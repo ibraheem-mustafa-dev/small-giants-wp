@@ -2,10 +2,15 @@
 /**
  * Admin UI for the Conditional Header rules engine (FR-S3-2, Spec 17 Wave 2).
  *
- * Registers a submenu under the SGS top-level menu (FR-S5-1) at
- * admin.php?page=sgs-header-rules. Lists existing rules and exposes an
- * "Add Rule" form. Form submissions go through admin-post.php with nonce +
- * capability gates; the actual storage + validation is delegated to
+ * Merged onto the native "Advanced Headers" CPT screen (D-merge, 2026-09-17):
+ * this class no longer registers its own top-level submenu/page. Instead it
+ * hooks `admin_notices`, scoped to the `edit-sgs_header` list-table screen
+ * (`edit.php?post_type=sgs_header`), and prints the rules table + "Add Rule"
+ * form there. `admin_notices` fires before the page's own title/list-table
+ * markup, so the rules panel lands ABOVE the native CPT list on the same
+ * screen — one screen per Bean's brief, instead of two separate admin pages.
+ * Form submissions still go through admin-post.php with nonce + capability
+ * gates; the actual storage + validation is delegated to
  * {@see Sgs_Header_Rules::add_rule()} and {@see Sgs_Header_Rules::remove_rule()}.
  *
  * UK English throughout. Plain language for operators — "Show this header
@@ -24,9 +29,6 @@ defined( 'ABSPATH' ) || exit;
  */
 final class Sgs_Header_Rules_Admin {
 
-	/** Submenu page slug. */
-	const PAGE_SLUG = 'sgs-header-rules';
-
 	/** Capability gate — matches every other SGS admin surface. */
 	const CAP = 'edit_theme_options';
 
@@ -38,34 +40,31 @@ final class Sgs_Header_Rules_Admin {
 
 	/** Wire WP hooks. */
 	public static function register(): void {
-		\add_action( 'admin_menu', array( __CLASS__, 'add_menu' ) );
+		\add_action( 'admin_notices', array( __CLASS__, 'render_admin_notice' ) );
 		\add_action( 'admin_post_' . self::ADD_ACTION, array( __CLASS__, 'handle_add' ) );
 		\add_action( 'admin_post_' . self::REMOVE_ACTION, array( __CLASS__, 'handle_remove' ) );
 	}
 
-	/** Register the submenu under the SGS top-level entry. */
-	public static function add_menu(): void {
-		\add_submenu_page(
-			Sgs_Admin_Menu::MENU_SLUG,
-			\__( 'SGS Header Rules', 'sgs-blocks' ),
-			\__( 'Header Rules', 'sgs-blocks' ),
-			self::CAP,
-			self::PAGE_SLUG,
-			array( __CLASS__, 'render_page' )
-		);
-	}
-
-	/** Render the admin page (rules table + Add Rule form). */
-	public static function render_page(): void {
+	/**
+	 * Print the rules table + Add Rule form above the native "Advanced
+	 * Headers" list table. Scoped to the `edit-sgs_header` screen only — every
+	 * other admin screen returns immediately, same as any other admin_notices
+	 * consumer that only cares about one screen.
+	 */
+	public static function render_admin_notice(): void {
+		$screen = \get_current_screen();
+		if ( ! $screen instanceof \WP_Screen || 'edit-' . Sgs_Block_CPTs::HEADER_CPT !== $screen->id ) {
+			return;
+		}
 		if ( ! \current_user_can( self::CAP ) ) {
-			\wp_die( \esc_html__( 'You do not have permission to access this page.', 'sgs-blocks' ), '', array( 'response' => 403 ) );
+			return;
 		}
 
 		$status = isset( $_GET['sgs-status'] ) ? \sanitize_key( \wp_unslash( $_GET['sgs-status'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$error  = isset( $_GET['sgs-error'] ) ? \sanitize_text_field( \wp_unslash( $_GET['sgs-error'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
-		echo '<div class="wrap">';
-		echo '<h1>' . \esc_html__( 'SGS Header Rules', 'sgs-blocks' ) . '</h1>';
+		echo '<div class="sgs-rules-panel">';
+		echo '<h2>' . \esc_html__( 'Header display rules', 'sgs-blocks' ) . '</h2>';
 		echo '<p>' . \esc_html__( 'Show different header patterns on different pages. Rules are checked top-to-bottom — the first matching rule wins. The default rule at the bottom always matches and cannot be removed.', 'sgs-blocks' ) . '</p>';
 
 		if ( 'added' === $status ) {
@@ -288,14 +287,16 @@ final class Sgs_Header_Rules_Admin {
 	}
 
 	/**
-	 * Redirect to the rules page with the given query args.
+	 * Redirect back to the "Advanced Headers" list-table screen (where the
+	 * rules panel now lives, see {@see self::render_admin_notice()}) with the
+	 * given query args.
 	 *
 	 * @param array<string,string> $args Query args to attach.
 	 */
 	private static function redirect_back( array $args ): void {
 		$url = \add_query_arg(
-			array_merge( array( 'page' => self::PAGE_SLUG ), $args ),
-			\admin_url( 'admin.php' )
+			array_merge( array( 'post_type' => Sgs_Block_CPTs::HEADER_CPT ), $args ),
+			\admin_url( 'edit.php' )
 		);
 		\wp_safe_redirect( $url );
 		exit;
