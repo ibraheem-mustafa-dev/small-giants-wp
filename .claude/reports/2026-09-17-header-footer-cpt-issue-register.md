@@ -28,11 +28,16 @@ This register tracks those, decomposed one issue per row. Full narrative + inves
 | I | Nav Drawer CPT requires inserting `sgs/nav-drawer` into its own content (looks circular) | Explained, deliberate | Confirmed intentional: one editable `sgs/nav-drawer` copy lives in the Drawer CPT, referenced by a global "Active Layout" pointer (an option, not a block attribute) — replacing an older, worse pattern of pasting the block into 8 separate header patterns as a sibling. | No action needed unless the G-session's chosen render mechanism changes how content is wired from CPT to live block — revisit then. |
 | J | `sgs/cart` is wrapped in an unnecessary `sgs/container` in the default header | **FIXED — diff ready, not committed** | Found 4 instances (not just the 1 originally spotted): 3 were genuinely redundant single-child wrappers and have been removed (`framework-header-default.php`, `header-search-bar-above.php`, `header-search-bar-below.php`); 1 (`header-search-icon.php`) is a real 2-icon grouping (search + cart) doing genuine flex work and was correctly left alone. | Needs your review of the diff, then a live Playwright check on the deployed canary before commit. |
 
-## Status summary (updated after investigation round)
+## Status summary (updated after commit + deploy + independent live verification)
 
 - **Resolved / explained, no further work:** A, I
-- **Fixed, diff ready — needs your review + live verification + commit decision:** E (9 blocks, not 3), F (dismiss control added), J (4 instances, 3 fixed)
+- **FIXED, COMMITTED, DEPLOYED, LIVE-VERIFIED (real browser interaction, not self-reported):**
+  - **E** — `b92c515f1`. Live-tested: a real mouse click on a nav-menu link now selects `sgs/nav-bar-menu` instead of navigating (URL unchanged, block selected). Census found 9 affected blocks, not 3.
+  - **F** — `9e28c661d`. Live-tested: dismiss button removes the promoted placeholder, row stays empty, WordPress's plain default appender takes over.
+  - **J** — `4c8b57014`. Live-tested: cart's parent is now `sgs/site-header-row` directly, no more `sgs/container` wrapper, on a freshly-inserted pattern instance.
+  - **B** — `d5ede2422`. Live-verified: Header Rules table renders above the Advanced Headers CPT list on one screen; old standalone menu entry is gone.
+  - **D3** — `689a00e70` (+ `ddd43e33b` fixing a destructive baseline-tool mistake caught mid-verification). Live-verified: "Used by" column shows a real computed value on the Advanced Headers list.
+  - Register doc itself: `2ca2f719a`. All pushed to `origin/main`.
+- **Process note:** the `--update-baseline` flag on `audit-block-file-consistency.py` does NOT merge — it replaces the whole baseline file. Running it during F's verification would have silently deleted 240 of 259 pre-existing entries belonging to 20 other, unrelated blocks. Caught before committing; fixed by hand-appending instead. Also found (not fixed): the same gate's `strip_comments()` helper eats roughly half of `site-header-row`/`site-footer-row`'s source before scanning — pre-existing, reproduces on the pre-fix commit too, not caused by this session.
 - **CONFIRMED live (broader than reported), decision needed before any fix:** H — affects both starter presets equally; looks like core WordPress behaviour, not an SGS bug
-- **Approved, cross-CPT scope confirmed, ready to build:** D3 (`sgs_header`/`sgs_footer`/`sgs_drawer` fully, `sgs_modal` fully, `sgs_form`/`sgs_choice_flow` partial)
-- **Concrete proposal, pulled out of the design-gate, ready to build:** B (merge Rules page + CPT list into one admin screen, Header and Footer)
 - **Architecture design-gate (brainstorming → adversarial-council → Bean sign-off):** C, D1, D2, G
