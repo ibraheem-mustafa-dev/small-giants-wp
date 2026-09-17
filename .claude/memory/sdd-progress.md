@@ -1176,3 +1176,12 @@ required. Two non-blocking residuals noted for parking: (a) the block-kind sibli
 scoring surface (cta-section/site-header-row/site-footer-row/form) wasn't swept for the same
 property, (b) sgs/mobile-nav + sgs/adaptive-nav are dead block_composition parent rows
 (harmless today - parent_slug can never legitimately be a slug that isn't a real block).
+Task 4 (Tier 4 - one-off content, dom-shape-guessed parent): complete (commits
+25e629480..7d911ff36, review Needs-fixes then re-reviewed Approved after fix - Critical
+process finding (git stash used by the implementer on this shared worktree, 3rd recurrence
+of a known pattern, logged to mistakes.md + CC memory feedback file, no data loss) plus
+Important finding (CTA composite-vs-floating disambiguation only checked siblings AFTER the
+button, missing the common heading-before-button real markup shape - Bean ruled: widen to
+both directions) both closed. Fix added a real end-to-end BeautifulSoup positive control
+that was previously missing (every prior test hand-built the signal dict rather than
+deriving it from real markup). 57/57 + 14/14 tests passing across both files.
