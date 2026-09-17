@@ -379,17 +379,29 @@ def _bs4_to_dom_dict(el: "Tag") -> dict:
     signals (Spec 45 §10.1) here, at the one point this function's caller
     still holds the REAL, attached bs4 element with intact tree navigation --
     `classify_button_shaped` itself receives only this flattened dict, with
-    its children already discarded and no sibling context forwarded to it."""
+    its children already discarded and no sibling context forwarded to it.
+
+    `_has_heading_or_paragraph_sibling` checks BOTH directions (Bean-decided,
+    2026-09-17 review of the Spec 45 Tier 4 build). Real composite CTA markup
+    typically writes the heading/paragraph BEFORE the button
+    (`<h2>...</h2><p>...</p><button>...</button>`), i.e. as PREVIOUS siblings
+    -- checking only `find_next_siblings()` was `False` for that exact shape,
+    so `disambiguate_cta_guess` could confidently resolve a genuine
+    `sgs/cta-section` shape to `sgs/whatsapp-cta` instead: a wrong answer, not
+    a gap, which is worse. A floating CTA (no heading/paragraph on EITHER
+    side) still correctly reads `False` both ways."""
     classes = el.get("class") or []
     if isinstance(classes, str):
         classes = classes.split()
+    _sibling_heading_tags = ("h1", "h2", "h3", "h4", "p")
     return {
         "tag": el.name,
         "classes": list(classes),
         "attrs": dict(el.attrs),
         "_child_count": len(el.find_all(True, recursive=False)),
-        "_has_heading_or_paragraph_sibling": any(
-            sib.name in ("h1", "h2", "h3", "h4", "p") for sib in el.find_next_siblings()
+        "_has_heading_or_paragraph_sibling": (
+            any(sib.name in _sibling_heading_tags for sib in el.find_previous_siblings())
+            or any(sib.name in _sibling_heading_tags for sib in el.find_next_siblings())
         ),
     }
 

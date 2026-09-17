@@ -1237,7 +1237,23 @@ def resolve_tier4(
     if isinstance(slug, Gap):
         return slug
 
+    # A missing `confidence` is reported as a Gap rather than defaulted to
+    # 0.0 -- matching this module's own convention for a missing Hint signal
+    # (see `disambiguate_cta_guess`'s explicit `is None` checks on
+    # `child_count`/`has_heading_or_paragraph_sibling`, both of which gap
+    # rather than silently substituting a value). Spec 45 §10.3 wraps every
+    # Tier 4 result as `review_pending=True` specifically so a human can
+    # weigh it against Spec 44's confidence-ceiling policy; a `None`
+    # silently coerced to `0.0` would misrepresent "unknown confidence" as
+    # "measured zero confidence", which is a different, false claim.
     confidence = _hint_field(hint, "confidence")
+    if confidence is None:
+        return Gap(
+            "",
+            reason="tier4_missing_confidence",
+            detail=f"{slug}: hint carries no 'confidence' value",
+        )
+
     results = resolve_fields(slug, draft_fields, max_depth=max_depth)
     return Tier4Resolution(
         block_slug=slug,

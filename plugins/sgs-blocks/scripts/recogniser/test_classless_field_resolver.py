@@ -19,6 +19,26 @@ sys.modules["cfr"] = cfr
 sys.modules.setdefault("classless_field_resolver", cfr)
 SPEC.loader.exec_module(cfr)
 
+# End-to-end fixture wiring (2026-09-17 review fix): a real bs4 fragment ->
+# per-section-convention-voter.py's `_bs4_to_dom_dict` -> dom_shape_
+# classifier.classify_element -> cfr.resolve_tier4, the one link in this
+# chain that had no test deriving its dict signals from REAL markup (every
+# existing Tier 4 test above hand-builds the signal dict/Hint directly).
+if str(HERE) not in sys.path:
+    sys.path.insert(0, str(HERE))
+import dom_shape_classifier as _dsc  # noqa: E402
+
+_VOTER_SPEC = importlib.util.spec_from_file_location(
+    "voter", HERE / "per-section-convention-voter.py"
+)
+_voter = importlib.util.module_from_spec(_VOTER_SPEC)
+_VOTER_SPEC.loader.exec_module(_voter)
+
+try:
+    from bs4 import BeautifulSoup
+except ImportError:
+    sys.exit("beautifulsoup4 required: pip install beautifulsoup4")
+
 
 # ---------------------------------------------------------------------------
 # section 4.0 -- hard pre-filter
@@ -867,6 +887,95 @@ def test_tier4_header_landmark_slug_passes_through_directly() -> None:
     print("  PASS  Tier 4 section 10.1: an already-real landmark slug passes through unchanged")
 
 
+def test_tier4_e2e_real_markup_composite_cta_resolves_to_cta_section() -> None:
+    """End-to-end positive control (2026-09-17 review fix) -- a REAL bs4
+    fragment shaped like a genuine composite CTA, run through the full
+    chain: `_bs4_to_dom_dict` (per-section-convention-voter.py) ->
+    `dom_shape_classifier.classify_element` -> `cfr.resolve_tier4`.
+
+    Real composite CTA markup writes the heading/paragraph BEFORE the
+    button -- exactly this shape. Before the `find_previous_siblings()` fix,
+    `_has_heading_or_paragraph_sibling` only looked forward and was `False`
+    here, so this exact real-world shape would have confidently resolved to
+    the WRONG block (sgs/whatsapp-cta) instead of gapping or matching
+    sgs/cta-section -- a wrong answer, not a gap, which is worse.
+
+    `disambiguate_cta_guess` requires BOTH signals for the composite shape
+    (child_count > 0 AND has_heading_or_paragraph_sibling) -- so the button
+    itself carries child elements (icon + label spans), matching a real
+    composite CTA button rather than a bare text-only `<button>`."""
+    soup = BeautifulSoup(
+        "<div>"
+        "<h2>Ready to get started?</h2>"
+        "<p>Book a free consultation today.</p>"
+        '<button><span class="icon"></span><span>Book now</span></button>'
+        "</div>",
+        "html.parser",
+    )
+    button = soup.find("button")
+    dom_dict = _voter._bs4_to_dom_dict(button)
+    assert dom_dict["_has_heading_or_paragraph_sibling"] is True, (
+        "heading/paragraph BEFORE the button must be detected"
+    )
+
+    hint = _dsc.classify_element(dom_dict, [], is_top_level=False)
+    assert hint is not None, f"expected a Hint, got None"
+    assert hint.block == "cta"
+    assert hint.has_heading_or_paragraph_sibling is True
+
+    fields = (cfr.DraftField(key="headline", value="Ready to get started?"),)
+    result = cfr.resolve_tier4(hint.to_dict(), fields)
+    assert isinstance(result, cfr.Tier4Resolution), f"got {result!r}"
+    assert result.block_slug == "sgs/cta-section", f"got {result.block_slug!r}"
+    print(
+        "  PASS  Tier 4 E2E: real bs4 markup (h2+p BEFORE button) resolves "
+        "to sgs/cta-section, not sgs/whatsapp-cta"
+    )
+
+
+def test_tier4_e2e_real_markup_floating_cta_resolves_to_whatsapp_cta() -> None:
+    """Negative-direction companion (2026-09-17 review fix) -- a lone
+    floating `<button>` with no heading/paragraph on EITHER side must still
+    resolve to sgs/whatsapp-cta after the `find_previous_siblings()` widening,
+    proving the fix did not silently break the genuine floating-CTA case."""
+    soup = BeautifulSoup(
+        '<div><span class="icon">chat</span><button>Chat with us</button></div>',
+        "html.parser",
+    )
+    button = soup.find("button")
+    dom_dict = _voter._bs4_to_dom_dict(button)
+    assert dom_dict["_has_heading_or_paragraph_sibling"] is False, (
+        "a floating CTA with no heading/paragraph sibling must stay False"
+    )
+
+    hint = _dsc.classify_element(dom_dict, [], is_top_level=False)
+    assert hint is not None, "expected a Hint, got None"
+    assert hint.block == "cta"
+    assert hint.has_heading_or_paragraph_sibling is False
+
+    fields = (cfr.DraftField(key="label", value="Chat with us"),)
+    result = cfr.resolve_tier4(hint.to_dict(), fields)
+    assert isinstance(result, cfr.Tier4Resolution), f"got {result!r}"
+    assert result.block_slug == "sgs/whatsapp-cta", f"got {result.block_slug!r}"
+    print(
+        "  PASS  Tier 4 E2E: real bs4 markup (no heading/paragraph either "
+        "side) still resolves to sgs/whatsapp-cta"
+    )
+
+
+def test_tier4_missing_confidence_gaps_not_silently_zeroed() -> None:
+    """Finding 2 (2026-09-17 review): `Tier4Resolution.confidence` is typed
+    `float`, but a hint lacking a `confidence` key must not silently produce
+    `None` into that field. Matches this module's own existing convention
+    for a missing Hint signal (`disambiguate_cta_guess`'s explicit `is None`
+    checks) -- reported as a Gap, never defaulted to 0.0."""
+    hint = {"block": "hero"}  # no "confidence" key at all
+    result = cfr.resolve_tier4(hint, ())
+    assert isinstance(result, cfr.Gap), f"got {result!r}"
+    assert result.reason == "tier4_missing_confidence"
+    print("  PASS  Tier 4: a hint with no 'confidence' key gaps, never silently zeroed")
+
+
 def test_tier4_unresolvable_bare_guess_gaps() -> None:
     """Negative control: a classifier guess with no Tier 4 mapping at all
     (neither an unambiguous name, "cta", nor an already-real slug) must gap,
@@ -934,6 +1043,9 @@ def main() -> int:
     test_tier4_cta_contradictory_signals_gaps()
     test_tier4_bare_nav_guess_never_routes_to_header_row()
     test_tier4_header_landmark_slug_passes_through_directly()
+    test_tier4_e2e_real_markup_composite_cta_resolves_to_cta_section()
+    test_tier4_e2e_real_markup_floating_cta_resolves_to_whatsapp_cta()
+    test_tier4_missing_confidence_gaps_not_silently_zeroed()
     test_tier4_unresolvable_bare_guess_gaps()
     print("\nCLASSLESS-FIELD-RESOLVER (Tiers 1-4): PASS")
     return 0
