@@ -1,5 +1,21 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1099 [ROUTINE] — plans/strategy/ retired; header-footer register + product-queue
+archived, `plans/archive/` is now the only non-active plans location
+
+**2026-09-17.** Following D1098's completion audit, Bean directed archiving the two remaining
+`plans/strategy/` docs and deleting the now-empty folder. `2026-07-15-header-footer-hardcoding-
+register.md` moved to `plans/archive/` — 15 of 17 items done (A9/A8 fixed same session per
+D1098; A12-A14 resolved by deleting the orphan `footer-indus-foods.php` entirely, D-earlier);
+only A11 (a footer-heading font-size question) remains, explicitly deferred to Bean/Opus
+sign-off by the doc's own text, unchanged. `2026-07-30-product-queue.md` moved to
+`plans/archive/` — Bean confirmed most items done, the rest superseded/planned elsewhere; its
+own frontmatter claim ("LIVE backlog... the LEDGER points at this file") was already false
+(LEDGER.md hadn't referenced it in ~7 weeks) and is corrected in place. The register's own
+citation of product-queue's Goal 3 fix is updated to note it's now DONE (the same footer
+hardcode D1098 fixed). `plans/strategy/` deleted — every plan doc now lives in either
+`plans/` (active) or `plans/archive/` (done/dead), no third bucket.
+
 ## D1098 [ROUTINE] — Parallel completion audit of every plan doc except Spec 36/37 +
 Snooza; 7 done/dead plans archived, 2 real gaps fixed, stale status lines corrected
 

@@ -2,7 +2,7 @@
 doc_type: strategy
 project: small-giants-wp
 last_updated: 2026-07-30
-note: "LIVE backlog. Split out of LEDGER.md 2026-07-30 to keep the ledger under its byte cap. This is NOT archived history — every item here is open work. The LEDGER points at this file."
+note: "ARCHIVED 2026-09-17 (D1098) — most items done, the rest superseded/planned elsewhere per LEDGER.md's current fronts. LEDGER.md no longer points at this file (had drifted un-referenced for ~7 weeks). Kept for residual-item history, not live status."
 ---
 
 ## Product queue (the website-builder work — reconcile before acting, some is already live)
@@ -32,10 +32,12 @@ note: "LIVE backlog. Split out of LEDGER.md 2026-07-30 to keep the ledger under 
    FIRST (`reports/visual-diff/header-footer-baseline-indus.json`). Open defects: logo mobile-tier
    switch; buttons/rows/bg not preserved; sticky+shrinking header; mega-menu on mobile+desktop.
    NEW: `P-INDUS-BRANDSTRIP-OVERFLOW-9PX`.
-4. **Goal 3 — de-hardcode base blocks.** `site-header/edit.js` + `site-footer/edit.js` TEMPLATEs +
-   row blocks — remove hardcoded content (NOT "empty containers"). REMOVE the `Quick Links`/
-   `Contact`/`Opening Hours` headings from `framework-footer-default` (rich versions are opt-in
-   patterns). Register: `plans/strategy/2026-07-15-header-footer-hardcoding-register.md`.
+4. **Goal 3 — de-hardcode base blocks — DONE (2026-09-17, D1098).** `site-header/edit.js` +
+   `site-footer/edit.js` TEMPLATEs + row blocks had hardcoded content removed earlier; the
+   `Quick Links`/`Contact` headings + the 5-item placeholder link list in
+   `framework-footer-default.php` were the last piece, fixed this session. Register (archived,
+   one item — A11, a font-size question — still deferred to Bean/Opus sign-off):
+   `plans/archive/2026-07-15-header-footer-hardcoding-register.md`.
 
 **Open reconciliation:** Track B (`feat/track-b-content-restore`, Indus page content) unmerged/
 paused — check its branch state before touching its files.
