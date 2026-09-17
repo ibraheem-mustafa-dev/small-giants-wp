@@ -8,11 +8,12 @@ last_updated: 2026-09-17
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**THREE OPEN FRONTS, ALL BUILT-BUT-NOT-LIVE-TRUSTED: Front C (Spec 44, classless GROUP
-recognition), Front D (Mama's/Indus header-footer builder cleanup), and Front E (Spec 45,
-classless FIELD resolution).** Fronts C and E are BOTH now fully built (all 4 tiers/units
-each) but neither is proven to do anything useful on a real draft yet — see below. Two things
-need Bean directly, not a subagent: the drawer-burger click retest, and Spec 42/43 Phase 3's
+**THREE OPEN FRONTS: Front C (Spec 44, classless GROUP recognition, built but NOT
+live-trusted), Front D (Mama's/Indus header-footer builder cleanup, mixed — 5 fixes DEPLOYED
+and LIVE-VERIFIED, a further architecture redesign DESIGNED but not yet built), and Front E
+(Spec 45, classless FIELD resolution, built but NOT live-trusted).** Front C is fully built
+(all 4 tiers) but not proven useful on a real draft yet — see below. Two things need Bean
+directly, not a subagent: the drawer-burger click retest, and Spec 42/43 Phase 3's
 precondition (real WooCommerce catalogue data). Everything else that used to lead this file —
 the nav-menu split, Spec 41/36 doc rewrites, Spec 42/43 Phases 0-2, and the choice-flow
 visual/UX pass — is FULLY DONE, DEPLOYED, LIVE-VERIFIED. See "Prior work (closed)" for
@@ -89,50 +90,45 @@ tasks below.
 ### Front D — Mama's/Indus header-footer builder cleanup (2026-09-17)
 
 Bean flagged the current generic (unbranded) header/footer as messy before Mama's/Indus branded
-content authoring starts (his stated priority order: Mama's, then Indus, then Ward End Eye Care).
-Six issues raised; **5 fixed this session, 1 still open + Bean says more related issues are
-coming next session — do not treat this front as closed.**
+content authoring starts. Two waves of work this session — full trail:
+`.claude/reports/2026-09-17-header-footer-cpt-issue-register.md`, decisions.md D1091/D1092.
 
-**Fixed (uncommitted at session end — verify `git status` before assuming landed):**
-- Architecture confusion (outer `sgs/site-header`/`sgs/site-footer` vs each row block) — answered,
-  not a code change: outer block owns whole-bar styling (background/sticky/outer padding/overall
-  content width); each row independently owns its own padding/contentWidth/layout. By design.
-- Footer's 80px top padding (theme spacing preset 70) — reduced to preset 50 (32px):
-  `theme/sgs-theme/patterns/framework-footer-default.php`.
-- Footer bottom-bar double-spacing stack (32px margin-top + 24px padding stacking in the same
-  direction) — margin-top removed, padding kept, same file.
-- Header logo/top-strip icons rendering outside the content-width band — root cause: the outer
-  `sgs/site-header` never set `contentWidth`, defaulting to `site-header-row`'s block.json default
-  of "full" (edge-to-edge). Fixed by adding `"contentWidth":{"desktop":"normal"}` to the outer
-  `sgs/site-header` block, matching how `sgs/site-footer` already does it. Same pattern file.
-- Icon-size inconsistency in the header's top strip (phone/email icons 16px vs. socials icon
-  24px) — `sgs/business-info`'s socials icon rule used a separate `1.5em` SVG size where every
-  other displayType uses `1em`. Unified to `1em`:
-  `plugins/sgs-blocks/src/blocks/business-info/style.css` `.sgs-business-socials__link svg`.
-- Column-shape-picker duplication on `site-footer-row` (a raw "Custom column template" textbox
-  coexisting with the proper FR-37-42 visual picker, both writing the same
-  `gridTemplateColumns` attribute) — passed the existing `enableColumnShapePicker` flag to its
-  `ContainerWrapperControls` call, same fix pattern `sgs/container` already uses correctly.
-  **Correction to the prior session's summary:** `site-header-row` does NOT mount
-  `ContainerWrapperControls`/`LayoutPanel` at all — it builds its own single ToolsPanel with only
-  the picker, no raw duplicate — so it never had this bug; no header-row change was needed.
+**Wave 1 — 5 visual/admin fixes, ALL COMMITTED, DEPLOYED, LIVE-VERIFIED** (real browser
+interaction, not self-reported — see the register for exactly how each was tested):
+- **E** — click-through-link bug in the CPT editor (a real click on a menu link now selects the
+  block instead of navigating). Census found 9 affected blocks, not the 3 first suspected.
+  `b92c515f1`.
+- **F** — empty header/footer row showed a large, undismissable placeholder. Dismiss control
+  added, falls back to WordPress's own plain appender. `9e28c661d`.
+- **J** — `sgs/cart` was wrapped in a redundant container in 3 of 4 header patterns; removed
+  (1 genuine 2-icon grouping correctly left alone). `4c8b57014`.
+- **B** — the separate "Header Rules"/"Footer Rules" admin pages merged into the Advanced
+  Header/Footer CPT list screens (one screen, not two). `d5ede2422`.
+- **D3** — a "Used by" column + a default-flag added to the CPT list tables, scoped correctly
+  after a same-day correction (a duplicate mechanism was built then removed once found to
+  overlap the existing "Active" pointer). `689a00e70` + `ddd43e33b`.
 
-**Still open — Issue 3, deliberately NOT fixed this session (Bean's own instruction: document,
-don't research/fix yet):**
+**Wave 2 — architecture redesign for the admin/CPT structure (C/D1/D2/G/H), DESIGNED, NOT BUILT.**
+Investigating deeper admin/architecture complaints (empty CPT lists, `sgs/nav-drawer` addable as
+an unbounded sibling block, and WordPress's native starter picker locking child-block editing
+behind an "Edit pattern" click on every preset) found one shared root cause. Design written into
+Spec 37 v1.2.0 as FR-37-46 through FR-37-49, then ran through a 6-persona `/adversarial-council`
+(D1092): NO-GO on the first write-up, fixed the same session, and Bean approved the corrected
+version. **Two items remain before implementation starts:** a verification spike on the
+underlying WP mechanism (see FR-37-46), and a scoping pass on FR-37-49's drawer post-picker
+(W2-b has no UI shape yet).
+
+**Still open, deliberately not started (Bean's own instruction: document, don't fix yet):**
 - **Cart pushes the burger menu inward on mobile, poorly architected.** Root mechanism confirmed
   live (Playwright, 390px viewport): `framework-header-default.php`'s middle row places
   `sgs/nav-bar-menu` (which renders the burger toggle at mobile widths) BEFORE the
   `sgs/cart`-wrapping container in markup order, so the burger lands mid-row instead of being the
   right-most element. Needs a proper "action cluster" architecture (icons grouped together,
-  burger always last/right-most) — genuine research task per Bean's request, not a quick reorder.
-  Not started.
-- **Bean has additional related header/footer issues to raise next session** — do not assume this
-  front is closed just because the 5 fixes above landed. Read this section fresh before declaring
-  Front D done.
+  burger always last/right-most) — genuine research task, not a quick reorder.
 
-**Not yet done after the fixes above:** rebuild + deploy (`build-deploy.py --target sandybrown`),
-live Playwright re-verification of all 5 fixes, then continue to Mama's real content authoring
-per `.claude/prompts/2026-09-10-header-footer-implementation.md`.
+**Next session:** either continue Wave 2 (the verification spike + W2-b scoping, then build
+FR-37-46 through FR-37-49), or move to Mama's real content authoring per
+`.claude/prompts/2026-09-10-header-footer-implementation.md` — Bean's call.
 
 ### Front C — Universal-pipeline classless recognition (D1071/D1073/D1074/D1075/D1077/D1078/D1081/D1084/D1088/D1089/D1090)
 
