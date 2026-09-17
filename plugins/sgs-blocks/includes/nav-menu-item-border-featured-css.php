@@ -278,6 +278,27 @@ if ( ! function_exists( 'sgs_nav_shared_item_border_css' ) ) {
 		if ( '' !== $item_separator_width && '' !== $item_separator_colour ) {
 			$item_separator_item_sel = $uid_sel . ' .' . $bem_root . '__bar:not(.' . $bem_root . '__bar--drawer) .' . $bem_root . '__item:not(:first-child)';
 
+			/*
+			 * ⚑ SHARED-EDGE HOVER FIX (2026-09-17, Bean-reported, follow-up to D1086).
+			 * D1086 centred the pseudo in the gap and fixed its resting-state
+			 * visibility, but left the HOVER TRIGGER one-sided: `$item_separator_item_sel`
+			 * is the item that OWNS the pseudo (the one to the divider's right), so only
+			 * hovering/focusing THAT item repainted it. Hovering the item on the OTHER
+			 * side of the same gap (the preceding sibling) did nothing, even though the
+			 * line now visually reads as shared between both. Adjacent-sibling selector
+			 * below: an `<li>` is a plain sibling of the next `<li>` (`nav-menu-markup.php`
+			 * — no per-item wrapper), so `:hover + .item` / `:focus-within + .item` from
+			 * the PRECEDING item reaches the FOLLOWING item's own `::before` directly — no
+			 * new pseudo, no duplicate paint, just a second trigger for the same rule.
+			 * `sgs_hover_state_rules()` cannot express this (it always appends the
+			 * hover/focus pseudo to the tail of the selector it's given, immediately
+			 * before the suffix) so this reverse pair is built with the same touch-safe
+			 * primitives (`sgs_hover_guarded_rule()` for the media+touch-guarded `:hover`
+			 * half, an unguarded `:focus-within` rule alongside it) rather than a third,
+			 * competing hover mechanism.
+			 */
+			$item_separator_prev_sel = $uid_sel . ' .' . $bem_root . '__bar:not(.' . $bem_root . '__bar--drawer) .' . $bem_root . '__item';
+
 			$css .= $item_separator_item_sel . '{position:relative;}';
 
 			if ( 'sweep' === $item_separator_treatment && '' !== $item_separator_hover ) {
@@ -292,6 +313,8 @@ if ( ! function_exists( 'sgs_nav_shared_item_border_css' ) ) {
 					. 'background-size:' . $item_separator_sweep['background_size'] . ';background-position:' . $item_separator_sweep['rest_position'] . ';background-repeat:no-repeat;'
 					. 'transition:background-position 300ms ease;pointer-events:none;}';
 				$css .= sgs_hover_state_rules( $item_separator_item_sel, 'background-position:' . $item_separator_sweep['hover_position'], ':focus-within', '::before' );
+				$css .= sgs_hover_guarded_rule( $item_separator_prev_sel . ':hover + .' . $bem_root . '__item::before', 'background-position:' . $item_separator_sweep['hover_position'] );
+				$css .= $item_separator_prev_sel . ':focus-within + .' . $bem_root . '__item::before{background-position:' . $item_separator_sweep['hover_position'] . ';}';
 				$css .= '@media (prefers-reduced-motion:reduce){' . $item_separator_item_sel . '::before{transition:none;}}';
 			} else {
 				$css .= $item_separator_item_sel . '::before{content:"";position:absolute;top:0;bottom:0;left:calc(' . $item_separator_gap . ' / -2);'
@@ -299,6 +322,8 @@ if ( ! function_exists( 'sgs_nav_shared_item_border_css' ) ) {
 					. ';border-left-color:' . $item_separator_colour . ';pointer-events:none;}';
 				if ( '' !== $item_separator_hover ) {
 					$css .= sgs_hover_state_rules( $item_separator_item_sel, 'border-left-color:' . $item_separator_hover, ':focus-within', '::before' );
+					$css .= sgs_hover_guarded_rule( $item_separator_prev_sel . ':hover + .' . $bem_root . '__item::before', 'border-left-color:' . $item_separator_hover );
+					$css .= $item_separator_prev_sel . ':focus-within + .' . $bem_root . '__item::before{border-left-color:' . $item_separator_hover . ';}';
 				}
 			}
 		}
