@@ -2019,6 +2019,31 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                 "responsive-bridge step skipped for this run"
             )
 
+    # Spec 44 classless-group recognition (--classless-match, off by default).
+    # The FR-44-1(b) precedent is snapshotted ONCE here, deliberately: the gate reads
+    # the same log this run appends to, so a live re-read would let the row written by
+    # a boundary's own forced first look satisfy the NEXT boundary's gate in the same
+    # run — the "one-time human look" happening to nobody. See classless_trust_gate.
+    _classless_enabled = bool(getattr(args, "classless_match", False))
+    _classless_decisions: list = []
+    _classless_precedent: tuple = ()
+    _classless_gate = None
+    _classless_adapter = None
+    _classless_soup = None
+    if _classless_enabled:
+        try:
+            if str(RECOGNISER_DIR) not in sys.path:
+                sys.path.insert(0, str(RECOGNISER_DIR))
+            import classless_draft_adapter as _classless_adapter  # noqa: F811
+            import classless_trust_gate as _classless_gate  # noqa: F811
+            _classless_precedent = _classless_gate.read_precedent()
+        except Exception as _exc:  # noqa: BLE001
+            _classless_enabled = False
+            aggregate_warnings.append(
+                f"--classless-match: Spec 44 modules unavailable ({_exc}); "
+                "classless path skipped, conversion behaviour unchanged"
+            )
+
     for m in matches:
         boundary_id = m["boundary_id"]
         target_block = m["block_name"]
@@ -2188,6 +2213,109 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                     class_signature=_class_sig,
                     reason="dom_shape Tier — classless boundary with no sc_var signal let through via dom_shape_hint",
                 )
+
+        # Spec 44 §4.4 — classless repeated-group recognition, BEFORE convert_section.
+        #
+        # Fires only when --classless-match is set AND the boundary is a GENUINELY
+        # classless repeated group: no class_signature at all (so Tier 0's lingua_franca
+        # path can never fire either), no slot-map hit, and a real repeated sibling group
+        # inside it. When Stage A or Stage B matches, this result is used INSTEAD of
+        # convert_section for that boundary (§4.4) — either as an auto-completed emission
+        # or as a review-queue entry; recognise_section()/build_block_markup()/walk.py are
+        # never invoked for it. When NEITHER stage matches, nothing changes: the boundary
+        # continues down exactly the path it takes today, which is what keeps §8's "the
+        # existing dom_shape / sc_var eligibility gates — unchanged" true rather than
+        # merely asserted.
+        if _classless_enabled and not (boundary.get("class_signature") or []) \
+                and not boundary.get("primary_is_slot_map_hit"):
+            try:
+                if _classless_soup is None:
+                    from bs4 import BeautifulSoup as _CL_BS4
+                    _cl_tagged = run_dir / "tagged-mockup.html"
+                    _cl_src = _cl_tagged if _cl_tagged.exists() else args.mockup
+                    _classless_soup = _CL_BS4(_cl_src.read_text(encoding="utf-8"), "html.parser")
+                # A classless boundary is resolvable ONLY by the Stage-1 tag: neither id
+                # nor class ever matches one uniquely, and a bare tag lookup returns the
+                # FIRST element of that tag regardless of which boundary is wanted (the
+                # real bug documented at the cv2 element resolution below).
+                _cl_el = _classless_soup.find(attrs={"data-sgs-boundary-id": boundary_id})
+                _cl_item = (_classless_adapter.representative_item(_cl_el)
+                            if _cl_el is not None else None)
+            except Exception as _exc:  # noqa: BLE001
+                _cl_el = _cl_item = None
+                aggregate_warnings.append(
+                    f"{boundary_id}: classless pre-check soft-failed ({_exc}); "
+                    "boundary left on its existing path"
+                )
+            if _cl_item is not None:
+                _cl_parent = getattr(_cl_el, "parent", None)
+                _cl_siblings = ([c for c in _cl_parent.find_all(True, recursive=False)]
+                                if _cl_parent is not None else [])
+                try:
+                    _cl_decision = _classless_gate.recognise_classless_group(
+                        _classless_adapter.build_stage_a_group(
+                            _cl_el, _cl_item, _cl_siblings, label=boundary_id),
+                        _classless_adapter.build_stage_b_group(_cl_item, label=boundary_id),
+                        client_slug=getattr(args, "client", "") or "",
+                        precedent=_classless_precedent,
+                        auto_complete_enabled=bool(
+                            getattr(args, "classless_auto_complete", False)),
+                        boundary_id=boundary_id,
+                        run_id=run_dir.name,
+                    )
+                    _classless_decisions.append(_cl_decision)
+                    _classless_gate.append_decision(_cl_decision)
+                except Exception as _exc:  # noqa: BLE001
+                    _cl_decision = None
+                    aggregate_warnings.append(
+                        f"{boundary_id}: classless recognition soft-failed ({_exc}); "
+                        "boundary left on its existing path"
+                    )
+                if _cl_decision is not None and _cl_decision.outcome != "no-match":
+                    _emit(
+                        _trace_for(run_dir),
+                        stage="stage_4_classless_recognition",
+                        boundary_id=boundary_id,
+                        classless_stage=_cl_decision.stage,
+                        block=_cl_decision.block,
+                        match_quality=_cl_decision.match_quality,
+                        outcome=_cl_decision.outcome,
+                        clause_a=_cl_decision.clause_a,
+                        clause_b=_cl_decision.clause_b,
+                        reason="Spec 44 FR-44-1",
+                    )
+                    _cl_auto = _cl_decision.auto_completed
+                    if _cl_auto and _cl_decision.block_markup:
+                        aggregate_markup_parts.append(_cl_decision.block_markup)
+                    else:
+                        # 'unmatched-*' so Stage 9's existing unmatched_sections filter
+                        # picks it up — the REAL review surface, not a second queue.
+                        aggregate_warnings.append(
+                            f"{boundary_id}: classless group recognised as "
+                            f"{_cl_decision.block} but did not clear FR-44-1 — "
+                            "operator review required"
+                        )
+                    per_section_results.append({
+                        "boundary_id": boundary_id,
+                        "section_id": m.get("section_id"),
+                        "selector": section_selector,
+                        "block_name": _cl_decision.block or target_block,
+                        "status": "complete" if _cl_auto else "unmatched-classless-review",
+                        "failure_reason": "" if _cl_auto else "; ".join(_cl_decision.reasons),
+                        "extract_path": "",
+                        "extracted_attributes": {},
+                        "block_markup": _cl_decision.block_markup,
+                        "token_resolutions": [],
+                        "new_tokens_written": [],
+                        "supports_decisions": [],
+                        "supports_emitted_attributes": {},
+                        "supports_omitted_attributes": {},
+                        "modifier_signals": {},
+                        "class_signature": [],
+                        "classless_stage": _cl_decision.stage,
+                        "classless_outcome": _cl_decision.outcome,
+                    })
+                    continue
 
         # Unmatched section: confidence == 0.0 means no block / pattern / scaffold
         # matched the candidate slug. Per the 2026-05-14 retirement of
@@ -2645,6 +2773,21 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
         })
         continue
 
+    # Spec 44 §7 — hand the run's classless decisions to Stage 9 as a file rather than
+    # through stage_9_report's signature. Stage 9 owns both consumers (the review page
+    # and the end-of-run summary), and a sidecar keeps this stage's contract unchanged
+    # for every other caller of it.
+    if _classless_enabled and _classless_gate is not None:
+        try:
+            (run_dir / "classless-decisions.json").write_text(
+                json.dumps(
+                    {"decisions": _classless_gate.decisions_to_json(_classless_decisions)},
+                    indent=2, ensure_ascii=False),
+                encoding="utf-8",
+            )
+        except OSError as _exc:  # noqa: BLE001
+            aggregate_warnings.append(f"classless-decisions.json write soft-failed ({_exc})")
+
     # Also write a single legacy extract-result.json so existing tooling
     # that expects one file still finds something.
     legacy_payload = {
@@ -3081,9 +3224,45 @@ def stage_9_report(boundary: dict, match: dict, slot_list: dict, extract: dict, 
         "--run-id", run_dir.name,
         "--out", str(review_html_path),
     ]
+    # Spec 44 §7 — the classless queue renders onto THIS page, not a second one. The
+    # flag is passed only when Stage 4 actually wrote the sidecar, so a run without
+    # --classless-match renders the pre-Spec-44 page byte for byte.
+    classless_path = run_dir / "classless-decisions.json"
+    if classless_path.exists():
+        cmd_review += ["--classless", str(classless_path)]
     proc_review = subprocess.run(cmd_review, capture_output=True, text=True, encoding="utf-8")
     if proc_review.returncode != 0:
         errors.append(f"simple_html_review_report exited {proc_review.returncode}: {(proc_review.stderr or '')[:500]}")
+
+    # 9c2. Spec 44 §7 — the end-of-run summary, printed AND written. Both, because a
+    # terminal-only summary dies with the scrollback and cannot be surfaced by a later
+    # /handoff or session-start hook.
+    classless_summary_path: str | None = None
+    if classless_path.exists():
+        try:
+            if str(RECOGNISER_DIR) not in sys.path:
+                sys.path.insert(0, str(RECOGNISER_DIR))
+            import classless_trust_gate as _cl_gate
+            _cl_rows = json.loads(classless_path.read_text(encoding="utf-8")).get("decisions", [])
+            _cl_decisions = [
+                _cl_gate.ClasslessDecision(
+                    client_slug="", boundary_id=r.get("boundary_id", ""),
+                    run_id=run_dir.name, stage=r.get("stage", "none"),
+                    block=r.get("block"), match_type=r.get("match_type"),
+                    match_quality=r.get("match_quality", "none"),
+                    outcome=r.get("outcome", "no-match"),
+                    clause_a=bool(r.get("clause_a")), clause_b=bool(r.get("clause_b")),
+                    signal=r.get("signal", ""), reasons=tuple(r.get("reasons") or []),
+                    fields=tuple(r.get("fields") or []),
+                )
+                for r in _cl_rows
+            ]
+            classless_summary_path = str(
+                _cl_gate.write_classless_summary(run_dir, _cl_decisions))
+            for _line in _cl_gate.summary_lines(_cl_decisions):
+                print(_line)
+        except Exception as exc:  # noqa: BLE001 - summary is an operator artefact; soft-fail
+            warnings.append(f"classless summary soft-failed: {exc}")
 
     # 9d. Coverage roll-up.
     # Bug fix 2026-05-13: extract['extracted_attributes'] keys are namespaced
@@ -3161,6 +3340,7 @@ def stage_9_report(boundary: dict, match: dict, slot_list: dict, extract: dict, 
         "content_gap_writer": content_gap_writer_result,
         "functionality_gap_detector": functionality_gap_detector_result,
         "gap_review_report_path": gap_review_report_path,
+        "classless_summary_path": classless_summary_path,
         "unmatched_sections": unmatched_sections,
         "unmatched_section_count": len(unmatched_sections),
     }
@@ -3444,6 +3624,37 @@ def main():
              "(unchanged, zero risk). A LOW value (e.g. 0.0) is a deliberate TESTING knob; "
              "production use is a separate, later policy decision -- same caveat as "
              "--sc-var-min-confidence.",
+    )
+    parser.add_argument(
+        "--classless-match", action="store_true", default=False,
+        help="Opt-in Spec 44 Pass 1 (.claude/specs/44-CLASSLESS-REPEATER-RECOGNITION.md "
+             "§9): before a boundary is handed to converter.entry.convert_section, a "
+             "GENUINELY classless repeated group (no class_signature at all, no Tier-0 "
+             "slot-map hit, and a real repeated sibling group inside it) is put through "
+             "Stage A (recogniser/render_repeater_recogniser.py, structural match against "
+             "block_render_repeaters) and then, if Stage A reached no known shape, Stage B "
+             "(recogniser/array_schema_eliminator.py, DB-fact elimination against "
+             "array_item_schema). A MATCH is recorded to the §7 audit log and routed to "
+             "the existing operator-review surface; it does NOT auto-complete unless "
+             "--classless-auto-complete is also set AND FR-44-1's gate passes. A NO-MATCH "
+             "changes nothing — the boundary continues down exactly the path it takes "
+             "today, so the existing dom_shape / sc_var gates are unaffected (§8). Omit "
+             "for today's default behaviour (unchanged, zero risk to any existing client).",
+    )
+    parser.add_argument(
+        "--classless-auto-complete", action="store_true", default=False,
+        help="Opt-in FR-44-1 auto-completion, on top of --classless-match (no effect "
+             "without it). When set, a classless group that clears BOTH trust clauses — "
+             "(a) a parent-narrowed EXACT Stage A structural match against exactly one "
+             "surviving candidate, and (b) a prior audit-log row for the SAME client and "
+             "the same (block, match-type) pattern — emits the recognised composite "
+             "instead of being converted. Spec 44 §9 keeps this off until at least one "
+             "real client draft has run review-only and the review queue has been checked "
+             "by hand; turning it off again is the rollback path, no code revert needed. "
+             "A Stage B match NEVER auto-completes regardless of this flag (Stage B "
+             "resolves field identity with no value attached — see classless_trust_gate's "
+             "docstring). Production use is a separate, later policy decision — same "
+             "caveat as --sc-var-min-confidence.",
     )
     parser.add_argument(
         "--sc-var-cache", type=Path, default=None,

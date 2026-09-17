@@ -14,6 +14,11 @@ Inputs (file paths -- all required):
   --run-id      Run identifier (used in page title + heading)
   --out         Path to write the HTML file
 
+Optional:
+  --classless   Spec 44 §7 classless-recognition decisions JSON (the orchestrator's
+                classless-decisions.json). Absent -> that section is omitted entirely,
+                so every pre-Spec-44 caller renders a byte-identical page.
+
 Alternatively, --run-dir can be passed; the script reads:
   <run_dir>/stage-1.json, stage-2.json, stage-3.json, stage-4.json,
   <run_dir>/leftover-buckets.json
@@ -24,6 +29,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from html import escape as html_escape
 from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
@@ -42,6 +48,53 @@ def _coverage_for_section(boundary_id: str, slot_list: dict, extract: dict) -> t
     return extracted, total, pct, open_slots
 
 
+def _esc(value: object) -> str:
+    """HTML-escape a value for a table cell. The classless rows carry operator-facing
+    prose (a `reasons` list), which every other cell here gets away without because it
+    is either a slug or a `json.dumps` round-trip."""
+    return html_escape(str(value), quote=True)
+
+
+def classless_rows(classless: dict | None) -> str:
+    """Spec 44 §7's review section — the FR-44-1 queue, on the EXISTING review page.
+
+    Returns "" when there is nothing to show, which the caller uses to omit the whole
+    section rather than render an empty table. `classless` is the orchestrator's
+    classless-decisions.json (`classless_trust_gate.decisions_to_json`).
+    """
+    decisions = (classless or {}).get("decisions") or []
+    queued = [d for d in decisions if d.get("outcome") == "review"]
+    if not queued:
+        return ""
+    rows = []
+    for d in queued:
+        reasons = "; ".join(str(r) for r in (d.get("reasons") or [])) or "—"
+        fields = (d.get("fields") or [])
+        detail = ("<br><em>per-field: " + _esc(" · ".join(str(f) for f in fields)) + "</em>"
+                  if fields else "")
+        rows.append(
+            f"<tr>"
+            f"<td><code>{_esc(d.get('boundary_id', ''))}</code></td>"
+            f"<td><code>{_esc(d.get('block') or '—')}</code></td>"
+            f"<td>{_esc(d.get('stage', ''))}</td>"
+            f"<td>{_esc(d.get('match_quality', ''))}</td>"
+            f"<td>{_esc(d.get('signal', '') or '—')}</td>"
+            f"<td>{_esc(reasons)}{detail}</td>"
+            f"</tr>"
+        )
+    return (
+        "<h2>Classless recognition — fell to review (Spec 44 FR-44-1)</h2>"
+        "<p>Each row was recognised by Spec 44's Stage A / Stage B but did not clear the "
+        "FR-44-1 trust gate, so nothing was emitted for it. The 'Why' column is the "
+        "structural signal that almost-but-didn't clear, verbatim.</p>"
+        "<table>"
+        "<thead><tr><th>Boundary</th><th>Candidate block</th><th>Stage</th>"
+        "<th>Quality</th><th>Structural signal</th><th>Why it did not clear</th></tr></thead>"
+        f"<tbody>{''.join(rows)}</tbody>"
+        "</table>"
+    )
+
+
 def _render(
     run_id: str,
     boundary: dict,
@@ -49,6 +102,7 @@ def _render(
     slot_list: dict,
     extract: dict,
     buckets: dict,
+    classless: dict | None = None,
 ) -> str:
     """Render the full operator-review HTML page."""
     extracted_attrs = extract.get("extracted_attributes") or {}
@@ -164,6 +218,8 @@ def _render(
     <tbody>{extracted_table_rows}</tbody>
   </table>
 
+  {classless_rows(classless)}
+
   <h2>Leftover bucket summary</h2>
   <table>
     <thead><tr><th>Bucket</th><th>Count</th></tr></thead>
@@ -183,9 +239,14 @@ def render_review(
     slot_list: dict,
     extract: dict,
     buckets: dict,
+    classless: dict | None = None,
 ) -> str:
-    """Importable rendering entry point used by the orchestrator."""
-    return _render(run_id, boundary, match, slot_list, extract, buckets)
+    """Importable rendering entry point used by the orchestrator.
+
+    `classless` is keyword-optional and defaults to None, so every existing caller's
+    positional call renders exactly what it rendered before Spec 44.
+    """
+    return _render(run_id, boundary, match, slot_list, extract, buckets, classless)
 
 
 def _load_json(path: Path) -> dict:
@@ -203,12 +264,21 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--buckets", type=Path, default=None)
     parser.add_argument("--run-id", type=str, default=None)
     parser.add_argument("--run-dir", type=Path, default=None, help="Pull inputs from a pipeline-state run dir")
+    parser.add_argument(
+        "--classless", type=Path, default=None,
+        help="Spec 44 §7 classless-recognition decisions JSON. Omit for the pre-Spec-44 page.")
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args(argv)
+
+    classless = None
+    if args.classless and args.classless.exists():
+        classless = _load_json(args.classless)
 
     if args.run_dir:
         rd = args.run_dir
         run_id = args.run_id or rd.name
+        if classless is None and (rd / "classless-decisions.json").exists():
+            classless = _load_json(rd / "classless-decisions.json")
         boundary = _load_json(rd / "stage-1.json").get("output", {})
         match = _load_json(rd / "stage-2.json").get("output", {})
         slot_list = _load_json(rd / "stage-3.json").get("output", {})
@@ -225,7 +295,7 @@ def main(argv: list[str] | None = None) -> int:
         extract = _load_json(args.extract)
         buckets = _load_json(args.buckets)
 
-    html = _render(run_id, boundary, match, slot_list, extract, buckets)
+    html = _render(run_id, boundary, match, slot_list, extract, buckets, classless)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(html, encoding="utf-8")
     print(f"[review] wrote {args.out}")
