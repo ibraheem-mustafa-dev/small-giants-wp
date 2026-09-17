@@ -39,7 +39,7 @@
 
 <!-- /wp:sgs/site-footer-row -->
 
-<!-- wp:sgs/site-footer-row {"borderWidth":{"top":"1px"},"borderStyle":"solid","borderColour":"border","rowSlot":"bottom","layout":"flex","justifyContent":"center","padding":{"desktop":{"top":"var(--wp--preset--spacing--40)","bottom":"var(--wp--preset--spacing--40)"}},"margin":{"desktop":{"top":"var(--wp--preset--spacing--50)"}}} -->
+<!-- wp:sgs/site-footer-row {"borderWidth":{"top":"1px"},"borderStyle":"solid","borderColour":"border","rowSlot":"bottom","layout":"flex","justifyContent":"center","padding":{"desktop":{"top":"var(--wp--preset--spacing--20)","bottom":"var(--wp--preset--spacing--20)"}},"margin":{"desktop":{"top":"var(--wp--preset--spacing--50)"}}} -->
 
 <!-- wp:sgs/business-info {"displayType":"copyright","textColour":"text-inverse","fontSize":{"desktop":"small"}} /-->
 
