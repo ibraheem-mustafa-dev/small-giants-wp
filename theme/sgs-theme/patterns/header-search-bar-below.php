@@ -28,8 +28,3 @@
 <!-- wp:sgs/product-search {"displayMode":"inline","placeholder":"Search products…"} /-->
 <!-- /wp:sgs/site-header-row -->
 <!-- /wp:sgs/site-header -->
-
-<!-- wp:sgs/nav-drawer -->
-<!-- wp:sgs/nav-drawer-menu {"ref":0} /-->
-<!-- wp:sgs/responsive-logo {"width":140,"linkToHome":true} /-->
-<!-- /wp:sgs/nav-drawer -->
