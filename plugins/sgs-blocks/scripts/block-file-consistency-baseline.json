@@ -1556,6 +1556,18 @@
       "block": "sgs/nav-bar-menu",
       "attr": "_note_three_state_model",
       "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup — fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/site-header-row",
+      "attr": "hidePromotedPlaceholder",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup — fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/site-footer-row",
+      "attr": "hidePromotedPlaceholder",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup — fully unused"
     }
   ]
 }
