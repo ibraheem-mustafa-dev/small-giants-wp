@@ -1185,3 +1185,17 @@ button, missing the common heading-before-button real markup shape - Bean ruled:
 both directions) both closed. Fix added a real end-to-end BeautifulSoup positive control
 that was previously missing (every prior test hand-built the signal dict rather than
 deriving it from real markup). 57/57 + 14/14 tests passing across both files.
+Task 4 QC (qc-inline): PASS, 7/7 scenarios (all against real classifier/BS4 output, not
+hand-built dicts), confidence 100/100, ship. One scenario initially looked like a
+regression (plain text-only button in a composite-CTA shape gapped instead of resolving)
+but traced to a disclosed, deliberate design limit already documented in the fix's own
+test docstring: disambiguate_cta_guess requires child_count>0 (button has real child
+elements, e.g. icon+label spans), which a bare text-only button doesn't satisfy - this is
+the conservative gap-not-guess behaviour working as intended, not a bug. Parked as a future
+measurement task (how often this under-fires against a real draft corpus), not a blocker.
+
+=== STATUS: all four tiers of Spec 45's classless field resolver are now built, reviewed,
+qc'd, and pushed to main (D1084's standalone/fixture-driven scope). Final commit:
+7d911ff36. Next real milestone for this mechanism is Spec 44's own build (the group-identity
+resolver Tier 1-4 need as their real parent_slug input) - tracked separately, not part of
+this SDD run.
