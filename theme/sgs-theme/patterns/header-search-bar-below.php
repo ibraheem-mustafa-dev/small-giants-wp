@@ -21,9 +21,7 @@
 
 <!-- wp:sgs/nav-bar-menu {"ref":0,"itemColour":"text","gap":"28px"} /-->
 
-<!-- wp:sgs/container {"className":"sgs-header-icons","layout":"flex","flexWrap":"nowrap","contentWidth":{"desktop":"full"}} -->
 <!-- wp:sgs/cart /-->
-<!-- /wp:sgs/container -->
 <!-- /wp:sgs/site-header-row -->
 
 <!-- wp:sgs/site-header-row {"rowSlot":"bottom","justifyContent":"center","backgroundColour":"surface-alt","maxWidth":{"desktop":"640px"},"padding":{"desktop":{"top":"20px","bottom":"20px"}},"rowShrink":{"desktop":"on"}} -->
