@@ -1,14 +1,22 @@
 ---
 doc_type: spec
 spec_id: 37
-spec_version: 1.0.0
+spec_version: 1.1.0
 title: SGS Header/Footer Builder — CPT editing home, container blocks, behaviours, binding
 project: small-giants-wp
 status: active
 authors: [Claude Code, Bean]
 session_date: 2026-07-22
-last_verified: 2026-07-22
+last_verified: 2026-09-17
 status_history:
+  - 2026-09-17 — v1.1.0. Front D architecture amendment (design-gated, Bean-directed): FR-37-46
+    (template-lock the 3 CPTs), FR-37-47 (bespoke starter action, OVERRIDES FR-37-7's
+    native-picker-only ruling for sgs_header/sgs_footer/sgs_drawer — sgs_mega_menu unaffected),
+    FR-37-48 (auto-seed one post per CPT), FR-37-49 (completes FR-37-43's W2-b+W2-d, sequenced
+    together per the new ruling recorded there). Closes register issues C, D1, D2, G, H
+    (`.claude/reports/2026-09-17-header-footer-cpt-issue-register.md`). All four new FRs
+    NOT-BUILT — this commit is the design only; pending /adversarial-council pre-mortem +
+    Bean sign-off per CLAUDE.md Rule 7 before implementation starts.
   - 2026-07-21 — v1.0.0. Written to replace Spec 17 as the canonical header/footer home.
     §9 coverage gate + /qc-council passed; Spec 17 deleted in the same commit (matrix at
     reports/2026-07-21-spec17-to-spec37-coverage.md). Signed off → status active.
@@ -618,6 +626,14 @@ to a post picker = **W2-b**; the 7 starter looks = **W2-c**; the 8 header patter
 embedded drawer + the per-site seed = **W2-d**; `variantPreset` retirement = **W2-d**. Until W2-d,
 both paths coexist by design and the landmark guard is what keeps that safe.
 
+> **Sequencing ruling — 2026-09-17 (Front D / FR-37-49).** W2-d (dropping the embedded
+> sibling-drawer from header/footer patterns) **must not ship before or without W2-b** (the
+> `drawerRef` post-picker). The sibling-block insertion ("Add the mobile menu", Spec 36 FR-36-9a
+> clause 2) is currently the ONLY way an operator can attach drawer content to a header — removing
+> it first, before the post-picker replacement exists, would strand that capability with nothing
+> to replace it. W2-b and W2-d ship in the **same wave**, W2-b first within it. See FR-37-49 for
+> the full build.
+
 **Non-destructive property (the reason this half could ship alone):** with no Active drawer pointer
 set, `get_active_content()` returns `''` and `Sgs_Drawer_Render` emits nothing, so page output is
 unchanged and all 8 pattern-embedded drawers keep working. `wp sgs drawer clear-active` reverts the
@@ -733,6 +749,17 @@ references its slug; (2) author each live site's header/footer as a CPT + set ac
 ### Starter templates
 
 #### FR-37-7 — One shared starter-template picker
+
+> **⛔ OVERRIDDEN for `sgs_header`/`sgs_footer`/`sgs_drawer` — 2026-09-17 (Bean, architecture
+> gate; see FR-37-46/47/48/49).** This FR's "use WordPress's native mechanism, no bespoke UI"
+> ruling is **explicitly superseded** for these three CPTs. Front D found the native mechanism's
+> side effect — every pattern insertion stamps provenance metadata that locks child-block editing
+> behind an "Edit pattern" click (§8.3 finding, all starter presets equally affected) — and Bean
+> ruled that a genuinely locked, always-populated CPT post (FR-37-46) is worth building bespoke UI
+> to get, overriding this FR's original preference. **`sgs_mega_menu` is UNAFFECTED — FR-37-7
+> stands as written for it**; only the three CPTs gaining the template-lock move to FR-37-47's
+> bespoke starter action instead.
+
 A single picker component serves `sgs_header`, `sgs_footer` **and** `sgs_mega_menu`. On
 creating a new post of any of those types, the first screen is a visual card grid of styles
 with preview-before-apply, plus a persistent "Start from scratch" card. One implementation,
@@ -1754,6 +1781,120 @@ only piece not independently re-confirmed in this pass.
 `surface` token) — met; the transparent/solid pair can be inverted — met; the
 `P-TRANSPARENT-HEADER-SCROLLED-BG-NOT-FLIPPING` regression stays fixed under the new control — not
 re-verified live in this pass.
+
+### Front D architecture amendment — 2026-09-17 (Bean-directed, overrides FR-37-7 for 3 CPTs)
+
+> **Context.** Investigating Bean's reported friction with `sgs_header`/`sgs_footer`/`sgs_drawer`
+> (empty CPT lists on first use, `sgs/nav-drawer` addable as an unbounded sibling of `sgs/site-header`,
+> and the native starter picker locking child-block editing behind an "Edit pattern" click on
+> EVERY preset, live-confirmed via Playwright) found that all three share one root cause: these
+> three CPTs rely on WordPress's native "Choose a pattern" empty-post mechanism (FR-37-7), which
+> requires the post to have no `template` — and an empty, unconstrained post is exactly what
+> makes all three problems possible at once. Full investigation trail:
+> `.claude/reports/2026-09-17-header-footer-cpt-issue-register.md` (issues C, D1, D2, G, H).
+
+#### FR-37-46 — Template-lock `sgs_header`/`sgs_footer`/`sgs_drawer` at the post level
+
+`register_post_type()` for all three CPTs gains a real `template` (`[['sgs/site-header']]`,
+`[['sgs/site-footer']]`, `[['sgs/nav-drawer']]` respectively) and `template_lock => 'all'`.
+
+**Why this, not Option 1 (CPT-becomes-the-block).** Two shapes were weighed for closing D2
+("nothing may exist beside or below the header/footer/drawer wrapper"): (1) move the wrapper's
+own settings onto CPT post-meta and inject a synthesised `sgs/site-header` instance at render
+time, holding only the 3 rows as real content; (2) keep `sgs/site-header` as the one real,
+locked, top-level block, exactly as today. **(2) is chosen.** `sgs/site-header`'s settings
+surface is verified complete and self-contained on the block already (58 attributes spanning
+background/border/shadow/layout/sticky/transparent/shrink/hide-on-scroll/contrast-safe —
+`.claude/reports/2026-09-17-header-footer-cpt-issue-register.md` D3 section; `sgs/site-footer`
+65 attributes, `sgs/nav-drawer` 48), so (1) buys nothing (2) doesn't already deliver, at the cost
+of a new render-time reconstruction step with its own failure surface and a migration of every
+existing attribute's home. This also directly answers Bean's request that "all header settings
+[stay] built into the site-header block" — verified true today (no leftover CPT meta duplicates
+a block-owned setting; `plugins/sgs-blocks/includes/class-sgs-cpt-default-meta.php::post_types()` correctly excludes header/
+footer, see FR-37-48) and this FR does not disturb it.
+
+**Interaction with D393/§3.3a.** The existing `template: isEmpty ? TEMPLATE : undefined`
+row-seeding fix inside `sgs/site-header`/`sgs/site-footer` is UNCHANGED — this FR's template
+lock operates one level up, at the CPT POST level (what may exist in `post_content` at all), not
+at the row-seeding level inside the container (what the 3 rows start with). The two locks do not
+interact and must not be conflated when verifying either.
+
+**Status:** `NOT-BUILT`.
+**Done when:** a new post of any of the three types opens with the locked block already present
+and populated by its own template default; no other block can be inserted as a sibling or
+appended below it, in the editor or via a raw REST `post_content` write; `wp/v2/{type}` schema
+still round-trips the locked content unchanged on save (a template-locked post is not read-only).
+
+#### FR-37-47 — Bespoke "Load a starter" action, replacing the native picker for these 3 CPTs
+
+Because FR-37-46 makes every new post non-empty by construction, WordPress's native "Choose a
+pattern" modal (FR-37-7) can never fire for `sgs_header`/`sgs_footer`/`sgs_drawer` again — a
+template-locked post is never the empty post that modal requires. This is the deliberate,
+overriding trade this wave makes (see the FR-37-7 override note above): a small bespoke action
+in place of the native modal, so the 14 existing starter patterns (FR-37-8) stay reachable and
+the "Edit pattern" lock (H) never gets a chance to apply, because content never arrives through
+WordPress's pattern-insertion path at all.
+
+**Mechanism.** A "Load a starter" button/action in the CPT editor (Document sidebar or a toolbar
+action on the locked block) lists the same starter looks FR-37-8 already ships as files. Choosing
+one reads that pattern file's content and writes it into the ROWS **inside** the already-present,
+locked `sgs/site-header`/`sgs/site-footer`/`sgs/nav-drawer` block — never replacing or touching the
+locked top-level block itself, so the lock is never disturbed. This reuses FR-37-8's starter files
+verbatim (no new starter-authoring work) and the row-seeding mechanism already proven safe by
+D393 (§3.3a) — applying a starter is structurally the same operation as the existing
+"apply this row's TEMPLATE" path, just triggered by an explicit action instead of block-mount.
+
+**`sgs_mega_menu` is unaffected** — it keeps FR-37-7's native picker as originally specified;
+this FR touches nothing there.
+
+**Status:** `NOT-BUILT`.
+**Done when:** creating a new post of any of the three types shows a way to pick a starter look;
+choosing one writes that starter's content into the rows, verified by reading the saved
+`post_content` (not editor state, per FR-37-7's own D393 lesson); the locked top-level block is
+byte-identical before and after; no `metadata.patternName`/`metadata.name` provenance stamp
+appears on any resulting block (the concrete proof that H cannot occur through this path).
+
+#### FR-37-48 — Auto-seed one post per CPT so the admin list is never empty
+
+`wp sgs header|footer|drawer seed-starter` (FR-37-30, already built and live-verified) runs once
+automatically per site — on first plugin activation, or as a cloning-pipeline setup step — so
+`edit.php?post_type=sgs_header` (and footer/drawer) never shows zero rows on a fresh install.
+This is independent of FR-37-46/47: FR-37-46 fixes what a *new, individual* post starts with;
+this FR fixes what the *list table* shows before any operator has created anything.
+
+**No new CPT meta needed for "which is the default."** This was investigated and DELIBERATELY
+NOT built as a separate flag — `Sgs_Active_Layout`'s existing "Active" pointer + admin column
+already answers "which post is currently live" for all three CPTs, and a second `_sgs_is_default`
+field would have duplicated it (built, then reverted, same-day — see
+`.claude/reports/2026-09-17-header-footer-cpt-issue-register.md` D3 section). The seeded post is
+set Active via the same existing mechanism, not a new one.
+
+**Status:** `NOT-BUILT`.
+**Done when:** a fresh site install shows exactly one post in each of the three CPT list tables,
+already marked Active, with no manual step required.
+
+#### FR-37-49 — Complete FR-37-43's W2-b + W2-d together (drawer post-picker + drop embedded drawer)
+
+Completes the "Explicitly still open" items FR-37-43 named and left unfinished in 2026-07-30:
+`drawerRef` re-typed to a real post picker (**W2-b**) and the 8 header/footer starter patterns
+dropping their embedded `sgs/nav-drawer` sibling block (**W2-d**), shipped in the SAME wave, W2-b
+first — per the sequencing ruling recorded against FR-37-43 above. Landing W2-d alone would strand
+the only current way an operator attaches drawer content (the sibling-insert one-click fix, Spec
+36 FR-36-9a clause 2) with no replacement.
+
+This also completes **D2** (a header/footer post can no longer contain anything but its own
+locked wrapper, full stop — `sgs/nav-drawer` was the one thing still legitimately appearing as a
+sibling, and FR-37-46 already blocks anything else) and removes the last reason FR-37-43's
+landmark guard (duplicate `<dialog id="sgs-nav-drawer">` prevention) needs to keep two coexisting
+paths alive for NEW content — existing already-published sibling-embedded drawers are left
+untouched (hard cut per D270/D293 applies to new content and starters, not a forced migration of
+live posts) and the guard stays in place for them.
+
+**Status:** `NOT-BUILT` — supersedes FR-37-43's "Explicitly still open" list for these two items.
+**Done when:** `drawerRef` is a real post picker (no more raw ID/string field); the 8 header/footer
+starter patterns (FR-37-8) contain zero `sgs/nav-drawer` blocks; a fresh header/footer created via
+FR-37-47 has no drawer content unless the operator explicitly picks one via the picker; the
+landmark guard still protects any pre-existing sibling-embedded drawer from double-rendering.
 
 ---
 

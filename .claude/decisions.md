@@ -1,6 +1,47 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
-## D1090 [ROUTINE] — `block_render_composition` — render-time block composition as a
+## D1091 [ROUTINE] — Front D header/footer/drawer CPT architecture, overrides FR-37-7 for 3 CPTs, built via `/brainstorming`
+
+**2026-09-17.** Bean flagged the Advanced Header/Footer/Nav-Drawer CPT builder as messy before
+Mama's/Indus branded content authoring starts (Front D, LEDGER.md). 5 visual issues fixed same
+session (D-untracked, see LEDGER). A deeper architecture pass on the remaining issues
+(`.claude/reports/2026-09-17-header-footer-cpt-issue-register.md` C/D1/D2/G/H) surfaced one
+shared root cause: all three CPTs rely on WordPress's native empty-post "Choose a pattern"
+mechanism, which requires an unconstrained post — the same precondition that makes the CPT list
+start empty (C), lets `sgs/nav-drawer` sit as an unbounded sibling of `sgs/site-header` (D2/G),
+and stamps every inserted pattern with provenance metadata that locks child-block editing behind
+an "Edit pattern" click (H, live-confirmed via Playwright on BOTH starter presets equally, not
+just the one Bean originally suspected).
+
+**First-pass design was wrong, caught before finalizing (worth recording so it doesn't recur):**
+initial plan was to remove `sgs/nav-drawer` from header patterns outright. Reading Spec 37 in
+full (at Bean's explicit direction, after a near-miss) found FR-37-43 already gates this as
+"W2-d", explicitly NOT to ship without "W2-b" (a drawer post-picker) landing first or alongside —
+the sibling-insert path is currently the ONLY way an operator attaches drawer content at all.
+Second near-miss: assumed template-locking the CPT top level would cleanly fix C+D2+H together,
+without checking that FR-37-7 (Bean-signed-off 2026-07-24) deliberately removed the CPTs'
+`template` arg specifically so the native starter picker would fire — the two are mutually
+exclusive by construction. Surfaced to Bean rather than building on an unverified premise; Bean
+overrode FR-37-7 explicitly rather than accepting the friction.
+
+**Decided (Option 2 over Option 1 — see FR-37-46 for the full trade-off):** keep `sgs/site-header`/
+`sgs/site-footer`/`sgs/nav-drawer` as the one real, visible, template-locked block per CPT post
+(not a synthesized-at-render block built from CPT meta) — verified their attribute surfaces are
+already complete and self-contained (58/65/48 attrs respectively; no CPT-meta duplicate of any
+block-owned setting), so moving settings off the block bought nothing at real migration cost.
+
+**Built into Spec 37 v1.1.0** as FR-37-46 (template + `template_lock:'all'` on all 3 CPTs) +
+FR-37-47 (bespoke "Load a starter" action replacing the native picker for these 3 CPTs only —
+`sgs_mega_menu` keeps FR-37-7 as-is) + FR-37-48 (auto-seed one post per CPT via the already-built
+`wp sgs ... seed-starter`) + FR-37-49 (completes FR-37-43's W2-b+W2-d, sequenced together).
+
+**Status: design only, NOT-BUILT.** Per CLAUDE.md Rule 7 (design-gate on shared-mechanism,
+high-blast-radius changes), this needs an `/adversarial-council` pre-mortem before implementation
+starts. D3's operational meta fields (`_sgs_is_default`/"Used by" columns) and the Rules-page
+admin merge (B) already shipped this session, independently, with zero dependency on this
+architecture decision — see LEDGER Front D.
+
+ — `block_render_composition` — render-time block composition as a
 Spec 31 data-layer fact, built via `/brainstorming` after a scope correction
 
 **2026-09-17.** Surfaced during Spec 44's `/adversarial-council` re-verification
