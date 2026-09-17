@@ -155,6 +155,7 @@ def classify_heading(element: Any, is_first_child: bool) -> Hint | None:
         block="hero",
         confidence=0.4,
         evidence=f"<{tag}> heading as the section's first child",
+        source="dom_shape:heading",
     )
 
 
@@ -192,6 +193,7 @@ def classify_button_shaped(element: Any) -> Hint | None:
         block="cta",
         confidence=0.45,
         evidence=evidence,
+        source="dom_shape:button_shaped",
         child_count=_get_signal(element, "_child_count", 0),
         has_heading_or_paragraph_sibling=_get_signal(
             element, "_has_heading_or_paragraph_sibling", False
@@ -218,6 +220,7 @@ def classify_landmark_tag(element: Any, is_top_level: bool) -> Hint | None:
         block=mapped,
         confidence=0.35,
         evidence=f"bare <{_get_tag(element)}> landmark tag, non-top-level",
+        source="dom_shape:landmark_tag",
     )
 
 
@@ -238,6 +241,7 @@ def classify_repeated_siblings(siblings: list[Any]) -> Hint | None:
             f"{largest.size} near-identical siblings "
             f"(avg similarity {largest.average_score:.2f})"
         ),
+        source="dom_shape:repeated_siblings",
     )
 
 

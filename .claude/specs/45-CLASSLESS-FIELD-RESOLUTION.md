@@ -3,7 +3,7 @@
 **doc_type:** spec
 **spec_id:** 45
 **spec_version:** 1.6.0
-**Status:** DRAFT — all four tiers fully designed, through THREE `/qc-council`
+**Status:** CODE-COMPLETE — all four tiers built + qc'd (D1087), through THREE `/qc-council`
 empirical-validation rounds plus one Bean-directed data-grounding pass
 (§0.4). Round 1 found real defects in both Tier 3 and Tier 4, fixed
 (v1.3.0). Round 2 verified Tier 4's fixes correct but found Tier 3's round-1

@@ -1,5 +1,23 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1097 [ROUTINE] — Spec 44 §11's per-classifier `Hint.source` prerequisite closed;
+Spec 45 doc-status corrected from stale DRAFT
+
+**2026-09-17.** Bean asked for a precise split of what's left between Spec 44 and Spec 45.
+Investigation found Spec 44 §11's "two undone `dom_shape_classifier.py` prerequisite fixes"
+(from D1074) were not what they appeared: the `sgs/card-grid`/`sgs/hero` slug mapping was
+already DB-verified (Spec 45 §10.1, checked live in an earlier session) — only
+`Hint.source` was genuinely still a gap, every classifier sharing one generic `"dom_shape"`
+value with zero differentiation (confirmed by grep — no classifier ever set its own).
+Fixed: `dom_shape_classifier.py`'s four classifiers (`classify_heading` /
+`classify_button_shaped` / `classify_landmark_tag` / `classify_repeated_siblings`) now each
+set a distinct `source="dom_shape:<name>"`. Purely additive — no consumer matched the old
+literal string. `test_dom_shape_classifier.py` (14/14) and `test_classless_field_resolver.py`
+(62/62) both pass unchanged. Also corrected Spec 45's doc header, which still said
+`Status: DRAFT` despite D1087 confirming all four tiers built + qc'd — changed to
+CODE-COMPLETE. Spec 44 §11's item struck through with the resolution recorded inline
+(Bean's own doc-op convention — never silently delete).
+
 ## D1096 [ROUTINE] — Front C Task 5: Spec 45 Tier 3 gains render-time composition as a
 fourth candidate-set source, proven with a real before/after test; two corrections logged
 

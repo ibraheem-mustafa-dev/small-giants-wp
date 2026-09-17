@@ -683,9 +683,18 @@ off is the rollback path if a real run misbehaves — no code revert needed.
 - **Tier A (`sc_var_classifier.py`) integration** — once its alias bug is fixed,
   does it become a third signal layered into Stage B, or is it superseded?
   Measure, don't assume additive.
-- **The two undone `dom_shape_classifier.py` prerequisite fixes** from D1074
-  (per-classifier `Hint.source`, a DB-verified `sgs/card-grid` slug) — confirm
-  still needed under this shape before building.
+- ~~**The two undone `dom_shape_classifier.py` prerequisite fixes** from D1074
+  (per-classifier `Hint.source`, a DB-verified `sgs/card-grid` slug)~~ —
+  **RESOLVED D1097 (2026-09-17).** The `sgs/card-grid`/`sgs/hero` slug mapping
+  was already DB-verified unambiguous (Spec 45 §10.1, checked live). The
+  `Hint.source` field DID exist but every classifier shared one generic
+  `"dom_shape"` value (confirmed by grep — zero classifiers set their own);
+  each of the four classifiers (`classify_heading`/`classify_button_shaped`/
+  `classify_landmark_tag`/`classify_repeated_siblings`) in
+  `dom_shape_classifier.py` now sets a distinct `source="dom_shape:<name>"`.
+  No consumer matched on the exact old string, so this was purely additive —
+  verified via `test_dom_shape_classifier.py` (14/14 pass) and
+  `test_classless_field_resolver.py` (62/62 pass), no other change needed.
 
 ## 12. Evidence index
 
