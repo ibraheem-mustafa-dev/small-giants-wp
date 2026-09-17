@@ -28,10 +28,10 @@ import {
 	BackgroundPanel,
 	MIN_HEIGHT_OPTIONS,
 } from '../container/components/ContainerWrapperControls';
-import { ResponsiveTriStateControl, ResponsiveBoxControl, ResponsiveOverride, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, ShadowControl, resolveColourToken, SgsBoxControl } from '../../components';
+import { ResponsiveTriStateControl, ResponsiveBoxControl, ResponsiveOverride, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, ShadowControl, resolveColourToken, SgsBoxControl, StarterLookPresetControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { resolveTier } from '../../utils/responsive';
-import { backgroundPreview, spacingPreview, svgBackgroundPreview } from '../../utils';
+import { backgroundPaintPreview, backgroundPreview, spacingPreview, svgBackgroundPreview, textPaintPreview } from '../../utils';
 import { calculateRelativeLuminance, calculateContrastRatio, meetsWCAG_AA } from '../../utils/wcag-contrast';
 
 /**
@@ -289,6 +289,26 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	// canvas — the shared mirror (src/utils/background-preview.js, 2026-08-26)
 	// fixes that the same way sgs/container already did.
 	const [ colourPalette ] = useSettings( 'color.palette' );
+
+	// SGS-owned flat background colour/gradient + text colour canvas preview —
+	// site-header had NEITHER mirror (site-footer's edit.js already had
+	// textPaintPreview wired; backgroundPaintPreview was missing on both
+	// blocks). Same reasoning as site-footer/edit.js: `sgs_background_paint_decl()`
+	// (helpers-tokens.php) emits `background-color`/`background-image` DIRECTLY
+	// on the block's own root selector (site-header/render.php:80-90) — a real
+	// property on the element itself, distinct from the `--sgs-ed-bg-*` custom
+	// properties `bgPreview` below paints onto the `::before` media layer, so
+	// `backgroundPaint` is spread FIRST and `bgPreview.style` after: PHP renders
+	// the media (image/::before layer) visually ABOVE the flat colour
+	// (class-sgs-container-wrapper.php:1373-1412), so on the rare occasion both
+	// are set the media preview wins, matching the live page.
+	const backgroundPaint = backgroundPaintPreview(
+		attributes.backgroundColour,
+		attributes.backgroundColourGradient,
+		colourPalette
+	);
+	const textPreview = textPaintPreview( attributes.textColour, attributes.textColourGradient, colourPalette );
+
 	const bgPreview = backgroundPreview( {
 		backgroundImage: attributes.backgroundImage,
 		bgVideo: attributes.bgVideo,
@@ -355,7 +375,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		className: [ 'sgs-site-header', bgPreview.className, ...svgPreview.className ]
 			.filter( Boolean )
 			.join( ' ' ),
-		style: { ...bgPreview.style, ...svgPreview.style, ...spacePreview },
+		style: { ...backgroundPaint, ...bgPreview.style, ...svgPreview.style, ...spacePreview, ...textPreview },
 	} );
 	const refEl = useRef( null );
 
@@ -1178,6 +1198,17 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			{ /* Styles tab — FR-37-28 layout preset. Simple (default-visible)
 			     control: writes contentWidth + the block's own `padding` attr,
 			     both existing attrs, never a new stored shape. */ }
+			{ /* FR-37-47 — starter-look preset. Sits above the Layout preset
+			     (FR-37-28) it extends: this replaces WHOLE looks (attributes
+			     + row content); FR-37-28 below fine-tunes alignment/width
+			     within whichever look is currently applied. */ }
+			<InspectorControls group="styles">
+				<StarterLookPresetControl
+					clientId={ clientId }
+					rootBlockName="sgs/site-header"
+				/>
+			</InspectorControls>
+
 			<InspectorControls group="styles">
 				<ToolsPanel
 					label={ __( 'Layout', 'sgs-blocks' ) }

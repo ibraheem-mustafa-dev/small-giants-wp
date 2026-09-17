@@ -22,9 +22,9 @@ import {
 	ShapeDividersPanel,
 	MIN_HEIGHT_OPTIONS,
 } from '../container/components/ContainerWrapperControls';
-import { ResponsiveBoxControl, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsColourPanel, SgsBorderControl, resolveColourToken, SgsBoxControl } from '../../components';
+import { ResponsiveBoxControl, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsColourPanel, SgsBorderControl, resolveColourToken, SgsBoxControl, StarterLookPresetControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
-import { backgroundPreview, spacingPreview, svgBackgroundPreview, textPaintPreview } from '../../utils';
+import { backgroundPaintPreview, backgroundPreview, spacingPreview, svgBackgroundPreview, textPaintPreview } from '../../utils';
 import { calculateRelativeLuminance, calculateContrastRatio, meetsWCAG_AA } from '../../utils/wcag-contrast';
 
 const ALLOWED_BLOCKS = [ 'sgs/site-footer-row' ];
@@ -146,6 +146,24 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	// canvas — the shared mirror (src/utils/background-preview.js, 2026-08-26)
 	// fixes that the same way sgs/container already did.
 	const [ colourPalette ] = useSettings( 'color.palette' );
+
+	// SGS-owned flat background colour/gradient canvas preview — the gap this
+	// fix closes. `sgs_background_paint_decl()` (helpers-tokens.php) emits
+	// `background-color`/`background-image` DIRECTLY on the block's own root
+	// selector (site-footer/render.php:112-118) — a real property on the
+	// element itself, not a custom property on the `::before` media layer
+	// `bgPreview` below paints onto. The two never collide on CSS property
+	// name, so `backgroundPaint` is spread FIRST and `bgPreview.style` after:
+	// PHP renders the media (image/::before layer) visually ABOVE the flat
+	// colour (class-sgs-container-wrapper.php:1373-1412), so on the rare
+	// occasion both are set the media's own preview values should win, same
+	// precedence as the live page.
+	const backgroundPaint = backgroundPaintPreview(
+		attributes.backgroundColour,
+		attributes.backgroundColourGradient,
+		colourPalette
+	);
+
 	const bgPreview = backgroundPreview( {
 		backgroundImage: attributes.backgroundImage,
 		bgVideo: attributes.bgVideo,
@@ -244,7 +262,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		className: [ 'sgs-site-footer', bgPreview.className, ...svgPreview.className ]
 			.filter( Boolean )
 			.join( ' ' ),
-		style: { ...bgPreview.style, ...svgPreview.style, ...spacePreview, ...layoutPreview, ...textPreview },
+		style: { ...backgroundPaint, ...bgPreview.style, ...svgPreview.style, ...spacePreview, ...layoutPreview, ...textPreview },
 	} );
 	const refEl = useRef( null );
 
@@ -440,6 +458,15 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			     cta-section/hero, so the client found it in a different place
 			     depending on which block they had selected. Appearance sits with
 			     colour, which D621/D622 already placed in Styles. */ }
+			{ /* FR-37-47 — starter-look preset, same mechanism/placement as
+			     sgs/site-header's (site-header/edit.js). */ }
+			<InspectorControls group="styles">
+				<StarterLookPresetControl
+					clientId={ clientId }
+					rootBlockName="sgs/site-footer"
+				/>
+			</InspectorControls>
+
 			<InspectorControls group="styles">
 				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
