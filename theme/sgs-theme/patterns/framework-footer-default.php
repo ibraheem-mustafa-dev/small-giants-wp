@@ -73,7 +73,7 @@
 
 		<!-- wp:sgs/business-info {"displayType":"copyright","textColour":"accent","fontSize":{"desktop":"small"}} /-->
 
-		<!-- wp:sgs/business-info {"displayType":"attribution","textColour":"accent","fontSize":{"desktop":"small"},"textAlign":"right"} /-->
+		<!-- wp:sgs/business-info {"displayType":"attribution","textColour":"accent","fontSize":{"desktop":"small"}} /-->
 
 	<!-- /wp:sgs/site-footer-row -->
 
