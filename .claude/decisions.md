@@ -1,5 +1,25 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1101 [ROUTINE] — Spec 44 completion phase plan written via /phase-planner, docscore A
+
+**2026-09-17.** Ran `/phase-planner` against the 6-item Spec 44 completion register (the AI
+fallback tier item was DROPPED — Bean's own point-6-suggestion was to investigate whether the
+recent markup upgrade supersedes it, not a settled supersession; recorded as a KJC, not
+decided). Plan written to `.claude/plans/2026-09-17-spec44-completion-phase-plan.md`: 3 parallel
+waves (Wave 1 = 5 independent steps — Stage B data re-verification, a `/qc-council`-validated
+per-group/per-member consistency check, a second-draft test run, the Tier A alias-bug root
+cause, the brand-strip count-field decision; Wave 2 = sequential integration + Tier A
+measurement; Wave 3 = the real gate, a live pipeline run with both rollout flags on). The Hidden
+Decisions pass (Sonnet + Haiku cold reviewers via `/dispatching-parallel-agents`) caught a real,
+verified bug in the original Step 3 draft before it could reach execution: the reused baseline
+script (`measure-classless-baseline.py`) is NOT read-only — it writes real audit-log rows under
+a hardcoded client slug, and running it unmodified against the second test draft (which shares
+a directory with the existing Eye Care Birmingham client) could have tripped FR-44-1(b)'s
+same-client second-occurrence auto-complete clause for real, contaminating the precedent history
+Wave 3's live run depends on being clean. Fixed directly in the step before dispatch, not left
+as a footnote. Docscore: 77.9% (B-) on first pass (missing Pre-conditions/Parking-lot sections,
+4 false-positive "kind of" hedging hits), 100% (A) after fixes.
+
 ## D1100 [ROUTINE] — header-footer register's last open item (A11) closed won't-fix:
 matching the drafts' literal 11px would itself be the hardcode being removed
 

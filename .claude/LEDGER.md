@@ -167,9 +167,10 @@ example for a page-agnostic mechanism — inherently product-page-specific; revi
 Page-routing (Spec 44 §4.5) is intentionally NOT next — Bean's own sequencing: the
 universal mechanism must be proven first.
 
-**Next session — Front C is fully closed, nothing queued.** Pick up the buybox-flagship
-note or Stage-B value-extraction only if prioritised; page-routing only once genuinely
-ready to move past the universal pipeline.
+**Next session — completion plan queued (D1101, docscore A):**
+`plans/2026-09-17-spec44-completion-phase-plan.md` — 3 waves: Stage B re-verify, a
+council-validated per-group check, a 2nd-draft test, Tier A's alias fix + measurement,
+brand-strip's count field, then the gate — a live run with both flags on.
 
 Separate named tracks, unaffected by this session's build: responsiveness work (already
 designed, `plans/archive/2026-09-14-connect-sc-var-identity-to-responsive-values.md`);
