@@ -25,25 +25,33 @@ code/tests rather than building from scratch. No live-inference cost beyond norm
 session use (no external API calls — Item 5's "AI fallback" question is scoped as a KJC, not a
 build task, so no Anthropic-API spend is incurred by this phase itself).
 
-**Phase success criteria (done when):**
-- [ ] `array_item_schema.role` population rate + the "N of M groups narrowed" figure are
+**Phase success criteria (done when) — ALL MET, 2026-09-18, D1101-D1106:**
+- [x] `array_item_schema.role` population rate + the "N of M groups narrowed" figure are
       re-measured against real current data and written to a file (not conversation-derived)
-- [ ] A per-group vs per-member consistency check for Stage B is designed, validated via
+- [x] A per-group vs per-member consistency check for Stage B is designed, validated via
       `/qc-council` against a measured baseline, and built if validated
-- [ ] Spec 44's full pipeline (Stage A + Stage B + trust gate) has been run against
+- [x] Spec 44's full pipeline (Stage A + Stage B + trust gate) has been run against
       `Frame Card.dc.html` (a second, independently-generated draft) with results recorded
-- [ ] The `items`/`thumbs` → wrong `sgs/info-box` alias bug is root-caused and fixed; Tier A's
+- [x] The `items`/`thumbs` → wrong `sgs/info-box` alias bug is root-caused and fixed; Tier A's
       real integration question (third Stage B signal vs superseded) is answered with a
       measurement, not an assumption
-- [ ] `sgs/brand-strip`'s "count" field (e.g. "12 frames") has a decided, built resolution —
+- [x] `sgs/brand-strip`'s "count" field (e.g. "12 frames") has a decided, built resolution —
       dropped with an honest skip-reason, or a new attribute — no longer an open question
-- [ ] A real client draft has been run through the gated pipeline with BOTH
+- [x] A real client draft has been run through the gated pipeline with BOTH
       `--classless-match` and `--classless-auto-complete` flags ON, producing real completions
       or honest review-queue entries, with the audit log / `operator-review.html` / end-of-run
       summary all confirmed firing, and the existing BEM-path baseline confirmed unaffected
-- [ ] `decisions.md` carries a D-numbered entry for every decision made in this phase;
+- [x] `decisions.md` carries a D-numbered entry for every decision made in this phase;
       `LEDGER.md`'s Front C section is updated to reflect the closed front (or the specific
       residual, if one genuinely remains)
+
+**Residual beyond this plan's original scope (found + partly closed same session, D1106):**
+the live-flagged run surfaced a real pipeline-completeness gap (67/70 boundaries non-BEM,
+0 converting) that the plan itself didn't anticipate. Root-caused via `/adversarial-council`
++ `/systematic-debugging` and two fixes shipped same day — 17→38 of 70 boundaries now
+convert. Remaining work (the `dc-import` cross-component gap + the attribute-collision fix)
+is tracked in `LEDGER.md`'s Front C section, not this plan — this plan's own scope is
+complete.
 
 ## Pre-conditions
 

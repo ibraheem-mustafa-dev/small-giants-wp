@@ -1,5 +1,66 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1106 [ROUTINE] — Live-run finding corrected: "67/70 non-BEM halts" was a real but
+badly-framed claim; root-caused via 5-investigator adversarial council, two fixes shipped,
+boundary success rate 17→38 of 70 (more than doubled)
+
+**2026-09-18.** After D1105 closed the Spec 44 register, Bean pushed back hard (rightly)
+on the claim that Eye Care Birmingham's 67/70 non-BEM boundaries were blocked pending new,
+unbuilt "confidence-tier" work. Investigation found that framing was wrong: `sc_var_classifier.py`
+and `dom_shape_classifier.py` already exist and already read real DB/structural signal —
+enabling them (`--sc-var-min-confidence 0.0 --dom-shape-min-confidence 0.0`) immediately
+admitted 48 of 67 non-BEM boundaries past eligibility, up from the 0 admitted in the
+default-flags-off run this session had mistakenly treated as the ceiling.
+
+Ran `/adversarial-council` + `/systematic-debugging` (5 independent investigators: code-path
+tracer, data-forensics, skeptical falsifier, architecture-fit reviewer, pragmatic
+fix-proposer) on the full boundary-conversion failure set — not scoped to Spec 44/45.
+Three investigators independently converged on the same root cause from different angles:
+`converter/recognition.py::recognise_section`'s FR-31-4 container-default fallback (already
+shipped, already trusted for the "BEM class present but unmatched" case) was unconditionally
+skipped for a section with ZERO BEM classes at all — locked in by an existing test as
+deliberate behaviour, correct for a nested classless div inside an already-recognised
+composite, wrong for a boundary's own top-level root (exactly what every Claude-Design
+section is). A 4th investigator (skeptical falsifier) found the resulting "no SGS block
+exists" framing for several specific content shapes (checkout wizard, measurement diagram,
+rating bar chart) was itself wrong — Bean caught this too: `sgs/form-step` +
+`sgs/form-field-*` + `sgs/process-steps` already cover the wizard shape, `core/html` already
+covers the diagram (container + custom-HTML embed), and the rating bars are composable from
+existing primitives, not new-block work.
+
+**Fix 1 (`76fba822e`):** new `is_boundary_root` parameter on `recognise_section` (default
+`False`, zero behaviour change for every existing caller); only `entry.py`'s one real
+top-level call site passes `True`. When `True` and zero root classes, falls through to the
+SAME `container_default_slug()` path the BEM-mismatch case already uses. 852/852 converter
+tests pass. Real measurement: 17→20 complete, 31→28 failed, 0 remaining "unrecognised"
+failures (was 31/31) — surfaced two separate, pre-existing downstream bugs instead
+(`ContentConservationError` empty-container on 19; `ConservationError: COLLISION` on 9).
+
+**Fix 2 (`f81b6fc46`):** root-caused the empty-container bug — `_route_container_child`
+required a BEM class before even attempting `_emit_content_leaf` on a text-leaf child, even
+though that function already has a class-free fallback rung
+(`db_lookup.standalone_block_for("text")`). git-blame confirmed the guard predates
+classless-fallback as a concept — a dormant gap, not a deliberate carve-out. One-line fix
+(drop the `csgs and` precondition). 852/852 tests pass. Real measurement: 20→38 complete
+(+18, bigger than the ~14-15 estimate), 28→10 failed.
+
+**Net result this session: 17/70 → 38/70 boundaries convert (54%, more than doubled).**
+Remaining 10 failures: 4 are `<dc-import name="...">` cross-component references (content
+genuinely lives in a separate draft file — a real missing feature, not a bug, needs its own
+design-gate per Rule 7, may overlap with the Frame Card second-draft work) plus ~6 more
+(some ContentConservationError edge cases, the attribute-collision bug's remaining
+instances). The collision bug itself was root-caused (a node's own inline `style=`
+attribute was being miscounted as matching a stylesheet `:hover`/`:focus` rule, manufacturing
+phantom decls that then collide with the real one on grid-family tier-object attrs — live-
+reproduced with a print-trace, confirmed pre-existing and unrelated to Fix 1) but NOT yet
+fixed — the proposed fix (`include_inline=False` param on `collect_css_decls_for_element`)
+is scoped and ready for a future session.
+
+**Lesson captured:** don't report a pipeline "halt" as evidence of a missing mechanism
+without first checking whether an already-built, already-gated mechanism was simply left
+switched off in the test invocation. Don't accept a "no block exists for this shape" claim
+without checking the real block roster first (R-31-8).
+
 ## D1105 [ROUTINE] — Spec 44 completion register closed 7 of 8: items 1, 2, 3, 8 all
 resolved with real end-to-end pipeline numbers
 

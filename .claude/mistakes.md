@@ -271,3 +271,11 @@
   revert/rebase; read-only git only) into every such dispatch prompt, every time, not just
   when git-specific language already appears in the task description.
 - **Feedback file:** [feedback_no_git_stash_in_subagents.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_no_git_stash_in_subagents.md)
+
+### [2026-09-18] Reported a pipeline "halt" as evidence new detection work was needed
+- **Pattern key:** `a-gated-off-mechanism-looks-like-a-missing-one`
+- **Feedback file:** [feedback_a_gated_off_mechanism_looks_like_a_missing_one.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_gated_off_mechanism_looks_like_a_missing_one.md)
+
+### [2026-09-18] Relayed a council persona's "no matching block exists" claim unverified
+- **Pattern key:** `no-matching-block-claim-needs-a-db-query-first`
+- **Feedback file:** [feedback_no_matching_block_claim_needs_a_db_query_first.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_no_matching_block_claim_needs_a_db_query_first.md)

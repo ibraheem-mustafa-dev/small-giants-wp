@@ -8,13 +8,12 @@ last_updated: 2026-09-17
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**THREE OPEN FRONTS: Front C (Spec 44, classless GROUP recognition — completion register
-CLOSED 7 of 8, 2026-09-18), Front D (Mama's/Indus header-footer builder cleanup — Wave 1's 5
-fixes and Wave 2's Tasks 1-5 of 6 all DEPLOYED, only Task 6 — the drawer post-picker — still
-open), and Front E (Spec 45, classless FIELD resolution, built but NOT live-trusted).**
-Front C's live flagged run PASSED (real pipeline, both rollout flags on for one test
-invocation, all 3 verification checks green) — only the AI-fallback question (Bean's own
-call, deliberately parked) remains. Two things need Bean directly, not a subagent: the
+**TWO OPEN FRONTS: Front C (Spec 44, classless GROUP recognition — completion register
+CLOSED 7 of 8; the underlying pipeline-completeness gap it exposed investigated + mostly
+fixed same session, D1106) and Front E (Spec 45, classless FIELD resolution, built but NOT
+live-trusted). Front D (Mama's/Indus header-footer builder cleanup) is now FULLY CLOSED —
+all 6 Wave 2 tasks shipped.** Only the AI-fallback question (Bean's own call, deliberately
+parked) remains open on Front C. Two things need Bean directly, not a subagent: the
 drawer-burger click retest, and Spec 42/43 Phase 3's precondition (real WooCommerce
 catalogue data). Everything else that used to lead this file — the nav-menu split, Spec
 41/36 doc rewrites, Spec 42/43 Phases 0-2, and the choice-flow visual/UX pass — is FULLY
@@ -100,38 +99,26 @@ interaction, not self-reported — see the register for exactly how each was tes
   after a same-day correction (a duplicate mechanism was built then removed once found to
   overlap the existing "Active" pointer). `689a00e70` + `ddd43e33b`.
 
-**Wave 2 — admin/CPT architecture redesign (C/D1/D2/G/H). Tasks 1-5 of 6 SHIPPED same day
-(2026-09-17), Task 6 still open.** Root cause + design (FR-37-46 through FR-37-49) ran through
-a 6-persona `/adversarial-council` (D1092, NO-GO then fixed), Bean approved, then built:
-Task 1 scoped FR-37-49's W2-b post-picker shape (`261ca4052`), Task 2 verification-spiked
-FR-37-46 (`26db0fb73`), Task 3 built FR-37-46 template-locking (`c67f09970`), Task 4 built
-FR-37-48 auto-seed (`9e3fc6234`), Task 5 built FR-37-47's starter-preset control
-(`081e818ea`+`6dc554461`). **Task 6 (FR-37-49 drawer post-picker + drop embedded drawer) is
-NOT built** — `nav-bar-menu`'s `DropdownSettingsPanel.js` still has a free-text `TextControl`
-bound to `drawerRef`, not Task 1's decided `useEntityRecords` picker, and the 8 header/footer
-starter patterns still embed `sgs/nav-drawer` as a sibling block. Confirmed by a completion
-audit 2026-09-17 — the single remaining item on this front.
+**Wave 2 — admin/CPT architecture redesign (C/D1/D2/G/H). ALL 6 TASKS SHIPPED
+(2026-09-17/18).** Root cause + design (FR-37-46 through FR-37-49) ran through a 6-persona
+`/adversarial-council` (D1092, NO-GO then fixed), Bean approved, then built: Task 1 scoped
+FR-37-49's W2-b post-picker shape (`261ca4052`), Task 2 verification-spiked FR-37-46
+(`26db0fb73`), Task 3 built FR-37-46 template-locking (`c67f09970`), Task 4 built FR-37-48
+auto-seed (`9e3fc6234`), Task 5 built FR-37-47's starter-preset control
+(`081e818ea`+`6dc554461`), Task 6 (drawer post-picker: `drawerRef` re-typed string→number,
+`useEntityRecords` picker wired, embedded `sgs/nav-drawer` sibling dropped from all 8
+starters) shipped by a concurrent session (`44383c980`, `9b1aa9ed3`) — archived resolved,
+`.claude/memory/parking-archive.md` 2026-09-18. **This front is now fully closed.**
 
-**Still open, deliberately not started (Bean's own instruction: document, don't fix yet):**
-- **Cart pushes the burger menu inward on mobile, poorly architected.** Root mechanism confirmed
-  live (Playwright, 390px viewport): `framework-header-default.php`'s middle row places
-  `sgs/nav-bar-menu` (which renders the burger toggle at mobile widths) BEFORE the
-  `sgs/cart`-wrapping container in markup order, so the burger lands mid-row instead of being the
-  right-most element. Needs a proper "action cluster" architecture (icons grouped together,
-  burger always last/right-most) — genuine research task, not a quick reorder.
-
-**Next session — only Task 6 remains, per the orchestration plan at
-`.claude/plans/2026-09-17-front-d-wave-2-orchestration.md`:**
-6. Build FR-37-49 (drawer post-picker + drop embedded drawer, W2-b then W2-d) — Task 1's
-   decided shape (a `SelectControl`/`useEntityRecords` picker mirroring `sgs/modal`'s
-   `modalRef`) is ready to implement; also drop the embedded `sgs/nav-drawer` sibling block
-   from the 8 header/footer starter patterns.
+**Cart/burger mobile ordering — RESOLVED (concurrent session, same day):** a one-file
+`:has()` CSS rule in `site-header-row/style.css`, live-verified at 375px, commits
+`96fb874e9`+`190c038ab`; archived `.claude/memory/parking-archive.md`.
 
 ### Front C — Universal-pipeline classless recognition (D1071-D1105, full trail in
 decisions.md)
 
 **Completion register CLOSED 7 of 8 (2026-09-18, D1101-D1105).** The
-`plans/2026-09-17-spec44-completion-phase-plan.md` queued last session is done:
+`plans/archive/2026-09-17-spec44-completion-phase-plan.md` queued last session is done:
 Stage A per-member value-consistency check BUILT (`SUSPECT_IDENTICAL`, closes the
 exact D1074-round-2 failure mode, 30/30 + 24/24 tests green); `items`/`thumbs`
 alias bug FIXED (DB data correction, 862 tests green); Tier A MEASURED and left
@@ -151,16 +138,35 @@ per this evidence, but flipping them is a separate decision, still Bean's.
 own suggestion to investigate whether the `sc-for`/`sc-if` markup upgrade reduces
 the need for it, explicitly NOT a decision yet (KJC in the completion plan).
 
-**New residual found by the live run, not yet actioned:** Eye Care Birmingham is
-67/70 boundaries non-BEM (Claude-Design authored) — the pipeline halts before
-classless recognition can run to completion on the WHOLE draft, needing a
-separate, out-of-scope confidence-tier mechanism (`--sc-var-min-confidence`/
-`--dom-shape-min-confidence`) to convert at all. Confirmed orthogonal to Spec 44
-itself, not a defect in this work — but a real gap for actually using this draft
-end-to-end.
+**Real pipeline-completeness gap found, investigated, mostly closed same session
+(D1106).** The "67/70 non-BEM halts" framing above was wrong (Bean caught it) —
+`sc_var_classifier.py`/`dom_shape_classifier.py` already exist and read real DB signal;
+they were just switched off in the test run. Ran `/adversarial-council` +
+`/systematic-debugging` (5 independent investigators) on the FULL boundary-conversion
+failure set, not scoped to Spec 44/45. Root cause (3 investigators converged): a trusted,
+already-shipped container-default fallback in `converter/recognition.py::recognise_section`
+was unconditionally skipped for a boundary with ZERO BEM classes — fixed (`76fba822e`),
+which surfaced two separate downstream bugs; the bigger one (an over-narrow leaf-content
+gate, `_route_container_child`) was also fixed (`f81b6fc46`). **Real result: 17/70 → 38/70
+boundaries now convert (54%, more than doubled) on Eye Care Birmingham.** Remaining 10:
+4 are `<dc-import>` cross-component references (a real missing feature, needs its own
+design-gate, not a bug), the rest are a root-caused-but-not-yet-fixed attribute-collision
+bug (a node's own inline style getting miscounted as a stylesheet `:hover`/`:focus` match,
+scoped fix ready for next session) plus a couple of edge cases. Full trail: D1106,
+`.claude/reports/2026-09-18-spec44-full-pipeline-stage-breakdown.md`.
+
+**Next session — 2 small, scoped, already-root-caused items, in order:**
+1. Fix the attribute-collision bug (`include_inline=False` param on
+   `collect_css_decls_for_element`, `converter/services/styling_helpers.py`) — closes
+   ~4 of the remaining 10.
+2. Design-gate + scope the `<dc-import>` cross-component resolution (Rule 7 — shared
+   mechanism, needs Bean's sign-off before building) — closes the other 4. Check first
+   whether the Frame Card second-draft work already covers this.
 
 Standing rule from this front: narrow by parent context before leaf-structural match — lesson
 `C:/Users/Bean/.claude/memory/learning/2026-09-15-narrow-by-parent-context-before-leaf-structural-match.md`.
+New rule (D1106): don't report a pipeline "halt" as a missing-mechanism finding without
+checking whether an already-built, gated mechanism was just left off.
 
 ### Tasks — need Bean directly, not a subagent
 - **Drawer-burger click retest.** Confirm live whether the intermittent click-miss (2/3 real
