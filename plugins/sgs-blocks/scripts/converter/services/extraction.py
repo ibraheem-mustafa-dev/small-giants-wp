@@ -354,9 +354,7 @@ def _route_container_child(
             ))
         return
 
-    csgs = [c for c in (child.get("class", []) or [])
-            if isinstance(c, str) and c.startswith("sgs-")]
-    if csgs and node_is_text_leaf(child):
+    if node_is_text_leaf(child):
         tslug, markup = _emit_content_leaf(child, css_rules, media_map, css_text=css_text)
         if markup:
             results.append(ChildBlock(slug=tslug, content=markup))
