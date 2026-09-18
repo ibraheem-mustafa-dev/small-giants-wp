@@ -150,6 +150,24 @@ if ( '' !== $sf_text_hover_effective ) {
 if ( $sf_resting_decls || $sf_hover_decls ) {
 	$css .= sgs_emit_state_colour_css( $root_sel, $sf_resting_decls, $sf_hover_decls );
 
+	// Force descendant LINKS to inherit this footer's resolved text colour
+	// (2026-09-18, Bean-reported live on Mama's Munches: the "Shop"/
+	// "Information" core/list links rendered theme.json's global
+	// `styles.elements.link` colour — primary pink — instead of the
+	// footer's own textColour). Root cause: `sgs_emit_state_colour_css()`
+	// only ever writes `{$root_sel}{color:…}`, never touches `<a>`
+	// directly. CSS inheritance loses to ANY rule that explicitly sets
+	// `color` on the element itself, however low its specificity — and
+	// core's global styles emit `:where(a){color:var(--wp--preset--color--primary)}`,
+	// an explicit (if zero-specificity) declaration that wins over an
+	// inherited value every time. Scoped to sgs/site-footer only (not the
+	// shared helper, which other blocks may deliberately want a themed
+	// link colour inside) — this container's job is to make ALL of its
+	// own text, including links, read as one resolved colour.
+	if ( '' !== $sf_text_effective ) {
+		$css .= "{$root_sel} a{color:inherit;}";
+	}
+
 	$sf_text_fallback = sgs_text_colour_gradient_fallback_rule( $root_sel, $sf_text_effective );
 	if ( '' !== $sf_text_fallback ) {
 		$css .= $sf_text_fallback;

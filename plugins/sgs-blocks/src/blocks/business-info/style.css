@@ -70,6 +70,17 @@
 	min-width: 44px;
 	min-height: 44px;
 	padding: 0.5em 0.6em;
+	/* Hit-area-extension technique (2026-09-18, Bean-reported live on Mama's
+	   Munches): the padding above grows the TAP target without moving the
+	   visible content — a negative margin equal to the padding cancels its
+	   box-model contribution so the icon+label start at the same horizontal
+	   position as a non-linked sibling of the same displayType family
+	   (e.g. `address`, which has no link wrapper and therefore no padding at
+	   all). Without this, every phone/email row sat ~0.6em further right
+	   than the address row directly above/below it in the SAME footer
+	   column. The larger tap area still exists — it just no longer shifts
+	   the glyph. */
+	margin: -0.5em -0.6em;
 }
 
 .sgs-business-info__link:hover {

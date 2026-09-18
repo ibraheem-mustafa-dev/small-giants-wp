@@ -34,9 +34,19 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	 *                           `sgs_nav_shared_resolved_treatments()` — ⛔ never the
 	 *                           stored attribute, which can say 'sweep' on a row
 	 *                           whose eligibility predicate is false.
+	 * @param string $default_item_colour_hover Token used when the operator has
+	 *                           never set `itemColourHover` (Wave 2 E1 / FR-41-36
+	 *                           locked default). The BAR and the DRAWER are
+	 *                           genuinely different surfaces (D1059 split) with
+	 *                           different resting/hover contexts, so each caller
+	 *                           names its own default explicitly rather than the
+	 *                           shared function guessing from `$bem_root` —
+	 *                           `sgs/nav-bar-menu` passes 'accent' (unchanged),
+	 *                           `sgs/nav-drawer-menu` passes 'primary' (2026-09-18,
+	 *                           Bean-reported live on Mama's Munches).
 	 * @return string CSS fragment (no wrapping <style> tag).
 	 */
-	function sgs_nav_shared_item_state_css( array $attributes, string $uid_sel, string $bem_root, array $treatments = array() ): string {
+	function sgs_nav_shared_item_state_css( array $attributes, string $uid_sel, string $bem_root, array $treatments = array(), string $default_item_colour_hover = 'accent' ): string {
 	$css      = '';
 	$link_sel = $uid_sel . ' .' . $bem_root . '__link';
 
@@ -290,7 +300,7 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	// code change. Skipped only when the resolved text-hover TREATMENT is
 	// 'none' — an operator who explicitly chose no text-hover signal keeps it.
 	if ( '' === $item_colour_hover && 'none' !== $t_text ) {
-		$item_colour_hover = 'accent';
+		$item_colour_hover = $default_item_colour_hover;
 	}
 
 	// Default OFF (2026-09-13, Bean-directed) — was default-ON. Unset or

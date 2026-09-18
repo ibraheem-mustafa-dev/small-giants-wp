@@ -592,7 +592,7 @@ $sgs_nm_treatments = sgs_nav_shared_resolved_treatments( $attributes, 'sgs/nav-d
 
 // ── 4. Scoped CSS assembly (no-inline, Spec 32). ────────────────────────────
 $css  = '';
-$css .= sgs_nav_shared_item_state_css( $attributes, $uid_sel, 'sgs-nav-drawer-menu', $sgs_nm_treatments );
+$css .= sgs_nav_shared_item_state_css( $attributes, $uid_sel, 'sgs-nav-drawer-menu', $sgs_nm_treatments, 'primary' );
 $css .= sgs_nav_shared_submenu_css(
 	$attributes,
 	$uid_sel,
