@@ -128,14 +128,24 @@ DYNAMIC_HOOK_FAMILIES = (
     (re.compile(r"^.+_edit_form_fields$"),      "{$taxonomy}_edit_form_fields"),
     (re.compile(r"^manage_\{?\$?\w*\}?_?posts_custom_column$"),
                                                 "manage_posts_custom_column"),
+    # Meta CRUD hooks: wp-includes/meta.php only documents the templated form
+    # "{$action}_{$meta_type}_meta" -- add/added/update/updated/delete/deleted x
+    # post/comment/term/user never appear literally, only their template does
+    # (confirmed in sgs-framework.db: `added_{$meta_type}_meta` exists,
+    # `added_post_meta` -- consumed by class-sgs-cpt-default-meta.php -- does
+    # not). The parent name needs the matched action verb substituted in, so
+    # this entry's second element is a callable rather than a fixed string.
+    (re.compile(r"^(add|added|update|updated|delete|deleted)_(post|comment|term|user)_meta$"),
+                                                lambda m: f"{m.group(1)}_" + "{$meta_type}_meta"),
 )
 
 
 def _dynamic_parent(hook: str) -> str | None:
     """Return the documented parent of a WP dynamic hook, or None."""
     for pattern, parent in DYNAMIC_HOOK_FAMILIES:
-        if pattern.match(hook):
-            return parent
+        match = pattern.match(hook)
+        if match:
+            return parent(match) if callable(parent) else parent
     return None
 
 
