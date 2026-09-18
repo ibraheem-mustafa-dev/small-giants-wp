@@ -125,3 +125,37 @@
 .sgs-site-header-row > .sgs-container__inner > * {
 	overflow-wrap: break-word;
 }
+
+/*
+ * Mobile action-cluster ordering (2026-09-18, Bean-approved). Cross-referenced
+ * research (GeneratePress, OceanWP, Kadence, Blocksy, Shopify, BigCommerce,
+ * Apple, Nike, Glossier) converges on cart-then-burger, left to right, as the
+ * dominant mobile header convention — the two stay fully separate, independently
+ * tappable controls; this ONLY repaints their visual order via flex `order`,
+ * never their DOM/tab order, and never wraps them in a shared clickable element.
+ *
+ * `sgs/nav-bar-menu` always emits its own burger toggle INSIDE its own `<nav>`
+ * root (D1059) — the burger is not a separate flex child of this row, so the
+ * only child we can reorder is the whole nav-bar-menu instance. `:has(~ …)`
+ * scopes the reorder to a nav-bar-menu that has a LATER sibling `sgs/cart` in
+ * this SAME row — the exact (and only) shape every shipped header pattern
+ * produces (logo, nav-bar-menu, cart). A row with no cart sibling (header-
+ * centred/full/minimal) or a split-nav instance with no cart after it never
+ * matches, so this cannot disturb either. Giving nav-bar-menu `order:1` while
+ * the logo and cart stay at their default `order:0` moves ONLY the nav-bar-menu
+ * (and the burger inside it) to the end of the row — logo stays first, cart
+ * moves ahead of the burger, matching DOM order for the two order:0 items.
+ *
+ * 767px mirrors nav-bar-menu's own default `collapsePoint` (768 — the burger
+ * appears at `max-width:767px`, includes/nav-menu-submenu-css.php). An operator
+ * who raises `collapsePoint` above the framework default moves the burger's own
+ * appearance point independently of this rule; that mismatch is a pre-existing
+ * property of collapsePoint being a free-standing per-instance breakpoint
+ * (see nav-bar-menu/style.css's own "LEGITIMATE non-device-tier breakpoint"
+ * note) and is out of this fix's scope.
+ */
+@media (max-width: 767px) {
+	.sgs-site-header-row .sgs-nav-bar-menu:has(~ .wp-block-sgs-cart) {
+		order: 1;
+	}
+}
