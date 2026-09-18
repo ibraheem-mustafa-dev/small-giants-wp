@@ -7,6 +7,40 @@ source: .claude/parking.md (Phase 6c split — doc-op programme)
 
 # Parking archive — resolved + closed + retired entries
 
+## 2026-09-18 — 2 entries RESOLVED: basket/burger reorder + drawer post-picker (Front D Wave 2 close-out)
+
+### P-HEADER-CART-BURGER-ACTION-CLUSTER — cart pushes the burger menu inward on mobile (ARCHIVED)
+**Status was:** OPEN · **Bucket:** framework · **Parked:** 2026-09-17 · **Resolved:** 2026-09-18
+
+Root mechanism confirmed live (Playwright, 390px viewport): `framework-header-default.php`'s
+middle row places `sgs/nav-bar-menu` (which renders the burger toggle at mobile widths) BEFORE
+the `sgs/cart`-wrapping container in markup order, so the burger lands mid-row instead of being
+the right-most element. Parked pending genuine research into the right action-cluster pattern.
+
+**Resolved:** three parallel research passes (WordPress themes — GeneratePress/OceanWP/Kadence/
+Blocksy; Shopify/Squarespace/BigCommerce; Apple/Nike/Glossier/Awwwards-tier sites) converged on
+one clear answer — cart and burger are never merged into one control, always two separate
+adjacent tap targets, cart conventionally to the left of the burger. No "action cluster"
+mechanism was needed after all. Fixed with a universal, single-file CSS `:has()`-scoped rule
+(`plugins/sgs-blocks/src/blocks/site-header-row/style.css`) giving the nav-bar-menu `order:1`
+only when a cart sibling exists in the row — no per-pattern edits. Live-verified at 375px:
+cart paints left of burger, badge stays on the cart, both independently clickable, no
+regression. Commits `96fb874e9`, `190c038ab`.
+
+### P-SPEC37-W2B-DRAWER-POST-PICKER — drawerRef needs a real post-picker UI, no shape decided yet (ARCHIVED)
+**Status was:** OPEN · **Bucket:** framework · **Parked:** 2026-09-17 · **Resolved:** 2026-09-18
+
+FR-37-43 named this "W2-b" on 2026-07-30 and left it with nothing beyond a one-line label — it
+had no UI shape. FR-37-49 (Spec 37 v1.2.0) needed it before the drawer's sibling-insert
+one-click fix (Spec 36 FR-36-9a clause 2) could be safely retired.
+
+**Resolved:** shaped as Task 1 of the Front D Wave 2 orchestration plan (reused `sgs/modal`'s
+`modalRef` pattern — a `SelectControl` fed by `useEntityRecords('postType','sgs_drawer', ...)`,
+plus a dangling-reference `Notice`) and built as Task 6: `nav-bar-menu`'s `DropdownSettingsPanel.js`
+now uses the picker (`drawerRef` re-typed `string`→`number`), `class-sgs-drawer-render.php`
+resolves/dedupes multiple burgers' picks, and the embedded `sgs/nav-drawer` sibling block was
+removed from all 8 header/footer starter patterns (W2-d). Independently verified.
+
 ## 2026-09-17 — 1 entry RESOLVED: nav-bar-menu/nav-drawer-menu border census, both root causes fixed
 
 ### P-NAV-MENU-BORDER-CENSUS-DELEGATED — nav-bar-menu/nav-drawer-menu border-migration fix, dispatched to a subagent (ARCHIVED)
