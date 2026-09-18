@@ -3735,6 +3735,25 @@ def main():
     global _RUN_DIR
     _RUN_DIR = run_dir
 
+    # Stage -2 -- dc-import resolution (D1106 follow-up, Bean-approved
+    # 2026-09-18). A Claude Design draft that reuses a card/component across
+    # multiple sections factors it out into its own `<name>.dc.html` file and
+    # references it via `<dc-import name="X" prop="{{ expr }}">`. Splice the
+    # referenced component's own markup in at each import site BEFORE any
+    # stage (including the Stage 0 BEM/token lint) ever reads args.mockup —
+    # every downstream stage then sees ordinary markup, no new recognition
+    # logic needed. Reassigning args.mockup here is the single swap point
+    # every later `args.mockup` read already relies on. A draft with no
+    # `<dc-import>` tags is untouched (no file written, no reassignment).
+    from converter.services.dc_import_resolver import resolve_dc_imports as _resolve_dc_imports
+    _dc_raw = args.mockup.read_text(encoding="utf-8")
+    _dc_resolved, _dc_count = _resolve_dc_imports(_dc_raw, args.mockup.parent)
+    if _dc_count:
+        _dc_resolved_path = run_dir / "dc-import-resolved.html"
+        _dc_resolved_path.write_text(_dc_resolved, encoding="utf-8")
+        args.mockup = _dc_resolved_path
+        print(f"[orchestrator] dc-import: resolved {_dc_count} import(s) -> {_dc_resolved_path}")
+
     print(f"[orchestrator] run_id={run_id}")
     print(f"[orchestrator] run_dir={run_dir}")
     print(f"[orchestrator] mode={args.mode}")
