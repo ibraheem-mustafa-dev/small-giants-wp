@@ -8,28 +8,21 @@ last_updated: 2026-09-17
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**THREE OPEN FRONTS: Front C (Spec 44, classless GROUP recognition, built but NOT
-live-trusted), Front D (Mama's/Indus header-footer builder cleanup — Wave 1's 5 fixes and
-Wave 2's Tasks 1-5 of 6 all DEPLOYED, only Task 6 — the drawer post-picker — still open), and
-Front E
-(Spec 45, classless FIELD resolution, built but NOT live-trusted).** Front C is fully built
-(all 4 tiers) but not proven useful on a real draft yet — see below. Two things need Bean
-directly, not a subagent: the drawer-burger click retest, and Spec 42/43 Phase 3's
-precondition (real WooCommerce catalogue data). Everything else that used to lead this file —
-the nav-menu split, Spec 41/36 doc rewrites, Spec 42/43 Phases 0-2, and the choice-flow
-visual/UX pass — is FULLY DONE, DEPLOYED, LIVE-VERIFIED. See "Prior work (closed)" for
-pointers; it isn't repeated here.
+**THREE OPEN FRONTS: Front C (Spec 44, classless GROUP recognition — completion register
+CLOSED 7 of 8, 2026-09-18), Front D (Mama's/Indus header-footer builder cleanup — Wave 1's 5
+fixes and Wave 2's Tasks 1-5 of 6 all DEPLOYED, only Task 6 — the drawer post-picker — still
+open), and Front E (Spec 45, classless FIELD resolution, built but NOT live-trusted).**
+Front C's live flagged run PASSED (real pipeline, both rollout flags on for one test
+invocation, all 3 verification checks green) — only the AI-fallback question (Bean's own
+call, deliberately parked) remains. Two things need Bean directly, not a subagent: the
+drawer-burger click retest, and Spec 42/43 Phase 3's precondition (real WooCommerce
+catalogue data). Everything else that used to lead this file — the nav-menu split, Spec
+41/36 doc rewrites, Spec 42/43 Phases 0-2, and the choice-flow visual/UX pass — is FULLY
+DONE, DEPLOYED, LIVE-VERIFIED. See "Prior work (closed)" for pointers; it isn't repeated
+here.
 
-**Spec 44 (classless GROUP recognition) — council re-verified 2026-09-17: NO-GO on
-auto-complete.** All 4 units built (D1088), the seeder-not-wired bug fixed live (D1089, 54→57
-rows/14 blocks — a real detector bug also fixed mid-session, see D1093), a
-structural-facts TRIO now built: `block_render_composition` (D1090) + `block_render_singletons`
-(D1093), both Spec-31-owned, both `/qc-council`-validated clean, consumer wiring parked for
-both. Seven independent reviewers found `--classless-auto-complete` unsafe: FR-44-1(b)'s
-"forced human review" is satisfied by the pipeline's own log write, not an actual human —
-confirmed by three reviewers independently, and by directly running the code. Both rollout
-flags stay OFF. Concrete, scoped fixes exist (a real approval step, a match-diversity floor,
-re-measure post-fix) — next session's build list. Full detail: Front C below.
+**Spec 44 (classless GROUP recognition) — completion register 7/8 closed 2026-09-18
+(D1101-D1105).** Full detail: Front C below.
 
 **Spec 45 (classless FIELD resolution) — all 4 tiers shipped, D1084/D1087.** Given a draft
 field + a resolved parent block, decides which real attribute it becomes — built, reviewed,
@@ -134,48 +127,37 @@ audit 2026-09-17 — the single remaining item on this front.
    `modalRef`) is ready to implement; also drop the embedded `sgs/nav-drawer` sibling block
    from the 8 header/footer starter patterns.
 
-### Front C — Universal-pipeline classless recognition (D1071/D1073/D1074/D1075/D1077/D1078/D1081/D1084/D1088/D1089/D1090/D1093/D1094/D1095/D1096)
+### Front C — Universal-pipeline classless recognition (D1071-D1105, full trail in
+decisions.md)
 
-**ALL 4 plan tasks + the Tier 3 residual SHIPPED same day as the council that found them
-(D1094/D1095/D1096).** FR-44-1(b) now needs a REAL human `--approve` action — a
-decision-row write can never open the gate on its own (3-run replay proof). FR-44-1(a)
-now needs `MIN_DISTINCT_ROLES=2`. Live re-measure: **39 groups (not 35 — real discrepancy
-vs D1088), 0 auto-completed, 2 review, 37 no-match.** Composition + singleton consumers
-built as SEPARATE evidence dimensions (never spliced into the repeater sequence),
-**deliberately informational-only** — proven via a test showing outcome is byte-identical
-regardless of the new signal's value. Real measurement: 0 of 39 Eye Care groups carry a
-singleton corroboration signal (honest null, proven-working via positive controls).
+**Completion register CLOSED 7 of 8 (2026-09-18, D1101-D1105).** The
+`plans/2026-09-17-spec44-completion-phase-plan.md` queued last session is done:
+Stage A per-member value-consistency check BUILT (`SUSPECT_IDENTICAL`, closes the
+exact D1074-round-2 failure mode, 30/30 + 24/24 tests green); `items`/`thumbs`
+alias bug FIXED (DB data correction, 862 tests green); Tier A MEASURED and left
+superseded (89% wrong fires, not wired in); brand-strip's "count" field resolved
+— target block is `sgs/card-grid` (existing framework precedent, `mega-brands-1.php`),
+no new attribute needed; second-draft test RUN (`Frame Card.dc.html`, isolated
+audit-log, 1 group, correctly declined to guess on a genuinely new shape); **live
+flagged run PASSED all 3 checks** (`--classless-match --classless-auto-complete`
+on, real orchestrator, twice — 36 boundaries walked, 0 auto-completed, 3 review,
+33 no-match, BEM-path byte-identical, real audit-log append-only verified). Full
+per-stage/tier breakdown (Stage A/B/Tier-A/trust-gate, all reconciled):
+`.claude/reports/2026-09-18-spec44-full-pipeline-stage-breakdown.md`. Both
+rollout flags still `default=False` — technically ready for a production toggle
+per this evidence, but flipping them is a separate decision, still Bean's.
 
-**Spec 45 Tier 3's composed-children source (D1096) closes the LAST open consumer slot.**
-`sgs/buybox` — zero array attrs, NULL `accepts_allowed_blocks` — would have fallen back to
-a bare `sgs/container` guess before this; now its real composed `sgs/option-picker`
-candidate suppresses that fallback, and a real draft field resolves all the way through to
-it. Both rollout flags still default off — zero client-facing change all session.
+**Only item 7 open, deliberately parked:** the AI-fallback tier question — Bean's
+own suggestion to investigate whether the `sc-for`/`sc-if` markup upgrade reduces
+the need for it, explicitly NOT a decision yet (KJC in the completion plan).
 
-**Two corrections from Bean this session:** (1) "one-off classless" was wrongly reported
-as deferred — it's actually covered by Spec 45 Tier 4 + this session's singleton
-corroboration; Spec 44 §11 corrected. (2) Parking additions were unauthorised — all
-every Front C Spec-44 parking entry removed from `parking.md`/archive; standing rule now: never
-add to parking.md without Bean asking first.
-
-**Structural-facts trio COMPLETE, ALL CONSUMED** — repeaters (D1088/D1089), composition
-(D1090), singletons (D1093) — all `/qc-council`/test-validated live.
-
-**Scope note (unresolved, carried forward):** `sgs/buybox` is arguably the WRONG flagship
-example for a page-agnostic mechanism — inherently product-page-specific; revisit Spec
-44's worked example next pass. Stage B still never extracts a value, identity only.
-Page-routing (Spec 44 §4.5) is intentionally NOT next — Bean's own sequencing: the
-universal mechanism must be proven first.
-
-**Next session — completion plan queued (D1101, docscore A):**
-`plans/2026-09-17-spec44-completion-phase-plan.md` — 3 waves: Stage B re-verify, a
-council-validated per-group check, a 2nd-draft test, Tier A's alias fix + measurement,
-brand-strip's count field, then the gate — a live run with both flags on.
-
-Separate named tracks, unaffected by this session's build: responsiveness work (already
-designed, `plans/archive/2026-09-14-connect-sc-var-identity-to-responsive-values.md`);
-rule-table extension (Tailwind/shadcn/Webflow/Elementor/Divi — locate its plan next
-session); one-off classless content (deferred, no composite to check against).
+**New residual found by the live run, not yet actioned:** Eye Care Birmingham is
+67/70 boundaries non-BEM (Claude-Design authored) — the pipeline halts before
+classless recognition can run to completion on the WHOLE draft, needing a
+separate, out-of-scope confidence-tier mechanism (`--sc-var-min-confidence`/
+`--dom-shape-min-confidence`) to convert at all. Confirmed orthogonal to Spec 44
+itself, not a defect in this work — but a real gap for actually using this draft
+end-to-end.
 
 Standing rule from this front: narrow by parent context before leaf-structural match — lesson
 `C:/Users/Bean/.claude/memory/learning/2026-09-15-narrow-by-parent-context-before-leaf-structural-match.md`.

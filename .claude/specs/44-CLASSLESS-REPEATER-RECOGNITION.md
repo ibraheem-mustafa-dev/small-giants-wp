@@ -475,23 +475,49 @@ destination.
 Runs only when Stage A's structure-first matching (§4) doesn't reach a known
 shape, and ALWAYS scans the full seeded roster (FR-44-1(b) — no pre-narrowing).
 
-### 5.0 Step 0 — verify before building (added per council finding)
+### 5.0 Step 0 — verify before building (RESOLVED 2026-09-18, D1105 — no longer
+open; superseded the earlier "measured this session" / "reportedly" claims below)
 
-Before Pass 1 code is written, run and record:
-1. The real `array_item_schema.role` population rate (measured this session: 25 of
-   84 rows, ~30%, across 12 of 206 blocks) — confirm this hasn't drifted, and
-   decide whether Stage B needs a seeding push BEFORE it's relied on, rather than
-   discovering this mid-build.
-2. Re-verify §5.1's "6 of 8 groups narrowed" figure against real fixture data —
-   it was conversation-derived, not written to a file, at time of writing (see
-   §12). State the actual group list and the denominator (the draft has 34
-   distinct repeated groups; "8" needs its filter criterion named).
+**Final, twice-verified figures** (`.claude/reports/2026-09-18-spec44-full-pipeline-stage-breakdown.md`):
+- `array_item_schema.role` population: **25 of 90 rows carry a role (27.8%)**.
+- Block coverage: **13 blocks have any `array_item_schema` row at all; 9 of those
+  13 (69%) have partial-or-better role coverage; 4 have zero** (`sgs/choice-flow-question`,
+  `sgs/cta-section`, `sgs/gallery`, `sgs/option-picker`). The earlier "12 of 206
+  blocks" denominator was misleading (206 is the TOTAL block count, most of which
+  aren't repeaters at all) — 13 is the real denominator of blocks with any
+  repeater-shaped seeding.
+- Decision: role coverage under 30% means Stage B's DB-fact elimination is
+  currently thin, not absent — it narrowed 0 of 36 real boundaries to a clean
+  single candidate on the 2026-09-18 live run (see below); a seeding push is
+  worth doing before Stage B is relied on for production auto-completion, but is
+  not a blocker for the review-queue-safe behaviour already shipped.
 
-### 5.1 What this narrows, and what it doesn't
+### 5.1 What this narrows, and what it doesn't — RESOLVED with real end-to-end
+numbers (2026-09-18, D1105)
 
-Reportedly narrowed 6 of 8 real content groups in the source draft to exactly one
-confident candidate — subject to §5.0's re-verification before this figure is
-relied on as settled.
+The "6 of 8 groups narrowed" figure was never real — conversation-derived,
+never verified against a fixture. The real, live-run-verified picture (36
+boundaries walked on Eye Care Birmingham, 2026-09-18, reconciling exactly with
+`.claude/reports/2026-09-18-spec44-live-flagged-run.md`'s 36/0/3/33):
+
+| Stage | Outcome | Count |
+|---|---|---|
+| Stage A (§4) | EXACT | 0 |
+| Stage A | SUSPECT_IDENTICAL (new per-member value check, item 2) | 0 — never fired on this real draft; proof-of-concept remains the synthetic negative-control test only, disclosed honestly |
+| Stage A | PARTIAL | 3 |
+| Stage A | NONE (falls through to Stage B) | 33 |
+| Stage B (§5) | Narrowed to exactly one candidate | 0 |
+| Stage B | Ambiguous (2+ candidates) | 33 |
+| Stage B | Zero candidates | 0 |
+| Tier A (`sc_var_classifier.py`) | Contribution | 0 — confirmed not wired into `recognise_classless_group()` at all (D1104) |
+| Trust gate (FR-44-1) | Auto-completed | 0 |
+| Trust gate | Forced to review | 3 (all 3 PARTIAL matches — never reached EXACT, so clause (a) fails outright; also all first-occurrence, so clause (b) would fail too) |
+| Trust gate | No-match | 33 |
+
+Stage B currently never becomes the DECIDING stage on this real draft — it runs
+on all 36 boundaries but only ever narrows to "ambiguous" or is pre-empted by a
+Stage A PARTIAL. This is consistent with the thin 27.8% role coverage in §5.0,
+not a contradiction of it.
 
 ### 5.2 Field-level resolution once narrowed
 

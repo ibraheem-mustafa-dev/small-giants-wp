@@ -1,5 +1,64 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1105 [ROUTINE] — Spec 44 completion register closed 7 of 8: items 1, 2, 3, 8 all
+resolved with real end-to-end pipeline numbers
+
+**2026-09-18.** Closing pass on the Spec 44 completion register, executed in the order
+Bean specified (2 → 3 → 8 → redo 1 last, once every mechanism change had actually landed).
+
+**Item 2 — Stage A per-member value-consistency check, BUILT.** Closes the exact gap
+that killed D1074's round-2 build: a systematic error affecting every member of a group
+IDENTICALLY previously still passed Stage A's "exact structural match" gate. Empirically
+confirmed the gap first (a 3-member fixture with one wrongly-identical value scored EXACT
+pre-fix), then built a new `SUSPECT_IDENTICAL` quality, wired in only after a structural
+EXACT match, so the normal path is untouched. `classless_trust_gate.py` needed no change —
+its gate already excludes anything not EXACT. 30/30 recogniser tests (25 pre-existing + 5
+new, both positive and negative controls present), 24/24 downstream trust-gate tests.
+
+**Item 3 — second-draft test against `Frame Card.dc.html`, RUN.** Built an isolated
+measurement script (`measure-classless-frame-card.py`) writing to a dedicated test log
+under a distinct client slug — verified two independent ways that the real
+`classless-recognition-log.jsonl` was never touched (in-script fingerprint + separate
+post-hoc md5/git-status check). Result: 1 real group (a colour-swatch button, structurally
+distinct from anything in Eye Care Birmingham's 39), 0/0/1 — Stage A/B correctly declined
+to guess on a genuinely ambiguous new shape (the right answer was in Stage B's own
+candidate list among 10 similar ones). Too thin a sample to prove completion/review rates
+generalise, but identification + honest ambiguity-refusal do.
+
+**Item 8 — live flagged run, PASSED all 3 checks.** Real orchestrator (not the dry-run
+script) run twice against Eye Care Birmingham — flagged and unflagged — to isolate the
+real effect of `--classless-match --classless-auto-complete`. Both flags confirmed still
+`default=False` in code (this was a one-off invocation, not a rollout). Counts vs D1094's
+39/0/2/37 dry-run baseline: 36/0/3/33, deltas explained (real gate walks per-boundary, not
+all `<sc-for>` groups directly; today's alias fix + logo-image draft edit legitimately
+changed content). BEM-path unaffected (walker stage + all intermediate artefacts
+byte-identical between runs; 0 audit-log writes with flags off — verified independently,
+36 clean insertions/0 deletions via `git diff`). All 3 real artefacts (audit log,
+operator-review.html, classless-summary.md) confirmed real and cross-consistent. **Genuine
+finding, disclosed not buried:** this specific draft is 67/70 boundaries non-BEM
+(Claude-Design authored) and the pipeline halts before classless recognition can run to
+completion on the whole draft — a separate, out-of-scope confidence-tier gap, confirmed
+orthogonal to the flags under test.
+
+**Item 1 (redo) — full pipeline breakdown, per stage/tier, all figures reconciled.**
+Re-verified role coverage live (25/90 rows, 27.8% — unchanged from 2026-09-17) and
+corrected a stale/misleading denominator the task itself had inherited ("12 of 206
+blocks" — 206 is the total block count, not a repeater-relevant one; real figure: 13
+blocks have any seeded row, 9 of 13 (69%) have partial-or-better coverage, 4 have zero).
+Produced the full per-stage table for the live run's 36 boundaries: Stage A 0
+EXACT/0 SUSPECT_IDENTICAL/3 PARTIAL/33 NONE; Stage B never the deciding stage (0 narrowed
+to one candidate, 33 ambiguous, 0 zero-candidate); Tier A confirmed genuinely 0
+contribution (traced the real call site, not wired into `recognise_classless_group()` at
+all); trust gate 0 auto-completed/3 review/33 no-match, all 3 review entries explained
+individually. Everything reconciles exactly with item 8's 36/0/3/33. Full report:
+`.claude/reports/2026-09-18-spec44-full-pipeline-stage-breakdown.md`. Spec 44 §5.0/§5.1
+rewritten in place with these final numbers, replacing every "reportedly"/"measured this
+session" placeholder.
+
+**Register status: 7 of 8 closed.** Only item 7 (the AI-fallback / "markup upgrade"
+question) remains deliberately parked — Bean's own call, an open investigation not a
+decision, per the KJC recorded in the completion phase plan.
+
 ## D1104 [ROUTINE] — Spec 44 item 5 resolved: Tier A (`sc_var_classifier.py`) measured and
 left superseded, not wired into Stage B
 
