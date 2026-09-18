@@ -227,9 +227,11 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	 * --wp--custom--transition--fast), so a client changing their theme's radius or
 	 * motion scale saw the nav ignore it. Literal fallbacks are kept inside var() so
 	 * the block still renders correctly on a non-SGS theme (the standalone-framework rule).
+	 * The token itself (`$transition_fast`) is applied in the sibling file
+	 * `nav-menu-item-border-featured-css.php`, which owns the featured-item hover
+	 * transitions this rationale describes — nothing in THIS file emits a transition.
 	 */
-	$transition_fast = 'var(--wp--custom--transition--fast, 150ms ease)';
-	
+
 	/*
 	 * ── Item SHAPE — `itemBorderRadius` (FR-41-7 / FR-41-33). ────────────────
 	 *
