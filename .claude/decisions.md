@@ -1,5 +1,30 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1104 [ROUTINE] — Spec 44 item 5 resolved: Tier A (`sc_var_classifier.py`) measured and
+left superseded, not wired into Stage B
+
+**2026-09-18.** Real measurement, not assumption, per Spec 44 §11's own "measure, don't assume
+additive" instruction. Ran Tier A's deterministic classifier against all 39 real repeated groups
+in `Eye Care Birmingham.dc.html` (same extraction method as `measure-classless-baseline.py`),
+compared group-by-group against D1094's Stage A/B baseline (0 auto-completed, 2 review, 37
+no-match), post the D1103 alias-bug fix.
+
+**Result:** 0 groups redundant (Tier A never agrees with what Stage A/B resolve), 4 groups
+genuinely additive (`sgs/card-grid` groups nested inside a `dc-import name="Frame Card"`
+sub-draft that Stage A/B's own adapter can't parse), 33 groups actively harmful (Tier A's
+`sc_var_count` heuristic blanket-guesses `sgs/card-grid` for any loop with 2+ items, misfiring
+identically on nav lists, tabs, accordions, filter chips, rating bars, marquees, spec tables —
+zero content awareness). 33 of 37 total fires (89%) wrong. The `sc_var_alias` half now fires
+zero times post-D1103 — a complete no-op on this draft, not merely improved.
+
+**Decision:** leave Tier A superseded, do not wire it in as an unconditional third Stage B
+signal — 89% wrong fails the spec's own bar ("(c) zero/rare and safely excludable"). If revisited
+later, it needs redesigning around the narrower `dc-import`+grid-shape signature that actually
+distinguishes the 4 real hits, not blanket cardinality. Spec 44 §11 updated with the full
+breakdown; report: `.claude/reports/2026-09-18-spec44-tier-a-integration-measurement.md`.
+Frame Card.dc.html was out of scope for this measurement (its own Stage A/B baseline is a
+separate, not-yet-done register item).
+
 ## D1103 [ROUTINE] — Spec 44 register items 4 and 6 resolved: `items`/`thumbs` alias fix
 shipped, brand-tile target block corrected from `sgs/brand-strip` to `sgs/card-grid`
 

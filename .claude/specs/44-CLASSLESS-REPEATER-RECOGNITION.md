@@ -700,9 +700,25 @@ off is the rollback path if a real run misbehaves — no code revert needed.
 - **Testing against a second, independently-generated draft.** D1074's own
   recommendation. `Frame Card.dc.html` sits in the same directory as this
   session's primary draft and has not yet been checked against this design.
-- **Tier A (`sc_var_classifier.py`) integration** — once its alias bug is fixed,
-  does it become a third signal layered into Stage B, or is it superseded?
-  Measure, don't assume additive.
+- ~~**Tier A (`sc_var_classifier.py`) integration**~~ — **RESOLVED 2026-09-18
+  (D1104): superseded, not wired in.** Measured for real against all 39 repeated
+  groups in Eye Care Birmingham.dc.html (Stage A/B baseline: D1094's 2026-09-17
+  re-measurement — 0 auto-completed, 2 review, 37 no-match), post the D1103
+  alias-bug fix. Result: 0 groups where Tier A agrees with Stage A/B (redundant),
+  4 groups where Tier A resolves correctly where Stage A/B are silent (genuinely
+  additive — all `sgs/card-grid` groups inside a `dc-import name="Frame Card"`
+  sub-draft Stage A/B's adapter can't parse), and 33 groups where Tier A guesses
+  wrong (harmful) — its `sc_var_count` heuristic blanket-fires `sgs/card-grid` on
+  any loop with 2+ items regardless of content (nav lists, tabs, accordions,
+  filter chips, rating bars, marquees, spec tables all misfire identically). 33
+  of 37 total fires (89%) are wrong — fails this spec's own bar for wiring in a
+  signal ("(c) zero/rare and safely excludable" per the completion phase plan's
+  Step 7 criteria). The `sc_var_alias` half (reading `slots.aliases`) now fires
+  zero times post-D1103 — a complete no-op on this draft, not merely reduced.
+  If pursued later, it needs redesigning around the narrower
+  `dc-import`+grid-shape signature that actually distinguishes the 4 correct
+  hits, not the current cardinality-only heuristic. Full breakdown:
+  `.claude/reports/2026-09-18-spec44-tier-a-integration-measurement.md`.
 - ~~**The two undone `dom_shape_classifier.py` prerequisite fixes** from D1074
   (per-classifier `Hint.source`, a DB-verified `sgs/card-grid` slug)~~ —
   **RESOLVED D1097 (2026-09-17).** The `sgs/card-grid`/`sgs/hero` slug mapping

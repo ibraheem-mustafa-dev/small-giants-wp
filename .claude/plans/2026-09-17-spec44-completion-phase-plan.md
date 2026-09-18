@@ -480,14 +480,18 @@ Step 6 — Integrate + commit Wave 1's changes
                what's already landed
   Prompt: (inline step — no dispatch prompt needed)
 
-Step 7 — Re-run Tier A integration measurement (depends on step 4's fix)
+Step 7 — DONE 2026-09-18 (D1104) — Tier A integration measurement
   Model:       sonnet
-  Action:      With step 4's alias-bug fix landed, MEASURE (per Spec 44 §11's own instruction —
-               "measure, don't assume additive") whether Tier A now contributes real, correct
-               resolutions on top of what Stage A/B already resolve alone, or whether it's fully
-               superseded. Run Tier A against both drafts (Eye Care Birmingham + Frame Card,
-               from step 3) and compare its output group-by-group against Stage A/B's own
-               resolution for the same groups.
+  Action:      COMPLETED. Measured against Eye Care Birmingham only (Frame Card's own Stage A/B
+               baseline is item 3, still not done, so this ran against the one draft that had a
+               real baseline to compare against — matches this plan's own On-Fail guidance to
+               record findings honestly rather than force a premature both-drafts answer).
+               Result: 0 redundant, 4 additive (all inside an unparsed `dc-import` sub-draft), 33
+               harmful (89% of 37 total fires wrong — the `sc_var_count` heuristic blanket-fires
+               on any 2+-item loop with zero content awareness). Decision: leave Tier A
+               superseded, do not wire in. Full breakdown:
+               `.claude/reports/2026-09-18-spec44-tier-a-integration-measurement.md`. Spec 44
+               §11 and decisions.md (D1104) both updated in place.
   Files:       plugins/sgs-blocks/scripts/recogniser/sc_var_classifier.py (read-only at this
                step — decision only, no further code change unless the measurement clearly
                calls for wiring it in)
