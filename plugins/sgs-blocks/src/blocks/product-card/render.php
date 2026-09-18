@@ -817,6 +817,29 @@ if ( 0 === $product_id && isset( $block->context['postId'] ) ) {
 	$product_id = absint( $block->context['postId'] );
 }
 
+// Editor SSR-preview fallback (2026-09-18): WordPress's `wp/v2/block-renderer`
+// REST endpoint — the one `<ServerSideRender>` calls for every editor preview —
+// builds a synthetic, parent-less block array and calls `render_block()` on it
+// directly (class-wp-rest-block-renderer-controller.php `get_item()`). That
+// bypasses the real WP_Block parent chain entirely, so `$block->context` above
+// is ALWAYS empty in an editor preview, even when this card is genuinely
+// nested inside a Product Collection loop — the frontend path (real block
+// tree, real WP_Block::context) is unaffected and already worked before this
+// change. The endpoint's only context-shaped param is `post_id`, which merely
+// calls `setup_postdata()` on the global `$post` — it does not populate
+// `$block->context`. `edit.js` sends that `post_id` query arg explicitly
+// whenever this instance has a live `postId` block-context value to preview
+// with (see edit.js's `ServerSideRender` `urlQueryArgs`). Gated on
+// `REST_REQUEST` so an ordinary frontend/page render — where `get_the_ID()`
+// could return an unrelated page ID — can never take this branch; only the
+// editor's own SSR-preview request path reaches here.
+if ( 0 === $product_id && defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+	$sgs_pc_ssr_preview_post_id = get_the_ID();
+	if ( $sgs_pc_ssr_preview_post_id ) {
+		$product_id = absint( $sgs_pc_ssr_preview_post_id );
+	}
+}
+
 $data = \SGS\Blocks\Product_Bindings::get_product_data( $product_id, $source_mode );
 
 // FP-H: bound-branch title heading tag from headingLevel. Allowlisted against

@@ -632,7 +632,7 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 	);
 }
 
-export default function Edit( { attributes, setAttributes, clientId } ) {
+export default function Edit( { attributes, setAttributes, clientId, context } ) {
 	const {
 		variantStyle,
 		sourceMode,
@@ -2894,10 +2894,31 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			{ isBound ? (
 				/* Bound mode: server-side render preview */
 				<div { ...blockProps }>
+					{ /*
+					 * FR-30-3 Option C editor-preview fix (2026-09-18):
+					 * `<ServerSideRender>` calls WP core's `wp/v2/block-renderer`
+					 * REST endpoint, which renders this block in isolation — no
+					 * parent WP_Block, so `$block->context['postId']`
+					 * (render.php's Product Collection loop fallback) is ALWAYS
+					 * empty in an editor preview, even when this card genuinely
+					 * inherits `postId` from an enclosing Product Collection loop
+					 * here. The endpoint's only context-shaped param is
+					 * `post_id` (sets up the global `$post`); forward this
+					 * instance's own `postId` block-context value through it so
+					 * render.php's matching `REST_REQUEST` fallback can resolve
+					 * the loop's real product. No-op when this card isn't inside
+					 * a context-providing loop (context.postId is undefined) or
+					 * already has an explicit productId.
+					 */ }
 					<SsrPreviewGuard>
 						<ServerSideRender
 							block="sgs/product-card"
 							attributes={ attributes }
+							urlQueryArgs={
+								context && context.postId
+									? { post_id: context.postId }
+									: undefined
+							}
 						/>
 					</SsrPreviewGuard>
 				</div>
