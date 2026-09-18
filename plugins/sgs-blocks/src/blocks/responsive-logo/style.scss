@@ -21,7 +21,12 @@
 
 .sgs-responsive-logo {
 	display: inline-block;
-	width: var( --logo-width, 240px );
+	// Fill-width default (2026-09-18, Bean-directed, was 240px) -- `--logo-width`
+	// is only emitted by render.php when the operator has explicitly set a
+	// pixel width; an untouched instance falls through to this 100% default so
+	// the logo fills whatever width its containing column/flex-item allocates,
+	// instead of a hardcoded pixel value fighting the surrounding layout.
+	width: var( --logo-width, 100% );
 	max-width: 100%;
 
 	// ── Link wrapper ──────────────────────────────────────────────────────────

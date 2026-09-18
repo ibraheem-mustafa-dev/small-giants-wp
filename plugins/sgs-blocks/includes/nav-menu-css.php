@@ -36,14 +36,16 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	 *                           whose eligibility predicate is false.
 	 * @param string $default_item_colour_hover Token used when the operator has
 	 *                           never set `itemColourHover` (Wave 2 E1 / FR-41-36
-	 *                           locked default). The BAR and the DRAWER are
-	 *                           genuinely different surfaces (D1059 split) with
-	 *                           different resting/hover contexts, so each caller
-	 *                           names its own default explicitly rather than the
-	 *                           shared function guessing from `$bem_root` —
-	 *                           `sgs/nav-bar-menu` passes 'accent' (unchanged),
-	 *                           `sgs/nav-drawer-menu` passes 'primary' (2026-09-18,
-	 *                           Bean-reported live on Mama's Munches).
+	 *                           locked default). D1059 briefly split this per-surface
+	 *                           ('accent' bar / 'primary' drawer) on the theory the bar
+	 *                           and drawer were genuinely different surfaces — REVERTED
+	 *                           the same day (2026-09-18, Bean-directed): on Mama's
+	 *                           Munches both surfaces share the SAME background colour,
+	 *                           so a split default just meant one of the two read wrong
+	 *                           for no reason. Both callers now pass 'primary'. The
+	 *                           parameter itself stays (not hardcoded) so a future
+	 *                           surface with a genuinely different background can still
+	 *                           override it without a shared-function edit.
 	 * @return string CSS fragment (no wrapping <style> tag).
 	 */
 	function sgs_nav_shared_item_state_css( array $attributes, string $uid_sel, string $bem_root, array $treatments = array(), string $default_item_colour_hover = 'accent' ): string {

@@ -56,9 +56,10 @@ require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
 use SGS\Blocks\Sgs_Site_Info;
 
-$source_raw = $attributes['source'] ?? 'manual';
-$source     = in_array( $source_raw, array( 'manual', 'site-info' ), true ) ? $source_raw : 'manual';
-$icon_size  = (int) ( $attributes['iconSize'] ?? 24 );
+$source_raw   = $attributes['source'] ?? 'manual';
+$source       = in_array( $source_raw, array( 'manual', 'site-info' ), true ) ? $source_raw : 'manual';
+$icon_size    = (int) ( $attributes['iconSize'] ?? 24 );
+$show_labels  = (bool) ( $attributes['showLabels'] ?? false );
 // D643: `iconColour`/`iconColourHover` are split into one attribute PER real
 // CSS property (background-color / border-color / color) because the
 // resting/hover token can feed up to 3 different declarations depending on
@@ -394,8 +395,16 @@ $sgs_social_defs_injected = false;
 // itself keeps rendering at the operator-chosen `iconSize` (fixed px, not a
 // 100%-of-parent stretch) so a small glyph gets extra transparent padding
 // instead of being blown up to fill the enlarged hit area.
-$item_size    = max( 44, $icon_size + ( 'plain' === $style_type ? 0 : 16 ) );
-$scoped_css[] = "{$root_sel} .sgs-social-icons__item{width:{$item_size}px;height:{$item_size}px;}";
+$item_size = max( 44, $icon_size + ( 'plain' === $style_type ? 0 : 16 ) );
+if ( $show_labels ) {
+	// A visible label needs the item box to grow with its text rather than
+	// stay a fixed icon-only square — height keeps the same touch-target
+	// maths as the icon-only box; width goes auto, horizontal padding +
+	// icon/label gap replace the icon-only box's uniform padding.
+	$scoped_css[] = "{$root_sel} .sgs-social-icons__item{width:auto;height:{$item_size}px;padding-inline:16px;gap:8px;}";
+} else {
+	$scoped_css[] = "{$root_sel} .sgs-social-icons__item{width:{$item_size}px;height:{$item_size}px;}";
+}
 $scoped_css[] = "{$root_sel} .sgs-social-icons__item svg{width:{$icon_size}px;height:{$icon_size}px;}";
 
 // --- Base spacing (padding/margin) + WP colour support — skip-serialised in
@@ -482,6 +491,9 @@ $root_classes = array(
 	'sgs-social-icons--' . $style_type,
 	$uid,
 );
+if ( $show_labels ) {
+	$root_classes[] = 'sgs-social-icons--has-labels';
+}
 
 // Preset colour slugs — the `color` support is skip-serialised, so re-add the
 // standard has-* classes manually (they set the colour from the theme palette).
@@ -581,12 +593,24 @@ foreach ( $icons as $icon_item ) {
 		$scoped_css[] = "{$root_sel} .sgs-social-icons__item:nth-child({$rendered_pos}){--sgs-social-bg:{$brand_value};--sgs-social-border:{$brand_value};--sgs-social-glyph:{$brand_value};}";
 	}
 
-	$items_html .= sprintf(
-		'<a%s class="sgs-social-icons__item" aria-label="%s">%s</a>',
-		$link_attrs_str,
-		esc_attr( $label_raw ),
-		$glyph_html
-	);
+	if ( $show_labels ) {
+		// The visible label IS the accessible name once it renders — no
+		// aria-label alongside it (would double-announce the same string).
+		$label_html  = sprintf( '<span class="sgs-social-icons__label">%s</span>', esc_html( $label_raw ) );
+		$items_html .= sprintf(
+			'<a%s class="sgs-social-icons__item">%s%s</a>',
+			$link_attrs_str,
+			$glyph_html,
+			$label_html
+		);
+	} else {
+		$items_html .= sprintf(
+			'<a%s class="sgs-social-icons__item" aria-label="%s">%s</a>',
+			$link_attrs_str,
+			esc_attr( $label_raw ),
+			$glyph_html
+		);
+	}
 }
 
 // Per-item custom-SVG <img> glyph sizing — mirrors the existing SVG glyph

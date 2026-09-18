@@ -389,8 +389,11 @@ export default function Edit( { attributes, setAttributes } ) {
 				>
 					<RangeControl
 						label={ __( 'Width (px)', 'sgs-blocks' ) }
-						help={ __( 'Desktop logo width. Mobile/tablet scale proportionally.', 'sgs-blocks' ) }
-						value={ width }
+						help={ __(
+							'Fills the containing column/element until set. Mobile/tablet scale proportionally.',
+							'sgs-blocks'
+						) }
+						value={ width ?? 240 }
 						onChange={ ( val ) => setAttributes( { width: val } ) }
 						min={ 40 }
 						max={ 600 }

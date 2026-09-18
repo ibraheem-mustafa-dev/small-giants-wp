@@ -69,7 +69,21 @@ $tablet_logo_id   = isset( $attributes['logoIdTablet'] ) ? absint( $attributes['
 $mobile_logo_id   = isset( $attributes['logoIdMobile'] ) ? absint( $attributes['logoIdMobile'] ) : 0;
 $svg_animation_id = isset( $attributes['svgAnimationSource'] ) ? absint( $attributes['svgAnimationSource'] ) : 0;
 $animation_style  = isset( $attributes['animationStyle'] ) ? sanitize_key( $attributes['animationStyle'] ) : 'none';
-$width            = isset( $attributes['width'] ) ? absint( $attributes['width'] ) : 240;
+// Fill-width default (2026-09-18, Bean-directed): a header logo previously
+// always rendered at a hardcoded 240px unless the operator touched the
+// RangeControl, ignoring whatever width its containing column/flex-item
+// actually allocated. `width` no longer carries a `default` in block.json
+// (see that file's own attribute comment), so `isset()` here is now a real
+// "did the operator ever set this" check, not a permanently-true one — WP's
+// `prepare_attributes_for_render()` only injects a declared schema default,
+// so an untouched instance genuinely has no `width` key. $width_explicit
+// drives the scoped `--logo-width` CSS emission below (skipped when unset,
+// letting style.scss's `var(--logo-width, 100%)` fallback fill the column);
+// `$width` itself still falls back to 240 here ONLY for the <img width="">
+// HTML attribute further down, which needs a real integer to stay valid
+// markup and is a harmless intrinsic-size hint, not the visual constraint.
+$width_explicit   = isset( $attributes['width'] );
+$width            = $width_explicit ? absint( $attributes['width'] ) : 240;
 $link_to_home     = isset( $attributes['linkToHome'] ) ? (bool) $attributes['linkToHome'] : true;
 $alt              = isset( $attributes['alt'] ) ? sanitize_text_field( $attributes['alt'] ) : '';
 $align            = isset( $attributes['align'] ) ? sanitize_key( $attributes['align'] ) : 'left';
@@ -213,8 +227,13 @@ $scoped_css = array();
 
 // --- Logo width custom property (D345: inline `--var` is forbidden, no
 // exception for custom-property values). Lives in the same scoped uid-class
-// rule as every other declaration on this block. ---
-$scoped_css[] = $sel . '{--logo-width:' . absint( $width ) . 'px}';
+// rule as every other declaration on this block. Emitted ONLY when the
+// operator has explicitly set a width — an untouched instance emits nothing
+// here, so style.scss's `var(--logo-width, 100%)` fallback fills the
+// containing column/element instead of a hardcoded pixel value. ---
+if ( $width_explicit ) {
+	$scoped_css[] = $sel . '{--logo-width:' . absint( $width ) . 'px}';
+}
 
 // --- Border — width/style on the wrapper, colour (flat or gradient, base +
 // hover) via the shared sgs_border_states_css() helper, radius via the

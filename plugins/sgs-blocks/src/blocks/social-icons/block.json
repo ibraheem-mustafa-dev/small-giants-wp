@@ -107,6 +107,13 @@
 					"prefix": "icon",
 					"_note": "Per-item <span class=\"sgs-social-icons__icon\" aria-hidden=\"true\"> — the decorative glyph itself (svg/img), render.php:451. Carries no colour attrMap: the `item` element's background/border/glyph attrs (below) do NOT paint this span, they paint the surrounding link box."
 				},
+				"label": {
+					"label": "Label",
+					"order": 4,
+					"clusters": [],
+					"prefix": "",
+					"_note": "Per-item <span class=\"sgs-social-icons__label\"> — the visible text beside the icon, rendered only when `showLabels` (block-wide) is true (2026-09-18, closing a genuine gap: the label previously existed only as the link's aria-label, never as visible content). Carries no attrMap of its own: colour/typography inherit from the `item` element's own colour tokens + this block's shared typography attrs (sgs_typography_css_rule()), matching this block's one-colour-per-state contract rather than adding a duplicate label-colour control — an honest gap, not an oversight."
+				},
 				"item": {
 					"label": "Icon Link",
 					"order": 3,
@@ -267,6 +274,11 @@
 		"iconStyle": {
 			"type": "string",
 			"default": "plain"
+		},
+		"showLabels": {
+			"type": "boolean",
+			"default": false,
+			"description": "Genuine framework gap closed 2026-09-18 (Bean-directed, Mama's Munches footer): renders each item's `label` text visibly beside its icon (a real 'Instagram' / 'WhatsApp' pill button), instead of the label existing only as the link's aria-label. Block-wide, matching iconStyle/colourMode's own block-wide scope — a curated social row reads one way or the other, not item-by-item. render.php drops the now-redundant aria-label when a visible label renders (the text itself becomes the link's accessible name), so nothing double-announces."
 		},
 		"gap": {
 			"type": "string",

@@ -181,7 +181,7 @@
 		},
 		"width": {
 			"type": "number",
-			"default": 240
+			"description": "Desktop logo width in px. No `default` (2026-09-18, Bean-directed, was 240) — WP's prepare_attributes_for_render() only injects a DECLARED default, so an untouched instance genuinely has no `width` key, which render.php reads as 'fill 100% of the containing column/element' (style.scss's `var(--logo-width, 100%)` fallback) instead of a hardcoded pixel value. An operator who moves the Sizing panel's RangeControl gets an explicit px width exactly as before."
 		},
 		"maxWidth": {
 			"type": "object",

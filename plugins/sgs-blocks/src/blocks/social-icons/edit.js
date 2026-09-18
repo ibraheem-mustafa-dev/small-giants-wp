@@ -5,6 +5,7 @@ import {
 	SelectControl,
 	TextControl,
 	RangeControl,
+	ToggleControl,
 	Button,
 	Flex,
 	Notice,
@@ -140,6 +141,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		iconGlyphColourHoverGradient,
 		colourMode,
 		iconStyle,
+		showLabels,
 		gap,
 		wrapperBorderColour,
 		wrapperBorderColourGradient,
@@ -243,9 +245,16 @@ export default function Edit( { attributes, setAttributes } ) {
 	const itemBorderImage = itemBorderGradientPreview.borderImage;
 
 	const blockProps = useBlockProps( {
-		className: `sgs-social-icons sgs-social-icons--${ iconStyle }`,
+		className: `sgs-social-icons sgs-social-icons--${ iconStyle }${ showLabels ? ' sgs-social-icons--has-labels' : '' }`,
 		style: previewStyle,
 	} );
+
+	// Mirrors render.php's showLabels branch: width goes auto (grows with the
+	// label text) instead of a fixed icon-only square, height keeps the same
+	// touch-target maths.
+	const itemBoxSizeStyle = showLabels
+		? { width: 'auto', height: itemSize, paddingInline: 16, gap: 8 }
+		: { width: itemSize, height: itemSize };
 
 	const updateIcon = ( index, field, value ) => {
 		const updated = [ ...icons ];
@@ -470,6 +479,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					<ToggleControl
+						label={ __( 'Show labels', 'sgs-blocks' ) }
+						help={ __( 'Renders each link’s label as visible text beside its icon (e.g. "Instagram"), instead of only in the accessible name.', 'sgs-blocks' ) }
+						checked={ !! showLabels }
+						onChange={ ( val ) => setAttributes( { showLabels: val } ) }
+						__nextHasNoMarginBottom
+					/>
 				</PanelBody>
 			</InspectorControls>
 
@@ -670,8 +686,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							key={ platform }
 							className="sgs-social-icons__item"
 							style={ {
-								width: itemSize,
-								height: itemSize,
+								...itemBoxSizeStyle,
 								color: 'brand' === colourMode
 									? ( PLATFORM_BRAND_COLOURS[ platform ] || PLATFORM_BRAND_COLOURS.custom )
 									: undefined,
@@ -695,6 +710,11 @@ export default function Edit( { attributes, setAttributes } ) {
 									gradient={ iconGlyphColourGradient }
 								/>
 							</span>
+							{ showLabels && (
+								<span className="sgs-social-icons__label">
+									{ PLATFORM_LABELS[ platform ] || platform }
+								</span>
+							) }
 						</span>
 					) )
 				) : icons.length === 0 ? (
@@ -705,8 +725,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							key={ i }
 							className="sgs-social-icons__item"
 							style={ {
-								width: itemSize,
-								height: itemSize,
+								...itemBoxSizeStyle,
 								color: 'brand' === colourMode
 									? ( PLATFORM_BRAND_COLOURS[ icon.platform ] || PLATFORM_BRAND_COLOURS.custom )
 									: undefined,
@@ -725,6 +744,11 @@ export default function Edit( { attributes, setAttributes } ) {
 									/>
 								) }
 							</span>
+							{ showLabels && (
+								<span className="sgs-social-icons__label">
+									{ icon.label || PLATFORM_LABELS[ icon.platform ] || icon.platform }
+								</span>
+							) }
 						</span>
 					) )
 				) }

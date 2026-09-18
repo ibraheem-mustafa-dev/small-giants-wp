@@ -758,7 +758,12 @@ if ( in_array( $sgs_nm_justify_content, $sgs_nm_justify_allowed, true ) ) {
 	$css .= $uid_sel . '{justify-content:' . $sgs_nm_justify_content . '}';
 }
 
-$css .= sgs_nav_shared_item_state_css( $attributes, $uid_sel, 'sgs-nav-bar-menu', $sgs_nm_treatments );
+// Unified with nav-drawer-menu (2026-09-18, Bean-directed) — both surfaces
+// share the same background colour on Mama's Munches, so a split default
+// ('accent' here vs 'primary' there, from the earlier D1059 split) just made
+// one of the two read wrong. See sgs_nav_shared_item_state_css()'s own
+// $default_item_colour_hover docblock in includes/nav-menu-css.php.
+$css .= sgs_nav_shared_item_state_css( $attributes, $uid_sel, 'sgs-nav-bar-menu', $sgs_nm_treatments, 'primary' );
 $css .= sgs_nav_bar_menu_trigger_css( $attributes, $uid_sel, $sgs_nm_treatments, $trigger_mode );
 $css .= sgs_nav_shared_submenu_css(
 	$attributes,
