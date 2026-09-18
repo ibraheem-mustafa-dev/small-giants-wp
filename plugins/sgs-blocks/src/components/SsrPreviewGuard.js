@@ -99,27 +99,47 @@
  *     reproduces that computation for the click-driven controls only.
  *
  * Deliberately NOT reproduced (checked, not skipped):
- *   - `sgs/product-card` bound mode (`sourceMode='wc-product'/'sgs-cpt'`) pill
- *     swapping + add-to-cart: these mutate a large seeded manifest (price,
- *     gallery, stock, per-unit note, WooCommerce Store API cart calls) via
- *     the Interactivity API context proxy — not a single attribute, a real
- *     state machine. Reproducing it here would be the "reimplement the
- *     Interactivity API" trap this file already rejected for nav-bar-menu's
- *     OWN disclosure engine. Add-to-cart mutating the real WooCommerce cart
- *     from inside a post-editor preview would also be a genuine data-safety
- *     regression, not a missing feature — this guard's existing
- *     `preventDefault()` on the submit button is the CORRECT behaviour here,
- *     not a gap.
+ *   - `sgs/product-card` bound-mode ADD-TO-CART + the availability-greying/
+ *     demand-analytics/thumbnail-rebuild/value-ladder side-effects of a pill
+ *     change: these mutate a large seeded manifest via a real Interactivity
+ *     API action (`addToCart`, `applyAvailability`) or make network calls
+ *     (Store API, demand-analytics endpoint) — reproducing them here would be
+ *     the "reimplement the Interactivity API" trap this file already
+ *     rejected for nav-bar-menu's OWN disclosure engine, and mutating the
+ *     real WooCommerce cart from inside a post-editor preview would be a
+ *     genuine data-safety regression, not a missing feature. This guard's
+ *     existing `preventDefault()` on the submit button is the CORRECT
+ *     behaviour here, not a gap.
+ *   - `sgs/product-card` bound-mode PRICE/IMAGE SWAP is NOW reproduced (see
+ *     `handleChangeCapture` below) — confirmed by reading `view.js`
+ *     (`applyPillSelection`) that this specific slice is a PURE, LOCAL
+ *     re-read of the already-seeded `data-wp-context` manifest (no network
+ *     call of any kind), keyed on which `sgs/option-picker` pill the visitor
+ *     selects. Because the Interactivity API runtime never hydrates in this
+ *     canvas (see the disclosure-toggle rationale above), the seeded
+ *     manifest is read directly off the DOM's own `data-wp-context`
+ *     attribute (present verbatim in the static SSR markup) rather than via
+ *     the live context proxy, and the same handful of `data-wp-text`/
+ *     `data-wp-bind--*` directive VALUES already authored into that markup
+ *     are used as the write targets — so this is a bounded mirror of one
+ *     documented contract, not a parallel state machine guessing at
+ *     render.php's shape.
  *   - `sgs/brand-strip`'s infinite-scroll marquee (clones DOM nodes, measures
- *     rendered image widths, starts a CSS animation) and its hover/tap pause
- *     are AUTONOMOUS motion, not a user-triggered interaction — Bean's
- *     mandate lists interactions (click/hover/drag), and this block has no
- *     currently-broken CLICK/HOVER-triggered state (real CSS `:hover` and
- *     the `mouseenter`/`pointerdown` pause listeners already fire correctly
- *     per this file's core `<Disabled>` removal — there is simply nothing
- *     scrolling yet to pause). Left as a known, documented gap rather than
- *     re-implementing the whole clone-and-measure marquee boot inside a
- *     shared guard component.
+ *     rendered image widths, starts a CSS animation) stays OUT OF SCOPE by
+ *     Bean's explicit instruction (2026-09-18) — whether it auto-plays in
+ *     the editor canvas is a separate, deliberately untouched question. Its
+ *     HOVER-triggered effects are handled per-effect: the greyscale/sepia
+ *     and scale/lift/glow treatments are pure CSS `:hover` rules with no JS
+ *     involved, so they already work once `<Disabled>` is gone (nothing to
+ *     add here). The whole-track PAUSE-on-hover is JS-driven
+ *     (`mouseenter`/`mouseleave`/`pointerdown` toggling a class in
+ *     `brand-strip/view.js`) and that script never runs in this canvas
+ *     (frontend `viewScriptModule`s are not loaded in the editor, the same
+ *     reason nav-bar-menu's own store never hydrates here) — reproduced
+ *     below (`handlePointerCapture`/mouse listeners) as a direct class-
+ *     toggle mirror of that exact contract. It has no visible effect unless
+ *     the marquee is independently running, which is consistent with, not a
+ *     contradiction of, the "don't touch autoplay" scope line above.
  *   - `sgs/business-info`, `sgs/card-grid`, `sgs/responsive-logo` — audited,
  *     no `view.js`, no Interactivity API directives, no interactivity beyond
  *     real CSS `:hover` (already fixed by this file's core change). Nothing
@@ -164,6 +184,169 @@ const TRUSTPILOT_DOT_SELECTOR = '.sgs-trustpilot-reviews__dot[data-index]';
 const TRUSTPILOT_TRACK_SELECTOR = '.sgs-trustpilot-reviews__track';
 const TRUSTPILOT_CARD_SELECTOR =
 	'.sgs-trustpilot-reviews__card:not([data-sgs-loop-clone])';
+
+/**
+ * `sgs/product-card` bound-mode variant-picker contract — the SAME markup
+ * `sgs/option-picker`'s own `view.js` and `product-card`'s own `view.js`
+ * (`applyAvailability`) already key off: a `change` event on a radio input
+ * inside `.sgs-option-picker__options[data-type-key]`, where `data-type-key`
+ * is the WooCommerce attribute taxonomy and the radio's `value` is the
+ * selected term slug. The enclosing product card carries
+ * `data-wp-interactive="sgs/product-card"` PLUS a `data-wp-context` attribute
+ * holding the entire seeded manifest as literal JSON (see
+ * `product-card/render.php`'s "data-wp-context carry" docblock) — readable
+ * straight off the DOM even though the Interactivity runtime that would
+ * normally parse it never hydrates in this canvas. See the wider docblock
+ * above for why this one slice (price/image display) is reproduced while
+ * add-to-cart/availability/analytics are not.
+ */
+const PRODUCT_CARD_LIVE_SELECTOR = '[data-wp-interactive="sgs/product-card"]';
+const PRODUCT_CARD_OPTIONS_SELECTOR =
+	'.sgs-option-picker__options[data-type-key]';
+
+/**
+ * Per-card mutable state for the product-card variant mirror, keyed by the
+ * live card's root DOM element so repeated pill changes accumulate onto the
+ * SAME `selectedAxes` map (mirrors `view.js`'s `ctx.selectedAxes`) rather than
+ * re-parsing the ORIGINAL `data-wp-context` JSON (which would forget every
+ * axis except the one just clicked). Parsed once per card, lazily, on its
+ * first pill change.
+ *
+ * @type {WeakMap<Element, {combos: Object, selectedAxes: Object, decimals: number, currencySymbol: string, taxDisplayMode: string, priceSuffix: string, vatLabel: string, perUnitTemplate: string, saleLabel: string}>}
+ */
+const productCardStateByRoot = new WeakMap();
+
+/**
+ * `sgs/brand-strip`'s scrolling-mode pause-on-hover contract (that block's
+ * own `view.js`) — toggles `.sgs-brand-strip__track--paused` on
+ * `.sgs-brand-strip__track` while the pointer is over
+ * `.sgs-brand-strip--scrolling`, unless the operator has switched pause off
+ * (`.sgs-brand-strip--no-pause` on the strip root). See the wider docblock
+ * above — this has no VISIBLE effect unless the marquee animation is
+ * independently running (out of scope), but reproduces the class-toggle
+ * contract exactly so nothing about it silently diverges from the frontend.
+ */
+const BRAND_STRIP_SCROLLING_SELECTOR = '.sgs-brand-strip--scrolling';
+
+/**
+ * Format a minor-unit integer using the card's seeded currency settings.
+ * Mirrors `product-card/view.js`'s `formatPrice()` exactly (SSR==swap parity).
+ *
+ * @param {number} minor Amount in minor currency units (pence).
+ * @param {Object} meta  `{decimals, currencySymbol}` read from the card's context.
+ * @return {string}
+ */
+function formatCardPrice( minor, meta ) {
+	const decimals = typeof meta.decimals === 'number' ? meta.decimals : 2;
+	const amount = ( minor / Math.pow( 10, decimals ) ).toLocaleString(
+		undefined,
+		{
+			minimumFractionDigits: decimals,
+			maximumFractionDigits: decimals,
+		}
+	);
+	return ( meta.currencySymbol || '' ) + amount;
+}
+
+/**
+ * Current-price display string for a combo. Mirrors `view.js`'s `modePrice()`.
+ *
+ * @param {Object} combo The selected manifest combo.
+ * @param {Object} meta  The card's context meta (see `formatCardPrice`).
+ * @return {string}
+ */
+function cardModePrice( combo, meta ) {
+	let mode = meta.taxDisplayMode || 'auto';
+	if (
+		mode === 'ex-plus-vat' &&
+		( combo.exMinor == null || combo.taxMinor == null )
+	) {
+		mode = 'auto';
+	}
+	if ( mode === 'ex-plus-vat' ) {
+		let out = formatCardPrice( combo.exMinor, meta );
+		if ( combo.taxMinor && combo.taxMinor > 0 ) {
+			out +=
+				' + ' +
+				formatCardPrice( combo.taxMinor, meta ) +
+				' ' +
+				( meta.vatLabel || 'VAT' );
+		}
+		return out;
+	}
+	if ( mode === 'inc-suffix' && meta.priceSuffix ) {
+		return formatCardPrice( combo.priceMinor, meta ) + ' ' + meta.priceSuffix;
+	}
+	return formatCardPrice( combo.priceMinor, meta );
+}
+
+/**
+ * Struck-through regular-price display string for a combo. Mirrors
+ * `view.js`'s `modeRegular()`.
+ *
+ * @param {Object} combo The selected manifest combo.
+ * @param {Object} meta  The card's context meta.
+ * @return {string}
+ */
+function cardModeRegular( combo, meta ) {
+	const exMode =
+		( meta.taxDisplayMode || 'auto' ) === 'ex-plus-vat' &&
+		combo.regularExMinor != null;
+	return formatCardPrice(
+		exMode ? combo.regularExMinor : combo.regularMinor,
+		meta
+	);
+}
+
+/**
+ * Per-unit price string for a combo, e.g. "£1.04 per bar". Mirrors
+ * `view.js`'s `perUnitDisplay()`.
+ *
+ * @param {Object} combo The selected manifest combo.
+ * @param {Object} meta  The card's context meta.
+ * @return {string}
+ */
+function cardPerUnitDisplay( combo, meta ) {
+	const divisor =
+		typeof combo.unitDivisor === 'number'
+			? combo.unitDivisor
+			: parseFloat( combo.unitDivisor ) || 0;
+	const label = combo.unitLabel || '';
+	if ( divisor <= 0 || label === '' ) {
+		return '';
+	}
+	const mode = meta.taxDisplayMode || 'auto';
+	const base =
+		mode === 'ex-plus-vat' && combo.exMinor != null
+			? combo.exMinor
+			: combo.priceMinor;
+	const perUnitMinor = Math.round( base / divisor );
+	const template = meta.perUnitTemplate || 'per %s';
+	return (
+		formatCardPrice( perUnitMinor, meta ) +
+		' ' +
+		template.split( '%s' ).join( label )
+	);
+}
+
+/**
+ * Write a single directive VALUE to every element in `root` carrying the
+ * matching `data-wp-text`/`data-wp-bind--*` attribute — the same attribute
+ * literals `render.php` authors into the static SSR markup (see the
+ * `PRODUCT_CARD_*` docblock above). Using the directive strings themselves as
+ * the query means this stays correct if render.php's CSS class names ever
+ * change, since it targets the documented data contract, not incidental
+ * markup.
+ *
+ * @param {Element} root      The card's live root element.
+ * @param {string}  attrName  e.g. 'data-wp-text' or 'data-wp-bind--hidden'.
+ * @param {string}  attrValue e.g. 'context.priceDisplay'.
+ * @param {(el: Element) => void} apply Called once per matching element.
+ */
+function applyToDirective( root, attrName, attrValue, apply ) {
+	const selector = '[' + attrName + '="' + attrValue + '"]';
+	root.querySelectorAll( selector ).forEach( apply );
+}
 
 export default function SsrPreviewGuard( { children, className } ) {
 	const handleClickCapture = useCallback( ( event ) => {
@@ -300,6 +483,224 @@ export default function SsrPreviewGuard( { children, className } ) {
 		event.preventDefault();
 	}, [] );
 
+	// `sgs/product-card` bound-mode variant picker — a real `change` event on
+	// an `sgs/option-picker` radio (native browser behaviour, needs no JS of
+	// its own to select the pill — CSS's `:checked ~ .pill` already handles
+	// that) recomputes the matching combo from the card's own seeded
+	// `data-wp-context` manifest and writes the result straight onto the
+	// documented `data-wp-text`/`data-wp-bind--*` directive targets. See the
+	// `PRODUCT_CARD_*` docblock above for why this slice specifically is safe
+	// to mirror (pure local read, no network call).
+	const handleChangeCapture = useCallback( ( event ) => {
+		const input = event.target;
+		if ( ! input || input.type !== 'radio' ) {
+			return;
+		}
+		const optionsDiv =
+			typeof input.closest === 'function'
+				? input.closest( PRODUCT_CARD_OPTIONS_SELECTOR )
+				: null;
+		if ( ! optionsDiv ) {
+			return;
+		}
+		const root =
+			typeof input.closest === 'function'
+				? input.closest( PRODUCT_CARD_LIVE_SELECTOR )
+				: null;
+		if ( ! root ) {
+			return;
+		}
+
+		const typeKey = optionsDiv.getAttribute( 'data-type-key' ) || '';
+		const selectedKey = input.value;
+		if ( ! typeKey || ! selectedKey ) {
+			return;
+		}
+
+		let state = productCardStateByRoot.get( root );
+		if ( ! state ) {
+			const raw = root.getAttribute( 'data-wp-context' );
+			if ( ! raw ) {
+				return;
+			}
+			let seeded;
+			try {
+				seeded = JSON.parse( raw );
+			} catch ( e ) {
+				return;
+			}
+			if ( ! seeded || ! seeded.combos ) {
+				// Simple/CPT card carries no manifest — nothing to swap.
+				return;
+			}
+			state = {
+				combos: seeded.combos,
+				selectedAxes: { ...( seeded.selectedAxes || {} ) },
+				decimals: seeded.decimals,
+				currencySymbol: seeded.currencySymbol,
+				taxDisplayMode: seeded.taxDisplayMode,
+				priceSuffix: seeded.priceSuffix,
+				vatLabel: seeded.vatLabel,
+				perUnitTemplate: seeded.perUnitTemplate,
+				saleLabel: seeded.saleLabel,
+			};
+			productCardStateByRoot.set( root, state );
+		}
+
+		state.selectedAxes = { ...state.selectedAxes, [ typeKey ]: selectedKey };
+		const comboKey = Object.keys( state.selectedAxes )
+			.sort()
+			.map( ( t ) => t + ':' + state.selectedAxes[ t ] )
+			.join( '|' );
+		const combo = state.combos[ comboKey ];
+		if ( ! combo ) {
+			// Invalid/unavailable combination — leave price/image untouched
+			// (mirrors view.js: no purchasable state to show a price for).
+			return;
+		}
+
+		applyToDirective( root, 'data-wp-text', 'context.priceDisplay', ( el ) => {
+			el.textContent = cardModePrice( combo, state );
+		} );
+
+		const onSale = combo.saleMinor !== null && combo.saleMinor !== undefined;
+		applyToDirective(
+			root,
+			'data-wp-bind--hidden',
+			'context.hideSale',
+			( el ) => {
+				el.hidden = ! onSale;
+			}
+		);
+		applyToDirective(
+			root,
+			'data-wp-text',
+			'context.regularDisplay',
+			( el ) => {
+				el.textContent = onSale ? cardModeRegular( combo, state ) : '';
+			}
+		);
+		applyToDirective( root, 'data-wp-text', 'context.pctDisplay', ( el ) => {
+			el.textContent =
+				combo.pctDisplay != null
+					? combo.pctDisplay
+					: combo.pctOff > 0
+					? combo.pctOff + '% off'
+					: '';
+		} );
+
+		const inStock = !! combo.inStock;
+		applyToDirective( root, 'data-wp-bind--hidden', 'context.inStock', ( el ) => {
+			el.hidden = inStock;
+		} );
+		applyToDirective( root, 'data-wp-text', 'context.stockText', ( el ) => {
+			el.textContent = inStock ? '' : 'Out of stock';
+		} );
+
+		const badgeLabel = onSale
+			? state.saleLabel || 'Sale'
+			: combo.discountLabel || '';
+		applyToDirective(
+			root,
+			'data-wp-bind--hidden',
+			'context.discountHidden',
+			( el ) => {
+				el.hidden = ! badgeLabel;
+			}
+		);
+		applyToDirective(
+			root,
+			'data-wp-text',
+			'context.discountLabel',
+			( el ) => {
+				el.textContent = badgeLabel;
+			}
+		);
+
+		const puDisplay = cardPerUnitDisplay( combo, state );
+		applyToDirective(
+			root,
+			'data-wp-bind--hidden',
+			'context.perUnitHidden',
+			( el ) => {
+				el.hidden = puDisplay === '';
+			}
+		);
+		applyToDirective(
+			root,
+			'data-wp-text',
+			'context.perUnitDisplay',
+			( el ) => {
+				el.textContent = puDisplay;
+			}
+		);
+
+		// Image swap — prefer the selected combo's own gallery (mirrors
+		// view.js's gallery[0] priority), fall back to the combo's flat
+		// imageUrl, else leave the current image untouched (a combo with no
+		// image of its own keeps whatever was already showing — same M-C7
+		// parity rule view.js documents).
+		const gallery = Array.isArray( combo.gallery ) ? combo.gallery : [];
+		const newSrc =
+			gallery.length > 0 && gallery[ 0 ].url
+				? gallery[ 0 ].url
+				: combo.imageUrl || '';
+		if ( newSrc ) {
+			applyToDirective( root, 'data-wp-bind--src', 'context.imageSrc', ( el ) => {
+				el.src = newSrc;
+			} );
+			const newAlt = gallery.length > 0 ? gallery[ 0 ].alt || '' : '';
+			if ( newAlt ) {
+				applyToDirective(
+					root,
+					'data-wp-bind--alt',
+					'context.imageAlt',
+					( el ) => {
+						el.alt = newAlt;
+					}
+				);
+			}
+		}
+	}, [] );
+
+	// `sgs/brand-strip` scrolling-mode pause-on-hover — a bubbling
+	// `mouseover`/`mouseout` pair standing in for `mouseenter`/`mouseleave`
+	// (checking `relatedTarget` so the toggle fires once per true
+	// enter/exit, not on every internal pointer move), toggling the exact
+	// class `view.js` toggles. See the `BRAND_STRIP_SCROLLING_SELECTOR`
+	// docblock above for why this has no visible effect without the marquee
+	// separately running.
+	const handleBrandStripHover = useCallback( ( event, isEntering ) => {
+		const strip =
+			typeof event.target.closest === 'function'
+				? event.target.closest( BRAND_STRIP_SCROLLING_SELECTOR )
+				: null;
+		if ( ! strip || strip.classList.contains( 'sgs-brand-strip--no-pause' ) ) {
+			return;
+		}
+		const related = event.relatedTarget;
+		if ( related && strip.contains( related ) ) {
+			// Moving between descendants of the same strip — not a real
+			// enter/exit, ignore (mirrors mouseenter/mouseleave semantics).
+			return;
+		}
+		const track = strip.querySelector( '.sgs-brand-strip__track' );
+		if ( track ) {
+			track.classList.toggle(
+				'sgs-brand-strip__track--paused',
+				isEntering
+			);
+		}
+	}, [] );
+	const handleMouseOverCapture = useCallback(
+		( event ) => handleBrandStripHover( event, true ),
+		[ handleBrandStripHover ]
+	);
+	const handleMouseOutCapture = useCallback(
+		( event ) => handleBrandStripHover( event, false ),
+		[ handleBrandStripHover ]
+	);
+
 	return (
 		<div
 			className={
@@ -308,8 +709,11 @@ export default function SsrPreviewGuard( { children, className } ) {
 					: 'sgs-ssr-preview-guard'
 			}
 			onClickCapture={ handleClickCapture }
+			onChangeCapture={ handleChangeCapture }
 			onInputCapture={ handleInputCapture }
 			onSubmitCapture={ handleSubmitCapture }
+			onMouseOverCapture={ handleMouseOverCapture }
+			onMouseOutCapture={ handleMouseOutCapture }
 		>
 			{ children }
 		</div>
