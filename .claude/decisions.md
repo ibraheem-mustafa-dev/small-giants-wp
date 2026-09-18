@@ -1,5 +1,54 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1107 [ROUTINE] — Both D1106 follow-on items closed: inline-style/state collision fix
+shipped; `<dc-import>` cross-component resolution designed, built, shipped
+
+**2026-09-18.** Closed the 2 remaining scoped items from D1106's "next session" list.
+
+**Item 1 — attribute-collision bug (`1a1ecd170`).** `collect_css_decls_for_element`
+unconditionally merged a node's own inline `style=` into `base_decls`, even when called
+against a state/pseudo-stripped rules dict (D309's `:hover`/`::before` isolation
+mechanism) — manufacturing a phantom state-tagged decl that collided with tier-object
+attrs (no `tier_state_suffix()` equivalent exists for them). Fixed with a new
+`include_inline` param (default True), `include_inline=False` from both probe call
+sites. Found the SAME bug pattern in `pseudo_overlay.py`'s `::before`/`::after`
+collector while there — fixed both together per the comprehensive-fix rule, not just the
+one originally scoped. 2 new regression tests. Full suite 854/854.
+
+**Item 2 — `<dc-import>` cross-component resolution (`d6981815a`), design-gated with
+Bean first (Rule 7).** Confirmed via evidence before proposing: all 4 real `<dc-import>`
+usages on Eye Care Birmingham reference the same "Frame Card" component (a plain product
+card) inside `sc-for` product-grid loops; Frame Card.dc.html's own second-draft work
+(same session) did NOT cover this (0 dc-import usages there). Bean approved building a
+GENERAL resolver (not a Frame-Card-only carve-out) after asking why Claude Design
+exports components separately — read as the DSL's own reuse mechanism (same shape any
+future client draft will hit when it factors a repeated card into its own component).
+
+Built as a new Stage -2 in `sgs-clone-orchestrator.py` (before any stage reads
+`args.mockup`): splices the referenced component's `<x-dc>` root markup in at each
+import site, prop renamed per the component's own declared `data-props` contract, call
+site's `style=` merged onto the spliced root last. **First implementation round-tripped
+the WHOLE draft through BeautifulSoup (`str(soup)`) to do the splice — caught before
+shipping by re-running the real pipeline: every one of 74 boundaries failed (vs the
+known 38/70 baseline) because BS4's html.parser silently lowercases the DSL's camelCase
+pseudo-attributes (`onClick`→`onclick`) and reorders/collapses whitespace across the
+ENTIRE document, not just the 4 spliced sites.** Rewritten as surgical string-level regex
+patching — locates `<dc-import>` spans and the component's `<x-dc>` root as raw text
+spans, substitutes only those; every byte outside a resolved span is byte-identical to
+source (verified: `onClick` count 106→126 post-splice, zero `onclick` corruption).
+
+Real pipeline result (Eye Care Birmingham, matching the documented `--sc-var-min-confidence
+0.0 --dom-shape-min-confidence 0.0` baseline invocation — an earlier comparison against
+the WRONG invocation, missing those flags, produced a false "0/74 regression" alarm,
+caught before being trusted): **50/74 boundaries complete, up from 38/70** — the 4
+previously-empty product-grid sections now convert real content. 5 new regression tests
+(splice+style-merge, prop rename, no-op on an ordinary draft, unresolvable import
+non-fatal, self-import cycle guard). Full suite 859/859, 0 regressions.
+
+**Lesson for `mistakes.md`:** before trusting a "regression vs baseline" comparison,
+verify the comparison run used the SAME invocation flags as the baseline it's being
+measured against — a missing opt-in flag can look identical to a real regression.
+
 ## D1106 [ROUTINE] — Live-run finding corrected: "67/70 non-BEM halts" was a real but
 badly-framed claim; root-caused via 5-investigator adversarial council, two fixes shipped,
 boundary success rate 17→38 of 70 (more than doubled)

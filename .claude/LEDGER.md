@@ -1,24 +1,23 @@
 ---
 doc_type: ledger
 project: small-giants-wp
-last_updated: 2026-09-17
+last_updated: 2026-09-18
 ---
 
 # small-giants-wp — LEDGER (the one living status)
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**TWO OPEN FRONTS: Front C (Spec 44, classless GROUP recognition — completion register
-CLOSED 7 of 8; the underlying pipeline-completeness gap it exposed investigated + mostly
-fixed same session, D1106) and Front E (Spec 45, classless FIELD resolution, built but NOT
-live-trusted). Front D (Mama's/Indus header-footer builder cleanup) is now FULLY CLOSED —
-all 6 Wave 2 tasks shipped.** Only the AI-fallback question (Bean's own call, deliberately
-parked) remains open on Front C. Two things need Bean directly, not a subagent: the
-drawer-burger click retest, and Spec 42/43 Phase 3's precondition (real WooCommerce
-catalogue data). Everything else that used to lead this file — the nav-menu split, Spec
-41/36 doc rewrites, Spec 42/43 Phases 0-2, and the choice-flow visual/UX pass — is FULLY
-DONE, DEPLOYED, LIVE-VERIFIED. See "Prior work (closed)" for pointers; it isn't repeated
-here.
+**ONE OPEN FRONT: Front E (Spec 45, classless FIELD resolution, built but NOT
+live-trusted). Front C (Spec 44 classless GROUP recognition + the pipeline-completeness
+gap it exposed) is now FULLY CLOSED (D1101-D1107), except the AI-fallback question
+(Bean's own call, deliberately parked). Front D (Mama's/Indus header-footer builder
+cleanup) is also FULLY CLOSED — all 6 Wave 2 tasks shipped.** Two things need Bean
+directly, not a subagent: the drawer-burger click retest, and Spec 42/43 Phase 3's
+precondition (real WooCommerce catalogue data). Everything else that used to lead this
+file — the nav-menu split, Spec 41/36 doc rewrites, Spec 42/43 Phases 0-2, and the
+choice-flow visual/UX pass — is FULLY DONE, DEPLOYED, LIVE-VERIFIED. See "Prior work
+(closed)" for pointers; it isn't repeated here.
 
 **Spec 44 (classless GROUP recognition) — completion register 7/8 closed 2026-09-18
 (D1101-D1105).** Full detail: Front C below.
@@ -149,19 +148,27 @@ was unconditionally skipped for a boundary with ZERO BEM classes — fixed (`76f
 which surfaced two separate downstream bugs; the bigger one (an over-narrow leaf-content
 gate, `_route_container_child`) was also fixed (`f81b6fc46`). **Real result: 17/70 → 38/70
 boundaries now convert (54%, more than doubled) on Eye Care Birmingham.** Remaining 10:
-4 are `<dc-import>` cross-component references (a real missing feature, needs its own
-design-gate, not a bug), the rest are a root-caused-but-not-yet-fixed attribute-collision
-bug (a node's own inline style getting miscounted as a stylesheet `:hover`/`:focus` match,
-scoped fix ready for next session) plus a couple of edge cases. Full trail: D1106,
-`.claude/reports/2026-09-18-spec44-full-pipeline-stage-breakdown.md`.
+4 were `<dc-import>` cross-component references, the rest an attribute-collision bug (a
+node's own inline style getting miscounted as a stylesheet `:hover`/`:focus` match). Full
+trail: D1106, `.claude/reports/2026-09-18-spec44-full-pipeline-stage-breakdown.md`.
 
-**Next session — 2 small, scoped, already-root-caused items, in order:**
-1. Fix the attribute-collision bug (`include_inline=False` param on
-   `collect_css_decls_for_element`, `converter/services/styling_helpers.py`) — closes
-   ~4 of the remaining 10.
-2. Design-gate + scope the `<dc-import>` cross-component resolution (Rule 7 — shared
-   mechanism, needs Bean's sign-off before building) — closes the other 4. Check first
-   whether the Frame Card second-draft work already covers this.
+**Both next-session items CLOSED same day (D1107):**
+1. **Attribute-collision bug fixed** (`1a1ecd170`) — `include_inline` param on
+   `collect_css_decls_for_element`; same bug pattern also found + fixed in
+   `pseudo_overlay.py`'s `::before`/`::after` collector. 854/854 tests.
+2. **`<dc-import>` cross-component resolution built** (`d6981815a`), design-gated with
+   Bean first per Rule 7. New Stage -2 in `sgs-clone-orchestrator.py` splices the
+   referenced component's markup in at each import site, prop-renamed per its own
+   `data-props` contract. First cut round-tripped the whole draft through BeautifulSoup
+   to splice — caught before shipping (real pipeline run: 0/74 vs the 38/70 baseline)
+   because that silently lowercases the DSL's camelCase pseudo-attrs
+   (`onClick`->`onclick`) project-wide. Rewritten as surgical string-regex patching —
+   every byte outside a resolved `<dc-import>` span is byte-identical to source.
+   **Real result: 50/74 boundaries complete, up from 38/70** — the 4 previously-empty
+   product-grid sections now convert real content. 859/859 tests.
+
+**Front C is now fully closed** except item 7 (AI-fallback tier, deliberately parked,
+Bean's own call — see above).
 
 Standing rule from this front: narrow by parent context before leaf-structural match — lesson
 `C:/Users/Bean/.claude/memory/learning/2026-09-15-narrow-by-parent-context-before-leaf-structural-match.md`.
