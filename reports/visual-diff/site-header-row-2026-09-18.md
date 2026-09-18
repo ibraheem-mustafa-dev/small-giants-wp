@@ -73,3 +73,30 @@ post-fix, click-testing each control independently, and confirming the badge is
 still correctly positioned. This report will be updated with an "Update" section
 carrying that result, per the established convention (see
 `reports/visual-diff/whatsapp-cta-2026-09-04.md`).
+
+## Update — post-deploy live capture (2026-09-18, same session)
+
+Deployed via `build-deploy.py --target sandybrown --blocks-only --skip-build`
+(build already run separately). The script's own OPcache-purge + verify leg failed
+with `CERTIFICATE_VERIFY_FAILED` — cross-checked with `curl -sI` (200 OK) and
+`openssl s_client` (cert valid to 2026-12-07): a stale local Python certifi bundle,
+not a real outage (matches memory `feedback_deployed_but_broken_can_be_a_local_cert_store_false_alarm`).
+Ran the OPcache reset by hand via an HTTPS probe; LiteSpeed page cache had already
+purged successfully in the script run. Confirmed the new rule is present in the
+deployed stylesheet via `curl` against the live CSS file before re-testing.
+
+Captured via Playwright MCP (worked this time) against
+https://sandybrown-nightingale-600381.hostingersite.com/ at 375×800:
+
+| # | Assertion | Result |
+|---|---|---|
+| 1 | cart LEFT of burger, post-fix | **PASS** — `getBoundingClientRect()`: `.wp-block-sgs-cart` x=239.33–283.33; `.sgs-nav-bar-menu` (burger) x=292–336. Cart now paints first, burger second. |
+| 2 | both independently tappable, no shared handler | **PASS** — clicked "Open menu" (accessible name, distinct `<button>`): opened the nav drawer only, cart untouched. Closed via "Close menu". Separately clicked "View your cart (1 item in cart)" (distinct `<a>` to `/cart/`): navigated to the cart page, no drawer interaction. Confirms DOM/tab order is untouched — only visual paint order changed via `order`, exactly as designed (no re-parenting, no shared wrapper). |
+| 3 | badge still attached to cart icon | **PASS** — `.sgs-cart__badge` at x=263.33–281.33, inside the cart's own 239.33–283.33 x-range, unaffected by the `order` reorder (badge is `position:absolute` inside `.sgs-cart`, per the pre-stated assertion). |
+| 4 | no overlap/clipping regression | **PASS** — screenshot `header-after-fix-375.png` shows clean 8px-ish gap between cart and burger, no overlap, phone-number CTA bar below unaffected. |
+
+Screenshots: `header-after-fix-375.png` (cart left of burger, closed state),
+`header-burger-drawer-open-375.png` (drawer open, confirms burger's own function
+untouched).
+
+**Verdict: PASS, fully closed.** No remaining debt on this fix.
