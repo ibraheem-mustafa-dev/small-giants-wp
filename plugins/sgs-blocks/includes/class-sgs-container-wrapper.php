@@ -3227,6 +3227,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// ambiguity. Keep container/edit.js's gapCssValue() in step.
 				$obj_inner_props = array();
 
+				// grid-template-columns' count-based tier fallback (built below)
+				// gets its OWN sgs_emit_responsive_css() call, `'container' => false`
+				// — see the full reasoning at that assignment. Declared here so it
+				// exists even when the `if` that populates it never runs.
+				$sgs_gtc_inner_props = array();
+
 				/*
 				 * BAND (Layer 2) properties get their OWN selector — they must never
 				 * ride on $grid_sel.
@@ -3374,9 +3380,35 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 								: 'repeat(' . absint( $sgs_gtc_count ) . ',1fr)';
 						}
 					}
-					$obj_inner_props[] = array(
-						'value' => $sgs_gtc_resolved,
-						'css'   => 'grid-template-columns',
+
+					/*
+					 * Own emission call, `'container' => false` (below, near the
+					 * other sgs_emit_responsive_css() calls) — NOT folded into the
+					 * shared $obj_inner_props/$container_queries batch.
+					 *
+					 * A count-based tier fallback answers "how many columns for a
+					 * PHONE", a viewport-device question. Container queries answer
+					 * "how many columns does THIS ROW currently have room for",
+					 * measured on the row's own inline size — and page padding
+					 * already eats into that, so the row's content width can drop
+					 * below SGS_Breakpoints::MOBILE_MAX (767) at a viewport that is
+					 * genuinely still >=768 (tablet). Measured live on this exact
+					 * footer: 768px viewport, 713px row content width — BELOW the
+					 * 767 container threshold — so a shared @container twin fired
+					 * the mobile collapse a whole tablet tier early, dropping the
+					 * confirmed-correct 3-column ratio at 768px. gap/contentWidth/
+					 * the other obj_inner_props entries never had this problem
+					 * because (before this fix) $object_grid gated off the ONLY
+					 * source of a divergent gridTemplateColumns tier value, so no
+					 * rule — @media or @container — was ever emitted for it; this
+					 * fallback is what first gives the property a mobile value to
+					 * diverge on, so it is what first exposes the mismatch.
+					 */
+					$sgs_gtc_inner_props = array(
+						array(
+							'value' => $sgs_gtc_resolved,
+							'css'   => 'grid-template-columns',
+						),
 					);
 				}
 				if ( isset( $attributes['contentWidth'] ) && is_array( $attributes['contentWidth'] ) ) {
@@ -3571,6 +3603,17 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					// match. Dead CSS is not free: it is what the next reader has to
 					// explain before they can trust the rest.
 					$responsive_css .= sgs_emit_responsive_css( $grid_sel, $obj_inner_props, array( 'container' => $container_queries ) );
+				}
+
+				// grid-template-columns' count-based tier fallback — its own call,
+				// `'container' => false` always. See the reasoning where
+				// $sgs_gtc_inner_props is built: a VIEWPORT device-tier fallback
+				// (how many columns for a phone) must not also fire as an
+				// @container rule keyed to the row's own inline size, which page
+				// padding can push below the mobile threshold at a viewport width
+				// that is genuinely still tablet.
+				if ( $sgs_gtc_inner_props && '' !== $grid_sel ) {
+					$responsive_css .= sgs_emit_responsive_css( $grid_sel, $sgs_gtc_inner_props, array( 'container' => false ) );
 				}
 
 				// Band (Layer 2) tier rules — own selector, see the $band_obj_sel note above.
