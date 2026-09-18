@@ -325,7 +325,14 @@ def _convert_section_body(html: str, css: str, media_map: dict,
     block_markup = ""
     failure_reason = ""
     try:
-        rec = recognise_section(root)
+        # is_boundary_root=True: `root` (soup.find() above) IS the boundary's own
+        # top-level section node, never a nested descendant — so a ZERO-BEM-CLASS
+        # section here is a genuine classless draft section, not a nested classless
+        # wrapper div inside an already-recognised composite. This is the only call
+        # site that passes it; recognise_section's recursive re-entries and
+        # repeated_sibling_detector.py's representative-sibling probe keep the
+        # default False (see recognition.py::recognise_section precedence #4).
+        rec = recognise_section(root, is_boundary_root=True)
         if not rec.slug or rec.kind == "unrecognised":
             failure_reason = f"recognise_section returned unrecognised (kind={rec.kind!r})"
         else:

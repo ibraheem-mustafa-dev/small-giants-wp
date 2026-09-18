@@ -68,6 +68,32 @@ def test_no_root_class_stays_unrecognised():
         or recognise_section(_node('<section class="sgs-hero__ctas"></section>')).slug != _CONTAINER
 
 
+def test_zero_class_boundary_root_defaults_to_container():
+    """The fix (2026-09-18, 5-investigator adversarial-council root-caused, Bean-
+    approved): a BOUNDARY's own root node with ZERO BEM classes at all — a genuine
+    classless draft section, e.g. Claude-Design-authored HTML with no sgs- classes
+    anywhere — must get the SAME FR-31-4 container-default rescue a BEM-mismatch
+    already gets, when the caller identifies it as is_boundary_root=True."""
+    rec = recognise_section(_node('<section></section>'), is_boundary_root=True)
+    assert rec.kind == "named"
+    assert rec.slug == _CONTAINER == "sgs/container"
+    assert rec.delegates_content == 1
+
+
+def test_zero_class_nested_node_stays_unrecognised_negative_control():
+    """Negative control for the fix above: the SAME zero-class node WITHOUT
+    is_boundary_root (the default, False) must stay unrecognised exactly as
+    before — this is what protects a nested classless div three levels inside an
+    already-recognised composite from being wrapped in a spurious container."""
+    rec_default = recognise_section(_node('<section></section>'))
+    assert rec_default.kind == "unrecognised"
+    assert rec_default.slug is None
+
+    rec_explicit_false = recognise_section(_node('<section></section>'), is_boundary_root=False)
+    assert rec_explicit_false.kind == "unrecognised"
+    assert rec_explicit_false.slug is None
+
+
 def test_recursive_recognise_unchanged_for_slug_none():
     """The recursive recognise() (used on descendants) is UNTOUCHED — a slug-None
     node stays unrecognised there, so a text grandchild is never forced to a container."""

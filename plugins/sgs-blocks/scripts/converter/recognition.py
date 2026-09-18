@@ -178,7 +178,7 @@ def variant_attrs(rec: Recognition) -> dict[str, str]:
     return {}
 
 
-def recognise_section(node: Any) -> Recognition:
+def recognise_section(node: Any, is_boundary_root: bool = False) -> Recognition:
     """Recognise a TOP-LEVEL section root, applying the FR-31-4 container DEFAULT.
 
     Spec 31 §13.2 FR-31-4 ("section base is always sgs/container") + §12.6
@@ -211,6 +211,18 @@ def recognise_section(node: Any) -> Recognition:
          rank — ``recognise()`` line 73) → return ``unrecognised`` verbatim (loud
          RED). A real recognition failure is NEVER silently swallowed into a
          container (R-31-9 over-broad-universality is also a break).
+      4. ``unrecognised`` + the node has ZERO BEM root classes at all (a genuine
+         classless draft section) + ``is_boundary_root=True`` → the container
+         default (5-investigator adversarial-council root-caused fix, Bean-
+         approved). ``is_boundary_root`` defaults to ``False`` so every existing
+         caller (the recursive ``recognise_section`` re-entry from
+         ``recognise()``'s own callers, and ``repeated_sibling_detector.py``'s
+         representative-sibling probe) keeps today's exact behaviour: a nested
+         classless node three levels inside an already-recognised composite
+         must stay ``unrecognised`` and resolve normally via the recursive
+         ``recognise()`` walk, never get wrapped in a spurious container. Only
+         ``entry.py::_convert_section_body`` — the boundary's own root node —
+         passes ``is_boundary_root=True``.
 
     THE SECTION-ROOT CAPABILITY GATE (R1, 2026-08-04) — a conformance fix, not a
     new rule. FR-31-4 and FR-31-16 both already require it, and it is what
@@ -254,13 +266,23 @@ def recognise_section(node: Any) -> Recognition:
         # must stay loud.
         root_classes = _root_classes(node)
         if not root_classes:
-            return base  # no BEM root class → not a class-section; stay unrecognised.
-        candidates = [
-            s for c in root_classes
-            if db_lookup.block_exists(s := "sgs/" + c[4:])
-        ]
-        if candidates:
-            return base  # ambiguous tie — a real failure, never a silent container.
+            if not is_boundary_root:
+                return base  # no BEM root class → not a class-section; stay unrecognised.
+            # BOUNDARY-ROOT RESCUE (the fix): the caller has told us this node IS
+            # a top-level boundary's own root, not some nested classless div three
+            # levels inside an already-recognised composite. A genuinely classless
+            # top-level section is not a "not a class-section" case — it is exactly
+            # the FR-31-4 no-match case with zero candidates, so it falls through
+            # to the SAME container_default_slug() assignment below that a
+            # BEM-mismatch already gets. Reuses that logic verbatim — no duplicate
+            # container-slug branch is added here.
+        else:
+            candidates = [
+                s for c in root_classes
+                if db_lookup.block_exists(s := "sgs/" + c[4:])
+            ]
+            if candidates:
+                return base  # ambiguous tie — a real failure, never a silent container.
 
     container_slug = db_lookup.container_default_slug()
     if container_slug is None:
