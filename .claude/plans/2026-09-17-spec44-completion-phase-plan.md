@@ -410,64 +410,33 @@ Step 4 — Root-cause the Tier A alias bug
     Return: TWO root causes (one sentence each, with the DB query or code line/file that proves
     each), what was fixed and where for each, and the full pytest output for both.
 
-Step 5 — Decide + build sgs/brand-strip's "count" field
-  Model:       sonnet
-  Action:      Confirmed live (2026-09-17): `sgs/brand-strip`'s block.json has zero attrs
-               containing "count" today — the §5.3 finding is real, not stale. Decide: drop the
-               field type with an honest skip-reason recorded in the classless pipeline's
-               skip-reason vocabulary, OR add a small new `count`-shaped attribute (e.g.
-               `itemCountLabel` per-item text) to the block. Recommendation for whoever executes
-               this step: build the attribute — it's a small, real, generically useful addition
-               (a "12 frames"-style count label is not Eye-Care-specific) rather than a
-               dropped-field workaround, but this is a KJC (see below) for the human to confirm
-               before committing to the larger option.
-  Files:       plugins/sgs-blocks/src/blocks/brand-strip/block.json,
-               plugins/sgs-blocks/src/blocks/brand-strip/edit.js,
-               plugins/sgs-blocks/src/blocks/brand-strip/render.php (if the attribute path is
-               chosen)
-  Inputs:      Spec 44 §5.3; live block.json read (2026-09-17, confirmed no count attr exists)
-  Outcome:     Either a shipped, deployed new attribute (block-editor control + render.php
-               output + `npm run build` clean + `check-dead-controls.js` passing) or a
-               documented skip-reason decision recorded in the pipeline's skip vocabulary — not
-               left as an open question
+Step 5 — Record the corrected brand-tile target block finding (no build needed)
+  Model:       inline
+  Action:      SUPERSEDED 2026-09-18 (D1103) — this step originally proposed building a new
+               `itemCountLabel` attribute on `sgs/brand-strip`. That premise was wrong on two
+               counts, found during a live `/brainstorming` session with Bean: (1) `sgs/brand-strip`
+               is the wrong TARGET block for this content group in the first place — the framework
+               already has a shipped precedent, `theme/sgs-theme/patterns/mega-brands-1.php`
+               ("Mega: Brands", Spec 36's `sgs_mega_menu` CPT starter), which uses `sgs/card-grid`
+               for exactly this clickable logo-tile-with-count shape; (2) `sgs/card-grid`'s
+               existing per-item schema already has `title`/`subtitle`/`media`/`badge`/`link` —
+               the "count" text has a direct home (`subtitle` or `badge`) with NO new attribute
+               needed at all. Spec 44 §5.3 has already been corrected in place with this finding.
+               Nothing to build. This step is now just confirming the spec correction landed.
+  Files:       .claude/specs/44-CLASSLESS-REPEATER-RECOGNITION.md §5.3 (already corrected)
+  Inputs:      D1103; the live `mega-brands-1.php` pattern read directly
+  Outcome:     Spec 44 §5.3 correctly states: target block is `sgs/card-grid` (not
+               `sgs/brand-strip`) for this shape, no new attribute required, `sgs/mega-panel`'s
+               aside wrapper not needed for this specific content group (Bean's call)
   Exec:        PARALLEL with steps 1, 2, 3, 4
-  Deps:        none — but see KJC below; this step's OUTCOME depends on the KJC's answer, so
-               confirm the KJC decision (drop vs build) before or during this step, not after
+  Deps:        none
   Marker:      (none)
-  Time:        30 min (build path) / 10 min (skip-reason path)
-  Tooling:     /sgs-wp-engine (GROUND-TRUTH discipline + block build), /sgs-db (confirm no
-               existing count-shaped attr elsewhere in the framework to reuse as precedent —
-               R-31-8 schema-enumeration-before-"missing X")
-  On-Fail:     If a `npm run build` or `check-dead-controls.js` failure blocks the build path,
-               fall back to the skip-reason path for this session and leave the attribute build
-               as a follow-up — do not let this block Wave 2/3.
+  Time:        2 min (verification only — the actual decision + doc fix already landed 2026-09-18)
+  Tooling:     none — read-only confirmation
+  On-Fail:     n/a
   Cold-Entry:  n/a (not a SESSION-START step)
-  Prompt: |
-    Resolve Spec 44 §5.3's open item: `sgs/brand-strip`'s "count" field (e.g. "12 frames" text
-    next to a brand/logo entry) has no matching attribute. Confirmed live 2026-09-17 — zero
-    attrs containing "count" in plugins/sgs-blocks/src/blocks/brand-strip/block.json.
-
-    First, per this project's GROUND-TRUTH discipline: query
-    `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT block_slug, attr_name
-    FROM block_attributes WHERE attr_name LIKE '%count%' OR attr_name LIKE '%label%'"` to check
-    whether any other block already has a similar per-item count/label pattern you should match
-    (Spec 44's own R-31-8 rule: never assume "missing" without checking existing precedent
-    first).
-
-    Decision (confirm with the KJC recorded in the phase plan before committing — default
-    recommendation is BUILD, not drop): add a small new per-item attribute to `sgs/brand-strip`
-    (e.g. `itemCountLabel`, a per-logo optional text string) following this block's existing
-    per-item attribute pattern (read block.json's `logos[]` shape first). Wire it through
-    edit.js's per-item controls and render.php's output. Run `npm run build` clean and
-    `node scripts/check-dead-controls.js --check` to confirm no dead-control violation.
-
-    If BUILD is not confirmed (KJC says drop instead), record the skip-reason in whatever
-    vocabulary the classless pipeline's skip-reason system already uses (read
-    classless_field_resolver.py / classless_trust_gate.py for the existing skip-reason string
-    format) and do not touch the block files.
-
-    Return: which path was taken, what was built (or the skip-reason text used), and build/gate
-    output confirming it's clean.
+  Prompt: (inline step — no dispatch needed; just confirm Spec 44 §5.3 reads as corrected above
+    before closing out the register)
 
 ---
 
@@ -730,22 +699,20 @@ Step 9 — Close out: decisions.md, LEDGER.md, handoff gate
     fallback as the fix, because the deferred item was closed prematurely.
   - **Who decides:** Bean (not delegated to this phase's subagents)
 
-- **Decision:** `sgs/brand-strip`'s "count" field — build a real attribute, or drop with a
-  skip-reason?
-  - **Options:** [A] Build `itemCountLabel` (or similar) as a small new per-item attribute /
-    [B] Drop the field type entirely with an honest skip-reason recorded in the pipeline's skip
-    vocabulary
-  - **Recommendation:** [A] — it's small (one attribute, following an existing per-item pattern
-    already in the block), generically useful (not Eye-Care-specific), and the alternative
-    (a permanent skip-reason) just defers the same decision to the next draft that has this
-    shape.
-  - **Why:** This project's own architecture rule says a missing block-equivalent is a "gap
-    candidate to add," never silently dropped, when the gap is small and generic.
-  - **Cost of wrong choice:** Building an unnecessary attribute costs ~20 minutes and a small
-    schema addition — cheap to reverse. Dropping a genuinely useful pattern means every future
-    "N items" style draft field re-triggers the same open question.
-  - **Who decides:** Bean can override at Step 5's dispatch time; the step's prompt defaults to
-    build but is written to accept a KJC override before it runs
+- **Decision (SETTLED 2026-09-18, D1103 — no longer open):** `sgs/brand-strip`'s "count"
+  field — build a real attribute, or drop with a skip-reason?
+  - **What actually happened:** Neither option was right. A live `/brainstorming` session with
+    Bean found the premise itself was wrong — `sgs/brand-strip` is the wrong TARGET block for
+    this content group (a clickable logo-tile-with-count grid), and the framework's own shipped
+    `mega-brands-1.php` precedent already routes this shape to `sgs/card-grid`, whose existing
+    `subtitle`/`badge` fields already cover "count" text with zero new attributes.
+  - **Why the original framing was wrong:** I checked `block_attributes`' styling-column names
+    (`titleColour`, `subtitleColour`, etc.) and wrongly read the absence of a literal "count"
+    column as "no per-item text field exists" — the actual per-item JSON schema (`items.properties`
+    in block.json) has `title`/`subtitle` and was never checked directly before concluding. Bean
+    caught this. Lesson: a styling-attribute name survey is not the same check as reading the
+    item schema itself.
+  - **Who decided:** Bean, 2026-09-18
 
 ### Pre-emptive decisions (Hidden Decisions pass — Sonnet + Haiku cold peer review)
 

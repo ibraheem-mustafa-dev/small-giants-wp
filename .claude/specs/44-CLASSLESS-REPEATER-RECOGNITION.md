@@ -505,18 +505,38 @@ content, weakest tie-breaker only. Explicitly NOT a signal: HTML tag shape for
 "which field is the title" — proven unreliable even within one draft (Thread 1
 Finding 2a).
 
-### 5.3 Framework-gap finding — CORRECTED this session
+### 5.3 Framework-gap finding — CORRECTED again 2026-09-18 (D1103)
 
 Last session's evidence found a "top brands" content group (name + count + link,
 no image) which was flagged as having no matching block anywhere in the
-framework. Re-checked directly against the real block this session (2026-09-15):
+framework. Re-checked directly against the real block on 2026-09-15:
 `sgs/brand-strip` already has `name` and `linkUrl` per-item fields, and its
 `media` field was deliberately fixed (D1031) to accept `null` as a genuine,
 validating empty state specifically so a logo entry can have no image. There is
-no framework gap here. The only unmatched field is the "count" text (e.g. "12
-frames"), which either gets dropped with an honest skip-reason or gets a small
-new attribute added to `sgs/brand-strip` — a minor content decision, not a
-missing-block problem.
+no framework gap here.
+
+**Corrected again 2026-09-18 — `sgs/brand-strip` is the wrong TARGET block for
+this specific content group, independent of the "count" question.** The
+concrete draft instance (Eye Care Birmingham's nav "Brands" mega-menu, "Most
+asked for" tile grid — `megaTopBrands`) is a clickable logo-tile picker with a
+per-item count label, not a decorative logo strip. The framework already has a
+purpose-built precedent for exactly this shape: `theme/sgs-theme/patterns/mega-brands-1.php`
+("Mega: Brands", Spec 36 §0.5's `sgs_mega_menu` CPT starter — a finished,
+shipped system, confirmed 2026-09-18) uses **`sgs/card-grid`**, not
+`sgs/brand-strip`, for its logo-tile grid. `sgs/card-grid`'s per-item schema
+already has `title`, `subtitle`, `media`, `badge`, and `link` — so the "count"
+text has a direct home (`subtitle` or `badge`) with **no new attribute needed
+at all**, closing both the block-choice question and the count-field question
+in one finding. (The mega-menu's own `sgs/mega-panel` aside-CTA wrapper is not
+needed for this content group — Bean's call, 2026-09-18 — `sgs/card-grid` alone
+is the target.)
+
+For any future recognition/conversion work that encounters this shape (a
+clickable, per-item-labelled logo tile grid, as distinct from a decorative
+auto-scrolling logo strip): route to `sgs/card-grid`, not `sgs/brand-strip`.
+This is a content-shape distinction, not a universal rule change — a genuine
+decorative/scrolling brand strip (no count, no per-item link target, no
+click-through) still correctly targets `sgs/brand-strip`.
 
 ### 5.4 Why Stage A had to come first
 

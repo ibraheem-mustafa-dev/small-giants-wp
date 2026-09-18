@@ -1,5 +1,45 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1103 [ROUTINE] — Spec 44 register items 4 and 6 resolved: `items`/`thumbs` alias fix
+shipped, brand-tile target block corrected from `sgs/brand-strip` to `sgs/card-grid`
+
+**2026-09-18.**
+
+**Item 4 (alias bug) — fixed, not just investigated.** Confirmed via direct DB query that
+`items`/`thumbs` → wrong `sgs/info-box` was genuinely two separate bugs. Fixed both directly in
+`sgs-framework.db`'s `slots` table (row 16, `slot_name='items'`): removed the stray `"thumbs"`
+alias entry (a bad data typo — only that one row referenced it, verified before touching it),
+and nulled the row's over-broad `standalone_block='sgs/info-box'` self-mapping default for
+`"items"` itself (a design-level over-generalisation, not a data typo — a Phase F fixture
+already documents this exact resolution as "the recognition defect this rework exists to fix").
+Verified no other consumer of `slots.aliases` affected (only two readers, both flat alias-map
+lookups). Full converter + `sc_var_classifier` suite: 862 passed, 0 failed, after both fixes.
+Picking a *correct* target for "items" (per D1077's WooCommerce-filter hypothesis) is still
+future work — this fix only removes the wrong default, doesn't invent a new one.
+
+**Item 6 (brand-strip "count" field) — the whole premise was wrong, found via live
+`/brainstorming` with Bean.** Earlier sessions (this one included, in an earlier turn) treated
+this as "does `sgs/brand-strip` need a new `count`-shaped attribute." Two things corrected that:
+(a) `sgs/brand-strip` is the wrong TARGET block for the actual draft content group — it's a
+clickable, per-item-count logo-tile picker (Eye Care Birmingham's nav "Brands" mega-menu, "Most
+asked for" grid), not a decorative auto-scrolling logo strip. The framework already has a
+shipped precedent for this exact shape: `theme/sgs-theme/patterns/mega-brands-1.php` ("Mega:
+Brands", Spec 36's finished `sgs_mega_menu` CPT system) routes it to `sgs/card-grid`. (b)
+`sgs/card-grid`'s existing per-item schema already has `title`/`subtitle`/`media`/`badge`/`link`
+— Bean caught that I'd wrongly concluded no count-shaped field existed by checking
+`block_attributes`' styling-column names instead of the actual `items` JSON schema. No new
+attribute is needed at all; `subtitle` or `badge` already covers "count" text. Spec 44 §5.3 and
+the Spec 44 completion phase plan (Step 5 + its KJC) both corrected in place. A genuine
+decorative/scrolling brand strip with no per-item link or count still correctly targets
+`sgs/brand-strip` — this is a content-shape distinction, not a universal rule change.
+
+Also this session: replaced the Eye Care Birmingham draft's "Most asked for" tile grid's styled
+wordmark text with real logo images (base64-embedded, sourced from the existing
+`sites/eye-care-ward-end/reference/brand-logos/` folder, 36 of 12... i.e. logos available for
+36 of the 40 brands in `C.BRANDS`, the other 4 confirmed genuinely unavailable anywhere on the
+source site) — placeholder-text-typed-as-a-logo was flagged as a real cloning risk (it would
+clone as a text element, not an image element) before this register work continues.
+
 ## D1102 [ROUTINE] — `/qc-council` on the Spec 44 completion phase plan: 2 real fix-shape
 corrections found and applied before any execution happened
 
