@@ -572,6 +572,8 @@ def collect_css_decls_for_element(
     node: Tag,
     css_rules: dict,
     residual_sink: list[ResidualBand] | None = None,
+    *,
+    include_inline: bool = True,
 ) -> tuple[dict[str, str], dict[str, dict[str, str]]]:
     """Collect CSS declarations targeting this element, resolved to device tiers.
 
@@ -604,6 +606,15 @@ def collect_css_decls_for_element(
 
     Ported from convert.py:585 (selector-matching behaviour-identical); the
     breakpoint routing is REPLACED by the FR-31-5.2 device-tier cascade.
+
+    ``include_inline`` (default True): whether the node's own ``style=``
+    attribute is folded into ``base_decls``. State/pseudo probes (D309) run
+    this matcher against a STRIPPED rules dict to isolate `:hover`/`::before`
+    values from the resting base — but the inline attribute belongs to the
+    node's real resting state regardless of which rules dict is probed, so an
+    unconditional merge manufactured a phantom state-tagged decl on every
+    probe call whenever the node carried an inline style. Callers probing a
+    state/pseudo-only rules dict MUST pass ``include_inline=False``.
     """
     desc_classes: list[str] = node.get("class", []) or []
     desc_tag: str = node.name or ""
@@ -756,9 +767,10 @@ def collect_css_decls_for_element(
     matched_base.sort(key=lambda x: (x[0], x[1]))
     for _spec_key, _ord, d in matched_base:
         base_decls.update(d)
-    inline = node.get("style", "") or ""
-    if inline:
-        base_decls.update(_parse_decls(inline))
+    if include_inline:
+        inline = node.get("style", "") or ""
+        if inline:
+            base_decls.update(_parse_decls(inline))
 
     def _specificity_key(media_cond: str) -> tuple[int, int]:
         mn = re.search(r"min-width\s*:\s*(\d+)", media_cond)
@@ -939,7 +951,7 @@ def collect_state_decls_for_element(
             stripped[ns] = {**stripped.get(ns, {}), **decls}
         if not stripped:
             continue
-        base, _bp = collect_css_decls_for_element(node, stripped)
+        base, _bp = collect_css_decls_for_element(node, stripped, include_inline=False)
         if base:
             out[suffix] = base
     return out

@@ -151,7 +151,7 @@ def collect_pseudo_decls_for_element(
             stripped[ns] = {**stripped.get(ns, {}), **decls}
         if not stripped:
             continue
-        base, _bp = collect_css_decls_for_element(node, stripped)
+        base, _bp = collect_css_decls_for_element(node, stripped, include_inline=False)
         if base:
             out[pseudo] = base
     return out

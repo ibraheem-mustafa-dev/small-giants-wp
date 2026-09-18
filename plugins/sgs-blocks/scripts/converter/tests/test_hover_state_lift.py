@@ -71,3 +71,38 @@ def test_state_strip_selector_shapes():
     assert _strip_state_from_selector(".a:hover, .b", "hover") == ".a"
     assert _strip_state_from_selector(".x::before", "hover") is None
     assert _strip_state_from_selector(".plain", "hover") is None
+
+
+_INLINE_STYLE_HTML = (
+    '<div class="sgs-announcement-bar--send-to-ward">'
+    '<a href="/send-to-ward/" style="color:red">Find out more</a></div>'
+)
+_INLINE_STYLE_RULES = {
+    ".sgs-announcement-bar--send-to-ward a:hover": {"text-decoration": "underline"},
+}
+
+
+def test_own_inline_style_does_not_leak_into_state_probe():
+    """D1106 fix: an element's own inline `style=` attribute belongs to its
+    RESTING state, not to whichever pseudo/state the collector happens to be
+    probing. Before the fix, `collect_css_decls_for_element`'s unconditional
+    inline merge ran even when called against a state-stripped rules dict, so
+    a node with both an inline style AND a `:hover` rule got `color:red`
+    manufactured into its Hover bucket too — a phantom state-tagged decl that
+    never came from any `:hover` rule."""
+    a = BeautifulSoup(_INLINE_STYLE_HTML, "html.parser").find("a")
+    state = collect_state_decls_for_element(a, _INLINE_STYLE_RULES)
+    assert "color" not in state.get("Hover", {}), (
+        "inline style leaked into the Hover bucket: " + repr(state)
+    )
+    assert state.get("Hover", {}).get("text-decoration") == "underline"
+
+
+def test_own_inline_style_still_reaches_the_resting_base():
+    """Negative control for the fix above: `include_inline` defaults to True
+    for the ordinary (non-probe) call path, so the inline style must still
+    land in the real resting base — the fix scopes the exclusion to state/
+    pseudo probes only, it doesn't drop inline styles altogether."""
+    a = BeautifulSoup(_INLINE_STYLE_HTML, "html.parser").find("a")
+    base, _bp = collect_css_decls_for_element(a, _INLINE_STYLE_RULES)
+    assert base.get("color") == "red"
