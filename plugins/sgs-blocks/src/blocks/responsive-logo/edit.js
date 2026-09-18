@@ -15,6 +15,7 @@ import {
 import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 import { Button } from '@wordpress/components';
 import { ResponsiveBoxControl, ResponsiveOverride, SgsLengthControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, SgsColourPanel, SsrPreviewGuard } from '../../components';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 // Units offered on the max-width/max-height UnitControls (mirrors the shared
 // TypographyControls unit-set pattern — px is the common case for a logo cap;
@@ -554,21 +555,21 @@ export default function Edit( { attributes, setAttributes } ) {
 				   sgs/site-footer). Distinct from the background-colour tile
 				   above, which paints the wrapper, not the image itself. ── */ }
 				<PanelBody title={ __( 'Colour treatment', 'sgs-blocks' ) } initialOpen={ false }>
-					<SelectControl
+					<ToggleGroupControl
 						label={ __( 'Logo image colour', 'sgs-blocks' ) }
 						help={ __(
 							'Force the logo image to pure white -- useful when the logo sits on a dark background.',
 							'sgs-blocks'
 						) }
-						value={ attributes.colourTreatment }
-						options={ [
-							{ label: __( 'As uploaded', 'sgs-blocks' ), value: '' },
-							{ label: __( 'Force white', 'sgs-blocks' ), value: 'white' },
-						] }
+						value={ attributes.colourTreatment || '' }
 						onChange={ ( val ) => setAttributes( { colourTreatment: val || '' } ) }
-						__nextHasNoMarginBottom
+						isBlock
 						__next40pxDefaultSize
-					/>
+						__nextHasNoMarginBottom
+					>
+						<ToggleGroupControlOption value="" label={ __( 'As uploaded', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="white" label={ __( 'Force white', 'sgs-blocks' ) } />
+					</ToggleGroupControl>
 				</PanelBody>
 
 				{ /* ── Panel 5: Border ── */ }

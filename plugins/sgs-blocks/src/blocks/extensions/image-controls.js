@@ -34,6 +34,7 @@ import {
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { ResponsiveControl, FocalPositionField } from '../../components';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 /**
  * Return true if the given block supports image controls.
@@ -242,20 +243,28 @@ const withImageControls = createHigherOrderComponent( ( BlockEdit ) => {
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
-						<SelectControl
+						<ToggleGroupControl
 							label={ __( 'Colour treatment', 'sgs-blocks' ) }
 							help={ __(
 								'Force a colour override on the image — e.g. a full-colour logo dropped onto a dark footer.',
 								'sgs-blocks'
 							) }
-							value={ sgsColourTreatment }
-							options={ COLOUR_TREATMENT_OPTIONS }
+							value={ sgsColourTreatment || '' }
 							onChange={ ( val ) =>
 								setAttributes( { sgsColourTreatment: val || '' } )
 							}
-							__nextHasNoMarginBottom
+							isBlock
 							__next40pxDefaultSize
-						/>
+							__nextHasNoMarginBottom
+						>
+							{ COLOUR_TREATMENT_OPTIONS.map( ( option ) => (
+								<ToggleGroupControlOption
+									key={ option.value }
+									value={ option.value }
+									label={ option.label }
+								/>
+							) ) }
+						</ToggleGroupControl>
 						<SelectControl
 							label={ __( 'Height unit', 'sgs-blocks' ) }
 							help={ __(
