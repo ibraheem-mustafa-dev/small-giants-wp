@@ -15,6 +15,9 @@
  * - sgsHeightTablet   (integer, 0 = inherit from desktop)
  * - sgsHeightMobile   (integer, 0 = inherit from desktop)
  * - sgsHeightUnit     (string — px / vh / em / %)
+ * - sgsColourTreatment (string — '' / 'white'. 'white' forces the image to pure
+ *                        white via a CSS filter, e.g. a full-colour logo on a
+ *                        dark footer — '' = no override.)
  *
  * Class and CSS variable injection mirrors the hover-effects.php pattern:
  * append to existing class="..." if present, otherwise add a new class
@@ -99,6 +102,12 @@ function inject_image_controls( string $block_content, array $block ): string {
 		? $height_unit_raw
 		: 'px';
 
+	$allowed_colour_treatments = array( 'white' );
+	$colour_treatment_raw      = $attrs['sgsColourTreatment'] ?? '';
+	$colour_treatment          = in_array( $colour_treatment_raw, $allowed_colour_treatments, true )
+		? $colour_treatment_raw
+		: '';
+
 	// Bail early — nothing to do.
 	if (
 		'' === $object_position &&
@@ -106,7 +115,8 @@ function inject_image_controls( string $block_content, array $block ): string {
 		'' === $max_width &&
 		0 === $height_desktop &&
 		0 === $height_tablet &&
-		0 === $height_mobile
+		0 === $height_mobile &&
+		'' === $colour_treatment
 	) {
 		return $block_content;
 	}
@@ -146,6 +156,10 @@ function inject_image_controls( string $block_content, array $block ): string {
 
 	if ( $height_mobile > 0 ) {
 		$css_vars[] = '--sgs-height-mobile:' . $height_mobile . $height_unit;
+	}
+
+	if ( 'white' === $colour_treatment ) {
+		$css_vars[] = '--sgs-image-filter:brightness(0) invert(1)';
 	}
 
 	// --- Locate the block's actual ROOT element. ---

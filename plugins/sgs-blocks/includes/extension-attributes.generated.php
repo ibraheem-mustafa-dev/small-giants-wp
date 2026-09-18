@@ -106,6 +106,7 @@ return array(
 	'sgsClickEffect' => array( 'type' => 'string' ),
 	'sgsClickRippleColour' => array( 'type' => 'string' ),
 	'sgsClickRippleDuration' => array( 'type' => 'number' ),
+	'sgsColourTreatment' => array( 'type' => 'string' ),
 	'sgsConditionDateEnd' => array( 'type' => 'string' ),
 	'sgsConditionDateStart' => array( 'type' => 'string' ),
 	'sgsConditionDays' => array( 'type' => 'array' ),

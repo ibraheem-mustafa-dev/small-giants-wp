@@ -262,6 +262,15 @@ if ( '' !== $bg_hover_decl ) {
 	$scoped_css[] = sgs_hover_state_rules( $sel, $bg_hover_decl, ':focus-within' );
 }
 
+// --- Colour treatment — forces the IMAGE (not the wrapper background above)
+// to pure white, for a full-colour logo dropped onto a dark surface (e.g.
+// inside sgs/site-footer). Targets every <img> the block can render (desktop/
+// tablet/mobile picture sources all share this class name). ---
+$colour_treatment = isset( $attributes['colourTreatment'] ) && 'white' === $attributes['colourTreatment'] ? 'white' : '';
+if ( 'white' === $colour_treatment ) {
+	$scoped_css[] = "{$sel} img{filter:brightness(0) invert(1);}";
+}
+
 $border_radius_tiers      = sgs_border_radius_tiers( $attributes );
 $border_radius_base       = $border_radius_tiers['base'];
 $border_radius_tablet_obj = $border_radius_tiers['tablet'];

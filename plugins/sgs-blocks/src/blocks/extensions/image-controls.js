@@ -67,6 +67,11 @@ const OBJECT_FIT_OPTIONS = [
 	{ label: __( 'Scale down', 'sgs-blocks' ), value: 'scale-down' },
 ];
 
+const COLOUR_TREATMENT_OPTIONS = [
+	{ label: __( 'Inherit (no override)', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Force white', 'sgs-blocks' ), value: 'white' },
+];
+
 /**
  * Inject image-control attributes into opted-in blocks.
  */
@@ -100,6 +105,10 @@ addFilter(
 				sgsHeightMobile: { type: 'number', default: 0 },
 				// Unit applied to all three height values.
 				sgsHeightUnit: { type: 'string', default: 'px' },
+				// Colour treatment override — '' = no override, 'white' forces
+				// the image to pure white (e.g. a full-colour logo on a dark
+				// footer) via a CSS filter, never an inline style (Spec 32).
+				sgsColourTreatment: { type: 'string', default: '' },
 			},
 		};
 	}
@@ -116,8 +125,13 @@ const withImageControls = createHigherOrderComponent( ( BlockEdit ) => {
 			return <BlockEdit { ...props } />;
 		}
 
-		const { sgsObjectPosition, sgsObjectFit, sgsMaxWidth, sgsHeightUnit } =
-			attributes;
+		const {
+			sgsObjectPosition,
+			sgsObjectFit,
+			sgsMaxWidth,
+			sgsHeightUnit,
+			sgsColourTreatment,
+		} = attributes;
 
 		// Heuristic image-url lookup for the FocalPointPicker preview. The
 		// extension has no per-block schema knowledge of which attribute holds
@@ -225,6 +239,20 @@ const withImageControls = createHigherOrderComponent( ( BlockEdit ) => {
 								setAttributes( { sgsMaxWidth: val || '' } )
 							}
 							placeholder="100%"
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+						<SelectControl
+							label={ __( 'Colour treatment', 'sgs-blocks' ) }
+							help={ __(
+								'Force a colour override on the image — e.g. a full-colour logo dropped onto a dark footer.',
+								'sgs-blocks'
+							) }
+							value={ sgsColourTreatment }
+							options={ COLOUR_TREATMENT_OPTIONS }
+							onChange={ ( val ) =>
+								setAttributes( { sgsColourTreatment: val || '' } )
+							}
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>

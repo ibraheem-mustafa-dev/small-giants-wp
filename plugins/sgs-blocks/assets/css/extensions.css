@@ -554,6 +554,11 @@
  *   - Direct <img> child (decorative-image, info-box media slot)
  *   - .wp-block-image > img (core image block inside an SGS block)
  *   - figure > img (team-member, testimonial avatar)
+ *   - .sgs-responsive-logo__picture > img (sgs/responsive-logo's <a><picture><img>
+ *     shape — added alongside sgsColourTreatment, the first image-control
+ *     attribute a logo instance actually needs; existing selectors above never
+ *     matched this block's markup, so its own colour-treatment escaped every
+ *     prior image-control rule silently until this addition)
  */
 
 /*
@@ -573,12 +578,14 @@
 .sgs-has-image-controls > img,
 .sgs-has-image-controls .wp-block-image > img,
 .sgs-has-image-controls figure > img,
+.sgs-has-image-controls .sgs-responsive-logo__picture > img,
 .sgs-has-image-controls > video,
 .sgs-has-image-controls .wp-block-image > video,
 .sgs-has-image-controls figure > video {
 	object-position: var(--sgs-object-position, center center);
 	object-fit: var(--sgs-object-fit, cover);
 	max-width: var(--sgs-max-width, 100%);
+	filter: var(--sgs-image-filter, none);
 }
 
 /* Desktop height (also the base for tablet/mobile fallbacks). */

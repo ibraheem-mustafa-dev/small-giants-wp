@@ -245,6 +245,12 @@
 			"type": "string",
 			"default": ""
 		},
+		"colourTreatment": {
+			"type": "string",
+			"enum": [ "", "white" ],
+			"default": "",
+			"description": "Forces the logo IMAGE (not its background tile) to pure white via a CSS filter -- for a full-colour logo dropped onto a dark surface (e.g. sgs/site-footer). '' = no override, the image renders as uploaded."
+		},
 		"borderStyle": {
 			"type": "string",
 			"enum": [

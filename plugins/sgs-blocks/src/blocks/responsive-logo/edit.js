@@ -549,6 +549,28 @@ export default function Edit( { attributes, setAttributes } ) {
 					] }
 				/>
 
+				{ /* ── Colour treatment: forces the logo IMAGE white -- for a
+				   full-colour logo dropped onto a dark surface (e.g. inside
+				   sgs/site-footer). Distinct from the background-colour tile
+				   above, which paints the wrapper, not the image itself. ── */ }
+				<PanelBody title={ __( 'Colour treatment', 'sgs-blocks' ) } initialOpen={ false }>
+					<SelectControl
+						label={ __( 'Logo image colour', 'sgs-blocks' ) }
+						help={ __(
+							'Force the logo image to pure white -- useful when the logo sits on a dark background.',
+							'sgs-blocks'
+						) }
+						value={ attributes.colourTreatment }
+						options={ [
+							{ label: __( 'As uploaded', 'sgs-blocks' ), value: '' },
+							{ label: __( 'Force white', 'sgs-blocks' ), value: 'white' },
+						] }
+						onChange={ ( val ) => setAttributes( { colourTreatment: val || '' } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</PanelBody>
+
 				{ /* ── Panel 5: Border ── */ }
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
 					<SgsBorderControl
