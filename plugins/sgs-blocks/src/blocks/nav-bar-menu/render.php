@@ -347,8 +347,28 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 			$raw_url = (string) ( $attrs['url'] ?? '' );
 			$has_url = '' !== $raw_url;
 			$url     = $has_url ? $raw_url : '#';
-			$own_key = isset( $attrs['id'] ) && '' !== $attrs['id']
-				? 'id:' . sanitize_key( (string) $attrs['id'] )
+
+			/*
+			 * A CUSTOM classic-menu link (no linked post/term) resolves through
+			 * SGS_Nav_Menu_Source::classic_items_to_blocks() with `'id' => (int)
+			 * $item->object_id`, which is 0 for a custom URL. The old check here
+			 * — `isset( $attrs['id'] ) && '' !== $attrs['id']` — is TRUE for int
+			 * 0 (0 !== '' in PHP's loose comparison), so every custom-link item
+			 * collapsed onto the SAME identifier 'id:0' instead of falling back
+			 * to 'label:<text>'. That silently broke two things: (1) any
+			 * `featuredItemIds` entry saved as 'label:<text>' for a custom link
+			 * never matched here, so the pill/background never rendered; (2) two
+			 * custom links in the same menu would have shared one identifier,
+			 * so featuring one would have featured both.
+			 *
+			 * flattenMenuItems() (nav-menu-panels/utils.js) already gets this
+			 * right — `id ? \`id:${id}\` : \`label:${label}\`` treats JS's `0`
+			 * as falsy — so this PHP check is brought into line with it: an id
+			 * of 0 (or absent) now falls to the label key on both sides.
+			 */
+			$id_val  = $attrs['id'] ?? '';
+			$own_key = ( '' !== (string) $id_val && 0 !== (int) $id_val )
+				? 'id:' . sanitize_key( (string) $id_val )
 				: 'label:' . $label;
 
 			/*

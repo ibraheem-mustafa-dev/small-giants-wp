@@ -3317,8 +3317,65 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					);
 				}
 				if ( isset( $attributes['gridTemplateColumns'] ) && is_array( $attributes['gridTemplateColumns'] ) ) {
+					/*
+					 * Per-tier count fallback, resolved BEFORE this reaches
+					 * sgs_emit_responsive_css() (D-follow-up, 2026-09-18 —
+					 * Mama's Munches footer fix).
+					 *
+					 * sgs_emit_responsive_css()'s cascade null-coalesces a
+					 * MISSING tier UP from the tier below it (mobile -> tablet
+					 * -> desktop) — correct for every other object property,
+					 * where "not set" genuinely means "inherit the wider
+					 * value". gridTemplateColumns is different: this block
+					 * ALSO owns `columns` (desktop/tablet/mobile track COUNT,
+					 * always populated — block.json default 2/2/1), which is
+					 * the block's real "how many columns at this tier"
+					 * answer whenever no literal track list was authored for
+					 * that tier. Before this fix, setting gridTemplateColumns
+					 * for desktop+tablet only (exactly what an operator wanting
+					 * "N columns down to tablet, THEN collapse per `columns`"
+					 * would author — see sites/mamas-munches footer, post
+					 * 3649) meant $object_grid gated OFF the pre-existing
+					 * tier-count fallback (~:2894) entirely, so mobile
+					 * inherited the tablet template verbatim via the generic
+					 * cascade — a 3-column footer stayed 3 columns at 320px
+					 * and clipped its own content (contact email, "Information"
+					 * heading). `columns.mobile` was declared, defaulted, and
+					 * completely inert.
+					 *
+					 * Resolving every tier to an EXPLICIT value here — the
+					 * object's own literal template where authored, else the
+					 * SAME count-based track ~:2905-2913 already computes for
+					 * the (now-dead-for-object-grids) legacy path — means
+					 * sgs_emit_responsive_css() has nothing left to inherit:
+					 * every tier is explicit, so its own tier-diff logic
+					 * (only emit a tier rule when it differs from the one
+					 * above) does the rest, matching the legacy scalar path's
+					 * behaviour exactly. A block that already sets an explicit
+					 * track for every tier it cares about is BYTE-IDENTICAL
+					 * (nothing here overrides an authored value; only an
+					 * absent tier gets a resolved one).
+					 */
+					$sgs_gtc_obj      = sgs_responsive_normalise_object( $attributes['gridTemplateColumns'] );
+					$sgs_gtc_resolved = array();
+					foreach (
+						array(
+							'desktop' => $columns,
+							'tablet'  => $columns_tablet,
+							'mobile'  => $columns_mobile,
+						) as $sgs_gtc_tier => $sgs_gtc_count
+					) {
+						$sgs_gtc_explicit = $sgs_gtc_obj[ $sgs_gtc_tier ] ?? null;
+						if ( is_string( $sgs_gtc_explicit ) && '' !== trim( $sgs_gtc_explicit ) ) {
+							$sgs_gtc_resolved[ $sgs_gtc_tier ] = $sgs_gtc_explicit;
+						} elseif ( 'grid' === $layout && $sgs_gtc_count ) {
+							$sgs_gtc_resolved[ $sgs_gtc_tier ] = $intrinsic_columns
+								? sgs_intrinsic_columns_track( absint( $sgs_gtc_count ), sgs_container_tier_gap( $attributes, $sgs_gtc_tier ), sgs_container_tier_min_column_width( $attributes, $sgs_gtc_tier ) )
+								: 'repeat(' . absint( $sgs_gtc_count ) . ',1fr)';
+						}
+					}
 					$obj_inner_props[] = array(
-						'value' => $attributes['gridTemplateColumns'],
+						'value' => $sgs_gtc_resolved,
 						'css'   => 'grid-template-columns',
 					);
 				}
