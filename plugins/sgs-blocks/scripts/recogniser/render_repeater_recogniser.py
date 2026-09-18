@@ -58,6 +58,16 @@ UNKNOWN = "unknown"
 EXACT = "exact"
 PARTIAL = "partial"
 NONE = "none"
+SUSPECT_IDENTICAL = "suspect_identical"
+"""Spec 44 completion register item 2 (§11's "per-member consistency" open hole). A
+structural EXACT match downgraded because a value-diff pass (`_value_diff_check`)
+found every member of the group bound to the byte-identical VALUE for a matched role,
+despite the members being provably distinct source elements — the D1074-round-2
+failure class: a systematic upstream-extraction mistake that repeats identically
+across every member is invisible to a role-SHAPE-only comparison. Distinct from
+PARTIAL (a genuine structural shape mismatch) and from EXACT (a structural match this
+module trusts enough to auto-complete) — never reused as either, so the specific
+failure mode stays distinguishable in logs/tests/the review queue (task instruction)."""
 
 _QUALITY_RANK = {EXACT: 0, PARTIAL: 1, NONE: 2}
 
@@ -96,6 +106,29 @@ class ParentContext:
 
 
 @dataclass(frozen=True)
+class DraftMember:
+    """One real sibling of a repeated draft group — Spec 44 completion register item 2
+    (the D1074-round-2 failure class: §11 "Per-group vs per-member consistency
+    checking" — "a systematic error that affects every member of a group identically
+    would still pass an 'exact structural match' today").
+
+    `member_id` must identify the member's own SOURCE DOM node — genuinely distinct
+    per real sibling (e.g. a draft adapter's own node identity/path, never a bare
+    loop index, which two members could share by construction). The "provably
+    distinct source elements" check in `_value_diff_check()` below is only as good
+    as this being real identity, not a repeated placeholder.
+
+    `values` is `(role, value)` pairs — the raw text/attribute VALUE this member
+    binds to each STRUCTURAL role position (same vocabulary as `DraftGroup.roles`),
+    in document order. A role this member doesn't carry is simply absent, not a
+    `None` entry.
+    """
+
+    member_id: str
+    values: tuple[tuple[str, str], ...] = ()
+
+
+@dataclass(frozen=True)
 class DraftGroup:
     """A repeated, classless draft group, reduced to what Stage A compares.
 
@@ -107,12 +140,22 @@ class DraftGroup:
     non-repeated content, in the same role vocabulary — compared against
     `block_render_singletons` as informational corroboration only (see
     `classless_trust_gate.py`'s docstring: it never contributes to FR-44-1(a)).
+
+    `members` (Spec 44 completion register item 2, additive) is every real sibling
+    in the group with its own per-role bound VALUE — see `DraftMember`. Empty by
+    the SAME discipline as `ParentContext.required_capabilities`: nothing derives
+    this from draft markup via `classless_draft_adapter.build_stage_a_group` yet
+    (that adapter builds `roles` from ONE representative item only, per its own
+    docstring), so an empty tuple runs no value-diff check and narrows nothing —
+    a caller supplying no member data gets byte-identical behaviour to before this
+    field existed. Named rather than faked; see `_value_diff_check()`.
     """
 
     roles: tuple[str, ...]
     static_roles: tuple[str, ...] = ()
     parent: ParentContext = field(default_factory=ParentContext)
     label: str = ""
+    members: tuple[DraftMember, ...] = ()
 
 
 # ---------------------------------------------------------------- outputs
@@ -173,6 +216,14 @@ class RenderMatchResult:
     FR-44-1's trust gate (a partial match, or more than one surviving candidate, never
     auto-completes; plus the per-client first-look check `client_slug` exists for) is a
     LATER task's job. This result reports quality honestly and leaves that decision to it.
+
+    `match_quality` can be `SUSPECT_IDENTICAL` (completion register item 2, §11): the
+    structural leaf match is genuinely EXACT (see `leaf.quality`, unchanged), but a
+    post-match value-diff (`_value_diff_check`) found every member's bound value for a
+    matched role byte-identical despite provably distinct source elements — a likely
+    upstream extraction mistake, excluded from auto-completion the same as PARTIAL, but
+    reported under its own label so the failure mode stays distinguishable in logs/the
+    review queue rather than being folded into an existing one.
     """
 
     matched: bool
@@ -441,6 +492,52 @@ def match_leaf(
     return best
 
 
+# ------------------------------------------------ per-member value diff (register item 2)
+
+def _value_diff_check(draft_group: DraftGroup) -> tuple[str, ...]:
+    """Runs ONLY after Stage A's structural match already returns EXACT (§4.4 calls
+    this after `best.quality == EXACT` — never before, and never for PARTIAL/NONE,
+    which are already correctly excluded from auto-completion for a different reason).
+
+    For each role the structural match actually used (`draft_group.roles`), collect
+    every member's bound VALUE for that role. A role is SUSPECT when: (a) at least
+    two members carry a value for it, (b) the members are PROVABLY DISTINCT source
+    elements (their `member_id`s are all different — a real draft adapter derives
+    these from source-node identity, never a bare repeated placeholder), and (c)
+    every one of those values is byte-identical. That combination is exactly the
+    D1074-round-2 failure class (§11): "identical across every member" is
+    structurally indistinguishable from "correct" when only role LABELS are
+    compared — this is the one place VALUES are compared instead.
+
+    Returns the tuple of offending roles (empty = no suspicion). `len(members) < 2`
+    is a no-op, not a false positive — a single-member "group" (or a group whose
+    caller never populated `members`, e.g. every pre-existing caller of this module,
+    per `DraftGroup.members`'s own docstring) has nothing to diff against, and
+    reporting suspicion off ONE data point would be exactly the kind of guess this
+    module's own docstring (`RecogniserDataError`, `NONE` vs `PARTIAL`) refuses to
+    make elsewhere.
+    """
+    if len(draft_group.members) < 2:
+        return ()
+
+    offending: list[str] = []
+    for role in dict.fromkeys(draft_group.roles):  # de-duplicated, document order
+        values: list[str] = []
+        member_ids: list[str] = []
+        for member in draft_group.members:
+            for member_role, value in member.values:
+                if member_role == role:
+                    values.append(value)
+                    member_ids.append(member.member_id)
+                    break  # one value per role per member — same de-dup rule as §3.1
+        if len(values) < 2:
+            continue  # not enough data points on this role to diff at all
+        distinct_sources = len(set(member_ids)) == len(member_ids)
+        if distinct_sources and len(set(values)) == 1:
+            offending.append(role)
+    return tuple(offending)
+
+
 # ---------------------------------------------------------------- §4.4 entry point
 
 def recognise_render_time_repeater(
@@ -529,6 +626,26 @@ def recognise_render_time_repeater(
             notes.append("PARTIAL: unmatched markers on both sides are recorded — does not "
                          "satisfy FR-44-1(a)")
 
+        # Spec 44 completion register item 2 (§11). Runs ONLY on a structural EXACT —
+        # a PARTIAL/NONE match already fails FR-44-1(a) for its own, already-reported
+        # reason, so there is nothing this check could add for those. Never silently
+        # keeps EXACT: a suspect group is reported as SUSPECT_IDENTICAL, a distinct
+        # label from both EXACT and PARTIAL (task instruction — the failure mode must
+        # stay distinguishable in logs/tests, not folded into an existing label).
+        match_quality = best.quality
+        suspect_roles: tuple[str, ...] = ()
+        if best.quality == EXACT:
+            suspect_roles = _value_diff_check(draft_group)
+            if suspect_roles:
+                match_quality = SUSPECT_IDENTICAL
+                notes.append(
+                    "SUSPECT_IDENTICAL: structural match is EXACT, but every member's "
+                    f"bound value for {', '.join(suspect_roles)} is byte-identical despite "
+                    "provably distinct source elements — a likely upstream extraction "
+                    "mistake (D1074 round-2 failure class, §11); excluded from "
+                    "auto-completion, not silently kept as EXACT"
+                )
+
         static_leaf = None
         if draft_group.static_roles:
             # Front C Task 4 — computed for the WINNING candidate only, and only ever
@@ -540,7 +657,7 @@ def recognise_render_time_repeater(
         return RenderMatchResult(
             matched=True,
             block_slug=best.block_slug,
-            match_quality=best.quality,
+            match_quality=match_quality,
             client_slug=client_slug,
             narrowing=narrowing,
             leaf=best,

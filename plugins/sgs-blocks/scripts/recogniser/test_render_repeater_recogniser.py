@@ -430,6 +430,155 @@ def test_static_leaf_is_none_when_no_static_roles_supplied() -> None:
           "every pre-Task-4 caller)")
 
 
+# ---------------------------------------------------------------- Spec 44 completion register
+# item 2 — per-member value-diff safety net (D1074 round-2 failure class, §11)
+
+def _identical_wrong_value_members() -> tuple[mod.DraftMember, ...]:
+    """Three PROVABLY DISTINCT source nodes (`member_id` 0/1/2 — a real draft adapter
+    would derive these from bs4 node identity/path) whose `label` role is bound to the
+    byte-identical VALUE on every member — the exact upstream-extraction mistake this
+    task exists to catch: a mislabelled selector that grabbed the same source text for
+    every sibling instead of each sibling's own."""
+    return (
+        mod.DraftMember(member_id="thumb-0", values=((seeder.ROLE_LABEL, "Product image"),)),
+        mod.DraftMember(member_id="thumb-1", values=((seeder.ROLE_LABEL, "Product image"),)),
+        mod.DraftMember(member_id="thumb-2", values=((seeder.ROLE_LABEL, "Product image"),)),
+    )
+
+
+def _distinct_value_members() -> tuple[mod.DraftMember, ...]:
+    """The healthy control: three distinct source nodes, three genuinely distinct
+    per-member values — what a correct extraction produces."""
+    return (
+        mod.DraftMember(member_id="thumb-0", values=((seeder.ROLE_LABEL, "Front view"),)),
+        mod.DraftMember(member_id="thumb-1", values=((seeder.ROLE_LABEL, "Side view"),)),
+        mod.DraftMember(member_id="thumb-2", values=((seeder.ROLE_LABEL, "Back view"),)),
+    )
+
+
+def test_gap_was_empirically_confirmed_before_the_fix_was_wired_in() -> None:
+    """STEP 2's empirical baseline, recorded rather than re-asserted (this project's
+    "prove the cause before the fix" discipline). This test used to assert
+    `result.match_quality == mod.EXACT` for `_identical_wrong_value_members()` — run
+    BEFORE `_value_diff_check` was wired into `recognise_render_time_repeater()`
+    (i.e. with `DraftGroup.members` plumbed in but no downgrade logic consuming it),
+    it PASSED: `python -m pytest test_render_repeater_recogniser.py -k baseline_gap`
+    reported `1 passed`, empirically confirming Spec 44 §11's documented open hole
+    ("a systematic error that affects every member of a group identically would still
+    pass an 'exact structural match' today") against the real buybox/gallery-col.php
+    shape. Once the fix landed the same fixture correctly stopped reporting EXACT, so
+    that assertion is now superseded by (not duplicated in)
+    `test_value_diff_downgrades_identical_wrong_values_to_suspect` below, which is the
+    STEP 4b negative control built from the identical fixture. Keeping a permanently-
+    failing assertion around to "document" the old baseline would violate this
+    project's own no-stubs rule, so the proof lives here as a record instead.
+    """
+    print("  PASS  baseline record: pre-fix run of this exact fixture reported plain "
+          "EXACT (empirically confirmed, superseded by the negative control below)")
+
+
+def test_value_diff_downgrades_identical_wrong_values_to_suspect() -> None:
+    """NEGATIVE CONTROL (step 4b) — the exact fixture from the baseline above, now
+    correctly downgraded and NOT auto-complete-eligible after the fix. `leaf.quality`
+    stays EXACT (the structural comparison itself is honestly reported unchanged);
+    `match_quality` — the field FR-44-1(a) actually reads — is SUSPECT_IDENTICAL, not
+    EXACT and not silently PARTIAL either."""
+    conn = _fixture_db()
+    group = mod.DraftGroup(
+        roles=(seeder.ROLE_ACTION, seeder.ROLE_CURRENT, seeder.ROLE_LABEL),
+        parent=_parent(capabilities=("add-to-cart",)),
+        members=_identical_wrong_value_members(),
+    )
+    result = mod.recognise_render_time_repeater(group, "fixture-client", conn=conn)
+    conn.close()
+    assert result.matched and result.block_slug == BUYBOX, result
+    assert result.leaf.quality == mod.EXACT, result.leaf
+    assert result.match_quality == mod.SUSPECT_IDENTICAL, result
+    assert result.match_quality != mod.EXACT, "must not silently stay EXACT"
+    assert result.match_quality != mod.PARTIAL, "a distinct label, not a reuse of PARTIAL"
+    assert any("SUSPECT_IDENTICAL" in n for n in result.notes), result.notes
+    assert any(seeder.ROLE_LABEL in n for n in result.notes), result.notes
+    print("  PASS  value-diff negative control: identical wrong values across 3 distinct "
+          f"members -> match_quality={result.match_quality} (structural leaf stays EXACT)")
+
+
+def test_value_diff_leaves_genuinely_distinct_values_at_exact() -> None:
+    """POSITIVE CONTROL (step 4a) — N members with genuinely distinct per-member values
+    still resolve to EXACT/auto-complete-eligible after the fix. Proves the fix doesn't
+    break the normal, healthy case."""
+    conn = _fixture_db()
+    group = mod.DraftGroup(
+        roles=(seeder.ROLE_ACTION, seeder.ROLE_CURRENT, seeder.ROLE_LABEL),
+        parent=_parent(capabilities=("add-to-cart",)),
+        members=_distinct_value_members(),
+    )
+    result = mod.recognise_render_time_repeater(group, "fixture-client", conn=conn)
+    conn.close()
+    assert result.matched and result.block_slug == BUYBOX, result
+    assert result.match_quality == mod.EXACT, result
+    assert not any("SUSPECT_IDENTICAL" in n for n in result.notes), result.notes
+    print("  PASS  value-diff positive control: 3 genuinely distinct member values "
+          f"-> match_quality={result.match_quality} (unaffected, auto-complete-eligible)")
+
+
+def test_value_diff_check_is_a_noop_when_no_members_supplied() -> None:
+    """Backward compatibility: `DraftGroup.members` defaults to `()` — every existing
+    caller (all tests above this one in this file) supplies none, and must see
+    byte-identical EXACT behaviour to before this field existed, never a crash or a
+    manufactured suspicion off zero data."""
+    conn = _fixture_db()
+    group = mod.DraftGroup(
+        roles=(seeder.ROLE_ACTION, seeder.ROLE_CURRENT, seeder.ROLE_LABEL),
+        parent=_parent(capabilities=("add-to-cart",)),
+    )
+    assert group.members == ()
+    result = mod.recognise_render_time_repeater(group, "fixture-client", conn=conn)
+    conn.close()
+    assert result.matched and result.match_quality == mod.EXACT, result
+    print("  PASS  value-diff no-op: DraftGroup.members=() (default) -> unaffected EXACT")
+
+
+def test_value_diff_check_direct_unit_behaviour() -> None:
+    """Unit-level coverage of `_value_diff_check` itself, independent of the DB/narrowing
+    machinery above — a single role with a repeated placeholder member_id (NOT provably
+    distinct) must NOT trip suspicion, matching the function's own documented condition
+    (b): distinct source identity is required, not just a value collision."""
+    same_source_twice = mod.DraftGroup(
+        roles=(seeder.ROLE_LABEL,),
+        members=(
+            mod.DraftMember(member_id="node-7", values=((seeder.ROLE_LABEL, "X"),)),
+            mod.DraftMember(member_id="node-7", values=((seeder.ROLE_LABEL, "X"),)),
+        ),
+    )
+    assert mod._value_diff_check(same_source_twice) == (), (
+        "a repeated member_id is not provably distinct — must not manufacture suspicion")
+
+    only_one_data_point = mod.DraftGroup(
+        roles=(seeder.ROLE_LABEL,),
+        members=(
+            mod.DraftMember(member_id="node-1", values=((seeder.ROLE_LABEL, "X"),)),
+            mod.DraftMember(member_id="node-2", values=()),
+        ),
+    )
+    assert mod._value_diff_check(only_one_data_point) == (), (
+        "one data point cannot diff against anything")
+
+    genuinely_suspect = mod.DraftGroup(
+        roles=(seeder.ROLE_LABEL, seeder.ROLE_ACTION),
+        members=(
+            mod.DraftMember(member_id="node-1",
+                             values=((seeder.ROLE_LABEL, "X"), (seeder.ROLE_ACTION, "go-1"))),
+            mod.DraftMember(member_id="node-2",
+                             values=((seeder.ROLE_LABEL, "X"), (seeder.ROLE_ACTION, "go-2"))),
+        ),
+    )
+    assert mod._value_diff_check(genuinely_suspect) == (seeder.ROLE_LABEL,), (
+        "only the role that is actually identical across distinct members is flagged — "
+        "action-trigger correctly varies per member and must not be swept in")
+    print("  PASS  _value_diff_check unit behaviour: repeated member_id inert, single "
+          "data point inert, only the genuinely-identical role flagged")
+
+
 # ---------------------------------------------------------------- honest no-match
 
 def test_unseeded_table_reports_unseeded_not_no_match() -> None:
@@ -503,6 +652,11 @@ def main() -> int:
     test_composition_signal_narrows_nothing_when_empty()
     test_static_leaf_is_computed_for_the_winning_candidate()
     test_static_leaf_is_none_when_no_static_roles_supplied()
+    test_gap_was_empirically_confirmed_before_the_fix_was_wired_in()
+    test_value_diff_downgrades_identical_wrong_values_to_suspect()
+    test_value_diff_leaves_genuinely_distinct_values_at_exact()
+    test_value_diff_check_is_a_noop_when_no_members_supplied()
+    test_value_diff_check_direct_unit_behaviour()
     test_unseeded_table_reports_unseeded_not_no_match()
     test_no_stage_a_match_is_a_clean_result()
     test_live_db_was_not_written()
