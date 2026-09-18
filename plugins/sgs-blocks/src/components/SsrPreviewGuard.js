@@ -111,7 +111,7 @@
  *     existing `preventDefault()` on the submit button is the CORRECT
  *     behaviour here, not a gap.
  *   - `sgs/product-card` bound-mode PRICE/IMAGE SWAP is NOW reproduced (see
- *     `handleChangeCapture` below) — confirmed by reading `view.js`
+ *     `applyProductCardVariantSelection` below) — confirmed by reading `view.js`
  *     (`applyPillSelection`) that this specific slice is a PURE, LOCAL
  *     re-read of the already-seeded `data-wp-context` manifest (no network
  *     call of any kind), keyed on which `sgs/option-picker` pill the visitor
@@ -348,6 +348,196 @@ function applyToDirective( root, attrName, attrValue, apply ) {
 	root.querySelectorAll( selector ).forEach( apply );
 }
 
+/**
+ * Apply an `sgs/option-picker` radio selection to its enclosing bound-mode
+ * product card, if any (a plain module-level function, NOT a hook, so it can
+ * be called from either the click path — mouse/Space-key activation, both
+ * fire a real `click` — or the input path — arrow-key radiogroup navigation,
+ * which changes `checked` WITHOUT a `click` event, only `input`/`change`).
+ *
+ * ⚠ Deliberately NOT wired to `onChangeCapture`: verified live that a native
+ * `change` event on a plain-HTML (non-React-owned) radio does reach a
+ * document-level capture listener, but React's own delegated event system
+ * does not forward it to an `onChangeCapture` prop here — React's
+ * ChangeEventPlugin tracks checkbox/radio changes via the `click`/`input`
+ * native events internally (a long-standing cross-browser normalisation),
+ * not a bare listen-for-native-`change`. `onClickCapture`/`onInputCapture`
+ * are the two paths this codebase has already proven reliable (nav-bar-menu,
+ * before-after), so this reuses them instead of a third, unproven wiring.
+ *
+ * @param {Element} input The radio `<input>` that was just interacted with.
+ */
+function applyProductCardVariantSelection( input ) {
+	if ( ! input || input.tagName !== 'INPUT' || input.type !== 'radio' ) {
+		return;
+	}
+	const optionsDiv =
+		typeof input.closest === 'function'
+			? input.closest( PRODUCT_CARD_OPTIONS_SELECTOR )
+			: null;
+	if ( ! optionsDiv ) {
+		return;
+	}
+	const root =
+		typeof input.closest === 'function'
+			? input.closest( PRODUCT_CARD_LIVE_SELECTOR )
+			: null;
+	if ( ! root ) {
+		return;
+	}
+
+	const typeKey = optionsDiv.getAttribute( 'data-type-key' ) || '';
+	const selectedKey = input.value;
+	if ( ! typeKey || ! selectedKey ) {
+		return;
+	}
+
+	let state = productCardStateByRoot.get( root );
+	if ( ! state ) {
+		const raw = root.getAttribute( 'data-wp-context' );
+		if ( ! raw ) {
+			return;
+		}
+		let seeded;
+		try {
+			seeded = JSON.parse( raw );
+		} catch ( e ) {
+			return;
+		}
+		if ( ! seeded || ! seeded.combos ) {
+			// Simple/CPT card carries no manifest — nothing to swap.
+			return;
+		}
+		state = {
+			combos: seeded.combos,
+			selectedAxes: { ...( seeded.selectedAxes || {} ) },
+			decimals: seeded.decimals,
+			currencySymbol: seeded.currencySymbol,
+			taxDisplayMode: seeded.taxDisplayMode,
+			priceSuffix: seeded.priceSuffix,
+			vatLabel: seeded.vatLabel,
+			perUnitTemplate: seeded.perUnitTemplate,
+			saleLabel: seeded.saleLabel,
+		};
+		productCardStateByRoot.set( root, state );
+	}
+
+	state.selectedAxes = { ...state.selectedAxes, [ typeKey ]: selectedKey };
+	const comboKey = Object.keys( state.selectedAxes )
+		.sort()
+		.map( ( t ) => t + ':' + state.selectedAxes[ t ] )
+		.join( '|' );
+	const combo = state.combos[ comboKey ];
+	if ( ! combo ) {
+		// Invalid/unavailable combination — leave price/image untouched
+		// (mirrors view.js: no purchasable state to show a price for).
+		return;
+	}
+
+	applyToDirective( root, 'data-wp-text', 'context.priceDisplay', ( el ) => {
+		el.textContent = cardModePrice( combo, state );
+	} );
+
+	const onSale = combo.saleMinor !== null && combo.saleMinor !== undefined;
+	applyToDirective(
+		root,
+		'data-wp-bind--hidden',
+		'context.hideSale',
+		( el ) => {
+			el.hidden = ! onSale;
+		}
+	);
+	applyToDirective(
+		root,
+		'data-wp-text',
+		'context.regularDisplay',
+		( el ) => {
+			el.textContent = onSale ? cardModeRegular( combo, state ) : '';
+		}
+	);
+	applyToDirective( root, 'data-wp-text', 'context.pctDisplay', ( el ) => {
+		el.textContent =
+			combo.pctDisplay != null
+				? combo.pctDisplay
+				: combo.pctOff > 0
+				? combo.pctOff + '% off'
+				: '';
+	} );
+
+	const inStock = !! combo.inStock;
+	applyToDirective( root, 'data-wp-bind--hidden', 'context.inStock', ( el ) => {
+		el.hidden = inStock;
+	} );
+	applyToDirective( root, 'data-wp-text', 'context.stockText', ( el ) => {
+		el.textContent = inStock ? '' : 'Out of stock';
+	} );
+
+	const badgeLabel = onSale
+		? state.saleLabel || 'Sale'
+		: combo.discountLabel || '';
+	applyToDirective(
+		root,
+		'data-wp-bind--hidden',
+		'context.discountHidden',
+		( el ) => {
+			el.hidden = ! badgeLabel;
+		}
+	);
+	applyToDirective(
+		root,
+		'data-wp-text',
+		'context.discountLabel',
+		( el ) => {
+			el.textContent = badgeLabel;
+		}
+	);
+
+	const puDisplay = cardPerUnitDisplay( combo, state );
+	applyToDirective(
+		root,
+		'data-wp-bind--hidden',
+		'context.perUnitHidden',
+		( el ) => {
+			el.hidden = puDisplay === '';
+		}
+	);
+	applyToDirective(
+		root,
+		'data-wp-text',
+		'context.perUnitDisplay',
+		( el ) => {
+			el.textContent = puDisplay;
+		}
+	);
+
+	// Image swap — prefer the selected combo's own gallery (mirrors
+	// view.js's gallery[0] priority), fall back to the combo's flat imageUrl,
+	// else leave the current image untouched (a combo with no image of its
+	// own keeps whatever was already showing — same M-C7 parity rule
+	// view.js documents).
+	const gallery = Array.isArray( combo.gallery ) ? combo.gallery : [];
+	const newSrc =
+		gallery.length > 0 && gallery[ 0 ].url
+			? gallery[ 0 ].url
+			: combo.imageUrl || '';
+	if ( newSrc ) {
+		applyToDirective( root, 'data-wp-bind--src', 'context.imageSrc', ( el ) => {
+			el.src = newSrc;
+		} );
+		const newAlt = gallery.length > 0 ? gallery[ 0 ].alt || '' : '';
+		if ( newAlt ) {
+			applyToDirective(
+				root,
+				'data-wp-bind--alt',
+				'context.imageAlt',
+				( el ) => {
+					el.alt = newAlt;
+				}
+			);
+		}
+	}
+}
+
 export default function SsrPreviewGuard( { children, className } ) {
 	const handleClickCapture = useCallback( ( event ) => {
 		const target =
@@ -453,6 +643,21 @@ export default function SsrPreviewGuard( { children, className } ) {
 					} );
 			}
 		}
+
+		// `sgs/product-card` bound-mode variant picker — mouse click (and
+		// Space-key activation, which the browser also reports as a `click`)
+		// on an `sgs/option-picker` radio/label. See
+		// `applyProductCardVariantSelection`'s own docblock for why this is
+		// wired here rather than `onChangeCapture`.
+		const radioInput =
+			typeof event.target.closest === 'function'
+				? event.target.closest(
+						PRODUCT_CARD_OPTIONS_SELECTOR + ' input[type="radio"]'
+				  )
+				: null;
+		if ( radioInput ) {
+			applyProductCardVariantSelection( radioInput );
+		}
 	}, [] );
 
 	// `sgs/before-after`'s always-present native range layer — every `input`
@@ -460,207 +665,43 @@ export default function SsrPreviewGuard( { children, className } ) {
 	// own "layer 1" writes (see docblock above). No GSAP/Draggable
 	// enhancement is reproduced here; the range alone already makes the
 	// block fully operable by mouse, touch, and keyboard (browser-native).
+	//
+	// Also covers `sgs/product-card`'s variant radios for KEYBOARD arrow-key
+	// radiogroup navigation, which changes `checked` and fires `input`
+	// WITHOUT a `click` event — the click-path call above alone would miss
+	// that operable-by-keyboard case.
 	const handleInputCapture = useCallback( ( event ) => {
 		const range =
 			typeof event.target.closest === 'function'
 				? event.target.closest( BEFORE_AFTER_RANGE_SELECTOR )
 				: null;
-		if ( ! range ) {
-			return;
+		if ( range ) {
+			const root = range.closest( BEFORE_AFTER_ROOT_SELECTOR );
+			if ( root ) {
+				const clamped = Math.max(
+					0,
+					Math.min( 100, Number.parseFloat( range.value ) )
+				);
+				root.style.setProperty(
+					'--sgs-before-after-position',
+					`${ clamped }%`
+				);
+			}
 		}
-		const root = range.closest( BEFORE_AFTER_ROOT_SELECTOR );
-		if ( ! root ) {
-			return;
+
+		const radioInput =
+			typeof event.target.closest === 'function'
+				? event.target.closest(
+						PRODUCT_CARD_OPTIONS_SELECTOR + ' input[type="radio"]'
+				  )
+				: null;
+		if ( radioInput ) {
+			applyProductCardVariantSelection( radioInput );
 		}
-		const clamped = Math.max(
-			0,
-			Math.min( 100, Number.parseFloat( range.value ) )
-		);
-		root.style.setProperty( '--sgs-before-after-position', `${ clamped }%` );
 	}, [] );
 
 	const handleSubmitCapture = useCallback( ( event ) => {
 		event.preventDefault();
-	}, [] );
-
-	// `sgs/product-card` bound-mode variant picker — a real `change` event on
-	// an `sgs/option-picker` radio (native browser behaviour, needs no JS of
-	// its own to select the pill — CSS's `:checked ~ .pill` already handles
-	// that) recomputes the matching combo from the card's own seeded
-	// `data-wp-context` manifest and writes the result straight onto the
-	// documented `data-wp-text`/`data-wp-bind--*` directive targets. See the
-	// `PRODUCT_CARD_*` docblock above for why this slice specifically is safe
-	// to mirror (pure local read, no network call).
-	const handleChangeCapture = useCallback( ( event ) => {
-		const input = event.target;
-		if ( ! input || input.type !== 'radio' ) {
-			return;
-		}
-		const optionsDiv =
-			typeof input.closest === 'function'
-				? input.closest( PRODUCT_CARD_OPTIONS_SELECTOR )
-				: null;
-		if ( ! optionsDiv ) {
-			return;
-		}
-		const root =
-			typeof input.closest === 'function'
-				? input.closest( PRODUCT_CARD_LIVE_SELECTOR )
-				: null;
-		if ( ! root ) {
-			return;
-		}
-
-		const typeKey = optionsDiv.getAttribute( 'data-type-key' ) || '';
-		const selectedKey = input.value;
-		if ( ! typeKey || ! selectedKey ) {
-			return;
-		}
-
-		let state = productCardStateByRoot.get( root );
-		if ( ! state ) {
-			const raw = root.getAttribute( 'data-wp-context' );
-			if ( ! raw ) {
-				return;
-			}
-			let seeded;
-			try {
-				seeded = JSON.parse( raw );
-			} catch ( e ) {
-				return;
-			}
-			if ( ! seeded || ! seeded.combos ) {
-				// Simple/CPT card carries no manifest — nothing to swap.
-				return;
-			}
-			state = {
-				combos: seeded.combos,
-				selectedAxes: { ...( seeded.selectedAxes || {} ) },
-				decimals: seeded.decimals,
-				currencySymbol: seeded.currencySymbol,
-				taxDisplayMode: seeded.taxDisplayMode,
-				priceSuffix: seeded.priceSuffix,
-				vatLabel: seeded.vatLabel,
-				perUnitTemplate: seeded.perUnitTemplate,
-				saleLabel: seeded.saleLabel,
-			};
-			productCardStateByRoot.set( root, state );
-		}
-
-		state.selectedAxes = { ...state.selectedAxes, [ typeKey ]: selectedKey };
-		const comboKey = Object.keys( state.selectedAxes )
-			.sort()
-			.map( ( t ) => t + ':' + state.selectedAxes[ t ] )
-			.join( '|' );
-		const combo = state.combos[ comboKey ];
-		if ( ! combo ) {
-			// Invalid/unavailable combination — leave price/image untouched
-			// (mirrors view.js: no purchasable state to show a price for).
-			return;
-		}
-
-		applyToDirective( root, 'data-wp-text', 'context.priceDisplay', ( el ) => {
-			el.textContent = cardModePrice( combo, state );
-		} );
-
-		const onSale = combo.saleMinor !== null && combo.saleMinor !== undefined;
-		applyToDirective(
-			root,
-			'data-wp-bind--hidden',
-			'context.hideSale',
-			( el ) => {
-				el.hidden = ! onSale;
-			}
-		);
-		applyToDirective(
-			root,
-			'data-wp-text',
-			'context.regularDisplay',
-			( el ) => {
-				el.textContent = onSale ? cardModeRegular( combo, state ) : '';
-			}
-		);
-		applyToDirective( root, 'data-wp-text', 'context.pctDisplay', ( el ) => {
-			el.textContent =
-				combo.pctDisplay != null
-					? combo.pctDisplay
-					: combo.pctOff > 0
-					? combo.pctOff + '% off'
-					: '';
-		} );
-
-		const inStock = !! combo.inStock;
-		applyToDirective( root, 'data-wp-bind--hidden', 'context.inStock', ( el ) => {
-			el.hidden = inStock;
-		} );
-		applyToDirective( root, 'data-wp-text', 'context.stockText', ( el ) => {
-			el.textContent = inStock ? '' : 'Out of stock';
-		} );
-
-		const badgeLabel = onSale
-			? state.saleLabel || 'Sale'
-			: combo.discountLabel || '';
-		applyToDirective(
-			root,
-			'data-wp-bind--hidden',
-			'context.discountHidden',
-			( el ) => {
-				el.hidden = ! badgeLabel;
-			}
-		);
-		applyToDirective(
-			root,
-			'data-wp-text',
-			'context.discountLabel',
-			( el ) => {
-				el.textContent = badgeLabel;
-			}
-		);
-
-		const puDisplay = cardPerUnitDisplay( combo, state );
-		applyToDirective(
-			root,
-			'data-wp-bind--hidden',
-			'context.perUnitHidden',
-			( el ) => {
-				el.hidden = puDisplay === '';
-			}
-		);
-		applyToDirective(
-			root,
-			'data-wp-text',
-			'context.perUnitDisplay',
-			( el ) => {
-				el.textContent = puDisplay;
-			}
-		);
-
-		// Image swap — prefer the selected combo's own gallery (mirrors
-		// view.js's gallery[0] priority), fall back to the combo's flat
-		// imageUrl, else leave the current image untouched (a combo with no
-		// image of its own keeps whatever was already showing — same M-C7
-		// parity rule view.js documents).
-		const gallery = Array.isArray( combo.gallery ) ? combo.gallery : [];
-		const newSrc =
-			gallery.length > 0 && gallery[ 0 ].url
-				? gallery[ 0 ].url
-				: combo.imageUrl || '';
-		if ( newSrc ) {
-			applyToDirective( root, 'data-wp-bind--src', 'context.imageSrc', ( el ) => {
-				el.src = newSrc;
-			} );
-			const newAlt = gallery.length > 0 ? gallery[ 0 ].alt || '' : '';
-			if ( newAlt ) {
-				applyToDirective(
-					root,
-					'data-wp-bind--alt',
-					'context.imageAlt',
-					( el ) => {
-						el.alt = newAlt;
-					}
-				);
-			}
-		}
 	}, [] );
 
 	// `sgs/brand-strip` scrolling-mode pause-on-hover — a bubbling
@@ -709,7 +750,6 @@ export default function SsrPreviewGuard( { children, className } ) {
 					: 'sgs-ssr-preview-guard'
 			}
 			onClickCapture={ handleClickCapture }
-			onChangeCapture={ handleChangeCapture }
 			onInputCapture={ handleInputCapture }
 			onSubmitCapture={ handleSubmitCapture }
 			onMouseOverCapture={ handleMouseOverCapture }
