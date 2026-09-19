@@ -127,7 +127,9 @@ const TEMPLATE = [
 				},
 			},
 			margin: { desktop: { top: 'var(--wp--preset--spacing--50)' } },
-			style: { border: { top: { color: 'var:preset|color|accent', width: '1px' } } },
+			borderStyle: 'solid',
+			borderWidth: { top: '1px' },
+			borderColour: 'accent',
 		},
 		[
 			[ 'sgs/business-info', { displayType: 'copyright' } ],

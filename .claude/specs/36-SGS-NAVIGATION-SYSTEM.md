@@ -163,6 +163,8 @@ Top-level items are real links; an item with a submenu renders a **disclosure** 
 else its submenu is a simple dropdown. Dropdowns/mega exist only on `sgs/nav-bar-menu`;
 `sgs/nav-drawer-menu` has no hover-close mechanism to gate.
 
+**Parent-only items.** A parent-only item has no destination: its URL is empty or a bare `#` (after trimming). It renders as a `<button aria-expanded>` disclosure trigger, never a link. A URL such as `#contact` is a real in-page anchor and renders as a link. One predicate decides this for the bar, the drawer and menu-bound icon lists: `plugins/sgs-blocks/includes/class-sgs-nav-menu-source.php::SGS_Nav_Menu_Source::is_destination_url`.
+
 **Interaction precision:** dropdowns/mega open on **hover on non-touch (default) / tap on touch / keyboard
 throughout** (avoids the sticky-hover mobile bug). Mechanics:
 - **Hover-intent.** Hover opens after an intent delay AND click/Enter/Space opens. The markup declares
@@ -1441,7 +1443,6 @@ store, not this one. So the claim is: **one Site-Info entry is the default sourc
 
 | Question | Owner | Due |
 |---|---|---|
-| **Safe `#` URL sentinel.** Should a literal `#` menu-item URL be treated as "no URL" (a parent-only item rendered as a toggle) the way the empty string is? Today `$has_url = '' !== $raw_url` in `plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php` (and in `nav-drawer-menu/render.php`), so `#` renders as a link. | Bean | Before the next client header build |
 | **Dialog-engine duplication.** `sgs/modal` hand-rolls its own `showModal()` while the drawer delegates to `store('sgs/nav')` — two `<dialog>` engines. Should a shared dialog-geometry primitive (carrying a modal/non-modal flag, serving drawer, modal, cart flyout, search overlay) unify them? | Framework | Unscheduled |
 | **`axe` on the OPEN drawer is not verified.** `plugins/sgs-blocks/scripts/nav-qa/axe-run.mjs --open` times out on `locator.click` (harness actionability — the burger opens correctly under a direct click); the result is INCONCLUSIVE, not a pass. | Framework | Before Gate-2 closes |
 | **`conditional-visibility.js` has no `hideExtensions` slug**, so no block can opt out of it (`git grep -n -i hideExtensions -- plugins/sgs-blocks/src/blocks/extensions/conditional-visibility.js` returns nothing). Kept on nav blocks deliberately (member-only / promo-window navs are legitimate); needs a slug for whoever wants it hideable. | Framework | Unscheduled |

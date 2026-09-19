@@ -309,6 +309,23 @@ class SGS_Nav_Menu_Source {
 	}
 
 	/**
+	 * Whether a menu item's raw URL points at a real destination.
+	 *
+	 * An empty URL and a bare `#` both mean "no destination": the item exists
+	 * only to open its children, so it renders as a disclosure button, never a
+	 * link. A bare `#` is the placeholder classic menus and cloned menus use
+	 * for a parent-only item. An in-page anchor such as `#contact` IS a
+	 * destination and stays a link.
+	 *
+	 * @param string $raw_url The item's URL exactly as stored.
+	 * @return bool True when the URL is a link target.
+	 */
+	public static function is_destination_url( string $raw_url ): bool {
+		$trimmed = trim( $raw_url );
+		return '' !== $trimmed && '#' !== $trimmed;
+	}
+
+	/**
 	 * Map a classic menu item's `type` to core/navigation-link's `kind` attribute.
 	 *
 	 * @param string $type Classic menu item type (post_type|taxonomy|custom|post_type_archive).

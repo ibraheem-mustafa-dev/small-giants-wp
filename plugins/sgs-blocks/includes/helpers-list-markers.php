@@ -120,9 +120,12 @@ if ( ! function_exists( 'sgs_icon_list_flatten_menu_blocks' ) ) {
 					if ( '' === $label ) {
 						break;
 					}
-					$flat[] = array(
+					// A parent-only item (empty URL or a bare `#`) has no destination:
+					// an empty url renders the text unlinked instead of a dead href="#".
+					$raw_url = (string) ( $block['attrs']['url'] ?? '' );
+					$flat[]  = array(
 						'text' => $label,
-						'url'  => (string) ( $block['attrs']['url'] ?? '#' ),
+						'url'  => SGS_Nav_Menu_Source::is_destination_url( $raw_url ) ? trim( $raw_url ) : '',
 					);
 					break;
 				case 'core/home-link':

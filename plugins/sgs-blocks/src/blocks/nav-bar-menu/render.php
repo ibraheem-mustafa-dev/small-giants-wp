@@ -331,8 +331,8 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 			if ( '' === $label ) {
 				return null;
 			}
-			$raw_url = (string) ( $attrs['url'] ?? '' );
-			$has_url = '' !== $raw_url;
+			$raw_url = trim( (string) ( $attrs['url'] ?? '' ) );
+			$has_url = SGS_Nav_Menu_Source::is_destination_url( $raw_url );
 			$url     = $has_url ? $raw_url : '#';
 
 			/*

@@ -2,13 +2,12 @@
 /**
  * Stubbed harness for SGS_Nav_Menu_Bar_Renderer — walker AND render_items.
  *
- * The previous harness sliced the class out by HARD-CODED line numbers
- * (`array_slice($lines, 50, 345-50)`), which silently went stale the moment the
- * class grew: it would have eval'd a truncated class and failed in a confusing
- * way rather than testing anything. This one locates the class by its own
- * delimiters, so it cannot drift.
+ * Slicing the class out by hard-coded line numbers goes silently stale the
+ * moment the class grows: it would eval a truncated class and fail in a
+ * confusing way rather than test anything. This harness locates the class by its
+ * own delimiters, so it cannot drift.
  *
- * Run: php .claude/scratch/nav-submenu-harness-2026-07-31.php
+ * Run: php plugins/sgs-blocks/scripts/nav-qa/submenu-harness.php
  * Exits 1 on any failure so it can gate, rather than printing prose nobody reads.
  */
 
@@ -23,7 +22,20 @@ function esc_html( $s ) { return htmlspecialchars( (string) $s, ENT_QUOTES ); }
 function sanitize_html_class( $c ) { return $c; }
 function wp_parse_url( $u, $c = -1 ) { return parse_url( $u, $c ); }
 function wp_json_encode( $d ) { return json_encode( $d ); }
+function wp_interactivity_data_wp_context( $c ) { return "data-wp-context='" . json_encode( $c ) . "'"; }
+function get_post( $id ) { return null; }
+function add_filter() { return true; }
+function remove_filter() { return true; }
 function sgs_get_lucide_icon( $n ) { return '<svg data-icon="' . $n . '"></svg>'; }
+
+// The walker decides link-vs-button through SGS_Nav_Menu_Source::is_destination_url(),
+// so the REAL source class is loaded rather than re-stubbed.
+if ( ! defined( 'ABSPATH' ) ) { define( 'ABSPATH', __DIR__ . '/' ); }
+require_once __DIR__ . '/../../includes/class-sgs-nav-menu-source.php';
+
+// render_items() is a shared free function (sgs_nav_bar_menu_render_items); the
+// walker instance owns the featured roster, uid and submenu settings it needs.
+require_once __DIR__ . '/../../includes/nav-menu-markup.php';
 
 $path = '' . __DIR__ . '/../../src/blocks/nav-bar-menu/render.php';
 $src  = file_get_contents( $path );
@@ -70,6 +82,15 @@ function mksub( $label, $url, $kids ) {
 	return array( 'blockName' => 'core/navigation-submenu', 'attrs' => $a, 'innerBlocks' => $kids );
 }
 
+function harness_render( $renderer, array $items ) {
+	$read = function ( $prop ) use ( $renderer ) {
+		$ref = new ReflectionProperty( $renderer, $prop );
+		$ref->setAccessible( true );
+		return $ref->getValue( $renderer );
+	};
+	return sgs_nav_bar_menu_render_items( $items, $read( 'featured_ids' ), $read( 'uid' ), $renderer->get_submenu() );
+}
+
 $fails = 0;
 function check( $name, $got, $want ) {
 	global $fails;
@@ -100,8 +121,8 @@ $walk   = function ( $items ) use ( &$walk, &$labels ) {
 $walk( $deep );
 check( 'depth-3 label survives (no silent data loss)', in_array( 'L3', $labels, true ), true );
 
-echo "\n=== RENDER (the half that was never tested) ===\n";
-$html = $r->render_items( $out );
+echo "\n=== RENDER (the markup render_items() emits) ===\n";
+$html = harness_render( $r, $out );
 check( 'child <li> present', substr_count( $html, 'sgs-nav-bar-menu__subitem' ), 2 );
 check( 'child <a> present', substr_count( $html, 'sgs-nav-bar-menu__sublink' ), 2 );
 check( 'interactive root emitted', substr_count( $html, 'data-wp-interactive="sgs/mega"' ), 1 );
@@ -125,14 +146,33 @@ check( 'child links carry data-sgs-nav-path', substr_count( $html, 'data-sgs-nav
 
 echo "\n=== has_url: parent WITHOUT its own URL renders a button, not href=# ===\n";
 $nourl      = $r->flatten( array( mksub( 'Services', '', array( mklink( 'Web', '/web' ) ) ) ) );
-$html_nourl = $r->render_items( $nourl );
+$html_nourl = harness_render( $r, $nourl );
 check( 'has_url false', $nourl[0]['has_url'], false );
 check( 'no href="#" trigger', strpos( $html_nourl, 'href="#"' ), false );
 check( 'button trigger used', substr_count( $html_nourl, '<button type="button"' ), 1 );
 
+echo "\n=== has_url: a '#' placeholder is no destination; a real anchor or path is ===\n";
+$url_cases = array(
+	'empty URL'               => array( '', false ),
+	'bare #'                  => array( '#', false ),
+	'whitespace-padded #'     => array( ' # ', false ),
+	'in-page anchor #contact' => array( '#contact', true ),
+	'in-page anchor #faq'     => array( '#faq', true ),
+	'real path /about/'       => array( '/about/', true ),
+);
+foreach ( $url_cases as $case_name => $case ) {
+	$item = $r->flatten( array( mksub( 'Parent', $case[0], array( mklink( 'Child', '/child' ) ) ) ) );
+	$rend = harness_render( $r, $item );
+	check( "has_url: $case_name", $item[0]['has_url'], $case[1] );
+	check( "disclosure button when no destination: $case_name", false !== strpos( $rend, '<button type="button" class="sgs-nav-bar-menu__link sgs-nav-bar-menu__subtoggle"' ), ! $case[1] );
+	check( "link href kept only for a destination: $case_name", false !== strpos( $rend, 'class="sgs-nav-bar-menu__link" href=' ), $case[1] );
+}
+$anchor = harness_render( $r, $r->flatten( array( mklink( 'Contact', '#contact' ) ) ) );
+check( 'top-level #contact stays a link', substr_count( $anchor, 'href="#contact"' ), 1 );
+
 echo "\n=== DEGRADE: children exist but every label is empty ===\n";
 $empty      = $r->flatten( array( mksub( 'Services', '/s', array( mklink( '', '/x' ) ) ) ) );
-$html_empty = $r->render_items( $empty );
+$html_empty = harness_render( $r, $empty );
 check( 'no dropdown emitted', strpos( $html_empty, 'data-sgs-mega-trigger' ), false );
 // NOTE: match the EXACT class attribute. 'sgs-nav-bar-menu__link' is a substring of
 // 'sgs-nav-bar-menu__link-text', which sits inside every plain link, so the loose
@@ -141,18 +181,18 @@ check( 'degrades to a plain link', substr_count( $html_empty, 'class="sgs-nav-ba
 
 echo "\n=== FLAT MENU UNCHANGED (every existing nav on both live sites) ===\n";
 $flat      = $r->flatten( array( mklink( 'Home', '/' ), mklink( 'Contact', '/contact' ) ) );
-$html_flat = $r->render_items( $flat );
+$html_flat = harness_render( $r, $flat );
 check( 'no submenu machinery', strpos( $html_flat, 'submenu-root' ), false );
 check( 'plain links still render', substr_count( $html_flat, 'class="sgs-nav-bar-menu__link"' ), 2 );
 check( 'top-level identifier unchanged', $flat[0]['identifier'], 'label:Home' );
 
 echo "\n=== ALIGNMENT reaches the markup ===\n";
 $r_end = new SGS_Nav_Menu_Bar_Renderer( array(), 'uid2', array( 'align' => 'end', 'caret' => false ) );
-$h_end = $r_end->render_items( $r_end->flatten( array( mksub( 'S', '/s', array( mklink( 'W', '/w' ) ) ) ) ) );
+$h_end = harness_render( $r_end, $r_end->flatten( array( mksub( 'S', '/s', array( mklink( 'W', '/w' ) ) ) ) ) );
 check( 'align=end emitted', substr_count( $h_end, 'data-sgs-nav-submenu-align="end"' ), 1 );
 check( 'caret=false suppresses the icon', strpos( $h_end, 'data-icon="chevron-down"' ), false );
 $r_bad = new SGS_Nav_Menu_Bar_Renderer( array(), 'uid3', array( 'align' => 'nonsense' ) );
-$h_bad = $r_bad->render_items( $r_bad->flatten( array( mksub( 'S', '/s', array( mklink( 'W', '/w' ) ) ) ) ) );
+$h_bad = harness_render( $r_bad, $r_bad->flatten( array( mksub( 'S', '/s', array( mklink( 'W', '/w' ) ) ) ) ) );
 check( 'invalid align falls back to start', substr_count( $h_bad, 'data-sgs-nav-submenu-align="start"' ), 1 );
 
 echo "
@@ -162,12 +202,12 @@ echo "
 // modifier class, using the SAME featuredItemIds roster the bar already uses.
 $r_feat     = new SGS_Nav_Menu_Bar_Renderer( array( 'label:Services>label:SEO Audits' ), 'uid4' );
 $items_feat = $r_feat->flatten( array( mksub( 'Services', '/s', array( mklink( 'Web Design', '/w' ), mklink( 'SEO Audits', '/seo' ) ) ) ) );
-$h_feat     = $r_feat->render_items( $items_feat );
+$h_feat     = harness_render( $r_feat, $items_feat );
 check( 'featured CHILD gets its modifier', substr_count( $h_feat, 'sgs-nav-bar-menu__subitem--featured' ), 1 );
 check( 'non-featured sibling does NOT', substr_count( $h_feat, 'class="sgs-nav-bar-menu__subitem"' ), 1 );
 // Negative control: with an EMPTY roster nothing may be marked featured.
 $r_none = new SGS_Nav_Menu_Bar_Renderer( array(), 'uid5' );
-$h_none = $r_none->render_items( $r_none->flatten( array( mksub( 'Services', '/s', array( mklink( 'SEO Audits', '/seo' ) ) ) ) ) );
+$h_none = harness_render( $r_none, $r_none->flatten( array( mksub( 'Services', '/s', array( mklink( 'SEO Audits', '/seo' ) ) ) ) ) );
 check( 'NEG CONTROL: empty roster marks nothing', strpos( $h_none, '--featured' ), false );
 // current-page is client-side (a page cache would serve a stale server value),
 // so the SERVER contract is just: every child carries the path view.js reads.
@@ -201,9 +241,9 @@ check( 'no duplicate identifiers past the depth cap', $dupes, array() );
 // zero duplicates, so count them too or this assertion is satisfiable by loss.
 check( 'both flattened grandchildren survive',
 	count( array_filter( $all_ids, function ( $i ) { return false !== strpos( $i, 'About' ); } ) ), 2 );
-// And the depth-3 tree must RENDER, not merely flatten — render_items() was
-// never exercised on this shape before.
-$deep_html = $r_deep->render_items( $deep_out );
+// And the depth-3 tree must RENDER, not merely flatten — flattening alone does
+// not exercise render_items() on this shape.
+$deep_html = harness_render( $r_deep, $deep_out );
 check( 'depth-3 tree renders child links', substr_count( $deep_html, 'sgs-nav-bar-menu__sublink' ) >= 2, true );
 
 printf( "\n%s — %d failure(s)\n", $fails ? 'FAILED' : 'ALL PASSED', $fails );

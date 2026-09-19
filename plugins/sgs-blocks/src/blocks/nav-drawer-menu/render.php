@@ -262,8 +262,8 @@ if ( ! class_exists( 'SGS_Nav_Drawer_Menu_Flattener' ) ) {
 			if ( '' === $label ) {
 				return null;
 			}
-			$raw_url = (string) ( $attrs['url'] ?? '' );
-			$has_url = '' !== $raw_url;
+			$raw_url = trim( (string) ( $attrs['url'] ?? '' ) );
+			$has_url = SGS_Nav_Menu_Source::is_destination_url( $raw_url );
 			$url     = $has_url ? $raw_url : '#';
 			$own_key = isset( $attrs['id'] ) && '' !== $attrs['id']
 				? 'id:' . sanitize_key( (string) $attrs['id'] )
