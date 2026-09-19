@@ -1506,8 +1506,11 @@ library (the drawer). Each post carries private meta `_sgs_starter_slug` = its p
 is skipped when any post of that CPT in any status, trash included, carries the marker, so
 reactivation never duplicates a look and never overwrites a client's edited copy; emptying the bin
 deletes the post and its marker, so that look is created again by the next seeding. Three entry
-points call `seed_library`: plugin activation, a versioned migration (`Sgs_Migrations`), and
-`wp sgs drawer seed-starter --all --user=1` for looks added later (idempotent). The single-slug form
+points call `seed_library`: plugin activation, `Sgs_Starter_Library_Migration` (runs on `init` in any
+request and seeds the drawer default plus the library whenever the signature of the plugin version and
+the registered library patterns differs from the stored one, so a theme uploaded after the plugin, or a
+look added later, is picked up on the next request), and `wp sgs drawer seed-starter --all --user=1`
+(idempotent). The single-slug form
 `wp sgs drawer seed-starter <slug>` creates a plain draft with no marker and is not part of the
 library. Seeded looks contain only blocks that render real site data (menu, logo, business info,
 social icons). `Sgs_Starter_Library_Admin` adds a "Framework look" post-state and a "Framework looks

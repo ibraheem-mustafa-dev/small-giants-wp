@@ -269,17 +269,49 @@ class StarterLibrarySeederTest extends TestCase {
 	 */
 	public static function migration_due_provider(): array {
 		return array(
-			'never run'            => array( '', '0.1.8', true ),
-			'older version stored' => array( '0.1.7', '0.1.8', true ),
-			'same version'         => array( '0.1.8', '0.1.8', false ),
-			'downgrade'            => array( '0.2.0', '0.1.8', false ),
-			'no running version'   => array( '', '', false ),
-			'numeric not lexical'  => array( '0.1.9', '0.1.10', true ),
+			'never run'         => array( '', 'aaa', true ),
+			'signature changed' => array( 'aaa', 'bbb', true ),
+			'unchanged'         => array( 'aaa', 'aaa', false ),
+			'no signature'      => array( '', '', false ),
 		);
 	}
 
 	#[DataProvider( 'migration_due_provider' )]
-	public function test_migration_is_due_only_when_the_plugin_is_newer_than_the_seeded_version( string $stored, string $current, bool $expected ): void {
+	public function test_migration_is_due_only_when_the_signature_changed( string $stored, string $current, bool $expected ): void {
 		$this->assertSame( $expected, Sgs_Starter_Library_Migration::is_due( $stored, $current ) );
+	}
+
+	public function test_signature_changes_when_a_library_pattern_is_added_or_the_version_changes(): void {
+		$one   = array(
+			array(
+				'name'      => 'sgs/drawer-a',
+				'postTypes' => array( 'sgs_drawer' ),
+			),
+		);
+		$two   = array_merge(
+			$one,
+			array(
+				array(
+					'name'      => 'sgs/drawer-b',
+					'postTypes' => array( 'sgs_drawer' ),
+				),
+			)
+		);
+		$other = array_merge(
+			$one,
+			array(
+				array(
+					'name'      => 'sgs/header-x',
+					'postTypes' => array( 'sgs_header' ),
+				),
+			)
+		);
+		$types = array( 'sgs_drawer' );
+
+		$base = Sgs_Starter_Library_Migration::signature( '1', $one, $types );
+		$this->assertNotSame( $base, Sgs_Starter_Library_Migration::signature( '1', $two, $types ), 'a new drawer pattern must change the signature' );
+		$this->assertNotSame( $base, Sgs_Starter_Library_Migration::signature( '2', $one, $types ), 'a version bump must change the signature' );
+		$this->assertSame( $base, Sgs_Starter_Library_Migration::signature( '1', $other, $types ), 'a pattern for another post type must not' );
+		$this->assertSame( $base, Sgs_Starter_Library_Migration::signature( '1', array_reverse( $one ), $types ), 'order must not matter' );
 	}
 }
