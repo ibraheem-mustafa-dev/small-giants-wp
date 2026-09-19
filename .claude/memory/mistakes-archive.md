@@ -1127,3 +1127,31 @@ history of prunes.)*
 - **Pattern key:** `agent-completed-status-is-not-proof-background-work-finished`
 - **Feedback file:** [feedback_agent_completed_status_is_not_proof_background_work_finished.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_agent_completed_status_is_not_proof_background_work_finished.md)
 - **Archived:** 2026-09-17, pruned as oldest active entry to stay at cap.
+
+### [2026-09-02] A self-declared "PROTOTYPE" script's output was published at scale while a mature, already-gated tool for the same question sat unused in the same directory
+- **Pattern key:** `check-for-mature-tool-before-trusting-prototype-script`
+- **Feedback file:** [feedback_check_for_mature_tool_before_trusting_prototype_script.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_check_for_mature_tool_before_trusting_prototype_script.md)
+- **Archived:** 2026-09-19, pruned as oldest active entry to stay at cap.
+
+### [2026-09-02] A subagent's worktree fataled on integration — a shared function it called had been deleted by a concurrently-integrated migration
+- **Pattern key:** `merge-main-before-trusting-a-stale-worktrees-gate-failures` (recurrence — see the CC-memory file for the fuller mechanism)
+- **Evidence:** `container`'s `BackgroundPanel` agent worked in a worktree branched before `hero`'s Wave 7 migration was integrated (manually, not via `git merge` — so a plain `git log origin/main -1` check would not have surfaced it). Its own hero-specific fix called `$sgs_css_object_position`, a closure the hero migration had already deleted from the current tree — invisible to the agent's own build, since its worktree's copy of `hero/render.php` still had it. Would have fataled the first hero instance with a background video to render.
+- **Rule:** Independently re-apply and rebuild EVERY subagent's output in the real, current tree before integrating — never trust a subagent's own reported build success, especially when parallel work is landing via manual copy rather than `git merge` (which would otherwise surface the conflict automatically).
+- **Archived:** 2026-09-19, pruned as oldest active entry to stay at cap.
+
+### [2026-09-01] A session's own plan collided with a rule the target file was already hardened against
+- **Pattern key:** `ask-before-resolving-a-plan-vs-hardened-rule-collision`
+- **Evidence:** A read-time legacy-fallback pattern was sanctioned elsewhere in the same session (`sgs/media`, `sgs/before-after`) but `hero/render.php` already carried a 2026-08-13 comment recording Bean had explicitly banned this exact shape on this exact block (R-31-14). Asked rather than defaulted either way; Bean chose the stricter reading both times this came up (including a second, deeper question about the resulting cloning-pipeline consequence).
+- **Rule:** When a plan's own precedent conflicts with a target file's documented history of an explicit prior rejection, ask — do not silently pick either side. If the answer creates a new consequence in a different subsystem, ask again rather than resolve it unilaterally.
+- **Archived:** 2026-09-19, pruned as oldest active entry to stay at cap.
+
+### [2026-09-01] `ToggleGroupControl`'s `disabled` prop is a documented no-op at the group level — RECURRED in a second file the same session
+- **Pattern key:** `wp-component-prop-name-is-not-proof-of-behaviour`
+- **Evidence:** `MediaTypeControl.js` passed `disabled`/`hiddenReason` straight to `ToggleGroupControl` (matching every other disableable control's shape in this codebase). `/qc-inline` checked the claim against the real Gutenberg API rather than trusting the prop name: `ToggleGroupControl` has no group-level `disabled` prop in the stable API (`WordPress/gutenberg#57862`, still open, "Add disabled state for entire component"). The prop was silently ignored — the control stayed fully clickable while `disabled: true`. Per-`ToggleGroupControlOption` `disabled` IS real (`#63450`) and was the fix. **Same session, same day: recurred in `BooleanResponsiveControl.js`** (a DIFFERENT file, DIFFERENT feature — the video autoplay tablet/mobile lock). A subagent's own "fixed and verified" report described the lock working; only a live click test (not a code read) proved the click still went through. Two files, same root cause, both caught only by actually clicking the control in a browser.
+- **Rule:** A prop that compiles and matches the pattern used elsewhere in the codebase is not evidence it does anything — verify a WordPress component's actual prop contract (official docs, or the installed package's own type/source) before relying on it, especially for a prop whose absence fails silently rather than throwing. **Knowing about this bug once did not stop it recurring** — when touching ANY `ToggleGroupControl`/`__experimentalToggleGroupControl` usage with a `disabled` prop in this codebase, check whether it's on the group or on each `ToggleGroupControlOption` before trusting it, and verify with a real click, not a code read.
+- **Archived:** 2026-09-19, pruned as oldest active entry to stay at cap.
+
+### [2026-08-28] A taxonomy-routing "bug" was WooCommerce's Enable Archives toggle, not a template mismatch
+- **Pattern key:** `a-live-defect-can-be-wp-config-not-code`
+- **Feedback file:** [feedback_a_live_defect_can_be_wp_config_not_code.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_live_defect_can_be_wp_config_not_code.md)
+- **Archived:** 2026-09-19, pruned as oldest active entry to stay at cap.
