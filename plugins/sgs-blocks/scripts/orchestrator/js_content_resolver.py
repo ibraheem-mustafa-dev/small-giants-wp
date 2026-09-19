@@ -292,6 +292,16 @@ def _splice_resolved_items(
         items = resolved.get(marker_id)
         if not items:
             continue  # not resolved (failure or genuinely empty) — leave untouched
+        if any("{{" in str(value) for item in items for value in item.values()):
+            # The runtime never ran (e.g. `mockup_dir` lacks support.js), so the
+            # "resolved" element is the raw template and its text still holds
+            # the `{{ ... }}` binding. Splicing that in would ship placeholders as
+            # content — treat the group as unresolved instead (FR-31-26.3 #3).
+            _LOG.warning(
+                "js_content_resolver: group %s resolved to unrendered template text; "
+                "leaving it untouched", marker_id,
+            )
+            continue
         as_name = cand["as_name"] or "t"
         text_field = cand.get("text_field")
         icon_field = cand.get("icon_field")

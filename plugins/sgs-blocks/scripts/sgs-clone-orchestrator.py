@@ -3775,6 +3775,10 @@ def main():
     # every later `args.mockup` read already relies on. A draft with no
     # `<dc-import>` tags is untouched (no file written, no reassignment).
     from converter.services.dc_import_resolver import resolve_dc_imports as _resolve_dc_imports
+    # The draft's REAL folder, captured before Stage -2 reassigns args.mockup
+    # into run_dir. Stage -1.5 needs it: the draft's own runtime (support.js,
+    # image-slot.js, sibling .dc.html components) lives here, not in run_dir.
+    _draft_dir = args.mockup.parent
     _dc_raw = args.mockup.read_text(encoding="utf-8")
     _dc_resolved, _dc_count = _resolve_dc_imports(_dc_raw, args.mockup.parent)
     if _dc_count:
@@ -3795,7 +3799,7 @@ def main():
         )
         _resolve_js_content = _js_content_mod.resolve_js_array_content
         _js_raw = args.mockup.read_text(encoding="utf-8")
-        _js_resolved, _js_count = _resolve_js_content(_js_raw, args.mockup.parent)
+        _js_resolved, _js_count = _resolve_js_content(_js_raw, _draft_dir)
         if _js_count:
             _js_resolved_path = run_dir / "js-content-resolved.html"
             _js_resolved_path.write_text(_js_resolved, encoding="utf-8")

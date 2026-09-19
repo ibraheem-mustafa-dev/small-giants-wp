@@ -184,3 +184,28 @@ def test_marker_injection_is_a_true_no_op_on_original_html():
     marked, _marker_map = inject_resolve_markers(_TICKER_SHAPED, candidates)
     assert marked != _TICKER_SHAPED  # the COPY is marked
     assert "data-sgs-resolve-id" not in _TICKER_SHAPED  # the ORIGINAL never is
+
+
+def test_unrendered_template_payload_is_refused_not_spliced(tmp_path):
+    """The runtime never ran (mockup_dir without support.js), so the render
+    script hands back the raw template's own text — `{{ t.text }}`. Splicing
+    that would ship placeholders as content (live bug, 2026-09-19: the
+    orchestrator passed run_dir, which has no support.js). The group must be
+    left untouched instead."""
+    (tmp_path / "draft.dc.html").write_text(_TICKER_SHAPED, encoding="utf-8")
+    unrendered = {"r1": [{"text": "{{ t.text }}", "iconPath": "{{ t.icon }}"}]}
+    with patch("js_content_resolver.subprocess.run") as mock_run:
+        mock_run.return_value = MagicMock(returncode=0, stdout=json.dumps(unrendered), stderr="")
+        html, count = resolve_js_array_content(_TICKER_SHAPED, tmp_path)
+    assert count == 0
+    assert html == _TICKER_SHAPED
+
+
+def test_orchestrator_passes_the_original_draft_dir_not_run_dir():
+    """Wiring pin. Every other test here mocks the subprocess boundary, so none
+    can see WHICH directory the orchestrator hands the resolver. Stage -2
+    reassigns args.mockup into run_dir; Stage -1.5 must still use the draft's
+    real folder, where support.js lives."""
+    src = (Path(__file__).resolve().parent.parent / "sgs-clone-orchestrator.py").read_text(encoding="utf-8")
+    assert "_resolve_js_content(_js_raw, _draft_dir)" in src
+    assert "_resolve_js_content(_js_raw, args.mockup.parent)" not in src
