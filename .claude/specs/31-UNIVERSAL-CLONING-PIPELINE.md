@@ -985,6 +985,8 @@ The orchestrator writes these per run at `pipeline-state/<client>-<page>-<YYYY-M
 
 | # | Stage name | Entry function/script | Owning FR / spec section |
 |---|---|---|---|
+| -2 (D1107) | `<dc-import>` cross-component resolution — splices a referenced component's `<x-dc>` root markup at each import site, prop-renamed per its `data-props` contract, before anything else reads `args.mockup`. Pure string/regex patching (never a full-document re-serialise — see D1107's own BeautifulSoup-corruption incident) | `sgs-clone-orchestrator.py` (Stage -2 block, before `run_id=` print) → `converter/services/dc_import_resolver.py::resolve_dc_imports()` | D1107 (retroactively documented here — was shipped without an Appendix D entry) |
+| -1.5 (FR-31-26) | JS-array-sourced repeated content resolution — real headless-browser render (opt-in) resolves `<sc-for>` groups whose only content lives in a draft `static ARRAY = [...]` class property, splicing resolved text back into the mockup non-destructively | `sgs-clone-orchestrator.py` (Stage -1.5 block, runs on the dc-import-resolved mockup) → `orchestrator/js_content_resolver.py` (new) | §15, FR-31-26 |
 | -1 (Spec 33) | Draft global-styles extraction | `plugins/sgs-blocks/scripts/theme-extractor/extract.py` (standalone, runs before the orchestrator) | Spec 33, FR-33-12 |
 | -1 (R8) | Motion-library pre-flight probe (Tier 4a/4b/4c) | `sgs-clone-orchestrator.py::stage_neg1_motion_probe()` | §14.3, FR-31-25 |
 | 0 | Theme cache | inline in `sgs-clone-orchestrator.py:main()` | — |
@@ -1296,3 +1298,96 @@ already declare — R8 cannot select a tier capable of doing that.
   one would mean guessing which interaction applies, which this system's whole discipline (decline
   rather than guess) refuses to do. Two of the 13 real-world sample items fall here permanently
   under the current architecture.
+
+## 15. JS-array-sourced repeated content resolution (FR-31-26, D1108/D1109 follow-on)
+
+**Problem, proven not assumed.** Investigating b32 (Eye Care Birmingham's ticker) after D1108
+found its real content lives ONLY in a JS `static TICKER = [['text', 'iconPath'], ...]` class
+property, never as static text in the DOM — confirmed by reading the draft file directly
+(`sites/eye-care-ward-end/design_handoff_ward_end_eye_care/Eye Care Birmingham.dc.html:1610`), and
+the `<sc-for list="{{ ticker }}">` item template's `{{ t.text }}`/`{{ t.icon }}` bindings resolve
+only via a separate `.map(t => ({text:t[0], icon:t[1]}))` transform elsewhere in the file
+(line 2069). This is not a one-off: the same draft has **12 such `static ARRAY = [...]`
+declarations** (`TICKER`, `REASONS`, `REVIEWS`, `PDP_REVIEWS`, `FAQS`, `BRANDS`, `PRODUCTS`,
+`SHAPES`, `STYLE_LIST`, `MATERIALS`, `FTYPES`, `HINGES`, `NOSES`), confirming a draft-wide
+authoring pattern, not a per-boundary fix. Every extraction signal this pipeline has (role
+derivation §13.2, Spec 44 Stage A/B, the text-leaf ladder) operates purely on DOM text — a
+boundary whose content is JS-array-sourced has zero usable signal today, inflating Spec
+44/45's own review/no-match buckets for reasons neither spec's own mechanism can see or fix.
+
+**Rejected approach: a custom JS-array-literal parser.** The array body is inside
+`<script type="text/x-dc">` — inert to a real browser — so the first instinct was to write a
+parser for the array literal, plus a second parser for the `.map(...)` field-correlation
+expression that declares which array index maps to which `{{ t.field }}` binding. Rejected
+without building: this duplicates, unreliably, what the draft's OWN runtime already does
+correctly, and risks becoming exactly the kind of general-purpose-JS-interpreter scope creep
+this spec's R-31-1/R-31-9 discipline exists to prevent.
+
+**Proven approach: render the draft with its own runtime, read the resolved DOM.** Confirmed
+live (this session, disposable probe script, not committed): the draft ships two REAL
+`<script src="./support.js">`/`image-slot.js` includes. `support.js` is a genuine client-side
+renderer for the whole `<sc-for>`/`<sc-if>`/`{{ }}`/`dc-import` DSL (`DCLogic`-based, React
+18.3.1 via `unpkg`). Serving the draft over a real local HTTP server (NOT `file://` — the
+runtime's own `fetch()` calls for self-loading and sibling `dc-import` components are blocked
+under `file://` by browser security, confirmed by the probe's first failed attempt) and letting
+`support.js` execute produces a DOM whose `document.body.innerText` contains the real, exact
+ticker strings verbatim ("100% genuine, supplied direct by the brands", etc.) — zero custom JS
+parsing. This is the SAME pattern Spec 33's `theme-extractor/measure.js` already uses for the
+CSS side (render in a real headless browser, read what the runtime actually produced, never
+parse the source) — this FR extends that proven pattern to content, not computed style.
+
+### FR-31-26.1 — non-destructive splice, never a full-document swap
+
+The live-rendered DOM is NOT used as the pipeline's new mockup wholesale. React does not
+preserve the source's exact markup shape (attribute casing/order, custom `<sc-for>`/`<sc-if>`
+tags are consumed and vanish, class ordering can shift) — using the full rendered DOM directly
+risks the exact corruption D1107's FIRST (rejected) `<dc-import>` resolver implementation hit
+when it round-tripped the whole document through BeautifulSoup. Instead: for each `<sc-for>` in
+the ORIGINAL raw HTML with no static placeholder content, find its resolved counterpart in the
+live DOM and splice the resolved text back into the ORIGINAL draft's `<sc-for>...</sc-for>` body
+as literal markup — pure string/regex patching, matching `dc_import_resolver.py`'s own
+discipline (byte-identical outside the patched span). Runs on the mockup AFTER `<dc-import>`
+resolution (Stage -2), so a JS-array-sourced group inside an imported component is covered too.
+
+### FR-31-26.2 — marker-based correlation, not document order
+
+Matching resolved content back to the correct `<sc-for>` by DOCUMENT ORDER (Nth source `<sc-for>`
+= Nth resolved group) is fragile and was rejected: the same draft file proves ordering/count can
+shift under viewport-conditional logic (`ticker: (mob ? TICKER.concat(TICKER) : TICKER.slice(...))`,
+line 2069) and `sc-if` branching. Instead: inject a unique marker attribute
+(`data-sgs-resolve-id="rN"`) onto each `<sc-for>`'s item-template element in a TEMPORARY served
+copy before rendering (pure string insertion — never touches the pipeline-bound mockup); since
+the runtime clones that template element once per array item, every rendered instance carries
+the same marker. Query the live DOM by marker, not position — a stable anchor tied to the
+specific `<sc-for>`, immune to how many items resolved or in what order.
+
+### FR-31-26.3 — regression-safety, three independent stacking guarantees
+
+1. **Scope-narrowed by construction.** Only `<sc-for>` groups with NO usable static content today
+   (no `hint-placeholder-count` fallback, no literal text) are touched at all. A group that
+   already extracts something is skipped entirely, byte-identical — this mechanism cannot
+   regress anything already working because it never reads or writes it.
+2. **Opt-in, not default-on.** Ships behind a new flag, mirroring Spec 44's own rollout
+   discipline (`--classless-match`/`--classless-auto-complete`, both `default=False` until
+   measured across real runs) — promote to default only once verified across more than one
+   draft.
+3. **Fail-soft, never fail-hard.** Any failure (server won't start, Playwright unavailable,
+   timeout, a genuinely dynamic array the runtime can't resolve) degrades to TODAY's behaviour —
+   the `<sc-for>` is left untouched, producing whatever gap it produces now. Matches
+   `dc_import_resolver.py`'s own "unresolvable import left as-is, non-fatal" discipline
+   (already built, already tested) — never a new failure mode, only ever a no-op.
+
+### FR-31-26.4 — interaction with Spec 44/Spec 45 (no change to either)
+
+This FR is a pure upstream content precondition. Spec 44's Stage A/B and Spec 45's field-tier
+resolution do not change at all — they simply receive real DOM text for a class of boundary that
+previously handed them nothing. See Spec 44 §11 and Spec 45 §4.1.0 for the cross-reference notes
+recording this relationship (added at the same time as this FR, not a separate mechanism in
+either spec).
+
+### FR-31-26.5 — not yet built
+
+Design-gated with Bean 2026-09-19 (`/brainstorming` design mode); this section records the
+approved design. Implementation tracked via `/phase-planner` (a phase plan, not this spec, owns
+the build sequencing/step breakdown per this project's doc-weight convention — a spec records
+WHAT + WHY, a phase plan records HOW + WHEN).

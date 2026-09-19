@@ -703,6 +703,15 @@ off is the rollback path if a real run misbehaves — no code revert needed.
 
 ## 11. Explicitly deferred (tracked, not built here)
 
+- **A repeated group whose content is JS-array-sourced, not DOM text — NOT this spec's job,
+  covered by Spec 31 FR-31-26 (2026-09-19).** Investigating b32 (Eye Care Birmingham's ticker)
+  found its content lives only in a draft `static TICKER = [...]` JS class property, invisible to
+  Stage A/B (and every other extraction signal) because they operate purely on DOM text. This is
+  an upstream content-availability precondition, not a Stage A/B matching defect — Spec 31's new
+  FR-31-26 resolves it BEFORE this spec's mechanisms ever run, by rendering the draft with its own
+  JS runtime and splicing the resolved text back into the mockup. Neither Stage A nor Stage B
+  changes at all; they simply receive real content for a class of boundary that previously handed
+  them nothing.
 - ~~One-off classless sections~~ — **NOT deferred; built, elsewhere (correction,
   2026-09-17).** This bullet predates Spec 45 Tier 4 (D1087) and this session's
   singleton consumer (Front C Task 4): a one-off element with no sibling group

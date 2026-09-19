@@ -421,6 +421,15 @@ Tier 3 as worded).
 tier produces no match and the field falls to a gap (§6), which is correct
 behaviour, not a defect.
 
+> **Cross-reference, added 2026-09-19 (Spec 31 FR-31-26):** this tier's per-item field matching
+> presupposes the item content is already resolvable from the DOM. When a repeated group's
+> content lives only in a draft JS `static ARRAY = [...]` class property (confirmed on Eye Care
+> Birmingham: 12 such arrays, the ticker among them), there is no DOM field to match against at
+> all — a precondition gap, not a defect in this tier's own logic. Spec 31 FR-31-26 resolves it
+> upstream (renders the draft with its own JS runtime, splices resolved text into the mockup
+> before this spec ever runs), so this tier's field-matching logic is unchanged — it just
+> receives real content where it previously received nothing.
+
 ### 4.1.0 Step A (new, v1.4.0) — identifying the array field itself
 
 ⚠ **Renamed from "Step 0" in this revision** — round-3 `/qc-council` flagged
