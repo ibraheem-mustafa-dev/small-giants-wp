@@ -272,12 +272,21 @@ def _emit_content_leaf(
     Returns (target_slug, markup) or (None, "") when no text-capable target exists.
     """
     from converter.services.text_leaf import is_text_capable_block
+    from converter.services.lift_helpers import placeholder_fallback_text
 
     # A text-leaf with no text AND no image has nothing to lift — return a gap
     # signal (caller emits ContentGap) rather than manufacturing an EMPTY sgs/text
     # ChildBlock, which would falsely satisfy the run_container_default conservation
     # guard (STOP-27 empty-container masking — QC correctness finding 3, 2026-07-01).
-    if not node.get_text(strip=True) and node.find("img") is None:
+    # D1109: an `<input placeholder="...">`'s hint text is real, visible content
+    # (a form field with no static label/value shows exactly this to a user) —
+    # checked here so this gate agrees with `rich_text_content()`'s own fallback,
+    # which actually performs the lift downstream (`build_block_markup` below).
+    if (
+        not node.get_text(strip=True)
+        and node.find("img") is None
+        and not placeholder_fallback_text(node)
+    ):
         return None, ""
 
     target: str | None = db_lookup.atomic_tag_map().get(getattr(node, "name", None))

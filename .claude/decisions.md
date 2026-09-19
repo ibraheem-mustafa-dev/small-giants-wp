@@ -1,5 +1,38 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1109 [ROUTINE] — b23's ContentConservationError fixed: `<input placeholder="...">` text now
+recognised as real content by the text-leaf ladder
+
+**2026-09-19.** Closed the other item from today's "2 genuine failures" pair (D1108 fixed the
+architectural cause behind most classless-match failures; this is the separate, previously
+design-approved fix for b23 specifically). b23's nested `isDelivery` form has no static
+label/value text and no `<img>`, so `extraction.py::_emit_content_leaf`'s gate (line 280, "no
+text AND no image → nothing to lift") correctly judged it empty by its OWN definition of content
+— but the form visibly shows real placeholder hint text to a user, which the gate had no way to
+see. `run_container_default` then correctly raised `ContentConservationError` (D244/STOP-35) on
+the resulting zero-content recursion — the gate did its job; its definition of "content" was
+just incomplete.
+
+**Deliberately did NOT touch the documented 2026-09-04 decision that `ContentConservationError`
+is never caught-and-downgraded** (`extraction.py::run_mechanism_b`, ~line 1010-1055) — that
+exception type is meant to propagate loudly, by design. This fix instead widens what counts as
+"content" at the point the gap is detected, so the exception simply stops firing for this class
+of node because it's no longer empty.
+
+**Fix:** a new shared helper `lift_helpers.py::placeholder_fallback_text()` collects every
+descendant `<input placeholder="...">`'s hint text (or the node's own, when the node IS the
+input), escaped, space-joined. Wired into TWO places that must agree with each other — the gate
+(`_emit_content_leaf`, extended to not bail early when placeholder text exists) and the actual
+lift (`rich_text_content()`'s own fallback, used when its normal children-walk returns empty) —
+because a gate and a lift that disagree on "is this node empty" is exactly how b23's bug shipped
+in the first place: something judged non-empty enough to route past a gate, then genuinely
+returning nothing downstream.
+
+**Live-verified:** `b23` status flips `failed` → `complete`; `failed` count 2→1 (b32 remains,
+open — its content lives in a JS `static TICKER = [...]` array, not the DOM, a structurally
+different and separately-scoped problem); `complete` 40→41. Full converter suite 859/859 passing,
+0 regressions (48 targeted `lift_helpers`/`extraction`/`text_leaf` tests + the full 859-test run).
+
 ## D1108 [ROUTINE] — `representative_item()` category-mismatch fixed: Spec 44's classless-match
 gate was calling a container-shaped function on already-resolved item boundaries
 

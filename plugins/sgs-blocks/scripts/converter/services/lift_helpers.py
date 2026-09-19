@@ -102,7 +102,36 @@ def rich_text_content(node: Tag) -> str:
             else:
                 # Disallowed tag — strip to text content (recurse)
                 parts.append(rich_text_content(child))
-    return "".join(parts).strip()
+    result = "".join(parts).strip()
+    if result:
+        return result
+    # D1109 — placeholder-as-content fallback: a node whose only visible text is
+    # an <input placeholder="...">'s hint (a form field with no static label/value)
+    # has genuinely no OTHER extractable content, so the walk above returns empty.
+    # Treat the placeholder(s) as the node's literal text rather than silently
+    # returning "" — that emptiness is exactly what the D244 conservation gate
+    # (ContentConservationError) reads as "this leaf has nothing", even though the
+    # draft visibly shows the placeholder hint text to a real user.
+    return placeholder_fallback_text(node)
+
+
+def placeholder_fallback_text(node: Tag) -> str:
+    """Every descendant `<input placeholder="...">`'s hint text (or the node's
+    own, when `node` IS the input), escaped and space-joined. `""` when none.
+
+    Shared between `rich_text_content()`'s own fallback and the text-leaf gate
+    in `extraction.py::_emit_content_leaf` (D1109) — the gate's "does this node
+    have anything to lift" check and the actual lift must agree, or the gate
+    passes a node the lift still returns empty for.
+    """
+    from html import escape
+    inputs = [node] if getattr(node, "name", None) == "input" else node.find_all("input")
+    placeholders = [
+        escape(value, quote=False)
+        for inp in inputs
+        if (value := (inp.get("placeholder") or "").strip())
+    ]
+    return " ".join(placeholders)
 
 
 # ---------------------------------------------------------------------------
