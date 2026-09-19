@@ -723,7 +723,7 @@ Check every row before building anything new.
 | Directory | Runnable files | Holds |
 |---|---|---|
 | `scripts/` | 20 | repo-wide tooling (naming lint, site utilities) |
-| `plugins/sgs-blocks/scripts/` | 778 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `plugins/sgs-blocks/scripts/` | 777 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/scripts/` | 2 | working-area helpers |
 | `.claude/hooks/` | 13 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
@@ -751,7 +751,7 @@ Each entry's purpose is quoted from the script's own header.
 | 11 | `check-dead-pattern-attrs.py` | Find block attributes in theme patterns/parts that WordPress silently DISCARDS |
 | 12 | `check-shared-panel-schema.js` | STRUCTURAL GUARD — closes the gap in the "dead control" family that check-dead-controls.js (control exists, nothing renders it) and… |
 | 13 | `check-empty-inspector-containers.js` | STRUCTURAL GUARD — an inspector container rendered with NO children. |
-| 14 | `check-wrapper-capability-preconditions.js` | STRUCTURAL GUARD for the shared-wrapper capability declarations in each block's `supports.sgs` — Spec 35 §F.2.1 + §F.2.2 (D637, step 7 of the… |
+| 14 | `check-wrapper-capability-preconditions.js` | STRUCTURAL GUARD for the shared-wrapper capability declarations in each block's `supports.sgs` — Spec 35A §F.2.1 + §F.2.2 (D637, step 7 of the… |
 | 15 | `survey-background-colour-support.py` | Track A completion audit — native colour/gradient background support. |
 | 16 | `check-image-controls-support.py` | Standing defence for the `imageControls` "declared-but-unverified capability" |
 | 17 | `survey-control-parity.py` | do SGS inspector controls look like NATIVE WordPress? |
@@ -1532,7 +1532,7 @@ always cheaper than a fresh build plus its brainstorm, QC and tests.
 for the SUBJECT (colour, gradient, token, element, inline, parity), never
 for the verb you happen to have in mind.
 
-#### `plugins/sgs-blocks/scripts/` — 694 scripts
+#### `plugins/sgs-blocks/scripts/` — 693 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -1633,7 +1633,7 @@ for the verb you happen to have in mind.
 | `check-universal-fit.js` | manifest+script-call | WARN-ONLY STRUCTURAL REPORT — maps every universal editor extension |
 | `check-unresolvable-token-refs.py` | manifest | advisory scan for var(--name) references |
 | `check-withdrawn-figures.py` | manifest | a figure withdrawn in one file stays withdrawn everywhere. |
-| `check-wrapper-capability-preconditions.js` | manifest+npm+script-call | STRUCTURAL GUARD for the shared-wrapper capability declarations in each block's `supports.sgs` — Spec 35 §F.2.1 + §F.2.2 (D637, step 7 of the… |
+| `check-wrapper-capability-preconditions.js` | manifest+npm+script-call | STRUCTURAL GUARD for the shared-wrapper capability declarations in each block's `supports.sgs` — Spec 35A §F.2.1 + §F.2.2 (D637, step 7 of the… |
 | `colour-codemod/adopt.js` | manifest+script-call | `<SgsColourPanel rows={[...]}>`) into a call to the shared row helper it is semantically identical to: fillRow / textRow |
 | `colour-codemod/classify-end-shape.js` | manifest+npm+script-call | WHY THIS EXISTS (2026-09-06, colour-conformance). Adversarial-council pre-mortem (6/6 personas graded D) found survey.js's AUTOFIXABLE verdict is… |
 | `colour-codemod/classify-gradient-path-deferred.js` | manifest+script-call | Splits every `gradient-path-deferred` refusal that fix.js's dry run |
@@ -1691,7 +1691,6 @@ for the verb you happen to have in mind.
 | `converter/resolvers/outer_box.py` | manifest+script-call | outer_box — the OUTER-layer resolver (Spec 31 §3.A, layer L1). |
 | `converter/resolvers/preset_absence.py` | manifest+script-call | Build #3 Option B: preset-absence transfer (AUTO-DERIVE). |
 | `converter/resolvers/scalar_content.py` | manifest+script-call | modularised ``_lift_scalar_attrs_by_selector`` (convert.py:3781). |
-| `converter/resolvers/scalar_media.py` | manifest+script-call | scalar_media — retired CSS-dispatch stub (design §3 / §3.2; retired 2026-07-04). |
 | `converter/resolvers/styling_content.py` | manifest+script-call | modularised ``_lift_styling_attrs_by_selector`` (convert.py:3903). |
 | `converter/resolvers/test_find_load_settle_candidates_fixtures.py` | — | Ad-hoc verification harness for `_find_load_settle_candidates()` |
 | `converter/resolvers/test_load_settle_probe_fixtures.py` | — | Ad-hoc verification harness for `load_settle_probe.py` (Tier 4b, D1032). |
@@ -1849,27 +1848,27 @@ for the verb you happen to have in mind.
 | `inspector-scan/rules/20-pattern-template-lock.js` | manifest+script-call | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/01-enforcer-truth-matrix.md row 20 source=file evidence=row 20 verdict "ABSENT (claim… |
 | `inspector-scan/rules/21-render-without-control.js` | manifest+script-call | GROUND-TRUTH: spec=.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §"The defect register" ("The fourth quadrant: declared + rendered + NO… |
 | `inspector-scan/rules/22-placement-rule-surfaces.js` | manifest | GROUND-TRUTH: spec=.claude/decisions.md D537 (read verbatim 2026-08-09) + .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §"THE PLACEMENT… |
-| `inspector-scan/rules/23-content-width-needs-inner-band.js` | manifest | GROUND-TRUTH: spec=.claude/decisions.md D540 (read verbatim 2026-08-10) + .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md, the bullet beginning… |
+| `inspector-scan/rules/23-content-width-needs-inner-band.js` | manifest | GROUND-TRUTH: spec=.claude/decisions.md D540 (read verbatim 2026-08-10) + .claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md… |
 | `inspector-scan/rules/24-raw-canonical-component.js` | manifest+script-call | GROUND-TRUTH: spec=.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §1 COLOUR / §2 LINK (read live 2026-08-10). §1.1/§1.3: canonical =… |
 | `inspector-scan/rules/25-no-own-device-switcher.js` | manifest | GROUND-TRUTH: spec=task brief 2026-08-10 (global device toggle regression guard) + live read of src/components/ResponsiveControl.js… |
 | `inspector-scan/rules/26-responsive-duplicate.js` | manifest | GROUND-TRUTH: spec=.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §12 (THE RESPONSIVE WRAPPER FAMILY) source=file evidence=live-read… |
 | `inspector-scan/rules/27-superseded-link-control.js` | manifest+script-call | GROUND-TRUTH: spec=.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §2 LINK |
-| `inspector-scan/rules/28-fix-durability.js` | manifest | GROUND-TRUTH: spec=.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md (Part F, anti-patterns) source=file evidence=live-read 2026-08-18. |
+| `inspector-scan/rules/28-fix-durability.js` | manifest | GROUND-TRUTH: spec=.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md (Part F, anti-patterns) source=file evidence=live-read… |
 | `inspector-scan/rules/29-duplicate-visible-label.js` | manifest | GROUND-TRUTH: spec=.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md §5 (canonical-assignment + banned-lookalike table) + Part A5 (nested ToolsPanel… |
 | `inspector-scan/rules/30-raw-box-control.js` | manifest | GROUND-TRUTH: spec=.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md §5 canonical-assignment line |
 | `inspector-scan/rules/31-golden-colour-control.js` | manifest+script-call | GROUND-TRUTH: spec=plugins/sgs-blocks/scripts/consistency/golden-controls.json (written 2026-08-19, read live before writing this rule)… |
-| `inspector-scan/rules/33-ineffective-typography-selector.js` | manifest+script-call | GROUND-TRUTH: spec=.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md Part F.1 source=file evidence=live-read 2026-08-18. |
+| `inspector-scan/rules/33-ineffective-typography-selector.js` | manifest+script-call | GROUND-TRUTH: spec=.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md Part F.1 source=file evidence=live-read 2026-08-18. |
 | `inspector-scan/rules/34-declared-attr-unrendered.js` | manifest+script-call | GROUND-TRUTH: spec=.superpowers/sdd/task-2-brief.md ("make rule 34 consume the gate's verdicts, split by SURFACE") source=file evidence=live-read… |
-| `inspector-scan/rules/35-pinned-panel-position.js` | manifest+script-call | GROUND-TRUTH: spec=.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §"THE PLACEMENT ORDER CONVENTION" (added alongside THE PLACEMENT RULE… |
+| `inspector-scan/rules/35-pinned-panel-position.js` | manifest+script-call | GROUND-TRUTH: spec=.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md PART O §"THE PLACEMENT ORDER CONVENTION" (added alongside… |
 | `inspector-scan/rules/36-box-control-presets-missing.js` | manifest+script-call | GROUND-TRUTH: spec=.claude/scratch/2026-08-27-c16-spacing-presets-design.md (the C16 spacing-presets design) + src/components/SgsBoxControl.js's own… |
 | `inspector-scan/rules/37-media-no-handroll.js` | manifest | GROUND-TRUTH: spec=coordinator brief 2026-08-31 ("Write ONE new inspector-scan rule module: media-no-handroll") source=file evidence=live-read… |
 | `inspector-scan/rules/38-media-attr-parity.js` | manifest | GROUND-TRUTH: spec=.claude/plans/media-element-tingly-stallman.md ("Wave 6 — media-attr-parity: server-registered schema matches the JS keys")… |
 | `inspector-scan/rules/39-media-control-coverage.js` | manifest | GROUND-TRUTH: spec=coordinator brief 2026-09-01 ("Write a rule that checks OTHER blocks adopt the media-atom system correctly") source=file… |
 | `inspector-scan/rules/40-media-svg-sanitised.js` | manifest | GROUND-TRUTH: spec=coordinator brief 2026-09-01 ("Write ONE new inspector-scan rule module: media-svg-sanitised") source=file evidence=live-read… |
-| `inspector-scan/rules/41-co2-element-grouping-order.js` | manifest+script-call | GROUND-TRUTH: spec=.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §"THE PLACEMENT RULE" (D537, 2026-08-09) + CO-2 ("element-first grouping")… |
-| `inspector-scan/rules/42-no-op-reset-controls.js` | manifest | GROUND-TRUTH: spec=.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART F |
-| `inspector-scan/rules/43-colour-only-state-indicator.js` | manifest | GROUND-TRUTH: spec=.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART F |
-| `inspector-scan/rules/44-help-text-not-described.js` | manifest | GROUND-TRUTH: spec=.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART F |
+| `inspector-scan/rules/41-co2-element-grouping-order.js` | manifest+script-call | GROUND-TRUTH: spec=.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §"THE PLACEMENT RULE" (D537, 2026-08-09) + Spec 35A CO-2 ("element-first… |
+| `inspector-scan/rules/42-no-op-reset-controls.js` | manifest | GROUND-TRUTH: spec=.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md PART F |
+| `inspector-scan/rules/43-colour-only-state-indicator.js` | manifest | GROUND-TRUTH: spec=.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md PART F |
+| `inspector-scan/rules/44-help-text-not-described.js` | manifest | GROUND-TRUTH: spec=.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md PART F |
 | `inspector-scan/rules/45-typography-full-replacement.js` | manifest | GROUND-TRUTH: spec=plugins/sgs-blocks/CLAUDE.md "TYPOGRAPHY — use the SHARED component, never bespoke font controls" (Bean R-22-13, 2026-06-11) +… |
 | `inspector-scan/run.js` | commit-gate+manifest+npm+script-call+skill | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… ⚠ **header disputes this — it IS wired** |
 | `ledger/__init__.py` | manifest+script-call | ledger — F2 draft-derived CSS Accounting Ledger (input parser). |
@@ -2572,7 +2571,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `ResponsiveTriStateControl.js` | `ResponsiveTriStateControl (default)` | ResponsiveTriStateControl — the DP1 tri-state on/off control (Spec 35 T1.2). |
 | `RowQuickInsertAppender.js` | `RowQuickInsertAppender (default)` | Promoted quick-insert appender for a freeform row block (site-header-row / site-footer-row). Steering, not gating: the row still… |
 | `RowScrollBehaviourControls.js` | `RowScrollBehaviourControls (default)` | RowScrollBehaviourControls — per-row transparent / hide-on-scroll toggles |
-| `ScaleAxisControl.js` | `ScaleAxisControl (default)` | ScaleAxisControl — 2-axis (X/Y) proportional scale control with a link/unlink toggle (Spec 35 §F.2.3, D637). |
+| `ScaleAxisControl.js` | `ScaleAxisControl (default)` | ScaleAxisControl — 2-axis (X/Y) proportional scale control with a link/unlink toggle (Spec 35A §F.2.3, D637). |
 | `SgsBooleanField.js` | `SgsBooleanField (default)` | SgsBooleanField — the SGS standard BOOLEAN control (golden-controls.json goldens/input.json `boolean` row, Bean-approved live… |
 | `SgsBorderControl.js` | `SgsBorderControl (default)` | SgsBorderControl — the border control PAIR, matching WP core's native `BorderBoxControl` layout (Bean-directed 2026-08-27 Task 0… |
 | `SgsBoxControl.js` | `SgsBoxControl (default)` | SgsBoxControl — compact 4-side box editor (padding / margin / border-width), built from native primitives with a hand-aligned row… |
@@ -2580,7 +2579,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `SgsFreeTextField.js` | `SgsFreeTextField (default)` | SgsFreeTextField — the SGS standard FREE-TEXT / BARE-NUMBER control |
 | `SgsLengthControl.js` | `SgsLengthControl (default)` | SgsLengthControl — thin SGS wrapper for a length/unit value (Bean-directed new build, 2026-08-19; same construction pattern… |
 | `SgsMultiSelectField.js` | `SgsMultiSelectField (default)` | SgsMultiSelectField — the SGS standard MULTI-SELECT / TOKEN control |
-| `ShadowControl.js` | `ShadowControl (default)`, `shadowAttrName`, `shadowAttrKeys` | ShadowControl — shared real shadow builder (Spec 35 Part I action item 3). |
+| `ShadowControl.js` | `ShadowControl (default)`, `shadowAttrName`, `shadowAttrKeys` | ShadowControl — shared real shadow builder (Spec 35A Part I action item 3). |
 | `SpacingControl.js` | `SpacingControl (default)` | Spacing control that reads theme.json spacing presets. |
 | `SsrPreviewGuard.js` | `SsrPreviewGuard (default)` | SsrPreviewGuard — replaces `<Disabled>` around `<ServerSideRender>` previews. |
 | `StarterLookPresetControl.js` | `StarterLookPresetControl (default)` | SGS Starter Look preset control (FR-37-47). |
@@ -2866,7 +2865,7 @@ meaning shows a blank cell rather than an invented sentence.
 |---|---|---|---|
 | `block_slug` | TEXT | 0% | Part of the composite PK. Scoped DELETE-then-INSERT per block (sgs-update-v2.py:1049) means one /sgs-update run fully replaces that block's rows — no cross-run conflict is possible by construction. |
 | `array_attr` | TEXT | 0% | Which array-typed attribute on the block these field rows describe. DECLARED — the attribute name straight from block.json. |
-| `field_key` | TEXT | 0% | One key of the array's item shape, copied verbatim from block.json `items.properties` (sgs-update-v2.py:1055-1057). This is the declarative replacement for the retired hand-authored arrayItemSchema mechanism (D248). |
+| `field_key` | TEXT | 0% | One key of the array's item shape, copied verbatim from block.json `items.properties` (seeded by the array_item_schema seeder in sgs-update-v2.py). One row per item key per array attribute. |
 | `field_order` | INTEGER | 0% | STRUCTURAL and implicit — it is the block.json key order of items.properties, captured by enumerate() at sgs-update-v2.py:1056, not anything an author declares. Consumed as a tie-break (array_content.py:282-289). Any tool that sorts or reformats block.json keys would silently change converter behaviour with no error. |
 | `role` | TEXT | 72% | `text-content` 9, `url-href` 5, `image-object` 4, `icon-slug` 3, `icon` 3, `state-modifier-boolean` 1 — A SEPARATE 3-VALUE VOCABULARY — icon-slug / text-content / url-href, plus NULL. NEVER join it to block_attributes.role (34 values); they are unrelated despite the shared column name. DECLARED from block.json items.properties.<field>.role, never name-parsed (FR-31-2.1a). NULL means no role was declared, and the reader (array_content.py:112) deliberately falls back to name-derivation for those. |
 

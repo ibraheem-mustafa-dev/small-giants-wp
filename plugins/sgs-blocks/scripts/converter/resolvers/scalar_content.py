@@ -365,18 +365,6 @@ def lift_scalar_content(node: Tag, slug: str, media_map: dict) -> dict:
     return lifted
 
 # ---------------------------------------------------------------------------
-# EXECUTION Step 12 (2026-07-04): the module-level `resolve(decl, ctx) -> GAP`
-# CSS-dispatch stub that used to live here has been DELETED, along with its
-# "scalar_content" REGISTRY entry (converter/resolvers/__init__.py) and its
-# dispatch_table.resolver_id branch (keyed on delegates_content==0). PROOF of
-# unreachability: `layer_detect` (converter/services/layer_detect.py), the ONLY
-# producer of the `layer` value resolver_id is ever called with in production
-# (orchestrator.process_element, cached as ctx.base_layer), NEVER returns
-# anything outside {"OUTER","GRID","CONTENT"} — all 3 already have a
-# registered layer resolver, so the removed `delegates_content == 0` branch could
-# only fire for a `layer` value layer_detect can provably never produce. See
-# converter/tests/test_dispatch_table.py for the proof test.
-# `lift_scalar_content` above (the CONTENT-side lift, wired through
-# services.extraction / walk.py's B1 mechanism, a DIFFERENT dispatch entirely) is
-# untouched.
+# `lift_scalar_content` above is the CONTENT-side lift, wired through services.extraction /
+# walk.py's B1 mechanism; it is not a CSS-dispatch resolver and has no REGISTRY entry.
 # ---------------------------------------------------------------------------

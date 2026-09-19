@@ -116,7 +116,7 @@ COLUMN_MEANING = {
     ("fx_effects", "created_at"): "FOSSIL — SQL DEFAULT (datetime('now')), never written by application code and read by nothing.",
     ("array_item_schema", "block_slug"): "Part of the composite PK. Scoped DELETE-then-INSERT per block (sgs-update-v2.py:1049) means one /sgs-update run fully replaces that block's rows — no cross-run conflict is possible by construction.",
     ("array_item_schema", "array_attr"): "Which array-typed attribute on the block these field rows describe. DECLARED — the attribute name straight from block.json.",
-    ("array_item_schema", "field_key"): "One key of the array's item shape, copied verbatim from block.json `items.properties` (sgs-update-v2.py:1055-1057). This is the declarative replacement for the retired hand-authored arrayItemSchema mechanism (D248).",
+    ("array_item_schema", "field_key"): "One key of the array's item shape, copied verbatim from block.json `items.properties` (seeded by the array_item_schema seeder in sgs-update-v2.py). One row per item key per array attribute.",
     ("design_tokens", "slug"): "Primary key. DECLARED from theme.json for framework tokens; for shadows and font sizes it is the source slug PLUS a hand-added type prefix (enrich-db.py:531,555,578). That prefix is load-bearing — outer_box.py:166 matches on `slug LIKE 'shadow-%'`, so the naming convention IS part of the read contract.",
     ("design_tokens", "default_value"): "The token's literal CSS value, copied verbatim from theme.json. One of only two columns any runtime consumer actually reads (outer_box.py:166-171).",
     ("design_tokens", "description"): "FOSSIL — written as `preset.name` with the slug as fallback, read by nothing anywhere in the tree.",

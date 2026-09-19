@@ -77,7 +77,7 @@ def render_markdown(results: list[Any], fixture_name: str) -> str:
         "",
         "_Symptom→file: section width/spacing/background → `outer_box.py` · inner band → "
         "`content_band.py` · columns/gaps → `grid.py` · fonts → `typography.py` · "
-        "quote/name/stars → `scalar_content.py` · images → `scalar_media.py`._",
+        "quote/name/stars → `scalar_content.py`._",
     ]
     return "\n".join(lines)
 

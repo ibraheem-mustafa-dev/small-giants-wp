@@ -5,8 +5,7 @@ Given a declaration's (layer, css_property) plus the element's structural facts
 It NAMES NO BLOCK (R-31-1 / R-31-9): block-specific behaviour comes from the DB
 (property_suffixes / block_attributes / excluded_properties), never an `if slug ==`.
 
-Routing algorithm (design §2, with the §10 conformance corrections folded in;
-EXECUTION Step 12 / 2026-07-04 correction below):
+Routing algorithm (design §2, with the §10 conformance corrections folded in):
 
     resolver_id(layer, property) =
         typography     if property is in db_lookup's _TYPOGRAPHY_CSS_SCOPE   (A13 pre-layer sink)
@@ -21,24 +20,15 @@ function of the node's base-tier layer, cached on Ctx. A non-device-tier breakpo
 is handled at the tier-resolution seam (services.tier_suffix), routed to
 gap(origin=NO_DESTINATION), never coerced into a device tier (§10 A4).
 
-EXECUTION Step 12 (2026-07-04) REMOVED the `scalar_media`/`scalar_content` branch
-that used to sit between the layer-driven resolvers and `unrouted` (keyed on
-`delegates_content == 0`). GROUND-TRUTH: source=file evidence=
-`converter/services/layer_detect.py::layer_detect` is called exactly once per
-element (`orchestrator.process_element`, cached on `ctx.base_layer`) and its
-every code path returns one of `{"OUTER", "GRID", "CONTENT"}` — it NEVER returns
-`None` or any other string, regardless of `delegates_content`. Since
-`_LAYER_TO_RESOLVER` below has an entry for all 3 of those keys, `by_layer` here is
-NEVER `None` for any real `ctx.base_layer` — so the removed `if delegates_content
-== 0:` branch could only ever be reached by a value of `layer` that layer_detect
-can provably never produce. `resolver_id` has exactly ONE production call site
-(`orchestrator.process_element`, always passing `ctx.base_layer`) — so the branch
-was dead code in the live pipeline, not a currently-exercised deferred feature.
-See `converter/tests/test_dispatch_table.py::test_layer_detect_domain_is_exhaustive_...`
-for the proof. `media_signal` (the function) is RETAINED (still directly testable,
-still an honest documented-deferred stub) — only its CALL SITE inside `resolver_id`
-was removed, since that call site is what made the branch reachable in tests only
-via a synthetic out-of-domain `layer` string, never in production.
+Every production call reaches `resolver_id` through `orchestrator.process_element`, which
+passes `ctx.base_layer`, and `ctx.base_layer` is `converter/services/layer_detect.py::layer_detect`'s
+return value, cached once per element. Every code path of `layer_detect` returns one of
+`{"OUTER", "GRID", "CONTENT"}`, and `_LAYER_TO_RESOLVER` below has an entry for all three, so
+`by_layer` is never `None` for a real layer and the `unrouted` sink is reached only by a layer
+value `layer_detect` cannot produce. See
+`converter/tests/test_dispatch_table.py::test_layer_detect_domain_is_exhaustively_covered_by_layer_to_resolver`
+for the proof. `media_signal` (the function) is a documented-deferred stub that `resolver_id`
+does not call; it stays directly testable.
 
 `grid_area`/`GRID_AREA` REMOVED (2026-08-16, D642; found-but-not-fixed at D639): the resolver, its dispatch
 entry, and `layer_detect`'s branch that could route to it. The trigger
@@ -58,9 +48,7 @@ import sqlite3
 from converter.db.db_lookup import _TYPOGRAPHY_CSS_SCOPE
 
 # Resolver ids the table can return (each maps to resolvers/<id>.py).
-# EXECUTION Step 12 (2026-07-04): "scalar_media"/"scalar_content" REMOVED — proven
-# unreachable from resolver_id's one production call site (see module docstring).
-# "grid_area" REMOVED 2026-08-16 (D642) — see module docstring.
+# The scalar content/media lifts are not CSS-dispatch resolvers (see module docstring).
 RESOLVER_IDS = frozenset({
     "typography", "excluded",
     "outer_box", "content_band", "grid",

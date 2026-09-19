@@ -64,31 +64,26 @@ def test_unknown_layer_with_inner_blocks_is_unrouted():
     assert resolver_id("???", "max-width", delegates_content=1, conn=_conn()) == "unrouted"
 
 
-# -- EXECUTION Step 12 (2026-07-04): the scalar_content/scalar_media branch was
-# REMOVED as proven-dead code. Below: the removal is behaviour-safe (an unknown
-# layer now routes straight to 'unrouted' regardless of delegates_content), plus
-# the reachability proof itself (layer_detect's exhaustive return domain). -------
+# -- An unknown layer routes straight to 'unrouted' regardless of delegates_content,
+# plus the reachability proof (layer_detect's exhaustive return domain). ----------
 
-def test_scalar_branch_removed_unknown_layer_is_unrouted_regardless_of_delegates_content():
-    # Before the removal this raised NotImplementedError (delegates_content==0 hit
-    # the scalar branch's deferred media_signal call). The branch is gone now, so
-    # an unknown layer routes straight to 'unrouted' for EITHER delegates_content
-    # value — proving the removal did not change behaviour for any REAL layer
-    # value (only for the synthetic "???" probe, which no real ctx.base_layer ever
-    # produces — see the proof test below).
+def test_unknown_layer_is_unrouted_regardless_of_delegates_content():
+    # An unknown layer routes straight to 'unrouted' for EITHER delegates_content
+    # value. The synthetic "???" probe is a value no real ctx.base_layer ever
+    # produces — see the proof test below.
     assert resolver_id("???", "max-width", delegates_content=0, conn=_conn()) == "unrouted"
     assert resolver_id("???", "max-width", delegates_content=1, conn=_conn()) == "unrouted"
 
 
 def test_media_signal_is_deferred():
-    # media_signal (the FUNCTION) is retained — still directly testable, still an
-    # honest documented-deferred stub — even though resolver_id no longer calls it.
+    # media_signal (the FUNCTION) is directly testable and an honest
+    # documented-deferred stub; resolver_id does not call it.
     with pytest.raises(NotImplementedError):
         media_signal("background-image", _conn())
 
 
 def test_layer_detect_domain_is_exhaustively_covered_by_layer_to_resolver():
-    """The reachability proof for the removed scalar_content/scalar_media branch.
+    """The reachability proof for resolver_id's layer routing.
 
     resolver_id has exactly ONE production call site (orchestrator.process_element),
     which always passes ctx.base_layer — and ctx.base_layer is ALWAYS layer_detect's
@@ -114,8 +109,7 @@ def test_layer_detect_domain_is_exhaustively_covered_by_layer_to_resolver():
         layer = layer_detect(ctx, base_decls)
         assert layer in _LAYER_TO_RESOLVER, (
             f"layer_detect returned {layer!r}, which is NOT in _LAYER_TO_RESOLVER — "
-            f"this would make the removed scalar branch reachable again; the "
-            f"EXECUTION Step 12 removal's premise (exhaustive layer coverage) is broken."
+            f"exhaustive layer coverage is broken."
         )
 
 
