@@ -611,8 +611,24 @@ def _descend_container_children(
     _child_result_index: dict[int, int] = {}
     for child in parent.children:
         if not isinstance(child, Tag):
-            # Loose (non-Tag) text directly under the container is real content —
-            # track it as a ContentGap rather than silently dropping it (Rule 4).
+            # Loose (non-Tag) text directly under the container is real content.
+            # Plain text next to an element (`<span><svg/>Label</span>`, the
+            # ubiquitous icon + label shape) is lifted through the SAME text-leaf
+            # route as any element text leaf, via a detached synthetic <span>
+            # holding just that text run. Before this it was only tracked as a
+            # ContentGap, so a container whose only text was loose recursed to
+            # ZERO content blocks and raised ContentConservationError (b32, the
+            # Eye Care Birmingham ticker, D1112 prototype). Never mutates the
+            # source tree (the loop is iterating it). Comments/doctype/CDATA are
+            # NavigableString subclasses but are not content: they keep the
+            # ContentGap path below.
+            if type(child) is NavigableString and child.strip():
+                _loose = Tag(name="span")
+                _loose.append(NavigableString(child.strip()))
+                _route_container_child(
+                    _loose, results, css_rules, media_map, css_text=css_text,
+                )
+                continue
             if isinstance(child, NavigableString) and child.strip():
                 results.append(ContentGap(
                     _label(parent),

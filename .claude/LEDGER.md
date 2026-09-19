@@ -125,10 +125,14 @@ The 30 real items (74 minus 41 complete minus 3 chrome-skipped): 15 classless-re
 non-BEM-compliant (not investigated this session), 1 failed (b32 ticker). Ranked menu, smallest
 first action first:
 
-1. **Ticker reaches the blocks (recommended first).** Resolver output is right but no boundary
-   covers the ticker's plain `<div>`. First action (<5 min): read why
-   `per-section-convention-voter.py::auto_detect_sections` skips a non-semantic top-level `<div>`.
-   Needs a design gate (shared mechanism, Rule 7).
+1. **Binding resolution, staged (Bean-approved design, D1113).** Stage 1 DONE and committed: loose
+   text next to an element becomes a content block (b32 now completes, zero other changes). Stage 2
+   OPEN: in-place substitution of runtime `{{ }}` bindings (107 placeholders currently ship inside
+   "complete" blocks). Design fact still to settle first: keep-the-`<sc-for>` lands only item 0 of N,
+   so full conservation needs container-level handling (promote the inert parent `<div>` to a
+   container boundary). Scratch prototype files: `scratchpad/v1-*.dc.html`, `v2-*.dc.html` (gone next
+   session; rebuild from `dc-import-resolved.html` + the resolver payload). First action: decide
+   unroll-plus-container-boundary vs keep-wrapper for Stage 2 on a two-group prototype.
 2. **Multi-field arrays (REASONS, REVIEWS, FAQS, ...).** Per-field tagging in the resolver; design
    gate first. Bean thinks this is solvable and the evidence agrees (each field sits in its own element).
 3. **15 review-queue items.** Bean's eye on `operator-review.html`; decide per candidate. Needs

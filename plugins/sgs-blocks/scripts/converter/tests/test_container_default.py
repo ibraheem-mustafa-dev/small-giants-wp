@@ -173,14 +173,40 @@ def test_anchor_text_leaf_is_text_capable_not_core_button():
     assert "Shop now" in markup
 
 
-def test_loose_text_under_container_is_tracked_not_dropped():
-    """Finding 1: loose (non-Tag) text directly under a container is tracked as a
-    ContentGap, never silently dropped (Rule 4)."""
+def test_loose_text_under_container_is_lifted_not_dropped():
+    """Finding 1 (Rule 4), tightened by D1112: loose (non-Tag) text directly under a
+    container is lifted into a content block — no longer merely tracked as a gap."""
     from converter.services.extraction import run_container_default
-    from converter.context import ContentGap
+    from converter.context import ChildBlock
     node = _node('<section class="sgs-x">Loose copy<div class="sgs-x__b">Real</div></section>')
     results = run_container_default(recognise_section(node), node, css_rules={}, media_map={})
-    assert any(isinstance(r, ContentGap) and "Loose copy" in r.detail for r in results)
+    assert any(isinstance(r, ChildBlock) and "Loose copy" in (r.content or "") for r in results)
+
+
+def test_icon_plus_bare_text_span_converts_not_conservation_error():
+    """D1112: `<span><svg/>Label</span>` (icon + bare text) has NO text-leaf element, so
+    its only text is loose. It used to recurse to zero content blocks and raise
+    ContentConservationError (Eye Care Birmingham ticker, b32). The text must land."""
+    from converter.services.extraction import run_container_default
+    from converter.context import ChildBlock
+    node = _node(
+        '<span style="display:flex"><svg width="15"><path d="M1"></path></svg>'
+        '  100% genuine, supplied direct by the brands  </span>'
+    )
+    results = run_container_default(recognise_section(node), node, css_rules={}, media_map={})
+    assert any(
+        isinstance(r, ChildBlock) and "100% genuine, supplied direct by the brands" in (r.content or "")
+        for r in results
+    )
+
+
+def test_html_comment_is_not_lifted_as_content():
+    """A comment is a NavigableString subclass but not content — it must not become a text block."""
+    from converter.services.extraction import run_container_default
+    from converter.context import ChildBlock
+    node = _node('<section class="sgs-x"><!-- todo: remove --><div class="sgs-x__b">Real</div></section>')
+    results = run_container_default(recognise_section(node), node, css_rules={}, media_map={})
+    assert not any(isinstance(r, ChildBlock) and "todo: remove" in (r.content or "") for r in results)
 
 
 # -- integration: the real Mama's homepage, all 9 sections --------------------

@@ -1,5 +1,47 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1113 [ROUTINE] — Stage 1 of the binding-resolution family: loose text next to an element is now lifted into a content block (b32 no longer raises ContentConservationError)
+
+**2026-09-19.** Bean approved a staged design (brainstorming design mode) after D1112 showed the
+JS-array resolver covered ~1 of 22 unresolved repeated groups and the ticker still would not convert.
+
+**Prototype first (scratch files only, nothing shipped).** Two hand-built variants of the ticker (real
+text put into the draft by hand, `<sc-for>` kept, all 4 items vs 1 item) both still failed b32 with the
+IDENTICAL `ContentConservationError` as the untouched control. So "content missing" was only half the
+cause. Second, independent cause, proven from code + failure message: `extraction.py::
+_descend_container_children` recorded a loose text run (`<span><svg/>Label</span>`) only as a
+`ContentGap`, so a container whose only text is loose recursed to zero content blocks. Every
+icon + bare-label span in any draft hits this.
+
+**Fix.** A plain `NavigableString` (exactly that type; comments/doctype/CDATA keep the old gap path) is
+wrapped in a detached synthetic `<span>` and routed through `_route_container_child`, i.e. the normal
+text-leaf ladder. The source tree is never mutated. Tests in `converter/tests/test_container_default.py`:
+the old "tracked, not dropped" test is tightened to "lifted", plus the icon + bare-text case and a
+comment-is-not-content case. The two behaviour tests fail against the old code (checked by restoring
+HEAD's file).
+
+**Evidence.** Converter suite 861 passed, 0 failed (5 pre-existing collection errors from unrelated
+missing-module imports: load_settle_probe, motion_shape/trigger, tier4a_gate_hardening,
+webgl_reference_puller). Live before/after on Eye Care Birmingham, flag OFF, same flags: identical
+except exactly ONE boundary by (selector, block) identity: `sc-for:nth-of-type(1) > span`
+failed -> complete. Independent review found no blocking issue; two low-confidence edge cases noted
+(a bare `span{}` CSS rule can now match the synthetic span; the uniform grid-item fold might apply to a
+new loose-text block in an arranging container).
+
+**What this does NOT fix (be honest).** b32 is now "complete", but its text is the PLACEHOLDER
+`{{ t.text }}` (flag OFF), not the real string: that is the hollow-complete problem, Stage 2. The
+icon `<svg>` still becomes a ContentGap ("text-leaf produced no content block") so the ticker icon is
+not emitted. Emitted markup holds 107 unresolved `{{ }}` placeholders across "complete" blocks (50 in
+`text`, 18 in `label`; includes non-loop ones like `{{ h1 }}`, `{{ heroTitle }}`, `{{ phone }}`).
+
+**Stage 2 design fact found by the wrapper prototype (with Stage 1 in place).** Keeping the `<sc-for>`
+with real text makes b32 complete WITH the real first string, but only ITEM 0 lands (1 of 4 ticker
+strings) in both the all-items and one-item variants: an item boundary is the sc-for's FIRST element
+child only. So keep-wrapper alone loses items 2..N (Rule 4). Full conservation needs the group handled
+at container level (N literal siblings through the existing container path), which brings back the
+"promote the sc-for's inert parent `<div>` to a container boundary" question. To be settled in the
+Stage 2 design before any build.
+
 ## D1112 [INCIDENT] — D1111's "ticker converts, real strings verbatim" was FALSE; wrong-directory bug found + fixed, and the ticker still does not reach the emitted blocks
 
 **2026-09-19.** Bean asked for the docs to be reconciled before the next front. Cross-checking
