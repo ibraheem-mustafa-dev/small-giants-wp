@@ -3671,6 +3671,21 @@ def main():
              "caveat as --sc-var-min-confidence.",
     )
     parser.add_argument(
+        "--resolve-js-content", action="store_true", default=False,
+        help="Opt-in Spec 31 FR-31-26 (.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md §15, "
+             "design-gated with Bean 2026-09-19): a <sc-for> item template whose ONLY content "
+             "is JS `{{ t.field }}` bindings with no literal fallback text (the real content "
+             "lives in a draft `static ARRAY = [...]` class property, resolved at runtime by "
+             "the draft's own JS) gets that content resolved via a real headless-browser "
+             "render of the draft (js_content_resolver.py -> resolve-js-content.js), spliced "
+             "back into the mockup non-destructively — scope-narrowed to genuinely-simple "
+             "single-text-field items only (a multi-field item or a bare self-reference is "
+             "excluded rather than risk a garbled splice). Fail-soft: any render failure "
+             "(server, Playwright, timeout, an unresolvable array) leaves the draft "
+             "completely unchanged, never a new failure mode. Omit for today's default "
+             "behaviour (unchanged, zero risk to any existing client).",
+    )
+    parser.add_argument(
         "--sc-var-cache", type=Path, default=None,
         help="Opt-in Tier B (2026-09-14, Bean-directed follow-up): the committed sc_var_hint "
              "cache sidecar path (plugins/sgs-blocks/scripts/recogniser/sc_var_classifier.py's "
@@ -3767,6 +3782,25 @@ def main():
         _dc_resolved_path.write_text(_dc_resolved, encoding="utf-8")
         args.mockup = _dc_resolved_path
         print(f"[orchestrator] dc-import: resolved {_dc_count} import(s) -> {_dc_resolved_path}")
+
+    # Stage -1.5 -- JS-array-sourced content resolution (Spec 31 FR-31-26,
+    # design-gated with Bean 2026-09-19). Runs AFTER dc-import so a
+    # JS-array-sourced group inside an imported component is covered too.
+    # Opt-in (off by default) and fail-soft: any failure leaves args.mockup
+    # untouched, never a new failure mode. See js_content_resolver.py's own
+    # module docstring for the full mechanism.
+    if getattr(args, "resolve_js_content", False):
+        _js_content_mod = _load_module_from_path(
+            "sgs_js_content_resolver", ORCHESTRATOR_DIR / "js_content_resolver.py"
+        )
+        _resolve_js_content = _js_content_mod.resolve_js_array_content
+        _js_raw = args.mockup.read_text(encoding="utf-8")
+        _js_resolved, _js_count = _resolve_js_content(_js_raw, args.mockup.parent)
+        if _js_count:
+            _js_resolved_path = run_dir / "js-content-resolved.html"
+            _js_resolved_path.write_text(_js_resolved, encoding="utf-8")
+            args.mockup = _js_resolved_path
+            print(f"[orchestrator] js-content: resolved {_js_count} group(s) -> {_js_resolved_path}")
 
     print(f"[orchestrator] run_id={run_id}")
     print(f"[orchestrator] run_dir={run_dir}")

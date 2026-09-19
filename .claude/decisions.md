@@ -1,5 +1,67 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1111 [ROUTINE] — FR-31-26 (JS-array-sourced content resolution) built + live-verified:
+the ticker (b32) converts, zero regressions
+
+**2026-09-19.** Implemented the design recorded in Spec 31 §15 (FR-31-26, `/brainstorming`
+design mode with Bean earlier this session) via `/phase-planner` (`.claude/plans/phase-1111-js-array-content-resolution.md`).
+
+**Built:** `plugins/sgs-blocks/scripts/orchestrator/js_content_resolver.py` (eligibility scan,
+marker injection, splice-back, fail-soft orchestration) + `resolve-js-content.js` (Playwright
+render script, served over real local HTTP — `file://` blocks the draft runtime's own `fetch()`
+calls, confirmed live) + `test_js_content_resolver.py` (9 tests). Wired into
+`sgs-clone-orchestrator.py` as Stage -1.5 behind a new `--resolve-js-content` flag
+(`default=False`, mirroring `--classless-match`'s opt-in discipline).
+
+**Two real bugs caught by live testing against the actual draft, not by design review — both
+fixed before shipping:**
+1. **Eligibility check was wrong.** First version treated ANY literal attribute value as "has
+   content," so the ticker's own structural SVG attributes (`width="15"`, `stroke="..."`,
+   `viewBox="..."`) made `_has_literal_content()` wrongly return `True` for an item with ZERO
+   real text — the ticker would never have been touched at all. Fixed to check TEXT only,
+   matching `extraction.py::_emit_content_leaf`'s own "has content" gate shape.
+2. **Field-name mismatch in the splice.** The render script normalises every resolved item to
+   generic `{text, iconPath}` keys (it has no way to know a draft calls its field `name` vs
+   `text` vs `label`), but the first splice implementation matched against the item template's
+   LITERAL field name — `{{ b.name }}` spliced to `""` because the payload key was `text`, not
+   `name`. Caught by the test suite's own `test_two_simple_groups_...` case (a group using a
+   non-`text` field name). Fixed by capturing each candidate's actual field name at eligibility
+   time and mapping through it at splice time.
+
+**Scope narrowed further than the original design during the build, based on live evidence:**
+a `<sc-for>` item template using a BARE self-reference (`{{ p }}`, no dotted field) is excluded
+from "simple shape" entirely — live-tested against the real `featured` products array: its item
+looked field-count-simple but the resolved element turned out to be a whole nested product-card
+composition (image/brand/price/rating concatenated into one `.textContent` blob), not literal
+text. Splicing it would have shipped garbled content. Multi-field items (2+ distinct named
+fields, e.g. `REASONS`'s number+title+body) were already out of scope per the original design.
+Both exclusions are disclosed limits, not silent gaps — `find_unresolved_sc_fors()`'s own
+docstring names them and the reason.
+
+**Live-verified, properly isolated (not against a mismatched baseline — this session's own
+captured lesson):**
+- Flag ON: `b32` (the ticker) flips `failed` → `complete`. `js-content-resolved.html` written,
+  containing the real ticker strings verbatim.
+- A naive `boundary_id`-keyed diff against the pre-fix run looked like ~16 boundaries changed
+  status — investigated before trusting it: proved to be pure `nth-of-type` selector-index
+  renumbering (removing the ticker's `<sc-for>` element shifts every LATER `<sc-for>`'s CSS
+  index down by one), not a real change. Re-diffed by `(selector, block_name)` identity instead
+  of `boundary_id`: **zero** real differences — only the ticker changed.
+- Flag OFF: re-ran the IDENTICAL invocation on the CURRENT (modified) code — exact
+  `boundary_id`-keyed parity with the documented D1109 baseline (74/74 statuses byte-identical),
+  no `js-content-resolved.html` written. The new Stage -1.5 block is a true no-op when the flag
+  is omitted.
+
+**Lesson for `mistakes.md`:** a boundary/selector index (`nth-of-type(N)`) is not stable identity
+across a run that structurally removes an element earlier in the document — a per-index diff
+between two such runs will show phantom "changes" that are pure renumbering. Compare by
+selector+content identity (or another structurally-stable key), never by positional index, when
+the two runs' element counts can differ.
+
+**Not yet closed (per the plan's own disclosed scope):** REASONS and the bare-self-ref product
+arrays remain unresolved — correctly excluded rather than shipped garbled. Full suite
+868/868 passing (9 new + full converter suite), 0 regressions.
+
 ## D1110 [ROUTINE] — Indus Foods given a dedicated WordPress test site instead of building on
 the shared sandybrown canary; two content-level bugs root-caused during that build
 
