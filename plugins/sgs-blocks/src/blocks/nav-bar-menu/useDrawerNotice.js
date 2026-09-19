@@ -90,9 +90,9 @@ export default function useDrawerNotice( { clientId, ref, drawerRef } ) {
 				insertIndex: be.getBlockIndex( outermost ) + 1,
 				// createBlock throws on an unregistered slug — never offer a
 				// fix action that cannot run.
-				canCreate: !! select( blocksStore ).getBlockType(
-					'sgs/nav-drawer'
-				),
+				canCreate:
+					!! select( blocksStore ).getBlockType( 'sgs/nav-drawer' ) &&
+					!! select( blocksStore ).getBlockType( 'sgs/nav-drawer-menu' ),
 			};
 		},
 		[ clientId, effectiveDrawerRef ]
@@ -107,7 +107,7 @@ export default function useDrawerNotice( { clientId, ref, drawerRef } ) {
 				{ drawerRef: effectiveDrawerRef },
 				// Seed the same menu the bar uses, matching header-scratch.php
 				// — the drawer opens with real links rather than empty.
-				[ createBlock( 'sgs/nav-menu', { ref: ref || 0 } ) ]
+				[ createBlock( 'sgs/nav-drawer-menu', { ref: ref || 0 } ) ]
 			),
 			drawerState.insertIndex,
 			undefined, // root level

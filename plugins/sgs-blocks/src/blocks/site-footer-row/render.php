@@ -362,7 +362,7 @@ if ( 'none' !== $border_style ) {
 	// class default) would otherwise keep painting even though the
 	// operator picked "no border". Cause-agnostic: harmless when no
 	// such default exists, a real fix when one does.
-	$scoped_css[] = $root_sel . '{border-style:none;border-width:0;}';
+	$css .= $root_sel . '{border-style:none;border-width:0;}';
 }
 
 // ── Block-private border-radius via wp_style_engine_get_styles() (base and the

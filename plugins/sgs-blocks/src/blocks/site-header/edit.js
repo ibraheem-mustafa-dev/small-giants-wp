@@ -237,7 +237,7 @@ const TEMPLATE = [
 			// auto-injection that WC hooks onto core/navigation via Block Hooks
 			// (FR-37-21).
 			[
-				'sgs/nav-menu',
+				'sgs/nav-bar-menu',
 				{
 					itemColour: 'text',
 					gap: '28px',
