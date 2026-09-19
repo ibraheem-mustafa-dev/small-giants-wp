@@ -11,23 +11,717 @@
   },
   {
     "kind": "derive",
-    "slug": "surface-alt",
-    "_source": "derived",
-    "role": "surface-alt",
-    "confidence": 0.7,
-    "relative_share": 0.333,
-    "value": "#bdc1c6",
-    "reason": "Pass B: derived surface-alt by usage-context (share 0.333 within role)"
-  },
-  {
-    "kind": "derive",
     "slug": "text",
     "_source": "derived",
     "role": "text",
     "confidence": 0.95,
-    "relative_share": 0.667,
+    "relative_share": 1.0,
     "value": "#141414",
-    "reason": "Pass B: derived text by usage-context (share 0.667 within role)"
+    "reason": "Pass B: derived text by usage-context (share 1.0 within role)"
+  },
+  {
+    "kind": "merge",
+    "reason": "Pass B palette OVERLAID on the framework baseline (baseline slugs kept, never replaced)",
+    "overlaid": 2,
+    "appended": 0
+  },
+  {
+    "kind": "declared",
+    "what": "accentSets.accent",
+    "value": "taupe",
+    "reason": "active option confirmed by the rendered custom property"
+  },
+  {
+    "kind": "skip",
+    "what": "Faint text",
+    "value": "#8B8478",
+    "reason": "placeholder-tier role: no palette slot"
+  },
+  {
+    "kind": "skip",
+    "what": "Soft fill",
+    "value": "#EFEAE2",
+    "reason": "accent slugs are supplied by the script variant set"
+  },
+  {
+    "kind": "skip",
+    "what": "Image placeholder",
+    "value": "#F3F0EB",
+    "reason": "placeholder-tier role: no palette slot"
+  },
+  {
+    "kind": "skip",
+    "what": "Dark placeholder",
+    "value": "#2B2721",
+    "reason": "placeholder-tier role: no palette slot"
+  },
+  {
+    "kind": "skip",
+    "what": "Accent (taupe, default)",
+    "value": "#9C8B78",
+    "reason": "accent slugs are supplied by the script variant set"
+  },
+  {
+    "kind": "skip",
+    "what": "Accent ink (taupe)",
+    "value": "#6F6152",
+    "reason": "accent slugs are supplied by the script variant set"
+  },
+  {
+    "kind": "skip",
+    "what": "Ordered in",
+    "value": "#8A6A1F",
+    "reason": "status colour with no base slug"
+  },
+  {
+    "kind": "skip",
+    "what": "Google blue",
+    "value": "#1A73E8",
+    "reason": "third-party widget colour: stays literal"
+  },
+  {
+    "kind": "skip",
+    "what": "Google star",
+    "value": "#FBBC04",
+    "reason": "third-party widget colour: stays literal"
+  },
+  {
+    "kind": "skip",
+    "what": "Google grey star",
+    "value": "#DADCE0",
+    "reason": "third-party widget colour: stays literal"
+  },
+  {
+    "kind": "skip",
+    "what": "Google borders",
+    "value": "#DADCE0",
+    "reason": "third-party widget colour: stays literal"
+  },
+  {
+    "kind": "skip",
+    "what": "Google text",
+    "value": "#202124",
+    "reason": "third-party widget colour: stays literal"
+  },
+  {
+    "kind": "declared",
+    "what": "palette.surface",
+    "value": "#FAF8F5",
+    "reason": "README 'Page background', 13 of 43 uses in its role's families (background 13), consistent with its role"
+  },
+  {
+    "kind": "declared",
+    "what": "palette.surface-alt",
+    "value": "#FFFFFF",
+    "reason": "README 'Surface', 88 of 102 uses in its role's families (background 88), consistent with its role"
+  },
+  {
+    "kind": "declared",
+    "what": "palette.text",
+    "value": "#141414",
+    "reason": "README 'Ink', 151 of 151 uses in its role's families (text 65, background 35, border 51), consistent with its role"
+  },
+  {
+    "kind": "declared",
+    "what": "palette.primary",
+    "value": "#141414",
+    "reason": "README 'Ink', 151 of 151 uses in its role's families (text 65, background 35, border 51), consistent with its role"
+  },
+  {
+    "kind": "declared",
+    "what": "palette.text-inverse",
+    "value": "#FAF8F5",
+    "reason": "README 'Ink on dark', 29 of 43 uses in its role's families (text 29), consistent with its role"
+  },
+  {
+    "kind": "declared",
+    "what": "palette.primary-text",
+    "value": "#FAF8F5",
+    "reason": "README 'Ink on dark', 29 of 43 uses in its role's families (text 29), consistent with its role"
+  },
+  {
+    "kind": "declared",
+    "what": "palette.text-muted",
+    "value": "#5E584F",
+    "reason": "README 'Body text', 56 of 56 uses in its role's families (text 56), consistent with its role"
+  },
+  {
+    "kind": "declared",
+    "what": "palette.text-label",
+    "value": "#77716A",
+    "reason": "README 'Muted text', 44 of 44 uses in its role's families (text 44), consistent with its role"
+  },
+  {
+    "kind": "declared",
+    "what": "palette.border",
+    "value": "#E6E1DA",
+    "reason": "README 'Hairline', 124 of 124 uses in its role's families (background 14, border 110), consistent with its role"
+  },
+  {
+    "kind": "declared",
+    "what": "palette.success",
+    "value": "#1B7F43",
+    "reason": "README 'In stock', 2 of 2 uses in its role's families (text 2), consistent with its role"
+  },
+  {
+    "kind": "declared",
+    "what": "palette.whatsapp",
+    "value": "#25D366",
+    "reason": "README 'WhatsApp', 10 of 10 uses in its role's families (text 1, background 8, border 1), consistent with its role"
+  },
+  {
+    "kind": "overlay",
+    "what": "palette.primary",
+    "value": "#141414",
+    "was": "#1F7A7A",
+    "reason": "base slug replaced in place"
+  },
+  {
+    "kind": "overlay",
+    "what": "palette.primary-text",
+    "value": "#FAF8F5",
+    "was": "#F1F5F9",
+    "reason": "base slug replaced in place"
+  },
+  {
+    "kind": "overlay",
+    "what": "palette.primary-dark",
+    "value": "#0F0F0F",
+    "was": "#0F4C4C",
+    "reason": "derived: primary mixed 25% toward black"
+  },
+  {
+    "kind": "overlay",
+    "what": "palette.accent",
+    "value": "#9C8B78",
+    "was": "#F59E0B",
+    "reason": "base slug replaced in place"
+  },
+  {
+    "kind": "overlay",
+    "what": "palette.accent-text",
+    "value": "#6F6152",
+    "was": "#92400E",
+    "reason": "base slug replaced in place"
+  },
+  {
+    "kind": "overlay",
+    "what": "palette.accent-light",
+    "value": "#EFEAE2",
+    "was": "#FEF3C7",
+    "reason": "base slug replaced in place"
+  },
+  {
+    "kind": "overlay",
+    "what": "palette.success",
+    "value": "#1B7F43",
+    "was": "#2E7D4F",
+    "reason": "base slug replaced in place"
+  },
+  {
+    "kind": "overlay",
+    "what": "palette.whatsapp",
+    "value": "#25D366",
+    "was": "#25D366",
+    "reason": "base slug replaced in place"
+  },
+  {
+    "kind": "overlay",
+    "what": "palette.surface",
+    "value": "#FAF8F5",
+    "was": "#faf8f5",
+    "reason": "base slug replaced in place"
+  },
+  {
+    "kind": "overlay",
+    "what": "palette.surface-alt",
+    "value": "#FFFFFF",
+    "was": "#F1F0EC",
+    "reason": "base slug replaced in place"
+  },
+  {
+    "kind": "overlay",
+    "what": "palette.text",
+    "value": "#141414",
+    "was": "#141414",
+    "reason": "base slug replaced in place"
+  },
+  {
+    "kind": "overlay",
+    "what": "palette.text-muted",
+    "value": "#5E584F",
+    "was": "#606D80",
+    "reason": "base slug replaced in place"
+  },
+  {
+    "kind": "overlay",
+    "what": "palette.text-inverse",
+    "value": "#FAF8F5",
+    "was": "#F1F5F9",
+    "reason": "base slug replaced in place"
+  },
+  {
+    "kind": "overlay",
+    "what": "palette.border",
+    "value": "#E6E1DA",
+    "was": "#D4DBE5",
+    "reason": "base slug replaced in place"
+  },
+  {
+    "kind": "overlay",
+    "what": "palette.text-label",
+    "value": "#77716A",
+    "reason": "new role-named slug appended (no base slug fits)"
+  },
+  {
+    "kind": "declared",
+    "what": "layout.contentSize",
+    "value": "1440px",
+    "reason": "README max content width; wideSize 1440px (never narrower)"
+  },
+  {
+    "kind": "declared",
+    "what": "custom.borderRadius",
+    "value": "0px",
+    "reason": "README declares a square design; pill and other keys untouched"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#6B655E",
+    "reason": "undeclared, 24 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#4A453E",
+    "reason": "undeclared, 12 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#2A2A2A",
+    "reason": "undeclared, 9 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#0B2B17",
+    "reason": "undeclared, 8 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#B7E5C7",
+    "reason": "undeclared, 5 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#E9F9EF",
+    "reason": "undeclared, 5 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#F0EBE3",
+    "reason": "undeclared, 5 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#12301E",
+    "reason": "undeclared, 4 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#1EBE5A",
+    "reason": "undeclared, 4 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#5F6368",
+    "reason": "undeclared, 4 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#C9C2B8",
+    "reason": "undeclared, 4 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#D8D2C8",
+    "reason": "undeclared, 4 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#F1F6FE",
+    "reason": "undeclared, 4 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "rgba(20,20,20,0.5)",
+    "reason": "translucent"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "rgba(255,255,255,0.94)",
+    "reason": "translucent"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#0F2E1C",
+    "reason": "undeclared, 2 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#2F5C3F",
+    "reason": "undeclared, 2 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#70757A",
+    "reason": "undeclared, 2 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#999999",
+    "reason": "undeclared, 2 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#DCF4E5",
+    "reason": "undeclared, 2 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#DDD6CB",
+    "reason": "undeclared, 2 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#E8EAED",
+    "reason": "undeclared, 2 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#F7F4EF",
+    "reason": "undeclared, 2 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "rgba(20,20,20,0)",
+    "reason": "translucent"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "rgba(20,20,20,0.72)",
+    "reason": "translucent"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "rgba(20,20,20,0.8)",
+    "reason": "translucent"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#000000",
+    "reason": "undeclared, 1 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#1765CC",
+    "reason": "undeclared, 1 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#2A2724",
+    "reason": "undeclared, 1 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#2F2F2F",
+    "reason": "undeclared, 1 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#3A352F",
+    "reason": "undeclared, 1 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#3C4043",
+    "reason": "undeclared, 1 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#3F3F3F",
+    "reason": "undeclared, 1 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#4285F4",
+    "reason": "undeclared, 1 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#4A4A4A",
+    "reason": "undeclared, 1 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#5F5F5F",
+    "reason": "undeclared, 1 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#7A7A7A",
+    "reason": "undeclared, 1 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#A39C90",
+    "reason": "undeclared, 1 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#B8B0A4",
+    "reason": "undeclared, 1 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#BDC1C6",
+    "reason": "undeclared, 1 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#C13584",
+    "reason": "undeclared, 1 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#CFC7BB",
+    "reason": "undeclared, 1 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#CFC8BE",
+    "reason": "undeclared, 1 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#D0C8BA",
+    "reason": "undeclared, 1 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#DADADA",
+    "reason": "undeclared, 1 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#DFD8CC",
+    "reason": "undeclared, 1 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#E2DCD3",
+    "reason": "undeclared, 1 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#EDE7DC",
+    "reason": "undeclared, 1 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#F1F3F4",
+    "reason": "undeclared, 1 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#F4F4F4",
+    "reason": "undeclared, 1 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#FFB3C7",
+    "reason": "undeclared, 1 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "#FFC439",
+    "reason": "undeclared, 1 uses below 25"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "rgba(18,18,18,0)",
+    "reason": "translucent"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "rgba(18,18,18,0.04)",
+    "reason": "translucent"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "rgba(18,18,18,0.4)",
+    "reason": "translucent"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "rgba(18,18,18,0.74)",
+    "reason": "translucent"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "rgba(18,18,18,0.86)",
+    "reason": "translucent"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "rgba(20,20,20,0.06)",
+    "reason": "translucent"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "rgba(20,20,20,0.1)",
+    "reason": "translucent"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "rgba(20,20,20,0.2)",
+    "reason": "translucent"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "rgba(20,20,20,0.34)",
+    "reason": "translucent"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "rgba(20,20,20,0.44)",
+    "reason": "translucent"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "rgba(20,20,20,0.45)",
+    "reason": "translucent"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "rgba(20,20,20,0.88)",
+    "reason": "translucent"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "rgba(20,20,20,0.93)",
+    "reason": "translucent"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "rgba(20,20,20,0.97)",
+    "reason": "translucent"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "rgba(250,248,245,0.14)",
+    "reason": "translucent"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "rgba(250,248,245,0.16)",
+    "reason": "translucent"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "rgba(250,248,245,0.5)",
+    "reason": "translucent"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "rgba(250,248,245,0.6)",
+    "reason": "translucent"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "rgba(250,248,245,0.75)",
+    "reason": "translucent"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "rgba(250,248,245,0.9)",
+    "reason": "translucent"
+  },
+  {
+    "kind": "skip",
+    "what": "census",
+    "value": "rgba(250,248,245,0.94)",
+    "reason": "translucent"
   },
   {
     "kind": "base",
@@ -73,6 +767,14 @@
     }
   },
   {
+    "kind": "declared",
+    "what": "styles.elements.heading.typography.fontWeight",
+    "reason": "most common computed weight of the measured, non-chrome heading levels; levels that differ, or that the framework baseline weights itself, carry their own measured weight; unmeasured levels keep the baseline",
+    "value": "500",
+    "measured": "h1=500,h2=500,h3=500",
+    "own_weight_levels": "(none)"
+  },
+  {
     "kind": "base",
     "what": "styles.elements.h1..h6",
     "reason": "no non-chrome measurement for these levels — framework baseline PRESERVED untouched (blind spot, not measured-absent; deleting it would strip the level from the live site)",
@@ -100,6 +802,69 @@
     "source_css_url": "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700;800;900&display=swap"
   },
   {
+    "kind": "preset",
+    "slot": "buttonPresets.primary",
+    "_source": "derived",
+    "reason": "slot inferred from an unclassed style signature (sig:rgb(20, 20, 20)|rgb(250, 248, 245)|rgb(250, 248, 245)|0px|0px|uppercase|400), 1 occurrence(s), on the PAINTING element <button>",
+    "variant_from": "unclassed style signature",
+    "keys": "background,text,border,border-width,border-radius,font-size,font-weight,min-height,padding,hover-background,hover-transform"
+  },
+  {
+    "kind": "preset",
+    "slot": "buttonPresets.secondary",
+    "_source": "derived",
+    "reason": "slot inferred from an unclassed style signature (sig:rgb(250, 248, 245)|rgb(20, 20, 20)|rgb(20, 20, 20)|0px|0px|uppercase|400), 1 occurrence(s), on the PAINTING element <button>",
+    "variant_from": "unclassed style signature",
+    "keys": "background,text,border,border-width,border-radius,font-size,font-weight,min-height,padding,hover-background,hover-transform"
+  },
+  {
+    "kind": "preset",
+    "slot": "buttonPresets.outline",
+    "_source": "derived",
+    "reason": "slot inferred from an unclassed style signature (sig:rgba(0, 0, 0, 0)|rgb(250, 248, 245)|rgba(250, 248, 245, 0.75)|1px|0px|uppercase|400), 1 occurrence(s), on the PAINTING element <button:nth-of-type(2)>",
+    "variant_from": "unclassed style signature",
+    "keys": "background,text,border,border-width,border-radius,font-size,font-weight,min-height,padding,hover-background,hover-border,hover-transform"
+  },
+  {
+    "kind": "merge",
+    "what": "buttonPresets.primary",
+    "reason": "derived keys overlaid onto the framework baseline preset; baseline keys the extractor cannot derive are preserved",
+    "overridden": "background,border,border-radius,border-width,font-size,font-weight,hover-background,hover-transform,min-height,padding,text",
+    "preserved_from_baseline": "hover-border,hover-text"
+  },
+  {
+    "kind": "merge",
+    "what": "buttonPresets.secondary",
+    "reason": "derived keys overlaid onto the framework baseline preset; baseline keys the extractor cannot derive are preserved",
+    "overridden": "background,border,border-radius,border-width,font-size,font-weight,hover-background,hover-transform,min-height,padding,text",
+    "preserved_from_baseline": "hover-border,hover-text"
+  },
+  {
+    "kind": "merge",
+    "what": "buttonPresets.outline",
+    "reason": "derived keys overlaid onto the framework baseline preset; baseline keys the extractor cannot derive are preserved",
+    "overridden": "background,border,border-radius,border-width,font-size,font-weight,hover-background,hover-border,hover-transform,min-height,padding,text",
+    "preserved_from_baseline": "hover-text"
+  },
+  {
+    "kind": "overlay",
+    "what": "buttonPresets.outline",
+    "value": "hover-border=primary-text,text=primary-text",
+    "reason": "preset hex values that equal a palette colour now reference it"
+  },
+  {
+    "kind": "overlay",
+    "what": "buttonPresets.primary",
+    "value": "background=primary,border=primary-text,text=primary-text",
+    "reason": "preset hex values that equal a palette colour now reference it"
+  },
+  {
+    "kind": "overlay",
+    "what": "buttonPresets.secondary",
+    "value": "background=surface,border=primary,hover-background=surface-alt,text=text",
+    "reason": "preset hex values that equal a palette colour now reference it"
+  },
+  {
     "kind": "merge",
     "what": "styles.elements",
     "reason": "fill-only carry of client element keys the extractor does not derive (generated/measured values always win)",
@@ -107,6 +872,6 @@
   },
   {
     "kind": "merge",
-    "reason": "additive merge onto existing snapshot: 18 extra palette slug(s) preserved + component css/blocks/patterns carried forward"
+    "reason": "additive merge onto existing snapshot: 0 extra palette slug(s) preserved + component css/blocks/patterns carried forward"
   }
 ]

@@ -1,0 +1,22 @@
+{
+  "{{ gmbHref }}": {
+    "as": "url",
+    "key": "socials.google"
+  },
+  "{{ igHref }}": {
+    "as": "url",
+    "key": "socials.instagram"
+  },
+  "{{ mapHref }}": {
+    "as": "url",
+    "key": null
+  },
+  "{{ phone }}": {
+    "as": "text",
+    "key": "phone"
+  },
+  "{{ phoneHref }}": {
+    "as": "tel-href",
+    "key": "phone"
+  }
+}

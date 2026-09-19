@@ -49,6 +49,7 @@ def _is_allowed_https_url(url: str, allowed_hosts: set[str]) -> bool:
 
 import declared_sources
 import derive as derive_mod
+import heading_weight
 import palette as palette_mod
 import presets as presets_mod
 import palette_refs
@@ -377,6 +378,8 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
         tag_typ["lineHeight"] = hbase["lineHeight"]
         if tag in hsizes:
             tag_typ["fontSize"] = hsizes[tag]
+    if design:  # declared-design path only: a draft that lands elsewhere keeps its snapshot byte-identical
+        heading_weight.apply_heading_weights(elements, facts, baseline, trace)
     if skipped:
         trace.append({"kind": "base", "what": "styles.elements.h1..h6",
                       "reason": "no non-chrome measurement for these levels — framework baseline "

@@ -5,63 +5,53 @@
     "color": {
       "palette": [
         {
-          "slug": "surface",
-          "color": "#faf8f5",
-          "name": "Surface",
-          "_source": "derived",
-          "confidence": 0.95,
-          "advisory": true
-        },
-        {
-          "slug": "surface-alt",
-          "color": "#bdc1c6",
-          "name": "Surface Alt",
-          "_source": "derived",
-          "confidence": 0.7,
-          "advisory": true
-        },
-        {
-          "slug": "text",
-          "color": "#141414",
-          "name": "Text",
-          "_source": "derived",
-          "confidence": 0.95,
-          "advisory": true
-        },
-        {
           "slug": "primary",
-          "color": "#1F7A7A",
-          "name": "Primary"
+          "color": "#141414",
+          "name": "Primary",
+          "_source": "declared",
+          "_baseline_color": "#1F7A7A"
         },
         {
           "slug": "primary-text",
+          "color": "#FAF8F5",
           "name": "Text on Primary",
-          "color": "#F1F5F9"
+          "_source": "declared",
+          "_baseline_color": "#F1F5F9"
         },
         {
           "slug": "primary-dark",
-          "color": "#0F4C4C",
-          "name": "Primary Dark"
+          "color": "#0F0F0F",
+          "name": "Primary Dark",
+          "_source": "derived",
+          "_baseline_color": "#0F4C4C"
         },
         {
           "slug": "accent",
-          "color": "#F59E0B",
-          "name": "Accent"
+          "color": "#9C8B78",
+          "name": "Accent",
+          "_source": "declared",
+          "_baseline_color": "#F59E0B"
         },
         {
           "slug": "accent-text",
-          "color": "#92400E",
-          "name": "Text on Accent"
+          "color": "#6F6152",
+          "name": "Text on Accent",
+          "_source": "declared",
+          "_baseline_color": "#92400E"
         },
         {
           "slug": "accent-light",
-          "color": "#FEF3C7",
-          "name": "Accent Light"
+          "color": "#EFEAE2",
+          "name": "Accent Light",
+          "_source": "declared",
+          "_baseline_color": "#FEF3C7"
         },
         {
           "slug": "success",
-          "color": "#2E7D4F",
-          "name": "Success"
+          "color": "#1B7F43",
+          "name": "Success",
+          "_source": "declared",
+          "_baseline_color": "#2E7D4F"
         },
         {
           "slug": "success-light",
@@ -91,22 +81,51 @@
         {
           "slug": "whatsapp",
           "color": "#25D366",
-          "name": "WhatsApp"
+          "name": "WhatsApp",
+          "_source": "declared",
+          "_baseline_color": "#25D366"
+        },
+        {
+          "slug": "surface",
+          "color": "#FAF8F5",
+          "name": "Surface",
+          "_source": "declared",
+          "_baseline_color": "#FAF9F6"
+        },
+        {
+          "slug": "surface-alt",
+          "color": "#FFFFFF",
+          "name": "Raised Background",
+          "_source": "declared",
+          "_baseline_color": "#F1F0EC"
+        },
+        {
+          "slug": "text",
+          "color": "#141414",
+          "name": "Text",
+          "_source": "declared",
+          "_baseline_color": "#1A202C"
         },
         {
           "slug": "text-muted",
-          "color": "#606D80",
-          "name": "Text Muted"
+          "color": "#5E584F",
+          "name": "Text Muted",
+          "_source": "declared",
+          "_baseline_color": "#606D80"
         },
         {
           "slug": "text-inverse",
-          "color": "#F1F5F9",
-          "name": "Text on Dark"
+          "color": "#FAF8F5",
+          "name": "Text on Dark",
+          "_source": "declared",
+          "_baseline_color": "#F1F5F9"
         },
         {
           "slug": "border",
-          "color": "#D4DBE5",
-          "name": "Border"
+          "color": "#E6E1DA",
+          "name": "Border",
+          "_source": "declared",
+          "_baseline_color": "#D4DBE5"
         },
         {
           "slug": "border-light",
@@ -117,6 +136,12 @@
           "slug": "footer-bg",
           "color": "#0F172A",
           "name": "Footer Background"
+        },
+        {
+          "slug": "text-label",
+          "color": "#77716A",
+          "name": "Text Label",
+          "_source": "declared"
         }
       ],
       "gradients": [],
@@ -322,8 +347,8 @@
       ]
     },
     "layout": {
-      "contentSize": "1200px",
-      "wideSize": "1400px"
+      "contentSize": "1440px",
+      "wideSize": "1440px"
     },
     "shadow": {
       "defaultPresets": false,
@@ -354,51 +379,54 @@
       "buttonPresets": {
         "primary": {
           "background": "var(--wp--preset--color--primary)",
-          "text": "#ffffff",
-          "border": "var(--wp--preset--color--primary)",
-          "border-width": "2px",
-          "border-radius": "8px",
-          "padding": "12px 24px 12px 24px",
-          "font-size": "15px",
-          "font-weight": "600",
-          "min-height": "48px",
-          "hover-background": "var(--wp--preset--color--text)",
+          "text": "var(--wp--preset--color--primary-text)",
+          "border": "var(--wp--preset--color--primary-text)",
+          "border-width": "0px",
+          "border-radius": "0px",
+          "padding": "0px 28px 0px 28px",
+          "font-size": "13px",
+          "font-weight": "400",
+          "min-height": "52px",
+          "hover-background": "#2a2a2a",
           "hover-text": "#ffffff",
-          "hover-border": "var(--wp--preset--color--text)"
+          "hover-border": "var(--wp--preset--color--text)",
+          "hover-transform": "matrix(1, 0, 0, 1, 0, -3)"
         },
         "secondary": {
-          "background": "transparent",
-          "text": "var(--wp--preset--color--primary)",
+          "background": "var(--wp--preset--color--surface)",
+          "text": "var(--wp--preset--color--text)",
           "border": "var(--wp--preset--color--primary)",
-          "border-width": "2px",
-          "border-radius": "8px",
-          "padding": "12px 24px 12px 24px",
-          "font-size": "15px",
-          "font-weight": "600",
-          "min-height": "48px",
-          "hover-background": "var(--wp--preset--color--primary)",
+          "border-width": "0px",
+          "border-radius": "0px",
+          "padding": "0px 28px 0px 28px",
+          "font-size": "13px",
+          "font-weight": "400",
+          "min-height": "52px",
+          "hover-background": "var(--wp--preset--color--surface-alt)",
           "hover-text": "#ffffff",
-          "hover-border": "var(--wp--preset--color--primary)"
+          "hover-border": "var(--wp--preset--color--primary)",
+          "hover-transform": "matrix(1, 0, 0, 1, 0, -3)"
         },
         "outline": {
           "background": "transparent",
-          "text": "var(--wp--preset--color--text)",
-          "border": "var(--wp--preset--color--border)",
-          "border-width": "2px",
-          "border-radius": "8px",
-          "padding": "12px 24px 12px 24px",
-          "font-size": "15px",
-          "font-weight": "600",
-          "min-height": "48px",
-          "hover-background": "var(--wp--preset--color--surface-alt)",
+          "text": "var(--wp--preset--color--primary-text)",
+          "border": "rgba(250, 248, 245, 0.75)",
+          "border-width": "1px",
+          "border-radius": "0px",
+          "padding": "0px 28px 0px 28px",
+          "font-size": "13px",
+          "font-weight": "400",
+          "min-height": "52px",
+          "hover-background": "rgba(250, 248, 245, 0.14)",
           "hover-text": "var(--wp--preset--color--text)",
-          "hover-border": "var(--wp--preset--color--primary)"
+          "hover-border": "var(--wp--preset--color--primary-text)",
+          "hover-transform": "matrix(1, 0, 0, 1, 0, -3)"
         }
       },
       "borderRadius": {
-        "small": "4px",
-        "medium": "8px",
-        "large": "16px",
+        "small": "0px",
+        "medium": "0px",
+        "large": "0px",
         "pill": "9999px"
       },
       "transition": {
@@ -425,6 +453,23 @@
         "offset": "2px",
         "color-primary": "var(--wp--preset--color--accent, #d8ca50)",
         "color-accent": "color-mix(in srgb, var(--wp--preset--color--accent, #d8ca50) 40%, transparent)"
+      },
+      "accentSets": {
+        "navy": {
+          "accent": "#3A4A6B",
+          "accent-light": "#E4E7EE",
+          "accent-text": "#2B3A55"
+        },
+        "sage": {
+          "accent": "#8A9A86",
+          "accent-light": "#E8ECE6",
+          "accent-text": "#55654F"
+        },
+        "taupe": {
+          "accent": "#9C8B78",
+          "accent-light": "#EFEAE2",
+          "accent-text": "#6F6152"
+        }
       },
       "header": {},
       "footer": {}
@@ -476,7 +521,7 @@
       "heading": {
         "typography": {
           "fontFamily": "var:preset|font-family|heading",
-          "fontWeight": "700",
+          "fontWeight": "500",
           "lineHeight": "1.0"
         },
         "color": {
