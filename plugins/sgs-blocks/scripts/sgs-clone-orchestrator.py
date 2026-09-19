@@ -3779,7 +3779,12 @@ def main():
     # into run_dir. Stage -1.5 needs it: the draft's own runtime (support.js,
     # image-slot.js, sibling .dc.html components) lives here, not in run_dir.
     _draft_dir = args.mockup.parent
+    _draft_path = args.mockup  # ORIGINAL draft, before Stage -2 / -1.5 reassign args.mockup
     _dc_raw = args.mockup.read_text(encoding="utf-8")
+    _draft_server = _load_module_from_path(
+        "sgs_draft_server", ORCHESTRATOR_DIR / "draft_server.py"
+    )
+    _is_dsl_draft = _draft_server.is_dsl_draft(_dc_raw)
     _dc_resolved, _dc_count = _resolve_dc_imports(_dc_raw, args.mockup.parent)
     if _dc_count:
         _dc_resolved_path = run_dir / "dc-import-resolved.html"
@@ -4333,14 +4338,25 @@ def main():
                     # page Stage 10 just deployed. No --exclude (compares everything;
                     # the operator can pass --exclude to computed-parity.js for a draft
                     # whose sections are known-broken).
-                    cp_proc = subprocess.run(
-                        ["node", str(cp_tool),
-                         "--draft", str(args.mockup.resolve()),
-                         "--clone", cp_url,
-                         "--viewports", "375,768,1440",
-                         "--out", str(cp_out)],
-                        capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=420,
-                    )
+                    # A Claude Design (.dc.html) draft renders only through its own runtime, so
+                    # score the ORIGINAL draft folder over a temporary HTTP server (D1116). The
+                    # run-dir copy (args.mockup) has no support.js and is unrendered template.
+                    # Static drafts keep the file path unchanged.
+                    import contextlib as _ctx3
+                    import urllib.parse as _up3
+                    with _ctx3.ExitStack() as _cp_stack:
+                        _cp_draft_arg = str(args.mockup.resolve())
+                        if _is_dsl_draft:
+                            _cp_base = _cp_stack.enter_context(_draft_server.serve_dir(_draft_dir))
+                            _cp_draft_arg = f"{_cp_base}/{_up3.quote(_draft_path.name)}"
+                        cp_proc = subprocess.run(
+                            ["node", str(cp_tool),
+                             "--draft", _cp_draft_arg,
+                             "--clone", cp_url,
+                             "--viewports", "375,768,1440",
+                             "--out", str(cp_out)],
+                            capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=420,
+                        )
                     if not cp_out.exists():
                         print(f"[stage-11.6] computed-parity produced no report (node rc={cp_proc.returncode}). "
                               f"stderr: {(cp_proc.stderr or '')[-200:]}", file=sys.stderr)
@@ -4348,7 +4364,8 @@ def main():
                         import json as _json3
                         _cp = _json3.loads(cp_out.read_text(encoding="utf-8"))
                         computed_parity_overall_pct = _cp.get("overall_css_pct")
-                        print(f"[stage-11.6] computed-parity (draft={args.mockup.name} vs live clone) — "
+                        print(f"[stage-11.6] computed-parity (draft={_draft_path.name}"
+                              f"{' [served over http]' if _is_dsl_draft else ''} vs live clone) — "
                               f"OVERALL CSS {_cp.get('overall_css_pct')}% (universal, matched by content):")
                         for _vp, _v in _cp.get("viewports", {}).items():
                             _cc = (_v.get("content") or {})

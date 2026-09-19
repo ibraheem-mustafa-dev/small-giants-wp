@@ -1,5 +1,29 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1116 [ROUTINE] — Stage 11.6 now scores the RENDERED draft (served over HTTP) for `.dc.html` drafts; honest baseline is content 12% / css 0%
+
+**2026-09-19.** Investigator report `.claude/reports/2026-09-19-inv-stage116-draft-side.md`. Root cause
+(PROVEN, and I re-ran it): Stage -2 swaps `args.mockup` into `run_dir/dc-import-resolved.html`, and
+Stage 11.6 passed that file to `computed-parity.js` as `--draft` over `file://`. The run directory has no
+`support.js`, so the draft was scored as raw template (176 unfilled `{{ }}`, 43 `<sc-for>`, 127 `<sc-if>`).
+Same wrong-directory class as D1112. Mama's Munches was unaffected (its `args.mockup` stays the static file).
+
+**Fix.** New `orchestrator/draft_server.py` (`is_dsl_draft` detects `<x-dc>` / `data-dc-script` /
+`<sc-for|if>` by CONTENT; `serve_dir` is an ephemeral-port `ThreadingHTTPServer` always shut down in
+`finally`). The orchestrator captures `_draft_path` and `_is_dsl_draft` at Stage -2 and, for a DSL draft,
+passes `http://127.0.0.1:<port>/<original name>` to Stage 11.6, serving the ORIGINAL draft folder.
+Static drafts keep the file path, unchanged. 3 new tests (14 pass with the resolver tests).
+
+**Evidence.** Full deploy run after the fix printed `[stage-11.6] computed-parity (draft=Eye Care
+Birmingham.dc.html [served over http] ...)` with content 12% / 11% / 12% and css 0% at 375/768/1440,
+identical to the investigator's manual-server run. Both positive controls (served draft vs itself, clone
+vs itself) score 100%, so the tool is sound. Over HTTP the draft shows ONE routed view (home, ~880
+elements); ~11% (header, footer, announcement bar) legitimately is not in a homepage clone.
+
+**Consequence.** The old "content 37% / css 4%" was inflated by placeholder-to-placeholder matches. 12% /
+0% is the honest baseline for every later fix on this draft. Open: I did not audit other consumers of
+`args.mockup` after the Stage -2 reassign for the D1112 class (only Stage -1.5 and 11.6 are fixed).
+
 ## D1115 [INCIDENT] — Spec 33 push wiped the test site's palette (my push); investigators find the "non-BEM" halts are classless sections gated on a hint, and Spec 33's Pass B guesses badly
 
 **2026-09-19.** Three read-only investigators (reports in `.claude/reports/2026-09-19-inv-*.md`); each

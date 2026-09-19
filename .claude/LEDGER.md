@@ -50,8 +50,9 @@ Phase 3's precondition (real WooCommerce catalogue data).
 `SSL_CERT_FILE=<certifi cacert.pem>` (Python's Windows TLS store rejects every hostingersite.com
 host, proven), `--deploy-target page:11`, and NO `--skip-freshness-gate` (the snapshot is now
 recreated from the draft by Spec 33). First live numbers: 93 visible `{{ }}` placeholders on the
-rendered page, STRUCTURE 2% against the draft served over HTTP. Stage 11.6 in the orchestrator
-compares the RAW un-rendered draft, so its numbers are invalid for `.dc.html` drafts. Queued
+rendered page, STRUCTURE 2% against the draft served over HTTP. Stage 11.6 was comparing the RAW
+un-rendered draft (invalid for `.dc.html`); FIXED in D1116, honest baseline is content 12% / css 0%.
+The first run had an EMPTY palette on the test site (my push, D1115), fixed by re-pushing the merged snapshot. Queued
 investigation groups (5 findings) are in D1114: each is a `/systematic-debugging` from run dumps,
 parallel subagents one directory each, main thread owns deploys and commits.
 
