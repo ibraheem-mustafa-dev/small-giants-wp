@@ -638,7 +638,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   background, so it cannot be `none`.
 
  **This was MEASURED before the code was written, and the measurement is why the column exists.**
-  Letting `cursor-field` create panels puts a brand-new fx panel on **11 blocks** — `nav-menu`,
+  Letting `cursor-field` create panels puts a brand-new fx panel on **11 blocks** — `nav-bar-menu`,
   `site-header`, `site-header-row`, `site-footer`, `site-footer-row`, `form`, `modal`, `nav-drawer`,
   `mega-panel`, `feature-grid`, `testimonial-slider` — and because `offered = specific + permissive`,
   every one of those would ALSO silently inherit `motion-path` and `scrub`. That is the "13 panels
@@ -713,7 +713,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
  **ROUTE B WAS NOT TAKEN, deliberately and with a measurement behind it.** The capability shipped
   as an fx-panel effect with `fx_effects.creates_panel = 0`, not as a background mode in the shared
   wrapper. Letting it create panels was measured and rejected: it put a brand-new fx panel on 11
-  blocks (`nav-menu`, `site-header`, `form`, `modal`…), each of which would then ALSO silently
+  blocks (`nav-bar-menu`, `site-header`, `form`, `modal`…), each of which would then ALSO silently
   inherit `motion-path` and `scrub` — the "13 panels where none makes sense" containment failure
   D459 exists to prevent. Panel roster measured 28 before, 28 after. **The reach Route B promised is
   delivered (9 emitter blocks incl. `sgs/container`, plus runtime-detected participants); the
@@ -1053,11 +1053,10 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   between a magnetic button and a hover state.
 
  **Not a new mechanism — a generalisation of a shipped one.** `src/shared/effects/magnet.js`
-  has shipped since the mega-menu build, driving `sgs/nav-bar-menu`'s (split from `sgs/nav-menu` at
-  D1059, 2026-09-14/15 — the burger/magnet mechanism is bar-only) label nudge (±8px, X-axis, only
-  while the pointer is over the label itself). This FR generalises that file rather than replacing
-  it: the new `createMagnet( el, opts )` core is byte-identical in its no-options behaviour, so
-  `nav-menu` is untouched by this build.
+  drives `sgs/nav-bar-menu`'s label nudge (±8px, X-axis, only
+  while the pointer is over the label itself; the burger/magnet mechanism is bar-only). This FR
+  generalises that file rather than replacing it: the new `createMagnet( el, opts )` core is
+  byte-identical in its no-options behaviour, so `sgs/nav-bar-menu` is unaffected.
 
  **Why a shared document listener, not a per-element one.** `createMagnet()` attaches NO listeners
   of its own, because an element-scoped `mousemove` structurally cannot see a pointer that is
@@ -1963,18 +1962,16 @@ Grouping is by SHARED INFRASTRUCTURE, not size. B and C both depend only on A; B
   > mid-flight** — while the transparent row's background ramped `alpha 0 → 0.408 → 0.847 → 1`
   > and returned cleanly to transparent at the top. `--sgs-header-height` steady at 93px.
   > Non-vacuous: `lenis-smooth` was confirmed active throughout.
-  > · **nav-drawer `<dialog>` × transformed ancestor — PASS, and the risk note was wrong about
-  > the DOM.** `header-behaviours.css` describes the drawer as opening *inside* a transformed
-  > `header.sgs-site-header`. On this build the drawer's parent chain is `BODY → HTML` — it is
-  > **not a header descendant at all**, so a header transform could never reach it, and a test
-  > using one is vacuous by construction. Re-run against a genuine ancestor (`body`) with a
-  > negative control: an ordinary `position: fixed` probe moved **−80px**, proving the detector
-  > works, while the open `<dialog>` moved **0**. Top-layer resolution against the viewport is
-  > therefore CONFIRMED empirically, not merely cited. **Caveat kept honest:** the transform was
-  > applied directly rather than by enabling hide-on-scroll, so the *setting* path is still
-  > unexercised end-to-end; and if a future build nests the drawer inside the header, the
+  > · **nav-drawer `<dialog>` × transformed ancestor — PASS.** The drawer's parent chain is
+  > `BODY → HTML` — it is **not a header descendant at all**, so a header transform can never
+  > reach it, and a test using one is vacuous by construction. Run against a genuine ancestor
+  > (`body`) with a negative control: an ordinary `position: fixed` probe moved **−80px**,
+  > proving the detector works, while the open `<dialog>` moved **0**. Top-layer resolution
+  > against the viewport is therefore CONFIRMED empirically, not merely cited. **Caveat:** the
+  > transform was applied directly rather than by enabling hide-on-scroll, so the *setting* path
+  > is unexercised end-to-end; and if a future build nests the drawer inside the header, the
   > ancestry premise changes and this should be re-read (though the top-layer result would still
-  > hold). The `header-behaviours.css` comment should be corrected to match the real DOM.
+  > hold).
 - **Wave C — interaction + SVG + toys.**
   Draggable roster (FR-38-13) incl. **NET-NEW `sgs/before-after`** (needs Draggable — cannot
   come earlier), Flip pairing (FR-38-12 — original `sgs/filter-search`↔`sgs/card-grid` premise

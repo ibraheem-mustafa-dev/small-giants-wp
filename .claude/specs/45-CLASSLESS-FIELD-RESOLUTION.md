@@ -41,10 +41,9 @@ source files before being accepted — none were taken on Bean's word alone,
 per this project's standing fact-check mandate.
 
 1. **`block_composition` carries orphaned rows for deleted blocks.**
-   `sgs/adaptive-nav` and `sgs/mobile-nav` have no row in `blocks` at all
-   (both fully removed) and no source directory — yet `block_composition`
-   still carries rows for them, plus 5 more orphans (`sgs/content-collection`,
-   `sgs/divider`, `sgs/mega-menu`, `sgs/mobile-nav-toggle`, `sgs/nav-menu`).
+   `sgs/adaptive-nav` and `sgs/content-collection` have no row in `blocks`
+   and no source directory — yet `block_composition` still carries rows for
+   them (`python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT DISTINCT block_slug FROM block_composition WHERE block_slug NOT IN (SELECT slug FROM blocks)"` → those 2).
    Nothing in the schema or the `/sgs-update` seeder removes a
    `block_composition` row when its block is deleted; `blocks.is_stale`
    exists but is 0 for all 209 rows, so it is not being used as that
@@ -840,10 +839,9 @@ unchanged by this — read the composition paragraph above for that distinction.
   refusal to search.
 
 ⚠ **v1.6.0 verification gate 1 — a candidate slug must resolve to a real,
-current `blocks` row.** Verified live: `block_composition` carries 7 orphaned
+current `blocks` row.** `block_composition` carries 2 orphaned
 rows referencing blocks that no longer exist in `blocks` at all (`sgs/adaptive-nav`,
-`sgs/content-collection`, `sgs/divider`, `sgs/mega-menu`, `sgs/mobile-nav`,
-`sgs/mobile-nav-toggle`, `sgs/nav-menu`) — deleted blocks whose composition
+`sgs/content-collection`; same query as above) — deleted blocks whose composition
 row was never cleaned up (`blocks.is_stale` exists but is 0 for every row
 today, so it cannot be relied on as this signal). Any candidate slug pulled
 from `accepts_allowed_blocks` that does not resolve to a live `blocks` row

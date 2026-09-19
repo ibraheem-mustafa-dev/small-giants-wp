@@ -5,7 +5,7 @@ spec_id: 1
 spec_version: 1.4.0
 last_verified: 2026-07-13
 status_history:
-  - 2026-07-13: v1.4.0 — Header/footer/nav block system approved (design-gate `plans/2026-07-13-header-footer-nav-system-design-gate.md`, Bean sign-off): `parts/header.html`/`parts/footer.html` now host the specialised container blocks `sgs/site-header`, `sgs/site-footer`, `sgs/adaptive-nav` (replacing the plain `core/group` wrapper) — header/footer REMAIN template parts (this spec's architecture is unchanged; the blocks live *inside* it). Blocks default from `theme.json`/`wp_global_styles` tokens + the Spec 33 draft-extracted `theme-snapshot.json`, and bind to the `sgs/site-info` store (Spec 36) so brand/contact data is entered once. New §Header/Footer/Nav Block System documents the theme-level responsibilities (global-style defaults, never-overflow responsive model, off-canvas drawer a11y fix); block-level FRs owned by Spec 37.
+  - 2026-07-13: v1.4.0 — Header/footer/nav block system approved (design-gate `plans/2026-07-13-header-footer-nav-system-design-gate.md`, Bean sign-off): `parts/header.html`/`parts/footer.html` now host the specialised container blocks `sgs/site-header`, `sgs/site-footer`, `sgs/nav-bar-menu` (replacing the plain `core/group` wrapper) — header/footer REMAIN template parts (this spec's architecture is unchanged; the blocks live *inside* it). Blocks default from `theme.json`/`wp_global_styles` tokens + the Spec 33 draft-extracted `theme-snapshot.json`, and bind to the `sgs/site-info` store (Spec 36) so brand/contact data is entered once. New §Header/Footer/Nav Block System documents the theme-level responsibilities (global-style defaults, never-overflow responsive model, off-canvas drawer a11y fix); block-level FRs owned by Spec 37.
   - 2026-06-12: v1.3.0 — Added WooCommerce layer (Spec 30: templates, parts, woocommerce.css, sgs-shop-filters.js); search header patterns (3 patterns, sgs-headers category); collapsible-text SEO block note; updated theme version to 1.5.2; corrected WordPress requirements (WooCommerce dependency now present); updated File Structure to match real filesystem (parts, patterns, assets).
 -->
 
@@ -47,7 +47,6 @@ sgs-theme/
 │   │   ├── core-blocks-critical.css # Critical-path subset inlined above the fold
 │   │   ├── dark-mode.css            # Dark mode colour overrides
 │   │   ├── header-modes.css         # Header mode variants (sticky, transparent, shrink)
-│   │   ├── mega-menu-panels.css     # Mega-menu panel layout styles
 │   │   ├── utilities.css            # Utility classes (.sr-only, .container, etc.)
 │   │   └── woocommerce.css          # WooCommerce block theme styles — shop, PDP, cart, mini-cart (Spec 30, D213)
 │   ├── js/
@@ -78,20 +77,13 @@ sgs-theme/
 │   └── single-product.html      # WooCommerce PDP — composes sgs-pdp-* template parts (Spec 30, D210)
 │
 ├── parts/
-│   ├── header.html                 # Consolidated site header — search-free default. Already hosts sgs/site-header (+ sgs/nav-bar-menu, split from sgs/nav-menu at D1059 2026-09-14/15; `sgs/adaptive-nav` was DELETED at Spec 36 Phase-1 close 2026-07-20), BUILT + LIVE (D323-D333, §S9 11/11; see §Header/Footer/Nav Block System below; Spec 37 owns the block FRs)
+│   ├── header.html                 # Consolidated site header — search-free default. Hosts `sgs/site-header` (+ `sgs/nav-bar-menu`); see §Header/Footer/Nav Block System below; Spec 37 owns the block FRs
 │   ├── header-shrink.html          # Header variant: shrink-on-scroll
 │   ├── header-sticky.html          # Header variant: always sticky
 │   ├── header-transparent.html     # Header variant: transparent with scroll reveal
-│   ├── footer.html                 # Site footer (columns, copyright, socials). Already hosts sgs/site-footer, BUILT + LIVE (D323-D333, §S9 11/11)
+│   ├── footer.html                 # Site footer (columns, copyright, socials). Hosts `sgs/site-footer`
 │   ├── footer-minimal.html         # Minimal footer (for landing pages)
 │   ├── sidebar.html                # Optional sidebar template part
-│   ├── mega-menu-about.html        # Mega-menu panel: About
-│   ├── mega-menu-brands.html       # Mega-menu panel: Brands
-│   ├── mega-menu-contact.html      # Mega-menu panel: Contact
-│   ├── mega-menu-products.html     # Mega-menu panel: Products
-│   ├── mega-menu-resources.html    # Mega-menu panel: Resources
-│   ├── mega-menu-sectors.html      # Mega-menu panel: Sectors
-│   ├── mega-menu-services.html     # Mega-menu panel: Services
 │   ├── sgs-archive-toolbar.html    # Shop archive: product-search bar + filter-search chips (Spec 30, D214)
 │   ├── sgs-pdp-buybox.html         # PDP: option pickers + add-to-cart (sgs/buybox, Spec 30, D210)
 │   ├── sgs-pdp-content.html        # PDP: description, tabs (ingredients/allergens/nutritional), collapsible SEO copy
@@ -146,14 +138,12 @@ sgs-theme/
 │   ├── framework-header-sticky.php
 │   ├── framework-header-transparent.php
 │   │
-│   │   # Mega-menu layout patterns (mega-menu-layouts category — shipped 2026-06-02)
-│   ├── mega-menu-card-grid.php
-│   ├── mega-menu-featured-promo.php
-│   ├── mega-menu-logo-wall.php
-│   ├── mega-menu-simple-links.php
-│   ├── mega-menu-split-info-cta.php
-│   ├── mega-menu-split-story-links.php
-│   └── mega-menu-two-column.php
+│   │   # Mega panel starter patterns (Post Types: sgs_mega_menu)
+│   ├── mega-brands-1.php
+│   ├── mega-general-1col.php
+│   ├── mega-general-2col-aside.php
+│   ├── mega-general-2col.php
+│   └── mega-media-cards-1.php
 │
 └── styles/                         # EMPTIED (RETIRED 2026-05-21 — see §Per-site theme.json model)
 ```
@@ -455,9 +445,9 @@ Standard header with:
 - Navigation menu (centre or right, configurable via block settings)
 - CTA button (right, accent colour)
 - Sticky behaviour via `header-behaviour.js` (adds `.is-scrolled` class for shrink/shadow effect; supports modes: static, sticky, transparent, transparent-sticky, smart-reveal, shrink, hidden — see legacy header-system-design spec for full mode reference)
-- Mobile: hamburger menu with slide-out drawer (`sgs/nav-drawer`; the old `sgs/mobile-nav` was deleted at D337, 2026-07-14, commit `7c60b8ff`)
+- Mobile: hamburger menu with slide-out drawer (`sgs/nav-drawer`)
 - Announcement bar slot above header (optional, toggled via customiser or block)
-- **Once P1/P2 land** (design-approved 2026-07-13, build-pending), the header content will be composed of `sgs/site-header` (3 named rows: top utility / middle primary / bottom message) + `sgs/nav-bar-menu` inside it (split from `sgs/nav-menu` at D1059, 2026-09-14/15; `sgs/adaptive-nav` was DELETED 2026-07-20) — see §Header/Footer/Nav Block System.
+- The header content is composed of `sgs/site-header` (3 named rows: top utility / middle primary / bottom message) + `sgs/nav-bar-menu` inside it — see §Header/Footer/Nav Block System.
 
 ### Footer Template Part (`parts/footer.html`)
 
@@ -482,10 +472,10 @@ The theme continues to provide the header/footer as WordPress **template parts**
 |---|---|---|
 | `sgs/site-header` | Header shell — 3 optional named rows (top utility / middle primary / bottom message) | `SGS_Container_Wrapper` (KIND: section) |
 | `sgs/site-footer` | Footer shell — named rows + up-to-N columns | `SGS_Container_Wrapper` (KIND: section) |
-| `sgs/nav-bar-menu` | One nav-bar↔burger menu, 4-tier breakpoint (split from `sgs/nav-menu` at D1059, 2026-09-14/15; that block replaced `sgs/adaptive-nav`, DELETED 2026-07-20) | block-private root (D539, 2026-08-09 -- no longer `SGS_Container_Wrapper`) + nav logic |
-| `sgs/nav-drawer` | Off-canvas drawer (replaced `sgs/mobile-nav`, DELETED at D337 2026-07-14, commit `7c60b8ff`) | own render.php |
+| `sgs/nav-bar-menu` | One nav-bar↔burger menu, 4-tier breakpoint | block-private root (not `SGS_Container_Wrapper`) + nav logic |
+| `sgs/nav-drawer` | Off-canvas drawer | own render.php |
 
-A block that *subsumes* the template-part/Site-Info/rules system remains forbidden (the `no-header-footer-block.py` hook still blocks bare `header`/`footer`/`nav` block slugs); it now allow-lists `src/blocks/{site-header,site-footer,nav-bar-menu,nav-drawer-menu,nav-drawer}/` for these specialised containers only (the `adaptive-nav` allow-list entry is stale -- that block was DELETED at Spec 36 Phase-1 close 2026-07-20 and never replaced under that slug; re-verify the hook's actual current list on next touch rather than trust this line).
+A block that *subsumes* the template-part/Site-Info/rules system remains forbidden (the `no-header-footer-block.py` hook still blocks bare `header`/`footer`/`nav` block slugs); it now allow-lists `src/blocks/{site-header,site-footer,nav-bar-menu,nav-drawer-menu,nav-drawer}/` for these specialised containers only.
 
 ### Theme-owned defaults — global styles + Site Info
 
@@ -494,9 +484,9 @@ Every element in `sgs/site-header`, `sgs/site-footer`, and `sgs/nav-bar-menu`/`s
 1. **Global style tokens** — this file's `theme.json` settings (§Design Tokens above) and, for cloned sites, the Spec 33 draft-extracted `sites/<client>/theme-snapshot.json`. Colours, typography, and spacing flow to header/footer elements as defaults; per-instance overrides remain available in the block inspector.
 2. **SGS Site Info store** (Spec 36, `sgs_site_info` `wp_options` via the `sgs/site-info` block-bindings source) — logo, phone, email, address, hours, socials, copyright, attribution link. Both header and footer bind to the same store.
 
-### Responsive model (never-overflow) + the drawer a11y fix
+### Responsive model (never-overflow) + the drawer a11y contract
 
-The header/footer never overflow at any width down to 320px by construction — a Cluster layout (`flex-wrap` + `min-width:0` + fluid `clamp()` spacing) plus a per-breakpoint override model (768/1024 + a custom-px 4th tier, shared source per R-31-1) rather than per-element overflow hacks. This closed a live WCAG 2.2 Reflow bug. The `sgs/mobile-nav` off-canvas drawer's P0 bug (drawer inherited `inert` from `.wp-site-blocks` because it was a DOM descendant, freezing its own links) was root-caused and fixed 2026-07-13; the drawer is now the a11y benchmark (focus trap, ESC-to-close, backdrop dismiss, body-scroll-lock). Full mechanics: Spec 37 (never-overflow layout) + Spec 36 (drawer a11y).
+The header/footer never overflow at any width down to 320px by construction — a Cluster layout (`flex-wrap` + `min-width:0` + fluid `clamp()` spacing) plus a per-breakpoint override model (768/1024 + a custom-px 4th tier, shared source per R-31-1) rather than per-element overflow hacks. The off-canvas drawer is the a11y benchmark (focus trap, ESC-to-close, backdrop dismiss, body-scroll-lock). Full mechanics: Spec 37 (never-overflow layout) + Spec 36 (drawer a11y).
 
 ## WooCommerce Layer (Spec 30 — shipped 2026-06-11/12)
 
@@ -539,18 +529,7 @@ Operator SEO copy with accessible read-more. Full text is always server-side-ren
 
 ### Compatibility check
 
-⛔ **WITHDRAWN 2026-09-11 (owner).** Deliberately not built — not deferred. `class-wc-compat-check.php`
-(FR-30-0a — the version-band runtime self-check) has been DELETED, along with its registration in
-`plugins/sgs-blocks/sgs-blocks.php` and the manifest it referenced (`WC-DEPENDENCY-MANIFEST.md`,
-FR-30-0b — also deleted). Reasoning: this mechanism exists to protect a LIVE client site from an
-unexpected WooCommerce upgrade breaking their pages; with no live client site running this
-framework yet, it fires only on the sandybrown dev canary, where "review before it ships" is what
-every session already does by default — making the mechanism pure overhead. Same root cause as
-FR-41-34/G5a's withdrawal (nav-menu spec): pre-production, nothing to protect. Recorded once:
-`.claude/decisions.md` D1036. The paragraph below describes the withdrawn mechanism as it was
-specified — kept as history, not a live requirement.
-
-*(Was) `class-wc-compat-check.php`::init* performed a lazy, version-keyed runtime self-check on `woocommerce_loaded`. On a version mismatch it showed a dismissible admin notice. The ceiling used integer arithmetic to avoid float-comparison errors (e.g. WC 10.10 was previously mis-passed under a 10.8 ceiling — fixed D210). `WC-DEPENDENCY-MANIFEST.md` recorded the relied-upon core WC blocks and the gateway record per site.
+There is no WooCommerce version-band runtime self-check and no dependency manifest. The framework is pre-production, so no live client site needs protecting from an unexpected WooCommerce upgrade; review happens before each deploy.
 
 ---
 
@@ -568,17 +547,15 @@ Three operator-selectable header alternatives that embed the `sgs/product-search
 
 The default `parts/header.html` remains **search-free**. Search patterns are opt-in at go-live.
 
-### Mega-menu layout patterns (category: `mega-menu-layouts` — shipped 2026-06-02)
+### Mega panel starter patterns (Post Types: `sgs_mega_menu`)
 
-Seven generic mega-menu panel layout patterns registered under the `mega-menu-layouts` category. A create-panel inspector shortcut was added at the same time. The seven patterns are:
+Five starter patterns for the `sgs_mega_menu` CPT (Spec 36):
 
-- `mega-menu-card-grid.php`
-- `mega-menu-featured-promo.php`
-- `mega-menu-logo-wall.php`
-- `mega-menu-simple-links.php`
-- `mega-menu-split-info-cta.php`
-- `mega-menu-split-story-links.php`
-- `mega-menu-two-column.php`
+- `mega-brands-1.php`
+- `mega-general-1col.php`
+- `mega-general-2col-aside.php`
+- `mega-general-2col.php`
+- `mega-media-cards-1.php`
 
 ### Typography helper (`plugins/sgs-blocks/includes/helpers-typography.php`)
 
@@ -629,7 +606,7 @@ The `sgs_typography_css_rule()` PHP helper (auto-loaded via `render-helpers.php`
 
 - WordPress 7.0+ recommended (canary/sandybrown runs WP 7.0); 6.7+ minimum (block theme features, theme.json v3)
 - PHP 8.0+
-- WooCommerce 9.9+ — **required** for shop/PDP templates (Spec 30, D210). ⛔ **The runtime version-check + admin notice described in earlier revisions is WITHDRAWN (2026-09-11, D1036)** — `class-wc-compat-check.php` no longer exists; see "Compatibility check" above. Verify the WC version manually (`wp plugin get woocommerce --field=version`) before a build touches shop/PDP templates. The theme still activates cleanly on non-WC installs — WC template parts simply go unused.
+- WooCommerce 9.9+ — **required** for shop/PDP templates (Spec 30). There is no runtime version-check or admin notice (see "Compatibility check" above). Verify the WC version manually (`wp plugin get woocommerce --field=version`) before a build touches shop/PDP templates. The theme still activates cleanly on non-WC installs — WC template parts simply go unused.
 - No page builder plugin dependency
 
 **theme.json v3 note:** Version 3 was introduced in WordPress 6.6 (August 2024) and should be supported on WP 6.9.1. Verify on the development site before committing. If the dev site runs an older WP version, use v2 instead (the schema is largely compatible, but v3 adds `defaultFontSizes` control and other refinements).

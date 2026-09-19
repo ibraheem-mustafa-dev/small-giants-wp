@@ -1,20 +1,19 @@
 ---
 doc_type: spec
 spec_id: 19
-spec_version: 0.2
+spec_version: 0.3
 project: small-giants-wp
 title: SGS WP-CLI Command Reference — `wp sgs` Namespace
-status: SHIPPED — all 12 commands live as of Spec 17 (now Spec 37) Wave 3; CLI-command DB seed shipped as part of Phase 1 (2026-05-22)
-shipped: true
-session_date: 2026-05-19
-last_updated: 2026-05-22
-authors: Bean + Claude (Sonnet 4.6)
-shipped_in: Spec 37 FR-37-30 (reduced set; formerly Spec 17 FR-S5-3)
-phase_1_db_seed: "2026-05-22 Phase 1 (architecture programme) seeded all 12 wp sgs commands + 3 SGS pipeline scripts (sgs-clone-orchestrator, sgs-db, wp-blocks.py dump) as rows in sgs-framework.db `docs` table with `doc_type='cli-command'`, `source='sgs'`. Total 16 cli-command docs rows. Skills can now query these as DB rows alongside WP-CLI handbook docs (`source='native_wp'`)."
+status: active
+authors: Bean + Claude
+implements: Spec 37 FR-37-30
 implementation_file: plugins/sgs-blocks/includes/class-sgs-cli-commands.php
 references:
   - .claude/specs/37-HEADER-FOOTER-BUILDER.md (parent spec)
-  - plugins/sgs-blocks/includes/class-sgs-cli-commands.php (canonical implementation — 622 lines)
+  - plugins/sgs-blocks/includes/class-sgs-cli-commands.php
+  - plugins/sgs-blocks/includes/class-sgs-header-footer-cli-commands.php
+  - plugins/sgs-blocks/includes/class-sgs-colour-audit-cli-commands.php
+  - plugins/sgs-blocks/includes/class-sgs-active-layout.php
   - plugins/sgs-blocks/includes/class-sgs-site-info.php
   - plugins/sgs-blocks/includes/class-sgs-template-part-seeder.php
   - plugins/sgs-blocks/includes/class-sgs-template-part-resetter.php
@@ -22,7 +21,6 @@ references:
   - plugins/sgs-blocks/includes/class-sgs-footer-rules.php
   - plugins/sgs-blocks/includes/class-sgs-migrations.php
   - plugins/sgs-blocks/includes/class-sgs-safety-guard.php
-  - plugins/sgs-blocks/includes/class-sgs-variation-picker.php  # DELETED (Decision 18, 2026-05-21)
 cross_references:
   - wp-wpcli-and-ops skill (SKILL.md) — documents this command surface
   - .claude/specs/37-HEADER-FOOTER-BUILDER.md FR-37-30
@@ -32,20 +30,32 @@ cross_references:
 
 ## 1. Overview
 
-The `wp sgs` namespace ships 12 WP-CLI sub-commands as part of Spec 37 FR-37-30 (formerly Spec 17 FR-S5-3). Every
-command is a thin delegation to the same PHP helper classes used by the admin handlers —
-no business logic lives in `class-sgs-cli-commands.php` itself.
+The `wp sgs` namespace is the developer and pipeline command surface for SGS sites
+(Spec 37 FR-37-30). Every command is a thin delegation to the same PHP helper classes the
+admin handlers use — no business logic lives in the command classes themselves.
+
+Three command groups:
+
+| Group | Class | Commands |
+|---|---|---|
+| Site Info, template parts, rules, migrations | `Sgs_Cli_Commands` | `site-info`, `seed-template-parts`, `reset-template-parts`, `header-rules`, `footer-rules`, `seeding-arm`, `migrations` |
+| Header / footer / drawer lifecycle | `Sgs_Header_Footer_Cli_Commands` | `header`, `footer`, `drawer` — each with `set-active`, `clear-active`, `list`, `seed-starter` |
+| Colour-token audit | `Sgs_Colour_Audit_Cli_Commands` | `audit-colour-tokens` |
 
 **Audience:** developers and Claude Code automation. Clients never interact with WP-CLI.
 
 ## 2. Registration
 
-Commands are registered in `sgs-blocks.php` inside a `WP_CLI` conditional:
+Commands are registered in `sgs-blocks.php` inside a `WP_CLI` conditional, so they cost
+nothing on the frontend:
 
 ```php
 if ( defined( 'WP_CLI' ) && WP_CLI ) {
-    require_once SGS_BLOCKS_PATH . 'includes/class-sgs-cli-commands.php';
     \WP_CLI::add_command( 'sgs', Sgs_Cli_Commands::class );
+    \WP_CLI::add_command( 'sgs header', new Sgs_Header_Footer_Cli_Commands( Sgs_Active_Layout::AREA_HEADER ) );
+    \WP_CLI::add_command( 'sgs footer', new Sgs_Header_Footer_Cli_Commands( Sgs_Active_Layout::AREA_FOOTER ) );
+    \WP_CLI::add_command( 'sgs drawer', new Sgs_Header_Footer_Cli_Commands( Sgs_Active_Layout::AREA_DRAWER ) );
+    \WP_CLI::add_command( 'sgs audit-colour-tokens', Sgs_Colour_Audit_Cli_Commands::class );
 }
 ```
 
@@ -59,7 +69,8 @@ CLI commands themselves) — the gate is at the `site-info set` command level, n
 the helper.
 
 Read-only commands (`site-info get`, `header-rules list`, `footer-rules list`,
-`migrations status`) carry no capability requirement.
+`migrations status`, `header|footer|drawer list`, `audit-colour-tokens`) carry no
+capability requirement.
 
 ## 4. Command reference
 
@@ -159,14 +170,18 @@ wp sgs site-info reset --user=1
 
 ### 4.5 `wp sgs seed-template-parts [--variation=<slug>] [--force] --user=<id>`
 
-> **Note (2026-05-21):** Template parts are **brand-agnostic** — they are NOT coupled to the WP style-variation system (which is deleted per Decision 18). The `--variation=<slug>` flag here refers to a registered PATTERN SLUG (e.g. `sgs/framework-header-minimal`), not a WP style variation JSON. The auto-trigger via `save_post_wp_global_styles` is removed (FR-S2-1 retired). Use this command or the admin "Reset Header/Footer" button to seed explicitly. First-install seeding happens automatically via the plugin activation hook.
-
 **Capability:** `edit_theme_options` + seeding guard must be armed (see §4.11)
 **Delegates to:** `Sgs_Template_Part_Seeder::resolve_pattern_slugs()` + `get_pattern_content()`
 
-Seeds the header and footer template parts from the named (or currently active) framework
-pattern. The seeder resolves `sgs/framework-header-*` and `sgs/framework-footer-*` pattern
-slugs and writes the pattern content into the corresponding `wp_template_parts` post.
+Resolves the header and footer pattern slugs for a variation and reports each pattern it
+finds. The slugs come from the variation manifest's `settings.custom.sgs.headerPattern` /
+`footerPattern` keys; a missing key falls back to the seeder's default header and footer
+patterns (`sgs/framework-header-default`, `sgs/framework-footer-default`). When
+`--variation` is omitted the command resolves the currently active variation from the
+site's `wp_global_styles` post. A pattern that is not registered is skipped with a warning.
+
+The command does not write a `wp_template_part` post. To create a header or footer layout
+from a pattern, use `wp sgs header|footer|drawer seed-starter` (§4.14).
 
 ```bash
 # Seed from the currently active variation
@@ -174,9 +189,6 @@ wp sgs seed-template-parts --user=1
 
 # Seed from a specific variation
 wp sgs seed-template-parts --variation=mamas-munches --user=1
-
-# Force-overwrite even if already seeded
-wp sgs seed-template-parts --variation=mamas-munches --force --user=1
 ```
 
 **Common errors:**
@@ -184,8 +196,8 @@ wp sgs seed-template-parts --variation=mamas-munches --force --user=1
 | Error | Cause | Fix |
 |---|---|---|
 | `Seeding is not armed` | Safety guard not triggered | Run `wp sgs seeding-arm --user=1` first |
-| `No variation slug supplied and no default pattern found` | No `--variation=<slug>` passed and no default pattern registered | Pass `--variation=<slug>` where slug is a registered pattern slug (e.g. `sgs/framework-header-minimal`) |
-| `Pattern 'sgs/...' not registered — skipping header` | Pattern not registered for this variation | Run `/sgs-update` to regenerate patterns, or register manually |
+| `No active style variation found. Activate a variation first, or pass --variation=<slug>.` | No `--variation` passed and none resolves from `wp_global_styles` | Pass `--variation=<slug>` |
+| `Pattern 'sgs/...' not registered — skipping header` | Pattern is not registered for this variation | Run `/sgs-update` to regenerate patterns, or register the pattern |
 
 ---
 
@@ -194,9 +206,8 @@ wp sgs seed-template-parts --variation=mamas-munches --force --user=1
 **Capability:** `edit_theme_options`
 **Delegates to:** `Sgs_Template_Part_Resetter::reset()`
 
-Resets header and/or footer template parts from the active style variation. Mirrors the
-*SGS Admin → Reset Header/Footer* page (Spec 37 FR-37-25, formerly Spec 17 FR-S2-3). When neither flag is given, both are
-reset.
+Resets header and/or footer template parts. Mirrors the *SGS Admin → Reset Header/Footer*
+page (Spec 37 FR-37-25). When neither flag is given, both are reset.
 
 ```bash
 # Reset both
@@ -236,11 +247,14 @@ wp sgs header-rules list
 **Capability:** `edit_theme_options`
 **Delegates to:** `Sgs_Header_Rules::add_rule()`
 
-Adds a conditional header rule. The JSON argument must contain at least `pattern_slug`.
-Optional fields: `priority` (int, default 10), `condition` (object with `page_type` etc).
+Adds a conditional header rule. The JSON argument must contain `pattern_slug`. Optional
+fields: `priority` (int, clamped to 1–9998, default 10) and `conditions` (array of
+condition objects; a `url_match` condition value is validated by the ReDoS guard). The rule
+is stored with exactly `id`, `priority`, `pattern_slug` and `conditions`; any other key in
+the JSON — including `behaviour` — is not stored.
 
 ```bash
-wp sgs header-rules add '{"pattern_slug":"sgs/framework-header-transparent","priority":5}' --user=1
+wp sgs header-rules add '{"pattern_slug":"sgs/framework-header-centred","priority":5}' --user=1
 # Output: Success: Rule added with ID: rule_abc12345
 ```
 
@@ -249,7 +263,7 @@ wp sgs header-rules add '{"pattern_slug":"sgs/framework-header-transparent","pri
 | Error | Cause | Fix |
 |---|---|---|
 | `Argument must be a valid JSON object` | Malformed JSON or wrong quote style | Use single quotes around JSON on the CLI |
-| WP_Error message from `add_rule()` | Duplicate rule, unregistered pattern slug | Check pattern slug with `wp sgs header-rules list` |
+| WP_Error message from `add_rule()` | Missing pattern slug, non-object condition, or a `url_match` that fails the ReDoS guard | Fix the payload; list existing rules with `wp sgs header-rules list` |
 
 ---
 
@@ -282,19 +296,15 @@ wp sgs footer-rules remove rule_xyz99999 --user=1
 ### 4.11 `wp sgs seeding-arm --user=<id>`
 
 **Capability:** `edit_theme_options`
-**Delegates to:** `Sgs_Safety_Guard::arm()`
+**Delegates to:** `Sgs_Safety_Guard::arm( 0 )`
 
-Flips the seeding safety guard (FR-S7-3, retired with Spec 17 — no Spec 37 successor) to armed (with a 0-second cooldown), allowing the
-template-part seeder to fire on the next explicit `wp sgs seed-template-parts` call. The
-guard normally requires an upgrade cooldown period before seeding is permitted.
-
-> **Note (2026-05-21):** The auto-trigger on style-variation save (FR-S2-1) is REMOVED by
-> Decision 18. This command now arms the guard for EXPLICIT CLI seeding only. The output
-> message below is updated accordingly.
+Arms the seeding safety guard immediately (zero-second delay), which lets
+`wp sgs seed-template-parts` run. The guard otherwise requires an upgrade cooldown to
+elapse before seeding is permitted.
 
 ```bash
 wp sgs seeding-arm --user=1
-# Output: Success: Seeding guard armed. Run wp sgs seed-template-parts to seed template parts.
+# Output: Success: Seeding guard armed. The seeder will fire on the next style-variation save.
 ```
 
 Run this before `wp sgs seed-template-parts` when the cooldown has not yet elapsed.
@@ -306,16 +316,16 @@ Run this before `wp sgs seed-template-parts` when the cooldown has not yet elaps
 **Capability:** none (read-only)
 **Delegates to:** `Sgs_Migrations::list_completed()` + `list_pending()`
 
-Prints a summary of the installed framework version plus completed and pending migrations.
+Prints the installed framework version plus completed and pending migrations. Migration
+slugs are the file names under `plugins/sgs-blocks/includes/migrations/`.
 
 ```bash
 wp sgs migrations status
 # Output:
-# Installed version : 1.1.0
+# Installed version : <version>
 #
-# Completed (2):
-#   [x] 0001-site-info-schema
-#   [x] 0002-floating-ui-defaults
+# Completed (<n>):
+#   [x] <migration-slug>
 #
 # Pending (0):
 # Success: All migrations up to date.
@@ -336,7 +346,7 @@ passed. Migrations are idempotent — a migration that has already run is skippe
 wp sgs migrations run --user=1
 
 # Run up to a specific migration
-wp sgs migrations run --target=0003-some-migration --user=1
+wp sgs migrations run --target=<migration-slug> --user=1
 ```
 
 **Common errors:**
@@ -347,10 +357,96 @@ wp sgs migrations run --target=0003-some-migration --user=1
 
 ---
 
-| Command / class | Retired | Reason | Replacement |
-|---|---|---|---|
-| `wp sgs theme-mod restore` / `Sgs_Variation_Picker` | 2026-05-21 (Decision 18) | WP style-variation system deleted; no legacy `active_theme_style` theme_mod to restore | `push-theme-snapshot.py` (§7) |
-| `Sgs_Variation_REST` (`sgs/v1/active-variation`) | 2026-05-21 (Decision 18) | variation system deleted | Stage 10 of `/sgs-clone` calls `push-theme-snapshot.py` |
+### 4.14 `wp sgs header|footer|drawer <set-active | clear-active | list | seed-starter>`
+
+**Class:** `Sgs_Header_Footer_Cli_Commands` — one class, registered three times, each
+instance bound to an area token (`header`, `footer`, `drawer`). The three command trees
+behave identically; only the post type and active-pointer option differ.
+
+| Area | Post type | Active-pointer option |
+|---|---|---|
+| `header` | `sgs_header` | `sgs_active_header_cpt_id` |
+| `footer` | `sgs_footer` | `sgs_active_footer_cpt_id` |
+| `drawer` | `sgs_drawer` | `sgs_active_drawer_cpt_id` |
+
+Each active pointer is a single global site option: exactly one header, one footer and one
+drawer is active per WordPress site. Pointer reads and writes always go through
+`Sgs_Active_Layout`; the command class never touches the options directly.
+
+**`set-active <post-id>`** — capability `edit_theme_options`. Makes the post the active
+layout for the area. `Sgs_Active_Layout::set_active()` rejects a non-existent post, a post
+of the wrong post type, and an unpublished post.
+
+**`clear-active`** — capability `edit_theme_options`. Clears the pointer so the immutable
+framework default serves. The previously active post is left untouched and can be
+re-activated.
+
+**`list [--format=<table|csv|json|yaml|count>]`** — read-only. Lists every layout post of
+the area's type (any status) with columns `ID`, `Title`, `Status`, `Active`. The `Active`
+column reads the raw stored pointer, so a layout that has since been trashed is still
+marked active — the operator sees why it stopped rendering.
+
+**`seed-starter <pattern-slug>`** — capability `edit_theme_options`. Creates a new
+**draft** post of the area's type from a registered block pattern. It does not activate
+the post: publish it, then run `set-active`. The pattern must already be registered in the
+CLI context (theme patterns carrying `Post Types: sgs_header|sgs_footer|sgs_drawer`
+register automatically).
+
+```bash
+wp sgs header list
+wp sgs header seed-starter sgs/framework-header-centred --user=1
+wp sgs header set-active 42 --user=1
+wp sgs header clear-active --user=1
+
+wp sgs footer list --format=json
+wp sgs footer seed-starter sgs/framework-footer-compact --user=1
+wp sgs footer set-active 51 --user=1
+
+wp sgs drawer list
+wp sgs drawer seed-starter sgs/framework-drawer-default --user=1
+wp sgs drawer set-active 60 --user=1
+```
+
+**Common errors:**
+
+| Error | Cause | Fix |
+|---|---|---|
+| `edit_theme_options capability required` | No `--user` passed | Pass `--user=1` |
+| `Usage: wp sgs <area> set-active <post-id>` | Missing or non-numeric post ID | Pass the numeric post ID from `list` |
+| `Pattern '<slug>' is not registered in this CLI context` | Wrong slug, or the theme is not active | Check the slug against the theme's `patterns/` headers |
+| Error from `set_active()` | Post missing, wrong post type, or not published | Publish the post, or pick a post of the right type |
+
+---
+
+### 4.15 `wp sgs audit-colour-tokens [--post_type=<types>]`
+
+**Capability:** none (read-only diagnostic)
+**Class:** `Sgs_Colour_Audit_Cli_Commands`
+
+Finds orphaned colour-token slugs: a colour-typed block attribute whose stored value is a
+design-token slug that is no longer in the site's live palette (for example after a Site
+Editor palette entry is renamed or deleted). `sgs_colour_value()` falls back to
+`currentColor` so an orphaned slug never renders invisible, but nothing else surfaces the
+drift — this command is the discovery half. Run it on demand, for example straight after a
+palette edit; it is never a render-time gate.
+
+The command reads the live palette from `wp_get_global_settings( [ 'color', 'palette' ] )`
+across every origin, parses each post's block content recursively, and checks every
+colour attribute listed in the class's `COLOUR_ATTRIBUTES_BY_BLOCK` map. That map is a
+generated snapshot of the `block_attributes` table (`css_property LIKE '%color%'`); the
+class docblock carries the regeneration query.
+
+`--post_type` takes a comma-separated list and defaults to `post,page`. Posts in `publish`,
+`draft`, `pending`, `future` and `private` status are scanned.
+
+```bash
+wp sgs audit-colour-tokens
+wp sgs audit-colour-tokens --post_type=page
+# Output: table of post_id, title, edit_url, block_slug, attr_name, slug
+```
+
+Zero orphans prints `Success: No orphaned colour-token slugs found.`; otherwise it prints
+the table and a warning with the count.
 
 ---
 
@@ -363,10 +459,16 @@ wp sgs site-info set <key> <value> --user=1
 wp sgs site-info update /tmp/data.json --user=1
 wp sgs site-info reset --user=1
 
-# Template parts (brand-agnostic — NOT variation-coupled; see §4.5 note)
+# Template parts
 wp sgs seeding-arm --user=1
 wp sgs seed-template-parts [--variation=<slug>] [--force] --user=1
 wp sgs reset-template-parts [--header] [--footer] --user=1
+
+# Header / footer / drawer lifecycle (CPT-backed layouts)
+wp sgs header|footer|drawer list [--format=json]
+wp sgs header|footer|drawer seed-starter <pattern-slug> --user=1
+wp sgs header|footer|drawer set-active <post-id> --user=1
+wp sgs header|footer|drawer clear-active --user=1
 
 # Conditional rules
 wp sgs header-rules list
@@ -380,141 +482,149 @@ wp sgs footer-rules remove <rule-id> --user=1
 wp sgs migrations status
 wp sgs migrations run [--target=<slug>] --user=1
 
-# wp sgs theme-mod restore — RETIRED 2026-05-21 (Decision 18, variation system deleted)
-# Use push-theme-snapshot.py for per-site branding — see §7 below
+# Diagnostics
+wp sgs audit-colour-tokens [--post_type=<types>]
 ```
+
+Per-site branding is deployed with `push-theme-snapshot.py` (§7), not with `wp sgs`.
 
 ## 6. Cross-references
 
-- **Spec 37 FR-37-30** — the functional requirement that mandated this command surface (formerly Spec 17 FR-S5-3)
-- **`plugins/sgs-blocks/includes/class-sgs-cli-commands.php`** — canonical implementation (622 lines)
-- **`wp-wpcli-and-ops` skill (SKILL.md)** — the `/wp-wpcli-and-ops` skill documents this surface and should be invoked for any WP-CLI work in this project
-- **Spec 37** (FR-37-20 conditional rules, FR-37-25 reset, FR-37-7/FR-37-8 seeding) — the `seed-template-parts`, `reset-template-parts`, `header-rules`, and `footer-rules` commands mirror the admin UI described there (formerly Spec 17 §S2 + §S3)
-
----
-
-## 2026-05-20 — Behaviour parameter NOT YET wired on wp sgs header_rules add
-
-Phase 2A added a `behaviour` key on header rules (read by `Sgs_Header_Behaviours::add_body_classes`) but the CLI command `wp sgs header_rules add <json>` currently strips unknown keys via its sanitiser. Until the CLI is extended, behaviours are set via:
-
-```bash
-wp --user=1 sgs header_rules add '{"pattern_slug":"sgs/framework-header-default","priority":5,"conditions":[]}'
-wp --user=1 eval '$rules = get_option("sgs_header_rules", []); foreach($rules as $i => $r){if(($r["id"]??"")==="rule_XXX"){$rules[$i]["behaviour"]="sticky";}} update_option("sgs_header_rules", $rules);'
-```
-
-**Next session work:** extend `Sgs_Header_Rules::add_rule()` to accept + sanitise `behaviour` from the input JSON. Add `--behaviour=<slug>` examples to the CLI help. Estimated 20 min.
-
----
-
-## 2026-05-20 — `stage_attribute_promotion.py` — DELETED 2026-09-02, do not rebuild
-
-⛔ **Retired as part of retiring the attribute-gap-detection mechanism.** The gap-detection feature (writer: `gap-detection/detect.py`, promotion workflow: `stage_attribute_promotion.py`, DB table: `sgs-framework.db.attribute_gap_candidates`) was never finished and the project owner confirmed it was never wanted as a completed feature. Note: `converter/services/gap_writer.py` is a DIFFERENT, unrelated, still-live module — it builds the in-memory `GAP` object for the converter's real conservation ledger and was never part of this retired mechanism; do not confuse the two similarly-named files. The "honest gap" concept — ensuring no CSS property silently disappears from a clone — is preserved via in-memory ledger tracking inside the converter, NOT via this DB-backed promotion path. The workflow consisted of:
-- (deleted) `python stage_attribute_promotion.py list --top N` — ranked candidates from the retired `attribute_gap_candidates` table
-- (deleted) `python stage_attribute_promotion.py promote --id <row_id>` — mutate block.json + render.php on promotion
-- (deleted) `python stage_attribute_promotion.py status` — show promoted vs pending counts
-
-This was a development-tool convenience for surfacing and promoting CSS-gap findings; it was never deployed to production or called by any automated pipeline. **Do NOT rebuild it** — the gap mechanism persists via in-memory detection in the converter itself.
+- **Spec 37 FR-37-30** — the functional requirement that mandates this command surface
+- **`plugins/sgs-blocks/includes/class-sgs-cli-commands.php`**, **`class-sgs-header-footer-cli-commands.php`**, **`class-sgs-colour-audit-cli-commands.php`** — the implementations
+- **`wp-wpcli-and-ops` skill (SKILL.md)** — documents this surface; invoke it for any WP-CLI work in this project
+- **Spec 37** (FR-37-20 conditional rules, FR-37-25 reset, FR-37-7/FR-37-8 seeding) — the `seed-template-parts`, `reset-template-parts`, `header-rules` and `footer-rules` commands mirror the admin UI described there
 
 ## 7. Adjacent CLI scripts (non-wp-sgs)
 
-> Per `.claude/plans/2026-05-21-architecture-staging.md` §6.6 — Decision 14′.
+These Python scripts are developer and pipeline tools that operate on dev-machine or
+server artefacts outside the WordPress runtime. They are NOT `wp sgs` subcommands.
 
-These Python scripts are developer/pipeline tools that operate on dev-machine or server artefacts outside WP runtime. They are NOT `wp sgs` subcommands.
+### `push-theme-snapshot.py`
 
-### `push-theme-snapshot.py` (Phase 5a — Decision 14′)
-
-Deploys a local per-client `theme-snapshot.json` to a specific site's `wp-content/themes/sgs-theme/theme.json`.
+Deploys a local per-client `sites/<client>/theme-snapshot.json` (a full `theme.json`) to
+one site: over SSH it overwrites `wp-content/themes/sgs-theme/theme.json`, and it writes
+the snapshot's `styles` and `settings` to that site's live `wp_global_styles` post through
+the WP REST API. Both layers are written because the Site Editor user layer would
+otherwise override the on-disk file for every property it already defines.
 
 ```bash
+# Diff only — prints the diff and exits, pushes nothing
 python plugins/sgs-blocks/scripts/push-theme-snapshot.py \
   --client mamas-munches \
-  --target u945238940@141.136.39.73
-
-# Force-overwrite without interactive prompt
-python plugins/sgs-blocks/scripts/push-theme-snapshot.py \
-  --client indus-foods \
   --target u945238940@141.136.39.73 \
+  --target-domain sandybrown-nightingale-600381.hostingersite.com \
+  --no-push
+
+# Push, skipping the interactive confirmation
+python plugins/sgs-blocks/scripts/push-theme-snapshot.py \
+  --client mamas-munches \
+  --target u945238940@141.136.39.73 \
+  --target-domain sandybrown-nightingale-600381.hostingersite.com \
   --yes
+
+# Restore a backup taken by an earlier push
+python plugins/sgs-blocks/scripts/push-theme-snapshot.py \
+  --client mamas-munches \
+  --target u945238940@141.136.39.73 \
+  --rollback <backup-file>
 ```
 
+**Flags:** `--client` and `--target` (required); `--target-domain` (default the
+sandybrown canary); `--port` (default 65002); `--yes`; `--no-push` / `--dry-run`;
+`--app-user` / `--app-password` (REST credentials when no secrets file matches the
+domain); `--no-backup` / `--force-no-backup`; `--include-advisory`; `--rollback
+<backup-file>`.
+
 **Behaviour:**
-1. Fetch server's current `wp-content/themes/sgs-theme/theme.json` via SSH
-2. Diff local `sites/<client>/theme-snapshot.json` against server file
-3. Display diff; require `--yes` or interactive y/N
-4. Overwrite server `theme.json` with local snapshot
+1. Fetch the server's current `theme.json` and the live `wp_global_styles` layer.
+2. Diff the local snapshot against them; operator overrides (keys present live but absent
+   locally) are surfaced in the diff.
+3. Back up the live payload under `sites/<client>/theme-snapshot-backups/` before any
+   overwrite.
+4. Overwrite the server `theme.json` and write the user layer, then flush the cache.
 
-**Safety:** operator Site Editor edits write to `wp_global_styles` (a separate post type), not `theme.json` directly. File-level conflicts are rare; the pre-push diff surfaces them before any overwrite.
+**Safety:** a target whose domain is in the script's `SAFE_TARGETS` list is forced to
+`--no-push` unless `--yes` is passed. The snapshot is the theme layer wholesale: a preset
+missing from a snapshot is absent for that client, and the framework `theme.json` does not
+fill it in.
 
-**Auto-invoked by:** `/sgs-clone` Stage 10 when `--client` flag is set (Decision 16′).
+**Auto-invoked by:** `/sgs-clone` Stage 10 as a diff only; a real push needs the
+orchestrator's `--push-theme-snapshot` flag.
 
-**Snapshot format:** full `theme.json` copy (not a diff). Located at `sites/<client>/theme-snapshot.json`.
+### `sgs-clone-orchestrator.py`
 
-### `sgs-clone-orchestrator.py` (existing)
-
-> Per `.claude/plans/2026-05-21-architecture-staging.md` §6.6.
-
-The primary pipeline orchestrator for the SGS clone workflow. Runs all pipeline stages
-(extraction, recognition, conversion, deploy). Accepts `--converter-v2` flag to route
-through the Spec 31 §13 universal walker converter.
+The pipeline orchestrator for the SGS clone workflow. It runs every pipeline stage
+(extraction, recognition, conversion, deploy, register). The converter is the modular
+`converter/` engine; there is no converter-selection flag.
 
 ```bash
-# Standard full run
 python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py \
-  --source https://example.com \
+  --mockup sites/mamas-munches/mockups/<draft>.html \
   --client mamas-munches \
-  --converter-v2
+  --page <page-slug>
 
 # Without Playwright (faster, skips responsive extraction)
 python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py \
-  --source sites/mamas-munches/mockup.html \
+  --mockup sites/mamas-munches/mockups/<draft>.html \
   --client mamas-munches \
-  --converter-v2 \
+  --page <page-slug> \
   --no-playwright
 ```
 
 **Key flags:**
-- `--converter-v2` — REQUIRED to route through cv2. Without it, legacy extract path runs silently.
-- `--client <slug>` — auto-derived from mockup path when omitted; required for Stage 10 push.
-- `--no-playwright` — skips Stage 4 Playwright responsive extraction. Use only for quick iteration; not for fidelity measurement.
+- `--mockup <path>` and `--page <slug>` — required.
+- `--client <slug>` — auto-derived from the mockup path (the nearest `sites/<client>/`
+  ancestor) when omitted; required for Stage 10.
+- `--deploy-target page:<id>` — after the pipeline completes, uploads referenced images
+  and patches that page with the new block markup.
+- `--push-theme-snapshot` — makes Stage 10 push the client snapshot instead of only
+  diffing it.
+- `--no-playwright` — skips the Playwright responsive extraction. For quick iteration
+  only; not for fidelity measurement.
+- `--mode {strict,draft,legacy}` — strict (default) halts on Stage 0 violations, draft
+  warns, legacy bypasses.
 
-**Stage 10** (auto-invoked when `--client` is set): calls `push-theme-snapshot.py` to deploy the client's `theme-snapshot.json` to the target site.
-
-**IMPORTANT — `--converter-v2` required for cv2:** without this flag, `_cv2_eligible=False` for every boundary and the legacy extract path runs, silently bypassing widthMode emission and style-variation lift. This is a known footgun — captured at `~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_converter_v2_flag_required_for_cv2.md`.
+**Stage 10** runs when the client slug is known: it diffs the client's
+`theme-snapshot.json` against the target site through `push-theme-snapshot.py`.
 
 ---
 
-### `sgs-db.py` (existing)
+### `sgs-db.py`
 
-> Per `.claude/plans/2026-05-21-architecture-staging.md` §6.6.
-
-Query tool for the SGS Framework knowledge base (`sgs-framework.db`). 2,230 block attributes, 184 design tokens, 53 patterns queryable from the command line. <!-- Updated 2026-05-23 — canonical DB counts per empirical run: block_attributes 2230, design_tokens 184, patterns 53 (was 619+/25/36) -->
+Query tool for the SGS Framework knowledge base (`sgs-framework.db`): blocks, block
+attributes, design tokens, patterns, hooks and WP-CLI docs. Counts are DB-authoritative —
+run `stats` for them.
 
 ```bash
-python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py stats          # Framework health
-python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py block sgs/hero  # Block details
-python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py match "pricing" # Find best block
-python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py context indus-foods # Load client context
+python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py stats            # Framework health
+python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py block sgs/hero   # Block details
+python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py match "pricing"  # Find best block
+python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py context indus-foods  # Load client context
+python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "<query>"    # Raw SQL
 ```
 
-**Note:** after Phase 1 (DB merge) lands, this tool queries the merged sgs-framework.db which
-also contains WP core blocks, hooks, and CLI docs (Decision 1). All WP + SGS knowledge in
-one DB, one query tool.
-
 ---
 
-### `stage_attribute_promotion.py` — RETIRED 2026-09-02
+### `build-deploy.py`
 
-(See retirement note above — 2026-05-20 section.)
+The deploy script at `plugins/sgs-blocks/scripts/build-deploy.py`, and the only supported
+way to ship the theme and plugin to a site. The `/wp-sgs-deploy` skill carries the full
+Check → Build → Execute → Cache → Verify ceremony around it (see `.claude/dev-setup.md`).
 
----
+**Targets** (`TARGETS` in the script):
 
-### `build-deploy.py` (D3, 2026-05-30 — commit `a23ff53f`)
-
-Canary-fast-cycle deploy script (367 LOC) at `plugins/sgs-blocks/scripts/build-deploy.py`. Complementary to (NOT replacing) the `/wp-sgs-deploy` skill — that skill carries the full Check+Build+Execute+Cache+Verify ceremony. This script targets `sandybrown` by default for fast iteration.
+| Target | Site | Notes |
+|---|---|---|
+| `sandybrown` (default) | `sandybrown-nightingale-600381.hostingersite.com` | The canary |
+| `indus-test` | `lavender-dinosaur-183533.hostingersite.com` | Indus Foods test site; `explicit_opt_in_required` — deploys only when named with `--target indus-test` |
 
 ```bash
 # Default: build + deploy plugin + theme to sandybrown
 python plugins/sgs-blocks/scripts/build-deploy.py
+
+# Deploy to the Indus test site
+python plugins/sgs-blocks/scripts/build-deploy.py --target indus-test
 
 # Skip npm build (use existing build/)
 python plugins/sgs-blocks/scripts/build-deploy.py --skip-build
@@ -526,63 +636,84 @@ python plugins/sgs-blocks/scripts/build-deploy.py --blocks-only
 # Dry-run (print commands, do nothing)
 python plugins/sgs-blocks/scripts/build-deploy.py --dry-run
 
-# Bypass the dirty-deploy guard — the guard that would have stopped the
-# 2026-07-14 outage. Only after READING the paths it lists.
-python plugins/sgs-blocks/scripts/build-deploy.py --allow-dirty
-
 # Verify a specific page instead of the target homepage (verify is ON by default)
 python plugins/sgs-blocks/scripts/build-deploy.py --verify-url https://sandybrown-nightingale-600381.hostingersite.com/
 ```
 
-**Args:** `--target {sandybrown}` (the only target; palestine-lives removed 2026-08-10), `--skip-build`, `--theme-only`, `--blocks-only`, `--dry-run`, `--allow-dirty`, `--skip-verify`, `--verify-url <URL>`.
+**Args:** `--target {sandybrown,indus-test,eye-care-test}`, `--skip-build`, `--theme-only`,
+`--blocks-only`, `--dry-run`, `--allow-dirty`, `--payload <path-prefix>` (repeatable),
+`--skip-verify`, `--verify-url <URL>`, `--skip-purge`, `--skip-gate-full`,
+`--skip-oldshape-audit`, `--skip-motion-qa`, `--audit-scoped-page <page_id>`,
+`--takeover`, `--no-isolate`, `--self-test`.
 
-**Guards (hardened 2026-07-14 after the outage below):**
-- **Dirty-deploy guard.** Refuses when a file that BOTH ships in the tarball AND executes in WordPress (`.php/.js/.css/.html/.json` under `theme/sgs-theme/` or `plugins/sgs-blocks/`, minus `src/`, `_retired/`, `styles/`, `scripts/`, `tests/`, minus lockfiles + the generated `lucide-icons.php`) is uncommitted — unless `--allow-dirty`. **Deliberately scoped:** it previously checked the WHOLE repo, which is permanently dirty, so every documented command carried `--allow-dirty` and the guard protected nothing.
-- **Post-deploy smoke test.** Runs BY DEFAULT (opt out: `--skip-verify`). Cache-busted GET of the target; **fails the run** on 5xx/4xx or a WordPress fatal in the body. It was previously opt-in AND warn-only ("never aborts"), so a deploy that broke the site still reported `[DONE]`.
-- **One-generation rollback.** The previous copy is rotated to `<dir>.bak` instead of being `rm -rf`'d, so a bad deploy is one `mv` from recovery.
-- Refuses if `plugins/sgs-blocks/build/` missing and `--skip-build` set.
+**Guards:**
+- **Dirty-deploy guard.** Refuses when a file that BOTH ships in the tarball AND executes
+  in WordPress (`.php/.js/.css/.html/.json` under `theme/sgs-theme/` or
+  `plugins/sgs-blocks/`, minus `src/`, `_retired/`, `styles/`, `scripts/`, `tests/`,
+  lockfiles and the generated `lucide-icons.php`) is uncommitted — unless `--allow-dirty`,
+  or unless every such file falls under a `--payload` prefix. Read the paths it lists
+  before reaching for `--allow-dirty`.
+- **Post-deploy smoke test.** Runs by default (opt out: `--skip-verify`). A cache-busted
+  GET of the target that fails the run on a 4xx/5xx or a WordPress fatal in the body.
+- **One-generation rollback.** The previous copy is rotated to `<dir>.bak` rather than
+  deleted, so a bad deploy is one `mv` from recovery.
+- **Build check.** Refuses if `plugins/sgs-blocks/build/` is missing and `--skip-build` is
+  set.
+- **Cache purge.** After deploy it purges both cache layers — OPcache through an HTTPS
+  probe and the LiteSpeed page cache through wp-cli (opt out: `--skip-purge`).
 
-> **Why (2026-07-14):** an unfinished, uncommitted edit (a missing `use SGS\Blocks\Sgs_Site_Info;` — a RUNTIME class-resolution error that `php -l` passes cleanly) was deployed to **both** live client sites and 500'd them for ~2.5 hours, while the deploy reported success. All three defences above were inert at the time. This is also why `build-deploy.py` is now the deploy path for EVERY target — see `.claude/dev-setup.md`; the raw tar/scp sequence has been removed from the docs.
-
-**Pipeline (5 steps + verify):** `npm run build` → tar archive → scp → ssh extract + rotate-to-`.bak` + move → local cleanup → post-deploy smoke test.
+**Pipeline:** `npm run build` → tar archive → scp → ssh extract + rotate-to-`.bak` + move →
+local cleanup, then the cache purge and the post-deploy smoke test.
 
 ---
 
-### `sync-container-wrapping-blocks.py` (D6 / D112 origin; **rewritten D152 2026-06-02** — commit `0d746073`)
+### `sync-container-wrapping-blocks.py`
 
-Container-inheritance audit + KIND-classification script at `plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py`. Rewritten in D152 (Workstream A of the container standardisation programme) with:
+Container-inheritance audit and KIND-classification script at
+`plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py`.
 
-- **Validated "wraps children" detection** — structural signal (block wraps child blocks) replaces attr-count scoring. Reads `block_composition.has_inner_blocks` + `accepts_allowed_blocks` as the primary gate.
-- **3-KIND model** — classifies each block as `section` (full-bleed outer), `layout` (inner content-width wrapper), or `content` (composite with its own chrome).
-- **KIND→attr-scope diff** — emits per-block diff showing which attrs are in scope for each KIND, highlighting missing attrs vs `sgs/container`.
+- **Wraps-children detection** — a structural signal (the block wraps child blocks) read
+  from `block_composition.has_inner_blocks` + `accepts_allowed_blocks`.
+- **3-KIND model** — classifies each block as `section` (full-bleed outer), `layout`
+  (inner content-width wrapper) or `content` (composite with its own chrome).
+- **KIND→attr-scope diff** — emits a per-block diff showing which attrs are in scope for
+  each KIND and which are missing versus `sgs/container`.
 
-**Writes** `block_composition.wraps_block + container_kind` to canonical `sgs-framework.db`. **Never auto-edits block.json** — operator review gate for `containerKind` operator-override attribute is separate. Per-block diff Markdown at `pipeline-state/container-inheritance-sync/<date>/<block>.diff.md`.
-
-**Current roster (post-D152):** 28 blocks with `wraps_block` + `container_kind` populated. Original P-D6-THRESHOLD-RETUNE target (20–30+) met. See Spec 31 §13 FR-31-21 for the canonical wrapper-conversion procedure.
+With `--apply` it writes `block_composition.wraps_block` and `container_kind` to the
+canonical `sgs-framework.db`; without it, it is a dry run. It never edits `block.json`
+unless `--write-block-json` is combined with `--apply`. Per-block diff Markdown goes to
+`pipeline-state/container-inheritance-sync/<date>/<block>.diff.md`. See Spec 31 §13
+FR-31-21 for the wrapper-conversion procedure.
 
 ```bash
-python plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py
+python plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py                 # report only
+python plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py --apply         # write the DB
+python plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py --target-block sgs/hero
 ```
 
+**Args:** `--apply`, `--write-block-json`, `--target-block <slug>`, `--db <path>`.
+
 ---
 
-### `behavioural-analyser/assign-canonical.py` (D110, 2026-05-30 — commit `04fa0f2b` + XS-4 follow-ups in `52408c7e`)
+### `behavioural-analyser/assign-canonical.py`
 
-D99-ported `canonical_slot` / `role` / `derived_selector` batch backfill at `plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py`. Reads `slots.aliases` + `roles` table; writes to `block_attributes` rows.
-
-**Coverage shift (this session):**
-- `canonical_slot`: 2.5% → 33.4%
-- `role`: 5.3% → 33.2%
+Batch backfill of `canonical_slot`, `role` and `derived_selector` on `block_attributes`,
+at `plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py`. It reads the
+`slots`, `property_suffixes` and `modifier_suffixes` tables and writes to `block_attributes`
+rows. Tier A (suffix decomposition and slot resolution) runs by default; Tier B (BEM-element
+backfill) runs as a dry run that writes a diff JSON under `pipeline-state/_snapshots/`.
 
 ```bash
-# Default: apply changes
+# Tier A, then a Tier B dry run
 python plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py
 
-# Preview only
-python plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py --dry-run
+# Apply the most recent Tier B diff
+python plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py --apply
 
-# Skip Tier A (high-confidence direct alias matches)
+# Skip a tier
 python plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py --skip-tier-a
+python plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py --skip-tier-b
 ```
 
-**Args:** `--dry-run`, `--apply` (default), `--skip-tier-a`.
+**Args:** `--skip-tier-a`, `--skip-tier-b`, `--apply`, `--diff-file <path>`,
+`--role-detection`, `--apply-roles`, `--role-diff-file <path>`, `--recapture-baseline`.

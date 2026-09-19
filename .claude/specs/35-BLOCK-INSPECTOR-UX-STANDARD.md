@@ -746,7 +746,7 @@ className, align, aspectRatio, background, position, shadow, filter/duotone.
 | Responsive per-breakpoint | `ResponsiveControl`, `ResponsiveBoxControl` EXIST | audit coverage; use everywhere responsive-worthy |
 | Typography per element | `TypographyControls` EXISTS (R-22-13). ✅ **DONE 2026-09-07 (D990/D991) — architecture settled as "no curation": every text surface gets the full control set by default**, not a curated per-element subset. Two-state link colour shipped on 7 blocks (`sgs_link_colour_css()`); full set rolled out across 29 blocks mechanically + 8 blocks needing real judgement; a 513-attribute undeclared-in-block.json regression this rollout exposed was found and fixed with a new detector (`audit-typography-attr-declarations.js`). Deployed + live-verified on the canary (D991). | — |
 | Colour | `DesignTokenPicker` EXISTS — `enableAlpha` + `clearable` BUILT (both default true; verified 2026-07-28, `DesignTokenPicker.js:51-58,:87-94`). ⭐ **`SgsColourPanel` (the shared per-element colour panel that groups `DesignTokenPicker` instances under D621/D622's Styles-tab placement) — Track A rollout COMPLETE 2026-08-15** (`f6f3c033`, wave 2, on top of wave 1 + the `sgs/icon` pilot): most colour-bearing blocks now route colour through the shared panel — re-derive the exact split via `git log --oneline -- 'plugins/sgs-blocks/src/blocks/*/edit.js'` grepped for `SgsColourPanel`, do not trust a cached count here. **Track B has NOT started** — `container`, `cta-section`, `hero`, `trust-bar`, `site-header`, `site-footer` keep colour inside the shared `ContainerWrapperControls.js` (Bean-ruled separate session). Seven blocks (`notice-banner`, `quote`, `testimonial-slider`, `testimonial`, `option-picker`, `process-steps`, `product-card`) deliberately KEPT native `supports.color` sub-flags `true` alongside the panel — those flags are load-bearing for a root-level `style.color.*` mechanism the migration does not replace, so native colour UI may still appear alongside `SgsColourPanel` for those blocks specifically. `sgs/social-icons` was surveyed and found NOT a Track-A candidate (no custom colour attrs, only native supports) — needs its own design pass, not a migration. | DONE (Wave 1.1); Track A DONE 2026-08-15, Track B OPEN |
-| Normal/Hover state | ⛔ **`StateToggleControl` is DEAD CODE — corrected 2026-08-17.** It exists and is exported (`components/index.js:45`) but has **0 imports and 0 JSX mounts** anywhere. Every apparent usage is a comment recording where it *used to* live (`brand-strip/edit.js:316`, `nav-menu/edit.js:463`) | ⚠ **"roll out to stateful blocks" never happened — and may not need to.** Hover/state colour is already delivered by a DIFFERENT, working mechanism: `SgsColourPanel`'s `rows[].states` array, passed through to `DesignTokenPicker`'s own `states` prop (e.g. `button/edit.js:395-397`). ✅ **RESOLVED 2026-08-24 (D765) — DELETED.** Bean's call: the `states`-prop route IS canonical. `StateToggleControl.js` has been removed from `src/components/` and un-exported from `components/index.js`; Normal/Hover lives INSIDE the colour popover via `DesignTokenPicker`'s `states` prop. Verified 0 mounts at any depth by two independent methods before deletion, and the plugin builds clean. Do not re-propose wiring it — the component no longer exists. |
+| Normal/Hover state | `StateToggleControl` no longer exists (`git grep -n StateToggleControl -- plugins/sgs-blocks/src` finds only 2 comments recording where it used to live). | Hover/state colour is delivered by `SgsColourPanel`'s `rows[].states` array, passed through to `DesignTokenPicker`'s own `states` prop (e.g. `button/edit.js`). Normal/Hover lives INSIDE the colour popover. Do not wire a separate toggle component. |
 | Extension gating | `hideExtensions` (opt-out, most extensions) + `enabledExtensions` (opt-in, hover/blockLink only, D579 2026-08-11) EXIST | — |
 | **Shadow builder** | ⛔ **UPDATED 2026-08-16 (D632) — colour split out of the builder.** `ShadowControl` (`src/components/ShadowControl.js`) now stores SHAPE only (X/Y/blur/spread/inset); colour is a split sibling `{name}Colour` attribute that appears as a normal row in the per-block `SgsColourPanel`, matching D621/D622's placement model, composed at render/preview via `sgs_shadow_value_composed()` (PHP)/`resolveShadowPreviewComposed()` (JS). Onto this shape: `cta-section`, `trust-bar` (`iconCircleShadow`/`badgeImageShadow` only — its own root shadow renders inside the shared container wrapper, deliberately out of scope), `card-grid`, `team-member`, `brand-strip`, `testimonial`, `info-box`, `post-grid` (off a banned preset-only picker), `before-after`, `media` (off a raw CSS `TextControl`), `button` (off a hand-rolled object attribute). `sgs/quote` migrated onto the same shape as the other 11 blocks (D634): `ShadowControl` for
 shape + flat sibling `boxShadowColour`/`boxShadowHoverColour` surfaced in `SgsColourPanel`, composed
@@ -863,11 +863,7 @@ triad mechanism and the same enforcement stack.
       `03-dense-panel-candidate` re-run live: **0 flagged.** All 10 named blocks converted
       (`form-field-checkbox/-date/-file/-number/-radio/-select`, `gallery`, `info-box`,
       `multi-button`, `text`). Commit `497261de0`.
-- [x] **State capability is DONE via `SgsColourPanel`'s D609 tab-toggle mechanism, not
-      `StateToggleControl`** — 60 blocks pass `states:` to the colour control (`DesignTokenPicker.js:27-34`).
-      `StateToggleControl` is an orphan of the pre-D609 design, exported from `components/index.js:45` with
-      0 mounts. Actions: (a) reword this checklist item to name the D609 mechanism; (b) delete the orphan
-      component. Neither is a capability gap.
+- [x] **State capability is DONE via `SgsColourPanel`'s tab-toggle mechanism** — 60 blocks pass `states:` to the colour control (`DesignTokenPicker.js:27-34`). There is no separate `StateToggleControl` component.
 - [x] **CLOSED 2026-09-04 (C7).** decorative-image + ARIA-label where needed — rule
       `18-decorative-image-aria` re-run live: **0 flagged.** `sgs/cta-section`, `sgs/nav-drawer`,
       `sgs/social-icons` gained real toggles + ARIA wiring; `sgs/media`'s `imageIsDecorative`
@@ -1179,8 +1175,7 @@ waves shipped same day; the plan referenced in earlier revisions
 **Also outstanding across the board:** editor-CANVAS verification — everything to date verified
 by frontend render + REST attribute registration, never by opening the block editor
 (`ShadowControl` precedent: crashed on first live render despite 180 passing unit tests, R-31-13).
-**OPEN (parked, none blocking Spec 35):** `P-NAV-DRAWER-VARIANTS-NO-DISCRIMINATORS` (Track 2, not
-this spec) · `P-NO-INLINE-GATE-COVERAGE-GAPS` (gate canary page for var-driven features; see the
+**OPEN (parked, none blocking Spec 35):** `P-NO-INLINE-GATE-COVERAGE-GAPS` (gate canary page for var-driven features; see the
 Spec 32 amendment below) · `sgs-758` lifted-CSS MIME error (one-off, unchased) ·
 `HeaderBehavioursTest.php` needs a composer/PHPUnit env to execute · Shrink+Hide legacy-transition
 overlap on pre-animation-timeline browsers (documented, not speculatively fixed).
@@ -1201,24 +1196,19 @@ above + **PART O** (this spec) §THE PLACEMENT RULE.
 - **Measured, library-wide** (`python plugins/sgs-blocks/scripts/placement-reach.py`, re-derived
   2026-08-09): element-scoped 1,702/2,595 (65.6%), tier-2 893/2,595 (34.4%); `sgs/hero`'s tier-2
   count closed 61 → 30. Contested placements (the tie-break-instead-of-report defect the earlier
-  46.1% figure hid) are **0 library-wide** — the last 9 were all `sgs/nav-menu`, resolved by its
-  wrapper exit below. `inspector-scan` rule 21 (`render-without-control`) fell 243 → 130 in the
+  46.1% figure hid) are **0 library-wide**. `inspector-scan` rule 21 (`render-without-control`) fell 243 → 130 in the
   same work (re-derived: `node plugins/sgs-blocks/scripts/inspector-scan/run.js`, at the time
  **130 flagged, 12 baselined**). ⛔ **RE-MEASURED 2026-08-09 at `a09226e8`: 129 flagged, 12
   baselined.** 130 was correct when written; `0fb1507d` (the `sgs/physics-canvas` `tagName` wiring)
   cleared its last finding. ⚠ Count `status:"FLAGGED"` — `core/report.js:96-101` puts BASELINED
   entries in the `--json` array too, so a raw array length reads 141.
-- **The composite-mirror rule (root `CLAUDE.md` §"Composite-mirror rule") gained a fourth,
-  measured exit condition (D538/D539): a block whose wrapper contributes ZERO live arrangement CSS
+- **The composite-mirror rule (root `CLAUDE.md` §"Composite-mirror rule") has a fourth,
+  measured exit condition: a block whose wrapper contributes ZERO live arrangement CSS
   to its own children may exit `SGS_Container_Wrapper` and render block-private — this is
-  DIFFERENT from D294's KIND-based test and stands on its own measured evidence, not on D294's
-  authority.** `sgs/nav-menu` exited on this test (24 of ~107 wrapper keys declared, 3 reachable,
-  wrapper contributed no live CSS) — attrs 77 → 57, `render-without-control` findings for this
-  block 17 → 0, contested placements 9 → 0. Two live bugs fixed in the same change: the "item gap"
-  control moved from the wrapper root (where its flex sibling had already been `display:none`d,
-  so it painted nothing) to `.sgs-nav-menu__bar`; the accessible name's double-`esc_attr()` was
-  fixed to single. `sgs/site-header-row`/`sgs/site-footer-row` took the OPPOSITE fix — they KEEP
-  the wrapper and had their ~7 real missing controls wired, because `responsive_model=>'object'`
+  DIFFERENT from the KIND-based test (D294) and stands on its own measured evidence.**
+  `sgs/nav-bar-menu` is such a block (block-private root; its item-gap control targets
+  `.sgs-nav-bar-menu__bar`, not the wrapper root). `sgs/site-header-row`/`sgs/site-footer-row` take the
+  OPPOSITE route — they KEEP the wrapper, because `responsive_model=>'object'`
   forces their InnerBlocks to be direct children of the element the wrapper's arrangement CSS
   targets (genuine containers, not specialised). `sgs/physics-canvas` SPLIT: ~18 box/width attrs
   were a real gap (`minHeight` had no control at all) and are now wired; ~61 were inert or
@@ -1227,8 +1217,8 @@ above + **PART O** (this spec) §THE PLACEMENT RULE.
   genuine inner band.** Five block-private composites (`quote`, `testimonial`, `notice-banner`,
   `team-member`, `product-faq`) were emitting `max-width` (from `maxWidth`) AND `width` (from
   `contentWidth`) on the SAME root selector — two competing widths under one name promising a
-  second layer that did not exist. `contentWidth` was deleted from all five; `sgs/nav-menu` also
-  lost `maxWidth` (redundant with its parent row's own width control, wired above).
+  second layer that did not exist. `contentWidth` was deleted from all five; `sgs/nav-bar-menu`
+  carries no `maxWidth` (its parent row's own width control governs).
 - **The gate IS now built (2026-08-10): `inspector-scan` rule 23
   (`23-content-width-needs-inner-band.js`, ADVISORY).** Building it falsified D540's own census,
   which had grouped 33 blocks on "routes through `SGS_Container_Wrapper`" without reading each
@@ -1847,7 +1837,7 @@ is `[]` today.
 
 1. **`inspector_control_type`** — FIXED (D523). Root cause: `_KNOWN_CONTROLS`
 (`extract-signatures.py:2436-2441`) was a hardcoded 16-name tuple with zero custom SGS components
-(`SgsLinkControl`, `URLInput`, `IconPicker`, `ShadowControl`, `StateToggleControl`,
+(`SgsLinkControl`, `URLInput`, `IconPicker`, `ShadowControl`,
 `TypographyControls`, `ResponsiveBoxControl`, `ResponsiveOverride`), so an unrecognised tag never
 disagreed with the stored value and stale values (fossils of the deleted `enrich-db.py` heuristic)
 persisted forever — same defect class as the gates it feeds (matching by component NAME). Fix:
@@ -2298,12 +2288,7 @@ its element's panel (TIER 1) regardless of this field.)*
 
 ### 6. STATE / HOVER
 
-1. **Canonical (CLOSED 2026-08-24, D765 — was open at D673)** — `StateToggleControl` was unadopted, never canonical, and is now DELETED. It
-exists and is exported (`components/index.js:45`) but has 0 JSX mounts across `src/blocks` — the
-only references are 2 comments recording where it used to live (`brand-strip/edit.js:316`,
-`nav-menu/edit.js:463`). **The WORKING mechanism is `SgsColourPanel` rows → `DesignTokenPicker`'s
-`states` prop** (e.g. `button/edit.js:395-397`). RESOLVED 2026-08-24 (D765): DELETED — the `states`-prop route is canonical. The superseded text below is kept for provenance. Originally: decide whether to wire `StateToggleControl`, or delete it and
-make the `states`-prop route canonical.
+1. **Canonical** — the `states`-prop route: `SgsColourPanel` rows → `DesignTokenPicker`'s `states` prop (e.g. `button/edit.js`). There is no separate `StateToggleControl` component.
 2. **Required props** — one toggle per logical attr GROUP, not per attribute; the render-prop must
    cover **every** paired attr in both states.
 3. **Banned lookalikes** — a separate "Hover" panel (7 blocks; `post-grid`'s is 145 lines from its
@@ -2320,11 +2305,11 @@ make the `states`-prop route canonical.
    ⚠ `table-of-contents.activeLinkColour` is a genuine `current` state (renamed from `selected`
    2026-08-19) that **name-matching cannot find**. A new semantically-named state with `css_state`
    NULL would be invisible to every method here.
-6. **Conformance** — conform: `brand-strip`, `button`, `nav-menu`.
+6. **Conformance** — conform: `brand-strip`, `button`, `nav-bar-menu`.
 7. **Detection** — three separate rules, not one: `state-attr-no-toggle`, `state-attr-unreachable`,
    `state-attr-preset-only` (park the third — one instance cannot prove the shape, per R-31-9).
 8. **RESOLVED, not open — migration needs ZERO schema change.** Every attr already exists with its
-   current type; `StateToggleControl` is a presentational wrapper reading/writing the same keys. No
+   current type; the `states`-prop route reads/writes the same keys. No
    version bump, no deprecation. Consistent with D293/D270.
 
 ### 7. MEDIA
@@ -2692,7 +2677,7 @@ its TIER 2 family panel via `cluster-member-sets.json` instead. An element-scope
 its element's panel (TIER 1) regardless of this field.)*
 5. **Scope** — `box_family IN ('borderWidth', …)` ∪ `css_property LIKE 'border%'`. ⚠ `box_family` is
    now trustworthy (D523) but still scopes only to 4-side/4-corner OBJECT attrs — a scalar radius
-   (`card-grid.cardRadius`, `nav-menu.itemRadius`, `mega-aside.asideRadius`) is correctly NULL there
+   (`card-grid.cardRadius`, `mega-aside.asideRadius`) is correctly NULL there
    and must be picked up by the `css_property` leg, or the rule will miss every one of them.
 6. **Conformance** — ✅ **MEASURED 2026-08-11 (Phase 0 item 0a, D561).** Source:
    `npm run survey:box`, re-run after the three fixes below. Cite these, not the pre-fix figures.

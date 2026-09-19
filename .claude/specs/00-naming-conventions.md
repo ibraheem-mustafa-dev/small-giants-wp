@@ -43,11 +43,9 @@ Single source of truth for every identifier used across the SGS WordPress Framew
 
 **Anti-pattern:** `sgs/CardGrid`, `sgs/card_grid`, `SGS/card-grid` — wrong case, wrong separator, wrong namespace capitalisation.
 
-### 2.1 Header/footer/nav container blocks (evolved rule, 2026-07-13)
+### 2.1 Header/footer/nav container blocks
 
-Header/footer remain WordPress template parts (Spec 37) — a monolithic block that subsumes the template-part/Site-Info/rules system is still forbidden. **Specialised container blocks used *inside* the template parts are permitted**, exactly like `sgs/card-grid`/`sgs/feature-grid`: `sgs/site-header`, `sgs/site-footer`, `sgs/site-header-row`, `sgs/site-footer-row`, and the nav blocks **`sgs/nav-bar-menu`** (bar + burger, split from the former `sgs/nav-menu` at D1059, 2026-09-14/15) + **`sgs/nav-drawer-menu`** (the drawer's accordion/drill-down list, same split) + **`sgs/nav-drawer`** (off-canvas `<dialog>` drawer). The `no-header-footer-block.py` hook allow-lists these while still blocking the bare `header`/`footer`/`nav` block slugs — **verified 2026-07-20 by executing the hook** (`nav-menu`/`nav-drawer`/`site-header` → exit 0; `nav`/`header` → exit 2, against the pre-split slug — re-verify against `nav-bar-menu`/`nav-drawer-menu` on next touch), not by re-reading its regex. Design-gate: `.claude/plans/2026-07-13-header-footer-nav-system-design-gate.md`; block FRs owned by Spec 37 and **Spec 36** (the canonical nav home).
-
-> **`sgs/mobile-nav` no longer exists** (deleted D336/Task 1, 2026-07-14). `sgs/adaptive-nav` is superseded by the Spec 36 rebuild and is reference-only: REGISTERED but dormant, kept solely as the rollback path until the Indus header is re-authored (FR-36-18). Do not cite either as the current nav block.
+Header/footer remain WordPress template parts (Spec 37) — a monolithic block that subsumes the template-part/Site-Info/rules system is still forbidden. **Specialised container blocks used *inside* the template parts are permitted**, exactly like `sgs/card-grid`/`sgs/feature-grid`: `sgs/site-header`, `sgs/site-footer`, `sgs/site-header-row`, `sgs/site-footer-row`, and the nav blocks **`sgs/nav-bar-menu`** (bar + burger) + **`sgs/nav-drawer-menu`** (the drawer's accordion/drill-down list) + **`sgs/nav-drawer`** (off-canvas `<dialog>` drawer). The `no-header-footer-block.py` hook allow-lists these while still blocking the bare `header`/`footer`/`nav` block slugs. Design-gate: `.claude/plans/2026-07-13-header-footer-nav-system-design-gate.md`; block FRs owned by Spec 37 and **Spec 36** (the canonical nav home).
 
 ---
 
@@ -97,10 +95,9 @@ itself is not a registered block. Because BEM root is the only recognition signa
 section), there is no way for the converter walker to distinguish which `form-field-*` block a
 given `.sgs-form-field__*` element belongs to, or to route to any of them at all — the entire
 family is permanently invisible to the cloning pipeline. This is live, verifiable evidence for
-why a registered block's BEM root must be unique to that block. It is exactly why the
-nav-menu-split project gave `sgs/nav-bar-menu` and `sgs/nav-drawer-menu` their own separate
-roots (`.sgs-nav-bar-menu__*` / `.sgs-nav-drawer-menu__*`) rather than continuing to share the
-old conflated `.sgs-nav-menu__*` root the two blocks were split out of.
+why a registered block's BEM root must be unique to that block. It is exactly why
+`sgs/nav-bar-menu` and `sgs/nav-drawer-menu` each have their own separate
+root (`.sgs-nav-bar-menu__*` / `.sgs-nav-drawer-menu__*`).
 
 #### 3.1.1 Label / badge recognition → `sgs/label` (convention)
 
@@ -119,7 +116,7 @@ Current roster: `sgs/hero`, `sgs/cta-section`, `sgs/trust-bar`. Adding a new sec
 2. Run `/sgs-update` to populate `blocks.tier`
 3. Walker recognition flows automatically — no code branches needed
 
-Cross-references: D107 (voter rewrite, tier-driven recognition), D108 (block_composition table — sibling routing data), D118 + **Spec 31 §13 FR-31-4.1** (Universal wrapper/container resolution — the single rule governing how every sgs-classed wrapper below a section root is resolved: direct-descendant fold, grid/flex absorption, block-match exception, non-direct-descendant own-container), D152 + **Spec 31 §13 FR-31-21** (`block_composition.container_kind` 3-KIND model section|layout|content; composite-mirror rule — every composite wrapper block mirrors `sgs/container`, BLOCK-SIDE COMPLETE across the 29-block roster D167; `supports.sgs.containerKind` operator-override + `supports.sgs.containerMirror:false` exclusion — modal + mobile-nav are excluded).
+Cross-references: D107 (voter rewrite, tier-driven recognition), D108 (block_composition table — sibling routing data), D118 + **Spec 31 §13 FR-31-4.1** (Universal wrapper/container resolution — the single rule governing how every sgs-classed wrapper below a section root is resolved: direct-descendant fold, grid/flex absorption, block-match exception, non-direct-descendant own-container), D152 + **Spec 31 §13 FR-31-21** (`block_composition.container_kind` 3-KIND model section|layout|content; composite-mirror rule — every composite wrapper block mirrors `sgs/container`, BLOCK-SIDE COMPLETE across the 29-block roster D167; `supports.sgs.containerKind` operator-override + `supports.sgs.containerMirror:false` exclusion — `sgs/modal` + `sgs/nav-drawer` are excluded).
 
 ### 3.3 Content-width cap → `contentWidth` attribute (the inner-wrapper mapping, D194)
 

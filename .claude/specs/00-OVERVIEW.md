@@ -136,7 +136,7 @@ No "it works on desktop but breaks on mobile" — mobile is the starting point.
 - **Deployment:** **`python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown`** — the ONE path for every target (ceremony/gates via `/wp-sgs-deploy`). It builds, gates on a dirty working tree, verifies fail-closed, and rotates a `.bak` for rollback. ⛔ **Not SFTP, and never a hand-rolled tar/`scp -r`/`ssh rm -rf`** — that recipe took two client sites down for ~2.5h on 2026-07-14 (D336).
 - **Per-client tokens:** `sites/<client>/theme-snapshot.json` → `push-theme-snapshot.py` (Spec 33), never a framework deploy.
 - **Local testing:** WordPress Playground or Local by Flywheel
-- **Dev site:** sandybrown-nightingale-600381.hostingersite.com — the ONLY target (palestine-lives.org removed from TARGETS 2026-08-10)
+- **Dev sites:** `build-deploy.py` targets are `sandybrown` (sandybrown-nightingale-600381.hostingersite.com, the canary) `indus-test` (lavender-dinosaur-183533.hostingersite.com, the Indus Foods test site) and `eye-care-test` (darkcyan-grouse-898606.hostingersite.com, the Eye Care Birmingham test site); the last two deploy only when named with `--target`
 - **Staging/canary:** sandybrown-nightingale-600381.hostingersite.com — Mama's Munches canary. The native-block homepage is **page 2742** (`/`), posts page **2741** (`/blog/`). ⛔ Page 144 was hard-deleted; keep the number only as the provenance that locates the clone, and verify any post ID exists before pointing anything at it.
 - **WP version:** **7.1** (verified 2026-08-20 via `wp core version` over SSH — re-check, don't trust this line)
 - **Automation:** N8N workflows on VPS (72.62.212.169) for notifications, webhooks, scheduled tasks

@@ -14,15 +14,15 @@ status_history:
   - 2026-05-24: frontmatter added per Phase 13 spec template
   - 2026-06-12: blocks-layer + TypographyControls standard + product-search/filter-search/collapsible-text sync
   - 2026-06-13: testimonial attr names corrected to match block.json; converter routing updated (D212 shipped); notice-banner save.js corrected to InnerBlocks.Content; stale WIP warning on testimonial-slider removed; 29-block hardcode replaced with DB query
-  - 2026-07-13: header/footer/nav system design-gate APPROVED (Bean sign-off) — `sgs/site-header`, `sgs/site-footer`, `sgs/adaptive-nav` added as DESIGN-APPROVED/build-pending specialised container composites; `sgs/mobile-nav` P0 unclickable-drawer bug SHIPPED + live-verified; `no-header-footer-block.py` rule evolved to permit these 3 slugs
-  - 2026-07-14: reconciliation pass — `sgs/site-header`, `sgs/site-footer`, `sgs/adaptive-nav` are now BUILT + LIVE (D323-D333, §S9 11/11), pending final Bean sign-off; see `.claude/specs/37-HEADER-FOOTER-BUILDER.md` for current status
+  - 2026-07-13: header/footer/nav system design-gate approved (Bean sign-off) — `sgs/site-header`, `sgs/site-footer`, `sgs/nav-bar-menu` added as specialised container composites; `no-header-footer-block.py` rule evolved to permit these slugs
+  - 2026-07-14: reconciliation pass — `sgs/site-header`, `sgs/site-footer`, `sgs/nav-bar-menu` built + live; see `.claude/specs/37-HEADER-FOOTER-BUILDER.md` for current status
 ---
 
 # SGS Blocks — Custom Gutenberg Block Library
 
-> **2026-07-13 update — Header/Footer/Navigation SYSTEM design-gate APPROVED (Bean sign-off, all recommended defaults).** Source of truth: `.claude/plans/2026-07-13-header-footer-nav-system-design-gate.md`. Three NEW specialised container-composite blocks added to the roster — **BUILT + LIVE** (D323-D333, §S9 11/11; `status='built'` in the DB, `container_kind` populated; pending final Bean sign-off): `sgs/site-header`, `sgs/site-footer` (section-KIND, delegate to `SGS_Container_Wrapper` exactly like `sgs/card-grid`/`sgs/feature-grid` — 3 optional named rows + a typed element palette; live inside the `header`/`footer` template parts), `sgs/adaptive-nav` (layout-KIND — one menu source that collapses nav-bar→burger across 4 tiers incl. custom-px, mega-menu drill-down on mobile, off-canvas escape hatch). **`sgs/mobile-nav`** (the existing off-canvas drawer) is NOT new but its **P0 unclickable-drawer bug is FIXED and live-verified** (2026-07-13): `view.js` was setting `inert` on `.wp-site-blocks`, and the drawer was a DOM descendant of that element — so the drawer froze itself; fix re-parents the drawer to be a direct child of `<body>` before `showPopover()`. The drawer is also being hardened to the GOV.UK-grade a11y contract (focus trap, ESC-close, backdrop-dismiss, body-scroll-lock, redundant state signalling, configurable SR labels). **Header/footer REMAIN WordPress template parts (Spec 37 owns this architecture)** — these 3 blocks are the specialised CONTAINER used *inside* the parts, not a monolithic header/footer block; `no-header-footer-block.py` evolves to allow `src/blocks/{site-header,site-footer,adaptive-nav}/` while still blocking bare `header`/`footer`/`nav` block slugs. Full FR set + the per-breakpoint override model + the never-overflow Cluster+clamp layout live in **Spec 37** (`37-HEADER-FOOTER-BUILDER.md`); the global-defaults/Site-Info access model is owned by **Spec 36** — this spec does not duplicate those FRs, see the new "Header / Footer / Navigation System" section below for the block-roster summary + cross-references. Phasing (P0 drawer fix SHIPPED → P1 site-header → P2 adaptive-nav → P3 site-footer → P4 per-device polish → P5 cloning-pipeline Part 2) is tracked in the design-gate doc + `.claude/state.md`/`next-session-prompt.md` (do not cache phase-completion status here — it drifts).
+> **Header/Footer/Navigation system.** Source of truth: `.claude/plans/2026-07-13-header-footer-nav-system-design-gate.md`. Specialised container-composite blocks (`status='built'` in the DB, `container_kind` populated): `sgs/site-header`, `sgs/site-footer` (section-KIND, delegate to `SGS_Container_Wrapper` exactly like `sgs/card-grid`/`sgs/feature-grid` — 3 optional named rows + a typed element palette; live inside the `header`/`footer` template parts), `sgs/nav-bar-menu` (layout-KIND — one menu source that collapses nav-bar→burger across 4 tiers incl. custom-px, mega-menu drill-down on mobile, off-canvas escape hatch), `sgs/nav-drawer` (the off-canvas drawer, held to the GOV.UK-grade a11y contract: focus trap, ESC-close, backdrop-dismiss, body-scroll-lock, redundant state signalling, configurable SR labels) and `sgs/nav-drawer-menu` (the drawer's link list). **Header/footer REMAIN WordPress template parts (Spec 37 owns this architecture)** — these blocks are the specialised CONTAINERS used *inside* the parts, not a monolithic header/footer block; `no-header-footer-block.py` allows `src/blocks/{site-header,site-footer,nav-bar-menu,nav-drawer-menu,nav-drawer}/` while still blocking bare `header`/`footer`/`nav` block slugs. Full FR set + the per-breakpoint override model + the never-overflow Cluster+clamp layout live in **Spec 37** (`37-HEADER-FOOTER-BUILDER.md`); the global-defaults/Site-Info access model is owned by **Spec 36** — this spec does not duplicate those FRs, see the "Header / Footer / Navigation System" section below for the block-roster summary + cross-references.
 >
-> **2026-06-12 update (D213/D214 — Spec 30 P2 shop layer).** Three new SGS blocks shipped: `sgs/product-search` (FR-30-5 combobox search + hardened REST endpoint + `inline`/`icon` display modes + no-JS GET fallback, v1.1.0), `sgs/filter-search` (FR-30-6 type-to-find narrowing for ≥16 attribute terms, Baymard threshold, `woocommerce/product-filter-attribute` ancestor), `sgs/collapsible-text` (D213 — operator SEO copy, accessible CSS line-clamp read-more, always SSR'd, i18n toggle labels). Two pre-existing blocks now documented below: `sgs/buybox` (FR-30-7/D210 — PDP configurator wrapper composing `sgs/option-picker` pickers + cart proxy) and `sgs/content-collection` (FR-24-4/D210 — query-driven product grid with forwarded `showPickers`/`ctaBehaviour`/`showLadder`). **Blocks registered clean via `/sgs-update` (0 new = already registered from their feature commits).** `02-SGS-BLOCKS-REFERENCE.md` unchanged.
+> **2026-06-12 update (D213/D214 — Spec 30 P2 shop layer).** Three new SGS blocks shipped: `sgs/product-search` (FR-30-5 combobox search + hardened REST endpoint + `inline`/`icon` display modes + no-JS GET fallback, v1.1.0), `sgs/filter-search` (FR-30-6 type-to-find narrowing for ≥16 attribute terms, Baymard threshold, `woocommerce/product-filter-attribute` ancestor), `sgs/collapsible-text` (D213 — operator SEO copy, accessible CSS line-clamp read-more, always SSR'd, i18n toggle labels). Two pre-existing blocks now documented below: `sgs/buybox` (FR-30-7/D210 — PDP configurator wrapper composing `sgs/option-picker` pickers + cart proxy) and `sgs/content-collection` (query-driven product grid with forwarded `showPickers`/`ctaBehaviour`/`showLadder`). **Blocks registered clean via `/sgs-update` (0 new = already registered from their feature commits).** `02-SGS-BLOCKS-REFERENCE.md` unchanged.
 >
 > **2026-06-11 update (D209 — R-31-13 block-quality programme + TypographyControls).** Shared `TypographyControls` component + `sgs_typography_css_rule()` helper are now MANDATORY for all per-element typography (see Block Customisation Standard below). `announcement-bar` RETIRED → `notice-banner` with `displayMode=announcement`. `sgs/testimonial` rebuilt as a 7-variant typed-attr block (D206). `/sgs-update` reconciled the block roster post-retirement (live count is DB-authoritative — query `/sgs-db` or see `02-SGS-BLOCKS-REFERENCE.md`; never hard-code it here).
 >
@@ -30,7 +30,7 @@ status_history:
 >
 > **Last block-architecture update: 2026-05-22.** Phase 1.5 of the architecture programme added inserter-discoverable variations + block styles + default-style declarations to 12 composite blocks (hero, card-grid, cta-section, testimonial, team-member, pricing-table, accordion, tabs, gallery, post-grid, form, info-box). 40 variations + 30 styles total. Registered via PHP sibling files under `plugins/sgs-blocks/includes/variations/sgs-<block>-variations.php` auto-discovered by `class-sgs-block-variations.php` loader. Variations register via `add_filter('get_block_type_variations', ...)` (WP 6.5+ canonical PHP path); block styles via `register_block_style()`. Each variation declares default style via `className` attribute. See "Block Variation + Style Registration" section below. Also (2026-05-22): `core/button` double-`is_default` bug fixed in `theme/sgs-theme/functions.php` — `sgs-accent` no longer claims default, leaving WP's native `fill` as the single default.
 >
-> **Previous architecture update (2026-05-19):** All 10 previously-static SGS blocks (certification-bar / counter / heading / label / feature-grid / multi-button / mobile-nav / notice-banner / process-steps / trust-bar) converted to dynamic — save returns null, render.php drives 100% of frontend output. `_STILL_STATIC_SGS_BLOCKS = frozenset()` (cv2 A1 guard is now a no-op). Container block extended with advanced backgrounds (4 modes: image / video / parallax+ken-burns / gradient-overlay; 15 new attrs; view.js + render.php + style.css). Hero block.json defaults removed (Section H6 dual-cascade anti-pattern fix). Framework deployed to palestine-lives.org (commit `a9083ca9`). Per-block attribute counts in `02-SGS-BLOCKS-REFERENCE.md` regenerate on every `/sgs-update`.
+> **Previous architecture update (2026-05-19):** All 9 previously-static SGS blocks (certification-bar / counter / heading / label / feature-grid / multi-button / notice-banner / process-steps / trust-bar) converted to dynamic — save returns null, render.php drives 100% of frontend output. `_STILL_STATIC_SGS_BLOCKS = frozenset()` (cv2 A1 guard is now a no-op). Container block extended with advanced backgrounds (4 modes: image / video / parallax+ken-burns / gradient-overlay; 15 new attrs; view.js + render.php + style.css). Hero block.json defaults removed (Section H6 dual-cascade anti-pattern fix). Per-block attribute counts in `02-SGS-BLOCKS-REFERENCE.md` regenerate on every `/sgs-update`.
 
 ## Purpose
 
@@ -71,19 +71,22 @@ sgs-blocks/
 │   │   ├── pricing-table/        # Service/pricing comparison table
 │   │   ├── modal/                # Lightbox/modal overlay
 │   │   ├── google-reviews/       # Google Business Profile reviews display
-│   │   ├── mega-menu/            # Block-based mega menu for Navigation block
+│   │   ├── mega-panel/           # Content container of a mega menu (lives inside an sgs_mega_menu post)
+│   │   ├── mega-group/           # One column of a mega panel — heading + link list
+│   │   ├── mega-aside/           # Optional side panel of a mega panel
 │   │   ├── decorative-image/     # Absolute-positioned decorative floating images
-│   │   ├── option-picker/        # Radio-group pill chooser (sgs-interactive; atomic). Spec 24 FR-24-15; C7 group-label controls D206
+│   │   ├── option-picker/        # Radio-group pill chooser (sgs-interactive; atomic); group-label controls
 │   │   ├── cart/                 # WooCommerce cart count badge v1 (sgs-interactive)
-│   │   ├── content-collection/   # ★ Query-driven product grid. Spec 24 FR-24-4/5/6; showPickers/ctaBehaviour/showLadder attrs (D210)
+│   │   ├── content-collection/   # ★ Query-driven product grid; showPickers/ctaBehaviour/showLadder attrs
 │   │   ├── buybox/               # ★ PDP configurator — option-picker→cart bridge (FR-30-7/D210). sgs-content category.
 │   │   ├── product-search/       # ★ NEW FR-30-5/D214 — Accessible combobox search + REST /sgs/v1/product-search + inline|icon displayMode (v1.1.0)
 │   │   ├── filter-search/        # ★ NEW FR-30-6/D214 — Type-to-find filter narrowing (≥16 terms threshold, woocommerce/product-filter-attribute ancestor)
 │   │   ├── collapsible-text/     # ★ NEW D213 — Operator SEO copy; CSS line-clamp read-more; always SSR'd; i18n toggle labels
-│   │   ├── mobile-nav/           # Off-canvas drawer (existing). P0 unclickable-drawer bug FIXED 2026-07-13 (drawer re-parented to <body> so background `inert` no longer freezes it); GOV.UK-grade a11y contract in progress. See specs/36-SGS-NAVIGATION-SYSTEM.md.
-│   │   ├── site-header/          # ★ BUILT + LIVE (D323-D333, §S9 11/11) — specialised header container, section-KIND, delegates to SGS_Container_Wrapper. See "Header / Footer / Navigation System" section below + specs/37-HEADER-FOOTER-BUILDER.md
-│   │   ├── site-footer/          # ★ BUILT + LIVE (D323-D333, §S9 11/11) — specialised footer container, section-KIND, delegates to SGS_Container_Wrapper. Rows + up-to-N columns. See same section
-│   │   ├── adaptive-nav/         # ★ BUILT + LIVE (D323-D333, §S9 11/11) — one-menu-source adaptive nav (bar→burger, 4 tiers incl. custom-px), layout-KIND, mega-menu drill-down. See same section
+│   │   ├── site-header/          # ★ Specialised header container, section-KIND, delegates to SGS_Container_Wrapper. See "Header / Footer / Navigation System" section below + specs/37-HEADER-FOOTER-BUILDER.md
+│   │   ├── site-footer/          # ★ Specialised footer container, section-KIND, delegates to SGS_Container_Wrapper. Rows + up-to-N columns. See same section
+│   │   ├── nav-bar-menu/         # One-menu-source nav (bar→burger, 4 tiers incl. custom-px), layout-KIND, mega-menu drill-down. See same section
+│   │   ├── nav-drawer-menu/      # The drawer's accordion/drill-down link list (ancestor: sgs/nav-drawer)
+│   │   ├── nav-drawer/           # Off-canvas drawer (dialog). See same section
 │   │
 │   ├── components/               # Shared React components for editor UI
 │   │   ├── TypographyControls.js # ★ MANDATORY — shared per-element typography UI (D209). See Block Customisation Standard.
@@ -200,7 +203,7 @@ block-name/
 | `layout` | Inner layout wrapper — grid/flex arrangement + width/contentWidth + gap. No background/overlay/SVG/shape layers. | Layout + Width panels only |
 | `content` | Content-level composite — width/contentWidth + inner padding/spacing only. No grid/bg layers. | Width + Spacing panels only |
 
-`containerKind` is declared in each composite block's `block.json` as `supports.sgs.containerKind`. It gates which `ContainerWrapperControls` panels render in the editor and which layers the shared `SGS_Container_Wrapper::render()` PHP helper emits at runtime. `sgs/modal` and `sgs/nav-drawer` carry `supports.sgs.containerMirror: false` and are excluded from the roster entirely (their outer shell is a Popover/dialog, not a container). **`sgs/site-header` and `sgs/site-footer` (DESIGN-APPROVED 2026-07-13, build-pending) ARE on this roster as `containerKind: section`; `sgs/nav-menu` as `containerKind: layout`** — see "Header / Footer / Navigation System" section below.
+`containerKind` is declared in each composite block's `block.json` as `supports.sgs.containerKind`. It gates which `ContainerWrapperControls` panels render in the editor and which layers the shared `SGS_Container_Wrapper::render()` PHP helper emits at runtime. `sgs/modal` and `sgs/nav-drawer` carry `supports.sgs.containerMirror: false` and are excluded from the roster entirely (their outer shell is a Popover/dialog, not a container). **`sgs/site-header` and `sgs/site-footer` ARE on this roster as `containerKind: section`; `sgs/nav-bar-menu` as `containerKind: layout`** — see "Header / Footer / Navigation System" section below.
 
 **Composite-mirror rule (R-31-9 / D152, BLOCK-SIDE COMPLETE D167 2026-06-04):** Every composite block in the DB container-mirror roster (query: `SELECT block_slug FROM block_composition WHERE container_kind IS NOT NULL`) mirrors `sgs/container`'s wrapper capabilities via the shared helper `includes/class-sgs-container-wrapper.php`. No per-block reimplementation — the helper handles all rendering. When `sgs/container` gains a new capability, `/sgs-update` Stage 11 propagates it to all roster blocks. Canonical procedure: Spec 31 §13 FR-31-21 + `.claude/plans/archive/2026-06-02-container-wrapper-standardisation.md`.
 
@@ -580,7 +583,6 @@ tier-migration upgrade lands.
 | `sgs/certification-bar` | RETIRED 2026-05-29 (D95) | merged into `sgs/trust-bar` as `badgeStyle: text-only` / `image-badge` |
 | `sgs/announcement-bar` | RETIRED D209 (2026-06-11) | replaced by `sgs/notice-banner` `displayMode=announcement`; 1 live homepage instance still flagged for re-clone/swap |
 | `sgs/svg-background` | RETIRED 2026-05-28 (D93) | merged into `sgs/container` (`bgSvgContent`/`bgSvgAnimation`/`bgSvgPosition` attrs) |
-| `sgs/mega-menu` (old block-based design) | SUPERSEDED — moved to Spec 36 | banned `role="menu"` + template-part panel approach; canonical home is now `specs/36-SGS-NAVIGATION-SYSTEM.md` (`sgs_mega_menu` CPT) |
 
 ---
 
@@ -1005,7 +1007,7 @@ Cross-references: D107 (voter rewrite, tier-driven recognition), D108 (`block_co
 
 ---
 
-## Header / Footer / Navigation System (BUILT + LIVE — D323-D333, §S9 11/11; pending final Bean sign-off)
+## Header / Footer / Navigation System
 
 **Design-gate sign-off:** `.claude/plans/2026-07-13-header-footer-nav-system-design-gate.md` (Bean, all recommended defaults). **Owning spec for the FULL requirement set (FRs, per-breakpoint override data model, never-overflow Cluster+clamp layout, sticky/transparent-scroll behaviour): [`37-HEADER-FOOTER-BUILDER.md`](37-HEADER-FOOTER-BUILDER.md); global-defaults/Site-Info binding and the drawer a11y contract are owned by **Spec 36**.** This section is the block-roster summary only — do not duplicate Spec 37's (or Spec 36's) FRs here.
 
@@ -1056,38 +1058,38 @@ Gate: the resting state must still meet 4.5:1 (WCAG 1.4.3) and `#d4a73c` must me
 
 **Defaults are intentionally thin.** The cloning pipeline sets the real styling per client (Spec 33) — these defaults only need to be sane and accessible out of the box, not final.
 
-### Rule evolution — specialised container blocks are permitted inside template parts
+### Specialised container blocks are permitted inside template parts
 
-`no-header-footer-block.py` + the `header-footer-are-template-parts-not-blocks` memory forbid a monolithic header/footer block that subsumes the FSE/CPT/rules system. Header and footer **remain WordPress template parts** (Spec 37: parts + patterns + `sgs_header`/`sgs_footer` CPT + rules engine; Site Info bindings: Spec 36). The rule evolves (Bean-directed, conscious, not a regex dodge) to permit a **specialised container block used INSIDE the template part** — equivalent in kind to `sgs/card-grid`/`sgs/feature-grid`. `no-header-footer-block.py` now allows `src/blocks/{site-header,site-footer,adaptive-nav}/` specifically, while continuing to block any bare `header`/`footer`/`nav` block slug.
+`no-header-footer-block.py` + the `header-footer-are-template-parts-not-blocks` memory forbid a monolithic header/footer block that subsumes the FSE/CPT/rules system. Header and footer **remain WordPress template parts** (Spec 37: parts + patterns + `sgs_header`/`sgs_footer` CPT + rules engine; Site Info bindings: Spec 36). A **specialised container block used INSIDE the template part** is permitted — equivalent in kind to `sgs/card-grid`/`sgs/feature-grid`. `no-header-footer-block.py` allows `src/blocks/{site-header,site-footer,nav-bar-menu,nav-drawer-menu,nav-drawer}/` specifically, while continuing to block any bare `header`/`footer`/`nav` block slug.
 
 ### The blocks
 
 | Block | Status | KIND | Renders via | Category |
 |---|---|---|---|---|
-| `sgs/site-header` | BUILT + LIVE (P1) | section | `SGS_Container_Wrapper` | `sgs-layout` |
-| `sgs/site-footer` | BUILT + LIVE (P3) | section | `SGS_Container_Wrapper` | `sgs-layout` |
-| `sgs/nav-bar-menu` | BUILT + LIVE (split from `sgs/nav-menu` at D1059, 2026-09-14/15; `sgs/nav-menu` itself replaced `sgs/adaptive-nav`, DELETED at Spec 36 Phase-1 close 2026-07-20) | block-private root (D539, 2026-08-09 — no longer `SGS_Container_Wrapper`) | own render.php + nav logic | `sgs-layout` |
-| `sgs/nav-drawer-menu` (`"ancestor":["sgs/nav-drawer"]`) | BUILT + LIVE (same D1059 split — the drawer's accordion/drill-down fork) | block-private root, never used `SGS_Container_Wrapper` | own render.php + nav logic | `sgs-layout` |
-| `sgs/nav-drawer` (replaced `sgs/mobile-nav`, DELETED at D336 2026-07-14) | BUILT + LIVE; see Spec 36 for the current drawer contract | — (Popover/dialog, `containerMirror: false` — excluded from the container-mirror roster, same as `sgs/modal`) | own render.php | (unchanged) |
+| `sgs/site-header` | BUILT + LIVE | section | `SGS_Container_Wrapper` | `sgs-layout` |
+| `sgs/site-footer` | BUILT + LIVE | section | `SGS_Container_Wrapper` | `sgs-layout` |
+| `sgs/nav-bar-menu` | BUILT + LIVE | layout | block-private root (not `SGS_Container_Wrapper`); own render.php + nav logic | `sgs-content` |
+| `sgs/nav-drawer-menu` (`"ancestor":["sgs/nav-drawer"]`) | BUILT + LIVE | — | block-private root (never used `SGS_Container_Wrapper`); own render.php + nav logic | `sgs-content` |
+| `sgs/nav-drawer` | BUILT + LIVE; see Spec 36 for the drawer contract | — (Popover/dialog, `containerMirror: false` — excluded from the container-mirror roster, same as `sgs/modal`) | own render.php | `sgs-interactive` |
 
-- **`sgs/site-header`** — header shell: 3 optional named rows (top utility strip / middle primary row with logo+nav+CTA / bottom message row), each independently configurable; an empty row emits zero output (no wrapper, no padding-bleed). Typed element palette (logo, adaptive-nav, search, cart, account, button/CTA, contact, social, HTML, widget-area) — not freeform.
+- **`sgs/site-header`** — header shell: 3 optional named rows (top utility strip / middle primary row with logo+nav+CTA / bottom message row), each independently configurable; an empty row emits zero output (no wrapper, no padding-bleed). Typed element palette (logo, nav, search, cart, account, button/CTA, contact, social, HTML, widget-area) — not freeform.
 - **`sgs/site-footer`** — footer shell: named rows (top CTA/newsletter, middle columns row splitting to up to N columns collapsing to 1 below mobile tier, bottom trademark/terms bar). Same typed element palette as the header.
-- **`sgs/nav-menu`** (replaced `sgs/adaptive-nav`, DELETED 2026-07-20; Spec 36 is canonical) — ONE menu source renders a desktop nav bar and collapses to a burger at a breakpoint set across 4 tiers (Desktop/Tablet/Mobile/custom-px). Default = one-tree-restyled; escape hatch = independent mobile tree via the `sgs/nav-drawer`. Mega-menu drill-down + auto back-link on mobile with AJAX lazy-load for heavy content. Desktop overflow auto-collapses into a "more" menu.
-- **`sgs/mobile-nav` drawer fix (P0, SHIPPED 2026-07-13; that block was later DELETED at D336 — retained for the failure mode, which recurs):** root cause was `view.js` applying `inert` to `.wp-site-blocks` while the drawer (`#sgs-mobile-nav`) was a DOM **descendant** of that element, so the drawer froze itself even though the Popover top-layer painted it as open. Fix: the drawer is re-parented to be a direct child of `<body>` (sibling of `.wp-site-blocks`) before `showPopover()`. Live-verified via `elementFromPoint` returning the link (not `BODY`). The full GOV.UK-grade a11y contract (focus trap, ESC-close, backdrop-dismiss, body-scroll-lock, redundant state signalling, configurable SR labels, published keyboard contract, 44px targets) is being built out on top of this fix — see Spec 36 for the FR-level detail.
+- **`sgs/nav-bar-menu`** (Spec 36 is canonical) — ONE menu source renders a desktop nav bar and collapses to a burger at a breakpoint set across 4 tiers (Desktop/Tablet/Mobile/custom-px). Default = one-tree-restyled; escape hatch = independent mobile tree via the `sgs/nav-drawer`. Mega-menu drill-down + auto back-link on mobile with AJAX lazy-load for heavy content. Desktop overflow auto-collapses into a "more" menu.
+- **`sgs/nav-drawer` / `sgs/nav-drawer-menu`** — the off-canvas drawer and its link list. The drawer must never be frozen by its own background `inert`: it must not be a DOM descendant of the element it inerts (`.wp-site-blocks`), so its links stay clickable (verify with `elementFromPoint` returning the link, not `BODY`). The full GOV.UK-grade a11y contract (focus trap, ESC-close, backdrop-dismiss, body-scroll-lock, redundant state signalling, configurable SR labels, published keyboard contract, 44px targets) is specified in Spec 36.
 
-### Customisation-standard extensions that apply to these 3 new blocks
+### Customisation-standard extensions that apply to these blocks
 
 These blocks follow the Block Customisation Standard (below) plus:
 
 - **Composite-mirror (R-31-9 / D152):** `sgs/site-header` and `sgs/site-footer` delegate ALL outer rendering to `SGS_Container_Wrapper::render()` — no per-block reimplementation of grid/section/background machinery, same rule as `sgs/hero`/`sgs/card-grid`. See "Composite-mirror rule" under `sgs/container` above.
 - **No-inline scoped styling (Spec 32):** same no-inline-`style=""` contract as every other SGS block — values land in a scoped `<style id="uid">` block, not inline declarations.
-- **Per-breakpoint override model — NEW-BLOCKS-ONLY:** these 3 blocks (and no existing block — avoids Gutenberg invalid-content errors, honours the no-deprecations rule) get a `{desktop, tablet, mobile}` (`null` = inherit from the tier above) per-property override data model, PLUS a separately-configurable custom-px 4th breakpoint tier (used by the `sgs/nav-menu` collapse setting) — the custom-px tier is NOT a 4th key merged into every per-property value object. Full data model, cascade rules, and editor UX are owned by Spec 37 (FR-37-16) — not duplicated here.
-- **Global defaults + Site Info access (Bean requirement 2026-07-13):** every element/setting in `sgs/site-header`, `sgs/site-footer`, and `sgs/adaptive-nav` defaults from (1) the site's `theme.json`/`wp_global_styles` tokens (or, for cloned sites, the Spec 33 `theme-snapshot.json`) and (2) the shared SGS Site Info store (Spec 36 — logo/phone/email/address/hours/socials/copyright via `sgs/site-info` block-bindings). A value set once in Site Info renders identically in header AND footer with no re-entry — never a hardcoded per-block literal (R-31-1). Owning FRs: Spec 37 (FR-37-17, §3.7); Site Info store: Spec 36.
-- **Never-overflow layout (D455, 2026-08-01):** the header Cluster row is locked `flex-wrap: nowrap` and never wraps or stacks; `min-width:0` on children lets flexbox shrink them proportionally, each stopping at its own floor (44px controls, logo `min-width: min(100%, var(--sgs-header-logo-min, 7.5rem))`) — guarantees no overflow down to 320px by construction. ⚠ the logo's `flex-shrink:0` was REMOVED (it overflows 320px once wrapping is gone). Fluid `clamp()` spacing IS shipped (D461/D462, 2026-08-02): the gap default is `clamp(0.5rem, 0.25rem + 1.5cqi, 1rem)`, live-verified varying 16px→8.8px. Both CSS-length paths now share one validator, `sgs_css_length_value()` (`includes/helpers-css-safety.php`), which accepts `var|calc|min|max|minmax|clamp|repeat` via WP core's recursive balanced-paren grammar and fails CLOSED. Container-query tiers remain. Owning FRs: Spec 37 (FR-37-12, §3.6).
+- **Per-breakpoint override model — NEW-BLOCKS-ONLY:** the header/footer/nav blocks (and no existing block — avoids Gutenberg invalid-content errors, honours the no-deprecations rule) get a `{desktop, tablet, mobile}` (`null` = inherit from the tier above) per-property override data model, PLUS a separately-configurable custom-px 4th breakpoint tier (used by the `sgs/nav-bar-menu` collapse setting) — the custom-px tier is NOT a 4th key merged into every per-property value object. Full data model, cascade rules, and editor UX are owned by Spec 37 (FR-37-16) — not duplicated here.
+- **Global defaults + Site Info access:** every element/setting in `sgs/site-header`, `sgs/site-footer`, and `sgs/nav-bar-menu` defaults from (1) the site's `theme.json`/`wp_global_styles` tokens (or, for cloned sites, the Spec 33 `theme-snapshot.json`) and (2) the shared SGS Site Info store (Spec 36 — logo/phone/email/address/hours/socials/copyright via `sgs/site-info` block-bindings). A value set once in Site Info renders identically in header AND footer with no re-entry — never a hardcoded per-block literal (R-31-1). Owning FRs: Spec 37 (FR-37-17, §3.7); Site Info store: Spec 36.
+- **Never-overflow layout:** the header Cluster row is locked `flex-wrap: nowrap` and never wraps or stacks; `min-width:0` on children lets flexbox shrink them proportionally, each stopping at its own floor (44px controls, logo `min-width: min(100%, var(--sgs-header-logo-min, 7.5rem))`) — guarantees no overflow down to 320px by construction. ⚠ the logo carries no `flex-shrink:0` (it overflows 320px once wrapping is gone). Fluid `clamp()` spacing: the gap default is `clamp(0.5rem, 0.25rem + 1.5cqi, 1rem)`, live-verified varying 16px→8.8px. Both CSS-length paths now share one validator, `sgs_css_length_value()` (`includes/helpers-css-safety.php`), which accepts `var|calc|min|max|minmax|clamp|repeat` via WP core's recursive balanced-paren grammar and fails CLOSED. Container-query tiers remain. Owning FRs: Spec 37 (FR-37-12, §3.6).
 
-### DB reseed + doc plumbing (on build, not yet run — P1 onward)
+### DB registration
 
-`/sgs-update` registers `blocks` + `block_supports` + `block_attributes` for the 3 new block.json files automatically; `block_composition.wraps_block='sgs/container'` + `container_kind` via `sync-container-wrapping-blocks.py`; `composition_role` via `seed-composition-roles.py`. DB rows now exist (built + live) — re-verify via `/sgs-db` if in doubt rather than trusting this note.
+`/sgs-update` registers `blocks` + `block_supports` + `block_attributes` for the header/footer/nav block.json files automatically; `block_composition.wraps_block='sgs/container'` + `container_kind` via `sync-container-wrapping-blocks.py`; `composition_role` via `seed-composition-roles.py`. Re-verify the rows via `/sgs-db`.
 
 ---
 
@@ -1180,7 +1182,7 @@ Use WP core `supports` for spacing, colour, border, and typography controls on t
 - Line height: `RangeControl` + unit dropdown
 
 **Why this is mandatory (D209 — Bean R-31-13):**
-> "Blank-box/token font controls are the wrong UI pattern. The inconsistency across 6 blocks (counter, whatsapp-cta, mobile-nav, option-picker, trust-bar, product-card) was audited and all migrated. The shared component is documented here so future blocks use it and the inconsistency does not recur."
+> "Blank-box/token font controls are the wrong UI pattern. The inconsistency across 5 blocks (counter, whatsapp-cta, option-picker, trust-bar, product-card) was audited and all migrated. The shared component is documented here so future blocks use it and the inconsistency does not recur."
 
 **Usage (edit.js):**
 ```js
@@ -1304,7 +1306,7 @@ All SGS blocks receive animation and interaction controls via the block extensio
 - `sgsStaggerDelay` — stagger delay for child animations
 - `sgsBlockLink`, `sgsBlockLinkTarget` — wrap entire block in link
 
-**Several blocks opt out of universal scale/shadow/image-zoom defaults** (breadcrumbs, container, countdown-timer, counter, form, form-step, all form-field-* blocks, hero, mega-menu, tabs, tab — `announcement-bar` removed from this roster, RETIRED D209) — these blocks shouldn't lift or scale visually. Colour hovers and block-link still work on them. (Exact roster is DB-authoritative — query `/sgs-db`.)
+**Several blocks opt out of universal scale/shadow/image-zoom defaults** (breadcrumbs, container, countdown-timer, counter, form, form-step, all form-field-* blocks, hero, tabs, tab — `announcement-bar` removed from this roster, RETIRED D209) — these blocks shouldn't lift or scale visually. Colour hovers and block-link still work on them. (Exact roster is DB-authoritative — query `/sgs-db`.)
 
 **Inner element hover effects (for specific blocks):**
 - Card Grid, Info Box, Card: already have per-block hover attributes
@@ -1527,27 +1529,26 @@ Retired: the legacy sgs/icon-block slug (was a backward-compat shim) was deleted
 
 ### sgs/option-picker (2026-06-02, theme thread; C7 group-label controls D206)
 
-Atomic radio-group pill chooser. Category: `sgs-interactive`. Built as Phase A of Spec 24 FR-24-15 (variation-sets + option-picker system). Battle-ready as both a standalone editor block and the converter's emit target for pill-group slots.
+Atomic radio-group pill chooser. Category: `sgs-interactive`. Part of the variation-sets + option-picker system. Battle-ready as both a standalone editor block and the converter's emit target for pill-group slots.
 
 Semantics: visually-hidden `<input type=radio>` + `<label>` + pill `<span>` per option. CSS `:checked` active state (no JS required for selection display). Bubbles a `sgs:option-selected` custom event for parent-block Interactivity API stores to consume. NOT `sgs/button` — distinct atomic block.
 
 **Note on `data-wp-on--sgs:option-selected`:** WP Interactivity silently does NOT bind custom event names containing a colon — use a `data-wp-init` + captured-context bridge (`getContext()` + plain `addEventListener`) instead. Memory: `wp-interactivity-data-wp-on-rejects-colon-event-names`.
 
-Attributes: `options` (array of `{ value, label, isDefault }`), `variant` (source toggle: `typed` | `bound` — mirrors FR-24-2), `display_as` (`pills` | `static-list` | `hidden`), `pillStyle` (`filled` | `outlined`), plus standard animation/hover extension attrs.
+Attributes: `options` (array of `{ value, label, isDefault }`), `variant` (source toggle: `typed` | `bound`), `display_as` (`pills` | `static-list` | `hidden`), `pillStyle` (`filled` | `outlined`), plus standard animation/hover extension attrs.
 
 **C7 additions (D206):** group-label font-size + colour controls (legend inline style; `sgs_colour_value()`). Typography migrated to `TypographyControls` component (D209).
 
-Render: Dynamic `render.php`. `viewScriptModule` bubbles `sgs:option-selected`. No-JS default state: options render as visible static labels (FR-24-16).
+Render: Dynamic `render.php`. `viewScriptModule` bubbles `sgs:option-selected`. No-JS default state: options render as visible static labels.
 
 SGS-BEM: `.sgs-option-picker` root + `__option` / `__input` / `__label` / `__pill` + `--style-filled/outlined` + `--display-pills/static-list` + `.is-selected` state on checked option.
 
-See: Spec 24 §FR-24-11..FR-24-17 + D144 + D206.
 
 ---
 
 ### sgs/cart (2026-06-02, theme thread)
 
-WooCommerce cart count badge (v1). Category: `sgs-interactive`. Displays a live item count from the WC cart; intended for use in headers/navigation alongside `sgs/mega-menu` or `core/navigation`. Gracefully absent (renders nothing) when WooCommerce is not active.
+WooCommerce cart count badge (v1). Category: `sgs-interactive`. Displays a live item count from the WC cart; intended for use in headers/navigation alongside `sgs/nav-bar-menu` or `core/navigation`. Gracefully absent (renders nothing) when WooCommerce is not active.
 
 Attributes: `iconSlug` (default `shopping-cart` Lucide icon), `badgeColour` (token slug, default `accent`), `showWhenEmpty` (boolean, default `false` — hides badge when count is 0).
 
@@ -1561,7 +1562,7 @@ SGS-BEM: `.sgs-cart` root + `__icon` / `__count` + `--empty` modifier.
 
 The blocks below form the WooCommerce commerce layer shipped as part of the SGS product/shop build. They are production blocks — not experimental. All integrate with the SGS design-token system and WC REST API/Store API.
 
-### sgs/content-collection (Spec 24 FR-24-4/5/6; showPickers attr D210)
+### sgs/content-collection
 
 Query-driven grid of content items. Category: `sgs-content`. Runs its own `WP_Query` (or `wc_get_products`) with a named selection rule and renders each result through the dual-mode `sgs/product-card`.
 
@@ -1577,7 +1578,7 @@ Query-driven grid of content items. Category: `sgs-content`. Runs its own `WP_Qu
 - `ctaBehaviour` — learn-more | add-to-basket | buy-now (forwarded to each product-card)
 - `showLadder` — boolean (default: `false`). Forwarded to each product-card (browsing grids default false)
 - `handpickedIds` — array of post IDs (for handpicked selectionRule)
-- `emptyMessage` — string shown when query returns 0 results (FR-24-6)
+- `emptyMessage` — string shown when query returns 0 results
 - Full container-mirror attrs: `widthMode`, `contentWidth`, `maxWidth`, `gridTemplateColumns*`, etc.
 
 **Render:** Dynamic `render.php`. Editor preview uses `ServerSideRender`.
