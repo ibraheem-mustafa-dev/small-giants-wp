@@ -39,7 +39,7 @@ Three command groups:
 | Group | Class | Commands |
 |---|---|---|
 | Site Info, template parts, rules, migrations | `Sgs_Cli_Commands` | `site-info`, `seed-template-parts`, `reset-template-parts`, `header-rules`, `footer-rules`, `seeding-arm`, `migrations` |
-| Header / footer / drawer lifecycle | `Sgs_Header_Footer_Cli_Commands` | `header`, `footer`, `drawer` — each with `set-active`, `clear-active`, `list`, `seed-starter` |
+| Header / footer / drawer lifecycle | `Sgs_Header_Footer_Cli_Commands` (`seed-starter` body in `Sgs_Starter_Cli_Seeder`) | `header`, `footer`, `drawer` — each with `set-active`, `clear-active`, `list`, `seed-starter` |
 | Colour-token audit | `Sgs_Colour_Audit_Cli_Commands` | `audit-colour-tokens` |
 
 **Audience:** developers and Claude Code automation. Clients never interact with WP-CLI.
@@ -392,6 +392,16 @@ the post: publish it, then run `set-active`. The pattern must already be registe
 CLI context (theme patterns carrying `Post Types: sgs_header|sgs_footer|sgs_drawer`
 register automatically).
 
+**`seed-starter --all`** — capability `edit_theme_options`; no positional slug. Creates
+every framework look of the area that has no post yet, as **published** posts that are **not**
+made active, and prints `Created N ... skipped M`. Every seeded post carries the private meta
+`_sgs_starter_slug` (the pattern slug); a look is skipped when any post of the type, trash
+included, already carries its slug, so re-running never duplicates a look or overwrites an
+edited copy. The blank `sgs/<area>-scratch` starter and the area's default pattern are never
+seeded as looks. Only areas listed in `Sgs_Starter_Library_Seeder::LIBRARY_AREAS` have a
+library (currently `drawer`); `--all` on another area errors. `--all` and a slug are mutually
+exclusive. The same seeding runs on plugin activation (`Sgs_Header_Footer_Starter_Seeder::seed_all()`).
+
 ```bash
 wp sgs header list
 wp sgs header seed-starter sgs/framework-header-centred --user=1
@@ -404,6 +414,7 @@ wp sgs footer set-active 51 --user=1
 
 wp sgs drawer list
 wp sgs drawer seed-starter sgs/framework-drawer-default --user=1
+wp sgs drawer seed-starter --all --user=1
 wp sgs drawer set-active 60 --user=1
 ```
 
@@ -467,6 +478,7 @@ wp sgs reset-template-parts [--header] [--footer] --user=1
 # Header / footer / drawer lifecycle (CPT-backed layouts)
 wp sgs header|footer|drawer list [--format=json]
 wp sgs header|footer|drawer seed-starter <pattern-slug> --user=1
+wp sgs drawer seed-starter --all --user=1
 wp sgs header|footer|drawer set-active <post-id> --user=1
 wp sgs header|footer|drawer clear-active --user=1
 

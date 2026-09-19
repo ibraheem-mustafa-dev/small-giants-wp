@@ -20,11 +20,13 @@
  * `theme/sgs-theme/patterns/` — are already registered and readable via
  * {@see WP_Block_Patterns_Registry}.
  *
- * Idempotency: guarded per-area on `wp_count_posts( $post_type )->publish
- * === 0` — reactivating the plugin, or activation firing twice in one
- * request, never inserts a second post once one area already has a
- * published layout. No new option/flag is needed for this guard; the CPT's
- * own publish count IS the guard, and no `_sgs_is_default` meta is needed.
+ * Idempotency: the default is guarded per-area on `wp_count_posts(
+ * $post_type )->publish === 0` — reactivating the plugin, or activation firing
+ * twice in one request, never inserts a second default once one area already
+ * has a published layout. Every seeded post also carries the private
+ * `_sgs_starter_slug` meta, which is what the starter LIBRARY
+ * ({@see Sgs_Starter_Library_Seeder}) keys its own idempotency on. After the
+ * defaults, seed_all() seeds that library for the areas that have one.
  *
  * @package SGS\Blocks
  * @since   1.1.0
@@ -57,12 +59,25 @@ final class Sgs_Header_Footer_Starter_Seeder {
 
 	/**
 	 * Activation-hook entry point — seed every area that has zero published
-	 * posts of its CPT.
+	 * posts of its CPT, then seed the starter library for the areas that have one.
 	 */
 	public static function seed_all(): void {
 		foreach ( self::AREA_PATTERNS as $area => $pattern_slug ) {
 			self::seed_area( $area, $pattern_slug );
 		}
+
+		foreach ( Sgs_Starter_Library_Seeder::LIBRARY_AREAS as $area ) {
+			Sgs_Starter_Library_Seeder::seed_library( $area );
+		}
+	}
+
+	/**
+	 * Framework default pattern slug for an area, or '' for an unknown area.
+	 *
+	 * @param string $area {@see Sgs_Active_Layout} area token.
+	 */
+	public static function default_pattern( string $area ): string {
+		return self::AREA_PATTERNS[ $area ] ?? '';
 	}
 
 	/**
@@ -106,20 +121,12 @@ final class Sgs_Header_Footer_Starter_Seeder {
 
 		$pattern_title = ( \is_array( $pattern ) && isset( $pattern['title'] ) && \is_string( $pattern['title'] ) ) ? $pattern['title'] : $pattern_slug;
 
-		$post_id = \wp_insert_post(
-			array(
-				'post_type'    => $post_type,
-				'post_status'  => 'publish',
-				'post_title'   => \sanitize_text_field( $pattern_title ),
-				'post_content' => $content,
-			),
-			true
-		);
+		$post_id = Sgs_Starter_Library_Seeder::insert_starter( $post_type, $pattern_slug, $pattern_title, $content, 'publish' );
 
-		if ( \is_wp_error( $post_id ) || ! $post_id ) {
+		if ( $post_id <= 0 ) {
 			return;
 		}
 
-		Sgs_Active_Layout::set_active( $area, (int) $post_id );
+		Sgs_Active_Layout::set_active( $area, $post_id );
 	}
 }

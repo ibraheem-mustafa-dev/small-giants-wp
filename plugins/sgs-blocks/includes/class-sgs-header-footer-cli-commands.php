@@ -57,6 +57,7 @@ defined( 'ABSPATH' ) || exit;
  *     wp sgs drawer list
  *     wp sgs drawer set-active 63 --user=1
  *     wp sgs drawer clear-active --user=1
+ *     wp sgs drawer seed-starter --all --user=1
  */
 final class Sgs_Header_Footer_Cli_Commands {
 
@@ -226,80 +227,47 @@ final class Sgs_Header_Footer_Cli_Commands {
 	}
 
 	// -------------------------------------------------------------------------
-	// wp sgs <header|footer|drawer> seed-starter <slug>
+	// wp sgs <header|footer|drawer> seed-starter <slug> | --all
 	// -------------------------------------------------------------------------
 
 	/**
-	 * Create a new sgs_header/sgs_footer/sgs_drawer post seeded from a named starter
-	 * block pattern.
+	 * Create sgs_header/sgs_footer/sgs_drawer posts seeded from starter block
+	 * patterns.
 	 *
-	 * The starter must already be a registered block pattern (theme patterns
-	 * under theme/sgs-theme/patterns/ scoped `Block Types: core/post-content`
-	 * + `Post Types: sgs_header`/`sgs_footer`/`sgs_drawer` register automatically). The new
-	 * post is created as a DRAFT — it is not made active by this command; run
-	 * `set-active` afterwards once it has been reviewed and published.
+	 * With a slug, creates one new post from that registered block pattern
+	 * (theme patterns under theme/sgs-theme/patterns/ scoped `Block Types:
+	 * core/post-content` + `Post Types: sgs_header`/`sgs_footer`/`sgs_drawer`
+	 * register automatically). The new post is a DRAFT — it is not made active
+	 * by this command; run `set-active` afterwards once it has been reviewed and
+	 * published.
+	 *
+	 * With `--all`, creates every framework look of the area that has no post
+	 * yet, as PUBLISHED posts that are NOT made active. Looks already seeded
+	 * (any status, trash included) are skipped, so re-running never duplicates
+	 * or overwrites a client's edited copy. Only areas with a starter library
+	 * support `--all` (currently `drawer`).
 	 *
 	 * ## OPTIONS
 	 *
-	 * <pattern-slug>
+	 * [<pattern-slug>]
 	 * : Registered block pattern slug to seed from, e.g.
-	 *   sgs/framework-header-centred.
+	 *   sgs/framework-header-centred. Omit when using --all.
+	 *
+	 * [--all]
+	 * : Seed every missing framework look for the area instead of one slug.
 	 *
 	 * ## EXAMPLES
 	 *
 	 *     wp sgs header seed-starter sgs/framework-header-centred --user=1
 	 *     wp sgs footer seed-starter sgs/framework-footer-default --user=1
+	 *     wp sgs drawer seed-starter --all --user=1
 	 *
-	 * @param string[] $args       Positional arguments.
-	 * @param string[] $assoc_args Named arguments (unused).
+	 * @param string[]            $args       Positional arguments.
+	 * @param array<string,mixed> $assoc_args Named arguments.
 	 *
 	 * @subcommand seed-starter
 	 */
 	public function seed_starter( array $args, array $assoc_args ): void {
-		unset( $assoc_args );
-
-		if ( ! \current_user_can( 'edit_theme_options' ) ) {
-			\WP_CLI::error( 'edit_theme_options capability required — pass --user=<id> (e.g. --user=1).' );
-		}
-
-		$slug = $args[0] ?? '';
-		if ( '' === $slug ) {
-			\WP_CLI::error( "Usage: wp sgs {$this->area} seed-starter <pattern-slug>" );
-		}
-
-		if ( ! \class_exists( '\\WP_Block_Patterns_Registry' ) ) {
-			\WP_CLI::error( 'WP_Block_Patterns_Registry unavailable in this CLI context.' );
-		}
-
-		$registry = \WP_Block_Patterns_Registry::get_instance();
-		if ( ! $registry || ! $registry->is_registered( $slug ) ) {
-			\WP_CLI::error( "Pattern '{$slug}' is not registered in this CLI context — check the slug and that the theme is active." );
-		}
-
-		$pattern = $registry->get_registered( $slug );
-		$content = ( \is_array( $pattern ) && isset( $pattern['content'] ) && \is_string( $pattern['content'] ) ) ? $pattern['content'] : '';
-
-		if ( '' === $content ) {
-			\WP_CLI::error( "Pattern '{$slug}' has no content." );
-		}
-
-		$post_type     = Sgs_Active_Layout::post_type( $this->area );
-		$pattern_title = ( \is_array( $pattern ) && isset( $pattern['title'] ) && \is_string( $pattern['title'] ) ) ? $pattern['title'] : $slug;
-
-		$post_id = \wp_insert_post(
-			array(
-				'post_type'    => $post_type,
-				'post_status'  => 'draft',
-				'post_title'   => \sanitize_text_field( $pattern_title ),
-				'post_content' => $content,
-			),
-			true
-		);
-
-		if ( \is_wp_error( $post_id ) ) {
-			\WP_CLI::error( $post_id->get_error_message() );
-		}
-
-		\WP_CLI::success( "Draft {$this->area} #{$post_id} ('{$pattern_title}') seeded from '{$slug}'. Publish and run set-active to activate it." );
+		Sgs_Starter_Cli_Seeder::run( $this->area, $args, $assoc_args );
 	}
 }

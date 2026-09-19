@@ -366,6 +366,7 @@ Sgs_Active_Layout_Admin::register();
 // empty list table. Single canonical trigger: register_activation_hook,
 // guarded per-area on a zero published-post count (see the class for why
 // that guard alone is sufficient to prevent double-seeding).
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-starter-library-seeder.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-header-footer-starter-seeder.php';
 register_activation_hook( __FILE__, array( Sgs_Header_Footer_Starter_Seeder::class, 'seed_all' ) );
 
@@ -382,6 +383,12 @@ require_once SGS_BLOCKS_PATH . 'includes/class-sgs-cpt-default-meta.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-cpt-usage-columns.php';
 Sgs_Cpt_Default_Meta::register();
 Sgs_Cpt_Usage_Columns::register();
+
+// "Framework look" post-state + "Framework looks (N)" view on the list table of
+// every CPT that has a seeded starter library (FR-37-48). Needs the CPT + Active-layout
+// classes defined; the hooks only fire in wp-admin list screens.
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-starter-library-admin.php';
+Sgs_Starter_Library_Admin::register();
 
 // SGS Active menu-drawer render path (Spec 36 + 37) — the drawer
 // has no core/template-part slot to intercept, so it renders on wp_footer instead
