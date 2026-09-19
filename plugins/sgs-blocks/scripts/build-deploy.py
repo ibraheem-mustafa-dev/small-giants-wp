@@ -51,6 +51,23 @@ import tempfile
 import time
 from pathlib import Path
 
+
+def https_context():
+    """TLS context for the post-deploy probes, verified against the certifi bundle.
+
+    The Windows certificate store on the deploy machine can prefer an expired
+    cross-signed chain, so a healthy site fails verification with "certificate
+    has expired" while certifi's bundle accepts the same certificate. Falls
+    back to the platform default when certifi is not installed.
+    """
+    try:
+        import certifi
+        import ssl
+        return ssl.create_default_context(cafile=certifi.where())
+    except ImportError:
+        return None
+
+
 sys.stdout.reconfigure(encoding="utf-8")
 
 # ---------------------------------------------------------------------------
@@ -1116,7 +1133,7 @@ def step_purge_caches(dry_run: bool, use_alias: bool, wp_content: str,
             try:
                 req = urllib.request.Request(
                     url, headers={"User-Agent": "sgs-deploy/opcache"})
-                with urllib.request.urlopen(req, timeout=20) as resp:
+                with urllib.request.urlopen(req, timeout=20, context=https_context()) as resp:
                     body = resp.read(200).decode("utf-8", "replace")
                 if "SGS-OPCACHE-RESET-OK" in body:
                     log("[purge] OPcache: RESET (web pool)")
@@ -1570,7 +1587,7 @@ def step_verify(url: str) -> int:
             "Accept-Encoding": "identity",
         })
         try:
-            with urllib.request.urlopen(req, timeout=20) as resp:
+            with urllib.request.urlopen(req, timeout=20, context=https_context()) as resp:
                 status = resp.status
                 body = resp.read(16384).decode("utf-8", errors="ignore")
         except urllib.error.HTTPError as e:
