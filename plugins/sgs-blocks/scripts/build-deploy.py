@@ -78,6 +78,15 @@ TARGETS = {
         "wp_content": "domains/lavender-dinosaur-183533.hostingersite.com/public_html/wp-content",
         "explicit_opt_in_required": True,
     },
+    # Dedicated Eye Care Birmingham test site (2026-09-19) — sgs-theme + sgs-blocks +
+    # WooCommerce, so deploy-and-verify clone runs of the Eye Care draft are checked on a
+    # real rendered page without touching sandybrown's global active-header/footer/
+    # theme-snapshot pointers. Credentials: .claude/secrets/eye-care-test.env (gitignored).
+    "eye-care-test": {
+        "host": "darkcyan-grouse-898606.hostingersite.com",
+        "wp_content": "domains/darkcyan-grouse-898606.hostingersite.com/public_html/wp-content",
+        "explicit_opt_in_required": True,
+    },
 }
 
 # SSH endpoint is shared across targets (single Hostinger account).
