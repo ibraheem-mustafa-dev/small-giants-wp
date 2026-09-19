@@ -114,7 +114,10 @@ function paddingMatches( padding, target ) {
  * @return {string} 'centred' | 'split' | 'minimal' | ''
  */
 function getActiveLayoutPreset( attributes, rowJustify = '' ) {
-	const { contentWidth = 'full', padding } = attributes;
+	const { padding } = attributes;
+	// `contentWidth` is a tier object ({ desktop, tablet, mobile }); a preset owns
+	// the desktop tier.
+	const contentWidth = attributes.contentWidth?.desktop ?? 'full';
 
 	// ⚠ EMPTINESS, not falsiness. `padding` is a block-OWNED tier-of-boxes attr
 	// whose declared default is `{ desktop: {} }`, which is truthy and has a key,
@@ -164,11 +167,11 @@ function applyLayoutPreset(
 	if ( value === 'split' ) {
 		// Split has no padding override — clear one if present so the
 		// preset detector reads back 'split' cleanly.
-		setAttributes( { contentWidth: 'full', padding: {} } );
+		setAttributes( { contentWidth: { ...attributes.contentWidth, desktop: 'full' }, padding: {} } );
 	} else if ( value === 'centred' ) {
-		setAttributes( { contentWidth: 'normal', padding: {} } );
+		setAttributes( { contentWidth: { ...attributes.contentWidth, desktop: 'normal' }, padding: {} } );
 	} else if ( value === 'minimal' ) {
-		setAttributes( { contentWidth: 'normal', padding: { desktop: MINIMAL_PADDING } } );
+		setAttributes( { contentWidth: { ...attributes.contentWidth, desktop: 'normal' }, padding: { desktop: MINIMAL_PADDING } } );
 	} else {
 		return;
 	}
