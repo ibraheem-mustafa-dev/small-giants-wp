@@ -32,7 +32,7 @@ Sonnet builds the audits/components/scanner; Haiku handles residue). Critical pa
 - [ ] Gate 0 signed off by Bean → unlocks the framework-wide waves.
 
 **Entry context (read before starting):**
-- `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` — the standard (read in full; Part L = the checklist source).
+- `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` — the standard (read in full; Part L = the checklist source, in `.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md`).
 - `.claude/plans/archive/2026-07-18-spec-35-block-inspector-ux-strategic-plan.md` — the macro plan / wave map / tier map.
 - `.claude/plans/spec-35-inspector-DONE-checklist.md` — the enforceable end-conditions (this session's first action).
 - `.claude/plans/block-migration-DONE-checklist.md` — sibling (rendered-output/no-inline); shows overlap items.

@@ -141,7 +141,7 @@
         "matchRule": "Set-mismatch check is a value-set diff, not a Set-membership JSX-identifier ban (colour's style). The shapeRule check is a count+length computation against a live mount identity. Neither is a simple component-name ban."
       },
       "qualifiesWhen": {
-        "_why": "Colour-row discipline (Spec 35 O.16): the predicate must be code-derived and re-runnable, not descriptive-and-circular.",
+        "_why": "Colour-row discipline (Spec 35A O.16): the predicate must be code-derived and re-runnable, not descriptive-and-circular.",
         "declaredEnum": {
           "source": "block.json attribute type definition",
           "match": "attribute declares an \"enum\" array",

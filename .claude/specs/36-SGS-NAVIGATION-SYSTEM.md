@@ -106,7 +106,7 @@ column here would drift against the code.
 | FR-36-11 | 5 | WCAG 2.1 AA + 2.2 wins |
 | FR-36-12 | 5 | Operator a11y feedback — informational only |
 | FR-36-13 | 6 | No inline styling (Spec 32) |
-| FR-36-14 | 6 | Control-completeness (Spec 35 Part L) |
+| FR-36-14 | 6 | Control-completeness (Spec 35A Part L) |
 | FR-36-16 | 8 | Acceptance — reproduce both menus + regression gate |
 | FR-36-18 | 8 | Live production instances render from CPTs |
 | FR-36-15 | 9 | Converter-emittability |
@@ -265,7 +265,7 @@ DISCLOSURE semantics, never `role="menu"` (FR-36-10), and are block-based CPT po
   panel" should spawn the CPT record transparently and back-reference it, so the client never sees the CPT
   directly. No `sgs_mega_menu` reference exists in the block's editor files
   (`git grep -il sgs_mega_menu -- plugins/sgs-blocks/src/blocks/nav-bar-menu` returns nothing).
-- **Whole-card link:** a mega panel's featured cards may use a whole-card clickable-link overlay (the Spec 35
+- **Whole-card link:** a mega panel's featured cards may use a whole-card clickable-link overlay (the Spec 35A
   Part I gap) — budget it in the layout spec.
 - **Real-position render:** renders at the menu item's real position, never last.
 - **Mobile:** inside the drawer a mega item is a plain link by default; the full panel rendered inline
@@ -727,7 +727,7 @@ the failure that policy exists to prevent.
 > The nav composes with five utility pieces. Each EXTENDS an existing block — with an HONEST built-vs-to-build
 > note and a phase line so a solo builder knows the sequence. The ONE a11y decision gate for every interactive
 > piece is FR-36-10's: does the open panel leave the page usable (**DISCLOSURE**) or dim/block it (**DIALOG**)?
-> — reuse that contract, never a second one. All bind the §10 constraints (no-inline, Part L controls,
+> — reuse that contract, never a second one. All bind the §10 constraints (no-inline, Spec 35A Part L controls,
 > converter-emittable, WCAG, perf, UK).
 
 ### Spec maturity index — read this before dispatching any §4 FR
@@ -1140,7 +1140,7 @@ rule, which defeats the UA's `dialog:not([open]){display:none}` and leaves the d
 converter impact (CSS routes off `block_attributes` keyed on `block_slug`, never
 `wraps_block`/`container_kind`). The no-inline contract is fully met.
 
-### FR-36-14 — Control-completeness (Spec 35 Part L)
+### FR-36-14 — Control-completeness (Spec 35A Part L)
 Settings/Styles/Advanced via `group`; ≤3-default `PanelBody` + `ToolsPanel` (P2 §5); `LinkControl` per
 item/CTA; `StateToggleControl` (hover); the shared **`TypographyControls` + `sgs_typography_css_rule`** (R-22-13,
 never bespoke font controls); `ResponsiveControl` (tiers) + the **BUILT Responsive-Visibility extension** +
@@ -1171,7 +1171,7 @@ attributes exist on the block, not just that the panel shows.
 
 **Rule for any NEW nav block: declare `hideExtensions` deliberately. Inheriting all four is a decision, not
 a default.** Open framework-wide gaps (`conditional-visibility.js` has no `hideExtensions` slug; the bespoke
-Custom CSS field in the Advanced tab is a Spec 35 Part F anti-pattern) are in Open Questions.
+Custom CSS field in the Advanced tab is a Spec 35A Part F anti-pattern) are in Open Questions.
 
 ### FR-36-28 — Nav colour-state system → Spec 41
 
@@ -1391,7 +1391,7 @@ so the later pipeline is easy. *(wp_navigation-block emit + the "pack factory" a
 deps.)*
 
 ## 10. Constraints
-Spec 32 no-inline · Spec 35 Part L + the Responsive-Visibility ext · Spec 31/33 emittable · Spec 37
+Spec 32 no-inline · Spec 35A Part L + the Responsive-Visibility ext · Spec 31/33 emittable · Spec 37
 decoupling + published state surface · WCAG 2.1 AA (+2.2; 44 px; forced-colors survival) ·
 crawlable/no-AJAX/schema-friendly (FR-36-17) · `viewScriptModule` vanilla JS + honest no-JS scope, no jQuery
 · works in the header · transform-ancestor survival · perf budget (<100 KB CSS / <50 KB JS; no CLS;
@@ -1446,7 +1446,7 @@ store, not this one. So the claim is: **one Site-Info entry is the default sourc
 | **Dialog-engine duplication.** `sgs/modal` hand-rolls its own `showModal()` while the drawer delegates to `store('sgs/nav')` — two `<dialog>` engines. Should a shared dialog-geometry primitive (carrying a modal/non-modal flag, serving drawer, modal, cart flyout, search overlay) unify them? | Framework | Unscheduled |
 | **`axe` on the OPEN drawer is not verified.** `plugins/sgs-blocks/scripts/nav-qa/axe-run.mjs --open` times out on `locator.click` (harness actionability — the burger opens correctly under a direct click); the result is INCONCLUSIVE, not a pass. | Framework | Before Gate-2 closes |
 | **`conditional-visibility.js` has no `hideExtensions` slug**, so no block can opt out of it (`git grep -n -i hideExtensions -- plugins/sgs-blocks/src/blocks/extensions/conditional-visibility.js` returns nothing). Kept on nav blocks deliberately (member-only / promo-window navs are legitimate); needs a slug for whoever wants it hideable. | Framework | Unscheduled |
-| **Custom CSS field gap.** The bespoke Custom CSS field in the Advanced tab is a Spec 35 Part F anti-pattern present on every `sgs/*` block. | Framework | Unscheduled |
+| **Custom CSS field gap.** The bespoke Custom CSS field in the Advanced tab is a Spec 35A Part F anti-pattern present on every `sgs/*` block. | Framework | Unscheduled |
 | **FR-36-27 shape.** Keep it open for the `triggerStyle` / `triggerSymbol` / `triggerOpenStyle` / cross-block morph-sync shape, or close it as satisfied by Spec 41's narrower `triggerMode` / `triggerIcon` build? | Bean | Unscheduled |
 | **`listColumns` reading order.** Rows-of-2 vs column-wise reading is undecided — the reference capture for that variant failed, so there is no ground truth. | Bean | Unscheduled |
 | **Trigger-anchored drawer.** Measure the burger's real rect at open (the `--sgs-drawer-header-offset` pattern) so a `trigger` anchor follows the burger. | Framework | Unscheduled |

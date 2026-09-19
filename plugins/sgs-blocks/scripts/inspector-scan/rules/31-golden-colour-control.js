@@ -820,7 +820,7 @@ module.exports = {
 						fix:
 							'Set every supports.color sub-flag to false (keep __experimentalSkipSerialization) ' +
 							'so WordPress renders no native colour UI, and expose the same control via ' +
-							'SgsColourPanel/DesignTokenPicker instead. See rules.json _meta / Spec 35 Part O ' +
+							'SgsColourPanel/DesignTokenPicker instead. See rules.json _meta / Spec 35A Part O ' +
 							'Cross-cutting A for sequencing — retire native supports as its own tracked pass, ' +
 							'not ad hoc per finding.',
 						keyParts: [ 'native-colour-ui', trueFlags.sort().join( ',' ) ],

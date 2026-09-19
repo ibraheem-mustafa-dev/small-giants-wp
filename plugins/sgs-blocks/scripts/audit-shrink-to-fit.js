@@ -12,7 +12,7 @@
  * memory `blocks-must-shrink-to-fit-container`). The framework `min-width:0`
  * grid/flex-item backstop (Spec 35 UNIT C) is NOT built yet, so this audit
  * measures the block's UNRESCUED intrinsic behaviour — exactly what the
- * Spec 35 T2 shrink-to-fit standard wants proven.
+ * Spec 35A T2 shrink-to-fit standard wants proven.
  *
  * DEFAULT MODE IS STILL WARN-ONLY (no --url, no --check, or Playwright/network
  * unavailable all exit 0 — see below). It cannot run at prebuild time (it needs

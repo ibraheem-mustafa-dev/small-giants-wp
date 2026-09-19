@@ -171,7 +171,7 @@
    }
   },
   "repeater": {
-   "specRef": "No Part O section exists for this type — genuinely new work this session. Spec 35's only reference is cross-cutting note CO-10.",
+   "specRef": "No Part O section exists for this type — genuinely new work this session. Spec 35A's only reference is cross-cutting note CO-10.",
    "decision": "TWO SEPARATE TYPES under one heading, not one contract with variations — confirmed with Bean 2026-08-19 after live review. (a) AUTHOR-ITEMS repeater: a client types in N custom rows (icon+label, text, etc). (b) PICK-FROM-EXISTING: search/select existing site content into an ordered list. These solve different jobs and must not be forced into one shape. Drag-reorder is explicitly OUT OF SCOPE for now — Bean: 'not worth the time because we need to launch.' No native WordPress component does this (verified: no public reusable array-repeater-with-drag-reorder API in @wordpress/components; the closest exists only as a private API inside core's own Navigation block).",
    "canonical": {
     "authorItems": {

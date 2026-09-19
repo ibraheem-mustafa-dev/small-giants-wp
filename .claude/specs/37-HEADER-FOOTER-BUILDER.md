@@ -11,6 +11,7 @@ references:
   - .claude/specs/36-SGS-NAVIGATION-SYSTEM.md          # nav — the extension of this spec
   - .claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md
   - .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md
+  - .claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md
   - .claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md
   - .claude/plans/archive/2026-07-18-P2-builder-ux-design-gate.md
   - .claude/plans/archive/2026-07-18-P1-architecture-decision-header-footer-nav.md
@@ -72,7 +73,7 @@ what exists and nobody assumes something works because a similar-sounding file e
 | Site Info store (`sgs_site_info`) + the `sgs/site-info` binding source | **Spec 36** — FR-36-23 already names `sgs/business-info` "the Site-Info source of truth" |
 | The shared header/footer element blocks — cart, search, social, logo, business-info | **Spec 36** FR-36-19…23 |
 | Block styling/serialisation contract | Spec 32 |
-| Inspector control completeness | Spec 35 Part L |
+| Inspector control completeness | Spec 35A Part L |
 
 **The boundary rule.** Spec 36 §1 already states it does not own the container; this spec
 states it does not own the nav. Neither may quietly annex the other. A change that crosses
@@ -855,7 +856,7 @@ generation is unchanged and `STOP-NO-KSORT` still holds. ✅ met.
 verified on every live site.
 
 #### FR-37-18 — Inspector conformance
-Every control in both containers satisfies Spec 35 Part L (the per-block definition of done).
+Every control in both containers satisfies Spec 35A Part L (the per-block definition of done).
 **Status:** `PARTIAL`. `sgs/site-header`, `sgs/site-footer`, `sgs/site-header-row` and
 `sgs/site-footer-row` are all in `plugins/sgs-blocks/scripts/consistency/roster.json` (Spec 35's
 audit denominator). Being in the roster is not the same as passing: the conformance run reports

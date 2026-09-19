@@ -5237,7 +5237,7 @@ instance, editing the live homepage (page 2742) in the block editor without savi
 **Docs closed same session:** `decisions.md`'s dead pointer to the deleted
 `2026-09-06-typography-full-replacement-next-session.md` redirected to D990 (this entry's
 predecessor); the fully-consumed `2026-09-07-typography-deploy-and-doc-fixes-next.md` prompt
-deleted (its scope is this entry); `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` Part I's
+deleted (its scope is this entry); `specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md` Part I's
 "Typography per element" row updated from "extend to appearance/letter-spacing where missing"
 to DONE, D990/D991.
 
@@ -15661,7 +15661,7 @@ and the "which blocks qualify for `gridAreas`" scope call on Design #2 — both 
 second lens was specifically dispatched to pressure-test. Re-running that lens (or a human sign-off)
 before step 7 build starts is the honest residual, not a blocker to recording this design now.
 
-**Output:** written to `decisions.md` (this entry) + `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md`
+**Output:** written to `decisions.md` (this entry) + `.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md`
 new §F.2. No code changed this session — feeds step 7's build directly.
 
 **Addendum (2026-08-16, later same session) — the missing second lens ran, plus an independent
@@ -15756,7 +15756,7 @@ both RULED by Bean, control-shape question still open.**
 **Net: Design #3 is now FULLY LOCKED — render behaviour, control shape, and storage fork all decided.
 Step 7 has no remaining design blocker on any of the three designs.**
 
-Full spec update: `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` §F.2.3.
+Full spec update: `.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md` §F.2.3.
 
 ## D636 — Gradient-capable colour picker: scope goes universal (background+text+border), storage collapses to one CSS string [ROUTINE]
 
@@ -16088,7 +16088,7 @@ grid-item children via custom properties, not natural inheritance — named as t
 a real future need surfaces (e.g. a universal shadow extension, under live investigation as a separate
 question), not proposed to build now.
 
-Full spec guidance: `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` Part F.1 (typography) and the wrapper
+Full spec guidance: `specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md` Part F.1 (typography) and the wrapper
 decomposition initiative: `~/.claude/plans/go-track-1b-playful-hamster.md` §1.4.
 
 ## D625 — Composite `selectors.typography` targets the block ROOT, never a dead child BEM class [ROUTINE]
@@ -16128,7 +16128,7 @@ key, so the engine silently drops it. Fixed by adding one hand-emitted `text-ali
 passthrough left intact (a first attempt that hand-enumerated all six passthrough properties was
 reverted — correct today, but silently stops emitting any support added later).
 
-Full spec guidance: `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` Part F.1.
+Full spec guidance: `specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md` Part F.1.
 
 ## D624 — Wrapper-capability census: DECLARED/RENDERED/CONSUMED, 11 orphaned capabilities closed [ROUTINE]
 

@@ -14,7 +14,7 @@
  *    the cloning converter (which also writes slugs). `render.php`'s
  *    sgs_colour_value() resolves both a slug and a raw hex.
  *
- * Alpha (Spec 35 Part I action item): `enableAlpha` (default true — "almost
+ * Alpha (Spec 35A Part I action item): `enableAlpha` (default true — "almost
  * always" per the standard) lets the operator pick a translucent colour.
  * ColorPalette's custom picker returns hex8 (#RRGGBBAA) or a functional
  * `rgba()` string depending on the copy format in use — either way,

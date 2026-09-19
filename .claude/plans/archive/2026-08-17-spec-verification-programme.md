@@ -188,8 +188,8 @@ look and what was intended. It never settles anything.
 | Session | Read IN FULL before starting | Also open |
 |---|---|---|
 | **S1 — Spec 32** | `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md` | Root `CLAUDE.md` Spec 32 section — it disagreed with the spec, so the disagreement itself is a finding |
-| **S2 — Spec 35 A–L** | `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` **Parts A–L** | **Part G's verdict table** — it overrides Part L in at least two places, so Part L cannot be judged without it. `plugins/sgs-blocks/scripts/inspector-scan/rules.json` `_meta` (the mode table + the `zeroIsAClaim` doctrine) |
-| **S3 — Spec 35 M–O** | `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` **Parts M–O** | `plugins/sgs-blocks/package.json` `prebuild` (the real wiring); `.githooks/pre-commit` + `sgs-gates.sh`. Part N's claims are about gates — read the gates, not the prose |
+| **S2 — Spec 35 A–L** | `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` **Parts A–E** and `.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md` **Parts F–L** | **Part G's verdict table** — it overrides Part L in at least two places, so Part L cannot be judged without it. `plugins/sgs-blocks/scripts/inspector-scan/rules.json` `_meta` (the mode table + the `zeroIsAClaim` doctrine) |
+| **S3 — Spec 35 M–O** | `.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md` **Parts M–N** and `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` **Part O** (O.15, O.16, carried obligations and cross-cutting: 35A) | `plugins/sgs-blocks/package.json` `prebuild` (the real wiring); `.githooks/pre-commit` + `sgs-gates.sh`. Part N's claims are about gates — read the gates, not the prose |
 | **S4 — Track 1b plan** | `~/.claude/plans/go-track-1b-playful-hamster.md` — **all three PARTs** | S2+S3 verdict rosters. PART 3 is marked "settled, never a work-list" — verify that claim too |
 | **S5 — doctrine** | `.claude/plans/spec-35-capability-routing-doctrine.md` | S1–S4 rosters. It mostly confirms or contradicts them |
 | **S6 — close-out** | All five `points.json` rosters | `.claude/parking.md` in full (61 entries); both plans folders |

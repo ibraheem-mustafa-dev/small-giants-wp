@@ -85,7 +85,7 @@ function sgs_get_shape_dividers(): array {
  *
  * Every path above is drawn against a 1200x120 coordinate space. These two
  * constants are what make "100% = the shape's natural, undistorted size"
- * (Spec 35 §F.2.3) a computable value rather than a magic number: Y at 100%
+ * (Spec 35A §F.2.3) a computable value rather than a magic number: Y at 100%
  * IS the viewBox height in px, and X at 100% IS one tile spanning the full
  * viewBox width.
  */
@@ -290,7 +290,7 @@ function sgs_render_shape_divider( string $shape, bool $flip, bool $invert, stri
  * (not `fill`) because the SVG path paints with `fill="currentColor"`.
  *
  * HEIGHT is now derived from the Y axis of the `{x,y}` scale attribute rather
- * than stored as px (Spec 35 §F.2.3, D637): 100% IS the shape's natural
+ * than stored as px (Spec 35A §F.2.3, D637): 100% IS the shape's natural
  * undistorted height, which is the authored viewBox height. Y anchors to the
  * edge the divider is attached to and grows from there, which is what the
  * existing `top:-1px` / `bottom:-1px` positioning in the block stylesheet

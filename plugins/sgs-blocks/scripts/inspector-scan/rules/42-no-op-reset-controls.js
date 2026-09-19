@@ -1,6 +1,6 @@
 'use strict';
 
-// GROUND-TRUTH: spec=.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART F
+// GROUND-TRUTH: spec=.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md PART F
 // (anti-patterns, "a reset control that does nothing") source=task brief
 // 2026-09-04 (Bean-scoped, Task 2a). evidence=live-read
 // scripts/check-empty-inspector-containers.js's AST-walk technique (its own
@@ -91,7 +91,7 @@ function findJsxAttr( openingElement, name ) {
 module.exports = {
 	id: '42-no-op-reset-controls',
 	checklistItem: null,
-	title: 'A ToolsPanelItem reset control (hasValue/onDeselect) that is wired but does nothing (Spec 35 PART F)',
+	title: 'A ToolsPanelItem reset control (hasValue/onDeselect) that is wired but does nothing (Spec 35A PART F)',
 	scope: 'per-block',
 	needs: [ 'ast:edit.js' ],
 	run( ctx, block ) {

@@ -1,6 +1,6 @@
 /**
  * ScaleAxisControl — 2-axis (X/Y) proportional scale control with a
- * link/unlink toggle (Spec 35 §F.2.3, D637).
+ * link/unlink toggle (Spec 35A §F.2.3, D637).
  *
  * The 2-axis analogue of WP core's `BoxControl` 4-side link pattern: a
  * single icon-button toggles between editing X and Y together (one

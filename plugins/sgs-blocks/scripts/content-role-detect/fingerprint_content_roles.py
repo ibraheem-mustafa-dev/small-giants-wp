@@ -616,7 +616,7 @@ def fingerprint(findings: dict[str, list[dict]], pool: set[tuple[str, str]]) -> 
     # their only two targets — sgs/star-rating.schemaItemName and
     # sgs/google-reviews.excludeKeywords — sit in `report_only`, not `d4_review`. A
     # built mechanism that is never fed its candidates reads exactly like a missing one
-    # (Spec 35 PART N rule N-2). The detectors were correct; the candidate set was too
+    # (Spec 35A PART N rule N-2). The detectors were correct; the candidate set was too
     # narrow.
     #
     # Still SAFE by construction rather than by ordering: D6 only ever returns a verdict

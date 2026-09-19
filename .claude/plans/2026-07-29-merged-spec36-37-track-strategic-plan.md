@@ -133,7 +133,7 @@ the site-wide Active drawer; a per-burger override wins.
 | W3-b | Simplicity findings 2+3 (`P-HEADER-SIMPLICITY-FINDINGS`) | PARTIAL | Finding 3 (settings ordering) settled. **Finding 2 (canvas-click selection) is open** | 1h (2h) | no |
 | W3-c | FR-37-6 per-site CPTs authored + set-active on every live site | UNVERIFIED | Every live site renders header + footer from its CPTs: the sandybrown canary and the Indus test site (`lavender-dinosaur-183533.hostingersite.com`, deploy target `indus-test`). Both serve `sgs/site-header` + `sgs/site-footer` markup (curl-checked); CPT sourcing per site not yet proven | 45m (1.5h) | YES |
 | W3-d | FR-37-26 blind-tester arm | NOT DONE | Bean-run, screen-recorded non-coder session; the authoritative half of the FAIL verdict. The automated proxy covers the Starter-Look control only and does not replace it | Bean session (schedule) | no |
-| W3-e | FR-37-18 inspector conformance (Part L) | PARTIAL | The conformance script's gap counts are raw upper bounds, not a workload; triage before acting | 1h (2h) | no |
+| W3-e | FR-37-18 inspector conformance (Spec 35A Part L) | PARTIAL | The conformance script's gap counts are raw upper bounds, not a workload; triage before acting | 1h (2h) | no |
 
 ### Wave 4 — PROOF GATE: the reference clones (DP6 as sequenced) — not started
 

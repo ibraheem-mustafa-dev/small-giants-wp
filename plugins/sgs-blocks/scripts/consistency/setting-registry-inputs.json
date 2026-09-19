@@ -2,7 +2,7 @@
   "_meta": {
     "doc_type": "reference",
     "title": "Spec 35 optimal-control registry — input-type slice (11 rows)",
-    "spec": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md (Parts B/C/H/I)",
+    "spec": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md (Parts B/C) + .claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md (Parts H/I)",
     "design_spine": ".claude/plans/spec-35-setting-registry-design.md",
     "source": "plugins/sgs-blocks/scripts/consistency/setting-reclassification.json (input_type_groups + full_classification)",
     "category": "input-type",

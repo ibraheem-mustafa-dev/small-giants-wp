@@ -1,6 +1,6 @@
 'use strict';
 
-// GROUND-TRUTH: spec=.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O
+// GROUND-TRUTH: spec=.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md PART O
 // §"THE PLACEMENT ORDER CONVENTION" (added alongside THE PLACEMENT RULE,
 // 2026-08-27) + CO-28 ("Consistent ORDER of panels, clusters and controls").
 // source=file evidence=live-read plugins/sgs-blocks/src/blocks/extensions/

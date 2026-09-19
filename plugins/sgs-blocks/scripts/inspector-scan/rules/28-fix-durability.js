@@ -1,6 +1,6 @@
 'use strict';
 
-// GROUND-TRUTH: spec=.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md (Part F,
+// GROUND-TRUTH: spec=.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md (Part F,
 // anti-patterns) source=file evidence=live-read 2026-08-18.
 //
 // WHY THIS RULE EXISTS — the defect class no other gate can see.

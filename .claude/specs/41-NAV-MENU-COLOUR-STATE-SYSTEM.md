@@ -7,7 +7,8 @@ owner: framework
 last_verified: 2026-09-19
 companions:
   - 36-SGS-NAVIGATION-SYSTEM.md (the governing nav spec — FR-36-4's "distinct hover+focus states" and FR-36-11's WCAG floor; FR-36-28 is the pointer back. Only the visual half of active-trail is satisfied here — see FR-41-20)
-  - 35-BLOCK-INSPECTOR-UX-STANDARD.md (Part L control completeness; PART O control-type contract)
+  - 35-BLOCK-INSPECTOR-UX-STANDARD.md (PART O control-type contract)
+  - 35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md (Part L control completeness)
   - 32-COMPONENT-STYLING-TOKEN-CONTRACT.md (no inline `style=` property declarations; scoped `<style>` only)
 ---
 

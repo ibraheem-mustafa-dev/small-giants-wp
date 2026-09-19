@@ -1,6 +1,6 @@
 'use strict';
 
-// GROUND-TRUTH: spec=.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART F
+// GROUND-TRUTH: spec=.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md PART F
 // (anti-patterns, "colour-only state indicator" — WCAG 1.4.1 use-of-colour)
 // source=task brief 2026-09-04 (Bean-scoped, Task 2b). evidence=live-read
 // scripts/check-shared-css-state-rules.js's brace-matching CSS parser
@@ -513,7 +513,7 @@ function scanBlockCss( strippedSrc ) {
 module.exports = {
 	id: '43-colour-only-state-indicator',
 	checklistItem: null,
-	title: 'A persisted UI state distinguished by colour alone (Spec 35 PART F / WCAG 1.4.1)',
+	title: 'A persisted UI state distinguished by colour alone (Spec 35A PART F / WCAG 1.4.1)',
 	scope: 'per-block',
 	needs: [ 'text:style.css' ],
 	run( ctx, block ) {

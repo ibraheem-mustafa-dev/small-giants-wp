@@ -2018,7 +2018,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$shape_bottom = $attributes['shapeDividerBottom'] ?? '';
 
 				if ( $shape_top ) {
-					// Scale is a {x,y} PERCENTAGE object (Spec 35 §F.2.3, D637) —
+					// Scale is a {x,y} PERCENTAGE object (Spec 35A §F.2.3, D637) —
 					// it replaced the old scalar px `shapeDividerTopHeight`. X drives
 					// the SVG's internal tiling, Y the wrapper's height; both default
 					// to 100 = the shape's natural, undistorted size.

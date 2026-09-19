@@ -1,5 +1,5 @@
 /**
- * ShadowControl — shared real shadow builder (Spec 35 Part I action item 3).
+ * ShadowControl — shared real shadow builder (Spec 35A Part I action item 3).
  *
  * Replaces the old None/Small/Medium 3-option select pattern with genuine
  * X/Y offset, blur, spread, and inset controls, PLUS a small preset menu

@@ -90,7 +90,7 @@ addFilter(
 				...settings.attributes,
 				// Focal point as { x, y } floats 0-1 (FocalPointPicker's native
 				// shape) — resolved server-side to an object-position percentage
-				// pair. CLEAN RESHAPE (T3.5, Spec 35 Part G): this attribute was a
+				// pair. CLEAN RESHAPE (T3.5, Spec 35A Part G): this attribute was a
 				// free-text CSS string (e.g. "center 20%") pre-T3.5; no seeded
 				// pattern/site content carried a value (verified via grep across
 				// theme/sgs-theme/patterns + sites/ — zero matches), so no runtime

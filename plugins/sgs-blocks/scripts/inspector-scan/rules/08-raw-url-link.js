@@ -20,7 +20,7 @@
 // an anchor href") but produces NO live finding today — an independent
 // grep + the standalone Babel walk both confirm src/blocks/media/edit.js has
 // no `TextControl type="url"` any more (migrated to SgsLinkControl per Spec
-// 35 Part I). That baseline entry is DORMANT under the OLD system too (it
+// 35A Part I). That baseline entry is DORMANT under the OLD system too (it
 // never matched a live finding on this run); see the migration report for
 // why it is not carried into baselines/08-raw-url-link.json (its OLD key
 // shape — block+rule only, no locus — cannot be translated into this

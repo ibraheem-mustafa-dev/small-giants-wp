@@ -1,6 +1,6 @@
 'use strict';
 
-// GROUND-TRUTH: spec=.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART F
+// GROUND-TRUTH: spec=.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md PART F
 // (anti-patterns, "help text not linked via aria-describedby") source=task
 // brief 2026-09-04 (Bean-scoped, Task 2c), CONFIRMED LIVE before building —
 // evidence=Playwright against the sandybrown canary block editor
@@ -212,7 +212,7 @@ module.exports = {
 	checklistItem: null,
 	title:
 		'A raw <BaseControl help={...}> mount wrapping a non-self-wiring child must carry aria-describedby ' +
-		'itself (Spec 35 PART F) — WordPress only self-wires it for native useBaseControlProps controls',
+		'itself (Spec 35A PART F) — WordPress only self-wires it for native useBaseControlProps controls',
 	needs: [ 'ast' ],
 	run( ctx ) {
 		const ruleId = this.id;

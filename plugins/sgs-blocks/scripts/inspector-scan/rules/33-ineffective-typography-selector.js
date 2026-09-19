@@ -1,6 +1,6 @@
 'use strict';
 
-// GROUND-TRUTH: spec=.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md Part F.1
+// GROUND-TRUTH: spec=.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md Part F.1
 // source=file evidence=live-read 2026-08-18.
 //
 // WHY THIS RULE EXISTS — the defect class no other gate can see.
@@ -22,7 +22,7 @@
 // (`$root_sel . ' .sgs-hero__headline'`, lines 863/870) that DOES match the
 // child's DOM node. Per this framework's HC2 rule (plugins/sgs-blocks/
 // CLAUDE.md), that generated rule sits at specificity (0,2,0) and cannot beat
-// the child block's own inline typography styles at (1,0,0,0). Spec 35 F.1:
+// the child block's own inline typography styles at (1,0,0,0). Spec 35A F.1:
 // "a composite's selectors.typography targets its own ROOT, never a child's
 // dead BEM class." cta-section/info-box/notice-banner were fixed for this;
 // hero never was. Its 7 declared native typography controls (fontSize,
@@ -73,7 +73,7 @@
 // (`$root_sel . ' .sgs-pricing-table__name, ' . $root_sel . ' .sgs-pricing-table__title'`).
 // This rule DOES flag it as case (a) DEAD — the DECLARED selector itself
 // never matches any element, which is exactly the declared/rendered mismatch
-// Spec 35 F.1 is about — even though typography still visibly reaches the
+// Spec 35A F.1 is about — even though typography still visibly reaches the
 // page today via the redundant paired `__name` selector in the same
 // generated rule. That "still visually fine because of an incidental alias"
 // nuance is NOT modelled here; the fix text says so explicitly so Bean can
@@ -346,7 +346,7 @@ function walkPhpFiles( dir ) {
 module.exports = {
 	id: '33-ineffective-typography-selector',
 	checklistItem: null,
-	title: "A block's declared typography selector actually matches an element it renders (Spec 35 F.1)",
+	title: "A block's declared typography selector actually matches an element it renders (Spec 35A F.1)",
 	scope: 'per-block',
 	needs: [ 'json:block.json', 'ast:edit.js', 'text:render.php', 'text:save.js' ],
 	run( ctx, block ) {
@@ -410,7 +410,7 @@ module.exports = {
 					block: block.slug,
 					file: editFile,
 					severity: 'warn',
-					detail: `${ block.slug } — declared typography selector "${ selectorString }" is set ONLY as an InnerBlocks TEMPLATE child's className (${ editFile }), never emitted by ${ block.slug }'s own rendered markup. Any scoped rule block.json's ${ explicit ? 'selectors.typography' : 'selectors.root' } generates (e.g. "<root> ${ selectorString }") sits at CSS specificity (0,2,0) and cannot beat the child block's own inline typography styles at (1,0,0,0) — the native typography controls this selector backs are silent no-ops (Spec 35 F.1).`,
+					detail: `${ block.slug } — declared typography selector "${ selectorString }" is set ONLY as an InnerBlocks TEMPLATE child's className (${ editFile }), never emitted by ${ block.slug }'s own rendered markup. Any scoped rule block.json's ${ explicit ? 'selectors.typography' : 'selectors.root' } generates (e.g. "<root> ${ selectorString }") sits at CSS specificity (0,2,0) and cannot beat the child block's own inline typography styles at (1,0,0,0) — the native typography controls this selector backs are silent no-ops (Spec 35A F.1).`,
 					fix: `Retarget block.json's selectors.typography to ${ block.slug }'s own root element (matching cta-section/info-box/notice-banner's fix), not the InnerBlocks child's class. If the child block genuinely owns the typography, move the native typography support to that child block instead of declaring it here.`,
 					keyParts: [ 'child-owned-selector', token ],
 				} ),
@@ -425,7 +425,7 @@ module.exports = {
 				block: block.slug,
 				file: fs.existsSync( renderFile ) ? renderFile : editFile,
 				severity: 'warn',
-				detail: `${ block.slug } — declared typography selector "${ selectorString }" (class "${ token }") is never emitted as a real DOM class attribute by ${ block.slug }'s own edit.js/save.js/render.php or by any shared render helper under includes/. The declared selector does not match any element this block renders, so its native typography controls have no guaranteed target (Spec 35 F.1).`,
+				detail: `${ block.slug } — declared typography selector "${ selectorString }" (class "${ token }") is never emitted as a real DOM class attribute by ${ block.slug }'s own edit.js/save.js/render.php or by any shared render helper under includes/. The declared selector does not match any element this block renders, so its native typography controls have no guaranteed target (Spec 35A F.1).`,
 				fix: `Either retarget block.json's selectors.typography to the class the block actually renders for its primary text element, or add that class to the rendered markup so the declared selector starts matching something.`,
 				keyParts: [ 'dead-selector', token ],
 			} ),

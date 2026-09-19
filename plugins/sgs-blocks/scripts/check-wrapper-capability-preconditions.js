@@ -2,7 +2,7 @@
  * check-wrapper-capability-preconditions.js
  *
  * STRUCTURAL GUARD for the shared-wrapper capability declarations in each
- * block's `supports.sgs` — Spec 35 §F.2.1 + §F.2.2 (D637, step 7 of the
+ * block's `supports.sgs` — Spec 35A §F.2.1 + §F.2.2 (D637, step 7 of the
  * shared-wrapper decomposition).
  *
  * TWO RULES, one script:
@@ -310,7 +310,7 @@ function withFixture( name, tree, runFn ) {
 
 /**
  * --self-test: prove each rule CAN fail (a gate that has never been seen to
- * fail is not known to work — Spec 35 Part N, N-5), and prove each rule stays
+ * fail is not known to work — Spec 35A Part N, N-5), and prove each rule stays
  * quiet on the clean case (the negative control's own negative control —
  * a rule that fires on everything is as useless as one that fires on nothing).
  *

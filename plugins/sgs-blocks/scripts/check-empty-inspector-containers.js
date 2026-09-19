@@ -9,7 +9,7 @@
  * disclosure menu and still participates in `resetAll`/`onDeselect` — so the
  * client can find it, switch it on, and be shown nothing. A `<PanelBody>` with
  * no children renders a collapsible section that opens onto blank space. Both
- * are dead controls in the Spec 35 Part F sense, and NOTHING in `prebuild`
+ * are dead controls in the Spec 35A Part F sense, and NOTHING in `prebuild`
  * catches them: `check-dead-controls.js` checks attribute wiring (a control
  * exists but nothing renders it), which is the opposite direction — a container
  * whose children were deleted still has perfectly valid attribute wiring.
@@ -160,7 +160,7 @@ function scanFile( file ) {
 					message:
 						`<${ name }> is rendered with no children. It still appears to the client ` +
 						`(a ToolsPanelItem in the "+" menu, a PanelBody as a collapsible section) ` +
-						`and shows nothing when opened — a dead control (Spec 35 Part F).`,
+						`and shows nothing when opened — a dead control (Spec 35A Part F).`,
 				} );
 			}
 		}

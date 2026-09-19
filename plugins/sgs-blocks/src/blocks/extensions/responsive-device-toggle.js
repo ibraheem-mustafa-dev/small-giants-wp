@@ -48,7 +48,7 @@
  *    with no tabpanel and no aria-controls. For a per-setting strip that is a
  *    tolerated stretch; for a control that changes what every OTHER control means
  *    it is a WCAG 4.1.2 defect — the role promises content-switching. This is a
- *    radio group, which is what ToggleGroupControl renders. Spec 35 Part H names
+ *    radio group, which is what ToggleGroupControl renders. Spec 35A Part H names
  *    ToggleGroupControl canonical for segmented choice.
  *
  * ⛔ NO persistence (D4, Bean-decided 2026-08-10). Every fresh editor load starts

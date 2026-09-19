@@ -180,7 +180,7 @@ const OBJECT_FAMILY_TAGS = new Set( [
 	'ResponsiveOverride',
 	'BoxControl',
 	'ResponsiveBorderRadiusControl',
-	// ScaleAxisControl writes an object-shaped `{ x, y }` axis pair (Spec 35
+	// ScaleAxisControl writes an object-shaped `{ x, y }` axis pair (Spec 35A
 	// §F.2.3, D637), so a block declaring its attribute must declare
 	// "type":"object" exactly as it must for the three above. Added when
 	// shapeDivider{Top,Bottom}Height (scalar px) was replaced by

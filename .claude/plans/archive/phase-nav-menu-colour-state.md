@@ -213,7 +213,7 @@ defaults calibrated against this project's comparable plans
 | `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` | **READ IN FULL (4,546 lines — re-derive with `wc -l`; an earlier edition said 4,388, a 158-line drift on a READ-IN-FULL instruction).** The governing spec. Every FR is load-bearing; 6 revisions + 3 adversarial-council rounds have already removed the easy wrongness, so a skim finds nothing and misses the traps |
 | `.claude/specs/36-SGS-NAVIGATION-SYSTEM.md` | The governing nav spec. FR-36-4 (distinct hover+focus states), FR-36-11 (WCAG floor), FR-36-28 (pointer to Spec 41) |
 | `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md` | No inline `style=` property declarations; scoped `<style>` only |
-| `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` | Part L control completeness; Part O control-type contract; FR-35-5 STATE_WITHOUT_BASE |
+| `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` | Part O control-type contract; Part L control completeness (in `.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md`); FR-35-5 STATE_WITHOUT_BASE |
 | `plugins/sgs-blocks/src/blocks/nav-menu/` | `block.json` (610 L, 79 attrs, 8 elements), `edit.js` (1,535 L), `render.php` (2,031 L), `style.css` (427 L), `view.js` (158 L) |
 | `plugins/sgs-blocks/CLAUDE.md` | Colour-control standard, precedent registry (`background-clip:text` `@supports` requirement), block-deprecation policy |
 | `CLAUDE.md` (repo root) | The 7 rules, root-cause methodology, deploy path, git hygiene |

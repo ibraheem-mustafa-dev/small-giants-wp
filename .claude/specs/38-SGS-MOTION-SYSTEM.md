@@ -1490,7 +1490,7 @@ Every effect defines **suppress vs simplify** individually, consistent with the 
 the canonical check is `prefersReducedMotion()` (LIVE per call — `motion-utils.js`), plus
 `gsap.matchMedia('(prefers-reduced-motion: no-preference)')` as the Tier G registration gate so
 a mid-session OS change reverts/kills active tweens. CSS-side kill switches follow the existing
-`@media (prefers-reduced-motion: reduce)` blocks. Spec 35 Part C/E5/L: gated from day one,
+`@media (prefers-reduced-motion: reduce)` blocks. Spec 35 Part C/E5 and Spec 35A Part L: gated from day one,
 never bolted on; the FAIL-CLOSED prebuild inspector-conformance gate applies to every new fx
 control surface.
 
@@ -1625,12 +1625,12 @@ on `seed-composition-roles.py` — [ok]/[skip]/[set] passes, docstring changelog
 
 Binding: ToolsPanel once ~6+ controls (Part A5); never duplicate a native supports panel (A6);
 `hideExtensions` opt-out honoured (A7); 768/1024 tiers only where responsive (D2);
-reduced-motion gate day-one (E5/Part C/L); the FAIL-CLOSED gate
+reduced-motion gate day-one (E5/Part C, and Spec 35A Part L); the FAIL-CLOSED gate
 `plugins/sgs-blocks/scripts/inspector-scan/rules/17-reduced-motion-gate.js` covers every new
 panel automatically.
 
 - **Block-level fx panel ("Scroll & effects")** — ONE collapsed panel in the Styles tab,
-  ToolsPanel-based: effect picker (`ToggleGroupControl`/`ComboboxControl` per §35 Part H),
+  ToolsPanel-based: effect picker (`ToggleGroupControl`/`ComboboxControl` per §35A Part H),
   then per-effect params as `ToolsPanelItem`s (1–3 `isShownByDefault`, rest behind "+"),
   each with reset. Scrub params: start/end (`UnitControl` viewport %), scrub smoothing
   (`RangeControl` with input+reset), stagger (`UnitControl` ms). The §4.3 Notice renders here.

@@ -133,7 +133,7 @@ function parseSafe( src ) {
  * was reported VIOLATION regardless of whether the control even applies to
  * it. Measured 2026-08-19 for `typography` (26 blocks correctly mount
  * TypographyControls): 67 of 83 blocks came back VIOLATION — a phantom
- * backlog, exactly the Spec 35 §O.16 trap (an ungated scope predicate is
+ * backlog, exactly the Spec 35A §O.16 trap (an ungated scope predicate is
  * self-fulfilling). Fix: when unreached, ask `qualifiesFor()` whether the
  * block SHOULD have this control before deciding the verdict.
  *

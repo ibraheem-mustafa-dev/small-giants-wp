@@ -4,7 +4,7 @@
  * component's object attr `{ url, opensInNewTab, rel }` into a safe `<a>`
  * attribute string.
  *
- * Companion to `src/components/SgsLinkControl.js` (Spec 35 Part I action
+ * Companion to `src/components/SgsLinkControl.js` (Spec 35A Part I action
  * item 2). Mirrors the flat linkUrl/linkTarget/linkRel pattern hand-rolled
  * per-block today (see `sgs/icon`'s `render.php`), centralised for every new
  * consumer of the shared component.

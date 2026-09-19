@@ -4,7 +4,7 @@
     "produced_by": "setting-registry-css drafting task, per .claude/plans/spec-35-setting-registry-design.md",
     "source": "plugins/sgs-blocks/scripts/consistency/setting-types.json (settings[] filtered to basis=='css-property')",
     "row_count": 60,
-    "spec": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md (Parts B / C / D / G / H / I are the optimal-control authority)",
+    "spec": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md (Parts B / C / D) + .claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md (Parts G / H / I) are the optimal-control authority",
     "divergence_severity_counts": {
       "high": 15,
       "medium": 28,

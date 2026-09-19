@@ -152,7 +152,7 @@
             "site-header"
           ]
         },
-        "sequencingConstraint": "Part O Cross-cutting A: the three-tab bar lands AFTER native-supports retirement, because while a block declares native color, core renders its own Styles tab regardless of what SGS does. DETECT NOW; retire per that existing plan, never ad hoc.",
+        "sequencingConstraint": "Spec 35A Part O Cross-cutting A: the three-tab bar lands AFTER native-supports retirement, because while a block declares native color, core renders its own Styles tab regardless of what SGS does. DETECT NOW; retire per that existing plan, never ad hoc.",
         "doNotDuplicate": "Rule 24 (24-raw-canonical-component) already gates the JSX half. It never opens block.json, so this fingerprint does not overlap it."
       },
       "states": {
@@ -1005,7 +1005,7 @@
           },
           {
             "shape": "a third breakpoint constant",
-            "why": "the 768/1024 lock — carried obligation 11 in Spec 35's cross-cutting section",
+            "why": "the 768/1024 lock — carried obligation 11 in Spec 35A's cross-cutting section",
             "liveInstances": "not independently re-measured this session"
           },
           {

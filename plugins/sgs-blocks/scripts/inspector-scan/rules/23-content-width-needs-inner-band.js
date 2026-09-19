@@ -1,7 +1,7 @@
 'use strict';
 
 // GROUND-TRUTH: spec=.claude/decisions.md D540 (read verbatim 2026-08-10) +
-// .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md, the bullet beginning
+// .claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md, the bullet beginning
 // "`contentWidth` is now a NAMED contract (D540)".
 // ^ CITED BY HEADING TEXT, NOT LINE NUMBER (repaired 2026-08-09). It previously
 // read ":503-509"; a 22-line insertion into that spec's PART H moved the bullet

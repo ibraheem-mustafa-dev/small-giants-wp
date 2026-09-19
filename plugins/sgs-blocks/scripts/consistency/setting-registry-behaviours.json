@@ -3,7 +3,7 @@
     "doc_type": "data",
     "title": "Spec 35 optimal-control registry — behaviour-family slice (11 rows)",
     "created": "2026-07-19",
-    "spec": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md",
+    "spec": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md (Parts A/C/E) + .claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md (Parts H/I)",
     "contract": ".claude/plans/spec-35-setting-registry-design.md",
     "source": "plugins/sgs-blocks/scripts/consistency/setting-reclassification.json (behaviour_families, full_classification)",
     "note": "Unlike css-property/input-type rows, each row here defines a control SET (control_set array) for a recurring UI behaviour, not a single control. optimal_control.component names the shared component that should own the whole set."
@@ -37,7 +37,7 @@
         }
       ],
       "shared_component": null,
-      "spec_ref": "Spec 35 Part A5 (ToolsPanel once ~6+ controls), Part A9 (in-row layout), Part H (segmented-choice component list — booleans stay ToggleControl)",
+      "spec_ref": "Spec 35 Part A5 (ToolsPanel once ~6+ controls), Part A9 (in-row layout), Spec 35A Part H (segmented-choice component list — booleans stay ToggleControl)",
       "current_state": "31 distinct attr names (showAggregate/showAuthor/showAvatar/showBreakdown/showCaptions/showCategory/showDate/showDays/showExcerpt/showFilters/showGoogleLogo/showHome/showHours/showImage/showLabel/showLadder/showMinutes/showNames/showNumeric/showPickers/showRating/showReadMore/showSchema/showSeconds/showSelectedTick/showSourceHeader/showSubtitle/showTitle/showTrustpilotLogo/showVerifiedBadge/showZero) across 14 blocks, every one a bare boolean-toggle at attr_type=boolean with no shared panel structure or ToolsPanel grouping — each block hand-rolls its own flat list of ToggleControls.",
       "divergence": "not a wrong-component problem (ToggleControl is already correct per attr) — the divergence is presentation: dense blocks (post-grid has 8+ show-toggles, trustpilot-reviews has 7+) render them as one flat un-grouped list instead of a disclosure-managed 'Display' panel (Part A5/F anti-pattern 'no headers past a handful').",
       "divergence_severity": "low",
@@ -113,11 +113,11 @@
         }
       ],
       "shared_component": "BUILD: ScrollRevealControls (grows AnimationControl)",
-      "spec_ref": "Spec 35 Part C Motion/animation ('entrance P · scroll-triggered P · parallax P · prefers-reduced-motion gating on ALL animation T'), Part E5, Part I ('Reduced-motion gate — verify on animation ext')",
+      "spec_ref": "Spec 35 Part C Motion/animation ('entrance P · scroll-triggered P · parallax P · prefers-reduced-motion gating on ALL animation T'), Part E5, Spec 35A Part I ('Reduced-motion gate — verify on animation ext')",
       "current_state": "22 attrs across 12 blocks. A universal AnimationPanel/AnimationControl already exists (sgsAnimation/sgsAnimationDelay/sgsAnimationDuration/sgsAnimationEasing, wired globally to nearly all sgs/* blocks via editor.BlockEdit filter) but it is a NARROWER shape — plain entrance fade/slide only. The scroll-reveal-animation family's 22 attrs (bgKenBurns, bgParallax+parallaxStrength, bgSvgAnimation+Speed, svgAnimation+Source+Speed, revealOnScroll+revealStagger, staggerDelay, captionReveal, fadeOnScroll, flipX, pathDrawOnScroll+DurationMs+TriggerOffset, scrollDirection/Offset/Spy, smoothScroll, animationStyle) are ALL block-private, not routed through the universal AnimationControl at all — every block (container, cta-section, hero, trust-bar, decorative-image, gallery, timeline, table-of-contents, media, card-grid, post-grid, team-member, testimonial, google-reviews, trustpilot-reviews, responsive-logo, brand-strip) reinvents its own subset with its own naming.",
       "divergence": "22 scroll/motion attrs are all block-private and bypass the existing universal AnimationControl, each block reinventing its own subset under its own names; and a per-block prefers-reduced-motion gate must be confirmed applied framework-wide (WCAG 2.3.3) before any consolidation.",
       "divergence_severity": "high",
-      "notes": "MANDATORY: no member attr in setting-reclassification.json currently represents a per-block prefers-reduced-motion override — verify (per Spec 35 Part I 'ensure every animation is gated') whether the CSS gate is applied automatically at the framework/animation.js level (cause-agnostic, no client control needed) rather than exposing a toggle; if it is NOT applied framework-wide today, that is the #1 gap to close before any other scroll-reveal work, ahead of consolidating the 22 attrs. Do not add a client-facing 'disable animation' toggle as a substitute for the automatic CSS media-query gate — WCAG 2.3.3 requires it to fire without the client knowing to ask."
+      "notes": "MANDATORY: no member attr in setting-reclassification.json currently represents a per-block prefers-reduced-motion override — verify (per Spec 35A Part I 'ensure every animation is gated') whether the CSS gate is applied automatically at the framework/animation.js level (cause-agnostic, no client control needed) rather than exposing a toggle; if it is NOT applied framework-wide today, that is the #1 gap to close before any other scroll-reveal work, ahead of consolidating the 22 attrs. Do not add a client-facing 'disable animation' toggle as a substitute for the automatic CSS media-query gate — WCAG 2.3.3 requires it to fire without the client knowing to ask."
     },
     {
       "setting_key": "behaviour:slider-carousel",
@@ -185,7 +185,7 @@
         }
       ],
       "shared_component": "BUILD: CarouselControls",
-      "spec_ref": "Spec 35 Part C Motion (parallax/scroll P), Part I ('Reduced-motion gate — verify on animation ext' extends to autoplay), Part H (bounded numeric -> RangeControl, segmented choice -> ToggleGroupControl)",
+      "spec_ref": "Spec 35 Part C Motion (parallax/scroll P), Spec 35A Part I ('Reduced-motion gate — verify on animation ext' extends to autoplay), Spec 35A Part H (bounded numeric -> RangeControl, segmented choice -> ToggleGroupControl)",
       "current_state": "18 attrs across 9 blocks, and this is THE clearest name-divergence case in the whole registry: the SAME 4 concepts (show-arrows / show-dots / autoplay-on-off / autoplay-speed) are reimplemented under 4 different naming schemes per block — 'showArrows'/'showDots' (google-reviews, testimonial-slider, trustpilot-reviews) vs 'carouselShowArrows'/'carouselShowDots' (gallery, post-grid) vs no direct equivalent on brand-strip/trust-bar (which use 'scrolling'/'autoScroll' + 'pauseOnHover'/'autoScrollPauseOnHover' + 'scrollSpeed'/'autoScrollSpeed' for a continuous-marquee variant rather than paged slides). 'autoplaySpeed' (google-reviews/testimonial-slider/trustpilot-reviews, number) vs 'carouselSpeed' (gallery/post-grid, number) vs 'autoScrollSpeed' (trust-bar, enum-select) vs 'scrollSpeed' (brand-strip, enum-select) are the SAME ms-duration concept under 4 names and 2 different control types (number vs enum).",
       "divergence": "The same 4 concepts (arrows/dots/autoplay/speed) are reimplemented under 4 naming schemes and 2 control types (number vs enum) across 9 blocks; should converge on one CarouselControls component with a paged|marquee variant prop.",
       "divergence_severity": "high",
@@ -336,7 +336,7 @@
         }
       ],
       "shared_component": "BUILD: DisclosureControls",
-      "spec_ref": "Spec 35 Part H ('optional-controls group -> ToolsPanel/ToolsPanelItem'), Part B Selection row (ToggleGroupControl for 2-5 short options)",
+      "spec_ref": "Spec 35A Part H ('optional-controls group -> ToolsPanel/ToolsPanelItem'), Spec 35 Part B Selection row (ToggleGroupControl for 2-5 short options)",
       "current_state": "9 attrs across 9 blocks with no shared component: sgs/accordion (allowMultiple bool, defaultOpen number/index), sgs/accordion-item + sgs/product-faq-item (isOpen bool, per-item), sgs/collapsible-text (collapsible bool, collapsedLines number), sgs/table-of-contents (collapsible bool, defaultCollapsed bool — inverse-polarity duplicate of accordion's defaultOpen concept), sgs/business-info + sgs/button (labelCollapse enum — an odd pairing; button's 'labelCollapse' is really an icon-only-collapse-to-icon-button pattern, conceptually closer to a responsive-display toggle than a disclosure, worth a future reclass), sgs/mega-menu (openOn enum: click/hover), sgs/pricing-table (toggleStyle enum).",
       "divergence": "9 open/collapse attrs across 9 blocks with no shared component and inverse-polarity duplicates (defaultOpen vs defaultCollapsed); should share DisclosureControls.",
       "divergence_severity": "medium",
@@ -389,7 +389,7 @@
         }
       ],
       "shared_component": "SgsLinkControl",
-      "spec_ref": "Spec 35 Part B Link/CTA ('LinkControl — internal search + new-tab + rel'), Part C Links ('new-tab + auto-rel-noopener T · rel nofollow/sponsored T · whole-card/block clickable link T — high-impact gap'), Part F ('raw URL field instead of LinkControl')",
+      "spec_ref": "Spec 35 Part B Link/CTA ('LinkControl — internal search + new-tab + rel'), Part C Links ('new-tab + auto-rel-noopener T · rel nofollow/sponsored T · whole-card/block clickable link T — high-impact gap'), Spec 35A Part F ('raw URL field instead of LinkControl')",
       "current_state": "8 attrs across 7 blocks, ALL still raw/bespoke: blockLinkTarget + sgsBlockLinkTarget (2 different attr names, same concept, on info-box/team-member — whole-card-link new-tab flag, no LinkControl involved since the whole-card-link overlay pattern itself is unbuilt per Part I), download (button, plain boolean), linkOpensNewTab (media, plain boolean), linkRel (icon/media, enum-select of nofollow/sponsor/ugc/noopener), linkToHome (responsive-logo, plain boolean, different concept — see notes), opensInNewTab (mega-menu, plain boolean), rel (button, enum-select). None of these route through SgsLinkControl's settings prop yet.",
       "divergence": "8 new-tab/rel/download attrs are raw/bespoke (2 names for one concept: blockLinkTarget vs sgsBlockLinkTarget); these settings belong inside SgsLinkControl's settings prop, not as parallel top-level attrs.",
       "divergence_severity": "high",
@@ -523,7 +523,7 @@
         }
       ],
       "shared_component": "OWNED BY TRACK 2 (header/footer/nav rebuild) — do NOT design a split here",
-      "spec_ref": "Spec 35 Part G ('position.sticky N — HIGH priority, free inspector UI'), Part C Position/layout ('sticky (N: position.sticky) T')",
+      "spec_ref": "Spec 35A Part G ('position.sticky N — HIGH priority, free inspector UI'), Spec 35 Part C Position/layout ('sticky (N: position.sticky) T')",
       "current_state": "7 attrs across 3 blocks: sgs/site-header (contrastSafe enum, headerShrink/headerSticky/headerTransparent bool — verified live: site-header/block.json declares NO `supports.position.sticky`, so headerSticky is a fully bespoke boolean today, not routed through the native support), sgs/adaptive-nav (collapseCustomPx number, collapseTier enum — this is a responsive nav-collapse BREAKPOINT, not stickiness, see notes), sgs/notice-banner (stickyPosition enum top/bottom).",
       "divergence": "Superseded: the sticky/transparent/shrink/contrast-safe + nav-collapse behaviour on site-header/adaptive-nav/notice-banner is being rebuilt by Track 2 (header/footer/nav) as a 3-state (inherit/on/off) value tiered per surface + breakpoint — a fuller model than a standalone StickyToggle+NavCollapseTier split. The Spec 35 rollout must NOT touch these blocks' sticky/collapse behaviour.",
       "divergence_severity": "none",
@@ -601,7 +601,7 @@
         }
       ],
       "shared_component": "StateToggleControl",
-      "spec_ref": "Spec 35 Part F ('duplicate hover panels / hover split from resting'), Part I ('Normal/Hover state — StateToggleControl EXISTS (2026-07-18) — roll out to stateful blocks'), Spec 35 checklist item 12",
+      "spec_ref": "Spec 35A Part F ('duplicate hover panels / hover split from resting'), Spec 35A Part I ('Normal/Hover state — StateToggleControl EXISTS (2026-07-18) — roll out to stateful blocks'), Spec 35 checklist item 12",
       "current_state": "7 behaviour-family attrs (effectHover/grayscaleHover/imageZoomHover/overlayHover/scaleHover/shadowHover/textDecorationHover) across 14 blocks — PLUS a SEPARATE, ALREADY-BUILT universal 'Hover Effects' panel (src/components/universal-extensions/HoverEffectsPanel.js, wired via src/blocks/extensions/hover-effects.js to every block) exposing sgsHoverBgColour/sgsHoverTextColour/sgsHoverBorderColour/sgsHoverScalePreset/sgsHoverScale/sgsHoverShadow/sgsHoverDuration/sgsHoverEasing/sgsHoverImageZoom. Neither system uses StateToggleControl (verified: HoverEffectsPanel.js imports DesignTokenPicker/SelectControl/RangeControl/ToggleControl directly, not StateToggleControl) — this is TWO parallel hover systems running simultaneously: the universal sgsHover* panel AND 14 blocks' own private *Hover attrs (scaleHover on 11 blocks alone).",
       "divergence": "Two parallel hover systems run at once — the universal HoverEffectsPanel (sgsHover*) AND 14 blocks' private *Hover attrs — neither using StateToggleControl; migrate HoverEffectsPanel to StateToggleControl and retire the per-block duplicates.",
       "divergence_severity": "high",
@@ -683,7 +683,7 @@
         }
       ],
       "shared_component": "BUILD: DismissibleControl",
-      "spec_ref": "Spec 35 Part H (segmented choice -> ToggleGroupControl), Part A2 (sensible defaults — dismissBehaviour defaults to 'session' in block.json, correct default-to-least-permanent choice)",
+      "spec_ref": "Spec 35A Part H (segmented choice -> ToggleGroupControl), Spec 35 Part A2 (sensible defaults — dismissBehaviour defaults to 'session' in block.json, correct default-to-least-permanent choice)",
       "current_state": "2 attrs, 1 block only (sgs/notice-banner) — verified live in block.json: `dismissible` (boolean, default false) + `dismissBehaviour` (string enum session/permanent, default session). No shared component exists because there is currently only one consumer.",
       "divergence": "Single consumer (notice-banner) with a bespoke dismissible/dismissBehaviour pair; extract a small shared DismissibleControl now, and switch dismissBehaviour from SelectControl to ToggleGroupControl (dimension 5).",
       "divergence_severity": "low",
