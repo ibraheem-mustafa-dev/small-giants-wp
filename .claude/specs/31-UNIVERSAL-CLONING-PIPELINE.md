@@ -1385,9 +1385,33 @@ previously handed them nothing. See Spec 44 §11 and Spec 45 §4.1.0 for the cro
 recording this relationship (added at the same time as this FR, not a separate mechanism in
 either spec).
 
-### FR-31-26.5 — not yet built
+### FR-31-26.5 — status: resolver BUILT and correct; ticker still NOT reaching the emitted blocks (D1111, corrected by D1112)
 
-Design-gated with Bean 2026-09-19 (`/brainstorming` design mode); this section records the
-approved design. Implementation tracked via `/phase-planner` (a phase plan, not this spec, owns
-the build sequencing/step breakdown per this project's doc-weight convention — a spec records
+**Built.** `orchestrator/js_content_resolver.py::resolve_js_array_content` + `orchestrator/resolve-js-content.js`,
+wired as Stage -1.5 in `sgs-clone-orchestrator.py` behind `--resolve-js-content` (opt-in, default off,
+true no-op when omitted). The orchestrator hands the resolver the draft's ORIGINAL folder
+(`_draft_dir`, captured before Stage -2 reassigns `args.mockup` into the run directory) because that
+is where the draft's own `support.js` lives; the resolver refuses any group whose resolved text still
+contains `{{` (`_splice_resolved_items`). D1111 first shipped with the wrong directory and a false
+"verified" claim; D1112 records the correction.
+
+**Verified (2026-09-19, D1112).** Calling the resolver with the draft folder yields four spliced
+ticker spans with the real strings and zero `{{ t.text }}` left. Command:
+`python -c` calling `resolve_js_array_content` on `pipeline-state/<run>/dc-import-resolved.html` with
+`sites/eye-care-ward-end/design_handoff_ward_end_eye_care` as `mockup_dir`, then
+`out.count('{{ t.text }}') == 0`.
+
+**Open gap, not built.** The ticker text still does not appear in `stage-4.json`'s `block_markup`.
+The ticker's container is a plain `<div>` above `<header>`; auto-section only detects semantic
+top-level tags, and the only boundary that ever represented it was the `<sc-for>` item boundary,
+which splicing consumes. Check: `'100% genuine' in block_markup` is `False` on a flag-ON run. Needs
+its own design gate (boundary detection is a shared mechanism, Rule 7).
+
+**Disclosed scope limits (by design, not silent gaps).** Only single-text-field items resolve.
+Excluded: (a) multi-field items (e.g. REASONS: number + title + body in three separate elements);
+(b) items passed whole into a sub-component (`featured` -> `<dc-import name="Frame Card" p="{{ p }}">`,
+which after Stage -2 is a multi-field, image and conditional item). Exclusion (a) is a design choice,
+not a technical wall (each field sits in its own element, so per-field tagging would identify it);
+untested. Build sequencing lives in `plans/archive/phase-1111-js-array-content-resolution.md`, not
+this spec.
 WHAT + WHY, a phase plan records HOW + WHEN).

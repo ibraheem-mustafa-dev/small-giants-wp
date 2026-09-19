@@ -27,19 +27,19 @@ archive.
 dispatch, so no per-step model-routing cost beyond the session already in progress.
 
 **Phase success criteria (done when):**
-- [ ] `per-section-convention-voter.py::build_boundary` tags every boundary with an explicit
+- [x] `per-section-convention-voter.py::build_boundary` tags every boundary with an explicit
       `boundary_kind` ("container" | "item"), set by the two call sites in `vote()` — no boundary
       consumer has to infer kind from which detector function produced it.
-- [ ] `sgs-clone-orchestrator.py`'s Stage 4 classless-match gate (~line 2242) branches on
+- [x] `sgs-clone-orchestrator.py`'s Stage 4 classless-match gate (~line 2242) branches on
       `boundary_kind`: "item" boundaries use the element directly as the Stage B item (bypass
       `representative_item()` entirely); "container" boundaries keep calling
       `representative_item()` unchanged.
-- [ ] `measure-classless-baseline.py` and `measure-classless-frame-card.py` are untouched —
+- [x] `measure-classless-baseline.py` and `measure-classless-frame-card.py` are untouched —
       their `sc_for.parent`-shaped calls to `representative_item()` still work exactly as before.
-- [ ] Live pipeline re-run against Eye Care Birmingham, SAME flags as the documented 50/74
+- [x] Live pipeline re-run against Eye Care Birmingham, SAME flags as the documented 50/74
       baseline, shows b32 (ticker) getting a real item (not `None`) and b40 (reasons card)
       getting its full 3-field content (not just the number badge) in `classless-decisions.json`.
-- [ ] `.claude/decisions.md` carries a new D-number (next after D1107) recording root cause + fix
+- [x] `.claude/decisions.md` carries a new D-number (next after D1107) recording root cause + fix
       + evidence; `.claude/mistakes.md` carries the reusable "container-shaped function fed an
       item-shaped input, no signal to catch it" pattern.
 
@@ -312,3 +312,12 @@ Ready to execute. Options:
 (b) refine any step first
 (c) hand off to a fresh session via `/handoff` (this phase is small enough that (a) is the
     faster path — recommended)
+
+## Closure (2026-09-19, archived)
+
+**Status: DONE, D1108.** Criteria 1-3 and 5 met exactly as written. Criterion 4 met in substance
+with two disclosed deviations: the "50/74 baseline" named there was the wrong comparison (it ran
+without `--classless-match`; the correct like-for-like baseline is 49/74 and the post-fix figure
+40/74, see D1108); and D1108 records b32 getting a real Stage A/B comparison but does not
+separately record b40's three-field content, so that half of the criterion was not independently
+evidenced. Later fixes (D1109: 41/74) sit on top of this one.

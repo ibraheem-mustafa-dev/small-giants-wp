@@ -4,6 +4,13 @@
 <!-- ACTIVE — every entry carries its rule directly inline, never just a keyword + external link. Archive: memory/mistakes-archive.md. Cap stays ~30 entries; prune the oldest by date when it grows past that. -->
 
 ## Active entries (target ~30, prune oldest by date when over)
+### [2026-09-19] A mocked boundary hid a wrong-argument bug, and a "verified" claim was read off counts instead of the artefact's content
+- **Pattern key:** `mocked-boundary-hides-wrong-argument-and-verified-claim-must-read-the-content`
+- **Rule:** (1) when every test mocks a subprocess/IO boundary, no test can see WHICH argument the caller passes — add a wiring pin or one real un-mocked run. (2) A "feature X works" claim must be checked by reading the artefact's CONTENT for the thing it promised (here: the ticker's real text in `block_markup`), never inferred from a status count moving. Counts can move for unrelated reasons (renumbering).
+- **What happened:** D1111 claimed the JS-array resolver made the ticker convert. The orchestrator passed `run_dir` (no `support.js`) to the resolver, so the draft's runtime never ran and the output held the literal `{{ t.text }}`. Every unit test mocked the render call, so all passed; the live check read a status flip that was really ID renumbering. Found only when the docs were reconciled by re-reading the stored artefact.
+- **Fix going forward:** for any pipeline stage claimed live-verified, grep the emitted artefact for one distinctive string the stage was supposed to produce. Record the string in the decision.
+- **Feedback file:** [D1112](decisions.md) (D1112, 2026-09-19)
+
 ### [2026-09-19] A positional selector index (`nth-of-type`) is not stable identity when comparing two pipeline runs whose element count differs
 - **Pattern key:** `positional-index-not-stable-across-element-count-change`
 - **Rule:** when comparing per-boundary status between a before/after pipeline run, and the total element/boundary count differs between the two runs, do NOT key the diff on a positional index (`boundary_id`, `nth-of-type(N)`, any sequential ID). Removing or adding ONE element earlier in the document shifts the index of every LATER element by one, so a naive index-keyed diff shows a cascade of phantom "changes" that are pure renumbering, not real content changes. Key the diff on a structurally-stable identity instead (selector text + resolved block name, or another content-derived key) before concluding anything changed.
@@ -232,44 +239,6 @@
   immediately before writing a new decisions.md entry — every time, not once per session. A
   stale ceiling from even ten minutes earlier can already be wrong.
 
-### [2026-09-03] Nearly overwrote a shared LEDGER.md straight over a concurrent session's uncommitted work
-- **Pattern key:** `check-git-diff-not-status-on-shared-replace-never-append-docs`
-- **Feedback file:** [feedback_check_git_diff_not_status_on_shared_docs.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_check_git_diff_not_status_on_shared_docs.md)
-- **Rule:** before writing to a "replace, never append" doc in a working directory a concurrent
-  session might use, `git diff` the file first, not just `git status` — "modified" alone doesn't
-  say whose modification it is. Caught: the other session's uncommitted delta pointed at a prompt
-  file I'd just deleted; blind overwrite would have broken their pointer and lost their work.
-
-### [2026-09-03] Left "RETIRED 2026-09-03, this used to..." narration scattered through retired code
-- **Pattern key:** `no-retirement-narration-in-active-code-comments`
-- **Feedback file:** [feedback_no_retirement_narration_in_comments.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_no_retirement_narration_in_comments.md)
-- **Rule:** when retiring a mechanism, comments describe current behaviour only — no "used to do
-  X, retired because Y" narration inline. That history goes in the commit message and
-  decisions.md. Bean's direct correction; this project's own `extract-comment-narrative.py`
-  detector already exists for exactly this pattern.
-
-### [2026-09-03] A codemod's self-test AND the full 86-gate build chain both passed while 3 of 6 applied fixes shipped genuinely broken
-- **Pattern key:** `a-codemods-self-test-passing-is-not-proof-its-real-output-is-correct`
-- **Feedback file:** [feedback_a_codemods_self_test_passing_is_not_proof_its_real_output_is_correct.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_codemods_self_test_passing_is_not_proof_its_real_output_is_correct.md)
-- **Rule:** `colour-codemod/fix.js --fix --apply` (recurrence of a 2026-09-02 incident with the SAME
-  tool) shipped 3 semantically-wrong rows — a selector collision, a gate missing a gradient-only
-  input case, a block mis-inserted into an unrelated element's logic — past `php -l`, JSON
-  validation, AND the full 86-gate build chain, all green. Only live deploy + reading the actual
-  rendered CSS caught any of them. Escalates the prior lesson: passing the FULL static gate chain
-  is also not proof of correctness for semantic defects (wrong selector, wrong gate condition,
-  wrong insertion point) that no static check can see. Full account:
-  `~/.claude/memory/learning/2026-09-03-codemod-verification-must-include-live-deploy-not-just-gates.md`.
-
-### [2026-09-03] Fixing one bug in a codemod's dead-code stripper revealed a second, cascading one — patching the already-migrated output by hand would have re-derived both fixes twice
-- **Pattern key:** `revert-and-rerun-a-codemod-dont-hand-patch-its-output`
-- **Feedback file:** [feedback_revert_and_rerun_a_codemod_dont_hand_patch_its_output.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_revert_and_rerun_a_codemod_dont_hand_patch_its_output.md)
-- **Rule:** After `migrate-border-shape-b.js --fix --apply` migrated `card-grid`/`multi-button`/`trust-bar` off native border support, `check-render-undefined-vars` flagged a dead `if ( ! empty( $X ) )` guard left behind once the script's own native-read stripper removed every write to `$X`. Fixing the stripper and re-running against the ALREADY-migrated files (rather than reverting first) would have meant re-deriving the fix by hand a second time when a cascading case showed up next (removing one dead guard made the accumulator it fed into vacuous too, on `trust-bar`, two levels deep) — and a hand-patched file drifts from what the script would generate fresh, so the next legitimate re-run produces an unreviewable diff. `git checkout --` the affected files, fix the script, re-run `--survey`/`--fix --apply`, repeat until clean — every time a codemod's OWN bug is found mid-migration, not just the first time.
-
-
-### [2026-09-03] A dated report filename is not proof the file is new — nearly overwrote a same-day, genuinely live-verified report
-- **Pattern key:** `read-before-overwrite-dated-report-files`
-- **Feedback file:** [feedback_read_before_overwrite_dated_report_files.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_read_before_overwrite_dated_report_files.md)
-- **Rule:** Writing a fresh `intent_capture_passed` report to `reports/visual-diff/hero-2026-09-02.md` via `Write`, without reading the existing file first, silently overwrote a genuinely live-verified earlier report from the SAME day's earlier D919 work (real `gate:full` + deploy + live-capture evidence against page 2742). Caught before commit only because `git diff --cached --stat` showed `M` (modified) rather than `A` (added) for a file the session believed was brand new — the mismatch between assumption and git's own record was the tell. Recovered the original via `git show HEAD:<path>` and merged both captures into one file (matching the pre-existing `info-box-2026-08-15.md` report's own established "two commits today, this report covers both" pattern), so nothing was lost — but the near-miss was real. Sibling to `a-gate-can-be-date-keyed-instead-of-change-keyed` (2026-08-06, archived) — same class of failure (a `<name>-<DATE>.md` path is keyed on the date, not on who wrote it or what it describes), this time on the WRITE side rather than the gate's READ side. On a shared, multi-track, date-keyed report path: before writing, check `git status`/`git diff --cached --stat` for that exact path — a same-day report from an EARLIER part of your own session is exactly as real as one from a different track, and needs the same merge-not-overwrite treatment.
 ### [2026-09-13] `git stash` in a subagent recurred a second time on a shared worktree, this time from the orchestrator's own omission
 - **Pattern key:** `no-git-stash-in-subagents`
 - **Evidence:** three parallel nav-menu fix agents each ran `git stash`/`pop` once for a WPCS

@@ -2,15 +2,18 @@
 
 **doc_type:** spec
 **spec_id:** 44
-**spec_version:** 2.3.1
-**Status:** DESIGNED — Pass-1 mechanism (Stage A + Stage B, within-page repeated
-content only) is internally consistent after three council rounds and one
-scope correction; NOT yet re-verified by a council pass since v2.2.0 → v2.3.0,
-and not yet built. Page routing/per-client template design (formerly this
-spec's "Pass 2") is OUT OF SCOPE as of this revision — see §0.3, §4.5.
-v2.3.1 is a small, additive §7 amendment only (the `source` field/filter
-required by Spec 45 Tier 4's isolated review-gate) — no mechanism change, no
-new council round needed for this revision alone.
+**spec_version:** 2.4.0
+**Status:** BUILT and live-measured. Stage A + Stage B (within-page repeated content) run inside
+the orchestrator behind `--classless-match` / `--classless-auto-complete`, both OFF by default
+(`grep -n 'classless-match' plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py`). Front C closed
+7 of 8 (D1088-D1107); the one open item, the AI-fallback tier (§11), is deliberately parked as
+Bean's call. Live picture on Eye Care Birmingham (D1108-D1112, 2026-09-19, flags ON): 0
+auto-completed, 15 fell to operator review, remaining boundaries unaffected. Page routing/per-client
+template design (formerly "Pass 2") is OUT OF SCOPE, see §0.3, §4.5.
+**Changelog v2.4.0 (2026-09-19):** status corrected from "DESIGNED, not yet built" (it had been
+built for weeks); D1108 recorded in §4 (the Stage 4 gate now branches on `boundary_kind`). No
+mechanism change to Stage A/B themselves. v2.3.1 was a small additive §7 amendment (the `source`
+field Spec 45 Tier 4 needs).
 **Date:** 2026-09-15
 
 ## 0. What changed since v1.0.0 (read this first)
@@ -398,6 +401,16 @@ and `converter/walk.py` are never invoked for a Stage-A-matched boundary, and ar
 therefore genuinely unchanged (§8), because this is a parallel decision at the
 orchestrator layer, not a modification to what those functions return.
 
+**Boundary kind (D1108, 2026-09-19).** Every boundary the voter emits carries an explicit
+`boundary_kind` ("container" or "item"), set once in
+`recogniser/per-section-convention-voter.py::build_boundary`. The orchestrator gate branches on it:
+an "item" boundary (already one resolved `<sc-for>` item from
+`detect_sc_for_item_boundaries()`) is used directly as the Stage B item and bypasses
+`classless_draft_adapter.py::representative_item()`, which answers "given a CONTAINER, give me one
+item" and was being fed the wrong shape; a "container" boundary (or an older `voter.json` with no
+`boundary_kind`) still calls it, unchanged. The two measurement scripts were never wrong and are
+untouched. Check: `grep -n boundary_kind plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py`.
+
 **What gets emitted — corrected.** A prior revision of this spec claimed the
 markup should carry `sourceMode='wc-product'`, describing it as buybox's real
 mode. Checked directly against `buybox/block.json`: false — buybox has no
@@ -708,7 +721,7 @@ off is the rollback path if a real run misbehaves — no code revert needed.
   found its content lives only in a draft `static TICKER = [...]` JS class property, invisible to
   Stage A/B (and every other extraction signal) because they operate purely on DOM text. This is
   an upstream content-availability precondition, not a Stage A/B matching defect — Spec 31's new
-  FR-31-26 resolves it BEFORE this spec's mechanisms ever run, by rendering the draft with its own
+  FR-31-26 resolves it BEFORE this spec's mechanisms ever run (resolver built; its downstream gap is open, see Spec 31 §15 FR-31-26.5), by rendering the draft with its own
   JS runtime and splicing the resolved text back into the mockup. Neither Stage A nor Stage B
   changes at all; they simply receive real content for a class of boundary that previously handed
   them nothing.

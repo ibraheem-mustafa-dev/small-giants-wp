@@ -1,10 +1,67 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1112 [INCIDENT] — D1111's "ticker converts, real strings verbatim" was FALSE; wrong-directory bug found + fixed, and the ticker still does not reach the emitted blocks
+
+**2026-09-19.** Bean asked for the docs to be reconciled before the next front. Cross-checking
+D1111's claim against the stored run artefacts (`pipeline-state/...-020813/`) contradicted it, so it
+was re-run on the committed code rather than trusted.
+
+**Proven, not inferred:**
+1. **Symptom.** Flag ON: 73 boundaries (not 74), 41 complete (unchanged), `js-content-resolved.html`
+   held ONE ticker span with literal `{{ t.text }}` / `{{ t.icon }}` instead of four real spans, and
+   the ticker text was absent from `block_markup`. D1111's "b32 failed -> complete" was the ID now
+   naming a different element (`sc-for:nth-of-type(1) > a`, the next loop) after renumbering, not a
+   conversion. D1111's own mistakes.md lesson (positional IDs are not identity) was applied to the
+   regression check but not to its own headline claim.
+2. **Cause.** Stage -2 reassigns `args.mockup` into `run_dir`; Stage -1.5 then passed
+   `args.mockup.parent` (= `run_dir`, which has no `support.js`) to
+   `js_content_resolver.py::resolve_js_array_content`, so the draft's runtime never executed and the
+   "resolved" element was the raw template, whose own text is the mustache. Reproduced exactly by
+   calling the resolver with `run_dir` (count 1, `{{ t.text }}` left, no real text) versus the draft's
+   own folder (four correct spans, zero mustaches left). The render script's payload was
+   independently confirmed correct (4 items, real strings) when given the right folder.
+3. **Why the tests missed it.** Every resolver test mocks the subprocess boundary, so none can see
+   WHICH directory the orchestrator hands over.
+
+**Fix.** `sgs-clone-orchestrator.py` captures `_draft_dir` before Stage -2 and passes it to the
+resolver. `js_content_resolver.py::_splice_resolved_items` now refuses any group whose resolved text
+still contains `{{` (leaves it untouched, logs a warning), so this failure signature can never ship
+placeholders as content whatever the cause. Two new tests: the refusal (fails against the pre-fix
+resolver, confirmed) and a wiring pin on the orchestrator call. Resolver tests 11/11.
+
+**Live re-run after the fix (same flags as the 2026-09-18 live-flagged-run report + `--resolve-js-content`):**
+`js-content-resolved.html` now has zero leftover `{{ t.text }}`. But 73 boundaries, 41 complete, and
+the ticker text STILL does not appear in `block_markup`.
+
+**Why: a second, separate gap (OPEN).** The ticker's container is a plain `<div>` above `<header>`;
+auto-section only detects semantic top-level tags, so no top-level boundary covers it. The only
+boundary that ever represented the ticker was the `<sc-for>` item boundary, and splicing consumes the
+`<sc-for>`. So the mechanism now resolves content correctly, but nothing downstream reads it for this
+draft. Needs its own design gate (it touches boundary detection, a shared mechanism, Rule 7): either
+promote the spliced group's container to a boundary, or teach auto-section about it. NOT built here.
+
+**Also verified this session:** flag-OFF breakdown of the 74 boundaries is 41 complete + 15
+classless-review + 14 non-BEM-compliant + 3 chrome-skipped (by design) + 1 failed (b32) = 74; the
+"33 remaining" is those 15+14+3+1, i.e. 30 real items. Pre-existing, unrelated failures noticed in
+the orchestrator suite (not touched): `test_preflight_chain::test_precommit_gate_drift_pass`
+(drift-validator path missing), `test_validate_stage_artifact::test_stage_9_coverage_gap_levels`,
+`test_wp_integration::test_native_hover_zoom_routes` (`hoverImageZoom` vs `imageZoomHover`).
+
+**Scope limits of FR-31-26, restated plainly (unchanged, still true):** only single-text-field items
+resolve. Multi-field items (REASONS: number/title/body in three separate elements) and items passed
+whole into a sub-component (`featured` -> Frame Card) are excluded. The multi-field exclusion is a
+design choice, not a technical wall (each field sits in its own element, so per-field tagging would
+identify them); untested.
+
+**Lesson for `mistakes.md`:** captured there.
+
 ## D1111 [ROUTINE] — FR-31-26 (JS-array-sourced content resolution) built + live-verified:
 the ticker (b32) converts, zero regressions
 
+> **CORRECTION (D1112, same day): the headline claim below was false when written — read D1112 first.**
+
 **2026-09-19.** Implemented the design recorded in Spec 31 §15 (FR-31-26, `/brainstorming`
-design mode with Bean earlier this session) via `/phase-planner` (`.claude/plans/phase-1111-js-array-content-resolution.md`).
+design mode with Bean earlier this session) via `/phase-planner` (`.claude/plans/archive/phase-1111-js-array-content-resolution.md`).
 
 **Built:** `plugins/sgs-blocks/scripts/orchestrator/js_content_resolver.py` (eligibility scan,
 marker injection, splice-back, fail-soft orchestration) + `resolve-js-content.js` (Playwright

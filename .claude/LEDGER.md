@@ -8,10 +8,18 @@ last_updated: 2026-09-19
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**NEXT SESSION FRONT (Bean-directed 2026-09-19): the merged Spec 36+37 track** —
-`plans/2026-07-29-merged-spec36-37-track-strategic-plan.md`, stalled since Wave 3. Read the full
-plan + its verify doc before touching anything; see "THE FRONT" below for what's actually still
-open there (it predates several things shipped since, so don't assume the whole thing is live).
+**NEXT SESSION FRONT (Bean-directed 2026-09-19): finish the classless-pipeline boundaries on Eye
+Care Birmingham (30 real items, breakdown in "THE FRONT" below), THEN the merged Spec 36+37 track**
+(`plans/2026-07-29-merged-spec36-37-track-strategic-plan.md`, stalled since Wave 3; read the full plan
++ its verify doc first, it predates several things shipped since).
+
+**Read this before trusting anything about the ticker fix.** The last session's handoff said the
+ticker "now converts". That was FALSE (D1112). The new step that pulls hidden JS-array text into the
+draft was being handed the wrong folder, so it produced placeholder text. Fixed and proven this
+session, and the text is now correct in the intermediate file. But the ticker still does not appear
+in the finished blocks, because nothing treats its container as a section to convert. That is the
+first item on the front below. Bean's earlier question was right: multi-field arrays (REASONS etc.)
+look solvable; only the single-text-field case is built.
 
 **Front D (Mama's/Indus header-footer builder cleanup) is FULLY CLOSED**, including a same-day
 follow-on: Indus Foods now has a complete, independently-verified header/footer/nav-drawer/mega-menu
@@ -22,7 +30,26 @@ classless FIELD resolution) is still open** — built, all 4 tiers, but not live
 this session. Two things still need Bean directly, not a subagent: the drawer-burger click
 retest, and Spec 42/43 Phase 3's precondition (real WooCommerce catalogue data).
 
-## This session (2026-09-19) — Indus Foods dedicated test site
+## This session (2026-09-19, part 2) — classless-pipeline fixes + a correction
+
+- **D1108** classless-match gate stopped feeding item-shaped boundaries to a container-shaped
+  function (Spec 44 Stage 4 now branches on `boundary_kind`). **D1109** `<input placeholder>` text
+  counts as content, fixing b23's crash. Both real, live-verified, flag-OFF parity intact.
+- **D1111 was wrong, D1112 corrects it.** Wrong directory passed to the JS-content resolver;
+  fixed (`_draft_dir`), guarded (refuses unrendered `{{ }}` text), 2 new tests. Resolver output is
+  now correct; the ticker still does not reach the emitted blocks (no boundary covers its
+  container). Lesson in `mistakes.md` (mocked boundary + "verified" read off counts).
+- **Docs reconciled:** Spec 31 §15 FR-31-26.5, Spec 44 header (was "DESIGNED, not built", now
+  v2.4.0), D1112, both finished plans archived (`plans/archive/phase-1108-*`, `phase-1111-*`).
+  Spec 45 needed no change. `parking.md` untouched (nothing there concerns this work).
+- **Numbers, from the run artefacts not from memory:** flag OFF, 74 boundaries = 41 complete + 15
+  classless-review + 14 non-BEM-compliant + 3 chrome-skipped (by design) + 1 failed (b32). Flag ON
+  = 73 boundaries (the ticker's `<sc-for>` is consumed), still 41 complete.
+- Pre-existing failures noticed, not touched: `test_preflight_chain::test_precommit_gate_drift_pass`
+  (drift-validator path missing), `test_validate_stage_artifact::test_stage_9_coverage_gap_levels`,
+  `test_wp_integration::test_native_hover_zoom_routes`.
+
+## Earlier this session (2026-09-19) — Indus Foods dedicated test site
 
 - **Archived** the completed Front D Wave 2 orchestration plan
   (`plans/archive/2026-09-17-front-d-wave-2-orchestration.md`) — all 6 tasks confirmed shipped.
@@ -53,8 +80,8 @@ retest, and Spec 42/43 Phase 3's precondition (real WooCommerce catalogue data).
 
 ## Prior work (closed / parked) — pointer only, full narrative in memory or decisions.md
 
-Full narrative for entries below moved to `memory/session-2026-09-17.md` / `memory/session-2026-09-18.md`
-+ the named D-numbers in `decisions.md` — read those, not a summary here.
+Full narrative for entries below moved to `memory/session-2026-09-17.md`
++ the named D-numbers in `decisions.md` (no `session-2026-09-18.md` exists) — read those, not a summary here.
 
 - **Front D Wave 1+2 (5 visual/admin fixes + 6 CPT-architecture tasks, FR-37-46..49)** — ALL
   SHIPPED, deployed, live-verified. Full trail: `.claude/reports/2026-09-17-header-footer-cpt-issue-register.md`,
@@ -84,6 +111,30 @@ Full narrative for entries below moved to `memory/session-2026-09-17.md` / `memo
 **None.**
 
 ## THE FRONT — what to pick up next
+
+### Front F — Eye Care Birmingham classless-pipeline boundaries (Bean-directed, do this first)
+
+Invocation (same flags as `.claude/reports/2026-09-18-spec44-live-flagged-run.md` plus
+`--sc-var-min-confidence 0.0 --dom-shape-min-confidence 0.0 --classless-match --classless-auto-complete`;
+add `--resolve-js-content` for the flag-ON comparison). **Compare by (selector, block) identity, never
+`boundary_id`** (mistakes.md). Verify a stage claim by grepping the emitted `block_markup` for one
+string it should have produced.
+
+The 30 real items (74 minus 41 complete minus 3 chrome-skipped): 15 classless-review (9
+`sgs/product-card`, 6 `sgs/trustpilot-reviews`, all "partial match, first occurrence"), 14
+non-BEM-compliant (not investigated this session), 1 failed (b32 ticker). Ranked menu, smallest
+first action first:
+
+1. **Ticker reaches the blocks (recommended first).** Resolver output is right but no boundary
+   covers the ticker's plain `<div>`. First action (<5 min): read why
+   `per-section-convention-voter.py::auto_detect_sections` skips a non-semantic top-level `<div>`.
+   Needs a design gate (shared mechanism, Rule 7).
+2. **Multi-field arrays (REASONS, REVIEWS, FAQS, ...).** Per-field tagging in the resolver; design
+   gate first. Bean thinks this is solvable and the evidence agrees (each field sits in its own element).
+3. **15 review-queue items.** Bean's eye on `operator-review.html`; decide per candidate. Needs
+   Bean, not a subagent.
+4. **14 non-BEM boundaries.** Not yet looked at: first find out whether they are draft-side fixes
+   or a pipeline gap.
 
 ### Spec 36+37 merged track (Bean-directed focus for next session, 2026-09-19)
 
@@ -202,7 +253,7 @@ Built, all 4 tiers, empirically validated — but has NO live pipeline input yet
   150+ sessions share this tree.
 - **D-ceiling:** verify fresh with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1` (was
-  D1110 at last check — re-check, don't trust a cached number here).
+  D1112 at last check — re-check, don't trust a cached number here).
 - **Canary:** sandybrown, WP 7.1. Production homepage page **2742**. Fresh-clone verification
   page **3448** for cloning-pipeline work. **Untouched by this session's Indus work** — that now
   lives entirely on its own dedicated site (`indus-test` deploy target).
@@ -223,7 +274,8 @@ Built, all 4 tiers, empirically validated — but has NO live pipeline input yet
 | **Indus Foods dedicated test site — header/footer/nav/mega-menu build, all fixes live** | `sites/indus-foods/CLAUDE.md`; site: lavender-dinosaur-183533.hostingersite.com; deploy target `indus-test` in `build-deploy.py` |
 | **Nav-menu split — ALL 8 STEPS DONE; only gap is a missing visual-diff report** | `C:\Users\Bean\.claude\plans\our-new-draft-from-enchanted-karp.md`; `decisions.md` D1059/D1060/D1076; `.claude/reports/2026-09-14-nav-menu-split-attribute-classification.md` |
 | Ward End Eye Care draft audit + CPT inventory | `.claude/reports/2026-09-14-eye-care-draft-exceptions-agreed.md` |
-| **Classless recognition (Spec 44) — CLOSED 7/8** | `specs/44-CLASSLESS-REPEATER-RECOGNITION.md` (v2.3.1); `decisions.md` D1088-D1107; `.claude/reports/2026-09-18-spec44-full-pipeline-stage-breakdown.md` |
+| **JS-array content resolver (Spec 31 §15) — built, ticker gap OPEN** | `specs/31-UNIVERSAL-CLONING-PIPELINE.md` §15; `decisions.md` D1111 + D1112 (correction); `plans/archive/phase-1111-js-array-content-resolution.md` |
+| **Classless recognition (Spec 44) — CLOSED 7/8** | `specs/44-CLASSLESS-REPEATER-RECOGNITION.md` (v2.4.0); `decisions.md` D1088-D1109, D1112; `.claude/reports/2026-09-18-spec44-full-pipeline-stage-breakdown.md` |
 | **Structural-facts trio (repeaters+composition+singletons)** — all 3 built, validated, consumer wiring parked | `specs/31-UNIVERSAL-CLONING-PIPELINE.md` §13.9-§13.10; `decisions.md` D1090/D1093 |
 | **Classless FIELD resolution (Spec 45)** — all 4 tiers BUILT, still no real input | `specs/45-CLASSLESS-FIELD-RESOLUTION.md` (v1.6.0); `decisions.md` D1084/D1087 |
 | **Form CPT + choice-flow** — council-closed, Phase 0 ready | `specs/42-SGS-FORM-CPT-AND-PRICING.md` (v2.1.0) + `specs/43-SGS-CHOICE-FLOW.md` (v1.2.0) + `plans/2026-09-14-spec42-43-form-choiceflow-phase-plan.md` |

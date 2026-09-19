@@ -30,15 +30,15 @@ Playwright render script) is well-isolated enough to dispatch.
 - [ ] A `<sc-for>` group with no usable static content, when `--resolve-js-content` is passed, gets
       its real content spliced into the mockup non-destructively (byte-identical outside patched
       spans) — verified on b32 (ticker) AND at least one other of the 12 arrays (REASONS).
-- [ ] A `<sc-for>` group that ALREADY has usable static content is never touched, verified by an
+- [x] A `<sc-for>` group that ALREADY has usable static content is never touched, verified by an
       explicit negative-control test.
-- [ ] Correlation is marker-based (`data-sgs-resolve-id`), not document order — verified by a test
+- [x] Correlation is marker-based (`data-sgs-resolve-id`), not document order — verified by a test
       where two eligible groups resolve to DIFFERENT item counts.
-- [ ] The flag defaults OFF; a run without it is byte-for-byte unchanged from today (verified by
+- [x] The flag defaults OFF; a run without it is byte-for-byte unchanged from today (verified by
       re-running the existing 41/74 boundary count with the flag OFF).
-- [ ] Any render/server failure leaves the draft untouched and the pipeline continues — verified by
+- [x] Any render/server failure leaves the draft untouched and the pipeline continues — verified by
       a forced-failure test (e.g. point the resolver at a nonexistent draft directory).
-- [ ] `.claude/decisions.md` carries a new D-number recording the build + live-verification
+- [x] `.claude/decisions.md` carries a new D-number recording the build + live-verification
       evidence.
 
 **Entry context (read before starting):**
@@ -497,3 +497,19 @@ Ready to execute. Options:
     the longest single step
 (c) refine any step first
 (d) hand off to a fresh session via `/handoff`
+
+## Closure (2026-09-19, archived)
+
+**Status: PARTIALLY MET. Read D1111 AND D1112 (the correction) together.**
+
+- Criterion 1 is NOT met: it required verification on the ticker AND REASONS. REASONS (number +
+  title + body, three separate fields) was excluded from the mechanism by design, and the ticker's
+  resolver output was only correct AFTER the D1112 fix (the orchestrator passed the wrong
+  directory, so D1111's "ticker converts" claim was false when made). Even now the ticker text does
+  not reach the emitted blocks: its container is not a detected boundary (D1112).
+- Criteria 2-6 are met (negative control, marker correlation, flag-OFF parity, forced-failure,
+  D-number), with criterion 5's mocked test unable to see the wrong-directory bug, hence D1112's
+  added wiring pin.
+- Open scope this plan did NOT deliver: multi-field arrays (REASONS, REVIEWS, FAQS, ...) and
+  bare self-reference items (`featured` products), plus making the spliced ticker an actual
+  boundary. Tracked in `LEDGER.md`, not here.
