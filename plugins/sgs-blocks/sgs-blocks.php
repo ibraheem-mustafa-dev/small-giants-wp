@@ -542,6 +542,7 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 	// post type through Sgs_Active_Layout), so the drawer instance needs ZERO new
 	// command logic — `set-active`, `clear-active`, `list` and `seed-starter` all
 	// work as soon as the area token maps.
+	require_once SGS_BLOCKS_PATH . 'includes/class-sgs-starter-cli-seeder.php';
 	require_once SGS_BLOCKS_PATH . 'includes/class-sgs-header-footer-cli-commands.php';
 	\WP_CLI::add_command( 'sgs header', new Sgs_Header_Footer_Cli_Commands( Sgs_Active_Layout::AREA_HEADER ) );
 	\WP_CLI::add_command( 'sgs footer', new Sgs_Header_Footer_Cli_Commands( Sgs_Active_Layout::AREA_FOOTER ) );
