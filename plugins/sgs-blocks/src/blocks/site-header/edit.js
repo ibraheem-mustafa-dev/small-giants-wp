@@ -28,7 +28,7 @@ import {
 import { ResponsiveTriStateControl, ResponsiveBoxControl, ResponsiveOverride, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, ShadowControl, resolveColourToken, SgsBoxControl, StarterLookPresetControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { resolveTier } from '../../utils/responsive';
-import { backgroundPaintPreview, backgroundPreview, spacingPreview, svgBackgroundPreview, textPaintPreview } from '../../utils';
+import { backgroundPaintPreview, backgroundPreview, spacingPreview, isTierBoxEmpty, svgBackgroundPreview, textPaintPreview } from '../../utils';
 import { calculateRelativeLuminance, calculateContrastRatio, meetsWCAG_AA } from '../../utils/wcag-contrast';
 
 /**
@@ -86,12 +86,17 @@ const PRESET_JUSTIFY = {
 	minimal: 'space-between',
 };
 
+// `padding` is a tier-of-boxes attr { desktop, tablet, mobile }: a preset owns
+// the desktop box, so it matches only when tablet and mobile are empty too.
 function paddingMatches( padding, target ) {
-	if ( ! padding ) {
+	if ( ! padding?.desktop ) {
 		return false;
 	}
-	return [ 'top', 'right', 'bottom', 'left' ].every(
-		( side ) => padding[ side ] === target[ side ]
+	return (
+		isTierBoxEmpty( { tablet: padding.tablet, mobile: padding.mobile } ) &&
+		[ 'top', 'right', 'bottom', 'left' ].every(
+			( side ) => padding.desktop[ side ] === target[ side ]
+		)
 	);
 }
 
@@ -111,12 +116,12 @@ function paddingMatches( padding, target ) {
 function getActiveLayoutPreset( attributes, rowJustify = '' ) {
 	const { contentWidth = 'full', padding } = attributes;
 
-	// ⚠ EMPTINESS, not falsiness. Base padding is a block-OWNED `padding` object
-	// attr whose declared default is `{}` (the same shape as sgs/container). An
-	// empty object is TRUTHY, so a `! padding` test would make Split and Centred
+	// ⚠ EMPTINESS, not falsiness. `padding` is a block-OWNED tier-of-boxes attr
+	// whose declared default is `{ desktop: {} }`, which is truthy and has a key,
+	// so a `! padding` or key-count test would make Split and Centred
 	// undetectable and the preset toggle would permanently show nothing
 	// selected — a silent break with no error and a green build.
-	const noPadding = ! padding || Object.keys( padding ).length === 0;
+	const noPadding = isTierBoxEmpty( padding );
 
 	if ( contentWidth === 'full' && noPadding && rowJustify === 'space-between' ) {
 		return 'split';
@@ -163,7 +168,7 @@ function applyLayoutPreset(
 	} else if ( value === 'centred' ) {
 		setAttributes( { contentWidth: 'normal', padding: {} } );
 	} else if ( value === 'minimal' ) {
-		setAttributes( { contentWidth: 'normal', padding: MINIMAL_PADDING } );
+		setAttributes( { contentWidth: 'normal', padding: { desktop: MINIMAL_PADDING } } );
 	} else {
 		return;
 	}
@@ -340,16 +345,11 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		return { Tablet: 'tablet', Mobile: 'mobile' }[ device ] || 'desktop';
 	}, [] );
 
-	// Padding/margin canvas preview. Base padding + margin are block-OWNED
-	// `padding`/`margin` object attrs (as on sgs/container); tablet/mobile
-	// overrides are passed through alongside them.
+	// Padding/margin canvas preview. `padding`/`margin` are each ONE
+	// tier-of-boxes object attr { desktop, tablet, mobile }, read directly.
 	const spacePreview = spacingPreview( {
-		basePadding: attributes.padding,
-		paddingTablet: attributes.paddingTablet,
-		paddingMobile: attributes.paddingMobile,
-		baseMargin: attributes.margin,
-		marginTablet: attributes.marginTablet,
-		marginMobile: attributes.marginMobile,
+		padding: attributes.padding,
+		margin: attributes.margin,
 	}, previewTier );
 
 	const blockProps = useBlockProps( {
@@ -727,10 +727,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							// interchangeable here.
 							padding: {},
 							margin: {},
-							paddingTablet: {},
-							paddingMobile: {},
-							marginTablet: {},
-							marginMobile: {},
 							backgroundImage: undefined,
 							backgroundImageTablet: undefined,
 							backgroundImageMobile: undefined,
@@ -761,27 +757,18 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					{ /* Responsive spacing (padding + margin) — box-object interface
 					     contract. Base tier writes the block's OWN padding/margin object attrs
 					     (this block declares no supports.spacing, so there is no
-					     duplicate Styles > Dimensions panel); tablet/mobile write to
-					     the paddingTablet/paddingMobile and marginTablet/marginMobile
-					     object attrs read by the wrapper's @media tiers. */ }
+					     duplicate Styles > Dimensions panel); each attr holds
+					     desktop, tablet and mobile, read by the wrapper's @media tiers. */ }
 					<ToolsPanelItem
 						label={ __( 'Padding & margin', 'sgs-blocks' ) }
 						hasValue={ () =>
-							Object.keys( attributes.padding ?? {} ).length > 0 ||
-							Object.keys( attributes.margin ?? {} ).length > 0 ||
-							Object.keys( attributes.paddingTablet ?? {} ).length > 0 ||
-							Object.keys( attributes.paddingMobile ?? {} ).length > 0 ||
-							Object.keys( attributes.marginTablet ?? {} ).length > 0 ||
-							Object.keys( attributes.marginMobile ?? {} ).length > 0
+							! isTierBoxEmpty( attributes.padding ) ||
+							! isTierBoxEmpty( attributes.margin )
 						}
 						onDeselect={ () =>
 							setAttributes( {
 								padding: {},
 								margin: {},
-								paddingTablet: {},
-								paddingMobile: {},
-								marginTablet: {},
-								marginMobile: {},
 							} )
 						}
 					>

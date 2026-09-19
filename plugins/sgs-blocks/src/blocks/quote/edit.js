@@ -45,7 +45,7 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, textRow, ShadowControl, shadowAttrKeys, SgsLengthControl, TypographyControls, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
-import { colourVar, resolveTextColourPreviewStyle, linkColourPreviewCss } from '../../utils';
+import { colourVar, resolveTextColourPreviewStyle, linkColourPreviewCss, isTierBoxEmpty } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 // ---------------------------------------------------------------------------
@@ -762,7 +762,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							<ToolsPanelItem
 								label={ __( 'Padding', 'sgs-blocks' ) }
 								hasValue={ () =>
-									Object.keys( attributes.padding ?? {} ).length > 0
+									! isTierBoxEmpty( attributes.padding )
 								}
 								onDeselect={ () =>
 									setAttributes( { padding: {} } )
@@ -787,7 +787,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							<ToolsPanelItem
 								label={ __( 'Margin', 'sgs-blocks' ) }
 								hasValue={ () =>
-									Object.keys( attributes.margin ?? {} ).length > 0
+									! isTierBoxEmpty( attributes.margin )
 								}
 								onDeselect={ () =>
 									setAttributes( { margin: {} } )

@@ -1,21 +1,14 @@
 /**
- * Shared editor-canvas mirror of the padding/margin box-object preview —
- * extracted 2026-08-26 from `sgs/container`'s `edit.js` (the ONLY block that
- * had built this mirror — `boxShorthand()`/`resolveBoxTierPreview()`,
- * previously local + unexported at lines ~117-155) into ONE shared module so
- * every other block carrying padding/margin box-object attrs can show the
- * same live preview instead of a flat, non-moving canvas for a setting that
- * IS painting on the published page. Measured live on the canary 2026-08-26:
- * `sgs/trust-bar` and `sgs/multi-button` both showed 0px padding/0px margin
- * on canvas against a live 120px/80px page — this module + its per-block
- * wiring closes that gap (contract: `.claude/plans/2026-07-09-box-object-
- * interface-contract.md` §5, "editor preview must match the frontend scoped
- * output").
+ * Shared editor-canvas mirror of the padding/margin box-object preview. Every
+ * block carrying `padding`/`margin` attributes uses it, so the canvas shows
+ * the same spacing the published page paints instead of a flat, non-moving
+ * canvas for a setting that is live on the front end (contract:
+ * `.claude/plans/2026-07-09-box-object-interface-contract.md` §5, "editor
+ * preview must match the frontend scoped output").
  *
- * `boxShorthand()` and `resolveBoxTierPreview()` are copied VERBATIM from
- * `sgs/container`'s edit.js — same implementation, same docblocks, unchanged
- * logic — so this extraction cannot itself introduce a behavioural drift for
- * container's own regression baseline.
+ * `padding` and `margin` are each ONE tier-of-boxes object attribute,
+ * `{ desktop: {top,right,bottom,left}, tablet: {...}, mobile: {...} }`; this
+ * module reads that shape directly.
  *
  * ⛔ Keep this in step with the PHP path (`class-sgs-container-wrapper.php`).
  * If they disagree, the editor lies about what the page will look like —
@@ -41,16 +34,14 @@ export function boxShorthand( box ) {
 }
 
 /**
- * padding/margin are NOT tier objects on this block — they are a flat trio of
- * OWNED box attrs (`padding`/`paddingTablet`/`paddingMobile`, each its own
- * {top,right,bottom,left}), the pre-tier-object shape (Spec 35 / D555). The
- * frontend emits the base box through the style engine, then a tablet/mobile
- * `@media` rule for EACH side that tier explicitly sets — an unset side at a
- * narrower tier keeps whatever the wider tier declared (ordinary CSS cascade,
- * both `max-width` queries can be simultaneously true). This mirrors that:
- * merge tablet's declared sides over base, then mobile's over that.
+ * Resolve one tier-of-boxes attribute for the active preview tier. The frontend
+ * emits the desktop box, then a tablet/mobile `@media` rule for EACH side that
+ * tier explicitly sets — an unset side at a narrower tier keeps whatever the
+ * wider tier declared (ordinary CSS cascade, both `max-width` queries can be
+ * true at once). This mirrors that: tablet's declared sides merge over
+ * desktop, then mobile's over that.
  *
- * @param {Object|undefined} base   Desktop/base box.
+ * @param {Object|undefined} base   Desktop box.
  * @param {Object|undefined} tablet Tablet box (only declared sides override).
  * @param {Object|undefined} mobile Mobile box (only declared sides override).
  * @param {string}           tier   Active preview tier.
@@ -74,52 +65,49 @@ export function resolveBoxTierPreview( base, tablet, mobile, tier ) {
 }
 
 /**
- * Convenience wrapper for a block's canvas `style` object — resolves BOTH
- * padding and margin for the active preview tier and returns only the keys
- * that actually have something to paint (mirrors `boxShorthand()`'s own
- * `undefined`-when-empty contract, so a caller can spread the result straight
- * into its style object without an extra `if` per property).
+ * Does a tier-of-boxes attribute hold no value at any tier? An empty object,
+ * `{ desktop: {} }` (the declared default) and boxes whose sides are all blank
+ * all count as empty — plain key-counting on the default would say "set".
  *
- * ⚠ The BASE tier's SOURCE differs per calling block — this function takes it
- * as an explicit argument rather than hard-coding either source, because:
- *  - `sgs/container` stores base in its OWN attrs (`attributes.padding` /
- *    `attributes.margin` — the pre-Spec-35 owned-box shape).
- *  - Every other adopting block (`sgs/multi-button`, `sgs/physics-canvas`,
- *    `sgs/site-footer`, `sgs/site-header`, `sgs/trust-bar`) stores base in the
- *    WP-NATIVE `attributes.style.spacing.padding` / `….margin` object (the
- *    `supports.spacing` panel), with only the tablet/mobile OVERRIDE tiers as
- *    block-private `paddingTablet`/`paddingMobile`/`marginTablet`/
- *    `marginMobile` attrs.
- * Pass whichever box each block actually reads as `basePadding`/`baseMargin`
- * — never assume one shape here.
- *
- * @param {Object} boxes             Base + tier boxes for both properties.
- * @param {Object} [boxes.basePadding]   Desktop/base padding box.
- * @param {Object} [boxes.paddingTablet] Tablet padding override box.
- * @param {Object} [boxes.paddingMobile] Mobile padding override box.
- * @param {Object} [boxes.baseMargin]    Desktop/base margin box.
- * @param {Object} [boxes.marginTablet]  Tablet margin override box.
- * @param {Object} [boxes.marginMobile]  Mobile margin override box.
- * @param {string} tier               Active preview tier ('desktop'|'tablet'|'mobile').
- * @return {{padding?: string, margin?: string}} Only the keys that resolved
- *                   to a real shorthand — omit a key entirely when unset, so
- *                   the caller can spread this straight into its style object.
+ * @param {Object|undefined} tiers `{ desktop, tablet, mobile }` boxes.
+ * @return {boolean} True when no tier declares any side.
  */
-export function spacingPreview(
-	{ basePadding, paddingTablet, paddingMobile, baseMargin, marginTablet, marginMobile },
-	tier
-) {
+export function isTierBoxEmpty( tiers ) {
+	if ( ! tiers || typeof tiers !== 'object' ) return true;
+	return Object.values( tiers ).every(
+		( box ) => ! box || typeof box !== 'object' || Object.values( box ).every( ( side ) => ! side )
+	);
+}
+
+/**
+ * Resolve a tier-of-boxes attribute (`{desktop,tablet,mobile}`, each a
+ * `{top,right,bottom,left}` box) into a CSS shorthand for the active tier.
+ *
+ * @param {Object|undefined} tiers `{ desktop, tablet, mobile }` boxes.
+ * @param {string}           tier  Active preview tier ('desktop'|'tablet'|'mobile').
+ * @return {string|undefined} A 4-value shorthand, or undefined when nothing is set.
+ */
+export function tierBoxShorthand( tiers, tier ) {
+	const source = tiers && typeof tiers === 'object' ? tiers : {};
+	return boxShorthand( resolveBoxTierPreview( source.desktop, source.tablet, source.mobile, tier ) );
+}
+
+/**
+ * A block's canvas `style` object for padding + margin at the active preview
+ * tier. Returns only the keys that resolved to a real shorthand, so a caller
+ * can spread the result straight into its style object.
+ *
+ * @param {Object} attrs         The block's spacing attributes.
+ * @param {Object} [attrs.padding] Tier-of-boxes padding attribute.
+ * @param {Object} [attrs.margin]  Tier-of-boxes margin attribute.
+ * @param {string} tier          Active preview tier ('desktop'|'tablet'|'mobile').
+ * @return {{padding?: string, margin?: string}}
+ */
+export function spacingPreview( { padding, margin }, tier ) {
 	const result = {};
-
-	const padding = boxShorthand(
-		resolveBoxTierPreview( basePadding, paddingTablet, paddingMobile, tier )
-	);
-	if ( padding ) result.padding = padding;
-
-	const margin = boxShorthand(
-		resolveBoxTierPreview( baseMargin, marginTablet, marginMobile, tier )
-	);
-	if ( margin ) result.margin = margin;
-
+	const paddingValue = tierBoxShorthand( padding, tier );
+	if ( paddingValue ) result.padding = paddingValue;
+	const marginValue = tierBoxShorthand( margin, tier );
+	if ( marginValue ) result.margin = marginValue;
 	return result;
 }

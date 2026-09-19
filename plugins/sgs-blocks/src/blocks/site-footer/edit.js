@@ -206,16 +206,11 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		return { Tablet: 'tablet', Mobile: 'mobile' }[ device ] || 'desktop';
 	}, [] );
 
-	// Padding/margin canvas preview. Base padding + margin are the block-OWNED
-	// `padding`/`margin` object attrs (no `supports.spacing`); tablet/mobile
-	// overrides are passed through alongside them.
+	// Padding/margin canvas preview. `padding`/`margin` are each ONE
+	// tier-of-boxes object attr { desktop, tablet, mobile }, read directly.
 	const spacePreview = spacingPreview( {
-		basePadding: attributes.padding,
-		paddingTablet: attributes.paddingTablet,
-		paddingMobile: attributes.paddingMobile,
-		baseMargin: attributes.margin,
-		marginTablet: attributes.marginTablet,
-		marginMobile: attributes.marginMobile,
+		padding: attributes.padding,
+		margin: attributes.margin,
 	}, previewTier );
 
 	// Layout preview (`layout` is FIXED to 'flex' — see the Layout PanelBody
@@ -565,9 +560,8 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 				{ /* Responsive spacing (padding + margin) — box-object interface
 				     contract. Base tier writes to the block-OWNED `padding`/`margin` attrs
 				     (this block declares no supports.spacing, so there is NO
-				     duplicate Styles > Dimensions panel); tablet/mobile write
-				     to the paddingTablet/paddingMobile and marginTablet/marginMobile
-				     object attrs read by the wrapper's @media tiers. */ }
+				     duplicate Styles > Dimensions panel); each attr holds
+				     desktop, tablet and mobile, read by the wrapper's @media tiers. */ }
 				<PanelBody title={ __( 'Padding & margin', 'sgs-blocks' ) } initialOpen={ false }>
 					<ResponsiveOverride
 						value={ attributes.padding }

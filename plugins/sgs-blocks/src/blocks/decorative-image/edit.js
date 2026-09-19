@@ -273,28 +273,16 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				) }
 
-				{ /* The old bare desktop-only "Position" panel (Position X / Y) was
-				     deleted here — it duplicated the tier-aware ResponsiveOverride
-				     controls in the "Responsive Overrides" panel below, which cover
-				     desktop/tablet/mobile for the same positionX/positionY object
-				     attrs. Two controls writing the same attr under the pre-migration
-				     flat-scalar shape were merely redundant; under the new tier-object
-				     shape they would actively conflict (one control expects a plain
-				     number, the other an {desktop,tablet,mobile} object). */ }
+				{ /* Position X / Y and Width are tier-aware ResponsiveOverride controls
+				     in the "Responsive Overrides" panel below, which cover
+				     desktop/tablet/mobile for those object attrs. A second control
+				     writing the same attr would conflict (one writes a plain number,
+				     the other a {desktop,tablet,mobile} object), so there is one
+				     writer per attribute. */ }
 				<PanelBody
 					title={ __( 'Size', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<RangeControl
-						label={ __( 'Width (px)', 'sgs-blocks' ) }
-						value={ width }
-						onChange={ ( val ) => setAttributes( { width: val } ) }
-						min={ 50 }
-						max={ 800 }
-						step={ 10 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
 					<RangeControl
 						label={ __( 'Max Width (% of parent)', 'sgs-blocks' ) }
 						value={ maxWidthPercent }

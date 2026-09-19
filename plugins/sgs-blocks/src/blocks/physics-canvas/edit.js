@@ -112,20 +112,11 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		return { Tablet: 'tablet', Mobile: 'mobile' }[ device ] || 'desktop';
 	}, [] );
 
-	// Padding/margin canvas preview (measured live 2026-08-26: sibling blocks
-	// showed 0px padding/margin on canvas against a real 120px/80px page).
-	// Base padding + margin are now the block-OWNED `padding`/`margin`
-	// object attrs (D555 gutter-default migration — no `supports.spacing`);
-	// tablet/mobile overrides are the block-private paddingTablet/
-	// paddingMobile/marginTablet/marginMobile object attrs (this block
-	// declares all four — verified in block.json).
+	// Padding/margin canvas preview. `padding`/`margin` are each ONE
+	// tier-of-boxes object attr { desktop, tablet, mobile }, read directly.
 	const spacePreview = spacingPreview( {
-		basePadding: attributes.padding,
-		paddingTablet: attributes.paddingTablet,
-		paddingMobile: attributes.paddingMobile,
-		baseMargin: attributes.margin,
-		marginTablet: attributes.marginTablet,
-		marginMobile: attributes.marginMobile,
+		padding: attributes.padding,
+		margin: attributes.margin,
 	}, previewTier );
 
 	// Contrast check for border colour — warn if border fails WCAG 3:1 contrast
@@ -328,9 +319,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				</PanelBody>
 
 				{ /* ── Padding & margin (box-object tiers) — base tier writes to the
-				     block-OWNED `padding`/`margin` attrs; tablet/mobile write to the
-				     paddingTablet/paddingMobile + marginTablet/marginMobile object
-				     attrs the wrapper's @media tiers read. Mirrors sgs/container's
+				     block-OWNED `padding`/`margin` tier-of-boxes attrs (desktop, tablet and
+				     mobile in one object, read by the wrapper's @media tiers). Mirrors sgs/container's
 				     and sgs/trust-bar's own edit.js exactly. ────────────────── */ }
 				<PanelBody title={ __( 'Padding & margin', 'sgs-blocks' ) } initialOpen={ false }>
 					<ResponsiveOverride

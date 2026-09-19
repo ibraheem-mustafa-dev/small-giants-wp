@@ -10,7 +10,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 // WS-4: shared sgs/container wrapper editor controls (layout kind).
 import ContainerWrapperControls, { BackgroundPanel } from '../container/components/ContainerWrapperControls';
 import { ResponsiveOverride, SpacingControl, SgsColourPanel, fillRow, ResponsiveBoxControl, SGS_FONT_WEIGHT_OPTIONS, textRow, SgsBorderControl, resolveColourToken, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
-import { backgroundPreview, spacingPreview, svgBackgroundPreview, boxShorthand, resolveTextColourPreviewStyle } from '../../utils';
+import { backgroundPreview, spacingPreview, isTierBoxEmpty, svgBackgroundPreview, boxShorthand, resolveTextColourPreviewStyle } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
 	PanelBody,
@@ -180,19 +180,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		return { Tablet: 'tablet', Mobile: 'mobile' }[ device ] || 'desktop';
 	}, [] );
 
-	// Padding/margin canvas preview (measured live 2026-08-26: this block
-	// showed 0px on canvas against a real 120px/80px page). `padding`/`margin`
-	// are each a single block-owned tier-object attr { desktop, tablet,
-	// mobile } — spacingPreview() still expects the old flat-sibling shape
-	// (a separate follow-up: 8 other blocks share this same stale call —
-	// see the Phase 3 handoff prompt), so adapt at this call site only.
+	// Padding/margin canvas preview. `padding`/`margin` are each ONE
+	// tier-of-boxes object attr { desktop, tablet, mobile }, read directly.
 	const spacePreview = spacingPreview( {
-		basePadding: attributes.padding?.desktop,
-		paddingTablet: attributes.padding?.tablet,
-		paddingMobile: attributes.padding?.mobile,
-		baseMargin: attributes.margin?.desktop,
-		marginTablet: attributes.margin?.tablet,
-		marginMobile: attributes.margin?.mobile,
+		padding: attributes.padding,
+		margin: attributes.margin,
 	}, previewTier );
 
 	// Contrast check for border colour — warn if border fails WCAG 3:1 contrast
@@ -542,7 +534,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<ToolsPanelItem
 						label={ __( 'Padding', 'sgs-blocks' ) }
 						hasValue={ () =>
-							JSON.stringify( attributes.padding ?? {} ) !== '{}'
+							! isTierBoxEmpty( attributes.padding )
 						}
 						onDeselect={ () =>
 							setAttributes( { padding: {} } )
@@ -579,7 +571,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<ToolsPanelItem
 						label={ __( 'Margin', 'sgs-blocks' ) }
 						hasValue={ () =>
-							JSON.stringify( attributes.margin ?? {} ) !== '{}'
+							! isTierBoxEmpty( attributes.margin )
 						}
 						onDeselect={ () =>
 							setAttributes( { margin: {} } )

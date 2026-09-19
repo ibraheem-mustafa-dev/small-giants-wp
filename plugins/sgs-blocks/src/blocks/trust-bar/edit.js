@@ -18,9 +18,9 @@ import { colourVar, resolveShadowPreview, resolveShadowPreviewComposed, resolveR
 // trust-bar does not use the default <ContainerWrapperControls> aggregator —
 // its "Content band" / "Responsive spacing" panels write to flat attrs
 // (contentBandPaddingTop, paddingTopTablet, …) this block does not declare;
-// its padding/margin/content-band values are box-object attrs
-// (paddingTablet/paddingMobile/marginTablet/marginMobile/contentBandPadding+
-// Tablet+Mobile). The individual panels needed are imported instead (mirrors
+// its padding/margin/content-band values are tier-of-boxes object attrs
+// (`padding`, `margin`, `contentBandPadding`, each { desktop, tablet, mobile }).
+// The individual panels needed are imported instead (mirrors
 // sgs/container's + sgs/hero's own edit.js), and trust-bar rolls its own
 // "Padding & margin" / "Content band" panels below using ResponsiveBoxControl
 // bound to the object attrs.
@@ -431,20 +431,11 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		return { Tablet: 'tablet', Mobile: 'mobile' }[ device ] || 'desktop';
 	}, [] );
 
-	// Padding/margin canvas preview — the pair MEASURED live 2026-08-26 as the
-	// concrete regression evidence for this build (120px/80px on the real
-	// page, 0px on canvas). Base padding + margin are now the block-OWNED
-	// `padding`/`margin` object attrs (D555 gutter-default migration — no
-	// `supports.spacing`); tablet/mobile overrides are the block-private
-	// paddingTablet/paddingMobile/marginTablet/marginMobile object attrs
-	// (this block declares all four — verified in block.json).
+	// Padding/margin canvas preview. `padding`/`margin` are each ONE
+	// tier-of-boxes object attr { desktop, tablet, mobile }, read directly.
 	const spacePreview = spacingPreview( {
-		basePadding: attributes.padding,
-		paddingTablet: attributes.paddingTablet,
-		paddingMobile: attributes.paddingMobile,
-		baseMargin: attributes.margin,
-		marginTablet: attributes.marginTablet,
-		marginMobile: attributes.marginMobile,
+		padding: attributes.padding,
+		margin: attributes.margin,
 	}, previewTier );
 
 	// Build className based on active variant.
@@ -929,9 +920,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				{ /* ── Padding & margin (box-object tiers) ───────────────────── */ }
 				{ /* Box-object interface contract (.claude/plans/2026-07-09-box-object-interface-contract.md
 				     §5): base tier writes to the block-OWNED `padding`/`margin` attrs
-				     (also visible in the Styles > Dimensions panel); tablet/mobile write
-				     to the paddingTablet/paddingMobile + marginTablet/marginMobile object
-				     attrs read by the shared wrapper's @media tiers. Mirrors sgs/container's edit.js. */ }
+				     (also visible in the Styles > Dimensions panel); each attr holds
+				     desktop, tablet and mobile, read by the shared wrapper's @media
+				     tiers. Mirrors sgs/container's edit.js. */ }
 				<PanelBody title={ __( 'Padding & margin', 'sgs-blocks' ) } initialOpen={ false }>
 					<ResponsiveOverride
 						value={ attributes.padding }

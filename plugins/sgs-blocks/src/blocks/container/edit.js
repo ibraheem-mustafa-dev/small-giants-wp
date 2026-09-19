@@ -214,11 +214,11 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
   // the inspector's ResponsiveBoxControl wrote the attrs correctly but
   // nothing here read them back.
   const paddingPreview = boxShorthand(
-    resolveBoxTierPreview( attributes.padding, attributes.paddingTablet, attributes.paddingMobile, previewTier )
+    resolveBoxTierPreview( attributes.padding?.desktop, attributes.padding?.tablet, attributes.padding?.mobile, previewTier )
   );
   if ( paddingPreview ) style.padding = paddingPreview;
   const marginPreview = boxShorthand(
-    resolveBoxTierPreview( attributes.margin, attributes.marginTablet, attributes.marginMobile, previewTier )
+    resolveBoxTierPreview( attributes.margin?.desktop, attributes.margin?.tablet, attributes.margin?.mobile, previewTier )
   );
   if ( marginPreview ) style.margin = marginPreview;
 
@@ -594,12 +594,10 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
             migration. `padding`/`margin` are now block-OWNED object attrs (no
             `supports.spacing` — a WP-native support cannot carry a framework
             default, which is exactly why `sgs/container` had no horizontal
-            gutter and rendered flush to the viewport edge; see D555). Base tier
-            now writes to the owned `padding`/`margin` attrs directly, matching
-            the tablet/mobile legs' already-owned `paddingTablet`/`paddingMobile`
-            and `marginTablet`/`marginMobile` — one system, not a native+SGS
-            split. Mirrors the D548 `sgs/gallery` precedent (its own base tier
-            is likewise owned, not native). */}
+            gutter and rendered flush to the viewport edge; see D555). Every tier
+            writes into the owned `padding`/`margin` attr directly — one system,
+            not a native+SGS split. Mirrors the `sgs/gallery` precedent (its own
+            base tier is likewise owned, not native). */}
         <PanelBody title={ __( "Padding & margin", "sgs-blocks" ) } initialOpen={ false }>
           {/* padding/margin are now TIER-of-BOXES object attrs — ONE attribute
               holding {desktop,tablet,mobile}, each tier a {top,right,bottom,left}
@@ -607,11 +605,9 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
               shape already shipped on sgs/site-header-row / sgs/site-footer-row /
               sgs/gallery (Spec 37 FR-37-16). Uses ResponsiveOverride, which reads
               and writes the object directly, NOT the flat-sibling
-              ResponsiveBoxControl. Do NOT revert to an attrMap of
-              {base:'padding', tablet:'paddingTablet', mobile:'paddingMobile'} —
-              those two siblings are no longer declared by block.json, and
-              WordPress SILENTLY DISCARDS an attribute a block does not declare
-              (D338).
+              ResponsiveBoxControl. WordPress SILENTLY DISCARDS an attribute a
+              block does not declare (D338), so never write a per-tier sibling
+              attr such as `paddingTablet`.
               presets — C16 pilot (2026-08-27). sgs/container is the ONE block
               piloting spacing presets on the shared SgsBoxControl before the
               other mounts see them (default stays OFF everywhere else).
