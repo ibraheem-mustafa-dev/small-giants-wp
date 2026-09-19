@@ -15,12 +15,12 @@
 <!-- wp:sgs/mega-panel {"variant":"general","style":"columns"} -->
 
 <!-- wp:sgs/mega-group -->
-<!-- wp:sgs/heading {"content":"Products","level":3} /-->
+<!-- wp:sgs/heading {"content":"Products","level":"h3"} /-->
 <!-- wp:sgs/icon-list {"heading":"","items":[{"iconSource":"lucide","iconName":"check","text":"Product One","url":"#"},{"iconSource":"lucide","iconName":"check","text":"Product Two","url":"#"},{"iconSource":"lucide","iconName":"check","text":"Product Three","url":"#"}]} /-->
 <!-- /wp:sgs/mega-group -->
 
 <!-- wp:sgs/mega-group -->
-<!-- wp:sgs/heading {"content":"Resources","level":3} /-->
+<!-- wp:sgs/heading {"content":"Resources","level":"h3"} /-->
 <!-- wp:sgs/icon-list {"heading":"","items":[{"iconSource":"lucide","iconName":"check","text":"Guides","url":"#"},{"iconSource":"lucide","iconName":"check","text":"Case Studies","url":"#"},{"iconSource":"lucide","iconName":"check","text":"Support","url":"#"}]} /-->
 <!-- /wp:sgs/mega-group -->
 

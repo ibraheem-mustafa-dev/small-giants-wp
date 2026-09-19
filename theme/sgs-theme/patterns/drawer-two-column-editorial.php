@@ -6,7 +6,7 @@
  * Block Types: core/post-content
  * Post Types: sgs_drawer
  * Keywords: drawer, menu, panel, featured
- * Description: A full-screen light panel with a large two-column link grid that merges to one column on smaller devices. Reference: a real-site 2-column editorial drawer.
+ * Description: A full-screen light panel with a large two-column link grid that merges to one column on smaller devices, and the business email beneath it. Reference: a real-site 2-column editorial drawer.
  *
  * @package SGS\Theme
  */
@@ -25,5 +25,5 @@
 ?>
 <!-- wp:sgs/nav-drawer {"drawerBg":"surface","closeStyle":"text-swap"} -->
 <!-- wp:sgs/nav-drawer-menu {"ref":0,"gap":"4px","itemFontSize":{"desktop":64,"mobile":40},"listColumns":{"desktop":2,"mobile":1}} /-->
-<!-- wp:sgs/button {"label":"Let's talk"} /-->
+<!-- wp:sgs/business-info {"displayType":"email"} /-->
 <!-- /wp:sgs/nav-drawer -->

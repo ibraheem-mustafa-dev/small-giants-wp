@@ -66,6 +66,15 @@ Theme patterns + parts ONLY (static markup we control and commit). It does NOT s
 problem. It only checks `sgs/*` blocks; core blocks have their own (differently
 spelled) native attrs and are out of scope.
 
+TYPE / ENUM PATH (added 2026-09-19)
+-----------------------------------
+A DECLARED attribute whose authored value breaks its block.json `type` or `enum`
+is coerced to the default by WP, silently (`type-enum-mismatch`, hard-gated).
+`sgs/heading`'s `level` is a string enum h1..h6; seven patterns authored numeric
+`"level":3`, which rendered `<h2>` while this gate passed, because it only ever
+checked the `object` shape and never enum membership. Type matching mirrors WP's
+`rest_validate_value_from_schema()` leniency so it never flags a value WP keeps.
+
 `--check` exits 1 on any finding (wire into prebuild). Default run reports only.
 """
 
@@ -169,6 +178,22 @@ def load_schemas() -> dict:
             continue
         if 'name' in d:
             out[d['name']] = parse_block_attribute_types(d)
+    return out
+
+
+def load_attr_specs() -> dict:
+    """{block_name: {attr_name: spec_dict}} — the full declaration (type, enum,
+    default) that `load_schemas()` flattens to a bare type."""
+    out = {}
+    for bj in BLOCKS_DIR.glob('*/block.json'):
+        try:
+            d = json.loads(bj.read_text(encoding='utf-8'))
+        except json.JSONDecodeError:
+            continue
+        if 'name' in d:
+            out[d['name']] = {
+                k: v for k, v in d.get('attributes', {}).items() if isinstance(v, dict)
+            }
     return out
 
 
@@ -362,8 +387,100 @@ def is_shape_mismatch(declared_type, value) -> bool:
     return isinstance(value, (str, int, float, bool, list))
 
 
+def _matches_json_type(json_type: str, value) -> bool:
+    """Mirror of WP's `rest_validate_value_from_schema()` type test — which is
+    what `prepare_attributes_for_render()` runs. It is deliberately as lenient
+    as WP: number/integer accept numeric strings and boolean accepts the
+    "true"/"false"/0/1 spellings, so this never flags a value WP would keep."""
+    is_bool = isinstance(value, bool)
+    if json_type == 'string':
+        return isinstance(value, str)
+    if json_type in ('number', 'integer'):
+        if is_bool:
+            return False
+        if isinstance(value, str):
+            try:
+                float(value)
+            except ValueError:
+                return False
+            return json_type == 'number' or float(value).is_integer()
+        if isinstance(value, float):
+            return json_type == 'number' or value.is_integer()
+        return isinstance(value, int)
+    if json_type == 'boolean':
+        return is_bool or value in (0, 1, '0', '1', 'true', 'false')
+    if json_type == 'array':
+        return isinstance(value, list)
+    if json_type == 'object':
+        return isinstance(value, dict)
+    if json_type == 'null':
+        return value is None
+    return True  # unknown type keyword: never flag what we cannot judge
+
+
+def find_type_enum_violation(spec: dict, value):
+    """Return a reason string when `value` breaks the declared `type` or
+    `enum`, else None. WP coerces such a value to the attribute default with
+    no error — e.g. a numeric `"level":3` on `sgs/heading` (string enum
+    h1..h6) renders as the default `h2`. `None` is skipped: null is the
+    documented inherit-nothing value, matching is_shape_mismatch()."""
+    if value is None:
+        return None
+    declared_type = spec.get('type')
+    types = declared_type if isinstance(declared_type, list) else (
+        [declared_type] if declared_type else [])
+    if types and not any(_matches_json_type(t, value) for t in types):
+        return f'type {"|".join(types)} but got {type(value).__name__} {value!r}'
+    enum = spec.get('enum')
+    if isinstance(enum, list) and not any(
+            value == e and isinstance(value, bool) == isinstance(e, bool) for e in enum):
+        return f'value {value!r} is outside enum {enum!r}'
+    return None
+
+
+def scan_source(src: str, rel: str, schemas: dict, specs: dict,
+                supports_map: dict, fx_qualifying: dict) -> list:
+    """Findings for one file's text. Split out of scan() so --self-test drives
+    the real detection path against fixture markup and synthetic schemas."""
+    findings = []
+    for m in BLOCK_RE.finditer(src):
+        name, raw = m.group(1), m.group(2)
+        if not raw or name not in schemas:
+            continue
+        try:
+            attrs = json.loads(raw)
+        except json.JSONDecodeError:
+            continue
+        declared = schemas[name]
+        block_specs = specs.get(name, {})
+        line = src.count(chr(10), 0, m.start()) + 1
+
+        block_supports = supports_map.get(name, {})
+
+        for style_key in find_dead_native_style(attrs, block_supports):
+            findings.append((rel, line, name, f'style.{style_key}', 'native-style-undeclared'))
+
+        for attr_key in find_dead_native_preset_attrs(attrs, block_supports, declared):
+            findings.append((rel, line, name, attr_key, 'native-preset-undeclared'))
+
+        for key, value in attrs.items():
+            if key in declared and is_shape_mismatch(declared[key], value):
+                findings.append((rel, line, name, key, 'shape-mismatch'))
+                continue
+            if key in block_specs:
+                reason = find_type_enum_violation(block_specs[key], value)
+                if reason:
+                    findings.append((rel, line, name, key, 'type-enum-mismatch', reason))
+                continue
+            if is_legit(key, declared, name, fx_qualifying):
+                continue
+            findings.append((rel, line, name, key, 'undeclared'))
+    return findings
+
+
 def scan() -> list:
     schemas = load_schemas()
+    specs = load_attr_specs()
     supports_map = load_block_supports()
     fx_qualifying = load_fx_qualifying_blocks()
     findings = []
@@ -371,49 +488,22 @@ def scan() -> list:
         if path.suffix not in ('.php', '.html') or not path.is_file():
             continue
         src = path.read_text(encoding='utf-8', errors='replace')
-        for m in BLOCK_RE.finditer(src):
-            name, raw = m.group(1), m.group(2)
-            if not raw or name not in schemas:
-                continue
-            try:
-                attrs = json.loads(raw)
-            except json.JSONDecodeError:
-                continue
-            declared = schemas[name]
-            line = src[: m.start()].count('\n') + 1
-            rel = path.relative_to(REPO).as_posix()
-
-            block_supports = supports_map.get(name, {})
-
-            for style_key in find_dead_native_style(attrs, block_supports):
-                findings.append((rel, line, name, f'style.{style_key}', 'native-style-undeclared'))
-
-            for attr_key in find_dead_native_preset_attrs(attrs, block_supports, declared):
-                findings.append((rel, line, name, attr_key, 'native-preset-undeclared'))
-
-            for key, value in attrs.items():
-                if key in declared and is_shape_mismatch(declared[key], value):
-                    findings.append((rel, line, name, key, 'shape-mismatch'))
-                    continue
-                if is_legit(key, declared, name, fx_qualifying):
-                    continue
-                findings.append((rel, line, name, key, 'undeclared'))
+        rel = path.relative_to(REPO).as_posix()
+        findings.extend(scan_source(src, rel, schemas, specs, supports_map, fx_qualifying))
     return findings
 
 
 def compute_exit_code(findings: list, check: bool) -> int:
     """Gate logic, isolated from printing so it can be unit-tested directly.
 
-    Only `undeclared` and `shape-mismatch` are hard-gated (exit 1 under
-    `--check`). `native-style-undeclared` and `native-preset-undeclared` are
-    BOTH advisory-only (exit 0) — see the comment in main() for why."""
+    Only `undeclared`, `shape-mismatch` and `type-enum-mismatch` are hard-gated
+    (exit 1 under `--check`). `native-style-undeclared` and
+    `native-preset-undeclared` are BOTH advisory-only (exit 0) — see the
+    comment in main() for why."""
     if not check:
         return 0
-    undeclared = [f for f in findings if f[4] == 'undeclared']
-    shape = [f for f in findings if f[4] == 'shape-mismatch']
-    if undeclared or shape:
-        return 1
-    return 0
+    hard = ('undeclared', 'shape-mismatch', 'type-enum-mismatch')
+    return 1 if any(f[4] in hard for f in findings) else 0
 
 
 def main() -> int:
@@ -424,13 +514,15 @@ def main() -> int:
         return 0
     undeclared = [f for f in findings if f[4] == 'undeclared']
     shape = [f for f in findings if f[4] == 'shape-mismatch']
-    native_style = [f for f in findings if f[4] == 'native-style-undeclared']
+    type_enum = [f for f in findings if f[4] == 'type-enum-mismatch']
+    native_style =[f for f in findings if f[4] == 'native-style-undeclared']
     native_preset = [f for f in findings if f[4] == 'native-preset-undeclared']
     print(f'[dead-pattern-attrs] {len(findings)} EDITOR-INVISIBLE attribute(s) '
           f'({len(undeclared)} undeclared, {len(shape)} shape-mismatch, '
+          f'{len(type_enum)} type-enum-mismatch, '
           f'{len(native_style)} native-style-undeclared, '
           f'{len(native_preset)} native-preset-undeclared):\n')
-    for rel, line, name, key, kind in findings:
+    for rel, line, name, key, kind, *extra in findings:
         print(f'  {rel}:{line}')
         if kind == 'undeclared':
             print(f'      {name} -> "{key}" is not declared in its block.json — WP drops it from the '
@@ -440,6 +532,10 @@ def main() -> int:
         elif kind == 'shape-mismatch':
             print(f'      {name} -> "{key}" is declared type:"object" but the stored value is a '
                   f'scalar/list — WP coerces it to the default at render.\n')
+        elif kind == 'type-enum-mismatch':
+            print(f'      {name} -> "{key}" is declared {extra[0]} — WP coerces a value that '
+                  f'fails the block.json type/enum to the attribute default at render (e.g. '
+                  f'numeric "level":3 on sgs/heading renders the default h2).\n')
         elif kind == 'native-style-undeclared':
             print(f'      {name} -> "{key}" is a native WP style family this block\'s `supports` '
                   f'section does not declare at all — WP drops it from the EDITOR schema, but PHP '
@@ -475,7 +571,7 @@ def main() -> int:
 
 
 def self_test() -> int:
-    """Six controls, all in-memory/temp — never mutates real repo files.
+    """Ten controls, all in-memory/temp — never mutates real repo files.
 
     1. POSITIVE — a flat scalar against an object declaration MUST be flagged.
     2. NEGATIVE — a correctly-shaped object against the same declaration MUST NOT
@@ -599,6 +695,31 @@ def self_test() -> int:
                          f'native-preset-undeclared findings returned {exit_code}, expected 0 — '
                          f'the new advisory kind must never fail the build.')
 
+    # 10. TYPE/ENUM — driven through the real scan_source() with a synthetic
+    #     `sgs/heading`-shaped schema. A numeric level, an out-of-enum string, a
+    #     non-numeric integer and a boolean integer MUST fail; an in-enum string,
+    #     null, a real integer and a numeric-string integer MUST pass.
+    fx_specs = {'sgs/st-heading': {
+        'level': {'type': 'string', 'enum': ['h1', 'h2', 'h3'], 'default': 'h2'},
+        'count': {'type': 'integer'},
+    }}
+    fx_schemas = {'sgs/st-heading': {'level': 'string', 'count': 'integer'}}
+
+    def run_fixture(attrs_json: str) -> list:
+        markup = f'<!-- wp:sgs/st-heading {attrs_json} /-->'
+        return scan_source(markup, 'fixture.php', fx_schemas, fx_specs, {}, {})
+
+    for bad in ('{"level":3}', '{"level":"h9"}', '{"count":"abc"}', '{"count":true}'):
+        got = [f for f in run_fixture(bad) if f[4] == 'type-enum-mismatch']
+        if not got:
+            failures.append(f'TYPE-ENUM mustFlag control failed: {bad} was NOT flagged.')
+        elif compute_exit_code(got, check=True) != 1:
+            failures.append(f'TYPE-ENUM exit-code control failed: {bad} did not fail --check.')
+    for good in ('{"level":"h3"}', '{"level":null}', '{"count":3}', '{"count":"3"}', '{}'):
+        got = run_fixture(good)
+        if got:
+            failures.append(f'TYPE-ENUM mustNotFlag control failed: {good} was flagged: {got}.')
+
     if failures:
         print('[dead-pattern-attrs --self-test] FAILED:\n')
         for f in failures:
@@ -606,7 +727,7 @@ def self_test() -> int:
         return 1
 
     print('[dead-pattern-attrs --self-test] OK — positive, negative, and crash-guard '
-          'controls all behaved as expected.')
+          'controls all behaved as expected, incl. type/enum ("level":3 fails, "level":"h3" passes).')
     return 0
 
 

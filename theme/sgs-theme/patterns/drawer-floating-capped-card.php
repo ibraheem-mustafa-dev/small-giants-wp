@@ -6,7 +6,7 @@
  * Block Types: core/post-content
  * Post Types: sgs_drawer
  * Keywords: drawer, menu, panel, featured
- * Description: A small blurred card pinned near the trigger, capped at a comfortable reading width — not a full-viewport panel. Reference: a real-site corner-panel drawer.
+ * Description: A small blurred card pinned near the trigger, capped at a comfortable reading width, with the menu and the business phone number beneath it. Not a full-viewport panel. Reference: a real-site corner-panel drawer.
  *
  * @package SGS\Theme
  */
@@ -25,5 +25,5 @@
 ?>
 <!-- wp:sgs/nav-drawer {"anchor":{"desktop":"trigger"},"panelSize":{"desktop":"438px"},"surfaceOpacity":0.85,"surfaceBlur":"4px","closeStyle":"text-swap","drawerAlign":"left","drawerBg":"surface"} -->
 <!-- wp:sgs/nav-drawer-menu {"ref":0,"gap":"4px"} /-->
-<!-- wp:sgs/button {"label":"Get in touch"} /-->
+<!-- wp:sgs/business-info {"displayType":"phone"} /-->
 <!-- /wp:sgs/nav-drawer -->

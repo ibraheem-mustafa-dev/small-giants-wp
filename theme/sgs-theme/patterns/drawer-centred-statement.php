@@ -6,7 +6,7 @@
  * Block Types: core/post-content
  * Post Types: sgs_drawer
  * Keywords: drawer, menu, panel, featured
- * Description: An opaque full-screen panel with a large centred link list and a tertiary row underneath. Reference: a real-site centred-statement drawer.
+ * Description: An opaque full-screen panel with a large centred link list and the business phone number and email underneath, both read from Business Details. Reference: a real-site centred-statement drawer.
  *
  * @package SGS\Theme
  */
@@ -25,6 +25,6 @@
 ?>
 <!-- wp:sgs/nav-drawer {"drawerBg":"footer-bg","drawerAlign":"center","closeStyle":"separate-x"} -->
 <!-- wp:sgs/nav-drawer-menu {"ref":0,"gap":"4px","itemFontSize":{"desktop":56,"mobile":36}} /-->
-<!-- wp:sgs/icon-list /-->
-<!-- wp:sgs/button {"label":"Get started"} /-->
+<!-- wp:sgs/business-info {"displayType":"phone"} /-->
+<!-- wp:sgs/business-info {"displayType":"email"} /-->
 <!-- /wp:sgs/nav-drawer -->

@@ -18,7 +18,7 @@
 	<!-- wp:sgs/text {"text":"We combine strategic thinking with creative execution to help businesses grow. Our data-driven approach ensures measurable results every time.","textAlign":"center","textColour":"text-muted"} /-->
 
 	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"1fr 1fr 1fr","mobile":"1fr"},"gap":{"desktop":"var:preset|spacing|40"},"margin":{"top":"var:preset|spacing|50"}} -->
-		<!-- wp:sgs/container {"layout":{"type":"default"},"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}} -->
+		<!-- wp:sgs/container {"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}} -->
 			<!-- wp:sgs/heading {"content":"500+","textAlign":"center","level":"h3","textColour":"primary","fontSize":{"desktop":"hero"}} /-->
 			<!-- wp:sgs/text {"text":"Projects Completed","textAlign":"center","textColour":"text-muted","fontSize":{"desktop":"small"}} /-->
 		<!-- /wp:sgs/container -->

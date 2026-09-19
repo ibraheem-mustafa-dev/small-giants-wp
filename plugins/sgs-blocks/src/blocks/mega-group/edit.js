@@ -22,7 +22,7 @@ import { useBlockProps, useInnerBlocksProps } from '@wordpress/block-editor';
  * @return {JSX.Element} The block editor UI.
  */
 const TEMPLATE = [
-	[ 'sgs/heading', { level: 3 } ],
+	[ 'sgs/heading', { level: 'h3' } ],
 	[ 'sgs/icon-list', { heading: '' } ],
 ];
 

@@ -87,7 +87,7 @@ const TEMPLATE = [
 				'sgs/container',
 				{ className: 'sgs-site-footer__links', layout: { type: 'constrained' } },
 				[
-					[ 'sgs/heading', { level: 2 } ],
+					[ 'sgs/heading', { level: 'h2' } ],
 						[
 							'sgs/text',
 							{},
@@ -99,7 +99,7 @@ const TEMPLATE = [
 				'sgs/container',
 				{ className: 'sgs-site-footer__links', layout: { type: 'constrained' } },
 				[
-					[ 'sgs/heading', { level: 2 } ],
+					[ 'sgs/heading', { level: 'h2' } ],
 						[
 							'sgs/text',
 							{},
