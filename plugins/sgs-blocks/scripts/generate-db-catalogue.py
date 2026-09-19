@@ -3,20 +3,19 @@
 
 WHY THIS EXISTS
 ---------------
-Bean, 2026-08-23: "Cataloguing what each column in the tables is recording and what
-it means is just as important as cataloguing the scripts, as that is already filtered
-data that distinguishes the blocks and their attributes in meaningful ways."
+Cataloguing what each column in the tables is recording and what it means is just
+as important as cataloguing the scripts, as that is already filtered data that
+distinguishes the blocks and their attributes in meaningful ways.
 
-The payoff is measurable: `block_attributes.role` covers 99.8% of 3,166 rows with 34
-values, and joining it to `roles.classification` collapses those into a clean
+The payoff is measurable: `block_attributes.role` covers nearly every row with a few
+dozen values, and joining it to `roles.classification` collapses those into a clean
 content-vs-styling fork. Nobody can use that if nobody knows the column exists.
 
 THE SPLIT — measurable vs meaningful
 ------------------------------------
 Everything that CHANGES on a reseed is GENERATED and never hand-written: row counts,
 column lists, NULL rates, distinct-value vocabularies with counts. Those are exactly
-the figures this repo has watched rot in prose repeatedly (the CLAUDE.md stage count
-drifted three times; a spec-roster cell was three specs wrong within a fortnight).
+the figures that rot when written in prose.
 
 What a column MEANS cannot be derived from the data, so it lives in COLUMN_MEANING
 below — small, stable, hand-curated. It is deliberately PARTIAL: a column with no
@@ -49,9 +48,9 @@ PRIORITY = [
     "blocks", "block_attributes", "block_composition", "block_capabilities",
     "block_supports", "property_suffixes", "slots", "roles", "variant_slots",
     "preset_implications", "fx_effects",
-    # The five other tables traced on 2026-08-24. Without them their COLUMN_MEANING
-    # entries render NOWHERE - the catalogue would hold the findings and show none
-    # of them, which is the exact written-never-read defect this catalogue exposes.
+    # Further tables that carry COLUMN_MEANING entries. Without them listed here
+    # their entries render NOWHERE - the catalogue would hold the findings and show
+    # none of them, which is the written-never-read defect this catalogue exposes.
     "array_item_schema", "design_tokens", "block_selectors", "animation_tokens",
     "schema_metadata",
 ]
@@ -65,10 +64,8 @@ VOCAB_COLUMNS = {
     "inspector_control_type", "emit_shape", "scope", "presence", "kind_override",
 }
 
-# RETIRED 2026-08-24 (migrations/2026-08-24-drop-fossil-columns.py): the entries for
-# block_attributes.signature_confidence, blocks.grade and blocks.grade_score were
-# removed with the columns. equivalent_implementations is NOT retired — it has a
-# live writer at uimax-tools/enrich-db.py:306; dormant is not dead.
+# equivalent_implementations has a live writer (uimax-tools/enrich-db.py);
+# dormant is not dead.
 COLUMN_MEANING = {
     ("block_attributes", "role"): "What KIND of thing the attribute is — the single best attribute classifier here. A gate (db-consistency/check_orphan_roles.py) fails the build if a value has no `roles` row, so it cannot rot quietly.",
     ("block_attributes", "css_property"): "The CSS longhand(s) this attribute writes. WARNING: a NULL means TWO different things — for a painting role it is a real gap; for `text-content`/`content`/`boolean-visibility` it is correct by design (100% NULL, they do not paint). Condition on `role` before reading a NULL as a defect.",
@@ -97,9 +94,8 @@ COLUMN_MEANING = {
     ("variant_slots", "unique_slot"): "The slot ONLY this variant has — the discriminator, computed by set-difference against the block's other variants.",
     ("preset_implications", "is_neutral"): "Marks preset values that genuinely imply nothing (`none`, `flat`), so the converter can tell 'no styling' from 'not set'.",
 
-    # --- Traced 2026-08-24. Every entry below was followed to executing
-    # --- code, never to a docstring. FOSSIL = written, read by nothing
-    # --- operational. See decisions.md D762.
+    # --- Every entry below was followed to executing code, never to a
+    # --- docstring. FOSSIL = written, read by nothing operational.
     ("fx_effects", "requires"): "What an effect needs from a block (text/svg/svg-subtree/section/item-set/track/surface/image/none). LIVE — generate-fx-qualifying-blocks.py:750-780 matches it against each block's provision. The value none is real, meaning any block qualifies — NOT a null-substitute. The svg vs svg-subtree split (2026-07-31) exists because under-specifying here once offered MorphSVG on blocks carrying only a background SVG.",
     ("fx_effects", "scope"): "Gates which effects are considered at all — generate-fx-qualifying-blocks.py:780 filters scope IN (block, element). A live reader, not a label.",
     ("fx_effects", "in_picker"): "Whether the effect appears in the generic FX picker. Two-way gated against fx.js SHIPPED_EFFECTS by check-fx-list-drift.py:486-503, so it cannot rot quietly.",
@@ -139,12 +135,10 @@ COLUMN_MEANING = {
 }
 
 
-# Per-ROW meanings for KEY-VALUE shaped tables. These were originally written into
-# COLUMN_MEANING keyed on a row key rather than a column name, so the renderer -
-# which looks up (table, column) from PRAGMA table_info - never matched them and
-# they rendered NOWHERE. Verified 2026-08-24: zero occurrences in the generated
-# dev-setup.md, including the wp_version root cause. Written, never read - the same
-# defect class this catalogue exists to expose. They now render as their own table.
+# Per-ROW meanings for KEY-VALUE shaped tables. They are keyed on a row key rather
+# than a column name, so they cannot live in COLUMN_MEANING: the renderer looks up
+# (table, column) from PRAGMA table_info and would never match them. They render
+# as their own table.
 ROW_KEY_MEANING = {
     ("schema_metadata", "wp_version_indexed"): "STALE BY CONSTRUCTION, not by neglect. Stage 2 writes whatever --wp-version holds, and that flag defaults to WP_VERSION_DEFAULT = 7.0, a hardcoded literal at sgs-update-v2.py:97 never bumped after the canary moved to 7.1 on 2026-08-20. Every full run therefore RE-ASSERTS the wrong value. The one mechanism that would catch it (stage_8_drift_gate) does run, does compare against the live site, and only prints — its own TODO to wire it into a deploy hook is unactioned, and grep confirms nothing outside sgs-update-v2.py calls it. Verified 2026-08-24.",
     ("schema_metadata", "last_full_refresh_ts"): "Write-only audit timestamp — no reader anywhere. Useful to a human asking when this last ran. Written None in dry-run mode (sgs-update-v2.py:3885), so NULL distinguishes dry-run-only from never-ran.",
@@ -243,7 +237,7 @@ def build(con) -> str:
             out.append("| `%s` | %s | %s | %s |" % (name, ctype or "?", pct, cell))
         out.append("")
         # KEY-VALUE tables carry their meaning per ROW, not per column. Emit those
-        # too, or the notes are unreachable — they were, until 2026-08-24.
+        # too, or the notes are unreachable.
         row_keys = sorted(k for (tbl, k) in ROW_KEY_MEANING if tbl == t)
         if row_keys:
             out.append("Row keys (this table is key-value shaped):")

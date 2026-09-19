@@ -1,19 +1,18 @@
 /**
  * ResponsiveBoxControls — Spec 37 FR-37-16 per-device spacing + width panel.
  *
- * The shared inspector panel for the header/footer/nav row blocks
- * (site-header-row / site-footer-row / nav-menu — sgs/adaptive-nav, the third
- * block this comment used to name, was retired/deleted at FR-37-21/D362,
- * 2026-07-22). Edits padding, margin, max-width and content-width on the ONE
+ * The shared inspector panel for blocks that mount the ONE box object model
+ * (e.g. sgs/gallery; sgs/site-header-row and sgs/site-footer-row keep local
+ * copies of the same controls inside their own Layout panels). Edits
+ * padding, margin, max-width and content-width on the ONE
  * `{desktop,tablet,mobile}` object model (Spec 37 FR-37-16) via the SGS-owned
  * `ResponsiveOverride` device switcher — padding/margin through WP's native
  * `BoxControl` (4 sides), max-width through `UnitControl`, content-width
  * through a token `SelectControl`.
  *
- * Replaces the legacy `ResponsiveSpacingPanel` (flat `paddingTopTablet…` attrs +
- * WP-native `style.spacing` base). ONE system: these blocks declare NO
- * `supports.spacing`, so all box CSS flows through the object model here →
- * emitted by `SGS_Container_Wrapper` (padding/margin/max-width to the outer,
+ * ONE system, no flat `paddingTopTablet…` attrs and no WP-native
+ * `style.spacing` base: these blocks declare NO `supports.spacing`, so all
+ * box CSS flows through the object model here → emitted by `SGS_Container_Wrapper` (padding/margin/max-width to the outer,
  * content-width band to the inner) under `responsive_model=object`.
  *
  * Per-side inheritance is handled by the PHP emitter (`sgs_responsive_normalise_object`
@@ -86,11 +85,10 @@ export default function ResponsiveBoxControls( {
 			     BoxControl. Core's BoxControl renders its label UNCONDITIONALLY via
 			     <BaseControl.VisualLabel> and has no hideLabelFromVision handling at
 			     all — verified in core source at the SHA WP 7.0.4 pins
-			     (packages/components/src/box-control/index.tsx). So the prop was a
-			     no-op and BOTH labels painted: the wrapper's plain <span> in sentence
-			     case, and BoxControl's own in WP's uppercase styling. Keep
-			     BoxControl's — it is the one BaseControl associates with the inputs.
-			     Measured 2026-08-13: 8 sites tree-wide had this exact defect. */ }
+			     (packages/components/src/box-control/index.tsx). So the prop is a
+			     no-op and BOTH labels would paint: the wrapper's plain <span> in
+			     sentence case, and BoxControl's own in WP's uppercase styling. Keep
+			     BoxControl's — it is the one BaseControl associates with the inputs. */ }
 			<ResponsiveOverride
 				value={ padding }
 				onChange={ ( obj ) => setAttributes( { padding: obj } ) }

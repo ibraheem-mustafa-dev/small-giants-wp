@@ -58,9 +58,9 @@ if ( ! function_exists( 'SGS\Theme\sgs_generate_palette' ) ) {
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-blocks.php';
 require_once SGS_BLOCKS_PATH . 'includes/block-categories.php';
 
-// Content-derived ?ver for this plugin's assets. Block versions are frozen
-// (D293), so a block's CSS URL never changes while its content does — and the
-// CDN caches it for 7 days. Read the header of this file before touching it.
+// Content-derived ?ver for this plugin's assets. Block versions are frozen,
+// so a block's CSS URL never changes while its content does — and the CDN
+// caches it for 7 days. Read the header of this file before touching it.
 require_once SGS_BLOCKS_PATH . 'includes/asset-cache-busting.php';
 
 // Form processing classes.
@@ -68,22 +68,17 @@ require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-activator.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-processor.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-upload.php';
 // Must load before class-form-rest-api.php — that file's route registration
-// references Form_REST_Submission::class as its REST callback. This require
-// was missing entirely (confirmed absent from every commit in this file's
-// git history via `git log -S`), so WordPress could register the /submit
-// route but never actually DISPATCH it — every live submission attempt
-// returned a bare 500 rest_invalid_handler, with nothing in any PHP error
-// log (WordPress's REST dispatcher fails the is_callable() check silently).
-// Found live during Phase 1 QA; confirmed unrelated to Phase 1's own changes
-// via `git log -S"class-form-rest-submission" -- sgs-blocks.php` (zero hits,
-// ever) and by manually require()-ing the file, which made the class load
-// and the exact same REST request succeed immediately.
+// references Form_REST_Submission::class as its REST callback. Without this
+// require WordPress registers the /submit route but cannot DISPATCH it —
+// every submission attempt returns a bare 500 rest_invalid_handler, with
+// nothing in any PHP error log (WordPress's REST dispatcher fails the
+// is_callable() check silently).
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-rest-submission.php';
-// Same D1079 shape, found by the new scripts/check-rest-route-require.py
-// detector's first live --survey (2026-09-15): Form_REST_Upload::handle_upload
-// (/sgs-forms/v1/upload) and every Form_REST_Admin method (/submissions,
-// /submissions/{id}, /submissions/export) were ALSO never require'd. Both
-// confirmed unloadable live (class_exists() false) before this fix.
+// Same shape: Form_REST_Upload::handle_upload (/sgs-forms/v1/upload) and every
+// Form_REST_Admin method (/submissions, /submissions/{id}, /submissions/export)
+// are REST callbacks too, so both classes must be require'd before route
+// registration. scripts/check-rest-route-require.py flags a REST callback class
+// that is never loaded.
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-rest-upload.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-rest-admin.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-rest-api.php';
@@ -123,13 +118,13 @@ require_once SGS_BLOCKS_PATH . 'includes/configurator-asset-optimiser.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-configurator-meta.php';
 Configurator_Meta::register();
 
-// Configurator — product-level value-ladder authoring fields (Wave-2 #1/#9).
+// Configurator — product-level value-ladder authoring fields.
 // Self-hooks woocommerce_product_options_general_product_data + the save handler
 // (delegates to Configurator_Meta::save_product_fields). No-op without WooCommerce.
 require_once SGS_BLOCKS_PATH . 'includes/configurator-product-fields.php';
 
 // Demand Analytics — privacy-safe aggregate counter for unbuyable combos
-// (Spec 27 Phase-2 Step 7). REST endpoint POST /sgs/v1/demand/attempt +
+// (Spec 27). REST endpoint POST /sgs/v1/demand/attempt +
 // admin meta-box on product edit screen. ZERO PII stored.
 require_once SGS_BLOCKS_PATH . 'includes/class-demand-analytics.php';
 Demand_Analytics::register();
@@ -139,7 +134,7 @@ Demand_Analytics::register();
 require_once SGS_BLOCKS_PATH . 'includes/class-turnstile.php';
 Turnstile::register();
 
-// Stock Notify — back-in-stock email capture (Spec 30 Step 10).
+// Stock Notify — back-in-stock email capture (Spec 30).
 // REST endpoint POST /sgs/v1/notify/subscribe + product edit-screen meta-box.
 // Stores ONLY email + timestamp — no IP ever persisted.
 require_once SGS_BLOCKS_PATH . 'includes/class-stock-notify.php';
@@ -248,7 +243,7 @@ Trustpilot\Trustpilot_REST::register();
 Trustpilot\Trustpilot_Cron::register();
 Trustpilot\Trustpilot_Settings::register();
 
-// Image Sequence block — "Verify frames" REST endpoint (Step 16, Motion Wave D).
+// Image Sequence block — "Verify frames" REST endpoint (Spec 38).
 require_once SGS_BLOCKS_PATH . 'includes/class-image-sequence-verify.php';
 Image_Sequence_Verify::register();
 
@@ -264,20 +259,14 @@ new Font_Collection();
 // Register REST API endpoints.
 Forms\Form_REST_API::register();
 
-// Lucide Icons REST bridge DELETED 2026-08-06. It guarded on
-// `wp_register_icon_collection()`, which does not exist and will not: WP 7.0's
-// icon registry (wp-includes/class-wp-icons-registry.php) is deliberately CLOSED
-// to third parties — "For 7.0, the Icons Registry is closed for third-party icon
-// registry", enforced by a protected constructor + protected register() and a
-// hardcoded core-only manifest. There is no filter, action or global function to
-// register through, and WP_REST_Icons_Controller only reads a registry it does
-// not own. The bridge was therefore a permanent no-op carrying a TODO that could
-// never be actioned. `sgs_get_lucide_icon()` in lucide-icons.php is UNAFFECTED
-// and remains the supported path — 17 block render.php files call it.
+// No Lucide icon REST bridge is registered: WP 7.0's icon registry
+// (wp-includes/class-wp-icons-registry.php) is deliberately CLOSED to third
+// parties (protected constructor + protected register(), hardcoded core-only
+// manifest), with no filter, action or global function to register through.
+// `sgs_get_lucide_icon()` in lucide-icons.php is the supported path.
 
-// Variation activation REST + WP style-variation picker DELETED 2026-05-22
-// (Phase 5a Decision 18). Per-site branding now flows through the per-site
-// theme.json snapshot at sites/<client>/theme-snapshot.json pushed via
+// Per-site branding flows through the per-site theme.json snapshot at
+// sites/<client>/theme-snapshot.json, pushed via
 // plugins/sgs-blocks/scripts/push-theme-snapshot.py — no theme_mod, no REST.
 
 // Register admin settings page (webhook URL + submissions viewer).
@@ -287,7 +276,7 @@ Forms\Form_Admin::register();
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-admin-menu.php';
 Sgs_Admin_Menu::register();
 
-// SGS Site Info — public store + admin settings page (FR-S4-3) + Wave 2.5 split notices class.
+// SGS Site Info — public store + admin settings page (FR-S4-3) + split notices class.
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-site-info.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-site-info-admin-fields.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-site-info-admin-notices.php';
@@ -297,12 +286,11 @@ require_once SGS_BLOCKS_PATH . 'includes/class-sgs-site-info-rest.php';
 Sgs_Site_Info::register();
 Sgs_Site_Info_Admin::register();
 // Tier-1 pipeline business-info sync — capability-gated remote write endpoint
-// (POST /sgs/v1/site-info, fill-if-empty). D325.
+// (POST /sgs/v1/site-info, fill-if-empty).
 Sgs_Site_Info_Rest::register();
-// FR-S9-10 (D325): boot the sgs/site-info block-bindings source so header/footer
+// FR-S9-10: boot the sgs/site-info block-bindings source so header/footer
 // paragraphs bound to copyright/tagline/socials/contact resolve on the frontend.
-// Was never wired (the class documented "Call this from the main plugin file" but
-// nothing did) — the sgs/site-footer pattern is the first consumer that surfaced it.
+// The class does not self-register; this call is what wires it.
 Sgs_Site_Info_Binding::register();
 
 // Block bindings support — widens WP core's hardcoded metadata.bindings
@@ -333,7 +321,7 @@ require_once SGS_BLOCKS_PATH . 'includes/class-sgs-header-rules-admin.php';
 Sgs_Header_Rules::register();
 Sgs_Header_Rules_Admin::register();
 
-// SGS header behaviours (F1+F2+F4, Phase 2A) — class injector + asset enqueuer.
+// SGS header behaviours (F1+F2+F4) — class injector + asset enqueuer.
 // Must load after Sgs_Header_Rules::register() so the sgs_header_rule_resolved filter point exists.
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-header-behaviours.php';
 Sgs_Header_Behaviours::register();
@@ -344,21 +332,15 @@ require_once SGS_BLOCKS_PATH . 'includes/class-sgs-footer-rules-admin.php';
 Sgs_Footer_Rules::register();
 Sgs_Footer_Rules_Admin::register();
 
-// SGS Motion Diagnostics (Step 18/19, Spec 38, D448) — admin-only support
+// SGS Motion Diagnostics (Spec 38) — admin-only support
 // surface: which motion effects a page shipped, their byte cost against the
 // Spec 02 per-page budget, and which effects were skipped (and why) —
 // without SSH or WP_DEBUG. Never loaded on the frontend request path.
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-motion-diagnostics.php';
-// Serves the measurement above to the editor. `extensions/fx.js` has requested
-// this route since it was written; nothing registered it, so every editor load
-// 404'd. Must load AFTER the diagnostics class it calls.
+// Serves the measurement above to the editor (`extensions/fx.js` requests this
+// route). Must load AFTER the diagnostics class it calls.
 require_once SGS_BLOCKS_PATH . 'includes/rest-motion-budget.php';
 Sgs_Motion_Diagnostics::register();
-
-// SGS style variation picker DELETED 2026-05-22 (Phase 5a Decision 18).
-// class-sgs-variation-picker.php + class-sgs-legacy-theme-mod-migrator.php
-// archived at plugins/sgs-blocks/_retired/. WP style variations are no longer
-// the per-site branding mechanism — see push-theme-snapshot.py instead.
 
 // SGS template-part resetter (FR-S2-3) — admin button + public helper for FR-S5-3 CLI wrap.
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-template-part-resetter.php';
@@ -387,11 +369,10 @@ Sgs_Active_Layout_Admin::register();
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-header-footer-starter-seeder.php';
 register_activation_hook( __FILE__, array( Sgs_Header_Footer_Starter_Seeder::class, 'seed_all' ) );
 
-// SGS "_sgs_is_default" post meta (sgs_modal only — sgs_header/sgs_footer
-// coverage was removed the same day, 2026-09-17, once confirmed duplicate of
-// Sgs_Active_Layout's existing "Active" pointer, see class-sgs-cpt-default-meta.php)
-// + the read-only "Used by" list-table column (sgs_header/sgs_footer/sgs_drawer/
-// sgs_modal/sgs_form/sgs_choice_flow), client build 2026-09-17. Loaded after
+// SGS "_sgs_is_default" post meta (sgs_modal only — sgs_header/sgs_footer are
+// covered by Sgs_Active_Layout's "Active" pointer, see
+// class-sgs-cpt-default-meta.php) + the read-only "Used by" list-table column
+// (sgs_header/sgs_footer/sgs_drawer/sgs_modal/sgs_form/sgs_choice_flow). Loaded after
 // the CPTs + Active-layout + rules engines because both classes below read
 // Sgs_Block_CPTs' post-type constants and, for the usage column, resolve
 // against Sgs_Header_Rules / Sgs_Footer_Rules / Sgs_Active_Layout at render
@@ -402,7 +383,7 @@ require_once SGS_BLOCKS_PATH . 'includes/class-sgs-cpt-usage-columns.php';
 Sgs_Cpt_Default_Meta::register();
 Sgs_Cpt_Usage_Columns::register();
 
-// SGS Active menu-drawer render path (W2-a, merged Spec 36+37 Wave 2) — the drawer
+// SGS Active menu-drawer render path (Spec 36 + 37) — the drawer
 // has no core/template-part slot to intercept, so it renders on wp_footer instead
 // of via pre_render_block. Loaded after Sgs_Active_Layout because every read
 // resolves through it. Emits NOTHING when no Active drawer pointer is set, so this
@@ -480,16 +461,14 @@ register_deactivation_hook(
 	}
 );
 
-// SGS Floating UI — Customiser controls + frontend renderer (replaces retired back-to-top + reading-progress blocks).
+// SGS Floating UI — Customiser controls + frontend renderer (back-to-top + reading-progress).
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-floating-ui-customiser.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-floating-ui-renderer.php';
 Sgs_Floating_UI_Customiser::register();
 Sgs_Floating_UI_Renderer::register();
 
-// SGS AI Connector — wrapper around WP 7.0 native AI Connectors API (Phase 7, Decision 26).
+// SGS AI Connector — wrapper around WP 7.0 native AI Connectors API.
 // Infrastructure-only: no AI calls. Safe-fail when no provider plugin is active.
-// API surface verified 2026-05-22 against developer.wordpress.org/reference/functions/
-// (wp_get_connector, wp_get_connectors, wp_is_connector_registered all return HTTP 200).
 // The function_exists() guard means the class is also safe to load on WP <7.0 (every
 // method returns a safe empty/false/WP_Error value), so we load unconditionally and
 // rely on the in-class guards rather than a separate is_wp_7_or_later() check.
@@ -498,10 +477,9 @@ if ( function_exists( 'wp_get_connector' ) ) {
 	add_action( 'wp_connectors_init', array( Sgs_Ai_Connector::class, 'on_connectors_init' ) );
 }
 
-// SGS Site Info Customiser — Phase 5b (Decision 21) — live preview of the shared Site Info store.
-// The Header/Footer Customiser + Renderer classes were RETIRED 2026-07-14 (D330 Task 2b):
-// header/footer editing is the Site Editor (block controls + FR-S9-9 behaviour toggles), not the
-// Customiser (Bean D329 "one home"). class-sgs-customiser-info-control.php extends
+// SGS Site Info Customiser — live preview of the shared Site Info store.
+// Header/footer editing lives in the Site Editor (block controls + FR-S9-9 behaviour toggles),
+// not the Customiser. class-sgs-customiser-info-control.php extends
 // WP_Customize_Control (admin/customise-only) — loaded lazily inside customize_register (priority 1)
 // so it never fatals on the frontend; Sgs_Site_Info_Customiser still depends on it.
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-site-info-customiser.php';
@@ -514,8 +492,7 @@ add_action(
 );
 Sgs_Site_Info_Customiser::register();
 
-// Phase 5b Decision 27 — wire View Transitions into Customiser navigation.
-// WP 7.0+ native API; WP 6.x fallback retired 2026-05-22 (all clients on WP 7.0+).
+// Wire View Transitions into Customiser navigation (WP 7.0+ native API).
 add_action(
 	'customize_controls_enqueue_scripts',
 	function () {
@@ -557,15 +534,14 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 	// tree. The class is fully area-parameterised (it resolves the option key and
 	// post type through Sgs_Active_Layout), so the drawer instance needs ZERO new
 	// command logic — `set-active`, `clear-active`, `list` and `seed-starter` all
-	// work as soon as the area token maps (W2-a).
+	// work as soon as the area token maps.
 	require_once SGS_BLOCKS_PATH . 'includes/class-sgs-header-footer-cli-commands.php';
 	\WP_CLI::add_command( 'sgs header', new Sgs_Header_Footer_Cli_Commands( Sgs_Active_Layout::AREA_HEADER ) );
 	\WP_CLI::add_command( 'sgs footer', new Sgs_Header_Footer_Cli_Commands( Sgs_Active_Layout::AREA_FOOTER ) );
 	\WP_CLI::add_command( 'sgs drawer', new Sgs_Header_Footer_Cli_Commands( Sgs_Active_Layout::AREA_DRAWER ) );
 
 	// Orphaned colour-token discovery (companion to the sgs_colour_value() currentColor
-	// fallback in helpers-tokens.php) — see
-	// .claude/reports/2026-09-12-nav-menu-wave2-cluster5-architecture-solutions.md.
+	// fallback in helpers-tokens.php).
 	require_once SGS_BLOCKS_PATH . 'includes/class-sgs-colour-audit-cli-commands.php';
 	\WP_CLI::add_command( 'sgs audit-colour-tokens', Sgs_Colour_Audit_Cli_Commands::class );
 }

@@ -21,19 +21,18 @@ Usage examples:
 Guards (per spec):
     - Refuses to deploy when a file that SHIPS AND EXECUTES is uncommitted, unless
       --allow-dirty (see deployed_dirty_files() — scoped on purpose; a repo-wide
-      dirty check is always true here, so it was bypassed every run and protected
-      nothing)
+      dirty check is always true on a shared worktree, so it would be bypassed
+      every run and protect nothing)
     - Post-deploy smoke test runs BY DEFAULT and ABORTS on a 5xx or a WordPress
-      fatal (opt out with --skip-verify)
-    - sandybrown is currently the ONLY target; a target flagged
-      explicit_opt_in_required must be named with --target before it will deploy
+      fatal (opt out with --skip-verify). Verify defaults on and fails closed
+      because a deploy of an unfinished edit that reports [DONE] is how a PHP
+      fatal reaches live sites unnoticed.
+    - The default target is sandybrown; the other TARGETS entries
+      (indus-test, eye-care-test) are flagged explicit_opt_in_required and must
+      be named with --target before they will deploy
     - Refuses to deploy if plugins/sgs-blocks/build/ is missing after build step
-
-Both guards were hardened on 2026-07-14 after an unfinished, uncommitted edit was
-deployed to BOTH live client sites and took them down with a PHP fatal for ~2.5
-hours. All three safety mechanisms were inert at the time: the dirty gate was
-bypassed by a permanently-dirty repo, verify was opt-in, and verify could only
-warn — so the deploy that broke both sites reported [DONE].
+    - Never hand-roll tar/scp: the remote step swaps directories with a .bak
+      rotation so a failed extract leaves something to roll back to.
 
 R-22-9 universal: hostnames and remote WP paths live in TARGETS dict — add a new
 client by adding a single dict entry; no code changes needed elsewhere.
@@ -57,28 +56,26 @@ sys.stdout.reconfigure(encoding="utf-8")
 # ---------------------------------------------------------------------------
 # Targets — extend here to add a new client deploy destination.
 # ---------------------------------------------------------------------------
-# palestine-lives.org was REMOVED 2026-08-10: the site no longer exists (Bean).
-# It is deliberately not kept "just in case" — this script's remote step does
+# Only live hosts belong here. This script's remote step does
 # `rm -rf $WP/plugins/sgs-blocks.bak` and moves directories around inside
 # `wp_content`, so a target pointing at a host that is gone (or, worse, at a
-# hostname someone else later owns) is a live hazard, and D336 is this project's
-# own record of deploy tooling taking two client sites down for ~2.5h.
-# Adding a real client back is one dict entry, per R-22-9 above.
+# hostname someone else later owns) is a live hazard.
+# Adding a target is one dict entry, per R-22-9 above.
 TARGETS = {
     "sandybrown": {
         "host": "sandybrown-nightingale-600381.hostingersite.com",
         "wp_content": "domains/sandybrown-nightingale-600381.hostingersite.com/public_html/wp-content",
         "explicit_opt_in_required": False,
     },
-    # Dedicated Indus Foods test site (2026-09-19) — created specifically to avoid
-    # sandybrown's single global active-header/footer/theme-snapshot pointer, which
-    # would have un-rendered Mama's Munches sitewide the moment Indus content went live.
+    # Dedicated Indus Foods test site — separate from sandybrown because
+    # sandybrown has a single global active-header/footer/theme-snapshot pointer,
+    # so Indus content there would un-render Mama's Munches sitewide.
     "indus-test": {
         "host": "lavender-dinosaur-183533.hostingersite.com",
         "wp_content": "domains/lavender-dinosaur-183533.hostingersite.com/public_html/wp-content",
         "explicit_opt_in_required": True,
     },
-    # Dedicated Eye Care Birmingham test site (2026-09-19) — sgs-theme + sgs-blocks +
+    # Dedicated Eye Care Birmingham test site — sgs-theme + sgs-blocks +
     # WooCommerce, so deploy-and-verify clone runs of the Eye Care draft are checked on a
     # real rendered page without touching sandybrown's global active-header/footer/
     # theme-snapshot pointers. Credentials: .claude/secrets/eye-care-test.env (gitignored).
@@ -100,28 +97,21 @@ BUILD_DIR = PLUGIN_DIR / "build"
 # `composer.phar` is GITIGNORED (only a developer's primary clone has a copy that
 # was hand-downloaded once). REPO_ROOT here is *this checkout's* root — in a git
 # worktree (e.g. `.claude/worktrees/wave-deploy`) or a fresh clone/CI checkout that
-# is a directory that never had the phar dropped into it, so the old hardcoded
-# `REPO_ROOT / "composer.phar"` pointed at a file that simply does not exist there.
-# composer_dump_autoload() then failed, and it is SUPPOSED to fail closed rather
-# than skip the dev-package purge (see its docstring + D849) — but "fails closed"
-# should mean "refuses to deploy with a useful message", not "cannot run at all
-# from a worktree". Hit for real 2026-08-27 working from `wave-deploy`; worked
-# around by hand-copying the phar, which is not repeatable for the next session
-# or for CI. `resolve_composer()` below is the fix: try every real location, in
-# order, and only fail once none of them work.
+# is a directory that never had the phar dropped into it, so
+# `REPO_ROOT / "composer.phar"` alone points at a file that does not exist there.
+# composer_dump_autoload() is SUPPOSED to fail closed rather than skip the
+# dev-package purge (see its docstring) — but "fails closed" should mean
+# "refuses to deploy with a useful message", not "cannot run at all from a
+# worktree". `resolve_composer()` below tries every real location, in order,
+# and only fails once none of them work.
 COMPOSER_PHAR = REPO_ROOT / "composer.phar"
 TARBALL_NAME = "sgs-deploy.tar"
-# Ceiling for the packaged tarball. MEASURED, not guessed. A blocks-only deploy on
-# 2026-08-27 was 114.4MB pre-exclusion (scripts/ 43MB dev tooling, vendor/ ~40MB of
-# which ~34MB was PHPStan/PHPUnit-only Composer dev packages, pipeline-state/tests/
-# caches ~3MB). scripts/, the dev-only vendor packages (proven via composer's own
-# `dev-package-names` list -- see TAR_EXCLUDES) and the test/pipeline residue were
-# excluded the same day once each was proven unreferenced by any runtime PHP path
-# (see the TAR_EXCLUDES comments for the grep evidence). Re-measured after: the SAME
-# blocks-only tarball is now 28.6MB; theme/sgs-theme/ adds ~2.1MB on a full deploy.
-# 45MB sits above the ~31MB combined real baseline (same ~1.4x margin the previous
-# 150MB ceiling held over its own 113MB baseline) and still catches the case this
-# guard exists for -- a stray untracked tree landing inside the plugin/theme dir.
+# Ceiling for the packaged tarball. MEASURED, not guessed. With scripts/, the
+# dev-only vendor packages (per composer's own `dev-package-names` list -- see
+# TAR_EXCLUDES) and the test/pipeline residue excluded, a blocks-only tarball is
+# ~28.6MB and theme/sgs-theme/ adds ~2.1MB on a full deploy. 45MB sits above the
+# ~31MB combined baseline (~1.4x margin) and still catches the case this guard
+# exists for -- a stray untracked tree landing inside the plugin/theme dir.
 # ⚠ Raise this ONLY after measuring, and say what grew.
 TARBALL_MAX_MB = 45
 
@@ -143,42 +133,40 @@ TAR_EXCLUDES = [
     "*.pyc",
     "__pycache__",
     # Third-party reference checkouts + scratch output that sit INSIDE the plugin
-    # dir without being part of it (2026-08-27). Both were UNTRACKED, and an
-    # untracked file is invisible to deployed_dirty_files() -- which reads tracked
-    # files from `git status` -- while being perfectly visible to tar. 278MB of a
-    # competitor's GPL source would have landed web-accessible inside the live
-    # plugin directory. Proven with a controlled tar test, not inferred: the
-    # existing "plugins/sgs-blocks/src" pattern is PATH-ANCHORED and so does NOT
-    # match "plugins/sgs-blocks/stackable/src".
+    # dir without being part of it. They are UNTRACKED, and an untracked file is
+    # invisible to deployed_dirty_files() -- which reads tracked files from
+    # `git status` -- while being perfectly visible to tar, so without these
+    # excludes a competitor's GPL source would land web-accessible inside the
+    # live plugin directory. The "plugins/sgs-blocks/src" pattern is
+    # PATH-ANCHORED and so does NOT match "plugins/sgs-blocks/stackable/src".
     "plugins/sgs-blocks/stackable",
     "plugins/sgs-blocks/now.tmp.json",
-    # --- dev-tooling / build-residue exclusions (2026-08-27) ---------------
-    # PROVEN unused at runtime before adding, not assumed: grepped includes/,
-    # src/ and sgs-blocks.php for any require/include/plugin_dir_path reach
-    # into these paths -- zero hits (only human-facing comments/error-message
-    # strings MENTION "scripts/generate-*.py" as instructions for a developer
-    # to re-run by hand; none of them execute it). The `wp sgs` CLI command
+    # --- dev-tooling / build-residue exclusions ----------------------------
+    # None of these paths is reached at runtime: includes/, src/ and
+    # sgs-blocks.php contain no require/include/plugin_dir_path reach into them
+    # (only human-facing comments/error-message strings MENTION
+    # "scripts/generate-*.py" as instructions for a developer to re-run by
+    # hand; none of them execute it). The `wp sgs` CLI command
     # tree (`WP_CLI::add_command`) is registered from includes/class-sgs-cli-
     # commands.php and includes/class-sgs-header-footer-cli-commands.php --
     # i.e. INSIDE includes/, never scripts/ -- so excluding scripts/ does not
     # remove any WP-CLI command the site exposes.
     "plugins/sgs-blocks/scripts",
     # Pipeline run artefacts, Python/PHP test residue -- none read by
-    # render.php/includes/src at runtime (grepped, zero hits). tests/ was
-    # already exempted from the DIRTY-file gate below as "ships but never
-    # executes"; now it does not ship at all.
+    # render.php/includes/src at runtime. tests/ is also exempt from the
+    # DIRTY-file gate below because it never executes on the site.
     "plugins/sgs-blocks/pipeline-state",
     "plugins/sgs-blocks/tests",
     "plugins/sgs-blocks/.pytest_cache",
     "plugins/sgs-blocks/.ruff_cache",
     "plugins/sgs-blocks/.phpunit.cache",
-    # --- vendor/: dev-only Composer packages (2026-08-27) -------------------
+    # --- vendor/: dev-only Composer packages -------------------------------
     # `vendor/autoload.php` IS required unconditionally at plugin bootstrap
-    # (sgs-blocks.php lines 23-24/49-50) -- vendor/ as a whole is NOT excluded,
+    # (sgs-blocks.php) -- vendor/ as a whole is NOT excluded,
     # that would break the live site. But `composer.json`'s `require-dev` (PHPStan
     # + PHPUnit + the WordPress stub/test toolchain) pulls ~40MB of packages that
     # exist only to support local static analysis and tests, never loaded by any
-    # PHP that runs on a request. PROVEN, not inferred: composer itself computed
+    # PHP that runs on a request. Composer itself computed
     # the full transitive dependency graph and recorded it in
     # `vendor/composer/installed.json`'s `dev-package-names` array -- these 11
     # vendor NAMESPACES (not individual packages -- verified every package under
@@ -214,8 +202,8 @@ DEPLOY_SKIP_PREFIXES = (
     # src/ is the only place that churn is visible.
     "plugins/sgs-blocks/_retired/",   # excluded from the tar
     "theme/sgs-theme/styles/",        # per-client snapshots, pushed separately
-    "plugins/sgs-blocks/scripts/",    # excluded from the tar (2026-08-27) — dev tooling, never executes in WP
-    "plugins/sgs-blocks/tests/",      # excluded from the tar (2026-08-27) — tests, never execute in WP
+    "plugins/sgs-blocks/scripts/",    # excluded from the tar — dev tooling, never executes in WP
+    "plugins/sgs-blocks/tests/",      # excluded from the tar — tests, never execute in WP
 )
 DEPLOY_SKIP_BASENAMES = {
     "package-lock.json",
@@ -239,17 +227,14 @@ def deploy_roots_for_scope(theme_only: bool, blocks_only: bool) -> tuple[str, ..
     template is not "about to execute on a live site" for that run — and that is
     precisely the contract ``deployed_dirty_files()`` promises when it fires.
 
-    WHY THIS IS A NARROWING, NOT A WEAKENING. Before this, a ``--blocks-only``
-    deploy aborted on another track's uncommitted theme templates: files that run
-    could not have shipped. That is the SAME over-broadness the docstring below
-    already blames for D336 — a guard that fires on files a run cannot touch
-    trains the operator to reach for ``--allow-dirty``, and that reflex is what
-    put two client sites down for ~2.5h. It blocked three separate deploys in one
-    session (2026-08-24) on files none of them could write.
+    WHY THIS IS A NARROWING, NOT A WEAKENING. A guard that fires on files a run
+    cannot touch (another track's uncommitted theme templates, on a
+    ``--blocks-only`` deploy) trains the operator to reach for
+    ``--allow-dirty``, and that reflex removes the guard's protection for the
+    files that do ship.
 
     Returns a strictly SMALLER set than ``DEPLOY_ROOTS``, never a larger one, and
-    returns ``DEPLOY_ROOTS`` unchanged for a full deploy — so the default path is
-    byte-identical to the pre-change behaviour. ``self_test()`` cases 5-7 prove
+    returns ``DEPLOY_ROOTS`` unchanged for a full deploy. ``self_test()`` cases 5-7 prove
     both directions, including that an in-scope dirty file STILL blocks.
     """
     if blocks_only:
@@ -319,18 +304,15 @@ def resolve_composer() -> tuple[list[str], str] | None:
     ``composer_dump_autoload()`` below).
 
     Candidates, in order:
-      1. ``composer.phar`` at THIS checkout's repo root — the original,
-         unchanged behaviour for a normal primary clone.
+      1. ``composer.phar`` at THIS checkout's repo root — the normal
+         primary-clone case.
       2. ``composer.phar`` at the MAIN worktree's root, derived via
          ``git rev-parse --git-common-dir``. A git worktree's own directory
          never holds the gitignored phar, but ``--git-common-dir`` always
          points at the shared ``.git`` inside the primary clone, whose parent
-         is the primary clone's root — proven to hold the phar on this
-         machine. This is the case that actually broke a deploy on
-         2026-08-27 (see COMPOSER_PHAR's comment above).
+         is the primary clone's root. This is the case that applies when
+         deploying from a worktree (see COMPOSER_PHAR's comment above).
       3. ``composer`` on PATH as a plain executable, via ``resolve_exe()``.
-         Not installed on this machine as of writing, so this branch is
-         implemented carefully but could not be smoke-tested here.
     """
     php = resolve_exe("php")
 
@@ -461,18 +443,17 @@ def deployed_dirty_files(
 
     Deliberately narrower than a repo-wide ``git status``. A repo-wide check is
     always true here (``.claude/`` reports, ``package-lock.json``, ``reports/*.txt``
-    churn constantly), so the guard was bypassed with ``--allow-dirty`` on every
-    run and therefore protected nothing — that is how an unfinished edit reached
-    two live client sites on 2026-07-14. Scoped this way the guard stays quiet
-    during normal work, so when it fires it means a file that is about to execute
-    on a live site differs from HEAD.
+    churn constantly), so it would be bypassed with ``--allow-dirty`` on every
+    run and therefore protect nothing — and an unfinished edit would reach live
+    client sites. Scoped this way the guard stays quiet during normal work, so
+    when it fires it means a file that is about to execute on a live site
+    differs from HEAD.
 
     ``repo_root`` is overridable (default: the real repo) so this can be exercised
     against an isolated temp repo in ``self_test()`` without touching real git state.
 
     ``roots`` is the set of deploy roots THIS RUN will ship — see
-    ``deploy_roots_for_scope()``. It defaults to every root, so a caller that does
-    not pass it gets the pre-existing behaviour unchanged.
+    ``deploy_roots_for_scope()``. It defaults to every root.
     """
     result = subprocess.run(
         ["git", "status", "--porcelain", "--untracked-files=no"],
@@ -499,29 +480,23 @@ def deployed_dirty_files(
 def split_dirty_by_payload(dirty: list[str], payload_prefixes: list[str]) -> tuple[list[str], list[str]]:
     """Split deploy-relevant dirty files into (covered, uncovered) by declared payload.
 
-    Breaks the deploy<->commit deadlock (Step T): ``build-deploy.py`` refused to run
-    dirty; the pre-commit visual-diff gate refused to let you commit without a report
-    that requires a live deploy to produce. Neither could go first.
-
-    Fix shape chosen: (b) — let the deploy gate distinguish "dirty with the payload
-    being deployed" from "dirty with unrelated unfinished work", rather than (a)
-    changing the visual-diff gate's ordering. Reasoning: this repo's tree is
-    genuinely SHARED across concurrent tracks (see the six-agent worktree rules this
-    session runs under) — at any moment there is very likely dirty work that has
-    NOTHING to do with the wave being deployed. A caller who names their own payload
+    Breaks the deploy<->commit deadlock: ``build-deploy.py`` refuses to run dirty,
+    while the pre-commit visual-diff gate refuses a commit without a report that
+    requires a live deploy to produce. Neither could go first, so the deploy gate
+    distinguishes "dirty with the payload being deployed" from "dirty with
+    unrelated unfinished work" rather than the visual-diff gate's ordering being
+    relaxed. The tree is SHARED across concurrent tracks, so at any moment there
+    is very likely dirty work that has NOTHING to do with the wave being deployed.
+    A caller who names their own payload
     (``--payload plugins/sgs-blocks/src/blocks/quote/``) is asserting "this, and only
     this, is what I intend to ship uncommitted"; anything else dirty in deploy scope
-    is presumptively someone else's unfinished work and must still block, exactly as
-    D336 requires. Changing the visual-diff gate instead would have meant relaxing
-    ITS ordering requirement (produce-report-before-commit), which is the gate that
-    actually enforces "no unverified visual change ships" — weakening it to permit a
-    later report would be a bigger blast radius for a smaller fix.
+    is presumptively someone else's unfinished work and must still block. The
+    visual-diff gate is the one that enforces "no unverified visual change
+    ships", so its produce-report-before-commit ordering is left alone.
 
     A file is "covered" only when it falls under one of the declared prefixes. An
     EMPTY prefix list covers nothing, so calling this with ``payload_prefixes=[]``
-    reproduces the pre-existing all-or-nothing behaviour exactly (backward compatible
-    — a caller who never learns about ``--payload`` gets the old D336 protection
-    unchanged).
+    gives the all-or-nothing behaviour: every dirty file blocks.
     """
     norm_prefixes = [p.replace("\\", "/").rstrip("/") + "/" for p in payload_prefixes if p]
     covered: list[str] = []
@@ -538,8 +513,7 @@ def split_dirty_by_payload(dirty: list[str], payload_prefixes: list[str]) -> tup
 def self_test() -> int:
     """Prove the payload-scoped dirty gate REJECTS the unsafe case, not just the happy path.
 
-    A gate that cannot fail reads green forever (the exact failure mode this repo's
-    own rules name). This builds an ISOLATED temp git repo — never the real
+    A gate that cannot fail reads green forever. This builds an ISOLATED temp git repo — never the real
     working tree — with two dirty files under a deploy root: one declared as the
     wave's own ``--payload``, one left undeclared (standing in for "another
     track's unrelated modified files").
@@ -552,10 +526,9 @@ def self_test() -> int:
       2. POSITIVE CONTROL — declaring the payload file via ``--payload`` removes
          it from ``uncovered`` (this is the deadlock-breaker actually working).
       3. NEGATIVE CONTROL / KNOWN FAILURE — the undeclared file STAYS in
-         ``uncovered`` even though a payload was declared (D336's protection is
-         not weakened by this change).
-      4. BACKWARD COMPATIBILITY — with NO ``--payload`` at all, both files are
-         uncovered, i.e. identical to the gate's behaviour before this change.
+         ``uncovered`` even though a payload was declared (declaring a payload
+         does not weaken the guard).
+      4. NO PAYLOAD — with NO ``--payload`` at all, both files are uncovered.
     """
     failures: list[str] = []
     with tempfile.TemporaryDirectory(prefix="sgs-deploy-selftest-") as td:
@@ -627,7 +600,7 @@ def self_test() -> int:
                 f"-- this would weaken D336's protection: uncovered={uncovered}"
             )
 
-        # 4. BACKWARD COMPATIBILITY: no --payload at all -> old all-blocking behaviour.
+        # 4. NO PAYLOAD: no --payload at all -> everything blocks.
         covered_none, uncovered_none = split_dirty_by_payload(dirty, [])
         if covered_none:
             failures.append(
@@ -652,7 +625,7 @@ def self_test() -> int:
 
         # 6. NEGATIVE CONTROL for case 5 — scoping must NARROW, not DISABLE. An
         #    in-scope dirty file MUST still block, or the guard has been switched
-        #    off and would read green forever (D336 intact).
+        #    off and would read green forever.
         if rel_unrelated not in dirty_blocks_only:
             failures.append(
                 "SCOPE NEGATIVE CONTROL FAILED: an in-scope dirty file was NOT "
@@ -707,20 +680,16 @@ def step_build(dry_run: bool) -> int:
 def step_gate_full(dry_run: bool) -> int:
     """PRE-DEPLOY heavyweight gate tier (`npm run gate:full`).
 
-    ⛔ WHY THIS EXISTS AND WHY IT IS NOT OPTIONAL. `prebuild` used to be 61
-    `&&`-joined commands taking 153.4s measured, and it is FAIL-FAST — a change
-    tripping five gates showed ONE failure per build. The chain was split into
-    two measured tiers (`scripts/gates.json`): `fast` (52 gates, 33.4s) runs on
-    every build; `full` is the four gates that were 76.1% of the total time —
-    pytest 47.3s, check-dead-api-calls 31.2s, audit-block-file-consistency
-    16.7s, inspector-scan 11.3s.
+    ⛔ WHY THIS EXISTS AND WHY IT IS NOT OPTIONAL. `prebuild` is FAIL-FAST — a
+    change tripping five gates shows ONE failure per build — so the gate chain is
+    split into two tiers (`scripts/gates.json`): `fast` runs on every build;
+    `full` holds the slowest gates (pytest, check-dead-api-calls,
+    audit-block-file-consistency, inspector-scan).
 
     Moving a gate to a later tier is only legitimate if something actually runs
     that tier. WITHOUT THIS STEP the split would be enforcement laundering: four
     gates would sit in a roster, run on no build, and the repo would read green
-    while nothing checked them. That is this project's recorded failure mode —
-    a mandatory gate sat unwired for three weeks while three documents said it
-    was enforced. `run-gates.py --assert-wired` exists to prove this call is
+    while nothing checked them. `run-gates.py --assert-wired` proves this call is
     still here, and fails closed if it is deleted.
 
     It runs PRE-tar so a failure costs nothing: nothing has been uploaded yet.
@@ -746,13 +715,12 @@ def step_tar(dry_run: bool, theme: bool, blocks: bool) -> int:
     # plugins/sgs-blocks); a --theme-only deploy never touches vendor/ at
     # all, and dry-run never writes to disk in the first place.
     #
-    # Why this exists (D849, 2026-08-27): the deployed tarball must ship an
-    # autoloader with zero references to PHPStan/PHPUnit/etc (see
-    # TAR_EXCLUDES's `vendor/` block, and composer_dump_autoload()'s
-    # docstring for the two-consumer split). A prior session regenerated the
-    # working tree's autoloader dev-included to fix a LOCAL gate, which
-    # silently undid the deploy-safe one and reopened the exact live-site
-    # fatal this function exists to prevent. See:
+    # Why this exists: the deployed tarball must ship an autoloader with zero
+    # references to PHPStan/PHPUnit/etc (see TAR_EXCLUDES's `vendor/` block, and
+    # composer_dump_autoload()'s docstring for the two-consumer split). A
+    # dev-included autoloader in the tarball fatals the live site, and a local
+    # gate that regenerates the working tree's autoloader dev-included would
+    # silently undo the deploy-safe one. See:
     # `python plugins/sgs-blocks/scripts/check-render-undefined-vars.py --check`
     regen_composer = blocks and not dry_run
     if regen_composer:
@@ -781,8 +749,8 @@ def step_tar(dry_run: bool, theme: bool, blocks: bool) -> int:
             err(f"tarball not produced: {REPO_ROOT / TARBALL_NAME}")
             return 2
 
-        # STRUCTURAL SIZE GUARD (2026-08-27). The named excludes fix the two strays we
-        # found; this catches the NEXT one. Any untracked tree dropped inside
+        # STRUCTURAL SIZE GUARD. The named excludes cover the known strays;
+        # this catches the NEXT one. Any untracked tree dropped inside
         # plugins/sgs-blocks or theme/sgs-theme is invisible to the dirty gate and ships
         # silently -- the only symptom is a suddenly huge tarball, and "the deploy is a
         # bit slow" is exactly how that goes unnoticed. Fail closed and NAME the biggest
@@ -873,9 +841,8 @@ def step_remote_extract(dry_run: bool, use_alias: bool, wp_content: str,
                         theme: bool, blocks: bool) -> int:
     """Extract + install, rotating the previous copy aside instead of deleting it.
 
-    This USED to `rm -rf` the live directory before extracting, so a bad deploy
-    left nothing to roll back to — which is why the 2026-07-14 outage lasted
-    ~2.5 hours instead of ~30 seconds. Now the outgoing copy is renamed to
+    Deleting the live directory before extracting would leave nothing to roll
+    back to after a bad deploy, so the outgoing copy is renamed to
     ``<dir>.bak`` (previous .bak dropped first, so exactly one generation is
     kept and disk use stays bounded). Recovery is then a single `mv` back —
     see ROLLBACK_HINT, which step_verify prints on failure.
@@ -883,7 +850,7 @@ def step_remote_extract(dry_run: bool, use_alias: bool, wp_content: str,
     The theme's backup is named ``.sgs-theme.bak`` (dot-prefixed) rather than
     ``sgs-theme.bak`` — WordPress's theme directory scanner
     (``search_theme_directories()``) skips any directory starting with ``.``,
-    so the backup no longer shows up as a second "SGS Theme" entry on the
+    so the backup does not show up as a second "SGS Theme" entry on the
     Themes admin page while still living in the same rollback location. The
     plugins backup keeps its visible name; WordPress's plugin scanner doesn't
     surface it the same way in normal use.
@@ -912,7 +879,7 @@ def step_remote_extract(dry_run: bool, use_alias: bool, wp_content: str,
     if theme:
         # Dot-prefixed so WordPress's theme scanner (search_theme_directories())
         # skips it — WP excludes any directory starting with "." from the theme
-        # listing, so the backup no longer shows up as a second "SGS Theme" on
+        # listing, so the backup does not show up as a second "SGS Theme" on
         # the Themes admin page. Same rotation logic as sgs-blocks.bak above,
         # just a hidden folder name instead of a visible one.
         parts.append("rm -rf $WP/themes/.sgs-theme.bak")
@@ -953,31 +920,27 @@ def step_local_cleanup(dry_run: bool) -> int:
 
 
 # ---------------------------------------------------------------------------
-# Deploy isolation (Task B, D-incident 2026-09-07) — worktree-isolated
-# build+deploy is the DEFAULT, not opt-in.
+# Deploy isolation — worktree-isolated build+deploy is the DEFAULT, not opt-in.
 # ---------------------------------------------------------------------------
 # `plugins/sgs-blocks/build/` is gitignored and shared across every concurrent
 # session on this machine (150+ per the project's own git-hygiene docs).
 # `npm run build` runs `rm -rf build` first. A deploy's gate window (gate:full
 # alone is ~47s+) is long enough for a concurrent session's `npm run build` to
-# wipe the shared `build/` out from under an in-flight deploy — measured live
-# 2026-09-07 (see `.claude/memory/sdd-progress.md`'s incident section): the
-# canary served a `sgs-blocks` plugin with ZERO working render.php files for
-# several minutes, and the deploy's own `[payload-verify]` step only caught it
-# AFTER the broken plugin was already live (the checksum comparison runs
-# against the now-also-deleted local reference copy, not the tarball's actual
-# contents at pack time).
+# wipe the shared `build/` out from under an in-flight deploy: the target would
+# serve a `sgs-blocks` plugin with ZERO working render.php files, and the
+# deploy's own `[payload-verify]` step would only catch it AFTER the broken
+# plugin was already live (the checksum comparison runs against the
+# deleted local reference copy, not the tarball's actual contents at
+# pack time).
 #
-# CHOSEN DESIGN: a `git worktree add <tmp-dir> HEAD` (proven manually the same
-# session), THEN A RE-EXEC of this same script — the WORKTREE'S OWN COPY of
+# DESIGN: a `git worktree add <tmp-dir> HEAD`, THEN A RE-EXEC of this same script — the WORKTREE'S OWN COPY of
 # `build-deploy.py` — with `--no-isolate` appended, rather than threading a
 # repo-root parameter through step_build()/step_tar()/etc. `REPO_ROOT` /
 # `PLUGIN_DIR` / `BUILD_DIR` are all derived from `Path(__file__)`, so running
 # the WORKTREE'S copy of the script makes every existing step function resolve
 # worktree paths automatically, with ZERO changes to any of them and therefore
-# no new risk to the already-hardened build/tar/scp/verify chain. This is a
-# lock-file alternative chosen DELIBERATELY (Bean-locked design, per the
-# handoff prompt): a lock only protects a session that respects it, and this
+# no new risk to the build/tar/scp/verify chain. This is chosen over a lock
+# file DELIBERATELY: a lock only protects a session that respects it, and this
 # repo cannot assume that.
 #
 # ⚠ ISOLATION ONLY COVERS A COMMITTED (or clean) DEPLOY. `git worktree add
@@ -991,9 +954,9 @@ def step_local_cleanup(dry_run: bool) -> int:
 # exists to fix), isolation AUTO-SKIPS whenever this run would ship any
 # deploy-relevant dirty file — the exact same `deployed_dirty_files()` check
 # `main()` already runs for the dirty-tree gate, scoped the same way. That
-# deploy proceeds against the shared checkout exactly as before this change
-# (the pre-existing race is not newly introduced, only no longer the default
-# for the common case: a normal deploy of committed work).
+# deploy proceeds against the shared checkout (the race with a concurrent
+# `npm run build` remains for that case; isolation covers the common one: a
+# normal deploy of committed work).
 ISOLATION_WORKTREE_PREFIX = "sgs-deploy-wt"
 
 
@@ -1050,8 +1013,7 @@ def run_isolated(args: "argparse.Namespace") -> int:
         # writes vendor/autoload_*.php, which is why it is regenerated INSIDE
         # the worktree by the normal step_tar() call, same as any other run —
         # the symlink target is the shared vendor/, so that write lands in the
-        # shared checkout too; this mirrors the existing single-checkout
-        # behaviour exactly and is not a new hazard).
+        # shared checkout too, exactly as it does for a single-checkout run).
         for rel in (
             Path("plugins/sgs-blocks/node_modules"),
             Path("plugins/sgs-blocks/vendor"),
@@ -1096,12 +1058,9 @@ def step_purge_caches(dry_run: bool, use_alias: bool, wp_content: str,
                       host: str) -> int:
     """Post-deploy cache purge - TWO DIFFERENT CACHES, deliberately both.
 
-    WHY THIS EXISTS (2026-08-21). Both CLAUDE.md files stated that this script
-    "resets OPcache", and it did not: the only two `opcache` mentions in this file
-    were inside ROLLBACK_HINT, a string of MANUAL instructions printed on failure.
-    A defence asserted in docs and enforced nowhere is this repo's recorded failure
-    mode, and D709 (theme assets served STALE to every warm browser cache, the day
-    before this was written) is what it costs.
+    WHY THIS EXISTS. A cache reset that is only described in docs (or in
+    ROLLBACK_HINT's MANUAL instructions) and enforced nowhere leaves theme assets
+    served STALE to every warm browser cache after a deploy.
 
     The two layers are not interchangeable:
 
@@ -1122,7 +1081,7 @@ def step_purge_caches(dry_run: bool, use_alias: bool, wp_content: str,
     FAILS SOFT, LOUDLY. By this point the files are already live, so a failed purge
     is not grounds to abort - that would read as "nothing shipped" and invite a
     retry loop. But a leg that did not run is NEVER reported as OK: the whole point
-    of this step is that silence is what made D709 invisible.
+    of this step is that a silent skip makes stale caches invisible.
     """
     log("[purge] clearing both cache layers (OPcache + page cache)")
     if dry_run:
@@ -1214,8 +1173,7 @@ def step_purge_caches(dry_run: bool, use_alias: bool, wp_content: str,
 
 def step_oldshape_audit(dry_run: bool, use_alias: bool, target_key: str,
                         wp_content: str) -> int:
-    """Pre-deploy content-compat gate (Track B, 2026-07-15 — the gate D182 used
-    and D270/D271 skipped). Scans the TARGET site's stored post_content against
+    """Pre-deploy content-compat gate. Scans the TARGET site's stored post_content against
     the LOCAL block.json schemas (i.e. the code about to be deployed) for:
       * stranded content — old scalar shapes an InnerBlocks render no longer reads
         (the empty-Indus-homepage class), and
@@ -1235,7 +1193,7 @@ def step_oldshape_audit(dry_run: bool, use_alias: bool, target_key: str,
     # Post types are ENUMERATED from the live site, never hardcoded — a client CPT
     # (sgs_header/sgs_footer/sgs_product_template) or a reusable block holds block
     # markup exactly like a page does, and a page,post-only scan was blind to all
-    # of them (QC council 2026-07-15). Only WP-internal types that structurally
+    # of them. Only WP-internal types that structurally
     # cannot carry block markup in post_content are excluded.
     #
     # TWO WP bootstraps total (enumerate types, then one bulk JSON fetch). The
@@ -1276,7 +1234,7 @@ def step_oldshape_audit(dry_run: bool, use_alias: bool, target_key: str,
     baseline = Path(__file__).resolve().parent / "oldshape-audit-baseline.json"
     with tempfile.TemporaryDirectory() as td:
         # Subdir named after the target so finding keys match the register/baseline
-        # convention ("palestine-lives/13|sgs/hero|…").
+        # convention ("<target>/<post id>|sgs/hero|…").
         site_dir = Path(td) / target_key
         site_dir.mkdir()
         for post in posts:
@@ -1298,7 +1256,7 @@ def step_oldshape_audit(dry_run: bool, use_alias: bool, target_key: str,
 
 
 def step_scoped_selector_audit(page_id: str, dry_run: bool) -> int:
-    """Post-deploy structural gate (P-SCOPED-SELECTOR-MATCH, D303): run the LIVE
+    """Post-deploy structural gate (scoped-selector match): run the LIVE
     scoped-selector audit against the just-deployed canary page. Catches the
     "scoped rule whose class the element never carries" bug class (multi-button)
     on the painted DOM — the STOP-21-authoritative signal a static check can't
@@ -1354,12 +1312,11 @@ def step_deploy_ownership(use_alias: bool, target_key: str, takeover: bool,
                           dry_run: bool) -> int:
     """PRE-deploy gate: refuse to clobber a deploy carrying work this HEAD lacks.
 
-    ⛔ WHY (D576 + the 2026-07-20 incident it repeated). This canary is shared,
-    and a co-active session deploys from its OWN git worktree — so it ships ITS
-    build/, not yours. On 2026-08-11 that silently reverted every migrated
-    block.json to the pre-migration schema; WordPress then discarded every
-    object-valued attribute before render, and the deploy reported success. The
-    same shape hit a verified visual-diff PASS on 2026-07-20.
+    ⛔ WHY. This canary is shared, and a co-active session deploys from its OWN
+    git worktree — so it ships ITS build/, not yours. Deploying an older build
+    over a newer one silently reverts every migrated block.json to the
+    pre-migration schema; WordPress then discards every object-valued attribute
+    before render, and the deploy reports success.
 
     The test is ANCESTRY, not equality: if the recorded commit is an ancestor of
     HEAD, this deploy carries everything the last one did and overwriting is
@@ -1466,7 +1423,7 @@ def write_deploy_marker(use_alias: bool, target_key: str, dry_run: bool) -> int:
 
 
 def step_motion_qa(dry_run: bool) -> int:
-    """Post-deploy LIVE motion regression check (D730).
+    """Post-deploy LIVE motion regression check.
 
     ⛔ WHY THIS IS HERE AND NOT IN `prebuild`. Every motion probe needs a live canary.
     A network-dependent check inside a BUILD gate can only fail when the canary is
@@ -1477,9 +1434,9 @@ def step_motion_qa(dry_run: bool) -> int:
     plugin IS this run's payload, so a motion regression here is genuinely attributable
     to this deploy rather than to ambient site state.
 
-    ⚠ Before this existed, `scripts/motion-qa/` held 13 probes with ZERO references in
-    `package.json` — an entire directory of the D338/D493 "built but never wired"
-    failure. Opting out with `--skip-motion-qa` re-creates it.
+    ⚠ Probes under `scripts/motion-qa/` that `package.json` does not reference are
+    "built but never wired": they run on no build. Opting out with
+    `--skip-motion-qa` leaves them unrun.
     """
     if dry_run:
         log("[motion-qa] SKIPPED (--dry-run)")
@@ -1493,18 +1450,15 @@ def step_motion_qa(dry_run: bool) -> int:
 def step_verify_payload(use_alias: bool, wp_content: str, blocks: bool) -> int:
     """CHANGE-SPECIFIC verify: does the LIVE plugin match the payload we just shipped?
 
-    ⛔ WHY THIS EXISTS (D576, 2026-08-11). `step_verify()` above is deliberately
-    cause-agnostic and GENERIC — it asserts the page returns 200 and contains
-    `wp-block-sgs`. Every one of those assertions passes just as happily on LAST
-    WEEK'S build. Measured that day: a co-active session deploying from its own
-    worktree shipped an OLDER `build/` over this track's, reverting every migrated
-    `block.json` to the pre-migration `type:string` schema. WordPress then rejected
-    each object-valued attribute in `prepare_attributes_for_render()` and refilled
-    it from the old scalar default, so the value never reached render.php at all —
-    and this script printed [DONE] with a green verify. Two sessions of PHP
-    debugging chased a bug no PHP fix could ever have reached.
-
-    Closes the gap parked as P-DEPLOY-VERIFY-NOT-CHANGE-SPECIFIC.
+    ⛔ WHY THIS EXISTS. `step_verify()` above is deliberately cause-agnostic and
+    GENERIC — it asserts the page returns 200 and contains `wp-block-sgs`. Every
+    one of those assertions passes just as happily on LAST WEEK'S build. If a
+    co-active session deploying from its own worktree ships an OLDER `build/`
+    over this track's, every migrated `block.json` reverts to the pre-migration
+    `type:string` schema. WordPress then rejects each object-valued attribute in
+    `prepare_attributes_for_render()` and refills it from the old scalar default,
+    so the value never reaches render.php at all — and a generic verify stays
+    green.
 
     Compares the md5 of every deployed `build/blocks/*/block.json` against the
     local copy that was just packaged. block.json is the right file to check
@@ -1584,14 +1538,14 @@ def step_verify_payload(use_alias: bool, wp_content: str, blocks: bool) -> int:
 def step_verify(url: str) -> int:
     """Post-deploy smoke test. Returns non-zero when the deploy has broken the site.
 
-    Runs by default (opt out with --skip-verify). This USED to be opt-in and
-    warn-only — it could not fail — so a deploy that took two live client sites
-    down on 2026-07-14 still reported [DONE].
+    Runs by default (opt out with --skip-verify) and can fail: a verify that is
+    opt-in or warn-only lets a deploy that took live sites down still report
+    [DONE].
 
     Deliberately cause-agnostic: it does not care WHY the page is broken. That
-    matters because the 2026-07-14 fatal was a missing `use` statement, which is
-    a RUNTIME class-resolution failure — `php -l` passes it cleanly and only
-    fetching the real page catches it.
+    matters because a missing `use` statement is a RUNTIME class-resolution
+    failure — `php -l` passes it cleanly and only fetching the real page
+    catches it.
     """
     import urllib.error
     import urllib.request
@@ -1647,25 +1601,20 @@ def step_verify(url: str) -> int:
     markers = ["wp-block-sgs", "sgs-", "wp-content"]
     found = [m for m in markers if m in body]
     if not found:
-        # 2026-08-06: this branch used to log a WARNING and fall through to
-        # `return 0`, so the content leg of verify could not fail under any
-        # input - only HTTP status and the WP fatal string above were ever
-        # fail-closed. A verify leg that cannot fail reads green forever.
-        # NOTE this is still a GENERIC assertion (these markers match any
+        # This branch fails closed: a verify leg that cannot fail reads green
+        # forever.
+        # NOTE this is a GENERIC assertion (these markers match any
         # working SGS page, including one running last week's build); it is
         # not change-specific — deliberately, because its job is "is the site
         # alive", not "is my code live".
-        # ✅ The change-specific half IS now solved, by `step_verify_payload()`
-        # above (2026-08-11, D576): it md5s every deployed block.json against
-        # the local payload over the SSH connection this script already opens.
+        # The change-specific half is `step_verify_payload()` above: it md5s
+        # every deployed block.json against the local payload over the SSH
+        # connection this script already opens.
         # ⚠ That check proves AGREEMENT, not correctness — matching bytes mean
         # the live plugin is what this run shipped, never that what it shipped
-        # is right.
-        # STILL OPEN, and needs Bean's sign-off on takeover semantics: the
-        # deploy-ownership marker (`.sgs-deploy-marker.json` naming deployer +
-        # commit SHA, aborting unless --takeover when the recorded commit is not
-        # an ancestor of HEAD). That is part (b) of the same parking entry and
-        # turns a silent clobber into a deliberate one.
+        # is right. The deploy-ownership marker (`step_deploy_ownership()`)
+        # turns a silent clobber of another session's deploy into a deliberate
+        # one.
         err(f"[verify] none of {markers} found in {url} - "
             "the deployed page is not rendering SGS markup")
         err(f"[verify] {ROLLBACK_HINT}")
@@ -1782,18 +1731,17 @@ def main() -> int:
     # intended dirty payload.
     intends_dirty_ship = bool(dirty) and (args.allow_dirty or not uncovered)
 
-    # Deploy isolation (Task B, D-incident 2026-09-07) — see the module-level
+    # Deploy isolation — see the module-level
     # note above run_isolated(). A worktree at HEAD is dirty-immune BY
     # CONSTRUCTION: it can only ever contain committed content, so when this
     # run does not intend to ship anything uncommitted, isolating makes the
     # git-cleanliness guard below MOOT for THIS run — other sessions' unrelated
     # dirty files in the shared checkout (a near-certainty on a 150+-session
     # tree) cannot leak into a worktree checkout regardless, so there is
-    # nothing left to abort on. This was measured live 2026-09-07: a
-    # fully-committed hero-only deploy was wrongly aborted by six OTHER
-    # sessions' unrelated dirty blocks (business-info/counter/form/gallery/
-    # label/modal) sitting in the shared checkout — none of which a worktree
-    # at HEAD would have shipped in the first place.
+    # nothing left to abort on. Without isolation, a fully-committed
+    # single-block deploy is wrongly aborted by OTHER sessions' unrelated dirty
+    # blocks sitting in the shared checkout — none of which a worktree at HEAD
+    # would ship in the first place.
     if not intends_dirty_ship and should_isolate(args, dirty):
         log("[isolate] dirty-tree gate satisfied by construction (worktree "
             "checks out committed HEAD only) — skipping the shared-checkout "
@@ -1825,7 +1773,8 @@ def main() -> int:
 
     # Pre-deploy content-compat gate: the target's stored post_content vs the
     # schemas in THIS tree. Runs before the build — no point compiling code that
-    # would strand stored content (the empty-Indus-homepage class, Track B).
+    # would strand stored content (an InnerBlocks render that no longer reads an
+    # old scalar shape).
     if args.skip_oldshape_audit:
         log("[oldshape-audit] SKIPPED (--skip-oldshape-audit)")
     else:

@@ -1,24 +1,23 @@
 #!/usr/bin/env python3
 """check-withdrawn-figures.py — a figure withdrawn in one file stays withdrawn everywhere.
 
-WHY: eleven files restate "13 days and 25 corrections" as settled fact. That
-figure was WITHDRAWN by THE-MIGRATION-METHOD.md itself (the seven cited
-D-numbers span three days, not thirteen). Its replacement -- "71 commits, 23
-fixes" -- also fails to reproduce: 67 and 21 today. A figure copied into eleven
-files and corrected in one is the drift this repo keeps paying for.
+WHY: THE-MIGRATION-METHOD.md is the one canonical table for the migration-effort
+figures and marks some of them withdrawn. A figure copied into other files
+drifts from the table: it is corrected in one place and keeps being restated as
+settled fact everywhere else.
 
-The fix is not a better number. It is NO number outside the one canonical
-table, and a bare pointer everywhere else.
+The rule is NO number outside the one canonical table, and a bare pointer
+everywhere else.
 
 Follows the method's own contract (THE-MIGRATION-METHOD.md Steps 4-10):
 --survey / --fix / --fix --apply / --check / --self-test, with a negative
 control AND a corpus control.
 
-The corpus control exists because this script needed it: its transform-only
-self-test passed 5/5 while the census found ZERO, because ROOT resolved
-outside the repo and targets() returned []. A detector whose corpus silently
-collapses reports the same clean census as a clean tree. That failure is now
-a fixture (assert_corpus), and it is why Step 6 of the method lists a corpus
+The corpus control guards against a silently collapsed corpus: if ROOT resolved
+outside the repo, targets() would return [] and a transform-only self-test would
+still pass while the census found ZERO. A detector whose corpus silently
+collapses reports the same clean census as a clean tree. That failure mode is a
+fixture (assert_corpus), and it is why Step 6 of the method lists a corpus
 control as the sixth required fixture.
 """
 from __future__ import annotations
@@ -85,11 +84,11 @@ SHAPES = [
     # the number is what misleads.
     (re.compile(r"\*\*33 blocks over 13 days and\s*\n?\s*25 correction commits\*\*", re.M), "C"),
     (re.compile(r"\b\d+ (?:call sites|closures|guards) in ONE day", re.M), "D"),
-    # E: the OVERTURNED THESIS, not a figure. The 33-block colour wave WAS
-    # census-driven on day 2 (f6f3c0331) and still cost a fortnight -- so
-    # "the census was the only difference" is the claim the method now
-    # rebuts. It survived in CLAUDE.md and plugins/sgs-blocks/CLAUDE.md,
-    # both AUTO-LOADED, where a cold agent meets it before the method doc.
+    # E: a THESIS, not a figure. "The census was the only difference" is the
+    # claim the method rebuts (a census-driven rollout can still be slow when the
+    # target shape is unsettled). It must not appear in CLAUDE.md or
+    # plugins/sgs-blocks/CLAUDE.md, both AUTO-LOADED, where a cold agent meets
+    # it before the method doc.
     (re.compile(r"\s*(?:Same repo, same week, same rules\.\s*)?"
                 r"The only difference was building the census before the edit\.", re.M), "E"),
 ]

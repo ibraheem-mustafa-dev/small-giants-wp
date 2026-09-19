@@ -37,7 +37,7 @@ final class SGS_Blocks {
 
 		// A THIRD hook, for a third reason. The global device toggle and its cue
 		// render in the OUTER admin document (the block inspector is not inside
-		// the canvas iframe — measured 2026-08-10), so their CSS must land there.
+		// the canvas iframe), so their CSS must land there.
 		// It cannot ride `enqueue_block_assets` above: device-visibility.php
 		// attaches inline CSS guarded on that handle, and it cannot ride
 		// `enqueue_block_editor_assets` without being shimmed into the iframe and
@@ -56,14 +56,14 @@ final class SGS_Blocks {
 		// Image Controls extension — objectPosition / maxWidth / per-breakpoint height.
 		require_once SGS_BLOCKS_PATH . 'includes/image-controls.php';
 
-		// Tier G motion registry (Spec 38 §4.4 / D409) — registers the GSAP
+		// Tier G motion registry (Spec 38 §4.4) — registers the GSAP
 		// script modules and enqueues them ONLY on pages whose rendered blocks
 		// actually carry an fx effect. A page with no Tier G effect serves zero
 		// GSAP bytes; registration alone costs nothing.
 		require_once SGS_BLOCKS_PATH . 'includes/class-sgs-motion-registry.php';
 		SGS_Motion_Registry::register();
 
-		// SGS → Motion settings page (Spec 38 §7 / FR-38-18, D422) — the
+		// SGS → Motion settings page (Spec 38 §7 / FR-38-18) — the
 		// site-LEVEL motion capabilities, which have no block to hang off.
 		// Admin-only: the registry above owns the frontend read, so the
 		// settings surface is never a frontend dependency.
@@ -77,7 +77,7 @@ final class SGS_Blocks {
 		// that ordering is what lets a dynamic block's effect be detected.
 		require_once SGS_BLOCKS_PATH . 'includes/fx-attributes.php';
 
-		// Motion-path route expansion (Spec 38 §11.2, D427). Runs at
+		// Motion-path route expansion (Spec 38 §11.2). Runs at
 		// render_block p11 — after the p10 injection above has put
 		// `data-sgs-fx-path` on dynamic blocks, and before the registry's p99
 		// sniff. Turns the client's chosen route preset into the hidden <svg>
@@ -85,7 +85,7 @@ final class SGS_Blocks {
 		// so the runtime needs no change at all.
 		require_once SGS_BLOCKS_PATH . 'includes/fx-path-routes.php';
 
-		// Shape-pair expansion for MorphSVG (Spec 38 s11.2, D427). Same
+		// Shape-pair expansion for MorphSVG (Spec 38 s11.2). Same
 		// slot as fx-path-routes.php above (a sibling expansion, never
 		// the same block instance) - after the p10 injection has put
 		// data-sgs-fx-shape on dynamic blocks, before the registry's p99
@@ -102,13 +102,13 @@ final class SGS_Blocks {
 		require_once SGS_BLOCKS_PATH . 'includes/fx-cursor-field.php';
 		require_once SGS_BLOCKS_PATH . 'includes/fx-wave-gradient.php';
 
-		// Generative background (Tier W, Spec 38, D874 — v1 static build
-		// only). Same p11 slot as the sibling above: resolves the four
+		// Generative background (Tier W, Spec 38 — static build only).
+		// Same p11 slot as the sibling above: resolves the four
 		// colour slots + ground preset into custom properties both the CSS
 		// fallback and the JS-built OKLCH image read.
 		require_once SGS_BLOCKS_PATH . 'includes/fx-generative-background.php';
 
-		// Surface treatment (Tier W / WebGL, Spec 38 s1.2b, D479). Same p11
+		// Surface treatment (Tier W / WebGL, Spec 38 s1.2b). Same p11
 		// slot as the three siblings above: marks the emitter with its
 		// treatment id and, for duotone, a uid-scoped <style> setting
 		// --sgs-fx-shadow/--sgs-fx-highlight (Spec 32 forbids the inline
@@ -117,7 +117,7 @@ final class SGS_Blocks {
 		// attribute — no bespoke sniff needed.
 		require_once SGS_BLOCKS_PATH . 'includes/fx-surface-treatment.php';
 
-		// Particle trail per-instance colour (FR-38-32, D846). Same p11 slot:
+		// Particle trail per-instance colour (FR-38-32). Same p11 slot:
 		// resolves the stored palette slug and emits a uid-scoped <style>
 		// setting --sgs-fx-particle-colour, which particles.js prefers over the
 		// inherited `color`. Opt-in — with no colour set this filter returns
@@ -125,17 +125,14 @@ final class SGS_Blocks {
 		require_once SGS_BLOCKS_PATH . 'includes/fx-particles.php';
 
 		// Grid-dot field per-instance colour (FR-38-33). Same p11 slot and the
-		// same shape as the trail above, for the same reason and then some: the
-		// field shipped with an ACCENT default that measured 1.35:1 against the
-		// client's cream background — worse than the 1.44:1 that produced the
-		// particle-colour control. Default moved to `primary`; this filter is
+		// same shape as the trail above: the stylesheet default is `primary`
+		// (an accent default fails contrast on light grounds), and this filter is
 		// the per-instance override. Opt-in: with no colour set it returns early
 		// and the stylesheet's default stands.
 		require_once SGS_BLOCKS_PATH . 'includes/fx-grid-dots.php';
 
 		// Flip on WooCommerce Product Collection re-filtering (Spec 38
-		// FR-38-12, redirected 2026-08-20 — see the design gate this file's
-		// docblock points to). A `render_block_woocommerce/product-collection`
+		// FR-38-12). A `render_block_woocommerce/product-collection`
 		// filter, not the shared `render_block` p10 slot above: SGS does not
 		// own that block's block.json, so the opt-in is a site-level setting
 		// rather than a per-block attribute, and there is nothing here for
@@ -171,8 +168,8 @@ final class SGS_Blocks {
 		Product_Search_REST::register();
 
 		// LiteSpeed compatibility — keep personalised/rate-limited REST routes
-		// out of the server-side page cache. Measured 2026-07-30: LiteSpeed was
-		// serving BOTH /wc/store/v1/cart (stale empty cart -> sgs/cart badge
+		// out of the server-side page cache. LiteSpeed serves
+		// BOTH /wc/store/v1/cart (stale empty cart -> sgs/cart badge
 		// pinned at 0) and /sgs/v1/product-search (request 2 onward a cache HIT,
 		// which bypasses the per-IP rate limit and the fail-closed visibility
 		// filter above — a security control a cache can switch off is not a
@@ -226,7 +223,7 @@ final class SGS_Blocks {
 
 				// Wire WP 7.0 script-module translations for blocks that use viewScriptModule.
 				// Infrastructure only — no translation .json files required until the first
-				// non-English client onboards (Decision 23c, Phase 6).
+				// non-English client onboards.
 				// Module ID convention: @sgs/<block-slug>/view (WP auto-registers this from
 				// viewScriptModule in block.json via WP_Script_Modules::register()).
 				$block_json_data = json_decode( file_get_contents( $block_json ), true ); // phpcs:ignore WordPress.WP.AlternativeFunctions
@@ -306,10 +303,10 @@ final class SGS_Blocks {
 	/**
 	 * Enqueue the extensions CSS into the EDITOR CANVAS IFRAME.
 	 *
-	 * Split out of `enqueue_editor_extensions()` on 2026-07-31. It previously
-	 * rode on `enqueue_block_editor_assets`, which targets the outer admin
-	 * document — since WP 6.3 the canvas is an iframe, so core copied the style
-	 * in via a compatibility shim and warned on every editor load:
+	 * Separate from `enqueue_editor_extensions()`: styles must not ride
+	 * `enqueue_block_editor_assets`, which targets the outer admin document.
+	 * Since WP 6.3 the canvas is an iframe, so core would copy the style in via
+	 * a compatibility shim and warn on every editor load:
 	 *
 	 *   "sgs-extensions-editor-css was added to the iframe incorrectly. Please
 	 *    use block.json or enqueue_block_assets to add styles to the iframe."
@@ -392,11 +389,11 @@ final class SGS_Blocks {
 	 *     drops the device-visibility CSS with no error.
 	 *   - `enqueue_block_editor_assets` reaches the outer document but is copied
 	 *     into the iframe by core's compatibility shim, re-emitting the "added to
-	 *     the iframe incorrectly" warning this plugin removed on 2026-07-31.
+	 *     the iframe incorrectly" warning.
 	 *
 	 * `admin_enqueue_scripts` reaches the outer admin document — where the block
-	 * inspector actually lives (verified on the canary, both editors, 2026-08-10:
-	 * `.block-editor-block-inspector` is present in the outer document and absent
+	 * inspector actually lives
+	 * (`.block-editor-block-inspector` is present in the outer document and absent
 	 * inside the canvas iframe) — and is never iframe-shimmed.
 	 *
 	 * @param string $hook_suffix Current admin page. Unused; screen check is finer.

@@ -9,8 +9,8 @@
  * behaviour (a real font-size / weight / transform / letter-spacing) shows
  * only the browser default in the editor (the "hand-built preview drift"
  * failure class — feedback_ssr_fixes_hand_built_preview_drift.md). A block
- * whose canvas IS entirely <ServerSideRender> (sgs/nav-menu's burger label,
- * for example) needs none of this — PHP's own CSS already reaches it.
+ * whose canvas IS entirely <ServerSideRender> needs none of this — PHP's own
+ * CSS already reaches it.
  *
  * DESKTOP/base value only, deliberately. The PHP helper also emits tablet/
  * mobile media-query rules, but the editor canvas has one width — there is no
@@ -44,9 +44,9 @@ export function typographyPreviewStyle( attributes, prefix = '' ) {
 	// "14"), which sgs_typography_css_rule() still routes through its modern
 	// numeric flat-spec path (helpers-typography.php's $size_is_tiered check is
 	// `is_array()`, not `is_numeric()`+type — a numeric string is NOT the
-	// legacy/preset-slug branch). A plain `typeof === 'number'` check missed
-	// this shape entirely and silently dropped the desktop font-size (found
-	// live: closeFontSize stayed at the browser default instead of 14px).
+	// legacy/preset-slug branch). A plain `typeof === 'number'` check would
+	// miss this shape and silently drop the desktop font-size (closeFontSize
+	// would stay at the browser default instead of 14px).
 	const isNumericLike = ( v ) =>
 		'number' === typeof v || ( 'string' === typeof v && '' !== v.trim() && ! isNaN( Number( v ) ) );
 

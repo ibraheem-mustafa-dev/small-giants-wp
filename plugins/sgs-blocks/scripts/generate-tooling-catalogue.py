@@ -3,11 +3,8 @@
 
 WHY THIS IS GENERATED AND NOT HAND-WRITTEN
 ------------------------------------------
-This repo's own doc rules say a roster written by hand is a copy that rots: the
-`.claude/CLAUDE.md` spec cell drifted twice, `docs-registry.yaml` was dissolved for
-listing deleted specs as live, and the CLAUDE.md stage-count line drifted three
-times. A catalogue of ~60 enforcement scripts would rot faster than any of them.
-So it is derived from two sources that CANNOT drift from the truth, because they
+A roster written by hand is a copy that rots, and a catalogue of this many
+enforcement scripts would rot faster than most. So it is derived from two sources that CANNOT drift from the truth, because they
 ARE the truth:
 
   1. the `prebuild` chain in plugins/sgs-blocks/package.json — the actual gate
@@ -50,9 +47,8 @@ def first_purpose(path: Path) -> str:
         return ""
     # python module docstring — via ast, NOT a regex. A regex that stops at the
     # first newline returns "" for the very common `"""\nText...` shape, and the
-    # JS fallback below then returns the literal triple-quote as the "purpose".
-    # That bug shipped in this generator's first run and put a bare triple-quote
-    # in the catalogue for 4 of 59 rows. ast.get_docstring cannot make that error.
+    # JS fallback below would then return the literal triple-quote as the
+    # "purpose". ast.get_docstring cannot make that error.
     if path.suffix == ".py":
         try:
             # Silence warnings raised by the file being READ (several catalogued
@@ -82,11 +78,10 @@ def first_purpose(path: Path) -> str:
                 continue
             return cleaned
         return ""
-    # js/mjs header. TWO shapes, and missing the second left 21 rows BLANK:
-    # a /** JSDoc */ block, and a bare `//` comment header. The whole
-    # inspector-scan/rules/ family uses `//`, and the first version of this
-    # generator SKIPPED every `//` line as noise — so the 23 files carrying the
-    # richest blind-spot documentation in the repo catalogued as empty cells.
+    # js/mjs header. TWO shapes: a /** JSDoc */ block, and a bare `//` comment
+    # header. The whole inspector-scan/rules/ family uses `//`, so skipping `//`
+    # lines as noise would catalogue files carrying rich blind-spot
+    # documentation as empty cells.
     # An empty cell in a discovery catalogue is worse than no row: it says
     # "looked, found nothing" about a file that documents itself thoroughly.
     stripped = []
@@ -135,11 +130,11 @@ def first_purpose(path: Path) -> str:
 
 
 _PKG = json.loads(PKG.read_text(encoding="utf-8"))
-# ⛔ The gate chain no longer lives in the `prebuild` STRING (2026-08-24). It was
-# split into `scripts/gates.json` + `run-gates.py`, so reading `prebuild` alone
-# now sees SIX commands where it used to see 61 — and every reachability check
-# built on it would report 55 live gates as unwired. The roster is spliced in
-# here so "is this script in the prebuild chain?" keeps answering correctly.
+# ⛔ The gate chain does not live in the `prebuild` STRING: it is split into
+# `scripts/gates.json` + `run-gates.py`, so reading `prebuild` alone sees only a
+# handful of commands — and every reachability check built on it would report the
+# live gates as unwired. The roster is spliced in here so "is this script in the
+# prebuild chain?" keeps answering correctly.
 _GATES_JSON = Path(__file__).resolve().parent / "gates.json"
 
 
@@ -154,12 +149,11 @@ _PREBUILD_BLOB = " && ".join(
 )
 _SCRIPTS_BLOB = " && ".join(_PKG.get("scripts", {}).values())
 
-# Runnable suffixes. .php and .sh were EXCLUDED from the table while being
-# COUNTED in the directory row above — so the count said one thing and the
-# table another, which is worse than either alone. 21 PHP tools under
-# plugins/sgs-blocks/scripts were invisible, including golden-master-harness.php
-# and product-search-leak-check.php (whose own header calls itself "the REAL
-# gate", with the JS grep only a tripwire).
+# Runnable suffixes. .php and .sh are included: excluding them from the table
+# while COUNTING them in the directory row above would make the count say one
+# thing and the table another, and would hide PHP tools such as
+# golden-master-harness.php and product-search-leak-check.php (whose own header
+# calls itself "the REAL gate", with the JS grep only a tripwire).
 _RUNNABLE = (".py", ".js", ".mjs", ".php", ".sh")
 
 # THERE ARE TWO GATE CHAINS, not one. package.json `prebuild` runs at build
@@ -448,11 +442,10 @@ def build_io_section() -> list[str]:
 def prebuild_steps() -> list[str]:
     """Every command a build runs, in execution order.
 
-    ⛔ `prebuild` is no longer the whole chain. Since 2026-08-24 it is five
-    generators plus `run-gates.py --tier fast`; the 56 gates live in
-    `scripts/gates.json`. Returning the raw `prebuild` split would document
-    SIX commands and silently drop 55 gates from this catalogue — which is
-    exactly what happened on the split commit before this function was fixed.
+    ⛔ `prebuild` is not the whole chain: it is a few generators plus
+    `run-gates.py --tier fast`, and the gates themselves live in
+    `scripts/gates.json`. Returning the raw `prebuild` split would document only
+    those few commands and silently drop every gate from this catalogue.
     The runner invocation is expanded back into its roster here, tier-tagged,
     so the catalogue keeps naming every gate that can block a build or a
     deploy.
@@ -493,14 +486,12 @@ _REACH_CACHE = None
 def reachability() -> dict:
     """script path -> execution channels, computed LIVE by the audit tool.
 
-    This column used to come from three substring checks against package.json
-    and .githooks. That under-reports badly: a script reached via a JSON
+    Computed by the audit tool, not by substring checks against package.json
+    and .githooks. Those under-report badly: a script reached via a JSON
     manifest, a .claude hook, a skill, another script, a pytest import or a
-    constructed importlib path all rendered as a dash. The catalogue was itself
-    manufacturing the "looks dead but isn't" impression this library suffers
-    from - inspector-scan's 16 rule modules, all 18 migrate-core-blocks pairing
-    transformers and four pytest-imported oracle modules were shown unwired
-    while running on every build.
+    constructed importlib path would all render as a dash, and the catalogue
+    would manufacture the "looks dead but isn't" impression (modules that run
+    on every build shown as unwired).
 
     Calls audit-script-reachability.py directly rather than reading its JSON
     report, so this can never disagree with a stale artefact.
@@ -598,8 +589,7 @@ def build() -> str:
     # catalogue. The reason this section exists is the opposite case: a script
     # built for one task, committed, and then forgotten when the task closed, so
     # the next session hand-does the work or rebuilds the tool from scratch with
-    # a fresh round of brainstorming, QC and testing. That has happened enough
-    # times that the gate chain above is largely scar tissue from it.
+    # a fresh round of brainstorming, QC and testing.
     # THIS is the library to grep before building anything.
     out.append("")
     out.append("### The full library — grep this BEFORE building or hand-doing anything")
@@ -652,12 +642,10 @@ def build() -> str:
                 wired = "+".join(_via) if _via else "—"
             else:
                 wired = "+".join(wired_marks) if wired_marks else "—"
-            # Search the WHOLE header, not the truncated purpose. The first
-            # version searched `purpose` only, so it could catch a contradiction
-            # solely when the phrase happened to land in the first ~150 chars.
-            # It missed inspector-scan/run.js, whose header says "NOT wired into
-            # prebuild yet" four lines down while the file is in BOTH chains —
-            # exactly the case the check exists for.
+            # Search the WHOLE header, not the truncated purpose, so a
+            # contradiction (e.g. a header saying "NOT wired into prebuild yet"
+            # while the file is in the chain) is caught wherever the phrase
+            # lands, not only in the first ~150 chars.
             if wired_marks and _STALE_WIRING.search(_header_text(f)):
                 purpose += " ⚠ **header disputes this — it IS wired**"
             sub = f.relative_to(rp).as_posix()

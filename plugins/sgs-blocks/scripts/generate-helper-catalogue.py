@@ -6,13 +6,10 @@ WHY THIS IS GENERATED AND NOT HAND-WRITTEN
 ------------------------------------------
 Sibling to generate-tooling-catalogue.py, same philosophy: a hand-maintained
 roster of PHP helper functions and JS components is a copy that rots the moment
-a new helper is added and nobody remembers to write it down. This repo has
-already proven that pattern fails — `sgs_svg_stroke_gradient()` was
-independently rediscovered as "the answer" to the same problem shape THREE
-separate times in one week (see plugins/sgs-blocks/CLAUDE.md's "Known
-precedent-function registry"), and `sgs_custom_property_gradient_decls()`
-was not known about at all until stumbled on mid-task. The tooling catalogue
-covers CHECKER/MIGRATION SCRIPTS; this generator covers the other half of the
+a new helper is added and nobody remembers to write it down, and an existing
+helper nobody knows about gets rebuilt from scratch (see
+plugins/sgs-blocks/CLAUDE.md's "Known precedent-function registry"). The
+tooling catalogue covers CHECKER/MIGRATION SCRIPTS; this generator covers the other half of the
 "what already exists" question — the PHP helper FUNCTIONS in
 plugins/sgs-blocks/includes/helpers-*.php and the JS components/atoms in
 plugins/sgs-blocks/src/components/. Both are derived straight from source
@@ -409,11 +406,8 @@ def build() -> str:
         "hand-edit — edits are overwritten. It covers the other half of "
         "\"what already exists\" that the tooling catalogue above doesn't: "
         "PHP helper FUNCTIONS (not scripts) and JS editor components/atoms. "
-        "Built because `sgs_svg_stroke_gradient()` was independently "
-        "rediscovered from scratch three times in one week, and "
-        "`sgs_custom_property_gradient_decls()` wasn't known about at all "
-        "until stumbled on mid-task — read this before writing a new helper "
-        "or component that might already exist."
+        "It makes existing helpers discoverable — read this before writing "
+        "a new helper or component that might already exist."
     )
     out.append("")
     out.extend(build_php_section())

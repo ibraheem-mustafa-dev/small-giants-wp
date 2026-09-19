@@ -1,51 +1,36 @@
 'use strict';
 
 // GROUND-TRUTH: spec=.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §2 LINK
-// (amended 2026-08-13 — the "SUPERSEDED" clause at the top of §2, read live
-// before writing this rule). Bean reviewed `sgs/button`'s popover-based LINK
-// control live and ruled it the standard, to be rolled out everywhere a raw
-// link input exists, including replacing `SgsLinkControl`'s inline mount.
+// (the "SUPERSEDED" clause at the top of §2). The popover-based LINK control on
+// `sgs/button` is the standard everywhere a raw link input exists.
 // `src/components/LinkPopoverControl.js` (`LinkPopoverField` /
-// `LinkPopoverContent`) is now canonical; `SgsLinkControl`'s inline mount is
-// a LOOKALIKE for any NEW consumer.
+// `LinkPopoverContent`) is canonical; `SgsLinkControl`'s inline mount is a
+// LOOKALIKE for any new consumer.
 //
-// WHY THIS IS A NEW RULE, NOT AN EDIT TO RULE 24. Rule 24
+// WHY THIS IS A SEPARATE RULE, NOT AN EDIT TO RULE 24. Rule 24
 // (24-raw-canonical-component.js) hardcodes `SgsLinkControl` as the LINK
 // contract's canonical target (`CANONICAL_FOR` maps `URLInput`/`LinkControl`
 // -> `'SgsLinkControl'`) and its own self-test fixture
 // `sgslinkcontrol-used` asserts `mustNotFlag`. Editing rule 24 in place would
-// invert a live, passing, gate-adjacent rule's meaning under an unrelated
-// commit and risk exactly the kind of "widening a passing gate's condition
-// in place" rule 24's own header warns against (line 27-29). A new rule
-// asking the NEW, narrower question — "is the SUPERSEDED component here,
-// specifically" — is the same pattern rule 24 itself used against rules
-// 04/08. Rule 24 is NOT touched by this change; its `SgsLinkControl` mapping
-// stays correct for the 7 blocks that have not migrated yet.
+// invert a live, passing rule's meaning and is exactly the "widening a passing
+// gate's condition in place" that rule 24's own header warns against. This rule
+// asks the narrower question — "is the SUPERSEDED component here,
+// specifically" — the same pattern rule 24 itself used against rules 04/08.
+// Rule 24's `SgsLinkControl` mapping is not touched by this rule.
 //
-// SHIP MODE: advisory (rules.json), per the project's own "every genuinely
-// new rule starts advisory" convention (rules.json _meta.note) — the 7
-// known remaining consumers (`brand-strip`, `card-grid`, `form`,
-// `pricing-table`, `social-icons`, `team-member`, `trust-bar`) are a real,
-// PRIORITISED-not-yet-cleared migration backlog (contract §2.6), not a
-// build-breaking regression. Promotion trigger: flip `rules.json`'s mode to
-// `"gate"` once that backlog clears to 0 live findings (verify via
-// `node run.js --json` before flipping — do not trust a stale count).
+// MODE: see rules.json for the current mode and open backlog; verify the live
+// count with `node run.js --json` rather than trusting a number written here.
 //
-// EXPECTED POPULATION at introduction (2026-08-13), independent grep over
-// src/blocks/*/edit.js:
-//   grep -rl "<SgsLinkControl" src/blocks/*/edit.js
-//     -> 7 hits: brand-strip, card-grid, form, pricing-table, social-icons,
-//        team-member, trust-bar (icon/media/product-card/button already
-//        migrated off it this same session — see git history).
+// POPULATION CHECK: `git grep -ln "<SgsLinkControl" -- src/` lists every file
+// that mounts the superseded control; a healthy tree returns none.
 //
 // BLIND SPOTS (declared, not fixed here — same boundary rules 04/08/24 use):
 //   - `src/blocks/extensions/*.js` is out of scope (no `block.json`, so
 //     outside the per-block roster this rule walks).
-//   - A component reached indirectly via a block's own local `components/`
-//     subfolder is invisible — this rule reads each block's own `edit.js`
-//     text only.
 //   - A dynamically-computed JSX tag name is invisible (same as 04/08/24's
 //     `jsxName()` helper, reused verbatim here).
+// A component reached through a block's own local or shared `components/`
+// subfolder IS covered — see SHARED-COMPONENT REACH below.
 
 const path = require( 'path' );
 const { makeFinding } = require( '../core/finding' );
@@ -110,21 +95,14 @@ module.exports = {
 		} );
 		if ( ! ok ) return [];
 
-		// ── SHARED-COMPONENT REACH (2026-08-19, C0) ────────────────────────────
-		// Until today this rule read ONLY the block's own edit.js and said so in
-		// its header: "A component reached indirectly via a block's own local
-		// `components/` subfolder is invisible." That is a DECLARED BLIND SPOT on
-		// a rule running as a GATE at openBacklog 0 — the most dangerous shape a
+		// ── SHARED-COMPONENT REACH ─────────────────────────────────────────────
+		// Reading ONLY the block's own edit.js would leave a blind spot on a
+		// rule running as a GATE at openBacklog 0 — the most dangerous shape a
 		// detector can have, because zero findings reads as "finished" rather than
-		// "never looked". A block whose LINK field lives in a shared panel passed
-		// clean by construction.
-		//
-		// EXPECTED POPULATION, declared before the first run by a method
-		// independent of this code: `git grep -ln "<SgsLinkControl" -- src/`
-		// returns ZERO files tree-wide, shared components included. So this
-		// widening is predicted to add 0 findings and cannot red the gate. Its
-		// value is forward: the next LINK field added to a shared panel is caught
-		// instead of passing invisibly.
+		// "never looked": a block whose LINK field lives in a shared panel would
+		// pass clean by construction. So the components a block renders are
+		// resolved and read too. Its value is forward: a LINK field added to a
+		// shared panel is caught instead of passing invisibly.
 		//
 		// Membership is "detect by what it does": a block is credited with a
 		// component because its OWN JSX renders `<ComponentName`, cross-referenced
@@ -141,7 +119,7 @@ module.exports = {
 		// self-test's fixture-local components are reachable too (blocksDir is a
 		// temp dir under --self-test; without the extras the fixture resolves to an
 		// empty map and its mustFlag control passes for the WRONG reason — the
-		// false-green core/selftest.js:44-46 warns about).
+		// false-green core/selftest.js warns about).
 		const extraDirs = [];
 		if ( ctx.componentsDir ) extraDirs.push( ctx.componentsDir );
 		if ( ctx.extensionsDir ) extraDirs.push( ctx.extensionsDir );

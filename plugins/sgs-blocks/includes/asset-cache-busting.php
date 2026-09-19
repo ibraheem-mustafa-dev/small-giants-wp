@@ -2,45 +2,34 @@
 /**
  * Content-derived cache-busting for SGS block assets.
  *
- * THE PROBLEM (proven live on two client sites, D338, 2026-07-14)
- * ---------------------------------------------------------------
+ * WHY A CONTENT-DERIVED ?ver
+ * ---------------------------
  * WordPress versions a block's style/script handle from its block.json
  * `version` field, so every SGS block asset is served at a URL like:
  *
- *     .../build/blocks/adaptive-nav/style-index.css?ver=0.1.0
+ *     .../build/blocks/hero/style-index.css?ver=0.1.0
  *
- * That version is deliberately frozen — the project forbids block version
- * bumps pre-production (D293/D270). The file's CONTENT changes on every build;
- * its URL never does. Hostinger fronts these sites with Cloudflare, which
- * caches the asset with `Cache-Control: public, max-age=604800` — SEVEN DAYS —
- * keyed on that never-changing URL.
- *
- * Consequences observed, not theorised:
- *  - Cloudflare held a 0-byte copy of adaptive-nav's stylesheet for a week. The
- *    `<link>` loaded, parsed to ZERO rules, and the <dialog> drawer fell back to
- *    UA styling — the "white drawer" that cost a full session and a rollback.
- *  - With the drawer unstyled, a latent `display:flex`-without-[open] bug stayed
- *    invisible. Clearing the CDN delivered the real CSS and broke BOTH sites at
- *    once — a fix and a landmine landing together.
- *  - A subsequent a11y fix (WCAG 1.4.3) could not be delivered at all: the file
- *    on disk was correct, the origin served it correctly, and Cloudflare still
- *    returned `Cf-Cache-Status: HIT` with the old bytes.
+ * That version is deliberately frozen: block versions are not bumped
+ * pre-production. The file's CONTENT changes on every build; its URL would
+ * never change. Hostinger fronts these sites with Cloudflare, which caches the
+ * asset with `Cache-Control: public, max-age=604800` — SEVEN DAYS — keyed on
+ * that URL. A URL that never changes therefore lets the CDN, LiteSpeed and
+ * every returning visitor's browser keep serving a stale (or empty) copy of the
+ * stylesheet for up to a week, however correct the file on disk is.
  *
  * Clearing the CDN by hand is not a fix: it is a step a human must remember on
- * every deploy, it does nothing for a returning visitor already holding the
- * poisoned copy for up to 7 days, and it silently reverts any CSS change that
- * ships without it.
+ * every deploy, and it does nothing for a browser already holding the stale
+ * copy.
  *
- * THE FIX
- * -------
- * Derive `?ver` from the file's modification time for SGS plugin assets only.
- * Content changes => URL changes => every cache (browser, Cloudflare, LiteSpeed)
- * misses and refetches. Self-enforcing: no human step, no deploy-order
- * discipline, nothing to forget.
+ * WHAT THIS DOES
+ * --------------
+ * Derive `?ver` from the file's modification time (`filemtime()`) for SGS
+ * plugin assets only. The file changes => the URL changes => every cache
+ * (browser, Cloudflare, LiteSpeed) misses and refetches. Self-enforcing: no
+ * human step, no deploy-order discipline.
  *
- * Explicitly NOT a block version bump — block.json `version` is untouched, so
- * D293/D270 hold. This only rewrites the query string WordPress appends when
- * enqueuing the asset.
+ * This is NOT a block version bump: block.json `version` is untouched. It only
+ * rewrites the query string WordPress appends when enqueuing the asset.
  *
  * @package SGS\Blocks
  */
