@@ -11,27 +11,22 @@
  * pass). So this script: navigates, optionally clicks an "open" trigger,
  * injects axe-core, and scopes the run to a container selector.
  *
- * axe-core is loaded from the LOCAL node_modules copy (already present —
- * verified 2026-07-19, `axe-core@^4.10.3`, transitively installed) rather
- * than a CDN, so the gate works offline/behind a firewall and is version-
- * pinned to what's on disk. `package.json` gets an explicit devDependency
- * added (see this repo's package.json) so it stops being an accident of
- * a transitive install.
+ * axe-core is loaded from the LOCAL node_modules copy (an explicit devDependency
+ * of `plugins/sgs-blocks`, `axe-core@^4.10.3`) rather than a CDN, so the gate
+ * works offline/behind a firewall and is version-pinned to what's on disk.
  *
- * OPENNESS GUARD (added 2026-07-29 — STOP-A-SCOPED-AXE-RUN-ON-A-CLOSED-SURFACE-PASSES-VACUOUSLY)
+ * OPENNESS GUARD (STOP-A-SCOPED-AXE-RUN-ON-A-CLOSED-SURFACE-PASSES-VACUOUSLY)
  * ------------------------------------------------------------------------------------------------
- * The paragraph above was ASPIRATIONAL, not implemented: the script clicked
- * the trigger and then only checked the scope selector MATCHED an element.
- * A `<dialog>` is in the DOM whether open or closed, and axe's default
- * `excludeHidden` skips hidden subtrees — so a CLOSED drawer returned
- * "0 violations" identically to an open one. Every scoped drawer result from
- * before this guard proves nothing.
+ * Clicking a trigger and checking only that the scope selector MATCHED an
+ * element proves nothing: a `<dialog>` is in the DOM whether open or closed, and
+ * axe's default `excludeHidden` skips hidden subtrees — so a CLOSED drawer
+ * returns "0 violations" identically to an open one.
  *
- * The guard now measures the scope's ACTUAL rendered state before axe runs:
- * a `<dialog>` must carry the `open` property; any scope must be visible with
- * a non-zero box; and it must contain at least one focusable element (a panel
- * you cannot Tab into is not an open panel). Failing the guard reports
- * **VACUOUS** and exits 3 — never a passing 0.
+ * The guard measures the scope's ACTUAL rendered state before axe runs: a
+ * `<dialog>` must carry the `open` property; any scope must be visible with a
+ * non-zero box; and it must contain at least one focusable element (a panel you
+ * cannot Tab into is not an open panel). Failing the guard reports **VACUOUS**
+ * and exits 3 — never a passing 0.
  *
  * It arms itself whenever the run implies an opened surface (`--open` given,
  * or the scope resolves to a `<dialog>`). `--require-open` arms it for any
@@ -45,15 +40,15 @@
  *                          [--scope <selector>] [--viewport <width>]
  *                          [--require-open] [--allow-closed] [--json]
  *
- * --open-via (added 2026-07-29)
- * ----------------------------
+ * --open-via
+ * -----------
  *   click    (default) — click the trigger, then park the pointer away from the
  *                        opened surface. Correct for a `<dialog>` drawer.
  *   keyboard           — focus the trigger and press Enter; the pointer never
  *                        touches the surface. REQUIRED for the desktop mega,
  *                        which is a hover-bridge component: parking the pointer
  *                        fires its leave-bridge (170ms grace) and closes it, so
- *                        the click path always ended VACUOUS.
+ *                        the click path always ends VACUOUS.
  *
  * Examples
  * --------
@@ -86,10 +81,8 @@ import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
-// The openness guard + opener were EXTRACTED to a shared module 2026-07-30
-// (DP7). They used to live inline in main() below, which is exactly why three
-// other nav-qa scripts never got them. This script's behaviour is unchanged —
-// verified by re-running it against the same fixture before and after the move.
+// The openness guard + opener live in a shared module so every nav-qa script
+// that opens a surface gets them.
 import {
 	EXIT,
 	OpenError,
@@ -151,10 +144,9 @@ function usageAndExit( message ) {
 
 /**
  * Negative controls for the openness guard — the single most load-bearing check
- * in this script. Before 2026-07-30 its only proof of function was a prose note
- * in README.md recording a manual run, which is not re-runnable and therefore
- * not evidence. Delegates to the shared module so the guard and its proof can
- * never drift apart.
+ * in this script. A prose note recording a manual run is not re-runnable and
+ * therefore not evidence, so the proof is a command. Delegates to the shared
+ * module so the guard and its proof can never drift apart.
  */
 async function runSelfTest() {
 	const { ok, results } = await selfTest( { chromium } );
@@ -201,7 +193,7 @@ async function main() {
 
 		if ( args.open ) {
 			// Opener (click / keyboard park semantics, sticky-header scroll fix)
-			// now lives in lib/openness-guard.mjs — see its docblock for WHY the
+			// lives in lib/openness-guard.mjs — see its docblock for WHY the
 			// keyboard path is mandatory on a hover-bridge panel.
 			try {
 				await openSurface( page, { open: args.open, openVia: args.openVia } );
@@ -227,10 +219,10 @@ async function main() {
 		}
 
 		// --- Openness guard -------------------------------------------------
-		// Measurement + judgement now live in lib/openness-guard.mjs (shared with
+		// Measurement + judgement live in lib/openness-guard.mjs (shared with
 		// sweep-drawer-variants, shoot-drawer-pairs and elementfrompoint-sweep).
-		// Formatting + the exit code stay HERE deliberately — the old inline
-		// version printed from inside the guard, which is what made it unreusable.
+		// Formatting + the exit code stay HERE deliberately — a guard that prints
+		// from inside itself cannot be reused.
 		const guard = await guardScope( page, {
 			scope: args.scope,
 			open: args.open,
@@ -266,21 +258,18 @@ async function main() {
 			}
 		}
 
-		// INCOMPLETE IS REPORTED, NOT DISCARDED (2026-07-30).
+		// INCOMPLETE IS REPORTED, NOT DISCARDED.
 		//
-		// This used to pass `resultTypes: [ 'violations' ]`, which threw away axe's
-		// INCOMPLETE ("needs review") bucket. That is not a cosmetic omission:
-		// measured on the canary POC drawers, axe places EVERY text element inside
-		// an open `<dialog>` into `incomplete` with "Element's background color
-		// could not be determined because it is overlapped by another element" —
-		// because a dialog renders in the top layer over a ::backdrop and axe
-		// cannot resolve the background stack.
+		// axe's INCOMPLETE ("needs review") bucket is not optional output: axe places
+		// EVERY text element inside an open `<dialog>` into `incomplete` with
+		// "Element's background color could not be determined because it is overlapped
+		// by another element" — because a dialog renders in the top layer over a
+		// ::backdrop and axe cannot resolve the background stack.
 		//
 		// So axe's color-contrast rule CANNOT return a violation inside an open
-		// drawer, and this script was printing a confident "0 violations" while 8
-		// elements — including 3 rendering at 1:1 contrast, i.e. invisible — sat
-		// unresolved in a bucket nobody read. A clean 0 that hides 8 unknowns is
-		// the same class of falsehood as a vacuous pass.
+		// drawer, and printing a confident "0 violations" while elements — including
+		// any rendering at 1:1 contrast, i.e. invisible — sit unresolved in a bucket
+		// nobody reads is the same class of falsehood as a vacuous pass.
 		const results = await page.evaluate( async ( scopeSelector ) => {
 			const context = scopeSelector ? document.querySelector( scopeSelector ) : document;
 			// eslint-disable-next-line no-undef

@@ -6,28 +6,27 @@
  * ---------------
  * A `<dialog>` is in the DOM whether open or closed, and axe's default
  * `excludeHidden` skips hidden subtrees — so a scoped run on a CLOSED drawer
- * returns "0 violations" identically to an open one. On 2026-07-29 a guard was
- * added to `axe-run.mjs` for exactly this. A DP7 review on 2026-07-30 then found
- * the SAME hole still open in three other scripts:
+ * returns "0 violations" identically to an open one. `axe-run.mjs` needs the
+ * guard, and so does every other nav-qa script that opens a surface:
  *
- *   - `shoot-drawer-pairs.mjs`  — screenshots the REFERENCE site with no open
- *     check at all (this is how a closed homepage became "the reference"), and
- *     a failed capture cell never affects the exit code.
- *   - `sweep-drawer-variants.mjs` — `openDrawer()` clicks and assumes; vacuity is
- *     recorded as data but folded into exit 1, indistinguishable from a real FAIL.
- *   - `elementfrompoint-sweep.mjs` — clicks, waits 350ms, hopes.
+ *   - `shoot-drawer-pairs.mjs`  — a reference screenshot with no open check would
+ *     present a closed homepage as "the reference", and a failed capture cell
+ *     must affect the exit code.
+ *   - `sweep-drawer-variants.mjs` — `openDrawer()` must assert the drawer opened,
+ *     and vacuity must be reported apart from a real FAIL.
+ *   - `elementfrompoint-sweep.mjs` — a click plus a fixed wait proves nothing.
  *
- * Fixing each in place would have produced four divergent copies of the one
- * check that matters. So the guard lives here once, and every script imports it.
+ * Fixing each in place would produce four divergent copies of the one check
+ * that matters. So the guard lives here once, and every script imports it.
  *
  * DESIGN NOTE — this module returns DATA, never printed output.
  * ------------------------------------------------------------
- * The original guard interleaved measurement with `process.stdout.write` and
- * `process.exit` (axe-run.mjs:312-325), which is precisely why it could not be
- * reused. Everything here is pure: `measureOpenness()` reads the DOM,
- * `assessOpenness()` judges it, and the CALLER decides how to format and which
- * exit code to use. `EXIT` publishes the shared code vocabulary so "3 means
- * vacuous" is stated in one place rather than re-invented per script.
+ * A guard that interleaves measurement with `process.stdout.write` and
+ * `process.exit` cannot be reused. Everything here is pure: `measureOpenness()`
+ * reads the DOM, `assessOpenness()` judges it, and the CALLER decides how to
+ * format and which exit code to use. `EXIT` publishes the shared code
+ * vocabulary so "3 means vacuous" is stated in one place rather than
+ * re-invented per script.
  *
  * Canonical rule: STOP-A-SCOPED-AXE-RUN-ON-A-CLOSED-SURFACE-PASSES-VACUOUSLY.
  * Sibling rule: a check that cannot fail reads green forever — see `selfTest()`.
@@ -39,8 +38,8 @@
  *
  * 3 (VACUOUS) is the load-bearing one: it separates "the surface was not open,
  * so this run proves NOTHING" from "the surface was open and genuinely failed"
- * (1). Before this existed, both collapsed to 1 and a vacuous run looked like a
- * real defect — or worse, a closed surface passed as a clean 0.
+ * (1). If both collapsed to 1, a vacuous run would look like a real defect — or
+ * worse, a closed surface would pass as a clean 0.
  */
 export const EXIT = {
 	OK: 0,
@@ -82,7 +81,7 @@ export class OpenError extends Error {
  *
  * A STICKY site header otherwise intercepts the click on a trigger near the top
  * of the page: the element reports visible + enabled and the click still never
- * lands (measured 2026-07-29 at 375px).
+ * lands (seen at 375px).
  *
  * @param {import('playwright').Page} page
  * @param {string}                    selector
@@ -105,15 +104,15 @@ export async function scrollTriggerIntoView( page, selector ) {
  *   click    — clicks, then parks the pointer at (2,2). The park is REQUIRED for
  *              a `<dialog>`: after a click the cursor stays put, an opened panel
  *              frequently renders a link underneath it, and that link then sits
- *              in `:hover` — measured 2026-07-29, this manufactured a "serious
- *              color-contrast" violation on one drawer link (2.14:1) that
- *              vanished the moment the pointer moved. A real-looking failure
- *              describing nothing a user would see at rest.
+ *              in `:hover`, which manufactures a "serious color-contrast"
+ *              violation on a drawer link (2.14:1) that vanishes the moment the
+ *              pointer moves. A real-looking failure describing nothing a user
+ *              would see at rest.
  *   keyboard — focuses the trigger and presses Enter. REQUIRED for a hover-bridge
  *              surface (the desktop mega panel), whose leave-bridge + 170ms grace
- *              closes it the instant the pointer parks. Measured on canary page
- *              1842: click-then-hold = open 1120x499; click-then-move = closed.
- *              Every mega axe run before this path existed ended VACUOUS.
+ *              closes it the instant the pointer parks: click-then-hold leaves the
+ *              panel open, click-then-move closes it. The click path therefore
+ *              always ends VACUOUS on a mega.
  *
  * @param {import('playwright').Page} page
  * @param {Object}                    opts
@@ -133,9 +132,9 @@ export async function openSurface( page, { open, openVia = 'click', settleMs = 3
 	 * is visible and refuses to open, and conflating them makes the harness lie in
 	 * one direction or the other.
 	 *
-	 * The live case that forced this distinction (2026-07-30, W2-a Gate 2): a
-	 * burger is CSS-hidden at and above `collapsePoint`, so at 1440px and 768px it
-	 * cannot be clicked — by this probe or by a user. There is simply no open state
+	 * The live case: a burger is CSS-hidden at and above `collapsePoint`, so at
+	 * wider viewports it cannot be clicked — by this probe or by a user. There is
+	 * simply no open state
 	 * to measure at that width. Reporting that as a harness FAULT would cry wolf on
 	 * every desktop breakpoint forever, and the usual response to a check that
 	 * always complains is to stop believing it.
@@ -332,9 +331,8 @@ export function formatVacuous( scope, verdict ) {
 /* ------------------------------------------------------------------------- *
  * NEGATIVE CONTROLS
  *
- * A gate that cannot fail reads green forever. Before this, the guard's only
- * proof of function was a prose note in README.md recording a manual run — not
- * re-runnable, and therefore not evidence. Each case below INJECTS a violation
+ * A gate that cannot fail reads green forever, and a prose note recording a
+ * manual run is not re-runnable evidence. Each case below INJECTS a violation
  * and asserts the guard catches it; if the guard is ever broken or short-
  * circuited, these fail loudly.
  * ------------------------------------------------------------------------- */
@@ -359,8 +357,7 @@ const SELF_TEST_CASES = [
 		// NB the padding/border reset is load-bearing, not tidiness: a <dialog>
 		// carries UA default padding (1em) + a 2px border, so `width:0;height:0`
 		// alone still renders a 38x38 border-box and the guard is RIGHT to call
-		// that open. Caught by this very self-test on first run, 2026-07-30 —
-		// a bad fixture, not a bad guard.
+		// that open.
 		name: 'NEGATIVE CONTROL — zero-size surface must be VACUOUS',
 		html: '<dialog open id="s" style="width:0;height:0;padding:0;border:0"><a href="#x">Link</a></dialog>',
 		expect: 'VACUOUS',
@@ -386,7 +383,7 @@ const SELF_TEST_CASES = [
 /*
  * Cases for openSurface() specifically. The guardScope cases above judge a
  * surface's STATE; these judge the ACT of opening it, which is a separate code
- * path and was covered by nothing until 2026-07-30.
+ * path and needs its own controls.
  *
  * The middle case is the one that matters. A trigger which is present but hidden
  * (a burger above its `collapsePoint`) must be distinguishable from one that is

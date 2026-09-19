@@ -6,15 +6,14 @@
  * ---------------
  * Starter panels are token-driven: a panel declares `--primary` / `--surface`
  * / `--text` in its own `:root`, and at build time those values are replaced
- * by the CLIENT's brand tokens so the panel adopts their look (Bean's ruling,
- * 2026-07-21 — it dissolves the "register A vs register B" question).
+ * by the CLIENT's brand tokens so the panel adopts their look.
  *
  * Inheritance makes a panel adapt to the brand. It does NOT make the panel
- * LEGIBLE in the brand. Those are different guarantees, and one client already
- * breaks the second: `--primary-dark` is a dusty pink (#c56a7a) on
- * mamas-munches, where white text measures 3.67:1 against a 4.5:1 minimum.
- * Seven of eight clients pass. A by-eye check on the draft's own palette would
- * never surface it — which is exactly how it would ship.
+ * LEGIBLE in the brand. Those are different guarantees, and a client palette
+ * can break the second: mamas-munches' `--primary-dark` is a dusty pink
+ * (#c56a7a), where white text measures 3.67:1 against a 4.5:1 minimum. A by-eye
+ * check on the draft's own palette would never surface it — which is exactly
+ * how it would ship.
  *
  * So every panel is rendered once per client palette and measured.
  *
@@ -33,7 +32,7 @@
  * -------------------------------
  * axe-run.mjs is the LIVE-SITE Gate-1 tool (Spec 36 FR-36-16): one URL, one
  * run, opens a drawer first. This is a different job — local files, no
- * interaction, one browser reused across 88 combinations. It deliberately
+ * interaction, one browser reused across every draft x client-palette combination. It deliberately
  * shares axe-run.mjs's local pinned axe-core copy rather than a second one, so
  * there is exactly one axe version in play.
  *
@@ -50,12 +49,12 @@
  *   # One client only, while fixing
  *   node palette-contrast-sweep.mjs ../../../../.claude/drafts/mega-menu --client mamas-munches
  *
- * WARN-ONLY BY DEFAULT (Bean-locked)
- * ----------------------------------
+ * WARN-ONLY BY DEFAULT
+ * --------------------
  * This reports; it does not block. Standing rule
  * `a11y-validation-feedback-informational-not-gate`: a11y findings are passive
  * notices, never gates. A contrast gate that fails a build turns "clone this
- * draft" into a forced redesign, which is churn Bean did not ask for — and
+ * draft" into a forced redesign, which is unrequested churn — and
  * when a draft's OWN pairing is accessible, a failure on a client palette is a
  * question about that palette, not a defect in the draft.
  *

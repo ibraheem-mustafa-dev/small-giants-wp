@@ -1,6 +1,6 @@
 /**
  * elementfrompoint-sweep.mjs — the Spec 36 §8 / FR-36-16 `elementFromPoint`
- * occlusion sweep, carried verbatim from Spec 34 FR-S9-5 / FR-34-7 (D101).
+ * occlusion sweep, carried verbatim from Spec 34 FR-S9-5 / FR-34-7.
  *
  * METHODOLOGY (Spec 36 §8, quoted for anyone reading this file cold)
  * --------------------------------------------------------------------
@@ -17,15 +17,15 @@
  * Geometry check (also Spec 36 §8): a partial drawer's
  * `getBoundingClientRect().top` === header bottom ±1px at all three
  * widths. Run separately with --geometry (see below) — it needs a real
- * desktop width with a classic scrollbar (D340 bounce test) which device
- * emulation cannot reproduce, so this script flags that limitation rather
- * than pretending to cover it.
+ * desktop width with a classic scrollbar (the scrollbar-vanish bounce test),
+ * which device emulation cannot reproduce, so this script flags that limitation
+ * rather than pretending to cover it.
  *
- * WHY PARAMETERISED PROBES (the blocks don't exist yet)
- * -------------------------------------------------------
- * This script is written in Wave-0, before `sgs/nav-menu` / `sgs/nav-drawer`
- * exist, so it cannot hardcode selectors. Probes are supplied as a JSON
- * file (see probes.example.json in this directory for the exact shape).
+ * WHY PARAMETERISED PROBES
+ * -------------------------
+ * The script hardcodes no block markup, so it works against any header/drawer
+ * arrangement. Probes are supplied as a JSON file (see probes.example.json in
+ * this directory for the exact shape).
  *
  * PROBES JSON SHAPE
  * ------------------
@@ -35,7 +35,7 @@
  *
  *   Flat:
  *   {
- *     "openSelector": ".sgs-nav-bar-menu__toggle",
+ *     "openSelector": ".sgs-nav-bar-menu__burger",
  *     "probes": [ { ... }, { ... } ]
  *   }
  *
@@ -46,21 +46,21 @@
  *     "1440": { "openSelector": "...", "openScope": "...", "probes": [ ... ] }
  *   }
  *
- * "openScope" (added 2026-07-30, DP7) names the surface the trigger OPENS —
- * e.g. `dialog.sgs-nav-drawer`. It is what lets this script ASSERT the panel is
- * genuinely open before probing, instead of clicking and hoping as it used to.
- * Without it, a closed drawer yields a page of "selector matched no element"
- * probe failures that read like real occlusion defects. Omit it and the run is
- * stamped `openness: UNASSERTED` with a loud warning — never silently trusted.
+ * "openScope" names the surface the trigger OPENS — e.g. `dialog.sgs-nav-drawer`.
+ * It is what lets this script ASSERT the panel is genuinely open before probing,
+ * instead of clicking and hoping. Without it, a closed drawer yields a page of
+ * "selector matched no element" probe failures that read like real occlusion
+ * defects. Omit it and the run is stamped `openness: UNASSERTED` with a loud
+ * warning — never silently trusted.
  *
  * Each probe is one of two kinds:
  *
  *   1. Point probe — a fixed spot in the viewport, expects a specific node:
  *      {
- *        "name": "header-row-toggle",
+ *        "name": "header-row-close",
  *        "kind": "point",
  *        "xRatio": 0.95, "yRatio": 0.05,   // 0..1 of viewport width/height
- *        "expectSelector": ".sgs-nav-drawer__toggle"
+ *        "expectSelector": ".sgs-nav-drawer__close"
  *      }
  *
  *   2. Self probe — probes the CENTRE of a selector's own bounding box,
@@ -70,7 +70,7 @@
  *      {
  *        "name": "drawer-link-1",
  *        "kind": "self",
- *        "selector": ".sgs-nav-drawer__link:nth-child(1)"
+ *        "selector": ".sgs-nav-drawer-menu__item:nth-child(1) .sgs-nav-drawer-menu__link"
  *      }
  *
  * Both kinds accept an optional "expectSelector" override; "self" probes
@@ -232,10 +232,10 @@ async function sweepViewport( browser, url, vpWidth, cfg ) {
 		await trigger.first().click();
 		await page.waitForTimeout( 350 );
 
-		// OPENNESS GUARD (2026-07-30, DP7). This used to click and go straight to
-		// the probe sweep. A drawer that never opened then produced a page of
-		// "selector matched no element" probe failures — which reads as a stack of
-		// real occlusion defects rather than "nothing was measured".
+		// OPENNESS GUARD. Going straight from the click to the probe sweep would let
+		// a drawer that never opened produce a page of "selector matched no element"
+		// probe failures — which reads as a stack of real occlusion defects rather than
+		// "nothing was measured".
 		if ( cfg.openScope ) {
 			guard = await guardScope( page, {
 				scope: cfg.openScope,

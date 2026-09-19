@@ -1,6 +1,6 @@
 {
-  "_doc": "POC content plan for the sgs/nav-drawer variant exit gate (Spec 36 FR-36-6 Task 5). Consumed by build-poc-fixtures.py. Every label and every line of copy here was HARVESTED LIVE from the reference site's open drawer on 2026-07-29 and is recorded in labels-<site>.json in .claude/reports/2026-07-28-drawer-code-extraction/. Nothing here is invented: the design gate's §6 rule is that POC fixtures are exact clones INCLUDING content, so a visual difference between our variant and the reference is attributable to the BLOCK, never to content drift. Genericising this copy is a named PRE-PRODUCTION step (P-DRAWER-VARIANT-CONTENT-GENERICISE), never a POC step.",
-  "_navMenuAttrs_note": "Authoring block markup directly does NOT apply a registerBlockVariation's seeded child attributes — those only fire when an operator inserts the variation from the inserter. So each variant's nav-menu attrs are restated here to match variations.js exactly (verified against that file 2026-07-29).",
+  "_doc": "POC content plan for the sgs/nav-drawer variant exit gate (Spec 36 FR-36-6). Consumed by build-poc-fixtures.py. Every label and every line of copy here was HARVESTED LIVE from the reference site's open drawer and is recorded in labels-<site>.json in .claude/reports/2026-07-28-drawer-code-extraction/. Nothing here is invented: the design gate's §6 rule is that POC fixtures are exact clones INCLUDING content, so a visual difference between our variant and the reference is attributable to the BLOCK, never to content drift. Genericising this copy is a named pre-production step, never a POC step.",
+  "_navMenuAttrs_note": "Authoring block markup directly does NOT apply a registerBlockVariation's seeded child attributes — those only fire when an operator inserts the variation from the inserter. So each variant's sgs/nav-drawer-menu attrs are restated here to match the `navMenu()` seeds in src/blocks/nav-drawer/variations.js exactly.",
   "_known_fidelity_limits": [
     "sgs/social-icons has no Vimeo or Dribbble platform slug (render.php $platform_icons). buck uses Vimeo, dogstudio uses Dribbble — both mapped to platform 'website' with a label override. This is a real framework gap vs the references, recorded not hidden.",
     "dogstudio's decorative index numbers (01-05) beside each link are out of scope by the design gate's own out-of-scope list.",
@@ -78,9 +78,8 @@
       },
       "navMenuAttrs": {
         "gap": "4px",
-        "itemFontSize": 45,
-        "itemFontWeight": "200",
-        "itemFontSizeMobile": 32
+        "itemFontSize": { "desktop": 45, "mobile": 32 },
+        "itemFontWeight": "200"
       },
       "children": [
         { "block": "sgs/text", "attrs": { "text": "Watch our Showreel" } },
@@ -114,7 +113,7 @@
         "closeStyle": "separate-x",
         "variantPreset": "centred-statement"
       },
-      "navMenuAttrs": { "gap": "4px", "itemFontSize": 56, "itemFontSizeMobile": 36 },
+      "navMenuAttrs": { "gap": "4px", "itemFontSize": { "desktop": 56, "mobile": 36 } },
       "children": [
         {
           "block": "sgs/icon-list",
@@ -186,9 +185,8 @@
       },
       "navMenuAttrs": {
         "gap": "4px",
-        "itemFontSize": 64,
-        "listColumns": { "desktop": 2, "mobile": 1 },
-        "itemFontSizeMobile": 40
+        "itemFontSize": { "desktop": 64, "mobile": 40 },
+        "listColumns": { "desktop": 2, "mobile": 1 }
       },
       "children": [
         { "block": "sgs/button", "attrs": { "label": "Let's talk!" } },
@@ -251,7 +249,7 @@
     }
   ],
   "multiInstance": {
-    "_why": "D374 — two instances of the SAME block on one page catch per-render collisions (shared ids, redeclared top-level functions) that a single instance can never surface. Distinct drawerRefs are assigned by the builder, because both blocks default to drawerRef 'sgs-nav-drawer'.",
+    "_why": "Two instances of the SAME block on one page catch per-render collisions (shared ids, redeclared top-level functions) that a single instance can never surface. The builder gives each sgs/nav-drawer a distinct drawerRef (its dialog id), because the block defaults to 'sgs-nav-drawer' and two dialogs must not share an id. sgs/nav-bar-menu's own drawerRef is an sgs_drawer post id, so a burger on this page always targets the default id: the page checks per-render collisions, not burger-to-second-drawer binding.",
     "variants": [ "floating-capped-card", "centred-statement" ],
     "menuLabels": [
       { "text": "Work" },

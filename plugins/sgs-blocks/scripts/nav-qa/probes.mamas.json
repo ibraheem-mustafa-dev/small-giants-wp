@@ -1,7 +1,7 @@
 {
-  "_comment": "REAL probes file for Mama's Munches (gate-1) — Spec 36 §8 / FR-36-16. Authored 2026-07-20 against the LIVE sandybrown canary DOM, not from the block source: every selector below was confirmed present by querying the rendered page (5 bar items Shop/Our Story/Send to Ward/Gift Ideas/FAQs; drawer = <dialog class='sgs-nav-drawer'> containing its own .sgs-nav-bar-menu__bar). Baseline target per Spec 36 §8: 10/10 at 375.",
+  "_comment": "REAL probes file for Mama's Munches (gate-1) — Spec 36 §8 / FR-36-16. Every selector below is confirmed present by querying the rendered sandybrown canary page, not read from the block source (5 bar items Shop/Our Story/Send to Ward/Gift Ideas/FAQs; drawer = <dialog class='sgs-nav-drawer'> containing its own .sgs-nav-drawer-menu__bar). Baseline target per Spec 36 §8: 10/10 at 375.",
 
-  "_selector_note": "There are TWO .sgs-nav-bar-menu__bar instances on the page — the header bar (.sgs-site-header > … > .sgs-container__inner) and the drawer's copy (.sgs-nav-drawer__body). Every probe below is scoped to one or the other; NEVER use a bare .sgs-nav-bar-menu__bar, which matches both and silently probes whichever comes first in the DOM.",
+  "_selector_note": "The header bar renders as .sgs-nav-bar-menu (list .sgs-nav-bar-menu__bar, items .sgs-nav-bar-menu__item) and the drawer's menu renders as .sgs-nav-drawer-menu (list .sgs-nav-drawer-menu__bar, items .sgs-nav-drawer-menu__item), so a bar class can never match the drawer's copy. Bar probes are still scoped to .sgs-site-header so a second bar placed in page content is never probed by accident, and drawer probes to .sgs-nav-drawer.",
 
   "_viewport_note": "elementfrompoint-sweep.mjs opens every viewport at height 1200, so yRatio is a fraction of 1200 — not of a real device height. The 0.028 header-row ratio = the ~34px close-control centre measured live.",
 
@@ -70,7 +70,7 @@
   },
 
   "768": {
-    "_comment": "Tablet: collapsePoint is 768, so the BAR is shown (no burger, no drawer) — confirmed live. No openSelector: there is nothing to open. These probes prove nothing overlays the bar and steals its hit-test (sticky rows, the cart icon, a stray full-width container).",
+    "_comment": "Tablet: collapsePoint is 768, so the BAR is shown (no burger, no drawer). No openSelector: there is nothing to open. These probes prove nothing overlays the bar and steals its hit-test (sticky rows, the cart icon, a stray full-width container).",
     "probes": [
       {
         "name": "bar-link-1-shop-returns-self",
@@ -101,7 +101,7 @@
   },
 
   "1440": {
-    "_comment": "Desktop: flat bar. Phase 1 ships NO mega menu (FR-36-5 is a later phase), so unlike probes.example.json there is no mega trigger to open and no mega-scrim to probe — do not add one until the mega actually ships, or the sweep will exit 2 on a selector matching 0 elements.",
+    "_comment": "Desktop: flat bar. This menu has no mega or dropdown item, so unlike probes.example.json there is no mega trigger to open and no mega panel to probe — do not add one unless the menu gains a mega item, or the sweep will exit 2 on a selector matching 0 elements.",
     "probes": [
       {
         "name": "bar-link-1-shop-returns-self",

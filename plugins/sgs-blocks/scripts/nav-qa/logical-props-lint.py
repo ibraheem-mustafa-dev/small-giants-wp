@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""logical-props-lint.py — RTL-readiness WARN-only lint for the SGS nav blocks
+"""logical-props-lint.py — RTL-readiness lint for the SGS nav blocks
 (Spec 36 §8 / FR-36-16 "RTL/logical properties").
 
 WHY WARN BY DEFAULT — AND WHAT `--check` ADDS
@@ -10,13 +10,10 @@ icon nudge that should stay on the same visual side regardless of writing
 direction). So the DEFAULT mode is unchanged: it prints every hit with
 file:line, lets a human decide, and always exits 0.
 
-`--check` is the deliberate hard-gate mode the old header note asked a
-future session to discuss first. The discussion happened: this script was
-the ONLY detector for a real Spec 36 §8 requirement (RTL/logical
-properties) and a repo-wide search found it referenced from nothing but its
-own README — so the risk was never "it reads green forever", it was that
-nobody ever runs it. `--check` fails (exit 1) on any hit that is NOT
-already recorded in `logical-props-baseline.json`. Existing debt is frozen
+`--check` is the deliberate hard-gate mode. This script is the ONLY detector
+for a real Spec 36 §8 requirement (RTL/logical properties), and a detector
+nobody runs reads green forever. `--check` fails (exit 1) on any hit that is
+NOT already recorded in `logical-props-baseline.json`. Existing debt is frozen
 and VISIBLE in that file; new debt breaks the build. Re-seed deliberately
 with `--seed` (and expect the diff to be reviewed).
 
@@ -64,17 +61,16 @@ USAGE
   python logical-props-lint.py --seed [dir ...]     # rewrite the baseline
   python logical-props-lint.py --self-test          # prove the gate can fail
 
-  # Default target dirs (the two nav blocks + the shared utils module —
-  # update these paths once the nav blocks/shared module actually land,
-  # see the DEFAULT_DIRS note below):
+  # Default target dirs (nav-bar-menu, nav-drawer-menu, nav-drawer and the
+  # shared utils module — see DEFAULT_DIRS below):
   python logical-props-lint.py
 
-  # Explicit dirs once you know the real paths:
-  python logical-props-lint.py src/blocks/nav-menu src/blocks/nav-drawer src/utils
+  # Explicit dirs:
+  python logical-props-lint.py src/blocks/nav-bar-menu src/blocks/nav-drawer-menu src/blocks/nav-drawer src/utils
 
-A missing target directory is reported as a WARN line (the block/module
-hasn't been built yet) rather than a crash — this script is meant to be
-runnable from Wave-0 onward, before any of the target dirs exist.
+A missing target directory is reported as a WARN line rather than a crash. A
+default directory that does not exist means part of the nav surface is
+unscanned — keep DEFAULT_DIRS in step with `src/blocks/`.
 
 Spec 36 coverage: FR-36-16 "RTL/logical properties" in the FR-36-16 live gate list.
 """
@@ -94,15 +90,14 @@ from pathlib import Path
 SCRIPT_DIR = Path(__file__).resolve().parent
 SGS_BLOCKS_ROOT = SCRIPT_DIR.parent.parent  # plugins/sgs-blocks/
 
-# Default target dirs. `nav-menu` and `nav-drawer` are the two Spec 36 nav
-# blocks (not yet built at Wave-0 — see block.json roster in the spec's
-# FR-36-2). `utils` is the existing shared-JS-module convention
-# (src/utils/responsive.js, tokens.js, icons.js) — the closest existing
-# home for FR-36-7's "shared nav plumbing utility" until/unless that
-# utility gets its own directory. Update this list the moment the real
-# paths are known; do not let this drift silently.
+# Default target dirs. `nav-bar-menu`, `nav-drawer-menu` and `nav-drawer` are the
+# three Spec 36 nav blocks. `utils` is the shared-JS-module convention
+# (src/utils/responsive.js, tokens.js, icons.js) — the home of FR-36-7's
+# "shared nav plumbing utility". A block missing from this list is a block the
+# gate never scans, so add any new nav block here.
 DEFAULT_DIRS = [
-    SGS_BLOCKS_ROOT / "src" / "blocks" / "nav-menu",
+    SGS_BLOCKS_ROOT / "src" / "blocks" / "nav-bar-menu",
+    SGS_BLOCKS_ROOT / "src" / "blocks" / "nav-drawer-menu",
     SGS_BLOCKS_ROOT / "src" / "blocks" / "nav-drawer",
     SGS_BLOCKS_ROOT / "src" / "utils",
 ]
@@ -129,7 +124,7 @@ PHYSICAL_TO_LOGICAL = {
 # whitespace/`{`/`;`, followed by `:`. Captures the property name only.
 # Deliberately simple (line-based) — this is a WARN nudge, not a full CSS
 # parser; it can over- or under-match inside multi-line values, which is
-# an acceptable tradeoff for a non-gating lint.
+# an acceptable tradeoff for a line-based lint.
 PROPERTY_RE = re.compile(
     r"(?:^|[;{]|\s)([a-zA-Z-]+)\s*:\s*[^;{}]*;?",
 )
@@ -403,9 +398,9 @@ def main(argv: list[str]) -> int:
     print()
     if not any_dir_scanned:
         print(
-            "logical-props-lint: no target directories exist yet — nothing to scan. "
-            "This is expected at Wave-0 before the nav blocks are built; re-run once "
-            "src/blocks/nav-menu and src/blocks/nav-drawer exist."
+            "logical-props-lint: no target directories exist — nothing to scan. "
+            "Check DEFAULT_DIRS against src/blocks/nav-bar-menu, "
+            "src/blocks/nav-drawer-menu and src/blocks/nav-drawer."
         )
     elif total_hits == 0:
         print("logical-props-lint: 0 warnings across all scanned directories.")
@@ -416,7 +411,7 @@ def main(argv: list[str]) -> int:
             "review each hit; it does not fail the build."
         )
 
-    # Always exits 0 — see the "WHY WARN, NOT FAIL" header note.
+    # Default mode always exits 0 — see the "WHY WARN BY DEFAULT" header note.
     return 0
 
 

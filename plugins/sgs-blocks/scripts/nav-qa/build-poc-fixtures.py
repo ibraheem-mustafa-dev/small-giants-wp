@@ -3,17 +3,17 @@
 
 WHY THIS EXISTS
 ---------------
-Spec 36 FR-36-6's exit gate (Task 5) verifies each `sgs/nav-drawer` variant as an
-EXACT clone of the reference design it was modelled on — INCLUDING CONTENT (design
-gate `2026-07-28-nav-drawer-variants-design-gate.md` §6, Bean-binding). Holding the
-content constant is the whole point: any visual difference between our variant and
-the reference is then attributable to the BLOCK's capabilities, never to content
-drift. So each fixture needs its OWN classic menu carrying the reference's real link
-labels, and its seeded child blocks carrying the reference's real copy.
+Spec 36 FR-36-6's exit gate verifies each `sgs/nav-drawer` variant as an EXACT
+clone of the reference design it was modelled on — INCLUDING CONTENT (the
+drawer-variant design gate, §6). Holding the content constant is the whole
+point: any visual difference between our variant and the reference is then
+attributable to the BLOCK's capabilities, never to content drift. So each fixture
+needs its OWN classic menu carrying the reference's real link labels, and its
+seeded child blocks carrying the reference's real copy.
 
-Doing that by hand across 7 variants is error-prone and unrepeatable, and the
-follow-on `P-DRAWER-VARIANT-CONTENT-GENERICISE` pre-production step has to rewrite
-the same fixtures again. Hence a script.
+Doing that by hand across every variant is error-prone and unrepeatable, and the
+pre-production step that genericises the fixture copy has to rewrite the same
+fixtures again. Hence a script.
 
 WHAT IT DOES
 ------------
@@ -21,10 +21,11 @@ For each variant in the content plan:
   1. Creates (or reuses) a classic nav menu named `poc-<variant>` via the REST
      `/wp/v2/menus` endpoint, with one custom-link item per reference link label.
   2. Creates (or updates) a page `poc-drawer-<variant>` whose block content is
-     a header `sgs/nav-menu` (burger forced ALWAYS visible so desktop anchors are
-     reachable) plus the variant's `sgs/nav-drawer` with its seeded child roster,
-     text filled from the reference's real copy.
-Plus one extra page holding TWO drawer instances (D374 multi-instance check).
+     a header `sgs/nav-bar-menu` (burger forced ALWAYS visible so desktop anchors
+     are reachable) plus the variant's `sgs/nav-drawer`, whose first child is an
+     `sgs/nav-drawer-menu` followed by its seeded child roster, text filled from
+     the reference's real copy.
+Plus one extra page holding TWO drawer instances (multi-instance check).
 
 Content is NEVER invented here: it comes from the plan file, which is authored from
 the live harvest at `.claude/reports/2026-07-28-drawer-code-extraction/labels-*.json`.
@@ -67,9 +68,10 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[4]
 ENV_PATH = REPO_ROOT / ".claude" / "secrets" / "sandybrown.env"
 
-# Burger 'Always' — nav-menu/edit.js BURGER_SCOPE_PX.always. Forces the burger to
-# show at every width so the DESKTOP anchors (trigger/centred/header) are reachable
-# on a 1440 viewport, which is the whole point of these fixtures.
+# Burger 'Always' — the value the nav-bar-menu editor's burger-scope control
+# writes to `collapsePoint` for "always". Forces the burger to show at every width
+# so the DESKTOP anchors (trigger/centred/header) are reachable on a 1440
+# viewport, which is the whole point of these fixtures.
 BURGER_ALWAYS_PX = 99999
 
 PAGE_SLUG_PREFIX = "poc-drawer-"
@@ -170,11 +172,17 @@ def build_children(children: list[dict]) -> str:
 def build_page_content(menu_id: int, variant: dict, drawer_ref: str | None = None) -> str:
     """Header bar + the variant's drawer, both bound to this fixture's own menu.
 
-    `drawer_ref` overrides the drawer's DOM id and the burger's `aria-controls`.
-    It must be unique per drawer on a page: both blocks default to
-    `sgs-nav-drawer`, so two default drawers on one page would produce duplicate
-    element ids and an ambiguous burger→panel binding (verified live 2026-07-29 —
-    every burger on the probe page carried `aria-controls="sgs-nav-drawer"`).
+    `drawer_ref` overrides the `sgs/nav-drawer` DOM id. It must be unique per
+    drawer on a page: two default drawers on one page would produce duplicate
+    element ids.
+
+    The bar's own `drawerRef` is deliberately NOT written: on `sgs/nav-bar-menu`
+    it is a NUMBER (an `sgs_drawer` post id; 0 = the site's active drawer, falling
+    back to the default id `sgs-nav-drawer`), so a string id there is an invalid
+    attribute value that the block drops. A burger therefore always targets the
+    default id, which is the drawer on any single-drawer page. Binding a burger to
+    a non-default in-content drawer needs an `sgs_drawer` post, which this script
+    does not create.
     """
     bar_attrs = {
         "ref": menu_id,
@@ -184,28 +192,26 @@ def build_page_content(menu_id: int, variant: dict, drawer_ref: str | None = Non
     }
     drawer_attrs = dict(variant["drawerAttrs"])
     if drawer_ref:
-        bar_attrs["drawerRef"] = drawer_ref
         drawer_attrs["drawerRef"] = drawer_ref
 
     drawer_menu_attrs = {"ref": menu_id}
     drawer_menu_attrs.update(variant.get("navMenuAttrs") or {})
     inner = "\n".join(
-        [block("sgs/nav-menu", drawer_menu_attrs), build_children(variant.get("children") or [])]
+        [block("sgs/nav-drawer-menu", drawer_menu_attrs), build_children(variant.get("children") or [])]
     ).strip()
     return (
         f"{filler('Header clearance', HEADER_CLEARANCE_PARAS)}\n\n"
-        f"{block('sgs/nav-menu', bar_attrs)}\n\n"
+        f"{block('sgs/nav-bar-menu', bar_attrs)}\n\n"
         f"{block('sgs/nav-drawer', drawer_attrs, inner)}\n\n"
         f"{filler('Scroll filler', SCROLL_FILLER_PARAS)}"
     )
 
 
 # Paragraphs placed ABOVE the fixture's nav bar so its burger clears the theme
-# header's footprint. Measured 2026-07-29 at 375px: the site header is
-# `position:absolute`, 251px tall (it renders the 305x102 DESKTOP logo at mobile
-# width), and it overlaid the in-content burger at (24,101) — every click was
-# intercepted by that logo image, which reads as a broken drawer but is the
-# fixture's stacking arrangement, not the block.
+# header's footprint. At 375px the site header is `position:absolute` and tall
+# enough to overlay the in-content burger — every click is intercepted by the
+# header's logo image, which reads as a broken drawer but is the fixture's
+# stacking arrangement, not the block.
 #
 # Scrolling CANNOT fix this: an absolutely-positioned header scrolls WITH the
 # document, so its overlap with in-content elements is fixed in document space.
@@ -253,7 +259,7 @@ def ensure_menu(wp: WP, name: str, labels: list[dict], dry_run: bool) -> int:
             wp.delete(f"/menu-items/{item['id']}", {"force": True})
     else:
         menu_id = wp.post("/menus", {"name": name, "description":
-                                     "nav-drawer variant POC fixture (Spec 36 FR-36-6 Task 5)"})["id"]
+                                     "nav-drawer variant POC fixture (Spec 36 FR-36-6)"})["id"]
 
     for position, label in enumerate(labels, start=1):
         wp.post(
@@ -375,24 +381,24 @@ def main() -> int:
             sys.stderr.write(f"  FAILED {name}: {err}\n")
             failures.append((name, str(err)))
 
-    # D374: a page carrying two instances of the same block, to catch per-render
+    # A page carrying two instances of the same block, to catch per-render
     # collisions (shared IDs, top-level function redeclaration) that a single
     # instance can never surface.
     multi = plan.get("multiInstance")
     if multi and not args.only:
-        print("  multi-instance page (D374)")
+        print("  multi-instance page")
         try:
             menu_id = ensure_menu(wp, MENU_NAME_PREFIX + "multi", multi["menuLabels"], args.dry_run)
             parts = []
             for index, variant_name in enumerate(multi["variants"], start=1):
                 source = next(v for v in plan["variants"] if v["name"] == variant_name)
-                # Distinct refs — the correct operator configuration for 2 drawers
-                # on one page. (The default-collision case is probed separately.)
+                # Distinct drawer ids — the correct configuration for 2 drawers on
+                # one page. (The default-collision case is probed separately.)
                 parts.append(build_page_content(menu_id, source, f"sgs-nav-drawer-{index}"))
             page_id = ensure_page(
                 wp,
                 PAGE_SLUG_PREFIX + "multi-instance",
-                "POC drawer — two instances (D374)",
+                "POC drawer — two instances",
                 "\n\n".join(parts),
                 args.dry_run,
             )

@@ -1,13 +1,14 @@
 /**
- * shoot-drawer-pairs.mjs — same-content side-by-side captures for Bean's eye.
+ * shoot-drawer-pairs.mjs — same-content side-by-side captures for the owner's eye.
  *
  * WHY
  * ---
- * R-31-13: script measurement and Bean's eye are CO-AUTHORITATIVE. Numbers alone
- * do not close a fidelity gate, so the Task-5 exit gate needs a visual pair per
- * variant: our fixture next to the reference drawer it was modelled on, at the
- * same viewport, carrying the SAME CONTENT (the fixtures were built from the
- * live harvest precisely so this comparison is about the block, not the copy).
+ * R-31-13: script measurement and the owner's eye are CO-AUTHORITATIVE. Numbers
+ * alone do not close a fidelity gate, so the drawer-variant exit gate needs a
+ * visual pair per variant: our fixture next to the reference drawer it was
+ * modelled on, at the same viewport, carrying the SAME CONTENT (the fixtures are
+ * built from the live harvest precisely so this comparison is about the block,
+ * not the copy).
  *
  * Reference sites are captured best-effort: several need bespoke trigger
  * handling, and a site that will not open is recorded as UNCAPTURED with the
@@ -24,7 +25,7 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
 import { EXIT, FOCUSABLE_SELECTOR, guardScope } from './lib/openness-guard.mjs';
 
-const OURS_OPEN = '.entry-content > nav.sgs-nav-menu .sgs-nav-menu__burger';
+const OURS_OPEN = '.entry-content > nav.sgs-nav-bar-menu .sgs-nav-bar-menu__burger';
 const PAGE_PREFIX = 'poc-drawer-';
 
 // Per-reference trigger recipes. Each site gets a CANDIDATE LIST tried in order
@@ -78,10 +79,10 @@ function parseArgs( argv ) {
 /**
  * Click the first candidate selector that is actually visible.
  *
- * Takes a selector OR a list. Uses Playwright locators throughout — an earlier
- * version passed the selector into `document.querySelector`, which throws
- * SyntaxError on any Playwright-specific selector (`text=`, `:has-text()`) and
- * silently cost every reference capture (measured 2026-07-29: 0/7 captured).
+ * Takes a selector OR a list. Uses Playwright locators throughout — passing the
+ * selector into `document.querySelector` would throw SyntaxError on any
+ * Playwright-specific selector (`text=`, `:has-text()`) and silently lose every
+ * reference capture.
  */
 async function clickClear( page, selector ) {
 	const candidates = Array.isArray( selector ) ? selector : [ selector ];
@@ -114,8 +115,8 @@ async function clickClear( page, selector ) {
 		// Park the pointer in the corner. The cursor stays where it clicked, and
 		// an opened full-screen panel usually renders a link right underneath it
 		// — that link then sits in :hover and the screenshot shows a highlighted
-		// item no reader would see at rest. Measured 2026-07-29: a nav link
-		// photographed pink-with-underline purely because the burger sat behind it.
+		// item no reader would see at rest (a nav link photographed
+		// pink-with-underline purely because the burger sat behind it).
 		await page.mouse.move( 2, 2 );
 		await page.waitForTimeout( 900 );
 		return candidate;
@@ -155,10 +156,10 @@ async function shootOurs( browser, url, width, file ) {
 		await page.goto( url, { waitUntil: 'networkidle', timeout: 45000 } );
 		await clickClear( page, OURS_OPEN );
 
-		// FULL openness guard, not the `[open]`-property spot-check this used to
-		// do (2026-07-30, DP7). `dialog[open]` alone passes on a drawer that is
-		// open-but-zero-size, open-but-display:none, or open with nothing
-		// focusable in it — three states that photograph as an empty page.
+		// FULL openness guard, not an `[open]`-property spot-check: `dialog[open]`
+		// alone passes on a drawer that is open-but-zero-size, open-but-display:none,
+		// or open with nothing focusable in it — three states that photograph as an
+		// empty page.
 		const verdict = await guardScope( page, {
 			scope: 'dialog.sgs-nav-drawer',
 			open: OURS_OPEN,
@@ -180,12 +181,12 @@ async function shootOurs( browser, url, width, file ) {
 /**
  * Capture a reference site's opened panel.
  *
- * WHY THIS IS STRICTER THAN IT LOOKS (2026-07-30, DP7 clause 1)
- * ------------------------------------------------------------
- * This function previously clicked the trigger and screenshotted immediately,
- * with NO check that anything opened. That is how two-column-editorial's
- * "reference" came to be the site's CLOSED homepage, and how solid-brand-light
- * ended up with no reference at all while the run still reported success.
+ * WHY THIS IS STRICTER THAN IT LOOKS
+ * ----------------------------------
+ * A capture that clicks the trigger and screenshots immediately, with no check
+ * that anything opened, would present the site's CLOSED homepage as the
+ * "reference", and a variant with no reference at all would still report
+ * success.
  *
  * A third-party panel has no selector we can know a priori, so openness cannot
  * be asserted generically. Rather than guess, the recipe must NAME its panel
@@ -283,11 +284,10 @@ async function main() {
 	const refOk = manifest.filter( ( m ) => m.referenceShot.ok ).length;
 	process.stdout.write( `\n${ oursOk }/${ manifest.length } ours captured; ${ refOk }/${ manifest.length } references captured\n` );
 
-	// EXIT CODE (added 2026-07-30, DP7). This used to fall off the end of main()
-	// and exit 0 no matter what — a run where ZERO drawers opened reported
-	// "0/14 ours captured" in stdout text and still told the shell it succeeded.
-	// A capture harness that cannot fail is how a closed homepage became a
-	// reference screenshot nobody questioned.
+	// EXIT CODE. A capture harness that cannot fail lets a run where ZERO drawers
+	// opened report "0/14 ours captured" in stdout text while telling the shell it
+	// succeeded — which is how a closed homepage becomes a reference screenshot
+	// nobody questions.
 	const vacuous = manifest.filter(
 		( m ) => m.ours.status === 'VACUOUS' || m.referenceShot.status === 'VACUOUS'
 	).length;

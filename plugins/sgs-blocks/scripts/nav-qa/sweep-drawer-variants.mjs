@@ -1,15 +1,15 @@
 /**
- * sweep-drawer-variants.mjs — the Spec 36 FR-36-6 Task-5 exit-gate sweep.
+ * sweep-drawer-variants.mjs — the Spec 36 FR-36-6 drawer-variant exit-gate sweep.
  *
  * WHY THIS SHAPE
  * --------------
- * Task 5 is a pre-registered gate with a fixed check-list, and its acceptance
- * rule is "every check has a recorded result — 'cannot tell' is a FAIL".
- * Running those checks by hand across 7 variants x 3 widths invites exactly the
- * failure the gate exists to prevent: a tidy summary with untested cells in it.
- * So each check returns PASS / FAIL / VACUOUS with the measured evidence
- * attached, and anything it could not determine is recorded as such — never
- * omitted, never rounded up to a pass.
+ * The gate is a pre-registered check-list, and its acceptance rule is "every
+ * check has a recorded result — 'cannot tell' is a FAIL". Running those checks
+ * by hand across every variant and width invites exactly the failure the gate
+ * exists to prevent: a tidy summary with untested cells in it. So each check
+ * returns PASS / FAIL / VACUOUS with the measured evidence attached, and
+ * anything it could not determine is recorded as such — never omitted, never
+ * rounded up to a pass.
  *
  * WHAT IT CHECKS (per variant, per width)
  * ---------------------------------------
@@ -45,23 +45,21 @@ import { EXIT, guardScope, scrollTriggerIntoView } from './lib/openness-guard.mj
 
 const __dirname = path.dirname( fileURLToPath( import.meta.url ) );
 
-// Scoped past the theme header's burger AND the one inside the drawer — a bare
-// `.sgs-nav-menu__burger` resolves to the header's, which is hidden at desktop
-// and dies on a click timeout that looks like a broken drawer (measured
-// 2026-07-29; see this directory's README "selector traps").
-const OPEN_SEL = '.entry-content > nav.sgs-nav-menu .sgs-nav-menu__burger';
-// The drawer REPARENTS to <body> on open (D323), so it must be scoped alone.
+// Scoped to the fixture page's own nav-bar-menu. A bare
+// `.sgs-nav-bar-menu__burger` resolves to the theme header's burger, which is
+// hidden at desktop and dies on a click timeout that looks like a broken drawer
+// (see this directory's README "Selector traps").
+const OPEN_SEL = '.entry-content > nav.sgs-nav-bar-menu .sgs-nav-bar-menu__burger';
+// The drawer reparents to <body> on open, so it must be scoped alone.
 const DRAWER_SEL = 'dialog.sgs-nav-drawer';
 
 /**
  * Contrast failures the OWNER has knowingly accepted, as `rgb(fg)-on-rgb(bg)`.
  *
- * P-MAMAS-PRIMARY-CONTRAST, Bean 2026-07-30: "the content is still
- * distinguishable with those colours even though they fail WCAG". His ruling was
- * explicit that these must be REPORTED and CITED, never suppressed — so entries
- * here move a failure into its own `acceptedFailures` bucket in the report and
- * out of the pass/fail verdict. They are still printed. Adding a pair here is a
- * decision that needs Bean, not a way to quieten a red check.
+ * An accepted pair must still be REPORTED, never suppressed — so entries here
+ * move a failure into its own `acceptedFailures` bucket in the report and out of
+ * the pass/fail verdict. They are still printed. Adding a pair here is an owner
+ * decision, not a way to quieten a red check.
  */
 const ACCEPTED_CONTRAST_PAIRS = [
 	// The Mama's coral CTA (#e68a95) with the brand's dark brown label on it.
@@ -94,14 +92,14 @@ function parseArgs( argv ) {
 /**
  * Open the drawer and return the burger handle, or throw with a real reason.
  *
- * The burger is scrolled to mid-viewport first. Measured 2026-07-29: at 375px
- * the theme's STICKY site header overlays the top of the page content, so the
- * fixture's in-content burger is visible and enabled but its click is
- * intercepted by the header's logo image — Playwright retries for 30s and dies.
- * That is a property of this FIXTURE arrangement (a second nav bar placed in
- * page content, below a sticky header), not of the drawer: in production the
- * burger lives inside the header itself. Scrolling it clear measures the block
- * rather than the fixture's stacking accident.
+ * The burger is scrolled to mid-viewport first. At 375px the theme's STICKY
+ * site header overlays the top of the page content, so the fixture's in-content
+ * burger is visible and enabled but its click is intercepted by the header's
+ * logo image — Playwright retries for 30s and dies. That is a property of the
+ * FIXTURE arrangement (a second nav bar placed in page content, below a sticky
+ * header), not of the drawer: in production the burger lives inside the header
+ * itself. Scrolling it clear measures the block rather than the fixture's
+ * stacking accident.
  */
 async function openDrawer( page ) {
 	// These pre-click failures are VACUOUS too, not ordinary FAILs: in every one
@@ -124,10 +122,10 @@ async function openDrawer( page ) {
 	await burger.click( { timeout: 15000 } );
 	await page.waitForTimeout( 600 );
 
-	// ASSERT, don't assume (2026-07-30, DP7). This used to click and return the
-	// burger with no check at all, so every downstream measurement in this sweep
-	// ran against whatever state the page happened to be in. A closed drawer then
-	// produced a tidy row of failures that looked like real defects.
+	// ASSERT, don't assume. Without this check every downstream measurement in
+	// the sweep would run against whatever state the page happened to be in, and
+	// a closed drawer would produce a tidy row of failures that look like real
+	// defects.
 	const verdict = await guardScope( page, {
 		scope: DRAWER_SEL,
 		open: OPEN_SEL,
@@ -162,7 +160,7 @@ async function measureGeometry( page ) {
 			backdropFilter: s.backdropFilter,
 			opacity: s.opacity,
 			focusables,
-			navLinkCount: d.querySelectorAll( '.sgs-nav-menu__link' ).length,
+			navLinkCount: d.querySelectorAll( '.sgs-nav-drawer-menu__link' ).length,
 		};
 	}, DRAWER_SEL );
 }
@@ -267,9 +265,8 @@ async function checkNoJs( browser, url, labels ) {
 		await page.goto( url, { waitUntil: 'domcontentloaded', timeout: 45000 } );
 		const html = await page.content();
 		// Compare against the HTML-ENCODED label too. "Arts & Culture" is served
-		// as "Arts &amp; Culture", so a raw substring test reported it missing
-		// and manufactured a crawlability failure that did not exist (measured
-		// 2026-07-29 — the label was present twice in the no-JS HTML).
+		// as "Arts &amp; Culture", so a raw substring test would report it
+		// missing and manufacture a crawlability failure that does not exist.
 		const encode = ( s ) => s.replace( /&/g, '&amp;' ).replace( /</g, '&lt;' ).replace( />/g, '&gt;' );
 		const missing = labels.filter( ( l ) => ! html.includes( l.text ) && ! html.includes( encode( l.text ) ) );
 		return {
@@ -288,38 +285,31 @@ async function checkNoJs( browser, url, labels ) {
 /**
  * Rest-state contrast across EVERY text element in the open drawer.
  *
- * WHY THIS IS HAND-ROLLED AND NOT DELEGATED TO axe (measured 2026-07-30)
- * ---------------------------------------------------------------------
- * The obvious move is "let axe's color-contrast rule do it". It cannot. An open
- * `<dialog>` renders in the browser's TOP LAYER above a `::backdrop`, and axe
- * cannot resolve a background through that: measured on the canary POC drawers,
- * axe places EVERY text element in the drawer into its INCOMPLETE bucket with
- * "Element's background color could not be determined because it is overlapped
- * by another element" — 8 of 8, including 3 rendering at 1:1 (invisible). Axe
- * therefore CANNOT produce a contrast violation inside a drawer, so delegating
- * to it would have replaced one blind check with a differently-blind one.
+ * WHY THIS IS HAND-ROLLED AND NOT DELEGATED TO axe
+ * ------------------------------------------------
+ * axe's color-contrast rule cannot do this. An open `<dialog>` renders in the
+ * browser's TOP LAYER above a `::backdrop`, and axe cannot resolve a background
+ * through that: it places EVERY text element in the drawer into its INCOMPLETE
+ * bucket with "Element's background color could not be determined because it is
+ * overlapped by another element" — including text rendering at 1:1 (invisible).
+ * axe therefore cannot produce a contrast violation inside a drawer, so
+ * delegating to it would be a blind check.
  *
- * WHAT THIS FIXES vs THE OLD VERSION
- * ----------------------------------
- * The previous implementation measured exactly one selector —
- * `.sgs-nav-menu__link-text` — which is precisely why
- * P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER (`.sgs-icon-list__text` at 1:1 on the two
- * dark `footer-bg` variants, 6 elements) sailed through it. It also composited
- * the panel over hardcoded white and applied that single background to every
- * element, so any nested surface (a card, a button, an inner band) was measured
- * against the wrong colour. And despite its name it never hovered anything.
- *
- * Now: every element carrying its own text node is measured, each against its
- * OWN effective background — resolved by climbing ancestors to the first
- * non-transparent backgroundColor, then compositing any alpha over that. WCAG
- * large-text relaxation (>=24px, or >=18.66px at weight >=700 -> 3:1) applied
- * per element rather than as a blanket rule.
+ * WHAT IT MEASURES
+ * ----------------
+ * Every element carrying its own text node is measured — not one selector — each
+ * against its OWN effective background, resolved by climbing ancestors to the
+ * first non-transparent backgroundColor, then compositing any alpha over that.
+ * Measuring one selector would miss text in nested content blocks, and applying
+ * a single panel background to every element would measure any nested surface
+ * (a card, a button, an inner band) against the wrong colour. The WCAG
+ * large-text relaxation (>=24px, or >=18.66px at weight >=700 -> 3:1) is
+ * applied per element rather than as a blanket rule.
  *
  * @param {import('playwright').Page} page
- * @param {string[]}                  acceptedRatios Known + owner-accepted
- *        "fg-on-bg" pairs (e.g. P-MAMAS-PRIMARY-CONTRAST). Reported in their own
- *        bucket and never silently dropped — Bean's 2026-07-30 ruling was
- *        "report and cite it, never suppress".
+ * @param {string[]}                  acceptedPairs Known + owner-accepted
+ *        "fg-on-bg" pairs. Reported in their own bucket and never silently
+ *        dropped.
  */
 async function checkRestContrast( page, acceptedPairs = [] ) {
 	return page.evaluate( ( { sel, accepted } ) => {
@@ -328,8 +318,7 @@ async function checkRestContrast( page, acceptedPairs = [] ) {
 			const m = c.match( /-?[\d.]+/g );
 			if ( ! m || m.length < 3 ) return null;
 			// `color(srgb 0 0 0)` reports 0-1 floats, not 0-255 — reading those as
-			// 0-255 once scored a near-white cream as luminance 0.00 (my own error,
-			// 2026-07-30 session notes).
+			// 0-255 would score a near-white cream as luminance 0.
 			const scale = /^color\(/.test( c ) ? 255 : 1;
 			return m.slice( 0, 3 ).map( ( v ) => Number( v ) * scale );
 		};
@@ -441,7 +430,7 @@ async function checkRestContrast( page, acceptedPairs = [] ) {
 				: '',
 			elementsMeasured: measured.length,
 			failing: realFails,
-			// Reported, never suppressed — Bean's ruling on P-MAMAS-PRIMARY-CONTRAST.
+			// Reported, never suppressed.
 			acceptedFailures: acceptedFails,
 			all: measured,
 		};
@@ -514,10 +503,10 @@ async function main() {
 					cell.checks.focusContained = await checkFocusContainment( page );
 					cell.checks.keyboard = await checkKeyboard( page );
 				} catch ( e ) {
-					// Preserve VACUITY as its own state (2026-07-30, DP7). A drawer
-					// that never opened is not "a cell with some failed checks" — it
-					// is a cell that measured NOTHING, and the difference decides
-					// whether a red result is a product defect or a harness defect.
+					// Preserve VACUITY as its own state. A drawer that never opened is not
+					// "a cell with some failed checks" — it is a cell that measured NOTHING, and
+					// the difference decides whether a red result is a product defect or a
+					// harness defect.
 					cell.checks.geometry = { ok: false, why: e.message, vacuous: Boolean( e.vacuous ) };
 					if ( e.vacuous ) cell.vacuous = true;
 				} finally {
@@ -533,8 +522,7 @@ async function main() {
 				const bad = Object.entries( cell.checks ).filter( ( [ , v ] ) => v && v.ok === false );
 				failures += bad.length;
 				// A cell is VACUOUS if the drawer never opened, or if any individual
-				// check reported vacuity (focusContained / runAxe already set this
-				// flag but nothing ever read it before 2026-07-30).
+				// check reported vacuity (focusContained and runAxe both set the flag).
 				if ( Object.values( cell.checks ).some( ( v ) => v && v.vacuous ) ) cell.vacuous = true;
 				if ( cell.vacuous ) vacuousCells += 1;
 				if ( cell.vacuous ) {

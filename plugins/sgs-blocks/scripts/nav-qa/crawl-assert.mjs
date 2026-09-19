@@ -39,16 +39,16 @@
  *      this assertion exists to catch) — it does not silently pass on an
  *      empty result.
  *
- *      SUPERSET GATE (the real assertion). "≥1 anchor" was far too weak: a
- *      nav that server-rendered ONE link and injected the other nine passed.
+ *      SUPERSET GATE (the real assertion). A "≥1 anchor" gate is far too weak: a
+ *      nav that server-renders ONE link and injects the other nine would pass.
  *      There is no roster to compare against and inventing one would just
  *      drift, so THE PAGE IS ITS OWN ORACLE — the same URL is loaded twice,
  *      once with JS disabled and once with JS enabled, and the JS-off href
  *      set must be a SUPERSET of the JS-on set. The property under test is
  *      "the nav is server-rendered", so any nav link that appears only when
  *      JS runs IS the defect, by definition. (A superset rather than an exact
- *      match because JS legitimately MOVES links — the D323 body-reparent
- *      takes the drawer out of the nav containers — which subtracts from the
+ *      match because JS legitimately MOVES links — the drawer's body-reparent
+ *      takes it out of the nav containers — which subtracts from the
  *      JS-on set and must not read as a failure.)
  *
  *      --expect-count N additionally pins the JS-off anchor count for CI.
@@ -60,7 +60,7 @@
  *     --want-href "/about,/products,/contact" \
  *     --want-text "About,Products,Contact,Brands"
  *
- *   # Auto-detect against the nav-menu + nav-drawer + mega panel roots
+ *   # Auto-detect against the nav-bar-menu + nav-drawer + mega panel roots
  *   node crawl-assert.mjs https://palestine-lives.org/
  *
  * Exit codes
@@ -78,10 +78,10 @@
 
 import { chromium } from 'playwright';
 
-// The SGS nav BEM roots as named in Spec 36 (nav-menu bar, nav-drawer,
-// mega panel). Update this list once the blocks land if the root class
-// names differ from the spec's working names.
-const DEFAULT_NAV_SELECTOR = '.sgs-nav-menu, .sgs-nav-drawer, .sgs-nav-menu__mega-panel';
+// The SGS nav BEM roots: the bar (`nav.sgs-nav-bar-menu`, which also contains
+// the dropdown and mega panels), the drawer `<dialog>` (`.sgs-nav-drawer`,
+// which contains the drawer menu) and the mega panel wrapper.
+const DEFAULT_NAV_SELECTOR = '.sgs-nav-bar-menu, .sgs-nav-drawer, .sgs-nav-bar-menu__mega-panel-wrap';
 
 /**
  * Scope a comma-separated container selector list down to the anchors inside
@@ -197,7 +197,7 @@ function selfTest() {
 	// 2. Fully server-rendered nav — must be green.
 	check( 'clean superset passes', jsOnlyHrefs( jsOn, jsOn ).length === 0 );
 
-	// 3. JS legitimately REMOVES links from the containers (the D323 drawer
+	// 3. JS legitimately REMOVES links from the containers (the drawer's body
 	//    reparent). JS-off is a strict superset — must still be green.
 	check( 'JS-off superset (JS moved links out) passes', jsOnlyHrefs( jsOn, jsOn.slice( 0, 4 ) ).length === 0 );
 
@@ -212,8 +212,8 @@ function selfTest() {
 		).length === 0
 	);
 
-	// 5. The one-anchor case the OLD gate passed.
-	check( 'the old ">=1 anchor" pass case now fails', jsOnlyHrefs( [ 'https://x.test/a' ], [ 'https://x.test/a', 'https://x.test/b' ] ).length === 1 );
+	// 5. The one-anchor case a ">=1 anchor" gate would pass.
+	check( 'a JS-only extra link fails even though an anchor is present', jsOnlyHrefs( [ 'https://x.test/a' ], [ 'https://x.test/a', 'https://x.test/b' ] ).length === 1 );
 
 	process.stdout.write(
 		failures.length === 0
