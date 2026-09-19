@@ -34,13 +34,9 @@ A custom WordPress block framework built by Claude Code: theme + blocks plugin (
 > **Live status is single-sourced — do NOT track shipped-status / D-numbers / counts here; they drift.** For "what's shipped vs pending, current step, D-ceiling, blockers" read **`.claude/LEDGER.md`** (the one living status; structural defences in `.claude/STOP-CATALOGUE.md`). Decisions → `.claude/decisions.md`. Parked work → `.claude/parking.md`.
 
 - **Canonical spec:** [Spec 31 §13.6 / FR-31-21](.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md) — the universal wrapper-conversion procedure + 3-layer model (OUTER / CONTENT-WIDTH / PER-GRID-ITEM) + composite-mirror rule.
-- **Converter-completion plan (ARCHIVED — historical):** [`.claude/plans/archive/2026-07-04-new-engine-to-parity-delete-converter-v2.md`](.claude/plans/archive/2026-07-04-new-engine-to-parity-delete-converter-v2.md) — the converter completion plan — EXECUTED IN FULL (D276, 2026-07-05: Steps 3-16 + Gates A/B/C shipped; frozen engine deleted). Now historical; the live front = the post-programme QC session (LEDGER.md).
-- **Previous plans (archived context):** all pre-2026-07 plan/design docs (W3 phase-plan, clone-fix build-plan + 55-issue sign-off ledger, stage designs) moved to [`.claude/plans/archive/`](.claude/plans/archive/) on 2026-07-04; open residuals captured in `parking.md` (`P-W3-ARCHIVE-RESIDUALS`).
-
 ## Binding rules (Spec 31 §13.1 R-31-1 through R-31-15; gate every commit)
 
-<!-- NOTE: R-* (binding rules) and FR-* (functional requirements) are SEPARATE numbering series — FR-31-15 (capability-aware BEM tiebreaking, D96) and R-31-15 (the anti-mirror gate) are NOT a collision. R-31-15 = "no mirror emit": the cloning pipeline's anti-cheat rule, enforced via plugins/sgs-blocks/scripts/orchestrator/check_no_mirror.py (--report now, flips to --enforce when the converter stops cheating). See Spec 22 §FR-31-11 PASS-test + next-session-prompt.md. The 14 headlines below predate R-31-15; it is the 15th. -->
-
+R-* (binding rules) and FR-* (functional requirements) are separate numbering series; FR-31-15 (capability-aware BEM tiebreaking) and R-31-15 (the anti-mirror gate, enforced via `plugins/sgs-blocks/scripts/orchestrator/check_no_mirror.py`) are different things. R-31-15 ("no mirror emit") is the 15th rule and has no headline below; read it in Spec 31 §13.1.
 
 Full text in Spec 31 §13.1. Headlines:
 
@@ -57,13 +53,13 @@ Full text in Spec 31 §13.1. Headlines:
 11. **Verify rendered output, not internal metrics (R-31-11)** — live Playwright DOM is canonical.
 12. **QC gates are structural, not prompt (R-31-12)** — `pipeline-stage-gate.py` hook enforces /qc-council.
 13. **Bean visual sign-off is co-authoritative (R-31-13)** — script measurement + Bean's eye + visual cropped-pair BOTH consulted; numbers alone don't close, eye alone doesn't close.
-14. **FR-31-6 migrations never carry server-side legacy fallback hacks (R-31-14)** — the hybrid render.php problem is exclusively SGS framework debt (zero core blocks on Phase 0.4 roster). Never add `if (empty($content) && !empty($legacy_attr)) { ...legacy scalar render... }` to a migrated render.php. Canonical backwards-compat: full FR-31-6 hybrid-block roster migration (the roster is DB/report-derived — query `/sgs-db`; do not hardcode a count) + WP-CLI batch existing-post migration (NOT via `deprecated.js` — the plugin carries no block deprecations; see `plugins/sgs-blocks/CLAUDE.md` §block deprecations). Bean P1 locked.
+14. **FR-31-6 migrations never carry server-side legacy fallback hacks (R-31-14)** — the hybrid render.php problem is exclusively SGS framework debt (zero core blocks on Phase 0.4 roster). Never add `if (empty($content) && !empty($legacy_attr)) { ...legacy scalar render... }` to a migrated render.php. Canonical backwards-compat: full FR-31-6 hybrid-block roster migration (the roster is DB/report-derived — query `/sgs-db`; do not hardcode a count) + WP-CLI batch existing-post migration (NOT via `deprecated.js` — the plugin carries no block deprecations; see `plugins/sgs-blocks/CLAUDE.md` §block deprecations).
 
 Sibling rules: blub.db 254 (read leftover-buckets first), 255 (multi-model /qc per converter commit), 256 (per-section cropped pixel-diff), 260 (db-first-no-hardcoded-dicts), 272 (schema enumeration before "missing X"), 276 (council fix-shapes are HYPOTHESES not specs), 281 (qc gate must be structural), 288 (phases never ship as single commits).
 
 ## Root-cause methodology (MANDATORY — no assumptions, evidence-first; gate EVERY diagnosis + fix)
 
-This is the core working method for this project. It is non-negotiable and overrides any urge to move fast by guessing. Demonstrated + locked 2026-05-31 (D117/D118).
+This is the core working method for this project. It is non-negotiable and overrides any urge to move fast by guessing.
 
 **Never assume, never reason from probability, never trust a claim** — yours, a subagent's, a doc's, or a metric's — without verifying it against real ground truth. Before proposing OR acting on any fix:
 
@@ -71,9 +67,9 @@ This is the core working method for this project. It is non-negotiable and overr
 2. **Classify the layer:** is it an IMPLEMENTATION bug, or a GAP/FLAW in the spec/plan? Fix the right layer — patching code around a spec gap is a trap.
 3. **Verify every dependency the theory rests on:** DB table data (`/sgs-db`, `/wp-blocks`), the block's ACTUAL functionality (e.g. does `sgs/container` really have a grid engine / the attrs you assume?), the pipeline spec (what it is SUPPOSED to do — Spec 31 + flow + stages), the truth-spec (`sites/<client>/mockups/.../TRUTH-SPEC.md` — does the fix hold for ALL relevant instances across the page, not just one?).
 4. **Pixel-diff is misleading — verify the LIVE DOM (R-31-11), not the number.** An EMPTY section scores a false WIN (matches background); a REFLOWED-to-correct section scores a false LOSS. Use Playwright `el.innerText.length` + element-layout checks as the gate, never the pixel-diff alone. (Memory `empty-section-false-pixel-diff-win`.)
-4a. **PARITY/FIDELITY = compare EFFECTIVE (computed) values on the actual rendered element, matched by CONTENT — never source-declaration-diff, never wrapper-class-keying (Bean-locked 2026-07-03).** Two failure modes give unreliable scores Bean can't depend on: (a) **source-declaration-diff is blind to INHERITED values** — comparing the draft's authored CSS rules to the clone's `<style>` blocks MISSES the brand-quote 16px→18px drop because that `<p>` has no explicit font-size (it inherits the base; draft base 16px vs clone theme base 18px, and the theme base lives in a global stylesheet not in the block-scoped snapshot). (b) **wrapper-class-keying misclassifies** — comparing computed styles keyed by BEM class compares the draft's raw `<section>` against the clone's block WRAPPER (which adds its own flex/padding/gap), drowning real diffs in false positives. The dependable method: `getComputedStyle` on each rendered element, keyed by its normalised TEXT CONTENT (text is ~96% present), so you compare the same painted node and catch inherited + explicit. This is a specific extension of the global `measurement-vs-eye` rule. **This is a BUILT system component: `plugins/sgs-blocks/scripts/parity/computed-parity.js` — universal/draft-agnostic (all computed props minus a documented blocklist verified vs `property_suffixes`), 3-tier (content presence / typography / box-layout), meaningful-only scoring. It runs AUTOMATICALLY as pipeline Stage 11.6 (`sgs-clone-orchestrator.py`, post-deploy, comparing `--mockup` vs the live clone; opt-out `--no-computed-parity`) → `computed-parity.json`. USE IT — do not hand-roll a fresh comparison, and do NOT trust the pipeline's input-side drop-logs (`attribute_gap_candidates` cumulative ledger, `leftover-buckets.json`) as a per-clone rendered-fidelity signal.**
-4b. **A CONTROL THAT "DOESN'T WORK" — FIND A BLOCK WHERE IT ALREADY WORKS AND DIFF (Bean-locked 2026-08-31).** Before designing anything, ask *which blocks already have this attribute or control?* — `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT block_slug, attr_name, css_property, css_element FROM block_attributes WHERE css_property='<prop>'"` — then read the WORKING block's `render.php` + `style.css` and compare against yours. The answer is almost always already in the tree. Two things the query catches that a hand-written survey of "media blocks" does not: a selector scoped PER ELEMENT (`sgs/hero`'s `.{uid} .sgs-hero__split-media--image`) versus one fixed custom-property name per block — which makes a two-element block render both slots with the second slot's value — and blocks you would not have listed (`sgs/brand-strip` `logoFit`, `sgs/trust-bar` `badgeImageObjectFit`).
-⛔ **NEVER weigh "this would change what the canary currently renders" (Bean-locked 2026-08-31).** The framework is PRE-PRODUCTION — a default changing costs nothing, and there is no content to protect. If a default is wrong that is a SEPARATE question, decided on merits (what do the other surfaces measure?), never on preserving the current page. Reasoning from existing canary content produces the wrong fix and wastes the session.
+4a. **PARITY/FIDELITY = compare EFFECTIVE (computed) values on the actual rendered element, matched by CONTENT — never source-declaration-diff, never wrapper-class-keying.** Two failure modes give unreliable scores Bean can't depend on: (a) **source-declaration-diff is blind to INHERITED values** — comparing the draft's authored CSS rules to the clone's `<style>` blocks MISSES the brand-quote 16px→18px drop because that `<p>` has no explicit font-size (it inherits the base; draft base 16px vs clone theme base 18px, and the theme base lives in a global stylesheet not in the block-scoped snapshot). (b) **wrapper-class-keying misclassifies** — comparing computed styles keyed by BEM class compares the draft's raw `<section>` against the clone's block WRAPPER (which adds its own flex/padding/gap), drowning real diffs in false positives. The dependable method: `getComputedStyle` on each rendered element, keyed by its normalised TEXT CONTENT (text is ~96% present), so you compare the same painted node and catch inherited + explicit. This is a specific extension of the global `measurement-vs-eye` rule. **This is a BUILT system component: `plugins/sgs-blocks/scripts/parity/computed-parity.js` — universal/draft-agnostic (all computed props minus a documented blocklist verified vs `property_suffixes`), 3-tier (content presence / typography / box-layout), meaningful-only scoring. It runs AUTOMATICALLY as pipeline Stage 11.6 (`sgs-clone-orchestrator.py`, post-deploy, comparing `--mockup` vs the live clone; opt-out `--no-computed-parity`) → `computed-parity.json`. USE IT — do not hand-roll a fresh comparison, and do NOT trust the pipeline's input-side drop-logs (`attribute_gap_candidates` cumulative ledger, `leftover-buckets.json`) as a per-clone rendered-fidelity signal.**
+4b. **A CONTROL THAT "DOESN'T WORK" — FIND A BLOCK WHERE IT ALREADY WORKS AND DIFF.** Before designing anything, ask *which blocks already have this attribute or control?* — `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT block_slug, attr_name, css_property, css_element FROM block_attributes WHERE css_property='<prop>'"` — then read the WORKING block's `render.php` + `style.css` and compare against yours. The answer is almost always already in the tree. Two things the query catches that a hand-written survey of "media blocks" does not: a selector scoped PER ELEMENT (`sgs/hero`'s `.{uid} .sgs-hero__split-media--image`) versus one fixed custom-property name per block — which makes a two-element block render both slots with the second slot's value — and blocks you would not have listed (`sgs/brand-strip` `logoFit`, `sgs/trust-bar` `badgeImageObjectFit`).
+⛔ **NEVER weigh "this would change what the canary currently renders".** The framework is PRE-PRODUCTION — a default changing costs nothing, and there is no content to protect. If a default is wrong that is a SEPARATE question, decided on merits (what do the other surfaces measure?), never on preserving the current page. Reasoning from existing canary content produces the wrong fix and wastes the session.
 
 5. **Attest with evidence, twice** (`/verify-loop`): every load-bearing claim needs ≥2 independent evidence sources (e.g. emitted markup + live DOM). Never delegate the proof step for unproven work — open the live page yourself.
 6. **Roll back fast on regression (STOP #19);** refine across a session boundary with the empirical evidence baked into the plan — don't iterate a failing sensitive fix inline under context pressure.
@@ -104,11 +100,10 @@ Each sub-project + each client site has its own CLAUDE.md. Read the relevant one
 | Doc | What |
 |---|---|
 | [`.claude/reports/2026-05-25-qc-council-issue-register.md`](.claude/reports/2026-05-25-qc-council-issue-register.md) | THE current cloning-pipeline register (~110 items, Sections A-R) |
-| [`.claude/plans/archive/2026-07-04-new-engine-to-parity-delete-converter-v2.md`](.claude/plans/archive/2026-07-04-new-engine-to-parity-delete-converter-v2.md) | **Converter completion plan — EXECUTED IN FULL (D276, 2026-07-05); historical. Live front = the post-programme QC (LEDGER.md)** |
-| [`.claude/plans/archive/`](.claude/plans/archive/) | All superseded plans/designs (W3 phase-plan, clone-fix build-plan + sign-off ledger, stage designs — archived 2026-07-04; residuals → parking `P-W3-ARCHIVE-RESIDUALS`) |
-| [`.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md`](.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md) §13 | Absorbed Spec 22 (merged D253): single-recursive walker (FR-31-3), content fork (FR-31-2), sgs/container default (FR-31-4), binding rules R-31-1..15. |
+| [`.claude/plans/archive/`](.claude/plans/archive/) | Completed plans and designs (implementation detail of shipped work; never a source of live status) |
+| [`.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md`](.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md) §13 | Single-recursive walker (FR-31-3), content fork (FR-31-2), sgs/container default (FR-31-4), binding rules R-31-1..15. |
 | [`.claude/specs/33-DRAFT-GLOBAL-STYLES-EXTRACTOR.md`](.claude/specs/33-DRAFT-GLOBAL-STYLES-EXTRACTOR.md) | Draft global-styles extractor — the OPENING step of the whole cloning pipeline, runs before Stage 0 / any block conversion. Measures the draft's rendered computed styles and generates `sites/<client>/theme-snapshot.json`, which the converter's colour token-snap (Spec 31 §3.A step 6) depends on. FR-33-12 fails the run closed if the snapshot wasn't generated/validated for the current draft. |
-| [`.claude/specs/20-CLONE-FIDELITY-MEASUREMENT.md`](.claude/specs/20-CLONE-FIDELITY-MEASUREMENT.md) | **Canonical clone-fidelity measurement spec (computed-parity tool + Stage 11.6 + rule 4a).** Replaced Spec 20 (log surfacing) + Spec 21 (artefact inventory), both archived to `memory/specs-archive/` — the input-side logs are debug-only, NOT the fidelity signal. |
+| [`.claude/specs/20-CLONE-FIDELITY-MEASUREMENT.md`](.claude/specs/20-CLONE-FIDELITY-MEASUREMENT.md) | **Canonical clone-fidelity measurement spec (computed-parity tool + Stage 11.6 + rule 4a).** The input-side logs are debug-only, NOT the fidelity signal. |
 | [`.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md`](.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md) Appendix D | Stage map — per-stage truth is the code; keep no hand-maintained mirror of it |
 | [`.claude/dev-setup.md`](.claude/dev-setup.md) | Build / deploy / SSH / local environment / gotchas |
 | [`.claude/decisions.md`](.claude/decisions.md) | D-numbered architectural log |
@@ -131,13 +126,13 @@ Full rules: [`.claude/specs/00-naming-conventions.md`](.claude/specs/00-naming-c
 |---|---|
 | Heavy WP build (pages, templates, blocks, plugins, migrations, fidelity) | `wp-sgs-developer` agent |
 | SGS block / theme / client-site build or fix (the framework skill) | `/sgs-wp-engine` (+ `/wp-block-development` for core-WP block-API questions) |
-| **Deploy theme/plugin** | **`build-deploy.py --target sandybrown` (the ONE path) — ceremony + gates via `/wp-sgs-deploy`. NEVER hand-roll tar/scp (D336: 2 client sites, ~2.5h down).** |
+| **Deploy theme/plugin** | **`build-deploy.py --target <sandybrown|indus-test>` (the ONE path) — ceremony + gates via `/wp-sgs-deploy`. NEVER hand-roll tar/scp.** |
 | Per-client tokens / brand colours | `sites/<client>/theme-snapshot.json` (Spec 33) → `push-theme-snapshot.py` |
 | Visual / a11y verification of a built page | `/visual-qa` (9-layer SGS pipeline) + `/a11y-audit`; Playwright MCP for bespoke probes |
 | Clone fidelity — is it faithful? | Spec 20 computed-parity (Stage 11.6, auto) **+ Bean's eye (R-31-13)**. Never close on a number alone |
 | Cloning pipeline work | `/sgs-clone` + register the result via `/sgs-update` |
 | Doc edits | `docscore-on-doc-edit` PostToolUse hook auto-runs |
-| Model picking per task | `/delegate` (Haiku mechanical / Sonnet architectural / cross-TIER cold-Claude validation — all-Claude fleet since 2026-07-15) |
+| Model picking per task | `/delegate` (Haiku mechanical / Sonnet architectural / cross-TIER cold-Claude validation) |
 | Multi-rater code-review before commit on converter/pipeline/SGS-block | `/qc-council` (per blub.db 255) |
 | Per-file checks inline | `/qc-inline` |
 | Parallel work across disjoint files | `/dispatching-parallel-agents` |
@@ -154,29 +149,24 @@ Full rules: [`.claude/specs/00-naming-conventions.md`](.claude/specs/00-naming-c
 
 ## Session workflow
 
-**This project defaults to PLAN MODE** (`.claude/settings.json` `permissions.defaultMode: "plan"`, set 2026-06-29). Every session starts read-only — investigate + get an approved plan before editing. This is deliberate (the cause-agnostic grounding floor that kills the cold-start doom-loop), NOT a bug; Shift+Tab exits for trivial turns. If it doesn't fire on startup (Windows bug #34509), set the VS Code extension's permission mode instead. The SessionStart hook `~/.claude/hooks/session-spec-anchor.py` also injects the governing spec pointer + next action each session. Rationale: `~/.claude/rules/prove-the-cause-before-fix.md` + the 2026-06-29 session-grounding work.
+**This project defaults to PLAN MODE** (`.claude/settings.json` `permissions.defaultMode: "plan"`). Every session starts read-only — investigate + get an approved plan before editing. This is deliberate (the cause-agnostic grounding floor that kills the cold-start doom-loop), NOT a bug; Shift+Tab exits for trivial turns. If it doesn't fire on startup (Windows bug #34509), set the VS Code extension's permission mode instead. The SessionStart hook `~/.claude/hooks/session-spec-anchor.py` also injects the governing spec pointer + next action each session. Rationale: `~/.claude/rules/prove-the-cause-before-fix.md`.
 
-**ALWAYS read the governing spec IN FULL at session start (Bean-locked 2026-07-01).** Every cloning-pipeline session reads `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` END TO END before starting work — NOT just the sections for the day's task, NOT a grep-and-skim. **Why:** issues surface mid-work in sections you weren't planning to touch; with the whole spec already in context you have the grounding to diagnose them instead of being in the dark. This is not optional and applies every session regardless of how narrow the task looks. (This is why the next-session-prompt reading gate says "read it in full".)
+**ALWAYS read the governing spec IN FULL at session start.** Every cloning-pipeline session reads `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` END TO END before starting work — NOT just the sections for the day's task, NOT a grep-and-skim. **Why:** issues surface mid-work in sections you weren't planning to touch; with the whole spec already in context you have the grounding to diagnose them instead of being in the dark. This is not optional and applies every session regardless of how narrow the task looks. (This is why the next-session-prompt reading gate says "read it in full".)
 
 ## Git workflow
 
-**Hygiene standards (Bean-locked 2026-09-07). These OVERRIDE global CLAUDE.md's
-"feature 3+ files or risky → branch+push+PR" — that rule is retired everywhere
-(`~/.claude/rules/git-hygiene.md`); Bean does not review PRs.**
+**Hygiene standards (`~/.claude/rules/git-hygiene.md`). These OVERRIDE global CLAUDE.md's
+"feature 3+ files or risky → branch+push+PR"; Bean does not review PRs.**
 
 1. **Commit straight to `main`. Never open a PR.** A PR here is a queue of one that
-   nobody reads. Measured 2026-09-07: 8 draft PRs + 30 remote branches, every one
-   already superseded by `main`, and it took a forensic session to prove nothing was lost.
+   nobody reads.
 2. **Never stash.** To move work: commit your own files with an EXPLICIT pathspec
    (never `git add -A`, never a glob), then switch. This tree is shared by many
-   concurrent sessions — a main-thread stash has already swept a dozen peer sessions'
-   uncommitted files, and a `*/render.php` glob swept another session's half-done edit
-   onto `main`.
+   concurrent sessions — a stash sweeps their uncommitted files and a glob sweeps
+   their half-done edits onto `main`.
 3. **Integrate with `origin/main` after every completed task** — pull/rebase and push,
-   don't bank up divergence. Long-lived branches are what blocked sessions, which
-   blocked more sessions, which blocked the original session back. The cost compounds:
-   the branches deleted on 2026-09-07 were up to 2,150 commits behind, at which point
-   merging one would have REVERTED ~55k lines and nobody could safely adjudicate it.
+   don't bank up divergence. Long-lived branches block other sessions, and the cost
+   compounds with branch age.
 4. **Gate bypasses:** bypassing is FINE when the reported violations are not your work
    — check each one is genuinely pre-existing and disclose it in the commit message
    (`[gates-ok:<reason>]`). But if you are FIXING things, fix the pre-existing issues
@@ -202,28 +192,29 @@ session, then delete it. Scope table for that case only:
 cd plugins/sgs-blocks && npm run build
 # Build uses @wordpress/scripts with --experimental-modules + --webpack-copy-php (PHP render.php copied to build/)
 
-# Deploy — THE ONE PATH (D336-hardened). Defaults to the sandybrown canary.
+# Deploy — THE ONE PATH. Defaults to the sandybrown canary.
 python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown
-# sandybrown is the ONLY target (palestine-lives.org is gone — removed from TARGETS 2026-08-10).
+# Targets are the keys of build-deploy.py::TARGETS (sandybrown, indus-test, eye-care-test).
 # Scope: --blocks-only | --theme-only. It runs the build itself unless --skip-build.
 # It carries the dirty-tree gate + default-ON fail-closed verify + .bak rollback rotation, and
 # purges BOTH cache layers post-deploy — OPcache (compiled PHP) via an HTTPS probe, because the
 # CLI pool has its OWN OPcache and `wp eval` would reset the wrong one; and the LiteSpeed page
 # cache (rendered HTML) via wp-cli. Clearing one does nothing for the other. Opt out only with
-# --skip-purge, and know that doing so IS D709. Full sequence in dev-setup.md.
+# --skip-purge, which leaves stale compiled PHP or HTML serving. Full sequence in dev-setup.md.
 #
-# ⛔ NEVER hand-roll tar / scp -r / ssh 'rm -rf … && mv …'. The old recipe deleted the LIVE
-#    directory before extracting: on 2026-07-14 (D336) it took two client sites down for ~2.5h.
-#    Do not reach for --allow-dirty (an uncommitted edit was D336's trigger) or --skip-verify
-#    (that flag removes the check that catches a broken deploy).
+# ⛔ NEVER hand-roll tar / scp -r / ssh 'rm -rf … && mv …' — that recipe deletes the LIVE
+#    directory before extracting and can take client sites down.
+#    Do not reach for --allow-dirty (an uncommitted edit is how a deploy goes wrong) or
+#    --skip-verify (that flag removes the check that catches a broken deploy).
 
 # Per-client theme snapshot (per-client tokens live at sites/<client>/theme-snapshot.json, Spec 33)
 python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client <slug> --target <ssh-host>
 ```
 
-- **Canary (the ONLY site — palestine-lives.org is GONE, removed from TARGETS 2026-08-10):** sandybrown-nightingale-600381.hostingersite.com, on **WP 7.1** (Bean upgraded 2026-08-20; verified same day via `wp core version` over SSH — re-check rather than trusting this line). ⚠ **Page 144 NO LONGER EXISTS** (hard-deleted; not in trash, no surviving revisions) — **verify a post ID exists before pointing anything at it.** Keep the number: it is still the PROVENANCE that locates the clone. The native-block Mama's homepage (98 sgs blocks) lives at `pipeline-state/mamas-munches-144-2026-08-24-031610/stage-4.json` and is served from **page 2742** (`/`). Posts page = **2741** (`/blog/`). ⛔ Post 66 'Spec16-P7 mockup baseline' is RAW HTML, zero block comments — a mirror, not a clone; do not reuse it as a page.
+- **Sites.** Three deploy targets (`build-deploy.py::TARGETS`): `sandybrown` (the default canary, `sandybrown-nightingale-600381.hostingersite.com`, Mama's Munches + isolated block QA), `indus-test` (the Indus Foods test site, `lavender-dinosaur-183533.hostingersite.com`) and `eye-care-test` (the Eye Care Birmingham test site). Each client has its own site because the active header/footer/drawer/theme-snapshot pointers are single global options — one site can hold only one client's active chrome and tokens. `indus-test` and `eye-care-test` deploy only when named explicitly with `--target`.
+- **Canary WP version:** WP 7.1 (verify: `wp core version` over SSH). The native-block Mama's homepage (98 sgs blocks) is served from **page 2742** (`/`); its clone artefact is `pipeline-state/mamas-munches-144-2026-08-24-031610/stage-4.json` (the `144` is the source page id embedded in that run name). Posts page = **2741** (`/blog/`). Verify a post ID exists before pointing anything at it. Post 66 'Spec16-P7 mockup baseline' is RAW HTML, zero block comments — a mirror, not a clone; do not reuse it as a page.
 - **SSH:** `ssh -i ~/.ssh/id_ed25519 -p 65002 u945238940@141.136.39.73` (alias `ssh hd`). WP admin user: `Claude`.
-- **Canary credentials (gitignored, ALWAYS available — no need to ask):** `.claude/secrets/sandybrown.env` holds the test-site logins — `WP_USER_SANDYBROWN`/`WP_PWD_SANDYBROWN` (browser/admin login at wp-login.php) + `WP_APP_PWD_SANDYBROWN` (REST/Store-API Basic auth) + `WP_URL_SANDYBROWN`. Use them directly for Playwright editor login + REST verification. (Cloning dev-site app passwords: `A:/.openclaw/.secrets/wp-app-passwords.env`.)
+- **Site credentials (gitignored, ALWAYS available — no need to ask):** `.claude/secrets/<site>.env` (`sandybrown.env`, `indus-test.env`, `eye-care-test.env`) holds each test site's logins — e.g. `WP_USER_SANDYBROWN`/`WP_PWD_SANDYBROWN` (browser/admin login at wp-login.php) + `WP_APP_PWD_SANDYBROWN` (REST/Store-API Basic auth) + `WP_URL_SANDYBROWN`. Use them directly for Playwright editor login + REST verification.
 - **No Node.js on server** — build locally, deploy compiled `build/`.
 
 ## Architecture rules
@@ -232,7 +223,7 @@ python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client <slug> --targe
 Theme + blocks must work on ANY WordPress install for ANY client. Every design decision must pass: "Will this make sense for a restaurant, a wedding planner, AND a law firm — not just <current client>?" Never hard-code client colours, copy, imagery, structure into base theme / blocks plugin. Client-specific work lives in `sites/<client>/` only.
 
 ### cv2 output goes to WP PAGES, not POSTS
-Posts use `single.html` which constrains `.entry-content` to `max-width: 800px` — wrong for landing-page clones. Pages use `page.html` with no such constraint. `/sgs-clone --deploy-target page:2742` for the current Mama's homepage (144 is deleted — see the canary line above).
+Posts use `single.html` which constrains `.entry-content` to `max-width: 800px` — wrong for landing-page clones. Pages use `page.html` with no such constraint. `/sgs-clone --deploy-target page:2742` for the current Mama's homepage.
 
 ### Client experience is primary
 No block feature is complete until it has full block-editor UI controls. Clients are tech-illiterate — they use the block editor exclusively. Every customisable property must be exposed as an inspector control. If a setting requires touching code, it is not done. WP-CLI is a developer tool only; never something clients touch.
@@ -243,28 +234,27 @@ Walker is a single recursive function with exactly 3 permitted exceptions (atomi
 ### DB-first, no hardcoded dicts (blub.db 260)
 Before adding any hardcoded lookup dict in pipeline scripts, check sgs-framework.db. **Counts are DB-authoritative — query `/sgs-db`, never cache a number here.** The tables + what each is for: `property_suffixes` + its `kind_override` column, `block_supports`, `modifier_suffixes`, `slots` (element + section scopes), `roles` (base + `scalar-media`), `block_attributes` (+ its Front-1 declarative routing columns `css_property`/`css_element`/`css_state`/`css_tier` — seeded + load-bearing, see Spec 31 §3.A/§4), `block_capabilities`, **`blocks.variant_attr` column** (FR-31-20; names the variant-selector attr per block), **`variant_slots` table** (FR-31-20; stores each variant's DISCRIMINATING slots via set-difference; populated by `/sgs-update` from `supports.sgs.variants` in block.json), **`block_composition.container_kind` column** (values `section|layout|content`; the container roster has `wraps_block` + `container_kind` populated), **`block_render_composition` table** (Spec 31 §13.9; a block composing ANOTHER block at RENDER TIME via `render_block()` — distinct from `block_composition.accepts_allowed_blocks`'s editor-stored InnerBlocks children; populated by `seed-render-composition.py`, wired into `/sgs-update`). Refactor to DB reads. ⚠ **There is no `plugins/sgs-blocks/scripts/db_lookup.py`.** The only module of that name is `scripts/converter/db/db_lookup.py`, which runs six schema-migration functions against the shared live DB **as an import side effect** — do NOT import it from a read-only reporter. For a plain read, open `~/.claude/skills/sgs-wp-engine/sgs-framework.db` read-only (`sqlite3.connect(f'file:{db}?mode=ro', uri=True)`), the convention used by `audit-declared-vs-seeded-roles.py`, `generate-db-catalogue.py` and `audit-feature-parity.py`. Full mechanism: Spec 31 §13.5 + §13.6.
 
-### Composite-mirror rule (R-31-9 extension, D152, locked 2026-06-02)
+### Composite-mirror rule (R-31-9 extension)
 No composite block evades R-31-9. Every composite block with a built-in wrapper (e.g. sgs/hero, sgs/cta-section, sgs/trust-bar) MUST mirror `sgs/container`'s wrapper capabilities (padding, max-width, contentWidth, gap, background) rather than diverging. Capability propagation route: `block.json` `supports.sgs.containerKind` → `block_composition.container_kind` (populated by `/sgs-update`) → converter wrapper logic reads the column and applies the 3-layer model (OUTER/CONTENT-WIDTH/PER-GRID-ITEM). Missing capabilities = gap candidates to add to the composite, never converter workarounds. Canonical procedure: Spec 31 §13.6. Memory: `feedback_no_composite_evades_universal_rule`, `feedback_pipeline_transfers_draft_css_not_converter_detection_hacks`.
 
-**"Mirror capabilities" ≠ "must call the shared PHP helper" (D294 clarification, qc-council-settled 2026-07-09).** The rule forbids per-block CSS *hacks that DIVERGE* from the wrapper's computed behaviour — NOT a clean block-private implementation that reproduces the same capability set. A **content-KIND composite that uses only box+width** (quote, info-box, testimonial, team-member, product-faq-item…) MAY render block-private (own scoped `<style>`, no `SGS_Container_Wrapper` call) — it never used the wrapper's grid/section/background machinery, and the converter routes CSS by `block_attributes` keyed on `block_slug` (block.json-derived), NOT by `wraps_block`/`container_kind` (zero walker impact), so dropping the wrapper is safe and requires no DB change. **section/layout-KIND composites (hero, cta-section, card-grid, feature-grid…) KEEP the wrapper** (genuine grid/section) — which is now fully scoped (spacing/max-width/contentWidth/band/GRID, D292/D294/D296). This is the no-inline-rollout pattern selector; do not re-litigate it per block.
+**"Mirror capabilities" ≠ "must call the shared PHP helper".** The rule forbids per-block CSS *hacks that DIVERGE* from the wrapper's computed behaviour — NOT a clean block-private implementation that reproduces the same capability set. A **content-KIND composite that uses only box+width** (quote, info-box, testimonial, team-member, product-faq-item…) MAY render block-private (own scoped `<style>`, no `SGS_Container_Wrapper` call) — it never used the wrapper's grid/section/background machinery, and the converter routes CSS by `block_attributes` keyed on `block_slug` (block.json-derived), NOT by `wraps_block`/`container_kind` (zero walker impact), so dropping the wrapper is safe and requires no DB change. **section/layout-KIND composites (hero, cta-section, card-grid, feature-grid…) KEEP the wrapper** (genuine grid/section) — which is fully scoped (spacing/max-width/contentWidth/band/GRID). This is the no-inline-rollout pattern selector; do not re-litigate it per block.
 
 **Scope is universal:** the fix applies to every wrapper at any nesting depth, every `sgs/container` instance, and every composite with a built-in container, not just section-level blocks. Faithful transfer includes a property's absence (no `max-width` → full-width, overriding the theme default).
 
-A composite is **NEVER a separate system** — hero/cta-section/trust-bar all render through the shared `SGS_Container_Wrapper`. Per-block CSS hacks/carve-outs that diverge from the universal wrapper (e.g. the hero's old `wrap_inner=false`, the `.wp-block-group .wp-block-sgs-hero{max-width:100%!important}` containment hack, the `margin-inline:-24px` breakout) are **bugs to remove**, not contracts to preserve. The hero uses universal `alignfull` identically to trust-bar.
+A composite is **NEVER a separate system** — hero/cta-section/trust-bar all render through the shared `SGS_Container_Wrapper`. Per-block CSS hacks/carve-outs that diverge from the universal wrapper are **bugs to remove**, not contracts to preserve. The hero uses universal `alignfull` identically to trust-bar.
 
 **When a composite VARIANT's grid/structure looks ambiguous, STOP — query the DB before theorising:** `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT * FROM variant_slots WHERE block_slug='sgs/hero'"`. The discriminating slots in `variant_slots` + the block's `blocks.variant_attr` ARE the definition of that variant's setup (FR-31-20). E.g. sgs/hero `split` = `gridTemplateColumns`/`splitGap`/`splitImage`/`splitImageMobile` → a 2-col grid (≥768) that stacks to 1-col (<768). Never call a variant grid a "tangle" or guess from attr values — read the variant DB + the per-client mockup CSS. Memory: `feedback_ground_in_variant_db_for_variant_block_setups`.
 
-### Hardcoded wrapper defaults are CHEATS to remove, not blockers (locked 2026-06-16)
-When the shared wrapper/helper injects a hardcoded value that overrides the draft's faithfully-transferred CSS, that injection is a **no-hardcoding (R-31-1) violation to REMOVE or gate** — never an immovable "blocker" a fix can't get past. The pipeline transfers the draft's ratio/gap/align/responsive faithfully; it must not inject anticipated defaults. Example purged 2026-06-16: the wrapper always emitted `sgs-cols-tablet-N`/`sgs-cols-mobile-N` classes whose CSS forces `grid-template-columns:repeat(N,1fr) !important`, crushing the faithful explicit `gridTemplateColumns*` ratio. Fix = emit the `sgs-cols-*` shorthand class for a tier ONLY when that tier has no explicit ratio (so the faithful `@media` rule wins). If a wrapper behaviour blocks faithful transfer, ask "is this an injected hardcoded default?" — if yes, remove/gate it. **Status: the `sgs-cols-*` gate (emit the shorthand class for a tier ONLY when that tier has no explicit ratio) was SHIPPED 2026-06-16 (D228). If you find the class still emitting unconditionally in code, that is a regression to fix — not an open design decision.** Memory: `feedback_wrapper_hardcoded_defaults_are_cheats_to_remove_not_blockers`.
+### Hardcoded wrapper defaults are CHEATS to remove, not blockers
+When the shared wrapper/helper injects a hardcoded value that overrides the draft's faithfully-transferred CSS, that injection is a **no-hardcoding (R-31-1) violation to REMOVE or gate** — never an immovable "blocker" a fix can't get past. The pipeline transfers the draft's ratio/gap/align/responsive faithfully; it must not inject anticipated defaults. The wrapper emits the `sgs-cols-tablet-N`/`sgs-cols-mobile-N` shorthand class for a tier ONLY when that tier has no explicit `gridTemplateColumns*` ratio (its CSS forces `grid-template-columns:repeat(N,1fr) !important`, which would crush the faithful ratio). If a wrapper behaviour blocks faithful transfer, ask "is this an injected hardcoded default?" — if yes, remove/gate it. If you find the shorthand class emitting unconditionally in code, that is a regression to fix — not an open design decision. Memory: `feedback_wrapper_hardcoded_defaults_are_cheats_to_remove_not_blockers`.
 
-### Responsive breakpoint discipline — device-tier vs visual (locked 2026-06-16)
+### Responsive breakpoint discipline — device-tier vs visual
 Two DISTINCT concepts; NEVER conflate them or run a blanket "fix all 599/600 breakpoints" sweep:
 1. **Device-tier responsive** — the structured SGS `Mobile`/`Tablet`/`Desktop` attribute system (`gridTemplateColumnsMobile`, `gapTablet`, etc.), rendered by `SGS_Container_Wrapper` + mapped by the converter (`_GRID_TABLET_BP`). MUST use ONE consistent standard: **768/1024** (`@media (max-width:767px)` mobile, `(max-width:1023px)` tablet, desktop ≥1024 — per `~/.claude/rules/visual-standards.md`). An inconsistent value HERE is a real bug.
 2. **Arbitrary visual breakpoints** — a single CSS rule changing at a specific width for a design reason (`min-width:600px`, WP's `wp-block-columns` `781px` stack point). LEGITIMATE, design-driven, any value, NOT the device system — must NOT be blanket-changed. Before changing any breakpoint, classify it; if unsure, leave it. A mechanical/Haiku agent CANNOT make this judgment. Memory: `feedback_device_tier_vs_visual_breakpoints_are_distinct`. Variant grids are DEFINED in `variant_slots` + `blocks.variant_attr` (query, don't guess — `feedback_ground_in_variant_db_for_variant_block_setups`).
 
 ### Rosetta Stone discipline (uimax cross-platform translation)
-Every uimax row describing a design artefact MUST carry equivalent-name mappings across SGS blocks + vanilla HTML/CSS + Bootstrap + shadcn/Radix + Tailwind + React + AI-builder. Missing SGS equivalent = gap candidate, never silently dropped. `uimax` = DB/data layer; `/ui-ux-pro-max` = intelligence skill that USES the DB. Captured 2026-05-06 blub.db 213.
-
+Every uimax row describing a design artefact MUST carry equivalent-name mappings across SGS blocks + vanilla HTML/CSS + Bootstrap + shadcn/Radix + Tailwind + React + AI-builder. Missing SGS equivalent = gap candidate, never silently dropped. `uimax` = DB/data layer; `/ui-ux-pro-max` = intelligence skill that USES the DB.
 ### Bean-controlled drafts use SGS-BEM (Spec 00 §3 / §3.1, blub.db 236)
 `.sgs-<block>__<element>--<modifier>`. `/sgs-clone` Stage 0 hard-rejects non-conforming on production runs; `--draft-mode` = soft warning; `--legacy` bypasses. Live scrapes use lingua-franca conversion at write time.
 
@@ -285,10 +275,10 @@ Overrides are custom-property VALUES. A single-semantic-element block IS its ele
 **Mechanism, selectors and rationale: `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md`.**
 
 Only two things here get re-litigated; both are settled:
-- **Which pattern a block uses (D294, qc-council-settled):** single-element blocks + content-KIND
+- **Which pattern a block uses:** single-element blocks + content-KIND
   composites using only box+width render BLOCK-PRIVATE; section/layout-KIND composites KEEP
   `SGS_Container_Wrapper` (genuine grid/section), itself fully scoped.
-- **No version bumps, no deprecations pre-production** (Bean D293 — overrides STOP-57).
+- **No version bumps, no deprecations pre-production.**
 
 **Rollout COMPLETE — prove it by RUNNING the gate, not by reading a doc:**
 `node plugins/sgs-blocks/scripts/audit-inline-styling.js --check` must exit 0 with zero inline
@@ -312,21 +302,21 @@ PHP: `get_theme_file_uri()` / `get_stylesheet_directory_uri()` / `wp_upload_dir(
 ### sgs/trust-bar — typed-only, no `sourceMode`
 `sgs/trust-bar` is the badge block (counter use-cases belong to `sgs/counter`). It has **NO `sourceMode` attribute at all** and is **typed-only**: a curated `items[]` repeater across all 3 variants. The converter emits native item attrs resolved by the icon-identity resolver (`converter/services/icon_resolver.py`) — badges clone to correct icon slugs (home/check/truck/star).
 
-- **Do NOT emit `sourceMode` on `sgs/trust-bar` in any form** — including `'typed'`. An undeclared attribute is invisible to the editor's `getBlockAttributes()` (D338), so the client could never see or use it there — it would be a dead attr that looks fine and does nothing. ⚠ Editor-only: PHP does NOT drop an undeclared attribute before render.php runs (`WP_Block_Type::prepare_attributes_for_render()` merely `continue`s past it) — only the JS/editor surface discards it. D338 is correct for THIS case (a client-facing editor control), but do not generalise "WP discards undeclared attrs" to render.php too.
+- **Do NOT emit `sourceMode` on `sgs/trust-bar` in any form** — including `'typed'`. An undeclared attribute is invisible to the editor's `getBlockAttributes()`, so the client could never see or use it there — it would be a dead attr that looks fine and does nothing. ⚠ Editor-only: PHP does NOT drop an undeclared attribute before render.php runs (`WP_Block_Type::prepare_attributes_for_render()` merely `continue`s past it) — only the JS/editor surface discards it. That is why the rule holds for THIS case (a client-facing editor control), but do not generalise "WP discards undeclared attrs" to render.php too.
 - `sourceMode='bound'` is banned in cloning; `cheat-gate/check_bound_emit.py` enforces it.
 - The `wc-product` / `sgs-cpt` live-configurator modes belong to **`sgs/product-card`** (Spec 27), not trust-bar. Check the target block's own `block.json` before assuming it has a `sourceMode`.
 
 ## Non-negotiables
 
 - WCAG 2.1 AA baseline (keep 2.2's cheap wins — visible focus; 44px touch targets already beat 2.2's 24px), mobile-first responsive (4.5:1 contrast). Revisit to 2.2 AA per public-sector/EU client.
-- No jQuery — vanilla JS only frontend; `viewScriptModule` (ES modules) for interactive blocks. **Motion is governed by the four-tier doctrine (Spec 38 §1, D406 + D422 + D479): Tier V (vanilla/CSS) is the default for every effect; Tier G (GSAP) is the bounded exception for what vanilla genuinely cannot do; Tier H (helper/utility — a CLOSED list, currently Lenis alone, admitted per the §1.2a four-part test) covers a single-purpose library that is neither vanilla nor GSAP; **Tier W (rendering substrate — WebGL, D479)** is a different rendering substrate rather than another library, admitted only on its own five-part test and carrying a NAMED 120KB JS allowance for Tier W pages alone. All npm-bundled, all conditionally loaded — a page using none ships zero bytes of any. No CDN ever.**
+- No jQuery — vanilla JS only frontend; `viewScriptModule` (ES modules) for interactive blocks. **Motion is governed by the four-tier doctrine (Spec 38 §1): Tier V (vanilla/CSS) is the default for every effect; Tier G (GSAP) is the bounded exception for what vanilla genuinely cannot do; Tier H (helper/utility — a CLOSED list, currently Lenis alone, admitted per the §1.2a four-part test) covers a single-purpose library that is neither vanilla nor GSAP; **Tier W (rendering substrate — WebGL)** is a different rendering substrate rather than another library, admitted only on its own five-part test and carrying a NAMED 120KB JS allowance for Tier W pages alone. All npm-bundled, all conditionally loaded — a page using none ships zero bytes of any. No CDN ever.**
 - All REST endpoints: nonces, capability checks, sanitisation, prepared statements (`$wpdb->prepare()`)
 - Performance budget: <100KB CSS, <50KB JS per page; green Core Web Vitals
 - UK English in all code, comments, user-facing text
 - Cross-project sync: any change affecting sgs-booking REST must also update `specs/03-SGS-BOOKING.md` + `plugins/sgs-booking/CLAUDE.md`
 - No hedging. No stubs. Finish the thing. If you can't, name the blocker.
 
-## Cite code by SYMBOL, never by line — and a "verified" claim carries its command (2026-09-09)
+## Cite code by SYMBOL, never by line — and a "verified" claim carries its command
 
 **Two rules, because doc-rot has two diseases and only one of them is about pointers.**
 
@@ -349,9 +339,7 @@ Full research + sources: `~/.claude/memory/research/2026-09-09-code-citation-for
 **2. A claim that asserts verification carries the command that produced it.** Symbol
 citation fixes citations that were once true and drifted. It does NOTHING for citations
 that were false when written — and a symbol-cited false claim *reads* more rigorous, so it
-is harder to doubt. Spec 36 carried `"DESIGNED-NOT-BUILT (verified: 0 in src/)"` for a
-component imported and mounted three times; the badge stopped anyone re-checking for
-months. **A "verified" / "0 in src/" / "does not exist" claim with no runnable command
+is harder to doubt. **A "verified" / "0 in src/" / "does not exist" claim with no runnable command
 beside it is banned.** Write the command, or write the claim without the badge.
 
 **Enforcement (structural, not prose):** `lint-spec-drift.py` — `CITE-SYMBOL` gates (a
@@ -359,15 +347,15 @@ symbol citation that does not resolve fails the commit), `CITE-LINE` + `FR-ORPHA
 advisory so the gate is not red from day one; migrate on touch. `--self-test` carries
 negative controls proving each check can fail.
 
-## Doc-op standards (Phase 13 close, 2026-05-24)
+## Doc-op standards
 
-Architectural record: `.claude/decisions.md` D57-D65. Canonical templates: `~/.agents/skills/shared-references/doc-templates/`.
+Canonical templates: `~/.agents/skills/shared-references/doc-templates/`.
 
 1. **parking entries** carry `**Status:** OPEN|PARTIAL|BLOCKED|DEFERRED` + one of 6 taxonomy buckets
 2. **specs** use `FR-{spec_id}-{N}` for requirement IDs (e.g. `FR-31-3`)
 3. **mistakes.md** entries carry their rule directly inline, not just a keyword + external link. Target ~30 active entries; prune the oldest by date to `memory/mistakes-archive.md` when it grows past that
 4. **plans** use strategic-plan + phase-plan templates (timebox / ROAM / 16-field step block)
-5. **Handoff docs carry forward structural defences — never SUBTRACT** (D101 rule, captured 2026-05-29 / blub.db 290 / pattern_key `handoff-docs-carry-forward-structural-defences`). When overwriting `.claude/STOP-CATALOGUE.md` (or, on other projects, any handoff doc) with structural-defence sections (anti-pattern STOP catalogue, pre-flight self-attestation ritual, tiered mandatory reading list, "READ THIS BEFORE ANYTHING ELSE" boxes), READ THE PREVIOUS VERSION FIRST end-to-end. Carry every structural-defence section forward verbatim or extended. Only ADD based on this session's new learnings; never SUBTRACT without a recorded justification. After writing, COUNT: STOP entries ≥ previous + new; reading items ≥ previous + new; ritual questions ≥ previous + new. If any count went down without justification, the new doc is a regression — revise before commit. Captured because 2026-05-29 D93-D100 session-close prompt dropped 7-entry STOP catalogue + 5-question ritual + collapsed 16→5 reading list; Bean caught before next session ran. Sparser prompts let captured failure patterns recur (meta-lesson `feedback_lessons_must_be_operationally_surfaced_not_just_archived` — captured lessons sitting in memory files only prevent failures when operationally surfaced at session start; STOP catalogue at top of handoff IS the operational surfacing).
+5. **Handoff docs carry forward structural defences — never SUBTRACT.** When overwriting `.claude/STOP-CATALOGUE.md` (or, on other projects, any handoff doc) with structural-defence sections (anti-pattern STOP catalogue, pre-flight self-attestation ritual, tiered mandatory reading list, "READ THIS BEFORE ANYTHING ELSE" boxes), READ THE PREVIOUS VERSION FIRST end-to-end. Carry every structural-defence section forward verbatim or extended. Only ADD based on this session's new learnings; never SUBTRACT without a recorded justification. After writing, COUNT: STOP entries ≥ previous + new; reading items ≥ previous + new; ritual questions ≥ previous + new. If any count went down without justification, the new doc is a regression — revise before commit. Captured lessons sitting in memory files only prevent failures when operationally surfaced at session start; the STOP catalogue at the top of a handoff IS that surfacing.
 
 ## Framework stats
 
@@ -381,6 +369,6 @@ Per-client design context lives in `sites/<client>/CLAUDE.md`. Active clients:
 
 - `sites/mamas-munches/` — current pipeline canary
 - `sites/indus-foods/` — Heritage / Partnership / Ambition; teal+gold palette; B2B trade buyers
-- `sites/helping-doctors/` — green palette; medical sector. **PAUSED** (2026-08-12) — build stalled, no CLAUDE.md written yet, last touched 2026-05-21.
+- `sites/helping-doctors/` — green palette; medical sector. **PAUSED.**
 
 Do NOT inline client-specific design context into framework CLAUDE.md. Always read the client's own CLAUDE.md when working on that client.

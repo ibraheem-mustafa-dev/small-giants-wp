@@ -2,9 +2,9 @@
 
 ## What This Is
 
-A lightweight, performance-first WordPress block theme. Replaces Astra Pro. Provides global styles via `theme.json` v3, custom templates, responsive typography, and self-hosted fonts with zero bloat.
+A lightweight, performance-first WordPress block theme. Provides global styles via `theme.json` v3, custom templates, responsive typography, and self-hosted fonts with zero bloat.
 
-Full spec: `specs/01-SGS-THEME.md`
+Full spec: `.claude/specs/01-SGS-THEME.md`
 
 ## File Structure
 
@@ -12,52 +12,43 @@ Full spec: `specs/01-SGS-THEME.md`
 sgs-theme/
 ├── style.css                 # Theme metadata header (required by WP)
 ├── theme.json                # Design tokens, settings, styles (v3)
-├── functions.php             # Theme setup, font preloading, enqueuing
+├── functions.php             # Theme setup, font preloading, enqueuing, pattern categories
+├── inc/                      # colour-helpers.php, font-preloading.php
 ├── templates/                # Block templates:
-│   │                         #   index, page, single, archive, 404, front-page
-│   │                         #   search.html — search results page
-│   │                         #   archive-product.html — WooCommerce shop archive (Spec 30, D213)
-│   │                         #   single-product.html  — WooCommerce PDP (Spec 30, D210)
-│   │                         #   cart.html, checkout.html, order-confirmation.html —
-│   │                         #     WooCommerce cart/checkout/thank-you (Spec 30 FR-30-4
-│   │                         #     scope correction — see decisions.md)
+│   │                         #   index, page, single, archive, home, front-page, 404, search
+│   │                         #   archive-product, single-product, product-search-results,
+│   │                         #   taxonomy-product_attribute, cart, checkout, order-confirmation
+│   │                         #     — WooCommerce (Spec 30)
 ├── parts/                    # Template parts:
-│   │                         #   header (default + shrink + sticky + transparent)
-│   │                         #   footer (default + minimal)
-│   │                         #   sidebar
-│   │                         #   sgs-archive-toolbar.html — shop filter/search bar (Spec 30, D213/D214)
-│   │                         #   sgs-pdp-buybox.html      — PDP buybox part (Spec 30, D210)
-│   │                         #   sgs-pdp-content.html     — PDP description/tabs part (Spec 30, D210)
-│   │                         #   sgs-pdp-gallery.html     — PDP gallery part (Spec 30, D210)
-│   │                         #   sgs-cart-content.html    — Cart page content (Spec 30 FR-30-4 correction)
-│   │                         #   sgs-checkout-content.html — Checkout page content (Spec 30 FR-30-4 correction)
-│   │                         #   sgs-order-confirmation-content.html — Thank-you page content (Spec 30 FR-30-4 correction)
-├── patterns/                 # Block patterns:
-│   │                         #   header: header-centred, header-full, header-minimal,
-│   │                         #     header-search-bar-above, header-search-bar-below,
-│   │                         #     header-search-icon (category: sgs-headers, D214)
-│   │                         #   hero, cta, testimonial, about, services, stats,
-│   │                         #     footer layouts, and others
-├── styles/                   # Style variations — one JSON per client site
+│   │                         #   header.html, footer.html
+│   │                         #   sgs-archive-toolbar.html — shop filter/search bar
+│   │                         #   sgs-pdp-buybox.html, sgs-pdp-content.html — PDP
+│   │                         #   sgs-cart-content.html, sgs-checkout-content.html,
+│   │                         #   sgs-order-confirmation-content.html — cart/checkout/thank-you
+├── patterns/                 # Block patterns (one PHP file per pattern):
+│   │                         #   header-*, footer-*, mega-*, framework-{header,footer,drawer}-default,
+│   │                         #   hero, cta, testimonial, about, services, stats, team, pricing,
+│   │                         #   faq, contact, and cluster patterns
+├── styles/                   # Empty — per-client tokens live at sites/<client>/theme-snapshot.json
 ├── assets/
 │   ├── css/
 │   │   ├── core-blocks.css          # Overrides for WP core blocks
 │   │   ├── core-blocks-critical.css # Critical subset, inlined
 │   │   ├── dark-mode.css            # Dark-mode token overrides
+│   │   ├── type-scale.css           # Responsive type scale
 │   │   ├── utilities.css            # .sr-only, .container, .text-centre, etc.
-│   │   └── woocommerce.css          # WooCommerce shop/PDP/cart styling (Spec 30, D213)
+│   │   └── woocommerce.css          # WooCommerce shop/PDP/cart styling
 │   ├── js/
-│   │   ├── header-behaviour.js      # Sticky/shrink/transparent logic
 │   │   ├── nav-accessibility.js     # Keyboard navigation
 │   │   ├── dark-mode.js             # Dark-mode toggle
 │   │   ├── smooth-scroll.js
 │   │   ├── viewport-width.js
-│   │   ├── header-editor-panel.js   # Block-editor header-mode inspector
-│   │   └── sgs-shop-filters.js      # Mobile filter drawer (Spec 30, D213)
-│   ├── fonts/                # Self-hosted WOFF2 files
-│   └── svg/                  # Reusable SVG assets
+│   │   └── sgs-shop-filters.js      # Mobile filter drawer
+│   └── fonts/                # Self-hosted WOFF2 files
 └── screenshot.png
 ```
+
+Nav is owned by Spec 36 (`sgs/nav-bar-menu`, `sgs/nav-drawer-menu`, `sgs/nav-drawer`, `sgs_mega_menu` CPT).
 
 ## Design Tokens (Defaults — SGS Branding)
 
@@ -67,23 +58,23 @@ sgs-theme/
 --success: #2E7D4F (green)         --whatsapp: #25D366
 --surface: #FAF9F6                 --surface-alt: #F1F0EC
 --text: #1A202C                    --text-muted: #606D80
---text-inverse: #F1F5F9            --border-subtle: #D4DBE5
+--text-inverse: #F1F5F9            --border: #D4DBE5
 ```
 
-Verified against `theme/sgs-theme/theme.json` `settings.color.palette` (2026-08-01) — this table had drifted (was the source of a wrong `border-subtle` fallback copied into 3 block `style.css` files; see `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md`).
+Source of truth: `theme/sgs-theme/theme.json` `settings.color.palette`. Copies of a token value elsewhere (block `style.css` fallbacks) must match it; see `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md`.
 
-Clients override via style variations in `styles/`. Indus Foods uses teal (#0a7ea8) + gold (#d8ca50).
+Clients override tokens via their theme snapshot. Indus Foods uses teal (#0a7ea8) + gold (#d8ca50).
 
 ### Layout
-- `contentSize`: 1200px (was 800px, fixed 2026-02-22)
-- `wideSize`: 1400px (was 1200px, fixed 2026-02-22)
+- `contentSize`: 1200px
+- `wideSize`: 1400px
 
-Fonts: Inter variable (body + headings, 48KB, weights 100-900) — WOFF2, `font-display: swap`. DM Serif Display and DM Sans kept as "Display" and "DM Sans" family options for client style variations.
+Fonts: Inter variable (body + headings, weights 100-900) — WOFF2, `font-display: swap`. DM Serif Display and DM Sans are kept as "Display" and "DM Sans" family options for client snapshots.
 
 ## Per-Site Customisation
 
 Only these change per client deployment:
-1. Style variation JSON in `styles/` (colours, fonts, spacing)
+1. Theme snapshot `sites/<client>/theme-snapshot.json` (colours, fonts, spacing), pushed with `push-theme-snapshot.py`
 2. Font files in `assets/fonts/`
 3. Logo/favicon via WP customiser
 4. Header/footer pattern selection
@@ -96,7 +87,7 @@ Everything else is inherited.
 - < 100KB CSS total
 - < 5KB JS for a typical page without interactive blocks
 - Two font files maximum per site
-- No jQuery, no external CDN. Two sanctioned library exceptions, both npm-bundled + conditionally loaded per Spec 38 §1: **Tier G** (GSAP, D406) and **Tier H** (helper/utility — a CLOSED list, currently Lenis alone for site-level smooth scrolling, D422). A page using neither ships zero bytes of either.
+- No jQuery, no external CDN. Sanctioned library exceptions are npm-bundled + conditionally loaded per Spec 38 §1: **Tier G** (GSAP) and **Tier H** (helper/utility — a CLOSED list, currently Lenis alone for site-level smooth scrolling). A page using neither ships zero bytes of either.
 - Critical CSS inlined, block CSS loaded conditionally (WP 6.9 handles core blocks automatically)
 - Preload critical fonts via `<link rel="preload">`
 
@@ -104,50 +95,37 @@ Everything else is inherited.
 
 - WordPress 6.7+ (theme.json v3 support)
 - PHP 8.0+
-- WooCommerce 9.9+ — **optional** shop/PDP/cart layer (Spec 30). The theme activates and functions fully without WooCommerce. When WooCommerce is active, the theme registers `add_theme_support('woocommerce')` and the `sgs-*` template parts/`woocommerce.css`/`sgs-shop-filters.js` assets are loaded. A runtime compat-check (`class-wc-compat-check.php`) surfaces a dismissible admin notice if the detected WC version falls outside the tested band.
+- WooCommerce — **optional** shop/PDP/cart layer (Spec 30). The theme activates and functions fully without WooCommerce. When WooCommerce is active, the theme registers `add_theme_support('woocommerce')` and the `sgs-*` template parts/`woocommerce.css`/`sgs-shop-filters.js` assets are loaded.
 - No page builder dependency
 
 ## Browser Support
 
 Chrome/Edge 90+, Firefox 90+, Safari 15+, iOS Safari 15+, Samsung Internet 18+. No IE11.
 
-## Build Phase
+## Version and open priorities
 
-Phase 1a (theme foundation) is **complete**. Current theme version: **1.5.2** (deployed on palestine-lives.org and sandybrown canary).
+Current theme version: read `style.css`; deployed to the sandybrown canary and the Indus test site.
 
-Version bump history (recent):
-- 1.5.2 — Spec 30 P2 shop layer complete: FR-30-5 product search + FR-30-6 filter live-verified; search block placed in `sgs-archive-toolbar`; QA Gates B+C passed (D214, 2026-06-12)
-- 1.5.1 — Spec 30 P2 Gate A+B: shop archive built on WC's canonical Product Collection + Filters structure; `sgs-shop-filters.js` + `woocommerce.css`; `sgs/collapsible-text` block (D213, 2026-06-11)
-- 1.5.0 — Spec 30 P1 complete: PDP + cart loop + option-picker→cart bridge (`sgs/buybox`); mini-cart; Bean R-22-13 sign-off (D209/D210, 2026-06-11)
-- Earlier bumps — mega-menu panels; block-quality programme; announcement-bar retired → notice-banner announcement mode; shared `TypographyControls` component (D209, 2026-06-11)
-
-**Phase 2 theme priorities (from master feature audit):**
-- `prefers-contrast` high-contrast support (P1, S-tier differentiator — first WP theme to support this)
-- `text-wrap: balance` on headings (P1, CSS-only, zero effort)
-- Dark mode toggle + `light-dark()` colour palette (P2) — `dark-mode.css` + `dark-mode.js` are scaffolded
-- `content-visibility: auto` on below-fold sections (P2, performance)
-- Block patterns library — hero, feature, testimonial, CTA, content, footer, header patterns (P2)
-- ~~**Mega-menu generic layout patterns SHIPPED 2026-06-02** — 7 patterns under `mega-menu-layouts`~~ — **RETIRED + DELETED 2026-07-22 (FR-37-21 / D362, commit `23a3cf63`).** The 7 `mega-menu-*.php` patterns, the 7 `mega-menu-*.html` parts, their `theme.json` `templateParts` entries, `mega-menu-panels.css`, and the `sgs/mega-menu` + `sgs/adaptive-nav` blocks were all removed. Nav is now owned by **Spec 36** (`sgs/nav-menu` + `sgs/nav-drawer` + the `sgs_mega_menu` CPT — note the CPT is a DIFFERENT thing from the deleted `sgs/mega-menu` block).
-- **Header search patterns SHIPPED 2026-06-12** — `header-search-bar-above`, `header-search-bar-below`, `header-search-icon` registered under `sgs-headers` category (D214).
-
-See `docs/plans/2026-02-21-master-feature-audit.md` for the full graded roadmap.
+Open theme priorities:
+- `prefers-contrast` high-contrast support
+- `light-dark()` colour palette (`dark-mode.css` + `dark-mode.js` are scaffolded)
+- Block patterns library — hero, feature, testimonial, CTA, content, footer, header patterns
 
 ## Deploy
 
-Use the tar method from the framework CLAUDE.md — `scp -r` creates nested directories on Hostinger. Run from the repo root (`small-giants-wp/`).
+Deploy with `build-deploy.py --target <sandybrown|indus-test>` (see root CLAUDE.md). Run from the repo root (`small-giants-wp/`).
 
 ## Key Rules
 
 - All templates use block markup only — no PHP template tags
 - All styles flow from theme.json tokens — no hardcoded colours/fonts
 - `functions.php` stays minimal — enqueuing, theme support, pattern registration
-- Style variation-specific CSS goes in `functions.php` via `wp_add_inline_style()`, gated on the active variation — never in `style.css`
+- Per-client CSS goes in the snapshot's `styles.css` or `sites/<client>/theme-overrides.css` — never in `style.css`
 - Test that theme activates cleanly and core WP blocks render correctly before moving on
 
 ## Gotchas
 
-- **Pattern registration requires a `style.css` Version bump.** WordPress caches the pattern-file list against the theme version. Adding a new `.php` file to `patterns/` without bumping the version means the pattern will not appear in the editor on cached installs. Bump `style.css` Version (e.g. `1.5.1` → `1.5.2`) whenever adding or renaming pattern files.
+- **Pattern registration requires a `style.css` Version bump.** WordPress caches the pattern-file list against the theme version. Adding a new `.php` file to `patterns/` without bumping the version means the pattern will not appear in the editor on cached installs. Bump `style.css` Version whenever adding or renaming pattern files.
 - **Theme CSS busts off `style.css` Version, not `block.json`.** The Hostinger CDN caches `style.css` on the `?ver=` query string. A CSS deploy without a version bump serves the stale edge copy — computed-style probes then appear to confirm a correct rule when the browser is still loading the old file. Bump version with any `style.css` or `assets/css/*.css` change and verify the served `?ver` after deploy.
 - **WooCommerce `woocommerce_coming_soon=yes` is the default.** WC 10+ ships with Coming Soon mode enabled — it masks ALL store pages behind a Coming Soon template on fresh installs. Must be set to `no` before any shop go-live check (FR-30-13 go-live checklist item).
-- **`class-wc-compat-check.php` uses integer arithmetic for version comparison.** A float ceiling (e.g. `10.8`) silently passes WC 10.10 due to float precision; use `version_compare()` or integer-parsed major/minor strings. Fixed D210 — do not revert to float.
-- **No global `.btn` / `.btn-primary` exists in the theme.** Button-like styles are scoped to `.sgs-product-card`. Any new component needing a button must use `sgs/button` block tokens or define its own scoped selector. (Parked: `P-NO-GLOBAL-BUTTON-COMPONENT`, D213.)
+- **No global `.btn` / `.btn-primary` exists in the theme.** Button-like styles are scoped to `.sgs-product-card`. Any new component needing a button must use `sgs/button` block tokens or define its own scoped selector.

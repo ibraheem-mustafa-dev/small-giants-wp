@@ -4,28 +4,28 @@
 
 **Indus Foods Ltd** — Birmingham-based ethnic food wholesaler, est. 1962, £15.3M turnover, 5,000+ customers. Website built by Small Giants Studio using the SGS WordPress framework.
 
-## Live Sites
+## Sites
 
-- **Reference site (client's current live site, non-SGS stack):** https://lightsalmon-tarsier-683012.hostingersite.com/ — DO NOT modify, client-facing, read-only reference only
-- **Dedicated test site (2026-09-19):** https://lavender-dinosaur-183533.hostingersite.com/ — a fresh, Indus-only SGS install (sgs-theme + sgs-blocks active, no WooCommerce, no other client's content). Registered as `build-deploy.py --target indus-test`. Indus's theme-snapshot tokens are already applied to this site's on-disk `theme.json`. Use this as the PRIMARY render target for all Indus header/footer/nav/homepage work — no shared-canary active-CPT-pointer conflict here.
-- **Build/test site (shared canary, other clients live here too):** sandybrown-nightingale-600381.hostingersite.com — only ONE client's header/footer/drawer/theme-snapshot can be ACTIVE at a time (`sgs_active_header_cpt_id` etc. are single global `wp_options`, checked live 2026-09-19). Avoid for Indus header/footer/nav work now that the dedicated test site exists; still fine for isolated block-level QA that doesn't touch the active pointers.
+- **Reference site (client's current live site, non-SGS stack):** https://lightsalmon-tarsier-683012.hostingersite.com/ — DO NOT modify or deploy to; client-facing, read-only reference only.
+- **Indus Foods build/test site:** https://lavender-dinosaur-183533.hostingersite.com/ — an Indus-only SGS install (sgs-theme + sgs-blocks active, no WooCommerce). Deploy target `indus-test`. This is the PRIMARY render target for all Indus header/footer/nav/homepage work.
+- **Shared canary (sandybrown):** the canary can hold only one client's active header/footer/drawer/theme-snapshot at a time — `sgs_active_header_cpt_id` etc. are single global `wp_options` — so it is for isolated block QA only.
 
 ## Design Reference
 
 All design decisions are documented in `notes/Indus-Foods-Website-Research-Updated-V2V3.md` — this is the single source of truth.
 
-### Design Tokens (Indus Foods Variation)
+### Design Tokens
 
-These values live in `theme/sgs-theme/styles/indus-foods.json` (WordPress style variation):
+These values live in `sites/indus-foods/theme-snapshot.json`:
 
 ```
---primary: #0a7ea8 (teal)          --accent: #d8ca50 (gold)
---primary-dark: #076a8e            --accent-light: #e7d768
+--primary: #0A7EA8 (teal)          --accent: #D8CA50 (gold)
+--primary-dark: #075E80            --accent-light: #E7D768
 --success: #2E7D4F (green)         --whatsapp: #25D366
---surface: #FFFFFF                 --surface-alt: #F2F5F7
---text: #1E1E1E                    --text-muted: #424242
---text-inverse: #FFFFFF            --border-subtle: #2eade2
---footer-bg: #2c3e50
+--surface: #FFFFFF                 --surface-alt: #F8F7F4
+--text: #2C3E50                    --text-muted: #5A6070
+--text-inverse: #FFFFFF            --border: #2EADE2
+--footer-bg: #2C3E50
 ```
 
 **Fonts:** Montserrat (headings) + Source Sans 3 (body) — self-hosted variable WOFF2.
@@ -52,48 +52,47 @@ Shared sections (trust bar, heritage strip, process, delivery, brands, certifica
 
 | Directory | Contents |
 |---|---|
-| `mockups/` | HTML design references — Food Service V3 (template for all service pages) and Trade Application V2 |
+| `mockups/` | HTML design references — Food Service V3 (template for all service pages) and Trade Application V2/V3 |
 | `content/` | Image status notes, test site URL, asset requirements |
 | `notes/` | Research document (V2V3) — full company intel, competitive analysis, design rationale |
 
 ## Deploy
 
-Deploy to **sandybrown-nightingale-600381.hostingersite.com** (shared SGS canary) via `build-deploy.py`:
+Deploy to the Indus test site via `build-deploy.py`:
 
 ```bash
 cd /c/Users/Bean/Projects/small-giants-wp
-python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown
+python plugins/sgs-blocks/scripts/build-deploy.py --target indus-test
 ```
 
-**DO NOT deploy to lightsalmon-tarsier-683012.hostingersite.com** — that's the client-facing test site.
-
-After deployment, push Indus Foods colours onto the canary:
+Push the Indus Foods tokens (name the domain explicitly — `--target-domain` defaults to the canary):
 
 ```bash
-python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client indus-foods --target u945238940@141.136.39.73
+python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client indus-foods --target u945238940@141.136.39.73 \
+  --target-domain lavender-dinosaur-183533.hostingersite.com
 ```
 
-## Page Build Status
+## Site Build State (indus-test)
 
-**Header/footer/nav-drawer build (2026-09-19, dedicated test site https://lavender-dinosaur-183533.hostingersite.com/):**
-`sgs_header` #28 (top-strip business-info phone/email + site-info social-icons; main row responsive-logo `logoId:5` + `sgs/nav-bar-menu` `ref:2` `drawerRef:27`) · `sgs_footer` #29 (4-col grid: Brand/Quick Links/Contact+Opening Hours/Address, collapses to 2-col tablet / 1-col mobile per `columns:{"desktop":4,"tablet":2}`; bottom copyright row) · `sgs_drawer` #27 (`sgs/nav-drawer-menu` `ref:2` + "Register for a Trade Account" CTA) · classic `nav_menu` term 2 "Indus Foods Primary" (7 top-level items; About/Sectors/Trade are dropdowns; Brands is a `post_type` item targeting `sgs_mega_menu` post #6, native FR-36-15 attach) · `sgs_mega_menu` #6 "Indus - Brands Mega Menu" (`sgs/mega-panel` variant=brands + `sgs/card-grid` 4 columns) · Home page #30 set as static front page. Active pointers (`sgs_active_header_cpt_id`=28, `sgs_active_footer_cpt_id`=29, `sgs_active_drawer_cpt_id`=27) set directly — safe on this dedicated site (nothing else to protect). Phone/email/address/opening-hours/socials populated once via `Sgs_Site_Info::set_internal()` (the `sgs_site_info` option) rather than hardcoded per-block, so `sgs/business-info` and `sgs/social-icons source="site-info"` both read the one store. Live-verified 375/768/1440: dropdowns (About/Sectors/Trade) open correctly, Brands mega renders all 4 columns at its real menu position, mobile drawer opens with full accordion tree + CTA, footer collapses 4→2→1 columns, 0 console errors (bar the expected favicon 404). **Post-build fix (same day):** independent verification found the desktop footer rendering only 3 grid tracks for 4 columns (Address wrapping into an ugly second row) — root-caused as content-level, not a framework bug: `columns:{"desktop":4}` alone drives the shared wrapper's intrinsic/auto-fit column sizing, whose default 256px per-column minimum didn't fit 4 real columns at this row's actual container width. Fixed by adding an explicit `"gridTemplateColumns":{"desktop":"1.4fr 1fr 1fr 1fr"}` to post #29's columns row, which takes precedence over the count-based auto-fit fallback. Live-verified: computed grid now renders `316.9px 226.4px 226.4px 226.4px`, all 4 columns as direct siblings, no wrapping. **Not run: Spec 36 §7 Phase-2 Gate-2's full acceptance sweep** (axe/occlusion/late-CSS-A-B/reduced-motion/Bean's-eye rubric) — deliberately out of scope for this pass, per Bean's direction. **Fixed same day:** About/Sectors/Trade parent items carried a literal `#` menu-item URL, which made `nav-bar-menu/render.php::from_link()`'s existing `has_url` check (`'' !== $raw_url`) incorrectly treat them as real links — rendering `<a href="#">` instead of the non-link disclosure trigger the mechanism was already built to emit for a parent-only item. Root cause was content (`_menu_item_url` postmeta on menu items #8/#14/#20), not code — cleared to `''` via `wp post meta update`, which now flows correctly through the pre-existing `has_url` branch. Live-verified: all three render as `<button aria-expanded>` (no `href`), dropdowns still open with all items intact, no page-jump. Brands' drawer plain-link degrade points at an internal `?sgs_mega_menu=` query URL (the CPT is `public=>false`, no real permalink) — expected per FR-36-5, not a bug. **Fixed same day:** the 4 mega-menu cards had no images. Per Bean's direction, sourced the real brand logos from the live reference site (https://lightsalmon-tarsier-683012.hostingersite.com/) rather than placeholders — downloaded server-to-server (Sanam/Shan Foods/Green Leaf/Lemontree, 500×500 JPEGs, matching the reference's own Astra mega-menu image-to-category mapping exactly), imported into this site's media library (attachment IDs 32-35), and wired into `sgs/card-grid`'s `items[].media` object on mega-menu post #6. Live-verified: mega-menu now renders all 4 real brand logos matching the reference.
+Header/footer/nav-drawer objects:
 
-| Page | Status | Notes |
+| Object | ID | Contents |
 |---|---|---|
-| Homepage | ✅ Deployed | Post ID 13, all sections rendering (needs visual polish) — NOTE: this row's post IDs are on an OLDER site (see Live Sites); not yet reconciled with the new dedicated test site |
-| /contact/ | ✅ Created | Post ID 57 (placeholder content) |
-| /apply-for-trade-account/ | ✅ Created | Post ID 58 (placeholder content) |
-| Food Service | Not started | Template for all service pages (V3 mockup) |
-| Manufacturing | Not started | Same template, different content |
-| Retail | Not started | Same template, different content |
-| Wholesale | Not started | Same template, different content |
-| Trade Application | Not started | V2 mockup, requires form blocks (Phase 1b) |
-| /brands/ | Not started | Mega menu template parts ready |
-| /our-story/ | Not started | |
-| /certifications/ | Not started | |
-| /blog/ | Not started | |
+| `sgs_header` | 28 | Top strip (business-info phone/email + site-info social icons); main row with responsive logo (`logoId` 5) + `sgs/nav-bar-menu` (`ref` 2, `drawerRef` 27) |
+| `sgs_footer` | 29 | 4-column grid (Brand / Quick Links / Contact + Opening Hours / Address), 2 columns tablet, 1 mobile; bottom copyright row |
+| `sgs_drawer` | 27 | `sgs/nav-drawer-menu` (`ref` 2) + "Register for a Trade Account" CTA |
+| `sgs_mega_menu` | 6 | "Indus - Brands Mega Menu": `sgs/mega-panel` variant `brands` + `sgs/card-grid` (4 columns) |
+| nav menu term | 2 | "Indus Foods Primary" — 7 top-level items; About / Sectors / Trade are dropdowns; Brands is a `post_type` item targeting `sgs_mega_menu` post 6 |
+| Home page | 30 | Static front page |
 
-Update this table as pages are built and deployed.
+Active pointers: `sgs_active_header_cpt_id`=28, `sgs_active_footer_cpt_id`=29, `sgs_active_drawer_cpt_id`=27. Phone, email, address, opening hours and socials live in the `sgs_site_info` option (set via `Sgs_Site_Info::set_internal()`), read by `sgs/business-info` and `sgs/social-icons source="site-info"`. The Brands mega-menu cards use brand logos (Sanam, Shan Foods, Green Leaf, Lemontree) held as media attachments 32-35, wired into `sgs/card-grid` `items[].media`.
+
+Durable content rules:
+- **A 4-column footer needs an explicit `gridTemplateColumns` override.** The count-based `columns:{"desktop":4}` attribute drives the wrapper's auto-fit sizing, whose per-column minimum can collapse 4 real columns to 3 tracks at this row's container width. Post 29 sets `"gridTemplateColumns":{"desktop":"1.4fr 1fr 1fr 1fr"}` on its columns row.
+- **A parent-only dropdown menu item must have an EMPTY `_menu_item_url`.** A literal `#` makes `nav-bar-menu/render.php::from_link()`'s `has_url` check treat it as a real link and render `<a href="#">` instead of the non-link disclosure button. About / Sectors / Trade are stored with an empty URL.
+- The Brands drawer plain-link degrade points at an internal `?sgs_mega_menu=` query URL (the CPT is `public=>false`, no permalink) — expected per FR-36-5.
+
+Pages on the site: Home (30, published) and a draft privacy policy. Service pages (Food Service, Manufacturing, Retail, Wholesale), Trade Application, /brands/, /our-story/, /certifications/ and /blog/ are not built; the Brands mega menu is `sgs_mega_menu` post 6.
 
 ## Placeholder Items Awaiting Client
 
