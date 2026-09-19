@@ -4,13 +4,10 @@
  *
  * File: helpers-colour-variants.php
  *
- * WHY THIS EXISTS. Each block currently hand-writes its own colour CSS. Measured
- * 2026-08-22: 3,951 lines of inline colour-row JSX across 64 blocks, each paired with
- * bespoke render.php paint. That bespoke paint is ALSO why a codemod could only reach
- * 14% of non-conformant rows — most blocks emit colour into a colour-valued CSS custom
- * property (`--sgs-mm-card`), and a gradient cannot live in one: a gradient is
- * `background-image`, a different CSS property entirely. The ceiling was a CONSEQUENCE
- * of hand-rolled paint, not a fact about the blocks. A shared emitter owns the paint,
+ * WHY THIS EXISTS. Hand-written per-block colour CSS cannot carry a gradient: most
+ * blocks emit colour into a colour-valued CSS custom property (`--sgs-mm-card`), and a
+ * gradient cannot live in one — a gradient is `background-image`, a different CSS
+ * property entirely. A shared emitter owns the paint,
  * so gradient + hover come free at every adoption site.
  *
  * ⛔ FAÇADE OVER PROVEN PRIMITIVES, NOT NEW PAINT CODE. Everything below delegates:
@@ -22,8 +19,8 @@
  * Both are already load-bearing across the tree. This file adds a uniform contract,
  * not a second paint implementation.
  *
- * ATTRIBUTE NAMES ARE THE CALLER'S (Bean's ruling 2026-08-22): the map is passed in,
- * so sgs/nav-menu keeps `navBg` and sgs/media keeps `boxShadowColour`. No renames, no
+ * ATTRIBUTE NAMES ARE THE CALLER'S: the map is passed in,
+ * so sgs/nav-bar-menu keeps `navBg` and sgs/media keeps `boxShadowColour`. No renames, no
  * stored-content migration.
  *
  * @package SGS\Blocks
@@ -34,21 +31,14 @@ declare( strict_types = 1 );
 /**
  * Build the FILL (background) DECLARATIONS for a block, per state.
  *
- * ⛔ RETURNS DECLARATIONS, NOT FINISHED CSS — and that is not a style preference, it
- * is what adoption revealed. The first version of this helper emitted its own
- * `{sel}{…}` rule. Attempting to adopt it in sgs/info-box showed why that is wrong:
- * that block collects FILL, TEXT and BORDER into one `$sgs_hover_decls` array and
- * emits them in a SINGLE rule (render.php:393-394). A helper that owns its own rule
- * would have split fill into a separate rule block — computed-equivalent, but not
- * byte-identical output and more CSS on every page. Real blocks compose variants into
- * shared rules, so the helper must hand back parts, not a finished rule.
- *
- * This is why the five variants are proven ONE AT A TIME against a real adoption
- * rather than designed as a set: the signature was wrong and only contact with a
- * caller showed it.
+ * ⛔ RETURNS DECLARATIONS, NOT FINISHED CSS. A block such as sgs/info-box collects
+ * FILL, TEXT and BORDER into one `$sgs_hover_decls` array and emits them in a SINGLE
+ * rule. A helper that owned its own `{sel}{…}` rule would split fill into a separate
+ * rule block — computed-equivalent, but more CSS on every page. Real blocks compose
+ * variants into shared rules, so the helper hands back parts, not a finished rule.
  *
  * @param array $attributes The block's attributes.
- * @param array $map        The block's OWN attribute names (Bean's ruling: helpers
+ * @param array $map        The block's OWN attribute names (helpers
  *                          adapt to existing names, nothing is renamed):
  *                          [ 'base' => 'navBg', 'hover' => 'navBgHover',
  *                            'gradient' => 'navBgGradient', 'hover_gradient' => '…',
@@ -157,15 +147,10 @@ function sgs_fill_states_css( string $selector, array $attributes, array $map ):
  * valid and the flat colour otherwise, and sgs_text_colour_decl() to turn that resolved
  * value into the correct declaration set for either case (a bare `color:` for a flat
  * value, or the full background-image/background-clip/color:transparent set for a
- * gradient) — FIXED 2026-09-04: this used to hand-build `'color:' . sgs_colour_value(...)`
- * directly, which is only correct for a flat value; fed a resolved gradient string it
- * produced invalid CSS (`color:linear-gradient(...)`) that the browser silently drops.
- * Confirmed live-broken on 7 blocks before this fix (see the session 11 write-up in
- * `.claude/plans/2026-09-03-golden-colour-staged-rollout.md`) — all 7 had already added
- * the MANDATORY companion rule below and still shipped broken, because the companion
- * alone cannot fix a wrong primary declaration. Byte-identical output for every existing
- * flat-colour caller (`sgs_text_colour_decl()`'s flat branch is the same
- * `'color:' . sgs_colour_value(...)` this function used to build inline).
+ * gradient). Building `'color:' . sgs_colour_value(...)`
+ * directly is only correct for a flat value; fed a resolved gradient string it
+ * produces invalid CSS (`color:linear-gradient(...)`) that the browser silently drops,
+ * and the MANDATORY companion rule below cannot fix a wrong primary declaration.
  *
  * ⚠ THE GRADIENT CASE STILL NEEDS A COMPANION RULE THE CALLER MUST EMIT — this is a
  * structural limitation of the return shape (per-state declaration ARRAYS for one
@@ -246,8 +231,8 @@ function sgs_text_decls( array $attributes, array $map ): array {
  * alone — the sgs_fill_states_css() sibling for text. Resolves both states, emits the
  * `{sel}{…}` / touch-guarded `:hover`,`:focus-visible` pair via sgs_emit_state_colour_css(),
  * AND emits both mandatory gradient fallback rules — the step every hand-rolled caller of
- * sgs_text_decls() had to remember separately, and the step 7 blocks got wrong before the
- * 2026-09-04 fix (see sgs_text_decls()'s own docblock above). Prefer this over hand-rolling
+ * sgs_text_decls() had to remember separately (see sgs_text_decls()'s own docblock
+ * above). Prefer this over hand-rolling
  * the sequence for a new adoption; sgs_text_decls() + sgs_text_colour_gradient_fallback_rule()
  * stay available directly only for a block that must compose text declarations into a
  * shared rule with fill/border (the same reason sgs_fill_decls() returns declarations, not
@@ -358,10 +343,9 @@ function sgs_border_states_css( string $selector, array $attributes, array $map 
 	// it feeds the value straight into `background:` inside the masked ::before
 	// ring, where a palette SLUG is invalid CSS the browser silently drops --
 	// and the ring also sets `border-color:transparent`, so the border vanishes
-	// entirely. Measured live 2026-08-29 on sgs/container: `borderColour:
-	// "primary"` emitted `background:primary` and painted nothing. A raw hex
-	// worked, which is why this survived the sgs/quote sign-off (that used a
-	// custom hex swatch, not a token). Same class as D684.
+	// entirely. `borderColour:
+	// "primary"` would emit `background:primary` and paint nothing; a raw hex
+	// works, so the failure only shows with a palette token.
 	//
 	// So: when the resolver fell through to the flat value, run it through
 	// `sgs_colour_value()` (slug -> var(--wp--preset--color--…), raw colour
@@ -406,15 +390,9 @@ function sgs_border_states_css( string $selector, array $attributes, array $map 
 	// `border-color:transparent` on the element itself. That is correct FOR A
 	// GRADIENT.
 	//
-	// It is wrong for a FLAT colour, and until 2026-08-30 this helper ran the
-	// ring unconditionally. The result: a client's flat border colour was never
-	// readable as `border-color`, and the transparent border it left behind was
-	// the only thing painted. Measured live on the canary with
-	// scripts/qa/check-border-roundtrip.js against a palette token — BOTH callers
-	// (sgs/container, sgs/product-card) reported
-	// `positive border-color = rgba(0, 0, 0, 0)`, while every block that emits
-	// `border-color` directly passed. The homepage's restored 1px container
-	// border painted its width and style and nothing else.
+	// It is wrong for a FLAT colour: running the ring unconditionally would leave
+	// a client's flat border colour unreadable as `border-color`, with the
+	// transparent border it leaves behind as the only thing painted.
 	//
 	// So: ring ONLY when a gradient is actually set. A flat colour emits
 	// `border-color` directly, which is also cheaper — no pseudo-element, no
@@ -440,7 +418,7 @@ function sgs_border_states_css( string $selector, array $attributes, array $map 
 
 		// Builds the NON-RESTING declaration string for one resolved paint —
 		// the flat `border-color:X;` shorthand when nothing is suppressed
-		// (byte-identical to pre-suppress_edges behaviour), the unsuppressed
+		// (identical to the behaviour without suppress_edges), the unsuppressed
 		// edges' `border-<edge>-color:X;` longhands when some are, or '' when
 		// every edge is suppressed (no rule at all, not an empty one).
 		$non_resting_decl = static function ( string $paint ) use ( $any_suppressed, $active_edges ): string {
@@ -507,11 +485,9 @@ function sgs_border_states_css( string $selector, array $attributes, array $map 
  * block hand-reads four attributes and passes them positionally. This is the FAÇADE:
  * the block passes its own attribute NAMES once, matching sgs_fill_decls/sgs_text_decls,
  * so installing overlay somewhere new is one call rather than four reads plus a call.
- * Bean 2026-08-22: "I want that and the shadow control to be in a helper so it's easy to
- * install them in new places and we don't need to keep rebuilding those 2 variants."
  *
- * The JS half needed no equivalent: GradientOverlayControl already takes an `attrNames`
- * map. Overlay was half-installable — JS yes, PHP no.
+ * The JS half needs no equivalent: GradientOverlayControl already takes an `attrNames`
+ * map.
  *
  * @param array $attributes The block's attributes.
  * @param array $map        The block's OWN attribute names. Keys mirror
@@ -536,8 +512,8 @@ function sgs_overlay_decls_for( array $attributes, array $map ): array {
 
 	// Opacity and blend mode belong to the RESTING overlay only. They are not
 	// per-state: there is one opacity attribute, and duplicating it per state would be
-	// two attributes owning one value — the shape Bean rejected for the overlay
-	// boolean (S-2). A hover overlay changes its PAINT, not its transparency.
+	// two attributes owning one value. A hover overlay changes its PAINT, not its
+	// transparency.
 	$normal = sgs_overlay_decls(
 		$read( $map['solid'] ?? null ),
 		$read( $map['gradient'] ?? null ),
@@ -568,18 +544,18 @@ function sgs_overlay_decls_for( array $attributes, array $map ): array {
  * `sgs_typography_attr()` has had all along — see
  * `check-control-helper-parity.py` for why every shared control owes one.
  *
- * ⭐ THE RULES ARE ENUMERATED, NOT GENERALISED — and generalising got one WRONG
- * first. Every `attrNames` map in the tree was listed and each rule tested
- * against every row carrying the key (2026-08-26):
+ * ⭐ THE RULES ARE ENUMERATED, NOT GENERALISED — generalising gets one WRONG.
+ * Every `attrNames` map in the tree was listed and each rule tested
+ * against every row carrying the key:
  *   • `colour`       = `<base>Colour`      — holds **22/22**
  *   • `hover_colour` = `<base>ColourHover` — holds **10/10**
  *   • `hover`        = `<base>Hover`       — **0 editor mounts use it.**
- *     `sgs_shadow_decls()` accepts a hover SHAPE (Bean's full-symmetry ruling,
- *     2026-08-22) but nothing passes one yet; available, not proven.
- * ⛔ The first draft returned `<base>HoverColour`, generalised from
- * `sgs/button`'s `boxShadowHoverColour` — a SEPARATE family whose base IS
- * `boxShadowHover`, so it was `<base>Colour` all along. Against the real corpus
- * the guessed rule scored **0/10**. This is why R-31-1 wants an enumeration
+ *     `sgs_shadow_decls()` accepts a hover SHAPE (full symmetry: a hover shadow
+ *     can LIFT, GROW and SOFTEN) but nothing passes one yet; available, not proven.
+ * ⛔ The colour rule is NOT `<base>HoverColour`: `sgs/button`'s
+ * `boxShadowHoverColour` belongs to a SEPARATE family whose base IS
+ * `boxShadowHover`, so it is `<base>Colour` there too. The guessed rule scores
+ * **0/10** against the real corpus. This is why R-31-1 wants an enumeration
  * before a rule replaces a list.
  *
  * @param string $base Base attribute name, e.g. 'boxShadow' or 'cardShadow'.
@@ -608,8 +584,7 @@ function sgs_shadow_attr( string $base, string $part = 'base' ): string {
  *
  * Replaces a hand-written array literal at each call site. Hand-writing it is
  * how a caller pairs the wrong colour attr with a shape attr — the shape of
- * mistake D805 paid for on a different mechanism the same day, where a PHP
- * roster and a JS roster of the same names drifted apart.
+ * mistake where a PHP roster and a JS roster of the same names drift apart.
  *
  * The JS twin is `shadowAttrKeys()` in `src/components/ShadowControl.js`;
  * both derive from the same rule, so a block declares its base name ONCE.
@@ -622,7 +597,7 @@ function sgs_shadow_attr( string $base, string $part = 'base' ): string {
  * derives `shadowHoverHover`. Harmless HERE, because `sgs_shadow_decls()` reads
  * a missing attribute as '' — but the JS twin BINDS every key it is handed, so
  * the same unconditional map renders an editor control wired to an attribute the
- * block never declares, and WordPress silently discards writes to those (D338).
+ * block never declares, and WordPress silently discards writes to those.
  * The two sides must carry the SAME opt-in or the pair stops being one rule.
  *
  * @param string $base       Base attribute name, e.g. 'boxShadow'.
@@ -659,11 +634,10 @@ function sgs_shadow_attr_map( string $base, bool $with_hover_shape = false, bool
  * drops. rule 31 already encodes this exemption centrally so it is never declared
  * per block.
  *
- * ⭐ THE HOVER SHAPE IS A REAL KEY, not a copy of the resting one. Bean's full-symmetry
- * ruling (2026-08-22) is that a hover shadow can LIFT, GROW and SOFTEN, not merely
- * recolour — so 'hover' names the hover SHAPE attribute and 'hover_colour' its colour.
- * A caller supplying only 'hover_colour' still gets a hover rule, composed against the
- * RESTING shape, which is the pre-symmetry behaviour and remains valid.
+ * ⭐ THE HOVER SHAPE IS A REAL KEY, not a copy of the resting one. A hover shadow
+ * can LIFT, GROW and SOFTEN, not merely recolour — so 'hover' names the hover SHAPE
+ * attribute and 'hover_colour' its colour. A caller supplying only 'hover_colour'
+ * still gets a hover rule, composed against the RESTING shape.
  *
  * @param array $attributes The block's attributes.
  * @param array $map        The block's OWN attribute names:

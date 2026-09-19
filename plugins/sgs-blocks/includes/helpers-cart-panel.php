@@ -34,7 +34,7 @@ defined( 'ABSPATH' ) || exit;
  * `link`   → an `<a href>`, so the cart is reachable with no JS at all.
  * `flyout` → a real `<button aria-expanded aria-controls>`. It must be a button,
  *            not a styled `<a>`: a click handler on an anchor races the anchor's
- *            own default navigation. This mirrors the proven `sgs/nav-menu` burger.
+ *            own default navigation. This mirrors the `sgs/nav-bar-menu` burger.
  * `drawer` → the same button, wrapped in a `data-wp-interactive="sgs/nav"` element
  *            carrying the per-instance context, so the SHARED `store('sgs/nav')`
  *            drives it. No second open/close/focus utility exists (R-31-9).
@@ -152,7 +152,7 @@ function sgs_cart_panel_body_html( array $args ): string {
  *             `aria-expanded`/`aria-controls`. Tab is never trapped.
  * `drawer`  → DIALOG: a native `<dialog>` carrying `data-sgs-nav-drawer`, so
  *             the SHARED `store('sgs/nav')` opens it with the same
- *             `showModal()` / body-reparent (D323) / scroll-lock / focus-trap
+ *             `showModal()` / body-reparent / scroll-lock / focus-trap
  *             / ESC behaviour `sgs/nav-drawer` already proves. No second
  *             open/close utility exists (R-31-9).
  * anything else (i.e. `link`) → no panel at all.

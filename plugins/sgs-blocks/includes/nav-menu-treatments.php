@@ -1,10 +1,8 @@
 <?php
 /**
- * SGS Nav Menu (sgs/nav-menu) — the hover-TREATMENT layer + icon resolution.
- *
- * Split out of `nav-menu-css.php` (Spec 41 step 15) because BOTH CSS modules
- * and `render.php` consume these, and because the file-length limit is a real
- * gate, not a style note. Nothing here emits a whole rule set: it answers
+ * SGS Nav Bar Menu / Nav Drawer Menu — the hover-TREATMENT layer + icon
+ * resolution, shared by BOTH CSS modules and `render.php`. Nothing here emits
+ * a whole rule set: it answers
  * "which treatment actually applies?" (the declared Sweep-eligibility
  * predicate + the resolution), emits the one shared treatment the answer can
  * select (the glyph sweep), and resolves an IconPicker object to markup.
@@ -78,7 +76,7 @@ if ( ! function_exists( 'sgs_nav_shared_resolved_treatments' ) ) {
 	 * `Swap` restores it. Only the emission falls back to `'swap'`.
 	 *
 	 * ⚠ Only rows DECLARED in `sweepEligibility` are gated. `itemBorderHoverTreatment`
-	 * IS declared (Spec 41 Wave 2 H1) — its Sweep is a `::after` gradient band, which
+	 * IS declared — its Sweep is a `::after` gradient band, which
 	 * can only ever render solid, so it is gated purely via `glyphGuard` against
 	 * `itemBorderStyle` (dashed/dotted/etc withdraw Sweep back to `swap`); it has no
 	 * `blockingBackgroundAttrs`/`blockingGradientAttrs` referent since the band isn't

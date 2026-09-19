@@ -1,22 +1,21 @@
 /**
  * SGS Starter Look preset control (FR-37-47).
  *
- * Turns the 12+2 header/footer starter patterns (FR-37-8) — plus whatever
+ * Turns the header/footer starter patterns (FR-37-8) — plus whatever
  * patterns are registered for `sgs_drawer` — into a preset control on the
- * NOW-LOCKED root block (`sgs/site-header` / `sgs/site-footer` /
- * `sgs/nav-drawer`, per FR-37-46's template-lock). This REPLACES the native
- * "Choose a pattern" starter modal (FR-37-7) for these three CPTs, which can
- * never fire again once FR-37-46 makes every new post non-empty by
- * construction.
+ * locked root block (`sgs/site-header` / `sgs/site-footer` /
+ * `sgs/nav-drawer`, per FR-37-46's template-lock). It stands in for the
+ * native "Choose a pattern" starter modal (FR-37-7), which never fires for
+ * these three CPTs because every new post is non-empty by construction (the
+ * CPT `template` seeds the root block).
  *
- * Redesigned 2026-09-17 (Bean, post-`/adversarial-council`) to extend the
- * already-BUILT-and-LIVE-VERIFIED FR-37-28 "Layout preset" pattern rather
- * than invent a bespoke write-action: no new REST route, no new nonce, no
- * new sanitisation surface — every write here is an ordinary
+ * It extends the FR-37-28 "Layout preset" pattern rather than inventing a
+ * bespoke write-action: no new REST route, no new nonce, no new
+ * sanitisation surface — every write here is an ordinary
  * `core/block-editor` store dispatch (`updateBlockAttributes` /
  * `replaceInnerBlocks`), exactly the category of call FR-37-28's preset and
- * FR-37-34's `RowQuickInsertAppender` already use safely today. It is a
- * normal, Undo-able editor action like any other Inspector control.
+ * FR-37-34's `RowQuickInsertAppender` already use. It is a normal,
+ * Undo-able editor action like any other Inspector control.
  *
  * Mechanism — DB-first, no hand-authored per-look attribute dictionary
  * (CLAUDE.md R-31-1's spirit applied to this surface): the patterns
@@ -28,19 +27,19 @@
  * starter pattern file changes.
  *
  * `select( 'core/block-editor' ).getSettings().__experimentalBlockPatterns`
- * was tried first and rejected: live-verified (2026-09-17) on the sandybrown
- * canary to hold ONLY the small "outside `init`" pattern bucket (WooCommerce's
- * lazily-registered patterns plus this project's own OWN admin_init-derived
- * `sgs/header-<slug>`/`sgs/footer-<slug>` template-part-swap patterns from
+ * is NOT used: it holds ONLY the small "outside `init`" pattern bucket
+ * (WooCommerce's lazily-registered patterns plus this project's own
+ * admin_init-derived `sgs/header-<slug>`/`sgs/footer-<slug>` template-part-swap
+ * patterns from
  * {@see \SGS\Blocks\Sgs_Block_CPTs::register_patterns_from_cpts()}) — every
- * pattern registered on the normal `init` hook, including all 9 real FR-37-8
+ * pattern registered on the normal `init` hook, including all the real FR-37-8
  * `sgs/framework-header-*`/`sgs/header-*` starter patterns, is invisible on
  * that key regardless of post type, because WordPress core's own JS resolves
  * `__experimentalAdditionalBlockPatterns ?? __experimentalBlockPatterns` and
  * PHP always sets the former (even as `[]`), so the latter is never reached.
  * `select( 'core' ).getBlockPatterns()` is backed by
- * `/wp/v2/block-patterns/patterns`, returns the FULL registry (verified: 258
- * patterns on the canary), and camel-cases the REST response's `post_types`/
+ * `/wp/v2/block-patterns/patterns`, returns the FULL registry, and
+ * camel-cases the REST response's `post_types`/
  * `block_types` fields into `postTypes`/`blockTypes` — the same two fields
  * this control's own `looks` filter below already reads. One mechanism
  * covers BOTH kinds of look difference the spec names:

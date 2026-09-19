@@ -8,7 +8,7 @@
  * Keywords: header, sgs, framework, centred, centered, logo, balanced, elegant
  * Viewport Width: 1440
  * Inserter: true
- * Description: Logo centred above navigation, navigation centred below. Elegant and balanced — suits hospitality, wellness, and lifestyle brands. Sticky on scroll, with the logo row compacting slightly for a refined feel. Starter template for the sgs_header CPT (Spec 37 FR-37-8) — built on sgs/site-header with sgs/nav-bar-menu (Spec 36), whose burger opens the site's active menu panel by default (SGS admin menu -> Menu Panels — Spec 37 FR-37-49/W2-b).
+ * Description: Logo centred above navigation, navigation centred below. Elegant and balanced — suits hospitality, wellness, and lifestyle brands. Sticky on scroll, with the logo row compacting slightly for a refined feel. Starter template for the sgs_header CPT, built on sgs/site-header with sgs/nav-bar-menu, whose burger opens the site's active menu drawer by default (SGS admin menu -> Menu drawers).
  *
  * @package SGS\Theme
  */

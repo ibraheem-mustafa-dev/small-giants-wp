@@ -4,10 +4,10 @@
  * FR-36-7: the ONE reusable nav-plumbing utility both nav blocks consume. A
  * UTILITY, not a component — proven by its THREE call-sites (all on the SAME
  * three functions): (1) drawer OPEN, (2) drawer CLOSE, (3) burger TOGGLE. Every
- * surface (`sgs/nav-menu` burger, `sgs/nav-drawer` dialog) drives open/close/
+ * surface (`sgs/nav-bar-menu` burger, `sgs/nav-drawer` dialog) drives open/close/
  * focus/`inert`/scroll-lock through this single store.
  *
- * Importing this module REGISTERS the store. Both Wave-2 blocks `import` it via a
+ * Importing this module REGISTERS the store. Both nav blocks `import` it via a
  * relative path; @wordpress/scripts bundles a copy into each block's view module,
  * so `store('sgs/nav', …)` runs once per bundle. That is SAFE: the Interactivity
  * runtime dedupes by the `sgs/nav` namespace and MERGES repeat registrations
@@ -20,7 +20,7 @@
  * NOT "every panel opens without JS."
  *
  * ─────────────────────────────────────────────────────────────────────────────
- * PUBLIC API CONTRACT — Wave-2 blocks (Steps 6 & 7) code against THIS.
+ * PUBLIC API CONTRACT — the nav blocks code against THIS.
  * ─────────────────────────────────────────────────────────────────────────────
  *
  * Namespace:  store( 'sgs/nav' )
@@ -45,7 +45,7 @@
  *   }
  *
  * Required markup conventions (resolved by id/attribute, NOT by directive, so
- * they SURVIVE the D323 body-reparent — a moved node keeps its id/attrs but loses
+ * they SURVIVE the body-reparent — a moved node keeps its id/attrs but loses
  * its Interactivity region, hence × + scrim + ESC are wired imperatively here):
  *   • Drawer:  <dialog id="{drawerRef}" data-sgs-nav-drawer> … </dialog>
  *   • Close ×: any element INSIDE the drawer carrying  data-sgs-nav-close
@@ -69,15 +69,11 @@
 import { store, getContext, getElement } from '@wordpress/interactivity';
 
 /**
- * Canonical focusable-element selector — MERGED from the two salvage sources
- * (Claim D: they disagreed). Resolution:
- *   • adaptive-nav (view.js:46-47) required `a[href]` + guarded every control
- *     with `:not([disabled])` — CHOSEN as the base (it is the correct one:
- *     it excludes disabled controls and bare hrefless anchors from the tab ring).
- *   • mega-menu (view.js:16-17) used the looser `a, button, input, …` — REJECTED
- *     (it would trap Tab onto disabled controls and non-navigable anchors).
- *   • `summary` ADDED for the drawer's no-JS `<details>` submenu fallback
- *     (FR-36-6 accordion/drill-down) — a deliberate, justified extension.
+ * Canonical focusable-element selector. `a[href]` plus `:not([disabled])` on
+ * every control excludes disabled controls and bare hrefless anchors from the
+ * tab ring (a looser `a, button, input, …` selector would trap Tab onto
+ * disabled controls and non-navigable anchors). `summary` is included for the
+ * drawer's no-JS `<details>` submenu fallback (FR-36-6 accordion/drill-down).
  */
 const FOCUSABLE_SELECTOR = [
 	'a[href]',
@@ -95,23 +91,22 @@ const SCROLL_LOCK_ATTR = 'data-sgs-nav-scroll-y';
 // page never cross-talk: { trigger, scrim, frozen, cleanup[] }.
 const drawerBookkeeping = new WeakMap();
 
-// Drawers already re-parented to <body> (idempotency for reparentToBody, D323).
+// Drawers already re-parented to <body> (idempotency for reparentToBody).
 const reparented = new WeakSet();
 
 /* ==========================================================================
- * PORTED VERBATIM — hard-won fixes carried across (do NOT re-derive).
+ * DRAWER PLUMBING — hard-won fixes (do NOT re-derive).
  * ========================================================================== */
 
 /**
- * Re-parent the drawer + scrim to <body> on first open (idempotent, D323).
+ * Re-parent the drawer + scrim to <body> on first open (idempotent).
  * Load-bearing: without it the container wrapper's
  * `.sgs-container > :not(.sgs-container__overlay){position:relative}` (0,2,0)
  * beats the drawer's (0,1,0) `position:fixed`, and a transformed/filtered
  * ancestor would convert `fixed` into ancestor-relative positioning. Moving
  * out to <body> removes every such ancestor by construction.
  *
- * Ported from adaptive-nav/view.js:108-117 (`reparentToBody`); parameterised +
- * WeakSet-keyed for reuse across instances.
+ * Parameterised and WeakSet-keyed for reuse across instances.
  *
  * @param {HTMLElement}      dialog The drawer dialog element.
  * @param {HTMLElement|null} scrim  The scrim element (non-modal fallback only).
@@ -131,8 +126,6 @@ function reparentToBody( dialog, scrim ) {
  * Lock body scroll behind the open drawer: fixed-position body + scrollY
  * save. iOS Safari ignores `overflow:hidden` on body, which is why the fixed-
  * position technique is used instead of a simple overflow toggle.
- *
- * Ported verbatim from adaptive-nav/view.js:285-305 (`lockScroll`, D340).
  */
 function lockScroll() {
 	const y = window.scrollY;
@@ -141,7 +134,7 @@ function lockScroll() {
 	// widens by its width and the right-anchored drawer's anchor jumps right
 	// partway through the slide-in. The eye reads it as a bounce: the panel
 	// overshoots into the page by exactly the scrollbar width, then steps back
-	// (Bean's report, D340 — frame capture showed the anchor moving 753→768 at
+	// (a frame capture shows the anchor moving 753→768 at
 	// 768px). Forcing the root's scrollbar track to stay while locked keeps the
 	// geometry constant; overlay-scrollbar platforms (iOS/Android, width 0)
 	// take the no-op branch.
@@ -161,20 +154,15 @@ function lockScroll() {
  * scroll offset in the SAME synchronous task (avoids the one-frame jump a
  * deferred `scrollTo` would cause).
  *
- * Ported verbatim from adaptive-nav/view.js:312-324 (`unlockScroll`, D340).
- *
- * K1 fix (2026-09-12): the site's global `html{scroll-behavior:smooth}`
- * (`core-blocks-critical.css:80-84`) was unguarded at this call site, turning
- * the restore into a ~350ms eased climb visible AFTER the drawer had already
+ * The site's global `html{scroll-behavior:smooth}` would otherwise turn the
+ * restore into a ~350ms eased climb visible AFTER the drawer had already
  * closed. `scrollTo()` resolves synchronously within the current task, so
  * forcing `scroll-behavior:auto` for the duration of this one call — then
  * restoring whatever was there before on the very next line — is safe;
- * nothing else can scroll in between. Matches the idiom already used in
- * `scripts/motion-qa/probe-horizontal-panel-focus.mjs:375`, scoped down from
- * "disable smooth-scroll for the whole page session" (correct for a test
- * probe) to "disable it only for this one call" (correct for production,
- * where a genuine user-initiated smooth-scroll — e.g. an anchor link — must
- * keep working immediately after the drawer closes).
+ * nothing else can scroll in between. It is scoped to this one call rather
+ * than the whole page session because a genuine user-initiated smooth-scroll
+ * — e.g. an anchor link — must keep working immediately after the drawer
+ * closes.
  */
 function unlockScroll() {
 	const stored = document.body.getAttribute( SCROLL_LOCK_ATTR );
@@ -203,8 +191,7 @@ function unlockScroll() {
  * so no hand-rolled trap is needed (FR-34-1). The drawer is never an ancestor of
  * a frozen node — it is re-parented to <body> first.
  *
- * Ported verbatim from adaptive-nav/view.js:208-244 (`freezeBackground`). Used on
- * the NON-modal `.show()` fallback path only; a native `showModal()` inerts the
+ * Used on the NON-modal `.show()` path only; a native `showModal()` inerts the
  * background itself.
  *
  * @param {HTMLElement}      toggle The nav toggle; its ancestor chain stays live.
@@ -254,8 +241,6 @@ function freezeBackground( toggle, dialog, scrim ) {
  * Restore EXACTLY the set frozen on open — removing inert/aria-hidden only from
  * elements this instance added them to (leaving any pre-existing ones intact).
  *
- * Ported verbatim from adaptive-nav/view.js:252-261 (`unfreezeBackground`).
- *
  * @param {Array<Object>} frozen The tracked freeze set from freezeBackground().
  */
 function unfreezeBackground( frozen ) {
@@ -270,7 +255,7 @@ function unfreezeBackground( frozen ) {
 }
 
 /* ==========================================================================
- * MERGED — the focus-trap / keyboard layer (Claim D re-derivation).
+ * The focus-trap / keyboard layer.
  * ========================================================================== */
 
 /**
@@ -319,8 +304,6 @@ function getFocusable( container ) {
  * Move focus to the first focusable element inside the drawer on open; if none
  * exists (all children non-interactive), focus the drawer itself via a
  * temporary `tabindex="-1"`.
- *
- * Ported from adaptive-nav/view.js:270-278 (`focusFirstInDrawer`), generalised.
  *
  * @param {HTMLElement} container The drawer dialog element.
  */
@@ -375,15 +358,13 @@ function hasContainingNestedDialog( container ) {
 /**
  * ONE canonical Tab-containment handler for the drawer (dialog surface): Tab on
  * the last focusable WRAPS to the first, Shift+Tab on the first wraps to the
- * last. This is the merge resolution of the two sources' Tab disagreement:
- *   • adaptive-nav had NO hand-rolled trap — containment was EMERGENT from the
- *     selective freeze (correct for its non-modal model, but nothing to reuse).
- *   • mega-menu's Tab-handling (view.js:286-314) CLOSED the panel on tab-out —
- *     that is the DISCLOSURE contract (a menu you tab past), NOT a modal drawer
- *     you must stay inside. Reusing it here would let focus escape the drawer.
- * So the drawer gets a proper WRAPPING trap. It is belt-and-braces under a
- * native `showModal()` (which already contains Tab — same wrap outcome) and
- * ESSENTIAL under the `.show()` fallback.
+ * last. A disclosure's Tab-handling (close the panel on tab-out) is the wrong
+ * contract here: that is a menu you tab past, NOT a modal drawer you must stay
+ * inside, and reusing it would let focus escape the drawer. So the drawer gets
+ * a proper WRAPPING trap. It is belt-and-braces under a native `showModal()`
+ * (which already contains Tab — same wrap outcome). It is bound on the modal
+ * path only: the non-modal path relies on `freezeBackground`'s selective
+ * `inert`.
  *
  * @param {HTMLElement}   container The drawer dialog element.
  * @param {KeyboardEvent} event     The keydown event.
@@ -424,13 +405,13 @@ function trapTab( container, event ) {
 }
 
 /* ==========================================================================
- * Internal drawer orchestration (open/close/scrim/ESC skeleton — ported from
- * adaptive-nav/view.js:119-192, restructured around the store's three actions).
+ * Internal drawer orchestration (open/close/scrim/ESC skeleton around the
+ * store's three actions).
  * ========================================================================== */
 
 /**
  * Resolve the drawer element for a context. Resolved by id (NOT a wrapper
- * `.querySelector`) because after the D323 body-reparent the drawer is no longer
+ * `.querySelector`) because after the body-reparent the drawer is no longer
  * a descendant of the burger's wrapper — but a moved node keeps its id.
  *
  * @param {Object} ctx The Interactivity context.
@@ -484,12 +465,10 @@ function runClose( drawer, scrim ) {
 	 * The exit animation must finish BEFORE dialog.close().
 	 *
 	 * `close()` removes the [open] attribute, which makes a <dialog>
-	 * `display:none` in the same tick — so the element is gone before the
-	 * browser paints a single frame of `.is-closing`. That is why the drawer
-	 * "just went" instead of animating out: the exit keyframes were never
-	 * reachable, both the original vertical ones and the directional ones.
-	 * (The old comment here reasoned about a CSS *transition* on a
-	 * still-displayed element; a display:none element animates nothing.)
+	 * `display:none` in the same tick — so the element would be gone before the
+	 * browser paints a single frame of `.is-closing`, and the exit keyframes
+	 * (vertical and directional) would never be reachable. A display:none
+	 * element animates nothing.
 	 *
 	 * So: add the class, let the animation run, close on animationend.
 	 */
@@ -533,8 +512,8 @@ function runClose( drawer, scrim ) {
 }
 
 /**
- * Open the drawer for the current context. Reparents (D323), locks scroll
- * (D340), opens as a native modal where supported (FR-36-6) or falls back to a
+ * Open the drawer for the current context. Reparents, locks scroll,
+ * opens as a native modal where supported (FR-36-6) or falls back to a
  * non-modal `.show()` with the selective freeze, then wires the ×/scrim/ESC/Tab
  * handlers imperatively (they survive the reparent) and sets `context.isOpen`.
  *
@@ -557,10 +536,10 @@ function openDrawerFor( ctx, trigger ) {
 		return;
 	}
 
-	// D1011: modality is an OPERATOR CHOICE (block.json `modality` attribute,
+	// Modality is an OPERATOR CHOICE (block.json `modality` attribute,
 	// carried as `data-sgs-nav-modality`), never a capability sniff — every
 	// browser's `HTMLDialogElement` defines BOTH `showModal` and `show`
-	// (D1012), so a sniff can never actually choose the non-modal branch.
+	// so a sniff can never actually choose the non-modal branch.
 	// `hasModal`/`hasShow` still guard the (currently theoretical) case of a
 	// dialog implementation missing one method outright.
 	const hasModal = typeof drawer.showModal === 'function';
@@ -575,7 +554,7 @@ function openDrawerFor( ctx, trigger ) {
 	lockScroll();
 
 	/*
-	 * Fix 7 (multi-rater pre-commit review, D-pending): the `header` anchor's
+	 * The `header` anchor's
 	 * top offset must track the header's REAL rendered bottom edge, not the
 	 * theme's static --sgs-header-height (which utilities.css sets to an
 	 * unconditional 80px, or 0 when the header is unpinned/hidden). Measure it
@@ -600,10 +579,9 @@ function openDrawerFor( ctx, trigger ) {
 	}
 
 	/*
-	 * The `trigger` anchor, measured for real. render.php's `trigger` case used
-	 * to return a literal `top:16px;right:16px`, so the panel flew to the
-	 * top-right corner no matter where the burger actually was (its own docblock
-	 * admitted the approximation). Same measure-and-write pattern as the header
+	 * The `trigger` anchor, measured for real: a literal `top:16px;right:16px`
+	 * would send the panel to the top-right corner no matter where the burger
+	 * actually is. Same measure-and-write pattern as the header
 	 * offset directly above: `trigger` is already in scope here (it is this
 	 * function's second parameter) and is NOT reparented — only the drawer and
 	 * scrim are — so its rect is stable at this point, and lockScroll() has
@@ -624,12 +602,12 @@ function openDrawerFor( ctx, trigger ) {
 	 * `window.innerWidth` INCLUDES it. Those two are normally equal only because
 	 * a scroll-locked page usually has no scrollbar — but `lockScroll` above
 	 * DELIBERATELY forces the root's scrollbar track to stay while the drawer is
-	 * open (D340, to stop the anchor jumping mid-animation), so the difference is
+	 * open (to stop the anchor jumping mid-animation), so the difference is
 	 * live at exactly the moment this measurement is taken. Using `innerWidth`
 	 * therefore over-states the inset by the scrollbar width (~15px on desktop
 	 * Windows/Linux Chrome/Firefox) and the panel sits that far left of the
 	 * burger. It is invisible on macOS and on mobile, where overlay scrollbars
-	 * make `innerWidth === clientWidth` — which is why it survived review.
+	 * make `innerWidth === clientWidth`.
 	 * `documentElement.clientWidth` is the ICB's width on every platform, so this
 	 * is cause-agnostic: it is the correct basis whether or not a scrollbar
 	 * happens to exist, and a no-op on the platforms where the two agree.
@@ -718,10 +696,9 @@ function openDrawerFor( ctx, trigger ) {
 		);
 
 		/*
-		 * Tab-trap — MODAL PATH ONLY (D1012 fix, 2026-09-10). A native
-		 * `showModal()` dialog already contains focus via the top layer, but
-		 * this hand-rolled trap makes the wrap explicit and matches the
-		 * pre-existing behaviour exactly.
+		 * Tab-trap — MODAL PATH ONLY. A native `showModal()` dialog already
+		 * contains focus via the top layer, but this hand-rolled trap makes the
+		 * wrap explicit.
 		 *
 		 * It must NOT also bind on the non-modal path below: `freezeBackground`
 		 * inerts everything except the live header row specifically so that
@@ -738,7 +715,7 @@ function openDrawerFor( ctx, trigger ) {
 			drawer.removeEventListener( 'keydown', onTab )
 		);
 	} else {
-		// Fallback / D1011 primary: non-modal `.show()`. A non-modal dialog does
+		// Non-modal `.show()`. A non-modal dialog does
 		// NOT inert the background or auto-close on ESC, so the selective freeze
 		// gives EMERGENT containment and ESC is hand-rolled below.
 		// No hand-rolled Tab-trap here — see the comment on the modal branch's
@@ -751,7 +728,7 @@ function openDrawerFor( ctx, trigger ) {
 				// containment check beyond `drawer.open`, so without it, an
 				// ESC press would also reach `mega-disclosure.js`'s own
 				// element-scoped `data-wp-on--keydown` ESC handling if a mega
-				// panel happened to be open at the same time (D1011 item 4).
+				// panel happened to be open at the same time.
 				e.stopPropagation();
 				runClose( drawer, scrim );
 			}

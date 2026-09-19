@@ -1,25 +1,23 @@
 /**
- * Header Behaviours CSS (F1 + contrast-safe + per-row).
+ * Header Behaviours CSS (F1 + per-row).
  *
  * F1 — WCAG 2.4.11: ensures anchor-link focus targets land below any sticky
  * header. The JS ResizeObserver publishes --sgs-header-height; this rule
  * consumes it. Defaults to 0px when the property is not yet set (no jump).
  *
- * ⚠ SCOPE NARROWED (Spec 35 T1.4 / FR-37-14, 2026-07-28). Sticky / transparent
- * / shrink / hide-on-scroll are RETIRED from this shared, body-class-keyed
- * stylesheet — they reshaped to tri-state {desktop,tablet,mobile} objects,
- * which a site-wide body class cannot express. Their CSS is now emitted
- * PER-INSTANCE (per header block, scoped to its own uid) inside
+ * Header-level sticky / transparent / shrink / hide-on-scroll and `contrastSafe`
+ * are per-device {desktop,tablet,mobile} values, which a site-wide body class
+ * cannot express ("scrim over the desktop hero, nothing on a phone"). Their CSS
+ * is emitted PER-INSTANCE (per header block, scoped to its own uid) inside
  * `sgs/site-header/render.php`, gated per device tier via
- * `sgs_emit_tier_rules()` (Spec 35 D4) — see that file's "Header-level
- * tri-state behaviours" block for the full mechanism. State classes
- * (is-header-scrolled, is-header-shrunk, is-header-scrolling-down) are
+ * `sgs_emit_tier_rules()` / `sgs_emit_tier_rules_map()` — see that file's
+ * "Header-level tri-state behaviours" block for the full mechanism. State
+ * classes (is-header-scrolled, is-header-shrunk, is-header-scrolling-down) are
  * toggled by view.js on the HEADER ELEMENT itself (not body).
  *
- * What remains here: F1 (scroll-padding-top), the contrastSafe body-class
- * rules (contrastSafe stays flat/scalar — untouched by T1.4), and the
- * per-row behaviour rules (rowTransparent/rowHideOnScroll/rowShrink — a
- * SEPARATE, already-tiered mechanism, unaffected by this reshape).
+ * What lives here: F1 (scroll-padding-top) and the per-row behaviour rules
+ * (rowTransparent/rowHideOnScroll/rowShrink — a SEPARATE, already-tiered
+ * mechanism).
  *
  * All z-index values use the WP admin-bar safe range (< 99999) while staying
  * above typical theme content layers (100).
@@ -36,60 +34,50 @@
 }
 
 /* -------------------------------------------------------------------------
- * Sticky / transparent / shrink / hide-on-scroll body-class rules RETIRED
- * here at Spec 35 T1.4 (2026-07-28) — see the file docblock above. Their CSS
- * (including the shrink @supports scroll-timeline pair and the hide-on-scroll
- * transform) is now emitted per-instance in sgs/site-header/render.php.
+ * Header-level sticky / transparent / shrink / hide-on-scroll rules (including
+ * the shrink @supports scroll-timeline pair and the hide-on-scroll transform)
+ * are emitted per-instance in sgs/site-header/render.php — see the file
+ * docblock above.
  *
- * ✅ RISK RESOLVED 2026-07-30 (D424) — and the risk as previously written was
- * WRONG ABOUT THE DOM, which is why it is corrected here rather than deleted.
+ * Top-layer note: a native `<dialog>` (sgs/nav-drawer) is NOT a descendant of
+ * `header.sgs-site-header` — its parent chain is `BODY → HTML` — so a header
+ * `translateY` transform (hide-on-scroll) cannot affect it, and any test that
+ * transforms the header to check would pass vacuously, for the wrong reason.
+ * The top-layer behaviour was tested against a REAL ancestor (`body`) and with a
+ * negative control: an ordinary `position: fixed` probe moved -80px (proving the
+ * measurement could detect the effect), while the open `<dialog>` moved 0 — a
+ * top-layer `<dialog>` resolves against the viewport, not a transformed
+ * ancestor.
  *
- * It claimed a native `<dialog>` (sgs/nav-drawer) opens INSIDE
- * `header.sgs-site-header`, and so might be trapped when that header carries a
- * translateY transform (hide-on-scroll). Measured on the canary: the drawer's
- * parent chain is `BODY → HTML`. It is **not a header descendant**, so a
- * header transform could never affect it — and any test transforming the
- * header to check would pass vacuously, for the wrong reason.
- *
- * The underlying top-layer question was then tested properly, against a REAL
- * ancestor (`body`) and with a negative control: an ordinary `position: fixed`
- * probe moved -80px (proving the measurement could detect the effect), while
- * the open `<dialog>` moved 0. So D323/D337 holds empirically — a top-layer
- * `<dialog>` resolves against the viewport, not a transformed ancestor.
- *
- * Still unexercised: the transform was applied directly rather than by turning
- * ON "Hide on scroll", so that settings path has not been driven end-to-end.
- * If a future build ever nests the drawer inside the header, re-read this —
- * the ancestry premise changes, even though the top-layer result would stand.
+ * Unexercised: the transform was applied directly rather than by turning ON
+ * "Hide on scroll", so that settings path has not been driven end-to-end. If
+ * the drawer is ever nested inside the header, re-read this — the ancestry
+ * premise changes, even though the top-layer result would stand.
  * ---------------------------------------------------------------------- */
 
 /* -------------------------------------------------------------------------
- * F2 — Contrast-safe fallback: MOVED OUT OF THIS FILE (2026-08-19).
+ * F2 — Contrast-safe fallback: NOT in this file.
  *
- * The three `body.sgs-header-behaviour-contrast-{scrim,shadow,force-solid}`
- * rules that lived here are gone. `contrastSafe` became a per-device
- * {desktop,tablet,mobile} attribute, and a class on <body> is site-wide — it
- * cannot express "scrim over the desktop hero, nothing on a phone", which is
- * the case clients actually want. The same reason moved sticky / transparent /
- * shrink / hide-on-scroll off this file in 2026-07-28's T1.4 pass.
- *
- * Where they went: `sgs/site-header/render.php` now emits them per tier as
- * per-instance uid-scoped CSS via `sgs_emit_tier_rules_map()`. The scrim's
+ * `contrastSafe` is a per-device {desktop,tablet,mobile} attribute, and a class
+ * on <body> is site-wide — it cannot express "scrim over the desktop hero,
+ * nothing on a phone", which is the case clients actually want.
+ * `sgs/site-header/render.php` emits the three modes per tier as per-instance
+ * uid-scoped CSS via `sgs_emit_tier_rules_map()`, including the scrim's
  * gradient, its `pointer-events:none` / `inset:0` / z-index layering and the
- * `> *` content lift are reproduced there verbatim.
+ * `> *` content lift.
  *
- * Two things worth carrying forward rather than rediscovering:
+ * Two things worth carrying forward:
  *   - `shadow` is COSMETIC ONLY and never WCAG-conformant — a text-shadow's
  *     contrast against arbitrary imagery cannot be computed. Never describe it
  *     as meeting a contrast requirement.
- *   - `force-solid` no longer paints anything. It used `background … !important`
- *     here to out-rank the transparent rule; per-tier, that fight has no clean
- *     undo, so render.php resolves it earlier instead — force-solid simply
+ *   - `force-solid` paints nothing itself. A `background … !important` would be
+ *     needed to out-rank the transparent rule, and per-tier that fight has no
+ *     clean undo, so render.php resolves it earlier instead — force-solid simply
  *     means "do not go transparent at this tier".
  * ---------------------------------------------------------------------- */
 
 /* -------------------------------------------------------------------------
- * PER-ROW behaviours (Phase 1, header-footer-per-row-identity design gate).
+ * PER-ROW behaviours.
  *
  * A parallel mechanism, additive to the header-LEVEL per-instance rules
  * emitted by site-header/render.php — does NOT touch the shared wrapper
@@ -129,8 +117,8 @@
 
 /* Hide-on-scroll-down — row slides off independently of any other row.
  *
- * This is the NOT-PINNED path and it must stay byte-identical (FR-37-40
- * regression test). When the header IS pinned the collapse rules below take
+ * This is the NOT-PINNED path; the collapse path below must not alter it
+ * (FR-37-40). When the header IS pinned the collapse rules below take
  * over instead — see the block comment there for why translate is wrong in
  * that case. */
 .sgs-row-behaviour[data-sgs-row-hide-on-scroll].is-row-hidden {
@@ -151,7 +139,7 @@
  *
  * `is-row-collapse-mode` is added by view.js ONLY while the header is measured
  * as actually pinned AND the row is inside that header — never on a footer row
- * (footer rows get no sticky, D390) and never on a non-pinned page.
+ * (footer rows get no sticky) and never on a non-pinned page.
  *
  * ⛔ There is deliberately NO height value here. A browser cannot animate from
  * `height: auto`, so view.js measures the row's real height, writes it as the
@@ -177,20 +165,19 @@
 	border-block-width: 0;
 }
 
-/* Shrink-on-scroll (Phase 2) — TRANSITION ONLY. There is deliberately NO
+/* Shrink-on-scroll — TRANSITION ONLY. There is deliberately NO
  * shrunk-value rule here.
  *
  * ⛔ DO NOT reintroduce an absolute shrunk value (e.g.
- * `padding-block: var(--wp--preset--spacing--10)`) in this file. That is
- * exactly what shipped on 2026-07-26 and it was WRONG: this rule wins at
- * (0,3,0) over the wrapper's own `.sgs-container-<uid>` padding rule (0,1,0),
- * so it forced EVERY shrunk row to the same absolute value regardless of its
- * resting padding. Measured live on the canary: a row with no padding sat at
- * 0px at rest and jumped to 4px "shrunk" — it GREW. A shrink must never
- * increase, and an absolute value in a shared stylesheet cannot know the
- * resting value it is supposed to reduce.
+ * `padding-block: var(--wp--preset--spacing--10)`) in this file. It would win
+ * at (0,3,0) over the wrapper's own `.sgs-container-<uid>` padding rule
+ * (0,1,0), forcing EVERY shrunk row to the same absolute value regardless of
+ * its resting padding: a row with no padding would sit at 0px at rest and jump
+ * to 4px "shrunk" — it would GROW. A shrink must never increase, and an
+ * absolute value in a shared stylesheet cannot know the resting value it is
+ * supposed to reduce.
  *
- * The shrunk value is now emitted PER INSTANCE by each row's render.php via
+ * The shrunk value is emitted PER INSTANCE by each row's render.php via
  * the shared `sgs_emit_responsive_css()` engine, as
  * `calc(<that row's own padding> / 2)` per tier — so it is proportional by
  * construction and can never exceed the resting value. A row with no padding
@@ -204,7 +191,7 @@
  * The transition names the physical longhands the render.php rule actually
  * sets (`padding-top`/`padding-bottom`), NOT the `padding-block` shorthand —
  * relying on shorthand-to-logical-longhand expansion here is the "looks fine,
- * silently doesn't animate" class of defect this feature already produced once.
+ * silently doesn't animate" class of defect.
  *
  * The chosen "hide on shrink" child is likewise handled per-instance:
  * render.php emits `.{uid}.is-row-shrunk #{anchor}{display:none}` into the

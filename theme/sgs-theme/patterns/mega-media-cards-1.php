@@ -5,7 +5,7 @@
  * Categories: sgs
  * Block Types: core/post-content
  * Post Types: sgs_mega_menu
- * Description: A 4-column grid of coloured media cards (image, title, description, link). Starter template for the sgs_mega_menu CPT (Spec 36 §0.5, media-cards variant).
+ * Description: A 4-column grid of coloured media cards (image, title, description, link). Starter template for the sgs_mega_menu CPT (media-cards variant).
  *
  * @package SGS\Theme
  */

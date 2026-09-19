@@ -11,8 +11,8 @@
  *
  * Lives under `includes/` (never inside a block folder) because
  * `--webpack-copy-php` only copies paths named in `block.json`; a sibling
- * file inside the block would 500 in production (learned on the mini-cart,
- * 2026-07-23). Aggregated by `render-helpers.php` alongside its siblings.
+ * file inside the block would 500 in production. Aggregated by
+ * `render-helpers.php` alongside its siblings.
  *
  * @package SGS\Blocks
  */
@@ -97,14 +97,14 @@ if ( ! function_exists( 'sgs_icon_list_flatten_menu_blocks' ) ) {
 	 * menu-bound list renders through the SAME per-item loop as typed items.
 	 *
 	 * Top-level items only — a submenu collapses to its own parent link,
-	 * matching sgs/nav-menu's Phase-1 bar behaviour. The menu RESOLUTION
+	 * matching sgs/nav-bar-menu's flat bar behaviour. The menu RESOLUTION
 	 * (classic-menu lookup, term -> items) stays in SGS_Nav_Menu_Source; only
 	 * the flatten step is here.
 	 *
 	 * MUST live in this shared include, NOT in a block's render.php: render.php
 	 * is re-included once per block instance, so a top-level function declared
 	 * there fatals ("Cannot redeclare") the moment a page holds two of the same
-	 * block. (Caught live 2026-07-23 — a 5-instance test page 500'd.)
+	 * block.
 	 *
 	 * @param array $blocks Parsed nav blocks.
 	 * @return array<int, array{text:string, url:string}>

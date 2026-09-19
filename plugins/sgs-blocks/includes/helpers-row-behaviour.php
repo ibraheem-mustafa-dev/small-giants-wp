@@ -1,6 +1,6 @@
 <?php
 /**
- * Per-row behaviour helpers (Spec 37 Phase 2 — per-row shrink).
+ * Per-row behaviour helpers (Spec 37 — per-row shrink).
  *
  * Owns the SERVER-SIDE BACKSTOP for "shrink hides a chosen element": the
  * operator picks one child of the row to hide once that row shrinks on scroll,
@@ -9,13 +9,12 @@
  * Two independent guards, defence-in-depth with the editor picker:
  *   1. The target must actually still be a DIRECT child of this row. If the
  *      operator deleted the element, the stored id is orphaned — we return ''
- *      and shrink simply hides nothing (no error, no notice — must-fix 3).
+ *      and shrink simply hides nothing (no error, no notice).
  *   2. The target's block type must NOT declare `supports.sgs.headerEssential`.
  *      That flag is the DECLARATIVE guardrail (R-31-1: no hardcoded block-name
  *      dictionary here) marking a block whose absence would break the header —
  *      logo, primary navigation, cart. The editor picker greys those out; this
- *      backstop refuses them even if a hand-edited attribute slips through
- *      (must-fix 4).
+ *      backstop refuses them even if a hand-edited attribute slips through.
  *
  * The reference is the child's own `anchor` attribute — a STABLE per-child id
  * that survives copy/paste, never the editor's internal clientId (must-fix 3).
@@ -43,13 +42,13 @@ if ( ! function_exists( 'sgs_row_shrink_css' ) ) {
 	 * Notes on the shared responsive engine (verified against
 	 * includes/helpers-responsive.php before writing this):
 	 *  - TWO SCALAR SPECS, never `box => true`. A box spec expands across all four
-	 *    sides (sgs_responsive_atoms_from_spec:347-365) — that would halve
+	 *    sides (`sgs_responsive_atoms_from_spec()`) — that would halve
 	 *    padding-left/right too and jolt the row horizontally on scroll.
 	 *  - The engine does the tier cascade + tier-diff + @media wrapping itself
-	 *    (sgs_emit_responsive_css:450-495), so an absent tier correctly inherits
+	 *    (`sgs_emit_responsive_css()`), so an absent tier correctly inherits
 	 *    the tier above instead of reading as zero.
 	 *  - A `transform` SHORT-CIRCUITS the engine's unit handling
-	 *    (sgs_responsive_format_atom_value:379-390) — `unit_default` is ignored
+	 *    (`sgs_responsive_format_atom_value()`) — `unit_default` is ignored
 	 *    and the raw value never reaches sgs_responsive_sanitise_css_value(). So
 	 *    the transform below must do BOTH itself: append the unit to a bare
 	 *    number (a stored `24` would otherwise become the invalid, silently
@@ -116,7 +115,7 @@ if ( ! function_exists( 'sgs_block_is_header_essential' ) ) {
 	 * wp.blocks.getBlockType(). Protecting a new critical block later is a
 	 * one-line block.json flag, never a code change here.
 	 *
-	 * @param string $block_name Block slug, e.g. 'sgs/nav-menu'.
+	 * @param string $block_name Block slug, e.g. 'sgs/nav-bar-menu'.
 	 * @return bool
 	 */
 	function sgs_block_is_header_essential( $block_name ) {

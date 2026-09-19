@@ -229,9 +229,9 @@ if ( ! function_exists( 'sgs_responsive_box_shorthand_rule' ) ) {
  *     string, and emitting a tier's declaration only when its string differs
  *     from the tier below's.
  *   - Box properties emit per-side LONGHAND (`padding-top` …) not shorthand, so
- *     per-side inheritance and per-side tier-diff are exact (the legacy
+ *     per-side inheritance and per-side tier-diff are exact (the
  *     `sgs_responsive_box_shorthand_rule` '0'-fill behaviour is deliberately
- *     NOT reused — these are new blocks with no dependency on it).
+ *     NOT reused).
  *   - Breakpoints come from SGS_Breakpoints (R-31-1). When $opts['container'] is
  *     true each tier is ALSO emitted as an @container query alongside the @media
  *     fallback (Spec 37 FR-37-16 container-queries-and-media-queries-together).
@@ -258,7 +258,7 @@ if ( ! function_exists( 'sgs_responsive_normalise_object' ) ) {
 	/**
 	 * Coerce a stored attribute value into the `{desktop,tablet,mobile}` shape.
 	 *
-	 * Accepts the object model verbatim, and gracefully lifts legacy/plain values:
+	 * Accepts the object model verbatim, and gracefully lifts plain values:
 	 *   - a scalar (string/number)            → { desktop:<val>, tablet:null, mobile:null }
 	 *   - a flat box array {top,right,…}      → { desktop:{…}, tablet:null, mobile:null }
 	 *   - an already-tiered object            → returned as-is (missing tiers → null)
@@ -300,14 +300,12 @@ if ( ! function_exists( 'sgs_responsive_normalise_object' ) ) {
 
 			// An ARRAY with no tier keys on a NON-box property is UNSET, not a value.
 			//
-			// ⛔ Without this branch it fell through to the "plain scalar" return
-			// below and assigned the ARRAY ITSELF as the desktop value, which the
-			// formatter then stringified — emitting a literal `max-width:Array`
-			// declaration. Found LIVE on the canary 2026-08-10 (gallery, page 1591):
-			// every block whose object-typed attr still holds its `default: {}`
-			// reached this path, which is site-header-row and site-footer-row too
-			// (object maxWidth since FR-37-16) — so the defect PRE-DATES the gallery
-			// migration; the migration merely exposed it.
+			// ⛔ Without this branch it would fall through to the "plain scalar" return
+			// below and assign the ARRAY ITSELF as the desktop value, which the
+			// formatter would stringify — emitting a literal `max-width:Array`
+			// declaration. Every block whose object-typed attr still holds its
+			// `default: {}` reaches this path, site-header-row and site-footer-row
+			// included (object maxWidth, FR-37-16).
 			//
 			// An empty `{}` is exactly what an untouched object attr looks like, so
 			// this is the COMMON case, not an edge case. Returning all-null lets the
@@ -437,24 +435,22 @@ if ( ! function_exists( 'sgs_responsive_sanitise_css_value' ) ) {
 	 * already delegates to. This function is the ONLY sanitiser for every
 	 * object-model responsive property (gap, gridTemplateColumns, contentWidth,
 	 * maxWidth, padding, margin, nav-drawer panelSize) across sgs/site-header-row,
-	 * sgs/site-footer-row, sgs/nav-menu, sgs/nav-drawer, sgs/mega-panel,
+	 * sgs/site-footer-row, sgs/nav-bar-menu, sgs/nav-drawer-menu, sgs/nav-drawer, sgs/mega-panel,
 	 * sgs/mega-aside and SGS_Container_Wrapper.
 	 *
-	 * PREVIOUS implementation (superseded 2026-08-02) permitted `/` and `*` in
-	 * its character allowlist without checking for the `/*` CSS-comment
-	 * opener, and STRIPPED disallowed characters rather than rejecting the
-	 * whole value — so a malformed/malicious value degraded to mangled-but-
-	 * emitted CSS instead of being refused. sgs_css_length_value() closes both
-	 * gaps: it checks the RAW input for breakout characters (including the
-	 * literal `/*` substring) BEFORE consuming any function call, and it FAILS
+	 * A character-allowlist that permitted `/` and `*` without checking for the
+	 * `/*` CSS-comment opener, and STRIPPED disallowed characters rather than
+	 * rejecting the whole value, would let a malformed/malicious value degrade to
+	 * mangled-but-emitted CSS instead of being refused. sgs_css_length_value()
+	 * closes both gaps: it checks the RAW input for breakout characters (including
+	 * the literal `/*` substring) BEFORE consuming any function call, and it FAILS
 	 * CLOSED — the whole value returns '' the moment anything looks unsafe,
 	 * never a stripped-down remainder. It is the raw-input breakout check that
 	 * provides the security here, not the var|calc|min|max|minmax|clamp|repeat
 	 * function-name allowlist — see that function's own docblock (step 2a).
 	 *
-	 * Return contract is unchanged for every caller: '' means "no safe value —
-	 * emit nothing for this property", exactly as before (verified against
-	 * every call site: sgs_responsive_format_atom_value() treats '' as null/
+	 * Return contract: '' means "no safe value — emit nothing for this property"
+	 * (every call site handles it: sgs_responsive_format_atom_value() treats '' as null/
 	 * absent, helpers-row-behaviour.php's $halve treats '' as null, and
 	 * nav-drawer/render.php's geometry builder only emits a declaration when
 	 * the tier string is non-empty).
@@ -630,7 +626,7 @@ if ( ! function_exists( 'sgs_resolve_tier' ) ) {
 	 * Supported value shapes:
 	 *   - Tri-state enum: { desktop: 'on'|'off', tablet: 'inherit'|'on'|'off', mobile: 'inherit'|'on'|'off' }
 	 *   - Scalar/null:    { desktop: <value>, tablet: <value|null>, mobile: <value|null> }
-	 *   - Non-object:     coerces to $default (D328 defence)
+	 *   - Non-object:     coerces to $default (junk-input defence)
 	 *
 	 * @param mixed  $value   Responsive object with 'desktop', 'tablet', 'mobile' keys (or non-array).
 	 * @param string $tier    'desktop' | 'tablet' | 'mobile'.
@@ -638,7 +634,7 @@ if ( ! function_exists( 'sgs_resolve_tier' ) ) {
 	 * @return array{ value: mixed, inherited: bool } Effective value + inheritance flag.
 	 */
 	function sgs_resolve_tier( $value, $tier = 'desktop', $default = null ) {
-		// Defend against non-array/junk input (D328).
+		// Defend against non-array/junk input.
 		if ( ! is_array( $value ) ) {
 			return array(
 				'value'     => $default,
@@ -718,11 +714,11 @@ if ( ! function_exists( 'sgs_emit_tier_rules' ) ) {
 	 *
 	 * Rules are scoped to the caller-supplied selector ($uid_selector) — e.g.
 	 * '#sgs-abc123' or '.sgs-header--abc123' — NEVER a body class (Spec 35
-	 * design gate §4, 2026-07-28). Breakpoints come from SGS_Breakpoints
+	 * design gate §4). Breakpoints come from SGS_Breakpoints
 	 * (768/1024 device-tier standard, emitted as max-width 1023px/767px) —
 	 * never hardcoded here.
 	 *
-	 * ⚠ D386: this helper emits whatever CSS text the caller passes in
+	 * ⚠ This helper emits whatever CSS text the caller passes in
 	 * $css_on/$css_off verbatim. Callers MUST NOT pass declarations
 	 * containing absolute/per-instance sizes destined for a SHARED,
 	 * state-only stylesheet — a value that varies per block instance must be
@@ -730,7 +726,7 @@ if ( ! function_exists( 'sgs_emit_tier_rules' ) ) {
 	 * never baked into shared CSS text reused across instances.
 	 *
 	 * @param string $uid_selector Fully-formed, already-safe CSS selector (caller-owned uid scope).
-	 * @param mixed  $value        Tri-state responsive object `{desktop,tablet,mobile}` (or non-object/junk — D328 defence via sgs_resolve_tier()).
+	 * @param mixed  $value        Tri-state responsive object `{desktop,tablet,mobile}` (or non-object/junk — handled by sgs_resolve_tier()).
 	 * @param string $css_on       CSS declarations (no selector/braces) to emit when the resolved state is 'on'.
 	 * @param string $css_off      CSS declarations to emit when the resolved state is 'off'. Default '' (nothing emitted for 'off').
 	 * @param string $default      State used when desktop inherits/is missing (§6b guard). Default 'off' (DEFAULT_OFF).
@@ -765,18 +761,18 @@ if ( ! function_exists( 'sgs_emit_tier_rules_map' ) ) {
 	 * is mapped to CSS text. `sgs_emit_tier_rules()` is the 1-entry case and
 	 * delegates here, so there is one implementation of the cascade, not two.
 	 *
-	 * Added 2026-08-19 for `sgs/site-header`'s `contrastSafe`, which is a
+	 * Serves `sgs/site-header`'s `contrastSafe`, which is a
 	 * FOUR-value enum ('none'|'scrim'|'shadow'|'force-solid') going per-device.
 	 * The binary helper could not express it: its `'on' === $state` test means
 	 * 'scrim' and 'none' would both fall to $css_off and paint identically.
 	 * Note that sgs_resolve_tier() itself needed no change — it is already
 	 * value-agnostic, treating only 'inherit'/null specially.
 	 *
-	 * ⚠ D386 applies here unchanged: CSS text is emitted verbatim, so a caller
+	 * ⚠ The same rule applies here: CSS text is emitted verbatim, so a caller
 	 * must never pass per-instance absolute values destined for shared CSS.
 	 *
 	 * @param string $uid_selector  Fully-formed, already-safe CSS selector (caller-owned uid scope).
-	 * @param mixed  $value         Responsive object `{desktop,tablet,mobile}` (or junk — D328 defence via sgs_resolve_tier()).
+	 * @param mixed  $value         Responsive object `{desktop,tablet,mobile}` (or junk — handled by sgs_resolve_tier()).
 	 * @param array  $css_by_value  Map of resolved state => CSS declarations (no selector/braces).
 	 * @param string $css_fallback  CSS emitted for any resolved state absent from the map. Default '' (emit nothing).
 	 * @param string $default       State used when desktop inherits/is missing (§6b guard). Default 'off'.
@@ -827,8 +823,7 @@ if ( ! function_exists( 'sgs_resolve_on_tiers' ) ) {
 	 * tiers where the effective value equals $on_marker, via the canonical
 	 * sgs_resolve_tier() cascade (Spec 35 T1.1/T1.4 — one cascade, no forks).
 	 *
-	 * Generalises the retired `sgs_resolve_tier_booleans()` (removed Spec 35
-	 * T1.4, 2026-07-28): that function's boolean-absence-as-inherit semantics
+	 * Boolean absence-as-inherit semantics
 	 * are IDENTICAL to sgs_resolve_tier()'s null/absent-key-as-inherit rule —
 	 * an explicit `false` at a tier still means "off here", not "unset",
 	 * because sgs_resolve_tier() only treats `'inherit'`/`null`/missing as
@@ -858,23 +853,22 @@ if ( ! function_exists( 'sgs_merge_tri_state_declarations' ) ) {
 	/**
 	 * Merge several tri-state ('on'/'off'/'inherit') behaviours that may write
 	 * to the SAME selector into ONE set of declarations per tier, with a
-	 * single writer per CSS property (Spec 35 T1.4 FR-37-14 QC-fix, D400+).
+	 * single writer per CSS property (Spec 35 T1.4, FR-37-14).
 	 *
-	 * Replaces the earlier per-behaviour independent-emission pattern, where
-	 * each behaviour called `sgs_emit_tier_rules()` on its own and relied on
-	 * `!important` + CSS source order to "win" — provably broken: an unrelated
-	 * behaviour resolved OFF at every tier still emitted an unconditional
-	 * `!important` cancel-declaration on the shared selector, and because it
-	 * was written LATER in the concatenated stylesheet it silently clobbered
-	 * an earlier, genuinely-enabled behaviour's declaration for any property
-	 * both happened to touch (proven live: Transparent={} killed Sticky's
-	 * `position` at every viewport, because Transparent's off-css for
-	 * `position`/`top`/`z-index` was emitted after Sticky's on-css).
+	 * Per-behaviour independent emission — each behaviour calling
+	 * `sgs_emit_tier_rules()` on its own and relying on `!important` + CSS source
+	 * order to "win" — is provably broken: an unrelated behaviour resolved OFF at
+	 * every tier still emits an unconditional `!important` cancel-declaration on
+	 * the shared selector, and because it is written LATER in the concatenated
+	 * stylesheet it silently clobbers an earlier, genuinely-enabled behaviour's
+	 * declaration for any property both happen to touch (Transparent={} would
+	 * kill Sticky's `position` at every viewport, because Transparent's off-css
+	 * for `position`/`top`/`z-index` is emitted after Sticky's on-css).
 	 *
 	 * This resolves each behaviour's on/off state PER TIER first, then builds
 	 * ONE property=>value map per tier from only the behaviours that are
 	 * genuinely ON there. A behaviour never contributes a declaration when
-	 * it's off — so an off/never-configured behaviour is now inert instead of
+	 * it's off — so an off/never-configured behaviour is inert instead of
 	 * an active canceller. When two behaviours are BOTH on for the same tier
 	 * and both declare the same property, `$behaviours` ARRAY ORDER is the
 	 * documented precedence (first listed wins that property; a later

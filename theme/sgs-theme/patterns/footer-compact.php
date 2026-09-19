@@ -8,7 +8,7 @@
  * Keywords: footer, sgs, framework, compact, two-column, contact, socials
  * Viewport Width: 1440
  * Inserter: true
- * Description: Two-column footer — logo and tagline left, contact details and social icons right. Content auto-populates from Settings > Business Details. Starter template for the sgs_footer CPT (Spec 37 FR-37-8) — built on sgs/site-footer with a 2-column "columns" row.
+ * Description: Two-column footer — logo and tagline left, contact details and social icons right. Content auto-populates from Settings > Business Details. Starter template for the sgs_footer CPT, built on sgs/site-footer with a 2-column "columns" row.
  *
  * @package SGS\Theme
  */

@@ -5,7 +5,7 @@
  * Categories: sgs-headers
  * Block Types: core/post-content
  * Post Types: sgs_header
- * Description: Full header with contact top bar (phone, email, socials), logo, navigation, and mobile menu. Contact info auto-populates from Settings > Business Details. Sticky on scroll, with the contact bar hiding on scroll down to reclaim space (navigation stays visible). Starter template for the sgs_header CPT (Spec 37 FR-37-8) — built on sgs/site-header with sgs/nav-bar-menu (Spec 36), whose burger opens the site's active menu panel by default (SGS admin menu -> Menu Panels — Spec 37 FR-37-49/W2-b).
+ * Description: Full header with contact top bar (phone, email, socials), logo, navigation, and mobile menu. Contact info auto-populates from Settings > Business Details. Sticky on scroll, with the contact bar hiding on scroll down to reclaim space (navigation stays visible). Starter template for the sgs_header CPT, built on sgs/site-header with sgs/nav-bar-menu, whose burger opens the site's active menu drawer by default (SGS admin menu -> Menu drawers).
  *
  * @package SGS\Theme
  */

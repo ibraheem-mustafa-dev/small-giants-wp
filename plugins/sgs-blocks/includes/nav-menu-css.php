@@ -1,9 +1,9 @@
 <?php
 /**
- * SGS Nav Menu (sgs/nav-menu) — scoped CSS, part 1: item/state colour, border,
- * treatments + featured sweep.
+ * SGS Nav Bar Menu / Nav Drawer Menu — scoped CSS, part 1: item/state colour,
+ * border, treatments + featured sweep.
  *
- * Split out of render.php (Spec 41 step 8) — item typography, nav container
+ * Emits item typography, nav container
  * colour, the item text / background / border THREE-STATE emission (Normal,
  * Hover, Current) with its paired hover treatments (None / Swap / Sweep /
  * Highlight, Spec 41 FR-41-23), and the featured-item styling.
@@ -16,8 +16,8 @@
  *
  * ⚠ LOAD ORDER: NOT bootstrap-loaded — `require_once`'d per-instance from
  * render.php, matching product-card's pattern. Its function is only in scope
- * after nav-menu's own render.php has run at least once on that page load.
- * Fine today; a future cross-block call needs this file required first.
+ * after a nav block's own render.php has run at least once on that page load.
+ * A cross-block call needs this file required first.
  *
  * @package SGS\Blocks
  */
@@ -26,7 +26,7 @@ defined( 'ABSPATH' ) || exit;
 
 if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	/**
-	 * Build the item/state-colour half of nav-menu's scoped <style>.
+	 * Build the item/state-colour half of the nav blocks' scoped <style>.
 	 *
 	 * @param array  $attributes Block attributes (verbatim render.php param).
 	 * @param string $uid_sel    This instance's CSS scope selector (`.{uid}`).
@@ -35,17 +35,13 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	 *                           stored attribute, which can say 'sweep' on a row
 	 *                           whose eligibility predicate is false.
 	 * @param string $default_item_colour_hover Token used when the operator has
-	 *                           never set `itemColourHover` (Wave 2 E1 / FR-41-36
-	 *                           locked default). D1059 briefly split this per-surface
-	 *                           ('accent' bar / 'primary' drawer) on the theory the bar
-	 *                           and drawer were genuinely different surfaces — REVERTED
-	 *                           the same day (2026-09-18, Bean-directed): on Mama's
-	 *                           Munches both surfaces share the SAME background colour,
-	 *                           so a split default just meant one of the two read wrong
-	 *                           for no reason. Both callers now pass 'primary'. The
-	 *                           parameter itself stays (not hardcoded) so a future
-	 *                           surface with a genuinely different background can still
-	 *                           override it without a shared-function edit.
+	 *                           never set `itemColourHover` (FR-41-36 locked default).
+	 *                           Both callers pass 'primary': the bar and the drawer
+	 *                           share the same background colour, so a per-surface
+	 *                           default would only make one of them read wrong. The
+	 *                           parameter stays (not hardcoded) so a surface with a
+	 *                           genuinely different background can override it without
+	 *                           a shared-function edit.
 	 * @return string CSS fragment (no wrapping <style> tag).
 	 */
 	function sgs_nav_shared_item_state_css( array $attributes, string $uid_sel, string $bem_root, array $treatments = array(), string $default_item_colour_hover = 'accent' ): string {
@@ -53,8 +49,7 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	$link_sel = $uid_sel . ' .' . $bem_root . '__link';
 
 	/*
-	 * Wave 2 cluster 3 (M4/M2/M6, 2026-09-12) — `.{bem}__link` (the <a>)
-	 * and `.{bem}__subtoggle` (the <button> containing
+	 * `.{bem}__link` (the <a>) and `.{bem}__subtoggle` (the <button> containing
 	 * `.{bem}__caret > svg`) are DOM SIBLINGS under one shared parent
 	 * (`.{bem}__submenu-root`), never an ancestor/descendant pair — CSS
 	 * cannot select a sibling's sibling by value. `$caret_svg_sel` is the
@@ -76,14 +71,14 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	$css .= sgs_typography_css_rule( $attributes, 'item', $link_sel );
 
 	/*
-	 * Wave 2 M6 (2026-09-12) — caret oversize. `.{bem}__caret svg` has no
+	 * Caret oversize. `.{bem}__caret svg` has no
 	 * font-size of its own to run `width:1em;height:1em` against (the sibling
 	 * rule nav-menu-submenu-css.php emits) — it falls back to the browser's UA
 	 * button-reset default. nav-menu-submenu-css.php's own `.{bem}__
-	 * subtoggle` rule already carries `font:inherit` FOR THIS EXACT PURPOSE (its
-	 * own "M6 precondition" comment), which means the resolved size must live on
-	 * an ANCESTOR the button can inherit from — `.{bem}__submenu-root`,
-	 * confirmed live: an explicit `font-size` on `.subtoggle` itself is a
+	 * subtoggle` rule already carries `font:inherit` FOR THIS EXACT PURPOSE,
+	 * which means the resolved size must live on
+	 * an ANCESTOR the button can inherit from — `.{bem}__submenu-root`:
+	 * an explicit `font-size` on `.subtoggle` itself is a
 	 * same-specificity sibling to that `font:inherit` shorthand and LOSES to it
 	 * by source order (nav-menu-submenu-css.php concatenates after this file).
 	 *
@@ -139,23 +134,23 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	 * 4a-ii. Nav CONTAINER appearance.
 	 *
 	 * Every value is emitted ONLY when the operator has set it, so an untouched
-	 * nav is byte-identical to before. `$uid_sel` targets the <nav> root itself
+	 * nav carries no container styling. `$uid_sel` targets the <nav> root itself
 	 * (SGS_Container_Wrapper renders it with 'tag' => 'nav').
 	 *
 	 * This is also what makes drawer styling self-serve: the drawer holds its
-	 * OWN sgs/nav-menu instance with its own uid, so setting a background here
+	 * OWN sgs/nav-drawer-menu instance with its own uid, so setting a background here
 	 * on the drawer's copy styles ONLY the drawer — no per-context plumbing.
 	 */
 	$nav_bg       = isset( $attributes['navBg'] ) ? (string) $attributes['navBg'] : '';
 	$nav_bg_gradient = sgs_css_gradient_value( $attributes['navBgGradient'] ?? '' );
 	$nav_colour   = isset( $attributes['navColour'] ) ? (string) $attributes['navColour'] : '';
-	// D956 -- sibling gradient wins when set+valid. Safe unconditionally: navBg
+	// The sibling gradient wins when set+valid. Safe unconditionally: navBg
 	// already lives on a SEPARATE `::after` layer below, never $uid_sel itself.
 	$nav_colour_gradient  = isset( $attributes['navColourGradient'] ) ? (string) $attributes['navColourGradient'] : '';
 	$nav_colour_effective = sgs_resolve_text_colour_or_gradient( $nav_colour, $nav_colour_gradient );
 	$nav_bg_hover = isset( $attributes['navBgHover'] ) ? (string) $attributes['navBgHover'] : '';
 	
-	// bg_layer=true equivalent (D940 batch): background moves onto a `::after`
+	// The background moves onto a `::after`
 	// layer so `navColour` is free of a same-selector background for a future
 	// navColourGradient sibling. $uid_sel is not positioned in style.css, so the
 	// full helper (position:relative + isolation:isolate) is safe here.
@@ -178,17 +173,16 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	// 4b. Item colours (resting). Base is `inherit` in style.css; an unset slug
 	// leaves the surrounding context's colour untouched (header/footer agnostic).
 	// Text and background are SEPARATE properties, each with its own Normal/Hover
-	// state (Spec 35 element-first): the pre-2026-07-20 model paired resting TEXT
-	// against hover BACKGROUND in one toggle, so an operator could never set a
-	// hover text colour at all — it was auto-computed and unreachable.
+	// state (Spec 35 element-first), so an operator can set a hover text colour
+	// directly.
 	// Resolves EITHER a palette slug OR a raw CSS colour (hex/rgb/hsl/…) to an
 	// actual computable hex. Used ONLY for WCAG smart-contrast maths below —
 	// never for the paint declaration itself (see $item_bg_hex vs $item_bg_raw
 	// split further down): `sgs_resolve_palette_hex()` alone silently returns
-	// '' for a raw hex (it is a slug-only lookup), which is why a client-chosen
-	// custom colour (not a theme swatch) made `itemSmartContrast` a no-op —
-	// $bg_hex/$preferred_hex both resolved empty and `$smart_fg()` returned the
-	// input unchanged (G16(c)).
+	// '' for a raw hex (it is a slug-only lookup), so a client-chosen
+	// custom colour (not a theme swatch) would leave
+	// $bg_hex/$preferred_hex empty and `$smart_fg()` would return the
+	// input unchanged.
 	$sgs_nm_hex = static function ( $raw ): string {
 		$raw = (string) $raw;
 		if ( '' === $raw ) {
@@ -200,13 +194,12 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 		return (string) sgs_resolve_palette_hex( sanitize_html_class( $raw ), '' );
 	};
 	$item_colour = isset( $attributes['itemColour'] ) ? (string) $attributes['itemColour'] : '';
-	// D956 -- sibling gradient wins when set+valid. Safe unconditionally: itemBg
-	// (below) paints on a `::before` layer, never $link_sel itself (D942 recipe
-	// item 1's own comment at the itemBg block explains why ::after was unusable
-	// here).
+	// The sibling gradient wins when set+valid. Safe unconditionally: itemBg
+	// (below) paints on a `::before` layer, never $link_sel itself (the itemBg
+	// block below explains why ::after is unusable here).
 	$item_colour_gradient  = isset( $attributes['itemColourGradient'] ) ? (string) $attributes['itemColourGradient'] : '';
 	$item_colour_effective = sgs_resolve_text_colour_or_gradient( $item_colour, $item_colour_gradient );
-	// itemColourHoverGradient (2026-09-13, Bean-directed) -- read here, resolved
+	// itemColourHoverGradient -- read here, resolved
 	// further down AFTER the itemSmartContrast branch runs, because the swap
 	// must win over any stored gradient (see $item_colour_hover_effective below).
 	$item_colour_hover_gradient = isset( $attributes['itemColourHoverGradient'] ) ? (string) $attributes['itemColourHoverGradient'] : '';
@@ -220,12 +213,11 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	$item_bg_gradient = sgs_css_gradient_value( $attributes['itemBgGradient'] ?? '' );
 
 	/*
-	 * Shape + motion come from ATTRIBUTES and theme TOKENS, never literals. The
-	 * pre-2026-07-20 code hardcoded `border-radius:8px` on both pills, `font-weight:600`
-	 * on the featured item and `.15s ease` on every transition — each of which bypasses
+	 * Shape + motion come from ATTRIBUTES and theme TOKENS, never literals: a literal
+	 * `border-radius`, featured `font-weight` or transition duration would bypass
 	 * a token theme.json already ships (--wp--custom--border-radius--medium,
 	 * --wp--custom--transition--fast), so a client changing their theme's radius or
-	 * motion scale saw the nav ignore it. Literal fallbacks are kept inside var() so
+	 * motion scale would see the nav ignore it. Literal fallbacks are kept inside var() so
 	 * the block still renders correctly on a non-SGS theme (the standalone-framework rule).
 	 * The token itself (`$transition_fast`) is applied in the sibling file
 	 * `nav-menu-item-border-featured-css.php`, which owns the featured-item hover
@@ -237,13 +229,11 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	 *
 	 * A CORNER-keyed box object ({topLeft,topRight,bottomRight,bottomLeft}),
 	 * read through `sgs_corner_object_shorthand()` — NOT the side-keyed helper.
-	 * It replaces the retired flat `itemRadius`/`itemRadiusHover` scalars: radius
-	 * rides `SgsBorderControl`'s own radius pair, and there is no hover radius
-	 * (the control has no state axis for shape).
+	 * Radius rides `SgsBorderControl`'s own radius pair, and there is no hover
+	 * radius (the control has no state axis for shape).
 	 *
-	 * ⛔ NOT emitted here — the pre-0.4.6 behaviour (§8.4, G13 scenario 4) only
-	 * ever rounded corners "in the one case where the radius is visible": when
-	 * the item has a background to clip. An item with no background renders no
+	 * ⛔ NOT emitted here — corners are only rounded "in the one case where the
+	 * radius is visible": when the item has a background to clip. An item with no background renders no
 	 * `border-radius` rule at all, default-8px or not. The shorthand is computed
 	 * here (so it is available before the background branch needs it) but
 	 * EMITTED further down, gated on the same background-presence condition the
@@ -255,22 +245,17 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	/*
 	 * ── ITEM TEXT — three states (FR-41-3 / FR-41-23). ───────────────────────
 	 *
-	 * `itemSmartContrast` (FR-41-5) is the pill branch's one genuinely unique
-	 * behaviour, preserved as an OPT-IN toggle rather than a hardcoded side
-	 * effect. Default changed to OFF 2026-09-13 (Bean-directed): a silent
-	 * colour swap surprised an operator whose explicit `itemColourHover` looked
-	 * "not applied" — it had been quietly overridden by this exact branch. The
-	 * swap logic below is UNCHANGED and stays available as an explicit opt-in;
-	 * only the DEFAULT flipped. The readability CHECK itself (same WCAG maths)
-	 * now lives unconditionally in edit.js as an advisory inspector Notice —
+	 * `itemSmartContrast` (FR-41-5) is an OPT-IN toggle, default OFF: a silent
+	 * colour swap would make an operator's explicit `itemColourHover` look
+	 * "not applied". The readability CHECK itself (same WCAG maths)
+	 * lives unconditionally in edit.js as an advisory inspector Notice —
 	 * it always warns on a failing combination, regardless of this attribute's
 	 * value; only the automatic SWAP below is gated on it.
 	 *
 	 * When ON and the operator has set a Hover or Current BACKGROUND, the
 	 * matching foreground resolves through the EXISTING shared WCAG helpers —
-	 * the same two the retired pill branch called, and the same two the
-	 * featured pill and sgs/nav-drawer already use. ⛔ No new contrast function
-	 * is built.
+	 * the same two the featured pill and sgs/nav-drawer use. ⛔ No new
+	 * contrast function is built.
 	 *
 	 * ⚠ Case two means an explicit colour does not always win: with the toggle
 	 * ON, the operator's choice is kept whenever it clears AA against the
@@ -291,31 +276,29 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	$item_colour_hover   = isset( $attributes['itemColourHover'] ) ? (string) $attributes['itemColourHover'] : '';
 	$item_colour_current = isset( $attributes['itemColourCurrent'] ) ? (string) $attributes['itemColourCurrent'] : '';
 
-	// Wave 2 E1 (2026-09-12) / FR-41-36 locked default ("Top bar | Hover |
-	// text=accent"). An operator who never touches itemColourHover previously
-	// relied on WordPress core's own ambient `:root :where(a:hover)` rule —
+	// FR-41-36 locked default ("Top bar | Hover | text=accent"). Without a
+	// default, an operator who never touches itemColourHover relies on WordPress
+	// core's own ambient `:root :where(a:hover)` rule —
 	// ZERO specificity, and it stops matching the instant the pointer leaves
 	// the literal <a> even while still inside the item's own open dropdown, so
 	// FR-41-13's rescue block below (which only re-emits an EXPLICITLY-set
 	// hover declaration) has nothing to hold onto. Defaulting here closes the
 	// gap by construction: every branch below that already gates on
 	// `'' !== $item_colour_hover` (the Hover-emission branch + the FR-41-13
-	// rescue block) now fires for every untouched item too, with zero further
-	// code change. Skipped only when the resolved text-hover TREATMENT is
+	// rescue block) fires for every untouched item too. Skipped only when the resolved text-hover TREATMENT is
 	// 'none' — an operator who explicitly chose no text-hover signal keeps it.
 	if ( '' === $item_colour_hover && 'none' !== $t_text ) {
 		$item_colour_hover = $default_item_colour_hover;
 	}
 
-	// Default OFF (2026-09-13, Bean-directed) — was default-ON. Unset or
+	// Default OFF. Unset or
 	// explicitly false = the operator's itemColourHover renders exactly
 	// as-authored, no swap. Only an explicit `true` opts into the swap below.
 	$smart_contrast = isset( $attributes['itemSmartContrast'] ) && (bool) $attributes['itemSmartContrast'];
 	if ( $smart_contrast ) {
 		// $sgs_nm_hex handles a slug OR a raw CSS colour for $preferred too —
-		// the same G16(c) gap applied here: a client-chosen custom hex text
-		// colour previously fell straight to the "unresolved" branch below and
-		// was silently discarded even when it cleared AA.
+		// so a client-chosen custom hex text colour is kept when it clears AA
+		// rather than falling to the "unresolved" branch below.
 		$smart_fg = static function ( string $bg_hex, string $preferred ) use ( $sgs_nm_hex ): string {
 			if ( '' === $bg_hex ) {
 				return $preferred;
@@ -329,7 +312,7 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 		$item_colour_current = $smart_fg( $item_bg_current_hex, $item_colour_current );
 	}
 
-	// itemColourHoverGradient (2026-09-13) -- the swap above ALWAYS wins when
+	// itemColourHoverGradient -- the swap above ALWAYS wins when
 	// itemSmartContrast is ON: $item_colour_hover is already the auto-computed
 	// safe solid at this point, and a stored gradient value is deliberately
 	// ignored here rather than resolved, so a stale gradient set while the
@@ -363,7 +346,7 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	} elseif ( '' !== $item_colour_effective ) {
 		$item_colour_decl = sgs_text_colour_decl( $item_colour_effective );
 		if ( '' !== $item_colour_decl ) {
-			// Wave 2 M4 (2026-09-12): paired with $caret_svg_sel — same value,
+			// Paired with $caret_svg_sel — same value,
 			// same rule, reaches the caret's `stroke="currentColor"` glyph too
 			// (a DOM sibling `$link_sel` alone cannot select).
 			$css .= $link_sel . ',' . $caret_svg_sel . '{' . $item_colour_decl . ';}';
@@ -382,14 +365,13 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	if ( '' !== $item_text_sweep['hover'] ) {
 		$css .= $item_text_sweep['hover'];
 	} elseif ( 'none' !== $t_text && '' !== $item_colour_hover_effective ) {
-		// Wave 2 M4 (2026-09-12): $caret_svg_sel paired in the same call — a
+		// $caret_svg_sel is paired in the same call — a
 		// direct :hover/:focus-visible on the caret's own svg fires when the
 		// pointer/focus is on the caret itself (e.g. the has_url fork's
 		// separate `.{bem}__subtoggle` button).
-		// itemColourHoverGradient (2026-09-13): sgs_text_colour_decl() detects a
+		// itemColourHoverGradient: sgs_text_colour_decl() detects a
 		// gradient function on its own and swaps in the background-clip:text
-		// declaration set; a flat colour resolves exactly as before via
-		// `color:`. Guarded on a non-empty decl (an invalid stored value
+		// declaration set; a flat colour resolves via `color:`. Guarded on a non-empty decl (an invalid stored value
 		// resolves to '', matching every other colour branch in this file).
 		$item_colour_hover_decl = sgs_text_colour_decl( $item_colour_hover_effective );
 		if ( '' !== $item_colour_hover_decl ) {
@@ -405,7 +387,7 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	// operator who bolds the whole menu would otherwise see the current page
 	// render LIGHTER than every other item: a signal pointing the wrong way. An
 	// empty itemFontWeight (the shipped default) casts to 0, so the default
-	// "600" always emits and today's output is preserved byte-for-byte.
+	// "600" always emits.
 	$item_weight_current = (int) ( $attributes['itemFontWeightCurrent'] ?? 0 );
 	if ( $item_weight_current > (int) ( $attributes['itemFontWeight'] ?? 0 ) ) {
 		$css .= $uid_sel . ' .' . $bem_root . '__link[aria-current="page"],'
@@ -444,7 +426,7 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 		? ''
 		: sgs_background_paint_decl( $item_bg_current_raw, $item_bg_current_gradient );
 
-	// Wave 2 A1/A2 (2026-09-12): under `highlight` the per-item hover FILL is
+	// Under `highlight` the per-item hover FILL is
 	// unconditionally suppressed above (FR-41-14/FR-41-25 — the shared sliding
 	// pill is the ONE background shape for non-resting states). That is
 	// correct when the pill's colour visibly differs from the resting fill —
@@ -469,19 +451,15 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 			$css .= $link_sel . '{border-radius:' . $item_radius_shorthand . ';}';
 		}
 		/*
-		 * D942 recipe item 1 (`itemColour`): `itemColour`'s `color:` and
-		 * `itemBg`'s `background-color:` used to paint the SAME selector
-		 * ($link_sel) — a same-selector text/background collision that would
-		 * block a future `itemColourGradient` sibling from using
+		 * `itemColour`'s `color:` and `itemBg`'s `background-color:` must not
+		 * paint the SAME selector ($link_sel) — a same-selector text/background
+		 * collision would block an `itemColourGradient` sibling from using
 		 * `background-clip:text` (it clips the element's whole background
 		 * paint area, not just this declaration). The usual fix is
 		 * `sgs_block_background_layer_css()`, which moves the paint onto a
-		 * `::after` layer, but `::after` was taken at the time. `::before` was
-		 * free, so the background moved there instead (same shape,
-		 * hand-composed for the free slot). ⚠ `::after` is free again now that
-		 * the underline bar is retired — the background deliberately STAYS on
-		 * `::before` (moving it would be churn with no benefit), and the border
-		 * sweep band claims `::after` instead.
+		 * `::after` layer, but the border sweep band claims `::after` here, so
+		 * the background is painted on `::before` instead (same shape,
+		 * hand-composed for that slot).
 		 */
 		$css .= $link_sel . '{position:relative;isolation:isolate;}';
 		$css .= $link_sel . '::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;'
@@ -497,10 +475,10 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 
 	/*
 	 * ── FR-41-13-adjacent — ANCESTOR shows Current styling when a descendant
-	 * submenu item IS the current page (nav-review fix 4, 2026-09-12). ─────────
+	 * submenu item IS the current page. ──────────────────────────────────────
 	 *
-	 * Bean explicitly rejected a THIRD visual language (a diluted/tinted
-	 * treatment) for this — the ancestor reuses the LITERAL existing Current
+	 * No THIRD visual language (a diluted/tinted
+	 * treatment) — the ancestor reuses the LITERAL existing Current
 	 * declarations verbatim, the same values `$item_colour_current` /
 	 * `$item_bg_current_decl` / `itemBorderColourCurrent` / `$item_weight_current`
 	 * already computed above for the item's OWN current-page rule. No new
@@ -517,13 +495,13 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	 * NOT specificity. Measured: the `:has(ul.{bem}__submenu
 	 * a[aria-current="page"])` selector's own specificity (0,5,2) already
 	 * OUTRANKS the item's plain `:hover` rule (0,3,0), so relying on source
-	 * order or specificity here would have been backwards — a directly-hovered
-	 * parent would have kept showing the propagated Current paint underneath.
+	 * order or specificity here would be backwards — a directly-hovered
+	 * parent would keep showing the propagated Current paint underneath.
 	 * The `:not()` pair sidesteps the arithmetic entirely: while the link is
 	 * itself hovered or focus-visible, this rule simply does not match.
 	 *
-	 * ⚠ BAR FORK ONLY — `[data-sgs-nav-has-current]` `:has()` rescue
-	 * (2026-09-14, sticky-header reparent regression). `mega-disclosure.js`'s
+	 * ⚠ BAR FORK ONLY — `[data-sgs-nav-has-current]` `:has()` rescue.
+	 * `mega-disclosure.js`'s
 	 * `reparentPanelIfNeeded()` moves the bar's `[data-sgs-mega-panel]`
 	 * (containing `ul.{bem}__submenu`) to `<body>` while a page-embedded
 	 * dropdown is open, which breaks `:has()` above for exactly that long — the
@@ -571,14 +549,13 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 		$css .= $sgs_nm_ancestor_bar_sel . '::before,' . $sgs_nm_ancestor_drawer_sel . '::before{' . $item_bg_current_decl . ';}';
 	}
 
-	// Item BORDER (three states + Sweep band) and item SEPARATOR — extracted to
-	// includes/nav-menu-item-border-featured-css.php (file-size maintenance
-	// pass, 2026-09-14): fully self-contained, no shared state beyond
-	// $attributes/$link_sel/$uid_sel/$t_border.
+	// Item BORDER (three states + Sweep band) and item SEPARATOR — emitted by
+	// includes/nav-menu-item-border-featured-css.php: fully self-contained, no
+	// shared state beyond $attributes/$link_sel/$uid_sel/$t_border.
 	$css .= sgs_nav_shared_item_border_css( $attributes, $link_sel, $uid_sel, $t_border, $bem_root );
 
 	// Featured items (LABEL/PILL forms + republished custom properties + Hover
-	// state) — extracted to the same module, same rationale.
+	// state) — emitted by the same module.
 	$css .= sgs_nav_shared_featured_css( $attributes, $uid_sel, $bem_root );
 
 	/*
@@ -620,11 +597,9 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	// selector and reintroduce a solid bottom border exactly while the
 	// submenu is hovered/focused — a technique mismatch, not a fix. Only
 	// 'swap' uses a plain border-colour hover this rule can faithfully copy.
-	// ⛔ Gated on the BORDER'S OWN hover colour, not $item_colour_hover (a
-	// leftover from copy-pasting the text branch above) — an item with a
-	// border-only hover (no text hover colour at all, G7's exact live-caught
-	// case) previously never reached this branch, so the rescue rule never
-	// computed for it in the first place.
+	// ⛔ Gated on the BORDER'S OWN hover colour, not $item_colour_hover — an
+	// item with a border-only hover (no text hover colour at all) must still
+	// reach this branch, or the rescue rule never computes for it.
 	if ( 'swap' === $t_border ) {
 		$item_border_hover_colour = sgs_colour_value( (string) ( $attributes['itemBorderColourHover'] ?? '' ) );
 		if ( '' !== $item_border_hover_colour ) {
@@ -636,12 +611,9 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	//
 	// ⛔ 'text' and 'border' both paint the LINK element itself and are
 	// combined into ONE declaration string; 'bg' paints the `::before` layer
-	// (FR-41-23's item-background mechanism) and stays separate. A prior
-	// version of this block checked only 'text'/'bg' in its if/elseif chain,
-	// so a border-only hover (G7's exact live-caught case — `itemBorderColourHover`
-	// set with no text hover colour) computed a 'border' entry above that was
-	// silently never read here: none of the four branches matched
-	// text-absent/bg-absent/border-present, so nothing emitted at all.
+	// (FR-41-23's item-background mechanism) and stays separate. All three
+	// keys are read, so a border-only hover (`itemBorderColourHover` set with no
+	// text hover colour) still emits.
 	if ( ! empty( $item_hover_decls ) ) {
 		$link_decls = array_filter(
 			array( $item_hover_decls['text'] ?? '', $item_hover_decls['border'] ?? '' )
@@ -651,12 +623,11 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 
 		// Mouse half — bar fork.
 		//
-		// Wave 2 M2 (2026-09-12): $bar_mouse_caret_sel pairs alongside
+		// $bar_mouse_caret_sel pairs alongside
 		// $bar_mouse_sel for the LINK declaration only (never `::before`, which
 		// is the link's own background-fill pseudo-element and has no
 		// caret-svg equivalent) — closes the caret's own hover-persistence gap
-		// as a side effect of the SAME selector shape M4 already pairs above,
-		// no separate mechanism. Bar-only: the drawer fork's caret pairing is
+		// with the SAME selector shape paired above, no separate mechanism. Bar-only: the drawer fork's caret pairing is
 		// a different mechanism owned by nav-menu-submenu-css.php.
 		$bar_mouse_sel       = $uid_sel . ' .' . $bem_root . '__submenu-root:hover > .' . $bem_root . '__link';
 		$bar_mouse_caret_sel = $uid_sel . ' .' . $bem_root . '__submenu-root:hover .' . $bem_root . '__caret svg';
@@ -678,10 +649,10 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 
 		// Keyboard half — bar fork.
 		//
-		// Wave 2 M2 (2026-09-12): same caret pairing as the mouse half above.
+		// Same caret pairing as the mouse half above.
 		//
 		// ⚠ `:is( :has(…), [data-sgs-nav-has-focus] )` is the same reparent-safe
-		// `:has()` rescue as the current-page ancestor rule above (2026-09-14)
+		// `:has()` rescue as the current-page ancestor rule above
 		// — while `reparentPanelIfNeeded()` has moved the bar's panel to
 		// `<body>`, `:has( ul.{bem}__submenu :focus-visible )` can no
 		// longer see the focus-visible descendant, so `mega-disclosure.js`

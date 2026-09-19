@@ -5,7 +5,7 @@
  * Categories: sgs
  * Block Types: core/post-content
  * Post Types: sgs_mega_menu
- * Description: Two-column mega panel with a side call-to-action panel (media, heading, text, button). Starter template for the sgs_mega_menu CPT (Spec 36).
+ * Description: Two-column mega panel with a side call-to-action panel (media, heading, text, button). Starter template for the sgs_mega_menu CPT.
  *
  * @package SGS\Theme
  */

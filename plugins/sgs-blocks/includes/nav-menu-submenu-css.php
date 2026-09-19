@@ -1,23 +1,23 @@
 <?php
 /**
- * SGS Nav Menu (sgs/nav-menu) — scoped CSS, part 2: submenu/dropdown, drawer
- * fork, sliding indicator, root box.
+ * SGS Nav Bar Menu / Nav Drawer Menu — scoped CSS, part 2: submenu/dropdown,
+ * drawer fork, sliding indicator, root box.
  *
- * Split out of render.php (Spec 41 step 8) — the bar/burger collapse-point
+ * Emits the bar/burger collapse-point
  * switch, mega-menu + dropdown disclosure positioning, the submenu LINK's own
  * three-state colour/fill family and its typography, drawer-specific
  * submenu/sublink/current-page overrides, listColumns in-drawer grid, the
  * sliding-indicator colour override, the root box (native spacing + responsive
  * padding tiers), and the free-text custom-CSS escape hatch.
  *
- * ⚠ The MENU BUTTON's own CSS is NOT here — it moved to
- * `includes/nav-menu-trigger-css.php` at step 15, because it is a separate
+ * ⚠ The MENU BUTTON's own CSS is NOT here — it lives in
+ * `includes/nav-menu-trigger-css.php`, because it is a separate
  * element with its own inspector panel.
  *
  * ⚠ LOAD ORDER: NOT bootstrap-loaded — `require_once`'d per-instance from
  * render.php, matching product-card's pattern and this file's own sibling
- * `nav-menu-css.php`. Its function is only in scope after nav-menu's own
- * render.php has run at least once on that page load. Fine today; a future
+ * `nav-menu-css.php`. Its function is only in scope after a nav block's own
+ * render.php has run at least once on that page load. A
  * cross-block call needs this file required first.
  *
  * @package SGS\Blocks
@@ -27,7 +27,7 @@ defined( 'ABSPATH' ) || exit;
 
 if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 	/**
-	 * Build the submenu/dropdown/burger/indicator/root-box half of nav-menu's
+	 * Build the submenu/dropdown/burger/indicator/root-box half of the nav blocks'
 	 * scoped <style>.
 	 *
 	 * @param array  $attributes             Block attributes (verbatim render.php param).
@@ -55,8 +55,7 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 	 *                                        sequentially (column-major, "4+3") rather
 	 *                                        than relying on `column` flow's own
 	 *                                        auto-wrap, which needs an explicit
-	 *                                        row/column count to behave predictably
-	 *                                        (P-NAV-MENU-LISTCOLUMNS-READING-ORDER).
+	 *                                        row/column count to behave predictably).
 	 * @return string CSS fragment (no wrapping <style> tag).
 	 */
 	function sgs_nav_shared_submenu_css(
@@ -78,8 +77,8 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		$sublink_sel = $uid_sel . ' .' . $bem_root . '__sublink';
 		$t_sub_text  = (string) ( $treatments['submenuColourHoverTreatment'] ?? 'swap' );
 		$t_sub_bg    = (string) ( $treatments['submenuLinkBgHoverTreatment'] ?? 'swap' );
-		// Read once: census #9 gates the panel's own border on it, and census #1
-		// gates the drawer's `border:0` SUPPRESSION on the same value.
+		// Read once: it gates the panel's own border and the drawer's `border:0`
+		// SUPPRESSION on the same value.
 		$sgs_nm_submenu_border_box = is_array( $attributes['submenuBorderWidth'] ?? null ) ? $attributes['submenuBorderWidth'] : array();
 
 		// 4f. Bar ↔ burger collapse-point switch. A LEGITIMATE non-device-tier
@@ -107,37 +106,34 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		// trigger is a <button>, not an <a>, so it needs a minimal reset to inherit
 		// the bar link's look rather than the browser's default button chrome.
 		//
-		// D1060 (2026-09-14): wrapped in :where(). The trigger also carries
+		// Wrapped in :where(). The trigger also carries
 		// .{bem}__link, and this reset is written AFTER the item rules at the
 		// same (0,2,0) specificity — so its `background:none`, `border:0` and
-		// `font:inherit` shorthands wiped the client's item background (and gradient),
-		// item border and item typography on every mega item. As a zero-specificity
+		// `font:inherit` shorthands would wipe the client's item background (and
+		// gradient), item border and item typography on every mega item. As a zero-specificity
 		// default it still beats the browser's own button styles.
 		$css .= ':where(' . $uid_sel . ' .' . $bem_root . '__mega-trigger){background:none;border:0;font:inherit;cursor:pointer;}';
 		
 		/*
-		 * Caret flips when the disclosure opens. Bean, 2026-09-10: the flip used to
-		 * animate over 300ms while EVERY consumer of this shared `.caret` class opens
-		 * its own panel INSTANTLY -- the mega dropdown toggles `display:none/block`
-		 * (no transition possible on `display` directly) and the drawer's native
-		 * `<details>` has no animation of its own either. An animated caret paired
-		 * with an instant panel always reads as lagging behind, in both places that
-		 * share this rule, not just the one currently in view -- so this is instant
+		 * Caret flips when the disclosure opens, with no transition: EVERY consumer of
+		 * this shared `.caret` class opens its own panel INSTANTLY -- the mega
+		 * dropdown toggles `display:none/block` (no transition possible on `display`
+		 * directly) and the drawer's native `<details>` has no animation of its own
+		 * either. An animated caret paired with an instant panel always reads as
+		 * lagging behind, in both places that share this rule -- so it is instant
 		 * everywhere rather than a per-consumer carve-out. Since there's no
 		 * transition, no reduced-motion override is needed either.
 		 */
 		$css .= $uid_sel . ' .' . $bem_root . '__caret{display:inline-flex;}';
-		// M5 fix (2026-09-12) — widened to a selector list covering BOTH trigger
-		// classes. `.{bem}__mega-trigger` is the mega-menu item's own
-		// trigger class; the plain dropdown's trigger carries
-		// `.{bem}__subtoggle` instead and had no matching rule at all — a
-		// selector never written for that second trigger, not a regression. One
-		// rule keeps both triggers' flip behaviour identical by construction.
+		// A selector list covering BOTH trigger classes. `.{bem}__mega-trigger`
+		// is the mega-menu item's own trigger class; the plain dropdown's trigger
+		// carries `.{bem}__subtoggle` instead. One rule keeps both triggers' flip
+		// behaviour identical by construction.
 		$css .= $uid_sel . ' .' . $bem_root . '__mega-trigger[aria-expanded="true"] .' . $bem_root . '__caret,'
 			. $uid_sel . ' .' . $bem_root . '__subtoggle[aria-expanded="true"] .' . $bem_root . '__caret{transform:rotate(180deg);}';
 		
 		/*
-		 * Panel anchoring (Bean design-gated — Gate-3 finding). The wrap anchors to
+		 * Panel anchoring. The wrap anchors to
 		 * the BAR (`.{bem}__bar` is already position:relative in style.css
 		 * for the indicator pill), not to the <li>-level hover bridge, so the panel
 		 * can exceed a single menu item's width. The draft designs (sites/Mega-menu
@@ -147,8 +143,7 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		 * centres on the bar and may exceed the bar's width up to the draft's
 		 * 1120px cap with the draft's 28px side gutters. MEGA-ONLY by construction:
 		 * plain (non-mega) dropdowns, when built, must anchor left-aligned under
-		 * their own item — Bean explicitly rejected centring them (the Indus draft
-		 * centres its "More" dropdown and it reads badly).
+		 * their own item — centring them reads badly.
 		 *
 		 * Hover safety holds because the wrap stays a DOM child of the
 		 * `.{bem}__mega` bridge — mouseleave fires on DOM containment, not
@@ -163,10 +158,10 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		 */
 		
 		/*
-		 * VERTICAL BOUND (2026-09-09). Horizontal overflow was already handled (the
-		 * width:min() above + the JS edge-collision vars); the block axis had NO bound
-		 * at all, so a long panel rendered past the viewport bottom with no way to
-		 * reach it — the panel closes on pointer-leave, so there was nothing to scroll.
+		 * VERTICAL BOUND. Horizontal overflow is handled by the width:min() above +
+		 * the JS edge-collision vars; the block axis needs its own bound, or a long
+		 * panel renders past the viewport bottom with no way to reach it — the panel
+		 * closes on pointer-leave, so there is nothing to scroll.
 		 *
 		 * The bound is the panel's OWN top edge measured against the viewport, published
 		 * by mega-disclosure.js::repositionPanel as --sgs-mm-panel-max-h (a custom-
@@ -176,18 +171,16 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		 * non-SGS theme's header entirely — because it asks the panel where it actually
 		 * is rather than reconstructing that from something else's geometry.
 		 *
-		 * ⚠ It must NOT be derived from --sgs-header-height (corrected 2026-09-10; the
-		 * first version of this rule did exactly that). That variable is a SCROLL-
+		 * ⚠ It must NOT be derived from --sgs-header-height. That variable is a SCROLL-
 		 * PADDING token, not header geometry: header-behaviours/view.js::publishHeight
 		 * is called as `publishHeight( isHeaderPinned( header ) ? measuredHeight : 0 )`
 		 * and writes the result INLINE on documentElement/body, which outranks the
 		 * theme's static :root value. sgs/site-header's `headerSticky` defaults to `{}`
 		 * — a NON-sticky header is the framework default — so on a default header the
 		 * token resolves to `0px`, the bound collapses to `calc(100dvh - 16px)`, and
-		 * the panel overflows the viewport bottom by a full header height. It only ever
-		 * looked right because the canary's header happens to be sticky.
+		 * the panel would overflow the viewport bottom by a full header height.
 		 *
-		 * The old expression is kept as the var()'s FALLBACK, so it remains the no-JS /
+		 * The --sgs-header-height expression is the var()'s FALLBACK, so it is the no-JS /
 		 * pre-first-open floor: too generous on a static header, but never zero.
 		 * 16px is the spacing-scale step, kept as breathing room above the viewport edge.
 		 *
@@ -224,7 +217,7 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		 * hardcoded value overriding it.
 		 */
 		/*
-		 * submenuBg/submenuBgGradient (2026-09-11, classify-end-shape closeout):
+		 * submenuBg/submenuBgGradient:
 		 * sgs_custom_property_gradient_decls() emits `--sgs-nm-submenu-bg` and,
 		 * only when set, a sibling `--sgs-nm-submenu-bg-gradient` — matching the
 		 * shared "fill-custom-property-gradient" end shape every other
@@ -235,18 +228,18 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		$sgs_nm_submenu_bg_source          = (string) ( $attributes['submenuBg'] ?? '' );
 		$sgs_nm_submenu_bg_source_gradient = (string) ( $attributes['submenuBgGradient'] ?? '' );
 
-		// I1 fix (2026-09-12) — the panel is Normal-only by design (FR-41-9) and must
+		// The panel is Normal-only by design (FR-41-9) and must
 		// stay that way, but an operator who set the ROW colour (submenuLinkBg) and
 		// never touched the separate PANEL colour (submenuBg) almost certainly wants
 		// the panel's own padding band to match the rows, not fall through to the
-		// independent surface-alt/surface/#fff token chain (the "white lip" bug).
+		// independent surface-alt/surface/#fff token chain (a "white lip").
 		// Only engages when submenuBg itself is untouched — an explicit submenuBg
-		// always wins, exactly as before.
+		// always wins.
 		//
-		// D1060 (2026-09-14): submenuBgGradient must be untouched too. submenuLinkBg
-		// defaults to 'surface', so without this check the fallback fired in the
-		// DEFAULT state and replaced an explicit panel gradient with
-		// submenuLinkBgGradient (default ''). Owner rule: a gradient is ignored only
+		// submenuBgGradient must be untouched too. submenuLinkBg
+		// defaults to 'surface', so without this check the fallback would fire in the
+		// DEFAULT state and replace an explicit panel gradient with
+		// submenuLinkBgGradient (default ''). A gradient is ignored only
 		// when auto contrast adaptation is on.
 		if ( '' === $sgs_nm_submenu_bg_source && '' === $sgs_nm_submenu_bg_source_gradient
 			&& '' !== (string) ( $attributes['submenuLinkBg'] ?? '' ) ) {
@@ -284,33 +277,25 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		/*
 		 * `submenuTopOffset` (FR-41-11) — emitted as `calc(100% + <offset>)` so the
 		 * `100%` anchor is preserved and only the GAP is operator-owned. Empty
-		 * renders today's output exactly.
+		 * leaves the plain `100%` anchor.
 		 */
 		$submenu_top_offset = sgs_css_length_value( $attributes['submenuTopOffset'] ?? '' );
 		$submenu_wrap_top   = '' !== $submenu_top_offset ? 'calc(100% + ' . $submenu_top_offset . ')' : '100%';
 
 		/*
-		 * SHADOW FIX (2026-09-14, Bean-directed) — `box-shadow` used to sit on
-		 * this exact rule, on the exact same element as `overflow-y:auto`. Per
-		 * CSS's overflow-clip behaviour an element clips its OWN box-shadow
-		 * the moment its `overflow` is anything but `visible` — proven live on
-		 * the canary: forcing the panel open showed a flat, shadow-less edge
-		 * against the header even with a real box-shadow value computed. The
-		 * `overflow-y:auto` cannot move (it is this element's own scroll for
-		 * a tall panel); the shadow moves instead, from `box-shadow` to
-		 * `filter:drop-shadow()` — a filter effect, which paints on the
-		 * element's rendered bitmap BEFORE the overflow clip is applied, so
-		 * it is never clipped by the same element's own overflow.
+		 * SHADOW — the panel's shadow is `filter:drop-shadow()`, not `box-shadow`.
+		 * Per CSS's overflow-clip behaviour an element clips its OWN box-shadow
+		 * the moment its `overflow` is anything but `visible`, and this rule carries
+		 * `overflow-y:auto` (the element's own scroll for a tall panel), so a
+		 * `box-shadow` here would show a flat, shadow-less edge against the header.
+		 * A filter effect paints on the element's rendered bitmap BEFORE the
+		 * overflow clip is applied, so it is never clipped by the same element's
+		 * own overflow.
 		 *
-		 * Default is a bare `none`, not a theme shadow preset (was
-		 * `var(--wp--preset--shadow--raised, 0 4px 12px rgba(0,0,0,.1))` —
-		 * a real, always-on shadow value regardless of the `submenuShadow`
-		 * attribute's own empty default, the second half of the same bug:
-		 * an untouched nav rendered a shadow it never asked for, on top of
-		 * the shadow being invisible where it rendered). `--sgs-nm-submenu-
-		 * filter` is written below ONLY when `submenuShadow` is non-empty, so
-		 * a fresh install now genuinely ships no shadow until an operator
-		 * opts in.
+		 * Default is a bare `none`, not a theme shadow preset: an untouched nav must
+		 * render no shadow. `--sgs-nm-submenu-filter` is written below ONLY when
+		 * `submenuShadow` is non-empty, so a fresh install ships no shadow until an
+		 * operator opts in.
 		 */
 		$css .= $uid_sel . ' .' . $bem_root . '__submenu-wrap{position:absolute;top:' . $submenu_wrap_top . ';left:var(--sgs-mm-overflow-left, 0);max-height:var(--sgs-mm-panel-max-h, calc(100dvh - var(--sgs-header-height, 80px) - 16px));overflow-y:auto;overscroll-behavior:contain;z-index:100;display:none;border-radius:var(--sgs-nm-submenu-radius, var(--wp--custom--border-radius--medium, 8px));filter:var(--sgs-nm-submenu-filter, none);}';
 
@@ -319,13 +304,12 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		 * ⛔ A non-zero offset creates a hover DEAD STRIP, and that reintroduces the
 		 * exact bug FR-41-13 exists to fix: the gap belongs to neither element, so
 		 * as the pointer crosses it neither is hovered and the parent flickers back
-		 * to its resting paint mid-journey. The bridge is MANDATORY and ships in
-		 * the same change.
+		 * to its resting paint mid-journey. The bridge is MANDATORY.
 		 *
 		 * ⛔ `submenuCloseGrace` does NOT cover this — it is a `setTimeout` on the
 		 * bridge element's `mouseleave` that defers `ctx.isOpen = false`. It governs
-		 * OPENNESS and never touches CSS `:hover`. The panel correctly stays open
-		 * across the gap today; the parent's PAINT does not.
+		 * OPENNESS and never touches CSS `:hover`. The panel stays open
+		 * across the gap; the parent's PAINT does not.
 		 *
 		 * Safe by construction: `.{bem}__submenu-wrap::before` is claimed by
 		 * nothing; the wrap is already `position:absolute`, so it is its own
@@ -338,9 +322,8 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		}
 
 		/*
-		 * LIFT THE WHOLE ITEM while its submenu is open (Bean, 2026-07-31 — live-caught:
-		 * the site logo painted OVER the open dropdown; hit-testing the panel's centre
-		 * returned `sgs-responsive-logo__image--desktop`, not the panel).
+		 * LIFT THE WHOLE ITEM while its submenu is open (otherwise a later block such
+		 * as the site logo paints OVER the open dropdown).
 		 *
 		 * `z-index:100` on the panel alone is not enough. The panel sits inside
 		 * stacking contexts its own ancestors create — `.{bem}__item{z-index:1}`,
@@ -358,7 +341,7 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		 * and the block root sit between the item and the page, so a 101 on the item
 		 * alone only ordered it against its own siblings.
 		 *
-		 * WHAT THIS DOES AND DOES NOT FIX (measured 2026-07-31, five sample points):
+		 * WHAT THIS DOES AND DOES NOT FIX:
 		 *   HEADER placement — the normal one — is fully correct: the open panel is the
 		 *   topmost element at every sampled point, because the header template part is
 		 *   `position:sticky; z-index:100` and therefore outranks page content.
@@ -367,64 +350,57 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		 *   context the block cannot escape, so the sticky header (z-index 100) and the
 		 *   footer's own positioned rows (z-index 1, later in document order) still
 		 *   paint over the panel. Raising `.entry-content` would put ALL page content
-		 *   above the sticky header, which is worse. Tracked as
-		 *   P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT.
+		 *   above the sticky header, which is worse.
 		 * These lifts are still correct and worth keeping: they order the open panel
 		 * above rivals WITHIN the same content flow, and they revert the moment it closes.
 		 *
 		 * Each is keyed on `[data-sgs-mega-trigger][aria-expanded="true"]`, NOT on a bare
 		 * `[aria-expanded="true"]`. The burger button binds `aria-expanded` too
-		 * (render.php ~607, `data-wp-bind--aria-expanded="state.isOpen"`), so the bare
-		 * form also matched whenever the mobile DRAWER opened and lifted the whole nav
-		 * for a reason that had nothing to do with a dropdown. Council-caught.
+		 * (render.php, `data-wp-bind--aria-expanded="state.isOpen"`), so the bare
+		 * form would also match whenever the mobile DRAWER opened and lift the whole
+		 * nav for a reason that has nothing to do with a dropdown.
 		 */
 		$css .= $uid_sel . ':has([data-sgs-mega-trigger][aria-expanded="true"]){position:relative;z-index:101;}';
 		$css .= $uid_sel . ' .' . $bem_root . '__bar:has([data-sgs-mega-trigger][aria-expanded="true"]){z-index:101;}';
 		$css .= $uid_sel . ' [data-sgs-mega-trigger][aria-expanded="true"] ~ .' . $bem_root . '__submenu-wrap{display:block;}';
 		
 		/*
-		 * EVERY default here is a THEME TOKEN, never a literal (Bean, 2026-07-31 —
-		 * live-caught: the first cut hardcoded `#fff` and `rgba(0,0,0,.12)`, so the
-		 * panel painted white on a client whose surface token is `#fbf3dc` and ignored
-		 * the palette completely, in every style variation). A literal cannot follow a
+		 * EVERY default here is a THEME TOKEN, never a literal (a hardcoded `#fff`
+		 * would paint the panel white on a client whose surface token differs and
+		 * ignore the palette completely, in every style variation). A literal cannot follow a
 		 * per-client snapshot or a light/dark variation; a token does, for free. The
 		 * short literal after each token is a last-resort safety net for a theme that
 		 * defines no palette at all, NOT a design value.
 		 */
 		/*
-		 * CENSUS #9 — per-declaration, none handled "somewhere else":
+		 * Per-declaration source of each panel value:
 		 *
-		 *   background-color / background-image  NO CHANGE — `--sgs-nm-submenu-bg`
+		 *   background-color / background-image  `--sgs-nm-submenu-bg`
 		 *     has a real writer (`submenuBg`), emitted inside an empty-guard so an
 		 *     unset attribute writes no property at all and the chained
 		 *     surface-alt -> surface -> #fff fallback applies.
-		 *   min-width                            NO CHANGE — attribute-driven from
+		 *   min-width                            attribute-driven from
 		 *     `submenuMinWidth` through the same guarded block.
-		 *   border-radius                        NO CHANGE — see the ⚠ below.
-		 *   border                               CONVERT — the only `border`
-		 *     declaration on the rule with no attribute behind it. It now reads
+		 *   border-radius                        see the ⚠ below.
+		 *   border                               reads
 		 *     `submenuBorderWidth` / `submenuBorderStyle` through custom properties
-		 *     whose UNSET fallback is the previous literal, and its COLOUR through
+		 *     whose UNSET fallback is a literal, and its COLOUR through
 		 *     the shared `sgs_border_states_css()` (Normal-only, FR-41-9: a panel
 		 *     that cannot be hovered for one property cannot be hovered for another)
 		 *     appended after this rule, so a set colour wins on source order and an
 		 *     unset one leaves the token fallback below in place.
-		 *   box-shadow                           CONVERT — reads `submenuShadow` /
+		 *   box-shadow                           reads `submenuShadow` /
 		 *     `submenuShadowColour` via the shared `sgs_shadow_value_composed()`,
 		 *     same unset-fallback discipline.
 		 *
-		 * `--sgs-nm-submenu-radius` was CONVERTED here (found dead-but-firing after
-		 * step 10's manifest rewrite deleted `submenuRadius` in favour of the
-		 * object-typed `submenuBorderRadius` — FR-41-15's per-declaration table still
-		 * said "NO CHANGE" against the pre-rewrite attribute name, which had gone
-		 * stale; found and fixed during step 16, same CONVERT shape as census #7 and
-		 * the submenu current-colour row: keep the `var()`, rewire the writer to the
-		 * real attribute, keep the unset fallback so an untouched nav is unchanged).
+		 * `--sgs-nm-submenu-radius` reads the object-typed `submenuBorderRadius`:
+		 * the `var()` is kept, the writer is wired to the real attribute, and the
+		 * unset fallback keeps an untouched nav unchanged.
 		 * `submenuBorderRadius` is a FLAT corner object, read through
 		 * `sgs_corner_object_shorthand()` — NOT the side-keyed box helper — matching
 		 * `itemBorderRadius`'s own precedent above in nav-menu-css.php. Its declared
 		 * default is `{}` (empty), so an untouched panel writes no property at all and
-		 * the chained token fallback below applies exactly as before.
+		 * the chained token fallback below applies.
 		 */
 		$sgs_nm_submenu_border_style  = sgs_css_keyword_sanitise( $attributes['submenuBorderStyle'] ?? '' );
 		$sgs_nm_submenu_border_w      = $sgs_nm_submenu_border_box ? sgs_box_object_shorthand( $sgs_nm_submenu_border_box ) : null;
@@ -433,7 +409,7 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 			(string) ( $attributes['submenuShadow'] ?? '' ),
 			(string) ( $attributes['submenuShadowColour'] ?? '' )
 		);
-		// `filter:drop-shadow()`, not `box-shadow` — see the SHADOW FIX comment
+		// `filter:drop-shadow()`, not `box-shadow` — see the SHADOW comment
 		// on the `.submenu-wrap` rule above. Written ONLY when submenuShadow is
 		// non-empty, so the rule's own `var(--sgs-nm-submenu-filter, none)`
 		// fallback is what an untouched nav actually renders.
@@ -459,35 +435,26 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		}
 
 		/*
-		 * I1 REDESIGN (2026-09-13, Bean root-cause) — the 2026-09-12 fallback above
-		 * (falling `--sgs-nm-submenu-bg` back to `submenuLinkBg` when `submenuBg` is
-		 * unset) only ever coalesced the Normal-state colour. It could not touch the
-		 * "lip": `padding:8px 0` on THIS rule reserved a band above/below the item
-		 * list that is painted by the PANEL's own background-color and can never be
-		 * painted by any ROW state — including `submenuLinkBgHover` — because no row
-		 * geometry extends into it. Bean's own description ("a static panel fill
-		 * shows through in the padding zone, especially obvious on hover") is that
-		 * exact geometry: two independently-resolved layers, one of which owns a
-		 * strip the other cannot reach.
-		 *
-		 * Chose shape (b) over shape (a): removing the panel's own background
-		 * outright was rejected because the panel is a genuinely floating element
-		 * (`position:absolute`) over arbitrary page content — it needs SOME fill to
-		 * read as a card, which is exactly why `submenuBg`/`submenuBorder*`/
-		 * `submenuShadow` exist as real attributes above. Zeroing the padding
-		 * instead removes the one place the panel's own fill could ever be exposed
-		 * next to a row: `overflow:hidden` on this rule clips the list to its own
-		 * `border-radius`, so a square-cornered first/last row is cropped to the
-		 * panel's rounded corners rather than leaving a square tab poking past them
-		 * — the standard rounded-container technique (already precedented in this
-		 * file: `.submenu-wrap` gets the same radius for its box-shadow). The
-		 * existing Normal-state coalesce above is KEPT, not removed — it still
-		 * closes the sub-pixel residual at the four rounded corners for the common
-		 * case (no explicit `submenuBg`), same reasoning, smaller radius.
+		 * The panel's padding is 0 and `overflow:hidden` clips the list to the
+		 * panel's own `border-radius`. Coalescing `--sgs-nm-submenu-bg` to
+		 * `submenuLinkBg` above only coalesces the Normal-state colour; it cannot
+		 * touch a "lip": a `padding:8px 0` band on THIS rule would be painted by the
+		 * PANEL's own background-color and could never be painted by any ROW state —
+		 * including `submenuLinkBgHover` — because no row geometry extends into it.
+		 * Zeroing the padding removes the one place the panel's own fill could be
+		 * exposed next to a row, and `overflow:hidden` crops a square-cornered
+		 * first/last row to the panel's rounded corners rather than leaving a square
+		 * tab poking past them — the standard rounded-container technique
+		 * (`.submenu-wrap` gets the same radius for its shadow). The panel is a
+		 * genuinely floating element (`position:absolute`) over arbitrary page
+		 * content, so it keeps SOME fill to read as a card, which is why
+		 * `submenuBg`/`submenuBorder*`/`submenuShadow` exist as real attributes
+		 * above. The Normal-state coalesce above still closes the sub-pixel residual
+		 * at the four rounded corners for the common case (no explicit `submenuBg`).
 		 *
 		 * Net effect: at every point along the panel's edges the visible colour is
-		 * now ALWAYS a row's own state (Normal/Hover/Current), for every operator
-		 * configuration, with no attribute-dependent edge case — because there is no
+		 * ALWAYS a row's own state (Normal/Hover/Current), for every operator
+		 * configuration, with no attribute-dependent edge case — there is no
 		 * geometry left for the panel's own fill to show through against a row.
 		 */
 		$css .= $uid_sel . ' .' . $bem_root . '__submenu{list-style:none;margin:0;padding:0;overflow:hidden;'
@@ -500,25 +467,20 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 			. 'border-radius:var(--sgs-nm-submenu-radius, var(--wp--custom--border-radius--medium, 8px));}';
 
 		/*
-		 * MOVED from `nav-menu/style.css` 2026-09-14 (G20c ungated-paint fix,
-		 * `check-ungated-paint-rules.py`). This is the drill-down mode's
-		 * full-panel-overlay background — same selector, same fallback chain
-		 * as before, uid-scoped to match every other rule in this function
-		 * (previously unscoped). Specificity is now
+		 * The drill-down mode's full-panel-overlay background — uid-scoped to match
+		 * every other rule in this function. Specificity is
 		 * `{uid} .bar--drawer[data-drill-enhanced] .accordion .submenu` =
-		 * (0,5,0), still comfortably above the accordion-mode drawer rule
+		 * (0,5,0), comfortably above the accordion-mode drawer rule
 		 * below (`.sgs-nav-drawer {uid} .{bem}__submenu`, (0,3,0)) and
-		 * the base rule above ((0,2,0)) — so drill-enhanced mode continues to
-		 * resolve THIS chain (surface-alt -> surface -> #fff), matching the
-		 * flat bar's own dropdown rather than the accordion-mode drawer's
-		 * different chain (surface -> color-mix). Do not merge these two
-		 * chains without re-verifying both modes' resting colour live — see
-		 * the 2026-09-14 "root-cause fix" comment on the drill-down panel
-		 * rule in `nav-menu/style.css` for why they were deliberately made to
-		 * differ.
+		 * the base rule above ((0,2,0)) — so drill-enhanced mode resolves THIS chain
+		 * (surface-alt -> surface -> #fff), matching the flat bar's own dropdown
+		 * rather than the accordion-mode drawer's different chain
+		 * (surface -> color-mix). Do not merge these two chains without
+		 * re-verifying both modes' resting colour live — see the drill-down panel
+		 * rule in `nav-drawer-menu/style.css`.
 		 */
-		// D1060 (2026-09-14): longhands, not the `background:` shorthand — the
-		// shorthand reset background-image to none and cancelled submenuBgGradient.
+		// Longhands, not the `background:` shorthand — the shorthand would reset
+		// background-image to none and cancel submenuBgGradient.
 		$css .= $uid_sel . ' .' . $bem_root . '__bar--drawer[data-drill-enhanced] .' . $bem_root . '__accordion .' . $bem_root . '__submenu{'
 			. 'background-color:var(--sgs-nm-submenu-bg, var(--wp--preset--color--surface-alt, var(--wp--preset--color--surface, #fff)));'
 			. 'background-image:var(--sgs-nm-submenu-bg-gradient, none);}';
@@ -538,8 +500,8 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		
 		/*
 		 * submenuPadding — object box model {desktop:{top,right,bottom,left},
-		 * tablet:{…}, mobile:{…}}, migrated 2026-08-19 from a flat box object to
-		 * match nav-drawer's drawerPadding shape. Emitted as a tier-aware override
+		 * tablet:{…}, mobile:{…}}, matching nav-drawer's drawerPadding shape.
+		 * Emitted as a tier-aware override
 		 * of the base rule above via the shared responsive-object helper (same
 		 * selector, same specificity, later in source order — so an unset tier
 		 * leaves the `8px 0` fallback in place rather than a custom property that
@@ -567,40 +529,24 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		 */
 		
 		/*
-		 * Submenu text defaults to the palette's LINK token (Bean-ruled, 2026-07-31).
-		 *
-		 * History, because this moved twice and the reasoning matters:
-		 *   1. `color:...,inherit` (the first cut) — out-specified the theme's global
-		 *      link rule and forced inherited body text, so the palette never applied
-		 *      at all. A straight bug; this is what Bean saw.
-		 *   2. the TEXT token — palette-driven and high-contrast, chosen because link
-		 *      pink `#e68a95` on surface `#fbf3dc` measures 2.25:1 against WCAG AA's
-		 *      4.5:1 floor.
-		 *   3. the LINK token — BEAN'S RULING, and what ships. He judged the pink-on-
-		 *      cream pairing easily legible and aesthetically intended, and ruled the
-		 *      AA floor not applicable to it. That is the owner's call on his own brand
-		 *      palette: a contrast ratio measures luminance distance, not whether text
-		 *      is discernible, and the framework should honour the palette the client
-		 *      chose rather than quietly substituting a different colour.
-		 * Practical upshot: submenu rows now inherit whatever the theme sets for links,
-		 * so they follow the palette AND every style variation for free. The related
-		 * `P-MAMAS-PRIMARY-CONTRAST` entry stands on its own merits and is unaffected.
-		 * The operator's own colour still overrides, below.
+		 * Submenu text defaults to the palette's `primary` token, so rows follow the
+		 * palette AND every style variation for free; the operator's own colour still
+		 * overrides, below. It must not be `color:...,inherit`, which out-specifies the
+		 * theme's global link rule and forces inherited body text so the palette never
+		 * applies. The framework honours the palette the client chose rather than
+		 * quietly substituting a different colour.
 		 */
 		$css .= $uid_sel . ' .' . $bem_root . '__sublink{display:flex;align-items:center;min-height:44px;padding:0 16px;'
 			. 'text-decoration:none;white-space:nowrap;'
 			. 'color:var(--wp--preset--color--primary, currentColor);}';
 		
 		/*
-		 * …EXCEPT in the drawer, where `nowrap` has nothing to wrap into (2026-09-10).
+		 * …EXCEPT in the drawer, where `nowrap` has nothing to wrap into.
 		 *
-		 * Exactly the defect style.css already fixes for `.{bem}__link`, one
+		 * The same fix style.css applies to `.{bem}__link`, one
 		 * level down: the drawer reuses this same sublink class for a VERTICAL stacked
 		 * list, so a long label has no second row to move to and can only push
-		 * sideways. Measured on the canary at 375px, the top-level `__link` overflowed
-		 * 0px (its fix landed) while the drawer `__sublink` overflowed 222.76px, taking
-		 * the drawer to scrollWidth 561 against clientWidth 360 — the horizontal
-		 * scrollbar the drawer should never have.
+		 * sideways, giving the drawer a horizontal scrollbar it should never have.
 		 *
 		 * It has to be emitted HERE rather than in style.css because the `nowrap` it
 		 * overrides is emitted here too, at `$uid_sel .{bem}__sublink` (0,2,0);
@@ -612,102 +558,44 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		$css .= $uid_sel . ' :where(.' . $bem_root . '__bar--drawer) .' . $bem_root . '__sublink{white-space:normal;overflow-wrap:break-word;}';
 		
 		/*
-		 * …and in the drawer specifically, text defaults to the drawer's OWN
-		 * WCAG-computed foreground (`color:inherit`, matching every other drawer
-		 * text element) rather than the flat bar's link-token default directly
-		 * above (Bean, 2026-09-10). Same (0,2,0) technique as the `nowrap` fix
+		 * …and in the drawer specifically, sublink text defaults to the palette's
+		 * `text` token (falling back to `inherit`), not the flat bar's `primary`
+		 * default directly above. The drawer's nested submenu row always paints a
+		 * real, deterministic surface: `submenuLinkBg` (block.json) defaults to
+		 * 'surface' (cream) and the drill-down panel rule's fallback matches the
+		 * accordion-mode chain (see style.css), regardless of the `drawerBg` the
+		 * operator picked. With a fixed backdrop the text colour needs no
+		 * per-instance contrast computation — it can be a plain default token, like
+		 * every other drawer text element.
+		 *
+		 * Same (0,2,0) technique as the `nowrap` fix
 		 * immediately above -- `:where()` costs nothing, `$uid_sel` + `.sublink`
 		 * keeps real specificity, positioned AFTER the base rule (wins over it in
 		 * the drawer) but BEFORE the operator's `submenuColour` block below (loses
-		 * to it when the operator has actually set one).
-		 *
-		 * The drawer's background is entirely operator-chosen per instance (any
-		 * palette colour), which is exactly why the drawer computes its own
-		 * foreground in the first place (block.json's `drawerFgHex` note) -- the
-		 * flat bar's link-token default has no such per-instance background to
-		 * stay safe against, so it can afford to be a fixed brand colour. Applying
-		 * that same fixed colour inside the drawer breaks the safety the computed
-		 * foreground exists for: on THIS canary instance, the link token and the
-		 * chosen `drawerBg` resolve to the identical colour, so a first attempt at
-		 * this fix (routing straight to a real global default via `:where()` on
-		 * the OLD override instead of adding this one) rendered sub-item text
-		 * invisible against its own background — caught live before shipping.
-		 *
-		 * Fix 3a reconciliation (nav-review E1, 2026-09-12) — checked against
-		 * FR-41-36 (locked 2026-09-11) and KEPT, not changed. FR-41-36's table
-		 * gives the drawer's nested submenu the same "plain tier" Normal-state
-		 * text as the top bar: `primary`. But the top bar's OWN item text
-		 * (`itemColour` in nav-menu-css.php) has NO explicit token default
-		 * either — it is unset and simply inherits ambient colour, exactly what
-		 * `color:inherit` does here. So this override does not diverge from "the
-		 * bar's top-level items" default; it already MATCHES it (both currently
-		 * rely on ambient inheritance, not an explicit `primary` literal). The
-		 * only mechanism available inside THIS file that is provably safe
-		 * against an arbitrary `drawerBg` is the drawer's own WCAG-computed
-		 * ambient foreground (documented above) — this file has no access to
-		 * `drawerBg` itself (that attribute lives on the separate sgs/nav-drawer
-		 * block), so a literal `primary` default here cannot be contrast-checked
-		 * and would reintroduce the exact invisible-text bug this override was
-		 * added to fix. Implementing FR-41-36's full literal `primary` token
-		 * everywhere (including the top bar's own currently-unset default) is
-		 * flagged as separate, larger, cross-file future work — the spec itself
-		 * marks the whole table "not yet built" (§FR-41-36) — not bundled into
-		 * this narrow fix.
-		 */
-
-		/*
-		 * FR-41-36 REDESIGN (2026-09-14, QC-council root-cause fix — supersedes the
-		 * 2026-09-13 runtime-computed version documented above from 2026-09-13
-		 * through 2026-09-14) — the drawer's nested submenu row previously had NO
-		 * opaque background of its own by default: the drill-down-mode panel rule
-		 * (style.css `.{bem}__bar--drawer[data-drill-enhanced] … .submenu`)
-		 * fell back to `inherit` rather than the token chain the accordion-mode
-		 * panel rule already used, so the row's real backdrop was whatever colour
-		 * `drawerBg` happened to be (its default at the time, `'primary'`) — hence the runtime
-		 * `sgs_wcag_preferred_text_colour_for_bg( $drawer_bg_slug, … )` computation
-		 * this comment used to describe.
-		 *
-		 * That gap is now closed at its source, not compensated for here:
-		 * `submenuLinkBg` (block.json) defaults to `'surface'` (cream) and the
-		 * drill-down panel rule's fallback now matches the accordion-mode chain
-		 * (see style.css) — so a drawer's nested submenu row ALWAYS paints a real,
-		 * deterministic cream surface regardless of what `drawerBg` the operator
-		 * picked. Once the backdrop is fixed rather than arbitrary, the text
-		 * colour no longer needs a per-instance contrast computation to stay
-		 * legible — it can be a plain default token, exactly like every other
-		 * drawer text element already uses (Bean, 2026-09-14: "shouldn't have
-		 * contrast checks that enforce anything by default").
-		 *
-		 * `text` (dark brown) on `surface` (cream) measures 11.86:1 (WCAG AA),
-		 * verified via wcag-contrast.js's own luminance/ratio maths. The operator's
-		 * own `submenuColour` still wins below (same specificity, later source
-		 * order — see the comment at the original site of this rule).
+		 * to it when the operator has actually set one). `text` (dark) on `surface`
+		 * (cream) is a high-contrast pairing (see wcag-contrast.js).
 		 */
 		$css .= $uid_sel . ' :where(.' . $bem_root . '__bar--drawer) .' . $bem_root . '__sublink{color:var(--wp--preset--color--text, inherit);}';
-		// D956 — submenuColourGradient is the gradient sibling (778879732 rollout,
-		// Phase 3); routed as a direct decl (not the custom-property chain above)
+		// submenuColourGradient is the gradient sibling; routed as a direct decl
+		// (not the custom-property chain above)
 		// because a `var(--x, …)` fed into a fixed `color:` declaration cannot
 		// switch to `background-image` for a gradient.
 		$submenu_colour          = (string) ( $attributes['submenuColour'] ?? '' );
 		$submenu_colour_hover    = (string) ( $attributes['submenuColourHover'] ?? '' );
 
 		/*
-		 * FR-41-36 REVISED (2026-09-13) — desktop submenu hover is no longer
+		 * FR-41-36 — desktop submenu hover is not
 		 * bg-tint-only; an unset `submenuColourHover` default-closes to a real
 		 * text colour alongside the row's hover background tint, same reasoning
 		 * as `nav-menu-css.php`'s own `$item_colour_hover` default-closing
 		 * pattern (an unset hover colour under WordPress core's zero-specificity
 		 * ambient `a:hover` rule is not "no change", it is invisible/unreliable).
 		 *
-		 * TOKEN CHANGED 2026-09-14 (QC-council root-cause fix): 'accent' → 'text'.
 		 * The close-token must pair with whatever `submenuLinkBgHover` actually
-		 * resolves to, and `submenuLinkBgHover` itself default-changed the same
-		 * day from `'accent-light'` to `'primary'` (see block.json) — the two
-		 * `accent` family defaults produced a same-hue 1.35:1 near-invisible
-		 * combination (verified via wcag-contrast.js maths), worst on the drawer
-		 * where the row previously had no opaque background to separate them.
-		 * `text` (dark brown) on the new `primary` fill measures 5.28:1 (WCAG
-		 * AA) — a fixed default pairing, not a runtime contrast computation.
+		 * resolves to (default `'primary'`, see block.json): an `accent`-family text
+		 * on an `accent`-family fill is a same-hue near-invisible combination.
+		 * `text` (dark) on the `primary` fill is a fixed default pairing, not a
+		 * runtime contrast computation.
 		 */
 		if ( '' === $submenu_colour_hover && 'none' !== $t_sub_text ) {
 			$submenu_colour_hover = 'text';
@@ -761,38 +649,26 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		/*
 		 * Current BEFORE Hover, and never guarded (FR-41-3 binding rule 3).
 		 *
-		 * FR-41-15 CONVERT: the Current colour is written as the custom property
-		 * the existing `[aria-current="page"]` rule below ALREADY consumes,
-		 * rather than as a second competing rule. `--sgs-nm-submenu-current-colour`
-		 * was dead-but-firing — declared in that rule's `var()` and written
-		 * NOWHERE in the tree, so it could only ever render its own hardcoded
-		 * fallback. Writing it from `submenuColourCurrent` makes the rule
-		 * attribute-driven; the unset-fallback token below is `text` (2026-09-14
-		 * root-cause fix — was `primary`, which measured only 2.35:1 against the
-		 * Current-row background). `submenuLinkBgCurrent`'s default was itself
-		 * corrected the same day (`surface-pink` -> `surface-alt`, a real
-		 * framework token — `surface-pink` existed only in the Mama's Munches
-		 * per-client snapshot); `text` on the current `surface-alt` default
-		 * measures 14.31:1 (framework palette) / 12.55:1 (Mama's Munches).
-		 * `submenuColourCurrent` now defaults to `text` in block.json, so this
-		 * branch fires unconditionally in practice; the fallback remains as the
-		 * safety floor for an explicitly-cleared value.
+		 * FR-41-15: the Current colour is written as the custom property
+		 * the `[aria-current="page"]` rule below consumes, rather than as a second
+		 * competing rule, so the rule is attribute-driven. The unset-fallback token
+		 * in that rule is `text`; `submenuColourCurrent` defaults to `text` in
+		 * block.json, so this branch fires unconditionally in practice and the
+		 * fallback remains as the safety floor for an explicitly-cleared value.
 		 */
 		if ( '' !== $submenu_colour_current ) {
 			$css .= $uid_sel . '{--sgs-nm-submenu-current-colour:' . sgs_colour_value( $submenu_colour_current ) . ';}';
 		}
 
 		/*
-		 * FR-41-3 tie-break fix (2026-09-12) — the actual `[aria-current="page"]`
-		 * colour rule now emits HERE, before the Hover rule below, mirroring
-		 * nav-menu-css.php's own documented pattern ("Current BEFORE Hover, and
-		 * never guarded — both states differ from the base by one single-
-		 * specificity suffix, so the pair always ties and source order is the
-		 * only tie-breaker: hover wins when you point at the item for the page
-		 * you are already on"). It previously emitted 136 lines below the Hover
-		 * rule (both (0,3,0), equal specificity), so Current won the tie instead
-		 * — backwards from the item family's own correct precedent. Declaration
-		 * unchanged; only the emission position moved.
+		 * FR-41-3 tie-break — the `[aria-current="page"]` colour rule emits HERE,
+		 * before the Hover rule below, mirroring nav-menu-css.php's own documented
+		 * pattern ("Current BEFORE Hover, and never guarded — both states differ
+		 * from the base by one single-specificity suffix, so the pair always ties
+		 * and source order is the only tie-breaker: hover wins when you point at
+		 * the item for the page you are already on"). Both rules are (0,3,0), so
+		 * emitting Current after Hover would let Current win the tie — backwards
+		 * from the item family's own precedent.
 		 */
 		$css .= $uid_sel . ' .' . $bem_root . '__sublink[aria-current="page"]{'
 			. 'color:var(--sgs-nm-submenu-current-colour, var(--wp--preset--color--text, currentColor));}';
@@ -804,9 +680,9 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		}
 
 		// Submenu LINK background/border/typography-hover, in-drawer overrides,
-		// listColumns grid, sliding-indicator override and root box — extracted to
-		// includes/nav-menu-submenu-link-css.php (file-size maintenance pass,
-		// 2026-09-14). $submenu_sweep_hover threads through explicitly (it depends
+		// listColumns grid, sliding-indicator override and root box — emitted by
+		// includes/nav-menu-submenu-link-css.php. $submenu_sweep_hover threads
+		// through explicitly (it depends
 		// on the submenuColourHover default-close branch above); the other locals
 		// that module needs are cheap, deterministic recomputes from $attributes.
 		$css .= sgs_nav_shared_submenu_link_css(

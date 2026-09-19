@@ -10,12 +10,12 @@
  * NONE of the drawer orchestration.
  *
  * This module is deliberately self-contained — it does NOT import from
- * `store.js`. `store.js:638` exports only `{ actions, FOCUSABLE_SELECTOR }`
- * (verified 2026-07-24); `getFocusable`/`prefersReducedMotion` are declared but
+ * `store.js`, which exports only `{ actions, FOCUSABLE_SELECTOR }`;
+ * `getFocusable`/`prefersReducedMotion` are declared but
  * NOT exported. Importing even the one exported constant would pull store.js's
  * `store('sgs/nav')` registration into this block's bundle, re-coupling the two.
  * The three tiny pure helpers are therefore re-implemented locally, keeping the
- * drawer store byte-for-byte untouched (CF-3).
+ * drawer store untouched (CF-3).
  *
  * Handles: hover-intent open (300ms, non-touch) / tap (touch) / keyboard
  * throughout; a bar+panel hover BRIDGE with a 170ms close-grace + cancel-on-
@@ -30,7 +30,7 @@
  * Spec 32); single-open; ESC + focus-return; WCAG 1.4.13
  * (dismissible/hoverable/persistent).
  *
- * Markup contract (emitted by sgs/nav-menu render.php at U9), decoupled from BEM:
+ * Markup contract (emitted by sgs/nav-bar-menu via `nav-menu-markup.php`), decoupled from BEM:
  *   - the disclosure ROOT carries `data-wp-interactive="sgs/mega"` + a context
  *     `{ isOpen, megaId, intentDelay, closeGrace }` and wraps BOTH the trigger
  *     and the panel (so moving the pointer trigger→panel never leaves the root —
@@ -268,13 +268,13 @@ function scheduleIntentOpen( ctx, root, delay ) {
  * direct `.style.left/.style.right` assignment (Spec 32 no-inline). style.css
  * reads this pair, so clearing the vars restores the default alignment.
  *
- * TWO KINDS, ONE FUNCTION (2026-07-31). A MEGA panel centres on the viewport;
+ * TWO KINDS, ONE FUNCTION. A MEGA panel centres on the viewport;
  * a DROPDOWN aligns to its own trigger. The kind is read from the disclosure
  * root's `data-sgs-nav-disclosure` attribute rather than passed in as an
  * argument, and that is deliberate: this function is called from FIVE separate
  * open paths, and a parameter would have to be set correctly at every one of
  * them or three would centre while two did not. Reading it from the DOM makes
- * the five call sites byte-identical to before and removes the divergence risk
+ * the five call sites identical and removes the divergence risk
  * entirely — the element itself carries what it is.
  *
  * `activePanelRect` is captured BEFORE either branch and re-captured after the
@@ -294,14 +294,14 @@ function repositionPanel( root ) {
 	panel.style.removeProperty( '--sgs-mm-tx' );
 	window.requestAnimationFrame( () => {
 		/*
-		 * Centre the panel on the BAR, clamped to the viewport (2026-07-28,
-		 * Bean-caught fix). The CSS `left:50% / translateX(-50%)` default
+		 * Centre the panel on the BAR, clamped to the viewport. The CSS
+		 * `left:50% / translateX(-50%)` default
 		 * CANNOT do this: every `.sgs-nav-bar-menu__item` is position:relative
 		 * (style.css — required so links paint above the indicator pill), so
 		 * the wrap's containing block is the ~100px MENU ITEM, the centred
-		 * rect always overflows, and the old edge-pin glued the panel to the
-		 * item's own left/right edge — visibly off-centre on both live
-		 * screenshots. The panel can only ever OPEN with JS (the store flips
+		 * rect always overflows, and an edge-pin would glue the panel to the
+		 * item's own left/right edge — visibly off-centre. The panel can only
+		 * ever OPEN with JS (the store flips
 		 * aria-expanded), so JS owns the geometry: centre on the bar, clamp
 		 * with the draft's 28px gutters, and express the result purely as
 		 * CSS-var VALUES relative to the wrap's offsetParent (Spec 32 —
@@ -374,13 +374,11 @@ function repositionPanel( root ) {
 			 * Anchor on the whole MENU ITEM (the disclosure root, which wraps
 			 * the link and the toggle together), NOT on `[data-sgs-mega-trigger]`.
 			 *
-			 * Measured live 2026-07-31: anchoring on the trigger put the panel
-			 * 89px right of the item (panel.left 362 vs item.left 273), because
-			 * when a parent has its own URL the trigger is the small caret
-			 * BUTTON sitting after the link, not the item itself. Visually a
+			 * Anchoring on the trigger would put the panel to the right of the
+			 * item, because when a parent has its own URL the trigger is the small
+			 * caret BUTTON sitting after the link, not the item itself. Visually a
 			 * dropdown belongs under its menu entry, which is what every
-			 * comparable builder does. Caught only by opening it on a real page
-			 * — the markup and every offline check were already green.
+			 * comparable builder does.
 			 */
 			const anchor = root.getBoundingClientRect();
 			const align = root.dataset.sgsNavSubmenuAlign || 'start';
@@ -415,10 +413,9 @@ function repositionPanel( root ) {
 			return;
 		}
 		/*
-		 * Centre on the VIEWPORT, not the bar (Bean's eye, round 2): the bar
+		 * Centre on the VIEWPORT, not the bar: the bar
 		 * shrink-wraps its items and sits wherever the header row puts it, so
-		 * bar-centred still produced lopsided side-space (28px vs 292px,
-		 * measured, mirrored between the header nav and a page nav). The
+		 * bar-centred produces lopsided side-space. The
 		 * drafts centre their 1120px band on the header CONTAINER — visually
 		 * the viewport — giving symmetric space; the width clamp
 		 * (min(1120px, 100vw − 2×28px)) guarantees the panel still spans
@@ -437,11 +434,11 @@ function repositionPanel( root ) {
 }
 
 /**
- * Panels currently reparented to `<body>` for the sticky-header stacking fix
- * (P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT), keyed by megaId so
+ * Panels currently reparented to `<body>` for the sticky-header stacking fix,
+ * keyed by megaId so
  * `watchOpenState` — which only ever sees the reactive `ctx`, never the DOM
  * — can find and reverse the move on close. Per-open/per-close, unlike the
- * drawer's PERMANENT `reparented` WeakSet in store.js (D323): a disclosure
+ * drawer's PERMANENT `reparented` WeakSet in store.js: a disclosure
  * panel must return to its rendered position once closed, not live in
  * `<body>` forever, since it is a normal in-flow part of the page for the
  * vast majority of instances (the header placement never reparents at all).
@@ -451,8 +448,7 @@ function repositionPanel( root ) {
 const reparentedPanels = new Map();
 
 /**
- * `:has()` ancestor-highlight rescue (P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT
- * follow-up, 2026-09-14). `reparentPanelIfNeeded()` below moves the panel
+ * `:has()` ancestor-highlight rescue. `reparentPanelIfNeeded()` below moves the panel
  * (the `[data-sgs-mega-panel]` wrap, containing `ul.sgs-nav-bar-menu__submenu`)
  * OUT of `.sgs-nav-bar-menu__submenu-root` while open — but two `nav-menu-css.php`
  * rules key off that exact containment via `:has(ul.sgs-nav-bar-menu__submenu …)`
@@ -517,8 +513,7 @@ function detachAncestorFlagWatcher( panel, root, focusHandler ) {
  * content by construction — whereas a page-embedded disclosure sits inside
  * `sgs/container`'s child-lift rule (`container/style.css`, load-bearing,
  * NOT to be touched), which creates a stacking context capping the panel
- * below the header regardless of the panel's own z-index. See
- * `.claude/reports/2026-09-13-sticky-header-dropdown-overlap-fix-proposal.md`.
+ * below the header regardless of the panel's own z-index.
  *
  * @param {HTMLElement} root The disclosure root.
  * @return {boolean} True if this disclosure needs the body-reparent fix.
@@ -631,9 +626,8 @@ function revertReparent( megaId ) {
 
 /**
  * Close the currently-open disclosure when a click lands outside both its
- * root and its panel — the missing dismissal path on touch devices (P-NAV
- * gap confirmed 2026-09-14: a full-directory grep of this directory found no
- * existing click-outside listener anywhere). Without this, once a panel is
+ * root and its panel — the dismissal path on touch devices. Without this,
+ * once a panel is
  * open on touch the ONLY way to dismiss it is re-tapping the same trigger —
  * ESC is unavailable and there is no hover to leave.
  *
@@ -783,15 +777,14 @@ const { state } = store( 'sgs/mega', {
 		 * open AND the pointer is currently tracking into it, the open is
 		 * deferred and re-polled rather than firing early.
 		 *
-		 * MAX_INTENT_DELAY_MS caps whatever the markup declares (Wave-2 F2/M2,
-		 * 2026-09-13 — root-caused live). `nav-menu-markup.php` hardcodes
+		 * MAX_INTENT_DELAY_MS caps whatever the markup declares.
+		 * `nav-menu-markup.php` hardcodes
 		 * `intentDelay: 300` for both the mega and dropdown forks; that 300ms
 		 * is not just an open-panel delay — the chevron flip
 		 * (`nav-menu-submenu-css.php`'s `[aria-expanded="true"] .sgs-nav-bar-menu__caret`
 		 * rule) and the panel's own `display:block` are BOTH keyed off the
 		 * SAME `aria-expanded`/`context.isOpen` value this timer sets, so
-		 * Bean's "the dropdown AND the chevron both feel laggy" report is one
-		 * cause, not two. That coupling is owned by markup/CSS files outside
+		 * a laggy dropdown and a laggy chevron have one cause, not two. That coupling is owned by markup/CSS files outside
 		 * this module's scope, so it cannot be split into a fast chevron +
 		 * slow panel here — the fix available at this layer is to cap the
 		 * shared delay itself. 300ms reads as sluggish to a moving pointer;
@@ -930,8 +923,8 @@ const { state } = store( 'sgs/mega', {
 	callbacks: {
 		/**
 		 * Single-open: closes this disclosure whenever its own `isOpen`
-		 * disagrees with the shared `state.openMegaId` — originally just
-		 * "another disclosure opened", now also covers "nothing is open any
+		 * disagrees with the shared `state.openMegaId` — both "another
+		 * disclosure opened" and "nothing is open any
 		 * more" (`state.openMegaId === null`), which is exactly the state the
 		 * `pageshow`/bfcache reset below produces.
 		 */

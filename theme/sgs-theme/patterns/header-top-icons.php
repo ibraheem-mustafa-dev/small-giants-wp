@@ -6,15 +6,7 @@
  * Block Types: core/post-content
  * Post Types: sgs_header
  * Keywords: header, cart, account, my account, ecommerce, icons, top bar
- * Description: Header with a thin top-strip row carrying only the cart and
- * My Account icons (right-aligned), separate from the main logo + navigation
- * row below. For an ecommerce header that wants those two utility actions
- * out of the main row entirely, rather than clustered next to the burger
- * menu. Cart lives ONLY in the top strip — it is not repeated in the main
- * row. My Account links to WooCommerce's My Account page, resolved via
- * wc_get_page_permalink('myaccount') at pattern-insertion time (falls back
- * to /my-account/ when WooCommerce is inactive, matching sgs/cart's own
- * shop-page fallback convention in render.php).
+ * Description: Header with a thin top-strip row carrying only the cart and My Account icons (right-aligned), separate from the main logo + navigation row below. For an ecommerce header that wants those two utility actions out of the main row entirely. Cart lives only in the top strip. My Account links to the WooCommerce My Account page, falling back to /my-account/ when WooCommerce is inactive.
  *
  * @package SGS\Theme
  */

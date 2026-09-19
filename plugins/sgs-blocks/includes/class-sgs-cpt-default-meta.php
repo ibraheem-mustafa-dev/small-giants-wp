@@ -1,22 +1,18 @@
 <?php
 /**
- * SGS CPT "default" post meta — `_sgs_is_default` (Client build, 2026-09-17).
+ * SGS CPT "default" post meta — `_sgs_is_default`.
  *
  * Registers ONE boolean post-meta key, `_sgs_is_default`, on `sgs_modal` only.
  * It marks which single modal post an operator has designated as the
  * fallback default for that CPT.
  *
- * ⚠ REDUCED SCOPE (2026-09-17, same-day correction): this originally also
- * covered `sgs_header` and `sgs_footer`, duplicating a mechanism that already
- * exists for those two CPTs — {@see Sgs_Active_Layout} / {@see
- * Sgs_Active_Layout_Admin} already provide a site-wide "Active" pointer +
- * admin "Set as active"/"Clear active" row actions for `sgs_header` and
- * `sgs_footer` (and `sgs_drawer`). Bean confirmed these are the same concept
- * from an operator's point of view, so the duplicate `_sgs_is_default`
- * coverage for header/footer was removed the same day it was added — the one
- * true mechanism for those two CPTs is `Sgs_Active_Layout`.
+ * Covers `sgs_modal` only. `sgs_header`, `sgs_footer` and `sgs_drawer` use the
+ * site-wide Active pointer plus the admin "Set as active"/"Clear active" row
+ * actions from {@see Sgs_Active_Layout} / {@see Sgs_Active_Layout_Admin}; that
+ * is the one mechanism for them. `_sgs_is_default` is a plain data-layer flag
+ * with no render-side consumer.
  *
- * `sgs_modal` is NOT covered by `Sgs_Active_Layout`, and deliberately was not
+ * `sgs_modal` is NOT covered by `Sgs_Active_Layout`, and deliberately is not
  * folded into it: `Sgs_Active_Layout`'s shape is "exactly one post is THE
  * live thing, site-wide" (one header renders, one footer renders, one drawer
  * renders on `wp_footer`). A `sgs_modal` post has no equivalent single
@@ -27,11 +23,8 @@
  * no "the one active modal" render consumer for a site-wide pointer to feed,
  * so extending `Sgs_Active_Layout` to a 4th `sgs_modal` area would add an
  * option nobody reads — the same dead-attribute failure mode this class
- * exists to avoid. `_sgs_is_default` therefore stays modal-only for now, as a
- * plain data-layer flag with no render-side consumer yet (see the scope note
- * below) — whether/how it should wire into a future "trigger with no
- * modalRef falls back to the default modal" behaviour is a follow-up design
- * decision, not resolved here.
+ * exists to avoid. `_sgs_is_default` is therefore modal-only, a plain
+ * data-layer flag with no render-side consumer (see the scope note below).
  *
  * Registration shape mirrors {@see Sgs_Template_Part_Meta}: `auth_callback`
  * gated on `edit_theme_options` (the capability `sgs_modal` already routes to
@@ -50,7 +43,7 @@
  * ⚠ Scope note: this class only registers the DATA LAYER — the meta key, its
  * single-default enforcement, and REST exposure for the editor toggle. It
  * does NOT wire `_sgs_is_default` into any modal render resolution; no such
- * fallback path exists today (see above).
+ * fallback path exists (see above).
  *
  * @package SGS\Blocks
  * @since   1.0.0
@@ -80,8 +73,8 @@ final class Sgs_Cpt_Default_Meta {
 	/**
 	 * The post type(s) this meta key applies to.
 	 *
-	 * Modal-only (2026-09-17) — `sgs_header`/`sgs_footer` were removed once
-	 * confirmed duplicate of {@see Sgs_Active_Layout}. Kept as an array
+	 * Modal-only: `sgs_header`/`sgs_footer`/`sgs_drawer` use
+	 * {@see Sgs_Active_Layout}. Kept as an array
 	 * (rather than a single constant) because {@see register_meta()} and
 	 * {@see maybe_enforce_single_default()} both iterate/check membership over
 	 * it, and a second post type may join it later without changing either.
@@ -98,8 +91,7 @@ final class Sgs_Cpt_Default_Meta {
 	 * Register `_sgs_is_default` on each eligible post type.
 	 *
 	 * `auth_callback` matches {@see Sgs_Template_Part_Meta}'s gate exactly —
-	 * `sgs_modal`'s capabilities already route to `edit_theme_options` (Council
-	 * M1 shape), so this is the same bar the CPT itself enforces, not a new
+	 * `sgs_modal`'s capabilities already route to `edit_theme_options`, so this is the same bar the CPT itself enforces, not a new
 	 * one.
 	 */
 	public static function register_meta(): void {

@@ -2,7 +2,7 @@
  * SGS shared motion — in-drawer drill-down submenu (Spec 36 FR-36-6).
  *
  * Progressive enhancement over the accordion markup `sgs/nav-drawer-menu`'s
- * `render_items_drawer()` (PHP) always emits — a `<details name>` exclusive
+ * `sgs_nav_drawer_menu_render_items()` (PHP) always emits — a `<details name>` exclusive
  * accordion, per-item. With this module NOT running (no JS, or a page where
  * it never mounts), that accordion IS the whole experience: `<summary>`
  * click natively opens the panel in place. This module intercepts that same

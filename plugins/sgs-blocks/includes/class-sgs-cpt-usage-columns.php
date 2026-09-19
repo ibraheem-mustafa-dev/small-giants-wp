@@ -1,6 +1,6 @@
 <?php
 /**
- * SGS CPT "usage" admin-list-table columns (Client build, 2026-09-17).
+ * SGS CPT "usage" admin-list-table columns.
  *
  * Adds a read-only "Used by" column to the `sgs_header`, `sgs_footer`,
  * `sgs_drawer`, `sgs_modal`, `sgs_form` and `sgs_choice_flow` list tables.
@@ -14,29 +14,21 @@
  *     (`sgs/header-{post_name}` / `sgs/footer-{post_name}`), the SAME string
  *     {@see Sgs_Block_CPTs::register_patterns_from_cpts()} derives.
  *   - sgs_drawer — {@see Sgs_Active_Layout}'s single site-wide "Active drawer"
- *     option pointer. This is the ONLY linkage that exists: a live grep of
- *     `sgs/nav-drawer`'s + `sgs/nav-bar-menu`'s block.json/render.php found no
- *     attribute that references a `sgs_drawer` CPT post by ID or slug — a
- *     drawer BLOCK INSTANCE's `drawerRef` is an HTML id string used by the
- *     Interactivity store to find its `<dialog>`, not a pointer to this CPT.
- *     So this column is semantically the same fact the existing "Active"
- *     column (added by {@see Sgs_Active_Layout_Admin}) already shows for this
- *     CPT — reported here as found, not invented as a second mechanism.
+ *     option pointer. `sgs/nav-bar-menu`'s `drawerRef` is a `sgs_drawer` post
+ *     id (0 = use the Active drawer); the column reports the Active pointer, and
+ *     a per-burger pick is not counted. So this column shows the same fact as
+ *     the existing "Active" column (added by {@see Sgs_Active_Layout_Admin})
+ *     for this CPT.
  *   - sgs_modal — a `post_content LIKE` scan across published posts/pages for
  *     a `sgs/modal` block instance whose `modalRef` attribute equals this
  *     post's ID (the attribute {@see Sgs_Block_CPTs::resolve_modal()} reads).
  *   - sgs_form — the same LIKE-scan shape, matching `sgs/form`'s `formId`
  *     attribute (a SLUG, not an id) against this post's `post_name` — the
  *     attribute {@see Sgs_Block_CPTs::resolve_form()} reads.
- *   - sgs_choice_flow — the same LIKE-scan shape against a hypothetical
- *     `flowId` slug attribute, mirroring `resolve_form()`'s shape exactly, per
- *     Spec 43 FR-43-8 ("same literal values, not a parallel decision"). NOTE:
- *     {@see Sgs_Block_CPTs::resolve_choice_flow()} exists but a live grep of
- *     `src/blocks/choice-flow*` found NO block attribute named `flowId` (or
- *     `flowSlug`) anywhere that embeds a `sgs_choice_flow` post by slug — the
- *     resolver has zero callers today. This column will therefore correctly
- *     read "Not currently used" for every choice flow until the embedding
- *     block ships; that is accurate, not a bug in this column.
+ *   - sgs_choice_flow — the same LIKE-scan shape against a `flowId` slug
+ *     attribute, mirroring `resolve_form()`'s shape exactly (Spec 43 FR-43-8).
+ *     No `sgs/choice-flow*` block currently declares `flowId`, so every choice
+ *     flow reads "Not currently used" until an embedding block does.
  *
  * All list-table queries are bounded to a `COUNT(*)`/small `get_posts()` over
  * PUBLISHED content only — these CPTs and their embedding targets are all
@@ -258,7 +250,7 @@ final class Sgs_Cpt_Usage_Columns {
 	/**
 	 * Count published posts/pages whose content embeds a block attribute
 	 * `"{$attr}":"{$slug}"` — the shape both `sgs/form`'s `formId` and a
-	 * hypothetical `sgs/choice-flow` embedding block's `flowId` use to
+	 * `sgs/choice-flow` embedding block's `flowId` use to
 	 * reference a CPT post by slug (mirrors `Sgs_Block_CPTs::resolve_form()` /
 	 * `resolve_choice_flow()`'s own by-slug lookup).
 	 *

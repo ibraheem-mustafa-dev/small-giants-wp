@@ -3,8 +3,8 @@
  *
  * An element leans toward the pointer. Two consumers, one core:
  *
- *   · `sgs/nav-menu`'s label magnet (Mega-Menu Build Spec §6, row 4) — the
- *     ORIGINAL and still the default: ±8px, HORIZONTAL only, engaging only
+ *   · `sgs/nav-bar-menu`'s label magnet (Mega-Menu Build Spec §6, row 4) — the
+ *     default: ±8px, HORIZONTAL only, engaging only
  *     while the cursor is over the label's own box.
  *   · the `magnet` fx effect — award-tier magnetic buttons, which differ in
  *     one load-bearing way: the pull engages from a PROXIMITY RADIUS, i.e.
@@ -12,18 +12,18 @@
  *     an element that only reacts once you are already on it is just a hover.
  *
  * ── WHY TIER V ────────────────────────────────────────────────────────────
- * The 2026-08-02 motion-ecosystem survey reached this independently: magnetic
- * buttons and cursor followers "are commonly ~20-30 lines of vanilla JS
- * (mousemove + rAF + CSS transform) — write it, don't dependency it". GSAP
+ * Magnetic buttons and cursor followers "are commonly ~20-30 lines of vanilla
+ * JS (mousemove + rAF + CSS transform) — write it, don't dependency it". GSAP
  * adds nothing §1.3's ratchet would accept.
  *
  * ── TWO ENTRY POINTS, AND WHY ─────────────────────────────────────────────
  *
  *   initMagnet( el, opts? ) -> cleanup
  *     Self-contained: attaches the element's OWN mousemove/mouseleave. This is
- *     the FROZEN contract `sgs/nav-menu` already imports, and with no `opts`
- *     it behaves byte-identically to the version that shipped before proximity
- *     existed. Do not change its default behaviour.
+ *     the contract `sgs/nav-bar-menu` imports; with no `opts` it applies the
+ *     default label magnet (±8px, horizontal only, engaging only while the
+ *     cursor is over the element's own box). Do not change its default
+ *     behaviour.
  *
  *   createMagnet( el, opts? ) -> { apply( x, y ), reset(), destroy() }
  *     Driver-agnostic core with NO listeners of its own. Proximity mode needs
@@ -31,7 +31,7 @@
  *     never sees — so `fx-magnet.js` drives every magnet on the page from ONE
  *     shared document listener rather than N per-element ones.
  *
- * CONSUMING CSS ships per consumer (`sgs/nav-menu/style.css`, or
+ * CONSUMING CSS ships per consumer (`sgs/nav-bar-menu/style.css`, or
  * `assets/css/fx-magnet.css` for the fx effect). Both read the same pair:
  *   transform: translate( var( --magnet-x, 0px ), var( --magnet-y, 0px ) );
  * Both default to zero, so with no JS the element sits exactly where it would
@@ -172,8 +172,8 @@ export function createMagnet( el, opts = {} ) {
 /**
  * Attach the magnet effect to one element, with its own listeners.
  *
- * FROZEN CONTRACT — `sgs/nav-menu` imports this and calls it with no options.
- * With no options the behaviour is byte-identical to the pre-proximity version.
+ * CONTRACT — `sgs/nav-bar-menu` imports this and calls it with no options,
+ * which gives the default label magnet.
  *
  * @param {HTMLElement} el     The element to nudge toward the cursor.
  * @param {Object}      [opts] Passed through to {@link createMagnet}.

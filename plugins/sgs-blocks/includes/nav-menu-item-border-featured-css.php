@@ -1,26 +1,18 @@
 <?php
 /**
- * SGS Nav Menu (sgs/nav-menu) — scoped CSS, part 1b: item border/separator +
+ * SGS Nav Bar Menu / Nav Drawer Menu — scoped CSS, part 1b: item border/separator +
  * featured-item styling.
  *
- * Split out of `nav-menu-css.php` (file-size maintenance pass, 2026-09-14) —
- * `nav-menu-css.php` had grown to 415 code lines against the 300-code-line
- * PHP cap (`~/.claude/rules/code-quality.md`; comment-heavy, so measured on
- * CODE LINES ONLY per the Ruling 7 addendum precedent, D722). This module
- * holds the two sections that were fully self-contained — no shared derived
+ * Holds the two sections that are fully self-contained — no shared derived
  * state with the rest of `sgs_nav_shared_item_state_css()` beyond `$attributes`,
- * `$link_sel`, `$uid_sel` and the resolved `$t_border` treatment — so the
- * split needed no new plumbing. The FR-41-13 hover-persistence rescue block
- * stayed in `nav-menu-css.php` because it reads several OTHER modules'
- * already-computed locals (`$item_text_sweep`, `$item_colour_hover`,
- * `$item_bg_hover_decl`) that this module never touches.
- *
- * Pure extraction — every line below is byte-identical to its prior location
- * in `nav-menu-css.php`, only re-wrapped as two standalone functions.
+ * `$link_sel`, `$uid_sel` and the resolved `$t_border` treatment. The FR-41-13
+ * hover-persistence rescue block lives in `nav-menu-css.php` because it reads
+ * several OTHER modules' already-computed locals (`$item_text_sweep`,
+ * `$item_colour_hover`, `$item_bg_hover_decl`) that this module never touches.
  *
  * ⚠ LOAD ORDER: NOT bootstrap-loaded — `require_once`'d per-instance from
  * render.php, immediately after `nav-menu-css.php` (matching that file's own
- * load-order note). Its functions are only in scope after nav-menu's own
+ * load-order note). Its functions are only in scope after a nav block's own
  * render.php has run at least once on that page load.
  *
  * @package SGS\Blocks
@@ -46,24 +38,23 @@ if ( ! function_exists( 'sgs_nav_shared_item_border_css' ) ) {
 		/*
 		 * ── ITEM BORDER — three states + the directional Sweep band (FR-41-7/8). ─
 		 *
-		 * Terminology (2026-09-13 pass): on the horizontal bar the bottom-only
+		 * Terminology: on the horizontal bar the bottom-only
 		 * default reads as the item's own UNDERLINE (a text-indicator sitting
 		 * under one item's own label, not between two items); the identical
 		 * bottom edge on a vertical list (this same instance rendered inside a
 		 * nav-drawer, or a submenu-root stacked in-drawer) is geometrically a ROW
 		 * SEPARATOR between two adjacent rows. Both read the SAME attribute
-		 * family — that has not changed and is not being split (see below).
+		 * family (see below).
 		 *
 		 * ONE border control, per-side by construction: a bottom border is the
 		 * drawer-style row separator, a right border is a vertical divider on the
-		 * flat bar, all four is a boxed item. ⛔ There is STILL no separate
+		 * flat bar, all four is a boxed item. ⛔ There is no separate
 		 * "Item Divider" TOGGLE competing with this width/style/colour family —
 		 * two mechanisms answering the SAME question (which edge does
-		 * itemBorderWidth paint, and what colour) is how the pre-existing
-		 * double-line bug happened, and that risk is unchanged.
+		 * itemBorderWidth paint, and what colour) produce a double line.
 		 *
-		 * ⚠ What DID change (FR-41-37, same date): `itemSeparatorWidth/Style/
-		 * Colour(Hover)` is a genuinely SEPARATE, purpose-built attribute family
+		 * ⚠ `itemSeparatorWidth/Style/
+		 * Colour(Hover)` (FR-41-37) is a genuinely SEPARATE, purpose-built attribute family
 		 * for a between-item vertical rule on the horizontal bar only — see its
 		 * own emission block further down. It answers a DIFFERENT question
 		 * (draw a line between item N and item N+1) from this one (style item
@@ -71,8 +62,8 @@ if ( ! function_exists( 'sgs_nav_shared_item_border_css' ) ) {
 		 * it does not let an operator style the SAME right-edge-of-itemBorderWidth
 		 * line two different ways from two different controls.
 		 *
-		 * Width is BASE-ONLY by the control's own design: per-device border width was
-		 * cancelled framework-wide (Bean, 2026-08-29), not deferred.
+		 * Width is BASE-ONLY by the control's own design: there is no per-device
+		 * border width.
 		 */
 		$item_border_box   = is_array( $attributes['itemBorderWidth'] ?? null ) ? $attributes['itemBorderWidth'] : array();
 		$item_border_width = $item_border_box ? sgs_box_object_shorthand( $item_border_box ) : null;
@@ -85,32 +76,27 @@ if ( ! function_exists( 'sgs_nav_shared_item_border_css' ) ) {
 				. ( '' !== $item_border_style ? $item_border_style : 'solid' ) . ';}';
 		}
 		/*
-		 * REMOVED 2026-09-15 (found live, item border shadow fix). This elseif
-		 * used to fire whenever width was empty but itemBorderStyle held its own
-		 * non-empty default ('solid') -- which it always does. `border-style:solid`
-		 * with NO border-width is not "no border": CSS falls back to the UA
-		 * default `medium` width (~3px), painting a border the operator never
-		 * asked for -- directly contradicting the comment above ("clears the
-		 * WIDTH" should mean no border). Dead in production until
-		 * itemBorderWidth's own default changed from {bottom:"1px"} to {} today --
-		 * before that, width was never actually empty on a live instance, so this
-		 * branch never fired. Style only ever means anything paired with a width;
-		 * there is no supported operator flow that sets a style with no width.
+		 * A border style with no width is deliberately NOT emitted on its own:
+		 * `border-style:solid` with NO border-width is not "no border" — CSS falls
+		 * back to the UA default `medium` width (~3px), painting a border the
+		 * operator never asked for, contradicting the comment above ("clears the
+		 * WIDTH" should mean no border). Style only means anything paired with a
+		 * width.
 		 */
 
 		/*
 		 * ⛔ Under `sweep` the band OWNS every non-resting colour on the bottom edge.
 		 * Without the suppression the shared painter repaints a real border on the
 		 * BORDER box directly beneath the band on the PADDING box — two visible
-		 * horizontal lines, one un-asked-for. That is discharged by step 6a's
-		 * additive `suppress_edges` parameter on the shared helper, called ONCE and
+		 * horizontal lines, one un-asked-for. That is prevented by the shared
+		 * helper's `suppress_edges` parameter, called ONCE and
 		 * normally. ⛔ No block-private `border-bottom-color` override sits alongside
 		 * it: two overlapping fixes are unfalsifiable, so neither could ever be
 		 * safely removed.
 		 *
 		 * ⛔ When the treatment is NOT `sweep`, NO `suppress_edges` key is passed at
 		 * all — not an empty array, not all-false. The absent key is what keeps the
-		 * emission byte-identical to the non-sweep case (the helper emits the flat
+		 * emission identical to the non-sweep case (the helper emits the flat
 		 * `border-color` shorthand, not per-edge longhands).
 		 */
 		$item_border_map = array(
@@ -159,29 +145,21 @@ if ( ! function_exists( 'sgs_nav_shared_item_border_css' ) ) {
 				$css .= $link_sel . '{position:relative;border-bottom-color:transparent;}';
 
 				/*
-				 * Directional sweep (FR-41-37 follow-up, 2026-09-13) — generalised
-				 * to `sgs_directional_sweep_css()` (includes/sweep-css.php), an
-				 * angle-driven primitive replacing the old hard-coded "to right"
-				 * gradient + stop-order swap. `sweepAngle` is the ONE new
-				 * attribute (standard CSS gradient-angle degrees, AnglePickerControl
-				 * convention); 90deg/270deg reproduce the retired
-				 * `left-to-right`/`right-to-left` output pixel-for-pixel (see the
-				 * helper's own docblock for the proof).
+				 * Directional sweep (FR-41-37) — `sgs_directional_sweep_css()`
+				 * (includes/sweep-css.php), an angle-driven primitive. `sweepAngle` is
+				 * standard CSS gradient-angle degrees (AnglePickerControl
+				 * convention); 90deg is left-to-right and 270deg right-to-left (see
+				 * the helper's own docblock).
 				 *
-				 * ⚠ COMPAT SHIM, one-time: `borderHoverAnimationDirection` was
-				 * REMOVED from block.json (2026-09-14, no-version-bumps/no-
-				 * deprecations-pre-production, D293) — it is no longer a declared
-				 * attribute, so `21-render-without-control` correctly cannot find
-				 * a control for it, and the framework never emits it as a client-
-				 * settable value again. This line reads it DEFENSIVELY off the raw
-				 * $attributes array only — WordPress does not strip an undeclared
-				 * key from an already-serialised block's parsed attrs before
-				 * render.php runs — purely so a post saved before this change
-				 * still renders its chosen direction rather than silently
-				 * resetting to the sweepAngle default. `sweepAngle` always carries
-				 * its block.json default (90) on such a pre-existing post; only
-				 * when the legacy value is explicitly `right-to-left` do we derive
-				 * 270 instead.
+				 * ⚠ `borderHoverAnimationDirection` is not a declared attribute, so
+				 * the framework never emits it as a client-settable value. This line
+				 * reads it DEFENSIVELY off the raw $attributes array only — WordPress
+				 * does not strip an undeclared key from an already-serialised block's
+				 * parsed attrs before render.php runs — so a post saved with it still
+				 * renders its chosen direction rather than resetting to the
+				 * sweepAngle default. `sweepAngle` carries its block.json default (90)
+				 * on such a post; only when the value is explicitly `right-to-left`
+				 * do we derive 270 instead.
 				 */
 				$sweep_angle = isset( $attributes['sweepAngle'] ) ? (float) $attributes['sweepAngle'] : 90.0;
 				if ( ! isset( $attributes['sweepAngle'] ) && 'right-to-left' === (string) ( $attributes['borderHoverAnimationDirection'] ?? 'left-to-right' ) ) {
@@ -202,8 +180,7 @@ if ( ! function_exists( 'sgs_nav_shared_item_border_css' ) ) {
 
 		/*
 		 * ── ITEM SEPARATOR — independent vertical divider between adjacent
-		 * TOP-LEVEL BAR items (FR-41-37, 2026-09-13; geometry + visibility
-		 * corrected 2026-09-17 — see D1086). ─────────────────────────────────
+		 * TOP-LEVEL BAR items (FR-41-37). ────────────────────────────────────
 		 *
 		 * Genuinely separate from the item border/underline family above: that
 		 * family's `right` option ALREADY lets an operator draw a vertical line
@@ -221,17 +198,12 @@ if ( ! function_exists( 'sgs_nav_shared_item_border_css' ) ) {
 		 * block never renders the rule at all — not suppressed after the fact,
 		 * never emitted for that context.
 		 *
-		 * ⚑ GEOMETRY REWORK (2026-09-17, Bean-reported, live-verified against
-		 * `sites/mamas-munches`). The original shipped version painted a plain
-		 * `border-right` on the LINK's own box — i.e. flush against whichever
-		 * item it belonged to, not centred in the flex `gap` between the two
-		 * items either side of it. It also inherited the underline family's
-		 * "one-sided ownership" framing (a row owns its own bottom edge on the
-		 * drawer's vertical list) applied unmodified to the horizontal axis,
-		 * which is why it read as belonging to only one neighbour instead of
-		 * sitting visually between both.
+		 * GEOMETRY: the separator is centred in the flex `gap` between the two
+		 * items either side of it, not painted flush against one item's own box
+		 * (a plain `border-right` on the LINK would read as belonging to only one
+		 * neighbour).
 		 *
-		 * Fix: an empty `::before` pseudo-element on every item EXCEPT THE
+		 * It is an empty `::before` pseudo-element on every item EXCEPT THE
 		 * FIRST (`:not(:first-child)`), positioned via `left: calc(<gap>/-2)`.
 		 * A flex `gap` is split evenly between two adjacent siblings, so
 		 * shifting a zero-width box half the gap to the LEFT of an item's own
@@ -241,8 +213,8 @@ if ( ! function_exists( 'sgs_nav_shared_item_border_css' ) ) {
 		 * default when the attribute is genuinely absent).
 		 *
 		 * This also settles the "both sides" requirement for free: exactly ONE
-		 * separator paints per gap (n-1 for n items, same count as before), and
-		 * because it now sits centred rather than flush, it visually reads as
+		 * separator paints per gap (n-1 for n items), and
+		 * because it sits centred rather than flush, it visually reads as
 		 * belonging to BOTH the item before it and the item after it — not
 		 * "owned" by either. The first item has nothing before it
 		 * (`:not(:first-child)` excludes it) and the last item's rightmost edge
@@ -253,8 +225,7 @@ if ( ! function_exists( 'sgs_nav_shared_item_border_css' ) ) {
 		 * dashed/dotted options keep working — a filled box can't do a dash
 		 * pattern, a border can.
 		 *
-		 * ⚠ SWEEP (FR-41-37 follow-up, 2026-09-13; re-targeted to the new
-		 * pseudo 2026-09-17): `sgs_directional_sweep_css()` supplies the
+		 * ⚠ SWEEP (FR-41-37): `sgs_directional_sweep_css()` supplies the
 		 * any-angle background-position maths (includes/sweep-css.php). The
 		 * band lives on this SAME `::before` (not a second pseudo) — the item's
 		 * `::after` is still reserved for the item border-bottom sweep above
@@ -279,13 +250,11 @@ if ( ! function_exists( 'sgs_nav_shared_item_border_css' ) ) {
 			$item_separator_item_sel = $uid_sel . ' .' . $bem_root . '__bar:not(.' . $bem_root . '__bar--drawer) .' . $bem_root . '__item:not(:first-child)';
 
 			/*
-			 * ⚑ SHARED-EDGE HOVER FIX (2026-09-17, Bean-reported, follow-up to D1086).
-			 * D1086 centred the pseudo in the gap and fixed its resting-state
-			 * visibility, but left the HOVER TRIGGER one-sided: `$item_separator_item_sel`
-			 * is the item that OWNS the pseudo (the one to the divider's right), so only
-			 * hovering/focusing THAT item repainted it. Hovering the item on the OTHER
-			 * side of the same gap (the preceding sibling) did nothing, even though the
-			 * line now visually reads as shared between both. Adjacent-sibling selector
+			 * ⚑ SHARED-EDGE HOVER. `$item_separator_item_sel` is the item that OWNS
+			 * the pseudo (the one to the divider's right), so hovering/focusing THAT
+			 * item repaints it; hovering the item on the OTHER side of the same gap
+			 * (the preceding sibling) must repaint it too, since the line visually
+			 * reads as shared between both. Adjacent-sibling selector
 			 * below: an `<li>` is a plain sibling of the next `<li>` (`nav-menu-markup.php`
 			 * — no per-item wrapper), so `:hover + .item` / `:focus-within + .item` from
 			 * the PRECEDING item reaches the FOLLOWING item's own `::before` directly — no
@@ -355,36 +324,32 @@ if ( ! function_exists( 'sgs_nav_shared_featured_css' ) ) {
 		/*
 		 * 4d. Featured items (FR-36-4). Two forms, both operator-set:
 		 *
-		 * LABEL form (featuredBg unset) — the accent-coloured label. Kept as the
-		 * default so no existing site changes shape.
+		 * LABEL form (featuredBg unset) — the accent-coloured label, the default.
 		 *
 		 * PILL form (featuredBg set) — a filled pill, which is what a draft typically
-		 * authors a "featured" nav item as (Mama's draft `.sgs-header__nav-featured` =
-		 * `background:var(--primary)` + `color:var(--text)` + weight 600 on the base
-		 * link's 8px radius). Without a background attribute the converter had nowhere
-		 * to put the draft's fill and silently dropped it, leaving accent-on-surface
-		 * text — 1.35:1 on Mama's, measured live 2026-07-20.
+		 * authors a "featured" nav item as (`background:var(--primary)` +
+		 * `color:var(--text)` + weight 600 on the base link's 8px radius). Without a
+		 * background attribute the draft's fill would be dropped, leaving
+		 * accent-on-surface text at low contrast.
 		 *
 		 * The pill's foreground is contrast-checked against the resolved fill by the
 		 * same shared helper the hover pill uses (4c): the operator's chosen colour
-		 * wins when it clears AA, else the guaranteed-safe binary fallback. Mama's
-		 * text #3a2e26 on primary #e68a95 = 5.28:1 PASS, so the draft's own pairing is
-		 * adopted verbatim — the fidelity fix and the a11y fix are the same fix.
+		 * wins when it clears AA, else the guaranteed-safe binary fallback, so a
+		 * draft's own pairing is adopted verbatim when it passes.
 		 */
 		$featured_sel    = $uid_sel . ' .' . $bem_root . '__item--featured .' . $bem_root . '__link';
 		$featured_colour = isset( $attributes['featuredColour'] ) && '' !== $attributes['featuredColour']
 			? (string) $attributes['featuredColour']
 			: 'accent';
-		// featuredColourGradient is the gradient sibling (mirrors burgerColourGradient,
-		// D956 rollout) -- resting LABEL form only (no featured_bg). Gradient wins when
+		// featuredColourGradient is the gradient sibling (mirrors burgerColourGradient)
+		// -- resting LABEL form only (no featured_bg). Gradient wins when
 		// set+valid.
 		$featured_colour_gradient  = isset( $attributes['featuredColourGradient'] ) ? (string) $attributes['featuredColourGradient'] : '';
 		$featured_colour_effective = sgs_resolve_text_colour_or_gradient( $featured_colour, $featured_colour_gradient );
 		$featured_bg_slug          = isset( $attributes['featuredBg'] ) ? sanitize_html_class( $attributes['featuredBg'] ) : '';
 		$featured_bg_hex           = '' !== $featured_bg_slug ? sgs_resolve_palette_hex( $featured_bg_slug, '' ) : '';
-		// D958 -- Bean-directed preset-to-gradient upgrade. Gradient wins over the
-		// resolved slug/hex when set+valid; the slug mechanism above is untouched
-		// when this is unset, so an existing site renders byte-identical.
+		// Gradient wins over the resolved slug/hex when set+valid; the slug
+		// mechanism above applies when this is unset.
 		$featured_bg_gradient = sgs_css_gradient_value( $attributes['featuredBgGradient'] ?? '' );
 		$featured_bg_active   = ( '' !== $featured_bg_hex ) || ( '' !== $featured_bg_gradient );
 
@@ -430,9 +395,8 @@ if ( ! function_exists( 'sgs_nav_shared_featured_css' ) ) {
 
 		/*
 		 * Republish the RESOLVED featured values as custom properties so a featured
-		 * SUBMENU item inherits exactly what the featured bar item uses (Bean,
-		 * 2026-07-31 — the "Send to ward" priority item must look like itself wherever
-		 * it appears, bar or burger drawer).
+		 * SUBMENU item inherits exactly what the featured bar item uses (a priority
+		 * item must look like itself wherever it appears, bar or burger drawer).
 		 *
 		 * Deliberately reuses the values computed ABOVE rather than re-reading the
 		 * attributes: `$featured_fg` comes from sgs_wcag_preferred_text_colour_for_bg(),
@@ -459,9 +423,8 @@ if ( ! function_exists( 'sgs_nav_shared_featured_css' ) ) {
 			// textSharesElementWithBackground() precondition failure (see
 			// CLAUDE.md "Colour EMISSION helpers" + submenuColourGradient's block.json
 			// note for the identical precedent on this same file's sublink element).
-			// Fixing this needs the submenu featured background moved onto its own
-			// ::after layer (sgs_block_background_layer_css()) first -- out of scope
-			// for this pass.
+			// Supporting it needs the submenu featured background moved onto its own
+			// ::after layer (sgs_block_background_layer_css()) first.
 			$sgs_nm_featured_vars .= '--sgs-nm-featured-colour:' . sgs_colour_value( $featured_colour ) . ';'
 				. '--sgs-nm-featured-bg:transparent;';
 		}
@@ -477,7 +440,7 @@ if ( ! function_exists( 'sgs_nav_shared_featured_css' ) ) {
 		$featured_bg_hover     = isset( $attributes['featuredBgHover'] ) ? sanitize_html_class( $attributes['featuredBgHover'] ) : '';
 		$featured_bg_hover_hex = '' !== $featured_bg_hover ? sgs_resolve_palette_hex( $featured_bg_hover, '' ) : '';
 		$featured_fg_hover     = isset( $attributes['featuredColourHover'] ) ? (string) $attributes['featuredColourHover'] : '';
-		// D958 -- gradient sibling, mirrors featuredBgGradient above. Gradient wins
+		// Gradient sibling, mirrors featuredBgGradient above. Gradient wins
 		// over the resolved featuredBgHover slug/hex when set+valid.
 		$featured_bg_hover_gradient = sgs_css_gradient_value( $attributes['featuredBgHoverGradient'] ?? '' );
 		$featured_bg_hover_active   = ( '' !== $featured_bg_hover_hex ) || ( '' !== $featured_bg_hover_gradient );
@@ -516,15 +479,13 @@ if ( ! function_exists( 'sgs_nav_shared_featured_css' ) ) {
 		}
 
 		/*
-		 * ⛔ DELETED (FR-41-4 item 7). This emitted `{featured_sel}::after{content:none;}`
-		 * unconditionally, to stop the retired underline bar doubling up with the
-		 * featured treatment. That bar no longer exists, so it had nothing left to
-		 * suppress — and `$featured_sel` weighs (0,3,1) against the border sweep's
-		 * band at (0,2,1), so it WON and the sweep silently did not render on a
-		 * featured item. ⛔ Not kept "just in case": a kept suppression rule is
+		 * ⛔ The featured item's `::after` is deliberately left alone: a
+		 * `{featured_sel}::after{content:none;}` suppression rule weighs (0,3,1)
+		 * against the border sweep's band at (0,2,1), so it would WIN and the sweep
+		 * would silently not render on a featured item. A suppression rule is
 		 * exactly the silent override `check-hardcoded-render-defaults.js` F3b exists
-		 * to catch, and deleting it makes the sweep apply to featured items too —
-		 * which is the universal answer (project rule 3, no carve-outs).
+		 * to catch; featured items take the sweep like every other item (project
+		 * rule 3, no carve-outs).
 		 */
 
 		return $css;

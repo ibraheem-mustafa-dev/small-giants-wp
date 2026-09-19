@@ -5,7 +5,7 @@
  * Categories: sgs-footers
  * Block Types: core/post-content
  * Post Types: sgs_footer
- * Description: Centred footer with logo area, navigation links, and copyright. Content auto-populates from Settings > Business Details. Starter template for the sgs_footer CPT (Spec 37 FR-37-8) — built on sgs/site-footer with a single-column "columns" row.
+ * Description: Centred footer with logo area, navigation links, and copyright. Content auto-populates from Settings > Business Details. Starter template for the sgs_footer CPT, built on sgs/site-footer with a single-column "columns" row.
  *
  * @package SGS\Theme
  */

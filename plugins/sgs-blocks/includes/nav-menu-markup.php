@@ -1,24 +1,10 @@
 <?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName -- shared per-instance include; class namespace lives in the block slug.
 /**
- * SGS Nav Menu (sgs/nav-menu) — markup renderers.
- *
- * Split out of render.php (Spec 41 step 8, pure refactor). REQUIRED, not
- * optional — the markup half (428 code lines) cannot fit one 300-line file
- * alongside render.php's own class/entry + menu resolution. This file holds
- * the two flat-list renderers (`sgs_nav_bar_menu_render_items()`,
- * `sgs_nav_drawer_menu_render_items()`, extracted from
- * SGS_Nav_Menu_Bar_Renderer's own methods — the class itself, its
- * constructor, `flatten()`, `from_link()` and `from_page_list()` all STAY in
- * render.php, matching the plan's own file assignment) and the burger/
- * trigger markup builder (`sgs_nav_bar_menu_burger_toggle_markup()`).
- *
- * ⚠ NOT a pure copy-paste of the class methods: `$this->featured_ids`,
- * `$this->uid` and `$this->submenu` become explicit parameters, since a
- * free function has no `$this`. Every function body is otherwise
- * byte-identical to the class method it replaces — see each function's own
- * docblock for the exact before/after parameter mapping. Proven
- * byte-identical output via the fixture harness in the reuse ledger
- * (.claude/verify/spec-41-reuse-ledger.md).
+ * SGS Nav Bar Menu / Nav Drawer Menu — shared markup renderers: the two
+ * flat-list renderers (`sgs_nav_bar_menu_render_items()`,
+ * `sgs_nav_drawer_menu_render_items()`) and the burger/trigger markup builder
+ * (`sgs_nav_bar_menu_burger_toggle_markup()`). `$featured_ids`, `$uid` and
+ * `$submenu` are explicit parameters because a free function has no `$this`.
  *
  * Required PER-INSTANCE from render.php, matching sgs/product-card's
  * `includes/product-card-builtin-render.php` precedent (`require_once
@@ -29,13 +15,13 @@
  * `includes/render-helpers.php`), this file is NOT bootstrap-loaded — it is
  * `require_once`'d per-instance from `render.php`, exactly like
  * `nav-menu-css.php` and `nav-menu-submenu-css.php`. Its functions are only
- * in scope after nav-menu's own `render.php` has run at least once on that
- * page load. Fine today (nothing else calls into nav-menu internals) — a
- * future cross-block call needs this file required first, or it fatals for
- * a reason nobody will find without this note.
+ * in scope after a nav block's own `render.php` has run at least once on that
+ * page load. Nothing else calls into these internals — a cross-block call
+ * needs this file required first, or it fatals for a reason nobody will find
+ * without this note.
  *
- * ⛔ FATAL AVOIDANCE: this page carries TWO nav-menu instances (header bar +
- * the drawer's own seeded instance). Every function below is wrapped in its
+ * ⛔ FATAL AVOIDANCE: a page carries a `sgs/nav-bar-menu` (header) and a
+ * `sgs/nav-drawer-menu` (inside the drawer). Every function below is wrapped in its
  * own `if ( ! function_exists( '...' ) )` guard so the second `require_once`
  * (and the second render) never re-declares it.
  *
@@ -46,13 +32,12 @@ defined( 'ABSPATH' ) || exit;
 
 if ( ! function_exists( 'sgs_nav_shared_badge_html' ) ) {
 	/**
-	 * Build the optional badge fragment for a leaf item's link (Step 7, D1059).
+	 * Build the optional badge fragment for a leaf item's link.
 	 *
 	 * Same datum for both blocks (`$item['badge']`, from each render.php's own
 	 * `from_link()` — the operator's menu-item "Description" field, repurposed;
-	 * genuinely unused by any render path before this, see that function's own
-	 * docblock). `$bem_root` only picks which BEM root's `__badge` element
-	 * applies — `style.css` owns the actual visual difference (a tinted chip on
+	 * unused by any other render path, see that function's own docblock).
+	 * `$bem_root` only picks which BEM root's `__badge` element applies — `style.css` owns the actual visual difference (a tinted chip on
 	 * the bar, a bare letter-spaced word in the drawer).
 	 *
 	 * Real visually-hidden TEXT, not CSS `::before`/`::after` `content` — some
@@ -71,8 +56,8 @@ if ( ! function_exists( 'sgs_nav_shared_badge_html' ) ) {
 			return '';
 		}
 		// A badge is a short marker, not a second sentence — cap it so an
-		// operator who filled this field in for its ORIGINAL purpose (a real
-		// description) doesn't ship a paragraph-long chip. 24 chars covers
+		// operator who filled this field in with a real description doesn't
+		// ship a paragraph-long chip. 24 chars covers
 		// every reference badge copy ("SOON", "NEW", "Coming spring 2027")
 		// with headroom.
 		$badge = function_exists( 'mb_substr' ) ? mb_substr( $badge, 0, 24 ) : substr( $badge, 0, 24 );
@@ -88,14 +73,10 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 		/**
 		 * Render the flat <li><a> list.
 		 *
-		 * Split out of the SGS_Nav_Menu_Bar_Renderer class (Spec 41 step 8,
-		 * pure refactor) into a standalone function -- $this->featured_ids/
-		 * uid/submenu become explicit parameters, body otherwise byte-identical.
-		 *
 		 * @param array $items Flattened items from flatten().
-		 * @param array  $submenu      Submenu settings: align/caret/close_grace (was $this->submenu).
-		 * @param string $uid          This block instance's uid (was $this->uid).
-		 * @param array  $featured_ids Featured item identifiers (was $this->featured_ids).
+		 * @param array  $submenu      Submenu settings: align/caret/close_grace.
+		 * @param string $uid          This block instance's uid.
+		 * @param array  $featured_ids Featured item identifiers.
 		 * @return string HTML <li> elements.
 		 */
 		function sgs_nav_bar_menu_render_items( array $items, array $featured_ids, string $uid, array $submenu ): string {
@@ -121,8 +102,8 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 						&& false !== strpos( (string) $panel_post->post_content, 'wp:sgs/button' );
 
 					// Build the fallback link BEFORE rendering so it can be handed
-					// to sgs/mega-panel's footer slot (Bean 2026-07-28: it must
-					// render INSIDE the panel, never as a sibling).
+					// to sgs/mega-panel's footer slot (it must render INSIDE the
+					// panel, never as a sibling).
 					$viewall_for_panel = '';
 					if ( ! $panel_has_cta && '#' !== $item['url'] && '' !== $item['url'] ) {
 						$viewall_for_panel = sprintf(
@@ -227,8 +208,7 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 						 */
 
 						/*
-						 * A CHILD can be featured too (Bean, 2026-07-31 — the
-						 * "Send to ward"-style priority item). Same
+						 * A CHILD can be featured too (a priority item). Same
 						 * featuredItemIds check the top-level branch uses, so
 						 * one mechanism covers both levels rather than a
 						 * parallel one for children.
@@ -295,11 +275,9 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 							);
 						}
 
-						// FR-41-10 (Spec 41 step 17 built the CSS; nothing applied the
-						// class until now). `$submenu['animation']` is already
-						// PHP-validated to one of none|fade|slide-down by the
-						// renderer's constructor — 'none' emits no modifier class,
-						// matching the pre-animation markup byte-for-byte.
+						// FR-41-10. `$submenu['animation']` is already PHP-validated to
+						// one of none|fade|slide-down by the renderer's constructor —
+						// 'none' emits no modifier class.
 						$sub_wrap_class = 'sgs-nav-bar-menu__submenu-wrap'
 							. ( 'none' !== $submenu['animation'] ? ' sgs-nav-bar-menu__submenu-wrap--' . $submenu['animation'] : '' );
 
@@ -343,9 +321,8 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 if ( ! function_exists( 'sgs_nav_drawer_menu_render_items' ) ) {
 		/**
 		 * Render the flat items as a REAL nested vertical list for the drawer
-		 * (Spec 36 FR-36-6 — the flat-bar collapse to one link, above, is
-		 * deliberately Phase-1-only for the desktop/burger bar; the drawer gets
-		 * a genuine nested submenu).
+		 * (Spec 36 FR-36-6 — the desktop/burger bar above collapses a submenu to
+		 * one link; the drawer gets a genuine nested submenu).
 		 *
 		 * Both `accordion` and `drill-down` share IDENTICAL server markup — a
 		 * `<details name>` exclusive accordion (the spec's own stated no-JS
@@ -359,12 +336,11 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_render_items' ) ) {
 		 * `url`, else '#') rather than emitting the desktop hover-disclosure
 		 * markup `render_items()` builds — that markup has no touch equivalent
 		 * and dragging it into a `<details>` would need its own JS-driven mega-
-		 * in-drawer build. Declared here, not silently dropped: FR-36-5 already
-		 * names "the same panel renders inside the drawer" as a FUTURE item this
-		 * task does not build.
+		 * in-drawer build. Declared here, not silently dropped: FR-36-5 names
+		 * "the same panel renders inside the drawer" as a future item that is not
+		 * built.
 		 *
-		 * $mega_drawer_fallback_ids (Bean 2026-09-13, "not everyone wants them")
-		 * is a narrower, already-buildable slice of that future item: when a
+		 * $mega_drawer_fallback_ids is a narrower slice of that item: when a
 		 * mega-typed item is authored as a `core/navigation-submenu` carrying
 		 * REAL nested child links (not the CPT mega panel — its own menu
 		 * children) AND its identifier is listed here, those children render as
@@ -372,18 +348,14 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_render_items' ) ) {
 		 * A mega item with no nested children still degrades to a plain link
 		 * regardless of this list (nothing to show as an accordion). The bar/
 		 * desktop form is untouched either way — it always gets the full mega
-		 * panel. Unset (default empty array) is byte-identical to before.
-		 *
-		 * Split out of the SGS_Nav_Menu_Bar_Renderer class (Spec 41 step 8,
-		 * pure refactor) into a standalone function -- $this->featured_ids
-		 * becomes an explicit parameter, body otherwise byte-identical.
+		 * panel. Unset (default empty array) leaves every mega item a plain link.
 		 *
 		 * @param array  $items Flattened items from flatten().
 		 * @param string $model 'accordion' or 'drill-down' (validated by caller).
 		 * @param string $uid   The block instance's uid (accordion `name=` scope
 		 *                      + sub-panel DOM id namespace, mirrors the mega
 		 *                      panel's own instance-scoping).
-		 * @param array  $featured_ids Featured item identifiers (was $this->featured_ids).
+		 * @param array  $featured_ids Featured item identifiers.
 		 * @param string $marker_icon Rendered sublink-marker glyph HTML.
 		 * @param array  $mega_drawer_fallback_ids Mega item identifiers opted OUT of the
 		 *                      plain-link degrade in favour of an accordion of their own
@@ -418,14 +390,13 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_render_items' ) ) {
 
 				$children = isset( $item['children'] ) && is_array( $item['children'] ) ? $item['children'] : array();
 				if ( $children ) {
-					// Bean, 2026-09-10 (reference site): a small right-pointing marker
-					// in each sub-item's indent, matching the reference's convention of
-					// using the same caret family for both "this expands" (chevron-down,
+					// A small right-pointing marker in each sub-item's indent, using the
+					// same caret family for both "this expands" (chevron-down,
 					// rotates on open) and "this is a leaf" (chevron-right, static).
-					// FR-41-30(b): the glyph is now operator-chosen (`sublinkMarkerIcon`),
+					// FR-41-30(b): the glyph is operator-chosen (`sublinkMarkerIcon`),
 					// resolved by render.php through the same source-aware resolver
 					// `sgs/icon` uses and handed in already-rendered. The stored default
-					// is lucide/chevron-right, so an untouched nav is byte-identical.
+					// is lucide/chevron-right, so an untouched nav shows a right chevron.
 					$sub_marker = '' !== $marker_icon
 						? '<span class="sgs-nav-drawer-menu__sublink-marker" aria-hidden="true">' . $marker_icon . '</span>'
 						: '';
@@ -477,7 +448,7 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_render_items' ) ) {
 							esc_html( $item['label'] )
 						);
 					} else {
-						// Step 7 (D1059) — `aria-disabled="true"` names what this span
+						// `aria-disabled="true"` names what this span
 						// already visually IS: a link-styled element with no href, not
 						// a real interactive control. Without it, AT that exposes
 						// elements by their visual/class styling alone can announce
@@ -528,9 +499,7 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_render_items' ) ) {
 
 if ( ! function_exists( 'sgs_nav_bar_menu_burger_toggle_markup' ) ) {
 	/**
-	 * Build the burger button + toggle-wrap markup (was inlined in render.php
-	 * as the `$toggle_html = sprintf(...)` assignment; body byte-identical,
-	 * now a `return sprintf(...)` inside its own function).
+	 * Build the burger button + toggle-wrap markup.
 	 *
 	 * @param string $burger_context_attr Pre-built `data-wp-context` attribute string
 	 *                                     (from `wp_interactivity_data_wp_context()`).
@@ -572,8 +541,7 @@ if ( ! function_exists( 'sgs_nav_bar_menu_burger_toggle_markup' ) ) {
 				// `<span>` bars (not the resolved SVG's `<path>` elements) so the
 				// CSS-only burger↔X morph in style.css has genuine independently-
 				// animatable structure to work with. Always wrapped (both `icon`
-				// and `icon-and-text`) — unlike the custom-icon branch below, this
-				// is new-feature markup, not a byte-identical-preservation case.
+				// and `icon-and-text`), unlike the custom-icon branch below.
 				$icon_html = '<span class="sgs-nav-bar-menu__burger-icon" aria-hidden="true">'
 					. str_repeat( '<span class="sgs-nav-bar-menu__burger-bar"></span>', 3 )
 					. '</span>';
@@ -582,9 +550,9 @@ if ( ! function_exists( 'sgs_nav_bar_menu_burger_toggle_markup' ) ) {
 				// glyph is decorative — the same convention this file already applies
 				// to `.sgs-nav-bar-menu__sublink-marker` and `.sgs-nav-bar-menu__caret`. Under
 				// `icon` the SVG is the only content and the button's own aria-label
-				// names it, so it is emitted bare — byte-identical to pre-0.4.x output.
+				// names it, so it is emitted bare.
 				// A custom `triggerIcon` (G3) never morphs — an arbitrary glyph has no
-				// well-defined 3-bar shape (Spec 41 G4 scope boundary, disclosed).
+				// well-defined 3-bar shape.
 				$icon_html = 'icon' === $trigger_mode
 					? $burger_icon
 					: '<span class="sgs-nav-bar-menu__burger-icon" aria-hidden="true">' . $burger_icon . '</span>';
@@ -595,8 +563,8 @@ if ( ! function_exists( 'sgs_nav_bar_menu_burger_toggle_markup' ) ) {
 			? ''
 			: '<span class="sgs-nav-bar-menu__burger-text">' . esc_html( $trigger_label ) . '</span>';
 
-		// No modifier class under `icon`: that mode must render today's markup
-		// byte-for-byte (FR-41-12), and a class nothing styles is not free.
+		// No modifier class under `icon` (FR-41-12): a class nothing styles is
+		// not free.
 		$mode_class = 'icon' === $trigger_mode ? '' : ' sgs-nav-bar-menu__burger--' . $trigger_mode;
 
 		return sprintf(

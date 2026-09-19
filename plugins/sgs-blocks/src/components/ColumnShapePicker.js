@@ -1,7 +1,7 @@
 /**
  * ColumnShapePicker — pick a column SHAPE by clicking a diagram (FR-37-42).
  *
- * WHY THIS EXISTS (approved by Bean 2026-07-28, built 2026-08-26)
+ * WHY THIS EXISTS
  * --------------------------------------------------------------
  * A "Columns" row lets the operator set a column COUNT, and every column comes
  * out equal. Spec 37 §3.3 rejected exposing `gridTemplateColumns` as a typed
@@ -14,14 +14,14 @@
  * every commercial builder presents it. So the shape becomes reachable while
  * the raw string stays hidden.
  *
- * The evidence is measured, not preferred: the 2026-07-28 teardown of an
+ * The evidence is measured, not preferred: a teardown of an
  * Awwwards-winning ecommerce footer found `grid-template-columns: 340px 680px
  * 340px` — a deliberate WIDE-CENTRE shape a count can NEVER produce.
  *
  * ⛔ DO NOT ADD SHAPES FROM TASTE. The catalogue comes from the reference
  * teardowns; any new shape needs a measured reference behind it (FR-37-42).
  *
- * GOLD-STANDARD RESEARCH, 2026-08-26
+ * GOLD-STANDARD RESEARCH
  * ----------------------------------
  * `.claude/reports/2026-08-26-column-shape-picker-gold-standard.md`. Findings
  * that shaped this file:
@@ -74,10 +74,10 @@
  *   mobile automatically, so an asymmetric desktop shape never reaches a phone.
  * · Shapes are `fr`, never px, so they stay fluid.
  *
- * `auto` TRACKS (added 2026-09-14, nav-menu-split Step 6, D1059)
+ * `auto` TRACKS
  * ----------------------------------------------------------------
  * A shape's `weights` array may hold the literal string `'auto'` alongside
- * numeric `fr` weights — `SHAPES[3]` gains `['1fr','auto','1fr']` for the
+ * numeric `fr` weights — `SHAPES[3]` includes `['1fr','auto','1fr']` for the
  * split-nav-either-side-of-a-centred-logo layout: the CSS Grid track keyword
  * `auto`, so the middle column hugs its content's own width (the logo) while
  * the two `1fr` columns share whatever space is left equally. A numeric count
@@ -89,10 +89,9 @@
  * instead. The diagram renders an `auto` member as a DASHED outline rather
  * than a solid bar, at the same DIAGRAM_BAR_COLOUR contrast, so it reads as
  * "fits its content" rather than "an equal proportional share".
- * ⛔ Still governed by "DO NOT ADD SHAPES FROM TASTE" — this one shape was
- * explicitly approved (`.claude\plans\our-new-draft-from-enchanted-karp.md`
- * Step 6), not invented here; do not add further `auto` members without the
- * same measured justification.
+ * ⛔ Still governed by "DO NOT ADD SHAPES FROM TASTE" — this one shape has a
+ * measured reference behind it (the split-nav layout); do not add further
+ * `auto` members without the same measured justification.
  *
  * @package SGS\Blocks
  */
@@ -206,11 +205,10 @@ const DIAGRAM_BAR_SPACE_TARGET = 30;
  * `var(--wp--preset--color--primary)`.
  *
  * ⛔ Do NOT swap this for the preset var. That var is the CLIENT's palette and
- * resolves to whatever the current site sets (Mama's pink `#e68a95` on the
- * canary). This picker is SGS TOOL CHROME and must read identically for every
+ * resolves to whatever the current site sets (a client's pink or teal, say).
+ * This picker is SGS TOOL CHROME and must read identically for every
  * client, so it needs a fixed value. This one is `theme.json`'s `primary`
- * captured as a literal (Bean's call, 2026-08-26 — he first proposed `#158697`,
- * then chose this instead because it already exists in the tree).
+ * captured as a literal (chosen because it already exists in the tree).
  *
  * ACCESSIBILITY: the bars are `aria-hidden` decorative graphics, so the
  * governing rule is WCAG 1.4.11 non-text contrast at 3:1, NOT the 4.5:1 text
@@ -234,11 +232,11 @@ function lcm( values ) {
  * How many px of BAR (excluding gaps) one row of diagrams gets.
  *
  * ⛔ THIS IS THE WHOLE POINT OF THE FUNCTION — read before changing a number.
- * The first build laid bars out with `flex: <weight> 1 0` inside a fixed 34px
- * box. With a 2px gap that left 30px of bar space, so a 3-bar `1,2,1` shape
- * produced bars of 7.5 / 15 / 7.5. Those `7.5px` bars land on a SUBPIXEL, and
+ * Laying bars out with `flex: <weight> 1 0` inside a fixed 34px
+ * box leaves 30px of bar space with a 2px gap, so a 3-bar `1,2,1` shape
+ * would produce bars of 7.5 / 15 / 7.5. Those `7.5px` bars land on a SUBPIXEL, and
  * two bars that are mathematically identical can then paint one device pixel
- * apart — which is exactly the non-uniformity Bean saw on the canary footer.
+ * apart — which is exactly the visible non-uniformity.
  *
  * The fix is arithmetic, not nudging: pick a bar-space that every weight-TOTAL
  * in the set divides into exactly, then give each bar an explicit whole-pixel
@@ -352,7 +350,7 @@ export function ColumnShapePicker( { count, value, onChange, label, help } ) {
 			// control is mounted inside <ResponsiveOverride>, which already
 			// renders the visible label, and two visible copies is a real
 			// defect (inspector-scan rule 29). Same reason and same shape as
-			// BooleanResponsiveControl.js:129.
+			// BooleanResponsiveControl.js.
 			hideLabelFromVision
 			label={ label || __( 'Column shape', 'sgs-blocks' ) }
 			help={

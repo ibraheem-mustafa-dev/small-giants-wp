@@ -1,28 +1,29 @@
 <?php
 /**
- * SGS header/footer LIFECYCLE WP-CLI commands (FR-37-30, Spec 37).
+ * SGS header/footer/drawer LIFECYCLE WP-CLI commands (FR-37-30, Spec 37).
  *
- * A reduced `wp sgs header <...>` / `wp sgs footer <...>` command set covering
- * the CPT-backed header/footer lifecycle non-interactively: set/clear the
+ * The `wp sgs header <...>`, `wp sgs footer <...>` and `wp sgs drawer <...>`
+ * command sets cover the CPT-backed lifecycle non-interactively: set/clear the
  * active pointer, list saved layouts, seed a new layout from a starter
  * pattern. Explicitly NOT a client-facing surface — clients use the "Advanced
- * Headers"/"Advanced Footers" admin screens exclusively. It exists so Bean
- * and the cloning pipeline (FR-37-22) have a programmatic path.
+ * Headers"/"Advanced Footers"/"Menu drawers" admin screens exclusively. It
+ * gives the cloning pipeline (FR-37-22) and developers a programmatic path.
  *
- * One class serves both `wp sgs header` and `wp sgs footer` — each is
- * registered as a separate instance carrying its own area token (see the
- * registration block in sgs-blocks.php), so the two command trees share
+ * One class serves `wp sgs header`, `wp sgs footer` and `wp sgs drawer` — each
+ * is registered as a separate instance carrying its own area token (see the
+ * registration block in sgs-blocks.php), so the command trees share
  * identical behaviour with zero duplicated logic.
  *
  * Active-pointer reads/writes ALWAYS delegate to {@see Sgs_Active_Layout} —
- * this class never touches the `sgs_active_{header,footer}_cpt_id` options
- * directly.
+ * this class never touches the `sgs_active_{header,footer,drawer}_cpt_id`
+ * options directly.
  *
  * Registration (in sgs-blocks.php, inside the existing WP_CLI conditional):
  *
  *   require_once SGS_BLOCKS_PATH . 'includes/class-sgs-header-footer-cli-commands.php';
  *   \WP_CLI::add_command( 'sgs header', new Sgs_Header_Footer_Cli_Commands( Sgs_Active_Layout::AREA_HEADER ) );
  *   \WP_CLI::add_command( 'sgs footer', new Sgs_Header_Footer_Cli_Commands( Sgs_Active_Layout::AREA_FOOTER ) );
+ *   \WP_CLI::add_command( 'sgs drawer', new Sgs_Header_Footer_Cli_Commands( Sgs_Active_Layout::AREA_DRAWER ) );
  *
  * Capability gate: write commands (`set-active`, `clear-active`,
  * `seed-starter`) require `edit_theme_options` via `current_user_can()`. Pass
@@ -39,7 +40,7 @@ namespace SGS\Blocks;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * SGS header/footer lifecycle WP-CLI commands.
+ * SGS header/footer/drawer lifecycle WP-CLI commands.
  *
  * ## EXAMPLES
  *
@@ -52,11 +53,15 @@ defined( 'ABSPATH' ) || exit;
  *     wp sgs footer set-active 51 --user=1
  *     wp sgs footer clear-active --user=1
  *     wp sgs footer seed-starter sgs/framework-footer-default --user=1
+ *
+ *     wp sgs drawer list
+ *     wp sgs drawer set-active 63 --user=1
+ *     wp sgs drawer clear-active --user=1
  */
 final class Sgs_Header_Footer_Cli_Commands {
 
 	/**
-	 * Area token this instance serves — 'header' or 'footer'.
+	 * Area token this instance serves — 'header', 'footer' or 'drawer'.
 	 *
 	 * @var string
 	 */
@@ -65,14 +70,14 @@ final class Sgs_Header_Footer_Cli_Commands {
 	/**
 	 * Bind this command tree to a single layout area.
 	 *
-	 * @param string $area {@see Sgs_Active_Layout::AREA_HEADER} or {@see Sgs_Active_Layout::AREA_FOOTER}.
+	 * @param string $area {@see Sgs_Active_Layout::AREA_HEADER}, {@see Sgs_Active_Layout::AREA_FOOTER} or {@see Sgs_Active_Layout::AREA_DRAWER}.
 	 */
 	public function __construct( string $area ) {
 		$this->area = $area;
 	}
 
 	// -------------------------------------------------------------------------
-	// wp sgs <header|footer> set-active <post-id>
+	// wp sgs <header|footer|drawer> set-active <post-id>
 	// -------------------------------------------------------------------------
 
 	/**
@@ -85,7 +90,7 @@ final class Sgs_Header_Footer_Cli_Commands {
 	 * ## OPTIONS
 	 *
 	 * <post-id>
-	 * : The post ID of the sgs_header/sgs_footer layout to activate. Must
+	 * : The post ID of the sgs_header/sgs_footer/sgs_drawer layout to activate. Must
 	 *   already be published.
 	 *
 	 * ## EXAMPLES
@@ -121,14 +126,14 @@ final class Sgs_Header_Footer_Cli_Commands {
 	}
 
 	// -------------------------------------------------------------------------
-	// wp sgs <header|footer> clear-active
+	// wp sgs <header|footer|drawer> clear-active
 	// -------------------------------------------------------------------------
 
 	/**
 	 * Clear the active pointer for this area, restoring the immutable
 	 * framework default.
 	 *
-	 * Delegates to Sgs_Active_Layout::clear_active(). The previously-active
+	 * Delegates to Sgs_Active_Layout::clear_active(). The active
 	 * post is left untouched and can be re-activated later.
 	 *
 	 * ## EXAMPLES
@@ -154,11 +159,11 @@ final class Sgs_Header_Footer_Cli_Commands {
 	}
 
 	// -------------------------------------------------------------------------
-	// wp sgs <header|footer> list
+	// wp sgs <header|footer|drawer> list
 	// -------------------------------------------------------------------------
 
 	/**
-	 * List saved header/footer layouts with an Active indicator.
+	 * List saved header/footer/drawer layouts with an Active indicator.
 	 *
 	 * The Active column is derived from Sgs_Active_Layout::get_stored_id(),
 	 * the UNVALIDATED pointer — so a row is still marked Active even if that
@@ -221,16 +226,16 @@ final class Sgs_Header_Footer_Cli_Commands {
 	}
 
 	// -------------------------------------------------------------------------
-	// wp sgs <header|footer> seed-starter <slug>
+	// wp sgs <header|footer|drawer> seed-starter <slug>
 	// -------------------------------------------------------------------------
 
 	/**
-	 * Create a new sgs_header/sgs_footer post seeded from a named starter
+	 * Create a new sgs_header/sgs_footer/sgs_drawer post seeded from a named starter
 	 * block pattern.
 	 *
 	 * The starter must already be a registered block pattern (theme patterns
 	 * under theme/sgs-theme/patterns/ scoped `Block Types: core/post-content`
-	 * + `Post Types: sgs_header`/`sgs_footer` register automatically). The new
+	 * + `Post Types: sgs_header`/`sgs_footer`/`sgs_drawer` register automatically). The new
 	 * post is created as a DRAFT — it is not made active by this command; run
 	 * `set-active` afterwards once it has been reviewed and published.
 	 *

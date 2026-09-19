@@ -94,7 +94,7 @@ final class Sgs_Mega_Menu_CPT {
 	 * `show_in_nav_menus => true` still populates the "add items" panel
 	 * independently of `public`; `show_in_rest => true` is kept so the
 	 * block editor can edit panel content. Capability map mirrors
-	 * {@see Sgs_Block_CPTs::register_post_types()} (Council M1 pattern):
+	 * {@see Sgs_Block_CPTs::register_post_types()}:
 	 * every primitive routes to `edit_theme_options`, PLURAL primitives
 	 * only — listing a singular meta-cap here would register its value as
 	 * a meta-capability in WP's reverse map and break every plain
@@ -160,9 +160,9 @@ final class Sgs_Mega_Menu_CPT {
 	 *
 	 * Called directly BY {@see Sgs_Block_CPTs::register_submenus()}
 	 * (immediately after its "Menu drawers" registration), not hooked onto
-	 * `admin_menu` independently — that used to fire on this class's own
-	 * later admin_menu callback, which placed the item after Modals/Forms/
-	 * Choice Flows in the sidebar instead of directly below Menu drawers.
+	 * `admin_menu` independently — a separate later-firing callback would place
+	 * the item after Modals/Forms/Choice Flows in the sidebar instead of
+	 * directly below Menu drawers.
 	 */
 	public static function register_submenu(): void {
 		\add_submenu_page(
@@ -210,9 +210,8 @@ final class Sgs_Mega_Menu_CPT {
 	 * Consumed by {@see fix_nav_menus_metabox_visibility()}.
 	 *
 	 * Hooked to `load-nav-menus.php`, fired by `wp-admin/admin.php` via
-	 * `do_action( "load-{$pagenow}" )` BEFORE it requires `nav-menus.php`
-	 * (confirmed on the canary over SSH); `nav-menus.php` calls
-	 * `wp_initial_nav_menu_meta_boxes()` at line 692, so this runs first.
+	 * `do_action( "load-{$pagenow}" )` BEFORE it requires `nav-menus.php`, which
+	 * is what calls `wp_initial_nav_menu_meta_boxes()`, so this runs first.
 	 */
 	public static function record_pre_seed_state(): void {
 		self::$is_first_visit = false === \get_user_option( 'metaboxhidden_nav-menus' );
@@ -223,25 +222,20 @@ final class Sgs_Mega_Menu_CPT {
 	 * WordPress core's own first-visit routine has run, on a genuine first
 	 * visit only.
 	 *
-	 * `default_hidden_meta_boxes` (this method's previous implementation)
-	 * is NOT the mechanism nav-menus.php uses — verified by reading core
-	 * directly on the live canary. `wp_initial_nav_menu_meta_boxes()`
-	 * (`wp-admin/includes/nav-menu.php`) hardcodes its own initial-visible
-	 * allow-list, marks every OTHER metabox — including ours — hidden, and
-	 * writes the result straight via `update_user_meta()`; it never calls
-	 * `apply_filters()`/`get_hidden_meta_boxes()` (the sole call site of
-	 * `default_hidden_meta_boxes` is inside THAT other function, in
-	 * `wp-admin/includes/screen.php`, never invoked by nav-menus) — so the
-	 * old filter-based approach here was inert.
+	 * `wp_initial_nav_menu_meta_boxes()` (`wp-admin/includes/nav-menu.php`)
+	 * hardcodes its own initial-visible allow-list, marks every OTHER metabox —
+	 * including ours — hidden, and writes the result straight via
+	 * `update_user_meta()`; it never calls `apply_filters()` /
+	 * `get_hidden_meta_boxes()`, so the `default_hidden_meta_boxes` filter cannot
+	 * influence it.
 	 *
 	 * It also only ever runs ONCE PER USER (early-returns once the user
 	 * meta is set), and cannot be pre-empted by seeding that meta earlier
 	 * — the metaboxes it reads are registered by `wp_nav_menu_setup()` on
-	 * the immediately preceding line of `nav-menus.php` (line 692), with
-	 * no hook between the two calls. The fix is to let core run once,
-	 * then correct its output: hooked to `admin_head-nav-menus.php`,
-	 * confirmed on the canary to fire (via `wp-admin/admin-header.php`,
-	 * required at line 780) after that line-692 call.
+	 * the immediately preceding line of `nav-menus.php`, with no hook between
+	 * the two calls. So this lets core run once, then corrects its output:
+	 * hooked to `admin_head-nav-menus.php`, which fires (via
+	 * `wp-admin/admin-header.php`) after that call.
 	 *
 	 * Only acts when {@see record_pre_seed_state()} recorded a genuine
 	 * first visit — a user with the meta already set (their own Screen

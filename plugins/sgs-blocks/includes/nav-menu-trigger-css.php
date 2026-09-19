@@ -1,10 +1,9 @@
 <?php
 /**
- * SGS Nav Menu (sgs/nav-menu) — the MENU BUTTON's scoped CSS.
+ * SGS Nav Bar Menu — the MENU BUTTON's scoped CSS.
  *
- * Split out of `nav-menu-submenu-css.php` (Spec 41 step 15). It is its own
- * module because it is its own element with its own inspector panel ("Menu
- * Button", §9.3): icon/text colour with its glyph-Sweep treatment, the resting
+ * Its own module because it is its own element with its own inspector panel
+ * ("Menu Button", §9.3): icon/text colour with its glyph-Sweep treatment, the resting
  * and hover background, and the size rule that must stop being a fixed square
  * the moment the button carries a word.
  *
@@ -18,7 +17,7 @@ defined( 'ABSPATH' ) || exit;
 
 if ( ! function_exists( 'sgs_nav_bar_menu_trigger_css' ) ) {
 	/**
-	 * Build the menu-button half of nav-menu's scoped <style>.
+	 * Build the menu-button half of the nav bar menu's scoped <style>.
 	 *
 	 * @param array  $attributes   Block attributes.
 	 * @param string $uid_sel      This instance's CSS scope selector (`.{uid}`).
@@ -33,8 +32,8 @@ if ( ! function_exists( 'sgs_nav_bar_menu_trigger_css' ) ) {
 		$t_burger_bg = (string) ( $treatments['burgerBgHoverTreatment'] ?? 'swap' );
 
 		// 4e. Burger colour / resting background / hover / size.
-		// D956 — burgerColourGradient is the gradient sibling (778879732 rollout,
-		// Phase 3); gradient wins when set+valid.
+		// burgerColourGradient is the gradient sibling; the gradient wins when
+		// set+valid.
 		$burger_colour           = isset( $attributes['burgerColour'] ) ? (string) $attributes['burgerColour'] : '';
 		$burger_colour_gradient  = isset( $attributes['burgerColourGradient'] ) ? (string) $attributes['burgerColourGradient'] : '';
 		$burger_colour_effective = sgs_resolve_text_colour_or_gradient( $burger_colour, $burger_colour_gradient );
@@ -77,10 +76,9 @@ if ( ! function_exists( 'sgs_nav_bar_menu_trigger_css' ) ) {
 
 		/*
 		 * RESTING background — the base for burgerHoverColour's hover state (Spec 35
-		 * FR-35-5 STATE_WITHOUT_BASE). Before this, the burger's hover background had
-		 * no resting counterpart: a client could style the hover fill but never the
-		 * button's own resting fill. style.css's `background:none` stays the
-		 * byte-identical default when this is left unset.
+		 * FR-35-5 STATE_WITHOUT_BASE). Without a resting fill, a client could style
+		 * the hover fill but never the button's own resting fill. style.css's
+		 * `background:none` is the default when this is left unset.
 		 */
 		$burger_bg          = isset( $attributes['burgerBg'] ) ? (string) $attributes['burgerBg'] : '';
 		$burger_bg_gradient = sgs_css_gradient_value( $attributes['burgerBgGradient'] ?? '' );
@@ -109,7 +107,7 @@ if ( ! function_exists( 'sgs_nav_bar_menu_trigger_css' ) ) {
 		}
 
 		/*
-		 * Menu-button LABEL typography (Spec 41 Wave 2 J1). Scoped to the TEXT SPAN
+		 * Menu-button LABEL typography. Scoped to the TEXT SPAN
 		 * (`.sgs-nav-bar-menu__burger-text`), never the button itself ($burger_sel), so
 		 * `icon-and-text` mode never accidentally resizes the icon SVG. Both the
 		 * font-family AND font-size inherit-when-blank escape hatches are opted in:

@@ -8,7 +8,7 @@
  * Keywords: footer, sgs, framework, informational, three-column, links, hours, map, address
  * Viewport Width: 1440
  * Inserter: true
- * Description: Three-column footer — business description and socials, quick links and contact hours, map and address with directions. Content auto-populates from Settings > Business Details. Starter template for the sgs_footer CPT (Spec 37 FR-37-8) — built on sgs/site-footer with a 3-column "columns" row.
+ * Description: Three-column footer — business description and socials, quick links and contact hours, map and address with directions. Content auto-populates from Settings > Business Details. Starter template for the sgs_footer CPT, built on sgs/site-footer with a 3-column "columns" row.
  *
  * @package SGS\Theme
  */

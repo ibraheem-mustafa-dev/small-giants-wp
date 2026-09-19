@@ -5,7 +5,7 @@
  * Categories: sgs
  * Block Types: core/post-content
  * Post Types: sgs_mega_menu
- * Description: A logo-tile grid with a side call-to-action panel. Starter template for the sgs_mega_menu CPT (Spec 36 §0.5, brands variant).
+ * Description: A logo-tile grid with a side call-to-action panel. Starter template for the sgs_mega_menu CPT (brands variant).
  *
  * @package SGS\Theme
  */

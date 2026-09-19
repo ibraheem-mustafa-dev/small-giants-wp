@@ -5,7 +5,7 @@
  * Categories: sgs
  * Block Types: core/post-content
  * Post Types: sgs_mega_menu
- * Description: Single-column mega panel starter — one group of links under a heading. Starter template for the sgs_mega_menu CPT (Spec 36, FR-37-10-style starter roster).
+ * Description: Single-column mega panel starter — one group of links under a heading. Starter template for the sgs_mega_menu CPT.
  *
  * @package SGS\Theme
  */

@@ -1,9 +1,9 @@
 <?php
 /**
- * Active header/footer pointer store (FR-37-2, FR-37-25, Spec 37).
+ * Active header/footer/drawer pointer store (FR-37-2, FR-37-25, Spec 37).
  *
- * A header or footer is a post of type `sgs_header` / `sgs_footer`. Exactly one
- * post per type may be marked ACTIVE, and the pointer to it lives in a single
+ * A header, footer or menu drawer is a post of type `sgs_header` /
+ * `sgs_footer` / `sgs_drawer`. Exactly one post per type may be marked ACTIVE, and the pointer to it lives in a single
  * `wp_options` row per type. This class owns that pointer: reading it, writing
  * it, clearing it, and — critically — VALIDATING it before any caller renders
  * from it.
@@ -11,8 +11,8 @@
  * Why validation lives here and not at the call site (FR-37-3 clause (c)):
  * an operator can trash or delete the active post at any time. If the render
  * branch trusted the stored id blindly it would emit an empty header with no
- * error and no failing build — the D338 silent-failure class this spec exists
- * to prevent. `get_active_id()` therefore returns 0 for a missing, trashed,
+ * error and no failing build — the silent failure this spec exists to
+ * prevent. `get_active_id()` therefore returns 0 for a missing, trashed,
  * draft, or wrong-post-type target, and every caller falls through to the
  * immutable framework default (FR-37-4).
  *
@@ -44,12 +44,11 @@ final class Sgs_Active_Layout {
 	public const OPTION_FOOTER = 'sgs_active_footer_cpt_id';
 
 	/**
-	 * Option key holding the active menu-drawer post id (W2-a).
+	 * Option key holding the active menu-drawer post id.
 	 *
-	 * Site-wide default, per Bean's signed gate decision 2026-07-29: ONE drawer is
-	 * Active for the site; a per-burger picker override lands with W2-b. The
-	 * single-pointer shape is what makes that override additive — the burger will
-	 * carry a post id and fall back to this pointer, with no second store.
+	 * ONE drawer is Active for the site; a burger's `drawerRef` (a `sgs_drawer`
+	 * post id, 0 = no pick) overrides it per burger and falls back to this
+	 * pointer.
 	 */
 	public const OPTION_DRAWER = 'sgs_active_drawer_cpt_id';
 
@@ -140,7 +139,7 @@ final class Sgs_Active_Layout {
 	 * Record that a header/footer was served this request by a path OTHER than
 	 * render_active() — specifically the rules-engine / immutable-default path in
 	 * Sgs_Header_Rules::filter_template_part(). This lets the one-header-per-request
-	 * invariant (P-HEADER-DOUBLE-SLOT-NEST) suppress a duplicate second slot
+	 * invariant suppress a duplicate second slot
 	 * regardless of which path served the first header. render_active() sets the
 	 * same flag inline on its own success path. Cleared by reset_request_state().
 	 *
@@ -189,7 +188,7 @@ final class Sgs_Active_Layout {
 		// WordPress short-circuits `pre_render_block` on any NON-NULL return —
 		// not merely a truthy one. So an empty string here would still
 		// short-circuit, and the page would render a blank header with no error:
-		// the D338 silent-failure class, one layer up from the content check
+		// a silent failure, one layer up from the content check
 		// above. Validating post_content is necessary but NOT sufficient, because
 		// a valid, published post whose blocks all fail their render callbacks
 		// yields '' from do_blocks(). Returning null instead lets the caller fall
@@ -292,7 +291,7 @@ final class Sgs_Active_Layout {
 	/**
 	 * Build the front-end preview URL for a layout post.
 	 *
-	 * Points at the site HOME (Bean-chosen 2026-07-27): the header must be seen
+	 * Points at the site HOME: the header must be seen
 	 * against real scrolling content, because sticky / hide-on-scroll /
 	 * transparent are scroll-triggered and cannot be shown in a static editor
 	 * canvas — which is the gap this route exists to close.
@@ -314,9 +313,9 @@ final class Sgs_Active_Layout {
 	/**
 	 * Resolve a valid preview target for THIS request, or 0.
 	 *
-	 * Preview-before-active (B2). Both CPTs are registered `'public' => false`
-	 * (`class-sgs-block-cpts.php:98`), so a layout post has no frontend URL of
-	 * its own; without this route the only way an operator could see their
+	 * Preview-before-active. The layout CPTs are registered `'public' => false`
+	 * (`class-sgs-block-cpts.php::register_post_types`), so a
+	 * layout post has no frontend URL of its own; without this route the only way an operator could see their
 	 * header on a real page was to press "Set as active" — i.e. publish it to
 	 * every visitor before ever looking at it.
 	 *
@@ -407,13 +406,13 @@ final class Sgs_Active_Layout {
 	 * @return int Usable post id, or 0.
 	 */
 	public static function get_active_id( string $area ): int {
-		// Preview-before-active (B2) resolves FIRST and only for this request.
+		// Preview-before-active resolves FIRST and only for this request.
 		//
 		// Deliberately overridden HERE rather than in render_active(), because
 		// this is the single point every consumer funnels through:
 		// Sgs_Header_Rules::filter_template_part() -> render_active() ->
 		// get_active_content() -> here, AND the BEHAVIOUR resolver
-		// SGS_Nav_Menu_Source::get_header_content() (class-sgs-nav-menu-source.php:419)
+		// SGS_Nav_Menu_Source::get_header_content() (class-sgs-nav-menu-source.php)
 		// -> get_active_content() -> here. Overriding only the render path would
 		// preview the markup while sticky / hide-on-scroll / transparent still
 		// resolved from the LIVE header — and those scroll behaviours are exactly

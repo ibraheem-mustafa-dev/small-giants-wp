@@ -4,7 +4,7 @@
  * (FR-37-48, Spec 37).
  *
  * Without this, a fresh SGS install shows an empty "Advanced Headers" /
- * "Advanced Footers" / "Advanced Drawers" list table with no obvious next
+ * "Advanced Footers" / "Menu drawers" list table with no obvious next
  * step. This class runs the same underlying logic as
  * `wp sgs header|footer|drawer seed-starter` (FR-37-30), but as a PUBLISHED,
  * immediately-Active post rather than a draft — the fresh-install list table
@@ -12,9 +12,7 @@
  * operator has to notice and finish.
  *
  * Trigger: {@see register_activation_hook()} ONLY — the single canonical
- * trigger (spec-lawyer finding recorded against FR-37-48: the original
- * wording named two possible triggers with no idempotency guard; one
- * trigger, guarded, is simpler and sufficient). By the time an activation
+ * trigger, guarded for idempotency. By the time an activation
  * hook callback runs, `init` has already fired earlier in the same admin
  * request (plugin activation is processed from an admin-page request, not a
  * bootstrap-time hook), so theme block patterns — including the three
@@ -26,8 +24,7 @@
  * === 0` — reactivating the plugin, or activation firing twice in one
  * request, never inserts a second post once one area already has a
  * published layout. No new option/flag is needed for this guard; the CPT's
- * own publish count IS the guard (per FR-37-48's own Done-when, and per the
- * FR's explicit note that no new `_sgs_is_default` meta was needed either).
+ * own publish count IS the guard, and no `_sgs_is_default` meta is needed.
  *
  * @package SGS\Blocks
  * @since   1.1.0

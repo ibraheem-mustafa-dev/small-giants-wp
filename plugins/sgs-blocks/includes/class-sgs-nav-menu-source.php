@@ -9,8 +9,8 @@
  * FR-36-1 "one menu source"; composite-mirror R-31-9).
  *
  * TWO menu formats resolve here (Spec 36 FR-36-1). **Classic menus are PRIMARY**
- * (Appearance → Menus, `nav_menu` terms); block-based `wp_navigation` posts are
- * the Phase-3 extra. A classic menu is normalised into the same block-shaped
+ * (Appearance → Menus, `nav_menu` terms); block-based `wp_navigation` posts
+ * resolve second. A classic menu is normalised into the same block-shaped
  * array a `wp_navigation` post parses to, so everything downstream —
  * SGS_Nav_Menu_Bar_Renderer::flatten(), the drawer, edit.js's featured mirror —
  * speaks one dialect and needs no knowledge of which format was picked.
@@ -20,8 +20,9 @@
  *      resolved CLASSIC-FIRST, then wp_navigation (see blocks_from_ref).
  *   2. The active header template part → the nav block's ref
  *      (used by the drawer, which does not know the ref itself).
- *   3. Back-compat: a core/navigation block in the header (its ref or inline
- *      innerBlocks) — so an un-migrated header still populates the drawer.
+ *   3. A core/navigation block in the header (its ref or inline
+ *      innerBlocks) — so a header built on the core navigation block still
+ *      populates the drawer.
  *   4. Fallback, in order: (a) a registered classic theme menu location — this
  *      is the one case FR-36-1's "classic is primary" ruling actually governs,
  *      because a location assignment is a deliberate site-owner action; (b) the
@@ -34,10 +35,9 @@
  *      no assignment to anything and no operator intent behind it at all —
  *      unlike a `wp_navigation` post, there is no "was this ever published as
  *      the site's menu" signal to lean on, only "does it exist". Promoting an
- *      unassigned classic menu above a real wp_navigation post let a leftover
- *      QA fixture ("T1 Dropdown Test", the highest `term_id` on the install)
- *      render live on every page in place of the real menu — see D-log entry
- *      for this fix. Do not swap (b) and (c) back without addressing that.
+ *      unassigned classic menu above a real wp_navigation post would let a
+ *      leftover QA fixture (the highest `term_id` on the install) render live on
+ *      every page in place of the real menu. Keep (b) ahead of (c).
  *   5. Empty array (caller then renders a page-list / get_pages fallback).
  *
  * All links resolved here are rendered SERVER-SIDE by the callers (crawlable +
@@ -57,36 +57,28 @@ class SGS_Nav_Menu_Source {
 	/**
 	 * Resolve the nav-holding block names searched for in the header, in priority order.
 	 *
-	 * Order matters: sgs/nav-bar-menu is the canonical SGS bar nav block (D1059
-	 * split from the former sgs/nav-menu, 2026-09-14) — the header-searching branch
-	 * below only ever finds the bar fork, since get_header_content() reads the
-	 * HEADER, not the drawer; sgs/nav-drawer-menu is listed alongside it for the
-	 * same resolution allowlist regardless (D1059 ruling). sgs/adaptive-nav was
-	 * retired (FR-37-21). core/navigation is kept for back-compat with headers not
-	 * yet migrated — WooCommerce hooks its mini-cart/customer-account onto it.
+	 * Order matters: sgs/nav-bar-menu is the canonical SGS bar nav block — the
+	 * header-searching branch below only ever finds the bar, since
+	 * get_header_content() reads the HEADER, not the drawer; sgs/nav-drawer-menu is
+	 * listed alongside it so the same resolution allowlist covers both.
+	 * core/navigation is kept for headers built on the core navigation block —
+	 * WooCommerce hooks its mini-cart/customer-account onto it.
 	 *
-	 * NOT a bare hardcoded const (R-31-1 DB-first). This was `private const
-	 * NAV_BLOCK_NAMES` until Spec 36 Wave-0 flagged it as the exact anti-pattern the
-	 * binding rule forbids. The seed list below is run through two DB/registry-style
-	 * gates instead of being trusted as-is:
+	 * NOT a bare hardcoded const (R-31-1 DB-first). The seed list below is run
+	 * through two DB/registry-style gates instead of being trusted as-is:
 	 *   1. `apply_filters( 'sgs_nav_shared_block_names', ... )` — a future nav-holding
 	 *      block (or a follow-up that declares `supports.sgs.navMenuBlock` in
 	 *      block.json and derives this list from the block registry) can extend or
 	 *      replace the seed without editing this class.
 	 *   2. Pruned to block names actually present in WordPress's OWN
-	 *      `WP_Block_Type_Registry` — a retired/renamed slug drops out on its own,
-	 *      no edit needed here.
+	 *      `WP_Block_Type_Registry` — a slug that is no longer registered drops out
+	 *      on its own, no edit needed here.
 	 *
-	 * Honest ceiling for this pass (documented per the build brief): sgs-framework.db
-	 * already has a `navigation` capability in `block_capabilities`, but it is
-	 * currently assigned to sgs/breadcrumbs and sgs/table-of-contents — neither of
-	 * which is "menu-holding root block in a header row" in this class's sense.
-	 * Routing off that table as-is would silently break menu resolution, so it
-	 * was not used. The clean DB-first fix is a follow-up: either add the real
-	 * nav-holding blocks to `block_capabilities` under a distinct capability (e.g.
-	 * `nav-menu-holder`), or declare `supports.sgs.navMenuBlock` per block.json and
-	 * derive this list from the registry at runtime — both are block.json changes,
-	 * out of scope for this file-only pass.
+	 * The `navigation` capability in sgs-framework.db `block_capabilities` is not
+	 * used to derive this list: it is shared by blocks that are not "menu-holding
+	 * root block in a header row" in this class's sense (sgs/breadcrumbs,
+	 * sgs/table-of-contents), so routing off it as-is would silently break menu
+	 * resolution.
 	 *
 	 * @return string[] Registered nav-holding block names, in priority order.
 	 */
@@ -179,9 +171,8 @@ class SGS_Nav_Menu_Source {
 		// unassigned `nav_menu` term can be dev/QA tooling residue with zero
 		// operator intent behind it, and "most recent" (highest term_id) is an
 		// arbitrary tie-break with no relation to which menu is real content.
-		// It used to sit ahead of 4b and picked exactly such a leftover fixture
-		// site-wide; see the class docblock for the incident this guards
-		// against. Do not move it back above 4b.
+		// Keep it below 4b: above it, it would pick exactly such a leftover
+		// fixture site-wide (see the class docblock).
 		$latest_classic = self::latest_classic_menu_blocks();
 		if ( ! empty( $latest_classic ) ) {
 			return $latest_classic;
@@ -208,12 +199,11 @@ class SGS_Nav_Menu_Source {
 	 * Resolve a menu reference to blocks — CLASSIC menu first, then wp_navigation.
 	 *
 	 * FR-36-1: classic WordPress menus (Appearance -> Menus, `nav_menu` terms) are the
-	 * PRIMARY menu source; block-based `wp_navigation` posts are the Phase-3 extra. A
+	 * PRIMARY menu source; block-based `wp_navigation` posts resolve second. A
 	 * `nav_menu` term id and a `wp_navigation` post id are both plain integers drawn from
-	 * independent sequences, so the same number can name one of each. Bean's ruling
-	 * (2026-07-20): keep the single numeric `ref` and resolve CLASSIC-FIRST — which is
-	 * what "classic is primary" means when the two collide. No second attribute, no
-	 * reshape of the stored value (D270: no deprecations pre-production).
+	 * independent sequences, so the same number can name one of each. The single numeric
+	 * `ref` resolves CLASSIC-FIRST — which is what "classic is primary" means when the
+	 * two collide. No second attribute, no reshape of the stored value.
 	 *
 	 * @param int $ref nav_menu term id (classic) or wp_navigation post id (block).
 	 * @return array Parsed/normalised nav blocks, or empty array when neither resolves.
@@ -246,9 +236,9 @@ class SGS_Nav_Menu_Source {
 	 * second menu format. Nothing downstream changes.
 	 *
 	 * Nesting is preserved (children become the parent's innerBlocks on a
-	 * `core/navigation-submenu`) even though Phase 1's flat bar collapses a submenu to its
-	 * own link — the drawer's accordion (Phase 2) needs the real tree, and discarding it
-	 * here would be a silent data loss of exactly the D338 class.
+	 * `core/navigation-submenu`) even though the flat bar collapses a submenu to its
+	 * own link — the drawer's accordion needs the real tree, and discarding it
+	 * here would be a silent data loss.
 	 *
 	 * Identifier parity: `attrs['id']` is set to the menu item's `object_id` (the target
 	 * post/term id; WordPress sets it to the item's own id for custom links), which is the
@@ -419,28 +409,14 @@ class SGS_Nav_Menu_Source {
 	 *   2. The published `wp_template_part` post named "header".
 	 *   3. `parts/header.html` on disk.
 	 *
-	 * The CPT branch MUST come first, and it is load-bearing rather than a
-	 * convenience. This function is not only used to render — it is also how
-	 * `Sgs_Header_Behaviours` discovers whether the active header wants sticky /
-	 * transparent / shrink, and that class hooks `body_class`, a DIFFERENT hook
-	 * from the `pre_render_block` path that renders the header. So the two read
-	 * the header through two independent routes.
+	 * The CPT branch MUST come first: consumers that read the active header
+	 * reach `get_header_content()` by a different route from the
+	 * `pre_render_block` path that renders it; teaching only the render route
+	 * about the CPT would let the two diverge silently.
 	 *
-	 * Teach only the render route about the CPT and the page looks perfect while
-	 * every behaviour flag silently resolves false: no body classes, no sticky,
-	 * no error, no failing build. That is the D338 silent-failure class, and it
-	 * is exactly what FR-37-6 (emptying `parts/header.html`) would trigger if
-	 * this branch were absent. FR-37-6 is gated on this branch existing.
-	 *
-	 * ⚠ SCOPE OF THAT FIX — do not read it as broader than it is. This closes the
-	 * two-routes divergence for the ACTIVE-CPT case ONLY. The advanced path
-	 * (`Sgs_Header_Rules`, FR-37-20) can select a different header pattern per
-	 * page type, and this function does NOT consult the rules engine — so when a
-	 * rule matches and no CPT is active, the rendered header and the header these
-	 * behaviour flags describe can still be two different things (e.g. body says
-	 * sticky, the rendered per-page header is not). That gap PRE-DATES the CPT
-	 * work and is not introduced here, but it is real and still open. Parked as
-	 * `P-HEADER-RULES-INVISIBLE-TO-BEHAVIOURS`; do not assume it is handled.
+	 * Scope: the ACTIVE-CPT case only — `Sgs_Header_Rules` (FR-37-20) can select
+	 * a different header pattern per page type and this function does not consult
+	 * the rules engine.
 	 *
 	 * @return string Header block markup, or empty string.
 	 */
@@ -502,7 +478,7 @@ class SGS_Nav_Menu_Source {
 	 * Depth-first search through a parsed block tree for a named block.
 	 *
 	 * @param array  $blocks     Parsed blocks array.
-	 * @param string $block_name Fully-qualified block name, e.g. 'sgs/adaptive-nav'.
+	 * @param string $block_name Fully-qualified block name, e.g. 'sgs/nav-bar-menu'.
 	 * @return array|null The found block array, or null.
 	 */
 	public static function find_block_recursive( array $blocks, string $block_name ): ?array {

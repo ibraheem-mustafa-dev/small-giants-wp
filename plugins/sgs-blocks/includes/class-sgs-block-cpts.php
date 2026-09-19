@@ -1,19 +1,21 @@
 <?php
 /**
- * SGS custom post types for advanced headers and footers (FR-S3-4, Spec 17).
+ * SGS custom post types: headers, footers, menu drawers, modals, forms and
+ * choice flows.
  *
- * Registers `sgs_header` and `sgs_footer` CPTs. Each published post
- * auto-registers as a block pattern with `blockTypes` pointing at the
- * appropriate core template-part area so the Site Editor can surface it as a
- * header/footer swap option.
+ * Registers `sgs_header`, `sgs_footer`, `sgs_drawer`, `sgs_modal`, `sgs_form`
+ * and `sgs_choice_flow` (`sgs_mega_menu` is registered by `Sgs_Mega_Menu_CPT`).
+ * Each published header/footer post auto-registers as a block pattern with
+ * `blockTypes` pointing at the appropriate core template-part area so the Site
+ * Editor can surface it as a header/footer swap option.
  *
- * Council M1 — REST read is gated to `edit_theme_options`:
+ * REST read is gated to `edit_theme_options`:
  * All read-path capabilities (`read`, `read_private_posts`) are mapped to
  * `edit_theme_options`, which subscribers do not hold. Combined with
  * `capability_type => 'page'` + `map_meta_cap => true`, the WP REST controller
  * inherits these caps and returns 403 for any user without that capability.
  *
- * Pattern registration runs on `admin_init` (not `init`) per Seat 1 finding:
+ * Pattern registration runs on `admin_init` (not `init`):
  * deferring to `admin_init` avoids a `get_posts()` query on every frontend
  * page load. CPT registration itself must remain on `init` so that permalink
  * rewriting and the REST controller are set up in both contexts.
@@ -29,8 +31,8 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Class Sgs_Block_CPTs
  *
- * Registers sgs_header and sgs_footer CPTs and derives block patterns from
- * their published posts.
+ * Registers the SGS CPTs and derives block patterns from published header and
+ * footer posts.
  */
 final class Sgs_Block_CPTs {
 
@@ -41,40 +43,31 @@ final class Sgs_Block_CPTs {
 	public const FOOTER_CPT = 'sgs_footer';
 
 	/**
-	 * Post type slug for menu-drawer entries (W2-a, merged Spec 36+37 Wave 2).
-	 *
-	 * The off-canvas panel the burger opens. Before this it existed ONLY as a
-	 * `sgs/nav-drawer` block pasted as a SIBLING of `sgs/site-header` inside a
-	 * header pattern (8 patterns each carry their own copy), which meant an
-	 * operator had to find it inside a header layout to change it. The CPT gives
-	 * it its own edit screen, exactly as headers and footers already have.
+	 * Post type slug for menu-drawer entries: the off-canvas panel a burger
+	 * opens, on its own edit screen. A `sgs/nav-bar-menu` burger opens the
+	 * site's Active drawer, or the `sgs_drawer` post picked in its `drawerRef`
+	 * attribute.
 	 */
 	public const DRAWER_CPT = 'sgs_drawer';
 
 	/**
-	 * Post type slug for modal content entries (Task 1, 2026-09-14).
+	 * Post type slug for modal content entries.
 	 *
 	 * A modal's CONTENT (the InnerBlocks that appear inside the dialog panel)
-	 * gets its own edit screen, same reasoning as the drawer above: on a real
-	 * client draft the same size-guide modal opens from six different places
-	 * (footer, product page x2, Help/FAQ, header mega-menu, mobile nav
-	 * drawer), and before this CPT that content had to be pasted into all six
-	 * `sgs/modal` instances separately — six copies to keep in sync by hand.
-	 * A `sgs/modal` block instance now OPTIONALLY points at a published
-	 * `sgs_modal` post via its `modalRef` attribute; when set, render.php
-	 * resolves and renders that post's content instead of the instance's own
-	 * InnerBlocks (see {@see resolve_modal()}). The block's own InnerBlocks
-	 * shape stays fully available (default `modalRef` is 0) — this is an
-	 * ADDITIVE capability, not a replacement, so every existing `sgs/modal`
-	 * instance keeps working unchanged.
+	 * gets its own edit screen, so one modal (a size guide, say) can open from
+	 * many places and be edited once. A `sgs/modal` block instance OPTIONALLY
+	 * points at a published `sgs_modal` post via its `modalRef` attribute; when
+	 * set, render.php resolves and renders that post's content instead of the
+	 * instance's own InnerBlocks (see {@see resolve_modal()}). With the default
+	 * `modalRef` of 0 the block renders its own InnerBlocks.
 	 */
 	public const MODAL_CPT = 'sgs_modal';
 
 	/**
-	 * Post type slug for form definition entries (Phase 1, Spec 42).
+	 * Post type slug for form definition entries (Spec 42).
 	 *
 	 * A `sgs_form` post stores a form's field definitions + settings, edited on
-	 * its own screen rather than inline inside a page. Unlike the four CPTs
+	 * its own screen rather than inline inside a page. Unlike the CPTs
 	 * above, this one carries its OWN dedicated capability (`edit_sgs_forms`)
 	 * rather than the inherited `edit_theme_options` — form-building is an
 	 * everyday content-editing task, not a theme-structure change, so it should
@@ -84,7 +77,7 @@ final class Sgs_Block_CPTs {
 	public const FORM_CPT = 'sgs_form';
 
 	/**
-	 * Post type slug for branching-quiz definition entries (Phase 2, Spec 43).
+	 * Post type slug for branching-quiz definition entries (Spec 43).
 	 *
 	 * A `sgs_choice_flow` post stores a branching quiz's question/answer graph,
 	 * edited on its own screen rather than inline inside a page — same reasoning
@@ -117,10 +110,10 @@ final class Sgs_Block_CPTs {
 	}
 
 	/**
-	 * Register both CPTs on `init`.
+	 * Register the CPTs on `init`.
 	 *
-	 * The `capabilities` map routes every read-path cap to `edit_theme_options`
-	 * (Council M1). `capability_type => 'page'` + `map_meta_cap => true` ensures
+	 * The `capabilities` map routes every read-path cap to `edit_theme_options`.
+	 * `capability_type => 'page'` + `map_meta_cap => true` ensures
 	 * the WordPress core meta-cap mapper honours our capability overrides rather
 	 * than falling back to its own derivation logic.
 	 */
@@ -129,7 +122,7 @@ final class Sgs_Block_CPTs {
 		/**
 		 * Shared capability map — primitive caps only.
 		 *
-		 * Council M1: subscriber-level users cannot list or read entries via REST.
+		 * Subscriber-level users cannot list or read entries via REST.
 		 * All primitives route to `edit_theme_options`. The singular meta-caps
 		 * `edit_post`, `read_post`, `delete_post` are deliberately omitted —
 		 * with `map_meta_cap => true` WP core derives them from these primitives
@@ -186,16 +179,11 @@ final class Sgs_Block_CPTs {
 						'not_found_in_trash' => \__( 'No headers found in Trash.', 'sgs-blocks' ),
 					),
 					'description' => \__( 'Full-editor header layouts selectable as a site header variant.', 'sgs-blocks' ),
-					// FR-37-46 (2026-09-17, Front D): `template` is now RESTORED and
-					// `template_lock` set to 'all', overriding the FR-37-7 empty-post design
-					// this comment used to describe. A new Advanced Header now opens
-					// pre-populated with a single locked `sgs/site-header` block; nothing
-					// else can be inserted as a sibling or appended below it. This
-					// deliberately retires WordPress's native "Choose a pattern" starter
-					// modal for this CPT (a template-locked post is never the empty post
-					// that modal requires) — starter LOOKS move to FR-37-47's preset
-					// control on the now-always-present block instead. See Spec 37
-					// "Front D architecture amendment" for the full rationale.
+					// `template` seeds a single locked `sgs/site-header` block and
+					// `template_lock` is 'all', so nothing else can be inserted as a
+					// sibling or appended below it. WordPress's native "Choose a
+					// pattern" starter modal (which needs an empty post) does not appear;
+					// starter looks come from the preset control (FR-37-47).
 					'template'      => array( array( 'sgs/site-header' ) ),
 					'template_lock' => 'all',
 				)
@@ -221,14 +209,11 @@ final class Sgs_Block_CPTs {
 						'not_found_in_trash' => \__( 'No footers found in Trash.', 'sgs-blocks' ),
 					),
 					'description' => \__( 'Full-editor footer layouts selectable as a site footer variant.', 'sgs-blocks' ),
-					// FR-37-46 (2026-09-17, Front D): `template` is now RESTORED and
-					// `template_lock` set to 'all' (mirrors the sgs_header change above),
-					// overriding the FR-37-7 empty-post design this comment used to
-					// describe. A new Advanced Footer now opens pre-populated with a
-					// single locked `sgs/site-footer` block; nothing else can be
-					// inserted as a sibling or appended below it. Starter LOOKS move to
-					// FR-37-47's preset control instead of the native starter modal. See
-					// Spec 37 "Front D architecture amendment" for the full rationale.
+					// `template` seeds a single locked `sgs/site-footer` block and
+					// `template_lock` is 'all', so nothing else can be inserted as a
+					// sibling or appended below it. WordPress's native "Choose a
+					// pattern" starter modal (which needs an empty post) does not appear;
+					// starter looks come from the preset control (FR-37-47).
 					'template'      => array( array( 'sgs/site-footer' ) ),
 					'template_lock' => 'all',
 				)
@@ -254,19 +239,15 @@ final class Sgs_Block_CPTs {
 						'not_found_in_trash' => \__( 'No menu drawers found in Trash.', 'sgs-blocks' ),
 					),
 					'description' => \__( 'The slide-out panel a burger button opens, editable on its own screen.', 'sgs-blocks' ),
-					// FR-37-46 (2026-09-17, Front D): `template` is now RESTORED and
-					// `template_lock` set to 'all', overriding the FR-37-7/D393 reasoning
-					// this comment used to describe. The D393 concern (`templateLock`
-					// reapplying OVER a block's own existing InnerBlocks children) is a
-					// DIFFERENT WP code path (`useInnerBlockTemplateSync`, a nested-block
-					// mechanism) from this CPT-level, whole-post `template`/`template_lock`
-					// (the editor's root-level template sync) — confirmed safe by the
-					// Task 2 verification spike before this change was made. A new Menu
-					// Drawer now opens pre-populated with a single locked
-					// `sgs/nav-drawer` block; nothing else can be inserted as a sibling
-					// or appended below it. Starter LOOKS move to FR-37-47's preset
-					// control instead of the native starter modal. See Spec 37 "Front D
-					// architecture amendment" for the full rationale.
+					// `template` seeds a single locked `sgs/nav-drawer` block and
+					// `template_lock` is 'all', so nothing else can be inserted as a
+					// sibling or appended below it. WordPress's native "Choose a
+					// pattern" starter modal (which needs an empty post) does not appear;
+					// starter looks come from the preset control (FR-37-47). This
+					// post-level `template_lock` is the editor's root-level template
+					// sync, a different code path from a nested block's `templateLock`
+					// (`useInnerBlockTemplateSync`), which reapplies its template over
+					// existing InnerBlocks children.
 					'template'      => array( array( 'sgs/nav-drawer' ) ),
 					'template_lock' => 'all',
 				)
@@ -292,19 +273,18 @@ final class Sgs_Block_CPTs {
 						'not_found_in_trash' => \__( 'No modals found in Trash.', 'sgs-blocks' ),
 					),
 					'description' => \__( 'Reusable modal content, opened by a Modal block trigger from anywhere on the site — edit once, every trigger pointing at it updates together.', 'sgs-blocks' ),
-					// NO `template` arg — same reason as all three CPTs above
-					// (FR-37-7, 2026-07-24): a registration template makes a new
-					// post non-empty and suppresses WordPress's native "Choose a
+					// NO `template` arg: a registration template would make a new
+					// post non-empty and suppress WordPress's native "Choose a
 					// pattern" starter modal. A `sgs_modal` post is plain content
 					// (a heading + text, a form, an image — whatever the operator
-					// needs inside the dialog), so an empty start is correct here too.
+					// needs inside the dialog), so an empty start is correct.
 				)
 			)
 		);
 
 		/**
 		 * Capability map for `sgs_form` — deliberately its OWN map, not the
-		 * shared `$capabilities` above (Phase 1, Spec 42).
+		 * shared `$capabilities` above (Spec 42).
 		 *
 		 * Every primitive routes to `edit_sgs_forms` instead of
 		 * `edit_theme_options`, so form-building can be assigned to a role
@@ -334,7 +314,7 @@ final class Sgs_Block_CPTs {
 		/**
 		 * Args for `sgs_form` — mirrors `$shared`'s shape but swaps in the
 		 * form-specific capability map and drops `custom-fields` support
-		 * (out of scope for Phase 1; no post-meta is stored on this CPT yet).
+		 * (no post-meta is stored on this CPT).
 		 *
 		 * @var array<string,mixed>
 		 */
@@ -370,9 +350,8 @@ final class Sgs_Block_CPTs {
 						'not_found_in_trash' => \__( 'No forms found in Trash.', 'sgs-blocks' ),
 					),
 					'description' => \__( 'Form definitions, edited on their own screen and rendered by a Form block wherever they are needed.', 'sgs-blocks' ),
-					// NO `template` arg — same reason as all CPTs above (FR-37-7,
-					// 2026-07-24): a registration template makes a new post
-					// non-empty and suppresses WordPress's native "Choose a
+					// NO `template` arg: a registration template would make a new
+					// post non-empty and suppress WordPress's native "Choose a
 					// pattern" starter modal.
 				)
 			)
@@ -380,8 +359,7 @@ final class Sgs_Block_CPTs {
 
 		/**
 		 * Args for `sgs_choice_flow` — mirrors `$form_shared`'s shape
-		 * exactly, reusing the SAME `$form_capabilities` map (Phase 2,
-		 * Spec 43 FR-43-8: "same literal values, not a parallel decision" —
+		 * exactly, reusing the SAME `$form_capabilities` map (Spec 43 FR-43-8:
 		 * one capability governs both CPTs). No `custom-fields` support,
 		 * same reasoning as `sgs_form`.
 		 *
@@ -419,9 +397,8 @@ final class Sgs_Block_CPTs {
 						'not_found_in_trash' => \__( 'No choice flows found in Trash.', 'sgs-blocks' ),
 					),
 					'description' => \__( 'Branching quiz definitions, edited on their own screen and rendered by a Choice Flow block wherever they are needed.', 'sgs-blocks' ),
-					// NO `template` arg — same reason as all CPTs above (FR-37-7,
-					// 2026-07-24): a registration template makes a new post
-					// non-empty and suppresses WordPress's native "Choose a
+					// NO `template` arg: a registration template would make a new
+					// post non-empty and suppress WordPress's native "Choose a
 					// pattern" starter modal.
 				)
 			)
@@ -432,11 +409,11 @@ final class Sgs_Block_CPTs {
 	 * Derive block patterns from published CPT posts.
 	 *
 	 * Runs on `admin_init` only — keeps frontend page loads free of
-	 * `get_posts()` overhead (Seat 1 finding). Draft posts are intentionally
+	 * `get_posts()` overhead. Draft posts are intentionally
 	 * excluded: `post_status => 'publish'` ensures unfinished layouts never
 	 * surface in the pattern inserter.
 	 *
-	 * DRAWER_CPT is deliberately NOT queried here (W2-a). A derived pattern's
+	 * DRAWER_CPT is deliberately NOT queried here. A derived pattern's
 	 * whole purpose is a `blockTypes` target the Site Editor can swap a
 	 * template-part into — and a drawer HAS no template-part area: it is a
 	 * `<dialog>` bound by the Active-drawer pointer, not inserted into a slot.
@@ -546,7 +523,7 @@ final class Sgs_Block_CPTs {
 
 		// `sgs_form` uses its OWN capability ('edit_sgs_forms'), not
 		// 'edit_theme_options' — a user who only holds the new cap must still
-		// see this submenu entry (Phase 1, Spec 42 FR-42-1).
+		// see this submenu entry (Spec 42 FR-42-1).
 		\add_submenu_page(
 			Sgs_Admin_Menu::MENU_SLUG,
 			\__( 'Forms', 'sgs-blocks' ),
@@ -557,8 +534,8 @@ final class Sgs_Block_CPTs {
 		);
 
 		// `sgs_choice_flow` shares the SAME capability as `sgs_form`
-		// ('edit_sgs_forms') — Phase 2, Spec 43 FR-43-8: one capability
-		// governs both CPTs, not a parallel decision.
+		// ('edit_sgs_forms') — Spec 43 FR-43-8: one capability
+		// governs both CPTs.
 		\add_submenu_page(
 			Sgs_Admin_Menu::MENU_SLUG,
 			\__( 'Choice Flows', 'sgs-blocks' ),
@@ -571,9 +548,8 @@ final class Sgs_Block_CPTs {
 
 	/**
 	 * Cap `sgs_form` AND `sgs_choice_flow` revisions at 10; leave every other
-	 * post type's revision count untouched (Phase 1, Spec 42 — decided literal
-	 * value, FR-42-3; extended Phase 2, Spec 43 FR-43-8 to cover
-	 * `sgs_choice_flow` with the SAME literal value, not a second function).
+	 * post type's revision count untouched (Spec 42 FR-42-3; Spec 43 FR-43-8
+	 * covers `sgs_choice_flow` with the same value).
 	 *
 	 * @param int          $num  The number of revisions WP would otherwise keep.
 	 * @param \WP_Post|int $post The post (or post ID) being checked.
@@ -591,8 +567,7 @@ final class Sgs_Block_CPTs {
 
 	/**
 	 * Block a `sgs_form` post's slug from changing once it has at least one
-	 * row in the submissions table (Phase 1, Spec 42 — decided slug-rename
-	 * policy). A silent no-op (keep the old slug) reads better to a non-coder
+	 * row in the submissions table (Spec 42 slug-rename policy). A silent no-op (keep the old slug) reads better to a non-coder
 	 * client than a save failure with no visible reason.
 	 *
 	 * @param array<string,mixed> $data    Slashed post data about to be saved.
@@ -705,8 +680,7 @@ final class Sgs_Block_CPTs {
 	 * `sgs_choice_flow` post it names, or null when there is no valid target.
 	 *
 	 * Same fail-closed shape as `resolve_form()` (never a fatal, degrade to
-	 * null), same by-slug lookup mechanism (Phase 2, Spec 43 — mirrors Phase 1
-	 * exactly, per FR-43-8).
+	 * null), same by-slug lookup mechanism (Spec 43 FR-43-8).
 	 *
 	 * @param string $slug The `flowId` attribute value (a `sgs_choice_flow` post slug, or '' for "not linked").
 	 * @return \WP_Post|null The published choice-flow-definition post, or null.

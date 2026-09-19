@@ -1,8 +1,8 @@
 <?php
 /**
- * Frontend render path for the Active menu drawer (W2-a, merged Spec 36+37 Wave 2).
+ * Frontend render path for the Active menu drawer.
  *
- * WHAT THIS IS, plainly: the slide-out panel a burger opens now lives on its own
+ * WHAT THIS IS, plainly: the slide-out panel a burger opens lives on its own
  * edit screen (the `sgs_drawer` CPT). This class is what puts that panel onto a
  * real page — once, at the end of the document, and only when something on the
  * page actually has a burger to open it.
@@ -10,14 +10,14 @@
  * WHY IT IS NOT A `pre_render_block` FILTER LIKE HEADER AND FOOTER.
  * {@see Sgs_Header_Rules::filter_template_part()} intercepts `core/template-part`
  * because a header and a footer each OWN a template-part slot. A drawer owns no
- * slot: in every one of the 8 header patterns it is a plain SIBLING placed after
- * `</sgs/site-header>` (see theme/sgs-theme/patterns/framework-header-default.php),
- * because its root is a `<dialog>` that promotes to the browser's top layer and
- * `sgs/site-header` is `templateLock:'all'` around exactly three rows (D393). There
- * is therefore no existing hook to mirror, and `wp_footer` is the correct
- * equivalent: document-end, once per page, after every burger has rendered.
+ * slot: its root is a `<dialog>` that promotes to the browser's top layer, and
+ * `sgs/site-header` is `templateLock:'all'` around exactly three rows, so the
+ * drawer cannot live inside it. There is no template-part hook to mirror, and
+ * `wp_footer` is the correct equivalent: document-end, once per page, after every
+ * burger has rendered. A `sgs/nav-drawer` placed directly in content still renders
+ * through the block path.
  *
- * ORDERING IS PROVEN, NOT ASSUMED. Priority 5 is safe for the drawer's scoped CSS
+ * ORDERING. Priority 5 is safe for the drawer's scoped CSS
  * because `class-sgs-css-registry.php` opens ONE whole-page output buffer on
  * `template_redirect` priority 0 and injects the consolidated CSS into the already
  * printed `<head>` when that buffer closes — which is AFTER the whole of
@@ -27,9 +27,9 @@
  *
  * NON-DESTRUCTIVE BY CONSTRUCTION. With no Active drawer pointer set,
  * {@see Sgs_Active_Layout::get_active_content()} returns '' and this class emits
- * nothing at all — so page output is byte-identical to the pre-CPT behaviour and
- * the 8 pattern-embedded drawers keep working untouched. `wp sgs drawer
- * clear-active` reverts the entire binding.
+ * nothing at all — so page output is unchanged, and any `sgs/nav-drawer` block
+ * placed directly in content keeps rendering through the block path. `wp sgs
+ * drawer clear-active` reverts the entire binding.
  *
  * @package SGS\Blocks
  * @since   1.0.0
@@ -51,7 +51,7 @@ final class Sgs_Drawer_Render {
 	private const FOOTER_PRIORITY = 5;
 
 	/**
-	 * The "a burger asked for a drawer" registry (W2-b).
+	 * The "a burger asked for a drawer" registry.
 	 *
 	 * Recorded rather than assumed because rendering a drawer on a page with no
 	 * burger would add a `<dialog>` nothing can open — pure weight on every
@@ -72,7 +72,7 @@ final class Sgs_Drawer_Render {
 	 * Per-request guard: has the `wp_footer` render already been attempted?
 	 *
 	 * Mirrors {@see Sgs_Active_Layout::$render_attempted} and exists for the same
-	 * reason — the drawer's own post content contains a `sgs/nav-menu`, so
+	 * reason — the drawer's own post content can contain a `sgs/nav-bar-menu`, so
 	 * `do_blocks()` below re-enters this class's registry mid-render.
 	 *
 	 * @var bool
@@ -90,7 +90,7 @@ final class Sgs_Drawer_Render {
 	/**
 	 * Reset the per-request state.
 	 *
-	 * COUNCIL FIX (ii). `Sgs_Active_Layout` documents that its statics reset
+	 * `Sgs_Active_Layout` documents that its statics reset
 	 * naturally "because PHP processes terminate at the end of each request" and
 	 * still exposes {@see Sgs_Active_Layout::reset_request_state()} as a seam. A
 	 * fresh static with no such seam would carry stale state through anything that
@@ -103,7 +103,7 @@ final class Sgs_Drawer_Render {
 	}
 
 	/**
-	 * Record that a burger on this page wants a drawer open (W2-b).
+	 * Record that a burger on this page wants a drawer open.
 	 *
 	 * Called from `sgs/nav-bar-menu`'s render.php, which always emits its burger
 	 * markup (CSS decides visibility at `collapsePoint`, so the button exists in
@@ -157,17 +157,17 @@ final class Sgs_Drawer_Render {
 
 	/**
 	 * The `<dialog>` id a burger should target for a given picked drawer post
-	 * id (W2-b).
+	 * id.
 	 *
 	 * `$post_id` of `0` (no specific pick) falls back to the site's single
 	 * Active-drawer pointer ({@see Sgs_Active_Layout::AREA_DRAWER}) — the SAME
 	 * pointer every other AREA_DRAWER consumer reads, per that class's
-	 * `OPTION_DRAWER` docblock ("the burger will carry a post id and fall back
-	 * to this pointer, with no second store"). Whatever post is resolved, the
+	 * `OPTION_DRAWER` docblock (the burger carries a post id and falls back
+	 * to this pointer, with no second store). Whatever post is resolved, the
 	 * actual DOM id is read from ITS OWN `sgs/nav-drawer` block's `drawerRef`
 	 * attribute (mirrors {@see self::active_drawer_ref()}'s resolution), so a
 	 * picker choice always opens the panel it actually points at. Falls back to
-	 * 'sgs-nav-drawer' — byte-identical to the pre-W2-b default — when nothing
+	 * 'sgs-nav-drawer' — the block's default id — when nothing
 	 * resolves, so an untouched instance (no pick, no Active drawer set)
 	 * renders unchanged.
 	 *
@@ -192,7 +192,7 @@ final class Sgs_Drawer_Render {
 	 *
 	 * Every branch below fails CLOSED — emits nothing and leaves the page exactly
 	 * as it was — because the alternative to "no drawer" must never be "an empty
-	 * `<dialog>` and no error" (the D338 silent-failure class).
+	 * `<dialog>` and no error" (a silent failure).
 	 *
 	 * @return void
 	 */
@@ -201,11 +201,10 @@ final class Sgs_Drawer_Render {
 			return;
 		}
 
-		// COUNCIL FIX (iv), first half. `wp_footer` does not fire in the block
-		// editor's ServerSideRender / block-renderer REST route at all
-		// (class-sgs-css-registry.php:32-36), so a page being edited shows no
-		// drawer in the canvas. That limitation is ACCEPTED and DECLARED (Bean,
-		// 2026-07-30) rather than worked around; the operator-facing half is the
+		// `wp_footer` does not fire in the block editor's ServerSideRender /
+		// block-renderer REST route at all (see class-sgs-css-registry.php), so a
+		// page being edited shows no drawer in the canvas. That limitation is
+		// accepted rather than worked around; the operator-facing half is the
 		// editor notice on the burger, wired through {@see self::editor_data()}.
 		// This guard is belt-and-braces: it makes the fork explicit at the render
 		// site instead of relying on a hook that happens not to fire.
@@ -213,24 +212,22 @@ final class Sgs_Drawer_Render {
 			return;
 		}
 
-		// Lazy: a page with no burger keeps byte-identical output.
+		// Lazy: a page with no burger emits nothing here.
 		if ( ! self::has_burger() ) {
 			return;
 		}
 
-		// ── THE LANDMARK GUARD (council BLOCKER 3, still load-bearing under
-		// W2-b). A drawer may ALREADY have painted on this page: any
-		// sibling-embedded `sgs/nav-drawer` block (the pre-Task-6 pattern shape,
-		// left untouched on already-published pages per the non-destructive
-		// property) marks AREA_DRAWER served the moment it renders. Printing a
-		// picked/Active drawer on top of one risks a duplicate `<dialog>` id —
-		// this guard is what stops that, unconditionally, before this class
-		// resolves or prints anything of its own.
+		// ── THE LANDMARK GUARD. A drawer may ALREADY have painted on this page:
+		// a `sgs/nav-drawer` block placed directly in content marks AREA_DRAWER
+		// served the moment it renders. Printing a picked/Active drawer on top of
+		// one would duplicate the `<dialog>` id — this guard stops that,
+		// unconditionally, before this class resolves or prints anything of its
+		// own.
 		if ( Sgs_Active_Layout::has_served( Sgs_Active_Layout::AREA_DRAWER ) ) {
 			return;
 		}
 
-		// ── COUNCIL FIX (iii) — WRITE-ORDERING IS LOAD-BEARING. ───────────────
+		// ── WRITE-ORDERING IS LOAD-BEARING. ───────────────────────────────────
 		// Set the attempt guard BEFORE do_blocks(), exactly as
 		// Sgs_Active_Layout::render_active() does and for the same reason: a
 		// picked drawer's own content may contain a `sgs/nav-bar-menu` (a burger
@@ -241,7 +238,7 @@ final class Sgs_Drawer_Render {
 		self::$render_attempted = true;
 
 		// Resolve each requested pick to a concrete, VALIDATED post id. `0`
-		// (no specific pick, W2-b's default) falls back to the site's single
+		// (no specific pick, the default) falls back to the site's single
 		// Active-drawer pointer — the same one every other AREA_DRAWER consumer
 		// reads (no second store). Distinct picks across multiple burgers on one
 		// page are deduped by resolved id, so the same drawer post never prints
@@ -288,14 +285,13 @@ final class Sgs_Drawer_Render {
 	/**
 	 * Editor-facing summary of the Active drawer, or null when there is none.
 	 *
-	 * COUNCIL FIX (iv), second half. Without this the CPT move would make the
-	 * existing FR-36-9a notice LIE. That notice warns "there is no menu panel for
-	 * it to open" whenever the editor canvas holds no `sgs/nav-drawer` block with
-	 * a matching id — which, once the drawer lives in a CPT, is the NORMAL and
-	 * CORRECT state for every ordinary page. The burger does open something; the
-	 * panel simply is not in this post. So the editor needs to know the Active
-	 * drawer exists, and the notice turns from a false warning into a true
-	 * statement of where to go and edit it.
+	 * Without this the FR-36-9a notice would be false. That notice warns "there is
+	 * no menu panel for it to open" whenever the editor canvas holds no
+	 * `sgs/nav-drawer` block with a matching id — which, with the drawer living in
+	 * a CPT, is the NORMAL and CORRECT state for every ordinary page. The burger
+	 * does open something; the panel simply is not in this post. So the editor
+	 * needs to know the Active drawer exists, and the notice states where to go
+	 * and edit it.
 	 *
 	 * Reads the VALIDATED id: a trashed or unpublished drawer must not be reported
 	 * as one the burger will open, because it will not.
