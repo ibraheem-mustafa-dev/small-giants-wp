@@ -1,6 +1,6 @@
 {
   "_doc": "POC content plan for the sgs/nav-drawer variant exit gate (Spec 36 FR-36-6). Consumed by build-poc-fixtures.py. Every label and every line of copy here was HARVESTED LIVE from the reference site's open drawer and is recorded in labels-<site>.json in .claude/reports/2026-07-28-drawer-code-extraction/. Nothing here is invented: the design gate's §6 rule is that POC fixtures are exact clones INCLUDING content, so a visual difference between our variant and the reference is attributable to the BLOCK, never to content drift. Genericising this copy is a named pre-production step, never a POC step.",
-  "_navMenuAttrs_note": "Authoring block markup directly does NOT apply a registerBlockVariation's seeded child attributes — those only fire when an operator inserts the variation from the inserter. So each variant's sgs/nav-drawer-menu attrs are restated here to match the `navMenu()` seeds in src/blocks/nav-drawer/variations.js exactly.",
+  "_navMenuAttrs_note": "Authoring block markup directly does NOT apply the seeded child attributes a look carries — those only fire when an operator inserts the look itself. So each variant's sgs/nav-drawer-menu attrs are restated here to match the corresponding drawer pattern (theme/sgs-theme/patterns/drawer-<name>.php) exactly.",
   "_known_fidelity_limits": [
     "sgs/social-icons has no Vimeo or Dribbble platform slug (render.php $platform_icons). buck uses Vimeo, dogstudio uses Dribbble — both mapped to platform 'website' with a label override. This is a real framework gap vs the references, recorded not hidden.",
     "dogstudio's decorative index numbers (01-05) beside each link are out of scope by the design gate's own out-of-scope list.",
@@ -26,8 +26,7 @@
         "surfaceBlur": "4px",
         "closeStyle": "text-swap",
         "drawerAlign": "left",
-        "drawerBg": "surface",
-        "variantPreset": "floating-capped-card"
+        "drawerBg": "surface"
       },
       "navMenuAttrs": { "gap": "4px" },
       "children": [
@@ -50,8 +49,7 @@
         "anchor": { "desktop": "trigger", "tablet": "full-screen" },
         "panelSize": { "desktop": "310px" },
         "closeStyle": "text-swap",
-        "drawerAlign": "left",
-        "variantPreset": "anchored-card-stack"
+        "drawerAlign": "left"
       },
       "navMenuAttrs": { "gap": "4px" },
       "children": [
@@ -73,8 +71,7 @@
       "drawerAttrs": {
         "surfaceOpacity": 0.55,
         "closeStyle": "separate-x",
-        "drawerAlign": "left",
-        "variantPreset": "editorial-ghost-list"
+        "drawerAlign": "left"
       },
       "navMenuAttrs": {
         "gap": "4px",
@@ -110,8 +107,7 @@
       "drawerAttrs": {
         "drawerBg": "footer-bg",
         "drawerAlign": "center",
-        "closeStyle": "separate-x",
-        "variantPreset": "centred-statement"
+        "closeStyle": "separate-x"
       },
       "navMenuAttrs": { "gap": "4px", "itemFontSize": { "desktop": 56, "mobile": 36 } },
       "children": [
@@ -147,8 +143,7 @@
       "drawerAttrs": {
         "drawerBg": "primary",
         "drawerAlign": "right",
-        "closeStyle": "separate-x",
-        "variantPreset": "solid-brand-light"
+        "closeStyle": "separate-x"
       },
       "navMenuAttrs": { "gap": "4px", "itemFontWeight": "100" },
       "children": [
@@ -180,8 +175,7 @@
       ],
       "drawerAttrs": {
         "drawerBg": "surface",
-        "closeStyle": "text-swap",
-        "variantPreset": "two-column-editorial"
+        "closeStyle": "text-swap"
       },
       "navMenuAttrs": {
         "gap": "4px",
@@ -208,8 +202,7 @@
       "drawerAttrs": {
         "drawerBg": "footer-bg",
         "drawerAlign": "left",
-        "closeStyle": "separate-x",
-        "variantPreset": "split-zone-serif"
+        "closeStyle": "separate-x"
       },
       "navMenuAttrs": { "gap": "4px" },
       "children": [

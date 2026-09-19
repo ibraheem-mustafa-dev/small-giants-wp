@@ -318,7 +318,7 @@
     "shape": "testimonial's inline 'Layout variant' thumbnail grid (role=\"radiogroup\" of clickable mini-preview tiles) — NOT YET extracted to a shared component",
     "path": "src/blocks/testimonial/edit.js (PanelBody 'Layout variant', ~line 516)",
     "verifiedLive": true,
-    "adoption": "1 of 5 preset-bearing blocks (sgs/testimonial only)",
+    "adoption": "1 of 4 preset-bearing blocks (sgs/testimonial only)",
     "note": "Hand-rolled inline JSX, never extracted — building the actual shared VariantPicker component is future work; this row names the target shape.",
     "noComponentIdentifier2026_08_20": "The thumbnail grid is inline JSX inside testimonial/edit.js's own render body (a role=\"radiogroup\" of <button> tiles), not a separate named function or export — there is nothing to resolve, let alone declare. Left undeclared per the explicit instruction not to invent an identifier where nothing has been extracted yet; canonical reads N/A for this type until a shared VariantPicker component exists."
    },
@@ -338,9 +338,9 @@
      {
       "shape": "a declared variant axis with NO control at all",
       "verifiedLive": true,
-      "why": "sgs/nav-drawer declares variantPreset (7 values) in block.json + supports.sgs.variants; grep for 'variantPreset' in its own edit.js returns ZERO matches; confirmed live — its sidebar shows only Drawer/Visibility conditions/Advanced, no Style/Variant panel of any kind",
-      "liveInstances": 1,
-      "priority": "highest-value single finding in this type — a DB-backed, declared 7-value variant axis a client cannot reach at all"
+      "why": "A block declaring supports.sgs.variants whose variant attribute has no inspector control and no toolbar switcher — the client cannot reach the axis at all. No live instance remains: sgs/nav-drawer was the sole one, and its seven looks are now block patterns (theme/sgs-theme/patterns/drawer-*.php) offered by the drawer starter-look control, so the declared axis was removed rather than given a control.",
+      "liveInstances": 0,
+      "priority": "shape retained as a banned lookalike so a future block reintroducing it is caught"
      }
     ],
     "matchRule": "Structural (visual-picker vs plain-dropdown vs absent), not a JSX-identifier ban — no shared component exists yet."
@@ -352,10 +352,10 @@
     "rule": "a block declaring supports.sgs.variants with a real variant_attr present in the DB blocks.variant_attr column — this is a DB-backed fact, not a derived/self-fulfilling predicate, so it can be used directly (unlike roster.json surfaces.*)"
    },
    "dataCompletenessGap": {
-    "note": "variant_slots (24 rows total, DB query 2026-08-19) is sparse and uneven against the 5 blocks' declared variant values — e.g. sgs/nav-drawer declares 7 variants but only 1 (floating-capped-card) has any variant_slots row at all. Flagged as an honest data gap, not smoothed over."
+    "note": "variant_slots is sparse and uneven against the eligible blocks' declared variant values — several declared variants carry no variant_slots row at all. Flagged as an honest data gap, not smoothed over. (The 2026-08-19 measurement of 24 rows included sgs/nav-drawer, which no longer declares a variant axis; re-measure after the next /sgs-update.)"
    },
    "scope": {
-    "eligible": "5 blocks confirmed via block.json grep, cross-checked identical against DB blocks.variant_attr column, 2026-08-19",
+    "eligible": "4 blocks confirmed via block.json grep, cross-checked against the DB blocks.variant_attr column. sgs/nav-drawer is deliberately absent: its seven looks are block patterns, not block variations.",
     "blocks": [
      {
       "slug": "sgs/hero",
@@ -375,11 +375,6 @@
      {
       "slug": "sgs/testimonial",
       "variantAttr": "variant",
-      "values": 7
-     },
-     {
-      "slug": "sgs/nav-drawer",
-      "variantAttr": "variantPreset",
       "values": 7
      }
     ]

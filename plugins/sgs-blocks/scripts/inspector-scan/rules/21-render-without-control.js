@@ -477,9 +477,10 @@ function resolves( attr, corpus, parts ) {
  * ⚠ KNOWN LIMIT, stated rather than hidden: the two signals are matched across
  * the whole file, not paired within one variation object. A file mixing a
  * transform-scoped variation with an inserter-only one that alone carries the
- * `isActive` would be exempted wrongly. `sgs/nav-drawer` is currently the ONLY
- * block in the framework with a `variations.js`, so the population is one and
- * uniform; tighten to per-object pairing if a second block ever disagrees.
+ * `isActive` would be exempted wrongly. No block in the framework currently ships
+ * a `variations.js`, so the live population is zero and the exemption is exercised
+ * only by this rule's fixtures; tighten to per-object pairing if a real block ever
+ * adopts one.
  */
 function resolvedByVariationSwitcher( ctx, block, attr ) {
 	const file = path.join( ctx.blocksDir, block.tail, 'variations.js' );

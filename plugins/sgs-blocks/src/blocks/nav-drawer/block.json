@@ -42,55 +42,6 @@
 				"clickEffects",
 				"parallax"
 			],
-			"variantAttr": "variantPreset",
-			"variants": {
-				"floating-capped-card": [
-					"variantPreset",
-					"anchor",
-					"panelSize",
-					"surfaceOpacity",
-					"surfaceBlur",
-					"closeStyle",
-					"drawerAlign",
-					"drawerBg"
-				],
-				"anchored-card-stack": [
-					"variantPreset",
-					"anchor",
-					"panelSize",
-					"closeStyle",
-					"drawerAlign"
-				],
-				"editorial-ghost-list": [
-					"variantPreset",
-					"surfaceOpacity",
-					"closeStyle",
-					"drawerAlign"
-				],
-				"centred-statement": [
-					"variantPreset",
-					"drawerBg",
-					"drawerAlign",
-					"closeStyle"
-				],
-				"solid-brand-light": [
-					"variantPreset",
-					"drawerBg",
-					"drawerAlign",
-					"closeStyle"
-				],
-				"two-column-editorial": [
-					"variantPreset",
-					"drawerBg",
-					"closeStyle"
-				],
-				"split-zone-serif": [
-					"variantPreset",
-					"drawerBg",
-					"drawerAlign",
-					"closeStyle"
-				]
-			},
 			"elements": {
 				"dialog": {
 					"label": "Drawer container",
@@ -410,20 +361,6 @@
 			"enum": [
 				"accordion",
 				"drill-down"
-			]
-		},
-		"variantPreset": {
-			"type": "string",
-			"default": "",
-			"enum": [
-				"",
-				"floating-capped-card",
-				"anchored-card-stack",
-				"editorial-ghost-list",
-				"centred-statement",
-				"solid-brand-light",
-				"two-column-editorial",
-				"split-zone-serif"
 			]
 		},
 		"sgsCustomCss": {

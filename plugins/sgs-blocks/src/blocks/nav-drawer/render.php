@@ -741,16 +741,6 @@ if ( '' !== $sgs_nd_anim_class ) {
 	$classes[] = $sgs_nd_anim_class;
 }
 
-// ── variantPreset — the variation slug this instance was inserted from. No
-// CSS behaviour depends on it (each variation's LOOK comes entirely from the
-// attrs it sets, per the binding variant principle), but rendering it as a
-// class makes the attribute non-dead (check-dead-controls.js) and gives
-// per-preset CSS a hook should a future need arise.
-$variant_preset_slug = isset( $attributes['variantPreset'] ) ? sanitize_html_class( (string) $attributes['variantPreset'] ) : '';
-if ( '' !== $variant_preset_slug ) {
-	$classes[] = 'sgs-nav-drawer--preset-' . $variant_preset_slug;
-}
-
 // ── Modality selects the store's showModal()/show() branch. Read here
 // (not sniffed from browser capability, which is always true) and
 // carried as a data attribute so store.js has it before it opens the dialog.
