@@ -1,7 +1,7 @@
 ---
 doc_type: ledger
 project: small-giants-wp
-last_updated: 2026-09-19
+last_updated: 2026-09-20
 ---
 
 # small-giants-wp — LEDGER (the one living status)
@@ -27,10 +27,11 @@ complete" was hollow. Spec 45 (classless FIELD resolution) is built but has no r
 **Nav / header / footer.** Wave 1 (fixtures + verification) is closed. Wave 2 (capabilities) is
 part done: the drawer post type, trigger controls, scoped behaviours and lint gate are built; the
 drawer post picker is built except creating a drawer inline; the 7 drawer looks are built as patterns
-and seeded as Menu drawer posts, with only the Gate 2 re-run to close; the logo source,
-priority+More / bottom-tab modes, scrolled shadow, payment icons, floating pill and the final
-integration re-check are not. Wave 3 is partial. Waves 4 and 5 (the reference clones and the
-clone walker) have not started.
+(no block variations remain), seeded as Menu drawer posts on all three test sites, and applied
+through a starter-look control that undoes in one step and changes only the settings a look owns;
+the logo source, priority+More / bottom-tab modes, scrolled shadow, payment icons, floating pill,
+the formal Gate 2 re-run and the final integration re-check are not done. Wave 3 is partial.
+Waves 4 and 5 (the reference clones and the clone walker) have not started.
 
 **Indus Foods** has its own dedicated test site (`lavender-dinosaur-183533.hostingersite.com`,
 deploy target `indus-test`) because the active header/footer/theme-snapshot pointers are single
@@ -119,9 +120,11 @@ IN FULL before touching anything — do not act on this summary.**
 - **Wave 1** (fixtures + verification) — CLOSED. Residuals: axe on the Gate-3 mega panel shows 6
   primary-colour contrast violations on the Mama's palette, accepted by owner ruling; Bean's-eye on
   mega motion not recorded; cart/search screenshot set not captured.
-- **Wave 2** (capability) — DONE a, d, e, f (live/eye verification owed), g, h, j, k, q, s, t ·
-  PARTIAL b, c, i · NOT DONE l, m, n, o, p, r, u. Gate 2 passed once
-  (`reports/2026-07-30-w2a-gate2-drawer-cpt.md`); a re-run is owed after W2-b/c/d.
+- **Wave 2** (capability) — DONE a, c, d, e, f (live/eye verification owed), g, h, j, k, q, r, s, t ·
+  PARTIAL b (create-inline missing), i · NOT DONE l, m, n, o, p, u. Gate 2 passed once
+  (`reports/2026-07-30-w2a-gate2-drawer-cpt.md`); the formal re-run is owed. Since `variantPreset`
+  was removed the default drawer was checked live on all three test sites (opens, closes on Escape,
+  no preset class, zero stored uses), which is evidence but not the harness run.
 - **Wave 3** (polish) — PARTIAL: FR-37-44/45 verified (`reports/visual-diff/site-header-2026-08-19.md`);
   FR-37-27 settled; simplicity finding 2 (canvas-click selection) open; FR-37-6 per-site CPT
   sourcing unverified; FR-37-26 blind-tester session not done; FR-37-18 conformance partial.
@@ -129,10 +132,12 @@ IN FULL before touching anything — do not act on this summary.**
 - **Wave 5** (clone walker — FR-37-22) — not started.
 
 **First action:** re-run Gate 2 with the `plugins/sgs-blocks/scripts/nav-qa` harness
-(`--open-via keyboard`, with a negative control). W2-c is built: the 7 drawer looks are patterns
-(`theme/sgs-theme/patterns/drawer-*.php`, keyword `featured`), seeded as Menu drawer posts and
-applied through the starter-look control. `variantPreset` is removed from `nav-drawer`, pending the
-lead's Gate 2 confirmation.
+(`--open-via keyboard`, with a negative control), then W2-u (mega + drawer same-page probe on the CPT
+drawer), then W2-b's create-inline drawer (`nav-bar-menu/useDrawerNotice.js::addDrawer`). The 7 drawer
+looks are patterns (`theme/sgs-theme/patterns/drawer-*.php`, keyword `featured`, a plain manual
+keyword), seeded by `Sgs_Starter_Library_Migration` on any site whose set of library patterns
+changed, and labelled "Framework look" in the Menu drawers list. Only the drawer has a library.
+The three test sites (`sandybrown`, `indus-test`, `eye-care-test`) run the same code.
 
 ### Front E — Spec 45 classless FIELD resolution (open)
 
@@ -172,6 +177,11 @@ does not produce real matches on real data for it to consume.
 - **A pre-commit gate can fail SILENTLY** after ~250 lines — never `--no-verify`; use the scoped
   `SGS_VISUAL_GATE_SKIP`/`SGS_INSPECTOR_GATE_SKIP`/`SGS_F5_SKIP` + `*_REASON`.
 - **Run builds synchronously, never backgrounded.**
+- ⛔ **A front-end probe after a deploy can read Hostinger's CDN, not the deploy.** Check
+  `x-hcdn-cache-status` (HIT with `max-age=604800` served 8-hour-old HTML on eye-care-test), add a
+  cache-buster, or purge with the Hostinger MCP `hosting_clearWebsiteCacheV1` (also clears the CDN).
+  `build-deploy.py` clears OPcache, LiteSpeed and the theme pattern cache but not the CDN.
+- ⛔ **A gate-skip reason that claims a live check names the target and the deploy marker it ran on.**
 - **A new `block.json` attribute needs `sgs-update-v2.py --stage 1` immediately** — and a
   brand-new BLOCK also needs its `block_composition` row hand-seeded.
 - **Commit straight to `main`; never a PR, never a stash; integrate after every task.**

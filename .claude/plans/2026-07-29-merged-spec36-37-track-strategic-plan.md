@@ -95,9 +95,9 @@ canary for later waves.
 |---|---|---|---|---|---|
 | W2-i | **DP7 harness fixes** — `plugins/sgs-blocks/scripts/nav-qa/` capture + contrast + fidelity scripts | PARTIAL | Built: the shared `nav-qa/lib/openness-guard.mjs` (exit 3 = VACUOUS) used by four scripts; contrast walks every text element; `--self-test` in five scripts; `labels-<site>.json` for 7 reference sites. Open: `--self-test` on `sweep-drawer-variants.mjs`, `shoot-drawer-pairs.mjs`, `elementfrompoint-sweep.mjs`; the content/label count-fidelity check does not exist; `labels-<site>.json` for Away, ButcherBox, rabbit.tech (after W4-a). Must precede any Wave-4 evidence | 2h (4h) | YES |
 | W2-a | **Drawer CPT** `sgs_drawer` (DP2) | DONE | CPT, Active model, revisions, seed by menu LOCATION lookup, admin "Menu drawer" | — | YES |
-| **GATE 2** | OPEN-state computed-parity, default CPT drawer vs default drawer, property-identical | passed once; re-run owed | Evidence: `reports/2026-07-30-w2a-gate2-drawer-cpt.md`. Re-run fresh after W2-b/c/d complete (harness `--open-via keyboard`, negative control) | — | YES |
+| **GATE 2** | OPEN-state computed-parity, default CPT drawer vs default drawer, property-identical | passed once; formal re-run owed | Evidence: `reports/2026-07-30-w2a-gate2-drawer-cpt.md`. Since `variantPreset` was removed the default drawer was checked live on the canary, `indus-test` and `eye-care-test`: the dialog opens at 375px, closes on Escape, carries no preset class, and no stored content uses the attribute (`wp db query` count 0 on all three). That is evidence, not the harness run (`nav-qa`, `--open-via keyboard`, negative control) | — | YES |
 | W2-b | `drawerRef` → post picker (DP2) | PARTIAL | Built: `nav-bar-menu/block.json::drawerRef` is a post-ID `number`; the picker; the dangling-post notice (FR-36-9a). `nav-drawer/block.json::drawerRef` stays an element-id string. Open (FR-37-43): create-inline — "create a new `sgs_drawer` post from the picker" (`nav-bar-menu/useDrawerNotice.js::addDrawer` inserts a sibling `sgs/nav-drawer` block, seeded with `sgs/nav-drawer-menu`, instead) | 1h (2h) | YES |
-| W2-c | Drawer starter looks: 7 real starter patterns | PARTIAL | Built: seven `sgs_drawer` patterns (`theme/sgs-theme/patterns/drawer-*.php`, keyword `featured`), seeded as published Menu drawer posts marked `_sgs_starter_slug` (`Sgs_Starter_Library_Seeder`), a "Framework look" label and view in the list, and the starter-look control (featured-else-all rule, owned settings, "Keep my blocks" toggle). `nav-drawer` declares no `variantPreset` and registers no block variations (`git grep -n variantPreset -- plugins/sgs-blocks/src` returns nothing). Open: the Gate 2 re-run only (`nav-qa` harness, `--open-via keyboard`, negative control) | 10m (30m) | YES |
+| W2-c | Drawer starter looks: 7 real starter patterns | DONE | Seven `sgs_drawer` patterns (`theme/sgs-theme/patterns/drawer-*.php`, keyword `featured`, a plain manual keyword; each holds only blocks that render real site data), seeded as published Menu drawer posts marked `_sgs_starter_slug` by `Sgs_Starter_Library_Migration` (re-runs when the set of library patterns changes) and `wp sgs drawer seed-starter --all --user=1`, a "Framework look" label and view in the list. The starter-look control lists the `featured` looks (else all), applies in one Undo step, and changes only the settings a look owns; "Keep my blocks" leaves the client's blocks untouched. `nav-drawer` declares no `variantPreset` and registers no block variations (`git grep -n variantPreset -- plugins/sgs-blocks/src` returns nothing). Live-verified 2026-09-19 on all three test sites; only the Gate 2 harness re-run remains | — | YES |
 | W2-d | Migration + seed (DP2) | DONE | Header starter patterns embed no drawer; the per-site seed (FR-37-48). No stored string `drawerRef` exists on any live site, so no re-type sweep is needed (`wp db query "SELECT COUNT(*) FROM wp_posts WHERE post_content LIKE '%\"drawerRef\":\"%'"` returns 0 on the canary, the Indus test site and the Eye Care test site) | — | YES |
 | W2-r | **Spec 36 + Spec 37 same-commit statement of the drawer model** (Spec 37 §1.2) | DONE | Both specs state the drawer as a `sgs_drawer` post, the picker, the seed, and the seven looks as starter patterns (Spec 36 FR-36-9a, Spec 37 FR-37-43) | — | YES |
 | W2-e | **DP4 trigger controls** | DONE | Six attrs on `nav-bar-menu/block.json`: `triggerMode`, `triggerLabel`, `triggerIcon`, `triggerMagnetEnabled`, `triggerMagnetRadius`, `triggerMagnetStrength`. Open-state sync via the global `store('sgs/nav')` (trigger and drawer are separate DOM trees; context-scoped state silently no-ops) | — | YES |
@@ -116,7 +116,7 @@ canary for later waves.
 | W2-t | Doc closure sweep | DONE | Parking entries archived on resolve | — | no |
 | W2-u | **W1 re-verification on the CPT path** (wave exit) | NOT DONE | Re-run the mega + drawer same-page integration probe (focus traps, ESC interplay, non-modal branch) on the CPT-rendered drawer. Do after W2-c | 30m (1h) | YES |
 
-**Net Wave 2:** DONE a, d, e, f (live/eye verification owed), g, h, j, k, q, r, s, t · PARTIAL b, c, i ·
+**Net Wave 2:** DONE a, c, d, e, f (live/eye verification owed), g, h, j, k, q, r, s, t · PARTIAL b, i ·
 NOT DONE l, m, n, o, p, u.
 
 **TEST (critical path):** Happy = default drawer post renders property-identical to the default
@@ -164,8 +164,8 @@ Integration = presets restyle under each client's theme-snapshot tokens (DP5 hom
 ```
 W2-i (remainder) FIRST — harness honesty; Gate 2's re-run and every Wave-4 capture depend on it
 W2-b remainder                                (create-inline)
-W2-c                            (built; the Gate 2 re-run is its only remaining step)
-Gate 2 re-run after W2-b/c/d
+W2-c                            (done; live-verified on all three test sites)
+Gate 2 harness re-run
 W2-u wave exit                  (re-run the integration probe on the CPT path, after W2-c)
 
 Wave 3 after the Wave 2 CP set (polish on final surfaces)
@@ -294,7 +294,7 @@ Stop-loss: any gate <50 → surface pivot-vs-park with two ranked paths; log in 
 
 ## First action (≤5 min, zero dependencies)
 
-Re-run Gate 2 with the `--open-via keyboard` harness against the seeded default drawer.
+Re-run Gate 2 with the `--open-via keyboard` harness against the seeded default drawer, then W2-u, then W2-b's create-inline drawer.
 
 ## References
 
