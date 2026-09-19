@@ -1,0 +1,102 @@
+[
+  {
+    "kind": "derive",
+    "slug": "surface",
+    "_source": "derived",
+    "role": "surface",
+    "confidence": 0.95,
+    "relative_share": 1.0,
+    "value": "#faf8f5",
+    "reason": "Pass B: derived surface by usage-context (share 1.0 within role)"
+  },
+  {
+    "kind": "derive",
+    "slug": "surface-alt",
+    "_source": "derived",
+    "role": "surface-alt",
+    "confidence": 0.7,
+    "relative_share": 0.333,
+    "value": "#bdc1c6",
+    "reason": "Pass B: derived surface-alt by usage-context (share 0.333 within role)"
+  },
+  {
+    "kind": "derive",
+    "slug": "text",
+    "_source": "derived",
+    "role": "text",
+    "confidence": 0.95,
+    "relative_share": 0.667,
+    "value": "#141414",
+    "reason": "Pass B: derived text by usage-context (share 0.667 within role)"
+  },
+  {
+    "kind": "base",
+    "what": "styles.typography",
+    "_source": "declared",
+    "reason": "computed on representative <p> 'I'm an optician who genuinely en'",
+    "fontSize": "16px",
+    "lineHeight": "1.5",
+    "root_px": 16.0
+  },
+  {
+    "kind": "base",
+    "what": "settings.typography.fontSizes[base]",
+    "_source": "declared",
+    "reason": "base body size routed through a non-fluid preset so WP's fluid engine cannot recompute the draft's authored value (FR-33-4)",
+    "size": "16px",
+    "fluid": false
+  },
+  {
+    "kind": "base",
+    "what": "styles.color.background",
+    "_source": "declared",
+    "reason": "widest content-containing ancestor 'html>body>div>div>div' (area 9201600)",
+    "value": "rgb(250, 248, 245)"
+  },
+  {
+    "kind": "base",
+    "what": "styles.elements.heading",
+    "_source": "declared",
+    "reason": "mode line-height ratio 1.0 across non-chrome headings (ratios=[1.0, 1.02, 1.5]); hero outlier excluded",
+    "lineHeight": "1.0",
+    "letterSpacing": "(omitted)"
+  },
+  {
+    "kind": "base",
+    "what": "styles.elements.h1..h6.typography.fontSize",
+    "_source": "declared",
+    "reason": "literal computed fontSize per non-chrome heading tag (overrides the shared preset var for that tag only, no unrelated element touched)",
+    "sizes": {
+      "h1": "63.36px",
+      "h2": "46px",
+      "h3": "20px"
+    }
+  },
+  {
+    "kind": "base",
+    "what": "styles.elements.h1..h6",
+    "reason": "no non-chrome measurement for these levels — framework baseline PRESERVED untouched (blind spot, not measured-absent; deleting it would strip the level from the live site)",
+    "baseline_preserved": "h4,h5,h6"
+  },
+  {
+    "kind": "font-loading",
+    "what": "font-face:Outfit",
+    "reason": "self-hosted a font not already bundled in the framework",
+    "saved_to": "file:./assets/fonts/outfit/outfit-variable-latin.woff2",
+    "source_css_url": "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Roboto:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap"
+  },
+  {
+    "kind": "font-loading",
+    "what": "font-face:Playfair Display",
+    "reason": "self-hosted a font not already bundled in the framework",
+    "saved_to": "file:./assets/fonts/playfair-display/playfair-display-variable-latin.woff2",
+    "source_css_url": "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700;800;900&display=swap"
+  },
+  {
+    "kind": "font-loading",
+    "what": "font-face:Playfair Display",
+    "reason": "self-hosted a font not already bundled in the framework",
+    "saved_to": "file:./assets/fonts/playfair-display/playfair-display-variable-latin.woff2",
+    "source_css_url": "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700;800;900&display=swap"
+  }
+]

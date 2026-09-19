@@ -1,5 +1,54 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1114 [ROUTINE] — Dedicated Eye Care Birmingham test site (sgs-theme + sgs-blocks + WooCommerce) so clone fixes are verified on a REAL rendered page; first real-page numbers
+
+**2026-09-19.** Bean challenged what the fixes were being tested with. Honest answer: unit tests that
+mock the risky boundary plus the pipeline's own dumps from runs with NO deploy target (media sideload
+was a dry run, "validate" only means the markup parses). Nothing had looked at a rendered page
+(project Rule 5 / R-31-11). This closes that gap.
+
+**Built.** Hostinger site `darkcyan-grouse-898606.hostingersite.com` (same Business plan, free
+subdomain, WP 7.1.1, WooCommerce 11.1.1, `sgs-theme` + `sgs-blocks` active), registered as
+`build-deploy.py --target eye-care-test` (`861e2a415`). Credentials (incl. an application password)
+in gitignored `.claude/secrets/eye-care-test.env`. `upload_and_patch.py` now reads its site from
+`SGS_DEPLOY_SITE` (default `sandybrown`, unchanged), keys `WP_URL_<KEY>` with `<KEY>` = name upper-cased
+minus non-alphanumerics. Eye Care's `theme-snapshot.json` RECREATED FROM THE DRAFT by the Spec 33
+extractor (Bean: do not restore the old deleted palette files; the two axis sidecars stay deleted).
+Freshness gate now genuinely passes (it had been skipped on every run). Target page = id 11
+(`/eye-care-birmingham/`).
+
+**How to run (need all three):** `SGS_DEPLOY_SITE=eye-care-test`, `SSL_CERT_FILE` = certifi bundle (Python's
+Windows-store TLS rejects every hostingersite.com host, proven; see memory), then the standard flags
+plus `--deploy-target page:11` and no `--skip-freshness-gate`.
+
+**First real-page numbers (flag OFF, Stage 1 in place), measured on the live page, not the dumps:**
+- Visible text 4,498 chars, **93 unresolved `{{ }}` placeholders visible to a visitor**; none of the
+  ticker strings, and static headings such as "Why buy from me" / "Four reasons" are ABSENT (14
+  non-BEM sections are never converted). So "42/74 complete" is hollow in the strongest sense.
+- `computed-parity.js` with the draft SERVED OVER HTTP (so its runtime renders): STRUCTURE 2%
+  (12/700 elements at 375px). The orchestrator's own Stage 11.6 reported "content 37% / css 4%" but
+  compared against `dc-import-resolved.html` in the run dir, i.e. the raw un-rendered draft: same
+  wrong-directory class as D1112. **Stage 11.6's draft side is invalid for `.dc.html` drafts.**
+
+**Findings queued as separate investigation groups (each needs `/systematic-debugging` from the run dumps):**
+1. Runtime `{{ }}` bindings shipping as content (Stage 2 of D1113; main thread, design-gated).
+2. Theme `templates/page.html`'s big WIDTH MODEL comment leaks as VISIBLE TEXT on the rendered page
+   (starts mid-comment after `<main>`). Unverified whether sandybrown shows it too. Theme bug.
+3. Stage 11.6 must serve the ORIGINAL draft folder over HTTP.
+4. `push-theme-snapshot.py` aborts on a fresh site (server theme.json exists but no `wp_global_styles`
+   post, so the backup gate treats it as "backup failed"; needs `--force-no-backup`) and exits 1 after
+   a successful on-disk push because the REST step has no post to write. Onboarding a new client site
+   should not need a force flag.
+5. Spec 33 output for this draft: 3 palette entries, ALL advisory, so FR-33-5 strips them all; the
+   draft's real accent (`--acc`, three themes taupe/sage/navy set by JS) is not captured, and
+   `surface-alt #bdc1c6` looks like a scrollbar colour. Bean's call whether to push with
+   `--include-advisory`.
+7. 15 classless-review + 14 non-BEM boundaries (LEDGER Front F).
+
+**Mistake made and caught the same hour:** read a stale `C:	mp\live.html` (Python's `/tmp` is not Git
+Bash's `/tmp`) and briefly concluded the new site served Mama's Munches content. False; re-fetch proved
+it. Memory: `git-bash-tmp-and-python-tmp-are-different-folders`.
+
 ## D1113 [ROUTINE] — Stage 1 of the binding-resolution family: loose text next to an element is now lifted into a content block (b32 no longer raises ContentConservationError)
 
 **2026-09-19.** Bean approved a staged design (brainstorming design mode) after D1112 showed the

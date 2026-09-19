@@ -37,7 +37,16 @@ sys.stdout.reconfigure(encoding="utf-8")
 # location at plugins/sgs-blocks/scripts/orchestrator/. parents math shifts
 # to [4] (orchestrator → scripts → sgs-blocks → plugins → repo).
 REPO = Path(__file__).resolve().parents[4]
-ENV = REPO / ".claude/secrets/sandybrown.env"
+# Deploy site. Defaults to the sandybrown canary (unchanged behaviour). Set
+# SGS_DEPLOY_SITE=<name> (e.g. eye-care-test) to deploy to a dedicated test site: the
+# credentials come from .claude/secrets/<name>.env and the keys are WP_URL_<KEY> /
+# WP_USER_<KEY> / WP_APP_PWD_<KEY>, where <KEY> is <name> upper-cased with every
+# non-alphanumeric removed (eye-care-test -> EYECARETEST, indus-test -> INDUSTEST).
+# An env var, not a flag, so the orchestrator's Stage 10 subprocess inherits it with
+# no argument plumbing.
+DEPLOY_SITE = os.environ.get("SGS_DEPLOY_SITE", "sandybrown")
+_SITE_KEY = re.sub(r"[^A-Z0-9]", "", DEPLOY_SITE.upper())
+ENV = REPO / ".claude" / "secrets" / f"{DEPLOY_SITE}.env"
 # The mockup root (used to resolve the draft's relative `../../research/...`
 # image paths) is NOT a module-level constant — it is derived per run inside
 # main() from --client (sites/<client>/mockups/homepage) or --mockup-root, so
@@ -52,9 +61,9 @@ for line in ENV.read_text(encoding="utf-8").splitlines():
     k, _, v = line.partition("=")
     env[k.strip()] = v.strip().strip('"').strip("'")
 
-WP_URL = env["WP_URL_SANDYBROWN"]
-USER = env["WP_USER_SANDYBROWN"]
-PW = env["WP_APP_PWD_SANDYBROWN"]
+WP_URL = env[f"WP_URL_{_SITE_KEY}"]
+USER = env[f"WP_USER_{_SITE_KEY}"]
+PW = env[f"WP_APP_PWD_{_SITE_KEY}"]
 AUTH = "Basic " + base64.b64encode(f"{USER}:{PW}".encode()).decode()
 
 
