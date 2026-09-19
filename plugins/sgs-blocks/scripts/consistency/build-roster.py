@@ -38,9 +38,19 @@ BLOCKS_DIR = Path(__file__).parent.parent.parent / "src" / "blocks"
 
 # Same paint-declaration pattern the survey uses for `paintsOwnSurface`
 # (survey-golden-conformance.js `qualifiesFor()`), duplicated here rather than
-# shared cross-language — kept identical on purpose so the two counts never
-# silently diverge in meaning.
+# shared cross-language — the pattern is kept identical on purpose so the two counts never
+# silently diverge in meaning (this script also strips CSS comments before matching).
 PAINT_DECLARATION_RE = re.compile(r'(?:background(?:-color)?|border-color|[^-\w]color)\s*:')
+
+# CSS comments are not declarations: `/* ... color: ... */` prose must not count,
+# or a comment-only edit changes roster.json.
+CSS_COMMENT_RE = re.compile(r'/\*.*?\*/', re.DOTALL)
+
+
+def count_paint_declarations(css: str) -> int:
+    """Count colour-paint declarations in `css`, ignoring `/* ... */` comments."""
+    return len(PAINT_DECLARATION_RE.findall(CSS_COMMENT_RE.sub('', css)))
+
 
 # Sub-flags that mean core's `color` support paints REAL UI, not just the
 # ability to declare one. Verified 2026-08-19 against live DB rows:
@@ -186,7 +196,7 @@ def build_payload() -> dict:
             css = css_path.read_text(encoding="utf-8")
         except OSError:
             return 0
-        return len(PAINT_DECLARATION_RE.findall(css))
+        return count_paint_declarations(css)
 
     STYLING = {"color", "spacing", "__experimentalBorder", "typography", "shadow"}
     sup_by_block: dict[str, dict[str, str]] = {}
@@ -306,6 +316,20 @@ def self_test() -> int:
 
     payload = build_payload()
     ok = True
+
+    # Case 0: a `color:` inside a CSS comment must not count as a paint declaration,
+    # and a real one must still count (positive control — else the strip could be
+    # deleting everything and passing for the wrong reason).
+    with_comment = "/* colour note\n color: red; background: blue; */\n.a { color: red; }\n"
+    without_comment = ".a { color: red; }\n"
+    if (
+        count_paint_declarations(with_comment) != count_paint_declarations(without_comment)
+        or count_paint_declarations(without_comment) != 1
+    ):
+        print("[self-test] FAIL — paint-declaration count is affected by CSS comments (or misses a real one)")
+        ok = False
+    else:
+        print("[self-test] case 0 (CSS comment not counted, real declaration counted) — correctly PASSED")
 
     with tempfile.TemporaryDirectory(prefix="roster-freshness-selftest-") as tmp:
         tmp_out = Path(tmp) / "roster.json"

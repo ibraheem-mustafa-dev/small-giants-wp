@@ -97,7 +97,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 15,
+        "paintDeclarations": 14,
         "replacedCoreSupports": []
       }
     },
@@ -116,7 +116,7 @@
         "animation": true
       },
       "qualifies": {
-        "paintDeclarations": 14,
+        "paintDeclarations": 13,
         "replacedCoreSupports": []
       }
     },
@@ -160,7 +160,7 @@
         "animation": true
       },
       "qualifies": {
-        "paintDeclarations": 13,
+        "paintDeclarations": 12,
         "replacedCoreSupports": []
       }
     },
@@ -263,7 +263,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 15,
+        "paintDeclarations": 14,
         "replacedCoreSupports": []
       }
     },
@@ -282,7 +282,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 6,
+        "paintDeclarations": 5,
         "replacedCoreSupports": []
       }
     },
@@ -810,7 +810,7 @@
         "animation": true
       },
       "qualifies": {
-        "paintDeclarations": 23,
+        "paintDeclarations": 22,
         "replacedCoreSupports": [
           "anchor",
           "border",
@@ -853,7 +853,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 2,
+        "paintDeclarations": 1,
         "replacedCoreSupports": [
           "anchor",
           "border",
@@ -880,7 +880,7 @@
         "animation": true
       },
       "qualifies": {
-        "paintDeclarations": 3,
+        "paintDeclarations": 2,
         "replacedCoreSupports": [
           "anchor",
           "border",
@@ -931,7 +931,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 3,
+        "paintDeclarations": 2,
         "replacedCoreSupports": []
       }
     },
@@ -1132,7 +1132,7 @@
         "animation": true
       },
       "qualifies": {
-        "paintDeclarations": 12,
+        "paintDeclarations": 9,
         "replacedCoreSupports": [
           "anchor",
           "ariaLabel",
@@ -1196,7 +1196,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 10,
+        "paintDeclarations": 9,
         "replacedCoreSupports": []
       }
     },
@@ -1215,7 +1215,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 26,
+        "paintDeclarations": 25,
         "replacedCoreSupports": []
       }
     },
@@ -1316,7 +1316,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 50,
+        "paintDeclarations": 47,
         "replacedCoreSupports": []
       }
     },
@@ -1677,7 +1677,7 @@
         "animation": true
       },
       "qualifies": {
-        "paintDeclarations": 16,
+        "paintDeclarations": 15,
         "replacedCoreSupports": []
       }
     },
