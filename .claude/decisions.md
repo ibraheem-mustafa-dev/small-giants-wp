@@ -32,8 +32,15 @@ plus `--deploy-target page:11` and no `--skip-freshness-gate`.
 
 **Findings queued as separate investigation groups (each needs `/systematic-debugging` from the run dumps):**
 1. Runtime `{{ }}` bindings shipping as content (Stage 2 of D1113; main thread, design-gated).
-2. Theme `templates/page.html`'s big WIDTH MODEL comment leaks as VISIBLE TEXT on the rendered page
-   (starts mid-comment after `<main>`). Unverified whether sandybrown shows it too. Theme bug.
+2. ~~Theme `templates/page.html` comment leaks as visible text.~~ **FALSE, retracted the same day.** My
+   "visible text" came from a naive `re.sub(r'<[^>]+>','',html)`, which ends the comment at the `>` of
+   `<main>` written inside it; a real browser (Playwright `innerText`) shows no leak, and an
+   independent investigator (`.claude/reports/2026-09-19-inv-theme-comment-leak.md`) found the served
+   comment byte-identical to the template on both this site and sandybrown. Residual, optional:
+   comments containing tag-like text (19 in 11 theme files) are only ever exposed to naive strippers,
+   and every comment ships to visitors in page source. Lesson: never derive "visible text" by regex
+   from HTML; use a browser. The 93-placeholder and missing-heading numbers above were re-verified
+   with Playwright `innerText` and stand (93 visible, 59 distinct).
 3. Stage 11.6 must serve the ORIGINAL draft folder over HTTP.
 4. `push-theme-snapshot.py` aborts on a fresh site (server theme.json exists but no `wp_global_styles`
    post, so the backup gate treats it as "backup failed"; needs `--force-no-backup`) and exits 1 after
