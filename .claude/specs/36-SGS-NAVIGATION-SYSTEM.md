@@ -440,23 +440,23 @@ Header rows are NOT imported into the drawer in any form (there is no "show head
 Built: the per-device `anchor` object (`full-screen` default / `header` derives width + edges from the
 header / `trigger` / `centred`) + `panelSize` (responsive) + surface opacity/blur (`surfaceOpacity`,
 `surfaceBlur`; NO scrim element — 8/8 references have none) + a background-image media layer
-(`backgroundImage*`, `backgroundImageDecorative` — painted as a CSS layer, never a frontend `<img>`) + `closeStyle` + the `variantPreset`
-discriminator (`supports.sgs.variantAttr`, `isActive`) + `sgs/nav-drawer-menu` `listColumns` (in-drawer
-only) + **7 `registerBlockVariation`s** (complete-clone presets from `plugins/sgs-blocks/src/blocks/nav-drawer/variations.js`) +
+(`backgroundImage*`, `backgroundImageDecorative` — painted as a CSS layer, never a frontend `<img>`) + `closeStyle` + `sgs/nav-drawer-menu` `listColumns` (in-drawer
+only) + **seven drawer looks as patterns** (`theme/sgs-theme/patterns/drawer-*.php`, keyword `featured`; the block
+declares no variant attribute and registers no block variations) +
 **backdrop-click-to-close in `store('sgs/nav')`** (a `::backdrop` click closes a partial-width panel;
 full-screen is unaffected by construction). `animateFrom` is `auto|fade` with per-anchor motion defaults.
-- **Design rules (binding):** (1) **the variant axis is the LOOK** — a complete-clone preset of internal
+- **Design rules (binding):** (1) **the look axis is the LOOK** — a complete-clone preset of internal
   make-up (type scale 16–160px across references, columns, alignment, secondary-block roster) that sets
   DEFAULTS and hardcodes NOTHING; anchoring/geometry are plain per-device ATTRIBUTES (the "what the panel
   attaches to" axis survives only as the `anchor` attribute's values). (2) There is no "full-screen below
   collapse point" toggle — incoherent under Burger Menu = Always; per-device `anchor` covers that case
   generically (`trigger` desktop + `full-screen` tablet).
-- **A FLAT variant value holds** (`.claude/reports/2026-07-28-drawer-code-extraction/`): 6 of 7 confirmed
+- **A FLAT look holds** (`.claude/reports/2026-07-28-drawer-code-extraction/`): 6 of 7 confirmed
   sites keep one character at every width; one card is fluid-capped BY DERIVING the header's width (measured
   at 400px: 368×436 = `min(438px, 100vw−32px)`); only one reference swaps compact→takeover below desktop,
   handled by the per-device `anchor`. `side-panel` is not an `anchor` value — zero reference evidence at any
   width.
-- **Fidelity status.** The seven variants reproduce structure and copy, not design: styling, borders,
+- **Fidelity status.** The seven looks reproduce structure and copy, not design: styling, borders,
   symbols, button treatment, cycling background imagery and its motion, and animated secondary media are
   absent. They must not be presented as faithful clones without rework; the Bean's-eye rubric (§8) lists
   the grounds that review checks. Record: `.claude/reports/2026-07-29-nav-drawer-variants-task5-exit-gate.md`.
@@ -464,8 +464,7 @@ full-screen is unaffected by construction). `animateFrom` is `auto|fade` with pe
   references' real labels + copy) so differences attribute to the block; genericising the content is a named
   pre-production step (`P-DRAWER-VARIANT-CONTENT-GENERICISE`). Fixtures that are not exact clones:
   `P-DRAWER-POC-FIXTURES-NOT-EXACT-CLONES`.
-- **DB registration (FR-31-20):** seeded via `/sgs-update` stage 1 — `blocks.variant_attr = 'variantPreset'`.
-  DRAFT-side variant detection needs value/roster matching and belongs to Spec 33 Part 2.
+- **Draft-side look detection** needs value/roster matching and belongs to Spec 33 Part 2.
 - **Design rationale (measured, ~30 sites — `.claude/reports/2026-07-28-nav-drawer-desktop-variant-research.md`):**
   - **ONE block with VARIANTS, not two blocks.** Every production system checked does this (WP core
     Navigation `overlayMenu`; Bricks; Webflow; GOV.UK; Elementor). The documented failure mode is one block
@@ -496,15 +495,14 @@ Full record: `.claude/plans/archive/2026-07-29-spec36-37-merged-architecture-and
    Scope: **site-wide Active default + per-burger override** via the picker. **BUILT:** the CPT, its Active
    model, template lock, and the `wp_footer` render path
    (`plugins/sgs-blocks/includes/class-sgs-drawer-render.php::render_active_drawer`);
-   header starter patterns embed no `sgs/nav-drawer` (only `theme/sgs-theme/patterns/drawer-scratch.php` and
-   `framework-drawer-default.php` do).
+   header starter patterns embed no `sgs/nav-drawer` (only the nine drawer starters do:
+   `theme/sgs-theme/patterns/drawer-scratch.php`, `framework-drawer-default.php` and the seven `drawer-*.php` looks).
 2. **The seven looks as "Menu drawer" starter patterns — BUILT.** Each look is a pattern
    (`theme/sgs-theme/patterns/drawer-*.php`, keyword `featured`) carrying the drawer's own attributes and
    a starting block roster; every value stays editable and nothing locks. They are offered by the
    starter-look control and seeded as Menu drawer posts (Spec 37 FR-37-43, FR-37-47, FR-37-48).
-   **NOT BUILT:** removal of `variantPreset` (still declared in
-   `plugins/sgs-blocks/src/blocks/nav-drawer/block.json` and used by
-   `plugins/sgs-blocks/src/blocks/nav-drawer/variations.js`) once Gate 2 is re-run.
+   `sgs/nav-drawer` declares no `variantPreset` attribute and registers no block variations
+   (`git grep -n variantPreset -- plugins/sgs-blocks/src` returns nothing).
 3. **`drawerRef` — BUILT on the burger, string on the drawer.** `sgs/nav-bar-menu` `drawerRef` is
    `type: number` — a `sgs_drawer` post id, 0 = use the Active drawer (`Sgs_Active_Layout::AREA_DRAWER`),
    resolved by `Sgs_Drawer_Render::drawer_ref_for()`. The picker is a `SelectControl` over `sgs_drawer`

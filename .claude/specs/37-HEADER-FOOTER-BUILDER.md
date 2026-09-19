@@ -496,8 +496,10 @@ construction.
   `-anchored-card-stack`, `-editorial-ghost-list`, `-centred-statement`, `-solid-brand-light`,
   `-two-column-editorial` and `-split-zone-serif` (`theme/sgs-theme/patterns/drawer-*.php`, keyword
   `featured`). A look is data — block markup carrying the drawer's own attributes and a starting
-  block roster — and every value stays editable. The sidebar starter-look control (FR-37-47) lists
-  only the `featured` looks and offers "Keep my content — change the look only".
+  block roster of real site data (menu, logo, business info, social icons) — and every value stays
+  editable. The sidebar starter-look control (FR-37-47) lists only the `featured` looks (the rule is
+  stated there) and offers "Keep my blocks - change the look only". `nav-drawer` declares no
+  `variantPreset` attribute and registers no block variations.
 - **Library** — every `sgs_drawer` pattern except the blank starter is seeded as its own published
   Menu drawer post (`Sgs_Starter_Library_Seeder::seed_library`), marked `_sgs_starter_slug`, never
   Active. The list table labels them "Framework look" and offers a "Framework looks (N)" view. A
@@ -506,16 +508,14 @@ construction.
   picker (FR-37-49).
 
 **Not built:**
-1. Removal of `nav-drawer`'s `variantPreset` attribute and the seven block variations in
-   `nav-drawer/variations.js`, which the patterns now replace.
-2. A measured showcase: the weighted attribute-coverage script that selects which looks are
-   `featured` as competitor-modelled drawers are added.
-3. Inline creation of a drawer post from the `drawerRef` picker. Today
+1. Inline creation of a drawer post from the `drawerRef` picker. Today
    `plugins/sgs-blocks/src/blocks/nav-bar-menu/useDrawerNotice.js::addDrawer` inserts a sibling `sgs/nav-drawer` block instead.
 
 **Done when:** a drawer authored in *SGS → Menu drawers* renders as the site default, a second
 drawer can be picked per-burger, the starter surface offers the featured looks and a chosen
-starter's CHILD TREE survives save, and zero `variantPreset` attrs remain in shipped markup.
+starter's CHILD TREE survives save, and zero `variantPreset` attrs exist in shipped markup
+(`git grep -n variantPreset -- plugins/sgs-blocks/src theme/sgs-theme/patterns` returns nothing).
+Inline creation of a drawer post from the picker is the one open item.
 
 **Non-destructive property:** with no Active drawer pointer set, `get_active_content()` returns
 `''` and `Sgs_Drawer_Render` emits nothing, so page output is unchanged. `wp sgs drawer
@@ -1074,7 +1074,9 @@ opt-in, not default**.
 (expect no output from either); the three search starters exist under `theme/sgs-theme/patterns/`
 scoped `Post Types: sgs_header`.
 **Done when:** zero references to the three behaviour stubs exist (✅); the three search starters
-are offered by the FR-37-47 control (✅).
+are offered by the FR-37-47 control (✅) — under its featured-else-all rule they are shown because no
+`sgs_header` pattern carries the keyword `featured`
+(`git grep -l "Keywords:.*featured" -- theme/sgs-theme/patterns | grep header-` returns nothing).
 
 ### Gate
 
@@ -1439,22 +1441,44 @@ look" holding a grid of buttons on the **Styles** tab of `sgs/site-header`, `sgs
 filtered by the pattern's `postTypes` — no hand-authored per-look attribute dictionary (R-31-1), so
 a starter file change cannot drift from the control. (`getSettings().__experimentalBlockPatterns`
 holds only the small "outside `init`" pattern bucket and misses every `init`-registered starter, so
-it cannot be the source.) Selecting a look (a) sets the root and row ATTRIBUTES through
-`updateBlockAttributes` for stylistic differences, and (b) where content differs (a search-bar
-starter's extra `sgs/product-search`) replaces the affected row's InnerBlocks through
-`replaceInnerBlocks`. A row is matched between the pattern and the live post by its `rowSlot`
-attribute, never by array position. `metadata` is stripped before every write and the control never
-calls `insertBlock` with a pattern. Everything is an ordinary `core/block-editor` store dispatch inside
-the editor session: no new REST route, no new nonce, no new sanitisation surface, and switching looks
-is a normal Undo-able editor action. The control shows no derived "active look" indicator.
+it cannot be the source.)
+
+**Which looks are listed — the featured-else-all rule.** Of the patterns that qualify for the CPT,
+if any carries the pattern keyword `featured` the control lists only those; otherwise it lists every
+qualifying pattern. `featured` is a plain manual keyword on a pattern file; no script scores or
+selects it. The seven drawer looks carry it, so the drawer control lists the seven; no header or
+footer pattern carries it, so those controls list every qualifying starter (including the three
+FR-37-31 search starters).
+
+**Owned settings.** A look's OWNED SETTINGS are the attributes that any look for that CPT writes
+explicitly, derived from the qualifying patterns at run time. Applying a look sets only owned
+settings — to the look's value where it states one, otherwise to the block's default — and never
+touches any other setting (for example `drawerRef`, `ariaLabel` or `backgroundImage`). Applying is
+done through `updateBlockAttributes`, matching a row between the pattern and the live post by its
+`rowSlot` attribute, never by array position.
+
+**Keep my blocks.** The panel carries a toggle "Keep my blocks - change the look only". ON leaves the
+block's inner content untouched and applies the owned settings to matching child blocks by block name
+(for example the drawer's menu). OFF also replaces the inner content through `replaceInnerBlocks`
+(where content differs, such as a search-bar starter's extra `sgs/product-search`). One Undo reverts
+an application in full, settings and content together.
+
+**Real data only.** A look contains only blocks that render real site data (menu, logo, business
+info, social icons) — no sample copy and no destination-less buttons. `metadata` is stripped before
+every write and the control never calls `insertBlock` with a pattern. Everything is an ordinary
+`core/block-editor` store dispatch inside the editor session: no new REST route, no new nonce, no new
+sanitisation surface. The control shows no derived "active look" indicator.
 
 **`sgs_mega_menu` keeps FR-37-7's native picker;** this FR does not touch it.
 
 **Status:** `BUILT`.
-**Done when:** creating a post of any of the three types shows the control listing every look (every
-pattern whose `Post Types:` names that CPT); selecting one applies the matching attributes and/or row
-content, verified by reading the saved `post_content` (not editor state); switching to a DIFFERENT
-look afterward reapplies correctly; a single Undo reverts to the prior state; no
+**Done when:** creating a post of any of the three types shows the control listing the looks the
+featured-else-all rule selects (the seven `featured` looks for the drawer; every qualifying pattern
+for header and footer); selecting one sets only the owned settings and leaves `drawerRef`,
+`ariaLabel` and `backgroundImage` untouched, verified by reading the saved `post_content` (not editor
+state); with "Keep my blocks - change the look only" ON the inner blocks are unchanged and OFF they
+are replaced; switching to a DIFFERENT look afterward reapplies correctly; a single Undo reverts
+settings and content in full; no
 `metadata.patternName`/`metadata.name` provenance stamp appears on any resulting block; and the
 FR-37-26 operator-simplicity proxy arm has been run against this flow with the result recorded
 (PASS: `reports/fr-37-26-simplicity-test/2026-09-17-starter-look-flow-re-run.md`).
@@ -1480,9 +1504,13 @@ names the area's CPT in `Post Types:`, except the blank starter (`sgs/<area>-scr
 and never marks them Active. Only areas listed in `Sgs_Starter_Library_Seeder::LIBRARY_AREAS` have a
 library (the drawer). Each post carries private meta `_sgs_starter_slug` = its pattern slug; a pattern
 is skipped when any post of that CPT in any status, trash included, carries the marker, so
-reactivation never duplicates a look and never overwrites a client's edited copy.
-`wp sgs drawer seed-starter --all --user=1` runs the same method for looks added after activation
-(idempotent). `Sgs_Starter_Library_Admin` adds a "Framework look" post-state and a "Framework looks
+reactivation never duplicates a look and never overwrites a client's edited copy; emptying the bin
+deletes the post and its marker, so that look is created again by the next seeding. Three entry
+points call `seed_library`: plugin activation, a versioned migration (`Sgs_Migrations`), and
+`wp sgs drawer seed-starter --all --user=1` for looks added later (idempotent). The single-slug form
+`wp sgs drawer seed-starter <slug>` creates a plain draft with no marker and is not part of the
+library. Seeded looks contain only blocks that render real site data (menu, logo, business info,
+social icons). `Sgs_Starter_Library_Admin` adds a "Framework look" post-state and a "Framework looks
 (N)" view to the CPT list table. A pattern file added by a deploy registers only after the theme
 pattern cache is cleared, which `build-deploy.py` does.
 
@@ -1511,15 +1539,15 @@ there is no second "has this drawer printed yet" tracker.
 
 **Header and footer starter patterns embed no `sgs/nav-drawer`.** A header/footer post therefore
 contains nothing but its own locked wrapper: FR-37-46 blocks any other block, and the drawer is a
-separate post. Only `drawer-scratch.php` and `framework-drawer-default.php` contain a `sgs/nav-drawer`
-(they are the drawer starters). The landmark guard of FR-37-43 stays in place for any header/footer
+separate post. Only the nine drawer starter patterns contain a `sgs/nav-drawer` — `drawer-scratch.php`,
+`framework-drawer-default.php` and the seven `drawer-*.php` looks (they are the drawer starters). The landmark guard of FR-37-43 stays in place for any header/footer
 content that still carries a sibling-embedded drawer.
 
-**Status:** `BUILT`. The FR-37-43 clauses still NOT-BUILT are: inline creation of a drawer post from
-the picker, the 7 drawer looks as starter patterns, and removal of
-`nav-drawer`'s `variantPreset`.
+**Status:** `BUILT`. The one FR-37-43 clause still NOT-BUILT is inline creation of a drawer post
+from the picker.
 **Done when:** `drawerRef` on `sgs/nav-bar-menu` is a post picker (no free-text id field);
-`git grep -l "wp:sgs/nav-drawer" -- theme/sgs-theme/patterns` lists only the two drawer starters; a
+`git grep -l "wp:sgs/nav-drawer " -- theme/sgs-theme/patterns` lists only the nine `drawer-*.php` /
+`framework-drawer-default.php` starters; a
 fresh header/footer created through FR-37-47 has no drawer content unless the operator explicitly
 picks one through the picker; and the landmark guard still protects any pre-existing
 sibling-embedded drawer from double-rendering.

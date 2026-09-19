@@ -26,7 +26,8 @@ complete" was hollow. Spec 45 (classless FIELD resolution) is built but has no r
 
 **Nav / header / footer.** Wave 1 (fixtures + verification) is closed. Wave 2 (capabilities) is
 part done: the drawer post type, trigger controls, scoped behaviours and lint gate are built; the
-drawer post picker is built except creating a drawer inline; the 7 drawer starter patterns, logo source,
+drawer post picker is built except creating a drawer inline; the 7 drawer looks are built as patterns
+and seeded as Menu drawer posts, with only the Gate 2 re-run to close; the logo source,
 priority+More / bottom-tab modes, scrolled shadow, payment icons, floating pill and the final
 integration re-check are not. Wave 3 is partial. Waves 4 and 5 (the reference clones and the
 clone walker) have not started.
@@ -36,7 +37,7 @@ deploy target `indus-test`) because the active header/footer/theme-snapshot poin
 GLOBAL `wp_options` rows per site. Its content build is documented in `sites/indus-foods/CLAUDE.md`.
 
 Things that need Bean directly, not a subagent: the drawer-burger click retest, the mega-motion
-Bean's-eye check, the choice of mechanism for the drawer starter looks (W2-c), and Spec 42/43
+Bean's-eye check, and Spec 42/43
 Phase 3's precondition (real WooCommerce catalogue data).
 
 ## Blockers
@@ -119,7 +120,7 @@ IN FULL before touching anything — do not act on this summary.**
   primary-colour contrast violations on the Mama's palette, accepted by owner ruling; Bean's-eye on
   mega motion not recorded; cart/search screenshot set not captured.
 - **Wave 2** (capability) — DONE a, d, e, f (live/eye verification owed), g, h, j, k, q, s, t ·
-  PARTIAL b, i · NOT DONE c, l, m, n, o, p, r, u. Gate 2 passed once
+  PARTIAL b, c, i · NOT DONE l, m, n, o, p, r, u. Gate 2 passed once
   (`reports/2026-07-30-w2a-gate2-drawer-cpt.md`); a re-run is owed after W2-b/c/d.
 - **Wave 3** (polish) — PARTIAL: FR-37-44/45 verified (`reports/visual-diff/site-header-2026-08-19.md`);
   FR-37-27 settled; simplicity finding 2 (canvas-click selection) open; FR-37-6 per-site CPT
@@ -127,9 +128,11 @@ IN FULL before touching anything — do not act on this summary.**
 - **Wave 4** (proof gate — 10 client clones, Bean's-eye per clone) — not started.
 - **Wave 5** (clone walker — FR-37-22) — not started.
 
-**First action:** confirm with Bean how the 7 drawer starter looks (W2-c) are delivered — recommended:
-as starter patterns surfaced through the starter-look control already in `nav-drawer/edit.js` — then
-build them, re-run Gate 2, and remove `variantPreset`.
+**First action:** re-run Gate 2 with the `plugins/sgs-blocks/scripts/nav-qa` harness
+(`--open-via keyboard`, with a negative control). W2-c is built: the 7 drawer looks are patterns
+(`theme/sgs-theme/patterns/drawer-*.php`, keyword `featured`), seeded as Menu drawer posts and
+applied through the starter-look control. `variantPreset` is removed from `nav-drawer`, pending the
+lead's Gate 2 confirmation.
 
 ### Front E — Spec 45 classless FIELD resolution (open)
 
@@ -142,9 +145,6 @@ does not produce real matches on real data for it to consume.
   clicks failed to open the drawer in automated testing) still occurs now the duplicate-burger fix
   has shipped. If it still fails, dispatch a fresh `/systematic-debugging`.
 - **Mega-motion Bean's-eye (R-31-13).** Book it with the next live URL.
-- **Drawer starter-look mechanism (W2-c).** The template lock stops the native picker firing for an
-  `sgs_drawer` post; recommended: surface the 7 looks through the starter-look control already
-  mounted in `nav-drawer/edit.js`.
 - **Spec 42/43 Phase 3 precondition.** Real WooCommerce attribute/variation catalogue data must
   exist before Phase 3 (priced WC-variation steps) can be built — a WooCommerce-admin
   catalogue-setup task, not block-engine work.

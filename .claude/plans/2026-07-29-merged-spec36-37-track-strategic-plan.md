@@ -97,7 +97,7 @@ canary for later waves.
 | W2-a | **Drawer CPT** `sgs_drawer` (DP2) | DONE | CPT, Active model, revisions, seed by menu LOCATION lookup, admin "Menu drawer" | — | YES |
 | **GATE 2** | OPEN-state computed-parity, default CPT drawer vs default drawer, property-identical | passed once; re-run owed | Evidence: `reports/2026-07-30-w2a-gate2-drawer-cpt.md`. Re-run fresh after W2-b/c/d complete (harness `--open-via keyboard`, negative control) | — | YES |
 | W2-b | `drawerRef` → post picker (DP2) | PARTIAL | Built: `nav-bar-menu/block.json::drawerRef` is a post-ID `number`; the picker; the dangling-post notice (FR-36-9a). `nav-drawer/block.json::drawerRef` stays an element-id string. Open (FR-37-43): create-inline — "create a new `sgs_drawer` post from the picker" (`nav-bar-menu/useDrawerNotice.js::addDrawer` inserts a sibling `sgs/nav-drawer` block, seeded with `sgs/nav-drawer-menu`, instead) | 1h (2h) | YES |
-| W2-c | Drawer starter looks: 7 real starter patterns | PARTIAL | Built: seven `sgs_drawer` patterns (`theme/sgs-theme/patterns/drawer-*.php`, keyword `featured`), seeded as published Menu drawer posts marked `_sgs_starter_slug` (`Sgs_Starter_Library_Seeder`), a "Framework look" label and view in the list, and the starter-look control filtered to `featured` with a keep-content toggle. Open: re-run Gate 2, then remove `variantPreset` and its variations (`nav-drawer/block.json`, `render.php`, `variations.js`, `index.js`) so `git grep variantPreset -- plugins/sgs-blocks/src` returns nothing; the weighted coverage script that selects the `featured` set as competitor drawers are added | 30m (1h) | YES |
+| W2-c | Drawer starter looks: 7 real starter patterns | PARTIAL | Built: seven `sgs_drawer` patterns (`theme/sgs-theme/patterns/drawer-*.php`, keyword `featured`), seeded as published Menu drawer posts marked `_sgs_starter_slug` (`Sgs_Starter_Library_Seeder`), a "Framework look" label and view in the list, and the starter-look control (featured-else-all rule, owned settings, "Keep my blocks" toggle). `nav-drawer` declares no `variantPreset` and registers no block variations (`git grep -n variantPreset -- plugins/sgs-blocks/src` returns nothing). Open: the Gate 2 re-run only (`nav-qa` harness, `--open-via keyboard`, negative control) | 10m (30m) | YES |
 | W2-d | Migration + seed (DP2) | DONE | Header starter patterns embed no drawer; the per-site seed (FR-37-48). No stored string `drawerRef` exists on any live site, so no re-type sweep is needed (`wp db query "SELECT COUNT(*) FROM wp_posts WHERE post_content LIKE '%\"drawerRef\":\"%'"` returns 0 on the canary, the Indus test site and the Eye Care test site) | — | YES |
 | W2-r | **Spec 36 + Spec 37 same-commit statement of the drawer model** (Spec 37 §1.2) | DONE | Both specs state the drawer as a `sgs_drawer` post, the picker, the seed, and the seven looks as starter patterns (Spec 36 FR-36-9a, Spec 37 FR-37-43) | — | YES |
 | W2-e | **DP4 trigger controls** | DONE | Six attrs on `nav-bar-menu/block.json`: `triggerMode`, `triggerLabel`, `triggerIcon`, `triggerMagnetEnabled`, `triggerMagnetRadius`, `triggerMagnetStrength`. Open-state sync via the global `store('sgs/nav')` (trigger and drawer are separate DOM trees; context-scoped state silently no-ops) | — | YES |
@@ -164,7 +164,7 @@ Integration = presets restyle under each client's theme-snapshot tokens (DP5 hom
 ```
 W2-i (remainder) FIRST — harness honesty; Gate 2's re-run and every Wave-4 capture depend on it
 W2-b remainder                                (create-inline)
-W2-c                            (7 drawer starter patterns via the starter-look control)
+W2-c                            (built; the Gate 2 re-run is its only remaining step)
 Gate 2 re-run after W2-b/c/d
 W2-u wave exit                  (re-run the integration probe on the CPT path, after W2-c)
 
@@ -213,7 +213,7 @@ visible.
 | Harness false-passes (a check that passes vacuously) | High — Bean trust | W2-i ships negative controls (`--self-test` style) BEFORE any Wave-4 evidence is captured |
 | Gate 2 parity measured on a CLOSED drawer would be vacuous | High | Gate 2 parity is OPEN-state via the guarded harness, with negative control |
 | Unbounded loop-back on WebGL/motion-heavy references | High | W4-c termination rule — Tier-G/WebGL gaps route to Spec 38 or a Bean trim decision |
-| Rollback after destructive attr cuts is multi-commit on a shared worktree | Medium | Gate 2 parity passes before `variantPreset` is removed |
+| Rollback after destructive attr cuts is multi-commit on a shared worktree | Medium | Gate 2 re-run on the drawer after `variantPreset` is gone |
 | Licensed fonts/imagery read as capability defects | Medium | W4-a2 substitution policy signed by Bean before W4-b |
 | Specs drift from the drawer CPT model | Medium | W2-r same-commit statement in both specs |
 | Shared worktree collision with a co-active track | Medium | Commit exact paths; never `git add -A`; branch re-check in the commit command |
@@ -294,8 +294,7 @@ Stop-loss: any gate <50 → surface pivot-vs-park with two ranked paths; log in 
 
 ## First action (≤5 min, zero dependencies)
 
-Re-run Gate 2 with the `--open-via keyboard` harness against the seeded default drawer, then remove
-`variantPreset` and the seven variations once it passes.
+Re-run Gate 2 with the `--open-via keyboard` harness against the seeded default drawer.
 
 ## References
 

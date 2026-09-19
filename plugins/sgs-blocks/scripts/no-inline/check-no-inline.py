@@ -99,7 +99,7 @@ except Exception:
 # not distinguish 'clean' from 'saw nothing'. Either re-seed, or make the gate
 # fail when a canary URL yields zero sgs blocks - do not simply drop the URL.
 CANARY_URLS = [
-    "https://palestine-lives.org/",                                            # Indus (page 13 front)
+    "https://lavender-dinosaur-183533.hostingersite.com/",                     # Indus Foods test site (indus-test) front page
     "https://sandybrown-nightingale-600381.hostingersite.com/",                # Mama's (staging canary)
     "https://sandybrown-nightingale-600381.hostingersite.com/spec32-guard-capture-canary/",  # seeded 2026-08-07, page 2164
 ]
@@ -141,9 +141,8 @@ def scan_html_deep(html: str) -> dict[str, dict]:
     descendant to its nearest SGS ancestor produces FALSE POSITIVES: a CORE
     block nested inside an SGS block (``core/heading`` inside
     ``sgs/site-footer-row``) carries WP core's OWN inline serialisation of its
-    native supports, which FR-32-1 does not govern. Measured on the
-    palestine-lives canary: a naive scan flagged 4 such core-block elements;
-    the core-aware rule below flags 0. So the ownership rule is: attribute an
+    native supports, which FR-32-1 does not govern. A naive scan flags those
+    core-block elements; the core-aware rule below does not. So the ownership rule is: attribute an
     element to the nearest enclosing block root of ANY kind, and flag ONLY when
     that root is an SGS one — a core root SHADOWS its SGS ancestor.
 

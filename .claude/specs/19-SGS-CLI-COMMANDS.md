@@ -400,7 +400,11 @@ included, already carries its slug, so re-running never duplicates a look or ove
 edited copy. The blank `sgs/<area>-scratch` starter and the area's default pattern are never
 seeded as looks. Only areas listed in `Sgs_Starter_Library_Seeder::LIBRARY_AREAS` have a
 library (currently `drawer`); `--all` on another area errors. `--all` and a slug are mutually
-exclusive. The same seeding runs on plugin activation (`Sgs_Header_Footer_Starter_Seeder::seed_all()`).
+exclusive. Run it with `--user=1` (a user with `edit_theme_options`). The same library seeding
+(`Sgs_Starter_Library_Seeder::seed_library`) also runs on plugin activation and from a versioned
+migration (`Sgs_Migrations`); the single-slug form above is a plain draft with no `_sgs_starter_slug`
+marker and is not part of the library. A look already present in any status, trash included, is not
+re-created; emptying the bin removes the post and its marker, so the look returns on the next seeding.
 
 ```bash
 wp sgs header list
@@ -671,8 +675,9 @@ python plugins/sgs-blocks/scripts/build-deploy.py --verify-url https://sandybrow
   deleted, so a bad deploy is one `mv` from recovery.
 - **Build check.** Refuses if `plugins/sgs-blocks/build/` is missing and `--skip-build` is
   set.
-- **Cache purge.** After deploy it purges both cache layers — OPcache through an HTTPS
-  probe and the LiteSpeed page cache through wp-cli (opt out: `--skip-purge`).
+- **Cache purge.** After deploy it purges three cache layers (`build-deploy.py::step_purge_caches`)
+  — OPcache through an HTTPS probe, the LiteSpeed page cache through wp-cli, and the theme
+  pattern cache so a newly added pattern file registers (opt out: `--skip-purge`).
 
 **Pipeline:** `npm run build` → tar archive → scp → ssh extract + rotate-to-`.bak` + move →
 local cleanup, then the cache purge and the post-deploy smoke test.

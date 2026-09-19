@@ -38,7 +38,7 @@ orchestrator.py  →  dispatch_table.resolver_id(block, layer, property)  →  r
 | Columns & gaps | `resolvers/grid.py` |
 | Fonts / text styling | `resolvers/typography.py` |
 | Quote / name / stars (single text bits) | `resolvers/scalar_content.py` |
-| Images / video | `resolvers/scalar_media.py` |
+| Images / video | `services/field_extractors.py::extract_field_value` (the `image-object` role, using `services/lift_helpers.py::scalar_media_from_img` and the run's media map); video elements are lifted in `services/extraction.py`. No `resolvers/` module owns media |
 
 ## Anti-cheat gates (converter/gates/)
 

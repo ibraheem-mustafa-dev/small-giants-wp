@@ -149,7 +149,7 @@ definition-of-done (Part L → fold into `block-migration-DONE-checklist.md` + a
 | Shadow | real X/Y/blur/spread/inset builder (shape only) **+ colour/alpha as a split sibling attribute routed through `SgsColourPanel`** (not embedded in the builder), presets on top; multi-layer ideal | **None/Small/Medium only** |
 | Selection | `ToggleGroupControl` (2–5 short); `ComboboxControl` (>~10, searchable); `FormTokenField` (multi-value) | comma-text; giant Select |
 | Media/gallery | `multiple="add"` + `gallery` + array attr + `MediaUploadCheck` + drag-drop | scalar attr + single MediaUpload |
-| Link/CTA | **`LinkPopoverField` / `LinkPopoverContent`** (canonical). `SgsLinkControl` is not canonical; blocks still mounting it are listed by inspector-scan rule `27-superseded-link-control`. | raw URL `TextControl` |
+| Link/CTA | **`LinkPopoverField` / `LinkPopoverContent`** (canonical). `SgsLinkControl` is not canonical; inspector-scan rule `27-superseded-link-control` flags any block mounting a control by that name. | raw URL `TextControl` |
 | Typography | full set: `FontSizePicker` (presets; NOT fluid) + `FontAppearanceControl` + line-height via `ResponsiveControl`+`UnitControl` (contract §4.1) + letter-spacing/transform/decoration | fontSize only |
 | Image | size dropdown (attachment `sizes`) + aspectRatio + object-fit/`FocalPointPicker` | hardcoded full-size `src`, centre-crop only |
 | Spacing | token-based `__experimentalSpacingSizesControl` (S/M/L, theme.json) OR UnitControl | raw px RangeControl (breaks token system) |
@@ -838,10 +838,10 @@ everywhere a hyperlink option exists — including the block-link extension's li
 1. **Canonical** — `src/components/LinkPopoverControl.js`. Two exports: `LinkPopoverContent` (the
    `<Popover>` primitive — mount when a block needs MULTIPLE triggers sharing one popover instance,
    e.g. `sgs/button`'s toolbar button + sidebar row) and `LinkPopoverField` (self-contained
-   trigger-row + popover in one component — the common single-trigger case). Root-caused the same
-   two defects `SgsLinkControl`'s docblock already named (core `LinkControl`'s 350px floor overflowing
-   a ~248px inline panel; staged `settings` toggles with no blur/close commit) by moving off the
-   inline mount onto core's own designed home for `LinkControl` — a popover with a real Submit
+   trigger-row + popover in one component — the common single-trigger case). It avoids
+   the two defects of an inline `LinkControl` mount (core `LinkControl`'s 350px floor overflowing
+   a ~248px inline panel; staged `settings` toggles with no blur/close commit) by using
+   core's own designed home for `LinkControl` — a popover with a real Submit
    interaction, matching `core/button`. Neither Kadence nor Otter mount `LinkControl` inline in a
    sidebar panel either.
 2. **Required props** — `LinkPopoverField`: `label`, `value`, `onChange`. Two value shapes: object
@@ -862,12 +862,13 @@ everywhere a hyperlink option exists — including the block-link extension's li
 6. **Conformance** — Migrated to `LinkPopoverControl`: `sgs/button` (dual-trigger,
    `LinkPopoverContent` direct), the `blockLink` extension (`LinkPopoverField` + `renderExtraFields`
    for its bespoke accessible-label field), `sgs/icon`, `sgs/media`, `sgs/product-card` (3 fields,
-   `searchOnly`). `SgsLinkControl` has 0 JSX mounts tree-wide
-   (`python scripts/surveys/survey-control-mounts.py .`); rule 27 (`27-superseded-link-control.js`) is
-   `mode: gate` at `openBacklog: 0`.
-7. **Detection** — `inspector-scan/rules/08-raw-url-link.js` flags `<TextControl type="url">` and
-   `SgsLinkControl` JSX elements, and `27-superseded-link-control.js` flags any NEW
-   `<SgsLinkControl>` JSX usage (`mode: gate`).
+   `searchOnly`). No `SgsLinkControl` component exists and it has 0 JSX mounts tree-wide
+   (`python plugins/sgs-blocks/scripts/surveys/survey-control-mounts.py .`;
+   `git ls-files | grep SgsLinkControl` lists only inspector-scan fixtures); rule 27
+   (`27-superseded-link-control.js`) is `mode: gate` at `openBacklog: 0`, with coverage from its
+   self-test fixtures only.
+7. **Detection** — `inspector-scan/rules/08-raw-url-link.js` flags `<TextControl type="url">`, and
+   `27-superseded-link-control.js` flags any `<SgsLinkControl>` JSX usage (`mode: gate`).
 8. **Open** — is `google-reviews.reviewRequestUrl` genuinely config, or a link a visitor follows?
    Does `whatsapp-cta.phoneNumber` deserve its own PHONE contract?
 
@@ -1096,7 +1097,7 @@ its element's panel (TIER 1) regardless of this field.)*
 
 ### 10. ICON
 
-1. **Canonical** — `src/components/IconPicker.js`. No competitor exists.
+1. **Canonical** — `src/components/IconPicker/IconPicker.js` (re-exported by `src/components/IconPicker/index.js`). No competitor exists.
 2. **Required props** — `label`, `value`, `onChange`. **`id` REQUIRED** —
    the same `BaseControl`-without-`id` defect as COLOUR and LINK applies.
 3. **Banned lookalikes** — a `SelectControl` over a hardcoded icon-name list; a `TextControl` taking

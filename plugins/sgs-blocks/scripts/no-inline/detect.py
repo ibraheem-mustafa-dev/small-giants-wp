@@ -50,7 +50,8 @@ POSITIVE_CONTROLS = {"brand-strip", "quote"}
 
 # Default canary URLs (the live, authoritative signal).
 DEFAULT_LIVE_URLS = [
-    "https://palestine-lives.org/",
+    "https://lavender-dinosaur-183533.hostingersite.com/",  # indus-test front page
+    "https://sandybrown-nightingale-600381.hostingersite.com/",  # sandybrown canary front page
 ]
 
 # WP styling supports that auto-inline via get_block_wrapper_attributes()

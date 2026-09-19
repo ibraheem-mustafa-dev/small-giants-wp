@@ -81,16 +81,15 @@
 	/**
 	 * Is the header ACTUALLY pinned to the viewport right now?
 	 *
-	 * MEASURED from the computed `position`, never inferred from the
-	 * `sgs-header-behaviour-sticky` body class. The class states intent; the
-	 * computed value states reality, and the two diverge:
-	 * header-behaviours.css sets `position: sticky !important` for the sticky
-	 * flag (line ~39) and `position: absolute !important` for the transparent
-	 * flag (line ~52) — equal specificity, both `!important`, transparent
-	 * later in source order. A header set BOTH sticky and transparent
-	 * therefore computes `absolute` and scrolls away, while still carrying the
-	 * sticky class. Measuring also picks up a theme/CPT rule that pins the
-	 * header by some other route.
+	 * MEASURED from the computed `position`, never inferred from the header's
+	 * `headerSticky` setting or its `data-sgs-header-sticky` attribute. Those state
+	 * intent for the header as a whole; the computed value states reality for the
+	 * viewport tier in front of the visitor. `site-header/render.php` emits
+	 * the `position` rule per tier through `sgs_merge_tri_state_declarations()`,
+	 * so a header set to stick on desktop only computes an unpinned position on mobile, and
+	 * a header set both sticky and transparent for one tier receives a single
+	 * `position` declaration (sticky wins). Measuring also picks up a theme or
+	 * CPT rule that pins the header by some other route.
 	 *
 	 * `fixed` counts as pinned for the same reason `sticky` does: the element
 	 * occupies the top of the viewport when an anchor target lands.
