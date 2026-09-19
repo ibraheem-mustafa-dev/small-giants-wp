@@ -82,6 +82,9 @@ visible `{{ }}` placeholders (59 distinct), no ticker text, 7 of 8 homepage boun
 4. *Built and pushed this session:* Stage 1 (loose text beside an element), the Stage 11.6 fix,
    the test site + `SGS_DEPLOY_SITE`, the JS-resolver wrong-directory fix. Retracted: the "theme comment leak" (my regex artefact).
 
+**Paste-ready prompt for the next session:** `.claude/prompts/2026-09-19-eye-care-spec33-and-missing-sections.md`.
+It is single-use: delete it (`git rm`) in the same commit as that session's first work.
+
 **Task blocks for the next session (orchestration: main thread Opus, inline; investigators are read-only):**
 
 - **Task 1 — Read, no proposing.** Read `specs/33-DRAFT-GLOBAL-STYLES-EXTRACTOR.md` (in full), the code behind
