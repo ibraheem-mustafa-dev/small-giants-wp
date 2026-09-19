@@ -29,58 +29,123 @@ A WordPress plugin providing a curated library of custom Gutenberg blocks purpos
 sgs-blocks/
 ├── sgs-blocks.php               # Plugin bootstrap (registration, block loading)
 ├── package.json                  # Node dependencies (@wordpress/scripts, etc.)
-├── webpack.config.js             # Build config (or wp-scripts default)
+├── webpack.config.js             # Build config (extends the @wordpress/scripts default with non-block entry points)
+├── assets/                       # Static plugin assets (admin, brand, css, floating-ui, font-collections, icons, js)
+├── scripts/                      # Build, audit, deploy and cloning-pipeline scripts (build-deploy.py, converter/, audit-*.py, …)
+├── tests/                        # Test suites and fixtures (fixtures, js, php, playwright)
 │
 ├── src/
-│   ├── blocks/
+│   ├── blocks/                   # One directory per block: block.json + edit.js + render.php + style.css (+ view.js when interactive)
 │   │   ├── button/               # ★ Canonical SGS button (atomic) — replaces all uses of core/button. See specs/11-SGS-BUTTON-ARCHITECTURE.md
 │   │   ├── multi-button/         # ★ Button container (accepts 0..N sgs/button via InnerBlocks). Replaces core/buttons inside SGS composite blocks
 │   │   ├── container/            # Layout container (flexbox/grid)
-│   │   ├── hero/                 # Hero section (multiple variants)
+│   │   ├── hero/                 # Hero section (standard + split variants)
 │   │   ├── info-box/             # Info/feature card
+│   │   ├── feature-grid/         # Responsive grid container for info-box cards
 │   │   ├── counter/              # Animated statistic counter
 │   │   ├── trust-bar/            # Trust/badge strip — typed-only, icon resolver. See §5.
-│   │   ├── card-grid/            # Flexible image+content grid (overlay/card variants; wc-product mode)
+│   │   ├── card-grid/            # Flexible image+content grid (overlay/card variants; wc-product + cpt-collection modes)
 │   │   ├── testimonial/          # Single testimonial — 7-variant typed-attr block. See §7.
 │   │   ├── testimonial-slider/   # Multi-testimonial carousel
 │   │   ├── cta-section/          # Call-to-action section
 │   │   ├── icon-list/            # Checkmark/icon list
+│   │   ├── icon/                 # Single icon (Lucide, WordPress icons, Dashicons or emoji) with optional shape and link
 │   │   ├── process-steps/        # Horizontal step timeline
+│   │   ├── timeline/             # Date-based vertical/horizontal timeline with scroll-reveal
 │   │   ├── accordion/            # Expandable FAQ/content sections
+│   │   ├── accordion-item/       # One expandable panel (parent: sgs/accordion)
 │   │   ├── tabs/                 # Tabbed content panels
+│   │   ├── tab/                  # One tab panel (parent: sgs/tabs)
 │   │   ├── brand-strip/          # Logo/brand carousel strip
 │   │   ├── notice-banner/        # Inline banner; `displayMode=announcement` gives the sticky announcement bar
 │   │   ├── whatsapp-cta/         # WhatsApp floating button + contextual CTA
 │   │   ├── pricing-table/        # Service/pricing comparison table
 │   │   ├── modal/                # Lightbox/modal overlay
 │   │   ├── google-reviews/       # Google Business Profile reviews display
+│   │   ├── trustpilot-reviews/   # Trustpilot reviews in the official Trustpilot visual style
+│   │   ├── star-rating/          # Star rating display with half-star support and schema.org markup
+│   │   ├── team-member/          # Team member card (photo, name, role, bio, social links)
+│   │   ├── quote/                # Attributed blockquote (InnerBlocks body + optional attribution)
+│   │   ├── heading/              # Single-element heading (primary heading or subheading paragraph)
+│   │   ├── text/                 # Single-element body text (`<p>`)
+│   │   ├── label/                # Atomic eyebrow / kicker / badge text
+│   │   ├── media/                # Content media block (image or video)
+│   │   ├── gallery/              # Image gallery (grid / masonry / carousel) with lightbox
+│   │   ├── audio/                # Audio player with seven visual styles
+│   │   ├── before-after/         # Two-media comparison slider with a draggable divider
+│   │   ├── image-sequence/       # Agency-only scroll-scrubbed canvas frame sequence (hidden from the inserter)
+│   │   ├── physics-canvas/       # Section whose decorative children become throwable physics bodies
+│   │   ├── separator/            # Styleable horizontal divider (line, gradient, optional icon or label)
+│   │   ├── social-icons/         # Row of social platform icons with links
+│   │   ├── responsive-logo/      # Three-slot logo (desktop / tablet / mobile) with optional SVG animation
+│   │   ├── breadcrumbs/          # Auto-generated breadcrumb navigation
+│   │   ├── table-of-contents/    # Auto-generated table of contents (smooth scroll, scroll spy, collapsible)
+│   │   ├── business-info/        # Business details from Settings > Business Details
+│   │   ├── countdown-timer/      # Countdown to a target date, or an evergreen timer
+│   │   ├── post-grid/            # Posts in grid / list / masonry / carousel layouts with AJAX filtering
 │   │   ├── mega-panel/           # Content container of a mega menu (lives inside an sgs_mega_menu post)
 │   │   ├── mega-group/           # One column of a mega panel — heading + link list
 │   │   ├── mega-aside/           # Optional side panel of a mega panel
-│   │   ├── decorative-image/     # Absolute-positioned decorative floating images
+│   │   ├── decorative-image/     # Absolute-positioned decorative floating images/video. See §24.
 │   │   ├── option-picker/        # Radio-group pill chooser (sgs-interactive; atomic); group-label controls
-│   │   ├── cart/                 # WooCommerce cart count badge (sgs-interactive)
-│   │   ├── buybox/               # ★ PDP configurator — option-picker→cart bridge (FR-30-7). sgs-content category.
-│   │   ├── product-search/       # ★ FR-30-5 — Accessible combobox search + REST /sgs/v1/product-search + inline|icon displayMode
-│   │   ├── filter-search/        # ★ FR-30-6 — Type-to-find filter narrowing (≥16 terms threshold, woocommerce/product-filter-attribute ancestor)
+│   │   ├── cart/                 # WooCommerce mini-cart: count badge + optional flyout/drawer panel (sgs-interactive)
+│   │   ├── buybox/               # ★ WooCommerce PDP area — gallery column + configurator column in a responsive 2-column grid. sgs-content category.
+│   │   ├── product-card/         # Product card (typed built-in elements, or wc-product / sgs-cpt live data)
+│   │   ├── product-faq/          # Product-page FAQ section with structured FAQ data
+│   │   ├── product-faq-item/     # One question/answer pair (parent: sgs/product-faq)
+│   │   ├── product-search/       # ★ FR-30-5 — Accessible combobox search + REST /sgs/v1/product-search + inline-bar | icon-expand | full-screen-overlay | command-palette displayMode
+│   │   ├── filter-search/        # ★ FR-30-6 — Type-to-find filter narrowing (>15 terms threshold, woocommerce/product-filter-attribute ancestor)
 │   │   ├── collapsible-text/     # ★ Operator SEO copy; CSS line-clamp read-more; always SSR'd; i18n toggle labels
 │   │   ├── site-header/          # ★ Specialised header container, section-KIND, delegates to SGS_Container_Wrapper. See "Header / Footer / Navigation System" section below + specs/37-HEADER-FOOTER-BUILDER.md
-│   │   ├── site-footer/          # ★ Specialised footer container, section-KIND, delegates to SGS_Container_Wrapper. Rows + up-to-N columns. See same section
+│   │   ├── site-header-row/      # One header row (parent: sgs/site-header) — never-overflow cluster
+│   │   ├── site-footer/          # ★ Specialised footer container, section-KIND, delegates to SGS_Container_Wrapper. See same section
+│   │   ├── site-footer-row/      # One footer row (parent: sgs/site-footer) — cluster or column grid (up to 6 columns)
 │   │   ├── nav-bar-menu/         # One-menu-source nav (bar→burger, 4 tiers incl. custom-px), layout-KIND, mega-panel drill-down. See same section
-│   │   ├── nav-drawer-menu/      # The drawer's accordion/drill-down link list (ancestor: sgs/nav-drawer)
+│   │   ├── nav-drawer-menu/      # The drawer's accordion/drill-down link list (rendered inside sgs/nav-drawer)
 │   │   ├── nav-drawer/           # Off-canvas drawer (dialog). See same section
+│   │   ├── form/                 # Form wrapper — multi-step, validation, webhook notification
+│   │   ├── form-step/            # Groups fields into a step (parent: sgs/form or sgs/choice-flow)
+│   │   ├── form-review/          # Summary of entered fields shown before submission
+│   │   ├── form-field-address/   # Address field with optional postcode lookup
+│   │   ├── form-field-checkbox/  # Checkbox group (multiple selections)
+│   │   ├── form-field-consent/   # Consent checkbox (GDPR, terms, marketing)
+│   │   ├── form-field-date/      # Date picker with min/max constraints
+│   │   ├── form-field-email/     # Email input with validation
+│   │   ├── form-field-file/      # File upload with drag-and-drop
+│   │   ├── form-field-hidden/    # Hidden value field
+│   │   ├── form-field-number/    # Number input with min/max/step
+│   │   ├── form-field-phone/     # Telephone input
+│   │   ├── form-field-radio/     # Radio group (single selection)
+│   │   ├── form-field-select/    # Dropdown select
+│   │   ├── form-field-text/      # Single-line text input
+│   │   ├── form-field-textarea/  # Multi-line text input
+│   │   ├── form-field-tiles/     # Visual tile selection with icons
+│   │   ├── choice-flow/          # Branching step-by-step quiz that ends in a result
+│   │   ├── choice-flow-question/ # Multiple-choice question step (parent: sgs/form-step)
+│   │   ├── choice-flow-result/   # Recommendation terminal of a choice flow (parent: sgs/form-step)
+│   │   └── extensions/           # Not a block (no block.json): editor extensions applied to many blocks
+│   │       ├── animation.js          # Scroll-triggered animation extension
+│   │       ├── responsive-visibility.js  # Show/hide per breakpoint
+│   │       ├── hover-effects.js      # Hover-effect controls
+│   │       ├── image-controls.js     # Universal image controls (blocks declaring `supports.sgs.imageControls`)
+│   │       ├── custom-css.js         # Per-block custom CSS field
+│   │       └── fx.js                 # FX (effects) panel
 │   │
 │   ├── components/               # Shared React components for editor UI
-│   │   ├── TypographyControls.js # ★ MANDATORY — shared per-element typography UI . See Block Customisation Standard.
+│   │   ├── TypographyControls.js # ★ MANDATORY — shared per-element typography UI. See Block Customisation Standard.
 │   │   ├── ResponsiveControl.js  # Breakpoint switcher (mobile/tablet/desktop)
+│   │   ├── ResponsiveOverride.js # Per-tier value override wrapper for tier-object attributes
 │   │   ├── DesignTokenPicker.js  # Colour picker that reads theme.json tokens
 │   │   ├── SpacingControl.js     # Margin/padding control with presets
-│   │   └── AnimationControl.js   # Animation type/trigger selector
+│   │   ├── AnimationControl.js   # Animation type/trigger selector
+│   │   ├── MediaPicker.js        # Image/video picker
+│   │   ├── media/                # Media-atom panel layouts (atoms/, controls/, canvasStyle.js)
+│   │   └── primitives/           # Re-exports of the WordPress ToolsPanel / ToolsPanelItem primitives
 │   │
-│   ├── extensions/               # Block extensions (applied to all/multiple blocks)
-│   │   ├── animation.js          # Scroll-triggered animation extension
-│   │   ├── responsive-visibility.js  # Show/hide per breakpoint
-│   │   └── custom-spacing.js     # Enhanced spacing controls
+│   ├── bindings/                 # Editor-side registration of the sgs/site-info block-bindings source
+│   ├── header-behaviours/        # Frontend header behaviour module (view.js)
+│   ├── shared/                   # Cross-block frontend modules (effects, nav-interactivity, nav-menu-panels, info-toggle)
+│   ├── vendor-modules/           # Bundled GSAP modules (Tier G motion — see Spec 38)
 │   │
 │   └── utils/
 │       ├── tokens.js             # Read design tokens from theme.json at runtime
@@ -90,11 +155,15 @@ sgs-blocks/
 │
 └── includes/
     ├── class-sgs-blocks.php      # Main plugin class
-    ├── block-categories.php      # Register "SGS" block category
-    └── render/                   # Server-side render callbacks
-        ├── counter.php
-        ├── testimonial-slider.php
-        └── ...
+    ├── block-categories.php      # Register the SGS block categories (sgs-layout, sgs-content, sgs-interactive, sgs-forms)
+    ├── class-sgs-container-wrapper.php  # SGS_Container_Wrapper — the shared wrapper for section/layout-KIND composites
+    ├── render-helpers.php        # Loader for the helpers-*.php files that per-block render.php files require
+    ├── forms/                    # Form REST API, processor, admin, privacy, upload handling
+    ├── media/                    # Media-atom PHP layer (atoms/)
+    ├── migrations/               # Numbered database/content migrations
+    ├── trustpilot/               # Trustpilot cron, REST, settings, sync
+    ├── variations/               # Per-block variations and block styles (sgs-<block>-variations.php, auto-discovered)
+    └── ...                       # Further helpers, REST controllers and generated attribute maps
 ```
 
 ---
@@ -700,122 +769,170 @@ Output as `<script type="application/ld+json">` in render.php — enables Google
 
 ### 24. Decorative Image (`sgs/decorative-image`)
 
-**Purpose:** Absolute-positioned decorative images that float freely across page sections, unconstrained by containers and not affecting layout flow. Used for organic, editorial-style design where images (food photography, decorative elements, brand illustrations) are scattered naturally over section backgrounds.
+**Purpose:** Absolute-positioned decorative images (or short looping videos) that float across page sections, unconstrained by containers and not affecting layout flow. Used for organic, editorial-style design where images (food photography, decorative elements, brand illustrations) are scattered naturally over section backgrounds.
 
-**Competitive edge over Elementor:** Elementor's "Motion Effects" allow floating elements but generate heavy JS and deeply nested DOM. CSS-native absolute positioning with percentage offsets is lighter, more predictable, and produces cleaner markup. Zero JS required for static positioning — optional parallax is < 1KB.
+**Competitive edge over Elementor:** Elementor's "Motion Effects" allow floating elements but generate heavy JS and deeply nested DOM. CSS-native absolute positioning with percentage offsets is lighter, more predictable, and produces cleaner markup. Static positioning needs no JavaScript at all; parallax and fade-on-scroll are optional.
 
-**Use case — Indus Foods homepage:** Food photography (samosas, spice bowls, rice bags, chilli peppers) scattered organically across the homepage. Each image floats over its parent section's background colour without affecting the layout of headings, text, or other blocks. Desktop shows 4-6 images at varied positions and rotations. Mobile shows fewer, smaller, repositioned to edges or hidden entirely.
+**Use case — Indus Foods homepage:** Food photography (samosas, spice bowls, rice bags, chilli peppers) scattered organically across the homepage. Each image floats over its parent section's background colour without affecting the layout of headings, text, or other blocks. Desktop shows 4-6 images at varied positions and rotations. Mobile shows fewer, smaller images, or hides them entirely.
 
-**Parent block:** Works inside any block that sets `position: relative` — primarily `sgs/container` and `core/group`. The decorative image positions itself relative to the parent container using percentage-based offsets.
+**Parent block:** Works inside any block that establishes a containing block. `plugins/sgs-blocks/src/blocks/decorative-image/style.css::.wp-block-sgs-container` and `plugins/sgs-blocks/src/blocks/decorative-image/style.css::.wp-block-group` both set `position: relative`, so `sgs/container` and `core/group` need no extra setup. The image positions itself against that ancestor using percentage offsets.
 
-**Attributes:**
-- `image` — media object (ID + URL + alt text, though alt will always be empty — decorative)
-- `positionX` — number 0-100 (percentage from left edge, default: 50)
-- `positionY` — number 0-100 (percentage from top edge, default: 50)
-- `width` — number px (default: 200 — image width)
-- `maxWidthPercent` — number 0-50 (max width as % of parent container, default: 20)
-- `rotation` — number degrees (-180 to 180, default: 0)
-- `opacity` — number 0-100 (default: 85)
-- `zIndex` — number (-1 to 10, default: 1 — above background, below content)
-- `flipX` — boolean (horizontal mirror, default: false)
-- `parallaxStrength` — number 0-100 (default: 0 — 0 means no parallax, 100 means strong parallax scroll effect)
-- `overflow` — visible | hidden (default: visible — whether image can extend beyond parent boundaries)
-- **Responsive overrides:**
-  - `positionXTablet` — number 0-100 (override position on tablet)
-  - `positionYTablet` — number 0-100
-  - `widthTablet` — number px
-  - `rotationTablet` — number degrees
-  - `hideOnTablet` — boolean (default: false)
-  - `positionXMobile` — number 0-100
-  - `positionYMobile` — number 0-100
-  - `widthMobile` — number px
-  - `rotationMobile` — number degrees
-  - `hideOnMobile` — boolean (default: false)
+**Block registration:** dynamic. `block.json` declares `render` (`render.php`), `viewScriptModule` (`view.js`), `supports.anchor: true` and `supports.html: false`; `index.js` registers `edit` only, so nothing is serialised into post content except the block comment and its attributes.
 
-**Render:** Static `save()` — outputs a single `<img>` element with inline styles for positioning.
+**Attributes** (source of truth: `plugins/sgs-blocks/src/blocks/decorative-image/block.json::attributes`):
 
-**Output markup:**
+| Attribute | Type | Default | Notes |
+|---|---|---|---|
+| `decorMedia` | object | `null` | The unified image-or-video slot: `{ url, type: 'image' \| 'video', id, alt, mime }`. |
+| `imageId` / `imageUrl` | number / string | unset | Image slot mirrored from `decorMedia` when it holds an image. When `imageUrl` is empty and `decorMedia` holds an image, `render.php` reads the image from `decorMedia`. |
+| `imageIdTablet` / `imageUrlTablet` | number / string | unset | Art-direction image for tablet widths (image only). |
+| `imageIdMobile` / `imageUrlMobile` | number / string | unset | Art-direction image for mobile widths (image only). |
+| `imageAlt` | string | `""` | Alt text; only rendered when `imageDecorative` is `false`. |
+| `imageDecorative` | boolean | `true` | Decorative (hidden from assistive technology) or informative (uses `imageAlt`). |
+| `positionX` | tier object | `{ "desktop": 50 }` | Percentage from the left edge of the containing block; editor range 0-100. |
+| `positionY` | tier object | `{ "desktop": 50 }` | Percentage from the top edge; editor range 0-100. |
+| `width` | tier object | `{ "desktop": 200 }` | Width in px; editor range 50-800. |
+| `maxWidthPercent` | number | `20` | Maximum width as a percentage of the containing block; editor range 0-50. |
+| `rotation` | tier object | `{ "desktop": 0 }` | Degrees; editor range -180 to 180. |
+| `opacity` | number | `85` | 0-100. |
+| `zIndex` | number | `1` | Editor range -1 to 10. |
+| `flipX` | boolean | `false` | Horizontal mirror. |
+| `parallaxStrength` | number | `0` | 0 disables parallax; editor range 0-100. |
+| `fadeOnScroll` | boolean | `false` | Fades the image out as it scrolls past the top of the viewport. |
+| `overflow` | string | `"visible"` | Editor offers `visible` and `hidden`; `render.php` accepts `visible`, `hidden`, `clip`, `scroll`, `auto` and falls back to `visible`. |
+| `hideOnTablet` / `hideOnMobile` | boolean | `false` | Hide at the tablet (max 1023px) / mobile (max 767px) device tier. |
+| `pathDrawOnScroll` | boolean | `false` | Animate SVG strokes when the image scrolls into view. |
+| `pathDrawDurationMs` | number | `1500` | Path-draw duration; editor range 300-4000. |
+| `pathDrawTriggerOffset` | number | `20` | Percentage of the image that must be visible before drawing starts; editor range 0-80. |
+| `pathDrawEasing` | string | `"ease-out"` | `ease-out`, `ease-in-out` or `linear`. |
+
+A tier object is `{ desktop, tablet, mobile }`; `plugins/sgs-blocks/includes/helpers-responsive.php::sgs_responsive_normalise_object` also accepts a plain number as the desktop value. The shared media-atom attributes for `object-fit`, `focal-point` and `overlay` (unprefixed, e.g. `objectFit`, `objectPosition`, `overlayColour`, `overlayGradient`, `overlayOpacity`, `overlayBlendMode`) are declared through `plugins/sgs-blocks/src/blocks/decorative-image/block.json::supports.sgs.mediaElements` and injected at registration from `plugins/sgs-blocks/includes/media-element-attributes.generated.php`. The universal `fx` attributes attach through `plugins/sgs-blocks/src/blocks/decorative-image/block.json::supports.sgs.fx.motionSurface`.
+
+**Render (`render.php`):**
+
+- Renders nothing when neither `decorMedia.url` nor `imageUrl` is set.
+- Scope token: `uid = 'sgs-di-' + first 8 hex characters of md5(JSON of the attributes)`. Because the block supports `anchor`, the token is always a CLASS, never an id.
+- The block prints one scoped `<style>` element immediately before its markup; the markup carries no inline `style` attribute. The base rule uses the DESKTOP tier of `positionX`, `positionY`, `width` and `rotation`:
+
+```css
+.{uid}.sgs-decorative-image {
+    position: absolute;
+    left: {positionX.desktop}%;
+    top: {positionY.desktop}%;
+    width: {width.desktop}px;
+    max-width: {maxWidthPercent}%;
+    opacity: var(--sgs-di-op, {opacity / 100});
+    z-index: {zIndex};
+    transform: translate(-50%, -50%) [rotate({rotation.desktop}deg)] [scaleX(-1)] translateY(var(--sgs-di-py, 0px));
+    overflow: {overflow};
+}
+```
+
+  `rotate()` is emitted only when the rotation is non-zero and `scaleX(-1)` only when `flipX` is on. `--sgs-di-py` and `--sgs-di-op` are the two custom properties `view.js` writes at runtime, so the scoped rule is the only place `transform` and `opacity` are declared. Every numeric value is cast before it reaches the CSS, and the whole blob passes through `wp_strip_all_tags`.
+- The object-fit, focal-point and overlay atom rules from `SGS_Media_Element::style` are appended to the same `<style>` element, scoped to `.{uid}`.
+
+**Output markup, image (default):**
 ```html
+<style>.sgs-di-3fa91c20.sgs-decorative-image{position:absolute;left:50%;top:50%;width:200px;max-width:20%;opacity:var(--sgs-di-op, 0.85);z-index:1;transform:translate(-50%, -50%) translateY(var(--sgs-di-py, 0px));overflow:visible;}</style>
 <img
-    class="sgs-decorative-image"
+    class="sgs-decorative-image sgs-media-el sgs-di-3fa91c20"
     src="{url}"
     alt=""
-    role="presentation"
     aria-hidden="true"
+    role="presentation"
     loading="lazy"
     decoding="async"
-    style="
-        position: absolute;
-        left: {positionX}%;
-        top: {positionY}%;
-        width: {width}px;
-        max-width: {maxWidthPercent}%;
-        transform: translate(-50%, -50%) rotate({rotation}deg) {flipX ? 'scaleX(-1)' : ''};
-        opacity: {opacity / 100};
-        z-index: {zIndex};
-        pointer-events: none;
-    "
     data-parallax="{parallaxStrength}"
 />
 ```
 
-**CSS (style.css):**
+The `<img>` is the block root (no wrapper element). It is produced by `plugins/sgs-blocks/includes/helpers-media.php::sgs_responsive_image` at size `large`, so an image with an attachment id also carries `srcset`, `sizes`, `width` and `height`. Optional data attributes, each present only when its setting is on or its value is set:
+
+- `data-parallax="{parallaxStrength}"` when `parallaxStrength > 0`; `data-fade-on-scroll="true"` when `fadeOnScroll` is on.
+- `data-sgs-path-draw="true"` with `data-sgs-path-draw-duration`, `data-sgs-path-draw-offset` and `data-sgs-path-draw-easing` when `pathDrawOnScroll` is on. `plugins/sgs-blocks/assets/js/animation-observer.js` reads these and `plugins/sgs-blocks/assets/css/extensions.css` styles the stroke.
+- `data-hide-tablet="true"` / `data-hide-mobile="true"` when the matching toggle is on.
+- `data-position-x-tablet`, `data-position-y-tablet`, `data-width-tablet`, `data-rotation-tablet` and the four `-mobile` equivalents when the tier value is set. No stylesheet or script reads these eight attributes, so tablet and mobile values of `positionX`, `positionY`, `width` and `rotation` have no visual effect.
+- With `imageDecorative` off, `alt` carries `imageAlt` and `aria-hidden` / `role` are omitted.
+
+**Art-direction tiers (image only):** when `imageUrlTablet`/`imageIdTablet` or `imageUrlMobile`/`imageIdMobile` is set, the block prints sibling `<img>` elements after the base one. Each carries the same `uid`, base classes and data attributes, plus a tier class: the base image gets `sgs-decorative-image--desktop` and the siblings get `sgs-decorative-image--tablet` / `sgs-decorative-image--mobile`. Compound selectors in the scoped `<style>` element (never descendant selectors, because there is no ancestor) toggle them with `display: none`:
+
+- Mobile tier set: desktop hidden at max 767px; mobile hidden at min 768px.
+- Tablet tier set: desktop hidden from 768px to 1023px; tablet hidden at max 767px and at min 1024px.
+
+A tier left empty falls back to the desktop image at that width.
+
+**Wrapper mode (image):** when `fx` is `surface-treatment`, or when the overlay atom emits box-scope CSS for the current values, the block renders a `<span>` root instead of a naked `<img>`:
+```html
+<style>…</style>
+<span class="sgs-decorative-image [sgs-decorative-image--treated] [sgs-media-box] sgs-di-3fa91c20"
+      aria-hidden="true" role="presentation" data-…>
+    <img class="sgs-decorative-image__media sgs-media-el" src="{url}" alt="" loading="lazy" decoding="async" />
+</span>
+```
+The span takes over the root role (uid, decorative `aria-hidden`/`role`, every `data-*` attribute); the inner `<img>` fills the span, and tier images use `sgs-decorative-image__media--{desktop,tablet,mobile}` with descendant selectors. `--treated` adds `.{uid}.sgs-decorative-image--treated>.sgs-decorative-image__media{display:block;width:100%;height:auto}`. With `imageDecorative` off, the span omits `aria-hidden` and `role`. A surface treatment combined with art-direction tiers samples the desktop image at every width, because the treatment module reads the first `<img>` in the wrapper.
+
+**Output markup, video:** when `decorMedia.type` is `video`, `plugins/sgs-blocks/includes/helpers-media.php::sgs_render_media` supplies the `<video>` and the block wraps it in a positioned span, again after the scoped `<style>`:
+```html
+<span class="sgs-decorative-image sgs-decorative-image--video [sgs-media-box] sgs-di-3fa91c20"
+      aria-hidden="true" role="presentation" data-…>
+    <video class="sgs-media sgs-media--video sgs-media--sgs-decorative-image" autoplay loop muted playsinline aria-label="…"><source src="{url}" type="video/mp4"></video>
+</span>
+```
+The wrapper is always `aria-hidden`. The video branch has no art-direction tiers, and the object-fit and focal-point atoms do not reach the `<video>`; the overlay atom does.
+
+**CSS (`style.css`):**
 ```css
 .sgs-decorative-image {
     position: absolute;
     pointer-events: none;
     user-select: none;
     will-change: transform;
-    transition: none; /* no layout transitions — purely positional */
+    transition: none;
 }
 
-/* Parent container must be position: relative */
 .wp-block-sgs-container,
 .wp-block-group {
     position: relative;
 }
 
-/* Responsive overrides via media queries using data attributes */
-@media (max-width: 781px) {
-    .sgs-decorative-image[data-hide-tablet="true"] {
-        display: none;
-    }
+@media (max-width: 1023px) {
+    .sgs-decorative-image[data-hide-tablet="true"] { display: none; }
 }
 
-@media (max-width: 480px) {
-    .sgs-decorative-image[data-hide-mobile="true"] {
-        display: none;
-    }
+@media (max-width: 767px) {
+    .sgs-decorative-image[data-hide-mobile="true"] { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sgs-decorative-image { will-change: auto; }
 }
 ```
 
-**Parallax (optional viewScriptModule):**
-- Only loaded when `parallaxStrength > 0` on any decorative image on the page
-- Uses `IntersectionObserver` + `requestAnimationFrame` for smooth scroll-linked transform
-- Offset: `translateY` shifts by `(scrollPosition * parallaxStrength / 100)` pixels
-- Respects `prefers-reduced-motion` — disables parallax, shows static position
-- < 1KB minified
+**Scroll effects (`view.js`, `viewScriptModule`):**
+- WordPress loads the module on pages that contain the block; it returns immediately when no `.sgs-decorative-image` carries `data-parallax` or `data-fade-on-scroll`, and does nothing at all under `prefers-reduced-motion: reduce`.
+- An `IntersectionObserver` (root margin `20% 0px`) tracks which matching elements are near the viewport; a `requestAnimationFrame`-throttled passive scroll listener updates only those.
+- Scroll progress is `(viewportHeight - rect.top) / (viewportHeight + rect.height)`.
+- Parallax writes `--sgs-di-py` as `(progress - 0.5) * parallaxStrength * 2` px.
+- Fade writes `--sgs-di-op` as `clamp((1 - progress) / 0.3, 0, 1)`: fully opaque until progress reaches 0.7, then fading to 0 as the image leaves through the top of the viewport. While the effect is running it replaces the configured `opacity` value.
+- The script only ever sets those two custom properties, never a CSS property, so the element carries zero inline declarations at any point in its lifecycle.
 
 **Editor experience:**
-- In the editor, decorative images render at their configured positions
-- Drag handles for adjusting positionX/positionY visually (stretch goal)
-- Sidebar: ResponsiveControl for per-breakpoint position/size/visibility
-- Preview: shows desktop/tablet/mobile positions when breakpoint is switched
+- Settings tab: **Accessibility** (image media only: the "Decorative image" toggle plus an alt-text field when it is off) and **Art direction** (image media only: a device switcher; desktop shows a hint, tablet and mobile each show a media picker, and an empty tier reuses the desktop image).
+- Styles tab: the media-atom panel (`DecorativeImagePanelLayout`: object-fit, focal point, overlay) when media is selected, then **Size** (width, max width), **Transform** (flip, opacity, z-index), **Effects** (parallax strength, fade on scroll, overflow), **SVG Path Draw** (toggle, plus duration, trigger offset and easing when on) and **Responsive Overrides** (hide on tablet / mobile, and per-tier position X, position Y, width and rotation through `ResponsiveOverride`).
+- Placeholder: a media picker for an image or video; once media is chosen, a preview canvas (minimum height 400px) shows it at its desktop-tier position, and a "Replace Media" picker sits beneath.
+- The editor canvas positions its preview with editor-only inline styles from `edit.js`; they are never saved to post content or rendered on the frontend.
 
 **Accessibility:**
-- `aria-hidden="true"` — completely hidden from assistive technology
-- `role="presentation"` — reinforces decorative nature
-- `alt=""` — empty alt text, not omitted (WAI standard for decorative images)
-- `pointer-events: none` — cannot be accidentally clicked/focused
-- No tab stop — not in the focus order
+- Decorative by default: `alt=""`, `aria-hidden="true"` and `role="presentation"` on the `<img>` (or on the wrapper span). An operator can switch `imageDecorative` off and supply alt text instead.
+- Video is always `aria-hidden` and `role="presentation"`.
+- `pointer-events: none` and no tab stop: the element cannot be clicked or focused.
+- Parallax and fade-on-scroll are disabled under `prefers-reduced-motion: reduce`.
 
 **Performance:**
-- Zero JS for static positioning (pure CSS)
-- < 1KB JS only when parallax is used
-- `loading="lazy"` + `decoding="async"` on all images
-- `will-change: transform` only on parallax images (opt-in via data attribute)
-- Images should be optimised WebP/AVIF, 150-300px wide — small file sizes
-- `contain: layout` on parent container prevents sticker overflow from causing reflow
+- No JavaScript is needed for static positioning; `view.js` only acts when parallax or fade-on-scroll is set.
+- `loading="lazy"` and `decoding="async"` on every image.
+- `will-change: transform` applies to every `.sgs-decorative-image` (`plugins/sgs-blocks/src/blocks/decorative-image/style.css::.sgs-decorative-image`), and drops to `auto` under `prefers-reduced-motion: reduce`.
+- Images should be optimised WebP/AVIF, 150-300px wide, to keep file sizes small.
 
 ---
 
@@ -1001,7 +1118,7 @@ Gate: the resting state must still meet 4.5:1 (WCAG 1.4.3) and `#d4a73c` must me
 These blocks follow the Block Customisation Standard (below) plus:
 
 - **Composite-mirror (R-31-9):** `sgs/site-header` and `sgs/site-footer` delegate ALL outer rendering to `SGS_Container_Wrapper::render()` — no per-block reimplementation of grid/section/background machinery, same rule as `sgs/hero`/`sgs/card-grid`. See "Composite-mirror rule" under `sgs/container` above.
-- **No-inline scoped styling (Spec 32):** same no-inline-`style=""` contract as every other SGS block — values land in a scoped `<style id="uid">` block, not inline declarations.
+- **No-inline scoped styling (Spec 32):** same no-inline-`style=""` contract as every other SGS block — values land in a scoped `<style id="{uid}-style">` block, not inline declarations.
 - **Per-breakpoint override model — NEW-BLOCKS-ONLY:** the header/footer/nav blocks (and no existing block — avoids Gutenberg invalid-content errors, honours the no-deprecations rule) get a `{desktop, tablet, mobile}` (`null` = inherit from the tier above) per-property override data model, PLUS a separately-configurable custom-px 4th breakpoint tier (used by the `sgs/nav-bar-menu` collapse setting) — the custom-px tier is NOT a 4th key merged into every per-property value object. Full data model, cascade rules, and editor UX are owned by Spec 37 (FR-37-16) — not duplicated here.
 - **Global defaults + Site Info access:** every element/setting in `sgs/site-header`, `sgs/site-footer`, and `sgs/nav-bar-menu` defaults from (1) the site's `theme.json`/`wp_global_styles` tokens (or, for cloned sites, the Spec 33 `theme-snapshot.json`) and (2) the shared SGS Site Info store (Spec 36 — logo/phone/email/address/hours/socials/copyright via `sgs/site-info` block-bindings). A value set once in Site Info renders identically in header AND footer with no re-entry — never a hardcoded per-block literal (R-31-1). Owning FRs: Spec 37 (FR-37-17, §3.7); Site Info store: Spec 36.
 - **Never-overflow layout:** the header Cluster row is locked `flex-wrap: nowrap` and never wraps or stacks; `min-width:0` on children lets flexbox shrink them proportionally, each stopping at its own floor (44px controls, logo `min-width: min(100%, var(--sgs-header-logo-min, 7.5rem))`) — guarantees no overflow down to 320px by construction. ⚠ the logo carries no `flex-shrink:0` (it overflows 320px once wrapping is gone). Fluid `clamp()` spacing: the gap default is `clamp(0.5rem, 0.25rem + 1.5cqi, 1rem)`, live-verified varying 16px→8.8px. Both CSS-length paths share one validator, `sgs_css_length_value()` (`includes/helpers-css-safety.php`), which accepts `var|calc|min|max|minmax|clamp|repeat` via WP core's recursive balanced-paren grammar and fails CLOSED. Container-query tiers remain. Owning FRs: Spec 37 (FR-37-12, §3.6).
@@ -1494,7 +1611,7 @@ Accessible combobox search that fetches live product suggestions. Includes a no-
 **Category:** `sgs-interactive`.
 
 **Attributes:**
-- `displayMode` — `inline` | `icon` (default: `inline`). `inline` = always-visible search bar. `icon` = native `<details>`/`<summary>` disclosure widget (no JS required to open/close).
+- `displayMode` — `inline-bar` | `icon-expand` | `full-screen-overlay` | `command-palette` (default: `inline-bar`; `inline` and `icon` are accepted as aliases of `inline-bar` and `icon-expand`). `inline-bar` = always-visible search bar. `icon-expand` = native `<details>`/`<summary>` disclosure widget (no JS required to open/close). `full-screen-overlay` = icon trigger that opens a native `<dialog>` with a dimmed backdrop. `command-palette` = the same `<dialog>` as a smaller centred modal that also opens on Ctrl/Cmd+K.
 - `placeholder` — string (input placeholder text)
 - `buttonLabel` — string (submit button label)
 - `maxResults` — integer (default: 10; max results shown in the live list)
