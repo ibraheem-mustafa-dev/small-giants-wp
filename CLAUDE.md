@@ -197,10 +197,11 @@ python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown
 # Targets are the keys of build-deploy.py::TARGETS (sandybrown, indus-test, eye-care-test).
 # Scope: --blocks-only | --theme-only. It runs the build itself unless --skip-build.
 # It carries the dirty-tree gate + default-ON fail-closed verify + .bak rollback rotation, and
-# purges BOTH cache layers post-deploy — OPcache (compiled PHP) via an HTTPS probe, because the
+# purges THREE cache layers post-deploy — OPcache (compiled PHP) via an HTTPS probe, because the
 # CLI pool has its OWN OPcache and `wp eval` would reset the wrong one; and the LiteSpeed page
-# cache (rendered HTML) via wp-cli. Clearing one does nothing for the other. Opt out only with
-# --skip-purge, which leaves stale compiled PHP or HTML serving. Full sequence in dev-setup.md.
+# cache (rendered HTML) via wp-cli; and the theme pattern cache (a pattern file added by a
+# deploy is not registered until it is cleared). Clearing one does nothing for the others.
+# Opt out only with --skip-purge, which leaves stale compiled PHP, HTML or patterns serving. Full sequence in dev-setup.md.
 #
 # ⛔ NEVER hand-roll tar / scp -r / ssh 'rm -rf … && mv …' — that recipe deletes the LIVE
 #    directory before extracting and can take client sites down.

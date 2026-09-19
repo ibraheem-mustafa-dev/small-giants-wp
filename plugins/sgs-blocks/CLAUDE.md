@@ -611,9 +611,9 @@ before extracting the new copy takes client sites down.
 
 `build-deploy.py` is the ONE path: dirty-tree gate, `--payload` deadlock-breaker, pre-deploy
 stored-content audit, default-ON fail-closed smoke test, `.bak` rollback rotation, and a
-post-deploy purge of BOTH cache layers via `step_purge_caches()` — OPcache (compiled PHP, reset
-over HTTPS because the CLI pool keeps a separate one) and the LiteSpeed page cache (rendered
-HTML). Scope with `--blocks-only` / `--theme-only`; `--skip-build` reuses `build/`. Do not reach
+post-deploy purge of THREE cache layers via `step_purge_caches()` — OPcache (compiled PHP, reset
+over HTTPS because the CLI pool keeps a separate one) the LiteSpeed page cache (rendered
+HTML) and the theme pattern cache (new pattern files register only after it clears). Scope with `--blocks-only` / `--theme-only`; `--skip-build` reuses `build/`. Do not reach
 for `--allow-dirty` (an uncommitted edit is what breaks a deploy) or `--skip-verify` (it removes
 the check that catches a broken deploy).
 

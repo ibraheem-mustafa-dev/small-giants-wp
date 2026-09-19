@@ -1073,7 +1073,7 @@ def run_isolated(args: "argparse.Namespace") -> int:
 
 def step_purge_caches(dry_run: bool, use_alias: bool, wp_content: str,
                       host: str) -> int:
-    """Post-deploy cache purge - TWO DIFFERENT CACHES, deliberately both.
+    """Post-deploy cache purge - THREE DIFFERENT CACHES, deliberately all.
 
     WHY THIS EXISTS. A cache reset that is only described in docs (or in
     ROLLBACK_HINT's MANUAL instructions) and enforced nowhere leaves theme assets
@@ -1083,8 +1083,10 @@ def step_purge_caches(dry_run: bool, use_alias: bool, wp_content: str,
 
       OPcache   holds COMPILED PHP.   Stale => the server runs yesterday's render.php.
       LiteSpeed holds RENDERED HTML.  Stale => the server never runs today's PHP at all.
+      Pattern   holds the parsed THEME PATTERN FILES, keyed on the theme version.  Stale =>
+                a pattern file added by the deploy is on disk but never registered.
 
-    Clearing one does nothing for the other.
+    Clearing one does nothing for the others.
 
     OPCACHE MUST BE RESET OVER HTTP, NOT OVER SSH. Each PHP SAPI keeps its OWN
     OPcache: `wp eval` runs in the CLI pool and resets the CLI's cache, leaving the
@@ -1100,7 +1102,7 @@ def step_purge_caches(dry_run: bool, use_alias: bool, wp_content: str,
     retry loop. But a leg that did not run is NEVER reported as OK: the whole point
     of this step is that a silent skip makes stale caches invisible.
     """
-    log("[purge] clearing both cache layers (OPcache + page cache)")
+    log("[purge] clearing cache layers (OPcache + page cache + theme pattern cache)")
     if dry_run:
         log("[purge] SKIPPED (--dry-run); would reset OPcache over HTTPS "
             "and run `wp litespeed-purge all`")
@@ -1178,8 +1180,21 @@ def step_purge_caches(dry_run: bool, use_alias: bool, wp_content: str,
         err("[purge] page-cache purge did not confirm (exit %d): %s"
             % (pc.returncode, out[:200]))
 
-    if ok_opcache and ok_page:
-        log("[purge] OK - both layers clear")
+    # ---- leg 3: theme pattern cache ---------------------------------------
+    pattern_cmd = ssh_base_cmd(use_alias) + [
+        "cd " + shlex.quote(webroot) + " && "
+        "wp eval 'wp_get_theme()->delete_pattern_cache(); echo \"SGS-PATTERN-CACHE-CLEARED\";' 2>&1"]
+    pt = subprocess.run(pattern_cmd, check=False, capture_output=True, text=True)
+    pout = ((pt.stdout or "") + (pt.stderr or "")).strip()
+    ok_patterns = "SGS-PATTERN-CACHE-CLEARED" in pout
+    if ok_patterns:
+        log("[purge] theme pattern cache: CLEARED")
+    else:
+        err("[purge] theme pattern cache did not clear (exit %d): %s"
+            % (pt.returncode, pout[:200]))
+
+    if ok_opcache and ok_page and ok_patterns:
+        log("[purge] OK - all layers clear")
         return 0
     # Non-fatal by design (see the docstring), but never silent.
     err("[purge] NOT FULLY PURGED - the deploy IS live, but visitors with a warm "

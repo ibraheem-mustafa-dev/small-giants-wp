@@ -465,7 +465,7 @@ Gitignored; never committed.
 | `.claude/secrets/indus-test.env` | Indus test site (lavender-dinosaur-183533.hostingersite.com) logins | `WP_USER_INDUSTEST` + `WP_PWD_INDUSTEST` (browser/admin login); `WP_APP_PWD_INDUSTEST` (REST Basic auth); `WP_URL_INDUSTEST` |
 | `.claude/secrets/credentials.yml` | General project credentials (YAML) | `import yaml; yaml.safe_load(open('.claude/secrets/credentials.yml'))` |
 
-> **LiteSpeed:** LiteSpeed Cache is active on sandybrown (check any other target with `wp plugin list --status=active | grep -i litespeed`). `build-deploy.py` purges both cache layers after a deploy — OPcache (compiled PHP) through an HTTPS probe, because the CLI pool has its own OPcache, and the LiteSpeed page cache (rendered HTML) through wp-cli; clearing one does nothing for the other. For a manual purge after a CSS/render change run `wp litespeed-purge all`, reset OPcache (snippet below), and clear the Hostinger CDN (`hosting_clearWebsiteCacheV1`).
+> **LiteSpeed:** LiteSpeed Cache is active on sandybrown (check any other target with `wp plugin list --status=active | grep -i litespeed`). `build-deploy.py` purges three cache layers after a deploy — OPcache (compiled PHP) through an HTTPS probe, because the CLI pool has its own OPcache, the LiteSpeed page cache (rendered HTML) through wp-cli, and the theme pattern cache (a pattern file added by a deploy registers only after it clears); clearing one does nothing for the others. For a manual purge after a CSS/render change run `wp litespeed-purge all`, reset OPcache (snippet below), and clear the Hostinger CDN (`hosting_clearWebsiteCacheV1`).
 
 ### Full deployment (ALL targets) — always via `build-deploy.py`
 
@@ -486,7 +486,7 @@ python plugins/sgs-blocks/scripts/build-deploy.py --target indus-test
 The script runs the pre-deploy `gate:full` tier, builds (from an isolated `git worktree` of
 `HEAD` by default, so a concurrent session's build or uncommitted files cannot collide with the
 deploy; `--no-isolate` opts out), tars, scps, extracts, rotates the previous copy to `<dir>.bak`,
-cleans up, purges both cache layers, then **GETs the site and fails the run if it is broken**.
+cleans up, purges all three cache layers, then **GETs the site and fails the run if it is broken**.
 Deploy a framework change to the canary first.
 
 **The flags exist — know what you're giving up before using them:**
