@@ -1,88 +1,58 @@
 ---
 doc_type: spec
 spec_id: 33
-spec_version: 1.2.2
+spec_version: "1.3"
 project: small-giants-wp
 thread: header-footer-setup-pipeline (Part 1 of 2)
 title: "Universal Draft Global-Styles / Token Extractor"
 created: 2026-07-13
-last_verified: 2026-07-13 (D322 — ALL 13 FRs shipped + live-proven on Mama's page 8; component-CSS migrated out of the snapshot; focus-visible + buttons + rule-9 verified clean; header/footer/nav design-gate cross-reference added same day, no FR change)
-status: COMPLETE (v1.1.1 — Part 1 done: all 13 FRs shipped + live-verified. Deferred: other-5-client rollout behind per-client reclone (FR-33-11); Part 2 = header/footer clone, now emitting `sgs/site-header`/`sgs/site-footer`/`sgs/nav-bar-menu`+`sgs/nav-drawer-menu`+`sgs/nav-drawer` per the 2026-07-13 header/footer/nav design-gate)
-status_history:
-  - 2026-07-13 — v0.1.0 authored (corpus-grounded, 10 FRs).
-  - 2026-07-13 — v0.2.0 after a 6-persona /adversarial-council (Cynic/Spec-Lawyer/Ship-PM/Extraction-Correctness/Support-Realist/Systems-Integration; all C-band, GO-conditional). Applied every convergent must-fix. Bean-directed shape: keep the COMPLETE spine (all DECLARED value types in v1 — colour/typography/spacing/radius/shadow/buttons/layout), because the cost/risk is the DERIVATION mechanism, not the breadth of value types. The declared-vs-derived line is the trust boundary: declared (Pass A) auto-applies after computed-validation; derived (Pass B) is PROVISIONAL/advisory, never auto-pushed to a live theme. Fixed the FR-33-1 precedence contradiction that would have re-shipped D303; defined the role-inference rule table; pinned ΔE + determinism; reuse-by-composition (freeze the live hex-only helper); added provenance trace + golden fixtures + deploy-safety gates + bootstrap-ordering + forward contracts. All 4 open questions RESOLVED into FRs.
-  - 2026-07-13 — v1.0.0 (D318): BUILT + live-proven on Mama's. Hybrid Node(measure.js)+Python(extract) at `plugins/sgs-blocks/scripts/theme-extractor/`. SHIPPED: FR-33-1 (provenance + computed-wins), FR-33-2 (role rule-table + ΔE alpha-axis dedup), FR-33-3 (base from rendered `<p>` + mode-heading-lh + rem-vs-real-root — D303 killed), FR-33-4 (declared spine: colour/typography/buttons(open-bag rest+hover)/contentSize/clamp-verbatim), FR-33-7 (trace + goldens + schema-validate), FR-33-8 (determinism, byte-identical), FR-33-9 (conservation/gap-log), FR-33-10 (composed `build_draft_root_token_map`, frozen hex helper unchanged), FR-33-11 (push-theme-snapshot `--backup`/`--rollback`/drift-warn). 16 tests green; proven live on sandybrown page 8 (base 16px, heading 1.2, buttons faithful — caught+fixed a transparent→black alpha-drop bug via live measurement). FOLLOW-UP: FR-33-5 (Pass B advisory), FR-33-6 (dark-theme safety), FR-33-12 (orchestrator fail-closed ordering gate), FR-33-13 (header/footer namespace + colour-var parking re-point); migrate the transitional component `styles.css` out of the snapshot.
-  - 2026-07-13 — v1.1.0 (D320/D321/D322): the FOLLOW-UP set SHIPPED — Part 1 COMPLETE (13/13 FRs). **FR-33-12 (D320):** orchestrator fail-closed freshness gate — reads the `_sgsExtractor.draft_css_sha256` EMBEDDED in the canonical `theme-snapshot.json` (a code-review caught the first design tying it to the generated file, not the file the converter reads) + shared `scripts/shared_utils.py` single-source hash. **FR-33-5 (D321):** Pass B advisory derivation (`derive.py`) — token-less draft → derived palette by usage-context role (never frequency), `_source:derived`+confidence+`advisory:true`, translucent skipped, nothing-usable→baseline+skip; `push-theme-snapshot` strips advisory unless `--include-advisory`. **FR-33-6 (D321):** dark-theme/preview-shell safety (`extract._theme_background` + `measure.js` marker-path capture — a qc-council forensics rater caught that markers carried no path) — widest content-containing ancestor, dark discarded only on a positive shell signal, legit dark kept. **FR-33-13 (D322):** `settings.custom.header`/`.footer` reserved + reconciliation note (Part 2, Spec 37, resolves header-specific settings via scoped CSS, see FR-37-15/16) + `build_draft_root_token_map` parking re-point; the transitional component `styles.css` MIGRATED out of the Mama's snapshot (focus-visible → theme `utilities.css`; dead is-style/hero-cta/page-hack rules dropped; product-card client vars kept); button now consumes the open-bag `hover-transform` token (FR-33-4 render-side closure). 26 tests green; deployed + live-verified clean on sandybrown page 8.
-  - 2026-07-13 — v1.2.0 (D325, Bean-directed): FR-33-14 ADDED + BUILT — Tier-1 business-DATA auto-fill companion to the global-STYLES extraction. `scripts/sync-business-info.py` extracts high-confidence machine-signal fields (email `mailto:` / phone `tel:` / socials known-domain / copyright `©`) from the draft and fill-if-empty-writes them to the Site Info store via the NEW capability-gated `POST /sgs/v1/site-info`; wired to run automatically at the Part-1 deploy moment in `orchestrator/upload_and_patch.py` (same `--client`+push gating as the theme-snapshot push, non-fatal). Tier 2 (tagline/address/hours — semantic guesses) DEFERRED to a review flow (parallels FR-33-5). Standalone live-proven on sandybrown; pipeline wiring static-verified.
-  - 2026-08-01 — v1.2.1 (Spec 32/33 surface-alt fix, load-bearing): FR-33-2's role table already
-    inferred a "surface-alt" role for background-on-content signals, but `palette.py`'s slug-assignment
-    never converted that role into the theme's `surface-alt` baseline slug (`_IDENTITY_ROLE_SLUG` had no
-    entry for it) — so a re-extracted client snapshot could silently NOT emit a distinct `surface-alt`
-    at all, recreating the surface/surface-alt collision that 34 block call sites were swept off of this
-    session (Spec 32 §12). Fix has two parts, both in `plugins/sgs-blocks/scripts/theme-extractor/`:
-    (1) `roles.py` documents WHY the content-bg signal is deliberately kept at 0.70 confidence (below
-    the 0.85 identity-claim floor) — raising it to claim the slug directly was tried and reverted
-    because it broke the D318 regression guard (a client's own named large-surface token, e.g.
-    `--surface-pink`, got silently renamed to the generic slug); (2) `palette.py` adds
-    `_synthesise_surface_alt()`, which runs AFTER both assignment passes and ONLY fires if nothing (real
-    draft evidence or name-tiebreak) already claimed `surface-alt` — it derives one from the resolved
-    `surface` colour, tinted 6% toward black (light surface) or white (dark surface), tagged
-    `_source:"derived"`. Verified: `test_extractor.py` still 25/26 green (1 pre-existing, unrelated
-    `styles.elements` fontSize failure, confirmed present before this fix too via `git stash`); a
-    synthetic single-background fixture (no content-bg signal at all) now emits
-    `surface:#222831 → surface-alt:#2f353d` (dark) and `surface:#fbf3dc → surface-alt:#ece4cf` (light,
-    Mama's own surface hex) instead of a missing/collided slot. FR-33-2's rule table text is amended to
-    name this fallback explicitly; a cross-reference note is added to FR-33-6 (which governs the
-    surface/dark-theme discard decision, a related but DIFFERENT mechanism — corrects an earlier
-    mis-citation that conflated the two).
-  - 2026-07-13 — v1.1.1 (post-D322, no FR change, additive): the header/footer/nav design-gate (`.claude/plans/2026-07-13-header-footer-nav-system-design-gate.md`, Bean-approved) named the concrete Part-2 emit target and a new consumer relationship for Part 1's output. **Consumer link (new):** `sgs/site-header`, `sgs/site-footer`, and `sgs/nav-bar-menu`+`sgs/nav-drawer-menu`+`sgs/nav-drawer` — the specialised container blocks the design-gate approved for inside the header/footer template parts — default their colours/typography/spacing from the SAME `theme-snapshot.json` this spec generates (global-styles consumer, no new extraction surface; see design-gate §4b). **Part 2 emit target (concrete):** Part 2 (draft header/footer → WP) now emits these three named blocks, not `core/group` — this spec's role stays unchanged (it still only produces the token source Part 2 and the new blocks read). **FR-33-13 linkage (noted, not resolved):** the reserved `settings.custom.header`/`.footer` namespace is one candidate source for the new blocks' header-specific settings; the design-gate leaves the tokenise-vs-Customiser choice as a Part 2 design-gate item (§15 Q1 area) — not decided here. No FR text changed; this is a forward-reference update only.
-  - 2026-09-19 — v1.2.2 (additive note, NO FR change; findings from the first real-page Eye Care Birmingham run): (1) **FR-33-14 (business-data auto-fill) ALREADY EXISTS and is the mechanism Bean wants extended** (`scripts/sync-business-info.py` -> `POST /sgs/v1/site-info` -> the Site Info settings page, `includes/class-sgs-site-info-admin.php`); it regexes the raw draft for `mailto:`/`tel:`/socials/`©`, so on a `.dc.html` draft whose phone/email live behind `{{ phone }}` bindings it finds nothing (NOT yet verified against the code, read it first), and it only runs when the pipeline is given `--push-theme-snapshot`. (2) Pass B on a token-less `.dc.html` draft produced 3 advisory palette entries, one of which (`surface-alt #bdc1c6`) is a scrollbar-thumb hover colour that won a hex-order tie-break (`roles.py::collect_colour_usages` does not skip scrollbar/selection/placeholder/hover/focus selectors); the draft's real accent (`--acc`, set at runtime by JS on a wrapper div) is never read because `measure.js` does not read custom properties. (3) FR-33-5 strips every advisory entry at push, and the push REPLACES the theme palette, so pushing an all-advisory snapshot left the test site with an EMPTY palette; the extractor's own `--merge-onto theme/sgs-theme/theme.json` keeps the framework's slugs and is the safe form for a token-less draft. (4) `push-theme-snapshot.py` aborts on a brand-new site (server theme.json exists but no `wp_global_styles` post, so the FR-33-11 backup gate reads "backup failed") and exits 1 after a successful on-disk push. Bean-directed scope for the next session: extend Spec 33 to handle BOTH plain-HTML drafts (Mama's, must not change) and runtime-template drafts, saving GLOBAL DEFAULTS/SETTINGS only (NOT per-element styling values); design not yet done, see `.claude/reports/2026-09-19-inv-spec33-palette.md`.
+last_verified: 2026-09-19
+status: complete
 references:
   - 26-SGS-GLOBAL-STYLES-AND-THEMING.md (the theming MODEL this FEEDS; FR-26-C derived-globals = a FORWARD CONTRACT, inert until Spec 26 Phase 3)
-  - 37-HEADER-FOOTER-BUILDER.md (Part 2 sibling — the header/footer converter, built AFTER this; reserves the header/footer token namespace, FR-33-13)
+  - 37-HEADER-FOOTER-BUILDER.md (Part 2 sibling — the header/footer converter; reserves the header/footer token namespace, FR-33-13)
   - .claude/plans/archive/2026-07-13-header-footer-nav-system-design-gate.md (names Part 2's concrete emit target, `sgs/nav-bar-menu`+`sgs/nav-drawer-menu`+`sgs/nav-drawer`, and makes those blocks a consumer of this spec's `theme-snapshot.json` for global-style defaults, §4b)
   - 31-UNIVERSAL-CLONING-PIPELINE.md (the block pipeline; §3.A token-snap ΔE reused; the converter reads the snapshot this generates → bootstrap ordering FR-33-12)
-  - ../parking.md P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE (the parked idea this formalises)
+  - ../parking.md P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE (the parked continuation: the other-5-client rollout behind per-client reclone, FR-33-11)
   - ../parking.md P-DRAFT-CSSVAR-COLOUR-RESOLUTION + P-DRAFT-CSSVAR-SEED-READD (consume this extractor's token map, FR-33-13)
 corpus_basis: sites/{mamas-munches,indus-foods,_dogfood} authored draft mockups (8 files, 3 design systems) — full union inventory in §Appendix A
-supersedes: none
-absorbed_by: none
+absorbs: null
+absorbed_by: null
 ---
 
 # Spec 33 — Universal Draft Global-Styles / Token Extractor
 
-> **Part 1 of the 2-part header/footer setup pipeline** (Bean-directed 2026-07-13). Part 1 (this spec)
-> = extract the draft's GLOBAL design tokens + base styles into the site's theme so every block
-> inherits the correct base BY CONSTRUCTION. Part 2 (Spec 37) = clone the draft header/footer into
-> SGS template parts. Part 1 first: prerequisite for Part 2 AND for every body clone (the converter
-> reads the snapshot this generates — FR-33-12), fixes the D303 drift class, lower-risk, and unblocks
-> two parked colour-var bugs.
+> **Part 1 of the 2-part header/footer setup pipeline.** Part 1 (this spec) = extract the draft's GLOBAL
+> design tokens + base styles into the site's theme so every block inherits the correct base BY
+> CONSTRUCTION. Part 2 (Spec 37) = clone the draft header/footer into SGS template parts. Part 1 is the
+> prerequisite for Part 2 AND for every body clone (the converter reads the snapshot this generates —
+> FR-33-12), prevents the base-inheritance drift class described under Problem, and feeds two colour-var
+> consumers.
 >
-> **Part 2's emit target is now concrete (2026-07-13 header/footer/nav design-gate, Bean-approved):**
-> Part 2 clones a draft's header/footer rows onto the new specialised container blocks
-> `sgs/site-header`, `sgs/site-footer`, and `sgs/nav-bar-menu`+`sgs/nav-drawer-menu`+`sgs/nav-drawer` (`.claude/plans/archive/2026-07-13-header-footer-nav-system-design-gate.md`)
-> — NOT `core/group`. Those blocks also become a downstream CONSUMER of this spec's output: every
-> element/setting on them defaults its colours/typography/spacing from the `theme-snapshot.json` Part 1
-> generates (the design-gate's §4b "global defaults + Site Info access" requirement), so a client's
-> brand tokens flow through Part 1 into header/footer/nav with no re-entry. This does not change any
-> FR in this spec — Part 1 still only produces the token source; it is read by the same
-> `push-theme-snapshot.py` deploy path plus, now, by the new blocks' default-resolution at render time.
+> **Part 2's emit target:** Part 2 clones a draft's header/footer rows onto the specialised container
+> blocks `sgs/site-header`, `sgs/site-footer`, and `sgs/nav-bar-menu`+`sgs/nav-drawer-menu`+`sgs/nav-drawer`
+> (`.claude/plans/archive/2026-07-13-header-footer-nav-system-design-gate.md`) — not `core/group`. Those
+> blocks are also a downstream CONSUMER of this spec's output: every element/setting on them defaults its
+> colours/typography/spacing from the `theme-snapshot.json` Part 1 generates (the design-gate's §4b
+> "global defaults + Site Info access" requirement), so a client's brand tokens flow through Part 1 into
+> header/footer/nav with no re-entry. Part 1 still only produces the token source; it is read by the
+> `push-theme-snapshot.py` deploy path and by the new blocks' default-resolution at render time.
 
-> **⛔ THE ONE RULE THAT MAKES THIS WORK (read before any FR).** This spec exists to kill D303 — a
-> block inheriting the WRONG base because something trusted a DECLARED value over the RENDERED one.
+> **⛔ THE ONE RULE THAT MAKES THIS WORK (read before any FR).** This spec exists to stop a block
+> inheriting the WRONG base because something trusted a DECLARED value over the RENDERED one.
 > So the iron law here is: **the emitted VALUE is always the COMPUTED value on a real rendered node,
 > never a raw source declaration** (the project `measurement-vs-eye` rule). A source `:root`/base
 > declaration is only ever used for the token's NAME/ROLE vocabulary, never as the value to ship.
-> Any FR that emits a declared value without computed-validation is a D303 re-offence.
+> Any FR that emits a declared value without computed-validation breaks this rule.
 
 ## Problem
 
-A clone run today READS a hand-maintained `theme-snapshot.json`; nothing GENERATES it from the draft.
-That is the drift source: all 6 client snapshots carry a fabricated `h1: 1.15` line-height +
-`-0.022em`/`-0.015em` letter-spacing that **no draft ever declared** (the real Mama's draft says
-`h1,h2,h3{line-height:1.2}`, zero letter-spacing). Because the theme base ≠ the draft base, every
-cloned block inherits the wrong base — the D303 "brand quote renders 16→18px" bug is exactly this (a
-`<p>` with no explicit font-size inherits the theme base 18px, not the draft base 16px).
+Without this extractor a clone run READS a hand-maintained `theme-snapshot.json` that nothing GENERATES
+from the draft — the drift source. A hand-maintained snapshot carries values no draft ever declared (a
+fabricated `h1: 1.15` line-height + `-0.022em`/`-0.015em` letter-spacing, where the real Mama's draft says
+`h1,h2,h3{line-height:1.2}` and has zero letter-spacing). Because the theme base ≠ the draft base, every
+cloned block inherits the wrong base — e.g. the brand quote renders 16→18px (a `<p>` with no explicit
+font-size inherits the theme base 18px, not the draft base 16px).
 
 ## Solution overview
 
@@ -117,10 +87,10 @@ against the draft's **actual computed `documentElement` font-size**, never a har
 **Out of scope (the NOT list):**
 - NOT the header/footer converter (Part 2 / Spec 37) — but reserves its token namespace now (FR-33-13).
   Part 2's concrete emit target (`sgs/site-header`/`sgs/site-footer`/`sgs/nav-bar-menu`+`sgs/nav-drawer-menu`+`sgs/nav-drawer`, per the
-  2026-07-13 header/footer/nav design-gate) is named here for cross-reference only; building those
+  header/footer/nav design-gate) is named here for cross-reference only; building those
   blocks, and deciding whether their header-specific settings live in the reserved
   `settings.custom.header`/`.footer` namespace or a Customiser/JS-var channel, is a Part 2 decision
-  (design-gate §15 open-decisions area), not resolved by this spec.
+  (Spec 37 FR-37-15/16), not this spec's.
 - NOT the Spec 26 FR-26-C derived-globals post-pass — that is a FORWARD CONTRACT, inert until Spec 26
   Phase 3 (FR-33-13); this spec must not build a half-merge against unbuilt code.
 - NOT a new theming/deploy channel — feeds the EXISTING `theme-snapshot.json` → `push-theme-snapshot.py`.
@@ -147,7 +117,7 @@ table (extend in build, but this is the contract):
 | Signal | Candidate role |
 |---|---|
 | `background`/`background-color` on `body`/`html`/`:root`/`*` (a BASE selector) | `surface` |
-| `background`/`background-color` on a content-selector (a card/panel/section, NOT the base) | `surface-alt` — **deliberately low-confidence (0.70, below the 0.85 identity-claim floor) so it never overwrites a client's own named draft token (D318 guard); see the `_synthesise_surface_alt` fallback below for the no-evidence case** |
+| `background`/`background-color` on a content-selector (a card/panel/section, NOT the base) | `surface-alt` — **deliberately low-confidence (0.70, below the 0.85 identity-claim floor) so it never overwrites a client's own named draft token; see the `_synthesise_surface_alt` fallback below for the no-evidence case** |
 | `color` on body text / `p` / base, low L* | `text` / `text-muted` |
 | high-chroma value on `.btn`/`.cta`/`a`/`a:hover` `background` | `primary` / `accent` |
 | `border-color` / thin-border usage | `border-subtle` |
@@ -156,7 +126,7 @@ table (extend in build, but this is the contract):
 Each mapping carries a **confidence score**; below the floor → `custom` (conservation, FR-33-9), never a
 mis-slugged guess. Colours dedupe at **ΔE≤1 (CIEDE2000, sRGB→Lab); ALPHA is a separate axis (never
 dedup across alpha)**; on a merge the **`declared` token beats `derived`; among equals, first
-source-order wins**; the loser's name is logged as an ALIAS (not silently vanished).
+source-order wins**; the loser's name is logged as an ALIAS (not silently vanished). **`surface-alt` fallback:** if no real draft evidence or name-tiebreak already claimed `surface-alt`, `palette.py::_synthesise_surface_alt()` (runs AFTER both assignment passes) derives one from the resolved `surface` colour, tinted 6% toward black (light surface) or white (dark surface), tagged `_source:"derived"`. The content-bg signal stays at 0.70 confidence because raising it to claim the slug directly would silently rename a client's own named large-surface token (e.g. `--surface-pink`) to the generic slug.
 **Done when:** Mama's role-named + Indus literal-colour-named + dogfood tokens each map to correct
 roles via the table (not names); `success=#2E7D4F` lands `success` whether named `--success` or
 `--green`; a colour used as BOTH border and heading resolves by the higher-priority property or falls
@@ -166,7 +136,7 @@ to `custom` with a logged ambiguity; `rgba(x,1)` and `rgba(x,0.1)` do NOT dedup.
 The theme base (`styles.typography` + `styles.color`) MUST be the COMPUTED font-family/size/
 line-height/colour/background read on a **representative rendered `<p>` in the main content flow** —
 the cascade result of `html` + `body` + any content wrapper — NOT the `body{}` selector's declared
-value (reading `body{}` when a wrapper overrides it re-creates D303). `rem` values MUST resolve against
+value (reading `body{}` when a wrapper overrides it re-creates the wrong-base drift). `rem` values MUST resolve against
 the draft's actual computed `documentElement` font-size (never assume 16px). Font FAMILIES: `body` ←
 the base rule; `heading` ← `h1`→`h2`→`h3` (first present); `display` ← an explicit `--font-display`
 token or the heading family, else omitted (never synthesised from nothing). Emit the FULL fallback
@@ -175,7 +145,7 @@ STACK (`Fraunces, Georgia, serif`) AND ensure the primary family is actually loa
 A value the draft NEVER declared (e.g. the fabricated `1.15`/letter-spacing) MUST NOT be synthesised
 into the output.
 **Done when:** re-cloning Mama's with the generated snapshot renders the brand quote at the draft base
-**16px** (D303 gone), heading line-height **1.2** (not 1.15), letter-spacing absent; a fixture with
+**16px** (the 18px inheritance drift gone), heading line-height **1.2** (not 1.15), letter-spacing absent; a fixture with
 `html{font-size:62.5%}` resolves rem correctly (not ×1.6 wrong); the heading font actually loads.
 
 ### FR-33-4 — Complete DECLARED value-type coverage (the full spine, all in v1)
@@ -254,15 +224,15 @@ once-used decorative rgba is in the trace, not the palette; a grep finds no clie
 ### FR-33-10 — Reuse by COMPOSITION, not by widening the live helper
 The extractor MUST add a NEW `build_draft_root_token_map()` (hex + non-hex + `var()`-chain resolution +
 fallback handling). The EXISTING `converter/services/styling_helpers.py::build_draft_root_colour_map`
-(hex-only, feeding the LIVE converter's exact-hex snap + the D307 `_theme_palette_slugs()` guard) MUST
+(hex-only, feeding the LIVE converter's exact-hex snap + the `_theme_palette_slugs()` guard) MUST
 stay BYTE-IDENTICAL — widening its return would feed the converter unresolvable entries and risk
-re-opening the D306/D307 ghost-border bug. A golden asserts the hex-only map's output is unchanged for
+re-opening the ghost-border bug. A golden asserts the hex-only map's output is unchanged for
 the Mama's draft.
 **Done when:** `build_draft_root_colour_map`'s output is byte-identical for Mama's (golden guard); the
 extractor consumes the new composed token map; no converter regression.
 
 ### FR-33-11 — Deploy safety: prove on Mama's; backup + rollback; diff-approve; drift-detect
-v1 proves on **Mama's ONLY** (it carries the D303 bug + is the canary). The other 5 client snapshots
+v1 proves on **Mama's ONLY** (it carries the wrong-base drift + is the canary). The other 5 client snapshots
 are DEFERRED, each behind its own re-clone + a per-client visual/computed-parity (Stage 11.6) pass —
 NO snapshot-only push of a regenerated palette to a client whose pages aren't re-cloned in the same
 change. Before every `wp_global_styles` push, the pusher MUST fetch-and-back-up the CURRENT live
@@ -270,12 +240,10 @@ payload to a timestamped file + document a one-command `--rollback`. Before over
 live payload against the LAST-DEPLOYED snapshot and WARN if the live layer was hand-edited in the Site
 Editor since (else silent clobber of an operator tweak). Each client push is `--dry-run` diff → human
 go/no-go → `--yes` (SAFE_TARGETS enforced).
-**STATUS (2026-07-16, adversarial-council + QC): the "silent clobber" failure named above was REAL until
-this fix — `drift_warning()` diffed KEY SETS, so a client changing a VALUE on a key that already existed
-(the commonest edit — nudging a brand colour) produced an empty diff and NO warning, then got
-overwritten. Now a VALUE-LEVEL diff reports both ORPHANED keys and CLOBBERED keys (live-vs-incoming
-value); a failed live fetch is LOUD not silent; a failed backup ABORTS the push (`--force-no-backup`
-overrides; a genuinely fresh target still proceeds). 21/21 QC scenarios pass.**
+`drift_warning()` performs a VALUE-LEVEL diff and reports both ORPHANED keys and CLOBBERED keys (live-vs-incoming
+value) — a key-set diff would miss a client changing a VALUE on a key that already exists (the commonest
+edit — nudging a brand colour) and silently overwrite it. A failed live fetch is LOUD, not silent; a failed
+backup ABORTS the push (`--force-no-backup` overrides; a genuinely fresh target still proceeds).
 **Done when:** Mama's regenerates + passes the FR-33-3 reclone + Bean's eye BEFORE any other client;
 a `--rollback` restores the prior live payload; a hand-edited live layer triggers a warning pre-push.
 
@@ -298,7 +266,7 @@ message; a run after a fresh extraction proceeds.
 - **Part 2 namespace reserved NOW:** Part 1 owns GLOBAL/base + generic presets only; header/footer
   COMPONENT tokens (sticky/scrolled header bg, header height, logo max-height, nav-link hover,
   burger breakpoint) are Part 2's, in a reserved `settings.custom.header`/`.footer` namespace —
-  declared now so Part 2 does not force a Part 1 re-spec (Bean Q6).
+  declared now so Part 2 does not force a Part 1 re-spec.
   Part 2's owner is `sgs/site-header`/`sgs/site-footer`/
   `sgs/nav-bar-menu`+`sgs/nav-drawer-menu`+`sgs/nav-drawer` (header/footer/nav design-gate). Those blocks' GLOBAL defaults (brand colour/
   typography/spacing) come from Part 1's `theme-snapshot.json` output directly — that linkage needs
@@ -310,7 +278,7 @@ message; a run after a fresh extraction proceeds.
 **Done when:** the snapshot reserves the header/footer namespace; FR-33-10's token map is a callable
 service; a note re-points the colour-var parking entries.
 
-### FR-33-14 — Business-data auto-fill companion (Tier 1) — BUILT + LIVE (D325, Bean-directed 2026-07-13)
+### FR-33-14 — Business-data auto-fill companion (Tier 1) — BUILT + LIVE
 
 **Behaviour:** alongside the global-STYLES extraction+push this spec owns, Part 1 also auto-fills the
 site's **business DATA** (the `Sgs_Site_Info` store — email/phone/socials/copyright/…) from the draft,
@@ -339,10 +307,18 @@ side by the `sgs/business-info` block (per-type inserter variations) + `Org_Webs
 
 **Acceptance (met live on sandybrown):** the Mama's draft yields email + copyright (socials are `#`
 placeholders → skipped; phone/hours/address absent → not touched); fill-if-empty skips an existing
-value; a forced write persists the full copyright string. **Standalone script live-proven end-to-end;
-the upload_and_patch wiring is static-verified (draft glob resolves the Mama's mockup) — a full-pipeline
-integration run is pending a real `/sgs-clone` run.**
+value; a forced write persists the full copyright string. The standalone script is proven end-to-end; the
+`upload_and_patch` wiring is statically verified (the draft glob resolves the Mama's mockup); a full-pipeline
+integration run is PARTIAL — pending a real `/sgs-clone` run.
 **Depends on:** FR-33-11 (push moment / creds), Spec 37 FR-37-10 + FR-37-11 (business-info block consumer), Spec 36 (Site Info store).
+
+## Known limits
+
+- **Runtime-template drafts.** FR-33-14's `scripts/sync-business-info.py` regexes the raw draft for `mailto:`/`tel:`/socials/`©`, so on a `.dc.html` draft whose phone/email live behind `{{ phone }}` bindings it is expected to find nothing (unverified — read the script first), and it only runs when the pipeline is given `--push-theme-snapshot`.
+- **Pass B on a token-less `.dc.html` draft.** `roles.py::collect_colour_usages` does not skip scrollbar/selection/placeholder/hover/focus selectors, so a scrollbar-thumb hover colour can win a role (e.g. `surface-alt`) by hex-order tie-break; `measure.js` does not read custom properties, so an accent set at runtime by JS on a wrapper div (`--acc`) is never read.
+- **All-advisory push.** FR-33-5 strips every advisory entry at push, and the push REPLACES the theme palette, so pushing an all-advisory snapshot leaves the site with an EMPTY palette; the extractor's `--merge-onto theme/sgs-theme/theme.json` keeps the framework's slugs and is the safe form for a token-less draft.
+- **Brand-new site push.** `push-theme-snapshot.py` aborts on a brand-new site (server theme.json exists but no `wp_global_styles` post, so the FR-33-11 backup gate reads "backup failed") and exits 1 after a successful on-disk push.
+- **Runtime-template draft support is NOT BUILT.** Extending the extractor to handle BOTH plain-HTML drafts (Mama's, which must not change) and runtime-template drafts, saving GLOBAL DEFAULTS/SETTINGS only (not per-element styling values), has no design yet — see `.claude/reports/2026-09-19-inv-spec33-palette.md`.
 
 ## Test strategy (holistic)
 
@@ -350,7 +326,7 @@ integration run is pending a real `/sgs-clone` run.**
 |----|---------------------|------------------------|-------------|------------------|
 | FR-33-1 | every token has `_source`; grep: no raw-declaration emit for values | fixture declared≠computed → computed wins + logged | vs golden | dead-token → gap-log |
 | FR-33-2 | role table present; ΔE=CIEDE2000; alpha-axis asserted | 3 systems → roles by table not name | vs the 3 verbatim token sets | rgba alpha not deduped; ambiguous → custom |
-| FR-33-3 | rem resolves vs computed root; no fabricated values | reclone Mama's → quote 16px, lh 1.2, font loads | vs live computed-style | 62.5%-root fixture; D303 guard |
+| FR-33-3 | rem resolves vs computed root; no fabricated values | reclone Mama's → quote 16px, lh 1.2, font loads | vs live computed-style | 62.5%-root fixture; wrong-base guard |
 | FR-33-4 | clamp verbatim; `!important` stripped; hover = open bag | all declared types + both hover shapes land | vs §App A §D | fixture per value type |
 | FR-33-5 | derived tagged `advisory`; relative-share threshold | token-less → advisory + no auto-live; nothing usable → baseline+skip | vs Pass-B-inverts-palette | parser-fail → halt |
 | FR-33-6 | positive preview signal required | dark shell ignored; legit dark theme KEPT | vs the shell fixture | legit-dark-theme fixture |
@@ -362,56 +338,50 @@ integration run is pending a real `/sgs-clone` run.**
 | FR-33-12 | orchestrator fail-closed gate | stale snapshot → fail; fresh → proceed | vs `(client,hash)` key | — |
 | FR-33-13 | header/footer namespace reserved; token map = service | — | vs Spec 26/17 | colour-var entries re-pointed |
 
-## Website-credit recognition (Part 2 — header/footer pipeline). D338, 2026-07-15
+## Website-credit recognition (Part 2 — header/footer pipeline)
 
 **Plain English:** when the pipeline clones a draft's footer, the "Website by Small Giants Studio" line must become the `sgs/business-info` `displayType="attribution"` element (Spec 02) — not a generic text block. This section is the recognition contract. It is the FIRST slot-mapping rule written for Part 2; extend the same shape for the remaining header/footer slots.
 
-### Ground truth — measured 2026-07-15, NOT assumed
+### Ground truth
 
-Neither draft is currently recognisable. Verified in the draft files, not inferred:
+Neither draft is recognisable without the classifier. Draft facts:
 
 | Draft | Bottom-bar markup | Credit present? |
 |---|---|---|
-| Indus (`Indus-Foods-Food-Service-V3-With-Images.html:1005-1008`) | `<div class="footer-bottom"><p>© …</p><p>Website by Small Giants Studio</p></div>` | Yes — but a **bare `<p>`: no class, and NOT EVEN A LINK** |
+| Indus (`Indus-Foods-Food-Service-V3-With-Images.html`, `.footer-bottom`) | `<div class="footer-bottom"><p>© …</p><p>Website by Small Giants Studio</p></div>` | Yes — but a **bare `<p>`: no class, and NOT EVEN A LINK** |
 | Mama's (`mockups/homepage/index.html`) | `<div class="sgs-footer__bottom"><span>© …</span><span>Made with love for breastfeeding mums 🍪</span></div>` | **NO — the 2nd slot is a TAGLINE** |
 
 So there is nothing to match on, and the two drafts disagree on what the second slot even means. **A positional rule ("2nd child of the bottom bar = attribution") is therefore FORBIDDEN** — it would map Mama's tagline onto the agency backlink.
 
-### The fix is at the DRAFT source, not in the converter (Bean-locked)
+### The fix is at the DRAFT source, not in the converter
 
-Per the standing rule (memory `fix-a11y-at-draft-source-not-the-clone`): a draft-inherited gap is fixed by editing the draft and re-cloning — **never** a converter carve-out. Two prerequisite draft edits, both Bean-approved 2026-07-15:
+Per the standing rule (memory `fix-a11y-at-draft-source-not-the-clone`): a draft-inherited gap is fixed by editing the draft and re-cloning — **never** a converter carve-out. Two prerequisite draft edits:
 
-1. **Add the classifier** `class="sgs-footer__credit"` to the credit element in every Bean-controlled draft. SGS-BEM per **Spec 00 §3 / §3.1** (NOT "Spec 15" — Spec 15 is abrogated and `specs/15-*` does not exist; **Spec 31 is LIVE** — it is the canonical cloning-pipeline spec and Spec 15's successor).
+1. **Add the classifier** `class="sgs-footer__credit"` to the credit element in every Bean-controlled draft. SGS-BEM per **Spec 00 §3 / §3.1**.
 2. **Add the missing credit to the Mama's draft** — it has none. Its existing tagline span stays as a tagline and must map to `business-info displayType="description"`, not to attribution.
 
-### Recognition — two independent recognisers (belt and braces, Bean-directed)
+### Recognition — two independent recognisers (belt and braces)
 
 | # | Recogniser | Rule | Why both |
 |---|---|---|---|
 | **R1 — classifier (primary)** | `.sgs-footer__credit` → emit `<!-- wp:sgs/business-info {"displayType":"attribution"} /-->` | Deterministic, BEM-first (R-31-2), zero heuristics. The canonical path for Bean-controlled drafts. |
-| **R2 — content match (fallback)** | Element text contains **`by Small Giants Studio`** (case-insensitive) → reroute from a text/paragraph block to the attribution element | Catches legacy/scraped drafts and any draft that predates R1. Without it every pre-2026-07-15 draft silently clones the credit as a plain paragraph — losing the element, its hover, and its typography contract. |
+| **R2 — content match (fallback)** | Element text contains **`by Small Giants Studio`** (case-insensitive) → reroute from a text/paragraph block to the attribution element | Catches scraped drafts and any draft that predates R1. Without it every such draft silently clones the credit as a plain paragraph — losing the element, its hover, and its typography contract. |
 
-**R2 must not match on the URL** — both live Astra sites point the link at Bean's LinkedIn (stale, predates the website), so a URL match would miss them and an href-rewrite would silently preserve the wrong target. Match the TEXT; the block supplies the correct URL from `SGS_ATTRIBUTION_URL`.
+**R2 must not match on the URL** — existing Astra sites point the link at Bean's LinkedIn, so a URL match would miss them and an href-rewrite would silently preserve the wrong target. Match the TEXT; the block supplies the correct URL from `SGS_ATTRIBUTION_URL`.
 
 **Content is DISCARDED on match, deliberately.** The attribution element takes no content/URL attrs (Spec 02) — its text and href are framework constants. The draft's credit text and href are recognition signals ONLY. Log the discarded original per R-31-4 (report, never silently skip) so a draft carrying a *different* agency's credit surfaces as a gap candidate rather than being silently rebranded.
 
 ### Acceptance
 
 - Both drafts carry `.sgs-footer__credit`; Mama's has a credit at all; Mama's tagline maps to `description`, NOT attribution (the exact false-positive a positional rule would produce).
-- A draft with the classifier but no matching text → R1 fires. A legacy draft with the text but no classifier → R2 fires. Neither double-emits.
+- A draft with the classifier but no matching text → R1 fires. A draft with the text but no classifier → R2 fires. Neither double-emits.
 - The emitted block renders `.sgs-business-attribution` with the framework URL — never the draft's stale LinkedIn href.
-- `/ui-ux-pro-max` enforces the classifier on every NEW draft it generates, so R2 stays a legacy path rather than the norm. (No live parking entry exists for this; if it becomes real deferred work it needs a genuine parking entry.)
-
-## Open questions — RESOLVED (baked into the FRs above; recorded here for the audit trail)
-1. **Full snapshot vs Spec-26 delta → FULL now** (matches the deploy path; delta is a clean downstream transform diffing the full output against baseline, not an extractor re-plumb). FR-33-4/7.
-2. **Token-less / Spectra fallback vs skip → advisory Pass B + baseline-on-empty** (never a silent guess; Pass B output is provisional/gated). FR-33-5.
-3. **Extra colours beyond the 16 slugs → named raw-hex custom entries, two-tier** (real colours → custom palette entry; decorative one-offs → trace, not the picker). FR-33-2/9.
-4. **Frequency thresholds → not precision-critical (Pass B advisory-gated); role by usage-context not raw frequency; relative-share within a role, not absolute count; validate on held-out drafts.** FR-33-2/5/8.
+- `/ui-ux-pro-max` enforces the classifier on every NEW draft it generates, so R2 stays a fallback rather than the norm.
 
 ## Appendix A — Corpus union inventory (the acceptance coverage set)
 Full empirical inventory of every global declared default/preset/variable across the real draft corpus
-(`sites/{mamas-munches,indus-foods,_dogfood}`, 8 authored mockups, 3 design systems), captured
-2026-07-13. The extractor's acceptance = correctly handling every row (via a golden per draft, FR-33-7).
+(`sites/{mamas-munches,indus-foods,_dogfood}`, 8 authored mockups, 3 design systems).
+The extractor's acceptance = correctly handling every row (via a golden per draft, FR-33-7).
 KEY COVERAGE ANCHORS:
 - **Colour roles + naming range (two philosophies):** role-named (`--primary`/`--surface-*`/`--text*`,
   Mama's+dogfood) vs literal-colour-named (`--navy`/`--gold`/`--green`/`--white`, Indus). Same role,
@@ -435,21 +405,17 @@ KEY COVERAGE ANCHORS:
   ad-hoc per-page colours (union); content-width outside `:root` (scan beyond); token-less Spectra
   scrape (Pass-B advisory or baseline-skip).
 
-## Appendix B — Target theme.json slots (SGS theme baseline, verified) + WP fluid facts
+## Appendix B — Target theme.json slots (SGS theme baseline) + WP fluid facts
 `theme/sgs-theme/theme.json` provides: `settings.color.palette` (16 named slugs, raw hex OK);
 `settings.typography.fontFamilies` (body/heading/display/dm-sans + fontFace) + `fontSizes` (6-step,
-NON-fluid since D1007 — `small` 14 / `regular` 16 / `large` 20 / `x-large` 24 / `xx-large` 36 /
-`hero` 50, every one `"fluid": false`; `x-small`/`medium`/`display` retired) + `fluid` (declared but
+NON-fluid — `small` 14 / `regular` 16 / `large` 20 / `x-large` 24 / `xx-large` 36 /
+`hero` 50, every one `"fluid": false`) + `fluid` (declared but
 inert — no preset opts in); `settings.spacing.spacingSizes` (8-step `10`–`80`); `settings.shadow.presets`
 (sm/md/lg/glow); `settings.custom.{buttonPresets(primary/secondary/outline — each: background/text/
 border/border-width/border-radius/padding/font-size/font-weight/min-height/hover-*), borderRadius
 (small/medium/large/pill), transition/duration/easing, focus-ring}`; `settings.layout.{contentSize
 1200, wideSize 1400}`; `styles.typography` (base body); `styles.elements.{h1..h6, heading, link,
-button}`. **NEW namespace this spec reserves:** `settings.custom.header`/`.footer` (Part 2, FR-33-13; Part 2's
-concrete owner is `sgs/site-header`/`sgs/site-footer`/`sgs/nav-bar-menu`+`sgs/nav-drawer-menu`+`sgs/nav-drawer` per the 2026-07-13
-header/footer/nav design-gate — those blocks' GLOBAL colour/typography/spacing defaults read the
-`settings.color.palette`/`settings.typography.*`/`settings.spacing.*` slots above directly; whether
-their header-specific settings use this reserved namespace is still open, see FR-33-13).
+button}`. **Namespace this spec reserves:** `settings.custom.header`/`.footer` (Part 2, FR-33-13; Part 2's concrete owner is `sgs/site-header`/`sgs/site-footer`/`sgs/nav-bar-menu`+`sgs/nav-drawer-menu`+`sgs/nav-drawer` per the header/footer/nav design-gate — those blocks' GLOBAL colour/typography/spacing defaults read the `settings.color.palette`/`settings.typography.*`/`settings.spacing.*` slots above directly; whether their header-specific settings use this reserved namespace is decided by Spec 37, see FR-33-13).
 Deploy: `push-theme-snapshot.py` → disk `theme.json` + `POST /wp/v2/global-styles/{id}` (wp_global_styles;
 overwrites the operator layer — FR-33-11 backup/diff/rollback guards this).
 **WP fluid typography:** `settings.typography.fluid:true` auto-computes `clamp()` from a size; per-size
