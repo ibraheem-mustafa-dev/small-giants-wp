@@ -26,7 +26,7 @@ complete" was hollow. Spec 45 (classless FIELD resolution) is built but has no r
 
 **Nav / header / footer.** Wave 1 (fixtures + verification) is closed. Wave 2 (capabilities) is
 part done: the drawer post type, trigger controls, scoped behaviours and lint gate are built; the
-drawer post picker and migration are half done; the 7 drawer starter patterns, logo source,
+drawer post picker is built except creating a drawer inline; the 7 drawer starter patterns, logo source,
 priority+More / bottom-tab modes, scrolled shadow, payment icons, floating pill and the final
 integration re-check are not. Wave 3 is partial. Waves 4 and 5 (the reference clones and the
 clone walker) have not started.
@@ -115,8 +115,8 @@ IN FULL before touching anything — do not act on this summary.**
 - **Wave 1** (fixtures + verification) — CLOSED. Residuals: axe on the Gate-3 mega panel shows 6
   primary-colour contrast violations on the Mama's palette, accepted by owner ruling; Bean's-eye on
   mega motion not recorded; cart/search screenshot set not captured.
-- **Wave 2** (capability) — DONE a, e, f (live/eye verification owed), g, h, j, k, q, s, t ·
-  PARTIAL b, d, i · NOT DONE c, l, m, n, o, p, r, u. Gate 2 passed once
+- **Wave 2** (capability) — DONE a, d, e, f (live/eye verification owed), g, h, j, k, q, s, t ·
+  PARTIAL b, i · NOT DONE c, l, m, n, o, p, r, u. Gate 2 passed once
   (`reports/2026-07-30-w2a-gate2-drawer-cpt.md`); a re-run is owed after W2-b/c/d.
 - **Wave 3** (polish) — PARTIAL: FR-37-44/45 verified (`reports/visual-diff/site-header-2026-08-19.md`);
   FR-37-27 settled; simplicity finding 2 (canvas-click selection) open; FR-37-6 per-site CPT
@@ -124,9 +124,9 @@ IN FULL before touching anything — do not act on this summary.**
 - **Wave 4** (proof gate — 10 client clones, Bean's-eye per clone) — not started.
 - **Wave 5** (clone walker — FR-37-22) — not started.
 
-**First action:** check for stored string `drawerRef` values on `sgs/nav-bar-menu` blocks on
-sandybrown and the Indus test site (`wp post list` + `post_content` search for `"drawerRef":"`); the
-result decides how the W2-d sweep is framed.
+**First action:** confirm with Bean how the 7 drawer starter looks (W2-c) are delivered — recommended:
+as starter patterns surfaced through the starter-look control already in `nav-drawer/edit.js` — then
+build them, re-run Gate 2, and remove `variantPreset`.
 
 ### Front E — Spec 45 classless FIELD resolution (open)
 

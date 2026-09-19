@@ -504,8 +504,6 @@ construction.
 2. Removal of `nav-drawer`'s `variantPreset` attribute.
 3. Inline creation of a drawer post from the `drawerRef` picker. Today
    `plugins/sgs-blocks/src/blocks/nav-bar-menu/useDrawerNotice.js::addDrawer` inserts a sibling `sgs/nav-drawer` block instead.
-4. The sweep that re-types stored `drawerRef` string values on existing `sgs/nav-bar-menu`
-   instances to the post-id shape (hard cut, no deprecations).
 
 **Done when:** a drawer authored in *SGS → Menu drawers* renders as the site default, a second
 drawer can be picked per-burger, the starter surface offers the 7 looks and a chosen starter's
@@ -702,7 +700,7 @@ blocks) renders an "Add a header element" placeholder in any EMPTY row, promotin
 / search / cart / account link / CTA / contact, plus `prioritizedInserterBlocks`. Freeform is
 preserved (no `allowedBlocks`); the placeholder itself says *"or use the block inserter (+) for
 anything else"*. The footer row shares the mechanism with footer-appropriate elements. Every
-promoted slug must be a registered block so `createBlock` cannot throw.
+promoted slug must be a registered block so `createBlock` cannot insert a dead placeholder.
 **Status:** `BUILT + LIVE-VERIFIED` — an empty row shows the full palette; a populated row shows
 none.
 **Done when:** an empty row offers the promoted elements and a populated row does not. ✅ met.
@@ -1498,7 +1496,7 @@ separate post. Only `drawer-scratch.php` and `framework-drawer-default.php` cont
 content that still carries a sibling-embedded drawer.
 
 **Status:** `BUILT`. The FR-37-43 clauses still NOT-BUILT are: inline creation of a drawer post from
-the picker, the stored-instance re-type sweep, the 7 drawer looks as starter patterns, and removal of
+the picker, the 7 drawer looks as starter patterns, and removal of
 `nav-drawer`'s `variantPreset`.
 **Done when:** `drawerRef` on `sgs/nav-bar-menu` is a post picker (no free-text id field);
 `git grep -l "wp:sgs/nav-drawer" -- theme/sgs-theme/patterns` lists only the two drawer starters; a

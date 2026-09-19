@@ -712,8 +712,8 @@ cases:
 `sgs-nav-drawer` on BOTH sides (`Sgs_Drawer_Render::drawer_ref_for()` and
 `plugins/sgs-blocks/src/blocks/nav-drawer/render.php::$drawer_ref`), so the editor compares *effective*
 refs — a blank-vs-default pair is a MATCH. **The notice only fires on `sgs/nav-bar-menu` instances** —
-`sgs/nav-drawer-menu` has no `drawerRef` attribute. The fix action is gated on `sgs/nav-drawer` being
-registered (`createBlock` throws on an unregistered slug). **The drawer cannot be seeded from
+`sgs/nav-drawer-menu` has no `drawerRef` attribute. The fix action is gated on `sgs/nav-drawer` and `sgs/nav-drawer-menu` being
+registered (`createBlock` does not check the slug: an unregistered one inserts a dead `core/missing` placeholder). **The drawer cannot be seeded from
 `sgs/site-header`'s TEMPLATE** — its root is a `<dialog>` that promotes to the top layer, it must be a
 sibling, and the container is `templateLock:'all'` around exactly three rows. A notice on the nav block is
 the only mechanism that reaches the raw-insert path. **Informational, never a gate** (Spec 37 FR-37-19 /

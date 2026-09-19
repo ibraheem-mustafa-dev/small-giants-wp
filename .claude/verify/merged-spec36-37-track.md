@@ -25,7 +25,7 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
   3. The cart/search screenshot set is not captured (numeric probes only).
 
 ## Wave 2 — Capability
-- STATUS: partial. DONE a, e, f (live/eye verification owed), g, h, j, k, q, s, t · PARTIAL b, d, i ·
+- STATUS: partial. DONE a, d, e, f (live/eye verification owed), g, h, j, k, q, s, t · PARTIAL b, i ·
   NOT DONE c, l, m, n, o, p, r, u.
 - DP7 harness self-tests pass FIRST (W2-i precedes Wave-4 evidence). Built: shared
   `nav-qa/lib/openness-guard.mjs` (exit 3 = VACUOUS), full-element contrast walk, `--self-test` in
@@ -35,9 +35,7 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
 - CPT parity (Gate 2): computed-parity JSON — default `sgs_drawer` post render vs the default drawer,
   **drawer OPEN** (a closed-vs-closed comparison is vacuous), property-identical, negative control
   run. Passed once (`reports/2026-07-30-w2a-gate2-drawer-cpt.md`); re-run owed after W2-b/c/d.
-- Stored-instance sweep: WP-CLI re-type of any stored string `drawerRef` on `sgs/nav-bar-menu`
-  across header CPT posts + fixture pages + every live site, count-verified before/after; a
-  pre-existing live-site burger still opens its drawer. Command not yet built.
+- No stored string `drawerRef` on any live site: `wp db query "SELECT COUNT(*) FROM wp_posts WHERE post_content LIKE '%\"drawerRef\":\"%'"` returns 0 on every site.
 - Spec 36 + Spec 37 state the drawer-CPT model identically, same commit (Spec 37 §1.2). Not done.
 - `drawerRef` picker: dangling-post notice fires on deleted AND draft target (2 screenshots).
   Create-inline (create a new `sgs_drawer` post from the picker) not built.

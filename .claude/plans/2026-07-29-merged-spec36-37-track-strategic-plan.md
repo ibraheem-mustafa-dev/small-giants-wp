@@ -96,9 +96,9 @@ canary for later waves.
 | W2-i | **DP7 harness fixes** — `plugins/sgs-blocks/scripts/nav-qa/` capture + contrast + fidelity scripts | PARTIAL | Built: the shared `nav-qa/lib/openness-guard.mjs` (exit 3 = VACUOUS) used by four scripts; contrast walks every text element; `--self-test` in five scripts; `labels-<site>.json` for 7 reference sites. Open: `--self-test` on `sweep-drawer-variants.mjs`, `shoot-drawer-pairs.mjs`, `elementfrompoint-sweep.mjs`; the content/label count-fidelity check does not exist; `labels-<site>.json` for Away, ButcherBox, rabbit.tech (after W4-a). Must precede any Wave-4 evidence | 2h (4h) | YES |
 | W2-a | **Drawer CPT** `sgs_drawer` (DP2) | DONE | CPT, Active model, revisions, seed by menu LOCATION lookup, admin "Menu drawer" | — | YES |
 | **GATE 2** | OPEN-state computed-parity, default CPT drawer vs default drawer, property-identical | passed once; re-run owed | Evidence: `reports/2026-07-30-w2a-gate2-drawer-cpt.md`. Re-run fresh after W2-b/c/d complete (harness `--open-via keyboard`, negative control) | — | YES |
-| W2-b | `drawerRef` → post picker (DP2) | PARTIAL | Built: `nav-bar-menu/block.json::drawerRef` is a post-ID `number`; the picker; the dangling-post notice (FR-36-9a). `nav-drawer/block.json::drawerRef` stays an element-id string. Open (FR-37-43): create-inline — "create a new `sgs_drawer` post from the picker" (`nav-bar-menu/useDrawerNotice.js::addDrawer` inserts a sibling `sgs/nav-drawer` block instead, and seeds it with a block slug that is not registered; the `TEMPLATE` in `site-header/edit.js` lists the same unregistered slug — reproduce in the real editor, then fix both with the current `sgs/nav-drawer-menu` / `sgs/nav-bar-menu` names) | 1h (2h) | YES |
+| W2-b | `drawerRef` → post picker (DP2) | PARTIAL | Built: `nav-bar-menu/block.json::drawerRef` is a post-ID `number`; the picker; the dangling-post notice (FR-36-9a). `nav-drawer/block.json::drawerRef` stays an element-id string. Open (FR-37-43): create-inline — "create a new `sgs_drawer` post from the picker" (`nav-bar-menu/useDrawerNotice.js::addDrawer` inserts a sibling `sgs/nav-drawer` block, seeded with `sgs/nav-drawer-menu`, instead) | 1h (2h) | YES |
 | W2-c | Drawer starter looks: 7 real starter patterns | NOT DONE | Only 2 drawer patterns exist (`theme/sgs-theme/patterns/framework-drawer-default.php`, `drawer-scratch.php`). `variantPreset` is still live in `nav-drawer/block.json`, `render.php` and `variations.js`; the criterion `variantPreset` absent from src is unmet until the 7 patterns exist. The template lock (FR-37-46) stops the native picker firing for an `sgs_drawer` post, so the surfacing mechanism is an open Bean decision — recommended: the starter-look control already mounted in `nav-drawer/edit.js` (`StarterLookPresetControl`) | 1 session (2) | YES |
-| W2-d | Migration sweep + seed (DP2) | PARTIAL | Built: header starter patterns embed no drawer; the per-site seed (FR-37-48). Open: the stored-instance sweep — a WP-CLI command (sibling of `includes/class-sgs-header-footer-cli-commands.php`) re-typing any stored string `drawerRef` on `sgs/nav-bar-menu`, count-verified before/after, one swept drawer opened live. Whether any stored string value exists is checked by the first action below | 1.5h (3h) | YES |
+| W2-d | Migration + seed (DP2) | DONE | Header starter patterns embed no drawer; the per-site seed (FR-37-48). No stored string `drawerRef` exists on any live site, so no re-type sweep is needed (`wp db query "SELECT COUNT(*) FROM wp_posts WHERE post_content LIKE '%\"drawerRef\":\"%'"` returns 0 on the canary, the Indus test site and the Eye Care test site) | — | YES |
 | W2-r | **Spec 36 + Spec 37 same-commit statement of the drawer model** (Spec 37 §1.2) | NOT DONE | Drawer-CPT ownership in Spec 37's CPT-family sections; Spec 36 keeps behaviour/a11y; the drawer-starter-pattern model stated identically in both | 30m (1h) | YES |
 | W2-e | **DP4 trigger controls** | DONE | Six attrs on `nav-bar-menu/block.json`: `triggerMode`, `triggerLabel`, `triggerIcon`, `triggerMagnetEnabled`, `triggerMagnetRadius`, `triggerMagnetStrength`. Open-state sync via the global `store('sgs/nav')` (trigger and drawer are separate DOM trees; context-scoped state silently no-ops) | — | YES |
 | W2-f | **FR-37-42 column-shape picker** | DONE; live/eye verification owed | Site-header row inspector writes `gridTemplateColumns` incl. `1fr auto 1fr` | — | YES |
@@ -116,7 +116,7 @@ canary for later waves.
 | W2-t | Doc closure sweep | DONE | Parking entries archived on resolve | — | no |
 | W2-u | **W1 re-verification on the CPT path** (wave exit) | NOT DONE | Re-run the mega + drawer same-page integration probe (focus traps, ESC interplay, non-modal branch) on the CPT-rendered drawer. Do after W2-c | 30m (1h) | YES |
 
-**Net Wave 2:** DONE a, e, f (live/eye verification owed), g, h, j, k, q, s, t · PARTIAL b, d, i ·
+**Net Wave 2:** DONE a, d, e, f (live/eye verification owed), g, h, j, k, q, s, t · PARTIAL b, i ·
 NOT DONE c, l, m, n, o, p, r, u.
 
 **TEST (critical path):** Happy = default drawer post renders property-identical to the default
@@ -209,7 +209,6 @@ visible.
 | Risk | Impact | Mitigation |
 |---|---|---|
 | CPT move breaks the property-identical bar | High — gate §4.3 blocks everything downstream | Gate 2 = computed-parity default-vs-default, re-run after W2-b/c/d complete |
-| Stored string `drawerRef` values silently become 0 after the string→number change (schema coercion) | High | First action checks for stored string values on every live site; the W2-d sweep re-types them, count-verified; Gate 2 integration test includes a live-site burger |
 | studionamma clone exposes missing capabilities late | High — is the point of the gate | Gate rule: every gap = defect filed against waves 1–3 and FIXED, never a trimmed reference; expect one loop-back cycle in the estimate |
 | Harness false-passes (a check that passes vacuously) | High — Bean trust | W2-i ships negative controls (`--self-test` style) BEFORE any Wave-4 evidence is captured |
 | Gate 2 parity measured on a CLOSED drawer would be vacuous | High | Gate 2 parity is OPEN-state via the guarded harness, with negative control |
@@ -218,7 +217,7 @@ visible.
 | Licensed fonts/imagery read as capability defects | Medium | W4-a2 substitution policy signed by Bean before W4-b |
 | Specs drift from the drawer CPT model | Medium | W2-r same-commit statement in both specs |
 | Shared worktree collision with a co-active track | Medium | Commit exact paths; never `git add -A`; branch re-check in the commit command |
-| Editor-killing crash past green gates | Medium | After any edit.js / shared-component change: deploy + OPEN the real editor before closing the unit. Open defect: `nav-bar-menu/useDrawerNotice.js::addDrawer` and the `TEMPLATE` in `site-header/edit.js` reference an unregistered block slug — every block name used in editor code must be one of `nav-bar-menu`, `nav-drawer-menu`, `nav-drawer` |
+| Editor-killing crash past green gates | Medium | After any edit.js / shared-component change: deploy + OPEN the real editor before closing the unit. Every block name used in editor code must be a registered block (`sgs/nav-bar-menu`, `sgs/nav-drawer-menu`, `sgs/nav-drawer`): `createBlock` does not check the slug and an unregistered one inserts a dead `core/missing` placeholder |
 | Store-API price data unavailable for search (36-20) | Low | Logged as its own dispatch, not silently absorbed |
 
 ---
@@ -295,13 +294,11 @@ Stop-loss: any gate <50 → surface pivot-vs-park with two ranked paths; log in 
 
 ## First action (≤5 min, zero dependencies)
 
-Check for stored string `drawerRef` values on `sgs/nav-bar-menu` blocks on every live site: the
-sandybrown canary (`sandybrown-nightingale-600381.hostingersite.com`; browser login credentials in
-`.claude/secrets/sandybrown.env` — `WP_USER_SANDYBROWN` / `WP_PWD_SANDYBROWN`) and the Indus test
-site (`lavender-dinosaur-183533.hostingersite.com`, deploy target `indus-test`). With WP-CLI on
-each site, list posts whose `post_content` contains `"drawerRef":"` and note any non-numeric
-value. The result decides how the W2-d sweep is framed (required, or shipped as a preventive
-command).
+Confirm with Bean the delivery mechanism for the 7 drawer starter looks (W2-c): recommended is to
+author them as starter patterns and surface them through the starter-look control already mounted
+in `nav-drawer/edit.js` (`StarterLookPresetControl`), because the template lock (FR-37-46) stops the
+native pattern picker firing for an `sgs_drawer` post. Then build W2-c, re-run Gate 2 with the
+`--open-via keyboard` harness, and remove `variantPreset` once the parity re-run passes.
 
 ## References
 
