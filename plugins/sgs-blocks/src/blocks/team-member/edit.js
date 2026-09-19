@@ -4,10 +4,9 @@
  * NO-INLINE + NO-WRAPPER migration (LOCKED per-block no-inline migration
  * contract §A/§B/§B3, 2026-07-09; matches sgs/quote's proven block-private
  * pattern, D294): the root <div> IS the block root — no SGS_Container_Wrapper
- * delegation, no `ContainerWrapperControls` (that component writes the OLD
- * per-side scalar tablet/mobile attrs — paddingTopTablet etc — which are
- * incompatible with the new box-OBJECT contract this block now uses:
- * paddingTablet/paddingMobile/marginTablet/marginMobile).
+ * delegation, no `ContainerWrapperControls`. `padding` and `margin` are each ONE
+ * tier-of-boxes object attr {desktop,tablet,mobile}, each tier a
+ * {top,right,bottom,left} box.
  *
  * Because color/typography/spacing/__experimentalBorder all declare
  * `__experimentalSkipSerialization` in block.json, WP's automatic style
@@ -20,13 +19,11 @@
  * (render.php), so nothing here is persisted to post_content.
  *
  * Padding/margin are edited via ResponsiveBoxControl (box-object interface
- * contract): base routes to WP-native padding/margin, tablet/
- * mobile route to the paddingTablet/paddingMobile/marginTablet/marginMobile
- * object attrs. Border width/colour/style/radius are BLOCK-PRIVATE
+ * contract), writing the one tier-of-boxes object attr each. Border
+ * width/colour/style/radius are BLOCK-PRIVATE
  * (borderWidth/borderStyle/borderColour/borderRadius, via SgsBorderControl
- * below) — CORRECTED 2026-09-06: this comment previously claimed team-member
- * declares FULL native `__experimentalBorder` support; block.json declares no
- * such support at all, so WP-native `style.border` was never populated.
+ * below); block.json declares no native `__experimentalBorder` support, so
+ * WP-native `style.border` is never populated.
  */
 import { __ } from '@wordpress/i18n';
 import {

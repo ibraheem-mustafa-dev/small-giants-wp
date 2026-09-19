@@ -454,11 +454,9 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	// padding/margin: Spec 37 FR-37-16 shape here is ONE attribute holding
 	// {desktop,tablet,mobile}, each tier ITSELF a {top,right,bottom,left} box
-	// (ResponsiveBoxControls -> BoxControl) — NOT sgs/container's flat trio of
-	// `padding`/`paddingTablet`/`paddingMobile` box attrs (this block declares
-	// no such Tablet/Mobile siblings at all). resolveBoxTierPreview() still
-	// does the correct per-side merge; it is just fed the three tiers pulled
-	// out of this block's single object instead of three separate attributes.
+	// (ResponsiveBoxControls -> BoxControl). resolveBoxTierPreview() does the
+	// per-side merge, fed the three tiers pulled out of this block's single
+	// object.
 	const galleryPaddingObj = attributes.padding && typeof attributes.padding === 'object' ? attributes.padding : {};
 	const galleryMarginObj  = attributes.margin  && typeof attributes.margin  === 'object' ? attributes.margin  : {};
 	const paddingPreview = boxShorthand(
@@ -643,19 +641,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					  max-width and content-width across all three tiers, each on the
 					  {desktop,tablet,mobile} shape.
 
-					  Replaces TWO panels that were both defective here:
-					  * <ResponsiveSpacingPanel> rendered 16 tablet/mobile spacing controls
-					    writing paddingTopTablet… — attributes NO block.json declares, so
-					    WordPress silently DISCARDED every value on save. A client could set
-					    tablet padding, save, and watch it vanish with no error. This was the
-					    panel's last mount; it is deleted with this change.
-					  * <WidthPanel> drove maxWidth/contentWidth on the flat STRING model,
-					    which this block has now left.
-
-					  Gallery therefore declares NO supports.spacing: all box CSS flows
-					  through the object model here and is emitted by SGS_Container_Wrapper
-					  under the object value model, exactly as site-header-row /
-					  site-footer-row / nav-menu already do. One system, not two.
+					  Gallery declares NO supports.spacing: all box CSS flows through the
+					  object model here and is emitted by SGS_Container_Wrapper under the
+					  object value model, exactly as site-header-row / site-footer-row /
+					  nav-menu do.
 					*/ }
 					<ResponsiveBoxControls attributes={ attributes } setAttributes={ setAttributes } />
 					{ /* Border + radius — collapsed into this same Layout family panel

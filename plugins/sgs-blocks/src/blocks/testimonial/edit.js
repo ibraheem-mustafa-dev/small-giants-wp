@@ -31,11 +31,10 @@ import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 // No-inline migration contract §B3 (D294): testimonial is a content-KIND
 // composite using only box+width, so it migrates BLOCK-PRIVATE — dropped
 // SGS_Container_Wrapper (render.php) and, correspondingly, the shared
-// ContainerWrapperControls import here (its 'content' kind panel writes to
-// the LEGACY flat paddingTopTablet/… attrs, not the box-object
-// paddingTablet/paddingMobile/marginTablet/marginMobile this block now uses —
-// same reasoning as sgs/quote's edit.js, which also builds its own
-// ResponsiveBoxControl-driven Width panel instead of using the shared one).
+// ContainerWrapperControls import here. `padding` and `margin` are each ONE
+// tier-of-boxes object attr {desktop,tablet,mobile}, each tier a
+// {top,right,bottom,left} box — same as sgs/quote's edit.js, which also builds
+// its own ResponsiveBoxControl-driven Width panel instead of using the shared one.
 
 const LENGTH_UNITS = [
 	{ value: 'px', label: 'px', default: 0 },

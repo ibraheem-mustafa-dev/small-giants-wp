@@ -18,15 +18,12 @@ import MediaPicker from '../../components/MediaPicker';
 import { resolveShadowPreviewComposed } from '../../utils/tokens';
 import { backgroundPreview, svgBackgroundPreview, applyGridLayoutPreview } from '../../utils';
 import { ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, resolveColourToken, TypographyControls, SgsBoxControl } from '../../components';
-// No-inline migration (2026-07-09): cta-section no longer uses the default
-// <ContainerWrapperControls> aggregator wholesale — its ResponsiveSpacingPanel /
-// ContentBandPanel sub-panels still write to LEGACY FLAT attrs
-// (paddingTopTablet.../contentBandPaddingTop...), which became dead controls once
-// paddingTablet/paddingMobile/marginTablet/marginMobile/contentBandPadding* became
-// box OBJECT attrs (matches sgs/container's own edit.js, which took the same
-// approach). Import the individual panels still needed instead, and roll cta-section's
-// own "Padding & margin" / "Content band" panels below using ResponsiveBoxControl
-// bound to the new object attrs.
+// cta-section does not mount the default <ContainerWrapperControls> aggregator
+// wholesale (matches sgs/container's own edit.js). `padding`, `margin` and
+// `contentBandPadding` are each ONE tier-of-boxes object attr
+// {desktop,tablet,mobile}, each tier a {top,right,bottom,left} box. The individual
+// panels needed are imported, and cta-section's own "Padding & margin" /
+// "Content band" panels below edit those object attrs.
 import {
 	WidthPanel,
 	LayoutPanel,
@@ -537,9 +534,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			{ /* Styles tab — appearance: section width/spacing, content band look, grid/flex
 				geometry, background, shadow and shape dividers. WS-4: mirrored sgs/container
 				wrapper controls (section kind) — individual panels rather than the
-				<ContainerWrapperControls> aggregator (its ResponsiveSpacingPanel /
-				ContentBandPanel sub-panels still write LEGACY FLAT attrs; see the
-				top-of-file import comment). */ }
+				<ContainerWrapperControls> aggregator (see the top-of-file import
+				comment). */ }
 			<InspectorControls group="styles">
 				{ /* Background (image/video/svg tabs + ken-burns/parallax) — root-level
 					appearance, kept first in the Styles tab (mirrors sgs/container). */ }
@@ -660,11 +656,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						block itself. Do NOT re-add a band-scoped background. */ }
 					{ /* contentBandPadding is a TIER OBJECT — ONE attr holding
 						{desktop,tablet,mobile}, each tier itself a
-						{top,right,bottom,left} box (Spec 35 box-shaped pass,
-						2026-08-11). Uses ResponsiveOverride, not the flat-sibling
-						ResponsiveBoxControl — contentBandPaddingTablet/Mobile are
-						no longer declared by block.json, so writing through the
-						old attrMap would silently discard both tiers (D338).
+						{top,right,bottom,left} box. Uses ResponsiveOverride,
+						which writes the whole tier object back to the one attr.
 						Mirrors sgs/container's own edit.js. */ }
 					{ /* ⛔ NO `label` on the wrapper, and NO `hideLabelFromVision` on the
 					     BoxControl — core's BoxControl ignores that prop and always renders its

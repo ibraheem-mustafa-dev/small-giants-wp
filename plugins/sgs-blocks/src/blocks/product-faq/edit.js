@@ -1,18 +1,13 @@
 /**
  * edit.js — Block editor component for sgs/product-faq.
  *
- * NO-INLINE + NO-WRAPPER (per-block no-inline migration contract §A/§B/§B3,
- * 2026-07-10): dropped ContainerWrapperControls (the shared wrapper's
- * kind="content" panel drove maxWidth + a FLAT-attr responsive
- * spacing panel and never drove gap for content kind at all — confirmed dead
- * in class-sgs-container-wrapper.php). Wrapper controls are now local + bind
- * to the OBJECT-shaped box families (paddingTablet/paddingMobile/
- * marginTablet/marginMobile) via ResponsiveBoxControl, mirroring sgs/quote +
- * sgs/brand-strip. Base padding/margin/border/colour/typography stay on the
- * native WP Dimensions/Border/Color/Typography inspector panels (unchanged —
- * they were never routed through ContainerWrapperControls; that component
- * only ever added WidthPanel + the old flat-attr ResponsiveSpacingPanel for
- * kind="content").
+ * NO-INLINE + NO-WRAPPER (per-block no-inline migration contract §A/§B/§B3):
+ * no ContainerWrapperControls. Wrapper controls are local and bind to the
+ * OBJECT-shaped box families via ResponsiveBoxControl, mirroring sgs/quote +
+ * sgs/brand-strip. `padding` and `margin` are each ONE tier-of-boxes object attr
+ * {desktop,tablet,mobile}, each tier a {top,right,bottom,left} box.
+ * Border/colour/typography stay on the native WP Border/Color/Typography
+ * inspector panels.
  *
  * Editor canvas preview mirrors render.php's scoped-CSS output via inline
  * style on the SAME root element for padding/margin/border-radius/width

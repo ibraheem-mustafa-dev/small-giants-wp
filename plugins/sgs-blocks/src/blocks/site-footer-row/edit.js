@@ -368,12 +368,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		  };
 
 	// Margin (CHECK A) — a TIER OBJECT (Spec 37 FR-37-16), each tier itself a
-	// {top,right,bottom,left} box — UNLIKE sgs/container's `margin`, which is a
-	// flat box with separate marginTablet/marginMobile sibling attrs. This
-	// block declares no such siblings (block.json boxFamilies.margin: ['margin']
-	// only), so it resolves via resolveResponsiveTier() + boxShorthand()
-	// directly, not resolveBoxTierPreview() (that helper expects 3 separate
-	// attrs). Fixed to the 'desktop' tier — the same convention every other
+	// {top,right,bottom,left} box (block.json boxFamilies.margin: ['margin']
+	// only), resolved via resolveResponsiveTier() + boxShorthand() on the tier
+	// object. Fixed to the 'desktop' tier — the same convention every other
 	// resolveResponsiveTier() call in this file already uses (columnsDesktop,
 	// gridTemplateColumnsDesktop, gridTemplateRowsDesktop), none of which track
 	// the live device switcher.

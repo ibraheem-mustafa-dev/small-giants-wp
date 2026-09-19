@@ -290,16 +290,14 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		splitMediaMaxHeightUnit,
 		contentBackground,
 		contentBackgroundGradient,
-		// contentPadding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile} (Spec 35
-		// box-tier migration, 2026-08-11) — the contentPaddingTablet/Mobile sibling
-		// attrs no longer exist in this block's schema.
+		// contentPadding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile} —
+		// ONE attr; each tier is a {top,right,bottom,left} box.
 		contentPadding,
 		mediaBackground,
 		mediaBackgroundGradient,
 		mediaPadding,
-		// contentBandPadding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile}
-		// (Spec 35 box-tier pass, 2026-08-11) — the contentBandPaddingTablet/
-		// Mobile sibling attrs no longer exist in this block's schema.
+		// contentBandPadding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile} —
+		// ONE attr; each tier is a {top,right,bottom,left} box.
 		contentBandPadding,
 		// Phase 1 — layout grid. splitColumnRatio* retired (Step 6, 2026-06-11);
 		// render.php now reads gridTemplateColumns* for the split variant.
@@ -1224,8 +1222,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								solidLabel={ __( 'Content background colour', 'sgs-blocks' ) }
 							/>
 							{ /* contentPadding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile}
-							     (Spec 35 box-tier migration) — ONE attr; each tier holds the
-							     4-side box, unchanged in shape from the old sibling attrs. */ }
+							     ONE attr; each tier holds the 4-side box. */ }
 							<ResponsiveBoxControl
 								label={ __( 'Content padding', 'sgs-blocks' ) }
 								presets
@@ -1873,11 +1870,8 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						band-scoped background. */ }
 					{ /* contentBandPadding is a TIER OBJECT — ONE attr holding
 						{desktop,tablet,mobile}, each tier itself a
-						{top,right,bottom,left} box (Spec 35 box-shaped pass,
-						2026-08-11). Uses ResponsiveOverride, not the flat-sibling
-						ResponsiveBoxControl — contentBandPaddingTablet/Mobile are
-						no longer declared by block.json, so writing through the
-						old attrMap would silently discard both tiers (D338).
+						{top,right,bottom,left} box. Uses ResponsiveOverride,
+						which writes the whole tier object back to the one attr.
 						Mirrors sgs/container's own edit.js. */ }
 					{ /* ⛔ NO `label` on the wrapper, and NO `hideLabelFromVision` on the
 					     BoxControl — core's BoxControl ignores that prop and always renders its
@@ -1902,12 +1896,10 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				</PanelBody>
 
 				{ /* Root padding & margin — box-object interface contract (mirrors
-					sgs/cta-section + sgs/container). Base writes the WP-native
-					style.spacing object; tablet/mobile write the paddingTablet/
-					paddingMobile + marginTablet/marginMobile object attrs the shared
-					wrapper reads at @media tiers. Replaces the legacy
-					<ResponsiveSpacingPanel> whose flat paddingTopTablet… attrs the
-					wrapper never read (dead controls, R6 2026-07-10). */ }
+					sgs/cta-section + sgs/container). `padding` and `margin` are each
+					ONE tier-of-boxes object attr {desktop,tablet,mobile}, each tier a
+					{top,right,bottom,left} box; the shared wrapper reads the tiers at
+					@media breakpoints. */ }
 				<PanelBody title={ __( 'Padding & margin', 'sgs-blocks' ) } initialOpen={ false }>
 					<ResponsiveOverride
 						value={ attributes.padding }

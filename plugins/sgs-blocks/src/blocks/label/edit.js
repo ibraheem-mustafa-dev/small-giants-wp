@@ -230,9 +230,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		textDecoration,
 		fontStyle,
 		textAlign,
-		// padding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile} (Spec 35
-		// box-tier migration) — the paddingTablet/paddingMobile sibling attrs no
-		// longer exist in this block's schema.
+		// padding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile} — ONE attr;
+		// each tier is a {top,right,bottom,left} box.
 		padding,
 		margin,
 		borderRadius,
@@ -503,8 +502,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						presets={ false }
 					/>
 					{ /* padding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile}
-					     (Spec 35 box-tier migration) — ONE attr; each tier holds the
-					     4-side box, unchanged in shape from the old sibling attrs. */ }
+					     ONE attr; each tier holds the 4-side box. */ }
 					<ResponsiveBoxControl
 						label={ __( 'Padding', 'sgs-blocks' ) }
 						presets

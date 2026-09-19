@@ -289,10 +289,9 @@ export default function Edit({ attributes, setAttributes }) {
           />
         </PanelBody>
         {/* Responsive spacing (padding + margin) — box-object interface contract
-            (.claude/plans/2026-07-09-box-object-interface-contract.md §5). Base tier
-            writes to the WP-native style.spacing object (also visible in the Styles >
-            Dimensions panel); tablet/mobile write to the paddingTablet/paddingMobile
-            and marginTablet/marginMobile object attrs read by the wrapper's @media tiers. */}
+            (.claude/plans/2026-07-09-box-object-interface-contract.md §5). `padding`
+            and `margin` are each ONE tier-of-boxes object attr {desktop,tablet,mobile},
+            each tier a {top,right,bottom,left} box, read by the wrapper's @media tiers. */}
         <PanelBody title={ __( "Padding & margin", "sgs-blocks" ) } initialOpen={ false }>
           <ResponsiveOverride
           	value={ attributes.padding }

@@ -28,9 +28,8 @@ import { colourVar } from '../../utils';
  * actually consumes:
  *   - cardStyle, effectHover, iconPosition (drive wrapper BEM classes)
  *   - Width (maxWidth / width — kept-scalar, base only)
- *   - Spacing (padding / margin — base via WP-native Dimensions panel,
- *     tablet/mobile via the paddingTablet/paddingMobile/marginTablet/
- *     marginMobile object attrs)
+ *   - Spacing (padding / margin — each ONE tier-of-boxes object attr
+ *     {desktop,tablet,mobile}, each tier a {top,right,bottom,left} box)
  *   - Border / Typography / Shadow are native WP supports — their editor UI
  *     is rendered automatically by the Styles inspector tab and needs no
  *     custom control here (`__experimentalSkipSerialization` only affects
