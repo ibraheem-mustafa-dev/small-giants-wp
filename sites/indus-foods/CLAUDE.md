@@ -6,8 +6,9 @@
 
 ## Live Sites
 
-- **Test site:** https://lightsalmon-tarsier-683012.hostingersite.com/ — DO NOT modify, client-facing
-- **Build/test site:** sandybrown-nightingale-600381.hostingersite.com (shared SGS canary) — safe for testing and deployment. Push client colours via `python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client indus-foods --target u945238940@141.136.39.73`
+- **Reference site (client's current live site, non-SGS stack):** https://lightsalmon-tarsier-683012.hostingersite.com/ — DO NOT modify, client-facing, read-only reference only
+- **Dedicated test site (2026-09-19):** https://lavender-dinosaur-183533.hostingersite.com/ — a fresh, Indus-only SGS install (sgs-theme + sgs-blocks active, no WooCommerce, no other client's content). Registered as `build-deploy.py --target indus-test`. Indus's theme-snapshot tokens are already applied to this site's on-disk `theme.json`. Use this as the PRIMARY render target for all Indus header/footer/nav/homepage work — no shared-canary active-CPT-pointer conflict here.
+- **Build/test site (shared canary, other clients live here too):** sandybrown-nightingale-600381.hostingersite.com — only ONE client's header/footer/drawer/theme-snapshot can be ACTIVE at a time (`sgs_active_header_cpt_id` etc. are single global `wp_options`, checked live 2026-09-19). Avoid for Indus header/footer/nav work now that the dedicated test site exists; still fine for isolated block-level QA that doesn't touch the active pointers.
 
 ## Design Reference
 
@@ -74,9 +75,12 @@ python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client indus-foods --
 
 ## Page Build Status
 
+**Header/footer/nav-drawer build (2026-09-19, dedicated test site https://lavender-dinosaur-183533.hostingersite.com/):**
+`sgs_header` #28 (top-strip business-info phone/email + site-info social-icons; main row responsive-logo `logoId:5` + `sgs/nav-bar-menu` `ref:2` `drawerRef:27`) · `sgs_footer` #29 (4-col grid: Brand/Quick Links/Contact+Opening Hours/Address, collapses to 2-col tablet / 1-col mobile per `columns:{"desktop":4,"tablet":2}`; bottom copyright row) · `sgs_drawer` #27 (`sgs/nav-drawer-menu` `ref:2` + "Register for a Trade Account" CTA) · classic `nav_menu` term 2 "Indus Foods Primary" (7 top-level items; About/Sectors/Trade are dropdowns; Brands is a `post_type` item targeting `sgs_mega_menu` post #6, native FR-36-15 attach) · `sgs_mega_menu` #6 "Indus - Brands Mega Menu" (`sgs/mega-panel` variant=brands + `sgs/card-grid` 4 columns) · Home page #30 set as static front page. Active pointers (`sgs_active_header_cpt_id`=28, `sgs_active_footer_cpt_id`=29, `sgs_active_drawer_cpt_id`=27) set directly — safe on this dedicated site (nothing else to protect). Phone/email/address/opening-hours/socials populated once via `Sgs_Site_Info::set_internal()` (the `sgs_site_info` option) rather than hardcoded per-block, so `sgs/business-info` and `sgs/social-icons source="site-info"` both read the one store. Live-verified 375/768/1440: dropdowns (About/Sectors/Trade) open correctly, Brands mega renders all 4 columns at its real menu position, mobile drawer opens with full accordion tree + CTA, footer collapses 4→2→1 columns, 0 console errors (bar the expected favicon 404). **Not run: Spec 36 §7 Phase-2 Gate-2's full acceptance sweep** (axe/occlusion/late-CSS-A-B/reduced-motion/Bean's-eye rubric) — deliberately out of scope for this pass, per Bean's direction. **Minor, unfixed:** About/Sectors/Trade parent items use a literal `#` href, which can cause `[aria-current]`-style parent styling to fire on multiple items at once when the browser URL itself is `#`-suffixed; a real anchor or empty href would be cleaner. Brands' drawer plain-link degrade points at an internal `?sgs_mega_menu=` query URL (the CPT is `public=>false`, no real permalink) — expected per FR-36-5, not a bug.
+
 | Page | Status | Notes |
 |---|---|---|
-| Homepage | ✅ Deployed | Post ID 13, all sections rendering (needs visual polish) |
+| Homepage | ✅ Deployed | Post ID 13, all sections rendering (needs visual polish) — NOTE: this row's post IDs are on an OLDER site (see Live Sites); not yet reconciled with the new dedicated test site |
 | /contact/ | ✅ Created | Post ID 57 (placeholder content) |
 | /apply-for-trade-account/ | ✅ Created | Post ID 58 (placeholder content) |
 | Food Service | Not started | Template for all service pages (V3 mockup) |
