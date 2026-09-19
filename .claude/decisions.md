@@ -1,5 +1,49 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1110 [ROUTINE] — Indus Foods given a dedicated WordPress test site instead of building on
+the shared sandybrown canary; two content-level bugs root-caused during that build
+
+**2026-09-19.** Bean asked to build a fresh header/footer/nav set for Indus Foods, replicating
+the structure of the client's own live (non-SGS) reference site. A `wp-sgs-developer` dispatch
+correctly stopped before writing anything: `sgs_active_header_cpt_id`/`footer`/`drawer` and the
+theme-snapshot colour tokens are each a single GLOBAL `wp_options` row on sandybrown — flipping
+them for Indus would have un-rendered Mama's Munches sitewide, not a no-op. Bean's resolution:
+provision a brand-new dedicated Hostinger WordPress site instead of using the built-in
+preview-before-active mechanism. Site created (`lavender-dinosaur-183533.hostingersite.com`),
+`sgs-theme`+`sgs-blocks` deployed and activated, Indus's `theme-snapshot.json` pushed to its
+on-disk `theme.json`, and registered as a proper `build-deploy.py --target indus-test` entry
+(`964a6a536`) — per this project's own R-22-9 ("adding a client is one dict entry").
+
+**Content build:** `sgs_header`/`sgs_footer`/`sgs_drawer`/`sgs_mega_menu` CPTs + a classic nav
+menu, using only existing SGS blocks (`nav-bar-menu`'s native submenu support, `mega-panel`+
+`card-grid` for the Brands mega menu) — no new mechanism needed. Independent verification
+(different agent than the builder) confirmed 7 of 8 build claims exactly and found one real
+defect.
+
+**Two content-level bugs found + fixed, both worth remembering as a shape (also added to
+LEDGER.md's guardrails):**
+1. **Intrinsic-columns floor mismatch.** `sgs/site-footer-row`'s `columns:{desktop:4}` (count-only,
+   no explicit `gridTemplateColumns`) drives the shared wrapper's auto-fit column sizing, whose
+   default 256px per-column minimum genuinely didn't fit 4 real columns at this row's actual
+   width — CSS grid auto-fit correctly collapsed to 3 tracks, wrapping the 4th column into an
+   ugly second row. Not a framework bug: the independent verifier's own guess (blaming a
+   framework default-pattern file) was checked directly against the post's stored content and
+   found wrong. Fixed with an explicit `gridTemplateColumns:{"desktop":"1.4fr 1fr 1fr 1fr"}`
+   override on that instance — content-level, no code change.
+2. **`href="#"` defeating an already-built no-link mechanism.** `nav-bar-menu/render.php::
+   from_link()` already has a `has_url` flag specifically so a disclosure-only parent (no
+   destination of its own) renders as a non-link trigger instead of `<a href="#">` — but the
+   About/Sectors/Trade menu items' `_menu_item_url` postmeta held the literal string `'#'`, which
+   passes the `'' !== $raw_url` check and gets treated as a real URL. Cleared to `''` via
+   `wp post meta update`; now renders as `<button aria-expanded>` with zero change to dropdown
+   behaviour. Content-level fix, not a code change — the render-side mechanism was already
+   correct.
+
+Mega-menu's 4 brand-category images (previously empty placeholders) were sourced from the
+client's own live reference site (read-only, never modified) into the new site's media library,
+matched to that site's own exact image-to-category mapping, and wired into `sgs/card-grid`'s
+`items[].media` object. Full trail: `sites/indus-foods/CLAUDE.md`.
+
 ## D1109 [ROUTINE] — b23's ContentConservationError fixed: `<input placeholder="...">` text now
 recognised as real content by the text-leaf ladder
 
