@@ -1,5 +1,13 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1117 [ROUTINE] — Front D build recorded; nav/header/footer/drawer living docs rewritten to current state only
+
+**2026-09-19.** The build that D1091 (design) and D1092 (council) authorised is now recorded: FR-37-46 template lock on `sgs_header`/`sgs_footer`/`sgs_drawer` (`c67f09970`, verification spike `26db0fb73`), FR-37-47 starter-look preset control (`6dc554461`), FR-37-48 activation-time seeding (`9e3fc6234`), FR-37-49 `drawerRef` post picker (`4171d55bb`, `3d034deeb`) and header starters dropping the embedded drawer (`9b1aa9ed3`). Wave 1 of the merged Spec 36+37 track closed 2026-07-30 (`memory/session-2026-07-30-wave1.md`).
+
+**Rule locked (Bean).** Living docs (specs, plans, verify docs, LEDGER, CLAUDE.md files, dev-setup, architecture, goals) state ONLY the current truth: no tombstones, no "formerly/superseded/retired/split from" wording, no decision numbers or commit hashes, no dates used as change markers, and no mention of removed blocks (`sgs/nav-menu`, `sgs/adaptive-nav`, `sgs/mobile-nav`) or the removed second site. History lives only here, in `memory/parking-archive.md`, `memory/` and git. Specs 36 (v2.6), 37 (v1.3.0) and 41 (v0.5.0) were rewritten to that rule; deploy targets are `sandybrown`, `indus-test`, `eye-care-test`.
+
+**Open.** (1) `nav-bar-menu/useDrawerNotice.js::addDrawer` and the `site-header/edit.js` TEMPLATE still reference the unregistered `sgs/nav-menu` block (reproduce in the editor before fixing). (2) No sweep re-types stored string `drawerRef` values. (3) Code comments and `block.json` descriptions still carry the same annotations; cleanup is a separate comment-only pass.
+
 ## D1116 [ROUTINE] — Stage 11.6 now scores the RENDERED draft (served over HTTP) for `.dc.html` drafts; honest baseline is content 12% / css 0%
 
 **2026-09-19.** Investigator report `.claude/reports/2026-09-19-inv-stage116-draft-side.md`. Root cause

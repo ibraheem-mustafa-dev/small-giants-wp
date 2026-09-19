@@ -222,12 +222,8 @@ matches.
 ### P-FX-PER-EFFECT-BLOCK-COMPATIBILITY — motion-effects panel is all-or-nothing per block, needs per-effect opt-in
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-15
 
-Recovered from an orphaned next-session prompt (`.claude/prompts/2026-09-10-fx-selective-effect-offering.md`,
-never actioned, now deleted — this entry is its permanent home) rather than let the idea disappear
-with the file. Found 2026-09-10 while redesigning the (pre-split) nav-menu inspector: a block
-currently gets its whole "Scroll & effects" panel — every effect sharing its `requires` token — or
-none of them, with no way to offer just ONE compatible effect. `sgs/nav-bar-menu` (post-split;
-`sgs/nav-menu` at the time this was found) genuinely qualifies as a `cursor-field` emitter, but the
+A block currently gets its whole "Scroll & effects" panel — every effect sharing its `requires` token — or
+none of them, with no way to offer just ONE compatible effect. `sgs/nav-bar-menu` genuinely qualifies as a `cursor-field` emitter, but the
 only switch (`supports.sgs.fx.motionSurface: true`) drags in 8 unrelated effects
 (`generative-background`/`grid-dots`/`morph`/`motion-path`/`particles`/`scrub`/`wave-gradient`/
 `magnet`) — `generate-fx-qualifying-blocks.py`'s own docstring names it as one of 11 blocks its
@@ -484,35 +480,34 @@ Research-backed conclusion: persistent bottom CTA/cart/sale bars belong in the e
 
 **Trigger:** needs its own design gate before any build; not a blocker for the Spec-37 sticky-header work.
 
-### P-HEADER-SIMPLICITY-FINDINGS — operator-simplicity test failed; 2 findings + the blind-tester arm still owed
+### P-HEADER-SIMPLICITY-FINDINGS — canvas-click selection + blind-tester arm
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-26
 
-The FR-37-26 automated-proxy simplicity test failed on drawer content (since addressed — `sgs/nav-bar-menu` (renamed from `sgs/nav-menu` at the 2026-09-14/15 split) now warns and one-click-fixes a burger with no panel to open). RESIDUAL SCOPE, after the 2026-08-19 header-completeness session:
+Two open items from the FR-37-26 operator-simplicity test:
 
-1. **Canvas-click selection — STILL OPEN.** Selecting the header block by clicking in the canvas is a hidden blocker; it only selects via List View. Untouched by that session.
-2. **The blind-tester arm — STILL OPEN, and it is the authoritative half.** A real non-coder, screen-recorded, has never been run. The automated proxy is not a substitute.
-3. ~~The Settings tab shows ~7 default-visible controls against a roster of 2~~ — **SETTLED 2026-08-19, not by reordering.** The "~7" was measured by a detector that counted a composite mount as ONE row without opening it; once that was fixed (Task 4, `6c3ec1b0`) the real figure is **4**, and Bean ruled the re-measured set IS the ruling: header 4, footer 2, header-row 8, footer-row 8. The ≤3 is a DEFAULT, not a ceiling (P2 §5), the detector is advisory, and `SgsColourPanel` is correctly not counted (it is the standardised colour panel; its picker is a popover, not a settings control the cap governs). Nothing to reorder on the header — do not re-open this from the old number.
+1. **Canvas-click selection.** Selecting the header block by clicking in the canvas is a hidden blocker; it only selects via List View.
+2. **The blind-tester arm.** A real non-coder, screen-recorded, has never been run. It is the authoritative half of the test; the automated proxy is not a substitute.
 
 **Trigger:** a dedicated header-simplicity pass, including the blind-tester arm; not a blocker for the Spec-37 per-row build.
 
 ### P-MEGA-FOLLOWON-DEFERRALS — mega-menu follow-on features declared and sequenced after the core ships
 **Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-07-24
 
-The mega-menu shipped a deliberately smallest CORE first after a 7-persona adversarial council. Declared follow-ons, sequenced not cut: 5 motion effects (staggered reveal, sliding indicator, cursor spotlight, magnet label, card hover-lift); `media-cards` and `brands` structural variations; a night/day dark colour set with its selector cascade; aside `feature`/`preview` formats; full manifest GAP/ORPHAN-0 conformance; the standalone `sgs/mega-panel` drift-guard golden test; and the competitive gaps the council named (conditional/role menus, WooCommerce category mega, RTL, import/export).
+Competitive gaps declared for the mega menu and not built: conditional/role-based menus, a WooCommerce product-category mega menu, RTL support, and menu import/export. Verify each is still absent with `git grep -n -i -E "product_cat|current_user_can|\brtl\b" -- plugins/sgs-blocks/src/blocks/nav-bar-menu plugins/sgs-blocks/src/blocks/nav-drawer plugins/sgs-blocks/src/blocks/mega-panel` (expect no feature hits).
 
-**Trigger:** once the core lands and passes its live-a11y gate, build the follow-ons onto the proven spine — canonical detail in the BUILD-SPEC.
+**Trigger:** a client asks for one of these. Canonical follow-on detail: `.claude/plans/archive/2026-07-24-mega-menu-BUILD-SPEC.md`.
 
 ### P-MODAL-SCROLLBAR-GUTTER — sgs/modal scroll-lock causes a scrollbar-vanish viewport bounce (latent, block not yet deployed)
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-15
 
-`body.sgs-modal-scroll-locked { position: fixed }` collapses the document scrollbar on classic-scrollbar desktops, widening the viewport ~15px mid-open and shifting a centred modal + the page behind it. Latent (the modal block isn't deployed on any page yet), so not live-verifiable. There is no longer a working precedent to copy — the block this fix pattern was proven on (`adaptive-nav`) has since been deleted, so the fix (gate on `innerWidth - clientWidth`, add a scrollbar-gutter-compensating class to `<html>`) must be derived fresh, not lifted.
+`body.sgs-modal-scroll-locked { position: fixed }` collapses the document scrollbar on classic-scrollbar desktops, widening the viewport ~15px mid-open and shifting a centred modal + the page behind it. Latent (the modal block isn't deployed on any page yet), so not live-verifiable. The fix must be derived fresh: gate on `innerWidth - clientWidth` and add a scrollbar-gutter-compensating class to `<html>`.
 
 **Trigger:** sgs/modal's first deploy, or the next drawer-family scroll-lock rework.
 
 ### P-NAV-FEATURED-HOVER-DRAFT-PARITY — featured nav item hover: two of three parts done, the inset accent bar is deliberately unfixed
 **Status:** BLOCKED (on header cloning being built) · **Bucket:** framework · **Parked:** 2026-07-20
 
-The generic-underline clash and the featured-item hover controls are both built and shipped. What remains is the draft's inset accent bar (`box-shadow: inset 0 -2px 0 var(--accent)` on hover) — the block has no attribute able to carry a box-shadow there, the same missing-attribute class as other known cases. Bean explicitly declined the obvious fix (adding an attribute): this divergence is DELIBERATELY preserved as the test case for header cloning — the draft carries a value the block cannot express, which is exactly the condition the header-clone pipeline must prove it can detect and handle. Adding the attribute now would delete the test fixture before the pipeline is proven against it.
+The draft's inset accent bar (`box-shadow: inset 0 -2px 0 var(--accent)` on hover) is deliberately unfixed: the block has no attribute able to carry a box-shadow there. The divergence is preserved as the test case for header cloning — the draft carries a value the block cannot express, which is exactly the condition the header-clone pipeline must prove it can detect and handle. Adding the attribute would delete the test fixture before the pipeline is proven against it.
 
 **Do not fix this as a bug** — it is a planted, documented control.
 
@@ -598,12 +593,15 @@ untouched/reset instance hasn't been measured.
 default to `'start'`, or add a `top` option to `VERTICAL_ALIGN_OPTIONS` — whichever matches the
 block's actual intended default visually.
 
-### P-SPEC37-OPEN-RESIDUALS — Spec 37 coverage-matrix residuals
+### P-SPEC37-OPEN-RESIDUALS — Spec 37 open residuals
 **Status:** PARTIAL · **Bucket:** framework · **Parked:** 2026-07-21
 
-Five smaller open items from the Spec 37 coverage matrix: (a) the skip-link regression contract needs a successor statement in the FR-37-31 retirement; (b) the 3 layout starter variants fold into FR-37-8; (c) FR-S5-3's non-carried WP-CLI commands need a decision on what happens to the rest of the set; (d) the FR-37-12 responsive width set is missing the 320–374px band; (e) Spec 17's prose-only REST capability-gating content needs restating under the FR-37-14 "attribute shape frozen" guardrail.
+Two open items in Spec 37:
 
-**Trigger:** alongside the FR-37-31 retirement work.
+1. **FR-37-12 (never-overflow contract):** the 1400px to 320px sweep has not been run on the Indus test site's own header and footer content; different content and `theme-snapshot.json` tokens can shift the transition widths.
+2. **FR-37-46 (post-level template lock):** the lock holds in the block-editor UI only; a raw REST write is not content-shape validated. If the `edit_theme_options` capability bar ever widens to a lower-trust role, add a `rest_pre_insert_{post_type}` filter.
+
+**Trigger:** item 1 when the Indus test site's header and footer content is final; item 2 if the capability bar widens.
 
 ### P-VAT-ZERO-RATED-PRECISION — VAT-label gate is store-level, not per-product-tax-rate precise
 **Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-06-12
@@ -638,15 +636,12 @@ Bean rejected the Task-5 exit gate on sight (R-31-13): *"the difference between 
 theirs is night and day"*. Verified defects. (1) **Content is not an exact clone** despite the §6
 POC rule mandating it — the gap is DESIGN fidelity (text/border/symbol/button styling, cycling
 background imagery + its motion, the animated secondary media), **not item count**.
-⚠ **An earlier version of this entry claimed `centred-statement` "renders 3 menu items where the
-extraction recorded 7" — that is FALSE and is struck (D411).** The 7-item site is studionamma
-(`two-column-editorial`); `centred-statement` clones fantasy.co, which genuinely has 3 primary links
-(`labels-fantasy.json` `counts.primary = 3`, matching the independent extraction count). Acting on
-it would ADD four items that should not exist.
-(2) **Alignment is wrong on several variants**; `centred-statement` renders LEFT-aligned — root
-cause proven, see `P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU`. Its link arrows are **not** label-less:
-the labels are present and laid out but painted at **1:1 contrast** — see
-`P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER` for the measured cause. (3) **`solid-brand-light` has no
+`centred-statement` clones fantasy.co, which has 3 primary links
+(`labels-fantasy.json` `counts.primary = 3`, matching the independent extraction count); the 7-item
+reference is studionamma (`two-column-editorial`).
+(2) **Alignment is wrong on several variants**; `centred-statement` renders LEFT-aligned instead of
+centred. Its link arrows are present and laid out but painted at **1:1 contrast** against the dark
+drawer. (3) **`solid-brand-light` has no
 reference capture at all.** (4) **`two-column-editorial`'s "reference" is the closed homepage with a
 cookie banner** — the menu was never opened.
 
@@ -661,12 +656,12 @@ build on mismatch; fix per-variant alignment; add an openness assertion to the s
 so a closed-panel shot is reported VACUOUS rather than saved; capture real menu-open references for
 `two-column-editorial`, `solid-brand-light` and `buck.co`.
 
-**Trigger:** the merged 36/37 track's FINAL proof gate. Bean signed the architecture gate on
-2026-07-29 and **re-sequenced the clone to the END** — a faithful clone depends on FR-37-42
-(asymmetric 3-col grids), the DP4 burger-trigger controls and the drawer CPT, all unbuilt, so
-clone-first would only reproduce the rejected half-clone with more steps. This entry is therefore
-NOT queued work; it is the standard the clone must meet when the system is complete. Task 5 must
-not be re-presented to Bean until every defect above is fixed.
+**Trigger:** the merged 36/37 track's FINAL proof gate. The clone is sequenced to the END — a
+faithful clone depends on FR-37-42 (asymmetric column shapes; live verification owed) and the
+burger-trigger controls (Spec 36; the `triggerStyle` variants are not built), so clone-first would
+only reproduce the rejected half-clone with more steps. This entry is therefore NOT queued work; it
+is the standard the clone must meet when the system is complete. Task 5 must not be re-presented to
+Bean until every defect above is fixed.
 
 ### P-PRODUCT-PAGE-REDESIGN — product page design does not line up with the cloned draft
 **Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-06-14

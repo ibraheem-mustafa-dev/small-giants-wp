@@ -2,9 +2,6 @@
 doc_type: dev-setup
 project: small-giants-wp
 title: SGS WordPress Framework — Developer Setup & Operations
-last_updated: 2026-08-22
-split_from: .claude/architecture.md (Part C)
-split_date: 2026-05-24
 ---
 
 # SGS WordPress Framework — Dev Setup
@@ -12,26 +9,23 @@ split_date: 2026-05-24
 ⛔ **More than 3 blocks/files/call sites? The first deliverable is the
 DETECTOR, not the edit — `.claude/THE-MIGRATION-METHOD.md`.** Measured: a census-driven pass moves the corrections out of the tree and into the detector, where one commit fixes hundreds of sites. Figures + derivation live in ONE place — do not copy them here.
 
-## Origin
-
-Split from `.claude/architecture.md` on 2026-05-24 as part of Phase 10 D'-1. Contains all build / deploy / SSH / local environment content from the original file. Architecture and system design content stays in `.claude/architecture.md`.
-
----
-
 ## Contents
 
 - [Project structure](#project-structure)
 - [Build process](#build-process)
 - [sgs-framework.db — the unversioned local dev DB](#sgs-frameworkdb--the-unversioned-local-dev-db)
 - [Creating a new block](#creating-a-new-block)
-- [Adding a style variation](#adding-a-style-variation)
+- [Adding per-client theming](#adding-per-client-theming)
 - [Shared components](#shared-components)
 - [Render helpers](#render-helpers)
 - [Extensions architecture](#extensions-architecture)
 - [Deployment process](#deployment-process)
+- [WP-CLI](#wp-cli)
 - [Environment and tools](#environment-and-tools)
 - [Tooling catalogue — every gate, audit and codemod](#tooling-catalogue--every-gate-audit-and-codemod)
 - [Helper & component/atom catalogue](#helper--componentatom-catalogue)
+- [DB catalogue — what every column records, and which ones lie](#db-catalogue--what-every-column-records-and-which-ones-lie)
+- [Known Gotchas](#known-gotchas)
 
 ---
 
@@ -42,42 +36,47 @@ small-giants-wp/
 ├── theme/sgs-theme/
 │   ├── theme.json               # All design tokens: colours, fonts, spacing, shadows
 │   ├── style.css                # Theme header only (no CSS rules)
-│   ├── functions.php            # Enqueues, variation-specific CSS, filters
+│   ├── functions.php            # Enqueues, image/font preload hooks, filters
+│   ├── inc/                     # PHP helpers (colour-helpers.php, font-preloading.php)
 │   ├── styles/                  # EMPTY — per-client snapshots at sites/<client>/theme-snapshot.json
 │   ├── templates/               # Full-page block templates (index, page, single, etc.)
-│   ├── parts/                   # Template parts (header variants, footer, mega menus)
+│   ├── parts/                   # Template parts (header, footer, shop/PDP/cart parts)
 │   ├── patterns/                # Reusable block patterns
 │   └── assets/
 │       ├── css/                 # core-blocks.css, dark-mode.css, utilities.css, etc.
-│       ├── js/                  # sticky-header.js, dark-mode.js, mobile-nav-drawer.js, etc.
+│       ├── js/                  # dark-mode.js, smooth-scroll.js, nav-accessibility.js, etc.
 │       ├── fonts/               # Self-hosted WOFF2 files
 │       └── decorative-foods/    # Indus Foods decorative PNG images
 │
 ├── plugins/sgs-blocks/
 │   ├── sgs-blocks.php           # Plugin entry point
-│   ├── includes/                # PHP helpers, form processing, REST endpoints
+│   ├── includes/                # PHP helpers, CPTs, WP-CLI commands, REST endpoints, migrations
 │   │   ├── class-sgs-blocks.php # Auto-discovery and registration of all blocks
+│   │   ├── class-sgs-cli-commands.php                # `wp sgs` commands (Spec 19)
+│   │   ├── class-sgs-header-footer-cli-commands.php  # `wp sgs header|footer|drawer`
+│   │   ├── class-sgs-colour-audit-cli-commands.php   # `wp sgs audit-colour-tokens`
 │   │   ├── forms/               # Form processor, REST API, admin, DB activation
-│   │   ├── google-reviews-settings.php
-│   │   ├── heading-anchors.php
+│   │   ├── migrations/          # Framework migrations run by `wp sgs migrations`
+│   │   ├── helpers-*.php        # Shared render helpers
 │   │   ├── device-visibility.php
 │   │   ├── hover-effects.php
 │   │   └── review-schema.php
 │   ├── src/
 │   │   ├── blocks/              # One folder per block (see structure below)
-│   │   │   └── extensions/      # Editor extensions (animation, visibility, hover, spacing)
+│   │   │   └── extensions/      # Editor extensions (animation, visibility, hover, custom CSS)
 │   │   ├── components/          # Reusable React components for use in edit.js files
+│   │   ├── header-behaviours/   # Header behaviour frontend modules
+│   │   ├── shared/              # Shared editor/frontend modules
 │   │   └── utils/               # Shared JS utilities
-│   ├── build/                   # Compiled output (committed, deployed to server)
+│   ├── build/                   # Compiled output (gitignored; `npm run build` produces it, build-deploy.py ships it)
 │   ├── assets/
-│   │   ├── css/extensions.css   # Frontend CSS for extensions (animation, visibility)
-│   │   └── js/animation-observer.js
+│   │   ├── css/                 # Frontend CSS for extensions, media atoms, effects
+│   │   └── js/                  # Frontend scripts (animation-observer.js, parallax.js, etc.)
+│   ├── scripts/                 # Build, deploy, gate and cloning-pipeline tooling (build-deploy.py, gates.json, converter/)
 │   └── package.json
 │
-├── docs/                        # Documentation (QUICKSTART, DEVELOPER, plans)
-├── sites/                       # Per-client content, mockups, research
-├── specs/                       # Framework specification documents
-└── ARCHITECTURE.md              # Root-level architecture overview
+├── sites/                       # Per-client content, mockups, research, theme-snapshot.json
+└── .claude/                     # Specs, decisions, ledger, plans, reports
 ```
 
 ### Per-block structure
@@ -121,22 +120,24 @@ The build uses `--experimental-modules` to support `viewScriptModule` (the Inter
 
 A `prebuild` / `prestart` hook runs `scripts/generate-icons.js` automatically. This generates `includes/lucide-icons.php` from the `lucide-static` package — a flat PHP array of 1,900+ SVG icons. Do not edit `lucide-icons.php` directly.
 
-The same `prebuild` chain runs the **dead-control guard** (`scripts/check-dead-controls.js --check`, D192) and `scripts/check-hardcoded-render-defaults.js` (D193) — both wired and BLOCKING via `--check`, not planned. `prebuild` actually chains roughly 40 gates in total (consistency gates, roster build, motion-fx generators, dead-pattern-attrs, `check-shared-panel-schema.js`, `check-empty-inspector-containers.js`, `check-wrapper-capability-preconditions.js`, background-colour-support survey, control-ux, schema-drift, value-identity, db-consistency, tier-storage-shape, cheat-gate, no-inline checks, the pytest oracle/converter suites, inspector-scan, feature-parity audit, block-uniformity, and more) — read `plugins/sgs-blocks/package.json`'s `prebuild` script directly for the current, authoritative list rather than trusting a hand-maintained summary here.
+`prebuild` runs the generators (roster, icons, extension attributes, SVG allowlist, media attributes and stylesheet, motion-fx generators) as a fail-fast chain, then `python scripts/run-gates.py --tier fast`. The runner executes every fast-tier gate, collects every failure, and prints one consolidated report, so one build shows every defect. The gate roster is `plugins/sgs-blocks/scripts/gates.json` (one record per gate: `id`, `cmd`, `tier`, `budget_ms`, `order`). Heavyweight gates sit in the `full` tier, which `build-deploy.py` runs before it ships (`npm run gate:full`; `--skip-gate-full` disables that tier for a deploy). A second chain runs at commit time from `.githooks/sgs-gates.sh` (visual-diff gate, `check-markup-neutral.py`, `check-editor-only.py`).
 
-**Two gates added 2026-08-16 (D639).** ⚠ **Correction (D643, same day):** this line said "both wired in the same commit that built them". Only ONE was. `check-wrapper-capability-preconditions.js` was built, documented in THREE places as wired, and referenced by nothing — `grep check-wrapper-capability plugins/sgs-blocks/package.json` returned zero, and it was absent from `run-consistency-gates.py` too. That is precisely the D338 failure this line was written to say had been learned from, repeated on the same day, in the doc claiming the lesson. It is genuinely wired now (`prebuild` + `npm run check:wrapper-capability`), verified passing standalone first (0 blocking, 0 advisory). **The lesson stands and is now twice-earned: never trust a doc's claim that a gate runs — grep `package.json`.** The two gates: `check-empty-inspector-containers.js` (an inspector container rendered with no children — a client-visible dead control that the whole ~50-gate stack had no coverage for, because `check-dead-controls.js` checks the opposite direction) and `check-wrapper-capability-preconditions.js` (`gridItems` requires `layout`; a `supports.sgs.gridAreas` declaration must have a live reader). Per-gate rationale, their `--self-test` shapes, and the "do NOT rewrite this as a regex" warning: `plugins/sgs-blocks/CLAUDE.md` §prebuild gates.
+Gate commands (from `plugins/sgs-blocks`): `npm run gate:list` (the roster), `gate:fast`, `gate:full`, `gate:all`, `gate:wired` (asserts the deploy script runs the full tier), `gate:selftest`.
 
-**Converter conformance (D222 lesson — the `converter_v2/` unit-test suite this section used to also name was deleted at D276, 2026-07-05; Gate A below is the only live suite now):**
-- **Gate A (golden-fixture harness):** `plugins/sgs-blocks/scripts/tests/test_converter_conformance.py` — fixture count is DB/dir-authoritative (`scripts/tests/fixtures/conformance/`, drifts — do not hard-code a number), run manually with `pytest plugins/sgs-blocks/scripts/tests/`. This is the pre-commit gating harness.
+Two of the gates, as examples of what the roster covers: `check-empty-inspector-containers.js` (an inspector container rendered with no children — a client-visible dead control that `check-dead-controls.js`, which checks the opposite direction, cannot see) and `check-wrapper-capability-preconditions.js` (`gridItems` requires `layout`; a `supports.sgs.gridAreas` declaration must have a live reader). Per-gate rationale and `--self-test` shapes are in each script's own header; the tooling catalogue below lists them. **Never trust a doc's claim that a gate runs — read `scripts/gates.json`, or run `npm run gate:wired`.**
 
-**Dated migration pattern (D222, mandatory):** any new `property_suffixes` row or other DB seed data MUST live in a dated `migrations/YYYY-MM-DD-<descriptor>.py` beside the existing siblings — never a module-load side-effect in `db_lookup.py`. Example: `migrations/2026-06-13-property-suffixes-align-items.py`.
+**Converter conformance:**
+- **Gate A (golden-fixture harness):** `plugins/sgs-blocks/scripts/tests/test_converter_conformance.py` — fixture count is DB/dir-authoritative (`scripts/tests/fixtures/conformance/`, do not hard-code a number), run manually with `pytest plugins/sgs-blocks/scripts/tests/`. This is the pre-commit gating harness.
 
-**Output:** `build/blocks/{block-name}/` contains the compiled files. All files in `build/` are version-controlled and deployed directly to the server — Node.js is not available on the Hostinger host.
+**Dated migration pattern (mandatory):** any new `property_suffixes` row or other DB seed data MUST live in a dated `migrations/YYYY-MM-DD-<descriptor>.py` under `plugins/sgs-blocks/scripts/migrations/` beside the existing siblings — never a module-load side-effect in `db_lookup.py`. Example: `plugins/sgs-blocks/scripts/migrations/2026-06-26-testimonial-media-role-selector.py`.
+
+**Output:** `build/blocks/{block-name}/` contains the compiled files. `build/` is gitignored: `npm run build` produces it locally and `build-deploy.py` ships it — Node.js is not available on the Hostinger host.
 
 ---
 
 ## sgs-framework.db — the unversioned local dev DB
 
-**Path:** `~/.agents/skills/sgs-wp-engine/sgs-framework.db` (hard-linked to `~/.claude/skills/sgs-wp-engine/sgs-framework.db` — same physical file, same inode, either path reads/writes the same data). **~13.9MB. Deliberately NOT committed to git** — it is a local dev SQLite knowledge base (block schema, `fx_effects`, `block_attributes`, `slots`, `roles`, etc. — see project `CLAUDE.md` "DB-first, no hardcoded dicts"), not a build artefact, and it is far too large and too fast-moving to version sensibly.
+**Path:** `~/.agents/skills/sgs-wp-engine/sgs-framework.db` (hard-linked to `~/.claude/skills/sgs-wp-engine/sgs-framework.db` — same physical file, same inode, either path reads/writes the same data). **Deliberately NOT committed to git** — it is a local dev SQLite knowledge base (block schema, `fx_effects`, `block_attributes`, `slots`, `roles`, etc. — see project `CLAUDE.md` "DB-first, no hardcoded dicts"), not a build artefact, and it is far too large and too fast-moving to version sensibly.
 
 **What depends on it:** the Spec 38 motion-fx generator chain —
 - `plugins/sgs-blocks/scripts/seed-motion-fx-registry.py` (seeds `fx_effects` + related tables)
@@ -149,7 +150,7 @@ The same `prebuild` chain runs the **dead-control guard** (`scripts/check-dead-c
 - **DB absent** — skips the whole chain cleanly (exit 0) and logs why. The build proceeds using the already-committed generated files untouched.
 - **DB present** — runs the chain for real (seed, then `generate-fx-effects-php.py --check` which diffs an in-memory regeneration against the committed files without writing, then `generate-fx-qualifying-blocks.py`, whose output the wrapper snapshots/diffs itself since that script has no `--check` mode of its own yet). Any drift between the DB and the committed generated files **fails the build loudly**, naming the stale file(s) — so the owner can never commit a generated artefact that doesn't match the DB.
 
-**A missing/empty DB must never produce a silently-empty roster.** `generate-fx-effects-php.py` and `generate-fx-qualifying-blocks.py` both fail loudly (naming the DB path) if the DB exists but a query returns zero rows — an empty `fx_effects` table is treated as a fatal misconfiguration, never as "nothing to generate". (Historically, two 0-byte decoy files were briefly committed at `scripts/sgs-framework.db` and `scripts/data/sgs-framework.db` — **deleted**; never recreate either path, and never point `DB_PATH` at a committed copy.)
+**A missing/empty DB must never produce a silently-empty roster.** `generate-fx-effects-php.py` and `generate-fx-qualifying-blocks.py` both fail loudly (naming the DB path) if the DB exists but a query returns zero rows — an empty `fx_effects` table is treated as a fatal misconfiguration, never as "nothing to generate". Never create a `sgs-framework.db` at `scripts/sgs-framework.db` or `scripts/data/sgs-framework.db`, and never point `DB_PATH` at a copy inside the repo.
 
 **Restoring/regenerating the DB (owner only):** the DB is not published or backed up anywhere else in this repo — if it is ever lost, it has to be rebuilt from the `/sgs-update` pipeline against the live block roster (`python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py stats` confirms whether it's present and healthy). This is a last-resort, hours-not-minutes recovery path — treat the DB as irreplaceable in day-to-day work (back it up before any destructive experiment).
 
@@ -326,18 +327,7 @@ import { DesignTokenPicker } from '../../components';
 />
 ```
 
-In `render.php`, convert a slug to a CSS variable:
-
-```php
-function sgs_colour_var( string $value ): string {
-    if ( str_starts_with( $value, '#' ) ) {
-        return $value; // Raw hex — pass through.
-    }
-    return 'var(--wp--preset--color--' . sanitize_html_class( $value ) . ')';
-}
-```
-
-Always add a `:not([style*="color"])` guard in CSS so inline styles set by the attributes always win.
+In `render.php`, resolve the stored value with `sgs_colour_value()` (`includes/helpers-tokens.php`), which turns a design-token slug into its CSS variable and passes a real CSS colour through. Never guard a CSS fallback colour with `:not([style*="color"])` — no SGS block emits an inline `style` property declaration, so that guard always matches (see `plugins/sgs-blocks/CLAUDE.md` "Colour controls").
 
 ### AnimationControl
 
@@ -390,26 +380,28 @@ import { SpacingControl } from '../../components';
 
 ### sgs_responsive_image
 
-Located in `includes/render-helpers.php`. Outputs a fully optimised `<img>` with:
+Located in `includes/helpers-media.php`. Outputs a fully optimised `<img>` with:
 
-- `srcset` and `sizes` attributes for responsive images.
-- `loading="lazy"` for below-fold images.
-- `fetchpriority="high"` for LCP images (hero, above-fold).
-- `decoding="async"`.
-- Proper `alt` text from the attachment metadata.
+- `srcset` and `sizes` attributes (through `wp_get_attachment_image()` when the attachment ID is known).
+- `loading="lazy"` and `decoding="async"` by default.
+- Explicit `width`/`height` resolved from the attachment metadata, so the browser reserves the space.
+- The supplied alt text.
 
 ```php
 echo sgs_responsive_image(
-    $attachment_id,       // int — attachment post ID
+    $attachment_id,       // int — attachment post ID (0 when only a URL is known)
+    $url,                 // string — image URL, used when there is no attachment ID
+    $alt,                 // string — alt text
     'large',              // string — WordPress image size
     [
-        'class'           => 'sgs-hero__image',
-        'fetchpriority'   => 'high',  // omit for lazy-loaded images
+        'class'         => 'sgs-hero__image',
+        'fetchpriority' => 'high',  // omit for lazy-loaded images
+        'loading'       => 'eager',
     ]
 );
 ```
 
-For the hero block's background image, a `<link rel="preload">` tag is injected into `<head>` by `functions.php` to eliminate LCP delay.
+For an above-the-fold hero image, the theme injects a `<link rel="preload" as="image">` tag into `<head>` (`functions.php`, `inc/font-preloading.php`) to shorten LCP.
 
 ---
 
@@ -420,10 +412,11 @@ Extensions add capabilities to all blocks via the WordPress `editor.BlockEdit` f
 ```
 extensions/
 ├── animation.js              # Scroll-triggered animation controls
-├── responsive-visibility.js  # Per-device show/hide controls
-├── hover-effects.js          # Hover state colour controls
-├── custom-spacing.js         # Enhanced per-breakpoint spacing
-└── index.js                  # Imports all extensions
+├── responsive-visibility.js  # Per-device show/hide attributes + classes
+├── conditional-visibility.js # "Visibility conditions" inspector panel
+├── hover-effects.js          # Hover effect controls
+├── custom-css.js             # Per-block scoped CSS field
+└── index.js                  # Imports all extensions (the authoritative list)
 ```
 
 ### How extensions work
@@ -431,7 +424,7 @@ extensions/
 1. `index.js` is compiled to `build/extensions/index.js`.
 2. `class-sgs-blocks.php` enqueues this bundle via `enqueue_block_editor_assets` so it loads once in the editor.
 3. Each extension file calls `addFilter( 'editor.BlockEdit', 'sgs/...', withMyPanel )` to inject an extra InspectorControls panel into every block's settings panel.
-4. For the **Responsive Visibility** and **Hover Effects** extensions, a corresponding PHP `render_block` filter in `includes/device-visibility.php` and `includes/hover-effects.php` applies the class or inline style server-side so the output is correct on the frontend too.
+4. For the **Responsive Visibility** and **Hover Effects** extensions, a corresponding PHP `render_block` filter in `includes/device-visibility.php` and `includes/hover-effects.php` applies the class or custom properties server-side so the output is correct on the frontend too.
 
 ### Adding a new extension
 
@@ -444,98 +437,97 @@ extensions/
 
 ## Deployment process
 
-**Canary — the ONLY deploy target:** `https://sandybrown-nightingale-600381.hostingersite.com` (WP 7.1 as of 2026-08-20)
+**Deploy targets** (the `TARGETS` dict in `plugins/sgs-blocks/scripts/build-deploy.py`):
+
+| Target | Site | Purpose |
+|---|---|---|
+| `sandybrown` (default) | `https://sandybrown-nightingale-600381.hostingersite.com` | The canary — pipeline canary (Mama's Munches) and framework verification. WP 7.1 |
+| `indus-test` | `https://lavender-dinosaur-183533.hostingersite.com` | Dedicated Indus Foods test site. Opt-in: deploys only when named with `--target indus-test` |
+
+**Why each client has its own site.** The active header, footer, drawer and theme-snapshot pointers are
+single global options per WordPress site (`sgs_active_header_cpt_id`,
+`sgs_active_footer_cpt_id`, `sgs_active_drawer_cpt_id`, and the theme snapshot). Two clients
+cannot hold different active layouts on one site: activating an Indus header on the canary would
+replace the Mama's Munches header sitewide. Indus Foods therefore builds on its own site. Another
+client target is one `TARGETS` entry with `explicit_opt_in_required: True` (enforced in code).
+
 **Reference site (READ ONLY):** `https://lightsalmon-tarsier-683012.hostingersite.com`
 
-**SSH:** `ssh -i ~/.ssh/id_ed25519 -p 65002 u945238940@141.136.39.73` (alias: `ssh hd`)
+**SSH** (all targets share the one Hostinger account): `ssh -i ~/.ssh/id_ed25519 -p 65002 u945238940@141.136.39.73` (alias: `ssh hd`)
 
 ### Project credentials (discoverable — every session can use these directly, without asking Bean)
 
-Gitignored; never committed. (Rehomed verbatim from the dissolved `docs-registry.yaml`, 2026-07-28.)
+Gitignored; never committed.
 
 | Path | What | Keys / loader |
 |---|---|---|
-| `.claude/secrets/sandybrown.env` | Staging/canary (sandybrown-nightingale-600381.hostingersite.com) logins — ALWAYS available | `WP_USER_SANDYBROWN` + `WP_PWD_SANDYBROWN` (browser/admin login); `WP_APP_PWD_SANDYBROWN` (REST + WC Store-API Basic auth); `WP_URL_SANDYBROWN`. Use for Playwright editor login + REST verification: `grep KEY .claude/secrets/sandybrown.env` |
+| `.claude/secrets/sandybrown.env` | Canary (sandybrown-nightingale-600381.hostingersite.com) logins — ALWAYS available | `WP_USER_SANDYBROWN` + `WP_PWD_SANDYBROWN` (browser/admin login); `WP_APP_PWD_SANDYBROWN` (REST + WC Store-API Basic auth); `WP_URL_SANDYBROWN`. Use for Playwright editor login + REST verification: `grep KEY .claude/secrets/sandybrown.env` |
+| `.claude/secrets/indus-test.env` | Indus test site (lavender-dinosaur-183533.hostingersite.com) logins | `WP_USER_INDUSTEST` + `WP_PWD_INDUSTEST` (browser/admin login); `WP_APP_PWD_INDUSTEST` (REST Basic auth); `WP_URL_INDUSTEST` |
 | `.claude/secrets/credentials.yml` | General project credentials (YAML) | `import yaml; yaml.safe_load(open('.claude/secrets/credentials.yml'))` |
-| `A:/.openclaw/.secrets/wp-app-passwords.env` | Cloning WP app passwords (legacy — the dev site they belonged to is gone) | env-file format |
 
-> **LiteSpeed note (updated 2026-07-13, D322):** LiteSpeed Cache **IS active on sandybrown** (v7.8.1 — re-installed at D312, re-confirmed live D322; the old "deleted 2026-05-05" claim is STALE). ALWAYS `wp litespeed-purge all` on sandybrown after a CSS/render deploy, in addition to OPcache reset + the Hostinger CDN clear (`hosting_clearWebsiteCacheV1`). Check `wp plugin list --status=active | grep -i litespeed` on any target before deciding.
+> **LiteSpeed:** LiteSpeed Cache is active on sandybrown (check any other target with `wp plugin list --status=active | grep -i litespeed`). `build-deploy.py` purges both cache layers after a deploy — OPcache (compiled PHP) through an HTTPS probe, because the CLI pool has its own OPcache, and the LiteSpeed page cache (rendered HTML) through wp-cli; clearing one does nothing for the other. For a manual purge after a CSS/render change run `wp litespeed-purge all`, reset OPcache (snippet below), and clear the Hostinger CDN (`hosting_clearWebsiteCacheV1`).
 
 ### Full deployment (ALL targets) — always via `build-deploy.py`
 
-> **⛔ Use the script. Do NOT hand-roll a tar/scp deploy (2026-07-14 incident).**
-> On 2026-07-14 an unfinished, uncommitted edit reached **both live client sites**
-> via a raw deploy and took them down with a PHP fatal for ~2.5 hours — and the
-> deploy reported success. The raw tar/scp sequence that used to live here had
-> no dirty-file gate, no post-deploy check, and `rm -rf`'d the live directory
-> before extracting, so there was nothing to roll back to. It has been REMOVED
-> from this doc on purpose. `build-deploy.py` now carries all three defences:
-> a scoped dirty gate, a fail-closed post-deploy smoke test, and a `.bak`
-> rotation for one-command rollback.
+> **⛔ Use the script. Never hand-roll a tar/scp deploy.**
+> A raw deploy has no dirty-file gate, no post-deploy check, and no rollback copy: an
+> unfinished uncommitted edit reaches the live site and the deploy still reports success.
+> `build-deploy.py` carries three defences: a scoped dirty gate, a fail-closed post-deploy
+> smoke test, and a `.bak` rotation for one-command rollback.
 
 ```bash
-# Canary (safe default — sandybrown)
+# Canary (default — sandybrown)
 python plugins/sgs-blocks/scripts/build-deploy.py
 
-# sandybrown is the ONLY target. palestine-lives.org no longer exists and was
-# removed from TARGETS 2026-08-10; adding a real client back is one dict entry.
+# Indus Foods test site
+python plugins/sgs-blocks/scripts/build-deploy.py --target indus-test
 ```
 
-The script builds, tars (same excludes as before), scps, extracts, rotates the
-previous copy to `<dir>.bak`, cleans up, then **GETs the site and fails the run
-if it is broken**. Deploy to the canary first; only then the client site.
+The script runs the pre-deploy `gate:full` tier, builds (from an isolated `git worktree` of
+`HEAD` by default, so a concurrent session's build or uncommitted files cannot collide with the
+deploy; `--no-isolate` opts out), tars, scps, extracts, rotates the previous copy to `<dir>.bak`,
+cleans up, purges both cache layers, then **GETs the site and fails the run if it is broken**.
+Deploy a framework change to the canary first.
 
 **The flags exist — know what you're giving up before using them:**
 
 | Flag | What you lose |
 |---|---|
-| `--allow-dirty` | The gate that would have stopped the 2026-07-14 outage. Only use when you have READ the listed paths and know each one is safe. |
+| `--allow-dirty` | The dirty-file gate. Only use when you have READ the listed paths and know each one is safe. |
 | `--skip-verify` | The only check that catches a deploy which breaks the site. |
+| `--skip-gate-full` | The heavyweight pre-deploy gate tier. |
+| `--skip-oldshape-audit` | The only check that catches a deploy whose schemas strand or delete stored content. |
+| `--skip-purge` | Cache purge — the deploy lands, but warm caches keep serving the previous version. |
 
-**Other flags (safe, not loss-of-safety):** `--payload <path>` (repeatable) deploys named uncommitted files without the blanket `--allow-dirty`; `--verify-url`, `--audit-scoped-page`, `--skip-oldshape-audit`, `--self-test` exist for narrower workflows — read the script's `--help` for current usage.
+**Other flags (safe, not loss-of-safety):** `--payload <path>` (repeatable) deploys named uncommitted files without the blanket `--allow-dirty`; `--verify-url`, `--audit-scoped-page`, `--self-test`, `--theme-only`, `--blocks-only`, `--skip-build` exist for narrower workflows — read the script's `--help` for current usage.
 
-⚠ **`--dry-run`: do NOT treat it as a safe preview until someone resolves this.** Two sources
-disagree and neither has been reconciled against a live test:
+**`--dry-run`** prints the commands each step would run and executes none of them: every deploy step passes `args.dry_run` to `run()`, which returns without executing. It also skips the dirty-tree gate, so a dry run cannot warn you about uncommitted files the next real deploy would carry.
 
-- **The code (read 2026-09-08) says it is safe.** Every deploy step takes `args.dry_run` and
-  passes it to `run()`, which returns without executing — `step_build`, `step_tar`, `step_scp`,
-  `step_remote_extract`, `step_local_cleanup`. Nothing in the deploy path bypasses it.
-- **D991 (2026-09-07) records an INCIDENT** in which `--dry-run` "built, packaged, SCP'd, and
-  installed the plugin live", shipping a peer session's staged-but-uncommitted work. `build-deploy.py`
-  has had **no commits since**, so the code above is the same code that was running.
-
-One of the two is wrong and it has not been established which. **Verified either way:**
-`--dry-run` DOES skip the dirty-tree gate (`if not args.allow_dirty and not args.dry_run and dirty`),
-so a dry run cannot warn you about uncommitted files the next real deploy would carry.
-
-Until this is settled with a deliberate test against a throwaway target, treat `--dry-run` as
-unproven rather than safe. D991 also flags the flag's name as misleading and leaves it open.
-
-**Ownership check (load-bearing, not optional):** the canary is a shared checkout. `build-deploy.py` checks whether the deploy would overwrite live work not in your HEAD's ancestry and **refuses if so** — this is correct behaviour, not a bug. `--takeover` overrides it; only use when you've confirmed with whoever else is working on the canary that it's safe to overwrite their state.
+**Ownership check (load-bearing, not optional):** a target is a shared checkout. `build-deploy.py` checks whether the deploy would overwrite live work not in your HEAD's ancestry and **refuses if so** — this is correct behaviour, not a bug. `--takeover` overrides it; only use when you've confirmed with whoever else is working on the target that it's safe to overwrite their state.
 
 **Rollback (if a deploy breaks the site):**
 
 ```bash
-ssh hd 'WP=domains/sandybrown-nightingale-600381.hostingersite.com/public_html/wp-content && \
+# <host> is the target's host from TARGETS (e.g. sandybrown-nightingale-600381.hostingersite.com)
+ssh hd 'WP=domains/<host>/public_html/wp-content && \
   mv $WP/plugins/sgs-blocks $WP/plugins/sgs-blocks.broken && \
   mv $WP/plugins/sgs-blocks.bak $WP/plugins/sgs-blocks'
 # then reset OPcache (below) — the .bak is the copy from the PREVIOUS deploy
 ```
 
-OPcache reset is handled per the snippet below (CLI and web are separate pools):
+OPcache reset (CLI and web are separate pools):
 
 ```bash
-ssh -p 65002 u945238940@141.136.39.73 "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/sandybrown-nightingale-600381.hostingersite.com/public_html/op-reset-tmp.php" && \
-  curl -s https://sandybrown-nightingale-600381.hostingersite.com/op-reset-tmp.php && \
-  ssh -p 65002 u945238940@141.136.39.73 "rm ~/domains/sandybrown-nightingale-600381.hostingersite.com/public_html/op-reset-tmp.php"
+ssh -p 65002 u945238940@141.136.39.73 "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/<host>/public_html/op-reset-tmp.php" && \
+  curl -s https://<host>/op-reset-tmp.php && \
+  ssh -p 65002 u945238940@141.136.39.73 "rm ~/domains/<host>/public_html/op-reset-tmp.php"
 ```
 
 ### Single-file patch — ⛔ don't
 
 A bare `scp` of one file is how broken code reaches a live site with **zero**
 gates and **no** rollback copy: no dirty check, no smoke test, no `.bak`. It
-feels safer than a full deploy because it touches less — that is the trap. The
-2026-07-14 fatal was a single unfinished file.
+feels safer than a full deploy because it touches less — that is the trap.
 
 Use `build-deploy.py` (add `--blocks-only` / `--theme-only` to narrow scope). If
 you genuinely must hand-place one file — emergency rollback only — take a backup
@@ -545,59 +537,50 @@ first and verify the site afterwards:
 # emergency only; back up, then verify
 ssh hd 'cp $WP/path/to/file $WP/path/to/file.bak'
 scp -P 65002 -i ~/.ssh/id_ed25519 path/to/file \
-  u945238940@141.136.39.73:domains/sandybrown-nightingale-600381.hostingersite.com/public_html/wp-content/path/to/file
-curl -s -o /dev/null -w '%{http_code}\n' "https://sandybrown-nightingale-600381.hostingersite.com/?cachebust=$RANDOM"   # expect 200
+  u945238940@141.136.39.73:domains/<host>/public_html/wp-content/path/to/file
+curl -s -o /dev/null -w '%{http_code}\n' "https://<host>/?cachebust=$RANDOM"   # expect 200
 ```
 
 ### Per-client theme snapshot deploy
 
-```bash
-python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client indus-foods --target u945238940@141.136.39.73
-# --no-push flag for preview without pushing
-```
-
-### Fast-cycle canary deploy (sandybrown) — D3
-
-`plugins/sgs-blocks/scripts/build-deploy.py` is also the fast-cycle path for the
-sandybrown staging canary. Skips full-ceremony steps (no /qc-council, no full doc
-walk) — use for iterative pipeline / converter work where the per-commit cadence
-is dictated by /sgs-clone --debug-trace measurement, not full deploy QA.
+`push-theme-snapshot.py` defaults `--target-domain` to the sandybrown canary, so **name the domain explicitly for any other site**:
 
 ```bash
-python plugins/sgs-blocks/scripts/build-deploy.py
+# Canary (default domain)
+python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client mamas-munches --target u945238940@141.136.39.73
+
+# Indus test site
+python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client indus-foods --target u945238940@141.136.39.73 \
+  --target-domain lavender-dinosaur-183533.hostingersite.com
+
+# --no-push (alias --dry-run) prints the diff without pushing
 ```
 
-**Corrected 2026-07-14 — this section previously routed production away from the
-script** ("sandybrown canary → `build-deploy.py`; palestine-lives + production →
-`/wp-sgs-deploy`"), which is how the *real client site* ended up documented for a
-raw, ungated tar deploy. `build-deploy.py` is now the deploy path for **every**
-target — the difference is only the flag:
+### Fast-cycle deploys
 
-- sandybrown canary → `build-deploy.py` (default and, since 2026-08-10, the only target)
-- a future client target → add one `TARGETS` entry with `explicit_opt_in_required: True`
-  (enforced in code), preceded by the `/wp-sgs-deploy` ceremony
-  (QC gates, doc walk) where that ceremony applies. `/wp-sgs-deploy` governs
-  *what must pass before* a production deploy; it does not replace the script
-  that performs it.
+`build-deploy.py` is also the fast-cycle path for iterative pipeline and converter work, where the
+per-commit cadence is dictated by `/sgs-clone --debug-trace` measurement rather than full deploy
+QA. The `/wp-sgs-deploy` skill governs *what must pass before* a production deploy (QC gates,
+doc walk); it does not replace the script that performs it.
 
-### Inheritance audit — container-wrapping blocks (D152)
+### Inheritance audit — container-wrapping blocks
 
-`plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py` detects which blocks wrap children via InnerBlocks (the "wraps children" model) and syncs `wraps_block` + `container_kind` into `block_composition`. Rewritten D152 from a heuristic threshold model to validated structural detection.
+`plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py` detects which blocks wrap children via InnerBlocks (the "wraps children" model, a validated structural signal) and syncs `wraps_block` + `container_kind` into `block_composition`.
 
 ```bash
 python plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py
 # --apply to write detected wraps_block + container_kind values into block_composition
 ```
 
-Container roster confirmed at D167 (2026-06-04 — content-collection added, modal + mobile-nav excluded). **Roster size is DB-authoritative — query `/sgs-db`, do not cache a count (architecture.md separately cited 28; both were stale).** Re-run via `/sgs-update` Stage (auto) or manually whenever block.json `supports.sgs.containerKind` changes.
+**Roster size is DB-authoritative — query `/sgs-db`, do not cache a count.** Re-run via `/sgs-update` Stage (auto) or manually whenever block.json `supports.sgs.containerKind` changes.
 
 ### PowerShell equivalents (dev machine)
 
-⛔ **The raw `scp -r` recipes that used to live here are RETIRED** — they contradicted the Deployment section's own warning box above, bypassed every gate, and left the tree and the server silently divergent. `build-deploy.py` is cross-platform; there is no PowerShell-specific deploy path.
+`build-deploy.py` is cross-platform; there is no PowerShell-specific deploy path.
 
 ```powershell
 # The deploy IS the script — it builds, gates on a dirty tree, verifies fail-closed, rotates a .bak,
-# and resets OPcache itself. Run from the project root.
+# and purges caches itself. Run from the project root.
 python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown
 python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown --blocks-only   # or --theme-only
 
@@ -614,7 +597,18 @@ cd plugins/sgs-blocks ; npm run build ; cd ..\..
 - `node_modules/` — not needed on the server
 - `src/` — compiled output from `build/` is what WordPress uses
 - `.gitignore`, `package.json`, `package-lock.json` — server does not need these
-- `theme/sgs-theme/styles/*.json` — per-client snapshots now live at `sites/<client>/theme-snapshot.json`
+- `theme/sgs-theme/styles/*.json` — per-client snapshots live at `sites/<client>/theme-snapshot.json`
+
+---
+
+## WP-CLI
+
+The `wp sgs` namespace is the developer and pipeline command surface for SGS sites: Site Info,
+template-part seeding and reset, conditional header/footer rules, migrations, the CPT-backed
+header / footer / drawer lifecycle (`wp sgs header|footer|drawer set-active | clear-active | list
+| seed-starter`), and `wp sgs audit-colour-tokens`. It runs on the server over SSH (`ssh hd`),
+and write commands need `--user=<id>`. Full reference: `.claude/specs/19-SGS-CLI-COMMANDS.md`
+(Spec 19).
 
 ---
 
@@ -624,7 +618,7 @@ cd plugins/sgs-blocks ; npm run build ; cd ..\..
 |------|---------|-------|
 | Node.js | v22.18.0 | Build tooling only — not on the server |
 | @wordpress/scripts | 30.x | Handles webpack, eslint, format |
-| WordPress | 7.0 | Block theme, no classic editor. Sandybrown upgraded 2026-05-22. |
+| WordPress | 7.1 | Block theme, no classic editor |
 | PHP | 8.0+ | |
 | Shell | PowerShell (dev) / Bash (SSH) | Use `;` not `&&` to chain PowerShell commands |
 | Playwright | v1.58.2 | Globally installed on dev machine, Chromium ready |
@@ -660,11 +654,11 @@ composer install  # installs stubs to vendor/ (dev-only, never deploy vendor/)
 
 ### Git workflow
 
-Main branch for framework work. Client-specific work on feature branches (`feat/indus-foods-*`, etc.). See project CLAUDE.md for full branch discipline rules.
+Commit straight to `main` and never open a pull request. Never `git stash`. Commit your own files with an explicit pathspec — never `git add -A` and never a glob, because this worktree is shared by many concurrent sessions. Integrate with `origin/main` (pull/rebase, push) after every completed task. Run `git branch --show-current` in the same command as the commit. A client-specific short-lived branch (`feat/<client>-*`) is merged back the same session. See project `CLAUDE.md` "Git workflow" for the full rules.
 
 ```powershell
 cd C:\Users\Bean\Projects\small-giants-wp
-git add .
+git add plugins/sgs-blocks/src/blocks/my-block/block.json plugins/sgs-blocks/src/blocks/my-block/render.php   # name every path
 git commit -m "feat: add my-block block"
 git push
 ```
@@ -680,24 +674,26 @@ python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py match "pricing" # Find b
 python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py context indus-foods # Load client
 ```
 
-### DB schema notes (post-D99 + D107-D113)
+### DB schema notes
 
-- **`blocks.tier`** (new D107) — TEXT column, CHECK constraint `IN ('block', 'class-section', 'pattern')`. Populated by `/sgs-update` Stage 1 from each block's `supports.sgs.is_section_root` flag in `block.json`. Operator-set per block, not algorithmically inferred.
-- **`block_composition`** (new D108; updated D152/D167) — 189+ rows at D167 (2026-06-04), drifts since — query `/sgs-db`. Container roster has `wraps_block` + `container_kind` populated (values `section|layout|content`; modal + mobile-nav excluded). Walker consumption DEFERRED — data layer LIVE only.
-- **`slots`** (D99) — composite PK on `(slot_name, scope)`. Post-D111 (2026-05-30): 92 element-scope + 4 section-scope = 96 total. Replaces retired `slot_synonyms` + `legacy_role_lookup`. XS-5 cleanup retired 12 wrong/dead section-scope rows + re-inserted testimonial/testimonial-slider at element scope; `inner` passthrough element row added.
-- **`roles`** (D99/D128) — 21 rows (20 base + `scalar-media` added D128 2026-06-01). Replaces `slot_synonyms.role_classification` column. `INSERT OR REPLACE` from `_ROLE_CLASSIFICATION_MAP`.
-- **`html_tag_to_core_block`** (D99) — 14 rows, idempotent migration at module load. Replaces hardcoded `_HTML_TAG_TO_CORE_SLUG` dict. `INSERT OR REPLACE`.
+Row counts drift — query `/sgs-db` (or the generated DB catalogue below) rather than trusting a number in prose.
 
-### canonical_slot assignment (XS-4 / D110; D194)
+- **`blocks.tier`** — TEXT column, CHECK constraint `IN ('block', 'class-section', 'pattern')`. Populated by `/sgs-update` Stage 1 from each block's `supports.sgs.is_section_root` flag in `block.json`. Operator-set per block, not algorithmically inferred.
+- **`block_composition`** — the container roster has `wraps_block` + `container_kind` populated (values `section|layout|content`).
+- **`slots`** — composite PK on `(slot_name, scope)`; element-scope and section-scope rows. Role is derived from `property_suffixes`, not stored on the slot row.
+- **`roles`** — base roles plus `scalar-media`. `INSERT OR REPLACE` from `_ROLE_CLASSIFICATION_MAP`.
+- **`html_tag_to_core_block`** — idempotent migration at module load; the source of the atomic-tag map (no hardcoded dict).
 
-`assign-canonical.py` was ported to the D99 `slots` + `roles` schema. Current canonical_slot coverage = 31.8% of attrs. Re-run after every slot-vocabulary addition:
+### canonical_slot assignment
+
+`assign-canonical.py` reads the `slots` + `roles` schema and backfills `canonical_slot`, `role` and `derived_selector`. Re-run after every slot-vocabulary addition:
 
 ```bash
 python plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py
 ```
 
 - **It writes the one physical `sgs-framework.db`.** uimax holds neither `block_attributes` nor `slots`; the `.claude` and `.agents` DB paths are the *same file* via an NTFS junction (not two copies) — so a single write reaches every path.
-- **It is the deterministic mechanism for content-area `canonical_slot` tagging (D194, 2026-06-09).** `assign-canonical.py` runs automatically as `/sgs-update` Stage 1; once the `content` element-slot row + the `Width`/`Padding`→`layout` `property_suffixes` rows exist, it tags the content-area attrs (`contentWidth`/`contentPadding*`/`contentMaxWidth*`) `content`/`layout` deterministically — no manual seed step. The throwaway `seed-canonical-slots.py` was **deleted as redundant** (the DB values it wrote persist; `/sgs-update` maintains + extends them).
+- **It is the deterministic mechanism for content-area `canonical_slot` tagging.** `assign-canonical.py` runs automatically as `/sgs-update` Stage 1; with the `content` element-slot row and the `Width`/`Padding`→`layout` `property_suffixes` rows in place, it tags the content-area attrs (`contentWidth`/`contentPadding*`/`contentMaxWidth*`) `content`/`layout` deterministically — no manual seed step.
 
 ---
 
@@ -710,10 +706,11 @@ in one of the script directories". There is more than one, and the big one holds
 hundreds of files. Before building any new checker, codemod or audit, read this
 section and grep every directory listed in it.
 
-Derived from the `prebuild` chain in `plugins/sgs-blocks/package.json` (the real gate
-list, in real execution order) plus each script's own header. Both sources are the
-truth rather than a copy of it, which is why this can be regenerated instead of
-maintained. `--check` fails if it is stale.
+Derived from the build chain (the `prebuild` generators plus the `plugins/sgs-blocks/scripts/gates.json`
+roster run by `scripts/run-gates.py`, in execution order), the commit-time chain
+`.githooks/sgs-gates.sh`, and each script's own header. These sources are the truth rather
+than a copy of it, which is why this can be regenerated instead of maintained. `--check` fails
+if it is stale.
 
 <!-- TOOLING-CATALOGUE:START -->
 
@@ -1937,10 +1934,7 @@ Do not hand-edit it — edits are overwritten.
 The tooling catalogue above covers checker/migration/codemod SCRIPTS. This section covers the
 other half of "what already exists": PHP helper FUNCTIONS in
 `plugins/sgs-blocks/includes/helpers-*.php`, and shared JS editor components/atoms in
-`plugins/sgs-blocks/src/components/`. It exists because `sgs_svg_stroke_gradient()` was
-independently rediscovered from scratch three times in one week, and
-`sgs_custom_property_gradient_decls()` wasn't known about at all until stumbled on mid-task —
-search this before writing a new helper or component.
+`plugins/sgs-blocks/src/components/`. Search it before writing a new helper or component.
 
 Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`. `--check` fails
 if it is stale.
@@ -2578,36 +2572,15 @@ python plugins/sgs-blocks/scripts/generate-db-catalogue.py
 
 | Gotcha | Detail |
 |--------|--------|
-| **SCP `-r` creates nested directories** | `scp -r theme/sgs-theme remote:path/sgs-theme` creates `sgs-theme/sgs-theme/`. This is one of several reasons hand-rolled deploys are retired — use `build-deploy.py`. |
+| **SCP `-r` creates nested directories** | `scp -r theme/sgs-theme remote:path/sgs-theme` creates `sgs-theme/sgs-theme/`. One of several reasons never to hand-roll a deploy — use `build-deploy.py`. |
 | **Hostinger caches CSS aggressively** | Bump version in `style.css` after CSS changes to bust cache. Theme version is the query string for all enqueued styles. |
 | **`--webpack-copy-php` flag** | Build script copies `render.php` to `build/` automatically. Dynamic blocks won't render without this. |
 | **`--experimental-modules` flag** | Required in build/start scripts for `viewScriptModule` in block.json. |
-| **Deprecations NOT used (D270/D271/D293)** | ~~Changing a static block's `save.js` requires a deprecation~~ — **retired policy.** `deprecated.js` is deleted plugin-wide and version bumps are forbidden pre-production. On a schema change, rebuild / re-clone the content, or use the Site Editor's "Attempt Block Recovery". Do NOT author a deprecation. |
+| **Deprecations NOT used** | The plugin carries no `deprecated.js` and block version bumps are forbidden pre-production. On a schema change, rebuild / re-clone the content, or use the Site Editor's "Attempt Block Recovery". Do NOT author a deprecation. |
 | **SSH remote variable expansion** | Use single quotes for outer string when running `ssh hd '...'` so `$WP` expands on server. Double quotes expand locally. |
-| **~~Tar deploy: delete before move~~** | **RETIRED — this "fix" IS the D336 outage.** `rm -rf $WP/plugins/sgs-blocks` before the extract succeeds leaves the site with no plugin if anything fails in between; on 2026-07-14 it took two client sites down ~2.5h. `build-deploy.py` handles ordering safely. Never hand-roll this. |
-| **Tar `--exclude='src'` breaks vendor** | Too broad — strips `vendor/*/src/` subdirectories. `build-deploy.py` already carries the correct excludes; this is background, not a recipe to copy. |
+| **Never delete the live directory before the new copy is in place** | `rm -rf $WP/plugins/sgs-blocks` before the extract succeeds leaves the site with no plugin if anything fails in between. `build-deploy.py` rotates the previous copy to `<dir>.bak` and moves the new one in. Never hand-roll this. |
+| **Tar `--exclude='src'` breaks vendor** | Too broad — strips `vendor/*/src/` subdirectories. `build-deploy.py` already carries the correct excludes. |
 | **WP-CLI inline PHP escaping** | `wp eval '...'` breaks on shell special chars. Reliable fallback: write to `/tmp/script.php` with `cat << 'PHPEOF'`, scp to server, `wp eval-file ~/script.php`, then `rm`. |
 | **`parse_blocks()` is shallow** | Only returns top-level blocks. Finding nested blocks requires a recursive function walking `$b['innerBlocks']`. |
 | **Hostinger error logs** | Live at `~/.logs/error_log_<domain>`, not `wp-content/debug.log` (often stale). |
 | **WP_DEBUG_DISPLAY contamination** | `WP_DEBUG_DISPLAY=true` injects PHP Notice banners that shift every section vertically, inflating pixel-diff 15-40pts. Set false on staging. |
-
----
-
-## 2026-05-20 — Phase 1 four-destination CSS router architectural rewrite (Spec 22 §FR-22-5)
-
-13 commits (`8ceb8787` → `bb3de12b`) added:
-
-**New modules:**
-- `plugins/sgs-blocks/scripts/orchestrator/css_router.py` (661 LOC) — Spec 22 §FR-22-5 four-destination router (D0/D1/D2/D3)
-- `plugins/sgs-blocks/scripts/orchestrator/essence_match_detector.py` — cv2 walker tier for essence-match-with-differences → block-variation emit
-- `plugins/sgs-blocks/includes/class-variation-rest.php` — sgs/v1/active-variation REST endpoint
-- `plugins/sgs-blocks/includes/variations/class-sgs-block-variations.php` — PHP variations loader
-- `.claude/hooks/no-header-footer-block.py` — PostToolUse hook for chrome-block prevention
-
-**New per-run artefacts:** `css-d1-assignments.json` (D1 sidecar), per-section `token_resolutions` + `essence_matches` in `extract.json`, `scaffold_quality_report` in `stage-9b.json`.
-
-**Cross-references:**
-- Full pipeline changes: `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` Appendix D (stage index; the old `cloning-pipeline-flow.md` was archived 2026-07-28)
-- Spec compliance + known gaps: `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` §2-§3
-- Architectural decisions: `.claude/decisions.md` D1-D6
-- Honest-path council finding: `.claude/memory/reports-archive/2026-05-20-pipeline-root-gap-council/real-path-synthesis.md`

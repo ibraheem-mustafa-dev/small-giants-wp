@@ -2,8 +2,6 @@
 doc_type: architecture
 scope: forever
 title: SGS WordPress Framework — System Architecture
-last_updated: 2026-09-07
-note: "Full rewrite 2026-09-07 (was stale since 2026-07-13, citing up to D590 against a live D995 ceiling). Counts and D-ceilings are never cached here — every one is a query, not a number. Verify via .claude/LEDGER.md for anything live-status-shaped."
 ---
 
 # SGS WordPress Framework — System Architecture
@@ -36,14 +34,14 @@ Query them live:
 
 | Layer | Technology | Notes |
 |---|---|---|
-| CMS | WordPress (canary on 7.1, upgraded 2026-08-20 — re-verify with `wp core version` over SSH, don't trust this line) | Block theme, no classic editor |
+| CMS | WordPress 7.1 (re-verify with `wp core version` over SSH) | Block theme, no classic editor |
 | Theme | `sgs-theme` | `theme.json` v3, template parts. Per-client colour/typography lives outside the theme — see §7 |
 | Blocks plugin | `sgs-blocks` | Dynamic (render.php-driven) blocks; extensions in `src/blocks/extensions/` |
 | Block build | `@wordpress/scripts` | `--experimental-modules --webpack-copy-php` (PHP `render.php` copied to `build/`) |
 | Frontend JS | Vanilla ES modules + WordPress Interactivity API | No jQuery anywhere. `viewScriptModule` for interactive blocks |
 | Motion | Four-tier doctrine (V/G/H/W) — see §6 | All npm-bundled, conditionally loaded, zero CDN |
 | Data layer | `sgs-framework.db` (SQLite) | Source of truth for block schema, composition, slots, roles — see §5 |
-| Hosting | Hostinger, one canary site (`sandybrown-nightingale-600381.hostingersite.com`) | `palestine-lives.org` is gone, removed from deploy targets 2026-08-10 |
+| Hosting | Hostinger, three sites: the `sandybrown` canary (`sandybrown-nightingale-600381.hostingersite.com`), the `indus-test` Indus Foods test site (`lavender-dinosaur-183533.hostingersite.com`) and the `eye-care-test` Eye Care Birmingham test site (`darkcyan-grouse-898606.hostingersite.com`) | Deploy targets are the `TARGETS` dict in `plugins/sgs-blocks/scripts/build-deploy.py`. Each test site exists because the active header, footer, drawer and theme-snapshot pointers are single global options per WordPress site, so two clients cannot share one site |
 
 ## 3. Directory structure
 
@@ -84,10 +82,10 @@ row data, never a 4th conditional or a slug literal. BEM is the *only* recogniti
 (`equivalent_block_for` — what kind of content: text/heading/media/button) which is separate
 from its *emit shape* (`block_attributes.emit_shape`, `nested` vs `child` — does this block
 render the value itself, or hand it to an InnerBlocks child). One universal per-attribute walk
-replaces the old block-level `has_inner_blocks` dispatch, because a single block can genuinely
-mix both shapes (Spec 31 §13.3, FR-31-2.6).
+(not a block-level `has_inner_blocks` dispatch) decides each attribute's shape, because a single
+block can genuinely mix both shapes (Spec 31 §13.3, FR-31-2.6).
 
-**CSS routing — three destinations (D0/D1/D2; D3 retired 2026-09-02, Spec 31 §13.4 FR-31-5):**
+**CSS routing — three destinations (D0/D1/D2, Spec 31 §13.4 FR-31-5):**
 
 | Destination | What |
 |---|---|
@@ -105,18 +103,13 @@ with a built-in wrapper mirrors `sgs/container`'s capabilities — see §5's com
 
 **Fidelity measurement — computed-parity, Stage 11.6 (Spec 20).** `scripts/parity/
 computed-parity.js` compares `getComputedStyle` on the rendered clone vs the draft, matched by
-normalised TEXT CONTENT (not wrapper class, not source-declaration diff — both were proven
-unreliable, root CLAUDE.md rule 4a). Runs automatically post-deploy. **This is a per-commit
+normalised TEXT CONTENT (not wrapper class, not source-declaration diff — both give
+unreliable scores, root CLAUDE.md rule 4a). Runs automatically post-deploy. **This is a per-commit
 DIAGNOSTIC, never the closing gate (R-31-4)** — the pipeline never ships on a number alone.
 Closure requires the live per-section visual check plus Bean's eye (R-31-13) — script and human
 judgement are co-authoritative, neither closes alone.
 
-**Deleted, do not look for:** `convert.py` / `converter_v2/` (the frozen monolithic walker,
-deleted D276 — the modular `converter/` engine under `plugins/sgs-blocks/scripts/converter/` is
-the *only* converter, no flag, no fallback); the old `Stage 11 pixel-diff.py` (deleted — it
-scored an empty section as a false win and a correctly-reflowed section as a false loss).
-
-**Stage map.** Do not cache stage numbers here — they have drifted repeatedly. The pipeline is a
+**Stage map.** Do not cache stage numbers here. The pipeline is a
 contiguous numbered sequence; read the stage index in `/sgs-update`'s own module docstring
 (`plugins/sgs-blocks/scripts/sgs-update-v2.py`) or Spec 31 Appendix D.
 
@@ -127,7 +120,7 @@ classification, CSS property routing, variant discrimination — reads from `sgs
 via the accessor layer, never a hand-maintained Python dict. The only permitted hardcoded
 constant is `SKIP_TOP_LEVEL_TAGS` (3 entries: header/footer/nav).
 
-**Access pattern — read carefully, this has bitten agents before.** There is no plain read-only
+**Access pattern — read carefully.** There is no plain read-only
 `db_lookup.py` at `plugins/sgs-blocks/scripts/`. The only module of that name is
 `converter/db/db_lookup.py`, which runs schema-migration functions against the shared live DB
 **as an import side effect** — do not import it from a read-only reporter. For a plain read,
@@ -147,7 +140,7 @@ sqlite3.connect(f'file:{db_path}?mode=ro', uri=True)
 | `block_attributes` | Per-attribute routing: `role`, `emit_shape`, `box_family`/`box_side`, `css_property`/`css_element`/`css_state`/`css_tier`, `canonical_slot` |
 | `block_composition` | `container_kind` (section / layout / content), `wraps_block` — the composite-mirror roster |
 | `block_supports` / `block_capabilities` | Native WP `supports` + SGS capability flags per block |
-| `slots` / `roles` | Element- and section-scope BEM vocabulary + role classification (replaced the retired `slot_synonyms`) |
+| `slots` / `roles` | Element- and section-scope BEM vocabulary + role classification |
 | `property_suffixes` | CSS property → device-tier attribute-name mapping (the D0/D1/D2 router's core lookup) |
 | `variant_slots` / `variant_composition_slots` | Per-variant discriminating attribute slots / discriminating child-block sets (for variants that share every attribute value) |
 | `preset_implications` | Auto-derived implied-CSS map for preset-selector attrs (e.g. `cardStyle`, `effectHover`), parsed from each block's own `style.css` |
@@ -155,8 +148,7 @@ sqlite3.connect(f'file:{db_path}?mode=ro', uri=True)
 
 `/sgs-update` (`sgs-update-v2.py`) rebuilds the DB from block.json files, render.php parsing,
 REST enumeration, and pattern parsing. Its own module docstring is the authoritative stage
-index — do not cache a stage count here (this file has drifted on that count three times
-before).
+index — do not cache a stage count here.
 
 ## 6. Component architecture
 
@@ -217,7 +209,7 @@ Standard".
 
 ## 7. Per-client theming
 
-`theme/sgs-theme/styles/` is deliberately empty — WordPress style variations were retired.
+`theme/sgs-theme/styles/` is deliberately empty — the framework does not use WordPress style variations.
 Per-client colour/typography tokens live at `sites/<client>/theme-snapshot.json` (Spec 33 —
 extracted from the draft's own rendered computed styles, the opening step of the cloning
 pipeline, before any block conversion runs) and deploy via
@@ -227,14 +219,14 @@ writes `wp_global_styles`. Client-specific CSS overrides go into the snapshot's 
 
 ## 8. Motion architecture (Spec 38)
 
-**Four-tier doctrine (constitutional, D406/D422/D479):**
+**Four-tier doctrine (constitutional):**
 
 | Tier | What | Rule |
 |---|---|---|
 | **V** — vanilla/CSS | The default for every effect | Used unless vanilla genuinely cannot do it |
 | **G** — GSAP | The bounded exception | Admitted only for what Tier V cannot do (pin+scrub, SplitText, Flip, Draggable, ScrollSmoother, DrawSVG, MorphSVG, image-sequence) |
 | **H** — helper/utility | A single-purpose library that is neither vanilla nor GSAP | A CLOSED list — currently Lenis alone, admitted per a documented four-part test |
-| **W** — rendering substrate | WebGL — a different rendering substrate, not "another library" | Admitted only on its own five-part test; carries a NAMED 120KB JS allowance for Tier-W pages alone (D479) |
+| **W** — rendering substrate | WebGL — a different rendering substrate, not "another library" | Admitted only on its own five-part test; carries a NAMED 120KB JS allowance for Tier-W pages alone |
 
 All tiers are npm-bundled and conditionally loaded — a page using none of them ships zero bytes
 of any. No CDN, ever. The cloning pipeline's `data-sgs-fx-*` grammar (Spec 38 §11) is the first
@@ -253,80 +245,65 @@ curated capability roster.
 | Blocks plugin → notifications | Form/booking submissions route to an N8N webhook, never `wp_mail()` |
 | Blocks plugin → Customiser | Floating UI (Back to Top, Reading Progress) settings stored as `theme_mod`, output via `wp_footer` |
 | Per-client deployment | `sites/<client>/theme-snapshot.json` → `push-theme-snapshot.py` → `wp_global_styles` (§7) |
-| Deploy | `plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown` — the ONE path; never hand-rolled tar/scp (a hand-rolled recipe took two client sites down for ~2.5h, D336). Builds+deploys from an isolated `git worktree add HEAD` by default (D993) so a concurrent session's build or uncommitted dirty files can't collide with the deploy |
+| Deploy | `plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown` — the ONE path; never hand-rolled tar/scp. `--target indus-test` and `--target eye-care-test` deploy to those test sites. It builds and deploys from an isolated `git worktree add HEAD` by default, so a concurrent session's build or uncommitted dirty files cannot collide with the deploy |
 
-## 10. Key architectural decisions
+## 10. Architectural principles
 
-Only decisions verified present in `.claude/decisions.md` or its archive
-(`.claude/memory/decisions-archive.md`) at time of writing are cited below. For "what shipped
-today" or the current front, read `.claude/LEDGER.md` — it is the single live-status source and
-is not duplicated here.
+For what is built today or the current front, read `.claude/LEDGER.md` — the single live-status
+source. The decision log is `.claude/decisions.md`.
 
 1. **Dynamic blocks only.** Every non-trivial block uses `render` in `block.json` pointing to
-   `render.php`; `save()` returns `null` or `<InnerBlocks.Content />`. PHP controls output;
-   avoids deprecation churn.
+   `render.php`; `save()` returns `null` or `<InnerBlocks.Content />`. PHP controls output.
 2. **Every visual property is a block attribute with an editor control** — never hard-coded CSS.
    CSS supplies structural defaults only.
 3. **`sgs/container` is the universal layout primitive** for every multi-column/section layout.
    Nesting containers inside containers is the correct pattern for complex layouts.
-4. **No-inline styling contract, framework-wide (D346, 2026-07-18)** — rollout complete, verified
-   live: zero `sgs/*` blocks emit an inline `style` property declaration (§6.1). Cite with its
-   caveat: the original win was partly accidental (four `render_block` injectors were having
-   their inline writes silently stripped, masking dead features until root-caused) — the claim
-   is true today because it was earned in a follow-up sweep, not because the masking bug still
-   hides it.
-5. **Composite-mirror rule + `container_kind` column (D152, 2026-06-02)** — no composite with a
-   built-in wrapper may diverge from `sgs/container`'s capabilities; `container_kind` gates which
-   3-layer panels a block exposes (§6.2).
-6. **Content-KIND composites may render block-private (D294, 2026-07-09, qc-council-settled)** —
-   the clarification that unblocked §6.2's pattern selector.
-7. **Spec 22 merged into Spec 31 (D253, 2026-06-30)** — single canonical cloning-pipeline spec;
-   `R-22-N`/`FR-22-N` citations in older docs map 1:1 to `R-31-N`/`FR-31-N`.
-8. **Converter completion executed in full; frozen engine deleted (D276, 2026-07-05)** — the
-   modular `converter/` engine is the only converter, no flag, no fallback (§4).
-9. **Root-cause methodology is mandatory, not optional (locked 2026-05-31)** — no fix without a
-   proven cause; verify every dependency a theory rests on; attest with ≥2 independent evidence
-   sources. Full statement: root `CLAUDE.md` "Root-cause methodology".
-10. **Git hygiene: commit straight to `main`, never open a PR, never `git stash` (D983,
-    2026-09-07)** — this project's shared worktree has 150+ concurrent sessions; a stash or a
-    glob-pathspec commit has repeatedly swept other sessions' uncommitted work. Full rules:
-    root `CLAUDE.md` "Git workflow" + `~/.claude/rules/git-hygiene.md`.
-11. **Motion four-tier doctrine locked (D406/D422, plus Tier-W admission D479)** — see §8.
-12. **Scalar-media routing extended to all 3 device tiers × 3 media types (D919, 2026-09-02)** —
-    closed a real bug where a draft's mobile/tablet art-directed image had no routing path; found
-    and fixed a related bug (video/SVG content stored but never rendered because its
-    type-selector attribute wasn't written alongside it) in the same pass.
-13. **Composition-based variant tiebreaker (D974, 2026-09-06)** — a second discriminating table,
-    `variant_composition_slots`, resolves variants that share every attribute value with a
-    sibling by discriminating child-block-name set instead; only fires when the attribute-value
-    pass genuinely ties. A new db-consistency check flags any future block that gets composition
-    rows without a working content-extraction path, closing off the same silent-dead-code shape.
-14. **Deploy now isolates via `git worktree add HEAD` by default (D993, 2026-09-07)** — closed a
-    concurrent-build-race incident; a shared `build/` directory was previously clobberable by a
-    concurrent session's `npm run build`.
+4. **No inline styling, framework-wide.** Zero `sgs/*` blocks emit an inline `style` property
+   declaration (§6.1); `audit-inline-styling.js --check` proves it.
+5. **Composite-mirror rule.** No composite with a built-in wrapper may diverge from
+   `sgs/container`'s capabilities; the `container_kind` column gates which 3-layer panels a block
+   exposes (§6.2).
+6. **Content-KIND composites may render block-private** — section/layout-KIND composites keep the
+   shared wrapper (§6.2).
+7. **One canonical cloning-pipeline spec** — Spec 31. Older `R-22-N`/`FR-22-N` citations map 1:1
+   to `R-31-N`/`FR-31-N`.
+8. **One converter** — the modular `converter/` engine, no flag, no fallback (§4).
+9. **Root-cause methodology is mandatory.** No fix without a proven cause; verify every dependency
+   a theory rests on; attest with at least two independent evidence sources. Full statement: root
+   `CLAUDE.md` "Root-cause methodology".
+10. **Git hygiene: commit straight to `main`, never open a PR, never `git stash`.** The shared
+    worktree carries many concurrent sessions; a stash or a glob-pathspec commit sweeps other
+    sessions' uncommitted work. Full rules: root `CLAUDE.md` "Git workflow" +
+    `~/.claude/rules/git-hygiene.md`.
+11. **Motion follows the four-tier doctrine** — see §8.
+12. **Scalar-media routing covers all three device tiers and all three media types**, so a
+    draft's mobile/tablet art-directed image, video or SVG has a routing path.
+13. **Composition-based variant tiebreaker.** `variant_composition_slots` resolves variants that
+    share every attribute value with a sibling by discriminating child-block-name set; it only
+    fires when the attribute-value pass ties.
+14. **Deploy isolates via `git worktree add HEAD` by default**, so a shared `build/` directory
+    cannot be clobbered by a concurrent session's `npm run build`.
 
 ## 11. Known technical debt
 
-Real, current items only — verify each against `.claude/LEDGER.md`'s "Open — carried from
-before" section before treating any as stale.
+Real, current items only. `.claude/LEDGER.md` carries the live status of each.
 
 | Item | Notes |
 |---|---|
-| Colour conformance, FILL surface | TEXT surface closed 2026-09-07 (Track A); FILL rows remain — separate track, count is a live census, don't cache it here |
-| Tier-object migration, remaining flat-trio attributes | Priorities 1-4 closed for hero's media family + accordion/button/table-of-contents/whatsapp-cta; a full framework-wide survey has not been run |
-| Inspector gates, rule 41/43 residuals | `co2-scattered-element` + `dom-order-vs-declared-order` findings still open; read `.claude/LEDGER.md` Track E for the current count |
-| `push-theme-snapshot.py` | Last known (2026-08-18): aborts safely for mamas-munches, refuses to write `wp_global_styles` without a verified backup — not re-verified since |
-| Blocks missing `:focus-visible` on `:hover` | As at 2026-09-07: `hero`, `icon-list`, `mega-panel`, `process-steps`, `testimonial`. **A dated finding, not a live roster — re-derive before acting** (`git grep -l ':hover' -- plugins/sgs-blocks/src/blocks/*/style.css` then check each for a `:focus-visible` counterpart). |
+| Colour conformance, FILL surface | The TEXT surface is closed; FILL rows remain as a separate track — the count is a live census, don't cache it here |
+| Tier-object migration, remaining flat-trio attributes | Closed for hero's media family + accordion/button/table-of-contents/whatsapp-cta; a framework-wide survey has not been run |
+| Inspector gates, rule 41/43 residuals | `co2-scattered-element` + `dom-order-vs-declared-order` findings open; `.claude/LEDGER.md` has the current count |
+| `push-theme-snapshot.py` | Refuses to write `wp_global_styles` without a verified backup; run it with `--no-push` against a target to see whether it aborts |
+| Blocks with `:hover` rules but no `:focus-visible` counterpart | Re-derive the roster before acting: `git grep -l ':hover' -- plugins/sgs-blocks/src/blocks/*/style.css`, then check each file for a `:focus-visible` rule |
 | `box-shape`/`overlay` `:hover` rules unguarded against touch-hover-stuck | The hover-guard tooling only scans `build/blocks/*/style.css` and PHP render surfaces, never `assets/css/media-atoms/*.css` — a real gap shared by the whole media-atom family |
-| `build-deploy.py --dry-run` is not actually dry | It ships for real and only skips the safety gates; found live 2026-09-07 (D991) when it shipped a peer session's uncommitted work bundled in |
 | `sgs-accessibility` plugin has no `CLAUDE.md` yet | Exists in the tree with real commits; undocumented at the plugin level |
 
 ## 12. External dependencies
 
 | Service | Purpose |
 |---|---|
-| Hostinger | Web hosting for the canary site (`ssh hd` alias) |
-| N8N | Form/booking notification webhook, replaces `wp_mail()` |
+| Hostinger | Web hosting for the canary and the Indus test site (`ssh hd` alias) |
+| N8N | Form/booking notification webhook (used instead of `wp_mail()`) |
 | Playwright | Visual/live-DOM verification, MCP + CLI |
 | Lucide | ~1900 icons, pre-generated to `lucide-icons.php` |
 | Inter (variable), Montserrat, Source Sans 3 | Self-hosted WOFF2 fonts, no CDN |
