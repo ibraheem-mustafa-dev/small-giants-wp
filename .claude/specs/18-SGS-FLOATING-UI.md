@@ -1,24 +1,19 @@
 ---
 doc_type: spec
 spec_id: 18
-spec_version: 0.1
+spec_version: 0.2
 project: small-giants-wp
 title: SGS Floating UI — Customiser-Based Back-to-Top + Reading Progress
 status: shipped
-status_history:
-  - 2026-05-19: ACCEPTED — implementation pending
-  - 2026-05-24: normalised to canonical enum (accepted → active)
-  - 2026-05-22: SHIPPED — deployed via Phase 5b (commit `60220b13` + paint-fix `0ef032fe`)
 shipped: true
-session_date: 2026-05-19
-authors: Bean + Claude (Sonnet 4.6)
+last_verified: 2026-09-19
+authors: Bean + Claude
 references:
-  - plugins/sgs-blocks/includes/class-sgs-floating-ui-customiser.php (shipped Phase 5b, commit 60220b13)
-  - plugins/sgs-blocks/includes/class-sgs-floating-ui-renderer.php (shipped Phase 5b, commit 60220b13)
-  - plugins/sgs-blocks/assets/floating-ui/floating-ui.js (shipped Phase 5b, commit 60220b13)
-  - plugins/sgs-blocks/assets/floating-ui/floating-ui.css (shipped Phase 5b, commit 60220b13)
-  - tests/php/FloatingUiCustomiserTest.php (shipped Phase 5b, commit 60220b13)
-  - .claude/memory/project_floating_ui_architecture.md (existing parking note)
+  - plugins/sgs-blocks/includes/class-sgs-floating-ui-customiser.php
+  - plugins/sgs-blocks/includes/class-sgs-floating-ui-renderer.php
+  - plugins/sgs-blocks/assets/floating-ui/floating-ui.js
+  - plugins/sgs-blocks/assets/floating-ui/floating-ui.css
+  - tests/php/FloatingUiCustomiserTest.php
 ---
 
 # Spec 18 — SGS Floating UI
@@ -27,21 +22,17 @@ references:
 
 ## 1. Overview
 
-Provides a Customiser-based floating UI layer that replaces the retired `sgs/back-to-top`
-and `sgs/reading-progress` Gutenberg blocks. Both elements render via `wp_footer` — they
-are site-wide, not per-page, so they belong in the Customiser rather than the block editor.
+Provides a Customiser-based floating UI layer (back-to-top button and reading-progress
+bar). Both elements render via `wp_footer` — they are site-wide, not per-page, so they
+belong in the Customiser rather than the block editor.
 
-Retiring a block requires a shipping replacement in the same change; a retirement without
-one is blocked, because it breaks operator workflows.
+### 1.1 Scope claim — persistent bottom bars belong HERE, not in the footer
 
-### 1.1 Scope claim — persistent bottom bars belong HERE, not in the footer (added 2026-07-26, D390)
-
-Nothing below is built yet; this records WHERE the work belongs so a future session does not route
-it into the header/footer builder.
+Nothing below is built yet; this records WHERE the work belongs so it is not routed into the
+header/footer builder.
 
 **Persistent bottom CTA / cart / sale bars are Spec 18 territory, not `sgs/site-footer-row`.**
-Settled by extended research (`workspace/memory/research/2026-07-26-bottom-bar-floating-ui-vs-footer.md`)
-and recorded as D390. Spec 37 §7 and FR-37-40 point here.
+Spec 37 §7 and FR-37-40 point here.
 
 Why:
 1. **State, not scroll.** These bars are driven by what a footer row cannot reach — basket
@@ -220,11 +211,9 @@ of N1 (no operator-supplied post_id routing, no trust escalation) is honoured: t
 Customiser sanitiser runs under standard WordPress capability checks, and the renderer
 reads a static option with no user-supplied routing.
 
-## 8b. Canonical Customiser pattern reference (2026-05-21)
+## 8b. Canonical Customiser pattern reference
 
-> Per `.claude/plans/2026-05-21-architecture-staging.md` §6.5.
-
-**Spec 18 is the canonical "how to register an SGS Customiser section" reference.** Two other specs now follow this pattern:
+**Spec 18 is the canonical "how to register an SGS Customiser section" reference.** Two other specs follow this pattern:
 
 | Spec | Section | What it adopts from Spec 18 |
 |---|---|---|
@@ -250,31 +239,3 @@ reads a static option with no user-supplied routing.
 | Smooth-scroll easing picker | Low | CSS `scroll-behavior` doesn't support custom easing; JS-based smooth scroll with easing param |
 | Custom icon picker for the BTT button | Medium | Replace the hard-coded chevron SVG with a Lucide icon selector |
 | Per-page disable via post meta | Medium | `_sgs_disable_floating_ui` post meta checkbox in the block editor sidebar |
-
-
----
-
-## Phase 2A Cleanup (2026-05-20 — commits af5755b2 / 2be7c648)
-
-### Legacy theme-side floating UI retired
-
-Before Phase 2A, the theme (sgs-theme) carried a PARALLEL floating-UI system: 16 Customiser controls (sgs_back_to_top_* + sgs_reading_progress_* prefixes) registered alongside Spec 18 seven canonical controls (sgs_floating_ui_* prefix). Operators saw 23 controls in Appearance to Customise to SGS Floating UI — confusing UX where some controls were duplicate-purpose and others were dead.
-
-Branch J deleted the theme-side parallel system entirely (985 lines):
-- theme/sgs-theme/inc/floating-ui-customiser.php — registered the 16 orphan controls
-- theme/sgs-theme/inc/floating-ui-output.php — read the theme_mods + enqueued 4 theme assets
-- theme/sgs-theme/assets/css/back-to-top.css
-- theme/sgs-theme/assets/css/reading-progress.css
-- theme/sgs-theme/assets/js/back-to-top.js
-- theme/sgs-theme/assets/js/reading-progress.js
-- theme/sgs-theme/assets/js/customiser-preview.js
-
-theme/sgs-theme/functions.php updated to drop the two require_once lines.
-
-### Final state
-
-All floating UI now lives ENTIRELY in the plugin (sgs-blocks):
-- 7 canonical controls registered by Sgs_Floating_UI_Customiser
-- All frontend output handled by Sgs_Floating_UI_Renderer
-
-Customiser to SGS Floating UI section verified live (2026-05-20) shows exactly 7 controls with the sgs_floating_ui_* prefix.
