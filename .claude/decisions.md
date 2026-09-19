@@ -1,5 +1,63 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1108 [ROUTINE] — `representative_item()` category-mismatch fixed: Spec 44's classless-match
+gate was calling a container-shaped function on already-resolved item boundaries
+
+**2026-09-19.** `/systematic-debugging` (this session) proved `representative_item()`
+(`classless_draft_adapter.py:122-135` — "does this CONTAINER hold a repeated group, give me one
+item", via a sibling-detector fallback on the node's own children) has 3 real callers: the
+orchestrator's Stage 4 classless-match gate (`sgs-clone-orchestrator.py` ~line 2242) and two
+measurement scripts (`measure-classless-baseline.py:101`, `measure-classless-frame-card.py:124`).
+Only the orchestrator call was wrong-shaped: it fed boundaries from
+`detect_sc_for_item_boundaries()`, which are ALREADY resolved individual sc-for items, not
+containers. Proven two distinct failure modes: an item whose own children don't superficially
+resemble each other (ticker/ b32) made the sibling-detector correctly find nothing, so
+`representative_item()` returned `None` and classless-match was silently skipped; an item whose
+own distinct fields (number badge / title / body) got false-positived as a "repeated group"
+(score 1.0) had `representative_item()` hand back just one field, discarding the rest.
+
+**Design-gated with Bean** (`/brainstorming` design mode). Two questions Bean's own follow-ups
+resolved before building: (1) whether to change `representative_item()` itself or branch only at
+the broken call site — confirmed via grep the other 2 callers already use it correctly on real
+containers (`element = sc_for.parent or sc_for`), so the function stays untouched and the branch
+lives at the one broken call site; (2) whether item-kind boundaries need a sibling-detection
+sanity check before being trusted as a single item — no, `detect_sc_for_item_boundaries()`
+already guarantees that by construction, and re-running the same heuristic that produced the
+second failure mode above would reintroduce it.
+
+**Fix (`per-section-convention-voter.py::build_boundary`/`vote`, `sgs-clone-orchestrator.py`
+~line 2242):** every boundary now carries an explicit `boundary_kind` ("container"|"item"), set
+once where it's created rather than left for a downstream consumer to infer from which detector
+produced it — `build_boundary()`'s new param defaults to `"container"` so all 5 existing test
+call sites keep working unmodified. The orchestrator's Stage 4 gate branches on it: `"item"`
+boundaries use the element directly as the Stage B item (bypassing `representative_item()`
+entirely); `"container"` (or an older `boundary_kind`-less `voter.json`) keeps calling
+`representative_item()` unchanged.
+
+**`/qc` caught a real gap before shipping:** the first draft made `boundary_kind` a required
+parameter, which would have broken all 5 existing `build_boundary()` test call sites (none pass
+it). Fixed by defaulting to `"container"` instead — zero test files needed editing.
+
+**Live-verified, isolated correctly (not against a mismatched-flags baseline — see D1107's own
+captured lesson).** An initial comparison against the documented 50/74 dc-import baseline looked
+like a regression (40/74 complete) — but that baseline didn't have `--classless-match` on, so it
+was the wrong comparison. Re-ran the IDENTICAL `--classless-match --classless-auto-complete`
+invocation on the pre-fix code via `git stash`: pre-fix 49/74 complete, post-fix 40/74 complete —
+a real, mechanistically-traced 9-boundary drop (classless-match now always fires on item-kind
+boundaries instead of being silently skipped, and short-circuits a boundary to review when its
+own verdict isn't certain — `sgs-clone-orchestrator.py:2288-2332`). Checked all 9: every one was
+falling back to generic `sgs/container` pre-fix (Spec 31 R-31-4's default, not a real
+content-specific block) and is now correctly routed to genuine candidates
+(`sgs/trustpilot-reviews`, `sgs/product-card`) pending operator review because the match is
+"partial, not exact" — an honest gap surfaced, not a silent generic-container mismatch. 40/74 is
+the correct number, not a regression. b32 (the ticker) confirmed: 0/66 classless decisions now
+read "no representative item found" (the old silent-skip signature), and b32 itself gets a real
+Stage A/B comparison (`no surviving candidate shares a structural marker`) instead of a skip.
+
+**Lesson for `mistakes.md`:** a container-shaped function fed an item-shaped input by one caller,
+among several, with no signal to catch the mismatch until the wrong-shape input produces a
+plausible-looking wrong answer.
+
 ## D1107 [ROUTINE] — Both D1106 follow-on items closed: inline-style/state collision fix
 shipped; `<dc-import>` cross-component resolution designed, built, shipped
 

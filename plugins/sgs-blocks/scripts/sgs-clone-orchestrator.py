@@ -2239,8 +2239,22 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                 # FIRST element of that tag regardless of which boundary is wanted (the
                 # real bug documented at the cv2 element resolution below).
                 _cl_el = _classless_soup.find(attrs={"data-sgs-boundary-id": boundary_id})
-                _cl_item = (_classless_adapter.representative_item(_cl_el)
-                            if _cl_el is not None else None)
+                # D1108: representative_item() answers "does this CONTAINER hold a
+                # repeated group -- give me one item", via a sibling-detector fallback
+                # on the node's own children. A boundary tagged "item" (from
+                # detect_sc_for_item_boundaries()) is ALREADY one resolved sc-for
+                # iteration, not a container -- calling representative_item() on it
+                # re-runs sibling-detection on the item's OWN fields and can
+                # false-positive them as a repeated group (proven: a number-badge +
+                # title + body card scored as one group, discarding title+body).
+                # Use the element directly for "item"; only "container" (or a
+                # boundary_kind-less older voter.json, defaulted safely) goes through
+                # representative_item() as before.
+                if boundary.get("boundary_kind") == "item":
+                    _cl_item = _cl_el
+                else:
+                    _cl_item = (_classless_adapter.representative_item(_cl_el)
+                                if _cl_el is not None else None)
             except Exception as _exc:  # noqa: BLE001
                 _cl_el = _cl_item = None
                 aggregate_warnings.append(

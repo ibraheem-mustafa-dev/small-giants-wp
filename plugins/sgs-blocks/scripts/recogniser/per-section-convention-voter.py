@@ -501,8 +501,17 @@ def detect_source_builder(soup: "BeautifulSoup") -> str | None:
 def build_boundary(node: Tag, selector: str, used_ids: set[str], idx: int,
                    run_dir: Path | None = None,
                    source_builder: str | None = None,
-                   sc_var_cache: dict | None = None) -> dict:
-    """Build a single boundary dict for one section node."""
+                   sc_var_cache: dict | None = None,
+                   boundary_kind: str = "container") -> dict:
+    """Build a single boundary dict for one section node.
+
+    `boundary_kind` ("container" | "item") names what kind of boundary this is,
+    set once here rather than left for a downstream consumer to infer from
+    which detector function produced it (D1108) -- `auto_detect_sections()`
+    and the single-selector path both mean "container"; only
+    `detect_sc_for_item_boundaries()` means "item" (an already-resolved
+    sc-for loop iteration, not a container that might hold one).
+    """
     class_signature = collect_class_signature(node)
     convention = detect_convention(class_signature)
     slug, confidence, fallback = vote_block_slug(class_signature, convention)
@@ -528,6 +537,7 @@ def build_boundary(node: Tag, selector: str, used_ids: set[str], idx: int,
 
     boundary = {
         "boundary_id": f"b{idx}",
+        "boundary_kind": boundary_kind,
         "selector": selector,
         "section_id": section_id,
         "semantic_role_hint": semantic_role_hint,
@@ -809,12 +819,14 @@ def vote(mockup_path: Path, section_selector: str | None, auto_section: bool,
             boundaries.append(build_boundary(
                 node, selector, used_ids, idx, run_dir=run_dir,
                 source_builder=source_builder, sc_var_cache=sc_var_cache,
+                boundary_kind="container",
             ))
         for node, selector in sc_for_items:
             idx += 1
             boundaries.append(build_boundary(
                 node, selector, used_ids, idx, run_dir=run_dir,
                 source_builder=source_builder, sc_var_cache=sc_var_cache,
+                boundary_kind="item",
             ))
     else:
         if not section_selector:
