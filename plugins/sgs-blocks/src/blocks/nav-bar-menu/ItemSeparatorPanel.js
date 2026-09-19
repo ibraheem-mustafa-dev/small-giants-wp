@@ -3,15 +3,12 @@ import { PanelBody, TextControl, SelectControl } from '@wordpress/components';
 
 /**
  * SGS Nav Bar Menu (sgs/nav-bar-menu) — Styles tab: the "Item separator (bar)" panel
- * (FR-41-37, 2026-09-13).
+ * (FR-41-37).
  *
- * Split out of edit.js (file-size maintenance pass, 2026-09-14) — pure
- * relocation, verbatim JSX, mounted directly under edit.js's own
- * `InspectorControls group="styles"` tree exactly like every sibling panel
- * (BarPanel, ItemsPanel, etc.) — NOT behind a second wrapper hop. A second
- * hop is what previously blinded inspector-scan rule 21's control corpus
- * (measured 2026-09-11: 21 findings → 48, see edit.js's own docblock); a
- * directly-mounted sibling component does not have that failure mode.
+ * Mounted directly under edit.js's own `InspectorControls group="styles"` tree
+ * exactly like every sibling panel (BarPanel, ItemsPanel, etc.) — NOT behind a
+ * second wrapper hop, which would blind inspector-scan rule 21's control
+ * corpus (see edit.js's own docblock).
  *
  * Shape controls only — colour lives in the Colour panel (Spec 41 §9.6), same
  * split as the item border's own underline/separator family above it.

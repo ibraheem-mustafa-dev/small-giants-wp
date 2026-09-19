@@ -1,30 +1,23 @@
 /**
  * SGS Nav Drawer Menu (sgs/nav-drawer-menu) — editor.
- *
- * DRAWER FORK ONLY (D1059 split, 2026-09-14). This block only ever renders
- * inside `sgs/nav-drawer` (block.json `"ancestor": ["sgs/nav-drawer"]`), so
- * — unlike the former conflated `sgs/nav-menu` — there is no bar/drawer fork
- * left to detect: `isDrawerInstance` and its 4 call sites are deleted
- * entirely, every "omit unless in a drawer" conditional the bar block still
- * carries is simply ABSENT here (the drawer-only content is the whole file),
- * and every "omit unless in a bar" conditional (item separator, burger,
- * dropdown-specific settings) is likewise absent — the controls for those
- * were never built into this block's own panels (see each trimmed panel
- * file's own docblock for what it dropped and why).
+ * DRAWER LIST ONLY. This block only ever renders inside `sgs/nav-drawer`
+ * (block.json `"ancestor": ["sgs/nav-drawer"]`), so there is no bar/drawer
+ * fork to detect: the whole file is drawer-only content, and every "bar
+ * only" control (item separator, burger, dropdown-specific settings) is
+ * absent from this block's own panels (see each panel file's own docblock).
  *
  * The list is fully server-rendered by render.php (menu source resolved via
  * SGS_Nav_Menu_Source). The editor uses ServerSideRender for the canvas
  * preview and exposes Settings + Styles as WP's native inspector tabs.
+ * Sub-modules: NavMenuNotices.js, MenuSettingsPanel.js,
+ * DropdownSettingsPanel.js and SplitPanel.js live in this directory; the
+ * panels shared with the bar block (utils, useNavMenuSource,
+ * useItemHoverContrast, TypographyPanel, ItemsPanel, SubmenuItemsPanel,
+ * DropdownStylePanel, EffectsPanel, FeaturedPanel, MegaDrawerPanel,
+ * ColourRowExtras, ColourTreatment, ListLayoutPanel) live in
+ * `src/shared/nav-menu-panels/`.
  *
- * Sub-modules mirror the bar block's own split pattern (Spec 41 step 7):
- * utils.js, useNavMenuSource.js, useItemHoverContrast.js, NavMenuNotices.js,
- * MenuSettingsPanel.js, DropdownSettingsPanel.js, TypographyPanel.js,
- * ItemsPanel.js, SubmenuItemsPanel.js, DropdownStylePanel.js, EffectsPanel.js,
- * FeaturedPanel.js, MegaDrawerPanel.js, ColourRowExtras.js, ColourTreatment.js
- * — each either a trimmed copy or (where fully generic) an unmodified copy;
- * see each file's own docblock for which.
- *
- * `colourRows` STAYS HERE (owner ruling 3, inherited) — as a single literal
+ * `colourRows` STAYS HERE — as a single literal
  * ArrayExpression whose entries are either row literals or `fillRow()`/
  * `textRow()` calls, so `scripts/inspector-scan/rules/31-golden-colour-
  * control.js` can resolve every row's state count.
@@ -66,7 +59,7 @@ import FeaturedPanel from '../../shared/nav-menu-panels/FeaturedPanel';
 import MegaDrawerPanel from '../../shared/nav-menu-panels/MegaDrawerPanel';
 // This block's OWN declared Sweep-eligibility source (FR-41-26) — read here
 // rather than inside the shared ColourRowExtras/ColourTreatment modules,
-// which no longer statically import either block's manifest (see
+// which do not statically import either block's manifest (see
 // shared/nav-menu-panels/ColourRowExtras.js docblock).
 import blockMetadata from './block.json';
 
@@ -152,15 +145,13 @@ export default function Edit( { attributes, setAttributes } ) {
 		( sublinkMarkerIcon?.name ?? SGS_NM_SUBLINK_MARKER_ICON_DEFAULT.name ) !==
 			SGS_NM_SUBLINK_MARKER_ICON_DEFAULT.name;
 
-	// ── The Colour panel (Spec 41 §9.6, D618/D609) ───────────────────────────
+	// ── The Colour panel (Spec 41 §9.6) ──────────────────────────────────────
 	//
-	// Trimmed from the bar block's `colourRows` (D1059 split, 2026-09-14):
-	// dropped the "Item separator colour (bar)" row (itemSeparatorWidth/Colour
-	// family is BAR-only, measured) and the two "Menu button" rows
-	// (burger-icon / burger-bg — the whole burger family is BAR-only). The
-	// "item-border" row's label is a PLAIN STRING now, not the bar block's
-	// `isDrawerInstance ? … : …` ternary — this block IS always the drawer, so
-	// it is unconditionally "Row separator colour" (the bar's identical
+	// Unlike the bar block's `colourRows`, this has no "Item separator colour
+	// (bar)" row (the itemSeparatorWidth/Colour family is BAR-only) and no
+	// "Menu button" rows (burger-icon / burger-bg — the whole burger family is
+	// BAR-only). The "item-border" row's label is unconditionally "Row
+	// separator colour" — this block IS always the drawer (the bar's identical
 	// attribute family paints its own item UNDERLINE instead — see
 	// itemBorderWidth's own block.json description on both blocks).
 	const colourRows = [
@@ -380,16 +371,14 @@ export default function Edit( { attributes, setAttributes } ) {
 				/>
 			),
 		} ),
-		// Added 2026-09-17 (P-NAV-MENU-BORDER-CENSUS-DELEGATED follow-up): the
-		// SUBLINK's own border colour — distinct from "Panel border colour"
+		// The SUBLINK's own border colour — distinct from "Panel border colour"
 		// above (that row is `submenuBorderColour`, the `submenu-panel`
 		// element; this one is `submenuLinkBorderColour`, the `sublink`
 		// element). Normal + Hover only — no Current, per block.json's
 		// `sublink.attrMap` (no `submenuLinkBorderColourCurrent` declared).
 		// Shape (width/style) is `DropdownStylePanel`'s new "Link border"
-		// control, matching the panel-border split above. render.php already
-		// consumed both attrs (`includes/nav-menu-submenu-link-css.php`); this
-		// was the missing editor control, not a dead attribute.
+		// control, matching the panel-border split above. render.php consumes
+		// both attrs (`includes/nav-menu-submenu-link-css.php`).
 		{
 			key: 'submenu-link-border',
 			label: __( 'Link border colour', 'sgs-blocks' ),
@@ -490,7 +479,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			{ /* ── Styles tab. ⛔ Every panel mounted HERE directly, not behind a
 			   wrapper component — see the bar block's own note on why an extra
-			   hop makes a detector's control corpus blind (D738 shape). ────── */ }
+			   hop makes a detector's control corpus blind. ─────────────────── */ }
 			<InspectorControls group="styles">
 				<ListLayoutPanel
 					gap={ gap }
@@ -520,7 +509,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								showTextAlign: true,
 								showTextWrap: true,
 								showTextColumns: true,
-								showTextIndent: false, // D1060: never emitted for nav links; attr kept
+								showTextIndent: false, // never emitted for nav links; attr kept
 								showWritingMode: true,
 								showHover: true,
 							},
@@ -536,7 +525,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								showTextAlign: true,
 								showTextWrap: true,
 								showTextColumns: true,
-								showTextIndent: false, // D1060: never emitted for nav links; attr kept
+								showTextIndent: false, // never emitted for nav links; attr kept
 								showWritingMode: true,
 								showHover: true,
 							},

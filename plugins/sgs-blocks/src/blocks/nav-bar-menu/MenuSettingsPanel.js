@@ -8,13 +8,11 @@ import { BURGER_SCOPE_PX, burgerScopeOf } from '../../shared/nav-menu-panels/uti
 /**
  * SGS Nav Bar Menu (sgs/nav-bar-menu) — Settings tab panels: Menu, Burger Menu.
  *
- * Split out of edit.js (Spec 41 step 7, pure refactor) to keep the file under
- * the project's 250-line JS budget — further split out of an intermediate
- * SettingsPanels.js (which itself landed at 264 lines, over budget) into this
- * file + the sibling DropdownSettingsPanel.js. No behaviour change — verbatim
- * JSX from edit.js's `<InspectorControls>` (default group) block.
- * `showCustomCollapse` is local UI-only state (was a useState in edit.js),
- * scoped here since only the Burger Menu panel reads it.
+ * Kept separate from edit.js to stay under the project's 250-line JS budget;
+ * sibling of DropdownSettingsPanel.js. Both are mounted from edit.js's
+ * `<InspectorControls>` (default group) block.
+ * `showCustomCollapse` is local UI-only state, scoped here since only the
+ * Burger Menu panel reads it.
  *
  * @param {Object}   root0               Props.
  * @param {number}   root0.menuRef       The block's `ref` attribute (menu id).

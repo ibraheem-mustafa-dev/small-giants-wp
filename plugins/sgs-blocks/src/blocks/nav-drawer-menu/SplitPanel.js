@@ -1,14 +1,11 @@
 /**
  * SGS Nav Drawer Menu (sgs/nav-drawer-menu) — Settings tab panel: two-tier split.
- *
- * Step 8 of the nav-menu-split plan (D1059) — trimmed from
- * `nav-bar-menu/SplitPanel.js` (Step 6): only `splitAfterItemId` + `splitSide`
- * apply here — no `justifyContent` (the drawer has no flex-row layout to
- * justify) and no `showBurger` (this block never has one). Lets two
+ * Counterpart of `nav-bar-menu/SplitPanel.js`: only `splitAfterItemId` +
+ * `splitSide` apply here — no `justifyContent` (the drawer has no flex-row
+ * layout to justify) and no `showBurger` (this block never has one). Lets two
  * instances of this block share one menu as two visually distinct tiers
  * (e.g. a Playfair 34px "primary" list, then an Outfit 15px "secondary"
- * list), each instance keeping its own typography attrs, rather than the
- * old workaround of a second block with a hardcoded `itemFontSize`.
+ * list), each instance keeping its own typography attrs.
  *
  * @package SGS\Blocks
  */

@@ -6,16 +6,14 @@
  * `BurgerIconTreatment` / `BurgerBgTreatment` (the whole burger family is
  * bar-only — only this block ever renders a burger).
  *
- * Split out of nav-menu/ColourRowExtras.js + nav-menu/SubmenuBurgerTreatments.js
- * (D1059 split, 2026-09-14 reconciliation) — the BOTH-classified functions
- * those two files also carried (`ItemTextTreatment`, `ItemBgTreatment`,
- * `ItemBorderTreatment`, `SubmenuTextTreatment`, `SubmenuLinkBgTreatment`)
- * moved to `src/shared/nav-menu-panels/ColourRowExtras.js` instead; this file
- * imports `sweepableOptions` / `TREATMENT_NONE` / `TREATMENT_SWAP` /
+ * The treatments shared with the drawer list (`ItemTextTreatment`,
+ * `ItemBgTreatment`, `ItemBorderTreatment`, `SubmenuTextTreatment`,
+ * `SubmenuLinkBgTreatment`) live in `src/shared/nav-menu-panels/ColourRowExtras.js`;
+ * this file imports `sweepableOptions` / `TREATMENT_NONE` / `TREATMENT_SWAP` /
  * `SweepAngleControl` from there rather than duplicating them.
  *
- * ⛔ NOTHING HERE IS A ROW OR A `states` ARRAY (owner ruling 3) — `colourRows`
- * stays in this block's own `edit.js`.
+ * ⛔ NOTHING HERE IS A ROW OR A `states` ARRAY — `colourRows` stays in this
+ * block's own `edit.js`.
  *
  * @package SGS\Blocks
  */
@@ -31,8 +29,8 @@ import {
 const TREATMENT_SWEEP = { value: 'sweep', label: __( 'Sweep', 'sgs-blocks' ) };
 
 /**
- * FR-41-37 follow-up (2026-09-13) — the top-level bar item SEPARATOR offers
- * Sweep too, using the same generalised angle mechanism as
+ * FR-41-37 — the top-level bar item SEPARATOR offers Sweep, using the same
+ * angle mechanism as
  * `ItemBorderTreatment` — a genuinely separate attribute pair
  * (`itemSeparatorHoverTreatment` / `itemSeparatorSweepAngle`) matching the
  * separator's own separate attribute family, never `itemBorderHoverTreatment`.

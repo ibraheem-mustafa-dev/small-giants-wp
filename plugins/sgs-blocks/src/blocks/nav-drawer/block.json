@@ -22,7 +22,7 @@
 			"colourExemptions": {
 				"drawerBg": {
 					"rule": "states",
-					"reason": "The drawer panel is a disclosure surface toggled open/closed by the burger trigger, not a hover target itself — only its own close button has :hover CSS (style.css:99). Already correctly painted with a real gradient sibling wired (drawerBgGradient, layered over the flat colour rather than replacing it, D-pending: an overlay panel keeps its solid base so alpha in the gradient doesn't let the page behind show through). Confirmed 2026-09-06 (colour-conformance FILL audit)."
+					"reason": "The drawer panel is a disclosure surface toggled open/closed by the burger trigger, not a hover target itself — only its own close button has :hover CSS (style.css). Already correctly painted with a real gradient sibling wired (drawerBgGradient, layered over the flat colour rather than replacing it: an overlay panel keeps its solid base so alpha in the gradient doesn't let the page behind show through)."
 				}
 			},
 			"containerKind": "content",
@@ -111,7 +111,7 @@
 						"css:border-color-gradient": "borderColourGradient",
 						"css:border-radius": "borderRadius"
 					},
-					"_note": "Root `<dialog>`. Block-private (containerMirror:false, per the render.php header note — a `<dialog>` root falls outside SGS_Container_Wrapper's $allowed_tags, so this mirrors the wrapper's fill/box capability without calling it). drawerBg resolves via explicit attrMap (name doesn't carry a Colour/Background suffix). Border (width/style/colour/colour-gradient/radius) is block-private via `SgsBorderControl` in its own dedicated Border panel (Shape-B migration, matching every other SgsBorderControl-adopting block) — explicitly mapped here because `body` also declares the `layout` cluster these members belong to, and the bare (no-`prefix`) suffix convention could not otherwise tell them apart; the border paints the whole drawer surface, not just `body`'s inner padding. Geometry (position/inset/width/height) is now driven by `anchor` (per-device enum) + `panelSize` (per-device length, trigger/centred only) rather than the retired `edge`/`width` scalars — see render.php's geometry_css_for closure. The WCAG-computed foreground (drawerFgHex) has no independent client-facing attribute — it is always DERIVED from drawerBg, never set directly — so css:color (text cluster) is deliberately NOT declared here."
+					"_note": "Root `<dialog>`. Block-private (containerMirror:false, per the render.php header note — a `<dialog>` root falls outside SGS_Container_Wrapper's $allowed_tags, so this mirrors the wrapper's fill/box capability without calling it). drawerBg resolves via explicit attrMap (name doesn't carry a Colour/Background suffix). Border (width/style/colour/colour-gradient/radius) is block-private via `SgsBorderControl` in its own dedicated Border panel (Shape B, matching every other SgsBorderControl-adopting block) — explicitly mapped here because `body` also declares the `layout` cluster these members belong to, and the bare (no-`prefix`) suffix convention could not otherwise tell them apart; the border paints the whole drawer surface, not just `body`'s inner padding. Geometry (position/inset/width/height) is driven by `anchor` (per-device enum) + `panelSize` (per-device length, trigger/centred only) — see render.php's geometry_css_for closure. The WCAG-computed foreground (drawerFgHex) has no independent client-facing attribute — it is always DERIVED from drawerBg, never set directly — so css:color (text cluster) is deliberately NOT declared here."
 				},
 				"body": {
 					"label": "Drawer content",
@@ -164,7 +164,7 @@
 							}
 						}
 					},
-					"_note": "The undeletable x close button, fixed chrome rendered as a sibling of $content (FR-36-6). CORRECTED 2026-09-04 (D956): the previous note here claimed toggleCloseColourHover had no per-block attribute behind :hover -- that was stale/wrong. render.php:344 genuinely wires it via sgs_hover_state_rules(), which emits BOTH a touch-guarded :hover rule AND an unguarded :focus-visible colour rule from the same value -- so toggleCloseColourHover controls both states' TEXT colour. Declared here explicitly (base attrMap + states.hover.attrMap) rather than relying on the default {prefix}{suffix} convention, which routed both attrs to the SAME (css:color, element=close, state=NULL) slot with no way to tell them apart -- a real routing-determinism ambiguity (F6 Check #1/#8), not a manifest gap. The button's :focus-visible OUTLINE (border, not colour) remains genuinely uncontrolled by any per-block attribute -- it resolves var(--sgs-focus-color, currentColor) since D467, following the site-wide focus token, which is correct behaviour, just not this element's colour attrs. 2026-09-12: closeSize (mirrors nav-menu's burgerSize, css:width+css:height) and the close-LABEL typography quintet (closeFontSize/closeFontFamily/closeFontWeight/closeTextTransform/closeLetterSpacing, mirrors nav-menu's burgerFontSize/burgerFontFamily/burgerFontWeight/burgerTextTransform/burgerLetterSpacing) added — same mechanism (sgs_typography_css_rule()), giving the close button real inspector Typography controls where it previously had none, only style.css hardcoding. Defaults preserve the pre-existing hardcoded values exactly (see render.php's close-typography block for the closeStyle-dependent text-transform resolution, and closeSize for the icon-vs-text width branch mirroring burgerSize's own triggerMode branch). 2026-09-13 (gradient-toggle sibling sweep): toggleCloseColourHoverGradient added -- commit e17bea203 wired the Normal-state toggleCloseColourGradient but left Hover as flat-colour-only with no stated reason (unlike nav-menu's itemColourHover, which had a documented D956 smart-contrast reason); confirmed accidental via git history and fixed the same way nav-menu's item-text Hover gained its own gradient sibling."
+					"_note": "The undeletable x close button, fixed chrome rendered as a sibling of $content (FR-36-6). toggleCloseColourHover is wired in render.php via sgs_hover_state_rules(), which emits BOTH a touch-guarded :hover rule AND an unguarded :focus-visible colour rule from the same value -- so toggleCloseColourHover controls both states' TEXT colour. Declared explicitly (base attrMap + states.hover.attrMap) rather than relying on the default {prefix}{suffix} convention, which routes both attrs to the SAME (css:color, element=close, state=NULL) slot with no way to tell them apart -- a routing-determinism ambiguity (F6 Check #1/#8), not a manifest gap. The button's :focus-visible OUTLINE (border, not colour) is uncontrolled by any per-block attribute -- it resolves var(--sgs-focus-color, currentColor), following the site-wide focus token, which is correct behaviour, just not this element's colour attrs. closeSize (mirrors sgs/nav-bar-menu's burgerSize, css:width+css:height) and the close-LABEL typography quintet (closeFontSize/closeFontFamily/closeFontWeight/closeTextTransform/closeLetterSpacing, mirrors sgs/nav-bar-menu's burgerFontSize/burgerFontFamily/burgerFontWeight/burgerTextTransform/burgerLetterSpacing) use the same mechanism (sgs_typography_css_rule()) -- see render.php's close-typography block for the closeStyle-dependent text-transform resolution, and closeSize for the icon-vs-text width branch mirroring burgerSize's own triggerMode branch. toggleCloseColourHoverGradient is the Hover gradient sibling of toggleCloseColourGradient; no smart-contrast swap applies to the close button (unlike the bar's itemColourHover)."
 				},
 				"decorative": {
 					"label": "Decorative background",
@@ -174,7 +174,7 @@
 					"attrMap": {
 						"css:background-image": "backgroundImage"
 					},
-					"_note": "The `.{uid}::before` pseudo-element background-media layer. Declared 2026-08-28 to resolve a routing collision: `backgroundImage` and `drawerBgGradient` BOTH resolved to css_property=background-image on css_element=wrapper, identical on every routing axis, so db-consistency reported AmbiguousLayerAttrError (cssprop:ambiguous:sgs/nav-drawer:background-image:OUTER:wrapper::) and the clone-time resolver picked by rowid. They are NOT the same target: render.php:201-210 states the image paints on `.{uid}::before` and NEVER on the dialog root, precisely because the root already carries drawerBg/drawerBgGradient and a background-image there would overwrite the gradient rather than layer with it. Mirrors sgs/container's media-LAYER pattern and reuses the `decorative` element token sgs/cta-section already declares for its identical background-media layer (cta-section.backgroundMedia -> background-image -> decorative). Only backgroundImage is claimed here; the size/position/repeat/attachment companions keep their existing routing."
+					"_note": "The `.{uid}::before` pseudo-element background-media layer. Declared to resolve a routing collision: `backgroundImage` and `drawerBgGradient` would BOTH resolve to css_property=background-image on css_element=wrapper, identical on every routing axis, so db-consistency would report AmbiguousLayerAttrError (cssprop:ambiguous:sgs/nav-drawer:background-image:OUTER:wrapper::) and the clone-time resolver would pick by rowid. They are NOT the same target: render.php states the image paints on `.{uid}::before` and NEVER on the dialog root, precisely because the root already carries drawerBg/drawerBgGradient and a background-image there would overwrite the gradient rather than layer with it. Mirrors sgs/container's media-LAYER pattern and reuses the `decorative` element token sgs/cta-section already declares for its identical background-media layer (cta-section.backgroundMedia -> background-image -> decorative). Only backgroundImage is claimed here; the size/position/repeat/attachment companions keep their existing routing."
 				}
 			}
 		},
@@ -212,7 +212,7 @@
 			"type": "string",
 			"default": ""
 		},
-		"_comment_closeStyle": "Spec 41 FR-41-12 / step 14a: `icon-and-text` is a FOURTH value, ADDED rather than a rename. `separate-x` and `text-swap` are the icon/text DISPLAY axis and do mirror sgs/nav-menu's triggerMode, but `burger-morph` is a GLYPH choice (a CSS-drawn two-bar span, no icon and no text), so re-valuing this enum onto triggerMode's three values would silently delete a shipped look. This enum is REAL and pre-existing; it stays. Its PHP twin is render.php::$sgs_nd_allowed_close_styles and BOTH lists must carry all four values -- a value one side accepts and the other rejects coerces silently, with no error on either side.",
+		"_comment_closeStyle": "Spec 41 FR-41-12: `icon-and-text` is the FOURTH value. `separate-x` and `text-swap` are the icon/text DISPLAY axis and mirror sgs/nav-bar-menu's triggerMode, but `burger-morph` is a GLYPH choice (a CSS-drawn two-bar span, no icon and no text), so re-valuing this enum onto triggerMode's three values would delete that look. Its PHP twin is render.php::$sgs_nd_allowed_close_styles and BOTH lists must carry all four values -- a value one side accepts and the other rejects coerces silently, with no error on either side.",
 		"closeStyle": {
 			"type": "string",
 			"default": "separate-x",
@@ -223,7 +223,7 @@
 				"icon-and-text"
 			]
 		},
-		"_comment_closeLabel_closeIcon": "Spec 41 FR-41-12 / step 14a -- the close button's word and glyph, mirroring sgs/nav-menu's triggerLabel / triggerIcon. NEITHER gets a JSON enum (closeLabel is free text; closeIcon is an object), and NEITHER gets a supports.sgs.elements member: they route no CSS property, so an element entry would be a phantom routing slot -- the same ruling Spec 41 section 8.6(e) makes for triggerMode/triggerLabel. The close button's COLOUR is already wired via toggleCloseColour / toggleCloseColourHover / toggleCloseColourGradient on the `close` element and is untouched by this step.",
+		"_comment_closeLabel_closeIcon": "Spec 41 FR-41-12 -- the close button's word and glyph, mirroring sgs/nav-bar-menu's triggerLabel / triggerIcon. NEITHER gets a JSON enum (closeLabel is free text; closeIcon is an object), and NEITHER gets a supports.sgs.elements member: they route no CSS property, so an element entry would be a phantom routing slot -- the same ruling Spec 41 section 8.6(e) makes for triggerMode/triggerLabel. The close button's COLOUR is wired via toggleCloseColour / toggleCloseColourHover / toggleCloseColourGradient on the `close` element.",
 		"closeLabel": {
 			"type": "string",
 			"default": "Close"
@@ -250,7 +250,7 @@
 				"modal",
 				"non-modal"
 			],
-			"description": "D1011: modal (default) uses native showModal() — the visible page is fully inert. non-modal uses show() with freezeBackground()'s selective inert, keeping the header/burger row live and keyboard-reachable while the drawer is open. Never pair non-modal with aria-modal=\"true\" on the dialog — that would hide the deliberately-live header from assistive tech."
+			"description": "Modal (default) uses native showModal() — the visible page is fully inert. non-modal uses show() with freezeBackground()'s selective inert, keeping the header/burger row live and keyboard-reachable while the drawer is open. Never pair non-modal with aria-modal=\"true\" on the dialog — that would hide the deliberately-live header from assistive tech."
 		},
 		"drawerBg": {
 			"type": "string",
@@ -456,7 +456,7 @@
 		"borderColourGradient": {
 			"type": "string",
 			"default": "",
-			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour. Non-empty wins over borderColour."
 		},
 		"borderRadius": {
 			"type": "object",

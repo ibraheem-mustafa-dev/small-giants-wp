@@ -1,8 +1,7 @@
 /**
  * SGS Nav Bar Menu (sgs/nav-bar-menu) — frontend interactivity.
  *
- * Split from the former conflated `sgs/nav-menu` (D1059, 2026-09-14) — this
- * copy serves the BAR fork only. Three responsibilities:
+ * Serves the BAR only. Three responsibilities:
  *  1. Register the shared `store('sgs/nav')` (importing it is what registers
  *     it — see the module doc-block in shared/nav-interactivity/store.js).
  *     This is what makes the burger's `data-wp-on--click="actions.toggleDrawer"`
@@ -33,13 +32,10 @@
  *
  * ⚠ The top-level root selector is `.wp-block-sgs-nav-bar-menu` — WordPress
  * derives that class from THIS block's own name (`sgs/nav-bar-menu`), not
- * from the shared `.sgs-nav-bar-menu` BEM root still used for internal elements
- * (Step 3's job to rename; not done in this scaffolding step — see
+ * from the shared `.sgs-nav-bar-menu` BEM root used for internal elements (see
  * render.php's own note on `$nav_root_classes`). The in-drawer drill-down
- * effect (`initDrillDown`) is DROPPED here — it only ever fired for the
- * drawer's own nested submenu-model list, which is the separate
- * `sgs/nav-drawer-menu` block's job now; this block never emits
- * `data-sgs-nav-submenu-model`.
+ * effect (`initDrillDown`) belongs to the separate `sgs/nav-drawer-menu`
+ * block; this block never emits `data-sgs-nav-submenu-model`.
  *
  * @package SGS\Blocks
  */
@@ -69,7 +65,7 @@ function normalisePath( pathname ) {
  */
 function markCurrentPage( root ) {
 	const current = normalisePath( window.location.pathname );
-	// Sublinks are included deliberately (Bean, 2026-07-31) — a visitor
+	// Sublinks are included deliberately — a visitor
 	// sitting on a dropdown child's URL still gets it highlighted.
 	root.querySelectorAll(
 		'.sgs-nav-bar-menu__link[data-sgs-nav-path], .sgs-nav-bar-menu__sublink[data-sgs-nav-path]'

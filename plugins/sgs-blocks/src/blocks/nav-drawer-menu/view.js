@@ -1,13 +1,11 @@
 /**
  * SGS Nav Drawer Menu (sgs/nav-drawer-menu) — frontend interactivity.
- *
- * Trimmed from nav-menu/view.js (D1059 split, 2026-09-14) — that file also
- * registered `store('sgs/nav')` (burger toggle actions — this block never
- * renders a burger) and `store('sgs/mega')` (desktop hover-disclosure —
- * this block's mega items degrade to a plain link or a plain accordion row,
- * never the hover-disclosure panel that store drives). Neither import
- * belongs here; `sgs/nav-drawer`'s own view.js owns the drawer dialog's
- * open/close/focus-trap mechanics independently of this file.
+ * This file does not register `store('sgs/nav')` (burger toggle actions — this
+ * block never renders a burger) or `store('sgs/mega')` (desktop
+ * hover-disclosure — this block's mega items degrade to a plain link or a
+ * plain accordion row, never the hover-disclosure panel that store drives).
+ * `sgs/nav-drawer`'s own view.js owns the drawer dialog's open/close/
+ * focus-trap mechanics independently of this file.
  *
  * Three responsibilities:
  *  1. Compute `aria-current="page"` CLIENT-SIDE at mount, comparing

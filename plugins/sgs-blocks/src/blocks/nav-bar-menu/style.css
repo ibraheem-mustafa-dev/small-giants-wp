@@ -1,12 +1,9 @@
 /**
  * SGS Nav Bar Menu (sgs/nav-bar-menu) — frontend + editor structural styles.
  *
- * Split from the former conflated `sgs/nav-menu` (D1059, 2026-09-14) — this
- * copy carries the BAR fork's structural rules only. The in-drawer nested
- * accordion/drill-down rules (the former "IN-DRAWER NESTED SUBMENU" section,
- * and the `.sgs-nav-bar-menu__bar--drawer` nowrap override) are DROPPED here —
- * this block never emits the `--drawer` bar modifier or a `<details>`
- * accordion; that markup and its styling belong to `sgs/nav-drawer-menu`.
+ * Carries the BAR's structural rules only. The in-drawer nested
+ * accordion/drill-down rules belong to `sgs/nav-drawer-menu` — this block
+ * never emits a `--drawer` bar modifier or a `<details>` accordion.
  *
  * Classes match render.php exactly. Structural rules only — the flex bar
  * layout, the burger button shape, 44px touch targets, focus outlines,
@@ -15,14 +12,14 @@
  * emitted by render.php's #uid-scoped <style> (Spec 32 no-inline). This file
  * deliberately hardcodes none of them.
  *
- * BEM root renamed to `.sgs-nav-bar-menu*` (D1059 split, Step 3, 2026-09-14)
- * — this block's OWN root, no longer shared with the drawer fork. The
- * shared includes/ CSS emitters receive this string as an explicit
- * `$bem_root` parameter from this block's render.php rather than hardcoding
- * it, so they stay usable by both `sgs/nav-bar-menu` and `sgs/nav-drawer-menu`.
+ * The BEM root `.sgs-nav-bar-menu*` is this block's OWN root, not shared with
+ * the drawer list. The shared includes/ CSS emitters receive this string as
+ * an explicit `$bem_root` parameter from this block's render.php rather than
+ * hardcoding it, so they stay usable by both `sgs/nav-bar-menu` and
+ * `sgs/nav-drawer-menu`.
  */
 
-/* Root nav element (rendered block-private, D539). */
+/* Root nav element (rendered block-private). */
 .sgs-nav-bar-menu {
 	align-items: center;
 	display: flex;
@@ -62,9 +59,8 @@
  * `transform: translateX()`. `.sgs-nav-bar-menu__indicator` is `position:
  * absolute` and `pointer-events: none`, i.e. OUT OF NORMAL FLOW, so
  * animating its width cannot reflow or repaint any sibling. Do NOT "fix"
- * this back to scaleX() — an earlier scaleX() version distorted the
- * border-radius into a smeared lozenge (border-radius resolves before the
- * transform is applied).
+ * this to scaleX() — scaleX() distorts the border-radius into a smeared
+ * lozenge (border-radius resolves before the transform is applied).
  */
 .sgs-nav-bar-menu__indicator {
 	height: 100%;
@@ -104,13 +100,13 @@
 }
 
 /*
- * Badge (Step 7, D1059) — a tinted chip. `currentColor`-derived background
+ * Badge — a tinted chip. `currentColor`-derived background
  * (never a named preset token) so it reads correctly against ANY client's
  * item-text colour without a per-theme contrast check: a translucent tint of
  * the SAME colour the text is already painted in is contrast-safe by
  * construction, on both a light and a dark item-text colour. Zero-specificity
  * default (G20c pattern, matches `.sgs-nav-bar-menu__indicator` above) — no
- * colour ATTRIBUTE for the badge exists yet (out of Step 7's scope).
+ * colour ATTRIBUTE for the badge exists.
  */
 :where(.sgs-nav-bar-menu__badge) {
 	background-color: color-mix(in srgb, currentColor 12%, transparent);
@@ -230,11 +226,11 @@
 }
 
 /*
- * G2 — `icon-and-text` mode: the icon belongs on the RIGHT of the label, not
- * the left (Bean: no convention in the wild puts it left). `.sgs-nav-bar-menu__burger`
- * is already `display:flex` (above) with no `flex-direction`/`order` override,
- * so DOM order alone was deciding visual order — this is a pure visual reorder
- * via `order`, DOM order (and therefore reading/tab order) is unchanged.
+ * `icon-and-text` mode: the icon belongs on the RIGHT of the label, not the
+ * left (no convention in the wild puts it left). `.sgs-nav-bar-menu__burger`
+ * is `display:flex` (above) with no `flex-direction`/`order` override, so DOM
+ * order alone decides visual order — this is a pure visual reorder via
+ * `order`; DOM order (and therefore reading/tab order) is unchanged.
  */
 .sgs-nav-bar-menu__burger--icon-and-text .sgs-nav-bar-menu__burger-icon {
 	order: 2;
@@ -245,14 +241,14 @@
 }
 
 /*
- * G4 — burger↔X morph. Only the DEFAULT (unmodified) trigger glyph is
+ * Burger↔X morph. Only the DEFAULT (unmodified) trigger glyph is
  * restructured into three real `<span>` bars by
  * `sgs_nav_bar_menu_burger_toggle_markup()` (nav-menu-markup.php) — a custom
- * `triggerIcon` (G3) keeps rendering its own resolved SVG/glyph untouched, with
+ * `triggerIcon` keeps rendering its own resolved SVG/glyph untouched, with
  * no morph, since a morph has no well-defined shape for an arbitrary glyph.
- * `currentColor` inherits the existing `burgerColour` mechanism for free; no
- * new attribute needed. Driven entirely by the EXISTING
- * `data-wp-bind--aria-expanded="state.isOpen"` binding — zero new JS.
+ * `currentColor` inherits the `burgerColour` mechanism for free; no
+ * attribute is needed. Driven entirely by the
+ * `data-wp-bind--aria-expanded="state.isOpen"` binding — no extra JS.
  */
 .sgs-nav-bar-menu__burger-icon:has(.sgs-nav-bar-menu__burger-bar) {
 	display: flex;
@@ -338,12 +334,12 @@
  * `submenuAnimation`: none|fade|slide-down). Structural shape only — the
  * trigger is the existing binary display toggle
  * (`{uid} [data-sgs-mega-trigger][aria-expanded="true"] ~
- * .sgs-nav-bar-menu__submenu-wrap{display:block;}`, nav-menu-submenu-css.php),
- * unchanged by this. Toggling an element's OWN `display` from `none` to
+ * .sgs-nav-bar-menu__submenu-wrap{display:block;}`, nav-menu-submenu-css.php).
+ * Toggling an element's OWN `display` from `none` to
  * `block` restarts any CSS animation declared on it, so a modifier class
  * that is simply PRESENT on the wrap is enough to make each open animate —
- * no JS replay logic needed. `none` (the default) renders today's output
- * byte-identical: neither modifier class below is ever applied for it.
+ * no JS replay logic needed. `none` (the default) applies neither modifier
+ * class below.
  */
 .sgs-nav-bar-menu__submenu-wrap--fade {
 	animation: sgs-nav-bar-menu-submenu-fade-in 0.18s ease-out;
@@ -394,7 +390,7 @@
 
 /*
  * Sticky-header / page-content stacking fix
- * (P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT, 2026-09-13). A page-embedded
+ * A page-embedded
  * `sgs/nav-bar-menu` sits inside `sgs/container`'s child-lift stacking context
  * (`container/style.css`, load-bearing — never touched by this fix), which
  * caps an open panel below the sticky header no matter how high the panel's

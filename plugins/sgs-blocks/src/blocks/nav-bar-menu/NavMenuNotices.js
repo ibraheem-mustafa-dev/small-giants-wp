@@ -6,9 +6,8 @@ import { LINK_COUNT_THRESHOLD } from '../../shared/nav-menu-panels/utils';
  * SGS Nav Bar Menu (sgs/nav-bar-menu) — Settings-tab notices: the drawer-pairing
  * warning, the site-wide-drawer info notice, and the link-count notice.
  *
- * Split out of edit.js (Spec 41 step 7, pure refactor) to keep the file under
- * the project's 250-line JS budget. No behaviour change — verbatim JSX from
- * edit.js's `<InspectorControls>` opening block.
+ * Kept separate from edit.js to stay under the project's 250-line JS budget;
+ * mounted at the top of edit.js's `<InspectorControls>` block.
  *
  * @param {Object}   root0                     Props.
  * @param {boolean}  root0.showDrawerNotice     From useDrawerNotice().

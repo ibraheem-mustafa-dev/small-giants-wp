@@ -8,7 +8,7 @@
  * button is FIXED CHROME rendered here as a SIBLING of $content, OUTSIDE the
  * editable InnerBlocks zone, so an operator editing content can never delete it
  * (undeletable by construction — FR-36-6). All open / close / focus-trap /
- * scroll-lock / ESC / reparent (D323) / scrollbar-bounce (D340) behaviour is
+ * scroll-lock / ESC / reparent / scrollbar-bounce behaviour is
  * OWNED BY THE SHARED STORE (src/shared/nav-interactivity/store.js); this file
  * emits only the markup the store resolves by id/attribute.
  *
@@ -17,18 +17,18 @@
  * `showModal()` + top-layer + native `::backdrop`/ESC, but SGS_Container_Wrapper
  * coerces any tag outside its $allowed_tags list (section/div/article/aside/
  * main/nav/header/footer/figure/details/fieldset — 'dialog' is NOT included) to
- * 'section', and I must not modify that shared file. A full-screen dialog uses
+ * 'section', and the shared file is not modified for one block. A full-screen dialog uses
  * NONE of the wrapper's grid / max-width band / background-image / shape-divider
  * machinery — it needs only background, padding, gap and content-alignment — so
  * the drawer MIRRORS those capabilities block-privately through the SAME shared
  * scoped-CSS helpers (sgs_emit_responsive_css + wp_style_engine_get_styles), with
  * ZERO inline property declarations and no divergence from the wrapper's computed
- * behaviour (the D294 block-private-when-no-grid/section-machinery pattern).
+ * behaviour (the block-private-when-no-grid/section-machinery pattern).
  *
  * NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
  * drawerBg + WCAG-computed foreground, drawerAlign, drawerGap, drawerPadding, close-button colour, the background-image media layer
  * (`.{uid}::before`) and the skip-serialised __experimentalBorder support are all emitted into this block's OWN scoped `.{uid}` <style>
- * at CLASS specificity (never `#uid`, D303).
+ * at CLASS specificity (never `#uid`).
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    InnerBlocks HTML (menu, logo, CTA).
@@ -44,11 +44,11 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-colour-wcag.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
-// ⚠ The source-aware icon resolver sgs/icon and sgs/nav-menu's trigger both use.
+// ⚠ The source-aware icon resolver sgs/icon and sgs/nav-bar-menu's trigger both use.
 // It lives in includes/nav-menu-treatments.php, which is require_once'd PER-INSTANCE
-// from sgs/nav-menu's own render.php rather than at plugin bootstrap -- so its
+// from sgs/nav-bar-menu's own render.php rather than at plugin bootstrap -- so its
 // functions are NOT in scope just because that block exists on the page, and a drawer
-// can render on a page with no nav-menu at all. Requiring it here is what stops this
+// can render on a page with no nav bar at all. Requiring it here is what stops this
 // call fatalling for a reason nobody would find; the file's own function_exists()
 // guards make the double require_once free.
 require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-treatments.php';
@@ -58,8 +58,8 @@ require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-treatments.php';
 // CSS length/unit sanitiser — digits, dot, %, unit letters only.
 // ── Legacy HTML-anchor salt (WP core's `supports.anchor` feature) for the uid
 // hash below. Vestigial: block.json declares `supports.anchor:false`, so WP
-// never populates this key for the CORE feature — but block.json now ALSO
-// declares a genuine object-typed `anchor` ATTRIBUTE (Task 1, geometry
+// never populates this key for the CORE feature — but block.json ALSO
+// declares a genuine object-typed `anchor` ATTRIBUTE (geometry
 // selector) that occupies the SAME 'anchor' key in parsed attrs, so this must
 // guard with is_string() or an array-to-string cast notice fires on every
 // render that sets a per-device anchor. $attributes is already hashed whole
@@ -70,8 +70,8 @@ $anchor_val = isset( $block->parsed_block['attrs']['anchor'] ) && is_string( $bl
 	: '';
 
 // ── drawerRef — the <dialog> id the burger's aria-controls / store context
-// resolves. Defaults to 'sgs-nav-drawer' (matching sgs/nav-menu's own drawerRef
-// default) so the single-drawer case associates with zero config. An operator /
+// resolves. Defaults to 'sgs-nav-drawer' (the id Sgs_Drawer_Render::drawer_ref_for()
+// falls back to on sgs/nav-bar-menu) so the single-drawer case associates with zero config. An operator /
 // converter value is sanitised to an HTML-id-safe token. Empty → the default.
 $drawer_ref_raw = isset( $attributes['drawerRef'] ) ? trim( (string) $attributes['drawerRef'] ) : '';
 $drawer_ref     = '' !== $drawer_ref_raw ? sanitize_html_class( $drawer_ref_raw ) : 'sgs-nav-drawer';
@@ -97,7 +97,7 @@ $sgs_nd_allowed_anchors = array( 'full-screen', 'header', 'trigger', 'centred' )
 
 /**
  * Geometry declarations (position/inset/width/height/max-* ONLY — never
- * `display`, per STOP-DIALOG-DISPLAY-GATE/D338) for one resolved anchor value
+ * `display`, per STOP-DIALOG-DISPLAY-GATE) for one resolved anchor value
  * at one tier. `header` derives its top offset from the published
  * `--sgs-header-height` custom property (never a hardcoded px) and spans full
  * width beneath it; `trigger` anchors BELOW the actual burger, reading the
@@ -114,10 +114,10 @@ $sgs_nd_allowed_anchors = array( 'full-screen', 'header', 'trigger', 'centred' )
 $sgs_nd_geometry_for_anchor = function ( $anchor_value, $panel_size ) {
 	switch ( $anchor_value ) {
 		case 'header':
-			// The real header bottom edge (Fix 7, multi-rater pre-commit review):
-			// the theme's utilities.css sets --sgs-header-height:80px UNCONDITIONALLY
-			// (a static token, not the header's live rendered height), so the drawer
-			// sat at a constant 80px — or 0 when the header is unpinned/hidden —
+			// The real header bottom edge: the theme's utilities.css sets
+			// --sgs-header-height:80px UNCONDITIONALLY (a static token, not the
+			// header's live rendered height), so using it alone would sit the
+			// drawer at a constant 80px — or 0 when the header is unpinned/hidden —
 			// instead of tracking the header's actual bottom. store.js measures the
 			// real getBoundingClientRect().bottom at open time and writes
 			// --sgs-drawer-header-offset onto the dialog; that measured value takes
@@ -165,8 +165,8 @@ $text_align_map = array(
 	'right'  => 'end',
 );
 
-// ── Background (drawerBg, slug, default 'surface' — D1060) + WCAG-computed foreground
-// (D339): the background stays a theme-linked var() so a palette change recolours
+// ── Background (drawerBg, slug, default 'surface') + WCAG-computed foreground:
+// the background stays a theme-linked var() so a palette change recolours
 // it; the foreground is computed from the LIVE resolved hex each render so the
 // pairing is always ≥ 4.5:1 with zero config.
 $drawer_bg_slug = isset( $attributes['drawerBg'] ) ? sanitize_html_class( $attributes['drawerBg'] ) : 'surface';
@@ -178,8 +178,8 @@ $drawer_fg_hex  = ( '' !== $drawer_bg_hex ) ? sgs_wcag_text_colour_for_bg( $draw
 // only while the client has not chosen a text colour. Contrast guidance is
 // advisory (an editor notice), never an override — WordPress core's own
 // ContrastChecker warns and never enforces, and sgs/site-header follows the
-// same rule (D681-D684). Before this, the computed value was the SOLE author of
-// the drawer's text colour and no attribute existed to override it.
+// same rule. The drawerTextColour attribute is the operator's override of the
+// computed value.
 $drawer_text_effective = sgs_resolve_text_colour_or_gradient(
 	$attributes['drawerTextColour'] ?? '',
 	$attributes['drawerTextColourGradient'] ?? ''
@@ -187,24 +187,23 @@ $drawer_text_effective = sgs_resolve_text_colour_or_gradient(
 
 // ── Close-icon colour (toggleCloseColour, slug). Empty = inherit the drawer's
 // computed foreground (style.css sets the × to color:inherit).
-// D956 — toggleCloseColourGradient is the gradient sibling (778879732 rollout,
-// Phase 3); gradient wins when set+valid, mirrors drawerTextColourGradient above.
+// toggleCloseColourGradient is the gradient sibling; gradient wins when
+// set+valid, mirrors drawerTextColourGradient above.
 $close_colour_slug       = isset( $attributes['toggleCloseColour'] ) ? sanitize_html_class( $attributes['toggleCloseColour'] ) : '';
 $close_colour_gradient   = $attributes['toggleCloseColourGradient'] ?? '';
 $close_colour_hover_slug = isset( $attributes['toggleCloseColourHover'] ) ? sanitize_html_class( $attributes['toggleCloseColourHover'] ) : '';
-// toggleCloseColourHoverGradient (2026-09-13, gradient-toggle sibling sweep) --
-// Normal already resolved gradient-or-solid via $close_colour_gradient above;
-// Hover was left flat-colour-only with no stated reason (git history confirms
-// accidental, unlike nav-menu's documented D956 smart-contrast exemption).
+// toggleCloseColourHoverGradient -- Normal resolves gradient-or-solid via
+// $close_colour_gradient above; Hover does the same through this attribute
+// (no smart-contrast swap applies here, unlike the bar's itemColourHover).
 // Read raw here, resolved below alongside $close_colour_hover_slug.
 $close_colour_hover_gradient = $attributes['toggleCloseColourHoverGradient'] ?? '';
 
 // ── Submenu model — LIVE (FR-36-6). Published to the drawer's descendants via
 // block.json `providesContext` (`sgs/navDrawerSubmenuModel`, mapped from this
-// same attribute below) so any `sgs/nav-menu` inside this drawer's InnerBlocks
+// same attribute below) so any `sgs/nav-drawer-menu` inside this drawer's InnerBlocks
 // content renders a REAL nested list — a native `<details name>` exclusive
 // accordion for both models; `drill-down` layers a JS slide-to-sub-panel
-// enhancement on top (nav-menu/render.php's render_items_drawer() +
+// enhancement on top (nav-drawer-menu/render.php's sgs_nav_drawer_menu_render_items() +
 // src/shared/effects/nav-drilldown.js). Standard WP block-context resolution
 // (WP_Block::render(), computed from the parsed block tree before a child's
 // render callback runs) means this works identically whether the drawer
@@ -294,8 +293,8 @@ if ( '' !== $drawer_bg_slug ) {
 //
 // `.sgs-nav-drawer__body` carries no background of its own, so both work at once:
 // the panel keeps its fill, the text keeps its gradient. This is a DOM-shape
-// constraint, not a CSS limit — the same reason sgs/button IS exempt (D288 makes
-// the <a> itself the block root, so it has no inner element to move the text to).
+// constraint, not a CSS limit — the same reason sgs/button IS exempt (the <a>
+// itself is the block root, so it has no inner element to move the text to).
 if ( '' !== $drawer_text_effective ) {
 	$css .= $body_sel . '{' . sgs_text_colour_decl( $drawer_text_effective ) . '}';
 	// @supports fallback so a browser without background-clip:text still gets a
@@ -328,9 +327,9 @@ if ( '' !== $drawer_text_effective_hover ) {
  * --sgs-drawer-align      = the flexbox value, for a descendant that is itself
  *                           a flex/grid container of its own children.
  * --sgs-drawer-text-align = the logical text value, for a descendant whose BOX
- *                           is deliberately full-width (sgs/nav-menu items are,
+ *                           is deliberately full-width (sgs/nav-drawer-menu items are,
  *                           for touch-target size) so only the LABEL can move.
- * Consumer: nav-menu/render.php (search --sgs-drawer-align there before renaming).
+ * Consumer: nav-drawer-menu/render.php (search --sgs-drawer-align there before renaming).
  */
 $css .= $body_sel . '{align-items:' . $align_items_map[ $drawer_align ] . ';'
 	. '--sgs-drawer-align:' . $align_items_map[ $drawer_align ] . ';'
@@ -369,7 +368,7 @@ if ( function_exists( 'sgs_emit_responsive_css' ) && is_array( $attributes['draw
 }
 
 // Close-icon colour override (else inherits the computed foreground).
-// D956 — sibling gradient wins when set+valid, same resolve/decl/fallback
+// Sibling gradient wins when set+valid, same resolve/decl/fallback
 // shape as the drawer text colour above.
 $close_colour_effective = sgs_resolve_text_colour_or_gradient( $close_colour_slug, $close_colour_gradient );
 if ( '' !== $close_colour_effective ) {
@@ -383,11 +382,10 @@ if ( '' !== $close_colour_effective ) {
 // The close button IS an interactive target, so it carries a real hover state —
 // it is NOT a candidate for a states exemption. :focus-visible is paired with
 // :hover so keyboard users get the same affordance.
-//
-// toggleCloseColourHoverGradient (2026-09-13) — same resolve/decl/fallback
-// trio as the Normal state above; sgs_text_colour_decl() detects a gradient
-// function on its own and swaps in the background-clip:text declaration set,
-// so a flat slug still resolves exactly as before via sgs_colour_value().
+// toggleCloseColourHoverGradient — same resolve/decl/fallback trio as the
+// Normal state above; sgs_text_colour_decl() detects a gradient function on
+// its own and swaps in the background-clip:text declaration set, so a flat
+// slug still resolves via sgs_colour_value().
 $close_colour_hover_effective = sgs_resolve_text_colour_or_gradient( $close_colour_hover_slug, $close_colour_hover_gradient );
 if ( '' !== $close_colour_hover_effective ) {
 	$close_colour_hover_decl = sgs_text_colour_decl( $close_colour_hover_effective );
@@ -398,10 +396,9 @@ if ( '' !== $close_colour_hover_effective ) {
 }
 
 // ── Anchor geometry (desktop variants). Guard on "is either attribute
-// actually set" so the zero-attribute default renders BYTE-IDENTICAL to the
-// pre-Task-1 output — style.css's base rule already IS the full-screen
-// geometry, so emitting it again here for the untouched default would be a
-// redundant (harmless but non-identical) duplicate rule.
+// actually set" so the zero-attribute default emits no geometry rule —
+// style.css's base rule already IS the full-screen geometry, so emitting it
+// again here for the untouched default would be a redundant duplicate rule.
 $sgs_nd_needs_scrim = false;
 if ( $sgs_nd_anchor_is_set || $sgs_nd_panel_is_set ) {
 	$sgs_nd_anchor_desktop = sgs_resolve_tier( $anchor_attr_raw, 'desktop', 'full-screen' )['value'];
@@ -412,7 +409,7 @@ if ( $sgs_nd_anchor_is_set || $sgs_nd_panel_is_set ) {
 	$sgs_nd_anchor_tablet  = in_array( $sgs_nd_anchor_tablet, $sgs_nd_allowed_anchors, true ) ? $sgs_nd_anchor_tablet : 'full-screen';
 	$sgs_nd_anchor_mobile  = in_array( $sgs_nd_anchor_mobile, $sgs_nd_allowed_anchors, true ) ? $sgs_nd_anchor_mobile : 'full-screen';
 
-	// D1011 item 5: needed only when at least one tier resolves to a
+	// The scrim is needed only when at least one tier resolves to a
 	// PARTIAL-WIDTH anchor — see the fuller comment beside $sgs_nd_needs_scrim's
 	// consumer below.
 	$sgs_nd_needs_scrim = (
@@ -423,8 +420,8 @@ if ( $sgs_nd_anchor_is_set || $sgs_nd_panel_is_set ) {
 
 	// panelSize is a free-text CSS length expression (calc()/clamp() are valid
 	// operator input, e.g. 'calc(100% - 40px)') — the strict digits/dot/%/unit-
-	// letters-only $sgs_nd_css_length sanitiser would mangle it (Fix 6, multi-
-	// rater pre-commit review): 'calc(100% - 40px)' → 'calc10040px'. Use the
+	// letters-only $sgs_nd_css_length sanitiser would mangle it:
+	// 'calc(100% - 40px)' → 'calc10040px'. Use the
 	// shared free-text CSS-value sanitiser instead (permits the math-function
 	// character set while still stripping anything that could break out of the
 	// declaration).
@@ -449,7 +446,7 @@ if ( $sgs_nd_anchor_is_set || $sgs_nd_panel_is_set ) {
 	}
 }
 
-// D1011 item 5: `$sgs_nd_needs_scrim` (set above, defaults false when neither
+// The scrim: `$sgs_nd_needs_scrim` (set above, defaults false when neither
 // `anchor` nor `panelSize` is set — the zero-attribute default is always
 // full-screen) gates the scrim markup emitted near the end of this file.
 // `resolveScrim()` (store.js) looks for `[data-sgs-nav-scrim="{drawerRef}"]`
@@ -514,10 +511,10 @@ if ( $has_bg_image ) {
 // and emit them into this block's own scoped <style>.
 
 $border_args = array();
-// G5 (Bean, 2026-08-26): 'style set, no width' means no border by
-// default — never fall through to the browser's initial medium (~3px)
-// border-width. Gated together via the shared helper (helpers-box.php)
-// so this rule is applied identically everywhere, not per block.
+// 'Style set, no width' means no border by default — never fall through
+// to the browser's initial medium (~3px) border-width. Gated together via
+// the shared helper (helpers-box.php) so this rule is applied identically
+// everywhere, not per block.
 if ( ! empty( $border_args ) ) {
 	$border_scoped = wp_style_engine_get_styles(
 		array( 'border' => $border_args ),
@@ -531,7 +528,6 @@ if ( ! empty( $border_args ) ) {
 // Custom CSS escape hatch — appended verbatim (sanitised of a </style> breakout
 
 // ── Block-private border: width / style / colour (Shape B). ──
-// Migrated from WP-native supports by scripts/migrate-border-shape-b.js.
 // Oracle: sgs/accordion, live-verified with scripts/qa/check-border-roundtrip.js.
 $border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
 $border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
@@ -545,8 +541,8 @@ $allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', '
 $border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
 
 if ( 'none' !== $border_style ) {
-	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
-	// through to the browser's initial `medium` (~3px).
+	// A style with no width means no border -- never fall through to the
+	// browser's initial `medium` (~3px).
 	if ( $has_border_width ) {
 		$bwt  = '' !== $border_width_top ? $border_width_top : '0';
 		$bwr  = '' !== $border_width_right ? $border_width_right : '0';
@@ -566,11 +562,11 @@ if ( 'none' !== $border_style ) {
 		$css .= sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' );
 	} elseif ( '' !== $border_colour ) {
 		// sgs_colour_value() resolves a palette SLUG; a bare slug is invalid CSS
-		// the browser drops (D881 defect 3).
+		// the browser drops.
 		$css .= $root_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
 	}
 } else {
-	// G5 corollary: "none" must be an explicit override too, not a
+	// "none" must be an explicit override too, not a
 	// no-op -- a variant's own hardcoded CSS border (e.g. a card-style
 	// class default) would otherwise keep painting even though the
 	// operator picked "no border". Cause-agnostic: harmless when no
@@ -578,11 +574,10 @@ if ( 'none' !== $border_style ) {
 	$css .= $root_sel . '{border-style:none;border-width:0;}';
 }
 
-// ── Block-private border-radius (radius is no longer native -- Shape B now
-// covers all four legs). Same wp_style_engine_get_styles() route already
-// proven live by sgs/media + sgs/before-after's borderRadiusTablet/Mobile
-// tiers; base now goes through the identical call instead of WP's native
-// serialisation. The style-engine result is an intermediate PHP value ($out
+// ── Block-private border-radius (radius is not native -- Shape B
+// covers all four legs). Same wp_style_engine_get_styles() route as
+// sgs/media + sgs/before-after's borderRadiusTablet/Mobile tiers; base
+// goes through the identical call. The style-engine result is an intermediate PHP value ($out
 // array), never appended raw -- only its ['css'] string goes through the
 // detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
 $radius_tiers      = sgs_border_radius_tiers( $attributes );
@@ -624,14 +619,14 @@ if ( '' !== $custom_css ) {
 
 // ── Build the dialog wrapper attributes. The <dialog> id IS the drawerRef (the
 // store resolves the drawer by getElementById — the id + data-sgs-nav-drawer
-// survive the D323 body-reparent). supports.anchor is false (block.json) so no
+// survive the body-reparent). supports.anchor is false (block.json) so no
 // competing anchor id is emitted. The uid is added as a CLASS for the scoped CSS.
 
 /*
  * Entry-animation direction (animateFrom). `auto` (the default) resolves to a
  * PER-ANCHOR default motion — the drawer's own DESKTOP anchor decides which
  * animation class applies, since the anchor (not an independent direction)
- * IS the design-defining choice now: full-screen keeps the pre-existing
+ * IS the design-defining choice: full-screen keeps the base
  * fade-drop (no class, so an untouched drawer is unaffected), header expands
  * down, trigger scales/fades from its corner, centred scales up like a
  * modal. `fade` is an explicit opacity-only override available at every
@@ -650,7 +645,7 @@ if ( 'fade' === $sgs_nd_animate_from ) {
 	// auto → per-anchor default. Resolve the DESKTOP anchor only for the
 	// animation choice (the entry motion is a single per-instance decision,
 	// not itself per-device) — falls back to 'full-screen' (no class) when
-	// `anchor` is unset, byte-identical to the pre-Task-1 default.
+	// `anchor` is unset.
 	$sgs_nd_anim_anchor = $sgs_nd_anchor_is_set
 		? sgs_resolve_tier( $anchor_attr_raw, 'desktop', 'full-screen' )['value']
 		: 'full-screen';
@@ -664,7 +659,7 @@ if ( 'fade' === $sgs_nd_animate_from ) {
 }
 
 // ── Close-button style (closeStyle). `separate-x` (default) renders the
-// existing × icon, byte-identical to the pre-Task-1 output. `text-swap`
+// × icon. `text-swap`
 // replaces the icon with a "Close" text label (3/8 reference sites use a
 // text-only close, no icon at all). `burger-morph` renders a 2-bar icon drawn
 // to already read as an X — this button's OWN close affordance, rendered here.
@@ -678,13 +673,12 @@ if ( 'fade' === $sgs_nd_animate_from ) {
 // so the open state is a live DOM attribute on that element throughout. A true
 // burger→× morph is therefore a pure CSS rule keyed on
 // `.sgs-nav-bar-menu__burger[aria-expanded="true"]` in sgs/nav-bar-menu's own
-// stylesheet (D1059 split, 2026-09-14 — the burger is now bar-exclusive by
-// construction) — no Interactivity-store change, no cross-block message
+// stylesheet (the burger is bar-exclusive by construction) — no Interactivity-store change, no cross-block message
 // passing. Whether sgs/nav-bar-menu should ship that rule is a styling
 // decision on THAT block; nothing in this file depends on the answer.
 //
 // The × button itself remains fixed, undeletable chrome in EVERY style (FR-36-6).
-// Spec 41 FR-41-12 / step 14a: `icon-and-text` is the FOURTH value.
+// Spec 41 FR-41-12: `icon-and-text` is the FOURTH value.
 // ⛔ THIS LIST AND block.json::attributes.closeStyle.enum MUST AGREE, ALWAYS.
 // A value one side accepts and the other rejects coerces the stored value away
 // with NO error on either side, so the operator's choice vanishes silently.
@@ -693,12 +687,11 @@ $sgs_nd_close_style          = in_array( $attributes['closeStyle'] ?? 'separate-
 	? (string) $attributes['closeStyle']
 	: 'separate-x';
 
-// ── Close-button SIZE (closeSize, mirrors nav-menu's burgerSize mechanism —
+// ── Close-button SIZE (closeSize, mirrors sgs/nav-bar-menu's burgerSize mechanism —
 // nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css()'s own size block).
-// Default '44px' reproduces the CURRENT effective size exactly: style.css's
-// base `.sgs-nav-drawer__close` rule already carries min-width/min-height:44px
-// with no explicit width/height, so an untouched drawer renders byte-identical
-// whether this fires or not.
+// Default '44px' matches style.css's base `.sgs-nav-drawer__close` rule, which
+// carries min-width/min-height:44px with no explicit width/height, so an
+// untouched drawer renders the same size whether this fires or not.
 //
 // Text-bearing styles (text-swap/icon-and-text) keep width:auto — style.css's
 // own `--close-text-swap`/`--close-icon-and-text` rules already set
@@ -715,17 +708,15 @@ if ( '' !== $sgs_nd_close_size ) {
 }
 
 // ── Close-button LABEL typography (closeFontSize/closeFontFamily/closeFontWeight/
-// closeTextTransform/closeLetterSpacing — mirrors nav-menu's burgerFontSize
-// family, same sgs_typography_css_rule() helper, same "give the client a real
-// inspector control where only hardcoded CSS existed before" shape). Scoped to
+// closeTextTransform/closeLetterSpacing — mirrors sgs/nav-bar-menu's burgerFontSize
+// family, same sgs_typography_css_rule() helper). Scoped to
 // the LABEL SPAN (.sgs-nav-drawer__close-text), never the button itself, so a
 // future icon-and-text glyph resize never rides on these attrs (matches
 // nav-menu-trigger-css.php's own $burger_text_sel scoping rationale). The span
 // only exists in the DOM under text-swap/icon-and-text closeStyle (render.php's
 // $sgs_nd_close_inner branch below), so this is a no-op on every other style.
-//
-// closeTextTransform is resolved, not read raw: style.css's PRE-EXISTING
-// hardcoded value differs by closeStyle (text-swap: uppercase; icon-and-text:
+// closeTextTransform is resolved, not read raw: style.css's hardcoded
+// value differs by closeStyle (text-swap: uppercase; icon-and-text:
 // none — never declared there), so the untouched default must reproduce BOTH
 // values exactly rather than pick one. A non-empty operator value overrides
 // uniformly for either style, matching every other resolved-value pattern in
@@ -760,8 +751,8 @@ if ( '' !== $variant_preset_slug ) {
 	$classes[] = 'sgs-nav-drawer--preset-' . $variant_preset_slug;
 }
 
-// ── D1011: modality selects the store's showModal()/show() branch. Read here
-// (not sniffed from browser capability, which is always true — D1012) and
+// ── Modality selects the store's showModal()/show() branch. Read here
+// (not sniffed from browser capability, which is always true) and
 // carried as a data attribute so store.js has it before it opens the dialog.
 $modality_raw = (string) ( $attributes['modality'] ?? 'modal' );
 $modality     = in_array( $modality_raw, array( 'modal', 'non-modal' ), true ) ? $modality_raw : 'modal';
@@ -774,7 +765,7 @@ $wrapper_args = array(
 	// The dialog's accessible name. Operator-settable because this block supports
 	// MULTIPLE drawers on one site (that is what the Drawer ID exists for), and two
 	// dialogs both announced as "Navigation menu" cannot be told apart by a screen
-	// reader. Falls back to the generic name when unset, so nothing regresses.
+	// reader. Falls back to the generic name when unset.
 	'aria-label'            => '' !== ( $attributes['ariaLabel'] ?? '' )
 		? esc_attr( $attributes['ariaLabel'] )
 		: esc_attr__( 'Navigation menu', 'sgs-blocks' ),
@@ -793,10 +784,10 @@ $wrapper_attributes = get_block_wrapper_attributes( $wrapper_args );
 // the aria-label note below, which is the whole reason this is resolved first.
 $sgs_nd_close_label = trim( (string) ( $attributes['closeLabel'] ?? '' ) );
 
-// ⛔ Resolved through the SAME source-aware resolver sgs/icon and sgs/nav-menu's
+// ⛔ Resolved through the SAME source-aware resolver sgs/icon and sgs/nav-bar-menu's
 // trigger both use -- never a bespoke lookup, and never a second hand-parsed call
-// to sgs_get_lucide_icon(). The declared default { lucide, x } therefore renders
-// byte-identically to the hardcoded sgs_get_lucide_icon( 'x' ) this replaces.
+// to sgs_get_lucide_icon(). The declared default { lucide, x } renders the
+// Lucide 'x' icon.
 $sgs_nd_close_icon = sgs_nav_shared_icon_markup(
 	$attributes['closeIcon'] ?? null,
 	array(
@@ -867,7 +858,7 @@ if ( $bg_image_needs_note ) {
 	);
 }
 
-// ── D1011 item 5 — the scrim itself, a plain sibling <div> rendered BEFORE the
+// ── The scrim itself, a plain sibling <div> rendered BEFORE the
 // dialog (store.js's reparentToBody() appends scrim then dialog, in that
 // order, so the dialog's own z-index still paints on top by DOM order + the
 // explicit scale in style.css). resolveScrim() matches on `data-sgs-nav-scrim`
@@ -899,30 +890,25 @@ printf(
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
 
 /*
- * ── ONE DRAWER PER REQUEST (W2-a, council BLOCKER 3). ────────────────────────
+ * ── ONE DRAWER PER REQUEST. ──────────────────────────────────────────────────
  *
- * Record that a drawer has now painted on this request, so the Active-drawer
- * render path (Sgs_Drawer_Render, on wp_footer) does NOT add a second one.
- *
- * This is the ORDINARY block path — the 8 header patterns each embed a
- * `sgs/nav-drawer` as a sibling of `sgs/site-header`, and until this line existed
- * they rendered entirely outside the Active-Layout machinery: a grep of this file
- * for `Sgs_Active_Layout` returned nothing. The consequence was concrete, not
- * theoretical — this block's `drawerRef` default and `sgs/nav-menu`'s are the same
- * string, so a page carrying BOTH a pattern-embedded drawer and an Active CPT
- * drawer would have shipped two `<dialog id="sgs-nav-drawer">` elements: a
+ * Record that a drawer has painted on this request, so the Active-drawer render
+ * path (Sgs_Drawer_Render, on wp_footer) does NOT add a second `<dialog
+ * id="sgs-nav-drawer">`. A `sgs/nav-drawer` placed directly in content renders
+ * through this ordinary block path, outside the Active-Layout machinery, and
+ * this block's `drawerRef` default is the same string the Active drawer uses —
+ * without the flag a page carrying BOTH would ship two dialogs with one id: a
  * duplicate id, a second modal the store can resolve by accident, and no error
  * anywhere.
  *
- * Exact precedent, including the reasoning: class-sgs-header-rules.php:253-258,
- * where the rules/default path records the same flag so a second header slot hits
- * the one-header guard. `render_active()` sets it inline on its own success path;
- * this is the other path that needed to.
+ * Same flag as class-sgs-header-rules.php's rules/default path, which records it
+ * so a second header slot hits the one-header guard. `render_active()` sets it
+ * inline on its own success path; this is the other path that needs to.
  *
  * Set AFTER the printf, not before: the flag means "a drawer was SERVED", which is
  * the distinction Sgs_Active_Layout draws between $render_attempted and
- * $render_served (:52-74). Marking it before emitting would claim a drawer that
- * might not exist.
+ * $render_served. Marking it before emitting would claim a drawer that might not
+ * exist.
  *
  * Guarded on class_exists because a block's render.php can be exercised outside a
  * full plugin bootstrap (tests, the block-renderer REST route).

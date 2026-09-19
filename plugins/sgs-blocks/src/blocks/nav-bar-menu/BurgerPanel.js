@@ -47,7 +47,7 @@ export default function BurgerPanel( {
 				) }
 			</p>
 
-			{ /* ⛔ OMIT, never disable (D609 field 9c) — a text-only button has no
+			{ /* ⛔ OMIT, never disable — a text-only button has no
 			   icon to pick, so the picker is absent rather than greyed out. */ }
 			{ showsIcon && (
 				<IconPicker

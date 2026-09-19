@@ -1,8 +1,7 @@
 /**
  * SGS Nav Bar Menu (sgs/nav-bar-menu) — Settings tab panel: split-nav layout.
  *
- * Step 6 of the nav-menu-split plan (D1059) — BAR-ONLY, net-new this step.
- * Lets an operator run the SAME menu as two block instances either side of a
+ * BAR-ONLY. Lets an operator run the SAME menu as two block instances either side of a
  * centred logo (e.g. `sgs/site-header-row` with a `1fr auto 1fr`
  * `ColumnShapePicker` shape): one instance renders everything up to a chosen
  * item, the other renders everything after it, and only one of the two shows
@@ -14,9 +13,9 @@
  * Top-level items only: splitting mid-submenu has no coherent bar/drawer
  * meaning.
  *
- * `justifyContent` is a plain restore — `style.css`'s `:where(.sgs-nav-bar-menu)
- * { justify-content: space-between; }` was ALREADY written to yield to an
- * attribute-driven rule (D539); this control is the first thing to set one.
+ * `justifyContent` sets the alignment directly — `style.css`'s
+ * `:where(.sgs-nav-bar-menu) { justify-content: space-between; }` is written to
+ * yield to an attribute-driven rule, and this control is what sets one.
  *
  * @package SGS\Blocks
  */

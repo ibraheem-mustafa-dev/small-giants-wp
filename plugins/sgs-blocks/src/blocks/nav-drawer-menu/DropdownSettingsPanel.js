@@ -5,17 +5,15 @@ import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
  * SGS Nav Drawer Menu (sgs/nav-drawer-menu) — Settings tab: the
  * "Accessibility" panel (navLabel + itemSmartContrast).
  *
- * SPLIT (not moved), per D1059 ruling 6 / the plan's Step 2 instructions —
- * `navLabel` and `itemSmartContrast` are BOTH-classified (measured: both
- * forks read them), so both `sgs/nav-bar-menu` and this block need a copy of
- * this Accessibility panel. The other two PanelBodies in nav-menu's original
- * `DropdownSettingsPanel.js` do NOT come along:
- *   - "Menu panel" (the `drawerRef` text field, pairing a burger with the
+ * `navLabel` and `itemSmartContrast` apply to both the bar and the drawer
+ * list, so `sgs/nav-bar-menu` carries its own copy of this Accessibility
+ * panel. The bar's other two PanelBodies do not apply here:
+ *   - "Menu panel" (the `drawerRef` picker, pairing a burger with the
  *     drawer it opens) is BAR-only — this block has no burger of its own.
  *   - "Dropdown menus" (`submenuAlign`/`submenuCaret`/`submenuCloseGrace`)
- *     is BAR-only (measured) — this block's accordion has no floating panel
- *     to align, no caret-disclosure-arrow choice (the `<details>` marker is
- *     the disclosure), and no close-on-pointer-leave grace period.
+ *     is BAR-only — this block's accordion has no floating panel to align,
+ *     no caret-disclosure-arrow choice (the `<details>` marker is the
+ *     disclosure), and no close-on-pointer-leave grace period.
  *
  * @param {Object}   root0                Props.
  * @param {string}   root0.navLabel       The block's `navLabel` attribute.

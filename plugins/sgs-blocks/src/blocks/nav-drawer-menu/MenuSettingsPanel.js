@@ -5,15 +5,11 @@ import { PanelBody, SelectControl } from '@wordpress/components';
  * SGS Nav Drawer Menu (sgs/nav-drawer-menu) — Settings tab: the "Menu" panel
  * (menu source picker only).
  *
- * Trimmed from nav-menu/MenuSettingsPanel.js (D1059 split, 2026-09-14) — that
- * file bundled TWO concerns in one component: the "Menu" panel (the `ref`
- * source picker, BOTH-classified — every menu-rendering block needs it) and
- * the "Burger Menu" panel (`collapsePoint`, BAR-only, measured — this block
- * never has a burger and never declares that attribute). Reusing the
- * original component unmodified would have rendered a "Burger Menu" panel
- * writing to an attribute this block's block.json doesn't declare — a dead
- * control, exactly what `check-dead-controls.js` bans. This file keeps ONLY
- * the half that applies here.
+ * Only the "Menu" panel (the `ref` source picker — every menu-rendering block
+ * needs it). The bar block's "Burger Menu" panel (`collapsePoint`) is BAR-only:
+ * this block never has a burger and never declares that attribute, and a
+ * "Burger Menu" panel here would write to an undeclared attribute — a dead
+ * control, exactly what `check-dead-controls.js` bans.
  *
  * @param {Object}   root0               Props.
  * @param {number}   root0.menuRef       The block's `ref` attribute (menu id).

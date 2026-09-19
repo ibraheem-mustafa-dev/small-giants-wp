@@ -1,15 +1,11 @@
 /**
  * SGS Nav Bar Menu (sgs/nav-bar-menu) — editor.
  *
- * Split from the former conflated `sgs/nav-menu` (D1059, 2026-09-14). This
- * block renders ONLY the bar fork — the in-drawer accordion/drill-down list
- * is the separate `sgs/nav-drawer-menu` block. `isDrawerInstance` and its
- * `context?.['sgs/navDrawerBg']` read are GONE entirely (not just unused):
- * this block never receives that context (`usesContext` dropped from
- * block.json) and never needs to detect what it is — it IS the bar.
+ * This block renders ONLY the bar — the in-drawer accordion/drill-down list
+ * is the separate `sgs/nav-drawer-menu` block. This block declares no
+ * `usesContext` and never needs to detect what it is — it IS the bar.
  *
- * RECONCILED 2026-09-14 (post-scaffold pass, both blocks now built): panels
- * with NO bar/drawer conflict (TypographyPanel, ItemsPanel, EffectsPanel,
+ * Panels with NO bar/drawer conflict (TypographyPanel, ItemsPanel, EffectsPanel,
  * FeaturedPanel, ColourRowExtras' BOTH-classified treatments,
  * useNavMenuSource, useItemHoverContrast, utils, ColourTreatment) moved to
  * `src/shared/nav-menu-panels/` and are imported from there by both blocks —
@@ -17,30 +13,24 @@
  * still needs the unchanged parts). Panels that are genuinely BAR-only
  * (BurgerPanel, ItemSeparatorPanel, MenuSettingsPanel, DropdownSettingsPanel,
  * NavMenuNotices, useDrawerNotice, and the bar-only treatments in
- * `./BarColourRowExtras.js`) live in THIS directory, not shared — they used
- * to be imported from the doomed `../nav-menu/` directory (now deleted).
+ * `./BarColourRowExtras.js`) live in THIS directory, not shared.
  * `ListLayoutPanel` and `DropdownStylePanel` are shared components that take
  * a prop (`showColumnsControl` / `showSizingControls`) to omit the controls
  * that don't apply here — see each shared file's own docblock.
  *
- * NOT mounted here, by measured decision (classification report,
- * 2026-09-14) — both are DRAWER-only, confirmed by reading their own wiring,
- * not assumed from the task brief:
- *  - `SubmenuItemsPanel` (sublink marker icon/colour) — render.php's marker
- *    CSS was scoped `.sgs-nav-drawer …`; the bar dropdown never painted it.
- *    `sublinkMarkerIcon`/`sublinkMarkerColour*` are dropped from this
- *    block's attributes entirely.
+ * NOT mounted here — both are DRAWER-only:
+ *  - `SubmenuItemsPanel` (sublink marker icon/colour) — the marker CSS is
+ *    scoped `.sgs-nav-drawer …`; the bar dropdown never paints it.
+ *    `sublinkMarkerIcon`/`sublinkMarkerColour*` are not declared on this
+ *    block's attributes.
  *  - `MegaDrawerPanel` (megaDrawerFallbackIds) — its own help text says
  *    "The desktop bar always shows the full mega panel either way — this
  *    only affects the drawer." `megaDrawerFallbackIds` is DRAWER-only.
  *
- * KEPT here, overriding the task brief's default assumption — `useDrawerNotice`
- * IS mounted, not dropped. Reading the hook (useDrawerNotice.js) shows it
- * pairs THIS block's burger with an `sgs/nav-drawer` CONTAINER block (the
- * dialog wrapper, a different concept from `sgs/nav-drawer-menu`, the new
- * content block) — only the bar ever has a burger, so the "your burger opens
- * nothing" warning is bar-side functionality by construction, not
- * drawer-side. Flagged for Step 2 sign-off.
+ * `useDrawerNotice` IS mounted: it pairs THIS block's burger with an
+ * `sgs/nav-drawer` CONTAINER block (the dialog wrapper, a different concept
+ * from `sgs/nav-drawer-menu`, the content list) — only the bar ever has a
+ * burger, so the "your burger opens nothing" warning belongs to this block.
  *
  * The bar is fully server-rendered by render.php (menu source resolved via
  * SGS_Nav_Menu_Source). The editor uses ServerSideRender for the canvas
@@ -48,7 +38,7 @@
  * preview drifts from render.php) and exposes Settings + Styles as WP's
  * native inspector tabs.
  *
- * `colourRows` STAYS HERE (owner ruling 3)
+ * `colourRows` STAYS HERE
  * — as a single literal ArrayExpression whose entries are either row literals
  * or `fillRow()`/`textRow()` calls. `scripts/inspector-scan/rules/31-golden-colour-control.js`
  * resolves a row's state count only from a shape it can see in THIS file or in
@@ -98,12 +88,9 @@ import EffectsPanel from '../../shared/nav-menu-panels/EffectsPanel';
 import FeaturedPanel from '../../shared/nav-menu-panels/FeaturedPanel';
 // This block's OWN declared Sweep-eligibility source (FR-41-26) — read here
 // rather than inside the shared ColourRowExtras/ColourTreatment modules,
-// which no longer statically import either block's manifest (see
-// shared/nav-menu-panels/ColourRowExtras.js docblock). This FIXES a latent
-// bug from the original scaffold: this block previously imported
-// ColourRowExtras straight from `../nav-menu/`, which read `nav-menu`'s OWN
-// block.json rather than this block's — this block's own manifest is the
-// correct declared source per FR-41-26.
+// which do not statically import either block's manifest (see
+// shared/nav-menu-panels/ColourRowExtras.js docblock) — this block's own
+// manifest is the correct declared source per FR-41-26.
 import blockMetadata from './block.json';
 
 const SWEEP_ELIGIBILITY = blockMetadata?.supports?.sgs?.sweepEligibility;
@@ -183,12 +170,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	} = attributes;
 
 	// listColumns is intentionally NOT destructured/read here — it is
-	// DRAWER-only (classification report) and is not declared on this
-	// block's attributes. RECONCILED (2026-09-14 shared-panels pass): the
-	// shared `ListLayoutPanel` (`src/shared/nav-menu-panels/ListLayoutPanel.js`)
-	// now takes a `showColumnsControl` prop and this block passes `false`, so
-	// the "Columns" control is OMITTED here rather than rendered-and-inert —
-	// the dead-control gap the original scaffold flagged is closed.
+	// DRAWER-only and is not declared on this block's attributes. The shared
+	// `ListLayoutPanel` (`src/shared/nav-menu-panels/ListLayoutPanel.js`) takes
+	// a `showColumnsControl` prop and this block passes `false`, so the
+	// "Columns" control is OMITTED here rather than rendered-and-inert.
 
 	const { menuOptions, isResolving, resolvedItems, toggleFeatured } =
 		useNavMenuSource( { ref, featuredItemIds, setAttributes } );
@@ -213,13 +198,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	// ── The Colour panel (Spec 41 §9.6) ──────────────────────────────────
 	//
-	// D618/D609 — ONE grouped, SGS-OWNED colour panel (own PanelBody, mounted
+	// ONE grouped, SGS-OWNED colour panel (own PanelBody, mounted
 	// FIRST so it sits at the top of the Styles tab; WordPress concatenates
 	// same-group Fills in mount order). Sub-groupings come from FR-41-16's
 	// optional per-row `heading`, so this stays ONE panel.
 	//
 	// ⛔ THIS ARRAY, AND EVERY `states` ARRAY INSIDE IT, STAYS IN THIS FILE
-	// (owner ruling 3). See the file docblock.
+	// See the file docblock.
 	const itemSurface = itemBg || navBg || '';
 
 	// This instance is ALWAYS the bar (no drawer-context detection any
@@ -346,10 +331,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		// same rule-31 static-resolution reasoning as the item-bg row above.
 		{
 			key: 'item-border',
-			// Bar-only now, unconditionally — the drawer's own row-separator
-			// label lives on `sgs/nav-drawer-menu`'s own edit.js copy of this
-			// row (a distinct attribute NAMESPACE, D1059 "the block name is
-			// the namespace" — no attribute rename needed).
+			// Bar-only — the drawer's own row-separator label lives on
+			// `sgs/nav-drawer-menu`'s own edit.js copy of this row (a distinct
+			// attribute NAMESPACE: the block name is the namespace).
 			label: __( 'Item underline colour', 'sgs-blocks' ),
 			...( itemSurface
 				? { contrastAgainst: itemSurface, contrastLargeText: true }
@@ -389,10 +373,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			),
 		},
 		// FR-41-37 — the independent vertical divider between adjacent
-		// TOP-LEVEL BAR items. Unconditional now (bar-only block; the
-		// former `! isDrawerInstance` guard is gone by construction — a
-		// vertical list has no "next item to the right" and that concept
-		// simply never reaches this block's edit.js at all).
+		// TOP-LEVEL BAR items. Unconditional (bar-only block — a vertical
+		// list has no "next item to the right", so that concept never
+		// reaches this block's edit.js).
 		{
 			key: 'item-separator',
 			label: __( 'Item separator colour', 'sgs-blocks' ),
@@ -494,16 +477,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				/>
 			),
 		} ),
-		// Added 2026-09-17 (P-NAV-MENU-BORDER-CENSUS-DELEGATED follow-up): the
-		// SUBLINK's own border colour — distinct from "Panel border colour"
+		// The SUBLINK's own border colour — distinct from "Panel border colour"
 		// above (that row is `submenuBorderColour`, the `submenu-panel`
 		// element; this one is `submenuLinkBorderColour`, the `sublink`
 		// element). Normal + Hover only — no Current, per block.json's
 		// `sublink.attrMap` (no `submenuLinkBorderColourCurrent` declared).
 		// Shape (width/style) is `DropdownStylePanel`'s new "Link border"
-		// control, matching the panel-border split above. render.php already
-		// consumed both attrs (`includes/nav-menu-submenu-link-css.php`); this
-		// was the missing editor control, not a dead attribute.
+		// control, matching the panel-border split above. render.php consumes
+		// both attrs (`includes/nav-menu-submenu-link-css.php`).
 		{
 			key: 'submenu-link-border',
 			label: __( 'Link border colour', 'sgs-blocks' ),
@@ -529,10 +510,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				},
 			],
 		},
-		// The sublink-marker colour row is DROPPED here (DRAWER-only,
-		// classification report — its CSS is scoped `.sgs-nav-drawer …` and
-		// never painted the bar's own dropdown). `sublinkMarkerIcon` and its
-		// colour family are not declared on this block.
+		// There is no sublink-marker colour row here (DRAWER-only — its CSS is
+		// scoped `.sgs-nav-drawer …`, so it never paints the bar's own
+		// dropdown). `sublinkMarkerIcon` and its colour family are not declared
+		// on this block.
 		textRow( {
 			key: 'burger-icon',
 			heading: __( 'Menu button', 'sgs-blocks' ),
@@ -598,7 +579,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	return (
 		<>
-			{ /* ⛔ FIRST among same-group Fills (D618/D609) — WordPress concatenates
+			{ /* ⛔ FIRST among same-group Fills — WordPress concatenates
 			   same-group Fills in MOUNT order, so this must render before
 			   `<InspectorControls>` below to sit at the top of the Styles tab. */ }
 			<SgsColourPanel rows={ colourRows } />
@@ -654,9 +635,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			</InspectorControls>
 
 			{ /* ── Styles tab — every panel mounted directly, no wrapper hop.
-			   Measured 2026-08-11: routing panels through a second wrapper
-			   component blinded inspector-scan rule 21's control corpus
-			   (21 findings → 48 once un-wrapped). ─────────────────────────── */ }
+			   Routing panels through a second wrapper component would blind
+			   inspector-scan rule 21's control corpus. ─────────────────────────── */ }
 			<InspectorControls group="styles">
 				<ListLayoutPanel
 					gap={ gap }
@@ -685,7 +665,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								showTextAlign: true,
 								showTextWrap: true,
 								showTextColumns: true,
-								showTextIndent: false, // D1060: never emitted for nav links; attr kept
+								showTextIndent: false, // never emitted for nav links; attr kept
 								showWritingMode: true,
 								showHover: true,
 							},
@@ -701,7 +681,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								showTextAlign: true,
 								showTextWrap: true,
 								showTextColumns: true,
-								showTextIndent: false, // D1060: never emitted for nav links; attr kept
+								showTextIndent: false, // never emitted for nav links; attr kept
 								showWritingMode: true,
 								showHover: true,
 							},
@@ -724,7 +704,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					setAttributes={ setAttributes }
 				/>
 
-				{ /* FR-41-37 — unconditional now (bar-only block). */ }
+				{ /* FR-41-37 — always mounted (bar-only block). */ }
 				<ItemSeparatorPanel
 					itemSeparatorWidth={ itemSeparatorWidth }
 					itemSeparatorStyle={ itemSeparatorStyle }

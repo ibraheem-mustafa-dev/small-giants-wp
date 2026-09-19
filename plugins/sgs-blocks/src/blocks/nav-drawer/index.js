@@ -11,5 +11,5 @@ registerBlockType( metadata.name, {
 	save: Save,
 } );
 
-// Seven desktop-variant presets (design gate 2026-07-28) — see variations.js.
+// Seven desktop-variant presets — see variations.js.
 variations.forEach( ( variation ) => registerBlockVariation( metadata.name, variation ) );

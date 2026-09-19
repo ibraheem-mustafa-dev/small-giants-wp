@@ -13,19 +13,14 @@ import { useEntityRecords } from '@wordpress/core-data';
  * SGS Nav Bar Menu (sgs/nav-bar-menu) — Settings tab panels: Accessibility, Menu
  * panel, Dropdown menus.
  *
- * Split out of edit.js (Spec 41 step 7, pure refactor) to keep the file under
- * the project's 250-line JS budget — sibling of MenuSettingsPanel.js (see its
- * docblock for why this pair exists instead of one SettingsPanels.js). No
- * behaviour change — verbatim JSX from edit.js's `<InspectorControls>`
+ * Sibling of MenuSettingsPanel.js; kept separate to stay under the project's
+ * 250-line JS budget. Both are mounted from edit.js's `<InspectorControls>`
  * (default group) block.
  *
- * drawerRef (Task 6/W2-b, Spec 37 FR-37-49) — re-typed from a free-text
- * `TextControl` (a raw DOM-id STRING an operator had to type to MATCH the
- * target `sgs/nav-drawer` block's own `drawerRef`, silently broken by any
- * typo) to a real post-picker: a `SelectControl` populated from PUBLISHED
- * `sgs_drawer` posts, storing a POST ID. `0` means "no specific pick" and
- * falls back to the site's single Active-drawer pointer
- * (`Sgs_Active_Layout::AREA_DRAWER`, PHP-side). Shape copied verbatim from
+ * drawerRef (Spec 37 FR-37-49) is a post-picker: a `SelectControl` populated
+ * from PUBLISHED `sgs_drawer` posts, storing a POST ID. `0` means "no specific
+ * pick" and falls back to the site's single Active-drawer pointer
+ * (`Sgs_Active_Layout::AREA_DRAWER`, PHP-side). Same shape as
  * `sgs/modal`'s `modalRef` control (`modal/edit.js`) — same
  * `useEntityRecords( 'postType', …, { per_page: -1, status: ['publish'],
  * context: 'edit' } )` fetch, same manual-options-array-with-a-leading-
@@ -93,13 +88,10 @@ export default function DropdownSettingsPanel( {
 					__next40pxDefaultSize
 				/>
 
-				{ /* RELOCATED here in step 14 (Spec 41 §9.5 / FR-41-27) from the old
-				   Design-tab colour/state area. It sits beside the navigation label
+				{ /* Spec 41 §9.5 / FR-41-27. It sits beside the navigation label
 				   because both answer "does this menu behave safely for every
 				   visitor", which is what a General-tab Accessibility panel is for.
-				   DEFAULT FLIPPED 2026-09-13 (Bean-directed): was default-ON
-				   (silently swapping an operator's explicit hover colour); now
-				   default-OFF — an explicit colour always renders as-authored
+				   Default OFF — an explicit colour always renders as-authored
 				   unless this is switched ON. The readability CHECK itself is
 				   unconditional regardless of this toggle: the item-text row below
 				   always shows an advisory note when the hover colour would be hard

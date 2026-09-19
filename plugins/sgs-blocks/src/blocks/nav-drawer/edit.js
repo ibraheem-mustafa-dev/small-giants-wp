@@ -81,10 +81,10 @@ import { resolveTextColourPreviewStyle, typographyPreviewStyle } from '../../uti
 
 /**
  * Content template: menu + (optional) logo + (optional) CTA. templateLock:false.
- *
- * The nav-menu seeded here is a SEPARATE block instance from the one in the
- * header — its own uid, its own scoped styles, its own inspector — so a client
- * can style the drawer's menu completely independently of the bar.
+ * The nav-drawer-menu seeded here is a SEPARATE block instance from the
+ * sgs/nav-bar-menu in the header — its own uid, its own scoped styles, its own
+ * inspector — so a client can style the drawer's menu completely independently
+ * of the bar.
  *
  * Seeding drawer-appropriate values makes the capability discoverable AND
  * gives a sane vertical starting point (a tighter stacked gap). Colours stay
@@ -169,13 +169,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const isCompact = anchorDesktop === 'trigger' || anchorDesktop === 'centred';
 	const [ palette ] = useSettings( 'color.palette' );
 
-	// ── G6 (2026-09-12 architecture doc) — auto-rename on detected collision. ──
+	// ── Auto-rename on detected collision. ──
 	//
-	// block.json's shared literal default 'sgs-nav-drawer' is deliberate (9
-	// shipped header patterns rely on it) and stays untouched. The bug this
-	// closes is a SECOND, genuinely independent drawer resolving to the same
-	// id as another drawer, so a burger opens the wrong dialog. Bean approved
-	// "auto-rename silently" over "warn and block".
+	// block.json's shared literal default 'sgs-nav-drawer' is deliberate and
+	// stays untouched. A SECOND, genuinely independent drawer resolving to the
+	// same id as another drawer would make a burger open the wrong dialog, so
+	// the later one is renamed silently rather than warning and blocking.
 	//
 	// Two collision sources, checked in the same effect:
 	//  (a) within-post — another sgs/nav-drawer block in THIS post already
@@ -184,7 +183,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	//      index) is renamed, so the original zero-config drawer a header
 	//      pattern seeds is never rewritten out from under an operator.
 	//  (b) cross-post — window.sgsBlocksData.activeDrawer (published by
-	//      Sgs_Drawer_Render::editor_data(), class-sgs-blocks.php:284) names the
+	//      Sgs_Drawer_Render::editor_data()) names the
 	//      site's real Active header drawer by post id + ref. If this block's
 	//      ref matches but its OWN post is a different post, this is a second,
 	//      different drawer colliding with the real one — not the Active
@@ -251,7 +250,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// Editor-only preview styling (reflects the same attrs render.php reads;
 	// inline style here is editor canvas only — the no-inline contract governs
 	// the FRONTEND render.php output, not the editor). Fix 4 (multi-rater
-	// pre-commit review): NEVER set element `opacity` — that would fade the
+	// NEVER set element `opacity` — that would fade the
 	// InnerBlocks content too, unlike render.php's color-mix() which only
 	// affects the panel's own fill. Mirror render.php's color-mix() approach
 	// instead so the preview matches what ships; guard for an empty drawerBg
@@ -259,8 +258,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// color-mix() string is never built around an undefined colour.
 	// drawerBg's DesignTokenPicker is `linked`, but linked still stores raw
 	// hex for a custom colour pick (only a palette-swatch pick stores the
-	// slug) -- colourVar() (slug-only) was wrong for that half of its own
-	// contract; resolveColourToken() handles both.
+	// slug) -- colourVar() (slug-only) cannot handle that half;
+	// resolveColourToken() handles both.
 	const compactWidthFallback =
 		anchorDesktop === 'centred' ? '480px' : '360px';
 
@@ -310,7 +309,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			? { 'aria-describedby': `${ drawerRef || 'sgs-nav-drawer' }-bg-note` }
 			: {};
 
-	// Close-LABEL typography canvas mirror (2026-09-13). The close-text span
+	// Close-LABEL typography canvas mirror. The close-text span
 	// below is hand-authored JSX, not a render.php-rendered node (this block
 	// hosts editable InnerBlocks so cannot use <ServerSideRender> for its whole
 	// canvas — see the module docstring), so render.php's scoped closeFontSize/
@@ -320,7 +319,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	//
 	// closeTextTransform's untouched DEFAULT differs by closeStyle
 	// (text-swap: uppercase; icon-and-text: none) — resolved here exactly as
-	// render.php:719-720 resolves it, so an untouched instance's canvas
+	// render.php resolves it, so an untouched instance's canvas
 	// matches the untouched instance's frontend, not just an edited one.
 	const closeTypographyAttrs = attributes.closeTextTransform
 		? attributes
@@ -331,8 +330,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const closeLabelStyle = typographyPreviewStyle( closeTypographyAttrs, 'close' );
 
 	const blockProps = useBlockProps( {
-		// sgs-nav-drawer--close-{style} mirrors render.php:456 -- without it,
-		// the text-swap/burger-morph CSS (style.css:314-345, scoped under that
+		// sgs-nav-drawer--close-{style} mirrors render.php's own modifier class --
+		// without it, the text-swap/burger-morph CSS (style.css, scoped under that
 		// modifier class) never applies, and the canvas always shows the
 		// separate-x icon regardless of the closeStyle control.
 		className: `sgs-nav-drawer sgs-nav-drawer__editor sgs-nav-drawer--close-${ closeStyle || 'separate-x' }${ previewOpen ? '' : ' sgs-nav-drawer__editor--collapsed' }`,
@@ -350,12 +349,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	return (
 		<>
-			{ /* D618/D609 — grouped, SGS-owned colour panel, rendered FIRST so it
-			   sits at the top of the inspector (Styles tab). Replaces the two
-			   scattered DesignTokenPicker rows that used to live in "Drawer
-			   container" (Background) and "Close button" (Close icon colour)
-			   below. Neither attr has a hover counterpart, so each is a
-			   single-state row. */ }
+			{ /* Grouped, SGS-owned colour panel, rendered FIRST so it sits at the
+			   top of the inspector (Styles tab). Holds every drawer colour
+			   (Background, Text, Close icon colour) so none is scattered across
+			   the panels below. */ }
 			<SgsColourPanel
 				rows={ [
 					fillRow( {
@@ -368,11 +365,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						attributes,
 						setAttributes,
 					} ),
-					/* Drawer text colour — was a standalone GradientCapableColourControl
-					   inside "Drawer container" below; consolidated in alongside its
-					   sibling drawerBg/toggleCloseColour rows (no D622 element-panel
-					   override applies — this block already groups all its colours in
-					   the top-level shared panel, per the D618/D609 comment above). */
+					/* Drawer text colour — alongside its sibling drawerBg/
+					   toggleCloseColour rows; this block groups all its colours in the
+					   top-level shared panel, per the comment above. */
 					textRow( {
 						key: 'drawerText',
 						label: __( 'Drawer text colour', 'sgs-blocks' ),
@@ -392,12 +387,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							base: 'toggleCloseColour',
 							hover: 'toggleCloseColourHover',
 							gradient: 'toggleCloseColourGradient',
-							// toggleCloseColourHoverGradient (2026-09-13, gradient-toggle
-							// sibling sweep) -- e17bea203 wired the Normal-state gradient
-							// but left Hover flat-colour-only with no documented reason
-							// (unlike nav-menu's itemColourHover, which had D956's
-							// smart-contrast justification). Confirmed accidental via git
-							// history; wired unconditionally since no swap applies here.
+							// toggleCloseColourHoverGradient -- the Hover gradient sibling of
+							// toggleCloseColourGradient; wired unconditionally since no
+							// smart-contrast swap applies here (unlike the bar's
+							// itemColourHover).
 							hoverGradient: 'toggleCloseColourHoverGradient',
 						},
 						attributes,
@@ -419,8 +412,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 				</PanelBody>
 
-				{ /* S7 pilot (2026-09-02, uniformity sweep): converted from a plain PanelBody
-				   to a ToolsPanel — ariaLabel, drawerRef, and anchor (panel position) are
+				{ /* A ToolsPanel rather than a plain PanelBody — ariaLabel, drawerRef, and anchor (panel position) are
 				   core block settings and stay always-visible (isShownByDefault); panelSize,
 				   animateFrom, closeStyle, and submenuModel are genuinely optional
 				   style/behaviour embellishments and are hideable/resettable per WP's native
@@ -649,14 +641,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			<InspectorControls group="styles">
 				<PanelBody title={ __( 'Drawer container', 'sgs-blocks' ) }>
 					{ /* Drawer text colour moved to the top-level SgsColourPanel above,
-					   alongside Background/Close icon colour (D618/D621 pattern). */ }
-					{ /* Background moved to the top-level SgsColourPanel (D618/D621).
+					   alongside Background/Close icon colour. */ }
+					{ /* Background lives in the top-level SgsColourPanel.
 					   NOTE: that shared control does not expose an alpha/clearable
-					   override per row (SgsColourPanel forwards no such props),
-					   so the previous "preset-slug-only, no enableAlpha" WCAG
-					   guard rail here is superseded by the shared panel's
-					   default (enableAlpha=true) — consistent with how every
-					   other consumer of SgsColourPanel already behaves. */ }
+					   override per row (SgsColourPanel forwards no such props), so
+					   it uses the shared panel's default (enableAlpha=true),
+					   consistent with every other consumer of SgsColourPanel. */ }
 
 					{ /* Surface — opacity + blur on the panel itself. No separate scrim:
 					     the panel's own fill/blur IS the occlusion (8/8 reference sites
@@ -833,15 +823,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					) }
 				</PanelBody>
 
-				{ /* Spec 41 FR-41-12 / step 14a — the close button now offers the same
-				   three things the OPEN side does: a chosen icon, a chosen word, and
-				   both together. Converted from a plain PanelBody to a ToolsPanel so
-				   the `closeStyle` row keeps the hasValue/onDeselect idiom it had in
-				   "Drawer Settings", which is where it used to live — it moves here so
-				   the trio sits together, in §9.3's order, rather than one control
-				   being two panels away from the other two.
+				{ /* Spec 41 FR-41-12 — the close button offers the same three things
+				   the OPEN side does: a chosen icon, a chosen word, and both
+				   together. A ToolsPanel, so the `closeStyle` row keeps the
+				   hasValue/onDeselect idiom, with the trio sitting together in
+				   §9.3's order.
 				   ⛔ Close icon COLOUR is not here: it is a row in the top-level
-				   SgsColourPanel (D618/D621), and is untouched by this step. */ }
+				   SgsColourPanel. */ }
 				<ToolsPanel
 					label={ __( 'Close button', 'sgs-blocks' ) }
 					resetAll={ () =>
@@ -852,7 +840,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						} )
 					}
 				>
-					{ /* ⛔ OMIT, never disable (D609 field 9c). Under `text-swap` there is
+					{ /* ⛔ OMIT, never disable. Under `text-swap` there is
 					   no icon and under `burger-morph` the glyph is a CSS-drawn two-bar
 					   span, not an icon at all — so the picker is ABSENT in both, never
 					   greyed out. */ }
@@ -939,7 +927,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						</ToolsPanelItem>
 					) }
 
-					{ /* closeSize — mirrors nav-menu's BurgerPanel `Size` field exactly
+					{ /* closeSize — mirrors sgs/nav-bar-menu's BurgerPanel `Size` field
 					   (same SgsLengthControl shape, same 44px WCAG-floor help text).
 					   Not gated on closeStyle: it governs the button box in every
 					   style, matching burgerSize's own unconditional presence. */ }
@@ -961,7 +949,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						/>
 					</ToolsPanelItem>
 
-					{ /* ⛔ OMIT, never disable (D609 field 9c) — matching nav-menu's own
+					{ /* ⛔ OMIT, never disable — matching sgs/nav-bar-menu's own
 					   burger-typography OMIT-while-icon gate (edit.js's `triggerMode !==
 					   'icon'` target). The close LABEL only renders under text-swap /
 					   icon-and-text (render.php's $sgs_nd_close_inner branch), so font
@@ -1005,16 +993,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				{ /* closeStyle preview (2026-08-13) -- mirrors render.php:487-493's
-					three real, visually distinct markups. Previously this always
-					rendered the × icon regardless of closeStyle, so the "Close
-					button style" control had zero editor-canvas effect. */ }
+				{ /* closeStyle preview -- mirrors render.php's three real, visually
+					distinct close-button markups, so the "Close button style"
+					control has a visible editor-canvas effect. */ }
 				<span
 					className="sgs-nav-drawer__close-preview sgs-nav-drawer__close"
 					aria-hidden="true"
 					style={ {
 						...resolveTextColourPreviewStyle( toggleCloseColour, toggleCloseColourGradient, ( v ) => resolveColourToken( v, palette ) ),
-						/* closeSize editor-canvas mirror (2026-09-12) — this preview span
+						/* closeSize editor-canvas mirror — this preview span
 						   is hand-authored JSX, not a render.php-rendered node (the drawer
 						   cannot use ServerSideRender while it hosts editable InnerBlocks —
 						   see the module docstring), so render.php's scoped closeSize <style>

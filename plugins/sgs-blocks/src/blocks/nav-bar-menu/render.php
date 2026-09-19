@@ -1,6 +1,6 @@
 <?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName -- dynamic block render template; helper class below is rendered inline, its namespace lives in the block slug.
 /**
- * SGS Nav Bar Menu (sgs/nav-bar-menu) — server-side render. (D1059 split)
+ * SGS Nav Bar Menu (sgs/nav-bar-menu) — server-side render.
  *
  * This is the site's VISIBLE menu BAR: a FLAT horizontal row of real <a href>
  * links on desktop; below `collapsePoint` it becomes a burger that opens
@@ -10,11 +10,9 @@
  * sub-toggles and `sgs_mega_render_panel_content()` panels, all driven by the
  * shared `sgs/mega` interactivity store.
  *
- * Split from the former conflated `sgs/nav-menu` (D1059, 2026-09-14): this
- * block renders ONLY the bar fork. The in-drawer accordion/drill-down list is
- * the separate `sgs/nav-drawer-menu` block — there is no runtime fork here
- * any more (`isDrawerInstance` / `$sgs_nm_is_drawer_list` are gone by
- * construction, not by branch). The burger is ALWAYS emitted by this block.
+ * This block renders ONLY the bar. The in-drawer accordion/drill-down list is
+ * the separate `sgs/nav-drawer-menu` block — there is no runtime fork here.
+ * The burger is emitted by this block unless `showBurger` is off.
  *
  * Menu source: the shared SGS_Nav_Menu_Source resolver (one-source rule,
  * Spec 36 FR-36-1) — the SAME resolver `sgs/nav-drawer-menu` uses.
@@ -39,22 +37,16 @@
 
 defined( 'ABSPATH' ) || exit;
 
-// [D-tier-object-render-fix 2026-09-06]
-// Group 1 folded padding/margin into owned tier-object attrs
-// {desktop,tablet,mobile}, but this block's own scoped CSS below still
-// reads the pre-migration flat shape (a plain box for the base value,
-// plus four separate flat attrs for the tablet/mobile overrides --
-// block.json no longer declares any of those four). Normalise once,
-// into fresh locals only -- every literal reference below has been
-// redirected to these instead of writing back into $attributes.
-// Fixed 2026-09-06: sgs_responsive_normalise_object() lives in
-// helpers-responsive.php, which this file's own render-helpers.php
-// require below WOULD load -- but too late, since these two calls run
-// before that require executes. A block whose render.php is the first
-// SGS block PHP to run in a request (the bar sits in the site header, on
-// every page) fatals with "Call to undefined function" before any
-// other block's render.php has had a chance to load it. Requiring the
-// defining file directly, here, removes the load-order dependency.
+// padding/margin are owned tier-object attrs {desktop,tablet,mobile}.
+// Normalise once, into fresh locals only -- never written back into
+// $attributes.
+// sgs_responsive_normalise_object() lives in helpers-responsive.php, which
+// this file's own render-helpers.php require below WOULD load -- but too
+// late, since these two calls run before that require executes. A block
+// whose render.php is the first SGS block PHP to run in a request (e.g. the
+// site-header navigation bar, present on every page) would otherwise fatal
+// with "Call to undefined function". Requiring the defining file directly,
+// here, removes the load-order dependency.
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
 $sgs_tor_padding_tiers   = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
 $sgs_tor_margin_tiers    = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
@@ -77,8 +69,8 @@ require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-trigger-css.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-submenu-css.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-submenu-link-css.php';
 // class-sgs-container-wrapper.php is deliberately NOT required — this block
-// renders its root block-private since D539 (see §5). Re-adding the require
-// would reintroduce a dependency nothing uses.
+// renders its root block-private (see §5). Requiring it would add a
+// dependency nothing uses.
 
 if ( ! function_exists( 'sgs_nav_shared_typography_hover_rule' ) ) {
 	/**
@@ -89,8 +81,7 @@ if ( ! function_exists( 'sgs_nav_shared_typography_hover_rule' ) ) {
 	 * and `TypographyControls`' `showHover` trio is block-private code. It is
 	 * wrapped in a `function_exists()` guard because a top-level function
 	 * declaration in a per-instance render.php fatals on a page's SECOND
-	 * instance, and the sibling `sgs/nav-menu` (retired at Step 5) declares the
-	 * identical function under the same name/guard during the migration window.
+	 * instance.
 	 *
 	 * ⛔ The three allowlists are reproduced LITERALLY from
 	 * `includes/helpers-typography.php::sgs_typography_css_rule()` — they are
@@ -218,19 +209,16 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 					: 'start',
 				'caret'       => ! isset( $submenu['caret'] ) || (bool) $submenu['caret'],
 
-				/*
-				 * 170ms, matching the mega panel's live deterministic value in this
-				 * same file. Deliberately NOT changed as a side effect of adding
-				 * dropdowns: this timing governs every existing nav, and a design
-				 * doc asserting 500 was checked against the code rather than
-				 * believed.
+				/* 170ms, matching the mega panel's deterministic value in this
+				 * same file. This timing governs every nav, so it is a fixed
+				 * default rather than something tuned per dropdown.
 				 */
 				'close_grace' => isset( $submenu['close_grace'] ) ? max( 0, (int) $submenu['close_grace'] ) : 170,
 
 				// PHP-validated, not a JSON enum (block.json::submenuAnimation is
 				// plain string) -- an out-of-list stored value coerces to the
 				// no-animation default rather than emitting an unstyled modifier
-				// class the CSS (style.css, Spec 41 step 17) never defined.
+				// class the CSS (style.css) never defines.
 				'animation'   => in_array( $submenu['animation'] ?? '', array( 'fade', 'slide-down' ), true )
 					? (string) $submenu['animation']
 					: 'none',
@@ -238,12 +226,11 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 		}
 
 		/**
-		 * Accessor for the validated submenu settings (Spec 41 step 8, pure
-		 * refactor) -- render.php now calls sgs_nav_bar_menu_render_items() as a
-		 * free function (see includes/nav-menu-markup.php), which has no
-		 * $this and so cannot read $this->submenu directly. This getter is the
-		 * ONLY new surface this split adds to the class; it exposes existing
-		 * validated state, it does not compute anything new.
+		 * Accessor for the validated submenu settings -- render.php calls
+		 * sgs_nav_bar_menu_render_items() as a free function (see
+		 * includes/nav-menu-markup.php), which has no $this and so cannot read
+		 * $this->submenu directly. This getter exposes the existing validated
+		 * state; it does not compute anything new.
 		 *
 		 * @return array{align: string, caret: bool, close_grace: int, animation: string}
 		 */
@@ -291,7 +278,7 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 							// operator drag-nest to ANY depth, so this case is reachable
 							// from the UI. Emit the parent, then FLATTEN its descendants
 							// into this same level rather than dropping them — a silent
-							// truncation here is the D338 data-loss class. Declared
+							// truncation here would be silent data loss. Declared
 							// behaviour, not discovered behaviour.
 							$items[] = $item;
 
@@ -351,20 +338,19 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 			/*
 			 * A CUSTOM classic-menu link (no linked post/term) resolves through
 			 * SGS_Nav_Menu_Source::classic_items_to_blocks() with `'id' => (int)
-			 * $item->object_id`, which is 0 for a custom URL. The old check here
-			 * — `isset( $attrs['id'] ) && '' !== $attrs['id']` — is TRUE for int
-			 * 0 (0 !== '' in PHP's loose comparison), so every custom-link item
-			 * collapsed onto the SAME identifier 'id:0' instead of falling back
-			 * to 'label:<text>'. That silently broke two things: (1) any
-			 * `featuredItemIds` entry saved as 'label:<text>' for a custom link
-			 * never matched here, so the pill/background never rendered; (2) two
-			 * custom links in the same menu would have shared one identifier,
-			 * so featuring one would have featured both.
+			 * $item->object_id`, which is 0 for a custom URL. A check of
+			 * `isset( $attrs['id'] ) && '' !== $attrs['id']` would be TRUE for
+			 * int 0 (0 !== '' in PHP's loose comparison), collapsing every
+			 * custom-link item onto the SAME identifier 'id:0' instead of
+			 * falling back to 'label:<text>'. So an id of 0 (or absent) falls
+			 * to the label key: (1) a `featuredItemIds` entry saved as
+			 * 'label:<text>' for a custom link matches here, so its
+			 * pill/background renders; (2) two custom links in the same menu
+			 * keep distinct identifiers, so featuring one does not feature both.
 			 *
-			 * flattenMenuItems() (nav-menu-panels/utils.js) already gets this
-			 * right — `id ? \`id:${id}\` : \`label:${label}\`` treats JS's `0`
-			 * as falsy — so this PHP check is brought into line with it: an id
-			 * of 0 (or absent) now falls to the label key on both sides.
+			 * flattenMenuItems() (nav-menu-panels/utils.js) does the same —
+			 * `id ? \`id:${id}\` : \`label:${label}\`` treats JS's `0` as
+			 * falsy — so both sides agree.
 			 */
 			$id_val  = $attrs['id'] ?? '';
 			$own_key = ( '' !== (string) $id_val && 0 !== (int) $id_val )
@@ -391,13 +377,9 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 				'label'      => $label,
 				'type'       => (string) ( $attrs['type'] ?? '' ),
 				'object_id'  => (int) ( $attrs['id'] ?? 0 ),
-				// Step 7 (D1059) — the operator's own "Description" field on a
-				// classic menu item / `core/navigation-link`'s native `description`
-				// attribute, repurposed as free-text badge copy ("SOON"). Genuinely
-				// unused by any render path before this (verified: no prior
-				// `'description'` read anywhere in this file or nav-menu-markup.php),
-				// so wiring it up here is additive, not a behaviour change for any
-				// existing item that already carries one.
+				// The operator's own "Description" field on a classic menu item /
+				// `core/navigation-link`'s native `description` attribute, used
+				// as free-text badge copy ("SOON").
 				'badge'      => (string) ( $attrs['description'] ?? '' ),
 				'children'   => array(),
 			);
@@ -454,7 +436,7 @@ $bar_renderer = new SGS_Nav_Menu_Bar_Renderer(
 $flat_items   = $bar_renderer->flatten( $menu_blocks );
 
 /*
- * ── 2b. Split-nav slicing (Step 6, D1059). ──────────────────────────────────
+ * ── 2b. Split-nav slicing. ──────────────────────────────────
  *
  * `splitSide` + `splitAfterItemId` let two instances of this block share one
  * menu — one instance renders everything up to and including a chosen
@@ -491,14 +473,12 @@ if ( in_array( $sgs_nm_split_side, array( 'before', 'after' ), true ) ) {
 	}
 }
 
-// ── D1059 split: this block ALWAYS renders the flat bar. ────────────────────
-// The former runtime fork (`sgs/navDrawerSubmenuModel` context /
-// `$sgs_nm_is_drawer_list`) is gone by construction: the in-drawer
-// accordion/drill-down list is the separate `sgs/nav-drawer-menu` block,
-// which calls `sgs_nav_drawer_menu_render_items()` in its OWN render.php.
-// This block never receives drawer context and never needs to detect what it
-// is — it IS the bar. (`$flat_items` may be a SLICE of the full menu — see
-// §2b above — but the render path itself never forks on that.)
+// ── This block ALWAYS renders the flat bar. ─────────────────────────────────
+// The in-drawer accordion/drill-down list is the separate
+// `sgs/nav-drawer-menu` block, which calls `sgs_nav_drawer_menu_render_items()`
+// in its OWN render.php. This block never receives drawer context and never
+// needs to detect what it is — it IS the bar. (`$flat_items` may be a SLICE
+// of the full menu — see §2b above — but the render path never forks on that.)
 $items_html = sgs_nav_bar_menu_render_items( $flat_items, $featured_ids, $uid, $bar_renderer->get_submenu() );
 
 if ( '' === $items_html ) {
@@ -507,29 +487,26 @@ if ( '' === $items_html ) {
 
 // ── 3. Burger + drawer-toggle context. ──────────────────────────────────────
 //
-// drawerRef (Task 6/W2-b) is now a `sgs_drawer` POST ID, not a free-text
-// DOM-id string: an operator picks a specific published drawer via the
-// SelectControl in DropdownSettingsPanel.js, or leaves it 0 to fall back to
-// the site's single Active-drawer pointer (Sgs_Active_Layout::AREA_DRAWER —
-// see that class's OPTION_DRAWER docblock: "the burger will carry a post id
-// and fall back to this pointer, with no second store"). Sgs_Drawer_Render
-// resolves the ACTUAL <dialog> id to open by reading the target post's own
-// sgs/nav-drawer block (mirrors Sgs_Drawer_Render::active_drawer_ref()),
-// falling back to 'sgs-nav-drawer' — identical to the pre-Task-6 default —
-// when nothing resolves, so an untouched instance renders unchanged.
+// drawerRef is a `sgs_drawer` POST ID: an operator picks a specific
+// published drawer via the SelectControl in DropdownSettingsPanel.js, or
+// leaves it 0 to fall back to the site's single Active-drawer pointer
+// (Sgs_Active_Layout::AREA_DRAWER — see that class's OPTION_DRAWER docblock:
+// "the burger will carry a post id and fall back to this pointer, with no
+// second store"). Sgs_Drawer_Render::drawer_ref_for() resolves the ACTUAL
+// <dialog> id to open by reading the target post's own sgs/nav-drawer block,
+// falling back to 'sgs-nav-drawer' when nothing resolves.
 $drawer_post_id = isset( $attributes['drawerRef'] ) ? absint( $attributes['drawerRef'] ) : 0;
 $drawer_ref     = class_exists( '\\SGS\\Blocks\\Sgs_Drawer_Render' )
 	? \SGS\Blocks\Sgs_Drawer_Render::drawer_ref_for( $drawer_post_id )
 	: 'sgs-nav-drawer';
 
-// `showBurger` (Step 6, D1059) — the right-hand half of a split menu (§2b)
-// suppresses its own burger; the left-hand half keeps the real one. Default
-// TRUE so every pre-Step-6 instance (and a fresh single, unsplit instance)
-// is unaffected.
+// `showBurger` — the right-hand half of a split menu (§2b) suppresses its own
+// burger; the left-hand half keeps the real one. Default TRUE so a single,
+// unsplit instance always has its burger.
 $sgs_nm_show_burger = ! isset( $attributes['showBurger'] ) || (bool) $attributes['showBurger'];
 
 /*
- * ── "A burger asked for a drawer" (W2-a). ────────────────────────────────────
+ * ── "A burger asked for a drawer". ────────────────────────────────────
  *
  * When shown, the burger below is always emitted — CSS at `collapsePoint`
  * decides whether it is visible, so the button is in the DOM on every device
@@ -548,11 +525,10 @@ if ( $sgs_nm_show_burger && class_exists( '\\SGS\\Blocks\\Sgs_Drawer_Render' ) )
  * `triggerMode` is PHP-validated, not a JSON enum — an out-of-enum stored value
  * would otherwise coerce silently back to the block.json default, which bites
  * hardest via a programmatic writer (the cloning converter, a theme pattern).
- *
- * ⚠ The `aria-label` is built as a VARIABLE and interpolated. It used to live
- * inside the `sprintf()` FORMAT STRING, where the only way to "drop" it was to
- * feed it '' — emitting `aria-label=""`, an EMPTY accessible name, strictly
- * worse than the Label-in-Name mismatch it was meant to fix. Under `text` and
+ * ⚠ The `aria-label` is built as a VARIABLE and interpolated. Inside the
+ * `sprintf()` FORMAT STRING the only way to "drop" it would be to feed it '' —
+ * emitting `aria-label=""`, an EMPTY accessible name, strictly worse than the
+ * Label-in-Name mismatch it avoids. Under `text` and
  * `icon-and-text` the visible word IS the accessible name, so the attribute is
  * omitted entirely; under `icon` it stays.
  */
@@ -576,9 +552,9 @@ $burger_icon = 'text' === $trigger_mode
 	);
 
 /*
- * G4 — is the resolved glyph the UNMODIFIED default ({source:lucide,name:menu})?
+ * Is the resolved glyph the UNMODIFIED default ({source:lucide,name:menu})?
  * Gates the burger↔X morph markup in sgs_nav_bar_menu_burger_toggle_markup(): a
- * custom triggerIcon (G3) can be any glyph shape with no guaranteed 3-line
+ * custom triggerIcon can be any glyph shape with no guaranteed 3-line
  * structure, so it must keep rendering its own resolved markup untouched.
  */
 $burger_icon_is_default = 'lucide' === (string) ( $attributes['triggerIcon']['source'] ?? 'lucide' )
@@ -614,13 +590,10 @@ $burger_context_attr = wp_interactivity_data_wp_context(
 	)
 );
 
-// The burger toggle used to be ALWAYS emitted by this block, back when only
-// one instance of it could ever exist on a page. Step 6 (D1059, split-nav)
-// makes that no longer true: two instances can share one menu either side of
-// a logo, and only ONE of them should own the burger — `$sgs_nm_show_burger`
-// (§3 above) is that gate. It never runs as the drawer's own internal list
-// (that is `sgs/nav-drawer-menu`'s job) — contrast the pre-split
-// `$sgs_nm_is_drawer_list ? '' : …` fork, which this is not a revival of.
+// Two instances can share one menu either side of a logo, and only ONE of
+// them should own the burger — `$sgs_nm_show_burger` (§3 above) is that gate.
+// The drawer's own internal list is `sgs/nav-drawer-menu`'s job, not this
+// block's.
 $toggle_html = $sgs_nm_show_burger ? sgs_nav_bar_menu_burger_toggle_markup(
 	$burger_context_attr,
 	$drawer_ref,
@@ -665,7 +638,7 @@ if ( '' === $nav_label ) {
 }
 
 /*
- * Split-nav landmark-unique guard (Step 6, D1059). Two split instances of
+ * Split-nav landmark-unique guard. Two split instances of
  * this block read the SAME `$ref` menu (§2b), so the fallback chain above —
  * unaware of the split — would derive the IDENTICAL label for both: two
  * `<nav>` landmarks with the same accessible name is an axe `landmark-unique`
@@ -703,12 +676,9 @@ $bar_data_attrs            = '';
 $bar_data_attrs           .= 'pill' === $indicator_style ? ' data-sgs-nav-indicator' : '';
 $bar_data_attrs           .= $magnet_enabled ? ' data-magnet' : '';
 
-// D1059 split (Step 3, 2026-09-14): `sgs-nav-bar-menu__bar` is this block's
-// own separate BEM root -- no longer shared with the drawer fork. The former
-// `--drawer` modifier + `data-sgs-nav-submenu-model` attribute belonged
-// exclusively to the in-drawer render path ($sgs_nm_is_drawer_list), which no
-// longer exists on this block — that branch, and the modifier class, are gone
-// here (they live on `sgs/nav-drawer-menu`'s own render.php instead).
+// `sgs-nav-bar-menu__bar` is this block's own BEM root. The `--drawer`
+// modifier + `data-sgs-nav-submenu-model` attribute belong to the in-drawer
+// render path, which lives on `sgs/nav-drawer-menu`'s own render.php.
 $bar_class = 'sgs-nav-bar-menu__bar';
 
 $bar_html = sprintf(
@@ -739,15 +709,15 @@ $sgs_nm_treatments = sgs_nav_shared_resolved_treatments( $attributes, 'sgs/nav-b
 
 // ── 4. Scoped CSS assembly (no-inline, Spec 32). ────────────────────────────
 // This block is never nested inside `sgs/nav-drawer` (no `sgs/navDrawerBg`
-// context — the drawer's own render path is `sgs/nav-drawer-menu` now), so
-// the drawer-bg-aware submenu contrast parameter is always ''.
+// context — the drawer's own render path is `sgs/nav-drawer-menu`), so the
+// drawer-bg-aware submenu contrast parameter is always ''.
 $css = '';
 
 /*
- * `justifyContent` (Step 6, D1059) — a plain restore, not new plumbing:
- * `style.css`'s `:where(.sgs-nav-bar-menu){justify-content:space-between}`
- * was already written (D539) to yield to an attribute-driven rule at normal
- * specificity the moment one exists. Whitelisted rather than merely
+ * `justifyContent` — `style.css`'s
+ * `:where(.sgs-nav-bar-menu){justify-content:space-between}` is written to
+ * yield to an attribute-driven rule at normal specificity the moment one
+ * exists. Whitelisted rather than merely
  * `esc_attr()`'d — this concatenates straight into a raw `<style>` block, not
  * an HTML attribute, and the value can arrive via a programmatic writer (the
  * cloning converter, WP-CLI) that bypasses the editor's `enum` validation.
@@ -758,10 +728,8 @@ if ( in_array( $sgs_nm_justify_content, $sgs_nm_justify_allowed, true ) ) {
 	$css .= $uid_sel . '{justify-content:' . $sgs_nm_justify_content . '}';
 }
 
-// Unified with nav-drawer-menu (2026-09-18, Bean-directed) — both surfaces
-// share the same background colour on Mama's Munches, so a split default
-// ('accent' here vs 'primary' there, from the earlier D1059 split) just made
-// one of the two read wrong. See sgs_nav_shared_item_state_css()'s own
+// The item hover-colour default ('primary') is the same on nav-drawer-menu, so
+// both surfaces read alike. See sgs_nav_shared_item_state_css()'s own
 // $default_item_colour_hover docblock in includes/nav-menu-css.php.
 $css .= sgs_nav_shared_item_state_css( $attributes, $uid_sel, 'sgs-nav-bar-menu', $sgs_nm_treatments, 'primary' );
 $css .= sgs_nav_bar_menu_trigger_css( $attributes, $uid_sel, $sgs_nm_treatments, $trigger_mode );
@@ -781,30 +749,24 @@ $css .= sgs_nav_shared_submenu_css(
 	count( $flat_items )
 );
 
-// ── 5. Assemble — BLOCK-PRIVATE root (D539, Bean-approved 2026-08-09).
+// ── 5. Assemble — BLOCK-PRIVATE root.
 //
-// This block used to render through SGS_Container_Wrapper with kind 'layout'.
-// It no longer does. The evidence, measured rather than argued:
-// (a) it declared 24 of the wrapper's ~107 attribute keys and only THREE were
-// reachable by a client — maxWidth plus the two padding tiers;
-// (b) the wrapper contributed ZERO live arrangement CSS. justifyContent,
-// flexDirection, flexWrap, alignItems and the whole grid family were frozen at
-// empty defaults with no control, so its arrangement array stayed empty and
-// 100% of this nav's visible flex layout comes from style.css;
-// (c) `gap` was wired but inert in practice — the bar and the toggle swap by
-// display:none at the collapse point (§4f), so only ever ONE flex child exists
-// and a flex gap between one item paints nothing.
-// The unreachable attributes were DELETED from block.json, not reproduced.
+// This block does not render through SGS_Container_Wrapper. Why:
+// (a) only THREE of the wrapper's ~107 attribute keys are reachable by a
+// client here — maxWidth plus the two padding tiers;
+// (b) the wrapper would contribute ZERO live arrangement CSS. justifyContent,
+// flexDirection, flexWrap, alignItems and the whole grid family have no
+// control on this block, so 100% of this nav's visible flex layout comes from
+// style.css;
+// (c) a flex `gap` would be inert — the bar and the toggle swap by
+// display:none at the collapse point (§4f), so only ever ONE flex child
+// exists and a flex gap between one item paints nothing.
 //
-// ⛔ Do NOT "restore the composite-mirror rule" here. D294's KIND axis (layout
-// KIND keeps the wrapper) was weighed and consciously departed from; D539
-// records the reasoning and amends D538's over-broad "specialised block"
-// framing. Re-read D539 before reverting this.
-//
-// R-31-9 is NOT breached: per D294's own clarification, "mirror capabilities"
-// forbids a per-block hack that DIVERGES from the wrapper's computed behaviour,
-// not a clean block-private implementation reproducing the same capability set
-// — which §4g-bis above does for max-width, native spacing and the tiers.
+// ⛔ Do NOT "restore the composite-mirror rule" here. R-31-9 is NOT breached:
+// "mirror capabilities" forbids a per-block hack that DIVERGES from the
+// wrapper's computed behaviour, not a clean block-private implementation
+// reproducing the same capability set — which §4g-bis above does for
+// max-width, native spacing and the tiers.
 $inner_html = $bar_html . $toggle_html;
 
 if ( '' !== $css ) {
@@ -814,7 +776,7 @@ if ( '' !== $css ) {
 // STOP-21 / DONE-item-2: the block's own scoped `<style>` targets `.$uid …`, so
 // the SAME `$uid` MUST ride onto the rendered element as a CLASS or every scoped
 // rule above is a silent render no-op. `sgs-nav-bar-menu` is this block's own
-// BEM root (D1059 split, Step 3); `$uid` is the per-instance scope.
+// BEM root; `$uid` is the per-instance scope.
 $nav_root_classes = array( 'sgs-nav-bar-menu', $uid );
 
 // This <nav> IS the navigation landmark, so the accessible name belongs here —

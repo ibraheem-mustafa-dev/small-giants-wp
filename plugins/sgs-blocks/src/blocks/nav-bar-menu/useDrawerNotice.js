@@ -1,9 +1,8 @@
 /**
  * SGS Nav Bar Menu (sgs/nav-bar-menu) — burger→drawer pairing hook.
  *
- * Split out of edit.js (Spec 41 step 7, pure refactor) to keep the file under
- * the project's 250-line JS budget. No behaviour change — verbatim logic
- * from edit.js, just relocated behind a hook boundary.
+ * Kept behind a hook boundary so edit.js stays under the project's 250-line
+ * JS budget.
  *
  * @package SGS\Blocks
  */
@@ -13,29 +12,25 @@ import { createBlock, store as blocksStore } from '@wordpress/blocks';
 
 /**
  * Resolves the burger↔drawer pairing state and the "add a drawer" action for
- * sgs/nav-menu — see the block-level comments this was extracted from for the
- * full FR-36-9a(2)/W2-a history.
+ * sgs/nav-bar-menu (FR-36-9a(2)).
  *
  * @param {Object} root0           Hook params.
  * @param {string} root0.clientId  This block's clientId.
  * @param {number} root0.ref       The block's `ref` attribute (menu id) — seeded
- *                                 into a newly-created drawer's own nav-menu child.
+ *                                 into a newly-created drawer's own nav-drawer-menu child.
  * @param {number} root0.drawerRef The block's `drawerRef` attribute (a `sgs_drawer`
- *                                 post id, or 0 for "no specific pick" — Task 6/W2-b).
+ *                                 post id, or 0 for "no specific pick").
  * @return {Object} { effectiveDrawerRef, drawerState, addDrawer, activeDrawer, showActiveDrawerNotice, showDrawerNotice }.
  */
 export default function useDrawerNotice( { clientId, ref, drawerRef } ) {
 	// ── FR-36-9a(2) — the burger must open something. ───────────────────────
 	//
 	// This menu collapses to a burger below `collapsePoint` and opens
-	// sgs/nav-drawer BY ID (render.php:295-317 → the drawer's <dialog> id,
-	// nav-drawer/render.php:236). Every header STARTER pattern used to ship a
-	// drawer as a SIBLING of sgs/site-header (Task 6/W2-d retired this for the
-	// starters — see theme/sgs-theme/patterns/) — but a header built by
-	// inserting the blocks by hand still has none, so the burger opens
-	// nothing, silently, and a non-coder cannot diagnose it. That is the only
-	// hard FAIL in the FR-37-26 operator-simplicity test (parking
-	// P-HEADER-SIMPLICITY-FINDINGS finding 1).
+	// sgs/nav-drawer BY ID (render.php's drawer id → the drawer's <dialog> id
+	// in nav-drawer/render.php). The header starter patterns embed no drawer,
+	// so a header built by inserting the blocks by hand has none, the burger
+	// opens nothing, silently, and a non-coder cannot diagnose it. That is the
+	// only hard FAIL in the FR-37-26 operator-simplicity test.
 	//
 	// The drawer CANNOT be seeded from sgs/site-header's own TEMPLATE: its root
 	// is a <dialog> that promotes to the top layer, it must be a sibling of the
@@ -45,7 +40,7 @@ export default function useDrawerNotice( { clientId, ref, drawerRef } ) {
 	//
 	// Informational + fixable, NEVER a save/publish gate (FR-37-19 / P1 DP2a).
 	//
-	// ── Task 6/W2-b: this whole sibling-block-matching check is meaningful
+	// This whole sibling-block-matching check is meaningful
 	// ONLY when the operator has NOT picked a specific drawer post above
 	// (drawerRef === 0) — a picked post is validated entirely by
 	// DropdownSettingsPanel.js's own dangling-reference Notice, independent of
@@ -54,8 +49,8 @@ export default function useDrawerNotice( { clientId, ref, drawerRef } ) {
 	//
 	// Both sides fall back to 'sgs-nav-drawer' when no specific pick is made
 	// (nav-bar-menu/render.php's Sgs_Drawer_Render::drawer_ref_for(), and
-	// nav-drawer/render.php:61-65's own default) — a fixed literal here, not
-	// derived from drawerRef, because drawerRef is now a post id rather than
+	// nav-drawer/render.php's own default) — a fixed literal here, not
+	// derived from drawerRef, because drawerRef is a post id rather than
 	// the DOM-id string this comparison needs.
 	const hasPickedDrawer = Number( drawerRef ) > 0;
 	const effectiveDrawerRef = 'sgs-nav-drawer';
@@ -64,7 +59,7 @@ export default function useDrawerNotice( { clientId, ref, drawerRef } ) {
 		( select ) => {
 			const be = select( blockEditorStore );
 
-			// A nav-menu INSIDE a drawer renders a vertical list, not a burger.
+			// A nav-drawer-menu INSIDE a drawer renders a vertical list, not a burger.
 			// It has no drawer of its own to open, so it must never warn.
 			if (
 				be.getBlockParentsByBlockName( clientId, 'sgs/nav-drawer' )
@@ -120,14 +115,13 @@ export default function useDrawerNotice( { clientId, ref, drawerRef } ) {
 		);
 	};
 
-	// ── W2-a — the drawer moved to its own edit screen, so this notice had to
-	// learn about it or it would start LYING. ────────────────────────────────
+	// ── The drawer lives on its own edit screen (the `sgs_drawer` CPT). ─────────
 	//
 	// The warning above fires when the canvas holds no sgs/nav-drawer block with a
-	// matching id. Once the drawer lives in the `sgs_drawer` CPT, that is the
-	// NORMAL, CORRECT state of every ordinary page — the panel is site-wide, not in
-	// this post — and the notice would tell every operator their burger is broken
-	// when it works perfectly.
+	// matching id. With the drawer in the `sgs_drawer` CPT, that is the NORMAL,
+	// CORRECT state of every ordinary page — the panel is site-wide, not in this
+	// post — so the notice must not tell operators their burger is broken when it
+	// works perfectly.
 	//
 	// `activeDrawer` is published by PHP onto the existing window.sgsBlocksData
 	// channel (class-sgs-blocks.php) and is null when no Active drawer RESOLVES
