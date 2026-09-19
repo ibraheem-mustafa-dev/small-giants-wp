@@ -52,20 +52,44 @@ import time
 from pathlib import Path
 
 
-def https_context():
-    """TLS context for the post-deploy probes, verified against the certifi bundle.
+def urlopen_tls(req, tag, timeout=20):
+    """Open `req`, trying the certifi bundle first and the platform store second.
 
-    The Windows certificate store on the deploy machine can prefer an expired
-    cross-signed chain, so a healthy site fails verification with "certificate
-    has expired" while certifi's bundle accepts the same certificate. Falls
-    back to the platform default when certifi is not installed.
+    The two trust stores can disagree about the same certificate (seen on the
+    deploy machine: a healthy site failing with "certificate has expired" under
+    one store), and which one is right varies by machine, so both are tried. A
+    certificate-verification failure under certifi is retried ONCE under the
+    platform default; any other error is raised untouched. The store that
+    served the request is logged as `[<tag>] TLS: certifi|platform store`.
     """
+    import ssl
+    import urllib.error
+    import urllib.request
+
+    stores = []
     try:
         import certifi
-        import ssl
-        return ssl.create_default_context(cafile=certifi.where())
+        stores.append(("certifi", ssl.create_default_context(cafile=certifi.where())))
     except ImportError:
-        return None
+        pass
+    stores.append(("platform store", None))
+
+    for position, (label, context) in enumerate(stores):
+        try:
+            resp = urllib.request.urlopen(req, timeout=timeout, context=context)
+        except urllib.error.HTTPError:
+            log("[%s] TLS: %s" % (tag, label))  # the handshake succeeded; the server answered with an error status
+            raise
+        except (urllib.error.URLError, ssl.SSLCertVerificationError) as e:
+            reason = getattr(e, "reason", e)
+            if isinstance(reason, ssl.SSLCertVerificationError) and position + 1 < len(stores):
+                log("[%s] TLS: %s rejected the certificate, retrying with the %s"
+                    % (tag, label, stores[position + 1][0]))
+                continue
+            raise
+        log("[%s] TLS: %s" % (tag, label))
+        return resp
+    raise RuntimeError("no TLS store available")  # unreachable: the platform store is always last
 
 
 sys.stdout.reconfigure(encoding="utf-8")
@@ -1135,7 +1159,7 @@ def step_purge_caches(dry_run: bool, use_alias: bool, wp_content: str,
             try:
                 req = urllib.request.Request(
                     url, headers={"User-Agent": "sgs-deploy/opcache"})
-                with urllib.request.urlopen(req, timeout=20, context=https_context()) as resp:
+                with urlopen_tls(req, "purge") as resp:
                     body = resp.read(200).decode("utf-8", "replace")
                 if "SGS-OPCACHE-RESET-OK" in body:
                     log("[purge] OPcache: RESET (web pool)")
@@ -1602,7 +1626,7 @@ def step_verify(url: str) -> int:
             "Accept-Encoding": "identity",
         })
         try:
-            with urllib.request.urlopen(req, timeout=20, context=https_context()) as resp:
+            with urlopen_tls(req, "verify") as resp:
                 status = resp.status
                 body = resp.read(16384).decode("utf-8", errors="ignore")
         except urllib.error.HTTPError as e:

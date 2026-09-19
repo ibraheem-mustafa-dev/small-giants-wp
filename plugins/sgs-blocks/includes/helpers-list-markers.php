@@ -19,6 +19,11 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// sgs_icon_list_flatten_menu_blocks() calls SGS_Nav_Menu_Source; do not rely on a caller having loaded it first.
+if ( ! class_exists( 'SGS_Nav_Menu_Source', false ) ) {
+	require_once __DIR__ . '/class-sgs-nav-menu-source.php';
+}
+
 if ( ! function_exists( 'sgs_list_marker_types' ) ) {
 	/**
 	 * The allowed `markerType` values (no JSON `enum` on the attribute —

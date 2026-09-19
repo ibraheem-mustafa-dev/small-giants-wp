@@ -12,8 +12,14 @@
  *
  * Idempotency is by private post meta {@see self::MARKER_META}: a pattern is
  * skipped when ANY post of the CPT (trash included) already carries its slug.
- * Reactivation therefore never duplicates a look, never overwrites a client's
- * edited copy, and never resurrects a look the client deleted to the bin.
+ * Reactivation therefore never duplicates a look and never overwrites a
+ * client's edited copy. A look in the bin still counts as seeded; once the bin
+ * is emptied the marker is gone with the post, so the deleted look is created
+ * again on the next migration run or `--all` (accepted behaviour).
+ *
+ * Only seeding that runs unattended (activation, the version migration, `--all`)
+ * stamps the marker. The single-slug `seed-starter <slug>` command creates an
+ * unmarked draft, so it never blocks the published copy `--all` would create.
  *
  * @package SGS\Blocks
  * @since   1.1.0
@@ -96,7 +102,7 @@ final class Sgs_Starter_Library_Seeder {
 
 		$result['skipped'] = $plan['skipped'];
 		foreach ( $plan['create'] as $look ) {
-			if ( self::insert_starter( $post_type, $look['slug'], $look['title'], $look['content'], 'publish' ) > 0 ) {
+			if ( ! \is_wp_error( self::insert_starter( $post_type, $look['title'], $look['content'], 'publish', $look['slug'] ) ) ) {
 				++$result['created'];
 			}
 		}
@@ -108,7 +114,7 @@ final class Sgs_Starter_Library_Seeder {
 	 * Decide which registered patterns still need a post. Pure: no WordPress
 	 * calls, so it is unit-tested without a WordPress install.
 	 *
-	 * @param array<int,array<string,mixed>> $patterns    Registered patterns (`name`, `title`, `content`, `postTypes`).
+	 * @param array<int,array<string,mixed>> $patterns    Registered patterns (`name`, `title`, `content`, `postTypes`, `inserter`).
 	 * @param string                         $post_type   CPT being seeded.
 	 * @param array<int,string>              $skip_slugs  Slugs never seeded as a look.
 	 * @param callable                       $is_seeded   `fn( string $slug ): bool` — a post already carries the marker.
@@ -126,6 +132,11 @@ final class Sgs_Starter_Library_Seeder {
 			$content = isset( $pattern['content'] ) && \is_string( $pattern['content'] ) ? $pattern['content'] : '';
 
 			if ( '' === $slug || '' === $content || ! \in_array( $post_type, $types, true ) || \in_array( $slug, $skip_slugs, true ) ) {
+				continue;
+			}
+
+			// The look picker lists only inserter-visible patterns, so a hidden one would be a post the client cannot choose.
+			if ( isset( $pattern['inserter'] ) && false === $pattern['inserter'] ) {
 				continue;
 			}
 
@@ -168,32 +179,36 @@ final class Sgs_Starter_Library_Seeder {
 	}
 
 	/**
-	 * Insert one starter post and stamp it with the marker.
+	 * Insert one starter post, optionally stamping it with the marker.
 	 *
 	 * Content is slashed because `wp_insert_post()` unslashes its input, which
 	 * would otherwise strip the backslashes from JSON escapes in block comments.
 	 *
 	 * @param string $post_type CPT slug.
-	 * @param string $slug      Pattern slug the post is seeded from.
 	 * @param string $title     Post title.
 	 * @param string $content   Serialised block markup.
 	 * @param string $status    Post status.
-	 * @return int New post ID, or 0 on failure.
+	 * @param string $marker    Pattern slug to record in {@see self::MARKER_META}; '' stamps nothing.
+	 * @return int|\WP_Error New post ID, or the failure.
 	 */
-	public static function insert_starter( string $post_type, string $slug, string $title, string $content, string $status ): int {
-		$post_id = \wp_insert_post(
-			array(
-				'post_type'    => $post_type,
-				'post_status'  => $status,
-				'post_title'   => \sanitize_text_field( $title ),
-				'post_content' => \wp_slash( $content ),
-				'meta_input'   => array(
-					self::MARKER_META => \sanitize_text_field( $slug ),
-				),
-			),
-			true
+	public static function insert_starter( string $post_type, string $title, string $content, string $status, string $marker = '' ) {
+		$postarr = array(
+			'post_type'    => $post_type,
+			'post_status'  => $status,
+			'post_title'   => \sanitize_text_field( $title ),
+			'post_content' => \wp_slash( $content ),
 		);
 
-		return ( \is_wp_error( $post_id ) || ! $post_id ) ? 0 : (int) $post_id;
+		if ( '' !== $marker ) {
+			$postarr['meta_input'] = array( self::MARKER_META => \sanitize_text_field( $marker ) );
+		}
+
+		$post_id = \wp_insert_post( $postarr, true );
+
+		if ( \is_wp_error( $post_id ) ) {
+			return $post_id;
+		}
+
+		return $post_id > 0 ? (int) $post_id : new \WP_Error( 'sgs_starter_insert_failed', 'wp_insert_post returned no post ID.' );
 	}
 }

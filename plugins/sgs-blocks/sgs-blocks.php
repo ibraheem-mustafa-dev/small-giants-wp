@@ -370,6 +370,11 @@ require_once SGS_BLOCKS_PATH . 'includes/class-sgs-starter-library-seeder.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-header-footer-starter-seeder.php';
 register_activation_hook( __FILE__, array( Sgs_Header_Footer_Starter_Seeder::class, 'seed_all' ) );
 
+// Existing sites updated by a file overwrite never fire the activation hook above,
+// so seed the default drawer + looks library once per plugin version on `init`.
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-starter-library-migration.php';
+Sgs_Starter_Library_Migration::register();
+
 // SGS "_sgs_is_default" post meta (sgs_modal only — sgs_header/sgs_footer are
 // covered by Sgs_Active_Layout's "Active" pointer, see
 // class-sgs-cpt-default-meta.php) + the read-only "Used by" list-table column

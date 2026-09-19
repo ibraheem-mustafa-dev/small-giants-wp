@@ -6,8 +6,13 @@
  * The WordPress-touching half (get_posts marker lookup, wp_insert_post) cannot
  * run without WordPress and is proven live on the canary. This test drives the
  * decision function with an in-memory "already seeded" store that stands in for
- * that lookup, and replays activation, reactivation and a client deleting a
- * look to the bin.
+ * that lookup, so it proves the selection logic only: it does NOT exercise
+ * Sgs_Starter_Library_Seeder::is_seeded(), so the "a look in the bin counts as
+ * seeded" rule (the `trash` status in that query) is not covered here.
+ *
+ * Also covers the two other pure decisions: whether `--all` was passed
+ * (Sgs_Starter_Cli_Seeder::wants_all) and when the version migration is due
+ * (Sgs_Starter_Library_Migration::is_due).
  *
  * Run with:
  *   vendor/bin/phpunit --filter StarterLibrarySeederTest
@@ -19,10 +24,15 @@
 
 declare( strict_types=1 );
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use SGS\Blocks\Sgs_Starter_Cli_Seeder;
+use SGS\Blocks\Sgs_Starter_Library_Migration;
 use SGS\Blocks\Sgs_Starter_Library_Seeder;
 
 require_once dirname( __DIR__, 2 ) . '/includes/class-sgs-starter-library-seeder.php';
+require_once dirname( __DIR__, 2 ) . '/includes/class-sgs-starter-cli-seeder.php';
+require_once dirname( __DIR__, 2 ) . '/includes/class-sgs-starter-library-migration.php';
 
 /**
  * Class StarterLibrarySeederTest
@@ -80,6 +90,13 @@ class StarterLibrarySeederTest extends TestCase {
 				'content'   => '',
 				'postTypes' => array( 'sgs_drawer' ),
 			),
+			array(
+				'name'      => 'sgs/drawer-hidden',
+				'title'     => 'Hidden from the inserter',
+				'content'   => '<!-- wp:group /-->',
+				'postTypes' => array( 'sgs_drawer' ),
+				'inserter'  => false,
+			),
 		);
 	}
 
@@ -126,8 +143,8 @@ class StarterLibrarySeederTest extends TestCase {
 		$this->assertSame( 2, $second['skipped'] );
 	}
 
-	public function test_a_look_whose_post_is_in_the_bin_is_not_recreated(): void {
-		// The real marker lookup includes trash, so a binned look still counts as seeded.
+	public function test_a_look_already_in_the_store_is_not_recreated(): void {
+		// Stands in for any status the real marker lookup matches; the trash status itself is proven live.
 		$store = array( 'sgs/drawer-centred-statement' );
 		$pass  = self::pass( $store );
 
@@ -193,5 +210,76 @@ class StarterLibrarySeederTest extends TestCase {
 		);
 
 		$this->assertSame( array( 'sgs/header-centred' ), array_column( $plan['create'], 'slug' ) );
+	}
+
+	public function test_a_pattern_hidden_from_the_inserter_is_never_seeded_or_counted(): void {
+		$store = array( 'sgs/drawer-hidden' );
+		$pass  = self::pass( $store );
+
+		$this->assertNotContains( 'sgs/drawer-hidden', $pass['created'] );
+		$this->assertSame( 0, $pass['skipped'] );
+	}
+
+	public function test_a_pattern_with_inserter_true_is_still_seeded(): void {
+		$plan = Sgs_Starter_Library_Seeder::select_missing(
+			array(
+				array(
+					'name'      => 'sgs/drawer-shown',
+					'title'     => 'Shown',
+					'content'   => '<!-- wp:group /-->',
+					'postTypes' => array( 'sgs_drawer' ),
+					'inserter'  => true,
+				),
+			),
+			'sgs_drawer',
+			array(),
+			static function (): bool {
+				return false;
+			}
+		);
+
+		$this->assertSame( array( 'sgs/drawer-shown' ), array_column( $plan['create'], 'slug' ) );
+	}
+
+	/**
+	 * @return array<string,array{0:array<string,mixed>,1:bool}>
+	 */
+	public static function all_flag_provider(): array {
+		return array(
+			'--all'        => array( array( 'all' => true ), true ),
+			'--no-all'     => array( array( 'all' => false ), false ),
+			'--all=0'      => array( array( 'all' => '0' ), false ),
+			'--all=false'  => array( array( 'all' => 'false' ), false ),
+			'--all=1'      => array( array( 'all' => '1' ), true ),
+			'absent'       => array( array(), false ),
+			'other flag'   => array( array( 'user' => '1' ), false ),
+		);
+	}
+
+	/**
+	 * @param array<string,mixed> $assoc_args Named arguments as WP-CLI parses them.
+	 */
+	#[DataProvider( 'all_flag_provider' )]
+	public function test_wants_all_reads_the_flag_value_not_its_presence( array $assoc_args, bool $expected ): void {
+		$this->assertSame( $expected, Sgs_Starter_Cli_Seeder::wants_all( $assoc_args ) );
+	}
+
+	/**
+	 * @return array<string,array{0:string,1:string,2:bool}>
+	 */
+	public static function migration_due_provider(): array {
+		return array(
+			'never run'            => array( '', '0.1.8', true ),
+			'older version stored' => array( '0.1.7', '0.1.8', true ),
+			'same version'         => array( '0.1.8', '0.1.8', false ),
+			'downgrade'            => array( '0.2.0', '0.1.8', false ),
+			'no running version'   => array( '', '', false ),
+			'numeric not lexical'  => array( '0.1.9', '0.1.10', true ),
+		);
+	}
+
+	#[DataProvider( 'migration_due_provider' )]
+	public function test_migration_is_due_only_when_the_plugin_is_newer_than_the_seeded_version( string $stored, string $current, bool $expected ): void {
+		$this->assertSame( $expected, Sgs_Starter_Library_Migration::is_due( $stored, $current ) );
 	}
 }

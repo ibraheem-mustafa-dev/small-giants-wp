@@ -11,11 +11,11 @@
  * needs to show a working default, not an unpublished starting point an
  * operator has to notice and finish.
  *
- * Trigger: {@see register_activation_hook()} ONLY — the single canonical
- * trigger, guarded for idempotency. By the time an activation
- * hook callback runs, `init` has already fired earlier in the same admin
- * request (plugin activation is processed from an admin-page request, not a
- * bootstrap-time hook), so theme block patterns — including the three
+ * Triggers: {@see register_activation_hook()} (fresh installs: every area) and
+ * {@see Sgs_Starter_Library_Migration} (sites updated by a file overwrite, which
+ * never fires activation: {@see self::seed_for_existing_site()}). Both are
+ * guarded for idempotency. By the time either runs, `init` has fired, so theme
+ * block patterns — including the three
  * `sgs/framework-{header,footer,drawer}-default` starters registered from
  * `theme/sgs-theme/patterns/` — are already registered and readable via
  * {@see WP_Block_Patterns_Registry}.
@@ -72,6 +72,22 @@ final class Sgs_Header_Footer_Starter_Seeder {
 	}
 
 	/**
+	 * Seed an already-live site: the default plus the library for the areas that
+	 * have a library (the drawer), and nothing else.
+	 *
+	 * A header or footer default is Active the moment it is seeded and replaces
+	 * the live template part, so it is never created unattended on a site that
+	 * already renders a header. The drawer has no fallback, so an empty drawer
+	 * area leaves the burger opening nothing.
+	 */
+	public static function seed_for_existing_site(): void {
+		foreach ( Sgs_Starter_Library_Seeder::LIBRARY_AREAS as $area ) {
+			self::seed_area( $area, self::default_pattern( $area ) );
+			Sgs_Starter_Library_Seeder::seed_library( $area );
+		}
+	}
+
+	/**
 	 * Framework default pattern slug for an area, or '' for an unknown area.
 	 *
 	 * @param string $area {@see Sgs_Active_Layout} area token.
@@ -121,9 +137,9 @@ final class Sgs_Header_Footer_Starter_Seeder {
 
 		$pattern_title = ( \is_array( $pattern ) && isset( $pattern['title'] ) && \is_string( $pattern['title'] ) ) ? $pattern['title'] : $pattern_slug;
 
-		$post_id = Sgs_Starter_Library_Seeder::insert_starter( $post_type, $pattern_slug, $pattern_title, $content, 'publish' );
+		$post_id = Sgs_Starter_Library_Seeder::insert_starter( $post_type, $pattern_title, $content, 'publish', $pattern_slug );
 
-		if ( $post_id <= 0 ) {
+		if ( \is_wp_error( $post_id ) ) {
 			return;
 		}
 

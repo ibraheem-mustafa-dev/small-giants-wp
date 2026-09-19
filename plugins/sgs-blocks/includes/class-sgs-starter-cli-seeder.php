@@ -8,7 +8,9 @@
  * lives there, the behaviour lives here.
  *
  * Two modes:
- *   - `<pattern-slug>` creates ONE DRAFT post from a registered pattern.
+ *   - `<pattern-slug>` creates ONE DRAFT post from a registered pattern. The
+ *     draft carries no library marker, so it never stops `--all` creating the
+ *     published copy of that look.
  *   - `--all` creates every missing PUBLISHED framework look for the area via
  *     {@see Sgs_Starter_Library_Seeder::seed_library()}. Neither mode makes a
  *     post Active.
@@ -40,7 +42,7 @@ final class Sgs_Starter_Cli_Seeder {
 
 		$slug = $args[0] ?? '';
 
-		if ( isset( $assoc_args['all'] ) ) {
+		if ( self::wants_all( $assoc_args ) ) {
 			if ( '' !== $slug ) {
 				\WP_CLI::error( 'Pass either <pattern-slug> or --all, not both.' );
 			}
@@ -53,6 +55,16 @@ final class Sgs_Starter_Cli_Seeder {
 		}
 
 		self::seed_one( $area, $slug );
+	}
+
+	/**
+	 * Whether `--all` was passed. `--no-all` arrives as `all => false` and
+	 * `--all=0` as the string '0', so presence alone is not a yes.
+	 *
+	 * @param array<string,mixed> $assoc_args Named arguments.
+	 */
+	public static function wants_all( array $assoc_args ): bool {
+		return \filter_var( $assoc_args['all'] ?? false, FILTER_VALIDATE_BOOLEAN );
 	}
 
 	/**
@@ -95,10 +107,10 @@ final class Sgs_Starter_Cli_Seeder {
 
 		$pattern_title = ( \is_array( $pattern ) && isset( $pattern['title'] ) && \is_string( $pattern['title'] ) ) ? $pattern['title'] : $slug;
 
-		$post_id = Sgs_Starter_Library_Seeder::insert_starter( Sgs_Active_Layout::post_type( $area ), $slug, $pattern_title, $content, 'draft' );
+		$post_id = Sgs_Starter_Library_Seeder::insert_starter( Sgs_Active_Layout::post_type( $area ), $pattern_title, $content, 'draft' );
 
-		if ( $post_id <= 0 ) {
-			\WP_CLI::error( "Could not create the {$area} post from '{$slug}'." );
+		if ( \is_wp_error( $post_id ) ) {
+			\WP_CLI::error( $post_id->get_error_message() );
 		}
 
 		\WP_CLI::success( "Draft {$area} #{$post_id} ('{$pattern_title}') seeded from '{$slug}'. Publish and run set-active to activate it." );
