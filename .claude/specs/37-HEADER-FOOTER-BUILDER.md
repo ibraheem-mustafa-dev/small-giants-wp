@@ -492,23 +492,30 @@ construction.
   drawer, matched on the Active drawer's own `drawerRef` rather than on its mere existence: a burger
   opens by element id, so an Active drawer with a different ref genuinely opens nothing.
 - **Starters** — the `sgs-drawers` pattern category with `sgs/drawer-scratch` ("Start from
-  scratch") and `sgs/framework-drawer-default`.
+  scratch"), `sgs/framework-drawer-default`, and the seven looks `sgs/drawer-floating-capped-card`,
+  `-anchored-card-stack`, `-editorial-ghost-list`, `-centred-statement`, `-solid-brand-light`,
+  `-two-column-editorial` and `-split-zone-serif` (`theme/sgs-theme/patterns/drawer-*.php`, keyword
+  `featured`). A look is data — block markup carrying the drawer's own attributes and a starting
+  block roster — and every value stays editable. The sidebar starter-look control (FR-37-47) lists
+  only the `featured` looks and offers "Keep my content — change the look only".
+- **Library** — every `sgs_drawer` pattern except the blank starter is seeded as its own published
+  Menu drawer post (`Sgs_Starter_Library_Seeder::seed_library`), marked `_sgs_starter_slug`, never
+  Active. The list table labels them "Framework look" and offers a "Framework looks (N)" view. A
+  burger can pick any of them through the drawer picker (FR-37-49).
 - **Header/footer starters embed no `sgs/nav-drawer`** and `nav-bar-menu.drawerRef` is a post
   picker (FR-37-49).
 
 **Not built:**
-1. The 7 drawer looks as "Menu drawer" starter patterns. Only the two starters above exist, and
-   the `nav-drawer` block still carries the 7 `variantPreset` values (`floating-capped-card`,
-   `anchored-card-stack`, `editorial-ghost-list`, `centred-statement`, `solid-brand-light`,
-   `two-column-editorial`, `split-zone-serif`). Because FR-37-46 locks the drawer post, the FR-37-7
-   native "Choose a pattern" modal cannot serve them; the delivery mechanism is an open question (§8).
-2. Removal of `nav-drawer`'s `variantPreset` attribute.
+1. Removal of `nav-drawer`'s `variantPreset` attribute and the seven block variations in
+   `nav-drawer/variations.js`, which the patterns now replace.
+2. A measured showcase: the weighted attribute-coverage script that selects which looks are
+   `featured` as competitor-modelled drawers are added.
 3. Inline creation of a drawer post from the `drawerRef` picker. Today
    `plugins/sgs-blocks/src/blocks/nav-bar-menu/useDrawerNotice.js::addDrawer` inserts a sibling `sgs/nav-drawer` block instead.
 
 **Done when:** a drawer authored in *SGS → Menu drawers* renders as the site default, a second
-drawer can be picked per-burger, the starter surface offers the 7 looks and a chosen starter's
-CHILD TREE survives save, and zero `variantPreset` attrs remain in shipped markup.
+drawer can be picked per-burger, the starter surface offers the featured looks and a chosen
+starter's CHILD TREE survives save, and zero `variantPreset` attrs remain in shipped markup.
 
 **Non-destructive property:** with no Active drawer pointer set, `get_active_content()` returns
 `''` and `Sgs_Drawer_Render` emits nothing, so page output is unchanged. `wp sgs drawer
@@ -1452,7 +1459,7 @@ look afterward reapplies correctly; a single Undo reverts to the prior state; no
 FR-37-26 operator-simplicity proxy arm has been run against this flow with the result recorded
 (PASS: `reports/fr-37-26-simplicity-test/2026-09-17-starter-look-flow-re-run.md`).
 
-#### FR-37-48 — Auto-seed one post per CPT so the admin list is never empty
+#### FR-37-48 — Auto-seed the starter posts so the admin list is never empty
 
 `Sgs_Header_Footer_Starter_Seeder::seed_all()`
 (`includes/class-sgs-header-footer-starter-seeder.php`) runs once per site on the plugin's
@@ -1466,6 +1473,18 @@ is the guard, with no extra option. The seeder is its own class: it shares its s
 activates where the CLI seeds a draft. This is independent of FR-37-46/47: FR-37-46 fixes what a
 *new, individual* post starts with; this FR fixes what the *list table* shows before any operator
 has created anything.
+
+**Library.** After the defaults, `Sgs_Starter_Library_Seeder::seed_library( $area )`
+(`includes/class-sgs-starter-library-seeder.php`) publishes one post for every registered pattern that
+names the area's CPT in `Post Types:`, except the blank starter (`sgs/<area>-scratch`) and the default,
+and never marks them Active. Only areas listed in `Sgs_Starter_Library_Seeder::LIBRARY_AREAS` have a
+library (the drawer). Each post carries private meta `_sgs_starter_slug` = its pattern slug; a pattern
+is skipped when any post of that CPT in any status, trash included, carries the marker, so
+reactivation never duplicates a look and never overwrites a client's edited copy.
+`wp sgs drawer seed-starter --all --user=1` runs the same method for looks added after activation
+(idempotent). `Sgs_Starter_Library_Admin` adds a "Framework look" post-state and a "Framework looks
+(N)" view to the CPT list table. A pattern file added by a deploy registers only after the theme
+pattern cache is cleared, which `build-deploy.py` does.
 
 **No new CPT meta marks "the default."** `Sgs_Active_Layout`'s Active pointer + admin column already
 answer "which post is live" for all three CPTs. `_sgs_is_default` exists for `sgs_modal` only (§5).

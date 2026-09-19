@@ -498,11 +498,13 @@ Full record: `.claude/plans/archive/2026-07-29-spec36-37-merged-architecture-and
    (`plugins/sgs-blocks/includes/class-sgs-drawer-render.php::render_active_drawer`);
    header starter patterns embed no `sgs/nav-drawer` (only `theme/sgs-theme/patterns/drawer-scratch.php` and
    `framework-drawer-default.php` do).
-2. **The seven looks as "Menu drawer" starter patterns — NOT BUILT.** The intent: the seven looks become
-   starter patterns served by the FR-37-7 picker, a preset stops baking defaults and becomes an editable
-   starting document, and `variantPreset` (with its `supports.sgs.variantAttr` seeding) goes away. Today
-   `variantPreset` is still declared in `plugins/sgs-blocks/src/blocks/nav-drawer/block.json` and used by `plugins/sgs-blocks/src/blocks/nav-drawer/variations.js`
-   (Spec 37 FR-37-47).
+2. **The seven looks as "Menu drawer" starter patterns — BUILT.** Each look is a pattern
+   (`theme/sgs-theme/patterns/drawer-*.php`, keyword `featured`) carrying the drawer's own attributes and
+   a starting block roster; every value stays editable and nothing locks. They are offered by the
+   starter-look control and seeded as Menu drawer posts (Spec 37 FR-37-43, FR-37-47, FR-37-48).
+   **NOT BUILT:** removal of `variantPreset` (still declared in
+   `plugins/sgs-blocks/src/blocks/nav-drawer/block.json` and used by
+   `plugins/sgs-blocks/src/blocks/nav-drawer/variations.js`) once Gate 2 is re-run.
 3. **`drawerRef` — BUILT on the burger, string on the drawer.** `sgs/nav-bar-menu` `drawerRef` is
    `type: number` — a `sgs_drawer` post id, 0 = use the Active drawer (`Sgs_Active_Layout::AREA_DRAWER`),
    resolved by `Sgs_Drawer_Render::drawer_ref_for()`. The picker is a `SelectControl` over `sgs_drawer`

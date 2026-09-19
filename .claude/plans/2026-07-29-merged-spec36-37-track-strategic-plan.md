@@ -97,7 +97,7 @@ canary for later waves.
 | W2-a | **Drawer CPT** `sgs_drawer` (DP2) | DONE | CPT, Active model, revisions, seed by menu LOCATION lookup, admin "Menu drawer" | — | YES |
 | **GATE 2** | OPEN-state computed-parity, default CPT drawer vs default drawer, property-identical | passed once; re-run owed | Evidence: `reports/2026-07-30-w2a-gate2-drawer-cpt.md`. Re-run fresh after W2-b/c/d complete (harness `--open-via keyboard`, negative control) | — | YES |
 | W2-b | `drawerRef` → post picker (DP2) | PARTIAL | Built: `nav-bar-menu/block.json::drawerRef` is a post-ID `number`; the picker; the dangling-post notice (FR-36-9a). `nav-drawer/block.json::drawerRef` stays an element-id string. Open (FR-37-43): create-inline — "create a new `sgs_drawer` post from the picker" (`nav-bar-menu/useDrawerNotice.js::addDrawer` inserts a sibling `sgs/nav-drawer` block, seeded with `sgs/nav-drawer-menu`, instead) | 1h (2h) | YES |
-| W2-c | Drawer starter looks: 7 real starter patterns | NOT DONE | Author seven `sgs_drawer` starter patterns (one per look in `nav-drawer/variations.js`) under `theme/sgs-theme/patterns/`; the existing `StarterLookPresetControl` (FR-37-47, mounted in `nav-drawer/edit.js`) lists every pattern registered for `sgs_drawer`, so no new mechanism is built. Only two drawer patterns exist today (`framework-drawer-default.php`, `drawer-scratch.php`). Then remove `variantPreset` and its variations (`nav-drawer/block.json`, `render.php`, `variations.js`, `index.js`) so `git grep variantPreset -- plugins/sgs-blocks/src` returns nothing | 1 session (2) | YES |
+| W2-c | Drawer starter looks: 7 real starter patterns | PARTIAL | Built: seven `sgs_drawer` patterns (`theme/sgs-theme/patterns/drawer-*.php`, keyword `featured`), seeded as published Menu drawer posts marked `_sgs_starter_slug` (`Sgs_Starter_Library_Seeder`), a "Framework look" label and view in the list, and the starter-look control filtered to `featured` with a keep-content toggle. Open: re-run Gate 2, then remove `variantPreset` and its variations (`nav-drawer/block.json`, `render.php`, `variations.js`, `index.js`) so `git grep variantPreset -- plugins/sgs-blocks/src` returns nothing; the weighted coverage script that selects the `featured` set as competitor drawers are added | 30m (1h) | YES |
 | W2-d | Migration + seed (DP2) | DONE | Header starter patterns embed no drawer; the per-site seed (FR-37-48). No stored string `drawerRef` exists on any live site, so no re-type sweep is needed (`wp db query "SELECT COUNT(*) FROM wp_posts WHERE post_content LIKE '%\"drawerRef\":\"%'"` returns 0 on the canary, the Indus test site and the Eye Care test site) | — | YES |
 | W2-r | **Spec 36 + Spec 37 same-commit statement of the drawer model** (Spec 37 §1.2) | DONE | Both specs state the drawer as a `sgs_drawer` post, the picker, the seed, and the seven looks as starter patterns (Spec 36 FR-36-9a, Spec 37 FR-37-43) | — | YES |
 | W2-e | **DP4 trigger controls** | DONE | Six attrs on `nav-bar-menu/block.json`: `triggerMode`, `triggerLabel`, `triggerIcon`, `triggerMagnetEnabled`, `triggerMagnetRadius`, `triggerMagnetStrength`. Open-state sync via the global `store('sgs/nav')` (trigger and drawer are separate DOM trees; context-scoped state silently no-ops) | — | YES |
@@ -116,8 +116,8 @@ canary for later waves.
 | W2-t | Doc closure sweep | DONE | Parking entries archived on resolve | — | no |
 | W2-u | **W1 re-verification on the CPT path** (wave exit) | NOT DONE | Re-run the mega + drawer same-page integration probe (focus traps, ESC interplay, non-modal branch) on the CPT-rendered drawer. Do after W2-c | 30m (1h) | YES |
 
-**Net Wave 2:** DONE a, d, e, f (live/eye verification owed), g, h, j, k, q, r, s, t · PARTIAL b, i ·
-NOT DONE c, l, m, n, o, p, u.
+**Net Wave 2:** DONE a, d, e, f (live/eye verification owed), g, h, j, k, q, r, s, t · PARTIAL b, c, i ·
+NOT DONE l, m, n, o, p, u.
 
 **TEST (critical path):** Happy = default drawer post renders property-identical to the default
 drawer (the DP-signed bar; gate §4.3). Edge = deleted/draft drawer post → FR-36-9a notice;
@@ -294,12 +294,8 @@ Stop-loss: any gate <50 → surface pivot-vs-park with two ranked paths; log in 
 
 ## First action (≤5 min, zero dependencies)
 
-Author the first of the seven drawer starter patterns (`floating-capped-card`) as
-`theme/sgs-theme/patterns/drawer-floating-capped-card.php`, categories `sgs-drawers`, post type
-`sgs_drawer`, copying the attribute and inner-block set from `nav-drawer/variations.js`. The
-starter-look control already mounted in `nav-drawer/edit.js` (`StarterLookPresetControl`) lists it
-with no other change. Repeat for the other six, re-run Gate 2 with the `--open-via keyboard`
-harness, then remove `variantPreset`.
+Re-run Gate 2 with the `--open-via keyboard` harness against the seeded default drawer, then remove
+`variantPreset` and the seven variations once it passes.
 
 ## References
 
