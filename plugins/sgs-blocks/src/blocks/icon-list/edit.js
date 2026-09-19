@@ -46,7 +46,7 @@ const HEADING_LEVEL_OPTIONS = [
   { label: __("Paragraph", "sgs-blocks"), value: "p" },
 ];
 
-// FR-36-26c Dispatch B — no JSON `enum` on `source` either (same reason as
+// FR-36-26c — no JSON `enum` on `source` either (same reason as
 // headingLevel/markerType above); render.php validates it the same way.
 const SOURCE_OPTIONS = [
   { label: __("Typed items", "sgs-blocks"), value: "typed" },
@@ -68,7 +68,7 @@ const GAP_OPTIONS = [
   { label: __("Spacious", "sgs-blocks"), value: "40" },
 ];
 
-// Legacy per-item slug → Lucide name (for items authored before the visual picker).
+// Per-item slug → Lucide name, for items that store `{icon: slug}`.
 const LEGACY_ICON_MAP = {
   check: "check",
   "star-filled": "star",
@@ -81,7 +81,7 @@ const LEGACY_ICON_MAP = {
 };
 
 /**
- * Resolve an item's icon to a { source, name } pair, migrating legacy items.
+ * Resolve an item's icon to a { source, name } pair (items may store `{icon: slug}`).
  *
  * @param {Object} item            List item.
  * @param {Object} fallback        Default { source, name } when the item has none.
@@ -213,10 +213,9 @@ export default function Edit({ attributes, setAttributes }) {
 
   const resolvedSource = source || "typed";
 
-  // FR-36-26c Dispatch B — classic menus (Appearance → Menus, `nav_menu`
+  // FR-36-26c — classic menus (Appearance → Menus, `nav_menu`
   // terms) are the primary menu source (Spec 36 FR-36-1); `menuRef` is a
-  // `nav_menu` term id. Mirrors sgs/nav-menu/edit.js's own classic-menu
-  // lookup (useEntityRecords( 'taxonomy', 'nav_menu', ... )).
+  // `nav_menu` term id, listed via useEntityRecords( 'taxonomy', 'nav_menu', ... ).
   const { records: classicMenus, isResolving: isResolvingMenus } = useEntityRecords(
     "taxonomy",
     "nav_menu",
@@ -327,7 +326,7 @@ export default function Edit({ attributes, setAttributes }) {
   // FR-36-26c editor-canvas preview: heading blank = no heading element
   // (matches render.php exactly); marker types other than icon/emoji render
   // no icon span; `numbered` previews as a real <ol>.
-  // Dispatch B: a menu-bound list's actual links resolve server-side only
+  // A menu-bound list's actual links resolve server-side only
   // (render.php calls SGS_Nav_Menu_Source) — the `items` attribute is unused
   // in `source: menu`, so the typed-item preview would show stale/default
   // placeholder rows. Show a lightweight placeholder instead; the real links
@@ -363,13 +362,11 @@ export default function Edit({ attributes, setAttributes }) {
 
   return (
     <>
-      {/* D609/D618 — ONE grouped, SGS-OWNED colour panel, rendered FIRST.
-         Replaces the scattered inline DesignTokenPicker rows that used to
-         live in "Text Styling" and "Border" below. Icon colour only applies
-         when the marker renders an icon/emoji glyph; border colour only
-         applies when a border style is selected — both rows are OMITTED
-         (not disabled) when they don't apply, per D609 9c. Every state
-         links to the theme palette (D619). */}
+      {/* ONE grouped, SGS-OWNED colour panel, rendered FIRST. Icon colour
+         only applies when the marker renders an icon/emoji glyph; border
+         colour only applies when a border style is selected — both rows are
+         OMITTED (not disabled) when they don't apply. Every state links to
+         the theme palette. */}
       <SgsColourPanel
         rows={[
           fillRow({
@@ -425,7 +422,7 @@ export default function Edit({ attributes, setAttributes }) {
         ]}
       />
       <InspectorControls>
-        {/* FR-36-26c Dispatch B — typed items vs a bound WordPress menu. */}
+        {/* FR-36-26c — typed items vs a bound WordPress menu. */}
         <PanelBody title={__("Source", "sgs-blocks")} initialOpen={true}>
           {/* Spec 35 Part B: 2–5 short options → ToggleGroupControl, not a Select. */}
           <ToggleGroupControl
@@ -699,19 +696,14 @@ export default function Edit({ attributes, setAttributes }) {
         </PanelBody>
 
         {/* Box-object interface contract §1/§5: borderWidth is an SGS custom
-           object attr (base only, no tiers — matches the pre-existing
-           base-only contract); border-radius routes to WP-native
+           object attr (base only, no tiers); border-radius routes to WP-native
            style.border.radius + SGS tier objects (skip-serialised → scoped). */}
         <PanelBody title={__("Border", "sgs-blocks")} initialOpen={false}>
           {/* One composite Width/Style/Colour row, mirroring native's
-              BorderBoxControl layout (Task 0). Style, width and colour used to
-              be split three ways here: a standalone style dropdown, a width
-              control hidden unless a style was picked, and a colour row in the
-              panel above that vanished on style "none". Bean's call
-              (2026-08-29): mount the composite unconditionally. Picking "none"
+              BorderBoxControl layout, mounted unconditionally. Picking "none"
               still paints nothing — CSS suppresses a border with no style — so
-              nothing is lost by keeping every control reachable, and a client
-              can no longer switch a border off and be unable to find it again.
+              every control stays reachable and a client can always find the
+              control to switch a border back on.
               Border radius stays WP-native, below. */}
           <SgsBorderControl
             widthValues={borderWidth ?? {}}

@@ -22,7 +22,7 @@
 			"wide"
 		],
 		"sgs": {
-			"_comment_mediaElements": "37-media-no-handroll remediation (2026-09-03). The result-row product thumbnail (`.sgs-product-search__results [role=\"option\"] img`) is built at runtime by view.js (a live REST-fetched results list), not by render.php — there is no server-rendered <img> to attach the marker class to at render time. The scoped custom-property VALUE is still computed server-side by SGS_Media_Element::style() (keyed on the block's existing no-inline scoped-styling uid class, $sgs_style_uid, already present on the wrapper for every display mode), and view.js adds the `sgs-media-el` marker + that same uid class onto each thumbnail <img> it creates, so the shared `.sgs-media-el{object-fit:var(--sgs-media-object-fit,cover)}` atom stylesheet paints it. style.css no longer hardcodes object-fit:cover.",
+			"_comment_mediaElements": "The result-row product thumbnail (`.sgs-product-search__results [role=\"option\"] img`) is built at runtime by view.js (a live REST-fetched results list), not by render.php — there is no server-rendered <img> to attach the marker class to at render time. The scoped custom-property VALUE is still computed server-side by SGS_Media_Element::style() (keyed on the block's existing no-inline scoped-styling uid class, $sgs_style_uid, already present on the wrapper for every display mode), and view.js adds the `sgs-media-el` marker + that same uid class onto each thumbnail <img> it creates, so the shared `.sgs-media-el{object-fit:var(--sgs-media-object-fit,cover)}` atom stylesheet paints it. style.css does not hardcode object-fit.",
 			"mediaElements": [
 				{
 					"prefix": "",
@@ -71,7 +71,7 @@
 							}
 						}
 					},
-					"_note": "No native color/typography/__experimentalBorder support is declared on this block; clusters stays scoped to layout (native spacing only, ROLLOUT REQUIREMENT 1). The wrapper-level borderColour/etc added 2026-09-06 (Block Customisation Standard) is DISTINCT from the pre-existing inputBorderColour (below) — that one paints ONLY the `.sgs-product-search__input` search box border; this one frames the whole block wrapper (and, via the bare-uid-class rule, the reparented dialog in overlay/command-palette display modes — see render.php)."
+					"_note": "No native color/typography/__experimentalBorder support is declared on this block; clusters stays scoped to layout (native spacing only, ROLLOUT REQUIREMENT 1). The wrapper-level borderColour/etc (Block Customisation Standard) is DISTINCT from inputBorderColour (below) — that one paints ONLY the `.sgs-product-search__input` search box border; this one frames the whole block wrapper (and, via the bare-uid-class rule, the reparented dialog in overlay/command-palette display modes — see render.php)."
 				},
 				"input": {
 					"label": "Search input",
@@ -93,7 +93,7 @@
 							}
 						}
 					},
-					"_note": "The search <input class=\"sgs-product-search__input\" role=\"combobox\"> (render.php:326-341). Declared because F6 check #8 (reseed-survival) correctly REFUSED a css_property with no css_element: inputBorderColour resolved to border-color but had css_element=NULL and derived_selector=NULL, so it fell to the ROOT routing domain and would misroute on a clone. A property resolved without an element is not a win — it is a mis-route waiting to happen. ⚠ KNOWN MODELLING LIMIT: --sgs-ps-input-border has TWO consumers — this input's border (style.css:37) AND the listbox border (style.css:87). One attribute paints two nodes; the manifest models attribute->element ownership one-to-one, so it is declared on the input (the primary, named node) and the listbox border rides the same variable. Splitting them would need a second attribute, which is a client-facing control decision, not a mapping one."
+					"_note": "The search <input class=\"sgs-product-search__input\" role=\"combobox\"> inputBorderColour resolves to border-color on this element; declaring the element keeps it out of the ROOT routing domain, where it would misroute on a clone. ⚠ KNOWN MODELLING LIMIT: --sgs-ps-input-border has TWO consumers — this input's border AND the listbox border. One attribute paints two nodes; the manifest models attribute->element ownership one-to-one, so it is declared on the input (the primary, named node) and the listbox border rides the same variable. Splitting them would need a second attribute, which is a client-facing control decision, not a mapping one."
 				},
 				"results": {
 					"label": "Results listbox",
@@ -114,7 +114,7 @@
 							}
 						}
 					},
-					"_note": "The results <ul class=\"sgs-product-search__results\" role=\"listbox\"> (render.php:478-484). resultHoverBackgroundColour is modelled here as the results element's hover state (the row-highlight colour a client sees when interacting with the listbox), matching the wrapper/input elements' base+hover attrMap convention above, even though the physical paint target is a [role=\"option\"] child rather than the <ul> itself — colour-conformance migration 2026-09-07."
+					"_note": "The results <ul class=\"sgs-product-search__results\" role=\"listbox\"> resultHoverBackgroundColour is modelled here as the results element's hover state (the row-highlight colour a client sees when interacting with the listbox), matching the wrapper/input elements' base+hover attrMap convention above, even though the physical paint target is a [role=\"option\"] child rather than the <ul> itself."
 				},
 				"result-title": {
 					"label": "Result title",
@@ -127,7 +127,7 @@
 						"css:background-color": "matchHighlightColour",
 						"css:background-color-gradient": "matchHighlightColourGradient"
 					},
-					"_note": "The matched-portion <mark> inside .sgs-product-search__result-title (view.js-built, style.css:160). Colour-conformance migration 2026-09-07."
+					"_note": "The matched-portion <mark> inside .sgs-product-search__result-title (view.js-built)."
 				}
 			}
 		}

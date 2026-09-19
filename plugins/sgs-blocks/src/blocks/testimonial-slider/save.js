@@ -1,9 +1,9 @@
 /**
- * FR-22-6 InnerBlocks migration — 2026-05-30.
+ * FR-22-6 InnerBlocks save.
  *
- * The slider is dynamic (render.php drives all frontend output) but now uses
- * InnerBlocks so the converter-emitted sgs/testimonial child blocks are
- * persisted in post_content. Render.php iterates $block->inner_blocks,
+ * The slider is dynamic (render.php drives all frontend output) but uses
+ * InnerBlocks so the sgs/testimonial child blocks are persisted in
+ * post_content. Render.php iterates $block->inner_blocks,
  * wraps each rendered child in .sgs-testimonial-slider__slide, and derives
  * the dot/arrow count from the inner block count.
  *
@@ -11,8 +11,6 @@
  * WordPress silently dropping InnerBlocks from post_content on save.
  * (See CLAUDE.md gotcha B4.)
  *
- * The previous null-save shape is NOT preserved (deprecations deleted at D271); the former v2 had a
- * migrate() that converts the testimonials array into sgs/testimonial blocks.
  */
 import { InnerBlocks } from '@wordpress/block-editor';
 

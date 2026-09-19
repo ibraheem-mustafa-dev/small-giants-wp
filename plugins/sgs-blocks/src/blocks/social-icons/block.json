@@ -30,7 +30,7 @@
 			"colourExemptions": {
 				"icon-bg-hover": {
 					"rule": "states",
-					"reason": "CLASSIFIER FALSE POSITIVE — edit.js branches on colourMode via a ternary; the 'theme' branch already has a real 2-state icon-bg row (normal+hover, fully wired), and this row is the OTHER branch's own deliberately hover-only row for a different display mode where the resting background comes from a CSS preset class, not a custom attribute. The census's ConditionalExpression handling concatenates both ternary branches as if they coexisted. Confirmed 2026-09-06 (colour-conformance FILL audit) — this block's colour coverage is already complete."
+					"reason": "CLASSIFIER FALSE POSITIVE — edit.js branches on colourMode via a ternary; the 'theme' branch already has a real 2-state icon-bg row (normal+hover, fully wired), and this row is the OTHER branch's own deliberately hover-only row for a different display mode where the resting background comes from a CSS preset class, not a custom attribute. The census's ConditionalExpression handling concatenates both ternary branches as if they coexisted. This block's colour coverage is complete."
 				}
 			},
 			"collection": true,
@@ -96,7 +96,7 @@
 							}
 						}
 					},
-					"_note": "Root <div> (render.php get_block_wrapper_attributes, style.css .sgs-social-icons — display:flex is hardcoded CSS, no attribute, so no `layer` is declared and the 12 arrangement members are honestly never asked about). No `layout` box-model attrs beyond padding/margin/gap exist (no width/height/max-width/border/box-shadow control) — honest gaps. Typography migrated off native WP support onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972), root prefix '' (fontSize/fontWeight/fontStyle/lineHeight). The old native `textAlign` capability (`css:text-align`) was dropped, not replaced: this root is `display:flex` (style.css) with no inline/block content of its own, so `text-align` was inert dead CSS on every real instance — confirmed by reading style.css, not assumed."
+					"_note": "Root <div> (render.php get_block_wrapper_attributes, style.css .sgs-social-icons — display:flex is hardcoded CSS, no attribute, so no `layer` is declared and the 12 arrangement members are honestly never asked about). No `layout` box-model attrs beyond padding/margin/gap exist (no width/height/max-width/border/box-shadow control) — honest gaps. Typography routes through the shared TypographyControls/sgs_typography_css_rule() mechanism, root prefix '' (fontSize/fontWeight/fontStyle/lineHeight). There is no `text-align` capability: this root is `display:flex` (style.css) with no inline/block content of its own, so `text-align` would be inert."
 				},
 				"icon": {
 					"label": "Icon",
@@ -105,14 +105,14 @@
 						"text"
 					],
 					"prefix": "icon",
-					"_note": "Per-item <span class=\"sgs-social-icons__icon\" aria-hidden=\"true\"> — the decorative glyph itself (svg/img), render.php:451. Carries no colour attrMap: the `item` element's background/border/glyph attrs (below) do NOT paint this span, they paint the surrounding link box."
+					"_note": "Per-item <span class=\"sgs-social-icons__icon\" aria-hidden=\"true\"> — the decorative glyph itself (svg/img). Carries no colour attrMap: the `item` element's background/border/glyph attrs (below) do NOT paint this span, they paint the surrounding link box."
 				},
 				"label": {
 					"label": "Label",
 					"order": 4,
 					"clusters": [],
 					"prefix": "",
-					"_note": "Per-item <span class=\"sgs-social-icons__label\"> — the visible text beside the icon, rendered only when `showLabels` (block-wide) is true (2026-09-18, closing a genuine gap: the label previously existed only as the link's aria-label, never as visible content). Carries no attrMap of its own: colour/typography inherit from the `item` element's own colour tokens + this block's shared typography attrs (sgs_typography_css_rule()), matching this block's one-colour-per-state contract rather than adding a duplicate label-colour control — an honest gap, not an oversight."
+					"_note": "Per-item <span class=\"sgs-social-icons__label\"> — the visible text beside the icon, rendered only when `showLabels` (block-wide) is true. Carries no attrMap of its own: colour/typography inherit from the `item` element's own colour tokens + this block's shared typography attrs (sgs_typography_css_rule()), matching this block's one-colour-per-state contract rather than adding a duplicate label-colour control — an honest gap, not an oversight."
 				},
 				"item": {
 					"label": "Icon Link",
@@ -142,7 +142,7 @@
 							}
 						}
 					},
-					"_note": "The clickable <a class=\"sgs-social-icons__item\"> link box (render.php:462) — declared 2026-08-15 (Class 3, session fix: this element previously existed only in real markup, never in the manifest, an undeclared-sub-element drift the reseed audit flagged as an orphan `css_element`). D643: `iconColour`/`iconColourHover` were split (2026-08-16) into one attribute PER real CSS property. Pre-split, the resting/hover colour var (`--sgs-social-colour`/`--sgs-social-hover`) was consumed by up to THREE different declarations depending on `iconStyle` (plain: color only, style.css:20/34; filled: background, :45/52; outlined: border-color AND color SIMULTANEOUSLY — the base rule's `color` isn't overridden by the outlined selector, so both apply at once, :20+:57-65) — a single gradient-capable value cannot serve background/border/currentColor at once, so each property now has its own attribute (`iconBackground`/`iconBorderColour`/`iconGlyphColour`, each with a matching `*Hover` pair), each defaulting to the ORIGINAL shared default (text-muted resting / primary hover). clusters widened to text+fill+layout 2026-08-16 (D643): the D643 split gave this element attrMap entries for css:background-color and css:border-color, but with clusters=['text'] neither is a resolvable member, so the entries never reached claimedAttrs and iconBackground/iconBorderColour surfaced as STYLE-DEFECT orphans. background-color lives in the fill cluster and border-color in the layout cluster - declaring both is what makes the existing attrMap entries actually bind. Verified by running the gate, not by reasoning."
+					"_note": "The clickable <a class=\"sgs-social-icons__item\"> link box — each real CSS property has its own attribute (`iconBackground`/`iconBorderColour`/`iconGlyphColour`, each with a matching `*Hover` pair), defaulting to text-muted resting / primary hover. The colour depends on `iconStyle` (plain: color only; filled: background; outlined: border-color AND color simultaneously, since the base rule's `color` is not overridden by the outlined selector), and a single gradient-capable value cannot serve background/border/currentColor at once, hence one attribute per property. clusters is text+fill+layout: background-color lives in the fill cluster and border-color in the layout cluster, and declaring both is what makes the attrMap entries for css:background-color and css:border-color bind."
 				}
 			}
 		}
@@ -252,7 +252,7 @@
 		"iconGlyphColourGradient": {
 			"type": "string",
 			"default": "",
-			"description": "CSS gradient string painting every icon's stroke instead of a flat colour. Non-empty wins over iconGlyphColour at render time (D636/D644)."
+			"description": "CSS gradient string painting every icon's stroke instead of a flat colour. Non-empty wins over iconGlyphColour at render time."
 		},
 		"iconGlyphColourHover": {
 			"type": "string",
@@ -278,7 +278,7 @@
 		"showLabels": {
 			"type": "boolean",
 			"default": false,
-			"description": "Genuine framework gap closed 2026-09-18 (Bean-directed, Mama's Munches footer): renders each item's `label` text visibly beside its icon (a real 'Instagram' / 'WhatsApp' pill button), instead of the label existing only as the link's aria-label. Block-wide, matching iconStyle/colourMode's own block-wide scope — a curated social row reads one way or the other, not item-by-item. render.php drops the now-redundant aria-label when a visible label renders (the text itself becomes the link's accessible name), so nothing double-announces."
+			"description": "Renders each item's `label` text visibly beside its icon (a real 'Instagram' / 'WhatsApp' pill button) instead of the label existing only as the link's aria-label. Block-wide, matching iconStyle/colourMode's scope. render.php drops the redundant aria-label when a visible label renders (the text is the link's accessible name), so nothing double-announces."
 		},
 		"gap": {
 			"type": "string",

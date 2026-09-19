@@ -7,7 +7,7 @@ import {
 } from '@wordpress/components';
 
 /**
- * SGS Cart — FR-36-19 Phase 2 inspector controls: display mode + the
+ * SGS Cart — FR-36-19 inspector controls: display mode + the
  * mini-cart panel's own settings. Split out of edit.js to keep the file
  * under the project's 250-line JS budget.
  *

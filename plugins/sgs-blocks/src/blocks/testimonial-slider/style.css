@@ -1,8 +1,7 @@
 /* ===== SGS Testimonial Slider — Frontend + Editor ===== */
 
 /*
- * inline-size containment — root cause of a mobile overflow bug (verified live
- * on palestine-lives.org page 13 at 360px, 2026-07-18):
+ * inline-size containment — prevents a mobile overflow (seen at 360px):
  *
  * The carousel's flex chain (__stage -> __track [flex:1, overflow:hidden] ->
  * __list [flex row] -> __slide [flex:0 0 calc(100%/N), flex-shrink:0]) uses a
@@ -30,8 +29,8 @@
  */
 /*
  * width:100% is REQUIRED alongside the containment above — it is not a
- * redundant "fill the parent" declaration (verified live on page 2742,
- * 2026-09-07: without it this block and every descendant measured width:0).
+ * redundant "fill the parent" declaration (without it this block and every
+ * descendant measure width:0).
  *
  * `contain: inline-size` forces this element's own intrinsic (min/max-content)
  * inline size to 0. In block flow and in a grid track that is harmless — the
@@ -95,7 +94,7 @@
  * flex-basis calc so slide widths exactly fill the track.
  */
 /*
- * No-inline contract (2026-07-10): the track offset is a CSS custom PROPERTY
+ * No-inline contract: the track offset is a CSS custom PROPERTY
  * VALUE (--sgs-slider-offset, written by view.js via .style.setProperty — a
  * var value, not a property declaration) consumed by the `transform`
  * declaration below. `.no-transition` is the transition kill-switch view.js
@@ -198,9 +197,9 @@
 }
 
 /*
- * Chevron icon — replaces the old bare ‹ / › text glyph (measured live as an
- * 8×24px mark inside the 44px circular button — thin, off-centre, rattling
- * around in the much bigger button). The Lucide SVG ships at a fixed
+ * Chevron icon — an SVG rather than a bare ‹ / › text glyph (which would be a
+ * thin, off-centre 8×24px mark rattling around in the 44px circular button).
+ * The Lucide SVG ships at a fixed
  * 24×24 viewBox; sized here at 22px (proportionate fill of the 44px circle,
  * matching the button's own 44:24 ≈ button:glyph ratio the design intended)
  * and centred via the button's own flex centring — no absolute positioning
@@ -236,8 +235,8 @@
  * The button is 44×44px transparent so it comfortably exceeds this.
  * The VISIBLE dot is a 10px pseudo-element so it looks correct visually.
  * Using a pseudo-element keeps the button background transparent —
- * the old approach set min-width/min-height on a coloured button
- * which caused the dot to render as a giant teal circle.
+ * setting min-width/min-height on a coloured button would render the dot
+ * as a giant coloured circle.
  */
 .sgs-testimonial-slider__dot {
 	width: 44px;
@@ -261,15 +260,12 @@
  * Dot pseudo-element: text-muted idle → primary hover scale 1.2 → primary-dark active scale 1.3.
  * Easing: spring per Group J spec (fast duration).
  *
- * Idle colour fix (measured live 2026-08-01): border-subtle is a decorative
- * hairline token, not a UI-component token — it measured ≈1.2:1 against the
- * slider background on both the homepage and the canary, failing WCAG 2.1 AA's
- * 3:1 UI-component floor badly. text-muted is the theme's UI-state-indicator
- * token and carries real contrast against surface (theme.json default
- * text-muted #606D80 on surface #FAF9F6/#FFFFFF ≈ 7:1+). The previous fallback
- * (#0D5557, a dark teal) was also wrong on its own terms — border-subtle is
- * actually #D4DBE5 (pale blue-grey) in theme.json; the fallback below matches
- * text-muted's real theme.json value instead.
+ * Idle colour: border-subtle is a decorative hairline token, not a
+ * UI-component token — it measures ≈1.2:1 against the slider background,
+ * failing WCAG 2.1 AA's 3:1 UI-component floor badly. text-muted is the
+ * theme's UI-state-indicator token and carries real contrast against surface
+ * (theme.json default text-muted #606D80 on surface #FAF9F6/#FFFFFF ≈ 7:1+);
+ * the fallback below matches text-muted's real theme.json value.
  */
 .sgs-testimonial-slider__dot::before {
 	content: '';
@@ -366,11 +362,10 @@
 /* ===== Hover States =====
  * The hover colours are emitted per-instance by render.php as a scoped
  * `.{uid}.sgs-testimonial-slider:hover { background-color / color / border-color }`
- * rule (Spec 32 FR-32-4 as amended 2026-07-18 / D345) — NOT via inline
- * `--sgs-hover-*` VALUES gated by an `[style*="--sgs-hover-…"]` presence-selector.
- * That gate silently STOPPED matching the instant the var moved off the inline
- * `style` attribute into the wrapper's scoped rule (footprint GOTCHA F), killing
- * the hover colour with no error. The per-instance `:hover` rule (specificity
+ * rule (Spec 32 FR-32-4) — NOT via inline `--sgs-hover-*` VALUES gated by an
+ * `[style*="--sgs-hover-…"]` presence-selector (such a gate silently stops
+ * matching once the var leaves the inline `style` attribute, killing the hover
+ * colour with no error). The per-instance `:hover` rule (specificity
  * 0,3,0) beats the variant base and applies only when a hover colour is set, so
  * it is variant-safe with no resting-value fallback (mirrors sgs/info-box). */
 

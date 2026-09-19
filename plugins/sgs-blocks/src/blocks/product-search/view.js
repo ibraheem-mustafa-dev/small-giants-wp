@@ -15,7 +15,7 @@
  *                           the side-effect import below registers it, so
  *                           this block never hand-rolls a second open/close/
  *                           focus/inert utility (R-31-9).
- *   "command-palette"     — D638 §6. The SAME <dialog> DIALOG mechanism as
+ *   "command-palette"     — The SAME <dialog> DIALOG mechanism as
  *                           full-screen-overlay (isInsideComponent() below
  *                           already covers it — no second containment
  *                           guard). Adds ONE thing on top: a global Ctrl/
@@ -80,7 +80,7 @@ function initInstance( root ) {
 			: maxResultsDesktop;
 	}
 
-	// 37-media-no-handroll remediation (2026-09-03) — the result thumbnail's
+	// The result thumbnail's
 	// object-fit VALUE is computed server-side (render.php, via the shared
 	// media-atom system) and scoped to the block's existing no-inline
 	// scoped-styling uid class ($sgs_style_uid, PHP-side name), which is
@@ -98,7 +98,7 @@ function initInstance( root ) {
 	// icon: <details>/<summary> DISCLOSURE (FR-36-10).
 	// full-screen-overlay / command-palette: <dialog> DIALOG (FR-36-10),
 	// driven by the shared store('sgs/nav') import above — command-palette
-	// (D638 §6) is the SAME dialog mechanism, only its CSS modifier class
+	// is the SAME dialog mechanism, only its CSS modifier class
 	// differs, so it is included here rather than given a second dialog
 	// detection branch.
 	const isIcon = root.dataset.display === 'icon';
@@ -133,8 +133,8 @@ function initInstance( root ) {
 
 	/**
 	 * Whether an element is inside this component. Overlay mode's <dialog>
-	 * is REPARENTED to <body> on first open by the shared store (D323 escape-
-	 * transformed-ancestor fix) — after that, `root.contains()` alone would
+	 * is REPARENTED to <body> on first open by the shared store (so it escapes
+	 * transformed ancestors) — after that, `root.contains()` alone would
 	 * wrongly treat every click/focus inside the (now-detached) dialog as
 	 * "outside", closing the listbox the instant the input gains focus. This
 	 * checks BOTH the original wrapper and the (possibly-moved) dialog.
@@ -311,7 +311,7 @@ function initInstance( root ) {
 
 	// -------------------------------------------------------------------------
 	// Command palette — global Ctrl/Cmd+K opens the SAME trigger the shared
-	// store already binds `actions.toggleDrawer` to (D638 §6). Dispatching a
+	// store already binds `actions.toggleDrawer` to. Dispatching a
 	// real .click() on the live button — rather than importing/calling the
 	// store's `actions` directly — is deliberate: those actions read
 	// getContext()/getElement() from the Interactivity runtime's currently-
@@ -410,8 +410,7 @@ function initInstance( root ) {
 					img.loading = 'lazy';
 					img.width = 40;
 					img.height = 40;
-					// 37-media-no-handroll remediation (2026-09-03) — marker
-					// classes for the shared media-atom object-fit rule; see
+					// Marker classes for the shared media-atom object-fit rule; see
 					// the mediaScopeClass comment above.
 					img.classList.add( 'sgs-media-el' );
 					if ( mediaScopeClass ) {
@@ -430,8 +429,8 @@ function initInstance( root ) {
 				appendHighlightedTitle( titleEl, result.title || '', q );
 				info.appendChild( titleEl );
 
-				// Price + stock preview (D638 §6, FR-36-20 MUST). The REST
-				// response now includes `price_html` (WooCommerce's own
+				// Price + stock preview (FR-36-20 MUST). The REST
+				// response includes `price_html` (WooCommerce's own
 				// wc_get_price_html() markup — currency/locale-formatted,
 				// already sanitised server-side via wp_kses_post, see
 				// class-product-search-rest.php step 8) plus `on_sale` and

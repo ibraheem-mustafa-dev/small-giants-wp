@@ -49,7 +49,7 @@ const PLATFORM_LABELS = {
 	discord: 'Discord', google: 'Google', custom: 'Custom',
 };
 
-// Fix 1 (Spec 35 A2/Part B): mirrors render.php's $platform_icons EXACTLY —
+// Mirrors render.php's $platform_icons EXACTLY —
 // the editor canvas resolves the SAME Lucide slug render.php does, via the
 // shared IconPreview component (src/components/IconPicker/IconPreview.js),
 // instead of reinventing icon-name resolution a second time.
@@ -156,8 +156,8 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	// Base padding/margin preview — padding/margin are owned tier-object
 	// attrs { desktop, tablet, mobile }, read directly by render.php.
-	// NOTE: `style` here is WP's native style-support object attribute (now
-	// holds only style.color, not spacing) — distinct from this block's own
+	// NOTE: `style` here is WP's native style-support object attribute (holds
+	// only style.color, not spacing) — distinct from this block's own
 	// `iconStyle` attribute (plain/filled/outlined/pill variant).
 	const basePadding = attributes.padding?.desktop;
 	const baseMargin = attributes.margin?.desktop;
@@ -191,7 +191,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	}
 	// 'theme' mode drives every item's resting background/border/glyph colour
 	// via these 3 custom properties (style.css .sgs-social-icons__item{color:
-	// var(--sgs-social-glyph)} etc — D643); 'brand' mode overrides per item
+	// var(--sgs-social-glyph)} etc); 'brand' mode overrides per item
 	// instead (applied on each item below).
 	if ( 'theme' === colourMode ) {
 		// The DesignTokenPickers here have no `linked` prop, so they always
@@ -229,7 +229,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	// a box floored at 44px.
 	const itemSize = Math.max( 44, iconSize + ( 'plain' === iconStyle ? 0 : 16 ) );
 
-	// iconBorderColourGradient real mechanism (render.php, D636): a masked
+	// iconBorderColourGradient real mechanism (render.php): a masked
 	// `::before` ring via `sgs_border_gradient_css()`, scoped to
 	// `.sgs-social-icons--outlined .sgs-social-icons__item` — the gradient
 	// border only ever paints on the OUTLINED style variant; plain/filled/pill
@@ -286,12 +286,11 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
-			{ /* D619 — ONE grouped, SGS-OWNED colour panel (own PanelBody,
+			{ /* ONE grouped, SGS-OWNED colour panel (own PanelBody,
 			   Styles tab), rendered FIRST so it sits at the top of the inspector.
-			   D643 (2026-08-16): `iconColour`/`iconColourHover` split into 3
-			   attribute pairs — one per real CSS property this block paints
-			   (background-color / border-color / color) — so each can later
-			   carry its own gradient option without one value having to serve
+			   Icon colour is 3 attribute pairs — one per real CSS property this
+			   block paints (background-color / border-color / color) — so each
+			   can carry its own gradient option without one value having to serve
 			   3 different CSS techniques at once. The native `color` support
 			   sub-flags are false so WordPress generates no competing native
 			   colour UI. The colour mode (theme vs brand) gates whether the
@@ -491,15 +490,11 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
-				{ /* NOTE (2026-09-03 investigation): "Social Links" appears TWICE
-				   in this file — once here (Site Info source: read-only notice)
-				   and once below (manual source: the full icon-list editor).
-				   Confirmed NOT a dead/orphaned duplicate: the ternary on
-				   `isSiteInfoSource` means exactly one of the two ever mounts,
-				   both are live code paths reachable by toggling "Link source"
-				   above. Confusingly named (identical titles, different
-				   content) but functioning as designed — a rename is a
-				   separate, out-of-scope UX fix, not attempted here. */ }
+				{ /* NOTE: "Social Links" appears TWICE in this file — once here
+				   (Site Info source: read-only notice) and once below (manual
+				   source: the full icon-list editor). The ternary on
+				   `isSiteInfoSource` means exactly one of the two ever mounts;
+				   both are reachable by toggling "Link source" above. */ }
 				{ isSiteInfoSource ? (
 					<PanelBody title={ __( 'Social Links', 'sgs-blocks' ) }>
 						<Notice status="info" isDismissible={ false }>
@@ -508,10 +503,9 @@ export default function Edit( { attributes, setAttributes } ) {
 					</PanelBody>
 				) : (
 				<PanelBody title={ __( 'Social Links', 'sgs-blocks' ) }>
-					{ /* Fix 4 (Bean: inspector "horrendous") — each control now runs
-					   FULL-WIDTH, stacked vertically, instead of squeezed 3-across
-					   inside a ~248px sidebar (previously ~110px per control, help
-					   text wrapping 6 lines). Only the small icon-button row at the
+					{ /* Each control runs FULL-WIDTH, stacked vertically, because a
+					   ~248px sidebar cannot fit 3-across (help text would wrap
+					   6 lines). Only the small icon-button row at the
 					   bottom stays horizontal — those don't need full width. */ }
 					{ icons.map( ( icon, index ) => (
 						<div key={ index } className="sgs-social-icons-editor__item">
@@ -523,9 +517,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
-							{ /* Fix 5 (Spec 35 §2 LINK, Bean-ruled 2026-08-13): the
-							   canonical popover LINK control, replacing the retired
-							   inline SgsLinkControl mount. targetMode="boolean" maps
+							{ /* Spec 35 §2 LINK: the canonical popover LINK control.
+							   targetMode="boolean" maps
 							   this block's stored `opensInNewTab` boolean onto
 							   LinkPopoverField's linkTarget shape. */ }
 							<LinkPopoverField
@@ -592,15 +585,10 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 				) }
 
-				{ /* Typography — replaces the old WP-native supports.typography
-				   (textAlign only, and dead in practice: this root is display:flex
-				   with no inline/block content, so text-align never painted
-				   anything) with the shared TypographyControls component +
-				   sgs_typography_css_rule() render.php helper (D971/D972
-				   full-replacement track). Root prefix "" — the block has no
-				   rendered text label (aria-label only), so the root is the only
-				   sensible typography target, matching the previous native
-				   fontSize/lineHeight scope. */ }
+				{ /* Typography — the shared TypographyControls component +
+				   sgs_typography_css_rule() render.php helper. Root prefix "" —
+				   the block has no rendered text label (aria-label only), so the
+				   root is the only sensible typography target. */ }
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
 					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
 						attributes={ attributes }
@@ -694,11 +682,11 @@ export default function Edit( { attributes, setAttributes } ) {
 							} }
 						>
 							<span className="sgs-social-icons__icon" aria-hidden="true">
-								{ /* iconGlyphColourGradient real mechanism (render.php,
-								   D636/D644): `sgs_svg_stroke_gradient()` builds an SVG
+								{ /* iconGlyphColourGradient real mechanism (render.php):
+								   `sgs_svg_stroke_gradient()` builds an SVG
 								   `stroke:url(#id)` declaration + `<linearGradient>` def —
 								   NOT a background-image/currentColor technique. IconPreview
-								   itself now accepts a `gradient` prop and applies this exact
+								   itself accepts a `gradient` prop and applies this exact
 								   technique (`withSvgStrokeGradient()`,
 								   src/utils/svg-gradient-preview.js) via its own
 								   loadLucide()/withInlineFillStroke() path — pass it through

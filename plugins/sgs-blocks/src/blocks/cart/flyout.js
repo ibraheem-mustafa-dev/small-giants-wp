@@ -1,5 +1,5 @@
 /**
- * SGS Cart — flyout (DISCLOSURE) open/close/focus (FR-36-19 Phase 2).
+ * SGS Cart — flyout (DISCLOSURE) open/close/focus (FR-36-19).
  *
  * FR-36-10 draws a hard line between DISCLOSURE (dropdowns/mega — a
  * `<button aria-expanded>`, Tab through, NO trap, Escape closes + returns

@@ -130,8 +130,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
-			{ /* Colour gap close (D638 §6; colour-conformance migration
-			    2026-09-07) — 5 client-controllable colour rows, each a
+			{ /* 5 client-controllable colour rows, each a
 			    normal+hover state pair with gradient capability, matching
 			    the SgsBorderControl colourStates pattern below. Falls back
 			    to the existing theme-token defaults in style.css when unset
@@ -364,14 +363,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						__next40pxDefaultSize
 					/>
 					{ /*
-					  `maxResults` is a TIER OBJECT (Spec 35 pass 2) — ONE attr
+					  `maxResults` is a TIER OBJECT — ONE attr
 					  holding {desktop,tablet,mobile}, so it uses
-					  <ResponsiveOverride> rather than the old breakpoint-keyed
-					  attrMap. FR-36-20's caps are per-tier (Baymard: max 10
+					  <ResponsiveOverride>. FR-36-20's caps are per-tier (Baymard: max 10
 					  desktop, 4–8 mobile) with NO distinct tablet design
 					  finding — render.php inherits the desktop value/cap for
-					  tablet (matching the pre-migration behaviour where no
-					  tablet attr ever existed), so the tablet tier here shows
+					  tablet, so the tablet tier here shows
 					  explanatory text rather than a second control that
 					  render.php would never read (would be a dead control).
 					*/ }
@@ -448,10 +445,9 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
-				{ /* 37-media-no-handroll remediation (2026-09-03) — the result-row
-				   product thumbnail's crop mode is a genuine client control now
-				   (style.css no longer hardcodes object-fit:cover; the shared
-				   media-atoms stylesheet paints the same default). The thumbnail
+				{ /* The result-row product thumbnail's crop mode is a client control
+				   (style.css does not hardcode object-fit; the shared
+				   media-atoms stylesheet paints the default). The thumbnail
 				   only exists in the live results list (view.js), never in this
 				   static editor preview, so this mounts its own panel rather than
 				   nesting inside an existing preview-bound control. */ }

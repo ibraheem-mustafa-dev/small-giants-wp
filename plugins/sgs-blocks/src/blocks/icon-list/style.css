@@ -42,7 +42,7 @@
 	transition: var(--wp--custom--transition--fast, 0.15s ease);
 }
 
-/* Dividers (`dividers` attr, render.php step 6) — a line BETWEEN items only.
+/* Dividers (`dividers` attr) — a line BETWEEN items only.
  * `item + item` (matches sgs/accordion's `--bordered` variant + sgs/product-faq's
  * item-spacing rule) never matches the first item, so a single-item list gets no
  * stray divider. `padding-top` composes with the existing flex `gap` rather than
@@ -63,7 +63,7 @@
 	border-radius: var(--wp--custom--border-radius--small, 4px);
 }
 
-/* Spec 32: no block emits an inline `style` property declaration any more,
+/* Spec 32: no block emits an inline `style` property declaration,
  * so a `:not([style*=…])` guard always matches and the fallback is
  * unconditional. This value is PAINTED (not what the element inherits), so
  * it is kept — but de-specified via :where() (0,0,0) so the operator's own
@@ -103,29 +103,25 @@
 	height: 28px;
 }
 
-/* Default line-height (0 specificity via :where()) — textElLineHeight attribute now drives this; must always lose to the attribute-driven scoped rule. */
+/* Default line-height (0 specificity via :where()) — the textElLineHeight attribute drives this; must always lose to the attribute-driven scoped rule. */
 :where(.sgs-icon-list__text) {
 	line-height: 1.5;
 }
 
 /* NO rest-state colour fallback here — deliberately. A
  * `.sgs-icon-list__text:not([style*="color"]) { color: var(--wp--preset--color--text) }`
- * rule lived here until 2026-08-06 and was a measured a11y defect. The
- * `:not([style*="color"])` guard only ever matched INLINE output; the 2026-07-10
- * no-inline migration moved this block's colours into the scoped <style>, so no
- * inline style is emitted any more, the guard always matched, and the dark text
- * token was painted unconditionally. Inside a dark drawer that computed
- * rgb(58,46,38) on rgb(58,46,38) — contrast 1:1, text invisible — measured on 6
- * elements across the centred-statement and split-zone-serif POC variants.
- * Letting it inherit is both the fix and the framework norm: sgs/nav-menu ships
- * no such fallback, and sgs/nav-drawer computes a contrast-safe foreground via
- * sgs_wcag_text_colour_for_bg() and emits it on the dialog root for descendants
- * to inherit. On a normal page nothing changes — theme.json sets body colour to
- * var:preset|color|text, the identical value this rule was forcing.
+ * rule would only ever match INLINE output; this block emits no inline style,
+ * so the guard would always match and the dark text token would paint
+ * unconditionally. Inside a dark drawer that computes rgb(58,46,38) on
+ * rgb(58,46,38) — contrast 1:1, text invisible.
+ * Letting the text inherit is the framework norm: sgs/nav-drawer computes a
+ * contrast-safe foreground via sgs_wcag_text_colour_for_bg() and emits it on
+ * the dialog root for descendants to inherit. On a normal page the result is
+ * identical — theme.json sets body colour to var:preset|color|text.
  * A set textColour still wins: render.php emits it as a scoped `.{uid}` rule. */
 
 /* Per-item hover: text shifts to primary, icon scales up */
-/* Spec 32: no block emits an inline `style` property declaration any more,
+/* Spec 32: no block emits an inline `style` property declaration,
  * so a `:not([style*=…])` guard always matches and the fallback is
  * unconditional. This value is PAINTED (not what the element inherits), so
  * it is kept — but de-specified via :where() (0,0,0) so the operator's own

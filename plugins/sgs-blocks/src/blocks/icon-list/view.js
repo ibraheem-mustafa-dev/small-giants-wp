@@ -7,8 +7,8 @@
  * list is menu-bound or a typed link list). This canNOT be done server-side —
  * the stack sits behind LiteSpeed page cache, so a server-baked aria-current
  * would serve one cached page's answer to every visitor on every page
- * (FR-36-11). Mirrors `sgs/nav-menu`'s `view.js` exactly (FR-36-26c Dispatch
- * B — reuse the pattern, do not re-derive it).
+ * (FR-36-11). Mirrors `sgs/nav-bar-menu`'s `view.js` exactly (FR-36-26c —
+ * reuse the pattern, do not re-derive it).
  *
  * Every link is already a real, crawlable server-rendered `<a href>` — this
  * is progressive enhancement only; with zero JS the list still works, it

@@ -10,7 +10,7 @@
  *   3. `flyout` mode wires a local disclosure toggle (`flyout.js` — FR-36-10
  *      DISCLOSURE: no trap, page stays usable). `drawer` mode imports the
  *      SHARED `store('sgs/nav')` (registers the same dialog/DIALOG plumbing
- *      already proven by `sgs/nav-menu` + `sgs/nav-drawer` — R-31-9, no
+ *      used by `sgs/nav-bar-menu` + `sgs/nav-drawer` — R-31-9, no
  *      second open/close/focus utility).
  *   4. Either way, opening the panel triggers `panel-render.js` to fetch +
  *      render the live item list/qty/remove/subtotal — never a redirect.
@@ -29,7 +29,7 @@
  * the page — so it can auto-open safely. The badge still updates live in
  * drawer mode either way.
  *
- * WC iAPI store namespace (OPEN Q1 resolution, carried from Phase 1):
+ * WC iAPI store namespace:
  *   Grepping WooCommerce 10.x src/StoreApi/Routes/V1/ and the compiled
  *   wc-cart-interactivity view bundle shows the store is registered as
  *   "woocommerce/cart" via the @woocommerce/interactivity package.
@@ -195,7 +195,7 @@ function init() {
 
 	const onCartChanged = () => refreshAll( panels, { allowAutoOpen: true } );
 	document.addEventListener( 'wc-blocks_added_to_cart', onCartChanged );
-	// Tolerate legacy jQuery `added_to_cart` if a 3rd-party plugin re-emits
+	// Tolerate jQuery `added_to_cart` if a 3rd-party plugin re-emits
 	// it as a native DOM CustomEvent.
 	document.addEventListener( 'added_to_cart', onCartChanged );
 	document.addEventListener( 'wc-blocks_removed_from_cart', () =>

@@ -5,14 +5,14 @@
  * Cache strategy: always renders count 0 server-side (LiteSpeed/Hostinger
  * page cache would otherwise serve stale counts to all visitors); view.js
  * hydrates the real count from the WooCommerce Store API within ~200 ms.
- * WooCommerce inactive → renders nothing at all (D338/R-31-9 — no
- * per-client carve-out needed; edit.js shows admins a Notice instead).
+ * WooCommerce inactive → renders nothing at all (no per-client carve-out
+ * needed; edit.js shows admins a Notice instead).
  *
- * FR-36-19 Phase 2 (mini-cart): `displayMode` is `link` (unchanged badge
- * link, no panel), `flyout` (DISCLOSURE per FR-36-10 — a plain toggle
+ * FR-36-19 (mini-cart): `displayMode` is `link` (badge link, no panel),
+ * `flyout` (DISCLOSURE per FR-36-10 — a plain toggle
  * button, non-modal popover, no Tab trap, page stays usable) or `drawer`
  * (DIALOG per FR-36-10 — a native `<dialog>` opened via the SHARED
- * `store('sgs/nav')` already proven by `sgs/nav-menu`/`sgs/nav-drawer`,
+ * `store('sgs/nav')` used by `sgs/nav-bar-menu`/`sgs/nav-drawer`,
  * zero duplicated open/close/focus logic). Item data/qty-edit/remove/
  * totals are populated client-side by view.js — the SSR panel is a
  * loading skeleton only (as cache-sensitive as the count).
@@ -20,8 +20,8 @@
  * `link` on `is_cart()`/`is_checkout()` — a popover there is redundant.
  *
  * WCAG 2.2 AA: `link` mode's trigger is an `<a>` (full no-JS fallback);
- * `flyout`/`drawer` triggers are a real `<button>` (mirrors the proven
- * `sgs/nav-menu` burger — a click handler on an `<a>` would race the
+ * `flyout`/`drawer` triggers are a real `<button>` (mirrors the
+ * `sgs/nav-bar-menu` burger — a click handler on an `<a>` would race the
  * anchor's default navigation). aria-label carries the live count;
  * `role="status"`/`aria-live="polite"` on the badge, and the panel
  * carries its own SEPARATE status live region for mutation feedback
@@ -54,9 +54,8 @@ require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 // one page) — matches the sgs_css_length_value() pattern established below.
 
 // ---------------------------------------------------------------------------
-// NO-INLINE (Spec 32 FR-32-4, D345): margin is a block-private object attr
-// (retired off WP-native style.spacing.margin 2026-09-11) — emitted scoped
-// via the core style engine below (mirrors sgs/label).
+// NO-INLINE (Spec 32 FR-32-4): margin is a block-private object attr,
+// emitted scoped via the core style engine below (mirrors sgs/label).
 // marginTablet/marginMobile are SGS object attrs, scoped @media (tablet
 // max-width:1023px, mobile max-width:767px). The `--sgs-cart-*` custom-
 // property VALUES (icon/badge/panel colours) land in the same scoped
@@ -71,7 +70,7 @@ $display_mode          = in_array( $attributes['displayMode'] ?? 'link', $allowe
 $icon_name             = preg_replace( '/[^a-z0-9-]/', '', strtolower( $attributes['iconName'] ?? 'shopping-cart' ) );
 $icon_size             = absint( $attributes['iconSize'] ?? 24 );
 $icon_colour           = $attributes['iconColour'] ?? 'primary';
-// D636/D644 icon/SVG gradient sibling — non-empty wins over iconColour above.
+// Icon/SVG gradient sibling — non-empty wins over iconColour above.
 $icon_colour_gradient       = $attributes['iconColourGradient'] ?? '';
 $icon_colour_hover          = $attributes['iconColourHover'] ?? '';
 $icon_colour_hover_gradient = $attributes['iconColourHoverGradient'] ?? '';
@@ -81,7 +80,7 @@ $aria_label                 = sanitize_text_field( $attributes['ariaLabel'] ?? _
 $show_zero                  = ! empty( $attributes['showZero'] );
 $hide_when_empty            = ! empty( $attributes['hideWhenEmpty'] );
 
-// FR-36-19 Phase 2 panel attrs.
+// FR-36-19 panel attrs.
 $panel_heading      = sanitize_text_field( $attributes['panelHeading'] ?? __( 'Your cart', 'sgs-blocks' ) );
 $empty_cart_message = sanitize_text_field( $attributes['emptyCartMessage'] ?? __( 'Your cart is empty', 'sgs-blocks' ) );
 $empty_cart_cta     = sanitize_text_field( $attributes['emptyCartCtaLabel'] ?? __( 'Continue shopping', 'sgs-blocks' ) );
@@ -118,9 +117,9 @@ $has_panel           = $wc_active && in_array( $effective_mode, array( 'flyout',
 $ssr_count = 0;
 
 // ── CSS custom-property VALUES (icon size/colour, badge colours, panel
-// bg/text) — a scoped `.{uid}.wp-block-sgs-cart{…}` rule below (Spec 32
-// FR-32-4 as amended 2026-07-18 / D345: inline `--var` is now FORBIDDEN,
-// mirrors sgs/info-box's hover-colour treatment). Nothing lands in the
+// bg/text) — a scoped `.{uid}.wp-block-sgs-cart{…}` rule below. Inline
+// `--var` custom properties are forbidden (Spec 32 FR-32-4); this mirrors
+// sgs/info-box's hover-colour treatment. Nothing lands in the
 // root's `style="…"` attribute. ────────────────────────────────────────────
 $sgs_cart_vars = array(
 	'--sgs-cart-icon-size:' . $icon_size . 'px',
@@ -128,11 +127,9 @@ $sgs_cart_vars = array(
 );
 
 // ── Margin — `margin` is a single block-owned TIER-of-BOXES envelope attr
-// {desktop,tablet,mobile} (folded 2026-09-11 from the wrong 3-sibling shape
-// margin/marginTablet/marginMobile), read once via
+// {desktop,tablet,mobile}, read once via
 // sgs_responsive_normalise_object(), NOT auto-inlined. Hand-built shorthand
-// for the tablet/mobile tiers (mirrors sgs/star-rating's already-shipped
-// margin migration). ─────
+// for the tablet/mobile tiers (mirrors sgs/star-rating's margin). ─────
 $sgs_cart_margin_tiers = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
 $base_margin_obj       = array();
 $margin_raw            = is_array( $sgs_cart_margin_tiers['desktop'] ?? null ) ? $sgs_cart_margin_tiers['desktop'] : array();
@@ -175,11 +172,10 @@ if ( null !== $margin_mob_val ) {
 }
 
 // ── Cart custom-property VALUES (icon size/colour) — scoped rule on the
-// SAME uid selector, NOT inline (Spec 32 FR-32-4 as amended 2026-07-18 /
-// D345). Badge/panel colours moved off this mechanism 2026-09-04 (below) —
-// each pairs a fill (background) and text colour on the SAME element, which
-// a text gradient's background-clip:text would otherwise clip, so the fill
-// half now routes through its own ::after layer. ───────────────────────────
+// SAME uid selector, NOT inline (Spec 32 FR-32-4). Badge/panel colours are
+// emitted separately (below) — each pairs a fill (background) and text colour
+// on the SAME element, which a text gradient's background-clip:text would
+// otherwise clip, so the fill half routes through its own ::after layer. ───
 if ( $sgs_cart_vars ) {
 	$scoped_css[] = $sel . '{' . implode( ';', $sgs_cart_vars ) . '}';
 }
@@ -208,8 +204,8 @@ if ( '' !== $badge_text_effective ) {
 // Hover — safe to paint directly (no precondition swap needed): the badge's
 // own background always lives on its ::after layer above, never on
 // $badge_sel itself, so background-clip:text here can never clip a
-// background (colour-conformance, 2026-09-07).
-$badge_text_hover           = (string) ( $attributes['badgeTextColourHover'] ?? '' );
+// background.
+$badge_text_hover          = (string) ( $attributes['badgeTextColourHover'] ?? '' );
 $badge_text_hover_gradient  = (string) ( $attributes['badgeTextColourHoverGradient'] ?? '' );
 $badge_text_hover_effective = sgs_resolve_text_colour_or_gradient( $badge_text_hover, $badge_text_hover_gradient );
 if ( '' !== $badge_text_hover_effective ) {
@@ -249,7 +245,7 @@ if ( $has_panel ) {
 	// Hover — safe to paint directly (no precondition swap needed): the
 	// panel's own background always lives on its ::after layer above, never
 	// on $panel_sel itself, so background-clip:text here can never clip a
-	// background (colour-conformance, 2026-09-07).
+	// background.
 	$panel_text_hover           = (string) ( $attributes['panelTextColourHover'] ?? '' );
 	$panel_text_hover_gradient  = (string) ( $attributes['panelTextColourHoverGradient'] ?? '' );
 	$panel_text_hover_effective = sgs_resolve_text_colour_or_gradient( $panel_text_hover, $panel_text_hover_gradient );
@@ -308,7 +304,7 @@ $wrapper_attributes = get_block_wrapper_attributes(
 
 // ── Icon SVG ─────────────────────────────────────────────────────────────────
 $icon_svg = sgs_get_lucide_icon( $icon_name );
-// D636/D644 icon/SVG gradient — non-empty gradient wins over iconColour's
+// Icon/SVG gradient — non-empty gradient wins over iconColour's
 // flat currentColor paint (helpers-svg-gradient.php).
 $sgs_cart_stroke_grad = sgs_icon_gradient_css( 'lucide', $icon_colour_gradient, $uid . '-ig', "{$sel} .sgs-cart__icon svg" );
 if ( '' !== $sgs_cart_stroke_grad['defs'] ) {
@@ -317,7 +313,7 @@ if ( '' !== $sgs_cart_stroke_grad['defs'] ) {
 }
 
 // Icon hover — flat-or-gradient, via the shared sgs_icon_gradient_css()
-// composer (2026-09-06). This block's icon is always Lucide (no source
+// composer. This block's icon is always Lucide (no source
 // picker), so the composer always takes the SVG stroke-gradient branch;
 // using it anyway keeps every icon-hosting block on one call site.
 $sgs_cart_icon_hover_grad = sgs_icon_gradient_css( 'lucide', $icon_colour_hover_gradient, $uid . '-igh', "{$sel} .sgs-cart__icon svg" );
@@ -339,7 +335,7 @@ $trigger_label = $aria_label . ' (' . $count_label . ')';
 
 // ── The trigger itself: <a href> in `link` mode (unchanged — full no-JS
 // fallback), a real <button> in flyout/drawer mode (mirrors the proven
-// sgs/nav-menu burger — a click handler on an <a> would race the anchor's
+// sgs/nav-bar-menu burger — a click handler on an <a> would race the anchor's
 // default navigation since neither store('sgs/nav')'s toggleDrawer action
 // nor the flyout's own JS calls preventDefault on it). ──────────────────────
 $icon_and_badge_html = sprintf(

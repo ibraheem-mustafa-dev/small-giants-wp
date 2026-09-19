@@ -2,14 +2,12 @@
 /**
  * Server-side render for the SGS Option Picker block.
  *
- * BLOCK-PRIVATE, NO-INLINE, NO-WRAPPER (LOCKED per-block no-inline migration
- * contract §A/§B/§B3, 2026-07-09 — D294 pattern selector): sgs/option-picker
- * is CONTENT-kind (box + width only — `SGS_Container_Wrapper::render()` for
- * 'content' kind only ever emitted maxWidth/width/padding, never
- * grid/background/overlay/shape-divider machinery) and it already renders a
- * single semantic root (`<fieldset>`), so the shared wrapper was dead weight —
- * same proven pattern as sgs/quote (D294). The `<fieldset>` IS the block root,
- * built via get_block_wrapper_attributes().
+ * BLOCK-PRIVATE, NO-INLINE, NO-WRAPPER (per-block no-inline contract
+ * §A/§B/§B3): sgs/option-picker is CONTENT-kind (box + width only — no
+ * grid/background/overlay/shape-divider machinery) and it renders a single
+ * semantic root (`<fieldset>`), so it makes no `SGS_Container_Wrapper` call —
+ * same pattern as sgs/quote. The `<fieldset>` IS the block root, built via
+ * get_block_wrapper_attributes().
  *
  * NO-INLINE: this block emits zero inline style property declarations.
  * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
@@ -20,9 +18,9 @@
  *
  * Pill resting/hover/selected colour + border-radius are attribute-driven CSS
  * custom PROPERTY VALUES (`--sgs-op-*`) consumed by style.css's
- * `.sgs-option-picker` class rules — never inline property declarations. Per
- * Spec 32 FR-32-4 as amended 2026-07-18 (D345), inline `--var` declarations
- * are FORBIDDEN too — every `--sgs-op-*` value (root resting/hover/selected/
+ * `.sgs-option-picker` class rules — never inline property declarations.
+ * Inline `--var` declarations are forbidden too (Spec 32 FR-32-4) — every
+ * `--sgs-op-*` value (root resting/hover/selected/
  * radius vars + the per-pill swatch bg/text vars) is emitted into the
  * block's OWN scoped `.{uid}`
  * `<style>` tag, never as an inline `style="--var:…"` attribute. This is
@@ -67,21 +65,15 @@
 
 defined( 'ABSPATH' ) || exit;
 
-// [D-tier-object-render-fix 2026-09-06]
-// Group 1 folded padding/margin into owned tier-object attrs
-// {desktop,tablet,mobile}, but this block's own scoped CSS below still
-// reads the pre-migration flat shape (a plain box for the base value,
-// plus four separate flat attrs for the tablet/mobile overrides --
-// block.json no longer declares any of those four). Normalise once,
-// into fresh locals only -- every literal reference below has been
-// redirected to these instead of writing back into $attributes.
-// Fixed 2026-09-06: sgs_responsive_normalise_object() lives in
-// helpers-responsive.php, which this file's own render-helpers.php
-// require below WOULD load -- but too late, since these two calls run
-// before that require executes. A block whose render.php is the first
-// SGS block PHP to run in a request (nav-menu in the site header, on
-// every page) fatals with "Call to undefined function" before any
-// other block's render.php has had a chance to load it. Requiring the
+// padding/margin are owned tier-object attrs {desktop,tablet,mobile}.
+// Normalise once, into fresh locals only -- never write back into
+// $attributes.
+// sgs_responsive_normalise_object() lives in helpers-responsive.php,
+// which this file's own render-helpers.php require below WOULD load --
+// but too late, since these two calls run before that require executes.
+// A block whose render.php is the first SGS block PHP to run in a request
+// (e.g. the site-header navigation bar, present on every page) would
+// otherwise fatal with "Call to undefined function". Requiring the
 // defining file directly, here, removes the load-order dependency.
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
 $sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
@@ -122,10 +114,9 @@ $pill_bg_colour       = $attributes['pillBgColour'] ?? '';
 $pill_bg_colour_gradient = $attributes['pillBgColourGradient'] ?? '';
 $pill_text_colour     = $attributes['pillTextColour'] ?? '';
 
-// Pill HOVER colours — real attributes since 2026-09-03 (FR-35-5 exception
-// reversed by the block owner). Empty = fall through to the existing
+// Pill HOVER colours — real attributes. Empty = fall through to the
 // static preset-variant hover look via the CSS var() fallback chain in
-// style.css (no behaviour change for an instance with nothing configured).
+// style.css.
 $pill_bg_colour_hover   = $attributes['pillBgColourHover'] ?? '';
 $pill_bg_colour_hover_gradient = $attributes['pillBgColourHoverGradient'] ?? '';
 $pill_text_colour_hover = $attributes['pillTextColourHover'] ?? '';
@@ -144,9 +135,9 @@ $pill_border_radius   = isset( $attributes['pillBorderRadius'] ) ? (string) $att
 $pill_sel_radius_raw  = isset( $attributes['pillSelectedBorderRadius'] ) ? (string) $attributes['pillSelectedBorderRadius'] : '';
 
 // Root wrapper (box+width only, content-kind — matches the mirrored
-// SGS_Container_Wrapper 'content' capability set) (D540). This block renders
+// SGS_Container_Wrapper 'content' capability set). This block renders
 // no inner band — the value becomes a plain `width:` in $root_decls beside
-// `max-width:`. D540 reserves `contentWidth` for a real second layer; a fixed
+// `max-width:`. `contentWidth` is reserved for a real second layer; a fixed
 // width is `width`.
 $content_width = $attributes['width'] ?? '';
 $max_width     = $attributes['maxWidth'] ?? '';
@@ -284,11 +275,11 @@ $preset_text_slug      = isset( $attributes['textColor'] ) ? sanitize_html_class
 $preset_bg_slug        = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
 
 // Pill custom padding — SGS custom TIER-OF-BOXES object attr
-// {desktop,tablet,mobile} (Spec 35 box-tier migration). The pill is a
+// {desktop,tablet,mobile} (Spec 35 box-tier). The pill is a
 // content CHILD, not the block root, so there is no WP-native support to
 // route through. sgs_responsive_normalise_object() is the canonical reader
-// (helpers-responsive.php:273), box=true so an unset/legacy value never
-// mis-resolves as a flat side (D328 defence).
+// (helpers-responsive.php), box=true so an unset or flat value never
+// mis-resolves as a flat side.
 $pill_padding_tiers      = sgs_responsive_normalise_object( $attributes['pillPadding'] ?? null, true );
 $pill_padding_obj        = is_array( $pill_padding_tiers['desktop'] ) ? $pill_padding_tiers['desktop'] : array();
 $pill_padding_tablet_obj = is_array( $pill_padding_tiers['tablet'] ) ? $pill_padding_tiers['tablet'] : array();
@@ -297,21 +288,20 @@ $pill_padding_mobile_obj = is_array( $pill_padding_tiers['mobile'] ) ? $pill_pad
 // ---------------------------------------------------------------------------
 // 6. Scoped CSS custom-PROPERTY VALUES (never property declarations, never
 // inline) for pill resting/hover/selected colour + radius, root border
-// colour. Per Spec 32 FR-32-4 as amended 2026-07-18 (D345), these are
+// colour. Per Spec 32 FR-32-4, these are
 // emitted into the scoped `{$root_sel}{--var:value;…}` rule below (§7) —
 // NOT as an inline `style="--var:value"` attribute — consumed by
 // style.css's class rules via var(--sgs-op-*, …). The --sgs-op-*-hover
-// vars (2026-09-03) feed the SAME :hover rules that used to reuse the
-// resting vars as a fallback — style.css chains
-// var(--sgs-op-*-hover, var(--sgs-op-*, <old hardcoded default>)) so an
-// instance with nothing configured renders byte-identically to before.
+// vars feed the :hover rules — style.css chains
+// var(--sgs-op-*-hover, var(--sgs-op-*, <hardcoded default>)) so an
+// instance with nothing configured renders the default look.
 // ---------------------------------------------------------------------------
 
 $var_decls = array();
 
-// pillBgColour/pillBgColourHover gradient siblings (2026-09-05) — same
-// custom-property-gradient shape already proven on brand-strip/post-grid/
-// social-icons/form/gallery/before-after (helpers-tokens.php:953); style.css
+// pillBgColour/pillBgColourHover gradient siblings — same
+// custom-property-gradient shape used on brand-strip/post-grid/
+// social-icons/form/gallery/before-after (helpers-tokens.php); style.css
 // carries the matching background-image:var(--sgs-op-bg[-hover]-gradient,none)
 // line next to the existing background-color:var(...) rule.
 $var_decls = array_merge( $var_decls, sgs_custom_property_gradient_decls( 'sgs-op-bg', $pill_bg_colour, $pill_bg_colour_gradient ) );
@@ -332,8 +322,8 @@ if ( $pill_sel_text_colour ) {
 	$var_decls[] = '--sgs-op-sel-text:' . sgs_colour_value( $pill_sel_text_colour );
 }
 if ( $pill_sel_border_col ) {
-	// R2: the selected border is DECOUPLED from the fill — a distinct var with
-	// its own fallback to --sgs-op-sel-bg (byte-identical when unset).
+	// The selected border is DECOUPLED from the fill — a distinct var with
+	// its own fallback to --sgs-op-sel-bg.
 	$var_decls[] = '--sgs-op-sel-border:' . sgs_colour_value( $pill_sel_border_col );
 }
 if ( '' !== $pill_border_radius ) {
@@ -365,7 +355,7 @@ $scoped_css = array();
 // --- Swatch image object-fit (media-element atom layer, rule
 // 37-media-no-handroll) — no `swatchObjectFit` value set -> style() returns
 // '' -> nothing appended -> the shared stylesheet's own `.sgs-media-el`
-// `cover` fallback governs, matching the removed style.css hardcode exactly. ---
+// `cover` fallback governs. ---
 if ( '' !== $sgs_op_swatch_scope && class_exists( 'SGS_Media_Element' ) ) {
 	$sgs_op_swatch_css = SGS_Media_Element::style( $attributes, 'swatch', 'sgs/option-picker', $uid, array( 'object-fit' ) );
 	if ( '' !== $sgs_op_swatch_css ) {
@@ -381,7 +371,7 @@ if ( $var_decls ) {
 
 // --- Root box declarations (border-style/width, width, max-width) ---
 $root_decls = array();
-// G5 (Bean, 2026-08-26): 'style set, no width' means no border by
+// 'style set, no width' means no border by
 // default — never fall through to the browser's initial medium (~3px)
 // border-width.
 if ( 'none' !== $border_style && $has_border_width ) {
@@ -414,11 +404,11 @@ if ( $root_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $root_decls ) . ';}';
 }
 
-// --- Border gradients (D636 border builder) — masked ::before rings.
+// --- Border gradients (border builder) — masked ::before rings.
 // Root: only relevant when a real border is on (mirrors the flat-colour gate
 // above). Pill: all 3 style variants (outlined/filled/ghost) share an
 // identical `border: 2px solid …` shorthand on .sgs-option-picker__pill
-// (style.css:188/238/269), so ONE universal rule covers every variant — no
+// (style.css), so ONE universal rule covers every variant — no
 // per-style carve-out. Selected: the compound `:checked ~ .pill` selector is
 // reproduced verbatim so specificity matches the flat-colour rule it
 // overrides (both rooted at $root_sel, which out-specifies the variant
@@ -547,7 +537,7 @@ if ( '' !== $typography_css ) {
 	$scoped_css[] = $typography_css;
 }
 
-// Flat-or-gradient (D636 "text" builder) — sgs_resolve_text_colour_or_gradient()
+// Flat-or-gradient ("text" builder) — sgs_resolve_text_colour_or_gradient()
 // picks the gradient sibling attribute when it's set and valid, otherwise the
 // flat labelColour value untouched; sgs_text_colour_decl() emits a plain
 // `color:` declaration for a flat value or the background-clip:text
@@ -589,19 +579,19 @@ if ( '' !== $label_colour_effective_hover ) {
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $sel_label . ':hover', $label_colour_effective_hover );
 }
 
-// Pill resting TEXT flat-or-gradient (D636 "text" builder) — same recipe as
+// Pill resting TEXT flat-or-gradient ("text" builder) — same recipe as
 // the legend colour above and the pillBorderColourGradient border builder
-// (§7, ~line 421). $sel_pill (root_sel + .sgs-option-picker__pill, 3
+// (§7). $sel_pill (root_sel + .sgs-option-picker__pill, 3
 // classes) OUT-SPECIFIES every per-variant resting rule in style.css
 // (`.sgs-option-picker--{style} .sgs-option-picker__pill`, 2 classes), the
 // exact specificity precedent the pillBorderColourGradient rule already
 // relies on — no source-order dependency. The hover-state colour
 // (--sgs-op-text-hover, chained to --sgs-op-text in §6) still wins on
 // hover/focus-within because that static rule carries an extra pseudo-class
-// (specificity 4 vs this rule's 3), so hover behaviour is unaffected by this
-// change. Empty pillTextColour + empty pillTextColourGradient -> $effective
-// is '' -> decl is '' -> no scoped rule emitted (additive-safety guarantee,
-// existing --sgs-op-text var mechanism keeps governing unchanged).
+// (specificity 4 vs this rule's 3), so hover behaviour is unaffected.
+// Empty pillTextColour + empty pillTextColourGradient -> $effective
+// is '' -> decl is '' -> no scoped rule emitted (the --sgs-op-text var
+// mechanism keeps governing).
 $pill_text_colour_gradient  = $attributes['pillTextColourGradient'] ?? '';
 $pill_text_colour_effective = sgs_resolve_text_colour_or_gradient( $pill_text_colour, $pill_text_colour_gradient );
 $pill_text_colour_decl      = sgs_text_colour_decl( $pill_text_colour_effective );
@@ -728,8 +718,8 @@ foreach ( $valid_items as $item ) {
 			// Colour chip — the swatch background is a decorative DATA VALUE (the
 			// colour term's own swatch, not a styling property of the block),
 			// carried as CSS custom-property VALUES (`--sgs-op-swatch-bg` /
-			// `--sgs-op-swatch-text`) painted by style.css. Per Spec 32 FR-32-4
-			// as amended 2026-07-18 (D345), these are NEVER inline — each pill's
+			// `--sgs-op-swatch-text`) painted by style.css. Per Spec 32 FR-32-4,
+			// these are NEVER inline — each pill's
 			// $input_id is a unique per-instance HTML id (already used for the
 			// <label for>), so it doubles as a safe, unique scoped-CSS anchor for
 			// this one pill's swatch vars (no cross-pill collision, no clash
@@ -814,7 +804,7 @@ $anchor = $attributes['anchor'] ?? '';
 $root_attr_args = array(
 	'class' => implode( ' ', $root_classes ),
 );
-// No inline `style` output (Spec 32 FR-32-4 as amended D345) — the
+// No inline `style` output (Spec 32 FR-32-4) — the
 // --sgs-op-* custom-property VALUES are emitted into the scoped `{$root_sel}`
 // rule at §7 instead (functional-colour values are normalised to hex by
 // sgs_colour_value() so they survive WordPress's safecss_filter_attr(),

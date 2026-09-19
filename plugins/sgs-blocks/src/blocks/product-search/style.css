@@ -34,10 +34,9 @@
 	flex: 1;
 	min-height: 44px;
 	padding: 0.5rem 0.75rem;
-	/* inputBorderColour/Hover/Gradient (border-base-hover, colour-conformance
-	   2026-09-07) now paint border-color via a scoped rule from
-	   sgs_border_states_css() (render.php) — this fallback is the theme
-	   default for an unset attribute, no longer an attribute-driven var(). */
+	/* inputBorderColour/Hover/Gradient (border-base-hover) paint border-color
+	   via a scoped rule from sgs_border_states_css() (render.php) — this
+	   fallback is the theme default for an unset attribute. */
 	border: 1px solid var( --wp--preset--color--border, #ccc );
 	border-radius: 8px;
 	font: inherit;
@@ -122,7 +121,7 @@
 }
 
 /* Rule 43 (WCAG 1.4.1): hover/active state must not rely on colour alone —
- * verified by eye this was a flat background swap with no shape difference,
+ * the hover state is a flat background swap with no shape difference,
  * so a left accent bar (same convention as the buybox/product-card value
  * ladder rows) is the non-colour signal. */
 .sgs-product-search__results [role="option"]:hover {
@@ -132,8 +131,8 @@
 }
 
 /* resultHoverBackgroundColourHover/HoverGradient — the row's SELECTED/active
-   state (previously sharing the resting :hover variable verbatim; split so
-   the client can distinguish "hovered" from "selected via keyboard/click"). */
+   state (its own variable, so the client can distinguish "hovered" from
+   "selected via keyboard/click"). */
 .sgs-product-search__results [role="option"].is-active {
 	background: var( --sgs-ps-result-hover-bg-hover, var( --sgs-ps-result-hover-bg, var( --wp--preset--color--surface-alt, #f5f7f7 ) ) );
 	background-image: var( --sgs-ps-result-hover-bg-hover-gradient, var( --sgs-ps-result-hover-bg-gradient, none ) );
@@ -154,10 +153,10 @@
 .sgs-product-search__results [role="option"] img {
 	width: 40px;
 	height: 40px;
-	/* object-fit removed 2026-09-03 (37-media-no-handroll remediation) — the
-	   shared `.sgs-media-el{object-fit:var(--sgs-media-object-fit,cover)}`
-	   atom stylesheet (assets/css/media-atoms/object-fit.css) now paints the
-	   identical `cover` default; view.js adds the marker classes to each
+	/* object-fit comes from the shared
+	   `.sgs-media-el{object-fit:var(--sgs-media-object-fit,cover)}`
+	   atom stylesheet (assets/css/media-atoms/object-fit.css), whose default
+	   is `cover`; view.js adds the marker classes to each
 	   thumbnail <img> it builds (see view.js + render.php). */
 	flex-shrink: 0;
 	border-radius: 4px;
@@ -375,7 +374,7 @@
 
 /* Trigger button — a plain <button>, not the <summary> icon-expand uses, so
    it needs its own copy of the same 44×44 px target + visual treatment.
-   Shared verbatim by command-palette (D638 §6) — same trigger, same store. */
+   Shared verbatim by command-palette — same trigger, same store. */
 .sgs-product-search--overlay .sgs-product-search__overlay-trigger-wrap .sgs-product-search__icon-toggle,
 .sgs-product-search--cmdk .sgs-product-search__overlay-trigger-wrap .sgs-product-search__icon-toggle {
 	display: inline-flex;
@@ -468,7 +467,7 @@
 
 /* ==========================================================================
    Command palette display mode (.sgs-product-search--cmdk)
-   D638 §6 addition. Shares the trigger + <dialog> + store('sgs/nav') plumbing
+   Shares the trigger + <dialog> + store('sgs/nav') plumbing
    above verbatim (`.sgs-product-search__dialog`, `[data-sgs-nav-drawer]`) —
    this section ONLY adds the `--cmdk` modifier's own visual treatment
    (smaller centred modal, blurred backdrop, fade/scale entrance+exit) and
@@ -479,7 +478,7 @@
    `transition`) because the shared store's `runClose()` (nav-interactivity/
    store.js) waits for an `animationend` event on `.is-closing` before calling
    `dialog.close()` — extending that existing exit-animation contract rather
-   than inventing a second one, per D638 §6's explicit instruction. Tier V
+   than inventing a second one. Tier V
    (vanilla CSS) only — a small self-contained fade/scale needs no GSAP.
    ========================================================================== */
 

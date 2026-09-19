@@ -1,5 +1,5 @@
 /**
- * SGS Cart — WooCommerce Store API client (FR-36-19 Phase 2).
+ * SGS Cart — WooCommerce Store API client (FR-36-19).
  *
  * Every cart mutation (add/update-qty/remove) goes through the WooCommerce
  * Store API (`/wp-json/wc/store/v1/cart/*`) — never legacy `cart-fragments`

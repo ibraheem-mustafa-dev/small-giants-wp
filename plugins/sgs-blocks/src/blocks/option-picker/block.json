@@ -34,7 +34,7 @@
 			"scalarStylingLift": true,
 			"arrayContentLift": true,
 			"scalarContentLift": true,
-			"_comment_mediaElements": "The image-swatch <img> (style.css .sgs-option-picker__swatch--image, render.php ~line 609) is a fixed 2rem square crop of a WooCommerce attribute term's `_sgs_swatch_image_id` image — no per-instance media picker, but the crop MODE (cover|contain) is a legitimate client choice (e.g. a white-background product photo may want 'contain'). Wired via the shared object-fit atom, prefix 'swatch', rather than the hand-rolled `object-fit: cover` that used to live in style.css (detector rule 37-media-no-handroll).",
+			"_comment_mediaElements": "The image-swatch <img> (style.css .sgs-option-picker__swatch--image) is a fixed 2rem square crop of a WooCommerce attribute term's `_sgs_swatch_image_id` image — no per-instance media picker, but the crop MODE (cover|contain) is a legitimate client choice (e.g. a white-background product photo may want 'contain'). Wired via the shared object-fit atom, prefix 'swatch'.",
 			"mediaElements": [
 				{
 					"prefix": "swatch",
@@ -67,7 +67,7 @@
 						"css:color": "native:color.text",
 						"css:border-color-gradient": "borderColourGradient"
 					},
-					"_note": "D294 content-KIND, no-wrapper (render.php:5-33) — the <fieldset> IS the block root (no SGS_Container_Wrapper call). Border radius stays WP-native; width/style/colour are SGS custom object/string attrs (borderWidth/borderStyle/borderColour) per render.php:123-135 — mapped explicitly since no prefix covers bare root attrs. Root has no independent typography (fontSize/weight/etc belong to legend/pill) — those text-cluster members are honest gaps."
+					"_note": "Content-KIND, no wrapper — the <fieldset> IS the block root (no SGS_Container_Wrapper call). Border radius stays WP-native; width/style/colour are SGS custom object/string attrs (borderWidth/borderStyle/borderColour) — mapped explicitly since no prefix covers bare root attrs. Root has no independent typography (fontSize/weight/etc belong to legend/pill) — those text-cluster members are honest gaps."
 				},
 				"label": {
 					"label": "Group label (legend)",
@@ -88,7 +88,7 @@
 							}
 						}
 					},
-					"_note": "labelFontSize/labelColour/labelFontWeight/labelFontStyle/labelMarginBottom resolve via the default {prefix}{suffix} convention (labelMarginBottom -> css:margin-bottom, Spec 35 vocabulary fix; render.php:492-495 legend `margin-bottom:...`). line-height/letter-spacing/text-transform/text-decoration/text-align/font-family have no labelX equivalent — honest gaps. labelColourGradient is the text-colour gradient sibling to labelColour (background-clip:text mechanism, same recipe as sgs/quote's attributionColour/attributionColourGradient) — needs an explicit attrMap entry since the default prefix convention only covers css:color, not the gradient sibling."
+					"_note": "labelFontSize/labelColour/labelFontWeight/labelFontStyle/labelMarginBottom resolve via the default {prefix}{suffix} convention (labelMarginBottom -> css:margin-bottom, Spec 35 vocabulary; legend `margin-bottom:...`). line-height/letter-spacing/text-transform/text-decoration/text-align/font-family have no labelX equivalent — honest gaps. labelColourGradient is the text-colour gradient sibling to labelColour (background-clip:text mechanism, same recipe as sgs/quote's attributionColour/attributionColourGradient) — needs an explicit attrMap entry since the default prefix convention only covers css:color, not the gradient sibling."
 				},
 				"pill": {
 					"label": "Option pill",
@@ -123,7 +123,7 @@
 							}
 						}
 					},
-					"_note": "FR-35-5 — 'selected' (NOT :hover/:active) is the correct state name for the pillSelected* family: style.css:200/246/277 key the selected look off `input[type=radio]:checked ~ .pill`, which is the [aria-current]/is-active family the states vocabulary calls 'selected'. UPDATE (2026-09-03, block owner reversal of the original FR-35-5 exception below): the CSS ALSO shows a `:hover` visual (style.css:192/241/272) which USED TO be a STATIC preset-variant rule with no distinct hover-only attribute behind it — Bean explicitly reversed that exception, so `pillBgColourHover`/`pillTextColourHover` now exist as real attributes and are declared as this element's 'hover' state below, mirroring sgs/nav-menu's item-bg/item-text normal+hover row pattern. The original rationale is preserved here for context only: 'no distinct hover-only attribute behind it (no pillHoverBgColour etc. exists) — correctly NOT declared as a state per FR-35-5 rule 1 (opt-in, attribute-backed only)' — that reasoning no longer applies now that the attributes exist. css:background-color needs explicit attrMap (pillBgColour doesn't match the default Background/Bg/BackgroundColour suffixes); css:border-color (pillBorderColour) and css:border-radius (pillBorderRadius) and css:padding (pillPadding) and css:font-size (pillFontSize) all resolve via the default convention. css:font-weight is an honest gap — no pillFontWeight attr exists. GRADIENT DEFERRAL RETIRED (2026-09-05): pillBgColour/pillBgColourHover now carry pillBgColourGradient/pillBgColourHoverGradient siblings via `sgs_custom_property_gradient_decls()` (helpers-tokens.php:953) — the same shape already proven on brand-strip/post-grid/social-icons/form/gallery/before-after. style.css declares `background-image:var(--sgs-op-bg[-hover]-gradient,none)` next to each existing `background-color:var(...)` line, so the two properties coexist unconditionally and the gradient only paints when the resolved custom property is set; no conditional property-switching needed, contrary to the original 2026-09-03 deferral note (preserved in git history). pillTextColourGradient (2026-09-05) used the unrelated D636 text builder (`sgs_resolve_text_colour_or_gradient()`/`sgs_text_colour_decl()`/`sgs_text_colour_gradient_fallback_rule()`), same recipe as labelColourGradient; css:color-gradient needs the explicit attrMap entry above since the default prefix convention only covers css:color, not the gradient sibling."
+					"_note": "FR-35-5 — 'selected' (NOT :hover/:active) is the correct state name for the pillSelected* family: style.css:200/246/277 key the selected look off `input[type=radio]:checked ~ .pill`, which is the [aria-current]/is-active family the states vocabulary calls 'selected'. The `:hover` visual is backed by real attributes `pillBgColourHover`/`pillTextColourHover`, declared as this element's 'hover' state below, mirroring sgs/nav-bar-menu's item-bg/item-text normal+hover row pattern. css:background-color needs explicit attrMap (pillBgColour doesn't match the default Background/Bg/BackgroundColour suffixes); css:border-color (pillBorderColour) and css:border-radius (pillBorderRadius) and css:padding (pillPadding) and css:font-size (pillFontSize) all resolve via the default convention. css:font-weight is an honest gap — no pillFontWeight attr exists. pillBgColour/pillBgColourHover carry pillBgColourGradient/pillBgColourHoverGradient siblings via `sgs_custom_property_gradient_decls()` (helpers-tokens.php) — the same shape used on brand-strip/post-grid/social-icons/form/gallery/before-after. style.css declares `background-image:var(--sgs-op-bg[-hover]-gradient,none)` next to each existing `background-color:var(...)` line, so the two properties coexist unconditionally and the gradient only paints when the resolved custom property is set; no conditional property-switching needed. pillTextColourGradient uses the text builder (`sgs_resolve_text_colour_or_gradient()`/`sgs_text_colour_decl()`/`sgs_text_colour_gradient_fallback_rule()`), same recipe as labelColourGradient; css:color-gradient needs the explicit attrMap entry above since the default prefix convention only covers css:color, not the gradient sibling."
 				}
 			},
 			"boxFamilies": {
@@ -189,7 +189,7 @@
 		"labelColourGradient": {
 			"type": "string",
 			"default": "",
-			"description": "CSS gradient string painting the label legend's text via background-clip:text (D636 text builder). Non-empty wins over labelColour."
+			"description": "CSS gradient string painting the label legend's text via background-clip:text (text builder). Non-empty wins over labelColour."
 		},
 		"labelColourHover": {
 			"type": "string",
@@ -285,7 +285,7 @@
 		"pillTextColourGradient": {
 			"type": "string",
 			"default": "",
-			"description": "CSS gradient string painting the resting pill text via background-clip:text (D636 text builder). Non-empty wins over pillTextColour."
+			"description": "CSS gradient string painting the resting pill text via background-clip:text (text builder). Non-empty wins over pillTextColour."
 		},
 		"pillBgColourHover": {
 			"type": "string",
@@ -307,7 +307,7 @@
 		"pillBorderColourGradient": {
 			"type": "string",
 			"default": "",
-			"description": "CSS gradient string painting the resting pill border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over pillBorderColour."
+			"description": "CSS gradient string painting the resting pill border with a masked ring instead of a flat colour. Non-empty wins over pillBorderColour."
 		},
 		"pillSelectedBgColour": {
 			"type": "string",
@@ -324,7 +324,7 @@
 		"pillSelectedBorderColourGradient": {
 			"type": "string",
 			"default": "",
-			"description": "CSS gradient string painting the selected pill border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over pillSelectedBorderColour."
+			"description": "CSS gradient string painting the selected pill border with a masked ring instead of a flat colour. Non-empty wins over pillSelectedBorderColour."
 		},
 		"pillFontSize": {
 			"type": "object",
@@ -384,7 +384,7 @@
 		"borderColourGradient": {
 			"type": "string",
 			"default": "",
-			"description": "CSS gradient string painting the root fieldset border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+			"description": "CSS gradient string painting the root fieldset border with a masked ring instead of a flat colour. Non-empty wins over borderColour."
 		},
 		"width": {
 			"type": "string",

@@ -11,17 +11,17 @@
  *                         explicit override is set; otherwise omitted so the currentColor
  *                         fallback below inherits from the surrounding container.
  *
- * textColour/labelColour moved OFF this custom-property bridge (2026-09-04, D636
- * gradient rollout finish) — render.php now writes a direct scoped `color:`/
- * `background-image:` declaration for them (sgs_text_colour_decl(), same
- * mechanism as sgs/counter) so a gradient sibling can paint via
- * background-clip:text, which a custom property can never legally hold. The
+ * textColour/labelColour are NOT on this custom-property bridge — render.php
+ * writes a direct scoped `color:`/`background-image:` declaration for them
+ * (sgs_text_colour_decl(), same mechanism as sgs/counter) so a gradient
+ * sibling can paint via background-clip:text, which a custom property can
+ * never legally hold. The
  * `var(--sgs-bi-text-colour, currentColor)` / `var(--sgs-bi-label-colour, currentColor)`
- * fallbacks below are now DEAD for override purposes (that custom property is
- * never declared by any mechanism any more) but harmless to keep — an unset
- * attribute still resolves to `currentColor`, identical behaviour either way.
+ * fallbacks below are inert for override purposes (that custom property is
+ * never declared by any mechanism) — an unset attribute resolves to
+ * `currentColor`.
  *
- * WCAG 1.4.3 (D-pending): fallback is `currentColor`, not a fixed theme preset — a
+ * WCAG 1.4.3: fallback is `currentColor`, not a fixed theme preset — a
  * business-info instance nested in a dark container (e.g. the mobile drawer) must inherit
  * that container's light text colour automatically, the same way it inherits a light
  * header's dark text colour. An explicit override attribute still wins (see render.php).
@@ -70,16 +70,14 @@
 	min-width: 44px;
 	min-height: 44px;
 	padding: 0.5em 0.6em;
-	/* Hit-area-extension technique (2026-09-18, Bean-reported live on Mama's
-	   Munches): the padding above grows the TAP target without moving the
+	/* Hit-area-extension technique: the padding above grows the TAP target without moving the
 	   visible content — a negative margin equal to the padding cancels its
 	   box-model contribution so the icon+label start at the same horizontal
 	   position as a non-linked sibling of the same displayType family
 	   (e.g. `address`, which has no link wrapper and therefore no padding at
 	   all). Without this, every phone/email row sat ~0.6em further right
 	   than the address row directly above/below it in the SAME footer
-	   column. The larger tap area still exists — it just no longer shifts
-	   the glyph. */
+	   column. The larger tap area stays without shifting the glyph. */
 	margin: -0.5em -0.6em;
 }
 
@@ -90,17 +88,6 @@
 
 /* ── Website credit (displayType="attribution") ───────────────────────────
  * Colour fade + a left-to-right underline that grows from zero width on hover.
- * This is the reference behaviour on muslimsinconstruction.uk, which Bean named
- * as the canonical version of this effect (2026-09-08).
- *
- * REPLACED a `background-clip: text` gradient WIPE (to #e7d768) that lived here
- * until 2026-09-08. The wipe recoloured the glyphs left-to-right but drew no
- * underline, and it forced `color: transparent` on the resting link — which is
- * why it needed an `@supports` fallback to avoid rendering the credit invisible
- * on browsers without background-clip:text. The underline form needs no such
- * fallback: the resting state is an ordinary `color`, so there is no state in
- * which the text can disappear. That whole failure mode is now gone rather than
- * being guarded against.
  *
  * #d4a73c is SGS's own credit colour — a component constant, not a client value
  * (CLAUDE.md "a component's OWN constant STAYS"). It overrides no theme default.
@@ -119,10 +106,9 @@
 
 	/*
 	 * The TEXT sweep. Both halves of this effect must travel the same way at the
-	 * same speed: before 2026-09-10 the underline swept left-to-right while the
-	 * colour cross-faded uniformly (`transition: color`), so the word turned gold
-	 * all at once under a line that was still arriving. Bean caught it on the live
-	 * footer.
+	 * same speed: the underline sweeps left-to-right, so the colour must too,
+	 * rather than cross-fading uniformly (`transition: color`) and turning the
+	 * word gold all at once under a line that is still arriving.
 	 *
 	 * A gradient clipped to the glyphs is what makes a colour travel. The band is
 	 * twice the element's width — gold on the left half, the resting colour on the
@@ -158,8 +144,8 @@
  * `width` is a layout property, so animating it reflowed the line on every
  * frame; `transform` is composited. And the hover-guard classifies a rule by
  * what it declares — `transform` is a known motion property, so this rule is
- * auto-guarded for touch, whereas the old `width` was unclassifiable and failed
- * the build gate outright (it blocked every deploy, not just this block's).
+ * auto-guarded for touch, whereas `width` is unclassifiable and fails the
+ * build gate.
  */
 .sgs-business-attribution .sgs-business-info__link::after {
 	content: "";
@@ -222,10 +208,9 @@
  * painted by a background, so ANYTHING that discards backgrounds discards the
  * text itself, not merely its decoration. Browsers drop background images from
  * print output by default (`print-color-adjust: economy`), so without this the
- * credit printed as nothing at all. Measured under print emulation
- * 2026-09-10: with the background removed — which is exactly what a printer
- * does — the link's rendered text row was byte-identical to a
- * `visibility: hidden` control.
+ * credit printed as nothing at all. Under print emulation, with the
+ * background removed — which is exactly what a printer does — the link's
+ * rendered text row is byte-identical to a `visibility: hidden` control.
  *
  * The restore is cause-agnostic: handing the glyphs back `currentColor` and
  * dropping the gradient is correct whether the background is discarded by the
@@ -368,7 +353,7 @@
 /* ── "Button" block style (Spec 37 §3.8 — labelCollapse) ──────────────────────
    A first-class, client-selectable display style: renders the contact item
    (phone/email/address/…) as a prominent button. Block-private, theme-token
-   only — replaces the old theme-side .sgs-header-call hack. Composes with
+   only. Composes with
    labelCollapse, so a contact button can collapse to an icon-only button at a
    chosen breakpoint. */
 .wp-block-sgs-business-info.is-style-button .sgs-business-info {

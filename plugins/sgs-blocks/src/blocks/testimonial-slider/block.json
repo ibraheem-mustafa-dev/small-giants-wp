@@ -23,7 +23,7 @@
 				"slider": {
 					"label": "Slider",
 					"layer": "OUTER",
-					"_layer_note": "Root IS the carousel wrapper — SGS_Container_Wrapper kind='layout' renders it (render.php:460-471; DB block_composition.container_kind=layout, wraps_block=sgs/container). MF-3 makes the root OUTER, mirroring card-grid/content-collection.",
+					"_layer_note": "Root IS the carousel wrapper — SGS_Container_Wrapper kind='layout' renders it (DB block_composition.container_kind=layout, wraps_block=sgs/container). The root is the OUTER layer, mirroring card-grid/content-collection.",
 					"order": 1,
 					"clusters": [
 						"layout",
@@ -71,28 +71,28 @@
 							}
 						}
 					},
-					"_note": "css:align-items is an honest gap (no alignItems attr declared — only alignContent/justifyItems). `nameFontSize` was removed 2026-08-06 — no editor control, no consumer anywhere in the repo (D338-cleared). textColourGradient/textColourHoverGradient added 2026-09-04 (D744-pattern text-colour gradient rollout) -- background moved off this same root selector onto a ::after layer (sgs_block_background_layer_css()) so background-clip:text on the text colour cannot clip the background paint, mirroring sgs/info-box's identical text-and-background-on-one-element migration. Typography migrated off native WP support onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972), root prefix '' (fontSize/fontWeight/fontStyle/lineHeight); no letterSpacing/textTransform/textAlign control is offered, so those remain honest gaps (matches sgs/accordion's wrapper element)."
+					"_note": "css:align-items is an honest gap (no alignItems attr declared — only alignContent/justifyItems). textColourGradient/textColourHoverGradient: the background sits on a ::after layer (sgs_block_background_layer_css()) so background-clip:text on the text colour cannot clip the background paint (as sgs/info-box). Typography routes through the shared TypographyControls/sgs_typography_css_rule() mechanism, root prefix '' (fontSize/fontWeight/fontStyle/lineHeight); no letterSpacing/textTransform/textAlign control is offered, so those remain honest gaps (matches sgs/accordion's wrapper element)."
 				},
 				"arrow": {
 					"label": "Prev/next arrow",
 					"order": 3,
 					"clusters": [],
-					"_note": "showArrows toggles visibility only (render.php:333-341) — no colour/size/style attrs exist per-arrow; styling comes from static style.css theme defaults."
+					"_note": "showArrows toggles visibility only — no colour/size/style attrs exist per-arrow; styling comes from static style.css theme defaults."
 				},
 				"dot": {
 					"label": "Navigation dot",
 					"order": 4,
 					"clusters": [],
-					"_note": "showDots toggles visibility only (render.php:343-363) — no colour/size attrs exist per-dot."
+					"_note": "showDots toggles visibility only — no colour/size attrs exist per-dot."
 				},
 				"track": {
 					"label": "Slide track",
 					"order": 5,
 					"clusters": [],
-					"_note": "The `.sgs-testimonial-slider__track` scroll strip inside `.stage` (render.php:304,480) — distinct from the `slider` wrapper element above. `slidesVisible` sets the `--sgs-slides-visible` custom property consumed by this element's own CSS (render.php:304). Added 2026-08-15, no manifest element previously covered it. `clusters: []` — slidesVisible is a slide-count control, not a Text/Fill/Layout style value, so it stays an honest by-design orphan rather than being force-mapped to a cluster member that doesn't exist for it."
+					"_note": "The `.sgs-testimonial-slider__track` scroll strip inside `.stage` — distinct from the `slider` wrapper element above. `slidesVisible` sets the `--sgs-slides-visible` custom property consumed by this element's own CSS. `clusters: []` — slidesVisible is a slide-count control, not a Text/Fill/Layout style value, so it stays an honest by-design orphan rather than being force-mapped to a cluster member that doesn't exist for it."
 				}
 			},
-			"_ownership_note": "OWNERSHIP BOUNDARY (Spec 35): each slide is rendered by iterating $block->inner_blocks and calling $inner_block->render() (render.php:286-301) — a genuine child-block render, not a scalar array. Quote text, author name, role, rating, avatar and card-style all belong ENTIRELY to the child sgs/testimonial block's own manifest and are deliberately NOT declared here — declaring them would cross the delegated-rendering ownership boundary. Only the carousel chrome this block itself emits (slider wrapper, arrows, dots) is declared above.",
+			"_ownership_note": "OWNERSHIP BOUNDARY (Spec 35): each slide is rendered by iterating $block->inner_blocks and calling $inner_block->render() — a genuine child-block render, not a scalar array. Quote text, author name, role, rating, avatar and card-style all belong ENTIRELY to the child sgs/testimonial block's own manifest and are deliberately NOT declared here — declaring them would cross the delegated-rendering ownership boundary. Only the carousel chrome this block itself emits (slider wrapper, arrows, dots) is declared above.",
 			"boxFamilies": {
 				"borderRadius": [
 					"borderRadius"
@@ -123,7 +123,7 @@
 	"providesContext": {
 		"sgs/testimonialVariant": "cardStyle"
 	},
-	"_selectorsNote": "S1 fix (2026-09-02, uniformity sweep, inspector-scan rule 33): selectors.typography retargeted from '.sgs-testimonial-slider__quote' to the block root ('.wp-block-sgs-testimonial-slider'). No element in this block's own rendered markup ever carried the quote class — the quote text belongs to a child sgs/testimonial InnerBlocks (render.php:179-183 already documents this and works around it with a manual PHP-side root-scoped rule).",
+	"_selectorsNote": "selectors.typography targets the block root ('.wp-block-sgs-testimonial-slider'), not '.sgs-testimonial-slider__quote': no element in this block's own rendered markup carries the quote class — the quote text belongs to a child sgs/testimonial InnerBlocks (render.php documents this and works around it with a manual PHP-side root-scoped rule).",
 	"selectors": {
 		"root": ".wp-block-sgs-testimonial-slider",
 		"typography": ".wp-block-sgs-testimonial-slider"
@@ -172,7 +172,7 @@
 		"textColourGradient": {
 			"type": "string",
 			"default": "",
-			"description": "CSS gradient string painting the slider's text with a background-clip:text mechanism instead of a flat colour (D744-pattern rollout). Non-empty wins over textColour."
+			"description": "CSS gradient string painting the slider's text with a background-clip:text mechanism instead of a flat colour. Non-empty wins over textColour."
 		},
 		"backgroundColourHover": {
 			"type": "string",
@@ -198,7 +198,7 @@
 		"borderColourHoverGradient": {
 			"type": "string",
 			"default": "",
-			"description": "CSS gradient string painting the hover-state slider border with a masked ::before ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColourHover on hover."
+			"description": "CSS gradient string painting the hover-state slider border with a masked ::before ring instead of a flat colour. Non-empty wins over borderColourHover on hover."
 		},
 		"effectHover": {
 			"type": "string",
@@ -326,7 +326,7 @@
 		"borderColourGradient": {
 			"type": "string",
 			"default": "",
-			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour. Non-empty wins over borderColour."
 		},
 		"borderRadius": {
 			"type": "object",

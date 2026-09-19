@@ -1,5 +1,5 @@
 /**
- * SGS Cart — mini-cart panel rendering + mutation wiring (FR-36-19 Phase 2).
+ * SGS Cart — mini-cart panel rendering + mutation wiring (FR-36-19).
  *
  * Populates the server-rendered panel skeleton (loading state only — the
  * item list is exactly as cache-sensitive as the badge count, see

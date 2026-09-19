@@ -3,7 +3,8 @@
    ===================================================================
 
    Token-aware colour overrides flow through CSS custom properties
-   set as inline vars on the fieldset wrapper by render.php / edit.js:
+   set on the fieldset wrapper by render.php (in the block's scoped rule)
+   and by edit.js (editor preview):
 
      --sgs-op-bg              resting pill background
      --sgs-op-text            resting pill text
@@ -11,7 +12,7 @@
      --sgs-op-pill-radius     resting pill border-radius
      --sgs-op-sel-bg          selected pill background
      --sgs-op-sel-text        selected pill text
-     --sgs-op-sel-border      selected pill border (R2 — decoupled from fill,
+     --sgs-op-sel-border      selected pill border (decoupled from fill,
                               falls back to --sgs-op-sel-bg when unset)
      --sgs-op-sel-pill-radius selected pill border-radius (falls back to
                               --sgs-op-pill-radius when unset)
@@ -107,8 +108,7 @@
 	 * WCAG selection tick: the ::before tick is ABSOLUTELY positioned (see below),
 	 * so it is OUT OF FLOW — an unselected pill reserves NO tick space and matches
 	 * the draft's tight pill width, and revealing the tick on :checked causes NO
-	 * layout shift (the pill width is identical selected/unselected). Bean-directed
-	 * 2026-07-11 (page-8 discrepancy programme): draft pills reserve no tick space.
+	 * layout shift (the pill width is identical selected/unselected).
 	 */
 	transition: background-color var(--wp--custom--transition--fast, 0.15s ease),
 	            color            var(--wp--custom--transition--fast, 0.15s ease),
@@ -122,11 +122,10 @@
  * Selection-tick indicator — an IN-FLOW flex item shown only on the SELECTED pill.
  * Being in-flow (not an absolute overlay) is what gives a real, consistent GAP
  * between the tick and the value (`margin-right` below) and guarantees the tick can
- * NEVER overlap the label text at any viewport — the previous absolute `left:0.7em`
- * overlay sat over the centred text and collided with it on tight pills
- * (Bean-reported 2026-07-12). It is `display:none` when unselected, so an unselected
- * pill reserves NO tick space and keeps the draft's tight width (Bean-directed
- * 2026-07-11 "draft pills reserve no tick space"); it is revealed IN FLOW on :checked
+ * NEVER overlap the label text at any viewport (an absolute overlay would sit over
+ * the centred text and collide with it on tight pills). It is `display:none` when
+ * unselected, so an unselected pill reserves NO tick space and keeps the draft's
+ * tight width; it is revealed IN FLOW on :checked
  * (below), so only the selected pill carries the tick + its small leading gap.
  * `.sgs-option-picker--no-tick` keeps it hidden entirely (below).
  * CSS-drawn check: a rotated L-shape via border.
@@ -190,9 +189,9 @@
 }
 
 /* Considering state (hover / focus-within on the label). --sgs-op-*-hover
-   (2026-09-03) is a real client-configurable override; unset falls through
-   the same chain as before (--sgs-op-bg/text, then the hardcoded default),
-   so an instance with nothing configured renders byte-identically. */
+   is a client-configurable override; unset falls through
+   the chain (--sgs-op-bg/text, then the hardcoded default),
+   so an instance with nothing configured renders the default look. */
 .sgs-option-picker--outlined .sgs-option-picker__option:hover  .sgs-option-picker__pill,
 .sgs-option-picker--outlined .sgs-option-picker__option:focus-within .sgs-option-picker__pill {
 	background-color: var(--sgs-op-bg-hover, var(--sgs-op-bg, var(--wp--preset--color--secondary, #f3f4f6)));
@@ -214,51 +213,40 @@
 	 */
 	color: var(--sgs-op-sel-text, #ffffff);
 	/*
-	 * R2 (2026-07-10): the selected border is DECOUPLED from the fill — its own
-	 * var, falling back to --sgs-op-sel-bg so an unset --sgs-op-sel-border is
-	 * byte-identical to the previous behaviour (border == fill). Setting
+	 * The selected border is DECOUPLED from the fill — its own
+	 * var, falling back to --sgs-op-sel-bg so an unset --sgs-op-sel-border
+	 * gives border == fill. Setting
 	 * --sgs-op-sel-border independently reproduces a draft's "pale-tint fill +
 	 * primary outline" (decoupled) selected pill.
 	 */
 	border-color: var(--sgs-op-sel-border, var(--sgs-op-sel-bg, var(--wp--preset--color--primary, #1F7A7A)));
 	border-radius: var(--sgs-op-sel-pill-radius, var(--sgs-op-pill-radius, var(--wp--custom--border-radius--medium, 6px)));
 	/*
-	 * 3.21 (2026-09-08, RE-FIXED — the earlier same-day fix here was a false
-	 * start). This rule used to also declare its own `font-weight` (first a
-	 * hardcoded 700, then a `--sgs-op-sel-font-weight`/`--sgs-op-pill-font-
-	 * weight` var chain) — but ANY declaration here, var-based or not,
-	 * out-specifies (0,5,0) whatever set the RESTING pill's weight, because
-	 * this selector is a compound with MORE classes/pseudo-classes than the
-	 * base `.sgs-option-picker__pill` rule (0,1,0) *and* MORE than a caller's
-	 * scoped override rule reaching in from outside (e.g.
-	 * `sgs/product-card`'s own `pillFontWeight` typography injection at
-	 * `.{uid} .sgs-option-picker__pill`, specificity (0,2,0) — see
-	 * product-card/render.php's `sgs_typography_css_rule( …, 'pill', … )`
-	 * call). That is exactly how the earlier var-chain fix still measured
-	 * resting=600/selected=500 live: the var chain never fires because
-	 * neither `--sgs-op-*-font-weight` custom property is ever emitted by
-	 * ANY caller — font-weight is set as a literal declaration by whoever
-	 * targets `.sgs-option-picker__pill` directly, and this rule's OWN
-	 * declaration (even a var one) always wins the specificity fight
-	 * regardless of what that literal value is.
+	 * No `font-weight` is declared here, on purpose. ANY declaration here,
+	 * var-based or not, out-specifies (0,5,0) whatever set the RESTING pill's
+	 * weight, because this selector is a compound with MORE
+	 * classes/pseudo-classes than the base `.sgs-option-picker__pill` rule
+	 * (0,1,0) *and* MORE than a caller's scoped override rule reaching in from
+	 * outside (e.g. `sgs/product-card`'s own `pillFontWeight` typography
+	 * injection at `.{uid} .sgs-option-picker__pill`, specificity (0,2,0) —
+	 * see product-card/render.php's `sgs_typography_css_rule( …, 'pill', … )`
+	 * call). Font-weight is set as a literal declaration by whoever targets
+	 * `.sgs-option-picker__pill` directly, so a var chain here would never
+	 * fire and this rule's own declaration would always win the specificity
+	 * fight.
 	 *
-	 * The draft never changes weight on selection (`.sgs-product-card__pill--
-	 * active` in the mockup declares no font-weight of its own — see
-	 * sites/mamas-munches/mockups/homepage/index.html:423-427) — so the
-	 * correct behaviour is for the SELECTED pill's weight to be WHATEVER won
-	 * the resting-pill cascade, unconditionally. Declaring nothing here is
-	 * what achieves that: this element is the SAME DOM node as the resting
-	 * pill, so with no competing `font-weight` declaration at :checked, the
-	 * resting rule's value simply persists — for the shared default, a
-	 * standalone `sgs/option-picker` instance's own `pillFontWeight`, AND a
-	 * host block's own typography injection alike. No `--sgs-op-sel-font-
-	 * weight` var exists anywhere in the codebase to lose by removing this;
-	 * grep confirms zero other readers.
+	 * The draft never changes weight on selection, so the SELECTED pill's
+	 * weight is WHATEVER won the resting-pill cascade, unconditionally. This
+	 * element is the SAME DOM node as the resting pill, so with no competing
+	 * `font-weight` declaration at :checked, the resting rule's value simply
+	 * persists — for the shared default, a standalone `sgs/option-picker`
+	 * instance's own `pillFontWeight`, AND a host block's own typography
+	 * injection alike.
 	 */
 }
 
-/* Fix 1 (WCAG): reveal tick on checked — outlined (white tick on coloured bg).
-   Suppressed entirely when .sgs-option-picker--no-tick is set (R2 — the "no
+/* WCAG: reveal tick on checked — outlined (white tick on coloured bg).
+   Suppressed entirely when .sgs-option-picker--no-tick is set (the "no
    visible tick" look, e.g. a decoupled pale-tint/outline selected pill). */
 .sgs-option-picker--outlined:not(.sgs-option-picker--no-tick) .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill::before {
 	border-left-color:   var(--sgs-op-sel-text, #ffffff);
@@ -286,16 +274,16 @@
 	background-color: var(--sgs-op-sel-bg, var(--wp--preset--color--primary, #1F7A7A));
 	/* WCAG A11Y: white text default passes 4.5:1 on framework teal (5.09:1 ✓). */
 	color:         var(--sgs-op-sel-text, #ffffff);
-	/* R2: decoupled selected border, falls back to transparent (previous default). */
+	/* Decoupled selected border, falls back to transparent. */
 	border-color:  var(--sgs-op-sel-border, transparent);
 	border-radius: var(--sgs-op-sel-pill-radius, var(--sgs-op-pill-radius, var(--wp--custom--border-radius--medium, 6px)));
-	/* 3.21 (re-fixed): no font-weight declared here — see the outlined
+	/* No font-weight declared here — see the outlined
 	 * :checked rule above for why. Whatever won the resting pill's weight
 	 * (default, standalone attr, or a host block's typography injection)
 	 * simply persists on selection, matching the draft. */
 }
 
-/* Fix 1 (WCAG): reveal tick on checked — filled (white tick on coloured bg) */
+/* WCAG: reveal tick on checked — filled (white tick on coloured bg) */
 .sgs-option-picker--filled:not(.sgs-option-picker--no-tick) .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill::before {
 	border-left-color:   var(--sgs-op-sel-text, #ffffff);
 	border-bottom-color: var(--sgs-op-sel-text, #ffffff);
@@ -322,19 +310,19 @@
 	color:            var(--sgs-op-sel-text, var(--wp--preset--color--primary, #1F7A7A));
 	border-color:     var(--sgs-op-sel-border, var(--sgs-op-sel-bg, var(--wp--preset--color--primary, #1F7A7A)));
 	border-radius:    var(--sgs-op-sel-pill-radius, var(--sgs-op-pill-radius, var(--wp--custom--border-radius--medium, 6px)));
-	/* 3.21 (re-fixed): no font-weight declared here — see the outlined
+	/* No font-weight declared here — see the outlined
 	 * :checked rule above for why. Whatever won the resting pill's weight
 	 * (default, standalone attr, or a host block's typography injection)
 	 * simply persists on selection, matching the draft. */
 }
 
-/* Fix 1 (WCAG): reveal tick on checked — ghost (transparent bg → primary-coloured tick) */
+/* WCAG: reveal tick on checked — ghost (transparent bg → primary-coloured tick) */
 .sgs-option-picker--ghost:not(.sgs-option-picker--no-tick) .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill::before {
 	border-left-color:   var(--sgs-op-sel-text, var(--wp--preset--color--primary, #1F7A7A));
 	border-bottom-color: var(--sgs-op-sel-text, var(--wp--preset--color--primary, #1F7A7A));
 }
 
-/* ── Suppress the tick reservation entirely when no-tick (R2) ────────────
+/* ── Suppress the tick reservation entirely when no-tick ────────────
    Applies across all 3 pill styles — the tick pseudo-element is removed
    from flow so the pill text stays centred with no reserved gap. ────── */
 .sgs-option-picker--no-tick .sgs-option-picker__pill::before {
@@ -375,7 +363,6 @@
 
 /* ================================================================
    FR-27-B2 — Colour and image swatches
-   New selectors only. Existing pill rules are UNCHANGED.
    These rules activate only when the PHP render adds the
    sgs-option-picker__swatch modifier classes. Options without
    swatch meta render byte-for-byte as before (additive-safe).
@@ -426,12 +413,12 @@
 
 .sgs-option-picker__swatch--image {
 	/* Constrain to a consistent square; the <img> fills it via the shared
-	   media-element atom layer's object-fit (rule 37-media-no-handroll) —
+	   media-element atom layer's object-fit —
 	   the <img> carries `.sgs-media-el` (render.php), which resolves
 	   `object-fit: var(--sgs-media-object-fit, cover)` from
-	   assets/css/media-atoms/object-fit.css. Byte-identical resting crop to
-	   the old local hardcode; block.json's "Swatch image" panel (prefix
-	   'swatch') now lets a client override it per instance. */
+	   assets/css/media-atoms/object-fit.css. block.json's "Swatch image"
+	   panel (prefix 'swatch') lets a client override the crop per
+	   instance. */
 	width: 2rem;
 	height: 2rem;
 	border-radius: 4px;
@@ -461,13 +448,13 @@
 
 @media (prefers-reduced-motion: reduce) {
 	.sgs-option-picker__swatch--colour {
-		/* No transition was added, but be explicit for future-proofing. */
+		/* No transition is declared, but be explicit for future-proofing. */
 		transition: none;
 	}
 }
 
 /* ================================================================
-   R3 — Colour presets (Spec 32/D291 button-preset pattern, 2026-07-10)
+   Colour presets (Spec 32 button-preset pattern)
    ================================================================
 
    Each `.sgs-option-picker--{preset}` class SETS the `--sgs-op-*` vars
@@ -475,52 +462,46 @@
    auto-generated by WordPress from the theme-snapshot's
    `settings.custom.optionPickerPresets`), falling back to a FRAMEWORK THEME
    TOKEN (never a client hex). A non-empty per-instance pillBgColour/etc.
-   attr (rendered as an inline --sgs-op-* VALUE on the root, Spec 32 FR-32-4)
-   still wins over the class — the cascade is:
-     inline per-instance override  >  preset class token  >  framework fallback.
+   attr (rendered as a --sgs-op-* VALUE in the block's scoped rule on the
+   root, Spec 32 FR-32-4) still wins over the class — the cascade is:
+     per-instance scoped override  >  preset class token  >  framework fallback.
 
    Colour-preset class is INDEPENDENT of the structural pillStyle modifier
    (outlined/filled/ghost) — both classes coexist on the same root; the
    pillStyle rules above read the SAME --sgs-op-* vars this preset sets.
 
-   - `solid` = the pre-2026-07-10 bound-configurator look: primary-coloured
-     resting border, solid-primary fill + inverse text + visible tick when
-     selected. NOT applied unless colourPreset='solid' is explicitly set
-     (an option-picker with no colourPreset stays at the framework-neutral
-     default established by the base pillStyle rules above — byte-identical
-     to pre-existing behaviour).
+   - `solid` = the bound-configurator look: solid-primary fill + inverse
+     text + visible tick when selected (resting state below). NOT applied
+     unless colourPreset='solid' is explicitly set (an option-picker with no
+     colourPreset stays at the framework-neutral default established by the
+     base pillStyle rules above).
    - `soft` = the draft look: a neutral surface/border-token resting pill;
      a pale primary-tint fill + primary-coloured OUTLINE (decoupled border,
-     R2) + dark text + NO tick when selected.
+     decoupled border) + dark text + NO tick when selected.
    ================================================================ */
 
 /* ⛔ RESTING STATE HAS A CONTRAST FLOOR — do not re-point these at `primary`.
  *
- * Measured on the Mama's Munches canary 2026-08-24, where primary is a pale pink
- * (#e68a95) and the buybox band behind the picker is surface-alt (#fff9f0):
- *   resting fill  `transparent`      -> 1.00 vs the container. It IS the container.
- *   resting border `primary` #e68a95 -> 2.38:1, BELOW the WCAG 3.0 UI-boundary floor.
- * Net effect: an unselected capsule had no fill and a near-invisible outline. Bean
- * reported it by eye; three separate contrast probes of mine had missed it because
- * they measured TEXT contrast (fine, 12.55:1) and never fill-vs-container.
+ * `primary` is a token, so a resting look built on it inherits whatever the
+ * client's palette gives it: ~4.8:1 on the framework's dark teal default, but only
+ * 2.38:1 (below the WCAG 3.0 UI-boundary floor) on a pale primary such as #e68a95
+ * against a #fff9f0 band, where a `transparent` resting fill is 1.00 vs the
+ * container — an unselected capsule with no fill and a near-invisible outline.
+ * Text contrast (12.55:1 there) is fine; the failure is fill-vs-container and
+ * border-vs-container.
  *
- * The preset was not "broken" — it had no floor. `primary` is a token, so the resting
- * look inherits whatever the client's palette gives it: ~4.8:1 on the framework's dark
- * teal default, 2.38:1 on a pale client primary. Any light-primary client got an
- * unusable picker.
- *
- * Fix: the RESTING state uses neutral tokens that cannot fall below the floor —
+ * So the RESTING state uses neutral tokens that cannot fall below the floor —
  * `text` for the outline (12.55:1 on the same canary) and `surface` for the fill.
  * `primary` still owns the SELECTED state below, where it is a solid FILL rather than
  * a hairline, so the brand colour is where it carries weight and passes contrast.
  * That is what "solid" names: a solidly-filled selected pill.
  *
- * ⚠ The fill can only do so much on a low-contrast palette. On this canary every
- * palette colour sits within 1.4:1 of the container (surface 1.06, border 1.36), so
- * the OUTLINE is what defines the capsule. A client wanting a stronger resting fill
+ * ⚠ The fill can only do so much on a low-contrast palette. On a palette where every
+ * colour sits within 1.4:1 of the container (surface 1.06, border 1.36), the OUTLINE
+ * is what defines the capsule. A client wanting a stronger resting fill
  * should add a mid-tone to their palette, not re-point this token.
  *
- * Per-client override is unchanged: set --wp--custom--option-picker-presets--solid--*. */
+ * Per-client override: set --wp--custom--option-picker-presets--solid--*. */
 .sgs-option-picker--solid {
 	--sgs-op-bg: var(--wp--custom--option-picker-presets--solid--bg, var(--wp--preset--color--surface, #ffffff));
 	--sgs-op-text: var(--wp--custom--option-picker-presets--solid--text, var(--wp--preset--color--text, currentColor));
@@ -540,10 +521,10 @@
 }
 
 /* ================================================================
-   R6 — Pill custom padding (SGS custom object family, base + tiers).
+   Pill custom padding (SGS custom object family, base + tiers).
    render.php emits a scoped `.pill{padding:…}` rule ONLY when the
    pillPadding/*Tablet/*Mobile object attrs are non-empty; when unset,
    the per-size default padding rules above (`.sgs-option-picker--small/
-   medium/large .sgs-option-picker__pill{padding:…}`) govern unchanged —
-   byte-identical default behaviour, per-instance override available.
+   medium/large .sgs-option-picker__pill{padding:…}`) govern — per-instance
+   override available.
    ================================================================ */

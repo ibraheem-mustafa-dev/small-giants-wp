@@ -26,16 +26,12 @@
  * Icon/text colour: the block-level `iconColour`/`textColour` emit ONCE into
  * the scoped `<style>` targeting `.{uid} .sgs-icon-list__icon` /
  * `.{uid} .sgs-icon-list__text` as the DEFAULT every item inherits. Each item
- * MAY override its own `iconColour`/`iconColourGradient` (2026-09-06) — those
+ * MAY override its own `iconColour`/`iconColourGradient` — those
  * overrides, and ALL gradient resolution, are emitted per-item inside the
  * render loop (step 7), `:nth-child(N)`-scoped, because the correct gradient
  * TECHNIQUE (SVG stroke vs text background-clip) depends on that item's own
  * icon source, which can differ item-to-item in the same list — a single
- * shared gradient rule cannot resolve that (this was `svg-paint-gradient`'s
- * one open KNOWN_DIFFERENT_SHAPE row; see migrate-icon-gradient-css.js).
- *
- * @since 2026-05-?? Initial icon-list render.
- * @since 2026-07-10 No-inline migration (box-object attrs + scoped output).
+ * shared gradient rule cannot resolve that.
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused — no InnerBlocks).
@@ -46,21 +42,15 @@
 
 defined( 'ABSPATH' ) || exit;
 
-// [D-tier-object-render-fix 2026-09-06]
-// Group 1 folded padding/margin into owned tier-object attrs
-// {desktop,tablet,mobile}, but this block's own scoped CSS below still
-// reads the pre-migration flat shape (a plain box for the base value,
-// plus four separate flat attrs for the tablet/mobile overrides --
-// block.json no longer declares any of those four). Normalise once,
-// into fresh locals only -- every literal reference below has been
-// redirected to these instead of writing back into $attributes.
-// Fixed 2026-09-06: sgs_responsive_normalise_object() lives in
-// helpers-responsive.php, which this file's own render-helpers.php
-// require below WOULD load -- but too late, since these two calls run
-// before that require executes. A block whose render.php is the first
-// SGS block PHP to run in a request (nav-menu in the site header, on
-// every page) fatals with "Call to undefined function" before any
-// other block's render.php has had a chance to load it. Requiring the
+// padding/margin are owned tier-object attrs {desktop,tablet,mobile}.
+// Normalise once, into fresh locals only -- never write back into
+// $attributes.
+// sgs_responsive_normalise_object() lives in helpers-responsive.php,
+// which this file's own render-helpers.php require below WOULD load --
+// but too late, since these two calls run before that require executes.
+// A block whose render.php is the first SGS block PHP to run in a request
+// (e.g. the site-header navigation bar, present on every page) would
+// otherwise fatal with "Call to undefined function". Requiring the
 // defining file directly, here, removes the load-order dependency.
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
 $sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
@@ -76,16 +66,14 @@ require_once dirname( __DIR__, 3 ) . '/includes/wp-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-nav-menu-source.php';
 
 // ---------------------------------------------------------------------------
-// 0. FR-36-26c Dispatch B — resolve `source: menu` into flat { text, url }
+// 0. FR-36-26c — resolve `source: menu` into flat { text, url }
 // items via the ONE shared resolver (SGS_Nav_Menu_Source, R-31-9 — never a
-// second menu-walker). This mirrors sgs/nav-menu's own
-// SGS_Nav_Menu_Bar_Renderer::flatten() (top-level items only; a submenu
-// collapses to its own parent link, matching the bar's Phase-1 behaviour) —
-// that class is declared inside nav-menu/render.php's own file scope and is
-// not reusable across blocks, so the FLATTENING step (not the menu-walking
-// step) is reproduced here at the same, small scope. The actual menu
-// resolution (classic-menu lookup, term → items) is entirely delegated to
-// SGS_Nav_Menu_Source; nothing here re-implements that.
+// second menu-walker). The flattening step mirrors the sgs/nav-bar-menu
+// renderer (top-level items only; a submenu collapses to its own parent
+// link); that class is not reusable across blocks, so the FLATTENING step
+// (not the menu-walking step) is reproduced here at the same, small scope.
+// The actual menu resolution (classic-menu lookup, term → items) is entirely
+// delegated to SGS_Nav_Menu_Source; nothing here re-implements that.
 // ---------------------------------------------------------------------------
 
 // sgs_icon_list_flatten_menu_blocks() lives in includes/helpers-list-markers.php
@@ -100,7 +88,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-nav-menu-source.php';
 // ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
-// 2. Legacy editor slug → Lucide name (items authored before the visual picker).
+// 2. Editor slug → Lucide name, for items that store `{icon: slug}`.
 // ---------------------------------------------------------------------------
 
 $icon_map = array(
@@ -145,7 +133,7 @@ $items          = $attributes['items'] ?? array();
 $default_icon   = $attributes['icon'] ?? 'check';
 $default_source = $attributes['defaultIconSource'] ?? 'lucide';
 $icon_colour    = $attributes['iconColour'] ?? '';
-// D636/D644 icon/SVG gradient sibling — non-empty wins over iconColour above.
+// Icon/SVG gradient sibling — non-empty wins over iconColour above.
 $icon_colour_gradient = $attributes['iconColourGradient'] ?? '';
 $icon_colour_hover_gradient = $attributes['iconColourHoverGradient'] ?? '';
 $icon_size      = $attributes['iconSize'] ?? 'medium';
@@ -165,7 +153,7 @@ $heading_level          = in_array( $attributes['headingLevel'] ?? '', $allowed_
 $marker_type            = sgs_list_marker_sanitise_type( $attributes['markerType'] ?? '', 'icon' );
 $list_tag               = sgs_list_marker_element_tag( $marker_type );
 
-// FR-36-26c Dispatch B: `source`/`menuRef`/`renderLandmark` carry no JSON
+// FR-36-26c: `source`/`menuRef`/`renderLandmark` carry no JSON
 // `enum` either (same blockjson-enum-coerces-invalid-to-default reason), so
 // `source` is validated here too.
 $source    = in_array( $attributes['source'] ?? '', array( 'typed', 'menu' ), true ) ? $attributes['source'] : 'typed';
@@ -299,8 +287,7 @@ if ( null !== $sgs_radius_tiers['desktop'] ) {
 }
 
 // Border-width — SGS custom OBJECT attr { top, right, bottom, left }, base
-// only (no tiers — matches the pre-existing base-only contract, sgs/quote
-// pattern). Paired with scalar borderColour/borderStyle attrs.
+// only (no tiers — sgs/quote pattern). Paired with scalar borderColour/borderStyle attrs.
 $border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
 $border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
 $border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
@@ -312,20 +299,17 @@ $border_style_raw      = $attributes['borderStyle'] ?? 'none';
 $allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
 $border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
 $border_colour         = $attributes['borderColour'] ?? '';
-// D636 border-colour gradient — sibling attribute, wins over $border_colour when set.
+// Border-colour gradient — sibling attribute, wins over $border_colour when set.
 $border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
 
 // WP `typography` support values (skip-serialised → NOT auto-inlined).
 //
-// The `color` reads that used to sit here are GONE. supports.color.background
-// and .text were `true`, so CORE rendered its own colour panel in the Styles
-// tab competing with this block's SgsColourPanel — rule 31's native-colour-ui
-// finding. The flag flip is PAIRED with block-private backgroundColour* and
-// textColour* attributes exposed through fillRow()/textRow(), so capability
-// MOVES rather than disappearing (D744). With both sub-flags false nothing can
-// write style.color.* or the textColor/backgroundColor preset slugs any more,
-// so those branches were unreachable — deleted rather than left as dead code
-// that reads like a live feature (the sgs/quote precedent, 2eebbe55).
+// There are no `color` reads here. supports.color.background and .text are
+// `false`, so core renders no colour panel competing with this block's
+// SgsColourPanel; background and text colour are block-private
+// backgroundColour* and textColour* attributes exposed through
+// fillRow()/textRow(). With both sub-flags false nothing can write
+// style.color.* or the textColor/backgroundColor preset slugs.
 $style_font_size   = isset( $attributes['style']['typography']['fontSize'] ) ? (string) $attributes['style']['typography']['fontSize'] : '';
 $style_line_height = isset( $attributes['style']['typography']['lineHeight'] ) ? (string) $attributes['style']['typography']['lineHeight'] : '';
 
@@ -352,7 +336,7 @@ $item_row_sel = $root_sel . ' .sgs-icon-list__item';
 
 $scoped_css = array();
 
-// --- Heading + item + item text typography families (Bean R-22-13 — shared emitter,
+// --- Heading + item + item text typography families (shared emitter,
 // never a bespoke font-size control). Only set properties are emitted. ---
 if ( function_exists( 'sgs_typography_css_rule' ) ) {
 	$heading_typography_css = sgs_typography_css_rule( $attributes, 'heading', $heading_sel );
@@ -373,7 +357,7 @@ if ( function_exists( 'sgs_typography_css_rule' ) ) {
 // inline on the repeated <li> elements. Every item inherits this unless it
 // declares its own iconColour/iconColourGradient (step 7 below). Flat colour
 // only here — gradient is resolved per-item in step 7, because the correct
-// technique depends on each item's own icon source (2026-09-06). ---
+// technique depends on each item's own icon source. ---
 if ( $icon_colour ) {
 	$scoped_css[] = "{$icon_sel}{color:" . sgs_colour_value( $icon_colour ) . ';}';
 	if ( '' !== ( $attributes['iconColourHover'] ?? '' ) ) {
@@ -382,11 +366,9 @@ if ( $icon_colour ) {
 }
 // Text colour (flat-or-gradient, resting + hover) — scoped to the item text
 // element, never the root <ul>, matching the block's declared css:color slot.
-// FIXED 2026-09-04 — was sgs_text_decls()/sgs_emit_state_colour_css(), which
-// always emits a bare `color:` even for a resolved gradient string (invalid
-// CSS, silently dropped — same defect proven live on sgs/info-box and
-// sgs/testimonial-slider). sgs_text_colour_decl() is the correct primary
-// primitive; the companion fallback rule below was already correct.
+// sgs_text_colour_decl() is the primary primitive: unlike a bare `color:`
+// declaration it handles a resolved gradient string (which a bare `color:`
+// would emit as invalid CSS, silently dropped).
 $sgs_ilist_text_normal_resolved = sgs_resolve_text_colour_or_gradient(
 	(string) ( $attributes['textColour'] ?? '' ),
 	(string) ( $attributes['textColourGradient'] ?? '' )
@@ -494,7 +476,7 @@ if ( ! empty( $base_style_engine_args ) ) {
 
 // --- Border width/style/colour (SGS custom, base only) — hand-built,
 // scoped. ---
-// G5 (Bean, 2026-08-26): 'style set, no width' means no border by
+// 'style set, no width' means no border by
 // default — never fall through to the browser's initial medium (~3px)
 // border-width.
 if ( 'none' !== $border_style && $has_border_width ) {
@@ -513,7 +495,7 @@ if ( 'none' !== $border_style && $has_border_width ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $border_decls ) . ';}';
 }
 
-// --- Border gradient (D636 border builder) — masked ::before, wins over the
+// --- Border gradient (border builder) — masked ::before, wins over the
 // flat border-color decl above (emitted after it so the cascade favours the
 // mask). ---
 if ( '' !== $border_colour_gradient ) {
@@ -565,8 +547,8 @@ if ( $mobile_decls ) {
 // attribute stays free for the anchor. is-style-* / align* classes are
 // merged in automatically by get_block_wrapper_attributes() via the block's
 // className attribute. NO style is passed at all — the root carries neither
-// CSS property declarations (contract §A) nor custom-property values (the
-// post-D345 amendment): the gap var lives in the scoped <style> above.
+// CSS property declarations (contract §A) nor custom-property values: the
+// gap var lives in the scoped <style> above.
 // ---------------------------------------------------------------------------
 
 // $list_visual_classes carries the LAYOUT classes (list-style/flex/gap in
@@ -582,7 +564,7 @@ if ( $dividers ) {
 
 $wrapper_only_classes = $uid;
 
-// Post-D345 contract (Spec 32 FR-32-1/FR-32-4 as amended; enforced live by
+// Spec 32 FR-32-1/FR-32-4 (enforced by
 // scripts/no-inline/check-no-inline.py): even a custom-property VALUE never
 // rides the inline style attribute — the gap var is emitted into the block's
 // own scoped <style> rule instead. $gap_slug is digits-only (sanitised above).
@@ -614,7 +596,7 @@ if ( $uses_dashicon ) {
 // ---------------------------------------------------------------------------
 
 $render_marker_icon = in_array( $marker_type, array( 'icon', 'emoji' ), true );
-// Per-item colour/gradient (2026-09-06) — each item resolves its OWN colour
+// Per-item colour/gradient — each item resolves its OWN colour
 // and gradient (falling back to the block-level default when unset), and its
 // OWN icon source decides the gradient TECHNIQUE via sgs_icon_gradient_css().
 // Unlike flat colour (currentColor inheritance works identically regardless
@@ -632,7 +614,7 @@ foreach ( $resolved_items as $item ) {
 	++$sgs_icon_list_item_idx;
 	$marker_html = '';
 	if ( $render_marker_icon ) {
-		// Resolve the item's icon source + name (migrating legacy {icon: slug} items).
+		// Resolve the item's icon source + name (items may store `{icon: slug}`).
 		if ( ! empty( $item['iconSource'] ) ) {
 			$item_source = $item['iconSource'];
 			$item_name   = $item['iconName'] ?? $default_icon;
@@ -646,8 +628,7 @@ foreach ( $resolved_items as $item ) {
 		$svg = $render_icon( $item_source, $item_name );
 
 		// Per-item colour override + per-item gradient resolution — BOTH
-		// states, via the shared sgs_icon_gradient_states_css() composer
-		// (2026-09-06; see its docblock for why a two-state helper exists).
+		// states, via the shared sgs_icon_gradient_states_css() composer.
 		// Block-level hover-flat already cascades onto every item via the
 		// shared $icon_sel rule below (step 5), so a per-item hover-flat
 		// rule is only needed when the ITEM sets its own hover colour.
@@ -683,7 +664,7 @@ foreach ( $resolved_items as $item ) {
 	$item_url  = isset( $item['url'] ) ? esc_url( $item['url'] ) : '';
 
 	// Wrap text in <a> when a per-item URL is provided. `data-sgs-nav-path`
-	// mirrors nav-menu/view.js's contract exactly (FR-36-26a rule 2):
+	// mirrors nav-bar-menu/view.js's contract exactly (FR-36-26a rule 2):
 	// aria-current is computed CLIENT-SIDE only — a server-baked value would
 	// be cached by LiteSpeed and served to every visitor on every page
 	// (FR-36-11). Emitted for ANY item with a url, not just landmark items —
@@ -716,12 +697,12 @@ foreach ( $resolved_items as $item ) {
 // ---------------------------------------------------------------------------
 // 8. Render. Root element depends on the heading + FR-36-26a landmark
 // contract:
-// - no heading, no landmark → root = the <ul>/<ol> itself (ZERO markup
-// change vs. the pre-existing block).
+// - no heading, no landmark → root = the <ul>/<ol> itself (no wrapper
+// markup).
 // - heading and/or landmark → a wrapping element becomes the wp-block
 // root: `<nav>` when $render_landmark is true (menu-bound, always; typed
 // only when the operator opted in AND items carry urls — rule 3, never
-// automatic), else the pre-existing plain `<div>`. The `<nav>` carries
+// automatic), else a plain `<div>`. The `<nav>` carries
 // `aria-labelledby` pointing at the rendered heading's id — the visible
 // heading becomes the landmark's accessible name (rule 1), so unique
 // landmark names hold by construction. No aria-labelledby is added when

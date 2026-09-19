@@ -26,21 +26,15 @@
 
 defined( 'ABSPATH' ) || exit;
 
-// [D-tier-object-render-fix 2026-09-06]
-// Group 1 folded padding/margin into owned tier-object attrs
-// {desktop,tablet,mobile}, but this block's own scoped CSS below still
-// reads the pre-migration flat shape (a plain box for the base value,
-// plus four separate flat attrs for the tablet/mobile overrides --
-// block.json no longer declares any of those four). Normalise once,
-// into fresh locals only -- every literal reference below has been
-// redirected to these instead of writing back into $attributes.
-// Fixed 2026-09-06: sgs_responsive_normalise_object() lives in
-// helpers-responsive.php, which this file's own render-helpers.php
-// require below WOULD load -- but too late, since these two calls run
-// before that require executes. A block whose render.php is the first
-// SGS block PHP to run in a request (nav-menu in the site header, on
-// every page) fatals with "Call to undefined function" before any
-// other block's render.php has had a chance to load it. Requiring the
+// padding/margin are owned tier-object attrs {desktop,tablet,mobile}.
+// Normalise once, into fresh locals only -- never write back into
+// $attributes.
+// sgs_responsive_normalise_object() lives in helpers-responsive.php,
+// which this file's own render-helpers.php require below WOULD load --
+// but too late, since these two calls run before that require executes.
+// A block whose render.php is the first SGS block PHP to run in a request
+// (e.g. the site-header navigation bar, present on every page) would
+// otherwise fatal with "Call to undefined function". Requiring the
 // defining file directly, here, removes the load-order dependency.
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
 $sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
@@ -55,8 +49,7 @@ use SGS\Blocks\Sgs_Site_Info;
 
 $display_type = $attributes['displayType'] ?? 'phone';
 $show_icon    = ! empty( $attributes['showIcon'] );
-// Responsive label collapse (Spec 37 §3.8 — labelCollapse RETAINED, an
-// operator-toggled setting; the sibling move-to-drawer mechanism was RETIRED):
+// Responsive label collapse (Spec 37 §3.8 — an operator-toggled setting):
 // one setting that hides the text label —
 // and collapses the item to just its icon — from a chosen breakpoint down.
 // none = always show; mobile = icon-only <=767; tablet = icon-only <=1023;
@@ -64,7 +57,7 @@ $show_icon    = ! empty( $attributes['showIcon'] );
 // clip differs, and a clipped label stays in the a11y tree so an icon-only
 // phone/email link keeps its accessible name (WCAG name-required).
 $label_collapse = isset( $attributes['labelCollapse'] ) ? (string) $attributes['labelCollapse'] : 'none';
-// Colour overrides (WCAG 1.4.3 fix, D-pending): empty by default — an unset
+// Colour overrides (WCAG 1.4.3): empty by default — an unset
 // colour means "no override", so style.css's var(--sgs-bi-*, currentColor)
 // fallback inherits the surrounding container's text colour (e.g. the light
 // header vs. the dark mobile drawer) instead of always forcing the theme's
@@ -73,23 +66,21 @@ $label_collapse = isset( $attributes['labelCollapse'] ) ? (string) $attributes['
 // colour control) still wins — see the colour-bridge block below, which only
 // emits the custom property when the resolved value is non-empty.
 $icon_colour = (string) ( $attributes['iconColour'] ?? '' );
-// D636/D644 icon/SVG gradient sibling — non-empty wins over iconColour above.
+// Icon/SVG gradient sibling — non-empty wins over iconColour above.
 $icon_colour_gradient = (string) ( $attributes['iconColourGradient'] ?? '' );
-// Icon hover siblings (2026-09-05) — mirror sgs/button's icon element exactly.
+// Icon hover siblings — mirror sgs/button's icon element exactly.
 $icon_colour_hover          = (string) ( $attributes['iconColourHover'] ?? '' );
 $icon_colour_hover_gradient = (string) ( $attributes['iconColourHoverGradient'] ?? '' );
 $text_colour                = (string) ( $attributes['textColour'] ?? '' );
-// D636 text-colour gradient sibling (778879732 rollout finish, 2026-09-04) —
-// non-empty wins over textColour/labelColour at render time.
+// Text-colour gradient sibling — non-empty wins over textColour/labelColour at render time.
 $text_colour_gradient = (string) ( $attributes['textColourGradient'] ?? '' );
-// Text hover siblings (2026-09-05) — real normal/hover pair via sgs_text_states_css().
+// Text hover siblings — real normal/hover pair via sgs_text_states_css().
 $text_colour_hover          = (string) ( $attributes['textColourHover'] ?? '' );
 $text_colour_hover_gradient = (string) ( $attributes['textColourHoverGradient'] ?? '' );
 $label_colour               = (string) ( $attributes['labelColour'] ?? '' );
 $label_colour_gradient      = (string) ( $attributes['labelColourGradient'] ?? '' );
 // Attribution hover-sweep colours — unset means "no override", so style.css's
-// #e7d768 default applies. Renamed 2026-09-05 from linkHoverBackgroundImage/
-// linkHoverTextColour (D643, 2026-08-16): both only ever paint the website-credit
+// #d4a73c default applies. Both only paint the website-credit
 // sweep on `.sgs-business-attribution .sgs-business-info__link` (style.css),
 // never a phone/email link — see block.json's `link` element note. Split
 // because a `color:` value can never legally hold a gradient, so each CSS
@@ -123,13 +114,13 @@ $placeholder = sprintf(
 // rather than re-deriving REST_REQUEST/is_admin() locally.
 $sgs_is_editor_render = ! \SGS\Blocks\sgs_is_frontend_render();
 
-// D636/D644 icon/SVG gradient — computed here (before $icon_html's closure
+// Icon/SVG gradient — computed here (before $icon_html's closure
 // definition below, which needs it) using the SAME uid this render also uses
-// for its scoped <style> further down (moved up unchanged — one definition,
-// referenced both here and where $root_sel is built).
+// for its scoped <style> further down (one definition, referenced both here
+// and where $root_sel is built).
 $uid                = 'sgs-biz-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 $sgs_bi_stroke_grad = sgs_svg_stroke_gradient( $icon_colour_gradient, $uid . '-ig' );
-// Icon hover gradient sibling (2026-09-05) — same mechanism, own <defs> id/'-igh'
+// Icon hover gradient sibling — same mechanism, own <defs> id/'-igh'
 // suffix, mirroring sgs/button's iconColourHoverGradient handling exactly.
 $sgs_bi_stroke_grad_hover = sgs_svg_stroke_gradient( $icon_colour_hover_gradient, $uid . '-igh' );
 $sgs_bi_defs_injected     = false;
@@ -186,7 +177,7 @@ switch ( $display_type ) {
 			$tel_href = 'tel:' . preg_replace( '/[^0-9+]/', '', $phone_raw );
 			$inner    = $icon_html( 'phone' ) . $label_html( Sgs_Site_Info::get_esc_html( 'phone' ) );
 			// Always a link — there is no use case for an unclickable phone
-			// number, so the old linkPhone toggle was removed 2026-09-05.
+			// number.
 			$html = sprintf(
 				'<a href="%s" class="sgs-business-info__link">%s</a>',
 				esc_url( $tel_href ),
@@ -204,7 +195,7 @@ switch ( $display_type ) {
 		if ( '' !== $email_raw && is_email( $email_raw ) ) {
 			$inner = $icon_html( 'mail' ) . $label_html( Sgs_Site_Info::get_esc_html( 'email' ) );
 			// Always a link — there is no use case for an unclickable email
-			// address, so the old linkEmail toggle was removed 2026-09-05.
+			// address.
 			$html = sprintf(
 				'<a href="%s" class="sgs-business-info__link">%s</a>',
 				esc_url( 'mailto:' . antispambot( $email_raw ) ),
@@ -410,9 +401,9 @@ switch ( $display_type ) {
 			// Strip <br> back to commas for the maps search query.
 			$query   = trim( preg_replace( '/\s*<br\s*\/?>\s*/i', ', ', $address_raw ) );
 			$map_url = 'https://maps.google.com/maps?q=' . rawurlencode( $query ) . '&z=15&hl=en&t=m&output=embed&iwloc=near';
-			// NO-INLINE: `border:0` moved to the .sgs-business-map iframe rule in
+			// NO-INLINE: `border:0` lives in the .sgs-business-map iframe rule in
 			// style.css (frontend-only concern, not user-configurable) — the
-			// iframe no longer carries a `style` attribute.
+			// iframe carries no `style` attribute.
 			$html = sprintf(
 				'<div class="sgs-business-info sgs-business-map"><iframe src="%s" width="100%%" height="400" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="%s"></iframe></div>',
 				esc_url( $map_url ),
@@ -438,8 +429,8 @@ if ( '' === $html && ! $sgs_is_editor_render ) {
 // NO-INLINE: this block emits zero inline style property declarations.
 // Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
 // --check. This is a content-KIND single-container block (box+width only,
-// no grid/section machinery) — block-private per the D294 pattern,
-// mirroring sgs/heading's mechanism.
+// no grid/section machinery) — block-private, mirroring sgs/heading's
+// mechanism.
 //
 // BOX-GROUP (contract §B): base padding/margin come from WP-native
 // style.spacing.* (skip-serialised, emitted scoped via the core style
@@ -450,7 +441,7 @@ if ( '' === $html && ! $sgs_is_editor_render ) {
 // CSS-length sanitiser — strips everything except digits, dot, %, and unit
 // letters so an object-attr side value can never break out of its
 // declaration (contract §D; mirrors sgs/heading + sgs/container).
-// $uid was already computed earlier (above $icon_html's closure definition,
+// $uid is computed earlier (above $icon_html's closure definition,
 // which needs the gradient derived from it) — reused here, not recomputed.
 $root_sel = '.' . $uid;
 
@@ -515,7 +506,7 @@ if ( null !== $border_radius_mob_val ) {
 if ( '' !== $sgs_bi_stroke_grad['css'] ) {
 	$scoped_css[] = "{$root_sel} .sgs-business-info__icon svg{" . $sgs_bi_stroke_grad['css'] . ';}';
 }
-// Icon hover — flat colour + gradient siblings (2026-09-05), touch-safe via
+// Icon hover — flat colour + gradient siblings, touch-safe via
 // sgs_hover_state_rules() (helpers-hover-state.php), mirroring sgs/button's
 // icon element exactly. The hover TRIGGER is the whole block wrapper
 // ($root_sel) rather than .sgs-business-info__link alone, because the icon
@@ -554,23 +545,19 @@ $sgs_bi_icon_colour_css = sgs_colour_value( $icon_colour );
 if ( '' !== $sgs_bi_icon_colour_css ) {
 	$sgs_bi_colour_decls[] = '--sgs-bi-icon-colour:' . $sgs_bi_icon_colour_css;
 }
-// textColour moved OFF the custom-property bridge (2026-09-04, D636 gradient
-// rollout finish) — a custom property can never legally hold a CSS gradient
-// string the way --sgs-bi-icon-colour above still can for a flat value, so it
-// emits direct scoped declarations, exactly mirroring sgs/counter's
-// numberColour. The "unset means no override, inherit currentColor" contract
-// is UNCHANGED: when none of the four text attrs are set,
-// sgs_text_states_css() emits nothing and style.css's
+// textColour is NOT on the custom-property bridge — a custom property can
+// never legally hold a CSS gradient string the way --sgs-bi-icon-colour above
+// can for a flat value, so it emits direct scoped declarations, exactly
+// mirroring sgs/counter's numberColour. The "unset means no override,
+// inherit currentColor" contract holds: when none of the four text attrs are
+// set, sgs_text_states_css() emits nothing and style.css's
 // `var(--sgs-bi-text-colour, currentColor)` rule simply resolves its fallback
-// (that custom property is never declared by any mechanism any more).
+// (that custom property is never declared by any mechanism).
 //
-// 2026-09-05: replaced the old single-state (normal only) hand-rolled call
-// with sgs_text_states_css() — the shared 2-state (normal+hover) helper
-// (helpers-colour-variants.php) already used for this exact shape elsewhere
-// in the framework. It resolves both states, emits the touch-safe hover pair
-// via sgs_hover_state_rules(), AND both mandatory gradient `@supports`
-// fallback rules, at the SAME $root_sel this block's text colour was already
-// scoped to.
+// sgs_text_states_css() is the shared 2-state (normal+hover) helper
+// (helpers-colour-variants.php). It resolves both states, emits the
+// touch-safe hover pair via sgs_hover_state_rules(), AND both mandatory
+// gradient `@supports` fallback rules, at $root_sel.
 $scoped_css[] = sgs_text_states_css(
 	$root_sel,
 	$attributes,
@@ -582,7 +569,7 @@ $scoped_css[] = sgs_text_states_css(
 	)
 );
 // labelColour's only real paint target today is .sgs-business-hours__day
-// (style.css:167 `color: var(--sgs-bi-label-colour, currentColor)`) — the
+// (style.css `color: var(--sgs-bi-label-colour, currentColor)`) — the
 // generic .sgs-business-info__label span carries no colour rule of its own,
 // it inherits. The gradient sibling follows the SAME real selector.
 $label_sel              = "{$root_sel} .sgs-business-hours__day";
@@ -607,13 +594,12 @@ if ( '' !== $label_colour_effective_hover ) {
 }
 
 // Attribution hover-sweep — same omit-when-unset contract as the icon colour
-// above. Unset falls back to style.css's `var(--sgs-bi-link-hover-bg, #e7d768)` /
-// `var(--sgs-bi-link-hover-text, #e7d768)`, the SGS credit sweep colour. Two
-// separate custom properties (split 2026-08-16, D643; renamed 2026-09-05 from
-// linkHoverBackgroundImage/linkHoverTextColour — see block.json's `link`
-// element note) — one feeds the gradient colour-stop, one feeds the
-// @supports fallback `color:` — so each can be resolved independently and,
-// later, so only the gradient one can ever be offered a gradient value.
+// above. Unset falls back to style.css's `var(--sgs-bi-link-hover-bg, #d4a73c)` /
+// `var(--sgs-bi-link-hover-text, #d4a73c)`, the SGS credit sweep colour. Two
+// separate custom properties (see block.json's `link` element note) — one
+// feeds the gradient colour-stop, one feeds the @supports fallback `color:`
+// — so each can be resolved independently and only the gradient one can ever
+// be offered a gradient value.
 $sgs_bi_attribution_hover_bg_css = sgs_colour_value( $attribution_hover_colour );
 if ( '' !== $sgs_bi_attribution_hover_bg_css ) {
 	$sgs_bi_colour_decls[] = '--sgs-bi-link-hover-bg:' . $sgs_bi_attribution_hover_bg_css;
@@ -632,7 +618,7 @@ if ( $sgs_bi_colour_decls ) {
 // the device-visibility feature (mobile <=767, tablet 768–1023, desktop >=1024
 // — the canonical SGS_Breakpoints values). ---
 // Only collapse when an icon is actually shown — collapsing the label with no
-// icon would leave the item empty (Bean rule, 2026-07-14).
+// icon would leave the item empty.
 if ( $show_icon && 'none' !== $label_collapse ) {
 	$label_clip      = 'position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;';
 	$label_clip_rule = "{$root_sel} .sgs-business-info__label{" . $label_clip . '}';
@@ -706,11 +692,8 @@ if ( ! empty( $base_style_engine_args ) ) {
 }
 
 // Typography — root prefix '', shared TypographyControls/sgs_typography_css_rule()
-// mechanism (D971/D972 full-replacement track). Replaces the old WP-native
-// supports.typography (fontSize + fontFamily only) with the framework's own
-// helper, which also now offers fontWeight/fontStyle/lineHeight. Scope is
-// unchanged — $root_sel is the same whole-wrapper selector the native support
-// was applied to above.
+// mechanism, which offers fontSize/fontFamily/fontWeight/fontStyle/lineHeight.
+// $root_sel is the whole-wrapper selector.
 $typography_css = sgs_typography_css_rule( $attributes, '', $root_sel );
 if ( '' !== $typography_css ) {
 	$scoped_css[] = $typography_css;

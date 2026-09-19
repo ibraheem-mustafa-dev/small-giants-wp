@@ -59,14 +59,14 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
-			{ /* D618/D609 — ONE grouped, SGS-OWNED colour panel (own PanelBody,
+			{ /* ONE grouped, SGS-OWNED colour panel (own PanelBody,
 			   default InspectorControls group), rendered FIRST so it sits at
-			   the top of the inspector. `supports.color` sub-flags are now
+			   the top of the inspector. `supports.color` sub-flags are
 			   false so WordPress generates no native colour UI to overlap
 			   with this panel. Text colour + Icon colour each carry a real
-			   normal/hover pair (added 2026-09-05 — the framework's 2-state
-			   standard, sgs_text_states_css()/mirroring sgs/button's icon
-			   states.hover shape, is now used rather than a single-state row). */ }
+			   normal/hover pair (the framework's 2-state standard,
+			   sgs_text_states_css()/mirroring sgs/button's icon
+			   states.hover shape). */ }
 			<SgsColourPanel
 				rows={ [
 					{
@@ -118,13 +118,9 @@ export default function Edit( { attributes, setAttributes } ) {
 							},
 						],
 					},
-					/* Label colour — was a standalone DesignTokenPicker inside the
-					   "Display Options" panel; moved into the shared panel to match
-					   the D609/D618 grouped-colour-panel model this block already
-					   uses for text/icon (no D622 element-panel override applies
-					   here — this block never split into per-element TIER 1 panels).
-					   Same ICON_TYPES gate as before, per D609 9c (omit, don't
-					   disable). */
+					/* Label colour — lives in the shared grouped colour panel,
+					   like text/icon (this block has no per-element TIER 1
+					   panels). Gated on ICON_TYPES (omit, don't disable). */
 					ICON_TYPES.has( displayType ) &&
 						textRow( {
 							key: 'label',
@@ -189,15 +185,11 @@ export default function Edit( { attributes, setAttributes } ) {
 					</PanelBody>
 				) }
 
-				{ /* 2026-09-05: replaces the old "Link Options" panel, which was
-				   gated on phone/email but controlled the ATTRIBUTION
-				   credit-sweep colour (`.sgs-business-attribution
-				   .sgs-business-info__link`, style.css:99-134) — a control
-				   that visibly did nothing on a phone/email instance, while
-				   the display type that actually needed it (attribution) had
-				   no exposed control at all. `linkPhone`/`linkEmail` toggles
-				   are gone entirely — phone/email now always render as links
-				   (see block.json's `link` element note + render.php). */ }
+				{ /* Hover colour for the ATTRIBUTION credit-sweep
+				   (`.sgs-business-attribution .sgs-business-info__link`,
+				   style.css), shown only for the attribution display type.
+				   Phone/email always render as links (see block.json's `link`
+				   element note + render.php). */ }
 				{ 'attribution' === displayType && (
 					<PanelBody title={ __( 'Hover Colour', 'sgs-blocks' ) } initialOpen={ false }>
 						<DesignTokenPicker
@@ -301,15 +293,11 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
-				{ /* Typography — replaces the old WP-native supports.typography
-				   (fontSize/fontFamily only) with the shared TypographyControls
-				   component + sgs_typography_css_rule() render.php helper
-				   (D971/D972 full-replacement track). Root prefix "" — this
-				   block's typography was already applied to the whole wrapper
-				   div ($root_sel in render.php), not a specific child element,
-				   so the scope is unchanged, only the mechanism moves.
-				   showFontFamily preserves the pre-migration native
-				   fontFamily:true capability. */ }
+				{ /* Typography — the shared TypographyControls component +
+				   sgs_typography_css_rule() render.php helper. Root prefix "" —
+				   typography applies to the whole wrapper div ($root_sel in
+				   render.php), not a specific child element. showFontFamily
+				   exposes the font-family control. */ }
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
 					<TypographyControls fontSizePresets showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
 						attributes={ attributes }

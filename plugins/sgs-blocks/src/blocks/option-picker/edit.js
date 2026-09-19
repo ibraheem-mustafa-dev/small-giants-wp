@@ -1,8 +1,8 @@
 /**
  * SGS Option Picker — editor component.
  *
- * NO-INLINE + NO-WRAPPER (LOCKED per-block no-inline migration contract
- * §A/§B/§B3, 2026-07-09 — D294 content-KIND pattern, mirrors sgs/quote):
+ * NO-INLINE + NO-WRAPPER (per-block no-inline contract §A/§B/§B3;
+ * content-KIND pattern, mirrors sgs/quote):
  * the <fieldset> IS the block root — no SGS_Container_Wrapper delegation,
  * no ContainerWrapperControls. This panel hand-rolls its own width/spacing/
  * border controls, the same shape as sgs/quote's.
@@ -185,8 +185,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		pillBorderRadius,
 		pillSelectedBorderRadius,
 		// pillPadding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile} (Spec 35
-		// box-tier migration) — the pillPaddingTablet/pillPaddingMobile sibling
-		// attrs no longer exist in this block's schema.
+		// box-tier); there are no pillPaddingTablet/pillPaddingMobile siblings.
 		pillPadding,
 		borderWidth,
 		borderStyle,
@@ -352,24 +351,19 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
-			{ /* D619 — ONE grouped, SGS-owned colour panel, mounted FIRST so it
-			   sits at the top of the inspector (mirrors sgs/button). Replaces
-			   the scattered DesignTokenPicker rows that used to live in the
-			   "Colours" ToolsPanel + the Label/Border panels below.
-			   GROUND-TRUTH (style.css:186-289 base+:hover+:checked rules;
-			   block.json pill-element note, FR-35-5): pillBgColour/
+			{ /* ONE grouped, SGS-owned colour panel, mounted FIRST so it
+			   sits at the top of the inspector (mirrors sgs/button).
+			   Ground truth: style.css base+:hover+:checked rules;
+			   block.json pill-element note, FR-35-5: pillBgColour/
 			   pillTextColour/pillBorderColour are the RESTING state.
-			   UPDATE (2026-09-03, block owner reversal): the pill's :hover
-			   USED TO reuse the resting vars with no distinct hover-only
-			   attribute — that FR-35-5 exception has been reversed, so
-			   pillBgColourHover/pillTextColourHover now exist as real
-			   attributes (mirroring sgs/nav-menu's item-bg/item-text
-			   normal+hover rows) and are wired as a genuine "Hover" state
-			   below, between Normal and Current. pillBorderColour has no
-			   hover sibling (out of scope for this reversal). The
-			   remaining second state is "current" (pillSelected*Colour,
-			   driven by :checked). Grouped here as Normal/Hover/Current
-			   triples per pill property, all `linked: true`. */ }
+			   pillBgColourHover/pillTextColourHover are real
+			   attributes (mirroring sgs/nav-bar-menu's item-bg/item-text
+			   normal+hover rows) wired as a "Hover" state
+			   between Normal and Current. pillBorderColour has no
+			   hover sibling. The other state is "current"
+			   (pillSelected*Colour, driven by :checked). Grouped here as
+			   Normal/Hover/Current triples per pill property, all
+			   `linked: true`. */ }
 			<SgsColourPanel
 				rows={ [
 					textRow( {
@@ -415,9 +409,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: pillSelectedBgColour,
 								onChange: ( val ) => setAttributes( { pillSelectedBgColour: val ?? '' } ),
 								linked: true,
-								// No pillSelectedBgColourGradient attribute exists (out of
-								// scope for this rollout, same reasoning as pillText's
-								// 'current' state below) — a required no-op, not a missing
+								// No pillSelectedBgColourGradient attribute exists (same
+								// reasoning as pillText's 'current' state below) — a
+								// required no-op, not a missing
 								// feature (GradientCapableColourControl calls
 								// onGradientChange('') on every pick for every state in a
 								// gradientCapable row).
@@ -446,9 +440,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: pillTextColourHover,
 								onChange: ( val ) => setAttributes( { pillTextColourHover: val ?? '' } ),
 								linked: true,
-								// No pillTextColourHoverGradient attribute exists (out of
-								// scope for this rollout — see block.json pill-element
-								// note). GradientCapableColourControl's Solid picker calls
+								// No pillTextColourHoverGradient attribute exists (see
+								// block.json pill-element note). GradientCapableColourControl's Solid picker calls
 								// state.onGradientChange('') unconditionally on every pick
 								// regardless of which state tab is active, so every state
 								// in a gradientCapable row needs a handler even when it has
@@ -806,7 +799,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					{ /* Typography controls (label + pill) are now unified in the Label
+					{ /* Typography controls (label + pill) are unified in the Label
 					   panel's targets-based TypographyControls above — search for
 					   "Group label" target to adjust both text surfaces from one call. */ }
 					{ /* Border-radius is a CSS-length STRING (number+unit), so the
@@ -823,10 +816,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						presets={ false }
 					/>
 					{ /* Pill padding — SGS custom TIER-OF-BOXES object family
-					   {desktop,tablet,mobile} (Spec 35 box-tier migration) — the
+					   {desktop,tablet,mobile} (Spec 35 box-tier) — the
 					   pill is a content CHILD, not the block root, so there is no
 					   WP-native spacing support to route through. Empty object =
-					   the per-size default padding in style.css governs unchanged. */ }
+					   the per-size default padding in style.css governs. */ }
 					<ResponsiveBoxControl
 						label={ __( 'Pill padding', 'sgs-blocks' ) }
 						presets
@@ -847,9 +840,9 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 					/>
 
-					{ /* Selection appearance — colours moved to the top-level
-					   SgsColourPanel (D619, Normal/Current states per swatch).
-					   This ToolsPanel now holds only the non-colour selection
+					{ /* Selection appearance — colours live in the top-level
+					   SgsColourPanel (Normal/Current states per swatch).
+					   This ToolsPanel holds only the non-colour selection
 					   behaviour: selected pill radius + the tick toggle. */ }
 					<ToolsPanel
 						className="sgs-nested-tools-panel"
@@ -976,10 +969,10 @@ export default function Edit( { attributes, setAttributes } ) {
 				   SGS custom object attr (base only); border-radius routes to
 				   WP-native style.border.radius (skip-serialised → scoped). */ }
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
-										{ /* Task 0 codemod (migrate-border-control.js) -- one composite row
+										{ /* One composite row
 					   (width/style/colour) mirroring native's BorderBoxControl layout,
-					   matching sgs/product-card + sgs/quote. Border-radius is unchanged
-					   (stays WP-native). */ }
+					   matching sgs/product-card + sgs/quote. Border-radius stays
+					   WP-native. */ }
 					<SgsBorderControl
 						widthValues={ borderWidth ?? {} }
 						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }

@@ -20,11 +20,9 @@
  * The block's own color + typography values are emitted into THIS BLOCK'S
  * OWN scoped `.{uid}` <style> (composite caveat — mirrors sgs/hero — these do
  * NOT ride through the shared wrapper's `extra_styles`, which would inline
- * them). Base spacing/border-radius/max-width remain the wrapper's own
- * scoped mechanism (unchanged). The transition + hover-colour CSS
- * custom-property VALUES ($css_vars below) are allowed inline (a `--x:y` var
- * value is not a property declaration) and continue to ride the wrapper's
- * `extra_styles`.
+ * them). Base spacing/border-radius/max-width are the wrapper's own
+ * scoped mechanism. The transition CSS custom-property VALUES ($css_vars
+ * below) ride the wrapper's `extra_styles`.
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused — we iterate inner_blocks directly).
@@ -50,17 +48,17 @@ $autoplay_speed = $attributes['autoplaySpeed'] ?? 5000;
 $show_dots      = $attributes['showDots'] ?? true;
 $show_arrows    = $attributes['showArrows'] ?? true;
 $slides_visible = $attributes['slidesVisible'] ?? 1;
-// NOTE: cardStyle is no longer read here — the slide wrapper is positioning-only
-// (Bean-locked card-in-a-card de-style). It flows to child sgs/testimonial blocks
+// NOTE: cardStyle is not read here — the slide wrapper is positioning-only
+// (no card-in-a-card). It flows to child sgs/testimonial blocks
 // as `sgs/testimonialVariant` via block.json `providesContext`, resolved in
 // sgs/testimonial's own render.php ($block->context), not by this parent.
 // backgroundColourHover is read by sgs_fill_decls() directly (below) — no
-// local variable needed. textColourHover is still read here: it feeds the
-// gradient-resolve calc below, not the combined hover-decls array (D744
-// pattern moved it out of that array — see the comment further down).
+// local variable needed. textColourHover is read here: it feeds the
+// gradient-resolve calc below, not the combined hover-decls array (see the
+// comment further down).
 $hover_text_colour   = $attributes['textColourHover'] ?? '';
 $hover_border_colour = $attributes['borderColourHover'] ?? '';
-// D636 border-colour gradient rollout — non-empty wins over the flat
+// Border-colour gradient — non-empty wins over the flat
 // $hover_border_colour above, painted via the shared masked ::before ring
 // mechanism, scoped to :hover/:focus-within.
 $hover_border_gradient = sgs_css_gradient_value( $attributes['borderColourHoverGradient'] ?? '' );
@@ -126,15 +124,12 @@ $slider_scoped_css = '';
 // text-decls-NAIVE: sgs_text_decls() resolves flat-vs-gradient via
 // sgs_resolve_text_colour_or_gradient() but then feeds the result through
 // sgs_colour_value() unconditionally, which expects a slug/hex, not a full
-// gradient() function string. Verified live (2026-09-04): with a gradient
-// set it emitted `color:var(--wp--preset--color--linear-gradient90degff...)`
-// — garbage, not a working gradient. sgs/info-box's own D744 rollout has
-// this exact same defect (verified live via the same probe method), so this
-// is a real pre-existing bug in that pairing, not something specific to
-// this block — the CORRECT pattern (proven live on sgs/pricing-table's
+// gradient() function string, so a gradient emits
+// `color:var(--wp--preset--color--linear-gradient90degff...)` — garbage, not
+// a working gradient. The correct pattern (used by sgs/pricing-table's
 // ctaColour, sgs/modal's closeColourText, sgs/google-reviews) is
 // sgs_resolve_text_colour_or_gradient() -> sgs_text_colour_decl() ->
-// sgs_text_colour_gradient_fallback_rule(), used below instead.
+// sgs_text_colour_gradient_fallback_rule(), used below.
 $slider_text_normal_resolved = sgs_resolve_text_colour_or_gradient(
 	(string) ( $attributes['textColour'] ?? '' ),
 	(string) ( $attributes['textColourGradient'] ?? '' )
@@ -166,17 +161,13 @@ if ( '' !== $slider_text_hover_resolved ) {
 // Background (colour + gradient, resting + hover) — painted on a `::after`
 // layer, never the root itself, so the text colour/gradient above
 // (background-clip:text on the SAME $root_sel) cannot clip or overwrite it
-// (both use background-image). Mirrors sgs/info-box (D744). The border
+// (both use background-image). Mirrors sgs/info-box. The border
 // gradient's masked ring (below) owns `::before` on this same root, so
 // `::after` is free.
 //
-// supports.color.gradients was `true` here, so CORE rendered its own gradient
-// panel in the Styles tab, competing with the SGS colour panel — the client saw
-// two and could not tell which won. Switching the flag off alone would have
-// REMOVED the only gradient control this block had, because the sole gradient
-// read was $attributes['style']['color']['gradient'] (core's own storage). The
-// flag flip is therefore PAIRED with a block-private backgroundColourGradient
-// exposed through fillRow(), so capability is moved rather than lost.
+// supports.color.gradients is off so core renders no gradient panel competing
+// with the SGS colour panel; the gradient control is the block-private
+// backgroundColourGradient exposed through fillRow().
 $slider_bg_decls = sgs_fill_decls(
 	$attributes,
 	array(
@@ -192,19 +183,14 @@ $slider_scoped_css .= sgs_block_background_layer_css(
 	$slider_bg_decls['hover'][0] ?? ''
 );
 
-// (native border_args removed by the Shape-B migration -- width/style/colour
-//  are block-private attrs now, emitted below)
+// (border width/style/colour are block-private attrs, emitted below)
 
 // Typography — root prefix '', shared TypographyControls/sgs_typography_css_rule()
-// mechanism (D971/D972 full-replacement track). The block itself renders no
-// direct text node (the quote text belongs to the child sgs/testimonial
-// InnerBlocks), so this scopes to the root element, not the stale/unused
-// block.json `selectors.typography` (.sgs-testimonial-slider__quote — no
-// element in this block's own markup ever carried that class). Replaces the
-// old WP-native supports.typography (fontSize/lineHeight/letterSpacing/
-// textTransform/fontWeight/fontStyle/textAlign) — letterSpacing/textTransform/
-// textAlign are honest gaps the shared helper doesn't cover (matches
-// sgs/accordion's wrapper element).
+// mechanism. The block itself renders no direct text node (the quote text
+// belongs to the child sgs/testimonial InnerBlocks), so this scopes to the
+// root element (block.json `selectors.typography` targets the root too).
+// letterSpacing/textTransform/textAlign are honest gaps the shared helper
+// doesn't cover (matches sgs/accordion's wrapper element).
 $slider_scoped_css .= sgs_typography_css_rule( $attributes, '', $root_sel );
 
 // Skip-serialised `color` support also stops WP auto-adding the standard
@@ -229,9 +215,8 @@ $css_vars = sgs_transition_vars( $attributes );
 
 // Hover colours emit as a scoped `.{uid}.sgs-testimonial-slider:hover{…}` rule
 
-// ── Block-private border: width / style / colour (Shape B). ──
-// Migrated from WP-native supports by scripts/migrate-border-shape-b.js.
-// Oracle: sgs/accordion, live-verified with scripts/qa/check-border-roundtrip.js.
+// ── Block-private border: width / style / colour. ──
+// Same shape as sgs/accordion (checked by scripts/qa/check-border-roundtrip.js).
 $border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
 $border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
 $border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
@@ -244,7 +229,7 @@ $allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', '
 $border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
 
 if ( 'none' !== $border_style ) {
-	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
+	// A style with no width means NO border -- never fall
 	// through to the browser's initial `medium` (~3px).
 	if ( $has_border_width ) {
 		$bwt = '' !== $border_width_top ? $border_width_top : '0';
@@ -257,19 +242,19 @@ if ( 'none' !== $border_style ) {
 	// A FLAT colour emits `border-color` DIRECTLY; only a GRADIENT uses the
 	// masked ::before ring. NOT sgs_border_states_css(): that helper always
 	// routes through sgs_border_gradient_css(), which sets
-	// border-color:transparent -- measured live, both of its callers
-	// (sgs/product-card, sgs/container) report border-color = rgba(0,0,0,0).
+	// border-color:transparent, so a flat colour would compute to
+	// rgba(0,0,0,0).
 	$border_colour          = (string) ( $attributes['borderColour'] ?? '' );
 	$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
 	if ( '' !== $border_colour_gradient ) {
 		$slider_scoped_css .= sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' );
 	} elseif ( '' !== $border_colour ) {
 		// sgs_colour_value() resolves a palette SLUG; a bare slug is invalid CSS
-		// the browser drops (D881 defect 3).
+		// the browser drops.
 		$slider_scoped_css .= $root_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
 	}
 } else {
-	// G5 corollary: "none" must be an explicit override too, not a
+	// "none" must be an explicit override too, not a
 	// no-op -- a variant's own hardcoded CSS border (e.g. a card-style
 	// class default) would otherwise keep painting even though the
 	// operator picked "no border". Cause-agnostic: harmless when no
@@ -277,11 +262,9 @@ if ( 'none' !== $border_style ) {
 	$scoped_css[] = $root_sel . '{border-style:none;border-width:0;}';
 }
 
-// ── Block-private border-radius (radius is no longer native -- Shape B now
-// covers all four legs). Same wp_style_engine_get_styles() route already
-// proven live by sgs/media + sgs/before-after's borderRadiusTablet/Mobile
-// tiers; base now goes through the identical call instead of WP's native
-// serialisation. The style-engine result is an intermediate PHP value ($out
+// ── Block-private border-radius. Same wp_style_engine_get_styles() route
+// used by sgs/media + sgs/before-after's borderRadiusTablet/Mobile tiers, for
+// base and tiers alike. The style-engine result is an intermediate PHP value ($out
 // array), never appended raw -- only its ['css'] string goes through the
 // detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
 $radius_tiers = sgs_border_radius_tiers( $attributes );
@@ -318,17 +301,16 @@ if ( ! empty( $border_radius_mobile_obj ) ) {
 
 // (assembled below, appended to $slider_scoped_css), NOT as inline
 // `--sgs-hover-*` VALUES. An inline `--var` (a) leaves a `style` attribute on
-// the root and (b) breaks the former `[style*="--sgs-hover-*"]`
-// presence-selector gate the moment the value moves scoped (Spec 32 FR-32-4 as
-// amended 2026-07-18 / D345; footprint GOTCHA F). A per-instance `:hover` rule
+// the root and (b) breaks a `[style*="--sgs-hover-*"]`
+// presence-selector gate the moment the value is scoped (Spec 32 FR-32-4).
+// A per-instance `:hover` rule
 // beats the base rule and applies only when the operator set a hover colour —
 // variant-safe, so no resting-value fallback is needed (mirrors sgs/info-box).
 //
-// D744-pattern rollout (2026-09-04): background/text hover colours moved OUT
-// of this array — they are now emitted above by
-// sgs_block_background_layer_css()/sgs_emit_state_colour_css() (background on
-// its own `::after` layer; text alongside its base state), so building them
-// here too would duplicate the same declarations on the same selector.
+// Background/text hover colours are NOT in this array — they are emitted
+// above by sgs_block_background_layer_css()/sgs_text_colour_decl() (background
+// on its own `::after` layer; text alongside its base state), so building
+// them here too would duplicate the same declarations on the same selector.
 $slider_hover_decls = array();
 if ( $hover_border_colour ) {
 	$slider_hover_decls[] = 'border-color:' . sgs_colour_value( $hover_border_colour );
@@ -339,7 +321,7 @@ if ( $slider_hover_decls ) {
 	$slider_scoped_css .= sgs_emit_state_colour_css( $root_sel, array(), $slider_hover_decls );
 }
 
-// D636 border-colour gradient rollout — masked ::before ring, scoped to
+// Border-colour gradient — masked ::before ring, scoped to
 // :hover/:focus-within only (mirrors sgs/testimonial's own borderColourHover
 // gradient — same hover-only semantics, no resting-state border to override).
 if ( '' !== $hover_border_gradient ) {
@@ -420,7 +402,7 @@ foreach ( $inner_blocks as $inner_block ) {
 
 	// ── Collect Schema.org data from inner block attrs ─────────────────────
 	// $inner_block->parsed_block['attrs'] holds the stored block comment JSON.
-	// These attrs are present on both old posts and new converter-generated posts.
+	// These attrs are present on every stored inner block.
 	$child_attrs  = $inner_block->parsed_block['attrs'] ?? array();
 	$child_name   = wp_strip_all_tags( $child_attrs['name'] ?? '' );
 	$child_quote  = wp_strip_all_tags( $child_attrs['quote'] ?? '' );
@@ -455,7 +437,7 @@ $arrow_prev_html = '';
 $arrow_next_html = '';
 if ( $show_arrows && $total_testimonials > 0 ) {
 	// Chevron SVGs from the shared Lucide icon library (same mechanism used by
-	// sgs/accordion-item + sgs/nav-menu). The SVG is trusted static markup
+	// sgs/accordion-item + sgs/nav-drawer). The SVG is trusted static markup
 	// from sgs_get_lucide_icon() (mirrors the escaping pattern used elsewhere
 	// in this codebase for the same helper).
 	$arrow_prev_icon = function_exists( 'sgs_get_lucide_icon' ) ? sgs_get_lucide_icon( 'chevron-left' ) : '';

@@ -101,7 +101,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	} );
 
 	// InnerBlocks — allows any number of sgs/testimonial children.
-	// templateLock:false preserves Bean's "add as many as I want" flexibility.
+	// templateLock:false lets the client add as many slides as they want.
 	const innerBlocksProps = useInnerBlocksProps(
 		{
 			className: 'sgs-testimonial-slider__track',
@@ -115,7 +115,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		}
 	);
 
-	// D619/D609 — the wrapper's own colours pair a normal state with a hover
+	// The wrapper's own colours pair a normal state with a hover
 	// state per row (background/text), matching quote/heading. Border stays
 	// hover-only — no border-colour base attr exists on this block.
 	//
@@ -175,10 +175,10 @@ export default function Edit( { attributes, setAttributes } ) {
 			/>
 			<InspectorControls>
 
-				{ /* Outer PanelBody removed 2026-08-13 — it duplicated this
-				   ToolsPanel's own "Slider Settings" title with no
-				   initialOpen, so the client saw the same words twice for
-				   no collapse benefit (Spec 35 A5 note). */ }
+				{ /* No outer PanelBody: it would duplicate this
+				   ToolsPanel's own "Slider Settings" title, so the client
+				   would see the same words twice for no collapse benefit
+				   (Spec 35 A5 note). */ }
 					<ToolsPanel
 						label={ __( 'Slider Settings', 'sgs-blocks' ) }
 						resetAll={ () =>
@@ -433,8 +433,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Hover States', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					{ /* Colours moved to the top-level SgsColourPanel (D609/D619)
-					   — this panel now holds only the non-colour hover
+					{ /* Colours live in the top-level SgsColourPanel
+					   — this panel holds only the non-colour hover
 					   behaviour (the transition shape). */ }
 					<SelectControl
 						label={ __( 'Hover effect', 'sgs-blocks' ) }
@@ -482,10 +482,9 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 			</InspectorControls>
 			{ /* ── Styles tab ─────────────────────────────────────────────
-			   Typography — replaces the old WP-native supports.typography
-			   (fontSize/lineHeight only) with the shared TypographyControls
-			   component + sgs_typography_css_rule() render.php helper
-			   (D971/D972 full-replacement track). Root prefix "" — the
+			   Typography — the shared TypographyControls
+			   component + sgs_typography_css_rule() render.php helper.
+			   Root prefix "" — the
 			   quote text itself is child-owned by sgs/testimonial, but the
 			   slider root scopes its own text-colour/typography styling. */ }
 			<InspectorControls group="styles">
@@ -500,16 +499,12 @@ export default function Edit( { attributes, setAttributes } ) {
 			{ /* showLayout={false}: this block builds its OWN internal structure
 			     (__stage > __track, slide count driven by --sgs-slides-visible), so a
 			     container layout control would be a SECOND owner of one behaviour.
-			     History: the block used to declare its own `layout` attr with an
-			     enum of full|split, colliding with the container vocabulary the
-			     shared control writes (stack/flex/grid). Every such write was
-			     accepted in the editor, stored, then SILENTLY reverted by WordPress
-			     enum coercion — and the CONVERTER hit the same collision on a path
-			     this workaround never covered, emitting layout:"grid" and collapsing
-			     a cloned slider to zero width. The attr (and the redundant split
-			     shell, which a container composes better) was removed 2026-08-25;
-			     hiding the control is now a statement about ownership, not a
-			     workaround for a name clash. Same collision family as sgs/gallery. */ }
+			     The block declares no `layout` attr: a `layout` enum would collide
+			     with the container vocabulary the shared control writes
+			     (stack/flex/grid) — writes would be accepted in the editor, stored,
+			     then SILENTLY reverted by WordPress enum coercion. Hiding the
+			     control is a statement about ownership. Same collision family as
+			     sgs/gallery. */ }
 			<ContainerWrapperControls
 				attributes={ attributes }
 				setAttributes={ setAttributes }

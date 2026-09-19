@@ -8,11 +8,10 @@
  * emitted scoped via wp_style_engine_get_styles() into the block's own
  * <style> tag, mirroring sgs/heading + sgs/quote.
  *
- * Typography (font-size/weight/style/line-height) is migrated off the old
- * WP-native `supports.typography` onto the shared TypographyControls editor
- * component + `sgs_typography_css_rule()` render helper (D971/D972
- * full-replacement track), root prefix '' — emitted scoped, same mechanism
- * as color/spacing above, so the wrapper stays inline-free.
+ * Typography (font-size/weight/style/line-height) routes through the shared
+ * TypographyControls editor component + `sgs_typography_css_rule()` render
+ * helper, root prefix '' — emitted scoped, same mechanism as color/spacing
+ * above, so the wrapper stays inline-free.
  *
  * BOX-GROUP (contract §B): padding/margin are box objects. Base = WP-native
  * style.spacing.padding/margin (skip-serialised); tiers = paddingTablet/
@@ -28,21 +27,15 @@
 
 defined( 'ABSPATH' ) || exit;
 
-// [D-tier-object-render-fix 2026-09-06]
-// Group 1 folded padding/margin into owned tier-object attrs
-// {desktop,tablet,mobile}, but this block's own scoped CSS below still
-// reads the pre-migration flat shape (a plain box for the base value,
-// plus four separate flat attrs for the tablet/mobile overrides --
-// block.json no longer declares any of those four). Normalise once,
-// into fresh locals only -- every literal reference below has been
-// redirected to these instead of writing back into $attributes.
-// Fixed 2026-09-06: sgs_responsive_normalise_object() lives in
-// helpers-responsive.php, which this file's own render-helpers.php
-// require below WOULD load -- but too late, since these two calls run
-// before that require executes. A block whose render.php is the first
-// SGS block PHP to run in a request (nav-menu in the site header, on
-// every page) fatals with "Call to undefined function" before any
-// other block's render.php has had a chance to load it. Requiring the
+// padding/margin are owned tier-object attrs {desktop,tablet,mobile}.
+// Normalise once, into fresh locals only -- never write back into
+// $attributes.
+// sgs_responsive_normalise_object() lives in helpers-responsive.php,
+// which this file's own render-helpers.php require below WOULD load --
+// but too late, since these two calls run before that require executes.
+// A block whose render.php is the first SGS block PHP to run in a request
+// (e.g. the site-header navigation bar, present on every page) would
+// otherwise fatal with "Call to undefined function". Requiring the
 // defining file directly, here, removes the load-order dependency.
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
 $sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
@@ -60,8 +53,7 @@ $source_raw   = $attributes['source'] ?? 'manual';
 $source       = in_array( $source_raw, array( 'manual', 'site-info' ), true ) ? $source_raw : 'manual';
 $icon_size    = (int) ( $attributes['iconSize'] ?? 24 );
 $show_labels  = (bool) ( $attributes['showLabels'] ?? false );
-// D643: `iconColour`/`iconColourHover` are split into one attribute PER real
-// CSS property (background-color / border-color / color) because the
+// Icon colour is one attribute PER real CSS property (background-color / border-color / color) because the
 // resting/hover token can feed up to 3 different declarations depending on
 // `iconStyle` (plain: color; filled: background; outlined: border-color +
 // color — simultaneously, both from the same value), and a single
@@ -77,7 +69,7 @@ $icon_border_gradient           = sgs_css_gradient_value( $attributes['iconBorde
 $icon_border_gradient_hover     = sgs_css_gradient_value( $attributes['iconBorderColourHoverGradient'] ?? '' );
 $icon_glyph_colour              = $attributes['iconGlyphColour'] ?? 'text-muted';
 $icon_glyph_colour_hover        = $attributes['iconGlyphColourHover'] ?? 'primary';
-// D636/D644 icon/SVG gradient siblings — non-empty wins over the flat glyph
+// Icon/SVG gradient siblings — non-empty wins over the flat glyph
 // colours above at render time (helpers-svg-gradient.php).
 $icon_glyph_colour_gradient       = $attributes['iconGlyphColourGradient'] ?? '';
 $icon_glyph_colour_hover_gradient = $attributes['iconGlyphColourHoverGradient'] ?? '';
@@ -88,7 +80,7 @@ $gap_raw                          = $attributes['gap'] ?? '20';
 $anchor                           = $attributes['anchor'] ?? '';
 
 // Border (Block Customisation Standard — wrapper-level border control).
-// Prefixed `wrapper*` to distinguish from the pre-existing per-item
+// Prefixed `wrapper*` to distinguish from the per-item
 // `icon*BorderColour` family (item element, above) — this frames the whole
 // row, not each icon. Box-object interface contract §1/§2: borderWidth is
 // an SGS custom OBJECT attr { top, right, bottom, left }, no tiers.
@@ -288,7 +280,7 @@ $root_sel = '.' . $uid;
 
 $scoped_css = array();
 
-// --- Row gap + per-item colour custom properties (was inline `style=`). ---
+// --- Row gap + per-item colour custom properties. ---
 $gap_slug_raw = sgs_css_keyword_sanitise( str_replace( array( '.', '%' ), '', (string) $gap_raw ) );
 $gap_slug     = '' !== $gap_slug_raw ? $gap_slug_raw : preg_replace( '/[^0-9]/', '', (string) $gap_raw );
 $gap_slug     = '' !== $gap_slug ? $gap_slug : '20';
@@ -365,7 +357,7 @@ if ( null !== $wrapper_border_radius_mob_val ) {
 	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{border-radius:{$wrapper_border_radius_mob_val};}}";
 }
 
-// --- Border gradient (D636 border builder) — masked ::before, outlined style only. ---
+// --- Border gradient (border builder) — masked ::before, outlined style only. ---
 if ( '' !== $icon_border_gradient ) {
 	$scoped_css[] = sgs_border_gradient_css(
 		"{$root_sel}.sgs-social-icons--outlined .sgs-social-icons__item",
@@ -375,7 +367,7 @@ if ( '' !== $icon_border_gradient ) {
 	);
 }
 
-// D636/D644 icon/SVG gradient — one rule per state paints every icon's stroke
+// Icon/SVG gradient — one rule per state paints every icon's stroke
 // (mirrors the single --sgs-social-glyph* custom properties above; a
 // gradient def is injected once into the FIRST rendered item's SVG below so
 // no duplicate #id exists in the DOM).
@@ -389,7 +381,7 @@ if ( '' !== $sgs_social_stroke_grad_hover['css'] ) {
 }
 $sgs_social_defs_injected = false;
 
-// --- Per-icon-item size (was inline `style="width:...px;height:...px"`). ---
+// --- Per-icon-item size. ---
 // WCAG 2.5.8 target size: the clickable box (`.sgs-social-icons__item`) is
 // floored at 44px regardless of the requested icon size, but the SVG glyph
 // itself keeps rendering at the operator-chosen `iconSize` (fixed px, not a
@@ -474,10 +466,8 @@ if ( $mobile_box_decls ) {
 }
 
 // Typography — root prefix '', shared TypographyControls/sgs_typography_css_rule()
-// mechanism (D971/D972 full-replacement track). Replaces the old WP-native
-// supports.typography (textAlign only — dead in practice, this root is
-// display:flex with no inline/block content of its own) with the framework's
-// own helper, which offers font-size/weight/style/line-height instead.
+// mechanism, which offers font-size/weight/style/line-height. There is no
+// text-align: this root is display:flex with no inline/block content of its own.
 $scoped_css[] = sgs_typography_css_rule( $attributes, '', $root_sel );
 
 // ---------------------------------------------------------------------------
@@ -526,9 +516,9 @@ foreach ( $icons as $icon_item ) {
 	$platform     = $icon_item['platform'] ?? 'website';
 	$label_raw    = ! empty( $icon_item['label'] ) ? $icon_item['label'] : sgs_social_icons_default_label( $platform, $platform_labels, $platform_verbs );
 	$link_url_raw = 'email' === $platform ? 'mailto:' . $icon_item['url'] : $icon_item['url'];
-	// Shared SgsLinkControl object shape { url, opensInNewTab, rel } (Spec 35
-	// Task 2.1) resolved via sgs_link_attributes() — opensInNewTab defaults to
-	// true (matches the block's prior global default) when unset on an item.
+	// Shared SgsLinkControl object shape { url, opensInNewTab, rel } (Spec 35)
+	// resolved via sgs_link_attributes() — opensInNewTab defaults to
+	// true when unset on an item.
 	$link_attrs_str = sgs_link_attributes(
 		array(
 			'url'           => $link_url_raw,
@@ -572,8 +562,8 @@ foreach ( $icons as $icon_item ) {
 	// The link's accessible name comes solely from `aria-label` above; without
 	// this the raw <svg>/<img> is exposed a second time, doubling the
 	// announcement in some screen readers. Matches the house pattern used by
-	// sgs/cart (cart/render.php:235, `<span class="sgs-cart__icon"
-	// aria-hidden="true">`) and sgs/business-info (business-info/render.php:85).
+	// sgs/cart (`<span class="sgs-cart__icon" aria-hidden="true">`) and
+	// sgs/business-info.
 	// Descendant selectors only (`.sgs-social-icons__item svg`/`img` in
 	// style.css + the scoped per-instance <style> below) so the extra span
 	// changes nothing visually.
@@ -584,10 +574,8 @@ foreach ( $icons as $icon_item ) {
 	// §A); hover colour stays the single theme-token control in both modes.
 	if ( 'brand' === $colour_mode ) {
 		// Overrides all THREE resting custom properties for this item (not just
-		// glyph colour) — pre-split, one shared var fed whichever property the
-		// active iconStyle used, so a per-item brand hex already reached
-		// background/border/glyph simultaneously depending on style; this keeps
-		// that same reach now the resting set is 3 separate attributes.
+		// glyph colour), so a per-item brand hex reaches background/border/glyph
+		// whichever property the active iconStyle uses.
 		$brand_hex    = $platform_brand_colours[ $platform ] ?? $platform_brand_colours['custom'];
 		$brand_value  = sgs_colour_value( $brand_hex );
 		$scoped_css[] = "{$root_sel} .sgs-social-icons__item:nth-child({$rendered_pos}){--sgs-social-bg:{$brand_value};--sgs-social-border:{$brand_value};--sgs-social-glyph:{$brand_value};}";

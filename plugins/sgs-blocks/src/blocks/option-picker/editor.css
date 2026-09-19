@@ -58,9 +58,9 @@
 	padding: 4px;
 }
 
-/* D4 dedup (2026-08-14) — a ToolsPanel nested inside a PanelBody renders its
-   own <h2> title in addition to the PanelBody's clickable accordion title,
-   confirmed live via DOM inspection (sandybrown canary). The outer PanelBody
+/* A ToolsPanel nested inside a PanelBody renders its
+   own <h2> title in addition to the PanelBody's clickable accordion title.
+   The outer PanelBody
    supplies both the visible title and the collapsed-by-default state (which
    ToolsPanel has no equivalent for), so only the inner <h2> is hidden here —
    the "..." reset-all menu stays visible and the accessible name survives

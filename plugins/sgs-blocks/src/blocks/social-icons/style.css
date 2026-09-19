@@ -28,15 +28,14 @@
 	 * 100% fallback only applies before that scoped rule loads/matches. */
 	width: 100%;
 	height: 100%;
-	/* showLabels (2026-09-18): the icon no longer fills the whole item box
+	/* showLabels: the icon does not fill the whole item box
 	 * once a label sits beside it -- flex-shrink:0 keeps the glyph at its
 	 * fixed render.php-set size instead of the flex row squashing it. */
 	flex-shrink: 0;
 }
 
-/* showLabels (2026-09-18, Bean-directed) -- a real visible text label beside
- * the icon (e.g. "Instagram", "WhatsApp"), closing the gap where the label
- * text previously existed only as the link's aria-label. Colour/typography
+/* showLabels -- a real visible text label beside
+ * the icon (e.g. "Instagram", "WhatsApp"). Colour/typography
  * are inherited from the item's own colour token + the wrapper's typography
  * attrs (sgs_typography_css_rule()) -- no separate label-colour attribute,
  * matching this block's one-colour-per-state contract. */
@@ -81,12 +80,10 @@
 	color: var(--sgs-social-glyph-hover);
 }
 
-/* Pill style. Background bug fixed 2026-09-18 (Bean-directed session):
- * this was the only one of the three shaped styles (filled/outlined/pill)
- * hardcoding a fallback preset instead of reading the same
- * --sgs-social-bg custom property render.php already emits from
- * iconBackground/iconBackgroundGradient -- an operator's chosen background
- * colour silently had no effect on a pill-styled row. */
+/* Pill style. Reads the same --sgs-social-bg custom property as the other
+ * shaped styles (filled/outlined/pill); render.php emits it from
+ * iconBackground/iconBackgroundGradient, so an operator's chosen background
+ * colour applies to a pill-styled row. */
 .sgs-social-icons--pill .sgs-social-icons__item {
 	background: var(--sgs-social-bg, var(--wp--preset--color--surface-alt, #f5f7f7));
 	background-image: var(--sgs-social-bg-gradient, none);

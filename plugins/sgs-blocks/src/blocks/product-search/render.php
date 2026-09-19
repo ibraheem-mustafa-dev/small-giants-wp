@@ -28,7 +28,7 @@
  *                          ::backdrop while open. No-JS fallback: the dialog
  *                          renders with the `open` attribute (non-modal,
  *                          inline, no backdrop) so the GET form still works.
- *   command-palette      — D638 §6 addition. Same <dialog> DIALOG + shared
+ *   command-palette      — Same <dialog> DIALOG + shared
  *                          store('sgs/nav') plumbing as full-screen-overlay
  *                          (deliberately NOT a second containment mechanism —
  *                          only the wrapper/dialog modifier class differs, so
@@ -37,8 +37,8 @@
  *                          full-screen panel). Also opens on Ctrl/Cmd+K
  *                          (view.js) by dispatching a real click on the same
  *                          trigger button the shared store already binds.
- * Legacy aliases 'inline'/'icon' (pre-FR-36-20 stored values) map onto
- * 'inline-bar'/'icon-expand' below — no version bump, no deprecated.js.
+ * Aliases 'inline'/'icon' map onto 'inline-bar'/'icon-expand', so stored
+ * instances keep rendering.
  *
  * @var array     $attributes Block attributes.
  * @var string    $content    InnerBlocks HTML (unused — dynamic block).
@@ -49,21 +49,15 @@
 
 defined( 'ABSPATH' ) || exit;
 
-// [D-tier-object-render-fix 2026-09-06]
-// Group 1 folded padding/margin into owned tier-object attrs
-// {desktop,tablet,mobile}, but this block's own scoped CSS below still
-// reads the pre-migration flat shape (a plain box for the base value,
-// plus four separate flat attrs for the tablet/mobile overrides --
-// block.json no longer declares any of those four). Normalise once,
-// into fresh locals only -- every literal reference below has been
-// redirected to these instead of writing back into $attributes.
-// Fixed 2026-09-06: sgs_responsive_normalise_object() lives in
-// helpers-responsive.php, which this file's own render-helpers.php
-// require below WOULD load -- but too late, since these two calls run
-// before that require executes. A block whose render.php is the first
-// SGS block PHP to run in a request (nav-menu in the site header, on
-// every page) fatals with "Call to undefined function" before any
-// other block's render.php has had a chance to load it. Requiring the
+// padding/margin are owned tier-object attrs {desktop,tablet,mobile}.
+// Normalise once, into fresh locals only -- never write back into
+// $attributes.
+// sgs_responsive_normalise_object() lives in helpers-responsive.php,
+// which this file's own render-helpers.php require below WOULD load --
+// but too late, since these two calls run before that require executes.
+// A block whose render.php is the first SGS block PHP to run in a request
+// (e.g. the site-header navigation bar, present on every page) would
+// otherwise fatal with "Call to undefined function". Requiring the
 // defining file directly, here, removes the load-order dependency.
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
 $sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
@@ -92,20 +86,18 @@ $button_label = ! empty( $attributes['buttonLabel'] )
 
 // FR-36-20 MUST: ≤10 desktop / 4–8 mobile — both caps are clamped server-side
 // so a stored value can never widen past the spec ceiling regardless of what
-// the editor sent. `maxResults` is a TIER OBJECT (Spec 35 pass 2) — ONE attr
-// holding {desktop,tablet,mobile}; `maxResultsMobile` no longer exists as a
-// sibling attr. Tablet has no design-distinct cap (Baymard's mobile-only
-// finding — see edit.js), so it inherits the desktop cap/value, matching the
-// pre-migration behaviour where no tablet attr ever existed.
+// the editor sent. `maxResults` is a TIER OBJECT — ONE attr
+// holding {desktop,tablet,mobile}. Tablet has no design-distinct cap
+// (Baymard's mobile-only finding — see edit.js), so it inherits the desktop
+// cap/value.
 $max_results_tiers  = sgs_responsive_normalise_object( $attributes['maxResults'] ?? null );
 $max_results        = isset( $max_results_tiers['desktop'] ) && '' !== $max_results_tiers['desktop'] && null !== $max_results_tiers['desktop'] ? max( 1, min( 10, (int) $max_results_tiers['desktop'] ) ) : 10;
 $max_results_mobile = isset( $max_results_tiers['mobile'] ) && '' !== $max_results_tiers['mobile'] && null !== $max_results_tiers['mobile'] ? max( 4, min( 8, (int) $max_results_tiers['mobile'] ) ) : 6;
 
-// Validate display mode. FR-36-20 + D638 §6: inline-bar | icon-expand |
+// Validate display mode. FR-36-20: inline-bar | icon-expand |
 // full-screen-overlay | command-palette.
-// Legacy alias map keeps pre-existing 'inline'/'icon' instances rendering
-// identically to their old shape (no version bump / no deprecated.js, D270 —
-// this is the cheap forward-compat translation instead).
+// The alias map keeps stored 'inline'/'icon' instances rendering as
+// 'inline-bar'/'icon-expand'.
 $sgs_ps_display_aliases = array(
 	'inline' => 'inline-bar',
 	'icon'   => 'icon-expand',
@@ -130,8 +122,7 @@ $sgs_ps_is_dialog_mode = in_array( $display, array( 'full-screen-overlay', 'comm
 $sgs_style_uid = 'sgs-ps-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 $sgs_style_sel = '.' . $sgs_style_uid . '.wp-block-sgs-product-search';
 
-// Colour overrides (D638 §6 gap close; colour-conformance migration
-// 2026-09-07, corrected same day) — 5 client-controllable colour rows,
+// Colour overrides — 5 client-controllable colour rows,
 // each routed through the conformant shared helper for its DB mechanism
 // rather than a bare custom-property array literal
 // (block_attributes.css_property).
@@ -141,11 +132,11 @@ $sgs_style_sel = '.' . $sgs_style_uid . '.wp-block-sgs-product-search';
 // "outline-not-gradientable" shape (classify-end-shape.js) -- CSS
 // `outline` cannot hold a gradient (no box side to clip a masked ring
 // against) and a focus ring has no hover concept, so it stays a flat
-// custom property, unchanged from its pre-migration shape.
+// custom property.
 // listboxBackgroundColour / resultHoverBackgroundColour /
 // matchHighlightColour (background-color, css_element=results/
 // result-title) route through sgs_custom_property_gradient_decls() -- the
-// same background/border custom-property-gradient shape already proven on
+// same background/border custom-property-gradient shape used on
 // brand-strip/post-grid/social-icons/form/gallery/before-after.
 // $sgs_ps_input_sel/$sgs_ps_results_sel are declared here (ahead of
 // $sgs_ps_border_sel below) because the border row keys off them.
@@ -153,9 +144,9 @@ $sgs_style_sel = '.' . $sgs_style_uid . '.wp-block-sgs-product-search';
 $sgs_ps_input_sel   = '.' . $sgs_style_uid . ' .sgs-product-search__input';
 $sgs_ps_results_sel = '.' . $sgs_style_uid . ' .sgs-product-search__results';
 
-// -- inputBorderColour: paints the search input's border AND (pre-existing
+// -- inputBorderColour: paints the search input's border AND (a
 // KNOWN MODELLING LIMIT, see block.json's "input" element _note) the
-// listbox's border, which has always shared the same variable/value. --
+// listbox's border, which shares the same variable/value. --
 $sgs_ps_input_border_css = sgs_border_states_css(
 	$sgs_ps_input_sel . ', ' . $sgs_ps_results_sel,
 	$attributes,
@@ -306,15 +297,14 @@ if ( $sgs_ps_fill_decls ) {
 	$sgs_scoped_css[] = '.' . $sgs_style_uid . '{' . implode( ';', $sgs_ps_fill_decls ) . ';}';
 }
 
-// --- Result thumbnail object-fit (37-media-no-handroll remediation,
-// 2026-09-03) — the shared media-atom system computes the custom-property
+// --- Result thumbnail object-fit — the shared media-atom system computes the custom-property
 // VALUE server-side, keyed on $sgs_style_uid (the same no-inline
 // scoped-styling uid class already on the wrapper for every display mode).
 // view.js adds the matching `sgs-media-el` + $sgs_style_uid marker classes
 // to each thumbnail <img> it builds at fetch time (there is no
 // server-rendered <img> here to attach classes to directly — the results
-// list is JS-built from a live REST response). style.css no longer
-// hardcodes object-fit:cover on the result-row thumbnail. ---
+// list is JS-built from a live REST response). style.css does not
+// hardcode object-fit on the result-row thumbnail. ---
 if ( class_exists( 'SGS_Media_Element' ) ) {
 	$sgs_ps_fit_css = SGS_Media_Element::style( $attributes, '', 'sgs/product-search', $sgs_style_uid, array( 'object-fit' ) );
 	if ( '' !== $sgs_ps_fit_css ) {
@@ -442,7 +432,7 @@ if ( 'icon-expand' === $display ) {
 		)
 	);
 } elseif ( 'command-palette' === $display ) {
-	// D638 §6: same dialog mechanism as full-screen-overlay, distinguished
+	// Same dialog mechanism as full-screen-overlay, distinguished
 	// only by the --cmdk modifier class (style.css renders it as a smaller
 	// centred ~600px modal with a blurred backdrop, not a full-screen panel).
 	$wrapper_attrs = get_block_wrapper_attributes(
@@ -563,7 +553,7 @@ $form_html = ob_get_clean();
 // wraps the SAME $form_html combobox (the spec's "ONE shared combobox
 // implementation reused across all display modes" differentiator).
 //
-// D638 §6: command-palette shares this EXACT block with full-screen-overlay
+// command-palette shares this EXACT block with full-screen-overlay
 // — same trigger markup, same <dialog>, same store('sgs/nav') plumbing.
 // Only a dialog modifier class differs (style.css renders --cmdk as a
 // smaller centred ~600px modal with a blurred backdrop). Ctrl/Cmd+K

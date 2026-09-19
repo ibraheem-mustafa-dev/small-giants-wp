@@ -1,9 +1,9 @@
 /**
  * SGS Testimonial Slider — transform-based infinite carousel.
  *
- * Replaces the old native-scroll model (which clamped at the ends and could
- * not rotate at all when every card was already visible) with a translateX
- * track that wraps infinitely regardless of slidesVisible vs slide count.
+ * A translateX track that wraps infinitely regardless of slidesVisible vs
+ * slide count (a native-scroll model would clamp at the ends and could not
+ * rotate at all when every card is already visible).
  *
  * Mechanism:
  * - Real slides are moved into a JS-built `.sgs-testimonial-slider__list`
@@ -16,47 +16,47 @@
  *   clone zone at the ends; once the transition finishes we silently snap the
  *   transform back to the equivalent real position with no animation, so the
  *   loop reads as continuous.
- * - Touch/pointer drag re-implements swipe (native scroll no longer does it).
+ * - Touch/pointer drag implements swipe (native scroll does not provide it here).
  *
  * prefers-reduced-motion: transform still updates (so autoplay/arrows still
- * work) but with no transition — matches the previous scroll-behavior:auto
- * fallback per WCAG 2.3.3.
+ * work) but with no transition — the scroll-behavior:auto equivalent, per
+ * WCAG 2.3.3.
  *
- * No-inline contract (2026-07-10): the track position is driven entirely by a
+ * No-inline contract: the track position is driven entirely by a
  * CSS custom PROPERTY VALUE (--sgs-slider-offset, allowed — a var value is not
  * a property declaration) + a transition kill-switch class (.no-transition).
  * Never write .style.transform/.style.transition — style.css owns the
  * `transform: translateX(var(--sgs-slider-offset, 0))` + `transition` property
- * declarations, keyed off the var + class (D298 mobile-nav pattern).
+ * declarations, keyed off the var + class.
  *
  * Loaded as a viewScriptModule (ES module, frontend only).
  *
  * DRAG MOMENTUM — BLOCK-PRIVATE, NOT THE SHARED Tier G ROSTER (Spec 38
- * FR-38-13; rescoped 2026-07-31):
- * this block briefly declared `supports.sgs.fx.draggable` and emitted
- * `data-sgs-fx="draggable"` on `.sgs-testimonial-slider__track`. Both were
- * removed, because the declaration was INERT here and not free: the shared
- * runtime (`shared/effects/gsap/fx-draggable.js`) only ever attaches to a
- * genuine native `overflow-x: auto|scroll` element, and this track is not one
- * (it is `overflow: hidden` with the transform-based clone-loop above), so
- * `initDraggable()` returned `undefined` every time — while the marker still
- * made `SGS_Motion_Registry` enqueue GSAP core + InertiaPlugin + the effect
- * module (~35KB gzip) to run it.
+ * FR-38-13):
+ * this block does NOT declare `supports.sgs.fx.draggable` or emit
+ * `data-sgs-fx="draggable"` on `.sgs-testimonial-slider__track`, because the
+ * declaration would be INERT and not free: the shared runtime
+ * (`shared/effects/gsap/fx-draggable.js`) only attaches to a genuine native
+ * `overflow-x: auto|scroll` element, and this track is not one (it is
+ * `overflow: hidden` with the transform-based clone-loop above), so
+ * `initDraggable()` would return `undefined` every time — while the marker
+ * would still make `SGS_Motion_Registry` enqueue GSAP core + InertiaPlugin +
+ * the effect module (~35KB gzip) to run it.
  *
  * Re-deriving this file's clone-zone wrap-around maths inside a block-agnostic
  * module would be exactly the per-block hyperfocus R-31-9 forbids, so the
- * momentum upgrade stays HERE, additively, on top of the pointer-drag that
- * already existed: `InertiaPlugin.track()`/`getVelocity()` (dynamically
+ * momentum upgrade lives HERE, additively, on top of the pointer-drag:
+ * `InertiaPlugin.track()`/`getVelocity()` (dynamically
  * imported, ONLY when an instance opts in — a page with the toggle off never
  * fetches GSAP) measures how fast the pointer was moving at release, so a
  * genuine flick, even over a short distance, registers as a deliberate slide
  * change, same as any native momentum scroll.
  *
- * The opt-in marker is now block-private grammar —
+ * The opt-in marker is block-private grammar —
  * `data-sgs-slider-momentum="true"`, read only by this file. Deliberately NOT
  * a `data-sgs-fx*` name: the registry sniffs rendered markup for `data-sgs-fx`
- * to decide what to enqueue, so any name in that family would resurrect the
- * dead-weight enqueue this change exists to remove. See the "Drag momentum"
+ * to decide what to enqueue, so any name in that family would trigger the
+ * dead-weight enqueue this design avoids. See the "Drag momentum"
  * block below `endDrag()` for the implementation and its reduced-motion note.
  */
 
@@ -67,9 +67,7 @@
  * frontend, but `SGS_Motion_Registry` deliberately registers/enqueues the Tier G
  * modules on the frontend only (`is_admin()` gate) — so in the editor the
  * import map contains no `@sgs/gsap-*` entries and any dynamic import of one
- * throws. Verified live 2026-07-31: the editor's import map held exactly
- * `@wordpress/route`, `@wordpress/latex-to-mathml`, `@wordpress/interactivity`
- * and `@sgs/gsap` — none of the plugin modules.
+ * throws.
  *
  * Rather than register frontend motion modules into wp-admin (which would ship
  * animation machinery into an editing surface that must never animate — Spec 38
@@ -84,9 +82,8 @@ function isEditorSurface() {
 		!! document.getElementById( 'wpwrap' ) ||
 		// The editor CANVAS is a same-origin iframe whose body carries neither
 		// `wp-admin` nor `#wpwrap`, so those two checks alone miss it. These are
-		// the canvas's own markers. Checked 2026-07-31 because the editor loads
-		// block view modules INTO that iframe, which is exactly where an
-		// unguarded motion boot would run.
+		// the canvas's own markers: the editor loads block view modules INTO
+		// that iframe, which is exactly where an unguarded motion boot would run.
 		!! document.querySelector( '.block-editor-iframe__body, .editor-styles-wrapper' ) ||
 		document.body?.classList.contains( 'block-editor-iframe__body' )
 	);
@@ -328,7 +325,7 @@ sliders.forEach( ( slider ) => {
 		} );
 	} );
 
-	/* Touch/pointer swipe — native scroll no longer provides this. */
+	/* Touch/pointer swipe — native scroll does not provide this. */
 	let isDragging = false;
 	let dragStartX = 0;
 	let dragDelta = 0;
@@ -393,11 +390,9 @@ sliders.forEach( ( slider ) => {
 			.catch( () => {
 				// Momentum is an ENHANCEMENT: the pointer-drag above already
 				// works without it, so a failed module load must degrade
-				// silently rather than reject unhandled. Added 2026-07-31 after
-				// the real editor threw an uncaught
-				// `Failed to resolve module specifier "@sgs/gsap-inertia"` —
-				// the rejection had nowhere to go because this chain had no
-				// catch at all.
+				// silently rather than reject unhandled (the editor throws an
+				// uncaught `Failed to resolve module specifier
+				// "@sgs/gsap-inertia"` if the chain has no catch).
 			} );
 	}
 
@@ -420,8 +415,8 @@ sliders.forEach( ( slider ) => {
 		 * off under reduced motion. The drag itself (this whole function)
 		 * is unaffected either way — dragging is user-driven input, never
 		 * gated. Only the flick-sensitivity upgrade below is skipped, which
-		 * is exactly the pre-existing fixed slideStep/4 threshold this
-		 * block already used, honoured for a reduced-motion visitor.
+		 * is exactly the fixed slideStep/4 threshold, honoured for a
+		 * reduced-motion visitor.
 		 */
 		const reducedMotion = window.matchMedia(
 			'(prefers-reduced-motion: reduce)'

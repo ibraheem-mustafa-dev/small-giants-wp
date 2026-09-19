@@ -1,5 +1,5 @@
 /**
- * SGS Cart — mini-cart item-row HTML template (FR-36-19 Phase 2).
+ * SGS Cart — mini-cart item-row HTML template (FR-36-19).
  *
  * Split out of `panel-render.js` to keep each file under the project's
  * 250-line JS budget.
