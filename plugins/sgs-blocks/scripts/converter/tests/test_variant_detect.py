@@ -97,238 +97,208 @@ def test_variant_with_no_discriminating_slots_still_matches_its_modifier():
 
 
 # ----------------------------------------------------------------------------
-# db_lookup.detect_variant — composition tiebreaker (variant-composition-
-# fingerprinting plan, Task 3, 2026-09-05)
+# db_lookup.detect_variant — composition tiebreaker, tiers 1 and 2
 # ----------------------------------------------------------------------------
-# Real fixture chosen deliberately, not a synthetic one: `sgs/nav-drawer`'s
-# `split-zone-serif` variant is THE motivating case for this whole mechanism
-# (Context section of .claude/plans/2026-09-05-variant-composition-
-# fingerprinting.md) — every attribute value it sets is duplicated by at
-# least one sibling variant, so `variant_slots` has no row for it at all and
-# it scores 0 on attributes alone, same as every other variant with zero
-# discriminating attrs. Using the real block/DB proves the fix against the
-# actual bug, not an approximation of it.
+# These tests are HERMETIC: they run against the synthetic throwaway block in
+# `converter/tests/_variant_composition_fixture.py` (read its module docstring
+# for the three shapes and why each one exists), monkeypatched onto
+# `db_lookup`'s variant loaders. No live-DB row can make them pass or fail.
+
+from converter.tests._variant_composition_fixture import (  # noqa: E402
+    CHILD_BUTTON,
+    CHILD_GRID,
+    CHILD_MENU,
+    CHILD_TEXT,
+    FIXTURE_BLOCK,
+    IDENTICAL_A_CHILD_BLOCKS,
+    IDENTICAL_CHILD_SLUGS,
+    TIED_ATTRS,
+    UNIQUE_CHILD_SLUGS,
+    db,  # noqa: F401  — the pytest fixture, used by name below
+)
 
 
-def test_detect_variant_0_0_tie_resolved_by_composition():
-    """`split-zone-serif` seeds [nav-menu, icon-list, text, social-icons,
-    card-grid]; `variant_composition_slots` (Task 2's population, verified
-    live against the real DB while writing this test) gives it exactly ONE
-    discriminating child slug: 'sgs/card-grid' — no other nav-drawer variant's
-    InnerBlocks template includes a card-grid. The attrs below are
-    split-zone-serif's REAL preset values (drawerBg:footer-bg,
-    drawerAlign:left, closeStyle:separate-x) — each one is shared by a sibling
-    variant (drawerAlign:left matches nothing in variant_slots at all,
-    drawerBg/closeStyle likewise), so every declared variant scores exactly 0
-    on attributes and today's code returns None via the `no_slots_matched`
-    miss path. Passing the real composition (child_slugs) must now resolve
-    it correctly instead.
+def test_detect_variant_0_0_tie_resolved_by_unique_child_slug(db):
+    """TIER 1. A variant with no discriminating attributes at all is still
+    resolvable when its InnerBlocks seed nests a child block type no sibling
+    nests.
+
+    `TIED_ATTRS` matches no variant's discriminating slot value, so every
+    variant scores exactly 0 and the attribute-only path returns None via the
+    `no_slots_matched` miss. Supplying the real child composition must resolve
+    it instead — and the candidate pool has to widen to every DECLARED variant,
+    because a variant with no `variant_slots` rows never appears in the score
+    list in the first place.
     """
-    from converter.db import db_lookup
-
-    attrs = {"drawerBg": "footer-bg", "drawerAlign": "left", "closeStyle": "separate-x"}
-    child_slugs = [
-        "sgs/nav-drawer-menu",
-        "sgs/icon-list",
-        "sgs/text",
-        "sgs/social-icons",
-        "sgs/card-grid",
-    ]
-    assert db_lookup.detect_variant("sgs/nav-drawer", attrs, child_slugs=child_slugs) == "split-zone-serif"
+    assert (
+        db.detect_variant(FIXTURE_BLOCK, TIED_ATTRS, child_slugs=UNIQUE_CHILD_SLUGS)
+        == "unique-child"
+    )
 
 
-def test_detect_variant_0_0_tie_default_off_path_unchanged():
-    """The SAME 0-0 tie, `child_slugs` omitted (today's pre-existing call
-    shape, still used by the one live caller in assembly.py until Task 4) —
-    must still return None. Proves the composition tiebreak is purely
+def test_detect_variant_0_0_tie_negative_control_without_composition_rows(db, monkeypatch):
+    """NEGATIVE CONTROL for the test above — break tier 1's data and it fails.
+
+    With the uniquely-nested-child rows removed, the identical call must return
+    None. Without this, the positive test could not distinguish "tier 1 resolved
+    it" from "some other path happened to return the right name".
+    """
+    monkeypatch.setattr(db, "_variant_composition_slots_map", lambda slug: ())
+    assert (
+        db.detect_variant(FIXTURE_BLOCK, TIED_ATTRS, child_slugs=UNIQUE_CHILD_SLUGS)
+        is None
+    )
+
+
+def test_detect_variant_0_0_tie_default_off_path_unchanged(db):
+    """The SAME 0-0 tie with `child_slugs` omitted — the pre-existing call shape
+    — must still return None. Proves the composition tiebreak is purely
     additive/opt-in and changes nothing for a caller that doesn't pass it.
     """
-    from converter.db import db_lookup
-
-    attrs = {"drawerBg": "footer-bg", "drawerAlign": "left", "closeStyle": "separate-x"}
-    assert db_lookup.detect_variant("sgs/nav-drawer", attrs) is None
-    # Also explicit None / empty list — both must behave identically to omission.
-    assert db_lookup.detect_variant("sgs/nav-drawer", attrs, child_slugs=None) is None
-    assert db_lookup.detect_variant("sgs/nav-drawer", attrs, child_slugs=[]) is None
+    assert db.detect_variant(FIXTURE_BLOCK, TIED_ATTRS) is None
+    # Explicit None / empty list must behave identically to omission.
+    assert db.detect_variant(FIXTURE_BLOCK, TIED_ATTRS, child_slugs=None) is None
+    assert db.detect_variant(FIXTURE_BLOCK, TIED_ATTRS, child_slugs=[]) is None
 
 
-def test_detect_variant_composition_tie_still_ambiguous_falls_through():
-    """`two-column-editorial` seeds [nav-menu, button] — NEITHER slug is
-    unique to it in `variant_composition_slots` (both are shared with other
-    nav-drawer variants' templates, per Task 2's real population run), so its
-    composition score is 0 against every candidate the same as
-    split-zone-serif's real composition scores 0 against a `two-column-
-    editorial`-shaped child list. Composition must never manufacture a result
-    when it, too, has no discriminating signal — falls through to the
-    existing miss behaviour, same as the no-child_slugs case.
+def test_detect_variant_composition_tie_still_ambiguous_falls_through(db):
+    """The IDENTICAL-SET child slug list gives tier 1 nothing: neither slug is
+    unique to either variant of that pair, so every candidate scores 0 on
+    composition too. Composition must never manufacture a result when it has no
+    discriminating signal — it falls through to the existing miss behaviour,
+    same as the no-`child_slugs` case.
     """
-    from converter.db import db_lookup
-
-    attrs = {"drawerBg": "footer-bg", "drawerAlign": "left", "closeStyle": "separate-x"}
-    two_column_slugs = ["sgs/nav-drawer-menu", "sgs/button"]
-    assert db_lookup.detect_variant("sgs/nav-drawer", attrs, child_slugs=two_column_slugs) is None
-
-
-# ----------------------------------------------------------------------------
-# db_lookup.detect_variant — TIER 2: child-ATTRIBUTE-VALUE composition
-# (2026-09-06)
-# ----------------------------------------------------------------------------
-# Same real fixture, the case tier 1 provably cannot reach.
-# `two-column-editorial` and `floating-capped-card` nest the IDENTICAL child
-# slug set {sgs/nav-drawer-menu, sgs/button}, so slug-uniqueness has nothing to
-# discriminate on (the test directly above pins that). What CAN separate them
-# is the nested nav-menu's own configuration.
-#
-# ✅ `two-column-editorial` IS NOW RESOLVABLE (2026-09-05 follow-up session,
-# third review of this mechanism). The two upstream gaps this file's previous
-# comment named as the remedy are both closed:
-#   itemFontSize — `nav-drawer/variations.js` now authors the TIER shape the
-#                  block actually declares (`{desktop: 64, mobile: 40}`), not
-#                  a flat scalar, so the converter's write and the seeded
-#                  value are the same shape and match exactly.
-#   listColumns  — `converter/resolvers/grid.py` now resolves the grid
-#                  column-COUNT destination via a DB-driven lookup
-#                  (`db_lookup.attr_for_grid_column_count`, keyed on the
-#                  pseudo-property `"grid-template-columns:count"`) instead
-#                  of a single hardcoded `"columns"` literal, and
-#                  `sgs/nav-drawer-menu/block.json` declares
-#                  `"css:grid-template-columns:count": "listColumns"` — so it
-#                  is now CSS-routable (previously `css_property`/
-#                  `css_element` were both NULL, the exact reason this test
-#                  used to require the seed-time filter to refuse it).
-# Confirmed live: `variant_composition_attr_slots` now carries seeded rows for
-# both `two-column-editorial.sgs/nav-drawer-menu.itemFontSize` and `.listColumns`
-# (previously zero rows for this variant beyond `itemFontWeight`), and
-# `detect_variant()` returns `"two-column-editorial"` for the real-clone-
-# shaped fixture below.
-
-_TWO_COLUMN_ATTRS = {"drawerBg": "surface", "closeStyle": "text-swap"}
-_TWO_COLUMN_CHILD_SLUGS = ["sgs/nav-drawer-menu", "sgs/button"]
-# The shape a REAL clone's extraction produces — tier object, not flat scalar.
-_TWO_COLUMN_CHILD_BLOCKS = [
-    (
-        "sgs/nav-drawer-menu",
-        {
-            "gap": "4px",
-            "itemFontSize": {"desktop": 64, "mobile": 40},
-            "listColumns": {"desktop": 2, "mobile": 1},
-        },
-    ),
-    ("sgs/button", {}),
-]
+    assert (
+        db.detect_variant(FIXTURE_BLOCK, TIED_ATTRS, child_slugs=IDENTICAL_CHILD_SLUGS)
+        is None
+    )
 
 
-def test_detect_variant_two_column_editorial_now_resolves_on_real_clone_shape():
-    """`two-column-editorial` IS detected once given the shape a real clone
-    actually produces — the tier-object `itemFontSize`/`listColumns` fix.
+def test_detect_variant_identical_slug_set_resolves_on_child_attribute_values(db):
+    """TIER 2. The pair tier 1 provably cannot reach, separated by the nested
+    child's own configuration.
 
-    `two-column-editorial` and `floating-capped-card` nest the IDENTICAL child
-    slug set {sgs/nav-drawer-menu, sgs/button}, so tier-1 slug-uniqueness has nothing
-    to discriminate on (see the ambiguous-tie test above this one). Tier 2
-    (child-attribute-value composition) now carries two real discriminating
-    rows for this variant — `itemFontSize` and `listColumns` — both routable
-    and both written in the tier-object shape a real clone actually produces.
+    Both variants of the pair nest the identical child slug set (the test
+    directly above pins that tier 1 is blind here). Tier 2 carries two
+    discriminating rows for `identical-a`, both written in the tier-object shape
+    a real extraction produces, so the exact canonical value match lands.
     """
-    from converter.db import db_lookup
+    assert (
+        db.detect_variant(
+            FIXTURE_BLOCK,
+            TIED_ATTRS,
+            child_slugs=IDENTICAL_CHILD_SLUGS,
+            child_blocks=IDENTICAL_A_CHILD_BLOCKS,
+        )
+        == "identical-a"
+    )
 
-    assert db_lookup.detect_variant(
-        "sgs/nav-drawer",
-        _TWO_COLUMN_ATTRS,
-        child_slugs=_TWO_COLUMN_CHILD_SLUGS,
-        child_blocks=_TWO_COLUMN_CHILD_BLOCKS,
-    ) == "two-column-editorial"
 
+def test_detect_variant_identical_slug_set_negative_control_dead_tier2_scoring(
+    db, monkeypatch
+):
+    """NEGATIVE CONTROL for the test above — kill tier 2's arithmetic and it fails.
 
-def test_detect_variant_two_column_editorial_flat_shape_still_fails_closed():
-    """NEGATIVE CONTROL — the OLD hand-written flat shape (what a clone would
-    have produced before `itemFontSize` was fixed to a tier object) must
-    still resolve to `None`, not `two-column-editorial`. This proves the
-    match is genuinely value-shape-aware (an exact string match against the
-    seeded tier-object JSON), not merely "some value is present" — a flat
-    `64`/`itemFontSizeMobile: 40` can never equal the seeded
-    `{"desktop":64,"mobile":40}` string, so this scenario (which no current
-    `variations.js` can produce any more, but which a REGRESSION back to the
-    flat shape would) must keep failing closed.
+    Forcing `_composition_attr_score` to 0 makes every candidate score 0, which
+    must return None. This is what proves the positive result comes from real
+    value scoring rather than from the tier declining while some other path
+    supplies the answer.
     """
-    from converter.db import db_lookup
+    monkeypatch.setattr(db, "_composition_attr_score", lambda _triples, _children: 0)
+    assert (
+        db.detect_variant(
+            FIXTURE_BLOCK,
+            TIED_ATTRS,
+            child_slugs=IDENTICAL_CHILD_SLUGS,
+            child_blocks=IDENTICAL_A_CHILD_BLOCKS,
+        )
+        is None
+    )
 
+
+def test_detect_variant_flat_child_attribute_shape_still_fails_closed(db):
+    """NEGATIVE CONTROL on the SHAPE — a flat scalar where the seeded value is a
+    tier object must resolve to None, not to the variant that seeds it.
+
+    This proves the match is genuinely value-shape-aware (an exact string match
+    against the seeded canonical JSON), not merely "some value is present": a
+    flat `64` plus a flat mobile sibling can never equal
+    `{"desktop":64,"mobile":40}`, so a regression back to the flat write shape
+    keeps failing closed rather than half-matching.
+    """
     flat_shape = [
-        ("sgs/nav-drawer-menu", {"gap": "4px", "itemFontSize": 64, "itemFontSizeMobile": 40}),
-        ("sgs/button", {}),
+        (CHILD_MENU, {"gap": "4px", "itemSize": 64, "itemSizeMobile": 40}),
+        (CHILD_BUTTON, {}),
     ]
-    assert db_lookup.detect_variant(
-        "sgs/nav-drawer",
-        _TWO_COLUMN_ATTRS,
-        child_slugs=_TWO_COLUMN_CHILD_SLUGS,
-        child_blocks=flat_shape,
-    ) is None
+    assert (
+        db.detect_variant(
+            FIXTURE_BLOCK,
+            TIED_ATTRS,
+            child_slugs=IDENTICAL_CHILD_SLUGS,
+            child_blocks=flat_shape,
+        )
+        is None
+    )
 
 
-def test_composition_attr_tier_resolves_a_live_seeded_row():
-    """POSITIVE CONTROL for the tier itself, on a row that SURVIVES the filter.
+def test_composition_attr_tier_resolves_a_seeded_scalar_row(db):
+    """POSITIVE CONTROL for the tier itself, on a plain scalar child attribute.
 
     Without this the file would assert only Nones and could not tell "tier 2
-    correctly declines" from "tier 2 is dead". `sgs/nav-drawer`'s surviving
-    discriminators are `itemFontWeight` — a plain `string` attr, routed
-    (`font-weight` on `item`), so its seeded value and the converter's write
-    are the same shape. Forcing the two variants that carry it into a tie must
-    resolve to the one whose value the children actually match.
+    correctly declines" from "tier 2 is dead". The ATTR-DISCRIMINATED pair each
+    seed the same child attribute NAME at a different VALUE, so forcing them
+    into a tie must resolve to the one whose children actually match.
 
     Exercised through `_composition_attr_tiebreak` directly because both
-    variants resolve on their own attributes long before a tie can arise via
-    `detect_variant` — a constructed tie is the only honest way to reach the
-    tier with real data.
+    variants resolve on their own parent attributes long before a tie can arise
+    via `detect_variant` — a constructed tie is the only honest way to reach the
+    tier with a scalar discriminator.
     """
-    from converter.db import db_lookup
+    tied = {"attr-heavy", "attr-light"}
+    heavy_children = [(CHILD_MENU, {"gap": "4px", "itemWeight": "200"})]
+    assert (
+        db._composition_attr_tiebreak(FIXTURE_BLOCK, tied, heavy_children) == "attr-heavy"
+    )
 
-    tied = {"editorial-ghost-list", "solid-brand-light"}
-    ghost_children = [("sgs/nav-drawer-menu", {"gap": "4px", "itemFontWeight": "200"})]
-    assert db_lookup._composition_attr_tiebreak(
-        "sgs/nav-drawer", tied, ghost_children
-    ) == "editorial-ghost-list"
-
-    light_children = [("sgs/nav-drawer-menu", {"gap": "4px", "itemFontWeight": "100"})]
-    assert db_lookup._composition_attr_tiebreak(
-        "sgs/nav-drawer", tied, light_children
-    ) == "solid-brand-light"
+    light_children = [(CHILD_MENU, {"gap": "4px", "itemWeight": "100"})]
+    assert (
+        db._composition_attr_tiebreak(FIXTURE_BLOCK, tied, light_children) == "attr-light"
+    )
 
 
-def test_composition_attr_tier_is_value_aware_not_name_aware():
-    """NEGATIVE CONTROL for the SCORING, against the same live tie.
+def test_composition_attr_tier_is_value_aware_not_name_aware(db):
+    """NEGATIVE CONTROL for the SCORING, against the same constructed tie.
 
-    Same attribute NAME at a value neither variant seeds must score 0 for both
-    and return None — a name-keyed implementation would score them equal and
-    could still return None, so the positive control above is what makes this
-    control meaningful rather than vacuous.
+    The same attribute NAME at a value neither variant seeds must score 0 for
+    both and return None — a name-keyed implementation would score them equal
+    and could still return None, so the positive control above is what makes
+    this control meaningful rather than vacuous.
     """
-    from converter.db import db_lookup
-
-    tied = {"editorial-ghost-list", "solid-brand-light"}
-    wrong = [("sgs/nav-drawer-menu", {"gap": "4px", "itemFontWeight": "700"})]
-    assert db_lookup._composition_attr_tiebreak("sgs/nav-drawer", tied, wrong) is None
+    tied = {"attr-heavy", "attr-light"}
+    wrong = [(CHILD_MENU, {"gap": "4px", "itemWeight": "700"})]
+    assert db._composition_attr_tiebreak(FIXTURE_BLOCK, tied, wrong) is None
 
 
-def test_composition_attr_tier_off_path_unchanged():
+def test_composition_attr_tier_off_path_unchanged(db):
     """The tier is opt-in: no child attributes supplied means no tier-2 result."""
-    from converter.db import db_lookup
-
-    tied = {"editorial-ghost-list", "solid-brand-light"}
-    assert db_lookup._composition_attr_tiebreak("sgs/nav-drawer", tied, None) is None
-    assert db_lookup._composition_attr_tiebreak("sgs/nav-drawer", tied, []) is None
+    tied = {"attr-heavy", "attr-light"}
+    assert db._composition_attr_tiebreak(FIXTURE_BLOCK, tied, None) is None
+    assert db._composition_attr_tiebreak(FIXTURE_BLOCK, tied, []) is None
 
 
 def test_composition_attr_score_rejects_tier_object_vs_flat_shape():
-    """The DEFECT this pass closes, pinned at the scoring layer.
+    """The shape contract pinned at the scoring layer — a pure function, so no
+    fixture data is involved at all.
 
     A flat seeded value and the tier object a real extraction writes can never
-    match. This asserts the arithmetic directly, so the reason the seeder now
+    match. This asserts the arithmetic directly, so the reason the seeder
     refuses such a row is documented by an executable fact rather than prose.
     """
     from converter.db import db_lookup
 
-    triples = (("sgs/nav-drawer-menu", "itemFontSize", db_lookup._canon_slot_value(64)),)
-    tier_write = [("sgs/nav-drawer-menu", {"itemFontSize": {"desktop": 64}})]
-    flat_write = [("sgs/nav-drawer-menu", {"itemFontSize": 64})]
+    triples = ((CHILD_MENU, "itemSize", db_lookup._canon_slot_value(64)),)
+    tier_write = [(CHILD_MENU, {"itemSize": {"desktop": 64}})]
+    flat_write = [(CHILD_MENU, {"itemSize": 64})]
 
     assert db_lookup._composition_attr_score(triples, tier_write) == 0
     # Positive control: the arithmetic itself works — it is the SHAPE that
@@ -336,30 +306,53 @@ def test_composition_attr_score_rejects_tier_object_vs_flat_shape():
     assert db_lookup._composition_attr_score(triples, flat_write) == 1
 
 
-def test_detect_variant_child_attribute_tier1_still_wins():
-    """Tier 1 (slug uniqueness) must keep precedence.
+def test_detect_variant_child_attribute_tier1_still_wins(db):
+    """Tier 1 (slug uniqueness) must keep precedence over tier 2.
 
-    `split-zone-serif`'s real children include the unique `sgs/card-grid`, AND
-    its nav-menu carries no discriminating attributes at all. It must still
-    resolve to `split-zone-serif` when child attributes are supplied — the new
-    tier must not perturb a case the slug signal already answers.
+    The UNIQUE-CHILD variant's children include the uniquely-nested child block
+    type, and its nested menu carries no discriminating attributes at all. It
+    must still resolve to that variant when child attributes are supplied — the
+    attribute tier must not perturb a case the slug signal already answers.
     """
-    from converter.db import db_lookup
-
-    attrs = {"drawerBg": "footer-bg", "drawerAlign": "left", "closeStyle": "separate-x"}
     child_blocks = [
-        ("sgs/nav-drawer-menu", {"gap": "4px"}),
-        ("sgs/icon-list", {}),
-        ("sgs/text", {}),
-        ("sgs/social-icons", {}),
-        ("sgs/card-grid", {}),
+        (CHILD_MENU, {"gap": "4px"}),
+        (CHILD_TEXT, {}),
+        (CHILD_GRID, {}),
     ]
-    assert db_lookup.detect_variant(
-        "sgs/nav-drawer",
-        attrs,
-        child_slugs=[s for s, _a in child_blocks],
-        child_blocks=child_blocks,
-    ) == "split-zone-serif"
+    assert (
+        db.detect_variant(
+            FIXTURE_BLOCK,
+            TIED_ATTRS,
+            child_slugs=[s for s, _a in child_blocks],
+            child_blocks=child_blocks,
+        )
+        == "unique-child"
+    )
+
+    # Stronger form of the same rule: make tier 2 actively DISAGREE. The nested
+    # menu now carries the other variant's discriminating values, so tier 2
+    # alone would answer `identical-a`. Tier 1 resolves first and is returned,
+    # so the answer must be unchanged.
+    disagreeing = [
+        (
+            CHILD_MENU,
+            {
+                "itemSize": {"desktop": 64, "mobile": 40},
+                "listColumns": {"desktop": 2, "mobile": 1},
+            },
+        ),
+        (CHILD_TEXT, {}),
+        (CHILD_GRID, {}),
+    ]
+    assert (
+        db.detect_variant(
+            FIXTURE_BLOCK,
+            TIED_ATTRS,
+            child_slugs=[s for s, _a in disagreeing],
+            child_blocks=disagreeing,
+        )
+        == "unique-child"
+    )
 
 
 def test_parse_block_open_comment_round_trips_child_attributes():
@@ -373,12 +366,12 @@ def test_parse_block_open_comment_round_trips_child_attributes():
     from converter.dispatch_spine import emit_block_markup
 
     attrs = {"listColumns": {"desktop": 2, "mobile": 1}, "label": "a --> b"}
-    markup = emit_block_markup("sgs/nav-drawer-menu", attrs)
-    assert parse_block_open_comment(markup) == ("sgs/nav-drawer-menu", attrs)
+    markup = emit_block_markup(CHILD_MENU, attrs)
+    assert parse_block_open_comment(markup) == (CHILD_MENU, attrs)
 
     # No-attribute block: name resolves, attributes are an empty dict.
-    assert parse_block_open_comment(emit_block_markup("sgs/card-grid", {})) == (
-        "sgs/card-grid",
+    assert parse_block_open_comment(emit_block_markup(CHILD_GRID, {})) == (
+        CHILD_GRID,
         {},
     )
 

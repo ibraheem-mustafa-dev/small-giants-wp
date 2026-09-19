@@ -1434,21 +1434,13 @@ class TestCheck10LiveDB:
 
     @_skip_no_db
     def test_check10_nav_drawer_has_real_extraction_path(self, live_conn):
-        """Ground the negative control: sgs/nav-drawer DOES have composition rows
-        AND DOES have a real extraction path today (Task 5 fixed the has_inner.py
-        regex) — this is the specific case the whole plan exists to fix, so the
-        test asserts the fix landed, not just that the check stayed quiet."""
-        rows = live_conn.execute(
-            "SELECT DISTINCT variant_value FROM variant_composition_slots "
-            "WHERE block_slug = 'sgs/nav-drawer'"
-        ).fetchall()
-        assert rows, (
-            "sgs/nav-drawer has no variant_composition_slots rows — the check "
-            "would trivially pass with nothing to inspect."
-        )
+        """`derive_delegates_content()` recognises the drawer's InnerBlocks
+        (`has_inner.py` regex), so check #10 stays quiet for it. No live block
+        currently carries `variant_composition_slots` rows, so the planted-violation
+        class below is the check's positive control, not a live row."""
         assert check_dead_composition_signal.derive_delegates_content("sgs/nav-drawer") == 1, (
-            "sgs/nav-drawer's derive_delegates_content() must be 1 (Task 5's "
-            "has_inner.py regex widening) for check #10 to correctly stay quiet."
+            "sgs/nav-drawer's derive_delegates_content() must be 1 (the "
+            "has_inner.py regex) for check #10 to correctly stay quiet."
         )
 
 

@@ -138,7 +138,8 @@ def test_unroutable_child_attribute_is_skipped(updater, monkeypatch):
     A discriminating value whose child attribute has css_property AND
     css_element both NULL can never be populated from a draft's CSS, so seeding
     it would create a row that silences a Check #3 collision while resolving
-    nothing. This is the `sgs/nav-menu.listColumns` shape.
+    nothing. This is the shape of a child attribute that is genuinely rendered
+    but carries no Front-1 CSS routing.
     """
     monkeypatch.setattr(
         updater, "_extract_variation_composition_attrs", lambda _dir: _COMPOSITION
@@ -158,10 +159,11 @@ def test_unroutable_child_attribute_is_skipped(updater, monkeypatch):
 def test_undeclared_child_attribute_is_skipped(updater, monkeypatch):
     """The OTHER inert shape: the child block declares no such attribute at all.
 
-    This is `sgs/nav-menu.itemFontSizeMobile` — the flat tier sibling left in
-    nav-drawer's variations.js after `itemFontSize` migrated to a tier OBJECT.
-    WordPress discards an undeclared attribute on the editor surface, so a clone
-    can never carry it either.
+    The real-world shape is a flat tier sibling (`<attr>Mobile`) left behind in
+    a variations file after its base attribute migrated to a tier OBJECT, so the
+    child block no longer declares the sibling at all. WordPress discards an
+    undeclared attribute on the editor surface, so a clone can never carry it
+    either.
     """
     monkeypatch.setattr(
         updater, "_extract_variation_composition_attrs", lambda _dir: _COMPOSITION
@@ -207,9 +209,10 @@ def test_routed_tier_object_attr_with_a_flat_value_is_skipped(updater, monkeypat
     while still suppressing a Check #3 collision — inert in exactly the way the
     routability filter exists to prevent, reached by a different route.
 
-    This is `sgs/nav-menu.itemFontSize`, and it is why `sgs/nav-drawer`'s
-    `two-column-editorial` remained undetectable end to end after the
-    routability filter shipped.
+    This is the shape that left a real variant undetectable end to end even
+    after the routability filter shipped: its one discriminating child attribute
+    was routed, so the filter kept the row, but the row's value shape could
+    never meet what an extraction writes.
     """
     monkeypatch.setattr(
         updater, "_extract_variation_composition_attrs", lambda _dir: _COMPOSITION
