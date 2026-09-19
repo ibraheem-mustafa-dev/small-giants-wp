@@ -37,7 +37,7 @@ import { FlowingGradientRowControls } from '../../components/FlowingGradientRowC
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { resolveResponsiveTier, boxShorthand, resolveContentWidthPreview, contentBandPreview } from '../../utils';
 
-// Motion (2026-09-11 addendum) — block-private `fxEffect` selector, NOT the
+// Motion — block-private `fxEffect` selector, NOT the
 // shared fx ToolsPanel roster's `fx` attribute (this block declares no `fx`
 // and must never join `generated-fx-qualifying-blocks.json`). Each option
 // mounts the matching shared *RowControls component built for exactly this
@@ -162,31 +162,27 @@ const ROW_LABELS = {
 	bottom: __( 'Bottom bar — copyright / legal / attribution', 'sgs-blocks' ),
 };
 
-// Columns are an operator-set COUNT per device (Spec 37 §3.3, Bean-locked), NOT
+// Columns are an operator-set COUNT per device (Spec 37 §3.3), NOT
 // a CSS grid-template ratio string. `columns` is a TIER OBJECT holding
-// {desktop,tablet,mobile} (Spec 35 pass 4, 2026-08-11) — read by the shared
+// {desktop,tablet,mobile} — read by the shared
 // wrapper via sgs_responsive_normalise_object(), rendered as scoped per-tier
 // rules at the grid selector.
 //
-// D456: for THIS block the count is a CEILING, not a fixed number. block.json
+// For THIS block the count is a CEILING, not a fixed number. block.json
 // declares `supports.sgs.intrinsicColumns`, so the wrapper emits a bounded
 // auto-fit track list per tier instead of `repeat(N,1fr)` — fewer columns are
 // used automatically once content stops fitting, continuously, rather than at a
-// pixel cliff. Measured live before the change: all three rows dropped 3 tracks
-// to 1 between viewport 768px and 767px while content needed only 496px of the
-// 767px available. Hence the inspector says "Maximum columns", not "Columns" —
-// a control that promised an exact count would now be lying.
-// (Until 2026-07-23 the tiers rode on `sgs-cols-*` classes instead —
-// removed because they addressed the wrapper while the grid had moved to
-// `.sgs-container__inner`, so mobile never stacked. FR-37-11.)
-// ⛔ Do NOT reintroduce a bridge to three flat attrs — `columnsTablet`/
-// `columnsMobile` are no longer declared by block.json (Spec 35 pass 4), and
-// the object attr wires directly onto ResponsiveOverride, exactly like
-// gridTemplateColumns below. A per-device custom template remains available
-// as an advanced override by setting gridTemplateColumns directly.
+// pixel cliff (a @media rule cannot read content size). Hence the inspector
+// says "Maximum columns", not "Columns" — a control that promised an exact
+// count would be lying. The per-tier rules address the grid selector
+// (`.sgs-container__inner`), not `sgs-cols-*` classes on the wrapper (FR-37-11).
+// There are no flat `columnsTablet`/`columnsMobile` attrs: the object attr
+// wires directly onto ResponsiveOverride, exactly like gridTemplateColumns
+// below. A per-device custom template remains available as an advanced
+// override by setting gridTemplateColumns directly.
 
 // Cross-axis alignment — read directly by SGS_Container_Wrapper as
-// `alignItems` (class-sgs-container-wrapper.php:247, 668-669/681-682).
+// `alignItems` (class-sgs-container-wrapper.php).
 // Mirrors sgs/container's ALIGN_OPTIONS exactly. No block.json enum on this
 // attr, so all four values are always valid explicit choices.
 const VERTICAL_ALIGN_OPTIONS = [
@@ -227,13 +223,10 @@ const ALIGN_CONTENT_OPTIONS = [
 	{ label: __( 'Space evenly', 'sgs-blocks' ), value: 'space-evenly' },
 ];
 
-// NOTE — gridTemplateColumns and gridTemplateRows are both declared
-// `"type": "object"` with default `{}` (Spec 35 pass 3a / 3b) — the live
-// {desktop,tablet,mobile} object-model shape, wired directly below via
-// ResponsiveOverride on the object attr itself. No bridging, no flat
-// Tablet/Mobile siblings — those were removed from block.json by the same
-// migration (they would otherwise become orphaned duplicates, the exact
-// same shape as the already-identified gapMobile/gapTablet orphans).
+// gridTemplateColumns and gridTemplateRows are both declared
+// `"type": "object"` with default `{}` — the {desktop,tablet,mobile}
+// object-model shape, wired directly below via ResponsiveOverride on the
+// object attr itself. No bridging, no flat Tablet/Mobile siblings.
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
@@ -262,7 +255,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	const isGrid = 'grid' === layout;
 
-	// Motion-effect reachability flags (2026-09-11) — each names the SINGLE
+	// Motion-effect reachability flags — each names the SINGLE
 	// selected effect so the "not available in editor" Notice below and the
 	// matching *RowControls panel gate on the same condition. The editor
 	// canvas is static and cannot follow a pointer, animate particles, tick a
@@ -323,7 +316,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// "[object Object]" in the template-string preview.
 	const columnsDesktop = resolveResponsiveTier( columns, 'desktop' )?.value || 3;
 
-	// Editor preview mirrors the frontend. D456: the grid preview uses the SAME
+	// Editor preview mirrors the frontend. The grid preview uses the SAME
 	// bounded auto-fit track list the wrapper emits, not `repeat(N,1fr)` — the
 	// count is a CEILING, so a fixed-N preview would show the operator more
 	// columns than the front end renders at the same width. Do not
@@ -366,7 +359,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				display: 'flex',
 				flexWrap: 'wrap',
 				// Blank alignItems falls to the CSS-initial `stretch` — mirrors
-				// SGS_Container_Wrapper::render()'s own default (D306), not a
+				// SGS_Container_Wrapper::render()'s own default, not a
 				// hardcoded editor-only fallback.
 				alignItems: alignItems || 'stretch',
 				...( flexDirection ? { flexDirection } : {} ),
@@ -429,7 +422,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		{
 			templateLock: false,
 			orientation: 'horizontal',
-			// Dismissible per-instance (Bean, 2026-09-17): once the operator
+			// Dismissible per-instance: once the operator
 			// closes the promoted panel on THIS row, fall back to no custom
 			// renderAppender at all — WordPress's own plain default appender
 			// takes over, exactly as sgs/container already does for its
@@ -461,8 +454,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		}
 	);
 
-	// Pilot WCAG contrast check on the Text row (D-pending, gap-candidate
-	// register task). The row's own `backgroundColour` is the effective
+	// Pilot WCAG contrast check on the Text row. The row's own `backgroundColour` is the effective
 	// background the text sits on when set; when the row leaves it blank the
 	// row paints no background of its own, so the parent `sgs/site-footer`'s
 	// background shows through instead — the real thing the text is read
@@ -490,8 +482,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// background of its own. When the row DOES have its own background/
 	// gradient, that (not the parent's) is what's behind the text, and this
 	// pilot doesn't check the row's own pairing — skip the check rather than
-	// comparing against a colour that isn't what's actually rendered (Bean,
-	// 2026-09-04).
+	// comparing against a colour that isn't what's actually rendered.
 	const rowHasOwnBackground = Boolean(
 		attributes.backgroundColour || attributes.backgroundColourGradient
 	);
@@ -502,7 +493,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// TIER 2 property-family rows for `row` (isWrapper) — Text / Fill, each in
 	// its own panel (THE PLACEMENT RULE, Spec 35 Part O). Built via the same
 	// row-descriptor helpers SgsColourPanel itself consumes, so the row SHAPE
-	// (D609: swatch + popover + in-popover state tabs) is identical — only the
+	// (swatch + popover + in-popover state tabs) is identical — only the
 	// panel TITLE differs (Text / Fill, not a shared "Colour" catch-all).
 	const textRowDescriptor = textRow( {
 		key: 'text',
@@ -569,11 +560,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 				</PanelBody>
 
-				{ /* Layout — merges the former "Alignment & grid" ToolsPanel, the
-				   unpanelled ResponsiveBoxControls mount (padding/margin/max-width —
-				   `row`'s OWN box attrs; `contentWidth` belongs to `content-band` and
-				   moves to that element's own panel below), and the "Border"
-				   PanelBody into ONE `row` Layout panel (Spec 35 Part O, D537). */ }
+				{ /* Layout — ONE `row` Layout panel holding the "Alignment & grid"
+				   ToolsPanel, the ResponsiveBoxControls mount (padding/margin/
+				   max-width — `row`'s OWN box attrs; `contentWidth` belongs to
+				   `content-band` and sits in that element's own panel below), and
+				   the "Border" PanelBody (Spec 35 Part O). */ }
 				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
 					<ToolsPanel
 						label={ __( 'Alignment & grid', 'sgs-blocks' ) }
@@ -889,8 +880,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				   below. Rendering LayoutPanel's selector too is silent DATA LOSS —
 				   it offers Stack, but this block.json's layout enum is [flex, grid],
 				   so WordPress coerces the write back to the default and the operator
-				   sees a control that does nothing. Same fix as post-grid and
-				   testimonial-slider (2026-08-12); this block was missed. */ }
+				   sees a control that does nothing. Same approach as post-grid and
+				   testimonial-slider. */ }
 				<ContainerWrapperControls
 					attributes={ attributes }
 					setAttributes={ setAttributes }
@@ -1048,7 +1039,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					</ResponsiveOverride>
 				</PanelBody>
 
-				{ /* Motion (2026-09-11 addendum) — block-private escape hatch, NOT
+				{ /* Motion — block-private escape hatch, NOT
 				   the shared fx ToolsPanel (fx.js is not touched by this block).
 				   `fxEffect` is this block's OWN selector attribute; only one of
 				   the four param panels mounts at a time, matching whichever

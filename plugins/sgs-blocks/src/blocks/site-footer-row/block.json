@@ -45,7 +45,7 @@
 				]
 			},
 			"intrinsicColumns": true,
-			"_intrinsicColumnsComment": "D456 — the column count becomes a CEILING that degrades with available width, instead of a fixed count that only changes at a viewport breakpoint. Measured live before this change: all three footer rows dropped 3 tracks to 1 between viewport 768px and 767px, while their content needed just 496px of the 767px available. A @media rule cannot read content size, so that collapse could never be organic. Opt-in per block type, read by sgs_block_wants_intrinsic_columns().",
+			"_intrinsicColumnsComment": "The column count is a CEILING that degrades with available width, instead of a fixed count that only changes at a viewport breakpoint. A @media rule cannot read content size, so a breakpoint-only collapse (3 tracks to 1 at 767px while the content needs far less) can never be organic. Opt-in per block type, read by sgs_block_wants_intrinsic_columns().",
 			"elements": {
 				"row": {
 					"label": "Row",
@@ -88,7 +88,7 @@
 							}
 						}
 					},
-					"_note": "A horizontal row inside sgs/site-footer. This element is BOTH the block root and the grid definition (containerKind=layout, rendered through SGS_Container_Wrapper), the same single-element shape sgs/trust-bar's wrapper uses. Padding and margin are the block's OWN box-object attributes, not native spacing — this block declares no `supports.spacing`. css:align-items maps to `alignItems` (class-sgs-container-wrapper.php:247). Typography members, display, order and overflow have no attribute here and remain honest GAPs. prefix: \"\" is an explicit opt-out of orphan scanning — every style attribute is mapped explicitly above, and the remaining row* attributes (rowSlot/rowTransparent/rowHideOnScroll/rowShrink/rowShrinkHideTarget) are slot identity and scroll BEHAVIOUR, not style properties. textColourHover/textColourHoverGradient (2026-09-07 colour-conformance): this element ALSO owns css:background-color (backgroundColour) on the same selector, so render.php conditionally moves the background onto its own ::after layer via sgs_block_background_layer_css() ONLY when the resolved hover value is a gradient — the flat-colour hover case is unaffected and keeps the existing sgs_fill_states_css() emission.",
+					"_note": "A horizontal row inside sgs/site-footer. This element is BOTH the block root and the grid definition (containerKind=layout, rendered through SGS_Container_Wrapper), the same single-element shape sgs/trust-bar's wrapper uses. Padding and margin are the block's OWN box-object attributes, not native spacing — this block declares no `supports.spacing`. css:align-items maps to `alignItems` (class-sgs-container-wrapper.php). Typography members, display, order and overflow have no attribute here and remain honest GAPs. prefix: \"\" is an explicit opt-out of orphan scanning — every style attribute is mapped explicitly above, and the remaining row* attributes (rowSlot/rowTransparent/rowHideOnScroll/rowShrink/rowShrinkHideTarget) are slot identity and scroll BEHAVIOUR, not style properties. textColourHover/textColourHoverGradient: this element ALSO owns css:background-color (backgroundColour) on the same selector, so render.php conditionally moves the background onto its own ::after layer via sgs_block_background_layer_css() ONLY when the resolved hover value is a gradient — the flat-colour hover case is unaffected and keeps the existing sgs_fill_states_css() emission.",
 					"prefix": ""
 				},
 				"content-band": {
@@ -156,7 +156,7 @@
 				"grid"
 			],
 			"default": "grid",
-			"_comment": "D456-follow-up (2026-08-02) — same shape + same latent exposure as sgs/site-header-row's `layout` enum (see that block.json for the full rationale): `class-sgs-container-wrapper.php:528` only routes the shared wrapper's gap onto the query-container-ancestor `.sgs-container__inner` when layout is 'flex' or 'grid'. This row's own gap defaults are plain px today (not cqi), so the landmine has no live symptom here yet — but the enum closes it universally rather than leaving a per-block carve-out (R-31-9), so a future cqi-based gap value on this block can never resolve against the wrong container either. Verified: edit.js LAYOUT_OPTIONS, render.php, and every theme pattern instantiating this block use only 'flex'/'grid'."
+			"_comment": "Same shape + same latent exposure as sgs/site-header-row's `layout` enum (see that block.json for the full rationale): `class-sgs-container-wrapper.php` only routes the shared wrapper's gap onto the query-container-ancestor `.sgs-container__inner` when layout is 'flex' or 'grid'. This row's own gap defaults are plain px today (not cqi), so the landmine has no live symptom here yet — but the enum closes it universally rather than leaving a per-block carve-out (R-31-9), so a future cqi-based gap value on this block can never resolve against the wrong container either. edit.js LAYOUT_OPTIONS, render.php, and every theme pattern instantiating this block use only 'flex'/'grid'."
 		},
 		"columns": {
 			"type": "object",
@@ -290,7 +290,7 @@
 		"borderColourGradient": {
 			"type": "string",
 			"default": "",
-			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour. Non-empty wins over borderColour."
 		},
 		"borderRadius": {
 			"type": "object",
@@ -308,7 +308,7 @@
 				"grid-dots",
 				"wave-gradient"
 			],
-			"_comment": "BLOCK-PRIVATE effect selector (2026-09-11 addendum) — deliberately NOT the shared fx ToolsPanel's `fx` attribute. This block must never declare `fx` or join the fx-qualifying-block roster (fx.js/generated-fx-qualifying-blocks.json are read-only reference here). PHP-whitelist-validated in render.php; an unrecognised value resolves to ''."
+			"_comment": "BLOCK-PRIVATE effect selector — deliberately NOT the shared fx ToolsPanel's `fx` attribute. This block must never declare `fx` or join the fx-qualifying-block roster (fx.js/generated-fx-qualifying-blocks.json are read-only reference here). PHP-whitelist-validated in render.php; an unrecognised value resolves to ''."
 		},
 		"fxFieldType": { "type": "string", "default": "" },
 		"fxFieldColour": { "type": "string", "default": "" },
@@ -338,7 +338,7 @@
 		"fxFooterStagger": {
 			"type": "boolean",
 			"default": false,
-			"_comment": "Footer-row-ONLY (not shared with any other block) scroll-scrubbed reveal. Reuses the Spec 38 FR-38-7 `scrub` runtime UNMODIFIED (src/shared/effects/gsap/fx-scrub.js, bootEffect('scrub', initScrub) does document.querySelectorAll('[data-sgs-fx=\"scrub\"]') and tweens each matched element's own opacity/transform against its own scroll progress) — render.php stamps `data-sgs-fx=\"scrub\"` on this row's ROOT via extra_attrs. Deliberately scoped to a single row-level reveal, not per-child: `sgs_fx_effect_param_scope()`'s 'scrub' row carries no stagger param, and per-child staggering would need either mutating already-rendered nested InnerBlocks HTML (no precedent/tooling in this codebase) or extending the shared runtime to accept multiple internal targets (out of scope for a block-private escape hatch — flagged for a future Spec 38 FR, not built here)."
+			"_comment": "Footer-row-ONLY (not shared with any other block) scroll-scrubbed reveal. Reuses the Spec 38 FR-38-7 `scrub` runtime UNMODIFIED (src/shared/effects/gsap/fx-scrub.js, bootEffect('scrub', initScrub) does document.querySelectorAll('[data-sgs-fx=\"scrub\"]') and tweens each matched element's own opacity/transform against its own scroll progress) — render.php stamps `data-sgs-fx=\"scrub\"` on this row's ROOT via extra_attrs. Deliberately scoped to a single row-level reveal, not per-child: `sgs_fx_effect_param_scope()`'s 'scrub' row carries no stagger param, and per-child staggering would need either mutating already-rendered nested InnerBlocks HTML (no precedent/tooling in this codebase) or extending the shared runtime to accept multiple internal targets (out of scope for a block-private escape hatch)."
 		}
 	},
 	"render": "file:./render.php",

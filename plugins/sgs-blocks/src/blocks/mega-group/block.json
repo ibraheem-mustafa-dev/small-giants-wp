@@ -24,7 +24,7 @@
 					"order": 1,
 					"clusters": [],
 					"isWrapper": true,
-					"_note": "The `.sgs-mega-group` column wrapper. Carries NO styling attributes of its own by design (CF-10, parent-paints-child): the parent sgs/mega-panel's scoped CSS paints this element per data-mega-style / data-mega-scheme, so every group restyles uniformly when the panel's style or scheme switches. Its content (a heading + an sgs/icon-list) is child-owned (HC2). Honest zero-cluster element."
+					"_note": "The `.sgs-mega-group` column wrapper. Carries NO styling attributes of its own by design (parent-paints-child): the parent sgs/mega-panel's scoped CSS paints this element per data-mega-style / data-mega-scheme, so every group restyles uniformly when the panel's style or scheme switches. Its content (a heading + an sgs/icon-list) is child-owned. Honest zero-cluster element."
 				}
 			}
 		}

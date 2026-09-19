@@ -5,10 +5,10 @@
  * The header shell: a vertical stack of up to three sgs/site-header-row blocks
  * (top / middle / bottom). Empty rows emit zero output (handled by the row
  * block itself). Outer rendering is delegated ENTIRELY to the shared
- * SGS_Container_Wrapper (section KIND) per composite-mirror (R-31-9 / D294) —
+ * SGS_Container_Wrapper (section KIND) per composite-mirror (R-31-9) —
  * no divergent per-block styling path.
  *
- * Rendered with tag <header> (D375): this block IS the site banner landmark.
+ * Rendered with tag <header>: this block IS the site banner landmark.
  * The SGS header engine (Sgs_Header_Rules::filter_template_part) short-circuits
  * core/template-part on every request via the priority-9999 default rule, so
  * core never emits its own <header class="wp-block-template-part"> wrapper.
@@ -17,11 +17,11 @@
  * block-guaranteed '.sgs-site-header' class. No nested landmark in the current
  * template roster: rows render as <div> (site-header-row) and the engine's
  * short-circuit means core's <header class="wp-block-template-part"> wrapper is not
- * emitted. RESIDUAL (not a live path today): if a template/pattern ever resolves the
+ * emitted. Limitation: if a template/pattern ever resolves the
  * header template-part TWICE on one request, Sgs_Header_Rules::filter_template_part's
  * has_served() branch hands the second slot back to core, which WOULD then wrap a
- * second sgs/site-header in core's <header> = nested banner landmarks. Guard at that
- * branch if a double-header template is ever added (parking P-HEADER-DOUBLE-SLOT-NEST).
+ * second sgs/site-header in core's <header> = nested banner landmarks. A double-header
+ * template would need a guard at that branch.
  *
  * Variables from WordPress:
  *   $attributes  array     Block attributes.
@@ -50,9 +50,9 @@ $classes  = array( 'sgs-site-header', $uid );
 
 $css = '';
 
-// ── WP-native colour / border supports — no-inline contract (Spec 32). ──────────
-// Mirrors sgs/site-header-row + sgs/feature-grid: skip-serialised supports are
-// read from $attributes['style'] and emitted into this block's scoped <style>.
+// ── Scoped colour + border — no-inline contract (Spec 32). ──────────────────────
+// Mirrors sgs/site-header-row + sgs/feature-grid: every value is emitted into
+// this block's scoped <style>, never inline.
 
 $sh_style_engine_args = array();
 
@@ -93,8 +93,7 @@ if ( ! empty( $sh_color_args ) ) {
 	$sh_style_engine_args['color'] = $sh_color_args;
 }
 
-// (native border_args removed by the Shape-B migration -- width/style/colour
-//  are block-private attrs now, emitted below)
+// Border width/style/colour are block-private attrs, emitted below.
 
 if ( ! empty( $sh_style_engine_args ) ) {
 	$sh_scoped_styles = wp_style_engine_get_styles(
@@ -112,12 +111,10 @@ if ( ! empty( $sh_style_engine_args ) ) {
 // stale stored content.
 
 // ── Header-level tri-state behaviours (FR-37-14, Spec 35 T1.4) ──────────────
-// The body-class mechanism (Sgs_Header_Behaviours::add_body_classes) is
-// RETIRED for these four behaviours (FR-37-15 / design-gate §4, 2026-07-28) —
-// it was site-wide and boolean-only, which cannot express "on for desktop,
-// off for mobile". Resolution now happens HERE, per tier, via the canonical
-// sgs_resolve_tier()/sgs_emit_tier_rules() cascade (Spec 35 D4), scoped to
-// THIS block's own uid — never a body class (D386).
+// Sticky, transparent, shrink and hide-on-scroll resolve HERE, per tier, via
+// sgs_resolve_tier()/sgs_emit_tier_rules() (FR-37-15), scoped to THIS block's
+// own uid, because a site-wide body class cannot express "on for desktop,
+// off for mobile".
 //
 // Two mechanisms, matched to what each behaviour needs:
 // 1. STATIC per-tier CSS (sticky's position, transparent's resting
@@ -128,14 +125,13 @@ if ( ! empty( $sh_style_engine_args ) ) {
 // unmedia-queried base rule (CSS cascade: the later, narrower @media
 // rule only wins if it re-declares the same property).
 // 2. SCROLL-STATE classes (is-header-scrolled / is-header-shrunk /
-// is-header-scrolling-down) are still toggled by view.js on scroll, same
-// as before — but now on the header ELEMENT (not body), and the CSS rule
-// that gives them any visual effect is ITSELF tier-gated via
-// sgs_emit_tier_rules() (keyed to ".is-header-shrunk" etc. as part of the
-// selector), so a tier where the behaviour is OFF sees no effect even
-// though JS still toggles the class there (cheap, correct-by-construction
+// is-header-scrolling-down) are toggled by view.js on scroll on the header
+// ELEMENT, and the CSS rule that gives them any visual effect is ITSELF
+// tier-gated via sgs_emit_tier_rules() (keyed to ".is-header-shrunk" etc. as
+// part of the selector), so a tier where the behaviour is OFF sees no effect
+// even though JS still toggles the class there (correct-by-construction
 // gating — no per-tier JS/matchMedia bookkeeping needed at header level,
-// unlike the row-level path which DOES need it because rows emit their
+// unlike the row-level path, which needs it because rows emit their
 // gating as data-attrs consumed by matchMedia, not @media CSS).
 $sh_sticky      = isset( $attributes['headerSticky'] ) ? $attributes['headerSticky'] : array();
 $sh_transparent = isset( $attributes['headerTransparent'] ) ? $attributes['headerTransparent'] : array();
@@ -143,15 +139,13 @@ $sh_shrink      = isset( $attributes['headerShrink'] ) ? $attributes['headerShri
 $sh_hide        = isset( $attributes['headerHideOnScroll'] ) ? $attributes['headerHideOnScroll'] : array();
 $sh_contrast    = isset( $attributes['contrastSafe'] ) ? $attributes['contrastSafe'] : array();
 
-// FORCE-SOLID IS A TRANSPARENT SUPPRESSOR, NOT A COMPETING PAINT (2026-08-19).
-// The retired body-class CSS made 'force-solid' fight Transparent with
-// `background:… !important`. That does not survive being made per-device: a
-// tier that stops being force-solid has no clean way to UNDO an !important
-// background (`revert` would revert past the block's own background too), so
-// the mode would leak across tiers. Resolving it here instead — force-solid
-// simply means "do not go transparent at this tier" — removes the fight
-// entirely: no !important, no cancel declaration, and Transparent's own
-// merge below stays the single writer of `background`/`position` as designed.
+// FORCE-SOLID IS A TRANSPARENT SUPPRESSOR, NOT A COMPETING PAINT.
+// Force-solid means "do not go transparent at this tier". An `!important`
+// background cannot be undone per tier (`revert` would revert past the block's
+// own background too), so the mode is resolved here instead of painting a
+// competing background: no !important, no cancel declaration, and
+// Transparent's own merge below stays the single writer of
+// `background`/`position`.
 // Every tier is resolved concrete, which the emitters handle identically (the
 // differs-from-the-tier-above minimisation still collapses equal tiers).
 // DIRECTION. Transparent has TWO states — see-through at rest, solid once
@@ -223,20 +217,18 @@ $css .= sgs_merge_tri_state_declarations(
 // this is a separate selector, not a second writer of the same one).
 // Emitted PER TIER, gated to tiers where Transparent genuinely resolves ON
 // (a tier where it's off has no resting transparency to flip away from, and
-// the base rule wins there by default). MUST carry `!important`: root-cause
-// of P-TRANSPARENT-HEADER-SCROLLED-BG-NOT-FLIPPING was that this rule had NO
-// `!important` while sgs_merge_tri_state_declarations() emits every resting
+// the base rule wins there by default). MUST carry `!important`:
+// sgs_merge_tri_state_declarations() emits every resting
 // declaration (including Transparent's `background:transparent`) WITH
-// `!important` — an `!important` declaration always beats a non-`!important`
+// `!important`, and an `!important` declaration always beats a non-`!important`
 // one regardless of selector specificity or source order, so the extra
-// `.is-header-scrolled` class here never mattered; the missing `!important`
-// did. Token-based (theme surface preset), never hardcoded.
+// `.is-header-scrolled` class alone never wins. Token-based (theme surface
+// preset), never hardcoded.
 // SCROLLED STATE — the other half of the transparent pair, client-reachable via
 // backgroundColourScrolled / backgroundColourScrolledGradient / textColourScrolled,
 // falling back to the same surface token when unset.
 //
-// MUST CARRY `!important` — do not drop it (see the root-cause note above:
-// P-TRANSPARENT-HEADER-SCROLLED-BG-NOT-FLIPPING).
+// MUST CARRY `!important` — do not drop it (see the note above).
 //
 // Built by hand rather than through wp_style_engine_get_styles() for exactly
 // that reason — the style engine has no way to emit `!important`.
@@ -308,14 +300,9 @@ if ( $sh_shrink_any_tier ) {
 	}
 
 	// Legacy (no `animation-timeline`) fallback: base padding + its own
-	// transition. NOTE (residual, not QC-proven, out of this fix's scope):
-	// Hide ALSO sets `transition` on this same unqualified base selector
-	// below; on a legacy browser with BOTH Shrink and Hide genuinely active
-	// on the SAME tier, whichever is emitted later still wins the shorthand
-	// for that one property (source order), same class of issue as the
-	// sticky/transparent bug this fix targets but unconfirmed live and out
-	// of scope here — track as a follow-up if a client build ever needs
-	// Shrink + Hide together on a pre-scroll-timeline browser.
+	// transition. Limitation: with both Shrink and Hide active on the same
+	// tier on a browser without `animation-timeline`, whichever rule is
+	// emitted later wins the `transition` shorthand on the shared base selector.
 	$sh_shrink_fallback_css = sgs_emit_tier_rules(
 		$root_sel,
 		$sh_shrink,
@@ -422,7 +409,7 @@ if ( in_array( 'shadow', $sh_contrast_modes, true ) ) {
 
 // prefers-reduced-motion: self-contained here (per-instance scoped CSS) rather
 // than relying on the shared stylesheet, since the transition/animation
-// declarations above are now themselves per-instance.
+// declarations above are themselves per-instance.
 $css .= '@media (prefers-reduced-motion: reduce) {' . $root_sel . '{transition:none !important;animation:none !important;}}';
 
 // Data attrs consumed by view.js: (a) whether ANY tier requests sticky, so the
@@ -442,9 +429,7 @@ if ( $sh_scroll_behaviour_on ) {
 }
 
 
-// ── Block-private border: width / style / colour (Shape B). ──
-// Migrated from WP-native supports by scripts/migrate-border-shape-b.js.
-// Oracle: sgs/accordion, live-verified with scripts/qa/check-border-roundtrip.js.
+// ── Block-private border: width / style / colour. ──
 $border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
 $border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
 $border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
@@ -457,8 +442,8 @@ $allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', '
 $border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
 
 if ( 'none' !== $border_style ) {
-	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
-	// through to the browser's initial `medium` (~3px).
+	// A style with no width means no border — never fall through to the
+	// browser's initial `medium` (~3px).
 	if ( $has_border_width ) {
 		$bwt = '' !== $border_width_top ? $border_width_top : '0';
 		$bwr = '' !== $border_width_right ? $border_width_right : '0';
@@ -478,11 +463,11 @@ if ( 'none' !== $border_style ) {
 		$css .= sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' );
 	} elseif ( '' !== $border_colour ) {
 		// sgs_colour_value() resolves a palette SLUG; a bare slug is invalid CSS
-		// the browser drops (D881 defect 3).
+		// the browser drops.
 		$css .= $root_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
 	}
 } else {
-	// G5 corollary: "none" must be an explicit override too, not a
+	// "none" must be an explicit override too, not a
 	// no-op -- a variant's own hardcoded CSS border (e.g. a card-style
 	// class default) would otherwise keep painting even though the
 	// operator picked "no border". Cause-agnostic: harmless when no
@@ -490,13 +475,10 @@ if ( 'none' !== $border_style ) {
 	$scoped_css[] = $root_sel . '{border-style:none;border-width:0;}';
 }
 
-// ── Block-private border-radius (radius is no longer native -- Shape B now
-// covers all four legs). Same wp_style_engine_get_styles() route already
-// proven live by sgs/media + sgs/before-after's borderRadiusTablet/Mobile
-// tiers; base now goes through the identical call instead of WP's native
-// serialisation. The style-engine result is an intermediate PHP value ($out
-// array), never appended raw -- only its ['css'] string goes through the
-// detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
+// ── Block-private border-radius via wp_style_engine_get_styles() (base and the
+// tablet/mobile tiers use the identical call). The style-engine result is an
+// intermediate PHP value ($out array), never appended raw -- only its ['css']
+// string is appended to $css. ──
 $radius_tiers = sgs_border_radius_tiers( $attributes );
 $border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
 if ( ! empty( $border_radius_obj ) ) {

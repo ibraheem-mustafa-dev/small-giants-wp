@@ -28,22 +28,15 @@
 
 defined( 'ABSPATH' ) || exit;
 
-// [D-tier-object-render-fix 2026-09-06]
-// Group 1 folded padding/margin into owned tier-object attrs
-// {desktop,tablet,mobile}, but this block's own scoped CSS below still
-// reads the pre-migration flat shape (a plain box for the base value,
-// plus four separate flat attrs for the tablet/mobile overrides --
-// block.json no longer declares any of those four). Normalise once,
-// into fresh locals only -- every literal reference below has been
-// redirected to these instead of writing back into $attributes.
-// Fixed 2026-09-06: sgs_responsive_normalise_object() lives in
-// helpers-responsive.php, which this file's own render-helpers.php
-// require below WOULD load -- but too late, since these two calls run
-// before that require executes. A block whose render.php is the first
-// SGS block PHP to run in a request (nav-menu in the site header, on
-// every page) fatals with "Call to undefined function" before any
-// other block's render.php has had a chance to load it. Requiring the
-// defining file directly, here, removes the load-order dependency.
+// padding/margin are tier-object attrs {desktop,tablet,mobile}. Normalise
+// them once, into fresh locals only -- never writing back into $attributes.
+// sgs_responsive_normalise_object() lives in helpers-responsive.php, which
+// this file's own render-helpers.php require below loads -- but these two
+// calls run before that require executes. A block whose render.php is the
+// first SGS block PHP to run in a request (e.g. the site-header navigation
+// bar, present on every page) would otherwise fatal with "Call to undefined
+// function". Requiring the defining file directly, here, removes the
+// load-order dependency.
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
 $sgs_tor_padding_tiers   = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
 $sgs_tor_margin_tiers    = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
@@ -59,7 +52,7 @@ $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_t
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // ---------------------------------------------------------------------------
-// Security sanitisers (no-inline contract §D) — mirrors sgs/label/render.php.
+// Security sanitisers (no-inline contract) — mirrors sgs/label/render.php.
 // ---------------------------------------------------------------------------
 
 // ── Attribute extraction ──────────────────────────────────────────────────────
@@ -69,14 +62,11 @@ $tablet_logo_id   = isset( $attributes['logoIdTablet'] ) ? absint( $attributes['
 $mobile_logo_id   = isset( $attributes['logoIdMobile'] ) ? absint( $attributes['logoIdMobile'] ) : 0;
 $svg_animation_id = isset( $attributes['svgAnimationSource'] ) ? absint( $attributes['svgAnimationSource'] ) : 0;
 $animation_style  = isset( $attributes['animationStyle'] ) ? sanitize_key( $attributes['animationStyle'] ) : 'none';
-// Fill-width default (2026-09-18, Bean-directed): a header logo previously
-// always rendered at a hardcoded 240px unless the operator touched the
-// RangeControl, ignoring whatever width its containing column/flex-item
-// actually allocated. `width` no longer carries a `default` in block.json
-// (see that file's own attribute comment), so `isset()` here is now a real
-// "did the operator ever set this" check, not a permanently-true one — WP's
-// `prepare_attributes_for_render()` only injects a declared schema default,
-// so an untouched instance genuinely has no `width` key. $width_explicit
+// Fill-width default: `width` carries no `default` in block.json (see that
+// file's own attribute comment), so `isset()` here is a real "did the
+// operator ever set this" check — WP's `prepare_attributes_for_render()` only
+// injects a declared schema default, so an untouched instance genuinely has
+// no `width` key. $width_explicit
 // drives the scoped `--logo-width` CSS emission below (skipped when unset,
 // letting style.scss's `var(--logo-width, 100%)` fallback fill the column);
 // `$width` itself still falls back to 240 here ONLY for the <img width="">
@@ -90,7 +80,7 @@ $align            = isset( $attributes['align'] ) ? sanitize_key( $attributes['a
 $logo_decorative  = ! empty( $attributes['logoDecorative'] );
 
 // Border (Block Customisation Standard — wrapper-level border control).
-// Box-object interface contract §1/§2: borderWidth is an SGS custom OBJECT
+// Box-object interface contract: borderWidth is an SGS custom OBJECT
 // attr { top, right, bottom, left }, no tiers.
 $border_style_raw = isset( $attributes['borderStyle'] ) ? sgs_css_keyword_sanitise( $attributes['borderStyle'] ) : 'solid';
 $border_width_obj = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
@@ -100,8 +90,7 @@ $border_width_bot = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
 $border_width_lft = sgs_css_length_value( $border_width_obj['left'] ?? '' );
 $has_border_width = ( '' !== $border_width_top || '' !== $border_width_rgt || '' !== $border_width_bot || '' !== $border_width_lft );
 
-// Background colour (Decision 1, 2026-09-14 — SGS nav-drawer/logo colour work).
-// Mirrors sgs/brand-strip's root background pair exactly: gradient (via
+// Background colour. Mirrors sgs/brand-strip's root background pair exactly: gradient (via
 // background-image) wins over the flat colour when set+valid, base + hover.
 $bg_colour                = isset( $attributes['backgroundColour'] ) ? (string) $attributes['backgroundColour'] : '';
 $bg_colour_gradient       = isset( $attributes['backgroundColourGradient'] ) ? (string) $attributes['backgroundColourGradient'] : '';
@@ -120,19 +109,18 @@ if ( ! in_array( $animation_style, $allowed_animation_styles, true ) ) {
 // When no desktop logo is set on the block, fall back to the WP site's default
 // custom logo (Appearance → Customise → Site Identity → Logo). Operators who
 // upload a single logo via the Customiser get all three breakpoints pointing
-// at it automatically. Per Bean's directive 2026-05-20.
+// at it automatically.
 
-// ID-wins-URL-fallback (2026-08-05) — the same resolution order every other SGS
-// image block uses (`media/render.php:467`: "imageId wins; fall back to
+// ID-wins-URL-fallback — the same resolution order every other SGS
+// image block uses (media/render.php: "imageId wins; fall back to
 // imageUrl"). The attachment ID stays authoritative because it resolves to the
 // CURRENT file if the media item is replaced, while the stored URL survives when
 // the ID is absent — which is the case for a cloned block, where the draft gave
 // a `<img src>` and no library item exists yet.
 //
-// That fallback is the whole point of the change: it gives `alt` a
-// `attr_type='string'` sibling to name as its `alt_companion_attr`, which is what
-// `walk.py:295` requires before it will capture alt text at all. Three bare
-// attachment IDs could never satisfy it.
+// That fallback also gives `alt` an `attr_type='string'` sibling to name as its
+// `alt_companion_attr`, which is what walk.py requires before it will capture
+// alt text at all. Three bare attachment IDs could never satisfy it.
 $sgs_logo_url_attr = static function ( $key ) use ( $attributes ): string {
 	return isset( $attributes[ $key ] ) ? esc_url_raw( (string) $attributes[ $key ] ) : '';
 };
@@ -216,8 +204,8 @@ if ( 'draw-on-load' === $animation_style ) {
 
 // ── No-inline scoped box CSS (padding/margin, base + tablet/mobile tiers) ────
 // uid is a CLASS (matches sgs/heading/sgs/container/sgs/label scoped pattern).
-// The root carries NO inline declaration at all: `--logo-width` moved into the
-// scoped uid-class rule below at D345 (see the emit a few lines down, and the
+// The root carries NO inline declaration at all: `--logo-width` lives in the
+// scoped uid-class rule below (see the emit a few lines down, and the
 // note near the end of this file).
 
 $uid = 'sgs-rl-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
@@ -225,7 +213,7 @@ $sel = '.' . $uid . '.wp-block-sgs-responsive-logo';
 
 $scoped_css = array();
 
-// --- Logo width custom property (D345: inline `--var` is forbidden, no
+// --- Logo width custom property (inline `--var` is forbidden, no
 // exception for custom-property values). Lives in the same scoped uid-class
 // rule as every other declaration on this block. Emitted ONLY when the
 // operator has explicitly set a width — an untouched instance emits nothing
@@ -269,7 +257,7 @@ if ( '' !== $border_colour_css ) {
 	$scoped_css[] = $border_colour_css;
 }
 
-// --- Background colour (Decision 1, 2026-09-14) — gradient wins over flat
+// --- Background colour — gradient wins over flat
 // colour when set+valid (sgs_background_paint_decl()), base + hover on the
 // same wrapper selector. Mirrors sgs/brand-strip's root background pair. ---
 $bg_decl = sgs_background_paint_decl( $bg_colour, $bg_colour_gradient );
@@ -325,7 +313,7 @@ if ( 'left' === $align ) {
 // --- Per-tier max box (FR-36-22 basics) — caps the rendered logo box on top
 // of the `width` custom property, independently per breakpoint. Unset tiers
 // emit nothing (no cap at that tier). ---
-// ⛔ `maxWidth` is a TIER OBJECT as of Spec 35 pass 2 (2026-08-11), and feeding
+// ⛔ `maxWidth` is a TIER OBJECT, and feeding
 // the object straight to sgs_responsive_css_rule() would DROP IT SILENTLY — not
 // warn, not error. That helper's validity gate is
 // `$transform || is_numeric( $raw )` (helpers-responsive.php), this spec supplies
@@ -335,10 +323,10 @@ if ( 'left' === $align ) {
 // reaches the formatter.
 //
 // So the object is flattened back to the three keys the helper expects, keeping
-// its unit handling and @media emission byte-identical. `maxHeight` became the
-// SAME tier-object shape in the same pass (2026-08-11) — flattened identically
-// below, via the same $rl_max_width_num() stripper (kept its historic name;
-// it is unit-agnostic and used for both families).
+// its unit handling and @media emission unchanged. `maxHeight` is the
+// SAME tier-object shape — flattened identically
+// below, via the same $rl_max_width_num() stripper (it is unit-agnostic and
+// used for both families).
 $rl_max_width_tiers  = sgs_responsive_normalise_object( $attributes['maxWidth'] ?? null );
 $rl_max_height_tiers = sgs_responsive_normalise_object( $attributes['maxHeight'] ?? null );
 
@@ -393,8 +381,8 @@ $scoped_css[] = sgs_responsive_css_rule(
 	$sel
 );
 
-// --- Base padding/margin — WP-native style.spacing (skip-serialised) emitted
-// scoped via the stable core style engine. ---
+// --- Base padding/margin — the desktop tier of the block-owned padding/margin
+// objects, emitted scoped via the stable core style engine. ---
 
 $base_padding_obj = ( ! empty( $sgs_tor_padding_desktop ) )
 	? $sgs_tor_padding_desktop
@@ -421,7 +409,7 @@ if ( ! empty( $base_padding_obj ) || ! empty( $base_margin_obj ) ) {
 }
 
 // --- Responsive padding/margin tiers — SGS custom object attrs, hand-built
-// shorthand, scoped @media on the SAME selector (contract §B2: tablet
+// shorthand, scoped @media on the SAME selector (tablet
 // max-width:1023px, mobile max-width:767px). ---
 $padding_tablet_obj = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
 $padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
@@ -456,8 +444,8 @@ if ( $mobile_decls ) {
 }
 
 // ── Wrapper attributes via get_block_wrapper_attributes() ────────────────────
-// No `style` key (D345: inline `--var` custom properties are forbidden, no
-// exception). `--logo-width` now lives in the scoped uid-class rule above.
+// No `style` key (inline `--var` custom properties are forbidden, no
+// exception). `--logo-width` lives in the scoped uid-class rule above.
 
 $wrapper_attributes = get_block_wrapper_attributes(
 	array(
@@ -505,7 +493,7 @@ if ( $link_to_home ) {
 if ( $has_svg_animation && $svg_html ) {
 	// Animation mode: inline SVG for desktop; static images for tablet + mobile.
 	//
-	// Tier G DrawSVG wiring (Spec 38 FR-38-15 / D408 — Vivus retirement). The
+	// Tier G DrawSVG wiring (Spec 38 FR-38-15). The
 	// `data-sgs-fx="draw"` + `data-sgs-fx-trigger` pair sits on THIS wrapper
 	// span, not on the inlined <svg> itself: the wrapper is markup this file
 	// fully controls, while the <svg> comes from a sanitised media-library
@@ -518,9 +506,7 @@ if ( $has_svg_animation && $svg_html ) {
 	// effect module — no separate JS wiring is needed on this block.
 	//
 	// animationStyle's three animated values map 1:1 onto Spec 38 §11.2's
-	// `load | scroll | hover` trigger grammar; the stored attribute enum is
-	// unchanged (only the runtime swapped), so a stored instance renders
-	// identically post-migration.
+	// `load | scroll | hover` trigger grammar.
 	$fx_trigger_by_style = array(
 		'draw-on-load'   => 'load',
 		'scroll-trigger' => 'scroll',
@@ -614,7 +600,7 @@ if ( $link_to_home ) {
 
 $inner_html = ob_get_clean();
 
-// ── Scoped CSS output (no-inline contract §A) ────────────────────────────────
+// ── Scoped CSS output (no-inline contract) ────────────────────────────────
 // wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving CSS
 // combinators intact. Every value reaching $scoped_css is pre-sanitised
 // (sgs_css_length_value() / wp_style_engine_get_styles), so no un-sanitised value

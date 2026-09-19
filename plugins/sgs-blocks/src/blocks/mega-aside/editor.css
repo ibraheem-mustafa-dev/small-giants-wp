@@ -1,10 +1,8 @@
 /**
  * SGS Mega Aside — editor canvas structural invariants ONLY.
  *
- * GROUND-TRUTH: mirrors style.css (verified against the same source above).
- *
- * Mirrors style.css: the parent sgs/mega-panel's own editor.css paints the
- * GRID POSITION (width/divider) live in the canvas (CF-10). This file carries
+ * Mirrors style.css: the parent sgs/mega-panel's style.css paints the
+ * GRID POSITION (width/divider) live in the canvas. This file carries
  * the same structural invariants + `asideFormat` arrangement as the frontend.
  *
  * @package SGS\Blocks
@@ -17,10 +15,9 @@
 	gap: 16px;
 }
 
-/* object-fit intentionally absent — mirrors style.css's own removal (rule
-   37-media-no-handroll, 2026-09-03): it was silently overriding the child
-   sgs/media block's own already-adopted object-fit atom/control (which
-   already defaults to `cover` via the shared `.sgs-media-el` marker). See
+/* object-fit intentionally absent — mirrors style.css: a declaration here
+   would override the child sgs/media block's own object-fit atom/control
+   (which defaults to `cover` via the shared `.sgs-media-el` marker). See
    style.css for the full rationale. */
 .sgs-mega-aside > .wp-block-sgs-media img,
 .sgs-mega-aside > .wp-block-sgs-media video {

@@ -1,20 +1,19 @@
 /**
  * SGS Mega Aside — block editor UI.
  *
- * GROUND-TRUTH: verified against .claude/plans/archive/2026-07-24-mega-menu-BUILD-SPEC.md
- * §8 (aside formats) + mega-panel/edit.js's own Aside PanelBody + the shared
+ * Mirrors mega-panel/edit.js's own Aside PanelBody + the shared
  * ResponsiveBoxControl doc-comment for the values/onChange contract.
  *
  * A locked-content side panel: media + tag/eyebrow + heading + text + a
  * call-to-action button. `asideFormat` (feature|preview|cta) is a LIVE control
- * (unlike the parent panel's insert-time-only `variant`, CF-5) — it only
+ * (unlike the parent panel's insert-time-only `variant`) — it only
  * changes which of the five fixed children are visible and how they're
  * arranged, never the structure, so switching it live never orphans content.
  *
  * This block owns its own FILL (background/padding/radius/border) — the
- * parent sgs/mega-panel still owns GRID POSITION (width/divider, CF-10). No
+ * parent sgs/mega-panel still owns GRID POSITION (width/divider). No
  * typography/colour control exists here for any inner element (media/tag/
- * heading/text/button) — that's all child-owned (HC2); a parent duplicate
+ * heading/text/button) — that's all child-owned; a parent duplicate
  * would be dead by CSS specificity against the child's own inline styles.
  *
  * @return {JSX.Element} The block editor UI.
@@ -94,10 +93,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	const format = asideFormat || 'feature';
 
-	// Editor-canvas preview style — mirrors render.php's fill logic (§2:
-	// background / border / radius / padding) exactly, so a change to any of
+	// Editor-canvas preview style — mirrors render.php's fill logic
+	// (background / border / radius / padding) exactly, so a change to any of
 	// these 5 controls shows live in the canvas instead of only on the
-	// published page. GROUND-TRUTH: render.php:82-122 — asideBg resolves via
+	// published page. asideBg resolves via
 	// sgs_colour_value() (here: resolveColourToken against the live palette,
 	// the same slug-or-raw-CSS resolution used by sgs/button's own preview);
 	// asideRadius is already a unit-bearing string from UnitControl; the
@@ -126,11 +125,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		previewStyle.borderColor = asideBorderColour
 			? resolveColourToken( asideBorderColour, palette )
 			: 'var(--sgs-mm-panel-border, rgba(0,0,0,.12))';
-		// CHECK A: asideBorderColourGradient had no canvas mirror — render.php:113-121
-		// paints it as a masked ::before ring (D636 border builder), winning over
+		// asideBorderColourGradient canvas mirror — render.php
+		// paints it as a masked ::before ring, winning over
 		// the flat border-color above. A plain inline style can't reproduce the
-		// mask, so this approximates it via border-image (same documented
-		// approximation used elsewhere this session), only when the border is
+		// mask, so this approximates it via border-image, only when the border is
 		// actually painting (borderWidthPreview truthy, matching render.php's gate).
 		if ( asideBorderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( asideBorderColourGradient ) ) {
 			previewStyle.borderImage = `${ asideBorderColourGradient } 1`;
@@ -142,11 +140,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	}
 
 	/*
-	 * asideBgHover(Gradient) canvas mirror (CHECK A, 2026-09-06). render.php:88-104
-	 * already emits both hover-sibling CSS custom properties, consumed by
-	 * style.css:49-53's real `.sgs-mega-aside:hover,:focus-within` rule — the
-	 * editor canvas never showed it because nothing outside the control read
-	 * either Hover attr. Same shape as this file's own resting preview above:
+	 * asideBgHover(Gradient) canvas mirror. render.php
+	 * emits both hover-sibling CSS custom properties, consumed by
+	 * style.css's real `.sgs-mega-aside:hover,:focus-within` rule — the
+	 * editor canvas needs its own rule to show it. Same shape as this file's
+	 * own resting preview above:
 	 * a clientId-scoped `<style>` tag with a real `:hover,:focus-within` rule,
 	 * resolved via the same resolveColourToken already used for the resting
 	 * background.
@@ -167,10 +165,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				? `background-color:${ resolveColourToken( asideBgHover, palette ) } !important;`
 				: '';
 	/*
-	 * asideBorderColourHover(Gradient) canvas mirror (CHECK A, Task 2,
-	 * colour-conformance). render.php now emits both via sgs_border_states_css()
-	 * — the editor canvas never showed it because nothing outside the control
-	 * read either Hover attr. Only meaningful when a resting border is actually
+	 * asideBorderColourHover(Gradient) canvas mirror. render.php emits both via
+	 * sgs_border_states_css(); the editor canvas needs its own rule to show it.
+	 * Only meaningful when a resting border is actually
 	 * painting (borderWidthPreview truthy, matching render.php's own
 	 * $aside_border_has_width gate above). Same `border-image` approximation
 	 * as the resting-state gradient preview above (not the real masked
@@ -192,7 +189,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		style: previewStyle,
 		'data-aside-format': format,
 	} );
-	// `templateLock:'insert'`, NOT `'all'` (D652). `'all'`/`'contentOnly'` re-run
+	// `templateLock:'insert'`, NOT `'all'`. `'all'`/`'contentOnly'` re-run
 	// WordPress's template-sync effect on every editor mount and silently
 	// discard any stored child that doesn't line up with TEMPLATE by position;
 	// `'insert'` still blocks a client from adding/removing/reordering the five
@@ -204,13 +201,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	return (
 		<>
-			{ /* GROUND-TRUTH: block.json attributes.asideBg / asideBorderColour
-			   (both plain string colour attrs, no default) + render.php:82-122
-			   (asideBg -> background-color; asideBorderColour -> border-color,
-			   falling back to --sgs-mm-panel-border when unset) — confirmed
-			   2026-08-15. Both single-state (no hover pair exists for either),
-			   `linked: true` per D619 (both previously used `linked` on their
-			   DesignTokenPicker already). */ }
+			{ /* block.json attributes.asideBg / asideBorderColour (plain string
+			   colour attrs, no default) + render.php (asideBg -> background-color;
+			   asideBorderColour -> border-color, falling back to
+			   --sgs-mm-panel-border when unset). `linked: true`. */ }
 			<SgsColourPanel
 				rows={ [
 					{
@@ -316,8 +310,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						} }
 					/>
 
-					{ /* units array is REQUIRED by contract §14 field 2 — added
-					     2026-08-11 (P-SPEC35-BORDER-RESIDUALS item 3). Without it
+					{ /* units array is REQUIRED by the box-object interface contract. Without it
 					     the operator gets whatever unit set core happens to
 					     default to, and '%' (a pill/circle radius) may not be
 					     reachable at all. */ }

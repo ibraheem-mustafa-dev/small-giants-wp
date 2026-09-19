@@ -11,19 +11,15 @@
 	width: 100%;
 	box-sizing: border-box;
 	/*
-	 * Site chrome paints ABOVE page content (2026-07-28, Gate-3 finding).
+	 * Site chrome paints ABOVE page content.
 	 * Without this, an at-rest header's open mega panel (z-index:100, trapped
 	 * inside the header rows' own z-index:1 stacking contexts) is painted
 	 * OVER by any later sgs-container context (.entry-content and footer
 	 * rows both carry z-index:1, and later-in-DOM wins at equal z) — the
-	 * panel became unhoverable because hit-testing reached the content
-	 * behind it, firing mouseleave on the nav's hover bridge. Proven live on
-	 * the canary (footer heading "T1TOP A" hit-tested above the open panel);
-	 * fix verified by injection before landing: a 400ms diagonal
-	 * trigger→panel hover survives with this rule, closes without it.
-	 * 100 matches the sticky/transparent behaviours' existing value
-	 * (header-behaviours.css:41,57 — the WP admin-bar-safe range) and the
-	 * draft designs' own header (position:sticky; z-index:200).
+	 * panel becomes unhoverable because hit-testing reaches the content
+	 * behind it, firing mouseleave on the nav's hover bridge.
+	 * 100 matches the sticky/transparent behaviours' value
+	 * (header-behaviours.css — the WP admin-bar-safe range).
 	 */
 	position: relative;
 	z-index: 100;
@@ -36,14 +32,11 @@
 
 /*
  * Collapse-to-drawer behaviour (nav bar hidden below the tier, burger shown) is
- * now owned entirely by sgs/nav-menu (Spec 36 FR-36-8, one of its three
+ * owned entirely by sgs/nav-bar-menu (Spec 36 FR-36-8, one of its three
  * operator-chosen collapse modes — burger→drawer / "More" overflow /
  * bottom-tab-bar), which emits the scoped breakpoint rules for BOTH its own
- * bar and its own burger toggle at the operator-configured tier (Task 1 /
- * D336 — the standalone sgs/mobile-nav-toggle block was retired; the header
- * no longer has a separate toggle to style). sgs/adaptive-nav, the block this
- * comment previously named, is superseded/retired per Spec 36 §1 — sgs/nav-menu
- * is the current from-scratch rebuild under that role.
+ * bar and its own burger toggle at the operator-configured tier. The header
+ * has no separate toggle to style.
  */
 
 /*

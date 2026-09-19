@@ -3,26 +3,26 @@
  *
  * Element-first inspector (Panel / Style / Aside), mirroring the pattern
  * used across other composite SGS blocks. `variant` has NO live control
- * (CF-5) — it is insert-time only, chosen by the starter pattern that
+ * — it is insert-time only, chosen by the starter pattern that
  * inserts this block, so it never appears here.
  *
- * FLEXIBLE COLUMNS (Bean-directed): the panel accepts a free 1-N mix of
+ * FLEXIBLE COLUMNS: the panel accepts a free 1-N mix of
  * `sgs/mega-group` / `sgs/mega-aside` children — add, remove, reorder freely
  * (no `contentOnly` lock at THIS level). The number of columns is simply the
  * number of mega-group children an operator has added; there is no separate
  * `columnCount` attribute. Each individual mega-group/mega-aside still locks
  * its OWN internal template (mega-group: heading+icon-list; mega-aside:
  * media+LABEL+heading+text+button — five children, see
- * `mega-aside/edit.js:37`; `templateLock: 'insert'` on their own edit.js —
+ * `mega-aside/edit.js`; `templateLock: 'insert'` on their own edit.js —
  * `'all'` re-runs WordPress's template-sync on every mount and silently
  * drops stored content that doesn't line up with the template by position,
  * so an operator cannot break THEIR shape, but can freely select and edit
  * any nested block's own settings (e.g. sgs/icon-list's link controls).
  *
- * The canvas itself proves the "parent paints child" mechanism (CF-10) live:
+ * The canvas itself proves the "parent paints child" mechanism live:
  * this component sets the SAME `data-mega-style` / `data-mega-scheme` /
  * `data-mega-variant` attributes AND the same colour custom-property VALUES
- * render.php computes onto the block wrapper, so editor.css (which mirrors
+ * render.php computes onto the block wrapper, so style.css (which mirrors
  * render.php's per-style reshape) restyles every sgs/mega-group /
  * sgs/mega-aside child immediately when an operator switches `style` or
  * `colourScheme` — no page reload, no ServerSideRender round-trip needed.
@@ -64,7 +64,7 @@ import { colourVar } from '../../utils';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 /**
- * `fxEffect` picker options (2026-09-11, Spec 38 addendum) — this block's own
+ * `fxEffect` picker options (Spec 38) — this block's own
  * block-private effect selector, NOT the shared fx roster's `fx` attribute
  * (mega-panel declares `hideExtensions:["fx"]` and stays off that roster).
  *
@@ -78,12 +78,12 @@ const FX_EFFECT_OPTIONS = [
 	{ label: __( 'Flowing gradient', 'sgs-blocks' ), value: 'wave-gradient' },
 ];
 
-/** Default general-variant template: 2 mega-groups (CF-10 pin) — a starting
- *  point only; the panel is NOT locked to this shape (FIX 1). */
+/** Default general-variant template: 2 mega-groups — a starting
+ *  point only; the panel is NOT locked to this shape. */
 const GENERAL_TEMPLATE = [ [ 'sgs/mega-group' ], [ 'sgs/mega-group' ] ];
 
 /**
- * media-cards variant (§1/§3) — a single `sgs/card-grid`, pre-configured to
+ * media-cards variant — a single `sgs/card-grid`, pre-configured to
  * the draft's exact geometry (4-col, 14px gap, 18px card radius, 16:10
  * media). `sgs/card-grid` owns its OWN full styling system (colour, hover,
  * typography) — the mega panel does NOT repaint it (unlike mega-group/
@@ -105,7 +105,7 @@ const MEDIA_CARDS_TEMPLATE = [
 ];
 
 /**
- * brands variant (§1/§3) — a `sgs/card-grid` used as a logo-tile grid
+ * brands variant — a `sgs/card-grid` used as a logo-tile grid
  * (media-only items, no title/subtitle needed) alongside a `sgs/mega-aside`
  * (pill/desc/CTA; asideWidth + asideSeparator attrs on THIS block already
  * give the 300px + 3px-accent-divider split — no new mega-panel CSS
@@ -128,7 +128,7 @@ const BRANDS_TEMPLATE = [
 
 /**
  * Which child blocks + starting template a variant gets. `variant` is
- * insert-time only (CF-5) — chosen by which starter pattern inserted this
+ * insert-time only — chosen by which starter pattern inserted this
  * block; there is no live control here that switches it.
  *
  * @param {string} variant `general` | `media-cards` | `brands`.
@@ -173,7 +173,7 @@ function paddingFromBox( box ) {
  * Build a CSS border-width shorthand from a { top, right, bottom, left } box
  * object — each side falls back to '1px' independently, mirroring
  * render.php's `$border_width_top = '' !== $border_width_top ? … : '1px';`
- * (B4, 2026-09-04) so a fresh instance (which never wrote this attr) shows
+ * so a fresh instance (which never wrote this attr) shows
  * the exact same 1px-everywhere hairline in the canvas that it renders on
  * the published page. Always returns a value (never undefined) — matches
  * render.php's `$has_border_width` being unconditionally true by
@@ -228,7 +228,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		fxEffect,
 	} = attributes;
 
-	// Motion-effect reachability flags (2026-09-11) — each names the SINGLE
+	// Motion-effect reachability flags — each names the SINGLE
 	// selected effect so the "not available in editor" Notice below and the
 	// matching *RowControls panel gate on the same condition. The editor
 	// canvas is static and cannot follow a pointer, animate particles, tick a
@@ -254,7 +254,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	// / `.sgs-mega-aside` even though those are separate elements.
 	const iconBackgroundValue = colourVar( iconBackground ) || 'var(--wp--preset--color--accent)';
 	const groupBorderValue = colourVar( groupBorderColourHover ) || 'var(--wp--preset--color--accent)';
-	// Gradient-set preview (D636 pattern, mirrors sgs/text's firstLetterColour
+	// Gradient-set preview (mirrors sgs/text's firstLetterColour
 	// precedent): a background-clip:text declaration cannot be expressed
 	// through a single CSS custom-property value consumed by a DESCENDANT
 	// selector — `--sgs-mm-accent-text` feeds `.sgs-icon-list__icon` several
@@ -269,14 +269,14 @@ export default function Edit( { attributes, setAttributes } ) {
 		: colourVar( iconColour ) || 'var(--wp--preset--color--accent)';
 	const accentImageValue = colourVar( accentBackgroundImage ) || 'var(--wp--preset--color--accent)';
 	const shellStyle = {
-		// Per-role accent custom properties (D643) — style.css derives
+		// Per-role accent custom properties — style.css derives
 		// --sgs-mm-soft / --sgs-mm-soft-image from -bg / -image via color-mix();
 		// -text / -border are consumed directly.
 		'--sgs-mm-accent-bg': iconBackgroundValue,
 		'--sgs-mm-accent-border': groupBorderValue,
 		'--sgs-mm-accent-text': iconColourValue,
 		'--sgs-mm-accent-image': accentImageValue,
-		// iconBackgroundGradient canvas mirror (2026-09-06) — paints the icon-chip
+		// iconBackgroundGradient canvas mirror — paints the icon-chip
 		// background-image at full strength, same approximation approach as the
 		// borderImage/groupBorderColourGradient mirrors below (a raw CSS function
 		// string, gated on looking like a real gradient() call).
@@ -285,8 +285,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			/^(repeating-)?(linear|radial|conic)-gradient\(/i.test( iconBackgroundGradient )
 				? iconBackgroundGradient
 				: undefined,
-		// iconBackgroundHover/iconBackgroundGradientHover canvas mirrors (2026-09-06,
-		// hover-controls task) — consumed by style.css's `cards`-style hover rule on
+		// iconBackgroundHover/iconBackgroundGradientHover canvas mirrors — consumed by style.css's `cards`-style hover rule on
 		// `.sgs-mega-group:hover .sgs-icon-list__icon`. Only set when the operator
 		// has picked one; unset means the hover rule's own var(...) fallback chain
 		// resolves to the exact resting-state values, so this stays a no-op.
@@ -298,7 +297,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			/^(repeating-)?(linear|radial|conic)-gradient\(/i.test( iconBackgroundGradientHover )
 				? iconBackgroundGradientHover
 				: undefined,
-		// accentBackgroundImageGradient canvas mirror (2026-09-06) — consumed by
+		// accentBackgroundImageGradient canvas mirror — consumed by
 		// style.css's spotlight `[data-spotlight]::before` rule, bypassing the
 		// derived --sgs-mm-soft-image tint entirely when set.
 		'--sgs-mm-accent-image-gradient':
@@ -307,10 +306,9 @@ export default function Edit( { attributes, setAttributes } ) {
 				? accentBackgroundImageGradient
 				: undefined,
 		'--sgs-mm-panel-bg': panelBg ? colourVar( panelBg ) || panelBg : undefined,
-		// panelBgGradient canvas mirror (2026-09-06) — same approach: --sgs-mm-panel-bg-gradient
+		// panelBgGradient canvas mirror — same approach: --sgs-mm-panel-bg-gradient
 		// is consumed by style.css's dark-scheme rule and by this root's own
-		// panelBg background-color (once painted — see that attribute's own
-		// pre-existing gap, unaffected by this change).
+		// panelBg background-color.
 		'--sgs-mm-panel-bg-gradient':
 			panelBgGradient &&
 			/^(repeating-)?(linear|radial|conic)-gradient\(/i.test( panelBgGradient )
@@ -322,16 +320,15 @@ export default function Edit( { attributes, setAttributes } ) {
 		// A gradient border renders frontend as a masked ::before ring
 		// (sgs_border_gradient_css() in render.php), which cannot be reproduced in
 		// a plain inline style — approximate it with the gradient as a border-image,
-		// same as every other border-migrated block's canvas preview. Paints into
-		// the real border area set below (borderWidth/borderStyle/borderColor —
-		// this block DOES have its own width/style control via SgsBorderControl,
-		// B4 2026-09-04; the "no width/style control" claim that used to live
-		// here was stale and is corrected by that same migration's own attrs).
+		// same as every other block's canvas preview of a gradient border. Paints
+		// into the real border area set below (borderWidth/borderStyle/
+		// borderColor — this block has its own width/style control via
+		// SgsBorderControl).
 		borderImage:
 			borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient )
 				? `${ borderColourGradient } 1`
 				: undefined,
-		// NEW resting-state group-tile border override (2026-08-28, Bean-ruled) —
+		// Resting-state group-tile border override —
 		// only set when the operator has picked a resting colour; unset means
 		// "inherit the cards tile's existing --sgs-mm-panel-border-derived
 		// border", matched in style.css via a `var(..., var(--sgs-mm-panel-border))`
@@ -339,12 +336,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		'--sgs-mm-group-border-resting': groupBorderColour
 			? colourVar( groupBorderColour ) || groupBorderColour
 			: undefined,
-		// CHECK A: groupBorderColourGradient had no canvas mirror — render.php
+		// groupBorderColourGradient canvas mirror — render.php
 		// paints it as a masked ::before ring on the resting `.sgs-mega-group`
 		// tile (cards style only), winning over the flat resting colour above.
-		// style.css's `--sgs-mm-group-border-image` consumer (added alongside
-		// this) is a border-image approximation, scoped so it is a no-op on the
-		// frontend (that custom property is never set by render.php).
+		// style.css's `--sgs-mm-group-border-image` consumer is a border-image
+		// approximation, scoped so it is a no-op on the frontend (that custom
+		// property is never set by render.php).
 		'--sgs-mm-group-border-image':
 			groupBorderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( groupBorderColourGradient )
 				? `${ groupBorderColourGradient } 1`
@@ -361,11 +358,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		// property, not a custom-prop indirection.
 		padding: paddingFromBox( panelPadding?.desktop ),
 		borderRadius: borderRadius || undefined,
-		// CHECK A: borderWidth/borderStyle had no canvas mirror at all (only
-		// borderColour was referenced, via --sgs-mm-panel-border above) — the
-		// panel rendered with no visible border in the editor regardless of
-		// these two controls. Mirrors render.php:344-356 exactly: width always
-		// paints (each side falls back to 1px, B4), style/colour ride the same
+		// borderWidth/borderStyle canvas mirror (borderColour arrives via
+		// --sgs-mm-panel-border above). Mirrors render.php exactly: width always
+		// paints (each side falls back to 1px), style/colour ride the same
 		// declaration set, colour reusing the --sgs-mm-panel-border value
 		// already resolved above so an unset borderColour falls back
 		// identically in both places.
@@ -406,27 +401,16 @@ export default function Edit( { attributes, setAttributes } ) {
 			{ /* GROUND-TRUTH: block.json attributes.panelBg / borderColour /
 			   iconBackground / groupBorderColour / groupBorderColourHover /
 			   iconColour / accentBackgroundImage (plain string colour attrs) +
-			   render.php:80-360 (each attribute resolves to its OWN
+			   render.php (each attribute resolves to its OWN
 			   --sgs-mm-accent-bg / -border / -text / -image custom property,
 			   consumed by exactly ONE real CSS property each — background-color
 			   via the derived --sgs-mm-soft, border-color, color, and the aside
-			   spotlight's background-image via the derived --sgs-mm-soft-image
-			   — split 2026-08-16 (D643) from the single `accent` attribute that
-			   previously drove all four at once, then renamed 2026-08-28 [NULL
-			   css_element fix proposal §5] from accentBackground/
-			   accentBorderColour/accentTextColour to iconBackground/
-			   groupBorderColour/iconColour, and — same day, once Bean ruled a
-			   genuine resting-state border should exist alongside the hover —
-			   groupBorderColour/groupBorderColourGradient renamed a second time
-			   to groupBorderColourHover/groupBorderColourGradientHover, freeing
-			   the base names for the NEW resting pair) + style.css (panelBg ->
-			   background-color, borderColour -> border-color, the new
-			   --sgs-mm-group-border-resting -> the cards tile's resting
-			   border-color). Confirmed 2026-08-16 against the live source
-			   before wiring these rows; resting pair confirmed 2026-08-28
-			   against the same render.php/style.css/block.json triad. All
-			   single-state, `linked: true` per D619 (all previously used
-			   `linked` on their DesignTokenPicker already). */ }
+			   spotlight's background-image via the derived --sgs-mm-soft-image;
+			   groupBorderColour/groupBorderColourGradient are the resting pair,
+			   groupBorderColourHover/groupBorderColourGradientHover the hover
+			   pair) + style.css (panelBg -> background-color, borderColour ->
+			   border-color, --sgs-mm-group-border-resting -> the cards tile's
+			   resting border-color). All single-state, `linked: true`. */ }
 			<SgsColourPanel
 				rows={ [
 					{
@@ -463,7 +447,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { iconBackgroundGradient: val ?? '' } ),
 							},
 							{
-								// Hover pair (2026-09-06, hover-controls task) — fires off the
+								// Hover pair — fires off the
 								// icon chip's ancestor `.sgs-mega-group:hover` on the `cards`
 								// style only (the one style where that ancestor already has a
 								// real hover trigger). Default empty string: no colour override
@@ -524,14 +508,13 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { iconColourGradient: val ?? '' } ),
 							},
 							{
-								// Hover pair (2026-09-07, colour-conformance bg-layer batch) —
-								// mirrors iconBackgroundHover immediately above: fires off the
+								// Hover pair — mirrors iconBackgroundHover immediately above: fires off the
 								// icon chip's ancestor `.sgs-mega-group:hover` on the `cards`
-								// style only. NOT migrated to the shared textRow() helper: that
+								// style only. Deliberately NOT the shared textRow() helper: that
 								// helper's onChange always falls back to '' on clear, but this
-								// row's NORMAL state deliberately falls back to the 'accent'
-								// default (matching iconColour's own block.json default) — a
-								// silent default-value regression this hand-rolled shape avoids.
+								// row's NORMAL state falls back to the 'accent' default
+								// (matching iconColour's own block.json default), which this
+								// hand-rolled shape preserves.
 								// Default empty string on hover: no colour override until an
 								// operator sets one, matching iconBackgroundHover's own convention.
 								key: 'hover',
@@ -549,8 +532,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'accentBackgroundImage',
 						label: __( 'Accent background image', 'sgs-blocks' ),
-						// gradientCapable (2026-09-06, preset-to-gradient upgrade task): the
-						// new accentBackgroundImageGradient sibling BYPASSES the base slug's
+						// gradientCapable: the
+						// accentBackgroundImageGradient sibling BYPASSES the base slug's
 						// color-mix()-derived tint entirely and paints the raw gradient
 						// directly on the spotlight glow's background-image — a gradient
 						// cannot be meaningfully passed through that same colour-stop
@@ -573,8 +556,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				] }
 			/>
 			<InspectorControls>
-				{ /* S7 pilot (2026-09-02, uniformity sweep): converted from a plain
-				   PanelBody to a ToolsPanel — all six controls (bgBlur, maxWidth,
+				{ /* A ToolsPanel — all controls (bgBlur, maxWidth,
 				   panelPadding, groupGap, borderRadius) are optional style/layout
 				   customisations, so none are marked isShownByDefault. Same pattern
 				   as team-member's optional controls. */ }
@@ -675,8 +657,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						</ResponsiveControl>
 					</ToolsPanelItem>
 
-					{ /* units array REQUIRED by contract §14 field 2 — added
-					     2026-08-11 (P-SPEC35-BORDER-RESIDUALS item 3). */ }
+					{ /* units array REQUIRED by the box-object interface contract. */ }
 					<ToolsPanelItem
 						label={ __( 'Border radius', 'sgs-blocks' ) }
 						hasValue={ () => !! borderRadius }
@@ -800,8 +781,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						<ToggleGroupControlOption value="bottom-right" label={ __( 'Bottom right', 'sgs-blocks' ) } />
 					</ToggleGroupControl>
 
-					{ /* Block-private motion-effect selector (2026-09-11, Spec 38
-					   addendum) — NOT the shared fx ToolsPanel roster (this block
+					{ /* Block-private motion-effect selector (Spec 38) — NOT the shared fx ToolsPanel roster (this block
 					   declares `hideExtensions:["fx"]` above and stays off that
 					   roster). Additive to, and independent of, the aside's own
 					   always-on cursor spotlight below in the Aside panel: that
@@ -1022,12 +1002,11 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						</>
 					) }
-					{ /* 37-media-no-handroll remediation (2026-09-03) — the aside
-					   banner's crop mode is a genuine client control now
-					   (style.css/render.php no longer hardcode object-fit:cover;
+					{ /* The aside banner's crop mode is a genuine client control
+					   (style.css/render.php do not hardcode object-fit:cover;
 					   the shared media-atoms system paints the same default).
 					   The aside's image is rendered by a CHILD block (sgs/mega-
-					   aside), so this is parent-paints-child (CF-10), same as
+					   aside), so this is parent-paints-child, same as
 					   this panel's other Aside-panel controls above. */ }
 					<MediaElementPanel
 						attributes={ attributes }
@@ -1041,30 +1020,22 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				{ /* B4 (2026-09-04): SgsBorderControl migration, ANOMALY category —
-				   the panel had a border colour (+ gradient) already, painted via a
-				   HARDCODED `border:1px solid` shorthand in render.php (no width/style
-				   attrs existed). Adopting the shared control necessarily adds real
-				   width + style capability (SgsBorderControl always renders the width
-				   box; there is no colour+radius-only composition), so borderWidth/
-				   borderStyle are NEW attrs, defaulting to 1px/solid to match the
-				   previous hardcoded shorthand exactly. Radius is DELIBERATELY left
-				   out of this control (no onRadiusChange wired) and stays on its own
-				   scalar `borderRadius` control in the Panel ToolsPanel above —
+				{ /* SgsBorderControl: width + style + colour (+ gradient) — borderWidth/
+				   borderStyle default to 1px/solid, matching render.php's fallback
+				   (SgsBorderControl always renders the width box; there is no
+				   colour+radius-only composition). Radius is DELIBERATELY left out of
+				   this control (no onRadiusChange wired) and stays on its own scalar
+				   `borderRadius` control in the Panel ToolsPanel above —
 				   SgsBorderControl's radius param expects a per-CORNER object
 				   ({topLeft,topRight,bottomLeft,bottomRight}), a different shape from
-				   this block's existing plain-string `borderRadius` (`"20px"`), and
-				   migrating that shape is a separate, unscoped change with its own
-				   backward-compatibility risk against every already-published
-				   mega-menu instance. Placed LAST in InspectorControls (not next to
-				   the Panel ToolsPanel it conceptually belongs beside) so its
-				   borderStyle/onStyleChange lines sit outside the enum-control-shape
-				   gate's 900-char proximity window of the unrelated Style/Motion/
-				   Aside panels' own ToggleGroupControl mounts — those falsely
-				   resolved as the bound control for borderStyle when this sat
-				   earlier in the tree (SgsBorderControl's OWN internal style picker
-				   is invisible to the file-local scan, same as every other migrated
-				   block's "shared-component" skip). */ }
+				   this block's plain-string `borderRadius` (`"20px"`). Placed LAST in
+				   InspectorControls (not next to the Panel ToolsPanel it conceptually
+				   belongs beside) so its borderStyle/onStyleChange lines sit outside
+				   the enum-control-shape gate's 900-char proximity window of the
+				   unrelated Style/Motion/Aside panels' own ToggleGroupControl mounts —
+				   those would falsely resolve as the bound control for borderStyle
+				   (SgsBorderControl's OWN internal style picker is invisible to the
+				   file-local scan, same as every other "shared-component" skip). */ }
 			</InspectorControls>
 
 			{ /* Routed to its own explicit "styles" group (RULE 01-tab-group,
@@ -1098,19 +1069,19 @@ export default function Edit( { attributes, setAttributes } ) {
 					<p className="sgs-mega-panel__eyebrow">{ brandsEyebrow }</p>
 				) }
 				<div { ...innerBlocksProps } />
-				{ /* viewAllPlacement editor-canvas preview (CHECK A, 2026-08-13).
+				{ /* viewAllPlacement editor-canvas preview.
 					The real footer content comes from `sgs_mega_panel_footer_html`
 					— a filter fired at FRONTEND render time by the parent
-					sgs/nav-menu mega item (render.php:528), reading data this
+					sgs/nav-bar-menu mega item, reading data this
 					isolated block editor has no access to, so the actual link
 					text/markup can never be replayed here (same "no live data"
 					shape Signal 4 already covers for buybox/google-reviews).
 					`auto`/`none` are correctly silent for the same reason: `auto`'s
-					visibility depends on that same unavailable nav-menu context,
+					visibility depends on that same unavailable navigation context,
 					and `none` genuinely renders nothing. But the CHOSEN CORNER
 					(bottom-left/bottom-right) is real, static, and fully knowable
 					here — it is just the alignment modifier class render.php
-					already applies (render.php:551-553) — so those two states get
+					already applies — so those two states get
 					an honest placeholder showing WHERE the link will land. */ }
 				{ ( 'bottom-left' === viewAllPlacement ||
 					'bottom-right' === viewAllPlacement ) && (
@@ -1132,7 +1103,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							gate's editor-only exemption — there is no equivalent
 							frontend markup this could accidentally clash with either
 							way, since `.sgs-mega-panel__footer` on a real page only
-							ever wraps real `$footer_html` content (render.php:548). */ }
+							ever wraps real `$footer_html` content (render.php). */ }
 						<span
 							style={ {
 								fontSize: '11px',

@@ -3,11 +3,11 @@
  * SGS Footer Row — server-side render.
  *
  * A single row of a site footer. Two shapes, both driven by the shared
- * SGS_Container_Wrapper (composite-mirror, R-31-9 / D294) via the block's
+ * SGS_Container_Wrapper (composite-mirror, R-31-9) via the block's
  * `layout` attr — no divergent per-block styling path:
  *   - layout='grid'  → a column grid (up to 6 columns → 1 below the mobile tier)
- *                       for the columns row; `columns` (a TIER OBJECT, Spec 35
- *                       pass 4) and `gridTemplateColumns` are consumed by the
+ *                       for the columns row; `columns` (a TIER OBJECT)
+ *                       and `gridTemplateColumns` are consumed by the
  *                       wrapper via sgs_responsive_normalise_object().
  *   - layout='flex'  → an intrinsic never-overflow cluster (top strip / bottom
  *                       bar) that wraps rather than overflowing at any width.
@@ -51,7 +51,7 @@ $uid = 'sgs-sfr-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 $row_slot   = isset( $attributes['rowSlot'] ) ? sanitize_html_class( $attributes['rowSlot'] ) : '';
 $slot_class = '' !== $row_slot ? 'sgs-site-footer-row--' . $row_slot : '';
 
-// D303: $uid is applied as BOTH an id (extra_attrs) AND a class (extra_classes) by
+// $uid is applied as BOTH an id (extra_attrs) AND a class (extra_classes) by
 // the wrapper, so the class-scoped `.{$uid}.sgs-site-footer-row` colour/border rules
 // below match this element.
 $root_sel = '.' . $uid . '.sgs-site-footer-row';
@@ -69,7 +69,7 @@ $css = '';
 
 
 // Text colour (flat or gradient) — gradient sibling attribute wins when
-// set+valid (D636 sibling-attribute shape). sgs_text_colour_decl() resolves a
+// set+valid (sibling-attribute shape). sgs_text_colour_decl() resolves a
 // palette SLUG to var(--wp--preset--color--…) the same way sgs_colour_value()
 // does, so a bare slug never reaches the browser as invalid CSS. Mirrors
 // sgs/counter's labelColour / sgs/tab's textColour.
@@ -86,7 +86,7 @@ if ( '' !== $sfr_text_colour_effective ) {
 	$css .= sgs_text_colour_gradient_fallback_rule( $root_sel, $sfr_text_colour_effective );
 }
 
-// Precondition check (colour-conformance pass, 2026-09-07): the `row`
+// Precondition check: the `row`
 // manifest element shares BOTH css:color (textColour) and
 // css:background-color (backgroundColour) on this SAME $root_sel, so a
 // hover text-GRADIENT here (background-clip:text) would clip/overwrite the
@@ -108,15 +108,9 @@ if ( '' !== $sfr_text_colour_hover_effective ) {
 }
 
 // Background (colour + gradient, resting + hover) is owned by the shared fill
-// emitter, NOT by the style engine and NOT by supports.color.gradients.
-//
-// supports.color.gradients was `true` here, so CORE rendered its own gradient
-// panel in the Styles tab, competing with the SGS colour panel — the client saw
-// two and could not tell which won. Switching the flag off alone would have
-// REMOVED the only gradient control this block had, because the sole gradient
-// read was $attributes['style']['color']['gradient'] (core's own storage). The
-// flag flip is therefore PAIRED with a block-private backgroundColourGradient
-// exposed through fillRow(), so capability is moved rather than lost.
+// emitter, NOT by the style engine and NOT by supports.color.gradients. The
+// gradient is the block-private backgroundColourGradient exposed through
+// fillRow(), so core renders no competing gradient panel in the Styles tab.
 if ( $sfr_hover_is_gradient ) {
 	$sfr_fill_decls = sgs_fill_decls(
 		$attributes,
@@ -148,17 +142,12 @@ if ( $sfr_hover_is_gradient ) {
 	}
 }
 
-// (native border_args removed by the Shape-B migration -- width/style/colour
-// are block-private attrs now, emitted below)
+// Border width/style/colour are block-private attrs, emitted below.
 
-// The native style-engine colour path is GONE, deliberately. Text colour now
-// renders through sgs_resolve_text_colour_or_gradient() + sgs_text_colour_decl()
-// above, because wp_style_engine_get_styles()'s color.text input cannot carry a
-// gradient (background-clip:text is not a colour value). The border half was
-// already removed by the Shape-B migration, so nothing was left to feed the
-// engine and its guards were provably dead -- check-render-undefined-vars
-// caught them as always-falsy. Do not reinstate: an empty args array emits no
-// CSS, so this was dead code, not a safety net.
+// There is no native style-engine colour path. Text colour renders through
+// sgs_resolve_text_colour_or_gradient() + sgs_text_colour_decl() above,
+// because wp_style_engine_get_styles()'s color.text input cannot carry a
+// gradient (background-clip:text is not a colour value).
 
 // Skip-serialised `color` support also stops WP adding has-*-color classes onto
 // the wrapper — re-add them so preset palette colours still resolve (mirrors hero/quote).
@@ -173,22 +162,20 @@ if ( '' !== $sfr_preset_bg_slug ) {
 	$classes[] = 'has-' . $sfr_preset_bg_slug . '-background-color';
 }
 
-// ── Per-row scroll behaviours (Phase 1, FR-37-per-row) ──────────────────────
-// Independent of the header-LEVEL body-class behaviour path (D376, unchanged).
-// This is a NEW parallel path: view.js scans `.sgs-row-behaviour` rows and
-// toggles per-row state classes based on the tiers listed in these data-attrs.
+// ── Per-row scroll behaviours (FR-37-per-row) ───────────────────────────────
+// Independent of the header-level behaviour path: view.js scans
+// `.sgs-row-behaviour` rows and toggles per-row state classes based on the
+// tiers listed in these data-attrs.
 // A behaviour off in every tier emits NOTHING (no attr at all). Mirrors
 // sgs/site-header-row exactly.
 $sfr_extra_attrs = array( 'id' => $uid );
-// rowTransparent/rowHideOnScroll/rowShrink reshaped from a boolean-object
-// shape to the tri-state STRING enum ('on'/'off'/'inherit') at Spec 35 T1.4
-// fold-in (2026-07-28, D400+) — see the identical note in
+// rowTransparent/rowHideOnScroll/rowShrink are tri-state STRING enums
+// ('on'/'off'/'inherit') — see the identical note in
 // sgs/site-header-row/render.php. sgs_resolve_on_tiers() is the same
-// canonical resolver for header + row + footer-row; only the marker/default
-// pair changes here.
+// canonical resolver for header + row + footer-row.
 $sfr_transparent_on_tiers = sgs_resolve_on_tiers( isset( $attributes['rowTransparent'] ) ? $attributes['rowTransparent'] : array(), 'on', 'off' );
 $sfr_hide_on_scroll_tiers = sgs_resolve_on_tiers( isset( $attributes['rowHideOnScroll'] ) ? $attributes['rowHideOnScroll'] : array(), 'on', 'off' );
-// Phase 2 — per-row shrink. Same tier resolver, own data-attr + state class.
+// Per-row shrink. Same tier resolver, own data-attr + state class.
 $sfr_shrink_tiers = sgs_resolve_on_tiers( isset( $attributes['rowShrink'] ) ? $attributes['rowShrink'] : array(), 'on', 'off' );
 if ( ! empty( $sfr_transparent_on_tiers ) || ! empty( $sfr_hide_on_scroll_tiers ) || ! empty( $sfr_shrink_tiers ) ) {
 	$classes[] = 'sgs-row-behaviour';
@@ -203,7 +190,7 @@ if ( ! empty( $sfr_transparent_on_tiers ) || ! empty( $sfr_hide_on_scroll_tiers 
 	}
 }
 
-// Phase 2 — "shrink hides a chosen element". SERVER-SIDE BACKSTOP, identical to
+// "Shrink hides a chosen element". SERVER-SIDE BACKSTOP, identical to
 // sgs/site-header-row: the helper re-validates the stored target against this
 // row's real children and refuses any block flagged supports.sgs.headerEssential.
 // An orphaned target (child deleted) resolves to '' — hides nothing, no error.
@@ -225,16 +212,15 @@ if ( ! empty( $sfr_shrink_tiers ) ) {
 	}
 }
 
-// ── Motion (2026-09-11 addendum) — block-private escape hatch, NOT the shared
+// ── Motion — block-private escape hatch, NOT the shared
 // fx ToolsPanel roster (fx.js / generated-fx-qualifying-blocks.json /
-// check-fx-list-drift.py are untouched by this block; it declares no `fx`
+// check-fx-list-drift.py are not touched by this block; it declares no `fx`
 // attribute and must never join that roster). `fxEffect` is this block's OWN
 // selector attribute, PHP-whitelist-validated below; the four options each
 // reuse an existing shared runtime unmodified (fx-cursor-field.php /
 // fx-particles.js / fx-grid-dots.js / the wave-gradient CSS+runtime), driven
 // by the SAME data-attribute contract `includes/fx-attributes.php`'s
-// FX_ATTR_MAP already documents — confirmed against that file before writing
-// this mapping. Only a key whose source attribute is genuinely set is
+// FX_ATTR_MAP already documents. Only a key whose source attribute is genuinely set is
 // emitted (a numeric 0 must survive; `isset()`/`'' !== `, never `empty()`,
 // which would drop a deliberate 0). ──
 $sfr_allowed_fx_effects = array( '', 'cursor-field', 'particles', 'grid-dots', 'wave-gradient' );
@@ -304,21 +290,20 @@ if ( '' !== $sfr_fx_effect ) {
 	}
 }
 
-// ── Footer-row-ONLY scroll-scrubbed reveal (2026-09-11 addendum) — NOT shared
+// ── Footer-row-ONLY scroll-scrubbed reveal — NOT shared
 // with any other block, and NOT gated by $sfr_fx_effect above (a reveal
 // TIMING, not a paint effect, so it can combine with any of the four or with
 // none). Reuses Spec 38 FR-38-7's `scrub` runtime UNMODIFIED
 // (src/shared/effects/gsap/fx-scrub.js, bootEffect('scrub', initScrub) does
 // document.querySelectorAll('[data-sgs-fx="scrub"]') and tweens each matched
-// element's own opacity/transform against its own scroll progress -- read in
-// full before writing this). `sgs_fx_effect_param_scope()`'s 'scrub' row
+// element's own opacity/transform against its own scroll progress).
+// `sgs_fx_effect_param_scope()`'s 'scrub' row
 // carries no per-child stagger param, so this is scoped to a single
 // row-level reveal (the row fades/slides in as a whole) rather than
 // mutating already-rendered nested InnerBlocks HTML to stagger individual
-// children -- that would need either fragile HTML surgery with no
-// precedent/tooling in this codebase, or extending the shared runtime to
-// accept multiple internal targets, both out of scope for a block-private
-// escape hatch. `data-sgs-fx` was already claimed above by $sfr_fx_effect
+// children -- that would need either fragile HTML surgery or extending the
+// shared runtime to accept multiple internal targets, neither of which
+// belongs in a block-private escape hatch. `data-sgs-fx` is already claimed above by $sfr_fx_effect
 // when one is set; 'scrub' does not conflict with any of the four paint
 // effects (they use their own runtimes/selectors) but the attribute can
 // only carry one value, so when a paint effect is also active this reveal
@@ -334,9 +319,7 @@ if ( $sfr_footer_stagger && '' === $sfr_fx_effect ) {
 	$sfr_extra_attrs['data-sgs-fx-ease']  = 'power2.out';
 }
 
-// ── Block-private border: width / style / colour (Shape B). ──
-// Migrated from WP-native supports by scripts/migrate-border-shape-b.js.
-// Oracle: sgs/accordion, live-verified with scripts/qa/check-border-roundtrip.js.
+// ── Block-private border: width / style / colour. ──
 $border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
 $border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
 $border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
@@ -349,8 +332,8 @@ $allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', '
 $border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
 
 if ( 'none' !== $border_style ) {
-	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
-	// through to the browser's initial `medium` (~3px).
+	// A style with no width means no border — never fall through to the
+	// browser's initial `medium` (~3px).
 	if ( $has_border_width ) {
 		$bwt  = '' !== $border_width_top ? $border_width_top : '0';
 		$bwr  = '' !== $border_width_right ? $border_width_right : '0';
@@ -370,11 +353,11 @@ if ( 'none' !== $border_style ) {
 		$css .= sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' );
 	} elseif ( '' !== $border_colour ) {
 		// sgs_colour_value() resolves a palette SLUG; a bare slug is invalid CSS
-		// the browser drops (D881 defect 3).
+		// the browser drops.
 		$css .= $root_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
 	}
 } else {
-	// G5 corollary: "none" must be an explicit override too, not a
+	// "none" must be an explicit override too, not a
 	// no-op -- a variant's own hardcoded CSS border (e.g. a card-style
 	// class default) would otherwise keep painting even though the
 	// operator picked "no border". Cause-agnostic: harmless when no
@@ -382,13 +365,10 @@ if ( 'none' !== $border_style ) {
 	$scoped_css[] = $root_sel . '{border-style:none;border-width:0;}';
 }
 
-// ── Block-private border-radius (radius is no longer native -- Shape B now
-// covers all four legs). Same wp_style_engine_get_styles() route already
-// proven live by sgs/media + sgs/before-after's borderRadiusTablet/Mobile
-// tiers; base now goes through the identical call instead of WP's native
-// serialisation. The style-engine result is an intermediate PHP value ($out
-// array), never appended raw -- only its ['css'] string goes through the
-// detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
+// ── Block-private border-radius via wp_style_engine_get_styles() (base and the
+// tablet/mobile tiers use the identical call). The style-engine result is an
+// intermediate PHP value ($out array), never appended raw -- only its ['css']
+// string is appended to $css. ──
 $radius_tiers      = sgs_border_radius_tiers( $attributes );
 $border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
 if ( ! empty( $border_radius_obj ) ) {

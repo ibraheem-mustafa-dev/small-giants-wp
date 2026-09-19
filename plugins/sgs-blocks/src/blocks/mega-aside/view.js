@@ -1,10 +1,9 @@
 /**
  * SGS Mega Aside (sgs/mega-aside) — frontend interactivity for `preview` format.
  *
- * GROUND-TRUTH: verified against .claude/plans/archive/2026-07-24-mega-menu-BUILD-SPEC.md
- * §8 ("preview: hover-reactive — displays the currently-hovered link's title
- * and description") + icon-list/view.js's module-bootstrap pattern (reused
- * here, same house style: querySelectorAll + forEach + DOMContentLoaded gate).
+ * `preview` format is hover-reactive: it displays the currently-hovered link's
+ * title and description. Uses icon-list/view.js's module-bootstrap pattern
+ * (querySelectorAll + forEach + DOMContentLoaded gate).
  *
  * ONE responsibility: when `data-aside-format="preview"`, swap the aside's
  * heading + text content to match whichever link elsewhere in the SAME
@@ -15,7 +14,7 @@
  * Progressive enhancement only: with zero JS the aside still renders its
  * authored heading/text (the resting state) — this is purely an enhancement
  * layer, never load-bearing content. No `.innerHTML` of link-derived content
- * (CF-2) — every write uses `textContent`.
+ * — every write uses `textContent`.
  *
  * Deliberately does NOT touch mega-panel's or mega-group's/icon-list's own
  * files or stores — this reads sibling DOM via event delegation on the

@@ -15,14 +15,11 @@ import {
 	Button,
 	BoxControl,
 } from '@wordpress/components';
-// No-inline migration: sgs/site-header no longer uses
-// <ContainerWrapperControls>'s ResponsiveSpacingPanel — its flat
-// paddingTopTablet/…/marginLeftMobile attrs are LEGACY and became dead
-// controls once paddingTablet/paddingMobile/marginTablet/marginMobile became
-// box OBJECT attrs read by class-sgs-container-wrapper.php (matches
-// sgs/container's + sgs/cta-section's own edit.js, which took the same
-// approach). Roll this block's own "Padding & margin" panel below using
-// ResponsiveBoxControl bound to the object attrs.
+// sgs/site-header does not use <ContainerWrapperControls>'s
+// ResponsiveSpacingPanel: padding and margin are box OBJECT attrs read by
+// class-sgs-container-wrapper.php, so this block's own "Padding & margin"
+// panel below uses ResponsiveBoxControl bound to those object attrs (as
+// sgs/container's and sgs/cta-section's own edit.js do).
 import {
 	WidthPanel,
 	BackgroundPanel,
@@ -53,16 +50,16 @@ function isOnAtAnyTier( raw ) {
 
 // FR-37-28 — Layout preset (Centred / Split / Minimal). A preset is a
 // convenience action that WRITES the block's EXISTING layout attributes
-// (contentWidth + the native spacing.padding style attr) to a documented
+// (contentWidth + the block's own padding attr) to a documented
 // value set — it is never a new stored shape. No preset-name attribute is
 // stored; the active preset (if any) is DERIVED from the current attribute
 // values each render, so a hand-edited combination correctly shows no
 // preset selected rather than lying about which preset produced it.
 //
-// Attrs available on sgs/site-header itself only (no row/nav-menu attrs —
+// Attrs available on sgs/site-header itself only (no row or navigation attrs —
 // those live on sgs/site-header-row and are out of this block's scope):
 //   contentWidth — 'normal' | 'wide' | 'full' | literal (content-band cap)
-//   style.spacing.padding — native WP spacing support (top/right/bottom/left)
+//   padding — block-owned box object (top/right/bottom/left per tier)
 //
 // Each preset ALSO re-aligns the primary (middle) row. The header's
 // horizontal logo/nav alignment lives on the middle row's justifyContent,
@@ -114,14 +111,11 @@ function paddingMatches( padding, target ) {
 function getActiveLayoutPreset( attributes, rowJustify = '' ) {
 	const { contentWidth = 'full', padding } = attributes;
 
-	// ⚠ EMPTINESS, not falsiness. Base padding moved off WP-native
-	// `style.spacing.padding` onto a block-OWNED `padding` object attr whose
-	// declared default is `{}` (2026-08-27, matching sgs/container's D555 shape).
-	// The old test here was `! padding`, which worked only because the native
-	// value was `undefined` when unset. An empty object is TRUTHY, so keeping
-	// `! padding` would make Split and Centred undetectable forever and the
-	// preset toggle would permanently show nothing selected — a silent break
-	// with no error and a green build.
+	// ⚠ EMPTINESS, not falsiness. Base padding is a block-OWNED `padding` object
+	// attr whose declared default is `{}` (the same shape as sgs/container). An
+	// empty object is TRUTHY, so a `! padding` test would make Split and Centred
+	// undetectable and the preset toggle would permanently show nothing
+	// selected — a silent break with no error and a green build.
 	const noPadding = ! padding || Object.keys( padding ).length === 0;
 
 	if ( contentWidth === 'full' && noPadding && rowJustify === 'space-between' ) {
@@ -160,13 +154,8 @@ function applyLayoutPreset(
 	middleRowClientId,
 	updateBlockAttributes
 ) {
-	// The old `restStyle`/`restSpacing`/`hasRestSpacing` destructure that stood here
-	// was DELETED, not redirected (2026-08-27). It existed for exactly one reason:
-	// padding and margin shared the single WP-native `style.spacing` container, so
-	// removing padding meant rebuilding that container without clobbering margin, and
-	// omitting the `spacing` key entirely when nothing was left. Now that `padding`
-	// and `margin` are separate top-level attrs, a preset writes its own attr and
-	// cannot touch the other — so the whole dance is gone.
+	// `padding` and `margin` are separate top-level attrs, so a preset writes its
+	// own attr and cannot touch the other.
 	if ( value === 'split' ) {
 		// Split has no padding override — clear one if present so the
 		// preset detector reads back 'split' cleanly.
@@ -217,12 +206,10 @@ const CONTRAST_SAFE_LABELS = CONTRAST_SAFE_OPTIONS.reduce(
 	{}
 );
 
-// `templateMode` (grid-section/card-grid presets) was never added here —
-// this block already restricts children to exactly `sgs/site-header-row`
-// below, a more specific structural rule that a generic preset would only
-// conflict with. `templateMode` itself was later removed from every block
-// that had declared it (including `sgs/site-header-row`) as vestigial —
-// see `.superpowers/sdd/task-3-report.md`.
+// `templateMode` (grid-section/card-grid presets) does not apply here —
+// this block restricts children to exactly `sgs/site-header-row` below, a
+// more specific structural rule that a generic preset would only conflict
+// with.
 const ALLOWED_BLOCKS = [ 'sgs/site-header-row' ];
 
 // calculateRelativeLuminance / calculateContrastRatio / meetsWCAG_AA moved to
@@ -231,8 +218,8 @@ const ALLOWED_BLOCKS = [ 'sgs/site-header-row' ];
 
 // Three fixed rows. The middle row is pre-filled to match the current site
 // header (logo + navigation + cart) so content parity holds on first insert.
-// The mobile burger + drawer are owned entirely by sgs/nav-menu + sgs/nav-drawer
-// (Spec 36 rebuild, FR-37-21) — no separate toggle
+// The mobile burger + drawer are owned entirely by sgs/nav-bar-menu + sgs/nav-drawer
+// (FR-37-21) — no separate toggle
 // block. Top and bottom rows start empty and emit zero output until an
 // operator adds elements (Spec 37 §3.4 empty-row-zero-output, verified FR-37-9).
 const TEMPLATE = [
@@ -245,8 +232,8 @@ const TEMPLATE = [
 			// custom_logo when no per-breakpoint images set). Draft: logo | nav | icons.
 			[ 'sgs/responsive-logo', { width: 180, linkToHome: true } ],
 			// Primary nav (centre on desktop; hidden <768 → lives in the drawer).
-			// sgs/nav-menu — matches the live header part / sgs_header CPT so a
-			// fresh insert doesn't re-arm the WooCommerce mini-cart/customer-account
+			// An SGS navigation block, not core/navigation, so a fresh insert
+			// doesn't re-arm the WooCommerce mini-cart/customer-account
 			// auto-injection that WC hooks onto core/navigation via Block Hooks
 			// (FR-37-21).
 			[
@@ -257,10 +244,9 @@ const TEMPLATE = [
 				},
 			],
 			// Icons cluster (right): cart. Grouped so the row has exactly 3 flex
-			// children → logo-left / nav-centre / icons-right. (The burger is no
-			// longer listed here: sgs/nav-menu renders its own toggle, and opens
-			// sgs/nav-drawer — a TEMPLATE entry for a deleted block would make
-			// every FRESH header insert render an invalid-content placeholder.)
+			// children → logo-left / nav-centre / icons-right. (The burger is not
+			// listed here: the navigation block renders its own toggle and opens
+			// sgs/nav-drawer, so there is no separate toggle block.)
 			//
 			// sgs/container, NOT core/group: the DB (`blocks.replaces`) records
 			// sgs/container as the replacement for core/group|core/columns|core/column,
@@ -284,10 +270,9 @@ const TEMPLATE = [
 ];
 
 export default function Edit( { attributes, setAttributes, clientId, name } ) {
-	// D717/background-preview: BackgroundPanel (mounted below) writes image/
-	// video/overlay/ken-burns/parallax attrs this block never previewed on
-	// canvas — the shared mirror (src/utils/background-preview.js, 2026-08-26)
-	// fixes that the same way sgs/container already did.
+	// BackgroundPanel (mounted below) writes image/video/overlay/ken-burns/
+	// parallax attrs; the shared mirror (src/utils/background-preview.js)
+	// previews them on the canvas the same way sgs/container does.
 	const [ colourPalette ] = useSettings( 'color.palette' );
 
 	// SGS-owned flat background colour/gradient + text colour canvas preview —
@@ -325,7 +310,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		backgroundOverlayBlendMode: attributes.backgroundOverlayBlendMode,
 	}, colourPalette );
 
-	// Decorative SVG background layer — editor mirror (2026-09-05). Deliberately
+	// Decorative SVG background layer — editor mirror. Deliberately
 	// NOT folded into backgroundPreview()'s return: that helper paints via
 	// `--sgs-ed-bg-*` custom properties on a ::before, whereas the SVG layer is a
 	// real element whose painting rules already ship in style.css (loaded in the
@@ -355,13 +340,9 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		return { Tablet: 'tablet', Mobile: 'mobile' }[ device ] || 'desktop';
 	}, [] );
 
-	// Padding/margin canvas preview (measured live 2026-08-26: sibling blocks
-	// showed 0px padding/margin on canvas against a real 120px/80px page).
-	// Base padding + margin are block-OWNED `padding`/`margin` object attrs
-	// (migrated off WP-native supports.spacing 2026-08-27, matching sgs/container);
-	// tablet/mobile overrides are the block-private paddingTablet/
-	// paddingMobile/marginTablet/marginMobile object attrs (this block
-	// declares all four — verified in block.json).
+	// Padding/margin canvas preview. Base padding + margin are block-OWNED
+	// `padding`/`margin` object attrs (as on sgs/container); tablet/mobile
+	// overrides are passed through alongside them.
 	const spacePreview = spacingPreview( {
 		basePadding: attributes.padding,
 		paddingTablet: attributes.paddingTablet,
@@ -427,11 +408,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	// compare. `rowSlot` is never consulted, so row 1 is treated as "the top row"
 	// whatever it actually is.
 	//
-	// Passing TEMPLATE unconditionally therefore overwrote every inserted starter
-	// pattern: measured on the canary, 7/8 header and 8/8 footer starters were
-	// corrupted — and it DESTROYED content, not just added it (the search-bar
-	// starter lost its search bar; the centred footer lost its copyright line).
-	// It also fired on every re-open, so an insert-only patch would not have held.
+	// Passing TEMPLATE unconditionally would therefore overwrite every inserted
+	// starter pattern and DESTROY its content, not just add to it (a search-bar
+	// starter would lose its search bar). It would also fire on every re-open,
+	// so an insert-only guard would not hold.
 	//
 	// Withholding the template is a true no-op in core — synchronizeBlocksWithTemplate
 	// opens with `if (!template) return blocks;` — so the row LOCK below is
@@ -486,25 +466,20 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		headerTransparentDirection,
 	} = attributes;
 
-	// P-HEADER-SIMPLICITY-FINDINGS finding 2 follow-up: Shrink on scroll is CONCEPTUALLY a sub-behaviour of
-	// Sticky on scroll, not an independent toggle. Proven, not assumed:
-	// render.php's shrink animation (`animation-timeline:
-	// scroll(root block); animation-range: 0 200px`, render.php:238) and its
-	// legacy `.is-header-shrunk` fallback both key off document scrollY —
-	// NEITHER checks headerSticky. But a header that is not sticky/fixed
-	// scrolls out of the viewport in normal document flow well before that
-	// 200px range completes (the header's own rendered height is ~97px,
-	// measured live on the sandybrown canary), and view.js's
-	// `initScrollBehaviours()` toggles `is-header-shrunk` purely off
-	// `window.scrollY > 50` (view.js:285) with no visibility/pinned check —
-	// so a non-sticky header's shrink animation runs mostly (or entirely)
-	// off-screen. The effect is real in code but invisible to the visitor
-	// without Sticky, which is exactly Bean's framing. Hiding the control
-	// until Sticky is on (rather than a flat ToolsPanel "+" disclosure
-	// alongside it) stops a client enabling a setting that visibly does
-	// nothing. Precedent for this shape: sgs/button's `edit.js` conditionally
-	// renders its "Collapse label to icon" ToolsPanelItem on
-	// `iconPosition !== 'only'` — same pattern, copied here.
+	// Shrink on scroll is CONCEPTUALLY a sub-behaviour of Sticky on scroll, not
+	// an independent toggle. render.php's shrink animation (`animation-timeline:
+	// scroll(root block); animation-range: 0 200px`) and its `.is-header-shrunk`
+	// fallback both key off document scrollY — NEITHER checks headerSticky. But
+	// a header that is not sticky/fixed scrolls out of the viewport in normal
+	// document flow well before that 200px range completes (the header's own
+	// rendered height is ~97px), and view.js's `initScrollBehaviours()` toggles
+	// `is-header-shrunk` purely off `window.scrollY > 50` with no
+	// visibility/pinned check — so a non-sticky header's shrink animation runs
+	// mostly (or entirely) off-screen. The effect is real in code but invisible
+	// to the visitor without Sticky. Hiding the control until Sticky is on
+	// stops a client enabling a setting that visibly does nothing. Same pattern
+	// as sgs/button's `edit.js`, which conditionally renders its "Collapse
+	// label to icon" ToolsPanelItem on `iconPosition !== 'only'`.
 	const isStickyOn = isOnAtAnyTier( headerSticky );
 
 	// Contrast safety over hero is similarly a sub-behaviour, but of
@@ -534,12 +509,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	const [ contrastNotice, setContrastNotice ] = useState( null );
 
 	// Reads block-private backgroundColour/textColour (SgsColourPanel) — not
-	// WP-native style.color.background/.text, which this block's
-	// supports.color sub-flags are all false for, so WordPress never
-	// populates it and this check has never fired (check-undeclared-attrs
-	// finding: `style` destructured but undeclared in block.json). Resolved
-	// via resolveColourToken() the same way the paint itself is, since a
-	// stored value can be a theme-token slug, not a literal colour.
+	// WP-native style.color.background/.text: this block's supports.color
+	// sub-flags are all false, so WordPress never populates `style.color`.
+	// Resolved via resolveColourToken() the same way the paint itself is,
+	// since a stored value can be a theme-token slug, not a literal colour.
 	useEffect( () => {
 		if ( ! backgroundColour || ! textColour ) {
 			setContrastNotice( null );
@@ -573,14 +546,12 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			     InspectorControls Fills in mount order, and this panel is pinned
 			     to the top of the block's inspector by standing rule.
 
-			     Migrated off WordPress's native colour supports 2026-08-19. The
-			     header was one of only three blocks showing core's colour UI with
-			     no SGS panel, while sgs/site-header-row carried the SAME two
-			     colours as SGS attributes — one concept, two mechanisms, two
-			     levels. block.json keeps `supports.color` DECLARED (a gate reads
-			     the key as a pipeline contract signal) with every sub-flag false,
-			     so core renders no panel of its own and there is exactly one
-			     colour home per block.
+			     Colour is SGS-owned, not WordPress's native colour supports:
+			     sgs/site-header-row carries the SAME two colours as SGS
+			     attributes, so both levels use one mechanism. block.json keeps
+			     `supports.color` DECLARED (a gate reads the key as a pipeline
+			     contract signal) with every sub-flag false, so core renders no
+			     panel of its own and there is exactly one colour home per block.
 
 			     Labels say "Header …" against the row block's "Row …" so the two
 			     levels read as different scopes rather than duplicates: this
@@ -650,25 +621,21 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 				] }
 			/>
 
-			{ /* Background renders in the STYLES tab, not Settings (standardised
-			     2026-08-16, Bean-ruled). Same shared panel, same tab, on every
-			     wrapper block — it used to land in Settings here and in Styles on
-			     cta-section/hero, so the client found it in a different place
-			     depending on which block they had selected. Appearance sits with
-			     colour, which D621/D622 already placed in Styles. */ }
+			{ /* Background renders in the STYLES tab, not Settings. Same shared
+			     panel, same tab, on every wrapper block, so the client finds it
+			     in the same place whichever block is selected. Appearance sits
+			     with colour, in Styles. */ }
 			<InspectorControls group="styles">
 				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
 
-				{ /* SHADOW — mounted 2026-08-19, upgraded 2026-09-02 (rule
-				     07-preset-only-shadow) from a coarse sm/md/lg/glow preset
-				     SelectControl to the shared ShadowControl (X/Y/blur/spread/
+				{ /* SHADOW — the shared ShadowControl (X/Y/blur/spread/
 				     colour+alpha/inset) every other SGS_Container_Wrapper block
 				     mounts — matches sgs/cta-section's reference wiring. The
 				     `shadow`/`shadowColour`/`shadowColourHover` attrs are already
 				     read by class-sgs-container-wrapper.php via
-				     sgs_shadow_value_composed(), so no render.php change is
-				     needed; a bare preset slug (from an existing stored value)
-				     still resolves correctly through the same helper. */ }
+				     sgs_shadow_value_composed(); a bare preset slug (from an
+				     existing stored value) still resolves correctly through the
+				     same helper. */ }
 				<PanelBody title={ __( 'Shadow', 'sgs-blocks' ) } initialOpen={ false }>
 					<ShadowControl
 						label={ __( 'Shadow', 'sgs-blocks' ) }
@@ -718,16 +685,12 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						{ contrastNotice }
 					</Notice>
 				) }
-				{ /* P-HEADER-SIMPLICITY-FINDINGS finding 2 (2026-08-12): the Settings
-				     tab previously always-showed 3 full panels here (Header width,
-				     Padding & margin, Background) plus 4 more in "Header behaviour"
-				     below — 7 default-visible controls against a target of 2.
-				     "Header width" is the one layout choice most clients touch
-				     (contained vs full-bleed), so it stays a plain always-visible
-				     panel. Padding & margin (fine-tuning spacing) and Background
-				     (image/video/SVG/overlay — a rich, situational panel) move
-				     behind a ToolsPanel "+ Add" disclosure — still one click away,
-				     never removed, just not shown until asked for. */ }
+				{ /* Settings tab: "Header width" is the one layout choice most
+				     clients touch (contained vs full-bleed), so it stays a plain
+				     always-visible panel. Padding & margin (fine-tuning spacing)
+				     and Background (image/video/SVG/overlay — a rich, situational
+				     panel) sit behind a ToolsPanel "+ Add" disclosure — one click
+				     away, not shown until asked for. */ }
 				<PanelBody title={ __( 'Header width', 'sgs-blocks' ) }>
 					<WidthPanel
 						attributes={ attributes }
@@ -789,17 +752,15 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							bgSvgOpacity: 100,
 							bgSvgMinHeight: '',
 							bgSvgTextShadow: false,
-							// String since the D636 collapse (837f7c97) — this reset
-							// wrote a boolean into a string attr plus three attrs
-							// that no longer exist (WP discards both silently). D643.
+							// overlayGradient is a string attr, so it resets to ''
+							// (WP silently discards a wrong-typed or undeclared value).
 							overlayGradient: '',
 						} );
 					} }
 				>
 					{ /* Responsive spacing (padding + margin) — box-object interface
-					     contract (.claude/plans/2026-07-09-box-object-interface-contract.md
-					     §5). Base tier writes the block's OWN padding/margin object attrs
-					     (this block no longer declares supports.spacing, so there is no
+					     contract. Base tier writes the block's OWN padding/margin object attrs
+					     (this block declares no supports.spacing, so there is no
 					     duplicate Styles > Dimensions panel); tablet/mobile write to
 					     the paddingTablet/paddingMobile and marginTablet/marginMobile
 					     object attrs read by the wrapper's @media tiers. */ }
@@ -857,7 +818,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 
 					{ /* contentBandPadding is a TIER OBJECT — ONE attr holding
 					     {desktop,tablet,mobile}, each tier itself a {top,right,bottom,left}
-					     box (Spec 35 box-shaped pass, 2026-08-11). It therefore uses
+					     box. It therefore uses
 					     ResponsiveOverride, which reads and writes the object, NOT the
 					     flat-sibling ResponsiveBoxControl. Mirrors container's own
 					     implementation. */ }
@@ -990,12 +951,11 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						) }
 					</ToolsPanelItem>
 
-					{ /* WHICH STATE IS WHICH (2026-08-19). The transparent
-					     behaviour always had two states — see-through at rest,
-					     solid once scrolled — but the order was hardcoded, so a
-					     client who wanted colour at the top and transparency
-					     further down had no way to say so. This adds no new CSS
-					     mechanism; it swaps which of the two existing rules
+					{ /* WHICH STATE IS WHICH. The transparent behaviour has two
+					     states — see-through at rest, solid once scrolled — and
+					     this control chooses which is which, so a client can have
+					     colour at the top and transparency further down. It adds no
+					     new CSS mechanism; it swaps which of the two existing rules
 					     carries the transparency. Shown only once Transparent is
 					     on, for the same reason the contrast control is: with it
 					     off there is no pair to order. */ }
@@ -1121,10 +1081,9 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 								setAttributes( { contrastSafe: {} } )
 							}
 						>
-							{ /* PER-DEVICE (2026-08-19). This was the ONLY one of the
-							     five header behaviours still stored flat, which made
-							     "scrim over the desktop hero, nothing on phone" —
-							     the common case — unexpressible.
+							{ /* PER-DEVICE. Stored as a tier object so "scrim over the
+							     desktop hero, nothing on phone" — the common
+							     case — is expressible.
 
 							     It uses <ResponsiveOverride> and NOT the
 							     <ResponsiveTriStateControl> its four siblings use,
@@ -1280,7 +1239,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			</InspectorControls>
 
 			{ /* Editor canvas renders as <header> to match the frontend banner
-			     landmark (FR-37-13 fix B; P-HEADER-EDITOR-TAG-PARITY). */ }
+			     landmark (FR-37-13). */ }
 			<header ref={ refEl } { ...innerBlocksProps }>
 				{ svgLayer }
 				{ innerBlocksProps.children }

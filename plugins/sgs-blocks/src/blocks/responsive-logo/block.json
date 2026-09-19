@@ -29,7 +29,7 @@
 			"gradients": false,
 			"text": false,
 			"__experimentalSkipSerialization": true,
-			"_comment": "Declared-but-disabled (mirrors sgs/brand-strip). backgroundColour/backgroundColourGradient/backgroundColourHover/backgroundColourHoverGradient are fully custom SgsColourPanel-driven attrs (Decision 1, 2026-09-14) — this satisfies audit-block-uniformity.py's supports_color_missing check without exposing WP's native colour UI, which SGS never uses."
+			"_comment": "Declared-but-disabled (mirrors sgs/brand-strip). backgroundColour/backgroundColourGradient/backgroundColourHover/backgroundColourHoverGradient are fully custom SgsColourPanel-driven attrs — this satisfies audit-block-uniformity.py's supports_color_missing check without exposing WP's native colour UI, which SGS never uses."
 		},
 		"html": false,
 		"sgs": {
@@ -38,7 +38,7 @@
 				"providesNatively": [
 					"draw"
 				],
-				"_comment_providesNatively": "Spec 38 FR-38-15 / §7. This block ALREADY exposes stroke-draw through its own `animationStyle` enum (draw-on-load | hover-redraw | scroll-trigger), whose values FR-38-15 keeps byte-identical across the Vivus->DrawSVG swap. Listing `draw` again in the generic 'Scroll & effects' picker would put TWO controls for ONE capability on this block, which this codebase bans. `generate-fx-qualifying-blocks.py` subtracts every effect named here from the block's derived roster, so the exclusion is a declaration this block OWNS rather than a per-block carve-out in the generator or in fx.js. Any future block that natively owns an fx capability declares it the same way."
+				"_comment_providesNatively": "Spec 38 FR-38-15. This block exposes stroke-draw through its own `animationStyle` enum (draw-on-load | hover-redraw | scroll-trigger). Listing `draw` again in the generic 'Scroll & effects' picker would put TWO controls for ONE capability on this block, which this codebase bans. `generate-fx-qualifying-blocks.py` subtracts every effect named here from the block's derived roster, so the exclusion is a declaration this block OWNS rather than a per-block carve-out in the generator or in fx.js. Any block that natively owns an fx capability declares it the same way."
 			},
 			"boxFamilies": {
 				"padding": [
@@ -86,7 +86,7 @@
 							}
 						}
 					},
-					"_note": "Root <div> (render.php get_block_wrapper_attributes, style.css .sgs-responsive-logo — display:inline-block hardcoded, no attribute, so no `layer`/arrangement members). `width`/`max-height` declared explicitly 2026-09-05 to close a rule-41 contested-manifest-gap raised against the newly-added `image` element (both were plausible owners with no attrMap to disambiguate). Traced through render.php: `$sel = '.' . $uid . '.wp-block-sgs-responsive-logo'` (the WRAPPER selector, not the <img>) is the target of both — `width` emits `{$sel}{--logo-width:...}` (render.php:175), consumed by style.scss's `.sgs-responsive-logo{width:var(--logo-width,240px)}` on the wrapper class itself; `maxHeight` (a tier object, Spec 35 pass 2) is flattened and passed to `sgs_responsive_css_rule()` with `$sel` as the selector argument (render.php:235-256), emitting `{$sel}{max-height:...}` plus tablet/mobile `@media` siblings. Neither ever targets `.sgs-responsive-logo__image--desktop`. (`width` is ALSO written as a literal HTML `width=\"...\"` sizing attribute on the <img> tag — an intrinsic-size hint, not a CSS property, so it does not compete for `css:width` ownership.) `maxWidth`'s existing `image`-element attrMap entry (declared same day, see that element's own `_note`) is a separate, unrelated finding and was left untouched. Empty-string prefix resolves the bare width/maxWidth/maxHeight attrs case-insensitively via the default {suffix} convention (Width/MaxWidth/MaxHeight). Background-colour control added 2026-09-14 (Decision 1, SGS nav-drawer/logo colour work) — `backgroundColour`/`backgroundColourGradient`/`backgroundColourHover`/`backgroundColourHoverGradient` mirror sgs/brand-strip's root background pair exactly (`sgs_background_paint_decl()` gradient-wins-flat, scoped to `$sel`, hover via `sgs_hover_state_rules()` on `:focus-within`) so the block's own background tile can be set independently whether it sits in the site header or inside `sgs/nav-drawer`. No box-shadow/gap/aspect-ratio attribute or native support exists (no shadow supports declared on this block) — honest gaps. The <img>/<picture> itself has no crop-box scenario (width:100%/max-width:100%, natural aspect) so supports.sgs.imageControls (universal image extension) was removed 2026-08-11 (Spec 35 capability-routing doctrine) as dead — the block's own per-device logoId*/logoUrl* art-direction tiers are its real media mechanism. logoId/logoIdTablet/logoIdMobile/svgAnimationSource/logoSwitchMode/animationStyle are media-source/behaviour scalars with no cluster member — deliberately undeclared (no prefix claims them)."
+					"_note": "Root <div> (render.php get_block_wrapper_attributes, style.css .sgs-responsive-logo — display:inline-block hardcoded, no attribute, so no `layer`/arrangement members). `width`/`max-height` are declared explicitly so the `image` element does not contend for them (both were plausible owners with no attrMap to disambiguate). Traced through render.php: `$sel = '.' . $uid . '.wp-block-sgs-responsive-logo'` (the WRAPPER selector, not the <img>) is the target of both — `width` emits `{$sel}{--logo-width:...}`, consumed by style.scss's `.sgs-responsive-logo{width:var(--logo-width,100%)}` on the wrapper class itself; `maxHeight` (a tier object) is flattened and passed to `sgs_responsive_css_rule()` with `$sel` as the selector argument, emitting `{$sel}{max-height:...}` plus tablet/mobile `@media` siblings. Neither targets `.sgs-responsive-logo__image--desktop`. (`width` is ALSO written as a literal HTML `width=\"...\"` sizing attribute on the <img> tag — an intrinsic-size hint, not a CSS property, so it does not compete for `css:width` ownership.) `maxWidth`'s `image`-element attrMap entry is separate. Empty-string prefix resolves the bare width/maxWidth/maxHeight attrs case-insensitively via the default {suffix} convention (Width/MaxWidth/MaxHeight). The background-colour pair `backgroundColour`/`backgroundColourGradient`/`backgroundColourHover`/`backgroundColourHoverGradient` mirrors sgs/brand-strip's root background pair exactly (`sgs_background_paint_decl()` gradient-wins-flat, scoped to `$sel`, hover via `sgs_hover_state_rules()` on `:focus-within`) so the block's own background tile can be set independently whether it sits in the site header or inside `sgs/nav-drawer`. No box-shadow/gap/aspect-ratio attribute or native support exists (no shadow supports declared on this block) — honest gaps. The <img>/<picture> itself has no crop-box scenario (width:100%/max-width:100%, natural aspect), so the block does not opt into supports.sgs.imageControls (universal image extension); the block's own per-device logoId*/logoUrl* art-direction tiers are its real media mechanism. logoId/logoIdTablet/logoIdMobile/svgAnimationSource/logoSwitchMode/animationStyle are media-source/behaviour scalars with no cluster member — deliberately undeclared (no prefix claims them)."
 				},
 				"image": {
 					"label": "Logo image",
@@ -98,7 +98,7 @@
 					"attrMap": {
 						"css:max-width": "maxWidth"
 					},
-					"_note": "Declared 2026-09-05. This element did not exist in the manifest at all, so its attrs fell to the heuristic path and FOUR of them (width, alt, logoSwitchCustomPx, logoDecorative) were each assigned css_property='max-width' — two of which are not CSS at all (`alt` is a string, `logoDecorative` a boolean). render.php:239-240 shows the real and only owner of max-width is the `maxWidth` tier object. Declaring it here gives the slot its true owner via the manifest-first precedence (css_property = manifest_css_property or emission_css_property). Tested 2026-09-05: removing this element's empty-string prefix does NOT change the max-width over-match (still 8 contending attrs after a reseed), so the empty prefix is NOT the cause — the over-assignment is in the classifier's emission heuristic, not this manifest."
+					"_note": "The <img> element. Declaring it gives the slot its true owner via the manifest-first precedence (css_property = manifest_css_property or emission_css_property); without it, its attrs fall to the classifier's emission heuristic and FOUR of them (width, alt, logoSwitchCustomPx, logoDecorative) are each assigned css_property='max-width' — two of which are not CSS at all (`alt` is a string, `logoDecorative` a boolean). The only real owner of max-width is the `maxWidth` tier object (render.php). The empty-string prefix is not the cause of that over-match: the over-assignment is in the classifier's emission heuristic, not this manifest."
 				}
 			}
 		},
@@ -123,17 +123,17 @@
 		"align": {
 			"type": "string",
 			"default": "left",
-			"_comment": "FR-36-22 basics: explicit left-align default (NN/g: 6x better home-return). Plain string (no enum) mirrors WP core's auto-injected align attribute shape — matches the supports.align list above without a coercion risk (D291 gotcha: an out-of-enum stored value silently resets to default)."
+			"_comment": "FR-36-22 basics: explicit left-align default (NN/g: 6x better home-return). Plain string (no enum) mirrors WP core's auto-injected align attribute shape — matches the supports.align list above without a coercion risk (an out-of-enum stored value silently resets to default)."
 		},
 		"logoId": {
 			"type": "number",
-			"_comment": "Desktop/base logo — media library attachment ID. Renamed from desktopLogoId (2026-08-05): the base attr carries no tier suffix, matching the framework's universal responsive-tier convention (e.g. backgroundImage/backgroundImageTablet/backgroundImageMobile) instead of the old desktop/tablet/mobile PREFIX scheme, which was structurally invisible to the DB's modifier_suffixes tier-detection (a suffix strip, not a prefix strip)."
+			"_comment": "Desktop/base logo — media library attachment ID. The base attr carries no tier suffix, matching the framework's universal responsive-tier convention (e.g. backgroundImage/backgroundImageTablet/backgroundImageMobile) rather than a desktop/tablet/mobile PREFIX scheme, which is structurally invisible to the DB's modifier_suffixes tier-detection (a suffix strip, not a prefix strip)."
 		},
 		"logoUrl": {
 			"type": "string",
 			"default": "",
 			"role": "content",
-			"_comment": "Media-library URL for this tier's logo, stored ALONGSIDE the attachment ID. Added 2026-08-05 so this block mirrors how every other SGS image block declares an image (sgs/media imageUrl+imageId, sgs/decorative-image, sgs/product-card): the ID wins at render and the URL is the fallback (media/render.php:467). WHY IT MATTERS BEYOND TIDINESS: the `image-alt` role pairs an alt attr to a SIBLING image attr via block_attributes.alt_companion_attr, and walk.py:295 only captures alt when that companion is attr_type='string'. With three bare attachment IDs (type=number) and no string image attr, there was nothing to name as the companion, so `alt` had to be routed through the interim `authored-alt-text` category. This attr is that companion."
+			"_comment": "Media-library URL for this tier's logo, stored ALONGSIDE the attachment ID, as every other SGS image block declares an image (sgs/media imageUrl+imageId, sgs/decorative-image, sgs/product-card): the ID wins at render and the URL is the fallback (media/render.php). WHY IT MATTERS BEYOND TIDINESS: the `image-alt` role pairs an alt attr to a SIBLING image attr via block_attributes.alt_companion_attr, and walk.py only captures alt when that companion is attr_type='string'. With three bare attachment IDs (type=number) and no string image attr there is nothing to name as the companion; this attr is that companion."
 		},
 		"logoIdTablet": {
 			"type": "number"
@@ -181,7 +181,7 @@
 		},
 		"width": {
 			"type": "number",
-			"description": "Desktop logo width in px. No `default` (2026-09-18, Bean-directed, was 240) — WP's prepare_attributes_for_render() only injects a DECLARED default, so an untouched instance genuinely has no `width` key, which render.php reads as 'fill 100% of the containing column/element' (style.scss's `var(--logo-width, 100%)` fallback) instead of a hardcoded pixel value. An operator who moves the Sizing panel's RangeControl gets an explicit px width exactly as before."
+			"description": "Desktop logo width in px. No `default`: WP only injects a DECLARED default, so an untouched instance has no `width` key, which render.php reads as 'fill 100% of the containing column/element' (style.scss's `var(--logo-width, 100%)` fallback) instead of a hardcoded pixel value. An operator who moves the Sizing panel's RangeControl gets an explicit px width."
 		},
 		"maxWidth": {
 			"type": "object",

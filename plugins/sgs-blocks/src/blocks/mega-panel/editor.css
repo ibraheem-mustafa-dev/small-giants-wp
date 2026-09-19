@@ -5,8 +5,7 @@
  * mobile stack, colour custom-property consumption) lives in style.css, NOT
  * here. WordPress 7.0 renders the block-editor canvas inside an iframe that
  * does NOT load a block's `editorStyle`, so any canvas-visible rule placed
- * here silently does nothing (root cause proven live via iframe evals
- * 2026-07-25; captured as `wp-iframe-canvas-ignores-editorstyle-use-style-css`).
+ * here silently does nothing.
  *
  * This file therefore carries only styles for the parts of the editor OUTSIDE
  * the canvas iframe — currently just the Inspector note below (rendered in

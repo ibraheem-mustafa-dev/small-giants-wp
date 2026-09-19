@@ -7,16 +7,11 @@
  * handle (this file) reaches it. So every canvas-visible layout rule (the
  * columns/cards/minimal preset shapes, the aside split, the mobile stack) MUST
  * live here to preview live when an operator switches `style` in the Inspector.
- * (Root cause proven live via iframe evals 2026-07-25; captured as
- * `wp-iframe-canvas-ignores-editorstyle-use-style-css`.)
  *
- * These rules are also THE frontend's source of shape. render.php's old
- * per-`style` reshape rules were self-nested (they prepended the root selector
- * to a variable that already contained it — `.uid.wp-block[style] .uid.wp-block
- * .content` — an impossible "panel nested inside itself" selector that matched
- * nothing), so columns/cards/minimal never actually rendered on the frontend
- * either. Removing that dead code from render.php and painting the shape here
- * fixes BOTH surfaces in one place.
+ * render.php builds its per-`style` shape selectors single-rooted: prepending
+ * the root selector to a variable that already contains it would produce
+ * `.uid.wp-block[style] .uid.wp-block .content` — an impossible "panel nested
+ * inside itself" selector that matches nothing.
  *
  * The rules are written GENERICALLY — keyed on the
  * `.wp-block-sgs-mega-panel[data-mega-style="…"]` root (present in both
@@ -52,16 +47,11 @@
 	   overrides --sgs-mm-soft / --sgs-mm-soft-image / --sgs-mm-card (and the
 	   full colour set) per instance on the frontend; edit.js sets the
 	   iconBackground / groupBorderColourHover / iconColour /
-	   accentBackgroundImage / gap / aside props in the editor (D643 — split
-	   from the old single `--sgs-mm-accent`; the four attributes were renamed
-	   from accentBackground/accentBorderColour/accentTextColour/
-	   accentBorderColourGradient 2026-08-28, NULL css_element fix proposal
-	   §5 — the CSS custom-property names below are unchanged, cosmetic-only
-	   and out of scope for that rename). Same day, groupBorderColour was
-	   renamed a second time to groupBorderColourHover once a genuine NEW
-	   resting-state pair (groupBorderColour / groupBorderColourGradient)
-	   was added — see the `--sgs-mm-group-border-resting` custom property
-	   consumed further down in the `cards` group rule. These defaults keep
+	   accentBackgroundImage / gap / aside props in the editor (each attribute
+	   has its own custom property rather than one shared `--sgs-mm-accent`;
+	   groupBorderColour / groupBorderColourGradient are the resting-state
+	   pair — see the `--sgs-mm-group-border-resting` custom property
+	   consumed further down in the `cards` group rule). These defaults keep
 	   the marker chips + card fills + spotlight glow painted in the canvas,
 	   where render.php never runs. */
 	--sgs-mm-soft: color-mix( in srgb, var( --sgs-mm-accent-bg, var( --wp--preset--color--accent ) ) 10%, transparent );
@@ -69,8 +59,8 @@
 	--sgs-mm-card: rgba( 255, 255, 255, 0.6 );
 }
 
-/* -- dark scheme (§4) — editor-canvas preview of the SAME two-rule cascade
-   render.php emits on the frontend (CF-7: forced `dark`, or `auto` bound to
+/* -- dark scheme — editor-canvas preview of the SAME two-rule cascade
+   render.php emits on the frontend (forced `dark`, or `auto` bound to
    an EXPLICIT site-wide `data-theme="dark"` switcher only — deliberately NO
    bare `prefers-color-scheme` fallback, so "no switcher + OS dark" stays
    light in both the canvas and the frontend). ------------------------------ */
@@ -85,7 +75,7 @@
 	--sgs-mm-panel-border: rgba( 255, 255, 255, 0.11 );
 	color: var( --sgs-mm-text );
 	background-color: var( --sgs-mm-panel-bg );
-	/* panelBgGradient editor-canvas mirror (2026-09-06) — --sgs-mm-panel-bg-gradient
+	/* panelBgGradient editor-canvas mirror — --sgs-mm-panel-bg-gradient
 	   is not redeclared in this dark-scheme rule, so an operator-set gradient
 	   (mirrored onto the root by edit.js) cascades in unchanged, matching
 	   render.php's dark_props behaviour. */
@@ -108,11 +98,11 @@
 	min-width: 0;
 }
 
-/* -- card hover-lift (§6) — the `cards` style's `.sgs-mega-group` tile only;
+/* -- card hover-lift — the `cards` style's `.sgs-mega-group` tile only;
    `sgs/card-grid` (media-cards/brands) owns its own native hover system, so
    it is left untouched here to avoid a competing/overlapping mechanism.
-   Transitions ONLY transform + opacity, never box-shadow/filter (measured
-   frame-drop cause on this project); the lift shadow is a same-box
+   Transitions ONLY transform + opacity, never box-shadow/filter (a
+   frame-drop cause); the lift shadow is a same-box
    `::after` faded via opacity, not a box-shadow transition. --------------- */
 .wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group {
 	position: relative;
@@ -148,8 +138,7 @@
 	}
 }
 
-/* iconBackground/iconBackgroundGradient HOVER siblings (2026-09-06,
-   hover-controls task) — editor-canvas mirror of render.php's touch-guarded
+/* iconBackground/iconBackgroundGradient HOVER siblings — editor-canvas mirror of render.php's touch-guarded
    hover pair. Fires off the SAME ancestor hover trigger as the lift/shadow
    rule above — `cards` style only, the one style where `.sgs-mega-group`
    already has a real hover treatment. The var(...) fallback chain resolves to
@@ -172,9 +161,8 @@
 	min-width: 0;
 }
 
-/* -- brands eyebrow (§3) — a small mono micro-label above the content row;
-   spans the full row (documented deviation, see block.json `brandsEyebrow`
-   note). ------------------------------------------------------------------ */
+/* -- brands eyebrow — a small mono micro-label above the content row;
+   spans the full row (see block.json `brandsEyebrow` note). ------------------------------------------------------------------ */
 .wp-block-sgs-mega-panel .sgs-mega-panel__eyebrow {
 	display: block;
 	font-family: var( --wp--preset--font-family--mono, monospace );
@@ -186,7 +174,7 @@
 	margin: 0 0 16px;
 }
 
-/* -- staggered reveal (§6 U4) — CONSUMER side of `shared/effects/stagger.js`'s
+/* -- staggered reveal — CONSUMER side of `shared/effects/stagger.js`'s
    frozen CSS contract (see that file's doc-block). view.js writes ONLY the
    `--sgs-stagger-*` custom-property VALUES; every declaration here defaults
    (via the `var(…, fallback)` 2nd arg) to the fully-visible end state, so a
@@ -215,11 +203,11 @@
 	}
 }
 
-/* -- cursor spotlight (§6 U6) — CONSUMER side of `shared/effects/spotlight.js`'s
+/* -- cursor spotlight — CONSUMER side of `shared/effects/spotlight.js`'s
    frozen CSS contract. view.js applies the `data-spotlight` attribute (JS-only
    — no PHP-side attribute needed) to `.sgs-mega-aside` when present, then
    writes ONLY `--mx`/`--my`. `--sgs-spotlight-colour` reuses the panel's own
-   "soft-image" role token (§4, D643 — background-image, split from the
+   "soft-image" role token (background-image, separate from the
    background-color "soft" token) so the glow follows whichever
    accentBackgroundImage the operator picked. Aside content gets
    `position:relative;z-index:1` so it paints
@@ -233,11 +221,10 @@
 	inset: 0;
 	opacity: 0.9;
 	pointer-events: none;
-	/* accentBackgroundImageGradient (2026-09-06, preset-to-gradient upgrade
-	   task) — when set, --sgs-mm-accent-image-gradient BYPASSES the
+	/* accentBackgroundImageGradient — when set, --sgs-mm-accent-image-gradient BYPASSES the
 	   color-mix()-derived --sgs-mm-soft-image tint entirely and paints the raw
 	   gradient directly as the WHOLE background-image; unset falls back to the
-	   exact pre-existing radial-gradient + colour-stop chain, unchanged. */
+	   radial-gradient + colour-stop chain. */
 	background-image: var(
 		--sgs-mm-accent-image-gradient,
 		radial-gradient(
@@ -247,14 +234,13 @@
 		)
 	);
 }
-/* CHILD-LIFT — `:where()`-wrapped at ZERO specificity (2026-08-25, D793), for the
-   same reason as `container/style.css` and the two fx child-lifts. NOT a live
-   defect today: this aside's only decorative layer is the `::before` glow above,
-   and `> *` can never match a pseudo-element. But at (0,3,0) this was the
-   HIGHEST-specificity child-lift in the tree, so the first REAL decorative child
-   element added inside `.sgs-mega-aside` would have been trapped hardest here.
-   De-specified pre-emptively rather than added to an exemption list — growing
-   that list is the exact failure D784 removed. The aside content still paints
+/* CHILD-LIFT — `:where()`-wrapped at ZERO specificity, for the
+   same reason as `container/style.css` and the two fx child-lifts. This aside's
+   only decorative layer is the `::before` glow above, and `> *` can never match
+   a pseudo-element; but a (0,3,0) child-lift would be the HIGHEST-specificity
+   one in the tree and would trap the first real decorative child element added
+   inside `.sgs-mega-aside`. Zero specificity avoids that without an exemption
+   list. The aside content still paints
    above the glow: nothing else declares `position` on these children, and the
    glow is at `z-index:auto` in the `::before`. Enforced by
    `scripts/check-child-lift.py`. */
@@ -289,8 +275,8 @@
 	height: 34px;
 	border-radius: 10px;
 	background-color: var( --sgs-mm-soft );
-	/* iconBackgroundGradient sibling (2026-09-06) — --sgs-mm-soft-gradient is
-	   set on the panel root by render.php §2 / edit.js's canvas mirror,
+	/* iconBackgroundGradient sibling — --sgs-mm-soft-gradient is
+	   set on the panel root by render.php / edit.js's canvas mirror,
 	   paints the icon-chip at full strength (not colour-mixed, matching
 	   render.php's own comment on why a gradient bypasses the 10% tint). */
 	background-image: var( --sgs-mm-soft-gradient, none );
@@ -308,7 +294,7 @@
 	padding: 17px;
 	border-radius: 15px;
 	border: 1px solid var( --sgs-mm-panel-border, color-mix( in srgb, var( --wp--preset--color--text ) 12%, transparent ) );
-	/* NEW resting-state border-colour override (2026-08-28, Bean-ruled) —
+	/* Resting-state border-colour override —
 	   `--sgs-mm-group-border-resting` is only set inline by edit.js when an
 	   operator has picked a resting colour; unset falls back to the SAME
 	   --sgs-mm-panel-border value the `border:` shorthand above already
@@ -316,14 +302,13 @@
 	   after the shorthand wins at equal specificity (source order). */
 	border-color: var( --sgs-mm-group-border-resting, var( --sgs-mm-panel-border, color-mix( in srgb, var( --wp--preset--color--text ) 12%, transparent ) ) );
 	background-color: var( --sgs-mm-card );
-	/* CHECK A editor-canvas mirror for groupBorderColourGradient (2026-09-05).
+	/* Editor-canvas mirror for groupBorderColourGradient.
 	   The FRONTEND renders this gradient as a masked ::before ring via
-	   render.php's sgs_border_gradient_css() call (§7, scoped to
+	   render.php's sgs_border_gradient_css() call (scoped to
 	   $group_border_resting_gradient) — a technique this shared stylesheet
 	   selector cannot reproduce without duplicating that PHP mask logic in
 	   CSS. `--sgs-mm-group-border-image` is ONLY ever set by edit.js's canvas
-	   preview (an approximation via border-image, same documented approach
-	   used elsewhere this session) — render.php never declares it, so this
+	   preview (an approximation via border-image) — render.php never declares it, so this
 	   declaration is a guaranteed no-op on the frontend (`none 1`, a valid,
 	   effect-free border-image value) and only paints in the editor canvas.
 	   Longhand after border-color, so it composes rather than competes with
@@ -413,14 +398,13 @@
 .wp-block-sgs-mega-panel .sgs-mega-aside .sgs-media__img,
 .wp-block-sgs-mega-panel .sgs-mega-aside img {
 	max-height: 170px;
-	/* 37-media-no-handroll remediation (2026-09-03) — this rule's specificity
-	   (0,3,0) is BEATEN by render.php's scoped `$aside_sel` rule (0,4,0:
+	/* This rule's specificity (0,3,0) is BEATEN by render.php's scoped
+	   `$aside_sel` rule (0,4,0:
 	   `.{uid}.wp-block-sgs-mega-panel .sgs-mega-aside .sgs-media__img`), so
-	   this declaration never actually wins and was dead weight (measured,
-	   not assumed — see render.php's own note at the matching rule). Kept as
-	   `var()` with the same `cover` fallback rather than deleted outright, so
-	   this stylesheet still paints something sane if render.php's scoped
-	   `<style>` is ever absent from the page. */
+	   this declaration does not win on the frontend (see render.php's own note
+	   at the matching rule). It is kept as `var()` with the same `cover`
+	   fallback so this stylesheet still paints something sane if render.php's
+	   scoped `<style>` is ever absent from the page. */
 	object-fit: var( --sgs-media-object-fit, cover );
 	width: 100%;
 	border-radius: 12px;
@@ -461,8 +445,8 @@
 	}
 }
 
-/* -- View-all footer row (CF-15 destination link, placement is an operator
-   choice — `viewAllPlacement`, 2026-07-28). Alignment rides modifier classes
+/* -- View-all footer row (destination link; placement is an operator
+   choice — `viewAllPlacement`). Alignment rides modifier classes
    rather than an inline style (Spec 32 no-inline). --------------------------- */
 .sgs-mega-panel__footer {
 	display: flex;

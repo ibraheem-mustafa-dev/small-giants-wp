@@ -32,7 +32,7 @@
 	gap: 8px;
 }
 
-/* Per-instance dismiss (Bean, 2026-09-17) — writes hidePromotedPlaceholder on
+/* Per-instance dismiss — writes hidePromotedPlaceholder on
  * this row only, never a global setting. Positioned top-right of the
  * Placeholder so it reads as "close this panel", not one of the quick-insert
  * choices. */

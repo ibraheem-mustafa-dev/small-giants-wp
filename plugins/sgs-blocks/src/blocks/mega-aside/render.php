@@ -2,15 +2,14 @@
 /**
  * Server-side render for sgs/mega-aside — the optional side panel of a mega.
  *
- * GROUND-TRUTH: verified against .claude/plans/archive/2026-07-24-mega-menu-BUILD-SPEC.md
- * §8 (aside formats) + the live mega-panel/render.php pattern (uid, sgs_colour_value,
- * sgs_css_length_sanitise, sgs_emit_responsive_css) this file mirrors.
+ * Mirrors the mega-panel/render.php pattern (uid, sgs_colour_value,
+ * sgs_css_length_sanitise, sgs_emit_responsive_css).
  *
  * Renders the `.sgs-mega-aside` element carrying its InnerBlocks (media + tag +
  * heading + text + button — always all five children present; `asideFormat`
  * only changes which are VISIBLE and how they're arranged, never the template).
  *
- * OWNERSHIP SPLIT (CF-10, parent-paints-child): the parent sgs/mega-panel paints
+ * OWNERSHIP SPLIT (parent-paints-child): the parent sgs/mega-panel paints
  * this element's GRID POSITION — width + divider — via its own scoped CSS keyed
  * on `.sgs-mega-aside`. This block owns its own FILL (background/padding/radius/
  * border) and its content ARRANGEMENT (asideFormat), resolved against the
@@ -21,12 +20,12 @@
  * Every attribute value is emitted into this instance's own scoped `<style>`
  * tag, keyed to a content-addressed uid selector.
  *
- * SECURITY (CF-2, binding): every colour/token attr resolves via
+ * SECURITY: every colour/token attr resolves via
  * `sgs_colour_value()`; every free dimensional attr resolves via the shared
  * `sgs_css_length_value()` regex sanitiser; `asideFormat` is a PHP-validated
  * enum (block.json deliberately declares NO JSON `enum` — an out-of-enum JSON
- * enum silently coerces the stored value to the block.json default,
- * `blockjson-enum-coerces-invalid-to-default`); nothing raw is ever
+ * enum silently coerces the stored value to the block.json default);
+ * nothing raw is ever
  * concatenated into the scoped `<style>`. `wp_strip_all_tags()` guards the one
  * remaining `</style>`-breakout vector as a defence-in-depth backstop.
  *
@@ -55,7 +54,7 @@ $aside_bg_gradient_raw       = isset( $attributes['asideBgGradient'] ) ? (string
 $aside_bg_hover_raw          = isset( $attributes['asideBgHover'] ) ? (string) $attributes['asideBgHover'] : '';
 $aside_bg_hover_gradient_raw = isset( $attributes['asideBgHoverGradient'] ) ? (string) $attributes['asideBgHoverGradient'] : '';
 $aside_radius = function_exists( 'sgs_css_length_value' ) ? sgs_css_length_value( $attributes['asideRadius'] ?? '' ) : '';
-// Box-object interface contract §1/§2: asideBorderWidth is an SGS custom
+// Box-object interface contract: asideBorderWidth is an SGS custom
 // OBJECT attr { top, right, bottom, left } — no tiers (mirrors sgs/button's
 // base-only borderWidth). box_family = 'asideBorderWidth' (a per-area family,
 // like hero's imageBorderWidth / product-card's ctaBorderWidth — not the
@@ -82,11 +81,11 @@ $css = '';
 // change when that lands).
 // ---------------------------------------------------------------------------
 
-// Background colour + gradient (with hover sibling, 2026-09-06 FILL closeout).
+// Background colour + gradient (with hover sibling).
 // sgs_custom_property_gradient_decls() emits --sgs-mega-aside-bg,
 // --sgs-mega-aside-bg-gradient for resting state, plus -hover/-hover-gradient
 // variants. style.css reads these via var() with fallback chains so an unset
-// attribute renders byte-identically to before this change.
+// attribute renders the plain transparent/none default.
 if ( function_exists( 'sgs_custom_property_gradient_decls' ) && '' !== $aside_bg_raw ) {
 	$bg_var_decls = sgs_custom_property_gradient_decls(
 		'sgs-mega-aside-bg',
@@ -119,7 +118,7 @@ if ( $aside_border_has_width && null !== $aside_border_width_shorthand ) {
 	// Fallback border-color, painted BEFORE the helper call below so the
 	// cascade favours it: equal specificity, later source order wins, so an
 	// explicit asideBorderColour overrides this default; an unset one leaves
-	// it standing (CF-10's inherited-panel-scheme fallback, unchanged).
+	// it standing (the inherited-panel-scheme fallback).
 	$css .= $root_sel . '{border-width:' . $aside_border_width_shorthand . ';border-style:solid;border-color:var(--sgs-mm-panel-border, rgba(0,0,0,.12));}';
 
 	// Border colour — base + hover, flat-or-gradient, one owned rule

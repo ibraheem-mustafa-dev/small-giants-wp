@@ -10,7 +10,7 @@
  *   .sgs-responsive-logo__picture--fallback  Static images in animation mode
  *   .sgs-responsive-logo--animate-draw / --animate-hover / --animate-scroll
  *
- * The Tier G DrawSVG runtime (Spec 38 FR-38-15 / D408) animates
+ * The Tier G DrawSVG runtime (Spec 38 FR-38-15) animates
  * `stroke-dasharray`/`stroke-dashoffset` directly via GSAP tweening, not via a
  * CSS transition — so there is no `.is-animating`/`.is-animated` state class
  * and no reduced-motion CSS override here. GSAP's own
@@ -21,7 +21,7 @@
 
 .sgs-responsive-logo {
 	display: inline-block;
-	// Fill-width default (2026-09-18, Bean-directed, was 240px) -- `--logo-width`
+	// Fill-width default -- `--logo-width`
 	// is only emitted by render.php when the operator has explicitly set a
 	// pixel width; an untouched instance falls through to this 100% default so
 	// the logo fills whatever width its containing column/flex-item allocates,

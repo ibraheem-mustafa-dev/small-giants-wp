@@ -143,7 +143,7 @@ const DISTRIBUTION_OPTIONS = [
 	{ label: __( 'Spread apart', 'sgs-blocks' ), value: 'space-between' },
 ];
 
-// Block-private motion-effect picker (2026-09-11). This row is deliberately
+// Block-private motion-effect picker. This row is deliberately
 // NOT on the shared fx ToolsPanel roster (see fx.js's own docblock +
 // generated-fx-qualifying-blocks.json) — `fxEffect` is a block-private
 // selector, never the shared `fx` attribute, so this row can never be pulled
@@ -165,15 +165,14 @@ const ROW_LABELS = {
 	bottom: __( 'Bottom row — message / business info', 'sgs-blocks' ),
 };
 
-// columns is a TIER OBJECT holding {desktop,tablet,mobile} (Spec 35 pass 4,
-// 2026-08-11) — wires directly onto ResponsiveOverride, identical to
-// site-footer-row and gridTemplateColumns. ⛔ Do NOT reintroduce a bridge to
-// three flat attrs — columnsTablet/columnsMobile are no longer declared by
-// block.json.
+// columns is a TIER OBJECT holding {desktop,tablet,mobile} — wires directly
+// onto ResponsiveOverride, identical to site-footer-row and
+// gridTemplateColumns. There are no flat columnsTablet/columnsMobile attrs, so
+// no bridge to them is needed.
 
 // Cross-axis alignment of this row's children (align-items on the wrapper's
 // grid/flex track) — read directly by SGS_Container_Wrapper as `alignItems`
-// (class-sgs-container-wrapper.php:247, 668-669/681-682). Mirrors sgs/container's
+// (class-sgs-container-wrapper.php). Mirrors sgs/container's
 // ALIGN_OPTIONS (ContainerWrapperControls.js) exactly for a consistent operator
 // vocabulary across the framework. No block.json enum on this attr, so any of
 // the four values is always a valid explicit choice — there is no separate
@@ -218,9 +217,9 @@ const ALIGN_CONTENT_OPTIONS = [
 	{ label: __( 'Space evenly', 'sgs-blocks' ), value: 'space-evenly' },
 ];
 
-// gridTemplateColumns is the {desktop,tablet,mobile} object (Spec 35 pass 3a)
-// — ResponsiveOverride reads and writes it directly. ⛔ Do NOT add a bridge to
-// three flat attrs: block.json no longer declares them (D563).
+// gridTemplateColumns is the {desktop,tablet,mobile} object —
+// ResponsiveOverride reads and writes it directly; block.json declares no flat
+// per-tier attrs, so no bridge to them is needed.
 
 // gridTemplateRows — same shape, same reasoning as gridTemplateColumns above.
 
@@ -250,7 +249,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	const isGrid = 'grid' === layout;
 
-	// Motion-effect reachability flags (2026-09-11) — each names the SINGLE
+	// Motion-effect reachability flags — each names the SINGLE
 	// selected effect so the "not available in editor" Notice below and the
 	// matching *RowControls panel gate on the same condition. The editor
 	// canvas is static and cannot follow a pointer, animate particles, tick a
@@ -301,12 +300,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		[ clientId ]
 	);
 
-	// columns IS the tier object now — pass it straight through, and write it
-	// straight back. No per-tier fan-out: those sibling attrs no longer exist.
+	// columns IS the tier object — pass it straight through, and write it
+	// straight back. No per-tier fan-out.
 	const columnsDesktop = resolveResponsiveTier( columns, 'desktop' )?.value || 3;
 
-	// The attr IS the tier object now — pass it straight through, and write it
-	// straight back. No per-tier fan-out: those sibling attrs no longer exist.
+	// The attr IS the tier object — pass it straight through, and write it
+	// straight back. No per-tier fan-out.
 	const gridTemplateColumnsValue = gridTemplateColumns;
 	const onGridTemplateColumnsChange = ( obj ) =>
 		setAttributes( { gridTemplateColumns: obj } );
@@ -316,7 +315,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		setAttributes( { gridTemplateRows: obj } );
 
 	// Editor preview mirrors the frontend: grid rows preview as an equal-count
-	// column grid at the desktop tier; cluster rows NEVER wrap (D455) — they
+	// column grid at the desktop tier; cluster rows NEVER wrap — they
 	// yield by shrinking their children, mirroring style.css's nowrap lock. The
 	// never-overflow guarantee (nowrap + min-width:0 + per-child floors) comes
 	// from style.css.
@@ -327,8 +326,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				...( gridAutoRows ? { gridAutoRows } : {} ),
 				// Blank alignItems/justifyItems/alignContent fall to the
 				// CSS-initial `stretch` — mirrors SGS_Container_Wrapper::render()'s
-				// own defaults (D306 for alignItems), not a hardcoded editor-only
-				// fallback.
+				// own defaults, not a hardcoded editor-only fallback.
 				alignItems: alignItems || 'stretch',
 				justifyItems: justifyItems || 'stretch',
 				alignContent: alignContent || 'stretch',
@@ -336,11 +334,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		  }
 		: {
 				display: 'flex',
-				// D455 — mirrors the frontend lock. The row never wraps or
+				// Mirrors the frontend lock. The row never wraps or
 				// stacks; it yields by shrinking its children instead.
 				flexWrap: 'nowrap',
 				// Blank alignItems falls to the CSS-initial `stretch` — mirrors
-				// SGS_Container_Wrapper::render()'s own default (D306), not a
+				// SGS_Container_Wrapper::render()'s own default, not a
 				// hardcoded editor-only fallback.
 				alignItems: alignItems || 'stretch',
 				...( flexDirection ? { flexDirection } : {} ),
@@ -403,7 +401,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		{
 			templateLock: false,
 			orientation: 'horizontal',
-			// Dismissible per-instance (Bean, 2026-09-17): once the operator
+			// Dismissible per-instance: once the operator
 			// closes the promoted panel on THIS row, fall back to no custom
 			// renderAppender at all — WordPress's own plain default appender
 			// takes over, exactly as sgs/container already does for its
@@ -435,8 +433,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		}
 	);
 
-	// Pilot WCAG contrast check on the Text row (D-pending, gap-candidate
-	// register task). The row's own `backgroundColour` is the effective
+	// Pilot WCAG contrast check on the Text row. The row's own `backgroundColour` is the effective
 	// background the text sits on when set; when the row leaves it blank the
 	// row paints no background of its own, so the parent `sgs/site-header`'s
 	// background shows through instead — the real thing the text is read
@@ -464,8 +461,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// background of its own. When the row DOES have its own background/
 	// gradient, that (not the parent's) is what's behind the text, and this
 	// pilot doesn't check the row's own pairing — skip the check rather than
-	// comparing against a colour that isn't what's actually rendered (Bean,
-	// 2026-09-04).
+	// comparing against a colour that isn't what's actually rendered.
 	const rowHasOwnBackground = Boolean(
 		attributes.backgroundColour || attributes.backgroundColourGradient
 	);
@@ -476,7 +472,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// TIER 2 property-family rows for `row` (isWrapper) — Text / Fill, each in
 	// its own panel (THE PLACEMENT RULE, Spec 35 Part O). Built via the same
 	// row-descriptor helpers SgsColourPanel itself consumes, so the row SHAPE
-	// (D609: swatch + popover + in-popover state tabs) is identical — only the
+	// (swatch + popover + in-popover state tabs) is identical — only the
 	// panel TITLE differs (Text / Fill, not a shared "Colour" catch-all).
 	const textRowDescriptor = textRow( {
 		key: 'text',
@@ -543,11 +539,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 				</PanelBody>
 
-				{ /* Layout — merges the former "Alignment & grid" ToolsPanel, the
-				   unpanelled ResponsiveBoxControls mount (padding/margin/max-width —
-				   `row`'s OWN box attrs; `contentWidth` belongs to `content-band` and
-				   moves to that element's own panel below), and the "Border"
-				   PanelBody into ONE `row` Layout panel (Spec 35 Part O, D537). */ }
+				{ /* Layout — ONE `row` Layout panel holding the "Alignment & grid"
+				   ToolsPanel, the ResponsiveBoxControls mount (padding/margin/
+				   max-width — `row`'s OWN box attrs; `contentWidth` belongs to
+				   `content-band` and sits in that element's own panel below), and
+				   the "Border" PanelBody (Spec 35 Part O). */ }
 				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
 					<ToolsPanel
 						label={ __( 'Alignment & grid', 'sgs-blocks' ) }
@@ -969,7 +965,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					</ResponsiveOverride>
 				</PanelBody>
 
-				{ /* Motion — block-private escape-hatch effect picker (2026-09-11).
+				{ /* Motion — block-private escape-hatch effect picker.
 				   `fxEffect` is NEVER the shared fx ToolsPanel's `fx` attribute;
 				   this row and its render.php companion emit the same
 				   `data-sgs-fx*` markup contract by hand. Only one effect's

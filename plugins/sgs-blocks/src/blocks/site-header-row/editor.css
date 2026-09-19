@@ -6,11 +6,10 @@
  * on the frontend, but must be editable in the Site Editor).
  */
 
-/* D455 — mirrors the frontend lock: one line at every width, never a stack.
+/* Mirrors the frontend lock: one line at every width, never a stack.
    `style.css` and `editor.css` compile to independent bundles, so the frontend
-   fix does NOT reach the editor canvas; it has to be repeated here.
-   Gap matches block.json's default (was `clamp(0.5rem, 2vw, 1.5rem)` while
-   block.json said `16px` — the two surfaces disagreed). */
+   rule does NOT reach the editor canvas; it has to be repeated here.
+   Gap matches block.json's default. */
 .editor-styles-wrapper .sgs-site-header-row {
 	display: flex;
 	flex-wrap: nowrap;
@@ -44,7 +43,7 @@
 	gap: 8px;
 }
 
-/* Per-instance dismiss (Bean, 2026-09-17) — writes hidePromotedPlaceholder on
+/* Per-instance dismiss — writes hidePromotedPlaceholder on
  * this row only, never a global setting. Positioned top-right of the
  * Placeholder so it reads as "close this panel", not one of the quick-insert
  * choices. */

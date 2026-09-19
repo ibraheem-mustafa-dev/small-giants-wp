@@ -6,9 +6,9 @@
  * columns*, gridTemplateColumns*, gap, verticalAlign, justifyContent) — NOT
  * hardcoded here (Gate B / no-inline, composite-mirror R-31-9). The responsive
  * column collapse is emitted by the wrapper as scoped per-tier rules at the grid
- * selector (QB-2). It is NOT a `sgs-cols-*` class any more — those were removed
- * 2026-07-23 because they sat on the wrapper while container queries had moved
- * the grid to `.sgs-container__inner`, so they silently did nothing (FR-37-11).
+ * selector (QB-2). It is NOT a `sgs-cols-*` class: such a class would sit on the
+ * wrapper while container queries place the grid on `.sgs-container__inner`,
+ * so it would silently do nothing (FR-37-11).
  * This file only adds the non-attr hardening that keeps the row from ever
  * overflowing.
  */
@@ -32,61 +32,26 @@
  * FR-37-35 — container-query row reflow (§3.6 "container queries for
  * row-level reflow" + STOP-CONTAINER-TIER-IS-NOT-VIEWPORT).
  *
- * Mirrors sgs/site-header-row's identical reflow rule exactly (same
- * reasoning, same numeric tier — see that file's comment for the full
- * justification). flex-basis is ignored on a `layout:grid` columns row
- * (flex-basis only affects flex layout), so this rule is inert-by-
- * construction on the footer's grid columns row and only reflows the
- * flex rows (top strip / bottom bar) — no per-layout carve-out needed.
+ * Mirrors sgs/site-header-row: a row reflows on its OWN inline size (its
+ * container — never the viewport). There is deliberately NO authored
+ * `@container` stack rule (e.g. `flex-basis:100%` on every child at 767px):
+ * it would force every flex child onto a full-width line whether or not the
+ * content had run out of room, so an operator switching a row to Cluster
+ * would see it hard-stack with room to spare. The column collapse of the grid
+ * rows comes from the per-tier count, made content-aware via
+ * `supports.sgs.intrinsicColumns` (block.json).
  *
- * flex-wrap (wrapper-owned) already lets children drop onto a new line
- * once they run out of room — an EMERGENT side effect of the flexbox
- * algorithm, not an authored layout change. This adds the authored
- * change: once the row's OWN inline size (its container — never the
- * viewport) crosses the SGS mobile tier, every direct flex child takes
- * the full row width and gets its own line, so a flex row deliberately
- * collapses to a single column rather than wrapping into an ambiguous
- * 2-per-line arrangement that happens to fit.
+ * Instead the flex rows use an intrinsic basis (below). Flex properties do not
+ * apply to grid items, so that rule is inert-by-construction on the grid rows
+ * and only shapes the flex rows (top strip / bottom bar) — no per-layout
+ * carve-out needed.
  *
- * container-type:inline-size here is a defensive restatement of the
- * identical rule the shared wrapper ALREADY emits per-instance
- * (class-sgs-container-wrapper.php:1555 — unconditional for this block
- * because the wrapper emits object-shaped values for every block). Same property,
- * same value, same element — applied here via the stable plain class
- * rather than the dynamic per-instance uid, so the @container rule below
- * does not silently depend on that PHP wiring staying unchanged.
- *
- * 767px is SGS_Breakpoints::MOBILE_MAX (includes/class-sgs-breakpoints.php).
- * It is reused here because it is the SAME numeric bound the wrapper's own
- * FR-37-16 mechanism already uses for the @container queries scoped to THIS
- * exact element (its gap / gridTemplateColumns tiers) — not a copy of the
- * viewport @media breakpoint for its own sake. The number matches the
- * viewport mobile tier by design (one SGS "mobile" definition, applied on
- * two independent axes — container width and viewport width — exactly as
- * FR-37-16 already does for this element); this rule itself fires purely
- * off the row's own measured inline size, never the viewport.
- *
- * ⛔ The collapse-to-stack half of this rule WAS DELETED (D456). Do not
- * reintroduce it. What was here:
- *
- *     @container (max-width: 767px) {
- *       .sgs-site-footer-row > *,
- *       .sgs-site-footer-row > .sgs-container__inner > * { flex-basis: 100%; }
- *     }
- *
- * It forced every flex child to a full-width line at a fixed 767px, whether or
- * not the content had run out of room. Measured live on the canary 2026-08-01:
- * the rule MATCHED on all three rows (computed `flex-basis: 100%` on their
- * children below 767px) but was visually INERT, because all three rows render
- * `display:grid` and a grid item ignores flex-basis. Its column collapse came
- * from the per-tier count instead — a hard @media cliff, now content-aware via
- * `supports.sgs.intrinsicColumns` (block.json). Deleting this rule closes the
- * LATENT half: the moment an operator switched a row to Cluster it would have
- * hard-stacked at 767px with room to spare, exactly as the header did.
- *
- * Replaced with an intrinsic basis. Flex properties do not apply to grid items,
- * so this is inert-by-construction on the grid rows — the same property the
- * deleted rule relied on, used the other way round.
+ * container-type:inline-size is a defensive restatement of the identical rule
+ * the shared wrapper emits per-instance (unconditional for this block because
+ * the wrapper emits object-shaped values for every block). Same property, same
+ * value, same element — applied here via the stable plain class rather than
+ * the dynamic per-instance uid, so nothing silently depends on that PHP wiring
+ * staying unchanged.
  */
 .sgs-site-footer-row {
 	container-type: inline-size;

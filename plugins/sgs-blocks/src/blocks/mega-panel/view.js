@@ -1,20 +1,18 @@
 /**
  * SGS Mega Panel — frontend view module.
  *
- * Wires the two shared motion effects (§6 U4/U6) into every rendered panel:
+ * Wires the two shared motion effects into every rendered panel:
  *
  * - Staggered reveal (`initStagger`), opt-in per panel via the `data-stagger`
  *   attribute the `staggerOnOpen` block attribute sets. Fires once on
  *   panel-OPEN.
  * - Cursor spotlight (`initSpotlight`), always on for the aside slot when a
- *   `.sgs-mega-aside` child is present — no opt-in attribute for this one
- *   (§6 U6 doesn't gate it behind a control).
+ *   `.sgs-mega-aside` child is present — no opt-in attribute for this one.
  *
- * OPEN-SIGNAL CONTRACT (verified against the live disclosure mechanism —
- * corrected 2026-07-27, prior revision of this file wrongly assumed a
- * `hidden` attribute on the panel, which never occurs; see below).
+ * OPEN-SIGNAL CONTRACT (matches the live disclosure mechanism; the panel
+ * never carries a `hidden` attribute).
  *
- * The mega panel is shown/hidden by `nav-menu/render.php`'s scoped CSS via a
+ * The mega panel is shown/hidden by `sgs/nav-bar-menu`'s scoped CSS via a
  * sibling combinator reacting to the TRIGGER BUTTON's `aria-expanded`, not by
  * any attribute on the panel itself:
  *

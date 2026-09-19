@@ -2,7 +2,7 @@
 /**
  * Server-side render for sgs/mega-group — one column of a mega panel.
  *
- * A deliberately dumb wrapper (CF-10, parent-paints-child): it emits ONLY the
+ * A deliberately dumb wrapper (parent-paints-child): it emits ONLY the
  * `.sgs-mega-group` element carrying its InnerBlocks (a heading + an
  * sgs/icon-list). It has NO styling attributes of its own — every colour /
  * shape / arrangement decision is painted by the parent sgs/mega-panel's
@@ -11,8 +11,8 @@
  *
  * Dynamic (not static) so that `save` persists only the InnerBlocks marker —
  * the starter patterns store comment delimiters + children with no wrapper
- * div, which then validate cleanly, and a future wrapper change never strands
- * stored content (no deprecations, D270).
+ * div, which then validate cleanly, and a wrapper change never strands
+ * stored content (no deprecations).
  *
  * @var string   $content Rendered InnerBlocks (heading + icon-list).
  * @var array    $attributes Block attributes (none of its own).

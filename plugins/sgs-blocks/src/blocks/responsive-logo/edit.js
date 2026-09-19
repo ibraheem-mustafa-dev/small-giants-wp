@@ -181,8 +181,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		backgroundColourHoverGradient,
 	} = attributes;
 
-	// `maxWidth` AND `maxHeight` are both TIER OBJECTS as of Spec 35 pass 2
-	// (2026-08-11) — ONE attr each holding {desktop,tablet,mobile}.
+	// `maxWidth` AND `maxHeight` are both TIER OBJECTS — ONE attr each
+	// holding {desktop,tablet,mobile}.
 	//
 	// The per-tier VALUE stays a bare NUMBER paired with the block-level
 	// `maxWidthUnit`/`maxHeightUnit` — the tier axis and the unit are separate
@@ -209,9 +209,8 @@ export default function Edit( { attributes, setAttributes } ) {
 	//
 	// Persisting the URL is also what makes the a11y half work: `image-alt` pairs
 	// an alt attr to a sibling image attr via `alt_companion_attr`, and
-	// `walk.py:295` only captures alt when that companion is
-	// `attr_type='string'`. Three bare attachment IDs could never satisfy it, so
-	// `alt` had to go through the interim `authored-alt-text` category.
+	// walk.py only captures alt when that companion is
+	// `attr_type='string'`. Three bare attachment IDs could never satisfy it.
 	const blockProps = useBlockProps( {
 		className: 'sgs-responsive-logo-editor',
 	} );
@@ -520,8 +519,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ResponsiveOverride>
 				</PanelBody>
 
-				{ /* ── Background colour (D609/D618 uniformity — SgsColourPanel is the
-				   ONLY sanctioned colour control). Decision 1, 2026-09-14: gives the
+				{ /* ── Background colour (SgsColourPanel is the
+				   ONLY sanctioned colour control): gives the
 				   logo's own background tile independent control whether it sits in
 				   the site header or inside sgs/nav-drawer. ── */ }
 				<SgsColourPanel
@@ -612,9 +611,9 @@ export default function Edit( { attributes, setAttributes } ) {
 			   Rendered via ServerSideRender (render.php) so the canvas NEVER
 			   drifts from the frontend — animation, the theme-customiser
 			   fallback logo, the functional alt default, left-align, and the
-			   new per-tier max-box all render exactly as they will on the
-			   live site (ssr-fixes-hand-built-preview-drift lesson,
-			   2026-07-18). Tradeoff: the SVG view.js animation itself doesn't
+			   per-tier max-box all render exactly as they will on the
+			   live site (a hand-built preview drifts from the frontend).
+			   Tradeoff: the SVG view.js animation itself doesn't
 			   run inside the static SSR preview — only its markup/CSS does.
 			   Gated on logoId (not the transient preview URL) so the
 			   placeholder is correct on reload before a logo is chosen; a

@@ -5,7 +5,7 @@
 	"version": "0.1.2",
 	"title": "SGS Mega Panel",
 	"category": "sgs-interactive",
-	"description": "The content container of an SGS mega menu — lives inside a sgs_mega_menu post. Owns ALL variant + colour-scheme styling for its child sgs/mega-group and sgs/mega-aside blocks (parent-paints-child, CF-10): switching this block's style or colour scheme uniformly reshapes/recolours every group and aside inside it.",
+	"description": "The content container of an SGS mega menu — lives inside a sgs_mega_menu post. Owns ALL variant + colour-scheme styling for its child sgs/mega-group and sgs/mega-aside blocks (parent-paints-child): switching this block's style or colour scheme uniformly reshapes/recolours every group and aside inside it.",
 	"keywords": [
 		"mega",
 		"menu",
@@ -23,12 +23,12 @@
 			"colourExemptions": {
 				"background": {
 					"rule": "states",
-					"reason": "The megamenu dropdown panel's visibility is toggled by the trigger/JS as a disclosure surface, not by pointer position over the panel shell — once open the pointer is always over some interactive CHILD (a group tile, icon, or link), each with its own hover control. No genuine :hover moment exists on the panel root itself. Confirmed 2026-09-06 (colour-conformance FILL audit)."
+					"reason": "The megamenu dropdown panel's visibility is toggled by the trigger/JS as a disclosure surface, not by pointer position over the panel shell — once open the pointer is always over some interactive CHILD (a group tile, icon, or link), each with its own hover control. No genuine :hover moment exists on the panel root itself."
 				}
 			},
 			"containerKind": "section",
 			"containerMirror": false,
-			"_comment_mediaElements": "37-media-no-handroll remediation (2026-09-03). The aside's media is rendered by a CHILD block (sgs/mega-aside, parent-paints-child per CF-10) — this panel never renders an <img>/<video> of its own, so there is no element to attach the `sgs-media-el` marker class to. The atom's VALUE is instead set as a custom property on the panel's OWN root ($uid, prefix ''), which the aside's img reads via var() since custom properties inherit down the InnerBlocks tree (see render.php's `object-fit` block near the aside-width rule). style.css/render.php no longer hardcode object-fit:cover on the aside media.",
+			"_comment_mediaElements": "The aside's media is rendered by a CHILD block (sgs/mega-aside, parent-paints-child) — this panel never renders an <img>/<video> of its own, so there is no element to attach the `sgs-media-el` marker class to. The atom's VALUE is instead set as a custom property on the panel's OWN root ($uid, prefix ''), which the aside's img reads via var() since custom properties inherit down the InnerBlocks tree (see render.php's `object-fit` block near the aside-width rule). style.css/render.php do not hardcode object-fit:cover on the aside media.",
 			"mediaElements": [
 				{ "prefix": "", "context": "element", "atoms": [ "object-fit" ] }
 			],
@@ -58,7 +58,7 @@
 						"css:gap": "groupGap",
 						"css:border-color-gradient": "borderColourGradient"
 					},
-					"_note": "The `.sgs-mega-panel` root + its `.sgs-mega-panel__content` row (CF-12 pins groupGap onto this SAME element rather than a separate content element). Block-private (containerMirror:false, D294 deviation — this composite uses no SGS_Container_Wrapper grid/section machinery of its own; it hand-rolls its own flex/grid content-row per `style`, mirroring the wrapper's fill/box capability only). variant/style/colourScheme/accent/headings/bgBlur are variant-selector + arrangement-mode attrs, not css: property mappings, so they are deliberately absent from attrMap — they select WHICH scoped rule applies, per CF-4 (warn-only advisory, not global GAP-0). Column COUNT is no longer a separate attribute (dropped, QC-fix 2026-07-24) — the panel accepts a flexible 1-N sgs/mega-group children (add/remove/reorder), so the number of columns IS the number of groups. group-heading/link/desc/marker are CHILD-OWNED (sgs/heading, sgs/icon-list — HC2) and are declared on THOSE blocks' own manifests, not repeated here, even though this panel's CSS paints their colour/shape uniformly (CF-10). NO hover pair on panelBg (2026-09-06, hover-controls task, considered and rejected): the panel root is a disclosure surface whose visibility is already toggled by its trigger button/JS, not an element a visitor hovers as a discrete interaction in its own right — there is no genuine `:hover` moment on the ROOT once it is open, only on its children (which have their own hover controls, e.g. the `icon` element below). Inventing a panel-level hover here would have no real trigger to attach it to."
+					"_note": "The `.sgs-mega-panel` root + its `.sgs-mega-panel__content` row (groupGap is pinned onto this SAME element rather than a separate content element). Block-private (containerMirror:false — this composite uses no SGS_Container_Wrapper grid/section machinery of its own; it hand-rolls its own flex/grid content-row per `style`, mirroring the wrapper's fill/box capability only). variant/style/colourScheme/accent/headings/bgBlur are variant-selector + arrangement-mode attrs, not css: property mappings, so they are deliberately absent from attrMap — they select WHICH scoped rule applies. Column COUNT is not a separate attribute — the panel accepts a flexible 1-N sgs/mega-group children (add/remove/reorder), so the number of columns IS the number of groups. group-heading/link/desc/marker are CHILD-OWNED (sgs/heading, sgs/icon-list) and are declared on THOSE blocks' own manifests, not repeated here, even though this panel's CSS paints their colour/shape uniformly. panelBg has no hover pair: the panel is a disclosure surface toggled by the `sgs/nav-bar-menu` mega-item trigger, not an element a visitor points at — there is no genuine `:hover` moment on the ROOT once it is open, only on its children (which have their own hover controls, e.g. the `icon` element below)."
 				},
 				"aside": {
 					"label": "Aside slot",
@@ -72,7 +72,7 @@
 						"css:background-image-gradient": "accentBackgroundImageGradient",
 						"css:width": "asideWidth"
 					},
-					"_note": "The optional `.sgs-mega-aside` grid column, when a sgs/mega-aside child is present (asideSeparator's border-left divider is a compound value — colour+width+style — so it is documented here rather than mapped to a single css: key). accentBackgroundImageGradient (2026-09-06, colour-conformance closeout) is a NEW gradient sibling for accentBackgroundImage — that base attribute feeds only a COLOUR STOP inside the spotlight glow's radial-gradient (via the derived --sgs-mm-soft-image 10% tint), which a gradient cannot be meaningfully passed through the same way a flat colour can, so when set this BYPASSES that derivation entirely and replaces the WHOLE background-image on the same `[data-spotlight]::before` selector with the raw gradient. Default empty string: the existing slug+color-mix() behaviour is completely unchanged when unset."
+					"_note": "The optional `.sgs-mega-aside` grid column, when a sgs/mega-aside child is present (asideSeparator's border-left divider is a compound value — colour+width+style — so it is documented here rather than mapped to a single css: key). accentBackgroundImageGradient is a gradient sibling for accentBackgroundImage — that base attribute feeds only a COLOUR STOP inside the spotlight glow's radial-gradient (via the derived --sgs-mm-soft-image 10% tint), which a gradient cannot be meaningfully passed through the same way a flat colour can, so when set this BYPASSES that derivation entirely and replaces the WHOLE background-image on the same `[data-spotlight]::before` selector with the raw gradient. Default empty string: the slug+color-mix() behaviour applies when unset."
 				},
 				"icon": {
 					"label": "Icon chip",
@@ -98,7 +98,7 @@
 							}
 						}
 					},
-					"_note": "CROSS-BLOCK REUSE (2026-08-28, NULL css_element fix proposal §5): the actual rendered selector is `.sgs-icon-list__icon` — a CHILD block's (sgs/icon-list) own BEM class, reused here as markup inside this panel's parent-paints-child model (CF-10, see the `panel` element's own note). This element exists so iconBackground/iconColour (the icon-chip background-color/color painted uniformly across all 3 group styles — columns/cards/minimal, render.php §4) classify to a real owning element instead of drifting to NULL css_element, matching the same cross-block-reuse documentation pattern already used elsewhere in this codebase (e.g. how a composite documents a child-owned selector it paints but does not declare controls for). iconColourGradient (mega-panel.iconColour gradient-conformance close-out) is the sibling gradient attribute — added to this attrMap so it classifies to the SAME `icon` element instead of drifting ORPHAN:UNCLASSIFIED, matching `panel`/`group`'s own css:border-color-gradient siblings above. iconBackgroundHover/iconBackgroundGradientHover (2026-09-06, hover-controls task) are a NEW hover pair, scoped in render.php/style.css to ONLY the `cards` style's `.sgs-mega-group:hover .sgs-icon-list__icon` — the one style where the icon chip's ancestor already has a real hover trigger (the group tile's own lift/shadow hover, see the `group` element note below). Default empty string on both: no colour override at hover until an operator sets one, matching the resting groupBorderColour pair's own default-empty convention. When set, REPLACES the derived --sgs-mm-soft 10%-tint entirely for the hover state — painted raw, never re-derived through color-mix() (same design choice as accentBackgroundImageGradient on the `aside` element below). iconColourHover/iconColourHoverGradient added 2026-09-07 (colour-conformance bg-layer batch) — wired to the SAME `cards`-only ancestor-hover trigger as iconBackgroundHover immediately above, for the same reason (columns/minimal have no genuine :hover moment on `.sgs-mega-group`). This element ALSO paints a real background on the SAME selector at BOTH states (the --sgs-mm-soft tint at rest, --sgs-mm-icon-hover-bg on hover) — render.php only swaps the HOVER background onto its own ::after layer for the specific instance where the resolved hover text value is actually a gradient (conditional-swap pattern, mirrors the brand-strip itemTextColourHover fix c785a3b7a); the flat-colour case (the common one) is byte-identical to the pre-existing iconBackgroundHover rule."
+					"_note": "CROSS-BLOCK REUSE: the actual rendered selector is `.sgs-icon-list__icon` — a CHILD block's (sgs/icon-list) own BEM class, reused here as markup inside this panel's parent-paints-child model (see the `panel` element's note). This element exists so iconBackground/iconColour (the icon-chip background-color/color painted uniformly across all 3 group styles — columns/cards/minimal) classify to a real owning element. iconColourGradient is the sibling gradient attribute, mapped to the SAME `icon` element, matching `panel`/`group`'s own css:border-color-gradient siblings. iconBackgroundHover/iconBackgroundGradientHover are a hover pair, scoped in render.php/style.css to ONLY the `cards` style's `.sgs-mega-group:hover .sgs-icon-list__icon` — the one style where the icon chip's ancestor has a real hover trigger (the group tile's own lift/shadow hover, see the `group` element note below). Default empty string on both: no colour override at hover until an operator sets one. When set, REPLACES the derived --sgs-mm-soft 10%-tint entirely for the hover state — painted raw, never re-derived through color-mix() (same design choice as accentBackgroundImageGradient on the `aside` element). iconColourHover/iconColourHoverGradient are wired to the SAME `cards`-only ancestor-hover trigger as iconBackgroundHover, for the same reason (columns/minimal have no genuine :hover moment on `.sgs-mega-group`). This element ALSO paints a real background on the SAME selector at BOTH states (the --sgs-mm-soft tint at rest, --sgs-mm-icon-hover-bg on hover) — render.php only swaps the HOVER background onto its own ::after layer when the resolved hover text value is actually a gradient (conditional-swap pattern, as in brand-strip's itemTextColourHover); the flat-colour case (the common one) is byte-identical to the plain iconBackgroundHover rule."
 				},
 				"group": {
 					"label": "Group tile",
@@ -119,7 +119,7 @@
 							}
 						}
 					},
-					"_note": "Targets `.sgs-mega-group` (resting) and `.sgs-mega-group:hover, .sgs-mega-group:focus-within` (hover) — both scoped to the `cards` style's tile only (render.php §4 card hover-lift); `columns`/`minimal` styles render no group-tile border at all. RENAMED 2026-08-28 (NULL css_element fix proposal §5): accentBorderColour -> groupBorderColour, accentBorderColourGradient -> groupBorderColourGradient. Bean then ruled, same day, that a genuine RESTING-state border control should exist alongside the hover — the original code only ever had a hover/focus-within border with no resting equivalent (the resting border on `cards` came solely from the `panel` element's shared --sgs-mm-panel-border token). groupBorderColour/groupBorderColourGradient (this element's BASE attrMap) are the new resting pair, default empty string so a fresh instance renders no colour override at rest — the `cards` tile keeps its existing --sgs-mm-panel-border-derived border unchanged until an operator sets one. The just-renamed groupBorderColour/groupBorderColourGradient were immediately re-renamed a second time, same day, to groupBorderColourHover/groupBorderColourGradientHover (base name = resting, base+Hover = hover — this codebase's own convention, e.g. backgroundColourHover) to make room for the new resting pair without a naming clash. Both pairs keep the same paired css:border-color + css:border-color-gradient shape in a single attrMap entry, per this codebase's established gradient-override convention."
+					"_note": "Targets `.sgs-mega-group` (resting) and `.sgs-mega-group:hover, .sgs-mega-group:focus-within` (hover) — both scoped to the `cards` style's tile only (card hover-lift); `columns`/`minimal` styles render no group-tile border at all. Two attribute pairs share one paired css:border-color + css:border-color-gradient shape in a single attrMap entry: groupBorderColour/groupBorderColourGradient are the RESTING pair (this element's BASE attrMap), default empty string so a fresh instance renders no colour override at rest — the `cards` tile keeps its --sgs-mm-panel-border-derived border (from the `panel` element's shared token) until an operator sets one; groupBorderColourHover/groupBorderColourGradientHover are the HOVER/focus-within pair (base name = resting, base+Hover = hover, as with backgroundColourHover)."
 				}
 			},
 			"hideExtensions": [
@@ -151,57 +151,57 @@
 		"iconBackground": {
 			"type": "string",
 			"default": "accent",
-			"_note": "Renamed from `accentBackground` (2026-08-28, NULL css_element fix proposal §5) — split from the old single `accent` attribute (D643, Bean-ruled: one colour attribute secretly painting 4 unrelated CSS properties blocks the gradient rollout — each property needs its own control). Feeds the icon-chip `background-color` (via the derived `--sgs-mm-soft` 10% tint) across all 3 group styles. Default unchanged from the retired `accent` attribute so existing rendering is preserved exactly. The generic name matches the established codebase convention (attribute name = generic `<element><Property>Colour`, default = bare token slug) and closes a NULL css_element classification gap via the new `icon` manifest element below."
+			"_note": "Feeds the icon-chip `background-color` (via the derived `--sgs-mm-soft` 10% tint) across all 3 group styles. Each painted CSS property has its own control — one colour attribute painting several unrelated CSS properties would block per-property gradient siblings. The generic name follows the codebase convention (attribute name = generic `<element><Property>Colour`, default = bare token slug) and classifies through the `icon` manifest element."
 		},
 		"iconBackgroundGradient": {
 			"type": "string",
 			"default": "",
-			"description": "CSS gradient string painting the icon-chip background via background-image, on the SAME `--sgs-mm-soft-gradient` custom property the icon selectors already consume alongside their existing `--sgs-mm-soft` 10%-tint background-color (render.php §2/§4). Non-empty wins over the derived iconBackground tint — the gradient paints at full strength rather than being colour-mixed, since a gradient cannot be meaningfully blended through color-mix()."
+			"description": "CSS gradient string painting the icon-chip background via background-image, on the SAME `--sgs-mm-soft-gradient` custom property the icon selectors already consume alongside their existing `--sgs-mm-soft` 10%-tint background-color. Non-empty wins over the derived iconBackground tint — the gradient paints at full strength rather than being colour-mixed, since a gradient cannot be meaningfully blended through color-mix()."
 		},
 		"iconBackgroundHover": {
 			"type": "string",
 			"default": "",
-			"description": "NEW hover pair (2026-09-06, hover-controls task) for iconBackground. Scoped to the `cards` style's `.sgs-mega-group:hover .sgs-icon-list__icon` only — the one style where the icon chip's ancestor already has a real hover trigger (the group tile's own lift/shadow hover). Default empty string: no colour override at hover until an operator sets one. When set, REPLACES the derived --sgs-mm-soft 10%-tint entirely for the hover state, painted raw via the --sgs-mm-icon-hover-bg custom property, never re-derived through color-mix()."
+			"description": "Hover colour for iconBackground. Scoped to the `cards` style's `.sgs-mega-group:hover .sgs-icon-list__icon` only — the one style where the icon chip's ancestor already has a real hover trigger (the group tile's own lift/shadow hover). Default empty string: no colour override at hover until an operator sets one. When set, REPLACES the derived --sgs-mm-soft 10%-tint entirely for the hover state, painted raw via the --sgs-mm-icon-hover-bg custom property, never re-derived through color-mix()."
 		},
 		"iconBackgroundGradientHover": {
 			"type": "string",
 			"default": "",
-			"description": "Gradient sibling for iconBackgroundHover (2026-09-06). Non-empty wins over iconBackgroundHover on the SAME hover/focus-within `.sgs-icon-list__icon` state via the --sgs-mm-icon-hover-bg-gradient custom property — same flat/gradient sibling pattern as every other pair in this block."
+			"description": "Gradient sibling for iconBackgroundHover. Non-empty wins over iconBackgroundHover on the SAME hover/focus-within `.sgs-icon-list__icon` state via the --sgs-mm-icon-hover-bg-gradient custom property — same flat/gradient sibling pattern as every other pair in this block."
 		},
 		"groupBorderColour": {
 			"type": "string",
 			"default": "",
-			"_note": "NEW resting-state border-colour control (2026-08-28, Bean-ruled) — added alongside the pre-existing hover-only pair, which is now renamed groupBorderColourHover/groupBorderColourGradientHover (see below and the `group` manifest element's own note for the full rename chain: accentBorderColour -> groupBorderColour -> groupBorderColourHover). Default empty string: renders NO colour override at rest, so a fresh instance keeps its existing --sgs-mm-panel-border-derived `cards`-style tile border (render.php §4) exactly as before this attribute existed. Feeds `border-color` on `.sgs-mega-group` (cards style only) via the `--sgs-mm-group-border-resting` custom property, with a `var(..., var(--sgs-mm-panel-border))` fallback chain so an unset value is behaviour-neutral."
+			"_note": "Resting-state border-colour control, paired with groupBorderColourHover/groupBorderColourGradientHover (the hover pair; see the `group` manifest element's note). Default empty string: renders NO colour override at rest, so a fresh instance keeps its --sgs-mm-panel-border-derived `cards`-style tile border. Feeds `border-color` on `.sgs-mega-group` (cards style only) via the `--sgs-mm-group-border-resting` custom property, with a `var(..., var(--sgs-mm-panel-border))` fallback chain so an unset value is behaviour-neutral."
 		},
 		"groupBorderColourGradient": {
 			"type": "string",
 			"default": "",
-			"description": "NEW resting-state gradient override (2026-08-28), paired with groupBorderColour above. Non-empty wins over groupBorderColour on the SAME resting `.sgs-mega-group` (cards style) border via a masked ::before ring (D636 border-gradient rollout) — independent of the hover pair's own groupBorderColourGradientHover."
+			"description": "Resting-state gradient override, paired with groupBorderColour above. Non-empty wins over groupBorderColour on the SAME resting `.sgs-mega-group` (cards style) border via a masked ::before ring — independent of the hover pair's own groupBorderColourGradientHover."
 		},
 		"groupBorderColourHover": {
 			"type": "string",
 			"default": "accent",
-			"_note": "Renamed from `groupBorderColour` (2026-08-28) — itself renamed from `accentBorderColour` earlier the same day (NULL css_element fix proposal §5), then renamed again to make room for the new resting groupBorderColour pair above once Bean ruled a genuine resting-state border should exist too. Split from the old single `accent` attribute (D643). Feeds `border-color` on the `cards` style's hover/focus-within state, and is STILL the default source colour for the aside separator's border-left (asideSeparator.colour still overrides) — that dependency reads the resolved `--sgs-mm-accent-border` custom property, unchanged by this rename. Default unchanged ('accent') across every name in the chain."
+			"_note": "Feeds `border-color` on the `cards` style's hover/focus-within state, and is ALSO the default source colour for the aside separator's border-left (asideSeparator.colour still overrides) — that dependency reads the resolved `--sgs-mm-accent-border` custom property. Default 'accent'."
 		},
 		"groupBorderColourGradientHover": {
 			"type": "string",
 			"default": "",
-			"description": "Renamed from `groupBorderColourGradient` (2026-08-28) — itself renamed from `accentBorderColourGradient` earlier the same day. CSS gradient string painting the `cards` style's hover/focus-within border with a masked ::before ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over groupBorderColourHover on that hover/focus-within state only."
+			"description": "CSS gradient string painting the `cards` style's hover/focus-within border with a masked ::before ring instead of a flat colour. Non-empty wins over groupBorderColourHover on that hover/focus-within state only."
 		},
 		"iconColour": {
 			"type": "string",
 			"default": "accent",
-			"_note": "Renamed from `accentTextColour` (2026-08-28, NULL css_element fix proposal §5) — split from the old single `accent` attribute (D643). Feeds the icon-chip `color` (icon glyph colour) across all 3 group styles. Default unchanged from the retired `accent` attribute. The generic name matches the established codebase convention and closes a NULL css_element classification gap via the new `icon` manifest element below."
+			"_note": "Feeds the icon-chip `color` (icon glyph colour) across all 3 group styles. The generic name follows the codebase convention and classifies through the `icon` manifest element."
 		},
 		"iconColourGradient": {
 			"type": "string",
 			"default": "",
-			"_note": "Sibling gradient attribute (D636 text-colour/gradient pattern) for `iconColour` — closes the mega-panel.iconColour non-conformant colour row. A non-empty valid CSS gradient string wins over the flat `iconColour` on the icon-chip `color`, rendered via `sgs_text_colour_decl()`'s background-clip:text trio + its mandatory `sgs_text_colour_gradient_fallback_rule()` companion. `iconColour` itself is left completely untouched when this is set, matching every other flat/gradient sibling pair in this block (groupBorderColour/groupBorderColourGradient etc.)."
+			"_note": "Sibling gradient attribute (text-colour/gradient pattern) for `iconColour`. A non-empty valid CSS gradient string wins over the flat `iconColour` on the icon-chip `color`, rendered via `sgs_text_colour_decl()`'s background-clip:text trio + its mandatory `sgs_text_colour_gradient_fallback_rule()` companion. `iconColour` itself is left untouched when this is set, matching every other flat/gradient sibling pair in this block (groupBorderColour/groupBorderColourGradient etc.)."
 		},
 		"iconColourHover": {
 			"type": "string",
 			"default": "",
-			"_note": "Hover-state sibling of iconColour (2026-09-07, colour-conformance bg-layer batch). Scoped in render.php to ONLY the `cards` style's `.sgs-mega-group:hover .sgs-icon-list__icon` — the same ancestor-hover trigger iconBackgroundHover already uses (columns/minimal have no genuine :hover moment on `.sgs-mega-group`). Default empty string: no override until an operator sets one."
+			"_note": "Hover-state sibling of iconColour. Scoped in render.php to ONLY the `cards` style's `.sgs-mega-group:hover .sgs-icon-list__icon` — the same ancestor-hover trigger iconBackgroundHover already uses (columns/minimal have no genuine :hover moment on `.sgs-mega-group`). Default empty string: no override until an operator sets one."
 		},
 		"iconColourHoverGradient": {
 			"type": "string",
@@ -211,12 +211,12 @@
 		"accentBackgroundImage": {
 			"type": "string",
 			"default": "accent",
-			"_note": "Split from the old single `accent` attribute (D643). Feeds the aside's cursor-spotlight radial-gradient glow (`background`, i.e. a background-image, via the derived `--sgs-mm-soft-image` 10% tint) — only visible when `data-spotlight` is active (view.js, §6 U6). Default unchanged from the retired `accent` attribute."
+			"_note": "Feeds the aside's cursor-spotlight radial-gradient glow (`background`, i.e. a background-image, via the derived `--sgs-mm-soft-image` 10% tint) — only visible when `data-spotlight` is active (view.js). Default 'accent'."
 		},
 		"accentBackgroundImageGradient": {
 			"type": "string",
 			"default": "",
-			"description": "NEW gradient sibling for accentBackgroundImage (2026-09-06, colour-conformance closeout). accentBackgroundImage feeds only a COLOUR STOP inside the spotlight glow's radial-gradient via the derived --sgs-mm-soft-image 10% tint — a gradient cannot be meaningfully passed through that same color-mix()-derived stop the way a flat colour can, so when this is set it BYPASSES the derivation entirely and replaces the WHOLE background-image on the `[data-spotlight]::before` selector with the raw gradient, via the --sgs-mm-accent-image-gradient custom property. Default empty string: the existing slug+color-mix() behaviour is completely unchanged when unset."
+			"description": "Gradient sibling for accentBackgroundImage. accentBackgroundImage feeds only a COLOUR STOP inside the spotlight glow's radial-gradient via the derived --sgs-mm-soft-image 10% tint — a gradient cannot be meaningfully passed through that same color-mix()-derived stop the way a flat colour can, so when this is set it BYPASSES the derivation entirely and replaces the WHOLE background-image on the `[data-spotlight]::before` selector with the raw gradient, via the --sgs-mm-accent-image-gradient custom property. Default empty string: the existing slug+color-mix() behaviour is completely unchanged when unset."
 		},
 		"maxWidth": {
 			"type": "object",
@@ -226,7 +226,7 @@
 		},
 		"panelPadding": {
 			"type": "object",
-			"_note": "BOX-object shape (top/right/bottom/left per tier) — NOT a scalar. render.php emits this through sgs_emit_responsive_css() with 'box' => true, which reads the four sides; the previous scalar default ({desktop:'28px'}) produced NO padding at all, so the panel rendered flush to its own border and both group headings touched the top/left edge (Bean's eye, 2026-07-28). Classic STOP-D328: the declared SHAPE must match what the consumer expects, or the value is silently dropped. Matches sgs/mega-aside's asidePadding shape exactly.",
+			"_note": "BOX-object shape (top/right/bottom/left per tier) — NOT a scalar. render.php emits this through sgs_emit_responsive_css() with 'box' => true, which reads the four sides; a scalar default such as {desktop:'28px'} would produce NO padding at all, so the panel would render flush to its own border. The declared SHAPE must match what the consumer expects, or the value is silently dropped. Matches sgs/mega-aside's asidePadding shape exactly.",
 			"default": {
 				"desktop": {
 					"top": "24px",
@@ -249,7 +249,7 @@
 		"panelBgGradient": {
 			"type": "string",
 			"default": "",
-			"description": "CSS gradient string painting the panel background via background-image (--sgs-mm-panel-bg-gradient custom property, render.php §2). Non-empty wins over panelBg (and the built-in translucent surface default) on the same root selector."
+			"description": "CSS gradient string painting the panel background via background-image (--sgs-mm-panel-bg-gradient custom property). Non-empty wins over panelBg (and the built-in translucent surface default) on the same root selector."
 		},
 		"bgBlur": {
 			"type": "boolean",
@@ -258,13 +258,13 @@
 		"borderWidth": {
 			"type": "object",
 			"default": {},
-			"_note": "B4 (2026-09-04) — SgsBorderControl migration. Empty object = unset; render.php falls back to 1px on every side so a pre-existing instance (which never wrote this attr) keeps its exact current 1px-solid hairline unchanged. Base tier only per SgsBorderControl's own contract (D294 2026-08-29: per-device border width has no real use case)."
+			"_note": "SgsBorderControl attribute. Empty object = unset; render.php falls back to 1px on every side. Base tier only per SgsBorderControl's own contract (per-device border width has no real use case)."
 		},
 		"borderStyle": {
 			"type": "string",
 			"enum": [ "none", "solid", "dashed", "dotted", "double", "groove", "ridge", "inset", "outset" ],
 			"default": "solid",
-			"_note": "B4 (2026-09-04) — paired with borderWidth above. Default 'solid' matches the pre-migration hardcoded `border:1px solid` shorthand, so a fresh/existing instance renders identically."
+			"_note": "Paired with borderWidth above. Default 'solid' matches the `border:1px solid` hairline fallback."
 		},
 		"borderColour": {
 			"type": "string",
@@ -302,23 +302,23 @@
 		"brandsEyebrow": {
 			"type": "string",
 			"default": "",
-			"_note": "brands-variant only — a small mono eyebrow label rendered above the logo grid (§3). Deliberately a scalar panel attribute rather than a child block: the brands variant's content (sgs/card-grid + sgs/mega-aside) has no wrapper block available to host a heading ABOVE just the grid (mega-group is locked to heading+icon-list, out of scope to modify), so the panel renders this text itself, spanning the full content row rather than just the left column — a documented deviation from §3's 'left flex:1: eyebrow + grid' framing."
+			"_note": "brands-variant only — a small mono eyebrow label rendered above the logo grid. Deliberately a scalar panel attribute rather than a child block: the brands variant's content (sgs/card-grid + sgs/mega-aside) has no wrapper block available to host a heading ABOVE just the grid (mega-group is locked to heading+icon-list), so the panel renders this text itself, spanning the full content row rather than just the left column."
 		},
 		"staggerOnOpen": {
 			"type": "boolean",
 			"default": false,
-			"_note": "Opt-in staggered-reveal on panel open (§6 U4) — maps to the `data-stagger` attribute the shared stagger effect module watches for. Off by default; the disclosure module (owned separately) is what actually toggles the panel open/closed."
+			"_note": "Opt-in staggered-reveal on panel open — maps to the `data-stagger` attribute the shared stagger effect module watches for. Off by default; the disclosure module is what actually toggles the panel open/closed."
 		},
 		"viewAllPlacement": {
 			"type": "string",
 			"default": "auto",
 			"enum": [ "auto", "none", "bottom-left", "bottom-right" ],
-			"_note": "Where the menu item's own destination link (\"View all X\") sits INSIDE this panel. CF-15 requires that link to exist somewhere reachable — the trigger is a <button>, so without it the item's page is unreachable from the nav and invisible to crawlers — but WHERE it sits is an operator choice, never hard-wired (Bean 2026-07-28). `auto` = show it only when this panel has no CTA button of its own (so a panel whose aside already links there stays clean); `none` = never; `bottom-left`/`bottom-right` = always, in that corner of the panel's footer row. ENUM DECLARED 2026-08-06 (Spec 35 A2), REVERSING this note's previous 'NO JSON enum — PHP-validated (blockjson-enum-coerces-invalid-to-default)' clause. That reasoning does not hold for THIS attribute, measured: block.json default is 'auto', render.php:534's in_array fallback is ALSO 'auto', and the allow-list at :532 is these same four values — so WP's out-of-enum coercion and the PHP fallback produce an IDENTICAL result for every possible stored value. The declaration is therefore behaviour-neutral, and buys three things: the row classifies via the existing tested TIER 3.5 to role `enum-mode`, WP validates the value, and the client gets a real select control instead of a free-text box (Spec 35 Part B). Same argument D456 used to ADD an enum to sgs/site-header-row.layout, treating coercion as a safety net rather than a hazard. RESIDUAL RISK, named rather than hidden: if the PHP allow-list at :532 ever gains a value and this enum is not updated in the same commit, WP will silently coerce the new value to 'auto'. That is a DRIFT hazard, not a coercion hazard — the inverse of what Detector 8 already checks (it finds PHP allow-lists with NO block.json enum)."
+			"_note": "Where the menu item's own destination link (\"View all X\") sits INSIDE this panel. That link must exist somewhere reachable — the trigger is a <button>, so without it the item's page is unreachable from the nav and invisible to crawlers — but WHERE it sits is an operator choice, never hard-wired. `auto` = show it only when this panel has no CTA button of its own (so a panel whose aside already links there stays clean); `none` = never; `bottom-left`/`bottom-right` = always, in that corner of the panel's footer row. The enum is declared: block.json default is 'auto', render.php's in_array fallback is ALSO 'auto', and its allow-list is these same four values, so WP's out-of-enum coercion and the PHP fallback produce an identical result for every possible stored value. The declaration is therefore behaviour-neutral, and gives three things: the row classifies via the existing tested TIER 3.5 to role `enum-mode`, WP validates the value, and the client gets a real select control instead of a free-text box. Drift hazard: if render.php's PHP allow-list ever gains a value and this enum is not updated in the same commit, WP will silently coerce the new value to 'auto'."
 		},
 		"fxEffect": {
 			"type": "string",
 			"default": "",
-			"_note": "BLOCK-PRIVATE motion-effect selector (2026-09-11, Spec 38 addendum) — NOT the shared fx ToolsPanel roster's `fx` attribute (this block declares `hideExtensions:[\"fx\"]` above and stays off that roster). PHP-validated in render.php against a fixed allow-list of '' | 'cursor-field' | 'particles' | 'grid-dots' | 'wave-gradient', following this block's own existing pattern for `variant`/`style`/`colourScheme` (no JSON enum, to avoid the blockjson-enum-coerces-invalid-to-default gotcha). Deliberately separate from the pre-existing, always-on `.sgs-mega-aside` cursor spotlight (view.js `initSpotlight`) — that effect is scoped to the aside CTA column only and uses its own accentBackgroundImage-derived colour; this attribute governs an ADDITIVE effect scoped to the whole panel root, sharing the render-layer `data-sgs-fx*` contract (`includes/fx-attributes.php` FX_ATTR_MAP) so the same frontend runtime/stylesheets the shared fx roster uses apply here with zero new JS/CSS."
+			"_note": "BLOCK-PRIVATE motion-effect selector — NOT the shared fx ToolsPanel roster's `fx` attribute (this block declares `hideExtensions:[\"fx\"]` above and stays off that roster). PHP-validated in render.php against a fixed allow-list of '' | 'cursor-field' | 'particles' | 'grid-dots' | 'wave-gradient', following this block's own existing pattern for `variant`/`style`/`colourScheme` (no JSON enum, because WP coerces an out-of-enum stored value to the default). Deliberately separate from the pre-existing, always-on `.sgs-mega-aside` cursor spotlight (view.js `initSpotlight`) — that effect is scoped to the aside CTA column only and uses its own accentBackgroundImage-derived colour; this attribute governs an ADDITIVE effect scoped to the whole panel root, sharing the render-layer `data-sgs-fx*` contract (`includes/fx-attributes.php` FX_ATTR_MAP) so the same frontend runtime/stylesheets the shared fx roster uses apply here with zero new JS/CSS."
 		},
 		"fxFieldType": {
 			"type": "string",

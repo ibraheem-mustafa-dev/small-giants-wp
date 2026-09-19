@@ -10,12 +10,10 @@ import {
 import { useSelect } from '@wordpress/data';
 import { PanelBody, Notice, SelectControl, BoxControl } from '@wordpress/components';
 // sgs/site-footer does not use <ContainerWrapperControls>'s
-// ResponsiveSpacingPanel — its flat paddingTopTablet/…/marginLeftMobile
-// attrs are LEGACY; paddingTablet/paddingMobile/marginTablet/marginMobile
-// are box OBJECT attrs read by class-sgs-container-wrapper.php (matches
-// sgs/container's + sgs/cta-section's own edit.js). Roll this block's own
-// "Padding & margin" panel below using ResponsiveBoxControl bound to the
-// object attrs.
+// ResponsiveSpacingPanel: padding and margin are box OBJECT attrs read by
+// class-sgs-container-wrapper.php, so this block's own "Padding & margin"
+// panel below uses ResponsiveBoxControl bound to those object attrs (as
+// sgs/container's and sgs/cta-section's own edit.js do).
 import {
 	WidthPanel,
 	BackgroundPanel,
@@ -30,16 +28,15 @@ import { calculateRelativeLuminance, calculateContrastRatio, meetsWCAG_AA } from
 const ALLOWED_BLOCKS = [ 'sgs/site-footer-row' ];
 
 /**
- * ⛔ `templateMode` (the container-family allowed-children preset) was
- * declared in block.json but REMOVED (was never wired): this block's
- * allowedBlocks is ALREADY fixed to a single type — `sgs/site-footer-row` —
+ * This block declares no `templateMode` (the container-family allowed-children
+ * preset): its allowedBlocks is fixed to a single type — `sgs/site-footer-row` —
  * at the block.json level, enforced alongside a structural 3-row TEMPLATE
  * under `templateLock: 'all'` (see the seed-once guard below). Both
  * templateMode presets (grid-section/card-grid) list content blocks like
- * heading/text/button/info-box that this block can never accept anyway, so
- * neither preset could ever do anything. Same shape as physics-canvas: no
- * room for a variable content-type restriction on a block already locked to
- * one child type. Do not re-add templateMode here.
+ * heading/text/button/info-box that this block can never accept, so neither
+ * preset could do anything. Same shape as physics-canvas: no room for a
+ * variable content-type restriction on a block already locked to one child
+ * type.
  */
 
 // calculateRelativeLuminance / calculateContrastRatio / meetsWCAG_AA moved to
@@ -59,20 +56,19 @@ const TEMPLATE = [
 		{
 			rowSlot: 'columns',
 			layout: 'grid',
-			// Columns are an operator-set COUNT (Spec 37 §3.3, Bean-locked): the
-			// shared wrapper reads columns as a TIER OBJECT (Spec 35 pass 4,
-			// class-sgs-container-wrapper.php) and stacks to the mobile tier's
+			// Columns are an operator-set COUNT (Spec 37 §3.3): the
+			// shared wrapper reads columns as a TIER OBJECT
+			// (class-sgs-container-wrapper.php) and stacks to the mobile tier's
 			// count below 768. No gridTemplateColumns object is seeded — an
 			// object there would flip $object_grid true and suppress the count
 			// path. A per-device custom template stays available as an advanced
 			// override (set gridTemplateColumns explicitly), never the default.
-			// ⛔ Do NOT seed columns/columnsTablet/columnsMobile as flat siblings
-			// here — sgs/site-footer-row's block.json no longer declares them
-			// (Spec 35 pass 4), so WordPress would silently discard the seed
-			// (D338/D563 bug class).
+			// Do NOT seed columns/columnsTablet/columnsMobile as flat siblings
+			// here — sgs/site-footer-row's block.json does not declare them,
+			// so WordPress would silently discard the seed.
 			columns: { desktop: 3, tablet: 3, mobile: 1 },
 			// gap is a {desktop,tablet,mobile} object attr — a flat string would
-			// be coerced to the block.json default at render (D328).
+			// be coerced to the block.json default at render.
 			gap: { desktop: '48px', mobile: '32px' },
 		},
 		[
@@ -118,8 +114,7 @@ const TEMPLATE = [
 		// bottom row exactly, because site-footer-row declares gap/padding/margin as
 		// OBJECT attrs. A flat value (gap:'8px') or a missing tier (padding:{top})
 		// is silently COERCED to the block.json default at render — no error, no test
-		// failure, just the wrong spacing (D328). `border` is a SUPPORT, not an attr,
-		// so it must live under `style`, or WP discards it as an unknown attribute.
+		// failure, just the wrong spacing.
 		{
 			rowSlot: 'bottom',
 			layout: 'flex',
@@ -141,10 +136,9 @@ const TEMPLATE = [
 ];
 
 export default function Edit( { attributes, setAttributes, clientId, name } ) {
-	// D717/background-preview: BackgroundPanel (mounted below) writes image/
-	// video/overlay/ken-burns/parallax attrs this block never previewed on
-	// canvas — the shared mirror (src/utils/background-preview.js, 2026-08-26)
-	// fixes that the same way sgs/container already did.
+	// BackgroundPanel (mounted below) writes image/video/overlay/ken-burns/
+	// parallax attrs; the shared mirror (src/utils/background-preview.js)
+	// previews them on the canvas the same way sgs/container does.
 	const [ colourPalette ] = useSettings( 'color.palette' );
 
 	// SGS-owned flat background colour/gradient canvas preview — the gap this
@@ -180,7 +174,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		backgroundOverlayBlendMode: attributes.backgroundOverlayBlendMode,
 	}, colourPalette );
 
-	// Decorative SVG background layer — editor mirror (2026-09-05). Deliberately
+	// Decorative SVG background layer — editor mirror. Deliberately
 	// NOT folded into backgroundPreview()'s return: that helper paints via
 	// `--sgs-ed-bg-*` custom properties on a ::before, whereas the SVG layer is a
 	// real element whose painting rules already ship in style.css (loaded in the
@@ -210,13 +204,9 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		return { Tablet: 'tablet', Mobile: 'mobile' }[ device ] || 'desktop';
 	}, [] );
 
-	// Padding/margin canvas preview (measured live 2026-08-26: sibling blocks
-	// showed 0px padding/margin on canvas against a real 120px/80px page).
-	// Base padding + margin are now the block-OWNED `padding`/`margin`
-	// object attrs (D555 gutter-default migration — no `supports.spacing`);
-	// tablet/mobile overrides are the block-private paddingTablet/
-	// paddingMobile/marginTablet/marginMobile object attrs (this block
-	// declares all four — verified in block.json).
+	// Padding/margin canvas preview. Base padding + margin are the block-OWNED
+	// `padding`/`margin` object attrs (no `supports.spacing`); tablet/mobile
+	// overrides are passed through alongside them.
 	const spacePreview = spacingPreview( {
 		basePadding: attributes.padding,
 		paddingTablet: attributes.paddingTablet,
@@ -248,14 +238,11 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		flexWrap: effectiveFlexWrapPreview,
 	};
 
-	// Text colour/gradient canvas preview (CHECK A finding 2026-09-05) —
-	// `textColour` LOOKED wired (it's read inside the WCAG contrast-check
-	// useEffect further down), but that's a contrast comparison, not real
-	// canvas paint — neither it nor `textColourGradient` was ever applied to
-	// `blockProps.style`. `textPaintPreview()` handles both the flat and
-	// gradient cases in one call (gradient-text technique when set, plain
-	// `color` otherwise), same shared helper used across this session's other
-	// text-colour fixes.
+	// Text colour/gradient canvas preview. `textColour` is also read inside the
+	// WCAG contrast-check useEffect further down, but that is a contrast
+	// comparison, not canvas paint — the paint comes from `textPaintPreview()`,
+	// which handles both the flat and gradient cases in one call
+	// (gradient-text technique when set, plain `color` otherwise).
 	const textPreview = textPaintPreview( attributes.textColour, attributes.textColourGradient, colourPalette );
 
 	const blockProps = useBlockProps( {
@@ -266,11 +253,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	} );
 	const refEl = useRef( null );
 
-	// SGS-owned colour (D294/D684 pattern, mirrors sgs/site-header's already-
-	// migrated shape) — supports.color sub-flags are false so WordPress
-	// generates no native colour UI; these two attribute pairs (background +
-	// text, each with a gradient sibling and a hover state) are the ONLY
-	// colour surface for this block now.
+	// SGS-owned colour (the same shape as sgs/site-header) — supports.color
+	// sub-flags are false so WordPress generates no native colour UI; these two
+	// attribute pairs (background + text, each with a gradient sibling and a
+	// hover state) are the ONLY colour surface for this block.
 	const {
 		backgroundColour,
 		backgroundColourGradient,
@@ -309,12 +295,11 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	// compare. `rowSlot` is never consulted, so row 1 is treated as "the top row"
 	// whatever it actually is.
 	//
-	// Passing TEMPLATE unconditionally therefore overwrote every inserted starter
-	// pattern: measured on the canary, 8/8 footer starters were corrupted (the
-	// framework default included) — and it DESTROYED content, not just added it:
-	// footer-centred's bottom row lost its copyright line, replaced by this
-	// TEMPLATE's three empty link columns. It also fired on every re-open, so an
-	// insert-only patch would not have held.
+	// Passing TEMPLATE unconditionally would therefore overwrite every inserted
+	// starter pattern and DESTROY its content, not just add to it (e.g. a
+	// centred footer's bottom row would lose its copyright line, replaced by
+	// this TEMPLATE's three empty link columns). It would also fire on every
+	// re-open, so an insert-only guard would not hold.
 	//
 	// Withholding the template is a true no-op in core — synchronizeBlocksWithTemplate
 	// opens with `if (!template) return blocks;` — so the row LOCK below is
@@ -356,13 +341,11 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	// Check contrast ratio on attribute changes
 	const [ contrastNotice, setContrastNotice ] = useState( null );
 
-	// Reads block-private backgroundColour/textColour (SgsColourPanel, D294/
-	// D684 pattern) — not WP-native style.color.background/.text, which this
-	// block's supports.color sub-flags are all false for, so WordPress never
-	// populates it and this check has never fired (check-undeclared-attrs
-	// finding: `style` destructured but undeclared in block.json). Resolved
-	// via resolveColourToken() the same way the paint itself is, since a
-	// stored value can be a theme-token slug, not a literal colour.
+	// Reads block-private backgroundColour/textColour (SgsColourPanel) — not
+	// WP-native style.color.background/.text: this block's supports.color
+	// sub-flags are all false, so WordPress never populates `style.color`.
+	// Resolved via resolveColourToken() the same way the paint itself is,
+	// since a stored value can be a theme-token slug, not a literal colour.
 	useEffect( () => {
 		if ( ! backgroundColour || ! textColour ) {
 			setContrastNotice( null );
@@ -392,10 +375,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 
 	return (
 		<>
-			{ /* D294/D684 — ONE grouped, SGS-OWNED colour panel, rendered FIRST
+			{ /* ONE grouped, SGS-OWNED colour panel, rendered FIRST
 			     (before any other same-group InspectorControls Fill) so it sits
-			     at the top of the Styles tab. Replaces the native supports.color
-			     UI (now fully disabled — supports.color sub-flags are false). */ }
+			     at the top of the Styles tab. The native supports.color UI is
+			     disabled — supports.color sub-flags are false. */ }
 			<SgsColourPanel
 				rows={ [
 					{
@@ -452,12 +435,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 				] }
 			/>
 
-			{ /* Background renders in the STYLES tab, not Settings (standardised
-			     2026-08-16, Bean-ruled). Same shared panel, same tab, on every
-			     wrapper block — it used to land in Settings here and in Styles on
-			     cta-section/hero, so the client found it in a different place
-			     depending on which block they had selected. Appearance sits with
-			     colour, which D621/D622 already placed in Styles. */ }
+			{ /* Background renders in the STYLES tab, not Settings. Same shared
+			     panel, same tab, on every wrapper block, so the client finds it
+			     in the same place whichever block is selected. Appearance sits
+			     with colour, in Styles. */ }
 			{ /* FR-37-47 — starter-look preset, same mechanism/placement as
 			     sgs/site-header's (site-header/edit.js). */ }
 			<InspectorControls group="styles">
@@ -543,15 +524,13 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 				     layout being 'grid' — a mode this block can never reach, since
 				     there is no picker to change `layout` away from 'flex'. Mounting
 				     it here would ship a control that can structurally never take
-				     effect, exactly the defect this change exists to remove.
-				     block.json declares no `alignContent` attribute at all — the
-				     shared wrapper only ever emits align-content in its GRID branch
-				     (class-sgs-container-wrapper.php ~1297), never the flex one
-				     (~1303-1361), so there was no CSS path for it while this block
-				     renders flex-only (2026-09-03). Flex direction + Flex wrap ARE
-				     genuinely honoured by that same flex branch, so they get real
+				     effect. block.json declares no `alignContent` attribute at
+				     all — the shared wrapper only emits align-content in its GRID
+				     branch, never the flex one, so there is no CSS path for it
+				     while this block renders flex-only. Flex direction + Flex wrap
+				     ARE honoured by that same flex branch, so they get real
 				     controls + real canvas preview below (mirrors sgs/container's
-				     own edit.js flex-branch preview, ~line 295-315). */ }
+				     own edit.js flex-branch preview). */ }
 				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
 					<ToggleGroupControl
 						label={ __( 'Flex direction', 'sgs-blocks' ) }
@@ -582,9 +561,8 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 				</PanelBody>
 
 				{ /* Responsive spacing (padding + margin) — box-object interface
-				     contract (.claude/plans/2026-07-09-box-object-interface-contract.md
-				     §5). Base tier writes to the block-OWNED `padding`/`margin` attrs
-				     (this block no longer declares supports.spacing, so there is NO
+				     contract. Base tier writes to the block-OWNED `padding`/`margin` attrs
+				     (this block declares no supports.spacing, so there is NO
 				     duplicate Styles > Dimensions panel); tablet/mobile write
 				     to the paddingTablet/paddingMobile and marginTablet/marginMobile
 				     object attrs read by the wrapper's @media tiers. */ }
@@ -622,7 +600,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 
 				{ /* contentBandPadding is a TIER OBJECT — ONE attr holding
 				     {desktop,tablet,mobile}, each tier itself a {top,right,bottom,left}
-				     box (Spec 35 box-shaped pass, 2026-08-11). It therefore uses
+				     box. It therefore uses
 				     ResponsiveOverride, which reads and writes the object, NOT the
 				     flat-sibling ResponsiveBoxControl. Mirrors container's own
 				     implementation. */ }

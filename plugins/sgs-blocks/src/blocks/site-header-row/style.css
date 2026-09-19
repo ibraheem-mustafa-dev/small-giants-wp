@@ -1,7 +1,7 @@
 /**
  * SGS Header Row — frontend styles.
  *
- * The intrinsic never-overflow "cluster" (Spec 37 §3.6 / FR-37-12, D455). The flex container itself
+ * The intrinsic never-overflow "cluster" (Spec 37 §3.6 / FR-37-12). The flex container itself
  * (display:flex, flex-wrap, gap, align-items, justify-content) is owned by the
  * shared SGS_Container_Wrapper via block attributes (layout='flex', flexWrap,
  * gap, verticalAlign, justifyContent) — NOT hardcoded here (Gate B / no-inline,
@@ -9,9 +9,9 @@
  * that make the cluster actually never overflow, plus the touch-target floor.
  *
  * `min-width:0` lets flex children shrink instead of forcing horizontal
- * overflow. Since D455 the row is locked to a single line
+ * overflow. The row is locked to a single line
  * (`flexWrap:'nowrap'`, block.json) and NEVER wraps or stacks; the sub-400px
- * WCAG 1.4.10 guarantee now comes from everything yielding instead — the gap
+ * WCAG 1.4.10 guarantee comes from everything yielding — the gap
  * clamp shrinks first, then every child shrinks together (flexbox's own
  * proportional shrink), each stopping at its own floor. No per-element hacks,
  * and no breakpoint anywhere in that chain.
@@ -26,17 +26,15 @@
 
 /* The logo yields WITH everything else, then stops at a floor.
  *
- * This was `flex-shrink:0` — the logo refused to shrink at any width. That was
- * safe only while the row was allowed to wrap: once the row is locked to a
- * single line (D455), an unshrinkable 240px logo (`--logo-width`, see
+ * The logo must not be frozen with `flex-shrink:0`: the row is locked to a
+ * single line, so an unshrinkable 240px logo (`--logo-width`, see
  * responsive-logo/style.scss) plus a 44px burger plus a 44px cart cannot fit a
  * 320px viewport, and the row would overflow horizontally — a WCAG 1.4.10
- * failure, and the exact outcome the fit-cascade design rejected when it
- * declined the "just delete the rule" fix.
+ * failure.
  *
- * The block already scales correctly once permitted to: `.sgs-responsive-logo`
+ * The block scales correctly once permitted to: `.sgs-responsive-logo`
  * carries `max-width:100%` and its `<img>` carries `width:100%;height:auto`, so
- * removing the freeze is sufficient — no per-element sizing hack here.
+ * no per-element sizing hack is needed here.
  *
  * The floor is a component constant, not a theme override (the DEFAULT-vs-
  * HARDCODE test): it overrides nothing in theme.json and is overridable per
@@ -51,8 +49,8 @@
 }
 
 /* Interactive controls keep a 44px minimum touch target (WCAG 2.5.8).
-   sgs/adaptive-nav's own toggle self-enforces 44px in its own style.css
-   (Task 1 / D336) — only the mini-cart button needs it here. */
+   The navigation block's own toggle self-enforces 44px in its own style.css
+   — only the mini-cart button needs it here. */
 .sgs-site-header-row .wc-block-mini-cart__button {
 	min-width: 44px;
 	min-height: 44px;
@@ -62,56 +60,24 @@
  * FR-37-35 — container-query row reflow (§3.6 "container queries for
  * row-level reflow" + STOP-CONTAINER-TIER-IS-NOT-VIEWPORT).
  *
- * flex-wrap (wrapper-owned, block.json default) already lets children drop
- * onto a new line once they run out of room on their own line — but that is
- * an EMERGENT side effect of the flexbox algorithm, not an authored layout
- * change. This adds the authored change: once the row's OWN inline size
- * (its container — never the viewport) crosses the SGS mobile tier, every
- * direct child takes the full row width and gets its own line, so the row
- * deliberately collapses to a single column rather than wrapping into an
- * ambiguous 2-per-line arrangement that happens to fit.
+ * The row is locked to one line (`flexWrap:'nowrap'`, block.json) and yields
+ * instead of stacking: the gap clamp shrinks first, then every child shrinks
+ * together via flexbox's own proportional shrink (enabled by the `min-width:0`
+ * above), stopping at the logo floor above and at each interactive child's own
+ * 44px floor. There is deliberately NO authored `@container` stack rule (e.g.
+ * `flex-basis:100%` on every child): such a rule is an authored stack, not a
+ * response to running out of room — children that fit on one line would still
+ * be forced onto three — and because the query measures the ROW's own inline
+ * size and never the viewport, it would also stack any narrow header row on a
+ * desktop monitor. A row still reflows on its own width, not the viewport's.
  *
- * container-type:inline-size here is a defensive restatement of the
- * identical rule the shared wrapper ALREADY emits per-instance
- * (class-sgs-container-wrapper.php:1555 — unconditional for this block
- * because the wrapper emits object-shaped values for every block). Same property,
- * same value, same element — applied here via the stable plain class
- * rather than the dynamic per-instance uid, so the @container rule below
- * does not silently depend on that PHP wiring staying unchanged.
- *
- * 767px is SGS_Breakpoints::MOBILE_MAX (includes/class-sgs-breakpoints.php).
- * It is reused here because it is the SAME numeric bound the wrapper's own
- * FR-37-16 mechanism already uses for the @container queries scoped to THIS
- * exact element (its gap / gridTemplateColumns tiers) — not a copy of the
- * viewport @media breakpoint for its own sake.
- *
- * ⛔ The collapse-to-stack HALF OF THIS RULE WAS DELETED (D455). Do not
- * reintroduce it. What was here:
- *
- *     @container (max-width: 767px) {
- *       .sgs-site-header-row > *,
- *       .sgs-site-header-row > .sgs-container__inner > * { flex-basis: 100%; }
- *     }
- *
- * It gave every child the full row width, and the wrapper's flex-wrap:wrap
- * then put each on its own line. It was an AUTHORED stack, never a response
- * to running out of room: measured live on the canary (D420), a forced row
- * width of 770px rendered one line 68px tall, and 766px rendered three layers
- * 229px tall — while at 766px the children needed 733px and had 766px
- * available. They fitted with 33px to spare. Because the query measures the
- * ROW's own inline size and never the viewport, it also stacked any narrow
- * header row on a desktop monitor.
- *
- * Replaced by the fit cascade: the row is locked to one line
- * (`flexWrap:'nowrap'`, block.json) and yields instead — the gap clamp shrinks
- * first, then every child shrinks together via flexbox's own proportional
- * shrink (enabled by the `min-width:0` above), stopping at the logo floor
- * above and at each interactive child's own 44px floor. FR-37-35's
- * container-query REQUIREMENT is unchanged and still honoured — a row still
- * reflows on its own width, not the viewport's
- * (STOP-CONTAINER-TIER-IS-NOT-VIEWPORT); only its chosen reflow BEHAVIOUR
- * changed. `container-type` below therefore STAYS: the wrapper's own per-tier
- * rules and the gap clamp's `cqi` term both depend on it.
+ * container-type:inline-size is a defensive restatement of the identical rule
+ * the shared wrapper emits per-instance (unconditional for this block because
+ * the wrapper emits object-shaped values for every block). Same property, same
+ * value, same element — applied here via the stable plain class rather than
+ * the dynamic per-instance uid, so nothing silently depends on that PHP wiring
+ * staying unchanged. It must STAY: the wrapper's own per-tier rules and the
+ * gap clamp's `cqi` term both depend on it.
  */
 .sgs-site-header-row {
 	container-type: inline-size;
@@ -127,15 +93,13 @@
 }
 
 /*
- * Mobile action-cluster ordering (2026-09-18, Bean-approved). Cross-referenced
- * research (GeneratePress, OceanWP, Kadence, Blocksy, Shopify, BigCommerce,
- * Apple, Nike, Glossier) converges on cart-then-burger, left to right, as the
+ * Mobile action-cluster ordering. Cart-then-burger, left to right, is the
  * dominant mobile header convention — the two stay fully separate, independently
  * tappable controls; this ONLY repaints their visual order via flex `order`,
  * never their DOM/tab order, and never wraps them in a shared clickable element.
  *
  * `sgs/nav-bar-menu` always emits its own burger toggle INSIDE its own `<nav>`
- * root (D1059) — the burger is not a separate flex child of this row, so the
+ * root — the burger is not a separate flex child of this row, so the
  * only child we can reorder is the whole nav-bar-menu instance. `:has(~ …)`
  * scopes the reorder to a nav-bar-menu that has a LATER sibling `sgs/cart` in
  * this SAME row — the exact (and only) shape every shipped header pattern
@@ -152,7 +116,7 @@
  * appearance point independently of this rule; that mismatch is a pre-existing
  * property of collapsePoint being a free-standing per-instance breakpoint
  * (see nav-bar-menu/style.css's own "LEGITIMATE non-device-tier breakpoint"
- * note) and is out of this fix's scope.
+ * note).
  */
 @media (max-width: 767px) {
 	.sgs-site-header-row .sgs-nav-bar-menu:has(~ .wp-block-sgs-cart) {

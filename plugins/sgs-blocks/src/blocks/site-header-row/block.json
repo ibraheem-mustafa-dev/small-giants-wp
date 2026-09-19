@@ -86,7 +86,7 @@
 							}
 						}
 					},
-					"_note": "A horizontal row inside sgs/site-header. This element is BOTH the block root and the grid definition (containerKind=layout, rendered through SGS_Container_Wrapper), the same single-element shape sgs/trust-bar's wrapper uses. Padding and margin are the block's OWN box-object attributes, not native spacing — this block declares no `supports.spacing`. css:align-items maps to `alignItems` (class-sgs-container-wrapper.php:247). Typography members, display, order and overflow have no attribute here and remain honest GAPs. prefix: \"\" is an explicit opt-out of orphan scanning — every style attribute is mapped explicitly above, and the remaining row* attributes (rowSlot/rowTransparent/rowHideOnScroll/rowShrink/rowShrinkHideTarget) are slot identity and scroll BEHAVIOUR, not style properties. textColourHover/textColourHoverGradient (2026-09-07 colour-conformance): this element ALSO owns css:background-color (backgroundColour) on the same selector, so render.php conditionally moves the background onto its own ::after layer via sgs_block_background_layer_css() ONLY when the resolved hover value is a gradient — the flat-colour hover case is unaffected and keeps the existing sgs_fill_states_css() emission. Mirrors sgs/site-footer-row exactly.",
+					"_note": "A horizontal row inside sgs/site-header. This element is BOTH the block root and the grid definition (containerKind=layout, rendered through SGS_Container_Wrapper), the same single-element shape sgs/trust-bar's wrapper uses. Padding and margin are the block's OWN box-object attributes, not native spacing — this block declares no `supports.spacing`. css:align-items maps to `alignItems` (class-sgs-container-wrapper.php). Typography members, display, order and overflow have no attribute here and remain honest GAPs. prefix: \"\" is an explicit opt-out of orphan scanning — every style attribute is mapped explicitly above, and the remaining row* attributes (rowSlot/rowTransparent/rowHideOnScroll/rowShrink/rowShrinkHideTarget) are slot identity and scroll BEHAVIOUR, not style properties. textColourHover/textColourHoverGradient: this element ALSO owns css:background-color (backgroundColour) on the same selector, so render.php conditionally moves the background onto its own ::after layer via sgs_block_background_layer_css() ONLY when the resolved hover value is a gradient — the flat-colour hover case is unaffected and keeps the existing sgs_fill_states_css() emission. Mirrors sgs/site-footer-row exactly.",
 					"prefix": ""
 				},
 				"content-band": {
@@ -154,7 +154,7 @@
 				"grid"
 			],
 			"default": "flex",
-			"_comment": "D456-follow-up (2026-08-02) — enum closes the cqi landmine documented on the `gap` attribute's default comment below: `class-sgs-container-wrapper.php:528` only routes the gap onto `.sgs-container__inner` (the row's own query-container ancestor) when layout is 'flex' or 'grid'. Any OTHER stored value would silently fall through to `.uid` itself, where `cqi` cannot resolve. The enum makes a stored value outside {flex,grid} impossible — WP coerces an out-of-enum stored value back to the default at render (observed D291, sgs/button `inheritStyle`). Verified before adding: edit.js LAYOUT_OPTIONS, render.php, the converter (services/arrangement.py), and every theme pattern instantiating this block all use only 'flex'/'grid'."
+			"_comment": "Enum closes the cqi landmine documented on the `gap` attribute's default comment below: `class-sgs-container-wrapper.php` only routes the gap onto `.sgs-container__inner` (the row's own query-container ancestor) when layout is 'flex' or 'grid'. Any OTHER stored value would silently fall through to `.uid` itself, where `cqi` cannot resolve. The enum makes a stored value outside {flex,grid} impossible — WP coerces an out-of-enum stored value back to the default at render. edit.js LAYOUT_OPTIONS, render.php, the converter (services/arrangement.py), and every theme pattern instantiating this block all use only 'flex'/'grid'."
 		},
 		"columns": {
 			"type": "object",
@@ -167,7 +167,7 @@
 		"flexWrap": {
 			"type": "string",
 			"default": "nowrap",
-			"_comment": "D455 — the header row is locked to ONE line and yields instead of wrapping. 'wrap' was the default until the authored @container stack rule was deleted from style.css; with that gone, wrap would trade a stack for an ambiguous 2-per-line arrangement. Read by SGS_Container_Wrapper (class-sgs-container-wrapper.php:622). No header pattern sets flexWrap explicitly, so this default governs every instance."
+			"_comment": "The header row is locked to ONE line and yields instead of wrapping ('nowrap' is the default): 'wrap' would trade a stack for an ambiguous 2-per-line arrangement. Read by SGS_Container_Wrapper (class-sgs-container-wrapper.php). No header pattern sets flexWrap explicitly, so this default governs every instance."
 		},
 		"justifyContent": {
 			"type": "string",
@@ -182,7 +182,7 @@
 			"default": {
 				"desktop": "clamp(0.5rem, 0.25rem + 1.5cqi, 1rem)"
 			},
-			"_comment": "D455 (2026-08-02) — the fluid gap curve. CORRECTION caught in review: this attribute does NOT depend on the sgs_css_length_value() validator shipped the same session. gap is an OBJECT here, so the wrapper emits object-shaped values for every block, and the value is emitted by sgs_emit_responsive_css() then sgs_responsive_sanitise_css_value() (helpers-responsive.php) — a PRE-EXISTING character allowlist that already permitted parentheses and commas. Verified by running that exact allowlist over this exact string: unchanged. The clamp would have rendered before the validator existed. The validator is load-bearing for the ~19 FLAT-scalar gap callers (card-grid, hero, gallery and friends), not for this one. Curve: 16px ceiling from container width 800px up, 8.5px floor at 267px and below, fluid between — measured 16px at 1400 and 8.56px at 320 against a fixed control that did not move. cqi is safe HERE because grid_on_inner is forced true for layout flex or grid (class-sgs-container-wrapper.php:528), putting gap on .sgs-container__inner whose ancestor container IS the row; a stored layout outside flex/grid would land it on .uid itself, where cqi cannot query its own container. Do NOT copy cqi to a block without a guaranteed container ancestor."
+			"_comment": "The fluid gap curve. This attribute does NOT depend on the sgs_css_length_value() validator. gap is an OBJECT here, so the wrapper emits object-shaped values for every block, and the value is emitted by sgs_emit_responsive_css() then sgs_responsive_sanitise_css_value() (helpers-responsive.php) — a character allowlist that permits parentheses and commas, so the clamp passes through it unchanged. The validator is load-bearing for the FLAT-scalar gap callers (card-grid, hero, gallery and friends), not for this one. Curve: 16px ceiling from container width 800px up, 8.5px floor at 267px and below, fluid between (16px at 1400, 8.56px at 320). cqi is safe HERE because grid_on_inner is forced true for layout flex or grid (class-sgs-container-wrapper.php), putting gap on .sgs-container__inner whose ancestor container IS the row; a stored layout outside flex/grid would land it on .uid itself, where cqi cannot query its own container. Do NOT copy cqi to a block without a guaranteed container ancestor."
 		},
 		"maxWidth": {
 			"type": "object",
@@ -290,7 +290,7 @@
 		"borderColourGradient": {
 			"type": "string",
 			"default": "",
-			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour. Non-empty wins over borderColour."
 		},
 		"borderRadius": {
 			"type": "object",
@@ -301,7 +301,7 @@
 		"fxEffect": {
 			"type": "string",
 			"default": "",
-			"_comment": "Block-private motion-effect selector (2026-09-11). NOT the shared fx ToolsPanel's `fx` attribute — this block deliberately never declares `fx`, so it can never be pulled onto that roster by accident. PHP-validated whitelist (render.php), not a JSON enum, per project convention: '' | 'cursor-field' | 'particles' | 'grid-dots' | 'wave-gradient'."
+			"_comment": "Block-private motion-effect selector. NOT the shared fx ToolsPanel's `fx` attribute — this block deliberately never declares `fx`, so it can never be pulled onto that roster by accident. PHP-validated whitelist (render.php), not a JSON enum, per project convention: '' | 'cursor-field' | 'particles' | 'grid-dots' | 'wave-gradient'."
 		},
 		"fxFieldType": { "type": "string", "default": "" },
 		"fxFieldColour": { "type": "string", "default": "" },

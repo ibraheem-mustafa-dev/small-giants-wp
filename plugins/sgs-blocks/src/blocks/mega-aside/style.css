@@ -1,14 +1,12 @@
 /**
  * SGS Mega Aside — frontend structural invariants ONLY.
  *
- * GROUND-TRUTH: verified against .claude/plans/archive/2026-07-24-mega-menu-BUILD-SPEC.md
- * §8 (aside formats) + render.php's own per-instance <style> (which emits the
- * same format-hide rules for guaranteed frontend delivery, mirroring
- * mega-panel's dual-delivery pattern).
+ * render.php's own per-instance <style> emits the same format-hide rules for
+ * guaranteed frontend delivery, mirroring mega-panel's dual-delivery pattern.
  *
  * GRID POSITION (width/divider) is painted by the PARENT sgs/mega-panel's own
  * scoped <style> (keyed on data-mega-style/data-mega-scheme, targeting
- * `.sgs-mega-aside` as a descendant — CF-10, parent-paints-child). This
+ * `.sgs-mega-aside` as a descendant — parent-paints-child). This
  * stylesheet carries the structural invariants that are true regardless of
  * which style/scheme the parent picks, plus the `asideFormat` arrangement
  * (depends only on the enum, never a resolved instance VALUE, so it's safe to
@@ -24,18 +22,13 @@
 	gap: 16px;
 }
 
-/* object-fit is deliberately NOT declared here (rule 37-media-no-handroll,
-   2026-09-03). This selector used to force `object-fit: cover` on the child
-   sgs/media block's own <img>/<video> — but that child ALREADY declares
-   `supports.sgs.mediaElements` (object-fit atom) and its rendered media
-   always carries the shared `.sgs-media-el` marker, which already defaults
-   to `cover` (assets/css/media-atoms/object-fit.css). This selector's
-   specificity (0,2,1 via two classes + a tag) beat the shared atom rule's
-   (0,1,0), so it was SILENTLY OVERRIDING any per-instance fit an operator
-   set on the child sgs/media block back to cover — a hand-rolled duplicate
-   that also broke the child's own control. Removing it restores the
-   byte-identical default resting crop (child atom fallback = cover) while
-   letting a client's fit choice on the child actually take effect. */
+/* object-fit is deliberately NOT declared here. The child sgs/media block
+   declares `supports.sgs.mediaElements` (object-fit atom) and its rendered
+   media always carries the shared `.sgs-media-el` marker, which defaults to
+   `cover` (assets/css/media-atoms/object-fit.css). A declaration here
+   (specificity 0,2,1 via two classes + a tag) would beat the shared atom
+   rule's (0,1,0) and silently override any per-instance fit an operator sets
+   on the child sgs/media block. */
 .sgs-mega-aside > .wp-block-sgs-media img,
 .sgs-mega-aside > .wp-block-sgs-media video {
 	max-height: 170px;
@@ -43,9 +36,8 @@
 	border-radius: 12px;
 }
 
-/* Aside background hover/focus (FILL closeout, 2026-09-06) — fallback chain:
-   hover var → resting var → CSS default. Unset hover renders byte-identically
-   to before this change. */
+/* Aside background hover/focus — fallback chain:
+   hover var → resting var → CSS default. */
 .sgs-mega-aside:hover,
 .sgs-mega-aside:focus-within {
 	background-color: var( --sgs-mega-aside-bg-hover, var( --sgs-mega-aside-bg, transparent ) );

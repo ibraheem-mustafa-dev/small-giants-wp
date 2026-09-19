@@ -5,31 +5,24 @@
  * The footer shell: a vertical stack of sgs/site-footer-row blocks (top /
  * columns / bottom bar). Empty rows emit zero output (handled by the row block
  * itself). Outer rendering is delegated ENTIRELY to the shared
- * SGS_Container_Wrapper (section KIND) per composite-mirror (R-31-9 / D294) —
+ * SGS_Container_Wrapper (section KIND) per composite-mirror (R-31-9) —
  * no divergent per-block styling path.
  *
- * Rendered with tag <footer> (2026-08-06): this block IS the site contentinfo
- * landmark. Exact mirror of the header's D375 fix, for the same cause —
+ * Rendered with tag <footer>: this block IS the site contentinfo landmark.
+ * The wrapper's tag allowlist includes 'footer', and the FSE footer template
+ * part is short-circuited so no second <footer> is emitted:
  * Sgs_Footer_Rules::filter_template_part() short-circuits core/template-part on
  * pre_render_block whenever the rules engine serves a footer, so core never
  * emits its own <footer> wrapper despite the theme templates referencing the
- * part as {"slug":"footer","tagName":"footer"}.
+ * part as {"slug":"footer","tagName":"footer"}. The block renders outside
+ * <main> with no unclosed <footer> ancestor, so exactly one contentinfo results.
  *
- * This corrects TWO false claims that previously sat here. (a) "'footer' is not
- * in the wrapper's tag allowlist" — it has been since D344 (2026-07-16); see
- * class-sgs-container-wrapper.php:385-397. (b) "the landmark is provided by the
- * FSE footer template part" — measured false on the canary homepage 2026-08-06:
- * the page carried FOUR <footer> elements, every one a sub-element
- * (sgs-quote__attribution, sgs-testimonial__footer x3), and ZERO site-level
- * contentinfo landmark. Verified safe to emit: the block renders outside <main>
- * with no unclosed <footer> ancestor, so exactly one contentinfo results.
- *
- * RESIDUAL (mirrors the header's parked P-HEADER-DOUBLE-SLOT-NEST): if the
- * rules engine ever falls through (has_served() hands a second slot back to
- * core), core WOULD wrap a second sgs/site-footer in its own <footer> = nested
- * landmarks. Fix at the rules-engine level (has_served()) if that is ever hit
- * for real — never via an operator-facing tag override; this block IS the
- * page's single contentinfo landmark and always renders as <footer>.
+ * Limitation (mirrors the header's): if the rules engine ever falls through
+ * (has_served() hands a second slot back to core), core WOULD wrap a second
+ * sgs/site-footer in its own <footer> = nested landmarks. The fix belongs at
+ * the rules-engine level (has_served()) — never via an operator-facing tag
+ * override; this block IS the page's single contentinfo landmark and always
+ * renders as <footer>.
  *
  * Variables from WordPress:
  *   $attributes  array     Block attributes.
@@ -58,17 +51,15 @@ $classes  = array( 'sgs-site-footer', $uid );
 
 $css = '';
 
-// ── WP-native border supports — no-inline contract (Spec 32). ──────────────
-// Mirrors sgs/site-header + sgs/site-footer-row: skip-serialised supports are
-// read from $attributes['style'] and emitted into this block's scoped <style>.
-// Colour is NO LONGER native (D-pending, this migration) — see the SGS-OWNED
-// backgroundColour/textColour block below, which replaces the native
-// style.color.* read that used to sit here.
+// ── Scoped colour + border — no-inline contract (Spec 32). ─────────────────
+// Mirrors sgs/site-header + sgs/site-footer-row: every value is emitted into
+// this block's scoped <style>, never inline.
+// Colour is SGS-owned (backgroundColour/textColour, each with a gradient
+// sibling and a hover state) — see the block below.
 
 $sf_style_engine_args = array();
 
-// (native border_args removed by the Shape-B migration -- width/style/colour
-//  are block-private attrs now, emitted below)
+// Border width/style/colour are block-private attrs, emitted below.
 
 if ( ! empty( $sf_style_engine_args ) ) {
 	$sf_scoped_styles = wp_style_engine_get_styles(
@@ -80,27 +71,20 @@ if ( ! empty( $sf_style_engine_args ) ) {
 	}
 }
 
-// ── SGS-OWNED background + text colour (D294/D684 pattern) ─────────────────
-// Replaces the native supports.color path entirely — supports.color's
-// sub-flags are now false, so WordPress generates no native colour UI and
-// never auto-inlines a colour style, and no `has-*-color`/
-// `has-*-background-color` preset class is auto-added either. This block
-// used to re-add those classes by reading the UNDECLARED `textColor`/
-// `backgroundColor` attrs (the D684 trap: PHP does not drop an undeclared
-// attribute before render.php runs, so a hand-authored theme pattern using
-// the old American-spelled native attrs would still have painted — see
-// class CLAUDE.md's "WordPress silently DROPS…" note). That read is deleted
-// here, not left in place: the 7 theme pattern authorings that fed it are
-// renamed to `backgroundColour` in the SAME change (see decisions.md), so
-// there is no live authoring left for the old attr to catch, and keeping a
-// dead read of an American-spelled key around would only invite a future
-// regression back onto the retired path.
+// ── SGS-OWNED background + text colour ─────────────────────────────────────
+// Colour is SGS-owned (backgroundColour/textColour, each with a gradient
+// sibling and a hover state); supports.color's sub-flags are false, so
+// WordPress generates no native colour UI, never auto-inlines a colour style,
+// and adds no `has-*-color`/`has-*-background-color` preset class. Do not
+// read the undeclared native `textColor`/`backgroundColor` attrs: PHP does not
+// drop an undeclared attribute before render.php runs, so such a read would
+// resurrect a second colour path.
 //
 // EVERY value goes through sgs_colour_value() / sgs_text_colour_decl() /
 // sgs_background_paint_decl() before reaching CSS — DesignTokenPicker
 // stores a bare token SLUG when `linked:true`, and passing that raw to
-// wp_style_engine_get_styles() emits the invalid `background-color:primary`
-// (D684). Both attribute pairs have a GRADIENT sibling and a HOVER state,
+// wp_style_engine_get_styles() emits the invalid `background-color:primary`.
+// Both attribute pairs have a GRADIENT sibling and a HOVER state,
 // neither of which the style engine can express (no state axis, and a
 // gradient would be flattened to a solid colour) — so both are emitted here
 // as a scoped `.uid{…}` / `.uid:hover,.uid:focus-visible{…}` pair via the
@@ -150,13 +134,11 @@ if ( '' !== $sf_text_hover_effective ) {
 if ( $sf_resting_decls || $sf_hover_decls ) {
 	$css .= sgs_emit_state_colour_css( $root_sel, $sf_resting_decls, $sf_hover_decls );
 
-	// Force descendant LINKS to inherit this footer's resolved text colour
-	// (2026-09-18, Bean-reported live on Mama's Munches: the "Shop"/
-	// "Information" core/list links rendered theme.json's global
-	// `styles.elements.link` colour — primary pink — instead of the
-	// footer's own textColour). Root cause: `sgs_emit_state_colour_css()`
-	// only ever writes `{$root_sel}{color:…}`, never touches `<a>`
-	// directly. CSS inheritance loses to ANY rule that explicitly sets
+	// Force descendant LINKS to inherit this footer's resolved text colour.
+	// Without this, core/list links render theme.json's global
+	// `styles.elements.link` colour instead of the footer's own textColour:
+	// `sgs_emit_state_colour_css()` only ever writes `{$root_sel}{color:…}`,
+	// never touches `<a>` directly. CSS inheritance loses to ANY rule that explicitly sets
 	// `color` on the element itself, however low its specificity — and
 	// core's global styles emit `:where(a){color:var(--wp--preset--color--primary)}`,
 	// an explicit (if zero-specificity) declaration that wins over an
@@ -183,9 +165,7 @@ if ( $sf_resting_decls || $sf_hover_decls ) {
 }
 
 
-// ── Block-private border: width / style / colour (Shape B). ──
-// Migrated from WP-native supports by scripts/migrate-border-shape-b.js.
-// Oracle: sgs/accordion, live-verified with scripts/qa/check-border-roundtrip.js.
+// ── Block-private border: width / style / colour. ──
 $border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
 $border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
 $border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
@@ -198,8 +178,8 @@ $allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', '
 $border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
 
 if ( 'none' !== $border_style ) {
-	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
-	// through to the browser's initial `medium` (~3px).
+	// A style with no width means no border — never fall through to the
+	// browser's initial `medium` (~3px).
 	if ( $has_border_width ) {
 		$bwt = '' !== $border_width_top ? $border_width_top : '0';
 		$bwr = '' !== $border_width_right ? $border_width_right : '0';
@@ -219,11 +199,11 @@ if ( 'none' !== $border_style ) {
 		$css .= sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' );
 	} elseif ( '' !== $border_colour ) {
 		// sgs_colour_value() resolves a palette SLUG; a bare slug is invalid CSS
-		// the browser drops (D881 defect 3).
+		// the browser drops.
 		$css .= $root_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
 	}
 } else {
-	// G5 corollary: "none" must be an explicit override too, not a
+	// "none" must be an explicit override too, not a
 	// no-op -- a variant's own hardcoded CSS border (e.g. a card-style
 	// class default) would otherwise keep painting even though the
 	// operator picked "no border". Cause-agnostic: harmless when no
@@ -231,13 +211,10 @@ if ( 'none' !== $border_style ) {
 	$scoped_css[] = $root_sel . '{border-style:none;border-width:0;}';
 }
 
-// ── Block-private border-radius (radius is no longer native -- Shape B now
-// covers all four legs). Same wp_style_engine_get_styles() route already
-// proven live by sgs/media + sgs/before-after's borderRadiusTablet/Mobile
-// tiers; base now goes through the identical call instead of WP's native
-// serialisation. The style-engine result is an intermediate PHP value ($out
-// array), never appended raw -- only its ['css'] string goes through the
-// detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
+// ── Block-private border-radius via wp_style_engine_get_styles() (base and the
+// tablet/mobile tiers use the identical call). The style-engine result is an
+// intermediate PHP value ($out array), never appended raw -- only its ['css']
+// string is appended to $css. ──
 $radius_tiers = sgs_border_radius_tiers( $attributes );
 $border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
 if ( ! empty( $border_radius_obj ) ) {
@@ -276,18 +253,8 @@ if ( '' !== $css ) {
 }
 
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() escapes all output internally; variables are pre-sanitised above.
-// Migrated to SGS_Container_Wrapper::resolve_kind() 2026-08-16 (D626/D633
-// step 6, Phase B, second pass) after 2113eeb6 fixed the helper: an earlier
-// version of resolve_kind() narrowed unmigrated-looking blocks (enabledExtensions
-// without shapeDividers/gridItems/layout) to kind='content', which would have
-// silently dropped this block's live minHeight + contentBandPadding
-// tablet/mobile controls ($is_section-gated in render() below). Caught before
-// shipping (see this file's git history), reported, and fixed at the source —
-// resolve_kind() no longer narrows away from $fallback at all; it is a
-// pass-through today (real per-capability narrowing is step 7 scope). Verified
-// directly against the merged fix before wiring this in: every code path in
-// resolve_kind() returns $fallback unconditionally, so this call is
-// behaviourally identical to the literal 'section' it replaces.
+// The kind resolves through SGS_Container_Wrapper::resolve_kind() with
+// `$fallback`.
 echo SGS_Container_Wrapper::render(
 	$attributes,
 	$block,
