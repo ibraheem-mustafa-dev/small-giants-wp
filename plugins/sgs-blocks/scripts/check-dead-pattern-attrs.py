@@ -438,6 +438,21 @@ def find_type_enum_violation(spec: dict, value):
     return None
 
 
+def find_border_without_style(attrs: dict, block_specs: dict):
+    """Return a reason when a border width or colour is set but no border style
+    is, on a block whose `borderStyle` defaults to none/empty: the wrapper only
+    paints a border when a style is set, so the authored border never renders.
+    An explicit `borderStyle:"none"` is a deliberate choice and is not flagged."""
+    style_spec = block_specs.get('borderStyle')
+    if not style_spec or style_spec.get('default') not in ('', 'none', None):
+        return None
+    if 'borderStyle' in attrs and attrs['borderStyle'] not in ('', None):
+        return None
+    if attrs.get('borderWidth') or attrs.get('borderColour'):
+        return 'borderWidth/borderColour set but borderStyle is empty, so no border renders'
+    return None
+
+
 def scan_source(src: str, rel: str, schemas: dict, specs: dict,
                 supports_map: dict, fx_qualifying: dict) -> list:
     """Findings for one file's text. Split out of scan() so --self-test drives
@@ -462,6 +477,10 @@ def scan_source(src: str, rel: str, schemas: dict, specs: dict,
 
         for attr_key in find_dead_native_preset_attrs(attrs, block_supports, declared):
             findings.append((rel, line, name, attr_key, 'native-preset-undeclared'))
+
+        reason = find_border_without_style(attrs, block_specs)
+        if reason:
+            findings.append((rel, line, name, 'borderStyle', 'border-without-style', reason))
 
         for key, value in attrs.items():
             if key in declared and is_shape_mismatch(declared[key], value):
@@ -496,13 +515,13 @@ def scan() -> list:
 def compute_exit_code(findings: list, check: bool) -> int:
     """Gate logic, isolated from printing so it can be unit-tested directly.
 
-    Only `undeclared`, `shape-mismatch` and `type-enum-mismatch` are hard-gated
+    Only `undeclared`, `shape-mismatch`, `type-enum-mismatch` and `border-without-style` are hard-gated
     (exit 1 under `--check`). `native-style-undeclared` and
     `native-preset-undeclared` are BOTH advisory-only (exit 0) — see the
     comment in main() for why."""
     if not check:
         return 0
-    hard = ('undeclared', 'shape-mismatch', 'type-enum-mismatch')
+    hard = ('undeclared', 'shape-mismatch', 'type-enum-mismatch', 'border-without-style')
     return 1 if any(f[4] in hard for f in findings) else 0
 
 
@@ -515,11 +534,13 @@ def main() -> int:
     undeclared = [f for f in findings if f[4] == 'undeclared']
     shape = [f for f in findings if f[4] == 'shape-mismatch']
     type_enum = [f for f in findings if f[4] == 'type-enum-mismatch']
+    border_style = [f for f in findings if f[4] == 'border-without-style']
     native_style =[f for f in findings if f[4] == 'native-style-undeclared']
     native_preset = [f for f in findings if f[4] == 'native-preset-undeclared']
     print(f'[dead-pattern-attrs] {len(findings)} EDITOR-INVISIBLE attribute(s) '
           f'({len(undeclared)} undeclared, {len(shape)} shape-mismatch, '
           f'{len(type_enum)} type-enum-mismatch, '
+          f'{len(border_style)} border-without-style, '
           f'{len(native_style)} native-style-undeclared, '
           f'{len(native_preset)} native-preset-undeclared):\n')
     for rel, line, name, key, kind, *extra in findings:
@@ -536,6 +557,8 @@ def main() -> int:
             print(f'      {name} -> "{key}" is declared {extra[0]} — WP coerces a value that '
                   f'fails the block.json type/enum to the attribute default at render (e.g. '
                   f'numeric "level":3 on sgs/heading renders the default h2).\n')
+        elif kind == 'border-without-style':
+            print(f'      {name} -> {extra[0]}; add "borderStyle":"solid" (or the intended style).\n')
         elif kind == 'native-style-undeclared':
             print(f'      {name} -> "{key}" is a native WP style family this block\'s `supports` '
                   f'section does not declare at all — WP drops it from the EDITOR schema, but PHP '
@@ -719,6 +742,37 @@ def self_test() -> int:
         got = run_fixture(good)
         if got:
             failures.append(f'TYPE-ENUM mustNotFlag control failed: {good} was flagged: {got}.')
+
+    bd_specs = {'sgs/st-box': {
+        'borderStyle': {'type': 'string', 'default': ''},
+        'borderWidth': {'type': 'object'},
+        'borderColour': {'type': 'string'},
+    }, 'sgs/st-solid': {
+        'borderStyle': {'type': 'string', 'default': 'solid'},
+        'borderWidth': {'type': 'object'},
+    }}
+    bd_schemas = {'sgs/st-box': {'borderStyle': 'string', 'borderWidth': 'object', 'borderColour': 'string'},
+                  'sgs/st-solid': {'borderStyle': 'string', 'borderWidth': 'object'}}
+
+    def run_border(block: str, attrs_json: str) -> list:
+        markup = f'<!-- wp:{block} {attrs_json} /-->'
+        return [f for f in scan_source(markup, 'fixture.php', bd_schemas, bd_specs, {}, {})
+                if f[4] == 'border-without-style']
+
+    for bad in ('{"borderWidth":{"top":"1px"},"borderColour":"primary"}', '{"borderColour":"primary"}',
+                '{"borderWidth":{"top":"1px"},"borderStyle":""}'):
+        got = run_border('sgs/st-box', bad)
+        if not got:
+            failures.append(f'BORDER-STYLE mustFlag control failed: {bad} was NOT flagged.')
+        elif compute_exit_code(got, check=True) != 1:
+            failures.append(f'BORDER-STYLE exit-code control failed: {bad} did not fail --check.')
+    for block, good in (('sgs/st-box', '{"borderWidth":{"top":"1px"},"borderColour":"primary","borderStyle":"solid"}'),
+                        ('sgs/st-box', '{"borderStyle":"none","borderWidth":{"top":"1px"}}'),
+                        ('sgs/st-box', '{}'),
+                        ('sgs/st-solid', '{"borderWidth":{"top":"1px"}}')):
+        got = run_border(block, good)
+        if got:
+            failures.append(f'BORDER-STYLE mustNotFlag control failed: {block} {good} was flagged: {got}.')
 
     if failures:
         print('[dead-pattern-attrs --self-test] FAILED:\n')

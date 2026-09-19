@@ -39,7 +39,7 @@
 		<!-- /wp:sgs/container -->
 
 		<!-- wp:sgs/container -->
-			<!-- wp:sgs/container {"tagName":"div","backgroundColour":"surface","padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|40","right":"var:preset|spacing|40"},"flexWrap":"wrap","borderRadius":{"desktop":"12px"},"borderColour":"var:preset|color|primary","borderWidth":{"top":"2px","right":"2px","bottom":"2px","left":"2px"}} -->
+			<!-- wp:sgs/container {"tagName":"div","backgroundColour":"surface","padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|40","right":"var:preset|spacing|40"},"flexWrap":"wrap","borderRadius":{"desktop":"12px"},"borderColour":"var:preset|color|primary","borderStyle":"solid","borderWidth":{"top":"2px","right":"2px","bottom":"2px","left":"2px"}} -->
 				<!-- wp:sgs/text {"text":"Most Popular","textAlign":"center","textColour":"primary","fontSize":{"desktop":"small"},"textTransform":"uppercase","letterSpacing":{"desktop":0.1},"letterSpacingUnit":"em","fontWeight":"700"} /-->
 				<!-- wp:sgs/heading {"content":"Professional","textAlign":"center","level":"h3","fontSize":{"desktop":"large"}} /-->
 				<!-- wp:sgs/text {"text":"<strong>£2,497</strong>","textAlign":"center","fontSize":{"desktop":"xx-large"},"margin":{"top":"var:preset|spacing|20","bottom":"var:preset|spacing|20"}} /-->
