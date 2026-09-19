@@ -68,13 +68,13 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { useMemo } from '@wordpress/element';
+import { useMemo, useState } from '@wordpress/element';
 import { useSelect, useDispatch, useRegistry } from '@wordpress/data';
 import { store as blockEditorStore } from '@wordpress/block-editor';
 import { store as editorStore } from '@wordpress/editor';
 import { store as coreStore } from '@wordpress/core-data';
 import { parse } from '@wordpress/blocks';
-import { PanelBody, Button } from '@wordpress/components';
+import { PanelBody, Button, ToggleControl } from '@wordpress/components';
 
 /**
  * Strips block-level `metadata` (name/binding/provenance) from a single
@@ -171,18 +171,31 @@ export default function StarterLookPresetControl( { clientId, rootBlockName } ) 
 	// opts in via `Post Types: <postType>` — matching how the real FR-37-8
 	// patterns are actually authored (see e.g.
 	// `theme/sgs-theme/patterns/framework-header-default.php`).
+	//
+	// When any qualifying pattern carries the `featured` keyword the picker shows
+	// only those, so a library of many looks stays a short list here while the
+	// rest remain available as their own posts; with none marked, every
+	// qualifying pattern is shown.
 	const looks = useMemo( () => {
 		if ( ! postType ) {
 			return [];
 		}
-		return allPatterns.filter( ( pattern ) => {
+		const qualifying = allPatterns.filter( ( pattern ) => {
 			const scopedToPostType =
 				Array.isArray( pattern.postTypes ) && pattern.postTypes.includes( postType );
 			const scopedToPostContent =
 				! pattern.blockTypes || pattern.blockTypes.includes( 'core/post-content' );
 			return scopedToPostType && scopedToPostContent && pattern.inserter !== false;
 		} );
+		const featured = qualifying.filter(
+			( pattern ) => Array.isArray( pattern.keywords ) && pattern.keywords.includes( 'featured' )
+		);
+		return featured.length > 0 ? featured : qualifying;
 	}, [ allPatterns, postType ] );
+
+	// "Change the look only": apply the look's settings but leave the block's
+	// existing content (menu, buttons, rows) exactly as the client left it.
+	const [ keepContent, setKeepContent ] = useState( false );
 
 	if ( looks.length === 0 ) {
 		return null;
@@ -240,10 +253,14 @@ export default function StarterLookPresetControl( { clientId, rootBlockName } ) 
 						return;
 					}
 					updateBlockAttributes( row.clientId, matched.attributes );
-					replaceInnerBlocks( row.clientId, matched.innerBlocks || [], false );
+					if ( ! keepContent ) {
+						replaceInnerBlocks( row.clientId, matched.innerBlocks || [], false );
+					}
 				} );
 			} else {
-				replaceInnerBlocks( clientId, patternRows, false );
+				if ( ! keepContent ) {
+					replaceInnerBlocks( clientId, patternRows, false );
+				}
 			}
 		} );
 	}
@@ -252,10 +269,16 @@ export default function StarterLookPresetControl( { clientId, rootBlockName } ) 
 		<PanelBody title={ __( 'Starter look', 'sgs-blocks' ) } initialOpen={ true }>
 			<p className="sgs-starter-look__help">
 				{ __(
-					'Applies a starter look’s layout and content to this locked block. This overwrites the rows below — fine-tune afterwards, or Undo to revert.',
+					'Applies a starter look’s settings and content to this locked block. This overwrites what is here — fine-tune afterwards, or Undo to revert.',
 					'sgs-blocks'
 				) }
 			</p>
+			<ToggleControl
+				__nextHasNoMarginBottom
+				label={ __( 'Keep my content — change the look only', 'sgs-blocks' ) }
+				checked={ keepContent }
+				onChange={ setKeepContent }
+			/>
 			<div className="sgs-starter-look__grid">
 				{ looks.map( ( pattern ) => (
 					<Button
