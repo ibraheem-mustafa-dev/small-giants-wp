@@ -230,7 +230,13 @@ namespace {
 	t_equals( 'email gets mailto: prefix', 'mailto:foo@bar.com', $r );
 
 	$r = \SGS\Blocks\Sgs_Site_Info_Binding::prefix_url_for_key( 'phone', '+44 121 000 0000' );
-	t_equals( 'phone gets tel: prefix', 'tel:+44 121 000 0000', $r );
+	t_equals( 'phone gets tel: prefix with everything but digits and + stripped', 'tel:+441210000000', $r );
+
+	$r = \SGS\Blocks\Sgs_Site_Info_Binding::prefix_url_for_key( 'phone', '0121 729 8233' );
+	t_equals( 'spaced display-form phone is stripped to digits', 'tel:01217298233', $r );
+
+	$r = \SGS\Blocks\Sgs_Site_Info_Binding::prefix_url_for_key( 'phone', '(0121) 729-8233' );
+	t_equals( 'brackets and hyphens are stripped too', 'tel:01217298233', $r );
 
 	$r = \SGS\Blocks\Sgs_Site_Info_Binding::prefix_url_for_key( 'socials.facebook', 'facebook.com/x' );
 	t_equals( 'social gets https:// prefix', 'https://facebook.com/x', $r );

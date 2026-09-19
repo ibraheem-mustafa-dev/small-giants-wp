@@ -30,6 +30,7 @@ import sys
 import urllib.error
 import urllib.request
 from pathlib import Path
+from urllib.parse import urlparse
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -65,6 +66,32 @@ WP_URL = env[f"WP_URL_{_SITE_KEY}"]
 USER = env[f"WP_USER_{_SITE_KEY}"]
 PW = env[f"WP_APP_PWD_{_SITE_KEY}"]
 AUTH = "Basic " + base64.b64encode(f"{USER}:{PW}".encode()).decode()
+
+# The sandybrown canary host. The default target domain (see default_snapshot_domain) when
+# SGS_DEPLOY_SITE is unset.
+CANARY_DOMAIN = "sandybrown-nightingale-600381.hostingersite.com"
+
+
+def default_snapshot_domain(deploy_site_env: str | None, wp_url: str) -> str:
+    """Default --snapshot-target-domain: the host of the deploy site's own WP_URL_<KEY> when
+    SGS_DEPLOY_SITE is set (so the theme-snapshot push and the business-info sync target the site
+    this run deploys to), else the canary. `wp_url` is the value read from .claude/secrets/<site>.env."""
+    if deploy_site_env:
+        host = urlparse(wp_url if "://" in wp_url else f"//{wp_url}").netloc
+        if host:
+            return host
+    return CANARY_DOMAIN
+
+
+def find_draft(client: str, explicit: Path | None) -> Path | None:
+    """The client's original draft HTML: an explicit --draft that exists, else the first
+    sites/<client>/mockups/**/*.html (preferring one named *mockup*), else None."""
+    if explicit is not None and explicit.is_file():
+        return explicit
+    mockups_dir = REPO / "sites" / client / "mockups"
+    candidates = sorted(mockups_dir.glob("**/*.html")) if mockups_dir.is_dir() else []
+    preferred = next((c for c in candidates if "mockup" in c.name.lower()), None)
+    return preferred or (candidates[0] if candidates else None)
 
 
 def upload_one(file_path: Path) -> dict:
@@ -146,8 +173,21 @@ def main():
     parser.add_argument(
         "--snapshot-target-domain",
         type=str,
-        default="sandybrown-nightingale-600381.hostingersite.com",
-        help="Target site domain for push-theme-snapshot.py REST + path derivation.",
+        default=default_snapshot_domain(os.environ.get("SGS_DEPLOY_SITE"), WP_URL),
+        help=(
+            "Target site domain for push-theme-snapshot.py REST + path derivation. "
+            "Default: the host of WP_URL_<KEY> in .claude/secrets/<SGS_DEPLOY_SITE>.env when "
+            "SGS_DEPLOY_SITE is set, else the sandybrown canary."
+        ),
+    )
+    parser.add_argument(
+        "--draft",
+        type=Path,
+        default=None,
+        help=(
+            "The client's ORIGINAL draft HTML, used by the Spec 33 business-info sync. "
+            "Wins over the sites/<client>/mockups/ search when the file exists."
+        ),
     )
     args = parser.parse_args()
 
@@ -375,20 +415,18 @@ def main():
     # can always fill it by hand). Fill-if-empty means it never clobbers an
     # operator's value.
     if args.client:
-        mockups_dir = REPO / "sites" / args.client / "mockups"
-        html_candidates = sorted(mockups_dir.glob("**/*.html")) if mockups_dir.is_dir() else []
-        draft = next((c for c in html_candidates if "mockup" in c.name.lower()), None)
-        if draft is None and html_candidates:
-            draft = html_candidates[0]
+        draft = find_draft(args.client, args.draft)
 
         if draft is None:
-            print(f"\nSpec-33 business-info: no draft HTML under {mockups_dir} — skipped.")
+            print(f"\nSpec-33 business-info: no draft HTML (--draft not given; none under "
+                  f"{REPO / 'sites' / args.client / 'mockups'}) — skipped.")
         else:
             bi_cli = (Path(__file__).resolve().parent.parent / "sync-business-info.py")
             bi_cmd = [
                 sys.executable, str(bi_cli),
                 "--draft", str(draft),
                 "--target-domain", args.snapshot_target_domain,
+                "--map-out", str(REPO / "sites" / args.client / "site-info-placeholder-map.json"),
             ]
             if args.push_theme_snapshot:
                 bi_cmd.append("--push")  # fill-if-empty (never --overwrite from the pipeline)

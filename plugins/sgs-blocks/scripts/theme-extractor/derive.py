@@ -72,3 +72,22 @@ def derive_palette(base_rules: list, trace: list) -> list:
                       "confidence": round(conf, 2), "relative_share": share, "value": hexv,
                       "reason": f"Pass B: derived {role} by usage-context (share {share} within role)"})
     return palette
+
+
+def overlay_on_baseline(base_pal: list, derived: list, trace: list) -> list:
+    """OVERLAY derived (advisory) entries on the framework baseline palette; never replace it.
+
+    A derived entry for a baseline slug replaces that entry in place and carries the slug's base hex as
+    ``_baseline_color`` so the push script can restore it when it strips advisory entries. Derived
+    entries for slugs the baseline lacks are appended (no ``_baseline_color``: stripping deletes them).
+    """
+    base_hex = {e["slug"]: e.get("color") for e in base_pal}
+    by_slug = {d["slug"]: d for d in derived}
+    pal = [dict(by_slug[e["slug"]], _baseline_color=base_hex[e["slug"]]) if e["slug"] in by_slug else e
+           for e in base_pal]
+    appended = [d for d in derived if d["slug"] not in base_hex]
+    pal.extend(appended)
+    trace.append({"kind": "merge", "reason": "Pass B palette OVERLAID on the framework baseline "
+                  "(baseline slugs kept, never replaced)", "overlaid": len(derived) - len(appended),
+                  "appended": len(appended)})
+    return pal

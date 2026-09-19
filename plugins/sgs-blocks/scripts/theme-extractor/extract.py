@@ -47,9 +47,14 @@ def _is_allowed_https_url(url: str, allowed_hosts: set[str]) -> bool:
         return False
     return parsed.scheme == "https" and parsed.hostname in allowed_hosts
 
+import declared_sources
 import derive as derive_mod
 import palette as palette_mod
 import presets as presets_mod
+import palette_refs
+import site_palette
+import usage_census
+import variant_sets as variant_sets_mod
 import typography as typo_mod
 from schema_validate import validate_theme_json
 from token_map import build_draft_root_token_map, parse_base_rules
@@ -269,8 +274,19 @@ def _overlay_font_families(baseline: dict, facts: dict, links: list, trace: list
                 by_slug[slug].pop("fontFace", None)
 
 
+def _declared_design(draft_dir, html: str, pass_a_found: bool) -> tuple[dict, dict] | None:
+    """The draft's declared design system (README token table, script variant sets) when Pass A found
+    no palette and there is something to read; None keeps today's behaviour exactly."""
+    if draft_dir is None or pass_a_found:
+        return None
+    declared = declared_sources.read_readme_tokens(draft_dir)
+    variant_sets = variant_sets_mod.read_script_variant_sets(html)
+    has_colours = declared["found"] and any(r.get("hexes") for r in declared.get("colours", []))
+    return (declared, variant_sets) if has_colours or variant_sets else None
+
+
 def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict, trace: list,
-                    repo: pathlib.Path) -> dict:
+                    repo: pathlib.Path, draft_dir: pathlib.Path | None = None) -> dict:
     root_tokens = build_draft_root_token_map(css)
     base_rules = parse_base_rules(css)
 
@@ -281,16 +297,30 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
     # PALETTE — Pass A (declared :root, FR-33-1/2/9); Pass B advisory fallback when the draft declares
     # no tokens (FR-33-5). Nothing usable → keep the deep-copied framework baseline palette UNCHANGED.
     pal = palette_mod.build_palette(root_tokens, base_rules, facts, trace)
+    design = _declared_design(draft_dir, html, bool(pal))
     if not pal:
-        pal = derive_mod.derive_palette(base_rules, trace)  # Pass B (advisory) or []
+        # Pass B runs FIRST whenever Pass A found nothing, even when a README declares colours: it
+        # supplies what the declared path does not (the page surface and text the README rows could
+        # not prove), advisory, and the declared design is laid on top so declared entries win by slug.
+        derived = derive_mod.derive_palette(base_rules, trace)  # Pass B (advisory) or []
+        if derived:
+            pal = derive_mod.overlay_on_baseline(
+                ((settings.get("color", {}) or {}).get("palette", [])) or [], derived, trace)
     if pal:
         settings.setdefault("color", {})["palette"] = pal
-    else:
+    if design:
+        # Declared outside <style> (README tokens / script variant sets): overlay, validated by usage.
+        declared, variant_sets = design
+        site_palette.apply_declared_design(snap, declared, variant_sets, usage_census.census_colours(html),
+                                           facts, trace)
+        pal = snap["settings"]["color"]["palette"]
+    elif not pal:
         pal = ((settings.get("color", {}) or {}).get("palette", [])) or []  # baseline (from deepcopy)
         trace.append({"kind": "derive-skip", "reason": "Pass A + Pass B recovered nothing usable → "
                       "framework baseline palette kept UNCHANGED (never a guessed theme)"})
-    slug_by_hex = {e["color"].lower(): e["slug"] for e in pal
-                   if isinstance(e.get("color"), str) and e["color"].startswith("#")}
+    slug_by_hex = palette_refs.slug_by_hex(pal) if design else {
+        e["color"].lower(): e["slug"] for e in pal
+        if isinstance(e.get("color"), str) and e["color"].startswith("#")}
 
     # BASE TYPOGRAPHY (FR-33-3 — the drift-killer)
     styles["typography"] = typo_mod.base_typography(facts, trace)
@@ -376,7 +406,7 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
     # A derived key always WINS over the baseline key (it is the measured client value, the FR-33-1
     # iron law). This is ordinary theme.json layering (baseline → client override), and it is the
     # same destructive-replace class as the D319 palette lesson + the elements.heading fix above.
-    bp = presets_mod.build_button_presets(facts, trace)
+    bp = presets_mod.build_button_presets(facts, trace, settings.get("color", {}).get("palette"))
     if bp:
         presets = settings.setdefault("custom", {}).setdefault("buttonPresets", {})
         for slot, derived in bp.items():
@@ -395,9 +425,12 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
                                     "whole (a wholesale replace would delete them from the live site)",
                           "preserved_slots": ",".join(sorted(untouched))})
 
-    # LAYOUT contentSize (scan beyond :root)
+    if design:
+        palette_refs.tokenise_button_presets(snap, trace, bp)
+
+    # LAYOUT contentSize (scan beyond :root); a width the README declares already won above
     cs = presets_mod.content_size(base_rules, trace)
-    if cs:
+    if cs and not (design and design[0].get("layout", {}).get("max_content_width")):
         settings.setdefault("layout", {})["contentSize"] = cs
 
     # FR-33-13 — RESERVE the header/footer COMPONENT namespace for Part 2 (Spec 17). Part 1 owns
@@ -621,7 +654,7 @@ def main(argv=None) -> int:
     baseline = json.loads((repo / "theme" / "sgs-theme" / "theme.json").read_text(encoding="utf-8"))
 
     trace: list = []
-    snap = build_snapshot(args.client, css, facts, html, baseline, trace, repo)
+    snap = build_snapshot(args.client, css, facts, html, baseline, trace, repo, draft_dir=draft.parent)
 
     if args.merge_onto:
         existing_path = pathlib.Path(args.merge_onto)

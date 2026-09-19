@@ -1,0 +1,43 @@
+{
+  "outline": {
+    "background": "transparent",
+    "border": "#e8d5c0",
+    "border-radius": "10px",
+    "border-width": "2px",
+    "font-size": "14px",
+    "font-weight": "600",
+    "hover-background": "rgba(245, 194, 200, 0.914)",
+    "hover-border": "#e69099",
+    "min-height": "44px",
+    "padding": "10px 18px 10px 18px",
+    "text": "#3a2e26"
+  },
+  "primary": {
+    "background": "#e68a95",
+    "border": "#e68a95",
+    "border-radius": "10px",
+    "border-width": "2px",
+    "font-size": "15px",
+    "font-weight": "600",
+    "hover-background": "#41322b",
+    "hover-border": "#41322b",
+    "hover-text": "#f7f1ec",
+    "min-height": "48px",
+    "padding": "14px 24px 14px 24px",
+    "text": "#3a2e26"
+  },
+  "secondary": {
+    "background": "transparent",
+    "border": "#e68a95",
+    "border-radius": "10px",
+    "border-width": "2px",
+    "font-size": "15px",
+    "font-weight": "600",
+    "hover-background": "rgba(58, 46, 38, 0.914)",
+    "hover-border": "#49362f",
+    "hover-text": "#eee9e3",
+    "min-height": "48px",
+    "padding": "14px 24px 14px 24px",
+    "text": "#3a2e26"
+  }
+}

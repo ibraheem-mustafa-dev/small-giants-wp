@@ -4232,6 +4232,10 @@ def main():
                 _upload_cmd += ["--client", args.client]
             if args.push_theme_snapshot:
                 _upload_cmd.append("--push-theme-snapshot")
+            # The ORIGINAL draft, so the Spec 33 business-info sync finds a draft that
+            # does not live under sites/<client>/mockups/ (e.g. a Claude Design handoff folder).
+            if _draft_path.is_file():
+                _upload_cmd += ["--draft", str(_draft_path)]
             result = subprocess.run(
                 _upload_cmd,
                 capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=180,

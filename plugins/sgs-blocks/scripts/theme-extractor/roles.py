@@ -23,6 +23,12 @@ _SEL_STATUS_SUCCESS = re.compile(r"(success|\.green|\.valid|instock)", re.I)
 _SEL_STATUS_ERROR = re.compile(r"(error|\.red|\.danger|\.invalid|outofstock)", re.I)
 _SEL_BASE = re.compile(r"^(:root|html|body|\*)$", re.I)
 
+# A selector that paints browser (UA) chrome or an interaction state is not the element's RESTING
+# colour, so it must never vote for a palette role (same resting-only rule palette.py applies to
+# Pass A via ``_STATE_RE``). Proven: a scrollbar-thumb hover grey won ``surface-alt`` by a hex-ascending
+# tie-break.
+_SEL_NON_RESTING = re.compile(r"::(-webkit-|-moz-|selection|placeholder|marker)|:(hover|focus|active|visited)", re.I)
+
 # A 404 PAGE-TYPE selector is not an error STATE. The status regexes match the bare substring
 # "error", which also occurs in every theme's not-found-page container (WP core's body class is
 # `.error404`; Astra emits `.error-404`). That container's background is just the site's ordinary
@@ -111,7 +117,7 @@ def collect_colour_usages(root_tokens: dict, base_rules: list) -> dict:
                     "border-top-color", "border-bottom-color", "border-left-color",
                     "border-right-color", "outline-color", "fill"}
     for sel, prop, value, _imp, _off in base_rules:
-        if prop not in colour_props:
+        if prop not in colour_props or _SEL_NON_RESTING.search(sel):
             continue
         propfam = _prop_family(prop)
         srole = selector_role(sel)

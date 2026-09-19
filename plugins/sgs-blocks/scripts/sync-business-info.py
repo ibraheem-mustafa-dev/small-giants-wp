@@ -1,197 +1,84 @@
 #!/usr/bin/env python3
 """
-sync-business-info.py — Tier-1 business-data extractor + pusher (D325).
+sync-business-info.py — Tier-1 business-data extractor + pusher (D325, Spec 33 FR-33-14).
 
 Extracts ONLY high-confidence, machine-signal business-data fields from a draft
 mockup and (optionally) writes them to the live site's Business Details store via
 the capability-gated REST endpoint POST /wp-json/sgs/v1/site-info (fill-if-empty).
 
 HIGH-CONFIDENCE signals only (Tier 1) — never a semantic guess:
-  - email        ← the first `mailto:` link
-  - phone        ← the first `tel:` link
-  - socials.<n>  ← an <a href> whose host is a known social domain (skips '#')
-  - copyright    ← the text of the line containing a © / &copy;
+  - email        <- a declared data-object key, an explicit "Email" label, or the first `mailto:` link
+  - phone        <- a declared data-object key, an explicit "Phone" label, or the first `tel:` link
+  - socials.<n>  <- a declared data-object key, or an <a href> on a known social host (skips '#')
+  - address      <- a declared data-object `address` key or an explicit Address/Clinic label ONLY
+  - opening_hours.<day> <- a declared `hours` key or an explicit Hours label, `Mon-Sat 9.30-17.30` ranges
+  - copyright    <- the text of the line containing a (c) / &copy;
 
-Deliberately NOT extracted (Tier 2 — need review, would be guesses):
-  tagline, address, opening_hours, vat_number, registered_office, map.
+Three sources, in this precedence when the same key turns up more than once
+(never two different values for one key):
+  1. the draft's script data object (`key: 'value'` pairs whose key is in VOCABULARY)
+  2. labelled page text (an element whose own text is exactly a LABELS entry, then its sibling value)
+  3. literal `mailto:` / `tel:` / `href=` / (c) text
+
+Address and hours are Tier 1 ONLY when they come from a declared data object or an explicit
+label, never from free-floating guessing. Every value is validated by SHAPE (email regex, UK
+postcode or 3+ words, https URL on a known host of the right network) and a value that fails is
+dropped, not written. Tagline and other free text remain Tier 2 and are not written.
+
+Phone storage: the value is stored as the human-readable form the draft shows ("0121 729 8233").
+`sgs/business-info` renders the stored text as the visible label and builds the tel: link by
+stripping every non-digit/+ character, so the spaced form is correct for BOTH the text and the link.
+
+`--map-out PATH` writes the placeholder map: which `{{ binding }}` in the draft template resolves
+to which Site Info key (and as what: text / tel-href / url), so a cloner can bind blocks to
+Site Info instead of copying the literal. Keys with no Site Info equivalent (a map link) are
+listed with `"key": null` and are never invented.
 
 The push is FILL-IF-EMPTY by default: an existing non-empty value is never
 overwritten (the endpoint enforces this; --overwrite flips it).
 
 Usage:
     # Extract + print only (no write)
-    python plugins/sgs-blocks/scripts/sync-business-info.py \\
-        --draft "sites/mamas-munches/mockups/.../mamas-munches-mockup.html"
+    python plugins/sgs-blocks/scripts/sync-business-info.py \
+        --draft "sites/<client>/.../draft.html" [--map-out placeholder-map.json]
 
-    # Extract + push to the canary (fill-if-empty)
-    python plugins/sgs-blocks/scripts/sync-business-info.py \\
-        --draft "sites/mamas-munches/mockups/.../mamas-munches-mockup.html" \\
-        --target-domain sandybrown-nightingale-600381.hostingersite.com --push
+    # Extract + push (fill-if-empty)
+    python plugins/sgs-blocks/scripts/sync-business-info.py \
+        --draft "sites/<client>/.../draft.html" --target-domain <host> --push
 
-Credentials (for --push): resolved like push-theme-snapshot.py —
-  1. Known domain → named secrets file (.claude/secrets/sandybrown.env)
+Credentials (for --push):
+  1. The .claude/secrets/*.env file whose WP_URL_<KEY> host equals --target-domain
+     (uses that file's WP_USER_<KEY> and WP_APP_PWD_<KEY>)
   2. --app-user / --app-password flags
   3. SGS_WP_APP_USER / SGS_WP_APP_PWD env vars
+
+Layout: this file is only the command line. The logic lives in the `business_info` package beside
+it (vocabulary tables, shape validation, the three sources, the placeholder map, credentials and
+the REST push); a hyphenated filename cannot be imported, which is why the split exists.
 """
 from __future__ import annotations
 
 import argparse
-import base64
 import json
-import re
 import sys
 import urllib.error
-import urllib.request
 from pathlib import Path
-from urllib.parse import urlparse
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from business_info.credentials import repo_root, resolve_credentials, secrets_dir  # noqa: E402
+from business_info.extract import extract_business_info  # noqa: E402
+from business_info.placeholder_map import build_placeholder_map  # noqa: E402
+from business_info.push import push  # noqa: E402
+from business_info.script_source import find_unmapped  # noqa: E402
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-
-# ---------------------------------------------------------------------------
-# Extraction (high-confidence machine signals only)
-# ---------------------------------------------------------------------------
-
-# host substring → Site Info social key. First match wins per network.
-SOCIAL_DOMAINS: dict[str, str] = {
-    "facebook.com": "facebook",
-    "fb.com": "facebook",
-    "instagram.com": "instagram",
-    "twitter.com": "twitter",
-    "x.com": "twitter",
-    "linkedin.com": "linkedin",
-    "youtube.com": "youtube",
-    "youtu.be": "youtube",
-    "tiktok.com": "tiktok",
-    "wa.me": "whatsapp",
-    "whatsapp.com": "whatsapp",
-}
-
-_HREF_RE = re.compile(r"""href\s*=\s*["']([^"']+)["']""", re.IGNORECASE)
-_MAILTO_RE = re.compile(r"""mailto:([^"'\s?>]+)""", re.IGNORECASE)
-_TEL_RE = re.compile(r"""tel:([^"'\s>]+)""", re.IGNORECASE)
-_EMAIL_SHAPE_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
-# Copyright line: a © or &copy; followed by the rest of that text run. Stop only
-# at an HTML tag boundary (< >), a newline, or a JS-template backtick — so real
-# text with apostrophes/quotes ("Mama's Munches.") is kept intact.
-_COPYRIGHT_RE = re.compile(r"""(?:©|&copy;)\s*([^<>\n`]{2,160})""", re.IGNORECASE)
-
-
-def extract_business_info(html: str) -> dict[str, str]:
-    """Return {site_info_key: value} for every high-confidence field found."""
-    fields: dict[str, str] = {}
-
-    # email — first mailto:
-    m = _MAILTO_RE.search(html)
-    if m:
-        email = m.group(1).strip().rstrip(".,;")
-        if _EMAIL_SHAPE_RE.match(email):
-            fields["email"] = email
-
-    # phone — first tel:
-    m = _TEL_RE.search(html)
-    if m:
-        phone = m.group(1).strip()
-        # keep digits, spaces, +, -, (, ) — reject anything else as noise
-        if re.fullmatch(r"[0-9+\-\s().]{6,20}", phone):
-            fields["phone"] = phone
-
-    # socials — first real URL per known network (skip '#'/relative/empty)
-    for raw_href in _HREF_RE.findall(html):
-        href = raw_href.strip()
-        if not href or href.startswith("#") or href.lower().startswith(("mailto:", "tel:")):
-            continue
-        host = (urlparse(href).netloc or "").lower()
-        if not host:
-            continue
-        host = host[4:] if host.startswith("www.") else host
-        for domain, key in SOCIAL_DOMAINS.items():
-            social_key = f"socials.{key}"
-            if domain in host and social_key not in fields:
-                fields[social_key] = href
-                break
-
-    # copyright — text of the © line, prefixed with © for a clean stored value
-    m = _COPYRIGHT_RE.search(html)
-    if m:
-        tail = m.group(1).strip()
-        if tail:
-            fields["copyright"] = f"© {tail}"
-
-    return fields
-
-
-# ---------------------------------------------------------------------------
-# Credentials + push (mirrors push-theme-snapshot.py)
-# ---------------------------------------------------------------------------
-
-def repo_root() -> Path:
-    return Path(__file__).resolve().parents[3]
-
-
-def _load_env_file(path: Path) -> dict[str, str]:
-    result: dict[str, str] = {}
-    if not path.is_file():
-        return result
-    for raw in path.read_text(encoding="utf-8").splitlines():
-        line = raw.strip()
-        if not line or line.startswith("#") or "=" not in line:
-            continue
-        key, _, value = line.partition("=")
-        value = value.strip()
-        # Strip a MATCHED surrounding quote pair. Bash's `source` strips these as part of
-        # its own parsing, so a hand-rolled reader that does not diverges SILENTLY - here it
-        # built Basic auth from a quoted user/password and 401'd every authenticated REST
-        # call, which reads as a credentials fault rather than a parsing one (2026-08-18).
-        # Matched-pair ONLY: a blind .strip() of quote chars corrupts a value that
-        # legitimately ends in one.
-        if len(value) >= 2 and value[0] == value[-1] and value[0] in ('"', "'"):
-            value = value[1:-1]
-        result[key.strip()] = value
-    return result
-
-
-def resolve_credentials(
-    target_domain: str, cli_user: str | None, cli_pwd: str | None
-) -> tuple[str, str] | None:
-    secrets_dir = repo_root() / ".claude" / "secrets"
-    domain_env_map = {
-        "sandybrown": (secrets_dir / "sandybrown.env", "WP_USER_SANDYBROWN", "WP_APP_PWD_SANDYBROWN"),
-    }
-    for domain_key, (env_path, user_var, pwd_var) in domain_env_map.items():
-        if domain_key in target_domain:
-            env = _load_env_file(env_path)
-            user = env.get(user_var, "")
-            pwd = env.get(pwd_var, "").replace(" ", "")
-            if user and pwd:
-                return user, pwd
-    if cli_user and cli_pwd:
-        return cli_user, cli_pwd.replace(" ", "")
-    import os
-
-    env_user = os.environ.get("SGS_WP_APP_USER", "")
-    env_pwd = os.environ.get("SGS_WP_APP_PWD", "").replace(" ", "")
-    if env_user and env_pwd:
-        return env_user, env_pwd
-    return None
-
-
-def push(target_domain: str, fields: dict[str, str], overwrite: bool,
-         creds: tuple[str, str]) -> dict:
-    url = f"https://{target_domain}/wp-json/sgs/v1/site-info"
-    body = json.dumps({"fields": fields, "overwrite": overwrite}).encode("utf-8")
-    token = base64.b64encode(f"{creds[0]}:{creds[1]}".encode()).decode()
-    req = urllib.request.Request(
-        url,
-        data=body,
-        method="POST",
-        headers={
-            "Content-Type": "application/json",
-            "Authorization": f"Basic {token}",
-        },
-    )
-    with urllib.request.urlopen(req, timeout=20) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+# Re-exported so existing importers of this script keep working.
+__all__ = [
+    "build_placeholder_map", "extract_business_info", "find_unmapped", "main", "push",
+    "repo_root", "resolve_credentials", "secrets_dir",
+]
 
 
 def main() -> int:
@@ -203,6 +90,8 @@ def main() -> int:
                     help="Overwrite existing non-empty values (default: fill-if-empty)")
     ap.add_argument("--app-user", help="REST Basic-auth username")
     ap.add_argument("--app-password", help="REST Basic-auth application password")
+    ap.add_argument("--map-out", type=Path,
+                    help="Write the {{ binding }} -> Site Info placeholder map here (JSON)")
     args = ap.parse_args()
 
     draft_path = Path(args.draft)
@@ -218,6 +107,18 @@ def main() -> int:
         print("  (none found)")
     for k, v in fields.items():
         print(f"  {k:24} = {v}")
+
+    unmapped = find_unmapped(html)
+    for k, v in unmapped.items():
+        print(f"  (unmapped: no Site Info key) {k} = {v}")
+
+    if args.map_out:
+        args.map_out.parent.mkdir(parents=True, exist_ok=True)
+        args.map_out.write_text(
+            json.dumps(build_placeholder_map(html), indent=2, sort_keys=True, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        print(f"[sync-business-info] placeholder map written: {args.map_out}")
 
     if not args.push:
         print("\n[sync-business-info] extract-only (no --push). Nothing written.")

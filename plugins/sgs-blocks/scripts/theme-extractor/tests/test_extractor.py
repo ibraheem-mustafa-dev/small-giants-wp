@@ -46,7 +46,7 @@ def _css():
 def _snapshot():
     baseline = json.loads((REPO / "theme" / "sgs-theme" / "theme.json").read_text(encoding="utf-8"))
     html = DRAFT.read_text(encoding="utf-8")
-    return extract.build_snapshot("mamas-munches", _css(), _facts(), html, baseline, [])
+    return extract.build_snapshot("mamas-munches", _css(), _facts(), html, baseline, [], REPO)
 
 
 # ── FR-33-3 — the D303 drift-killer ─────────────────────────────────────────────────────────────
@@ -328,9 +328,22 @@ def test_fr335_build_snapshot_token_less_uses_advisory_palette():
              "previewShellMarkers": []}
     baseline = json.loads((REPO / "theme" / "sgs-theme" / "theme.json").read_text(encoding="utf-8"))
     html = f"<html><head><style>{_TOKENLESS_CSS}</style></head><body><p>content here yes</p></body></html>"
-    snap = extract.build_snapshot("synthetic", extract.extract_css(html), facts, html, baseline, [])
+    snap = extract.build_snapshot("synthetic", extract.extract_css(html), facts, html, baseline, [], REPO)
     pal = snap["settings"]["color"]["palette"]
-    assert pal and all(e.get("_source") == "derived" for e in pal)
+    base_pal = baseline["settings"]["color"]["palette"]
+    # Pass B OVERLAYS the baseline: every baseline slug is still present, none dropped.
+    assert {e["slug"] for e in base_pal} <= {e["slug"] for e in pal}
+    derived = [e for e in pal if e.get("_source") == "derived"]
+    assert derived and all(e.get("advisory") is True for e in derived)
+    base_hex = {e["slug"]: e["color"] for e in base_pal}
+    for e in derived:
+        if e["slug"] in base_hex:
+            assert e["_baseline_color"] == base_hex[e["slug"]]
+        else:
+            assert "_baseline_color" not in e
+    # baseline entries not overlaid are untouched
+    derived_slugs = {e["slug"] for e in derived}
+    assert all(e in pal for e in base_pal if e["slug"] not in derived_slugs)
 
 
 def test_fr335_mamas_pass_a_full_no_derived():
@@ -343,10 +356,16 @@ def test_fr335_push_strips_advisory_tokens():
     spec = importlib.util.spec_from_file_location("pts_test", SCRIPTS / "push-theme-snapshot.py")
     pts = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(pts)
+    # An advisory entry for a slug that is NOT in the framework base palette is deleted at push; an
+    # advisory entry for a BASE slug is restored to the base colour (never deleted: a push replaces the
+    # live palette, so deleting a base slug would leave it empty). Both counted in the return value.
     snap = {"settings": {"color": {"palette": [
         {"slug": "primary", "color": "#e68a95", "_source": "declared"},
-        {"slug": "surface", "color": "#ffffff", "_source": "derived", "advisory": True}]}}}
+        {"slug": "surface", "color": "#ffffff", "_source": "derived", "advisory": True},
+        {"slug": "not-a-base-slug", "color": "#123456", "_source": "derived", "advisory": True}]}}}
     out, n = pts.strip_advisory(snap)
-    assert n == 1
-    assert [e["slug"] for e in out["settings"]["color"]["palette"]] == ["primary"]
-    assert len(snap["settings"]["color"]["palette"]) == 2   # original untouched (deepcopy)
+    assert n == 2
+    pal = {e["slug"]: e for e in out["settings"]["color"]["palette"]}
+    assert list(pal) == ["primary", "surface"]                 # the non-base advisory slug is gone
+    assert "advisory" not in pal["surface"] and pal["surface"]["color"] != "#ffffff"   # restored to base
+    assert len(snap["settings"]["color"]["palette"]) == 3   # original untouched (deepcopy)

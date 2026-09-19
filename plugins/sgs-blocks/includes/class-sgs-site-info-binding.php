@@ -274,7 +274,9 @@ final class Sgs_Site_Info_Binding {
 		}
 
 		if ( 'phone' === $root ) {
-			return 'tel:' . $value;
+			// The store keeps the display form ("0121 729 8233"); a tel: link takes digits and a leading +
+			// only, as sgs/business-info does, or esc_url() turns the spaces into %20.
+			return 'tel:' . preg_replace( '/[^0-9+]/', '', $value );
 		}
 
 		if ( self::SOCIAL_PARENT === $root ) {

@@ -19,28 +19,16 @@
 'use strict';
 
 const { chromium } = require('playwright');
-const path = require('path');
 const fs = require('fs');
-const { pathToFileURL } = require('url');
-
-// Same convention as parity/computed-parity.js: http(s) passes through, a local path → file:// URL.
-const toURL = (s) => (!s ? s : (/^https?:\/\//i.test(s) ? s : pathToFileURL(path.resolve(s)).href));
-
-function parseArgs(argv) {
-  const out = { draft: null, out: null };
-  for (let i = 2; i < argv.length; i++) {
-    const a = argv[i];
-    if (a === '--draft') out.draft = argv[++i];
-    else if (a === '--out') out.out = argv[++i];
-  }
-  return out;
-}
+const { GENERATED_CLASS_RE, toURL, parseArgs, readHover } = require('./measure-node');
 
 // ── The in-page capture function (serialised into the browser context) ──────────────────────────
 // Reads getComputedStyle on the representative nodes + enough structural signal for the Python
 // layer to pick the MAIN-CONTENT-FLOW representative <p> (FR-33-3) and the widest content-
 // containing ancestor for the background (FR-33-6). Returns raw computed values only.
-const CAPTURE_SRC = function () {
+const CAPTURE_SRC = function (generatedClassSrc) {
+  const GENERATED = new RegExp(generatedClassSrc);
+  const meaningful = (cls) => (cls ? cls.split(/\s+/) : []).filter((t) => !GENERATED.test(t));
   const TYPO = ['fontFamily', 'fontSize', 'lineHeight', 'fontWeight', 'fontStyle',
     'letterSpacing', 'color', 'textTransform'];
   const BOX = ['backgroundColor', 'backgroundImage', 'color', 'borderTopColor',
@@ -148,37 +136,77 @@ const CAPTURE_SRC = function () {
       .indexOf((el.getAttribute('type') || '').toLowerCase()) !== -1;
     return (el.getAttribute('role') || '').toLowerCase() === 'button';
   };
+  // Claude-Design-style drafts are CLASSLESS with inline styles, so a button with no class and no
+  // classed ancestor is still a button. A <button>/input/[role=button] always is; an <a> only when it
+  // PAINTS as one (non-transparent background, or a visible border with >=8px padding on both axes),
+  // so plain text links are never captured. Such buttons dedupe on a computed-style signature.
+  const alphaOf = (c) => {
+    if (c === 'transparent') return 0;
+    const m = /^rgba?\(([^)]*)\)$/.exec(c || '');
+    const parts = m ? m[1].split(',') : [];
+    return parts.length === 4 ? parseFloat(parts[3]) : 1;
+  };
+  const anchorPaintsButton = (cs) => {
+    if (alphaOf(cs.backgroundColor) > 0) return true;
+    const borderVisible = parseFloat(cs.borderTopWidth) >= 1 && alphaOf(cs.borderTopColor) > 0;
+    return borderVisible && parseFloat(cs.paddingTop) >= 8 && parseFloat(cs.paddingBottom) >= 8
+      && parseFloat(cs.paddingLeft) >= 8 && parseFloat(cs.paddingRight) >= 8;
+  };
+  const SIG = ['backgroundColor', 'color', 'borderTopColor', 'borderTopWidth', 'borderTopLeftRadius',
+    'textTransform', 'fontWeight'];
   const buttons = [];
-  const seenBtn = new Set();
+  const byKey = {};
   let btnIdx = 0;
   document.querySelectorAll('a, button, input, [role="button"]').forEach((el) => {
     if (!visible(el) || !paintsButton(el)) return;
-    const cls = (el.getAttribute('class') || '').trim();
-    const own = cls ? cls.split(/\s+/) : [];
+    const own = meaningful((el.getAttribute('class') || '').trim());
+    const cls = own.join(' ');
     const looksButton = /btn|button/i.test(cls) || el.tagName === 'BUTTON'
       || el.tagName === 'INPUT' || (el.getAttribute('role') || '').toLowerCase() === 'button';
-    if (!looksButton) return;
     // Nearest-ancestor classes (capped) = variant context only; never measured.
     const anc = [];
     let p = el.parentElement, depth = 0;
     while (p && depth < 4) {
-      const pc = (p.getAttribute('class') || '').trim();
-      if (pc) anc.push.apply(anc, pc.split(/\s+/));
+      anc.push.apply(anc, meaningful((p.getAttribute('class') || '').trim()));
       p = p.parentElement; depth++;
     }
-    if (own.length === 0 && anc.length === 0) return;
+    const classless = own.length === 0 && anc.length === 0;
+    if (classless ? !(looksButton || anchorPaintsButton(getComputedStyle(el))) : !looksButton) return;
     // Dedupe on own + ancestor context, so two <a>s sharing a class but sitting under different
     // variant wrappers (the UAGB case) are captured separately rather than collapsing to the first.
-    const key = own.slice().sort().join(' ') + '||' + anc.slice().sort().join(' ');
-    if (seenBtn.has(key)) return;
-    seenBtn.add(key);
+    // Classless buttons have no class to key on, so they key on their painted-style signature.
+    const key = classless
+      ? 'sig:' + SIG.map((k) => getComputedStyle(el)[k]).join('|')
+      : own.slice().sort().join(' ') + '||' + anc.slice().sort().join(' ');
+    if (byKey[key]) { byKey[key].count++; return; }
     // Index the node so Node-side hover reads the SAME element (a compound class selector is
     // ambiguous across instances and silently resolved to the wrong node).
     el.setAttribute('data-sgs-btn-idx', String(btnIdx));
-    buttons.push({ classKey: key, classes: own, ancestorClasses: anc, idx: btnIdx,
-      path: nodePath(el), rest: pick(el, BOX) });
+    byKey[key] = { classKey: key, classes: own, ancestorClasses: anc, idx: btnIdx,
+      path: nodePath(el), rest: pick(el, BOX), count: 1,
+      textLen: (el.textContent || el.value || '').trim().length, w: rect(el).w, h: rect(el).h };
+    buttons.push(byKey[key]);
     btnIdx++;
   });
+
+  // Custom properties declared on an element's inline style (a runtime accent such as
+  // `style="--brand: #123456"`). The RESOLVED computed value is recorded, never the authored text.
+  const customProps = [];
+  const seenCP = new Set();
+  document.querySelectorAll('[style*="--"]').forEach((el) => {
+    const cs = getComputedStyle(el);
+    for (let i = 0; i < el.style.length; i++) {
+      const name = el.style[i];
+      if (name.indexOf('--') !== 0) continue;
+      const value = cs.getPropertyValue(name).trim();
+      if (!value || seenCP.has(name + '=' + value)) continue;
+      seenCP.add(name + '=' + value);
+      customProps.push({ path: nodePath(el), name, value });
+    }
+  });
+  const cmp = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
+  customProps.sort((a, b) => cmp(a.name, b.name) || cmp(a.value, b.value));
+  customProps.length = Math.min(customProps.length, 200);
 
   // Section-level background candidates: block-level elements that CONTAIN the content flow.
   // Python (FR-33-6) picks the widest content-containing ancestor for the theme background.
@@ -214,20 +242,7 @@ const CAPTURE_SRC = function () {
     });
   });
 
-  return { root, body, paragraphs, headings, links, buttons, sections, previewShellMarkers };
-};
-
-// Read one captured button's :hover computed. Targeted by the index stamped during capture, so it
-// reads back the EXACT node that was measured at rest (matching by class list is ambiguous when
-// several instances share a class and silently resolves to the wrong one).
-const HOVER_READ_SRC = function (idx) {
-  const el = document.querySelector('[data-sgs-btn-idx="' + idx + '"]');
-  if (!el) return null;
-  const cs = getComputedStyle(el);
-  const props = ['backgroundColor', 'color', 'borderTopColor', 'borderTopWidth', 'transform', 'boxShadow'];
-  const o = {};
-  for (const p of props) o[p] = cs[p];
-  return o;
+  return { root, body, paragraphs, headings, links, buttons, sections, previewShellMarkers, customProps };
 };
 
 async function main() {
@@ -244,16 +259,13 @@ async function main() {
     await page.goto(url, { waitUntil: 'networkidle', timeout: 45000 }).catch(() => {});
     await page.waitForTimeout(400);
 
-    const facts = await page.evaluate('(' + CAPTURE_SRC.toString() + ')()');
+    const facts = await page.evaluate('(' + CAPTURE_SRC.toString() + ')(' + JSON.stringify(GENERATED_CLASS_RE.source) + ')');
 
     // Second pass: read each button's :hover computed by actually hovering the SAME node measured
     // at rest (addressed by its capture index, not an ambiguous class selector).
     for (const btn of facts.buttons) {
       try {
-        await page.hover('[data-sgs-btn-idx="' + btn.idx + '"]', { timeout: 1500 }).catch(() => {});
-        await page.waitForTimeout(120);
-        const hover = await page.evaluate('(' + HOVER_READ_SRC.toString() + ')(' + JSON.stringify(btn.idx) + ')');
-        btn.hover = hover;
+        btn.hover = await readHover(page, btn);
         // move the mouse away so the next hover starts clean
         await page.mouse.move(0, 0);
       } catch (e) {

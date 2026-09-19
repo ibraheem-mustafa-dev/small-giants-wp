@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>Classless button fixture</title>
+<style>
+  body { margin: 0; font-family: Georgia, serif; }
+  a[href="/book"]:hover { background-color: #6F6152 !important; }
+</style>
+</head>
+<body>
+<div style="--acc: #9C8B78; --ink: #6F6152; padding: 24px">
+  <p style="color: var(--ink)">Custom properties live on this wrapper's inline style.</p>
+  <a href="/book" style="display: inline-block; background: #141414; color: #FAF8F5; padding: 14px 28px; border-radius: 2px; text-decoration: none; text-transform: uppercase; font-weight: 600">Book a test</a>
+  <a href="/book" style="display: inline-block; background: #141414; color: #FAF8F5; padding: 14px 28px; border-radius: 2px; text-decoration: none; text-transform: uppercase; font-weight: 600">Book online</a>
+  <button style="background: transparent; color: #141414; border: 1px solid #141414; padding: 12px 24px; border-radius: 2px; cursor: pointer">Call us</button>
+  <p><a href="/about" style="color: #5E584F">About the practice</a></p>
+</div>
+<div style="--acc: #9C8B78; padding: 8px"><p>A second wrapper repeating the same property.</p></div>
+</body>
+</html>

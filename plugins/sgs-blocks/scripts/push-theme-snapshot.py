@@ -73,6 +73,11 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+# The generic host-matched secrets lookup lives with the Site Info push; one copy, not two.
+from business_info.credentials import credentials_from_secrets  # noqa: E402
+
 # Windows consoles default to cp1252, which cannot encode the '->' arrow glyph
 # used in diff output -> UnicodeEncodeError. Force UTF-8 on the standard streams.
 sys.stdout.reconfigure(encoding="utf-8")
@@ -129,13 +134,19 @@ def resolve_app_credentials(
     Return (username, app_password) for REST Basic auth, or None if unavailable.
 
     Lookup order:
-      1. Known domain → named secrets file (sandybrown.env etc.)
-      2. CLI flags --app-user / --app-password
-      3. Environment variables SGS_WP_APP_USER / SGS_WP_APP_PWD
+      1. Any .claude/secrets/*.env whose WP_URL_<KEY> host equals the target domain
+         (the generic, host-matched lookup shared with sync-business-info)
+      2. The two known domains' named secrets files (fallback when no WP_URL_* matches)
+      3. CLI flags --app-user / --app-password
+      4. Environment variables SGS_WP_APP_USER / SGS_WP_APP_PWD
     """
+    found = credentials_from_secrets(target_domain)
+    if found:
+        return found
+
     secrets_dir = repo_root() / ".claude" / "secrets"
 
-    # Domain-keyed lookup — extend this dict for each new client target.
+    # Hard-coded fallbacks for the two known domains, used only when no WP_URL_* file matched.
     domain_env_map: dict[str, tuple[Path, str, str]] = {
         "sandybrown": (
             secrets_dir / "sandybrown.env",
@@ -200,26 +211,38 @@ def load_local_snapshot(client: str) -> dict:
         return json.load(fh)
 
 
-def fetch_server_theme_json(target: str, port: int, server_path: str) -> dict | None:
-    """SSH-cat the server's current theme.json. Returns None on failure."""
+def fetch_server_theme_json(target: str, port: int, server_path: str) -> tuple[dict | None, str]:
+    """SSH-cat the server's current theme.json. Returns (theme, status).
+
+    status is ``found`` (theme set), ``absent`` (the connection worked and `cat` reported the file
+    does not exist: a genuinely fresh site) or ``error`` (timeout, SSH failure, any other `cat`
+    failure, or invalid JSON). The two None cases must never be conflated: an unreadable live
+    layer is not an empty one, and the backup gate treats them differently.
+
+    ssh exits 255 for its own connection failures and otherwise returns the remote command's
+    status, so a `cat` that ran and found no file is exit 1 with "No such file or directory".
+    """
     cmd = ["ssh", "-p", str(port), target, f"cat {server_path}"]
     try:
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=20)
     except subprocess.TimeoutExpired:
         print(f"[push-theme-snapshot] SSH timeout fetching {server_path}", file=sys.stderr)
-        return None
+        return None, "error"
     if result.returncode != 0:
+        if result.returncode == 1 and "no such file or directory" in result.stderr.lower():
+            print(f"[push-theme-snapshot] no theme.json on the server yet: {server_path}", file=sys.stderr)
+            return None, "absent"
         print(
             f"[push-theme-snapshot] SSH cat failed ({result.returncode}): "
             f"{result.stderr.strip()}",
             file=sys.stderr,
         )
-        return None
+        return None, "error"
     try:
-        return json.loads(result.stdout)
+        return json.loads(result.stdout), "found"
     except json.JSONDecodeError as exc:
         print(f"[push-theme-snapshot] server theme.json not valid JSON: {exc}", file=sys.stderr)
-        return None
+        return None, "error"
 
 
 # Hostinger's WAF returns 403 to the DEFAULT `Python-urllib/x.y` User-Agent, before the
@@ -382,8 +405,18 @@ def _wp_post_list(target: str, port: int, wp_root: str, extra: str) -> list | No
 
 
 def discover_global_styles_post_id(target: str, port: int, wp_root: str) -> int | None:
+    """Return the `wp_global_styles` user-layer post ID, or None (absent OR failed). Callers that
+    must tell those two apart use `discover_global_styles_state`."""
+    return discover_global_styles_state(target, port, wp_root)[0]
+
+
+def discover_global_styles_state(target: str, port: int, wp_root: str) -> tuple[int | None, str]:
     """
-    Return the `wp_global_styles` user-layer post ID via `wp post list` over SSH.
+    Return (post_id, status) for the `wp_global_styles` user-layer post via `wp post list` over SSH.
+
+    status is ``found`` (post_id set), ``absent`` (the lookup SUCCEEDED and no wp_global_styles
+    post exists — a brand-new site where nobody has opened the Site Editor yet), or ``error``
+    (SSH/parse failure, or several posts and none the active theme's — post_id None).
 
     Uses the same SSH connection already established for SCP/cache-flush.
     `wp post list --post_type=wp_global_styles` is a read-only WP-CLI command
@@ -401,33 +434,33 @@ def discover_global_styles_post_id(target: str, port: int, wp_root: str) -> int 
     # Primary: filter by the deterministic post_name for this theme.
     rows = _wp_post_list(target, port, wp_root, f"--name={expected_name}")
     if rows is None:
-        return None  # SSH/parse failure already reported.
+        return None, "error"  # SSH/parse failure already reported.
     match = next((r for r in rows if r.get("post_name") == expected_name), None)
     if match is not None:
         post_id = int(match["ID"])
         print(f"[push-theme-snapshot] discovered wp_global_styles post ID: {post_id} ({expected_name})")
-        return post_id
+        return post_id, "found"
 
     # Fallback: no name match — take the single unfiltered post if exactly one exists.
     all_rows = _wp_post_list(target, port, wp_root, "")
     if all_rows is None:
-        return None
+        return None, "error"
     if not all_rows:
         print("[push-theme-snapshot] no wp_global_styles post found on server", file=sys.stderr)
-        return None
+        return None, "absent"
     if len(all_rows) > 1:
         print(
             f"[push-theme-snapshot] ERROR: {len(all_rows)} wp_global_styles posts found and none "
             f"named {expected_name} — refusing to guess which is the active theme's. Aborting.",
             file=sys.stderr,
         )
-        return None
+        return None, "error"
     post_id = int(all_rows[0]["ID"])
     print(
         f"[push-theme-snapshot] WARNING: no post named {expected_name}; "
         f"falling back to the only wp_global_styles post (ID {post_id})"
     )
-    return post_id
+    return post_id, "found"
 
 
 # Preset arrays the DISK push already delivers at the `theme` origin, so writing them
@@ -622,21 +655,121 @@ def persist_backup(client: str, target_domain: str, server_theme: dict | None,
     return path
 
 
-def strip_advisory(snapshot: dict) -> tuple[dict, int]:
-    """Return (copy-with-advisory-removed, count). FR-33-5: a DERIVED (Pass B) token is provisional/
-    advisory and MUST NOT be pushed to the live theme without explicit human confirmation. Derived
-    tokens are marked ``advisory: true`` on the palette entry; here they are dropped from the deployed
-    payload unless the operator passes ``--include-advisory``.
+def _palette_of(snapshot: dict) -> list | None:
+    pal = ((snapshot.get("settings") or {}).get("color") or {}).get("palette")
+    return pal if isinstance(pal, list) else None
+
+
+def base_palette_colours() -> dict[str, str]:
+    """{slug: hex} of the framework base palette (theme/sgs-theme/theme.json)."""
+    path = repo_root() / "theme" / "sgs-theme" / "theme.json"
+    with path.open("r", encoding="utf-8") as fh:
+        palette = ((json.load(fh).get("settings") or {}).get("color") or {}).get("palette") or []
+    return {e["slug"]: e["color"] for e in palette
+            if isinstance(e, dict) and e.get("slug") and e.get("color")}
+
+
+def apply_advisory_policy(snapshot: dict) -> tuple[dict, int, int]:
+    """Return (deep-copy-with-advisory-resolved, restored, removed). FR-33-5: a DERIVED (Pass B)
+    token is provisional/advisory and MUST NOT be pushed to the live theme without explicit human
+    confirmation. Derived tokens are marked ``advisory: true`` on the palette entry.
+
+    The push REPLACES the theme palette, so deleting an advisory entry that overlaid a base slug
+    would leave that slug missing from the live site (an all-advisory palette pushed an EMPTY one).
+    The extractor therefore records the base theme's hex as ``_baseline_color`` on an overlaid
+    entry; here such an entry is RESTORED in place to ``{slug, color: <baseline>, name}`` (list
+    position kept). An advisory entry with no ``_baseline_color`` comes from an older extractor that
+    did not record one, so its slug is looked up in the framework base palette: a base slug is
+    RESTORED to the base colour (deleting it would remove a base slug from the live site), and only
+    a slug the base palette does not have is removed. Non-advisory entries and every other key are
+    untouched.
     """
     import copy as _copy
     out = _copy.deepcopy(snapshot)
-    removed = 0
-    pal = ((out.get("settings") or {}).get("color") or {}).get("palette")
-    if isinstance(pal, list):
-        kept = [e for e in pal if not (isinstance(e, dict) and e.get("advisory"))]
-        removed = len(pal) - len(kept)
+    restored = removed = 0
+    pal = _palette_of(out)
+    if pal is not None:
+        base = base_palette_colours() if any(
+            isinstance(e, dict) and e.get("advisory") and not e.get("_baseline_color") for e in pal
+        ) else {}
+        kept: list = []
+        for entry in pal:
+            if not (isinstance(entry, dict) and entry.get("advisory")):
+                kept.append(entry)
+                continue
+            colour = entry.get("_baseline_color") or base.get(entry.get("slug"))
+            if colour:
+                kept.append({"slug": entry.get("slug"), "color": colour, "name": entry.get("name")})
+                restored += 1
+            else:
+                removed += 1
         out["settings"]["color"]["palette"] = kept
-    return out, removed
+    return out, restored, removed
+
+
+def strip_advisory(snapshot: dict) -> tuple[dict, int]:
+    """Return (copy-with-advisory-resolved, total advisory entries handled). Thin wrapper over
+    ``apply_advisory_policy`` for callers that only need the combined count (restored + removed)."""
+    out, restored, removed = apply_advisory_policy(snapshot)
+    return out, restored + removed
+
+
+def drop_internal_palette_keys(snapshot: dict) -> tuple[dict, int]:
+    """Return (deep-copy-without-``_baseline_color``, entries changed). ``_baseline_color`` is an
+    extractor-internal bookkeeping key, not a theme.json field, so it never goes to the server —
+    including on the ``--include-advisory`` path where advisory entries otherwise pass through."""
+    import copy as _copy
+    out = _copy.deepcopy(snapshot)
+    changed = 0
+    for entry in _palette_of(out) or []:
+        if isinstance(entry, dict) and "_baseline_color" in entry:
+            del entry["_baseline_color"]
+            changed += 1
+    return out, changed
+
+
+def prepare_deploy_snapshot(local: dict, include_advisory: bool) -> tuple[dict, str | None]:
+    """Return (payload-to-push, one-line note or None). Pure: no I/O. Without
+    ``--include-advisory`` advisory entries are restored/removed (see ``apply_advisory_policy``);
+    with it they pass through, minus the internal ``_baseline_color`` key."""
+    if include_advisory:
+        deploy, n = drop_internal_palette_keys(local)
+        note = (f"dropped the internal _baseline_color key from {n} palette entr"
+                f"{'y' if n == 1 else 'ies'} (not a theme.json field)") if n else None
+        return deploy, note
+    deploy, restored, removed = apply_advisory_policy(local)
+    if not (restored or removed):
+        return deploy, None
+    return deploy, (f"FR-33-5: {restored} advisory (derived) palette token(s) restored to the base "
+                    f"theme value, {removed} removed (no base value) — pass --include-advisory to "
+                    f"deploy them as derived.")
+
+
+def backup_gate(server: dict | None, server_status: str, global_styles: dict | None,
+                gs_status: str, force_no_backup: bool) -> str:
+    """Decide the FR-33-11 backup-or-abort outcome. Pure.
+
+    ``server_status`` is the theme.json read result: ``found``, ``absent`` (the file is genuinely not
+    there) or ``error`` (the read failed). ``gs_status`` is the wp_global_styles discovery result:
+    ``found`` (a post exists), ``absent`` (the lookup succeeded and NO post exists yet) or ``error``
+    (the lookup itself failed). A failed read is never treated as an empty layer. Returns one of:
+      ``fresh``          both layers are genuinely absent - nothing to protect, proceed
+      ``no-user-layer``  the theme.json was fetched and no user-layer post exists - that layer has
+                         nothing to back up, the disk theme.json is backed up, proceed
+      ``ok``             the user layer was fetched (a missing disk theme.json alone never blocked)
+      ``forced``         a live layer could not be read, and --force-no-backup was given
+      ``abort``          a live layer exists or its read failed, and it could not be read
+    """
+    unreadable = "forced" if force_no_backup else "abort"
+    if server_status == "error":
+        return unreadable
+    if server is None and global_styles is None:
+        return "fresh" if gs_status == "absent" else unreadable
+    if global_styles is None and gs_status == "absent":
+        return "no-user-layer"
+    if global_styles is None:
+        return unreadable
+    return "ok"
 
 
 def drift_warning(local: dict, global_styles: dict | None) -> int:
@@ -780,14 +913,14 @@ def main() -> int:
             print(f"[push-theme-snapshot] {args.target_domain} is a safe target — forcing --no-push (override with --yes)")
         args.no_push = True
 
-    server = fetch_server_theme_json(args.target, args.port, server_path)
+    server, server_status = fetch_server_theme_json(args.target, args.port, server_path)
     # Discover the user-layer post ID up front and read THAT layer — the same post the
     # write targets — so diff / drift / rollback-backup all reflect exactly what the push
     # will overwrite. Credentials are resolved before the read because the route needs
     # `edit_theme_options` (anonymous 403s); a missing credential here is not fatal (the
     # authoritative check is below), it just leaves `global_styles` None, which the
     # backup-or-abort gate then handles.
-    gs_post_id = discover_global_styles_post_id(args.target, args.port, wp_root)
+    gs_post_id, gs_status = discover_global_styles_state(args.target, args.port, wp_root)
     _read_creds = resolve_app_credentials(args.target_domain, args.app_user, args.app_password)
     global_styles = None
     if gs_post_id is not None:
@@ -824,16 +957,13 @@ def main() -> int:
             return 0
 
     # FR-33-5: strip DERIVED (advisory) tokens from BOTH deployed layers unless --include-advisory.
-    deploy = local
+    deploy, deploy_note = prepare_deploy_snapshot(local, args.include_advisory)
     push_path = local_path
-    if not args.include_advisory:
-        stripped, n_adv = strip_advisory(local)
-        if n_adv:
-            deploy = stripped
-            push_path = repo_root() / "sites" / args.client / "theme-snapshot.deploy.tmp.json"
-            push_path.write_text(json.dumps(deploy, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-            print(f"[push-theme-snapshot] FR-33-5: stripped {n_adv} advisory (derived) palette token(s) "
-                  f"from the push — pass --include-advisory to deploy them.")
+    if deploy != local:
+        push_path = repo_root() / "sites" / args.client / "theme-snapshot.deploy.tmp.json"
+        push_path.write_text(json.dumps(deploy, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    if deploy_note:
+        print(f"[push-theme-snapshot] {deploy_note}")
 
     # FR-33-11: back up the CURRENT live payload BEFORE overwriting (rollback source of truth).
     # The backup is load-bearing: if it could not be made (fetch failure, or the live
@@ -842,41 +972,48 @@ def main() -> int:
     # opt-out) still skips this section entirely, unchanged.
     if not args.no_backup:
         stamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-        backup_path = persist_backup(args.client, args.target_domain, server, global_styles, stamp)
-        # `persist_backup` returns None for TWO different reasons — do NOT conflate them:
-        #   (a) FRESH TARGET: server_theme is None AND global_styles is None -> there is
-        #       nothing live to clobber, so there is nothing to protect. Proceeding is SAFE
-        #       and is the normal first-deploy path for a NEW CLIENT. Aborting here would
-        #       break onboarding, because the pipeline (orchestrator/upload_and_patch.py)
-        #       does not pass --force-no-backup.
-        #   (b) BACKUP FAILED: something WAS live but we could not capture it -> a rollback
-        #       is impossible, so abort.
-        is_fresh_target = server is None and global_styles is None
-        if is_fresh_target:
+        persist_backup(args.client, args.target_domain, server, global_styles, stamp)
+        # The decision is a pure function (`backup_gate`, unit-tested). Situations:
+        #   fresh          neither layer is available -> nothing live to clobber. The normal
+        #                  first-deploy path for a NEW CLIENT (orchestrator/upload_and_patch.py
+        #                  does not pass --force-no-backup), so it must not abort.
+        #   no-user-layer  theme.json fetched and the post lookup SUCCEEDED but no wp_global_styles
+        #                  post exists (new site, Site Editor never opened): that layer holds
+        #                  nothing to back up; the disk theme.json was backed up above.
+        #   abort          a live layer exists, or a read of either layer FAILED (SSH error, REST
+        #                  error), so nothing is known about it -> a rollback is impossible. A
+        #                  failed read is never mistaken for a fresh site.
+        gate = backup_gate(server, server_status, global_styles, gs_status, args.force_no_backup)
+        if gate == "fresh":
             print(
                 "[push-theme-snapshot] Fresh target — nothing live to back up (no existing "
                 "theme.json and no existing wp_global_styles). Proceeding; there is nothing "
                 "to overwrite.",
                 file=sys.stderr,
             )
-        elif backup_path is None or global_styles is None:
-            if args.force_no_backup:
-                print(
-                    "[push-theme-snapshot] WARNING: proceeding with --force-no-backup — there is no "
-                    "rollback safety net for this push. If anything goes wrong there is no automatic "
-                    "way back.",
-                    file=sys.stderr,
-                )
-            else:
-                print(
-                    "[push-theme-snapshot] ABORTED: a reliable backup of the live site could not be "
-                    "made (the live payload could not be fetched, or the live wp_global_styles layer "
-                    "is unavailable), so this push could not be safely rolled back if something goes "
-                    "wrong. Nothing has been changed. If you are certain this is a fresh target with "
-                    "nothing to protect, re-run with --force-no-backup.",
-                    file=sys.stderr,
-                )
-                return 1
+        elif gate == "no-user-layer":
+            print(
+                "[push-theme-snapshot] No wp_global_styles post exists yet (new site) — nothing in "
+                "that layer to back up; the server theme.json is backed up. Proceeding.",
+                file=sys.stderr,
+            )
+        elif gate == "forced":
+            print(
+                "[push-theme-snapshot] WARNING: proceeding with --force-no-backup — there is no "
+                "rollback safety net for this push. If anything goes wrong there is no automatic "
+                "way back.",
+                file=sys.stderr,
+            )
+        elif gate == "abort":
+            print(
+                "[push-theme-snapshot] ABORTED: a reliable backup of the live site could not be "
+                "made (a live layer could not be read: the theme.json fetch or the wp_global_styles "
+                "read failed), so this push could not be safely rolled back if something goes "
+                "wrong. Nothing has been changed. If you are certain this is a fresh target with "
+                "nothing to protect, re-run with --force-no-backup.",
+                file=sys.stderr,
+            )
+            return 1
 
     try:
         # Step 1: SCP theme.json to disk + cache flush (existing behaviour).
@@ -887,17 +1024,25 @@ def main() -> int:
         # wp_global_styles database post so the user layer matches the disk snapshot.
         # Reuse the id discovered up front (same layer read for diff/backup); only
         # re-discover if the early lookup failed but SSH is working now.
-        post_id = gs_post_id if gs_post_id is not None else discover_global_styles_post_id(
-            args.target, args.port, wp_root)
-        if post_id is None:
+        post_id, post_status = gs_post_id, gs_status
+        if post_id is None and post_status != "absent":
+            post_id, post_status = discover_global_styles_state(args.target, args.port, wp_root)
+        if post_id is None and post_status == "absent":
+            # A lookup that SUCCEEDED and found no post is not a failure: on a new site there is no
+            # user layer to update (nothing overrides the disk theme.json), so the disk push above
+            # is the whole deployment. Treating it as an error made a successful push exit 1.
+            print(
+                "[push-theme-snapshot] No wp_global_styles post exists yet — skipping the "
+                "user-layer write; the disk theme.json is the whole deployment."
+            )
+        elif post_id is None:
             print(
                 "[push-theme-snapshot] ERROR: could not determine wp_global_styles post ID — "
                 "disk push completed but live user-layer was NOT updated.",
                 file=sys.stderr,
             )
             return 1
-
-        if not post_global_styles(args.target_domain, post_id, deploy, auth_header):
+        elif not post_global_styles(args.target_domain, post_id, deploy, auth_header):
             # post_global_styles already printed a loud error.
             return 1
     finally:

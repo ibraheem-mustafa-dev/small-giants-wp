@@ -212,6 +212,9 @@ def _mix_hex(hex6: str, towards: str, amount: float) -> str:
     return "#{:02x}{:02x}{:02x}".format(r, g, bl)
 
 
+mix_hex = _mix_hex  # public alias for callers outside this module
+
+
 def _relative_luminance(hex6: str) -> float:
     hexs = hex6.lstrip("#")
     r, g, b = int(hexs[0:2], 16) / 255.0, int(hexs[2:4], 16) / 255.0, int(hexs[4:6], 16) / 255.0

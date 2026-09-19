@@ -108,8 +108,11 @@ def _hover_diff(entry: dict, rest: dict, hover: dict) -> None:
         entry["hover-transform"] = tform
 
 
-def build_button_presets(facts: dict, trace: list) -> dict:
-    """Build ``settings.custom.buttonPresets`` from computed rest + hover button facts."""
+def build_button_presets(facts: dict, trace: list, palette: list | None = None) -> dict:
+    """Build ``settings.custom.buttonPresets`` from computed rest + hover button facts.
+
+    ``palette`` (optional, the site palette built so far) only steers CLASSLESS slot inference; it never
+    touches a class-bearing button."""
     presets: dict = {}
     for b in facts.get("buttons", []):
         slot = _slot_for_button(b)
@@ -126,7 +129,106 @@ def build_button_presets(facts: dict, trace: list) -> dict:
                       "variant_from": "own classes" if _slot_for(b.get("classes", []) or [])
                                       else "ancestor wrapper context",
                       "keys": ",".join(entry.keys())})
+    _add_classless_presets(facts, presets, trace, *_palette_hints(palette))
     return presets
+
+
+def _is_visible_border(rest: dict) -> bool:
+    """A border that actually paints: at least 1px wide with a non-transparent colour."""
+    try:
+        width = float(str(rest.get("borderTopWidth", "0")).replace("px", "") or 0)
+    except ValueError:
+        return False
+    return width >= 1 and _HEXME(rest.get("borderTopColor", "")) not in (None, "transparent")
+
+
+# DATA. A button-shaped control taller than this is a card/tile link, not a button. Palette slugs whose
+# colour marks a brand or status control (WhatsApp, success/error/info messaging) never become a
+# general-purpose button variant.
+MAX_BUTTON_HEIGHT = 96
+NON_VARIANT_SLUGS = ("whatsapp", "success", "error", "info")
+
+
+def _palette_hints(palette: list | None) -> tuple[str | None, set]:
+    """(palette ``primary`` hex, hexes of the brand/status slugs) from the palette built so far."""
+    by_slug = {e.get("slug"): _HEXME(e.get("color", "")) for e in (palette or [])}
+    exclude = {by_slug[s] for s in NON_VARIANT_SLUGS if by_slug.get(s, "") and by_slug[s].startswith("#")}
+    primary = by_slug.get("primary")
+    return (primary if primary and primary.startswith("#") else None), exclude
+
+
+def _num(value) -> float:
+    """Leading number of a computed length/percentage ('50%', '9999px', 12) or 0 when there is none."""
+    m = re.match(r"^\s*(-?\d+(?:\.\d+)?)", str(value if value is not None else ""))
+    return float(m.group(1)) if m else 0.0
+
+
+def _is_real_button(b: dict) -> bool:
+    """A classless candidate must be a labelled, non-icon control.
+
+    Colour swatches, close buttons and other icon-only controls paint like buttons but say nothing
+    about the site's CTA style: they need at least 2 visible characters, must not be a circle
+    (radius 50%, or at least half the height on a roughly square box) and must not be a small
+    square/pill up to 48x48. A control taller than ``MAX_BUTTON_HEIGHT`` is a card link.
+    """
+    if int(b.get("textLen", 0) or 0) < 2:
+        return False
+    w, h = _num(b.get("w")), _num(b.get("h"))
+    if 0 < w <= 48 and 0 < h <= 48:
+        return False
+    if h > MAX_BUTTON_HEIGHT:
+        return False
+    radius = str((b.get("rest", {}) or {}).get("borderTopLeftRadius", ""))
+    if abs(w - h) <= 4 and h > 0 and (radius.strip() == "50%" or (
+            radius.strip().endswith("px") and _num(radius) >= h / 2)):
+        return False
+    return True
+
+
+def _add_classless_presets(facts: dict, presets: dict, trace: list, primary_hint: str | None = None,
+                           exclude: set | None = None) -> None:
+    """Fill ``primary`` / ``secondary`` / ``outline`` from CLASSLESS buttons (Claude Design drafts).
+
+    A classless button carries no variant word, so the slot is INFERRED from its painted style
+    signature (measure.js dedupes classless buttons on that signature and records ``count``). Among
+    the opaque-background signatures the most frequent is ``primary`` and the next distinct one
+    ``secondary``; a transparent-background signature with a visible border is ``outline``. Icon-only
+    and swatch controls are ignored (``_is_real_button``). Ranking is by descending count, then
+    descending text length, then signature ascending, so the result is deterministic. A slot a
+    class-bearing button already defined is never overwritten, so class-bearing drafts are untouched.
+
+    Palette steering: an opaque signature whose background IS the site's palette ``primary`` takes the
+    ``primary`` slot ahead of the ranking (two equally frequent signatures cannot otherwise be told
+    apart), and a signature painted in a brand/status colour (``NON_VARIANT_SLUGS``) is skipped.
+    """
+    cands = [b for b in facts.get("buttons", []) if not b.get("classes")
+             and not b.get("ancestorClasses") and _is_real_button(b)]
+    cands.sort(key=lambda b: (-int(b.get("count", 1) or 1), -int(b.get("textLen", 0) or 0),
+                              str(b.get("classKey", ""))))
+    opaque, outline = [], []
+    for b in cands:
+        rest = b.get("rest", {}) or {}
+        bg = _HEXME(rest.get("backgroundColor", ""))
+        if bg and bg.startswith("#") and bg not in (exclude or ()):
+            opaque.append(b)
+        elif bg == "transparent" and _is_visible_border(rest):
+            outline.append(b)
+    opaque.sort(key=lambda b: _HEXME(b["rest"].get("backgroundColor", "")) != primary_hint)  # stable
+    chosen = list(zip(("primary", "secondary"), opaque)) + list(zip(("outline",), outline))
+    for slot, b in chosen:
+        if slot in presets:
+            continue
+        rest, hover = b.get("rest", {}) or {}, b.get("hover", {}) or {}
+        entry = _rest_entry(rest)
+        _hover_diff(entry, rest, hover)
+        presets[slot] = entry
+        trace.append({"kind": "preset", "slot": f"buttonPresets.{slot}", "_source": "derived",
+                      "reason": f"slot inferred from an unclassed style signature "
+                                f"({b.get('classKey', '')}), {int(b.get('count', 1) or 1)} "
+                                f"occurrence(s), on the PAINTING element "
+                                f"<{b.get('path', '?').split('>')[-1]}>",
+                      "variant_from": "unclassed style signature",
+                      "keys": ",".join(entry.keys())})
 
 
 def content_size(base_rules: list, trace: list) -> str | None:
