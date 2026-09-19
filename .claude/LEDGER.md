@@ -8,18 +8,21 @@ last_updated: 2026-09-19
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**Next front: finish the classless-pipeline boundaries on Eye Care Birmingham (breakdown in "THE
-FRONT" below), then the merged Spec 36+37 track** (nav / header / footer / drawer / mega). Read
-`plans/2026-07-29-merged-spec36-37-track-strategic-plan.md` and `verify/merged-spec36-37-track.md`
-in full first; they carry the per-unit truth.
+**NEXT SESSION (Bean-directed): READ FIRST, THEN RE-PROPOSE. Do not propose from memory.**
+Bean stopped the last session because designs were being proposed cold, and asked things that could be
+looked up. Order: (1) Spec 33 (ASAP): read it in full, then the code behind its business-data step
+(FR-33-14, which ALREADY saves phone/email/socials to the Site Info settings page but was never run on this
+draft and may not see values behind `{{ phone }}` bindings), then re-propose the Spec 33 upgrade so it handles
+runtime-template drafts AS WELL AS plain HTML. (2) Then the "missing sections" problem (Problem 1 below).
+(3) Then runtime `{{ }}` bindings. Bean's rules for all of it: **never change how Mama's Munches and other
+static drafts already behave** (this is an extension), Spec 33 saves GLOBAL DEFAULTS/SETTINGS only (not
+per-element styling), and the pipeline should recognise settings-type placeholders and insert what Spec 33
+saved. Details, reading list and task blocks: "Front F" below. Then the merged Spec 36+37 track.
 
-**Classless pipeline.** The step that pulls hidden JS-array text into the draft is built, and its
-output is correct in the intermediate file. Loose text next to an element now becomes a content
-block, so the ticker completes. What is still open is the runtime `{{ }}` bindings: 107
-placeholders currently ship inside "complete" blocks (Front F item 1). Only the single-text-field
-array case is built; multi-field arrays (REASONS, REVIEWS, FAQS) look solvable because each field
-sits in its own element. Spec 45 (classless FIELD resolution) is built, all 4 tiers, but not
-live-trusted: it has no real pipeline input yet.
+**Where the Eye Care Birmingham clone really stands.** A real test website now exists (below) and shows the
+honest picture: the cloned page matches about 12% of the draft's content and 0% of its styling, shows 93 raw
+`{{ }}` placeholders to visitors, and 7 of the 8 homepage sections are missing. The pipeline's "42 of 74
+complete" was hollow. Spec 45 (classless FIELD resolution) is built but has no real pipeline input yet.
 
 **Nav / header / footer.** Wave 1 (fixtures + verification) is closed. Wave 2 (capabilities) is
 part done: the drawer post type, trigger controls, scoped behaviours and lint gate are built; the
@@ -42,46 +45,67 @@ Phase 3's precondition (real WooCommerce catalogue data).
 
 ## THE FRONT — what to pick up next
 
-### Front F — Eye Care Birmingham classless-pipeline boundaries (do this first)
+### Front F — Eye Care Birmingham clone on a REAL page (Bean-directed, do this first)
 
-**REAL-PAGE TEST SITE EXISTS (D1114):** https://darkcyan-grouse-898606.hostingersite.com/eye-care-birmingham/
-(page 11; WP 7.1.1 + WooCommerce; `build-deploy.py --target eye-care-test`; creds
-`.claude/secrets/eye-care-test.env`). Run clones with `SGS_DEPLOY_SITE=eye-care-test`,
-`SSL_CERT_FILE=<certifi cacert.pem>` (Python's Windows TLS store rejects every hostingersite.com
-host, proven), `--deploy-target page:11`, and NO `--skip-freshness-gate` (the snapshot is now
-recreated from the draft by Spec 33). First live numbers: 93 visible `{{ }}` placeholders on the
-rendered page, STRUCTURE 2% against the draft served over HTTP. Stage 11.6 was comparing the RAW
-un-rendered draft (invalid for `.dc.html`); FIXED in D1116, honest baseline is content 12% / css 0%.
-The first run had an EMPTY palette on the test site (my push, D1115), fixed by re-pushing the merged snapshot. Queued
-investigation groups (5 findings) are in D1114: each is a `/systematic-debugging` from run dumps,
-parallel subagents one directory each, main thread owns deploys and commits.
+**Test site:** https://darkcyan-grouse-898606.hostingersite.com/eye-care-birmingham/ (page 11; WP 7.1.1 +
+WooCommerce; `build-deploy.py --target eye-care-test`; creds `.claude/secrets/eye-care-test.env`). Run a clone:
+`SGS_DEPLOY_SITE=eye-care-test`, `SSL_CERT_FILE` and `NODE_EXTRA_CA_CERTS` = the certifi `cacert.pem` (Python's
+Windows TLS store rejects every hostingersite.com host, proven), `--deploy-target page:11`, no
+`--skip-freshness-gate`, plus `--client eye-care-ward-end --page eye-care-birmingham --auto-section --mode draft
+--skip-register --no-scaffold-new-blocks --sc-var-cache sites/eye-care-ward-end/sc-var-hints.json
+--sc-var-min-confidence 0.0 --dom-shape-min-confidence 0.0 --classless-match --classless-auto-complete`
+(add `--resolve-js-content` for the flag-ON comparison). Verify "what a visitor sees" with Playwright `innerText`,
+NEVER a tag-stripping regex; compare runs by (selector, block) identity, never `boundary_id`; verify a stage
+claim by grepping the emitted output for one string it should have produced. Files shared between bash and python:
+relative names (Git Bash `/tmp` and Python `/tmp` are different folders).
 
-Invocation (same flags as `.claude/reports/2026-09-18-spec44-live-flagged-run.md` plus
-`--sc-var-min-confidence 0.0 --dom-shape-min-confidence 0.0 --classless-match --classless-auto-complete`;
-add `--resolve-js-content` for the flag-ON comparison). **Compare by (selector, block) identity, never
-`boundary_id`** (mistakes.md). Verify a stage claim by grepping the emitted `block_markup` for one
-string it should have produced.
+**Snapshot state:** `sites/eye-care-ward-end/theme-snapshot.json` is recreated from the draft by Spec 33 with
+`--merge-onto theme/sgs-theme/theme.json` (framework palette kept: 18 framework slugs + the draft's 3 guessed colours, which are advisory and stripped
+at push, so the test site has 18). The old palette files stay deleted (Bean: do not restore them).
 
-The last full run had 30 real items (74 boundaries minus 41 complete minus 3 chrome-skipped): 15
-classless-review (9 `sgs/product-card`, 6 `sgs/trustpilot-reviews`, all "partial match, first
-occurrence"), 14 non-BEM-compliant (not investigated), 1 failed (b32 ticker, which now completes —
-re-count before quoting). Ranked menu, smallest first action first:
+**Real numbers now:** Stage 11.6 scores the draft served over HTTP: content 12%, css 0%. Live page: 93
+visible `{{ }}` placeholders (59 distinct), no ticker text, 7 of 8 homepage boundaries (b3-b9) missing.
 
-1. **Binding resolution, staged.** Stage 1 BUILT: loose text next to an element becomes a content
-   block (b32 completes, no other change). Stage 2 OPEN: in-place substitution of runtime `{{ }}`
-   bindings (107 placeholders currently ship inside "complete" blocks). Design fact to settle
-   first: keep-the-`<sc-for>` lands only item 0 of N, so full conservation needs container-level
-   handling (promote the inert parent `<div>` to a container boundary). Prototype files
-   (`scratchpad/v1-*.dc.html`, `v2-*.dc.html`) are session-local; rebuild from
-   `dc-import-resolved.html` + the resolver payload. First action: decide unroll-plus-container-
-   boundary vs keep-wrapper for Stage 2 on a two-group prototype.
-2. **Multi-field arrays (REASONS, REVIEWS, FAQS, ...).** Per-field tagging in the resolver; design
-   gate first.
-3. **15 review-queue items.** Bean's eye on `operator-review.html`; decide per candidate. Needs
-   Bean, not a subagent.
-4. **14 non-BEM boundaries.** Find out whether they are draft-side fixes or a pipeline gap.
+**Findings (each investigated; reports in `.claude/reports/2026-09-19-inv-*.md`, decisions.md newest entries):**
+1. *Problem 1, missing sections (biggest).* The "14 non-BEM" boundaries are classless sections gated on a hint (the
+   draft has ONE `class=`): 4 homepage sections (b5, b7, b8, b9), 8 other routed views, 2 chrome. Spec 44 §11 open
+   finding: proposed (A) admit any classless boundary as the container default, (B) only the default routed view
+   goes on the page, (C) fix the halt message + report lost text. NOT designed; needs a design gate; must not change
+   Mama's. Not proven: that the large sections convert cleanly.
+2. *Spec 33 (Bean's priority).* Pass B guessed 3 colours (one is a scrollbar hover colour), the real accent `--acc`
+   is set by JS at runtime and never read, an all-advisory push wiped the test site's palette (fixed via
+   `--merge-onto`), and `push-theme-snapshot.py` aborts on a brand-new site. Small fix proposed in the report
+   (skip scrollbar/hover/focus selectors in `roles.py`); the overlay-not-replace and custom-property read need design.
+3. *Runtime `{{ }}` bindings.* Stage 2 unbuilt. Kinds seen: site settings (`{{ phone }}`), page copy (`{{ h1 }}`),
+   cart/checkout UI state, styling values. Keeping the `<sc-for>` lands only item 0 of N; full conservation needs
+   container-level handling.
+4. *Built and pushed this session:* Stage 1 (loose text beside an element), the Stage 11.6 fix,
+   the test site + `SGS_DEPLOY_SITE`, the JS-resolver wrong-directory fix. Retracted: the "theme comment leak" (my regex artefact).
 
-**Front C residual:** the AI-fallback tier (Spec 44 §11) is parked — Bean's call.
+**Task blocks for the next session (orchestration: main thread Opus, inline; investigators are read-only):**
+
+- **Task 1 — Read, no proposing.** Read `specs/33-DRAFT-GLOBAL-STYLES-EXTRACTOR.md` (in full), the code behind
+  FR-33-14 (`scripts/sync-business-info.py`, `includes/class-sgs-site-info-admin.php`, `Sgs_Site_Info`,
+  `includes/class-sgs-site-info-rest.php`, the wiring in `orchestrator/upload_and_patch.py`), the extractor
+  (`scripts/theme-extractor/*.py`, `measure.js`), and the three reports `2026-09-19-inv-spec33-palette.md`,
+  `-inv-non-bem-sections.md`, `-inv-stage116-draft-side.md`. State what ALREADY EXISTS before what is missing.
+  Acceptance: a plain-English "what exists / what is missing" for Spec 33 that Bean can check. Inline, no subagent.
+- **Task 2 — Spec 33 upgrade design (`/brainstorming`, design gate with Bean).** Runtime-template drafts AND plain
+  HTML; global defaults/settings only; settings-type placeholders resolved to Site Info values the pipeline inserts.
+  Regression guard: Mama's Munches snapshot + page 3448 output must be byte-/identity-unchanged. Acceptance: Bean
+  approves the plan; then build with an independent `/qc` and a real-page check on the test site.
+- **Task 3 — Problem 1 design (`/brainstorming`, after Task 2).** Options A+B+C above; must leave Mama's unchanged
+  (identity-diff before/after on the Mama's clone). Acceptance: on the test page the homepage sections b3-b9 exist,
+  checked in Playwright `innerText`, not counts.
+- **Task 4 — Stage 2 bindings** after Tasks 2 and 3 (depends on both). Success metric: visible placeholders 93 -> 0
+  for content bindings.
+- Parallel: read-only investigators may run alongside (one directory each, main thread owns deploys and commits).
+- Needs Bean directly: the 15 `classless-review` boundaries (`operator-review.html`), design-gate approvals.
+
+Open tooling gaps (not assigned, own fixes): `push-theme-snapshot.py` on a brand-new site; other consumers of
+`args.mockup` after the Stage -2 reassign not audited for the D1112 class; `sites/eye-care-ward-end` theme-snapshot
+axis sidecars deliberately not restored. Front C residual: the AI-fallback tier (Spec 44 §11) stays parked (Bean).
+There is NO plan doc for Front F yet: write one (`/strategic-plan`) after the Task 2/3 design gates.
 
 ### Spec 36+37 merged track (after Front F)
 

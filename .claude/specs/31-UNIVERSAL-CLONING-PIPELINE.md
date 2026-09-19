@@ -1365,17 +1365,16 @@ previously handed them nothing. See Spec 44 §11 and Spec 45 §4.1.0 for the cro
 recording this relationship (added at the same time as this FR, not a separate mechanism in
 either spec).
 
-### FR-31-26.5 — status: resolver BUILT and correct; ticker still NOT reaching the emitted blocks (D1111, corrected by D1112)
+### FR-31-26.5 — status: resolver BUILT and correct; ticker still NOT reaching the emitted blocks
 
 **Built.** `orchestrator/js_content_resolver.py::resolve_js_array_content` + `orchestrator/resolve-js-content.js`,
 wired as Stage -1.5 in `sgs-clone-orchestrator.py` behind `--resolve-js-content` (opt-in, default off,
 true no-op when omitted). The orchestrator hands the resolver the draft's ORIGINAL folder
 (`_draft_dir`, captured before Stage -2 reassigns `args.mockup` into the run directory) because that
 is where the draft's own `support.js` lives; the resolver refuses any group whose resolved text still
-contains `{{` (`_splice_resolved_items`). D1111 first shipped with the wrong directory and a false
-"verified" claim; D1112 records the correction.
+contains `{{` (`_splice_resolved_items`).
 
-**Verified (2026-09-19, D1112).** Calling the resolver with the draft folder yields four spliced
+**Verified.** Calling the resolver with the draft folder yields four spliced
 ticker spans with the real strings and zero `{{ t.text }}` left. Command:
 `python -c` calling `resolve_js_array_content` on `pipeline-state/<run>/dc-import-resolved.html` with
 `sites/eye-care-ward-end/design_handoff_ward_end_eye_care` as `mockup_dir`, then
@@ -1395,3 +1394,21 @@ not a technical wall (each field sits in its own element, so per-field tagging w
 untested. Build sequencing lives in `plans/archive/phase-1111-js-array-content-resolution.md`, not
 this spec.
 WHAT + WHY, a phase plan records HOW + WHEN).
+
+### FR-31-26.6 — Stage 1 built; the real-page baseline
+
+**Stage 1 built.** `converter/services/extraction.py::_descend_container_children` now lifts a loose text
+run beside an element (`<span><svg/>Label</span>`) into a content block through the normal text-leaf route,
+instead of only logging a gap. This was a second, independent cause of the ticker failing (proven by
+prototype: the ticker still failed with real text in place). Static drafts are unaffected (live before/after
+on Eye Care Birmingham changed exactly one boundary).
+
+**Real-page verification exists.** A dedicated test site (`build-deploy.py --target eye-care-test`,
+WP + WooCommerce) receives full clone runs; run with `SGS_DEPLOY_SITE=eye-care-test` and
+`SSL_CERT_FILE=<certifi bundle>`. Stage 11.6 previously scored an UN-RENDERED copy of a `.dc.html` draft; it now
+serves the original draft folder over HTTP (`orchestrator/draft_server.py`). Honest baseline for Eye
+Care Birmingham: content 12% / css 0%, 93 unresolved `{{ }}` placeholders visible on the page, 7 of 8 homepage
+sections missing (see Spec 44 s11 open finding). Stage 2 (in-place substitution of runtime bindings) is NOT
+built; design fact found: keeping the `<sc-for>` lands only item 0 of N, so full conservation needs
+container-level handling. Check: count `{{` in the deployed page's Playwright `innerText`.
+

@@ -7,11 +7,11 @@
 the orchestrator behind `--classless-match` / `--classless-auto-complete`, both OFF by default
 (`grep -n 'classless-match' plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py`). Front C closed
 7 of 8 (D1088-D1107); the one open item, the AI-fallback tier (§11), is deliberately parked as
-Bean's call. Live picture on Eye Care Birmingham (D1108-D1112, 2026-09-19, flags ON): 0
+Bean's call. Live picture on Eye Care Birmingham (flags ON): 0
 auto-completed, 15 fell to operator review, remaining boundaries unaffected. Page routing/per-client
 template design (formerly "Pass 2") is OUT OF SCOPE, see §0.3, §4.5.
-**Changelog v2.4.0 (2026-09-19):** status corrected from "DESIGNED, not yet built" (it had been
-built for weeks); D1108 recorded in §4 (the Stage 4 gate now branches on `boundary_kind`). No
+**Changelog v2.4.0:** status corrected from "DESIGNED, not yet built" (it had been
+built for weeks); the boundary-kind branch recorded in §4 (the Stage 4 gate now branches on `boundary_kind`). No
 mechanism change to Stage A/B themselves. v2.3.1 was a small additive §7 amendment (the `source`
 field Spec 45 Tier 4 needs).
 **Date:** 2026-09-15
@@ -401,7 +401,7 @@ and `converter/walk.py` are never invoked for a Stage-A-matched boundary, and ar
 therefore genuinely unchanged (§8), because this is a parallel decision at the
 orchestrator layer, not a modification to what those functions return.
 
-**Boundary kind (D1108, 2026-09-19).** Every boundary the voter emits carries an explicit
+**Boundary kind.** Every boundary the voter emits carries an explicit
 `boundary_kind` ("container" or "item"), set once in
 `recogniser/per-section-convention-voter.py::build_boundary`. The orchestrator gate branches on it:
 an "item" boundary (already one resolved `<sc-for>` item from
@@ -716,6 +716,17 @@ off is the rollback path if a real run misbehaves — no code revert needed.
 
 ## 11. Explicitly deferred (tracked, not built here)
 
+- **OPEN FINDING: the "14 non-BEM-compliant" boundaries are classless sections gated on a
+  hint, not a BEM lint failure.** On Eye Care Birmingham the draft has ONE `class=` in the whole file and
+  Stage 0.1 passes; the halts come from the Stage 4 permission check in
+  `sgs-clone-orchestrator.py::stage_4_5_6_7_8_extract`, which admits a classless section only if a hint
+  (`dom_shape_hint` / `sc_var_hint`) happens to attach. Single-wrapper sections get none. On the live page
+  seven of the eight homepage boundaries (b3-b9, including "Why buy from me") are missing. Proposed (NOT
+  designed or built; needs a design gate, Rule 7, and must not change Mama's): (A) admit any classless
+  boundary as the FR-31-4 container default on eligibility; (B) put only the default routed view
+  (`hint-placeholder-val="{{ true }}"`) on the page and report other views as "other-route view";
+  (C) fix the halt warning text (cites a nonexistent Spec 13) and list lost text per class. Evidence:
+  `.claude/reports/2026-09-19-inv-non-bem-sections.md`.
 - **A repeated group whose content is JS-array-sourced, not DOM text — NOT this spec's job,
   covered by Spec 31 FR-31-26 (2026-09-19).** Investigating b32 (Eye Care Birmingham's ticker)
   found its content lives only in a draft `static TICKER = [...]` JS class property, invisible to

@@ -6,6 +6,20 @@ under any name — see `.claude/reports/2026-08-12-doc-audit-register.md` §5).
 
 ---
 
+## 2026-09-19 (handoff prune) — 1-entry prune, oldest by date, moved verbatim
+
+### [2026-09-04] Re-check the decisions.md D-ceiling immediately before every write, not once per session
+- **Pattern key:** `recheck-d-ceiling-immediately-before-every-decisions-md-write`
+- **Evidence:** checked the D-ceiling once at session start, then wrote D939 and later D941 —
+  both already claimed by a concurrent session's own commits that landed between the initial check
+  and the write. Caught only because the Edit tool's "file changed on disk" warning fired and a
+  fresh `grep` was run before trusting the number, not because anything enforced it.
+- **Rule:** on a shared-`main` project with a concurrently active session, re-run
+  `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
+  immediately before writing a new decisions.md entry — every time, not once per session. A
+  stale ceiling from even ten minutes earlier can already be wrong.
+
+
 ## 2026-09-19 (reconcile pass) — 5-entry prune, oldest by date, moved verbatim, to make room for the mocked-boundary stub
 
 ### [2026-09-03] Nearly overwrote a shared LEDGER.md straight over a concurrent session's uncommitted work

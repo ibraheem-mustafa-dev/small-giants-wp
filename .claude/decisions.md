@@ -8,6 +8,30 @@
 
 **Open.** (1) `nav-bar-menu/useDrawerNotice.js::addDrawer` and the `site-header/edit.js` TEMPLATE still reference the unregistered `sgs/nav-menu` block (reproduce in the editor before fixing). (2) No sweep re-types stored string `drawerRef` values. (3) Code comments and `block.json` descriptions still carry the same annotations; cleanup is a separate comment-only pass.
 
+## D1118 [ROUTINE] — Bean's scope directives for the next front, and the handoff state (2026-09-19 late)
+
+**Directives (Bean, this session, condensed):** (1) Do NOT break what already works on drafts like the
+Mama's Munches homepage; this is an EXTENSION so any draft clones irrespective of formatting (static-draft
+behaviour is a regression guard for every change). (2) Spec 33 is ASAP, ahead of the missing-sections work.
+(3) Spec 33 should also recognise raw template text that is really site settings (phone, email...), find the
+real values, and save them to the site's settings page; the pipeline then recognises those placeholders and
+inserts what Spec 33 saved. Alternatively delegate an agent to adapt Spec 33 to handle BOTH the runtime-template
+draft and the simple-HTML draft. (4) Spec 33 saves GLOBAL DEFAULTS/SETTINGS only, NOT per-element styling values
+(he rejected "styling values" as too far). (5) Read the full specs and analyse what the code already does BEFORE
+proposing anything; do not ask Bean things that can be looked up (he confirmed the settings page exists).
+
+**Discovered at the end of the session, code NOT yet read:** Spec 33 FR-33-14 (D325) ALREADY implements the
+business-data auto-fill (`scripts/sync-business-info.py`, `POST /sgs/v1/site-info`, Site Info settings page,
+`includes/class-sgs-site-info-admin.php`). Suspected gaps (UNVERIFIED, read the code first): (a) it regexes raw
+HTML so it may find nothing behind `{{ phone }}` bindings, (b) it only runs with `--push-theme-snapshot`, (c) the
+pipeline does not map settings-type placeholders to the Site Info store.
+
+**Handoff state.** Everything built this session is pushed. Open, in Bean's order: read then re-propose (1) the
+Spec 33 upgrade for runtime-template drafts (Pass B fixes, custom-property read, `--merge-onto` safety, FR-33-14 for
+bindings) and (2) Problem 1 (classless section admission + routed views), then Stage 2 bindings. Bean chose to
+compact the session and start the reading in a fresh context. The 15 review-queue items need Bean's eye. See
+LEDGER.md Front F for the reading list and orchestration.
+
 ## D1116 [ROUTINE] — Stage 11.6 now scores the RENDERED draft (served over HTTP) for `.dc.html` drafts; honest baseline is content 12% / css 0%
 
 **2026-09-19.** Investigator report `.claude/reports/2026-09-19-inv-stage116-draft-side.md`. Root cause
@@ -43,7 +67,7 @@ palette entries, ALL advisory, so `push-theme-snapshot.py` (FR-33-5) stripped al
 palette 0 slugs, WordPress emitting only core default colours (`primary`, `accent`, `border` gone).
 Fixed by regenerating with the extractor's own `--merge-onto theme/sgs-theme/theme.json`
 (framework slugs preserved, draft's 3 advisory entries added then stripped at push) and re-pushing:
-server palette now 18, presets emitted again. This means the very first Eye Care real-page run (D1114)
+server palette now 18 (= the 21-slug merged snapshot minus the 3 advisory draft entries FR-33-5 strips at push), presets emitted again. Check: `ssh hd "cd domains/darkcyan-grouse-898606.hostingersite.com/public_html && php -r '$d=json_decode(file_get_contents(\"wp-content/themes/sgs-theme/theme.json\"),true);echo count($d[\"settings\"][\"color\"][\"palette\"]);'"` printed 18. This means the very first Eye Care real-page run (D1114)
 rendered with no framework colour presets; its colour numbers were not meaningful. Re-run before quoting.
 
 **2. Spec 33 Pass B is weak on a token-less draft (investigator PROVEN, I re-verified the colour).** The 3

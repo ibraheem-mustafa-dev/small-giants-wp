@@ -4,6 +4,13 @@
 <!-- ACTIVE — every entry carries its rule directly inline, never just a keyword + external link. Archive: memory/mistakes-archive.md. Cap stays ~30 entries; prune the oldest by date when it grows past that. -->
 
 ## Active entries (target ~30, prune oldest by date when over)
+### [2026-09-19] Proposed a design and asked Bean questions before reading the governing spec and the code
+- **Pattern key:** `proposed-before-reading-the-spec-and-asked-what-could-be-looked-up`
+- **Rule:** before proposing ANY design for a spec'd subsystem, read the governing spec in full and grep the code for the capability. Before asking Bean a factual question (does X exist, where is Y), look it up. A cold proposal presented as a menu is the failure Bean named.
+- **What happened:** asked Bean whether a settings page existed and proposed designing "Spec 33 finds phone/email values"; a full read of Spec 33 afterwards showed FR-33-14 (D325) already builds exactly that (`sync-business-info.py` -> Site Info store). Bean: "You should not ask me this, you should be checking for yourself ... You sound like you're doing this completely cold."
+- **Fix going forward:** for any "extend X" request, first read X's spec end to end and `git grep` the capability; state what already exists before saying what is missing. Related, same day: three diagnostic errors of my own (a stale file, a tag-strip regex, a fix verified only by counts).
+- **Feedback file:** [D1118](decisions.md) (D1118, 2026-09-19)
+
 ### [2026-09-19] A mocked boundary hid a wrong-argument bug, and a "verified" claim was read off counts instead of the artefact's content
 - **Pattern key:** `mocked-boundary-hides-wrong-argument-and-verified-claim-must-read-the-content`
 - **Rule:** (1) when every test mocks a subprocess/IO boundary, no test can see WHICH argument the caller passes — add a wiring pin or one real un-mocked run. (2) A "feature X works" claim must be checked by reading the artefact's CONTENT for the thing it promised (here: the ticker's real text in `block_markup`), never inferred from a status count moving. Counts can move for unrelated reasons (renumbering).
@@ -227,17 +234,6 @@
 - **Rule:** on this project, "the live page's raw HTML has no scoped `<style>` for this block" is
   never evidence the CSS didn't emit — check for a lifted external `uploads/sgs-css/*.css` file
   before concluding anything is broken. Grep that file, not the page body.
-
-### [2026-09-04] Re-check the decisions.md D-ceiling immediately before every write, not once per session
-- **Pattern key:** `recheck-d-ceiling-immediately-before-every-decisions-md-write`
-- **Evidence:** checked the D-ceiling once at session start, then wrote D939 and later D941 —
-  both already claimed by a concurrent session's own commits that landed between the initial check
-  and the write. Caught only because the Edit tool's "file changed on disk" warning fired and a
-  fresh `grep` was run before trusting the number, not because anything enforced it.
-- **Rule:** on a shared-`main` project with a concurrently active session, re-run
-  `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
-  immediately before writing a new decisions.md entry — every time, not once per session. A
-  stale ceiling from even ten minutes earlier can already be wrong.
 
 ### [2026-09-13] `git stash` in a subagent recurred a second time on a shared worktree, this time from the orchestrator's own omission
 - **Pattern key:** `no-git-stash-in-subagents`
