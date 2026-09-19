@@ -88,8 +88,9 @@ export default function useDrawerNotice( { clientId, ref, drawerRef } ) {
 				matches: refs.includes( effectiveDrawerRef ),
 				firstRef: refs[ 0 ] || '',
 				insertIndex: be.getBlockIndex( outermost ) + 1,
-				// createBlock throws on an unregistered slug — never offer a
-				// fix action that cannot run.
+				// createBlock does not check the slug: an unregistered one
+				// inserts a dead core/missing placeholder — never offer a fix
+				// action that would.
 				canCreate:
 					!! select( blocksStore ).getBlockType( 'sgs/nav-drawer' ) &&
 					!! select( blocksStore ).getBlockType( 'sgs/nav-drawer-menu' ),
