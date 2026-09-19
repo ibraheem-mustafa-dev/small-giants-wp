@@ -70,6 +70,14 @@ TARGETS = {
         "wp_content": "domains/sandybrown-nightingale-600381.hostingersite.com/public_html/wp-content",
         "explicit_opt_in_required": False,
     },
+    # Dedicated Indus Foods test site (2026-09-19) — created specifically to avoid
+    # sandybrown's single global active-header/footer/theme-snapshot pointer, which
+    # would have un-rendered Mama's Munches sitewide the moment Indus content went live.
+    "indus-test": {
+        "host": "lavender-dinosaur-183533.hostingersite.com",
+        "wp_content": "domains/lavender-dinosaur-183533.hostingersite.com/public_html/wp-content",
+        "explicit_opt_in_required": True,
+    },
 }
 
 # SSH endpoint is shared across targets (single Hostinger account).
