@@ -98,5 +98,15 @@
     "reason": "self-hosted a font not already bundled in the framework",
     "saved_to": "file:./assets/fonts/playfair-display/playfair-display-variable-latin.woff2",
     "source_css_url": "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700;800;900&display=swap"
+  },
+  {
+    "kind": "merge",
+    "what": "styles.elements",
+    "reason": "fill-only carry of client element keys the extractor does not derive (generated/measured values always win)",
+    "keys_preserved": 0
+  },
+  {
+    "kind": "merge",
+    "reason": "additive merge onto existing snapshot: 18 extra palette slug(s) preserved + component css/blocks/patterns carried forward"
   }
 ]

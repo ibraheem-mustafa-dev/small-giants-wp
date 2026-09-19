@@ -1,5 +1,47 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1115 [INCIDENT] — Spec 33 push wiped the test site's palette (my push); investigators find the "non-BEM" halts are classless sections gated on a hint, and Spec 33's Pass B guesses badly
+
+**2026-09-19.** Three read-only investigators (reports in `.claude/reports/2026-09-19-inv-*.md`); each
+claim below was spot-checked by me before recording.
+
+**1. My push emptied the test site's palette (PROVEN, fixed).** The Spec 33 snapshot for Eye Care had 3
+palette entries, ALL advisory, so `push-theme-snapshot.py` (FR-33-5) stripped all three and the pushed
+`theme.json` replaced the framework's 21-slug palette with an EMPTY one. Verified on the site: server
+palette 0 slugs, WordPress emitting only core default colours (`primary`, `accent`, `border` gone).
+Fixed by regenerating with the extractor's own `--merge-onto theme/sgs-theme/theme.json`
+(framework slugs preserved, draft's 3 advisory entries added then stripped at push) and re-pushing:
+server palette now 18, presets emitted again. This means the very first Eye Care real-page run (D1114)
+rendered with no framework colour presets; its colour numbers were not meaningful. Re-run before quoting.
+
+**2. Spec 33 Pass B is weak on a token-less draft (investigator PROVEN, I re-verified the colour).** The 3
+entries are the fallback guess: `surface`/`text` from `html,body`, and `surface-alt #bdc1c6` is a
+scrollbar-thumb hover colour (`.rev-rail::-webkit-scrollbar-thumb:hover`, present in the draft) that won a
+three-way tie on hex order. The draft's real accent (`--acc`, taupe `#9C8B78`, set at runtime by JS on a
+wrapper div) is never read: `measure.js` does not read custom properties. Proposed small fix (not applied):
+skip scrollbar/selection/placeholder/hover/focus selectors in `roles.py::collect_colour_usages`. Two larger
+issues need a design gate (Rule 7): Pass B should overlay the baseline rather than replace it, and the
+extractor should read rendered custom properties. `--include-advisory` would harm (guessed entries would
+replace the framework palette; 20 references to `primary`/`accent`/`border` etc. would dangle).
+
+**3. The "14 non-BEM-compliant" label is wrong (investigator PROVEN; I re-verified two facts).** The draft
+has exactly ONE `class=` in the whole file (checked). Stage 0.1 passed. The 14 halts come from the Stage 4
+permission check in `sgs-clone-orchestrator.py::stage_4_5_6_7_8_extract`: a classless section is only
+admitted if a hint (`dom_shape_hint` or `sc_var_hint`) happens to attach; single-wrapper sections get none.
+Of the 14: b5, b7, b8, b9 are HOMEPAGE sections (b5 holds "Why buy from me" and "Four reasons", confirmed);
+b12, b13, b14, b17, b18, b20, b21, b27 are OTHER ROUTED VIEWS (product, lenses, about, contact, checkout,
+order confirmed); b1 and b28 are chrome. "Not sure what suits you?" / "Start with a shape" are in b6,
+held by the Spec 44 review gate, not one of the 14. So 7 of the 8 homepage boundaries (b3-b9) are missing
+from the live page; only the hero (b2) converted. Recommendation (needs Bean's design gate): (A) admit any
+classless boundary as the FR-31-4 container default, on eligibility only; (B) put only the default routed
+view (`hint-placeholder-val="{{ true }}"`) on the page, other views to separate artefacts reported as
+"other-route view" (A alone would pile other-route content onto the homepage); (C) fix the halt's warning
+text (it cites a Spec 13 that does not exist) and list the ~6.5k characters of lost text per class.
+NOT proven: that the 12 large sections convert cleanly (the converter was not run by the investigator).
+
+**4. Theme comment "leak" retracted** (D1114 finding 2). **Stage 11.6 draft-side** investigation still
+running; result goes in D1116.
+
 ## D1114 [ROUTINE] — Dedicated Eye Care Birmingham test site (sgs-theme + sgs-blocks + WooCommerce) so clone fixes are verified on a REAL rendered page; first real-page numbers
 
 **2026-09-19.** Bean challenged what the fixes were being tested with. Honest answer: unit tests that
