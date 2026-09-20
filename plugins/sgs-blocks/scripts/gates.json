@@ -1010,5 +1010,23 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 108
+  },
+  {
+    "id": "check-fixture-fidelity",
+    "cmd": "python scripts/nav-qa/check-fixture-fidelity.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 109
+  },
+  {
+    "id": "check-fixture-fidelity-self-test",
+    "cmd": "python scripts/nav-qa/check-fixture-fidelity.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 110
   }
 ]

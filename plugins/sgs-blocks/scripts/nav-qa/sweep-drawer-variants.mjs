@@ -28,11 +28,15 @@
  * USAGE
  *   node sweep-drawer-variants.mjs --plan poc-content-plan.json --base <site-url>
  *        [--only <variant>] [--widths 375,768,1440] [--out <path.json>]
+ *   node sweep-drawer-variants.mjs --self-test
+ *        Injects one defect per assertion into local fixture pages and proves the
+ *        sweep reports each one. Needs no site and no network.
  *
  * EXIT CODES
  *   0 — every check across every cell passed
- *   1 — at least one FAIL or VACUOUS (the report names each one)
+ *   1 — at least one FAIL (the report names each one)
  *   2 — bad arguments or an unusable plan
+ *   3 — at least one cell was VACUOUS (the drawer was never genuinely open)
  */
 'use strict';
 
@@ -42,6 +46,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { EXIT, guardScope, scrollTriggerIntoView } from './lib/openness-guard.mjs';
+import { runDrawerSweepSelfTest } from './lib/sweep-drawer-variants-selftest.mjs';
 
 const __dirname = path.dirname( fileURLToPath( import.meta.url ) );
 
@@ -437,6 +442,36 @@ async function checkRestContrast( page, acceptedPairs = [] ) {
 	}, { sel: DRAWER_SEL, accepted: acceptedPairs } );
 }
 
+/** Judge the stdout of a zero-exit axe-run.mjs invocation. */
+function interpretAxeSuccess( stdout ) {
+	const parsed = JSON.parse( stdout );
+	const violations = parsed.violations || [];
+	return {
+		ok: violations.length === 0,
+		guard: parsed.guard?.status,
+		why: violations.length ? violations.map( ( v ) => `${ v.id } (${ v.impact })` ).join( ', ' ) : '',
+		violations: violations.map( ( v ) => ( { id: v.id, impact: v.impact, nodes: v.nodes.length } ) ),
+	};
+}
+
+/** Judge a non-zero exit of axe-run.mjs. Exit 3 = VACUOUS, never a pass. */
+function interpretAxeError( e ) {
+	const status = e.status;
+	let payload = null;
+	try { payload = JSON.parse( e.stdout || '' ); } catch { /* not JSON */ }
+	if ( status === 3 ) {
+		return { ok: false, vacuous: true, guard: 'VACUOUS',
+			why: `VACUOUS — ${ payload?.guard?.reason || 'surface was not genuinely open' }` };
+	}
+	if ( status === 1 && payload ) {
+		const violations = payload.violations || [];
+		return { ok: false, guard: payload.guard?.status,
+			why: violations.map( ( v ) => `${ v.id } (${ v.impact })` ).join( ', ' ),
+			violations: violations.map( ( v ) => ( { id: v.id, impact: v.impact, nodes: v.nodes.length } ) ) };
+	}
+	return { ok: false, why: `axe run failed (exit ${ status }): ${ ( e.stderr || e.message ).slice( 0, 300 ) }` };
+}
+
 /** Shell out to the guard-owning axe runner. Exit 3 = VACUOUS, never a pass. */
 function runAxe( url, width ) {
 	try {
@@ -446,33 +481,71 @@ function runAxe( url, width ) {
 				'--viewport', String( width ), '--json' ],
 			{ encoding: 'utf8', timeout: 180000 }
 		);
-		const parsed = JSON.parse( stdout );
-		const violations = parsed.violations || [];
-		return {
-			ok: violations.length === 0,
-			guard: parsed.guard?.status,
-			why: violations.length ? violations.map( ( v ) => `${ v.id } (${ v.impact })` ).join( ', ' ) : '',
-			violations: violations.map( ( v ) => ( { id: v.id, impact: v.impact, nodes: v.nodes.length } ) ),
-		};
+		return interpretAxeSuccess( stdout );
 	} catch ( e ) {
-		const status = e.status;
-		let payload = null;
-		try { payload = JSON.parse( e.stdout || '' ); } catch { /* not JSON */ }
-		if ( status === 3 ) {
-			return { ok: false, vacuous: true, guard: 'VACUOUS',
-				why: `VACUOUS — ${ payload?.guard?.reason || 'surface was not genuinely open' }` };
-		}
-		if ( status === 1 && payload ) {
-			const violations = payload.violations || [];
-			return { ok: false, guard: payload.guard?.status,
-				why: violations.map( ( v ) => `${ v.id } (${ v.impact })` ).join( ', ' ),
-				violations: violations.map( ( v ) => ( { id: v.id, impact: v.impact, nodes: v.nodes.length } ) ) };
-		}
-		return { ok: false, why: `axe run failed (exit ${ status }): ${ ( e.stderr || e.message ).slice( 0, 300 ) }` };
+		return interpretAxeError( e );
 	}
 }
 
+/**
+ * Turn one cell's recorded checks into its verdict. A cell is VACUOUS if the
+ * drawer never opened, or if any individual check reported vacuity
+ * (focusContained and runAxe both set the flag); vacuity outranks failure.
+ *
+ * @param {{checks: Object, vacuous?: boolean}} cell
+ * @return {{bad: Array, vacuous: boolean, verdict: string}}
+ */
+function classifyCell( cell ) {
+	const bad = Object.entries( cell.checks ).filter( ( [ , v ] ) => v && v.ok === false );
+	const vacuous = Boolean( cell.vacuous ) || Object.values( cell.checks ).some( ( v ) => v && v.vacuous );
+	const verdict = vacuous ? 'VACUOUS' : ( bad.length === 0 ? 'PASS' : 'FAIL' );
+	return { bad, vacuous, verdict };
+}
+
+/**
+ * The process exit code for a finished run. Vacuity wins over both outcomes: a
+ * run that measured nothing for part of its matrix must not report the same
+ * code as a run that measured everything and found problems.
+ */
+function exitCodeFor( failures, vacuousCells ) {
+	if ( vacuousCells > 0 ) return EXIT.VACUOUS;
+	return failures === 0 ? EXIT.OK : EXIT.FAILURES;
+}
+
+/** The pure and browser-facing decision functions the self-test drives. */
+const SELF_TEST_TARGETS = {
+	openDrawer, measureGeometry, checkKeyboard, checkFocusContainment, checkReducedMotion,
+	checkNoJs, checkRestContrast, interpretAxeSuccess, interpretAxeError, classifyCell, exitCodeFor,
+};
+
+async function runSelfTest() {
+	const { ok, results } = await runDrawerSweepSelfTest( {
+		chromium,
+		targets: SELF_TEST_TARGETS,
+		scriptPath: fileURLToPath( import.meta.url ),
+	} );
+	for ( const r of results ) {
+		process.stdout.write(
+			`${ r.ok ? 'PASS' : 'FAIL' }  ${ r.name }\n` +
+			`      expected ${ r.expected }, got ${ r.actual }${ r.reason ? ` — ${ r.reason }` : '' }\n`
+		);
+	}
+	const failed = results.filter( ( r ) => ! r.ok ).length;
+	process.stdout.write(
+		`\n${ results.length - failed }/${ results.length } drawer-sweep self-tests passed.\n` +
+		( ok
+			? 'Every sweep assertion can still FAIL when it should — results from this script mean something.\n'
+			: 'A SWEEP ASSERTION IS BROKEN — an injected defect went undetected. Do not trust any run.\n' )
+	);
+	process.exit( ok ? EXIT.OK : EXIT.FAILURES );
+}
+
 async function main() {
+	if ( process.argv.includes( '--self-test' ) ) {
+		await runSelfTest();
+		return;
+	}
+
 	const args = parseArgs( process.argv.slice( 2 ) );
 	const plan = JSON.parse( readFileSync( args.plan, 'utf8' ) );
 	const base = args.base.replace( /\/$/, '' );
@@ -519,17 +592,11 @@ async function main() {
 					cell.checks.noJsCrawl = await checkNoJs( browser, url, variant.menuLabels );
 				}
 
-				const bad = Object.entries( cell.checks ).filter( ( [ , v ] ) => v && v.ok === false );
+				const { bad, vacuous, verdict } = classifyCell( cell );
 				failures += bad.length;
-				// A cell is VACUOUS if the drawer never opened, or if any individual
-				// check reported vacuity (focusContained and runAxe both set the flag).
-				if ( Object.values( cell.checks ).some( ( v ) => v && v.vacuous ) ) cell.vacuous = true;
+				if ( vacuous ) cell.vacuous = true;
 				if ( cell.vacuous ) vacuousCells += 1;
-				if ( cell.vacuous ) {
-					cell.verdict = 'VACUOUS';
-				} else {
-					cell.verdict = bad.length === 0 ? 'PASS' : 'FAIL';
-				}
+				cell.verdict = verdict;
 				process.stdout.write(
 					`  ${ String( width ).padStart( 4 ) }px  ${ cell.verdict }` +
 					( bad.length ? `  → ${ bad.map( ( [ k, v ] ) => `${ k }: ${ v.why }` ).join( ' | ' ) }` : '' ) +
@@ -568,9 +635,8 @@ async function main() {
 			'  rows prove NOTHING (they are not evidence of a defect either). Fix the fixture or the\n' +
 			'  open step and re-run. This is NOT a pass and NOT a normal failure.\n'
 		);
-		process.exit( EXIT.VACUOUS );
 	}
-	process.exit( failures === 0 ? EXIT.OK : EXIT.FAILURES );
+	process.exit( exitCodeFor( failures, vacuousCells ) );
 }
 
 main().catch( ( e ) => {

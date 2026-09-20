@@ -95,7 +95,7 @@ canary for later waves.
 
 | ID | Unit | Status | What is built / what remains | Est (taxed) | CP |
 |---|---|---|---|---|---|
-| W2-i | **DP7 harness fixes** — `plugins/sgs-blocks/scripts/nav-qa/` capture + contrast + fidelity scripts | PARTIAL | Built: the shared `nav-qa/lib/openness-guard.mjs` (exit 3 = VACUOUS) used by four scripts; contrast walks every text element; `--self-test` in five scripts; `labels-<site>.json` for 7 reference sites. Open: `--self-test` on `sweep-drawer-variants.mjs`, `shoot-drawer-pairs.mjs`, `elementfrompoint-sweep.mjs`; the content/label count-fidelity check does not exist; `labels-<site>.json` for Away, ButcherBox, rabbit.tech (after W4-a). Must precede any Wave-4 evidence | 2h (4h) | YES |
+| W2-i | **DP7 harness fixes** — `plugins/sgs-blocks/scripts/nav-qa/` capture + contrast + fidelity scripts | DONE apart from the three unmeasured refs | Built: the shared `nav-qa/lib/openness-guard.mjs` (exit 3 = VACUOUS) used by four scripts; contrast walks every text element; `--self-test` in all six sweep, capture and audit scripts, including `sweep-drawer-variants.mjs` (47 controls), `shoot-drawer-pairs.mjs` (16) and `elementfrompoint-sweep.mjs` (3); `nav-qa/check-fixture-fidelity.py` (fixture link count and label text against `labels-<site>.json`, right-site keyed, in `gates.json` as `check-fixture-fidelity` and its `--self-test`); `labels-<site>.json` for 7 reference sites. Open: `labels-<site>.json` for Away, ButcherBox, rabbit.tech (generated after W4-a). Must precede any Wave-4 evidence | 2h (4h) | YES |
 | W2-a | **Drawer CPT** `sgs_drawer` (DP2) | DONE | CPT, Active model, revisions, seed by menu LOCATION lookup, admin "Menu drawer" | — | YES |
 | **GATE 2** | OPEN-state computed-parity, default CPT drawer vs default drawer, property-identical | PASSED 2026-09-20 on the mechanism (fidelity is Bean's eye) | `reports/2026-09-20-w2-gate2-rerun.md`: `--open-via keyboard` at 375px, both sides emit the same uid, no property mismatches over 8 element records and 400 comparisons, plus an extended probe of 27 records per side (1,267 comparisons, including `backdrop-filter`, pseudo-elements, `::backdrop` and the parent chain). Negative controls: `--open` omitted exits 3 (VACUOUS), 768/1440 exit 3 (UNMEASURED), a deliberately different drawer reports 21 mismatches and exits 1 | — | YES |
 | W2-b | `drawerRef` → post picker (DP2) | DONE | `nav-bar-menu/block.json::drawerRef` is a post-ID `number`; the picker; the dangling-post notice (FR-36-9a); create-inline: "Create a new menu panel" (`nav-bar-menu/useCreateDrawer.js::useCreateDrawer`) saves a published `sgs_drawer` post seeded from the blank starter pattern and selects it. Live-verified in the editor (`reports/visual-diff/nav-bar-menu-2026-09-20.md`): one post per double-click, an honest error on an injected 403, no reload needed. `nav-drawer/block.json::drawerRef` stays an element-id string | — | YES |
@@ -163,7 +163,7 @@ Integration = presets restyle under each client's theme-snapshot tokens (DP5 hom
 ### Dependency graph + critical path
 
 ```
-W2-i (remainder) FIRST — harness honesty; Gate 2's re-run and every Wave-4 capture depend on it
+W2-i (done; labels for the three unmeasured refs follow W4-a) — harness honesty; Gate 2's re-run and every Wave-4 capture depend on it
 W2-b                                          (done)
 W2-c                            (done; live-verified on all three test sites)
 Gate 2 harness re-run           (done 2026-09-20)
@@ -292,7 +292,7 @@ Stop-loss: any gate <50 → surface pivot-vs-park with two ranked paths; log in 
 
 ## First action (≤5 min, zero dependencies)
 
-W2-i's remaining harness work (self-tests on three scripts and the content/label count-fidelity check) precedes any Wave 4 evidence. Then Wave 3 residuals (W3-b finding 2, W3-e conformance).
+The harness self-tests and the fixture fidelity check are in place. Next: Wave 3 residuals (W3-b finding 2, W3-e conformance), then W4-a with `labels-<site>.json` for the three unmeasured refs.
 
 ## References
 

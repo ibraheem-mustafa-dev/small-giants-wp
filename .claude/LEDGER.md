@@ -23,7 +23,7 @@ council); about 13 raw content bindings. Mama's Munches is untouched by all of i
 FR-31-30, Spec 33 FR-33-15 to FR-33-17.
 
 **Nav / header / footer.** Wave 1 (fixtures + verification) is closed. Wave 2 (capabilities) is
-done and live-verified apart from the harness honesty work (W2-i). Done: the drawer post type, the picker
+done and live-verified. The harness self-tests and the fixture fidelity check are in place; only the reference labels for three unmeasured sites wait on Wave 4. Done: the drawer post type, the picker
 (including creating a drawer inline), trigger controls, scoped behaviours, the 7 drawer looks (patterns
 seeded as Menu drawer posts on all three test sites), the Site Info logo tier, the scrolled-state header
 shadow, the floating header pill (blur-based, matching the one true pill among the references), the formal Gate 2

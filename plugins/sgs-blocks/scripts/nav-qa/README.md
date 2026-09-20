@@ -486,6 +486,37 @@ python scripts/nav-qa/build-poc-fixtures.py --list         # fixtures that exist
 python scripts/nav-qa/build-poc-fixtures.py --delete-all   # remove every fixture it made
 ```
 
+## 7b. `check-fixture-fidelity.py` — plan versus harvest
+
+Offline check (stdlib only, no WordPress, no network) that `poc-content-plan.json`
+carries the same content as the harvest the fixtures claim to clone. For each variant
+it resolves the reference site from the plan's `reference`, matches it to the `site`
+field of `labels-*.json` under `.claude/reports/2026-07-28-drawer-code-extraction/`,
+and asserts:
+
+- the primary link count equals both `counts.primary` and `len(primary_links)`;
+- each primary label equals the harvest `text` exactly (case-sensitive; the harvest
+  holds the authored text, so `css_uppercase` is informational);
+- each secondary block's `exact_text` is present in the variant's plan copy, part by
+  part (parts are split on ` / `). A block with none of its parts in the plan is
+  listed NOT-CARRIED; a block with only some parts is a mismatch. Decorative and
+  dynamic blocks are skipped and named;
+- anything the plan's `_known_fidelity_limits` documents is reported KNOWN-LIMIT,
+  not as a failure.
+
+It prints a per-variant table (variant, site, expected, actual, missing, extra) and
+exits `0` (all pass), `1` (any mismatch), `2` (unreadable input) or `3` (no variants
+compared, so the result is vacuous). `--json` gives machine-readable output.
+`--self-test` proves it fails on a dropped link, an extra link, a changed label, a
+missing harvest file, a partly-missing secondary block and zero variants, and passes
+on a matching pair. `scripts/gates.json` runs `--check` and `--self-test` as the fast-tier
+gates `check-fixture-fidelity` and `check-fixture-fidelity-self-test`.
+
+```bash
+python scripts/nav-qa/check-fixture-fidelity.py [--json]
+python scripts/nav-qa/check-fixture-fidelity.py --self-test
+```
+
 ## 8. `palette-contrast-sweep.mjs` — cross-palette contrast
 
 Renders each self-contained SGS-BEM draft (mega-menu panels and similar) once per

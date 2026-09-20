@@ -84,6 +84,14 @@
  * the report so a human reading the output knows what was swept; the
  * actual open trigger comes from the probes JSON's "openSelector".
  *
+ *   node elementfrompoint-sweep.mjs --self-test
+ *
+ * --self-test runs local in-memory fixtures (no network, no probes file) through
+ * the real open-and-sweep code: an open surface must pass, an overlay covering
+ * part of it must be reported as a failure, and a closed surface must exit 3.
+ * Each negative control first confirms its injected break landed. Exits 0 only
+ * when every control behaves as expected.
+ *
  * Exit codes
  * ----------
  *   0 — every probe at every requested viewport passed
@@ -100,6 +108,7 @@ import { chromium } from 'playwright';
 import { readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { EXIT, guardScope, formatVacuous } from './lib/openness-guard.mjs';
+import { selfTest } from './lib/elementfrompoint-sweep-selftest.mjs';
 
 function parseArgs( argv ) {
 	const args = { url: null, probesPath: null, viewports: [ 375, 768, 1440 ], openTarget: null, json: false };
@@ -211,22 +220,16 @@ const SWEEP = ( probes ) => {
 	return results;
 };
 
-async function sweepViewport( browser, url, vpWidth, cfg ) {
-	const page = await browser.newPage( { viewport: { width: vpWidth, height: 1200 } } );
-	try {
-		await page.goto( url, { waitUntil: 'networkidle', timeout: 30000 } );
-	} catch ( e ) {
-		await page.close();
-		throw new Error( `navigation to "${ url }" failed at viewport ${ vpWidth }: ${ e.message }` );
-	}
-
+// Opens the surface (when the config names a trigger), asserts it is genuinely
+// open, then runs the probe sweep on the page as it stands. Throws an Error with
+// `vacuous: true` when the named scope is not open. The caller owns the page.
+async function openAndSweep( page, vpWidth, cfg ) {
 	let guard = { status: 'NOT_APPLICABLE', reason: 'no openSelector for this viewport' };
 
 	if ( cfg.openSelector ) {
 		const trigger = page.locator( cfg.openSelector );
 		const count = await trigger.count();
 		if ( count === 0 ) {
-			await page.close();
 			throw new Error( `openSelector "${ cfg.openSelector }" matched 0 elements at viewport ${ vpWidth }` );
 		}
 		await trigger.first().click();
@@ -243,7 +246,6 @@ async function sweepViewport( browser, url, vpWidth, cfg ) {
 				requireOpen: true,
 			} );
 			if ( guard.status === 'VACUOUS' ) {
-				await page.close();
 				const err = new Error(
 					`viewport ${ vpWidth }: ${ formatVacuous( cfg.openScope, guard ) }`
 				);
@@ -265,11 +267,66 @@ async function sweepViewport( browser, url, vpWidth, cfg ) {
 	}
 
 	const results = await page.evaluate( SWEEP, cfg.probes );
-	await page.close();
 	return { results, guard };
 }
 
+async function sweepViewport( browser, url, vpWidth, cfg ) {
+	const page = await browser.newPage( { viewport: { width: vpWidth, height: 1200 } } );
+	try {
+		await page.goto( url, { waitUntil: 'networkidle', timeout: 30000 } );
+	} catch ( e ) {
+		await page.close();
+		throw new Error( `navigation to "${ url }" failed at viewport ${ vpWidth }: ${ e.message }` );
+	}
+	try {
+		return await openAndSweep( page, vpWidth, cfg );
+	} finally {
+		await page.close();
+	}
+}
+
+// Pass/fail decisions, kept as named functions so --self-test exercises the
+// same code the real run uses.
+function tally( results ) {
+	return { pass: results.filter( ( r ) => r.pass ).length, total: results.length };
+}
+
+function exitCodeForTotals( totalPass, totalCount ) {
+	return totalPass === totalCount ? EXIT.OK : EXIT.FAILURES;
+}
+
+// A vacuous open is NOT the same class of problem as a bad argument or a dead
+// selector — exit 3 so a caller can tell them apart.
+function exitCodeForError( e ) {
+	return e.vacuous ? EXIT.VACUOUS : EXIT.USAGE;
+}
+
+async function runSelfTest() {
+	const { ok, results } = await selfTest( {
+		chromium, openAndSweep, tally, exitCodeForTotals, exitCodeForError,
+	} );
+	for ( const r of results ) {
+		process.stdout.write(
+			`${ r.ok ? 'PASS' : 'FAIL' }  ${ r.name }\n` +
+			`      expected ${ r.expected }, got ${ r.actual }${ r.ok ? '' : ` — ${ r.reason }` }\n`
+		);
+	}
+	const failed = results.filter( ( r ) => ! r.ok ).length;
+	process.stdout.write(
+		`\n${ results.length - failed }/${ results.length } sweep self-tests passed.\n` +
+		( ok
+			? 'The sweep can still FAIL when it should — results from this script mean something.\n'
+			: 'THE SWEEP IS BROKEN — an injected break went undetected. Do not trust any run.\n' )
+	);
+	process.exit( ok ? EXIT.OK : EXIT.FAILURES );
+}
+
 async function main() {
+	if ( process.argv.includes( '--self-test' ) ) {
+		await runSelfTest();
+		return;
+	}
+
 	const args = parseArgs( process.argv.slice( 2 ) );
 	if ( ! args.url ) usageAndExit( 'missing required <url> argument.' );
 	if ( ! args.probesPath ) usageAndExit( 'missing required --probes <path> argument.' );
@@ -292,15 +349,14 @@ async function main() {
 				swept = await sweepViewport( browser, args.url, vp, perViewport[ vp ] );
 			} catch ( e ) {
 				process.stderr.write( `elementfrompoint-sweep: ${ e.message }\n` );
-				// A vacuous open is NOT the same class of problem as a bad argument
-				// or a dead selector — exit 3 so a caller can tell them apart.
-				process.exit( e.vacuous ? EXIT.VACUOUS : EXIT.USAGE );
+				process.exit( exitCodeForError( e ) );
 			}
 			const { results, guard } = swept;
 			byViewport[ vp ] = results;
 			guards[ vp ] = guard;
-			totalCount += results.length;
-			totalPass += results.filter( ( r ) => r.pass ).length;
+			const counts = tally( results );
+			totalCount += counts.total;
+			totalPass += counts.pass;
 		}
 	} finally {
 		await browser.close();
@@ -334,7 +390,7 @@ async function main() {
 		process.stdout.write( `\nelementfrompoint-sweep: TOTAL ${ totalPass }/${ totalCount }${ totalPass === totalCount ? ' — PASS' : ' — FAIL' }\n` );
 	}
 
-	process.exit( totalPass === totalCount ? 0 : 1 );
+	process.exit( exitCodeForTotals( totalPass, totalCount ) );
 }
 
 main().catch( ( e ) => {

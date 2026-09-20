@@ -17,6 +17,9 @@
  * USAGE
  *   node shoot-drawer-pairs.mjs --plan poc-content-plan.json --base <url>
  *        --out <dir> [--widths 1440,375] [--only <variant>] [--ours-only]
+ *   node shoot-drawer-pairs.mjs --self-test
+ *        Negative controls for the capture and exit-code logic (local fixtures,
+ *        no network). Exits 0 only if every control behaves as expected.
  */
 'use strict';
 
@@ -24,6 +27,7 @@ import { chromium } from 'playwright';
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
 import { EXIT, FOCUSABLE_SELECTOR, guardScope } from './lib/openness-guard.mjs';
+import { runShootSelfTest } from './lib/shoot-drawer-pairs-selftest.mjs';
 
 const OURS_OPEN = '.entry-content > nav.sgs-nav-bar-menu .sgs-nav-bar-menu__burger';
 const PAGE_PREFIX = 'poc-drawer-';
@@ -247,7 +251,54 @@ async function shootReference( browser, reference, width, file, allowUnverified 
 	}
 }
 
+/**
+ * Decide the process exit code from the manifest. Pure — prints nothing and
+ * exits nothing, so the self-test can drive the same decision the real run uses.
+ *
+ * A capture harness that cannot fail lets a run where ZERO drawers opened report
+ * "0/14 ours captured" in stdout text while telling the shell it succeeded —
+ * which is how a closed homepage becomes a reference screenshot nobody questions.
+ *
+ * @param {Array}  manifest
+ * @param {Object} opts
+ * @param {boolean} opts.oursOnly
+ * @return {{code: number, message: string|null, oursOk: number, refOk: number}}
+ */
+function decideExit( manifest, { oursOnly } ) {
+	const oursOk = manifest.filter( ( m ) => m.ours.ok ).length;
+	const refOk = manifest.filter( ( m ) => m.referenceShot.ok ).length;
+	const vacuous = manifest.filter(
+		( m ) => m.ours.status === 'VACUOUS' || m.referenceShot.status === 'VACUOUS'
+	).length;
+	const oursFailed = manifest.length - oursOk;
+
+	if ( oursFailed > 0 ) {
+		return {
+			code: vacuous > 0 ? EXIT.VACUOUS : EXIT.FAILURES,
+			message: `\nshoot: ${ oursFailed } of ${ manifest.length } of OUR captures did not produce a ` +
+				'genuinely-open drawer. Those screenshots prove nothing.\n',
+			oursOk,
+			refOk,
+		};
+	}
+	if ( ! oursOnly && refOk < manifest.length ) {
+		return {
+			code: EXIT.FAILURES,
+			message: `\nshoot: ${ manifest.length - refOk } reference capture(s) are UNVERIFIED or failed — ` +
+				'see manifest.json `status`. An unverified reference is not a reference.\n',
+			oursOk,
+			refOk,
+		};
+	}
+	return { code: EXIT.OK, message: null, oursOk, refOk };
+}
+
 async function main() {
+	if ( process.argv.includes( '--self-test' ) ) {
+		await runSelfTest();
+		return;
+	}
+
 	const args = parseArgs( process.argv.slice( 2 ) );
 	const plan = JSON.parse( readFileSync( args.plan, 'utf8' ) );
 	const base = args.base.replace( /\/$/, '' );
@@ -280,34 +331,35 @@ async function main() {
 	}
 
 	writeFileSync( path.join( args.out, 'manifest.json' ), JSON.stringify( manifest, null, 2 ) );
-	const oursOk = manifest.filter( ( m ) => m.ours.ok ).length;
-	const refOk = manifest.filter( ( m ) => m.referenceShot.ok ).length;
-	process.stdout.write( `\n${ oursOk }/${ manifest.length } ours captured; ${ refOk }/${ manifest.length } references captured\n` );
+	const verdict = decideExit( manifest, { oursOnly: args.oursOnly } );
+	process.stdout.write(
+		`\n${ verdict.oursOk }/${ manifest.length } ours captured; ${ verdict.refOk }/${ manifest.length } references captured\n`
+	);
+	if ( verdict.message ) process.stderr.write( verdict.message );
+	process.exit( verdict.code );
+}
 
-	// EXIT CODE. A capture harness that cannot fail lets a run where ZERO drawers
-	// opened report "0/14 ours captured" in stdout text while telling the shell it
-	// succeeded — which is how a closed homepage becomes a reference screenshot
-	// nobody questions.
-	const vacuous = manifest.filter(
-		( m ) => m.ours.status === 'VACUOUS' || m.referenceShot.status === 'VACUOUS'
-	).length;
-	const oursFailed = manifest.length - oursOk;
-
-	if ( oursFailed > 0 ) {
-		process.stderr.write(
-			`\nshoot: ${ oursFailed } of ${ manifest.length } of OUR captures did not produce a ` +
-			'genuinely-open drawer. Those screenshots prove nothing.\n'
+/**
+ * Negative controls for this script's own capture and exit decisions. The
+ * controls live in lib/shoot-drawer-pairs-selftest.mjs; the real functions are
+ * passed in so the proof exercises the code the run uses.
+ */
+async function runSelfTest() {
+	const { ok, results } = await runShootSelfTest( { chromium, shootOurs, shootReference, decideExit } );
+	for ( const r of results ) {
+		process.stdout.write(
+			`${ r.ok ? 'PASS' : 'FAIL' }  ${ r.name }\n` +
+			`      expected ${ r.expected }, got ${ r.actual }${ r.ok ? '' : ` — ${ r.reason }` }\n`
 		);
-		process.exit( vacuous > 0 ? EXIT.VACUOUS : EXIT.FAILURES );
 	}
-	if ( ! args.oursOnly && refOk < manifest.length ) {
-		process.stderr.write(
-			`\nshoot: ${ manifest.length - refOk } reference capture(s) are UNVERIFIED or failed — ` +
-			'see manifest.json `status`. An unverified reference is not a reference.\n'
-		);
-		process.exit( EXIT.FAILURES );
-	}
-	process.exit( EXIT.OK );
+	const failed = results.filter( ( r ) => ! r.ok ).length;
+	process.stdout.write(
+		`\n${ results.length - failed }/${ results.length } shoot-drawer-pairs self-tests passed.\n` +
+		( ok
+			? 'The capture and exit logic can still FAIL when it should — a green run from this script means something.\n'
+			: 'THE CAPTURE HARNESS IS BROKEN — an injected fault went undetected. Do not trust any run.\n' )
+	);
+	process.exit( ok ? EXIT.OK : EXIT.FAILURES );
 }
 
 main().catch( ( e ) => {

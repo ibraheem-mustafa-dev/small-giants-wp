@@ -26,12 +26,14 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
 
 ## Wave 2 — Capability
 - STATUS: partial. DONE a, b, c, d, e, f (live/eye verification owed), g, h, j, k, l, n, p, q, r, s, t, u ·
-  PARTIAL i · CLOSED with no framework feature: o.
+  i (labels for the three unmeasured refs follow W4-a) · CLOSED with no framework feature: o.
 - DP7 harness self-tests pass FIRST (W2-i precedes Wave-4 evidence). Built: shared
   `nav-qa/lib/openness-guard.mjs` (exit 3 = VACUOUS), full-element contrast walk, `--self-test` in
-  five scripts. Open: `--self-test` on `sweep-drawer-variants.mjs`, `shoot-drawer-pairs.mjs`,
-  `elementfrompoint-sweep.mjs`; the content/label count-fidelity check (fails on count/label
-  mismatch, right-site keyed) does not exist.
+  all six sweep, capture and audit scripts, and `nav-qa/check-fixture-fidelity.py` (fails on count/label mismatch,
+  right-site keyed). Proof: `node plugins/sgs-blocks/scripts/nav-qa/sweep-drawer-variants.mjs --self-test`
+  (47/47), `shoot-drawer-pairs.mjs --self-test` (16/16), `elementfrompoint-sweep.mjs --self-test` (3/3),
+  `python plugins/sgs-blocks/scripts/nav-qa/check-fixture-fidelity.py --self-test` (14/14) and `--check`
+  (exit 0). Open: `labels-<site>.json` for Away, ButcherBox, rabbit.tech, generated after W4-a.
 - CPT parity (Gate 2): computed-parity JSON — default `sgs_drawer` post render vs the default drawer,
   **drawer OPEN** (a closed-vs-closed comparison is vacuous), property-identical, negative control
   run. Passed 2026-09-20 on the mechanism (`.claude/reports/2026-09-20-w2-gate2-rerun.md`), fidelity left to Bean's eye.

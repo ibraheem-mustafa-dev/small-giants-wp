@@ -148,6 +148,7 @@
       "navMenuAttrs": { "gap": "4px", "itemFontWeight": "100" },
       "children": [
         { "block": "sgs/text", "attrs": { "text": "© 2026 BUCK" } },
+        { "block": "sgs/text", "attrs": { "text": "Privacy Policy" } },
         {
           "block": "sgs/social-icons",
           "attrs": {
