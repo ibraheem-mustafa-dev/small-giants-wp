@@ -8,20 +8,19 @@ last_updated: 2026-09-20
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**Spec 33 upgrade: BUILT and verified on the Eye Care test site. Next: the missing homepage sections, then the raw `{{ }}` text.**
-Spec 33 is the step that turns a draft into a site's theme settings. It used to read almost none of a Claude Design
-draft's real design system. Now the Eye Care test site's live page has the draft's palette (22 colours on top of the
-framework's), its three accent sets saved (taupe in use, sage and navy kept), square corners, a 1440px layout, Playfair
-Display and Outfit loading properly, headings at weight 500, and 13 business settings (phone, email, address, hours,
-socials) saved to the Site Info settings page. Mama's Munches and the Indus drafts produce identical output before and
-after. Detail: decision D1120 and Spec 33 FR-33-15 to FR-33-17. Two independent reviews and a three-rater QC council
-found and fixed the faults listed there.
+**NEXT SESSION OPENS WITH A BRAINSTORMING COUNCIL (Bean, D1130): standardise a draft when it arrives, and write a schema for Claude Design.**
+Read `.claude/prompts/2026-09-20-draft-normalisation-council.md` first. The idea: instead of the pipeline patching every
+oddity of a draft as it comes, clean the draft on arrival (round breakpoints within about 10px to the device tiers, fix
+missing labels, empty values and raw bindings, use the README to add labels and structure so it matches Mama's homepage),
+and give Claude Design a rules document so future drafts arrive clean. Nothing is built until Bean approves a design.
 
-**What is still wrong on the cloned page (not Spec 33).** It shows 59 distinct raw `{{ }}` placeholders, 7 of 8
-homepage sections are missing, its buttons paint transparent (even one told to be `#141414`), and nothing on the page
-shows the saved business details. Next, in order: (1) the missing sections (Task 3, a design gate with Bean, must leave
-Mama's unchanged), (2) the raw placeholders and inserting the saved values (Task 4 plus the last part of the Spec 33
-plan), then (3) the merged Spec 36+37 track.
+**Where the Eye Care clone stands (test page 11).** Spec 33 gives it the draft's real palette, fonts, square corners and 13
+saved business settings. The screen route clones only the Home screen: 5 of 8 homepage sections are on the page (was 1), none
+of the other screens' text, and raw `{{ }}` text is 53 occurrences (was 93). The guard stops raw style values reaching block
+settings. Still missing: the brand strip, best sellers and shape tiles (Spec 44 review queue, needs Bean); the spacing and
+grid columns (the draft's script states them per device and an evaluator can read them, but wiring it is on hold for the
+council); about 13 raw content bindings. Mama's Munches is untouched by all of it. Detail: D1120 to D1130, Spec 31 FR-31-27 to
+FR-31-30, Spec 33 FR-33-15 to FR-33-17.
 
 **Nav / header / footer.** Wave 1 (fixtures + verification) is closed. Wave 2 (capabilities) is
 done and live-verified apart from the floating header pill (approved, being built) and the harness

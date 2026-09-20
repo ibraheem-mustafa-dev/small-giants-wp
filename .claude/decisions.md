@@ -1,5 +1,13 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1130 [ROUTINE] — Next front: a brainstorming council on standardising a draft when it arrives, and a schema for Claude Design (2026-09-20)
+
+**Direction (Bean).** Stop processing "absolutely everything as it comes" in the pipeline. Clean and standardise a draft on arrival: round custom breakpoints within about 10px to the device tiers, fix the classless drafts' missing labels, empty values and raw bindings, and use the README to insert labels and structure into the draft so it matches the standard shape Mama's homepage has (SGS-BEM). Write the rules as a schema / standardisation / architecture document for Claude Design to follow, so future drafts arrive standardised. Start with a brainstorming council after this session is compacted; nothing is built until Bean approves a design.
+
+**Consequence.** This is the idea Bean held the script-binding wiring for (D1129). The evaluator stays built and unwired. The council's brief and reading list: `.claude/prompts/2026-09-20-draft-normalisation-council.md` (single-use; delete when the session ends).
+
+**Not decided.** Where normalisation lives, whether it renders the draft to static HTML or rewrites its source, how far the README can be trusted to supply structure (measured: loose matching wrong for 5 of 8 sections, exact phrases right for 3), and which of the screen route, guard, evaluator and the Spec 44/45 classless recognisers stay needed for third-party drafts.
+
 ## D1129 [ROUTINE] — Script-binding wiring on hold; breakpoints within about 10px round to the device tiers (2026-09-20)
 
 **Decisions (Bean).** (1) Do NOT wire the script-binding evaluator into the pipeline yet: Bean has an idea, to be raised after this session is compacted, that could change the design. (2) A draft width threshold within about 10px of a device-tier edge is ROUNDED to that edge (760 to the 767/768 edge, 1010 to the 1023/1024 edge, and so on). (3) A threshold further out than that follows the rule that already exists: the responsive value is written into the Additional CSS control (`sgsCustomCss`) of the block the element becomes.
