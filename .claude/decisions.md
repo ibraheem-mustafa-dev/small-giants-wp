@@ -16,7 +16,9 @@
 
 **W3A-5 done; W3A-2 closed.** The header-in-content fixtures exist (pages 3723, 3733, 3734, 3735). Inside a real header the dropdown has no list markers, no link underline, no indent and a visible surface, so the loose-fixture defects (bullets, underline, no surface, indent) were fixture artefacts and W3A-2 closes with no change.
 
-**Open.** The hover-underline cause (W3A-3) is unproven. Where the references keep the burger and close control, and whether any drawer omits a top close row, is read from the table, not assumed.
+**W3A-1 and W3A-3 measured.** W3A-1 reproduces on the pill fixture's mega panel only: the panel attaches to the header's bottom edge 21px below the item and closes at the 170ms grace (the mega's grace is hardcoded, not `submenuCloseGrace`). W3A-3 does not reproduce inside a real header; the loose-fixture behaviour came from the content-link rule in `extensions.css`, which matches `<a>` inside `.entry-content` only.
+
+**Open.** The W3A-1 fix (the header as one hover region) awaits the design gate. Where the references keep the burger and close control, and whether any drawer omits a top close row, is read from the table, not assumed.
 
 ## D1132 [ROUTINE] — Draft standardisation council: close the wiring gaps in existing code first; a small draft standard only for what code cannot derive; a deterministic second layer (2026-09-20)
 

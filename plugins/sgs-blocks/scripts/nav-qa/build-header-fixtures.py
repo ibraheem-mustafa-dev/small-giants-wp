@@ -238,6 +238,23 @@ def page_drawer_submenus(menu_id: int, header_attrs: dict) -> str:
     return "\n\n".join([site_header(header_attrs, [row]), drawer(menu_id), body_filler()])
 
 
+def page_hover_parity(menu_id: int, header_attrs: dict) -> str:
+    """W3A-3 hover-parity fixture: a header nav that sets an underline hover treatment
+    (a 2px bottom item border that changes colour on hover, plus a hover text-decoration)
+    on a menu holding plain items, an item with a dropdown and an item with a mega."""
+    row = middle_row([
+        block("sgs/responsive-logo", {"width": 140, "linkToHome": True}),
+        block("sgs/nav-bar-menu", {"ref": menu_id, "navLabel": "QA hover parity",
+                                   "itemColour": "text", "gap": "28px",
+                                   "itemBorderWidth": {"bottom": "2px"},
+                                   "itemBorderStyle": "solid",
+                                   "itemBorderColour": "transparent",
+                                   "itemBorderColourHover": "accent",
+                                   "itemTextDecorationHover": "underline"}),
+    ])
+    return "\n\n".join([site_header(header_attrs, [row]), body_filler()])
+
+
 # The three header variants. Attribute names are `sgs/site-header` block.json's own;
 # `maxWidth` and `headerFloat` are TIER OBJECTS (a scalar silently emits nothing).
 CAPPED = {"maxWidth": {"desktop": "1120px"}}
@@ -259,6 +276,8 @@ FIXTURES = [
      "build": page_full_nav, "header": PILL},
     {"slug": "qa-hdr-drawer-submenus", "title": "drawer with submenus + mega item",
      "build": page_drawer_submenus, "header": {}},
+    {"slug": "qa-hdr-hover-parity", "title": "underline hover parity: plain, dropdown and mega items",
+     "build": page_hover_parity, "header": {}},
 ]
 
 
