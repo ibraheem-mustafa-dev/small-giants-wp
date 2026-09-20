@@ -144,6 +144,27 @@ the site-wide Active drawer; a per-burger override wins.
 | W3-d | FR-37-26 blind-tester arm | NOT DONE | Bean-run, screen-recorded non-coder session; the authoritative half of the FAIL verdict. The automated proxy covers the Starter-Look control only and does not replace it | Bean session (schedule) | no |
 | W3-e | FR-37-18 inspector conformance (Spec 35A Part L) | PARTIAL | The conformance script's gap counts are raw upper bounds, not a workload; triage before acting | 1h (2h) | no |
 
+### Checkpoint protocol (every wave from 3A onward)
+
+No wave's implementation starts until the previous wave has passed all five steps, in order:
+
+1. **Evidence pack** built by the delegate that did the work (live URLs, computed-style output, the
+   command that produced each claim).
+2. **QC** by someone other than the builder: `/qc-inline` per unit; `/qc-council` (cross-model, each
+   fix-shape a hypothesis measured against a baseline) on any shared-mechanism change; an adversarial
+   review of a table or family list before Bean signs it.
+3. **Docs updated in the same commit** as the code or table they describe: the spec that owns the
+   behaviour (Spec 36 and Spec 37 together, per Spec 37 §1.2), this plan's unit rows, the verify doc,
+   `LEDGER.md`, `decisions.md`, and `specs/README.md` when a spec changes.
+4. **Mechanical gates:** `python .claude/hooks/handoff-preflight.py --check` and
+   `python plugins/sgs-blocks/scripts/lints/lint-spec-drift.py --check` pass.
+5. **Bean's gate** where the unit table marks one (W3B-1, W3B-5, the eye check closing 3C).
+
+Delegation rules: `/delegate` picks each model at dispatch. Mechanical measuring and fixture building
+go to a cheaper model; design, the family clustering and every shared-mechanism change go to the
+strongest. Parallel agents get disjoint file lists stated in their brief; a deploy is done once by the
+main thread after the agents' work is read and merged, never by an agent.
+
 ### Wave 3A — Independent fixes (real whatever the design)
 
 Every unit is first REPRODUCED inside a real `sgs/site-header` (the fixture pages 3693, 3694, 3699 and
@@ -213,6 +234,14 @@ drawer anchoring, force-solid) is reopened by a family, not patched on its own.
 | W3C-2 | Trigger and close behaviour | the burger is replaced in place by the close control where the references do it; the drawer omits a separate top close row where they omit it | from the table | YES |
 | W3C-3 | Drawer placement and sizing | side, width and anchor from the model, the trigger-anchored clamp (page 3699), and the force-solid tier background (the off value is the header's own resting background) | from the table | YES |
 | W3C-4 | Remaining families | one unit per family from W3B-4 | from the table | YES |
+
+**Lanes, delegation and checkpoints**
+
+| Wave | Order | Parallel lanes (disjoint files) | Delegate | QC checkpoint | Docs closed at the checkpoint |
+|---|---|---|---|---|---|
+| 3A | W3A-5 first; then W3A-1, W3A-2, W3A-3 together; W3A-4 from the start | L1 hover-intent JS (W3A-1) · L2 dropdown CSS include (W3A-2) · L3 item hover CSS include (W3A-3) · L4 Mama's canary content (W3A-4) | Sonnet builders per lane; main thread deploys once and verifies live | `/qc-inline` per lane; `/qc-council` on W3A-2 and W3A-3 because they change shared block defaults | Spec 36 (dropdown defaults, hover system), verify doc, LEDGER, `decisions.md` |
+| 3B | W3B-1 → (W3B-2 ‖ W3B-3) → W3B-4 → W3B-5 | one agent per reference, three references per batch, each writing its own file under `reports/reference-requirements/` | Sonnet for measuring; the strongest model for W3B-4 (clustering) | adversarial review of the columns before W3B-1 closes and of the family list before W3B-5 | the matrix report, this plan, verify doc, LEDGER, `decisions.md` |
+| 3C | one design-gate per family, then build | families with disjoint files in parallel; anything touching the shared header wrapper is serial | strongest model designs; `/subagent-driven-development` builds (implementer plus two reviewers); main thread deploys and verifies live | design-gate plus `/qc-council` before each shared-mechanism build; Bean's eye on one composed real header before 3C closes | Spec 36 and Spec 37 in the same commit, verify doc, LEDGER, `decisions.md`, `specs/README.md` |
 
 **TEST (critical path):** Happy = every reference's row is expressible with block attributes and one
 composed real header matches its row. Edge = the header at 375, 768 and 1440px with panels open.
@@ -303,6 +332,10 @@ visible.
 | Specs drift from the drawer CPT model | Medium | W2-r same-commit statement in both specs |
 | Shared worktree collision with a co-active track | Medium | Commit exact paths; never `git add -A`; branch re-check in the commit command |
 | Editor-killing crash past green gates | Medium | After any edit.js / shared-component change: deploy + OPEN the real editor before closing the unit. Every block name used in editor code must be a registered block (`sgs/nav-bar-menu`, `sgs/nav-drawer-menu`, `sgs/nav-drawer`): `createBlock` does not check the slug and an unregistered one inserts a dead `core/missing` placeholder |
+| A fix built on a fixture artefact (loose blocks outside a header) | High — wasted rebuild | Every W3A unit is reproduced inside a real header first; QA fixtures are rebuilt there (W3A-5) |
+| The table's columns miss a defining attribute, so a family is missed | High — surfaces as a Wave 4 loop-back | Adversarial and completeness review of the columns before W3B-1 closes; every unmatched reference behaviour is a new column, never dropped |
+| Clustering merges two mechanisms into one family, or splits one | Medium | Adversarial review of the family list before Bean signs it (W3B-5) |
+| Parallel agents collide on shared files | Medium | Disjoint file lists in each brief; one deploy by the main thread; `git diff --stat` read after every agent |
 | Store-API price data unavailable for search (36-20) | Low | Logged as its own dispatch, not silently absorbed |
 
 ---
@@ -325,8 +358,21 @@ pass; FR-37-42 writes correct grids incl. 1fr auto 1fr; Gate 3 is passable on th
 (W2-i..u) alone — W2-j/k/l/m/n/o/p/s may trail into Wave-3 time without blocking it
 TYPE: auto + /qc multi-rater
 
+GATE 3A: independent fixes verified
+AFTER: W3A-1..5  · PASS: each fix reproduced then fixed inside a real header with a negative control;
+QC and docs steps of the checkpoint protocol done  · TYPE: auto-gate + /qc-council
+
+GATE 3B: requirements table signed
+AFTER: W3B-1..5  · PASS: 12/12 references measured by computed style; every row in one family; the
+adversarial review of the family list answered; Bean has signed the list  · TYPE: go/no-go (Bean)
+
+GATE 3C: architecture harmonised
+AFTER: W3C-1..4  · PASS: every signed family built or explicitly mapped; one composed real header
+matches its table row; specs, verify doc and LEDGER state the model  · TYPE: auto + go/no-go (Bean's
+eye, R-31-13)
+
 GATE 4: studionamma accepted   ← THE go/no-go
-AFTER: W4-b  · PASS: Bean's eye + DP5 homes table reviewed + DP7-clean evidence
+AFTER: W3C + W4-b  · PASS: Bean's eye + DP5 homes table reviewed + DP7-clean evidence
 FAIL: capability gaps → loop back to waves 1–3, re-present only after DP7 evidence
 TYPE: go/no-go (Bean)  · READINESS: computed at the time; do not pre-assert
 · The Bean session is BOOKED at Wave 3 close with the evidence pack pre-built (external ping, not
@@ -353,6 +399,20 @@ Stop-loss: any gate <50 → surface pivot-vs-park with two ranked paths; log in 
   Label hint: PLAN opus (shared-mechanism design-gate inside: floating mode)
 
 [Wave 3 — handoff]  Trigger: /phase-planner scope="W3 polish"  · Label: sonnet
+
+[Wave 3A — handoff]  Trigger: /phase-planner scope="W3A independent fixes"
+  Entry: this plan (§ Checkpoint protocol, § Wave 3A) · nav-bar-menu and site-header block.json ·
+  includes/nav-menu-submenu-css.php · includes/nav-menu-item-border-featured-css.php
+  Label hint: sonnet builders, one lane each
+
+[Wave 3B — handoff]  Trigger: /phase-planner scope="W3B requirements table"
+  Entry: this plan (§ Wave 3B columns) · reports/2026-07-28-drawer-code-extraction/ · teardown run
+  20260728-112649-7bc4a8 · labels-<site>.json
+  Label hint: sonnet measurers per reference; opus for clustering
+
+[Wave 3C — handoff]  Trigger: /phase-planner scope="W3C header and nav architecture"
+  Entry: the signed family list · Spec 36 + Spec 37 · plugins/sgs-blocks/CLAUDE.md block standards
+  Label hint: PLAN opus (shared-mechanism design-gate per family)
 
 [Wave 4 — handoff]  Trigger: /phase-planner scope="W4 studionamma clone" (then per-clone)
   Entry: teardown FINDINGS.md · drawer-code-extraction jsons · DP5/DP7 · R-31-13
