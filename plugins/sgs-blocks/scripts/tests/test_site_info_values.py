@@ -1,4 +1,4 @@
-"""Tests for orchestrator/site_info_values.py: the draft's own business details replace the bindings that carry them (A2a, D1133).
+"""Tests for orchestrator/site_info_values.py: the draft's own business details replace the bindings that carry them (A2a, D1134).
 
 Run from plugins/sgs-blocks/scripts:
     python -m pytest tests/test_site_info_values.py -q -p no:cacheprovider
@@ -40,9 +40,31 @@ def test_a_loop_item_field_with_the_same_last_word_is_left_raw() -> None:
 
 
 def test_the_script_itself_is_never_edited() -> None:
-    """Negative control: only the template part changes; everything from the draft's own script on is untouched."""
-    out, _ = siv.resolve_site_info_bindings(DRAFT)
-    assert out[out.index('<script type="text/x-dc"'):] == DRAFT[DRAFT.index('<script type="text/x-dc"'):]
+    """Negative control: a template string INSIDE the script that holds `{{ gmbHref }}` must survive; only the
+    template part of the file is touched (removing the template/script split makes this fail)."""
+    html = ('<a href="{{ gmbHref }}">x</a><script type="text/x-dc">const C = {gmbHref:\'https://share.google/abc\'};'
+            'const TPL = \'<a href="{{ gmbHref }}">y</a>\';</script>')
+    out, counts = siv.resolve_site_info_bindings(html)
+    assert counts == {"gmbHref": 1}
+    assert out[out.index('<script type="text/x-dc"'):] == html[html.index('<script type="text/x-dc"'):]
+
+
+def test_a_name_inside_a_loop_or_condition_tag_is_never_replaced() -> None:
+    """QC council: `reviews` is a vocabulary word (the Google reviews link) AND an ordinary array name. A draft whose
+    script declares `reviews:'https://g.page/...'` must not have `<sc-for list="{{ reviews }}">` destroyed."""
+    html = ('<sc-for list="{{ reviews }}" as="r"><p>{{ r.who }}</p></sc-for><sc-if cond="{{ reviews }}"><a href="{{ reviews }}">x</a></sc-if>'
+            '<script type="text/x-dc">const C = {reviews:\'https://g.page/r/z\'};</script>')
+    out, counts = siv.resolve_site_info_bindings(html)
+    assert '<sc-for list="{{ reviews }}" as="r">' in out and '<sc-if cond="{{ reviews }}">' in out
+    assert '<a href="https://g.page/r/z">x</a>' in out and counts == {"reviews": 1}
+
+
+def test_the_drafts_own_script_wins_over_a_sample_default_in_another_script() -> None:
+    """QC council: a form's demo `email:` in an earlier <script> beat the business's own value."""
+    html = ('<script>const FORM = {email:\'you@example.com\'};</script><p>{{ email }}</p>'
+            '<script type="text/x-dc">const C = {email:\'hello@eyecare.example\'};</script>')
+    out, counts = siv.resolve_site_info_bindings(html)
+    assert counts == {"email": 1} and "<p>hello@eyecare.example</p>" in out
 
 
 def test_a_value_that_fails_its_shape_check_is_not_used() -> None:
