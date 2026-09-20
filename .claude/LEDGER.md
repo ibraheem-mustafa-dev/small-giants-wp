@@ -8,18 +8,20 @@ last_updated: 2026-09-20
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**NEXT SESSION OPENS WITH A BRAINSTORMING COUNCIL (Bean, D1130): standardise a draft when it arrives, and write a schema for Claude Design.**
-Read `.claude/prompts/2026-09-20-draft-normalisation-council.md` first. The idea: instead of the pipeline patching every
-oddity of a draft as it comes, clean the draft on arrival (round breakpoints within about 10px to the device tiers, fix
-missing labels, empty values and raw bindings, use the README to add labels and structure so it matches Mama's homepage),
-and give Claude Design a rules document so future drafts arrive clean. Nothing is built until Bean approves a design.
+**DRAFT STANDARDISATION: council done, plan approved (D1132). Read `.claude/plans/2026-09-20-draft-standardisation-plan.md`.**
+Finding: the JS-to-CSS translation already exists and is simply not wired in; the pipeline also silently ignores several parts
+of a draft (`<sc-if>` conditions, `style-hover`, multi-field JS-array copy, base64 logos). The README is wrong in 8 places
+against the files, so the files are the source of truth. Plan: (A) wire and extend existing functions, no new stage, starting
+with the evaluator; (B) a small draft standard only for what code cannot derive, written into the draft by Claude Design via a
+closing prompt; (C) a deterministic checker as the second layer. Waiting on Bean: the 10px snap (keep, or use a bounded
+residual for 760), and running the closing prompt in Claude Design.
 
 **Where the Eye Care clone stands (test page 11).** Spec 33 gives it the draft's real palette, fonts, square corners and 13
 saved business settings. The screen route clones only the Home screen: 5 of 8 homepage sections are on the page (was 1), none
 of the other screens' text, and raw `{{ }}` text is 53 occurrences (was 93). The guard stops raw style values reaching block
 settings. Still missing: the brand strip, best sellers and shape tiles (Spec 44 review queue, needs Bean); the spacing and
-grid columns (the draft's script states them per device and an evaluator can read them, but wiring it is on hold for the
-council); about 13 raw content bindings. Mama's Munches is untouched by all of it. Detail: D1120 to D1130, Spec 31 FR-31-27 to
+grid columns (the draft's script states them per device and an evaluator can read them; wiring it is plan step A1, D1132);
+about 13 raw content bindings. Mama's Munches is untouched by all of it. Detail: D1120 to D1130, Spec 31 FR-31-27 to
 FR-31-30, Spec 33 FR-33-15 to FR-33-17.
 
 **Nav / header / footer.** Wave 1 (fixtures + verification) is closed. Wave 2 (capabilities) is
