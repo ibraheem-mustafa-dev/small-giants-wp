@@ -83,6 +83,12 @@ lists screens, kinds, entities, references and a build order; report `reports/20
 the per-client entity registry, then clone About, Help and Contact with `--screen`. Mama's clones currently halt at the
 freshness gate because another session's uncommitted Mama's snapshot carries a different draft's hash.
 
+**Layout bindings (D1128).** Guard BUILT: a style value that is an unresolved `{{ }}` binding is dropped and reported, so the
+homepage sections no longer carry junk attributes (18 to 0). Evaluator BUILT, NOT wired: `orchestrator/script_bindings.py`
+turns the draft's own `mob / narrow / wide` expressions into mobile, tablet and desktop values (75 of 140 names, 0
+mismatches against the measured render). Until it is wired the sections take block defaults for padding and columns.
+Wiring design and one open question (58 of 75 names have a breakpoint inside a device tier): `reports/2026-09-20-script-binding-tiers-design.md`.
+
 **Open, in order:**
 1. *Problem 1, missing sections.* The "14 non-BEM" boundaries are classless sections gated on a hint (the draft has ONE
    `class=`): 4 homepage sections (b5, b7, b8, b9), 8 other routed views, 2 chrome. Spec 44 §11: proposed (A) admit any

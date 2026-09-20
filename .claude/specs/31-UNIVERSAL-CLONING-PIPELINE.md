@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 31
-spec_version: "0.9"
+spec_version: "1.0"
 project: small-giants-wp
 thread: cloning-pipeline
 title: "Universal Cloning Pipeline — Content + CSS Extraction"
@@ -1006,3 +1006,21 @@ A draft with no labelled screens yields one page and no entities, so a static dr
 **Done when (met on the Eye Care test page).** Live, read in a browser: the hero, "Why buy from me", reviews, the prescription-sunglasses explainer and the clinic-photo section are present (5 of 8 homepage sections, up from 1); Help, About, Contact, bag, checkout and order-confirmed text is absent; raw `{{ }}` text is 53 occurrences (32 distinct), down from 93 (59). Stage 11.6: content 18%, css 1%. Mama's homepage with the route on and off: identical block markup (32,767 characters) and identical statuses. `python -m pytest tests/test_screen_route.py` passes (8).
 
 **Not done.** The three homepage sections in the FR-44-1 review queue (b3 brand strip, b4 best sellers, b6 shape tiles); the raw script-computed layout values in block attributes (`padding` `{{ secPad }}`, `gridTemplateColumns` `{{ twoColWide }}`); the raw `{{ }}` text; Bean's eye on the page (R-31-13). Cloning About, Help and Contact as pages is `--screen`, not yet run.
+
+### FR-31-29 — An unresolved template binding is never lifted into a block attribute — BUILT
+
+**Behaviour.** A Claude Design draft's style values such as `padding: {{ secPad }}` are resolved by the draft's own runtime, so the static HTML the converter reads still carries the raw text. `converter/services/template_binding.py::drop_unresolved_bindings` runs at the one place the converter first reads a node's inline `style` (`converter/services/styling_helpers.py::collect_css_decls_for_element`, which also filters declarations from stylesheet rules). A declaration whose value contains `{{` or `}}` is dropped whole, before it can be tokenised into box sides or snapped to a design token, and is recorded as `kind: "dropped"` through the existing content-gap channel (`converter/services/content_gap_collector.py::record_declaration_gap`; reason "unresolved template binding"). Text and content bindings are not touched. A draft with no `{{` in a style value is unchanged.
+
+**Why.** Without it a shorthand became four junk sides (`{"top":"{{","left":"secPad","bottom":"}}"}`), and `font-size: {{ h2 }}` was snapped to `var(--wp--preset--font-size--h2)`, a preset the site does not define, so the live heading rendered at 16px instead of 46px.
+
+**Done when (met).** Eye Care homepage sections b2, b5, b7, b8 and b9: style-derived raw-binding attributes 18, then 0; boundary statuses unchanged; Mama's homepage markup byte-identical (32,767 characters); 874 converter tests pass.
+
+**Not done.** About 13 content bindings (`{{ r.title }}` in button labels, a heading, a quote attribution, three `sgs/text` `text` values) still reach attributes: a different problem.
+
+### FR-31-30 — Script-computed layout bindings as per-device values — evaluator BUILT, wiring NOT built
+
+**Behaviour built.** `orchestrator/script_bindings.py::resolve_tier_bindings` (with `orchestrator/script-bindings-eval.js`, a Node `vm` evaluator with an empty context and timeouts) reads the draft's script and evaluates every style binding that depends only on the draft's width flags. It reads the flag definitions from the script (`const mob = effW < 760, narrow = effW < 1024, wide = effW >= 1280`), never assumes them, and returns `{name: {mobile, tablet, desktop}}` for the fixed device tiers 375, 768 and 1440. Anything that depends on state, data or a loop item is returned as unresolved with its reason and never guessed; a draft whose flags cannot be read resolves nothing.
+
+**Proof.** Eye Care: 140 names in style values, 75 resolved, 65 unresolved (37 loop-item fields, 28 state or data driven). Against the measured render at 375, 768 and 1440 (`draft-responsive-probe.js`): 195 comparisons, 0 mismatches (`tests/test_script_bindings.py`, 33 tests). Design and options: `.claude/reports/2026-09-20-script-binding-tiers-design.md`.
+
+**Not built.** Nothing in the pipeline calls the evaluator, so the homepage sections still take block defaults for these values. The recommended wiring (design note §6): the orchestrator writes a per-run map, `convert_section` takes it as an optional `tier_bindings` argument, and `template_binding` substitutes each tier's text where it now drops the declaration, returning the Desktop text as the base and the Tablet and Mobile texts as overrides, the shape the converter already builds from a classed draft's `@media` rules. It is inert for a draft with no bindings. Open question for Bean: 58 of the 75 names have a draft breakpoint inside a device tier (760 to 767 against SGS mobile; `prodCols` 3 columns from 1024 to 1279, 4 from 1280), which three tiers cannot express.
