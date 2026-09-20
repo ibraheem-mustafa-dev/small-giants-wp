@@ -1,0 +1,239 @@
+{
+  "site": "awaytravel.com",
+  "harvested": "2026-09-20",
+  "desktop": {
+    "opened": true,
+    "reason_if_not": null,
+    "note": "Away has no full-screen drawer at 1440: the menu is the header nav plus header-wide mega panels. primary_links are the nav items; secondary_blocks are the per-panel columns and callouts plus the top-bar and utility blocks.",
+    "primary_links": [
+      {
+        "text": "NEW ARRIVALS",
+        "css_uppercase": true,
+        "has_panel": true
+      },
+      {
+        "text": "BEST SELLERS",
+        "css_uppercase": true,
+        "has_panel": false
+      },
+      {
+        "text": "LUGGAGE",
+        "css_uppercase": true,
+        "has_panel": true
+      },
+      {
+        "text": "BAGS",
+        "css_uppercase": true,
+        "has_panel": true
+      },
+      {
+        "text": "ACCESSORIES",
+        "css_uppercase": true,
+        "has_panel": true
+      },
+      {
+        "text": "SALE",
+        "css_uppercase": true,
+        "has_panel": true
+      }
+    ],
+    "secondary_blocks": [
+      {
+        "kind": "link-column",
+        "position_in_panel": "NEW ARRIVALS panel, header-wide panel, column 1 of 1",
+        "exact_text": "FEATURED: Cherry Red Topside / The Sabrina Ionescu Collection / Back-To-School Shop / Disney & Pixar's Toy Story 5 / Shop all new arrivals",
+        "note": "title is uppercase by CSS text-transform (14px, 0.7px tracking)"
+      },
+      {
+        "kind": "promo-card",
+        "position_in_panel": "NEW ARRIVALS panel, right side, image tile 1 of 2",
+        "exact_text": "AWAY X SABRINA IONESCU",
+        "note": "image 273.6 x 350.8 with a pill text button under it; label is uppercase by CSS (16px, 0.8px tracking)"
+      },
+      {
+        "kind": "promo-card",
+        "position_in_panel": "NEW ARRIVALS panel, right side, image tile 2 of 2",
+        "exact_text": "CHERRY RED TOPSIDE",
+        "note": "image 273.6 x 350.8 with a pill text button under it; label is uppercase by CSS (16px, 0.8px tracking)"
+      },
+      {
+        "kind": "link-column",
+        "position_in_panel": "LUGGAGE panel, header-wide panel, column 1 of 3",
+        "exact_text": "SHOP BY SIZE: All luggage / Carry-On luggage / Checked luggage / Compare Carry-Ons / Compare Checked",
+        "note": "title is uppercase by CSS text-transform (14px, 0.7px tracking)"
+      },
+      {
+        "kind": "link-column",
+        "position_in_panel": "LUGGAGE panel, header-wide panel, column 2 of 3",
+        "exact_text": "SHOP BY STYLE: Hardside / Flex / Topside / Softside / Aluminum / Compare styles",
+        "note": "title is uppercase by CSS text-transform (14px, 0.7px tracking)"
+      },
+      {
+        "kind": "link-column",
+        "position_in_panel": "LUGGAGE panel, header-wide panel, column 3 of 3",
+        "exact_text": "FEATURED: Personalize your luggage / The Sabrina Ionescu Collection / Family travel / The In Between Collection / Bundle & save",
+        "note": "title is uppercase by CSS text-transform (14px, 0.7px tracking)"
+      },
+      {
+        "kind": "promo-card",
+        "position_in_panel": "LUGGAGE panel, right side, image tile 1 of 2",
+        "exact_text": "NEW ALUMINUM EDGE",
+        "note": "image 273.6 x 350.8 with a pill text button under it; label is uppercase by CSS (16px, 0.8px tracking)"
+      },
+      {
+        "kind": "promo-card",
+        "position_in_panel": "LUGGAGE panel, right side, image tile 2 of 2",
+        "exact_text": "THE CHERRY ON TOPSIDE",
+        "note": "image 273.6 x 350.8 with a pill text button under it; label is uppercase by CSS (16px, 0.8px tracking)"
+      },
+      {
+        "kind": "link-column",
+        "position_in_panel": "BAGS panel, header-wide panel, column 1 of 2",
+        "exact_text": "SHOP BY CATEGORY: All bags / Backpacks / Duffles / Totes / Crossbodies / Garment bags / Diaper bags / Compare bags",
+        "note": "title is uppercase by CSS text-transform (14px, 0.7px tracking)"
+      },
+      {
+        "kind": "link-column",
+        "position_in_panel": "BAGS panel, header-wide panel, column 2 of 2",
+        "exact_text": "FEATURED: Personalize your bags / Game Day Essentials / Featherlight Collection / Active Collection",
+        "note": "title is uppercase by CSS text-transform (14px, 0.7px tracking)"
+      },
+      {
+        "kind": "promo-card",
+        "position_in_panel": "BAGS panel, right side, image tile 1 of 2",
+        "exact_text": "THE COMMUTER BACKPACK",
+        "note": "image 273.6 x 350.8 with a pill text button under it; label is uppercase by CSS (16px, 0.8px tracking)"
+      },
+      {
+        "kind": "promo-card",
+        "position_in_panel": "BAGS panel, right side, image tile 2 of 2",
+        "exact_text": "BOOKSMART SCHOOL BAGS",
+        "note": "image 273.6 x 350.8 with a pill text button under it; label is uppercase by CSS (16px, 0.8px tracking)"
+      },
+      {
+        "kind": "link-column",
+        "position_in_panel": "ACCESSORIES panel, header-wide panel, column 1 of 1",
+        "exact_text": "SHOP BY CATEGORY: All accessories / Packing organizers / Toiletry bags / Tech organizers / Small leather accessories / Luggage tags & charms",
+        "note": "title is uppercase by CSS text-transform (14px, 0.7px tracking)"
+      },
+      {
+        "kind": "promo-card",
+        "position_in_panel": "ACCESSORIES panel, right side, image tile 1 of 3",
+        "exact_text": "NEW PACKAWAY CLOSETS",
+        "note": "image 273.6 x 350.8 with a pill text button under it; label is uppercase by CSS (16px, 0.8px tracking)"
+      },
+      {
+        "kind": "promo-card",
+        "position_in_panel": "ACCESSORIES panel, right side, image tile 2 of 3",
+        "exact_text": "NEW: FEATHERLIGHT DAILY COSMETIC CASE",
+        "note": "image 273.6 x 350.8 with a pill text button under it; label is uppercase by CSS (16px, 0.8px tracking)"
+      },
+      {
+        "kind": "promo-card",
+        "position_in_panel": "ACCESSORIES panel, right side, image tile 3 of 3",
+        "exact_text": "ON-THE-GO ACCESSORIES",
+        "note": "image 273.6 x 350.8 with a pill text button under it; label is uppercase by CSS (16px, 0.8px tracking)"
+      },
+      {
+        "kind": "link-column",
+        "position_in_panel": "SALE panel, header-wide panel, column 1 of 1",
+        "exact_text": "WAYS TO SAVE: Shop sale / Reclaimed: Shop pre-owned / Bundle & Save",
+        "note": "title is uppercase by CSS text-transform (14px, 0.7px tracking)"
+      },
+      {
+        "kind": "announcement-carousel",
+        "position_in_panel": "top bar, centre, with previous / next arrows",
+        "exact_text": "rotating messages, first seen: \"Save up to $100 when you mix, match, and build your set\"; also \"NEW: Topside just landed\" and \"4,000-person waitlist: Aluminum Edge is back in new colors\"",
+        "note": "dynamic; bar colour changes per slide (#111111, #d85358, #39614c seen)"
+      },
+      {
+        "kind": "tertiary-link",
+        "position_in_panel": "top bar, right",
+        "exact_text": "Help"
+      },
+      {
+        "kind": "store-selector",
+        "position_in_panel": "top bar, right",
+        "exact_text": "Store / London",
+        "note": "select control with a dropdown of three stores"
+      },
+      {
+        "kind": "utility-icons",
+        "position_in_panel": "header row, right zone",
+        "exact_text": "Wishlist / Search / Log in / Cart (0)",
+        "note": "icon buttons with visually-hidden labels"
+      }
+    ],
+    "counts": {
+      "primary": 6,
+      "secondary_blocks": 21,
+      "panel_owning_items": 5
+    }
+  },
+  "mobile": {
+    "opened": true,
+    "reason_if_not": null,
+    "note": "Measured at 375 (full-width panel below the header) and 768 (390px side drawer); both hold the same content.",
+    "mobile_deltas": [
+      {
+        "change": "retained",
+        "kind": "primary-links",
+        "exact_text": "New Arrivals / Best Sellers / Luggage / Bags / Accessories / Sale",
+        "note": "same six items; five are accordions (aria-expanded), Best Sellers is a plain link; shown uppercase by CSS at 14px / 500"
+      },
+      {
+        "change": "retained",
+        "kind": "link-column",
+        "exact_text": "same column titles and links as the desktop panels",
+        "note": "inside each accordion panel; NEW ARRIVALS panel measured with its Featured group of 5 links"
+      },
+      {
+        "change": "retained",
+        "kind": "promo-card",
+        "exact_text": "AWAY X SABRINA IONESCU / CHERRY RED TOPSIDE",
+        "note": "two 236 x 338.8 image callouts side by side inside the expanded NEW ARRIVALS panel (measured); other panels not expanded in this capture"
+      },
+      {
+        "change": "migrated",
+        "kind": "utility-icons",
+        "exact_text": "Log in",
+        "note": "the account icon leaves the bar and becomes a text link at the top of the drawer secondary list"
+      },
+      {
+        "change": "migrated",
+        "kind": "tertiary-link",
+        "exact_text": "Help",
+        "note": "top-bar link at 1440 (display none below) becomes a drawer link"
+      },
+      {
+        "change": "migrated",
+        "kind": "store-selector",
+        "exact_text": "Our stores / London",
+        "note": "top-bar Store selector becomes an accordion \"Our stores\" containing a \"London\" store button"
+      },
+      {
+        "change": "added",
+        "kind": "tertiary-link",
+        "exact_text": "Refer a friend",
+        "note": "appears only in the drawer"
+      },
+      {
+        "change": "retained",
+        "kind": "utility-icons",
+        "exact_text": "Search, Wishlist, Cart",
+        "note": "stay in the bar; the hamburger is added at the left"
+      },
+      {
+        "change": "retained",
+        "kind": "announcement-carousel",
+        "exact_text": "rotating top-bar messages",
+        "note": "still in the top bar (arrows 36x36 at the message edges)"
+      }
+    ],
+    "counts": {
+      "primary": 6,
+      "secondary_links": 4
+    }
+  },
+  "notes": "Trigger at 1440: the nav items themselves (hover or focus opens the panel). Trigger at 768 and 375: a button with visually-hidden text \"Menu\" and no aria-label; the label does not change to Close. A cookie-consent Accept button appears on some loads (explore.mjs clicked it at every width; the later capture runs found none); at 375 a Klaviyo signup teaser tab appears at the left edge and does not cover the toggle. All text read from the rendered DOM by away-d.mjs, away-m.mjs and away-m2.mjs."
+}

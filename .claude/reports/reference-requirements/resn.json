@@ -1,0 +1,6324 @@
+{
+ "reference": "resn",
+ "url": "https://resn.co.nz/",
+ "captured": "2026-09-20",
+ "browser": "chromium headless, Playwright, software WebGL (iPhone Safari UA with touch at 375, desktop Chrome UA at 768 and 1440)",
+ "rows": [
+  {
+   "surface": "header-shell",
+   "tier": 375,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: no header element and no nav (0 of each in the document); .js-shell is a 0x0 wrapper whose children are separate fixed controls, so there is no shell to size, colour or hide",
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest / openSettled",
+      "selector": ".js-shell",
+      "raw": {
+       "semantics": {
+        "footers": 0,
+        "headers": 0,
+        "navs": 0,
+        "mains": 0,
+        "title": "Resn - Creative Digital Agency | Ideation, Design, and Development",
+        "hash": "",
+        "lang": "",
+        "htmlCls": "js no-flexbox canvas canvastext webgl touch geolocation postmessage no-websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs "
+       },
+       "scrollable": {
+        "docH": 900,
+        "winH": 900,
+        "htmlOv": "auto scroll",
+        "bodyOv": "visible"
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "bar",
+   "tier": 375,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: no bar; controls float over the canvas (menu button top-right 18x18; the sound toggle is display none at 375, a page-level VIEW ALL PROJECTS link top-centre on the home and work pages, a CLICK & HOLD prompt bottom-centre)",
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest / openSettled",
+      "selector": ".js-shell",
+      "raw": {
+       "fixedControls": [
+        [
+         "--menu.shell__button--menu.shell__button",
+         332,
+         31,
+         18,
+         18
+        ],
+        [
+         "ackground > div.js-background__drop__gem",
+         0,
+         0,
+         375,
+         900
+        ],
+        [
+         "> div.js-interactive_bar.interactive_bar",
+         62.5,
+         849,
+         250,
+         1
+        ],
+        [
+         "ves-top-anchor.go2933276541.go2369186930",
+         0,
+         0,
+         375,
+         900
+        ]
+       ],
+       "archive": {
+        "top": 30,
+        "left": 138.3,
+        "right": 236.7,
+        "bottom": 46,
+        "width": 98.3,
+        "height": 16,
+        "insetRight": 138.3,
+        "cx": 187.5,
+        "cy": 38
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "dropdown",
+   "tier": 375,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: the three menu items have no child panels (the menu page holds only the three items)",
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest / openSettled",
+      "selector": ".js-menu-page",
+      "raw": {
+       "items": [
+        [
+         null,
+         null
+        ],
+        [
+         null,
+         null
+        ],
+        [
+         null,
+         null
+        ]
+       ],
+       "kids": "menu page children: nav.js-menu with .menu-item children only"
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "mega",
+   "tier": 375,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: no panel of any kind attached to a menu item",
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest / openSettled",
+      "selector": ".js-menu-page",
+      "raw": {
+       "items": [
+        [
+         null,
+         null
+        ],
+        [
+         null,
+         null
+        ],
+        [
+         null,
+         null
+        ]
+       ],
+       "kids": "menu page children: nav.js-menu with .menu-item children only"
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "footer",
+   "tier": 375,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: no footer element (0 found), the document is exactly one viewport high (scrollHeight 900) at every route tested, and the Contact route shows office and social details as page content, not as a footer",
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest / openSettled",
+      "selector": "footer",
+      "raw": {
+       "semantics": {
+        "footers": 0,
+        "headers": 0,
+        "navs": 0,
+        "mains": 0,
+        "title": "Resn - Creative Digital Agency | Ideation, Design, and Development",
+        "hash": "",
+        "lang": "",
+        "htmlCls": "js no-flexbox canvas canvastext webgl touch geolocation postmessage no-websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs "
+       },
+       "scrollable": {
+        "docH": 900,
+        "winH": 900,
+        "htmlOv": "auto scroll",
+        "bodyOv": "visible"
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "trigger-close",
+   "tier": 375,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": "floating icon button top-right (no bar); when the menu opens a separate 26x26 close button appears in the same slot (the menu button drops to opacity 0 beneath it); the droplet button and history back also close it; Escape and empty-area taps do not",
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "resn-capture.mjs rest / open + closeprobe2.mjs",
+      "selector": ".js-shell__button--menu",
+      "raw": {
+       "menuBtnRect": {
+        "top": 31,
+        "left": 332,
+        "right": 350,
+        "bottom": 49,
+        "width": 18,
+        "height": 18,
+        "insetRight": 25,
+        "cx": 341,
+        "cy": 40
+       },
+       "pointerReach": {
+        "insideTarget": true,
+        "chain": [
+         {
+          "s": "use",
+          "z": "auto",
+          "rect": {
+           "top": 32.8,
+           "left": 332,
+           "right": 351.8,
+           "bottom": 47.2,
+           "width": 19.8,
+           "height": 14.4,
+           "insetRight": 23.2,
+           "cx": 341.9,
+           "cy": 40
+          }
+         },
+         {
+          "s": "svg",
+          "z": "auto",
+          "rect": {
+           "top": 31,
+           "left": 332,
+           "right": 350,
+           "bottom": 49,
+           "width": 18,
+           "height": 18,
+           "insetRight": 25,
+           "cx": 341,
+           "cy": 40
+          }
+         },
+         {
+          "s": "div.js-button__icon.button__icon",
+          "z": "auto",
+          "rect": {
+           "top": 31,
+           "left": 332,
+           "right": 350,
+           "bottom": 49,
+           "width": 18,
+           "height": 18,
+           "insetRight": 25,
+           "cx": 341,
+           "cy": 40
+          }
+         },
+         {
+          "s": "div.js-shell__button--menu.shell__button--menu.shell__button",
+          "z": "1000",
+          "rect": {
+           "top": 31,
+           "left": 332,
+           "right": 350,
+           "bottom": 49,
+           "width": 18,
+           "height": 18,
+           "insetRight": 25,
+           "cx": 341,
+           "cy": 40
+          }
+         }
+        ]
+       },
+       "closersByHash": {
+        "menu button again": false,
+        "close button": true,
+        "drop button": true,
+        "Escape": false,
+        "empty area click": false,
+        "history back": true
+       },
+       "shellWhileOpen": [
+        [
+         "on--drop",
+         25,
+         21,
+         18,
+         25
+        ],
+        [
+         "on--menu",
+         332,
+         31,
+         18,
+         18
+        ],
+        [
+         "n--close",
+         330,
+         25,
+         26,
+         26
+        ]
+       ]
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "menuButton": {
+       "w": 18,
+       "h": 18,
+       "top": 31,
+       "left": 332,
+       "insetRight": 25
+      },
+      "hitArea": {
+       "w": 60,
+       "h": 60,
+       "left": 311,
+       "top": 10
+      },
+      "zIndex": "1000",
+      "belowTouchTarget44": true,
+      "hitAreaCoversTheButton": true,
+      "closeButtonWhileOpen": {
+       "w": 26,
+       "h": 26,
+       "left": 330,
+       "top": 25
+      },
+      "dropButtonWhileOpen": [
+       {
+        "top": 21,
+        "left": 25,
+        "right": 43,
+        "bottom": 46,
+        "width": 18,
+        "height": 25,
+        "insetRight": 332,
+        "cx": 34,
+        "cy": 33.5
+       }
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest / openSettled",
+      "selector": ".js-shell__button--menu",
+      "raw": {
+       "rest": {
+        "top": 31,
+        "left": 332,
+        "right": 350,
+        "bottom": 49,
+        "width": 18,
+        "height": 18,
+        "insetRight": 25,
+        "cx": 341,
+        "cy": 40
+       },
+       "hit": {
+        "top": 10,
+        "left": 311,
+        "right": 371,
+        "bottom": 70,
+        "width": 60,
+        "height": 60,
+        "insetRight": 4,
+        "cx": 341,
+        "cy": 40
+       },
+       "shellOpen": [
+        [
+         "js-shell__button--drop.shell__button--drop",
+         {
+          "top": 21,
+          "left": 25,
+          "right": 43,
+          "bottom": 46,
+          "width": 18,
+          "height": 25,
+          "insetRight": 332,
+          "cx": 34,
+          "cy": 33.5
+         }
+        ],
+        [
+         "js-shell__button--menu.shell__button--menu",
+         {
+          "top": 31,
+          "left": 332,
+          "right": 350,
+          "bottom": 49,
+          "width": 18,
+          "height": 18,
+          "insetRight": 25,
+          "cx": 341,
+          "cy": 40
+         }
+        ],
+        [
+         "js-shell__button--close.shell__button--close",
+         {
+          "top": 25,
+          "left": 330,
+          "right": 356,
+          "bottom": 51,
+          "width": 26,
+          "height": 26,
+          "insetRight": 19,
+          "cx": 343,
+          "cy": 38
+         }
+        ]
+       ]
+      }
+     }
+    },
+    "zone_model": {
+     "value": {
+      "menuButton": "top-right",
+      "dropButton": "top-left, shown only while a route other than home is open (18x24 droplet)",
+      "soundToggle": "display none at 375",
+      "label": "a text label sits to the left of the menu button (opacity 0 at rest)",
+      "utilityControls": []
+     },
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest / openSettled",
+      "selector": ".js-shell",
+      "raw": {
+       "sound": {
+        "top": 0,
+        "left": 0,
+        "right": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0,
+        "insetRight": 375,
+        "cx": 0,
+        "cy": 0
+       },
+       "label": {
+        "top": 33,
+        "left": 272.1,
+        "right": 325,
+        "bottom": 43,
+        "width": 52.9,
+        "height": 10,
+        "insetRight": 50,
+        "cx": 298.5,
+        "cy": 38
+       }
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "fill": "none, no ring, no border",
+      "iconColour": "#ffffff SVG (a <use> symbol inside the icon div; the text-label span is #ffffff)",
+      "blur": "none"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest",
+      "selector": ".js-shell__button--menu",
+      "raw": {
+       "labelColour": "#ffffff",
+       "reachTop": "use"
+      }
+     }
+    },
+    "background_visual": {
+     "value": "none",
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest",
+      "selector": ".js-shell__button--menu",
+      "raw": {}
+     }
+    },
+    "item_typography": {
+     "value": {
+      "label": {
+       "fontFamily": "Fort-Book, Arial, sans-serif",
+       "fontSize": "10px",
+       "letterSpacing": "0.2px",
+       "textTransform": "uppercase",
+       "color": "#ffffff",
+       "text": "Discover"
+      },
+      "scaling": "stepped: 16px at 1440 and 768, 10px uppercase at 375"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest",
+      "selector": ".js-shell__button--menu .button__text",
+      "raw": {
+       "typo": {
+        "fontFamily": "Fort-Book, Arial, sans-serif",
+        "fontSize": "10px",
+        "fontWeight": "400",
+        "lineHeight": "10px",
+        "letterSpacing": "0.2px",
+        "textTransform": "uppercase",
+        "color": "#ffffff",
+        "textDecoration": "none #ffffff"
+       },
+       "rect": {
+        "top": 33,
+        "left": 272.1,
+        "right": 325,
+        "bottom": 43,
+        "width": 52.9,
+        "height": 10,
+        "insetRight": 50,
+        "cx": 298.5,
+        "cy": 38
+       }
+      }
+     }
+    },
+    "item_states": {
+     "value": {
+      "hover": "no change measured (opacity 0 -> 0); at 768 the pointer never reaches the button (canvas overlay), at 375 there is no hover",
+      "cursor": "auto",
+      "open": "while open the menu button goes to opacity 0 and the separate close button shows",
+      "focus": "no focus style: the control is a div with no tabindex, no role and no aria-label; 8 Tab presses never left the body"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "resn-capture.mjs hoverMenuBtn / keyboard",
+      "selector": ".js-shell__button--menu",
+      "raw": {
+       "before": "0",
+       "hover": {
+        "text": "",
+        "op": "0",
+        "r": {
+         "top": 33,
+         "left": 272.1,
+         "right": 325,
+         "bottom": 43,
+         "width": 52.9,
+         "height": 10,
+         "insetRight": 50,
+         "cx": 298.5,
+         "cy": 38
+        },
+        "typo": {
+         "fontFamily": "Fort-Book, Arial, sans-serif",
+         "fontSize": "10px",
+         "fontWeight": "400",
+         "lineHeight": "10px",
+         "letterSpacing": "0.2px",
+         "textTransform": "uppercase",
+         "color": "#ffffff",
+         "textDecoration": "none #ffffff"
+        }
+       },
+       "cursor": "auto",
+       "tabs": [
+        "BODY. About\nWork\nCon",
+        "BODY. About\nWork\nCon",
+        "BODY. About\nWork\nCon"
+       ]
+      }
+     }
+    },
+    "secondary_blocks": {
+     "value": {
+      "dropButton": "droplet home button, top-left, appears while a route is open (18x24, 18x25 at 375)",
+      "soundToggle": "absent at 375",
+      "showreelAndProjectButtons": "exist in the DOM but display none on the routes measured"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest / openSettled",
+      "selector": ".js-shell",
+      "raw": {
+       "shell": [
+        [
+         "on--drop",
+         "none"
+        ],
+        [
+         "on--menu",
+         "block"
+        ],
+        [
+         "on--reel",
+         "none"
+        ],
+        [
+         "n--sound",
+         "none"
+        ],
+        [
+         "n--close",
+         "none"
+        ],
+        [
+         "hive-btn",
+         "flex"
+        ]
+       ]
+      }
+     }
+    },
+    "trigger_close": {
+     "value": {
+      "kind": "a <div class=\"js-shell__button--menu\"> with an SVG icon and a text span; not a <button> or <a>",
+      "accessibleName": "none (the \"Discover\" text span is at opacity 0 and there is no aria-label or role)",
+      "burgerStyle": "SVG icon 18x18 (a <use> symbol, not measured further)",
+      "closeStyle": "no close style on the same button; a separate 26x26 close button",
+      "replacesInPlace": true,
+      "magnet": "none observed",
+      "closeWays": {
+       "menu button again": "does not close",
+       "close button": "closes",
+       "drop button": "closes",
+       "Escape": "does not close",
+       "empty area click": "does not close",
+       "history back": "closes"
+      }
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "closeprobe2.mjs",
+      "selector": ".js-shell__button--menu",
+      "raw": {
+       "tries": [
+        [
+         "menu button again",
+         {
+          "via": "dispatch",
+          "reach": {
+           "inside": false,
+           "top": "div.js-button__icon.button__icon"
+          }
+         },
+         "#!/menu"
+        ],
+        [
+         "close button",
+         {
+          "via": "tap",
+          "reach": {
+           "inside": true,
+           "top": "div.js-button__icon.button__icon"
+          }
+         },
+         ""
+        ],
+        [
+         "drop button",
+         {
+          "via": "tap",
+          "reach": {
+           "inside": true,
+           "top": "canvas"
+          }
+         },
+         ""
+        ],
+        [
+         "Escape",
+         {
+          "via": "key"
+         },
+         "#!/menu"
+        ],
+        [
+         "empty area click",
+         {
+          "via": "pointer"
+         },
+         "#!/menu"
+        ],
+        [
+         "history back",
+         {
+          "via": "history"
+         },
+         ""
+        ]
+       ]
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "openTrigger": "click on the button (route becomes #!/menu)",
+      "keyboard": "no focusable elements: Tab leaves activeElement on the body; the three menu items are <a> elements without href or tabindex",
+      "escape": "does not close the menu",
+      "scrollLock": "none needed: the document never scrolls (scrollHeight 900)",
+      "dialogOrInert": "none",
+      "pointerReach": "pointer input reaches the button (elementFromPoint returns the SVG use inside it)",
+      "openStateSurvivesResize": "not measured"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "resn-capture.mjs rest.reach / keyboard + closeprobe2.mjs",
+      "selector": ".js-shell__button--menu",
+      "raw": {
+       "reach": {
+        "insideTarget": true,
+        "chain": [
+         {
+          "s": "use",
+          "z": "auto",
+          "rect": {
+           "top": 32.8,
+           "left": 332,
+           "right": 351.8,
+           "bottom": 47.2,
+           "width": 19.8,
+           "height": 14.4,
+           "insetRight": 23.2,
+           "cx": 341.9,
+           "cy": 40
+          }
+         },
+         {
+          "s": "svg",
+          "z": "auto",
+          "rect": {
+           "top": 31,
+           "left": 332,
+           "right": 350,
+           "bottom": 49,
+           "width": 18,
+           "height": 18,
+           "insetRight": 25,
+           "cx": 341,
+           "cy": 40
+          }
+         },
+         {
+          "s": "div.js-button__icon.button__icon",
+          "z": "auto",
+          "rect": {
+           "top": 31,
+           "left": 332,
+           "right": 350,
+           "bottom": 49,
+           "width": 18,
+           "height": 18,
+           "insetRight": 25,
+           "cx": 341,
+           "cy": 40
+          }
+         },
+         {
+          "s": "div.js-shell__button--menu.shell__button--menu.shell__button",
+          "z": "1000",
+          "rect": {
+           "top": 31,
+           "left": 332,
+           "right": 350,
+           "bottom": 49,
+           "width": 18,
+           "height": 18,
+           "insetRight": 25,
+           "cx": 341,
+           "cy": 40
+          }
+         }
+        ]
+       },
+       "kbAfterEscape": {
+        "hash": "#!/menu",
+        "menuPresent": true,
+        "menuVisible": true
+       },
+       "closers": {
+        "menu button again": false,
+        "close button": true,
+        "drop button": true,
+        "Escape": false,
+        "empty area click": false,
+        "history back": true
+       },
+       "dispatchedClicks": [
+        [
+         ".js-shell__button--menu",
+         "div.js-button__icon.button__icon",
+         "auto"
+        ],
+        [
+         ".js-shell__button--menu",
+         "div.js-button__icon.button__icon",
+         "auto"
+        ]
+       ]
+      }
+     }
+    },
+    "motion": {
+     "value": [
+      {
+       "effect": "label reveal on the menu button (\"Discover\" fades from opacity 0 to about 1 on hover)",
+       "tier": "V",
+       "substrate": "DOM",
+       "tierCanExpress": true,
+       "why": "a CSS opacity transition"
+      },
+      {
+       "effect": "route changes are hash routes (#!/menu, #!/work, #!/contact) rendered by the app over the same WebGL scene; the menu element mounts within one sampled frame and the visible transition happens inside canvases",
+       "tier": "none",
+       "substrate": "canvas (WebGL and 2D)",
+       "tierCanExpress": false,
+       "why": "FR-38-19 page transitions are cross-document View Transitions (Tier V); an in-canvas single-page transition has no DOM to transition. Comes back as a Bean trim/exclude decision."
+      }
+     ],
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "resn-capture.mjs hoverMenuBtn / open",
+      "selector": ".js-shell__button--menu",
+      "raw": {
+       "openLog": {
+        "firstMenuT": 985,
+        "frames": 44,
+        "first": {
+         "t": 985,
+         "menu": true,
+         "op": "1",
+         "hash": "#!/menu",
+         "items": [
+          [
+           133.3,
+           315,
+           "1",
+           null
+          ],
+          [
+           141.3,
+           426.5,
+           "1",
+           null
+          ],
+          [
+           114.5,
+           538,
+           "1",
+           null
+          ]
+         ]
+        }
+       },
+       "libs": [
+        "requirejs",
+        "TweenMax",
+        "TimelineMax",
+        "Stats",
+        "createjs",
+        "THREE",
+        "__hsReferrer",
+        "__hsInitialUrl",
+        "dataLayer",
+        "__PRIVATE__HubspotCtaClient",
+        "__hsWebInteractiveInstance",
+        "__hsUserToken"
+       ]
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "menuLabel": "label text span is empty at 375 (no text read)",
+      "note": "labels at other tiers: Discover, Drop, Audio"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs shell state",
+      "selector": ".js-shell",
+      "raw": {
+       "shellText": [
+        [
+         "on--drop",
+         "drop"
+        ],
+        [
+         "on--menu",
+         ""
+        ],
+        [
+         "on--reel",
+         "showreel"
+        ],
+        [
+         "n--sound",
+         "audio"
+        ],
+        [
+         "n--close",
+         ""
+        ],
+        [
+         "hive-btn",
+         "VIEW ALL PROJECTS"
+        ]
+       ]
+      }
+     }
+    },
+    "tier_delta": {
+     "value": "button at left 332 / top 31, 60x60 hit area, 10px uppercase label, no sound toggle, separate close button while open, cursor auto",
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest",
+      "selector": ".js-shell__button--menu",
+      "raw": {
+       "rect": {
+        "top": 31,
+        "left": 332,
+        "right": 350,
+        "bottom": 49,
+        "width": 18,
+        "height": 18,
+        "insetRight": 25,
+        "cx": 341,
+        "cy": 40
+       },
+       "hit": {
+        "top": 10,
+        "left": 311,
+        "right": 371,
+        "bottom": 70,
+        "width": 60,
+        "height": 60,
+        "insetRight": 4,
+        "cx": 341,
+        "cy": 40
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "drawer",
+   "tier": 375,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": "full-screen: the menu route is an absolutely positioned page covering the whole viewport (width == viewport, height == viewport) laid over the persistent WebGL scene; it holds three canvas-drawn items and nothing else",
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "resn-capture.mjs openSettled",
+      "selector": ".js-menu-page",
+      "raw": {
+       "rect": {
+        "top": 0,
+        "left": 0,
+        "right": 375,
+        "bottom": 900,
+        "width": 375,
+        "height": 900,
+        "insetRight": 0,
+        "cx": 187.5,
+        "cy": 450
+       },
+       "position": "absolute",
+       "viewport": [
+        375,
+        900
+       ]
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "width": 375,
+      "height": 900,
+      "position": "absolute",
+      "zIndex": "auto",
+      "radius": "0px",
+      "anchor": "centred on the viewport (offset 0)",
+      "items": [
+       {
+        "w": 108.5,
+        "h": 47,
+        "left": 133.3,
+        "top": 315
+       },
+       {
+        "w": 92.5,
+        "h": 47,
+        "left": 141.3,
+        "top": 426.5
+       },
+       {
+        "w": 146,
+        "h": 47,
+        "left": 114.5,
+        "top": 538
+       }
+      ],
+      "nav": {
+       "display": "flex",
+       "flexDirection": "column",
+       "justify": "space-between",
+       "align": "center",
+       "rect": {
+        "top": 315,
+        "left": 0,
+        "right": 375,
+        "bottom": 585,
+        "width": 375,
+        "height": 270,
+        "insetRight": 0,
+        "cx": 187.5,
+        "cy": 450
+       }
+      }
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "resn-capture.mjs openSettled",
+      "selector": ".js-menu-page nav.js-menu",
+      "raw": {
+       "page": {
+        "rect": {
+         "top": 0,
+         "left": 0,
+         "right": 375,
+         "bottom": 900,
+         "width": 375,
+         "height": 900,
+         "insetRight": 0,
+         "cx": 187.5,
+         "cy": 450
+        },
+        "position": "absolute",
+        "top": "0px",
+        "left": "0px",
+        "right": "0px",
+        "zIndex": "auto",
+        "maxWidth": "none",
+        "width": "375px",
+        "transform": "none",
+        "display": "block",
+        "overflow": "visible",
+        "padding": "0px",
+        "margin": "0px"
+       },
+       "nav": {
+        "geo": {
+         "rect": {
+          "top": 315,
+          "left": 0,
+          "right": 375,
+          "bottom": 585,
+          "width": 375,
+          "height": 270,
+          "insetRight": 0,
+          "cx": 187.5,
+          "cy": 450
+         },
+         "position": "absolute",
+         "top": "450px",
+         "left": "0px",
+         "right": "0px",
+         "zIndex": "auto",
+         "maxWidth": "none",
+         "width": "375px",
+         "transform": "matrix(1, 0, 0, 1, 0, -135)",
+         "display": "flex",
+         "overflow": "visible",
+         "padding": "0px",
+         "margin": "0px"
+        },
+        "display": "flex",
+        "flexDir": "column",
+        "justify": "space-between",
+        "align": "center",
+        "gap": "normal"
+       },
+       "items": [
+        {
+         "top": 315,
+         "left": 133.3,
+         "right": 241.7,
+         "bottom": 362,
+         "width": 108.5,
+         "height": 47,
+         "insetRight": 133.3,
+         "cx": 187.5,
+         "cy": 338.5
+        },
+        {
+         "top": 426.5,
+         "left": 141.3,
+         "right": 233.7,
+         "bottom": 473.5,
+         "width": 92.5,
+         "height": 47,
+         "insetRight": 141.3,
+         "cx": 187.5,
+         "cy": 450
+        },
+        {
+         "top": 538,
+         "left": 114.5,
+         "right": 260.5,
+         "bottom": 585,
+         "width": 146,
+         "height": 47,
+         "insetRight": 114.5,
+         "cx": 187.5,
+         "cy": 561.5
+        }
+       ]
+      }
+     }
+    },
+    "zone_model": {
+     "value": {
+      "layout": "one vertical column of three items, centred (centre x 187.5), item pitch 111.5px",
+      "zones": "no top row, no footer row, no secondary blocks: About, Work, Contact only",
+      "shellControlsWhileOpen": [
+       "on--drop",
+       "on--menu",
+       "n--close"
+      ]
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "resn-capture.mjs openSettled",
+      "selector": ".js-menu-page",
+      "raw": {
+       "itemRects": [
+        {
+         "top": 315,
+         "left": 133.3,
+         "right": 241.7,
+         "bottom": 362,
+         "width": 108.5,
+         "height": 47,
+         "insetRight": 133.3,
+         "cx": 187.5,
+         "cy": 338.5
+        },
+        {
+         "top": 426.5,
+         "left": 141.3,
+         "right": 233.7,
+         "bottom": 473.5,
+         "width": 92.5,
+         "height": 47,
+         "insetRight": 141.3,
+         "cx": 187.5,
+         "cy": 450
+        },
+        {
+         "top": 538,
+         "left": 114.5,
+         "right": 260.5,
+         "bottom": 585,
+         "width": 146,
+         "height": 47,
+         "insetRight": 114.5,
+         "cx": 187.5,
+         "cy": 561.5
+        }
+       ],
+       "navRect": {
+        "top": 315,
+        "left": 0,
+        "right": 375,
+        "bottom": 585,
+        "width": 375,
+        "height": 270,
+        "insetRight": 0,
+        "cx": 187.5,
+        "cy": 450
+       }
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "fill": "#000000 @0 (transparent)",
+      "blur": "none",
+      "scrim": "none: the page is transparent and the WebGL scene stays visible behind it (its own shader dims and refocuses it)",
+      "shadow": "none"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs openSettled",
+      "selector": ".js-menu-page",
+      "raw": {
+       "backgroundColor": "#000000 @0",
+       "backgroundImage": "none",
+       "filter": "none",
+       "backdropFilter": "none",
+       "mixBlendMode": "normal",
+       "opacity": "1",
+       "boxShadow": "none",
+       "borderRadius": "0px",
+       "border": "0px none #000000",
+       "before": null,
+       "after": null
+      }
+     }
+    },
+    "background_visual": {
+     "value": {
+      "kind": "WebGL scene (three.js), full viewport, persistent across routes and interactive",
+      "behaviour": "animated continuously; responds to pointer position and to click-and-hold; the menu page does not replace it",
+      "canvas": {
+       "top": 0,
+       "left": 0,
+       "right": 0,
+       "bottom": 0,
+       "width": 0,
+       "height": 0,
+       "insetRight": 375,
+       "cx": 0,
+       "cy": 0
+      },
+      "renderSubstrate": "canvas"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest",
+      "selector": ".js-background canvas",
+      "raw": {
+       "bg": {
+        "canvas": {
+         "top": 0,
+         "left": 0,
+         "right": 0,
+         "bottom": 0,
+         "width": 0,
+         "height": 0,
+         "insetRight": 375,
+         "cx": 0,
+         "cy": 0
+        },
+        "bodyBg": "#000000",
+        "bgElBg": "#000000 @0",
+        "glCtx": false,
+        "bgPaint": {
+         "backgroundColor": "#000000 @0",
+         "backgroundImage": "none",
+         "filter": "none",
+         "backdropFilter": "none",
+         "mixBlendMode": "normal",
+         "opacity": "1",
+         "boxShadow": "none",
+         "borderRadius": "0px",
+         "border": "0px none #000000",
+         "before": null,
+         "after": null
+        }
+       },
+       "libs": {
+        "gsap": "undefined",
+        "TweenMax": "function",
+        "THREE": "object",
+        "PIXI": "undefined",
+        "createjs": "object",
+        "Howl": "undefined",
+        "lenis": "undefined",
+        "keys": [
+         "requirejs",
+         "TweenMax",
+         "TimelineMax",
+         "Stats",
+         "createjs",
+         "THREE",
+         "__hsReferrer",
+         "__hsInitialUrl",
+         "dataLayer",
+         "__PRIVATE__HubspotCtaClient",
+         "__hsWebInteractiveInstance",
+         "__hsUserToken"
+        ]
+       }
+      }
+     }
+    },
+    "item_typography": {
+     "value": {
+      "note": "text is drawn into canvases 108x47, 92x47 and 146x47 with no DOM text; glyph size not measurable from styles",
+      "canvasSizes": [
+       [
+        108,
+        47
+       ],
+       [
+        92,
+        47
+       ],
+       [
+        146,
+        47
+       ]
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs openSettled",
+      "selector": ".js-menu-page .menu-item canvas",
+      "raw": {
+       "items": [
+        [
+         108,
+         47,
+         null
+        ],
+        [
+         92,
+         47,
+         null
+        ],
+        [
+         146,
+         47,
+         null
+        ]
+       ]
+      }
+     }
+    },
+    "item_states": {
+     "value": {
+      "dissolve": "no hover on touch: canvas pixel hashes identical before and during (changedIdx empty for all three items)",
+      "cursor": "auto",
+      "active": "none"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "resn-capture.mjs menuItemHover",
+      "selector": ".js-menu-page .menu-item canvas",
+      "raw": {
+       "hover": {
+        "about": {
+         "before": [
+          [
+           1561673447,
+           75
+          ],
+          [
+           -536183218,
+           717
+          ],
+          [
+           1185115745,
+           701
+          ],
+          [
+           54187822,
+           904
+          ]
+         ],
+         "during": [
+          [
+           1561673447,
+           75
+          ],
+          [
+           -536183218,
+           717
+          ],
+          [
+           1185115745,
+           701
+          ],
+          [
+           54187822,
+           904
+          ]
+         ],
+         "changedIdx": [],
+         "cursor": "auto",
+         "dom": [
+          [
+           "div.js-menu-page.menu-page",
+           "1",
+           "none"
+          ],
+          [
+           "nav.js-menu.menu",
+           "1",
+           "matrix(1, 0, 0, 1, 0, -135)"
+          ],
+          [
+           "div.js-menu-about.menu-item.has-text-effect",
+           "1",
+           "none"
+          ],
+          [
+           "span",
+           "0",
+           "none"
+          ],
+          [
+           "canvas.text-effect-canvas",
+           "1",
+           "none"
+          ],
+          [
+           "div.js-menu-work.menu-item.has-text-effect",
+           "1",
+           "none"
+          ]
+         ]
+        },
+        "work": {
+         "before": [
+          [
+           1561673447,
+           75
+          ],
+          [
+           -536183218,
+           717
+          ],
+          [
+           1185115745,
+           701
+          ],
+          [
+           54187822,
+           904
+          ]
+         ],
+         "during": [
+          [
+           1561673447,
+           75
+          ],
+          [
+           -536183218,
+           717
+          ],
+          [
+           1185115745,
+           701
+          ],
+          [
+           54187822,
+           904
+          ]
+         ],
+         "changedIdx": [],
+         "cursor": "auto",
+         "dom": [
+          [
+           "div.js-menu-page.menu-page",
+           "1",
+           "none"
+          ],
+          [
+           "nav.js-menu.menu",
+           "1",
+           "matrix(1, 0, 0, 1, 0, -135)"
+          ],
+          [
+           "div.js-menu-about.menu-item.has-text-effect",
+           "1",
+           "none"
+          ],
+          [
+           "span",
+           "0",
+           "none"
+          ],
+          [
+           "canvas.text-effect-canvas",
+           "1",
+           "none"
+          ],
+          [
+           "div.js-menu-work.menu-item.has-text-effect",
+           "1",
+           "none"
+          ]
+         ]
+        },
+        "contact": {
+         "before": [
+          [
+           1561673447,
+           75
+          ],
+          [
+           -536183218,
+           717
+          ],
+          [
+           1185115745,
+           701
+          ],
+          [
+           54187822,
+           904
+          ]
+         ],
+         "during": [
+          [
+           1561673447,
+           75
+          ],
+          [
+           -536183218,
+           717
+          ],
+          [
+           1185115745,
+           701
+          ],
+          [
+           54187822,
+           904
+          ]
+         ],
+         "changedIdx": [],
+         "cursor": "auto",
+         "dom": [
+          [
+           "div.js-menu-page.menu-page",
+           "1",
+           "none"
+          ],
+          [
+           "nav.js-menu.menu",
+           "1",
+           "matrix(1, 0, 0, 1, 0, -135)"
+          ],
+          [
+           "div.js-menu-about.menu-item.has-text-effect",
+           "1",
+           "none"
+          ],
+          [
+           "span",
+           "0",
+           "none"
+          ],
+          [
+           "canvas.text-effect-canvas",
+           "1",
+           "none"
+          ],
+          [
+           "div.js-menu-work.menu-item.has-text-effect",
+           "1",
+           "none"
+          ]
+         ]
+        }
+       },
+       "run": null
+      }
+     }
+    },
+    "secondary_blocks": {
+     "value": {
+      "roster": "none inside the menu page",
+      "previewPaneFollowsHover": false,
+      "shellControls": "the droplet home button appears top-left while the menu is open; the sound toggle stays bottom-right (absent at 375)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs openSettled",
+      "selector": ".js-menu-page",
+      "raw": {
+       "shell": [
+        [
+         "on--drop",
+         {
+          "top": 21,
+          "left": 25,
+          "right": 43,
+          "bottom": 46,
+          "width": 18,
+          "height": 25,
+          "insetRight": 332,
+          "cx": 34,
+          "cy": 33.5
+         }
+        ],
+        [
+         "on--menu",
+         {
+          "top": 31,
+          "left": 332,
+          "right": 350,
+          "bottom": 49,
+          "width": 18,
+          "height": 18,
+          "insetRight": 25,
+          "cx": 341,
+          "cy": 40
+         }
+        ],
+        [
+         "n--close",
+         {
+          "top": 25,
+          "left": 330,
+          "right": 356,
+          "bottom": 51,
+          "width": 26,
+          "height": 26,
+          "insetRight": 19,
+          "cx": 343,
+          "cy": 38
+         }
+        ]
+       ]
+      }
+     }
+    },
+    "trigger_close": {
+     "value": {
+      "trigger": "menu button (see trigger-close row)",
+      "closeWays": {
+       "menu button again": "does not close",
+       "close button": "closes",
+       "drop button": "closes",
+       "Escape": "does not close",
+       "empty area click": "does not close",
+       "history back": "closes"
+      }
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "closeprobe2.mjs",
+      "selector": ".js-menu-page",
+      "raw": {
+       "tries": [
+        [
+         "menu button again",
+         "#!/menu",
+         true
+        ],
+        [
+         "close button",
+         "",
+         true
+        ],
+        [
+         "drop button",
+         "",
+         true
+        ],
+        [
+         "Escape",
+         "#!/menu",
+         true
+        ],
+        [
+         "empty area click",
+         "#!/menu",
+         true
+        ],
+        [
+         "history back",
+         "",
+         true
+        ]
+       ]
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "route": "#!/menu (hash route); history back closes it (yes)",
+      "scrollLock": "none: the document is one viewport high, overflow auto scroll on html but nothing to scroll",
+      "dialogOrInert": "no dialog, no inert, no aria attributes",
+      "focus": "not managed: activeElement stays the body; Tab visits nothing (8 presses)",
+      "itemSemantics": "each item is <a> with no href and no tabindex, opacity 0, containing the label span; the visible glyphs are the canvas",
+      "hoverBlocker": "a full-size .hover-blocker with pointer-events none sits under the items",
+      "clickTargets": "canvas or the .menu-item box; cursor auto",
+      "stickyOrHide": "n/a",
+      "openStateSurvivesResize": "not measured"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "resn-capture.mjs openSettled / keyboard + closeprobe2.mjs",
+      "selector": ".js-menu-page",
+      "raw": {
+       "items": [
+        [
+         null,
+         null,
+         null,
+         null,
+         null
+        ],
+        [
+         null,
+         null,
+         null,
+         null,
+         null
+        ],
+        [
+         null,
+         null,
+         null,
+         null,
+         null
+        ]
+       ],
+       "blocker": null,
+       "kb": {
+        "tabs": [
+         "BODY. About\nWork\nCon",
+         "BODY. About\nWork\nCon",
+         "BODY. About\nWork\nCon",
+         "BODY. About\nWork\nCon",
+         "BODY. About\nWork\nCon",
+         "BODY. About\nWork\nCon",
+         "BODY. About\nWork\nCon",
+         "BODY. About\nWork\nCon"
+        ],
+        "afterEscape": {
+         "hash": "#!/menu",
+         "menuPresent": true,
+         "menuVisible": true
+        }
+       }
+      }
+     }
+    },
+    "motion": {
+     "value": [
+      {
+       "effect": "persistent full-viewport WebGL scene behind every route: a shattered glass-like \"gem\" with chromatic-aberration fringing, driven by the pointer and by click-and-hold (touch-and-hold on touch); three.js, canvas 1440x900",
+       "tier": "none",
+       "substrate": "canvas (WebGL)",
+       "tierCanExpress": false,
+       "why": "Tier W is the only GPU tier, but its admission test needs (iii) one bounded surface, never page-wide chrome, and it must never become a 3D engine (three.js is named as the thing it must not grow into). This scene is page-wide, a 3D mesh with refraction, and every route sits on it. Comes back as a Bean trim/exclude decision (W4-c termination rule)."
+      },
+      {
+       "effect": "menu items drawn into per-item canvases (2D context) with a live dissolve: the hovered item goes to a near-constant high lit-pixel count while the other two lose 40 to 98 per cent of theirs",
+       "tier": "V (partial)",
+       "substrate": "canvas (2D)",
+       "tierCanExpress": "partly",
+       "why": "Tier V has a canvas 2D substrate (FR-38-32 particle trail and FR-38-33 grid-dot field use it), so a per-item 2D text dissolve is expressible as a new Tier V effect, but none exists. Rendering the label only into a canvas removes real text, which SGS must not do; the nearest built effect is FR-38-11 ScrambleText (Tier G, on real DOM text), which is a different look. So: no built tier effect matches; expressible in principle as a new Tier V effect that keeps the DOM text."
+      },
+      {
+       "effect": "hero title drawn partly in the DOM and partly elsewhere: innerText reads \"Re n · Creative Studio / E t. 2004\" (letters missing) while the rendered title shows every letter",
+       "tier": "G (partial)",
+       "substrate": "DOM text plus canvas",
+       "tierCanExpress": "partly",
+       "why": "Per-character treatment of real DOM text is Tier G SplitText / ScrambleText territory (FR-38-10, FR-38-11); drawing some glyphs outside the DOM, and the chromatic fringing around the title, are not expressible by any tier."
+      },
+      {
+       "effect": "label reveal on the menu button (\"Discover\" fades from opacity 0 to about 1 on hover)",
+       "tier": "V",
+       "substrate": "DOM",
+       "tierCanExpress": true,
+       "why": "a CSS opacity transition"
+      },
+      {
+       "effect": "\"VIEW ALL PROJECTS\" underline: two 1px underline spans switch opacity and transform on hover",
+       "tier": "V",
+       "substrate": "DOM",
+       "tierCanExpress": true,
+       "why": "CSS opacity and transform on pseudo-like spans"
+      },
+      {
+       "effect": "click-and-hold prompt with an 80x80 2D canvas progress ring (hold to enter)",
+       "tier": "V",
+       "substrate": "canvas (2D)",
+       "tierCanExpress": true,
+       "why": "a 2D canvas ring or an SVG stroke-dashoffset; the hold-to-enter behaviour is application logic, not an effect"
+      },
+      {
+       "effect": "route changes are hash routes (#!/menu, #!/work, #!/contact) rendered by the app over the same WebGL scene; the menu element mounts within one sampled frame and the visible transition happens inside canvases",
+       "tier": "none",
+       "substrate": "canvas (WebGL and 2D)",
+       "tierCanExpress": false,
+       "why": "FR-38-19 page transitions are cross-document View Transitions (Tier V); an in-canvas single-page transition has no DOM to transition. Comes back as a Bean trim/exclude decision."
+      },
+      {
+       "effect": "ambient audio with a sound toggle (Howler, bottom-right \"Audio\" control)",
+       "tier": "none",
+       "substrate": "audio",
+       "tierCanExpress": false,
+       "why": "sound is not a Spec 38 motion effect and no SGS block plays site audio; Bean decision."
+      }
+     ],
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "resn-capture.mjs open / menuItemHover + hovermeasure.mjs",
+      "selector": ".js-menu-page, .js-background canvas",
+      "raw": {
+       "openFrames": {
+        "frames": 44,
+        "firstMenuT": 985
+       },
+       "libs": [
+        "requirejs",
+        "TweenMax",
+        "TimelineMax",
+        "Stats",
+        "createjs",
+        "THREE",
+        "__hsReferrer",
+        "__hsInitialUrl",
+        "dataLayer",
+        "__PRIVATE__HubspotCtaClient",
+        "__hsWebInteractiveInstance",
+        "__hsUserToken"
+       ],
+       "globals": {
+        "gsap": "undefined",
+        "TweenMax": "function",
+        "THREE": "object",
+        "createjs": "object",
+        "Howl": "undefined"
+       },
+       "note": "the page renders at about 12 fps in this headless session (42 sampled frames in 3.5s), so no easing curve was recorded; the per-effect verdicts rest on the DOM and canvas evidence, the libraries present and the Spec 38 tier definitions"
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "items": "labels not read (canvas only)",
+      "routes": "reached by clicking the item boxes: #!/contact and #!/work",
+      "contactPage": [
+       "Contact",
+       "newbusiness@resn.co.nz",
+       "careers.resn.co.nz",
+       "WELLINGTON",
+       "+64 4 385 0705",
+       "AMSTERDAM",
+       "+31 20 2610299",
+       "SOCIALS",
+       "LinkedIn",
+       "Instagram",
+       "X",
+       "It looks like something went wrong. Plea"
+      ],
+      "fixedOrDynamic": "labels fixed; work list is dynamic"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs pages",
+      "selector": ".js-menu-page",
+      "raw": {
+       "pages": {
+        "contact": "#!/contact",
+        "work": "#!/work"
+       }
+      }
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "delta": "a vertical column (nav flex column, space-between, centred, 270px tall), items 108x47, 92x47 and 146x47, no DOM text, no hover; a separate close button appears",
+      "dropMechanism": "the row becomes a column at 375; the DOM text of the items is removed at 375 (only canvas remains); nothing collapses to 0x0"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "resn-capture.mjs openSettled",
+      "selector": ".js-menu-page",
+      "raw": {
+       "nav": {
+        "geo": {
+         "rect": {
+          "top": 315,
+          "left": 0,
+          "right": 375,
+          "bottom": 585,
+          "width": 375,
+          "height": 270,
+          "insetRight": 0,
+          "cx": 187.5,
+          "cy": 450
+         },
+         "position": "absolute",
+         "top": "450px",
+         "left": "0px",
+         "right": "0px",
+         "zIndex": "auto",
+         "maxWidth": "none",
+         "width": "375px",
+         "transform": "matrix(1, 0, 0, 1, 0, -135)",
+         "display": "flex",
+         "overflow": "visible",
+         "padding": "0px",
+         "margin": "0px"
+        },
+        "display": "flex",
+        "flexDir": "column",
+        "justify": "space-between",
+        "align": "center",
+        "gap": "normal"
+       },
+       "items": [
+        [
+         null,
+         null,
+         108.5,
+         47
+        ],
+        [
+         null,
+         null,
+         92.5,
+         47
+        ],
+        [
+         null,
+         null,
+         146,
+         47
+        ]
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "header-shell",
+   "tier": 768,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: no header element and no nav (0 of each in the document); .js-shell is a 0x0 wrapper whose children are separate fixed controls, so there is no shell to size, colour or hide",
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest / openSettled",
+      "selector": ".js-shell",
+      "raw": {
+       "semantics": {
+        "footers": 0,
+        "headers": 0,
+        "navs": 0,
+        "mains": 0,
+        "title": "Resn - Creative Digital Agency | Ideation, Design, and Development",
+        "hash": "",
+        "lang": "",
+        "htmlCls": "js no-flexbox canvas canvastext webgl no-touch geolocation postmessage no-websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multipleb"
+       },
+       "scrollable": {
+        "docH": 900,
+        "winH": 900,
+        "htmlOv": "auto scroll",
+        "bodyOv": "visible"
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "bar",
+   "tier": 768,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: no bar; controls float over the canvas (menu button top-right 18x18, sound toggle bottom-right 24x16, a page-level VIEW ALL PROJECTS link top-centre on the home and work pages, a CLICK & HOLD prompt bottom-centre)",
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest / openSettled",
+      "selector": ".js-shell",
+      "raw": {
+       "fixedControls": [
+        [
+         "--menu.shell__button--menu.shell__button",
+         727,
+         20,
+         18,
+         18
+        ],
+        [
+         "sound.shell__button--sound.shell__button",
+         721,
+         863,
+         24,
+         16
+        ],
+        [
+         "div#rootNode.rootNode",
+         0,
+         0,
+         768,
+         900
+        ],
+        [
+         "js-background__drop__gem.background__gem",
+         0,
+         0,
+         768,
+         900
+        ],
+        [
+         "> div.js-interactive_bar.interactive_bar",
+         259,
+         819,
+         250,
+         1
+        ],
+        [
+         "ves-top-anchor.go2933276541.go2369186930",
+         0,
+         0,
+         768,
+         900
+        ]
+       ],
+       "archive": {
+        "top": 61.4,
+        "left": 344.6,
+        "right": 423.4,
+        "bottom": 74.6,
+        "width": 78.8,
+        "height": 13.2,
+        "insetRight": 344.6,
+        "cx": 384,
+        "cy": 68
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "dropdown",
+   "tier": 768,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: the three menu items have no child panels (the menu page holds only the three items)",
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest / openSettled",
+      "selector": ".js-menu-page",
+      "raw": {
+       "items": [
+        [
+         "About",
+         "A"
+        ],
+        [
+         "Work",
+         "A"
+        ],
+        [
+         "Contact",
+         "A"
+        ]
+       ],
+       "kids": "menu page children: nav.js-menu with .menu-item children only"
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "mega",
+   "tier": 768,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: no panel of any kind attached to a menu item",
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest / openSettled",
+      "selector": ".js-menu-page",
+      "raw": {
+       "items": [
+        [
+         "About",
+         "A"
+        ],
+        [
+         "Work",
+         "A"
+        ],
+        [
+         "Contact",
+         "A"
+        ]
+       ],
+       "kids": "menu page children: nav.js-menu with .menu-item children only"
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "footer",
+   "tier": 768,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: no footer element (0 found), the document is exactly one viewport high (scrollHeight 900) at every route tested, and the Contact route shows office and social details as page content, not as a footer",
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest / openSettled",
+      "selector": "footer",
+      "raw": {
+       "semantics": {
+        "footers": 0,
+        "headers": 0,
+        "navs": 0,
+        "mains": 0,
+        "title": "Resn - Creative Digital Agency | Ideation, Design, and Development",
+        "hash": "",
+        "lang": "",
+        "htmlCls": "js no-flexbox canvas canvastext webgl no-touch geolocation postmessage no-websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multipleb"
+       },
+       "scrollable": {
+        "docH": 900,
+        "winH": 900,
+        "htmlOv": "auto scroll",
+        "bodyOv": "visible"
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "trigger-close",
+   "tier": 768,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": "floating icon button top-right (no bar); a full-viewport canvas at z-index 1005 sits above it, so real pointer input never reaches it (programmatic click opens the menu); the menu button does not close the menu; Escape and history back close it",
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "resn-capture.mjs rest / open + closeprobe2.mjs",
+      "selector": ".js-shell__button--menu",
+      "raw": {
+       "menuBtnRect": {
+        "top": 20,
+        "left": 727,
+        "right": 745,
+        "bottom": 38,
+        "width": 18,
+        "height": 18,
+        "insetRight": 23,
+        "cx": 736,
+        "cy": 29
+       },
+       "pointerReach": {
+        "insideTarget": false,
+        "chain": [
+         {
+          "s": "canvas",
+          "z": "1005",
+          "rect": {
+           "top": 0,
+           "left": 0,
+           "right": 768,
+           "bottom": 900,
+           "width": 768,
+           "height": 900,
+           "insetRight": 0,
+           "cx": 384,
+           "cy": 450
+          }
+         },
+         {
+          "s": "",
+          "z": "auto",
+          "rect": {
+           "top": 0,
+           "left": 0,
+           "right": 768,
+           "bottom": 900,
+           "width": 768,
+           "height": 900,
+           "insetRight": 0,
+           "cx": 384,
+           "cy": 450
+          }
+         },
+         {
+          "s": "html.js.no-flexbox.canvas",
+          "z": "auto",
+          "rect": {
+           "top": 0,
+           "left": 0,
+           "right": 768,
+           "bottom": 900,
+           "width": 768,
+           "height": 900,
+           "insetRight": 0,
+           "cx": 384,
+           "cy": 450
+          }
+         }
+        ]
+       },
+       "closersByHash": {
+        "menu button again": false,
+        "close button": false,
+        "drop button": false,
+        "Escape": true,
+        "empty area click": false,
+        "history back": true
+       },
+       "shellWhileOpen": [
+        [
+         "on--drop",
+         23,
+         15,
+         18,
+         24
+        ],
+        [
+         "on--menu",
+         727,
+         20,
+         18,
+         18
+        ],
+        [
+         "n--sound",
+         721,
+         863,
+         24,
+         16
+        ],
+        [
+         "_overlay",
+         0,
+         0,
+         0,
+         0
+        ]
+       ]
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "menuButton": {
+       "w": 18,
+       "h": 18,
+       "top": 20,
+       "left": 727,
+       "insetRight": 23
+      },
+      "hitArea": {
+       "w": 200,
+       "h": 200,
+       "left": 625,
+       "top": -100
+      },
+      "zIndex": "1000",
+      "belowTouchTarget44": true,
+      "hitAreaCoversTheButton": true,
+      "closeButtonWhileOpen": "none: the menu button stays in place",
+      "dropButtonWhileOpen": [
+       {
+        "top": 15,
+        "left": 23,
+        "right": 41,
+        "bottom": 39,
+        "width": 18,
+        "height": 24,
+        "insetRight": 727,
+        "cx": 32,
+        "cy": 27
+       }
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest / openSettled",
+      "selector": ".js-shell__button--menu",
+      "raw": {
+       "rest": {
+        "top": 20,
+        "left": 727,
+        "right": 745,
+        "bottom": 38,
+        "width": 18,
+        "height": 18,
+        "insetRight": 23,
+        "cx": 736,
+        "cy": 29
+       },
+       "hit": {
+        "top": -100,
+        "left": 625,
+        "right": 825,
+        "bottom": 100,
+        "width": 200,
+        "height": 200,
+        "insetRight": -57,
+        "cx": 725,
+        "cy": 0
+       },
+       "shellOpen": [
+        [
+         "js-shell__button--drop.shell__button--drop",
+         {
+          "top": 15,
+          "left": 23,
+          "right": 41,
+          "bottom": 39,
+          "width": 18,
+          "height": 24,
+          "insetRight": 727,
+          "cx": 32,
+          "cy": 27
+         }
+        ],
+        [
+         "js-shell__button--menu.shell__button--menu",
+         {
+          "top": 20,
+          "left": 727,
+          "right": 745,
+          "bottom": 38,
+          "width": 18,
+          "height": 18,
+          "insetRight": 23,
+          "cx": 736,
+          "cy": 29
+         }
+        ],
+        [
+         "js-shell__button--sound.shell__button--sound",
+         {
+          "top": 863,
+          "left": 721,
+          "right": 745,
+          "bottom": 879,
+          "width": 24,
+          "height": 16,
+          "insetRight": 23,
+          "cx": 733,
+          "cy": 871
+         }
+        ],
+        [
+         "js-shell__overlay.shell__overlay",
+         {
+          "top": 0,
+          "left": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "insetRight": 768,
+          "cx": 0,
+          "cy": 0
+         }
+        ]
+       ]
+      }
+     }
+    },
+    "zone_model": {
+     "value": {
+      "menuButton": "top-right",
+      "dropButton": "top-left, shown only while a route other than home is open (18x24 droplet)",
+      "soundToggle": "bottom-right 24x16 (Audio)",
+      "label": "a text label sits to the left of the menu button (opacity 0 at rest)",
+      "utilityControls": [
+       "sound (Audio)"
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest / openSettled",
+      "selector": ".js-shell",
+      "raw": {
+       "sound": {
+        "top": 863,
+        "left": 721,
+        "right": 745,
+        "bottom": 879,
+        "width": 24,
+        "height": 16,
+        "insetRight": 23,
+        "cx": 733,
+        "cy": 871
+       },
+       "label": {
+        "top": 21,
+        "left": 649.6,
+        "right": 715,
+        "bottom": 37,
+        "width": 65.4,
+        "height": 16,
+        "insetRight": 53,
+        "cx": 682.3,
+        "cy": 29
+       }
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "fill": "none, no ring, no border",
+      "iconColour": "#ffffff SVG (a <use> symbol inside the icon div; the text-label span is #ffffff)",
+      "blur": "none"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest",
+      "selector": ".js-shell__button--menu",
+      "raw": {
+       "labelColour": "#ffffff",
+       "reachTop": "canvas"
+      }
+     }
+    },
+    "background_visual": {
+     "value": "none",
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest",
+      "selector": ".js-shell__button--menu",
+      "raw": {}
+     }
+    },
+    "item_typography": {
+     "value": {
+      "label": {
+       "fontFamily": "Fort-Book, Arial, sans-serif",
+       "fontSize": "16px",
+       "letterSpacing": "normal",
+       "textTransform": "none",
+       "color": "#ffffff",
+       "text": "Discover"
+      },
+      "scaling": "stepped: 16px at 1440 and 768, 10px uppercase at 375"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest",
+      "selector": ".js-shell__button--menu .button__text",
+      "raw": {
+       "typo": {
+        "fontFamily": "Fort-Book, Arial, sans-serif",
+        "fontSize": "16px",
+        "fontWeight": "400",
+        "lineHeight": "16px",
+        "letterSpacing": "normal",
+        "textTransform": "none",
+        "color": "#ffffff",
+        "textDecoration": "none #ffffff"
+       },
+       "rect": {
+        "top": 21,
+        "left": 649.6,
+        "right": 715,
+        "bottom": 37,
+        "width": 65.4,
+        "height": 16,
+        "insetRight": 53,
+        "cx": 682.3,
+        "cy": 29
+       }
+      }
+     }
+    },
+    "item_states": {
+     "value": {
+      "hover": "no change measured (opacity 0 -> 0); at 768 the pointer never reaches the button (canvas overlay), at 375 there is no hover",
+      "cursor": "pointer",
+      "open": "while open at 768 the label stays hidden",
+      "focus": "no focus style: the control is a div with no tabindex, no role and no aria-label; 8 Tab presses never left the body"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "resn-capture.mjs hoverMenuBtn / keyboard",
+      "selector": ".js-shell__button--menu",
+      "raw": {
+       "before": "0",
+       "hover": {
+        "text": "",
+        "op": "0",
+        "r": {
+         "top": 21,
+         "left": 649.6,
+         "right": 715,
+         "bottom": 37,
+         "width": 65.4,
+         "height": 16,
+         "insetRight": 53,
+         "cx": 682.3,
+         "cy": 29
+        },
+        "typo": {
+         "fontFamily": "Fort-Book, Arial, sans-serif",
+         "fontSize": "16px",
+         "fontWeight": "400",
+         "lineHeight": "16px",
+         "letterSpacing": "normal",
+         "textTransform": "none",
+         "color": "#ffffff",
+         "textDecoration": "none #ffffff"
+        }
+       },
+       "cursor": "pointer",
+       "tabs": [
+        "BODY. About\nWork\nCon",
+        "BODY. About\nWork\nCon",
+        "BODY. About\nWork\nCon"
+       ]
+      }
+     }
+    },
+    "secondary_blocks": {
+     "value": {
+      "dropButton": "droplet home button, top-left, appears while a route is open (18x24)",
+      "soundToggle": "Audio toggle bottom-right",
+      "showreelAndProjectButtons": "exist in the DOM but display none on the routes measured"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest / openSettled",
+      "selector": ".js-shell",
+      "raw": {
+       "shell": [
+        [
+         "on--drop",
+         "none"
+        ],
+        [
+         "on--menu",
+         "block"
+        ],
+        [
+         "on--reel",
+         "none"
+        ],
+        [
+         "n--sound",
+         "block"
+        ],
+        [
+         "_overlay",
+         "block"
+        ],
+        [
+         "-project",
+         "none"
+        ],
+        [
+         "hive-btn",
+         "flex"
+        ]
+       ]
+      }
+     }
+    },
+    "trigger_close": {
+     "value": {
+      "kind": "a <div class=\"js-shell__button--menu\"> with an SVG icon and a text span; not a <button> or <a>",
+      "accessibleName": "none (the \"Discover\" text span is at opacity 0 and there is no aria-label or role)",
+      "burgerStyle": "SVG icon 18x18 (a <use> symbol, not measured further)",
+      "closeStyle": "no close style on the same button; closers are elsewhere",
+      "replacesInPlace": false,
+      "magnet": "none observed",
+      "closeWays": {
+       "menu button again": "does not close",
+       "close button": "does not close",
+       "drop button": "does not close",
+       "Escape": "closes",
+       "empty area click": "does not close",
+       "history back": "closes"
+      }
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "closeprobe2.mjs",
+      "selector": ".js-shell__button--menu",
+      "raw": {
+       "tries": [
+        [
+         "menu button again",
+         {
+          "via": "dispatch",
+          "reach": {
+           "inside": false,
+           "top": "canvas"
+          }
+         },
+         "#!/menu"
+        ],
+        [
+         "close button",
+         {
+          "err": "TimeoutError: locator.boundingBox: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - w"
+         },
+         "#!/menu"
+        ],
+        [
+         "drop button",
+         {
+          "via": "dispatch",
+          "reach": {
+           "inside": false,
+           "top": "canvas"
+          }
+         },
+         "#!/menu"
+        ],
+        [
+         "Escape",
+         {
+          "via": "key"
+         },
+         ""
+        ],
+        [
+         "empty area click",
+         {
+          "via": "pointer"
+         },
+         "#!/menu"
+        ],
+        [
+         "history back",
+         {
+          "via": "history"
+         },
+         ""
+        ]
+       ]
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "openTrigger": "click on the button (route becomes #!/menu)",
+      "keyboard": "no focusable elements: Tab leaves activeElement on the body; the three menu items are <a> elements without href or tabindex",
+      "escape": "closes the menu",
+      "scrollLock": "none needed: the document never scrolls (scrollHeight 900)",
+      "dialogOrInert": "none",
+      "pointerReach": "a full-viewport canvas at z-index 1005 covers the button: elementFromPoint at the button centre returns the canvas, so real clicks and hovers do not reach the controls at this width; a dispatched click on the button does open the menu (measured)",
+      "openStateSurvivesResize": "not measured"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "resn-capture.mjs rest.reach / keyboard + closeprobe2.mjs",
+      "selector": ".js-shell__button--menu",
+      "raw": {
+       "reach": {
+        "insideTarget": false,
+        "chain": [
+         {
+          "s": "canvas",
+          "z": "1005",
+          "rect": {
+           "top": 0,
+           "left": 0,
+           "right": 768,
+           "bottom": 900,
+           "width": 768,
+           "height": 900,
+           "insetRight": 0,
+           "cx": 384,
+           "cy": 450
+          }
+         },
+         {
+          "s": "",
+          "z": "auto",
+          "rect": {
+           "top": 0,
+           "left": 0,
+           "right": 768,
+           "bottom": 900,
+           "width": 768,
+           "height": 900,
+           "insetRight": 0,
+           "cx": 384,
+           "cy": 450
+          }
+         },
+         {
+          "s": "html.js.no-flexbox.canvas",
+          "z": "auto",
+          "rect": {
+           "top": 0,
+           "left": 0,
+           "right": 768,
+           "bottom": 900,
+           "width": 768,
+           "height": 900,
+           "insetRight": 0,
+           "cx": 384,
+           "cy": 450
+          }
+         }
+        ]
+       },
+       "kbAfterEscape": {
+        "hash": "",
+        "menuPresent": false,
+        "menuVisible": false
+       },
+       "closers": {
+        "menu button again": false,
+        "close button": false,
+        "drop button": false,
+        "Escape": true,
+        "empty area click": false,
+        "history back": true
+       },
+       "dispatchedClicks": [
+        [
+         ".js-shell__button--menu",
+         "canvas",
+         "1005"
+        ],
+        [
+         ".js-shell__button--menu",
+         "canvas",
+         "1005"
+        ],
+        [
+         ".js-shell__button--menu",
+         "canvas",
+         "1005"
+        ]
+       ]
+      }
+     }
+    },
+    "motion": {
+     "value": [
+      {
+       "effect": "label reveal on the menu button (\"Discover\" fades from opacity 0 to about 1 on hover)",
+       "tier": "V",
+       "substrate": "DOM",
+       "tierCanExpress": true,
+       "why": "a CSS opacity transition"
+      },
+      {
+       "effect": "route changes are hash routes (#!/menu, #!/work, #!/contact) rendered by the app over the same WebGL scene; the menu element mounts within one sampled frame and the visible transition happens inside canvases",
+       "tier": "none",
+       "substrate": "canvas (WebGL and 2D)",
+       "tierCanExpress": false,
+       "why": "FR-38-19 page transitions are cross-document View Transitions (Tier V); an in-canvas single-page transition has no DOM to transition. Comes back as a Bean trim/exclude decision."
+      }
+     ],
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "resn-capture.mjs hoverMenuBtn / open",
+      "selector": ".js-shell__button--menu",
+      "raw": {
+       "openLog": {
+        "firstMenuT": 521,
+        "frames": 59,
+        "first": {
+         "t": 521,
+         "menu": true,
+         "op": "1",
+         "hash": "#!/menu",
+         "items": [
+          [
+           145.9,
+           415.5,
+           "1",
+           "0"
+          ],
+          [
+           299.5,
+           415.5,
+           "1",
+           "0"
+          ],
+          [
+           453.1,
+           415.5,
+           "1",
+           "0"
+          ]
+         ]
+        }
+       },
+       "libs": [
+        "requirejs",
+        "TweenMax",
+        "TimelineMax",
+        "__hsReferrer",
+        "__hsInitialUrl",
+        "__PRIVATE__HubspotCtaClient",
+        "__hsWebInteractiveInstance",
+        "createjs",
+        "Howler",
+        "Howl",
+        "THREE",
+        "dataLayer"
+       ]
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "menuLabel": "Discover",
+      "dropLabel": "Drop",
+      "soundLabel": "Audio",
+      "hiddenLabels": [
+       "Showreel",
+       "Close Project"
+      ],
+      "fixedOrDynamic": "fixed"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs shell state",
+      "selector": ".js-shell",
+      "raw": {
+       "shellText": [
+        [
+         "on--drop",
+         "Drop"
+        ],
+        [
+         "on--menu",
+         ""
+        ],
+        [
+         "on--reel",
+         "Showreel"
+        ],
+        [
+         "n--sound",
+         ""
+        ],
+        [
+         "_overlay",
+         ""
+        ],
+        [
+         "-project",
+         "Close ProjectClose Showr"
+        ],
+        [
+         "hive-btn",
+         "VIEW ALL PROJECTS"
+        ]
+       ]
+      }
+     }
+    },
+    "tier_delta": {
+     "value": "button at left 727 / top 20, 200x200 hit area, 16px label, sound toggle present, a full-viewport canvas at z-index 1005 blocks pointer input",
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest",
+      "selector": ".js-shell__button--menu",
+      "raw": {
+       "rect": {
+        "top": 20,
+        "left": 727,
+        "right": 745,
+        "bottom": 38,
+        "width": 18,
+        "height": 18,
+        "insetRight": 23,
+        "cx": 736,
+        "cy": 29
+       },
+       "hit": {
+        "top": -100,
+        "left": 625,
+        "right": 825,
+        "bottom": 100,
+        "width": 200,
+        "height": 200,
+        "insetRight": -57,
+        "cx": 725,
+        "cy": 0
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "drawer",
+   "tier": 768,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": "full-screen: the menu route is an absolutely positioned page covering the whole viewport (width == viewport, height == viewport) laid over the persistent WebGL scene; it holds three canvas-drawn items and nothing else",
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "resn-capture.mjs openSettled",
+      "selector": ".js-menu-page",
+      "raw": {
+       "rect": {
+        "top": 0,
+        "left": 0,
+        "right": 768,
+        "bottom": 900,
+        "width": 768,
+        "height": 900,
+        "insetRight": 0,
+        "cx": 384,
+        "cy": 450
+       },
+       "position": "absolute",
+       "viewport": [
+        768,
+        900
+       ]
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "width": 768,
+      "height": 900,
+      "position": "absolute",
+      "zIndex": "auto",
+      "radius": "0px",
+      "anchor": "centred on the viewport (offset 0)",
+      "items": [
+       {
+        "w": 153.6,
+        "h": 69,
+        "left": 145.9,
+        "top": 415.5
+       },
+       {
+        "w": 153.6,
+        "h": 69,
+        "left": 299.5,
+        "top": 415.5
+       },
+       {
+        "w": 169,
+        "h": 69,
+        "left": 453.1,
+        "top": 415.5
+       }
+      ],
+      "nav": {
+       "display": "flex",
+       "flexDirection": "row",
+       "justify": "center",
+       "align": "center",
+       "rect": {
+        "top": 0,
+        "left": 0,
+        "right": 768,
+        "bottom": 900,
+        "width": 768,
+        "height": 900,
+        "insetRight": 0,
+        "cx": 384,
+        "cy": 450
+       }
+      }
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "resn-capture.mjs openSettled",
+      "selector": ".js-menu-page nav.js-menu",
+      "raw": {
+       "page": {
+        "rect": {
+         "top": 0,
+         "left": 0,
+         "right": 768,
+         "bottom": 900,
+         "width": 768,
+         "height": 900,
+         "insetRight": 0,
+         "cx": 384,
+         "cy": 450
+        },
+        "position": "absolute",
+        "top": "0px",
+        "left": "0px",
+        "right": "0px",
+        "zIndex": "auto",
+        "maxWidth": "none",
+        "width": "768px",
+        "transform": "none",
+        "display": "block",
+        "overflow": "visible",
+        "padding": "0px",
+        "margin": "0px"
+       },
+       "nav": {
+        "geo": {
+         "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 768,
+          "bottom": 900,
+          "width": 768,
+          "height": 900,
+          "insetRight": 0,
+          "cx": 384,
+          "cy": 450
+         },
+         "position": "static",
+         "top": "auto",
+         "left": "auto",
+         "right": "auto",
+         "zIndex": "auto",
+         "maxWidth": "none",
+         "width": "768px",
+         "transform": "none",
+         "display": "flex",
+         "overflow": "visible",
+         "padding": "0px",
+         "margin": "0px"
+        },
+        "display": "flex",
+        "flexDir": "row",
+        "justify": "center",
+        "align": "center",
+        "gap": "normal"
+       },
+       "items": [
+        {
+         "top": 415.5,
+         "left": 145.9,
+         "right": 299.5,
+         "bottom": 484.5,
+         "width": 153.6,
+         "height": 69,
+         "insetRight": 468.5,
+         "cx": 222.7,
+         "cy": 450
+        },
+        {
+         "top": 415.5,
+         "left": 299.5,
+         "right": 453.1,
+         "bottom": 484.5,
+         "width": 153.6,
+         "height": 69,
+         "insetRight": 314.9,
+         "cx": 376.3,
+         "cy": 450
+        },
+        {
+         "top": 415.5,
+         "left": 453.1,
+         "right": 622.1,
+         "bottom": 484.5,
+         "width": 169,
+         "height": 69,
+         "insetRight": 145.9,
+         "cx": 537.6,
+         "cy": 450
+        }
+       ]
+      }
+     }
+    },
+    "zone_model": {
+     "value": {
+      "layout": "one horizontal row of three items, centred on the viewport (row centre x 384.0), items touching (no gap)",
+      "zones": "no top row, no footer row, no secondary blocks: About, Work, Contact only",
+      "shellControlsWhileOpen": [
+       "on--drop",
+       "on--menu",
+       "n--sound",
+       "_overlay"
+      ]
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "resn-capture.mjs openSettled",
+      "selector": ".js-menu-page",
+      "raw": {
+       "itemRects": [
+        {
+         "top": 415.5,
+         "left": 145.9,
+         "right": 299.5,
+         "bottom": 484.5,
+         "width": 153.6,
+         "height": 69,
+         "insetRight": 468.5,
+         "cx": 222.7,
+         "cy": 450
+        },
+        {
+         "top": 415.5,
+         "left": 299.5,
+         "right": 453.1,
+         "bottom": 484.5,
+         "width": 153.6,
+         "height": 69,
+         "insetRight": 314.9,
+         "cx": 376.3,
+         "cy": 450
+        },
+        {
+         "top": 415.5,
+         "left": 453.1,
+         "right": 622.1,
+         "bottom": 484.5,
+         "width": 169,
+         "height": 69,
+         "insetRight": 145.9,
+         "cx": 537.6,
+         "cy": 450
+        }
+       ],
+       "navRect": {
+        "top": 0,
+        "left": 0,
+        "right": 768,
+        "bottom": 900,
+        "width": 768,
+        "height": 900,
+        "insetRight": 0,
+        "cx": 384,
+        "cy": 450
+       }
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "fill": "#000000 @0 (transparent)",
+      "blur": "none",
+      "scrim": "none: the page is transparent and the WebGL scene stays visible behind it (its own shader dims and refocuses it)",
+      "shadow": "none"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs openSettled",
+      "selector": ".js-menu-page",
+      "raw": {
+       "backgroundColor": "#000000 @0",
+       "backgroundImage": "none",
+       "filter": "none",
+       "backdropFilter": "none",
+       "mixBlendMode": "normal",
+       "opacity": "1",
+       "boxShadow": "none",
+       "borderRadius": "0px",
+       "border": "0px none #ffffff",
+       "before": null,
+       "after": null
+      }
+     }
+    },
+    "background_visual": {
+     "value": {
+      "kind": "WebGL scene (three.js), full viewport, persistent across routes and interactive",
+      "behaviour": "animated continuously; responds to pointer position and to click-and-hold; the menu page does not replace it",
+      "canvas": {
+       "top": 779,
+       "left": 344,
+       "right": 424,
+       "bottom": 859,
+       "width": 80,
+       "height": 80,
+       "insetRight": 344,
+       "cx": 384,
+       "cy": 819
+      },
+      "renderSubstrate": "canvas"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest",
+      "selector": ".js-background canvas",
+      "raw": {
+       "bg": {
+        "canvas": {
+         "top": 779,
+         "left": 344,
+         "right": 424,
+         "bottom": 859,
+         "width": 80,
+         "height": 80,
+         "insetRight": 344,
+         "cx": 384,
+         "cy": 819
+        },
+        "bodyBg": "#000000",
+        "bgElBg": "#000000 @0",
+        "glCtx": false,
+        "bgPaint": {
+         "backgroundColor": "#000000 @0",
+         "backgroundImage": "none",
+         "filter": "none",
+         "backdropFilter": "none",
+         "mixBlendMode": "normal",
+         "opacity": "1",
+         "boxShadow": "none",
+         "borderRadius": "0px",
+         "border": "0px none #000000",
+         "before": null,
+         "after": null
+        }
+       },
+       "libs": {
+        "gsap": "undefined",
+        "TweenMax": "function",
+        "THREE": "object",
+        "PIXI": "undefined",
+        "createjs": "object",
+        "Howl": "function",
+        "lenis": "undefined",
+        "keys": [
+         "requirejs",
+         "TweenMax",
+         "TimelineMax",
+         "__hsReferrer",
+         "__hsInitialUrl",
+         "__PRIVATE__HubspotCtaClient",
+         "__hsWebInteractiveInstance",
+         "createjs",
+         "Howler",
+         "Howl",
+         "THREE",
+         "dataLayer"
+        ]
+       }
+      }
+     }
+    },
+    "item_typography": {
+     "value": {
+      "domText": {
+       "fontFamily": "Fort-Extralight, Arial, sans-serif",
+       "fontSize": "39px",
+       "lineHeight": "39px",
+       "letterSpacing": "-2px",
+       "color": "#ffffff",
+       "textTransform": "none",
+       "domOpacity": "0 (the <a> with the text is invisible)"
+      },
+      "renderedText": "drawn into a per-item canvas (2D context); the DOM text is a hidden copy",
+      "scaling": "stepped: 58.5px at 1440, 39px at 768 (canvas 154x69)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs openSettled",
+      "selector": ".js-menu-page .menu-item a > span",
+      "raw": {
+       "typo": {
+        "fontFamily": "Fort-Extralight, Arial, sans-serif",
+        "fontSize": "39px",
+        "fontWeight": "400",
+        "lineHeight": "39px",
+        "letterSpacing": "-2px",
+        "textTransform": "none",
+        "color": "#ffffff",
+        "textDecoration": "none #ffffff"
+       },
+       "canvas": {
+        "rect": {
+         "top": 415.5,
+         "left": 145.9,
+         "right": 299.5,
+         "bottom": 484.5,
+         "width": 153.6,
+         "height": 69,
+         "insetRight": 468.5,
+         "cx": 222.7,
+         "cy": 450
+        },
+        "w": 154,
+        "h": 69,
+        "style": null
+       }
+      }
+     }
+    },
+    "item_states": {
+     "value": {
+      "dissolve": "not observed: lit-pixel means barely move between idle and hover (idle [571, 626, 799], hover About [587, 626, 785]); consistent with the pointer being intercepted by the z-index 1005 canvas at this width",
+      "litPixelMeans": {
+       "idle (pointer parked top-left)": [
+        571,
+        626,
+        799
+       ],
+       "hover About": [
+        587,
+        626,
+        785
+       ],
+       "hover Work": [
+        615,
+        626,
+        769
+       ],
+       "hover Contact": [
+        652,
+        626,
+        756
+       ],
+       "idle again": [
+        659,
+        626,
+        740
+       ]
+      },
+      "cursor": "pointer",
+      "active": "none"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "hovermeasure.mjs",
+      "selector": ".js-menu-page .menu-item canvas",
+      "raw": {
+       "hover": null,
+       "run": [
+        {
+         "label": "idle (pointer parked top-left)",
+         "lit": [
+          {
+           "mean": 570.6,
+           "sd": 1.18,
+           "min": 569,
+           "max": 572
+          },
+          {
+           "mean": 626,
+           "sd": 0,
+           "min": 626,
+           "max": 626
+          },
+          {
+           "mean": 799.2,
+           "sd": 1.78,
+           "min": 796,
+           "max": 801
+          }
+         ],
+         "spanX": [
+          {
+           "mean": 100,
+           "sd": 0,
+           "min": 100,
+           "max": 100
+          },
+          {
+           "mean": 86,
+           "sd": 0,
+           "min": 86,
+           "max": 86
+          },
+          {
+           "mean": 132,
+           "sd": 0,
+           "min": 132,
+           "max": 132
+          }
+         ],
+         "cy": [
+          {
+           "mean": 29.7,
+           "sd": 0,
+           "min": 29.7,
+           "max": 29.7
+          },
+          {
+           "mean": 28.3,
+           "sd": 0,
+           "min": 28.3,
+           "max": 28.3
+          },
+          {
+           "mean": 29.4,
+           "sd": 0,
+           "min": 29.4,
+           "max": 29.4
+          }
+         ]
+        },
+        {
+         "label": "hover About",
+         "lit": [
+          {
+           "mean": 586.8,
+           "sd": 3.34,
+           "min": 582,
+           "max": 592
+          },
+          {
+           "mean": 626,
+           "sd": 0,
+           "min": 626,
+           "max": 626
+          },
+          {
+           "mean": 784.7,
+           "sd": 2.31,
+           "min": 782,
+           "max": 788
+          }
+         ],
+         "spanX": [
+          {
+           "mean": 100,
+           "sd": 0,
+           "min": 100,
+           "max": 100
+          },
+          {
+           "mean": 86,
+           "sd": 0,
+           "min": 86,
+           "max": 86
+          },
+          {
+           "mean": 131,
+           "sd": 0,
+           "min": 131,
+           "max": 131
+          }
+         ],
+         "cy": [
+          {
+           "mean": 29.8,
+           "sd": 0.03,
+           "min": 29.7,
+           "max": 29.8
+          },
+          {
+           "mean": 28.3,
+           "sd": 0,
+           "min": 28.3,
+           "max": 28.3
+          },
+          {
+           "mean": 29.5,
+           "sd": 0,
+           "min": 29.5,
+           "max": 29.5
+          }
+         ]
+        },
+        {
+         "label": "hover Work",
+         "lit": [
+          {
+           "mean": 614.7,
+           "sd": 5.62,
+           "min": 607,
+           "max": 624
+          },
+          {
+           "mean": 626,
+           "sd": 0,
+           "min": 626,
+           "max": 626
+          },
+          {
+           "mean": 769.4,
+           "sd": 1.17,
+           "min": 768,
+           "max": 772
+          }
+         ],
+         "spanX": [
+          {
+           "mean": 100,
+           "sd": 0,
+           "min": 100,
+           "max": 100
+          },
+          {
+           "mean": 86,
+           "sd": 0,
+           "min": 86,
+           "max": 86
+          },
+          {
+           "mean": 131,
+           "sd": 0,
+           "min": 131,
+           "max": 131
+          }
+         ],
+         "cy": [
+          {
+           "mean": 29.9,
+           "sd": 0,
+           "min": 29.9,
+           "max": 29.9
+          },
+          {
+           "mean": 28.3,
+           "sd": 0,
+           "min": 28.3,
+           "max": 28.3
+          },
+          {
+           "mean": 29.6,
+           "sd": 0,
+           "min": 29.6,
+           "max": 29.6
+          }
+         ]
+        },
+        {
+         "label": "hover Contact",
+         "lit": [
+          {
+           "mean": 651.5,
+           "sd": 1.5,
+           "min": 648,
+           "max": 654
+          },
+          {
+           "mean": 626,
+           "sd": 0,
+           "min": 626,
+           "max": 626
+          },
+          {
+           "mean": 756.1,
+           "sd": 1.71,
+           "min": 752,
+           "max": 758
+          }
+         ],
+         "spanX": [
+          {
+           "mean": 100,
+           "sd": 0,
+           "min": 100,
+           "max": 100
+          },
+          {
+           "mean": 86,
+           "sd": 0,
+           "min": 86,
+           "max": 86
+          },
+          {
+           "mean": 130,
+           "sd": 0,
+           "min": 130,
+           "max": 130
+          }
+         ],
+         "cy": [
+          {
+           "mean": 29.9,
+           "sd": 0,
+           "min": 29.9,
+           "max": 29.9
+          },
+          {
+           "mean": 28.3,
+           "sd": 0,
+           "min": 28.3,
+           "max": 28.3
+          },
+          {
+           "mean": 29.6,
+           "sd": 0,
+           "min": 29.6,
+           "max": 29.6
+          }
+         ]
+        },
+        {
+         "label": "idle again",
+         "lit": [
+          {
+           "mean": 658.8,
+           "sd": 1.21,
+           "min": 657,
+           "max": 661
+          },
+          {
+           "mean": 626,
+           "sd": 0,
+           "min": 626,
+           "max": 626
+          },
+          {
+           "mean": 740.1,
+           "sd": 1.68,
+           "min": 738,
+           "max": 743
+          }
+         ],
+         "spanX": [
+          {
+           "mean": 100,
+           "sd": 0,
+           "min": 100,
+           "max": 100
+          },
+          {
+           "mean": 86,
+           "sd": 0,
+           "min": 86,
+           "max": 86
+          },
+          {
+           "mean": 130,
+           "sd": 0,
+           "min": 130,
+           "max": 130
+          }
+         ],
+         "cy": [
+          {
+           "mean": 29.9,
+           "sd": 0.03,
+           "min": 29.8,
+           "max": 29.9
+          },
+          {
+           "mean": 28.3,
+           "sd": 0,
+           "min": 28.3,
+           "max": 28.3
+          },
+          {
+           "mean": 29.5,
+           "sd": 0,
+           "min": 29.5,
+           "max": 29.5
+          }
+         ]
+        }
+       ]
+      }
+     }
+    },
+    "secondary_blocks": {
+     "value": {
+      "roster": "none inside the menu page",
+      "previewPaneFollowsHover": false,
+      "shellControls": "the droplet home button appears top-left while the menu is open; the sound toggle stays bottom-right"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs openSettled",
+      "selector": ".js-menu-page",
+      "raw": {
+       "shell": [
+        [
+         "on--drop",
+         {
+          "top": 15,
+          "left": 23,
+          "right": 41,
+          "bottom": 39,
+          "width": 18,
+          "height": 24,
+          "insetRight": 727,
+          "cx": 32,
+          "cy": 27
+         }
+        ],
+        [
+         "on--menu",
+         {
+          "top": 20,
+          "left": 727,
+          "right": 745,
+          "bottom": 38,
+          "width": 18,
+          "height": 18,
+          "insetRight": 23,
+          "cx": 736,
+          "cy": 29
+         }
+        ],
+        [
+         "n--sound",
+         {
+          "top": 863,
+          "left": 721,
+          "right": 745,
+          "bottom": 879,
+          "width": 24,
+          "height": 16,
+          "insetRight": 23,
+          "cx": 733,
+          "cy": 871
+         }
+        ],
+        [
+         "_overlay",
+         {
+          "top": 0,
+          "left": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "insetRight": 768,
+          "cx": 0,
+          "cy": 0
+         }
+        ]
+       ]
+      }
+     }
+    },
+    "trigger_close": {
+     "value": {
+      "trigger": "menu button (see trigger-close row)",
+      "closeWays": {
+       "menu button again": "does not close",
+       "close button": "does not close",
+       "drop button": "does not close",
+       "Escape": "closes",
+       "empty area click": "does not close",
+       "history back": "closes"
+      }
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "closeprobe2.mjs",
+      "selector": ".js-menu-page",
+      "raw": {
+       "tries": [
+        [
+         "menu button again",
+         "#!/menu",
+         true
+        ],
+        [
+         "close button",
+         "#!/menu",
+         true
+        ],
+        [
+         "drop button",
+         "#!/menu",
+         true
+        ],
+        [
+         "Escape",
+         "",
+         false
+        ],
+        [
+         "empty area click",
+         "#!/menu",
+         true
+        ],
+        [
+         "history back",
+         "",
+         false
+        ]
+       ]
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "route": "#!/menu (hash route); history back closes it (yes)",
+      "scrollLock": "none: the document is one viewport high, overflow auto scroll on html but nothing to scroll",
+      "dialogOrInert": "no dialog, no inert, no aria attributes",
+      "focus": "not managed: activeElement stays the body; Tab visits nothing (8 presses)",
+      "itemSemantics": "each item is <a> with no href and no tabindex, opacity 0, containing the label span; the visible glyphs are the canvas",
+      "hoverBlocker": "a full-size .hover-blocker with pointer-events none sits under the items",
+      "clickTargets": "canvas or the .menu-item box; cursor pointer",
+      "stickyOrHide": "n/a",
+      "openStateSurvivesResize": "not measured"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "resn-capture.mjs openSettled / keyboard + closeprobe2.mjs",
+      "selector": ".js-menu-page",
+      "raw": {
+       "items": [
+        [
+         "About",
+         "A",
+         null,
+         null,
+         "0"
+        ],
+        [
+         "Work",
+         "A",
+         null,
+         null,
+         "0"
+        ],
+        [
+         "Contact",
+         "A",
+         null,
+         null,
+         "0"
+        ]
+       ],
+       "blocker": {
+        "geo": {
+         "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 768,
+          "bottom": 900,
+          "width": 768,
+          "height": 900,
+          "insetRight": 0,
+          "cx": 384,
+          "cy": 450
+         },
+         "position": "absolute",
+         "top": "0px",
+         "left": "0px",
+         "right": "0px",
+         "zIndex": "1",
+         "maxWidth": "none",
+         "width": "768px",
+         "transform": "none",
+         "display": "block",
+         "overflow": "visible",
+         "padding": "0px",
+         "margin": "0px"
+        },
+        "pe": "none",
+        "bg": "#000000 @0"
+       },
+       "kb": {
+        "tabs": [
+         "BODY. About\nWork\nCon",
+         "BODY. About\nWork\nCon",
+         "BODY. About\nWork\nCon",
+         "BODY. About\nWork\nCon",
+         "BODY. About\nWork\nCon",
+         "BODY. About\nWork\nCon",
+         "BODY. About\nWork\nCon",
+         "BODY. About\nWork\nCon"
+        ],
+        "afterEscape": {
+         "hash": "",
+         "menuPresent": false,
+         "menuVisible": false
+        }
+       }
+      }
+     }
+    },
+    "motion": {
+     "value": [
+      {
+       "effect": "persistent full-viewport WebGL scene behind every route: a shattered glass-like \"gem\" with chromatic-aberration fringing, driven by the pointer and by click-and-hold (touch-and-hold on touch); three.js, canvas 1440x900",
+       "tier": "none",
+       "substrate": "canvas (WebGL)",
+       "tierCanExpress": false,
+       "why": "Tier W is the only GPU tier, but its admission test needs (iii) one bounded surface, never page-wide chrome, and it must never become a 3D engine (three.js is named as the thing it must not grow into). This scene is page-wide, a 3D mesh with refraction, and every route sits on it. Comes back as a Bean trim/exclude decision (W4-c termination rule)."
+      },
+      {
+       "effect": "menu items drawn into per-item canvases (2D context) with a live dissolve: the hovered item goes to a near-constant high lit-pixel count while the other two lose 40 to 98 per cent of theirs",
+       "tier": "V (partial)",
+       "substrate": "canvas (2D)",
+       "tierCanExpress": "partly",
+       "why": "Tier V has a canvas 2D substrate (FR-38-32 particle trail and FR-38-33 grid-dot field use it), so a per-item 2D text dissolve is expressible as a new Tier V effect, but none exists. Rendering the label only into a canvas removes real text, which SGS must not do; the nearest built effect is FR-38-11 ScrambleText (Tier G, on real DOM text), which is a different look. So: no built tier effect matches; expressible in principle as a new Tier V effect that keeps the DOM text."
+      },
+      {
+       "effect": "hero title drawn partly in the DOM and partly elsewhere: innerText reads \"Re n · Creative Studio / E t. 2004\" (letters missing) while the rendered title shows every letter",
+       "tier": "G (partial)",
+       "substrate": "DOM text plus canvas",
+       "tierCanExpress": "partly",
+       "why": "Per-character treatment of real DOM text is Tier G SplitText / ScrambleText territory (FR-38-10, FR-38-11); drawing some glyphs outside the DOM, and the chromatic fringing around the title, are not expressible by any tier."
+      },
+      {
+       "effect": "label reveal on the menu button (\"Discover\" fades from opacity 0 to about 1 on hover)",
+       "tier": "V",
+       "substrate": "DOM",
+       "tierCanExpress": true,
+       "why": "a CSS opacity transition"
+      },
+      {
+       "effect": "\"VIEW ALL PROJECTS\" underline: two 1px underline spans switch opacity and transform on hover",
+       "tier": "V",
+       "substrate": "DOM",
+       "tierCanExpress": true,
+       "why": "CSS opacity and transform on pseudo-like spans"
+      },
+      {
+       "effect": "click-and-hold prompt with an 80x80 2D canvas progress ring (hold to enter)",
+       "tier": "V",
+       "substrate": "canvas (2D)",
+       "tierCanExpress": true,
+       "why": "a 2D canvas ring or an SVG stroke-dashoffset; the hold-to-enter behaviour is application logic, not an effect"
+      },
+      {
+       "effect": "route changes are hash routes (#!/menu, #!/work, #!/contact) rendered by the app over the same WebGL scene; the menu element mounts within one sampled frame and the visible transition happens inside canvases",
+       "tier": "none",
+       "substrate": "canvas (WebGL and 2D)",
+       "tierCanExpress": false,
+       "why": "FR-38-19 page transitions are cross-document View Transitions (Tier V); an in-canvas single-page transition has no DOM to transition. Comes back as a Bean trim/exclude decision."
+      },
+      {
+       "effect": "ambient audio with a sound toggle (Howler, bottom-right \"Audio\" control)",
+       "tier": "none",
+       "substrate": "audio",
+       "tierCanExpress": false,
+       "why": "sound is not a Spec 38 motion effect and no SGS block plays site audio; Bean decision."
+      }
+     ],
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "resn-capture.mjs open / menuItemHover + hovermeasure.mjs",
+      "selector": ".js-menu-page, .js-background canvas",
+      "raw": {
+       "openFrames": {
+        "frames": 59,
+        "firstMenuT": 521
+       },
+       "libs": [
+        "requirejs",
+        "TweenMax",
+        "TimelineMax",
+        "__hsReferrer",
+        "__hsInitialUrl",
+        "__PRIVATE__HubspotCtaClient",
+        "__hsWebInteractiveInstance",
+        "createjs",
+        "Howler",
+        "Howl",
+        "THREE",
+        "dataLayer"
+       ],
+       "globals": {
+        "gsap": "undefined",
+        "TweenMax": "function",
+        "THREE": "object",
+        "createjs": "object",
+        "Howl": "function"
+       },
+       "note": "the page renders at about 12 fps in this headless session (42 sampled frames in 3.5s), so no easing curve was recorded; the per-effect verdicts rest on the DOM and canvas evidence, the libraries present and the Spec 38 tier definitions"
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "items": [
+       "About",
+       "Work",
+       "Contact"
+      ],
+      "caseOrigin": "source text, no CSS transform (mixed case)",
+      "routes": [
+       "#!/about (not opened)",
+       "#!/work/",
+       "#!/contact"
+      ],
+      "contactPage": [
+       "Contact",
+       "newbusiness@resn.co.nz",
+       "careers.resn.co.nz",
+       "WELLINGTON",
+       "+64 4 385 0705",
+       "AMSTERDAM",
+       "+31 20 2610299",
+       "SOCIAL",
+       "LinkedIn",
+       "Instagram",
+       "X",
+       "It looks like something went wrong. Plea"
+      ],
+      "fixedOrDynamic": "labels fixed; work list is dynamic"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs openSettled / pages",
+      "selector": ".js-menu-page",
+      "raw": {
+       "items": [
+        "About",
+        "Work",
+        "Contact"
+       ],
+       "pages": {
+        "contact": "#!/contact",
+        "work": "#!/work/"
+       }
+      }
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "delta": "a horizontal row of three items at 39px, row centred on x 384, pointer input blocked by a z-index 1005 canvas",
+      "dropMechanism": "the row becomes a column at 375; the DOM text of the items is removed at 375 (only canvas remains); nothing collapses to 0x0"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "resn-capture.mjs openSettled",
+      "selector": ".js-menu-page",
+      "raw": {
+       "nav": {
+        "geo": {
+         "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 768,
+          "bottom": 900,
+          "width": 768,
+          "height": 900,
+          "insetRight": 0,
+          "cx": 384,
+          "cy": 450
+         },
+         "position": "static",
+         "top": "auto",
+         "left": "auto",
+         "right": "auto",
+         "zIndex": "auto",
+         "maxWidth": "none",
+         "width": "768px",
+         "transform": "none",
+         "display": "flex",
+         "overflow": "visible",
+         "padding": "0px",
+         "margin": "0px"
+        },
+        "display": "flex",
+        "flexDir": "row",
+        "justify": "center",
+        "align": "center",
+        "gap": "normal"
+       },
+       "items": [
+        [
+         "About",
+         "A",
+         153.6,
+         69
+        ],
+        [
+         "Work",
+         "A",
+         153.6,
+         69
+        ],
+        [
+         "Contact",
+         "A",
+         169,
+         69
+        ]
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "header-shell",
+   "tier": 1440,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: no header element and no nav (0 of each in the document); .js-shell is a 0x0 wrapper whose children are separate fixed controls, so there is no shell to size, colour or hide",
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest / openSettled",
+      "selector": ".js-shell",
+      "raw": {
+       "semantics": {
+        "footers": 0,
+        "headers": 0,
+        "navs": 0,
+        "mains": 0,
+        "title": "Resn - Creative Digital Agency | Ideation, Design, and Development",
+        "hash": "",
+        "lang": "",
+        "htmlCls": "js no-flexbox canvas canvastext webgl no-touch geolocation postmessage no-websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multipleb"
+       },
+       "scrollable": {
+        "docH": 900,
+        "winH": 900,
+        "htmlOv": "auto scroll",
+        "bodyOv": "visible"
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "bar",
+   "tier": 1440,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: no bar; controls float over the canvas (menu button top-right 18x18, sound toggle bottom-right 24x16, a page-level VIEW ALL PROJECTS link top-centre on the home and work pages, a CLICK & HOLD prompt bottom-centre)",
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest / openSettled",
+      "selector": ".js-shell",
+      "raw": {
+       "fixedControls": [
+        [
+         "--menu.shell__button--menu.shell__button",
+         1399,
+         20,
+         18,
+         18
+        ],
+        [
+         "sound.shell__button--sound.shell__button",
+         1393,
+         863,
+         24,
+         16
+        ],
+        [
+         "div#rootNode.rootNode",
+         0,
+         0,
+         1440,
+         900
+        ],
+        [
+         "js-background__drop__gem.background__gem",
+         0,
+         0,
+         1440,
+         900
+        ],
+        [
+         "> div.js-interactive_bar.interactive_bar",
+         595,
+         819,
+         250,
+         1
+        ],
+        [
+         "ves-top-anchor.go2933276541.go2369186930",
+         0,
+         0,
+         1440,
+         900
+        ]
+       ],
+       "archive": {
+        "top": 82.1,
+        "left": 660.9,
+        "right": 779.1,
+        "bottom": 101.9,
+        "width": 118.1,
+        "height": 19.8,
+        "insetRight": 660.9,
+        "cx": 720,
+        "cy": 92
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "dropdown",
+   "tier": 1440,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: the three menu items have no child panels (the menu page holds only the three items)",
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest / openSettled",
+      "selector": ".js-menu-page",
+      "raw": {
+       "items": [
+        [
+         "About",
+         "A"
+        ],
+        [
+         "Work",
+         "A"
+        ],
+        [
+         "Contact",
+         "A"
+        ]
+       ],
+       "kids": "menu page children: nav.js-menu with .menu-item children only"
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "mega",
+   "tier": 1440,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: no panel of any kind attached to a menu item",
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest / openSettled",
+      "selector": ".js-menu-page",
+      "raw": {
+       "items": [
+        [
+         "About",
+         "A"
+        ],
+        [
+         "Work",
+         "A"
+        ],
+        [
+         "Contact",
+         "A"
+        ]
+       ],
+       "kids": "menu page children: nav.js-menu with .menu-item children only"
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "footer",
+   "tier": 1440,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: no footer element (0 found), the document is exactly one viewport high (scrollHeight 900) at every route tested, and the Contact route shows office and social details as page content, not as a footer",
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest / openSettled",
+      "selector": "footer",
+      "raw": {
+       "semantics": {
+        "footers": 0,
+        "headers": 0,
+        "navs": 0,
+        "mains": 0,
+        "title": "Resn - Creative Digital Agency | Ideation, Design, and Development",
+        "hash": "",
+        "lang": "",
+        "htmlCls": "js no-flexbox canvas canvastext webgl no-touch geolocation postmessage no-websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multipleb"
+       },
+       "scrollable": {
+        "docH": 900,
+        "winH": 900,
+        "htmlOv": "auto scroll",
+        "bodyOv": "visible"
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "trigger-close",
+   "tier": 1440,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": "floating icon button top-right (no bar); the menu opens a full-viewport page and the same button does not close it: closing is by the top-left droplet button, Escape, history back, or a click on empty space",
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "resn-capture.mjs rest / open + closeprobe2.mjs",
+      "selector": ".js-shell__button--menu",
+      "raw": {
+       "menuBtnRect": {
+        "top": 20,
+        "left": 1399,
+        "right": 1417,
+        "bottom": 38,
+        "width": 18,
+        "height": 18,
+        "insetRight": 23,
+        "cx": 1408,
+        "cy": 29
+       },
+       "pointerReach": {
+        "insideTarget": true,
+        "chain": [
+         {
+          "s": "use",
+          "z": "auto",
+          "rect": {
+           "top": 21.8,
+           "left": 1399,
+           "right": 1418.8,
+           "bottom": 36.2,
+           "width": 19.8,
+           "height": 14.4,
+           "insetRight": 21.2,
+           "cx": 1408.9,
+           "cy": 29
+          }
+         },
+         {
+          "s": "svg",
+          "z": "auto",
+          "rect": {
+           "top": 20,
+           "left": 1399,
+           "right": 1417,
+           "bottom": 38,
+           "width": 18,
+           "height": 18,
+           "insetRight": 23,
+           "cx": 1408,
+           "cy": 29
+          }
+         },
+         {
+          "s": "div.js-button__icon.button__icon",
+          "z": "auto",
+          "rect": {
+           "top": 20,
+           "left": 1399,
+           "right": 1417,
+           "bottom": 38,
+           "width": 18,
+           "height": 18,
+           "insetRight": 23,
+           "cx": 1408,
+           "cy": 29
+          }
+         },
+         {
+          "s": "div.js-shell__button--menu.shell__button--menu.shell__button",
+          "z": "1000",
+          "rect": {
+           "top": 20,
+           "left": 1399,
+           "right": 1417,
+           "bottom": 38,
+           "width": 18,
+           "height": 18,
+           "insetRight": 23,
+           "cx": 1408,
+           "cy": 29
+          }
+         }
+        ]
+       },
+       "closersByHash": {
+        "menu button again": false,
+        "close button": false,
+        "drop button": true,
+        "Escape": true,
+        "empty area click": true,
+        "history back": true
+       },
+       "shellWhileOpen": [
+        [
+         "on--drop",
+         23,
+         15,
+         18,
+         24
+        ],
+        [
+         "on--menu",
+         1399,
+         20,
+         18,
+         18
+        ],
+        [
+         "n--sound",
+         1393,
+         863,
+         24,
+         16
+        ],
+        [
+         "_overlay",
+         0,
+         0,
+         0,
+         0
+        ]
+       ]
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "menuButton": {
+       "w": 18,
+       "h": 18,
+       "top": 20,
+       "left": 1399,
+       "insetRight": 23
+      },
+      "hitArea": {
+       "w": 200,
+       "h": 200,
+       "left": 1297,
+       "top": -100
+      },
+      "zIndex": "1000",
+      "belowTouchTarget44": true,
+      "hitAreaCoversTheButton": true,
+      "closeButtonWhileOpen": "none: the menu button stays in place",
+      "dropButtonWhileOpen": [
+       {
+        "top": 15,
+        "left": 23,
+        "right": 41,
+        "bottom": 39,
+        "width": 18,
+        "height": 24,
+        "insetRight": 1399,
+        "cx": 32,
+        "cy": 27
+       }
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest / openSettled",
+      "selector": ".js-shell__button--menu",
+      "raw": {
+       "rest": {
+        "top": 20,
+        "left": 1399,
+        "right": 1417,
+        "bottom": 38,
+        "width": 18,
+        "height": 18,
+        "insetRight": 23,
+        "cx": 1408,
+        "cy": 29
+       },
+       "hit": {
+        "top": -100,
+        "left": 1297,
+        "right": 1497,
+        "bottom": 100,
+        "width": 200,
+        "height": 200,
+        "insetRight": -57,
+        "cx": 1397,
+        "cy": 0
+       },
+       "shellOpen": [
+        [
+         "js-shell__button--drop.shell__button--drop",
+         {
+          "top": 15,
+          "left": 23,
+          "right": 41,
+          "bottom": 39,
+          "width": 18,
+          "height": 24,
+          "insetRight": 1399,
+          "cx": 32,
+          "cy": 27
+         }
+        ],
+        [
+         "js-shell__button--menu.shell__button--menu",
+         {
+          "top": 20,
+          "left": 1399,
+          "right": 1417,
+          "bottom": 38,
+          "width": 18,
+          "height": 18,
+          "insetRight": 23,
+          "cx": 1408,
+          "cy": 29
+         }
+        ],
+        [
+         "js-shell__button--sound.shell__button--sound",
+         {
+          "top": 863,
+          "left": 1393,
+          "right": 1417,
+          "bottom": 879,
+          "width": 24,
+          "height": 16,
+          "insetRight": 23,
+          "cx": 1405,
+          "cy": 871
+         }
+        ],
+        [
+         "js-shell__overlay.shell__overlay",
+         {
+          "top": 0,
+          "left": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "insetRight": 1440,
+          "cx": 0,
+          "cy": 0
+         }
+        ]
+       ]
+      }
+     }
+    },
+    "zone_model": {
+     "value": {
+      "menuButton": "top-right",
+      "dropButton": "top-left, shown only while a route other than home is open (18x24 droplet)",
+      "soundToggle": "bottom-right 24x16 (Audio)",
+      "label": "a text label sits to the left of the menu button (opacity 0 at rest)",
+      "utilityControls": [
+       "sound (Audio)"
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest / openSettled",
+      "selector": ".js-shell",
+      "raw": {
+       "sound": {
+        "top": 863,
+        "left": 1393,
+        "right": 1417,
+        "bottom": 879,
+        "width": 24,
+        "height": 16,
+        "insetRight": 23,
+        "cx": 1405,
+        "cy": 871
+       },
+       "label": {
+        "top": 21,
+        "left": 1321.6,
+        "right": 1387,
+        "bottom": 37,
+        "width": 65.4,
+        "height": 16,
+        "insetRight": 53,
+        "cx": 1354.3,
+        "cy": 29
+       }
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "fill": "none, no ring, no border",
+      "iconColour": "#ffffff SVG (a <use> symbol inside the icon div; the text-label span is #ffffff)",
+      "blur": "none"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest",
+      "selector": ".js-shell__button--menu",
+      "raw": {
+       "labelColour": "#ffffff",
+       "reachTop": "use"
+      }
+     }
+    },
+    "background_visual": {
+     "value": "none",
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest",
+      "selector": ".js-shell__button--menu",
+      "raw": {}
+     }
+    },
+    "item_typography": {
+     "value": {
+      "label": {
+       "fontFamily": "Fort-Book, Arial, sans-serif",
+       "fontSize": "16px",
+       "letterSpacing": "normal",
+       "textTransform": "none",
+       "color": "#ffffff",
+       "text": "Discover"
+      },
+      "scaling": "stepped: 16px at 1440 and 768, 10px uppercase at 375"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest",
+      "selector": ".js-shell__button--menu .button__text",
+      "raw": {
+       "typo": {
+        "fontFamily": "Fort-Book, Arial, sans-serif",
+        "fontSize": "16px",
+        "fontWeight": "400",
+        "lineHeight": "16px",
+        "letterSpacing": "normal",
+        "textTransform": "none",
+        "color": "#ffffff",
+        "textDecoration": "none #ffffff"
+       },
+       "rect": {
+        "top": 21,
+        "left": 1321.6,
+        "right": 1387,
+        "bottom": 37,
+        "width": 65.4,
+        "height": 16,
+        "insetRight": 53,
+        "cx": 1354.3,
+        "cy": 29
+       }
+      }
+     }
+    },
+    "item_states": {
+     "value": {
+      "hover": "label fades in: opacity 0 -> 0.999556 and its text reads \"Discover\"",
+      "cursor": "pointer",
+      "open": "while open the label reads Discover at opacity 1 (1440); the menu button itself does not change into a close icon (no morph)",
+      "focus": "no focus style: the control is a div with no tabindex, no role and no aria-label; 8 Tab presses never left the body"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "resn-capture.mjs hoverMenuBtn / keyboard",
+      "selector": ".js-shell__button--menu",
+      "raw": {
+       "before": "0",
+       "hover": {
+        "text": "Discover",
+        "op": "0.999556",
+        "r": {
+         "top": 21,
+         "left": 1321.6,
+         "right": 1387,
+         "bottom": 37,
+         "width": 65.4,
+         "height": 16,
+         "insetRight": 53,
+         "cx": 1354.3,
+         "cy": 29
+        },
+        "typo": {
+         "fontFamily": "Fort-Book, Arial, sans-serif",
+         "fontSize": "16px",
+         "fontWeight": "400",
+         "lineHeight": "16px",
+         "letterSpacing": "normal",
+         "textTransform": "none",
+         "color": "#ffffff",
+         "textDecoration": "none #ffffff"
+        }
+       },
+       "cursor": "pointer",
+       "tabs": [
+        "BODY. About\nWork\nCon",
+        "BODY. About\nWork\nCon",
+        "BODY. About\nWork\nCon"
+       ]
+      }
+     }
+    },
+    "secondary_blocks": {
+     "value": {
+      "dropButton": "droplet home button, top-left, appears while a route is open (18x24)",
+      "soundToggle": "Audio toggle bottom-right",
+      "showreelAndProjectButtons": "exist in the DOM but display none on the routes measured"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest / openSettled",
+      "selector": ".js-shell",
+      "raw": {
+       "shell": [
+        [
+         "on--drop",
+         "none"
+        ],
+        [
+         "on--menu",
+         "block"
+        ],
+        [
+         "on--reel",
+         "none"
+        ],
+        [
+         "n--sound",
+         "block"
+        ],
+        [
+         "_overlay",
+         "block"
+        ],
+        [
+         "-project",
+         "none"
+        ],
+        [
+         "hive-btn",
+         "flex"
+        ]
+       ]
+      }
+     }
+    },
+    "trigger_close": {
+     "value": {
+      "kind": "a <div class=\"js-shell__button--menu\"> with an SVG icon and a text span; not a <button> or <a>",
+      "accessibleName": "none (the \"Discover\" text span is at opacity 0 and there is no aria-label or role)",
+      "burgerStyle": "SVG icon 18x18 (a <use> symbol, not measured further)",
+      "closeStyle": "no close style on the same button; closers are elsewhere",
+      "replacesInPlace": false,
+      "magnet": "none observed",
+      "closeWays": {
+       "menu button again": "does not close",
+       "close button": "does not close",
+       "drop button": "closes",
+       "Escape": "closes",
+       "empty area click": "closes",
+       "history back": "closes"
+      }
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "closeprobe2.mjs",
+      "selector": ".js-shell__button--menu",
+      "raw": {
+       "tries": [
+        [
+         "menu button again",
+         {
+          "via": "mouse",
+          "reach": {
+           "inside": true,
+           "top": "use"
+          }
+         },
+         "#!/menu"
+        ],
+        [
+         "close button",
+         {
+          "err": "TimeoutError: locator.boundingBox: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - w"
+         },
+         "#!/menu"
+        ],
+        [
+         "drop button",
+         {
+          "via": "mouse",
+          "reach": {
+           "inside": true,
+           "top": "canvas"
+          }
+         },
+         ""
+        ],
+        [
+         "Escape",
+         {
+          "via": "key"
+         },
+         ""
+        ],
+        [
+         "empty area click",
+         {
+          "via": "pointer"
+         },
+         ""
+        ],
+        [
+         "history back",
+         {
+          "via": "history"
+         },
+         ""
+        ]
+       ]
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "openTrigger": "click on the button (route becomes #!/menu)",
+      "keyboard": "no focusable elements: Tab leaves activeElement on the body; the three menu items are <a> elements without href or tabindex",
+      "escape": "closes the menu",
+      "scrollLock": "none needed: the document never scrolls (scrollHeight 900)",
+      "dialogOrInert": "none",
+      "pointerReach": "pointer input reaches the button (elementFromPoint returns the SVG use inside it)",
+      "openStateSurvivesResize": "not measured"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "resn-capture.mjs rest.reach / keyboard + closeprobe2.mjs",
+      "selector": ".js-shell__button--menu",
+      "raw": {
+       "reach": {
+        "insideTarget": true,
+        "chain": [
+         {
+          "s": "use",
+          "z": "auto",
+          "rect": {
+           "top": 21.8,
+           "left": 1399,
+           "right": 1418.8,
+           "bottom": 36.2,
+           "width": 19.8,
+           "height": 14.4,
+           "insetRight": 21.2,
+           "cx": 1408.9,
+           "cy": 29
+          }
+         },
+         {
+          "s": "svg",
+          "z": "auto",
+          "rect": {
+           "top": 20,
+           "left": 1399,
+           "right": 1417,
+           "bottom": 38,
+           "width": 18,
+           "height": 18,
+           "insetRight": 23,
+           "cx": 1408,
+           "cy": 29
+          }
+         },
+         {
+          "s": "div.js-button__icon.button__icon",
+          "z": "auto",
+          "rect": {
+           "top": 20,
+           "left": 1399,
+           "right": 1417,
+           "bottom": 38,
+           "width": 18,
+           "height": 18,
+           "insetRight": 23,
+           "cx": 1408,
+           "cy": 29
+          }
+         },
+         {
+          "s": "div.js-shell__button--menu.shell__button--menu.shell__button",
+          "z": "1000",
+          "rect": {
+           "top": 20,
+           "left": 1399,
+           "right": 1417,
+           "bottom": 38,
+           "width": 18,
+           "height": 18,
+           "insetRight": 23,
+           "cx": 1408,
+           "cy": 29
+          }
+         }
+        ]
+       },
+       "kbAfterEscape": {
+        "hash": "",
+        "menuPresent": false,
+        "menuVisible": false
+       },
+       "closers": {
+        "menu button again": false,
+        "close button": false,
+        "drop button": true,
+        "Escape": true,
+        "empty area click": true,
+        "history back": true
+       },
+       "dispatchedClicks": []
+      }
+     }
+    },
+    "motion": {
+     "value": [
+      {
+       "effect": "label reveal on the menu button (\"Discover\" fades from opacity 0 to about 1 on hover)",
+       "tier": "V",
+       "substrate": "DOM",
+       "tierCanExpress": true,
+       "why": "a CSS opacity transition"
+      },
+      {
+       "effect": "route changes are hash routes (#!/menu, #!/work, #!/contact) rendered by the app over the same WebGL scene; the menu element mounts within one sampled frame and the visible transition happens inside canvases",
+       "tier": "none",
+       "substrate": "canvas (WebGL and 2D)",
+       "tierCanExpress": false,
+       "why": "FR-38-19 page transitions are cross-document View Transitions (Tier V); an in-canvas single-page transition has no DOM to transition. Comes back as a Bean trim/exclude decision."
+      }
+     ],
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "resn-capture.mjs hoverMenuBtn / open",
+      "selector": ".js-shell__button--menu",
+      "raw": {
+       "openLog": {
+        "firstMenuT": 649,
+        "frames": 42,
+        "first": {
+         "t": 649,
+         "menu": true,
+         "op": "1",
+         "hash": "#!/menu",
+         "items": [
+          [
+           273.6,
+           398.3,
+           "1",
+           "0"
+          ],
+          [
+           561.6,
+           398.3,
+           "1",
+           "0"
+          ],
+          [
+           849.6,
+           398.3,
+           "1",
+           "0"
+          ]
+         ]
+        }
+       },
+       "libs": [
+        "requirejs",
+        "TweenMax",
+        "TimelineMax",
+        "__hsReferrer",
+        "__hsInitialUrl",
+        "__PRIVATE__HubspotCtaClient",
+        "__hsWebInteractiveInstance",
+        "createjs",
+        "Howler",
+        "Howl",
+        "THREE",
+        "dataLayer"
+       ]
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "menuLabel": "Discover",
+      "dropLabel": "Drop",
+      "soundLabel": "Audio",
+      "hiddenLabels": [
+       "Showreel",
+       "Close Project"
+      ],
+      "fixedOrDynamic": "fixed"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs shell state",
+      "selector": ".js-shell",
+      "raw": {
+       "shellText": [
+        [
+         "on--drop",
+         "Drop"
+        ],
+        [
+         "on--menu",
+         ""
+        ],
+        [
+         "on--reel",
+         "Showreel"
+        ],
+        [
+         "n--sound",
+         ""
+        ],
+        [
+         "_overlay",
+         ""
+        ],
+        [
+         "-project",
+         "Close ProjectClose Showr"
+        ],
+        [
+         "hive-btn",
+         "VIEW ALL PROJECTS"
+        ]
+       ]
+      }
+     }
+    },
+    "tier_delta": {
+     "value": "button at left 1399 / top 20, 200x200 hit area, 16px label, sound toggle present, pointer input reaches the button",
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest",
+      "selector": ".js-shell__button--menu",
+      "raw": {
+       "rect": {
+        "top": 20,
+        "left": 1399,
+        "right": 1417,
+        "bottom": 38,
+        "width": 18,
+        "height": 18,
+        "insetRight": 23,
+        "cx": 1408,
+        "cy": 29
+       },
+       "hit": {
+        "top": -100,
+        "left": 1297,
+        "right": 1497,
+        "bottom": 100,
+        "width": 200,
+        "height": 200,
+        "insetRight": -57,
+        "cx": 1397,
+        "cy": 0
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "drawer",
+   "tier": 1440,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": "full-screen: the menu route is an absolutely positioned page covering the whole viewport (width == viewport, height == viewport) laid over the persistent WebGL scene; it holds three canvas-drawn items and nothing else",
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "resn-capture.mjs openSettled",
+      "selector": ".js-menu-page",
+      "raw": {
+       "rect": {
+        "top": 0,
+        "left": 0,
+        "right": 1440,
+        "bottom": 900,
+        "width": 1440,
+        "height": 900,
+        "insetRight": 0,
+        "cx": 720,
+        "cy": 450
+       },
+       "position": "absolute",
+       "viewport": [
+        1440,
+        900
+       ]
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "width": 1440,
+      "height": 900,
+      "position": "absolute",
+      "zIndex": "auto",
+      "radius": "0px",
+      "anchor": "centred on the viewport (offset 0)",
+      "items": [
+       {
+        "w": 288,
+        "h": 103.5,
+        "left": 273.6,
+        "top": 398.3
+       },
+       {
+        "w": 288,
+        "h": 103.5,
+        "left": 561.6,
+        "top": 398.3
+       },
+       {
+        "w": 316.8,
+        "h": 103.5,
+        "left": 849.6,
+        "top": 398.3
+       }
+      ],
+      "nav": {
+       "display": "flex",
+       "flexDirection": "row",
+       "justify": "center",
+       "align": "center",
+       "rect": {
+        "top": 0,
+        "left": 0,
+        "right": 1440,
+        "bottom": 900,
+        "width": 1440,
+        "height": 900,
+        "insetRight": 0,
+        "cx": 720,
+        "cy": 450
+       }
+      }
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "resn-capture.mjs openSettled",
+      "selector": ".js-menu-page nav.js-menu",
+      "raw": {
+       "page": {
+        "rect": {
+         "top": 0,
+         "left": 0,
+         "right": 1440,
+         "bottom": 900,
+         "width": 1440,
+         "height": 900,
+         "insetRight": 0,
+         "cx": 720,
+         "cy": 450
+        },
+        "position": "absolute",
+        "top": "0px",
+        "left": "0px",
+        "right": "0px",
+        "zIndex": "auto",
+        "maxWidth": "none",
+        "width": "1440px",
+        "transform": "none",
+        "display": "block",
+        "overflow": "visible",
+        "padding": "0px",
+        "margin": "0px"
+       },
+       "nav": {
+        "geo": {
+         "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 1440,
+          "bottom": 900,
+          "width": 1440,
+          "height": 900,
+          "insetRight": 0,
+          "cx": 720,
+          "cy": 450
+         },
+         "position": "static",
+         "top": "auto",
+         "left": "auto",
+         "right": "auto",
+         "zIndex": "auto",
+         "maxWidth": "none",
+         "width": "1440px",
+         "transform": "none",
+         "display": "flex",
+         "overflow": "visible",
+         "padding": "0px",
+         "margin": "0px"
+        },
+        "display": "flex",
+        "flexDir": "row",
+        "justify": "center",
+        "align": "center",
+        "gap": "normal"
+       },
+       "items": [
+        {
+         "top": 398.3,
+         "left": 273.6,
+         "right": 561.6,
+         "bottom": 501.8,
+         "width": 288,
+         "height": 103.5,
+         "insetRight": 878.4,
+         "cx": 417.6,
+         "cy": 450
+        },
+        {
+         "top": 398.3,
+         "left": 561.6,
+         "right": 849.6,
+         "bottom": 501.8,
+         "width": 288,
+         "height": 103.5,
+         "insetRight": 590.4,
+         "cx": 705.6,
+         "cy": 450
+        },
+        {
+         "top": 398.3,
+         "left": 849.6,
+         "right": 1166.4,
+         "bottom": 501.8,
+         "width": 316.8,
+         "height": 103.5,
+         "insetRight": 273.6,
+         "cx": 1008,
+         "cy": 450
+        }
+       ]
+      }
+     }
+    },
+    "zone_model": {
+     "value": {
+      "layout": "one horizontal row of three items, centred on the viewport (row centre x 720.0), items touching (no gap)",
+      "zones": "no top row, no footer row, no secondary blocks: About, Work, Contact only",
+      "shellControlsWhileOpen": [
+       "on--drop",
+       "on--menu",
+       "n--sound",
+       "_overlay"
+      ]
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "resn-capture.mjs openSettled",
+      "selector": ".js-menu-page",
+      "raw": {
+       "itemRects": [
+        {
+         "top": 398.3,
+         "left": 273.6,
+         "right": 561.6,
+         "bottom": 501.8,
+         "width": 288,
+         "height": 103.5,
+         "insetRight": 878.4,
+         "cx": 417.6,
+         "cy": 450
+        },
+        {
+         "top": 398.3,
+         "left": 561.6,
+         "right": 849.6,
+         "bottom": 501.8,
+         "width": 288,
+         "height": 103.5,
+         "insetRight": 590.4,
+         "cx": 705.6,
+         "cy": 450
+        },
+        {
+         "top": 398.3,
+         "left": 849.6,
+         "right": 1166.4,
+         "bottom": 501.8,
+         "width": 316.8,
+         "height": 103.5,
+         "insetRight": 273.6,
+         "cx": 1008,
+         "cy": 450
+        }
+       ],
+       "navRect": {
+        "top": 0,
+        "left": 0,
+        "right": 1440,
+        "bottom": 900,
+        "width": 1440,
+        "height": 900,
+        "insetRight": 0,
+        "cx": 720,
+        "cy": 450
+       }
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "fill": "#000000 @0 (transparent)",
+      "blur": "none",
+      "scrim": "none: the page is transparent and the WebGL scene stays visible behind it (its own shader dims and refocuses it)",
+      "shadow": "none"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs openSettled",
+      "selector": ".js-menu-page",
+      "raw": {
+       "backgroundColor": "#000000 @0",
+       "backgroundImage": "none",
+       "filter": "none",
+       "backdropFilter": "none",
+       "mixBlendMode": "normal",
+       "opacity": "1",
+       "boxShadow": "none",
+       "borderRadius": "0px",
+       "border": "0px none #ffffff",
+       "before": null,
+       "after": null
+      }
+     }
+    },
+    "background_visual": {
+     "value": {
+      "kind": "WebGL scene (three.js), full viewport, persistent across routes and interactive",
+      "behaviour": "animated continuously; responds to pointer position and to click-and-hold; the menu page does not replace it",
+      "canvas": {
+       "top": 779,
+       "left": 680,
+       "right": 760,
+       "bottom": 859,
+       "width": 80,
+       "height": 80,
+       "insetRight": 680,
+       "cx": 720,
+       "cy": 819
+      },
+      "renderSubstrate": "canvas"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs rest",
+      "selector": ".js-background canvas",
+      "raw": {
+       "bg": {
+        "canvas": {
+         "top": 779,
+         "left": 680,
+         "right": 760,
+         "bottom": 859,
+         "width": 80,
+         "height": 80,
+         "insetRight": 680,
+         "cx": 720,
+         "cy": 819
+        },
+        "bodyBg": "#000000",
+        "bgElBg": "#000000 @0",
+        "glCtx": false,
+        "bgPaint": {
+         "backgroundColor": "#000000 @0",
+         "backgroundImage": "none",
+         "filter": "none",
+         "backdropFilter": "none",
+         "mixBlendMode": "normal",
+         "opacity": "1",
+         "boxShadow": "none",
+         "borderRadius": "0px",
+         "border": "0px none #000000",
+         "before": null,
+         "after": null
+        }
+       },
+       "libs": {
+        "gsap": "undefined",
+        "TweenMax": "function",
+        "THREE": "object",
+        "PIXI": "undefined",
+        "createjs": "object",
+        "Howl": "function",
+        "lenis": "undefined",
+        "keys": [
+         "requirejs",
+         "TweenMax",
+         "TimelineMax",
+         "__hsReferrer",
+         "__hsInitialUrl",
+         "__PRIVATE__HubspotCtaClient",
+         "__hsWebInteractiveInstance",
+         "createjs",
+         "Howler",
+         "Howl",
+         "THREE",
+         "dataLayer"
+        ]
+       }
+      }
+     }
+    },
+    "item_typography": {
+     "value": {
+      "domText": {
+       "fontFamily": "Fort-Extralight, Arial, sans-serif",
+       "fontSize": "58.5px",
+       "lineHeight": "58.5px",
+       "letterSpacing": "-2px",
+       "color": "#ffffff",
+       "textTransform": "none",
+       "domOpacity": "0 (the <a> with the text is invisible)"
+      },
+      "renderedText": "drawn into a per-item canvas (2D context); the DOM text is a hidden copy",
+      "scaling": "stepped: 58.5px at 1440, 39px at 768 (canvas 288x104)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs openSettled",
+      "selector": ".js-menu-page .menu-item a > span",
+      "raw": {
+       "typo": {
+        "fontFamily": "Fort-Extralight, Arial, sans-serif",
+        "fontSize": "58.5px",
+        "fontWeight": "400",
+        "lineHeight": "58.5px",
+        "letterSpacing": "-2px",
+        "textTransform": "none",
+        "color": "#ffffff",
+        "textDecoration": "none #ffffff"
+       },
+       "canvas": {
+        "rect": {
+         "top": 398.3,
+         "left": 273.6,
+         "right": 561.6,
+         "bottom": 501.8,
+         "width": 288,
+         "height": 103.5,
+         "insetRight": 878.4,
+         "cx": 417.6,
+         "cy": 450
+        },
+        "w": 288,
+        "h": 104,
+        "style": null
+       }
+      }
+     }
+    },
+    "item_states": {
+     "value": {
+      "dissolve": "hovering an item holds its canvas at a near-constant high lit-pixel count (sd 0 to 6) while the other two items lose 40 to 98 per cent of their idle lit pixels (idle means 1063 / 483 / 1679); idle canvases fluctuate (sd 0 to 14)",
+      "litPixelMeans": {
+       "idle (pointer parked top-left)": [
+        1063,
+        483,
+        1679
+       ],
+       "hover About": [
+        1411,
+        10,
+        1002
+       ],
+       "hover Work": [
+        176,
+        1259,
+        904
+       ],
+       "hover Contact": [
+        128,
+        41,
+        1650
+       ],
+       "idle again": [
+        980,
+        589,
+        1605
+       ]
+      },
+      "litPixelSd": {
+       "idle (pointer parked top-left)": [
+        14.13,
+        7.03,
+        0
+       ],
+       "hover About": [
+        0,
+        1.76,
+        19.21
+       ],
+       "hover Work": [
+        9.77,
+        0,
+        12.57
+       ],
+       "hover Contact": [
+        5.27,
+        2.48,
+        5.92
+       ],
+       "idle again": [
+        3.16,
+        27.81,
+        7.11
+       ]
+      },
+      "cursor": "pointer",
+      "active": "none",
+      "ornament": "none",
+      "separators": "none"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "hovermeasure.mjs",
+      "selector": ".js-menu-page .menu-item canvas",
+      "raw": {
+       "hover": null,
+       "run": [
+        {
+         "label": "idle (pointer parked top-left)",
+         "lit": [
+          {
+           "mean": 1063.1,
+           "sd": 14.13,
+           "min": 1042,
+           "max": 1089
+          },
+          {
+           "mean": 482.9,
+           "sd": 7.03,
+           "min": 464,
+           "max": 489
+          },
+          {
+           "mean": 1679,
+           "sd": 0,
+           "min": 1679,
+           "max": 1679
+          }
+         ],
+         "spanX": [
+          {
+           "mean": 150,
+           "sd": 0,
+           "min": 150,
+           "max": 150
+          },
+          {
+           "mean": 129,
+           "sd": 0,
+           "min": 129,
+           "max": 129
+          },
+          {
+           "mean": 198,
+           "sd": 0,
+           "min": 198,
+           "max": 198
+          }
+         ],
+         "cy": [
+          {
+           "mean": 44.5,
+           "sd": 0.15,
+           "min": 44.2,
+           "max": 44.7
+          },
+          {
+           "mean": 38.7,
+           "sd": 0.09,
+           "min": 38.6,
+           "max": 38.9
+          },
+          {
+           "mean": 44.2,
+           "sd": 0,
+           "min": 44.2,
+           "max": 44.2
+          }
+         ]
+        },
+        {
+         "label": "hover About",
+         "lit": [
+          {
+           "mean": 1411,
+           "sd": 0,
+           "min": 1411,
+           "max": 1411
+          },
+          {
+           "mean": 10.5,
+           "sd": 1.76,
+           "min": 8,
+           "max": 13
+          },
+          {
+           "mean": 1001.7,
+           "sd": 19.21,
+           "min": 971,
+           "max": 1030
+          }
+         ],
+         "spanX": [
+          {
+           "mean": 150,
+           "sd": 0,
+           "min": 150,
+           "max": 150
+          },
+          {
+           "mean": 2.2,
+           "sd": 0.41,
+           "min": 2,
+           "max": 3
+          },
+          {
+           "mean": 198,
+           "sd": 0,
+           "min": 198,
+           "max": 198
+          }
+         ],
+         "cy": [
+          {
+           "mean": 44.6,
+           "sd": 0,
+           "min": 44.6,
+           "max": 44.6
+          },
+          {
+           "mean": 20.3,
+           "sd": 0.27,
+           "min": 19.9,
+           "max": 20.6
+          },
+          {
+           "mean": 44.9,
+           "sd": 0.28,
+           "min": 44.4,
+           "max": 45.3
+          }
+         ]
+        },
+        {
+         "label": "hover Work",
+         "lit": [
+          {
+           "mean": 176.5,
+           "sd": 9.77,
+           "min": 161,
+           "max": 193
+          },
+          {
+           "mean": 1259,
+           "sd": 0,
+           "min": 1259,
+           "max": 1259
+          },
+          {
+           "mean": 903.9,
+           "sd": 12.57,
+           "min": 884,
+           "max": 922
+          }
+         ],
+         "spanX": [
+          {
+           "mean": 149.4,
+           "sd": 0.81,
+           "min": 148,
+           "max": 150
+          },
+          {
+           "mean": 129,
+           "sd": 0,
+           "min": 129,
+           "max": 129
+          },
+          {
+           "mean": 198,
+           "sd": 0,
+           "min": 198,
+           "max": 198
+          }
+         ],
+         "cy": [
+          {
+           "mean": 38.5,
+           "sd": 0.53,
+           "min": 37.7,
+           "max": 39.4
+          },
+          {
+           "mean": 42.2,
+           "sd": 0,
+           "min": 42.2,
+           "max": 42.2
+          },
+          {
+           "mean": 42.8,
+           "sd": 0.32,
+           "min": 42.4,
+           "max": 43.4
+          }
+         ]
+        },
+        {
+         "label": "hover Contact",
+         "lit": [
+          {
+           "mean": 127.6,
+           "sd": 5.27,
+           "min": 119,
+           "max": 135
+          },
+          {
+           "mean": 40.8,
+           "sd": 2.48,
+           "min": 37,
+           "max": 45
+          },
+          {
+           "mean": 1649.6,
+           "sd": 5.92,
+           "min": 1640,
+           "max": 1661
+          }
+         ],
+         "spanX": [
+          {
+           "mean": 143.9,
+           "sd": 0.7,
+           "min": 143,
+           "max": 145
+          },
+          {
+           "mean": 5,
+           "sd": 0,
+           "min": 5,
+           "max": 5
+          },
+          {
+           "mean": 198,
+           "sd": 0,
+           "min": 198,
+           "max": 198
+          }
+         ],
+         "cy": [
+          {
+           "mean": 37.9,
+           "sd": 0.38,
+           "min": 37.4,
+           "max": 38.6
+          },
+          {
+           "mean": 24.6,
+           "sd": 0.33,
+           "min": 24.1,
+           "max": 25.2
+          },
+          {
+           "mean": 44,
+           "sd": 0.05,
+           "min": 44,
+           "max": 44.1
+          }
+         ]
+        },
+        {
+         "label": "idle again",
+         "lit": [
+          {
+           "mean": 980.5,
+           "sd": 3.16,
+           "min": 977,
+           "max": 989
+          },
+          {
+           "mean": 588.9,
+           "sd": 27.81,
+           "min": 529,
+           "max": 622
+          },
+          {
+           "mean": 1604.6,
+           "sd": 7.11,
+           "min": 1590,
+           "max": 1612
+          }
+         ],
+         "spanX": [
+          {
+           "mean": 150,
+           "sd": 0,
+           "min": 150,
+           "max": 150
+          },
+          {
+           "mean": 129,
+           "sd": 0,
+           "min": 129,
+           "max": 129
+          },
+          {
+           "mean": 198,
+           "sd": 0,
+           "min": 198,
+           "max": 198
+          }
+         ],
+         "cy": [
+          {
+           "mean": 43.2,
+           "sd": 0.05,
+           "min": 43.1,
+           "max": 43.2
+          },
+          {
+           "mean": 39.3,
+           "sd": 0.35,
+           "min": 38.7,
+           "max": 39.8
+          },
+          {
+           "mean": 43.7,
+           "sd": 0.03,
+           "min": 43.6,
+           "max": 43.7
+          }
+         ]
+        }
+       ]
+      }
+     }
+    },
+    "secondary_blocks": {
+     "value": {
+      "roster": "none inside the menu page",
+      "previewPaneFollowsHover": false,
+      "shellControls": "the droplet home button appears top-left while the menu is open; the sound toggle stays bottom-right"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs openSettled",
+      "selector": ".js-menu-page",
+      "raw": {
+       "shell": [
+        [
+         "on--drop",
+         {
+          "top": 15,
+          "left": 23,
+          "right": 41,
+          "bottom": 39,
+          "width": 18,
+          "height": 24,
+          "insetRight": 1399,
+          "cx": 32,
+          "cy": 27
+         }
+        ],
+        [
+         "on--menu",
+         {
+          "top": 20,
+          "left": 1399,
+          "right": 1417,
+          "bottom": 38,
+          "width": 18,
+          "height": 18,
+          "insetRight": 23,
+          "cx": 1408,
+          "cy": 29
+         }
+        ],
+        [
+         "n--sound",
+         {
+          "top": 863,
+          "left": 1393,
+          "right": 1417,
+          "bottom": 879,
+          "width": 24,
+          "height": 16,
+          "insetRight": 23,
+          "cx": 1405,
+          "cy": 871
+         }
+        ],
+        [
+         "_overlay",
+         {
+          "top": 0,
+          "left": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "insetRight": 1440,
+          "cx": 0,
+          "cy": 0
+         }
+        ]
+       ]
+      }
+     }
+    },
+    "trigger_close": {
+     "value": {
+      "trigger": "menu button (see trigger-close row)",
+      "closeWays": {
+       "menu button again": "does not close",
+       "close button": "does not close",
+       "drop button": "closes",
+       "Escape": "closes",
+       "empty area click": "closes",
+       "history back": "closes"
+      }
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "closeprobe2.mjs",
+      "selector": ".js-menu-page",
+      "raw": {
+       "tries": [
+        [
+         "menu button again",
+         "#!/menu",
+         true
+        ],
+        [
+         "close button",
+         "#!/menu",
+         true
+        ],
+        [
+         "drop button",
+         "",
+         false
+        ],
+        [
+         "Escape",
+         "",
+         false
+        ],
+        [
+         "empty area click",
+         "",
+         false
+        ],
+        [
+         "history back",
+         "",
+         false
+        ]
+       ]
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "route": "#!/menu (hash route); history back closes it (yes)",
+      "scrollLock": "none: the document is one viewport high, overflow auto scroll on html but nothing to scroll",
+      "dialogOrInert": "no dialog, no inert, no aria attributes",
+      "focus": "not managed: activeElement stays the body; Tab visits nothing (8 presses)",
+      "itemSemantics": "each item is <a> with no href and no tabindex, opacity 0, containing the label span; the visible glyphs are the canvas",
+      "hoverBlocker": "a full-size .hover-blocker with pointer-events none sits under the items",
+      "clickTargets": "canvas or the .menu-item box; cursor pointer",
+      "stickyOrHide": "n/a",
+      "openStateSurvivesResize": "not measured"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "resn-capture.mjs openSettled / keyboard + closeprobe2.mjs",
+      "selector": ".js-menu-page",
+      "raw": {
+       "items": [
+        [
+         "About",
+         "A",
+         null,
+         null,
+         "0"
+        ],
+        [
+         "Work",
+         "A",
+         null,
+         null,
+         "0"
+        ],
+        [
+         "Contact",
+         "A",
+         null,
+         null,
+         "0"
+        ]
+       ],
+       "blocker": {
+        "geo": {
+         "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 1440,
+          "bottom": 900,
+          "width": 1440,
+          "height": 900,
+          "insetRight": 0,
+          "cx": 720,
+          "cy": 450
+         },
+         "position": "absolute",
+         "top": "0px",
+         "left": "0px",
+         "right": "0px",
+         "zIndex": "1",
+         "maxWidth": "none",
+         "width": "1440px",
+         "transform": "none",
+         "display": "block",
+         "overflow": "visible",
+         "padding": "0px",
+         "margin": "0px"
+        },
+        "pe": "none",
+        "bg": "#000000 @0"
+       },
+       "kb": {
+        "tabs": [
+         "BODY. About\nWork\nCon",
+         "BODY. About\nWork\nCon",
+         "BODY. About\nWork\nCon",
+         "BODY. About\nWork\nCon",
+         "BODY. About\nWork\nCon",
+         "BODY. About\nWork\nCon",
+         "BODY. About\nWork\nCon",
+         "BODY. About\nWork\nCon"
+        ],
+        "afterEscape": {
+         "hash": "",
+         "menuPresent": false,
+         "menuVisible": false
+        }
+       }
+      }
+     }
+    },
+    "motion": {
+     "value": [
+      {
+       "effect": "persistent full-viewport WebGL scene behind every route: a shattered glass-like \"gem\" with chromatic-aberration fringing, driven by the pointer and by click-and-hold (touch-and-hold on touch); three.js, canvas 1440x900",
+       "tier": "none",
+       "substrate": "canvas (WebGL)",
+       "tierCanExpress": false,
+       "why": "Tier W is the only GPU tier, but its admission test needs (iii) one bounded surface, never page-wide chrome, and it must never become a 3D engine (three.js is named as the thing it must not grow into). This scene is page-wide, a 3D mesh with refraction, and every route sits on it. Comes back as a Bean trim/exclude decision (W4-c termination rule)."
+      },
+      {
+       "effect": "menu items drawn into per-item canvases (2D context) with a live dissolve: the hovered item goes to a near-constant high lit-pixel count while the other two lose 40 to 98 per cent of theirs",
+       "tier": "V (partial)",
+       "substrate": "canvas (2D)",
+       "tierCanExpress": "partly",
+       "why": "Tier V has a canvas 2D substrate (FR-38-32 particle trail and FR-38-33 grid-dot field use it), so a per-item 2D text dissolve is expressible as a new Tier V effect, but none exists. Rendering the label only into a canvas removes real text, which SGS must not do; the nearest built effect is FR-38-11 ScrambleText (Tier G, on real DOM text), which is a different look. So: no built tier effect matches; expressible in principle as a new Tier V effect that keeps the DOM text."
+      },
+      {
+       "effect": "hero title drawn partly in the DOM and partly elsewhere: innerText reads \"Re n · Creative Studio / E t. 2004\" (letters missing) while the rendered title shows every letter",
+       "tier": "G (partial)",
+       "substrate": "DOM text plus canvas",
+       "tierCanExpress": "partly",
+       "why": "Per-character treatment of real DOM text is Tier G SplitText / ScrambleText territory (FR-38-10, FR-38-11); drawing some glyphs outside the DOM, and the chromatic fringing around the title, are not expressible by any tier."
+      },
+      {
+       "effect": "label reveal on the menu button (\"Discover\" fades from opacity 0 to about 1 on hover)",
+       "tier": "V",
+       "substrate": "DOM",
+       "tierCanExpress": true,
+       "why": "a CSS opacity transition"
+      },
+      {
+       "effect": "\"VIEW ALL PROJECTS\" underline: two 1px underline spans switch opacity and transform on hover",
+       "tier": "V",
+       "substrate": "DOM",
+       "tierCanExpress": true,
+       "why": "CSS opacity and transform on pseudo-like spans"
+      },
+      {
+       "effect": "click-and-hold prompt with an 80x80 2D canvas progress ring (hold to enter)",
+       "tier": "V",
+       "substrate": "canvas (2D)",
+       "tierCanExpress": true,
+       "why": "a 2D canvas ring or an SVG stroke-dashoffset; the hold-to-enter behaviour is application logic, not an effect"
+      },
+      {
+       "effect": "route changes are hash routes (#!/menu, #!/work, #!/contact) rendered by the app over the same WebGL scene; the menu element mounts within one sampled frame and the visible transition happens inside canvases",
+       "tier": "none",
+       "substrate": "canvas (WebGL and 2D)",
+       "tierCanExpress": false,
+       "why": "FR-38-19 page transitions are cross-document View Transitions (Tier V); an in-canvas single-page transition has no DOM to transition. Comes back as a Bean trim/exclude decision."
+      },
+      {
+       "effect": "ambient audio with a sound toggle (Howler, bottom-right \"Audio\" control)",
+       "tier": "none",
+       "substrate": "audio",
+       "tierCanExpress": false,
+       "why": "sound is not a Spec 38 motion effect and no SGS block plays site audio; Bean decision."
+      }
+     ],
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "resn-capture.mjs open / menuItemHover + hovermeasure.mjs",
+      "selector": ".js-menu-page, .js-background canvas",
+      "raw": {
+       "openFrames": {
+        "frames": 42,
+        "firstMenuT": 649
+       },
+       "libs": [
+        "requirejs",
+        "TweenMax",
+        "TimelineMax",
+        "__hsReferrer",
+        "__hsInitialUrl",
+        "__PRIVATE__HubspotCtaClient",
+        "__hsWebInteractiveInstance",
+        "createjs",
+        "Howler",
+        "Howl",
+        "THREE",
+        "dataLayer"
+       ],
+       "globals": {
+        "gsap": "undefined",
+        "TweenMax": "function",
+        "THREE": "object",
+        "createjs": "object",
+        "Howl": "function"
+       },
+       "note": "the page renders at about 12 fps in this headless session (42 sampled frames in 3.5s), so no easing curve was recorded; the per-effect verdicts rest on the DOM and canvas evidence, the libraries present and the Spec 38 tier definitions"
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "items": [
+       "About",
+       "Work",
+       "Contact"
+      ],
+      "caseOrigin": "source text, no CSS transform (mixed case)",
+      "routes": [
+       "#!/about (not opened)",
+       "#!/work/",
+       "#!/contact"
+      ],
+      "contactPage": [
+       "Contact",
+       "newbusiness@resn.co.nz",
+       "careers.resn.co.nz",
+       "WELLINGTON",
+       "+64 4 385 0705",
+       "AMSTERDAM",
+       "+31 20 2610299",
+       "SOCIAL",
+       "LinkedIn",
+       "Instagram",
+       "X",
+       "It looks like something went wrong. Plea"
+      ],
+      "fixedOrDynamic": "labels fixed; work list is dynamic"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "resn-capture.mjs openSettled / pages",
+      "selector": ".js-menu-page",
+      "raw": {
+       "items": [
+        "About",
+        "Work",
+        "Contact"
+       ],
+       "pages": {
+        "contact": "#!/contact",
+        "work": "#!/work/"
+       }
+      }
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "delta": "a horizontal row of three items at 58.5px, row centred on x 720, hover dissolve works",
+      "dropMechanism": "the row becomes a column at 375; the DOM text of the items is removed at 375 (only canvas remains); nothing collapses to 0x0"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "resn-capture.mjs openSettled",
+      "selector": ".js-menu-page",
+      "raw": {
+       "nav": {
+        "geo": {
+         "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 1440,
+          "bottom": 900,
+          "width": 1440,
+          "height": 900,
+          "insetRight": 0,
+          "cx": 720,
+          "cy": 450
+         },
+         "position": "static",
+         "top": "auto",
+         "left": "auto",
+         "right": "auto",
+         "zIndex": "auto",
+         "maxWidth": "none",
+         "width": "1440px",
+         "transform": "none",
+         "display": "flex",
+         "overflow": "visible",
+         "padding": "0px",
+         "margin": "0px"
+        },
+        "display": "flex",
+        "flexDir": "row",
+        "justify": "center",
+        "align": "center",
+        "gap": "normal"
+       },
+       "items": [
+        [
+         "About",
+         "A",
+         288,
+         103.5
+        ],
+        [
+         "Work",
+         "A",
+         288,
+         103.5
+        ],
+        [
+         "Contact",
+         "A",
+         316.8,
+         103.5
+        ]
+       ]
+      }
+     }
+    }
+   }
+  }
+ ],
+ "not_measured": [
+  {
+   "surface": "trigger-close",
+   "tier": 375,
+   "column": "item_typography (label)",
+   "reason": "the 375 label span is empty in the DOM at rest, so only its computed style was read, not rendered text"
+  },
+  {
+   "surface": "drawer",
+   "tier": 375,
+   "column": "item_typography",
+   "reason": "at 375 the menu items have no DOM text (no <a> or <span> inside .menu-item, only a canvas 108x47 / 92x47 / 146x47), so font size and weight cannot be read from styles"
+  },
+  {
+   "surface": "drawer",
+   "tier": 375,
+   "column": "motion (easing and duration of the menu-in and out)",
+   "reason": "the visible open and close animation happens inside canvases and the page ran at about 12 fps in the headless session, so durations and easings were not captured; only that the menu element mounts within one sampled frame"
+  },
+  {
+   "surface": "drawer",
+   "tier": 375,
+   "column": "content",
+   "reason": "the item labels are not in the DOM at 375 (canvas only), so their text was not read"
+  },
+  {
+   "surface": "drawer",
+   "tier": 768,
+   "column": "motion (easing and duration of the menu-in and out)",
+   "reason": "the visible open and close animation happens inside canvases and the page ran at about 12 fps in the headless session, so durations and easings were not captured; only that the menu element mounts within one sampled frame"
+  },
+  {
+   "surface": "drawer",
+   "tier": 1440,
+   "column": "motion (easing and duration of the menu-in and out)",
+   "reason": "the visible open and close animation happens inside canvases and the page ran at about 12 fps in the headless session, so durations and easings were not captured; only that the menu element mounts within one sampled frame"
+  }
+ ],
+ "drawer_cross_check": [
+  {
+   "item": "close control",
+   "existing": "\"kind: burger-morph ... the same button used to open toggles closed\"",
+   "this_capture": "clicking the menu button while the menu is open does nothing at 1440 (route stays #!/menu, no change in 3s) and at 768; closers are the droplet button top-left (1440), Escape (1440, 768), a click on empty space (1440), and history back (all). At 375 a separate 26x26 close button appears and closes it; the menu button drops to opacity 0",
+   "trusted": "this capture",
+   "why": "each closer was tried after asserting the route was #!/menu and the result read from location.hash (closeprobe2.mjs); the earlier note said the morph was not captured"
+  },
+  {
+   "item": "menu geometry",
+   "existing": "panel 1346 x 713 (viewport), transparent, no scrim, 3 items horizontal, 58.5px Fort-Extralight",
+   "this_capture": "agrees: 1440 x 900 page, transparent, 3 items in a row at 58.5px Fort-Extralight, letter-spacing -2px, no scrim",
+   "trusted": "both, consistent",
+   "why": "same values at a different viewport height"
+  },
+  {
+   "item": "text rendering",
+   "existing": "each item is a <canvas class=\"text-effect-canvas\"> with a shader distortion at rest",
+   "this_capture": "each item is a 2D-context canvas (getContext(\"2d\") works, pixel counts read) plus a hidden <a><span> with the real text at opacity 0 at 1440 and 768; at 375 there is no DOM text",
+   "trusted": "this capture",
+   "why": "ImageData was read from the canvases; a WebGL canvas would refuse a 2D context"
+  },
+  {
+   "item": "hover",
+   "existing": "implied a WebGL hover-warp per item",
+   "this_capture": "the hovered item holds a near-constant high lit-pixel count while the other two lose 40 to 98 per cent of theirs (1440); no hover effect at 768 (pointer intercepted) or 375 (touch)",
+   "trusted": "this capture",
+   "why": "lit-pixel statistics over 14 samples per state (hovermeasure.mjs)"
+  },
+  {
+   "item": "secondary blocks",
+   "existing": "a droplet glyph top-left and a Discover text link plus icon top-right",
+   "this_capture": "agrees: the droplet (18x24 top-left) appears while the menu is open, the menu button is top-right with a Discover label that fades in on hover at 1440; adds the bottom-right sound toggle (24x16, 1440 and 768)",
+   "trusted": "both",
+   "why": "consistent"
+  },
+  {
+   "item": "loader",
+   "existing": "direct #!/menu load stalled on a static illustration twice (15s each)",
+   "this_capture": "the plain URL loads; the shell controls appear after about 14s, but at 768x900 they only appear after pointer movement; a first attempt at 768 also showed the loader illustration for a long time",
+   "trusted": "both",
+   "why": "this capture waits for the menu button to reach opacity 1 with mouse movement"
+  }
+ ]
+}
