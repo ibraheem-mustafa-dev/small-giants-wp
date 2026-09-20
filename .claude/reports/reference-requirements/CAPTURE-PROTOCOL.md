@@ -45,6 +45,7 @@ away, butcherbox, rabbit, halcyon, indus-foods.
 
 - `surface` is one of: `header-shell`, `bar`, `dropdown`, `mega`, `trigger-close`, `drawer`, `footer`.
 - `tier` is 375, 768 or 1440 (viewport widths, height 900).
+- `presence` is decided by what a VISITOR sees, never by an HTML tag: a header exists when the top edge shows a logo or home control, a menu control, or a nav, even if no `<header>` element or container holds them (record such a header as shell-less, with each part measured). `absent` means the visitor sees no such thing.
 - `presence` is `present`, `absent` or `not-applicable`. An `absent` row still has its row and a one-line
   reason in its `archetype` cell. Never invent a value for a surface the site does not have.
 - `cells` keys are the column names: `archetype`, `geometry`, `zone_model`, `ground`,
@@ -68,6 +69,14 @@ scrollbars that change the usable width, and it blocked real pointer input on re
 row `viewport` (`innerWidth`) and `clientWidth` (`document.documentElement.clientWidth`), and derive every
 width, centring and anchor label from `clientWidth`, because a classic scrollbar takes about 15px. Run one
 headed browser at a time so windows do not fight for the screen.
+
+**One browser for the whole job, opened once.** Start Chrome once in a long-running process
+(`chromium.launchServer({ channel: 'chrome', headless: false })`), write its `wsEndpoint` to a file, and
+have every script connect to it (`chromium.connect(wsEndpoint)`). Reuse one page per site, resize that page
+between tiers instead of reloading, and never call `browser.close()` until the job is finished. Wait for
+each site to finish loading (load event, network idle, preloader and consent gate gone, then two seconds
+of quiet) before measuring. Windows opening and closing on the owner's screen for every script is a
+defect in the capture, not a method.
 
 ## Rules for values (from the plan)
 

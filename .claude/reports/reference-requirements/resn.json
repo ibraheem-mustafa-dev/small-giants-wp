@@ -7,10 +7,14 @@
   {
    "surface": "header-shell",
    "tier": 375,
-   "presence": "absent",
+   "presence": "present",
    "cells": {
     "archetype": {
-     "value": "absent: no header element and no nav (0 of each in the document); .js-shell is a 0x0 wrapper whose children are separate fixed controls, so there is no shell to size, colour or hide",
+     "value": {
+      "label": "shell-less header (PROVISIONAL)",
+      "detail": "Owner says resn has a header. The capture keyed presence on a <header> element and found none (0 headers, 0 navs), but the page shows fixed controls at the top edge (the menu button top-right, the droplet home button top-left while a route is open, a VIEW ALL PROJECTS link top-centre on the home and work pages). Those controls are the header; they have no containing element. To be re-measured headed, part by part.",
+      "previous_value": "absent: no header element and no nav (0 of each in the document); .js-shell is a 0x0 wrapper whose children are separate fixed controls, so there is no shell to size, colour or hide"
+     },
      "method": "static",
      "evidence": {
       "script": "resn-capture.mjs rest / openSettled",
@@ -1934,10 +1938,14 @@
   {
    "surface": "header-shell",
    "tier": 768,
-   "presence": "absent",
+   "presence": "present",
    "cells": {
     "archetype": {
-     "value": "absent: no header element and no nav (0 of each in the document); .js-shell is a 0x0 wrapper whose children are separate fixed controls, so there is no shell to size, colour or hide",
+     "value": {
+      "label": "shell-less header (PROVISIONAL)",
+      "detail": "Owner says resn has a header. The capture keyed presence on a <header> element and found none (0 headers, 0 navs), but the page shows fixed controls at the top edge (the menu button top-right, the droplet home button top-left while a route is open, a VIEW ALL PROJECTS link top-centre on the home and work pages). Those controls are the header; they have no containing element. To be re-measured headed, part by part.",
+      "previous_value": "absent: no header element and no nav (0 of each in the document); .js-shell is a 0x0 wrapper whose children are separate fixed controls, so there is no shell to size, colour or hide"
+     },
      "method": "static",
      "evidence": {
       "script": "resn-capture.mjs rest / openSettled",
@@ -4066,10 +4074,14 @@
   {
    "surface": "header-shell",
    "tier": 1440,
-   "presence": "absent",
+   "presence": "present",
    "cells": {
     "archetype": {
-     "value": "absent: no header element and no nav (0 of each in the document); .js-shell is a 0x0 wrapper whose children are separate fixed controls, so there is no shell to size, colour or hide",
+     "value": {
+      "label": "shell-less header (PROVISIONAL)",
+      "detail": "Owner says resn has a header. The capture keyed presence on a <header> element and found none (0 headers, 0 navs), but the page shows fixed controls at the top edge (the menu button top-right, the droplet home button top-left while a route is open, a VIEW ALL PROJECTS link top-centre on the home and work pages). Those controls are the header; they have no containing element. To be re-measured headed, part by part.",
+      "previous_value": "absent: no header element and no nav (0 of each in the document); .js-shell is a 0x0 wrapper whose children are separate fixed controls, so there is no shell to size, colour or hide"
+     },
      "method": "static",
      "evidence": {
       "script": "resn-capture.mjs rest / openSettled",

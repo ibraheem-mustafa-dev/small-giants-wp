@@ -8,13 +8,13 @@ plan_row: W3B-3
 
 # resn (https://resn.co.nz/)
 
-Resn is a single-page WebGL application, not a header-and-navigation site. There is no header, nav, dropdown, mega panel or footer element. What exists is a persistent full-viewport three.js scene with a few fixed controls floating over it (a menu button top-right, a droplet home button top-left while a route is open, a sound toggle bottom-right) and a menu route that is a transparent full-viewport page holding three canvas-drawn items. Menu text is drawn in canvases; the real text sits in a hidden `<a><span>` at opacity 0 at 1440 and 768, and is absent from the DOM at 375.
+Resn is a single-page WebGL application. It has no `<header>`, `<nav>`, dropdown, mega panel or footer element, but it does have a header in what a visitor sees: fixed controls at the top edge (the menu button, the droplet home button, a VIEW ALL PROJECTS link) with no containing element. The header-shell rows are therefore `present` and provisional until they are re-measured headed, part by part (the earlier `absent` keyed on the missing `<header>` tag). What exists is a persistent full-viewport three.js scene with a few fixed controls floating over it (a menu button top-right, a droplet home button top-left while a route is open, a sound toggle bottom-right) and a menu route that is a transparent full-viewport page holding three canvas-drawn items. Menu text is drawn in canvases; the real text sits in a hidden `<a><span>` at opacity 0 at 1440 and 768, and is absent from the DOM at 375.
 
 ## What is captured
 
 | Surface | Presence (375 / 768 / 1440) | Cells measured | Cells not measured |
 |---|---|---|---|
-| header-shell | absent / absent / absent | 3 | 0 |
+| header-shell | present (provisional) / present (provisional) / present (provisional) | 3 | 0 |
 | bar | absent / absent / absent | 3 | 0 |
 | dropdown | absent / absent / absent | 3 | 0 |
 | mega | absent / absent / absent | 3 | 0 |
