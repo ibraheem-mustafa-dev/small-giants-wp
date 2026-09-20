@@ -983,5 +983,14 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 105
+  },
+  {
+    "id": "test-nonmodal-freeze-background",
+    "cmd": "node scripts/tests/test-nonmodal-freeze-background.mjs",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 106
   }
 ]

@@ -67,6 +67,7 @@
  */
 
 import { store, getContext, getElement } from '@wordpress/interactivity';
+import { collectFreezeTargets } from './freeze-background';
 
 /**
  * Canonical focusable-element selector. `a[href]` plus `:not([disabled])` on
@@ -86,6 +87,15 @@ const FOCUSABLE_SELECTOR = [
 ].join( ', ' );
 
 const SCROLL_LOCK_ATTR = 'data-sgs-nav-scroll-y';
+
+/**
+ * The site header region. Two uses, one definition: the `header` anchor measures
+ * its real bottom edge, and the non-modal freeze leaves it live because the
+ * mode's z-index scale paints it ABOVE the panel (100 against the drawer's 90) —
+ * an inert element that is still painted on top reads as a dead control.
+ */
+const HEADER_REGION_SELECTOR =
+	'.wp-block-sgs-site-header, header.wp-block-template-part, body > header';
 
 // Per-drawer bookkeeping, keyed by the drawer element so multiple drawers on a
 // page never cross-talk: { trigger, scrim, frozen, cleanup[] }.
@@ -183,58 +193,46 @@ function unlockScroll() {
 }
 
 /**
- * Freeze all background content EXCEPT the live header row carrying the toggle.
- * Iterates the direct children of <body> (and one level into `.wp-site-blocks`
- * when present), skipping the toggle's ancestor chain, the drawer, the scrim,
- * and `#wpadminbar`. Focus containment is EMERGENT from this: with everything
- * else inert, the browser's own Tab order cycles {live header + drawer} only,
- * so no hand-rolled trap is needed (FR-34-1). The drawer is never an ancestor of
- * a frozen node — it is re-parented to <body> first.
+ * Freeze all background content EXCEPT the live header row and the toggle.
+ * Walks down from <body>, skipping the drawer, the scrim and `#wpadminbar`,
+ * leaving the header region live (the non-modal z-index scale paints it above
+ * the panel), and DESCENDING INTO the toggle's ancestors rather than exempting
+ * them — so the toggle stays live and reachable while its own surroundings are
+ * still frozen. Focus containment is EMERGENT from this: with everything else
+ * inert, the browser's own Tab order cycles {live header + toggle + drawer}
+ * only, so no hand-rolled trap is needed (FR-34-1). The drawer is never an
+ * ancestor of a frozen node — it is re-parented to <body> first.
+ *
+ * The ancestor chain is descended, not skipped, because the chain of a toggle
+ * that sits in page content is `<main>` itself: exempting it whole would leave
+ * the entire page live behind the open drawer, which FR-36-6's "focus
+ * containment … exactly as `modal` has them" forbids. A header toggle behaves
+ * as before: the descent stops at the header region, which stays live entire.
  *
  * Used on the NON-modal `.show()` path only; a native `showModal()` inerts the
  * background itself.
  *
- * @param {HTMLElement}      toggle The nav toggle; its ancestor chain stays live.
+ * @param {HTMLElement}      toggle The nav toggle; it stays live and reachable.
  * @param {HTMLElement}      dialog The drawer dialog (skipped).
  * @param {HTMLElement|null} scrim  The scrim element (skipped).
  * @return {Array<Object>} Touched elements + their prior inert/aria-hidden state.
  */
 function freezeBackground( toggle, dialog, scrim ) {
-	const frozen = [];
 	const adminBar = document.getElementById( 'wpadminbar' );
 
-	const skip = ( el ) =>
-		el === dialog ||
-		el === scrim ||
-		el === adminBar ||
-		el.contains( toggle );
-
-	const freezeChildrenOf = ( parent ) => {
-		Array.from( parent.children ).forEach( ( el ) => {
-			if ( skip( el ) ) {
-				return;
-			}
-			frozen.push( {
-				el,
-				hadInert: el.hasAttribute( 'inert' ),
-				hadAriaHidden: el.hasAttribute( 'aria-hidden' ),
-			} );
-			el.setAttribute( 'inert', '' );
-			el.setAttribute( 'aria-hidden', 'true' );
-		} );
-	};
-
-	freezeChildrenOf( document.body );
-
-	// The header lives INSIDE `.wp-site-blocks`, so that wrapper is skipped at
-	// the body level (it contains the toggle); descend one level to freeze the
-	// header's siblings (main/footer) while the header row itself stays live.
-	const siteBlocks = document.querySelector( '.wp-site-blocks' );
-	if ( siteBlocks ) {
-		freezeChildrenOf( siteBlocks );
-	}
-
-	return frozen;
+	return collectFreezeTargets( document.body, toggle, {
+		isSkipped: ( el ) => el === dialog || el === scrim || el === adminBar,
+		isLive: ( el ) => el.matches( HEADER_REGION_SELECTOR ),
+	} ).map( ( el ) => {
+		const record = {
+			el,
+			hadInert: el.hasAttribute( 'inert' ),
+			hadAriaHidden: el.hasAttribute( 'aria-hidden' ),
+		};
+		el.setAttribute( 'inert', '' );
+		el.setAttribute( 'aria-hidden', 'true' );
+		return record;
+	} );
 }
 
 /**
@@ -565,9 +563,7 @@ function openDrawerFor( ctx, trigger ) {
 	 * property value, never a property declaration). render.php's `header`
 	 * anchor reads it first, falling back to --sgs-header-height then 0.
 	 */
-	const headerEl = document.querySelector(
-		'.wp-block-sgs-site-header, header.wp-block-template-part, body > header'
-	);
+	const headerEl = document.querySelector( HEADER_REGION_SELECTOR );
 	const headerRect = headerEl ? headerEl.getBoundingClientRect() : null;
 	if ( headerRect && headerRect.bottom > 0 ) {
 		drawer.style.setProperty(
