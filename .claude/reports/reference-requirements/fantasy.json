@@ -1,0 +1,6876 @@
+{
+ "reference": "fantasy",
+ "url": "https://fantasy.co/",
+ "captured": "2026-09-20",
+ "browser": "chromium headless, Playwright (Windows); 375 = mobile UA + hasTouch, 768 and 1440 = desktop UA, height 900; cookie banner dismissed with \"Accept all\"",
+ "rows": [
+  {
+   "surface": "header-shell",
+   "tier": 375,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": "full-bleed",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {
+       "rect": {
+        "top": 0,
+        "left": 0,
+        "right": 375,
+        "bottom": 95.9,
+        "width": 375,
+        "height": 95.9,
+        "insetRight": 0,
+        "cx": 187.5,
+        "cy": 48
+       },
+       "radius": "0px",
+       "viewport": 375
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "width": 375,
+      "height": 95.9,
+      "top": 0,
+      "left": 0,
+      "rightInset": 0,
+      "radius": "0px",
+      "position": "fixed",
+      "zIndex": "10",
+      "maxWidth": "1506.98px",
+      "innerPadding": "0px 13.9535px",
+      "pointerEvents": "none on the header, auto on logo and toggle (source classes)",
+      "centredOnViewport": true
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {
+       "geo": {
+        "rect": {
+         "top": 0,
+         "left": 0,
+         "right": 375,
+         "bottom": 95.9,
+         "width": 375,
+         "height": 95.9,
+         "insetRight": 0,
+         "cx": 187.5,
+         "cy": 48
+        },
+        "position": "fixed",
+        "top": "0px",
+        "left": "0px",
+        "right": "0px",
+        "zIndex": "10",
+        "maxWidth": "none",
+        "width": "375px",
+        "transform": "none",
+        "display": "block",
+        "overflow": "visible",
+        "padding": "0px",
+        "margin": "0px"
+       },
+       "zones": {
+        "logoLeftInset": 14,
+        "toggleRightInset": 14,
+        "innerMax": "1506.98px",
+        "innerPad": "0px 13.9535px",
+        "innerH": 95.9
+       }
+      }
+     }
+    },
+    "zone_model": {
+     "value": {
+      "zones": [
+       "logo (left)",
+       "toggle (right)"
+      ],
+      "utilityControls": "none (no cart, language, search, theme, sound)",
+      "navLinksInHeader": 0,
+      "buttons": [
+       "Fantasy",
+       ""
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0 a, header.sh.fixed.top-0 button",
+      "raw": {
+       "navLinks": 0,
+       "buttons": [
+        "Fantasy",
+        ""
+       ]
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "fill": "#000000 @0 on the header; child div.sh__gradient.bg-black paints #000000 at opacity 0.5 with mask-image linear-gradient(0deg, rgba(0, 0, 0, 0) 0px, rgb(0, 0, 0)) (a top-to-bottom fade)",
+      "blur": "none",
+      "scrim": "no",
+      "shadow": "none",
+      "border": "0px solid #ffffff",
+      "filter": "none",
+      "mixBlendMode": "normal",
+      "opacityWhenScrolledPast400": "0",
+      "themeVariant": "source: is-light text-black + bg-white gradient over light sections, is-dark text-white + bg-black gradient otherwise"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest, scroll",
+      "selector": "header.sh.fixed.top-0 > div.sh__gradient",
+      "raw": {
+       "gradient": {
+        "geo": {
+         "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 375,
+          "bottom": 95.9,
+          "width": 375,
+          "height": 95.9,
+          "insetRight": 0,
+          "cx": 187.5,
+          "cy": 48
+         },
+         "position": "absolute",
+         "top": "0px",
+         "left": "0px",
+         "right": "0px",
+         "zIndex": "auto",
+         "maxWidth": "none",
+         "width": "375px",
+         "transform": "none",
+         "display": "block",
+         "overflow": "visible",
+         "padding": "0px",
+         "margin": "0px"
+        },
+        "paint": {
+         "backgroundColor": "#000000",
+         "backgroundImage": "none",
+         "filter": "none",
+         "backdropFilter": "none",
+         "mixBlendMode": "normal",
+         "opacity": "0.5",
+         "boxShadow": "none",
+         "borderRadius": "0px",
+         "border": "0px solid #ffffff",
+         "before": null,
+         "after": null
+        },
+        "maskImage": "linear-gradient(0deg, rgba(0, 0, 0, 0) 0px, rgb(0, 0, 0))"
+       },
+       "scrollSamples": [
+        [
+         1,
+         "t-0 w-full z-10 js-sh is-dark text-white",
+         "0.5"
+        ],
+        [
+         401,
+         "10 js-sh is-dark text-white is-collapsed",
+         "0"
+        ],
+        [
+         901,
+         "10 js-sh is-dark text-white is-collapsed",
+         "0"
+        ],
+        [
+         1801,
+         "10 js-sh is-dark text-white is-collapsed",
+         "0"
+        ],
+        [
+         3501,
+         "10 js-sh is-dark text-white is-collapsed",
+         "0"
+        ],
+        [
+         6001,
+         "10 js-sh is-dark text-white is-collapsed",
+         "0"
+        ],
+        [
+         10001,
+         "10 js-sh is-dark text-white is-collapsed",
+         "0"
+        ],
+        [
+         11042,
+         "10 js-sh is-dark text-white is-collapsed",
+         "0"
+        ]
+       ]
+      }
+     }
+    },
+    "background_visual": {
+     "value": "none (a flat black 50% fade; no image, video or canvas in the header)",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {
+       "gradientPaint": {
+        "backgroundColor": "#000000",
+        "backgroundImage": "none",
+        "filter": "none",
+        "backdropFilter": "none",
+        "mixBlendMode": "normal",
+        "opacity": "0.5",
+        "boxShadow": "none",
+        "borderRadius": "0px",
+        "border": "0px solid #ffffff",
+        "before": null,
+        "after": null
+       }
+      }
+     }
+    },
+    "item_typography": {
+     "value": {
+      "applicable": false,
+      "reason": "column does not apply to this surface (header-shell)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "structural (no such element in this row)",
+      "selector": "(structural)",
+      "raw": {
+       "note": "column does not apply to this surface (header-shell)"
+      }
+     }
+    },
+    "item_states": {
+     "value": {
+      "applicable": false,
+      "reason": "column does not apply to this surface (header-shell)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "structural (no such element in this row)",
+      "selector": "(structural)",
+      "raw": {
+       "note": "column does not apply to this surface (header-shell)"
+      }
+     }
+    },
+    "secondary_blocks": {
+     "value": "none",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {}
+     }
+    },
+    "trigger_close": {
+     "value": "the toggle button at the right end (see trigger-close row); the logo button scrolls to top on the home route (source k())",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {}
+     }
+    },
+    "mechanics": {
+     "value": {
+      "pinned": "position:fixed top:0 at every scroll offset sampled (0..11042)",
+      "hideOnScroll": false,
+      "headerRectAfterScroll": [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0
+      ],
+      "gradientCollapse": "gradient fades out (is-collapsed) after scrolling down past 100px and returns as soon as the scroll direction is up: measured wheel down -> \"is-collapsed\" opacity 0, wheel up -> opacity 0.5",
+      "scrollContainer": "window, Lenis on html (class lenis)",
+      "themeSwitch": "is-dark / is-light class per section (only is-dark seen at the offsets sampled)"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs scroll",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {
+       "samples": [
+        {
+         "y": 1,
+         "top": 0,
+         "cls": "sh fixed top-0 left-0 w-full z-10 js-sh is-dark text-white",
+         "gradOpacity": "0.5"
+        },
+        {
+         "y": 401,
+         "top": 0,
+         "cls": "sh fixed top-0 left-0 w-full z-10 js-sh is-dark text-white is-collapsed",
+         "gradOpacity": "0"
+        },
+        {
+         "y": 901,
+         "top": 0,
+         "cls": "sh fixed top-0 left-0 w-full z-10 js-sh is-dark text-white is-collapsed",
+         "gradOpacity": "0"
+        },
+        {
+         "y": 1801,
+         "top": 0,
+         "cls": "sh fixed top-0 left-0 w-full z-10 js-sh is-dark text-white is-collapsed",
+         "gradOpacity": "0"
+        },
+        {
+         "y": 3501,
+         "top": 0,
+         "cls": "sh fixed top-0 left-0 w-full z-10 js-sh is-dark text-white is-collapsed",
+         "gradOpacity": "0"
+        },
+        {
+         "y": 6001,
+         "top": 0,
+         "cls": "sh fixed top-0 left-0 w-full z-10 js-sh is-dark text-white is-collapsed",
+         "gradOpacity": "0"
+        },
+        {
+         "y": 10001,
+         "top": 0,
+         "cls": "sh fixed top-0 left-0 w-full z-10 js-sh is-dark text-white is-collapsed",
+         "gradOpacity": "0"
+        },
+        {
+         "y": 11042,
+         "top": 0,
+         "cls": "sh fixed top-0 left-0 w-full z-10 js-sh is-dark text-white is-collapsed",
+         "gradOpacity": "0"
+        }
+       ],
+       "wheelDown": "sh fixed top-0 left-0 w-full z-10 js-sh is-dark text-white is-collapsed",
+       "wheelUp": "sh fixed top-0 left-0 w-full z-10 js-sh is-dark text-white",
+       "source": "S=({y:b,direction:y})=>{c.value=y===-1,a.value=b>100}; \"is-collapsed\":v.value with v=!c.value&&a.value||..."
+      }
+     }
+    },
+    "motion": {
+     "value": {
+      "scroll": "header never moves or resizes; only the gradient fades (class is-collapsed)",
+      "lenis": "new GH({lerp:.15,wheelMultiplier:1.25,autoResize:false}) on window, raf driven by the GSAP ticker",
+      "tier": "V for the gradient class toggle; Lenis is Tier H by the roster (helper); GSAP ticker present"
+     },
+     "method": "source-only",
+     "evidence": {
+      "script": "src/fan-DsC-Xkwh.js (https://fantasy.co/_nuxt/DsC-Xkwh.js) scroll plugin and header component",
+      "selector": "html.lenis",
+      "raw": {
+       "quote": "r=new GH({lerp:.15,wheelMultiplier:1.25,autoResize:!1}) ... Bn.ticker.add(l=>{r.raf(l*1e3)"
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "text": "none in the shell"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {}
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "height": 95.9,
+      "containerPadding": "0px 13.9535px",
+      "rootFontSize": "8.72093px",
+      "mechanism": "the whole UI scales through the root font-size (rem): 8.33px at 1440, 6.43px at 768, 8.72px at 375; nothing is removed",
+      "scaleNote": "not linear with the viewport: root 10px at 1337 and 1920, 8.33px at 1440 (fantasy-scale probe)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest; fan-scale.mjs",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {
+       "rect": {
+        "top": 0,
+        "left": 0,
+        "right": 375,
+        "bottom": 95.9,
+        "width": 375,
+        "height": 95.9,
+        "insetRight": 0,
+        "cx": 187.5,
+        "cy": 48
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "bar",
+   "tier": 375,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": "two-item bar: logo left, one toggle button right; no navigation links on the bar at any tier",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0 > div.site-max",
+      "raw": {
+       "inner": {
+        "top": 0,
+        "left": 0,
+        "right": 375,
+        "bottom": 95.9,
+        "width": 375,
+        "height": 95.9,
+        "insetRight": 0,
+        "cx": 187.5,
+        "cy": 48
+       },
+       "links": 0
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "barHeight": 95.9,
+      "logo": {
+       "top": 32.7,
+       "left": 14,
+       "right": 136,
+       "bottom": 63.2,
+       "width": 122.1,
+       "height": 30.5,
+       "insetRight": 239,
+       "cx": 75,
+       "cy": 48
+      },
+      "toggle": {
+       "top": 26.2,
+       "left": 307,
+       "right": 361,
+       "bottom": 69.8,
+       "width": 54.1,
+       "height": 43.6,
+       "insetRight": 14,
+       "cx": 334,
+       "cy": 48
+      },
+      "logoLeftInset": 14,
+      "toggleRightInset": 14,
+      "toggleRadius": "8.72093px"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {}
+     }
+    },
+    "zone_model": {
+     "value": {
+      "left": "logo button (wordmark svg + mark, aria-label \"Fantasy\")",
+      "right": "toggle pill",
+      "centre": "empty"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {
+       "logoAria": "Fantasy"
+      }
+     }
+    },
+    "ground": {
+     "value": "transparent over the header gradient; the toggle carries its own fill",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {}
+     }
+    },
+    "background_visual": {
+     "value": "none",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {}
+     }
+    },
+    "item_typography": {
+     "value": {
+      "toggleLabel": {
+       "fontFamily": "sans",
+       "fontSize": "15.6977px",
+       "fontWeight": "400",
+       "lineHeight": "21.9767px",
+       "letterSpacing": "-0.174419px",
+       "textTransform": "none",
+       "color": "#ffffff",
+       "textDecoration": "none #ffffff"
+      },
+      "scaling": "rem-scaled: 15px label at 1440 and 768, 15.7px at 375 (label hidden there)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": ".sh-toggle__label",
+      "raw": {
+       "typo": {
+        "fontFamily": "sans",
+        "fontSize": "15.6977px",
+        "fontWeight": "400",
+        "lineHeight": "21.9767px",
+        "letterSpacing": "-0.174419px",
+        "textTransform": "none",
+        "color": "#ffffff",
+        "textDecoration": "none #ffffff"
+       }
+      }
+     }
+    },
+    "item_states": {
+     "value": {
+      "toggleHover": "touch context: not applicable",
+      "logoHover": "no computed-style change",
+      "current": "none"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs restHover",
+      "selector": ".sh-toggle, .sh-logo",
+      "raw": {
+       "toggleDiff": [],
+       "logoDiff": []
+      }
+     }
+    },
+    "secondary_blocks": {
+     "value": "none",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {}
+     }
+    },
+    "trigger_close": {
+     "value": {
+      "element": "button type=button, no aria-label (name comes from the visible \"Menu\" label; at 375 the label is display:none so the button is icon-only with no accessible name)",
+      "style": "pill 54.1x43.6, radius 8.72093px, fill #ffffff @0.15, backdrop-filter blur(4px)",
+      "labelAndIconAtRest": "label hidden (display:none), hamburger icon shown"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "button.sh-toggle",
+      "raw": {
+       "toggle": {
+        "aria": [
+         "type=button",
+         "class=sh-toggle relative inline-flex items-center justify-center gap-x-12 h-50 body-normal pointer-events-auto"
+        ],
+        "svgClasses": [
+         "sh-toggle__icon h-9 w-auto rel:1",
+         "sh-toggle__close size-15 absol:0"
+        ],
+        "labelOp": "1"
+       },
+       "label": {
+        "text": "Menu",
+        "disp": "none",
+        "rect": {
+         "top": 0,
+         "left": 0,
+         "right": 0,
+         "bottom": 0,
+         "width": 0,
+         "height": 0,
+         "insetRight": 375,
+         "cx": 0,
+         "cy": 0
+        },
+        "typo": {
+         "fontFamily": "sans",
+         "fontSize": "15.6977px",
+         "fontWeight": "400",
+         "lineHeight": "21.9767px",
+         "letterSpacing": "-0.174419px",
+         "textTransform": "none",
+         "color": "#ffffff",
+         "textDecoration": "none #ffffff"
+        }
+       }
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "openTrigger": "click",
+      "hoverOpens": false,
+      "keyboard": "native button: Enter / Space (tab order: logo, toggle)",
+      "focusRing": "UA default auto 1px"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs behaviour.tab; restHover",
+      "selector": "button.sh-toggle",
+      "raw": {
+       "menuNodesAfterHover": 0
+      }
+     }
+    },
+    "motion": {
+     "value": {
+      "themeSwap": "colour classes swap with the section behind (source)",
+      "toggleSwap": "see trigger-close"
+     },
+     "method": "source-only",
+     "evidence": {
+      "script": "src/fan-DsC-Xkwh.js (https://fantasy.co/_nuxt/DsC-Xkwh.js) header component",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {}
+     }
+    },
+    "content": {
+     "value": {
+      "label": "Menu",
+      "logo": "wordmark svg",
+      "caseOrigin": "source case, no text-transform"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": ".sh-toggle__label",
+      "raw": {}
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "toggleSize": [
+       54.1,
+       43.6
+      ],
+      "label": "shown at 768 and 1440, display:none at 375 (icon-only)",
+      "logoSize": [
+       122.1,
+       30.5
+      ],
+      "dropMechanism": "label collapsed with display:none at the s breakpoint; not removed from the DOM"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "button.sh-toggle",
+      "raw": {
+       "labelDisp": "none"
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "dropdown",
+   "tier": 375,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: no dropdown or submenu exists; hovering the toggle and logo creates no node, the menu has 0 nested lists and 0 aria-haspopup",
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs restHover, open.state",
+      "selector": "aside.menu ul ul",
+      "raw": {
+       "nodesAfterHover": 0,
+       "nestedLists": 0,
+       "ariaHaspopup": 0
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "mega",
+   "tier": 375,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: there is no mega panel; the only panel is the full-screen menu (see drawer)",
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs open.state",
+      "selector": "aside.menu",
+      "raw": {
+       "nestedLists": 0
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "trigger-close",
+   "tier": 375,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": "one button that swaps its content in place: \"Menu\" label (hamburger icon at 375) fades out, an X icon fades in; the button keeps its place above the panel",
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs open.state.toggle",
+      "selector": "button.sh-toggle",
+      "raw": {
+       "rest": {
+        "labelOp": "1",
+        "svg": [
+         "sh-toggle__icon h-9 w-auto rel:1",
+         "sh-toggle__close size-15 absol:0"
+        ]
+       },
+       "open": {
+        "labelOp": "1",
+        "svg": [
+         "sh-toggle__icon h-9 w-auto rel:0",
+         "sh-toggle__close size-15 absol:1"
+        ]
+       }
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "restRect": {
+       "top": 26.2,
+       "left": 307,
+       "right": 361,
+       "bottom": 69.8,
+       "width": 54.1,
+       "height": 43.6,
+       "insetRight": 14,
+       "cx": 334,
+       "cy": 48
+      },
+      "openRect": {
+       "top": 26.2,
+       "left": 307,
+       "right": 361,
+       "bottom": 69.8,
+       "width": 54.1,
+       "height": 43.6,
+       "insetRight": 14,
+       "cx": 334,
+       "cy": 48
+      },
+      "rightEdgeFixed": true,
+      "widthChange": 0.0
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs open.state.toggle",
+      "selector": "button.sh-toggle",
+      "raw": {}
+     }
+    },
+    "zone_model": {
+     "value": "right end of the bar, same 50px/20.6px/14px inset as the logo on the left",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest.zones",
+      "selector": "button.sh-toggle",
+      "raw": {
+       "zones": {
+        "logoLeftInset": 14,
+        "toggleRightInset": 14,
+        "innerMax": "1506.98px",
+        "innerPad": "0px 13.9535px",
+        "innerH": 95.9
+       }
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "fill": "#ffffff @0.15",
+      "blur": "blur(4px)",
+      "radius": "8.72093px",
+      "unchangedWhenOpen": true
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "button.sh-toggle > div.sh-toggle__bg",
+      "raw": {
+       "paint": {
+        "backgroundColor": "#ffffff @0.15",
+        "backgroundImage": "none",
+        "filter": "none",
+        "backdropFilter": "blur(4px)",
+        "mixBlendMode": "normal",
+        "opacity": "1",
+        "boxShadow": "none",
+        "borderRadius": "8.72093px",
+        "border": "0px solid #ffffff",
+        "before": null,
+        "after": null
+       }
+      }
+     }
+    },
+    "background_visual": {
+     "value": "none",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "button.sh-toggle",
+      "raw": {}
+     }
+    },
+    "item_typography": {
+     "value": {
+      "label": {
+       "fontFamily": "sans",
+       "fontSize": "15.6977px",
+       "fontWeight": "400",
+       "lineHeight": "21.9767px",
+       "letterSpacing": "-0.174419px",
+       "textTransform": "none",
+       "color": "#ffffff",
+       "textDecoration": "none #ffffff"
+      }
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": ".sh-toggle__label",
+      "raw": {}
+     }
+    },
+    "item_states": {
+     "value": {
+      "hover": "no computed change",
+      "focus": "UA default auto 1px (auto 1px #e59700)"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs restHover, behaviour.tab",
+      "selector": "button.sh-toggle",
+      "raw": {}
+     }
+    },
+    "secondary_blocks": {
+     "value": {
+      "applicable": false,
+      "reason": "none"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "structural (no such element in this row)",
+      "selector": "button.sh-toggle",
+      "raw": {
+       "note": "none"
+      }
+     }
+    },
+    "trigger_close": {
+     "value": {
+      "kind": "native button",
+      "accessibleName": "text \"Menu\" (none at 375); no aria-label, no aria-expanded, no aria-controls",
+      "burgerStyle": "hamburger icon svg 2 bars (375 only) / text label",
+      "closeStyle": "X svg 13.1x13.1, same pill",
+      "replacesInPlace": true,
+      "topRow": "the header bar stays above the panel (header z-index 10 vs aside 9)",
+      "magnet": "not detected"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs open.state",
+      "selector": "button.sh-toggle",
+      "raw": {
+       "toggle": {
+        "labelOp": "1",
+        "svgClasses": [
+         "sh-toggle__icon h-9 w-auto rel:0",
+         "sh-toggle__close size-15 absol:1"
+        ],
+        "rect": {
+         "top": 26.2,
+         "left": 307,
+         "right": 361,
+         "bottom": 69.8,
+         "width": 54.1,
+         "height": 43.6,
+         "insetRight": 14,
+         "cx": 334,
+         "cy": 48
+        },
+        "label": "Menu",
+        "labelDisp": "none",
+        "svgs": [
+         {
+          "rect": {
+           "top": 44,
+           "left": 325.7,
+           "right": 342.3,
+           "bottom": 51.9,
+           "width": 16.5,
+           "height": 7.8,
+           "insetRight": 32.7,
+           "cx": 334,
+           "cy": 48
+          },
+          "op": "0",
+          "vis": true
+         },
+         {
+          "rect": {
+           "top": 41.4,
+           "left": 327.5,
+           "right": 340.6,
+           "bottom": 54.5,
+           "width": 13.1,
+           "height": 13.1,
+           "insetRight": 34.4,
+           "cx": 334,
+           "cy": 48
+          },
+          "op": "1",
+          "vis": true
+         }
+        ],
+        "aria": [
+         "type=button",
+         "class=sh-toggle relative inline-flex items-center justify-center gap-x-12 h-50 body-normal pointer-events-auto"
+        ],
+        "html": "<button type=\"button\" class=\"sh-toggle relative inline-flex items-center justify-center gap-x-12 h-50 body-normal pointer-events-auto\"><div class=\"bg-white/15 sh-toggle__bg absolute inset-0 radius-global backdrop-blur-sm\"></div><div class=\"sh-toggle__label absolute inset-0 hidden s:flex items-center justify-center text-center\">Menu</div><svg/><svg/></button>"
+       }
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "escapeCloses": true,
+      "sourceKeydown": "l=u=>{u.key===\"Escape\"&&o()} with o=()=>e.setFlag(\"menu\",!1)",
+      "linkClickCloses": true,
+      "focusAfterClose": "stays on the toggle (activeElement BUTTON.sh-toggle relative inline-flex)",
+      "focusOnOpen": "not moved: stays on the toggle"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs behaviour",
+      "selector": "button.sh-toggle",
+      "raw": {
+       "afterEscape": {
+        "asideExists": false,
+        "asideVis": false,
+        "panelH": null,
+        "scrollY": 940,
+        "html": "is-safari lenis",
+        "active": "BUTTON.sh-toggle relative inline-flex",
+        "toggleLabel": "Menu",
+        "toggleW": 54.1
+       },
+       "afterToggle": {
+        "asideExists": false,
+        "asideVis": false,
+        "panelH": null,
+        "scrollY": 11030,
+        "html": "is-safari lenis",
+        "active": "BUTTON.sh-toggle relative inline-flex",
+        "toggleLabel": "Menu",
+        "toggleW": 54.1
+       },
+       "afterLinkClick": {
+        "href": "/work",
+        "url": "https://fantasy.co/work",
+        "state": {
+         "asideExists": false,
+         "asideVis": false,
+         "panelH": null,
+         "scrollY": 0,
+         "html": "is-safari lenis",
+         "active": "BODY.",
+         "toggleLabel": "Menu",
+         "toggleW": 54.1
+        }
+       }
+      }
+     }
+    },
+    "motion": {
+     "value": {
+      "iconSwap": "label opacity 1 -> 0 and X icon 0 -> 1; toggle width shrinks (54.1 -> 54.1)",
+      "timing": "sampled toggle width settles ~700ms after click at 1440",
+      "tier": "not classified (CSS or GSAP not isolated)"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs open.samples",
+      "selector": "button.sh-toggle",
+      "raw": {
+       "samples": [
+        [
+         13,
+         54.1
+        ],
+        [
+         80,
+         54.1
+        ],
+        [
+         168,
+         54.1
+        ],
+        [
+         231,
+         54.1
+        ],
+        [
+         299,
+         54.1
+        ],
+        [
+         366,
+         54.1
+        ],
+        [
+         433,
+         54.1
+        ],
+        [
+         497,
+         54.1
+        ],
+        [
+         565,
+         54.1
+        ],
+        [
+         632,
+         54.1
+        ],
+        [
+         698,
+         54.1
+        ],
+        [
+         764,
+         54.1
+        ],
+        [
+         832,
+         54.1
+        ],
+        [
+         896,
+         54.1
+        ]
+       ]
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "label": "Menu",
+      "closeGlyph": "X icon (no text)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs open.state",
+      "selector": "button.sh-toggle",
+      "raw": {}
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "label": "visible at 768/1440, hidden at 375 (icon-only)",
+      "size": [
+       54.1,
+       43.6
+      ],
+      "openWidth": 54.1
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest, open",
+      "selector": "button.sh-toggle",
+      "raw": {}
+     }
+    }
+   }
+  },
+  {
+   "surface": "drawer",
+   "tier": 375,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": "full-screen opaque overlay: aside.menu fixed inset-x-0, 375x1074.4 (100% wide; 174.4px taller than the viewport, inset -100 top and bottom); inner panel exactly the viewport 375x900",
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs open.state",
+      "selector": "aside.menu",
+      "raw": {
+       "aside": {
+        "top": -87.2,
+        "left": 0,
+        "right": 375,
+        "bottom": 987.2,
+        "width": 375,
+        "height": 1074.4,
+        "insetRight": 0,
+        "cx": 187.5,
+        "cy": 450
+       },
+       "panel": {
+        "top": 0,
+        "left": 0,
+        "right": 375,
+        "bottom": 900,
+        "width": 375,
+        "height": 900,
+        "insetRight": 0,
+        "cx": 187.5,
+        "cy": 450
+       }
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "asideRect": {
+       "top": -87.2,
+       "left": 0,
+       "right": 375,
+       "bottom": 987.2,
+       "width": 375,
+       "height": 1074.4,
+       "insetRight": 0,
+       "cx": 187.5,
+       "cy": 450
+      },
+      "panelRect": {
+       "top": 0,
+       "left": 0,
+       "right": 375,
+       "bottom": 900,
+       "width": 375,
+       "height": 900,
+       "insetRight": 0,
+       "cx": 187.5,
+       "cy": 450
+      },
+      "position": "fixed",
+      "zIndex": "9",
+      "headerZ": "10",
+      "centredOnViewport": true,
+      "radius": "0px",
+      "anchor": "header-wide: panel width == viewport"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs open.state",
+      "selector": "aside.menu",
+      "raw": {
+       "aside": {
+        "rect": {
+         "top": -87.2,
+         "left": 0,
+         "right": 375,
+         "bottom": 987.2,
+         "width": 375,
+         "height": 1074.4,
+         "insetRight": 0,
+         "cx": 187.5,
+         "cy": 450
+        },
+        "position": "fixed",
+        "top": "-87.2093px",
+        "left": "0px",
+        "right": "0px",
+        "zIndex": "9",
+        "maxWidth": "none",
+        "width": "375px",
+        "transform": "none",
+        "display": "block",
+        "overflow": "hidden",
+        "padding": "0px",
+        "margin": "0px"
+       }
+      }
+     }
+    },
+    "zone_model": {
+     "value": {
+      "primary": {
+       "items": [
+        "Work",
+        "Services",
+        "Impact"
+       ],
+       "align": "centred stack",
+       "rows": [
+        {
+         "top": 338.7,
+         "left": 138,
+         "right": 237,
+         "bottom": 382.3,
+         "width": 99.1,
+         "height": 43.6,
+         "insetRight": 138,
+         "cx": 187.5,
+         "cy": 360.5
+        },
+        {
+         "top": 389.3,
+         "left": 104.9,
+         "right": 270.1,
+         "bottom": 432.9,
+         "width": 165.3,
+         "height": 43.6,
+         "insetRight": 104.9,
+         "cx": 187.5,
+         "cy": 411.1
+        },
+        {
+         "top": 439.9,
+         "left": 120.3,
+         "right": 254.6,
+         "bottom": 483.5,
+         "width": 134.3,
+         "height": 43.6,
+         "insetRight": 120.4,
+         "cx": 187.5,
+         "cy": 461.7
+        }
+       ]
+      },
+      "tertiaryRow": {
+       "items": [
+        "Contact",
+        "Latest",
+        "Careers"
+       ],
+       "align": "centred inline row",
+       "top": 539.3
+      },
+      "bottomBar": {
+       "top": 793,
+       "left": 0,
+       "right": 375,
+       "bottom": 900,
+       "width": 375,
+       "height": 107,
+       "insetRight": 0,
+       "cx": 187.5,
+       "cy": 846.5
+      },
+      "bottomLeftSentence": "ABSENT at this tier (source class hidden s:block)",
+      "bottomRightPromoCard": {
+       "rect": {
+        "top": 793,
+        "left": 14,
+        "right": 361,
+        "bottom": 879.1,
+        "width": 347.1,
+        "height": 86.1,
+        "insetRight": 14,
+        "cx": 187.5,
+        "cy": 836
+       },
+       "text": "HOW FANTASY SHIPPED LIV GOLF IN 72 DAYS",
+       "video": 1
+      }
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs open.state",
+      "selector": "aside.menu",
+      "raw": {
+       "links": [
+        [
+         "Work",
+         {
+          "top": 338.7,
+          "left": 138,
+          "right": 237,
+          "bottom": 382.3,
+          "width": 99.1,
+          "height": 43.6,
+          "insetRight": 138,
+          "cx": 187.5,
+          "cy": 360.5
+         }
+        ],
+        [
+         "Services",
+         {
+          "top": 389.3,
+          "left": 104.9,
+          "right": 270.1,
+          "bottom": 432.9,
+          "width": 165.3,
+          "height": 43.6,
+          "insetRight": 104.9,
+          "cx": 187.5,
+          "cy": 411.1
+         }
+        ],
+        [
+         "Impact",
+         {
+          "top": 439.9,
+          "left": 120.3,
+          "right": 254.6,
+          "bottom": 483.5,
+          "width": 134.3,
+          "height": 43.6,
+          "insetRight": 120.4,
+          "cx": 187.5,
+          "cy": 461.7
+         }
+        ],
+        [
+         "Contact",
+         {
+          "top": 539.3,
+          "left": 73,
+          "right": 130.1,
+          "bottom": 561.3,
+          "width": 57.2,
+          "height": 22,
+          "insetRight": 244.9,
+          "cx": 101.6,
+          "cy": 550.3
+         }
+        ],
+        [
+         "Latest",
+         {
+          "top": 539.3,
+          "left": 165,
+          "right": 209.9,
+          "bottom": 561.3,
+          "width": 44.8,
+          "height": 22,
+          "insetRight": 165.1,
+          "cx": 187.4,
+          "cy": 550.3
+         }
+        ],
+        [
+         "Careers",
+         {
+          "top": 539.3,
+          "left": 244.7,
+          "right": 302,
+          "bottom": 561.3,
+          "width": 57.3,
+          "height": 22,
+          "insetRight": 73,
+          "cx": 273.4,
+          "cy": 550.3
+         }
+        ],
+        [
+         "HOW FANTASY SHIPPED LIV GOLF IN 72 DAYS",
+         {
+          "top": 793,
+          "left": 14,
+          "right": 361,
+          "bottom": 879.1,
+          "width": 347.1,
+          "height": 86.1,
+          "insetRight": 14,
+          "cx": 187.5,
+          "cy": 836
+         }
+        ]
+       ]
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "fill": "#000000 opaque on the aside and on the panel",
+      "blur": "none",
+      "scrim": "none (the panel itself is the cover)",
+      "filter": "none",
+      "shadow": "none",
+      "headerGradientWhileOpen": "0.5"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs open.state",
+      "selector": "aside.menu",
+      "raw": {
+       "aside": {
+        "backgroundColor": "#000000",
+        "backgroundImage": "none",
+        "filter": "none",
+        "backdropFilter": "none",
+        "mixBlendMode": "normal",
+        "opacity": "1",
+        "boxShadow": "none",
+        "borderRadius": "0px",
+        "border": "0px solid #ffffff",
+        "before": null,
+        "after": null
+       },
+       "panel": {
+        "backgroundColor": "#000000",
+        "backgroundImage": "none",
+        "filter": "none",
+        "backdropFilter": "none",
+        "mixBlendMode": "normal",
+        "opacity": "1",
+        "boxShadow": "none",
+        "borderRadius": "0px",
+        "border": "0px solid #ffffff",
+        "before": null,
+        "after": null
+       }
+      }
+     }
+    },
+    "background_visual": {
+     "value": "none behind the links (flat black); the only media is the 96x62 looping muted promo video thumbnail inside the promo card",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs open.state; fan-toggle.mjs",
+      "selector": "aside.menu video",
+      "raw": {
+       "media": {
+        "video": 1,
+        "img": 0,
+        "canvas": 0
+       }
+      }
+     }
+    },
+    "item_typography": {
+     "value": {
+      "primary": {
+       "fontFamily": "sans",
+       "fontSize": "43.6047px",
+       "fontWeight": "400",
+       "lineHeight": "43.6047px",
+       "letterSpacing": "-1.30814px",
+       "textTransform": "none",
+       "color": "#ffffff",
+       "textDecoration": "none #ffffff"
+      },
+      "sub": {
+       "fontFamily": "sans",
+       "fontSize": "15.6977px",
+       "fontWeight": "400",
+       "lineHeight": "21.9767px",
+       "letterSpacing": "-0.174419px",
+       "textTransform": "none",
+       "color": "#ffffff",
+       "textDecoration": "none #ffffff"
+      },
+      "promo": {
+       "fontFamily": "sans",
+       "fontSize": "17.4419px",
+       "fontWeight": "400",
+       "lineHeight": "24.4186px",
+       "letterSpacing": "-0.174419px",
+       "textTransform": "none",
+       "color": "#ffffff",
+       "textDecoration": "none #ffffff"
+      },
+      "scaling": "rem-scaled: link size = 10rem at 1440, 7rem at 768, 5rem at 375 (rootFontSize 8.72093px)",
+      "fontFamily": "custom family named \"sans\""
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs open.state",
+      "selector": "a.menu-link",
+      "raw": {}
+     }
+    },
+    "item_states": {
+     "value": {
+      "primaryHover": "touch: no hover",
+      "subRest": "opacity 0.6 (class opacity-60)",
+      "subHover": "touch: no hover",
+      "current": "not driven",
+      "ornament": "none (no index, glyph or separator)",
+      "itemOwningPanel": "none"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs menuHover",
+      "selector": "a.menu-link, a.menu-sub-link",
+      "raw": {
+       "linkDiffs": [],
+       "subDiffs": []
+      }
+     }
+    },
+    "secondary_blocks": {
+     "value": {
+      "tertiaryRow": [
+       "Contact",
+       "Latest",
+       "Careers"
+      ],
+      "sentenceCta": "absent",
+      "promoCard": {
+       "text": "HOW FANTASY SHIPPED LIV GOLF IN 72 DAYS",
+       "href": "/latest/how-fantasy-shipped-liv-golf-in-72-days",
+       "rect": {
+        "top": 793,
+        "left": 14,
+        "right": 361,
+        "bottom": 879.1,
+        "width": 347.1,
+        "height": 86.1,
+        "insetRight": 14,
+        "cx": 187.5,
+        "cy": 836
+       },
+       "reactsToHover": false
+      }
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs open.state; menuHover",
+      "selector": "footer.menu__bottom",
+      "raw": {
+       "bottom": [
+        {
+         "s": "footer.menu__bottom.absolute.bottom-0",
+         "rect": {
+          "top": 793,
+          "left": 0,
+          "right": 375,
+          "bottom": 900,
+          "width": 375,
+          "height": 107,
+          "insetRight": 0,
+          "cx": 187.5,
+          "cy": 846.5
+         },
+         "text": "HOW FANTASY SHIPPED LIV GOLF IN 72 DAYS"
+        }
+       ]
+      }
+     }
+    },
+    "trigger_close": {
+     "value": "the header toggle (stays above the panel) turns into an X; Escape and a link click also close; there is no separate close button inside the panel",
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs behaviour",
+      "selector": "aside.menu",
+      "raw": {}
+     }
+    },
+    "mechanics": {
+     "value": {
+      "role": "role=dialog aria-modal=true aria-label=\"Main menu\" on aside.menu (no <dialog> element)",
+      "listRoles": "ul role=menubar, a role=menuitem",
+      "scrollLock": "none: wheel with the menu open moved the page 0 -> 940 and the menu stayed open (no lenis-stopped class, html/body overflow visible)",
+      "inert": 0,
+      "focusTrap": "none: Tab passes through 8 menu items then into the page behind (Driving AI tra, Explore, Scroll)",
+      "focusOnOpen": "not moved",
+      "escape": "closes",
+      "linkClick": "closes and routes",
+      "survivesResize": "NO: 375 -> 1440 (mobile-UA context) closed it",
+      "mountedOnlyWhenOpen": "aside.menu is created on open and removed on close (absent from the DOM at rest)"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs behaviour, resizeSurvival",
+      "selector": "aside.menu",
+      "raw": {
+       "scrollLock": {
+        "before": 0,
+        "after": 940,
+        "state": {
+         "asideExists": true,
+         "asideVis": true,
+         "panelH": 900,
+         "scrollY": 940,
+         "html": "is-safari lenis",
+         "active": "BUTTON.sh-toggle relative inline-flex",
+         "toggleLabel": "Menu",
+         "toggleW": 54.1
+        }
+       },
+       "tab": [
+        {
+         "el": "A.menu-link.flex",
+         "text": "Work",
+         "inHeader": false,
+         "inMenu": true,
+         "outline": "auto 1px #e59700"
+        },
+        {
+         "el": "A.menu-link.flex",
+         "text": "Services",
+         "inHeader": false,
+         "inMenu": true,
+         "outline": "auto 1px #e59700"
+        },
+        {
+         "el": "A.menu-link.flex",
+         "text": "Impact",
+         "inHeader": false,
+         "inMenu": true,
+         "outline": "auto 1px #e59700"
+        },
+        {
+         "el": "A.menu-sub-link.flex",
+         "text": "Contact",
+         "inHeader": false,
+         "inMenu": true,
+         "outline": "auto 1px #e59700"
+        },
+        {
+         "el": "A.menu-sub-link.flex",
+         "text": "Latest",
+         "inHeader": false,
+         "inMenu": true,
+         "outline": "auto 1px #e59700"
+        },
+        {
+         "el": "A.menu-sub-link.flex",
+         "text": "Careers",
+         "inHeader": false,
+         "inMenu": true,
+         "outline": "auto 1px #e59700"
+        },
+        {
+         "el": "A.flex.items-center",
+         "text": "HOW FANTASY SHIPPED LIV ",
+         "inHeader": false,
+         "inMenu": true,
+         "outline": "auto 1px #e59700"
+        },
+        {
+         "el": "BUTTON.mb-5.s:hidden",
+         "text": "Scroll",
+         "inHeader": false,
+         "inMenu": false,
+         "outline": "auto 1px #e59700"
+        },
+        {
+         "el": "A.block.absolute",
+         "text": "Driving AI transformatio",
+         "inHeader": false,
+         "inMenu": false,
+         "outline": "auto 1px #e59700"
+        },
+        {
+         "el": "BUTTON.btn.inline-flex",
+         "text": "Explore",
+         "inHeader": false,
+         "inMenu": false,
+         "outline": "auto 1px #e59700"
+        },
+        {
+         "el": "BUTTON.mb-5.ml-auto",
+         "text": "Scroll",
+         "inHeader": false,
+         "inMenu": false,
+         "outline": "auto 1px #e59700"
+        },
+        {
+         "el": "H2.h4",
+         "text": "Let's talk. We'd love\nto",
+         "inHeader": false,
+         "inMenu": false,
+         "outline": "auto 1px #e59700"
+        }
+       ],
+       "attrs": {
+        "dialogs": 0,
+        "roleDialog": 2,
+        "ariaModal": 2,
+        "inert": 0,
+        "ariaHidden": [],
+        "ariaExpanded": [
+         "button.cky-accordion-btn=false",
+         "button.cky-accordion-btn=false",
+         "button.cky-accordion-btn=false",
+         "button.cky-accordion-btn=false",
+         "button.cky-accordion-btn=false",
+         "button.cky-accordion-btn=false"
+        ]
+       },
+       "resize": {
+        "from": 375,
+        "to": 1440,
+        "before": {
+         "exists": true,
+         "vis": true,
+         "panel": {
+          "top": 0,
+          "left": 0,
+          "right": 375,
+          "bottom": 900,
+          "width": 375,
+          "height": 900,
+          "insetRight": 0,
+          "cx": 187.5,
+          "cy": 450
+         }
+        },
+        "mid": {
+         "exists": false,
+         "vis": false,
+         "panel": null
+        },
+        "back": {
+         "exists": false,
+         "vis": false,
+         "panel": null
+        }
+       },
+       "roles": {
+        "navs": [
+         "menubar",
+         "menubar"
+        ],
+        "items": [
+         "menuitem",
+         "menuitem",
+         "menuitem",
+         "menuitem",
+         "menuitem",
+         "menuitem",
+         null,
+         "menuitem"
+        ]
+       }
+      }
+     }
+    },
+    "motion": {
+     "value": {
+      "open": "aside autoAlpha 0 -> 1 0.5s power1; .js-fade items fade + y from -2rem with stagger 0.05s; .js-fade-up items y from 2rem",
+      "close": "autoAlpha -> 0 in 0.35s (measured: aside opacity 1 -> \"gone\" by ~351ms)",
+      "tier": "G (GSAP timeline, DOM, custom ease \"unmask\")",
+      "renderSubstrate": "DOM (+ a video thumbnail)"
+     },
+     "method": "source-only",
+     "evidence": {
+      "script": "src/fan-DsC-Xkwh.js (https://fantasy.co/_nuxt/DsC-Xkwh.js) menu component a=(u,h)=>{...} / c=(u,h)=>{...}; fan-capture.mjs closeMotion",
+      "selector": "aside.menu",
+      "raw": {
+       "closeSamples": [
+        [
+         1,
+         1
+        ],
+        [
+         48,
+         0.7347
+        ],
+        [
+         99,
+         0.5061
+        ],
+        [
+         149,
+         0.3233
+        ],
+        [
+         199,
+         0.1812
+        ],
+        [
+         250,
+         0.0784
+        ],
+        [
+         299,
+         0.0196
+        ],
+        [
+         351,
+         "gone"
+        ],
+        [
+         399,
+         "gone"
+        ],
+        [
+         450,
+         "gone"
+        ],
+        [
+         499,
+         "gone"
+        ],
+        [
+         548,
+         "gone"
+        ],
+        [
+         598,
+         "gone"
+        ],
+        [
+         650,
+         "gone"
+        ],
+        [
+         697,
+         "gone"
+        ]
+       ],
+       "quote": "f.clear().from(u,{autoAlpha:0,duration:.5,ease:\"power1\"},0).from(m,{alpha:0,stagger:.05,ease:\"linear\"},v).from(m,{y:\"-2rem\",stagger:.05},v).from(p,{y:\"2rem\",alpha:0,stagger:.05},v).restart()"
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "primary": [
+       "Work",
+       "Services",
+       "Impact"
+      ],
+      "primaryHrefs": [
+       "/work",
+       "/services",
+       "/impact"
+      ],
+      "sub": [
+       "Contact",
+       "Latest",
+       "Careers"
+      ],
+      "cta": "(dropped at this tier)",
+      "promo": "HOW FANTASY SHIPPED LIV GOLF IN 72 DAYS",
+      "counts": {
+       "primary": 3,
+       "sub": 3,
+       "secondary": 1
+      },
+      "caseOrigin": "source text; primary text-transform none; the promo card title renders uppercase from its own source",
+      "fixedOrDynamic": "menu items from a CMS list (r.main / r.sub); promo card dynamic (latest article)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs open.state",
+      "selector": "aside.menu",
+      "raw": {}
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "linkSize": "43.6047px",
+      "sentenceCta": "dropped (display none via hidden s:block)",
+      "promoCardRect": {
+       "top": 793,
+       "left": 14,
+       "right": 361,
+       "bottom": 879.1,
+       "width": 347.1,
+       "height": 86.1,
+       "insetRight": 14,
+       "cx": 187.5,
+       "cy": 836
+      },
+      "layout": "same centred stack at every tier"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs open.state",
+      "selector": "aside.menu",
+      "raw": {}
+     }
+    }
+   }
+  },
+  {
+   "surface": "footer",
+   "tier": 375,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": "single-block sign-off: a white panel with a heading, a button, copyright and a legal link (no link columns)",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs footer",
+      "selector": "footer.sf",
+      "raw": {
+       "rect": {
+        "top": 373.1,
+        "left": 0,
+        "right": 375,
+        "bottom": 900.4,
+        "width": 375,
+        "height": 527.3,
+        "insetRight": 0,
+        "cx": 187.5,
+        "cy": 636.7
+       },
+       "text": "Let's talk. We'd love | to hear from you. | Contact | © 2026 Fantasy | Privacy & Terms"
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "width": 375,
+      "height": 527.3,
+      "padding": "0px",
+      "position": "relative",
+      "overflow": "hidden"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs footer",
+      "selector": "footer.sf",
+      "raw": {
+       "geo": {
+        "rect": {
+         "top": 373.1,
+         "left": 0,
+         "right": 375,
+         "bottom": 900.4,
+         "width": 375,
+         "height": 527.3,
+         "insetRight": 0,
+         "cx": 187.5,
+         "cy": 636.7
+        },
+        "position": "relative",
+        "top": "0px",
+        "left": "0px",
+        "right": "0px",
+        "zIndex": "auto",
+        "maxWidth": "none",
+        "width": "375px",
+        "transform": "none",
+        "display": "block",
+        "overflow": "hidden",
+        "padding": "0px",
+        "margin": "0px"
+       }
+      }
+     }
+    },
+    "zone_model": {
+     "value": [
+      {
+       "text": "Let's talk. We'd love to hear from you.",
+       "tag": "H2",
+       "left": 14,
+       "top": 669.6,
+       "width": 246.6,
+       "height": 63.3
+      },
+      {
+       "text": "Contact",
+       "tag": "BUTTON",
+       "left": 14,
+       "top": 760.8,
+       "width": 113.2,
+       "height": 43.6
+      },
+      {
+       "text": "Privacy & Terms",
+       "tag": "LI",
+       "left": 265.3,
+       "top": 861.2,
+       "width": 95.7,
+       "height": 18.3
+      },
+      {
+       "text": "Privacy & Terms",
+       "tag": "A",
+       "left": 265.3,
+       "top": 861.2,
+       "width": 95.7,
+       "height": 17
+      }
+     ],
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs footer",
+      "selector": "footer.sf",
+      "raw": {}
+     }
+    },
+    "ground": {
+     "value": {
+      "panel": "div.bg-white.text-black.relative #ffffff",
+      "overlayBehind": "div.absolute.inset-0.bg-black/90 (rgba(0,0,0,0.9))",
+      "blur": "none"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs footer",
+      "selector": "footer.sf > div.bg-white",
+      "raw": {
+       "bgs": [
+        {
+         "s": "footer.sf.relative.overflow-hidden > div.absolute.inset-0.bg-black/90",
+         "paint": {
+          "backgroundColor": "#000000 @0.9",
+          "backgroundImage": "none",
+          "filter": "none",
+          "backdropFilter": "none",
+          "mixBlendMode": "normal",
+          "opacity": "0",
+          "boxShadow": "none",
+          "borderRadius": "0px",
+          "border": "0px solid #ffffff",
+          "before": null,
+          "after": null
+         },
+         "rect": {
+          "top": 373.1,
+          "left": 0,
+          "right": 375,
+          "bottom": 900.4,
+          "width": 375,
+          "height": 527.3,
+          "insetRight": 0,
+          "cx": 187.5,
+          "cy": 636.7
+         }
+        },
+        {
+         "s": "footer.sf.relative.overflow-hidden > div.bg-white.text-black.relative",
+         "paint": {
+          "backgroundColor": "#ffffff",
+          "backgroundImage": "none",
+          "filter": "none",
+          "backdropFilter": "none",
+          "mixBlendMode": "normal",
+          "opacity": "1",
+          "boxShadow": "none",
+          "borderRadius": "0px",
+          "border": "0px solid #000000",
+          "before": null,
+          "after": null
+         },
+         "rect": {
+          "top": 373.1,
+          "left": 0,
+          "right": 375,
+          "bottom": 900.4,
+          "width": 375,
+          "height": 527.3,
+          "insetRight": 0,
+          "cx": 187.5,
+          "cy": 636.7
+         }
+        }
+       ]
+      }
+     }
+    },
+    "background_visual": {
+     "value": "none (no image, video, canvas or svg in the footer: media all 0)",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs footer",
+      "selector": "footer.sf",
+      "raw": {
+       "media": {
+        "video": 0,
+        "img": 0,
+        "canvas": 0,
+        "svg": 0
+       }
+      }
+     }
+    },
+    "item_typography": {
+     "value": {
+      "heading": {
+       "fontFamily": "sans",
+       "fontSize": "28.7791px",
+       "fontWeight": "400",
+       "lineHeight": "31.657px",
+       "letterSpacing": "-0.575581px",
+       "textTransform": "none",
+       "color": "#000000",
+       "textDecoration": "none #000000"
+      },
+      "legal": {
+       "fontFamily": "sans",
+       "fontSize": "13.0814px",
+       "fontWeight": "400",
+       "lineHeight": "18.314px",
+       "letterSpacing": "-0.174419px",
+       "textTransform": "none",
+       "color": "#000000",
+       "textDecoration": "none #000000"
+      },
+      "button": {
+       "fontFamily": "sans",
+       "fontSize": "15.6977px",
+       "fontWeight": "500",
+       "lineHeight": "15.6977px",
+       "letterSpacing": "-0.174419px",
+       "textTransform": "none",
+       "color": "#000000",
+       "textDecoration": "none #000000"
+      },
+      "scaling": "rem-scaled (heading 28.7791px)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs footer",
+      "selector": "footer h2, a",
+      "raw": {}
+     }
+    },
+    "secondary_blocks": {
+     "value": {
+      "button": "Contact",
+      "copyright": "© 2026 Fantasy",
+      "legal": "Privacy & Terms (/policy)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs footer",
+      "selector": "footer.sf",
+      "raw": {}
+     }
+    },
+    "trigger_close": {
+     "value": {
+      "applicable": false,
+      "reason": "column does not apply to this surface (footer)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "structural (no such element in this row)",
+      "selector": "(structural)",
+      "raw": {
+       "note": "column does not apply to this surface (footer)"
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "position": "static in flow, overflow hidden",
+      "headerWhileAtFooter": "10 js-sh is-dark text-white is-collapsed",
+      "scrollMax": 11042
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs footer",
+      "selector": "footer.sf",
+      "raw": {
+       "headerAtFooter": {
+        "rect": {
+         "top": 0,
+         "left": 0,
+         "right": 375,
+         "bottom": 95.9,
+         "width": 375,
+         "height": 95.9,
+         "insetRight": 0,
+         "cx": 187.5,
+         "cy": 48
+        },
+        "cls": "sh fixed top-0 left-0 w-full z-10 js-sh is-dark text-white is-collapsed"
+       }
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "text": "Let's talk. We'd love | to hear from you. | Contact | © 2026 Fantasy | Privacy & Terms",
+      "caseOrigin": "source case (no text-transform)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs footer",
+      "selector": "footer.sf",
+      "raw": {}
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "height": 527.3,
+      "headingSize": "28.7791px",
+      "layout": "same single stack; padding and type scale with the root font-size"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs footer",
+      "selector": "footer.sf",
+      "raw": {}
+     }
+    }
+   }
+  },
+  {
+   "surface": "header-shell",
+   "tier": 768,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": "full-bleed",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {
+       "rect": {
+        "top": 0,
+        "left": 0,
+        "right": 768,
+        "bottom": 70.8,
+        "width": 768,
+        "height": 70.8,
+        "insetRight": 0,
+        "cx": 384,
+        "cy": 35.4
+       },
+       "radius": "0px",
+       "viewport": 768
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "width": 768,
+      "height": 70.8,
+      "top": 0,
+      "left": 0,
+      "rightInset": 0,
+      "radius": "0px",
+      "position": "fixed",
+      "zIndex": "10",
+      "maxWidth": "1111.48px",
+      "innerPadding": "0px 20.5829px",
+      "pointerEvents": "none on the header, auto on logo and toggle (source classes)",
+      "centredOnViewport": true
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {
+       "geo": {
+        "rect": {
+         "top": 0,
+         "left": 0,
+         "right": 768,
+         "bottom": 70.8,
+         "width": 768,
+         "height": 70.8,
+         "insetRight": 0,
+         "cx": 384,
+         "cy": 35.4
+        },
+        "position": "fixed",
+        "top": "0px",
+        "left": "0px",
+        "right": "0px",
+        "zIndex": "10",
+        "maxWidth": "none",
+        "width": "768px",
+        "transform": "none",
+        "display": "block",
+        "overflow": "visible",
+        "padding": "0px",
+        "margin": "0px"
+       },
+       "zones": {
+        "logoLeftInset": 20.6,
+        "toggleRightInset": 20.6,
+        "innerMax": "1111.48px",
+        "innerPad": "0px 20.5829px",
+        "innerH": 70.8
+       }
+      }
+     }
+    },
+    "zone_model": {
+     "value": {
+      "zones": [
+       "logo (left)",
+       "toggle (right)"
+      ],
+      "utilityControls": "none (no cart, language, search, theme, sound)",
+      "navLinksInHeader": 0,
+      "buttons": [
+       "Fantasy",
+       "Menu"
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0 a, header.sh.fixed.top-0 button",
+      "raw": {
+       "navLinks": 0,
+       "buttons": [
+        "Fantasy",
+        "Menu"
+       ]
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "fill": "#000000 @0 on the header; child div.sh__gradient.bg-black paints #000000 at opacity 0.5 with mask-image linear-gradient(0deg, rgba(0, 0, 0, 0) 0px, rgb(0, 0, 0)) (a top-to-bottom fade)",
+      "blur": "none",
+      "scrim": "no",
+      "shadow": "none",
+      "border": "0px solid #ffffff",
+      "filter": "none",
+      "mixBlendMode": "normal",
+      "opacityWhenScrolledPast400": "0",
+      "themeVariant": "source: is-light text-black + bg-white gradient over light sections, is-dark text-white + bg-black gradient otherwise"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest, scroll",
+      "selector": "header.sh.fixed.top-0 > div.sh__gradient",
+      "raw": {
+       "gradient": {
+        "geo": {
+         "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 768,
+          "bottom": 70.8,
+          "width": 768,
+          "height": 70.8,
+          "insetRight": 0,
+          "cx": 384,
+          "cy": 35.4
+         },
+         "position": "absolute",
+         "top": "0px",
+         "left": "0px",
+         "right": "0px",
+         "zIndex": "auto",
+         "maxWidth": "none",
+         "width": "768px",
+         "transform": "none",
+         "display": "block",
+         "overflow": "visible",
+         "padding": "0px",
+         "margin": "0px"
+        },
+        "paint": {
+         "backgroundColor": "#000000",
+         "backgroundImage": "none",
+         "filter": "none",
+         "backdropFilter": "none",
+         "mixBlendMode": "normal",
+         "opacity": "0.5",
+         "boxShadow": "none",
+         "borderRadius": "0px",
+         "border": "0px solid #ffffff",
+         "before": null,
+         "after": null
+        },
+        "maskImage": "linear-gradient(0deg, rgba(0, 0, 0, 0) 0px, rgb(0, 0, 0))"
+       },
+       "scrollSamples": [
+        [
+         1,
+         "t-0 w-full z-10 js-sh is-dark text-white",
+         "0.5"
+        ],
+        [
+         401,
+         "10 js-sh is-dark text-white is-collapsed",
+         "0"
+        ],
+        [
+         901,
+         "10 js-sh is-dark text-white is-collapsed",
+         "0"
+        ],
+        [
+         1801,
+         "10 js-sh is-dark text-white is-collapsed",
+         "0"
+        ],
+        [
+         3501,
+         "10 js-sh is-dark text-white is-collapsed",
+         "0"
+        ],
+        [
+         6001,
+         "10 js-sh is-dark text-white is-collapsed",
+         "0"
+        ],
+        [
+         10001,
+         "10 js-sh is-dark text-white is-collapsed",
+         "0"
+        ],
+        [
+         10756,
+         "10 js-sh is-dark text-white is-collapsed",
+         "0"
+        ]
+       ]
+      }
+     }
+    },
+    "background_visual": {
+     "value": "none (a flat black 50% fade; no image, video or canvas in the header)",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {
+       "gradientPaint": {
+        "backgroundColor": "#000000",
+        "backgroundImage": "none",
+        "filter": "none",
+        "backdropFilter": "none",
+        "mixBlendMode": "normal",
+        "opacity": "0.5",
+        "boxShadow": "none",
+        "borderRadius": "0px",
+        "border": "0px solid #ffffff",
+        "before": null,
+        "after": null
+       }
+      }
+     }
+    },
+    "item_typography": {
+     "value": {
+      "applicable": false,
+      "reason": "column does not apply to this surface (header-shell)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "structural (no such element in this row)",
+      "selector": "(structural)",
+      "raw": {
+       "note": "column does not apply to this surface (header-shell)"
+      }
+     }
+    },
+    "item_states": {
+     "value": {
+      "applicable": false,
+      "reason": "column does not apply to this surface (header-shell)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "structural (no such element in this row)",
+      "selector": "(structural)",
+      "raw": {
+       "note": "column does not apply to this surface (header-shell)"
+      }
+     }
+    },
+    "secondary_blocks": {
+     "value": "none",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {}
+     }
+    },
+    "trigger_close": {
+     "value": "the toggle button at the right end (see trigger-close row); the logo button scrolls to top on the home route (source k())",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {}
+     }
+    },
+    "mechanics": {
+     "value": {
+      "pinned": "position:fixed top:0 at every scroll offset sampled (0..10756)",
+      "hideOnScroll": false,
+      "headerRectAfterScroll": [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0
+      ],
+      "gradientCollapse": "gradient fades out (is-collapsed) after scrolling down past 100px and returns as soon as the scroll direction is up: measured wheel down -> \"is-collapsed\" opacity 0, wheel up -> opacity 0.5",
+      "scrollContainer": "window, Lenis on html (class lenis)",
+      "themeSwitch": "is-dark / is-light class per section (only is-dark seen at the offsets sampled)"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs scroll",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {
+       "samples": [
+        {
+         "y": 1,
+         "top": 0,
+         "cls": "sh fixed top-0 left-0 w-full z-10 js-sh is-dark text-white",
+         "gradOpacity": "0.5"
+        },
+        {
+         "y": 401,
+         "top": 0,
+         "cls": "sh fixed top-0 left-0 w-full z-10 js-sh is-dark text-white is-collapsed",
+         "gradOpacity": "0"
+        },
+        {
+         "y": 901,
+         "top": 0,
+         "cls": "sh fixed top-0 left-0 w-full z-10 js-sh is-dark text-white is-collapsed",
+         "gradOpacity": "0"
+        },
+        {
+         "y": 1801,
+         "top": 0,
+         "cls": "sh fixed top-0 left-0 w-full z-10 js-sh is-dark text-white is-collapsed",
+         "gradOpacity": "0"
+        },
+        {
+         "y": 3501,
+         "top": 0,
+         "cls": "sh fixed top-0 left-0 w-full z-10 js-sh is-dark text-white is-collapsed",
+         "gradOpacity": "0"
+        },
+        {
+         "y": 6001,
+         "top": 0,
+         "cls": "sh fixed top-0 left-0 w-full z-10 js-sh is-dark text-white is-collapsed",
+         "gradOpacity": "0"
+        },
+        {
+         "y": 10001,
+         "top": 0,
+         "cls": "sh fixed top-0 left-0 w-full z-10 js-sh is-dark text-white is-collapsed",
+         "gradOpacity": "0"
+        },
+        {
+         "y": 10756,
+         "top": 0,
+         "cls": "sh fixed top-0 left-0 w-full z-10 js-sh is-dark text-white is-collapsed",
+         "gradOpacity": "0"
+        }
+       ],
+       "wheelDown": "sh fixed top-0 left-0 w-full z-10 js-sh is-dark text-white is-collapsed",
+       "wheelUp": "sh fixed top-0 left-0 w-full z-10 js-sh is-dark text-white",
+       "source": "S=({y:b,direction:y})=>{c.value=y===-1,a.value=b>100}; \"is-collapsed\":v.value with v=!c.value&&a.value||..."
+      }
+     }
+    },
+    "motion": {
+     "value": {
+      "scroll": "header never moves or resizes; only the gradient fades (class is-collapsed)",
+      "lenis": "new GH({lerp:.15,wheelMultiplier:1.25,autoResize:false}) on window, raf driven by the GSAP ticker",
+      "tier": "V for the gradient class toggle; Lenis is Tier H by the roster (helper); GSAP ticker present"
+     },
+     "method": "source-only",
+     "evidence": {
+      "script": "src/fan-DsC-Xkwh.js (https://fantasy.co/_nuxt/DsC-Xkwh.js) scroll plugin and header component",
+      "selector": "html.lenis",
+      "raw": {
+       "quote": "r=new GH({lerp:.15,wheelMultiplier:1.25,autoResize:!1}) ... Bn.ticker.add(l=>{r.raf(l*1e3)"
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "text": "none in the shell"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {}
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "height": 70.8,
+      "containerPadding": "0px 20.5829px",
+      "rootFontSize": "6.43216px",
+      "mechanism": "the whole UI scales through the root font-size (rem): 8.33px at 1440, 6.43px at 768, 8.72px at 375; nothing is removed",
+      "scaleNote": "not linear with the viewport: root 10px at 1337 and 1920, 8.33px at 1440 (fantasy-scale probe)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest; fan-scale.mjs",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {
+       "rect": {
+        "top": 0,
+        "left": 0,
+        "right": 768,
+        "bottom": 70.8,
+        "width": 768,
+        "height": 70.8,
+        "insetRight": 0,
+        "cx": 384,
+        "cy": 35.4
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "bar",
+   "tier": 768,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": "two-item bar: logo left, one toggle button right; no navigation links on the bar at any tier",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0 > div.site-max",
+      "raw": {
+       "inner": {
+        "top": 0,
+        "left": 0,
+        "right": 768,
+        "bottom": 70.8,
+        "width": 768,
+        "height": 70.8,
+        "insetRight": 0,
+        "cx": 384,
+        "cy": 35.4
+       },
+       "links": 0
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "barHeight": 70.8,
+      "logo": {
+       "top": 24.1,
+       "left": 20.6,
+       "right": 110.6,
+       "bottom": 46.6,
+       "width": 90,
+       "height": 22.5,
+       "insetRight": 657.4,
+       "cx": 65.6,
+       "cy": 35.4
+      },
+      "toggle": {
+       "top": 19.3,
+       "left": 675.4,
+       "right": 747.4,
+       "bottom": 51.5,
+       "width": 72,
+       "height": 32.2,
+       "insetRight": 20.6,
+       "cx": 711.4,
+       "cy": 35.4
+      },
+      "logoLeftInset": 20.6,
+      "toggleRightInset": 20.6,
+      "toggleRadius": "6.43216px"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {}
+     }
+    },
+    "zone_model": {
+     "value": {
+      "left": "logo button (wordmark svg + mark, aria-label \"Fantasy\")",
+      "right": "toggle pill",
+      "centre": "empty"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {
+       "logoAria": "Fantasy"
+      }
+     }
+    },
+    "ground": {
+     "value": "transparent over the header gradient; the toggle carries its own fill",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {}
+     }
+    },
+    "background_visual": {
+     "value": "none",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {}
+     }
+    },
+    "item_typography": {
+     "value": {
+      "toggleLabel": {
+       "fontFamily": "sans",
+       "fontSize": "15px",
+       "fontWeight": "400",
+       "lineHeight": "21px",
+       "letterSpacing": "-0.15px",
+       "textTransform": "none",
+       "color": "#ffffff",
+       "textDecoration": "none #ffffff"
+      },
+      "scaling": "rem-scaled: 15px label at 1440 and 768, 15.7px at 375 (label hidden there)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": ".sh-toggle__label",
+      "raw": {
+       "typo": {
+        "fontFamily": "sans",
+        "fontSize": "15px",
+        "fontWeight": "400",
+        "lineHeight": "21px",
+        "letterSpacing": "-0.15px",
+        "textTransform": "none",
+        "color": "#ffffff",
+        "textDecoration": "none #ffffff"
+       }
+      }
+     }
+    },
+    "item_states": {
+     "value": {
+      "toggleHover": "no computed-style change on the toggle or its children",
+      "logoHover": "no computed-style change",
+      "current": "none"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs restHover",
+      "selector": ".sh-toggle, .sh-logo",
+      "raw": {
+       "toggleDiff": [],
+       "logoDiff": []
+      }
+     }
+    },
+    "secondary_blocks": {
+     "value": "none",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {}
+     }
+    },
+    "trigger_close": {
+     "value": {
+      "element": "button type=button, no aria-label (name comes from the visible \"Menu\" label; at 375 the label is display:none so the button is icon-only with no accessible name)",
+      "style": "pill 72x32.2, radius 6.43216px, fill #ffffff @0.15, backdrop-filter blur(4px)",
+      "labelAndIconAtRest": "label \"Menu\" shown, hamburger hidden"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "button.sh-toggle",
+      "raw": {
+       "toggle": {
+        "aria": [
+         "type=button",
+         "class=sh-toggle relative inline-flex items-center justify-center gap-x-12 h-50 body-normal pointer-events-auto"
+        ],
+        "svgClasses": [
+         "sh-toggle__icon h-9 w-auto rel:0",
+         "sh-toggle__close size-15 absol:0"
+        ],
+        "labelOp": "1"
+       },
+       "label": {
+        "text": "Menu",
+        "disp": "flex",
+        "rect": {
+         "top": 19.3,
+         "left": 675.4,
+         "right": 747.4,
+         "bottom": 51.5,
+         "width": 72,
+         "height": 32.2,
+         "insetRight": 20.6,
+         "cx": 711.4,
+         "cy": 35.4
+        },
+        "typo": {
+         "fontFamily": "sans",
+         "fontSize": "15px",
+         "fontWeight": "400",
+         "lineHeight": "21px",
+         "letterSpacing": "-0.15px",
+         "textTransform": "none",
+         "color": "#ffffff",
+         "textDecoration": "none #ffffff"
+        }
+       }
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "openTrigger": "click",
+      "hoverOpens": false,
+      "keyboard": "native button: Enter / Space (tab order: logo, toggle)",
+      "focusRing": "UA default auto 1px"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs behaviour.tab; restHover",
+      "selector": "button.sh-toggle",
+      "raw": {
+       "menuNodesAfterHover": 0
+      }
+     }
+    },
+    "motion": {
+     "value": {
+      "themeSwap": "colour classes swap with the section behind (source)",
+      "toggleSwap": "see trigger-close"
+     },
+     "method": "source-only",
+     "evidence": {
+      "script": "src/fan-DsC-Xkwh.js (https://fantasy.co/_nuxt/DsC-Xkwh.js) header component",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {}
+     }
+    },
+    "content": {
+     "value": {
+      "label": "Menu",
+      "logo": "wordmark svg",
+      "caseOrigin": "source case, no text-transform"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": ".sh-toggle__label",
+      "raw": {}
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "toggleSize": [
+       72,
+       32.2
+      ],
+      "label": "shown at 768 and 1440, display:none at 375 (icon-only)",
+      "logoSize": [
+       90,
+       22.5
+      ],
+      "dropMechanism": "label collapsed with display:none at the s breakpoint; not removed from the DOM"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "button.sh-toggle",
+      "raw": {
+       "labelDisp": "flex"
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "dropdown",
+   "tier": 768,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: no dropdown or submenu exists; hovering the toggle and logo creates no node, the menu has 0 nested lists and 0 aria-haspopup",
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs restHover, open.state",
+      "selector": "aside.menu ul ul",
+      "raw": {
+       "nodesAfterHover": 0,
+       "nestedLists": 0,
+       "ariaHaspopup": 0
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "mega",
+   "tier": 768,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: there is no mega panel; the only panel is the full-screen menu (see drawer)",
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs open.state",
+      "selector": "aside.menu",
+      "raw": {
+       "nestedLists": 0
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "trigger-close",
+   "tier": 768,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": "one button that swaps its content in place: \"Menu\" label (hamburger icon at 375) fades out, an X icon fades in; the button keeps its place above the panel",
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs open.state.toggle",
+      "selector": "button.sh-toggle",
+      "raw": {
+       "rest": {
+        "labelOp": "1",
+        "svg": [
+         "sh-toggle__icon h-9 w-auto rel:0",
+         "sh-toggle__close size-15 absol:0"
+        ]
+       },
+       "open": {
+        "labelOp": "0",
+        "svg": [
+         "sh-toggle__icon h-9 w-auto rel:0",
+         "sh-toggle__close size-15 absol:1"
+        ]
+       }
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "restRect": {
+       "top": 19.3,
+       "left": 675.4,
+       "right": 747.4,
+       "bottom": 51.5,
+       "width": 72,
+       "height": 32.2,
+       "insetRight": 20.6,
+       "cx": 711.4,
+       "cy": 35.4
+      },
+      "openRect": {
+       "top": 19.3,
+       "left": 707.5,
+       "right": 747.4,
+       "bottom": 51.5,
+       "width": 39.9,
+       "height": 32.2,
+       "insetRight": 20.6,
+       "cx": 727.5,
+       "cy": 35.4
+      },
+      "rightEdgeFixed": true,
+      "widthChange": -32.1
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs open.state.toggle",
+      "selector": "button.sh-toggle",
+      "raw": {}
+     }
+    },
+    "zone_model": {
+     "value": "right end of the bar, same 50px/20.6px/14px inset as the logo on the left",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest.zones",
+      "selector": "button.sh-toggle",
+      "raw": {
+       "zones": {
+        "logoLeftInset": 20.6,
+        "toggleRightInset": 20.6,
+        "innerMax": "1111.48px",
+        "innerPad": "0px 20.5829px",
+        "innerH": 70.8
+       }
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "fill": "#ffffff @0.15",
+      "blur": "blur(4px)",
+      "radius": "6.43216px",
+      "unchangedWhenOpen": true
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "button.sh-toggle > div.sh-toggle__bg",
+      "raw": {
+       "paint": {
+        "backgroundColor": "#ffffff @0.15",
+        "backgroundImage": "none",
+        "filter": "none",
+        "backdropFilter": "blur(4px)",
+        "mixBlendMode": "normal",
+        "opacity": "1",
+        "boxShadow": "none",
+        "borderRadius": "6.43216px",
+        "border": "0px solid #ffffff",
+        "before": null,
+        "after": null
+       }
+      }
+     }
+    },
+    "background_visual": {
+     "value": "none",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "button.sh-toggle",
+      "raw": {}
+     }
+    },
+    "item_typography": {
+     "value": {
+      "label": {
+       "fontFamily": "sans",
+       "fontSize": "15px",
+       "fontWeight": "400",
+       "lineHeight": "21px",
+       "letterSpacing": "-0.15px",
+       "textTransform": "none",
+       "color": "#ffffff",
+       "textDecoration": "none #ffffff"
+      }
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": ".sh-toggle__label",
+      "raw": {}
+     }
+    },
+    "item_states": {
+     "value": {
+      "hover": "no computed change",
+      "focus": "UA default auto 1px (auto 1px #101010)"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs restHover, behaviour.tab",
+      "selector": "button.sh-toggle",
+      "raw": {}
+     }
+    },
+    "secondary_blocks": {
+     "value": {
+      "applicable": false,
+      "reason": "none"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "structural (no such element in this row)",
+      "selector": "button.sh-toggle",
+      "raw": {
+       "note": "none"
+      }
+     }
+    },
+    "trigger_close": {
+     "value": {
+      "kind": "native button",
+      "accessibleName": "text \"Menu\" (none at 375); no aria-label, no aria-expanded, no aria-controls",
+      "burgerStyle": "hamburger icon svg 2 bars (375 only) / text label",
+      "closeStyle": "X svg 9.6x9.6, same pill",
+      "replacesInPlace": true,
+      "topRow": "the header bar stays above the panel (header z-index 10 vs aside 9)",
+      "magnet": "not detected"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs open.state",
+      "selector": "button.sh-toggle",
+      "raw": {
+       "toggle": {
+        "labelOp": "0",
+        "svgClasses": [
+         "sh-toggle__icon h-9 w-auto rel:0",
+         "sh-toggle__close size-15 absol:1"
+        ],
+        "rect": {
+         "top": 19.3,
+         "left": 707.5,
+         "right": 747.4,
+         "bottom": 51.5,
+         "width": 39.9,
+         "height": 32.2,
+         "insetRight": 20.6,
+         "cx": 727.5,
+         "cy": 35.4
+        },
+        "label": "Menu",
+        "labelDisp": "flex",
+        "svgs": [
+         {
+          "rect": {
+           "top": 32.5,
+           "left": 721.4,
+           "right": 733.6,
+           "bottom": 38.3,
+           "width": 12.2,
+           "height": 5.8,
+           "insetRight": 34.4,
+           "cx": 727.5,
+           "cy": 35.4
+          },
+          "op": "0",
+          "vis": true
+         },
+         {
+          "rect": {
+           "top": 30.6,
+           "left": 722.7,
+           "right": 732.3,
+           "bottom": 40.2,
+           "width": 9.6,
+           "height": 9.6,
+           "insetRight": 35.7,
+           "cx": 727.5,
+           "cy": 35.4
+          },
+          "op": "1",
+          "vis": true
+         }
+        ],
+        "aria": [
+         "type=button",
+         "class=sh-toggle relative inline-flex items-center justify-center gap-x-12 h-50 body-normal pointer-events-auto"
+        ],
+        "html": "<button type=\"button\" class=\"sh-toggle relative inline-flex items-center justify-center gap-x-12 h-50 body-normal pointer-events-auto\"><div class=\"bg-white/15 sh-toggle__bg absolute inset-0 radius-global backdrop-blur-sm\"></div><div class=\"sh-toggle__label absolute inset-0 hidden s:flex items-center justify-center text-center\">Menu</div><svg/><svg/></button>"
+       }
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "escapeCloses": true,
+      "sourceKeydown": "l=u=>{u.key===\"Escape\"&&o()} with o=()=>e.setFlag(\"menu\",!1)",
+      "linkClickCloses": true,
+      "focusAfterClose": "stays on the toggle (activeElement BUTTON.sh-toggle relative inline-flex)",
+      "focusOnOpen": "not moved: stays on the toggle"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs behaviour",
+      "selector": "button.sh-toggle",
+      "raw": {
+       "afterEscape": {
+        "asideExists": false,
+        "asideVis": false,
+        "panelH": null,
+        "scrollY": 940,
+        "html": "lenis",
+        "active": "BUTTON.sh-toggle relative inline-flex",
+        "toggleLabel": "Menu",
+        "toggleW": 39.9
+       },
+       "afterToggle": {
+        "asideExists": false,
+        "asideVis": false,
+        "panelH": null,
+        "scrollY": 8941,
+        "html": "lenis",
+        "active": "BUTTON.sh-toggle relative inline-flex",
+        "toggleLabel": "Menu",
+        "toggleW": 39.9
+       },
+       "afterLinkClick": {
+        "href": "/work",
+        "url": "https://fantasy.co/work",
+        "state": {
+         "asideExists": false,
+         "asideVis": false,
+         "panelH": null,
+         "scrollY": 0,
+         "html": "lenis",
+         "active": "BODY.",
+         "toggleLabel": "Menu",
+         "toggleW": 72
+        }
+       }
+      }
+     }
+    },
+    "motion": {
+     "value": {
+      "iconSwap": "label opacity 1 -> 0 and X icon 0 -> 1; toggle width shrinks (72 -> 39.9)",
+      "timing": "sampled toggle width settles ~700ms after click at 1440",
+      "tier": "not classified (CSS or GSAP not isolated)"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs open.samples",
+      "selector": "button.sh-toggle",
+      "raw": {
+       "samples": [
+        [
+         5,
+         72
+        ],
+        [
+         72,
+         72
+        ],
+        [
+         156,
+         71.6
+        ],
+        [
+         225,
+         67.4
+        ],
+        [
+         298,
+         60.3
+        ],
+        [
+         356,
+         53.5
+        ],
+        [
+         423,
+         48.5
+        ],
+        [
+         494,
+         45.1
+        ],
+        [
+         556,
+         42.7
+        ],
+        [
+         624,
+         41.2
+        ],
+        [
+         690,
+         40.3
+        ],
+        [
+         756,
+         39.9
+        ],
+        [
+         823,
+         39.9
+        ],
+        [
+         889,
+         39.9
+        ]
+       ]
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "label": "Menu",
+      "closeGlyph": "X icon (no text)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs open.state",
+      "selector": "button.sh-toggle",
+      "raw": {}
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "label": "visible at 768/1440, hidden at 375 (icon-only)",
+      "size": [
+       72,
+       32.2
+      ],
+      "openWidth": 39.9
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest, open",
+      "selector": "button.sh-toggle",
+      "raw": {}
+     }
+    }
+   }
+  },
+  {
+   "surface": "drawer",
+   "tier": 768,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": "full-screen opaque overlay: aside.menu fixed inset-x-0, 768x1028.6 (100% wide; 128.6px taller than the viewport, inset -100 top and bottom); inner panel exactly the viewport 768x900",
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs open.state",
+      "selector": "aside.menu",
+      "raw": {
+       "aside": {
+        "top": -64.3,
+        "left": 0,
+        "right": 768,
+        "bottom": 964.3,
+        "width": 768,
+        "height": 1028.6,
+        "insetRight": 0,
+        "cx": 384,
+        "cy": 450
+       },
+       "panel": {
+        "top": 0,
+        "left": 0,
+        "right": 768,
+        "bottom": 900,
+        "width": 768,
+        "height": 900,
+        "insetRight": 0,
+        "cx": 384,
+        "cy": 450
+       }
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "asideRect": {
+       "top": -64.3,
+       "left": 0,
+       "right": 768,
+       "bottom": 964.3,
+       "width": 768,
+       "height": 1028.6,
+       "insetRight": 0,
+       "cx": 384,
+       "cy": 450
+      },
+      "panelRect": {
+       "top": 0,
+       "left": 0,
+       "right": 768,
+       "bottom": 900,
+       "width": 768,
+       "height": 900,
+       "insetRight": 0,
+       "cx": 384,
+       "cy": 450
+      },
+      "position": "fixed",
+      "zIndex": "9",
+      "headerZ": "10",
+      "centredOnViewport": true,
+      "radius": "0px",
+      "anchor": "header-wide: panel width == viewport"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs open.state",
+      "selector": "aside.menu",
+      "raw": {
+       "aside": {
+        "rect": {
+         "top": -64.3,
+         "left": 0,
+         "right": 768,
+         "bottom": 964.3,
+         "width": 768,
+         "height": 1028.6,
+         "insetRight": 0,
+         "cx": 384,
+         "cy": 450
+        },
+        "position": "fixed",
+        "top": "-64.3216px",
+        "left": "0px",
+        "right": "0px",
+        "zIndex": "9",
+        "maxWidth": "none",
+        "width": "768px",
+        "transform": "none",
+        "display": "block",
+        "overflow": "hidden",
+        "padding": "0px",
+        "margin": "0px"
+       }
+      }
+     }
+    },
+    "zone_model": {
+     "value": {
+      "primary": {
+       "items": [
+        "Work",
+        "Services",
+        "Impact"
+       ],
+       "align": "centred stack",
+       "rows": [
+        {
+         "top": 346.2,
+         "left": 332.8,
+         "right": 435.1,
+         "bottom": 391.3,
+         "width": 102.3,
+         "height": 45,
+         "insetRight": 332.9,
+         "cx": 384,
+         "cy": 368.8
+        },
+        {
+         "top": 396.4,
+         "left": 298.7,
+         "right": 469.3,
+         "bottom": 441.4,
+         "width": 170.6,
+         "height": 45,
+         "insetRight": 298.7,
+         "cx": 384,
+         "cy": 418.9
+        },
+        {
+         "top": 446.6,
+         "left": 314.7,
+         "right": 453.3,
+         "bottom": 491.6,
+         "width": 138.7,
+         "height": 45,
+         "insetRight": 314.7,
+         "cx": 384,
+         "cy": 469.1
+        }
+       ]
+      },
+      "tertiaryRow": {
+       "items": [
+        "Contact",
+        "Latest",
+        "Careers"
+       ],
+       "align": "centred inline row",
+       "top": 532.8
+      },
+      "bottomBar": {
+       "top": 800.5,
+       "left": 0,
+       "right": 768,
+       "bottom": 900,
+       "width": 768,
+       "height": 99.5,
+       "insetRight": 0,
+       "cx": 384,
+       "cy": 850.3
+      },
+      "bottomLeftSentence": "Ready to launch an intelligent experience? Let’s talk (link)",
+      "bottomRightPromoCard": {
+       "rect": {
+        "top": 800.5,
+        "left": 474.1,
+        "right": 747.4,
+        "bottom": 864,
+        "width": 273.4,
+        "height": 63.5,
+        "insetRight": 20.6,
+        "cx": 610.7,
+        "cy": 832.2
+       },
+       "text": "HOW FANTASY SHIPPED LIV GOLF IN 72 DAYS",
+       "video": 1
+      }
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs open.state",
+      "selector": "aside.menu",
+      "raw": {
+       "links": [
+        [
+         "Work",
+         {
+          "top": 346.2,
+          "left": 332.8,
+          "right": 435.1,
+          "bottom": 391.3,
+          "width": 102.3,
+          "height": 45,
+          "insetRight": 332.9,
+          "cx": 384,
+          "cy": 368.8
+         }
+        ],
+        [
+         "Services",
+         {
+          "top": 396.4,
+          "left": 298.7,
+          "right": 469.3,
+          "bottom": 441.4,
+          "width": 170.6,
+          "height": 45,
+          "insetRight": 298.7,
+          "cx": 384,
+          "cy": 418.9
+         }
+        ],
+        [
+         "Impact",
+         {
+          "top": 446.6,
+          "left": 314.7,
+          "right": 453.3,
+          "bottom": 491.6,
+          "width": 138.7,
+          "height": 45,
+          "insetRight": 314.7,
+          "cx": 384,
+          "cy": 469.1
+         }
+        ],
+        [
+         "Contact",
+         {
+          "top": 532.8,
+          "left": 282,
+          "right": 336.7,
+          "bottom": 553.8,
+          "width": 54.8,
+          "height": 21,
+          "insetRight": 431.3,
+          "cx": 309.4,
+          "cy": 543.3
+         }
+        ],
+        [
+         "Latest",
+         {
+          "top": 532.8,
+          "left": 362.5,
+          "right": 405.4,
+          "bottom": 553.8,
+          "width": 43,
+          "height": 21,
+          "insetRight": 362.6,
+          "cx": 383.9,
+          "cy": 543.3
+         }
+        ],
+        [
+         "Careers",
+         {
+          "top": 532.8,
+          "left": 431.1,
+          "right": 486,
+          "bottom": 553.8,
+          "width": 54.9,
+          "height": 21,
+          "insetRight": 282,
+          "cx": 458.6,
+          "cy": 543.3
+         }
+        ],
+        [
+         "Let’s talk",
+         {
+          "top": 843,
+          "left": 20.6,
+          "right": 81.8,
+          "bottom": 863,
+          "width": 61.2,
+          "height": 20,
+          "insetRight": 686.2,
+          "cx": 51.2,
+          "cy": 853
+         }
+        ],
+        [
+         "HOW FANTASY SHIPPED LIV GOLF IN 72 DAYS",
+         {
+          "top": 800.5,
+          "left": 474.1,
+          "right": 747.4,
+          "bottom": 864,
+          "width": 273.4,
+          "height": 63.5,
+          "insetRight": 20.6,
+          "cx": 610.7,
+          "cy": 832.2
+         }
+        ]
+       ]
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "fill": "#000000 opaque on the aside and on the panel",
+      "blur": "none",
+      "scrim": "none (the panel itself is the cover)",
+      "filter": "none",
+      "shadow": "none",
+      "headerGradientWhileOpen": "0.5"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs open.state",
+      "selector": "aside.menu",
+      "raw": {
+       "aside": {
+        "backgroundColor": "#000000",
+        "backgroundImage": "none",
+        "filter": "none",
+        "backdropFilter": "none",
+        "mixBlendMode": "normal",
+        "opacity": "1",
+        "boxShadow": "none",
+        "borderRadius": "0px",
+        "border": "0px solid #ffffff",
+        "before": null,
+        "after": null
+       },
+       "panel": {
+        "backgroundColor": "#000000",
+        "backgroundImage": "none",
+        "filter": "none",
+        "backdropFilter": "none",
+        "mixBlendMode": "normal",
+        "opacity": "1",
+        "boxShadow": "none",
+        "borderRadius": "0px",
+        "border": "0px solid #ffffff",
+        "before": null,
+        "after": null
+       }
+      }
+     }
+    },
+    "background_visual": {
+     "value": "none behind the links (flat black); the only media is the 96x62 looping muted promo video thumbnail inside the promo card",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs open.state; fan-toggle.mjs",
+      "selector": "aside.menu video",
+      "raw": {
+       "media": {
+        "video": 1,
+        "img": 0,
+        "canvas": 0
+       }
+      }
+     }
+    },
+    "item_typography": {
+     "value": {
+      "primary": {
+       "fontFamily": "sans",
+       "fontSize": "45.0251px",
+       "fontWeight": "400",
+       "lineHeight": "45.0251px",
+       "letterSpacing": "-1.35075px",
+       "textTransform": "none",
+       "color": "#ffffff",
+       "textDecoration": "none #ffffff"
+      },
+      "sub": {
+       "fontFamily": "sans",
+       "fontSize": "15px",
+       "fontWeight": "400",
+       "lineHeight": "21px",
+       "letterSpacing": "-0.15px",
+       "textTransform": "none",
+       "color": "#ffffff",
+       "textDecoration": "none #ffffff"
+      },
+      "promo": {
+       "fontFamily": "sans",
+       "fontSize": "15px",
+       "fontWeight": "400",
+       "lineHeight": "21px",
+       "letterSpacing": "-0.15px",
+       "textTransform": "none",
+       "color": "#ffffff",
+       "textDecoration": "none #ffffff"
+      },
+      "scaling": "rem-scaled: link size = 10rem at 1440, 7rem at 768, 5rem at 375 (rootFontSize 6.43216px)",
+      "fontFamily": "custom family named \"sans\""
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs open.state",
+      "selector": "a.menu-link",
+      "raw": {}
+     }
+    },
+    "item_states": {
+     "value": {
+      "primaryHover": "the hovered link fades to opacity 0.5 (1 -> 0.5); others unchanged",
+      "subRest": "opacity 0.6 (class opacity-60)",
+      "subHover": "opacity 0.6 -> 1",
+      "current": "not driven",
+      "ornament": "none (no index, glyph or separator)",
+      "itemOwningPanel": "none"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs menuHover",
+      "selector": "a.menu-link, a.menu-sub-link",
+      "raw": {
+       "linkDiffs": [
+        {
+         "i": 1,
+         "d": [
+          {
+           "s": "a.menu-link.flex.h3",
+           "ch": {
+            "o": [
+             "1",
+             "0.5"
+            ]
+           }
+          }
+         ]
+        }
+       ],
+       "subDiffs": [
+        {
+         "i": 0,
+         "d": [
+          {
+           "s": "a.menu-sub-link.flex.body-normal",
+           "ch": {
+            "o": [
+             "0.6",
+             "1"
+            ]
+           }
+          }
+         ]
+        }
+       ]
+      }
+     }
+    },
+    "secondary_blocks": {
+     "value": {
+      "tertiaryRow": [
+       "Contact",
+       "Latest",
+       "Careers"
+      ],
+      "sentenceCta": "present",
+      "promoCard": {
+       "text": "HOW FANTASY SHIPPED LIV GOLF IN 72 DAYS",
+       "href": "/latest/how-fantasy-shipped-liv-golf-in-72-days",
+       "rect": {
+        "top": 800.5,
+        "left": 474.1,
+        "right": 747.4,
+        "bottom": 864,
+        "width": 273.4,
+        "height": 63.5,
+        "insetRight": 20.6,
+        "cx": 610.7,
+        "cy": 832.2
+       },
+       "reactsToHover": false
+      }
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs open.state; menuHover",
+      "selector": "footer.menu__bottom",
+      "raw": {
+       "bottom": [
+        {
+         "s": "footer.menu__bottom.absolute.bottom-0",
+         "rect": {
+          "top": 800.5,
+          "left": 0,
+          "right": 768,
+          "bottom": 900,
+          "width": 768,
+          "height": 99.5,
+          "insetRight": 0,
+          "cx": 384,
+          "cy": 850.3
+         },
+         "text": "Ready to launch an intelligent experience? Let’s talk |  | HOW FANTASY SHIPPED LIV GOLF IN 72 DAYS"
+        }
+       ]
+      }
+     }
+    },
+    "trigger_close": {
+     "value": "the header toggle (stays above the panel) turns into an X; Escape and a link click also close; there is no separate close button inside the panel",
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs behaviour",
+      "selector": "aside.menu",
+      "raw": {}
+     }
+    },
+    "mechanics": {
+     "value": {
+      "role": "role=dialog aria-modal=true aria-label=\"Main menu\" on aside.menu (no <dialog> element)",
+      "listRoles": "ul role=menubar, a role=menuitem",
+      "scrollLock": "none: wheel with the menu open moved the page 0 -> 940 and the menu stayed open (no lenis-stopped class, html/body overflow visible)",
+      "inert": 0,
+      "focusTrap": "none: Tab passes through 8 menu items then into the page behind (Scroll, Driving AI tra, Explore)",
+      "focusOnOpen": "not moved",
+      "escape": "closes",
+      "linkClick": "closes and routes",
+      "survivesResize": "yes, 768 -> 375 -> 768 kept it open and reflowed",
+      "mountedOnlyWhenOpen": "aside.menu is created on open and removed on close (absent from the DOM at rest)"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs behaviour, resizeSurvival",
+      "selector": "aside.menu",
+      "raw": {
+       "scrollLock": {
+        "before": 0,
+        "after": 940,
+        "state": {
+         "asideExists": true,
+         "asideVis": true,
+         "panelH": 900,
+         "scrollY": 940,
+         "html": "lenis",
+         "active": "BUTTON.sh-toggle relative inline-flex",
+         "toggleLabel": "Menu",
+         "toggleW": 39.9
+        }
+       },
+       "tab": [
+        {
+         "el": "A.menu-link.flex",
+         "text": "Work",
+         "inHeader": false,
+         "inMenu": true,
+         "outline": "auto 1px #101010"
+        },
+        {
+         "el": "A.menu-link.flex",
+         "text": "Services",
+         "inHeader": false,
+         "inMenu": true,
+         "outline": "auto 1px #101010"
+        },
+        {
+         "el": "A.menu-link.flex",
+         "text": "Impact",
+         "inHeader": false,
+         "inMenu": true,
+         "outline": "auto 1px #101010"
+        },
+        {
+         "el": "A.menu-sub-link.flex",
+         "text": "Contact",
+         "inHeader": false,
+         "inMenu": true,
+         "outline": "auto 1px #101010"
+        },
+        {
+         "el": "A.menu-sub-link.flex",
+         "text": "Latest",
+         "inHeader": false,
+         "inMenu": true,
+         "outline": "auto 1px #101010"
+        },
+        {
+         "el": "A.menu-sub-link.flex",
+         "text": "Careers",
+         "inHeader": false,
+         "inMenu": true,
+         "outline": "auto 1px #101010"
+        },
+        {
+         "el": "A.",
+         "text": "Let’s talk",
+         "inHeader": false,
+         "inMenu": true,
+         "outline": "auto 1px #101010"
+        },
+        {
+         "el": "A.flex.items-center",
+         "text": "HOW FANTASY SHIPPED LIV ",
+         "inHeader": false,
+         "inMenu": true,
+         "outline": "auto 1px #101010"
+        },
+        {
+         "el": "BUTTON.ml-auto.hidden",
+         "text": "Scroll",
+         "inHeader": false,
+         "inMenu": false,
+         "outline": "auto 1px #101010"
+        },
+        {
+         "el": "A.block.absolute",
+         "text": "Driving AI transformatio",
+         "inHeader": false,
+         "inMenu": false,
+         "outline": "auto 1px #101010"
+        },
+        {
+         "el": "BUTTON.btn.inline-flex",
+         "text": "Explore",
+         "inHeader": false,
+         "inMenu": false,
+         "outline": "auto 1px #101010"
+        },
+        {
+         "el": "BUTTON.mb-5.ml-auto",
+         "text": "Scroll",
+         "inHeader": false,
+         "inMenu": false,
+         "outline": "auto 1px #101010"
+        }
+       ],
+       "attrs": {
+        "dialogs": 0,
+        "roleDialog": 2,
+        "ariaModal": 2,
+        "inert": 0,
+        "ariaHidden": [],
+        "ariaExpanded": [
+         "button.cky-accordion-btn=false",
+         "button.cky-accordion-btn=false",
+         "button.cky-accordion-btn=false",
+         "button.cky-accordion-btn=false",
+         "button.cky-accordion-btn=false",
+         "button.cky-accordion-btn=false"
+        ]
+       },
+       "resize": {
+        "from": 768,
+        "to": 375,
+        "before": {
+         "exists": true,
+         "vis": true,
+         "panel": {
+          "top": 0,
+          "left": 0,
+          "right": 768,
+          "bottom": 900,
+          "width": 768,
+          "height": 900,
+          "insetRight": 0,
+          "cx": 384,
+          "cy": 450
+         }
+        },
+        "mid": {
+         "exists": true,
+         "vis": true,
+         "panel": {
+          "top": 0,
+          "left": 0,
+          "right": 375,
+          "bottom": 900,
+          "width": 375,
+          "height": 900,
+          "insetRight": 0,
+          "cx": 187.5,
+          "cy": 450
+         }
+        },
+        "back": {
+         "exists": true,
+         "vis": true,
+         "panel": {
+          "top": 0,
+          "left": 0,
+          "right": 768,
+          "bottom": 900,
+          "width": 768,
+          "height": 900,
+          "insetRight": 0,
+          "cx": 384,
+          "cy": 450
+         }
+        }
+       },
+       "roles": {
+        "navs": [
+         "menubar",
+         "menubar"
+        ],
+        "items": [
+         "menuitem",
+         "menuitem",
+         "menuitem",
+         "menuitem",
+         "menuitem",
+         "menuitem",
+         null,
+         "menuitem"
+        ]
+       }
+      }
+     }
+    },
+    "motion": {
+     "value": {
+      "open": "aside autoAlpha 0 -> 1 0.5s power1; .js-fade items fade + y from -2rem with stagger 0.05s; .js-fade-up items y from 2rem",
+      "close": "autoAlpha -> 0 in 0.35s (measured: aside opacity 1 -> \"gone\" by ~383ms)",
+      "tier": "G (GSAP timeline, DOM, custom ease \"unmask\")",
+      "renderSubstrate": "DOM (+ a video thumbnail)"
+     },
+     "method": "source-only",
+     "evidence": {
+      "script": "src/fan-DsC-Xkwh.js (https://fantasy.co/_nuxt/DsC-Xkwh.js) menu component a=(u,h)=>{...} / c=(u,h)=>{...}; fan-capture.mjs closeMotion",
+      "selector": "aside.menu",
+      "raw": {
+       "closeSamples": [
+        [
+         1,
+         1
+        ],
+        [
+         52,
+         0.6913
+        ],
+        [
+         109,
+         0.447
+        ],
+        [
+         166,
+         0.2529
+        ],
+        [
+         222,
+         0.1195
+        ],
+        [
+         285,
+         0.0275
+        ],
+        [
+         336,
+         0.0004
+        ],
+        [
+         383,
+         "gone"
+        ],
+        [
+         429,
+         "gone"
+        ],
+        [
+         477,
+         "gone"
+        ],
+        [
+         538,
+         "gone"
+        ],
+        [
+         587,
+         "gone"
+        ],
+        [
+         628,
+         "gone"
+        ],
+        [
+         687,
+         "gone"
+        ]
+       ],
+       "quote": "f.clear().from(u,{autoAlpha:0,duration:.5,ease:\"power1\"},0).from(m,{alpha:0,stagger:.05,ease:\"linear\"},v).from(m,{y:\"-2rem\",stagger:.05},v).from(p,{y:\"2rem\",alpha:0,stagger:.05},v).restart()"
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "primary": [
+       "Work",
+       "Services",
+       "Impact"
+      ],
+      "primaryHrefs": [
+       "/work",
+       "/services",
+       "/impact"
+      ],
+      "sub": [
+       "Contact",
+       "Latest",
+       "Careers"
+      ],
+      "cta": "Ready to launch an intelligent experience? Let’s talk",
+      "promo": "HOW FANTASY SHIPPED LIV GOLF IN 72 DAYS",
+      "counts": {
+       "primary": 3,
+       "sub": 3,
+       "secondary": 2
+      },
+      "caseOrigin": "source text; primary text-transform none; the promo card title renders uppercase from its own source",
+      "fixedOrDynamic": "menu items from a CMS list (r.main / r.sub); promo card dynamic (latest article)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs open.state",
+      "selector": "aside.menu",
+      "raw": {}
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "linkSize": "45.0251px",
+      "sentenceCta": "present",
+      "promoCardRect": {
+       "top": 800.5,
+       "left": 474.1,
+       "right": 747.4,
+       "bottom": 864,
+       "width": 273.4,
+       "height": 63.5,
+       "insetRight": 20.6,
+       "cx": 610.7,
+       "cy": 832.2
+      },
+      "layout": "same centred stack at every tier"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs open.state",
+      "selector": "aside.menu",
+      "raw": {}
+     }
+    }
+   }
+  },
+  {
+   "surface": "footer",
+   "tier": 768,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": "single-block sign-off: a white panel with a heading, a button, copyright and a legal link (no link columns)",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs footer",
+      "selector": "footer.sf",
+      "raw": {
+       "rect": {
+        "top": 554.6,
+        "left": 0,
+        "right": 768,
+        "bottom": 899.9,
+        "width": 768,
+        "height": 345.2,
+        "insetRight": 0,
+        "cx": 384,
+        "cy": 727.3
+       },
+       "text": "Let's talk. We'd love | to hear from you. | Contact | © 2026 Fantasy | Privacy & Terms"
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "width": 768,
+      "height": 345.2,
+      "padding": "0px",
+      "position": "relative",
+      "overflow": "hidden"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs footer",
+      "selector": "footer.sf",
+      "raw": {
+       "geo": {
+        "rect": {
+         "top": 554.6,
+         "left": 0,
+         "right": 768,
+         "bottom": 899.9,
+         "width": 768,
+         "height": 345.2,
+         "insetRight": 0,
+         "cx": 384,
+         "cy": 727.3
+        },
+        "position": "relative",
+        "top": "0px",
+        "left": "0px",
+        "right": "0px",
+        "zIndex": "auto",
+        "maxWidth": "none",
+        "width": "768px",
+        "transform": "none",
+        "display": "block",
+        "overflow": "hidden",
+        "padding": "0px",
+        "margin": "0px"
+       }
+      }
+     }
+    },
+    "zone_model": {
+     "value": [
+      {
+       "text": "Let's talk. We'd love to hear from you.",
+       "tag": "H2",
+       "left": 20.6,
+       "top": 709.6,
+       "width": 220.5,
+       "height": 56.6
+      },
+      {
+       "text": "Contact",
+       "tag": "BUTTON",
+       "left": 20.6,
+       "top": 786.8,
+       "width": 83.3,
+       "height": 32.2
+      },
+      {
+       "text": "Privacy & Terms",
+       "tag": "LI",
+       "left": 651.9,
+       "top": 866.3,
+       "width": 95.5,
+       "height": 18.2
+      },
+      {
+       "text": "Privacy & Terms",
+       "tag": "A",
+       "left": 651.9,
+       "top": 866.3,
+       "width": 95.5,
+       "height": 17
+      }
+     ],
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs footer",
+      "selector": "footer.sf",
+      "raw": {}
+     }
+    },
+    "ground": {
+     "value": {
+      "panel": "div.bg-white.text-black.relative #ffffff",
+      "overlayBehind": "div.absolute.inset-0.bg-black/90 (rgba(0,0,0,0.9))",
+      "blur": "none"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs footer",
+      "selector": "footer.sf > div.bg-white",
+      "raw": {
+       "bgs": [
+        {
+         "s": "footer.sf.relative.overflow-hidden > div.absolute.inset-0.bg-black/90",
+         "paint": {
+          "backgroundColor": "#000000 @0.9",
+          "backgroundImage": "none",
+          "filter": "none",
+          "backdropFilter": "none",
+          "mixBlendMode": "normal",
+          "opacity": "0",
+          "boxShadow": "none",
+          "borderRadius": "0px",
+          "border": "0px solid #ffffff",
+          "before": null,
+          "after": null
+         },
+         "rect": {
+          "top": 554.6,
+          "left": 0,
+          "right": 768,
+          "bottom": 899.9,
+          "width": 768,
+          "height": 345.2,
+          "insetRight": 0,
+          "cx": 384,
+          "cy": 727.3
+         }
+        },
+        {
+         "s": "footer.sf.relative.overflow-hidden > div.bg-white.text-black.relative",
+         "paint": {
+          "backgroundColor": "#ffffff",
+          "backgroundImage": "none",
+          "filter": "none",
+          "backdropFilter": "none",
+          "mixBlendMode": "normal",
+          "opacity": "1",
+          "boxShadow": "none",
+          "borderRadius": "0px",
+          "border": "0px solid #000000",
+          "before": null,
+          "after": null
+         },
+         "rect": {
+          "top": 554.6,
+          "left": 0,
+          "right": 768,
+          "bottom": 899.9,
+          "width": 768,
+          "height": 345.2,
+          "insetRight": 0,
+          "cx": 384,
+          "cy": 727.3
+         }
+        }
+       ]
+      }
+     }
+    },
+    "background_visual": {
+     "value": "none (no image, video, canvas or svg in the footer: media all 0)",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs footer",
+      "selector": "footer.sf",
+      "raw": {
+       "media": {
+        "video": 0,
+        "img": 0,
+        "canvas": 0,
+        "svg": 0
+       }
+      }
+     }
+    },
+    "item_typography": {
+     "value": {
+      "heading": {
+       "fontFamily": "sans",
+       "fontSize": "25.7286px",
+       "fontWeight": "400",
+       "lineHeight": "28.3015px",
+       "letterSpacing": "-0.514573px",
+       "textTransform": "none",
+       "color": "#000000",
+       "textDecoration": "none #000000"
+      },
+      "legal": {
+       "fontFamily": "sans",
+       "fontSize": "13px",
+       "fontWeight": "400",
+       "lineHeight": "18.2px",
+       "letterSpacing": "-0.15px",
+       "textTransform": "none",
+       "color": "#000000",
+       "textDecoration": "none #000000"
+      },
+      "button": {
+       "fontFamily": "sans",
+       "fontSize": "11.5779px",
+       "fontWeight": "500",
+       "lineHeight": "11.5779px",
+       "letterSpacing": "-0.15px",
+       "textTransform": "none",
+       "color": "#000000",
+       "textDecoration": "none #000000"
+      },
+      "scaling": "rem-scaled (heading 25.7286px)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs footer",
+      "selector": "footer h2, a",
+      "raw": {}
+     }
+    },
+    "secondary_blocks": {
+     "value": {
+      "button": "Contact",
+      "copyright": "© 2026 Fantasy",
+      "legal": "Privacy & Terms (/policy)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs footer",
+      "selector": "footer.sf",
+      "raw": {}
+     }
+    },
+    "trigger_close": {
+     "value": {
+      "applicable": false,
+      "reason": "column does not apply to this surface (footer)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "structural (no such element in this row)",
+      "selector": "(structural)",
+      "raw": {
+       "note": "column does not apply to this surface (footer)"
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "position": "static in flow, overflow hidden",
+      "headerWhileAtFooter": "10 js-sh is-dark text-white is-collapsed",
+      "scrollMax": 10756
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs footer",
+      "selector": "footer.sf",
+      "raw": {
+       "headerAtFooter": {
+        "rect": {
+         "top": 0,
+         "left": 0,
+         "right": 768,
+         "bottom": 70.8,
+         "width": 768,
+         "height": 70.8,
+         "insetRight": 0,
+         "cx": 384,
+         "cy": 35.4
+        },
+        "cls": "sh fixed top-0 left-0 w-full z-10 js-sh is-dark text-white is-collapsed"
+       }
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "text": "Let's talk. We'd love | to hear from you. | Contact | © 2026 Fantasy | Privacy & Terms",
+      "caseOrigin": "source case (no text-transform)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs footer",
+      "selector": "footer.sf",
+      "raw": {}
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "height": 345.2,
+      "headingSize": "25.7286px",
+      "layout": "same single stack; padding and type scale with the root font-size"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs footer",
+      "selector": "footer.sf",
+      "raw": {}
+     }
+    }
+   }
+  },
+  {
+   "surface": "header-shell",
+   "tier": 1440,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": "full-bleed",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {
+       "rect": {
+        "top": 0,
+        "left": 0,
+        "right": 1440,
+        "bottom": 108.3,
+        "width": 1440,
+        "height": 108.3,
+        "insetRight": 0,
+        "cx": 720,
+        "cy": 54.2
+       },
+       "radius": "0px",
+       "viewport": 1440
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "width": 1440,
+      "height": 108.3,
+      "top": 0,
+      "left": 0,
+      "rightInset": 0,
+      "radius": "0px",
+      "position": "fixed",
+      "zIndex": "10",
+      "maxWidth": "1440px",
+      "innerPadding": "0px 50px",
+      "pointerEvents": "none on the header, auto on logo and toggle (source classes)",
+      "centredOnViewport": true
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {
+       "geo": {
+        "rect": {
+         "top": 0,
+         "left": 0,
+         "right": 1440,
+         "bottom": 108.3,
+         "width": 1440,
+         "height": 108.3,
+         "insetRight": 0,
+         "cx": 720,
+         "cy": 54.2
+        },
+        "position": "fixed",
+        "top": "0px",
+        "left": "0px",
+        "right": "0px",
+        "zIndex": "10",
+        "maxWidth": "none",
+        "width": "1440px",
+        "transform": "none",
+        "display": "block",
+        "overflow": "visible",
+        "padding": "0px",
+        "margin": "0px"
+       },
+       "zones": {
+        "logoLeftInset": 50,
+        "toggleRightInset": 50,
+        "innerMax": "1440px",
+        "innerPad": "0px 50px",
+        "innerH": 108.3
+       }
+      }
+     }
+    },
+    "zone_model": {
+     "value": {
+      "zones": [
+       "logo (left)",
+       "toggle (right)"
+      ],
+      "utilityControls": "none (no cart, language, search, theme, sound)",
+      "navLinksInHeader": 0,
+      "buttons": [
+       "Fantasy",
+       "Menu"
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0 a, header.sh.fixed.top-0 button",
+      "raw": {
+       "navLinks": 0,
+       "buttons": [
+        "Fantasy",
+        "Menu"
+       ]
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "fill": "#000000 @0 on the header; child div.sh__gradient.bg-black paints #000000 at opacity 0.5 with mask-image linear-gradient(0deg, rgba(0, 0, 0, 0) 0px, rgb(0, 0, 0)) (a top-to-bottom fade)",
+      "blur": "none",
+      "scrim": "no",
+      "shadow": "none",
+      "border": "0px solid #ffffff",
+      "filter": "none",
+      "mixBlendMode": "normal",
+      "opacityWhenScrolledPast400": "0",
+      "themeVariant": "source: is-light text-black + bg-white gradient over light sections, is-dark text-white + bg-black gradient otherwise"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest, scroll",
+      "selector": "header.sh.fixed.top-0 > div.sh__gradient",
+      "raw": {
+       "gradient": {
+        "geo": {
+         "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 1440,
+          "bottom": 108.3,
+          "width": 1440,
+          "height": 108.3,
+          "insetRight": 0,
+          "cx": 720,
+          "cy": 54.2
+         },
+         "position": "absolute",
+         "top": "0px",
+         "left": "0px",
+         "right": "0px",
+         "zIndex": "auto",
+         "maxWidth": "none",
+         "width": "1440px",
+         "transform": "none",
+         "display": "block",
+         "overflow": "visible",
+         "padding": "0px",
+         "margin": "0px"
+        },
+        "paint": {
+         "backgroundColor": "#000000",
+         "backgroundImage": "none",
+         "filter": "none",
+         "backdropFilter": "none",
+         "mixBlendMode": "normal",
+         "opacity": "0.5",
+         "boxShadow": "none",
+         "borderRadius": "0px",
+         "border": "0px solid #ffffff",
+         "before": null,
+         "after": null
+        },
+        "maskImage": "linear-gradient(0deg, rgba(0, 0, 0, 0) 0px, rgb(0, 0, 0))"
+       },
+       "scrollSamples": [
+        [
+         1,
+         "t-0 w-full z-10 js-sh is-dark text-white",
+         "0.5"
+        ],
+        [
+         401,
+         "10 js-sh is-dark text-white is-collapsed",
+         "0"
+        ],
+        [
+         901,
+         "10 js-sh is-dark text-white is-collapsed",
+         "0"
+        ],
+        [
+         1801,
+         "10 js-sh is-dark text-white is-collapsed",
+         "0"
+        ],
+        [
+         3501,
+         "10 js-sh is-dark text-white is-collapsed",
+         "0"
+        ],
+        [
+         6001,
+         "10 js-sh is-dark text-white is-collapsed",
+         "0"
+        ],
+        [
+         10001,
+         "10 js-sh is-dark text-white is-collapsed",
+         "0"
+        ],
+        [
+         13501,
+         "10 js-sh is-dark text-white is-collapsed",
+         "0"
+        ]
+       ]
+      }
+     }
+    },
+    "background_visual": {
+     "value": "none (a flat black 50% fade; no image, video or canvas in the header)",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {
+       "gradientPaint": {
+        "backgroundColor": "#000000",
+        "backgroundImage": "none",
+        "filter": "none",
+        "backdropFilter": "none",
+        "mixBlendMode": "normal",
+        "opacity": "0.5",
+        "boxShadow": "none",
+        "borderRadius": "0px",
+        "border": "0px solid #ffffff",
+        "before": null,
+        "after": null
+       }
+      }
+     }
+    },
+    "item_typography": {
+     "value": {
+      "applicable": false,
+      "reason": "column does not apply to this surface (header-shell)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "structural (no such element in this row)",
+      "selector": "(structural)",
+      "raw": {
+       "note": "column does not apply to this surface (header-shell)"
+      }
+     }
+    },
+    "item_states": {
+     "value": {
+      "applicable": false,
+      "reason": "column does not apply to this surface (header-shell)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "structural (no such element in this row)",
+      "selector": "(structural)",
+      "raw": {
+       "note": "column does not apply to this surface (header-shell)"
+      }
+     }
+    },
+    "secondary_blocks": {
+     "value": "none",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {}
+     }
+    },
+    "trigger_close": {
+     "value": "the toggle button at the right end (see trigger-close row); the logo button scrolls to top on the home route (source k())",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {}
+     }
+    },
+    "mechanics": {
+     "value": {
+      "pinned": "position:fixed top:0 at every scroll offset sampled (0..13501)",
+      "hideOnScroll": false,
+      "headerRectAfterScroll": [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0
+      ],
+      "gradientCollapse": "gradient fades out (is-collapsed) after scrolling down past 100px and returns as soon as the scroll direction is up: measured wheel down -> \"is-collapsed\" opacity 0, wheel up -> opacity 0.5",
+      "scrollContainer": "window, Lenis on html (class lenis)",
+      "themeSwitch": "is-dark / is-light class per section (only is-dark seen at the offsets sampled)"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs scroll",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {
+       "samples": [
+        {
+         "y": 1,
+         "top": 0,
+         "cls": "sh fixed top-0 left-0 w-full z-10 js-sh is-dark text-white",
+         "gradOpacity": "0.5"
+        },
+        {
+         "y": 401,
+         "top": 0,
+         "cls": "sh fixed top-0 left-0 w-full z-10 js-sh is-dark text-white is-collapsed",
+         "gradOpacity": "0"
+        },
+        {
+         "y": 901,
+         "top": 0,
+         "cls": "sh fixed top-0 left-0 w-full z-10 js-sh is-dark text-white is-collapsed",
+         "gradOpacity": "0"
+        },
+        {
+         "y": 1801,
+         "top": 0,
+         "cls": "sh fixed top-0 left-0 w-full z-10 js-sh is-dark text-white is-collapsed",
+         "gradOpacity": "0"
+        },
+        {
+         "y": 3501,
+         "top": 0,
+         "cls": "sh fixed top-0 left-0 w-full z-10 js-sh is-dark text-white is-collapsed",
+         "gradOpacity": "0"
+        },
+        {
+         "y": 6001,
+         "top": 0,
+         "cls": "sh fixed top-0 left-0 w-full z-10 js-sh is-dark text-white is-collapsed",
+         "gradOpacity": "0"
+        },
+        {
+         "y": 10001,
+         "top": 0,
+         "cls": "sh fixed top-0 left-0 w-full z-10 js-sh is-dark text-white is-collapsed",
+         "gradOpacity": "0"
+        },
+        {
+         "y": 13501,
+         "top": 0,
+         "cls": "sh fixed top-0 left-0 w-full z-10 js-sh is-dark text-white is-collapsed",
+         "gradOpacity": "0"
+        }
+       ],
+       "wheelDown": "sh fixed top-0 left-0 w-full z-10 js-sh is-dark text-white is-collapsed",
+       "wheelUp": "sh fixed top-0 left-0 w-full z-10 js-sh is-dark text-white",
+       "source": "S=({y:b,direction:y})=>{c.value=y===-1,a.value=b>100}; \"is-collapsed\":v.value with v=!c.value&&a.value||..."
+      }
+     }
+    },
+    "motion": {
+     "value": {
+      "scroll": "header never moves or resizes; only the gradient fades (class is-collapsed)",
+      "lenis": "new GH({lerp:.15,wheelMultiplier:1.25,autoResize:false}) on window, raf driven by the GSAP ticker",
+      "tier": "V for the gradient class toggle; Lenis is Tier H by the roster (helper); GSAP ticker present"
+     },
+     "method": "source-only",
+     "evidence": {
+      "script": "src/fan-DsC-Xkwh.js (https://fantasy.co/_nuxt/DsC-Xkwh.js) scroll plugin and header component",
+      "selector": "html.lenis",
+      "raw": {
+       "quote": "r=new GH({lerp:.15,wheelMultiplier:1.25,autoResize:!1}) ... Bn.ticker.add(l=>{r.raf(l*1e3)"
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "text": "none in the shell"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {}
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "height": 108.3,
+      "containerPadding": "0px 50px",
+      "rootFontSize": "8.33333px",
+      "mechanism": "the whole UI scales through the root font-size (rem): 8.33px at 1440, 6.43px at 768, 8.72px at 375; nothing is removed",
+      "scaleNote": "not linear with the viewport: root 10px at 1337 and 1920, 8.33px at 1440 (fantasy-scale probe)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest; fan-scale.mjs",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {
+       "rect": {
+        "top": 0,
+        "left": 0,
+        "right": 1440,
+        "bottom": 108.3,
+        "width": 1440,
+        "height": 108.3,
+        "insetRight": 0,
+        "cx": 720,
+        "cy": 54.2
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "bar",
+   "tier": 1440,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": "two-item bar: logo left, one toggle button right; no navigation links on the bar at any tier",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0 > div.site-max",
+      "raw": {
+       "inner": {
+        "top": 0,
+        "left": 0,
+        "right": 1440,
+        "bottom": 108.3,
+        "width": 1440,
+        "height": 108.3,
+        "insetRight": 0,
+        "cx": 720,
+        "cy": 54.2
+       },
+       "links": 0
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "barHeight": 108.3,
+      "logo": {
+       "top": 39.6,
+       "left": 50,
+       "right": 166.6,
+       "bottom": 68.7,
+       "width": 116.6,
+       "height": 29.2,
+       "insetRight": 1273.4,
+       "cx": 108.3,
+       "cy": 54.2
+      },
+      "toggle": {
+       "top": 33.3,
+       "left": 1296.7,
+       "right": 1390,
+       "bottom": 75,
+       "width": 93.3,
+       "height": 41.7,
+       "insetRight": 50,
+       "cx": 1343.3,
+       "cy": 54.2
+      },
+      "logoLeftInset": 50,
+      "toggleRightInset": 50,
+      "toggleRadius": "8.33333px"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {}
+     }
+    },
+    "zone_model": {
+     "value": {
+      "left": "logo button (wordmark svg + mark, aria-label \"Fantasy\")",
+      "right": "toggle pill",
+      "centre": "empty"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {
+       "logoAria": "Fantasy"
+      }
+     }
+    },
+    "ground": {
+     "value": "transparent over the header gradient; the toggle carries its own fill",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {}
+     }
+    },
+    "background_visual": {
+     "value": "none",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {}
+     }
+    },
+    "item_typography": {
+     "value": {
+      "toggleLabel": {
+       "fontFamily": "sans",
+       "fontSize": "15px",
+       "fontWeight": "400",
+       "lineHeight": "21px",
+       "letterSpacing": "-0.166667px",
+       "textTransform": "none",
+       "color": "#ffffff",
+       "textDecoration": "none #ffffff"
+      },
+      "scaling": "rem-scaled: 15px label at 1440 and 768, 15.7px at 375 (label hidden there)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": ".sh-toggle__label",
+      "raw": {
+       "typo": {
+        "fontFamily": "sans",
+        "fontSize": "15px",
+        "fontWeight": "400",
+        "lineHeight": "21px",
+        "letterSpacing": "-0.166667px",
+        "textTransform": "none",
+        "color": "#ffffff",
+        "textDecoration": "none #ffffff"
+       }
+      }
+     }
+    },
+    "item_states": {
+     "value": {
+      "toggleHover": "no computed-style change on the toggle or its children",
+      "logoHover": "no computed-style change",
+      "current": "none"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs restHover",
+      "selector": ".sh-toggle, .sh-logo",
+      "raw": {
+       "toggleDiff": [],
+       "logoDiff": []
+      }
+     }
+    },
+    "secondary_blocks": {
+     "value": "none",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {}
+     }
+    },
+    "trigger_close": {
+     "value": {
+      "element": "button type=button, no aria-label (name comes from the visible \"Menu\" label; at 375 the label is display:none so the button is icon-only with no accessible name)",
+      "style": "pill 93.3x41.7, radius 8.33333px, fill #ffffff @0.15, backdrop-filter blur(4px)",
+      "labelAndIconAtRest": "label \"Menu\" shown, hamburger hidden"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "button.sh-toggle",
+      "raw": {
+       "toggle": {
+        "aria": [
+         "type=button",
+         "class=sh-toggle relative inline-flex items-center justify-center gap-x-12 h-50 body-normal pointer-events-auto"
+        ],
+        "svgClasses": [
+         "sh-toggle__icon h-9 w-auto rel:0",
+         "sh-toggle__close size-15 absol:0"
+        ],
+        "labelOp": "1"
+       },
+       "label": {
+        "text": "Menu",
+        "disp": "flex",
+        "rect": {
+         "top": 33.3,
+         "left": 1296.7,
+         "right": 1390,
+         "bottom": 75,
+         "width": 93.3,
+         "height": 41.7,
+         "insetRight": 50,
+         "cx": 1343.3,
+         "cy": 54.2
+        },
+        "typo": {
+         "fontFamily": "sans",
+         "fontSize": "15px",
+         "fontWeight": "400",
+         "lineHeight": "21px",
+         "letterSpacing": "-0.166667px",
+         "textTransform": "none",
+         "color": "#ffffff",
+         "textDecoration": "none #ffffff"
+        }
+       }
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "openTrigger": "click",
+      "hoverOpens": false,
+      "keyboard": "native button: Enter / Space (tab order: logo, toggle)",
+      "focusRing": "UA default auto 1px"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs behaviour.tab; restHover",
+      "selector": "button.sh-toggle",
+      "raw": {
+       "menuNodesAfterHover": 0
+      }
+     }
+    },
+    "motion": {
+     "value": {
+      "themeSwap": "colour classes swap with the section behind (source)",
+      "toggleSwap": "see trigger-close"
+     },
+     "method": "source-only",
+     "evidence": {
+      "script": "src/fan-DsC-Xkwh.js (https://fantasy.co/_nuxt/DsC-Xkwh.js) header component",
+      "selector": "header.sh.fixed.top-0",
+      "raw": {}
+     }
+    },
+    "content": {
+     "value": {
+      "label": "Menu",
+      "logo": "wordmark svg",
+      "caseOrigin": "source case, no text-transform"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": ".sh-toggle__label",
+      "raw": {}
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "toggleSize": [
+       93.3,
+       41.7
+      ],
+      "label": "shown at 768 and 1440, display:none at 375 (icon-only)",
+      "logoSize": [
+       116.6,
+       29.2
+      ],
+      "dropMechanism": "label collapsed with display:none at the s breakpoint; not removed from the DOM"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "button.sh-toggle",
+      "raw": {
+       "labelDisp": "flex"
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "dropdown",
+   "tier": 1440,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: no dropdown or submenu exists; hovering the toggle and logo creates no node, the menu has 0 nested lists and 0 aria-haspopup",
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs restHover, open.state",
+      "selector": "aside.menu ul ul",
+      "raw": {
+       "nodesAfterHover": 0,
+       "nestedLists": 0,
+       "ariaHaspopup": 0
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "mega",
+   "tier": 1440,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: there is no mega panel; the only panel is the full-screen menu (see drawer)",
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs open.state",
+      "selector": "aside.menu",
+      "raw": {
+       "nestedLists": 0
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "trigger-close",
+   "tier": 1440,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": "one button that swaps its content in place: \"Menu\" label (hamburger icon at 375) fades out, an X icon fades in; the button keeps its place above the panel",
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs open.state.toggle",
+      "selector": "button.sh-toggle",
+      "raw": {
+       "rest": {
+        "labelOp": "1",
+        "svg": [
+         "sh-toggle__icon h-9 w-auto rel:0",
+         "sh-toggle__close size-15 absol:0"
+        ]
+       },
+       "open": {
+        "labelOp": "0",
+        "svg": [
+         "sh-toggle__icon h-9 w-auto rel:0",
+         "sh-toggle__close size-15 absol:1"
+        ]
+       }
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "restRect": {
+       "top": 33.3,
+       "left": 1296.7,
+       "right": 1390,
+       "bottom": 75,
+       "width": 93.3,
+       "height": 41.7,
+       "insetRight": 50,
+       "cx": 1343.3,
+       "cy": 54.2
+      },
+      "openRect": {
+       "top": 33.3,
+       "left": 1338.3,
+       "right": 1390,
+       "bottom": 75,
+       "width": 51.7,
+       "height": 41.7,
+       "insetRight": 50,
+       "cx": 1364.2,
+       "cy": 54.2
+      },
+      "rightEdgeFixed": true,
+      "widthChange": -41.6
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs open.state.toggle",
+      "selector": "button.sh-toggle",
+      "raw": {}
+     }
+    },
+    "zone_model": {
+     "value": "right end of the bar, same 50px/20.6px/14px inset as the logo on the left",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest.zones",
+      "selector": "button.sh-toggle",
+      "raw": {
+       "zones": {
+        "logoLeftInset": 50,
+        "toggleRightInset": 50,
+        "innerMax": "1440px",
+        "innerPad": "0px 50px",
+        "innerH": 108.3
+       }
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "fill": "#ffffff @0.15",
+      "blur": "blur(4px)",
+      "radius": "8.33333px",
+      "unchangedWhenOpen": true
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "button.sh-toggle > div.sh-toggle__bg",
+      "raw": {
+       "paint": {
+        "backgroundColor": "#ffffff @0.15",
+        "backgroundImage": "none",
+        "filter": "none",
+        "backdropFilter": "blur(4px)",
+        "mixBlendMode": "normal",
+        "opacity": "1",
+        "boxShadow": "none",
+        "borderRadius": "8.33333px",
+        "border": "0px solid #ffffff",
+        "before": null,
+        "after": null
+       }
+      }
+     }
+    },
+    "background_visual": {
+     "value": "none",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": "button.sh-toggle",
+      "raw": {}
+     }
+    },
+    "item_typography": {
+     "value": {
+      "label": {
+       "fontFamily": "sans",
+       "fontSize": "15px",
+       "fontWeight": "400",
+       "lineHeight": "21px",
+       "letterSpacing": "-0.166667px",
+       "textTransform": "none",
+       "color": "#ffffff",
+       "textDecoration": "none #ffffff"
+      }
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest",
+      "selector": ".sh-toggle__label",
+      "raw": {}
+     }
+    },
+    "item_states": {
+     "value": {
+      "hover": "no computed change",
+      "focus": "UA default auto 1px (auto 1px #101010)"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs restHover, behaviour.tab",
+      "selector": "button.sh-toggle",
+      "raw": {}
+     }
+    },
+    "secondary_blocks": {
+     "value": {
+      "applicable": false,
+      "reason": "none"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "structural (no such element in this row)",
+      "selector": "button.sh-toggle",
+      "raw": {
+       "note": "none"
+      }
+     }
+    },
+    "trigger_close": {
+     "value": {
+      "kind": "native button",
+      "accessibleName": "text \"Menu\" (none at 375); no aria-label, no aria-expanded, no aria-controls",
+      "burgerStyle": "hamburger icon svg 2 bars (375 only) / text label",
+      "closeStyle": "X svg 12.5x12.5, same pill",
+      "replacesInPlace": true,
+      "topRow": "the header bar stays above the panel (header z-index 10 vs aside 9)",
+      "magnet": "not detected"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs open.state",
+      "selector": "button.sh-toggle",
+      "raw": {
+       "toggle": {
+        "labelOp": "0",
+        "svgClasses": [
+         "sh-toggle__icon h-9 w-auto rel:0",
+         "sh-toggle__close size-15 absol:1"
+        ],
+        "rect": {
+         "top": 33.3,
+         "left": 1338.3,
+         "right": 1390,
+         "bottom": 75,
+         "width": 51.7,
+         "height": 41.7,
+         "insetRight": 50,
+         "cx": 1364.2,
+         "cy": 54.2
+        },
+        "label": "Menu",
+        "labelDisp": "flex",
+        "svgs": [
+         {
+          "rect": {
+           "top": 50.4,
+           "left": 1356.3,
+           "right": 1372.1,
+           "bottom": 57.9,
+           "width": 15.8,
+           "height": 7.5,
+           "insetRight": 67.9,
+           "cx": 1364.2,
+           "cy": 54.1
+          },
+          "op": "0",
+          "vis": true
+         },
+         {
+          "rect": {
+           "top": 47.9,
+           "left": 1357.9,
+           "right": 1370.4,
+           "bottom": 60.4,
+           "width": 12.5,
+           "height": 12.5,
+           "insetRight": 69.6,
+           "cx": 1364.2,
+           "cy": 54.2
+          },
+          "op": "1",
+          "vis": true
+         }
+        ],
+        "aria": [
+         "type=button",
+         "class=sh-toggle relative inline-flex items-center justify-center gap-x-12 h-50 body-normal pointer-events-auto"
+        ],
+        "html": "<button type=\"button\" class=\"sh-toggle relative inline-flex items-center justify-center gap-x-12 h-50 body-normal pointer-events-auto\"><div class=\"bg-white/15 sh-toggle__bg absolute inset-0 radius-global backdrop-blur-sm\"></div><div class=\"sh-toggle__label absolute inset-0 hidden s:flex items-center justify-center text-center\">Menu</div><svg/><svg/></button>"
+       }
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "escapeCloses": true,
+      "sourceKeydown": "l=u=>{u.key===\"Escape\"&&o()} with o=()=>e.setFlag(\"menu\",!1)",
+      "linkClickCloses": true,
+      "focusAfterClose": "stays on the toggle (activeElement BUTTON.sh-toggle relative inline-flex)",
+      "focusOnOpen": "not moved: stays on the toggle"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs behaviour",
+      "selector": "button.sh-toggle",
+      "raw": {
+       "afterEscape": {
+        "asideExists": false,
+        "asideVis": false,
+        "panelH": null,
+        "scrollY": 940,
+        "html": "lenis",
+        "active": "BUTTON.sh-toggle relative inline-flex",
+        "toggleLabel": "Menu",
+        "toggleW": 51.7
+       },
+       "afterToggle": {
+        "asideExists": false,
+        "asideVis": false,
+        "panelH": null,
+        "scrollY": 11330,
+        "html": "lenis",
+        "active": "BUTTON.sh-toggle relative inline-flex",
+        "toggleLabel": "Menu",
+        "toggleW": 51.7
+       },
+       "afterLinkClick": {
+        "href": "/work",
+        "url": "https://fantasy.co/work",
+        "state": {
+         "asideExists": false,
+         "asideVis": false,
+         "panelH": null,
+         "scrollY": 0,
+         "html": "lenis",
+         "active": "BODY.",
+         "toggleLabel": "Menu",
+         "toggleW": 93.3
+        }
+       }
+      }
+     }
+    },
+    "motion": {
+     "value": {
+      "iconSwap": "label opacity 1 -> 0 and X icon 0 -> 1; toggle width shrinks (93.3 -> 51.7)",
+      "timing": "sampled toggle width settles ~700ms after click at 1440",
+      "tier": "not classified (CSS or GSAP not isolated)"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs open.samples",
+      "selector": "button.sh-toggle",
+      "raw": {
+       "samples": [
+        [
+         1,
+         93.3
+        ],
+        [
+         47,
+         93.3
+        ],
+        [
+         91,
+         93.3
+        ],
+        [
+         190,
+         93.3
+        ],
+        [
+         267,
+         87.4
+        ],
+        [
+         389,
+         71.3
+        ],
+        [
+         488,
+         61.6
+        ],
+        [
+         585,
+         56
+        ],
+        [
+         688,
+         53
+        ],
+        [
+         728,
+         52.2
+        ],
+        [
+         781,
+         51.8
+        ],
+        [
+         827,
+         51.7
+        ],
+        [
+         879,
+         51.7
+        ],
+        [
+         927,
+         51.7
+        ]
+       ]
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "label": "Menu",
+      "closeGlyph": "X icon (no text)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs open.state",
+      "selector": "button.sh-toggle",
+      "raw": {}
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "label": "visible at 768/1440, hidden at 375 (icon-only)",
+      "size": [
+       93.3,
+       41.7
+      ],
+      "openWidth": 51.7
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs rest, open",
+      "selector": "button.sh-toggle",
+      "raw": {}
+     }
+    }
+   }
+  },
+  {
+   "surface": "drawer",
+   "tier": 1440,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": "full-screen opaque overlay: aside.menu fixed inset-x-0, 1440x1066.7 (100% wide; 166.7px taller than the viewport, inset -100 top and bottom); inner panel exactly the viewport 1440x900",
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs open.state",
+      "selector": "aside.menu",
+      "raw": {
+       "aside": {
+        "top": -83.3,
+        "left": 0,
+        "right": 1440,
+        "bottom": 983.3,
+        "width": 1440,
+        "height": 1066.7,
+        "insetRight": 0,
+        "cx": 720,
+        "cy": 450
+       },
+       "panel": {
+        "top": 0,
+        "left": 0,
+        "right": 1440,
+        "bottom": 900,
+        "width": 1440,
+        "height": 900,
+        "insetRight": 0,
+        "cx": 720,
+        "cy": 450
+       }
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "asideRect": {
+       "top": -83.3,
+       "left": 0,
+       "right": 1440,
+       "bottom": 983.3,
+       "width": 1440,
+       "height": 1066.7,
+       "insetRight": 0,
+       "cx": 720,
+       "cy": 450
+      },
+      "panelRect": {
+       "top": 0,
+       "left": 0,
+       "right": 1440,
+       "bottom": 900,
+       "width": 1440,
+       "height": 900,
+       "insetRight": 0,
+       "cx": 720,
+       "cy": 450
+      },
+      "position": "fixed",
+      "zIndex": "9",
+      "headerZ": "10",
+      "centredOnViewport": true,
+      "radius": "0px",
+      "anchor": "header-wide: panel width == viewport"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs open.state",
+      "selector": "aside.menu",
+      "raw": {
+       "aside": {
+        "rect": {
+         "top": -83.3,
+         "left": 0,
+         "right": 1440,
+         "bottom": 983.3,
+         "width": 1440,
+         "height": 1066.7,
+         "insetRight": 0,
+         "cx": 720,
+         "cy": 450
+        },
+        "position": "fixed",
+        "top": "-83.3333px",
+        "left": "0px",
+        "right": "0px",
+        "zIndex": "9",
+        "maxWidth": "none",
+        "width": "1440px",
+        "transform": "none",
+        "display": "block",
+        "overflow": "hidden",
+        "padding": "0px",
+        "margin": "0px"
+       }
+      }
+     }
+    },
+    "zone_model": {
+     "value": {
+      "primary": {
+       "items": [
+        "Work",
+        "Services",
+        "Impact"
+       ],
+       "align": "centred stack",
+       "rows": [
+        {
+         "top": 281.2,
+         "left": 625.3,
+         "right": 814.7,
+         "bottom": 364.5,
+         "width": 189.3,
+         "height": 83.3,
+         "insetRight": 625.3,
+         "cx": 720,
+         "cy": 322.9
+        },
+        {
+         "top": 371.2,
+         "left": 562.1,
+         "right": 877.9,
+         "bottom": 454.5,
+         "width": 315.8,
+         "height": 83.3,
+         "insetRight": 562.1,
+         "cx": 720,
+         "cy": 412.8
+        },
+        {
+         "top": 461.2,
+         "left": 591.7,
+         "right": 848.3,
+         "bottom": 544.5,
+         "width": 256.7,
+         "height": 83.3,
+         "insetRight": 591.7,
+         "cx": 720,
+         "cy": 502.8
+        }
+       ]
+      },
+      "tertiaryRow": {
+       "items": [
+        "Contact",
+        "Latest",
+        "Careers"
+       ],
+       "align": "centred inline row",
+       "top": 597.8
+      },
+      "bottomBar": {
+       "top": 771.1,
+       "left": 0,
+       "right": 1440,
+       "bottom": 900,
+       "width": 1440,
+       "height": 128.9,
+       "insetRight": 0,
+       "cx": 720,
+       "cy": 835.5
+      },
+      "bottomLeftSentence": "Ready to launch an intelligent experience? Let’s talk (link)",
+      "bottomRightPromoCard": {
+       "rect": {
+        "top": 771.1,
+        "left": 1035.8,
+        "right": 1390,
+        "bottom": 853.3,
+        "width": 354.2,
+        "height": 82.3,
+        "insetRight": 50,
+        "cx": 1212.9,
+        "cy": 812.2
+       },
+       "text": "HOW FANTASY SHIPPED LIV GOLF IN 72 DAYS",
+       "video": 1
+      }
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs open.state",
+      "selector": "aside.menu",
+      "raw": {
+       "links": [
+        [
+         "Work",
+         {
+          "top": 281.2,
+          "left": 625.3,
+          "right": 814.7,
+          "bottom": 364.5,
+          "width": 189.3,
+          "height": 83.3,
+          "insetRight": 625.3,
+          "cx": 720,
+          "cy": 322.9
+         }
+        ],
+        [
+         "Services",
+         {
+          "top": 371.2,
+          "left": 562.1,
+          "right": 877.9,
+          "bottom": 454.5,
+          "width": 315.8,
+          "height": 83.3,
+          "insetRight": 562.1,
+          "cx": 720,
+          "cy": 412.8
+         }
+        ],
+        [
+         "Impact",
+         {
+          "top": 461.2,
+          "left": 591.7,
+          "right": 848.3,
+          "bottom": 544.5,
+          "width": 256.7,
+          "height": 83.3,
+          "insetRight": 591.7,
+          "cx": 720,
+          "cy": 502.8
+         }
+        ],
+        [
+         "Contact",
+         {
+          "top": 597.8,
+          "left": 610.5,
+          "right": 665.2,
+          "bottom": 618.8,
+          "width": 54.6,
+          "height": 21,
+          "insetRight": 774.8,
+          "cx": 637.9,
+          "cy": 608.3
+         }
+        ],
+        [
+         "Latest",
+         {
+          "top": 597.8,
+          "left": 698.5,
+          "right": 741.4,
+          "bottom": 618.8,
+          "width": 42.9,
+          "height": 21,
+          "insetRight": 698.6,
+          "cx": 719.9,
+          "cy": 608.3
+         }
+        ],
+        [
+         "Careers",
+         {
+          "top": 597.8,
+          "left": 774.7,
+          "right": 829.5,
+          "bottom": 618.8,
+          "width": 54.8,
+          "height": 21,
+          "insetRight": 610.5,
+          "cx": 802.1,
+          "cy": 608.3
+         }
+        ],
+        [
+         "Let’s talk",
+         {
+          "top": 831,
+          "left": 147.9,
+          "right": 215.9,
+          "bottom": 852,
+          "width": 68,
+          "height": 21,
+          "insetRight": 1224.1,
+          "cx": 181.9,
+          "cy": 841.5
+         }
+        ],
+        [
+         "HOW FANTASY SHIPPED LIV GOLF IN 72 DAYS",
+         {
+          "top": 771.1,
+          "left": 1035.8,
+          "right": 1390,
+          "bottom": 853.3,
+          "width": 354.2,
+          "height": 82.3,
+          "insetRight": 50,
+          "cx": 1212.9,
+          "cy": 812.2
+         }
+        ]
+       ]
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "fill": "#000000 opaque on the aside and on the panel",
+      "blur": "none",
+      "scrim": "none (the panel itself is the cover)",
+      "filter": "none",
+      "shadow": "none",
+      "headerGradientWhileOpen": "0.5"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs open.state",
+      "selector": "aside.menu",
+      "raw": {
+       "aside": {
+        "backgroundColor": "#000000",
+        "backgroundImage": "none",
+        "filter": "none",
+        "backdropFilter": "none",
+        "mixBlendMode": "normal",
+        "opacity": "1",
+        "boxShadow": "none",
+        "borderRadius": "0px",
+        "border": "0px solid #ffffff",
+        "before": null,
+        "after": null
+       },
+       "panel": {
+        "backgroundColor": "#000000",
+        "backgroundImage": "none",
+        "filter": "none",
+        "backdropFilter": "none",
+        "mixBlendMode": "normal",
+        "opacity": "1",
+        "boxShadow": "none",
+        "borderRadius": "0px",
+        "border": "0px solid #ffffff",
+        "before": null,
+        "after": null
+       }
+      }
+     }
+    },
+    "background_visual": {
+     "value": "none behind the links (flat black); the only media is the 96x62 looping muted promo video thumbnail inside the promo card",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs open.state; fan-toggle.mjs",
+      "selector": "aside.menu video",
+      "raw": {
+       "media": {
+        "video": 1,
+        "img": 0,
+        "canvas": 0
+       }
+      }
+     }
+    },
+    "item_typography": {
+     "value": {
+      "primary": {
+       "fontFamily": "sans",
+       "fontSize": "83.3333px",
+       "fontWeight": "400",
+       "lineHeight": "83.3333px",
+       "letterSpacing": "-2.5px",
+       "textTransform": "none",
+       "color": "#ffffff",
+       "textDecoration": "none #ffffff"
+      },
+      "sub": {
+       "fontFamily": "sans",
+       "fontSize": "15px",
+       "fontWeight": "400",
+       "lineHeight": "21px",
+       "letterSpacing": "-0.166667px",
+       "textTransform": "none",
+       "color": "#ffffff",
+       "textDecoration": "none #ffffff"
+      },
+      "promo": {
+       "fontFamily": "sans",
+       "fontSize": "16.6667px",
+       "fontWeight": "400",
+       "lineHeight": "23.3333px",
+       "letterSpacing": "-0.166667px",
+       "textTransform": "none",
+       "color": "#ffffff",
+       "textDecoration": "none #ffffff"
+      },
+      "scaling": "rem-scaled: link size = 10rem at 1440, 7rem at 768, 5rem at 375 (rootFontSize 8.33333px)",
+      "fontFamily": "custom family named \"sans\""
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs open.state",
+      "selector": "a.menu-link",
+      "raw": {}
+     }
+    },
+    "item_states": {
+     "value": {
+      "primaryHover": "the hovered link fades to opacity 0.5 (1 -> 0.5); others unchanged",
+      "subRest": "opacity 0.6 (class opacity-60)",
+      "subHover": "opacity 0.6 -> 1",
+      "current": "not driven",
+      "ornament": "none (no index, glyph or separator)",
+      "itemOwningPanel": "none"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs menuHover",
+      "selector": "a.menu-link, a.menu-sub-link",
+      "raw": {
+       "linkDiffs": [
+        {
+         "i": 1,
+         "d": [
+          {
+           "s": "a.menu-link.flex.h3",
+           "ch": {
+            "o": [
+             "1",
+             "0.5"
+            ]
+           }
+          }
+         ]
+        }
+       ],
+       "subDiffs": [
+        {
+         "i": 0,
+         "d": [
+          {
+           "s": "a.menu-sub-link.flex.body-normal",
+           "ch": {
+            "o": [
+             "0.6",
+             "1"
+            ]
+           }
+          }
+         ]
+        }
+       ]
+      }
+     }
+    },
+    "secondary_blocks": {
+     "value": {
+      "tertiaryRow": [
+       "Contact",
+       "Latest",
+       "Careers"
+      ],
+      "sentenceCta": "present",
+      "promoCard": {
+       "text": "HOW FANTASY SHIPPED LIV GOLF IN 72 DAYS",
+       "href": "/latest/how-fantasy-shipped-liv-golf-in-72-days",
+       "rect": {
+        "top": 771.1,
+        "left": 1035.8,
+        "right": 1390,
+        "bottom": 853.3,
+        "width": 354.2,
+        "height": 82.3,
+        "insetRight": 50,
+        "cx": 1212.9,
+        "cy": 812.2
+       },
+       "reactsToHover": false
+      }
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs open.state; menuHover",
+      "selector": "footer.menu__bottom",
+      "raw": {
+       "bottom": [
+        {
+         "s": "footer.menu__bottom.absolute.bottom-0",
+         "rect": {
+          "top": 771.1,
+          "left": 0,
+          "right": 1440,
+          "bottom": 900,
+          "width": 1440,
+          "height": 128.9,
+          "insetRight": 0,
+          "cx": 720,
+          "cy": 835.5
+         },
+         "text": "Ready to launch an intelligent experience? Let’s talk |  | HOW FANTASY SHIPPED LIV GOLF IN 72 DAYS"
+        }
+       ]
+      }
+     }
+    },
+    "trigger_close": {
+     "value": "the header toggle (stays above the panel) turns into an X; Escape and a link click also close; there is no separate close button inside the panel",
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs behaviour",
+      "selector": "aside.menu",
+      "raw": {}
+     }
+    },
+    "mechanics": {
+     "value": {
+      "role": "role=dialog aria-modal=true aria-label=\"Main menu\" on aside.menu (no <dialog> element)",
+      "listRoles": "ul role=menubar, a role=menuitem",
+      "scrollLock": "none: wheel with the menu open moved the page 0 -> 940 and the menu stayed open (no lenis-stopped class, html/body overflow visible)",
+      "inert": 0,
+      "focusTrap": "none: Tab passes through 8 menu items then into the page behind (Scroll, Redesigned, bu, See how)",
+      "focusOnOpen": "not moved",
+      "escape": "closes",
+      "linkClick": "closes and routes",
+      "survivesResize": "yes, 1440 -> 375 -> 1440 kept it open and reflowed",
+      "mountedOnlyWhenOpen": "aside.menu is created on open and removed on close (absent from the DOM at rest)"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs behaviour, resizeSurvival",
+      "selector": "aside.menu",
+      "raw": {
+       "scrollLock": {
+        "before": 0,
+        "after": 940,
+        "state": {
+         "asideExists": true,
+         "asideVis": true,
+         "panelH": 900,
+         "scrollY": 940,
+         "html": "lenis",
+         "active": "BUTTON.sh-toggle relative inline-flex",
+         "toggleLabel": "Menu",
+         "toggleW": 51.7
+        }
+       },
+       "tab": [
+        {
+         "el": "A.menu-link.flex",
+         "text": "Work",
+         "inHeader": false,
+         "inMenu": true,
+         "outline": "auto 1px #101010"
+        },
+        {
+         "el": "A.menu-link.flex",
+         "text": "Services",
+         "inHeader": false,
+         "inMenu": true,
+         "outline": "auto 1px #101010"
+        },
+        {
+         "el": "A.menu-link.flex",
+         "text": "Impact",
+         "inHeader": false,
+         "inMenu": true,
+         "outline": "auto 1px #101010"
+        },
+        {
+         "el": "A.menu-sub-link.flex",
+         "text": "Contact",
+         "inHeader": false,
+         "inMenu": true,
+         "outline": "auto 1px #101010"
+        },
+        {
+         "el": "A.menu-sub-link.flex",
+         "text": "Latest",
+         "inHeader": false,
+         "inMenu": true,
+         "outline": "auto 1px #101010"
+        },
+        {
+         "el": "A.menu-sub-link.flex",
+         "text": "Careers",
+         "inHeader": false,
+         "inMenu": true,
+         "outline": "auto 1px #101010"
+        },
+        {
+         "el": "A.",
+         "text": "Let’s talk",
+         "inHeader": false,
+         "inMenu": true,
+         "outline": "auto 1px #101010"
+        },
+        {
+         "el": "A.flex.items-center",
+         "text": "HOW FANTASY SHIPPED LIV ",
+         "inHeader": false,
+         "inMenu": true,
+         "outline": "auto 1px #101010"
+        },
+        {
+         "el": "BUTTON.ml-auto.hidden",
+         "text": "Scroll",
+         "inHeader": false,
+         "inMenu": false,
+         "outline": "auto 1px #101010"
+        },
+        {
+         "el": "A.block.absolute",
+         "text": "Redesigned, built, and l",
+         "inHeader": false,
+         "inMenu": false,
+         "outline": "auto 1px #101010"
+        },
+        {
+         "el": "BUTTON.btn.inline-flex",
+         "text": "See how",
+         "inHeader": false,
+         "inMenu": false,
+         "outline": "auto 1px #101010"
+        },
+        {
+         "el": "BUTTON.mb-5.ml-auto",
+         "text": "Scroll",
+         "inHeader": false,
+         "inMenu": false,
+         "outline": "auto 1px #101010"
+        }
+       ],
+       "attrs": {
+        "dialogs": 0,
+        "roleDialog": 2,
+        "ariaModal": 2,
+        "inert": 0,
+        "ariaHidden": [],
+        "ariaExpanded": [
+         "button.cky-accordion-btn=false",
+         "button.cky-accordion-btn=false",
+         "button.cky-accordion-btn=false",
+         "button.cky-accordion-btn=false",
+         "button.cky-accordion-btn=false",
+         "button.cky-accordion-btn=false"
+        ]
+       },
+       "resize": {
+        "from": 1440,
+        "to": 375,
+        "before": {
+         "exists": true,
+         "vis": true,
+         "panel": {
+          "top": 0,
+          "left": 0,
+          "right": 1440,
+          "bottom": 900,
+          "width": 1440,
+          "height": 900,
+          "insetRight": 0,
+          "cx": 720,
+          "cy": 450
+         }
+        },
+        "mid": {
+         "exists": true,
+         "vis": true,
+         "panel": {
+          "top": 0,
+          "left": 0,
+          "right": 375,
+          "bottom": 900,
+          "width": 375,
+          "height": 900,
+          "insetRight": 0,
+          "cx": 187.5,
+          "cy": 450
+         }
+        },
+        "back": {
+         "exists": true,
+         "vis": true,
+         "panel": {
+          "top": 0,
+          "left": 0,
+          "right": 1440,
+          "bottom": 900,
+          "width": 1440,
+          "height": 900,
+          "insetRight": 0,
+          "cx": 720,
+          "cy": 450
+         }
+        }
+       },
+       "roles": {
+        "navs": [
+         "menubar",
+         "menubar"
+        ],
+        "items": [
+         "menuitem",
+         "menuitem",
+         "menuitem",
+         "menuitem",
+         "menuitem",
+         "menuitem",
+         null,
+         "menuitem"
+        ]
+       }
+      }
+     }
+    },
+    "motion": {
+     "value": {
+      "open": "aside autoAlpha 0 -> 1 0.5s power1; .js-fade items fade + y from -2rem with stagger 0.05s; .js-fade-up items y from 2rem",
+      "close": "autoAlpha -> 0 in 0.35s (measured: aside opacity 1 -> \"gone\" by ~385ms)",
+      "tier": "G (GSAP timeline, DOM, custom ease \"unmask\")",
+      "renderSubstrate": "DOM (+ a video thumbnail)"
+     },
+     "method": "source-only",
+     "evidence": {
+      "script": "src/fan-DsC-Xkwh.js (https://fantasy.co/_nuxt/DsC-Xkwh.js) menu component a=(u,h)=>{...} / c=(u,h)=>{...}; fan-capture.mjs closeMotion",
+      "selector": "aside.menu",
+      "raw": {
+       "closeSamples": [
+        [
+         1,
+         1
+        ],
+        [
+         67,
+         0.604
+        ],
+        [
+         132,
+         0.3498
+        ],
+        [
+         249,
+         0.0661
+        ],
+        [
+         385,
+         "gone"
+        ],
+        [
+         459,
+         "gone"
+        ],
+        [
+         512,
+         "gone"
+        ],
+        [
+         561,
+         "gone"
+        ],
+        [
+         618,
+         "gone"
+        ],
+        [
+         660,
+         "gone"
+        ],
+        [
+         706,
+         "gone"
+        ]
+       ],
+       "quote": "f.clear().from(u,{autoAlpha:0,duration:.5,ease:\"power1\"},0).from(m,{alpha:0,stagger:.05,ease:\"linear\"},v).from(m,{y:\"-2rem\",stagger:.05},v).from(p,{y:\"2rem\",alpha:0,stagger:.05},v).restart()"
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "primary": [
+       "Work",
+       "Services",
+       "Impact"
+      ],
+      "primaryHrefs": [
+       "/work",
+       "/services",
+       "/impact"
+      ],
+      "sub": [
+       "Contact",
+       "Latest",
+       "Careers"
+      ],
+      "cta": "Ready to launch an intelligent experience? Let’s talk",
+      "promo": "HOW FANTASY SHIPPED LIV GOLF IN 72 DAYS",
+      "counts": {
+       "primary": 3,
+       "sub": 3,
+       "secondary": 2
+      },
+      "caseOrigin": "source text; primary text-transform none; the promo card title renders uppercase from its own source",
+      "fixedOrDynamic": "menu items from a CMS list (r.main / r.sub); promo card dynamic (latest article)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs open.state",
+      "selector": "aside.menu",
+      "raw": {}
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "linkSize": "83.3333px",
+      "sentenceCta": "present",
+      "promoCardRect": {
+       "top": 771.1,
+       "left": 1035.8,
+       "right": 1390,
+       "bottom": 853.3,
+       "width": 354.2,
+       "height": 82.3,
+       "insetRight": 50,
+       "cx": 1212.9,
+       "cy": 812.2
+      },
+      "layout": "same centred stack at every tier"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs open.state",
+      "selector": "aside.menu",
+      "raw": {}
+     }
+    }
+   }
+  },
+  {
+   "surface": "footer",
+   "tier": 1440,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": "single-block sign-off: a white panel with a heading, a button, copyright and a legal link (no link columns)",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs footer",
+      "selector": "footer.sf",
+      "raw": {
+       "rect": {
+        "top": 369.5,
+        "left": 0,
+        "right": 1440,
+        "bottom": 900.3,
+        "width": 1440,
+        "height": 530.8,
+        "insetRight": 0,
+        "cx": 720,
+        "cy": 634.9
+       },
+       "text": "Let's talk. We'd love | to hear from you. | Contact | © 2026 Fantasy | Privacy & Terms"
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "width": 1440,
+      "height": 530.8,
+      "padding": "0px",
+      "position": "relative",
+      "overflow": "hidden"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs footer",
+      "selector": "footer.sf",
+      "raw": {
+       "geo": {
+        "rect": {
+         "top": 369.5,
+         "left": 0,
+         "right": 1440,
+         "bottom": 900.3,
+         "width": 1440,
+         "height": 530.8,
+         "insetRight": 0,
+         "cx": 720,
+         "cy": 634.9
+        },
+        "position": "relative",
+        "top": "0px",
+        "left": "0px",
+        "right": "0px",
+        "zIndex": "auto",
+        "maxWidth": "none",
+        "width": "1440px",
+        "transform": "none",
+        "display": "block",
+        "overflow": "hidden",
+        "padding": "0px",
+        "margin": "0px"
+       }
+      }
+     }
+    },
+    "zone_model": {
+     "value": [
+      {
+       "text": "Let's talk. We'd love to hear from you.",
+       "tag": "H2",
+       "left": 50,
+       "top": 641.1,
+       "width": 357.1,
+       "height": 91.7
+      },
+      {
+       "text": "Contact",
+       "tag": "BUTTON",
+       "left": 50,
+       "top": 759.4,
+       "width": 108.1,
+       "height": 41.7
+      },
+      {
+       "text": "Privacy & Terms",
+       "tag": "LI",
+       "left": 1294.8,
+       "top": 862.1,
+       "width": 95.3,
+       "height": 18.2
+      },
+      {
+       "text": "Privacy & Terms",
+       "tag": "A",
+       "left": 1294.8,
+       "top": 862.1,
+       "width": 95.3,
+       "height": 17
+      }
+     ],
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs footer",
+      "selector": "footer.sf",
+      "raw": {}
+     }
+    },
+    "ground": {
+     "value": {
+      "panel": "div.bg-white.text-black.relative #ffffff",
+      "overlayBehind": "div.absolute.inset-0.bg-black/90 (rgba(0,0,0,0.9))",
+      "blur": "none"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs footer",
+      "selector": "footer.sf > div.bg-white",
+      "raw": {
+       "bgs": [
+        {
+         "s": "footer.sf.relative.overflow-hidden > div.absolute.inset-0.bg-black/90",
+         "paint": {
+          "backgroundColor": "#000000 @0.9",
+          "backgroundImage": "none",
+          "filter": "none",
+          "backdropFilter": "none",
+          "mixBlendMode": "normal",
+          "opacity": "0",
+          "boxShadow": "none",
+          "borderRadius": "0px",
+          "border": "0px solid #ffffff",
+          "before": null,
+          "after": null
+         },
+         "rect": {
+          "top": 369.5,
+          "left": 0,
+          "right": 1440,
+          "bottom": 900.3,
+          "width": 1440,
+          "height": 530.8,
+          "insetRight": 0,
+          "cx": 720,
+          "cy": 634.9
+         }
+        },
+        {
+         "s": "footer.sf.relative.overflow-hidden > div.bg-white.text-black.relative",
+         "paint": {
+          "backgroundColor": "#ffffff",
+          "backgroundImage": "none",
+          "filter": "none",
+          "backdropFilter": "none",
+          "mixBlendMode": "normal",
+          "opacity": "1",
+          "boxShadow": "none",
+          "borderRadius": "0px",
+          "border": "0px solid #000000",
+          "before": null,
+          "after": null
+         },
+         "rect": {
+          "top": 369.5,
+          "left": 0,
+          "right": 1440,
+          "bottom": 900.3,
+          "width": 1440,
+          "height": 530.8,
+          "insetRight": 0,
+          "cx": 720,
+          "cy": 634.9
+         }
+        }
+       ]
+      }
+     }
+    },
+    "background_visual": {
+     "value": "none (no image, video, canvas or svg in the footer: media all 0)",
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs footer",
+      "selector": "footer.sf",
+      "raw": {
+       "media": {
+        "video": 0,
+        "img": 0,
+        "canvas": 0,
+        "svg": 0
+       }
+      }
+     }
+    },
+    "item_typography": {
+     "value": {
+      "heading": {
+       "fontFamily": "sans",
+       "fontSize": "41.6667px",
+       "fontWeight": "400",
+       "lineHeight": "45.8333px",
+       "letterSpacing": "-0.833333px",
+       "textTransform": "none",
+       "color": "#000000",
+       "textDecoration": "none #000000"
+      },
+      "legal": {
+       "fontFamily": "sans",
+       "fontSize": "13px",
+       "fontWeight": "400",
+       "lineHeight": "18.2px",
+       "letterSpacing": "-0.166667px",
+       "textTransform": "none",
+       "color": "#000000",
+       "textDecoration": "none #000000"
+      },
+      "button": {
+       "fontFamily": "sans",
+       "fontSize": "15px",
+       "fontWeight": "500",
+       "lineHeight": "15px",
+       "letterSpacing": "-0.166667px",
+       "textTransform": "none",
+       "color": "#000000",
+       "textDecoration": "none #000000"
+      },
+      "scaling": "rem-scaled (heading 41.6667px)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs footer",
+      "selector": "footer h2, a",
+      "raw": {}
+     }
+    },
+    "secondary_blocks": {
+     "value": {
+      "button": "Contact",
+      "copyright": "© 2026 Fantasy",
+      "legal": "Privacy & Terms (/policy)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs footer",
+      "selector": "footer.sf",
+      "raw": {}
+     }
+    },
+    "trigger_close": {
+     "value": {
+      "applicable": false,
+      "reason": "column does not apply to this surface (footer)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "structural (no such element in this row)",
+      "selector": "(structural)",
+      "raw": {
+       "note": "column does not apply to this surface (footer)"
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "position": "static in flow, overflow hidden",
+      "headerWhileAtFooter": "10 js-sh is-dark text-white is-collapsed",
+      "scrollMax": 13932
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "fan-capture.mjs footer",
+      "selector": "footer.sf",
+      "raw": {
+       "headerAtFooter": {
+        "rect": {
+         "top": 0,
+         "left": 0,
+         "right": 1440,
+         "bottom": 108.3,
+         "width": 1440,
+         "height": 108.3,
+         "insetRight": 0,
+         "cx": 720,
+         "cy": 54.2
+        },
+        "cls": "sh fixed top-0 left-0 w-full z-10 js-sh is-dark text-white is-collapsed"
+       }
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "text": "Let's talk. We'd love | to hear from you. | Contact | © 2026 Fantasy | Privacy & Terms",
+      "caseOrigin": "source case (no text-transform)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs footer",
+      "selector": "footer.sf",
+      "raw": {}
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "height": 530.8,
+      "headingSize": "41.6667px",
+      "layout": "same single stack; padding and type scale with the root font-size"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fan-capture.mjs footer",
+      "selector": "footer.sf",
+      "raw": {}
+     }
+    }
+   }
+  }
+ ],
+ "not_measured": [
+  {
+   "surface": "footer",
+   "tier": 375,
+   "column": "item_states",
+   "reason": "footer link and button hover was not driven"
+  },
+  {
+   "surface": "footer",
+   "tier": 375,
+   "column": "motion",
+   "reason": "no footer motion sampled (reveal or hover)"
+  },
+  {
+   "surface": "footer",
+   "tier": 768,
+   "column": "item_states",
+   "reason": "footer link and button hover was not driven"
+  },
+  {
+   "surface": "footer",
+   "tier": 768,
+   "column": "motion",
+   "reason": "no footer motion sampled (reveal or hover)"
+  },
+  {
+   "surface": "footer",
+   "tier": 1440,
+   "column": "item_states",
+   "reason": "footer link and button hover was not driven"
+  },
+  {
+   "surface": "footer",
+   "tier": 1440,
+   "column": "motion",
+   "reason": "no footer motion sampled (reveal or hover)"
+  },
+  {
+   "surface": "header-shell",
+   "tier": 1440,
+   "column": "ground",
+   "reason": "is-light variant (white gradient, black text) was not observed: every sampled scroll offset (0, 400, 900, 1800, 3500, 6000, 10000, 13500) was over a dark section; the variant is known from source only"
+  },
+  {
+   "surface": "drawer",
+   "tier": 1440,
+   "column": "item_states",
+   "reason": "active-route indicator not driven: the menu was only opened on the home route"
+  },
+  {
+   "surface": "drawer",
+   "tier": 1440,
+   "column": "motion",
+   "reason": "enter animation is source-only; only the close was sampled (open animation frames were not captured with opacity of the aside)"
+  },
+  {
+   "surface": "trigger-close",
+   "tier": 375,
+   "column": "mechanics",
+   "reason": "measured in a mobile-UA emulation with a mouse wheel and keyboard; touch gestures not driven"
+  }
+ ],
+ "drawer_cross_check": [
+  {
+   "item": "primary link size",
+   "existing": "70px at a 1337px-wide viewport, 46.5px at 400px (fantasy-desktop.json / fantasy-mobile.json menu_link)",
+   "this_capture": "83.33px at 1440, 45.03px at 768, 43.60px at 375; a probe at 1337x713 reproduces 70px exactly, at 1920 gives 100px (fan-scale.mjs)",
+   "trusted": "both, the difference is the viewport",
+   "why": "the menu link is 10rem at 1440 and 1920, 7rem at 768 and 1337, 5rem at 375, and the root font-size is viewport-scaled (10px at 1337 and 1920, 8.33px at 1440), so the size is stepped by breakpoint and scaled by viewport, not one fluid clamp"
+  },
+  {
+   "item": "dialog and modal semantics",
+   "existing": "\"dialog: false\", \"inert_count: 0\"",
+   "this_capture": "no <dialog> element, but aside.menu carries role=\"dialog\" aria-modal=\"true\" aria-label=\"Main menu\"; inert count is 0 (agrees); no focus trap",
+   "trusted": "this capture",
+   "why": "the earlier harvest looked for a <dialog> element; the ARIA role is in the rendered DOM and in the source"
+  },
+  {
+   "item": "close control",
+   "existing": "\"separate-x\": a dark rounded-square X, 62x50, replacing the Menu text",
+   "this_capture": "not separate: the same button.sh-toggle; the Menu label fades out and an X svg fades in, and the button narrows from 93.3 to 51.7 at 1440; its fill (rgba(255,255,255,0.15) over blur(4px)) is unchanged. 62px is the width at a 1337px viewport (fan-scale.mjs)",
+   "trusted": "this capture",
+   "why": "measured label and svg opacities before and after the click on one element"
+  },
+  {
+   "item": "scrim and ground",
+   "existing": "no scrim; opaque black panel",
+   "this_capture": "agrees: aside and panel are #000000, opacity 1, no blur, no scrim",
+   "trusted": "both",
+   "why": "same reading"
+  },
+  {
+   "item": "scroll lock",
+   "existing": "body overflow visible with the menu open, \"worth a live re-check\"",
+   "this_capture": "re-checked live: with the menu open a wheel scroll moved the page from 0 to 940 and the menu stayed open; html class stays \"lenis\" (no lenis-stopped)",
+   "trusted": "this capture",
+   "why": "scrollY measured before and after the wheel"
+  },
+  {
+   "item": "secondary blocks and mobile drop",
+   "existing": "tertiary row, CTA sentence (dropped at mobile), promo card",
+   "this_capture": "agrees: the sentence CTA is present at 768 and 1440 and absent at 375 (source class hidden s:block); the promo card has a looping muted video thumbnail 96x62 at 1440",
+   "trusted": "both",
+   "why": "same DOM reading"
+  }
+ ]
+}
