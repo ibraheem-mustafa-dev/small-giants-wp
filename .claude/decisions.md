@@ -14,6 +14,8 @@
 
 **Roster extended (Bean).** The two Claude Design drafts Bean built, Halcyon Mega Menu and Indus Foods Mega Menu (header, nav bar, drawer and mega menu setups), join the table (W3B-3a, rendered locally, one row set per variant) and the Wave 4 roster (13 clones, 12 without resn). Reading their source shows the mega panel is a capped-centred card whose width differs per panel (Indus 300, 620 and 1080px; Halcyon 1120px), which are not pill headers. Bean's rule that a mega panel takes the header's width was about floating-pill headers only; the earlier reference measurement confirms it (lamalama, the one live pill: pill and panel are the same box, ratio 1.000, no gap), and W3C-1 keeps it for pills and follows the table for every other header.
 
+**W3A-5 done; W3A-2 closed.** The header-in-content fixtures exist (pages 3723, 3733, 3734, 3735). Inside a real header the dropdown has no list markers, no link underline, no indent and a visible surface, so the loose-fixture defects (bullets, underline, no surface, indent) were fixture artefacts and W3A-2 closes with no change.
+
 **Open.** The hover-underline cause (W3A-3) is unproven. Where the references keep the burger and close control, and whether any drawer omits a top close row, is read from the table, not assumed.
 
 ## D1132 [ROUTINE] — Draft standardisation council: close the wiring gaps in existing code first; a small draft standard only for what code cannot derive; a deterministic second layer (2026-09-20)

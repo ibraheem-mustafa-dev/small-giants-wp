@@ -102,8 +102,11 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
   with the cause proven before the fix.
 - W3A-4: the Mama's Munches header nav is centred within the bar (measured), and the hover text
   colour equals the draft's, matched by content.
-- W3A-5: the nav QA fixtures render inside `sgs/site-header` (`document.querySelector('header .sgs-nav-bar-menu')`
-  is non-null on each), and the drawer fixtures show submenus and a mega item.
+- W3A-5: met. The nav QA fixtures render inside `sgs/site-header` (`document.querySelector('.entry-content header.sgs-site-header .sgs-nav-bar-menu')`
+  is non-null on pages 3723, 3733, 3734 and 3735), and the drawer fixtures show submenus and a mega item
+  (`python plugins/sgs-blocks/scripts/nav-qa/build-header-fixtures.py --list`).
+- W3A-2: closed, not reproduced inside a real header (Shop dropdown on page 3734: no list markers, no
+  underline, no indent, a background and border).
 
 ## Wave 3B — Reference deconstruction
 - STATUS: not started.

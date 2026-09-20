@@ -178,10 +178,20 @@ negative control and is verified on a real header on the canary.
 | ID | Unit | Output | Est (taxed) | CP |
 |---|---|---|---|---|
 | W3A-1 | A dropdown or mega panel stays open while the pointer travels from its parent item to the panel | pointer path bridged (no dead gap); verified with a real pointer path at 1440px | 1h (2h) | YES |
-| W3A-2 | Default dropdown surface and items | a dropdown is a visible surface by default (background, border, radius, shadow from theme tokens); no list markers, no default link underline, no marker indent (the dropdown's alignment to its parent item is a W3C-1 family) | 1.5h (3h) | YES |
+| W3A-2 | Default dropdown surface and items | CLOSED, not reproduced inside a real header (see the note under this table); the target was: a dropdown is a visible surface by default (background, border, radius, shadow from theme tokens); no list markers, no default link underline, no marker indent (the dropdown's alignment to its parent item is a W3C-1 family) | 1.5h (3h) | YES |
 | W3A-3 | Top-level items that own a dropdown or mega panel get the same hover treatment as their siblings | one hover system for every bar item; cause proven before the fix (the underline is emitted for `.sgs-nav-bar-menu__link`, and the trigger elements carry that class too, so the cause is not yet known) | 1h (2h) | YES |
 | W3A-4 | Mama's Munches canary header | nav centred within the bar as the draft has it; hover text stays the draft's dark colour on the pink hover background (`itemSmartContrast` is off by default) | 1h (2h) | no |
-| W3A-5 | QA fixtures live inside a real header | nav QA fixtures rebuilt inside `sgs/site-header`, with the drawer fixtures carrying submenus and a mega item; the loose-block pages leave the canary | 1.5h (3h) | YES |
+| W3A-5 | QA fixtures live inside a real header | DONE: `nav-qa/build-header-fixtures.py` builds four canary pages with the nav inside `sgs/site-header` (page ids 3723 plain, 3733 capped-width, 3734 floating pill, 3735 drawer with submenus; slug prefix `qa-hdr-`). The loose-block pages (3692, 3693, 3694, 3695, 3699) stay until Bean retires them | 1.5h (3h) | YES |
+
+**Fixture facts and reproduction results.** A header placed in page content renders inside `<main>` in
+flow, beneath the site's own header, so each fixture page has two `<header>` elements; probes select
+`.entry-content header.sgs-site-header`. The pill fixture (3734) measures a 1120px header with an 8px
+radius and a mega panel of the same left edge and width (`--sgs-mm-panel-width` 1120px). Inside that
+real header the Shop dropdown computes `list-style-type: none`, link `text-decoration: none`,
+`padding-left: 0`, background `rgb(251, 243, 220)` and a border (command: hover the Shop toggle, then
+read `getComputedStyle` on `.sgs-nav-bar-menu__submenu`), so the bullets, underline, missing surface and
+indent seen on the loose fixture do not occur in a header. W3A-1 (hover gap) and W3A-3 (hover parity on
+items with panels) are not yet tested inside a real header.
 
 ### Wave 3B — Reference deconstruction (the requirements table)
 
