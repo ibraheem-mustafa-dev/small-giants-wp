@@ -85,9 +85,42 @@ _FUZZY_DECLINED_STAGES = frozenset({
 _FUZZY_STAGES = _FUZZY_RESOLVED_STAGES | _FUZZY_DECLINED_STAGES
 
 
+# Identity keys of declaration gaps already recorded this run. The same node's
+# declarations are read many times per section (CSS pass, root-supports lift,
+# arrangement, fold, motion), so one dropped declaration would otherwise be
+# recorded once per reader.
+_DECL_GAP_SEEN: set[tuple[str, str, str]] = set()
+
+
 def clear() -> None:
     """Reset the accumulator. Call once at the start of a convert_section() run."""
     _GAPS.clear()
+    _DECL_GAP_SEEN.clear()
+
+
+def record_declaration_gap(*, element: str, prop: str, value: str, reason: str) -> None:
+    """Record ONE style declaration that was deliberately not lifted.
+
+    Recorded as ``kind: "dropped"`` so the orchestrator's existing harvest
+    (``_harvest_content_gaps`` -> ``content-gaps.json``) carries it with no
+    change: ``where`` becomes ``attr_or_slot``; the extra keys (``property``,
+    ``value``, ``element``, ``reason``) ride along for a human reader.
+    Deduplicated on (element, property, raw value).
+    """
+    key = (element, prop, value)
+    if key in _DECL_GAP_SEEN:
+        return
+    _DECL_GAP_SEEN.add(key)
+    _GAPS.append({
+        "kind": "dropped",
+        "block_slug": "",
+        "where": f"{element} {{ {prop} }}",
+        "detail": f"{reason}: {prop}: {value}",
+        "element": element,
+        "property": prop,
+        "value": value,
+        "reason": reason,
+    })
 
 
 def record_content_gap(gap: ContentGap, *, block_slug: str) -> None:
@@ -204,4 +237,5 @@ def flush() -> list[dict[str, Any]]:
     """
     out = list(_GAPS)
     _GAPS.clear()
+    _DECL_GAP_SEEN.clear()
     return out

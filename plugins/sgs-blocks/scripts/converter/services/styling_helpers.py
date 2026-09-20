@@ -33,6 +33,7 @@ from bs4 import Tag
 
 from converter.db import db_lookup
 from converter.models import ResidualBand
+from converter.services.template_binding import drop_unresolved_bindings
 
 _LOG = logging.getLogger("sgs.converter.styling")
 
@@ -758,9 +759,11 @@ def collect_css_decls_for_element(
         if matched_sel is None:
             continue
         if media_part:
-            matched_media.append((media_part, decls))
+            matched_media.append((media_part, drop_unresolved_bindings(decls, node)))
         else:
-            matched_base.append((_sel_specificity(matched_sel), _src_order, decls))
+            matched_base.append(
+                (_sel_specificity(matched_sel), _src_order, drop_unresolved_bindings(decls, node))
+            )
 
     # Apply base rules in CASCADE order: ascending specificity then source order;
     # later/more-specific OVERRIDES earlier (last-wins). Inline style wins over all.
@@ -770,7 +773,10 @@ def collect_css_decls_for_element(
     if include_inline:
         inline = node.get("style", "") or ""
         if inline:
-            base_decls.update(_parse_decls(inline))
+            # Unresolved template bindings (``padding: {{ secPad }}``) are dropped
+            # HERE, at the first read of the inline declarations -- before any box
+            # tokenising, splitting or token snapping downstream (template_binding).
+            base_decls.update(drop_unresolved_bindings(_parse_decls(inline), node))
 
     def _specificity_key(media_cond: str) -> tuple[int, int]:
         mn = re.search(r"min-width\s*:\s*(\d+)", media_cond)
