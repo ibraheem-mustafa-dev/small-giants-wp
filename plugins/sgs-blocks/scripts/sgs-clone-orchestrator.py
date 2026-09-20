@@ -3799,6 +3799,12 @@ def main():
              "drop-and-gap behaviour for every binding.",
     )
     parser.add_argument(
+        "--no-site-info-values", action="store_true", default=False,
+        help="Skip the site-details stage (plan step A2a, D1133): by default the phone, review, social and map "
+             "values the draft's script declares replace the bare `{{ name }}` bindings that carry them. This "
+             "flag leaves those bindings as they were.",
+    )
+    parser.add_argument(
         "--resolve-js-content", action="store_true", default=False,
         help="Opt-in Spec 31 FR-31-26 (.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md §15, "
              "design-gated with Bean 2026-09-19): a <sc-for> item template whose ONLY content "
@@ -3938,6 +3944,21 @@ def main():
             _js_resolved_path.write_text(_js_resolved, encoding="utf-8")
             args.mockup = _js_resolved_path
             print(f"[orchestrator] js-content: resolved {_js_count} group(s) -> {_js_resolved_path}")
+
+    # Stage -1.45 -- SITE DETAILS (plan step A2a, D1133). The phone, review, social and map links the draft's
+    # script declares replace the bare `{{ phone }}` / `{{ gmbHref }}` bindings that carry them, so they reach
+    # the blocks as real values. Same reader as sync-business-info.py; inert (no file) for a draft without them.
+    if not getattr(args, "no_site_info_values", False):
+        try:
+            _si_mod = _load_module_from_path("sgs_site_info_values", ORCHESTRATOR_DIR / "site_info_values.py")
+            _si_html, _si_counts = _si_mod.resolve_site_info_bindings(args.mockup.read_text(encoding="utf-8"))
+            if _si_counts:
+                _si_path = run_dir / "site-info-resolved.html"
+                _si_path.write_text(_si_html, encoding="utf-8")
+                args.mockup = _si_path
+                print(f"[orchestrator] site-info: replaced {sum(_si_counts.values())} binding(s) {dict(_si_counts)} -> {_si_path}")
+        except Exception as _si_exc:  # noqa: BLE001 -- never a new failure mode: the bindings stay as they were
+            print(f"[site-info] skipped ({_si_exc}); the bindings are left as they were")
 
     # Stage -1.4 -- SCRIPT BINDINGS (plan step A1, D1132). The draft script's own width rules, evaluated
     # for the three device tiers, become the per-device values of the style bindings the converter would
