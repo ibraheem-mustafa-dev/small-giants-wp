@@ -111,14 +111,14 @@ canary for later waves.
 | W2-l | 36-22 logo source resolution | DONE | Site Info `logo` (media-library attachment ID) is tier 2 between the block's own image and the core custom logo (`includes/class-sgs-site-info-logo.php::resolve_id`); Organization JSON-LD follows the same chain; saving Site Info purges the page cache. Live-verified with fall-through controls (`reports/visual-diff/responsive-logo-2026-09-20.md`) | — | no |
 | W2-n | Scroll-state shadow on the pinned header | DONE | `site-header` attributes `shadowScrolled` and `shadowScrolledColour`; nothing paints when unset. Live-verified at 1440px and 375px including reduced motion and a non-sticky header (`reports/visual-diff/site-header-2026-09-20.md`) | — | no |
 | W2-o | Payment-logo SVG set | CLOSED, no framework feature | No spec, pattern or block asks for payment marks, and WooCommerce renders an accepted-methods row on the cart page. Clients upload each processor's official artwork into `sgs/trust-bar` image badges, which already works and is the only way to respect each brand's artwork rules (`reports/2026-09-20-w2o-payment-icons-host-options.md`) | — | no |
-| W2-p | "Floating" header pill mode (design approved: publish the header's measured bottom edge in `--sgs-header-height`, then compose the pill from existing controls plus three attributes; the pill persists at mobile; dropdown and mega panels follow the pill's width) | APPROVED, being built | `reports/2026-09-20-w2p-floating-header-pill-design.md` and the reference measurements in `reports/2026-09-20-w2p-reference-pill-measurements.md`. Seven files read the token; the value is unchanged for every header shipped today | 3h | no |
+| W2-p | "Floating" header pill mode | DONE | Built and live-verified on the canary (`reports/visual-diff/site-header-pill-2026-09-20.md`, first pass and a re-check after the QC fixes): `headerFloat` (per tier), `headerFloatInset`, `headerFloatCollapse`, and `backdropBlur` (the only pill among the 12 references, lamalama, is a blur-only bar: `reports/2026-09-20-w2p-reference-pill-measurements.md`); `--sgs-header-height` publishes the pinned bottom edge (top offset plus height), unchanged for every `top:0` header; a mega panel matches the pill and plain dropdowns clamp inside it; the pill persists at mobile unless collapse is on. With no float or blur set the emitted CSS is byte-identical | — | no |
 | W2-q | `resolveTier()` cascade | DONE | FR-37-14 built and live-verified | — | no |
 | W2-s | 36-24 lint-gate half | DONE | `plugins/sgs-blocks/scripts/lint-responsive-controls.py` in the prebuild gates (`--check` + `--self-test` pass); checks bespoke per-device controls, not per-tier drift | — | no |
 | W2-t | Doc closure sweep | DONE | Parking entries archived on resolve | — | no |
 | W2-u | **W1 re-verification on the CPT path** (wave exit) | DONE | Live probe on the CPT-rendered drawer (`reports/2026-09-20-w2u-cpt-drawer-integration.md`): focus trap, Tab and Shift+Tab cycling, ESC and focus return, scroll lock, modal and non-modal, at 375px and 1440px, each with a negative control. Findings: opening the drawer dismisses an open mega menu (they are never open together); a non-modal drawer opened from an in-content trigger leaves `main` live; a trigger-anchored drawer renders off-screen at negative x on fixture page 3699 (needs Bean's eye) | — | YES |
 
-**Net Wave 2:** DONE a, b, c, d, e, f (live/eye verification owed), g, h, j, k, l, n, q, r, s, t, u · PARTIAL i ·
-APPROVED and being built p · CLOSED with no framework feature o.
+**Net Wave 2:** DONE a, b, c, d, e, f (live/eye verification owed), g, h, j, k, l, n, p, q, r, s, t, u · PARTIAL i ·
+CLOSED with no framework feature o.
 
 **TEST (critical path):** Happy = default drawer post renders property-identical to the default
 drawer (the DP-signed bar; gate §4.3). Edge = deleted/draft drawer post → FR-36-9a notice;
@@ -287,14 +287,12 @@ Stop-loss: any gate <50 → surface pivot-vs-park with two ranked paths; log in 
    picker = Active. No third "inherit" state.
 4. **W4-b evidence pack is fixed in advance:** computed-parity JSON + DP7 captures + homes table +
    labels fidelity output. Bean judges from the pack + live URL — no ad-hoc evidence shapes.
-5. **Design-gate latency is scheduled work:** the W2-p design-gate is raised at wave start;
-   estimates include it.
 6. **`labels-<site>.json` for the three unmeasured refs is generated inside W2-i** after W4-a.
 7. **Clone roster:** see § Clone roster; Gate 5 counts against it.
 
 ## First action (≤5 min, zero dependencies)
 
-W2-i's remaining harness work (self-tests on three scripts and the content/label count-fidelity check) precedes any Wave 4 evidence; the W2-p pill build runs beside it. Then Wave 3 residuals (W3-b finding 2, W3-e conformance).
+W2-i's remaining harness work (self-tests on three scripts and the content/label count-fidelity check) precedes any Wave 4 evidence. Then Wave 3 residuals (W3-b finding 2, W3-e conformance).
 
 ## References
 

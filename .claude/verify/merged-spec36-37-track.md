@@ -25,8 +25,8 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
   3. The cart/search screenshot set is not captured (numeric probes only).
 
 ## Wave 2 — Capability
-- STATUS: partial. DONE a, b, c, d, e, f (live/eye verification owed), g, h, j, k, l, n, q, r, s, t, u ·
-  PARTIAL i · APPROVED and being built: p · CLOSED with no framework feature: o.
+- STATUS: partial. DONE a, b, c, d, e, f (live/eye verification owed), g, h, j, k, l, n, p, q, r, s, t, u ·
+  PARTIAL i · CLOSED with no framework feature: o.
 - DP7 harness self-tests pass FIRST (W2-i precedes Wave-4 evidence). Built: shared
   `nav-qa/lib/openness-guard.mjs` (exit 3 = VACUOUS), full-element contrast walk, `--self-test` in
   five scripts. Open: `--self-test` on `sweep-drawer-variants.mjs`, `shoot-drawer-pairs.mjs`,

@@ -141,3 +141,96 @@ page, post or revision was created or altered.**
 - `pill-mega-open-{1440,390}.png` — mega panel matching the pill's box (taken during the
   temporary two-nav E-check fixture, hence the taller bar)
 - `editor-float-controls.png` — "Float as a pill" toggled on in the Header behaviour panel
+- `editor-float-controls-recheck.png` — the same panel after the QC fixes, with all four
+  float items enabled (re-verification run below)
+
+---
+
+# Re-verification after QC fixes (commit 526784068)
+
+```
+verdict: PASS
+date:    2026-09-20 (second pass)
+commit:  526784068 ("fix(site-header): QC fixes for the floating pill")
+target:  sandybrown-nightingale-600381.hostingersite.com
+```
+
+No source file was edited, built or deployed in this dispatch. Every fetch carried a unique
+`?qacb=` cache-buster (all `x-hcdn-cache-status: MISS`, HTTP 200); every state change was
+followed by `wp litespeed-purge all`.
+
+**Deploy of 526784068 confirmed on the server before measuring** — not assumed from the
+commit: `includes/sgs-header-float-css.php` md5 `c533f6a5c04578281e438d3924ecfd85` matches
+the local working tree byte-for-byte; `build/blocks/site-header/render.php` carries the new
+four-argument call `sgs_header_float_css( $root_sel, $attributes, $sh_transparent_effective,
+$sh_solid_first )`; the minified `build/header-behaviours/view.js` carries the clamped SUM
+`Math.max(0,(Number.isFinite(e)?e:0)+s)` (not the old clamp-then-add); and
+`build/blocks/nav-bar-menu/view.js` carries
+`s=!o&&r.floating&&null!==r.bottom?r.bottom:n.top` feeding `--sgs-mm-panel-max-h`.
+
+## State touched, and its restore proof
+
+Same discipline as the first pass. A throwaway `[QA]` page could not carry this work — the
+header is site chrome rendered from the active `sgs_header` post, not from page content — so
+post **3648** was rewritten with `$wpdb->update()` (which takes unslashed data directly, so no
+`wp_slash()`/`wp_unslash()` round-trip can mangle a byte) from a snapshot taken first, with
+`post_modified` written back in the same statement. **No option, theme mod, page, post or
+revision was created or altered.**
+
+| Thing | BEFORE | AFTER | Proof |
+|---|---|---|---|
+| Post 3648 `post_content` | md5 `b6b19d932b8a3c7a7b52621e1d00b246`, 880 bytes | **identical** | `wp eval-file qa-header.php show`, run before the first write and after the last |
+| `post_modified` | `2026-09-18 21:29:45` | **identical** | same command |
+| Attribute JSON | `{"align":"full","backgroundColour":"surface","contentWidth":{"desktop":"normal"},"headerSticky":{"desktop":"on"},"borderWidth":{"bottom":"1px"},"borderStyle":"solid","borderColour":"border","padding":{...}}` | **identical, character-for-character** | same command |
+| Header element uid | `sgs-sh-facd3ef0` | `sgs-sh-facd3ef0` | attribute-hash derived, so its return proves the attribute set round-tripped exactly |
+| Lifted CSS content hash | `33fb433c6340d4b4654ef9016d9e628b` | `33fb433c6340d4b4654ef9016d9e628b` | byte-identical instance CSS (only the filename's render-counter prefix differs, `sgs-3852-` → `sgs-3854-`) |
+| Rendered geometry | `A-baseline-{1440,390}.json` (first pass) | `R4-final-{1440,390}.json` | **0 differing properties** across all four scroll phases (rest / 600 / 1400 / back-to-top) at both viewports |
+| Max revision id (post 3648) | `3713` | `3713` (7 rows total) | `SELECT MAX(ID) … post_parent=3648 AND post_type='revision'` — including after the editor session |
+| `[QA]` pages created | 0 | 0 | `wp post list --s="[QA] pill" --format=count` |
+| Server-side helpers | uploaded `~/qa-header.php`, `~/qa-nav.php` | deleted | `ls ~/qa-*` → "No such file or directory" |
+
+## Checks
+
+| # | Check | Measured value | Control (would fail if the fix were absent) | Verdict |
+|---|---|---|---|---|
+| **1a** | Float + Transparent, `transparent-first`: shadow suppressed at rest, returns on scroll | `headerFloat` all tiers, `headerTransparent` all tiers, `shadow:"floating"`. 1440 **and** 390: rest `box-shadow: none`, bg `rgba(0,0,0,0)`; scrollY 600 (`is-header-scrolled` present) `rgba(0,0,0,0.12) 0px 8px 30px 0px`; back at top `none` again. | Check 1b — the identical attribute set with `headerTransparentDirection:"solid-first"` measures the exact inverse. | PASS |
+| **1b** | `solid-first` inverts it | Same attributes + `"headerTransparentDirection":"solid-first"`. 1440 **and** 390: rest `rgba(0,0,0,0.12) 0px 8px 30px 0px` with bg `rgb(251,243,220)` (solid); at 600 `box-shadow: none` with bg `rgba(0,0,0,0)`; back at top shadow returns. Background and shadow invert together, i.e. the suppression follows the see-through STATE. | Check 1a (same attrs, opposite direction). | PASS |
+| **1c** | `contrastSafe: force-solid` at mobile keeps the mobile shadow | `contrastSafe:{"mobile":"force-solid"}` added to 1a. Rest `box-shadow`: 1440 **none**, 800 **none**, 390 **`rgba(0,0,0,0.12) 0px 8px 30px 0px`**. | Check 1a at 390 (same attrs minus `contrastSafe`) measured `none`. Force-solid is therefore the variable. | PASS |
+| **1d** | Transparent on desktop only — tablet/mobile keep their shadow | `headerTransparent:{"desktop":"on","tablet":"off","mobile":"off"}`, float on all tiers. Rest `box-shadow`: 1440 **none**, 800 **shadow**, 390 **shadow**. This is the "restate" arm working: without it the tier-minimisation would leave 800/390 inheriting desktop's `box-shadow:none`. | 1440 in the same run (suppressed) vs 800/390 (not) — one render, one attribute set, three tiers. | PASS |
+| **2** | Hostile `headerFloatInset` and `backdropBlur` fall back; width stays valid | Stored `headerFloatInset.desktop` = `"1rem 2rem"` on all three sides, `backdropBlur:"10px 5px"`. Emitted custom properties are the **defaults**: `max(1rem,env(safe-area-inset-*))` (computed `max(1rem,0px)`); computed `top: 16px`; computed `width: 1120px` at 1440 and `358px` at 390 — **not `auto`**; rect 1440 `{top:16,left:160,width:1120}`, 390 `{top:16,left:16,width:358}`, right gap 16. `backdrop-filter: none` — no invalid declaration emitted. | Same attrs with legal values (`2rem` / `6px`): computed `top: 32px`, `backdrop-filter: blur(6px)`, `--sgs-header-height` 122px. The probe can see a valid value, so the fallback reading is not a blind null. | PASS |
+| **3** | `backdropBlur` applies WITHOUT float | No `headerFloat` at all, `backdropBlur:"6px"`: `backdrop-filter: blur(6px)` at 1440 **and** 390, and still `blur(6px)` at scrollY 600. Geometry untouched: `position: sticky`, `top: 0px`, full-width rect, radius 0, `--sgs-header-height` 90px, `data-sgs-header-float` absent. | The untouched baseline (blur unset) measures `backdrop-filter: none` — so blur is not ambient. | PASS |
+| **4** | Mega panel `max-height` under a pill keeps it inside the viewport | Floating pill + mega bar (`sgs/nav-bar-menu` ref 100). **1440×900:** pill bottom 133, panel `top 133 / bottom 618.98`, `--sgs-mm-panel-max-h` **751.00px** = 900 − 133 − 16. **768×900:** pill bottom 185, panel `top 185 / bottom 884`, max-h **699.00px** = 900 − 185 − 16, and here the panel IS clamped (`scrollHeight 969 > height 699`), so the assertion is load-bearing. `panel.rect.bottom <= innerHeight` holds at both: 618.98 ≤ 900, 884 ≤ 900. | **Empirical, not arithmetic:** at 768×900 the pre-fix value was re-derived from the panel's own `top:100%` origin (menu-item bottom **70**) → `900 − 70 − 16 = 814px`, written back onto the live panel: bottom became **999**, i.e. **99px past the viewport**. | PASS |
+| **4b** | Dropdowns unaffected (they must keep measuring from their own top) | Both dropdown panels at 1440×900: wrap top 70, `--sgs-mm-panel-max-h` **814.00px** = 900 − 70 − 16 — the naive/unchanged expression, as intended. | The mega panel in the same header measures 751, not 814. | PASS |
+| **5** | `--sgs-header-height` = top offset + height, clamped as a SUM | Floating pinned pill, computed `top: 16px`, height 89.58 → published **106px** (`rect.bottom` 105.58). With inset `2rem`: `top: 32px` → **122px**. Forcing a **negative** offset on the live header: `top:-20px` → published **70px** (= max(0, −20 + 89.58)); `top:-200px` (entirely above the viewport) → published **0px**; restoring `top:16px` republishes **106px**. | The old clamp-then-add formula was computed in the same evaluation from the same live values: it gives **90px** for `top:-20px` and **90px** for `top:-200px`. Measured ≠ old formula in both cases. | PASS |
+| **6** | Float-off tier emits no redundant desktop width cancel | `headerFloat:{"desktop":"off","tablet":"on","mobile":"on"}` — emitted instance CSS for the uid contains **no** unqualified inset-0/`width:100%` rule; the only pill geometry is inside `@media (max-width:1023px)`. Visual result at 1440 unchanged: `position: sticky`, `top: 0px`, no inset custom property, `--sgs-header-height` 90px; tablet 800 floats correctly (`top 16`, left 16, width 768). | `headerFloat:{"desktop":"on","tablet":"on","mobile":"off"}` **does** emit the cancel — `@media (max-width:767px){…--sgs-header-float-inset-*:0px;width:100%;}` — so the grep can see a cancel rule when one exists. | PASS |
+| **R1** | **REGRESSION — untouched header renders exactly as before** | Active header, no float/blur attribute: computed snapshot at 1440 and 390 (`rect`, `position`, `top`, `padding`, `border-radius`, `box-shadow`, `backdrop-filter`, `background-color`, `border`, `transform`, `max-width`, `margin-inline`, `--sgs-header-height`, `scroll-padding-top`, doc scroll widths, `data-*`) across all four scroll phases — **0 differing properties** vs the first pass's `A-baseline-{1440,390}.json`. `--sgs-header-height` **90px** at 1440, at 390, at scrollY 600 and at 1400. **0** console errors, **0** page errors. | The same probe reports `106px`/`122px`/`70px`/`0px` under the float states above, so the 90px reading is a measurement, not a constant. | PASS |
+| **R2** | **REGRESSION — first-pass pill geometry still holds** | Canonical pill re-measured: `position: sticky`, `top: 16px` at 1440/390/320; 390 left **16**, right gap **16**, width **358**; 320 left **16**, right gap **16**, width **288**; 1440 left **160**, right gap **160**, width **1120**, `max-width: 1120px`, `margin-inline: 160px/160px`; `backdrop-filter: blur(4px)` at all three; radius `8px`; `overflow: visible`; no horizontal scroll (`scrollWidth === clientWidth`: 1440/1440, 390/390, 320/320). Byte-identical to the first pass's `Bfinal-*` snapshots apart from the viewport height I passed. | — (this IS the regression control for the pill) | PASS |
+| **R3** | **REGRESSION — collapse boundary unmoved** | `headerFloatCollapse {"enabled":true,"breakpoint":768}`: **768** → still a pill (`top 16`, left 16, width 736, radius 8px, var 129px); **767** → collapsed (`top 0`, left 0, width 767, radius 0px, var 90px); **390** → collapsed. | 768 vs 767 in the same run is the boundary control. | PASS |
+| **E1** | Editor — the four float controls still render | `wp-admin/post.php?post=3648`, block selected via `core/block-editor`. Header behaviour ⋮ menu with float OFF lists 5 items + Reset all (no float sub-items). With `headerFloat` on it lists **Gap around the pill**, **Background blur**, **Full width on small screens** as well, and once enabled all four render as real ToolsPanelItems with controls: `Float as a pill` (2), `Gap around the pill` (5), `Background blur` (1), `Full width on small screens` (1). Canvas preview applied the inset (`left 24→40`, `margin-top 16px`). **0** console errors, **0** page errors. | The float-OFF menu listing (5 items, no sub-items) is the negative control for the conditional render. | PASS |
+| **E2** | Editor — Reset all writes the block.json defaults | Attributes dirtied first to `headerFloatInset {"desktop":{"top":"3rem","right":"3rem","left":"3rem"}}`, `backdropBlur "9px"`, `headerFloatCollapse {"enabled":true,"breakpoint":1024}` and read back. After **Reset all** on the Header behaviour panel: `headerFloatInset` = **`{"desktop":{"top":"1rem","right":"1rem","left":"1rem"}}`** (= `block.json` default), `headerFloatCollapse` = **`{"enabled":false,"breakpoint":768}`**, `backdropBlur` = **`""`**, `headerFloat` = **`{}`**. | The dirtied values were measured immediately before the reset, so "equals the default" is a transition, not a starting state. | PASS |
+| **E3** | Editor — post never saved | Post left dirty and abandoned; afterwards md5 `b6b19d932b8a3c7a7b52621e1d00b246`, `post_modified 2026-09-18 21:29:45`, max revision id still `3713`. | — | PASS |
+
+## Observations (no defect attributable to this commit)
+
+1. **`contrastSafe: force-solid` suppresses the shadow correctly but does NOT make the
+   background solid.** At 390 with `headerTransparent` on and `contrastSafe:{"mobile":
+   "force-solid"}` the resting background measured `rgba(0,0,0,0)`. **This is pre-existing
+   and unrelated to float** — proven by re-measuring with `headerFloat` removed entirely:
+   the background is still `rgba(0,0,0,0)` at 390. The same shape appears with an explicit
+   `headerTransparent:{"tablet":"off","mobile":"off"}` (check 1d): the shadow restates per
+   tier, the background does not. The cause is the transparent merge's cancel path (a
+   narrower tier resolved `off` emits no `background` cancel against the desktop rule's
+   `background:transparent !important`), i.e. `sgs_merge_tri_state_declarations`, not
+   `sgs_header_float_css()`. The QC fix's own subject — the SHADOW following the effective
+   transparent state — is correct at every tier measured. Worth its own ticket.
+2. `--sgs-header-height` is published rounded to the integer px (`Math.round`), so a pill at
+   `top:16px` with an 89.58px height publishes `106px` against a `rect.bottom` of 105.58.
+   Unchanged behaviour, recorded so the 0.42 delta is not re-investigated.
+
+## Not run
+
+| Item | Reason |
+|---|---|
+| 200% zoom (design doc P9), axe re-run (P10), JS-disabled fallback (P11), drawer `header` anchor under a pill (P7) | Outside this dispatch's brief, as in the first pass. The `1rem` (not px) inset P9 protects was re-confirmed present in the emitted value `max(1rem,env(safe-area-inset-top))`. |
+| A NEGATIVE `headerFloatInset` reaching the stylesheet | Not reachable through the attribute: `sgs_header_float_single_length()` rejects negatives, and `max(…, env(…))` would clamp one to 0 anyway. Check 5's negative-offset case was therefore driven by overriding the computed `top` on the live header, which is what the publisher actually reads. |
+| Pixel/screenshot diff of the shadow states | Computed `box-shadow` was read directly at each state; no pixel sampling was done, so nothing is claimed about the painted result beyond the computed value. |
