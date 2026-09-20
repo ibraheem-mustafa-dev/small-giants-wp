@@ -8,21 +8,20 @@ last_updated: 2026-09-20
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**NEXT SESSION (Bean-directed): READ FIRST, THEN RE-PROPOSE. Do not propose from memory.**
-Bean stopped the last session because designs were being proposed cold, and asked things that could be
-looked up. Order: (1) Spec 33 (ASAP): read it in full, then the code behind its business-data step
-(FR-33-14, which ALREADY saves phone/email/socials to the Site Info settings page but was never run on this
-draft and may not see values behind `{{ phone }}` bindings), then re-propose the Spec 33 upgrade so it handles
-runtime-template drafts AS WELL AS plain HTML. (2) Then the "missing sections" problem (Problem 1 below).
-(3) Then runtime `{{ }}` bindings. Bean's rules for all of it: **never change how Mama's Munches and other
-static drafts already behave** (this is an extension), Spec 33 saves GLOBAL DEFAULTS/SETTINGS only (not
-per-element styling), and the pipeline should recognise settings-type placeholders and insert what Spec 33
-saved. Details, reading list and task blocks: "Front F" below. Then the merged Spec 36+37 track.
+**Spec 33 upgrade: BUILT and verified on the Eye Care test site. Next: the missing homepage sections, then the raw `{{ }}` text.**
+Spec 33 is the step that turns a draft into a site's theme settings. It used to read almost none of a Claude Design
+draft's real design system. Now the Eye Care test site's live page has the draft's palette (22 colours on top of the
+framework's), its three accent sets saved (taupe in use, sage and navy kept), square corners, a 1440px layout, Playfair
+Display and Outfit loading properly, headings at weight 500, and 13 business settings (phone, email, address, hours,
+socials) saved to the Site Info settings page. Mama's Munches and the Indus drafts produce identical output before and
+after. Detail: decision D1120 and Spec 33 FR-33-15 to FR-33-17. Two independent reviews and a three-rater QC council
+found and fixed the faults listed there.
 
-**Where the Eye Care Birmingham clone really stands.** A real test website now exists (below) and shows the
-honest picture: the cloned page matches about 12% of the draft's content and 0% of its styling, shows 93 raw
-`{{ }}` placeholders to visitors, and 7 of the 8 homepage sections are missing. The pipeline's "42 of 74
-complete" was hollow. Spec 45 (classless FIELD resolution) is built but has no real pipeline input yet.
+**What is still wrong on the cloned page (not Spec 33).** It shows 59 distinct raw `{{ }}` placeholders, 7 of 8
+homepage sections are missing, its buttons paint transparent (even one told to be `#141414`), and nothing on the page
+shows the saved business details. Next, in order: (1) the missing sections (Task 3, a design gate with Bean, must leave
+Mama's unchanged), (2) the raw placeholders and inserting the saved values (Task 4 plus the last part of the Spec 33
+plan), then (3) the merged Spec 36+37 track.
 
 **Nav / header / footer.** Wave 1 (fixtures + verification) is closed. Wave 2 (capabilities) is
 part done: the drawer post type, trigger controls, scoped behaviours and lint gate are built; the
@@ -47,70 +46,50 @@ Phase 3's precondition (real WooCommerce catalogue data).
 
 ## THE FRONT — what to pick up next
 
-### Front F — Eye Care Birmingham clone on a REAL page (Bean-directed, do this first)
+### Front F — Eye Care Birmingham clone on a REAL page (Bean-directed)
 
 **Test site:** https://darkcyan-grouse-898606.hostingersite.com/eye-care-birmingham/ (page 11; WP 7.1.1 +
-WooCommerce; `build-deploy.py --target eye-care-test`; creds `.claude/secrets/eye-care-test.env`). Run a clone:
-`SGS_DEPLOY_SITE=eye-care-test`, `SSL_CERT_FILE` and `NODE_EXTRA_CA_CERTS` = the certifi `cacert.pem` (Python's
-Windows TLS store rejects every hostingersite.com host, proven), `--deploy-target page:11`, no
-`--skip-freshness-gate`, plus `--client eye-care-ward-end --page eye-care-birmingham --auto-section --mode draft
---skip-register --no-scaffold-new-blocks --sc-var-cache sites/eye-care-ward-end/sc-var-hints.json
---sc-var-min-confidence 0.0 --dom-shape-min-confidence 0.0 --classless-match --classless-auto-complete`
-(add `--resolve-js-content` for the flag-ON comparison). Verify "what a visitor sees" with Playwright `innerText`,
-NEVER a tag-stripping regex; compare runs by (selector, block) identity, never `boundary_id`; verify a stage
-claim by grepping the emitted output for one string it should have produced. Files shared between bash and python:
-relative names (Git Bash `/tmp` and Python `/tmp` are different folders).
+WooCommerce; creds `.claude/secrets/eye-care-test.env`). Run a clone: `SGS_DEPLOY_SITE=eye-care-test`, `SSL_CERT_FILE`
+and `NODE_EXTRA_CA_CERTS` = the certifi `cacert.pem` (Python's Windows TLS store rejects every hostingersite.com host),
+`--deploy-target page:11`, no `--skip-freshness-gate`, plus `--client eye-care-ward-end --page eye-care-birmingham
+--auto-section --mode draft --skip-register --no-scaffold-new-blocks --sc-var-cache
+sites/eye-care-ward-end/sc-var-hints.json --sc-var-min-confidence 0.0 --dom-shape-min-confidence 0.0 --classless-match
+--classless-auto-complete` (add `--resolve-js-content` for the flag-ON comparison). Verify "what a visitor sees" with
+Playwright `innerText`, never a tag-stripping regex; compare runs by (selector, block) identity, never `boundary_id`;
+verify a stage claim by finding one string it should have produced. Files shared between bash and python: relative
+names (Git Bash `/tmp` and Python `/tmp` are different folders).
 
-**Snapshot state:** `sites/eye-care-ward-end/theme-snapshot.json` is recreated from the draft by Spec 33 with
-`--merge-onto theme/sgs-theme/theme.json` (framework palette kept: 18 framework slugs + the draft's 3 guessed colours, which are advisory and stripped
-at push, so the test site has 18). The old palette files stay deleted (Bean: do not restore them).
+**Spec 33 upgrade (done).** Plan `plans/2026-09-19-front-f-spec33-upgrade.md`. Snapshot `sites/eye-care-ward-end/
+theme-snapshot.json` (regenerate: `theme-extractor/extract.py --client eye-care-ward-end --draft "<draft>" --merge-onto
+theme/sgs-theme/theme.json`; the extractor reads the README beside the draft, which is now tracked). Deploy order on a
+test site: `build-deploy.py --target eye-care-test --theme-only` first (it puts the framework `theme.json` back), THEN
+`push-theme-snapshot.py --client eye-care-ward-end --target u945238940@141.136.39.73 --target-domain <host> --yes`. Saved
+values: `sync-business-info.py --draft "<draft>" --target-domain <host> --push --map-out
+sites/eye-care-ward-end/site-info-placeholder-map.json`. A Claude Design snapshot from before the second freshness key
+will halt a clone until re-extracted (intended).
 
-**Real numbers now:** Stage 11.6 scores the draft served over HTTP: content 12%, css 0%. Live page: 93
-visible `{{ }}` placeholders (59 distinct), no ticker text, 7 of 8 homepage boundaries (b3-b9) missing.
+**Real numbers (before the snapshot changed; not re-measured):** Stage 11.6 content 12%, css 0%. Live page: 93 visible
+`{{ }}` placeholders (59 distinct), no ticker text, 7 of 8 homepage boundaries (b3-b9) missing.
 
-**Findings (each investigated; reports in `.claude/reports/2026-09-19-inv-*.md`, decisions.md newest entries):**
-1. *Problem 1, missing sections (biggest).* The "14 non-BEM" boundaries are classless sections gated on a hint (the
-   draft has ONE `class=`): 4 homepage sections (b5, b7, b8, b9), 8 other routed views, 2 chrome. Spec 44 §11 open
-   finding: proposed (A) admit any classless boundary as the container default, (B) only the default routed view
-   goes on the page, (C) fix the halt message + report lost text. NOT designed; needs a design gate; must not change
-   Mama's. Not proven: that the large sections convert cleanly.
-2. *Spec 33 (Bean's priority).* Pass B guessed 3 colours (one is a scrollbar hover colour), the real accent `--acc`
-   is set by JS at runtime and never read, an all-advisory push wiped the test site's palette (fixed via
-   `--merge-onto`), and `push-theme-snapshot.py` aborts on a brand-new site. Small fix proposed in the report
-   (skip scrollbar/hover/focus selectors in `roles.py`); the overlay-not-replace and custom-property read need design.
-3. *Runtime `{{ }}` bindings.* Stage 2 unbuilt. Kinds seen: site settings (`{{ phone }}`), page copy (`{{ h1 }}`),
-   cart/checkout UI state, styling values. Keeping the `<sc-for>` lands only item 0 of N; full conservation needs
-   container-level handling.
-4. *Built and pushed this session:* Stage 1 (loose text beside an element), the Stage 11.6 fix,
-   the test site + `SGS_DEPLOY_SITE`, the JS-resolver wrong-directory fix. Retracted: the "theme comment leak" (my regex artefact).
+**Open, in order:**
+1. *Problem 1, missing sections.* The "14 non-BEM" boundaries are classless sections gated on a hint (the draft has ONE
+   `class=`): 4 homepage sections (b5, b7, b8, b9), 8 other routed views, 2 chrome. Spec 44 §11: proposed (A) admit any
+   classless boundary as the container default, (B) only the default routed view goes on the page, (C) fix the halt
+   message and report lost text. NOT designed; needs a design gate; must not change Mama's. Not proven: that the large
+   sections convert cleanly. Reports: `reports/2026-09-19-inv-non-bem-sections.md`.
+2. *Runtime `{{ }}` bindings (Stage 2) and the last part of the Spec 33 plan.* Kinds: site settings (`{{ phone }}`), page
+   copy, cart/checkout state, styling values. Keeping the `<sc-for>` lands only item 0 of N. The saved-settings half is the
+   placeholder map above; the pipeline must read it and insert the values. Success: visible placeholders 93 -> 0 for content
+   bindings.
+3. *Cloned buttons paint transparent* (26 measured on the live page, including one with `colourBackground` `#141414`):
+   block or converter side, not the theme; investigate before Task 3 closes.
+4. Needs Bean directly: the 15 `classless-review` boundaries (`operator-review.html`), design-gate approvals.
 
-**Paste-ready prompt for the next session:** `.claude/prompts/2026-09-19-eye-care-spec33-and-missing-sections.md`.
-It is single-use: delete it (`git rm`) in the same commit as that session's first work.
-
-**Task blocks for the next session (orchestration: main thread Opus, inline; investigators are read-only):**
-
-- **Task 1 — Read, no proposing.** Read `specs/33-DRAFT-GLOBAL-STYLES-EXTRACTOR.md` (in full), the code behind
-  FR-33-14 (`scripts/sync-business-info.py`, `includes/class-sgs-site-info-admin.php`, `Sgs_Site_Info`,
-  `includes/class-sgs-site-info-rest.php`, the wiring in `orchestrator/upload_and_patch.py`), the extractor
-  (`scripts/theme-extractor/*.py`, `measure.js`), and the three reports `2026-09-19-inv-spec33-palette.md`,
-  `-inv-non-bem-sections.md`, `-inv-stage116-draft-side.md`. State what ALREADY EXISTS before what is missing.
-  Acceptance: a plain-English "what exists / what is missing" for Spec 33 that Bean can check. Inline, no subagent.
-- **Task 2 — Spec 33 upgrade design (`/brainstorming`, design gate with Bean).** Runtime-template drafts AND plain
-  HTML; global defaults/settings only; settings-type placeholders resolved to Site Info values the pipeline inserts.
-  Regression guard: Mama's Munches snapshot + page 3448 output must be byte-/identity-unchanged. Acceptance: Bean
-  approves the plan; then build with an independent `/qc` and a real-page check on the test site.
-- **Task 3 — Problem 1 design (`/brainstorming`, after Task 2).** Options A+B+C above; must leave Mama's unchanged
-  (identity-diff before/after on the Mama's clone). Acceptance: on the test page the homepage sections b3-b9 exist,
-  checked in Playwright `innerText`, not counts.
-- **Task 4 — Stage 2 bindings** after Tasks 2 and 3 (depends on both). Success metric: visible placeholders 93 -> 0
-  for content bindings.
-- Parallel: read-only investigators may run alongside (one directory each, main thread owns deploys and commits).
-- Needs Bean directly: the 15 `classless-review` boundaries (`operator-review.html`), design-gate approvals.
-
-Open tooling gaps (not assigned, own fixes): `push-theme-snapshot.py` on a brand-new site; other consumers of
-`args.mockup` after the Stage -2 reassign not audited for the D1112 class; `sites/eye-care-ward-end` theme-snapshot
-axis sidecars deliberately not restored. Front C residual: the AI-fallback tier (Spec 44 §11) stays parked (Bean).
-There is NO plan doc for Front F yet: write one (`/strategic-plan`) after the Task 2/3 design gates.
+**Small gaps (not assigned):** other consumers of `args.mockup` after the Stage -2 reassign not audited for the
+JS-resolver wrong-directory class; the primary button's hover text keeps the framework value (Spec 33 Known limits);
+`test_site_info_binding.php` has 11 failures that exist at HEAD; `measure.js` (332 lines) and `extract.py` (over 700) exceed
+the file-length guide; untracked under `sites/eye-care-ward-end/`: the 3 MB offline draft copy, `sc-var-hints.json`,
+`uploads/`, `CLAUDE.md` (Bean decides). Front C residual: the AI-fallback tier (Spec 44 §11) stays parked (Bean).
 
 ### Spec 36+37 merged track (after Front F)
 

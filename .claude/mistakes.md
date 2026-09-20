@@ -4,6 +4,13 @@
 <!-- ACTIVE — every entry carries its rule directly inline, never just a keyword + external link. Archive: memory/mistakes-archive.md. Cap stays ~30 entries; prune the oldest by date when it grows past that. -->
 
 ## Active entries (target ~30, prune oldest by date when over)
+### [2026-09-20] Assumed a runtime draft's source markup is what renders, and searched only for values I already expected
+- **Pattern key:** `source-markup-is-not-the-rendered-page-and-a-bounded-search-reports-its-bound`
+- **Rule:** for a runtime-template draft, check the RENDERED page before claiming what an element is (its classes, colours, buttons): the draft's runtime rewrites the markup. Census EVERY value first, then group it. Never filter by a list or a threshold chosen in advance, and read sibling component files too.
+- **What happened:** I said the draft's buttons were classless because its source has one `class=`; the runtime stamps a generated `scp*` class on every styled element, so the classless-button fix never fired until an implementer proved why. My colour census searched only greys, then only luminance above 0.6, and missed `#CFC8BE`, `#A39C90` (it lives in `Frame Card.dc.html`) and a whole family (text on dark). I also kept raising contrast, which Bean had not asked about ("why do you keep emphasising contrast?").
+- **Fix going forward:** measure the rendered DOM for any claim about a runtime draft; census all values across every file in the handoff folder before grouping; stay inside the scope Bean asked for and drop a side-track the moment it is called irrelevant.
+- **Feedback file:** [D1120](decisions.md) (D1120, 2026-09-20)
+
 ### [2026-09-19] Proposed a design and asked Bean questions before reading the governing spec and the code
 - **Pattern key:** `proposed-before-reading-the-spec-and-asked-what-could-be-looked-up`
 - **Rule:** before proposing ANY design for a spec'd subsystem, read the governing spec in full and grep the code for the capability. Before asking Bean a factual question (does X exist, where is Y), look it up. A cold proposal presented as a menu is the failure Bean named.
@@ -220,20 +227,6 @@
   on that specific file yourself before accepting or acting on the claim — dirty-tree evidence is
   ambiguous by construction, and a peer's confident read of it is still an inference, not an
   observation. Feedback file: [feedback_a_peers_claim_about_who_caused_a_change_is_not_verified_by_default.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_peers_claim_about_who_caused_a_change_is_not_verified_by_default.md)
-
-### [2026-09-04] A live page rendering "no CSS" for a fixed block may just mean the CSS was lifted elsewhere
-- **Pattern key:** `check-the-lifted-css-file-before-concluding-emitted-css-is-missing`
-- **Evidence:** grepped the raw fetched HTML of a live verification page for six blocks' expected
-  `::after`/`::before` background rules — zero found, for every single one, right after a deploy
-  that had just passed all payload checks. Nearly concluded the fix hadn't actually deployed.
-  SGS lifts every block's scoped `<style>` tag out of its rendered HTML on the front end
-  (`class-sgs-css-registry.php`'s `render_block` filter) into a content-hash-named external file
-  (`uploads/sgs-css/sgs-<epoch>-<hash>.css`) — the page's own inline `<style>` tags are only the
-  STATIC enqueued `style.css` content, never the per-instance scoped CSS. Fetching that external
-  file (its URL is in the page's own `<head>`) found every expected rule correctly present.
-- **Rule:** on this project, "the live page's raw HTML has no scoped `<style>` for this block" is
-  never evidence the CSS didn't emit — check for a lifted external `uploads/sgs-css/*.css` file
-  before concluding anything is broken. Grep that file, not the page body.
 
 ### [2026-09-13] `git stash` in a subagent recurred a second time on a shared worktree, this time from the orchestrator's own omission
 - **Pattern key:** `no-git-stash-in-subagents`

@@ -1,12 +1,12 @@
 ---
 doc_type: spec
 spec_id: 33
-spec_version: "1.3"
+spec_version: "1.4"
 project: small-giants-wp
 thread: header-footer-setup-pipeline (Part 1 of 2)
 title: "Universal Draft Global-Styles / Token Extractor"
 created: 2026-07-13
-last_verified: 2026-09-19
+last_verified: 2026-09-20
 status: complete
 references:
   - 26-SGS-GLOBAL-STYLES-AND-THEMING.md (the theming MODEL this FEEDS; FR-26-C derived-globals = a FORWARD CONTRACT, inert until Spec 26 Phase 3)
@@ -174,6 +174,12 @@ token-less Spectra scrape as VALIDATION, not calibration data. A draft where BOT
 nothing usable MUST emit the framework baseline UNCHANGED + a loud logged skip — NEVER a silent
 guessed theme, NEVER a partial-deploy. Parser failure / malformed CSS → HALT with a clear error, do
 not proceed to deploy.
+Pass B counts only RESTING selectors: rules that paint browser chrome or an interaction state
+(`roles.py::_SEL_NON_RESTING`: scrollbar, selection, placeholder, marker, hover, focus, active, visited)
+never vote for a role, the same rule Pass A applies. Pass B also OVERLAYS the base palette instead of
+replacing it: an advisory entry for a base slug replaces that entry in place and carries `_baseline_color`
+(the base hex), so a push restores it rather than deleting it. A guessed palette can never leave a live
+site with fewer slugs than the framework.
 **Done when:** a token-less synthetic draft's derived palette is marked `advisory` + does not deploy
 to live without confirmation; a draft with nothing usable emits the baseline + a logged skip (not an
 empty/guessed theme); Pass B never inverts a palette (role from context, FR-33-2).
@@ -244,6 +250,13 @@ go/no-go → `--yes` (SAFE_TARGETS enforced).
 value) — a key-set diff would miss a client changing a VALUE on a key that already exists (the commonest
 edit — nudging a brand colour) and silently overwrite it. A failed live fetch is LOUD, not silent; a failed
 backup ABORTS the push (`--force-no-backup` overrides; a genuinely fresh target still proceeds).
+Stripping an advisory palette entry (`push-theme-snapshot.py::apply_advisory_policy`) RESTORES its base colour
+(`_baseline_color`, or the framework `theme.json` value when none was saved) and deletes only a slug the framework
+does not have, so no push can empty the palette. A site with a `theme.json` but no `wp_global_styles` post yet is a
+fresh site: nothing to back up in that layer, the push proceeds and exits 0. A failed read of either layer (network or
+SSH error) is NOT a fresh site and aborts unless `--force-no-backup` is given. REST credentials for any site come
+from the `.claude/secrets/*.env` file whose `WP_URL_*` host matches the target, with the two earlier hard-coded
+sites as fallback.
 **Done when:** Mama's regenerates + passes the FR-33-3 reclone + Bean's eye BEFORE any other client;
 a `--rollback` restores the prior live payload; a hand-edited live layer triggers a warning pre-push.
 
@@ -254,6 +267,13 @@ the extractor MUST run + validate for the current draft BEFORE any block convers
 The `/sgs-clone` orchestrator MUST fail-closed if `theme-snapshot.json` was not produced/validated by
 the extractor for the current draft hash (reuse the existing `(client_slug, hash(css))` key as the
 freshness check). This changes the whole-pipeline run order — state it.
+`_sgsExtractor.draft_css_sha256` hashes only `<style>` blocks, which cannot see a Claude Design draft change:
+such a draft keeps its design in inline `style` and `style-hover` attributes, its script and a README beside it.
+For that kind of draft the snapshot also embeds `_sgsExtractor.draft_source_sha256`
+(`shared_utils.py::draft_source_sha256`), a hash of the style blocks, every inline and hover style value, the script
+and the README, with line endings normalised. `sgs-clone-orchestrator.py::_freshness_gate` halts when a Claude Design
+draft's snapshot lacks the key or it no longer matches. Static drafts carry no second key, so their snapshots and
+gate behaviour are unchanged.
 **Done when:** a `/sgs-clone` run with a stale/absent generated snapshot fails-closed with a clear
 message; a run after a fresh extraction proceeds.
 
@@ -293,9 +313,17 @@ failure never blocks a deploy).
   phone (`tel:`), socials (an `<a href>` to a known social domain; `#` placeholders skipped),
   copyright (the `©` line). Extracted by regex on the raw draft (the fields survive as literal text
   even inside JS template strings). Written **fill-if-empty** (never overwrites an operator's value).
-- **Tier 2 (DEFERRED, review-not-auto-write):** semantic guesses — tagline, address, opening hours —
-  are NOT auto-written; they need an operator-confirm/suggestions flow (parallels FR-33-5's advisory
-  Pass B). OPEN.
+  A Claude Design draft adds two sources (`business_info/` package; `sync-business-info.py` is a thin
+  command-line wrapper): the script's runtime data object (keys such as phone, address, Instagram, Google
+  link, matched through a vocabulary table) and labelled page text (an element reading Phone, Email, Address
+  or Hours followed by its value). Values are validated by shape: a value containing a template binding is
+  never stored, a social link needs an http or https scheme on a known host, and an hours range
+  (`Mon–Sat 9.30–17.30`) expands to the per-day keys. Labels inside a form, dialog, review summary or modal
+  are ignored. Precedence: script data object, then labelled text, then literal links.
+- **Tier 2 (DEFERRED, review-not-auto-write):** free-text guesses (a tagline, or an address or hours found
+  by guessing rather than by a declaration) are NOT auto-written; they need an operator-confirm flow
+  (parallels FR-33-5's advisory Pass B). OPEN. An address or opening hours a Claude Design draft DECLARES (in
+  its data object or beside an explicit label) is Tier 1.
 
 **Write channel:** the NEW capability-gated `POST /wp-json/sgs/v1/site-info`
 (`includes/class-sgs-site-info-rest.php`, `edit_theme_options`) — key-allowlisted to
@@ -310,15 +338,55 @@ placeholders → skipped; phone/hours/address absent → not touched); fill-if-e
 value; a forced write persists the full copyright string. The standalone script is proven end-to-end; the
 `upload_and_patch` wiring is statically verified (the draft glob resolves the Mama's mockup); a full-pipeline
 integration run is PARTIAL — pending a real `/sgs-clone` run.
+**Acceptance (met live on the Eye Care test site):** 13 settings written and read back from `sgs_site_info`
+(phone, email, address, copyright, WhatsApp, Instagram, Google link, Monday to Saturday hours); a map link, which has
+no Site Info key, is reported as unmapped. Phone is stored as the display form (`0121 729 8233`);
+`Sgs_Site_Info_Binding::prefix_url_for_key` strips everything but digits and a leading `+` for the `tel:` link, as the
+`sgs/business-info` block already did.
+**Runs for any draft location and target site:** `upload_and_patch.py --draft` (the orchestrator passes the ORIGINAL
+draft path) and the site named by `SGS_DEPLOY_SITE` (host from that site's `WP_URL_*`); the canary is the default only
+when no site is named. Credentials come from the matching secrets file. The pipeline never sends `overwrite`.
+**Placeholder map:** `--map-out` writes `sites/<client>/site-info-placeholder-map.json`, mapping each template binding
+that resolves to a saved setting (`{{ phone }}` to `phone` as text, `{{ phoneHref }}` to `phone` as a `tel:` link).
+The pipeline inserting the saved values in place of the bindings is NOT built (Spec 31, Stage 2 runtime bindings).
 **Depends on:** FR-33-11 (push moment / creds), Spec 37 FR-37-10 + FR-37-11 (business-info block consumer), Spec 36 (Site Info store).
+
+### FR-33-15 — Declared design outside `<style>` (Claude Design drafts) — BUILT
+
+**Behaviour.** A Claude Design draft declares its design system in three places: a README token table beside the draft, the script (accent sets chosen by a `data-props` enum, and a runtime data object) and inline `style` and `style-hover` attributes. FR-33-15 reads all three, cross-checks against the rendered page, and builds the snapshot from them. It is additive: it runs only when Pass A found no palette AND the draft has a readable README colour table or a variant set (`extract.py::_declared_design`). Every other draft takes the earlier path unchanged.
+
+**Rules.**
+- README (`declared_sources.py::read_readme_tokens`): a colour table is any table containing hex colours, whatever its column wording; role words come from the row's other cells. A table that cannot be read, and any row without a hex, is gap-logged in the trace (FR-33-9), never dropped silently.
+- Variant sets (`variant_sets.py`): an enum prop in `data-props` plus a script object keyed by its options. Inner key names are matched through a data table; an option counts if it maps an accent role. The rendered custom property (`facts["customProps"]`) says which option is active; when no rendered value confirms it, the accent entries are advisory.
+- Usage (`usage_census.py`, `usage_js.py`): colours are counted in inline styles, hover styles, style blocks and JS values that flow into a style attribute through a template binding. Content data (product swatches, reviewer colours) is not styling and is not counted. A declared colour is promoted when used in a family its role allows; an undeclared one only with at least 25 uses and 90% in one family.
+- The rendered value wins (FR-33-1): `surface` and `text` are checked against the rendered body (`declared_reconcile.py`); `primary` and `primary-text` come from the measured primary button, not from a README word (`presets.py`, `measure.js`).
+- A role the phrase table cannot place gets an ADVISORY proposal from usage rank (`usage_roles.py`), never a firm entry.
+- Vocabulary (role words, column words, variant key names) lives in data tables (`palette_vocab.py`, `declared_sources.py`, `variant_sets.py`). Extending one is a one-line change; a role missing from every table is proposed from usage or logged, not lost.
+
+**Done when (met on the Eye Care test site).** All 22 palette custom properties on the live page equal the snapshot at 1440px and 375px; no element paints the framework's old teal or amber; a README with different column and role wording yields a usable overlay (three wordings tested); Mama's Munches and Indus snapshots are byte-identical.
+
+### FR-33-16 — Site palette overlay — BUILT
+
+**Behaviour.** The palette is the base SGS palette (21 slugs, base order), overridden in place by declared and validated colours, plus a role-named addition only where no base slug fits (`text-label`, the small-label grey). It is never replaced or emptied, and it is generated once per site from the whole draft, never per page clone. Not palette: placeholder-tier README roles (faint, placeholder, disabled), third-party widget colours, and colours that drift between elements. They stay literal hex on the blocks that use them. Alternative accent sets are saved under `settings.custom.accentSets` (CSS variables, not picker swatches); the active set fills `accent`, `accent-text` and `accent-light`. `primary-dark` is derived from the final `primary`. Global defaults only: corner radius (square `0`, or an explicit pixel value into `borderRadius.medium`), `contentSize` and `wideSize` (wide never narrower than content), the measured heading weight (`heading_weight.py`), and button presets from measured buttons, including buttons that carry only runtime-generated classes (`GENERATED_CLASS_RE` in `measure.js`).
+
+**Done when (met).** The Eye Care snapshot has the 21 base slugs plus `text-label`; none of the placeholder or drifting greys appears in it; nothing per element appears in it.
+
+### FR-33-17 — Variable-font faces — BUILT
+
+**Behaviour.** A self-hosted variable font declares a weight RANGE and uses the latin subset (`font_weights.py`). The weight probe tries `100..900`, then the range the draft's own font link requests, then `400..900`, then `300..700`; the family is static only if all are refused. The draft's font link is parsed as a URL, so multi-word family names match. An already-bundled face (Mama's Fraunces) is untouched.
+
+**Done when (met).** On the Eye Care test site Outfit loads as `100 900` and Playfair Display as `500 700`; the H1 renders in Playfair Display at weight 500.
 
 ## Known limits
 
-- **Runtime-template drafts.** FR-33-14's `scripts/sync-business-info.py` regexes the raw draft for `mailto:`/`tel:`/socials/`©`, so on a `.dc.html` draft whose phone/email live behind `{{ phone }}` bindings it is expected to find nothing (unverified — read the script first), and it only runs when the pipeline is given `--push-theme-snapshot`.
-- **Pass B on a token-less `.dc.html` draft.** `roles.py::collect_colour_usages` does not skip scrollbar/selection/placeholder/hover/focus selectors, so a scrollbar-thumb hover colour can win a role (e.g. `surface-alt`) by hex-order tie-break; `measure.js` does not read custom properties, so an accent set at runtime by JS on a wrapper div (`--acc`) is never read.
-- **All-advisory push.** FR-33-5 strips every advisory entry at push, and the push REPLACES the theme palette, so pushing an all-advisory snapshot leaves the site with an EMPTY palette; the extractor's `--merge-onto theme/sgs-theme/theme.json` keeps the framework's slugs and is the safe form for a token-less draft.
-- **Brand-new site push.** `push-theme-snapshot.py` aborts on a brand-new site (server theme.json exists but no `wp_global_styles` post, so the FR-33-11 backup gate reads "backup failed") and exits 1 after a successful on-disk push.
-- **Runtime-template draft support is NOT BUILT.** Extending the extractor to handle BOTH plain-HTML drafts (Mama's, which must not change) and runtime-template drafts, saving GLOBAL DEFAULTS/SETTINGS only (not per-element styling values), has no design yet — see `.claude/reports/2026-09-19-inv-spec33-palette.md`.
+- **Saved values are not yet inserted.** The placeholder map is written but the pipeline does not yet replace `{{ phone }}`-style bindings with the saved Site Info values; that is the runtime-binding stage of Spec 31 (FR-31-26.6).
+- **Primary hover text.** The button hover diff omits keys equal to the rest state and the merge keeps the framework value, so the primary button's hover text is the framework's `#ffffff`, not the draft's off-white.
+- **README versus script.** They can disagree (Eye Care's navy accent); the script is what renders and wins. A README value is cross-checked against the render only for `surface`, `text` and `primary`.
+- **`text-label` is a new slug.** No framework block reads it; it serves the converter's colour snap and the colour picker.
+- **Vocabulary is data but finite.** A role no table names is proposed from usage (advisory) or logged.
+- **Draft-facing gaps outside this spec.** A cloned page still paints its template buttons transparent and shows raw `{{ }}` text; both belong to the cloning pipeline (Spec 31, Spec 44), not to global-styles extraction.
+- **File length.** `measure.js` (332 lines) and `extract.py` (over 700) exceed the file-length guide.
+- **Other hosts.** `push-theme-snapshot.py --snapshot-ssh-host` defaults to the canary's login, so a non-canary site works only when it shares that Hostinger account.
 
 ## Test strategy (holistic)
 
@@ -335,8 +403,11 @@ integration run is PARTIAL — pending a real `/sgs-clone` run.
 | FR-33-9 | grep no client literal; decorative→trace | every decl → slot or gap | conservation count | picker-not-flooded fixture |
 | FR-33-10 | hex-map byte-identical golden | extractor uses composed map | vs converter output | no converter regression |
 | FR-33-11 | backup-before-write + `--rollback`; diff-approve | Mama's only; rollback restores; drift warns | vs live payload | other-5 deferred behind reclone |
-| FR-33-12 | orchestrator fail-closed gate | stale snapshot → fail; fresh → proceed | vs `(client,hash)` key | — |
+| FR-33-12 | orchestrator fail-closed gate | stale snapshot → fail; fresh → proceed; changed inline colour or script accent → fail | vs `(client,hash)` and `draft_source_sha256` | static drafts carry no second key |
 | FR-33-13 | header/footer namespace reserved; token map = service | — | vs Spec 26/17 | colour-var entries re-pointed |
+| FR-33-15 | vocabulary in data tables; gate `_declared_design`; unreadable table gap-logged | Eye Care live page = snapshot; 3 README wordings | vs the rendered body and primary button | Mama's and Indus byte-identical |
+| FR-33-16 | overlay keeps all base slugs; only `text-label` added | placeholder and drifting greys absent | vs live custom properties | base-slug set unchanged |
+| FR-33-17 | probe order tested with a faked network | live faces `100 900` and `500 700` | vs Google's declared range | Mama's Fraunces face equals its golden |
 
 ## Website-credit recognition (Part 2 — header/footer pipeline)
 

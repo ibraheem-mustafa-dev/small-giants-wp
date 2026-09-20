@@ -6,6 +6,23 @@ under any name — see `.claude/reports/2026-08-12-doc-audit-register.md` §5).
 
 ---
 
+## 2026-09-20 (handoff prune) — 1-entry prune, oldest by date, moved verbatim
+
+### [2026-09-04] A live page rendering "no CSS" for a fixed block may just mean the CSS was lifted elsewhere
+- **Pattern key:** `check-the-lifted-css-file-before-concluding-emitted-css-is-missing`
+- **Evidence:** grepped the raw fetched HTML of a live verification page for six blocks' expected
+  `::after`/`::before` background rules — zero found, for every single one, right after a deploy
+  that had just passed all payload checks. Nearly concluded the fix hadn't actually deployed.
+  SGS lifts every block's scoped `<style>` tag out of its rendered HTML on the front end
+  (`class-sgs-css-registry.php`'s `render_block` filter) into a content-hash-named external file
+  (`uploads/sgs-css/sgs-<epoch>-<hash>.css`) — the page's own inline `<style>` tags are only the
+  STATIC enqueued `style.css` content, never the per-instance scoped CSS. Fetching that external
+  file (its URL is in the page's own `<head>`) found every expected rule correctly present.
+- **Rule:** on this project, "the live page's raw HTML has no scoped `<style>` for this block" is
+  never evidence the CSS didn't emit — check for a lifted external `uploads/sgs-css/*.css` file
+  before concluding anything is broken. Grep that file, not the page body.
+
+
 ## 2026-09-19 (handoff prune) — 1-entry prune, oldest by date, moved verbatim
 
 ### [2026-09-04] Re-check the decisions.md D-ceiling immediately before every write, not once per session

@@ -1,7 +1,7 @@
 ---
 doc_type: plan
 plan_id: front-f-spec33-upgrade
-status: IN PROGRESS
+status: DONE (parts 1 to 3; part 4 open, see Open items)
 governing_spec: 33-DRAFT-GLOBAL-STYLES-EXTRACTOR.md
 created: 2026-09-19
 approved_by: Bean (2026-09-19, scope and the palette-overlay widening, both approved in conversation)
@@ -53,6 +53,10 @@ Parts 1 to 3 now; part 4 (the pipeline inserting saved values in place of `{{ }}
 | Overlay hides a wrong guess | Derived entries stay advisory; the push restores the base value |
 | Font files written into the shared theme by extraction | Extractor is never run end to end by agents; flagged for a decision |
 
+## Result
+
+Built, reviewed twice (implementer reviews plus a three-rater QC council), fixed and verified on the Eye Care test site: decision D1120 and Spec 33 FR-33-15 to FR-33-17 hold the detail. Steps 0, A1 to A8, F1 to F6 and R done; V (live verification) and Q (council and docs) done. Two steps grew beyond the plan and are recorded in D1120: a freshness key for Claude Design drafts, and variable-font faces.
+
 ## Open items carried out of this plan
 
-Part 4 (pipeline consumes the placeholder map); Task 3 (missing sections); Task 4 (runtime bindings); untracked Eye Care font folders under `theme/sgs-theme/assets/fonts/`.
+Part 4 (the pipeline inserts the saved values in place of `{{ }}` bindings, using `sites/eye-care-ward-end/site-info-placeholder-map.json`); Task 3 (missing homepage sections); Task 4 (runtime bindings); cloned buttons painting transparent.
