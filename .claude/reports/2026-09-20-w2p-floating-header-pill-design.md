@@ -171,28 +171,26 @@ second positioning system.
 
 ### 3.2 The primitive fix (build this first)
 
-**Change `publishHeight` to publish the header's measured bottom edge rather than its height.**
+**`publishHeight` publishes the header's pinned bottom edge (its `top` offset plus its height) rather than its height alone.**
 
 ```
 publishGated() → publishHeight( isHeaderPinned( header )
-    ? Math.max( 0, header.getBoundingClientRect().bottom )
+    ? Math.max( 0, pinnedTopOffset( header ) + header.getBoundingClientRect().height )
     : 0 )
 ```
 
-Why this specific shape, and not a second token:
+`pinnedTopOffset` is the computed `top` in px (`auto` counts as 0). Why this shape, and not a second token
+and not the header's on-screen bottom:
 
-- For every header shipping today (`top:0`), `rect.bottom === height`, so the published number is
-  **byte-identical**. That is the regression test — the same discipline `FR-37-40` used when it
-  added the collapse path.
-- It keeps **one** load-bearing mechanism. Adding a second token alongside the first would leave
-  two overlapping fixes where neither can ever be safely removed
-  (`~/.claude/rules/prove-the-cause-before-fix.md`).
-- Every one of the seven consumers wants the bottom edge. None wants the height. The name stays;
-  only the docblock changes to state the semantic honestly.
-
-⚠ **`getBoundingClientRect()` is viewport-relative, so `rect.bottom` on a header that hide-on-scroll
-has translated upward goes negative.** The `Math.max( 0, … )` floor handles it, and it is the
-correct answer: a header that is off-screen obscures nothing.
+- For every header shipping today (`top:0`), offset 0 + height is exactly the old value, **in every
+  scroll state**, including while hide-on-scroll has moved the header off screen. That is the regression
+  test: the published number is byte-identical.
+- It does not read where the header happens to be on screen. `rect.bottom` would change with scroll
+  position, with a hide-on-scroll translation (negative bottom) and with any element above the header.
+- It keeps **one** load-bearing mechanism. A second token alongside the first would leave two overlapping
+  fixes where neither can ever be safely removed (`~/.claude/rules/prove-the-cause-before-fix.md`).
+- Every one of the seven consumers wants the bottom edge. None wants the height. The name stays; only
+  the docblock states the semantic.
 
 ### 3.3 Attributes
 
@@ -355,7 +353,7 @@ go — say so and I will sequence W2-n first.**
 
 | File | Change |
 |---|---|
-| `plugins/sgs-blocks/src/header-behaviours/view.js` | `publishHeight` / `initHeightPublisher` — publish `rect.bottom` floored at 0; docblock restated to say "bottom edge". |
+| `plugins/sgs-blocks/src/header-behaviours/view.js` | `publishHeight` / `initHeightPublisher` — publish the pinned `top` offset plus the header height, floored at 0; docblock restated to say "bottom edge". |
 | `plugins/sgs-blocks/src/blocks/site-header/block.json` | Declare `headerFloat`, `headerFloatInset`, `headerFloatCollapse`. |
 | `plugins/sgs-blocks/src/blocks/site-header/render.php` | Third entry in the `sgs_merge_tri_state_declarations()` call with Float > Sticky > Transparent precedence; per-tier pill rules (width/`margin-inline`/radius/shadow); emit `--sgs-header-float-inset-top` as a custom-property **value**; the collapse-breakpoint `@media` block. |
 | `plugins/sgs-blocks/src/blocks/site-header/edit.js` | Mount the float tri-state on the existing `ResponsiveTriStateControl`; inset via `ResponsiveControl`; the collapse toggle. **No new device switcher** (inspector-scan rule 25). |
