@@ -102,8 +102,9 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
   with the cause proven before the fix.
 - W3A-4: hover colour met: the hovered nav item's computed text colour equals its resting colour and the
   hover pill is `rgb(245, 194, 200)` (the draft's `--surface-pink`), read with `getComputedStyle` on
-  `header .sgs-nav-bar-menu__link` and its `::before` while hovered. Centring open: the gaps left and
-  right of the nav (logo to nav, nav to cart) are equal within 2px.
+  `header .sgs-nav-bar-menu__link` and its `::before` while hovered. Centring met: the gaps left and
+  right of the nav (logo to nav, nav to cart) are 225 and 224px on the live homepage, and no SGS surface's
+  logo moved (`reports/visual-diff/responsive-logo-2026-09-20.md`, addendum).
 - W3A-5: met. The nav QA fixtures render inside `sgs/site-header` (`document.querySelector('.entry-content header.sgs-site-header .sgs-nav-bar-menu')`
   is non-null on pages 3723, 3733, 3734 and 3735), and the drawer fixtures show submenus and a mega item
   (`python plugins/sgs-blocks/scripts/nav-qa/build-header-fixtures.py --list`).

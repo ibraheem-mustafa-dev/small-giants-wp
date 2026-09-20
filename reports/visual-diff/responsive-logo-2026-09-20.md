@@ -3,6 +3,8 @@
 ```
 verdict: PASS
 first_paint_capture_passed: true
+intent_capture_passed: true
+source_sha: c86fbc8459752a57
 blocks: responsive-logo, site-info (admin)
 target: sandybrown-nightingale-600381.hostingersite.com
 date:   2026-09-20
@@ -64,3 +66,32 @@ which round-trips the rest of the store untouched — proven by the md5 equality
 - `header-site-info-logo-1440.png` — header element with the Site Info logo active (tier 2)
 - `header-restored-custom-logo-1440.png` — header element after restore (tier 3, baseline)
 - `site-info-logo-picker-modal.png` — the Site Info admin page with the media modal open
+
+---
+
+## Addendum: the block adds no alignment margin (W3A-4, FR-36-22), commit `1828c2830`
+
+Intent under test: on the Mama's Munches header the nav is centred between the logo and the cart, the
+logo stays where it was, and no other SGS surface moved. Deployed with
+`build-deploy.py --target sandybrown --blocks-only` (exit 0, motion-qa probes green), then read live in
+the real Chrome on this PC with cache-busters (`?nc=`).
+
+| Reading (live, 1440 wide, clientWidth 1425) | Before (deleted-rule experiment on the live page) | After the deploy |
+|---|---|---|
+| logo, nav, cart x-ranges | 114-297, 730-1254, 1270-1314 | 112-295, 520-1044, 1268-1312 |
+| gap logo to nav, gap nav to cart | 433 and 16 | 225 and 224 |
+| centre of the nav items, centre between logo and cart | 992 and 783 | 782 and 782 |
+| logo `margin-inline` | `0px 417.425px` | `0px` |
+
+Six container types on `qa-logo-pin` (page 3774), offsets from the container's left edge, after the deploy:
+flex-start logo 0 with the nav and cart packed after it; flex space-between logo 0, nav 736-844, cart 1397-1440;
+flex centre the whole row centred (logo 529); grid logo 0; flow logo 0 and constrained logo 215, both with core's
+own `.alignleft` float and a 32px inline-end margin (core layouts only, which the SGS blocks do not use).
+
+SGS surfaces on the homepage: header logo margin 0 and left 0 in a flex row; footer logo margin 0, no float, left 0
+in a block-flow container; drawer logo margin 0, left 0 in a column flex with `align-items: flex-start`.
+
+Not tested live: `header-centred` (its logo, the only child of a `justifyContent: center` row, now centres, which
+its description says is the intent) and a drawer with `drawerAlign: center` (the logo now obeys it). Both follow
+from the container measurements above and are recorded as intended changes in the design gate
+(`.claude/reports/2026-09-20-logo-left-pin-design.md`).
