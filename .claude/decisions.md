@@ -12,6 +12,8 @@
 
 **Columns signed off (Bean delegated the sign-off to a review).** A completeness review against the measured data and an adversarial review of the table design produced 14 typed columns over three tiers, with present/absent/not-applicable per surface, measurement rules with a 2px tolerance and a static/interaction-capture/source-only tag. The measured data covers the open drawer only, for eight references (studionamma, buck, dogstudio, fantasy, lamalama, lusion, wearecollins, resn); the header shell, bar, dropdown, mega panel and footer are unmeasured for all, so W3B-2 and W3B-3 are a fresh capture. The centring clause moved from W3A-2 to W3C-1.
 
+**Roster extended (Bean).** The two Claude Design drafts Bean built, Halcyon Mega Menu and Indus Foods Mega Menu (header, nav bar, drawer and mega menu setups), join the table (W3B-3a, rendered locally, one row set per variant) and the Wave 4 roster (13 clones, 12 without resn). Reading their source shows the mega panel is a capped-centred card whose width differs per panel (Indus 300, 620 and 1080px; Halcyon 1120px), so "mega panel takes the header width" is one anchor rule among several and W3C-1 follows the table.
+
 **Open.** The hover-underline cause (W3A-3) is unproven. Where the references keep the burger and close control, and whether any drawer omits a top close row, is read from the table, not assumed.
 
 ## D1132 [ROUTINE] — Draft standardisation council: close the wiring gaps in existing code first; a small draft standard only for what code cannot derive; a deterministic second layer (2026-09-20)

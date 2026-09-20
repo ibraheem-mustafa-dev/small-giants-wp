@@ -33,23 +33,26 @@ headers/footers automatically (Wave 5).
 
 **The header is the partial-width thing.** A capped-width or floating header holds the logo, the nav,
 the cart, the CTA and any message together as one centred surface; dropdown and mega panels take
-their width and position from that header. The architecture is built from the requirements table,
+their width and position from that header (the table records which rule each design uses). The architecture is built from the requirements table,
 never from guesses: Wave 3B measures the references, Wave 3C builds what the table says, Wave 4
 proves it.
 
-**Done means:** every reference on the clone roster (§ Clone roster — 10 clones, 11 with resn) cloned faithfully
+**Done means:** every reference on the clone roster (§ Clone roster — 12 clones, 13 with resn) cloned faithfully
 with zero hardcoding, Bean's eye signed off per clone, every preset extracted, and the clone walker
 consuming the proven system.
 
 ## Clone roster (the definitive list — Gate 5 counts against THIS)
 
-**10 clones** = studionamma (first) · buck · dogstudio · fantasy · lamalama · lusion ·
-wearecollins · **Away · ButcherBox · rabbit.tech** (these three are owed a teardown first, W3B-3).
-**resn** (WebGL) joins as the **11th clone** unless the W3B-3 teardown finds an effect that none of
+**12 clones** = studionamma (first) · buck · dogstudio · fantasy · lamalama · lusion ·
+wearecollins · **Away · ButcherBox · rabbit.tech** (these three are owed a teardown first, W3B-3) ·
+two designs Bean built in Claude Design, each with a header, nav bar, drawer and mega menu setup:
+**Halcyon Mega Menu** (`sites/Mega-menu design/Mega Menu.dc.html`) and **Indus Foods Mega Menu**
+(`sites/Indus Foods Mega Menu Design/Indus Foods Mega Menu.dc.html`, the client design behind W5-c).
+**resn** (WebGL) joins as the **13th clone** unless the W3B-3 teardown finds an effect that none of
 the four motion tiers (V, G, H, W) can express: Spec 38 is fully built, including the Tier W effects
 (surface treatment, flowing gradient), so its effects are inside the boundary in principle and the
 teardown only has to confirm it effect by effect. **Warm** is not on the roster.
-Gate 5 = **11/11** (10/10 if resn is excluded by the teardown).
+Gate 5 = **13/13** (12/12 if resn is excluded by the teardown).
 
 ---
 
@@ -64,7 +67,7 @@ Gate 5 = **11/11** (10/10 if resn is excluded by the teardown).
   exact path · Spec 37 §1.2 both-specs-same-commit rule · nothing renders differently until the
   studionamma gate (gate §4.3).
 - **Success criteria (measurable):** per-wave gates below; final = FR-37-23 acceptance (live FRs +
-  never-overflow on every live site + no inline + Bean's eye) + every roster clone accepted (11/11, or 10/10 if resn is excluded).
+  never-overflow on every live site + no inline + Bean's eye) + every roster clone accepted (13/13, or 12/12 if resn is excluded).
 - **Scope boundary (explicitly NOT included):**
   - Spec 36 Phase 3 (inventory B4): block-menu support, Nav Health, AI-builds-nav, conditional
     menus, WC category mega, RTL, import/export → **named stage: Spec 36 Phase 3, after this track**.
@@ -204,7 +207,8 @@ transforms) or, where that cannot work, read from the site's code and marked `so
   narrower with equal left and right inset → capped (record px); with a radius and a top inset →
   floating. Panel anchor: `|panelCentreX − itemCentreX| ≤ 2px` → item-centred; `|panelLeft − itemLeft|
   ≤ 2px` → item-left; `panelWidth ≥ headerWidth − 2px` → header-wide. Centred on the viewport:
-  `|surfaceCentreX − viewportCentreX| ≤ 2px`.
+  `|surfaceCentreX − viewportCentreX| ≤ 2px`. A panel with a fixed width centred on the header or
+  viewport is `capped-centred` (record the px, and whether it differs per panel).
 - Every column is tagged `static`, `interaction-capture` or `source-only`, and the cell records which
   method produced it.
 - Colours are recorded as hex and sizes as px so clustering compares values, not prose.
@@ -222,7 +226,8 @@ of the table design).**
 6. Item typography and scaling mode — size, weight, case, fluid, stepped or fixed.
 7. Item states — hover treatment, active or current indicator, ornament (index, glyph, thumbnail,
    spacer), separators, treatment of an item that owns a panel.
-8. Secondary-block roster — kind, position, presence per tier.
+8. Secondary-block roster — kind, position, presence per tier, and content that reacts to hover (a
+   preview pane that follows the hovered link).
 9. Trigger and close — kind, element semantics and accessible name, burger style; the close button's
    style, position and icon; replaces the burger in place or is separate; whether a top row holds it;
    the animation between the two states; magnet.
@@ -244,7 +249,8 @@ example blur on a header and on a drawer) becomes one family.
 |---|---|---|---|---|
 | W3B-1 | Columns signed off | the column list above, after the completeness and adversarial reviews | DONE | YES |
 | W3B-2 | Fresh capture for the 8 references with drawer data (studionamma, buck, dogstudio, fantasy, lamalama, lusion, wearecollins, resn) | header shell, bar, dropdown, mega, footer and interaction cells captured live at three tiers; drawer cells cross-checked against the existing JSON; one agent per reference, disjoint output files | 3h (5h) | YES |
-| W3B-3 | Fresh capture for Away, ButcherBox and rabbit.tech (every surface); map each resn effect to a Spec 38 tier and confirm its admission (10 vs 11); `labels-<site>.json` for the three | measured rows; all 11 roster references measured | 1.5h (3h) | YES |
+| W3B-3 | Fresh capture for Away, ButcherBox and rabbit.tech (every surface); map each resn effect to a Spec 38 tier and confirm its admission (12 vs 13); `labels-<site>.json` for the three | measured rows | 1.5h (3h) | YES |
+| W3B-3a | The two Claude Design drafts (Halcyon Mega Menu, Indus Foods Mega Menu): render each locally with its own runtime files, measure the rendered DOM at three tiers, and record each variant as its own rows (Halcyon: Columns, Cards, Minimal × Light, Dark; Indus: Sectors as Cards and as List). The source is Bean's, so it is read as well as measured; its runtime expands loops and stamps classes, so the render, not the source, is the measured truth | measured rows for both designs; all 13 roster references measured | 1h (2h) | YES |
 | W3B-4 | Cluster into capability families | each family: name, the references that need it, the SGS block attribute that covers it or none, verdict (covered, gap, conflicts with something built) | 1h (2h) | YES |
 | W3B-5 | Bean signs off the family list | the list of families Wave 3C builds and the order | Bean | YES |
 
@@ -257,7 +263,7 @@ drawer anchoring, force-solid) is reopened by a family, not patched on its own.
 
 | ID | Unit | Output | Est (taxed) | CP |
 |---|---|---|---|---|
-| W3C-1 | Header width model | the header is the partial-width surface, centred against the viewport and holding logo, nav and actions together; dropdown panels align to their parent item and mega panels take the header's width; checked against the floating pill in `site-header` | from the table | YES |
+| W3C-1 | Header width model | the header is the partial-width surface, centred against the viewport and holding logo, nav and actions together; dropdown and mega panels take the anchor and width rule the table records (item-centred, header-wide, or capped-centred with a per-panel width); checked against the floating pill in `site-header` | from the table | YES |
 | W3C-2 | Trigger and close behaviour | the burger is replaced in place by the close control where the references do it; the drawer omits a separate top close row where they omit it | from the table | YES |
 | W3C-3 | Drawer placement and sizing | side, width and anchor from the model, the trigger-anchored clamp (page 3699), and the force-solid tier background (the off value is the header's own resting background) | from the table | YES |
 | W3C-4 | Remaining families | one unit per family from W3B-4 | from the table | YES |
@@ -281,7 +287,7 @@ Wave 4 clones consume the families without per-reference code.
 |---|---|---|---|---|
 | W4-a2 | **Substitution policy signed BEFORE W4-b** | one-page policy Bean agrees: licensed font → named nearest match recorded in the DP5 homes table; copyrighted imagery → same-crop placeholder; neither counts as a capability gap | 15m (30m) + Bean | YES |
 | W4-b | **studionamma 100% clone** — header + drawer + footer; content, imagery, colours, typography, motion, positioning, mobile (CTA→drawer stresses DP4/DP5) | per-property DP5 homes table reviewed at gate; DP7-clean harness evidence; **Bean's eye (R-31-13)** | 2 sessions (3) — the floor, incl. one expected loop-back | YES |
-| W4-c | Remaining roster clones (buck, dogstudio, fantasy, lamalama, lusion, wearecollins, Away, ButcherBox, rabbit.tech; resn) — only after W4-b ACCEPTED | accepted clones; every capability gap = defect filed against waves 1–3, never a trimmed reference. **Termination rule: an effect a Spec 38 tier (V, G, H or W) can express is built with the Spec 38 effects; an effect the built Spec 38 effect does not yet match is a defect against that FR; an effect no tier can express comes back as a Bean trim/exclude decision — it never loops back silently** | 5 sessions (8) | YES |
+| W4-c | Remaining roster clones (buck, dogstudio, fantasy, lamalama, lusion, wearecollins, Away, ButcherBox, rabbit.tech, Halcyon Mega Menu, Indus Foods Mega Menu; resn) — only after W4-b ACCEPTED | accepted clones; every capability gap = defect filed against waves 1–3, never a trimmed reference. **Termination rule: an effect a Spec 38 tier (V, G, H or W) can express is built with the Spec 38 effects; an effect the built Spec 38 effect does not yet match is a defect against that FR; an effect no tier can express comes back as a Bean trim/exclude decision — it never loops back silently** | 5 sessions (8) | YES |
 | W4-d | Preset extraction | each accepted clone → header preset + footer preset + drawer starter; invented fills: Utility commerce, Overlay hero-contrast, Directory footer | 1h/clone (2h) | no |
 | W4-e | Starter-set narrowing | drop `centred/minimal/full`; keep `scratch` + 3 search variants | 30m (1h) | no |
 | W4-f | Contrast on all 8 client palettes per preset — **automated**: extend the DP7 contrast sweep to iterate `theme-snapshot.json` palettes (harness extension counted here) | palette sweep passes, machine evidence | 1.5h (3h) | no |
@@ -296,7 +302,7 @@ Integration = presets restyle under each client's theme-snapshot tokens (DP5 hom
 |---|---|---|---|---|
 | W5-a | FR-37-22 emittable-by-construction + header/footer clone walker ("Spec 33 Part 2") | pipeline clones header/footer through the walker; the roster clones become regression fixtures — includes authoring + review of the Spec 33 Part 2 section itself (Spec 33 holds Part 1 only; a spec must exist before the walker is built). `section_passes.py::SKIP_TOP_LEVEL_TAGS` still skips header/footer/nav | 2.5 sessions (5) | YES |
 | W5-b | FR-37-23 final acceptance | live FRs + never-overflow on every live site + no inline + Bean's eye | ½ session (1) | YES |
-| W5-c | 36-18 Indus branded-header cutover (cloning output) + 36-25 structured-data-once + 36-26a discoverability verify | branded Indus header via the pipeline; schema emitted once; contract verified — includes one client feedback round on the branded Indus header | 1.5 sessions (3) | no |
+| W5-c | 36-18 Indus branded-header cutover (cloning output) + 36-25 structured-data-once + 36-26a discoverability verify | branded Indus header via the pipeline, from the Indus Foods Mega Menu design (its inline-style Claude Design source has no SGS-BEM classes, so W5-a's input contract decides how it enters the pipeline); schema emitted once; contract verified — includes one client feedback round on the branded Indus header | 1.5 sessions (3) | no |
 
 ### Dependency graph + critical path
 
@@ -340,7 +346,7 @@ in-session reminder (Rule 7: in-session reminders die).**
 
 **Conversion: 1 session = 5 focused hours.** Remaining effort by wave (LOW hours, from the unit
 tables): Wave 2 open units per the table above · Wave 3 ≈ 3.5h + Bean session · Wave 3A ≈ 5h · Wave 3B ≈ 6h + Bean sign-off · Wave 3C sized at W3B-5 · Wave 4 ≈ 48h
-(≈ 9.5 sessions; W4-d is 1h × 10 clones) · Wave 5 ≈ 22h (≈ 4.5 sessions). The clone waves are the
+(≈ 10.5 sessions; W4-d is 1h × 12 clones) · Wave 5 ≈ 22h (≈ 4.5 sessions). The clone waves are the
 biggest single driver: pattern-authoring and clone work runs 2–4× optimistic on this project.
 Schedule risk: a W4-b loop-back blocks W4-c entirely — the serialisation is deliberate but must be
 visible.
@@ -390,7 +396,7 @@ AFTER: W3A-1..5  · PASS: each fix reproduced then fixed inside a real header wi
 QC and docs steps of the checkpoint protocol done  · TYPE: auto-gate + /qc-council
 
 GATE 3B: requirements table signed
-AFTER: W3B-1..5  · PASS: all 11 roster references captured fresh at three tiers; every row in one family; the
+AFTER: W3B-1..5  · PASS: all 13 roster references captured at three tiers; every row in one family; the
 adversarial review of the family list answered; Bean has signed the list  · TYPE: go/no-go (Bean)
 
 GATE 3C: architecture harmonised
@@ -406,7 +412,7 @@ TYPE: go/no-go (Bean)  · READINESS: computed at the time; do not pre-assert
 in-session)
 
 GATE 5: Track acceptance
-AFTER: W4-c..f + W5  · PASS: FR-37-23 in full; 11/11 accepted (10/10 if resn is excluded); presets
+AFTER: W4-c..f + W5  · PASS: FR-37-23 in full; 13/13 accepted (12/12 if resn is excluded); presets
 extracted; starter-set narrowing done; walker regression fixtures green
 TYPE: go/no-go (Bean)  · READINESS: computed at the time from the 4-component formula — do not
 pre-assert
