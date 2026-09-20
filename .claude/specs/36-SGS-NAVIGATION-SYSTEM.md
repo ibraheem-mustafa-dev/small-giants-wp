@@ -29,8 +29,7 @@ the nav blocks AND the utility pieces the nav composes with (cart / search / soc
 **Plain English.** The menu is a block you drop on the header. On desktop it's a bar; some items open a
 small dropdown, some a rich "mega" panel. You build a mega panel in its own findable screen (drag any blocks
 in) and **attach it the way you already know — add it to your menu in Appearance → Menus, like adding a
-page.** On a phone the bar collapses to a burger that opens a drawer (a "More" overflow and a bottom tab
-bar are planned collapse modes — FR-36-8). Every link is real + visible to Google + AI search.
+page.** On a phone the bar collapses to a burger that opens a drawer (FR-36-8). Every link is real + visible to Google + AI search.
 
 **The real differentiator (a Phase-3 build): AI builds your whole navigation from a sitemap.** The emit path
 already writes every nav primitive, so generating a complete best-practice menu + mega panels from a site's
@@ -91,7 +90,7 @@ column here would drift against the code.
 | **FR-36-6** | 3 | **The drawer — chrome top row + one InnerBlocks body; the `sgs_drawer` CPT** |
 | FR-36-27 | 3 | Burger trigger presentation |
 | FR-36-7 | 3 | Shared nav plumbing utility |
-| FR-36-8 | 3 | Responsive collapse — burger→drawer (built), priority+More and bottom-tab-bar (planned), per-device visibility |
+| FR-36-8 | 3 | Responsive collapse — burger→drawer, per-device visibility |
 | FR-36-24 | 3 | Per-device content + settings (ownership split with FR-36-8) |
 | FR-36-9 | 3 | Nav → header decoupling (one-directional) |
 | FR-36-9a | 3 | Referential integrity + orphan lifecycle |
@@ -591,17 +590,8 @@ reachable on the target page). "Crawlable without JS" ≠ "every panel opens wit
 - **Device-neutral language is binding.** Burger menus run on tablet and desktop, not just phones. Anything
   operator-facing says "menu panel" / "Below the collapse size…", never "mobile menu" / "on a phone" /
   "mobile drawer" — phone-framing mis-describes `Always` and `Tablet`.
-- **Three operator-chosen collapse modes:**
-  (a) **burger → drawer — BUILT.**
-  (b) **priority+ "More" overflow — NOT BUILT (planned).** Items that don't fit fold into a "More ▾"
-  disclosure (per-item priority attribute; the overflow is measured client-side via `ResizeObserver`;
-  **with no JS all items simply show/wrap**).
-  (c) **bottom-tab-bar — NOT BUILT (planned).** A fixed mobile bar of 3–5 icon+label items in the thumb zone
-  (safe-area-inset for notched phones), active-state highlighted.
-  The operator picks per site. `sgs/nav-bar-menu` has no attribute or code for (b) or (c) — the only
-  mention is a comment in `plugins/sgs-blocks/src/blocks/site-header/style.css`
-  (`git grep -n -i "bottom-tab\|priority+" -- plugins/sgs-blocks/src plugins/sgs-blocks/includes`). Resolve
-  the overlap with the floating-UI bottom bars (`P-FLOATING-UI-BOTTOM-BARS`, Spec 18) before building (c).
+- **One collapse mode: burger → drawer — BUILT.** A reference's own mobile design is cloned through the
+  drawer's variants and settings, not through further collapse modes.
 - **Burger→drawer association:** `sgs/nav-bar-menu` carries `drawerRef`, a `number` — the id of the
   `sgs_drawer` post its burger opens (0 = the site's Active drawer), resolved to the drawer's element id
   (→ `aria-controls`) by `Sgs_Drawer_Render::drawer_ref_for()`. A picked post that is missing, unpublished
@@ -1228,13 +1218,12 @@ utility pieces (§4) + cross-cutting FRs are phased INTO this plan so a solo bui
 - **Phase 1 (MVP) — Mama's end-to-end (classic menu):** flat bar + burger (`sgs/nav-bar-menu`) →
   `sgs/nav-drawer` full-screen modal accordion (`sgs/nav-drawer-menu` inside it) + the shared utility +
   converter-emit of those + FR-36-17 crawlability; **plus the cart badge (`role="status"`, FR-36-19) + logo
-  basics (FR-36-22).** NO mega CPT, NO safe-triangle (a flat bar has no submenus), NO priority+/bottom-tab,
+  basics (FR-36-22).** NO mega CPT, NO safe-triangle (a flat bar has no submenus),
   NO mini-cart drawer. **Gate-1** (Mama's live + drawer a11y + crawl + Bean's eye) is the pre-registered
   exit.
 - **Phase 2 — Indus + rich desktop + mobile modes + the pieces:** the `sgs_mega_menu` CPT + native (classic)
   attach + real-position render + mobile-in-drawer (plain link default; full panel NOT BUILT — FR-36-6);
-  safe-triangle + hover-intent; the collapse modes (burger built; priority+ and **bottom-tab-bar** NOT
-  BUILT — FR-36-8); **the utility pieces — search, social, business-info, and the cart mini-cart
+  safe-triangle + hover-intent; the collapse mode (burger→drawer, built — FR-36-8); **the utility pieces — search, social, business-info, and the cart mini-cart
   (FR-36-19..23).** **Gate-2** = the full §8 incl. the Indus mega. **After Gate-2 passes, before Phase 3:**
   update **Spec 33 Part 2** with the true header/footer setup (the clone pipeline comes after the nav is
   built + tested — FR-36-15).
@@ -1457,7 +1446,6 @@ store, not this one. So the claim is: **one Site-Info entry is the default sourc
 | **Block-editor `sgs_mega_menu` link search (Phase 3 spike).** Does the block Nav editor surface the CPT in link search? | Framework | Phase 3 |
 | **Partial-width drawer under a hide-on-scroll header.** Needs a published hidden-state signal from Spec 37 (FR-36-9). | Spec 37 owner | Before that combination is built |
 | **Drawer defects proven live:** icon-list text is invisible on the two dark-`footer-bg` drawer variants (`P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER`); `drawerAlign: 'center'` does not centre the menu list (`P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU`). | Framework | Before the drawer variants are re-presented |
-| **Bottom-tab-bar overlap.** Reconcile FR-36-8(c) with the floating-UI bottom bars (`P-FLOATING-UI-BOTTOM-BARS`, Spec 18) before building either. | Framework | Before FR-36-8(c) is built |
 
 ## 13. Sources
 Research: `.claude/reports/2026-07-18-P2.5-*` (phase-1 research + QC), `.claude/reports/2026-07-19-P2.5-*`

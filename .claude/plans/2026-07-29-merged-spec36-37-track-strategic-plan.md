@@ -109,17 +109,16 @@ canary for later waves.
 | W2-j | FR-37-15 behaviours → scoped `#uid` CSS | DONE | Scoped emission via `sgs_emit_tier_rules()`; no body classes | — | no |
 | W2-k | FR-37-16 container attrs flat → object | DONE | `site-header` / `site-footer` padding, margin, maxWidth, contentWidth, minHeight, contentBandPadding are objects | — | no |
 | W2-l | 36-22 logo source resolution | DONE | Site Info `logo` (media-library attachment ID) is tier 2 between the block's own image and the core custom logo (`includes/class-sgs-site-info-logo.php::resolve_id`); Organization JSON-LD follows the same chain; saving Site Info purges the page cache. Live-verified with fall-through controls (`reports/visual-diff/responsive-logo-2026-09-20.md`) | — | no |
-| W2-m | 36-8 modes (b) priority+More, (c) bottom-tab-bar | DESIGN WRITTEN, awaiting the design gate | `reports/2026-09-20-w2m-collapse-modes-design.md`: Spec 18 owns a shared bottom dock and Spec 36 registers into it; priority+More and the tab bar are separate slices (about 6.5h in full, about 2.5h for priority+More alone). Needs Bean's decisions before any build | 6.5h (or 2.5h) | no |
 | W2-n | Scroll-state shadow on the pinned header | DONE | `site-header` attributes `shadowScrolled` and `shadowScrolledColour`; nothing paints when unset. Live-verified at 1440px and 375px including reduced motion and a non-sticky header (`reports/visual-diff/site-header-2026-09-20.md`) | — | no |
-| W2-o | Payment-logo SVG set | NO HOST DEFINED, awaiting Bean | No spec, pattern or block asks for payment marks; WooCommerce already renders an accepted-methods row on the cart page. `reports/2026-09-20-w2o-payment-icons-host-options.md` ranks three options (recommended: clients upload official artwork into `sgs/trust-bar` now; a fifth icon source in the shared picker only if a build needs a footer row) | 30m–1h | no |
-| W2-p | "Floating" header pill mode (design-gate signed: pill persists at mobile) | DESIGN WRITTEN, awaiting the design gate | `reports/2026-09-20-w2p-floating-header-pill-design.md`: publish the header's measured bottom edge in `--sgs-header-height` (seven consumers, identical value for every header shipped today), then compose the pill from three new attributes plus the existing margin, width, radius and shadow. No `W2-v` row exists; the primitive is not a blocker | 3h | no |
+| W2-o | Payment-logo SVG set | CLOSED, no framework feature | No spec, pattern or block asks for payment marks, and WooCommerce renders an accepted-methods row on the cart page. Clients upload each processor's official artwork into `sgs/trust-bar` image badges, which already works and is the only way to respect each brand's artwork rules (`reports/2026-09-20-w2o-payment-icons-host-options.md`) | — | no |
+| W2-p | "Floating" header pill mode (design approved: publish the header's measured bottom edge in `--sgs-header-height`, then compose the pill from existing controls plus three attributes; the pill persists at mobile; dropdown and mega panels follow the pill's width) | APPROVED, being built | `reports/2026-09-20-w2p-floating-header-pill-design.md` and the reference measurements in `reports/2026-09-20-w2p-reference-pill-measurements.md`. Seven files read the token; the value is unchanged for every header shipped today | 3h | no |
 | W2-q | `resolveTier()` cascade | DONE | FR-37-14 built and live-verified | — | no |
 | W2-s | 36-24 lint-gate half | DONE | `plugins/sgs-blocks/scripts/lint-responsive-controls.py` in the prebuild gates (`--check` + `--self-test` pass); checks bespoke per-device controls, not per-tier drift | — | no |
 | W2-t | Doc closure sweep | DONE | Parking entries archived on resolve | — | no |
 | W2-u | **W1 re-verification on the CPT path** (wave exit) | DONE | Live probe on the CPT-rendered drawer (`reports/2026-09-20-w2u-cpt-drawer-integration.md`): focus trap, Tab and Shift+Tab cycling, ESC and focus return, scroll lock, modal and non-modal, at 375px and 1440px, each with a negative control. Findings: opening the drawer dismisses an open mega menu (they are never open together); a non-modal drawer opened from an in-content trigger leaves `main` live; a trigger-anchored drawer renders off-screen at negative x on fixture page 3699 (needs Bean's eye) | — | YES |
 
 **Net Wave 2:** DONE a, b, c, d, e, f (live/eye verification owed), g, h, j, k, l, n, q, r, s, t, u · PARTIAL i ·
-DESIGN WRITTEN, awaiting the design gate m, p · NO HOST DEFINED o.
+APPROVED and being built p · CLOSED with no framework feature o.
 
 **TEST (critical path):** Happy = default drawer post renders property-identical to the default
 drawer (the DP-signed bar; gate §4.3). Edge = deleted/draft drawer post → FR-36-9a notice;
@@ -180,8 +179,7 @@ W5-a after W4 complete
 CRITICAL PATH: W2-i → W2-b → W2-d → W2-r → W2-c → Gate 2 re-run → W2-u → W4-a2 → W4-b → Bean's eye
 → W4-c → W5-a → W5-b.
 
-**Parallel opportunities:** W2-l/n/o parallel to the CPT chain · the design-gate for W2-p is
-raised at wave start so Bean-approval latency overlaps build · W3-b/e parallel · W4-c's clones
+**Parallel opportunities:** W2-l/n parallel to the CPT chain · W3-b/e parallel · W4-c's clones
 parallelise AFTER the W4-b acceptance (never before — each clone is judged whole, with its header).
 **Bean-gated bottlenecks (W4-a2, Gate 4, W3-d, the mega-motion eye check) get BOOKED at the
 preceding wave's close with the evidence pack pre-built — an external ping (Telegram), not an
@@ -296,7 +294,7 @@ Stop-loss: any gate <50 → surface pivot-vs-park with two ranked paths; log in 
 
 ## First action (≤5 min, zero dependencies)
 
-Bean's decisions on the three design inputs (W2-p pill, W2-m collapse modes, W2-o payment marks); each report ends with a ranked menu. In parallel, Wave 3 residuals (W3-b finding 2, W3-e conformance).
+W2-i's remaining harness work (self-tests on three scripts and the content/label count-fidelity check) precedes any Wave 4 evidence; the W2-p pill build runs beside it. Then Wave 3 residuals (W3-b finding 2, W3-e conformance).
 
 ## References
 

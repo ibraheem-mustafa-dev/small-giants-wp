@@ -24,12 +24,12 @@ Mama's unchanged), (2) the raw placeholders and inserting the saved values (Task
 plan), then (3) the merged Spec 36+37 track.
 
 **Nav / header / footer.** Wave 1 (fixtures + verification) is closed. Wave 2 (capabilities) is
-done and live-verified apart from three items that wait on Bean. Done: the drawer post type, the picker
+done and live-verified apart from the floating header pill (approved, being built) and the harness
+honesty work (W2-i). Done: the drawer post type, the picker
 (including creating a drawer inline), trigger controls, scoped behaviours, the 7 drawer looks (patterns
 seeded as Menu drawer posts on all three test sites), the Site Info logo tier, the scrolled-state header
-shadow, the formal Gate 2 re-run and the mega + drawer integration probe. Waiting on Bean's design gate:
-the floating header pill and the priority+More / bottom-tab modes (design documents written). Waiting on a
-decision: payment icons (no host is defined). Wave 3 is partial. Waves 4 and 5 (the
+shadow, the formal Gate 2 re-run and the mega + drawer integration probe. Payment icons need no
+framework feature (clients upload official artwork into the trust bar). Wave 3 is partial. Waves 4 and 5 (the
 reference clones and the clone walker) have not started.
 
 **Indus Foods** has its own dedicated test site (`lavender-dinosaur-183533.hostingersite.com`,
@@ -112,8 +112,8 @@ IN FULL before touching anything — do not act on this summary.**
   primary-colour contrast violations on the Mama's palette, accepted by owner ruling; Bean's-eye on
   mega motion not recorded; cart/search screenshot set not captured.
 - **Wave 2** (capability) — DONE a, b, c, d, e, f (live/eye verification owed), g, h, j, k, l, n, q, r,
-  s, t, u · PARTIAL i · design written, awaiting the design gate: m (collapse modes), p (floating pill) ·
-  no host defined: o (payment icons). Gate 2 re-run passed 2026-09-20 on the mechanism
+  s, t, u · PARTIAL i · APPROVED and being built: p (floating pill) · CLOSED with no framework feature: o
+  (payment icons). Gate 2 re-run passed 2026-09-20 on the mechanism
   (`.claude/reports/2026-09-20-w2-gate2-rerun.md`); fidelity is Bean's eye. The mega + drawer probe on the
   CPT drawer passed (`.claude/reports/2026-09-20-w2u-cpt-drawer-integration.md`).
 - **Wave 3** (polish) — PARTIAL: FR-37-44/45 verified (`reports/visual-diff/site-header-2026-08-19.md`);
