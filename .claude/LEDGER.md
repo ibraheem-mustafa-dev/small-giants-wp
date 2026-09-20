@@ -24,13 +24,13 @@ Mama's unchanged), (2) the raw placeholders and inserting the saved values (Task
 plan), then (3) the merged Spec 36+37 track.
 
 **Nav / header / footer.** Wave 1 (fixtures + verification) is closed. Wave 2 (capabilities) is
-part done: the drawer post type, trigger controls, scoped behaviours and lint gate are built; the
-drawer post picker is built except creating a drawer inline; the 7 drawer looks are built as patterns
-(no block variations remain), seeded as Menu drawer posts on all three test sites, and applied
-through a starter-look control that undoes in one step and changes only the settings a look owns;
-the logo source, priority+More / bottom-tab modes, scrolled shadow, payment icons, floating pill,
-the formal Gate 2 re-run and the final integration re-check are not done. Wave 3 is partial.
-Waves 4 and 5 (the reference clones and the clone walker) have not started.
+done and live-verified apart from three items that wait on Bean. Done: the drawer post type, the picker
+(including creating a drawer inline), trigger controls, scoped behaviours, the 7 drawer looks (patterns
+seeded as Menu drawer posts on all three test sites), the Site Info logo tier, the scrolled-state header
+shadow, the formal Gate 2 re-run and the mega + drawer integration probe. Waiting on Bean's design gate:
+the floating header pill and the priority+More / bottom-tab modes (design documents written). Waiting on a
+decision: payment icons (no host is defined). Wave 3 is partial. Waves 4 and 5 (the
+reference clones and the clone walker) have not started.
 
 **Indus Foods** has its own dedicated test site (`lavender-dinosaur-183533.hostingersite.com`,
 deploy target `indus-test`) because the active header/footer/theme-snapshot pointers are single
@@ -107,21 +107,23 @@ IN FULL before touching anything — do not act on this summary.**
 - **Wave 1** (fixtures + verification) — CLOSED. Residuals: axe on the Gate-3 mega panel shows 6
   primary-colour contrast violations on the Mama's palette, accepted by owner ruling; Bean's-eye on
   mega motion not recorded; cart/search screenshot set not captured.
-- **Wave 2** (capability) — DONE a, c, d, e, f (live/eye verification owed), g, h, j, k, q, r, s, t ·
-  PARTIAL b (create-inline missing), i · NOT DONE l, m, n, o, p, u. Gate 2 passed once
-  (`reports/2026-07-30-w2a-gate2-drawer-cpt.md`); the formal re-run is owed. Since `variantPreset`
-  was removed the default drawer was checked live on all three test sites (opens, closes on Escape,
-  no preset class, zero stored uses), which is evidence but not the harness run.
+- **Wave 2** (capability) — DONE a, b, c, d, e, f (live/eye verification owed), g, h, j, k, l, n, q, r,
+  s, t, u · PARTIAL i · design written, awaiting the design gate: m (collapse modes), p (floating pill) ·
+  no host defined: o (payment icons). Gate 2 re-run passed 2026-09-20 on the mechanism
+  (`.claude/reports/2026-09-20-w2-gate2-rerun.md`); fidelity is Bean's eye. The mega + drawer probe on the
+  CPT drawer passed (`.claude/reports/2026-09-20-w2u-cpt-drawer-integration.md`).
 - **Wave 3** (polish) — PARTIAL: FR-37-44/45 verified (`reports/visual-diff/site-header-2026-08-19.md`);
   FR-37-27 settled; simplicity finding 2 (canvas-click selection) open; FR-37-6 per-site CPT
   sourcing unverified; FR-37-26 blind-tester session not done; FR-37-18 conformance partial.
 - **Wave 4** (proof gate — 10 client clones, Bean's-eye per clone) — not started.
 - **Wave 5** (clone walker — FR-37-22) — not started.
 
-**First action:** re-run Gate 2 with the `plugins/sgs-blocks/scripts/nav-qa` harness
-(`--open-via keyboard`, with a negative control), then W2-u (mega + drawer same-page probe on the CPT
-drawer), then W2-b's create-inline drawer (`nav-bar-menu/useDrawerNotice.js::addDrawer`). The 7 drawer
-looks are patterns (`theme/sgs-theme/patterns/drawer-*.php`, keyword `featured`, a plain manual
+**First action:** Bean's decisions on the three design inputs, each report ending in a ranked menu:
+the floating pill (`.claude/reports/2026-09-20-w2p-floating-header-pill-design.md`), the collapse modes
+(`.claude/reports/2026-09-20-w2m-collapse-modes-design.md`), the payment-icons host
+(`.claude/reports/2026-09-20-w2o-payment-icons-host-options.md`). In parallel: Wave 3 residuals (W3-b
+finding 2, W3-e conformance). Open defects found on the way are in `.claude/decisions.md` (latest entry).
+The 7 drawer looks are patterns (`theme/sgs-theme/patterns/drawer-*.php`, keyword `featured`, a plain manual
 keyword), seeded by `Sgs_Starter_Library_Migration` on any site whose set of library patterns
 changed, and labelled "Framework look" in the Menu drawers list. Only the drawer has a library.
 The three test sites (`sandybrown`, `indus-test`, `eye-care-test`) run the same code.
@@ -169,6 +171,11 @@ does not produce real matches on real data for it to consume.
   cache-buster, or purge with the Hostinger MCP `hosting_clearWebsiteCacheV1` (also clears the CDN).
   `build-deploy.py` clears OPcache, LiteSpeed and the theme pattern cache but not the CDN.
 - ⛔ **A gate-skip reason that claims a live check names the target and the deploy marker it ran on.**
+- ⛔ **A gate that reads a fixed vocabulary can be older than the code that uses it.** The preset-role gate
+  rejected `hover-transform`, which `button/style.css` reads and the extractor emits, so every deploy failed
+  in the fast tier. Check who consumes a rejected value before deciding whether the data or the gate is wrong.
+- ⛔ **A reviewer's fact-check beats the author's report.** Two agent reports asserted a grep returned 0 and a
+  consumer list was complete; both were wrong until re-run. Re-run the named command before repeating a count.
 - **A new `block.json` attribute needs `sgs-update-v2.py --stage 1` immediately** — and a
   brand-new BLOCK also needs its `block_composition` row hand-seeded.
 - **Commit straight to `main`; never a PR, never a stash; integrate after every task.**

@@ -25,8 +25,8 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
   3. The cart/search screenshot set is not captured (numeric probes only).
 
 ## Wave 2 — Capability
-- STATUS: partial. DONE a, d, e, f (live/eye verification owed), g, h, j, k, q, s, t · PARTIAL b, i ·
-  NOT DONE c, l, m, n, o, p, r, u.
+- STATUS: partial. DONE a, b, c, d, e, f (live/eye verification owed), g, h, j, k, l, n, q, r, s, t, u ·
+  PARTIAL i · design written, awaiting the design gate: m, p · no host defined: o.
 - DP7 harness self-tests pass FIRST (W2-i precedes Wave-4 evidence). Built: shared
   `nav-qa/lib/openness-guard.mjs` (exit 3 = VACUOUS), full-element contrast walk, `--self-test` in
   five scripts. Open: `--self-test` on `sweep-drawer-variants.mjs`, `shoot-drawer-pairs.mjs`,
@@ -34,14 +34,15 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
   mismatch, right-site keyed) does not exist.
 - CPT parity (Gate 2): computed-parity JSON — default `sgs_drawer` post render vs the default drawer,
   **drawer OPEN** (a closed-vs-closed comparison is vacuous), property-identical, negative control
-  run. Passed once (`reports/2026-07-30-w2a-gate2-drawer-cpt.md`); re-run owed after W2-b/c/d.
+  run. Passed 2026-09-20 on the mechanism (`.claude/reports/2026-09-20-w2-gate2-rerun.md`), fidelity left to Bean's eye.
 - No stored string `drawerRef` on any live site: `wp db query "SELECT COUNT(*) FROM wp_posts WHERE post_content LIKE '%\"drawerRef\":\"%'"` returns 0 on every site.
-- Spec 36 + Spec 37 state the drawer-CPT model identically, same commit (Spec 37 §1.2). Not done.
+- Spec 36 + Spec 37 state the drawer-CPT model identically, same commit (Spec 37 §1.2). Met.
 - `drawerRef` picker: dangling-post notice fires on deleted AND draft target (2 screenshots).
-  Create-inline (create a new `sgs_drawer` post from the picker) not built.
+  Create-inline (create a new `sgs_drawer` post from the picker) live-verified in the editor
+  (`reports/visual-diff/nav-bar-menu-2026-09-20.md`).
 - 7 drawer starter patterns appear in the drawer surfacing mechanism; `variantPreset` +
   `registerBlockVariation` calls = 0 in src (`git grep -n variantPreset -- plugins/sgs-blocks/src`).
-  Unmet until the drawer starter patterns exist (2 of 7 today).
+  Met: seven `featured` drawer patterns exist and are seeded as posts.
 - Header patterns render with no embedded drawer (met); seeded default drawer opens from the burger.
 - DP4: all six trigger attrs (`triggerMode`, `triggerLabel`, `triggerIcon`, `triggerMagnetEnabled`,
   `triggerMagnetRadius`, `triggerMagnetStrength`) drive visible change; open-state morph syncs via
@@ -53,7 +54,13 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
   mismatch → FAIL) before any Wave-4 capture is trusted.
 - After every edit.js / shared-component change: real editor opened post-deploy, noted per unit.
 - W2-u: the mega + drawer same-page integration probe (focus traps, ESC interplay, non-modal
-  branch) re-run live on the CPT-rendered drawer.
+  branch) re-run live on the CPT-rendered drawer. Met (`.claude/reports/2026-09-20-w2u-cpt-drawer-integration.md`).
+- W2-l: a Site Info logo renders when the block has none and falls through to the Customiser logo when
+  cleared, with an invalid attachment and a non-image attachment as controls
+  (`reports/visual-diff/responsive-logo-2026-09-20.md`). Met.
+- W2-n: with `shadowScrolled` set the header's computed `box-shadow` changes after scrolling and eases
+  back, reduced motion removes the transition, an unmodified header never changes
+  (`reports/visual-diff/site-header-2026-09-20.md`). Met.
 
 ## Wave 3 — Polish
 - STATUS: partial.

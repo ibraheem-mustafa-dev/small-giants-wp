@@ -95,8 +95,8 @@ canary for later waves.
 |---|---|---|---|---|---|
 | W2-i | **DP7 harness fixes** — `plugins/sgs-blocks/scripts/nav-qa/` capture + contrast + fidelity scripts | PARTIAL | Built: the shared `nav-qa/lib/openness-guard.mjs` (exit 3 = VACUOUS) used by four scripts; contrast walks every text element; `--self-test` in five scripts; `labels-<site>.json` for 7 reference sites. Open: `--self-test` on `sweep-drawer-variants.mjs`, `shoot-drawer-pairs.mjs`, `elementfrompoint-sweep.mjs`; the content/label count-fidelity check does not exist; `labels-<site>.json` for Away, ButcherBox, rabbit.tech (after W4-a). Must precede any Wave-4 evidence | 2h (4h) | YES |
 | W2-a | **Drawer CPT** `sgs_drawer` (DP2) | DONE | CPT, Active model, revisions, seed by menu LOCATION lookup, admin "Menu drawer" | — | YES |
-| **GATE 2** | OPEN-state computed-parity, default CPT drawer vs default drawer, property-identical | passed once; formal re-run owed | Evidence: `reports/2026-07-30-w2a-gate2-drawer-cpt.md`. Since `variantPreset` was removed the default drawer was checked live on the canary, `indus-test` and `eye-care-test`: the dialog opens at 375px, closes on Escape, carries no preset class, and no stored content uses the attribute (`wp db query` count 0 on all three). That is evidence, not the harness run (`nav-qa`, `--open-via keyboard`, negative control) | — | YES |
-| W2-b | `drawerRef` → post picker (DP2) | PARTIAL | Built: `nav-bar-menu/block.json::drawerRef` is a post-ID `number`; the picker; the dangling-post notice (FR-36-9a). `nav-drawer/block.json::drawerRef` stays an element-id string. Open (FR-37-43): create-inline — "create a new `sgs_drawer` post from the picker" (`nav-bar-menu/useDrawerNotice.js::addDrawer` inserts a sibling `sgs/nav-drawer` block, seeded with `sgs/nav-drawer-menu`, instead) | 1h (2h) | YES |
+| **GATE 2** | OPEN-state computed-parity, default CPT drawer vs default drawer, property-identical | PASSED 2026-09-20 on the mechanism (fidelity is Bean's eye) | `reports/2026-09-20-w2-gate2-rerun.md`: `--open-via keyboard` at 375px, both sides emit the same uid, no property mismatches over 8 element records and 400 comparisons, plus an extended probe of 27 records per side (1,267 comparisons, including `backdrop-filter`, pseudo-elements, `::backdrop` and the parent chain). Negative controls: `--open` omitted exits 3 (VACUOUS), 768/1440 exit 3 (UNMEASURED), a deliberately different drawer reports 21 mismatches and exits 1 | — | YES |
+| W2-b | `drawerRef` → post picker (DP2) | DONE | `nav-bar-menu/block.json::drawerRef` is a post-ID `number`; the picker; the dangling-post notice (FR-36-9a); create-inline: "Create a new menu panel" (`nav-bar-menu/useCreateDrawer.js::useCreateDrawer`) saves a published `sgs_drawer` post seeded from the blank starter pattern and selects it. Live-verified in the editor (`reports/visual-diff/nav-bar-menu-2026-09-20.md`): one post per double-click, an honest error on an injected 403, no reload needed. `nav-drawer/block.json::drawerRef` stays an element-id string | — | YES |
 | W2-c | Drawer starter looks: 7 real starter patterns | DONE | Seven `sgs_drawer` patterns (`theme/sgs-theme/patterns/drawer-*.php`, keyword `featured`, a plain manual keyword; each holds only blocks that render real site data), seeded as published Menu drawer posts marked `_sgs_starter_slug` by `Sgs_Starter_Library_Migration` (re-runs when the set of library patterns changes) and `wp sgs drawer seed-starter --all --user=1`, a "Framework look" label and view in the list. The starter-look control lists the `featured` looks (else all), applies in one Undo step, and changes only the settings a look owns; "Keep my blocks" leaves the client's blocks untouched. `nav-drawer` declares no `variantPreset` and registers no block variations (`git grep -n variantPreset -- plugins/sgs-blocks/src` returns nothing). Live-verified 2026-09-19 on all three test sites; only the Gate 2 harness re-run remains | — | YES |
 | W2-d | Migration + seed (DP2) | DONE | Header starter patterns embed no drawer; the per-site seed (FR-37-48). No stored string `drawerRef` exists on any live site, so no re-type sweep is needed (`wp db query "SELECT COUNT(*) FROM wp_posts WHERE post_content LIKE '%\"drawerRef\":\"%'"` returns 0 on the canary, the Indus test site and the Eye Care test site) | — | YES |
 | W2-r | **Spec 36 + Spec 37 same-commit statement of the drawer model** (Spec 37 §1.2) | DONE | Both specs state the drawer as a `sgs_drawer` post, the picker, the seed, and the seven looks as starter patterns (Spec 36 FR-36-9a, Spec 37 FR-37-43) | — | YES |
@@ -106,18 +106,18 @@ canary for later waves.
 | W2-h | Drawer align centres the menu | DONE | `centred-statement` centres | — | YES |
 | W2-j | FR-37-15 behaviours → scoped `#uid` CSS | DONE | Scoped emission via `sgs_emit_tier_rules()`; no body classes | — | no |
 | W2-k | FR-37-16 container attrs flat → object | DONE | `site-header` / `site-footer` padding, margin, maxWidth, contentWidth, minHeight, contentBandPadding are objects | — | no |
-| W2-l | 36-22 logo source resolution | NOT DONE | `responsive-logo/render.php` reads only `custom_logo`. Build: Site Info `logo` key as the middle tier (FR-36-22) — key + control + sanitiser + tier-2 read | 45m (1.5h) | no |
-| W2-m | 36-8 modes (b) priority+More, (c) bottom-tab-bar | NOT DONE | No attribute, no code. Resolve the overlap with parked `P-FLOATING-UI-BOTTOM-BARS` (Spec 18) first | 2h (4h) | no |
-| W2-n | Scroll-state shadow on the pinned header | NOT DONE | `shadow*` attrs exist; no scrolled-state attribute; `is-header-scrolled` is toggled in `src/header-behaviours/view.js` | 30m (1h) | no |
-| W2-o | Payment-logo SVG set | NOT DONE | No payment-brand SVGs in the repo | 30m (1h) | no |
-| W2-p | "Floating" header pill mode (design-gate signed: pill persists at mobile) | NOT DONE | Depends on the header-offset primitive (`--sgs-header-height` is published; confirm it is complete before starting). No design doc on disk yet — write it first | 3h (6h) | no |
+| W2-l | 36-22 logo source resolution | DONE | Site Info `logo` (media-library attachment ID) is tier 2 between the block's own image and the core custom logo (`includes/class-sgs-site-info-logo.php::resolve_id`); Organization JSON-LD follows the same chain; saving Site Info purges the page cache. Live-verified with fall-through controls (`reports/visual-diff/responsive-logo-2026-09-20.md`) | — | no |
+| W2-m | 36-8 modes (b) priority+More, (c) bottom-tab-bar | DESIGN WRITTEN, awaiting the design gate | `reports/2026-09-20-w2m-collapse-modes-design.md`: Spec 18 owns a shared bottom dock and Spec 36 registers into it; priority+More and the tab bar are separate slices (about 6.5h in full, about 2.5h for priority+More alone). Needs Bean's decisions before any build | 6.5h (or 2.5h) | no |
+| W2-n | Scroll-state shadow on the pinned header | DONE | `site-header` attributes `shadowScrolled` and `shadowScrolledColour`; nothing paints when unset. Live-verified at 1440px and 375px including reduced motion and a non-sticky header (`reports/visual-diff/site-header-2026-09-20.md`) | — | no |
+| W2-o | Payment-logo SVG set | NO HOST DEFINED, awaiting Bean | No spec, pattern or block asks for payment marks; WooCommerce already renders an accepted-methods row on the cart page. `reports/2026-09-20-w2o-payment-icons-host-options.md` ranks three options (recommended: clients upload official artwork into `sgs/trust-bar` now; a fifth icon source in the shared picker only if a build needs a footer row) | 30m–1h | no |
+| W2-p | "Floating" header pill mode (design-gate signed: pill persists at mobile) | DESIGN WRITTEN, awaiting the design gate | `reports/2026-09-20-w2p-floating-header-pill-design.md`: publish the header's measured bottom edge in `--sgs-header-height` (seven consumers, identical value for every header shipped today), then compose the pill from three new attributes plus the existing margin, width, radius and shadow. No `W2-v` row exists; the primitive is not a blocker | 3h | no |
 | W2-q | `resolveTier()` cascade | DONE | FR-37-14 built and live-verified | — | no |
 | W2-s | 36-24 lint-gate half | DONE | `plugins/sgs-blocks/scripts/lint-responsive-controls.py` in the prebuild gates (`--check` + `--self-test` pass); checks bespoke per-device controls, not per-tier drift | — | no |
 | W2-t | Doc closure sweep | DONE | Parking entries archived on resolve | — | no |
-| W2-u | **W1 re-verification on the CPT path** (wave exit) | NOT DONE | Re-run the mega + drawer same-page integration probe (focus traps, ESC interplay, non-modal branch) on the CPT-rendered drawer. Do after W2-c | 30m (1h) | YES |
+| W2-u | **W1 re-verification on the CPT path** (wave exit) | DONE | Live probe on the CPT-rendered drawer (`reports/2026-09-20-w2u-cpt-drawer-integration.md`): focus trap, Tab and Shift+Tab cycling, ESC and focus return, scroll lock, modal and non-modal, at 375px and 1440px, each with a negative control. Findings: opening the drawer dismisses an open mega menu (they are never open together); a non-modal drawer opened from an in-content trigger leaves `main` live; a trigger-anchored drawer renders off-screen at negative x on fixture page 3699 (needs Bean's eye) | — | YES |
 
-**Net Wave 2:** DONE a, c, d, e, f (live/eye verification owed), g, h, j, k, q, r, s, t · PARTIAL b, i ·
-NOT DONE l, m, n, o, p, u.
+**Net Wave 2:** DONE a, b, c, d, e, f (live/eye verification owed), g, h, j, k, l, n, q, r, s, t, u · PARTIAL i ·
+DESIGN WRITTEN, awaiting the design gate m, p · NO HOST DEFINED o.
 
 **TEST (critical path):** Happy = default drawer post renders property-identical to the default
 drawer (the DP-signed bar; gate §4.3). Edge = deleted/draft drawer post → FR-36-9a notice;
@@ -163,10 +163,10 @@ Integration = presets restyle under each client's theme-snapshot tokens (DP5 hom
 
 ```
 W2-i (remainder) FIRST — harness honesty; Gate 2's re-run and every Wave-4 capture depend on it
-W2-b remainder                                (create-inline)
+W2-b                                          (done)
 W2-c                            (done; live-verified on all three test sites)
-Gate 2 harness re-run
-W2-u wave exit                  (re-run the integration probe on the CPT path, after W2-c)
+Gate 2 harness re-run           (done 2026-09-20)
+W2-u wave exit                  (done 2026-09-20)
 
 Wave 3 after the Wave 2 CP set (polish on final surfaces)
 W4-a anytime; W4-a2 (substitution policy, Bean) before W4-b
@@ -294,7 +294,7 @@ Stop-loss: any gate <50 → surface pivot-vs-park with two ranked paths; log in 
 
 ## First action (≤5 min, zero dependencies)
 
-Re-run Gate 2 with the `--open-via keyboard` harness against the seeded default drawer, then W2-u, then W2-b's create-inline drawer.
+Bean's decisions on the three design inputs (W2-p pill, W2-m collapse modes, W2-o payment marks); each report ends with a ranked menu. In parallel, Wave 3 residuals (W3-b finding 2, W3-e conformance).
 
 ## References
 
