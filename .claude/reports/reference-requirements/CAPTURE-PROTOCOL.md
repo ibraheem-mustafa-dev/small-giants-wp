@@ -27,7 +27,7 @@ away, butcherbox, rabbit, halcyon, indus-foods.
   "reference": "lamalama",
   "url": "https://lamalama.com/",
   "captured": "2026-09-20",
-  "browser": "chromium headless, Playwright",
+  "browser": "Chrome, headed, Playwright",
   "rows": [
     {
       "surface": "header-shell",
@@ -57,6 +57,17 @@ away, butcherbox, rabbit, halcyon, indus-foods.
   value. A cell without evidence is invalid.
 - A cell you could not fill is not left blank and not guessed: put it in `not_measured` with the
   reason (for example "trigger unreachable headlessly", "requires login").
+
+## Browser: real and headed, never headless
+
+Capture in a real, visible Chrome on this PC: `chromium.launch({ channel: 'chrome', headless: false })`
+(fall back to the bundled Chromium with `headless: false` only if Chrome is not installed, and say so),
+with the GPU enabled. Do not use a headless browser. Headless runs software rendering (one frame a second
+on lusion, twelve on resn), a "HeadlessChrome" user agent that some sites answer differently, overlay
+scrollbars that change the usable width, and it blocked real pointer input on resn at 768. Record in every
+row `viewport` (`innerWidth`) and `clientWidth` (`document.documentElement.clientWidth`), and derive every
+width, centring and anchor label from `clientWidth`, because a classic scrollbar takes about 15px. Run one
+headed browser at a time so windows do not fight for the screen.
 
 ## Rules for values (from the plan)
 
