@@ -87,7 +87,7 @@ freshness gate because another session's uncommitted Mama's snapshot carries a d
 homepage sections no longer carry junk attributes (18 to 0). Evaluator BUILT, NOT wired: `orchestrator/script_bindings.py`
 turns the draft's own `mob / narrow / wide` expressions into mobile, tablet and desktop values (75 of 140 names, 0
 mismatches against the measured render). Until it is wired the sections take block defaults for padding and columns.
-Wiring design and one open question (58 of 75 names have a breakpoint inside a device tier): `reports/2026-09-20-script-binding-tiers-design.md`.
+Wiring design: `reports/2026-09-20-script-binding-tiers-design.md`. **WIRING ON HOLD (Bean, D1129):** he has an idea to raise after this session is compacted that could change the design. His breakpoint rule: within about 10px of a tier edge, round to it; further out, write the value into the block's Additional CSS (`sgsCustomCss`). Not implemented; it amends the FR-31-5.2 "never snap" lock.
 
 **Open, in order:**
 1. *Problem 1, missing sections.* The "14 non-BEM" boundaries are classless sections gated on a hint (the draft has ONE

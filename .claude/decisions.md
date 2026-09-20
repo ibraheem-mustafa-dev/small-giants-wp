@@ -1,5 +1,13 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1129 [ROUTINE] — Script-binding wiring on hold; breakpoints within about 10px round to the device tiers (2026-09-20)
+
+**Decisions (Bean).** (1) Do NOT wire the script-binding evaluator into the pipeline yet: Bean has an idea, to be raised after this session is compacted, that could change the design. (2) A draft width threshold within about 10px of a device-tier edge is ROUNDED to that edge (760 to the 767/768 edge, 1010 to the 1023/1024 edge, and so on). (3) A threshold further out than that follows the rule that already exists: the responsive value is written into the Additional CSS control (`sgsCustomCss`) of the block the element becomes.
+
+**What this changes.** Spec 31 FR-31-5.2 (F-ii, an earlier Bean lock) says a non-device threshold is "never snapped, never dropped" and is captured as a `ResidualBand` in `sgsCustomCss`. The 10px window is an amendment to "never snap". It is NOT implemented, so FR-31-5.2 still describes today's behaviour; amend it when built. "About 10px" is Bean's approximation: confirm the exact tolerance before building. It should apply to both `@media` thresholds and the width flags read from a draft's script (`orchestrator/script_bindings.py`).
+
+**Open for whoever builds it.** `_residual_selector_for` scopes a residual by the element's own SGS-BEM class, which a classless element does not have; the `&selector` convention inside the owning block's `sgsCustomCss` is the likely route. Where the element is not a block of its own (an inner band merged into a container), which block owns the rule is undecided.
+
 ## D1128 [ROUTINE] — Unresolved style bindings are dropped and reported; the script's own per-device values can be evaluated (2026-09-20)
 
 **Decisions (Bean).** Do the "no raw binding in an attribute" step and the per-device-values step in parallel. Bean asked whether the raw values were "just set in a different file"; measured on the live page: the theme's own `h2` rule supplies the right heading size where the attribute is ignored, but section padding (0px against the draft's 104px 52px) and the two-column grid (one column) are set nowhere else.
