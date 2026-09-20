@@ -93,3 +93,19 @@ nothing and every header read "not scrolled". Any scroll-state probe must assert
 
 - `shadowScrolled-floating-rest-{1440,375}.png` — header at scrollY 0 (no shadow)
 - `shadowScrolled-floating-scrolled-{1440,375}.png` — header at scrollY 600 (floating shadow painted)
+
+## Addendum — shrink cancel on off tiers and scroll behaviours on every header (commit 91444e40b)
+
+Live check on the canary after deploying 91444e40b, using a temporary page `[QA] header multi` (id 3714, created and
+deleted through REST) that carries a second `sgs/site-header` with `headerShrink` on for desktop and off for tablet and
+mobile, plus `shadowScrolled`. Script: an inline Playwright run, 1440px and 800px, scrolling 800px.
+
+| Check | Measured | Verdict |
+|---|---|---|
+| Two headers on one page: the page-level header gets `is-header-scrolled` and `is-header-shrunk` after scrolling | 1440px and 800px: second header `scrolled:true, shrunk:true`; the site header (no scroll behaviours) correctly stays `false` | PASS |
+| Desktop (shrink on): padding shrinks | `padding-block-start` 16px before, 4px after | PASS |
+| Tablet (shrink off): padding does not shrink even though the class is set | 0px before, 0px after (class present) | PASS |
+| State restored | the QA page was deleted (HTTP 200); no other content was touched | PASS |
+
+Not measurable in this browser: the legacy path (browsers without `animation-timeline`), where the off value restores the
+resting padding. That path was checked with the PHP emitter harness only.

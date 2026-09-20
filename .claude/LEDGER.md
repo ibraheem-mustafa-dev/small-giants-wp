@@ -126,7 +126,7 @@ IN FULL before touching anything — do not act on this summary.**
 the floating pill (`.claude/reports/2026-09-20-w2p-floating-header-pill-design.md`), the collapse modes
 (`.claude/reports/2026-09-20-w2m-collapse-modes-design.md`), the payment-icons host
 (`.claude/reports/2026-09-20-w2o-payment-icons-host-options.md`). In parallel: Wave 3 residuals (W3-b
-finding 2, W3-e conformance). Open defects found on the way are in `.claude/decisions.md` (latest entry).
+finding 2, W3-e conformance). Open defects found on the way are in `.claude/decisions.md` (D1122 and D1125).
 The 7 drawer looks are patterns (`theme/sgs-theme/patterns/drawer-*.php`, keyword `featured`, a plain manual
 keyword), seeded by `Sgs_Starter_Library_Migration` on any site whose set of library patterns
 changed, and labelled "Framework look" in the Menu drawers list. Only the drawer has a library.
