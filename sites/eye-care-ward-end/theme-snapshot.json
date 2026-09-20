@@ -164,7 +164,7 @@
           "fontFace": [
             {
               "fontFamily": "Outfit",
-              "fontWeight": "300",
+              "fontWeight": "100 900",
               "fontStyle": "normal",
               "fontDisplay": "swap",
               "src": [
@@ -182,7 +182,7 @@
           "fontFace": [
             {
               "fontFamily": "Playfair Display",
-              "fontWeight": "400",
+              "fontWeight": "500 700",
               "fontStyle": "normal",
               "fontDisplay": "swap",
               "src": [
@@ -198,7 +198,7 @@
           "fontFace": [
             {
               "fontFamily": "Playfair Display",
-              "fontWeight": "400",
+              "fontWeight": "500 700",
               "fontStyle": "normal",
               "fontDisplay": "swap",
               "src": [
@@ -731,6 +731,7 @@
   "description": "Draft-generated global styles — DO NOT hand-edit; regenerate via extract.py.",
   "_sgsExtractor": {
     "draft_css_sha256": "b76b357a40661824cf285e249f5f63fe3a8a39d4b69848e7203cd98d92d72529",
-    "extractor_version": "1.0"
+    "extractor_version": "1.0",
+    "draft_source_sha256": "79fe7e0c43faadceaf95bf2847ebb3f5cd9f6647c9a8e4b7c00df2f5844e18be"
   }
 }

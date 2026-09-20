@@ -49,6 +49,7 @@ def _is_allowed_https_url(url: str, allowed_hosts: set[str]) -> bool:
 
 import declared_sources
 import derive as derive_mod
+import font_weights
 import heading_weight
 import palette as palette_mod
 import presets as presets_mod
@@ -67,7 +68,9 @@ HERE = pathlib.Path(__file__).resolve().parent
 # orchestrator call it, so the two hashes can never drift). See shared_utils.py.
 if str(HERE.parent) not in sys.path:
     sys.path.insert(0, str(HERE.parent))
-from shared_utils import extract_css, css_sha256  # noqa: E402
+from shared_utils import (  # noqa: E402
+    css_sha256, draft_source_sha256, extract_css, read_readme_text,
+)
 
 # Version of THIS extractor's emit logic — stamped into the snapshot's `_sgsExtractor`
 # provenance block. Bump when palette/typography/preset extraction changes materially
@@ -83,12 +86,16 @@ def _repo_root(arg: str | None) -> pathlib.Path:
 
 
 def run_measure(draft: pathlib.Path) -> dict:
+    # Explicit UTF-8: node writes UTF-8, and text=True alone decodes with the console code page
+    # (cp1252 on Windows), which kills the reader thread and leaves stdout as None.
     out = subprocess.run(
         ["node", str(HERE / "measure.js"), "--draft", str(draft)],
-        capture_output=True, text=True, timeout=120,
+        capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120,
     )
     if out.returncode != 0:
-        raise RuntimeError(f"measure.js failed: {out.stderr[:500]}")
+        raise RuntimeError(f"measure.js failed (exit {out.returncode}): {(out.stderr or '')[:500]}")
+    if not out.stdout or not out.stdout.strip():
+        raise RuntimeError(f"measure.js produced no output: {(out.stderr or '')[:500]}")
     return json.loads(out.stdout)
 
 
@@ -122,7 +129,46 @@ def _primary_family_name(stack: str) -> str:
     return (stack or "").split(",")[0].strip().strip("'\"")
 
 
-def _self_host_google_font(family: str, links: list, repo: pathlib.Path, trace: list) -> list | None:
+def _fetch_bytes(url: str) -> bytes:
+    """The ONE network read in this module (CSS and .woff2 alike) — tests replace it."""
+    req = urllib.request.Request(url, headers={"User-Agent": _FONT_FETCH_UA})
+    with urllib.request.urlopen(req, timeout=20) as resp:
+        return resp.read()
+
+
+def _face_weight(block: str) -> str:
+    m_weight = re.search(r"font-weight:\s*([^;]+);", block)
+    return m_weight.group(1).strip() if m_weight else "400"
+
+
+def _declares_weight_range(css_text: str, family: str) -> bool:
+    return any(font_weights.parse_range(_face_weight(body))
+               for _subset, body in font_weights.face_blocks(css_text, family))
+
+
+def _variable_axis_css(family: str, links: list) -> tuple[str, str] | None:
+    """``(css_text, url)`` from the first variable-axis request Google accepts, or None when the
+    family is STATIC. A refusal (HTTP 400) only means THAT extent lies outside the family's axis, so
+    the extents in ``font_weights.axis_probe_ranges`` are tried in turn (full axis, the draft link's
+    ``<min>..<max>``, ``400..900``, ``300..700``); only when every one is refused is it static. A
+    network failure (not an HTTP refusal) stops the probing. Only URLs built by
+    ``font_weights.variable_axis_url`` are fetched — host-allowlisted by construction; the draft
+    link contributes numbers only, never a URL."""
+    for axis in font_weights.axis_probe_ranges(links, family):
+        url = font_weights.variable_axis_url(family, axis)
+        try:
+            text = _fetch_bytes(url).decode("utf-8")
+        except urllib.error.HTTPError:
+            continue
+        except (urllib.error.URLError, TimeoutError):
+            return None
+        if font_weights.face_blocks(text, family):
+            return text, url
+    return None
+
+
+def _self_host_google_font(family: str, links: list, repo: pathlib.Path, trace: list,
+                           facts: dict | None = None) -> list | None:
     """Fetch + self-host a font family the framework does NOT already bundle — the SAME code path
     for every font, whether it happens to be one the framework ships (Inter/DM Sans/DM Serif
     Display, resolved via ``_bundled_faces_by_family`` instead) or one a client draft introduces
@@ -135,6 +181,14 @@ def _self_host_google_font(family: str, links: list, repo: pathlib.Path, trace: 
     names this family, so the fetched weight/axis range matches what the draft actually renders
     rather than a guessed default. Falls back to a generic 300-900 weight request otherwise.
 
+    A VARIABLE font must declare a weight RANGE or the browser synthesises bold above the declared
+    weight. When that response is not already a range, the variable axis is requested
+    (``family=<Name>:wght@100..900``, then narrower extents while Google refuses with HTTP 400,
+    because a family whose axis is 400..900 refuses 100..900): a range answer is used as is; a
+    variable family that still yields one weight takes its range from the draft's link, then the
+    measured weights (``font_weights.choose_weight``); a family refusing EVERY extent is STATIC and
+    keeps its single weight. The weight is decided on every run, whether or not the file exists.
+
     Returns a WP theme.json ``fontFace`` array pointing at a newly-saved local .woff2, or ``None``
     if nothing could be fetched — callers MUST treat ``None`` as "could not self-host" and leave the
     family with no fontFace, which the FR-33-14 gate below then fails the run closed on, rather than
@@ -143,7 +197,7 @@ def _self_host_google_font(family: str, links: list, repo: pathlib.Path, trace: 
     slug = re.sub(r"[^a-z0-9]+", "-", family.lower()).strip("-")
     css_url = next(
         (u for u in links if _is_allowed_https_url(u, _ALLOWED_FONT_CSS_HOSTS)
-         and re.search(rf"family={re.escape(family)}[:&]", u, re.I)),
+         and font_weights.link_names_family(u, family)),
         None,
     )
     if not css_url:
@@ -160,10 +214,8 @@ def _self_host_google_font(family: str, links: list, repo: pathlib.Path, trace: 
                       "attempted_url": css_url})
         return None
 
-    req = urllib.request.Request(css_url, headers={"User-Agent": _FONT_FETCH_UA})
     try:
-        with urllib.request.urlopen(req, timeout=20) as resp:
-            css_text = resp.read().decode("utf-8")
+        css_text = _fetch_bytes(css_url).decode("utf-8")
     except (urllib.error.URLError, TimeoutError) as exc:
         trace.append({"kind": "gap", "what": f"font-face:{family}",
                       "reason": f"could not fetch Google Fonts CSS to self-host this family ({exc}) "
@@ -172,17 +224,27 @@ def _self_host_google_font(family: str, links: list, repo: pathlib.Path, trace: 
                       "attempted_url": css_url})
         return None
 
+    variable = _declares_weight_range(css_text, family)
+    if not variable:
+        axis = _variable_axis_css(family, links)
+        if axis:
+            css_text, css_url = axis
+            variable = True
+
     dest_dir = repo / "theme" / "sgs-theme" / "assets" / "fonts" / slug
     dest_file = dest_dir / f"{slug}-variable-latin.woff2"
 
     faces: list = []
-    for block in re.findall(r"@font-face\s*\{([^}]*)\}", css_text):
+    weight_source = "google-css"
+    # face_blocks keeps only this family's blocks (a multi-family CSS2 response carries others) and,
+    # when Google lists a `latin` subset, only that one — it lists cyrillic / latin-ext FIRST, and
+    # self-hosting the first block saved the latin-ext file under the "-latin" name.
+    for _subset, block in font_weights.face_blocks(css_text, family):
         m_family = re.search(r"font-family:\s*['\"]?([^;'\"]+)['\"]?\s*;", block)
         m_style = re.search(r"font-style:\s*([^;]+);", block)
-        m_weight = re.search(r"font-weight:\s*([^;]+);", block)
         m_src = re.search(r"src:\s*url\(([^)]+)\)", block)
-        if not (m_family and m_src) or m_family.group(1).strip().lower() != family.lower():
-            continue  # a multi-family CSS2 response — only self-host the family we asked for
+        if not m_src:
+            continue
 
         if not dest_file.exists():
             src_url = m_src.group(1).strip("'\"")
@@ -196,9 +258,7 @@ def _self_host_google_font(family: str, links: list, repo: pathlib.Path, trace: 
                               "attempted_url": src_url})
                 continue
             try:
-                freq = urllib.request.Request(src_url, headers={"User-Agent": _FONT_FETCH_UA})
-                with urllib.request.urlopen(freq, timeout=20) as fresp:
-                    font_bytes = fresp.read()
+                font_bytes = _fetch_bytes(src_url)
             except (urllib.error.URLError, TimeoutError) as exc:
                 trace.append({"kind": "gap", "what": f"font-face:{family}",
                               "reason": f"font-face CSS parsed but the .woff2 download failed "
@@ -207,9 +267,11 @@ def _self_host_google_font(family: str, links: list, repo: pathlib.Path, trace: 
             dest_dir.mkdir(parents=True, exist_ok=True)
             dest_file.write_bytes(font_bytes)
 
+        weight, weight_source = font_weights.choose_weight(
+            _face_weight(block), variable, links, facts, family)
         faces.append({
             "fontFamily": m_family.group(1).strip(),
-            "fontWeight": (m_weight.group(1).strip() if m_weight else "400"),
+            "fontWeight": weight,
             "fontStyle": (m_style.group(1).strip() if m_style else "normal"),
             "fontDisplay": "swap",
             "src": [f"file:./assets/fonts/{slug}/{dest_file.name}"],
@@ -225,9 +287,12 @@ def _self_host_google_font(family: str, links: list, repo: pathlib.Path, trace: 
                       "attempted_url": css_url})
         return None
 
-    trace.append({"kind": "font-loading", "what": f"font-face:{family}",
-                  "reason": "self-hosted a font not already bundled in the framework",
-                  "saved_to": faces[0]["src"][0], "source_css_url": css_url})
+    entry = {"kind": "font-loading", "what": f"font-face:{family}",
+             "reason": "self-hosted a font not already bundled in the framework",
+             "saved_to": faces[0]["src"][0], "source_css_url": css_url}
+    if weight_source != "google-css":
+        entry["weight_source"] = weight_source  # absent when Google's own range was used
+    trace.append(entry)
     return faces
 
 
@@ -253,7 +318,7 @@ def _overlay_font_families(baseline: dict, facts: dict, links: list, trace: list
         bundled_face = bundled.get(name.lower())
         if bundled_face:
             return [dict(bundled_face)]
-        return _self_host_google_font(name, links, repo, trace)
+        return _self_host_google_font(name, links, repo, trace, facts)
 
     if "body" in by_slug:
         by_slug["body"]["fontFamily"] = body_fam
@@ -463,6 +528,11 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
         "draft_css_sha256": css_sha256(css),
         "extractor_version": EXTRACTOR_VERSION,
     }
+    # A Claude Design draft keeps its design in inline styles, its script and a README, none of
+    # which the CSS hash sees. Static drafts get no extra key, so their snapshots are unchanged.
+    source_hash = draft_source_sha256(html, read_readme_text(draft_dir))
+    if source_hash:
+        snap["_sgsExtractor"]["draft_source_sha256"] = source_hash
     return snap
 
 

@@ -76,7 +76,8 @@ def test_readme_layout(readme_folder):
 def test_readme_absent_facts_are_absent(tmp_path):
     (tmp_path / "README.md").write_text("# Only prose\n\nNothing declared.\n", encoding="utf-8")
     out = ds.read_readme_tokens(tmp_path)
-    assert out == {"found": True, "path": str(tmp_path / "README.md"), "colours": [], "fonts": [], "layout": {}}
+    assert out == {"found": True, "path": str(tmp_path / "README.md"), "colours": [], "unreadable_tables": 0,
+                   "rows_without_hex": [], "fonts": [], "layout": {}}
 
 
 def test_readme_output_is_json_serialisable(readme_folder):

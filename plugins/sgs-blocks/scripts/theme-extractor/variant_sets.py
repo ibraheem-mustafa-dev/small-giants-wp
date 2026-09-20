@@ -2,7 +2,8 @@
 
 An enum prop in a ``data-props`` attribute names the options; an object literal in the draft's script,
 keyed by those option names, holds each option's colours. Read purely from text (no browser, no
-network). Returns plain, JSON-serialisable dicts. Nothing here names a client.
+network), then chooses the accent set the palette overlay uses. Returns plain, JSON-serialisable dicts.
+Nothing here names a client.
 """
 from __future__ import annotations
 
@@ -10,7 +11,8 @@ import html as html_lib
 import json
 import re
 
-from declared_sources import normalise_hex
+from declared_sources import HEX_RE, normalise_hex
+from palette_vocab import ACCENT_SLUGS, VARIANT_KEY_TABLE, trace_row
 
 _DATA_PROPS_RE = re.compile(r"""data-props\s*=\s*(?:"([^"]*)"|'([^']*)')""", re.IGNORECASE | re.DOTALL)
 _KEY_OPEN_RE = r"""['"]?{key}['"]?\s*:\s*\{{"""
@@ -102,3 +104,73 @@ def read_script_variant_sets(html: str) -> dict:
         if sets is not None:
             result[name] = {"default": spec["default"], "options": spec["options"], "sets": sets}
     return result
+
+
+# --------------------------------------------------------------------------- choosing the accent set
+
+
+def slug_map(values: dict[str, str]) -> tuple[dict[str, str], list[tuple[str, str, str]]]:
+    """One option's inner keys -> ({slug: HEX}, [(key, HEX, why unmapped)]). Nothing is dropped unseen."""
+    mapped: dict[str, str] = {}
+    unmapped: list[tuple[str, str, str]] = []
+    for key, colour in values.items():
+        slug = next((s for pattern, s in VARIANT_KEY_TABLE if re.match(pattern, key, re.I)), None)
+        if slug is None:
+            unmapped.append((key, colour, "has no role in the accent vocabulary"))
+        elif slug in mapped:
+            unmapped.append((key, colour, f"maps to {slug}, already taken by an earlier key"))
+        else:
+            mapped[slug] = colour
+    return mapped, unmapped
+
+
+def _rendered_option(mapped: dict[str, dict[str, str]], options: list[str], facts: dict) -> str | None:
+    """The option whose accent equals a hex the rendered page holds in a custom property."""
+    for prop in facts.get("customProps") or []:
+        value = str(prop.get("value", "")).strip()
+        if not HEX_RE.fullmatch(value):
+            continue
+        for option in options:
+            if option in mapped and mapped[option].get("accent") == normalise_hex(value):
+                return option
+    return None
+
+
+def _map_options(prop: str, spec: dict, trace: list) -> dict[str, dict[str, str]]:
+    """Every option that maps at least an accent colour, its roles mapped; each unmapped key traced."""
+    mapped: dict[str, dict[str, str]] = {}
+    for option, values in spec["sets"].items():
+        roles, unmapped = slug_map(values)
+        for key, colour, why in unmapped:
+            trace_row(trace, "skip", f"variant set {prop}.{option}.{key}", f"inner key {why}: left unmapped", colour)
+        if "accent" in roles:
+            mapped[option] = roles
+        else:
+            trace_row(trace, "skip", f"variant set {prop}.{option}",
+                      "option maps no accent colour (inner keys: " + ", ".join(values) + "): left out")
+    return mapped
+
+
+def choose_accent_set(variant_sets: dict, facts: dict, trace: list) -> dict | None:
+    """The first prop whose default option maps an accent colour, as ``{prop, active, sets, confirmed}``.
+
+    An option lacking one role is still accepted (it maps the roles it has); a prop is rejected only
+    when its default option maps no accent colour at all, and every rejection is traced with its reason.
+    """
+    for prop in sorted(variant_sets):
+        spec = variant_sets[prop]
+        mapped = _map_options(prop, spec, trace)
+        if not mapped:
+            trace_row(trace, "skip", f"variant set {prop}", "no option maps an accent colour")
+            continue
+        default = spec.get("default")
+        if default not in mapped:
+            trace_row(trace, "skip", f"variant set {prop}", "the default option's set is absent")
+            continue
+        rendered = _rendered_option(mapped, spec["options"], facts)
+        active = rendered or default
+        trace_row(trace, "declared", f"accentSets.{prop}", "active option " + (
+            "confirmed by the rendered custom property" if rendered else "is the declared default"), active)
+        sets = {opt: {s: m[s] for s in sorted(m) if s in ACCENT_SLUGS} for opt, m in sorted(mapped.items())}
+        return {"prop": prop, "active": active, "sets": sets, "confirmed": rendered is not None}
+    return None

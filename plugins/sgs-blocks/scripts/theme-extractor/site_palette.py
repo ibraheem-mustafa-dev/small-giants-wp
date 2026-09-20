@@ -9,60 +9,25 @@ validated against how the colours are USED (usage_census):
 * variant-set (accent) colours reach elements only via `var(--acc)`, so the census cannot count them:
   they are accepted when the default option is present and the RENDERED custom property picks the
   active option;
-* undeclared base slugs are untouched. Vocabulary is DATA; nothing here names a client.
+* the rendered page wins over a README colour it contradicts, and the measured primary button gives
+  `primary` (``declared_reconcile``); neutral slots no phrase filled get advisory usage proposals
+  (``usage_roles``);
+* undeclared base slugs are untouched. Vocabulary is DATA (``palette_vocab``); nothing here names a client.
 """
 from __future__ import annotations
 
 import re
 
+import declared_layout
+import declared_reconcile
 import usage_census
-from declared_sources import HEX_RE, normalise_hex
+import usage_roles
+import variant_sets as variant_sets_mod
 from palette import mix_hex
+from palette_vocab import (ACCENT_SLUGS, ALL_FAMILIES, MAX_OFF_ROLE_SHARE, MIN_ROW_USES, PRIMARY_DARK_MIX,
+                           ROLE_TABLE, SKIP_TABLE, trace_row)
 
-# --------------------------------------------------------------------------- vocabulary (data)
-
-# README row (name + " " + use) matched case-insensitively. First matching row wins, so order runs
-# from the most specific phrase to the most general.
-SKIP_TABLE = (
-    (r"\bfaint\b|\bplaceholder\b|\bdisabled\b", "placeholder-tier role: no palette slot"),
-    (r"\bgoogle\b|\bwidget\b|\bthird[- ]party\b", "third-party widget colour: stays literal"),
-    (r"\bordered in\b|\bout of stock\b|\bout-of-stock\b|\bbackorder", "status colour with no base slug"),
-)
-# (pattern, slugs, property families the role legitimately covers)
-ALL_FAMILIES = ("text", "background", "border", "fill")
-ROLE_TABLE = (
-    (r"\bwhats\s?app\b", ("whatsapp",), ALL_FAMILIES),
-    (r"\baccent ink\b|\bink accent\b", ("accent-text",), ("text", "fill")),
-    (r"\b(?:ink|text) on dark\b", ("text-inverse", "primary-text"), ("text", "fill")),
-    (r"\bpage background\b|\bbody background\b", ("surface",), ("background", "fill")),
-    (r"\bwhite surface\b|^surface\b|\bcards?\b|\bpanels?\b", ("surface-alt",), ("background", "fill")),
-    (r"\bbody text\b|\bparagraphs?\b", ("text-muted",), ("text", "fill")),
-    (r"\bmuted text\b|\bspec labels?\b|\blabels?\b", ("text-label",), ("text", "fill")),
-    (r"\bhairline\b|\bborders?\b|\bdividers?\b", ("border",), ("border", "background")),
-    (r"\bsoft fill\b|\btint\b", ("accent-light",), ("background", "border", "fill")),
-    (r"^accent\b", ("accent",), ALL_FAMILIES),
-    (r"\bin stock\b|\bsuccess\b", ("success",), ALL_FAMILIES),
-    (r"\bink\b|\bprimary text\b", ("text", "primary"), ALL_FAMILIES),
-)
-# Variant-set key -> palette slug.
-VARIANT_KEY_TABLE = (
-    (r"^(?:acc|accent)$", "accent"),
-    (r"^ink$", "accent-text"),
-    (r"^(?:soft|tint|light)$", "accent-light"),
-)
-ACCENT_SLUGS = ("accent", "accent-light", "accent-text")
-# A colour whose census usage falls outside the role's families by more than this share drifts.
-MAX_OFF_ROLE_SHARE = 0.25
-# A README row needs at least this many census uses in its OWN role families.
-MIN_ROW_USES = 1
-SQUARE_RADIUS_RE = re.compile(r"^0+(?:px|rem|em)?(?![\d.])")
-SQUARE_RADIUS_KEYS = ("small", "medium", "large")
-PRIMARY_DARK_MIX = 0.25
-
-
-def _log(trace: list, kind: str, what: str, reason: str, value: str | None = None, **extra) -> None:
-    trace.append({"kind": kind, "what": what, **({"value": value} if value else {}), **extra,
-                  "reason": reason})
+_log = trace_row
 
 
 def _classify(text: str):
@@ -165,55 +130,17 @@ def _map_readme_colours(declared: dict, accent_supplied: bool, census: dict, ski
     return assigned
 
 
-def _slug_map(values: dict[str, str]) -> dict[str, str]:
-    out: dict[str, str] = {}
-    for key, colour in values.items():
-        for pattern, slug in VARIANT_KEY_TABLE:
-            if re.match(pattern, key, re.I):
-                out.setdefault(slug, colour)
-                break
-    return out
-
-
-def _rendered_option(mapped: dict[str, dict[str, str]], options: list[str], facts: dict) -> str | None:
-    for prop in facts.get("customProps") or []:
-        value = str(prop.get("value", "")).strip()
-        if not HEX_RE.fullmatch(value):
-            continue
-        for option in options:
-            if mapped[option].get("accent") == normalise_hex(value):
-                return option
-    return None
-
-
-def _choose_accent_set(variant_sets: dict, facts: dict, trace: list) -> dict | None:
-    for prop in sorted(variant_sets):
-        spec = variant_sets[prop]
-        mapped = {opt: _slug_map(vals) for opt, vals in spec["sets"].items()}
-        if not all("accent" in m for m in mapped.values()):
-            _log(trace, "skip", f"variant set {prop}", "an option has no accent colour")
-            continue
-        default = spec.get("default")
-        if default not in mapped:
-            _log(trace, "skip", f"variant set {prop}", "the default option's set is absent")
-            continue
-        rendered = _rendered_option(mapped, spec["options"], facts)
-        active = rendered or default
-        _log(trace, "declared", f"accentSets.{prop}", "active option " + (
-            "confirmed by the rendered custom property" if rendered else "is the declared default"), active)
-        sets = {opt: {s: m[s] for s in sorted(m) if s in ACCENT_SLUGS} for opt, m in sorted(mapped.items())}
-        return {"prop": prop, "active": active, "sets": sets, "confirmed": rendered is not None}
-    return None
-
-
 def _title(slug: str) -> str:
     return slug.replace("-", " ").title()
 
 
 def _overlay_palette(snap: dict, assigned: dict[str, str], trace: list,
-                     advisory: frozenset[str] = frozenset()) -> None:
+                     advisory: frozenset[str] = frozenset(),
+                     proposed: dict[str, tuple[str, float]] | None = None) -> None:
     """Replace base slugs in place with the assigned colours, each tagged ``_baseline_color`` (the base
-    theme's hex, which the push script restores when stripping advisory; Pass B's entry carries it)."""
+    theme's hex, which the push script restores when stripping advisory; Pass B's entry carries it).
+    ``proposed`` slots (usage-proposed fallbacks) are written as advisory derived entries."""
+    proposed = proposed or {}
     pal = snap.setdefault("settings", {}).setdefault("color", {}).setdefault("palette", [])
     base_slugs = {e["slug"] for e in pal}
     out: list[dict] = []
@@ -226,6 +153,12 @@ def _overlay_palette(snap: dict, assigned: dict[str, str], trace: list,
                         "_baseline_color": base})
             _log(trace, "overlay", f"palette.{slug}", "base slug replaced in place", assigned[slug],
                  was=entry.get("color"))
+        elif slug in proposed:
+            out.append({"slug": slug, "color": proposed[slug][0], "name": entry.get("name", _title(slug)),
+                        "_source": "derived", "confidence": proposed[slug][1], "advisory": True,
+                        "_baseline_color": base})
+            _log(trace, "overlay", f"palette.{slug}", "base slug replaced in place by an advisory proposal",
+                 proposed[slug][0], was=entry.get("color"))
         elif slug == "primary-dark" and "primary" in assigned:
             dark = mix_hex(assigned["primary"], "#000000", PRIMARY_DARK_MIX).upper()
             out.append({"slug": slug, "color": dark, "name": entry.get("name", _title(slug)),
@@ -242,39 +175,30 @@ def _overlay_palette(snap: dict, assigned: dict[str, str], trace: list,
     snap["settings"]["color"]["palette"] = out
 
 
-def _px(value) -> float | None:
-    m = re.fullmatch(r"\s*(\d+(?:\.\d+)?)px\s*", value) if isinstance(value, str) else None
-    return float(m.group(1)) if m else None
+def _report_unreadable_tables(declared: dict, trace: list) -> None:
+    """FR-33-9: a README colour table the reader could not fully use is a trace gap, never a silent drop."""
+    if declared.get("unreadable_tables"):
+        _log(trace, "gap", "README colour table",
+             f"a declared token table could not be read ({declared['unreadable_tables']} table(s) hold hex "
+             "colours but yielded no row)")
+    if declared.get("rows_without_hex"):
+        _log(trace, "gap", "README colour table", "declared token rows carry no hex colour and cannot be "
+             "mapped: " + ", ".join(declared["rows_without_hex"]))
 
 
-def _apply_layout(settings: dict, layout: dict, trace: list) -> None:
-    content = layout.get("max_content_width")
-    if not content:
-        return
-    target = settings.setdefault("layout", {})
-    target["contentSize"] = content
-    wide, narrow = _px(target.get("wideSize")), _px(content)
-    if target.get("wideSize") is None or (wide is not None and narrow is not None and wide < narrow):
-        target["wideSize"] = content
-    _log(trace, "declared", "layout.contentSize",
-         f"README max content width; wideSize {target['wideSize']} (never narrower)", content)
-
-
-def _apply_radius(settings: dict, layout: dict, trace: list) -> None:
-    text = str(layout.get("border_radius", "")).replace("`", "").strip()
-    if not SQUARE_RADIUS_RE.match(text):
-        return
-    radius = settings.setdefault("custom", {}).setdefault("borderRadius", {})
-    for key in SQUARE_RADIUS_KEYS:
-        radius[key] = "0px"
-    _log(trace, "declared", "custom.borderRadius",
-         "README declares a square design; pill and other keys untouched", "0px")
+def _readme_hexes(declared: dict) -> set[str]:
+    return {h for row in declared.get("colours") or [] for h in row.get("hexes") or []}
 
 
 def apply_declared_design(snap: dict, declared: dict, variant_sets: dict, census: dict, facts: dict,
                           trace: list) -> None:
-    """Overlay the declared design system onto ``snap`` in place (palette, accent sets, layout, radius)."""
-    accent = _choose_accent_set(variant_sets, facts, trace)
+    """Overlay the declared design system onto ``snap`` in place (palette, accent sets, layout, radius).
+
+    Order: README phrase mapping, accent set, computed-wins reconciliation (FR-33-1), measured primary
+    button, then advisory usage-proposed fallbacks for the neutral slots still open (only when a README
+    table or variant set exists, so a static draft is never touched)."""
+    _report_unreadable_tables(declared, trace)
+    accent = variant_sets_mod.choose_accent_set(variant_sets, facts, trace)
     skipped: dict[str, str] = {}
     assigned = _map_readme_colours(declared, accent is not None, census, skipped, trace)
     settings = snap.setdefault("settings", {})
@@ -286,11 +210,17 @@ def apply_declared_design(snap: dict, declared: dict, variant_sets: dict, census
     if unconfirmed:
         _log(trace, "overlay", "palette.accent*", "accent not confirmed by a rendered custom property: "
              "advisory, so cached facts cannot make a wrong accent permanent")
-    _overlay_palette(snap, assigned, trace, frozenset(ACCENT_SLUGS) if unconfirmed else frozenset())
+    declared_reconcile.apply_computed(assigned, facts, trace)
+    declared_reconcile.apply_measured_primary(snap, assigned, facts, trace)
+    proposed: dict[str, tuple[str, float]] = {}
+    if declared.get("colours") or variant_sets:
+        proposed = usage_roles.propose_roles(census, _readme_hexes(declared), assigned, skipped,
+                                             settings.get("color", {}).get("palette", []), trace)
+    _overlay_palette(snap, assigned, trace, frozenset(ACCENT_SLUGS) if unconfirmed else frozenset(), proposed)
     layout = declared.get("layout") or {}
-    _apply_layout(settings, layout, trace)
-    _apply_radius(settings, layout, trace)
-    taken = set(assigned.values())
+    declared_layout.apply_layout(settings, layout, trace)
+    declared_layout.apply_radius(settings, layout, trace)
+    taken = set(assigned.values()) | {colour for colour, _confidence in proposed.values()}
     for colours in (accent["sets"].values() if accent else ()):
         taken.update(colours.values())
     for colour, reason in usage_census.explain_rejections(census, taken).items():

@@ -170,6 +170,18 @@
     "reason": "README 'WhatsApp', 10 of 10 uses in its role's families (text 1, background 8, border 1), consistent with its role"
   },
   {
+    "kind": "declared",
+    "what": "palette.primary",
+    "value": "#141414",
+    "reason": "measured primary button background"
+  },
+  {
+    "kind": "declared",
+    "what": "palette.primary-text",
+    "value": "#FAF8F5",
+    "reason": "measured primary button text"
+  },
+  {
     "kind": "overlay",
     "what": "palette.primary",
     "value": "#141414",
@@ -785,21 +797,21 @@
     "what": "font-face:Outfit",
     "reason": "self-hosted a font not already bundled in the framework",
     "saved_to": "file:./assets/fonts/outfit/outfit-variable-latin.woff2",
-    "source_css_url": "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Roboto:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap"
+    "source_css_url": "https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap"
   },
   {
     "kind": "font-loading",
     "what": "font-face:Playfair Display",
     "reason": "self-hosted a font not already bundled in the framework",
     "saved_to": "file:./assets/fonts/playfair-display/playfair-display-variable-latin.woff2",
-    "source_css_url": "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700;800;900&display=swap"
+    "source_css_url": "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500..700&display=swap"
   },
   {
     "kind": "font-loading",
     "what": "font-face:Playfair Display",
     "reason": "self-hosted a font not already bundled in the framework",
     "saved_to": "file:./assets/fonts/playfair-display/playfair-display-variable-latin.woff2",
-    "source_css_url": "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700;800;900&display=swap"
+    "source_css_url": "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500..700&display=swap"
   },
   {
     "kind": "preset",

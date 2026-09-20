@@ -23,7 +23,7 @@ enclosing object literal's sibling keys pick the matching one. Colours that are 
 bound into a style (colour-name lookup tables, reviewer or product data arrays,
 swatch lists) are content, not global styling, and are never counted. Product swatch gradients
 that ARE bound into a style (`swatch: 'linear-gradient(...)'` under `background:{{ o.swatch }}`) do
-count, as content colours (on the real Eye Care draft: 7 of them, all as background). Only the
+count, as content colours (a shop draft's product swatches, for example, all as background). Only the
 undeclared 25-use floor and the declared-colour requirement in `promote` keep them out of the palette.
 
 Plain dicts; deterministic ordering (descending uses, then colour).
