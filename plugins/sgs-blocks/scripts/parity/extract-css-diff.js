@@ -251,10 +251,14 @@ function diff( orig, clone ) {
 	const mismatches = [];
 	const onlyOriginal = [];
 	const onlyClone = [];
+	// How much was actually compared: "0 mismatches" over 0 records is not a pass.
+	const compared = { records: 0, properties: 0 };
 
 	for ( const o of orig.records ) {
 		const c = cloneByKey[ o.key ];
 		if ( !c ) { onlyOriginal.push( o.key ); continue; }
+		compared.records++;
+		compared.properties += CAPTURE_PROPS.filter( ( p ) => p !== 'fontFamily' ).length + 2;
 		const props = [];
 		for ( const p of CAPTURE_PROPS ) {
 			const ov = o.styles[ p ];
@@ -272,7 +276,7 @@ function diff( orig, clone ) {
 	}
 	for ( const c of clone.records ) if ( !origByKey[ c.key ] ) onlyClone.push( c.key );
 
-	return { mismatches, onlyOriginal, onlyClone };
+	return { mismatches, onlyOriginal, onlyClone, compared };
 }
 
 // ---------------------------------------------------------------------------
@@ -320,6 +324,7 @@ function toMarkdown( section, byBreakpoint ) {
 		lines.push( `## ${ bp.width }px`, '' );
 		if ( bp.error ) { lines.push( '> ' + bp.error, '' ); continue; }
 		lines.push( `Section: original ${ bp.origSection.rect.w }×${ bp.origSection.rect.h } vs clone ${ bp.cloneSection.rect.w }×${ bp.cloneSection.rect.h }`, '' );
+		lines.push( `Compared: ${ bp.diff.compared.records } element record(s), ${ bp.diff.compared.properties } property comparison(s).`, '' );
 		if ( !bp.diff.mismatches.length ) lines.push( '✅ No property mismatches.', '' );
 		for ( const m of bp.diff.mismatches ) {
 			lines.push( `### ${ m.text ? '“' + m.text + '”' : m.key }` );
@@ -429,6 +434,9 @@ function toMarkdown( section, byBreakpoint ) {
 		let vacuousAny = false;
 		let measuredCount = 0;
 		const unmeasuredWidths = [];
+		const emptyWidths = [];
+		let comparedRecords = 0;
+		let comparedProperties = 0;
 		for ( const width of args.breakpoints ) {
 			await page.setViewportSize( { width, height: 1000 } );
 
@@ -443,6 +451,9 @@ function toMarkdown( section, byBreakpoint ) {
 			}
 			measuredCount++;
 			const d = diff( orig, clone );
+			comparedRecords += d.compared.records;
+			comparedProperties += d.compared.properties;
+			if ( d.compared.records === 0 ) emptyWidths.push( width );
 			// hover note: list original hover rules the clone lacks (by decl signature)
 			const cloneHover = new Set( clone.hoverRules.map( ( h ) => h.css ) );
 			const missingHover = orig.hoverRules.filter( ( h ) => ![ ...cloneHover ].some( ( c ) => c && h.css && c.includes( h.css.split( ':' )[ 0 ] ) ) );
@@ -474,7 +485,8 @@ function toMarkdown( section, byBreakpoint ) {
 		 * the exit codes below are the half that cannot be ignored.
 		 */
 		console.error(
-			`\nextract-css-diff: MEASURED ${ measuredCount }/${ args.breakpoints.length } breakpoint(s)` +
+			`\nextract-css-diff: MEASURED ${ measuredCount }/${ args.breakpoints.length } breakpoint(s), ` +
+			`${ comparedRecords } element record(s) / ${ comparedProperties } property comparison(s) compared` +
 			( unmeasuredWidths.length
 				? ` — UNMEASURED at ${ unmeasuredWidths.join( ', ' ) }px (trigger not visible: no open state exists at that width)`
 				: '' )
@@ -506,6 +518,15 @@ function toMarkdown( section, byBreakpoint ) {
 				`  No open state at: ${ unmeasuredWidths.join( ', ' ) }px.\n` +
 				'  This is not a pass: you asked for breakpoints that were never measured.\n' +
 				'  Either drop them, or pass --allow-unmeasured to accept the reduced coverage.\n'
+			);
+			exitCode = 3;
+		} else if ( emptyWidths.length ) {
+			// The surface opened but no element record matched between the two
+			// sides: "no mismatches" over zero comparisons is not a pass.
+			console.error(
+				`\nextract-css-diff: EMPTY — no element was compared at ${ emptyWidths.join( ', ' ) }px.\n` +
+				'  The surface opened, but neither side produced a record the other could be matched\n' +
+				'  to. This is not a pass. Check --scope / --section.\n'
 			);
 			exitCode = 3;
 		} else if ( measuredCount === 0 ) {
