@@ -105,9 +105,7 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
 - W3A-5: met. The nav QA fixtures render inside `sgs/site-header` (`document.querySelector('.entry-content header.sgs-site-header .sgs-nav-bar-menu')`
   is non-null on pages 3723, 3733, 3734 and 3735), and the drawer fixtures show submenus and a mega item
   (`python plugins/sgs-blocks/scripts/nav-qa/build-header-fixtures.py --list`).
-- W3A-1: reproduced on the pill mega only (the panel sits 21px below the item, the pointer closes it at 170ms);
-  the fix is verified with a real pointer path (6px steps, slow and fast) on the plain, capped and pill
-  fixtures, with a positive control (instant jump stays open) and a negative control (pointer far away closes).
+- W3A-1: closed with no change (the plain dropdown works on a real header; the pill mega's gap is part of W3C-1).
 - W3A-3: closed, not reproduced inside a real header (page 3763); the content-link rule in
   `plugins/sgs-blocks/assets/css/extensions.css` is the proven cause of the loose-fixture behaviour.
 - W3A-2: closed, not reproduced inside a real header (Shop dropdown on page 3734: no list markers, no

@@ -22,7 +22,9 @@
 
 **Capture browser.** Captures were first taken headless; the protocol now requires a real headed Chrome with `clientWidth`-based labels, and a spot-check measures how much headless distorted the static cells.
 
-**Open.** The W3A-1 fix (the header as one hover region) awaits the design gate. Where the references keep the burger and close control, and whether any drawer omits a top close row, is read from the table, not assumed.
+**W3A-1 closed (Bean).** Bean tested the plain dropdown on a real header and it works, so his loose-fixture symptom was a fixture artefact. The pill mega's 21px gap is not fixed on its own; it is rebuilt with the header width model (W3C-1). The Away reference is the UK storefront.
+
+**Open.** The requirements table is not yet signed off (W3B-5). Where the references keep the burger and close control, and whether any drawer omits a top close row, is read from the table, not assumed.
 
 ## D1132 [ROUTINE] — Draft standardisation council: close the wiring gaps in existing code first; a small draft standard only for what code cannot derive; a deterministic second layer (2026-09-20)
 

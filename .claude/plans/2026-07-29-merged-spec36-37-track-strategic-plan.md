@@ -44,7 +44,7 @@ consuming the proven system.
 ## Clone roster (the definitive list — Gate 5 counts against THIS)
 
 **12 clones** = studionamma (first) · buck · dogstudio · fantasy · lamalama · lusion ·
-wearecollins · **Away · ButcherBox · rabbit.tech** (these three are owed a teardown first, W3B-3) ·
+wearecollins · **Away · ButcherBox · rabbit.tech** (these three are owed a teardown first, W3B-3; the Away reference is the UK storefront) ·
 two designs Bean built in Claude Design, each with a header, nav bar, drawer and mega menu setup:
 **Halcyon Mega Menu** (`sites/Mega-menu design/Mega Menu.dc.html`) and **Indus Foods Mega Menu**
 (`sites/Indus Foods Mega Menu Design/Indus Foods Mega Menu.dc.html`, the client design behind W5-c).
@@ -177,7 +177,7 @@ negative control and is verified on a real header on the canary.
 
 | ID | Unit | Output | Est (taxed) | CP |
 |---|---|---|---|---|
-| W3A-1 | A dropdown or mega panel stays open while the pointer travels from its parent item to the panel | REPRODUCED inside a real header, on the pill fixture's mega panel only: the panel attaches to the header's bottom edge, 21px below the item (the header's own bottom padding), and the panel closes when the pointer takes longer than the 170ms grace to cross it. Fix: the whole header, which contains its panels, is one hover region, so the panel closes only when the pointer leaves the header; the mega's grace is fed by `submenuCloseGrace` (it is a hardcoded 170 today). Needs the design gate (shared close logic) before building. Verified with a real pointer path at 1440px on all three fixtures | 1h (2h) | YES |
+| W3A-1 | A dropdown or mega panel stays open while the pointer travels from its parent item to the panel | CLOSED with no change: the plain dropdown on a real header works (Bean tested it), so his loose-fixture symptom was a fixture artefact. The pill mega's 21px gap below its item is part of the W3C-1 rebuild, not fixed here | — | no |
 | W3A-2 | Default dropdown surface and items | CLOSED, not reproduced inside a real header (see the note under this table); the target was: a dropdown is a visible surface by default (background, border, radius, shadow from theme tokens); no list markers, no default link underline, no marker indent (the dropdown's alignment to its parent item is a W3C-1 family) | 1.5h (3h) | YES |
 | W3A-3 | Top-level items that own a dropdown or mega panel get the same hover treatment as their siblings | CLOSED, not reproduced inside a real header (site header and fixtures outside `.entry-content` show no slide-in on any item). Cause proven: `plugins/sgs-blocks/assets/css/extensions.css` applies a content-link underline slide-in to `.entry-content li a:not(.wp-block-button__link):not(.sgs-toc__link)::after` and a `text-decoration: none` that beats the block's own hover underline; it matches `<a>` elements only, so a nav placed inside `.entry-content` gives plain items the effect and panel-owning items (a `<button>`) not. Optional hardening: exclude nav blocks from that rule | 1h (2h) | YES |
 | W3A-4 | Mama's Munches canary header | nav centred within the bar as the draft has it; hover text stays the draft's dark colour on the pink hover background (`itemSmartContrast` is off by default) | 1h (2h) | no |
@@ -190,8 +190,8 @@ radius and a mega panel of the same left edge and width (`--sgs-mm-panel-width` 
 real header the Shop dropdown computes `list-style-type: none`, link `text-decoration: none`,
 `padding-left: 0`, background `rgb(251, 243, 220)` and a border (command: hover the Shop toggle, then
 read `getComputedStyle` on `.sgs-nav-bar-menu__submenu`), so the bullets, underline, missing surface and
-indent seen on the loose fixture do not occur in a header. W3A-1 reproduces on the pill mega only (21px dead gap; the
-plain and capped headers have 0px because the items fill the header's height). W3A-3 does not reproduce
+indent seen on the loose fixture do not occur in a header. W3A-1 is closed: the plain dropdown works on a real header, and the pill mega's 21px gap (the
+plain and capped headers have 0px because the items fill the header's height) is rebuilt in W3C-1. W3A-3 does not reproduce
 in a real header (`qa-hdr-hover-parity`, page 3763).
 
 ### Wave 3B — Reference deconstruction (the requirements table)
