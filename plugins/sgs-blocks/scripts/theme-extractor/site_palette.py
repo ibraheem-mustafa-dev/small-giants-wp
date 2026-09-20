@@ -24,8 +24,8 @@ import usage_census
 import usage_roles
 import variant_sets as variant_sets_mod
 from palette import mix_hex
-from palette_vocab import (ACCENT_SLUGS, ALL_FAMILIES, MAX_OFF_ROLE_SHARE, MIN_ROW_USES, PRIMARY_DARK_MIX,
-                           ROLE_TABLE, SKIP_TABLE, trace_row)
+from palette_vocab import (ACCENT_SLUGS, ALL_FAMILIES, EXTRA_SLUG_TABLE, MAX_OFF_ROLE_SHARE, MIN_ROW_USES,
+                           PRIMARY_DARK_MIX, ROLE_TABLE, SKIP_TABLE, trace_row)
 
 _log = trace_row
 
@@ -59,7 +59,9 @@ def _plan_rows(declared: dict, accent_supplied: bool, skipped: dict, trace: list
             if accent_supplied and all(s in ACCENT_SLUGS for s in slugs):
                 _log(trace, "skip", row["name"], "accent slugs are supplied by the script variant set", colour)
                 continue
-            plan.append({"row": row["name"], "colour": colour, "slugs": slugs, "families": set(families)})
+            extra = tuple(s for p, s in EXTRA_SLUG_TABLE if re.search(p, text, re.I) and s not in slugs)
+            plan.append({"row": row["name"], "colour": colour, "slugs": tuple(slugs) + extra,
+                         "families": set(families)})
     return plan
 
 

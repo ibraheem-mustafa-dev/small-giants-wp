@@ -3467,6 +3467,13 @@ def _freshness_gate(mockup_path: Path, client: "str | None", skip: bool) -> None
             f"key — it was hand-authored or predates the extractor, so it is NOT verified against "
             f"this draft. Converting now risks a stale palette.\n{remediate}"
         )
+    from shared_utils import is_part_draft  # noqa: E402
+
+    if is_part_draft(snap, mockup_path):
+        print(f"[freshness-gate] '{Path(mockup_path).name}' is not the source draft of client '{client}' "
+              f"(that is '{snap['_sgsExtractor']['source_draft']}'): it inherits the saved snapshot, "
+              "so the draft hash is not checked (FR-33-12).")
+        return
     draft_html = Path(mockup_path).read_text(encoding="utf-8")
     current = draft_css_sha256(draft_html)
     if recorded != current:

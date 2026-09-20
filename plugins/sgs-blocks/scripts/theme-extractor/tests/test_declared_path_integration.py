@@ -74,8 +74,23 @@ def test_palette_overlay_holds_the_declared_roles_and_drops_the_drifting_colours
 
 def test_unmentioned_base_slugs_are_untouched():
     pal, base = _palette(_eye_care()), {e["slug"]: e for e in _baseline()["settings"]["color"]["palette"]}
-    for slug in ("success-light", "error", "error-light", "info", "info-light", "border-light", "footer-bg"):
+    for slug in ("success-light", "error", "error-light", "info", "info-light", "border-light"):
         assert pal[slug] == base[slug]
+
+
+def test_page_background_row_that_names_the_footer_also_fills_footer_bg():
+    pal = _palette(_eye_care())
+    assert pal["footer-bg"]["color"] == pal["surface"]["color"] == "#FAF8F5"
+    assert pal["footer-bg"]["_source"] == "declared" and pal["footer-bg"]["_baseline_color"] == "#0F172A"
+
+
+def test_footer_word_alone_does_not_fill_footer_bg():
+    from site_palette import _classify
+    from palette_vocab import EXTRA_SLUG_TABLE
+    import re as _re
+    assert _classify("Footer background Bottom band")[1][1] == ("footer-bg",)
+    for text in ("Footer text Links", "Ink Primary text, footer links"):
+        assert not any(_re.search(p, text, _re.I) for p, _s in EXTRA_SLUG_TABLE)
 
 
 def test_accent_sets_layout_and_radius():
@@ -162,3 +177,21 @@ def test_readme_without_a_colour_table_and_no_variants_keeps_todays_behaviour(tm
     plain = extract.build_snapshot("x", css, facts, html, _baseline(), [], REPO)
     with_dir = extract.build_snapshot("x", css, facts, html, _baseline(), [], REPO, draft_dir=tmp_path)
     assert json.dumps(plain) == json.dumps(with_dir)
+
+
+def test_extractor_refuses_to_overwrite_a_snapshot_from_a_different_source_draft(tmp_path, capsys):
+    draft = tmp_path / "part.html"
+    draft.write_text("<html><head><style>:root{--a:#111111}</style></head><body></body></html>", encoding="utf-8")
+    existing = tmp_path / "theme-snapshot.json"
+    existing.write_text(json.dumps({"_sgsExtractor": {"source_draft": "home.html"}}), encoding="utf-8")
+    argv = ["--client", "acme", "--draft", str(draft), "--out", str(existing), "--facts", str(FACTS)]
+    assert extract.main(argv) == 6
+    assert "different draft" in capsys.readouterr().err
+
+
+def test_the_snapshot_records_its_source_draft():
+    html = DRAFT.read_text(encoding="utf-8")
+    facts = json.loads(FACTS.read_text(encoding="utf-8"))
+    snap = extract.build_snapshot("eye-care", extract.extract_css(html), facts, html, _baseline(), [], REPO,
+                                  draft_dir=DRAFT_DIR, draft_name=DRAFT.name)
+    assert snap["_sgsExtractor"]["source_draft"] == "Eye Care Birmingham.dc.html"

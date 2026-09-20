@@ -69,7 +69,7 @@ HERE = pathlib.Path(__file__).resolve().parent
 if str(HERE.parent) not in sys.path:
     sys.path.insert(0, str(HERE.parent))
 from shared_utils import (  # noqa: E402
-    css_sha256, draft_source_sha256, extract_css, read_readme_text,
+    css_sha256, draft_source_sha256, extract_css, is_part_draft, read_readme_text,
 )
 
 # Version of THIS extractor's emit logic — stamped into the snapshot's `_sgsExtractor`
@@ -352,7 +352,8 @@ def _declared_design(draft_dir, html: str, pass_a_found: bool) -> tuple[dict, di
 
 
 def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict, trace: list,
-                    repo: pathlib.Path, draft_dir: pathlib.Path | None = None) -> dict:
+                    repo: pathlib.Path, draft_dir: pathlib.Path | None = None,
+                    draft_name: str | None = None) -> dict:
     root_tokens = build_draft_root_token_map(css)
     base_rules = parse_base_rules(css)
 
@@ -533,6 +534,9 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
     source_hash = draft_source_sha256(html, read_readme_text(draft_dir))
     if source_hash:
         snap["_sgsExtractor"]["draft_source_sha256"] = source_hash
+    # Which draft this snapshot describes: any other draft of the client inherits it (FR-33-12).
+    if draft_name:
+        snap["_sgsExtractor"]["source_draft"] = draft_name
     return snap
 
 
@@ -708,6 +712,8 @@ def main(argv=None) -> int:
     ap.add_argument("--out", default=None)
     ap.add_argument("--trace", default=None)
     ap.add_argument("--repo-root", default=None)
+    ap.add_argument("--replace-source", action="store_true",
+                    help="allow this draft to replace a snapshot recorded as extracted from a DIFFERENT draft")
     ap.add_argument("--merge-onto", default=None,
                     help="path to an EXISTING client snapshot — additively preserve its extra palette "
                          "slugs + component CSS (non-destructive deploy to an already-cloned site)")
@@ -721,13 +727,23 @@ def main(argv=None) -> int:
         print("HALT: no CSS found in draft (parser/empty).", file=sys.stderr)
         return 3
 
+    if not args.replace_source:
+        for existing in filter(None, (args.out, args.merge_onto)):
+            existing_path = pathlib.Path(existing)
+            if existing_path.is_file() and is_part_draft(json.loads(existing_path.read_text(encoding="utf-8")), draft):
+                print(f"HALT: {existing_path} was extracted from a different draft. Spec 33 runs on the client's "
+                      "source draft only; other drafts inherit the saved snapshot. Pass --replace-source to make "
+                      f"'{draft.name}' the source draft.", file=sys.stderr)
+                return 6
+
     facts = json.loads(pathlib.Path(args.facts).read_text(encoding="utf-8")) if args.facts \
         else run_measure(draft)
 
     baseline = json.loads((repo / "theme" / "sgs-theme" / "theme.json").read_text(encoding="utf-8"))
 
     trace: list = []
-    snap = build_snapshot(args.client, css, facts, html, baseline, trace, repo, draft_dir=draft.parent)
+    snap = build_snapshot(args.client, css, facts, html, baseline, trace, repo, draft_dir=draft.parent,
+                          draft_name=draft.name)
 
     if args.merge_onto:
         existing_path = pathlib.Path(args.merge_onto)

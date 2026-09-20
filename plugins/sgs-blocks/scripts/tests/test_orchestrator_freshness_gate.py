@@ -125,3 +125,40 @@ def test_skip_flag_still_bypasses_a_stale_claude_design_snapshot(tmp_path, monke
     snap = _snap(CLAUDE_DESIGN, README, with_source=False)
     draft = _setup(tmp_path, monkeypatch, CLAUDE_DESIGN, snap, README)
     orch._freshness_gate(draft, "acme", True)
+
+
+# --------------------------------------------------------------------------- scope: source draft only
+
+
+def _with_source(snap, name):
+    snap["_sgsExtractor"]["source_draft"] = name
+    return snap
+
+
+def test_gate_lets_a_part_draft_inherit_the_saved_snapshot(tmp_path, monkeypatch, capsys):
+    part = STATIC.replace("color:red", "color:blue")  # different CSS: would halt as a source draft
+    snap = _with_source(_snap(CLAUDE_DESIGN, README), "home.dc.html")
+    draft = _setup(tmp_path, monkeypatch, part, snap)
+    orch._freshness_gate(draft, "acme", False)
+    assert "inherits the saved snapshot" in capsys.readouterr().out
+
+
+def test_gate_still_halts_the_recorded_source_draft_when_it_changed(tmp_path, monkeypatch):
+    changed = CLAUDE_DESIGN.replace("margin:0", "margin:1px")
+    snap = _with_source(_snap(CLAUDE_DESIGN, README), "index.html")
+    draft = _setup(tmp_path, monkeypatch, changed, snap, README)
+    with pytest.raises(SystemExit) as exc:
+        orch._freshness_gate(draft, "acme", False)
+    assert "DIFFERENT draft" in str(exc.value)
+
+
+def test_part_draft_still_needs_an_extractor_made_snapshot(tmp_path, monkeypatch):
+    snap = {"_sgsExtractor": {"source_draft": "home.dc.html"}}  # no css hash: hand-authored
+    draft = _setup(tmp_path, monkeypatch, STATIC, snap)
+    with pytest.raises(SystemExit):
+        orch._freshness_gate(draft, "acme", False)
+
+
+def test_is_part_draft_is_false_without_a_recorded_source(tmp_path):
+    from shared_utils import is_part_draft
+    assert is_part_draft(_snap(STATIC, with_source=False), tmp_path / "x.html") is False

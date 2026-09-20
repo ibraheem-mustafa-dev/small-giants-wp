@@ -1,5 +1,15 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1121 [ROUTINE] — Spec 33 runs on a client's source draft only; README Use text can fill a second palette slot (2026-09-20)
+
+**Decisions (Bean).** Only the Eye Care homepage draft and the Mama's Munches homepage draft go through Spec 33. Any other draft of a client inherits the saved snapshot, or keeps its own hex where that does not match. The README's design-token table is the source of the global values.
+
+**Decisions (mine, on the evidence).** (1) The snapshot records `_sgsExtractor.source_draft`; `_freshness_gate` skips the draft-hash check for a different file of the same client, and `extract.py` refuses to overwrite a snapshot from a different source draft without `--replace-source` (Spec 33 FR-33-12). A snapshot with no recorded source behaves as before. (2) The usage check on README rows is KEPT. Proved with `site_palette._classify`: "Card border" and "Panel border" match the surface phrase by wording, so without the usage check a border colour would take a background slot. On the Eye Care draft the check vetoed no README row, but that does not make it inert. (3) `palette_vocab.py::EXTRA_SLUG_TABLE` lets a Use text that names the footer fill `footer-bg`; the Eye Care footer was left on the framework's navy `#0F172A`.
+
+**Verified.** 352 extractor, gate, push and business-details tests pass (344 before, 8 new; breaking `is_part_draft` or the footer table fails 3 of them). Regenerating Eye Care changes only `footer-bg` (`#0F172A` to `#FAF8F5`) and adds `source_draft`. Regenerating Mama's homepage against the untouched HEAD code differs only by the new `source_draft` key and the button hover values, which differ by the same amount between two runs of the untouched code. Live: `--wp--preset--color--footer-bg` is `#FAF8F5` on the Eye Care test site. Mama's committed snapshot was not regenerated, so it gains `source_draft` on its next regeneration.
+
+**Open.** The README's Routes table, Home section list and State section are not yet used by the clone pipeline (missing homepage sections, raw `{{ }}` text); design pending Bean's go-ahead.
+
 ## D1120 [ROUTINE] — Spec 33 now reads a Claude Design draft's declared design system; per-site palette overlay; QC council fixes (2026-09-20)
 
 **Decisions (Bean, this session).** (1) Spec 33 saves global defaults and settings only, never per-element values. (2) The site palette is an OVERLAY on the base SGS palette, generated once per site from the whole draft, holding only colours with a proven consistent role; drifting, one-off and third-party-widget colours stay literal hex on the blocks that use them; a README role called faint or placeholder gets no slot; real content that a draft coloured with its placeholder grey is treated as a real role. (3) The alternative accent sets (taupe chosen, sage and navy kept) are saved under `settings.custom.accentSets`, not as picker swatches. (4) Colours are counted from three sources: inline HTML, JS values that flow into a style attribute (product and reviewer colours are content, not styling), and the rendered page. (5) Static drafts must not change.

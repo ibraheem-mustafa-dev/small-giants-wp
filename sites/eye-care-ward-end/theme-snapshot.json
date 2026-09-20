@@ -134,8 +134,10 @@
         },
         {
           "slug": "footer-bg",
-          "color": "#0F172A",
-          "name": "Footer Background"
+          "color": "#FAF8F5",
+          "name": "Footer Background",
+          "_source": "declared",
+          "_baseline_color": "#0F172A"
         },
         {
           "slug": "text-label",
@@ -732,6 +734,7 @@
   "_sgsExtractor": {
     "draft_css_sha256": "b76b357a40661824cf285e249f5f63fe3a8a39d4b69848e7203cd98d92d72529",
     "extractor_version": "1.0",
-    "draft_source_sha256": "79fe7e0c43faadceaf95bf2847ebb3f5cd9f6647c9a8e4b7c00df2f5844e18be"
+    "draft_source_sha256": "79fe7e0c43faadceaf95bf2847ebb3f5cd9f6647c9a8e4b7c00df2f5844e18be",
+    "source_draft": "Eye Care Birmingham.dc.html"
   }
 }

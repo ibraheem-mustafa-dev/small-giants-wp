@@ -111,6 +111,12 @@
   },
   {
     "kind": "declared",
+    "what": "palette.footer-bg",
+    "value": "#FAF8F5",
+    "reason": "README 'Page background', 13 of 43 uses in its role's families (background 13), consistent with its role"
+  },
+  {
+    "kind": "declared",
     "what": "palette.surface-alt",
     "value": "#FFFFFF",
     "reason": "README 'Surface', 88 of 102 uses in its role's families (background 88), consistent with its role"
@@ -277,6 +283,13 @@
     "what": "palette.border",
     "value": "#E6E1DA",
     "was": "#D4DBE5",
+    "reason": "base slug replaced in place"
+  },
+  {
+    "kind": "overlay",
+    "what": "palette.footer-bg",
+    "value": "#FAF8F5",
+    "was": "#0F172A",
     "reason": "base slug replaced in place"
   },
   {
@@ -756,7 +769,7 @@
     "kind": "base",
     "what": "styles.color.background",
     "_source": "declared",
-    "reason": "widest content-containing ancestor 'html>body>div>div>div' (area 9201600)",
+    "reason": "widest content-containing ancestor 'html>body>div>div>div' (area 9276480)",
     "value": "rgb(250, 248, 245)"
   },
   {

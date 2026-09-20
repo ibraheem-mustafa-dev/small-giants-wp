@@ -66,10 +66,18 @@ test site: `build-deploy.py --target eye-care-test --theme-only` first (it puts 
 `push-theme-snapshot.py --client eye-care-ward-end --target u945238940@141.136.39.73 --target-domain <host> --yes`. Saved
 values: `sync-business-info.py --draft "<draft>" --target-domain <host> --push --map-out
 sites/eye-care-ward-end/site-info-placeholder-map.json`. A Claude Design snapshot from before the second freshness key
-will halt a clone until re-extracted (intended).
+will halt a clone until re-extracted (intended). Scope (D1121): Spec 33 runs on a client's source draft only (the snapshot
+records `_sgsExtractor.source_draft`); any other draft inherits the saved snapshot, and re-extracting from a different draft
+needs `--replace-source`. Mama's snapshot has no `source_draft` until it is next regenerated.
 
 **Real numbers (before the snapshot changed; not re-measured):** Stage 11.6 content 12%, css 0%. Live page: 93 visible
 `{{ }}` placeholders (59 distinct), no ticker text, 7 of 8 homepage boundaries (b3-b9) missing.
+
+**Bean-directed 2026-09-20 (design pending):** use the README beyond tokens. Its Routes table says only `home` belongs on
+`/` (the missing-sections fix, Spec 44 §11 option B); its Home list names the six sections in order (a key for classless
+boundaries); its State section (`bag`, `co`, `f`, `lens`, `view`) is app state, which sorts the raw `{{ }}` text. Read-only
+proof of the text-match against a stored run comes first; a shared-pipeline change needs Bean's approval and must leave Mama's
+unchanged.
 
 **Open, in order:**
 1. *Problem 1, missing sections.* The "14 non-BEM" boundaries are classless sections gated on a hint (the draft has ONE

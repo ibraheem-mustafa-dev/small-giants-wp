@@ -55,6 +55,19 @@ _INLINE_STYLE_ATTR_RE = re.compile(
 )
 
 
+def is_part_draft(snap: dict, draft_path) -> bool:
+    """True when ``snap`` records the draft it was extracted from and ``draft_path`` is a different file.
+
+    Spec 33 runs on a client's source drafts only (the site-wide homepage draft). A page or component
+    draft of the same client inherits the saved snapshot. A snapshot with no recorded source (one made
+    before ``source_draft`` existed) reports False, so it is checked against every draft as before.
+    """
+    from pathlib import Path
+
+    recorded = (snap.get("_sgsExtractor") or {}).get("source_draft")
+    return bool(recorded) and recorded != Path(draft_path).name
+
+
 def is_claude_design_draft(html: str) -> bool:
     """True when ``html`` is a Claude Design (DSL) draft, by content signal."""
     return bool(_DSL_DRAFT_RE.search(html))

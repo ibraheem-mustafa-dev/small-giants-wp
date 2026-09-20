@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 33
-spec_version: "1.4"
+spec_version: "1.5"
 project: small-giants-wp
 thread: header-footer-setup-pipeline (Part 1 of 2)
 title: "Universal Draft Global-Styles / Token Extractor"
@@ -274,6 +274,12 @@ For that kind of draft the snapshot also embeds `_sgsExtractor.draft_source_sha2
 and the README, with line endings normalised. `sgs-clone-orchestrator.py::_freshness_gate` halts when a Claude Design
 draft's snapshot lacks the key or it no longer matches. Static drafts carry no second key, so their snapshots and
 gate behaviour are unchanged.
+The extractor also records the draft it ran on as `_sgsExtractor.source_draft` (the file name). Spec 33 runs on a
+client's source draft only: `shared_utils.py::is_part_draft` is true when a snapshot records a source draft and the draft
+passed is a different file. `_freshness_gate` then lets that draft inherit the saved snapshot without the hash check (the
+snapshot must still carry the extractor key), and `extract.py` refuses to overwrite a snapshot recorded from a different
+draft unless `--replace-source` is given. A snapshot with no recorded source (made before the key existed) is checked
+against every draft as before.
 **Done when:** a `/sgs-clone` run with a stale/absent generated snapshot fails-closed with a clear
 message; a run after a fresh extraction proceeds.
 
@@ -360,6 +366,7 @@ The pipeline inserting the saved values in place of the bindings is NOT built (S
 - Variant sets (`variant_sets.py`): an enum prop in `data-props` plus a script object keyed by its options. Inner key names are matched through a data table; an option counts if it maps an accent role. The rendered custom property (`facts["customProps"]`) says which option is active; when no rendered value confirms it, the accent entries are advisory.
 - Usage (`usage_census.py`, `usage_js.py`): colours are counted in inline styles, hover styles, style blocks and JS values that flow into a style attribute through a template binding. Content data (product swatches, reviewer colours) is not styling and is not counted. A declared colour is promoted when used in a family its role allows; an undeclared one only with at least 25 uses and 90% in one family.
 - The rendered value wins (FR-33-1): `surface` and `text` are checked against the rendered body (`declared_reconcile.py`); `primary` and `primary-text` come from the measured primary button, not from a README word (`presets.py`, `measure.js`).
+- A row's Use text can fill a second slot (`palette_vocab.py::EXTRA_SLUG_TABLE`): a row naming a background and the footer ("Page background: body, header, footer") also fills `footer-bg`, and a row named "Footer background" fills it directly. The usage check stays a guard on the phrase table: a row such as "Card border" matches the surface phrase by its wording alone, and only the usage count (border, not background) stops it taking a background slot.
 - A role the phrase table cannot place gets an ADVISORY proposal from usage rank (`usage_roles.py`), never a firm entry.
 - Vocabulary (role words, column words, variant key names) lives in data tables (`palette_vocab.py`, `declared_sources.py`, `variant_sets.py`). Extending one is a one-line change; a role missing from every table is proposed from usage or logged, not lost.
 

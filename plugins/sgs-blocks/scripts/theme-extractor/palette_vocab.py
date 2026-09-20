@@ -23,6 +23,7 @@ ROLE_TABLE = (
     (r"\bwhats\s?app\b", ("whatsapp",), ALL_FAMILIES),
     (r"\baccent ink\b|\bink accent\b", ("accent-text",), ("text", "fill")),
     (r"\b(?:ink|text) on dark\b", ("text-inverse", "primary-text"), ("text", "fill")),
+    (r"\bfooter (?:background|bg|surface)\b", ("footer-bg",), ("background", "fill")),
     (r"\bpage background\b|\bbody background\b", ("surface",), ("background", "fill")),
     (r"\bwhite surface\b|^surface\b|\bcards?\b|\bpanels?\b", ("surface-alt",), ("background", "fill")),
     (r"\bbody text\b|\bparagraphs?\b", ("text-muted",), ("text", "fill")),
@@ -32,6 +33,11 @@ ROLE_TABLE = (
     (r"^accent\b", ("accent",), ALL_FAMILIES),
     (r"\bin stock\b|\bsuccess\b", ("success",), ALL_FAMILIES),
     (r"\bink\b|\bprimary text\b", ("text", "primary"), ALL_FAMILIES),
+)
+# A row whose "Use" text also names a place that has its own slot fills that slot too ("Page background:
+# body, header, footer" also fills footer-bg). The role's own families still apply.
+EXTRA_SLUG_TABLE = (
+    (r"\b(?:background|surface)\b.*\bfooter\b|\bfooter\b.*\b(?:background|surface)\b", "footer-bg"),
 )
 # A colour whose census usage falls outside the role's families by more than this share drifts.
 MAX_OFF_ROLE_SHARE = 0.25
