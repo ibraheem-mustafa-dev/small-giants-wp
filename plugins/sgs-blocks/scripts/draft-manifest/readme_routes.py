@@ -34,3 +34,50 @@ def read_readme_routes(text: str | None) -> list[dict]:
             j += 1
         i = j
     return routes
+
+
+def norm_view(word: str) -> str:
+    """A view key or flag as a bare lowercase word: ``isHome`` -> ``home``."""
+    return re.sub(r"^is(?=[A-Z])", "", word).lower()
+
+
+def same_word(a: str, b: str) -> bool:
+    """Same word, allowing a plural ('lens' and 'lenses', 'frame' and 'frames')."""
+    a, b = norm_view(a), norm_view(b)
+    return a == b or a + "s" == b or a + "es" == b or b + "s" == a or b + "es" == a
+
+
+def match_route(view_key: str, label: str, routes: list[dict]) -> dict | None:
+    """The README routes row for a screen, matched on its gate-flag view or its label."""
+    return next((r for r in routes if same_word(r["view"], view_key) or same_word(r["view"], label)), None)
+
+
+_HEADING_RE = re.compile(r"^(#{1,6})\s+(.*?)\s*#*\s*$")
+_BULLET_NAME_RE = re.compile(r"^\s*[-*+]\s+\*\*(.+?)\*\*")
+_QUOTED_RE = re.compile(r"[\"“]([^\"”]{6,})[\"”]")
+
+
+def read_screen_sections(text: str | None, screen_words: list[str]) -> list[dict]:
+    """The named sections the README lists under the heading for a screen.
+
+    The heading is the first one containing any of ``screen_words`` (case-insensitive, whole word);
+    its sections are the bullets that open with a bold name, up to the next heading of the same or a
+    higher level. Each is ``{"name", "phrases"}`` where ``phrases`` are the name plus any quoted
+    string in the bullet. Text only; an empty list when nothing is found.
+    """
+    if not text:
+        return []
+    lines, out, level = text.splitlines(), [], None
+    words = [w.lower() for w in screen_words if w]
+    for line in lines:
+        h = _HEADING_RE.match(line)
+        if h:
+            if level is not None and len(h.group(1)) <= level:
+                break
+            if level is None and any(re.search(r"\b%s\b" % re.escape(w), h.group(2), re.I) for w in words):
+                level = len(h.group(1))
+            continue
+        m = _BULLET_NAME_RE.match(line) if level is not None else None
+        if m:
+            out.append({"name": m.group(1).strip(), "phrases": [m.group(1).strip(), *_QUOTED_RE.findall(line)]})
+    return out

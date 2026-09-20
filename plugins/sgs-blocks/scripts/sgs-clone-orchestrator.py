@@ -1443,8 +1443,17 @@ def stage_1_boundary(
     auto_section: bool,
     run_dir: Path,
     sc_var_cache_path: Path | None = None,
+    draft_dir: Path | None = None,
+    screen: str | None = None,
+    screen_route: bool = True,
 ) -> dict:
     """Stage 1 -- delegate to per-section-convention-voter.py via subprocess.
+
+    Multi-screen drafts (screen route): when the draft holds two or more ``<main
+    data-screen-label>`` screens, every boundary is tagged with its screen and the run's chosen
+    screen (``screen``, else the README's route ``/``); see orchestrator/screen_route.py. A draft
+    with fewer than two screens is untouched. ``draft_dir`` is the ORIGINAL draft's folder (the
+    README sits beside it, not beside the resolved copy Stage 1 reads).
 
     `sc_var_cache_path` (2026-09-14, Bean-directed): threaded straight through to
     the voter's own --sc-var-cache so already-committed Tier B classifications
@@ -1506,6 +1515,26 @@ def stage_1_boundary(
             voter_out.write_text(json.dumps(output, indent=2, ensure_ascii=False), encoding="utf-8")
         except Exception as exc:  # noqa: BLE001 - enrichment is advisory; soft-fail
             warnings.append(f"stage1_boundary_hook soft-failed: {exc}; raw boundaries preserved")
+
+    # Screen route: tag each boundary with the screen it sits in (multi-screen drafts only).
+    tagged_path = run_dir / "tagged-mockup.html"
+    if screen_route and output.get("boundaries") and tagged_path.exists():
+        _sr = _load_module_from_path("sgs_screen_route", ORCHESTRATOR_DIR / "screen_route.py")
+        try:
+            summary = _sr.apply(output, tagged_path.read_text(encoding="utf-8"), Path(draft_dir or mockup_path.parent), screen)
+        except _sr.ScreenRouteError as exc:
+            sys.exit(f"HALT (screen route): {exc}")
+        if summary is not None:
+            (run_dir / "screens.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
+            voter_out.write_text(json.dumps(output, indent=2, ensure_ascii=False), encoding="utf-8")
+            if summary.get("active"):
+                other = [s for s in summary["screens"] if s["label"] != summary["chosen"]]
+                warnings.append(
+                    f"screen route: cloning screen '{summary['chosen']}' (chosen by {summary['chosen_by']}); "
+                    f"{len(other)} other screen(s) are not converted into this page: "
+                    + ", ".join(f"{s['label']} ({len(s['boundaries'])} boundaries, {s['text_chars']} characters of text)" for s in other))
+            else:
+                warnings.append(f"screen route inactive: {summary['reason']}")
 
     # Tier B halt (2026-09-14, Bean-directed): if a cache was supplied and any
     # sc-for boundary is still genuinely unresolved after Tier A + the cache,
@@ -2049,6 +2078,21 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
         target_block = m["block_name"]
         boundary = boundaries_by_id.get(boundary_id, {})
         section_selector = boundary.get("selector") or args.section
+        # Screen route: a boundary on another screen of a multi-screen draft belongs to another page.
+        # Reported with its text length, never converted into this one and never dropped silently.
+        if boundary.get("screen_role") == "other":
+            _emit(_trace_for(run_dir), stage="stage_4_other_route_view", boundary_id=boundary_id,
+                  screen=boundary.get("screen"), text_chars=boundary.get("screen_text_chars", 0),
+                  reason="boundary is on another screen of the draft")
+            per_section_results.append({
+                "boundary_id": boundary_id, "section_id": m.get("section_id"), "selector": section_selector,
+                "block_name": target_block, "status": "other-route-view", "screen": boundary.get("screen"),
+                "extract_path": "", "extracted_attributes": {}, "block_markup": "", "token_resolutions": [],
+                "new_tokens_written": [], "supports_decisions": [], "supports_emitted_attributes": {},
+                "supports_omitted_attributes": {}, "modifier_signals": {},
+                "class_signature": boundary.get("class_signature") or [],
+            })
+            continue
         if not section_selector:
             aggregate_warnings.append(f"{boundary_id}: no selector resolved; skipping")
             continue
@@ -2212,6 +2256,29 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                     dom_shape_min_confidence=_dom_shape_min_conf,
                     class_signature=_class_sig,
                     reason="dom_shape Tier — classless boundary with no sc_var signal let through via dom_shape_hint",
+                )
+
+            # Screen tier (screen route): a classless TOP-LEVEL section on the screen this run clones is
+            # admitted as the plain container (Spec 31 FR-31-4 default). Eligibility only, like the
+            # tiers above: no class is injected. Fires only for a multi-screen draft (screen_role is set
+            # by orchestrator/screen_route.py) and never for an "item" boundary, so a static draft's
+            # path is exactly what it was.
+            _cv2_eligible_via_screen = False
+            if (
+                not _cv2_eligible
+                and boundary.get("screen_role") == "default"
+                and boundary.get("boundary_kind", "container") == "container"
+                and not (boundary.get("class_signature") or [])
+            ):
+                _cv2_eligible = True
+                _cv2_eligible_via_screen = True
+                _emit(
+                    _trace_for(run_dir),
+                    stage="stage_4_screen_gate",
+                    boundary_id=boundary_id,
+                    screen=boundary.get("screen"),
+                    readme_section=boundary.get("readme_section"),
+                    reason="screen Tier — classless top-level section on the cloned screen admitted as the container default",
                 )
 
         # Spec 44 §4.4 — classless repeated-group recognition, BEFORE convert_section.
@@ -2601,6 +2668,7 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                         # confident BEM-based matches from lower-confidence schema-variant hints.
                         "admitted_via_sc_var_gate": _cv2_eligible_via_sc_var,
                         "admitted_via_dom_shape_gate": _cv2_eligible_via_dom_shape,
+                        "admitted_via_screen_gate": _cv2_eligible_via_screen,
                     })
                     continue
                 # Normalise to orchestrator per_section_results schema.
@@ -2689,6 +2757,7 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                     # schema-variant hinting.
                     "admitted_via_sc_var_gate": _cv2_eligible_via_sc_var,
                     "admitted_via_dom_shape_gate": _cv2_eligible_via_dom_shape,
+                    "admitted_via_screen_gate": _cv2_eligible_via_screen,
                 })
                 if _cv2_markup:
                     aggregate_markup_parts.append(_cv2_markup)
@@ -3677,6 +3746,17 @@ def main():
              "--sc-var-min-confidence.",
     )
     parser.add_argument(
+        "--screen", default=None, metavar="LABEL",
+        help="Multi-screen Claude Design draft: the screen (its data-screen-label) this run "
+             "clones into the page. Default: the screen the README routes table sends to '/', "
+             "cross-checked against the draft's own default marker. Ignored for a draft with "
+             "fewer than two labelled screens.",
+    )
+    parser.add_argument(
+        "--no-screen-route", action="store_true", default=False,
+        help="Disable the screen route: convert every screen of a multi-screen draft, as before.",
+    )
+    parser.add_argument(
         "--classless-match", action="store_true", default=False,
         help="Opt-in Spec 44 Pass 1 (.claude/specs/44-CLASSLESS-REPEATER-RECOGNITION.md "
              "§9): before a boundary is handed to converter.entry.convert_section, a "
@@ -3932,6 +4012,9 @@ def main():
     boundary = stage_1_boundary(
         args.mockup, args.section or "", args.auto_section, run_dir,
         sc_var_cache_path=args.sc_var_cache,
+        draft_dir=_draft_path.parent,
+        screen=getattr(args, "screen", None),
+        screen_route=not getattr(args, "no_screen_route", False),
     )
     bcount = len(boundary.get("boundaries", []))
     primary_conv = (boundary.get("convention_summary") or {}).get("primary", "?")

@@ -73,13 +73,15 @@ needs `--replace-source`. Mama's snapshot has no `source_draft` until it is next
 **Real numbers (before the snapshot changed; not re-measured):** Stage 11.6 content 12%, css 0%. Live page: 93 visible
 `{{ }}` placeholders (59 distinct), no ticker text, 7 of 8 homepage boundaries (b3-b9) missing.
 
-**Draft manifest (D1123, built, read-only).** `scripts/draft-manifest/manifest.py --draft "<draft>" --out m.json --report m.md`
-lists a draft's screens (its own `data-screen-label` views, matched to the README routes table), kinds, header and footer,
-overlay entities, the reference graph and a build order (global styles, page shells, modals/forms/menus/drawers, header and
-footer, then content). Eye Care: 9 screens, 4 normal pages (Home, About, Help, Contact), 6 entities. Report:
-`reports/2026-09-20-eye-care-draft-manifest.md`. Nothing consumes it yet. Next: the per-client entity registry (built once,
-referenced many times, recognised on later references), then Home-screen-only cloning (Spec 44 §11 A and B). Bean's mapping:
-size guide = `sgs_modal`, bag drawer = `sgs/cart`, shop filter drawer = the shop archive's filter.
+**Screen route (D1124, built).** A multi-screen Claude Design draft now clones ONE screen: `--screen <label>`, else the
+README's route `/` checked against the draft's default marker; other screens are skipped and reported (`other-route-view`),
+and a classless top-level section on the cloned screen is admitted as the container. Live Eye Care test page: 5 of 8
+homepage sections (was 1), no other-screen text, raw `{ }` text 53 (was 93). Still missing: b3, b4, b6 (the FR-44-1 review
+queue) and the raw layout bindings in attributes (`padding` `{ secPad }`; the README's Spacing section can resolve them).
+Mama's is untouched (identical markup route on/off). Draft manifest (D1123, read-only): `scripts/draft-manifest/manifest.py`
+lists screens, kinds, entities, references and a build order; report `reports/2026-09-20-eye-care-draft-manifest.md`. Next:
+the per-client entity registry, then clone About, Help and Contact with `--screen`. Mama's clones currently halt at the
+freshness gate because another session's uncommitted Mama's snapshot carries a different draft's hash.
 
 **Open, in order:**
 1. *Problem 1, missing sections.* The "14 non-BEM" boundaries are classless sections gated on a hint (the draft has ONE

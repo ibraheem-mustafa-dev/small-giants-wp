@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 31
-spec_version: "0.8"
+spec_version: "0.9"
 project: small-giants-wp
 thread: cloning-pipeline
 title: "Universal Cloning Pipeline — Content + CSS Extraction"
@@ -994,3 +994,15 @@ A draft with no labelled screens yields one page and no entities, so a static dr
 **Not built.** No stage consumes the manifest. There is no per-client entity registry (kind, draft name, slug, post ID), no step that creates the entities, and no step that resolves a later reference to an entity that already exists. Those come next, followed by cloning the Home screen only (Spec 44 §11 option B).
 
 **Done when (met).** Eye Care Birmingham yields 9 screens, of which Home, About, Help and Contact are normal pages; 6 entities (menu drawer, cart drawer, size-guide modal, mega menu with 4 panels, lens choice flow, contact form); the size guide referenced by Product, Help and the footer; the mega menu distinct from the lens flow. Mama's homepage yields one page and no entities. `python -m pytest draft-manifest/tests` passes (12), and breaking either the statement-end rule or the choice-flow merge rule fails 4 of them.
+
+### FR-31-28 — Screen route: clone one screen of a multi-screen draft — BUILT
+
+**Behaviour.** A Claude Design prototype holds several screens in one file, each a `<main data-screen-label>` gated by an `isX` flag. `orchestrator/screen_route.py::apply` runs in Stage 1 (`sgs-clone-orchestrator.py::stage_1_boundary`) on drafts with two or more labelled screens and tags every boundary with `screen`, `screen_role` (`default`, `other` or `outside` for header, footer and overlays) and `screen_text_chars`. The run clones ONE screen: `--screen <label>`, else the screen the README routes table sends to `/`, cross-checked against the draft's own default marker (`hint-placeholder-val="{{ true }}"`). When those two disagree the run halts; when neither names a default the route is inactive and says so.
+- **Other screens.** Stage 4 skips every `other` boundary with status `other-route-view`, and the Stage 1 warning lists each skipped screen with its boundary count and characters of text. Nothing is dropped silently.
+- **Admission.** A classless top-level (`container`) boundary with `screen_role` `default` is admitted as the plain container (`admitted_via_screen_gate`, trace stage `stage_4_screen_gate`). Eligibility only, no class injected, never for an `item` boundary.
+- **README label.** A README section name under the screen's heading, or a string the README quotes for it, that appears verbatim in exactly one boundary's text is recorded as `readme_section`. A quoted string must also occur once in the whole draft (the README quotes recurring states such as "Photo to come"). It is a label only and never chooses a block: loose word matching against the README named the wrong section for 5 of 8 homepage boundaries and was not built.
+- **Off switches.** `--no-screen-route` restores converting every screen. A draft with fewer than two labelled screens (every static draft, Mama's included) is untouched: no `screens.json`, no `screen_role`.
+
+**Done when (met on the Eye Care test page).** Live, read in a browser: the hero, "Why buy from me", reviews, the prescription-sunglasses explainer and the clinic-photo section are present (5 of 8 homepage sections, up from 1); Help, About, Contact, bag, checkout and order-confirmed text is absent; raw `{{ }}` text is 53 occurrences (32 distinct), down from 93 (59). Stage 11.6: content 18%, css 1%. Mama's homepage with the route on and off: identical block markup (32,767 characters) and identical statuses. `python -m pytest tests/test_screen_route.py` passes (8).
+
+**Not done.** The three homepage sections in the FR-44-1 review queue (b3 brand strip, b4 best sellers, b6 shape tiles); the raw script-computed layout values in block attributes (`padding` `{{ secPad }}`, `gridTemplateColumns` `{{ twoColWide }}`); the raw `{{ }}` text; Bean's eye on the page (R-31-13). Cloning About, Help and Contact as pages is `--screen`, not yet run.

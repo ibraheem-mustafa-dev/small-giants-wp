@@ -26,18 +26,12 @@ import dc_script  # noqa: E402
 import dc_template as tpl_mod  # noqa: E402
 from manifest_vocab import (CART_WORDS, DEFAULT_SCREEN_KIND, FULLSCREEN_RE, GEOMETRY_RULES,  # noqa: E402
                             SCREEN_KIND_RULES, TARGETS, TIERS)
-from readme_routes import read_readme_routes  # noqa: E402
+from readme_routes import match_route, read_readme_routes, same_word  # noqa: E402
 from shared_utils import is_claude_design_draft, read_readme_text  # noqa: E402
 
 
 def _norm(word: str) -> str:
     return re.sub(r"^is(?=[A-Z])", "", word).lower()
-
-
-def _same(a: str, b: str) -> bool:
-    """Same word, allowing a plural ('lens' and 'lenses', 'frame' and 'frames')."""
-    a, b = _norm(a), _norm(b)
-    return a == b or a + "s" == b or a + "es" == b or b + "s" == a or b + "es" == a
 
 
 def _tokens(text: str) -> set[str]:
@@ -62,13 +56,6 @@ def overlay_kind(region: dict) -> str | None:
     return None
 
 
-def _match_readme(view_key: str, label: str, routes: list[dict]) -> dict | None:
-    for r in routes:
-        if _same(r["view"], view_key) or _same(r["view"], label):
-            return r
-    return None
-
-
 def build_manifest(draft: pathlib.Path) -> dict:
     html = draft.read_text(encoding="utf-8")
     readme = read_readme_text(draft.parent)
@@ -83,14 +70,14 @@ def build_manifest(draft: pathlib.Path) -> dict:
     out_screens, view_of_label = [], {}
     for s in screens:
         view = _norm(s["flag"] or s["label"])
-        readme_row = _match_readme(s["flag"] or s["label"], s["label"], routes)
+        readme_row = match_route(s["flag"] or s["label"], s["label"], routes)
         kind = screen_kind(s["label"], (readme_row or {}).get("route", ""), (readme_row or {}).get("purpose", ""))
         view_of_label[s["label"]] = view
         out_screens.append({"label": s["label"], "view": view, "gate_flag": s["flag"], "kind": kind,
                             "target": TARGETS[kind], "route": (readme_row or {}).get("route"),
                             "readme_view": (readme_row or {}).get("view")})
     def label_for(view: str) -> str | None:
-        return next((k for k, v in view_of_label.items() if _same(v, view)), None)
+        return next((k for k, v in view_of_label.items() if same_word(v, view)), None)
 
     # Overlays: a flag a handler can turn on, found by the state the handler sets.
     flags = tpl_mod.all_flags(tpl)

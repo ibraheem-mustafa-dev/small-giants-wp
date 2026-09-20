@@ -1,5 +1,15 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1124 [ROUTINE] — Screen route: clone one screen of a multi-screen draft; classless sections on it admitted (2026-09-20)
+
+**Decisions (Bean).** Build the Home-screen-only clone. The README should help with classless sections and routing.
+
+**Decisions (mine, on the evidence).** (1) The README chooses the screen (its route `/`) and labels sections; it does not choose blocks. Measured on the stored run: loose word matching named the wrong section for 5 of 8 homepage boundaries, exact phrases labelled 3, and the framework database maps a README section name to a block only for "Hero" and "Google reviews". (2) A quoted README string labels a section only if it occurs once in the whole draft, because the README quotes recurring states ("Photo to come"); my first version labelled best sellers as shape tiles. (3) Admission is by position (a classless top-level section on the cloned screen), not by any hint. (4) `--screen` lets About, Help and Contact be cloned as pages later.
+
+**Verified.** Live Eye Care test page, read in a browser: 5 of 8 homepage sections (was 1), no text from other screens, raw `{ }` text 53 (32 distinct) from 93 (59), Stage 11.6 content 18% (was 12%). Mama's homepage, route on against `--no-screen-route`: identical markup and statuses, no screen data written. 1348 tests pass; 2 fail (`sgs/hero` headline signature, `multi-button` allowed blocks), both on committed block source this change does not touch.
+
+**Open.** b3, b4 and b6 stay in the FR-44-1 review queue. The converted sections carry raw layout bindings in attributes (`padding` `{ secPad }`), which the README's Spacing section can resolve. Mama's clones halt at the FR-33-12 freshness gate in this tree because another session's uncommitted Mama's snapshot carries a different draft's hash (the comparison above used `--skip-freshness-gate`).
+
 ## D1123 [ROUTINE] — Draft manifest: screens, entities, references and build order, read-only (2026-09-20)
 
 **Decisions (Bean).** The full-site cloner must know how many pages a draft holds. Blank-canvas pages clone normally; template-tied parts (shop, product, cart, checkout, order-received), the header, footer, menus and drawers, and modals get their own runs. The size guide is its own `sgs_modal`. The bag drawer is `sgs/cart` with `displayMode` drawer. The shop's filter drawer is a variant of the shop archive's filter (Spec 30 FR-30-3), not an overlay. Referable things must be built in an order that lets later content link to them, and a later reference to something already built must be recognised.

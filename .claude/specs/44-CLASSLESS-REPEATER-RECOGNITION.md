@@ -716,17 +716,15 @@ off is the rollback path if a real run misbehaves — no code revert needed.
 
 ## 11. Explicitly deferred (tracked, not built here)
 
-- **OPEN FINDING: the "14 non-BEM-compliant" boundaries are classless sections gated on a
-  hint, not a BEM lint failure.** On Eye Care Birmingham the draft has ONE `class=` in the whole file and
-  Stage 0.1 passes; the halts come from the Stage 4 permission check in
-  `sgs-clone-orchestrator.py::stage_4_5_6_7_8_extract`, which admits a classless section only if a hint
-  (`dom_shape_hint` / `sc_var_hint`) happens to attach. Single-wrapper sections get none. On the live page
-  seven of the eight homepage boundaries (b3-b9, including "Why buy from me") are missing. Proposed (NOT
-  designed or built; needs a design gate, Rule 7, and must not change Mama's): (A) admit any classless
-  boundary as the FR-31-4 container default on eligibility; (B) put only the default routed view
-  (`hint-placeholder-val="{{ true }}"`) on the page and report other views as "other-route view";
-  (C) fix the halt warning text (cites a nonexistent Spec 13) and list lost text per class. Evidence:
-  `.claude/reports/2026-09-19-inv-non-bem-sections.md`.
+- **The "14 non-BEM-compliant" boundaries: A and B BUILT (Spec 31 FR-31-28); C partly.** On Eye Care Birmingham the
+  draft has ONE `class=` in the whole file and Stage 0.1 passes; the halts came from the Stage 4 permission check in
+  `sgs-clone-orchestrator.py::stage_4_5_6_7_8_extract`, which admitted a classless section only if a hint
+  (`dom_shape_hint` / `sc_var_hint`) happened to attach. (A) A classless top-level section on the screen the run clones is
+  now admitted as the FR-31-4 container default (`admitted_via_screen_gate`). (B) A multi-screen draft's other screens are
+  skipped and reported as `other-route-view` (`orchestrator/screen_route.py`). (C) The report now names each skipped
+  screen with its boundary count and text length; the halt warning text that cites a nonexistent Spec 13 is NOT fixed.
+  The three homepage sections still in the review queue (b3, b4, b6) are this spec's FR-44-1 gate, not the halt.
+  Evidence: `.claude/reports/2026-09-19-inv-non-bem-sections.md`.
 - **A repeated group whose content is JS-array-sourced, not DOM text — NOT this spec's job,
   covered by Spec 31 FR-31-26 (2026-09-19).** Investigating b32 (Eye Care Birmingham's ticker)
   found its content lives only in a draft `static TICKER = [...]` JS class property, invisible to
