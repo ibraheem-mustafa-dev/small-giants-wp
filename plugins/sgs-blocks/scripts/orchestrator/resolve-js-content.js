@@ -13,8 +13,7 @@
  * TEMPORARY copy of the draft — FR-31-26.2) and does NOT splice results back into the pipeline
  * mockup (FR-31-26.1, also the Python module's job, pure string/regex patching). This script's
  * ONLY responsibility: given an already-marker-injected draft copy, serve it over real HTTP,
- * render it, and read out each `data-sgs-resolve-id` group's resolved text (+ icon path if
- * present) as JSON. The Python caller applies FR-31-26.3's fail-soft fallback on any failure here.
+ * render it, and read out each `data-sgs-resolve-id` row's resolved FIELD values as JSON. The Python caller applies FR-31-26.3's fail-soft fallback on any failure here.
  *
  * WHY REAL HTTP, NOT file:// (confirmed live, FR-31-26 preamble): the draft's own `support.js`
  * calls `fetch()` to self-load and to load sibling `dc-import` components; `file://` blocks fetch
@@ -103,24 +102,30 @@ function startServer(rootDir) {
 }
 
 // ── The in-page capture function (serialised into the browser context) ──────────────────────────
-// Reads every `[data-sgs-resolve-id]` element, groups by marker value, and for each element reads
-// the resolved text content plus an optional icon `<path d>` (FR-31-26.2: markers, not document
-// order — the runtime clones the marked item-template element once per resolved array item, so
-// every rendered instance still carries the same marker value).
+// Reads every `[data-sgs-resolve-id]` element (one per rendered array row: the runtime clones the marked
+// item-template element once per row, so every clone still carries the same marker) and, inside each,
+// every field carrier `js_content_resolver.py` added to the temporary copy: a `<span data-sgs-f="fK">`
+// wrapping a text-position mustache, or a `data-sgs-a-fK` attribute beside an attribute-position one.
+// Output: { markerId: [ { fields: { fK: resolvedValue } }, ... ] }  (FR-31-26.2: markers, not document order).
 const CAPTURE_SRC = function () {
   const groups = {};
   document.querySelectorAll('[data-sgs-resolve-id]').forEach((el) => {
     const markerId = el.getAttribute('data-sgs-resolve-id');
     if (!markerId) return;
-    const text = (el.textContent || '').trim();
-    const pathEl = el.querySelector('path[d]');
-    const item = { text };
-    if (pathEl) {
-      const d = pathEl.getAttribute('d');
-      if (d) item.iconPath = d;
-    }
+    const fields = {};
+    [el].concat(Array.from(el.querySelectorAll('*'))).forEach((node) => {
+      const textId = node.getAttribute('data-sgs-f');
+      if (textId !== null) fields[textId] = node.textContent || '';
+      // A hidden presence marker sits inside every <sc-if>: it exists in this row's clone only when the
+      // runtime rendered that branch for this row.
+      const branchId = node.getAttribute('data-sgs-b');
+      if (branchId !== null) fields[branchId] = '';
+      Array.from(node.attributes).forEach((attr) => {
+        if (attr.name.indexOf('data-sgs-a-') === 0) fields[attr.name.slice('data-sgs-a-'.length)] = attr.value;
+      });
+    });
     if (!groups[markerId]) groups[markerId] = [];
-    groups[markerId].push(item);
+    groups[markerId].push({ fields });
   });
   return groups;
 };

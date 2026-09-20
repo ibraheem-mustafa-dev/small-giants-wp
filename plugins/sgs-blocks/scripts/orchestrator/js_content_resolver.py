@@ -1,67 +1,41 @@
-"""js_content_resolver.py — resolve `<sc-for>` groups whose repeated content
-lives ONLY in a draft's JS `static ARRAY = [...]` class property, never as
-static text in the DOM.
+"""js_content_resolver.py — expand `<sc-for>` loops whose repeated content lives ONLY in a draft's
+JS `static ARRAY = [...]` class property, never as static text in the DOM.
 
-Problem (Spec 31 FR-31-26, `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md`
-§15, design-gated with Bean 2026-09-19): a Claude Design draft's `<sc-for>`
-item template can bind entirely to `{{ t.field }}` mustaches with NO literal
-fallback text anywhere — the real content exists only inside a
-`static X = [...]` class property elsewhere in the file, resolved at runtime
-by the draft's own JS. Every extraction signal this pipeline has (role
-derivation, Spec 44 Stage A/B, the text-leaf ladder) operates on DOM text —
-such a group hands them nothing.
+Problem (Spec 31 FR-31-26, `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` §15, design-gated with Bean
+2026-09-19; extended to multi-field items by plan step A2b, D1134): a Claude Design draft's `<sc-for>`
+item template binds to `{{ r.title }}` / `{{ r.body }}` mustaches, and the real content exists only inside a
+`static X = [...]` class property, resolved at runtime by the draft's own JS. Every extraction signal this
+pipeline has operates on DOM text, so such a loop hands them nothing.
 
-⚠ `hint-placeholder-count` is a CARDINALITY hint only (how many items the loop
-probably renders), not a content signal — a `<sc-for>` can carry a nonzero
-`hint-placeholder-count` and still have zero literal text (confirmed live:
-Eye Care Birmingham's ticker has `hint-placeholder-count="4"` and its item
-template is `<span><svg><path d="{{ t.icon }}"/></svg>{{ t.text }}</span>` —
-both fields pure mustache, nothing literal). Eligibility here is decided
-purely by whether literal (non-mustache) text/attribute content survives
-inside the `<sc-for>` body — never by that attribute.
+Mechanism (proven live, not guessed): render the draft with its OWN JS runtime in a real browser — NOT parse
+the JS ourselves. The draft's `support.js` resolves `<sc-for>` / `{{ }}` / `dc-import` for real when the draft
+is served over actual HTTP and loaded with Playwright (`file://` blocks the runtime's own `fetch()` calls).
+Same pattern as Spec 33's `theme-extractor/measure.js`.
 
-Mechanism (proven live this session via a disposable probe, not guessed):
-render the draft with its OWN JS runtime in a real browser — NOT parse the
-JS ourselves. The draft's `support.js` (a `DCLogic`-based renderer) resolves
-`<sc-for>`/`{{ }}`/`dc-import` for real when the draft is served over actual
-HTTP and loaded with Playwright (`file://` blocks the runtime's own `fetch()`
-calls for self-loading and sibling `dc-import` components — confirmed by a
-failed first attempt this session). Same pattern Spec 33's
-`theme-extractor/measure.js` already uses for CSS (render, read what the
-runtime produced, never parse the source), extended here to content.
+Capture is PER FIELD, keyed by marker, never by document order (FR-31-26.2). In a TEMPORARY served copy every
+`{{ }}` in the item body that mentions the loop variable gets a carrier: a text-position mustache is wrapped
+in `<span data-sgs-f="fK">`, an attribute-position mustache gets a sibling `data-sgs-a-fK="{{ ... }}"`
+attribute, and the item's first element gets `data-sgs-resolve-id="rN"`. The runtime clones that element once
+per array row, so reading `fK` from each clone gives every field of every row. A mustache that does not
+mention the loop variable (`{{ secPad }}`, a width-driven style value) is never touched: the script-bindings
+stage (A1) resolves those per device, and baking a desktop value here would undo that.
 
-Correlation is MARKER-based, not document-order (FR-31-26.2): document order
-is proven fragile by this very draft (`ticker: mob ? TICKER.concat(TICKER) :
-TICKER.slice(...)` — viewport-conditional count/order). A unique
-`data-sgs-resolve-id="rN"` is injected onto each eligible `<sc-for>`'s
-item-template element in a TEMPORARY served copy (never the pipeline-bound
-mockup); the runtime clones that template per item, so every rendered
-instance carries the same marker, letting us query by identity rather than
-position.
+Splice-back is SURGICAL STRING-LEVEL patching, exactly mirroring `dc_import_resolver.py`'s discipline: the
+`<sc-for>` is replaced by N copies of its ORIGINAL body with each captured mustache replaced by its
+HTML-escaped value. This module never parses the pipeline-bound mockup through BeautifulSoup.
 
-Splice-back is SURGICAL STRING-LEVEL patching, exactly mirroring
-`dc_import_resolver.py`'s own discipline (and its own hard-learned lesson —
-D1107's first implementation round-tripped the whole document through
-BeautifulSoup and silently corrupted camelCase pseudo-attributes across the
-ENTIRE document, not just the spliced sites). This module never parses the
-pipeline-bound mockup through BeautifulSoup either — every byte outside a
-resolved `<sc-for>` body is untouched.
+Never silent: a mustache that could not be captured (a branch that did not render, a handler, a computed value
+that is a function) stays as it was and is listed in the report with its loop, item number and expression. A
+loop that renders zero rows at load (empty bag, nothing selected), starts with a conditional, or contains a
+nested loop is skipped with its reason.
 
-Regression-safety (FR-31-26.3), three independent stacking guarantees:
-  1. Scope-narrowed by construction — only a `<sc-for>` with genuinely NO
-     literal content is ever touched; one that already has content is
-     skipped entirely, byte-identical.
-  2. Opt-in — ships behind `--resolve-js-content`, off by default (wired in
-     `sgs-clone-orchestrator.py`), mirroring `--classless-match`'s own
-     rollout discipline.
-  3. Fail-soft — ANY failure (server won't start, Playwright unavailable,
-     timeout, an unresolvable array) returns the ORIGINAL html unchanged,
-     never raises, never a new failure mode — mirrors
-     `dc_import_resolver.py`'s own "unresolvable import left as-is,
-     non-fatal" behaviour.
+Regression safety (FR-31-26.3): (1) a draft with no `<sc-for>` returns the same string with no subprocess
+spawned; (2) fail-soft: ANY failure (server, Playwright, timeout, an unrendered runtime) returns the ORIGINAL
+html unchanged and never raises. The pipeline runs it by default; `--no-resolve-js-content` opts out.
 """
 from __future__ import annotations
 
+import html as _html
 import json
 import logging
 import re
@@ -72,310 +46,273 @@ from typing import Any
 
 _LOG = logging.getLogger(__name__)
 
-# Same explicit-close-only, non-greedy span convention as
-# `dc_import_resolver.py::_DC_IMPORT_RE` — `<sc-for>` never self-closes in
-# real drafts (it always wraps an item template), so this form is exact.
+# Same explicit-close-only, non-greedy span convention as `dc_import_resolver.py::_DC_IMPORT_RE`.
 _SC_FOR_RE = re.compile(r"<sc-for\b([^>]*)>(.*?)</sc-for>", re.IGNORECASE | re.DOTALL)
 _ATTR_RE = re.compile(r'([a-zA-Z_:][-\w:.]*)\s*=\s*"([^"]*)"')
 _MUSTACHE_RE = re.compile(r"\{\{[^}]*\}\}")
-# `{{ t.field }}` — the SAME binding convention as
-# `classless_draft_adapter.py::_BINDING_RE` / `dc_import_resolver.py`'s local
-# copy; kept local for the same reason those two are (different concern, no
-# cross-package coupling).
-_BINDING_RE = re.compile(r"\{\{\s*([A-Za-z_$][\w$]*)((?:\.[\w$]+)*)\s*\}\}")
-_ICON_FIELD_NAMES = frozenset({"icon", "iconpath", "path", "svg", "svgpath"})
-# The item template's own opening tag — the FIRST element immediately inside
-# `<sc-for>...</sc-for>` (its direct child; the runtime clones exactly this
-# element once per array item).
-_FIRST_CHILD_OPEN_TAG_RE = re.compile(r"^\s*<([a-zA-Z][\w-]*)((?:\s+[^<>]*)?)(/?)>", re.DOTALL)
+_SC_IF_RE = re.compile(r"<sc-if\b[^>]*>(.*?)</sc-if>", re.IGNORECASE | re.DOTALL)
+# A start tag with quoted attribute values (a `>` inside quotes does not end it).
+_TAG_RE = re.compile(r"""<([a-zA-Z][\w-]*)((?:[^<>"']|"[^"]*"|'[^']*')*)>""")
+_TAG_ATTR_RE = re.compile(r"""([a-zA-Z_:@][-\w:.@]*)\s*=\s*(?:"([^"]*)"|'([^']*)')""")
+# The item template's own opening tag: the FIRST element inside `<sc-for>...</sc-for>`.
+_FIRST_CHILD_RE = re.compile(r"^\s*<([a-zA-Z][\w-]*)", re.DOTALL)
+_UNUSABLE_VALUE_RE = re.compile(r"^\s*(?:function\b|\(?[\w$,\s]*\)?\s*=>)|\[object ")
+_NEVER_CAPTURED_ATTRS = frozenset({"ref", "key"})
 
 _RESOLVE_SCRIPT = Path(__file__).with_name("resolve-js-content.js")
-_RENDER_TIMEOUT_SECONDS = 30
+_RENDER_TIMEOUT_SECONDS = 90
 
 
 def _parse_attrs(attr_str: str) -> dict[str, str]:
     return {name: value for name, value in _ATTR_RE.findall(attr_str)}
 
 
-def _has_literal_content(sc_for_body: str) -> bool:
-    """True when real (non-mustache) TEXT survives inside the item body.
+def _mentions(expr: str, var: str) -> bool:
+    return bool(re.search(r"(?<![\w$.])" + re.escape(var) + r"(?![\w$])", expr))
 
-    Deliberately TEXT-only, matching `extraction.py::_emit_content_leaf`'s
-    own "has content" gate (`node.get_text(strip=True)`) rather than any
-    attribute value — a first version also checked attribute values and
-    wrongly classified the ticker as "has content" because of ordinary
-    structural SVG attributes (`width="15"`, `stroke="..."`, `viewBox="..."`)
-    that carry no real content at all (caught live: `_has_literal_content`
-    returned `True` for a `<span><svg width="15" .../>{{ t.text }}</span>`
-    item with ZERO real text). Strips every `{{ ... }}` mustache, then every
-    tag, then checks whether non-whitespace TEXT remains. A `<img>`/`<path>`
-    tag whose `src`/`d` is itself entirely mustache-bound never counts as
-    content by this check — correct, since there is nothing literal to
-    extract from it either.
+
+def _is_directive(tag: str) -> bool:
+    """`sc-if`, `sc-for`, `dc-import` ...: the draft runtime consumes these, so a carrier on one is lost."""
+    return tag.lower().startswith(("sc-", "dc-"))
+
+
+def item_slots(body: str, var: str) -> list[dict[str, Any]]:
+    """Every `{{ ... }}` in `body` that mentions the loop variable, in document order.
+
+    ``{"id": "fK", "kind": "text"|"attr", "start", "end", "mustache", "tag_insert"}`` where ``start``/``end``
+    are offsets in ``body`` and ``tag_insert`` (attr only) is the offset just after the tag name, where a
+    carrier attribute can be added without disturbing anything else.
     """
-    stripped_mustaches = _MUSTACHE_RE.sub("", sc_for_body)
-    text_only = re.sub(r"<[^>]*>", " ", stripped_mustaches)
-    return bool(text_only.strip())
+    slots: list[dict[str, Any]] = []
+
+    def add(kind: str, start: int, end: int, tag_insert: int | None = None) -> None:
+        text = body[start:end]
+        inner = text[2:-2].strip()
+        # A bare `{{ p }}` is the whole row (in a product loop, a nested card): no single value to capture.
+        if inner != var and _mentions(inner, var):
+            slots.append({"id": "f%d" % len(slots), "kind": kind, "start": start, "end": end,
+                          "mustache": text, "tag_insert": tag_insert})
+
+    pos = 0
+    for tag in _TAG_RE.finditer(body):
+        for m in _MUSTACHE_RE.finditer(body, pos, tag.start()):
+            add("text", m.start(), m.end())
+        if not _is_directive(tag.group(1)):
+            attrs_at = tag.start(2)
+            for a in _TAG_ATTR_RE.finditer(tag.group(2)):
+                if a.group(1).lower().startswith("on") or a.group(1).lower() in _NEVER_CAPTURED_ATTRS:
+                    continue
+                value_at = attrs_at + a.start(2) if a.group(2) is not None else attrs_at + a.start(3)
+                for m in _MUSTACHE_RE.finditer(a.group(2) if a.group(2) is not None else a.group(3)):
+                    add("attr", value_at + m.start(), value_at + m.end(), tag.end(1))
+        pos = tag.end()
+    for m in _MUSTACHE_RE.finditer(body, pos):
+        add("text", m.start(), m.end())
+    return slots
 
 
-def _simple_shape_fields(body: str, as_name: str) -> tuple[bool, str | None, str | None]:
-    """`(is_simple, text_field, icon_field)` for the item template's loop var.
+def find_expandable_sc_fors(html: str) -> tuple[list[dict[str, Any]], list[dict[str, str]]]:
+    """``(candidates, skipped)``: every `<sc-for>` this module can expand, and each one it cannot with why.
 
-    `is_simple` is True when at most ONE distinct non-icon field is
-    referenced — the shape this module's splice mechanism (Step 4: one
-    resolved `text` + optional `iconPath` per item) can honestly
-    reconstruct. `text_field`/`icon_field` are the LITERAL field names used
-    in the template (e.g. `name` for `{{ b.name }}`, `icon` for
-    `{{ t.icon }}`) — `_splice_resolved_items` needs these to map the render
-    script's generic `{text, iconPath}` keys back onto the RIGHT `{{ }}`
-    binding, since different arrays name their text field differently
-    (`t.text`, `b.name`, `s.label`, ...) — a raw-key-match splice against a
-    generic render payload silently produces empty content for anything
-    named other than literally `text` (caught live by this module's own
-    test suite: `{{ b.name }}` spliced to `""` because the payload's key was
-    `text`, not `name`).
-
-    A multi-field item (a product card's `{{ p.name }}` + `{{ p.price }}` +
-    `{{ p.rating }}`, each a DIFFERENT field) cannot be spliced correctly by
-    this mechanism at all — live-tested: reading `.textContent` of the whole
-    resolved element concatenates every field into one blob with no way to
-    tell which words belong to which `{{ }}` binding, so naively splicing it
-    would replace every distinct mustache with the SAME garbled blob. Rather
-    than ship that, a multi-field group is excluded from `find_unresolved_
-    sc_fors()`'s candidates entirely — untouched, exactly today's behaviour,
-    a disclosed limit (Spec 31 FR-31-26.3 #1's scope-narrowing extended to
-    field-shape, not just presence-of-content). Field-level correlation for
-    multi-field arrays is Spec 45 Tier 1's domain, not this module's.
-
-    ⚠ A BARE self-reference (`{{ p }}`, no dotted field at all) is NEVER
-    treated as simple, on purpose — live-tested against the real draft's
-    `featured` products array: its item template is a bare `{{ p }}`, which
-    looked field-count-simple, but the resolved element turns out to be a
-    WHOLE nested product-card composition (image/brand/price/rating all
-    concatenated into one `.textContent` blob), not literal text. A bare
-    self-reference gives no signal either way, so it is excluded rather than
-    guessed at — the same "ship nothing over ship garbled" discipline as the
-    multi-field case above.
-    """
-    if not as_name:
-        return True, None, None
-    text_fields: set[str] = set()
-    icon_field: str | None = None
-    bare_self_ref = False
-    for base, tail in _BINDING_RE.findall(body):
-        if base != as_name:
-            continue
-        field = tail.lstrip(".").lower()
-        if not field:
-            bare_self_ref = True  # `{{ t }}` itself, no sub-field
-        elif field in _ICON_FIELD_NAMES:
-            icon_field = tail.lstrip(".")  # keep original casing for the splice
-        else:
-            text_fields.add(tail.lstrip("."))
-    if bare_self_ref:
-        return False, None, None
-    if len(text_fields) > 1:
-        return False, None, None
-    text_field = next(iter(text_fields), None)
-    return True, text_field, icon_field
-
-
-def find_unresolved_sc_fors(html: str) -> list[dict[str, Any]]:
-    """Every `<sc-for>` in `html` with genuinely NO literal content AND a
-    simple (single-field, `_is_simple_shape`) item template.
-
-    Returns one dict per candidate: `{full_match, span, list_expr, as_name,
-    body, first_child_tag, first_child_attrs_str, first_child_open_end}` —
-    `span` is the `(start, end)` offset of the WHOLE `<sc-for>...</sc-for>`
-    match in `html` (for Step 4's splice); `first_child_open_end` is the
-    offset (relative to the match start) immediately before the item
-    template's opening tag's closing `>`, i.e. where a new attribute can be
-    inserted without disturbing anything else.
+    A candidate has a loop variable, at least one capturable mustache, an ordinary HTML element as its first
+    child (the runtime clones exactly that element per row) and no nested `<sc-for>`. ``span`` is the
+    `(start, end)` of the whole `<sc-for>...</sc-for>` in `html`.
     """
     candidates: list[dict[str, Any]] = []
+    skipped: list[dict[str, str]] = []
     for m in _SC_FOR_RE.finditer(html):
-        attrs_str, body = m.group(1), m.group(2)
-        if _has_literal_content(body):
+        attrs = _parse_attrs(m.group(1))
+        loop = attrs.get("list", "")
+        body = m.group(2)
+        var = attrs.get("as", "")
+
+        def skip(reason: str, _loop: str = loop) -> None:
+            skipped.append({"loop": _loop, "reason": reason})
+
+        if not var:
+            skip("no loop variable (`as`)")
             continue
-        attrs = _parse_attrs(attrs_str)
-        as_name = attrs.get("as", "")
-        is_simple, text_field, icon_field = _simple_shape_fields(body, as_name)
-        if not is_simple:
+        if re.search(r"<sc-for\b", body, re.IGNORECASE):
+            skip("contains a nested loop")
             continue
-        child_m = _FIRST_CHILD_OPEN_TAG_RE.match(body)
-        if child_m is None:
-            # No element child to mark (e.g. a bare `{{ t }}` text-only item)
-            # — nothing to attach a marker to; skip rather than guess.
+        first = _FIRST_CHILD_RE.match(body)
+        if first is None or _is_directive(first.group(1)):
+            skip("item template does not start with an ordinary element (a conditional or bare text)")
             continue
-        self_closing = bool(child_m.group(3))
-        open_end = child_m.end() - (2 if self_closing else 1)  # before `/>` or `>`
+        slots = item_slots(body, var)
+        if not slots:
+            continue                                  # nothing bound to the loop variable: nothing to resolve
         candidates.append({
-            "full_match": m.group(0),
-            "span": (m.start(), m.end()),
-            "list_expr": attrs.get("list", ""),
-            "as_name": as_name,
-            "text_field": text_field,
-            "icon_field": icon_field,
-            "body": body,
-            "first_child_tag": child_m.group(1),
-            "first_child_open_end_in_body": open_end,
+            "span": (m.start(), m.end()), "list_expr": loop, "as_name": var, "body": body,
+            "slots": slots, "first_child_insert": first.end(1), "branches": if_branches(body),
         })
-    return candidates
+    return candidates, skipped
 
 
-def inject_resolve_markers(
-    html: str, candidates: list[dict[str, Any]]
-) -> tuple[str, dict[str, dict[str, Any]]]:
-    """Insert a unique `data-sgs-resolve-id="rN"` onto each candidate's
-    item-template element, in a COPY of `html` (never mutates the input).
+def _carrier(slot: dict[str, Any]) -> str | None:
+    mustache = slot["mustache"]
+    quote = '"' if '"' not in mustache else ("'" if "'" not in mustache else None)
+    return None if quote is None else " data-sgs-a-%s=%s%s%s" % (slot["id"], quote, mustache, quote)
 
-    Returns `(marked_html, {marker_id: candidate})`. IDs are assigned from a
-    single incrementing counter across the whole candidate list — never
-    per-`<sc-for>`-local — so uniqueness holds by construction, never by
-    convention (a colliding ID would misattribute resolved content on
-    splice-back, exactly what FR-31-26.2 exists to prevent).
 
-    Empty `candidates` returns `(html, {})` — the exact same string, no
-    marker map, matching FR-31-26.3 #1's "byte-identical when nothing is
-    eligible" guarantee.
-    """
+def _apply(body: str, edits: list[tuple[int, int, str, int]]) -> str:
+    """Apply ``(start, end, replacement, order)`` edits from the last offset back so earlier offsets stay valid."""
+    for start, end, text, _order in sorted(edits, key=lambda e: (e[0], e[3]), reverse=True):
+        body = body[:start] + text + body[end:]
+    return body
+
+
+def inject_capture_markers(html: str, candidates: list[dict[str, Any]]) -> tuple[str, dict[str, dict[str, Any]]]:
+    """Mark a COPY of `html` for capture. Returns `(marked_html, {marker id: candidate})`; never mutates `html`."""
     if not candidates:
         return html, {}
     marker_map: dict[str, dict[str, Any]] = {}
-    # Insert from the LAST match backward so earlier offsets stay valid as
-    # we splice (each insertion only shifts everything AFTER it).
-    ordered = sorted(
-        enumerate(candidates), key=lambda pair: pair[1]["span"][0], reverse=True
-    )
     marked = html
-    for idx, cand in ordered:
-        marker_id = f"r{idx + 1}"
+    for idx, cand in sorted(enumerate(candidates), key=lambda p: p[1]["span"][0], reverse=True):
+        marker_id = "r%d" % (idx + 1)
         marker_map[marker_id] = cand
-        sc_for_start, _sc_for_end = cand["span"]
-        # The body's offset within the whole document = the `<sc-for>` match
-        # start + the body's offset within the matched text (`full_match`);
-        # the item-template open-tag-end offset is relative to the body.
-        body_start_in_doc = sc_for_start + cand["full_match"].index(cand["body"])
-        insert_at = body_start_in_doc + cand["first_child_open_end_in_body"]
-        marked = marked[:insert_at] + f' data-sgs-resolve-id="{marker_id}"' + marked[insert_at:]
+        edits: list[tuple[int, int, str, int]] = [
+            (cand["first_child_insert"], cand["first_child_insert"], ' data-sgs-resolve-id="%s"' % marker_id, 0)]
+        for order, slot in enumerate(cand["slots"], start=1):
+            if slot["kind"] == "text":
+                edits.append((slot["start"], slot["end"],
+                              '<span data-sgs-f="%s">%s</span>' % (slot["id"], slot["mustache"]), order))
+            else:
+                carrier = _carrier(slot)
+                if carrier is not None:
+                    edits.append((slot["tag_insert"], slot["tag_insert"], carrier, order))
+        for b in cand["branches"]:
+            edits.append((b["open_end"], b["open_end"], '<span data-sgs-b="%s" hidden></span>' % b["id"], 0))
+        new_body = _apply(cand["body"], edits)
+        start, end = cand["span"]
+        whole = marked[start:end]
+        marked = marked[:start] + whole.replace(cand["body"], new_body, 1) + marked[end:]
     return marked, marker_map
 
 
-def _splice_resolved_items(
-    html: str, marker_map: dict[str, dict[str, Any]], resolved: dict[str, list[dict[str, Any]]]
-) -> tuple[str, int]:
-    """Replace each resolved candidate's `<sc-for>...</sc-for>` body with
-    literal markup for each resolved item, built by repeating the item
-    template once per item with its `{{ t.field }}` mustaches replaced by
-    the resolved field values — pure string substitution, the `<sc-for>`
-    wrapper itself is REMOVED (the runtime already consumed it; downstream
-    extraction reads plain repeated siblings, matching what a real render
-    would leave behind for a BEM-classed equivalent).
+def _usable(value: Any) -> bool:
+    return isinstance(value, str) and "{{" not in value and "}}" not in value and not _UNUSABLE_VALUE_RE.search(value)
 
-    `resolved`'s items use GENERIC keys (`text`/`iconPath`), not the
-    template's own literal field name — the render script has no way to know
-    a draft calls its text field `name` vs `text` vs `label`. The mapping
-    from the candidate's own `text_field`/`icon_field` (captured at
-    eligibility time by `_simple_shape_fields`) back onto those generic keys
-    is what makes the splice correct for any field-naming convention, not
-    just a template that happens to use `{{ t.text }}` literally (caught by
-    this module's own test suite: a bare key-match splice silently emptied
-    `{{ b.name }}` because the payload's key was `text`, not `name`).
 
-    Splices from the LAST span backward so earlier offsets stay valid.
-    Returns `(new_html, resolved_count)`.
-    """
-    resolved_count = 0
-    spliced = html
-    by_start = sorted(marker_map.items(), key=lambda kv: kv[1]["span"][0], reverse=True)
-    for marker_id, cand in by_start:
-        items = resolved.get(marker_id)
-        if not items:
-            continue  # not resolved (failure or genuinely empty) — leave untouched
-        if any("{{" in str(value) for item in items for value in item.values()):
-            # The runtime never ran (e.g. `mockup_dir` lacks support.js), so the
-            # "resolved" element is the raw template and its text still holds
-            # the `{{ ... }}` binding. Splicing that in would ship placeholders as
-            # content — treat the group as unresolved instead (FR-31-26.3 #3).
-            _LOG.warning(
-                "js_content_resolver: group %s resolved to unrendered template text; "
-                "leaving it untouched", marker_id,
-            )
+def if_branches(body: str) -> list[dict[str, Any]]:
+    """Each `<sc-if>...</sc-if>` in `body`: ``{id, start, end, open_end}``; ``open_end`` is the offset just after
+    the opening tag, where a presence marker goes.
+
+    A branch containing another `<sc-if>` is skipped (the non-greedy close would mis-pair it)."""
+    out: list[dict[str, Any]] = []
+    for m in _SC_IF_RE.finditer(body):
+        if re.search(r"<sc-if\b", m.group(1), re.IGNORECASE):
             continue
-        as_name = cand["as_name"] or "t"
-        text_field = cand.get("text_field")
-        icon_field = cand.get("icon_field")
-        pieces: list[str] = []
-        for item in items:
-            item_html = cand["body"]
-
-            def _replace(match: "re.Match[str]", _item=item, _as=as_name) -> str:
-                expr = match.group(0)[2:-2].strip()
-                if expr == _as or (text_field and expr == f"{_as}.{text_field}"):
-                    return str(_item.get("text", ""))
-                if icon_field and expr == f"{_as}.{icon_field}":
-                    return str(_item.get("iconPath", ""))
-                return ""  # a binding outside this item's own scope — drop, never guess
-
-            item_html = _MUSTACHE_RE.sub(_replace, item_html)
-            pieces.append(item_html)
-        sc_for_start, sc_for_end = cand["span"]
-        spliced = spliced[:sc_for_start] + "".join(pieces) + spliced[sc_for_end:]
-        resolved_count += 1
-    return spliced, resolved_count
+        out.append({"id": "b%d" % len(out), "start": m.start(), "end": m.end(), "open_end": m.start(1)})
+    return out
 
 
-def resolve_js_array_content(html: str, mockup_dir: Path) -> tuple[str, int]:
-    """Top-level entry point — mirrors
-    `dc_import_resolver.py::resolve_dc_imports()`'s `(html, count)` shape.
+def _not_rendered(branch: dict[str, Any], fields: dict[str, Any]) -> bool:
+    """True when the runtime did NOT render this branch for this row: its presence marker (a hidden span the
+    temporary copy carries inside every branch) is missing from the row's clone. Exact: it does not depend on
+    what the branch contains, so a branch of attributes only or of static text is decided the same way."""
+    return branch["id"] not in fields
 
-    Fail-soft at every stage (FR-31-26.3 #3): any error returns `(html, 0)`
-    unchanged, never raises. A `html` with zero eligible `<sc-for>`s returns
-    immediately with no subprocess spawned at all (FR-31-26.3 #1's
-    zero-cost-on-an-already-fine-draft guarantee).
+
+def _expand(cand: dict[str, Any], items: list[dict[str, Any]], report: dict[str, Any]) -> str:
+    pieces: list[str] = []
+    captured = 0
+    pruned = 0
+    for number, item in enumerate(items, start=1):
+        fields = item.get("fields") or {}
+        edits: list[tuple[int, int, str, int]] = []
+        dead = [b for b in cand.get("branches", []) if _not_rendered(b, fields)]
+        for b in dead:
+            edits.append((b["start"], b["end"], "", -1))
+            pruned += 1
+        for order, slot in enumerate(cand["slots"]):
+            if any(b["start"] <= slot["start"] and slot["end"] <= b["end"] for b in dead):
+                continue                                   # inside a branch the runtime did not render: gone with it
+            value = fields.get(slot["id"])
+            if _usable(value):
+                edits.append((slot["start"], slot["end"],
+                              _html.escape(value, quote=(slot["kind"] == "attr")), order))
+                captured += 1
+            else:
+                report["gaps"].append({
+                    "loop": cand["list_expr"], "item": number, "expr": slot["mustache"],
+                    "reason": "the draft's runtime produced no plain value for it (a handler, a computed value or an unrendered branch)"})
+        pieces.append(_apply(cand["body"], edits))
+    report["resolved"].append({"loop": cand["list_expr"], "items": len(items),
+                               "fields_captured": captured, "fields_per_item": len(cand["slots"]),
+                               "branches_pruned": pruned})
+    return "".join(pieces)
+
+
+def splice_expanded_items(html: str, marker_map: dict[str, dict[str, Any]],
+                          captured: dict[str, list[dict[str, Any]]]) -> tuple[str, int, dict[str, Any]]:
+    """Replace each rendered loop's `<sc-for>` with its expanded items. Returns `(html, loops, report)`."""
+    report: dict[str, Any] = {"resolved": [], "gaps": [], "skipped": []}
+    count = 0
+    for _marker, cand in sorted(marker_map.items(), key=lambda kv: kv[1]["span"][0], reverse=True):
+        items = captured.get(_marker) or []
+        if not items:
+            report["skipped"].append({"loop": cand["list_expr"], "reason": "rendered 0 items at load (state-driven or hidden)"})
+            continue
+        if any(not _usable(v) and isinstance(v, str) and ("{{" in v or "}}" in v)
+               for item in items for v in (item.get("fields") or {}).values()):
+            _LOG.warning("js_content_resolver: loop %s came back as unrendered template text; leaving it untouched", cand["list_expr"])
+            report["skipped"].append({"loop": cand["list_expr"], "reason": "the draft's runtime did not render it"})
+            continue
+        start, end = cand["span"]
+        html = html[:start] + _expand(cand, items, report) + html[end:]
+        count += 1
+    return html, count, report
+
+
+def resolve_js_array_content_with_report(html: str, mockup_dir: Path) -> tuple[str, int, dict[str, Any]]:
+    """Top-level entry point: `(html, loops expanded, report)`. Fail-soft at every stage; never raises.
+
+    A `html` with no expandable `<sc-for>` returns at once with no subprocess spawned.
     """
-    candidates = find_unresolved_sc_fors(html)
+    candidates, skipped = find_expandable_sc_fors(html)
+    report: dict[str, Any] = {"resolved": [], "gaps": [], "skipped": list(skipped)}
     if not candidates:
-        return html, 0
+        return html, 0, report
 
-    marked_html, marker_map = inject_resolve_markers(html, candidates)
-
+    marked_html, marker_map = inject_capture_markers(html, candidates)
     tmp_dir = None
     try:
         tmp_dir = tempfile.TemporaryDirectory(prefix="sgs-js-resolve-")
         tmp_path = Path(tmp_dir.name)
         marked_file = tmp_path / "marked.dc.html"
         marked_file.write_text(marked_html, encoding="utf-8")
-        # Sibling assets (support.js, image-slot.js, other .dc.html components)
-        # must be reachable at the SAME relative paths the runtime expects —
-        # copy the whole mockup directory's siblings alongside the marked file.
+        # Sibling assets (support.js, image-slot.js, other .dc.html components) must be reachable at the SAME
+        # relative paths the runtime expects.
         for sibling in mockup_dir.iterdir():
-            if sibling.is_file() and sibling.name != Path().name:
+            if sibling.is_file():
                 dest = tmp_path / sibling.name
                 if not dest.exists():
                     dest.write_bytes(sibling.read_bytes())
 
-        proc = subprocess.run(
-            ["node", str(_RESOLVE_SCRIPT), "--draft", str(marked_file)],
-            capture_output=True, text=True, timeout=_RENDER_TIMEOUT_SECONDS,
-        )
+        proc = subprocess.run(["node", str(_RESOLVE_SCRIPT), "--draft", str(marked_file)],
+                              capture_output=True, text=True, encoding="utf-8", timeout=_RENDER_TIMEOUT_SECONDS)
         if proc.returncode != 0:
-            _LOG.warning(
-                "js_content_resolver: render script exited %s; leaving draft unchanged (%s)",
-                proc.returncode, proc.stderr[:500],
-            )
-            return html, 0
+            _LOG.warning("js_content_resolver: render script exited %s; leaving draft unchanged (%s)",
+                         proc.returncode, proc.stderr[:500])
+            return html, 0, report
         payload = json.loads(proc.stdout)
         if isinstance(payload, dict) and "error" in payload:
-            _LOG.warning(
-                "js_content_resolver: render failed (%s); leaving draft unchanged", payload["error"]
-            )
-            return html, 0
+            _LOG.warning("js_content_resolver: render failed (%s); leaving draft unchanged", payload["error"])
+            return html, 0, report
     except Exception as exc:  # noqa: BLE001 — fail-soft is the whole point here
         _LOG.warning("js_content_resolver: soft-failed (%s); leaving draft unchanged", exc)
-        return html, 0
+        return html, 0, report
     finally:
         if tmp_dir is not None:
             tmp_dir.cleanup()
 
-    return _splice_resolved_items(html, marker_map, payload)
+    new_html, count, spliced = splice_expanded_items(html, marker_map, payload)
+    spliced["skipped"] = report["skipped"] + spliced["skipped"]
+    return new_html, count, spliced
+
+
+def resolve_js_array_content(html: str, mockup_dir: Path) -> tuple[str, int]:
+    """`(html, loops expanded)`: `resolve_js_array_content_with_report` without the report."""
+    new_html, count, _report = resolve_js_array_content_with_report(html, mockup_dir)
+    return new_html, count

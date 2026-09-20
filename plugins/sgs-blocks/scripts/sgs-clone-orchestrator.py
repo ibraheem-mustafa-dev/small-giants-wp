@@ -3800,24 +3800,19 @@ def main():
     )
     parser.add_argument(
         "--no-site-info-values", action="store_true", default=False,
-        help="Skip the site-details stage (plan step A2a, D1133): by default the phone, review, social and map "
+        help="Skip the site-details stage (plan step A2a, D1134): by default the phone, review, social and map "
              "values the draft's script declares replace the bare `{{ name }}` bindings that carry them. This "
              "flag leaves those bindings as they were.",
     )
     parser.add_argument(
-        "--resolve-js-content", action="store_true", default=False,
-        help="Opt-in Spec 31 FR-31-26 (.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md §15, "
-             "design-gated with Bean 2026-09-19): a <sc-for> item template whose ONLY content "
-             "is JS `{{ t.field }}` bindings with no literal fallback text (the real content "
-             "lives in a draft `static ARRAY = [...]` class property, resolved at runtime by "
-             "the draft's own JS) gets that content resolved via a real headless-browser "
-             "render of the draft (js_content_resolver.py -> resolve-js-content.js), spliced "
-             "back into the mockup non-destructively — scope-narrowed to genuinely-simple "
-             "single-text-field items only (a multi-field item or a bare self-reference is "
-             "excluded rather than risk a garbled splice). Fail-soft: any render failure "
-             "(server, Playwright, timeout, an unresolvable array) leaves the draft "
-             "completely unchanged, never a new failure mode. Omit for today's default "
-             "behaviour (unchanged, zero risk to any existing client).",
+        "--resolve-js-content", action=argparse.BooleanOptionalAction, default=True,
+        help="Spec 31 FR-31-26 (D1134 made it default-on): a <sc-for> whose item fields are bound to "
+             "the loop variable (`{{ r.title }}`, `{{ r.body }}`) gets its content from a real "
+             "headless-browser render of the draft, using the draft's own runtime "
+             "(js_content_resolver.py -> resolve-js-content.js). Each captured field replaces its "
+             "mustache in an expanded copy of the item; whatever cannot be captured is left as it was "
+             "and listed in js-content-report.json. A draft with no <sc-for> is untouched and spawns "
+             "no browser. Fail-soft. Use --no-resolve-js-content to switch it off.",
     )
     parser.add_argument(
         "--sc-var-cache", type=Path, default=None,
@@ -3926,26 +3921,30 @@ def main():
         args.mockup = _dc_resolved_path
         print(f"[orchestrator] dc-import: resolved {_dc_count} import(s) -> {_dc_resolved_path}")
 
-    # Stage -1.5 -- JS-array-sourced content resolution (Spec 31 FR-31-26,
-    # design-gated with Bean 2026-09-19). Runs AFTER dc-import so a
-    # JS-array-sourced group inside an imported component is covered too.
-    # Opt-in (off by default) and fail-soft: any failure leaves args.mockup
-    # untouched, never a new failure mode. See js_content_resolver.py's own
-    # module docstring for the full mechanism.
-    if getattr(args, "resolve_js_content", False):
+    # Stage -1.5 -- JS-array-sourced content resolution (Spec 31 FR-31-26, design-gated with Bean
+    # 2026-09-19; multi-field items and default-on in plan step A2b, D1134). Runs AFTER dc-import so a
+    # JS-array-sourced group inside an imported component is covered too. Every `<sc-for>` whose fields
+    # are bound to the loop variable is rendered by the draft's own runtime and expanded into real items;
+    # anything it cannot capture stays as it was and is listed in js-content-report.json. Fail-soft: any
+    # failure leaves args.mockup untouched. `--no-resolve-js-content` opts out. See js_content_resolver.py.
+    if getattr(args, "resolve_js_content", True):
         _js_content_mod = _load_module_from_path(
             "sgs_js_content_resolver", ORCHESTRATOR_DIR / "js_content_resolver.py"
         )
-        _resolve_js_content = _js_content_mod.resolve_js_array_content
+        _resolve_js_content = _js_content_mod.resolve_js_array_content_with_report
         _js_raw = args.mockup.read_text(encoding="utf-8")
-        _js_resolved, _js_count = _resolve_js_content(_js_raw, _draft_dir)
+        _js_resolved, _js_count, _js_report = _resolve_js_content(_js_raw, _draft_dir)
+        if _js_report["resolved"] or _js_report["gaps"] or _js_report["skipped"]:
+            (run_dir / "js-content-report.json").write_text(
+                json.dumps(_js_report, indent=1, ensure_ascii=False), encoding="utf-8")
+            print(f"[orchestrator] js-content: expanded {_js_count} loop(s); {len(_js_report['gaps'])} field(s) "
+                  f"left as they were; {len(_js_report['skipped'])} loop(s) skipped -> {run_dir / 'js-content-report.json'}")
         if _js_count:
             _js_resolved_path = run_dir / "js-content-resolved.html"
             _js_resolved_path.write_text(_js_resolved, encoding="utf-8")
             args.mockup = _js_resolved_path
-            print(f"[orchestrator] js-content: resolved {_js_count} group(s) -> {_js_resolved_path}")
 
-    # Stage -1.45 -- SITE DETAILS (plan step A2a, D1133). The phone, review, social and map links the draft's
+    # Stage -1.45 -- SITE DETAILS (plan step A2a, D1134). The phone, review, social and map links the draft's
     # script declares replace the bare `{{ phone }}` / `{{ gmbHref }}` bindings that carry them, so they reach
     # the blocks as real values. Same reader as sync-business-info.py; inert (no file) for a draft without them.
     if not getattr(args, "no_site_info_values", False):
