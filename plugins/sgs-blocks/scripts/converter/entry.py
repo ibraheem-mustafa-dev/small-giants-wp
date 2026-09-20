@@ -137,7 +137,7 @@ def _bind_trace(trace, boundary_id: str):
 def convert_section(html: str, css: str, media_map: dict,
                     client_slug: str = "", repo_root=None,
                     trace=None, boundary_id: str = "",
-                    section_id: str = "") -> dict:
+                    section_id: str = "", tier_bindings: dict | None = None) -> dict:
     """Convert a single section's HTML+CSS to a Stage 4 result dict.
 
     Returns a dict matching the per_section_results schema: { boundary_id,
@@ -226,12 +226,18 @@ def convert_section(html: str, css: str, media_map: dict,
     set_trace_fn(_bind_trace(trace, boundary_id))
     set_recognition_trace_fn(_bind_trace(trace, boundary_id))
     db_lookup.set_trace(_gap_collector.FallbackTraceSink(trace), boundary_id)
+    # Per-device values the draft's own script gives its template bindings (orchestrator/
+    # script_bindings.py). None or empty = nothing is resolved and every binding is dropped and
+    # gapped, exactly as before. Cleared in the finally so one section's map never leaks into the next.
+    from converter.services import template_binding as _template_binding
+    _template_binding.configure_tier_bindings(tier_bindings)
     try:
         return _convert_section_body(html, css, media_map, section_id=section_id)
     finally:
         set_trace_fn(None)
         set_recognition_trace_fn(None)
         db_lookup.set_trace(None)
+        _template_binding.reset_tier_bindings()
 
 
 def _convert_section_body(html: str, css: str, media_map: dict,

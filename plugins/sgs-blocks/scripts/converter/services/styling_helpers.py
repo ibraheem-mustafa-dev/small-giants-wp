@@ -33,7 +33,7 @@ from bs4 import Tag
 
 from converter.db import db_lookup
 from converter.models import ResidualBand
-from converter.services.template_binding import drop_unresolved_bindings
+from converter.services.template_binding import drop_unresolved_bindings, resolve_binding_declarations
 
 _LOG = logging.getLogger("sgs.converter.styling")
 
@@ -770,13 +770,17 @@ def collect_css_decls_for_element(
     matched_base.sort(key=lambda x: (x[0], x[1]))
     for _spec_key, _ord, d in matched_base:
         base_decls.update(d)
+    inline_tier_overrides: dict[str, dict[str, str]] = {}
     if include_inline:
         inline = node.get("style", "") or ""
         if inline:
-            # Unresolved template bindings (``padding: {{ secPad }}``) are dropped
-            # HERE, at the first read of the inline declarations -- before any box
-            # tokenising, splitting or token snapping downstream (template_binding).
-            base_decls.update(drop_unresolved_bindings(_parse_decls(inline), node))
+            # Template bindings (``padding: {{ secPad }}``) are resolved to the draft script's own
+            # per-device values when the run supplied them, else dropped and gapped, HERE, at the
+            # first read of the inline declarations -- before any box tokenising, splitting or
+            # token snapping downstream (template_binding). The per-device texts come back as
+            # ``inline_tier_overrides`` and are applied after the @media fold below.
+            resolved_inline, inline_tier_overrides = resolve_binding_declarations(_parse_decls(inline), node)
+            base_decls.update(resolved_inline)
 
     def _specificity_key(media_cond: str) -> tuple[int, int]:
         mn = re.search(r"min-width\s*:\s*(\d+)", media_cond)
@@ -818,6 +822,9 @@ def collect_css_decls_for_element(
                 media_cond, lo
             ) and _media_condition_applies_at(media_cond, hi):
                 eff.update(media_decls)
+        # The draft's own inline style outranks any stylesheet rule, so a per-device value
+        # resolved from an inline template binding is applied AFTER the @media fold.
+        eff.update(inline_tier_overrides.get(tier.lower(), {}))
         tier_effective[tier] = eff
 
     # Desktop is the SGS BASE (unsuffixed) tier — collapse it onto base_decls.

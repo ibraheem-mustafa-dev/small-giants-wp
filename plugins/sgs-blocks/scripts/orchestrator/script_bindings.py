@@ -34,14 +34,23 @@ import sys
 from typing import Any
 
 _SCRIPTS = pathlib.Path(__file__).resolve().parent.parent
-for _p in (str(_SCRIPTS), str(_SCRIPTS / "draft-manifest")):
+for _p in (str(_SCRIPTS), str(_SCRIPTS / "draft-manifest"), str(pathlib.Path(__file__).resolve().parent)):
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
+from breakpoint_snap import declared_flags, find_width_read, snap_scope  # noqa: E402
 from dc_script import script_text  # noqa: E402
 from dc_template import balanced_end, find_screens, template_text  # noqa: E402
 
 EVAL_JS = pathlib.Path(__file__).resolve().parent / "script-bindings-eval.js"
+
+# Time budgets for the locked-down evaluator. They exist to stop a hostile or looping script, not to
+# police speed: an ordinary draft takes about 0.15 s. Measured 2026-09-20: with 36 busy processes on
+# 12 cores 2 of 10 runs hit the old 20 s deadline ("overall deadline exceeded") and every name went
+# unresolved, so the budgets are wide enough for a busy machine and a loaded CI box.
+EVAL_EXPRESSION_TIMEOUT_MS = 1000
+EVAL_DEADLINE_MS = 90000
+EVAL_PROCESS_TIMEOUT_S = 120.0
 
 # The draft tool's own names for its width flags. Only used to FIND the render function; the
 # thresholds behind them (760, 1024, 1280 ...) are read from the script, never assumed.
@@ -301,15 +310,25 @@ def read_render_scope(script: str, flag_names: tuple[str, ...] = FLAG_NAMES) -> 
         if m:
             anchor = m.start()
             break
+    width_hit = find_width_read(masked)
+    structural = False
+    if anchor < 0 and width_hit:
+        # The draft renamed its flags (mob -> mobile ...): find the render function by what it READS, the
+        # viewport width from its state, not by what its flags are called.
+        anchor, structural = width_hit[1], True
     if anchor < 0:
-        return "no declaration of a width flag (%s) was found in the script" % ", ".join(flag_names)
+        return "no declaration of a width flag (%s) and no read of the viewport width was found in the script" % ", ".join(flag_names)
     opens = [o for o, c in pairs.items() if masked[o] == "{" and o < anchor < c]
     if not opens:
         return "the width flag declaration is not inside a function body"
     body_open = max(opens)
     body_close = pairs[body_open]
     declarations = _declarations(masked, plain, body_open + 1, body_close)
-    flag_source = {n: e for n, e, _ in declarations if n in flag_names}
+    width_var = width_hit[0] if width_hit else None
+    if structural and width_var:
+        flag_source = declared_flags(declarations, width_var)
+    else:
+        flag_source = {n: e for n, e, _ in declarations if n in flag_names}
     if not flag_source:
         return "the width flag declaration could not be parsed"
     returns = [m for m in re.finditer(r"(?<![\w$.])return\s*\{", masked[body_open:body_close])]
@@ -322,7 +341,7 @@ def read_render_scope(script: str, flag_names: tuple[str, ...] = FLAG_NAMES) -> 
         return "the render function returns no object literal of values"
     obj_open = depth_ok[-1]
     properties = _object_properties(masked, plain, obj_open, pairs[obj_open])
-    return {"declarations": declarations, "properties": properties, "flag_source": flag_source}
+    return {"declarations": declarations, "properties": properties, "flag_source": flag_source, "width_var": width_var}
 
 
 # --------------------------------------------------------------------------------------------------
@@ -428,11 +447,17 @@ def _run_node(payload: dict[str, Any], timeout: float = 30.0) -> dict[str, Any]:
         return {"fatal": "the evaluator returned no JSON: %s" % (proc.stderr or proc.stdout)[:300]}
 
 
+def widths_ranges_edge(ranges: dict[str, tuple[int, int]], tier: str) -> int:
+    """The lowest viewport width a device tier owns (tablet 768, desktop 1024): the edge below it."""
+    return int(ranges[tier][0])
+
+
 def resolve_tier_bindings(
     draft_html: str,
     flag_names: tuple[str, ...] = FLAG_NAMES,
     tier_widths: dict[str, int] | None = None,
     tier_ranges: dict[str, tuple[int, int]] | None = None,
+    snap: bool = True,
 ) -> dict[str, Any]:
     """Resolve every style binding the draft's template references to per-tier values.
 
@@ -443,7 +468,12 @@ def resolve_tier_bindings(
          "resolved": {name: {"mobile", "tablet", "desktop", "uniform", "expression", "depends_on",
                              "uses": [...], "intra_tier": {tier: [{from, to, value}]}}},
          "unresolved": [{"name", "reason"}],
+         "snaps": [{in, comparison, draft, snapped, reason, differs_from_draft_between}],
          "problems": [str]}                                  # why nothing could be resolved, if so
+
+    ``snap`` (default on) rounds the draft's width thresholds to our device edges before evaluating
+    (``breakpoint_snap``: within 10px of 768 / 1024, and a declared flag between 640 and 768 to 768); each
+    change is a row in ``snaps``. ``snap=False`` evaluates the draft's own thresholds untouched.
 
     ``tier_widths`` / ``tier_ranges`` (keys ``mobile`` / ``tablet`` / ``desktop``) default to 375 / 768 / 1440
     and 320-767 / 768-1023 / 1024-2560. A caller wired to the converter should pass the values the converter
@@ -456,7 +486,7 @@ def resolve_tier_bindings(
     uses = template_bindings(draft_html)
     widths = dict(tier_widths or TIER_WIDTHS)
     ranges = dict(tier_ranges or TIER_RANGES)
-    result: dict[str, Any] = {"tier_widths": widths, "flags": None, "resolved": {}, "unresolved": [], "problems": []}
+    result: dict[str, Any] = {"tier_widths": widths, "flags": None, "resolved": {}, "unresolved": [], "snaps": [], "problems": []}
 
     if not uses:
         return result          # a draft with no style binding (every static or BEM draft): nothing to read, no noise
@@ -482,20 +512,26 @@ def resolve_tier_bindings(
     if not to_evaluate:
         return result
 
+    original = dict(to_evaluate)
+    scope_declarations = scope["declarations"]
+    if snap:
+        edges = (widths_ranges_edge(ranges, "tablet"), widths_ranges_edge(ranges, "desktop"))
+        scope_declarations, to_evaluate, result["snaps"] = snap_scope(scope_declarations, to_evaluate, scope.get("width_var"), edges)
     seed: set[str] = set()
     for expr in to_evaluate.values():
         seed |= _identifiers(expr)
-    declarations = _closure(seed, scope["declarations"])
+    declarations = _closure(seed, scope_declarations)
     reply = _run_node({
         "declarations": [{"name": n, "expr": e} for n, e, _ in declarations],
         "bindings": [{"name": n, "expr": e} for n, e in to_evaluate.items()],
         "tiers": widths, "ranges": {t: list(r) for t, r in ranges.items()},
-    })
+        "timeout_ms": EVAL_EXPRESSION_TIMEOUT_MS, "deadline_ms": EVAL_DEADLINE_MS,
+    }, timeout=EVAL_PROCESS_TIMEOUT_S)
     if "fatal" in reply:
         return refuse_all("evaluator failed: %s" % reply["fatal"])
 
     known = {n for n, _, _ in scope["declarations"]}
-    for name, expr in to_evaluate.items():
+    for name, expr in original.items():
         out = reply.get("bindings", {}).get(name)
         if not out or not out.get("ok"):
             result["unresolved"].append({"name": name, "reason": (out or {}).get("error") or "not evaluated"})

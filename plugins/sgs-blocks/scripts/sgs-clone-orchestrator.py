@@ -2618,6 +2618,9 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                     # root block even when the HTML class attribute doesn't
                     # match (e.g. pattern:brand sections, external scrapes).
                     section_id=m.get("section_id") or "",
+                    # Per-device values from the draft script's own width rules
+                    # (Stage -1.4, script_bindings_stage.py). None = drop-and-gap.
+                    tier_bindings=getattr(args, "_tier_bindings", None) or None,
                 )
                 if result.get("status") == "failed":
                     # Rule-4 loud path (post-programme QC fix, 2026-07-05):
@@ -3788,6 +3791,14 @@ def main():
              "caveat as --sc-var-min-confidence.",
     )
     parser.add_argument(
+        "--no-script-bindings", action="store_true", default=False,
+        help="Skip the script-bindings stage (plan step A1, D1132): by default the draft script's own "
+             "width rules are evaluated for the three device tiers and given to the converter, so a style "
+             "binding such as `padding: {{ secPad }}` becomes per-device block values instead of being "
+             "dropped. Inert for a draft with no binding in a style value. This flag restores the old "
+             "drop-and-gap behaviour for every binding.",
+    )
+    parser.add_argument(
         "--resolve-js-content", action="store_true", default=False,
         help="Opt-in Spec 31 FR-31-26 (.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md §15, "
              "design-gated with Bean 2026-09-19): a <sc-for> item template whose ONLY content "
@@ -3927,6 +3938,18 @@ def main():
             _js_resolved_path.write_text(_js_resolved, encoding="utf-8")
             args.mockup = _js_resolved_path
             print(f"[orchestrator] js-content: resolved {_js_count} group(s) -> {_js_resolved_path}")
+
+    # Stage -1.4 -- SCRIPT BINDINGS (plan step A1, D1132). The draft script's own width rules, evaluated
+    # for the three device tiers, become the per-device values of the style bindings the converter would
+    # otherwise drop. Reads the run copy (after dc-import / js-content). Fail-soft, inert for a draft with
+    # no binding in a style value (no file, empty map). See orchestrator/script_bindings_stage.py.
+    args._tier_bindings = {}
+    if not getattr(args, "no_script_bindings", False):
+        try:
+            _sb_stage = _load_module_from_path("sgs_script_bindings_stage", ORCHESTRATOR_DIR / "script_bindings_stage.py")
+            args._tier_bindings = _sb_stage.build_run_map(args.mockup.read_text(encoding="utf-8"), run_dir)
+        except Exception as _sb_exc:  # noqa: BLE001 -- never a new failure mode: fall back to drop-and-gap
+            print(f"[script-bindings] skipped ({_sb_exc}); every style binding will be dropped and gapped as before")
 
     print(f"[orchestrator] run_id={run_id}")
     print(f"[orchestrator] run_dir={run_dir}")

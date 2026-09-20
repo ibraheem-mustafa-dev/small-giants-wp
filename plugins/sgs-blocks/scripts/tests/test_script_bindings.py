@@ -72,7 +72,7 @@ def test_nested_ternary_and_three_way_split() -> None:
 def test_a_breakpoint_inside_a_device_tier_is_reported() -> None:
     """mob is effW < 760 but the SGS mobile tier runs to 767: 760-767 is a sliver the tiers cannot express."""
     r = sb.resolve_tier_bindings(draft('<p style="font-size: {{ fs }}"></p>', "fs: mob ? '15px' : '18px'",
-                                       "const mob = effW < 760, narrow = effW < 1024, wide = effW >= 1280;"))
+                                       "const mob = effW < 760, narrow = effW < 1024, wide = effW >= 1280;"), snap=False)
     runs = r["resolved"]["fs"]["intra_tier"]["mobile"]
     assert [(x["from"], x["to"], x["value"]) for x in runs] == [(320, 759, "15px"), (760, 767, "18px")]
 
@@ -117,7 +117,7 @@ def test_flag_line_missing_resolves_nothing_and_says_why() -> None:
 def test_a_draft_with_no_style_binding_is_inert_and_reports_no_problem() -> None:
     """A static or BEM draft (Mama's Munches): nothing referenced, nothing resolved, nothing to complain about."""
     r = sb.resolve_tier_bindings('<section class="sgs-hero" style="padding:20px"><h1>Hi</h1></section>')
-    assert r == {"tier_widths": sb.TIER_WIDTHS, "flags": None, "resolved": {}, "unresolved": [], "problems": []}
+    assert r == {"tier_widths": sb.TIER_WIDTHS, "flags": None, "resolved": {}, "unresolved": [], "snaps": [], "problems": []}
 
 
 @needs_node
@@ -184,6 +184,12 @@ def eye_care() -> tuple[str, dict]:
     return html, sb.resolve_tier_bindings(html)
 
 
+@pytest.fixture(scope="module")
+def eye_care_raw() -> dict:
+    """The same draft evaluated with its OWN thresholds (no snapping to our device edges)."""
+    return sb.resolve_tier_bindings(EYE_CARE.read_text(encoding="utf-8"), snap=False)
+
+
 @needs_node
 def test_real_draft_flags_are_read_from_its_script(eye_care: tuple[str, dict]) -> None:
     assert eye_care[1]["flags"] == {"mob": "effW < 760", "narrow": "effW < 1024", "wide": "effW >= 1280"}
@@ -216,10 +222,61 @@ def test_real_draft_state_driven_values_stay_unresolved(eye_care: tuple[str, dic
 
 
 @needs_node
-def test_real_draft_draft_breakpoints_that_no_device_tier_can_hold_are_reported(eye_care: tuple[str, dict]) -> None:
-    resolved = eye_care[1]["resolved"]
-    assert [r["from"] for r in resolved["prodCols"]["intra_tier"]["desktop"]] == [1024, 1280]    # 3 columns, then 4
-    assert [r["from"] for r in resolved["secPad"]["intra_tier"]["mobile"]] == [320, 760]         # 760-767 is not mobile in the draft
+def test_real_draft_draft_breakpoints_that_no_device_tier_can_hold_are_reported(eye_care: tuple[str, dict], eye_care_raw: dict) -> None:
+    raw = eye_care_raw["resolved"]
+    assert [r["from"] for r in raw["prodCols"]["intra_tier"]["desktop"]] == [1024, 1280]     # 3 columns, then 4
+    assert [r["from"] for r in raw["secPad"]["intra_tier"]["mobile"]] == [320, 760]          # 760-767 is not mobile in the draft
+    snapped = eye_care[1]["resolved"]
+    assert [r["from"] for r in snapped["prodCols"]["intra_tier"]["desktop"]] == [1024, 1280]  # 1280 is not within 10px of an edge: kept
+    assert "mobile" not in snapped["secPad"]["intra_tier"]                                     # 760 -> 768 (Bean's rule): no sliver left
+
+
+@needs_node
+def test_real_draft_snaps_are_logged_and_only_the_760_and_700_flags_move(eye_care: tuple[str, dict]) -> None:
+    snaps = eye_care[1]["snaps"]
+    assert {(x["draft"], x["snapped"]) for x in snaps} == {(760, 768), (700, 768)}
+    assert all(x["differs_from_draft_between"] in ([760, 767], [700, 767]) for x in snaps)
+    assert {x["in"] for x in snaps if x["draft"] == 700} == {"lensStack"}
+
+
+@needs_node
+def test_snapping_does_not_change_the_values_at_the_three_tier_widths(eye_care: tuple[str, dict], eye_care_raw: dict) -> None:
+    """375 / 768 / 1440 are all outside the snapped bands, so every resolved value is identical with and without it."""
+    for name, e in eye_care_raw["resolved"].items():
+        s = eye_care[1]["resolved"][name]
+        assert (s["mobile"], s["tablet"], s["desktop"]) == (e["mobile"], e["tablet"], e["desktop"]), name
+
+
+@needs_node
+def test_renamed_flags_resolve_the_same_as_the_original_names() -> None:
+    """Claude Design renamed mob/narrow/wide to mobile/tablet/desktop: the render function is found by what it reads."""
+    named = draft('<div style="padding: {{ pad }}"></div>', "pad: mob ? '10px' : narrow ? '20px' : '30px'",
+                  "const mob = effW < 768, narrow = effW < 1024;")
+    renamed = draft('<div style="padding: {{ pad }}"></div>', "pad: mobile ? '10px' : tablet ? '20px' : '30px'",
+                    "const mobile = effW < 768, tablet = effW >= 768 && effW < 1024, desktop = effW >= 1024;")
+    a, b = sb.resolve_tier_bindings(named), sb.resolve_tier_bindings(renamed)
+    assert (a["resolved"]["pad"]["mobile"], a["resolved"]["pad"]["tablet"], a["resolved"]["pad"]["desktop"]) == ("10px", "20px", "30px")
+    assert (b["resolved"]["pad"]["mobile"], b["resolved"]["pad"]["tablet"], b["resolved"]["pad"]["desktop"]) == ("10px", "20px", "30px")
+    assert set(b["flags"]) == {"mobile", "tablet", "desktop"}
+
+
+@needs_node
+def test_a_script_that_reads_no_width_still_resolves_nothing_and_says_why() -> None:
+    html = ('<div style="padding: {{ pad }}"></div><script type="text/x-dc">'
+            'class C { renderVals(){ const a = 1; return { pad: a }; } }</script>')
+    r = sb.resolve_tier_bindings(html)
+    assert r["resolved"] == {} and "width flag" in r["problems"][0]
+
+
+V2 = REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care_v2/Eye Care Birmingham.dc.html"
+
+
+@needs_node
+@pytest.mark.skipif(not V2.exists(), reason="the v2 bundle is not in this checkout (untracked)")
+def test_the_renamed_v2_draft_resolves_as_many_names_as_the_original(eye_care: tuple[str, dict]) -> None:
+    r = sb.resolve_tier_bindings(V2.read_text(encoding="utf-8"))
+    assert r["problems"] == []
+    assert len(r["resolved"]) == len(eye_care[1]["resolved"]) == 75
 
 
 # ---- ground truth: what the probe measured by rendering the real draft -------------------------------
