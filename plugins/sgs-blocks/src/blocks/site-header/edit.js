@@ -650,6 +650,26 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							hoverColour: 'shadowColourHover',
 						} }
 					/>
+					{ /* SHADOW ONCE SCROLLED — same builder, same value vocabulary
+					     (theme preset or custom shape + colour), bound to its own
+					     attribute pair. Painted by render.php against the
+					     `.is-header-scrolled` class view.js toggles once the page
+					     has scrolled; empty = nothing is painted. Sits under the
+					     resting shadow so the two read as one at-rest / scrolled
+					     pair, matching how the colour panel words its states. */ }
+					<hr style={ { margin: '16px 0' } } />
+					<ShadowControl
+						label={ __( 'Shadow once scrolled', 'sgs-blocks' ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ {
+							base: 'shadowScrolled',
+							colour: 'shadowScrolledColour',
+						} }
+					/>
+					<p className="components-base-control__help">
+						{ __( 'Applied once the visitor has scrolled down the page, and eased in. Leave on None for no change. Most useful with a sticky header.', 'sgs-blocks' ) }
+					</p>
 				</PanelBody>
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
 					<SgsBorderControl

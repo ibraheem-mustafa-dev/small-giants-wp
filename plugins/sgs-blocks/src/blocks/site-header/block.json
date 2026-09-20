@@ -100,7 +100,9 @@
 							"attrMap": {
 								"css:color": "textColourScrolled",
 								"css:background-color": "backgroundColourScrolled",
-								"css:background-color-gradient": "backgroundColourScrolledGradient"
+								"css:background-color-gradient": "backgroundColourScrolledGradient",
+								"css:box-shadow": "shadowScrolled",
+								"css:box-shadow-color": "shadowScrolledColour"
 							}
 						}
 					},
@@ -385,6 +387,16 @@
 		"shadowColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"shadowScrolled": {
+			"type": "string",
+			"default": "",
+			"description": "Box-shadow SHAPE (or theme shadow preset slug) the header takes once the page has scrolled. Same value vocabulary as `shadow`. Empty = no scrolled shadow, nothing emitted."
+		},
+		"shadowScrolledColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour composed into the scrolled shadow SHAPE (a token slug or raw colour). Ignored when shadowScrolled is a preset slug."
 		},
 		"borderWidth": {
 			"type": "object",

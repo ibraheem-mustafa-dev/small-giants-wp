@@ -277,6 +277,52 @@ if ( $sh_solid_first ) {
 	);
 }
 
+// SHADOW ONCE SCROLLED — the elevation a pinned header takes when the page has
+// moved under it. Same value vocabulary as the resting `shadow` (a theme shadow
+// preset slug, or a raw shape composed with `shadowScrolledColour`) and the SAME
+// resolver, sgs_shadow_value_composed(), which the wrapper uses for the resting
+// shadow — so a slug resolves to var(--wp--preset--shadow--{slug}) and a colour
+// token resolves through sgs_colour_value(), with no second resolution path.
+//
+// NOTHING PAINTS BY DEFAULT: with `shadowScrolled` empty, $sh_shadow_scrolled_value
+// is '' and every branch below is skipped — the emitted CSS is byte-identical to
+// a header that has never heard of this attribute.
+//
+// Not tier-gated, deliberately. The scrolled BACKGROUND rule above is gated on
+// where Transparent is ON because it flips away from a resting transparency;
+// a shadow has no such precondition, it simply applies once `.is-header-scrolled`
+// is present. It is a plain scalar (like the resting `shadow`), not a per-device
+// object. `.is-header-scrolled` is a separate STATE selector from the resting
+// rules, and the resting `box-shadow` (wrapper, `.uid{}`) never uses !important,
+// so the extra class wins by specificity alone — no second writer, no !important.
+$sh_shadow_scrolled_shape  = isset( $attributes['shadowScrolled'] ) && is_string( $attributes['shadowScrolled'] )
+	? $attributes['shadowScrolled']
+	: '';
+$sh_shadow_scrolled_colour = isset( $attributes['shadowScrolledColour'] ) && is_string( $attributes['shadowScrolledColour'] )
+	? $attributes['shadowScrolledColour']
+	: '';
+$sh_shadow_scrolled_value  = sgs_shadow_value_composed( $sh_shadow_scrolled_shape, $sh_shadow_scrolled_colour );
+$sh_shadow_scrolled_on     = '' !== $sh_shadow_scrolled_value;
+
+// `transition` is a SHORTHAND that Shrink's fallback and Hide-on-scroll below
+// already write on this same selector, and a later shorthand replaces an earlier
+// one wholesale. So the shadow's easing is not a fourth writer: it is appended to
+// each of their lists (and stands in for their `transition:none` off-value), and
+// emitted on its own only as the base they override. Empty strings when no
+// scrolled shadow is set, which is what keeps their output unchanged.
+$sh_shadow_tx_append = $sh_shadow_scrolled_on ? ',box-shadow 200ms ease' : '';
+$sh_shadow_tx_off    = $sh_shadow_scrolled_on ? 'transition:box-shadow 200ms ease;' : 'transition:none;';
+
+if ( $sh_shadow_scrolled_on ) {
+	// Eases in AND out: the resting rule carries the transition, so the return to
+	// the resting shadow (scrolling back to the top) animates as well. The
+	// prefers-reduced-motion reset near the end of this file (`transition:none
+	// !important` on this selector) removes it for visitors who ask for no motion;
+	// the end-state shadow still applies.
+	$css .= $root_sel . '{transition:box-shadow 200ms ease;}';
+	$css .= $root_sel . '.is-header-scrolled{box-shadow:' . $sh_shadow_scrolled_value . ';}';
+}
+
 // Shrink — transition/animation setup per tier, THEN the shrunk padding value
 // itself emitted separately (also per tier) keyed to ".is-header-shrunk" so a
 // tier where shrink is off never sees the reduced padding even if view.js has
@@ -306,8 +352,8 @@ if ( $sh_shrink_any_tier ) {
 	$sh_shrink_fallback_css = sgs_emit_tier_rules(
 		$root_sel,
 		$sh_shrink,
-		'padding-block:var(--wp--preset--spacing--30,1.5rem);transition:padding-block 200ms ease;',
-		'transition:none;',
+		'padding-block:var(--wp--preset--spacing--30,1.5rem);transition:padding-block 200ms ease' . $sh_shadow_tx_append . ';',
+		$sh_shadow_tx_off,
 		'off'
 	);
 	if ( '' !== $sh_shrink_fallback_css ) {
@@ -330,8 +376,8 @@ if ( $sh_hide_any_tier ) {
 	$css .= sgs_emit_tier_rules(
 		$root_sel,
 		$sh_hide,
-		'transition:transform 200ms ease;will-change:transform;',
-		'transition:none;',
+		'transition:transform 200ms ease' . $sh_shadow_tx_append . ';will-change:transform;',
+		$sh_shadow_tx_off,
 		'off'
 	);
 	$css .= sgs_emit_tier_rules(
@@ -420,7 +466,11 @@ $sh_extra_attrs         = array( 'id' => $uid );
 $sh_sticky_any_tier     = ! empty( sgs_resolve_on_tiers( $sh_sticky, 'on', 'off' ) );
 $sh_scroll_behaviour_on = ! empty( sgs_resolve_on_tiers( $sh_transparent, 'on', 'off' ) )
 	|| ! empty( sgs_resolve_on_tiers( $sh_shrink, 'on', 'off' ) )
-	|| ! empty( sgs_resolve_on_tiers( $sh_hide, 'on', 'off' ) );
+	|| ! empty( sgs_resolve_on_tiers( $sh_hide, 'on', 'off' ) )
+	// A scrolled shadow needs view.js to toggle `.is-header-scrolled`, even on a
+	// header that is neither transparent, shrinking nor hiding (a plain or merely
+	// sticky one). Without this the class is never added and the shadow never shows.
+	|| $sh_shadow_scrolled_on;
 if ( $sh_sticky_any_tier ) {
 	$sh_extra_attrs['data-sgs-header-sticky'] = '1';
 }
