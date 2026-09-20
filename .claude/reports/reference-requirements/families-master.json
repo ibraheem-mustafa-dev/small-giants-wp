@@ -1,0 +1,2246 @@
+{
+ "families": [
+  {
+   "id": "M-01",
+   "name": "Header pin mode on scroll",
+   "sources": [
+    "F-A-01"
+   ],
+   "needed_by": [
+    "away",
+    "buck",
+    "butcherbox",
+    "dogstudio",
+    "halcyon",
+    "indus-foods",
+    "lusion",
+    "rabbit",
+    "wearecollins"
+   ],
+   "needed_by_count": 9,
+   "coverage_status": "covered",
+   "evidence": "measured",
+   "covered_by": [
+    "sgs/site-header::headerSticky",
+    "sgs/site-header::headerHideOnScroll",
+    "sgs/site-header-row::rowHideOnScroll"
+   ],
+   "note": "All three are per-tier tri-state objects, so wearecollins' iOS-only-at-375 case and dogstudio's hide/reveal both land. halcyon/indus declare sticky and do not stick; clone the INTENT (see decision DEC-10)."
+  },
+  {
+   "id": "M-02",
+   "name": "Header shell archetype and width",
+   "sources": [
+    "F-A-02"
+   ],
+   "needed_by": [
+    "away",
+    "buck",
+    "fantasy",
+    "halcyon",
+    "indus-foods",
+    "lamalama",
+    "lusion",
+    "resn",
+    "studionamma"
+   ],
+   "needed_by_count": 9,
+   "coverage_status": "partial",
+   "evidence": "measured",
+   "covered_by": [
+    "sgs/site-header::headerFloat",
+    "::headerFloatInset",
+    "::headerFloatCollapse",
+    "::maxWidth",
+    "::contentWidth",
+    "::borderRadius"
+   ],
+   "note": "Full-bleed, capped-inner and the floating pill are all built. The residual gap is SHELL-LESS (resn): sgs/site-header always renders a <header>, so four independently pinned controls cannot be emitted as a header. That residual moves to M-08."
+  },
+  {
+   "id": "M-03",
+   "name": "Scroll-state restyle (rest paint vs scrolled paint)",
+   "sources": [
+    "F-A-06"
+   ],
+   "needed_by": [
+    "butcherbox",
+    "dogstudio",
+    "fantasy",
+    "wearecollins"
+   ],
+   "needed_by_count": 4,
+   "coverage_status": "partial",
+   "evidence": "measured",
+   "covered_by": [
+    "sgs/site-header::headerTransparent",
+    "::headerTransparentDirection",
+    "::backgroundColourScrolled",
+    "::textColourScrolled",
+    "::shadowScrolled"
+   ],
+   "note": "Transparent-at-rest / solid-once-scrolled is fully covered per tier and per row. Gap: headerTransparentDirection keys on scroll POSITION; fantasy keys on scroll DIRECTION (fades going down, returns going up, at any offset)."
+  },
+  {
+   "id": "M-04",
+   "name": "Section-adaptive ink",
+   "sources": [
+    "F-A-05"
+   ],
+   "needed_by": [
+    "dogstudio",
+    "fantasy",
+    "lusion",
+    "studionamma",
+    "wearecollins"
+   ],
+   "needed_by_count": 5,
+   "coverage_status": "gap",
+   "evidence": "mixed",
+   "covered_by": [],
+   "note": "contrastSafe is an advisory scrim behind the header's OWN text and never reads the section behind it. Nothing in the tree observes what passes under the header, and mix-blend-mode exists only as backgroundOverlayBlendMode on the shared overlay panel (8 blocks), never on a header element. fantasy's light-ground half is source-only (never observed at any sampled offset)."
+  },
+  {
+   "id": "M-05",
+   "name": "Row track layout and rail alignment (header and footer)",
+   "sources": [
+    "F-A-07"
+   ],
+   "needed_by": [
+    "away",
+    "buck",
+    "halcyon",
+    "indus-foods",
+    "lusion",
+    "studionamma",
+    "wearecollins"
+   ],
+   "needed_by_count": 7,
+   "coverage_status": "covered",
+   "evidence": "measured",
+   "covered_by": [
+    "sgs/site-header-row::layout",
+    "::columns",
+    "::gridTemplateColumns",
+    "::justifyContent",
+    "::alignItems",
+    "::gap",
+    "::rowSlot",
+    "sgs/site-footer-row::columns",
+    "::gridTemplateColumns"
+   ],
+   "note": "One mechanism, identical attribute set on both row blocks. site-footer-row also declares intrinsicColumns, which is away's reflow-only footer behaviour."
+  },
+  {
+   "id": "M-06",
+   "name": "Stacked header rows (a strip above, below or off the bar)",
+   "sources": [
+    "F-A-08"
+   ],
+   "needed_by": [
+    "away",
+    "butcherbox",
+    "studionamma"
+   ],
+   "needed_by_count": 3,
+   "coverage_status": "partial",
+   "evidence": "measured",
+   "covered_by": [
+    "sgs/site-header (InnerBlocks of sgs/site-header-row)",
+    "sgs/site-header-row::rowSlot",
+    "::rowHideOnScroll",
+    "sgs/notice-banner::stickyPosition"
+   ],
+   "note": "Multiple rows with their own slot, paint and hide-on-scroll are covered (away's two-row wrapper, butcherbox's independently scrolling banner). Gap: studionamma's second strip is pinned to the BOTTOM of the viewport — that residual moves to M-08."
+  },
+  {
+   "id": "M-07",
+   "name": "Self-changing header message (carousel, random, live clock)",
+   "sources": [
+    "F-A-09"
+   ],
+   "needed_by": [
+    "away",
+    "lamalama",
+    "studionamma"
+   ],
+   "needed_by_count": 3,
+   "coverage_status": "gap",
+   "evidence": "thin",
+   "covered_by": [
+    "sgs/notice-banner::text (one static string only)"
+   ],
+   "note": "notice-banner holds ONE string with one colour set. No slide collection, no per-slide colour pair, no prev/next control, no timer, no random source, and nothing in the 209-block roster ticks a clock. Evidence thin: away's announcement transition timing was never measured."
+  },
+  {
+   "id": "M-08",
+   "name": "Detached fixed controls, incl. a trigger that outlives its header",
+   "sources": [
+    "F-A-19",
+    "F-B-24",
+    "F-A-02 (shell-less residual)",
+    "F-A-08 (bottom-strip residual)"
+   ],
+   "needed_by": [
+    "buck",
+    "lamalama",
+    "lusion",
+    "resn",
+    "studionamma"
+   ],
+   "needed_by_count": 5,
+   "coverage_status": "gap",
+   "evidence": "measured",
+   "covered_by": [],
+   "note": "MERGED: group A recorded 'the trigger detaches to fixed once scrolled' as one value of F-A-19 and group B gave the same buck behaviour its own family F-B-24. One mechanism: pin a header child (or the whole header's controls) to a viewport edge, with its own z-index and its own scroll threshold. Also absorbs resn's shell-less header and studionamma's bottom-pinned strip. Nothing in the tree detaches a child from the header box; the only position attributes in the DB are sgs/decorative-image::positionY and ::zIndex."
+  },
+  {
+   "id": "M-09",
+   "name": "Header stacking order (z-index)",
+   "sources": [
+    "F-A-21"
+   ],
+   "needed_by": [
+    "buck",
+    "butcherbox",
+    "dogstudio",
+    "fantasy",
+    "halcyon",
+    "lamalama",
+    "lusion",
+    "studionamma",
+    "wearecollins"
+   ],
+   "needed_by_count": 9,
+   "coverage_status": "conflict",
+   "evidence": "measured",
+   "covered_by": [
+    "sgs/site-header (z-index hardcoded 100; NO attribute)"
+   ],
+   "note": "VERIFIED: site-header/render.php emits 'z-index' => '100' in all three tri-state branches and style.css:25 sets z-index:100. Eleven distinct values measured across the roster (9 to 10000, plus auto), and wearecollins needs 999 at 375 and 9 above. A hardcoded wrapper default that overrides faithfully-transferred CSS is a cheat to remove or gate."
+  },
+  {
+   "id": "M-10",
+   "name": "Pointer-tracking label magnet on bar items",
+   "sources": [
+    "F-A-14"
+   ],
+   "needed_by": [
+    "halcyon",
+    "indus-foods"
+   ],
+   "needed_by_count": 2,
+   "coverage_status": "partial",
+   "evidence": "measured",
+   "covered_by": [
+    "sgs/nav-bar-menu::itemMagnetEnabled (boolean only)"
+   ],
+   "note": "VERIFIED: itemMagnetStrength and itemMagnetRadius are ABSENT while triggerMagnetStrength (default 24) and triggerMagnetRadius (default 120) exist. halcyon's 0.16 and indus's 0.14 collapse to one built-in constant. The read side already exists; this is two attributes."
+  },
+  {
+   "id": "M-11",
+   "name": "Header and footer entrance animation",
+   "sources": [
+    "F-A-20"
+   ],
+   "needed_by": [
+    "dogstudio",
+    "halcyon",
+    "indus-foods",
+    "lamalama",
+    "lusion",
+    "studionamma"
+   ],
+   "needed_by_count": 6,
+   "coverage_status": "partial",
+   "evidence": "thin",
+   "covered_by": [
+    "sgs/site-footer-row::fxFooterStagger"
+   ],
+   "note": "VERIFIED: site-header and site-footer both declare supports.sgs.hideExtensions ['fx'], so the generic Spec 38 picker is deliberately hidden on them; only the footer row has a scrubbed reveal. Three references animate their header in and none can be cloned; a preloader-gated start has no expression. Evidence thin: every footer motion cell is not_measured, so this rests on class names (appear-fade-up, grow-appear)."
+  },
+  {
+   "id": "M-12",
+   "name": "Footer archetype",
+   "sources": [
+    "F-A-22"
+   ],
+   "needed_by": [
+    "away",
+    "buck",
+    "dogstudio",
+    "fantasy",
+    "halcyon",
+    "indus-foods",
+    "lamalama",
+    "lusion",
+    "resn",
+    "studionamma",
+    "wearecollins"
+   ],
+   "needed_by_count": 11,
+   "coverage_status": "covered",
+   "evidence": "mixed",
+   "covered_by": [
+    "sgs/site-footer::layout",
+    "::columns",
+    "::minHeight",
+    "::contentWidth",
+    "sgs/site-footer-row::*"
+   ],
+   "note": "All five shapes are rows of blocks, and 'absent' is covered by carrying no footer template part. rabbit's footer was never captured."
+  },
+  {
+   "id": "M-13",
+   "name": "Surface ground: fill, opacity, blur, radius, border, shadow",
+   "sources": [
+    "F-A-03",
+    "F-A-04",
+    "F-B-05",
+    "F-C-04",
+    "F-C-05",
+    "F-A-23 (fill part)"
+   ],
+   "needed_by": [
+    "away",
+    "buck",
+    "butcherbox",
+    "dogstudio",
+    "fantasy",
+    "halcyon",
+    "indus-foods",
+    "lamalama",
+    "lusion",
+    "rabbit",
+    "resn",
+    "studionamma",
+    "wearecollins"
+   ],
+   "needed_by_count": 13,
+   "coverage_status": "partial",
+   "evidence": "measured",
+   "covered_by": [
+    "sgs/site-header::backgroundColour/-Gradient/::backdropBlur/::border*/::shadow",
+    "sgs/mega-panel::panelBg/::bgBlur/::borderRadius/::border*",
+    "sgs/nav-drawer::drawerBg/::surfaceOpacity/::surfaceBlur/::borderRadius",
+    "sgs/site-footer::backgroundColour/-Gradient",
+    "sgs/*-row::backgroundColour"
+   ],
+   "note": "MERGED across header, panel, drawer and footer: one ground vocabulary, per the composite-mirror rule. Covered on the header and the drawer (surfaceOpacity + surfaceBlur reach lamalama exactly). FOUR residual gaps: (a) mega-panel::bgBlur is a BOOLEAN emitting a literal 'saturate(1.5) blur(24px)' — halcyon clones, no other blur amount can (VERIFIED); (b) the mega panel's box-shadow is hardcoded '0 30px 80px -30px rgba(0,0,0,.28),0 2px 8px -2px rgba(0,0,0,.08)' with no attribute, so away's shadow-none and rabbit's shadow-lg are unreachable (VERIFIED); (c) site-header::backdropBlur is a length only, so halcyon's companion saturate(1.4) is unreachable and the value lands on the header box, not on fantasy's blurred trigger pill; (d) fantasy's mask-image gradient fade has no attribute (0 rows for css_property='mask-image')."
+  },
+  {
+   "id": "M-14",
+   "name": "Surface scrim (viewport dimmer behind an open surface)",
+   "sources": [
+    "F-B-06",
+    "F-C-06"
+   ],
+   "needed_by": [
+    "away",
+    "butcherbox",
+    "halcyon",
+    "indus-foods",
+    "lamalama",
+    "lusion"
+   ],
+   "needed_by_count": 6,
+   "coverage_status": "gap",
+   "evidence": "measured",
+   "covered_by": [
+    "(drawer scrim exists but is hardcoded; the panel fork has no scrim at all)"
+   ],
+   "note": "MERGED: group B found no scrim element on the panel fork, group C found a hardcoded one on the drawer. One attribute set (colour, alpha, blur, click-closes, per tier) expresses both. VERIFIED: zero 'scrim' in mega-panel/render.php and in nav-menu-markup.php; nav-drawer/style.css hardcodes rgba(0,0,0,0.55) twice (__scrim and ::backdrop) and the DB has no scrim attribute. All four references with a real scrim CHANGE it per tier, and two use it as the click-to-close target."
+  },
+  {
+   "id": "M-15",
+   "name": "Background media layer on a surface (image, video, per-link visual)",
+   "sources": [
+    "F-A-23 (media part)",
+    "F-C-07"
+   ],
+   "needed_by": [
+    "buck",
+    "dogstudio",
+    "fantasy",
+    "lamalama",
+    "resn",
+    "studionamma",
+    "wearecollins"
+   ],
+   "needed_by_count": 7,
+   "coverage_status": "partial",
+   "evidence": "measured",
+   "covered_by": [
+    "sgs/site-footer::backgroundImage*/::bgVideo*/::backgroundOverlay*",
+    "sgs/nav-drawer::backgroundImage/::backgroundSize/::backgroundPosition"
+   ],
+   "note": "Static image layers, per-tier background video and a tinted overlay are covered (studionamma's looping footer video, fantasy's white-panel-over-black-90%, dogstudio's drawer image layer). Gaps: the PER-LINK hover thumbnail (studionamma) and the per-link leading glyph (buck) need a per-item media slot, which is M-22; buck's per-page-load random fill is a content-supply question (DEC-07); resn's WebGL scene is DEC-01."
+  },
+  {
+   "id": "M-16",
+   "name": "Panel geometry: width, horizontal anchor, top offset",
+   "sources": [
+    "F-B-02",
+    "F-B-03",
+    "F-B-04"
+   ],
+   "needed_by": [
+    "away",
+    "butcherbox",
+    "halcyon",
+    "indus-foods",
+    "lamalama",
+    "rabbit"
+   ],
+   "needed_by_count": 6,
+   "coverage_status": "partial",
+   "evidence": "mixed",
+   "covered_by": [
+    "sgs/mega-panel::maxWidth",
+    "sgs/nav-bar-menu::submenuMinWidth",
+    "::submenuAlign",
+    "::submenuTopOffset"
+   ],
+   "note": "MERGED (three geometry columns, one panel-positioning mechanism). The shipped wrap width min(1120px, calc(100vw - 56px)) is byte-for-byte the rule derived from both drafts, and maxWidth defaults to 1120px (VERIFIED). Gaps: (a) there is no anchor ENUM — viewport-centring is the mega fork's fixed behaviour and item-left is the dropdown's, so a wide item-left panel or an item-centred mega has no expression; (b) submenuTopOffset is a DROPDOWN attribute only, so halcyon's 10px and indus's 12px mega gaps have no operator control. rabbit's open state was never reproduced."
+  },
+  {
+   "id": "M-17",
+   "name": "Drawer anchor archetype and width cap",
+   "sources": [
+    "F-C-02",
+    "F-C-03"
+   ],
+   "needed_by": [
+    "away",
+    "buck",
+    "butcherbox",
+    "dogstudio",
+    "fantasy",
+    "halcyon",
+    "indus-foods",
+    "lamalama",
+    "lusion",
+    "rabbit",
+    "resn",
+    "studionamma",
+    "wearecollins"
+   ],
+   "needed_by_count": 13,
+   "coverage_status": "partial",
+   "evidence": "measured",
+   "covered_by": [
+    "sgs/nav-drawer::anchor (full-screen|header|trigger|centred)",
+    "::panelSize"
+   ],
+   "note": "MERGED (the cap is only meaningful under a non-full-screen anchor). VERIFIED: the anchor allow-list is exactly ['full-screen','header','trigger','centred']. Missing: the SIDE DRAWER (away@768: left 0, top 0, 390x900, full height, partial width) and lusion's CONTAINER-INSET card stack (insets matching the header container, not the viewport). away@768's 390px cap is blocked by the missing anchor, not by panelSize."
+  },
+  {
+   "id": "M-18",
+   "name": "Utility and furniture block roster (bar, drawer, footer)",
+   "sources": [
+    "F-A-10",
+    "F-A-24",
+    "F-C-15"
+   ],
+   "needed_by": [
+    "away",
+    "buck",
+    "butcherbox",
+    "dogstudio",
+    "fantasy",
+    "halcyon",
+    "indus-foods",
+    "lamalama",
+    "lusion",
+    "rabbit",
+    "resn",
+    "studionamma",
+    "wearecollins"
+   ],
+   "needed_by_count": 13,
+   "coverage_status": "partial",
+   "evidence": "measured",
+   "covered_by": [
+    "sgs/cart",
+    "sgs/button",
+    "sgs/multi-button",
+    "sgs/form",
+    "sgs/social-icons",
+    "sgs/business-info::displayType",
+    "sgs/nav-drawer (InnerBlocks body)"
+   ],
+   "note": "MERGED: the same missing blocks recur in the bar, the drawer and the footer, so it is one build. Covered: cart with a count badge, CTAs, newsletter form, social rows, and every legal/address line via business-info::displayType (9 values, VERIFIED). MISSING BLOCKS (VERIFIED: 0 matching slugs in a 209-block roster): live local-time clock, language switch, country/store selector, back-to-top button, wishlist, account/log-in, theme toggle, site-wide sound mute. Also: sgs/product-search and sgs/filter-search exist but neither declares headerEssential, so neither is offered as a header control (VERIFIED: true only on sgs/cart and sgs/responsive-logo)."
+  },
+  {
+   "id": "M-19",
+   "name": "Per-tier role migration and secondary-block visibility",
+   "sources": [
+    "F-C-23"
+   ],
+   "needed_by": [
+    "away",
+    "buck",
+    "dogstudio",
+    "fantasy",
+    "halcyon",
+    "indus-foods",
+    "lusion",
+    "resn",
+    "studionamma",
+    "wearecollins"
+   ],
+   "needed_by_count": 10,
+   "coverage_status": "partial",
+   "evidence": "mixed",
+   "covered_by": [
+    "sgs/nav-bar-menu::featuredItemIds",
+    "sgs/nav-drawer-menu::megaDrawerFallbackIds",
+    "::ref"
+   ],
+   "note": "The MENU's own degrade is covered (one menu renders as a bar above collapsePoint and an accordion below, with a per-item mega opt-out). Not covered: migrating a NON-MENU header block into the drawer at a tier — studionamma's CTA, away's Help/Log-in/store selector, buck's added search icon. Today the only route is wearecollins' two-DOM-copies mechanism, by hand."
+  },
+  {
+   "id": "M-20",
+   "name": "Panel side rail and callout tiles",
+   "sources": [
+    "F-B-08"
+   ],
+   "needed_by": [
+    "away",
+    "halcyon",
+    "indus-foods"
+   ],
+   "needed_by_count": 3,
+   "coverage_status": "partial",
+   "evidence": "measured",
+   "covered_by": [
+    "sgs/mega-aside::asideFormat (feature|preview|cta)",
+    "sgs/mega-panel::asideWidth (default 340px)",
+    "::asideSeparator"
+   ],
+   "note": "VERIFIED: allowed_formats = ('feature','preview','cta') at mega-aside/render.php:47 — one value each for halcyon's feature card, halcyon's preview pane and indus's Own Brands CTA. Gap: away's callout ROW (two or three image tiles side by side at the right of the panel); a mega-panel renders exactly one aside column."
+  },
+  {
+   "id": "M-21",
+   "name": "Item hover paint (the hovered element itself)",
+   "sources": [
+    "F-A-12",
+    "F-B-11",
+    "F-C-12 (self part)"
+   ],
+   "needed_by": [
+    "away",
+    "buck",
+    "butcherbox",
+    "dogstudio",
+    "fantasy",
+    "halcyon",
+    "indus-foods",
+    "lamalama",
+    "lusion",
+    "resn",
+    "studionamma"
+   ],
+   "needed_by_count": 11,
+   "coverage_status": "partial",
+   "evidence": "mixed",
+   "covered_by": [
+    "sgs/nav-bar-menu::itemBgHoverTreatment/::itemBgHover/::itemColourHover/::itemFontWeightHover/::itemTextDecorationHover",
+    "sgs/nav-drawer-menu::item*Hover (14 hover rows)",
+    "sgs/nav-bar-menu::submenu*Hover",
+    "sgs/mega-panel::iconBackgroundHover"
+   ],
+   "note": "MERGED across bar, panel and drawer: buck's 1 -> 0.5 opacity fade appears on the BAR (group A) and in the DRAWER (group C) as the same value, and one attribute covers both. Sliding pill (itemBgHoverTreatment 'highlight'), tint swap, colour, weight, underline and border are all covered. THREE residual gaps: (a) no hover-OPACITY attribute (buck, fantasy, on two surfaces); (b) the panel CARD LIFT is hardcoded translateY(-3px) plus a fixed ::after shadow in mega-panel/style.css — halcyon's -3px exactly, indus's -6px not at all (VERIFIED); (c) no padding-left-shift-on-hover attribute (halcyon 14->22px, indus 6->12px). Also halcyon-specific: 'highlight' must NOT be gated on owning a panel (halcyon) while indus is the opposite, so both must be reachable."
+  },
+  {
+   "id": "M-22",
+   "name": "Per-item ornament and per-item media slot",
+   "sources": [
+    "F-A-16",
+    "F-B-12",
+    "F-C-08",
+    "F-C-07 (per-link part)"
+   ],
+   "needed_by": [
+    "away",
+    "buck",
+    "butcherbox",
+    "dogstudio",
+    "halcyon",
+    "indus-foods",
+    "lamalama",
+    "studionamma"
+   ],
+   "needed_by_count": 8,
+   "coverage_status": "partial",
+   "evidence": "measured",
+   "covered_by": [
+    "sgs/nav-bar-menu::submenuCaret",
+    "sgs/mega-panel::iconBackground/::iconColour (+hover pair)",
+    "sgs/nav-drawer-menu::sublinkMarker* (7 attrs)"
+   ],
+   "note": "MERGED: the caret on panel-owning items, the icon-host tile, the index number and the leading glyph are one ornament vocabulary and the gaps are identical on the panel and the drawer. Covered: caret (submenuCaret, applied only to items that own a submenu) and the icon-host tile on the mega fork. GAPS: (a) the INDEX NUMBER (indus 01..05, dogstudio's drawer counter) — no counter, ordinal or ::before rule anywhere, and dogstudio drops it below 1440 so it must be per-tier; (b) a decorative leading glyph on a PRIMARY row (buck, lamalama) — nav-drawer-menu carries only the seven sublinkMarker* attributes (VERIFIED), all on SUB-items; (c) a per-item media slot (studionamma's hover-expanded thumbnail); (d) the dropdown fork has no icon-host attribute at all."
+  },
+  {
+   "id": "M-23",
+   "name": "Current-page indicator",
+   "sources": [
+    "F-A-17",
+    "F-C-13"
+   ],
+   "needed_by": [
+    "lusion",
+    "studionamma",
+    "wearecollins"
+   ],
+   "needed_by_count": 3,
+   "coverage_status": "covered",
+   "evidence": "measured",
+   "covered_by": [
+    "sgs/nav-bar-menu::item*Current (6 attrs)",
+    "sgs/nav-drawer-menu::item*Current (6 attrs)"
+   ],
+   "note": "MERGED (same mechanism on both menu blocks). This is the one family where SGS is AHEAD of the roster: zero of thirteen references mark the current page visually. The risk is the inverse of a gap — a non-empty default would add a mark the draft never had. All twelve attributes default to empty, so it is closed."
+  },
+  {
+   "id": "M-24",
+   "name": "Sibling dim on hover (the hovered item is not what changes)",
+   "sources": [
+    "F-A-13",
+    "F-C-12 (sibling part)"
+   ],
+   "needed_by": [
+    "resn",
+    "wearecollins"
+   ],
+   "needed_by_count": 2,
+   "coverage_status": "gap",
+   "evidence": "thin",
+   "covered_by": [],
+   "note": "MERGED: group A found it on wearecollins' footer and group C on wearecollins' drawer, plus resn's per-item canvas dissolve (the hovered item holds its lit-pixel count while the others lose 40-98%). One mechanism: dim the non-hovered siblings of a list. Every hover attribute in the tree repaints the element BEING hovered; nothing repaints its siblings. Evidence thin: footer hover was never driven on any reference, so the footer half rests on one measured drawer case."
+  },
+  {
+   "id": "M-25",
+   "name": "Two-copy label roll",
+   "sources": [
+    "F-A-12 (roll part)",
+    "F-C-12 (roll part)",
+    "F-B-21 (roll part)"
+   ],
+   "needed_by": [
+    "lusion",
+    "studionamma"
+   ],
+   "needed_by_count": 2,
+   "coverage_status": "gap",
+   "evidence": "measured",
+   "covered_by": [],
+   "note": "SPLIT OUT of the hover families because it is markup, not paint: the item needs a SECOND label copy and a paired transform (studionamma's bar label rises out as an alternate slides in; lusion's drawer text rolls up to a clone; lusion's trigger label slides out as the new one slides in). No attribute provides a second label on any menu block."
+  },
+  {
+   "id": "M-26",
+   "name": "Header chrome persistence while the menu is open",
+   "sources": [
+    "F-C-17",
+    "F-B-19 (header-stays part)"
+   ],
+   "needed_by": [
+    "away",
+    "buck",
+    "butcherbox",
+    "dogstudio",
+    "fantasy",
+    "halcyon",
+    "indus-foods",
+    "lamalama",
+    "lusion",
+    "rabbit",
+    "resn",
+    "studionamma",
+    "wearecollins"
+   ],
+   "needed_by_count": 13,
+   "coverage_status": "covered",
+   "evidence": "measured",
+   "covered_by": [
+    "sgs/nav-drawer::modality (modal|non-modal)",
+    "::anchor"
+   ],
+   "note": "All three regimes are expressible: header-live-above = non-modal (show() plus freezeBackground's selective inert); drawer-covers-header = modal full-screen; drawer-below-header = the `header` anchor, whose CSS reads the header's measured bottom at open time. The drawer's own top row (wearecollins, halcyon, indus, lamalama) is InnerBlocks plus the undeletable close button."
+  },
+  {
+   "id": "M-27",
+   "name": "Close-control model",
+   "sources": [
+    "F-B-19",
+    "F-C-16"
+   ],
+   "needed_by": [
+    "away",
+    "buck",
+    "butcherbox",
+    "dogstudio",
+    "fantasy",
+    "halcyon",
+    "indus-foods",
+    "lamalama",
+    "lusion",
+    "rabbit",
+    "resn",
+    "studionamma",
+    "wearecollins"
+   ],
+   "needed_by_count": 13,
+   "coverage_status": "covered",
+   "evidence": "measured",
+   "covered_by": [
+    "sgs/nav-drawer::closeStyle (separate-x|text-swap|burger-morph|icon-and-text)",
+    "::closeIcon",
+    "::closeLabel"
+   ],
+   "note": "MERGED: both groups clustered the same column and both read 'covered'. VERIFIED: the allow-list is exactly those four values, and the in-place burger->X morph is shipped on the trigger side at nav-bar-menu/style.css:286-294. The two values the sources flagged as unreachable are carved out rather than downgrading this family: lamalama's three-bars-to-ONE-bar morph -> M-38, butcherbox's opposite-end placement -> M-37."
+  },
+  {
+   "id": "M-28",
+   "name": "Hover-reactive preview rail",
+   "sources": [
+    "F-B-09"
+   ],
+   "needed_by": [
+    "halcyon"
+   ],
+   "needed_by_count": 1,
+   "coverage_status": "covered",
+   "evidence": "measured",
+   "covered_by": [
+    "sgs/mega-aside::asideFormat = 'preview'"
+   ],
+   "note": "asideFormat='preview' is exactly this behaviour: render.php hides the media/label/button children and view.js swaps the heading and text on hover/focus of a sibling link, restoring the authored default when nothing is hovered (VERIFIED: the 'preview' branch exists)."
+  },
+  {
+   "id": "M-29",
+   "name": "Pointer-following light inside the panel",
+   "sources": [
+    "F-B-10"
+   ],
+   "needed_by": [
+    "halcyon"
+   ],
+   "needed_by_count": 1,
+   "coverage_status": "covered",
+   "evidence": "measured",
+   "covered_by": [
+    "sgs/mega-panel::fxEffect",
+    "::fxFieldType",
+    "::fxFieldShape",
+    "::fxFieldColour",
+    "::fxFieldRadius",
+    "::fxFieldBlend",
+    "::fxFieldTrail"
+   ],
+   "note": "fxEffect is PHP-validated against '' | cursor-field | particles | grid-dots | wave-gradient, and block.json records a pre-existing always-on .sgs-mega-aside cursor spotlight — which is halcyon's behaviour itself. Spec 38 FR-38-25 + FR-38-28."
+  },
+  {
+   "id": "M-30",
+   "name": "Row separators between menu items",
+   "sources": [
+    "F-C-09"
+   ],
+   "needed_by": [
+    "halcyon",
+    "indus-foods",
+    "lamalama"
+   ],
+   "needed_by_count": 3,
+   "coverage_status": "partial",
+   "evidence": "mixed",
+   "covered_by": [
+    "sgs/nav-drawer-menu::itemBorderWidth/::itemBorderStyle/::itemBorderColour"
+   ],
+   "note": "A bottom-only rule is reachable through the object-typed itemBorderWidth if the operator zeroes three sides, but the DRAWER has no separator control of its own while the BAR block carries a dedicated itemSeparator quintet (Width/Style/Colour/ColourHover/SweepAngle). Parity, not a new mechanism. butcherbox and rabbit were not measured."
+  },
+  {
+   "id": "M-31",
+   "name": "Panel and drawer entry and exit animation",
+   "sources": [
+    "F-B-15",
+    "F-C-21"
+   ],
+   "needed_by": [
+    "away",
+    "buck",
+    "butcherbox",
+    "dogstudio",
+    "fantasy",
+    "halcyon",
+    "indus-foods",
+    "lamalama",
+    "lusion",
+    "rabbit",
+    "resn",
+    "studionamma",
+    "wearecollins"
+   ],
+   "needed_by_count": 13,
+   "coverage_status": "partial",
+   "evidence": "mixed",
+   "covered_by": [
+    "sgs/nav-bar-menu::submenuAnimation (none|fade|slide-down)",
+    "sgs/nav-drawer::animateFrom (auto|fade)"
+   ],
+   "note": "MERGED: both are 'how the nav surface arrives and leaves', and both are an enum with no duration and no easing. VERIFIED: animateFrom has exactly TWO values and 'auto' resolves to a class chosen by the DESKTOP anchor, so a full-screen drawer can only fade-drop or fade; the eleven keyframes in nav-drawer/style.css cover four shapes. Unreachable: slide from a side edge (away, butcherbox), slide up from the bottom (buck), clip-path wipe (studionamma, wearecollins), curtain sweep (dogstudio), per-card staggered arrival (lusion), the drafts' intended opacity+translateY(-8px)+scale(.99) at 340ms, and 'no animation at all'. Measured durations span 150ms to ~2.0s with no duration or easing attribute anywhere. Several durations are upper bounds (dogstudio) or headed re-reads (lusion)."
+  },
+  {
+   "id": "M-32",
+   "name": "Per-item entry stagger",
+   "sources": [
+    "F-C-22",
+    "F-B-15 (staggerOnOpen part)"
+   ],
+   "needed_by": [
+    "fantasy",
+    "halcyon",
+    "indus-foods",
+    "lamalama",
+    "lusion",
+    "studionamma"
+   ],
+   "needed_by_count": 6,
+   "coverage_status": "gap",
+   "evidence": "mixed",
+   "covered_by": [
+    "sgs/mega-panel::staggerOnOpen (panel only)"
+   ],
+   "note": "MERGED: the mega panel HAS staggerOnOpen (mapping to the shared stagger module's data-stagger); the DRAWER has nothing. VERIFIED: zero files under src/blocks/nav-drawer* contain the string 'stagger', and neither block.json nor the DB carries a delay or sequence attribute. Needed: one per-index delay number (0.05s fantasy and lamalama, 0.02s per card lusion, 55ms in both drafts) plus a distance and a duration. wearecollins is a measured ABSENT, not unmeasured."
+  },
+  {
+   "id": "M-33",
+   "name": "Logo rendering substrate and per-tier swap",
+   "sources": [
+    "F-A-25"
+   ],
+   "needed_by": [
+    "away",
+    "buck",
+    "dogstudio",
+    "halcyon",
+    "indus-foods",
+    "lamalama",
+    "lusion",
+    "wearecollins"
+   ],
+   "needed_by_count": 8,
+   "coverage_status": "partial",
+   "evidence": "thin",
+   "covered_by": [
+    "sgs/responsive-logo::logoId/-Tablet/-Mobile",
+    "::logoSwitchMode",
+    "::logoSwitchCustomPx",
+    "::maxWidth",
+    "::maxHeight",
+    "::animationStyle",
+    "::svgAnimationSource"
+   ],
+   "note": "A different mark per tier with its own switch point, per-tier max sizes, a home link and a stroke-draw animation (FR-38-15, owned by the block) all land. Gap: the SUBSTRATE — a Lottie JSON (buck) and a live 2D canvas mark (lamalama) are not images, and svgAnimationSource accepts a media-library .svg only (inline SVG paste is banned as an XSS risk). Evidence thin: buck's Lottie was never sampled over time. See DEC-13."
+  },
+  {
+   "id": "M-34",
+   "name": "Dismissal routes (every way the menu can be shut)",
+   "sources": [
+    "F-B-16",
+    "F-B-25 (routes part)",
+    "F-C-18"
+   ],
+   "needed_by": [
+    "away",
+    "buck",
+    "butcherbox",
+    "dogstudio",
+    "fantasy",
+    "halcyon",
+    "indus-foods",
+    "lamalama",
+    "lusion",
+    "rabbit",
+    "resn",
+    "studionamma",
+    "wearecollins"
+   ],
+   "needed_by_count": 13,
+   "coverage_status": "conflict",
+   "evidence": "measured",
+   "covered_by": [
+    "(Escape, outside-click and Tab-off are shipped UNCONDITIONALLY, with no attribute)"
+   ],
+   "note": "MERGED across the panel and the drawer, and resolved to CONFLICT (see 'What I changed'). VERIFIED: store.js binds an Escape handler and mega-disclosure.js has four Escape branches plus an outside-click handler; the DB and both block.json files carry no escape/dismiss/closeOn* attribute. Seven references do NOT close on Escape and away does not close a focus-opened panel — neither can be reproduced and neither should be (WCAG 2.1.2 / 1.4.13). THREE routes are NOT a11y defects and have no equivalent: close-on-scroll (lamalama, >20-30px), a keyboard hotkey ('m', wearecollins) and history-back as a closer (resn's hash routes)."
+  },
+  {
+   "id": "M-35",
+   "name": "Modality: background scroll lock, focus trap, dialog semantics",
+   "sources": [
+    "F-B-25 (lock part)",
+    "F-C-19",
+    "F-B-16 (focus part)"
+   ],
+   "needed_by": [
+    "away",
+    "buck",
+    "butcherbox",
+    "dogstudio",
+    "fantasy",
+    "halcyon",
+    "indus-foods",
+    "lamalama",
+    "lusion",
+    "rabbit",
+    "resn",
+    "studionamma",
+    "wearecollins"
+   ],
+   "needed_by_count": 13,
+   "coverage_status": "conflict",
+   "evidence": "measured",
+   "covered_by": [
+    "sgs/nav-drawer::modality (modal|non-modal)",
+    "::ariaLabel"
+   ],
+   "note": "MERGED and resolved to CONFLICT. VERIFIED: modality is the only lever and governs INERTNESS, not the lock — store.js's lockBodyScroll/SCROLL_LOCK_ATTR pair runs on both values, and the focus trap is always on. Six references deliberately let the page scroll behind the open drawer and six deliberately let Tab leave; two set body overflow:hidden and still scroll because a smooth-scroll library bypasses it (studionamma@1440, Lenis). SGS is more accessible than the references here and the baseline is non-negotiable: the shortfall closes by DECIDING the rule (DEC-02), not by loosening the default."
+  },
+  {
+   "id": "M-36",
+   "name": "Trigger element semantics, accessible name and open state",
+   "sources": [
+    "F-B-22"
+   ],
+   "needed_by": [
+    "away",
+    "buck",
+    "dogstudio",
+    "fantasy",
+    "halcyon",
+    "indus-foods",
+    "lamalama",
+    "lusion",
+    "resn",
+    "studionamma",
+    "wearecollins"
+   ],
+   "needed_by_count": 11,
+   "coverage_status": "conflict",
+   "evidence": "measured",
+   "covered_by": [
+    "sgs/nav-bar-menu::triggerLabel",
+    "::navLabel",
+    "sgs/nav-drawer::closeLabel",
+    "::ariaLabel"
+   ],
+   "note": "VERIFIED: every trigger is emitted as <button type=\"button\" ... aria-expanded=\"false\" aria-controls=\"<resolving id>\"> with a data-wp-bind--aria-expanded. Every reference's NAMING is reachable. The conflict is that 9 of 13 omit aria-expanded, 2 use an unfocusable <div>, buck has no accessible name at all and wearecollins' aria-controls dangles — none of which SGS can emit, and none of which it should. A faithful clone measures MORE accessible than its reference by design."
+  },
+  {
+   "id": "M-37",
+   "name": "Close-control placement relative to the burger",
+   "sources": [
+    "F-B-20"
+   ],
+   "needed_by": [
+    "butcherbox",
+    "fantasy",
+    "halcyon",
+    "indus-foods",
+    "resn",
+    "studionamma"
+   ],
+   "needed_by_count": 6,
+   "coverage_status": "partial",
+   "evidence": "measured",
+   "covered_by": [
+    "sgs/nav-drawer::closeSize (covers the SIZE difference)"
+   ],
+   "note": "closeSize (default 44px, mirroring burgerSize) covers indus's 38x38 close against a 44x44 burger. What has no attribute is POSITION: separate-x renders at a fixed place in the drawer's own top row, so halcyon's +4/-0.5px nudge is only a rounding difference and butcherbox's opposite-end placement (burger left 16, close left 335) is unreachable. Needs a placement enum (same-slot | top-row-start | top-row-end) plus an offset pair."
+  },
+  {
+   "id": "M-38",
+   "name": "Trigger-to-close transition motion",
+   "sources": [
+    "F-B-21",
+    "F-C-16 (morph-pose part)"
+   ],
+   "needed_by": [
+    "away",
+    "buck",
+    "dogstudio",
+    "fantasy",
+    "halcyon",
+    "indus-foods",
+    "lamalama",
+    "lusion",
+    "rabbit",
+    "resn",
+    "studionamma",
+    "wearecollins"
+   ],
+   "needed_by_count": 12,
+   "coverage_status": "partial",
+   "evidence": "mixed",
+   "covered_by": [
+    "sgs/nav-drawer::closeStyle = 'burger-morph' | 'text-swap'"
+   ],
+   "note": "MERGED (group C flagged the same shortfall inside its close-model family). The bars-to-X morph and the label swap are both shipped. No attribute for the morph's DURATION or EASING, and no morph SHAPE choice: lamalama's three bars collapsing onto ONE horizontal line is not an X and the shipped keyframe is hardcoded to the X pose (VERIFIED at nav-bar-menu/style.css:286-294); dogstudio's extra 180deg button rotation has no expression. buck's icon swap was never sampled over time."
+  },
+  {
+   "id": "M-39",
+   "name": "Menu trigger form and placement in the bar",
+   "sources": [
+    "F-A-18",
+    "F-B-18"
+   ],
+   "needed_by": [
+    "away",
+    "buck",
+    "butcherbox",
+    "dogstudio",
+    "fantasy",
+    "halcyon",
+    "indus-foods",
+    "lamalama",
+    "lusion",
+    "rabbit",
+    "resn",
+    "studionamma",
+    "wearecollins"
+   ],
+   "needed_by_count": 13,
+   "coverage_status": "partial",
+   "evidence": "measured",
+   "covered_by": [
+    "sgs/nav-bar-menu::triggerMode (icon|text|icon-and-text)",
+    "::triggerIcon",
+    "::triggerLabel",
+    "::burger* paint row"
+   ],
+   "note": "MERGED — and the two groups DISAGREED on status (A partial, B covered); resolved to PARTIAL (see 'What I changed'). The three shapes, the icon choice, the label and the full paint set are covered. Residual gaps: (a) triggerMode is a plain string, NOT per-tier (VERIFIED), so fantasy's label dropping at 375 is unreachable; (b) the whole-bar-is-the-trigger pattern (lamalama) has no attribute — the trigger is always a discrete control inside the row. The detached-trigger values that made A read 'partial' move to M-08."
+  },
+  {
+   "id": "M-40",
+   "name": "Collapse breakpoint: bar nav, trigger and drawer presence per tier",
+   "sources": [
+    "F-A-11",
+    "F-B-17",
+    "F-C-01"
+   ],
+   "needed_by": [
+    "away",
+    "buck",
+    "butcherbox",
+    "dogstudio",
+    "fantasy",
+    "halcyon",
+    "indus-foods",
+    "lamalama",
+    "lusion",
+    "rabbit",
+    "resn",
+    "studionamma",
+    "wearecollins"
+   ],
+   "needed_by_count": 13,
+   "coverage_status": "covered",
+   "evidence": "measured",
+   "covered_by": [
+    "sgs/nav-bar-menu::collapsePoint (number, default 768)",
+    "::showBurger"
+   ],
+   "note": "MERGED: all three groups clustered the same breakpoint from three surfaces and all three read 'covered'. VERIFIED: collapsePoint is a free number so 940 (halcyon) and 960 (indus) are exact, and showBurger is the always-burger case (8 of 13). Whether the hidden nav is display:none or removed from the DOM has no visible difference. CARRY FORWARD: 768 is a MOBILE tier for halcyon and indus (DEC-11). buck's 375-tier DOM migration is M-08."
+  },
+  {
+   "id": "M-41",
+   "name": "Panel ownership per bar item",
+   "sources": [
+    "F-B-01"
+   ],
+   "needed_by": [
+    "away",
+    "butcherbox",
+    "halcyon",
+    "indus-foods",
+    "lamalama",
+    "rabbit"
+   ],
+   "needed_by_count": 6,
+   "coverage_status": "covered",
+   "evidence": "measured",
+   "covered_by": [
+    "sgs/nav-bar-menu::ref",
+    "::submenuCaret",
+    "sgs/mega-panel::variant",
+    "::style"
+   ],
+   "note": "A bar item owns a mega panel only when it is bound to a mega-menu CPT post; unbound childless items render as plain links, which is exactly the panel-less item both drafts show. The dropdown fork and the mega fork are separate branches of one markup builder."
+  },
+  {
+   "id": "M-42",
+   "name": "Panel content shape (columns / cards / minimal / logo grid)",
+   "sources": [
+    "F-B-07"
+   ],
+   "needed_by": [
+    "away",
+    "butcherbox",
+    "halcyon",
+    "indus-foods",
+    "lamalama",
+    "rabbit"
+   ],
+   "needed_by_count": 6,
+   "coverage_status": "covered",
+   "evidence": "measured",
+   "covered_by": [
+    "sgs/mega-panel::style (columns|cards|minimal)",
+    "::variant (general|media-cards|brands)",
+    "::headings",
+    "::groupGap",
+    "sgs/nav-bar-menu::submenuTextColumns"
+   ],
+   "note": "style is validated against exactly the three presets halcyon carries (the block was designed from that draft) and the brands variant renders indus's logo grid. Column counts come from the number of sgs/mega-group children."
+  },
+  {
+   "id": "M-43",
+   "name": "Panel open trigger mode (hover-intent vs click)",
+   "sources": [
+    "F-B-13"
+   ],
+   "needed_by": [
+    "away",
+    "butcherbox",
+    "halcyon",
+    "indus-foods",
+    "lamalama"
+   ],
+   "needed_by_count": 5,
+   "coverage_status": "partial",
+   "evidence": "mixed",
+   "covered_by": [
+    "(no attribute; the behaviour is a matchMedia gate in mega-disclosure.js)"
+   ],
+   "note": "mega-disclosure.js opens on hover-intent when '(hover:hover) and (pointer:fine)' matches and on tap otherwise, plus keyboard throughout — so the hover-or-focus value (away, halcyon, indus) is the shipped default. Missing is an OPERATOR CHOICE: butcherbox's click-toggled Gifts panel and lamalama's click-toggled accordion row cannot be reproduced on a hover-capable pointer. One enum attribute (hover-intent | click) read into the interactivity context beside intentDelay. rabbit's open state was never reproduced."
+  },
+  {
+   "id": "M-44",
+   "name": "Open intent delay and close grace",
+   "sources": [
+    "F-B-14"
+   ],
+   "needed_by": [
+    "away",
+    "halcyon",
+    "indus-foods"
+   ],
+   "needed_by_count": 3,
+   "coverage_status": "partial",
+   "evidence": "measured",
+   "covered_by": [
+    "sgs/nav-bar-menu::submenuCloseGrace (dropdown fork only)"
+   ],
+   "note": "BUG CONFIRMED: includes/nav-menu-markup.php builds the MEGA interactivity context with a literal \"'closeGrace'  => 170,\" while the dropdown branch passes \"'closeGrace'  => $submenu['close_grace'],\"; nav-bar-menu/render.php resolves 'close_grace' from the attribute with a 170 fallback. The attribute exists, has a control, is read, and does nothing on a mega panel — invisible only because both drafts declare 170 and measure 173-188ms. The open intent delay has NO attribute: markup hardcodes intentDelay 300 and mega-disclosure.js clamps it to MAX_INTENT_DELAY_MS = 80 (VERIFIED)."
+  },
+  {
+   "id": "M-45",
+   "name": "Item type scaling mode (bar, drawer, footer)",
+   "sources": [
+    "F-A-15",
+    "F-C-10"
+   ],
+   "needed_by": [
+    "away",
+    "buck",
+    "butcherbox",
+    "dogstudio",
+    "fantasy",
+    "halcyon",
+    "indus-foods",
+    "lamalama",
+    "lusion",
+    "rabbit",
+    "resn",
+    "studionamma",
+    "wearecollins"
+   ],
+   "needed_by_count": 13,
+   "coverage_status": "partial",
+   "evidence": "measured",
+   "covered_by": [
+    "sgs/nav-bar-menu::itemFontSize/::itemFontSizeUnit",
+    "sgs/nav-drawer-menu::itemFontSize/::itemFontSizeUnit/::itemLineHeight",
+    "sgs/business-info::fontSize"
+   ],
+   "note": "MERGED: one typography mechanism across three surfaces and the same three gaps on each. Per-tier objects cover fixed-px and stepped ladders exactly (7 of 13). GAPS (VERIFIED: itemFontSize is an object, itemFontSizeUnit a single scalar string, itemLineHeight a plain NUMBER): (a) no FORMULA — buck's 3.5vw-above-1100 with a stepped floor, fantasy's root-rem scale and lusion's container-em scale all freeze to three numbers and then drift at every width between the tiers, which is the exact failure the three-tier capture was built to expose; (b) HEIGHT-driven steps (dogstudio: 45px at 1440x713, 60px at 1440x900) — every SGS tier is a width media query, so this is invisible to a capture that only varies width; (c) itemLineHeight is not a tier object, so wearecollins' line-height==size at three sizes needs three values and has one."
+  },
+  {
+   "id": "M-46",
+   "name": "Drawer list layout: columns, alignment and row pitch",
+   "sources": [
+    "F-C-11"
+   ],
+   "needed_by": [
+    "away",
+    "buck",
+    "butcherbox",
+    "dogstudio",
+    "fantasy",
+    "halcyon",
+    "indus-foods",
+    "lamalama",
+    "lusion",
+    "resn",
+    "studionamma",
+    "wearecollins"
+   ],
+   "needed_by_count": 12,
+   "coverage_status": "partial",
+   "evidence": "measured",
+   "covered_by": [
+    "sgs/nav-drawer-menu::listColumns (per-tier)",
+    "::itemTextAlign",
+    "::gap",
+    "::padding",
+    "::itemTextIndent",
+    "sgs/nav-drawer::drawerAlign"
+   ],
+   "note": "Column count is per-tier (studionamma's 2-col-at-1440-only, wearecollins' grid) and alignment is left/centre/right. TWO misses (VERIFIED): (a) nav-drawer-menu::gap is a single STRING '8px', so lusion's 43.5px-at-375 / 58px-above pitch needs a tier object; (b) buck's column sits at ~45% of the viewport, which is a fourth position drawerAlign's three values cannot express."
+  },
+  {
+   "id": "M-47",
+   "name": "Submenu model inside the drawer (single-open vs multi-open)",
+   "sources": [
+    "F-C-14"
+   ],
+   "needed_by": [
+    "away",
+    "fantasy",
+    "halcyon",
+    "indus-foods",
+    "lamalama"
+   ],
+   "needed_by_count": 5,
+   "coverage_status": "conflict",
+   "evidence": "measured",
+   "covered_by": [
+    "sgs/nav-drawer::submenuModel (accordion|drill-down)"
+   ],
+   "note": "VERIFIED: the markup builder emits '<details class=\"sgs-nav-drawer-menu__accordion\" name=\"sgs-nav-drawer-menu-accordion-...\">' — a named <details> group is EXCLUSIVE by construction, so opening one row closes its siblings with no attribute to turn it off. Single-open is right for 3 of the 4 accordion references, but away@768 measured two panels open at once (669.5px and 1229.9px), so the built default actively PREVENTS a measured behaviour. drill-down is an extra capability no reference uses. CITATION CORRECTED: the 'EXCLUSIVE' wording is in includes/nav-menu-markup.php, not in nav-drawer/render.php."
+  },
+  {
+   "id": "M-48",
+   "name": "Internal scrolling of the drawer's own content",
+   "sources": [
+    "F-C-20"
+   ],
+   "needed_by": [
+    "away",
+    "halcyon",
+    "indus-foods",
+    "wearecollins"
+   ],
+   "needed_by_count": 4,
+   "coverage_status": "covered",
+   "evidence": "mixed",
+   "covered_by": [
+    "sgs/nav-drawer::anchor (via the max-height each anchor emits)"
+   ],
+   "note": "Every anchor already caps the panel at the viewport (max-height:calc(100dvh - offset)), and with a bounded max-height the body element scrolls the overflow — which is the capability all four measured references need. Six references were never measured on this column."
+  },
+  {
+   "id": "M-49",
+   "name": "Open-state survival across a viewport change",
+   "sources": [
+    "F-C-24"
+   ],
+   "needed_by": [
+    "away",
+    "buck",
+    "dogstudio",
+    "fantasy",
+    "halcyon",
+    "indus-foods",
+    "lamalama",
+    "lusion",
+    "studionamma",
+    "wearecollins"
+   ],
+   "needed_by_count": 10,
+   "coverage_status": "gap",
+   "evidence": "mixed",
+   "covered_by": [],
+   "note": "VERIFIED: store.js contains ZERO occurrences of 'resize' — nothing in the drawer path listens for a viewport crossing collapsePoint (the resize listener that does exist is mega-disclosure.js's, for repositioning a panel). SGS has one unstated behaviour where the references have three: stay-open-and-reflow (7), close-on-cross-tier (away, fantasy@375), and open-flag-persists-while-hidden (both drafts). A drawer left open while its trigger disappears is a trap. This wants a DECISION (DEC-09), not only an attribute."
+  },
+  {
+   "id": "M-50",
+   "name": "Trigger and close target size",
+   "sources": [
+    "F-B-23"
+   ],
+   "needed_by": [
+    "away",
+    "buck",
+    "butcherbox",
+    "dogstudio",
+    "fantasy",
+    "halcyon",
+    "indus-foods",
+    "lamalama",
+    "lusion",
+    "rabbit",
+    "resn",
+    "studionamma",
+    "wearecollins"
+   ],
+   "needed_by_count": 13,
+   "coverage_status": "covered",
+   "evidence": "measured",
+   "covered_by": [
+    "sgs/nav-bar-menu::burgerSize (default 44px)",
+    "sgs/nav-drawer::closeSize (default 44px)"
+   ],
+   "note": "Both are CSS length strings defaulting to the project's WCAG floor, so every measured size is a literal value. 10 of 13 references FAIL 44px on the trigger, the close control or both — a faithful clone of those sizes deliberately drops below the baseline, which is a per-clone decision (DEC-02), not a framework gap. lamalama's pattern (small glyph, large parent hit area) is the shape worth copying and needs no new attribute."
+  }
+ ],
+ "units": [
+  {
+   "id": "U-1",
+   "name": "De-hardcode the nav surfaces (literals become attributes)",
+   "families": [
+    "M-44",
+    "M-09",
+    "M-13",
+    "M-21"
+   ],
+   "independent": true,
+   "size": "medium",
+   "rationale": "One mechanism: every one of these is a literal in a render.php or style.css that overrides faithfully-transferred CSS, which the project's own rule calls a cheat to remove or gate. Highest reference support in the whole list and the cheapest pass. Its FIRST commit is the submenuCloseGrace mega wiring bug (one line).",
+   "files": [
+    "plugins/sgs-blocks/includes/nav-menu-markup.php",
+    "plugins/sgs-blocks/src/blocks/site-header/render.php",
+    "plugins/sgs-blocks/src/blocks/site-header/style.css",
+    "plugins/sgs-blocks/src/blocks/site-header/block.json",
+    "plugins/sgs-blocks/src/blocks/mega-panel/render.php",
+    "plugins/sgs-blocks/src/blocks/mega-panel/style.css",
+    "plugins/sgs-blocks/src/blocks/mega-panel/block.json"
+   ]
+  },
+  {
+   "id": "U-2",
+   "name": "Surface scrim on the panel and the drawer",
+   "families": [
+    "M-14"
+   ],
+   "independent": true,
+   "size": "medium",
+   "rationale": "One attribute set (colour, alpha, blur, click-closes, per tier) on two blocks; the drawer already has the element and needs parameterising, the panel fork needs the element. Design-gate: shared mechanism (rule 7).",
+   "files": [
+    "plugins/sgs-blocks/src/blocks/mega-panel/render.php",
+    "plugins/sgs-blocks/src/blocks/mega-panel/block.json",
+    "plugins/sgs-blocks/src/blocks/nav-drawer/style.css",
+    "plugins/sgs-blocks/src/blocks/nav-drawer/render.php",
+    "plugins/sgs-blocks/src/blocks/nav-drawer/block.json",
+    "plugins/sgs-blocks/src/shared/nav-interactivity/store.js"
+   ]
+  },
+  {
+   "id": "U-3",
+   "name": "Drawer anchor: side edge and container-inset, plus the pitch tier object",
+   "families": [
+    "M-17",
+    "M-46"
+   ],
+   "independent": true,
+   "size": "medium",
+   "rationale": "Both land in nav-drawer/render.php's per-anchor geometry closure and nav-drawer-menu's layout attributes; the width cap is only meaningful once the side anchor exists.",
+   "files": [
+    "plugins/sgs-blocks/src/blocks/nav-drawer/render.php",
+    "plugins/sgs-blocks/src/blocks/nav-drawer/block.json",
+    "plugins/sgs-blocks/src/blocks/nav-drawer-menu/block.json"
+   ]
+  },
+  {
+   "id": "U-4",
+   "name": "Type scaling mode: a formula unit and per-tier line-height",
+   "families": [
+    "M-45"
+   ],
+   "independent": true,
+   "size": "medium",
+   "rationale": "One typography emitter serves the bar, the drawer and the footer, so one change covers all three surfaces. Needed by all 13 references and the only family whose absence makes a clone drift at every width BETWEEN the measured tiers.",
+   "files": [
+    "plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json",
+    "plugins/sgs-blocks/src/blocks/nav-drawer-menu/block.json",
+    "plugins/sgs-blocks/includes/nav-menu-submenu-css.php"
+   ]
+  },
+  {
+   "id": "U-5",
+   "name": "Entry and exit animation vocabulary (shape, duration, easing, stagger)",
+   "families": [
+    "M-31",
+    "M-32",
+    "M-38"
+   ],
+   "independent": false,
+   "size": "high",
+   "rationale": "One vocabulary across the panel, the drawer and the trigger glyph; the stagger is the same per-index delay the mega fork already has and the drawer has not. Serial against U-2 (both touch nav-drawer). Design-gate: shared runtime.",
+   "files": [
+    "plugins/sgs-blocks/src/blocks/nav-drawer/style.css",
+    "plugins/sgs-blocks/src/blocks/nav-drawer/render.php",
+    "plugins/sgs-blocks/src/blocks/nav-drawer/block.json",
+    "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
+    "plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json",
+    "plugins/sgs-blocks/src/blocks/mega-panel/block.json",
+    "plugins/sgs-blocks/src/shared/nav-interactivity/"
+   ]
+  },
+  {
+   "id": "U-6",
+   "name": "Item hover parity: opacity, padding shift, sibling dim, label roll, separators",
+   "families": [
+    "M-21",
+    "M-24",
+    "M-25",
+    "M-30"
+   ],
+   "independent": true,
+   "size": "high",
+   "rationale": "All four are item-state attributes on the two menu blocks plus mega-panel; sibling dim and the label roll are the only two that need markup or a scoped rule rather than a value. Note M-21 also appears in U-1 for its hardcoded card lift — U-1 removes the literal, U-6 adds the new states.",
+   "files": [
+    "plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json",
+    "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
+    "plugins/sgs-blocks/src/blocks/nav-drawer-menu/block.json",
+    "plugins/sgs-blocks/src/blocks/nav-drawer-menu/style.css",
+    "plugins/sgs-blocks/includes/nav-menu-markup.php",
+    "plugins/sgs-blocks/includes/nav-menu-submenu-css.php"
+   ]
+  },
+  {
+   "id": "U-7",
+   "name": "Per-item ornament and per-item media slot",
+   "families": [
+    "M-22",
+    "M-15"
+   ],
+   "independent": true,
+   "size": "medium",
+   "rationale": "The index counter, the leading glyph and the per-link thumbnail are one per-item slot on the markup builder, per tier; the background-media half is already covered and only the per-link case is open.",
+   "files": [
+    "plugins/sgs-blocks/includes/nav-menu-markup.php",
+    "plugins/sgs-blocks/src/blocks/nav-drawer-menu/block.json",
+    "plugins/sgs-blocks/src/blocks/mega-group/",
+    "plugins/sgs-blocks/includes/nav-menu-submenu-css.php"
+   ]
+  },
+  {
+   "id": "U-8",
+   "name": "Panel geometry controls: anchor enum and a mega top offset",
+   "families": [
+    "M-16",
+    "M-20"
+   ],
+   "independent": true,
+   "size": "medium",
+   "rationale": "Both are mega-panel positioning: the anchor enum (item-left | item-centred | header-wide | capped-centred) and the aside/callout column count land in the same wrap CSS and the same block.json.",
+   "files": [
+    "plugins/sgs-blocks/includes/nav-menu-submenu-css.php",
+    "plugins/sgs-blocks/src/blocks/mega-panel/block.json",
+    "plugins/sgs-blocks/src/blocks/mega-panel/render.php",
+    "plugins/sgs-blocks/src/blocks/mega-aside/render.php"
+   ]
+  },
+  {
+   "id": "U-9",
+   "name": "Open mode, dismissal and resize policy",
+   "families": [
+    "M-43",
+    "M-34",
+    "M-35",
+    "M-36",
+    "M-47",
+    "M-49"
+   ],
+   "independent": true,
+   "size": "medium",
+   "rationale": "Mostly DECISION-led and then small: one open-mode enum, one close-on-scroll attribute, one accordion-exclusivity boolean, one resize policy. The three conflict families ship no new capability at all — they ship a recorded divergence. Depends on DEC-02, DEC-08 and DEC-09.",
+   "files": [
+    "plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json",
+    "plugins/sgs-blocks/src/blocks/nav-drawer/block.json",
+    "plugins/sgs-blocks/includes/nav-menu-markup.php",
+    "plugins/sgs-blocks/src/shared/nav-interactivity/store.js",
+    "plugins/sgs-blocks/src/shared/nav-interactivity/mega-disclosure.js"
+   ]
+  },
+  {
+   "id": "U-10",
+   "name": "Role migration: move a non-menu header block into the drawer per tier",
+   "families": [
+    "M-19"
+   ],
+   "independent": true,
+   "size": "medium",
+   "rationale": "A per-tier visibility/migration capability on header children, so a CTA, a search control or a store selector can be authored once and appear in either surface. Today the only route is duplicating the block by hand.",
+   "files": [
+    "plugins/sgs-blocks/src/blocks/site-header-row/block.json",
+    "plugins/sgs-blocks/src/blocks/nav-drawer/render.php",
+    "plugins/sgs-blocks/includes/nav-menu-markup.php"
+   ]
+  },
+  {
+   "id": "U-11",
+   "name": "Close-control placement and the magnet companions",
+   "families": [
+    "M-37",
+    "M-10"
+   ],
+   "independent": true,
+   "size": "low",
+   "rationale": "Two small attribute additions with the read side already built: a close-placement enum plus an offset pair on nav-drawer, and itemMagnetStrength/itemMagnetRadius mirroring the trigger's pair.",
+   "files": [
+    "plugins/sgs-blocks/src/blocks/nav-drawer/block.json",
+    "plugins/sgs-blocks/src/blocks/nav-drawer/render.php",
+    "plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json"
+   ]
+  },
+  {
+   "id": "U-12",
+   "name": "Missing furniture blocks",
+   "families": [
+    "M-18"
+   ],
+   "independent": true,
+   "size": "high",
+   "rationale": "Eight new blocks plus two headerEssential flags. Entirely disjoint from every nav file, so it parallelises against everything; the widest single build gap and ordinary commercial furniture rather than art direction.",
+   "files": [
+    "plugins/sgs-blocks/src/blocks/<new: local-time, language-switch, store-selector, back-to-top, wishlist, account-link, theme-toggle, sound-toggle>/",
+    "plugins/sgs-blocks/src/blocks/product-search/block.json",
+    "plugins/sgs-blocks/src/blocks/filter-search/block.json"
+   ]
+  },
+  {
+   "id": "U-13",
+   "name": "Header scroll intelligence: direction-keyed restyle and section-adaptive ink",
+   "families": [
+    "M-03",
+    "M-04"
+   ],
+   "independent": false,
+   "size": "high",
+   "rationale": "Both need the header to OBSERVE something it does not today (scroll direction; the section passing behind it). One observer serves both. Serial against U-1 (same render.php) and design-gated as a shared mechanism.",
+   "files": [
+    "plugins/sgs-blocks/src/blocks/site-header/render.php",
+    "plugins/sgs-blocks/src/blocks/site-header/block.json",
+    "plugins/sgs-blocks/src/blocks/site-header/view.js",
+    "plugins/sgs-blocks/src/blocks/site-header/style.css"
+   ]
+  },
+  {
+   "id": "U-14",
+   "name": "Detached controls, the shell-less header and a trigger that outlives it",
+   "families": [
+    "M-08",
+    "M-02",
+    "M-06",
+    "M-39"
+   ],
+   "independent": false,
+   "size": "high",
+   "rationale": "One structural change to what a header may contain: a child pinned to a viewport edge with its own z-index and threshold. It decides whether resn is clonable as a header at all, and it absorbs the whole-bar-as-trigger shape. Serial against U-1 and U-13; design-gate.",
+   "files": [
+    "plugins/sgs-blocks/src/blocks/site-header/render.php",
+    "plugins/sgs-blocks/src/blocks/site-header-row/block.json",
+    "plugins/sgs-blocks/src/blocks/site-header-row/render.php",
+    "plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json"
+   ]
+  },
+  {
+   "id": "U-15",
+   "name": "Self-changing header message",
+   "families": [
+    "M-07"
+   ],
+   "independent": true,
+   "size": "medium",
+   "rationale": "A slide collection with per-slide colour pair, a rotation timer, prev/next controls and a random-per-load source on sgs/notice-banner. Disjoint from every nav file.",
+   "files": [
+    "plugins/sgs-blocks/src/blocks/notice-banner/block.json",
+    "plugins/sgs-blocks/src/blocks/notice-banner/render.php",
+    "plugins/sgs-blocks/src/blocks/notice-banner/view.js"
+   ]
+  },
+  {
+   "id": "U-16",
+   "name": "Header and footer entrance animation",
+   "families": [
+    "M-11"
+   ],
+   "independent": true,
+   "size": "medium",
+   "rationale": "Unhide the fx picker on site-header/site-footer (or give them their own entrance attribute) and add a preloader-gated start. Ordered LAST of the build units because its evidence is thin — every footer motion cell is not_measured. Depends on DEC-05 (re-measure first).",
+   "files": [
+    "plugins/sgs-blocks/src/blocks/site-header/block.json",
+    "plugins/sgs-blocks/src/blocks/site-footer/block.json",
+    "plugins/sgs-blocks/src/blocks/site-footer-row/block.json"
+   ]
+  },
+  {
+   "id": "U-17",
+   "name": "Logo substrate (Lottie / live canvas)",
+   "families": [
+    "M-33"
+   ],
+   "independent": true,
+   "size": "high",
+   "rationale": "A new runtime with no Spec 38 tier, needed by two references for a decorative mark. Recommended OUT of Wave 3C pending DEC-13; listed so it is not silently dropped.",
+   "files": [
+    "plugins/sgs-blocks/src/blocks/responsive-logo/block.json",
+    "plugins/sgs-blocks/src/blocks/responsive-logo/render.php"
+   ]
+  }
+ ],
+ "decisions": [
+  {
+   "id": "DEC-01",
+   "title": "resn's page-wide WebGL scene and its canvas-drawn menu labels",
+   "families": [
+    "M-08",
+    "M-15",
+    "M-24",
+    "M-31"
+   ],
+   "why": "resn's whole header is four independently pinned controls with no <header>, its menu labels are per-item 2D canvases (no DOM text at 375 at all), and its background is a persistent three.js scene. Its own teardown records that no built Spec 38 effect matches and that the scene passes no Tier W test. Cloning canvas labels would DELETE real text, which the framework must not do.",
+   "options": [
+    "(a) Trim resn from the 13-reference clone roster and build M-08 for the other four references that need it.",
+    "(b) Keep resn as the 13th clone: build M-08, render the labels as real DOM text, and approximate the scene with a Tier V or an existing fx field; record the divergence.",
+    "(c) Admit a new Tier W page-background scene for it under Spec 38 §1's five-part test."
+   ],
+   "recommendation": "(b). It keeps the roster at 13 and keeps M-08 (needed by five references, not one) on its merits, without a tier admission that would have to be justified for one page. The canvas-label divergence is recorded the same way as the accessibility ones."
+  },
+  {
+   "id": "DEC-02",
+   "title": "Accessibility divergences: a faithful clone would be LESS accessible than its reference",
+   "families": [
+    "M-34",
+    "M-35",
+    "M-36",
+    "M-50"
+   ],
+   "why": "9 of 13 triggers omit aria-expanded, 2 are unfocusable <div>s, buck's button has no accessible name, wearecollins' aria-controls dangles; 7 references do not close on Escape; 6 let the page scroll behind an open drawer; 6 let Tab leave; 10 of 13 fail the 44px target. SGS emits the accessible pole of every one of these and cannot emit the other.",
+   "options": [
+    "(a) Keep SGS's accessible default everywhere; record each divergence at clone time so Bean's eye does not read a correct clone as wrong.",
+    "(b) Add opt-outs so a clone can reproduce the reference exactly.",
+    "(c) Decide per clone."
+   ],
+   "recommendation": "(a), with ONE carve-out: lamalama's close-on-scroll is a design choice, not an a11y defect, so it gets an attribute (in U-9). wearecollins' 'm' hotkey and resn's history-back closer are also not defects but are single-reference and can wait."
+  },
+  {
+   "id": "DEC-03",
+   "title": "Which Away storefront is the reference",
+   "families": [
+    "M-13",
+    "M-18",
+    "M-19",
+    "M-42"
+   ],
+   "why": "away.json describes the US storefront the headless run received; a headed Chrome is served UK (GBP, /en-gb, the first two nav items swapped, no consent banner). 12 of 55 static cells differ, 7 of them from the 15px classic scrollbar alone. Structure is identical, so no family changes.",
+   "options": [
+    "(a) UK.",
+    "(b) US."
+   ],
+   "recommendation": "(a) UK — already decided. Consequence to act on: away's copy cells in the JSON must NOT be cloned verbatim, and away's rows want a UK re-read before Wave 4."
+  },
+  {
+   "id": "DEC-04",
+   "title": "butcherbox and rabbit were never captured at 768, and rabbit's dropdown was never opened",
+   "families": [
+    "M-16",
+    "M-30",
+    "M-31",
+    "M-43",
+    "M-44",
+    "M-48",
+    "M-49"
+   ],
+   "why": "The emulated pass covered 375 and 1440 only for both references, rabbit's footer was never captured, and rabbit's open dropdown was never reproduced from synthetic pointer events, so its scrim, motion, close grace and item states read as absent-because-unmeasured.",
+   "options": [
+    "(a) Re-capture the 768 tier for both plus rabbit's open dropdown and footer before Wave 4; proceed with Wave 3C now on the families that do not depend on them.",
+    "(b) Mark the affected families thin and proceed to Wave 4 as-is.",
+    "(c) Drop the two references."
+   ],
+   "recommendation": "(a). It is a short headed run and it is the difference between 11 of 13 and 13 of 13 on seven families."
+  },
+  {
+   "id": "DEC-05",
+   "title": "Footer hover and footer motion were never measured on any reference",
+   "families": [
+    "M-11",
+    "M-24"
+   ],
+   "why": "Every footer motion cell and most footer item_states cells are not_measured across eight references. M-11 therefore rests on class names (appear-fade-up, grow-appear) and M-24's footer half rests on one measured drawer case.",
+   "options": [
+    "(a) A short re-measure pass (drive footer hover, sample one reveal) before U-16 is designed.",
+    "(b) Build U-16 from the class names and accept the risk.",
+    "(c) Defer U-16 to Wave 4."
+   ],
+   "recommendation": "(a). It is the cheapest way to raise two families from thin to measured, and U-16 is last in the order anyway."
+  },
+  {
+   "id": "DEC-06",
+   "title": "The z-index attribute's default value",
+   "families": [
+    "M-09"
+   ],
+   "why": "Making z-index an attribute is not in question (a hardcoded wrapper default that overrides transferred CSS is a cheat to remove). What needs a call is the DEFAULT: eleven values were measured from 9 to 10000 plus 'auto'. Pre-production, so 'it would change what the canary renders' is not an argument.",
+   "options": [
+    "(a) Per-tier attribute, default 100 (today's value preserved).",
+    "(b) Per-tier attribute, default unset, header falls back to style.css.",
+    "(c) Per-tier attribute with a small named scale."
+   ],
+   "recommendation": "(a). It is the only option that cannot regress an existing composed header while making all eleven measured values reachable, and wearecollins needs the per-tier half (999 at 375, 9 above)."
+  },
+  {
+   "id": "DEC-07",
+   "title": "buck's fill is re-picked on every page LOAD, not per tier",
+   "families": [
+    "M-13",
+    "M-15"
+   ],
+   "why": "Three colours appeared in one run for the footer and again for the drawer panel. It looks like a responsive value and is not. SGS stores one colour and PHP emits it verbatim, so a clone freezes whichever colour the capture saw. The attribute is right; its SUPPLY is the gap.",
+   "options": [
+    "(a) Out of scope: the clone freezes one colour and the divergence is recorded.",
+    "(b) Build a random-palette value supply (a colour LIST plus a per-request pick)."
+   ],
+   "recommendation": "(a). One reference, and a per-request random value fights page caching on every SGS site."
+  },
+  {
+   "id": "DEC-08",
+   "title": "Multi-open accordions in the drawer",
+   "families": [
+    "M-47"
+   ],
+   "why": "A named <details> group is exclusive by construction — opening one row closes its siblings, with no attribute to turn it off. Single-open is right for lamalama, halcyon and indus, but away@768 measured two panels open at once, so the built default actively prevents a measured behaviour.",
+   "options": [
+    "(a) Add an accordionExclusive boolean; when false the markup drops the name attribute (a two-line change in the markup builder).",
+    "(b) Declare single-open universal and record away as a deliberate divergence."
+   ],
+   "recommendation": "(a). The cost is two lines, the behaviour is neither an a11y defect nor a cheat, and a 'conflict' status is worth closing rather than carrying into Wave 4."
+  },
+  {
+   "id": "DEC-09",
+   "title": "What the drawer does when the viewport crosses the collapse point while open",
+   "families": [
+    "M-49"
+   ],
+   "why": "Seven references stay open and reflow, two deliberately close, and both drafts keep an open FLAG while the surface is not rendered. store.js listens for no resize at all, so SGS has one unstated behaviour where the references have three. A drawer left open while its trigger disappears is a trap.",
+   "options": [
+    "(a) Close the drawer when the viewport crosses collapsePoint; stay open and reflow otherwise. One rule, no attribute.",
+    "(b) The same rule plus an attribute so the other two behaviours are reachable.",
+    "(c) Leave it unstated."
+   ],
+   "recommendation": "(a). It is the safe behaviour, it matches away and fantasy, and the difference the other seven references would see is invisible unless someone resizes across the breakpoint with the drawer open."
+  },
+  {
+   "id": "DEC-10",
+   "title": "For Bean's two drafts, clone the INTENT or the RENDER",
+   "families": [
+    "M-01",
+    "M-31",
+    "M-32",
+    "M-34",
+    "M-35"
+   ],
+   "why": "halcyon and indus-foods declare sticky (an ancestor overflow-x:hidden stops it), a 340ms panel entry and a 420ms/55ms item stagger (a componentDidUpdate arity bug throws before either runs), and an Escape handler that only clears the desktop state. Source and render disagree on four separate things and both are recorded.",
+   "options": [
+    "(a) Clone the INTENT; the render is a bug in the draft's own runtime, not a requirement.",
+    "(b) Clone the RENDER as measured.",
+    "(c) Per row."
+   ],
+   "recommendation": "(a) — as all three source lists already assumed. Worth stating explicitly because it means the panel-entry shape in M-31 is a real requirement, not an artefact."
+  },
+  {
+   "id": "DEC-11",
+   "title": "The two drafts' 768 rows are MOBILE, not tablet",
+   "families": [
+    "M-40",
+    "M-45",
+    "M-46"
+   ],
+   "why": "halcyon collapses at 940 and indus-foods at 960, both breakpoint-verified to within 1px. Reading their 768 cells as a tablet tier would invent a tablet layout neither design has.",
+   "options": [
+    "(a) Read them as mobile throughout Wave 3C and Wave 4.",
+    "(b) Re-capture both at a real tablet width (e.g. 1000px)."
+   ],
+   "recommendation": "(a), and add (b) to the DEC-04 re-capture run if it happens anyway — a 1000px row would give those two drafts a genuine tablet tier for the first time."
+  },
+  {
+   "id": "DEC-12",
+   "title": "Re-run /sgs-update before Wave 3C reads the DB for sgs/site-header",
+   "families": [
+    "M-02",
+    "M-03",
+    "M-13"
+   ],
+   "why": "VERIFIED: six attributes exist in site-header/block.json and are rendered, but have no block_attributes row — backdropBlur, headerFloat, headerFloatCollapse, headerFloatInset, shadowScrolled, shadowScrolledColour. Anyone grading header coverage from /sgs-db alone would call the floating pill and the backdrop blur gaps. They are built.",
+   "options": [
+    "(a) Re-run /sgs-update before any Wave 3C unit reads the DB for this block.",
+    "(b) Carry the block.json-is-truth caveat in every unit brief."
+   ],
+   "recommendation": "(a). (b) is a prose rule enforced nowhere, and this master list already had to override the DB twice."
+  },
+  {
+   "id": "DEC-13",
+   "title": "Lottie and live-canvas logo substrates",
+   "families": [
+    "M-33"
+   ],
+   "why": "buck's mark is a Lottie JSON and lamalama's is a live 2D canvas. Neither is an image, svgAnimationSource accepts a media-library .svg only, and inline SVG paste is banned as an XSS risk. Neither has a Spec 38 tier.",
+   "options": [
+    "(a) Out of Wave 3C: clone both as stills and record the divergence.",
+    "(b) Admit a Lottie player and a canvas-2D mark (a new runtime plus a new tier admission)."
+   ],
+   "recommendation": "(a). Two references, a decorative mark, and a new runtime is a poor trade against the eight missing furniture blocks in U-12."
+  },
+  {
+   "id": "DEC-14",
+   "title": "Whole-bar-as-trigger (lamalama)",
+   "families": [
+    "M-39",
+    "M-14"
+   ],
+   "why": "lamalama's entire header pill IS the menu button, and its opened pill IS the panel. SGS's trigger is always a discrete control inside the row. The panel half is already reachable (the --sgs-mm-panel-width override repositionPanel writes when the header measures as inset from both edges); the trigger half is not.",
+   "options": [
+    "(a) Add a triggerMode value meaning 'the row's own surface is the trigger' (U-14).",
+    "(b) Clone lamalama with a discrete trigger and record the divergence."
+   ],
+   "recommendation": "(a). The pill header is already built and matches lamalama's measured box, so the surface-trigger is the one missing piece of an otherwise complete reference — and lamalama's large-hit-area pattern is the accessible one, which makes it worth having generally."
+  }
+ ],
+ "verification": [
+  {
+   "id": "V-01",
+   "families": [
+    "M-02",
+    "M-03",
+    "M-13"
+   ],
+   "claim": "The framework DB is stale against block.json for sgs/site-header.",
+   "command": "python -c \"json.load(open('plugins/sgs-blocks/src/blocks/site-header/block.json'))['attributes']\"  +  python C:\\Users\\Bean\\.claude\\skills\\sgs-wp-engine\\scripts\\sgs-db.py sql \"SELECT attr_name FROM block_attributes WHERE block_slug='sgs/site-header'\"",
+   "result": "CONFIRMED and made exact. 59 DB rows. Six attributes exist in block.json and have NO DB row: backdropBlur, headerFloat, headerFloatCollapse, headerFloatInset, shadowScrolled, shadowScrolledColour. headerSticky, headerHideOnScroll, headerTransparent, headerTransparentDirection, backgroundColourScrolled, textColourScrolled, contrastSafe, headerShrink, maxWidth, contentWidth and borderRadius are all present in block.json.",
+   "outcome": "no status change; DEC-12 raised"
+  },
+  {
+   "id": "V-02",
+   "families": [
+    "M-09"
+   ],
+   "claim": "sgs/site-header hardcodes z-index:100 with no attribute (status: conflict).",
+   "command": "grep -n 'z-index' plugins/sgs-blocks/src/blocks/site-header/render.php plugins/sgs-blocks/src/blocks/site-header/style.css  +  attribute scan for zIndex",
+   "result": "CONFIRMED. render.php emits \"'z-index'  => '100',\" ; style.css:25 sets \"z-index: 100;\" ; zero zIndex attributes on the block. DB: the only z-index attribute in the whole schema is sgs/decorative-image::zIndex.",
+   "outcome": "status conflict upheld"
+  },
+  {
+   "id": "V-03",
+   "families": [
+    "M-44"
+   ],
+   "claim": "submenuCloseGrace is wired to the dropdown fork and ignored by the mega fork.",
+   "command": "grep -n 'closeGrace' plugins/sgs-blocks/includes/nav-menu-markup.php  +  grep -n 'close_grace' plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php  +  grep -n 'MAX_INTENT_DELAY_MS|intentDelay' plugins/sgs-blocks/src/shared/nav-interactivity/mega-disclosure.js",
+   "result": "BUG CONFIRMED verbatim. nav-menu-markup.php contains BOTH \"'closeGrace'  => 170,\" (mega fork) and \"'closeGrace'  => $submenu['close_grace'],\" (dropdown fork). nav-bar-menu/render.php resolves \"'close_grace' => isset($attributes['submenuCloseGrace']) ? max(0,(int)...) : 170\". mega-disclosure.js: \"const MAX_INTENT_DELAY_MS = 80;\" against a markup-declared intentDelay of 300.",
+   "outcome": "status partial upheld; first commit of U-1"
+  },
+  {
+   "id": "V-04",
+   "families": [
+    "M-14"
+   ],
+   "claim": "The panel fork ships no scrim element at all; the drawer's is hardcoded.",
+   "command": "grep -ni 'scrim|backdrop' plugins/sgs-blocks/src/blocks/mega-panel/render.php plugins/sgs-blocks/includes/nav-menu-markup.php plugins/sgs-blocks/src/blocks/nav-drawer/style.css  +  python C:\\Users\\Bean\\.claude\\skills\\sgs-wp-engine\\scripts\\sgs-db.py sql \"SELECT attr_name FROM block_attributes WHERE block_slug='sgs/nav-drawer'\"",
+   "result": "CONFIRMED. Zero 'scrim' in mega-panel/render.php and in nav-menu-markup.php. nav-drawer/style.css carries .sgs-nav-drawer__scrim, .sgs-nav-drawer__scrim.is-open and .wp-block-sgs-nav-drawer::backdrop, with rgba(0, 0, 0, 0.55) appearing twice. No scrim/backdrop attribute on nav-drawer or mega-panel.",
+   "outcome": "status gap upheld"
+  },
+  {
+   "id": "V-05",
+   "families": [
+    "M-13"
+   ],
+   "claim": "mega-panel::bgBlur is a boolean emitting a literal blur, and the panel shadow is hardcoded.",
+   "command": "python -c block.json mega-panel attributes.bgBlur  +  grep 'saturate(1.5) blur(24px)|0 30px 80px -30px' plugins/sgs-blocks/src/blocks/mega-panel/render.php",
+   "result": "CONFIRMED. bgBlur = {\"type\":\"boolean\",\"default\":false}; the literal 'saturate(1.5) blur(24px)' is present in render.php; the hardcoded '0 30px 80px -30px' box-shadow is present and unconditional.",
+   "outcome": "status partial upheld"
+  },
+  {
+   "id": "V-06",
+   "families": [
+    "M-21"
+   ],
+   "claim": "The cards hover lift is hardcoded translateY(-3px).",
+   "command": "grep -n 'translateY' plugins/sgs-blocks/src/blocks/mega-panel/style.css",
+   "result": "CONFIRMED. 'transform: translateY( -3px );' is present (halcyon's measured value exactly); indus's -6px is unreachable. The only other translateY is the stagger custom property.",
+   "outcome": "status partial upheld"
+  },
+  {
+   "id": "V-07",
+   "families": [
+    "M-10",
+    "M-39",
+    "M-40",
+    "M-43",
+    "M-44"
+   ],
+   "claim": "Several nav-bar-menu attribute shapes (collapsePoint free number; itemMagnet boolean-only; triggerMode not per-tier).",
+   "command": "python -c \"json.load(open('plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json'))['attributes']\"",
+   "result": "CONFIRMED. collapsePoint {number, default 768}; showBurger {boolean, true}; triggerMode {string, default 'icon'} (NOT a tier object); submenuAlign enum [start,center,end]; submenuCloseGrace {number,170}; submenuAnimation {string,'fade'}; submenuCaret {boolean,true}; itemMagnetEnabled {boolean,false} with itemMagnetStrength and itemMagnetRadius BOTH ABSENT while triggerMagnetStrength {number,24} and triggerMagnetRadius {number,120} exist; burgerSize {string,'44px'}; itemFontSize {object,{}}; itemFontSizeUnit {string,''}; featuredItemIds {array}.",
+   "outcome": "M-10, M-39 partial upheld; M-40 covered upheld"
+  },
+  {
+   "id": "V-08",
+   "families": [
+    "M-17",
+    "M-27",
+    "M-31"
+   ],
+   "claim": "nav-drawer's anchor / closeStyle / animateFrom allow-lists.",
+   "command": "grep -n 'allowed_anchors|allowed_close_styles|allowed_anims' plugins/sgs-blocks/src/blocks/nav-drawer/render.php  +  block.json attributes",
+   "result": "CONFIRMED. anchors = ('full-screen','header','trigger','centred') — no side-edge anchor. closeStyles = ('separate-x','text-swap','burger-morph','icon-and-text'). anims = ('auto','fade') and animateFrom is an enum of exactly those two. Full 46-attribute roster read; no scrim, stagger, dismissal, placement or resize attribute in it.",
+   "outcome": "M-17 partial, M-31 partial, M-27 covered upheld"
+  },
+  {
+   "id": "V-09",
+   "families": [
+    "M-47"
+   ],
+   "claim": "The drawer accordion is an exclusive <details name> group with no opt-out.",
+   "command": "grep -n 'details|submenuModel' plugins/sgs-blocks/src/blocks/nav-drawer/render.php  +  grep -n '<details' plugins/sgs-blocks/includes/nav-menu-markup.php",
+   "result": "CONFIRMED, CITATION CORRECTED. The markup builder emits '<details class=\"sgs-nav-drawer-menu__accordion\" name=\"sgs-nav-drawer-menu-accordion-%3$s\" ...>' — a named group, exclusive by construction. submenuModel = enum ['accordion','drill-down']. The word EXCLUSIVE appears in includes/nav-menu-markup.php, NOT in nav-drawer/render.php as the source family cited.",
+   "outcome": "status conflict upheld; citation corrected"
+  },
+  {
+   "id": "V-10",
+   "families": [
+    "M-32"
+   ],
+   "claim": "The drawer has no per-item entry stagger of any kind.",
+   "command": "walk plugins/sgs-blocks/src/blocks/nav-drawer* for the string 'stagger'  +  attribute scan of both block.json  +  python C:\\Users\\Bean\\.claude\\skills\\sgs-wp-engine\\scripts\\sgs-db.py sql \"SELECT attr_name FROM block_attributes WHERE block_slug IN ('sgs/nav-drawer','sgs/nav-drawer-menu')\"",
+   "result": "CONFIRMED. ZERO files under src/blocks/nav-drawer and src/blocks/nav-drawer-menu contain 'stagger'; no stagger or delay attribute in either block.json or the DB.",
+   "outcome": "status gap upheld"
+  },
+  {
+   "id": "V-11",
+   "families": [
+    "M-49"
+   ],
+   "claim": "Nothing listens for a resize crossing the collapse point while the drawer is open.",
+   "command": "grep -ni 'resize' plugins/sgs-blocks/src/shared/nav-interactivity/*.js  +  attribute scan of nav-drawer and nav-bar-menu",
+   "result": "CONFIRMED and sharpened. store.js contains ZERO occurrences of 'resize'. The only resize listener in the nav runtime is mega-disclosure.js's document-level scroll+resize handler, which repositions/closes a MEGA PANEL — it never touches the drawer. No resize or persist attribute on either block.",
+   "outcome": "status gap upheld"
+  },
+  {
+   "id": "V-12",
+   "families": [
+    "M-34",
+    "M-35"
+   ],
+   "claim": "Escape, outside-click, the focus trap and the scroll lock are shipped unconditionally with no attribute.",
+   "command": "grep -n 'Escape|lockBodyScroll|SCROLL_LOCK_ATTR|freezeBackground' plugins/sgs-blocks/src/shared/nav-interactivity/store.js plugins/sgs-blocks/src/shared/nav-interactivity/mega-disclosure.js  +  attribute scan",
+   "result": "CONFIRMED. store.js binds one Escape handler and carries the lockBodyScroll / SCROLL_LOCK_ATTR pair; mega-disclosure.js has four Escape branches plus the outside-click handler and states in its own header comment 'no scroll-lock, no focus trap, no backdrop'. modality (modal|non-modal) is the only lever and it governs inertness. No escape/dismiss/closeOn*/scrollLock attribute exists.",
+   "outcome": "both resolved to conflict (see changes)"
+  },
+  {
+   "id": "V-13",
+   "families": [
+    "M-36"
+   ],
+   "claim": "Every SGS trigger is a real <button> with aria-expanded and a resolving aria-controls.",
+   "command": "grep -n 'aria-expanded' plugins/sgs-blocks/includes/nav-menu-markup.php",
+   "result": "CONFIRMED. Four emit sites, all '<button type=\"button\" ... aria-expanded=\"false\" aria-controls=\"...\" data-wp-bind--aria-expanded=...>' — the mega trigger, two subtoggles and the burger.",
+   "outcome": "status conflict upheld"
+  },
+  {
+   "id": "V-14",
+   "families": [
+    "M-24"
+   ],
+   "claim": "No attribute anywhere repaints an element's SIBLINGS on hover.",
+   "command": "python C:\\Users\\Bean\\.claude\\skills\\sgs-wp-engine\\scripts\\sgs-db.py sql \"SELECT block_slug, attr_name FROM block_attributes WHERE attr_name LIKE '%Sibling%' OR attr_name LIKE '%Dim%' OR attr_name LIKE '%Peer%'\"",
+   "result": "CONCLUSION CONFIRMED, COMMAND CORRECTED. The source family recorded this query as returning 0 rows; it actually returns 40, because SQLite LIKE is case-insensitive and '%Dim%' matches 'backgrounDIMage' inside backgroundImage*. None of the 40 is a sibling-scoped state (they are dimRatio, featuredImage* and backgroundImage* rows), so the gap stands — but the original command was noise, not a negative control.",
+   "outcome": "status gap upheld; how_checked rewritten"
+  },
+  {
+   "id": "V-15",
+   "families": [
+    "M-04"
+   ],
+   "claim": "Nothing observes the section passing behind the header; mix-blend-mode is overlay-only.",
+   "command": "python C:\\Users\\Bean\\.claude\\skills\\sgs-wp-engine\\scripts\\sgs-db.py sql \"SELECT block_slug, attr_name FROM block_attributes WHERE css_property='mix-blend-mode'\"  +  python -c block.json site-header attributes.contrastSafe",
+   "result": "CONFIRMED. Eight rows, every one backgroundOverlayBlendMode on a container/section block (container, cta-section, hero, multi-button, physics-canvas, site-footer, site-header, trust-bar) — the shared background OVERLAY panel, never the header element. contrastSafe is {\"type\":\"object\",\"default\":{}}, a per-tier scrim/shadow advisory.",
+   "outcome": "status gap upheld"
+  },
+  {
+   "id": "V-16",
+   "families": [
+    "M-13"
+   ],
+   "claim": "No block carries a backdrop-filter block_attributes row; backdropBlur is a length.",
+   "command": "python C:\\Users\\Bean\\.claude\\skills\\sgs-wp-engine\\scripts\\sgs-db.py sql \"SELECT block_slug, attr_name FROM block_attributes WHERE css_property='backdrop-filter'\"  +  block.json site-header::backdropBlur, nav-drawer::surfaceBlur",
+   "result": "CONFIRMED. 0 rows. site-header::backdropBlur = {string, ''} described as 'a CSS length, empty for none', same vocabulary as nav-drawer::surfaceBlur {string, ''} — so a companion saturate() is unreachable on both.",
+   "outcome": "status partial upheld"
+  },
+  {
+   "id": "V-17",
+   "families": [
+    "M-08"
+   ],
+   "claim": "Nothing detaches a header child to a viewport edge.",
+   "command": "python C:\\Users\\Bean\\.claude\\skills\\sgs-wp-engine\\scripts\\sgs-db.py sql \"SELECT block_slug, attr_name, css_property FROM block_attributes WHERE css_property IN ('position','top','z-index')\"",
+   "result": "CONFIRMED. Exactly two rows in the whole schema: sgs/decorative-image::positionY (top) and sgs/decorative-image::zIndex (z-index). Neither is a viewport-pinning mechanism and both are on a decorative block.",
+   "outcome": "status gap upheld"
+  },
+  {
+   "id": "V-18",
+   "families": [
+    "M-18"
+   ],
+   "claim": "Eight pieces of ordinary header/footer furniture have no block at all.",
+   "command": "python C:\\Users\\Bean\\.claude\\skills\\sgs-wp-engine\\scripts\\sgs-db.py sql \"SELECT slug FROM blocks WHERE slug LIKE '%clock%' OR '%language%' OR '%back-to-top%' OR '%wishlist%' OR '%account%' OR '%country%' OR '%theme%' OR '%ticker%' OR '%carousel%' OR '%announce%'\"  +  SELECT slug FROM blocks",
+   "result": "CONFIRMED. 0 matches in a roster of 209 blocks. The only search-ish blocks are core/search, sgs/filter-search and sgs/product-search.",
+   "outcome": "status partial upheld (the roster gap is real)"
+  },
+  {
+   "id": "V-19",
+   "families": [
+    "M-18"
+   ],
+   "claim": "product-search and filter-search are not offered as header controls.",
+   "command": "python -c supports.sgs.headerEssential over cart, responsive-logo, product-search, filter-search, form, button, multi-button, business-info, social-icons, audio block.json",
+   "result": "CONFIRMED. true on sgs/cart and sgs/responsive-logo ONLY; the other eight return no headerEssential key at all.",
+   "outcome": "status partial upheld"
+  },
+  {
+   "id": "V-20",
+   "families": [
+    "M-07"
+   ],
+   "claim": "sgs/notice-banner holds one static string with no rotation.",
+   "command": "python -c \"json.load(open('plugins/sgs-blocks/src/blocks/notice-banner/block.json'))['attributes'].keys()\"",
+   "result": "CONFIRMED. 46 attributes, all paint and typography plus displayMode / dismissible / dismissBehaviour / stickyPosition / variant / icon. The content attribute is a single text = {\"type\":\"string\",\"default\":\"\",\"role\":\"content\"}. No slides array, no interval, no random source.",
+   "outcome": "status gap upheld"
+  },
+  {
+   "id": "V-21",
+   "families": [
+    "M-11"
+   ],
+   "claim": "The Spec 38 fx picker is deliberately hidden on site-header and site-footer; only the footer row has a reveal.",
+   "command": "python -c supports.sgs.hideExtensions for site-header/site-footer  +  block.json site-footer-row attributes.fxFooterStagger",
+   "result": "CONFIRMED. Both declare hideExtensions ['fx']. fxFooterStagger = {boolean, false} with its own comment calling it footer-row-ONLY and reusing the FR-38-7 scrub runtime unmodified.",
+   "outcome": "status partial upheld"
+  },
+  {
+   "id": "V-22",
+   "families": [
+    "M-05",
+    "M-12"
+   ],
+   "claim": "Header and footer rows share one layout attribute set; the footer row adds intrinsicColumns.",
+   "command": "python -c block.json site-header-row / site-footer-row attributes and supports.sgs",
+   "result": "CONFIRMED. site-header-row carries layout, columns, gridTemplateColumns, justifyContent, alignItems, gap, rowSlot, rowHideOnScroll, rowTransparent and rowShrink. site-footer-row declares supports.sgs.intrinsicColumns = true.",
+   "outcome": "status covered upheld"
+  },
+  {
+   "id": "V-23",
+   "families": [
+    "M-45",
+    "M-46"
+   ],
+   "claim": "Drawer typography and layout scalars: itemFontSizeUnit, itemLineHeight and gap are not per-tier.",
+   "command": "python -c \"json.load(open('plugins/sgs-blocks/src/blocks/nav-drawer-menu/block.json'))['attributes']\"",
+   "result": "CONFIRMED. itemFontSize {object,{}} but itemFontSizeUnit {string,''} (one scalar unit for all tiers, so a vw value would apply at every tier); itemLineHeight {\"type\":\"number\"} — a plain number, not a tier object; listColumns {object,{}} (per-tier, good); gap {\"type\":\"string\",\"default\":\"8px\"} — a scalar; itemTextAlign enum ['','left','center','right','justify']; nav-drawer::drawerAlign enum ['left','center','right'] (three positions, so buck's ~45% is a fourth).",
+   "outcome": "both partial upheld"
+  },
+  {
+   "id": "V-24",
+   "families": [
+    "M-13"
+   ],
+   "claim": "Drawer ground is fully covered by drawerBg + surfaceOpacity + surfaceBlur + borderRadius.",
+   "command": "python -c block.json nav-drawer attributes drawerBg / drawerBgGradient / surfaceOpacity / surfaceBlur / borderRadius / panelSize / anchor",
+   "result": "CONFIRMED. drawerBg {string,'surface'}, drawerBgGradient {string,''}, surfaceOpacity {number,1}, surfaceBlur {string,''}, borderRadius {object,{desktop:{}}}, panelSize {object,{}}, anchor {object,{}} — lamalama's 0.6 fill + blur(4px) and lusion's 7.5/10px radius step are both literal values.",
+   "outcome": "drawer half covered; the gaps in M-13 are the panel and header halves"
+  },
+  {
+   "id": "V-25",
+   "families": [
+    "M-22"
+   ],
+   "claim": "nav-drawer-menu has no primary-item ornament attribute.",
+   "command": "python -c block.json nav-drawer-menu attribute names filtered for icon/marker/index/ornament/counter",
+   "result": "CONFIRMED. Exactly seven matches, all sublinkMarker* (Icon, Colour, ColourHover, ColourCurrent and their three gradient companions) — and the markup builder emits the marker span on SUB-items only. No primary-item icon, index or media attribute.",
+   "outcome": "status partial upheld"
+  },
+  {
+   "id": "V-26",
+   "families": [
+    "M-20",
+    "M-28"
+   ],
+   "claim": "mega-aside's formats are exactly feature / preview / cta and the preview branch is real.",
+   "command": "grep -n 'allowed_formats|preview' plugins/sgs-blocks/src/blocks/mega-aside/render.php  +  block.json mega-panel::asideWidth",
+   "result": "CONFIRMED. render.php:47 \"$allowed_formats = array( 'feature', 'preview', 'cta' );\" with a real 'preview' branch at :167 and 'cta' at :164; asideWidth = {string, '340px'} (halcyon's measured rail).",
+   "outcome": "M-28 covered, M-20 partial upheld"
+  },
+  {
+   "id": "V-27",
+   "families": [
+    "M-16"
+   ],
+   "claim": "The mega wrap width/anchor/top are custom properties, not operator attributes.",
+   "command": "grep -n 'sgs-mm-panel-width|sgs-mm-panel-top|sgs-mm-overflow-left' plugins/sgs-blocks/includes/nav-menu-submenu-css.php  +  block.json mega-panel::maxWidth",
+   "result": "CONFIRMED. The __mega-panel-wrap rule reads 'position:absolute;top:var(--sgs-mm-panel-top, 100%);left:var(--sgs-mm-overflow-left, 50%)...'; maxWidth = {object, {\"desktop\":\"1120px\"}}. There is no anchor enum and submenuTopOffset (a dropdown attribute) does not reach the mega wrap.",
+   "outcome": "status partial upheld"
+  },
+  {
+   "id": "V-28",
+   "families": [
+    "M-27",
+    "M-38"
+   ],
+   "claim": "The burger-morph keyframe is hardcoded to the X pose.",
+   "command": "grep -n 'burger-bar' plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
+   "result": "CONFIRMED. style.css:286-294 — [aria-expanded=\"true\"] .__burger-bar:nth-child(1), :nth-child(2) and :nth-child(3) form the X. No duration, easing or alternative pose. This also confirms group C's citation of the in-place morph, which is why M-27 stays covered while the pose moves to M-38.",
+   "outcome": "M-27 covered, M-38 partial"
+  },
+  {
+   "id": "V-29",
+   "families": [
+    "M-31"
+   ],
+   "claim": "Only four drawer entry shapes exist and each is bound to an anchor.",
+   "command": "grep -n '@keyframes' plugins/sgs-blocks/src/blocks/nav-drawer/style.css",
+   "result": "CONFIRMED. Eleven keyframes covering four shapes: sgs-nav-drawer-in/-out (base fade-drop), -fade-in/-out, -expand-down-in/-out, -corner-scale-in/-out, -modal-scale-in/-out, plus -backdrop-in. animateFrom 'auto' picks by DESKTOP anchor, so a full-screen drawer can only fade-drop or fade.",
+   "outcome": "status partial upheld"
+  },
+  {
+   "id": "V-30",
+   "families": [
+    "M-18"
+   ],
+   "claim": "business-info::displayType covers every legal / address / contact line.",
+   "command": "python -c block.json business-info attributes.displayType",
+   "result": "CONFIRMED. enum ['phone','email','address','hours','socials','copyright','description','map','attribution'] — nine values, default 'phone'.",
+   "outcome": "status partial upheld (the roster gaps are the missing blocks, not these)"
+  },
+  {
+   "id": "V-31",
+   "families": [
+    "M-33"
+   ],
+   "claim": "responsive-logo covers the per-tier swap but not the substrate.",
+   "command": "python -c block.json responsive-logo attributes",
+   "result": "CONFIRMED. logoId / logoIdTablet / logoIdMobile / logoSwitchMode / logoSwitchCustomPx / maxWidth / maxHeight / width all present; animationStyle = enum ['none','draw-on-load','hover-redraw','scroll-trigger'] (the block's own FR-38-15 draw). No Lottie or canvas source.",
+   "outcome": "status partial upheld"
+  },
+  {
+   "id": "V-33",
+   "families": [
+    "M-25"
+   ],
+   "claim": "No menu block provides a second label copy for a text roll.",
+   "command": "python -c attribute-name scan of nav-bar-menu, nav-drawer-menu, mega-panel, mega-group block.json for label2/altLabel/secondLabel/roll/clone/hoverLabel  +  grep -niE 'roll|alt-label|__label-alt|data-alt' plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css plugins/sgs-blocks/src/blocks/nav-drawer-menu/style.css",
+   "result": "CONFIRMED. Zero matching attributes across the four menu blocks and zero matching rules in either stylesheet. studionamma's bar label roll and lusion's drawer/trigger roll need markup (a second label plus a paired transform), not a value.",
+   "outcome": "status gap upheld"
+  },
+  {
+   "id": "V-32",
+   "families": [
+    "M-41",
+    "M-42"
+   ],
+   "claim": "Panel ownership and the three content presets are covered.",
+   "command": "grep -n 'allowed_styles|allowed_variants' plugins/sgs-blocks/src/blocks/mega-panel/render.php  +  block.json mega-panel",
+   "result": "CONFIRMED via the same render.php read as V-05: style is validated against ('columns','cards','minimal') and variant against ('general','media-cards','brands'); the mega/dropdown fork split is in nav-menu-markup.php (V-03 read the same file).",
+   "outcome": "both covered upheld"
+  }
+ ],
+ "changes_from_sources": [
+  {
+   "change": "Merged 74 source families into 50 masters.",
+   "detail": "Twenty-four source families were absorbed into a master that already expressed them. Every merge passes the brief's test — ONE block attribute or mechanism would express both sides. The large ones: the SCRIM (F-B-06 + F-C-06: the drawer's element is hardcoded, the panel has none, and one attribute set of colour/alpha/blur/click-closes serves both); SURFACE GROUND (F-A-03, F-A-04, F-B-05, F-C-04, F-C-05 and F-A-23's fill: one ground vocabulary mirrored across header, panel, drawer and footer, which is the composite-mirror rule); the COLLAPSE BREAKPOINT (F-A-11 + F-B-17 + F-C-01, all collapsePoint/showBurger read from three surfaces); TYPE SCALING (F-A-15 + F-C-10, one typography emitter and the same three gaps); the CLOSE-CONTROL MODEL (F-B-19 + F-C-16, one closeStyle enum); TRIGGER FORM (F-A-18 + F-B-18); DISMISSAL (F-B-16 + F-B-25 + F-C-18) and MODALITY (F-B-25 + F-C-19); ORNAMENT (F-A-16 + F-B-12 + F-C-08); HOVER PAINT (F-A-12 + F-B-11 + F-C-12); CURRENT-PAGE (F-A-17 + F-C-13); ENTRY MOTION (F-B-15 + F-C-21) and STAGGER (F-C-22 + F-B-15's staggerOnOpen)."
+  },
+  {
+   "change": "Kept apart where the mechanisms genuinely differ.",
+   "detail": "Panel geometry (M-16: a mega wrap positioned by custom properties) is NOT merged with drawer anchoring (M-17: a four-value anchor enum in a PHP geometry closure) — they share a column heading and nothing else. Header/footer ENTRANCE (M-11: the Spec 38 fx picker, deliberately hidden on both blocks) is NOT merged with panel/drawer entry (M-31: a disclosure animation enum). Trigger SEMANTICS (M-36, what element is emitted) is NOT merged with the dismissal set (M-34) or the background freeze (M-35): three different mechanisms behind one accessibility story."
+  },
+  {
+   "change": "Split two source families because the mechanism inside them was not one mechanism.",
+   "detail": "F-C-12 (drawer item hover) held SELF hover, SIBLING dim and a two-copy text roll. Self hover is an existing attribute family (M-21), sibling dim needs a list-scoped rule nothing in the tree has (M-24), and the roll needs a SECOND label in the markup (M-25). Group A had already separated sibling dim as F-A-13, which is the tell. The same split pulls studionamma's bar label roll out of F-A-12 and lusion's trigger label roll out of F-B-21 into M-25."
+  },
+  {
+   "change": "Resolved a status disagreement on the menu trigger: PARTIAL, not covered.",
+   "detail": "F-A-18 read partial and F-B-18 read covered for the same column. B is right that triggerMode covers the three shapes; A is right that two values are unreachable. Resolved to partial in M-39, with the two values placed where they belong: the DETACHED trigger (buck, resn) moves to M-08, and the residual gaps are triggerMode not being per-tier (VERIFIED: it is a plain string, so fantasy's label dropping at 375 is unreachable) and the whole-bar-as-trigger shape (lamalama)."
+  },
+  {
+   "change": "Resolved a status disagreement on accessibility: CONFLICT, not gap or partial.",
+   "detail": "Group C recorded the Escape / scroll-lock / focus-trap divergence as 'partial' and 'gap'; group B recorded the same divergence as 'conflict'. Resolved to CONFLICT on M-34, M-35 and M-36. 'Gap' implies something to build, and here there is nothing to build — the mechanism is shipped, is strictly more accessible than the reference, and must not be loosened. What it needs is a recorded divergence and a rule (DEC-02), which is what 'conflict' means in this register."
+  },
+  {
+   "change": "Merged buck's detaching burger chip into the detached-controls family.",
+   "detail": "Group A recorded 'the trigger detaches to fixed once the page has scrolled' as one of six values of F-A-19; group B gave the identical buck behaviour its own family, F-B-24, needed by one reference. They are one mechanism — pin a header child to a viewport edge with its own z-index and threshold — so they merge into M-08, which then has five references behind it instead of one and five separately, and stops looking like a single-site quirk."
+  },
+  {
+   "change": "Corrected a how_checked that was a vacuous query (conclusion unchanged).",
+   "detail": "F-A-13 recorded its sibling-dim search as \"attr_name LIKE '%Sibling%' OR '%Dim%' OR '%Peer%' returned 0 rows\". Re-run, it returns FORTY rows: SQLite LIKE is case-insensitive and '%Dim%' matches the 'dIm' inside backgroundImage. None of the forty is a sibling-scoped state, so the gap stands — but the query proved nothing, and the corrected command is recorded in V-14."
+  },
+  {
+   "change": "Corrected a citation on the exclusive accordion (conclusion unchanged).",
+   "detail": "F-C-14 cited nav-drawer/render.php for the '<details name> EXCLUSIVE accordion' wording. Re-run, render.php mentions 'details' twice without that wording; the named-group markup and the comment are in includes/nav-menu-markup.php. The conflict status is upheld on the verified markup ('<details class=\"sgs-nav-drawer-menu__accordion\" name=\"sgs-nav-drawer-menu-accordion-...\">')."
+  },
+  {
+   "change": "Made the DB-staleness claim exact.",
+   "detail": "Group A reported that block_attributes lacks rows for headerFloat, headerFloatInset, headerFloatCollapse, backdropBlur, shadowScrolled 'or shadowScrolledColour'. Re-run against 59 DB rows and the full block.json attribute map: it is exactly those SIX and no others. Raised as DEC-12 because the master list had to override the DB twice."
+  },
+  {
+   "change": "Accepted three source citations that reproduced exactly.",
+   "detail": "The hardcoded z-index:100 (render.php plus style.css:25), the submenuCloseGrace literal in the mega fork, and the burger-morph X keyframe at nav-bar-menu/style.css:286-294 all reproduced verbatim. Two more (mega-aside's allowed_formats, mega-panel's allowed_styles) failed my first regex and reproduced on a second read at render.php:47 — a false negative in MY check, not an error in the source."
+  },
+  {
+   "change": "Recorded evidence quality per family rather than per cell.",
+   "detail": "Four families are marked THIN: M-07 (away's announcement timing never measured), M-11 (every footer motion cell is not_measured, so it rests on class names), M-24 (footer hover never driven anywhere), M-33 (buck's Lottie never sampled over time). Twelve are MIXED — typically because butcherbox and rabbit have no 768 capture, or rabbit's dropdown was never opened. The remaining 34 are measured."
+  }
+ ],
+ "meta": {
+  "plan_unit": "W3B-4 (merge step)",
+  "generated": "2026-09-21",
+  "source_files": [
+   "families-A.json",
+   "families-B.json",
+   "families-C.json"
+  ],
+  "source_family_count": 74,
+  "master_family_count": 50,
+  "status_counts": {
+   "covered": 13,
+   "partial": 24,
+   "gap": 8,
+   "conflict": 5
+  },
+  "references": [
+   "away",
+   "buck",
+   "butcherbox",
+   "dogstudio",
+   "fantasy",
+   "halcyon",
+   "indus-foods",
+   "lamalama",
+   "lusion",
+   "rabbit",
+   "resn",
+   "studionamma",
+   "wearecollins"
+  ],
+  "ground_truth_note": "For sgs/site-header the framework DB is stale against block.json (six attributes have no block_attributes row); block.json is the ground truth used throughout. See V-01 and DEC-12."
+ }
+}
