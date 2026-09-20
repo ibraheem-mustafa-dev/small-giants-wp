@@ -53,10 +53,9 @@ denylist. **Rationale:** the data is site-wide — an address belongs on a conta
 footer — it is delivered as a block, and all five blocks that consume it (FR-36-19…23) live here. Splitting
 a store from its only consumers serves nobody.
 
-**Site Info does not yet feed `sgs/responsive-logo`.** The block reads WP's native Customiser setting at
-`plugins/sgs-blocks/src/blocks/responsive-logo/render.php::$sgs_site_logo_id` (`get_theme_mod( 'custom_logo', 0 )`),
-so the logo resolves from a different source than contact/social. The required design is **Site Info as a
-middle tier in the logo resolution chain**, specified as FR-36-22's first MUST (NOT BUILT).
+**Site Info feeds `sgs/responsive-logo` as the middle tier of the logo resolution chain** (FR-36-22's first
+MUST): the `logo` key is resolved by `plugins/sgs-blocks/includes/class-sgs-site-info.php::resolve_logo_id`,
+so the logo resolves from the same store as contact and social.
 
 **Does NOT own (→ Spec 37, header/footer builder):** the header/footer container blocks + row model, header
 behaviours (sticky/transparent/shrink/hide-on-scroll), and the CPT editing home + `Sgs_Header_Rules`
@@ -823,24 +822,25 @@ lockup / favicon / variant half needs a frozen attribute table first (§4 index)
 
 **Phasing: basics = Phase 1** (left-aligned default, link-to-home, per-device image, functional alt).
 **lockup + favicon-sync + transparent/dark variants = Phase 3.** **Extend** `sgs/responsive-logo`.
-- **MUST — the logo resolution chain — NOT BUILT (Site Info tier).** The logo resolves through THREE tiers,
+- **MUST — the logo resolution chain — BUILT.** The logo resolves through THREE tiers,
   first non-empty wins, evaluated per device tier:
 
   | Order | Source | Where it lives |
   |---|---|---|
   | 1 | The block's own per-device art-direction attrs | `plugins/sgs-blocks/src/blocks/responsive-logo/block.json::attributes.logoId` / `.logoUrl` (+ `…Tablet` / `…Mobile`) |
-  | 2 | **Site Info** — a NEW `logo` key in the `sgs_site_info` option store | `sgs_site_info` (this spec's store, §1) |
-  | 3 | WP's Customiser site logo | `plugins/sgs-blocks/src/blocks/responsive-logo/render.php::$sgs_site_logo_id` (`get_theme_mod( 'custom_logo', 0 )`) |
+  | 2 | **Site Info** — the `logo` key in the `sgs_site_info` option store (a media-library attachment ID) | `plugins/sgs-blocks/includes/class-sgs-site-info.php::get_logo_id` |
+  | 3 | WP's Customiser site logo (`get_theme_mod( 'custom_logo', 0 )`) | `plugins/sgs-blocks/includes/class-sgs-site-info.php::resolve_logo_id` |
   | 4 | Nothing — render no logo element at all | — |
 
-  Tier 2 is inserted BETWEEN two existing tiers, so a site that has never set a Site Info logo resolves
-  exactly as tiers 1/3/4 do today. **Tier 2 is NET-NEW BUILD, not a read of an existing field.** Today the
-  Site Info admin's Identity section only *previews* the Customiser logo and deep-links to the Site Editor
-  (`plugins/sgs-blocks/includes/class-sgs-site-info-admin-fields.php::render_identity_section`) — it stores
-  nothing, and `plugins/sgs-blocks/src/blocks/responsive-logo/render.php` reads only `custom_logo`. The `logo` key, its media control, its
-  sanitisation and its reserved-key registration are all part of this MUST. **Done when:** setting a Site
-  Info logo with no block-level `logoId` renders that logo, and clearing it falls through to the Customiser
-  logo — both live-verified, not asserted.
+  Tiers 2 and 3 are resolved together by `resolve_logo_id`; the block's own images (tier 1) are decided in
+  `plugins/sgs-blocks/src/blocks/responsive-logo/render.php`. A site that has never set a Site Info logo
+  resolves from the Customiser as before. The `logo` key is validated on every read: an attachment that was
+  deleted or is not an image yields no logo and the chain falls through. The Site Info admin's Identity
+  section (`plugins/sgs-blocks/includes/class-sgs-site-info-admin-logo.php`) holds the media picker
+  (Choose / Replace / Remove); the editor canvas renders the resolved logo through the server and the
+  inspector says which tier is showing. Alt text: the block's alt, then the attachment's alt (site-level
+  tiers only), then "[Business] home". **Done when:** setting a Site Info logo with no block-level `logoId`
+  renders that logo, and clearing it falls through to the Customiser logo, both checked on a live page.
 - **MUST (basics, Phase 1):** left-aligned default (NN/g: 6× better home-return); link-to-home on by default;
   **separate desktop/tablet/mobile IMAGE upload** (swap the file, not resize-only); SVG upload; **functional
   alt** ("[Business] home", inline authoring hint, never "logo"); max-width/height per breakpoint;
@@ -1432,7 +1432,7 @@ competitor (Kadence/Blocksy/Spectra) does this cleanly; all re-enter per placeme
 placements in Phase 3 (§7).
 
 **Honest scope of "entered ONCE" for the LOGO.** The logo joins this claim only through FR-36-22's
-resolution chain, and only at that chain's tier 2 (NOT BUILT). A logo set in Site Info is entered once and
+resolution chain, and only at that chain's tier 2. A logo set in Site Info is entered once and
 rendered everywhere; a logo set on an individual `sgs/responsive-logo` instance (tier 1, per-device art
 direction) is a deliberate per-placement override and is NOT covered by this claim — that override is the
 feature, not a leak. A site that has set neither still resolves from the Customiser (tier 3), which is WP's

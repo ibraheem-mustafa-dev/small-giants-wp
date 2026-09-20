@@ -66,6 +66,40 @@ function parseMaxBoxValue( raw, currentUnit ) {
 	return { num: undefined, unit: currentUnit || 'px' };
 }
 
+/**
+ * The site-level logo PHP resolved for this editor session (Site Info `logo`,
+ * else the WordPress site logo), published by
+ * `Sgs_Site_Info_Binding::publish_editor_data()` on `window.sgsBlocksData`.
+ *
+ * @return {{ id: number, url: string, source: string }} `source` is '' when no
+ *                                                        site-level logo exists.
+ */
+function getSiteLogo() {
+	const data =
+		typeof window !== 'undefined' && window.sgsBlocksData
+			? window.sgsBlocksData.siteLogo
+			: null;
+	return data && data.url
+		? data
+		: { id: 0, url: '', source: '' };
+}
+
+/**
+ * Help text naming the logo this block shows while it has none of its own.
+ *
+ * @param {string} source 'site-info', 'wordpress' or ''.
+ * @return {string} The hint, or '' when there is no site-level logo.
+ */
+function siteLogoHint( source ) {
+	if ( 'site-info' === source ) {
+		return __( 'Showing the logo from Site Info. Upload one here to override it for this block.', 'sgs-blocks' );
+	}
+	if ( 'wordpress' === source ) {
+		return __( 'Showing your WordPress site logo. Upload one here, or set a logo in Site Info, to override it.', 'sgs-blocks' );
+	}
+	return '';
+}
+
 const ANIMATION_STYLE_OPTIONS = [
 	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
 	{ label: __( 'Draw on load', 'sgs-blocks' ), value: 'draw-on-load' },
@@ -144,6 +178,18 @@ function LogoSlot( { mediaId, mediaUrl, onSelect, onRemove, label, placeholder }
 				) }
 			</div>
 		</MediaUploadCheck>
+	);
+}
+
+/**
+ * Shown in the canvas when render.php resolves no logo at any tier.
+ */
+function EmptyLogoPlaceholder() {
+	return (
+		<div className="sgs-responsive-logo-editor__empty">
+			<span className="dashicons dashicons-format-image" />
+			<p>{ __( 'Select a logo in the sidebar, or set one in Site Info, to get started.', 'sgs-blocks' ) }</p>
+		</div>
 	);
 }
 
@@ -250,6 +296,12 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const hasAnimation = animationStyle && 'none' !== animationStyle;
 
+	// Chain tier 1 is the block's own desktop image; when it is empty the
+	// frontend falls through to the site-level logo (Site Info, then WordPress).
+	const hasOwnLogo = !! ( logoId || desktopUrl );
+	const siteLogo = getSiteLogo();
+	const siteLogoNote = hasOwnLogo ? '' : siteLogoHint( siteLogo.source );
+
 	// Contrast check for border colour — warn if border fails WCAG 3:1 contrast
 	// against the block's own background. When the background is a gradient,
 	// the flat backgroundColour is not rendered, so skip the check in that case.
@@ -267,7 +319,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					initialOpen
 				>
 					<p className="sgs-responsive-logo-editor__panel-hint">
-						{ __( 'Desktop logo is required. Tablet and mobile fall back to desktop when not set.', 'sgs-blocks' ) }
+						{ __( 'Without a logo of its own, this block shows your site logo. Tablet and mobile fall back to the desktop logo when not set.', 'sgs-blocks' ) }
 					</p>
 
 					<LogoSlot
@@ -276,6 +328,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						onSelect={ onSelectDesktop }
 						onRemove={ onRemoveDesktop }
 						label={ __( 'Desktop logo (horizontal)', 'sgs-blocks' ) }
+						placeholder={ siteLogoNote }
 					/>
 
 					<LogoSlot
@@ -421,7 +474,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'Alt text', 'sgs-blocks' ) }
 						help={ logoDecorative
 							? __( 'Disabled — the logo image is marked decorative and won’t be announced to screen readers.', 'sgs-blocks' )
-							: __( 'Describes what the logo depicts for screen readers. Leave empty to use "[Business name] home" automatically — never just "logo".', 'sgs-blocks' ) }
+							: __( 'Describes what the logo depicts for screen readers. Leave empty to use "[Business name] home" automatically (or, for the site logo, its media-library alt text) — never just "logo".', 'sgs-blocks' ) }
 						value={ alt }
 						onChange={ ( val ) => setAttributes( { alt: val } ) }
 						disabled={ !! logoDecorative }
@@ -609,30 +662,24 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			{ /* ── Editor canvas preview ──────────────────────────────────────
 			   Rendered via ServerSideRender (render.php) so the canvas NEVER
-			   drifts from the frontend — animation, the theme-customiser
-			   fallback logo, the functional alt default, left-align, and the
-			   per-tier max-box all render exactly as they will on the
-			   live site (a hand-built preview drifts from the frontend).
+			   drifts from the frontend — animation, the site-level fallback
+			   logo (Site Info, then the WordPress site logo), the functional
+			   alt default, left-align, and the per-tier max-box all render
+			   exactly as they will on the live site (a hand-built preview
+			   drifts from the frontend).
 			   Tradeoff: the SVG view.js animation itself doesn't
 			   run inside the static SSR preview — only its markup/CSS does.
-			   Gated on logoId (not the transient preview URL) so the
-			   placeholder is correct on reload before a logo is chosen; a
-			   theme-customiser fallback logo (when set) still renders once a
-			   logo is picked here, matching render.php's own fallback. ── */ }
+			   Always rendered server-side: render.php decides which chain tier
+			   wins, and when none resolves it returns nothing, which the
+			   empty-response placeholder below turns into the empty prompt. ── */ }
 			<div { ...blockProps }>
-				{ logoId || desktopUrl ? (
-					<SsrPreviewGuard>
-						<ServerSideRender
-							block="sgs/responsive-logo"
-							attributes={ attributes }
-						/>
-					</SsrPreviewGuard>
-				) : (
-					<div className="sgs-responsive-logo-editor__empty">
-						<span className="dashicons dashicons-format-image" />
-						<p>{ __( 'Select a logo in the sidebar to get started.', 'sgs-blocks' ) }</p>
-					</div>
-				) }
+				<SsrPreviewGuard>
+					<ServerSideRender
+						block="sgs/responsive-logo"
+						attributes={ attributes }
+						EmptyResponsePlaceholder={ EmptyLogoPlaceholder }
+					/>
+				</SsrPreviewGuard>
 			</div>
 		</>
 	);

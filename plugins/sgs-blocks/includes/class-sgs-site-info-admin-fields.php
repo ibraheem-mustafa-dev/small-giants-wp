@@ -15,6 +15,8 @@ namespace SGS\Blocks;
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/class-sgs-site-info-admin-logo.php';
+
 /**
  * Class Sgs_Site_Info_Admin_Fields
  *
@@ -28,8 +30,9 @@ final class Sgs_Site_Info_Admin_Fields {
 	// -------------------------------------------------------------------------
 
 	/**
-	 * Render the Identity section: current logo preview + deep-link to the
-	 * Site Editor. Per FR-S4-3: no new media uploader is registered here.
+	 * Render the Identity section blurb and the WordPress site logo (the
+	 * fallback tier) with a deep-link to the Site Editor. The Site Info logo
+	 * itself is the media picker field {@see Sgs_Site_Info_Admin_Logo::render_field()}.
 	 */
 	public static function render_identity_section(): void {
 		$logo_id  = (int) \get_theme_mod( 'custom_logo' );
@@ -39,13 +42,13 @@ final class Sgs_Site_Info_Admin_Fields {
 		// to focus it. See developer.wordpress.org/block-editor/reference-guides/data/data-core-edit-site/.
 		$logo_editor_url = \admin_url( 'site-editor.php?path=%2Fwp_global_styles' );
 
-		echo '<p>' . \esc_html__( 'Your site logo is managed from the Site Editor — set or change it there, then it appears across every template that uses the Site Logo block.', 'sgs-blocks' ) . '</p>';
+		echo '<p>' . \esc_html__( 'The Logo block shows, in order: its own image, the logo chosen below, then the WordPress site logo. The WordPress site logo is managed from the Site Editor — set or change it there.', 'sgs-blocks' ) . '</p>';
 
 		if ( $logo_url ) {
 			printf(
 				'<p><img src="%1$s" alt="%2$s" style="max-width:160px;height:auto;border:1px solid #ccd0d4;padding:4px;background:#fff;" /></p>',
 				\esc_url( $logo_url ),
-				\esc_attr__( 'Current site logo', 'sgs-blocks' )
+				\esc_attr__( 'Current WordPress site logo', 'sgs-blocks' )
 			);
 		} else {
 			echo '<p><em>' . \esc_html__( 'No site logo set yet.', 'sgs-blocks' ) . '</em></p>';
@@ -157,6 +160,7 @@ final class Sgs_Site_Info_Admin_Fields {
 			'vat_number',
 			'registered_office',
 			'maps_cid',
+			'logo',
 			'socials',
 			'opening_hours',
 		);

@@ -40,6 +40,39 @@ final class Sgs_Site_Info_Binding {
 	public static function register(): void {
 		\add_action( 'init', array( self::class, 'register_source' ) );
 		\add_action( 'enqueue_block_editor_assets', array( self::class, 'enqueue_editor_script' ) );
+		\add_action( 'enqueue_block_editor_assets', array( self::class, 'publish_editor_data' ) );
+	}
+
+	/**
+	 * Publishes the site-level logo (FR-36-22 tiers 2 and 3) to the editor on
+	 * `window.sgsBlocksData.siteLogo`, the channel the other editor blocks already
+	 * read, so `sgs/responsive-logo` can say which logo it is showing.
+	 *
+	 * Shape: `{ id: int, url: string, source: 'site-info' | 'wordpress' | '' }`.
+	 * `source` is '' (and `url` empty) when neither tier resolves to an image.
+	 */
+	public static function publish_editor_data(): void {
+		$site_info_id = Sgs_Site_Info::get_logo_id();
+		$id           = $site_info_id > 0 ? $site_info_id : Sgs_Site_Info::resolve_logo_id();
+		$url          = $id > 0 ? (string) \wp_get_attachment_url( $id ) : '';
+		$source       = '';
+		if ( '' !== $url ) {
+			$source = $site_info_id > 0 ? 'site-info' : 'wordpress';
+		}
+
+		\wp_add_inline_script(
+			'wp-blocks',
+			'window.sgsBlocksData = window.sgsBlocksData || {};' .
+			'window.sgsBlocksData.siteLogo = ' . \wp_json_encode(
+				array(
+					'id'     => '' === $url ? 0 : $id,
+					'url'    => \esc_url_raw( $url ),
+					'source' => $source,
+				),
+				JSON_HEX_TAG | JSON_HEX_AMP
+			) . ';',
+			'before'
+		);
 	}
 
 	/**
@@ -120,6 +153,18 @@ final class Sgs_Site_Info_Binding {
 			// "📞 Set your phone number in SGS Site Info →" with a wp-admin
 			// deep-link on live client sites. Public frontend renders empty.
 			return self::is_operator_context() ? self::hint_for_key( $key ) : '';
+		}
+
+		// The logo is stored as an attachment ID; a bound attribute needs its URL.
+		// get_logo_id() re-validates the attachment, so a deleted image reads as empty.
+		if ( 'logo' === self::root_key( $key ) ) {
+			$logo_url = \class_exists( __NAMESPACE__ . '\Sgs_Site_Info' )
+				? (string) \wp_get_attachment_url( Sgs_Site_Info::get_logo_id() )
+				: '';
+			if ( '' === $logo_url ) {
+				return self::is_operator_context() ? self::hint_for_key( $key ) : '';
+			}
+			return \esc_url( $logo_url );
 		}
 
 		// Delegate to Sgs_Site_Info (Wave 1B). Returns raw value; we escape here.
@@ -239,6 +284,9 @@ final class Sgs_Site_Info_Binding {
 
 			case 'tagline':
 				return '💬 Set tagline in SGS Site Info →';
+
+			case 'logo':
+				return '🖼️ Set your logo in SGS Site Info →';
 
 			default:
 				return '✏️ Set in SGS Site Info →';

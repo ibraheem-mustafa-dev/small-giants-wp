@@ -48,7 +48,8 @@ final class Sgs_Site_Info {
 	 * opening_hours.fri, opening_hours.sat, opening_hours.sun,
 	 * socials.facebook, socials.instagram, socials.twitter, socials.linkedin,
 	 * socials.youtube, socials.tiktok, socials.whatsapp, socials.google,
-	 * copyright, tagline, vat_number, registered_office, maps_cid
+	 * copyright, tagline, vat_number, registered_office, maps_cid,
+	 * logo (media-library attachment ID of the site logo — read it with get_logo_id())
 	 */
 
 	/**
@@ -80,6 +81,7 @@ final class Sgs_Site_Info {
 		'copyright'         => 'public',
 		'tagline'           => 'public',
 		'maps_cid'          => 'public',
+		'logo'              => 'public',
 	);
 
 	/**
@@ -135,6 +137,7 @@ final class Sgs_Site_Info {
 				'tagline'           => $text,
 				'vat_number'        => $text,
 				'maps_cid'          => array( __CLASS__, 'sanitise_maps_cid' ),
+				'logo'              => array( __CLASS__, 'sanitise_logo_id' ),
 			),
 			// Opening hours — all days use plain-text sanitiser.
 			\array_fill_keys( \array_map( fn( $d ) => "opening_hours.{$d}", $days ), $text ),
@@ -184,6 +187,37 @@ final class Sgs_Site_Info {
 	 */
 	public static function get_esc_url( string $key, string $fallback = '' ): string {
 		return \esc_url( (string) self::get( $key, $fallback ) );
+	}
+
+	/**
+	 * The site logo's attachment ID from the `logo` key (logo chain tier 2).
+	 *
+	 * Validated on every read, not only on save: an attachment deleted after it
+	 * was chosen, or one that is not an image, yields 0 so the caller falls
+	 * through to the next tier instead of rendering a broken logo.
+	 *
+	 * @return int Attachment ID, or 0 when unset or no longer a usable image.
+	 */
+	public static function get_logo_id(): int {
+		$id = self::to_attachment_id( self::get( 'logo', 0 ) );
+		return ( $id > 0 && self::is_usable_logo_attachment( $id ) ) ? $id : 0;
+	}
+
+	/**
+	 * Resolve the site-level logo attachment ID: Site Info `logo` first, then
+	 * WordPress core's `custom_logo` theme mod (FR-36-22 tiers 2 and 3).
+	 *
+	 * The block's own per-device image (tier 1) is decided by the block and is
+	 * deliberately not consulted here.
+	 *
+	 * @return int Attachment ID, or 0 when neither tier is set.
+	 */
+	public static function resolve_logo_id(): int {
+		$id = self::get_logo_id();
+		if ( $id > 0 ) {
+			return $id;
+		}
+		return \absint( \get_theme_mod( 'custom_logo', 0 ) );
 	}
 
 	/**
@@ -441,6 +475,41 @@ final class Sgs_Site_Info {
 	 */
 	private static function sanitise_address( $raw ): string {
 		return \wp_kses( (string) $raw, array( 'br' => array() ) );
+	}
+
+	/**
+	 * Sanitise the `logo` key — an image attachment ID, or '' to clear it.
+	 *
+	 * Anything that is not a positive integer naming an existing image
+	 * attachment is stored as '' (the "unset" state used by every other key).
+	 *
+	 * @param  mixed $raw Raw submitted value.
+	 * @return int|string Attachment ID, or '' when invalid or empty.
+	 */
+	private static function sanitise_logo_id( $raw ) {
+		$id = self::to_attachment_id( $raw );
+		return ( $id > 0 && self::is_usable_logo_attachment( $id ) ) ? $id : '';
+	}
+
+	/**
+	 * Cast a stored or submitted value to an attachment ID: a positive integer, else 0.
+	 * Negative numbers are rejected rather than folded positive by absint().
+	 *
+	 * @param  mixed $raw Raw value.
+	 * @return int
+	 */
+	private static function to_attachment_id( $raw ): int {
+		return ( \is_numeric( $raw ) && (int) $raw > 0 ) ? \absint( $raw ) : 0;
+	}
+
+	/**
+	 * Whether an attachment ID is an image that resolves to a URL.
+	 *
+	 * @param  int $id Attachment ID.
+	 * @return bool
+	 */
+	private static function is_usable_logo_attachment( int $id ): bool {
+		return \wp_attachment_is_image( $id ) && '' !== (string) \wp_get_attachment_url( $id );
 	}
 
 	/**

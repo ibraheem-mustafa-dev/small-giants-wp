@@ -10,8 +10,9 @@
  *
  * Capability: edit_theme_options. Nonce verification is handled by the
  * Settings API on options.php; direct POST attempts are validated again here
- * before delegating to the store. Logo control deep-links to the Site Editor
- * (no new media uploader). Custom fields enforce both client and server-side
+ * before delegating to the store. The logo is a media-library picker
+ * ({@see Sgs_Site_Info_Admin_Logo}); the WordPress site logo deep-links to the
+ * Site Editor. Custom fields enforce both client and server-side
  * key allowlist (lower-snake_case) and denylist (reserved option keys).
  *
  * Field renderers live in {@see Sgs_Site_Info_Admin_Fields} to keep both
@@ -106,8 +107,16 @@ final class Sgs_Site_Info_Admin {
 
 		$fields = 'SGS\\Blocks\\Sgs_Site_Info_Admin_Fields';
 
-		// Identity / Logo (deep-link only — no uploader).
+		// Identity / Logo (the Site Info logo picker + the WordPress site logo deep-link).
 		\add_settings_section( 'sgs_site_info_identity', \__( 'Identity', 'sgs-blocks' ), array( $fields, 'render_identity_section' ), self::PAGE_SLUG );
+		\add_settings_field(
+			'sgs_site_info_logo',
+			\__( 'Site logo', 'sgs-blocks' ),
+			array( 'SGS\\Blocks\\Sgs_Site_Info_Admin_Logo', 'render_field' ),
+			self::PAGE_SLUG,
+			'sgs_site_info_identity',
+			array( 'label_for' => 'sgs_site_info_logo' )
+		);
 
 		// Contact.
 		\add_settings_section( 'sgs_site_info_contact', \__( 'Contact', 'sgs-blocks' ), array( $fields, 'render_contact_section' ), self::PAGE_SLUG );
@@ -262,7 +271,7 @@ final class Sgs_Site_Info_Admin {
 		}
 
 		// 1. Flat well-known scalar keys.
-		foreach ( array( 'phone', 'email', 'support_email', 'address', 'copyright', 'tagline', 'vat_number', 'registered_office', 'maps_cid' ) as $key ) {
+		foreach ( array( 'phone', 'email', 'support_email', 'address', 'copyright', 'tagline', 'vat_number', 'registered_office', 'maps_cid', 'logo' ) as $key ) {
 			if ( \array_key_exists( $key, $raw ) ) {
 				Sgs_Site_Info::set( $key, $raw[ $key ] );
 			}
@@ -465,5 +474,6 @@ final class Sgs_Site_Info_Admin {
 			array(),
 			$version
 		);
+		Sgs_Site_Info_Admin_Logo::enqueue( 'sgs-site-info-custom-fields' );
 	}
 }

@@ -106,10 +106,10 @@ if ( ! in_array( $animation_style, $allowed_animation_styles, true ) ) {
 // ── Early exit: nothing to render ────────────────────────────────────────────
 
 // ── Resolve image URLs ────────────────────────────────────────────────────────
-// When no desktop logo is set on the block, fall back to the WP site's default
-// custom logo (Appearance → Customise → Site Identity → Logo). Operators who
-// upload a single logo via the Customiser get all three breakpoints pointing
-// at it automatically.
+// When no desktop logo is set on the block, fall back to the site-level logo:
+// the Site Info logo, then the WP site's custom logo (Appearance → Customise →
+// Site Identity → Logo). Operators who upload a single site logo get all three
+// breakpoints pointing at it automatically.
 
 // ID-wins-URL-fallback — the same resolution order every other SGS
 // image block uses (media/render.php: "imageId wins; fall back to
@@ -129,10 +129,18 @@ $desktop_logo_url_attr = $sgs_logo_url_attr( 'logoUrl' );
 $tablet_logo_url_attr  = $sgs_logo_url_attr( 'logoUrlTablet' );
 $mobile_logo_url_attr  = $sgs_logo_url_attr( 'logoUrlMobile' );
 
+// Logo resolution chain (FR-36-22), first non-empty wins: (1) this block's own
+// logoId / logoUrl, tested by the condition below; (2) Site Info `logo`;
+// (3) WordPress core `custom_logo` theme mod; (4) nothing, so no logo element
+// is rendered at all. Tiers 2 and 3 are resolved together by
+// Sgs_Site_Info::resolve_logo_id().
+$sgs_logo_from_site = false;
 if ( 0 === $desktop_logo_id && '' === $desktop_logo_url_attr ) {
-	$sgs_site_logo_id = (int) get_theme_mod( 'custom_logo', 0 );
+	require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-site-info.php';
+	$sgs_site_logo_id = \SGS\Blocks\Sgs_Site_Info::resolve_logo_id();
 	if ( $sgs_site_logo_id > 0 ) {
-		$desktop_logo_id = $sgs_site_logo_id;
+		$desktop_logo_id    = $sgs_site_logo_id;
+		$sgs_logo_from_site = true;
 	} else {
 		return;
 	}
@@ -163,7 +171,11 @@ $effective_mobile_url = $mobile_url ? $mobile_url : $desktop_url;
 // Functional default alt (FR-36-22 basics) — never the literal "logo" (an
 // a11y anti-pattern: it tells a screen-reader user WHAT the graphic is, not
 // what it DOES). Falls back to "[Business] home" so the alt communicates
-// destination intent; an operator-authored value always wins.
+// destination intent; an operator-authored value always wins. A logo taken from
+// the site-level tiers falls back to its own media-library alt text first.
+if ( '' === $alt && $sgs_logo_from_site ) {
+	$alt = sanitize_text_field( (string) get_post_meta( $desktop_logo_id, '_wp_attachment_image_alt', true ) );
+}
 if ( '' === $alt ) {
 	$alt = sprintf(
 		/* translators: %s: business/site name. */
