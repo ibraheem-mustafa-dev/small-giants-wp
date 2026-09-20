@@ -90,15 +90,16 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
 ## Wave 4 — Proof gate (clones)
 - STATUS: not started
 - 12/12 references measured (Away, ButcherBox, rabbit.tech teardowns owed; 9/12 today); clone
-  roster = 10 (11 if resn's effects prove reachable, decided at the W4-a teardown) — Gate 5 counts
-  the roster.
+  roster = 11 (10 if the W4-a teardown finds a resn effect that no Spec 38 tier can express) —
+  Gate 5 counts the roster.
 - Substitution policy (fonts/imagery) signed by Bean BEFORE the first clone (W4-a2).
 - studionamma: DP5 per-property homes table reviewed; DP7-clean evidence pack (computed-parity +
   open-state captures + labels fidelity PASS); **Bean's eye acceptance recorded** BEFORE any other
   clone starts.
 - Each subsequent clone: same evidence pack + Bean's eye; capability gaps filed as wave-1–3
-  defects, zero trimmed references; Tier-G/WebGL gaps route to Spec 38 or a Bean trim decision
-  (the termination rule), never a silent loop-back.
+  defects, zero trimmed references; effects use the built Spec 38 tiers, a mismatch is a defect
+  against that FR, and an effect no tier can express is a Bean trim decision (the termination
+  rule), never a silent loop-back.
 - Presets extracted per accepted clone; contrast pass on all 8 client palettes; starter set
   narrowed to `scratch` + 3 search variants.
 

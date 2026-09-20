@@ -29,7 +29,7 @@ including the drawer's own edit screen (2, in progress) → polish the operator 
 partial) → clone the references as the final proof (4, not started) → teach the cloning pipeline to
 do headers/footers automatically (5, not started).
 
-**Done means:** every reference on the clone roster (§ Clone roster — 10 clones) cloned faithfully
+**Done means:** every reference on the clone roster (§ Clone roster — 10 clones, 11 with resn) cloned faithfully
 with zero hardcoding, Bean's eye signed off per clone, every preset extracted, and the clone walker
 consuming the proven system.
 
@@ -37,9 +37,11 @@ consuming the proven system.
 
 **10 clones** = studionamma (first) · buck · dogstudio · fantasy · lamalama · lusion ·
 wearecollins · **Away · ButcherBox · rabbit.tech** (these three are owed a teardown first, W4-a).
-**resn** (WebGL) is a reference only, and becomes the 11th clone if its effects prove reachable
-inside the vanilla/Tier-G boundary — decided at the W4-a teardown. **Warm** is not on the roster.
-Gate 5 = **10/10** (11/11 if resn joins).
+**resn** (WebGL) joins as the **11th clone** unless the W4-a teardown finds an effect that none of
+the four motion tiers (V, G, H, W) can express: Spec 38 is fully built, including the Tier W effects
+(surface treatment, flowing gradient), so its effects are inside the boundary in principle and the
+teardown only has to confirm it effect by effect. **Warm** is not on the roster.
+Gate 5 = **11/11** (10/10 if resn is excluded by the teardown).
 
 ---
 
@@ -54,7 +56,7 @@ Gate 5 = **10/10** (11/11 if resn joins).
   exact path · Spec 37 §1.2 both-specs-same-commit rule · nothing renders differently until the
   studionamma gate (gate §4.3).
 - **Success criteria (measurable):** per-wave gates below; final = FR-37-23 acceptance (live FRs +
-  never-overflow on every live site + no inline + Bean's eye) + 10/10 roster clones accepted.
+  never-overflow on every live site + no inline + Bean's eye) + every roster clone accepted (11/11, or 10/10 if resn is excluded).
 - **Scope boundary (explicitly NOT included):**
   - Spec 36 Phase 3 (inventory B4): block-menu support, Nav Health, AI-builds-nav, conditional
     menus, WC category mega, RTL, import/export → **named stage: Spec 36 Phase 3, after this track**.
@@ -63,7 +65,7 @@ Gate 5 = **10/10** (11/11 if resn joins).
   - FR-37-36 custom React picker → optional extension, only if the native modal proves insufficient.
   - Floating UI stays in the Customiser — the "floating header mode" unit below is the
     header-block pill mode, not a Customiser move.
-  - Motion Spec 38 Waves B/C → separate track, own prompts.
+  - Motion Spec 38 is built; its effects are available to every clone.
 - **Calibration:** estimates anchored to this project's actuals (spec'd multi-commit wave ≈ 1
   session; FR-36-9a notice ≈ ½ session; drawer variant build ≈ 2 sessions). Estimates quoted LOW
   per `~/.claude/rules/time-estimates.md`; ADHD-taxed number in brackets.
@@ -139,10 +141,10 @@ the site-wide Active drawer; a per-burger override wins.
 
 | ID | Unit | Output | Est (taxed) | CP |
 |---|---|---|---|---|
-| W4-a | Teardown the 3 unmeasured refs (Away, ButcherBox, rabbit.tech); decide resn (10 vs 11) | measured FINDINGS entries; 12/12 measured (9/12 today) | 1h (2h) | YES |
+| W4-a | Teardown the 3 unmeasured refs (Away, ButcherBox, rabbit.tech); map each resn effect to a Spec 38 tier and confirm its admission (10 vs 11) | measured FINDINGS entries; 12/12 measured (9/12 today) | 1h (2h) | YES |
 | W4-a2 | **Substitution policy signed BEFORE W4-b** | one-page policy Bean agrees: licensed font → named nearest match recorded in the DP5 homes table; copyrighted imagery → same-crop placeholder; neither counts as a capability gap | 15m (30m) + Bean | YES |
 | W4-b | **studionamma 100% clone** — header + drawer + footer; content, imagery, colours, typography, motion, positioning, mobile (CTA→drawer stresses DP4/DP5) | per-property DP5 homes table reviewed at gate; DP7-clean harness evidence; **Bean's eye (R-31-13)** | 2 sessions (3) — the floor, incl. one expected loop-back | YES |
-| W4-c | Remaining roster clones (buck, dogstudio, fantasy, lamalama, lusion, wearecollins, Away, ButcherBox, rabbit.tech; resn if admitted) — only after W4-b ACCEPTED | accepted clones; every capability gap = defect filed against waves 1–3, never a trimmed reference. **Termination rule: a gap classified Tier-G motion / WebGL routes to the Spec 38 track (named stage) or a Bean trim/exclude decision — it never loops back silently** | 5 sessions (8) | YES |
+| W4-c | Remaining roster clones (buck, dogstudio, fantasy, lamalama, lusion, wearecollins, Away, ButcherBox, rabbit.tech; resn) — only after W4-b ACCEPTED | accepted clones; every capability gap = defect filed against waves 1–3, never a trimmed reference. **Termination rule: an effect a Spec 38 tier (V, G, H or W) can express is built with the Spec 38 effects; an effect the built Spec 38 effect does not yet match is a defect against that FR; an effect no tier can express comes back as a Bean trim/exclude decision — it never loops back silently** | 5 sessions (8) | YES |
 | W4-d | Preset extraction | each accepted clone → header preset + footer preset + drawer starter; invented fills: Utility commerce, Overlay hero-contrast, Directory footer | 1h/clone (2h) | no |
 | W4-e | Starter-set narrowing | drop `centred/minimal/full`; keep `scratch` + 3 search variants | 30m (1h) | no |
 | W4-f | Contrast on all 8 client palettes per preset — **automated**: extend the DP7 contrast sweep to iterate `theme-snapshot.json` palettes (harness extension counted here) | palette sweep passes, machine evidence | 1.5h (3h) | no |
@@ -212,7 +214,7 @@ visible.
 | studionamma clone exposes missing capabilities late | High — is the point of the gate | Gate rule: every gap = defect filed against waves 1–3 and FIXED, never a trimmed reference; expect one loop-back cycle in the estimate |
 | Harness false-passes (a check that passes vacuously) | High — Bean trust | W2-i ships negative controls (`--self-test` style) BEFORE any Wave-4 evidence is captured |
 | Gate 2 parity measured on a CLOSED drawer would be vacuous | High | Gate 2 parity is OPEN-state via the guarded harness, with negative control |
-| Unbounded loop-back on WebGL/motion-heavy references | High | W4-c termination rule — Tier-G/WebGL gaps route to Spec 38 or a Bean trim decision |
+| Unbounded loop-back on WebGL/motion-heavy references | High | W4-c termination rule — effects use the built Spec 38 tiers; a mismatch is a defect against that FR; an effect no tier can express is a Bean trim decision |
 | Rollback after destructive attr cuts is multi-commit on a shared worktree | Medium | Gate 2 re-run on the drawer after `variantPreset` is gone |
 | Licensed fonts/imagery read as capability defects | Medium | W4-a2 substitution policy signed by Bean before W4-b |
 | Specs drift from the drawer CPT model | Medium | W2-r same-commit statement in both specs |
@@ -248,7 +250,7 @@ TYPE: go/no-go (Bean)  · READINESS: computed at the time; do not pre-assert
 in-session)
 
 GATE 5: Track acceptance
-AFTER: W4-c..f + W5  · PASS: FR-37-23 in full; 10/10 accepted (11/11 if resn joins); presets
+AFTER: W4-c..f + W5  · PASS: FR-37-23 in full; 11/11 accepted (10/10 if resn is excluded); presets
 extracted; starter-set narrowing done; walker regression fixtures green
 TYPE: go/no-go (Bean)  · READINESS: computed at the time from the 4-component formula — do not
 pre-assert

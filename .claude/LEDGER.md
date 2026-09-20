@@ -119,7 +119,7 @@ IN FULL before touching anything — do not act on this summary.**
 - **Wave 3** (polish) — PARTIAL: FR-37-44/45 verified (`reports/visual-diff/site-header-2026-08-19.md`);
   FR-37-27 settled; simplicity finding 2 (canvas-click selection) open; FR-37-6 per-site CPT
   sourcing unverified; FR-37-26 blind-tester session not done; FR-37-18 conformance partial.
-- **Wave 4** (proof gate — 10 client clones, Bean's-eye per clone) — not started.
+- **Wave 4** (proof gate — 11 client clones incl. resn, 10 if the teardown excludes it; Bean's-eye per clone; every Spec 38 effect available) — not started.
 - **Wave 5** (clone walker — FR-37-22) — not started.
 
 **First action:** Bean's decisions on the three design inputs, each report ending in a ranked menu:
