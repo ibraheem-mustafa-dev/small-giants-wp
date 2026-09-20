@@ -17,14 +17,14 @@ closing prompt; (C) a deterministic checker as the second layer. Bean confirmed 
 stays). First test done: Claude Design followed the prompt; I patched its faults myself (deleted brand logos restored as files,
 ticker rule and 3 button paddings reverted, manifest vocabularies closed, proposed block per section added); render check
 identical to the original except the header logo (D1132). Patched bundle:
-`sites/eye-care-ward-end/design_handoff_ward_end_eye_care_v2` (untracked; raw export kept as `..._v2_raw`). Next: plan step
-A1 (wire the evaluator), then run the pipeline on the v2 bundle. Prompt file is now ONE reusable prompt.
+`sites/eye-care-ward-end/design_handoff_ward_end_eye_care_v2` (untracked; raw export kept as `..._v2_raw`). A1 DONE (D1132, `faaf79f0d`): the width evaluator is wired in; on the live test page padding and grid columns equal the draft at 375, 768 and 1440 for every
+section present. Next: plan step A2 (site settings from the saved map first, then multi-field JS-array items; the ticker container needs its own design gate). Prompt file is ONE reusable prompt.
 
 **Where the Eye Care clone stands (test page 11).** Spec 33 gives it the draft's real palette, fonts, square corners and 13
 saved business settings. The screen route clones only the Home screen: 5 of 8 homepage sections are on the page (was 1), none
 of the other screens' text, and raw `{{ }}` text is 53 occurrences (was 93). The guard stops raw style values reaching block
 settings. Still missing: the brand strip, best sellers and shape tiles (Spec 44 review queue, needs Bean); the spacing and
-grid columns (the draft's script states them per device and an evaluator can read them; wiring it is plan step A1, D1132);
+grid columns (the draft's script states them per device and an evaluator can read them; wired in A1, D1132);
 about 13 raw content bindings. Mama's Munches is untouched by all of it. Detail: D1120 to D1130, Spec 31 FR-31-27 to
 FR-31-30, Spec 33 FR-33-15 to FR-33-17.
 
@@ -92,10 +92,10 @@ the per-client entity registry, then clone About, Help and Contact with `--scree
 freshness gate because another session's uncommitted Mama's snapshot carries a different draft's hash.
 
 **Layout bindings (D1128).** Guard BUILT: a style value that is an unresolved `{{ }}` binding is dropped and reported, so the
-homepage sections no longer carry junk attributes (18 to 0). Evaluator BUILT, NOT wired: `orchestrator/script_bindings.py`
-turns the draft's own `mob / narrow / wide` expressions into mobile, tablet and desktop values (75 of 140 names, 0
-mismatches against the measured render). Until it is wired the sections take block defaults for padding and columns.
-Wiring design: `reports/2026-09-20-script-binding-tiers-design.md`. **WIRING ON HOLD (Bean, D1129):** he has an idea to raise after this session is compacted that could change the design. His breakpoint rule: within about 10px of a tier edge, round to it; further out, write the value into the block's Additional CSS (`sgsCustomCss`). Not implemented; it amends the FR-31-5.2 "never snap" lock.
+homepage sections no longer carry junk attributes (18 to 0). Evaluator BUILT and WIRED (A1, D1132, `faaf79f0d`): `orchestrator/script_bindings.py` turns the draft's own width rules into mobile, tablet and desktop values
+(75 of 140 names, 0 mismatches against the measured render), found by what the script reads so renamed flags work; Bean's 10px / 768 breakpoint rule is
+`orchestrator/breakpoint_snap.py`; Stage -1.4 hands the map to the converter. Live test page: padding and grid columns match the draft and Bean's online copy of the
+original. Not done: 7 names whose breakpoint stays inside a device tier (logged as gaps), and the content bindings (A2). Design: `plans/2026-09-20-A1-wire-evaluator-design.md`.
 
 **Open, in order:**
 1. *Problem 1, missing sections.* The "14 non-BEM" boundaries are classless sections gated on a hint (the draft has ONE
