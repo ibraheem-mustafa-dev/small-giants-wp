@@ -33,7 +33,7 @@ headers/footers automatically (Wave 5).
 
 **The header is the partial-width thing.** A capped-width or floating header holds the logo, the nav,
 the cart, the CTA and any message together as one centred surface; dropdown and mega panels take
-their width and position from that header (the table records which rule each design uses). The architecture is built from the requirements table,
+their width and position from that header when the header is a floating pill (measured on lamalama, the one live pill among the references: the pill and its panel are the same box, width ratio 1.000, no gap; `reports/2026-09-20-w2p-reference-pill-measurements.md`); for any other header the table records the rule each design uses. The architecture is built from the requirements table,
 never from guesses: Wave 3B measures the references, Wave 3C builds what the table says, Wave 4
 proves it.
 
@@ -263,7 +263,7 @@ drawer anchoring, force-solid) is reopened by a family, not patched on its own.
 
 | ID | Unit | Output | Est (taxed) | CP |
 |---|---|---|---|---|
-| W3C-1 | Header width model | the header is the partial-width surface, centred against the viewport and holding logo, nav and actions together; dropdown and mega panels take the anchor and width rule the table records (item-centred, header-wide, or capped-centred with a per-panel width); checked against the floating pill in `site-header` | from the table | YES |
+| W3C-1 | Header width model | the header is the partial-width surface, centred against the viewport and holding logo, nav and actions together; on a floating-pill header the dropdown and mega panels take the pill's left edge and width (already built, and matching lamalama's measured pill-and-panel box); on every other header the panels take the anchor and width rule the table records (item-centred, header-wide, or capped-centred with a per-panel width) | from the table | YES |
 | W3C-2 | Trigger and close behaviour | the burger is replaced in place by the close control where the references do it; the drawer omits a separate top close row where they omit it | from the table | YES |
 | W3C-3 | Drawer placement and sizing | side, width and anchor from the model, the trigger-anchored clamp (page 3699), and the force-solid tier background (the off value is the header's own resting background) | from the table | YES |
 | W3C-4 | Remaining families | one unit per family from W3B-4 | from the table | YES |
