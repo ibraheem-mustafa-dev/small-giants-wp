@@ -61,6 +61,9 @@ def build_run_map(draft_html: str, run_dir: pathlib.Path, log: Callable[[str], N
     from script_bindings import resolve_tier_bindings
 
     widths, ranges = _converter_tiers()
+    if widths is None:
+        log("[script-bindings] the converter's tier sample widths are unavailable; using the evaluator's own "
+            "defaults (tablet 768, the converter samples 800): per-device values may differ from the converter's")
     result = resolve_tier_bindings(draft_html, tier_widths=widths, tier_ranges=ranges)
     if result["problems"] and any(m in p.lower() for p in result["problems"] for m in _RETRY_MARKERS):
         log("[script-bindings] evaluator hit its time budget; retrying once")

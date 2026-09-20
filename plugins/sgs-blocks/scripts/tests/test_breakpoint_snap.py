@@ -97,3 +97,33 @@ def test_snap_scope_moves_only_what_the_rule_allows() -> None:
 def test_no_width_variable_changes_nothing() -> None:
     decls = [("a", "x < 700", 0)]
     assert bs.snap_scope(decls, {"b": "y < 760"}, None, E) == (decls, {"b": "y < 760"}, [])
+
+
+@pytest.mark.parametrize("expr, expected", [
+    ("effW <= 767", "effW <= 767"),      # already on the 768 edge: the inclusive operator must not be moved
+    ("effW > 767", "effW > 767"),
+    ("effW <= 1023", "effW <= 1023"),
+    ("effW <= 760", "effW <= 767"),      # 8px short of the edge: the flip point (761) snaps to 768, written as <= 767
+    ("effW > 760", "effW > 767"),
+    ("effW < 760", "effW < 768"),
+    ("effW >= 760", "effW >= 768"),
+])
+def test_the_operator_decides_where_a_threshold_flips(expr: str, expected: str) -> None:
+    assert bs.snap_expression(expr, "effW", False, E)[0] == expected
+
+
+def test_the_reported_band_is_the_widths_that_really_change_for_every_operator() -> None:
+    for expr, band in (("effW < 760", [760, 767]), ("effW <= 760", [761, 767]), ("effW > 760", [761, 767]),
+                       ("effW >= 1020", [1020, 1023])):
+        rows = bs.snap_expression(expr, "effW", False, E)[1]
+        assert rows[0]["differs_from_draft_between"] == band, expr
+        # the band is exactly where the draft's expression and the snapped one disagree
+        new = bs.snap_expression(expr, "effW", False, E)[0]
+        disagree = [w for w in range(700, 1100) if eval(expr.replace("effW", str(w))) != eval(new.replace("effW", str(w)))]
+        assert [disagree[0], disagree[-1]] == band and len(disagree) == band[1] - band[0] + 1, expr
+
+
+def test_a_width_read_of_another_object_is_not_taken_for_the_viewport_width() -> None:
+    script = "const g = grid.w * 2; const effW = S.w; const mob = effW < 760;"
+    assert bs.find_width_read(script)[0] == "effW"
+    assert bs.find_width_read("const g = grid.w * 2;")[0] == "g"       # nothing compared: the first candidate stands

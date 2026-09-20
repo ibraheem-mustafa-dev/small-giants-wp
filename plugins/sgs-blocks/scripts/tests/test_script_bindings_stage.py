@@ -79,3 +79,26 @@ def test_a_problem_that_is_not_a_time_budget_is_not_retried(monkeypatch: pytest.
     monkeypatch.setattr(sb, "resolve_tier_bindings", lambda *_a, **_k: (calls.append(1), bad)[1])
     assert stage.build_run_map("<x/>", tmp_path, log=lambda _m: None) == {}
     assert len(calls) == 1
+
+
+_INCLUSIVE = ("""<div style="padding: {{ pad }}">x</div><script type="text/x-dc">
+class A { render() { const effW = S.w; const mob = effW <= 767; return { pad: mob ? '24px' : '64px' }; } }
+</script>""")
+
+
+@needs_node
+def test_a_draft_already_written_to_our_edge_is_not_moved_and_reports_no_invented_gap() -> None:
+    """`effW <= 767` is exactly our mobile edge. Snapping it to 768 gave tablet the mobile value at a 768 sample
+    and, at the converter's 800 sample, a phantom in-tier breakpoint. Checked at both sample sets."""
+    from script_bindings import resolve_tier_bindings
+    for widths in (None, {"mobile": 375, "tablet": 800, "desktop": 1440}):
+        entry = resolve_tier_bindings(_INCLUSIVE, tier_widths=widths, snap=True)["resolved"]["pad"]
+        assert (entry["mobile"], entry["tablet"], entry["desktop"]) == ("24px", "64px", "64px"), widths
+        assert entry["intra_tier"] == {}, widths
+
+
+def test_an_unavailable_converter_tier_lookup_is_said_out_loud(monkeypatch) -> None:
+    monkeypatch.setattr(stage, "_converter_tiers", lambda: (None, None))
+    logged: list[str] = []
+    stage.build_run_map('<p>no bindings</p>', pathlib.Path("."), log=logged.append)
+    assert any("tier sample widths are unavailable" in line for line in logged)

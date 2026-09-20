@@ -32,9 +32,15 @@ _WIDTH_READ_RE = re.compile(r"(?<![\w$.])(?:const|let|var)\s+(?:[\w$]+\s*=[^;\n]
 
 def find_width_read(script_masked: str) -> tuple[str, int] | None:
     """``(name, position)`` of the declaration that reads the viewport width from the draft's state
-    (``const effW = ... S.w``): the name a script gives its width, whatever it is called."""
-    m = _WIDTH_READ_RE.search(script_masked)
-    return (m.group(1), m.start()) if m else None
+    (``const effW = ... S.w``): the name a script gives its width, whatever it is called.
+
+    A script can read ``.w`` of other objects too (``const g = grid.w * 2``), so the first candidate that is
+    also compared with a number (``name < 760``) wins; with none compared, the first candidate."""
+    candidates = [(m.group(1), m.start()) for m in _WIDTH_READ_RE.finditer(script_masked)]
+    for name, position in candidates:
+        if _comparison_re(name).search(script_masked):
+            return name, position
+    return candidates[0] if candidates else None
 
 
 def _comparison_re(width_var: str) -> re.Pattern[str]:
@@ -55,7 +61,10 @@ def declared_flags(declarations: list[tuple[str, str, int]], width_var: str) -> 
 
 
 def snap_threshold(value: int, declared: bool, edges: tuple[int, int] = DEFAULT_EDGES) -> tuple[int, str]:
-    """``(snapped value, reason)``; the reason is '' when the value is left alone."""
+    """``(snapped value, reason)``; the reason is '' when the value is left alone.
+
+    ``value`` is the width where a comparison FLIPS (first width of the upper side): the number in
+    ``effW < 760`` or ``effW >= 760``. ``flip_point`` converts the other two operators to it."""
     for edge in edges:
         if 0 < abs(value - edge) <= SNAP_TOLERANCE_PX:
             return edge, "within %dpx of the %d device edge" % (SNAP_TOLERANCE_PX, edge)
@@ -64,17 +73,28 @@ def snap_threshold(value: int, declared: bool, edges: tuple[int, int] = DEFAULT_
     return value, ""
 
 
+def flip_point(op: str, number: int) -> int:
+    """The first integer width on the upper side of ``width <op> number``.
+
+    ``< n`` and ``>= n`` flip at n; ``<= n`` and ``> n`` flip at n + 1. Device edges are flip points
+    (mobile ends at 767, tablet starts at 768), so a threshold is snapped as a flip point and written
+    back in the operator's own terms: ``effW <= 767`` already sits on the 768 edge and must stay put."""
+    return number + 1 if op in ("<=", ">") else number
+
+
 def snap_expression(expr: str, width_var: str, declared: bool, edges: tuple[int, int] = DEFAULT_EDGES) -> tuple[str, list[dict[str, Any]]]:
     """Rewrite the thresholds in one expression. Returns the new expression and one row per change."""
     rows: list[dict[str, Any]] = []
 
     def repl(m: re.Match[str]) -> str:
         op, old = m.group(1), int(m.group(2))
-        new, why = snap_threshold(old, declared, edges)
+        old_flip = flip_point(op, old)
+        new_flip, why = snap_threshold(old_flip, declared, edges)
         if not why:
             return m.group(0)
-        rows.append({"comparison": m.group(0), "draft": old, "snapped": new, "reason": why,
-                     "differs_from_draft_between": [min(old, new), max(old, new) - 1]})
+        new = new_flip - (old_flip - old)          # back into this operator's own number
+        rows.append({"comparison": m.group(0), "operator": op, "draft": old, "snapped": new, "reason": why,
+                     "differs_from_draft_between": [min(old_flip, new_flip), max(old_flip, new_flip) - 1]})
         return "%s %s %d" % (width_var, op, new)
 
     return _comparison_re(width_var).sub(repl, expr), rows
