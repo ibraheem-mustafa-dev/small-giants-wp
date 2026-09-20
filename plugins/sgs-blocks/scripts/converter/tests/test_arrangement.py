@@ -123,6 +123,38 @@ def test_uniform_fold_lifts_identical_property_value():
     assert all(x.value == "10px" for x in lifts)
 
 
+def _cards(style: str, n: int = 3):
+    return [_node('<figure style="%s"></figure>' % style) for _ in range(n)]
+
+
+def test_a_per_item_destination_still_folds():
+    """Positive control: without it the tests below would pass against a lift that never fires."""
+    lifts = arrangement.lift_uniform_grid_item_css(_cards("box-shadow:0 1px 2px #000"), {}, _CONTAINER)
+    assert [(x.attr, x.value) for x in lifts] == [("gridItemShadow", "0 1px 2px #000")]
+
+
+def test_an_items_own_layout_is_never_lifted_onto_the_containers_own_layout():
+    """An item's gap / flex-direction / align-items govern the ITEM's children, and its background is not the
+    container's overlay. None of them may land on the container's own settings (they overwrote the container's
+    own value as a flat scalar)."""
+    css = "display:flex;flex-direction:column;gap:12px;align-items:center;background-color:#fff"
+    assert arrangement.lift_uniform_grid_item_css(_cards(css), {}, _CONTAINER) == []
+
+
+def test_a_scroll_rail_keeps_its_own_gap_and_direction_when_its_cards_share_theirs():
+    """The measured failure (Eye Care review rail): 3+ identical cards turned a row rail into a column."""
+    import re
+    from converter.entry import convert_section
+    card = ('<figure style="margin:0;padding:20px;display:flex;flex-direction:column;gap:12px">'
+            '<p>Card %d</p></figure>')
+    html = ('<section style="padding:40px"><div class="rail" style="display:flex;gap:16px;overflow-x:auto">'
+            + "".join(card % i for i in range(3)) + '</div></section>')
+    markup = convert_section(html=html, css="", media_map={}, boundary_id="b1", section_id="s1")["block_markup"]
+    assert not re.search(r'"gap":"[^"]+"', markup), "a flat scalar gap reached a container"
+    rail = next(b for b in re.findall(r'wp:sgs/container (\{".*?\}) -->', markup) if '"layout":"flex"' in b)
+    assert '"gap":{"desktop":"16px"}' in rail and "flexDirection" not in rail
+
+
 # -- §2.4 fold: brand __content becomes its OWN container (the D254 regression) --
 
 _BRAND_HTML = """<section class="sgs-brand">
@@ -393,6 +425,10 @@ def test_uniform_grid_item_fold_skips_box_family_attrs():
         @staticmethod
         def box_family_for(_slug, attr):
             return "gridItemPadding" if attr == "gridItemPadding" else None
+
+        @staticmethod
+        def css_element_for(_slug, attr):
+            return "grid-item" if attr.startswith("gridItem") else "inner"
 
     node_html = '<div class="i" style="padding:10px;box-shadow:0 0 1px #000;"></div>'
     items = [_node(node_html), _node(node_html)]

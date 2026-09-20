@@ -1308,6 +1308,25 @@ def box_family_for(block_slug: str, attr_name: str) -> "str | None":
     return row[0] or None
 
 
+def css_element_for(block_slug: str, attr_name: str) -> "str | None":
+    """Return the ``css_element`` DB tag for ``(block_slug, attr_name)``, or ``None``.
+
+    ``css_element`` says WHICH element of the block the attr styles: ``'grid-item'`` for a per-item
+    default (``gridItemPadding``...), ``'inner'`` for the container's OWN inner grid/flex settings
+    (``gap``, ``flexDirection``, ``alignItems``), ``'wrapper'`` for the root box. Callers that need a
+    per-item destination branch on this value, never on the attr NAME.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        row = conn.execute(
+            "SELECT css_element FROM block_attributes WHERE block_slug = ? AND attr_name = ?",
+            (block_slug, attr_name),
+        ).fetchone()
+    finally:
+        conn.close()
+    return (row[0] or None) if row else None
+
+
 @functools.lru_cache(maxsize=256)
 def box_css_catalogue(block_slug: str) -> dict[str, dict]:
     """Return ``{attr_name: {css_property, css_element, box_family, tier_shape}}``

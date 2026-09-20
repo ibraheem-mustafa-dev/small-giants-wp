@@ -168,6 +168,18 @@ def lift_uniform_grid_item_css(
             attr = None
         if attr is None:
             continue  # no gridItem* destination → child keeps its own CSS
+        # The DB's GRID layer also holds the container's OWN inner grid/flex settings (gap, flexDirection,
+        # alignItems: css_element 'inner'), and `background-color` resolves to the overlay layer. Those
+        # govern the container's children, not the items' defaults: an item's `gap` is about the item's own
+        # children. Only a per-item destination (css_element 'grid-item') is a §2.5 fold; anything else
+        # stays on the child. Without this the items' value overwrote the container's own (D554-C flat
+        # scalar, a scroll rail stacked as a column).
+        try:
+            destination_element = db_lookup.css_element_for(container_slug, attr)
+        except Exception:  # noqa: BLE001 — DB unavailable in test env → no-op
+            destination_element = None
+        if destination_element != "grid-item":
+            continue
         try:
             box_family = db_lookup.box_family_for(container_slug, attr)
         except Exception:  # noqa: BLE001 — DB unavailable in test env → no-op
