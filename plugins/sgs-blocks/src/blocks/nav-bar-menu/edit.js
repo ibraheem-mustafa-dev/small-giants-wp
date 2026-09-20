@@ -178,15 +178,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const { menuOptions, isResolving, resolvedItems, toggleFeatured } =
 		useNavMenuSource( { ref, featuredItemIds, setAttributes } );
 
-	// KEPT (see file docblock) — pairs THIS block's burger with an
-	// `sgs/nav-drawer` container block. Only the bar has a burger.
+	// KEPT (see file docblock) — reports whether THIS block's burger has a
+	// drawer to open. Only the bar has a burger. Report-only: creating one is
+	// CreateDrawerControl, inside DropdownSettingsPanel.
 	const {
 		drawerState,
-		addDrawer,
 		activeDrawer,
 		showActiveDrawerNotice,
 		showDrawerNotice,
-	} = useDrawerNotice( { clientId, ref, drawerRef } );
+	} = useDrawerNotice( { clientId, drawerRef } );
 
 	// Reference element for resolving `var(--wp--preset--color--x)` stops via
 	// getComputedStyle, mirroring GradientCapableColourControl's own probe
@@ -589,7 +589,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				<NavMenuNotices
 					showDrawerNotice={ showDrawerNotice }
 					drawerState={ drawerState }
-					addDrawer={ addDrawer }
 					showActiveDrawerNotice={ showActiveDrawerNotice }
 					activeDrawer={ activeDrawer }
 					resolvedItemsLength={ resolvedItems.length }
@@ -619,6 +618,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					itemSmartContrast={ itemSmartContrast }
 					setAttributes={ setAttributes }
 					drawerRef={ drawerRef }
+					drawerNeedsAttention={ showDrawerNotice }
 					submenuAlign={ submenuAlign }
 					submenuCaret={ submenuCaret }
 					submenuCloseGrace={ submenuCloseGrace }

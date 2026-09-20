@@ -6,23 +6,23 @@
  *
  * @package SGS\Blocks
  */
-import { useSelect, useDispatch } from '@wordpress/data';
+import { useSelect } from '@wordpress/data';
 import { store as blockEditorStore } from '@wordpress/block-editor';
-import { createBlock, store as blocksStore } from '@wordpress/blocks';
 
 /**
- * Resolves the burger↔drawer pairing state and the "add a drawer" action for
- * sgs/nav-bar-menu (FR-36-9a(2)).
+ * Resolves the burger↔drawer pairing state for sgs/nav-bar-menu (FR-36-9a(2)).
+ *
+ * This hook REPORTS only. Creating a drawer is `useCreateDrawer`, which saves a
+ * `sgs_drawer` POST (FR-37-43/49): a drawer lives in its own post and renders
+ * site-wide on `wp_footer`, never as a block in the page.
  *
  * @param {Object} root0           Hook params.
  * @param {string} root0.clientId  This block's clientId.
- * @param {number} root0.ref       The block's `ref` attribute (menu id) — seeded
- *                                 into a newly-created drawer's own nav-drawer-menu child.
  * @param {number} root0.drawerRef The block's `drawerRef` attribute (a `sgs_drawer`
  *                                 post id, or 0 for "no specific pick").
- * @return {Object} { effectiveDrawerRef, drawerState, addDrawer, activeDrawer, showActiveDrawerNotice, showDrawerNotice }.
+ * @return {Object} { effectiveDrawerRef, drawerState, activeDrawer, showActiveDrawerNotice, showDrawerNotice }.
  */
-export default function useDrawerNotice( { clientId, ref, drawerRef } ) {
+export default function useDrawerNotice( { clientId, drawerRef } ) {
 	// ── FR-36-9a(2) — the burger must open something. ───────────────────────
 	//
 	// This menu collapses to a burger below `collapsePoint` and opens
@@ -76,45 +76,15 @@ export default function useDrawerNotice( { clientId, ref, drawerRef } ) {
 				return ( attrs.drawerRef || '' ).trim() || 'sgs-nav-drawer';
 			} );
 
-			// A new drawer goes at the ROOT, immediately after whichever
-			// top-level block this menu sits inside (the header) — a sibling,
-			// never a child.
-			const parents = be.getBlockParents( clientId );
-			const outermost = parents.length ? parents[ 0 ] : clientId;
-
 			return {
 				suppress: false,
 				total: refs.length,
 				matches: refs.includes( effectiveDrawerRef ),
 				firstRef: refs[ 0 ] || '',
-				insertIndex: be.getBlockIndex( outermost ) + 1,
-				// createBlock does not check the slug: an unregistered one
-				// inserts a dead core/missing placeholder — never offer a fix
-				// action that would.
-				canCreate:
-					!! select( blocksStore ).getBlockType( 'sgs/nav-drawer' ) &&
-					!! select( blocksStore ).getBlockType( 'sgs/nav-drawer-menu' ),
 			};
 		},
 		[ clientId, effectiveDrawerRef ]
 	);
-
-	const { insertBlock } = useDispatch( blockEditorStore );
-
-	const addDrawer = () => {
-		insertBlock(
-			createBlock(
-				'sgs/nav-drawer',
-				{ drawerRef: effectiveDrawerRef },
-				// Seed the same menu the bar uses, matching header-scratch.php
-				// — the drawer opens with real links rather than empty.
-				[ createBlock( 'sgs/nav-drawer-menu', { ref: ref || 0 } ) ]
-			),
-			drawerState.insertIndex,
-			undefined, // root level
-			true // select it, so the operator lands on its content
-		);
-	};
 
 	// ── The drawer lives on its own edit screen (the `sgs_drawer` CPT). ─────────
 	//
@@ -153,7 +123,6 @@ export default function useDrawerNotice( { clientId, ref, drawerRef } ) {
 	return {
 		effectiveDrawerRef,
 		drawerState,
-		addDrawer,
 		activeDrawer,
 		showActiveDrawerNotice,
 		showDrawerNotice,

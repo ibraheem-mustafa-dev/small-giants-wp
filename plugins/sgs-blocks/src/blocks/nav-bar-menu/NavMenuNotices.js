@@ -12,7 +12,6 @@ import { LINK_COUNT_THRESHOLD } from '../../shared/nav-menu-panels/utils';
  * @param {Object}   root0                     Props.
  * @param {boolean}  root0.showDrawerNotice     From useDrawerNotice().
  * @param {Object}   root0.drawerState          From useDrawerNotice().
- * @param {Function} root0.addDrawer            From useDrawerNotice().
  * @param {boolean}  root0.showActiveDrawerNotice From useDrawerNotice().
  * @param {Object}   root0.activeDrawer         From useDrawerNotice().
  * @param {number}   root0.resolvedItemsLength  `resolvedItems.length` from useNavMenuSource().
@@ -20,7 +19,6 @@ import { LINK_COUNT_THRESHOLD } from '../../shared/nav-menu-panels/utils';
 export default function NavMenuNotices( {
 	showDrawerNotice,
 	drawerState,
-	addDrawer,
 	showActiveDrawerNotice,
 	activeDrawer,
 	resolvedItemsLength,
@@ -37,22 +35,10 @@ export default function NavMenuNotices( {
 						<>
 							<p style={ { margin: '0 0 8px' } }>
 								{ __(
-									'Below the collapse size this menu becomes a burger button — but there is no menu panel for it to open, so tapping it will do nothing.',
+									'Below the collapse size this menu becomes a burger button — but there is no menu panel for it to open, so tapping it will do nothing. Use “Create a new menu panel” in this block’s Menu panel settings, or pick an existing one.',
 									'sgs-blocks'
 								) }
 							</p>
-							{ drawerState.canCreate && (
-								<Button
-									variant="primary"
-									size="small"
-									onClick={ addDrawer }
-								>
-									{ __(
-										'Add the menu panel',
-										'sgs-blocks'
-									) }
-								</Button>
-							) }
 						</>
 					) : (
 						<p style={ { margin: 0 } }>

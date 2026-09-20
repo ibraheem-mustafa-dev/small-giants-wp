@@ -8,6 +8,8 @@ import {
 	Notice,
 } from '@wordpress/components';
 import { useEntityRecords } from '@wordpress/core-data';
+import CreateDrawerControl from './CreateDrawerControl';
+import { DRAWER_POST_TYPE, DRAWER_QUERY } from './create-drawer-seed';
 
 /**
  * SGS Nav Bar Menu (sgs/nav-bar-menu) — Settings tab panels: Accessibility, Menu
@@ -26,10 +28,16 @@ import { useEntityRecords } from '@wordpress/core-data';
  * context: 'edit' } )` fetch, same manual-options-array-with-a-leading-
  * default-option shape, same dangling-reference `Notice` pattern.
  *
+ * A new panel can also be created from here (FR-37-43's inline-creation clause)
+ * — `CreateDrawerControl` saves a real `sgs_drawer` POST. There is no
+ * "insert a drawer block into this page" path: a drawer is never an in-page
+ * block.
+ *
  * @param {Object}   root0                   Props.
  * @param {string}   root0.navLabel          The block's `navLabel` attribute.
  * @param {Function} root0.setAttributes     The block's attribute setter.
  * @param {number}   root0.drawerRef         The block's `drawerRef` attribute (a `sgs_drawer` post id, or 0).
+ * @param {boolean}  root0.drawerNeedsAttention `showDrawerNotice` from useDrawerNotice() — opens the Menu panel section so the picker and the create action are in front of the operator when the burger opens nothing.
  * @param {string}   root0.submenuAlign      The block's `submenuAlign` attribute.
  * @param {boolean}  root0.submenuCaret      The block's `submenuCaret` attribute.
  * @param {number}   root0.submenuCloseGrace The block's `submenuCloseGrace` attribute.
@@ -39,6 +47,7 @@ export default function DropdownSettingsPanel( {
 	itemSmartContrast,
 	setAttributes,
 	drawerRef,
+	drawerNeedsAttention,
 	submenuAlign,
 	submenuCaret,
 	submenuCloseGrace,
@@ -47,10 +56,14 @@ export default function DropdownSettingsPanel( {
 	// the frontend either (render.php / Sgs_Drawer_Render::get_drawer_post_content()
 	// applies the same status check), so offering it here would be a picker
 	// option that silently opens nothing.
+	// DRAWER_QUERY is shared with useCreateDrawer's `invalidateResolution` call:
+	// core-data keys its resolution cache on the stringified query, so a query
+	// that differed by one key would leave a just-created panel missing from
+	// this list until a reload.
 	const { records: drawerPosts, isResolving: isResolvingDrawers } = useEntityRecords(
 		'postType',
-		'sgs_drawer',
-		{ per_page: -1, status: [ 'publish' ], context: 'edit' }
+		DRAWER_POST_TYPE,
+		DRAWER_QUERY
 	);
 	const drawerRefOptions = [
 		{
@@ -110,7 +123,10 @@ export default function DropdownSettingsPanel( {
 				/>
 			</PanelBody>
 
-			<PanelBody title={ __( 'Menu panel', 'sgs-blocks' ) } initialOpen={ false }>
+			<PanelBody
+				title={ __( 'Menu panel', 'sgs-blocks' ) }
+				initialOpen={ true === drawerNeedsAttention }
+			>
 				<p style={ { marginTop: 0 } }>
 					{ __(
 						'Below the collapse size (see Burger Menu above) this menu becomes a burger button that opens a menu panel — on any device, including desktop if you choose Always. To change what visitors see in it, select that panel and edit its contents like any other block.',
@@ -140,6 +156,7 @@ export default function DropdownSettingsPanel( {
 					</Notice>
 				) }
 
+				<CreateDrawerControl setAttributes={ setAttributes } />
 			</PanelBody>
 
 			<PanelBody

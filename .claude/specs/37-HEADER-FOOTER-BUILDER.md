@@ -506,16 +506,17 @@ construction.
   burger can pick any of them through the drawer picker (FR-37-49).
 - **Header/footer starters embed no `sgs/nav-drawer`** and `nav-bar-menu.drawerRef` is a post
   picker (FR-37-49).
-
-**Not built:**
-1. Inline creation of a drawer post from the `drawerRef` picker. Today
-   `plugins/sgs-blocks/src/blocks/nav-bar-menu/useDrawerNotice.js::addDrawer` inserts a sibling `sgs/nav-drawer` block instead.
+- **Inline creation.** The picker offers "Create a new menu panel"
+  (`plugins/sgs-blocks/src/blocks/nav-bar-menu/useCreateDrawer.js::useCreateDrawer`): it saves a
+  published `sgs_drawer` post seeded from the blank drawer starter pattern, selects it in the picker
+  and links to its edit screen. It is the only add path; a drawer is never inserted as a block in the
+  page.
 
 **Done when:** a drawer authored in *SGS → Menu drawers* renders as the site default, a second
 drawer can be picked per-burger, the starter surface offers the featured looks and a chosen
 starter's CHILD TREE survives save, and zero `variantPreset` attrs exist in shipped markup
 (`git grep -n variantPreset -- plugins/sgs-blocks/src theme/sgs-theme/patterns` returns nothing).
-Inline creation of a drawer post from the picker is the one open item.
+A new drawer can also be created from the picker without leaving the header.
 
 **Non-destructive property:** with no Active drawer pointer set, `get_active_content()` returns
 `''` and `Sgs_Drawer_Render` emits nothing, so page output is unchanged. `wp sgs drawer
