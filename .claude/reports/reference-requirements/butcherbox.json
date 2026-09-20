@@ -1,0 +1,854 @@
+{
+ "reference": "butcherbox",
+ "url": "https://www.butcherbox.com/",
+ "captured": "2026-09-20",
+ "browser": "Chrome, headed (the real Chrome on this PC, driven through the chrome-devtools MCP); one window; 375 tier via the device emulator",
+ "rows": [
+  {
+   "surface": "header-shell",
+   "tier": 375,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "full-bleed",
+      "detail": "the same sticky 72px header; the announcement banner was not present at this width"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "label": "full-bleed",
+       "detail": "the same sticky 72px header; the announcement banner was not present at this width"
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "clientWidth": 375,
+      "header": [
+       0,
+       32,
+       375,
+       72
+      ],
+      "logo": [
+       90,
+       59,
+       195,
+       17
+      ],
+      "logoCentred": true,
+      "burger": [
+       16,
+       56,
+       24,
+       24
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "clientWidth": 375,
+       "header": [
+        0,
+        32,
+        375,
+        72
+       ],
+       "logo": [
+        90,
+        59,
+        195,
+        17
+       ],
+       "logoCentred": true,
+       "burger": [
+        16,
+        56,
+        24,
+        24
+       ]
+      }
+     }
+    },
+    "zone_model": {
+     "value": "burger left, logo centred, no actions (Sign In and Choose your plan are display none)",
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": "burger left, logo centred, no actions (Sign In and Choose your plan are display none)"
+     }
+    }
+   }
+  },
+  {
+   "surface": "bar",
+   "tier": 375,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: the bar is not shown at this width; its links live in the drawer",
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": "absent: the bar is not shown at this width; its links live in the drawer"
+     }
+    }
+   }
+  },
+  {
+   "surface": "dropdown",
+   "tier": 375,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: no dropdown at this width; Gifts is a row in the drawer list",
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": "absent: no dropdown at this width; Gifts is a row in the drawer list"
+     }
+    }
+   }
+  },
+  {
+   "surface": "mega",
+   "tier": 375,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: none at this width",
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": "absent: none at this width"
+     }
+    }
+   }
+  },
+  {
+   "surface": "trigger-close",
+   "tier": 375,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "burger at the left; on open the burger is hidden and a close control appears at the right end of the header (not in the same place)",
+      "openBurger": [
+       16,
+       56,
+       24,
+       24
+      ],
+      "close": [
+       335,
+       60,
+       24,
+       16
+      ],
+      "closeDisplayWhenOpen": "block",
+      "burgerDisplayWhenOpen": "none"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": "clicked the burger, read both rects and displays"
+     }
+    },
+    "trigger_close": {
+     "value": {
+      "headerStaysVisibleOverDrawer": true,
+      "drawerStartsBelowHeader": true,
+      "topRowInDrawer": false
+     },
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "headerStaysVisibleOverDrawer": true,
+       "drawerStartsBelowHeader": true,
+       "topRowInDrawer": false
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "drawer",
+   "tier": 375,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "full-width panel below the header",
+      "rect": [
+       0,
+       104,
+       375,
+       740
+      ],
+      "position": "fixed",
+      "top": "72px",
+      "height": "740px",
+      "zIndex": 10000
+     },
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "label": "full-width panel below the header",
+       "rect": [
+        0,
+        104,
+        375,
+        740
+       ],
+       "position": "fixed",
+       "top": "72px",
+       "height": "740px",
+       "zIndex": 10000
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "background": "rgb(255, 255, 255)",
+      "scrim": "rgb(18, 18, 18) at opacity 0 on this tier"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "background": "rgb(255, 255, 255)",
+       "scrim": "rgb(18, 18, 18) at opacity 0 on this tier"
+      }
+     }
+    },
+    "zone_model": {
+     "value": "CTA button, phone number, then a list: How it Works, Sourcing, Gifts, FAQs, then Sign In",
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": "CTA button, phone number, then a list: How it Works, Sourcing, Gifts, FAQs, then Sign In"
+     }
+    },
+    "item_typography": {
+     "value": {
+      "linkSize": "20px",
+      "linkWeight": 600,
+      "giftsRow": "16px 400",
+      "cta": "14px 700"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "linkSize": "20px",
+       "linkWeight": 600,
+       "giftsRow": "16px 400",
+       "cta": "14px 700"
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "scrollLock": "body overflow hidden while open",
+      "motion": "the inner panel slides from margin-left -100% to 0 over 0.15s cubic-bezier(0.4, 0, 0.2, 1)"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "scrollLock": "body overflow hidden while open",
+       "motion": "the inner panel slides from margin-left -100% to 0 over 0.15s cubic-bezier(0.4, 0, 0.2, 1)"
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "footer",
+   "tier": 375,
+   "presence": "not-applicable",
+   "cells": {
+    "archetype": {
+     "value": "not captured at this tier: see not_measured",
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": "not captured at this tier: see not_measured"
+     }
+    }
+   }
+  },
+  {
+   "surface": "header-shell",
+   "tier": 768,
+   "presence": "present",
+   "cells": {}
+  },
+  {
+   "surface": "bar",
+   "tier": 768,
+   "presence": "present",
+   "cells": {}
+  },
+  {
+   "surface": "dropdown",
+   "tier": 768,
+   "presence": "present",
+   "cells": {}
+  },
+  {
+   "surface": "mega",
+   "tier": 768,
+   "presence": "present",
+   "cells": {}
+  },
+  {
+   "surface": "trigger-close",
+   "tier": 768,
+   "presence": "present",
+   "cells": {}
+  },
+  {
+   "surface": "drawer",
+   "tier": 768,
+   "presence": "present",
+   "cells": {}
+  },
+  {
+   "surface": "footer",
+   "tier": 768,
+   "presence": "present",
+   "cells": {}
+  },
+  {
+   "surface": "header-shell",
+   "tier": 1440,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "full-bleed",
+      "detail": "sticky (position sticky, top 0) header wrapper 72px tall, white once stuck; a 32px announcement-banner swiper sits above it and scrolls away"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "label": "full-bleed",
+       "detail": "sticky (position sticky, top 0) header wrapper 72px tall, white once stuck; a 32px announcement-banner swiper sits above it and scrolls away"
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "clientWidth": 1427,
+      "innerWidth": 1442,
+      "header": [
+       0,
+       32,
+       1427,
+       72
+      ],
+      "inner": "div.container-lg 1380 wide from x=24, flex",
+      "logo": [
+       64,
+       59,
+       195,
+       17
+      ],
+      "zIndex": 10000
+     },
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "clientWidth": 1427,
+       "innerWidth": 1442,
+       "header": [
+        0,
+        32,
+        1427,
+        72
+       ],
+       "inner": "div.container-lg 1380 wide from x=24, flex",
+       "logo": [
+        64,
+        59,
+        195,
+        17
+       ],
+       "zIndex": 10000
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "background": "transparent at rest over the hero, white after scrolling",
+      "shadow": "none",
+      "border": "none"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "background": "transparent at rest over the hero, white after scrolling",
+       "shadow": "none",
+       "border": "none"
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "sticky": "position sticky top 0 after the banner scrolls away"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": "scrolled to 1200: header rect top 0, chain shows header sticky top 0px"
+     }
+    }
+   }
+  },
+  {
+   "surface": "bar",
+   "tier": 1440,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": "text nav between the logo and the actions, left-aligned after the logo; wrapper justify-between with the sign-in and plan buttons at the right",
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": "text nav between the logo and the actions, left-aligned after the logo; wrapper justify-between with the sign-in and plan buttons at the right"
+     }
+    },
+    "geometry": {
+     "value": {
+      "nav": [
+       275,
+       46,
+       350,
+       44
+      ],
+      "navWrapper": [
+       275,
+       46,
+       1089,
+       44
+      ],
+      "controls": [
+       1031,
+       46,
+       332,
+       44
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "nav": [
+        275,
+        46,
+        350,
+        44
+       ],
+       "navWrapper": [
+        275,
+        46,
+        1089,
+        44
+       ],
+       "controls": [
+        1031,
+        46,
+        332,
+        44
+       ]
+      }
+     }
+    },
+    "item_typography": {
+     "value": {
+      "family": "Lato",
+      "size": "16px",
+      "weight": 400,
+      "colour": "rgb(28, 38, 35)",
+      "case": "none"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "family": "Lato",
+       "size": "16px",
+       "weight": 400,
+       "colour": "rgb(28, 38, 35)",
+       "case": "none"
+      }
+     }
+    },
+    "item_states": {
+     "value": {
+      "hover": "font weight 600 on hover (hover:font-semibold, active also semibold); the caret shows on hover"
+     },
+     "method": "source-only",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": "class list of the Gifts button"
+     }
+    },
+    "content": {
+     "value": [
+      "How it Works",
+      "Sourcing",
+      "Gifts (dropdown)",
+      "FAQs"
+     ],
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": [
+       "How it Works",
+       "Sourcing",
+       "Gifts (dropdown)",
+       "FAQs"
+      ]
+     }
+    },
+    "secondary_blocks": {
+     "value": [
+      {
+       "kind": "button",
+       "label": "Sign In",
+       "rect": [
+        1031,
+        46,
+        135,
+        44
+       ],
+       "bg": "rgb(255, 255, 255)",
+       "radius": "pill"
+      },
+      {
+       "kind": "button",
+       "label": "Choose your plan",
+       "rect": [
+        1182,
+        46,
+        181,
+        44
+       ],
+       "bg": "rgb(0, 148, 95)",
+       "colour": "white",
+       "radius": "pill"
+      }
+     ],
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": [
+       {
+        "kind": "button",
+        "label": "Sign In",
+        "rect": [
+         1031,
+         46,
+         135,
+         44
+        ],
+        "bg": "rgb(255, 255, 255)",
+        "radius": "pill"
+       },
+       {
+        "kind": "button",
+        "label": "Choose your plan",
+        "rect": [
+         1182,
+         46,
+         181,
+         44
+        ],
+        "bg": "rgb(0, 148, 95)",
+        "colour": "white",
+        "radius": "pill"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "surface": "dropdown",
+   "tier": 1440,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "item-left",
+      "detail": "a click-toggled button (aria-expanded, aria-controls desktop-submenu-gifts); panel left 512 equals the item left 512"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "label": "item-left",
+       "detail": "a click-toggled button (aria-expanded, aria-controls desktop-submenu-gifts); panel left 512 equals the item left 512"
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "panel": [
+       512,
+       104,
+       300,
+       164
+      ],
+      "top": "header bottom (104)",
+      "width": 300,
+      "anchor": "item-left"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "panel": [
+        512,
+        104,
+        300,
+        164
+       ],
+       "top": "header bottom (104)",
+       "width": 300,
+       "anchor": "item-left"
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "background": "rgb(252, 250, 248)",
+      "radius": 0,
+      "shadow": "0 2px 7px rgba(0,0,0,.15)",
+      "border": "none",
+      "padding": "16px 24px"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "background": "rgb(252, 250, 248)",
+       "radius": 0,
+       "shadow": "0 2px 7px rgba(0,0,0,.15)",
+       "border": "none",
+       "padding": "16px 24px"
+      }
+     }
+    },
+    "item_states": {
+     "value": {
+      "items": 4,
+      "labels": [
+       "Shop for Gifts",
+       "All Gifts",
+       "Bestsellers",
+       "Corporate Gifts"
+      ],
+      "pitch": "36px, 19px text"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "items": 4,
+       "labels": [
+        "Shop for Gifts",
+        "All Gifts",
+        "Bestsellers",
+        "Corporate Gifts"
+       ],
+       "pitch": "36px, 19px text"
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "open": "click (aria-expanded true)",
+      "scrim": "fixed full-width layer from the header bottom, rgb(18,18,18) at reduced opacity while open"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "open": "click (aria-expanded true)",
+       "scrim": "fixed full-width layer from the header bottom, rgb(18,18,18) at reduced opacity while open"
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "mega",
+   "tier": 1440,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: the Gifts panel is a 300px dropdown, no wider panel exists on the bar",
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": "absent: the Gifts panel is a 300px dropdown, no wider panel exists on the bar"
+     }
+    }
+   }
+  },
+  {
+   "surface": "trigger-close",
+   "tier": 1440,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": "no burger at 1440 (the mobile burger is display none); the dropdown trigger is the Gifts button",
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": "no burger at 1440 (the mobile burger is display none); the dropdown trigger is the Gifts button"
+     }
+    }
+   }
+  },
+  {
+   "surface": "drawer",
+   "tier": 1440,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: the mobile drawer exists in the DOM but is not shown at desktop widths",
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": "absent: the mobile drawer exists in the DOM but is not shown at desktop widths"
+     }
+    }
+   }
+  },
+  {
+   "surface": "footer",
+   "tier": 1440,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "multi-column footer",
+      "rect": [
+       0,
+       5954,
+       1427,
+       660
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "label": "multi-column footer",
+       "rect": [
+        0,
+        5954,
+        1427,
+        660
+       ]
+      }
+     }
+    },
+    "content": {
+     "value": "About us, Press, Help Center, Affiliate Program, Careers, Blog, Store Locator, social links, support email, company address",
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": "About us, Press, Help Center, Affiliate Program, Careers, Blog, Store Locator, social links, support email, company address"
+     }
+    }
+   }
+  }
+ ],
+ "not_measured": [
+  {
+   "surface": "bar",
+   "tier": 1440,
+   "column": "motion",
+   "reason": "the dropdown open and close animation was not timed"
+  },
+  {
+   "surface": "footer",
+   "tier": 375,
+   "column": "all",
+   "reason": "the footer was not captured at 375"
+  },
+  {
+   "surface": "dropdown",
+   "tier": 1440,
+   "column": "mechanics",
+   "reason": "close grace, Escape and outside click were not tested"
+  },
+  {
+   "surface": "drawer",
+   "tier": 375,
+   "column": "mechanics",
+   "reason": "Escape, focus trap and the Gifts row expansion were not tested"
+  },
+  {
+   "surface": "footer",
+   "tier": 375,
+   "column": "all",
+   "reason": "not captured in this pass"
+  },
+  {
+   "surface": "header-shell",
+   "tier": 768,
+   "column": "all",
+   "reason": "the 768 tier was not captured for this reference; the emulated viewport pass covered 375 and 1440 only"
+  },
+  {
+   "surface": "bar",
+   "tier": 768,
+   "column": "all",
+   "reason": "the 768 tier was not captured for this reference; the emulated viewport pass covered 375 and 1440 only"
+  },
+  {
+   "surface": "dropdown",
+   "tier": 768,
+   "column": "all",
+   "reason": "the 768 tier was not captured for this reference; the emulated viewport pass covered 375 and 1440 only"
+  },
+  {
+   "surface": "mega",
+   "tier": 768,
+   "column": "all",
+   "reason": "the 768 tier was not captured for this reference; the emulated viewport pass covered 375 and 1440 only"
+  },
+  {
+   "surface": "trigger-close",
+   "tier": 768,
+   "column": "all",
+   "reason": "the 768 tier was not captured for this reference; the emulated viewport pass covered 375 and 1440 only"
+  },
+  {
+   "surface": "drawer",
+   "tier": 768,
+   "column": "all",
+   "reason": "the 768 tier was not captured for this reference; the emulated viewport pass covered 375 and 1440 only"
+  },
+  {
+   "surface": "footer",
+   "tier": 768,
+   "column": "all",
+   "reason": "the 768 tier was not captured for this reference; the emulated viewport pass covered 375 and 1440 only"
+  }
+ ]
+}

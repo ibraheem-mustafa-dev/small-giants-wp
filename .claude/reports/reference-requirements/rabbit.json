@@ -1,0 +1,744 @@
+{
+ "reference": "rabbit",
+ "url": "https://www.rabbit.tech/rabbit-r1",
+ "captured": "2026-09-20",
+ "browser": "Chrome, headed (the real Chrome on this PC, driven through the chrome-devtools MCP); one window; 375 tier via the device emulator",
+ "rows": [
+  {
+   "surface": "header-shell",
+   "tier": 375,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "full-bleed",
+      "detail": "sticky, 77px tall, background rgb(255, 77, 6) at this width"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "label": "full-bleed",
+       "detail": "sticky, 77px tall, background rgb(255, 77, 6) at this width"
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "clientWidth": 375,
+      "header": [
+       0,
+       0,
+       375,
+       77
+      ],
+      "logo": [
+       16,
+       26,
+       100,
+       25
+      ],
+      "cart": [
+       285,
+       22,
+       32,
+       33
+      ],
+      "burger": [
+       327,
+       22,
+       32,
+       33
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "clientWidth": 375,
+       "header": [
+        0,
+        0,
+        375,
+        77
+       ],
+       "logo": [
+        16,
+        26,
+        100,
+        25
+       ],
+       "cart": [
+        285,
+        22,
+        32,
+        33
+       ],
+       "burger": [
+        327,
+        22,
+        32,
+        33
+       ]
+      }
+     }
+    },
+    "zone_model": {
+     "value": "logo left; cart button and burger at the right",
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": "logo left; cart button and burger at the right"
+     }
+    }
+   }
+  },
+  {
+   "surface": "bar",
+   "tier": 375,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: the bar is not shown at this width; its links are the drawer list",
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": "absent: the bar is not shown at this width; its links are the drawer list"
+     }
+    }
+   }
+  },
+  {
+   "surface": "dropdown",
+   "tier": 375,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: none at this width",
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": "absent: none at this width"
+     }
+    }
+   }
+  },
+  {
+   "surface": "mega",
+   "tier": 375,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: none at this width",
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": "absent: none at this width"
+     }
+    }
+   }
+  },
+  {
+   "surface": "trigger-close",
+   "tier": 375,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "burger replaced in place by the close icon",
+      "rect": [
+       327,
+       22,
+       32,
+       33
+      ],
+      "closedIcon": "menu-closed.svg",
+      "openIcon": "menu-opened.svg",
+      "sameRectWhenOpen": true
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": "clicked the burger; the same button rect held the menu-opened icon"
+     }
+    },
+    "trigger_close": {
+     "value": {
+      "headerStaysVisibleOverDrawer": true,
+      "drawerStartsBelowHeader": true,
+      "topRowInDrawer": false
+     },
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "headerStaysVisibleOverDrawer": true,
+       "drawerStartsBelowHeader": true,
+       "topRowInDrawer": false
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "drawer",
+   "tier": 375,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "full-screen panel below the header",
+      "rect": [
+       0,
+       77,
+       375,
+       844
+      ],
+      "position": "fixed",
+      "top": "77px"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "label": "full-screen panel below the header",
+       "rect": [
+        0,
+        77,
+        375,
+        844
+       ],
+       "position": "fixed",
+       "top": "77px"
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "background": "rgb(255, 77, 6)",
+      "scrim": "none"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "background": "rgb(255, 77, 6)",
+       "scrim": "none"
+      }
+     }
+    },
+    "item_typography": {
+     "value": {
+      "size": "32px",
+      "weight": 200,
+      "colour": "rgb(19, 21, 22)",
+      "align": "centred"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "size": "32px",
+       "weight": 200,
+       "colour": "rgb(19, 21, 22)",
+       "align": "centred"
+      }
+     }
+    },
+    "content": {
+     "value": [
+      "r1 (with a \"new\" badge)",
+      "updates",
+      "creations",
+      "intern",
+      "blog",
+      "newsroom",
+      "support"
+     ],
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": [
+       "r1 (with a \"new\" badge)",
+       "updates",
+       "creations",
+       "intern",
+       "blog",
+       "newsroom",
+       "support"
+      ]
+     }
+    },
+    "mechanics": {
+     "value": {
+      "motion": "opacity 0 to 1 over 0.5s cubic-bezier(0.4, 0, 0.2, 1) (visibility hidden to visible)",
+      "scrollLock": "none (body overflow stayed visible)"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "motion": "opacity 0 to 1 over 0.5s cubic-bezier(0.4, 0, 0.2, 1) (visibility hidden to visible)",
+       "scrollLock": "none (body overflow stayed visible)"
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "footer",
+   "tier": 375,
+   "presence": "not-applicable",
+   "cells": {
+    "archetype": {
+     "value": "not captured at this tier: see not_measured",
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": "not captured at this tier: see not_measured"
+     }
+    }
+   }
+  },
+  {
+   "surface": "header-shell",
+   "tier": 768,
+   "presence": "present",
+   "cells": {}
+  },
+  {
+   "surface": "bar",
+   "tier": 768,
+   "presence": "present",
+   "cells": {}
+  },
+  {
+   "surface": "dropdown",
+   "tier": 768,
+   "presence": "present",
+   "cells": {}
+  },
+  {
+   "surface": "mega",
+   "tier": 768,
+   "presence": "present",
+   "cells": {}
+  },
+  {
+   "surface": "trigger-close",
+   "tier": 768,
+   "presence": "present",
+   "cells": {}
+  },
+  {
+   "surface": "drawer",
+   "tier": 768,
+   "presence": "present",
+   "cells": {}
+  },
+  {
+   "surface": "footer",
+   "tier": 768,
+   "presence": "present",
+   "cells": {}
+  },
+  {
+   "surface": "header-shell",
+   "tier": 1440,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "full-bleed",
+      "detail": "sticky header, no border or shadow; rabbit.tech redirects to /rabbit-r1"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "label": "full-bleed",
+       "detail": "sticky header, no border or shadow; rabbit.tech redirects to /rabbit-r1"
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "clientWidth": 1425,
+      "header": [
+       0,
+       0,
+       1425,
+       65
+      ],
+      "logo": [
+       32,
+       20,
+       100,
+       25
+      ],
+      "zIndex": 50
+     },
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "clientWidth": 1425,
+       "header": [
+        0,
+        0,
+        1425,
+        65
+       ],
+       "logo": [
+        32,
+        20,
+        100,
+        25
+       ],
+       "zIndex": 50
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "background": "rgb(255, 87, 5)",
+      "shadow": "none",
+      "border": "none",
+      "backdropFilter": "none"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "background": "rgb(255, 87, 5)",
+       "shadow": "none",
+       "border": "none",
+       "backdropFilter": "none"
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "sticky": "sticky top 0; the rect stayed at top 0 after scrolling 1500px"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "sticky": "sticky top 0; the rect stayed at top 0 after scrolling 1500px"
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "bar",
+   "tier": 1440,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": "inline text bar from x=295 to about 1120 between the logo and a cart button",
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": "inline text bar from x=295 to about 1120 between the logo and a cart button"
+     }
+    },
+    "geometry": {
+     "value": {
+      "items": "r1 [295,5,111,56], updates [407,5,123,56], creations [530,5,130,56], intern [660,5,105,56], blog [765,5,96,56], newsroom [861,5,138,56], support [999,5,121,56]",
+      "cart": [
+       1361,
+       17,
+       32,
+       32
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "items": "r1 [295,5,111,56], updates [407,5,123,56], creations [530,5,130,56], intern [660,5,105,56], blog [765,5,96,56], newsroom [861,5,138,56], support [999,5,121,56]",
+       "cart": [
+        1361,
+        17,
+        32,
+        32
+       ]
+      }
+     }
+    },
+    "item_typography": {
+     "value": {
+      "size": "14px",
+      "weight": 400,
+      "colour": "rgb(19, 21, 22)",
+      "case": "none"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "size": "14px",
+       "weight": 400,
+       "colour": "rgb(19, 21, 22)",
+       "case": "none"
+      }
+     }
+    },
+    "content": {
+     "value": [
+      "r1 (has a dropdown)",
+      "updates",
+      "creations",
+      "intern",
+      "blog",
+      "newsroom",
+      "support"
+     ],
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": [
+       "r1 (has a dropdown)",
+       "updates",
+       "creations",
+       "intern",
+       "blog",
+       "newsroom",
+       "support"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "surface": "dropdown",
+   "tier": 1440,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "item-anchored panel under r1",
+      "detail": "closed state measured: visibility hidden, opacity 0; open state was not reproduced with synthetic events, so it is not measured"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "label": "item-anchored panel under r1",
+       "detail": "closed state measured: visibility hidden, opacity 0; open state was not reproduced with synthetic events, so it is not measured"
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "panelWrapper": [
+       250,
+       55,
+       142,
+       100
+      ],
+      "card": [
+       250,
+       75,
+       142,
+       80
+      ],
+      "anchor": "left -45px from the r1 item, top 60px, width 142"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "panelWrapper": [
+        250,
+        55,
+        142,
+        100
+       ],
+       "card": [
+        250,
+        75,
+        142,
+        80
+       ],
+       "anchor": "left -45px from the r1 item, top 60px, width 142"
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "background": "rgb(255, 87, 5)",
+      "radius": "10px",
+      "shadow": "shadow-lg (Tailwind)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": {
+       "background": "rgb(255, 87, 5)",
+       "radius": "10px",
+       "shadow": "shadow-lg (Tailwind)"
+      }
+     }
+    },
+    "content": {
+     "value": [
+      "LAM playground",
+      "teachmode"
+     ],
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": [
+       "LAM playground",
+       "teachmode"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "surface": "mega",
+   "tier": 1440,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: no wide panel; the only panel is the two-item r1 dropdown",
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": "absent: no wide panel; the only panel is the two-item r1 dropdown"
+     }
+    }
+   }
+  },
+  {
+   "surface": "trigger-close",
+   "tier": 1440,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": "no burger at 1440 (the menu button image is 0x0)",
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": "no burger at 1440 (the menu button image is 0x0)"
+     }
+    }
+   }
+  },
+  {
+   "surface": "drawer",
+   "tier": 1440,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: the mobile menu panel exists in the DOM (visibility hidden, opacity 0, display none at 1440)",
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": "absent: the mobile menu panel exists in the DOM (visibility hidden, opacity 0, display none at 1440)"
+     }
+    }
+   }
+  },
+  {
+   "surface": "footer",
+   "tier": 1440,
+   "presence": "not-applicable",
+   "cells": {
+    "archetype": {
+     "value": "not captured at this tier: see not_measured",
+     "method": "static",
+     "evidence": {
+      "script": "chrome-devtools evaluate_script in the real Chrome on this PC (page loaded and settled, several seconds); 375 via the emulator (375x844, mobile, touch)",
+      "raw": "not captured at this tier: see not_measured"
+     }
+    }
+   }
+  }
+ ],
+ "not_measured": [
+  {
+   "surface": "dropdown",
+   "tier": 1440,
+   "column": "all open-state cells",
+   "reason": "the r1 dropdown did not open from synthetic pointer events, so its open state, close grace and item states were not measured"
+  },
+  {
+   "surface": "footer",
+   "tier": 1440,
+   "column": "all",
+   "reason": "the footer was not captured"
+  },
+  {
+   "surface": "footer",
+   "tier": 375,
+   "column": "all",
+   "reason": "the footer was not captured"
+  },
+  {
+   "surface": "drawer",
+   "tier": 375,
+   "column": "mechanics",
+   "reason": "Escape, focus handling and the r1 submenu inside the drawer were not tested"
+  },
+  {
+   "surface": "footer",
+   "tier": 375,
+   "column": "all",
+   "reason": "not captured in this pass"
+  },
+  {
+   "surface": "footer",
+   "tier": 1440,
+   "column": "all",
+   "reason": "not captured in this pass"
+  },
+  {
+   "surface": "header-shell",
+   "tier": 768,
+   "column": "all",
+   "reason": "the 768 tier was not captured for this reference; the emulated viewport pass covered 375 and 1440 only"
+  },
+  {
+   "surface": "bar",
+   "tier": 768,
+   "column": "all",
+   "reason": "the 768 tier was not captured for this reference; the emulated viewport pass covered 375 and 1440 only"
+  },
+  {
+   "surface": "dropdown",
+   "tier": 768,
+   "column": "all",
+   "reason": "the 768 tier was not captured for this reference; the emulated viewport pass covered 375 and 1440 only"
+  },
+  {
+   "surface": "mega",
+   "tier": 768,
+   "column": "all",
+   "reason": "the 768 tier was not captured for this reference; the emulated viewport pass covered 375 and 1440 only"
+  },
+  {
+   "surface": "trigger-close",
+   "tier": 768,
+   "column": "all",
+   "reason": "the 768 tier was not captured for this reference; the emulated viewport pass covered 375 and 1440 only"
+  },
+  {
+   "surface": "drawer",
+   "tier": 768,
+   "column": "all",
+   "reason": "the 768 tier was not captured for this reference; the emulated viewport pass covered 375 and 1440 only"
+  },
+  {
+   "surface": "footer",
+   "tier": 768,
+   "column": "all",
+   "reason": "the 768 tier was not captured for this reference; the emulated viewport pass covered 375 and 1440 only"
+  }
+ ],
+ "note": "The earlier headless capture reported no dropdown or drawer for rabbit.tech; a real Chrome shows a two-item dropdown under r1 and a full-screen mobile drawer."
+}
