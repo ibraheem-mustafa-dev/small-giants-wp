@@ -1001,5 +1001,14 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 107
+  },
+  {
+    "id": "test-float-defaults",
+    "cmd": "node scripts/tests/test-float-defaults.mjs",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 108
   }
 ]

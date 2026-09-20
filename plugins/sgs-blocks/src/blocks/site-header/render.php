@@ -417,8 +417,8 @@ if ( $sh_shrink_any_tier ) {
 // by its own height leaves its top inset behind as a visible sliver of bar. The
 // travel therefore adds the inset back — as a custom-property VALUE, resolved per
 // tier by sgs_header_float_css() (0px on a tier where the pill is not floating).
-// The plain `-100%` is kept verbatim when float is off at every tier, so a header
-// that does not float emits byte-identical CSS.
+// With float off at every tier the travel is the plain `-100%`, so a header that
+// does not float emits byte-identical CSS.
 $sh_float_any_tier = ! empty( sgs_header_float_tiers( $attributes ) );
 $sh_hide_travel    = $sh_float_any_tier
 	? 'transform:translateY(calc(-100% - var(--sgs-header-float-inset-top, 0px)));'
@@ -625,8 +625,15 @@ if ( ! empty( $border_radius_mobile_obj ) ) {
 // Its collapse-to-full-width block must out-rank both the pill geometry above it
 // and the per-tier border-radius rules emitted just now, and at equal specificity
 // that is decided by source order. Emits absolutely nothing unless `headerFloat`
-// resolves 'on' at some tier. See includes/sgs-header-float-css.php.
-$css .= sgs_header_float_css( $root_sel, $attributes );
+// resolves 'on' at some tier or `backdropBlur` carries a value.
+// See includes/sgs-header-float-css.php.
+//
+// The EFFECTIVE transparency (force-solid already resolved to off) and the
+// direction flag are passed in rather than re-read from the raw attributes:
+// whether the shadow is suppressed depends on which state is see-through, and
+// $sh_transparent_effective / $sh_solid_first above are the single resolver of
+// that. A second resolver inside the float file would disagree with this one.
+$css .= sgs_header_float_css( $root_sel, $attributes, $sh_transparent_effective, $sh_solid_first );
 
 if ( '' !== $css ) {
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_strip_all_tags() applied; $css from pre-sanitised values only (wp_style_engine_get_styles()).

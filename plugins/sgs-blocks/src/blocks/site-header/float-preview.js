@@ -32,6 +32,96 @@ export const INSET_SIDES = [ 'top', 'right', 'left' ];
 export const DEFAULT_INSET = '1rem';
 
 /**
+ * The width the collapse opt-out drops the pill at, when one is not chosen.
+ * Matches the renderer's own fallback (SGS_Breakpoints::MOBILE_MAX + 1).
+ *
+ * @type {number}
+ */
+export const DEFAULT_COLLAPSE_BREAKPOINT = 768;
+
+/**
+ * The four float attributes' DECLARED defaults, as block.json declares them.
+ *
+ * Every reset path reads from here rather than writing its own literal, so a
+ * "reset" leaves the attribute holding exactly the value the block would have
+ * had untouched. Writing something else — `{}` for an inset block.json declares
+ * as a populated object, or a breakpoint carried over from the value being
+ * reset — leaves the block dirty in the editor and serialises an attribute that
+ * matches no default, which is the difference between a reset and a change.
+ *
+ * `scripts/tests/test-float-defaults.mjs` reads block.json and fails the build
+ * if these drift apart, so the two cannot disagree silently.
+ *
+ * @type {Object}
+ */
+export const FLOAT_DEFAULTS = {
+	headerFloat: {},
+	headerFloatInset: {
+		desktop: {
+			top: DEFAULT_INSET,
+			right: DEFAULT_INSET,
+			left: DEFAULT_INSET,
+		},
+	},
+	headerFloatCollapse: {
+		enabled: false,
+		breakpoint: DEFAULT_COLLAPSE_BREAKPOINT,
+	},
+	backdropBlur: '',
+};
+
+/**
+ * A FRESH copy of one declared default, safe to hand to `setAttributes`.
+ *
+ * A copy, not the shared object: an attribute value that is the same reference
+ * as the module-level default would let any later mutation of the stored
+ * attribute rewrite the default itself.
+ *
+ * @param {string} name Attribute name.
+ * @return {*} The declared default.
+ */
+export function floatDefault( name ) {
+	const value = FLOAT_DEFAULTS[ name ];
+	return null !== value && typeof value === 'object'
+		? JSON.parse( JSON.stringify( value ) )
+		: value;
+}
+
+/**
+ * Is an attribute value still its declared default?
+ *
+ * Used by the ToolsPanel `hasValue` callbacks, which ask "has the operator
+ * changed this?" — a question a truthiness test cannot answer for an attribute
+ * whose default is itself a populated object.
+ *
+ * @param {string} name  Attribute name.
+ * @param {*}      value Current attribute value.
+ * @return {boolean} True when the value matches the declared default.
+ */
+export function isFloatDefault( name, value ) {
+	const isPlainObject = ( candidate ) =>
+		null !== candidate &&
+		typeof candidate === 'object' &&
+		! Array.isArray( candidate );
+	const deepEqual = ( a, b ) => {
+		if ( isPlainObject( a ) && isPlainObject( b ) ) {
+			const keys = new Set( [
+				...Object.keys( a ),
+				...Object.keys( b ),
+			] );
+			return [ ...keys ].every( ( key ) =>
+				deepEqual( a[ key ], b[ key ] )
+			);
+		}
+		return a === b;
+	};
+	return deepEqual(
+		value === undefined ? FLOAT_DEFAULTS[ name ] : value,
+		FLOAT_DEFAULTS[ name ]
+	);
+}
+
+/**
  * Representative viewport width per device tier, used ONLY to decide whether the
  * canvas preview shows the collapsed (full-width) state. Mirrors the widths the
  * editor's own device previews render at.
@@ -131,15 +221,14 @@ export function floatPreview( attributes, previewTier ) {
 }
 
 /**
- * The float attributes a "reset all" on the Header behaviour panel must clear.
+ * The float attributes a "reset all" on the Header behaviour panel must clear,
+ * each restored to the value block.json declares as its default.
  *
  * @return {Object} Attribute updates.
  */
 export function floatResetAttributes() {
-	return {
-		headerFloat: {},
-		headerFloatInset: {},
-		headerFloatCollapse: { enabled: false, breakpoint: 768 },
-		backdropBlur: '',
-	};
+	return Object.keys( FLOAT_DEFAULTS ).reduce( ( out, name ) => {
+		out[ name ] = floatDefault( name );
+		return out;
+	}, {} );
 }

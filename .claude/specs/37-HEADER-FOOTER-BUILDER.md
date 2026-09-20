@@ -832,6 +832,22 @@ second writer) and turns the scroll-class toggle on for plain and merely sticky 
 tier-gated, and paints nothing when unset (the emitted CSS is byte-identical to a header without the
 attribute). It wins over the resting hover shadow while scrolled, and `prefers-reduced-motion` removes the
 easing while the end-state shadow still applies. Live-verified at 1440px and 375px.
+**Floating pill.** A header can float as an inset, rounded bar.
+`plugins/sgs-blocks/src/blocks/site-header/block.json::attributes.headerFloat` is a per-tier tri-state like
+`headerSticky`; `attributes.headerFloatInset` is a tier-of-boxes gap to the viewport edges (default `1rem` top,
+left and right, each floored by the device safe-area inset); `attributes.headerFloatCollapse`
+(`{enabled, breakpoint}`, off by default) switches the pill to full width, square, below the breakpoint, so the
+pill persists at mobile unless the operator opts out. The width cap is the existing `maxWidth`, the shape is the
+existing `borderRadius` and `shadow`, and `attributes.backdropBlur` gives the frosted look the reference
+measurements show (a pill with no shadow, border or fill). Float at a tier implies pinning at that tier:
+`position`, `top` and `z-index` resolve Float > Sticky > Transparent through the one merged writer, and `top` is
+the inset. `plugins/sgs-blocks/includes/sgs-header-float-css.php::sgs_header_float_css` emits the rules.
+Hide-on-scroll travels `calc( -100% - <top inset> )` so no sliver stays on screen. A mega panel opened from a
+floating header matches the pill's left and width, and a plain dropdown clamps inside the pill's box
+(`plugins/sgs-blocks/src/shared/nav-interactivity/panel-bounds.js::megaPanelWidth`, `::clampDropdownLeft`).
+`--sgs-header-height` is the pinned header's bottom edge, its `top` offset plus its height, which is simply its
+height for every header at `top: 0`; `plugins/sgs-blocks/src/header-behaviours/view.js` publishes it. With no
+float attribute set the emitted CSS is byte-identical to a header without the feature.
 **Status:** `BUILT` for all five behaviours. `headerSticky` / `headerTransparent` / `headerShrink` /
 `headerHideOnScroll` emit through `sgs_emit_tier_rules()`. `contrastSafe` is a per-device object
 attribute emitted by `site-header/render.php` through `sgs_emit_tier_rules_map()`, the N-value

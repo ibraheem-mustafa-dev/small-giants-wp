@@ -371,18 +371,45 @@ function repositionPanel( root ) {
 		 * for a sticky, static, tall, short, hidden or absent header, and for a
 		 * non-SGS theme too.
 		 *
-		 * `rect.top` is safe to read here — this function writes only HORIZONTAL
-		 * geometry, so the top edge (`top: 100%` off its trigger) does not move
-		 * underneath us. GUTTER matches render.php's fallback expression;
-		 * MIN_PANEL_MAX_H keeps an oddly-measured panel usable rather than
-		 * collapsing it to nothing.
+		 * MEASURED FROM WHERE THE PANEL WILL BE, NOT WHERE IT IS. `rect.top` is
+		 * the panel's CURRENT top — the stylesheet's `top: 100%` off its own
+		 * menu item. For a full-width header that is also its final top, so the
+		 * expression is the shipped one. Under a floating pill it is NOT: the
+		 * mega branch below republishes `--sgs-mm-panel-top` as the PILL's
+		 * bottom edge, which sits below the menu item by the header's bottom
+		 * padding, and the panel then drops by that difference while a max-height
+		 * derived from the old top stays put. The panel's bottom lands at
+		 * `innerHeight - GUTTER + ( bounds.bottom - rect.top )` — it eats the
+		 * gutter first and runs past the viewport bottom once the difference
+		 * exceeds it. (`--sgs-mm-panel-top` is not cleared between opens, so a
+		 * re-open measured correctly and only the first open was wrong, which is
+		 * what made it easy to miss.)
+		 *
+		 * A dropdown is unaffected and must stay so: it keeps `top: 100%` off its
+		 * own trigger, so nothing republishes its top edge.
+		 *
+		 * GUTTER matches render.php's fallback expression; MIN_PANEL_MAX_H keeps
+		 * an oddly-measured panel usable rather than collapsing it to nothing.
 		 */
 		const GUTTER = 16;
 		const MIN_PANEL_MAX_H = 200;
+		const isDropdown = root.dataset.sgsNavDisclosure === 'dropdown';
+		/*
+		 * The box everything below is positioned against — the viewport for a
+		 * full-width header, the pill's own box for a floating one. Every
+		 * expression that follows reduces to the shipped arithmetic when this is
+		 * the viewport; `scripts/tests/test-panel-bounds.mjs` proves that on a
+		 * grid of inputs rather than leaving it to a reading.
+		 */
+		const bounds = panelBounds( root );
+		const panelTop =
+			! isDropdown && bounds.floating && null !== bounds.bottom
+				? bounds.bottom
+				: rect.top;
 		panel.style.setProperty(
 			'--sgs-mm-panel-max-h',
 			`${ Math.max(
-				window.innerHeight - rect.top - GUTTER,
+				window.innerHeight - panelTop - GUTTER,
 				MIN_PANEL_MAX_H
 			).toFixed( 2 ) }px`
 		);
@@ -393,16 +420,8 @@ function repositionPanel( root ) {
 		const parentRect = parent.getBoundingClientRect();
 		const gutter = 28;
 		const width = rect.width;
-		/*
-		 * The box everything below is positioned against — the viewport for a
-		 * full-width header, the pill's own box for a floating one. Every
-		 * expression that follows reduces to the shipped arithmetic when this is
-		 * the viewport; `scripts/tests/panel-bounds.test.mjs` proves that on a
-		 * grid of inputs rather than leaving it to a reading.
-		 */
-		const bounds = panelBounds( root );
 
-		if ( root.dataset.sgsNavDisclosure === 'dropdown' ) {
+		if ( isDropdown ) {
 			/*
 			 * DROPDOWN geometry — aligned to its own TRIGGER, not the viewport.
 			 * Fitts's Law: the most-clicked entry should sit nearest the launch

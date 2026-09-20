@@ -11,8 +11,10 @@
  * rulings that geometry forces.
  *
  * Nothing in this file emits anything at all unless `headerFloat` resolves
- * 'on' for at least one device tier. That is the regression guarantee: a
- * header that has never heard of float mode produces byte-identical CSS.
+ * 'on' for at least one device tier, or `backdropBlur` carries a value. That is
+ * the regression guarantee: a header with neither set produces byte-identical
+ * CSS. The blur is not gated on float because a frosted full-width bar is a
+ * legitimate look in its own right, and the editor canvas previews it that way.
  *
  * Custom properties published on the header's own uid selector:
  *   --sgs-header-float-inset-top / -right / -left
@@ -41,6 +43,62 @@ if ( ! function_exists( 'sgs_header_float_tiers' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_header_float_single_length' ) ) {
+	/**
+	 * A SINGLE CSS length, safe to place inside `max()` and `blur()`.
+	 *
+	 * The shared sgs_css_length_value() validator is deliberately wider than
+	 * this: it serves shorthand properties, so it accepts whitespace-separated
+	 * lists ('16px 12px' is one of its own must-accept cases), keywords and
+	 * negatives. Every one of those is a hostile value HERE — `max(1rem 2rem,
+	 * env(safe-area-inset-top))` and `blur(10px 5px)` are syntactically invalid,
+	 * so the browser drops the whole declaration: the blur silently disappears
+	 * and the width calc() falls back to `auto`. The shared validator is not
+	 * narrowed (its other callers need the width); this narrows it locally.
+	 *
+	 * Accepted: a number with one unit ('1rem', '0px', '100vw' — bare numbers
+	 * reach here already normalised to 'Npx' or a spacing-preset var()), or a
+	 * single var()/calc()/min()/max()/minmax()/clamp() call. Rejected: lists,
+	 * keywords such as 'inherit', negatives, and two calls side by side.
+	 *
+	 * @param mixed $raw Raw attribute value.
+	 * @return string A single CSS length, or '' when the value is unusable.
+	 */
+	function sgs_header_float_single_length( $raw ): string {
+		$value = sgs_css_length_value( is_string( $raw ) ? $raw : '' );
+		if ( '' === $value ) {
+			return '';
+		}
+
+		if ( preg_match( '/^\d+(\.\d+)?[a-z%]+$/i', $value ) ) {
+			return $value;
+		}
+
+		// A function call is one token only when its opening parenthesis closes
+		// on the final character — which rejects 'calc(1px) calc(2px)' and
+		// 'calc(1px) 2px'. Balance and breakout characters were already checked
+		// by the shared validator, so this only has to measure the extent.
+		if ( ! preg_match( '/^(var|calc|min|max|minmax|clamp)\(/i', $value ) || ')' !== substr( $value, -1 ) ) {
+			return '';
+		}
+		$last  = strlen( $value ) - 1;
+		$depth = 0;
+		for ( $i = (int) strpos( $value, '(' ); $i <= $last; $i++ ) {
+			if ( '(' === $value[ $i ] ) {
+				++$depth;
+				continue;
+			}
+			if ( ')' === $value[ $i ] ) {
+				--$depth;
+				if ( 0 === $depth ) {
+					return $last === $i ? $value : '';
+				}
+			}
+		}
+		return '';
+	}
+}
+
 if ( ! function_exists( 'sgs_header_float_inset_for_tier' ) ) {
 	/**
 	 * Resolve the TIER-of-BOX `headerFloatInset` for one tier.
@@ -54,9 +112,11 @@ if ( ! function_exists( 'sgs_header_float_inset_for_tier' ) ) {
 	 * `bottom` is never read: a pill is offset from the top and the two sides,
 	 * and a bottom inset on a pinned bar means nothing. The UI does not offer it.
 	 *
-	 * Every value passes through sgs_css_length_value(), so an unparseable or
-	 * hostile string becomes '' and falls back to the documented default rather
-	 * than reaching the stylesheet.
+	 * Every value passes through sgs_header_float_single_length(), which accepts
+	 * only a value that is legal INSIDE `max()` — a single length or a single
+	 * length-valued function call. Anything else (a two-value list, a keyword, a
+	 * negative) falls back to the documented default rather than reaching the
+	 * stylesheet, where it would invalidate the whole declaration.
 	 *
 	 * @param array  $attributes Block attributes.
 	 * @param string $tier       'desktop' | 'tablet' | 'mobile'.
@@ -82,7 +142,7 @@ if ( ! function_exists( 'sgs_header_float_inset_for_tier' ) ) {
 		foreach ( $order as $tier_key ) {
 			$box = is_array( $raw[ $tier_key ] ?? null ) ? $raw[ $tier_key ] : array();
 			foreach ( array_keys( $sides ) as $side ) {
-				$value = sgs_css_length_value( $box[ $side ] ?? '' );
+				$value = sgs_header_float_single_length( $box[ $side ] ?? '' );
 				if ( '' !== $value ) {
 					$sides[ $side ] = $value;
 				}
@@ -153,17 +213,39 @@ if ( ! function_exists( 'sgs_header_float_css' ) ) {
 	 *     focus ring off the leftmost and rightmost items (WCAG 2.4.11/2.4.13).
 	 *     Radius without clipping is the requirement.
 	 *
-	 * @param string $root_sel   The header's uid-scoped selector.
-	 * @param array  $attributes Block attributes.
+	 * @param string $root_sel              The header's uid-scoped selector.
+	 * @param array  $attributes            Block attributes.
+	 * @param array  $transparent_effective Per-tier EFFECTIVE transparency ('on'|'off'),
+	 *                                      with `contrastSafe: force-solid` already
+	 *                                      resolved to 'off'. Computed once in
+	 *                                      render.php and passed in so there is one
+	 *                                      resolver of the transparent state, not two.
+	 * @param bool   $solid_first           True when `headerTransparentDirection` is
+	 *                                      'solid-first' — the header rests SOLID and
+	 *                                      turns see-through once scrolled.
 	 * @return string CSS text, no <style> wrapper.
 	 */
-	function sgs_header_float_css( string $root_sel, array $attributes ): string {
-		$float_tiers = sgs_header_float_tiers( $attributes );
-		if ( empty( $float_tiers ) ) {
-			return '';
+	function sgs_header_float_css( string $root_sel, array $attributes, array $transparent_effective = array(), bool $solid_first = false ): string {
+		$css = '';
+
+		// ── Backdrop blur. ──
+		// The defining treatment of the only measured reference pill, which has
+		// no shadow, no border and a transparent fill. Same value vocabulary and
+		// the same paired `-webkit-` emission as sgs/nav-drawer's `surfaceBlur`.
+		// Emitted ABOVE the float gate, not tier-gated and not suppressed on
+		// scroll: a frosted full-width bar is a legitimate look on its own, and
+		// the editor canvas preview (float-preview.js::floatPreview) shows the
+		// blur whether or not the header floats. An unset `backdropBlur` still
+		// emits nothing, which is what keeps an untouched header byte-identical.
+		$blur = sgs_header_float_single_length( $attributes['backdropBlur'] ?? '' );
+		if ( '' !== $blur ) {
+			$css .= $root_sel . '{backdrop-filter:blur(' . $blur . ');-webkit-backdrop-filter:blur(' . $blur . ');}';
 		}
 
-		$css = '';
+		$float_tiers = sgs_header_float_tiers( $attributes );
+		if ( empty( $float_tiers ) ) {
+			return $css;
+		}
 
 		// ── Per-tier insets, width and centring. ──
 		// Emitted through the same differs-from-the-tier-above minimisation the
@@ -181,15 +263,22 @@ if ( ! function_exists( 'sgs_header_float_css' ) ) {
 				: '';
 		}
 
-		$prev = null;
+		$prev         = null;
+		$pill_emitted = false;
 		foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
 			$decls = $geometry_by_tier[ $tier ];
 			if ( $decls === $prev ) {
-				$prev = $decls;
 				continue;
 			}
 			$prev = $decls;
 			if ( '' === $decls ) {
+				if ( ! $pill_emitted ) {
+					// Nothing above this tier laid any pill geometry down, so
+					// there is nothing to cancel — a "float at tablet only"
+					// header emitting a desktop `width:100%` would be a rule
+					// that undoes something no rule ever did.
+					continue;
+				}
 				// A narrower tier that is NOT floating must actively cancel the
 				// wider tier's pill geometry, or a "float on desktop only"
 				// header stays inset on a phone. `revert` is wrong for a custom
@@ -197,6 +286,8 @@ if ( ! function_exists( 'sgs_header_float_css' ) ) {
 				// three insets makes the width expression resolve to 100%.
 				$decls = '--sgs-header-float-inset-top:0px;--sgs-header-float-inset-right:0px;'
 					. '--sgs-header-float-inset-left:0px;width:100%;';
+			} else {
+				$pill_emitted = true;
 			}
 			if ( 'desktop' === $tier ) {
 				$css .= $root_sel . '{' . $decls . '}';
@@ -206,49 +297,56 @@ if ( ! function_exists( 'sgs_header_float_css' ) ) {
 			}
 		}
 
-		// ── Backdrop blur. ──
-		// The defining treatment of the only measured reference pill, which has
-		// no shadow, no border and a transparent fill. Same value vocabulary and
-		// the same paired `-webkit-` emission as sgs/nav-drawer's `surfaceBlur`.
-		// Not tier-gated and not suppressed on scroll: a blur is what makes a
-		// see-through pill legible, so removing it at rest would defeat the look
-		// it exists to produce.
-		$blur = sgs_css_length_value( $attributes['backdropBlur'] ?? '' );
-		if ( '' !== $blur ) {
-			$css .= $root_sel . '{backdrop-filter:blur(' . $blur . ');-webkit-backdrop-filter:blur(' . $blur . ');}';
-		}
-
-		// ── Float + Transparent at the same tier: suppress the shadow at rest. ──
+		// ── Float + Transparent at the same tier: suppress the shadow where the
+		// header is actually SEE-THROUGH. ──
 		// A detached pill with a see-through fill and a shadow reads as a shadow
-		// around nothing. The shadow comes back once `.is-header-scrolled` is on:
-		// `shadowScrolled` when the client set one (render.php already emits it at
-		// higher specificity), otherwise the resting `shadow` restated.
-		$transparent_tiers = sgs_resolve_on_tiers( $attributes['headerTransparent'] ?? array(), 'on', 'off' );
-		$both_tiers        = array_values( array_intersect( $float_tiers, $transparent_tiers ) );
-		if ( ! empty( $both_tiers ) ) {
-			$suppress = array();
+		// around nothing. Which STATE is see-through is not the raw
+		// `headerTransparent` value: `contrastSafe: force-solid` turns a tier
+		// solid, and `headerTransparentDirection: solid-first` swaps the two
+		// states over, so the suppression keys on the effective transparency
+		// render.php resolved, at the state that carries it.
+		//
+		// The off-value RESTATES the resting shadow rather than emitting nothing.
+		// Tier rules are minimised against the tier above, so an empty off-value
+		// leaves a narrower non-transparent tier inheriting the wider tier's
+		// `box-shadow:none` — the header would lose its shadow on a phone because
+		// the desktop is see-through. `revert` cannot do the restating either: it
+		// rolls past the author origin, skipping the wrapper's own rule.
+		$resting_shadow = sgs_shadow_value_composed(
+			isset( $attributes['shadow'] ) && is_string( $attributes['shadow'] ) ? $attributes['shadow'] : '',
+			isset( $attributes['shadowColour'] ) && is_string( $attributes['shadowColour'] ) ? $attributes['shadowColour'] : ''
+		);
+		if ( '' !== $resting_shadow ) {
+			$suppress     = array();
+			$any_suppress = false;
 			foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
-				$suppress[ $tier ] = in_array( $tier, $both_tiers, true ) ? 'on' : 'off';
+				$on = in_array( $tier, $float_tiers, true )
+					&& 'on' === ( $transparent_effective[ $tier ] ?? 'off' );
+				$suppress[ $tier ] = $on ? 'on' : 'off';
+				$any_suppress      = $any_suppress || $on;
 			}
-			$css .= sgs_emit_tier_rules( $root_sel, $suppress, 'box-shadow:none;', '', 'off' );
 
+			// A scrolled shadow the operator set is an explicit instruction for
+			// the scrolled state, so it keeps winning there: render.php emits it
+			// on `.is-header-scrolled` and nothing below touches that state.
 			$scrolled_shadow = sgs_shadow_value_composed(
 				isset( $attributes['shadowScrolled'] ) && is_string( $attributes['shadowScrolled'] ) ? $attributes['shadowScrolled'] : '',
 				isset( $attributes['shadowScrolledColour'] ) && is_string( $attributes['shadowScrolledColour'] ) ? $attributes['shadowScrolledColour'] : ''
 			);
-			if ( '' === $scrolled_shadow ) {
-				$scrolled_shadow = sgs_shadow_value_composed(
-					isset( $attributes['shadow'] ) && is_string( $attributes['shadow'] ) ? $attributes['shadow'] : '',
-					isset( $attributes['shadowColour'] ) && is_string( $attributes['shadowColour'] ) ? $attributes['shadowColour'] : ''
-				);
-				if ( '' !== $scrolled_shadow ) {
-					$css .= sgs_emit_tier_rules(
-						$root_sel . '.is-header-scrolled',
-						$suppress,
-						'box-shadow:' . $scrolled_shadow . ';',
-						'',
-						'off'
-					);
+			$restate = 'box-shadow:' . $resting_shadow . ';';
+
+			if ( $any_suppress && $solid_first ) {
+				// Solid at rest, see-through once scrolled: the resting rule keeps
+				// its shadow and the scrolled state is the one to suppress.
+				if ( '' === $scrolled_shadow ) {
+					$css .= sgs_emit_tier_rules( $root_sel . '.is-header-scrolled', $suppress, 'box-shadow:none;', $restate, 'off' );
+				}
+			} elseif ( $any_suppress ) {
+				// See-through at rest, solid once scrolled: suppress at rest and
+				// bring the resting shadow back on the scrolled state.
+				$css .= sgs_emit_tier_rules( $root_sel, $suppress, 'box-shadow:none;', $restate, 'off' );
+				if ( '' === $scrolled_shadow ) {
+					$css .= sgs_emit_tier_rules( $root_sel . '.is-header-scrolled', $suppress, $restate, '', 'off' );
 				}
 			}
 		}

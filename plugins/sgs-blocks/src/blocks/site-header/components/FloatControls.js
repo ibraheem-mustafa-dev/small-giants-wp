@@ -24,11 +24,20 @@ import {
 	normaliseResponsiveBox,
 } from '../../../components';
 import { ToolsPanelItem } from '../../../components/primitives';
-import { INSET_SIDES, isFloatOnAtAnyTier } from '../float-preview';
+import {
+	INSET_SIDES,
+	DEFAULT_COLLAPSE_BREAKPOINT,
+	isFloatOnAtAnyTier,
+	isFloatDefault,
+	floatDefault,
+} from '../float-preview';
 
 /** Breakpoint choices for the collapse opt-out — the project's device tiers. */
 const COLLAPSE_BREAKPOINTS = [
-	{ value: 768, label: __( 'Below tablet width (768px)', 'sgs-blocks' ) },
+	{
+		value: DEFAULT_COLLAPSE_BREAKPOINT,
+		label: __( 'Below tablet width (768px)', 'sgs-blocks' ),
+	},
 	{ value: 1024, label: __( 'Below desktop width (1024px)', 'sgs-blocks' ) },
 ];
 
@@ -55,8 +64,10 @@ export default function FloatControls( { attributes, setAttributes } ) {
 		<>
 			<ToolsPanelItem
 				label={ __( 'Float as a pill', 'sgs-blocks' ) }
-				hasValue={ () => Object.keys( headerFloat || {} ).length > 0 }
-				onDeselect={ () => setAttributes( { headerFloat: {} } ) }
+				hasValue={ () => ! isFloatDefault( 'headerFloat', headerFloat ) }
+				onDeselect={ () =>
+					setAttributes( { headerFloat: floatDefault( 'headerFloat' ) } )
+				}
 			>
 				<ResponsiveTriStateControl
 					label={ __( 'Float as a pill', 'sgs-blocks' ) }
@@ -73,11 +84,21 @@ export default function FloatControls( { attributes, setAttributes } ) {
 			{ /* Everything below only has something to decide once the header
 			     actually floats — the same conditional-render pattern Shrink and
 			     Contrast safety already use on this panel. */ }
+			{ /* block.json declares a POPULATED default for the inset, so
+			     "has a value" is a comparison against that default rather than a
+			     truthiness test — an emptiness test reads the default as operator
+			     input and the panel item can then never clear. */ }
 			{ isFloating && (
 				<ToolsPanelItem
 					label={ __( 'Gap around the pill', 'sgs-blocks' ) }
-					hasValue={ () => Object.keys( headerFloatInset || {} ).length > 0 }
-					onDeselect={ () => setAttributes( { headerFloatInset: {} } ) }
+					hasValue={ () =>
+						! isFloatDefault( 'headerFloatInset', headerFloatInset )
+					}
+					onDeselect={ () =>
+						setAttributes( {
+							headerFloatInset: floatDefault( 'headerFloatInset' ),
+						} )
+					}
 				>
 					<ResponsiveOverride
 						value={ headerFloatInset }
@@ -109,7 +130,11 @@ export default function FloatControls( { attributes, setAttributes } ) {
 				<ToolsPanelItem
 					label={ __( 'Background blur', 'sgs-blocks' ) }
 					hasValue={ () => !! backdropBlur }
-					onDeselect={ () => setAttributes( { backdropBlur: '' } ) }
+					onDeselect={ () =>
+						setAttributes( {
+							backdropBlur: floatDefault( 'backdropBlur' ),
+						} )
+					}
 				>
 					<SgsLengthControl
 						label={ __( 'Background blur', 'sgs-blocks' ) }
@@ -134,7 +159,9 @@ export default function FloatControls( { attributes, setAttributes } ) {
 					hasValue={ () => !! collapse.enabled }
 					onDeselect={ () =>
 						setAttributes( {
-							headerFloatCollapse: { enabled: false, breakpoint: collapse.breakpoint || 768 },
+							headerFloatCollapse: floatDefault(
+								'headerFloatCollapse'
+							),
 						} )
 					}
 				>
@@ -149,7 +176,9 @@ export default function FloatControls( { attributes, setAttributes } ) {
 							setAttributes( {
 								headerFloatCollapse: {
 									enabled,
-									breakpoint: collapse.breakpoint || 768,
+									breakpoint:
+										collapse.breakpoint ||
+										DEFAULT_COLLAPSE_BREAKPOINT,
 								},
 							} )
 						}
@@ -158,7 +187,9 @@ export default function FloatControls( { attributes, setAttributes } ) {
 					{ collapse.enabled && (
 						<SelectControl
 							label={ __( 'Go full width below', 'sgs-blocks' ) }
-							value={ String( collapse.breakpoint || 768 ) }
+							value={ String(
+								collapse.breakpoint || DEFAULT_COLLAPSE_BREAKPOINT
+							) }
 							options={ COLLAPSE_BREAKPOINTS.map( ( option ) => ( {
 								value: String( option.value ),
 								label: option.label,
@@ -167,7 +198,9 @@ export default function FloatControls( { attributes, setAttributes } ) {
 								setAttributes( {
 									headerFloatCollapse: {
 										enabled: true,
-										breakpoint: parseInt( value, 10 ) || 768,
+										breakpoint:
+											parseInt( value, 10 ) ||
+											DEFAULT_COLLAPSE_BREAKPOINT,
 									},
 								} )
 							}

@@ -9,7 +9,10 @@
  * number only while the header sits at top:0; a floating ("pill") header is
  * offset from the top on purpose, and every consumer of this property wants the
  * distance to the header's LOWEST point. header-behaviours/view.js publishes
- * `Math.max( 0, rect.bottom )` accordingly. The name is kept because it is a
+ * `Math.max( 0, pinnedTop + measuredHeight )` accordingly — the header's
+ * computed `top` plus its observed border-box height, clamped as a sum so a
+ * header pinned above the viewport edge publishes 0 rather than its height.
+ * A header that is not pinned publishes 0. The name is kept because it is a
  * published contract read by the theme, two plugin stylesheets and two block
  * render paths.
  *

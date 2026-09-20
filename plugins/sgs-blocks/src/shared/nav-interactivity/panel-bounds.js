@@ -20,7 +20,7 @@
  * node test rather than by reading. When `bounds` is the viewport
  * (`{ left: 0, right: innerWidth }`) each expression reduces algebraically to
  * exactly what `mega-disclosure.js::repositionPanel` computed before this
- * module existed — see `scripts/tests/panel-bounds.test.mjs`, which asserts
+ * module existed — see `scripts/tests/test-panel-bounds.mjs`, which asserts
  * that on a grid of inputs and carries a negative control.
  *
  * @package SGS\Blocks

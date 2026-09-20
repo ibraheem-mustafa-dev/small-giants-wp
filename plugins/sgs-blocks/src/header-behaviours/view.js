@@ -233,15 +233,23 @@
 		// a pinned/unpinned flip can republish without waiting for a resize.
 		let measuredHeight = header.getBoundingClientRect().height;
 
-		function pinnedTopOffset() {
+		// The published number is a BOTTOM EDGE, so the clamp belongs on the
+		// SUM. Clamping the offset alone turns a negative `top` into 0 and then
+		// adds the full height on top of it: a header pinned at `top: -20px`
+		// with an 80px height has its bottom edge at 60, and clamping first
+		// publishes 80 — 20px of dead space injected into every
+		// scroll-into-view. A header pinned entirely above the viewport is the
+		// case the clamp exists for, and that one still publishes 0.
+		function pinnedBottomOffset() {
 			const top = parseFloat( window.getComputedStyle( header ).top );
-			return Number.isFinite( top ) ? Math.max( 0, top ) : 0;
+			return Math.max(
+				0,
+				( Number.isFinite( top ) ? top : 0 ) + measuredHeight
+			);
 		}
 
 		function publishGated() {
-			publishHeight(
-				isHeaderPinned( header ) ? pinnedTopOffset() + measuredHeight : 0
-			);
+			publishHeight( isHeaderPinned( header ) ? pinnedBottomOffset() : 0 );
 		}
 
 		if ( typeof ResizeObserver === 'undefined' ) {

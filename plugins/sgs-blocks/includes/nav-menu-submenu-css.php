@@ -195,8 +195,8 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		 * custom-property VALUE in front of the shipped expression, published by
 		 * mega-disclosure.js::repositionPanel ONLY when the header is measured as
 		 * genuinely inset from both viewport edges. A full-width header writes
-		 * neither, so the var() fallback governs and the rule is byte-identical
-		 * to what it has always been.
+		 * neither, so the var() fallback governs and the rule resolves to the
+		 * same width and top edge a non-floating header renders.
 		 *
 		 * Why the panel takes the PILL's box rather than the page's: every
 		 * measured reference whose panel is page-width also has a page-width
