@@ -12,7 +12,17 @@ Delete this file (`git rm`) once the result has been checked, in the same commit
 5. If it ignores items 1 or 2, reply once: "You missed items 1 and 2." Two tries, then the standard is parked (plan, section 5).
 6. Send me the list it gives for item 5 (README versus files differences). I found eight; any extras are useful.
 
-## The prompt (paste from the next line to the end of the block)
+## Step 2: the export prompt (use with the "Handoff to Claude Code" skill, after the closing prompt has finished)
+
+Paste this alongside the Handoff to Claude Code skill. Do NOT use "Save as standalone HTML" (it inlines every image as base64).
+
+```
+Now export this as a Handoff to Claude Code bundle, everything in one folder exactly as the project stands now: the main .dc.html, Frame Card.dc.html, support.js, image-slot.js, README.md, and the full assets/ folder (ec-logo.png and every .svg). Keep the manifest block inside the main HTML file unchanged. Do not bundle, merge or inline anything, and do not convert any image to base64. Do not change any design, layout or copy. When it is done, list every file in the bundle with its size.
+```
+
+Send me that file list along with the zip: I check it against what is on disk.
+
+## Step 1: the closing prompt (already run; kept for the record)
 
 ```
 Please update this design bundle so that everything a developer needs is in the files themselves, not only in the README. Do not change any visible design, layout or copy.
