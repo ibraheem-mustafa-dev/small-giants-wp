@@ -26,14 +26,14 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
 
 ## Wave 2 — Capability
 - STATUS: partial. DONE a, b, c, d, e, f (live/eye verification owed), g, h, j, k, l, n, p, q, r, s, t, u ·
-  i (labels for the three unmeasured refs follow W4-a) · CLOSED with no framework feature: o.
+  i (labels for the three unmeasured refs follow W3B-3) · CLOSED with no framework feature: o.
 - DP7 harness self-tests pass FIRST (W2-i precedes Wave-4 evidence). Built: shared
   `nav-qa/lib/openness-guard.mjs` (exit 3 = VACUOUS), full-element contrast walk, `--self-test` in
   all six sweep, capture and audit scripts, and `nav-qa/check-fixture-fidelity.py` (fails on count/label mismatch,
   right-site keyed). Proof: `node plugins/sgs-blocks/scripts/nav-qa/sweep-drawer-variants.mjs --self-test`
   (47/47), `shoot-drawer-pairs.mjs --self-test` (16/16), `elementfrompoint-sweep.mjs --self-test` (3/3),
   `python plugins/sgs-blocks/scripts/nav-qa/check-fixture-fidelity.py --self-test` (14/14) and `--check`
-  (exit 0). Open: `labels-<site>.json` for Away, ButcherBox, rabbit.tech, generated after W4-a.
+  (exit 0). Open: `labels-<site>.json` for Away, ButcherBox, rabbit.tech, generated in W3B-3.
 - CPT parity (Gate 2): computed-parity JSON — default `sgs_drawer` post render vs the default drawer,
   **drawer OPEN** (a closed-vs-closed comparison is vacuous), property-identical, negative control
   run. Passed 2026-09-20 on the mechanism (`.claude/reports/2026-09-20-w2-gate2-rerun.md`), fidelity left to Bean's eye.
@@ -89,10 +89,46 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
 - FR-37-18 inspector conformance: partial; the conformance script's gap counts are raw upper
   bounds.
 
+## Wave 3A — Independent fixes
+- STATUS: not started.
+- Every fix is first reproduced inside a real `sgs/site-header` (the loose-block QA pages prove
+  nothing about a header). A defect that does not reproduce there is closed with no change.
+- W3A-1: a real pointer path from a parent item to its dropdown and to its mega panel keeps the panel
+  open at 1440px; negative control: a deliberately widened gap closes it.
+- W3A-2: a default dropdown computes `list-style-type: none`, no link `text-decoration`, no
+  `padding-left` on the list, and a non-transparent `background-color` with a border or shadow; its
+  items centre on the parent item.
+- W3A-3: computed hover style of a bar item that owns a panel equals that of a sibling that does not,
+  with the cause proven before the fix.
+- W3A-4: the Mama's Munches header nav is centred within the bar (measured), and the hover text
+  colour equals the draft's, matched by content.
+- W3A-5: the nav QA fixtures render inside `sgs/site-header` (`document.querySelector('header .sgs-nav-bar-menu')`
+  is non-null on each), and the drawer fixtures show submenus and a mega item.
+
+## Wave 3B — Reference deconstruction
+- STATUS: not started.
+- W3B-1: Bean has reviewed and signed the table's columns before any measuring.
+- W3B-2, W3B-3: 12/12 references measured, every cell taken from the rendered DOM by computed style
+  (a cell quoting a source declaration fails); `labels-<site>.json` exists for all 12.
+- W3B-4: every table row belongs to one capability family, and every family states the block
+  attribute that covers it or "none".
+- W3B-5: Bean has signed the family list.
+
+## Wave 3C — Header and nav architecture harmonised
+- STATUS: not started; sized at W3B-5.
+- Every family in the signed list is built or explicitly mapped, universal across blocks, with block
+  attributes as the only responsive route (`node plugins/sgs-blocks/scripts/audit-inline-styling.js --check`
+  exits 0).
+- W3C-1: on a real capped-width header, the logo, nav and actions sit inside one surface centred on
+  the viewport (left and right gaps equal at 1440px), a mega panel's width equals the header's, and a
+  dropdown is centred on its parent item.
+- One composed real header matches its requirements-table row, with Bean's eye (R-31-13).
+
 ## Wave 4 — Proof gate (clones)
 - STATUS: not started
-- 12/12 references measured (Away, ButcherBox, rabbit.tech teardowns owed; 9/12 today); clone
-  roster = 11 (10 if the W4-a teardown finds a resn effect that no Spec 38 tier can express) —
+- 12/12 references measured in the requirements table (W3B-3 owes the Away, ButcherBox and
+  rabbit.tech teardowns; 9/12 today); the header and nav architecture (Wave 3C) is complete; clone
+  roster = 11 (10 if the W3B-3 teardown finds a resn effect that no Spec 38 tier can express) —
   Gate 5 counts the roster.
 - Substitution policy (fonts/imagery) signed by Bean BEFORE the first clone (W4-a2).
 - studionamma: DP5 per-property homes table reviewed; DP7-clean evidence pack (computed-parity +

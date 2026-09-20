@@ -1,5 +1,17 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1133 [ROUTINE] — Nav/header track reordered: independent fixes, then a reference requirements table, then architecture harmonised from it, then the clones (2026-09-20)
+
+**Bean's direction.** Page 3699 (the same-page mega and drawer fixture) looked broken: a dropdown that closes while the pointer travels to it, bulleted and underlined dropdown items with no surface, a 30px mega panel, a partial-width nav bar instead of a partial-width header, an off-screen drawer. Most of it is to be ignored and rebuilt in the proper process: the header as a whole is the partial-width thing (logo, nav, cart, CTA inside one centred surface) and panels follow it; the functionality is built from a deconstruction of the reference headers, not from guesses.
+
+**Measured on the canary.** The fixture's nav blocks sit directly in page content (parent `entry-content`), not in a header; `--sgs-mm-panel-width` is unset there. Whether the hover gap, the bullets and the missing dropdown surface also occur inside a real header is not proven.
+
+**Decision (option A).** Waves 3A (independent fixes, each reproduced inside a real header first, plus QA fixtures rebuilt inside a real header), 3B (a requirements table: reference by surface, columns reviewed by Bean before any measuring, clustered into capability families that Bean signs) and 3C (header and nav architecture built from the families; the floating pill, drawer anchoring and force-solid are reopened by a family, not patched) come before the Wave 4 clones. The teardown of the three unmeasured references moved into 3B (W3B-3).
+
+**Corrections recorded.** Point 4 is about top-level bar items that own a dropdown or mega panel lacking the hover underline their siblings have, not about the dropdown items. Force-solid and the page 3699 drawer overhang are no longer decided on their own; both belong to Wave 3C.
+
+**Open.** Bean reviews the table columns (W3B-1). The hover-underline cause (W3A-3) is unproven. Where the references keep the burger and close control, and whether any drawer omits a top close row, is read from the table, not assumed.
+
 ## D1132 [ROUTINE] — Draft standardisation council: close the wiring gaps in existing code first; a small draft standard only for what code cannot derive; a deterministic second layer (2026-09-20)
 
 **Bean's corrections that shaped it.** (1) The idea was NOT to rewrite a draft into Mama's shape or add a normalise stage: it was to move the README's facts into the draft files, so the pipeline reads them directly instead of extending code to read prose. (2) Do not limit the pipeline for other formats; add code only where it ignores information. (3) Claude Design writes the facts in AND a second layer checks them, because one AI pass misses things. Approved plan: `.claude/plans/2026-09-20-draft-standardisation-plan.md`.
