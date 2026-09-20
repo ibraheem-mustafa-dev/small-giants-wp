@@ -1,0 +1,3466 @@
+{
+  "group": "B",
+  "families": [
+    {
+      "id": "F-B-01",
+      "name": "Panel ownership per bar item",
+      "description": "Whether a navigation item opens a panel at all, and if so whether that panel is a narrow dropdown, a wide mega panel, or an accordion that grows inside the header itself. Recorded per ITEM, not per site: several references mix panel-owning and panel-less items in one bar.",
+      "surfaces": [
+        "dropdown",
+        "mega"
+      ],
+      "values_seen": [
+        {
+          "value": "no panel on any item",
+          "refs": [
+            "buck",
+            "dogstudio",
+            "fantasy",
+            "lusion",
+            "resn",
+            "studionamma",
+            "wearecollins"
+          ],
+          "evidence": "dropdown+mega archetype cells read 'absent' at all three tiers (e.g. buck: 0 aria-haspopup, newBoxCount [0,0,0])"
+        },
+        {
+          "value": "dropdown only",
+          "refs": [
+            "butcherbox",
+            "rabbit"
+          ],
+          "evidence": "butcherbox Gifts 300px; rabbit r1 142px; both mega rows absent at 1440"
+        },
+        {
+          "value": "dropdown + mega from one component",
+          "refs": [
+            "away"
+          ],
+          "evidence": "away 1440 dropdown (SALE, 1 column) and mega (LUGGAGE, 3 columns + callouts) share one .mega-menu__dropdown"
+        },
+        {
+          "value": "mega only",
+          "refs": [
+            "halcyon"
+          ],
+          "evidence": "halcyon 1440 archetype: 'every panel is a 1120px mega panel; there is no narrow dropdown kind'"
+        },
+        {
+          "value": "dropdown + mega, kind decided per panel by width/columns",
+          "refs": [
+            "indus-foods"
+          ],
+          "evidence": "indus 1440 archetype classification_rule 'mega when panel width >= 1000px or >= 2 link columns'; About/Trade/More dropdown, Sectors/Brands mega"
+        },
+        {
+          "value": "inline accordion inside the opened header pill (no hanging panel)",
+          "refs": [
+            "lamalama"
+          ],
+          "evidence": "lamalama dropdown archetype at 375/768/1440: 'inline accordion INSIDE the opened pill; no panel hangs off the bar'"
+        },
+        {
+          "value": "panel-less items coexisting with panel-owning items",
+          "refs": [
+            "halcyon",
+            "indus-foods"
+          ],
+          "evidence": "halcyon 'Pricing' absent (no caret); indus 'Home' and 'Blog' absent (no caret, hover leaves the panel closed)"
+        }
+      ],
+      "needed_by": [
+        {
+          "reference": "away",
+          "variant": null,
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown/mega archetype"
+        },
+        {
+          "reference": "butcherbox",
+          "variant": null,
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown archetype"
+        },
+        {
+          "reference": "rabbit",
+          "variant": null,
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown archetype"
+        },
+        {
+          "reference": "halcyon",
+          "variant": "all 6",
+          "tiers": [
+            1440
+          ],
+          "cell": "mega archetype"
+        },
+        {
+          "reference": "indus-foods",
+          "variant": "sectors-cards, sectors-list",
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown/mega archetype"
+        },
+        {
+          "reference": "lamalama",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "dropdown archetype"
+        }
+      ],
+      "absent_in": [],
+      "sgs_coverage": {
+        "status": "covered",
+        "attributes": [
+          "sgs/nav-bar-menu::ref",
+          "sgs/nav-bar-menu::submenuCaret",
+          "sgs/mega-panel::variant",
+          "sgs/mega-panel::style"
+        ],
+        "note": "A bar item owns a mega panel only when the menu item is bound to a mega-menu CPT post; items with no binding and no children render as plain links, which is exactly the panel-less item the two drafts show. The dropdown fork and the mega fork are separate branches of the same markup builder.",
+        "how_checked": "includes/nav-menu-markup.php (mega fork building `sgs-nav-bar-menu__mega-trigger` from $item['object_id'] + sgs_mega_render_panel_content; dropdown fork below it); python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name FROM block_attributes WHERE block_slug='sgs/nav-bar-menu'\""
+      },
+      "motion": null
+    },
+    {
+      "id": "F-B-02",
+      "name": "Panel width rule",
+      "description": "How wide the open panel is, and whether that width is the same for every panel on the bar.",
+      "surfaces": [
+        "dropdown",
+        "mega"
+      ],
+      "values_seen": [
+        {
+          "value": "viewport-wide (width == clientWidth, 1440px)",
+          "refs": [
+            "away"
+          ],
+          "evidence": "away geometry width 1440, sameWidthForEveryPanel true"
+        },
+        {
+          "value": "capped, same for every panel: 1120px",
+          "refs": [
+            "halcyon"
+          ],
+          "evidence": "halcyon geometry width_css 1120px, width_differs_per_panel false; tier_delta rule_derived 'width = min(max-width, viewport - 56)'"
+        },
+        {
+          "value": "capped, DIFFERENT per panel: 620px / 300px / 1080px",
+          "refs": [
+            "indus-foods"
+          ],
+          "evidence": "indus geometry width_differs_per_panel true; About+Trade 620, More 300, Sectors+Brands 1080"
+        },
+        {
+          "value": "narrow fixed: 300px",
+          "refs": [
+            "butcherbox"
+          ],
+          "evidence": "butcherbox geometry width 300"
+        },
+        {
+          "value": "narrow fixed: 142px",
+          "refs": [
+            "rabbit"
+          ],
+          "evidence": "rabbit geometry panelWrapper [250,55,142,100]"
+        },
+        {
+          "value": "takes the header pill's own width (343px at 375, 438px at 768/1440)",
+          "refs": [
+            "lamalama"
+          ],
+          "evidence": "lamalama geometry anchor 'same box as the pill (child width == pill width 343)'"
+        }
+      ],
+      "needed_by": [
+        {
+          "reference": "away",
+          "variant": null,
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown/mega geometry.width"
+        },
+        {
+          "reference": "halcyon",
+          "variant": "all 6",
+          "tiers": [
+            1440
+          ],
+          "cell": "mega geometry.max_width + tier_delta.rule_derived"
+        },
+        {
+          "reference": "indus-foods",
+          "variant": "sectors-cards, sectors-list",
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown/mega geometry.width_differs_per_panel"
+        },
+        {
+          "reference": "butcherbox",
+          "variant": null,
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown geometry.width"
+        },
+        {
+          "reference": "rabbit",
+          "variant": null,
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown geometry"
+        },
+        {
+          "reference": "lamalama",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "dropdown geometry.anchor"
+        }
+      ],
+      "absent_in": [],
+      "sgs_coverage": {
+        "status": "covered",
+        "attributes": [
+          "sgs/mega-panel::maxWidth",
+          "sgs/nav-bar-menu::submenuMinWidth",
+          "sgs/nav-bar-menu::submenuAlign"
+        ],
+        "note": "The shipped mega wrap width is `var(--sgs-mm-panel-width, min(1120px, calc(100vw - 56px)))` — byte-for-byte the rule derived from both drafts (`min(max-width, viewport - 56)`), with 1120px as the shipped default (halcyon's measured width). maxWidth is a per-tier object on the PANEL post, so a per-panel width (indus 620/300/1080) is one value per mega-menu post, not a per-bar setting. The pill case is the `--sgs-mm-panel-width` override written by mega-disclosure.js::repositionPanel when the header measures as inset from both viewport edges. away's viewport-wide panel is reachable as maxWidth 100vw.",
+        "how_checked": "includes/nav-menu-submenu-css.php::sgs_nav_menu_submenu_css (the `__mega-panel-wrap` rule); src/blocks/mega-panel/block.json::attributes.maxWidth (default {\"desktop\":\"1120px\"}); src/shared/nav-interactivity/mega-disclosure.js::repositionPanel"
+      },
+      "motion": null
+    },
+    {
+      "id": "F-B-03",
+      "name": "Panel horizontal anchor",
+      "description": "What the panel's horizontal position is measured against: the trigger item, the header box, or the viewport centre.",
+      "surfaces": [
+        "dropdown",
+        "mega"
+      ],
+      "values_seen": [
+        {
+          "value": "item-left (panel left == item left)",
+          "refs": [
+            "butcherbox",
+            "rabbit"
+          ],
+          "evidence": "butcherbox archetype label 'item-left', panel left 512 == item left 512; rabbit anchor 'left -45px from the r1 item'"
+        },
+        {
+          "value": "header-wide, centred on the viewport (offset 0)",
+          "refs": [
+            "away"
+          ],
+          "evidence": "away geometry anchor 'header-wide, centred on the viewport (offset 0)'"
+        },
+        {
+          "value": "capped-centred on the viewport (panelCentre - viewportCentre == 0, item offset up to 578px)",
+          "refs": [
+            "halcyon",
+            "indus-foods"
+          ],
+          "evidence": "halcyon anchor panelCentre_minus_viewportCentre 0 with panelLeft_minus_itemLeft -233 to -578; indus the same at 620/300/1080"
+        },
+        {
+          "value": "same box as the pill (pill left edge and pill width)",
+          "refs": [
+            "lamalama"
+          ],
+          "evidence": "lamalama geometry hangsBelowHeader false, child width == pill width"
+        }
+      ],
+      "needed_by": [
+        {
+          "reference": "butcherbox",
+          "variant": null,
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown archetype.label"
+        },
+        {
+          "reference": "rabbit",
+          "variant": null,
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown geometry.anchor"
+        },
+        {
+          "reference": "away",
+          "variant": null,
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown/mega geometry.anchor"
+        },
+        {
+          "reference": "halcyon",
+          "variant": "all 6",
+          "tiers": [
+            1440
+          ],
+          "cell": "mega geometry.anchor.label"
+        },
+        {
+          "reference": "indus-foods",
+          "variant": "sectors-cards, sectors-list",
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown/mega geometry.anchor.label"
+        },
+        {
+          "reference": "lamalama",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "dropdown geometry.anchor"
+        }
+      ],
+      "absent_in": [],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": [
+          "sgs/nav-bar-menu::submenuAlign"
+        ],
+        "note": "submenuAlign is start|center|end and aligns a DROPDOWN to its trigger — that covers item-left (start). Viewport-centring is not an operator value: it is the mega fork's fixed behaviour (`left:var(--sgs-mm-overflow-left, 50%);transform:translateX(var(--sgs-mm-tx,-50%))`), and the pill case is the same custom-property override. So every anchor the references show is REACHABLE, but only by choosing dropdown-vs-mega, not by an anchor control: a wide item-left panel or an item-centred mega has no expression. There is no `header-wide` or `capped-centred` enum value.",
+        "how_checked": "src/blocks/nav-bar-menu/block.json::attributes.submenuAlign (enum start|center|end); includes/nav-menu-submenu-css.php (the `__mega-panel-wrap` rule and the comment 'a dropdown aligns to its trigger, a mega panel centres on the viewport')"
+      },
+      "motion": null
+    },
+    {
+      "id": "F-B-04",
+      "name": "Panel top offset (gap below the header)",
+      "description": "The vertical gap between the header's bottom edge and the panel's top edge.",
+      "surfaces": [
+        "dropdown",
+        "mega"
+      ],
+      "values_seen": [
+        {
+          "value": "0px (flush to the header bottom)",
+          "refs": [
+            "away",
+            "butcherbox"
+          ],
+          "evidence": "away geometry top 93 == header bottom 93, 'gap to header bottom 0px'; butcherbox panel top 104 == header bottom 104"
+        },
+        {
+          "value": "10px",
+          "refs": [
+            "halcyon"
+          ],
+          "evidence": "halcyon geometry gap_below_header_px 10"
+        },
+        {
+          "value": "12px",
+          "refs": [
+            "indus-foods"
+          ],
+          "evidence": "indus geometry gap_below_header_px 12"
+        },
+        {
+          "value": "panel top is the item's own bottom, not the header's (item-anchored, top 60px from the r1 item)",
+          "refs": [
+            "rabbit"
+          ],
+          "evidence": "rabbit geometry anchor 'left -45px from the r1 item, top 60px'"
+        },
+        {
+          "value": "not applicable — the panel is the header growing downwards",
+          "refs": [
+            "lamalama"
+          ],
+          "evidence": "lamalama geometry hangsBelowHeader false, growthPx 160"
+        }
+      ],
+      "needed_by": [
+        {
+          "reference": "away",
+          "variant": null,
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown/mega geometry.anchor"
+        },
+        {
+          "reference": "halcyon",
+          "variant": "all 6",
+          "tiers": [
+            1440
+          ],
+          "cell": "mega geometry.gap_below_header_px"
+        },
+        {
+          "reference": "indus-foods",
+          "variant": "sectors-cards, sectors-list",
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown/mega geometry.gap_below_header_px"
+        },
+        {
+          "reference": "butcherbox",
+          "variant": null,
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown geometry.top"
+        },
+        {
+          "reference": "rabbit",
+          "variant": null,
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown geometry.anchor"
+        }
+      ],
+      "absent_in": [],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": [
+          "sgs/nav-bar-menu::submenuTopOffset"
+        ],
+        "note": "submenuTopOffset (FR-41-11) emits `calc(100% + <offset>)` and covers every measured value (0/10/12px) — but it is a DROPDOWN attribute. The mega wrap reads `top:var(--sgs-mm-panel-top, 100%)`, whose fallback is flush-to-the-bar and whose override is written by repositionPanel for the pill case only, so halcyon's 10px and indus's 12px mega gaps have no operator control on the mega fork.",
+        "how_checked": "includes/nav-menu-submenu-css.php (submenuTopOffset -> `calc(100% + offset)`; the `__mega-panel-wrap` `top:var(--sgs-mm-panel-top,100%)` rule); src/blocks/nav-bar-menu/block.json::attributes.submenuTopOffset"
+      },
+      "motion": null
+    },
+    {
+      "id": "F-B-05",
+      "name": "Panel ground (fill, blur, radius, border, shadow)",
+      "description": "What the panel box is painted with: its fill and opacity, any backdrop blur, corner radius, border and drop shadow.",
+      "surfaces": [
+        "dropdown",
+        "mega"
+      ],
+      "values_seen": [
+        {
+          "value": "opaque #ffffff, radius 0, no border, no shadow, no blur",
+          "refs": [
+            "away"
+          ],
+          "evidence": "away ground {fill '#ffffff opaque', blur none, shadow none, border none}, geometry radius '0px'"
+        },
+        {
+          "value": "opaque rgb(252,250,248), radius 0, shadow 0 2px 7px rgba(0,0,0,.15)",
+          "refs": [
+            "butcherbox"
+          ],
+          "evidence": "butcherbox ground"
+        },
+        {
+          "value": "opaque rgb(255,87,5), radius 10px, Tailwind shadow-lg",
+          "refs": [
+            "rabbit"
+          ],
+          "evidence": "rabbit ground"
+        },
+        {
+          "value": "translucent + backdrop blur: #fcfbf8 a=0.86 / #141419 a=0.82, saturate(1.5) blur(24px), radius 20px, 1px hairline border, 0 30px 80px -30px shadow",
+          "refs": [
+            "halcyon"
+          ],
+          "evidence": "halcyon ground (light and dark variants)"
+        },
+        {
+          "value": "opaque #ffffff, NO blur, radius 12px, 1px #1e2a3c a=0.1 border, rgba(20,25,35,.28) 0 30px 80px -30px shadow",
+          "refs": [
+            "indus-foods"
+          ],
+          "evidence": "indus ground (all variants)"
+        },
+        {
+          "value": "inherits the pill's own fill and blur (no separate ground)",
+          "refs": [
+            "lamalama"
+          ],
+          "evidence": "lamalama ground 'same fill and blur as the pill (no separate ground)'"
+        }
+      ],
+      "needed_by": [
+        {
+          "reference": "away",
+          "variant": null,
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown/mega ground"
+        },
+        {
+          "reference": "butcherbox",
+          "variant": null,
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown/mega ground"
+        },
+        {
+          "reference": "rabbit",
+          "variant": null,
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown/mega ground"
+        },
+        {
+          "reference": "halcyon",
+          "variant": "all 6",
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown/mega ground"
+        },
+        {
+          "reference": "indus-foods",
+          "variant": "sectors-cards, sectors-list",
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown/mega ground"
+        },
+        {
+          "reference": "lamalama",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "dropdown ground"
+        }
+      ],
+      "absent_in": [],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": [
+          "sgs/mega-panel::panelBg",
+          "sgs/mega-panel::panelBgGradient",
+          "sgs/mega-panel::bgBlur",
+          "sgs/mega-panel::borderRadius",
+          "sgs/mega-panel::borderColour",
+          "sgs/mega-panel::borderWidth",
+          "sgs/mega-panel::borderStyle",
+          "sgs/mega-panel::colourScheme",
+          "sgs/nav-bar-menu::submenuBg",
+          "sgs/nav-bar-menu::submenuBorderRadius",
+          "sgs/nav-bar-menu::submenuShadow",
+          "sgs/nav-bar-menu::submenuBorderColour",
+          "sgs/nav-bar-menu::submenuBorderWidth"
+        ],
+        "note": "Fill, gradient, radius, border and colour scheme are all operator attributes on both forks, and submenuShadow covers the dropdown shadow. TWO values are hardcoded on the mega fork: bgBlur is a BOOLEAN that emits exactly `saturate(1.5) blur(24px)` (halcyon's measured value, so halcyon clones but no other blur amount can), and the mega panel's box-shadow is a fixed `0 30px 80px -30px rgba(0,0,0,.28),0 2px 8px -2px rgba(0,0,0,.08)` with no attribute — away's shadow-none and rabbit's shadow-lg cannot be reached on a mega panel.",
+        "how_checked": "src/blocks/mega-panel/render.php (`if ( $bg_blur ) { ... backdrop-filter:saturate(1.5) blur(24px) }` and the unconditional `box-shadow:0 30px 80px -30px rgba(0,0,0,.28),0 2px 8px -2px rgba(0,0,0,.08)` on $root_sel); src/blocks/mega-panel/block.json::attributes.bgBlur (type boolean)"
+      },
+      "motion": null
+    },
+    {
+      "id": "F-B-06",
+      "name": "Panel scrim (viewport dimmer behind an open panel)",
+      "description": "A full-viewport layer that dims (and sometimes blurs) the page while a panel is open, and may itself be a click-to-close target.",
+      "surfaces": [
+        "dropdown",
+        "mega"
+      ],
+      "values_seen": [
+        {
+          "value": "present, #000000 a=0.10, no blur, starts below the header (900px high), z-index 11, fades with the panel, not a closer",
+          "refs": [
+            "away"
+          ],
+          "evidence": "away ground.scrim 'i.mega-menu__dropdown-overlay'"
+        },
+        {
+          "value": "present, rgb(18,18,18) at reduced opacity, fixed from the header bottom",
+          "refs": [
+            "butcherbox"
+          ],
+          "evidence": "butcherbox mechanics.scrim"
+        },
+        {
+          "value": "present, #0a0a0c a=0.28, blur(2px), full viewport 1440x900, z 150, click_closes true",
+          "refs": [
+            "halcyon"
+          ],
+          "evidence": "halcyon ground.scrim"
+        },
+        {
+          "value": "present, #141923 a=0.25, blur(2px), full viewport, z 150, click_closes true",
+          "refs": [
+            "indus-foods"
+          ],
+          "evidence": "indus ground.scrim"
+        },
+        {
+          "value": "present but belongs to the opened pill, rgba(0,0,0,0.4) + backdrop blur(16px), pointer-events none",
+          "refs": [
+            "lamalama"
+          ],
+          "evidence": "lamalama drawer cross-check: div.js-menu-blur, display:none until open"
+        },
+        {
+          "value": "not measured (open state never reproduced)",
+          "refs": [
+            "rabbit"
+          ],
+          "evidence": "not_measured: rabbit dropdown 1440 all open-state cells"
+        }
+      ],
+      "needed_by": [
+        {
+          "reference": "away",
+          "variant": null,
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown/mega ground.scrim"
+        },
+        {
+          "reference": "butcherbox",
+          "variant": null,
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown mechanics.scrim"
+        },
+        {
+          "reference": "halcyon",
+          "variant": "all 6",
+          "tiers": [
+            1440
+          ],
+          "cell": "mega ground.scrim"
+        },
+        {
+          "reference": "indus-foods",
+          "variant": "sectors-cards, sectors-list",
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown/mega ground.scrim"
+        },
+        {
+          "reference": "lamalama",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "dropdown ground (pill scrim)"
+        }
+      ],
+      "absent_in": [
+        "rabbit (not measured — open state never reproduced)"
+      ],
+      "sgs_coverage": {
+        "status": "gap",
+        "attributes": [],
+        "note": "The mega/dropdown disclosure ships deliberately WITHOUT a backdrop: its own header comment states 'no scroll-lock, no focus trap, no backdrop'. The only scrim in the nav system belongs to sgs/nav-drawer (`data-sgs-nav-scrim`), which the panel fork never renders. 4 of the 5 references whose panel scrim was measured have one, and two of them use it as the click-to-close target — so this is a real missing capability, not a styling preference. It needs a panel-level scrim element plus colour/opacity/blur/click-closes attributes on sgs/mega-panel (or on sgs/nav-bar-menu for the dropdown fork).",
+        "how_checked": "grep -rnoE 'scrim|backdrop' plugins/sgs-blocks/includes/nav-menu-*.php plugins/sgs-blocks/src/blocks/mega-panel/render.php -> only `backdrop-filter` on the panel itself, zero scrim element; src/shared/nav-interactivity/mega-disclosure.js (module comment: 'no scroll-lock, no focus trap, no backdrop'); src/shared/nav-interactivity/store.js (the drawer's `data-sgs-nav-scrim`, drawer only)"
+      },
+      "motion": {
+        "effect": "scrim fade in/out tracking the panel",
+        "tier": "V",
+        "fr": "Spec 38 §1 existing Tier V inventory (opacity transition); no dedicated FR"
+      }
+    },
+    {
+      "id": "F-B-07",
+      "name": "Panel content shape (columns / cards / minimal list / logo grid)",
+      "description": "How the panel's links are arranged inside it: titled link columns, tiled cards, a plain list, or a grid of brand logos.",
+      "surfaces": [
+        "dropdown",
+        "mega"
+      ],
+      "values_seen": [
+        {
+          "value": "one centred column, one title, 3 links",
+          "refs": [
+            "away"
+          ],
+          "evidence": "away dropdown zone_model {columns 1, title 'WAYS TO SAVE', alignment 'column centred on the viewport'}"
+        },
+        {
+          "value": "1 to 3 titled link columns on the left, image callouts on the right",
+          "refs": [
+            "away"
+          ],
+          "evidence": "away mega zone_model perPanel: NEW ARRIVALS 1 col, LUGGAGE 3 cols, BAGS 2 cols, ACCESSORIES 1 col"
+        },
+        {
+          "value": "plain link list, 36px pitch, 4 items",
+          "refs": [
+            "butcherbox"
+          ],
+          "evidence": "butcherbox item_states {items 4, pitch '36px, 19px text'}"
+        },
+        {
+          "value": "two-item list",
+          "refs": [
+            "rabbit"
+          ],
+          "evidence": "rabbit content ['LAM playground','teachmode']"
+        },
+        {
+          "value": "preset `columns` — titled link columns with icon hosts",
+          "refs": [
+            "halcyon"
+          ],
+          "evidence": "halcyon columns-light/columns-dark item_states.ornament.icon_hosts 34x34"
+        },
+        {
+          "value": "preset `cards` — link tiles that lift on hover",
+          "refs": [
+            "halcyon",
+            "indus-foods"
+          ],
+          "evidence": "halcyon cards-* transform matrix(1,0,0,1,0,-3); indus sectors-cards four 245px cards, lift -6px"
+        },
+        {
+          "value": "preset `minimal` — bare link rows with a padding-left shift",
+          "refs": [
+            "halcyon"
+          ],
+          "evidence": "halcyon minimal-* item_states.link_hover.paddingLeft ['14px','22px']"
+        },
+        {
+          "value": "numbered link list (01..05) plus a rail",
+          "refs": [
+            "indus-foods"
+          ],
+          "evidence": "indus About/Trade zone_model root_children [flex 318px list, block 300px rail]"
+        },
+        {
+          "value": "two-column list of rows",
+          "refs": [
+            "indus-foods"
+          ],
+          "evidence": "indus sectors-list, height 205"
+        },
+        {
+          "value": "4-column grid of 10 logo slots",
+          "refs": [
+            "indus-foods"
+          ],
+          "evidence": "indus Brands zone_model, background_visual '10 empty <image-slot> placeholders'"
+        },
+        {
+          "value": "single column of 4 accordion child rows, 40px each",
+          "refs": [
+            "lamalama"
+          ],
+          "evidence": "lamalama zone_model {columns 1, children ['Branding','Websites','E-commerce','Marketing']}"
+        }
+      ],
+      "needed_by": [
+        {
+          "reference": "away",
+          "variant": null,
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown/mega zone_model"
+        },
+        {
+          "reference": "butcherbox",
+          "variant": null,
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown item_states"
+        },
+        {
+          "reference": "rabbit",
+          "variant": null,
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown content"
+        },
+        {
+          "reference": "halcyon",
+          "variant": "columns-*, cards-*, minimal-*",
+          "tiers": [
+            1440
+          ],
+          "cell": "mega zone_model + item_states"
+        },
+        {
+          "reference": "indus-foods",
+          "variant": "sectors-cards, sectors-list",
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown/mega zone_model"
+        },
+        {
+          "reference": "lamalama",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "dropdown zone_model"
+        }
+      ],
+      "absent_in": [],
+      "sgs_coverage": {
+        "status": "covered",
+        "attributes": [
+          "sgs/mega-panel::style",
+          "sgs/mega-panel::variant",
+          "sgs/mega-panel::headings",
+          "sgs/mega-panel::groupGap",
+          "sgs/nav-bar-menu::submenuTextColumns"
+        ],
+        "note": "mega-panel `style` is validated against exactly ['columns','cards','minimal'] — the same three presets halcyon carries, because the block was designed from that draft. `variant` is ['general','media-cards','brands'], and the brands variant renders the logo grid indus's Brands panel needs (with brandsEyebrow for its eyebrow label). Column counts come from the number of sgs/mega-group children; the dropdown fork has submenuTextColumns.",
+        "how_checked": "src/blocks/mega-panel/render.php ($allowed_styles = array('columns','cards','minimal'); $allowed_variants = array('general','media-cards','brands')); python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name FROM block_attributes WHERE block_slug='sgs/mega-panel'\""
+      },
+      "motion": null
+    },
+    {
+      "id": "F-B-08",
+      "name": "Panel side rail / secondary block",
+      "description": "A non-link block occupying part of the panel: a promo or feature card, a preview pane, a CTA block, or a row of image callout tiles.",
+      "surfaces": [
+        "dropdown",
+        "mega"
+      ],
+      "values_seen": [
+        {
+          "value": "none — the panel is a title and links only",
+          "refs": [
+            "away (dropdown)",
+            "butcherbox",
+            "rabbit",
+            "lamalama",
+            "indus-foods (More panel)"
+          ],
+          "evidence": "away dropdown secondary_blocks 'none: the panel is a title and three links'; indus More secondary_blocks rail null"
+        },
+        {
+          "value": "2-3 image callout tiles on the right, 273.6 x 350.8 cover, radius 0, with an 80px-radius pill button under each",
+          "refs": [
+            "away"
+          ],
+          "evidence": "away mega secondary_blocks.calloutShape"
+        },
+        {
+          "value": "340px feature card rail (tag / heading / text / CTA / media)",
+          "refs": [
+            "halcyon"
+          ],
+          "evidence": "halcyon columns-*/cards-* secondary_blocks rail_kind 'feature card via <dc-import _feature>', w 340"
+        },
+        {
+          "value": "400px preview pane rail",
+          "refs": [
+            "halcyon"
+          ],
+          "evidence": "halcyon minimal-* secondary_blocks rail_kind 'preview pane', w 400, hover_reactive_preview true"
+        },
+        {
+          "value": "300px promo/feature rail with an image slot",
+          "refs": [
+            "indus-foods"
+          ],
+          "evidence": "indus About/Trade secondary_blocks rail w 300 bg #075e80 / #0a7ea8"
+        },
+        {
+          "value": "300px CTA promo block ('Own Brands', pill + text + CTA)",
+          "refs": [
+            "indus-foods"
+          ],
+          "evidence": "indus Brands secondary_blocks rail_kind 'Own Brands promo block with CTA', w 300, borderLeft 3px #0a7ea8"
+        },
+        {
+          "value": "501px full-width strip under the list",
+          "refs": [
+            "indus-foods"
+          ],
+          "evidence": "indus sectors-list secondary_blocks rail w 501 h 73.5 x 732"
+        }
+      ],
+      "needed_by": [
+        {
+          "reference": "away",
+          "variant": null,
+          "tiers": [
+            1440
+          ],
+          "cell": "mega secondary_blocks"
+        },
+        {
+          "reference": "halcyon",
+          "variant": "columns-*, cards-*, minimal-*",
+          "tiers": [
+            1440
+          ],
+          "cell": "mega secondary_blocks"
+        },
+        {
+          "reference": "indus-foods",
+          "variant": "sectors-cards, sectors-list",
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown/mega secondary_blocks"
+        }
+      ],
+      "absent_in": [
+        "butcherbox",
+        "rabbit",
+        "lamalama",
+        "away (its dropdown panel only)"
+      ],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": [
+          "sgs/mega-aside::asideFormat",
+          "sgs/mega-panel::asideWidth",
+          "sgs/mega-panel::asideSeparator",
+          "sgs/mega-aside::asideBg",
+          "sgs/mega-aside::asidePadding",
+          "sgs/mega-aside::asideRadius",
+          "sgs/mega-aside::asideBorderColour"
+        ],
+        "note": "asideFormat is exactly ['feature','preview','cta'] — halcyon's feature card, halcyon's preview pane and indus's Own Brands CTA block, one value each; asideWidth defaults to 340px (halcyon's measured rail) and takes 300px or 400px. What has no expression is away's callout ROW: two or three image tiles side by side at the right of the panel are not one aside, and a mega-panel renders exactly one aside column. media-cards is a whole-panel variant, not a right-hand tile pair.",
+        "how_checked": "src/blocks/mega-aside/render.php ($allowed_formats = array('feature','preview','cta')); src/blocks/mega-panel/block.json::attributes.asideWidth (default '340px'), ::asideSeparator"
+      },
+      "motion": null
+    },
+    {
+      "id": "F-B-09",
+      "name": "Hover-reactive preview rail",
+      "description": "The panel's side rail swaps its content to describe whichever link the pointer is currently over, and returns to a resting default when nothing is hovered.",
+      "surfaces": [
+        "mega"
+      ],
+      "values_seen": [
+        {
+          "value": "true — rail text follows the hovered link (measured)",
+          "refs": [
+            "halcyon"
+          ],
+          "evidence": "halcyon minimal-light/minimal-dark secondary_blocks hover_reactive_preview true, preview_text_after_hovering_last_link measured"
+        },
+        {
+          "value": "false — rail is static content",
+          "refs": [
+            "halcyon (columns-*, cards-*)",
+            "indus-foods",
+            "away"
+          ],
+          "evidence": "halcyon columns/cards secondary_blocks hover_reactive_preview false (only the glow follows the pointer); indus all rails false"
+        }
+      ],
+      "needed_by": [
+        {
+          "reference": "halcyon",
+          "variant": "minimal-light, minimal-dark",
+          "tiers": [
+            1440
+          ],
+          "cell": "mega secondary_blocks.hover_reactive_preview"
+        }
+      ],
+      "absent_in": [
+        "away",
+        "butcherbox",
+        "rabbit",
+        "indus-foods",
+        "lamalama",
+        "halcyon (columns-* and cards-* variants)"
+      ],
+      "sgs_coverage": {
+        "status": "covered",
+        "attributes": [
+          "sgs/mega-aside::asideFormat"
+        ],
+        "note": "asideFormat='preview' is exactly this behaviour: render.php hides the media/label/button children and the block's view.js swaps the heading and text on hover/focus of a sibling link, restoring the authored default when nothing is hovered.",
+        "how_checked": "src/blocks/mega-aside/render.php (the `elseif ( 'preview' === $aside_format )` branch and its comment 'view.js swaps their content on hover/focus of a sibling link and restores the authored default')"
+      },
+      "motion": {
+        "effect": "content swap in the rail on hover/focus",
+        "tier": "V",
+        "fr": "Spec 38 §1 existing Tier V inventory (hover suite); no dedicated FR"
+      }
+    },
+    {
+      "id": "F-B-10",
+      "name": "Pointer-following light inside the panel",
+      "description": "A radial glow inside the panel's feature block that re-centres on the pointer as it moves.",
+      "surfaces": [
+        "mega"
+      ],
+      "values_seen": [
+        {
+          "value": "yes — radial glow re-centred by --mx/--my written on mousemove (measured mx 25%, my ~74.9%)",
+          "refs": [
+            "halcyon"
+          ],
+          "evidence": "halcyon columns-*/cards-* background_visual follows_pointer 'yes', measured_pointer_vars"
+        },
+        {
+          "value": "no",
+          "refs": [
+            "halcyon (minimal-*)",
+            "indus-foods",
+            "away",
+            "butcherbox",
+            "rabbit",
+            "lamalama"
+          ],
+          "evidence": "halcyon minimal-* background_visual follows_pointer 'no (preview pane has no pointer glow)'; indus background_visual behaviour 'static'"
+        }
+      ],
+      "needed_by": [
+        {
+          "reference": "halcyon",
+          "variant": "columns-light, columns-dark, cards-light, cards-dark",
+          "tiers": [
+            1440
+          ],
+          "cell": "mega background_visual.follows_pointer"
+        }
+      ],
+      "absent_in": [
+        "away",
+        "butcherbox",
+        "rabbit",
+        "indus-foods",
+        "lamalama",
+        "halcyon (minimal-* variants)"
+      ],
+      "sgs_coverage": {
+        "status": "covered",
+        "attributes": [
+          "sgs/mega-panel::fxEffect",
+          "sgs/mega-panel::fxFieldType",
+          "sgs/mega-panel::fxFieldShape",
+          "sgs/mega-panel::fxFieldColour",
+          "sgs/mega-panel::fxFieldRadius",
+          "sgs/mega-panel::fxFieldBlend",
+          "sgs/mega-panel::fxFieldTrail"
+        ],
+        "note": "fxEffect is PHP-validated against '' | cursor-field | particles | grid-dots | wave-gradient, and the block.json note records a pre-existing, always-on `.sgs-mega-aside` cursor spotlight separate from it — which is the halcyon behaviour itself.",
+        "how_checked": "src/blocks/mega-panel/block.json::attributes.fxEffect (_note naming the allow-list and the always-on .sgs-mega-aside cursor spotlight)"
+      },
+      "motion": {
+        "effect": "cursor-reactive radial field",
+        "tier": "V",
+        "fr": "FR-38-25 (cursor-reactive field) + FR-38-28 (its four signed looks)"
+      }
+    },
+    {
+      "id": "F-B-11",
+      "name": "Panel link hover treatment",
+      "description": "What changes on a panel link when the pointer is over it.",
+      "surfaces": [
+        "dropdown",
+        "mega"
+      ],
+      "values_seen": [
+        {
+          "value": "underline only (text-decoration none -> underline)",
+          "refs": [
+            "away"
+          ],
+          "evidence": "away item_states.linkHover 'text-decoration none -> underline (only property changed)'"
+        },
+        {
+          "value": "background tint (#16140a a=0.05 light / #ffffff a=0.07 dark)",
+          "refs": [
+            "halcyon"
+          ],
+          "evidence": "halcyon columns-* and minimal-* item_states.link_hover.backgroundColor"
+        },
+        {
+          "value": "background tint #1e2a3c a=0.043",
+          "refs": [
+            "indus-foods"
+          ],
+          "evidence": "indus sectors-list item_states.link_hover.backgroundColor"
+        },
+        {
+          "value": "card lift translateY(-3px) + shadow + accent border",
+          "refs": [
+            "halcyon"
+          ],
+          "evidence": "halcyon cards-* item_states.link_hover transform matrix(1,0,0,1,0,-3), boxShadow rgba(0,0,0,.3) 0 12px 28px -14px, border -> #5b6ef5"
+        },
+        {
+          "value": "card lift translateY(-6px) + shadow rgba(0,0,0,.4) 0 20px 40px -18px",
+          "refs": [
+            "indus-foods"
+          ],
+          "evidence": "indus sectors-cards item_states.link_hover"
+        },
+        {
+          "value": "padding-left shift 14px -> 22px",
+          "refs": [
+            "halcyon"
+          ],
+          "evidence": "halcyon minimal-* item_states.link_hover.paddingLeft"
+        },
+        {
+          "value": "padding-left shift 6px -> 12px",
+          "refs": [
+            "indus-foods"
+          ],
+          "evidence": "indus item_states.link_hover.paddingLeft"
+        },
+        {
+          "value": "global a:hover opacity fade stacking on top (0.7 halcyon / 0.75 indus)",
+          "refs": [
+            "halcyon",
+            "indus-foods"
+          ],
+          "evidence": "item_states.global_a_hover_rule on every variant"
+        },
+        {
+          "value": "not measured",
+          "refs": [
+            "butcherbox",
+            "rabbit"
+          ],
+          "evidence": "butcherbox/rabbit dropdown rows carry no item hover cell"
+        }
+      ],
+      "needed_by": [
+        {
+          "reference": "away",
+          "variant": null,
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown/mega item_states.linkHover"
+        },
+        {
+          "reference": "halcyon",
+          "variant": "all 6",
+          "tiers": [
+            1440
+          ],
+          "cell": "mega item_states.link_hover"
+        },
+        {
+          "reference": "indus-foods",
+          "variant": "sectors-cards, sectors-list",
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown/mega item_states.link_hover"
+        }
+      ],
+      "absent_in": [
+        "lamalama (child rows: hover diff empty at all three tiers)",
+        "butcherbox (not measured)",
+        "rabbit (not measured)"
+      ],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": [
+          "sgs/nav-bar-menu::submenuColourHover",
+          "sgs/nav-bar-menu::submenuLinkBgHover",
+          "sgs/nav-bar-menu::submenuLinkBgHoverTreatment",
+          "sgs/nav-bar-menu::submenuTextDecorationHover",
+          "sgs/nav-bar-menu::submenuLinkBorderColourHover",
+          "sgs/mega-panel::groupBorderColourHover",
+          "sgs/mega-panel::iconBackgroundHover",
+          "sgs/mega-panel::iconColourHover"
+        ],
+        "note": "Underline, tint, colour swap and border swap are all operator attributes. The CARD LIFT is not: mega-panel/style.css hardcodes `transform: translateY(-3px)` plus a fixed `box-shadow:0 20px 40px -12px rgba(0,0,0,.28)` ::after for `[data-mega-style='cards']`. That reproduces halcyon's -3px exactly and indus's -6px not at all, with no attribute to change it. The padding-left shift on hover has no attribute either.",
+        "how_checked": "src/blocks/mega-panel/style.css (`[data-mega-style='cards'] .sgs-mega-group:hover { transform: translateY(-3px) }` and its ::after box-shadow, with a prefers-reduced-motion block); python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name FROM block_attributes WHERE block_slug='sgs/mega-panel' AND attr_name LIKE '%Hover%'\""
+      },
+      "motion": {
+        "effect": "hover lift / tint / underline transitions",
+        "tier": "V",
+        "fr": "Spec 38 §1 existing Tier V inventory (hover suite); no dedicated FR"
+      }
+    },
+    {
+      "id": "F-B-12",
+      "name": "Panel link ornament",
+      "description": "A non-text mark attached to each panel link: an index number, an icon in a tinted host tile, a bare glyph, or a rule between rows.",
+      "surfaces": [
+        "dropdown",
+        "mega"
+      ],
+      "values_seen": [
+        {
+          "value": "none",
+          "refs": [
+            "away"
+          ],
+          "evidence": "away item_states {ornament 'none', separators 'none'}"
+        },
+        {
+          "value": "index numbers 01..05, 12px/700, accent colour",
+          "refs": [
+            "indus-foods"
+          ],
+          "evidence": "indus item_states.ornament.index_numbers [{size '12px', weight '700', colour '#0a7ea8'}]"
+        },
+        {
+          "value": "icon host tiles 34x34 or 36x36, radius 10px, tinted background, 16px accent glyph",
+          "refs": [
+            "halcyon"
+          ],
+          "evidence": "halcyon columns-*/cards-* item_states.ornament.icon_hosts"
+        },
+        {
+          "value": "bare glyph-only SVG, 15px",
+          "refs": [
+            "halcyon",
+            "indus-foods"
+          ],
+          "evidence": "halcyon minimal-* glyph_only_svgs [{size 15, colour '#5b6ef5'}]; indus sectors-list [{size 15, colour '#d8ca50'}]"
+        },
+        {
+          "value": "1px row separators",
+          "refs": [
+            "indus-foods"
+          ],
+          "evidence": "indus item_states.separators '1px rows'"
+        },
+        {
+          "value": "five-dot asterisk glyph 10x10 at the right end of the parent row",
+          "refs": [
+            "lamalama"
+          ],
+          "evidence": "lamalama zone_model.glyph"
+        },
+        {
+          "value": "no current/active indicator anywhere",
+          "refs": [
+            "halcyon",
+            "indus-foods"
+          ],
+          "evidence": "item_states.current_indicator 'none' on every variant of both drafts"
+        }
+      ],
+      "needed_by": [
+        {
+          "reference": "halcyon",
+          "variant": "all 6",
+          "tiers": [
+            1440
+          ],
+          "cell": "mega item_states.ornament"
+        },
+        {
+          "reference": "indus-foods",
+          "variant": "sectors-cards, sectors-list",
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown/mega item_states.ornament"
+        },
+        {
+          "reference": "lamalama",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "dropdown zone_model.glyph"
+        }
+      ],
+      "absent_in": [
+        "away",
+        "butcherbox",
+        "rabbit"
+      ],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": [
+          "sgs/mega-panel::iconBackground",
+          "sgs/mega-panel::iconBackgroundGradient",
+          "sgs/mega-panel::iconColour",
+          "sgs/mega-panel::iconColourHover",
+          "sgs/nav-drawer-menu::sublinkMarkerIcon",
+          "sgs/nav-drawer-menu::sublinkMarkerColour"
+        ],
+        "note": "The icon-host tile is fully covered on the mega fork (background, gradient, colour, hover pairs). The INDEX NUMBER is not: there is no counter, no ordinal attribute and no `::before` counter rule anywhere in the mega or nav-bar CSS, so indus's 01..05 (and dogstudio's desktop-only drawer counter) would have to be typed into each link's text. The dropdown fork has no icon-host attribute at all — the only marker attribute pair lives on sgs/nav-drawer-menu.",
+        "how_checked": "grep -rniE 'counter\\(|index-number|numbered' plugins/sgs-blocks/src/blocks/mega-group/ plugins/sgs-blocks/src/blocks/mega-panel/ plugins/sgs-blocks/includes/nav-menu-submenu-css.php -> 0 matches; python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT block_slug, attr_name FROM block_attributes WHERE attr_name LIKE '%ndex%' OR attr_name LIKE '%ordinal%' OR attr_name LIKE '%counter%'\" -> no nav/mega rows"
+      },
+      "motion": null
+    },
+    {
+      "id": "F-B-13",
+      "name": "Panel open trigger mode (hover/focus vs click)",
+      "description": "What opens the panel: pointer hover and keyboard focus on the item, or a click that toggles it.",
+      "surfaces": [
+        "dropdown",
+        "mega",
+        "trigger-close"
+      ],
+      "values_seen": [
+        {
+          "value": "hover on the item OR keyboard focus, no click (click/Enter follows the item's href instead)",
+          "refs": [
+            "away"
+          ],
+          "evidence": "away trigger_close.open 'hover on the item or keyboard focus (aria-expanded true)'; mechanics.enterOnTrigger 'follows the trigger href'"
+        },
+        {
+          "value": "hover or keyboard focus, no click; trigger is a <button> with no href",
+          "refs": [
+            "halcyon",
+            "indus-foods"
+          ],
+          "evidence": "halcyon/indus trigger_close.open 'hover or keyboard focus on the bar item (no click)'"
+        },
+        {
+          "value": "click toggle (aria-expanded on a real button)",
+          "refs": [
+            "butcherbox"
+          ],
+          "evidence": "butcherbox dropdown mechanics.open 'click (aria-expanded true)'; archetype 'a click-toggled button'"
+        },
+        {
+          "value": "click toggle on the parent row, click again collapses",
+          "refs": [
+            "lamalama"
+          ],
+          "evidence": "lamalama trigger_close.trigger 'the parent row is a <button> (click); it toggles'; mechanics 'click only (no hover open)'"
+        },
+        {
+          "value": "not established (synthetic pointer events did not open it)",
+          "refs": [
+            "rabbit"
+          ],
+          "evidence": "rabbit archetype 'open state was not reproduced with synthetic events'"
+        }
+      ],
+      "needed_by": [
+        {
+          "reference": "away",
+          "variant": null,
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown/mega trigger_close.open"
+        },
+        {
+          "reference": "halcyon",
+          "variant": "all 6",
+          "tiers": [
+            1440
+          ],
+          "cell": "mega trigger_close.open"
+        },
+        {
+          "reference": "indus-foods",
+          "variant": "sectors-cards, sectors-list",
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown/mega trigger_close.open"
+        },
+        {
+          "reference": "butcherbox",
+          "variant": null,
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown mechanics.open"
+        },
+        {
+          "reference": "lamalama",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "dropdown trigger_close.trigger"
+        }
+      ],
+      "absent_in": [
+        "rabbit (open state not measured)"
+      ],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": [],
+        "note": "mega-disclosure.js opens on hover-intent when `matchMedia('(hover:hover) and (pointer:fine)')` matches and on tap otherwise, plus keyboard throughout — so the hover-or-focus value (away, halcyon, indus) is the shipped default and is covered. What is missing is an OPERATOR CHOICE: there is no attribute to make a desktop panel click-only, so butcherbox's click-toggled Gifts panel and lamalama's click-toggled accordion row cannot be reproduced on a hover-capable pointer. It needs one enum attribute (hover-intent | click) read into the interactivity context beside intentDelay.",
+        "how_checked": "src/shared/nav-interactivity/mega-disclosure.js::canHover (the matchMedia gate), ::enterBridge, ::toggle ('Toggle on click/tap. On touch (no hover) this is the sole open path'); python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name FROM block_attributes WHERE block_slug='sgs/nav-bar-menu'\" -> no open-mode attribute"
+      },
+      "motion": null
+    },
+    {
+      "id": "F-B-14",
+      "name": "Open intent delay and close grace",
+      "description": "How long the pointer must rest on an item before the panel opens, and how long the panel stays open after the pointer leaves so a diagonal path to it does not slam it shut.",
+      "surfaces": [
+        "dropdown",
+        "mega"
+      ],
+      "values_seen": [
+        {
+          "value": "open ~68ms, panel visible ~196ms after that; close grace ~59ms, fade starts ~225ms later",
+          "refs": [
+            "away"
+          ],
+          "evidence": "away mechanics.openDelayMs / visibleDelay / closeGrace"
+        },
+        {
+          "value": "close grace 170ms declared, 173.2-188.0ms measured over 6 trials (median 183.2); 4px trigger-to-panel gap traversable",
+          "refs": [
+            "halcyon"
+          ],
+          "evidence": "halcyon trigger_close.close_grace_ms_measured + grace_source_ms 170 + gap_traversal.gap_px 4"
+        },
+        {
+          "value": "close grace 170ms declared, 173.2-187.5ms measured (median 183.7); 4px gap",
+          "refs": [
+            "indus-foods"
+          ],
+          "evidence": "indus trigger_close.close_grace_ms_measured"
+        },
+        {
+          "value": "not applicable — click toggle, no grace",
+          "refs": [
+            "lamalama",
+            "butcherbox"
+          ],
+          "evidence": "lamalama mechanics.closeGrace 'not applicable (click toggle)'"
+        },
+        {
+          "value": "not measured",
+          "refs": [
+            "butcherbox",
+            "rabbit"
+          ],
+          "evidence": "not_measured: butcherbox dropdown 1440 mechanics (close grace, Escape, outside click untested)"
+        }
+      ],
+      "needed_by": [
+        {
+          "reference": "away",
+          "variant": null,
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown/mega mechanics.openDelayMs + closeGrace"
+        },
+        {
+          "reference": "halcyon",
+          "variant": "all 6",
+          "tiers": [
+            1440
+          ],
+          "cell": "mega trigger_close.close_grace_ms_measured"
+        },
+        {
+          "reference": "indus-foods",
+          "variant": "sectors-cards, sectors-list",
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown/mega trigger_close.close_grace_ms_measured"
+        }
+      ],
+      "absent_in": [
+        "butcherbox (click toggle, not measured)",
+        "rabbit (not measured)",
+        "lamalama (click toggle)"
+      ],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": [
+          "sgs/nav-bar-menu::submenuCloseGrace"
+        ],
+        "note": "submenuCloseGrace (number, default 170) matches both drafts' declared value exactly and is wired through render.php into the DROPDOWN fork's interactivity context. It is NOT wired into the MEGA fork: nav-menu-markup.php builds the mega context with a literal `'closeGrace' => 170` while the dropdown branch below it passes `$submenu['close_grace']`. So the one attribute that exists does nothing on a mega panel — an operator moving the slider sees no change. The open intent delay has no attribute at all: markup hardcodes `intentDelay => 300` and the JS clamps it to MAX_INTENT_DELAY_MS = 80.",
+        "how_checked": "includes/nav-menu-markup.php (mega fork `'closeGrace' => 170` literal; dropdown fork `'closeGrace' => $submenu['close_grace']`); src/blocks/nav-bar-menu/render.php ('close_grace' => (int) ( $attributes['submenuCloseGrace'] ?? 170 )); src/shared/nav-interactivity/mega-disclosure.js::enterBridge (MAX_INTENT_DELAY_MS = 80)"
+      },
+      "motion": null
+    },
+    {
+      "id": "F-B-15",
+      "name": "Panel open/close motion",
+      "description": "How the panel appears and disappears, and whether its children arrive staggered.",
+      "surfaces": [
+        "dropdown",
+        "mega"
+      ],
+      "values_seen": [
+        {
+          "value": "opacity fade with a visibility delay: visible ~196ms after expanded, 0 -> 0.95 over ~166ms; close fade starts ~225ms after collapse, lasts ~190ms",
+          "refs": [
+            "away"
+          ],
+          "evidence": "away motion[0] 'panel fade in and out', tier V, substrate DOM"
+        },
+        {
+          "value": "INTENT (source): 340ms entry, opacity + translateY(-8px) + scale(.99), cubic-bezier(.16,.84,.32,1), with children staggered 460ms at min(i*26,320)ms. RENDER: nothing runs — 0 animations, panel opacity 1 on its first frame",
+          "refs": [
+            "halcyon",
+            "indus-foods"
+          ],
+          "evidence": "halcyon/indus mega motion.source_says vs motion.render_shows + motion.contradiction ('componentDidUpdate(prevProps) signature mismatch throws before animatePanel')"
+        },
+        {
+          "value": "panel-to-panel switching is an instant swap with no cross-fade",
+          "refs": [
+            "halcyon"
+          ],
+          "evidence": "halcyon.md 'Interaction values': 'Panel-to-panel switching is an instant swap with no cross-fade'"
+        },
+        {
+          "value": "the pill's height animates (height auto) as the accordion opens",
+          "refs": [
+            "lamalama"
+          ],
+          "evidence": "lamalama dropdown motion 'pill height animates (height auto)'; timing not separately sampled"
+        },
+        {
+          "value": "slides in over 0.15s (mobile panel)",
+          "refs": [
+            "butcherbox"
+          ],
+          "evidence": "butcherbox.md mobile panel 'slides in over 0.15s'"
+        }
+      ],
+      "needed_by": [
+        {
+          "reference": "away",
+          "variant": null,
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown/mega motion"
+        },
+        {
+          "reference": "halcyon",
+          "variant": "all 6",
+          "tiers": [
+            1440
+          ],
+          "cell": "mega motion (source_says = INTENT; render_shows = none)"
+        },
+        {
+          "reference": "indus-foods",
+          "variant": "sectors-cards, sectors-list",
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown/mega motion (source vs render)"
+        },
+        {
+          "reference": "lamalama",
+          "variant": null,
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown motion"
+        }
+      ],
+      "absent_in": [
+        "butcherbox (desktop dropdown motion not measured)",
+        "rabbit (open state not measured)"
+      ],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": [
+          "sgs/nav-bar-menu::submenuAnimation",
+          "sgs/mega-panel::staggerOnOpen"
+        ],
+        "note": "submenuAnimation is PHP-validated as none | fade | slide-down and covers away's fade and butcherbox's slide; staggerOnOpen maps to the shared stagger module's `data-stagger`, which covers the two drafts' INTENDED staggered children. The drafts' intended ENTRY (opacity + translateY(-8px) + scale(.99), 340ms, a named cubic-bezier) has no matching enum value — slide-down is a directional translate with no scale and no per-instance duration or easing. Note the drafts' RENDER shows no motion at all, so the fidelity target here is the source intent, not the measured render.",
+        "how_checked": "src/blocks/nav-bar-menu/block.json::attributes.submenuAnimation (description: 'none / fade / slide-down. PHP-validated, no JSON enum'); src/blocks/mega-panel/block.json::attributes.staggerOnOpen (_note: 'maps to the `data-stagger` attribute the shared stagger effect module watches for')"
+      },
+      "motion": {
+        "effect": "panel entry/exit fade, translate, scale; staggered children",
+        "tier": "V",
+        "fr": "Spec 38 §1 existing Tier V inventory (entrance x16) + FR-38-4 (the data-sgs-fx-* grammar, which names data-stagger); no dedicated entrance FR"
+      }
+    },
+    {
+      "id": "F-B-16",
+      "name": "Panel dismissal and focus semantics",
+      "description": "What closes an open panel besides leaving it, and what happens to keyboard focus while it is open.",
+      "surfaces": [
+        "dropdown",
+        "mega"
+      ],
+      "values_seen": [
+        {
+          "value": "pointer leave or blur only; Escape does NOT close a focus-opened panel; no dialog, page stays interactive, no scroll lock",
+          "refs": [
+            "away"
+          ],
+          "evidence": "away mechanics {closeWays ['pointer leaves','blur'], escape 'does not close while focused', scrollLock 'none', dialogOrInert 'no dialog'}"
+        },
+        {
+          "value": "leave-with-grace, Escape, or a backdrop click; focus is not moved into the panel and not restored on close; Tab out leaves it open (no blur handler)",
+          "refs": [
+            "halcyon",
+            "indus-foods"
+          ],
+          "evidence": "halcyon/indus trigger_close.close + mechanics.focus_handling + mechanics.no_blur_close"
+        },
+        {
+          "value": "panel links unreachable by Tab (tabbing from the last bar item closes the panel)",
+          "refs": [
+            "halcyon"
+          ],
+          "evidence": "halcyon.md finding 4: 'Panel links cannot be reached by Tab'"
+        },
+        {
+          "value": "panel links reachable by Tab for the LAST bar item only",
+          "refs": [
+            "indus-foods"
+          ],
+          "evidence": "indus-foods.md: 'Panel links are reachable by Tab only for the last item, More'"
+        },
+        {
+          "value": "click toggle only; outside click closes; Escape does NOT close; closes on a >20px scroll",
+          "refs": [
+            "lamalama"
+          ],
+          "evidence": "lamalama trigger-close mechanics {escape 'does NOT close', outsideClick 'closes', scrollCloses 'closes after a 30px scroll step' at 768/1440}"
+        },
+        {
+          "value": "not measured",
+          "refs": [
+            "butcherbox",
+            "rabbit"
+          ],
+          "evidence": "not_measured: butcherbox dropdown 1440 mechanics (close grace, Escape and outside click were not tested)"
+        }
+      ],
+      "needed_by": [
+        {
+          "reference": "away",
+          "variant": null,
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown/mega mechanics"
+        },
+        {
+          "reference": "halcyon",
+          "variant": "all 6",
+          "tiers": [
+            1440
+          ],
+          "cell": "mega mechanics + trigger_close.close"
+        },
+        {
+          "reference": "indus-foods",
+          "variant": "sectors-cards, sectors-list",
+          "tiers": [
+            1440
+          ],
+          "cell": "dropdown/mega mechanics"
+        },
+        {
+          "reference": "lamalama",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close mechanics"
+        }
+      ],
+      "absent_in": [
+        "butcherbox (not measured)",
+        "rabbit (not measured)"
+      ],
+      "sgs_coverage": {
+        "status": "conflict",
+        "attributes": [],
+        "note": "SGS ships Escape-closes, outside-click-closes, focus-returns-to-trigger and Tab-off-closes, all unconditionally and with no attribute. That is strictly better than every reference, and it is what makes it a CONFLICT for clone fidelity rather than a gap: away's measured behaviour is that Escape does NOT close a focus-opened panel and that Enter on a trigger follows its href, and lamalama closes on a >20px scroll. Neither can be reproduced, and neither should be — reproducing them would ship a WCAG 2.1 AA regression (2.1.2 No Keyboard Trap / 1.4.13 Dismissible). Record the divergence as deliberate at clone time rather than treating it as a missing control. The one reference behaviour worth an attribute is lamalama's close-on-scroll, which is a design choice, not an a11y defect.",
+        "how_checked": "src/shared/nav-interactivity/mega-disclosure.js (outsideClickHandler on document 'click'; the `key === 'Escape' || key === 'Esc'` branches in triggerKeydown and the in-panel keydown handler; the document-level scroll+resize close listener)"
+      },
+      "motion": null
+    },
+    {
+      "id": "F-B-17",
+      "name": "Trigger presence per tier and the collapse breakpoint",
+      "description": "Whether the menu button exists at a given width, or the bar's own items are the triggers instead.",
+      "surfaces": [
+        "trigger-close"
+      ],
+      "values_seen": [
+        {
+          "value": "burger at every tier (the bar never carries nav items)",
+          "refs": [
+            "buck",
+            "dogstudio",
+            "fantasy",
+            "lamalama",
+            "lusion",
+            "studionamma",
+            "wearecollins",
+            "resn"
+          ],
+          "evidence": "tier_delta 'not dropped at any tier' (dogstudio, studionamma), 'identical at every tier' (lamalama), resn floating button at 375/768/1440"
+        },
+        {
+          "value": "burger below the breakpoint only; above it the bar items are the triggers and the burger is display:none / removed from the DOM",
+          "refs": [
+            "away",
+            "butcherbox",
+            "rabbit",
+            "halcyon",
+            "indus-foods"
+          ],
+          "evidence": "away 1440 archetype 'the hamburger exists but is display none'; halcyon/indus 1440 'burger absent (removed from the DOM)'; butcherbox/rabbit 1440 'no burger'"
+        },
+        {
+          "value": "breakpoint 940px",
+          "refs": [
+            "halcyon"
+          ],
+          "evidence": "halcyon.md: 'below 940px is mobile (939 burger, 940 nav, verified)'"
+        },
+        {
+          "value": "breakpoint 960px",
+          "refs": [
+            "indus-foods"
+          ],
+          "evidence": "indus dropdown 375/768 archetype 'below 960px panels are not rendered'"
+        },
+        {
+          "value": "breakpoint above 768 and at or below 1440 (nav display:none at 768)",
+          "refs": [
+            "away"
+          ],
+          "evidence": "away dropdown 768 archetype 'the nav is display none (0x0) at 768px'"
+        },
+        {
+          "value": "the burger moves to a DIFFERENT, always-fixed DOM element at 375",
+          "refs": [
+            "buck"
+          ],
+          "evidence": "buck 375 tier_delta drop 'migrated to another DOM element'; archetype standaloneDomElementAtThisTier 'direct child of #__next, outside the header'"
+        }
+      ],
+      "needed_by": [
+        {
+          "reference": "studionamma",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close archetype + tier_delta"
+        },
+        {
+          "reference": "buck",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close archetype + tier_delta"
+        },
+        {
+          "reference": "dogstudio",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close archetype + tier_delta"
+        },
+        {
+          "reference": "fantasy",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close archetype + tier_delta"
+        },
+        {
+          "reference": "lamalama",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close archetype + tier_delta"
+        },
+        {
+          "reference": "lusion",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close archetype + tier_delta"
+        },
+        {
+          "reference": "wearecollins",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close archetype + tier_delta"
+        },
+        {
+          "reference": "resn",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close archetype + tier_delta"
+        },
+        {
+          "reference": "away",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close archetype + tier_delta"
+        },
+        {
+          "reference": "butcherbox",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close archetype + tier_delta"
+        },
+        {
+          "reference": "rabbit",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close archetype + tier_delta"
+        },
+        {
+          "reference": "halcyon",
+          "variant": "all 6",
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close archetype + tier_delta"
+        },
+        {
+          "reference": "indus-foods",
+          "variant": "sectors-cards, sectors-list",
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close archetype + tier_delta"
+        }
+      ],
+      "absent_in": [],
+      "sgs_coverage": {
+        "status": "covered",
+        "attributes": [
+          "sgs/nav-bar-menu::showBurger",
+          "sgs/nav-bar-menu::collapsePoint"
+        ],
+        "note": "collapsePoint is a plain number (default 768) so 940 and 960 are ordinary values, and showBurger is the always-burger case (buck, dogstudio, fantasy, lamalama, lusion, studionamma, wearecollins, resn) with the bar carrying no items. Only buck's 375-tier DOM migration is outside it — see F-B-24.",
+        "how_checked": "src/blocks/nav-bar-menu/block.json::attributes.collapsePoint (type number, default 768) and ::showBurger (boolean, default true)"
+      },
+      "motion": null
+    },
+    {
+      "id": "F-B-18",
+      "name": "Trigger form",
+      "description": "What the closed menu button shows: an icon, a text label, both, or a swapped image.",
+      "surfaces": [
+        "trigger-close"
+      ],
+      "values_seen": [
+        {
+          "value": "three-bar icon burger",
+          "refs": [
+            "buck",
+            "dogstudio",
+            "lamalama"
+          ],
+          "evidence": "buck 'icon burger (three horizontal bars, 54x26 viewBox)'; dogstudio 'three white span bars 20/16/20 x 2px'; lamalama '3 bars', bars 16x2"
+        },
+        {
+          "value": "two-bar icon burger",
+          "refs": [
+            "halcyon",
+            "indus-foods",
+            "wearecollins"
+          ],
+          "evidence": "halcyon/indus burger_lines [18px x 1.5px] x2, line_gap 5px; wearecollins 'two bars 16x1.5'"
+        },
+        {
+          "value": "text label only",
+          "refs": [
+            "studionamma"
+          ],
+          "evidence": "studionamma archetype 'text-label trigger ... no burger icon', 14.4px GT Pressura Mono uppercase"
+        },
+        {
+          "value": "text pill at 1440, icon-only circle with two dots at 768/375",
+          "refs": [
+            "lusion"
+          ],
+          "evidence": "lusion trigger_close.burgerStyle 'text pill with two dots (icon-only circle with two dots at 768 and 375)'"
+        },
+        {
+          "value": "text label at 768/1440, 2-bar hamburger icon at 375, in a blurred pill",
+          "refs": [
+            "fantasy"
+          ],
+          "evidence": "fantasy trigger_close.burgerStyle 'hamburger icon svg 2 bars (375 only) / text label'; ground fill #ffffff@0.15 blur(4px) radius ~8.3px"
+        },
+        {
+          "value": "28x28 three-line SVG in a <button> with a visually-hidden label",
+          "refs": [
+            "away"
+          ],
+          "evidence": "away trigger_close.burgerStyle 'three 24px lines (paths M0 6H24, M0 12H24, M0 18H24)'"
+        },
+        {
+          "value": "two <img> files swapped (menu-closed.svg / menu-opened.svg)",
+          "refs": [
+            "rabbit"
+          ],
+          "evidence": "rabbit 375 archetype closedIcon 'menu-closed.svg', openIcon 'menu-opened.svg'"
+        },
+        {
+          "value": "an 18x18 SVG <use> symbol in an unfocusable <div>, with a separate label span at opacity 0",
+          "refs": [
+            "resn"
+          ],
+          "evidence": "resn trigger_close.kind 'a <div class=\"js-shell__button--menu\"> with an SVG icon and a text span; not a <button> or <a>'"
+        },
+        {
+          "value": "24x24 burger icon at the LEFT of the bar",
+          "refs": [
+            "butcherbox"
+          ],
+          "evidence": "butcherbox 375 archetype openBurger [16,56,24,24]"
+        }
+      ],
+      "needed_by": [
+        {
+          "reference": "buck",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close trigger_close.burgerStyle"
+        },
+        {
+          "reference": "dogstudio",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close trigger_close.burgerStyle"
+        },
+        {
+          "reference": "lamalama",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close trigger_close.burgerStyle"
+        },
+        {
+          "reference": "wearecollins",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close trigger_close.burgerStyle"
+        },
+        {
+          "reference": "studionamma",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close trigger_close.burgerStyle"
+        },
+        {
+          "reference": "lusion",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close trigger_close.burgerStyle"
+        },
+        {
+          "reference": "fantasy",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close trigger_close.burgerStyle"
+        },
+        {
+          "reference": "away",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close trigger_close.burgerStyle"
+        },
+        {
+          "reference": "rabbit",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close trigger_close.burgerStyle"
+        },
+        {
+          "reference": "resn",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close trigger_close.burgerStyle"
+        },
+        {
+          "reference": "butcherbox",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close trigger_close.burgerStyle"
+        },
+        {
+          "reference": "halcyon",
+          "variant": "all 6",
+          "tiers": [
+            375,
+            768
+          ],
+          "cell": "trigger-close geometry.burger_lines"
+        },
+        {
+          "reference": "indus-foods",
+          "variant": "sectors-cards, sectors-list",
+          "tiers": [
+            375,
+            768
+          ],
+          "cell": "trigger-close geometry.burger_lines"
+        }
+      ],
+      "absent_in": [],
+      "sgs_coverage": {
+        "status": "covered",
+        "attributes": [
+          "sgs/nav-bar-menu::triggerMode",
+          "sgs/nav-bar-menu::triggerIcon",
+          "sgs/nav-bar-menu::triggerLabel",
+          "sgs/nav-bar-menu::burgerSize",
+          "sgs/nav-bar-menu::burgerBg",
+          "sgs/nav-bar-menu::burgerColour",
+          "sgs/nav-bar-menu::burgerFontFamily",
+          "sgs/nav-bar-menu::burgerFontSize",
+          "sgs/nav-bar-menu::burgerFontWeight",
+          "sgs/nav-bar-menu::burgerLetterSpacing",
+          "sgs/nav-bar-menu::burgerTextTransform"
+        ],
+        "note": "triggerMode is icon | text | icon-and-text (PHP-validated), which is exactly the three shapes the references use; triggerIcon is an icon object (default lucide/menu) so a 2-bar, 3-bar or bespoke SVG is a choice of icon; triggerLabel + the burgerFont*/burgerTextTransform row cover studionamma's mono uppercase MENU and lusion's Aeonik pill; burgerBg/burgerColour cover fantasy's translucent blurred pill.",
+        "how_checked": "src/blocks/nav-bar-menu/block.json::attributes.triggerMode (description 'icon / text / icon-and-text. PHP-validated, no JSON enum'), ::triggerIcon (default {source:'lucide',name:'menu'}), ::triggerLabel (default 'Menu'), ::burgerSize (default '44px')"
+      },
+      "motion": null
+    },
+    {
+      "id": "F-B-19",
+      "name": "Close-control model",
+      "description": "Where the close control is once the menu is open: the burger itself changed in place, a separate control somewhere else, or no close control at all.",
+      "surfaces": [
+        "trigger-close"
+      ],
+      "values_seen": [
+        {
+          "value": "replaces the burger IN PLACE, same rect, header stays visible above the panel, NO top row inside the panel",
+          "refs": [
+            "away (375)",
+            "rabbit (375)",
+            "buck",
+            "dogstudio",
+            "fantasy",
+            "lamalama",
+            "lusion",
+            "studionamma"
+          ],
+          "evidence": "away 375 archetype 'hamburger replaced in place by a close icon ... the toggle stays visible' + zone_model.topRow 'no separate top row'; rabbit 375 sameRectWhenOpen true, headerStaysVisibleOverDrawer true, topRowInDrawer false; buck/dogstudio/fantasy/lamalama/lusion/studionamma replacesInPlace true, topRow false"
+        },
+        {
+          "value": "replaces the burger in place AND the panel carries its own copy of the whole bar row at the identical rect",
+          "refs": [
+            "wearecollins"
+          ],
+          "evidence": "wearecollins archetype '... the drawer also carries its own copy of the bar and button at the identical position'; zone_model.topRow 'yes: the drawer opens with its own top row (nav.header copy)'"
+        },
+        {
+          "value": "SEPARATE close button inside the panel's own top row (burger stays where it was, underneath)",
+          "refs": [
+            "halcyon",
+            "indus-foods"
+          ],
+          "evidence": "halcyon/indus archetype replaces_in_place false, close 'separate \"x\" button inside the overlay top row', top_row_holds_close true"
+        },
+        {
+          "value": "SEPARATE close control at the OPPOSITE end of the header; the burger is display:none while open",
+          "refs": [
+            "butcherbox"
+          ],
+          "evidence": "butcherbox 375 archetype burgerDisplayWhenOpen 'none', closeDisplayWhenOpen 'block', openBurger [16,56,24,24] vs close [335,60,24,16]"
+        },
+        {
+          "value": "SEPARATE close button appearing over the trigger, which drops to opacity 0",
+          "refs": [
+            "resn (375)"
+          ],
+          "evidence": "resn 375 geometry.closeButtonWhileOpen {w 26,h 26,left 330,top 25}; item_states.open 'the menu button goes to opacity 0'"
+        },
+        {
+          "value": "NO close control: the panel is dismissed by other routes only",
+          "refs": [
+            "resn (768, 1440)",
+            "away (768)",
+            "away (1440)",
+            "halcyon (1440)",
+            "indus-foods (1440)"
+          ],
+          "evidence": "resn 1440 archetype 'the same button does not close it'; away 768 'the drawer covers the toggle, so the visible closers are the scrim and Escape'; halcyon/indus 1440 close_button 'none'"
+        }
+      ],
+      "needed_by": [
+        {
+          "reference": "away",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close archetype + trigger_close.replacesInPlace + zone_model.topRow"
+        },
+        {
+          "reference": "rabbit",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close archetype + trigger_close.replacesInPlace + zone_model.topRow"
+        },
+        {
+          "reference": "buck",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close archetype + trigger_close.replacesInPlace + zone_model.topRow"
+        },
+        {
+          "reference": "dogstudio",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close archetype + trigger_close.replacesInPlace + zone_model.topRow"
+        },
+        {
+          "reference": "fantasy",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close archetype + trigger_close.replacesInPlace + zone_model.topRow"
+        },
+        {
+          "reference": "lamalama",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close archetype + trigger_close.replacesInPlace + zone_model.topRow"
+        },
+        {
+          "reference": "lusion",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close archetype + trigger_close.replacesInPlace + zone_model.topRow"
+        },
+        {
+          "reference": "studionamma",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close archetype + trigger_close.replacesInPlace + zone_model.topRow"
+        },
+        {
+          "reference": "wearecollins",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close archetype + trigger_close.replacesInPlace + zone_model.topRow"
+        },
+        {
+          "reference": "butcherbox",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close archetype + trigger_close.replacesInPlace + zone_model.topRow"
+        },
+        {
+          "reference": "resn",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close archetype + trigger_close.replacesInPlace + zone_model.topRow"
+        },
+        {
+          "reference": "halcyon",
+          "variant": "all 6",
+          "tiers": [
+            375,
+            768
+          ],
+          "cell": "trigger-close archetype.replaces_in_place"
+        },
+        {
+          "reference": "indus-foods",
+          "variant": "sectors-cards, sectors-list",
+          "tiers": [
+            375,
+            768
+          ],
+          "cell": "trigger-close archetype.replaces_in_place"
+        }
+      ],
+      "absent_in": [],
+      "sgs_coverage": {
+        "status": "covered",
+        "attributes": [
+          "sgs/nav-drawer::closeStyle",
+          "sgs/nav-drawer::closeIcon",
+          "sgs/nav-drawer::closeLabel",
+          "sgs/nav-drawer::modality",
+          "sgs/nav-drawer::anchor"
+        ],
+        "note": "closeStyle is a real enum: separate-x (halcyon, indus, butcherbox, resn@375), text-swap (studionamma MENU->CLOSE, lusion MENU->CLOSE), burger-morph (dogstudio, wearecollins, lamalama, buck, away@375, rabbit@375) and icon-and-text. 'Header stays visible over the panel with no top row' is the pairing of nav-drawer anchor='header' (the panel starts below the header and spans the width beneath it) with modality='non-modal', which uses show() + freezeBackground()'s selective inert so the header and burger row stay live and keyboard-reachable instead of being inerted by showModal().",
+        "how_checked": "src/blocks/nav-drawer/block.json::attributes.closeStyle (enum ['separate-x','text-swap','burger-morph','icon-and-text']), ::modality (enum ['modal','non-modal'], description naming freezeBackground's selective inert); src/blocks/nav-drawer/render.php ($sgs_nd_allowed_anchors = array('full-screen','header','trigger','centred'))"
+      },
+      "motion": null
+    },
+    {
+      "id": "F-B-20",
+      "name": "Close-control placement relative to the burger",
+      "description": "Where a SEPARATE close control sits compared with the burger it replaces, and whether it is the same size.",
+      "surfaces": [
+        "trigger-close"
+      ],
+      "values_seen": [
+        {
+          "value": "same slot, dx 0 / dy 0, same size (in-place swap)",
+          "refs": [
+            "away (375)",
+            "rabbit (375)",
+            "buck",
+            "dogstudio",
+            "fantasy",
+            "lamalama",
+            "lusion",
+            "wearecollins"
+          ],
+          "evidence": "away 375 geometry.sameSlotOpenAndClosed true; rabbit sameRectWhenOpen true; lamalama closedRect == openRect; wearecollins sameSlotOpenAndClosed true"
+        },
+        {
+          "value": "same slot but the control's WIDTH shrinks (93.3 -> 51.7 at 1440, 72 -> 39.9 at 768), right edge fixed",
+          "refs": [
+            "fantasy"
+          ],
+          "evidence": "fantasy geometry.rightEdgeFixed true, widthChange -41.6 / -32.1 / 0.0"
+        },
+        {
+          "value": "same slot, width grows 47.5 -> 57.3 (MENU -> CLOSE), left edge fixed at 768/1440 and shifting at 375",
+          "refs": [
+            "studionamma"
+          ],
+          "evidence": "studionamma geometry before/after"
+        },
+        {
+          "value": "offset dx +4px / dy -0.5px, same 44x44 size",
+          "refs": [
+            "halcyon"
+          ],
+          "evidence": "halcyon archetype close_vs_burger_centre_offset_px {dx 4, dy -0.5}, size_difference_px {w 0, h 0}"
+        },
+        {
+          "value": "offset dx +11px / dy -6px, SMALLER (38x38 vs 44x44, radius 8 vs 12)",
+          "refs": [
+            "indus-foods"
+          ],
+          "evidence": "indus archetype close_vs_burger_centre_offset_px {dx 11, dy -6}, size_difference_px {w -6, h -6}"
+        },
+        {
+          "value": "opposite end of the header (burger left 16, close left 335 at 375)",
+          "refs": [
+            "butcherbox"
+          ],
+          "evidence": "butcherbox 375 archetype openBurger vs close rects"
+        },
+        {
+          "value": "over the trigger, larger than it (26x26 close over an 18x18 button)",
+          "refs": [
+            "resn (375)"
+          ],
+          "evidence": "resn 375 geometry.closeButtonWhileOpen vs menuButton"
+        }
+      ],
+      "needed_by": [
+        {
+          "reference": "halcyon",
+          "variant": "all 6",
+          "tiers": [
+            375,
+            768
+          ],
+          "cell": "trigger-close archetype.close_vs_burger_centre_offset_px"
+        },
+        {
+          "reference": "indus-foods",
+          "variant": "sectors-cards, sectors-list",
+          "tiers": [
+            375,
+            768
+          ],
+          "cell": "trigger-close archetype.close_vs_burger_centre_offset_px + size_difference_px"
+        },
+        {
+          "reference": "butcherbox",
+          "variant": null,
+          "tiers": [
+            375
+          ],
+          "cell": "trigger-close archetype rects"
+        },
+        {
+          "reference": "resn",
+          "variant": null,
+          "tiers": [
+            375
+          ],
+          "cell": "trigger-close geometry.closeButtonWhileOpen"
+        },
+        {
+          "reference": "fantasy",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close geometry.widthChange"
+        },
+        {
+          "reference": "studionamma",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close geometry.before/after"
+        }
+      ],
+      "absent_in": [
+        "away",
+        "rabbit",
+        "buck",
+        "dogstudio",
+        "lamalama",
+        "lusion",
+        "wearecollins (all in-place, dx/dy 0)"
+      ],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": [
+          "sgs/nav-drawer::closeSize",
+          "sgs/nav-drawer::closeStyle"
+        ],
+        "note": "closeSize (default '44px', explicitly documented as mirroring nav-bar-menu's burgerSize) covers the SIZE difference — indus's 38x38 close against a 44x44 burger is one value. What has no attribute is the close control's POSITION: separate-x renders at a fixed place in the drawer's own top row, so halcyon's +4/-0.5px nudge is reachable only as a rounding difference and butcherbox's opposite-end placement (burger left, close right) is not reachable at all. It needs a close-placement attribute (same-slot | top-row-start | top-row-end, plus an offset pair) on sgs/nav-drawer.",
+        "how_checked": "src/blocks/nav-drawer/block.json::attributes.closeSize (default '44px', description \"Mirrors nav-menu's burgerSize (css:width/css:height, Spec 41)\"); python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name FROM block_attributes WHERE block_slug='sgs/nav-drawer'\" -> no close position/offset attribute"
+      },
+      "motion": null
+    },
+    {
+      "id": "F-B-21",
+      "name": "Trigger-to-close transition motion",
+      "description": "What happens visually between the closed and open states of the trigger.",
+      "surfaces": [
+        "trigger-close"
+      ],
+      "values_seen": [
+        {
+          "value": "no motion — a display swap of two icon spans / two image files / a static pair",
+          "refs": [
+            "away",
+            "rabbit",
+            "halcyon",
+            "indus-foods"
+          ],
+          "evidence": "away motion 'icon swap (no morph): hamburger span display none, close span inline-flex'; halcyon/indus trigger_close.animation_between_states 'none: burger is static'"
+        },
+        {
+          "value": "icon swap, not sampled over time (plus a round chip fading in on scroll, 0.2s ease-in-out)",
+          "refs": [
+            "buck"
+          ],
+          "evidence": "buck motion {effect 'bar-to-X icon swap; chip appears on scroll', spec38Tier 'V'}; not_measured: buck trigger-close 1440 motion.iconSwap"
+        },
+        {
+          "value": "bars morph to an X AND the button rotates 180deg, transform 0.6s cubic-bezier(0.165,0.84,0.44,1)",
+          "refs": [
+            "dogstudio"
+          ],
+          "evidence": "dogstudio item_states.open + motion.transition"
+        },
+        {
+          "value": "two bars morph to an X (12.4x12.4 boxes rotated +/-45deg), 0.45s",
+          "refs": [
+            "wearecollins"
+          ],
+          "evidence": "wearecollins geometry.iconBars + wearecollins.md 'the two burger bars morph into an X in the same slot (0.45s)'"
+        },
+        {
+          "value": "three bars collapse onto ONE line (not an X): top bar y +0.3125rem, bottom y -0.3125rem, expo.out 0.45s, GSAP",
+          "refs": [
+            "lamalama"
+          ],
+          "evidence": "lamalama motion [source-only] {bars '...expo.out 0.45s', tier 'G (GSAP, DOM)'}"
+        },
+        {
+          "value": "label cross-fades to an X svg and the pill narrows; settles ~700ms after the click",
+          "refs": [
+            "fantasy"
+          ],
+          "evidence": "fantasy motion {iconSwap 'label opacity 1 -> 0 and X icon 0 -> 1', timing 'sampled toggle width settles ~700ms', tier 'not classified'}"
+        },
+        {
+          "value": "label slides out and the new one slides in (transform 0.3s cubic-bezier(0.4,0,0.1,1)); fill 0.4s ease #e4e6ef -> #ffffff; two dots rotate 270deg",
+          "refs": [
+            "lusion"
+          ],
+          "evidence": "lusion motion {textSwap, buttonFill}"
+        },
+        {
+          "value": "text roll between MENU and CLOSE inside the trigger (with a hover alternate label OPEN)",
+          "refs": [
+            "studionamma"
+          ],
+          "evidence": "studionamma motion {effect 'label roll between MENU and CLOSE inside the trigger', spec38Tier 'V'}; item_states.hoverAltLabel"
+        },
+        {
+          "value": "label fade on the menu button ('Discover' opacity 0 -> ~1 on hover); the button never becomes a close icon",
+          "refs": [
+            "resn"
+          ],
+          "evidence": "resn motion[0] tier V + item_states.open 'the menu button itself does not change into a close icon (no morph)'"
+        }
+      ],
+      "needed_by": [
+        {
+          "reference": "away",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close motion"
+        },
+        {
+          "reference": "rabbit",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close motion"
+        },
+        {
+          "reference": "buck",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close motion"
+        },
+        {
+          "reference": "dogstudio",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close motion"
+        },
+        {
+          "reference": "wearecollins",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close motion"
+        },
+        {
+          "reference": "lamalama",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close motion"
+        },
+        {
+          "reference": "fantasy",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close motion"
+        },
+        {
+          "reference": "lusion",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close motion"
+        },
+        {
+          "reference": "studionamma",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close motion"
+        },
+        {
+          "reference": "resn",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close motion"
+        },
+        {
+          "reference": "halcyon",
+          "variant": "all 6",
+          "tiers": [
+            375,
+            768
+          ],
+          "cell": "trigger-close trigger_close.animation_between_states"
+        },
+        {
+          "reference": "indus-foods",
+          "variant": "sectors-cards, sectors-list",
+          "tiers": [
+            375,
+            768
+          ],
+          "cell": "trigger-close trigger_close.animation_between_states"
+        }
+      ],
+      "absent_in": [
+        "butcherbox (a display swap of two separate controls; no transition measured)"
+      ],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": [
+          "sgs/nav-drawer::closeStyle",
+          "sgs/nav-drawer::animateFrom"
+        ],
+        "note": "closeStyle='burger-morph' gives the bars-to-X morph (dogstudio, wearecollins, buck, away, rabbit) and 'text-swap' gives the label swap (studionamma, lusion). There is no attribute for the morph's DURATION or EASING, and no morph SHAPE choice: lamalama's bars collapsing onto one horizontal line is not an X, and dogstudio's extra 180deg button rotation has no expression. animateFrom is auto|fade and governs the PANEL, not the trigger glyph.",
+        "how_checked": "src/blocks/nav-drawer/block.json::attributes.closeStyle (enum) and ::animateFrom (enum ['auto','fade']); python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT attr_name FROM block_attributes WHERE block_slug='sgs/nav-drawer'\" -> no morph duration/easing/shape attribute"
+      },
+      "motion": {
+        "effect": "burger-to-X morph, label roll/slide, icon cross-fade, pill fill change",
+        "tier": "V for every reference except lamalama, whose bar collapse is GSAP-driven (Tier G) but is a two-element translate a Tier V transition reproduces",
+        "fr": "Spec 38 §1 existing Tier V inventory (hover suite + transitions); no dedicated FR. lamalama's GSAP expo.out is Tier G only by its implementation, not by its shape — §1.3's ratchet keeps it in V."
+      }
+    },
+    {
+      "id": "F-B-22",
+      "name": "Trigger semantics, accessible name and open state",
+      "description": "What element the trigger is, what a screen reader calls it, and whether its open state is exposed.",
+      "surfaces": [
+        "trigger-close"
+      ],
+      "values_seen": [
+        {
+          "value": "native <button> with aria-haspopup + aria-controls + aria-expanded; name from visually-hidden text, unchanged when open",
+          "refs": [
+            "away"
+          ],
+          "evidence": "away trigger_close.kind + accessibleName 'visually-hidden text \"Menu\" (no aria-label); the label does not change to \"Close\" while open'"
+        },
+        {
+          "value": "native <button>, aria-label swaps 'open menu' -> 'close menu', aria-expanded false/true, aria-controls DANGLES (no element has that id)",
+          "refs": [
+            "wearecollins"
+          ],
+          "evidence": "wearecollins trigger_close.accessibleName + ariaControls 'menu while open, but no element has id \"menu\"'"
+        },
+        {
+          "value": "native <button>, accessible name present, NO aria-expanded",
+          "refs": [
+            "dogstudio",
+            "lamalama",
+            "lusion",
+            "halcyon",
+            "indus-foods",
+            "fantasy"
+          ],
+          "evidence": "dogstudio 'Toggle menu (visually hidden span + title)', ariaExpanded null; lamalama aria-label 'menu-toggle', ariaExpanded absent; halcyon/indus accessible_name {burger 'Menu', close 'Close'}, aria_expanded 'absent'"
+        },
+        {
+          "value": "native <button> with NO accessible name at all (icon-only, no aria-label) and no aria-expanded",
+          "refs": [
+            "buck"
+          ],
+          "evidence": "buck trigger_close.elementSemantics {ariaLabel null, accessibleName '(empty: icon-only, no aria-label)', ariaExpanded null}"
+        },
+        {
+          "value": "a <div>, not focusable, no role, no tabindex — but it DOES set aria-expanded",
+          "refs": [
+            "studionamma"
+          ],
+          "evidence": "studionamma trigger_close.elementSemantics {tag 'DIV', role null, tabindexAttr null, ariaExpandedSetOnOpen 'true'}; mechanics.keyboardFocusable false"
+        },
+        {
+          "value": "a <div> with no role, no tabindex, no aria-label; 8 Tab presses never leave the body",
+          "refs": [
+            "resn"
+          ],
+          "evidence": "resn trigger_close.kind + item_states.focus"
+        }
+      ],
+      "needed_by": [
+        {
+          "reference": "away",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close trigger_close.elementSemantics + accessibleName"
+        },
+        {
+          "reference": "wearecollins",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close trigger_close.elementSemantics + accessibleName"
+        },
+        {
+          "reference": "dogstudio",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close trigger_close.elementSemantics + accessibleName"
+        },
+        {
+          "reference": "lamalama",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close trigger_close.elementSemantics + accessibleName"
+        },
+        {
+          "reference": "lusion",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close trigger_close.elementSemantics + accessibleName"
+        },
+        {
+          "reference": "fantasy",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close trigger_close.elementSemantics + accessibleName"
+        },
+        {
+          "reference": "buck",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close trigger_close.elementSemantics + accessibleName"
+        },
+        {
+          "reference": "studionamma",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close trigger_close.elementSemantics + accessibleName"
+        },
+        {
+          "reference": "resn",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close trigger_close.elementSemantics + accessibleName"
+        },
+        {
+          "reference": "halcyon",
+          "variant": "all 6",
+          "tiers": [
+            375,
+            768
+          ],
+          "cell": "trigger-close trigger_close.accessible_name + aria_expanded"
+        },
+        {
+          "reference": "indus-foods",
+          "variant": "sectors-cards, sectors-list",
+          "tiers": [
+            375,
+            768
+          ],
+          "cell": "trigger-close trigger_close.accessible_name + aria_expanded"
+        }
+      ],
+      "absent_in": [],
+      "sgs_coverage": {
+        "status": "conflict",
+        "attributes": [
+          "sgs/nav-bar-menu::triggerLabel",
+          "sgs/nav-bar-menu::navLabel",
+          "sgs/nav-drawer::closeLabel",
+          "sgs/nav-drawer::ariaLabel"
+        ],
+        "note": "SGS always renders a real <button type=\"button\"> carrying aria-expanded and a resolving aria-controls, with triggerLabel/closeLabel as the accessible names. Every reference's NAMING is therefore reachable. The conflict is that 9 of 13 references omit aria-expanded, 2 use an unfocusable <div>, 1 has no accessible name and 1 has a dangling aria-controls — none of which SGS can emit, and none of which it should: they are WCAG 2.1 AA failures (4.1.2 Name, Role, Value / 2.1.1 Keyboard). A faithful clone will measure MORE accessible than its reference on this row by design.",
+        "how_checked": "includes/nav-menu-markup.php (the trigger is emitted as `<button type=\"button\" ... aria-expanded=\"false\" aria-controls=\"%3$s\" data-wp-bind--aria-expanded=\"context.isOpen\">` with an instance-scoped $panel_dom_id); src/blocks/nav-bar-menu/block.json::attributes.triggerLabel; src/blocks/nav-drawer/block.json::attributes.closeLabel"
+      },
+      "motion": null
+    },
+    {
+      "id": "F-B-23",
+      "name": "Trigger and close target size",
+      "description": "The pointer/touch target of the menu button and of the close control, and whether it meets 44px.",
+      "surfaces": [
+        "trigger-close"
+      ],
+      "values_seen": [
+        {
+          "value": "44 x 44 burger, 44 x 44 close — meets 44px",
+          "refs": [
+            "halcyon"
+          ],
+          "evidence": "halcyon geometry touch_target_ok_44 true"
+        },
+        {
+          "value": "44 x 44 burger but a 38 x 38 close — close FAILS 44px",
+          "refs": [
+            "indus-foods"
+          ],
+          "evidence": "indus geometry {touch_target_ok_44 false, close_touch_target_note 'close button is 38x38px, under 44px'}"
+        },
+        {
+          "value": "48 x 57 — meets 44px",
+          "refs": [
+            "away"
+          ],
+          "evidence": "away geometry.touchTarget '48x57'"
+        },
+        {
+          "value": "55 x 55 at 375, but 53.6 x 25.7 at 1440 and 50 x 24 at 768 — fails at the two larger tiers, with a 68.6/64px round chip once scrolled",
+          "refs": [
+            "buck"
+          ],
+          "evidence": "buck geometry.targetSize {restHeight 25.7, meets44px false, fixedChip 68.6}"
+        },
+        {
+          "value": "32 x 30 — fails",
+          "refs": [
+            "dogstudio"
+          ],
+          "evidence": "dogstudio geometry.targetSizeMeets44 false"
+        },
+        {
+          "value": "28 x 18 — fails",
+          "refs": [
+            "wearecollins"
+          ],
+          "evidence": "wearecollins geometry.belowTouchTarget44 true"
+        },
+        {
+          "value": "47.5 x 16 — fails",
+          "refs": [
+            "studionamma"
+          ],
+          "evidence": "studionamma geometry.targetSizeBelow44px true"
+        },
+        {
+          "value": "30 x 36 button but the WHOLE 343/438px pill is the hit area",
+          "refs": [
+            "lamalama"
+          ],
+          "evidence": "lamalama geometry {barSize '16x2', hitAreaWholePill 343}"
+        },
+        {
+          "value": "18 x 18 icon with a 200 x 200 (60 x 60 at 375) invisible hit area",
+          "refs": [
+            "resn"
+          ],
+          "evidence": "resn geometry {menuButton 18x18, hitArea 200x200, belowTouchTarget44 true, hitAreaCoversTheButton true}"
+        },
+        {
+          "value": "33.6px circle at 375 (fails) / 44.8px at 768 (passes) / 102.4 x 44.8 pill at 1440",
+          "refs": [
+            "lusion"
+          ],
+          "evidence": "lusion geometry.closedRect per tier"
+        },
+        {
+          "value": "54.1 x 43.6 at 375, 72 x 32.2 at 768, 93.3 x 41.7 at 1440 — height fails at every tier",
+          "refs": [
+            "fantasy"
+          ],
+          "evidence": "fantasy geometry.restRect"
+        },
+        {
+          "value": "32 x 33 — fails",
+          "refs": [
+            "rabbit"
+          ],
+          "evidence": "rabbit 375 archetype rect [327,22,32,33]"
+        },
+        {
+          "value": "24 x 24 burger, 24 x 16 close — both fail",
+          "refs": [
+            "butcherbox"
+          ],
+          "evidence": "butcherbox 375 archetype rects"
+        }
+      ],
+      "needed_by": [
+        {
+          "reference": "away",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close geometry (target size)"
+        },
+        {
+          "reference": "buck",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close geometry (target size)"
+        },
+        {
+          "reference": "dogstudio",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close geometry (target size)"
+        },
+        {
+          "reference": "wearecollins",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close geometry (target size)"
+        },
+        {
+          "reference": "studionamma",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close geometry (target size)"
+        },
+        {
+          "reference": "lamalama",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close geometry (target size)"
+        },
+        {
+          "reference": "resn",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close geometry (target size)"
+        },
+        {
+          "reference": "lusion",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close geometry (target size)"
+        },
+        {
+          "reference": "fantasy",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close geometry (target size)"
+        },
+        {
+          "reference": "rabbit",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close geometry (target size)"
+        },
+        {
+          "reference": "butcherbox",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close geometry (target size)"
+        },
+        {
+          "reference": "halcyon",
+          "variant": "all 6",
+          "tiers": [
+            375,
+            768
+          ],
+          "cell": "trigger-close geometry.touch_target_ok_44"
+        },
+        {
+          "reference": "indus-foods",
+          "variant": "sectors-cards, sectors-list",
+          "tiers": [
+            375,
+            768
+          ],
+          "cell": "trigger-close geometry.close_touch_target_note"
+        }
+      ],
+      "absent_in": [],
+      "sgs_coverage": {
+        "status": "covered",
+        "attributes": [
+          "sgs/nav-bar-menu::burgerSize",
+          "sgs/nav-drawer::closeSize"
+        ],
+        "note": "Both are CSS length strings defaulting to '44px', so every measured size is a literal value and the SGS default is already the project's WCAG floor. Note that 10 of the 13 references fail 44px on the trigger, the close control, or both — a faithful clone of those sizes deliberately drops below the project baseline, which is a per-clone decision, not a framework gap. lamalama's pattern (small glyph, large parent hit area) is the shape worth copying and needs no new attribute: the hit area is the trigger's own padding.",
+        "how_checked": "src/blocks/nav-bar-menu/block.json::attributes.burgerSize (default '44px'); src/blocks/nav-drawer/block.json::attributes.closeSize (default '44px', description 'style.css's base rule already sets min-width/min-height:44px')"
+      },
+      "motion": null
+    },
+    {
+      "id": "F-B-24",
+      "name": "Trigger persistence on scroll",
+      "description": "Whether the menu button survives the header scrolling away, and changes form to do so.",
+      "surfaces": [
+        "trigger-close"
+      ],
+      "values_seen": [
+        {
+          "value": "the header scrolls away and the burger DETACHES to a fixed round chip: position:fixed, top-right, 68.6px at 1440 / 64px at 768, z-index 9100 over the header's 1400, appearing between 300-360px of scroll (180-240px at 768), 0.2s ease-in-out",
+          "refs": [
+            "buck"
+          ],
+          "evidence": "buck archetype.detachesToFixedChipOnScroll true; geometry.whenFixedOnScroll; item_states.scrolledState 'a round chip (svg background-shape, class state-is-scrolling)'"
+        },
+        {
+          "value": "always fixed, never attached to the header",
+          "refs": [
+            "buck (375)",
+            "resn",
+            "lamalama",
+            "lusion"
+          ],
+          "evidence": "buck 375 archetype {alwaysFixed true, standaloneDomElementAtThisTier 'direct child of #__next, outside the header'}; resn geometry zIndex 1000 fixed controls; lamalama fixed pill; lusion fixed header"
+        },
+        {
+          "value": "trigger rides the header: unchanged on scroll",
+          "refs": [
+            "away",
+            "studionamma",
+            "fantasy",
+            "butcherbox",
+            "rabbit",
+            "halcyon",
+            "indus-foods"
+          ],
+          "evidence": "away header 'never hides or shrinks on scroll (top 0 and the same height at every scroll position tested)'; studionamma strips 'identical to rest'"
+        },
+        {
+          "value": "trigger rides a header that hides on scroll-down and returns on scroll-up",
+          "refs": [
+            "dogstudio",
+            "wearecollins"
+          ],
+          "evidence": "dogstudio header 'hides on scroll-down (fixed, translated -100%) and reappears on scroll-up'; wearecollins translateY -100% / 0, 0.45s"
+        }
+      ],
+      "needed_by": [
+        {
+          "reference": "buck",
+          "variant": null,
+          "tiers": [
+            768,
+            1440
+          ],
+          "cell": "trigger-close archetype.detachesToFixedChipOnScroll + geometry.whenFixedOnScroll + item_states.scrolledState"
+        }
+      ],
+      "absent_in": [
+        "away",
+        "studionamma",
+        "fantasy",
+        "butcherbox",
+        "rabbit",
+        "halcyon",
+        "indus-foods",
+        "dogstudio",
+        "wearecollins",
+        "lamalama",
+        "lusion",
+        "resn"
+      ],
+      "sgs_coverage": {
+        "status": "gap",
+        "attributes": [
+          "sgs/site-header::headerSticky",
+          "sgs/site-header::headerHideOnScroll",
+          "sgs/site-header::headerShrink",
+          "sgs/site-header-row::rowHideOnScroll",
+          "sgs/site-header-row::rowShrink",
+          "sgs/site-header-row::rowShrinkHideTarget"
+        ],
+        "note": "The scroll behaviours SGS has all act on the HEADER or on a header ROW: sticky, hide-on-scroll, shrink, and a row-level shrink with a hide target. There is nothing that keeps a single CONTROL alive after its header has gone, and nothing that changes that control's form (buck's round chip, its own z-index and its own scroll threshold) once detached. buck.md names this directly: 'The header is not the sticky element, the burger is ... Any sticky header family must separate header behaviour from trigger behaviour.' One reference out of 13 needs it, so it is a real gap of low reach.",
+        "how_checked": "python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \"SELECT block_slug, attr_name FROM block_attributes WHERE block_slug IN ('sgs/site-header','sgs/site-header-row','sgs/nav-bar-menu')\" -> headerSticky/headerHideOnScroll/headerShrink/rowHideOnScroll/rowShrink only; grep -rniE 'detach|chipOnScroll|stickyTrigger|triggerSticky' src/blocks/nav-bar-menu/block.json src/blocks/site-header/block.json -> 0 matches"
+      },
+      "motion": {
+        "effect": "the chip fading in behind the bars on scroll (0.2s ease-in-out)",
+        "tier": "V",
+        "fr": "Spec 38 §1 existing Tier V inventory (scroll-progress + hover suite); no dedicated FR"
+      }
+    },
+    {
+      "id": "F-B-25",
+      "name": "Menu dismissal routes and background scroll while open",
+      "description": "Every way the open menu can be dismissed besides its own close control, and whether the page behind it is locked. Recorded on the trigger-close row; overlaps group C's drawer rows.",
+      "surfaces": [
+        "trigger-close"
+      ],
+      "values_seen": [
+        {
+          "value": "Escape closes",
+          "refs": [
+            "away",
+            "dogstudio",
+            "fantasy",
+            "wearecollins",
+            "resn (768, 1440)"
+          ],
+          "evidence": "away mechanics.closeWays ['Escape (focus returns to the toggle)', ...]; dogstudio escapeCloses true; fantasy escapeCloses true with the source keydown quoted; wearecollins closeWays ['close button click','Escape key','\"m\" key']"
+        },
+        {
+          "value": "Escape does NOT close",
+          "refs": [
+            "buck",
+            "studionamma",
+            "lamalama",
+            "lusion",
+            "halcyon",
+            "indus-foods",
+            "resn (375)"
+          ],
+          "evidence": "buck escapeCloses false; studionamma escapeCloses false; lamalama 'pill height 436 -> 436 after Escape', sourceEscapeHandler 'none found in bundle'; lusion 'no Escape handler in the bundle'; halcyon/indus escape_closes_overlay false"
+        },
+        {
+          "value": "outside / empty-area click closes",
+          "refs": [
+            "lamalama",
+            "lusion",
+            "halcyon",
+            "indus-foods",
+            "away (scrim)"
+          ],
+          "evidence": "lamalama outsideClick 'closes (window click listener excludes .js-menu)'; lusion the same; halcyon/indus backdrop click closes the desktop panel; away 'scrim click'"
+        },
+        {
+          "value": "empty-area click does NOT close",
+          "refs": [
+            "wearecollins",
+            "resn (375)"
+          ],
+          "evidence": "wearecollins mechanics.emptyAreaClickCloses false"
+        },
+        {
+          "value": "scrolling more than 20-30px closes",
+          "refs": [
+            "lamalama"
+          ],
+          "evidence": "lamalama 768/1440 scrollCloses 'closes after a 30px scroll step at this tier'; did NOT fire at 375 in the touch context"
+        },
+        {
+          "value": "a keyboard hotkey ('m') toggles it",
+          "refs": [
+            "wearecollins"
+          ],
+          "evidence": "wearecollins trigger_close.hotkey '\"m\" toggles the menu'"
+        },
+        {
+          "value": "browser history back closes it (hash route)",
+          "refs": [
+            "resn"
+          ],
+          "evidence": "resn 1440 archetype closers 'the top-left droplet button, Escape, history back, or a click on empty space'"
+        },
+        {
+          "value": "background scroll LOCKED while open",
+          "refs": [
+            "dogstudio",
+            "studionamma (768, 375)",
+            "wearecollins",
+            "butcherbox"
+          ],
+          "evidence": "dogstudio scrollLock 'locked: body overflow hidden and wheel/PageDown do not move the page'; wearecollins 'inline body style overflow:hidden set on open'; butcherbox 'locks body scroll'"
+        },
+        {
+          "value": "background scroll NOT locked",
+          "refs": [
+            "buck",
+            "fantasy",
+            "halcyon",
+            "indus-foods",
+            "rabbit",
+            "lamalama",
+            "away (panels)",
+            "studionamma (1440, leaks)"
+          ],
+          "evidence": "buck scrollLock 'none: page still scrolls behind the open panel'; halcyon/indus scroll_lock 'none: the page behind still scrolled 400px on wheel'; studionamma 1440 wheelProbe scrollY 0 -> 389 despite body overflow hidden (Lenis bypasses it)"
+        },
+        {
+          "value": "scroll lock not needed — the document never scrolls",
+          "refs": [
+            "resn"
+          ],
+          "evidence": "resn mechanics.scrollLock 'none needed: the document never scrolls (scrollHeight 900)'"
+        }
+      ],
+      "needed_by": [
+        {
+          "reference": "away",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close mechanics.closeWays + scrollLock"
+        },
+        {
+          "reference": "buck",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close mechanics.closeWays + scrollLock"
+        },
+        {
+          "reference": "dogstudio",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close mechanics.closeWays + scrollLock"
+        },
+        {
+          "reference": "fantasy",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close mechanics.closeWays + scrollLock"
+        },
+        {
+          "reference": "lamalama",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close mechanics.closeWays + scrollLock"
+        },
+        {
+          "reference": "lusion",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close mechanics.closeWays + scrollLock"
+        },
+        {
+          "reference": "studionamma",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close mechanics.closeWays + scrollLock"
+        },
+        {
+          "reference": "wearecollins",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close mechanics.closeWays + scrollLock"
+        },
+        {
+          "reference": "resn",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close mechanics.closeWays + scrollLock"
+        },
+        {
+          "reference": "butcherbox",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close mechanics.closeWays + scrollLock"
+        },
+        {
+          "reference": "rabbit",
+          "variant": null,
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close mechanics.closeWays + scrollLock"
+        },
+        {
+          "reference": "halcyon",
+          "variant": "all 6",
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close mechanics.escape_closes_overlay + scroll_lock"
+        },
+        {
+          "reference": "indus-foods",
+          "variant": "sectors-cards, sectors-list",
+          "tiers": [
+            375,
+            768,
+            1440
+          ],
+          "cell": "trigger-close mechanics"
+        }
+      ],
+      "absent_in": [],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": [
+          "sgs/nav-drawer::modality"
+        ],
+        "note": "Escape, outside-click and the scroll lock are all shipped but UNCONDITIONAL: store.js binds an Escape handler, and the lock uses the fixed-position technique (not a simple overflow toggle) precisely because iOS Safari ignores overflow:hidden. modality=modal|non-modal is the only operator lever, and it governs inertness, not the dismissal set. So the 6 references that lock scroll and the 5 that close on Escape are covered, while 'Escape does not close' (7 references) and 'scroll is not locked' (8 references) have no expression — and neither should be added, because both are a11y regressions (WCAG 1.4.13 Dismissible). Three routes have no equivalent at all and are NOT a11y defects: close-on-scroll (lamalama), a keyboard hotkey (wearecollins 'm'), and history-back as a closer (resn's hash routes).",
+        "how_checked": "src/shared/nav-interactivity/store.js (the `'Escape' === e.key && drawer.open` handler; freezeBackground/unfreezeBackground; the documentElement.style.overflowY fixed-position lock with its 'iOS Safari ignores overflow:hidden on body' comment); src/blocks/nav-drawer/block.json::attributes.modality"
+      },
+      "motion": null
+    }
+  ]
+}

@@ -1,0 +1,770 @@
+{
+  "group": "A",
+  "group_surfaces": ["header-shell", "bar", "footer"],
+  "references": ["studionamma", "buck", "dogstudio", "fantasy", "lamalama", "lusion", "wearecollins", "resn", "away", "butcherbox", "rabbit", "halcyon", "indus-foods"],
+  "reference_count": 13,
+  "inputs": [
+    ".claude/reports/reference-requirements/digests/digest-A-header-bar-footer.md",
+    ".claude/reports/reference-requirements/CAPTURE-PROTOCOL.md",
+    ".claude/reports/reference-requirements/HEADED-SPOTCHECK.md",
+    ".claude/reports/reference-requirements/<ref>.md and <ref>.json (headed_recheck preferred over headless)"
+  ],
+  "conventions": {
+    "intent_vs_render": "halcyon and indus-foods are Bean's own Claude Design drafts. Where the SOURCE declares behaviour the RUNTIME did not perform, the family records both, tagged 'intent' and 'render'.",
+    "away_storefront": "away.json describes the US storefront the headless run received; a headed Chrome is served the UK storefront (GBP, /en-gb, first two nav items swapped, no consent banner). Structure is identical; only labels and currency differ. The UK storefront is the reference.",
+    "presence": "decided by what a visitor sees, not by an HTML tag. resn has no <header> element but is 'present' as shell-less fixed controls.",
+    "butcherbox_rabbit": "768 was never captured for either, and rabbit's footer was never captured at any tier. Their absence from a needed_by list is a capture gap, not a measured 'absent'."
+  },
+  "families": [
+    {
+      "id": "F-A-01",
+      "name": "Header pin mode on scroll",
+      "description": "Whether the header stays on screen when the page scrolls, and how: it scrolls away with the page, it is pinned and always visible, or it hides going down and comes back going up.",
+      "surfaces": ["header-shell"],
+      "values_seen": [
+        {"value": "pinned-always (position fixed or sticky, rect unchanged at every scroll offset)", "references": ["away", "fantasy", "lamalama", "lusion", "studionamma", "butcherbox", "rabbit", "resn"]},
+        {"value": "hide-on-scroll-down, reveal-on-scroll-up (translateY -100% of its own height)", "references": ["dogstudio", "wearecollins"]},
+        {"value": "in-flow, scrolls away and never returns", "references": ["buck", "wearecollins"]},
+        {"value": "sticky declared in source, scrolls away as rendered (intent vs render)", "references": ["halcyon", "indus-foods"]}
+      ],
+      "needed_by": [
+        {"reference": "dogstudio", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.mechanics", "detail": "restPosition absolute -> fixed after scroll; headerTopAtScroll600 -138/-258/-258; translate matrix(1,0,0,1,0,-69/-129) then +69/+129 on scroll up"},
+        {"reference": "wearecollins", "variant": null, "tiers": [768, 1440], "cell": "header-shell.mechanics + motion", "detail": "class header--hidden toggles; transform translateY(-100%) <-> 0, transition 0.45s cubic-bezier(0.215,0.61,0.355,1); at 1440 hides after the first 40px down and returns after a 20px up step"},
+        {"reference": "wearecollins", "variant": "iPhone Safari UA", "tiers": [375], "cell": "header-shell.mechanics", "detail": "source class header--ios-safari makes position relative; the header is in normal flow and never reappears (top -682 at scrollY 600)"},
+        {"reference": "buck", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.mechanics", "detail": "sticky false, headerTopAtScroll600 -600; position relative at 375/768, absolute at 1440"},
+        {"reference": "away", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.mechanics", "detail": "position fixed, top 0 and height 97.8/93/93 measured at scrollY 100,300,600,900,1500 and after scrolling up; a scroll-down class toggles with no rect or paint change"},
+        {"reference": "halcyon", "variant": "all 6", "tiers": [375, 768, 1440], "cell": "header-shell.mechanics", "detail": "INTENT position sticky top 0 z 200; RENDER header_top_at_scroll_600 = -600. Cause proven: an ancestor with overflow-x:hidden becomes the sticky scroll container; flipping it to visible at runtime gives top 0"},
+        {"reference": "indus-foods", "variant": "both", "tiers": [375, 768, 1440], "cell": "header-shell.mechanics", "detail": "same declared sticky, same proven overflow-x:hidden cause, same -600 render"},
+        {"reference": "lusion", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.mechanics", "detail": "fixed top 0, rect unchanged over 9 PageDown steps; the page itself moves by transform inside #page-container (custom ScrollManager, window.scrollY stays 0)"},
+        {"reference": "butcherbox", "variant": null, "tiers": [1440], "cell": "header-shell.mechanics", "detail": "position sticky top 0 once the 32px announcement banner has scrolled away"},
+        {"reference": "rabbit", "variant": null, "tiers": [1440], "cell": "header-shell.mechanics", "detail": "sticky top 0; rect stayed at top 0 after 1500px"}
+      ],
+      "absent_in": [],
+      "sgs_coverage": {
+        "status": "covered",
+        "attributes": ["sgs/site-header::headerSticky", "sgs/site-header::headerHideOnScroll", "sgs/site-header-row::rowHideOnScroll"],
+        "notes": "All three are per-tier tri-state {desktop,tablet,mobile} objects, so the wearecollins iOS-at-375-only case and the dogstudio hide/reveal are both expressible. The halcyon/indus INTENT is what SGS should clone; the render is a bug in the draft's own wrapper, not a requirement.",
+        "how_checked": "python plugins/sgs-blocks/src/blocks/site-header/block.json read for headerSticky/headerHideOnScroll defaults; grep -n 'sticky|hideOnScroll|shrink' plugins/sgs-blocks/src/blocks/site-header/render.php (position:sticky emitted at render.php lines 195-205 via sgs_merge_tri_state_declarations)"
+      },
+      "motion": {"spec38_tier": "V", "fr": "none — Spec 38 names no header hide/reveal effect; it is a class toggle plus a CSS transform transition, inside Tier V by FR-38-1."}
+    },
+    {
+      "id": "F-A-02",
+      "name": "Header shell archetype and width",
+      "description": "The shape of the header box a visitor sees: edge-to-edge, edge-to-edge with its contents capped and centred, a floating rounded pill inset from every edge, or no box at all.",
+      "surfaces": ["header-shell"],
+      "values_seen": [
+        {"value": "full-bleed (width == viewport, radius 0, inset 0)", "references": ["away", "buck", "butcherbox", "dogstudio", "rabbit", "studionamma", "wearecollins"]},
+        {"value": "full-bleed shell with a capped, centred inner container", "references": ["halcyon", "indus-foods", "fantasy", "lusion"]},
+        {"value": "floating pill (radius + top inset + width cap)", "references": ["lamalama"]},
+        {"value": "shell-less (no box; separate fixed controls read as the header)", "references": ["resn"]}
+      ],
+      "needed_by": [
+        {"reference": "lamalama", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.archetype + geometry", "detail": "width 343/438/438, height 50, top 16, radius 4px, maxWidth 438px, left 50% + translateX(-50%), rule w-[calc(100vw-2rem)] max-w-[438px]; insets 16/165/501; z-index 20"},
+        {"reference": "halcyon", "variant": "all 6", "tiers": [1440], "cell": "header-shell.geometry", "detail": "header 1440x73, container 1240 wide at x=100, paddingX 28px, maxWidth 1240px, radius 0"},
+        {"reference": "indus-foods", "variant": "both", "tiers": [1440], "cell": "header-shell.geometry", "detail": "header 1440x79, container 1240 at x=100, paddingX 28px, radius 0"},
+        {"reference": "fantasy", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.geometry", "detail": "full-bleed fixed, maxWidth 1506.98/1111.48/1440px, innerPadding 0 13.95 / 0 20.58 / 0 50px"},
+        {"reference": "lusion", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.geometry", "detail": "full-bleed fixed, container inset 15/25/72, containerWidth 345/718/1296, containerTop 15/25/50"},
+        {"reference": "away", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.geometry", "detail": "width == viewport, maxWidth none, radius 0, padding 0 15 / 0 24 / 0 45px"},
+        {"reference": "resn", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.archetype", "detail": "div.js-shell is a 0x0 wrapper; menu button 18x18 at left 328/721/1393 top 20, droplet home button, sound toggle, VIEW ALL PROJECTS link — each separately fixed"},
+        {"reference": "buck", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.geometry", "detail": "width == viewport, height 170/170/182.2, grid padding 20/25/42.88, 8 columns of 24.375/72.25/150.516px"},
+        {"reference": "studionamma", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.geometry", "detail": "two strips: nav.nav-top 375/768/1440 x 26/16/16 at top 12/20/20, plus nav.nav-bottom fixed at the bottom (collapsed at 375)"}
+      ],
+      "absent_in": [],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": ["sgs/site-header::headerFloat", "sgs/site-header::headerFloatInset", "sgs/site-header::headerFloatCollapse", "sgs/site-header::maxWidth", "sgs/site-header::contentWidth", "sgs/site-header::borderRadius", "sgs/site-header::margin"],
+        "notes": "The pill is fully built: headerFloat is a per-tier tri-state that implies sticky (precedence Float > Sticky > Transparent), headerFloatInset is a per-tier box of relative units resolved as max(authored, env(safe-area-inset-*)), headerFloatCollapse is the single breakpoint opt-out. Full-bleed and capped-inner are contentWidth + maxWidth. GAP: shell-less has no expression — sgs/site-header always renders a <header> wrapper, so resn's four independent fixed controls cannot be emitted as a header (see F-A-19). NOTE: block_attributes in sgs-framework.db does NOT list headerFloat/headerFloatInset/headerFloatCollapse/backdropBlur/shadowScrolled — the DB is stale against block.json for this block; block.json is the ground truth used here.",
+        "how_checked": "grep -rn 'floating|pill|backdrop-filter' plugins/sgs-blocks/src/blocks/site-header/ (block.json lines 202/213/221/226, components/FloatControls.js, float-preview.js, render.php line 624 'Floating (pill) geometry'); python sgs-db.py sql \"SELECT attr_name FROM block_attributes WHERE block_slug='sgs/site-header'\" returned no headerFloat row"
+      },
+      "motion": {"spec38_tier": "n/a", "fr": "none — geometry, not motion."}
+    },
+    {
+      "id": "F-A-03",
+      "name": "Surface ground: fill, border and shadow",
+      "description": "What the header or footer box is painted with at rest: a colour or gradient (or nothing at all), plus its border and shadow.",
+      "surfaces": ["header-shell", "bar", "footer"],
+      "values_seen": [
+        {"value": "transparent (nothing painted; the page shows through)", "references": ["buck", "dogstudio", "fantasy", "studionamma", "wearecollins", "lusion", "away (bar row)", "dogstudio (footer)"]},
+        {"value": "opaque solid fill", "references": ["away", "indus-foods", "rabbit", "butcherbox", "buck (footer)", "wearecollins (footer)", "lusion (footer)"]},
+        {"value": "translucent fill with an alpha", "references": ["halcyon", "lamalama"]},
+        {"value": "masked gradient fade instead of a flat fill", "references": ["fantasy"]},
+        {"value": "border-bottom as the only edge", "references": ["halcyon", "indus-foods"]},
+        {"value": "no border and no shadow anywhere", "references": ["away", "buck", "dogstudio", "fantasy", "lamalama", "lusion", "rabbit", "studionamma", "wearecollins", "butcherbox"]}
+      ],
+      "needed_by": [
+        {"reference": "halcyon", "variant": "columns-light, cards-light, minimal-light", "tiers": [375, 768, 1440], "cell": "header-shell.ground", "detail": "fill #fcfbf8 a=0.86, border-bottom 1px solid #16140a a=0.1, shadow none"},
+        {"reference": "halcyon", "variant": "columns-dark, cards-dark, minimal-dark", "tiers": [375, 768, 1440], "cell": "header-shell.ground", "detail": "fill #141419 a=0.82, border-bottom 1px solid #ffffff a=0.11"},
+        {"reference": "indus-foods", "variant": "both", "tiers": [375, 768, 1440], "cell": "header-shell.ground", "detail": "fill #ffffff, border-bottom 3px solid #d8ca50, no blur, no shadow"},
+        {"reference": "lamalama", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.ground", "detail": "root #000000 a=0 plus a child div.bg-bgSecondary.opacity-60 painting #000000 at opacity 0.6; border 0px none"},
+        {"reference": "fantasy", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.ground", "detail": "header #000000 a=0; child div.sh__gradient paints #000000 at opacity 0.5 with mask-image linear-gradient(0deg, rgba(0,0,0,0) 0px, rgb(0,0,0))"},
+        {"reference": "rabbit", "variant": null, "tiers": [375, 1440], "cell": "header-shell.ground", "detail": "background rgb(255,77,6) at 375 and rgb(255,87,5) at 1440, shadow none, border none"},
+        {"reference": "away", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.ground", "detail": "#ffffff opaque wrapper, the header row itself transparent; top bar fill changes per announcement slide: #111111, #d85358, #39614c"},
+        {"reference": "buck", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.ground", "detail": "flat fill chosen per page LOAD from a brand palette: #f4c054, #ffb18e, #7f4c1e in one run; text #000000"},
+        {"reference": "wearecollins", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.ground", "detail": "fill #140700, blur none, scrim none"},
+        {"reference": "lusion", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.ground", "detail": "#ffffff on #footer-bg (a 902px panel); newsletter input #f0f1fa radius 13.5/15.75/16.2px"}
+      ],
+      "absent_in": ["resn (no header box and no footer to paint)"],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": ["sgs/site-header::backgroundColour", "sgs/site-header::backgroundColourGradient", "sgs/site-header::borderWidth", "sgs/site-header::borderStyle", "sgs/site-header::borderColour", "sgs/site-header::shadow", "sgs/site-header::shadowColour", "sgs/site-footer::backgroundColour", "sgs/site-footer::backgroundColourGradient", "sgs/site-header-row::backgroundColour", "sgs/site-footer-row::backgroundColour"],
+        "notes": "Flat fills, alphas, gradients, per-side borders and shadows are all covered on header, footer and each row. TWO GAPS: (a) fantasy's masked gradient fade (mask-image on the fill layer) has no attribute — backgroundColourGradient paints a gradient but cannot mask it; (b) buck's fill is chosen per page LOAD from a palette — SGS stores one colour and nothing randomises per request, so a clone freezes whichever colour the capture saw.",
+        "how_checked": "python sgs-db.py sql \"SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug IN ('sgs/site-header','sgs/site-footer','sgs/site-header-row','sgs/site-footer-row')\"; no mask-image row returned by \"SELECT ... WHERE css_property='mask-image'\""
+      },
+      "motion": {"spec38_tier": "n/a", "fr": "none — resting paint."}
+    },
+    {
+      "id": "F-A-04",
+      "name": "Backdrop blur behind a see-through surface",
+      "description": "Frosted glass: the header blurs whatever is behind it so its text stays readable without a solid fill.",
+      "surfaces": ["header-shell"],
+      "values_seen": [
+        {"value": "blur(18px) with saturate(1.4)", "references": ["halcyon"]},
+        {"value": "blur(4px)", "references": ["lamalama"]},
+        {"value": "none", "references": ["away", "buck", "butcherbox", "dogstudio", "fantasy", "indus-foods", "lusion", "rabbit", "studionamma", "wearecollins"]}
+      ],
+      "needed_by": [
+        {"reference": "halcyon", "variant": "all 6", "tiers": [375, 768, 1440], "cell": "header-shell.ground", "detail": "blur: saturate(1.4) blur(18px), identical in every variant and every tier"},
+        {"reference": "lamalama", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.ground + background_visual", "detail": "backdrop-filter blur(4px) applied over a live fixed WebGL/2D canvas (canvas.js-canvas.h-dvh.w-screen, 3 canvases on the page)"},
+        {"reference": "fantasy", "variant": null, "tiers": [375, 768, 1440], "cell": "bar.trigger_close", "detail": "not the shell but the Menu pill: fill #ffffff @0.15 with backdrop-filter blur(4px)"}
+      ],
+      "absent_in": ["away", "buck", "butcherbox", "dogstudio", "indus-foods", "lusion", "rabbit", "studionamma", "wearecollins", "resn"],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": ["sgs/site-header::backdropBlur"],
+        "notes": "backdropBlur is a CSS length applied at rest and kept once scrolled — it reaches lamalama's blur(4px) exactly. GAP: it is a length only, so halcyon's companion saturate(1.4) in the same backdrop-filter cannot be expressed, and the value lands on the header box only (fantasy's blurred trigger pill would need the same capability on the trigger). No block in the tree carries a backdrop-filter block_attributes row.",
+        "how_checked": "python -c read plugins/sgs-blocks/src/blocks/site-header/block.json -> backdropBlur description 'Blurs whatever sits behind the header (backdrop-filter). Same value vocabulary as sgs/nav-drawer's surfaceBlur — a CSS length'; python sgs-db.py sql \"SELECT block_slug, attr_name FROM block_attributes WHERE css_property='backdrop-filter'\" returned 0 rows"
+      },
+      "motion": {"spec38_tier": "n/a", "fr": "none — a static filter."}
+    },
+    {
+      "id": "F-A-05",
+      "name": "Section-adaptive ink",
+      "description": "The header's colour follows the page section passing behind it, so the logo and controls stay legible over both light and dark sections.",
+      "surfaces": ["header-shell", "bar"],
+      "values_seen": [
+        {"value": "per-section class swap flipping fill and mark colour", "references": ["wearecollins", "lusion", "fantasy"]},
+        {"value": "mix-blend-mode: difference (the ink inverts against whatever is behind)", "references": ["studionamma"]},
+        {"value": "one fill only at a tier, flipping at 375 alone", "references": ["dogstudio"]},
+        {"value": "none (fixed ink)", "references": ["away", "buck", "halcyon", "indus-foods", "lamalama", "rabbit", "butcherbox"]}
+      ],
+      "needed_by": [
+        {"reference": "wearecollins", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.ground + motion", "detail": "header ::before is a full-size fill #f8f8f7 at opacity 0; on scroll opacity 1 with fill #140700 — the colour follows the section behind (#f8f8f7 over light, #140700 over dark), logo and burger flip with it. Tier V, DOM"},
+        {"reference": "lusion", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.ground", "detail": "html class is-white-bg / is-black-bg / is-blue-bg flips the logo and control ink per section (is-black-bg and is-white-bg both observed)"},
+        {"reference": "fantasy", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.ground + motion", "detail": "source: is-light gives text-black plus a bg-white gradient over light sections; colour classes swap with the section behind. The is-light variant was not observed live — every sampled offset was over a dark section"},
+        {"reference": "studionamma", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.ground", "detail": "mixBlendMode 'difference' on the strips; fill transparent, no backdrop-filter"},
+        {"reference": "dogstudio", "variant": null, "tiers": [375], "cell": "header-shell.ground", "detail": "fillWhenScrolled #0d0e12 at 375 only; transparent at 768 and 1440 (a tier difference, not a per-section one)"}
+      ],
+      "absent_in": ["away", "buck", "butcherbox", "halcyon", "indus-foods", "lamalama", "rabbit", "resn"],
+      "sgs_coverage": {
+        "status": "gap",
+        "attributes": ["sgs/site-header::contrastSafe (does NOT do this)", "sgs/nav-bar-menu::itemSmartContrast"],
+        "notes": "contrastSafe is a per-tier scrim/shadow behind a transparent header's own text — it never reads the section behind and never flips a colour. Nothing in the tree observes what is under the header. mix-blend-mode exists only as backgroundOverlayBlendMode, which applies to the shared background OVERLAY panel, not to the header element itself, so studionamma's difference blend is also unreachable. Three of thirteen references need this and none can be cloned faithfully.",
+        "how_checked": "sed -n '500,540p' plugins/sgs-blocks/src/blocks/site-header/edit.js — contrastSafe is a WCAG 1.4.3 advisory choosing 'none'|'scrim'|'shadow'; grep -n 'sh_contrast' render.php lines 455-500 emit a scrim pseudo-element; python sgs-db.py sql \"SELECT block_slug, attr_name FROM block_attributes WHERE css_property='mix-blend-mode'\" returns only backgroundOverlayBlendMode rows"
+      },
+      "motion": {"spec38_tier": "V", "fr": "none — a class swap with a colour transition; inside Tier V by FR-38-1 but no Spec 38 effect names it."}
+    },
+    {
+      "id": "F-A-06",
+      "name": "Scroll-state restyle (rest paint vs scrolled paint)",
+      "description": "The header keeps its place but repaints once the page has moved: transparent over the hero, solid once scrolled, and back again.",
+      "surfaces": ["header-shell"],
+      "values_seen": [
+        {"value": "transparent at rest, solid fill once scrolled", "references": ["dogstudio", "wearecollins", "butcherbox"]},
+        {"value": "gradient present at rest, faded out while scrolling down, restored on scroll up (direction-sensitive)", "references": ["fantasy"]},
+        {"value": "no change at any scroll offset", "references": ["away", "buck", "halcyon", "indus-foods", "lamalama", "lusion", "rabbit", "studionamma"]}
+      ],
+      "needed_by": [
+        {"reference": "butcherbox", "variant": null, "tiers": [1440], "cell": "header-shell.ground", "detail": "background transparent at rest over the hero, white after scrolling; shadow none, border none"},
+        {"reference": "dogstudio", "variant": null, "tiers": [375], "cell": "header-shell.ground + mechanics", "detail": "fill transparent, fillWhenScrolled #0d0e12, solidFillWhenRevealed true at 375 (false at 768 and 1440)"},
+        {"reference": "wearecollins", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.ground", "detail": "::before opacity 0 at rest -> opacity 1 on scroll reveal; class header--at-top at scrollY 0"},
+        {"reference": "fantasy", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.mechanics", "detail": "gradient fades out (class is-collapsed, opacity 0) after scrolling down past 100px and returns as soon as the direction is up (wheel down -> opacity 0, wheel up -> opacity 0.5)"}
+      ],
+      "absent_in": ["away", "buck", "halcyon", "indus-foods", "lamalama", "lusion", "rabbit", "studionamma", "resn"],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": ["sgs/site-header::headerTransparent", "sgs/site-header::headerTransparentDirection", "sgs/site-header::backgroundColourScrolled", "sgs/site-header::backgroundColourScrolledGradient", "sgs/site-header::textColourScrolled", "sgs/site-header::shadowScrolled", "sgs/site-header::shadowScrolledColour", "sgs/site-header-row::rowTransparent"],
+        "notes": "transparent-at-rest / solid-once-scrolled is fully covered including the scrolled text colour and scrolled shadow, per tier and per row. GAP: headerTransparentDirection is 'transparent-first' | 'solid-first' — a scroll-POSITION toggle. fantasy's restyle keys on scroll DIRECTION (fades going down, returns going up, at any offset), which no attribute expresses.",
+        "how_checked": "python read block.json attributes headerTransparent / headerTransparentDirection (enum ['transparent-first','solid-first']) / backgroundColourScrolled / shadowScrolled; python sgs-db.py sql \"SELECT attr_name FROM block_attributes WHERE block_slug='sgs/site-header' AND attr_name LIKE '%Scrolled%'\""
+      },
+      "motion": {"spec38_tier": "V", "fr": "none — a class toggle plus a CSS colour/opacity transition."}
+    },
+    {
+      "id": "F-A-07",
+      "name": "Per-tier row track layout and rail alignment",
+      "description": "How one row divides its width into tracks and where the logo, nav, controls or link columns sit inside it — in the header bar and in the footer alike.",
+      "surfaces": ["header-shell", "bar", "footer"],
+      "values_seen": [
+        {"value": "three tracks: logo left, nav centred on the viewport, utilities right", "references": ["away"]},
+        {"value": "space-between: logo, nav, actions (nav NOT centred on the viewport)", "references": ["halcyon", "indus-foods", "butcherbox"]},
+        {"value": "two tracks: logo left, control cluster right", "references": ["buck", "dogstudio", "fantasy", "lusion", "rabbit", "wearecollins"]},
+        {"value": "logo centred with controls on both sides", "references": ["away", "butcherbox", "wearecollins"]},
+        {"value": "logo | rotating message | burger", "references": ["lamalama"]},
+        {"value": "explicit three-column text grid", "references": ["studionamma"]},
+        {"value": "footer columns per tier: 3 / 2 / 2", "references": ["away"]},
+        {"value": "footer columns per tier: 3x2 / 2 / 1", "references": ["buck"]},
+        {"value": "footer grid 12 / 6 / 6 tracks", "references": ["lusion"]},
+        {"value": "footer two tracks collapsing to one", "references": ["studionamma", "wearecollins", "lamalama"]}
+      ],
+      "needed_by": [
+        {"reference": "away", "variant": null, "tiers": [1440], "cell": "bar.geometry", "detail": "gridColumns 371.688px 602.609px 371.703px, columnGap 2px, nav cx 720 == viewport centre; at 375/768 it becomes 125.5/90/125.5 and 313/90/313 with the logo centred"},
+        {"reference": "halcyon", "variant": "all 6", "tiers": [1440], "cell": "header-shell.zone_model", "detail": "flex space-between gap 24px align-items centre; logo x=128 w=107.61, nav x=393.25 w=539.47, actions x=1090.36 w=221.64; navCentreMinusViewportCentre -57.02"},
+        {"reference": "indus-foods", "variant": "both", "tiers": [1440], "cell": "header-shell.zone_model", "detail": "logo x=128 w=143.88, nav x=397.05 w=610.13, actions x=1132.33 w=179.67; navCentreMinusViewportCentre -17.89"},
+        {"reference": "studionamma", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.zone_model", "detail": "grid 933.328/233.328/233.328 at 1440, 485.328/121.328/121.344 at 768, 276.734/74.2656 at 375"},
+        {"reference": "wearecollins", "variant": null, "tiers": [375], "cell": "bar.geometry", "detail": "display grid, padding 32px 24px, logo cx 187.5 == viewport centre; at 768/1440 the logo moves left to 16/98px"},
+        {"reference": "lusion", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.zone_model", "detail": "footer-middle grid cols 6x45px gap 60/15 at 375, 6x94.06px gap 70/30.72 at 768, 12x81.59px gap 28.8 at 1440"},
+        {"reference": "away", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.zone_model", "detail": "3 columns at x 45/402.5/760 at 1440; 2 columns with GET HELP wrapping below at 768 and 375; reflow only, nothing hidden, the same 89 links at every tier"},
+        {"reference": "wearecollins", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.zone_model", "detail": "grid cols 480px 0px 480px (1440), 313 0 313 (768), 155.5 155.5 (375); rows 440/44; gap 160px 16px"},
+        {"reference": "studionamma", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.geometry", "detail": "mainGrid 816.672/466.656 at 1440, 424.672/242.672 at 768, single 351px at 375"},
+        {"reference": "buck", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.zone_model", "detail": "3 columns x 2 rows of office blocks at 1440 (x 42.9/386.8/730.7), 2 columns at 768, single 162.5px right column at 375"}
+      ],
+      "absent_in": ["resn (no row to lay out)"],
+      "sgs_coverage": {
+        "status": "covered",
+        "attributes": ["sgs/site-header-row::layout", "sgs/site-header-row::columns", "sgs/site-header-row::gridTemplateColumns", "sgs/site-header-row::justifyContent", "sgs/site-header-row::alignItems", "sgs/site-header-row::gap", "sgs/site-header-row::rowSlot", "sgs/site-footer-row::columns", "sgs/site-footer-row::gridTemplateColumns", "sgs/site-footer-row::justifyContent", "sgs/site-footer-row::gap"],
+        "notes": "One mechanism, identical attribute set on both row blocks (both containerKind 'layout'). columns defaults to {desktop:3,tablet:3,mobile:1}; gridTemplateColumns takes an explicit track list, which is what away's 371.7/602.6/371.7 and studionamma's 933/233/233 need. sgs/site-footer-row additionally declares intrinsicColumns:true, so a footer column count degrades with available width rather than only at a breakpoint — which is exactly away's 'reflow only, nothing hidden' behaviour.",
+        "how_checked": "python read block.json for sgs/site-header-row (layout enum ['flex','grid'], columns default {desktop:3,tablet:3,mobile:1}, justifyContent enum) and sgs/site-footer-row (supports.sgs.intrinsicColumns true, _intrinsicColumnsComment); python sgs-db.py sql attr_name listing for both blocks"
+      },
+      "motion": {"spec38_tier": "n/a", "fr": "none — layout."}
+    },
+    {
+      "id": "F-A-08",
+      "name": "Stacked header rows (a strip above or below the bar row)",
+      "description": "The header is more than one row: an announcement or utility strip sits above the main bar, or a second strip is pinned elsewhere on screen.",
+      "surfaces": ["header-shell"],
+      "values_seen": [
+        {"value": "announcement strip above the bar, inside the same fixed wrapper", "references": ["away"]},
+        {"value": "announcement strip above a sticky bar, scrolling away independently", "references": ["butcherbox"]},
+        {"value": "a second fixed strip at the BOTTOM of the viewport", "references": ["studionamma"]},
+        {"value": "one row only", "references": ["buck", "dogstudio", "fantasy", "halcyon", "indus-foods", "lamalama", "lusion", "rabbit", "wearecollins"]}
+      ],
+      "needed_by": [
+        {"reference": "away", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.geometry + zone_model", "detail": "topBarHeight 40.8/36/36 plus headerHeight 57 = 97.8/93/93; contentBelow via --header-height custom property; the top bar holds the announcement carousel plus (1440 only) Help and a store selector"},
+        {"reference": "butcherbox", "variant": null, "tiers": [1440], "cell": "header-shell.archetype", "detail": "a 32px announcement-banner swiper sits above the 72px sticky header and scrolls away; header rect [0,32,1427,72], z-index 10000"},
+        {"reference": "studionamma", "variant": null, "tiers": [768, 1440], "cell": "header-shell.archetype + geometry", "detail": "strips ['nav.nav-top','nav.nav-bottom']; bottom strip fixed at insetTop 867.1/864, height 16, z-index 9999, 16.9/20px gap to the viewport bottom; collapsed to 0x0 at 375"}
+      ],
+      "absent_in": ["buck", "dogstudio", "fantasy", "halcyon", "indus-foods", "lamalama", "lusion", "rabbit", "wearecollins", "resn"],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": ["sgs/site-header::(InnerBlocks of sgs/site-header-row)", "sgs/site-header-row::rowSlot", "sgs/site-header-row::rowHideOnScroll", "sgs/notice-banner::stickyPosition"],
+        "notes": "Multiple rows inside one header, each with its own slot, paint and hide-on-scroll, are covered — away's two-row wrapper and butcherbox's independently-scrolling banner both land. GAP: studionamma's second strip is pinned to the BOTTOM of the viewport while the first is at the top; a site-header-row is laid out inside the header box and has no attribute to detach and pin it elsewhere (see F-A-19).",
+        "how_checked": "python read block.json sgs/site-header-row attributes rowSlot / rowHideOnScroll / rowTransparent; python read block.json sgs/notice-banner attributes (stickyPosition present, single `text`)"
+      },
+      "motion": {"spec38_tier": "n/a", "fr": "none — structure."}
+    },
+    {
+      "id": "F-A-09",
+      "name": "Rotating or randomised header message",
+      "description": "The header carries a message that changes by itself: a carousel of announcements, or one line picked at random on each visit.",
+      "surfaces": ["header-shell", "bar"],
+      "values_seen": [
+        {"value": "timed carousel of 4 slides, each with its own background and text colour, with previous/next arrows", "references": ["away"]},
+        {"value": "one line picked at random per page load, revealed with an animation", "references": ["lamalama"]},
+        {"value": "a live city clock cycling through cities", "references": ["studionamma"]},
+        {"value": "none", "references": ["buck", "butcherbox", "dogstudio", "fantasy", "halcyon", "indus-foods", "lusion", "rabbit", "wearecollins"]}
+      ],
+      "needed_by": [
+        {"reference": "away", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.motion + content + secondary_blocks", "detail": "four .top-bar__announcement slides, active one at z-index 1, time-driven not scroll-driven; bar colour changes per slide via per-slide --bg-color / --text-color (#111111, #d85358, #39614c); previous/next arrows 36x36; message 12px 400 underlined #ffffff. Transition timing NOT sampled (in not_measured at all three tiers)"},
+        {"reference": "lamalama", "variant": null, "tiers": [375, 768, 1440], "cell": "bar.content + motion", "detail": "random pick from a per-page array (source e[Math.round(Math.random()*(e.length-1))]); 8 strings seen; mono-text-reveal GSAP timeline, two stacked copies, one absolute animation target; 10px 500 uppercase #f9f4eb, message container absolute left:50% max-width calc(100% - 7rem). At 375 the message is empty and 0 high at rest and appears only after the first scroll"},
+        {"reference": "studionamma", "variant": null, "tiers": [768, 1440], "cell": "bar.secondary_blocks", "detail": "reactiveContent 'city name + live clock rotate through cities'; bottom strip contents ['WE CRAFT BOLD DESIGN & CLEAN WEBFLOW.','PARIS, FRANCE','19:48:38']"}
+      ],
+      "absent_in": ["buck", "butcherbox", "dogstudio", "fantasy", "halcyon", "indus-foods", "lusion", "rabbit", "wearecollins", "resn"],
+      "sgs_coverage": {
+        "status": "gap",
+        "attributes": ["sgs/notice-banner::text", "sgs/notice-banner::variant", "sgs/notice-banner::dismissible"],
+        "notes": "sgs/notice-banner holds ONE static string with one colour set, one optional icon and a dismiss control. There is no slide collection, no per-slide colour pair, no previous/next control, no rotation timer and no random source. Nothing in the block roster ticks a clock. Three of thirteen references carry a self-changing header message and none can be cloned.",
+        "how_checked": "python read plugins/sgs-blocks/src/blocks/notice-banner/block.json — attributes are text | variant | displayMode | dismissible | dismissBehaviour | stickyPosition plus paint; python sgs-db.py sql \"SELECT slug FROM blocks WHERE slug LIKE '%announce%' OR slug LIKE '%ticker%' OR slug LIKE '%clock%' OR slug LIKE '%carousel%'\" returned 0 rows"
+      },
+      "motion": {"spec38_tier": "V for the carousel slide swap; G for lamalama's GSAP text reveal", "fr": "FR-38-10 (SplitText char/word/line reveals) is the nearest named effect for the lamalama message reveal; no FR covers a timed announcement carousel."}
+    },
+    {
+      "id": "F-A-10",
+      "name": "Utility control roster in the bar",
+      "description": "Which non-navigation controls the header carries beside the logo and the menu: cart, search, account, wishlist, locale, sound, theme, or a call-to-action button.",
+      "surfaces": ["bar"],
+      "values_seen": [
+        {"value": "cart with a count badge", "references": ["away", "rabbit"]},
+        {"value": "search control", "references": ["away", "buck"]},
+        {"value": "wishlist", "references": ["away"]},
+        {"value": "account / log in", "references": ["away", "butcherbox"]},
+        {"value": "store or country selector", "references": ["away"]},
+        {"value": "call-to-action button in the bar", "references": ["halcyon", "indus-foods", "butcherbox", "lusion", "studionamma"]},
+        {"value": "sound toggle", "references": ["lusion", "resn"]},
+        {"value": "theme / dark-mode toggle", "references": ["studionamma"]},
+        {"value": "none at all", "references": ["dogstudio", "fantasy", "lamalama", "wearecollins"]}
+      ],
+      "needed_by": [
+        {"reference": "away", "variant": null, "tiers": [1440], "cell": "bar.zone_model + secondary_blocks", "detail": "wishlist 24x24 icon link, search button 48x57 opening a search drawer, Log in account link 48x57, cart 48x57 with a count badge (0); at 375/768 the account link drops and the cart count stays"},
+        {"reference": "rabbit", "variant": null, "tiers": [375, 1440], "cell": "header-shell.geometry + bar.geometry", "detail": "cart button 32x33 at [285,22] at 375 and [1361,17,32,32] at 1440"},
+        {"reference": "buck", "variant": null, "tiers": [768, 1440], "cell": "bar.zone_model", "detail": "searchControl 'icon-only anchor without href (not a button, no name)'; no cart, no language switch"},
+        {"reference": "studionamma", "variant": null, "tiers": [768, 1440], "cell": "bar.secondary_blocks", "detail": "theme toggle as a text label (#modeSwitch, role button, tabindex 0, aria-pressed false) plus a CTA LET'S TALK!; at 375 the toggle becomes a separate icon-only 26x26 element (#modeSwitch2) and the CTA is removed"},
+        {"reference": "lusion", "variant": null, "tiers": [1440], "cell": "bar.zone_model", "detail": "sound toggle (a canvas soundwave button 44.8x44.8) plus a talk pill LET'S TALK 134.1x44.8 (mailto:hello@lusion.co) #2b2e3a; both hidden 0x0 at 768 and 375"},
+        {"reference": "halcyon", "variant": "all 6", "tiers": [1440], "cell": "bar.zone_model", "detail": "actions Sign in (transparent, radius 10px, 15px/500) and Get started (#5b6ef5, radius 11px, 15px/600); extras explicitly 'no cart, search, language, theme or status controls'"},
+        {"reference": "indus-foods", "variant": "both", "tiers": [1440], "cell": "bar.zone_model", "detail": "one action Request Catalogue 179.67x44.5, #0a7ea8, radius 10px, 15px/700; no cart, search, language, theme or status controls"},
+        {"reference": "butcherbox", "variant": null, "tiers": [1440], "cell": "bar.secondary_blocks", "detail": "Sign In button 135x44 white pill and Choose your plan 181x44 #00945f pill; both display none at 375"},
+        {"reference": "resn", "variant": null, "tiers": [768, 1440], "cell": "header-shell.archetype", "detail": "sound toggle 24x16 bottom-right (display none at 375)"}
+      ],
+      "absent_in": ["dogstudio", "fantasy", "lamalama", "wearecollins"],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": ["sgs/cart::displayMode", "sgs/cart::iconName", "sgs/cart::badgeColour", "sgs/cart::badgeTextColour", "sgs/cart::showZero", "sgs/cart::hideWhenEmpty", "sgs/button", "sgs/multi-button", "sgs/product-search", "sgs/audio"],
+        "notes": "Cart with a count badge is fully covered (sgs/cart carries supports.sgs.headerEssential and showZero reaches away's '0' badge). CTA buttons are covered. PARTIAL: sgs/product-search and sgs/filter-search exist but neither declares headerEssential, so neither is offered as a header control. GAPS with no block at all: wishlist, account/log-in, store or country selector, theme/dark-mode toggle, and a site-wide sound mute toggle (sgs/audio is a media player with its own source and controls, not a global mute).",
+        "how_checked": "python -c read supports.sgs.headerEssential for sgs/cart (true), sgs/responsive-logo (true), sgs/product-search (None), sgs/filter-search (None), sgs/form (None); python sgs-db.py sql \"SELECT slug FROM blocks WHERE slug LIKE '%language%' OR slug LIKE '%theme%' OR slug LIKE '%search%'\"; grep -rln 'darkMode|themeToggle|language-switch|languageSwitch' plugins/sgs-blocks/src theme/sgs-theme returned nothing"
+      },
+      "motion": {"spec38_tier": "n/a", "fr": "none — a roster, not an effect."}
+    },
+    {
+      "id": "F-A-11",
+      "name": "Bar collapse breakpoint and mechanism",
+      "description": "The width at which the horizontal nav gives way to a menu button, and whether the nav is removed from the page or merely hidden.",
+      "surfaces": ["bar"],
+      "values_seen": [
+        {"value": "940px, nav removed from the DOM", "references": ["halcyon"]},
+        {"value": "960px, nav removed from the DOM", "references": ["indus-foods"]},
+        {"value": "between 768 and 1440, nav collapsed to 0x0 with display:none", "references": ["away"]},
+        {"value": "between 375 and 768, collapsed to 0x0", "references": ["buck", "butcherbox", "rabbit"]},
+        {"value": "between 768 and 1440, individual controls collapsed to 0x0", "references": ["lusion", "fantasy", "away"]},
+        {"value": "nothing to collapse (no bar nav at any tier)", "references": ["dogstudio", "lamalama", "studionamma", "wearecollins", "resn"]}
+      ],
+      "needed_by": [
+        {"reference": "halcyon", "variant": "all 6", "tiers": [375, 768, 1440], "cell": "bar.tier_delta", "detail": "breakpoint_px 940, verified 939 burger / 940 nav / 941 nav / 1100 / 1240 / 1440 nav; drop_mechanism 'nav and actions are removed from the DOM (sc-if isDesktop); a 44px burger is mounted (sc-if isMobile)'. 768 is a mobile tier for this design"},
+        {"reference": "indus-foods", "variant": "both", "tiers": [375, 768, 1440], "cell": "bar.tier_delta", "detail": "breakpoint_px 960, verified 959 burger / 960 nav / 961 nav / 1100 / 1240 / 1440 nav; same DOM-removal mechanism"},
+        {"reference": "away", "variant": null, "tiers": [375, 768], "cell": "bar.tier_delta", "detail": "desktop nav and the account link collapse to display none; the drawer takes their content; the hamburger is display none (0x0) at 1440"},
+        {"reference": "buck", "variant": null, "tiers": [375], "cell": "bar.tier_delta", "detail": "bar removed: display:none, 0x0 (element stays in the DOM); the trigger is re-homed to a fixed button outside the header"},
+        {"reference": "fantasy", "variant": null, "tiers": [375], "cell": "bar.tier_delta", "detail": "the toggle's 'Menu' label is display:none at the s breakpoint so the button is icon-only; not removed from the DOM"},
+        {"reference": "lusion", "variant": null, "tiers": [375, 768], "cell": "header-shell.tier_delta", "detail": "sound and talk collapse to 0x0 (display none), not removed from the DOM"},
+        {"reference": "studionamma", "variant": null, "tiers": [375], "cell": "bar.tier_delta", "detail": "droppedViaDisplayNone Dark mode and Let's talk! (rect 0x0, display block); dark mode migrates to a different DOM element (#modeSwitch2)"},
+        {"reference": "butcherbox", "variant": null, "tiers": [375], "cell": "bar.archetype", "detail": "absent: the bar is not shown at this width; its links live in the drawer"},
+        {"reference": "rabbit", "variant": null, "tiers": [375], "cell": "bar.archetype", "detail": "absent: the bar is not shown at this width; its links are the drawer list"}
+      ],
+      "absent_in": ["dogstudio", "lamalama", "wearecollins", "resn"],
+      "sgs_coverage": {
+        "status": "covered",
+        "attributes": ["sgs/nav-bar-menu::collapsePoint", "sgs/nav-bar-menu::showBurger"],
+        "notes": "collapsePoint is a free number (default 768), so 940 and 960 are both reachable exactly, and showBurger decides whether a trigger appears at all. Whether the hidden nav is display:none or removed from the DOM is an implementation detail with no visible difference to a visitor — it does not need an attribute. NOTE for Wave 3C: 768 is a MOBILE tier for halcyon (940) and indus-foods (960), so their 768 rows must be read as mobile, not tablet.",
+        "how_checked": "python read plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json — collapsePoint {\"type\":\"number\",\"default\":768}, showBurger {\"type\":\"boolean\",\"default\":true}"
+      },
+      "motion": {"spec38_tier": "n/a", "fr": "none — a breakpoint."}
+    },
+    {
+      "id": "F-A-12",
+      "name": "Nav item hover paint",
+      "description": "What the item itself does when the pointer is over it: a background appears or slides onto it, the text changes colour or weight, an underline draws, or nothing happens.",
+      "surfaces": ["bar"],
+      "values_seen": [
+        {"value": "sliding pill that tracks the hovered item's x and width", "references": ["halcyon"]},
+        {"value": "background tint plus text-colour swap, panel-owning items only", "references": ["indus-foods"]},
+        {"value": "opacity fade 1 -> 0.5", "references": ["buck"]},
+        {"value": "underline drawn under the item while its panel is open", "references": ["away"]},
+        {"value": "font-weight bump 400 -> 600", "references": ["butcherbox"]},
+        {"value": "two-copy label roll (the label rises out and an alternate label slides in)", "references": ["studionamma"]},
+        {"value": "control background swap (pill fill lightens)", "references": ["lusion"]},
+        {"value": "none measured (0 computed-style diffs)", "references": ["dogstudio", "fantasy", "lamalama", "wearecollins", "away (mobile icons)"]}
+      ],
+      "needed_by": [
+        {"reference": "halcyon", "variant": "columns-light, cards-light, minimal-light", "tiers": [1440], "cell": "bar.item_states + motion", "detail": "pill bg #16140a a=0.05, radius 11px, h 38, tracks item x and width, persists over the panel-less item; transition transform/width 0.38s cubic-bezier(0.16,0.84,0.32,1), opacity 0.25s; measured 237-266ms to settle"},
+        {"reference": "halcyon", "variant": "columns-dark, cards-dark, minimal-dark", "tiers": [1440], "cell": "bar.item_states", "detail": "same pill with bg #ffffff a=0.07; measured 176-298ms"},
+        {"reference": "indus-foods", "variant": "both", "tiers": [1440], "cell": "bar.item_states + motion", "detail": "tint #000000 a=0 -> #0a7ea8 a=0.12, colour #1e2a3c -> #0a7ea8, transition background 0.22s color 0.22s; Home and Blog (panel-less) show NOTHING on hover, measured"},
+        {"reference": "buck", "variant": null, "tiers": [768, 1440], "cell": "bar.item_states + motion", "detail": "a.chakra-link opacity 1 -> 0.5, transition 0.2s ease-in-out"},
+        {"reference": "away", "variant": null, "tiers": [1440], "cell": "bar.item_states", "detail": "hovered item gets a 1px #111111 ::after underline, width equal to the link, 0 at rest; item wrapper transition all 0.3s ease while open"},
+        {"reference": "butcherbox", "variant": null, "tiers": [1440], "cell": "bar.item_states", "detail": "source-only: hover:font-semibold (400 -> 600), active also semibold; the caret shows on hover"},
+        {"reference": "studionamma", "variant": null, "tiers": [1440], "cell": "bar.item_states + motion", "detail": "link_first transform matrix(0.800148,0,0,0.800148,-15.9882,-19.1858), w 118.4 -> 94.7, h 16 -> 12.8 while link_second (the alternate label) slides in at scale 1; settles inside 650ms; does NOT fire at 768 or 375 (0 diffs)"},
+        {"reference": "lusion", "variant": null, "tiers": [375, 768, 1440], "cell": "bar.item_states", "detail": "source-only CSS :hover — menu pill background #e4e6ef -> #ffffff, colour -> var(--header-text-color), dots rotate 270deg; transition color, background-color 0.4s ease"}
+      ],
+      "absent_in": ["dogstudio", "fantasy", "lamalama", "wearecollins", "resn"],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": ["sgs/nav-bar-menu::itemBgHoverTreatment", "sgs/nav-bar-menu::itemBgHover", "sgs/nav-bar-menu::itemBgHoverGradient", "sgs/nav-bar-menu::itemColourHover", "sgs/nav-bar-menu::itemColourHoverTreatment", "sgs/nav-bar-menu::itemFontWeightHover", "sgs/nav-bar-menu::itemTextDecorationHover", "sgs/nav-bar-menu::itemBorderHoverTreatment", "sgs/nav-bar-menu::itemBorderRadius"],
+        "notes": "itemBgHoverTreatment 'highlight' IS the sliding pill (Spec 41 FR-41-25), painting from itemBgHover/itemBgHoverGradient — halcyon lands exactly, including the radius. 'swap' covers the indus tint. itemColourHover covers the colour swap, itemFontWeightHover the butcherbox weight bump, itemTextDecorationHover the away underline. TWO GAPS: (a) opacity fade (buck) has no hover-opacity attribute; (b) the two-copy label roll (studionamma) needs a second label per item and a paired transform, which no attribute provides. A THIRD, halcyon-specific detail: the pill moves onto the panel-LESS item too, so 'highlight' must not be gated on owning a panel — indus is the opposite (panel-less items show nothing), so both behaviours must be reachable.",
+        "how_checked": "python read plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json — itemBgHoverTreatment description 'none / swap / highlight. highlight renders the sliding pill, painting from itemBgHover / itemBgHoverGradient (Spec 41 FR-41-25)'; python sgs-db.py sql attr_name listing for sgs/nav-bar-menu (no opacity or second-label attribute present)"
+      },
+      "motion": {"spec38_tier": "V", "fr": "none — CSS transitions on transform/width/colour/opacity; inside Tier V by FR-38-1, but Spec 38 names no hover-paint effect."}
+    },
+    {
+      "id": "F-A-13",
+      "name": "Sibling dim on hover",
+      "description": "Hovering one link changes the OTHER links, not the hovered one: the rest of the list fades back so the hovered item stands out.",
+      "surfaces": ["footer"],
+      "values_seen": [
+        {"value": "siblings drop from #ffffff to #4c4c4c over 0.45s while the hovered link stays white", "references": ["wearecollins"]},
+        {"value": "none", "references": ["away", "buck", "butcherbox", "dogstudio", "fantasy", "halcyon", "indus-foods", "lamalama", "lusion", "rabbit", "studionamma"]}
+      ],
+      "needed_by": [
+        {"reference": "wearecollins", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.item_states + motion", "detail": "'same sibling-dim and pill behaviour as the drawer: hovered footer nav link keeps white, siblings go to #4c4c4c; the Work with us pill scales and swaps to the email'; transitions 0.45s colour, 0.3s pill. At 375 the diffs are pointer-emulated in a touch context and are flagged weak evidence"}
+      ],
+      "absent_in": ["away", "buck", "butcherbox", "dogstudio", "fantasy", "halcyon", "indus-foods", "lamalama", "lusion", "rabbit", "studionamma", "resn"],
+      "sgs_coverage": {
+        "status": "gap",
+        "attributes": [],
+        "notes": "Every hover attribute in the tree repaints the element being hovered. There is no attribute anywhere that repaints an element's SIBLINGS on hover of one of them, on nav-bar-menu, social-icons, business-info or any row block. One reference in group A needs it, and the same mechanism recurs in group C (wearecollins' drawer, and resn's per-item canvas dissolve), so it should be judged across groups rather than dismissed as a single-site quirk.",
+        "how_checked": "python sgs-db.py sql \"SELECT block_slug, attr_name FROM block_attributes WHERE attr_name LIKE '%Sibling%' OR attr_name LIKE '%Dim%' OR attr_name LIKE '%Peer%'\" returned 0 rows; attr_name listings for sgs/nav-bar-menu and sgs/social-icons contain no sibling-scoped state"
+      },
+      "motion": {"spec38_tier": "V", "fr": "none — a CSS colour transition on a :hover-scoped list; no Spec 38 effect names it."}
+    },
+    {
+      "id": "F-A-14",
+      "name": "Pointer-tracking label magnet",
+      "description": "The item's label leans towards the pointer while it is over the item, by a fixed fraction of the distance from the item's centre, and springs back on leave.",
+      "surfaces": ["bar"],
+      "values_seen": [
+        {"value": "factor 0.16", "references": ["halcyon"]},
+        {"value": "factor 0.14", "references": ["indus-foods"]},
+        {"value": "none", "references": ["away", "buck", "butcherbox", "dogstudio", "fantasy", "lamalama", "lusion", "rabbit", "studionamma", "wearecollins"]}
+      ],
+      "needed_by": [
+        {"reference": "halcyon", "variant": "all 6", "tiers": [1440], "cell": "bar.item_states + motion", "detail": "label translateX = (mouseX - itemCentre) * 0.16; measured 0.160 on every item; transition transform 0.2s ease-out; resets on leave"},
+        {"reference": "indus-foods", "variant": "both", "tiers": [1440], "cell": "bar.item_states + motion", "detail": "label translateX = (mouseX - itemCentre) * 0.14; transition transform 0.2s ease-out; resets on leave"}
+      ],
+      "absent_in": ["away", "buck", "butcherbox", "dogstudio", "fantasy", "lamalama", "lusion", "rabbit", "studionamma", "wearecollins", "resn"],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": ["sgs/nav-bar-menu::itemMagnetEnabled", "sgs/nav-bar-menu::triggerMagnetEnabled", "sgs/nav-bar-menu::triggerMagnetRadius", "sgs/nav-bar-menu::triggerMagnetStrength"],
+        "notes": "The mechanism exists but the item side of it is a BOOLEAN only: itemMagnetEnabled is {type:boolean, default:false} with no companion strength or radius, while the TRIGGER has both triggerMagnetStrength and triggerMagnetRadius. So halcyon's 0.16 and indus's 0.14 collapse to the same built-in constant and the two drafts cannot be told apart in a clone. Adding itemMagnetStrength (and itemMagnetRadius for symmetry with the trigger) closes it — the read side already exists.",
+        "how_checked": "python read plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json — itemMagnetEnabled {\"type\":\"boolean\",\"default\":false}; python sgs-db.py sql attr_name listing for sgs/nav-bar-menu shows triggerMagnetRadius and triggerMagnetStrength but no itemMagnet* companion"
+      },
+      "motion": {"spec38_tier": "V", "fr": "none — a pointer-driven transform with a CSS transition; Tier V by FR-38-1. FR-38-17 (MotionPath) is a different mechanism and does not cover it."}
+    },
+    {
+      "id": "F-A-15",
+      "name": "Item type scaling mode",
+      "description": "How the size of bar and footer text responds to the viewport: a fixed number of pixels, stepped values per tier, or a formula that scales continuously.",
+      "surfaces": ["bar", "footer"],
+      "values_seen": [
+        {"value": "fixed px at every width", "references": ["dogstudio", "studionamma", "lamalama", "halcyon", "indus-foods", "away", "butcherbox", "rabbit", "wearecollins"]},
+        {"value": "fluid vw with a floor", "references": ["buck"]},
+        {"value": "root-rem scaled: the whole UI scales with the root font-size, non-linearly", "references": ["fantasy"]},
+        {"value": "em-scaled from the container", "references": ["lusion"]},
+        {"value": "stepped per tier", "references": ["away", "wearecollins", "lamalama", "lusion"]}
+      ],
+      "needed_by": [
+        {"reference": "buck", "variant": null, "tiers": [375, 768, 1440], "cell": "bar.item_typography + footer.item_typography", "detail": "scalingMode 'fluid (about 1.49vw) from 1280px up, floor of 20px below'; series 1600:23.8222 / 1440:21.44 / 1280:19.0578 / 1100:20 / 1024:20 / 900:20 / 768:20 / 375:20px. The footer follows the same scale"},
+        {"reference": "fantasy", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.tier_delta", "detail": "rootFontSize 8.72093 / 6.43216 / 8.33333px at 375 / 768 / 1440; 'the whole UI scales through the root font-size (rem)'; NOT linear with the viewport — root 10px at 1337 and 1920, 8.33px at 1440"},
+        {"reference": "lusion", "variant": null, "tiers": [375, 768, 1440], "cell": "bar.item_typography + footer.item_typography", "detail": "pill 'em-scaled from the container: 14px at 1440, 10.5px at 375'; footer address 15 / 17.5 / 18px, heading 40.5 / 47.25 / 48.6px"},
+        {"reference": "away", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.item_typography", "detail": "'stepped: newsletter heading 38px at 1440 and 32px below'; nav fixed 14px, 500, letter-spacing 0.7px, uppercase"},
+        {"reference": "wearecollins", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.item_typography", "detail": "primary links Portrait Text 72 / 58 / 48px, line-height equal to size, letter-spacing -1.44 / -1.16 / -0.96px; 'stepped, same values as the drawer'"},
+        {"reference": "halcyon", "variant": "all 6", "tiers": [1440], "cell": "bar.item_typography", "detail": "Instrument Sans 15px / 500 / -0.15px, scaling_mode 'fixed px (no clamp/vw in the source)'"},
+        {"reference": "dogstudio", "variant": null, "tiers": [375, 768, 1440], "cell": "bar.item_typography", "detail": "13px at every one of 11 sampled widths from 375 to 1600"}
+      ],
+      "absent_in": [],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": ["sgs/nav-bar-menu::itemFontSize", "sgs/nav-bar-menu::itemFontSizeUnit", "sgs/nav-bar-menu::itemLetterSpacing", "sgs/nav-bar-menu::itemLineHeight", "sgs/business-info::fontSize", "sgs/social-icons::fontSize"],
+        "notes": "itemFontSize is a per-tier object {desktop,tablet,mobile} with a free unit, so fixed-px and stepped are both covered exactly, including away's 38/32 step and wearecollins' 72/58/48. GAP: no attribute expresses a formula. buck's 1.49vw-with-a-20px-floor (a clamp), fantasy's root-rem scale and lusion's container-em scale all collapse to three frozen numbers in a clone, which then drifts at every width between the three tiers — the very failure the 375/768/1440 capture was designed to expose.",
+        "how_checked": "python read plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json — itemFontSize {\"type\":\"object\",\"default\":{}}, itemFontSizeUnit {\"type\":\"string\",\"default\":\"\"}; python sgs-db.py sql \"SELECT block_slug, attr_name FROM block_attributes WHERE attr_name LIKE '%Clamp%' OR attr_name LIKE '%Fluid%'\" returned 0 rows"
+      },
+      "motion": {"spec38_tier": "n/a", "fr": "none — typography."}
+    },
+    {
+      "id": "F-A-16",
+      "name": "Caret ornament on panel-owning items",
+      "description": "A small chevron beside the items that open a panel, marking them apart from the plain links, and turning while the panel is open.",
+      "surfaces": ["bar"],
+      "values_seen": [
+        {"value": "11x11 svg chevron on panel-owning items, rotating 180deg while open", "references": ["halcyon", "indus-foods"]},
+        {"value": "caret shown on hover only", "references": ["butcherbox"]},
+        {"value": "no caret; the panel-owning item is marked by aria-haspopup and an underline instead", "references": ["away"]},
+        {"value": "no panels, so no ornament", "references": ["buck", "dogstudio", "fantasy", "lamalama", "lusion", "studionamma", "wearecollins", "resn"]}
+      ],
+      "needed_by": [
+        {"reference": "halcyon", "variant": "all 6", "tiers": [1440], "cell": "bar.item_states + content", "detail": "caret chevron (11x11 svg) on items that own a panel, rotates 180deg while open, transition transform 0.3s cubic-bezier(0.16,0.84,0.32,1); Pricing (panel-less) has none"},
+        {"reference": "indus-foods", "variant": "both", "tiers": [1440], "cell": "bar.item_states + content", "detail": "same 11x11 caret on About, Sectors, Brands, Trade, More; Home and Blog have none"},
+        {"reference": "butcherbox", "variant": null, "tiers": [1440], "cell": "bar.item_states", "detail": "source-only: 'the caret shows on hover'; Gifts is the dropdown item"},
+        {"reference": "away", "variant": null, "tiers": [1440], "cell": "bar.item_states", "detail": "panelOwningItem marked by aria-haspopup=\"menu\" aria-expanded aria-controls; BEST SELLERS is a standalone item with no popup attributes; no caret glyph"}
+      ],
+      "absent_in": ["buck", "dogstudio", "fantasy", "lamalama", "lusion", "rabbit", "studionamma", "wearecollins", "resn"],
+      "sgs_coverage": {
+        "status": "covered",
+        "attributes": ["sgs/nav-bar-menu::submenuCaret"],
+        "notes": "submenuCaret is a boolean, default true, and the block already applies it only to items that own a submenu — which is exactly the halcyon/indus rule. away's caret-less, aria-only marking is the boolean set to false. butcherbox's hover-only caret is the one value not directly expressible, and it is a source-only reading with no measured geometry.",
+        "how_checked": "python read plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json — submenuCaret {\"type\":\"boolean\",\"default\":true}"
+      },
+      "motion": {"spec38_tier": "V", "fr": "none — a CSS transform transition on the glyph."}
+    },
+    {
+      "id": "F-A-17",
+      "name": "Current-page indicator",
+      "description": "A visible mark on the nav item for the page the visitor is already on.",
+      "surfaces": ["bar", "footer"],
+      "values_seen": [
+        {"value": "none visible anywhere (no colour, weight or underline change)", "references": ["away", "buck", "butcherbox", "dogstudio", "fantasy", "halcyon", "indus-foods", "lamalama", "lusion", "rabbit", "studionamma", "wearecollins"]},
+        {"value": "aria-current='page' present in the markup but with no visual treatment", "references": ["studionamma", "wearecollins"]}
+      ],
+      "needed_by": [
+        {"reference": "studionamma", "variant": null, "tiers": [375, 768, 1440], "cell": "bar.item_states", "detail": "currentIndicator: aria-current=\"page\" on the wordmark link (class w--current) — the only current marker on the site, and it carries no visual difference"},
+        {"reference": "wearecollins", "variant": null, "tiers": [375, 768, 1440], "cell": "bar.item_states", "detail": "'logo carries aria-current=\"page\" and class router-link-exact-active on the home route; no visual current-page indicator'"}
+      ],
+      "absent_in": ["away", "buck", "butcherbox", "dogstudio", "fantasy", "halcyon", "indus-foods", "lamalama", "lusion", "rabbit", "resn"],
+      "sgs_coverage": {
+        "status": "covered",
+        "attributes": ["sgs/nav-bar-menu::itemColourCurrent", "sgs/nav-bar-menu::itemBgCurrent", "sgs/nav-bar-menu::itemBgCurrentGradient", "sgs/nav-bar-menu::itemFontWeightCurrent", "sgs/nav-bar-menu::itemBorderColourCurrent", "sgs/nav-bar-menu::submenuColourCurrent"],
+        "notes": "Recorded because it is a real column with a real measured value, and the value is 'none' at every reference: SGS carries six current-state attributes and no reference in group A uses a single one of them. This is the one family where SGS is AHEAD of the roster — the risk is the opposite of a gap, namely a non-empty default leaking a mark the draft never had. All six default to empty, so nothing leaks.",
+        "how_checked": "python read plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json — itemColourCurrent {\"type\":\"string\",\"default\":\"\"}; python sgs-db.py sql attr_name listing for sgs/nav-bar-menu shows itemBgCurrent, itemBgCurrentGradient, itemColourCurrent, itemFontWeightCurrent, itemBorderColourCurrent, submenuColourCurrent"
+      },
+      "motion": {"spec38_tier": "n/a", "fr": "none — a state, not an effect."}
+    },
+    {
+      "id": "F-A-18",
+      "name": "Menu trigger form and placement in the bar",
+      "description": "What the visitor presses to open the menu, as it sits in the header: a bare burger, a labelled pill, a word, the whole bar, or a control floating outside the header entirely.",
+      "surfaces": ["bar", "header-shell"],
+      "values_seen": [
+        {"value": "icon-only burger inside the bar", "references": ["wearecollins", "dogstudio", "halcyon", "indus-foods", "away", "buck", "rabbit", "butcherbox", "lamalama", "lusion"]},
+        {"value": "labelled pill (icon plus a word, in a filled rounded box)", "references": ["fantasy", "lusion"]},
+        {"value": "a word with no box", "references": ["studionamma"]},
+        {"value": "the whole header box is the trigger", "references": ["lamalama"]},
+        {"value": "a fixed control outside the header box", "references": ["resn", "buck"]}
+      ],
+      "needed_by": [
+        {"reference": "lamalama", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.trigger_close + bar.mechanics", "detail": "'the whole 50px pill is one click target: div.absolute.inset-0.js-menu-toggle covers the bar; cursor pointer'; a 30x36 burger (3 bars 16x2 #f9f4eb, 3px gap) also sits at the right end; openTrigger 'click anywhere on the pill (overlay) or on the burger'"},
+        {"reference": "fantasy", "variant": null, "tiers": [375, 768, 1440], "cell": "bar.trigger_close", "detail": "pill 93.3x41.7 / 72x32.2 / 54.1x43.6, radius 8.33 / 6.43 / 8.72px, fill #ffffff @0.15, backdrop-filter blur(4px); label 'Menu' shown at 768 and 1440, display:none at 375 leaving the button with NO accessible name"},
+        {"reference": "lusion", "variant": null, "tiers": [375, 768, 1440], "cell": "bar.trigger_close", "detail": "button#header-right-menu-btn, aria-label 'Menu button', no aria-expanded; pill 102.4x44.8 at 1440 with label MENU -> CLOSE on a second span; circle 44.8x44.8 at 768 and 33.6x33.6 at 375, icon-only"},
+        {"reference": "studionamma", "variant": null, "tiers": [375, 768, 1440], "cell": "bar.geometry + item_states", "detail": "'MENU' 47.5x16 text, alternate label 'OPEN' on the roll; no box, no icon"},
+        {"reference": "buck", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.mechanics", "detail": "hamburgerDetachesToFixed — firstFixedAtScrollY 60 / 240 / 360, lastNonFixedScrollY null / 180 / 300; at 375 a separate fixed hamburger button in #__next takes over the trigger role entirely"},
+        {"reference": "resn", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.archetype", "detail": "div.js-shell__button--menu, 18x18 icon with a 200x200 hit area (60x60 on an iPhone UA), left 328 / 721 / 1393, top 20; an unfocusable div, so the menu is mouse-only"},
+        {"reference": "wearecollins", "variant": null, "tiers": [375, 768, 1440], "cell": "bar.geometry + motion", "detail": "burger 28x18 (two 16x1.5 bars) — below the 44px target; morphs into an X (bars become 12.4x12.4 boxes rotated +/-45deg), transition transform 0.45s cubic-bezier(0.645,0.045,0.355,1)"},
+        {"reference": "halcyon", "variant": "all 6", "tiers": [375, 768], "cell": "header-shell.zone_model", "detail": "44x44 burger at x=303 (375) / x=696 (768), two 18x1.5 lines, radius 12"}
+      ],
+      "absent_in": [],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": ["sgs/nav-bar-menu::triggerMode", "sgs/nav-bar-menu::triggerIcon", "sgs/nav-bar-menu::triggerLabel", "sgs/nav-bar-menu::showBurger", "sgs/nav-bar-menu::burgerSize", "sgs/nav-bar-menu::burgerBg", "sgs/nav-bar-menu::burgerBgGradient", "sgs/nav-bar-menu::burgerColour", "sgs/nav-bar-menu::burgerFontSize", "sgs/nav-bar-menu::burgerTextTransform", "sgs/nav-bar-menu::burgerBgHoverTreatment"],
+        "notes": "triggerMode is icon / text / icon-and-text with its own icon, label, size and full paint set — bare burger, labelled pill and bare word are all covered, including fantasy's label dropping at 375 (triggerMode is not per-tier, so that specific tier change is the one shortfall of the covered path). TWO GAPS: (a) the whole-bar-is-the-trigger pattern (lamalama) has no attribute — the trigger is always a discrete control inside the row; (b) a trigger that detaches to a fixed position on scroll (buck) or lives outside the header entirely (resn) belongs to F-A-19. SCOPE NOTE: the trigger-close SURFACE rows are group B's; this family covers only the trigger as it occupies the header's zone model, which is where these cells were captured.",
+        "how_checked": "python read plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json — triggerMode {\"type\":\"string\",\"default\":\"icon\",\"description\":\"What the menu button shows: icon / text / icon-and-text. PHP-validated, no JSON enum.\"}; python sgs-db.py sql attr_name listing for sgs/nav-bar-menu (burger* family present, no trigger-area or trigger-detach attribute)"
+      },
+      "motion": {"spec38_tier": "V", "fr": "none for the burger-to-X morph (a CSS transform on SVG rects). FR-38-16 (MorphSVG) is asset-gated path morphing, a different mechanism, and is not needed here."}
+    },
+    {
+      "id": "F-A-19",
+      "name": "Detached fixed controls outside the header box",
+      "description": "Controls a visitor reads as part of the header but which are pinned somewhere else on screen and are not inside the header element at all.",
+      "surfaces": ["header-shell"],
+      "values_seen": [
+        {"value": "the entire header is detached controls with no box", "references": ["resn"]},
+        {"value": "a card pinned to the top-right, beside but outside the header", "references": ["lamalama"]},
+        {"value": "a control pinned to the bottom-centre of the viewport", "references": ["lamalama"]},
+        {"value": "a second strip pinned to the bottom of the viewport", "references": ["studionamma"]},
+        {"value": "a scroll indicator pinned to the right edge", "references": ["lusion"]},
+        {"value": "the trigger detaches to fixed once the page has scrolled", "references": ["buck"]},
+        {"value": "none", "references": ["away", "butcherbox", "dogstudio", "fantasy", "halcyon", "indus-foods", "rabbit", "wearecollins"]}
+      ],
+      "needed_by": [
+        {"reference": "resn", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.archetype", "detail": "div.js-shell is a 0x0 wrapper holding four separately fixed parts: menu button 18x18 (200x200 hit area) at top 20 right ~23px, a droplet home button, a sound toggle bottom-right 24x16, and a page-level VIEW ALL PROJECTS link top-centre"},
+        {"reference": "lamalama", "variant": null, "tiers": [1440], "cell": "header-shell.secondary_blocks", "detail": "contact card rect top 16 left 1264 w 160 h 326, insetRight 16, text GET IN TOUCH, href /contact/ — display collapsed to 0x0 at 768 and 375"},
+        {"reference": "lamalama", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.secondary_blocks", "detail": "bottom-centre showreel toggle 'THIS IS US' 104x116 at cy 842, opacityAtRest 0, opacityWhileMenuOpen 1"},
+        {"reference": "studionamma", "variant": null, "tiers": [768, 1440], "cell": "header-shell.geometry", "detail": "nav.nav-bottom fixed, insetTop 867.1 / 864, height 16, z-index 9999, bottom gap 16.9 / 20px"},
+        {"reference": "lusion", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.secondary_blocks", "detail": "div#scroll-indicator fixed at right 16px, 2x180 at 375/768 and 6x180 at 1440"},
+        {"reference": "buck", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.mechanics", "detail": "hamburgerDetachesToFixed firstFixedAtScrollY 60 / 240 / 360 (samples every 60px); the header itself stays relative/absolute and scrolls away"}
+      ],
+      "absent_in": ["away", "butcherbox", "dogstudio", "fantasy", "halcyon", "indus-foods", "rabbit", "wearecollins"],
+      "sgs_coverage": {
+        "status": "gap",
+        "attributes": ["sgs/decorative-image::positionY (nearest, and not sufficient)", "sgs/decorative-image::zIndex"],
+        "notes": "Nothing in the header family detaches a child from the header box. sgs/site-header renders one <header> and sgs/site-header-row lays its children inside it; no attribute pins a row or a control to an arbitrary viewport edge. The only position-ish attributes in the whole DB are sgs/decorative-image's positionY and zIndex, which are not a viewport-pinning mechanism and are on a decorative block. Six of thirteen references carry at least one detached control, and one (resn) is ENTIRELY detached controls, so this decides whether resn is clonable as a header at all.",
+        "how_checked": "python sgs-db.py sql \"SELECT block_slug, attr_name FROM block_attributes WHERE css_property IN ('position','top','z-index')\" returned only sgs/decorative-image::positionY and sgs/decorative-image::zIndex; grep -n 'position' plugins/sgs-blocks/src/blocks/site-header-row/block.json shows no positioning attribute"
+      },
+      "motion": {"spec38_tier": "n/a", "fr": "none — placement."}
+    },
+    {
+      "id": "F-A-20",
+      "name": "Surface entrance animation",
+      "description": "The header or footer animates itself into place the first time it is seen, usually after a preloader, rather than simply being there.",
+      "surfaces": ["header-shell", "footer"],
+      "values_seen": [
+        {"value": "slides in from off-screen after a preloader", "references": ["studionamma"]},
+        {"value": "controls slide up from an offset, staggered", "references": ["lusion"]},
+        {"value": "fades in from opacity 0", "references": ["lamalama"]},
+        {"value": "declared in source but never runs (intent vs render)", "references": ["halcyon", "indus-foods"]},
+        {"value": "scroll-reveal classes present on footer blocks, not sampled", "references": ["dogstudio", "studionamma"]},
+        {"value": "none", "references": ["away", "buck", "butcherbox", "fantasy", "rabbit", "wearecollins", "resn"]}
+      ],
+      "needed_by": [
+        {"reference": "studionamma", "variant": null, "tiers": [1440], "cell": "header-shell.motion", "detail": "both strips slide in from translateY -44.8px / +47.7px to 0 when the preloader ends, driven by GSAP. HEADED re-check: off-screen for about 8.0 to 8.5 s, then about 1 s of slide, identity transform at +9.0 s; 0 of 36 static cells differ from the headless run"},
+        {"reference": "lusion", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.motion", "detail": "sound, talk and menu slide from translate3d(0,4em,0) to 0 with staggered easing, ratio windows 0.9-1.7 / 1.0-1.8 / 1.1-1.9 s, driven by header.update(). HEADED: controls arrive about 6.1 s after navigation (preloader gone at +5.19 s); the earlier 40 s reading was a software-rendering artefact"},
+        {"reference": "lamalama", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.motion", "detail": "pill starts class opacity-0 and carries inline opacity:1 after the loader. HEADED: the intro finishes about 8 s after navigation, the pill reaches full opacity at about 7.7 s — the committed opacity 0 was a pre-intro reading"},
+        {"reference": "halcyon", "variant": "all 6", "tiers": [375, 768, 1440], "cell": "header-shell.motion (intent)", "detail": "INTENT: a 340ms panel entry plus a staggered 460ms child entry, and a 420ms overlay stagger. RENDER: zero animations — componentDidUpdate(prevProps) is called with one argument while the draft reads ps.active from a second, so it throws before animatePanel"},
+        {"reference": "indus-foods", "variant": "both", "tiers": [375, 768, 1440], "cell": "header-shell.motion (intent)", "detail": "INTENT: 460ms stagger plus a 420ms overlay stagger. RENDER: `if (!ps) return;` always returns early, so the panel is opaque on its first frame"},
+        {"reference": "dogstudio", "variant": null, "tiers": [375, 768, 1440], "cell": "footer (not_measured)", "detail": "'the footer blocks carry appear-fade-up classes; the reveal was not sampled'"},
+        {"reference": "studionamma", "variant": null, "tiers": [375, 768, 1440], "cell": "footer (not_measured)", "detail": "'footer entrance animation (class grow-appear) not sampled'"}
+      ],
+      "absent_in": ["away", "buck", "butcherbox", "fantasy", "rabbit", "wearecollins", "resn"],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": ["sgs/site-footer-row::fxFooterStagger", "sgs/site-header::supports.sgs.hideExtensions = ['fx']", "sgs/site-footer::supports.sgs.hideExtensions = ['fx']"],
+        "notes": "The FOOTER has it: fxFooterStagger is a footer-row-only scroll-scrubbed reveal reusing the Spec 38 FR-38-7 scrub runtime unmodified, which is what dogstudio's appear-fade-up and studionamma's grow-appear need — though both reference cells are in not_measured, so the match is unproven in values. The HEADER does NOT: sgs/site-header and sgs/site-footer both declare hideExtensions:['fx'], so the generic Spec 38 effects picker is deliberately hidden on them, and site-header-row's fx* attributes are background FIELDS (fxField / fxGrid / fxParticle / fxWave), not an entrance. Three references animate their header in and none can be cloned. A preloader-gated start (the 6-9 s delays measured on all three) has no expression at all.",
+        "how_checked": "python read plugins/sgs-blocks/src/blocks/site-footer-row/block.json — fxFooterStagger {\"type\":\"boolean\",\"default\":false} with _comment 'Footer-row-ONLY ... Reuses the Spec 38 FR-38-7 scrub runtime UNMODIFIED'; python -c print supports.sgs for sgs/site-header and sgs/site-footer shows hideExtensions ['fx']"
+      },
+      "motion": {"spec38_tier": "V for the transform/opacity entrances (all reachable by a CSS transition); G as built (studionamma and lamalama use GSAP, lusion a custom rAF spring)", "fr": "FR-38-7 (scrub) covers the footer reveal and is already wired via fxFooterStagger. FR-38-5 (entrance x scrub exclusivity) governs which of the two a surface may take. No FR covers a preloader-gated header entrance."}
+    },
+    {
+      "id": "F-A-21",
+      "name": "Header stacking order",
+      "description": "How high the header sits in the page's stack, which decides what may pass over or under it.",
+      "surfaces": ["header-shell"],
+      "values_seen": [
+        {"value": "z-index 9", "references": ["wearecollins"]},
+        {"value": "z-index 10", "references": ["fantasy"]},
+        {"value": "z-index 20", "references": ["lamalama"]},
+        {"value": "z-index 50", "references": ["rabbit"]},
+        {"value": "z-index 52", "references": ["lusion"]},
+        {"value": "z-index 100", "references": ["away"]},
+        {"value": "z-index 200", "references": ["halcyon", "indus-foods"]},
+        {"value": "z-index 999", "references": ["wearecollins"]},
+        {"value": "z-index 1000", "references": ["dogstudio"]},
+        {"value": "z-index 10000", "references": ["studionamma", "butcherbox"]},
+        {"value": "z-index auto (not stacked)", "references": ["buck"]}
+      ],
+      "needed_by": [
+        {"reference": "studionamma", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.geometry", "detail": "top strip zIndex 10000, bottom strip zIndex 9999"},
+        {"reference": "butcherbox", "variant": null, "tiers": [1440], "cell": "header-shell.geometry", "detail": "zIndex 10000"},
+        {"reference": "dogstudio", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.geometry", "detail": "zIndex 1000"},
+        {"reference": "wearecollins", "variant": null, "tiers": [375], "cell": "header-shell.geometry", "detail": "zIndex 999 at 375, 9 at 768 and 1440 — a 111-fold change between tiers of the same site"},
+        {"reference": "halcyon", "variant": "all 6", "tiers": [375, 768, 1440], "cell": "header-shell.geometry", "detail": "zIndex 200, declared alongside position sticky"},
+        {"reference": "lusion", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.geometry", "detail": "zIndex 52; header#header is a child of a position:fixed div#ui together with div#page-container"},
+        {"reference": "fantasy", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.geometry", "detail": "zIndex 10"},
+        {"reference": "lamalama", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.geometry", "detail": "zIndex 20"},
+        {"reference": "buck", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.geometry", "detail": "zIndex 'auto' — the header creates no stacking context at all"}
+      ],
+      "absent_in": [],
+      "sgs_coverage": {
+        "status": "conflict",
+        "attributes": ["sgs/site-header (z-index hardcoded to 100 in render.php; NO attribute)"],
+        "notes": "CONFLICT, not a plain gap: sgs/site-header emits a hardcoded z-index:100 in all three tri-state declaration branches and style.css sets z-index:100 on the header, with no attribute to change it. Eleven distinct values were measured across the roster, from 9 to 10000 plus 'auto'. A clone of wearecollins (9) or fantasy (10) would sit 10 to 90 times higher than the draft and cover page elements the draft deliberately let pass over it; a clone of studionamma or butcherbox (10000) would sit under elements the draft covers. It also fights per-tier need: wearecollins measures 999 at 375 and 9 at 768/1440. Per the project's own rule, a hardcoded wrapper default that overrides faithfully-transferred CSS is a cheat to remove or gate, never a blocker.",
+        "how_checked": "grep -n 'z-index' plugins/sgs-blocks/src/blocks/site-header/render.php -> lines 197, 205, 227 all emit 'z-index' => '100'; plugins/sgs-blocks/src/blocks/site-header/style.css line 25 'z-index: 100;'; python sgs-db.py sql \"SELECT block_slug, attr_name FROM block_attributes WHERE css_property='z-index'\" returns only sgs/decorative-image::zIndex"
+      },
+      "motion": {"spec38_tier": "n/a", "fr": "none — stacking."}
+    },
+    {
+      "id": "F-A-22",
+      "name": "Footer archetype",
+      "description": "What kind of footer the page ends with: a sitemap of link columns, an information block, a single call-to-action sign-off, or none at all.",
+      "surfaces": ["footer"],
+      "values_seen": [
+        {"value": "multi-section sitemap with newsletter, link columns, locale and legal rows", "references": ["away"]},
+        {"value": "link columns plus repeated location blocks", "references": ["buck", "studionamma", "dogstudio"]},
+        {"value": "information footer (address, socials, contacts, newsletter, credit, back-to-top)", "references": ["lusion"]},
+        {"value": "call-to-action sign-off, no link columns", "references": ["fantasy", "lamalama", "wearecollins"]},
+        {"value": "multi-column (captured at 1440 only)", "references": ["butcherbox"]},
+        {"value": "absent — the page is header plus main only", "references": ["halcyon", "indus-foods", "resn"]},
+        {"value": "not captured", "references": ["rabbit"]}
+      ],
+      "needed_by": [
+        {"reference": "away", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.archetype + zone_model", "detail": "height 2239.1 / 1859 / 1111.2; three sections (1787.5/84/367.6 at 375, 1031.2/80/80 at 1440); 89 links present at every tier; newsletter and store block above, SHOP / ABOUT / GET HELP columns, then a country row and a legal row"},
+        {"reference": "buck", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.archetype + zone_model", "detail": "<footer role=contentinfo>, flex column, height 1700 / 994 / 1074.5; five office blocks in the order LA, NY, SYD, AMS, LDN, each with a live local-time clock"},
+        {"reference": "lusion", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.archetype", "detail": "address, socials, two email contacts, a newsletter form, a legal/credit row and a round back-to-top button on a white #footer-bg panel 902px high"},
+        {"reference": "fantasy", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.archetype", "detail": "a white panel over a black 90% overlay, height 527.3 / 345.2 / 530.8, holding a heading, a Contact button, a copyright and one legal link — no link columns"},
+        {"reference": "lamalama", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.archetype", "detail": "one column at 375/768 (heading, phone, blurb, two buttons, language switch), two columns at 1440 (heading x=40, blurb and buttons x=708); padding 120px 16px 80px -> 240px 40px 160px"},
+        {"reference": "wearecollins", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.archetype", "detail": "full-width, exactly one viewport high (900px), dark #140700, a copy of the drawer content without the story cards; explicitly 'not a link-column sitemap' and legal 'none present'"},
+        {"reference": "studionamma", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.archetype", "detail": "<footer> with no role, height 723.6 / 802 / 1086.2; 14 links, nav column plus contact column"},
+        {"reference": "dogstudio", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.archetype", "detail": "div.site-footer (NOT a <footer> element, role null), transparent over #131419, height 384.3 / 320.3 / 291.9, 8 links"},
+        {"reference": "halcyon", "variant": "all 6", "tiers": [375, 768, 1440], "cell": "footer.archetype", "detail": "absent — 'the design has no footer element; the page is header + <main> only'. A real value, not a gap"},
+        {"reference": "indus-foods", "variant": "both", "tiers": [375, 768, 1440], "cell": "footer.archetype", "detail": "absent, same as halcyon"},
+        {"reference": "resn", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.archetype", "detail": "absent — 0 footer elements, the document is exactly one viewport high (scrollHeight 900) at every route; contact details are a route, not a footer"}
+      ],
+      "absent_in": ["halcyon", "indus-foods", "resn", "rabbit (not captured)"],
+      "sgs_coverage": {
+        "status": "covered",
+        "attributes": ["sgs/site-footer::layout", "sgs/site-footer::columns", "sgs/site-footer::flexDirection", "sgs/site-footer::contentWidth", "sgs/site-footer::maxWidth", "sgs/site-footer::minHeight", "sgs/site-footer::padding", "sgs/site-footer-row::columns", "sgs/site-footer-row::gridTemplateColumns"],
+        "notes": "All five shapes are rows of blocks, which is exactly what sgs/site-footer plus N site-footer-row children is; minHeight reaches wearecollins' one-viewport footer and lamalama's 900px block. 'Absent' is also covered — the theme simply carries no footer template part. No mechanism is missing at the archetype level; what the individual footers need sits in F-A-07 (tracks), F-A-23 (ground) and F-A-24 (the block roster inside).",
+        "how_checked": "python sgs-db.py sql \"SELECT attr_name FROM block_attributes WHERE block_slug='sgs/site-footer'\"; python -c print supports.sgs for sgs/site-footer -> containerKind 'section'"
+      },
+      "motion": {"spec38_tier": "n/a", "fr": "none — structure."}
+    },
+    {
+      "id": "F-A-23",
+      "name": "Footer ground and background media",
+      "description": "What the footer is painted with: nothing (the page shows through), a solid brand colour, or moving media playing behind the text.",
+      "surfaces": ["footer"],
+      "values_seen": [
+        {"value": "transparent; the page colour behind shows through", "references": ["away", "dogstudio", "studionamma", "lamalama"]},
+        {"value": "solid fill", "references": ["wearecollins", "lusion", "fantasy"]},
+        {"value": "solid fill chosen at random per page LOAD from a brand palette", "references": ["buck"]},
+        {"value": "looping muted background videos", "references": ["studionamma"]},
+        {"value": "a white panel over a black 90% overlay", "references": ["fantasy"]}
+      ],
+      "needed_by": [
+        {"reference": "studionamma", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.background_visual", "detail": "kind 'looping muted videos', videos 6, images 0, canvas 0; behaviour autoplay loop muted, read from the DOM attributes on the video elements; the footer fill itself is transparent over a #e4e4e4 page"},
+        {"reference": "buck", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.ground", "detail": "fill #7f4c1e at 375, #ffb18e at 768, #f4c054 at 1440 in ONE run, with the explicit note 'chosen per page load, not per tier'; backgroundImage none, opacity 1, text #000000"},
+        {"reference": "fantasy", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.ground", "detail": "panel div.bg-white #ffffff with overlayBehind div.absolute.inset-0.bg-black/90 rgba(0,0,0,0.9); no blur; media all 0"},
+        {"reference": "dogstudio", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.ground", "detail": "fill transparent, pageBackgroundBehind #131419, text #ffffff; media inside img 2, svg 6"},
+        {"reference": "wearecollins", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.ground", "detail": "fill #140700 solid, no blur, no scrim, 'none (solid colour only)' for background_visual"},
+        {"reference": "lamalama", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.ground", "detail": "#000000 a=0 on the footer itself; the page body/html #1a1c1c shows through and the fixed page canvas stays behind it"}
+      ],
+      "absent_in": ["halcyon", "indus-foods", "resn", "rabbit (not captured)", "butcherbox (ground not captured)"],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": ["sgs/site-footer::backgroundColour", "sgs/site-footer::backgroundColourGradient", "sgs/site-footer::backgroundImage", "sgs/site-footer::backgroundImageTablet", "sgs/site-footer::backgroundImageMobile", "sgs/site-footer::bgVideo", "sgs/site-footer::bgVideoTablet", "sgs/site-footer::bgVideoMobile", "sgs/site-footer::backgroundOverlayColour", "sgs/site-footer::backgroundOverlayOpacity", "sgs/site-footer::backgroundOverlayBlendMode", "sgs/site-footer::shapeDividerTop", "sgs/site-footer::shapeDividerBottom"],
+        "notes": "Transparent, solid, gradient, image, per-tier background VIDEO and a tinted overlay are all covered — studionamma's looping muted video and fantasy's white-panel-over-black-90% both land (the overlay pair is exactly backgroundOverlayColour + backgroundOverlayOpacity). GAP: buck's fill is re-picked on every page LOAD. SGS stores one colour and PHP emits it verbatim; nothing randomises per request, so a clone freezes whichever of the three the capture happened to see. This is a source-of-value gap, not a paint gap — the attribute is right, its supply is not.",
+        "how_checked": "python sgs-db.py sql \"SELECT attr_name FROM block_attributes WHERE block_slug='sgs/site-footer' AND (attr_name LIKE 'bg%' OR attr_name LIKE 'background%' OR attr_name LIKE 'shapeDivider%')\"; python -c print supports.sgs for sgs/site-footer (enabledExtensions ['background'])"
+      },
+      "motion": {"spec38_tier": "V", "fr": "none — an autoplay looping <video> is not a Spec 38 effect; FR-38-20's reduced-motion contract still governs whether it plays."}
+    },
+    {
+      "id": "F-A-24",
+      "name": "Footer secondary block roster",
+      "description": "Which content blocks the footer carries beside its links: newsletter form, social icons, live clocks, language switch, country selector, back-to-top, legal row, contact CTA.",
+      "surfaces": ["footer"],
+      "values_seen": [
+        {"value": "newsletter form", "references": ["away", "lusion", "wearecollins", "buck"]},
+        {"value": "social icon or social text row", "references": ["away", "dogstudio", "lusion", "studionamma", "wearecollins"]},
+        {"value": "live local-time clock", "references": ["buck", "studionamma"]},
+        {"value": "language switch", "references": ["dogstudio", "studionamma", "lamalama"]},
+        {"value": "country or store selector", "references": ["away"]},
+        {"value": "round back-to-top button", "references": ["lusion"]},
+        {"value": "legal / copyright row", "references": ["away", "dogstudio", "fantasy", "lusion", "studionamma"]},
+        {"value": "contact CTA (pill, button or phone link)", "references": ["fantasy", "lamalama", "wearecollins", "dogstudio", "studionamma"]},
+        {"value": "store locator with an image", "references": ["away"]},
+        {"value": "no legal row at all", "references": ["wearecollins"]}
+      ],
+      "needed_by": [
+        {"reference": "away", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.secondary_blocks + trigger_close", "detail": "roster: newsletter form (email + Subscribe), store locator block (Visit us IRL, closest store London, phone, address, image 210x140 at 1440), social icon row, country selector as an accordion button with aria-expanded false (United States, flag icon 16x12), legal link row"},
+        {"reference": "buck", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.secondary_blocks", "detail": "liveClocks 5 — each office block is an h3 'LA->' plus a <time> element showing that city's current local time (LA 10:49 AM, NY 1:49 PM, SYD 3:49 AM, AMS 7:49 PM); plus address with a map link glyph, email and phone links, a newsletter H2 and a social + legal row"},
+        {"reference": "lusion", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.secondary_blocks", "detail": "newsletter 'Subscribe to our newsletter' with input #f0f1fa; upButton 45x45 / 52.5 / 54 radius 100%; labsLink 'R&D: labs.lusion.co'; socials Twitter / X, Instagram, Linkedin; credit ©2026 LUSION Creative Studio"},
+        {"reference": "studionamma", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.secondary_blocks", "detail": "tagline, CTA line, email address, socials (YouTube, LinkedIn, Instagram), Legal link, language switch 'Site en Français', copyright line; newsletterInputs 0"},
+        {"reference": "dogstudio", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.zone_model + secondary_blocks", "detail": "three city labels, social abbreviations Fb / Ins / Dri / Tw, Contact us heading plus email, Privacy Policy, language switch English / Español"},
+        {"reference": "lamalama", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.secondary_blocks", "detail": "phone +31 20 6220440 (tel:), buttons START A PROJECT (#form) and SCHEDULE A CALL (#cal), language switch NL / EN — width 11.2px at 768 and 375, width 0 at 1440"},
+        {"reference": "wearecollins", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.secondary_blocks + content", "detail": "contact CTA pill Work with us, tertiary row Team / Careers / Press, newsletter 'Keep up to date', socials X (Twitter) / LinkedIn / Instagram; legal explicitly 'none present (no copyright, address or policy links found)'"},
+        {"reference": "fantasy", "variant": null, "tiers": [375, 768, 1440], "cell": "footer.secondary_blocks", "detail": "Contact button, © 2026 Fantasy, Privacy & Terms (/policy)"}
+      ],
+      "absent_in": ["halcyon", "indus-foods", "resn", "rabbit (not captured)"],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": ["sgs/social-icons::icons", "sgs/social-icons::iconStyle", "sgs/social-icons::showLabels", "sgs/social-icons::source", "sgs/business-info::displayType", "sgs/form (newsletter)", "sgs/button", "sgs/multi-button"],
+        "notes": "sgs/social-icons covers every social row including dogstudio's text abbreviations (showLabels + iconStyle). sgs/business-info::displayType covers phone, email, address, hours, socials, copyright, description, map and attribution — so away's store block, lusion's address and credit, and every legal row land. sgs/form covers the newsletter. FOUR GAPS with no block at all: a live local-time clock (buck's five, studionamma's city clock), a language switch (three references), a country or store selector (away), and a back-to-top button (lusion). Three of the four are the ordinary furniture of a commercial footer, so this is the widest single build gap in group A.",
+        "how_checked": "python read plugins/sgs-blocks/src/blocks/business-info/block.json — displayType enum ['phone','email','address','hours','socials','copyright','description','map','attribution']; python sgs-db.py sql \"SELECT slug FROM blocks WHERE slug LIKE '%language%' OR slug LIKE '%clock%' OR slug LIKE '%back-to-top%'\" returned 0 rows; grep -rln 'back-to-top|backToTop|language-switch|languageSwitch|localTime|liveClock' plugins/sgs-blocks/src theme/sgs-theme returned nothing"
+      },
+      "motion": {"spec38_tier": "n/a", "fr": "none — a block roster."}
+    },
+    {
+      "id": "F-A-25",
+      "name": "Logo rendering substrate and per-tier swap",
+      "description": "How the brand mark is drawn — a static SVG, an animated vector, or a canvas — and whether a different mark or size is used at narrow widths.",
+      "surfaces": ["header-shell", "bar"],
+      "values_seen": [
+        {"value": "static SVG wordmark, one size at every tier", "references": ["wearecollins", "away", "dogstudio", "rabbit", "butcherbox"]},
+        {"value": "static SVG wordmark, resized per tier", "references": ["lusion", "fantasy", "buck"]},
+        {"value": "text wordmark plus a geometric mark", "references": ["halcyon", "indus-foods", "studionamma"]},
+        {"value": "animated Lottie SVG", "references": ["buck"]},
+        {"value": "animated 2D canvas icon grid", "references": ["lamalama"]},
+        {"value": "a droplet button that is the home control, not a wordmark", "references": ["resn"]}
+      ],
+      "needed_by": [
+        {"reference": "buck", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.zone_model + background_visual", "detail": "'logo (animated Lottie SVG)'; square 150.5 at 1440, 72.3 at 768, 24.4 at 375 — a 6-fold size change; 'the logo itself is an animated Lottie SVG'. The Lottie animation was not sampled over time (in not_measured)"},
+        {"reference": "lamalama", "variant": null, "tiers": [375, 768, 1440], "cell": "bar.zone_model + motion", "detail": "'logo, canvas 2D icon grid 36x36, link to / (aria-label Go to Lama Lama homepage)'; 'canvas 2D icon grid (animated canvas, not DOM)'; identical 36x36 at every tier"},
+        {"reference": "wearecollins", "variant": null, "tiers": [375, 768, 1440], "cell": "bar.geometry + item_typography", "detail": "SVG wordmark 93x15, fill rgb(20,7,0), 'fixed (93x15 logo at every tier)'; centred at 375 (cx 187.5) and left at 16/98px at 768/1440"},
+        {"reference": "lusion", "variant": null, "tiers": [375, 768, 1440], "cell": "bar.geometry", "detail": "logo 72x17.1 / 96x22.4 / 120x27.2 — three distinct sizes, aria-label 'Go to home page'"},
+        {"reference": "halcyon", "variant": "all 6", "tiers": [375, 768, 1440], "cell": "header-shell.content", "detail": "logo_text 'Halcyon' plus a 36.77x36.77 accent tile, 8px radius, rotated 45deg; logo_is_link true; 107.61x28.5 at every tier"},
+        {"reference": "indus-foods", "variant": "both", "tiers": [375, 768, 1440], "cell": "header-shell.content", "detail": "logo_text 'Indus Foods' plus a 33.94x33.94 accent tile, 7px radius, rotated 45deg; 143.88x28.5 at every tier"},
+        {"reference": "away", "variant": null, "tiers": [375, 768, 1440], "cell": "bar.geometry", "detail": "AWAY SVG 90x31 at every tier; centred on the viewport at 375/768 (cx 187.5 / 384), left at 45px at 1440"},
+        {"reference": "dogstudio", "variant": null, "tiers": [375, 768, 1440], "cell": "header-shell.zone_model", "detail": "SVG wordmark 84px wide at every tier; height 27 at 375 and 30 at 768/1440; accessible name 'Return to Dogstudio's homepage'"}
+      ],
+      "absent_in": [],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": ["sgs/responsive-logo::logoId", "sgs/responsive-logo::logoIdTablet", "sgs/responsive-logo::logoIdMobile", "sgs/responsive-logo::logoSwitchMode", "sgs/responsive-logo::logoSwitchCustomPx", "sgs/responsive-logo::width", "sgs/responsive-logo::maxWidth", "sgs/responsive-logo::maxHeight", "sgs/responsive-logo::linkToHome", "sgs/responsive-logo::animationStyle", "sgs/responsive-logo::svgAnimationSource", "sgs/responsive-logo::align"],
+        "notes": "A different mark per tier with its own switch point, per-tier maxWidth/maxHeight objects, a home link and a stroke-draw animation (animationStyle draw-on-load / hover-redraw / scroll-trigger, which the block OWNS per Spec 38 FR-38-15) all land — buck's three sizes, lusion's three sizes and every static wordmark are covered. GAP: the substrate. A Lottie JSON (buck) and a live 2D canvas (lamalama) are not images; svgAnimationSource accepts a media-library .svg only and inline SVG paste is banned as an XSS risk, so neither reference's mark can be reproduced as anything but a still. NOTE: the `width` attribute is a desktop px NUMBER with no declared default, while maxWidth/maxHeight are per-tier objects — the per-tier path is the one a clone should use.",
+        "how_checked": "python read plugins/sgs-blocks/src/blocks/responsive-logo/block.json — logoSwitchMode enum ['mobile','tablet','custom'], animationStyle enum ['none','draw-on-load','hover-redraw','scroll-trigger'], svgAnimationSource _comment 'Media library ID of a .svg file. NEVER accept inline SVG paste'; supports.sgs.headerEssential true, supports.sgs.fx.providesNatively ['draw'] (FR-38-15)"
+      },
+      "motion": {"spec38_tier": "V for a stroke-draw (already owned by the block); no tier for a Lottie player or a live 2D canvas mark", "fr": "FR-38-15 (DrawSVG) is declared providesNatively on this block. No FR covers a Lottie runtime; a canvas-drawn mark would need the same new Tier V canvas-2D admission resn's menu items need."}
+    }
+  ]
+}

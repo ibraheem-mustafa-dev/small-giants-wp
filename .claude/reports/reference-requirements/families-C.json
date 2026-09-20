@@ -1,0 +1,822 @@
+{
+  "group": "C",
+  "surface_group": "drawer",
+  "generated": "2026-09-21",
+  "plan_unit": "W3B-4",
+  "inputs": [
+    ".claude/reports/reference-requirements/digests/digest-C-drawer.md",
+    ".claude/reports/reference-requirements/<reference>.json (13 files, drawer + trigger-close rows, incl. top-level headed_recheck)",
+    ".claude/reports/reference-requirements/CAPTURE-PROTOCOL.md",
+    ".claude/reports/reference-requirements/HEADED-SPOTCHECK.md",
+    ".claude/reports/2026-07-28-drawer-code-extraction/DIFF-ANALYSIS.md"
+  ],
+  "references": ["studionamma", "buck", "dogstudio", "fantasy", "lamalama", "lusion", "wearecollins", "resn", "away", "butcherbox", "rabbit", "halcyon", "indus-foods"],
+  "reading_notes": [
+    "Presence is decided by what a visitor sees. away/butcherbox/rabbit/halcyon/indus-foods have NO drawer at 1440 (their desktop menu is the bar + panels); that absence is recorded as its own value in F-C-01, never as a forced fill.",
+    "halcyon (6 variants: columns/cards/minimal x light/dark) and indus-foods (2 variants: sectors-cards/sectors-list) record `variant_effect: none` on every drawer cell - the overlay geometry, zone model, mechanics and motion are variant-invariant; only the ground fill and label colour differ, and only on the light/dark axis. Variants are therefore named once per family rather than per cell.",
+    "For halcyon and indus-foods the SOURCE and the RENDER disagree on three things and both are recorded separately: entry stagger (F-C-22), Escape-closes (F-C-18) and scroll lock (F-C-19).",
+    "resn's drawer text is drawn into per-item canvases; its typography, hover and motion cells are canvas measurements, not DOM computed styles (F-C-10, F-C-12, F-C-21).",
+    "butcherbox and rabbit have a `drawer | 768 | present` row with NO cells (`not_measured`: 'the 768 tier was not captured'). They are counted as present at 768 for F-C-01 only and are excluded from every value-bearing family at that tier.",
+    "Where headed and headless disagree, the headed value is used: away's headed session is served the UK storefront (12 of 55 static cells differ, 7 of them scrollbar-derived); lusion's and lamalama's pre-intro readings were re-measured headed; resn's 1440 open/close timings and the 768 pointer-block are headed values."
+  ],
+  "families": [
+    {
+      "id": "F-C-01",
+      "name": "Drawer presence per tier",
+      "description": "Whether a visitor can open a drawer at all at a given viewport width. Five of the thirteen references have a drawer only below desktop: at 1440 the bar plus its dropdown or mega panels IS the menu and the burger is display:none, so there is nothing a visitor could open.",
+      "values_seen": {
+        "present-at-all-three-tiers": ["studionamma", "buck", "dogstudio", "fantasy", "lamalama", "lusion", "wearecollins", "resn"],
+        "present-375-and-768-absent-1440": ["away", "butcherbox", "rabbit", "halcyon (all 6 variants)", "indus-foods (both variants)"]
+      },
+      "needed_by": [
+        { "reference": "studionamma", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/archetype" },
+        { "reference": "buck", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/archetype" },
+        { "reference": "dogstudio", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/archetype" },
+        { "reference": "fantasy", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/archetype" },
+        { "reference": "lamalama", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/archetype" },
+        { "reference": "lusion", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/archetype" },
+        { "reference": "wearecollins", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/archetype" },
+        { "reference": "resn", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/archetype" },
+        { "reference": "away", "variant": null, "tiers": [375, 768], "cell": "drawer/archetype (1440 = absent, '#mobile-menu is in the DOM but its hamburger is display none (0x0)')" },
+        { "reference": "butcherbox", "variant": null, "tiers": [375, 768], "cell": "drawer/archetype (1440 = absent)" },
+        { "reference": "rabbit", "variant": null, "tiers": [375, 768], "cell": "drawer/archetype (1440 = absent, 'visibility hidden, opacity 0, display none at 1440')" },
+        { "reference": "halcyon", "variant": "all 6", "tiers": [375, 768], "cell": "drawer/archetype (1440 = absent, 'mobileVisible = isMobile && mobileOpen')" },
+        { "reference": "indus-foods", "variant": "both", "tiers": [375, 768], "cell": "drawer/archetype (1440 = absent)" }
+      ],
+      "absent_in": ["away @1440", "butcherbox @1440", "rabbit @1440", "halcyon @1440", "indus-foods @1440"],
+      "sgs_coverage": {
+        "status": "covered",
+        "attributes": ["sgs/nav-bar-menu::collapsePoint", "sgs/nav-bar-menu::showBurger"],
+        "how_checked": "plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json::attributes.collapsePoint (number, default 768) + attributes.showBurger (boolean, default true); DB row `sgs/nav-bar-menu collapsePoint max-width,min-width`, query: sgs-db.py sql \"SELECT block_slug, attr_name, css_property FROM block_attributes WHERE block_slug='sgs/nav-bar-menu' AND attr_name IN ('collapsePoint','showBurger')\"",
+        "note": "collapsePoint is one width, so 'drawer below N, bar above N' is expressible. A reference that keeps a drawer at EVERY tier (8 of 13) is served by showBurger:true with no collapse."
+      }
+    },
+    {
+      "id": "F-C-02",
+      "name": "Panel anchor archetype",
+      "description": "Where the open panel sits and how large it is: the single most design-defining choice. Six distinct shapes appear across the set.",
+      "values_seen": {
+        "full-screen (fixed inset 0, width == viewport, height == viewport)": ["studionamma (all tiers)", "buck (all tiers)", "dogstudio (all tiers)", "fantasy (all tiers, aside overshoots +100px top and bottom, inner panel is exactly the viewport)", "wearecollins (all tiers)", "resn (all tiers, an absolutely positioned route page)", "halcyon (375, 768)", "indus-foods (375, 768)"],
+        "header-anchored full-width panel (top == header bottom, width == viewport, runs to the viewport bottom)": ["away @375 (top 98, 375x802)", "butcherbox @375 (top 72, 375x740, z 10000)", "rabbit @375 (top 77, 375x844)"],
+        "side drawer (partial width, full height, flush to one viewport edge, over the header)": ["away @768 (390x900, left 0, top 0, widthToViewport 0.508)"],
+        "floating card grown in place from the trigger pill (same box as the closed pill, top stays 16px)": ["lamalama (343x436 @375; 438x436 @768 and @1440)"],
+        "container-wide card stack below the header (separate rounded cards in one flex column)": ["lusion @375 (345x535, left 15/right 15 == header container insets)", "lusion @768 (718x451.9, left 25/right 25)"],
+        "trigger-anchored capped card stack (panel right edge == trigger right edge)": ["lusion @1440 (310.1x613.4, right inset 72, |panelCx - triggerCx| = 103.8)"]
+      },
+      "needed_by": [
+        { "reference": "studionamma", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/archetype + drawer/geometry" },
+        { "reference": "buck", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/geometry (zIndex 1300)" },
+        { "reference": "dogstudio", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/geometry (menu z 995 over backLayer z 990 under curtain z 999)" },
+        { "reference": "fantasy", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/geometry (asideRect vs panelRect)" },
+        { "reference": "lamalama", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/archetype + drawer/geometry" },
+        { "reference": "lusion", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/geometry (anchor string changes at 1440)" },
+        { "reference": "wearecollins", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/geometry" },
+        { "reference": "resn", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/geometry" },
+        { "reference": "away", "variant": null, "tiers": [375, 768], "cell": "drawer/archetype + drawer/tier_delta (the archetype CHANGES between tiers: full-width-below-header at 375, side drawer at 768)" },
+        { "reference": "butcherbox", "variant": null, "tiers": [375], "cell": "drawer/archetype" },
+        { "reference": "rabbit", "variant": null, "tiers": [375], "cell": "drawer/archetype" },
+        { "reference": "halcyon", "variant": "all 6", "tiers": [375, 768], "cell": "drawer/geometry (overlay 0,0,W,900, z 300)" },
+        { "reference": "indus-foods", "variant": "both", "tiers": [375, 768], "cell": "drawer/geometry" }
+      ],
+      "absent_in": ["away @1440", "butcherbox @1440", "rabbit @1440", "halcyon @1440", "indus-foods @1440"],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": ["sgs/nav-drawer::anchor", "sgs/nav-drawer::panelSize"],
+        "how_checked": "plugins/sgs-blocks/src/blocks/nav-drawer/render.php::$sgs_nd_allowed_anchors = array('full-screen','header','trigger','centred') and render.php::$sgs_nd_geometry_for_anchor (the closure emitting the per-anchor CSS); block.json::attributes.anchor (object, per-device) and attributes.panelSize (object, per-device, consulted only by trigger/centred). DB: sgs-db.py sql \"SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/nav-drawer' AND attr_name IN ('anchor','panelSize')\" -> anchor/max-width/dialog, panelSize/NULL.",
+        "gap": "The SIDE DRAWER is missing: there is no anchor that pins the panel to one viewport EDGE at full height with a partial width (away @768: left 0, top 0, 390x900). `trigger` is a top-right corner card with 16px insets and a fit-content height; `header` is full-width. away @768 cannot be expressed. lusion's CONTAINER-WIDE card stack (left/right insets equal to the header container's own insets, not the viewport's) is also not an anchor - `header` gives full-bleed width with no inset - though it is reachable by putting the inner content in an sgs/container with the matching padding."
+      }
+    },
+    {
+      "id": "F-C-03",
+      "name": "Panel width cap",
+      "description": "For any panel narrower than the viewport, the pixel cap on its width. Only relevant to the non-full-screen archetypes.",
+      "values_seen": {
+        "no cap (width == viewport)": ["studionamma", "buck", "dogstudio", "fantasy", "wearecollins", "resn", "halcyon", "indus-foods", "away @375", "butcherbox @375", "rabbit @375"],
+        "390px": ["away @768"],
+        "438px": ["lamalama @768 and @1440 (343px at 375, which is viewport minus 2x16px inset, not a cap)"],
+        "310.1px": ["lusion @1440"],
+        "container-inset (viewport minus 2x15px at 375, minus 2x25px at 768)": ["lusion @375", "lusion @768"]
+      },
+      "needed_by": [
+        { "reference": "lamalama", "variant": null, "tiers": [768, 1440], "cell": "drawer/geometry.width" },
+        { "reference": "lusion", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/geometry.width + drawer/tier_delta.width" },
+        { "reference": "away", "variant": null, "tiers": [768], "cell": "drawer/geometry.width (390, widthToViewport 0.508)" }
+      ],
+      "absent_in": ["studionamma", "buck", "dogstudio", "fantasy", "wearecollins", "resn", "halcyon", "indus-foods", "butcherbox", "rabbit", "away @375"],
+      "sgs_coverage": {
+        "status": "covered",
+        "attributes": ["sgs/nav-drawer::panelSize"],
+        "how_checked": "block.json::attributes.panelSize (object, default {}) read per tier by render.php::$sgs_nd_geometry_for_anchor, which emits width:min({cap}, calc(100vw - 32px)); the two starter patterns already carry real caps - theme/sgs-theme/patterns/drawer-floating-capped-card.php sets \"panelSize\":{\"desktop\":\"438px\"} (lamalama's number) and drawer-anchored-card-stack.php sets \"310px\" (lusion's).",
+        "note": "Covered as a number. It is only REACHABLE under the trigger/centred anchors, so away @768's 390px cap is blocked by the missing side anchor (F-C-02), not by this family."
+      }
+    },
+    {
+      "id": "F-C-04",
+      "name": "Panel corner radius",
+      "description": "Rounded corners on the open panel (or on each card of a card stack).",
+      "values_seen": {
+        "0px": ["studionamma", "buck", "dogstudio", "fantasy", "wearecollins", "resn", "away (both tiers)", "halcyon", "indus-foods"],
+        "4px": ["lamalama (all tiers)"],
+        "7.5px (per card)": ["lusion @375"],
+        "10px (per card)": ["lusion @768", "lusion @1440"],
+        "not measured": ["butcherbox", "rabbit"]
+      },
+      "needed_by": [
+        { "reference": "lamalama", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/geometry.radius" },
+        { "reference": "lusion", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/geometry.cardRadius (7.5px at 375, 10px above)" }
+      ],
+      "absent_in": ["studionamma", "buck", "dogstudio", "fantasy", "wearecollins", "resn", "away", "halcyon", "indus-foods"],
+      "sgs_coverage": {
+        "status": "covered",
+        "attributes": ["sgs/nav-drawer::borderRadius"],
+        "how_checked": "block.json::attributes.borderRadius (object, default {desktop:{}}) and supports.sgs.boxFamilies.borderRadius; supports.sgs.elements.dialog.attrMap['css:border-radius'] = borderRadius. DB: sgs-db.py sql \"SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/nav-drawer' AND attr_name='borderRadius'\" -> border-radius / wrapper.",
+        "note": "Per-tier object, so lusion's 7.5px-at-375 / 10px-above step is expressible. lusion's radius is on each CARD, not the panel, so it lands on the child blocks' own radius rather than nav-drawer's."
+      }
+    },
+    {
+      "id": "F-C-05",
+      "name": "Panel ground: fill, opacity and blur",
+      "description": "What the panel surface itself is painted with, and whether the page behind shows through it. Three regimes: opaque fill, translucent fill plus blur, and fully transparent (the panel is a positioning layer only and something else does the covering).",
+      "values_seen": {
+        "opaque flat colour": ["studionamma #fafafa", "buck (brand-palette colour chosen per PAGE LOAD, not per tier: this run gave #196efa/#f4c054/#508054 at 1440/768/375)", "fantasy #000000", "wearecollins #140700", "away #ffffff", "butcherbox rgb(255,255,255)", "rabbit rgb(255,77,6)", "halcyon #f5f3ee (light) / #0d0d10 (dark)", "indus-foods #0a7ea8"],
+        "translucent fill + panel blur": ["lamalama (#000000 @0.6 child fill, backdrop blur(4px) on the panel)"],
+        "transparent panel, opaque sibling layer does the covering": ["dogstudio (menu layer transparent; an opaque #131419 back layer at z 990 covers the page)"],
+        "transparent panel, per-card fills": ["lusion (panel #000000 @0; cards #ffffff/#ffffff/#000000)"],
+        "transparent panel, nothing covers the page": ["resn (#000000 @0; the WebGL scene stays visible and its own shader dims it)"]
+      },
+      "needed_by": [
+        { "reference": "studionamma", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/ground.fill" },
+        { "reference": "buck", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/ground.fill + ground.fillNote" },
+        { "reference": "dogstudio", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/ground.menuLayerFill + ground.backLayerFill" },
+        { "reference": "fantasy", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/ground.fill" },
+        { "reference": "lamalama", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/ground.panelFill + ground.panelBlur" },
+        { "reference": "lusion", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/ground.cardFills + ground.panelFill" },
+        { "reference": "wearecollins", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/ground.fill" },
+        { "reference": "resn", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/ground.fill" },
+        { "reference": "away", "variant": null, "tiers": [375, 768], "cell": "drawer/ground.fill" },
+        { "reference": "butcherbox", "variant": null, "tiers": [375], "cell": "drawer/ground.background" },
+        { "reference": "rabbit", "variant": null, "tiers": [375], "cell": "drawer/ground.background" },
+        { "reference": "halcyon", "variant": "light 3 / dark 3", "tiers": [375, 768], "cell": "drawer/ground.fill (the ONLY drawer cell that differs between variants, and only on the light/dark axis)" },
+        { "reference": "indus-foods", "variant": "both", "tiers": [375, 768], "cell": "drawer/ground.fill" }
+      ],
+      "absent_in": [],
+      "sgs_coverage": {
+        "status": "covered",
+        "attributes": ["sgs/nav-drawer::drawerBg", "sgs/nav-drawer::drawerBgGradient", "sgs/nav-drawer::surfaceOpacity", "sgs/nav-drawer::surfaceBlur"],
+        "how_checked": "DB: sgs-db.py sql \"SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/nav-drawer' AND attr_name IN ('drawerBg','drawerBgGradient','surfaceOpacity','surfaceBlur')\" -> drawerBg/background-color/wrapper, drawerBgGradient/background-image/wrapper, surfaceOpacity/background-color/dialog, surfaceBlur/NULL; render.php::$sgs_nd_surface_opacity and render.php::$sgs_nd_surface_blur resolve both.",
+        "note": "lamalama's 0.6 fill + blur(4px) is exactly surfaceOpacity + surfaceBlur. buck's per-page-load palette rotation is a content behaviour, not a styling capability, and is out of scope for a block attribute."
+      }
+    },
+    {
+      "id": "F-C-06",
+      "name": "Scrim behind the drawer",
+      "description": "A separate full-viewport layer between the page and the drawer, and what it does: darken, blur, block clicks, or close the drawer when clicked. Eight of the thirteen references have NO scrim at all because an opaque panel already covers everything.",
+      "values_seen": {
+        "no scrim (the opaque panel is the cover)": ["studionamma", "buck", "fantasy", "wearecollins", "halcyon (scrim element exists at opacity 0, pointer-events none on mobile)", "indus-foods (same)", "butcherbox @375 (rgb(18,18,18) at opacity 0)"],
+        "no scrim, opaque sibling back layer instead": ["dogstudio (#131419 back layer at z 990)"],
+        "no scrim, page stays fully visible": ["resn", "rabbit"],
+        "scrim present, dark + blurred, non-interactive": ["lamalama (div.js-menu-blur, #000000 @0.4, backdrop-filter blur(16px), pointer-events NONE; the outside click lands on the page and a window listener closes)"],
+        "scrim present, fully transparent, click-to-close": ["away @375 (button.mobile-menu__overlay #000000 @0, full viewport, closes on click)"],
+        "scrim present, 50% black, click-to-close": ["away @768 (#000000 @0.5)"],
+        "scrim present, opaque brand colour": ["lusion @375 and @768 (#header-background, full viewport #0016ec at opacity 1, pointer-events auto when open)"],
+        "scrim present, half-viewport gradient at 0.2": ["lusion @1440 (linear-gradient(270deg, rgba(11,11,18,0.5), rgba(11,11,18,0)), opacity 0.2, right half only)"]
+      },
+      "needed_by": [
+        { "reference": "lamalama", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/ground.scrim" },
+        { "reference": "lusion", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/ground.scrim + ground.scrimIsInteractive (the scrim CHANGES shape between tiers)" },
+        { "reference": "away", "variant": null, "tiers": [375, 768], "cell": "drawer/ground.scrim (alpha changes 0 -> 0.5 between tiers)" },
+        { "reference": "butcherbox", "variant": null, "tiers": [375], "cell": "drawer/ground.scrim" }
+      ],
+      "absent_in": ["studionamma", "buck", "dogstudio", "fantasy", "wearecollins", "resn", "rabbit", "halcyon", "indus-foods"],
+      "sgs_coverage": {
+        "status": "gap",
+        "attributes": ["(none - the scrim carries no block attribute)"],
+        "how_checked": "plugins/sgs-blocks/src/blocks/nav-drawer/style.css::.sgs-nav-drawer__scrim hardcodes background-color: rgba(0, 0, 0, 0.55) with a 0.2s opacity transition, and style.css::.wp-block-sgs-nav-drawer::backdrop hardcodes the same rgba(0, 0, 0, 0.55). render.php::$sgs_nd_needs_scrim emits the scrim div ONLY when at least one tier resolves to a partial-width anchor. No attribute appears in a DB scan: sgs-db.py sql \"SELECT attr_name FROM block_attributes WHERE block_slug='sgs/nav-drawer'\" returns no scrim/backdrop row.",
+        "gap": "The scrim's colour, alpha and blur are hardcoded at one value. lamalama's blurred scrim (blur(16px) @0.4), away's transparent-but-clickable scrim (@0), away's @0.5 and lusion's opaque #0016ec / right-half gradient are all unreachable. Also: 4 of the 4 references with a real scrim CHANGE it per tier, and the hardcoded rule is not per-tier. Click-to-close IS wired (store.js::resolveScrim on the non-modal path)."
+      }
+    },
+    {
+      "id": "F-C-07",
+      "name": "Background visual layer inside the drawer",
+      "description": "Imagery painted behind or beside the menu list, as opposed to the flat ground. Four distinct mechanisms, and nine references have none.",
+      "values_seen": {
+        "none (flat colour only)": ["studionamma (panel)", "buck (panel)", "fantasy (flat black behind the links)", "lamalama", "lusion", "wearecollins (solid colour, no image/video/canvas/gradient)", "away (plain white; image callouts only inside an expanded accordion panel)", "halcyon", "indus-foods"],
+        "static image layer faded in over the flat colour": ["dogstudio (picture.site-menu-back > img; 450x515 at 375, 815x614 at 768, 1440x760 at 1440; no parallax, no follow-hover; at 1440 the tagline is also an <img>, not text)"],
+        "per-link thumbnail that follows the hovered link": ["studionamma @1440 (CSS background-image on .nav-menu_visual, width 0 at rest, grows to ~160x112 on the hovered link only; 7 thumbnails; 1440 only)"],
+        "per-link leading SVG glyph": ["buck (25px square at 375, 40px at 768, 50px at 1440, outdented into the gutter)"],
+        "persistent WebGL scene behind the whole route": ["resn (three.js, full viewport, pointer- and hold-reactive, not replaced by the menu)"]
+      },
+      "needed_by": [
+        { "reference": "dogstudio", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/background_visual.kind + imageRect" },
+        { "reference": "studionamma", "variant": null, "tiers": [1440], "cell": "drawer/background_visual.perLinkThumbnails (+ item_states.visualWidthsOnHover)" },
+        { "reference": "buck", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/background_visual.perLinkGlyph" },
+        { "reference": "resn", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/background_visual.kind (renderSubstrate canvas)" },
+        { "reference": "fantasy", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/background_visual (a 96x62 looping muted promo video inside the promo card - the only media)" }
+      ],
+      "absent_in": ["lamalama", "lusion", "wearecollins", "away", "butcherbox", "rabbit", "halcyon", "indus-foods"],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": ["sgs/nav-drawer::backgroundImage", "sgs/nav-drawer::backgroundSize", "sgs/nav-drawer::backgroundPosition", "sgs/nav-drawer::backgroundRepeat", "sgs/nav-drawer::backgroundAttachment", "sgs/nav-drawer::backgroundImageDecorative"],
+        "how_checked": "block.json::supports.sgs.elements.decorative.attrMap['css:background-image'] = backgroundImage, painted on `.{uid}::before` (never on the dialog root, so it layers with drawerBgGradient rather than overwriting it). DB: sgs-db.py sql \"SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/nav-drawer' AND css_property LIKE 'background%'\" -> backgroundImage/background-image/decorative plus size/position/repeat on wrapper.",
+        "gap": "dogstudio's static image layer is covered. The PER-LINK hover thumbnail (studionamma) and the per-link leading glyph (buck) are not: sgs/nav-drawer-menu declares only sublinkMarkerIcon (a sublink marker), with no primary-item icon and no per-item media slot - see F-C-08. resn's WebGL scene is out of scope for a drawer attribute (F-C-21)."
+      }
+    },
+    {
+      "id": "F-C-08",
+      "name": "Per-item ornament on primary rows",
+      "description": "A glyph, number or caret carried by each primary menu row, distinct from any panel background. Four distinct kinds appear.",
+      "values_seen": {
+        "none": ["fantasy", "wearecollins (no index, glyph or spacer on primary links)", "resn", "butcherbox", "rabbit"],
+        "leading SVG glyph, outdented into the gutter": ["buck (25/40/50px by tier)"],
+        "leading 10x10 glyph at left 12px, plus an asterisk glyph at right on the accordion parent, both swapping on hover": ["lamalama"],
+        "two-digit index counter (CSS counter on a::before, 01-05), 1440 only": ["dogstudio @1440 (absent at 375 and 768)"],
+        "inline per-link thumbnail": ["studionamma (ornament: 'inline thumbnail (per-link image)', at all tiers in the DOM; only animates at 1440)"],
+        "chevron on rows that own a panel, rotating on open": ["away (16x16 chevron)", "indus-foods (chevron, rotated 45deg when open)"],
+        "'+' glyph on rows that own links, rotating 45deg to an x when open": ["halcyon"],
+        "active dot only (no per-row ornament)": ["lusion"]
+      },
+      "needed_by": [
+        { "reference": "buck", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/item_states.ornament + background_visual.perLinkGlyph" },
+        { "reference": "lamalama", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/item_states.ornament" },
+        { "reference": "dogstudio", "variant": null, "tiers": [1440], "cell": "drawer/item_states.ornament + tier_delta ('index numbers removed' at 768 and 375)" },
+        { "reference": "studionamma", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/item_states.ornament" },
+        { "reference": "away", "variant": null, "tiers": [375, 768], "cell": "drawer/item_states.ornament" },
+        { "reference": "halcyon", "variant": "all 6", "tiers": [375, 768], "cell": "drawer/item_states.ornament" },
+        { "reference": "indus-foods", "variant": "both", "tiers": [375, 768], "cell": "drawer/item_states.ornament" }
+      ],
+      "absent_in": ["fantasy", "wearecollins", "resn", "lusion", "butcherbox", "rabbit"],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": ["sgs/nav-drawer-menu::sublinkMarkerIcon", "sgs/nav-drawer-menu::sublinkMarkerColour", "sgs/nav-drawer-menu::sublinkMarkerColourHover", "sgs/nav-drawer-menu::sublinkMarkerColourCurrent"],
+        "how_checked": "plugins/sgs-blocks/includes/nav-menu-markup.php::sgs_nav_drawer_menu_render_items emits `<span class=\"sgs-nav-drawer-menu__sublink-marker\">` on SUB-items only; the caret on an expandable parent is the built-in `<details>/<summary>` chevron. Attribute scan: python -c on nav-drawer-menu/block.json filtering attribute names for icon/marker/index/ornament returns ONLY the seven sublinkMarker* attributes - there is no primary-item icon attribute.",
+        "gap": "The expand/collapse caret on a parent row is covered (away, halcyon, indus-foods). A DECORATIVE leading glyph or index number on a primary row is not: buck's per-link SVG, lamalama's 10x10 glyph pair and dogstudio's CSS index counter have no attribute. dogstudio also drops the counter below 1440, so any such attribute must be per-tier."
+      }
+    },
+    {
+      "id": "F-C-09",
+      "name": "Row separators between primary items",
+      "description": "A rule drawn between menu rows. Only the three list-style drawers use one; the eight statement-style drawers deliberately have none.",
+      "values_seen": {
+        "none": ["studionamma", "buck", "dogstudio", "fantasy", "lusion ('none - rows are one card')", "wearecollins", "resn", "away ('none between primary rows')"],
+        "1px solid currentColour at 10% alpha": ["lamalama (1px #f9f4eb at opacity 0.1)", "halcyon light (1px solid #16140a a=0.1)"],
+        "1px solid currentColour at 11% alpha": ["halcyon dark (1px solid #ffffff a=0.11)"],
+        "1px solid an explicit brand colour": ["indus-foods (1px solid #d8ca50)"],
+        "not measured": ["butcherbox", "rabbit"]
+      },
+      "needed_by": [
+        { "reference": "lamalama", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/item_states.separator" },
+        { "reference": "halcyon", "variant": "all 6 (colour differs light vs dark)", "tiers": [375, 768], "cell": "drawer/item_states.row_separator" },
+        { "reference": "indus-foods", "variant": "both", "tiers": [375, 768], "cell": "drawer/item_states.row_separator" }
+      ],
+      "absent_in": ["studionamma", "buck", "dogstudio", "fantasy", "lusion", "wearecollins", "resn", "away"],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": ["sgs/nav-drawer-menu::itemBorderWidth", "sgs/nav-drawer-menu::itemBorderStyle", "sgs/nav-drawer-menu::itemBorderColour"],
+        "how_checked": "DB: sgs-db.py sql \"SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/nav-drawer-menu' AND attr_name LIKE 'itemBorder%'\" -> itemBorderWidth/border-width/item, itemBorderStyle/border-style/item, itemBorderColour/border-color/item, itemBorderRadius/border-radius/item. sgs/nav-bar-menu carries a dedicated itemSeparator* quintet (itemSeparatorWidth/Style/Colour/ColourHover/SweepAngle, all border-right-*) that sgs/nav-drawer-menu does NOT have (same query with block_slug='sgs/nav-bar-menu').",
+        "note": "A bottom-only rule is reachable through the object-typed itemBorderWidth if the operator zeroes three sides, but the drawer has no separator control of its own while the BAR block does. Not a conflict: style.css's only hardcoded border-bottom is on `.sgs-nav-drawer-menu__drill-back-btn`, not on item rows, so the eight separator-free references render correctly by default."
+      }
+    },
+    {
+      "id": "F-C-10",
+      "name": "Primary item typography and its responsive scaling mode",
+      "description": "The face, size, weight, case, tracking and colour of the primary links, and HOW the size changes between tiers. Size spans 14px to 160px across the set - the single widest spread in the group - and the scaling MODE is itself a design decision, not a derived number.",
+      "values_seen": {
+        "fixed at every tier": ["lamalama 16px/400 SuisseBPIntl", "away 14px/500 Graphik uppercase", "halcyon 22px/500 Bricolage Grotesque (row_height 65)", "indus-foods 20px/700 Plus Jakarta Sans (row_height 60)"],
+        "stepped ladder by width": ["studionamma 160/80/64px (160 from 1024 up, 80 at 900-768, 64 at 640 down)", "wearecollins 72/58/48px, line-height == size", "lusion 26/26/19.5px", "resn 58.5/39px (canvas, no DOM text at 375)"],
+        "stepped AND driven by viewport HEIGHT as well as width": ["dogstudio 60px at >=1280 wide and 900 tall, 45px at 1100-520 wide OR when the viewport is 713px tall, 40px at 414 and below (heightProbe: 1440x713 gives 45px, 1440x1100 gives 60px)"],
+        "fluid vw above a threshold then stepped below": ["buck 3.5vw from 1100px up (56/50.4/44.8/38.5px at 1600/1440/1280/1100), then 52px at 1024-900, 39.8px at 768-640, 24px at 520 down"],
+        "rem-scaled off a computed root font size": ["fantasy link = 10rem at 1440, 7rem at 768, 5rem at 375 (rootFontSize 8.33/6.43/8.72px)"],
+        "single measured size only": ["butcherbox 20px/600", "rabbit 32px/200 centred"],
+        "case from CSS text-transform rather than the source": ["studionamma (source Title Case)", "buck (source Title Case)", "away", "lusion"]
+      },
+      "needed_by": [
+        { "reference": "studionamma", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/item_typography.scalingMode + series" },
+        { "reference": "buck", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/item_typography.scalingMode + series" },
+        { "reference": "dogstudio", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/item_typography.scalingMode + heightProbe" },
+        { "reference": "fantasy", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/item_typography.scaling" },
+        { "reference": "lamalama", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/item_typography.scaling" },
+        { "reference": "lusion", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/item_typography.scaling" },
+        { "reference": "wearecollins", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/item_typography.scaling" },
+        { "reference": "resn", "variant": null, "tiers": [768, 1440], "cell": "drawer/item_typography.domText + scaling (375 is canvas only, no DOM text)" },
+        { "reference": "away", "variant": null, "tiers": [375, 768], "cell": "drawer/item_typography.scaling" },
+        { "reference": "butcherbox", "variant": null, "tiers": [375], "cell": "drawer/item_typography.linkSize" },
+        { "reference": "rabbit", "variant": null, "tiers": [375], "cell": "drawer/item_typography" },
+        { "reference": "halcyon", "variant": "all 6 (colour differs light vs dark)", "tiers": [375, 768], "cell": "drawer/item_typography.scaling_mode = 'fixed px'" },
+        { "reference": "indus-foods", "variant": "both", "tiers": [375, 768], "cell": "drawer/item_typography.scaling_mode = 'fixed px'" }
+      ],
+      "absent_in": [],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": ["sgs/nav-drawer-menu::itemFontSize", "sgs/nav-drawer-menu::itemFontSizeUnit", "sgs/nav-drawer-menu::itemFontFamily", "sgs/nav-drawer-menu::itemFontWeight", "sgs/nav-drawer-menu::itemLetterSpacing", "sgs/nav-drawer-menu::itemLineHeight", "sgs/nav-drawer-menu::itemTextTransform", "sgs/nav-drawer-menu::itemColour", "sgs/nav-drawer::drawerTextColour"],
+        "how_checked": "block.json::attributes.itemFontSize is type object (per-tier) with a single scalar itemFontSizeUnit; attributes.itemLineHeight is type number (NOT a tier object). DB: sgs-db.py sql \"SELECT attr_name, css_property, css_element, css_state FROM block_attributes WHERE block_slug='sgs/nav-drawer-menu' AND attr_name LIKE 'item%'\" -> itemFontSize/font-size/item, itemFontWeight/font-weight/item, itemLetterSpacing/letter-spacing/link, itemLineHeight/line-height/item, itemTextTransform/text-transform/item, itemColour/color/item.",
+        "gap": "STEPPED ladders are covered by the per-tier itemFontSize object (7 of 13 references). Not covered: (a) FLUID vw scaling between tiers (buck's 3.5vw) - itemFontSizeUnit is one scalar, so a vw value would apply at every tier rather than only above a threshold; (b) HEIGHT-driven steps (dogstudio 45px at 1440x713, 60px at 1440x900) - every SGS tier is a width media query; (c) itemLineHeight is a plain number, so wearecollins's line-height==size at each of three sizes needs three values and has one."
+      }
+    },
+    {
+      "id": "F-C-11",
+      "name": "List layout: columns, alignment and row pitch",
+      "description": "How the primary rows are arranged inside the panel: how many columns, how the column is aligned in the panel, and the vertical pitch between rows.",
+      "values_seen": {
+        "one column, left aligned": ["studionamma @375 and @768", "dogstudio (x=35 at 375/768, x=180 at 1440)", "lamalama (single column, contentPaddingX 13)", "lusion", "wearecollins @768 and @1440", "away (15px side padding)", "halcyon (body padding 14px 20px 32px)", "indus-foods (body padding 0 20px 32px)"],
+        "one column, centred": ["fantasy (centred stack at every tier, plus a centred inline tertiary row)", "wearecollins @375", "resn @375 (vertical column, centre x 187.5, item pitch 111.5px)", "rabbit (centred)"],
+        "one column, right of centre": ["buck @1440 (linkColumn left 644, ~45% of the viewport)", "buck @768 (left 325.5, centre-ish)", "buck @375 (left -21.3, glyph outdented into the gutter)"],
+        "two columns": ["studionamma @1440 (contentGrid '684px 684px', with a hidden '_' spacer link filling the first row of column 2)", "wearecollins (a two-column GRID: nav left, story cards right; 155.5/155.5 at 375, 321/321 at 768, 488/488 at 1440, gaps 60x16 / 160x16)"],
+        "one horizontal row": ["resn @768 and @1440 (three items touching, no gap, centred on the viewport)"],
+        "measured row pitch": ["away 54px", "lamalama 50px primary / 40px child", "halcyon 65px", "indus-foods 60px", "lusion 43.5px at 375, 58px above", "wearecollins nav gap 32px"]
+      },
+      "needed_by": [
+        { "reference": "studionamma", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/zone_model.linkColumns + geometry.contentGrid" },
+        { "reference": "buck", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/zone_model.linkColumn.alignment" },
+        { "reference": "dogstudio", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/zone_model.list + layout" },
+        { "reference": "fantasy", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/zone_model.primary.align" },
+        { "reference": "lamalama", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/zone_model.rows + itemColumn" },
+        { "reference": "lusion", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/zone_model.cards + columns" },
+        { "reference": "wearecollins", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/zone_model.grid" },
+        { "reference": "resn", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/zone_model.layout (column at 375, row above)" },
+        { "reference": "away", "variant": null, "tiers": [375, 768], "cell": "drawer/zone_model.alignment" },
+        { "reference": "butcherbox", "variant": null, "tiers": [375], "cell": "drawer/zone_model" },
+        { "reference": "halcyon", "variant": "all 6", "tiers": [375, 768], "cell": "drawer/zone_model.rows" },
+        { "reference": "indus-foods", "variant": "both", "tiers": [375, 768], "cell": "drawer/zone_model.rows" }
+      ],
+      "absent_in": ["rabbit (alignment only, no measured pitch or column count)"],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": ["sgs/nav-drawer-menu::listColumns", "sgs/nav-drawer-menu::itemTextAlign", "sgs/nav-drawer-menu::gap", "sgs/nav-drawer-menu::padding", "sgs/nav-drawer-menu::itemTextIndent", "sgs/nav-drawer::drawerAlign", "sgs/nav-drawer::drawerGap", "sgs/nav-drawer::drawerPadding"],
+        "how_checked": "DB: sgs-db.py sql \"SELECT attr_name, css_property, css_element FROM block_attributes WHERE block_slug='sgs/nav-drawer-menu' AND attr_name IN ('listColumns','itemTextAlign','gap','padding','itemTextIndent')\" -> listColumns/grid-template-columns:count/bar. block.json::attributes.listColumns is type object (per-tier); attributes.gap is type STRING '8px' (not a tier object). sgs/nav-drawer block.json::attributes.drawerAlign enum ['left','center','right'] -> css:align-items on the `body` element (supports.sgs.elements.body.attrMap).",
+        "gap": "Column count is per-tier (covers studionamma's 2-col-at-1440-only and wearecollins's grid). Alignment is covered (left/centre/right). Two misses: (a) sgs/nav-drawer-menu::gap is a single string, so lusion's 43.5px-at-375 / 58px-above pitch needs a tier object and has a scalar; (b) buck's 'right of centre at 45% of the viewport' is neither left, centre nor right - drawerAlign has three values and this is a fourth position."
+      }
+    },
+    {
+      "id": "F-C-12",
+      "name": "Item hover treatment",
+      "description": "What happens to a menu row when the pointer is over it. Six distinct mechanisms, and the distinction that matters most is SELF (only the hovered row changes) versus SIBLING (the hovered row stays and every other row dims).",
+      "values_seen": {
+        "none fired (touch context at that tier)": ["studionamma @375 and @768", "buck @375", "dogstudio @375", "fantasy @375", "lamalama @375", "resn @375 (canvas pixel hashes identical)"],
+        "self-dim (hovered row drops opacity, others unchanged)": ["buck @768 and @1440 (opacity 1 -> 0.5)", "fantasy @768 and @1440 (1 -> 0.5)"],
+        "self colour swap": ["dogstudio @768 and @1440 (rgba(160,168,220,0.8) -> #ffffff)"],
+        "sibling dim (hovered row stays #ffffff, siblings in the same group drop to #4c4c4c; each group dims independently; hovered transition 0.45s vs 0.7s on the others)": ["wearecollins (all tiers)"],
+        "row background fades in + glyph swaps, text colour unchanged": ["lamalama @768 and @1440 (rgba(255,255,255,0.1) overlay opacity 0 -> 1, js-icon swap, GSAP power4.out 0.65s)"],
+        "text rolls up to a clone + a pill background scales in at 0.1 opacity": ["lusion (source-only; measured background #0016ec, radius 75px at 375 / 100px above, opacity 0 at rest)"],
+        "expands an inline thumbnail beside the hovered label": ["studionamma @1440 (width 0 -> 159.4px, height 112px)"],
+        "canvas dissolve: hovered item holds a near-constant lit-pixel count while the other two lose 40-98% of theirs": ["resn @1440 (idle means 1063/483/1679; hover About 1411/10/1002)"],
+        "pointer never reaches the items": ["resn @768 (a z-index 1005 canvas intercepts; reproduced headed)"],
+        "accordion open/close only, hover not measured": ["away", "halcyon", "indus-foods"]
+      },
+      "needed_by": [
+        { "reference": "buck", "variant": null, "tiers": [768, 1440], "cell": "drawer/item_states.hover" },
+        { "reference": "dogstudio", "variant": null, "tiers": [768, 1440], "cell": "drawer/item_states.hoverColourChange" },
+        { "reference": "fantasy", "variant": null, "tiers": [768, 1440], "cell": "drawer/item_states.primaryHover + subHover (sub rests at opacity 0.6 and goes to 1)" },
+        { "reference": "lamalama", "variant": null, "tiers": [768, 1440], "cell": "drawer/item_states.hover" },
+        { "reference": "lusion", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/item_states.hover [source-only]" },
+        { "reference": "wearecollins", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/item_states.hover" },
+        { "reference": "studionamma", "variant": null, "tiers": [1440], "cell": "drawer/item_states.visualWidthsOnHover" },
+        { "reference": "resn", "variant": null, "tiers": [1440], "cell": "drawer/item_states.dissolve + litPixelMeans" }
+      ],
+      "absent_in": ["away", "butcherbox", "rabbit", "halcyon", "indus-foods"],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": ["sgs/nav-drawer-menu::itemColourHover", "sgs/nav-drawer-menu::itemBgHover", "sgs/nav-drawer-menu::itemBgHoverGradient", "sgs/nav-drawer-menu::itemColourHoverTreatment", "sgs/nav-drawer-menu::itemBgHoverTreatment", "sgs/nav-drawer-menu::itemFontWeightHover", "sgs/nav-drawer-menu::itemTextDecorationHover", "sgs/nav-drawer-menu::itemTextTransformHover", "sgs/nav-drawer-menu::itemBorderColourHover", "sgs/nav-drawer::drawerTextColourHover"],
+        "how_checked": "DB: sgs-db.py sql \"SELECT attr_name, css_property, css_element, css_state FROM block_attributes WHERE block_slug='sgs/nav-drawer-menu' AND css_state='hover'\" -> 14 rows covering colour, background-colour, background-image, font-weight, text-decoration, text-transform and border-colour on the item element.",
+        "gap": "SELF hover is fully covered (colour swap, background fade, weight, decoration) - that is buck, dogstudio, fantasy and lamalama. SIBLING DIM is not: wearecollins needs 'every row except the hovered one changes colour', which no hover attribute expresses (a hover state only ever targets the hovered element). Also uncovered: studionamma's hover-expanded per-link thumbnail (needs the per-item media slot of F-C-07/F-C-08) and resn's canvas dissolve (F-C-21)."
+      }
+    },
+    {
+      "id": "F-C-13",
+      "name": "Current-page indicator inside the drawer",
+      "description": "Whether the row for the page the visitor is already on is marked. Almost nothing does this: nine references explicitly show no marker.",
+      "values_seen": {
+        "none": ["buck", "dogstudio", "fantasy ('not driven')", "lamalama ('no aria-current on the homepage')", "wearecollins ('none in the drawer')", "resn", "away ('none marked')", "halcyon", "indus-foods"],
+        "aria-current plus a class, but no visual change": ["studionamma (aria-current='page' + class w--current on Home; its visual stays at width 0)"],
+        "a 0.5em dot at right 2em scales in, and the row is pointer-events none": ["lusion (source-only; HOME carries --active)"],
+        "not measured": ["butcherbox", "rabbit"]
+      },
+      "needed_by": [
+        { "reference": "studionamma", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/item_states.currentIndicator" },
+        { "reference": "lusion", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/item_states.active [source-only]" }
+      ],
+      "absent_in": ["buck", "dogstudio", "fantasy", "lamalama", "wearecollins", "resn", "away", "halcyon", "indus-foods"],
+      "sgs_coverage": {
+        "status": "covered",
+        "attributes": ["sgs/nav-drawer-menu::itemColourCurrent", "sgs/nav-drawer-menu::itemBgCurrent", "sgs/nav-drawer-menu::itemBgCurrentGradient", "sgs/nav-drawer-menu::itemFontWeightCurrent", "sgs/nav-drawer-menu::itemBorderColourCurrent", "sgs/nav-drawer-menu::sublinkMarkerColourCurrent"],
+        "how_checked": "DB: sgs-db.py sql \"SELECT attr_name, css_property, css_element, css_state FROM block_attributes WHERE block_slug='sgs/nav-drawer-menu' AND css_state='current'\" -> 6 rows (colour, background-colour, background-image, font-weight, border-colour, fill).",
+        "note": "Covered for the value both references actually need, which is 'no visible change' (studionamma) or a marker colour change. lusion's separate scaled-in dot is a decorative pseudo-element rather than a state colour, so it is a styling detail of the marker rather than a missing capability."
+      }
+    },
+    {
+      "id": "F-C-14",
+      "name": "Submenu model inside the drawer",
+      "description": "How a parent item's children are reached without leaving the drawer. Four regimes, and the one that splits the set is whether opening a second accordion CLOSES the first.",
+      "values_seen": {
+        "no submenu at all (flat list)": ["studionamma", "buck", "dogstudio", "wearecollins", "resn", "rabbit"],
+        "no accordion; sub-links rendered permanently expanded under the primary stack": ["fantasy (a centred tertiary inline row: Contact / Latest / Careers, rest opacity 0.6)"],
+        "accordion, single-open (opening one closes the previous; second click toggles off; state resets on reopen)": ["lamalama (one accordion parent, 'What we do', 4 x 40px children, +160px when open)", "halcyon (5 parents, panel heights 343/453/343/343/16)", "indus-foods (7 parents, panel heights 0/496.5/420/446.75/426.25/0/156.5)"],
+        "accordion, MULTI-open (accordions are independent: two panels measured open at once, 669.5px and 1229.9px)": ["away @768 (at 375 the second click missed and multi-open was not verified)"],
+        "an expandable row that opens to an EMPTY panel because the item owns no links": ["halcyon ('Pricing', panelHeight 16)", "indus-foods ('Home' and 'Blog', panelHeight 0)"],
+        "not measured": ["butcherbox ('the Gifts row expansion was not tested')"]
+      },
+      "needed_by": [
+        { "reference": "lamalama", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/item_states.itemOwningPanel + zone_model.rows" },
+        { "reference": "away", "variant": null, "tiers": [768], "cell": "drawer/item_states.multipleOpen" },
+        { "reference": "halcyon", "variant": "all 6 (variant_invariant true)", "tiers": [375, 768], "cell": "drawer/mechanics.accordion + single_open_verified" },
+        { "reference": "indus-foods", "variant": "both (variant_invariant true)", "tiers": [375, 768], "cell": "drawer/mechanics.accordion" },
+        { "reference": "fantasy", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/zone_model.tertiaryRow" }
+      ],
+      "absent_in": ["studionamma", "buck", "dogstudio", "wearecollins", "resn", "rabbit"],
+      "sgs_coverage": {
+        "status": "conflict",
+        "attributes": ["sgs/nav-drawer::submenuModel", "sgs/nav-drawer-menu::megaDrawerFallbackIds"],
+        "how_checked": "block.json::attributes.submenuModel enum ['accordion','drill-down'], published to descendants via providesContext sgs/navDrawerSubmenuModel; nav-drawer/render.php (the submenuModel block) states 'a native `<details name>` EXCLUSIVE accordion for BOTH models'; the markup comes from plugins/sgs-blocks/includes/nav-menu-markup.php::sgs_nav_drawer_menu_render_items.",
+        "conflict": "`<details name>` is exclusive by construction: opening one closes every sibling, with no attribute to turn that off. away @768 measured two panels open simultaneously (669.5px and 1229.9px), which the built default actively prevents. Single-open is correct for 3 of the 4 accordion references (lamalama, halcyon, indus-foods), so this is a missing option rather than a wrong default - but it is the built behaviour fighting a measured reference, which is a conflict, not a gap. `drill-down` is an extra capability no reference in this group uses."
+      }
+    },
+    {
+      "id": "F-C-15",
+      "name": "Secondary block roster inside the drawer",
+      "description": "What else the panel holds besides the menu list. Every reference except resn carries at least one, and the kinds repeat across the set, which is what makes them a roster rather than bespoke content.",
+      "values_seen": {
+        "CTA button(s)": ["lamalama (OUR PITCHDECK full-width outlined, then SCHEDULE A CALL / START A PROJECT 2-up)", "wearecollins ('Work with us' pill)", "halcyon ('Get started' filled + 'Sign in' outlined, both 13px radius)", "indus-foods ('Become A Trade Customer' 26px-radius pill)", "butcherbox (a CTA button at the top)", "studionamma @375 (LET'S TALK! joins the list as a non-anchor item)"],
+        "social link row": ["buck (LinkedIn/Instagram/Vimeo/Privacy Policy, inline row at 1440, stacked column below)", "dogstudio (Facebook/Instagram/Dribbble/Twitter/Newsletter, 40px pitch row at 375-768, inline word-width row bottom-right at 1440)", "wearecollins (X/LinkedIn/Instagram)", "indus-foods (four fixed circles at the end of the scroll body)"],
+        "newsletter signup form": ["lusion (title + 'Your email' + circular arrow submit; VISIBLE at 375 and 1440, COLLAPSED TO 0 HEIGHT at 768)", "wearecollins ('Keep up to date', submit at opacity 0 until typing)"],
+        "promo / story cards": ["fantasy (one promo card with a looping 96x62 video, 'HOW FANTASY SHIPPED LIV GOLF IN 72 DAYS', reactsToHover false)", "wearecollins (3 story cards with thumbnail + 'Story' label + arrow, reactsToHover false)", "indus-foods (About/Trade panels keep a promo card; Sectors are cards with 60px thumbnails; Brands is a 3-col logo grid)"],
+        "contact / utility icon buttons": ["indus-foods (mail circle + phone circle, aria-labelled)", "butcherbox (a phone number)"],
+        "copyright line": ["buck ('(c) 2026 BUCK')"],
+        "showreel / media link": ["dogstudio ('Watch our Showreel' with a caret icon)", "lamalama ('THIS IS US' bottom toggle, appears only when open)"],
+        "account / help / store-selector links": ["away (Log in, Refer a friend, Help, and an 'Our stores' accordion with a London store button)", "butcherbox ('Sign In')"],
+        "tagline as an IMAGE rather than text": ["dogstudio ('We Make Good Shit' is an <img> with alt text, not a text node)"],
+        "a collapsed contact form reachable by Tab": ["lamalama (textarea + CANCEL/NEXT, present in the DOM, collapsed)"],
+        "labs / external-site card": ["lusion ('LABS | LABS' black card linking to labs.lusion.co)"],
+        "sentence CTA that drops at mobile": ["fantasy ('Ready to launch an intelligent experience? Let's talk', present at 768 and 1440, display:none at 375)"],
+        "none": ["resn ('none inside the menu page'; only the shell's droplet home button and sound toggle stay outside it)"]
+      },
+      "needed_by": [
+        { "reference": "buck", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/secondary_blocks.blocks (layout flips stacked -> inline at 1440)" },
+        { "reference": "dogstudio", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/secondary_blocks.blocks" },
+        { "reference": "fantasy", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/secondary_blocks.promoCard + sentenceCta" },
+        { "reference": "lamalama", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/secondary_blocks.ctas + bottomShowreelToggle" },
+        { "reference": "lusion", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/secondary_blocks.newsletter/letsTalk/labs (two of the three collapse to 0 at a tier)" },
+        { "reference": "wearecollins", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/secondary_blocks.roster (5 kinds)" },
+        { "reference": "away", "variant": null, "tiers": [375, 768], "cell": "drawer/secondary_blocks.roster" },
+        { "reference": "butcherbox", "variant": null, "tiers": [375], "cell": "drawer/zone_model" },
+        { "reference": "studionamma", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/secondary_blocks.inPanel + persistentHeaderBlocksAbovePanel" },
+        { "reference": "halcyon", "variant": "all 6", "tiers": [375, 768], "cell": "drawer/secondary_blocks.ctas" },
+        { "reference": "indus-foods", "variant": "both", "tiers": [375, 768], "cell": "drawer/secondary_blocks.ctas + social_row + contact_icons" }
+      ],
+      "absent_in": ["resn", "rabbit"],
+      "sgs_coverage": {
+        "status": "covered",
+        "attributes": ["sgs/nav-drawer (InnerBlocks body)"],
+        "how_checked": "block.json::supports.sgs.elements.body._note - '.sgs-nav-drawer__body flex column that hosts the editable InnerBlocks (menu/logo/CTA)'; the seven shipped starters already compose these kinds: theme/sgs-theme/patterns/drawer-solid-brand-light.php (copyright + social row), drawer-editorial-ghost-list.php (social links from Business Details), drawer-anchored-card-stack.php (phone + email from Business Details), drawer-split-zone-serif.php (social + phone + email), drawer-two-column-editorial.php (email).",
+        "note": "The drawer body is open InnerBlocks, so any secondary block is placeable. What is NOT covered by the drawer itself is the PER-TIER SHOW/HIDE of one secondary block (lusion's newsletter collapsing to 0 at 768 and its 'Let's talk' collapsing at 1440; fantasy's sentence CTA dropping at 375) - that belongs to whatever responsive-visibility capability the child block carries, not to sgs/nav-drawer."
+      }
+    },
+    {
+      "id": "F-C-16",
+      "name": "Close-control model",
+      "description": "What the visitor presses to shut the drawer, and where it is. The set splits cleanly: eight references replace the trigger IN PLACE (the same button in the same slot becomes the close), three put a separate close control inside the drawer's own top row, one moves it to the other end of the header, and one has neither.",
+      "values_seen": {
+        "trigger replaced in place - burger morphs to an X": ["buck ('the SAME button swaps to a close X in place')", "dogstudio ('burger that turns into an X in place')", "away @375 ('two icon spans swapped by display')", "rabbit ('burger replaced in place by the close icon', identical rect, menu-closed.svg -> menu-opened.svg)", "wearecollins ('the two bars morph into an X in the same slot' - and the drawer ALSO carries its own copy of the bar and button at the identical position)"],
+        "trigger replaced in place - text label swaps": ["studionamma ('MENU becomes CLOSE in the same slot', no burger icon at all)", "lusion ('MENU slides up out of view and CLOSE slides in; the two dots rotate; fill #e4e6ef -> #ffffff')"],
+        "trigger replaced in place - icon swaps to an X, label fades": ["fantasy ('Menu' label / hamburger at 375 fades out, an X fades in; the button keeps its place above the panel)"],
+        "trigger morphs in place to a single bar, not an X": ["lamalama ('top and bottom bars translate to the middle bar so all three sit on one line - a minimise bar, not an X')"],
+        "separate close button inside the drawer's own top row": ["halcyon (44x44 at x=307/y=13.5 at 375, x=700 at 768; replaces_in_place false; close_vs_burger centre offset dx 4, dy -0.5)", "indus-foods (38x38 at x=317/y=13 at 375, x=710 at 768; centre offset dx 11, dy -6; size difference -6/-6)", "resn (a separate 26x26 close button appears in the same slot; the menu button drops to opacity 0 beneath it)"],
+        "close control moves to the other end of the header": ["butcherbox (burger at [16,56,24,24] hidden on open; close appears at [335,60,24,16] - 'not in the same place')"],
+        "no visible close control at all at that tier": ["away @768 (the 390px drawer covers the toggle; the visible closers are the full-viewport 'Close' scrim button and Escape)"]
+      },
+      "needed_by": [
+        { "reference": "studionamma", "variant": null, "tiers": [375, 768, 1440], "cell": "trigger-close/archetype (separateCloseButton false, topRowHoldsClose false)" },
+        { "reference": "buck", "variant": null, "tiers": [375, 768, 1440], "cell": "trigger-close/archetype (replacesInPlace true)" },
+        { "reference": "dogstudio", "variant": null, "tiers": [375, 768, 1440], "cell": "trigger-close/archetype" },
+        { "reference": "fantasy", "variant": null, "tiers": [375, 768, 1440], "cell": "trigger-close/archetype + drawer/trigger_close" },
+        { "reference": "lamalama", "variant": null, "tiers": [375, 768, 1440], "cell": "trigger-close/archetype" },
+        { "reference": "lusion", "variant": null, "tiers": [375, 768, 1440], "cell": "trigger-close/archetype" },
+        { "reference": "wearecollins", "variant": null, "tiers": [375, 768, 1440], "cell": "trigger-close/archetype + drawer/trigger_close" },
+        { "reference": "resn", "variant": null, "tiers": [375], "cell": "trigger-close/archetype (a separate close button appears; at 768 and 1440 there is no close button and closing is by droplet/Escape/back/empty click)" },
+        { "reference": "away", "variant": null, "tiers": [375, 768], "cell": "trigger-close/archetype (in place at 375, covered at 768)" },
+        { "reference": "butcherbox", "variant": null, "tiers": [375], "cell": "trigger-close/archetype" },
+        { "reference": "rabbit", "variant": null, "tiers": [375], "cell": "trigger-close/archetype (sameRectWhenOpen true)" },
+        { "reference": "halcyon", "variant": "all 6", "tiers": [375, 768], "cell": "trigger-close/archetype + drawer/trigger_close.top_row_holds_close" },
+        { "reference": "indus-foods", "variant": "both", "tiers": [375, 768], "cell": "trigger-close/archetype + drawer/trigger_close.top_row_holds_close" }
+      ],
+      "absent_in": ["away @1440 (no burger, no close: each panel-owning nav item is its own trigger)", "halcyon @1440", "indus-foods @1440", "butcherbox @1440", "rabbit @1440"],
+      "sgs_coverage": {
+        "status": "covered",
+        "attributes": ["sgs/nav-drawer::closeStyle", "sgs/nav-drawer::closeLabel", "sgs/nav-drawer::closeIcon", "sgs/nav-drawer::closeSize", "sgs/nav-drawer::toggleCloseColour", "sgs/nav-bar-menu::triggerMode", "sgs/nav-bar-menu::triggerLabel", "sgs/nav-bar-menu::triggerIcon", "sgs/nav-bar-menu::burgerSize"],
+        "how_checked": "block.json::attributes.closeStyle enum ['separate-x','text-swap','burger-morph','icon-and-text'], mirrored by render.php::$sgs_nd_allowed_close_styles. The IN-PLACE burger->X morph is shipped on the trigger side: plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css carries `.sgs-nav-bar-menu__burger[aria-expanded=\"true\"] .sgs-nav-bar-menu__burger-bar:nth-child(1){transform:translateY(8px) rotate(45deg)}`, `:nth-child(2){opacity:0}` and `:nth-child(3){transform:translateY(-8px) rotate(-45deg)}`, driven by nav-bar-menu/render.php::$toggle_html's data-wp-bind--aria-expanded=\"state.isOpen\". Trigger side: nav-bar-menu/block.json::attributes.triggerMode (icon / text / icon-and-text, PHP-validated) + triggerLabel + triggerIcon.",
+        "note": "Both halves are real: the header burger morphs to an X in place, and the drawer's own undeletable close button (FR-36-6) styles as separate-x / text-swap / burger-morph / icon-and-text. The one value with no equivalent is lamalama's THREE-BARS-TO-ONE-BAR morph (a minimise bar, not an X) - the shipped keyframe is hardcoded to the X pose. butcherbox's move-to-the-other-end-of-the-header is reachable by leaving the drawer's own close button on and hiding the burger, but nothing makes the two swap position by attribute."
+      }
+    },
+    {
+      "id": "F-C-17",
+      "name": "Header chrome persistence while the drawer is open",
+      "description": "Whether the site header stays visible and live over the open drawer, is covered by it, or is duplicated inside it. This is what decides whether the drawer needs a top row of its own.",
+      "values_seen": {
+        "header chrome stays ABOVE the open panel, drawer has no top row": ["studionamma ('headerChromeStaysAboveIt': true; wordmark, dark-mode toggle, MENU/CLOSE and, at 768+, the LET'S TALK CTA and the tagline + city clock strip all stay visible)", "buck ('the page trigger button stays above the panel', z 1400 vs 1300)", "dogstudio ('the burger (z 1000 header, button z 60) stays above the menu (z 995)')", "fantasy ('the button keeps its place above the panel', headerZ 10 vs panel z 9)", "lusion (the header pill is the close)"],
+        "the drawer IS the header control, grown in place": ["lamalama (the drawer's first row is a 50px bar row carrying the logo, the message and the burger-as-close)"],
+        "the drawer carries its OWN COPY of the header bar at the identical position": ["wearecollins ('bar copy 82px high (logo + close button)' at 375, 74px at 768/1440)"],
+        "the drawer has its own top row (logo + close) and the page header is behind it": ["halcyon (top_row_h 72)", "indus-foods (top_row_h 64, plus a CTA row below it)"],
+        "the drawer sits BELOW the header so the header stays visible": ["away @375 (top 98 == header bottom)", "butcherbox @375 (top 72)", "rabbit @375 (top 77)"],
+        "the drawer COVERS the header": ["away @768 (top 0, above the header, so the toggle is covered)"],
+        "shell controls appear/stay outside the drawer": ["resn (the droplet home button appears top-left while the menu is open; the sound toggle stays bottom-right, absent at 375)"]
+      },
+      "needed_by": [
+        { "reference": "studionamma", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/zone_model.headerControlsRemainAbove + secondary_blocks.persistentHeaderBlocksAbovePanel" },
+        { "reference": "buck", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/zone_model.closeControl" },
+        { "reference": "dogstudio", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/zone_model.headerControlsAbove" },
+        { "reference": "fantasy", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/geometry.headerZ + trigger_close" },
+        { "reference": "lamalama", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/zone_model.rows[0]" },
+        { "reference": "lusion", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/trigger_close" },
+        { "reference": "wearecollins", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/zone_model.topRow" },
+        { "reference": "resn", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/zone_model.shellControlsWhileOpen + secondary_blocks.shellControls" },
+        { "reference": "away", "variant": null, "tiers": [375, 768], "cell": "drawer/geometry.anchor + tier_delta ('toggle visible as the close' at 375, 'toggle covered' at 768)" },
+        { "reference": "butcherbox", "variant": null, "tiers": [375], "cell": "drawer/archetype.top" },
+        { "reference": "rabbit", "variant": null, "tiers": [375], "cell": "drawer/archetype.top" },
+        { "reference": "halcyon", "variant": "all 6", "tiers": [375, 768], "cell": "drawer/geometry.top_row_h + zone_model.top_row" },
+        { "reference": "indus-foods", "variant": "both", "tiers": [375, 768], "cell": "drawer/geometry.top_row_h + zone_model.top_row" }
+      ],
+      "absent_in": [],
+      "sgs_coverage": {
+        "status": "covered",
+        "attributes": ["sgs/nav-drawer::modality", "sgs/nav-drawer::anchor"],
+        "how_checked": "block.json::attributes.modality enum ['modal','non-modal'] with the description 'non-modal uses show() with freezeBackground()'s selective inert, KEEPING THE HEADER/BURGER ROW LIVE and keyboard-reachable while the drawer is open'; implemented at plugins/sgs-blocks/src/shared/nav-interactivity/freeze-background.js and store.js (the non-modal branch). The 'drawer sits below the header' case is the `header` anchor, whose CSS reads top:var(--sgs-drawer-header-offset, var(--sgs-header-height, 0px)) - store.js measures the header's real getBoundingClientRect().bottom at open time.",
+        "note": "All three regimes are expressible: header-live-above = non-modal; drawer-covers-header = modal full-screen; drawer-below-header = the `header` anchor with a measured offset. The drawer's own top row (wearecollins, halcyon, indus-foods, lamalama) is InnerBlocks content plus the undeletable close button."
+      }
+    },
+    {
+      "id": "F-C-18",
+      "name": "Close routes",
+      "description": "Every way a visitor can shut the drawer besides the close control itself. These differ wildly and are NOT a single 'dismissible' boolean: Escape works on only three of the thirteen.",
+      "values_seen": {
+        "Escape closes": ["dogstudio ('escapeCloses': true)", "fantasy ('escape': 'closes')", "away @768 (Escape closes and returns focus to the toggle)", "resn @768 and @1440 (Escape closes)"],
+        "Escape does NOT close": ["studionamma ('escapeCloses': false)", "buck (false)", "lamalama ('does not close')", "lusion ('does not close')", "resn @375 ('Escape: does not close')", "halcyon (render: escape_closes_overlay false; SOURCE has a window keydown listener at L211-212 that calls closeAll(), but closeAll clears only the DESKTOP `active` state, never mobileOpen)", "indus-foods (same, source L286)"],
+        "outside / scrim click closes": ["lamalama ('outsideClick': 'closes'; the scrim itself is pointer-events none so the click lands on the page and a window listener fires)", "lusion ('outsideClick': 'closes')", "away (the scrim IS a full-viewport 'Close' button)", "resn @1440 ('empty area click: closes'; at 375 and 768 it does not)"],
+        "outside click does NOT close": ["resn @375 and @768"],
+        "a link click closes and routes": ["fantasy ('linkClick': 'closes and routes')"],
+        "scrolling the page closes it": ["lamalama ('closes at 30px, stays open at 8px' at 1440/768, source: >20px in Lenis mode)"],
+        "browser history back closes": ["resn (all tiers; the menu is a hash route #!/menu)"],
+        "pressing the trigger again does NOT close": ["resn (all tiers: 'menu button again: does not close')"],
+        "close button does not close at that tier": ["resn @768 ('close button: does not close'; pointer input is intercepted by a z-index 1005 canvas, reproduced headed)"],
+        "focus returns to the toggle on close": ["away"],
+        "focus returns to the body on close": ["studionamma", "halcyon", "indus-foods"]
+      },
+      "needed_by": [
+        { "reference": "studionamma", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/mechanics.escapeCloses + focusAfterClose" },
+        { "reference": "buck", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/mechanics.escapeCloses" },
+        { "reference": "dogstudio", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/mechanics.escapeCloses" },
+        { "reference": "fantasy", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/mechanics.escape + linkClick" },
+        { "reference": "lamalama", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/mechanics.escape/outsideClick/scrimClick + drawer/trigger_close" },
+        { "reference": "lusion", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/mechanics.escape + outsideClick" },
+        { "reference": "wearecollins", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/trigger_close" },
+        { "reference": "resn", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/trigger_close.closeWays (a 6-way matrix that differs at EVERY tier)" },
+        { "reference": "away", "variant": null, "tiers": [375, 768], "cell": "drawer/trigger_close + mechanics.focus" },
+        { "reference": "halcyon", "variant": "all 6", "tiers": [375, 768], "cell": "trigger-close/mechanics.escape_closes_overlay (render) vs source L211-212 (intent)" },
+        { "reference": "indus-foods", "variant": "both", "tiers": [375, 768], "cell": "trigger-close/mechanics.escape_closes_overlay (render) vs source L286 (intent)" }
+      ],
+      "absent_in": ["butcherbox ('Escape, focus trap and the Gifts row expansion were not tested')", "rabbit ('Escape, focus handling and the r1 submenu were not tested')"],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": ["sgs/nav-drawer::modality", "(scrim click: store.js::resolveScrim)"],
+        "how_checked": "nav-drawer/render.php module docblock: '`<dialog showModal>` modal (top layer -> survives a transformed header ... scroll-lock / ESC / reparent / scrollbar-bounce behaviour is' native; style.css and render.php rely on the native `::backdrop`/ESC. Scrim click: render.php::$sgs_nd_scrim_html emits `data-sgs-nav-scrim=\"{drawerRef}\"`, matched by src/shared/nav-interactivity/store.js::resolveScrim on the non-modal path. Attribute scan for a dismissal control: sgs-db.py sql \"SELECT attr_name FROM block_attributes WHERE block_slug='sgs/nav-drawer'\" returns no escape/dismiss/closeOn* row.",
+        "gap": "Escape-closes is ALWAYS on (native `<dialog>` behaviour) with no opt-out, and 7 of the 11 measured references do NOT close on Escape. That is the correct accessible default and SGS should keep it, but it is not faithful transfer, so it is recorded as a gap rather than passed as covered. Also unreachable: close-on-scroll (lamalama), close-on-link-click (fantasy) and close-on-history-back (resn) have no attribute."
+      }
+    },
+    {
+      "id": "F-C-19",
+      "name": "Modality: page scroll lock, focus trap and dialog semantics",
+      "description": "Whether the page behind is frozen and inert while the drawer is open. The references split almost evenly and the three sub-behaviours do NOT travel together - two references lock the body and still let the page scroll.",
+      "values_seen": {
+        "body scroll locked and the page really does not move": ["studionamma @375 and @768 (body overflow hidden; wheel 0, PageDown 0)", "dogstudio (all tiers; wheel 0, PageDown 0)", "away (both tiers; body overflow hidden or class klaviyo-prevent-body-scrolling)", "wearecollins (inline body overflow:hidden, scrollY stays 0)", "lusion (locked by the page scroller itself: ScrollPane.isMoveable includes !header.menu.opened; body overflow is hidden open OR closed)", "butcherbox @375"],
+        "body overflow set to hidden but the page STILL scrolls behind (a smooth-scroll library bypasses it)": ["studionamma @1440 (Lenis: wheel moved the page 0 -> 389, PageDown -> 399, while bodyOverflowOpen reads 'hidden')"],
+        "no lock at all - the page scrolls behind the open panel": ["buck (all tiers: wheel 400, PageDown 1187)", "fantasy (all tiers: wheel moved the page 0 -> 940 and the menu stayed open; html/body overflow visible)", "lamalama (no lock; at 768/1440 scrolling CLOSES it instead)", "rabbit ('body overflow stayed visible')", "halcyon (render: 'the page behind still scrolled 400px on wheel', body_overflow_while_open 'visible')", "indus-foods (same)"],
+        "nothing to lock (the document is one viewport high)": ["resn"],
+        "role=dialog aria-modal=true declared": ["fantasy (on aside.menu, no <dialog> element; ul role=menubar, a role=menuitem)", "away (role=dialog aria-modal=true aria-labelledby=mobile-menu-title, aria-hidden toggled)"],
+        "no dialog role, no inert, no aria-modal": ["studionamma", "buck", "dogstudio", "lamalama", "lusion", "wearecollins", "resn", "halcyon", "indus-foods"],
+        "focus TRAPPED inside the drawer": ["away ('Tab is trapped and cycles inside the drawer, wrapping from Close/London back to NEW ARRIVALS')"],
+        "focus NOT trapped - Tab leaves into the page behind": ["fantasy", "lamalama (and it walks through collapsed-but-focusable contact-form controls)", "lusion", "wearecollins", "halcyon ('Tab leaves the overlay and reaches controls on the page behind': 'a:Start free:inside=false')", "indus-foods (same)"],
+        "focus moved into the drawer on open": ["away (the first accordion toggle)"],
+        "focus NOT moved on open": ["fantasy", "lamalama", "wearecollins (stays on the burger)", "resn (stays on the body; Tab visits nothing in 8 presses)", "halcyon / indus-foods (stays on the burger, label 'Menu')"]
+      },
+      "needed_by": [
+        { "reference": "studionamma", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/mechanics.scrollLock + wheelProbe (the lock BEHAVES DIFFERENTLY at 1440)" },
+        { "reference": "buck", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/mechanics.scrollLock + wheelProbe" },
+        { "reference": "dogstudio", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/mechanics.scrollLock" },
+        { "reference": "fantasy", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/mechanics.role + scrollLock + focusTrap" },
+        { "reference": "lamalama", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/mechanics.scrollLock + focusTrap" },
+        { "reference": "lusion", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/mechanics.scrollLock + scrollLockSource" },
+        { "reference": "wearecollins", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/mechanics.scrollLock + focus" },
+        { "reference": "resn", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/mechanics.scrollLock + dialogOrInert + focus" },
+        { "reference": "away", "variant": null, "tiers": [375, 768], "cell": "drawer/mechanics.scrollLock + dialogRole + focus" },
+        { "reference": "butcherbox", "variant": null, "tiers": [375], "cell": "drawer/mechanics.scrollLock" },
+        { "reference": "rabbit", "variant": null, "tiers": [375], "cell": "drawer/mechanics.scrollLock" },
+        { "reference": "halcyon", "variant": "all 6", "tiers": [375, 768], "cell": "drawer/mechanics.scroll_lock + trigger-close/mechanics.focus_trap (render; the SOURCE carries no scroll-lock code either, so this is a design gap in the draft, not only a render omission)" },
+        { "reference": "indus-foods", "variant": "both", "tiers": [375, 768], "cell": "drawer/mechanics.scroll_lock + focus_trap" }
+      ],
+      "absent_in": [],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": ["sgs/nav-drawer::modality", "sgs/nav-drawer::ariaLabel"],
+        "how_checked": "block.json::attributes.modality enum ['modal','non-modal'] - modal calls showModal() (native top layer, page fully inert), non-modal calls show() with freezeBackground()'s selective inert. Scroll lock: src/shared/nav-interactivity/store.js::SCROLL_LOCK_ATTR = 'data-sgs-nav-scroll-y' and the lockBodyScroll/restore pair (fixed-position body + saved scrollY, with an overflowY:'scroll' forced on the root to stop the classic-scrollbar bounce, and scroll-behavior forced to auto for the restore). Focus trap: store.js's focusable-element selector and the Tab-wrap layer, with an explicit `! el.closest('[inert]')` guard.",
+        "gap": "SGS ships the accessible pole of both axes and cannot express the other: scroll lock is unconditional on both modality values (there is no unlock attribute), and 6 of the 13 references deliberately let the page scroll behind the open drawer. Likewise the focus trap is always on while 6 references deliberately let Tab leave. modality:'non-modal' keeps the HEADER live (F-C-17) but still locks scroll and still traps focus. Worth noting before anyone 'fixes' this: it is SGS being more accessible than the references, and the WCAG 2.1 AA baseline is non-negotiable - so the honest status is partial, and the shortfall should be closed by deciding the rule, not by loosening the default."
+      }
+    },
+    {
+      "id": "F-C-20",
+      "name": "Internal scrolling of the drawer's own content",
+      "description": "Whether the panel itself scrolls when its content is taller than the viewport, and which element is the scroller.",
+      "values_seen": {
+        "content fits, no internal scroll": ["wearecollins @768 and @1440 (scrollHeight 900 == clientHeight 900)", "away with all accordions closed (802 == 802 at 375, 900 == 900 at 768)", "halcyon (828 vs 828)", "indus-foods (735 vs 735 at 375, 758 vs 758 at 768)"],
+        "content overflows and the panel scrolls internally": ["wearecollins @375 (scrollHeight 1126 vs 900; wheel moved menuScrollTop 0 -> 226)", "away once an accordion is open (1297 vs 802 at 375, 1277 vs 900 at 768; wheel moved contentTop 0 -> 495 while window scrollY stayed at 811)"],
+        "an inner body element is the scroller, not the panel root": ["halcyon ('overlay body scrolls', body y=72, h=828)", "indus-foods ('overlay body scrolls', body y=165 h=735 at 375, y=142.5 h=757.5 at 768)", "away (overflowY auto on the drawer, padding 0 0 48px)"],
+        "not applicable (the panel is content-sized)": ["lamalama (height 436)", "lusion (content-sized cards)", "resn (one viewport high)"],
+        "not measured": ["studionamma", "buck", "dogstudio", "fantasy", "butcherbox", "rabbit"]
+      },
+      "needed_by": [
+        { "reference": "wearecollins", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/geometry.scrollHeight vs clientHeight + mechanics.scrollLock" },
+        { "reference": "away", "variant": null, "tiers": [375, 768], "cell": "drawer/geometry.scrollHeight + mechanics.scrollLock" },
+        { "reference": "halcyon", "variant": "all 6", "tiers": [375, 768], "cell": "drawer/mechanics.scroll_container + geometry.body" },
+        { "reference": "indus-foods", "variant": "both", "tiers": [375, 768], "cell": "drawer/mechanics.scroll_container + geometry.body" }
+      ],
+      "absent_in": ["lamalama", "lusion", "resn"],
+      "sgs_coverage": {
+        "status": "covered",
+        "attributes": ["sgs/nav-drawer::anchor (via the max-height each anchor emits)"],
+        "how_checked": "render.php::$sgs_nd_geometry_for_anchor emits max-height:calc(100dvh - var(--sgs-drawer-header-offset,...)) for `header`, max-height:calc(100dvh - 32px) for `trigger` and `centred`, and max-height:100dvh for `full-screen`; with a bounded max-height the `body` element scrolls the overflow.",
+        "note": "Every anchor already caps the panel at the viewport, which is the capability the four references need. There is no separate overflow attribute and none of them needs one."
+      }
+    },
+    {
+      "id": "F-C-21",
+      "name": "Entry and exit motion archetype",
+      "description": "How the panel arrives and leaves. Seven distinct shapes, with measured durations spanning 150ms to about 2.0s - a 13x spread.",
+      "values_seen": {
+        "slide up from the bottom with a fade (translateY 100% -> 0 + opacity)": ["buck (settled 496/601/444ms at 375/768/1440; close 248/280/234ms; Spec 38 Tier V)"],
+        "slide in from one side edge (translateX -100% -> 0)": ["away (transition transform 0.3s ease-out; sampled -247.6 -> 0 in ~253ms at 375, -390 -> 0 in ~466ms at 768; close ~299ms; Tier V)", "butcherbox (inner panel margin-left -100% -> 0 over 0.15s cubic-bezier(0.4,0,0.2,1))"],
+        "clip-path wipe from an edge": ["studionamma (polygon wipe top-to-bottom with a skewed leading edge; firstFrame 44-62ms, reachedFull ~2.02-2.06s, close ~2.04-2.05s; ease-in-out from clip samples; Tier V reachable, the site drives it with GSAP 3.15 + ScrollSmoother + Lenis)", "wearecollins (clip-path from the bar strip to the full viewport; ~292/317/311ms open, ~284-359ms close, then removal ~442-499ms later; Tier V)"],
+        "a coloured curtain sweeps across while the menu layer fades in behind it": ["dogstudio (.site-menu-panel #131419 translateX from -100%; backFullyOpaque by 1830/2045/2793ms - UPPER BOUNDS, the page is WebGL-heavy and each evaluate took 0.4-1s; close backHidden by 824/1182/1211ms; Tier V reachable, driven by the site's own dog.js, no GSAP global)"],
+        "opacity-only fade": ["fantasy (aside autoAlpha 0 -> 1 over 0.5s power1; close 0.35s, measured gone by ~351-385ms; Tier G, GSAP timeline with a custom ease named 'unmask')", "rabbit (opacity 0 -> 1 over 0.5s cubic-bezier(0.4,0,0.2,1), visibility hidden -> visible)"],
+        "grow in place by height from the closed pill": ["lamalama (height auto expo.out 0.45s; scrim opacity 0->1 0.35s power4.out; burger bars y +/-0.3125rem expo.out 0.45s; measured 50 -> 436px by t=800ms at 375, 354ms at 768, 229ms at 1440; Tier G, GSAP)"],
+        "per-card transform + opacity with a staggered delay": ["lusion (0.5s cubic-bezier(0.4,0,0.1,1); open delays 0/0.02/0.04/0.06s per card, close delays reversed; closed pose: links translate3d(0,5.5em,0) rotate(3.5deg) opacity 0, other cards translate3d(0,7.75em,0) rotate(-3.5deg); scrim 0.4s ease with a 0.4s delay on close; Tier V. Headed re-check: class added +33ms, cards start +87-147ms and settle by +500ms; close settled by +748ms)"],
+        "no panel animation at all - the panel mounts at full opacity": ["halcyon (render: overlay_first_frame_opacity '1', animations_seen 0)", "indus-foods (same)"],
+        "the visible transition happens inside canvases": ["resn (headed: route mounts +11ms; item canvases blank until +519ms (About) and +820ms (Work, Contact), building up over ~1.3s; close: canvas pixels fall from +43ms, zero by +193-299ms, element removed +482-508ms; the persistent WebGL scene is tier 'none')"]
+      },
+      "needed_by": [
+        { "reference": "studionamma", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/motion.open/close" },
+        { "reference": "buck", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/motion.open.samples" },
+        { "reference": "dogstudio", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/motion.open.firstSamples" },
+        { "reference": "fantasy", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/motion [source-only]" },
+        { "reference": "lamalama", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/motion.open + measured" },
+        { "reference": "lusion", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/motion.cards + closedPose [source-only] + headed_recheck.menu_open" },
+        { "reference": "wearecollins", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/motion[0]" },
+        { "reference": "resn", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/motion[0] + headed_recheck.menu_open_1440" },
+        { "reference": "away", "variant": null, "tiers": [375, 768], "cell": "drawer/motion[0]" },
+        { "reference": "butcherbox", "variant": null, "tiers": [375], "cell": "drawer/mechanics.motion" },
+        { "reference": "rabbit", "variant": null, "tiers": [375], "cell": "drawer/mechanics.motion" },
+        { "reference": "halcyon", "variant": "all 6", "tiers": [375, 768], "cell": "drawer/motion.panel_expand ('none - panel mounts at full height; not animated')" },
+        { "reference": "indus-foods", "variant": "both", "tiers": [375, 768], "cell": "drawer/motion.panel_expand" }
+      ],
+      "absent_in": [],
+      "spec38": {
+        "tier_V": "9 of 11 measured effects. The drawer's own shipped entry animations are pure CSS keyframes in prefers-reduced-motion:no-preference - style.css::@keyframes sgs-nav-drawer-in / -out / -fade-in / -fade-out / -expand-down-in / -corner-scale-in / -modal-scale-in / -backdrop-in. Tier V covers slide, fade, grow-by-height, clip-path wipe and per-card transform+opacity.",
+        "tier_G": "fantasy (a GSAP timeline with a custom ease named 'unmask') and lamalama (GSAP expo.out/power4.out with a child stagger) are authored at Tier G, but both LOOKS (opacity fade, height grow) are reachable at Tier V; only the exact custom ease is not.",
+        "tier_H": "none. No drawer effect in the group needs a single-purpose helper library. Lenis appears on studionamma, lamalama and lusion but as the PAGE scroller, not as a drawer effect - it is what breaks studionamma's @1440 scroll lock (F-C-19).",
+        "tier_W": "none admissible. resn's persistent full-viewport WebGL gem is recorded in the digest as tier 'none' with the reason quoted from Spec 38 section 1.2a: Tier W's admission test requires one BOUNDED surface, never page-wide chrome, and it must never become a 3D engine (three.js is named as the thing it must not grow into). This scene is page-wide, is a 3D mesh with refraction, and every route sits on it. It returns as a Bean trim/exclude decision under the W4-c termination rule.",
+        "named_FRs": "FR-38-19 (page transitions as cross-document View Transitions, Tier V) is the nearest named FR to resn's in-canvas route change and does NOT cover it - an in-canvas single-page transition has no DOM to transition. FR-38-10 SplitText and FR-38-11 ScrambleText (Tier G) are the nearest named FRs to resn's per-item canvas dissolve and are a different look; the digest's own judgement is that the dissolve is expressible in principle as a NEW Tier V canvas-2D effect (the substrate already exists - FR-38-32 particle trail, FR-38-33 grid-dot field) provided the DOM text is kept. No existing FR names a drawer entry animation: the drawer's motion lives in sgs/nav-drawer's own stylesheet, not in a Spec 38 FR."
+      },
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": ["sgs/nav-drawer::animateFrom"],
+        "how_checked": "block.json::attributes.animateFrom enum ['auto','fade'] (TWO values only), mirrored by render.php::$sgs_nd_allowed_anims. render.php's $sgs_nd_anim_map resolves 'auto' to a class chosen by the DESKTOP anchor: header -> sgs-nav-drawer--anim-expand-down, trigger -> sgs-nav-drawer--anim-corner-scale, centred -> sgs-nav-drawer--anim-modal-scale, full-screen -> no class (the base fade-drop). The keyframes are in style.css: grep -n '@keyframes' plugins/sgs-blocks/src/blocks/nav-drawer/style.css returns sgs-nav-drawer-in/-out/-backdrop-in/-fade-in/-fade-out/-expand-down-in/-expand-down-out/-corner-scale-in/-corner-scale-out/-modal-scale-in/-modal-scale-out, all inside @media (prefers-reduced-motion: no-preference).",
+        "gap": "Only four entry animations exist and each is BOUND to an anchor rather than chosen freely, so a full-screen drawer can only fade-drop or fade. Unreachable: slide from a side edge (away, butcherbox), slide up from the bottom (buck), clip-path wipe (studionamma, wearecollins), curtain sweep (dogstudio), per-card staggered arrival (lusion), and 'no animation at all' (halcyon, indus-foods - although that is a bug in their runtime, not an intent). There is also no duration or easing attribute, and the measured spread is 150ms to ~2.0s."
+      }
+    },
+    {
+      "id": "F-C-22",
+      "name": "Item entry stagger",
+      "description": "Whether the rows arrive one after another rather than with the panel. A separate mechanism from the panel's own animation (F-C-21): wearecollins animates the panel and explicitly does NOT stagger its links.",
+      "values_seen": {
+        "staggered, measured": ["studionamma (link1 starts at translateY 167.8px and link2 at 170.4px at 375, settling 1860/1972ms; at 1440 they start at 387.3/393.7px and both settle at 1937ms)", "lusion (per-card delays 0/0.02/0.04/0.06s on open, reversed on close)"],
+        "staggered, from source": ["fantasy ('.js-fade items fade + y from -2rem with stagger 0.05s; .js-fade-up items y from 2rem')", "lamalama ('children shown with a 0.05s stagger')"],
+        "explicitly NOT staggered": ["wearecollins ('no stagger seen: links stay at top 25.5/210.5 with opacity 1 from the first moving frame', tier 'n/a')"],
+        "SOURCE says staggered, RENDER does not run it": ["halcyon (source: 'overlay items stagger in translateX(24px) -> 0, 420ms, delay i*55ms', animateMobile() at L236-241; render: animations_seen 0, first_item_opacity_min 1, overlay_first_frame_opacity '1'; cause recorded as a componentDidUpdate signature mismatch, console error 'Cannot read properties of undefined (reading active)')", "indus-foods (identical source at L310-315, identical render result)"],
+        "not measured": ["buck", "dogstudio", "resn", "away", "butcherbox", "rabbit"]
+      },
+      "needed_by": [
+        { "reference": "studionamma", "variant": null, "tiers": [375, 1440], "cell": "drawer/motion.linkEntrance (not measured at 768)" },
+        { "reference": "lusion", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/motion.cards delays" },
+        { "reference": "fantasy", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/motion.open [source-only]" },
+        { "reference": "lamalama", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/motion.open" },
+        { "reference": "halcyon", "variant": "all 6", "tiers": [375, 768], "cell": "trigger-close/motion.source_says vs render_shows (INTENT 420ms, delay i*55ms, cubic-bezier(.16,.84,.32,1), fill backwards; RENDER none)" },
+        { "reference": "indus-foods", "variant": "both", "tiers": [375, 768], "cell": "trigger-close/motion.source_says vs render_shows (same numbers)" }
+      ],
+      "absent_in": ["wearecollins (measured absent, not unmeasured)", "buck", "dogstudio", "resn", "away", "butcherbox", "rabbit"],
+      "spec38": {
+        "tier": "V for every value here - a transform + opacity transition with a per-index delay. halcyon and indus-foods both record spec38 'V' on the cell themselves. fantasy and lamalama author theirs at Tier G (GSAP stagger) but the look is Tier V reachable.",
+        "named_FR": "none. No Spec 38 FR names a nav-item entry stagger; FR-38-10 SplitText is per-CHARACTER treatment of one text node, not per-ITEM sequencing of a list."
+      },
+      "sgs_coverage": {
+        "status": "gap",
+        "attributes": ["(none)"],
+        "how_checked": "grep -rn 'stagger' plugins/sgs-blocks/src/blocks/nav-drawer/ plugins/sgs-blocks/src/blocks/nav-drawer-menu/ returns ZERO matches. No stagger/delay attribute appears in either block.json (python -c over both attributes maps) or in the DB: sgs-db.py sql \"SELECT attr_name FROM block_attributes WHERE block_slug IN ('sgs/nav-drawer','sgs/nav-drawer-menu')\" has no delay/stagger/sequence row.",
+        "gap": "Four references stagger their rows and two more intend to. SGS has no per-item entry delay of any kind on the drawer or the drawer menu. The needed value is a single number (the per-index delay: 0.05s on fantasy and lamalama, 0.02s per card on lusion, 55ms in both Claude Design drafts) plus a distance and a duration."
+      }
+    },
+    {
+      "id": "F-C-23",
+      "name": "Tier-delta role migration into the drawer",
+      "description": "What ARRIVES in the drawer at a narrow viewport because it no longer fits the bar, and what LEAVES the drawer. This is a content-routing decision, not a styling one, and every reference that has both a bar and a drawer makes it.",
+      "values_seen": {
+        "a header CTA migrates into the list at 375": ["studionamma ('header CTA is hidden (0x0) and re-appears as a list item: role migration'; LET'S TALK! becomes a non-anchor item #openForm)"],
+        "bar utilities move into the drawer": ["away ('the Help link and store selector move from the top bar into the drawer; Log in moves from a bar icon into the drawer; nothing is removed from the DOM')"],
+        "bar items become accordion rows and desktop panels become inline link lists; the bar CTAs move into the drawer": ["halcyon ('nav items become accordion rows; panels become inline link lists; CTAs move here')", "indus-foods (same)"],
+        "an extra control is ADDED that the desktop drawer does not have": ["buck ('a search icon appears at the top of the list', 375 only; 'none removed; search icon added')"],
+        "an ornament is DROPPED below a tier": ["dogstudio ('index numbers removed (pseudo content none)' at 768 and 375)", "studionamma ('the hidden _ spacer link is removed from the anchor list' at 768)"],
+        "a secondary block is display:none'd at a tier": ["fantasy ('sentenceCta: dropped (display none via hidden s:block)' at 375)", "lusion (newsletter collapsed to 0 height at 768; Let's talk collapsed to 0x0 at 1440)"],
+        "duplicate DOM copies, one shown per tier": ["wearecollins ('Team/Careers/Press exist TWICE in the DOM (desktop-only and mobile-only classes); the desktop copies are display:none while the mobile copies show in the lower area; nothing is removed from the DOM - 12 linkBtn elements exist at every tier')"],
+        "nothing changes": ["lamalama ('droppedElements: none - same DOM and same rows at every tier')", "fantasy layout ('same centred stack at every tier')"],
+        "the DOM text itself is dropped": ["resn ('the DOM text of the items is removed at 375 (only canvas remains); nothing collapses to 0x0')"]
+      },
+      "needed_by": [
+        { "reference": "studionamma", "variant": null, "tiers": [375, 768], "cell": "drawer/tier_delta.drop" },
+        { "reference": "buck", "variant": null, "tiers": [375], "cell": "drawer/tier_delta.drop + zone_model.extraFirstItem" },
+        { "reference": "dogstudio", "variant": null, "tiers": [375, 768], "cell": "drawer/tier_delta.drop" },
+        { "reference": "fantasy", "variant": null, "tiers": [375], "cell": "drawer/tier_delta.sentenceCta" },
+        { "reference": "lusion", "variant": null, "tiers": [768, 1440], "cell": "drawer/tier_delta.newsletter + letsTalk" },
+        { "reference": "wearecollins", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/tier_delta.dropMechanism" },
+        { "reference": "resn", "variant": null, "tiers": [375], "cell": "drawer/tier_delta.dropMechanism" },
+        { "reference": "away", "variant": null, "tiers": [375, 768], "cell": "drawer/tier_delta.dropMechanism" },
+        { "reference": "halcyon", "variant": "all 6", "tiers": [375, 768], "cell": "drawer/tier_delta.drop_mechanism" },
+        { "reference": "indus-foods", "variant": "both", "tiers": [375, 768], "cell": "drawer/tier_delta.drop_mechanism" }
+      ],
+      "absent_in": ["lamalama (measured: no delta)", "butcherbox", "rabbit"],
+      "sgs_coverage": {
+        "status": "partial",
+        "attributes": ["sgs/nav-bar-menu::drawerRef", "sgs/nav-drawer::drawerRef", "sgs/nav-drawer-menu::ref", "sgs/nav-drawer-menu::megaDrawerFallbackIds", "sgs/nav-bar-menu::featuredItemIds"],
+        "how_checked": "DB: sgs-db.py sql \"SELECT block_slug, attr_name, css_property FROM block_attributes WHERE attr_name IN ('drawerRef','ref','megaDrawerFallbackIds','featuredItemIds')\" -> featuredItemIds routes display,max-width,min-width on the bar element (a per-tier show/hide of NAMED items). megaDrawerFallbackIds is described in nav-drawer-menu/block.json as 'Per-item opt-OUT from the mega-menu item's default plain-link degrade in the DRAWER form only'. The bar-to-drawer degrade itself is plugins/sgs-blocks/includes/nav-menu-markup.php::sgs_nav_drawer_menu_render_items.",
+        "gap": "The MENU's own degrade is covered: the same menu renders as a bar above collapsePoint and as an accordion list in the drawer, with a per-item opt-out for mega items - that is halcyon, indus-foods and away's primary rows. What is NOT covered is migrating a NON-MENU header block (a CTA, a search control, a help link, a store selector) into the drawer at a tier. featuredItemIds can hide named MENU items per tier, but studionamma's CTA, away's Help/Log in/store selector and buck's added search icon are separate blocks, and duplicating them into the drawer's InnerBlocks with per-tier visibility is the only route - i.e. the wearecollins two-copies mechanism, by hand."
+      }
+    },
+    {
+      "id": "F-C-24",
+      "name": "Open-state survival across a viewport change",
+      "description": "Whether the drawer stays open, and reflows, when the viewport crosses a tier boundary while it is open. Measured on nine references, and they do not agree.",
+      "values_seen": {
+        "stays open and reflows, both within a tier and across tiers": ["studionamma ('survivesSameTierResize': true, 'survivesCrossTierResizeTo': {width 1440, open true}; and 1440 -> 700 stays open)", "buck (sameTier true, crossTier to 1440 / to 700 open true)", "dogstudio (same shape)", "lamalama @1440 ('1440 -> 375 -> 1440 kept it open, width 438 -> 343 -> 438, height 436 throughout')", "lusion ('stayed open through 375 -> 1440 -> 375 and reflowed', at every tier)", "wearecollins ('openStateSurvivesResize': true, with a measured reflow: gridCols 488px 488px at 1440, 155.5px 155.5px at 375, and the tertiary links swap which DOM copy is shown)", "fantasy @768 and @1440 ('768 -> 375 -> 768 kept it open and reflowed')"],
+        "CLOSES on a cross-tier resize": ["fantasy @375 ('NO: 375 -> 1440 (mobile-UA context) closed it')", "away (both tiers: 'openStateSurvivesResize': false; resizing 375 -> 768 left contentLeft -390, visibility hidden, aria-expanded false, body overflow visible)"],
+        "the open FLAG persists but the surface is not rendered at the new width": ["halcyon ('open flag persists: overlay is hidden at desktop width and REAPPEARS when the viewport returns below the breakpoint')", "indus-foods (same)"],
+        "not measured": ["resn ('openStateSurvivesResize': 'not measured')", "butcherbox", "rabbit"]
+      },
+      "needed_by": [
+        { "reference": "studionamma", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/mechanics.survivesSameTierResize + survivesCrossTierResizeTo" },
+        { "reference": "buck", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/mechanics.survivesResize" },
+        { "reference": "dogstudio", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/mechanics.survivesResize" },
+        { "reference": "fantasy", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/mechanics.survivesResize (differs at 375)" },
+        { "reference": "lamalama", "variant": null, "tiers": [1440], "cell": "drawer/mechanics.survivesResize" },
+        { "reference": "lusion", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/mechanics.survivesResize" },
+        { "reference": "wearecollins", "variant": null, "tiers": [375, 768, 1440], "cell": "drawer/mechanics.openStateSurvivesResize + resizeReflow" },
+        { "reference": "away", "variant": null, "tiers": [375, 768], "cell": "drawer/mechanics.openStateSurvivesResize + resize" },
+        { "reference": "halcyon", "variant": "all 6", "tiers": [375, 768], "cell": "trigger-close/mechanics.open_state_survives_resize" },
+        { "reference": "indus-foods", "variant": "both", "tiers": [375, 768], "cell": "trigger-close/mechanics.open_state_survives_resize" }
+      ],
+      "absent_in": ["resn", "butcherbox", "rabbit"],
+      "sgs_coverage": {
+        "status": "gap",
+        "attributes": ["(none)"],
+        "how_checked": "No attribute names this on either block: sgs-db.py sql \"SELECT attr_name FROM block_attributes WHERE block_slug IN ('sgs/nav-drawer','sgs/nav-bar-menu')\" has no resize/persist/breakpoint-close row, and neither block.json declares one (python -c over both attributes maps). The open state lives in the Interactivity store (src/shared/nav-interactivity/store.js) and the dialog's own [open] attribute; nothing in store.js or nav-drawer/render.php listens for a resize across collapsePoint.",
+        "gap": "SGS has one unstated behaviour where the references have three. Two of them (away, fantasy @375) deliberately CLOSE the drawer when the viewport crosses a breakpoint, which is also the safer behaviour for a drawer that does not exist above collapsePoint (F-C-01) - a drawer left open while its trigger disappears is a trap. This wants a decision, not just an attribute."
+      }
+    }
+  ],
+  "unclustered": [
+    {
+      "cell": "drawer/content (all 13 references)",
+      "why": "Link labels, promo headlines and social-item names are the site's own copy, not a capability. A family keyed on them would be keyed on prose, which the brief forbids. The one thing in these cells that IS typed - caseOrigin, whether the upper-casing comes from the source text or from CSS text-transform - is clustered into F-C-10."
+    },
+    {
+      "cell": "drawer/ground.fillNote (buck, all tiers)",
+      "why": "buck picks its drawer fill from a brand palette PER PAGE LOAD, not per tier (this run gave #196efa / #f4c054 / #508054 at 1440 / 768 / 375; the 2026-07-28 record saw #7f4c1e and #00513c). That is randomised content behaviour, not a styling capability, and clustering it would invent a 'random fill' family that exactly one reference needs and no block attribute should have."
+    },
+    {
+      "cell": "drawer/geometry z-index (studionamma 3, wearecollins 1, fantasy 9, lamalama 20, halcyon/indus 300, dogstudio 995, buck 1300, butcherbox 10000)",
+      "why": "An 8-value spread with no design meaning - each is whatever that site's own stacking context required. SGS puts the drawer in the native `<dialog>` top layer, which makes the number irrelevant rather than unmatched. Recorded here so the spread is not mistaken for a missing capability."
+    },
+    {
+      "cell": "drawer/geometry.asideRect overshoot (fantasy +100px top and bottom; wearecollins bottom -639 in the 2026-07-28 record)",
+      "why": "An implementation artefact of how those sites size their overlay, not a visible property: the INNER panel is exactly the viewport in both cases, and that is what a visitor sees. Clustering it would create a family keyed on a number no design decision produced."
+    },
+    {
+      "cell": "resn drawer/item_typography (375)",
+      "why": "The labels are drawn into per-item canvases 108x47 / 92x47 / 146x47 with NO DOM text at that tier, so there is no font size, weight or colour to cluster. At 768 and 1440 a hidden DOM copy exists at opacity 0 and those values ARE clustered into F-C-10. A canvas-only label is also something SGS must not reproduce (it deletes real text), so it is a Bean trim/exclude decision under W4-c, not a family."
+    },
+    {
+      "cell": "butcherbox and rabbit drawer @768 (every column)",
+      "why": "Both files carry a `drawer | 768 | present` row with no cells and a not_measured entry: 'the 768 tier was not captured for this reference; the emulated viewport pass covered 375 and 1440 only.' Presence is honest, so those rows feed F-C-01; every value-bearing family excludes them at 768 rather than inferring from 375."
+    },
+    {
+      "cell": "resn drawer/mechanics.hoverBlocker + clickTargets",
+      "why": "A full-size .hover-blocker with pointer-events:none under the items, and a z-index 1005 canvas that intercepts real pointer input at 768 and 375 (reproduced headed on a desktop pointer; iPad and iPhone user agents work by touch). This is a defect in the reference, not a capability any block should express. It is recorded inside F-C-12 and F-C-18 as the reason those cells read the way they do, but it is not a family of its own."
+    },
+    {
+      "cell": "away drawer/* storefront divergence",
+      "why": "The headed session is served the UK storefront (GBP, /en-gb, the first two nav items swapped, no consent banner) while the JSON describes the US storefront the headless run received; 12 of 55 static cells differ, 7 of them from the 15px classic scrollbar alone. Structure is identical, so every family uses the away values as captured, but WHICH storefront is the reference is an open decision (the file's own follow_up: 'decide which storefront is the reference before Wave 4') and cannot be clustered."
+    }
+  ]
+}
