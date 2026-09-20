@@ -13,8 +13,9 @@ Finding: the JS-to-CSS translation already exists and is simply not wired in; th
 of a draft (`<sc-if>` conditions, `style-hover`, multi-field JS-array copy, base64 logos). The README is wrong in 8 places
 against the files, so the files are the source of truth. Plan: (A) wire and extend existing functions, no new stage, starting
 with the evaluator; (B) a small draft standard only for what code cannot derive, written into the draft by Claude Design via a
-closing prompt; (C) a deterministic checker as the second layer. Waiting on Bean: the 10px snap (keep, or use a bounded
-residual for 760), and running the closing prompt in Claude Design.
+closing prompt; (C) a deterministic checker as the second layer. Bean confirmed the breakpoint mapping (700 to 768, 1280
+stays). Waiting on Bean: running the closing prompt (plan section 4, logo attached) in Claude Design and saving the result
+beside the current draft as `design_handoff_ward_end_eye_care_v2`.
 
 **Where the Eye Care clone stands (test page 11).** Spec 33 gives it the draft's real palette, fonts, square corners and 13
 saved business settings. The screen route clones only the Home screen: 5 of 8 homepage sections are on the page (was 1), none
