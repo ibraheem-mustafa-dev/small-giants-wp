@@ -1,6 +1,6 @@
 # Draft normalisation council: revised plan (2026-09-20, v2)
 
-Status: DESIGN FOR BEAN'S APPROVAL. Nothing built, wired or committed. Written for Bean; plain English first.
+Status: APPROVED by Bean 2026-09-20 (D1132). No pipeline code built yet. Written for Bean; plain English first.
 v1 of this plan misread the brief (it proposed rewriting drafts to Mama's shape and a new normalise stage) and was rejected. This v2 answers what you actually asked, after a five-part council over the real drafts and code.
 
 ## 1. Your questions, answered
@@ -98,19 +98,9 @@ Not in the standard: `data-slot` (not in Spec 00; Mama's uses none). Lives at `.
 - Residual scope: for a classless section root the residual targets the block wrapper (correct); for a nested classless element it would restyle the whole section (open, D1129).
 - Mama's has non-device breakpoints (600, 640, 1280): the standard must allow them, so "only 768 and 1024" is not a rule.
 
-## 4. The closing prompt for Claude Design (draft, for you to paste)
+## 4. The closing prompt for Claude Design
 
-> Please update this design bundle so that everything a developer needs is in the files themselves, not only in the README. Do not change any visible design, layout or copy.
-> 1. In the main HTML file add one block: `<script type="application/json" data-sgs-manifest>` holding: every page (id, route, screen label, kind, and the WordPress slug and parent you would give it), every repeated group with the script dataset it comes from and whether it is a fixed list or should be a live product query, and any behavioural rule from the README that the files do not show (for example "show the no-reviews strip when a product has zero reviews").
-> 2. Give every top-level section a CSS class `sgs-<name>` matching its section name, and list the sections in page order in the manifest.
-> 3. Use our device breakpoints only for layout changes between phone, tablet and desktop: 768px (phone below it) and 1024px (tablet below it). Rename your width flags to `mobile`, `tablet`, `desktop` and change your 760 and 700 thresholds to 768. Keep any other threshold (for example 1280) as a named extra breakpoint in the manifest with the reason.
-> 4. Use the attached logo file (`ec-logo.png`) for the header and footer logo in place of the drawn mark. Reference it as a file in the bundle (`assets/ec-logo.png`), not as inline base64, and do the same for every brand logo (files, not embedded data).
-> 5. Where the README and the files disagree, do not choose: list each difference for me.
-> 6. Then shorten the README to intent and rules that cannot be read from the files.
-
-Attach to the prompt: the logo (the 426 by 214 "ec" monogram PNG you sent; the client's folder only holds four JPEG logo drafts and no vector file, so a vector or larger original would be better when available).
-
-Test it on the existing Eye Care draft first (10 minutes of yours). The checker then scores the result.
+The prompt is saved, single-use, at `.claude/prompts/2026-09-20-claude-design-closing-prompt.md` (the file is the one source; this plan does not repeat the text, so the two cannot drift). It asks Claude Design to: embed one JSON manifest block (pages, collections and their intent, README rules the files do not show); put an `sgs-<name>` class on every top-level section; adopt 768 and 1024 as the device breakpoints (760 and 700 become 768; extras such as 1280 are named in the manifest); use the attached logo file and file references instead of base64; list every README-versus-files difference; and shorten the README. Attach the "ec" logo PNG. Save the result beside the current bundle as `design_handoff_ward_end_eye_care_v2` for the checker.
 
 ## 5. Phases (each verified on the real Eye Care page; Mama's markup identical)
 
