@@ -24,6 +24,8 @@
 
 **W3A-1 closed (Bean).** Bean tested the plain dropdown on a real header and it works, so his loose-fixture symptom was a fixture artefact. The pill mega's 21px gap is not fixed on its own; it is rebuilt with the header width model (W3C-1). The Away reference is the UK storefront.
 
+**W3A-4 hover colour done.** The Mama's header nav had no `itemColourHover`, so the block's locked default (`primary`) coloured the hover text pink; the header now sets it to `text`, matching the draft (`.sgs-header__nav a:hover` changes only the background). Centring: the responsive-logo's default left-pin (`margin-inline-end:auto`) swallows the free space in a `space-between` row, so the nav sits right of centre; the draft centres the items between the logo and the cart (measured 746 against a viewport centre of 714). The fix shape (block default versus header content) awaits Bean.
+
 **Open.** The requirements table is not yet signed off (W3B-5). Where the references keep the burger and close control, and whether any drawer omits a top close row, is read from the table, not assumed.
 
 ## D1132 [ROUTINE] — Draft standardisation council: close the wiring gaps in existing code first; a small draft standard only for what code cannot derive; a deterministic second layer (2026-09-20)

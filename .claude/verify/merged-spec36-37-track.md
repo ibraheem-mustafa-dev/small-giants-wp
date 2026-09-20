@@ -100,8 +100,10 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
   items centre on the parent item.
 - W3A-3: computed hover style of a bar item that owns a panel equals that of a sibling that does not,
   with the cause proven before the fix.
-- W3A-4: the Mama's Munches header nav is centred within the bar (measured), and the hover text
-  colour equals the draft's, matched by content.
+- W3A-4: hover colour met: the hovered nav item's computed text colour equals its resting colour and the
+  hover pill is `rgb(245, 194, 200)` (the draft's `--surface-pink`), read with `getComputedStyle` on
+  `header .sgs-nav-bar-menu__link` and its `::before` while hovered. Centring open: the gaps left and
+  right of the nav (logo to nav, nav to cart) are equal within 2px.
 - W3A-5: met. The nav QA fixtures render inside `sgs/site-header` (`document.querySelector('.entry-content header.sgs-site-header .sgs-nav-bar-menu')`
   is non-null on pages 3723, 3733, 3734 and 3735), and the drawer fixtures show submenus and a mega item
   (`python plugins/sgs-blocks/scripts/nav-qa/build-header-fixtures.py --list`).
