@@ -170,16 +170,22 @@ existing teardown data (`reports/2026-07-28-drawer-code-extraction/`, teardown r
 **Columns (draft, reviewed by Bean before any measuring):**
 1. Header shell — width model (full-bleed, capped, floating pill, partial-width bar), max width,
    centring against the viewport, what sits inside (logo, nav, cart, CTA, message, language),
-   background (solid, transparent, blur), sticky or hide-on-scroll.
+   background (solid, transparent, blur) and any visual covering it (image, video, gradient, cycling
+   media) with its animation or behaviour, sticky or hide-on-scroll.
 2. Bar items — alignment in the bar (left, centred, split), hover treatment, active state,
    separators, treatment of items that own a panel.
 3. Dropdown — anchor (item-centred, item-left, header-wide), width rule, surface (background, border,
-   radius, shadow), item styling, open trigger (hover, click), close grace.
-4. Mega panel — width anchor (header, container, viewport), columns, content types, motion.
-5. Trigger — burger style, replaced in place by the close control or a separate close, label, magnet.
-6. Drawer — type (full-screen, side, partial, dropdown from the header), side, width, top close row
-   present or not, header visible over the drawer, background and blur, menu structure (flat,
-   accordion submenus, two-tier), secondary content blocks.
+   radius, shadow), any background visual and its animation or behaviour, item styling, open trigger
+   (hover, click), close grace.
+4. Mega panel — width anchor (header, container, viewport), columns, content types, background visual
+   and its animation or behaviour, motion.
+5. Trigger and close button — burger style, label, magnet; the close button's style, position and
+   icon, whether it replaces the burger in place or is a separate control (and whether a top row
+   exists to hold it), and the animation between the two states.
+6. Drawer — type (full-screen, side, partial, dropdown from the header), side, width, header visible
+   over the drawer, background colour and blur, the visual covering the background (image, video,
+   gradient, cycling media) and its animation or behaviour (parallax, cross-fade, follows the hovered
+   link, autoplay), menu structure (flat, accordion submenus, two-tier), secondary content blocks.
 7. Footer — row model, column shape, secondary content.
 8. Mobile — what changes at each tier.
 9. Motion — each effect mapped to a Spec 38 tier (V, G, H, W).
