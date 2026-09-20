@@ -10072,5 +10072,10 @@
   }
  ],
  "drawer_cross_check": [],
- "cross_check_note": "Away has no existing drawer data in .claude/reports/2026-07-28-drawer-code-extraction/ (no away-desktop.json, away-mobile.json or labels-away.json existed before this capture), so there is nothing to cross-check; labels-away.json is written in the same shape as labels-fantasy.json."
+ "cross_check_note": "Away has no existing drawer data in .claude/reports/2026-07-28-drawer-code-extraction/ (no away-desktop.json, away-mobile.json or labels-away.json existed before this capture), so there is nothing to cross-check; labels-away.json is written in the same shape as labels-fantasy.json.",
+ "headed_recheck": {
+  "source": "HEADED-SPOTCHECK.md",
+  "finding": "a real headed Chrome is served the UK storefront (GBP, /en-gb, the first two nav items swapped, no consent banner); this file describes the US storefront the headless run received. 12 of 55 static cells differ: 7 from the 15px classic scrollbar (labels derived from clientWidth are identical) and 5 from the storefront difference.",
+  "follow_up": "decide which storefront is the reference before Wave 4; the structure is the same"
+ }
 }

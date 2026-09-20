@@ -121,7 +121,8 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
   drafts by rendering each locally with its own runtime files, one row set per variant); every static cell is
   taken from the rendered DOM by computed style, every behaviour cell by event-driven capture or
   marked `source-only`; every surface cell is present, absent or not-applicable; `labels-<site>.json`
-  exists for the eleven third-party references.
+  exists for the eleven third-party references. Captured headed, or spot-checked headed with the
+  differences recorded (`.claude/reports/reference-requirements/HEADED-SPOTCHECK.md`).
 - W3B-4: every table row belongs to one capability family, and every family states the block
   attribute that covers it or "none".
 - W3B-5: Bean has signed the family list.

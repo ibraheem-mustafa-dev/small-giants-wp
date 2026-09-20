@@ -11,32 +11,60 @@
    "cells": {
     "archetype": {
      "value": {
-      "label": "shell-less header (PROVISIONAL)",
-      "detail": "Owner says resn has a header. The capture keyed presence on a <header> element and found none (0 headers, 0 navs), but the page shows fixed controls at the top edge (the menu button top-right, the droplet home button top-left while a route is open, a VIEW ALL PROJECTS link top-centre on the home and work pages). Those controls are the header; they have no containing element. To be re-measured headed, part by part.",
+      "label": "shell-less header",
+      "detail": "No <header> element: div.js-shell is a 0x0 wrapper holding separate fixed controls that a visitor reads as the header.",
+      "parts": [
+       {
+        "part": "menu button",
+        "element": "div.js-shell__button--menu",
+        "size": "18x18 icon, 200x200 hit area (60x60 on an iPhone UA)",
+        "position": {
+         "1440": "left 1393, top 20",
+         "768": "left 721, top 20",
+         "375": "left 328, top 20 (iPhone UA left 332, top 31)"
+        },
+        "colour": "#ffffff"
+       },
+       {
+        "part": "droplet / home button",
+        "element": "div.js-shell__button--drop",
+        "size": "18x24 element, 18x72 sprite canvas, 200x200 hit area",
+        "position": {
+         "1440": "left 23, top 15",
+         "768": "left 23, top 15",
+         "375": "left 23, top 15"
+        },
+        "colour": "#ffffff canvas"
+       },
+       {
+        "part": "sound toggle",
+        "element": "div.js-shell__button--sound",
+        "size": "24x16, 200x200 hit area",
+        "position": {
+         "1440": "left 1387, top 863",
+         "768": "left 715, top 863",
+         "375": "left 322, top 863 (absent on an iPhone UA)"
+        },
+        "colour": "#ffffff"
+       },
+       {
+        "part": "VIEW ALL PROJECTS link",
+        "element": "a.js-work__menu-list-btn",
+        "size": "118.1x19.8 at 1440, 78.8x13.2 at 768 and 375",
+        "position": {
+         "1440": "left 660.9, top 82.1",
+         "768": "left 344.6, top 61.4",
+         "375": "left 148.1, top 61.4"
+        },
+        "colour": "#ffffff"
+       }
+      ],
       "previous_value": "absent: no header element and no nav (0 of each in the document); .js-shell is a 0x0 wrapper whose children are separate fixed controls, so there is no shell to size, colour or hide"
      },
      "method": "static",
      "evidence": {
-      "script": "resn-capture.mjs rest / openSettled",
-      "selector": ".js-shell",
-      "raw": {
-       "semantics": {
-        "footers": 0,
-        "headers": 0,
-        "navs": 0,
-        "mains": 0,
-        "title": "Resn - Creative Digital Agency | Ideation, Design, and Development",
-        "hash": "",
-        "lang": "",
-        "htmlCls": "js no-flexbox canvas canvastext webgl touch geolocation postmessage no-websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs "
-       },
-       "scrollable": {
-        "docH": 900,
-        "winH": 900,
-        "htmlOv": "auto scroll",
-        "bodyOv": "visible"
-       }
-      }
+      "script": "HEADED-SPOTCHECK.md, \"resn header, measured headed\" (resn-headed.mjs), real headed Chrome",
+      "raw": "getBoundingClientRect of each part in a real headed Chrome; see the report table"
      }
     }
    }
@@ -1942,32 +1970,60 @@
    "cells": {
     "archetype": {
      "value": {
-      "label": "shell-less header (PROVISIONAL)",
-      "detail": "Owner says resn has a header. The capture keyed presence on a <header> element and found none (0 headers, 0 navs), but the page shows fixed controls at the top edge (the menu button top-right, the droplet home button top-left while a route is open, a VIEW ALL PROJECTS link top-centre on the home and work pages). Those controls are the header; they have no containing element. To be re-measured headed, part by part.",
+      "label": "shell-less header",
+      "detail": "No <header> element: div.js-shell is a 0x0 wrapper holding separate fixed controls that a visitor reads as the header.",
+      "parts": [
+       {
+        "part": "menu button",
+        "element": "div.js-shell__button--menu",
+        "size": "18x18 icon, 200x200 hit area (60x60 on an iPhone UA)",
+        "position": {
+         "1440": "left 1393, top 20",
+         "768": "left 721, top 20",
+         "375": "left 328, top 20 (iPhone UA left 332, top 31)"
+        },
+        "colour": "#ffffff"
+       },
+       {
+        "part": "droplet / home button",
+        "element": "div.js-shell__button--drop",
+        "size": "18x24 element, 18x72 sprite canvas, 200x200 hit area",
+        "position": {
+         "1440": "left 23, top 15",
+         "768": "left 23, top 15",
+         "375": "left 23, top 15"
+        },
+        "colour": "#ffffff canvas"
+       },
+       {
+        "part": "sound toggle",
+        "element": "div.js-shell__button--sound",
+        "size": "24x16, 200x200 hit area",
+        "position": {
+         "1440": "left 1387, top 863",
+         "768": "left 715, top 863",
+         "375": "left 322, top 863 (absent on an iPhone UA)"
+        },
+        "colour": "#ffffff"
+       },
+       {
+        "part": "VIEW ALL PROJECTS link",
+        "element": "a.js-work__menu-list-btn",
+        "size": "118.1x19.8 at 1440, 78.8x13.2 at 768 and 375",
+        "position": {
+         "1440": "left 660.9, top 82.1",
+         "768": "left 344.6, top 61.4",
+         "375": "left 148.1, top 61.4"
+        },
+        "colour": "#ffffff"
+       }
+      ],
       "previous_value": "absent: no header element and no nav (0 of each in the document); .js-shell is a 0x0 wrapper whose children are separate fixed controls, so there is no shell to size, colour or hide"
      },
      "method": "static",
      "evidence": {
-      "script": "resn-capture.mjs rest / openSettled",
-      "selector": ".js-shell",
-      "raw": {
-       "semantics": {
-        "footers": 0,
-        "headers": 0,
-        "navs": 0,
-        "mains": 0,
-        "title": "Resn - Creative Digital Agency | Ideation, Design, and Development",
-        "hash": "",
-        "lang": "",
-        "htmlCls": "js no-flexbox canvas canvastext webgl no-touch geolocation postmessage no-websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multipleb"
-       },
-       "scrollable": {
-        "docH": 900,
-        "winH": 900,
-        "htmlOv": "auto scroll",
-        "bodyOv": "visible"
-       }
-      }
+      "script": "HEADED-SPOTCHECK.md, \"resn header, measured headed\" (resn-headed.mjs), real headed Chrome",
+      "raw": "getBoundingClientRect of each part in a real headed Chrome; see the report table"
      }
     }
    }
@@ -4078,32 +4134,60 @@
    "cells": {
     "archetype": {
      "value": {
-      "label": "shell-less header (PROVISIONAL)",
-      "detail": "Owner says resn has a header. The capture keyed presence on a <header> element and found none (0 headers, 0 navs), but the page shows fixed controls at the top edge (the menu button top-right, the droplet home button top-left while a route is open, a VIEW ALL PROJECTS link top-centre on the home and work pages). Those controls are the header; they have no containing element. To be re-measured headed, part by part.",
+      "label": "shell-less header",
+      "detail": "No <header> element: div.js-shell is a 0x0 wrapper holding separate fixed controls that a visitor reads as the header.",
+      "parts": [
+       {
+        "part": "menu button",
+        "element": "div.js-shell__button--menu",
+        "size": "18x18 icon, 200x200 hit area (60x60 on an iPhone UA)",
+        "position": {
+         "1440": "left 1393, top 20",
+         "768": "left 721, top 20",
+         "375": "left 328, top 20 (iPhone UA left 332, top 31)"
+        },
+        "colour": "#ffffff"
+       },
+       {
+        "part": "droplet / home button",
+        "element": "div.js-shell__button--drop",
+        "size": "18x24 element, 18x72 sprite canvas, 200x200 hit area",
+        "position": {
+         "1440": "left 23, top 15",
+         "768": "left 23, top 15",
+         "375": "left 23, top 15"
+        },
+        "colour": "#ffffff canvas"
+       },
+       {
+        "part": "sound toggle",
+        "element": "div.js-shell__button--sound",
+        "size": "24x16, 200x200 hit area",
+        "position": {
+         "1440": "left 1387, top 863",
+         "768": "left 715, top 863",
+         "375": "left 322, top 863 (absent on an iPhone UA)"
+        },
+        "colour": "#ffffff"
+       },
+       {
+        "part": "VIEW ALL PROJECTS link",
+        "element": "a.js-work__menu-list-btn",
+        "size": "118.1x19.8 at 1440, 78.8x13.2 at 768 and 375",
+        "position": {
+         "1440": "left 660.9, top 82.1",
+         "768": "left 344.6, top 61.4",
+         "375": "left 148.1, top 61.4"
+        },
+        "colour": "#ffffff"
+       }
+      ],
       "previous_value": "absent: no header element and no nav (0 of each in the document); .js-shell is a 0x0 wrapper whose children are separate fixed controls, so there is no shell to size, colour or hide"
      },
      "method": "static",
      "evidence": {
-      "script": "resn-capture.mjs rest / openSettled",
-      "selector": ".js-shell",
-      "raw": {
-       "semantics": {
-        "footers": 0,
-        "headers": 0,
-        "navs": 0,
-        "mains": 0,
-        "title": "Resn - Creative Digital Agency | Ideation, Design, and Development",
-        "hash": "",
-        "lang": "",
-        "htmlCls": "js no-flexbox canvas canvastext webgl no-touch geolocation postmessage no-websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multipleb"
-       },
-       "scrollable": {
-        "docH": 900,
-        "winH": 900,
-        "htmlOv": "auto scroll",
-        "bodyOv": "visible"
-       }
-      }
+      "script": "HEADED-SPOTCHECK.md, \"resn header, measured headed\" (resn-headed.mjs), real headed Chrome",
+      "raw": "getBoundingClientRect of each part in a real headed Chrome; see the report table"
      }
     }
    }
@@ -6267,26 +6351,8 @@
   {
    "surface": "drawer",
    "tier": 375,
-   "column": "motion (easing and duration of the menu-in and out)",
-   "reason": "the visible open and close animation happens inside canvases and the page ran at about 12 fps in the headless session, so durations and easings were not captured; only that the menu element mounts within one sampled frame"
-  },
-  {
-   "surface": "drawer",
-   "tier": 375,
    "column": "content",
    "reason": "the item labels are not in the DOM at 375 (canvas only), so their text was not read"
-  },
-  {
-   "surface": "drawer",
-   "tier": 768,
-   "column": "motion (easing and duration of the menu-in and out)",
-   "reason": "the visible open and close animation happens inside canvases and the page ran at about 12 fps in the headless session, so durations and easings were not captured; only that the menu element mounts within one sampled frame"
-  },
-  {
-   "surface": "drawer",
-   "tier": 1440,
-   "column": "motion (easing and duration of the menu-in and out)",
-   "reason": "the visible open and close animation happens inside canvases and the page ran at about 12 fps in the headless session, so durations and easings were not captured; only that the menu element mounts within one sampled frame"
   }
  ],
  "drawer_cross_check": [
@@ -6332,5 +6398,32 @@
    "trusted": "both",
    "why": "this capture waits for the menu button to reach opacity 1 with mouse movement"
   }
- ]
+ ],
+ "headed_recheck": {
+  "source": "HEADED-SPOTCHECK.md",
+  "menu_open_1440": "route mounts +11 ms after the click; item canvases blank until +519 ms (About) and +820 ms (Work, Contact), then build up, about 1.3 s in all",
+  "menu_close_1440": "canvas pixels fall from +43 ms and are at zero by +193 to +299 ms; the menu element is removed +482 to +508 ms after the click",
+  "menu_button_closes_menu_1440": "no (real click); the droplet button, Escape, an empty click and history back close it",
+  "pointer_block_768": "reproduced headed on a desktop pointer: the menu button, droplet and empty-area clicks do nothing at 768 and 375, only Escape and history back close it; iPad and iPhone user agents work by touch",
+  "resolved_not_measured": [
+   {
+    "surface": "drawer",
+    "tier": 375,
+    "column": "motion (easing and duration of the menu-in and out)",
+    "reason": "the visible open and close animation happens inside canvases and the page ran at about 12 fps in the headless session, so durations and easings were not captured; only that the menu element mounts within one sampled frame"
+   },
+   {
+    "surface": "drawer",
+    "tier": 768,
+    "column": "motion (easing and duration of the menu-in and out)",
+    "reason": "the visible open and close animation happens inside canvases and the page ran at about 12 fps in the headless session, so durations and easings were not captured; only that the menu element mounts within one sampled frame"
+   },
+   {
+    "surface": "drawer",
+    "tier": 1440,
+    "column": "motion (easing and duration of the menu-in and out)",
+    "reason": "the visible open and close animation happens inside canvases and the page ran at about 12 fps in the headless session, so durations and easings were not captured; only that the menu element mounts within one sampled frame"
+   }
+  ]
+ }
 }

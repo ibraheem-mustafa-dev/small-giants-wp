@@ -77,3 +77,7 @@ for w in 1440 768 375; do node lama-capture.mjs $w; node lama-capture2.mjs $w; n
 python build_lama.py    # writes lamalama.json and lamalama.md into .claude/reports/reference-requirements/
 ```
 Playwright is loaded from `plugins/sgs-blocks/package.json` by `lib.mjs`.
+
+## Headed re-check
+
+Real headed Chrome (see `HEADED-SPOTCHECK.md`): 4 of 42 static cells differ, all pre-intro timing or user-agent effects. The pill reaches full opacity about 7.7 s after navigation.

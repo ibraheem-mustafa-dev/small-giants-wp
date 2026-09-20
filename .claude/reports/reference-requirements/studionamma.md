@@ -69,3 +69,7 @@ node sn-drawer.mjs 1440 ; node sn-drawer.mjs 375
 node fontscale.mjs studionamma
 node build-studionamma.mjs
 ```
+
+## Headed re-check
+
+Real headed Chrome (see `HEADED-SPOTCHECK.md`): 0 of 36 static cells differ, and the 8 to 9 s header entrance holds.

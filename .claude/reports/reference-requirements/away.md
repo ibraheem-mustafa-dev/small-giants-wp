@@ -64,3 +64,7 @@ Totals: 21 rows (7 surfaces x 3 tiers), 213 measured cells, 5 absent or not-appl
 - footer @ 1440, item_states: footer link hover was not driven (the hover diff returned no rows)
 - footer @ 1440, motion: footer scroll-reveal and the country-selector open animation were not sampled
 - search drawer (`#search-drawer`): open behaviour was not measured; a click on the search button timed out in the follow-up run and the drawer is recorded only as closed (fixed, top -1800).
+
+## Headed re-check
+
+Real headed Chrome (see `HEADED-SPOTCHECK.md`): the committed capture describes the US storefront; a headed browser is served the UK one (GBP, `/en-gb`, first two nav items swapped, no consent banner). 12 of 55 static cells differ: 7 are the 15px scrollbar (identical once labels derive from `clientWidth`) and 5 are the storefront difference.

@@ -207,7 +207,11 @@ lusion, wearecollins, resn; `labels-<site>.json` exists for seven of them, not r
 bar, dropdown, mega panel and footer are unmeasured for every reference, and Away, ButcherBox and
 rabbit.tech are unmeasured entirely. So W3B-2 and W3B-3 are a fresh capture from the live reference
 sites (rendered DOM, computed style, event-driven capture for behaviour), not a re-read of files; the
-existing drawer JSON is a cross-check. Cells that a resting DOM cannot give (hover, close grace, motion,
+existing drawer JSON is a cross-check. Captures are taken in a real headed Chrome (`reports/reference-requirements/CAPTURE-PROTOCOL.md`); the
+first eleven were taken headless, and a headed spot-check (`HEADED-SPOTCHECK.md`) compared 133 static
+cells, of which 117 match; the 16 that differ are explained by the scrollbar, a different storefront
+(Away), page-intro timing and the user agent, and the timing cells headless could not measure were
+re-measured headed. Cells that a resting DOM cannot give (hover, close grace, motion,
 scroll behaviour) are captured by driving the page (hover, wait, diff computed styles; scroll, diff
 transforms) or, where that cannot work, read from the site's code and marked `source-only`.
 

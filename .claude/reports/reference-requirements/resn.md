@@ -70,3 +70,7 @@ On the plan's "confirm its admission (12 vs 13)": no resn effect passes the Tier
 - drawer @ 375, content: the item labels are not in the DOM at 375 (canvas only), so their text was not read
 - drawer @ 768, motion (easing and duration of the menu-in and out): the visible open and close animation happens inside canvases and the page ran at about 12 fps in the headless session, so durations and easings were not captured; only that the menu element mounts within one sampled frame
 - drawer @ 1440, motion (easing and duration of the menu-in and out): the visible open and close animation happens inside canvases and the page ran at about 12 fps in the headless session, so durations and easings were not captured; only that the menu element mounts within one sampled frame
+
+## Headed re-check
+
+Measured in a real headed Chrome (see `HEADED-SPOTCHECK.md`). The header is shell-less: a menu button, a droplet home button, a sound toggle and a VIEW ALL PROJECTS link, each measured at 375, 768 and 1440. The menu opens over about 1.3 s (per-item canvases build in stagger) and closes over about 0.5 s. At 768 and 375 with a desktop pointer a canvas blocks the menu button, droplet and empty-area clicks, so only Escape and history back close the menu; touch user agents are unaffected.

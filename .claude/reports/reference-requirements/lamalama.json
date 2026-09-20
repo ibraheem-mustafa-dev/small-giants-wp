@@ -11711,5 +11711,10 @@
    "trusted": "both, consistent",
    "why": "same width rule w-[calc(100vw-2rem)] max-w-[438px]"
   }
- ]
+ ],
+ "headed_recheck": {
+  "source": "HEADED-SPOTCHECK.md",
+  "finding": "the committed pill opacity of 0, the pending loader and the hidden contact card are pre-intro readings: the intro finishes about 8 s after navigation and the pill reaches full opacity at about 7.7 s; the 375 message box of height 0 was an empty rotating message",
+  "static_cells_compared": "4 of 42 static cells differ, all explained by that timing and by the user agent (native scroll under an iPhone UA, Lenis under a desktop UA)"
+ }
 }

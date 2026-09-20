@@ -10440,5 +10440,9 @@
    "cdn.jsdelivr.net/npm/hls.js@1.6.11",
    "player.vimeo.com/api/player.js"
   ]
+ },
+ "headed_recheck": {
+  "source": "HEADED-SPOTCHECK.md",
+  "finding": "0 of 36 static cells differ. The preloader is a fixed-length timer: the header is off-screen for about 8.0 to 8.5 s, then slides in over about 1 s (identity transform at +9.0 s); the headless figure holds."
  }
 }

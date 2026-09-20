@@ -89,3 +89,7 @@ node lus-scroll.mjs 1440   # the scroll-container probe
 python build_lus.py        # writes lusion.json and lusion.md into .claude/reports/reference-requirements/
 ```
 Source checks: `grep -c -i lenis src/lus-hoisted.js` (0); the ScrollManager and `_enableMenu` quotes are in `src/lus-hoisted.js`, the hover and transition rules in `src/lus.css`.
+
+## Headed re-check
+
+Real headed Chrome (see `HEADED-SPOTCHECK.md`): the header controls arrive about 6.1 s after navigation (the earlier 40 s was software rendering); the menu opens in about 0.5 s and closes in about 0.75 s including the scrim delay.

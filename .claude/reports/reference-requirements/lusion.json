@@ -8037,5 +8037,12 @@
    "trusted": "this capture for the count of dots (2)",
    "why": "the DOM has two .header-right-menu-btn-dot spans"
   }
- ]
+ ],
+ "headed_recheck": {
+  "source": "HEADED-SPOTCHECK.md",
+  "header_controls_arrival": "about 6.1 s after navigation headed (the preloader is gone at +5.19 s, the three controls then slide up 4em); the earlier 40 s was a software-rendering artefact",
+  "menu_open": "class added +33 ms after the click; cards start +87 to +147 ms, settled by +500 ms; scrim +37 to +346 ms",
+  "menu_close": "class removed +8 ms; cards settled by +500 ms; the scrim waits 0.4 s and fades over 0.4 s, everything settled by +748 ms",
+  "scroll_container": "unchanged: the page moves by transform inside #page-container"
+ }
 }
