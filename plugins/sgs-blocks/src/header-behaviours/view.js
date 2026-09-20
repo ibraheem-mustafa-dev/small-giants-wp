@@ -59,12 +59,23 @@
 	'use strict';
 
 	/**
-	 * Locate the header element.
+	 * Locate EVERY header element on the page, in document order.
 	 *
-	 * @return {HTMLElement|null}
+	 * `sgs/site-header` carries no `parent`/`ancestor` restriction and is not
+	 * hidden from the inserter, so a second instance is reachable: an operator
+	 * can place one in page content beside the one the header engine renders,
+	 * and site-header/render.php's own header note records the case of a
+	 * template resolving the header slot twice. Each instance emits its own
+	 * uid-scoped CSS and its own `data-sgs-header-*` attrs, so each needs its
+	 * own state classes — a first-match-only lookup leaves every later header
+	 * with CSS that nothing ever activates.
+	 *
+	 * @return {HTMLElement[]}
 	 */
-	function getHeaderEl() {
-		return document.querySelector( 'header.sgs-site-header' );
+	function getHeaderEls() {
+		return Array.prototype.slice.call(
+			document.querySelectorAll( 'header.sgs-site-header' )
+		);
 	}
 
 	/**
@@ -357,11 +368,13 @@
 			return;
 		}
 
-		const headerEl = getHeaderEl();
-
 		const rowData = Array.prototype.map.call( rows, function ( row ) {
 			return {
 				el: row,
+				// The row's OWN header, not the page's first one — a row
+				// belongs to whichever header contains it, and a footer row
+				// resolves null here (footer rows never collapse, D390).
+				headerEl: row.closest( 'header.sgs-site-header' ),
 				transparentTiers: parseTierList(
 					row.dataset.sgsRowTransparent
 				),
@@ -380,21 +393,17 @@
 		/**
 		 * Is this row eligible to COLLAPSE rather than translate?
 		 *
-		 * True only while the header is MEASURED as pinned AND this row lives
-		 * inside that header. Footer rows are never eligible (footer rows get
-		 * no sticky — D390), and neither is any row on a page whose header is
-		 * not pinned, which is what keeps the shipped translate path
-		 * byte-identical (the FR-37-40 regression test).
+		 * True only while the row's OWN header is MEASURED as pinned. Footer
+		 * rows are never eligible (they resolve no header — footer rows get no
+		 * sticky, D390), and neither is a row whose header is not pinned, which
+		 * is what keeps the shipped translate path byte-identical (the FR-37-40
+		 * regression test).
 		 *
 		 * @param {Object} row
 		 * @return {boolean} True when the collapse path applies.
 		 */
 		function rowCollapsesWhenHidden( row ) {
-			return (
-				!! headerEl &&
-				headerEl.contains( row.el ) &&
-				isHeaderPinned( headerEl )
-			);
+			return !! row.headerEl && isHeaderPinned( row.headerEl );
 		}
 
 		/**
@@ -603,20 +612,31 @@
 	 * Boot F1, F2 (header-level) and per-row behaviours after the DOM is ready.
 	 */
 	function boot() {
-		const header = getHeaderEl();
-		if ( header ) {
+		const headers = getHeaderEls();
+
+		headers.forEach( function ( header, index ) {
 			// F1 — publish header height for scroll-padding-top, GATED on the
 			// header actually being pinned (FR-37-40). Publishes an explicit
 			// `0px` when it is not; see initHeightPublisher().
-			initHeightPublisher( header );
+			//
+			// FIRST header only. `--sgs-header-height` is a SINGLE property on
+			// :root serving scroll-padding-top, so a second publisher would
+			// race the first and the winner would depend on resize order. The
+			// banner landmark is the header at the top of the document, which
+			// is the one an anchor target has to clear.
+			if ( 0 === index ) {
+				initHeightPublisher( header );
+			}
 
-			// F2 — scroll behaviour state; only active when a relevant flag exists.
+			// F2 — scroll behaviour state; only active when a relevant flag
+			// exists. Per instance: each header reads its own data-attr and
+			// keeps its own scroll bookkeeping inside the call.
 			initScrollBehaviours( header );
 
 			// FR-37-40 silent-failure guard — advisory console warning only,
 			// never a gate, and silent unless sticky was actually requested.
 			warnIfStickyIsSilentlyBroken( header );
-		}
+		} );
 
 		// Per-row (Phase 1) — independent of header presence; also serves
 		// footer rows. No-ops when no `.sgs-row-behaviour` row exists.

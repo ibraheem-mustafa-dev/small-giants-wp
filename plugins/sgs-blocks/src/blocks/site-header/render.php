@@ -333,6 +333,13 @@ $sh_shrink_any_tier = ! empty( sgs_resolve_on_tiers( $sh_shrink, 'on', 'off' ) )
 $sh_hide_any_tier   = ! empty( sgs_resolve_on_tiers( $sh_hide, 'on', 'off' ) );
 
 if ( $sh_shrink_any_tier ) {
+	// The two padding ends of the shrink, named once and reused by all three
+	// emitters below (keyframes, legacy resting rule, legacy shrunk rule) so the
+	// resting end a narrower tier restores is by construction the same value the
+	// resting rule sets.
+	$sh_shrink_pad_rest   = 'var(--wp--preset--spacing--30,1.5rem)';
+	$sh_shrink_pad_shrunk = 'var(--wp--preset--spacing--10,0.5rem)';
+
 	$sh_shrink_scroll_css = sgs_emit_tier_rules(
 		$root_sel,
 		$sh_shrink,
@@ -342,7 +349,7 @@ if ( $sh_shrink_any_tier ) {
 	);
 	if ( '' !== $sh_shrink_scroll_css ) {
 		$css .= '@supports (animation-timeline: scroll()) {' . $sh_shrink_scroll_css
-			. '@keyframes sgs-header-shrink-' . $uid . '{from{padding-block:var(--wp--preset--spacing--30,1.5rem);}to{padding-block:var(--wp--preset--spacing--10,0.5rem);}}}';
+			. '@keyframes sgs-header-shrink-' . $uid . '{from{padding-block:' . $sh_shrink_pad_rest . ';}to{padding-block:' . $sh_shrink_pad_shrunk . ';}}}';
 	}
 
 	// Legacy (no `animation-timeline`) fallback: base padding + its own
@@ -352,22 +359,35 @@ if ( $sh_shrink_any_tier ) {
 	$sh_shrink_fallback_css = sgs_emit_tier_rules(
 		$root_sel,
 		$sh_shrink,
-		'padding-block:var(--wp--preset--spacing--30,1.5rem);transition:padding-block 200ms ease' . $sh_shadow_tx_append . ';',
+		'padding-block:' . $sh_shrink_pad_rest . ';transition:padding-block 200ms ease' . $sh_shadow_tx_append . ';',
 		$sh_shadow_tx_off,
 		'off'
 	);
 	if ( '' !== $sh_shrink_fallback_css ) {
-		$css .= '@supports not (animation-timeline: scroll()) {' . $sh_shrink_fallback_css . '}';
-		// The shrunk VALUE, fallback path only (the scroll-timeline path above
-		// animates padding purely from scroll progress — no class needed). Same
-		// per-tier gate, keyed to the state class so an off tier never shrinks.
-		$css .= sgs_emit_tier_rules(
-			$root_sel . '.is-header-shrunk',
-			$sh_shrink,
-			'padding-block:var(--wp--preset--spacing--10,0.5rem);',
-			'',
-			'off'
-		);
+		// The shrunk VALUE belongs to the LEGACY path only — the scroll-timeline
+		// path above animates padding purely from scroll progress, and an
+		// animation beats a normal declaration in the cascade, so a rule emitted
+		// outside this @supports block would be dead weight on a modern browser
+		// at an ON tier and a live leak at an OFF one (where the animation is
+		// switched off but the class is still toggled).
+		//
+		// The OFF declaration restores the resting end rather than being left
+		// empty: view.js toggles `.is-header-shrunk` unconditionally, and the
+		// desktop rule carries no media query, so an empty off value leaves the
+		// wider tier's reduced padding applying at a tier where shrink is off.
+		// It cannot be `padding-block:revert` — revert rolls back past the
+		// author origin to the user-agent default (no padding at all), which is
+		// not this header's resting padding. The resting VALUE is the only
+		// honest cancel, and within this fallback the resting value is the one
+		// the rule above sets.
+		$css .= '@supports not (animation-timeline: scroll()) {' . $sh_shrink_fallback_css
+			. sgs_emit_tier_rules(
+				$root_sel . '.is-header-shrunk',
+				$sh_shrink,
+				'padding-block:' . $sh_shrink_pad_shrunk . ';',
+				'padding-block:' . $sh_shrink_pad_rest . ';',
+				'off'
+			) . '}';
 	}
 }
 

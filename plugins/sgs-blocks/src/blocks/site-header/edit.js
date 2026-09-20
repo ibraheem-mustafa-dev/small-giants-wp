@@ -670,6 +670,14 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					<p className="components-base-control__help">
 						{ __( 'Applied once the visitor has scrolled down the page, and eased in. Leave on None for no change. Most useful with a sticky header.', 'sgs-blocks' ) }
 					</p>
+					{ /* The scrolled rule is a more specific selector than both the
+					     resting rule and its hover, so while the page is scrolled it
+					     is the shadow that paints. Stated here rather than worked
+					     around in CSS — the precedence is the intended behaviour, it
+					     just is not guessable from the control. */ }
+					<p className="components-base-control__help">
+						{ __( 'While the page is scrolled, this shadow replaces the resting shadow and its hover shadow.', 'sgs-blocks' ) }
+					</p>
 				</PanelBody>
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
 					<SgsBorderControl
