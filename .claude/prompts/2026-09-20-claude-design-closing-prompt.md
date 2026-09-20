@@ -39,3 +39,25 @@ Please update this design bundle so that everything a developer needs is in the 
 
 6. Then shorten the README to intent and rules that cannot be read from the files.
 ```
+
+## Round 2: fixes after the first check (use after Step 2, before re-exporting)
+
+Result of my check on `design_handoff_ward_end_eye_care_v2` (details in the plan and D1132): manifest valid, 9 pages match the 9 screens, all visible text identical (373 of 373 lines), all datasets identical, no base64 left, breakpoints correct, all assets present. Three problems: the 40 brand logos were deleted (a visible change), the ticker's fit rule was rewritten, and 38 of the 40 `sgs-` classes are section labels, not SGS block names (fine as labels, but the pipeline needs to know which block each is).
+
+Attach `.claude/prompts/2026-09-20-sgs-block-roster.md` (the list of real SGS blocks) and paste:
+
+```
+Thank you. Four fixes. Do not change any visible design, layout or copy other than restoring what I name.
+
+1. You removed the brand logos (the LOGOS data and its hasLogo / noLogo handling), so the brand marquee and brand menus now show names only. Restore them exactly as in the previous version: a brand with a logo shows the logo, a brand without one shows its name. Store each logo as a file at assets/brands/<brand-slug>.<ext>, keeping its original format, and reference it by src. No base64.
+
+2. You replaced the ticker's fit rule (four claims from 1010px, three from 820px, two below) with an estimated-width rule. Restore the original rule unless the two give identical claim counts at 375, 768, 1024 and 1440 px. If you keep the new one, tell me the counts both ways.
+
+3. Keep every sgs-<name> class as it is. In the manifest, add a field suggestedBlock to every section: the one block from the attached roster (sgs-block-roster.md) that best fits it, written as the roster name (for example brand-strip), or null if none fits. Do not rename any class.
+
+4. In the manifest use only these words, and put any explanation in a separate note field:
+   - page kind: page, wc-archive, single-template, wc-cart, wc-checkout, wc-order-received, choice-flow
+   - repeated group data: fixed-list, product-query, taxonomy-query, managed-cache, session-state, derived
+
+Then export again as a Handoff to Claude Code bundle and list every file with its size.
+```
