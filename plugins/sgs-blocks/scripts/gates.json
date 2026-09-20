@@ -992,5 +992,14 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 106
+  },
+  {
+    "id": "test-panel-bounds",
+    "cmd": "node scripts/tests/test-panel-bounds.mjs",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 107
   }
 ]

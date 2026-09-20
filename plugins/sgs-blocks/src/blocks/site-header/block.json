@@ -45,6 +45,9 @@
 				"padding": [
 					"padding"
 				],
+				"headerFloatInset": [
+					"headerFloatInset"
+				],
 				"margin": [
 					"margin"
 				],
@@ -192,6 +195,35 @@
 		"contrastSafe": {
 			"type": "object",
 			"default": {}
+		},
+		"headerFloat": {
+			"type": "object",
+			"default": {},
+			"description": "Floating \"pill\" mode per device tier — the same tri-state {desktop,tablet,mobile} of on/off/inherit as headerSticky. Float ON for a tier implies the sticky declaration for that tier (precedence Float > Sticky > Transparent for position/top/z-index). Empty = off everywhere, and nothing is emitted."
+		},
+		"headerFloatInset": {
+			"type": "object",
+			"default": {
+				"desktop": {
+					"top": "1rem",
+					"right": "1rem",
+					"left": "1rem"
+				}
+			},
+			"description": "TIER-of-BOX gap between the pill and the viewport edges: {desktop:{top,right,left}, tablet:{…}, mobile:{…}}. Relative units, not px — a bare px inset fails WCAG 1.4.4 at 200% zoom. `bottom` is unused and is not offered in the UI. Each side is resolved as max(authored, env(safe-area-inset-*))."
+		},
+		"headerFloatCollapse": {
+			"type": "object",
+			"default": {
+				"enabled": false,
+				"breakpoint": 768
+			},
+			"description": "The single opt-out from the pill: below `breakpoint` the header goes full width, radius 0, inset 0. OFF by default — the pill persists at mobile. Deliberately one toggle plus one number, never three per-tier switches."
+		},
+		"backdropBlur": {
+			"type": "string",
+			"default": "",
+			"description": "Blurs whatever sits behind the header (backdrop-filter). Same value vocabulary as sgs/nav-drawer's surfaceBlur — a CSS length, empty for none. Applied at rest and kept once scrolled: it is what makes a see-through floating header legible."
 		},
 		"backgroundColour": {
 			"type": "string",

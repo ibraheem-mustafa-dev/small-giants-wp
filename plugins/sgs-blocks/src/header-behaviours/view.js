@@ -5,9 +5,20 @@
  *   1. Publishes `--sgs-header-height` CSS custom property on :root and body
  *      via ResizeObserver so sticky headers don't obscure anchor targets
  *      (WCAG 2.4.11 — scroll-padding-top picks this up via CSS).
- *      GATED (FR-37-40, 2026-07-26): the published value is the header's
- *      height ONLY while the header is actually PINNED; otherwise an explicit
- *      `0px`. See isHeaderPinned() for why this is measured, not inferred.
+ *      The published number is the header's pinned BOTTOM EDGE: its `top`
+ *      offset plus its height, the distance from the top of the viewport to the
+ *      lowest point it occupies while pinned. Every consumer wants that
+ *      distance, not the height; the two are the same number only while the
+ *      header sits at `top: 0`, which a floating ("pill") header deliberately
+ *      does not. Computed from the declared offset, not from where the header
+ *      is on screen at the moment of measuring, so the value does not change
+ *      with scroll position, a hide-on-scroll translation or an element above
+ *      the header. The NAME is kept because the property is a published
+ *      contract read by the theme, the plugin stylesheets and two block render
+ *      paths.
+ *      GATED (FR-37-40, 2026-07-26): the value is published ONLY while the
+ *      header is actually PINNED; otherwise an explicit `0px`. See
+ *      isHeaderPinned() for why this is measured, not inferred.
  *   2. Toggles scroll-STATE classes on the HEADER ELEMENT itself (NOT body —
  *      changed at Spec 35 T1.4 / FR-37-14, 2026-07-28, when the four header
  *      behaviours reshaped to tri-state {desktop,tablet,mobile} objects):
@@ -81,10 +92,11 @@
 	/**
 	 * Publish `--sgs-header-height` (integer px) to :root and body.
 	 *
-	 * @param {number} height
+	 * @param {number} bottomEdge Px from the viewport top to the pinned header's
+	 *                            lowest point, or 0 when it is not pinned.
 	 */
-	function publishHeight( height ) {
-		const value = Math.round( height ) + 'px';
+	function publishHeight( bottomEdge ) {
+		const value = Math.round( bottomEdge ) + 'px';
 		document.documentElement.style.setProperty( '--sgs-header-height', value );
 		document.body.style.setProperty( '--sgs-header-height', value );
 	}
@@ -210,6 +222,10 @@
 	 * UNDEFINED — it does nothing once the property is defined, so simply
 	 * skipping the write would leave a stale non-zero value in place.
 	 *
+	 * The pinned `top` offset is read from the computed style (`top` resolves to
+	 * px; `auto` is not a number and counts as 0), so a floating header pinned
+	 * `top: 1rem` below the viewport edge publishes 16 + its height.
+	 *
 	 * @param {HTMLElement} header
 	 */
 	function initHeightPublisher( header ) {
@@ -217,8 +233,15 @@
 		// a pinned/unpinned flip can republish without waiting for a resize.
 		let measuredHeight = header.getBoundingClientRect().height;
 
+		function pinnedTopOffset() {
+			const top = parseFloat( window.getComputedStyle( header ).top );
+			return Number.isFinite( top ) ? Math.max( 0, top ) : 0;
+		}
+
 		function publishGated() {
-			publishHeight( isHeaderPinned( header ) ? measuredHeight : 0 );
+			publishHeight(
+				isHeaderPinned( header ) ? pinnedTopOffset() + measuredHeight : 0
+			);
 		}
 
 		if ( typeof ResizeObserver === 'undefined' ) {

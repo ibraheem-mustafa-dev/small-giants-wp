@@ -5,6 +5,22 @@
  * header. The JS ResizeObserver publishes --sgs-header-height; this rule
  * consumes it. Defaults to 0px when the property is not yet set (no jump).
  *
+ * --sgs-header-height IS A BOTTOM EDGE, not a height. The two are the same
+ * number only while the header sits at top:0; a floating ("pill") header is
+ * offset from the top on purpose, and every consumer of this property wants the
+ * distance to the header's LOWEST point. header-behaviours/view.js publishes
+ * `Math.max( 0, rect.bottom )` accordingly. The name is kept because it is a
+ * published contract read by the theme, two plugin stylesheets and two block
+ * render paths.
+ *
+ * FALLBACK VALUES DIFFER ACROSS CONSUMERS AND THAT IS NOT INERT. This file and
+ * theme/.../woocommerce.css fall back to 0px; assets/css/fx-motion-path.css
+ * falls back to 80px. On sgs-theme no fallback ever fires, because
+ * theme/.../utilities.css defines the property at :root. On a NON-SGS theme
+ * utilities.css is absent and each fallback genuinely fires, so harmonising the
+ * two numbers would move real rendering in one direction or the other. Left as
+ * measured, deliberately, rather than "tidied" into a regression.
+ *
  * Header-level sticky / transparent / shrink / hide-on-scroll and `contrastSafe`
  * are per-device {desktop,tablet,mobile} values, which a site-wide body class
  * cannot express ("scrim over the desktop hero, nothing on a phone"). Their CSS
@@ -38,6 +54,27 @@
  * the shrink @supports scroll-timeline pair and the hide-on-scroll transform)
  * are emitted per-instance in sgs/site-header/render.php — see the file
  * docblock above.
+ *
+ * HIDE-ON-SCROLL TRAVEL UNDER A FLOATING HEADER lives there too, and must stay
+ * there. `translateY( -100% )` moves the header by its own height, which clears
+ * the screen only while its top edge is at 0; a pill slid by its own height
+ * leaves its top inset behind as a visible sliver of bar. The travel therefore
+ * becomes
+ *     translateY( calc( -100% - var( --sgs-header-float-inset-top, 0px ) ) )
+ * with the inset published per device tier as a custom-property VALUE by
+ * includes/sgs-header-float-css.php.
+ *
+ * ⛔ Do NOT move that rule into this shared stylesheet keyed on a float class.
+ * render.php's per-tier rule is `.{uid}.sgs-site-header.is-header-scrolling-down`
+ * at (0,3,0) and is emitted in an inline <style> AFTER this file loads, so a
+ * same-specificity rule here would lose on source order and silently do
+ * nothing — the "a rule that loses is indistinguishable from one that is
+ * absent" failure. The travel is also per-tier, which a shared static rule
+ * cannot express. Only the DOCUMENTATION belongs here.
+ *
+ * The per-row translate further down needs no equivalent: a row translating
+ * -100% moves by its OWN height inside the header, which is correct whatever
+ * the header's inset is.
  *
  * Top-layer note: a native `<dialog>` (sgs/nav-drawer) is NOT a descendant of
  * `header.sgs-site-header` — its parent chain is `BODY → HTML` — so a header

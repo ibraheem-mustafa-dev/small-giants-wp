@@ -42,6 +42,13 @@
  */
 
 import { store, getContext, getElement } from '@wordpress/interactivity';
+import {
+	boundsFromHeaderRect,
+	viewportBounds,
+	clampDropdownLeft,
+	centreMegaLeft,
+	megaPanelWidth,
+} from './panel-bounds';
 
 /** Focusable-elements selector — inlined (see file header). */
 const FOCUSABLE_SELECTOR =
@@ -263,6 +270,32 @@ function scheduleIntentOpen( ctx, root, delay ) {
 }
 
 /**
+ * The box a panel is positioned against, measured.
+ *
+ * Returns the viewport for every header shipping today, so the arithmetic in
+ * `repositionPanel` below is unchanged for them. A header that renders as a
+ * floating pill — `data-sgs-header-float` present AND genuinely inset at the
+ * visitor's current width — returns the pill's own box instead.
+ *
+ * The attribute is only a hint that measuring is worthwhile: float can be on
+ * for one device tier and off for another, and the collapse breakpoint turns
+ * the pill back into a full-width bar, so the rect decides.
+ *
+ * @param {HTMLElement} root The disclosure root.
+ * @return {{left: number, right: number, floating: boolean}} Bounding box.
+ */
+function panelBounds( root ) {
+	const header = root.closest( 'header.sgs-site-header[data-sgs-header-float]' );
+	if ( ! header ) {
+		return viewportBounds( window.innerWidth );
+	}
+	return boundsFromHeaderRect(
+		header.getBoundingClientRect(),
+		window.innerWidth
+	);
+}
+
+/**
  * Reposition a panel that overflows the right viewport edge — expressed purely
  * as CSS custom-property VALUES (`--sgs-mm-overflow-left/-right`), never a
  * direct `.style.left/.style.right` assignment (Spec 32 no-inline). style.css
@@ -360,6 +393,14 @@ function repositionPanel( root ) {
 		const parentRect = parent.getBoundingClientRect();
 		const gutter = 28;
 		const width = rect.width;
+		/*
+		 * The box everything below is positioned against — the viewport for a
+		 * full-width header, the pill's own box for a floating one. Every
+		 * expression that follows reduces to the shipped arithmetic when this is
+		 * the viewport; `scripts/tests/panel-bounds.test.mjs` proves that on a
+		 * grid of inputs rather than leaving it to a reading.
+		 */
+		const bounds = panelBounds( root );
 
 		if ( root.dataset.sgsNavDisclosure === 'dropdown' ) {
 			/*
@@ -400,9 +441,18 @@ function repositionPanel( root ) {
 			 * Popper INSIDE navbars — we deliberately do not; WordPress core's
 			 * Navigation block has no auto-flip either, which is a real gap.
 			 */
-			const maxLeft = window.innerWidth - gutter - width;
-			desired = Math.min( desired, maxLeft );
-			desired = Math.max( desired, gutter );
+			/*
+			 * A dropdown CLAMPS inside the box and keeps its own width; it does
+			 * not take the box's. ButcherBox measures the distinction on one
+			 * site — mega panel at the bar's full width, plain `<ul>` dropdown
+			 * at 300px, sized to its own menu item.
+			 */
+			desired = clampDropdownLeft( {
+				desiredLeft: desired,
+				width,
+				bounds,
+				gutter,
+			} );
 			panel.style.setProperty( '--sgs-mm-tx', '0px' );
 			panel.style.setProperty(
 				'--sgs-mm-overflow-left',
@@ -421,7 +471,34 @@ function repositionPanel( root ) {
 		 * (min(1120px, 100vw − 2×28px)) guarantees the panel still spans
 		 * beneath every trigger on the bar.
 		 */
-		const desired = Math.max( ( window.innerWidth - width ) / 2, gutter );
+		/*
+		 * Under a FLOATING header the band is not the viewport's — it is the
+		 * pill's. The only reference with a real pill opens its panel at exactly
+		 * the pill's left and width (ratio 1.000 at 1440 and at 390) with no gap
+		 * between the two: the pill and the panel read as one card. So the width
+		 * and the top edge are published as custom-property VALUES here, each
+		 * with the stylesheet's own expression as the var() fallback, which is
+		 * what keeps a full-width header byte-identical: no float, no write, the
+		 * fallback still governs.
+		 */
+		const boundWidth = megaPanelWidth( bounds );
+		if ( null !== boundWidth ) {
+			panel.style.setProperty( '--sgs-mm-panel-width', `${ boundWidth.toFixed( 2 ) }px` );
+			if ( null !== bounds.bottom ) {
+				panel.style.setProperty(
+					'--sgs-mm-panel-top',
+					`${ ( bounds.bottom - parentRect.top ).toFixed( 2 ) }px`
+				);
+			}
+		} else {
+			panel.style.removeProperty( '--sgs-mm-panel-width' );
+			panel.style.removeProperty( '--sgs-mm-panel-top' );
+		}
+		const desired = centreMegaLeft( {
+			width: null !== boundWidth ? boundWidth : width,
+			bounds,
+			gutter,
+		} );
 		panel.style.setProperty( '--sgs-mm-tx', '0px' );
 		panel.style.setProperty(
 			'--sgs-mm-overflow-left',

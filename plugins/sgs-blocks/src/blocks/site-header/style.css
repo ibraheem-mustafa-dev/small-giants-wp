@@ -32,9 +32,8 @@
 
 /*
  * Collapse-to-drawer behaviour (nav bar hidden below the tier, burger shown) is
- * owned entirely by sgs/nav-bar-menu (Spec 36 FR-36-8, one of its three
- * operator-chosen collapse modes — burger→drawer / "More" overflow /
- * bottom-tab-bar), which emits the scoped breakpoint rules for BOTH its own
+ * owned entirely by sgs/nav-bar-menu (Spec 36 FR-36-8, the burger→drawer
+ * collapse), which emits the scoped breakpoint rules for BOTH its own
  * bar and its own burger toggle at the operator-configured tier. The header
  * has no separate toggle to style.
  */

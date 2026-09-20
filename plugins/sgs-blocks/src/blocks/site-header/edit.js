@@ -30,6 +30,10 @@ import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelIte
 import { resolveTier } from '../../utils/responsive';
 import { backgroundPaintPreview, backgroundPreview, spacingPreview, isTierBoxEmpty, svgBackgroundPreview, textPaintPreview } from '../../utils';
 import { calculateRelativeLuminance, calculateContrastRatio, meetsWCAG_AA } from '../../utils/wcag-contrast';
+// Floating ("pill") mode — controls, canvas preview and reset live in their own
+// file; this module only mounts them. See FloatControls.js.
+import FloatControls from './components/FloatControls';
+import { floatPreview, floatResetAttributes } from './float-preview';
 
 /**
  * Does a tri-state {desktop,tablet,mobile} behaviour object resolve 'on' at
@@ -359,7 +363,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		className: [ 'sgs-site-header', bgPreview.className, ...svgPreview.className ]
 			.filter( Boolean )
 			.join( ' ' ),
-		style: { ...backgroundPaint, ...bgPreview.style, ...svgPreview.style, ...spacePreview, ...textPreview },
+		// The pill preview is spread LAST so its width/margin-inline win over the
+		// spacing preview's margin for a floating header — which is what the
+		// frontend does too (the float rules are emitted after the wrapper's).
+		style: { ...backgroundPaint, ...bgPreview.style, ...svgPreview.style, ...spacePreview, ...textPreview, ...floatPreview( attributes, previewTier ) },
 	} );
 	const refEl = useRef( null );
 
@@ -879,6 +886,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							headerShrink: {},
 							headerHideOnScroll: {},
 							contrastSafe: {},
+							...floatResetAttributes(),
 						} )
 					}
 				>
@@ -905,6 +913,16 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							defaultValue="off"
 						/>
 					</ToolsPanelItem>
+
+					{ /* Floating ("pill") mode sits immediately after Sticky
+					     because turning it on IMPLIES sticky for that device —
+					     a pill that is not pinned is just an inset bar that
+					     scrolls away. Its controls, canvas preview and reset all
+					     live in FloatControls.js; edit.js only mounts them. */ }
+					<FloatControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
 
 					<ToolsPanelItem
 						label={ __(

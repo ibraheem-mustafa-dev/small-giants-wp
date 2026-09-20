@@ -37,6 +37,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-breakpoints.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
+require_once dirname( __DIR__, 3 ) . '/includes/sgs-header-float-css.php';
 
 // Deterministic, content-addressed uid — mirrors SGS_Container_Wrapper's own
 // md5( wp_json_encode( $attributes ) ) derivation (class-sgs-container-wrapper.php)
@@ -175,9 +176,27 @@ foreach ( array( 'desktop', 'tablet', 'mobile' ) as $sh_tier ) {
 // wins position/top/z-index while Transparent still contributes its own
 // non-colliding `background`/`left`/`right` (documented precedence, not an
 // accident of source order).
+// FLOAT ("pill") is a THIRD entry in the same merge, listed FIRST, so the
+// documented precedence is Float > Sticky > Transparent for position/top/z-index
+// and the single-writer-per-property guarantee is untouched. Float ON for a tier
+// IMPLIES the sticky declaration for that tier: a pill that is not pinned is
+// just an inset bar that scrolls away. Its `top` is the inset rather than 0 —
+// emitted as a custom-property VALUE (Spec 32), published per tier by
+// sgs_header_float_css() on this same selector, with a 0px fallback so the
+// declaration is still valid on a tier where no inset resolved.
+$sh_float = isset( $attributes['headerFloat'] ) ? $attributes['headerFloat'] : array();
+
 $css .= sgs_merge_tri_state_declarations(
 	$root_sel,
 	array(
+		array(
+			'raw'   => $sh_float,
+			'props' => array(
+				'position' => 'sticky',
+				'top'      => 'var(--sgs-header-float-inset-top, 0px)',
+				'z-index'  => '100',
+			),
+		),
 		array(
 			'raw'   => $sh_sticky,
 			'props' => array(
@@ -392,6 +411,18 @@ if ( $sh_shrink_any_tier ) {
 }
 
 // Hide on scroll — transition setup + the translate value, both per tier.
+//
+// TRAVEL UNDER FLOAT. `translateY(-100%)` moves the header by exactly its OWN
+// height, which is correct only while its top edge is at 0. A floating pill slid
+// by its own height leaves its top inset behind as a visible sliver of bar. The
+// travel therefore adds the inset back — as a custom-property VALUE, resolved per
+// tier by sgs_header_float_css() (0px on a tier where the pill is not floating).
+// The plain `-100%` is kept verbatim when float is off at every tier, so a header
+// that does not float emits byte-identical CSS.
+$sh_float_any_tier = ! empty( sgs_header_float_tiers( $attributes ) );
+$sh_hide_travel    = $sh_float_any_tier
+	? 'transform:translateY(calc(-100% - var(--sgs-header-float-inset-top, 0px)));'
+	: 'transform:translateY(-100%);';
 if ( $sh_hide_any_tier ) {
 	$css .= sgs_emit_tier_rules(
 		$root_sel,
@@ -403,7 +434,7 @@ if ( $sh_hide_any_tier ) {
 	$css .= sgs_emit_tier_rules(
 		$root_sel . '.is-header-scrolling-down',
 		$sh_hide,
-		'transform:translateY(-100%);',
+		$sh_hide_travel,
 		'transform:revert;',
 		'off'
 	);
@@ -482,8 +513,14 @@ $css .= '@media (prefers-reduced-motion: reduce) {' . $root_sel . '{transition:n
 // "sticky silently broken by an ancestor" warning only fires when relevant;
 // (b) whether ANY tier requests a scroll-driven behaviour, so the scroll
 // listener is skipped entirely on headers with none active.
-$sh_extra_attrs         = array( 'id' => $uid );
-$sh_sticky_any_tier     = ! empty( sgs_resolve_on_tiers( $sh_sticky, 'on', 'off' ) );
+// (c) whether the header floats at ANY tier, read by the nav panel-bounds path
+// so a dropdown opened from a pill clamps inside the pill instead of the
+// viewport. Measured geometry still decides what actually happens at the
+// visitor's width — this attribute only says "it is worth measuring".
+$sh_extra_attrs = array( 'id' => $uid );
+// Float implies sticky, so a float-only header must still get the
+// "an ancestor is silently breaking sticky" advisory.
+$sh_sticky_any_tier     = ! empty( sgs_resolve_on_tiers( $sh_sticky, 'on', 'off' ) ) || $sh_float_any_tier;
 $sh_scroll_behaviour_on = ! empty( sgs_resolve_on_tiers( $sh_transparent, 'on', 'off' ) )
 	|| ! empty( sgs_resolve_on_tiers( $sh_shrink, 'on', 'off' ) )
 	|| ! empty( sgs_resolve_on_tiers( $sh_hide, 'on', 'off' ) )
@@ -496,6 +533,9 @@ if ( $sh_sticky_any_tier ) {
 }
 if ( $sh_scroll_behaviour_on ) {
 	$sh_extra_attrs['data-sgs-header-scroll-behaviours'] = '1';
+}
+if ( $sh_float_any_tier ) {
+	$sh_extra_attrs['data-sgs-header-float'] = '1';
 }
 
 
@@ -580,6 +620,13 @@ if ( ! empty( $border_radius_mobile_obj ) ) {
 		$css .= '@media(max-width:767px){' . $border_radius_mob_out['css'] . '}';
 	}
 }
+
+// ── Floating ("pill") geometry — LAST, deliberately. ──
+// Its collapse-to-full-width block must out-rank both the pill geometry above it
+// and the per-tier border-radius rules emitted just now, and at equal specificity
+// that is decided by source order. Emits absolutely nothing unless `headerFloat`
+// resolves 'on' at some tier. See includes/sgs-header-float-css.php.
+$css .= sgs_header_float_css( $root_sel, $attributes );
 
 if ( '' !== $css ) {
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_strip_all_tags() applied; $css from pre-sanitised values only (wp_style_engine_get_styles()).

@@ -189,7 +189,23 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		 * is NOT what makes the panel wheel-scrollable at all; that is the
 		 * `data-lenis-prevent` on the emitted wrap (see the markup note above).
 		 */
-		$css .= $uid_sel . ' .' . $bem_root . '__mega-panel-wrap{position:absolute;top:100%;left:var(--sgs-mm-overflow-left, 50%);right:var(--sgs-mm-overflow-right, auto);transform:translateX(var(--sgs-mm-tx, -50%));width:min(1120px, calc(100vw - 56px));max-height:var(--sgs-mm-panel-max-h, calc(100dvh - var(--sgs-header-height, 80px) - 16px));overflow-y:auto;overscroll-behavior:contain;z-index:100;display:none;}';
+
+		/*
+		 * FLOATING ("pill") HEADER — the width and the top edge each gain a
+		 * custom-property VALUE in front of the shipped expression, published by
+		 * mega-disclosure.js::repositionPanel ONLY when the header is measured as
+		 * genuinely inset from both viewport edges. A full-width header writes
+		 * neither, so the var() fallback governs and the rule is byte-identical
+		 * to what it has always been.
+		 *
+		 * Why the panel takes the PILL's box rather than the page's: every
+		 * measured reference whose panel is page-width also has a page-width
+		 * header — their panels are header-width, and the header happens to be
+		 * the page. The one reference where the two differ opens its panel at the
+		 * pill's own left and width, flush to its bottom edge with no gap. So
+		 * "follow the header" is the single rule that reproduces all of them.
+		 */
+		$css .= $uid_sel . ' .' . $bem_root . '__mega-panel-wrap{position:absolute;top:var(--sgs-mm-panel-top, 100%);left:var(--sgs-mm-overflow-left, 50%);right:var(--sgs-mm-overflow-right, auto);transform:translateX(var(--sgs-mm-tx, -50%));width:var(--sgs-mm-panel-width, min(1120px, calc(100vw - 56px)));max-height:var(--sgs-mm-panel-max-h, calc(100dvh - var(--sgs-header-height, 80px) - 16px));overflow-y:auto;overscroll-behavior:contain;z-index:100;display:none;}';
 		$css .= $uid_sel . ' .' . $bem_root . '__mega-trigger[aria-expanded="true"] ~ .' . $bem_root . '__mega-panel-wrap{display:block;}';
 		
 		/*
