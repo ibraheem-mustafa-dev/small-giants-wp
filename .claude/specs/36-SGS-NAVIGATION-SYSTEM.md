@@ -54,7 +54,7 @@ footer — it is delivered as a block, and all five blocks that consume it (FR-3
 a store from its only consumers serves nobody.
 
 **Site Info feeds `sgs/responsive-logo` as the middle tier of the logo resolution chain** (FR-36-22's first
-MUST): the `logo` key is resolved by `plugins/sgs-blocks/includes/class-sgs-site-info.php::resolve_logo_id`,
+MUST): the `logo` key is resolved by `plugins/sgs-blocks/includes/class-sgs-site-info-logo.php::resolve_id`,
 so the logo resolves from the same store as contact and social.
 
 **Does NOT own (→ Spec 37, header/footer builder):** the header/footer container blocks + row model, header
@@ -828,11 +828,11 @@ lockup / favicon / variant half needs a frozen attribute table first (§4 index)
   | Order | Source | Where it lives |
   |---|---|---|
   | 1 | The block's own per-device art-direction attrs | `plugins/sgs-blocks/src/blocks/responsive-logo/block.json::attributes.logoId` / `.logoUrl` (+ `…Tablet` / `…Mobile`) |
-  | 2 | **Site Info** — the `logo` key in the `sgs_site_info` option store (a media-library attachment ID) | `plugins/sgs-blocks/includes/class-sgs-site-info.php::get_logo_id` |
-  | 3 | WP's Customiser site logo (`get_theme_mod( 'custom_logo', 0 )`) | `plugins/sgs-blocks/includes/class-sgs-site-info.php::resolve_logo_id` |
+  | 2 | **Site Info** — the `logo` key in the `sgs_site_info` option store (a media-library attachment ID) | `plugins/sgs-blocks/includes/class-sgs-site-info-logo.php::get_id` |
+  | 3 | WP's Customiser site logo (`get_theme_mod( 'custom_logo', 0 )`) | `plugins/sgs-blocks/includes/class-sgs-site-info-logo.php::resolve_id` |
   | 4 | Nothing — render no logo element at all | — |
 
-  Tiers 2 and 3 are resolved together by `resolve_logo_id`; the block's own images (tier 1) are decided in
+  Tiers 2 and 3 are resolved together by `resolve_id`; the block's own images (tier 1) are decided in
   `plugins/sgs-blocks/src/blocks/responsive-logo/render.php`. A site that has never set a Site Info logo
   resolves from the Customiser as before. The `logo` key is validated on every read: an attachment that was
   deleted or is not an image yields no logo and the chain falls through. The Site Info admin's Identity
@@ -840,7 +840,11 @@ lockup / favicon / variant half needs a frozen attribute table first (§4 index)
   (Choose / Replace / Remove); the editor canvas renders the resolved logo through the server and the
   inspector says which tier is showing. Alt text: the block's alt, then the attachment's alt (site-level
   tiers only), then "[Business] home". **Done when:** setting a Site Info logo with no block-level `logoId`
-  renders that logo, and clearing it falls through to the Customiser logo, both checked on a live page.
+  renders that logo, and clearing it falls through to the Customiser logo, both live-verified, not asserted.
+  The Organization JSON-LD logo (`plugins/sgs-blocks/includes/class-org-website-schema.php::resolve_logo_url`)
+  follows the same chain, and saving Site Info purges the page cache
+  (`plugins/sgs-blocks/includes/class-sgs-site-info-cache-purge.php::purge`), so a new logo reaches every
+  placement at once.
 - **MUST (basics, Phase 1):** left-aligned default (NN/g: 6× better home-return); link-to-home on by default;
   **separate desktop/tablet/mobile IMAGE upload** (swap the file, not resize-only); SVG upload; **functional
   alt** ("[Business] home", inline authoring hint, never "logo"); max-width/height per breakpoint;

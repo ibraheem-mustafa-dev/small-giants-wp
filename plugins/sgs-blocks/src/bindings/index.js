@@ -84,6 +84,9 @@ const SITE_INFO_FIELDS = {
 	vat_number: { label: __( 'VAT number', 'sgs-blocks' ), type: 'string' },
 	copyright: { label: __( 'Copyright', 'sgs-blocks' ), type: 'string' },
 	tagline: { label: __( 'Tagline', 'sgs-blocks' ), type: 'string' },
+	// The PHP source resolves `logo` to the attachment's URL (a string), not to
+	// the stored attachment ID — see Sgs_Site_Info_Binding::get_value().
+	logo: { label: __( 'Logo URL', 'sgs-blocks' ), type: 'string' },
 	'opening_hours.mon': {
 		label: __( 'Opening hours — Monday', 'sgs-blocks' ),
 		type: 'string',

@@ -30,8 +30,14 @@ final class Sgs_Site_Info_Admin_Logo {
 	 * @param array $args Field args from add_settings_field() (unused; the key is fixed).
 	 */
 	public static function render_field( array $args = array() ): void { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- signature required by add_settings_field().
-		$logo_id  = Sgs_Site_Info::get_logo_id();
+		$logo_id  = Sgs_Site_Info_Logo::get_id();
 		$logo_url = $logo_id > 0 ? (string) \wp_get_attachment_image_url( $logo_id, 'medium' ) : '';
+
+		// The page is gated on `edit_theme_options`, which does not imply
+		// `upload_files`. Without the media capability the modal cannot open, so
+		// such an operator is shown the current logo and told who can change it
+		// rather than a button that silently does nothing.
+		$can_upload = \current_user_can( 'upload_files' );
 
 		printf(
 			'<div class="sgs-site-info-logo" data-title="%1$s" data-button="%2$s" data-choose-label="%3$s" data-replace-label="%4$s">',
@@ -56,15 +62,19 @@ final class Sgs_Site_Info_Admin_Logo {
 		);
 
 		echo '<p>';
-		printf(
-			'<button type="button" class="button button-secondary sgs-site-info-logo__choose">%s</button> ',
-			\esc_html( '' === $logo_url ? \__( 'Choose logo', 'sgs-blocks' ) : \__( 'Replace logo', 'sgs-blocks' ) )
-		);
-		printf(
-			'<button type="button" class="button button-link-delete sgs-site-info-logo__remove"%1$s>%2$s</button>',
-			'' === $logo_url ? ' hidden' : '', // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute string, no user input.
-			\esc_html__( 'Remove logo', 'sgs-blocks' )
-		);
+		if ( $can_upload ) {
+			printf(
+				'<button type="button" class="button button-secondary sgs-site-info-logo__choose">%s</button> ',
+				\esc_html( '' === $logo_url ? \__( 'Choose logo', 'sgs-blocks' ) : \__( 'Replace logo', 'sgs-blocks' ) )
+			);
+			printf(
+				'<button type="button" class="button button-link-delete sgs-site-info-logo__remove"%1$s>%2$s</button>',
+				'' === $logo_url ? ' hidden' : '', // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute string, no user input.
+				\esc_html__( 'Remove logo', 'sgs-blocks' )
+			);
+		} else {
+			echo '<em>' . \esc_html__( 'You do not have permission to upload or choose media, so the logo cannot be changed here. Ask a site administrator.', 'sgs-blocks' ) . '</em>';
+		}
 		echo '</p></div>';
 
 		echo '<p class="description">' . \esc_html__( 'Used by every Logo block that has no image of its own. Leave empty to use the WordPress site logo instead.', 'sgs-blocks' ) . '</p>';
@@ -103,6 +113,11 @@ final class Sgs_Site_Info_Admin_Logo {
 	var choose = root.querySelector( '.sgs-site-info-logo__choose' );
 	var remove = root.querySelector( '.sgs-site-info-logo__remove' );
 	var frame = null;
+
+	// The buttons are absent for an operator without the upload_files capability.
+	if ( ! input || ! preview || ! choose || ! remove ) {
+		return;
+	}
 
 	function show( id, url ) {
 		input.value = id ? String( id ) : '';

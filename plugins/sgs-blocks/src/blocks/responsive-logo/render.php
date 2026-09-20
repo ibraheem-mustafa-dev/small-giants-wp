@@ -133,11 +133,11 @@ $mobile_logo_url_attr  = $sgs_logo_url_attr( 'logoUrlMobile' );
 // logoId / logoUrl, tested by the condition below; (2) Site Info `logo`;
 // (3) WordPress core `custom_logo` theme mod; (4) nothing, so no logo element
 // is rendered at all. Tiers 2 and 3 are resolved together by
-// Sgs_Site_Info::resolve_logo_id().
+// Sgs_Site_Info_Logo::resolve_id().
 $sgs_logo_from_site = false;
 if ( 0 === $desktop_logo_id && '' === $desktop_logo_url_attr ) {
-	require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-site-info.php';
-	$sgs_site_logo_id = \SGS\Blocks\Sgs_Site_Info::resolve_logo_id();
+	require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-site-info-logo.php';
+	$sgs_site_logo_id = \SGS\Blocks\Sgs_Site_Info_Logo::resolve_id();
 	if ( $sgs_site_logo_id > 0 ) {
 		$desktop_logo_id    = $sgs_site_logo_id;
 		$sgs_logo_from_site = true;

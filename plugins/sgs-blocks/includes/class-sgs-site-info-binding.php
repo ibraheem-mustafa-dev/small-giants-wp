@@ -52,8 +52,8 @@ final class Sgs_Site_Info_Binding {
 	 * `source` is '' (and `url` empty) when neither tier resolves to an image.
 	 */
 	public static function publish_editor_data(): void {
-		$site_info_id = Sgs_Site_Info::get_logo_id();
-		$id           = $site_info_id > 0 ? $site_info_id : Sgs_Site_Info::resolve_logo_id();
+		$site_info_id = Sgs_Site_Info_Logo::get_id();
+		$id           = $site_info_id > 0 ? $site_info_id : Sgs_Site_Info_Logo::resolve_id();
 		$url          = $id > 0 ? (string) \wp_get_attachment_url( $id ) : '';
 		$source       = '';
 		if ( '' !== $url ) {
@@ -156,10 +156,10 @@ final class Sgs_Site_Info_Binding {
 		}
 
 		// The logo is stored as an attachment ID; a bound attribute needs its URL.
-		// get_logo_id() re-validates the attachment, so a deleted image reads as empty.
+		// get_id() re-validates the attachment, so a deleted image reads as empty.
 		if ( 'logo' === self::root_key( $key ) ) {
-			$logo_url = \class_exists( __NAMESPACE__ . '\Sgs_Site_Info' )
-				? (string) \wp_get_attachment_url( Sgs_Site_Info::get_logo_id() )
+			$logo_url = \class_exists( __NAMESPACE__ . '\Sgs_Site_Info_Logo' )
+				? (string) \wp_get_attachment_url( Sgs_Site_Info_Logo::get_id() )
 				: '';
 			if ( '' === $logo_url ) {
 				return self::is_operator_context() ? self::hint_for_key( $key ) : '';

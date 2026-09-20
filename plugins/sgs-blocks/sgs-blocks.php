@@ -278,12 +278,16 @@ Sgs_Admin_Menu::register();
 
 // SGS Site Info — public store + admin settings page (FR-S4-3) + split notices class.
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-site-info.php';
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-site-info-logo.php';
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-site-info-cache-purge.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-site-info-admin-fields.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-site-info-admin-notices.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-site-info-admin.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-site-info-binding.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-site-info-rest.php';
 Sgs_Site_Info::register();
+// The store feeds site-wide chrome, so an edit invalidates every cached page.
+Sgs_Site_Info_Cache_Purge::register();
 Sgs_Site_Info_Admin::register();
 // Tier-1 pipeline business-info sync — capability-gated remote write endpoint
 // (POST /sgs/v1/site-info, fill-if-empty).

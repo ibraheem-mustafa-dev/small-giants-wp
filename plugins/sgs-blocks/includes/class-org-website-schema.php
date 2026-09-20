@@ -31,6 +31,7 @@ namespace SGS\Blocks;
 defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/class-sgs-schema.php';
+require_once __DIR__ . '/class-sgs-site-info-logo.php';
 
 /**
  * Class Org_Website_Schema
@@ -98,7 +99,7 @@ final class Org_Website_Schema {
 			'url'      => $home_url,
 		);
 
-		// Logo: custom logo attachment → site icon → omit.
+		// Logo: Site Info logo → custom logo attachment → site icon → omit.
 		$logo_url = self::resolve_logo_url();
 		if ( '' !== $logo_url ) {
 			$org['logo'] = $logo_url;
@@ -259,14 +260,20 @@ final class Org_Website_Schema {
 	}
 
 	/**
-	 * Resolve the site logo URL: custom logo → site icon → ''.
+	 * Resolve the site logo URL: the rendered logo chain's site-level tiers
+	 * (Site Info `logo` → `custom_logo`) → site icon → ''.
+	 *
+	 * Sharing {@see Sgs_Site_Info_Logo::resolve_id()} with the Logo block is what
+	 * keeps the Organization node's `logo` the same image a visitor sees; reading
+	 * `custom_logo` alone contradicted every rendered logo once a Site Info logo
+	 * was chosen. Public so the resolution order is directly testable.
 	 *
 	 * @return string URL or ''.
 	 */
-	private static function resolve_logo_url(): string {
-		$custom_logo_id = (int) \get_theme_mod( 'custom_logo' );
-		if ( $custom_logo_id > 0 ) {
-			$url = \wp_get_attachment_image_url( $custom_logo_id, 'full' );
+	public static function resolve_logo_url(): string {
+		$site_logo_id = Sgs_Site_Info_Logo::resolve_id();
+		if ( $site_logo_id > 0 ) {
+			$url = \wp_get_attachment_image_url( $site_logo_id, 'full' );
 			if ( $url ) {
 				return \esc_url_raw( (string) $url );
 			}

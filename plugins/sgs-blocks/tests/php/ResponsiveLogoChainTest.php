@@ -24,7 +24,9 @@
 declare( strict_types=1 );
 
 use PHPUnit\Framework\TestCase;
+use SGS\Blocks\Org_Website_Schema;
 use SGS\Blocks\Sgs_Site_Info;
+use SGS\Blocks\Sgs_Site_Info_Logo;
 
 // ── Additional WP stubs (globals shared by convention with the sibling tests) ──
 
@@ -69,8 +71,25 @@ if ( ! function_exists( 'wp_attachment_is_image' ) ) {
 	}
 }
 
+if ( ! function_exists( 'wp_get_attachment_image_url' ) ) {
+	/**
+	 * Stub for WP wp_get_attachment_image_url(). Deterministic per ID and size;
+	 * it does not itself validate the attachment, so the chain's fall-through has
+	 * to come from the resolver rather than from an empty stub return.
+	 *
+	 * @param int    $id   Attachment ID.
+	 * @param string $size Requested image size.
+	 * @return string
+	 */
+	function wp_get_attachment_image_url( int $id, string $size = 'thumbnail' ): string {
+		return $id > 0 ? "https://example.test/logo-{$id}-{$size}.png" : '';
+	}
+}
+
 require_once __DIR__ . '/SiteInfoTest.php';
 require_once __DIR__ . '/ResponsiveLogoTest.php';
+require_once __DIR__ . '/../../includes/class-sgs-site-info-logo.php';
+require_once __DIR__ . '/../../includes/class-org-website-schema.php';
 
 /**
  * Class ResponsiveLogoChainTest
@@ -219,7 +238,7 @@ class ResponsiveLogoChainTest extends TestCase {
 		$GLOBALS['sgs_test_theme_mods']['custom_logo'] = self::CUSTOM_LOGO;
 
 		$this->assertSame( $invalid, (int) Sgs_Site_Info::get( 'logo' ), 'Control: the invalid ID really is stored.' );
-		$this->assertSame( 0, Sgs_Site_Info::get_logo_id() );
+		$this->assertSame( 0, Sgs_Site_Info_Logo::get_id() );
 
 		$html = render_responsive_logo( array() );
 
@@ -263,7 +282,7 @@ class ResponsiveLogoChainTest extends TestCase {
 		$this->set_site_info_logo( self::SITE_INFO_LOGO );
 
 		$this->assertSame( self::SITE_INFO_LOGO, Sgs_Site_Info::get( 'logo' ) );
-		$this->assertSame( self::SITE_INFO_LOGO, Sgs_Site_Info::get_logo_id() );
+		$this->assertSame( self::SITE_INFO_LOGO, Sgs_Site_Info_Logo::get_id() );
 	}
 
 	/**
@@ -279,7 +298,7 @@ class ResponsiveLogoChainTest extends TestCase {
 		Sgs_Site_Info::set( 'logo', $value );
 
 		$this->assertSame( '', Sgs_Site_Info::get( 'logo' ) );
-		$this->assertSame( 0, Sgs_Site_Info::get_logo_id() );
+		$this->assertSame( 0, Sgs_Site_Info_Logo::get_id() );
 	}
 
 	/**
@@ -298,16 +317,16 @@ class ResponsiveLogoChainTest extends TestCase {
 	}
 
 	/**
-	 * resolve_logo_id() returns tier 2 first, then tier 3, then 0.
+	 * resolve_id() returns tier 2 first, then tier 3, then 0.
 	 */
-	public function test_resolve_logo_id_orders_the_site_level_tiers(): void {
-		$this->assertSame( 0, Sgs_Site_Info::resolve_logo_id() );
+	public function test_resolve_id_orders_the_site_level_tiers(): void {
+		$this->assertSame( 0, Sgs_Site_Info_Logo::resolve_id() );
 
 		$GLOBALS['sgs_test_theme_mods']['custom_logo'] = self::CUSTOM_LOGO;
-		$this->assertSame( self::CUSTOM_LOGO, Sgs_Site_Info::resolve_logo_id() );
+		$this->assertSame( self::CUSTOM_LOGO, Sgs_Site_Info_Logo::resolve_id() );
 
 		$this->set_site_info_logo( self::SITE_INFO_LOGO );
-		$this->assertSame( self::SITE_INFO_LOGO, Sgs_Site_Info::resolve_logo_id() );
+		$this->assertSame( self::SITE_INFO_LOGO, Sgs_Site_Info_Logo::resolve_id() );
 	}
 
 	// ── Alt text ─────────────────────────────────────────────────────────────
@@ -342,6 +361,66 @@ class ResponsiveLogoChainTest extends TestCase {
 
 		$this->assertStringContainsString( 'alt="Acme home"', $html );
 		$this->assertStringNotContainsString( 'Acme Bakery', $html );
+	}
+
+	// ── Organization JSON-LD follows the same site-level chain ───────────────
+
+	/**
+	 * The Organization node's logo is the Site Info logo when one is set, so the
+	 * structured data agrees with what the page renders.
+	 */
+	public function test_json_ld_logo_uses_the_site_info_logo(): void {
+		$this->set_site_info_logo( self::SITE_INFO_LOGO );
+		$GLOBALS['sgs_test_theme_mods']['custom_logo'] = self::CUSTOM_LOGO;
+
+		$this->assertSame( $this->schema_url_of( self::SITE_INFO_LOGO ), Org_Website_Schema::resolve_logo_url() );
+	}
+
+	/**
+	 * With no Site Info logo, the node carries the WordPress site logo.
+	 */
+	public function test_json_ld_logo_falls_back_to_custom_logo(): void {
+		$GLOBALS['sgs_test_theme_mods']['custom_logo'] = self::CUSTOM_LOGO;
+
+		$this->assertSame( $this->schema_url_of( self::CUSTOM_LOGO ), Org_Website_Schema::resolve_logo_url() );
+	}
+
+	/**
+	 * Negative control: a Site Info logo ID that is not a usable image is skipped
+	 * by the JSON-LD emitter exactly as it is by the block, so the node never
+	 * advertises a logo the page does not render.
+	 */
+	public function test_json_ld_logo_skips_an_invalid_site_info_attachment(): void {
+		$invalid = 999;
+		update_option( Sgs_Site_Info::OPTION_KEY, array( 'logo' => $invalid ) );
+		$GLOBALS['sgs_test_theme_mods']['custom_logo'] = self::CUSTOM_LOGO;
+
+		$this->assertSame( $invalid, (int) Sgs_Site_Info::get( 'logo' ), 'Control: the invalid ID really is stored.' );
+		$this->assertSame( $this->schema_url_of( self::CUSTOM_LOGO ), Org_Website_Schema::resolve_logo_url() );
+		$this->assertNotSame( $this->schema_url_of( $invalid ), Org_Website_Schema::resolve_logo_url() );
+	}
+
+	/**
+	 * With no logo at either site-level tier the site icon is used, and with
+	 * nothing at all the emitter omits the field.
+	 */
+	public function test_json_ld_logo_falls_back_to_the_site_icon_then_nothing(): void {
+		$this->assertSame( '', Org_Website_Schema::resolve_logo_url() );
+
+		update_option( 'site_icon', 400 );
+
+		$this->assertSame( $this->schema_url_of( 400 ), Org_Website_Schema::resolve_logo_url() );
+	}
+
+	/**
+	 * The URL the JSON-LD emitter builds for an attachment, so the assertions do
+	 * not hard-code a stub's URL scheme.
+	 *
+	 * @param int $id Attachment ID.
+	 * @return string
+	 */
+	private function schema_url_of( int $id ): string {
+		return esc_url_raw( (string) wp_get_attachment_image_url( $id, 'full' ) );
 	}
 
 	/**
