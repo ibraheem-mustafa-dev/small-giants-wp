@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 31
-spec_version: "0.7"
+spec_version: "0.8"
 project: small-giants-wp
 thread: cloning-pipeline
 title: "Universal Cloning Pipeline — Content + CSS Extraction"
@@ -978,3 +978,19 @@ untested.
 
 **Real-page verification.** A dedicated test site (`build-deploy.py --target eye-care-test`, WP + WooCommerce) receives full clone runs; run with `SGS_DEPLOY_SITE=eye-care-test` and `SSL_CERT_FILE=<certifi bundle>`. Stage 11.6 serves the original draft folder over HTTP (`orchestrator/draft_server.py`), so a `.dc.html` draft is scored RENDERED. Baseline for Eye Care Birmingham: content 12% / css 0%, 93 unresolved `{{ }}` placeholders visible on the page, 7 of 8 homepage sections missing (see Spec 44 §11 open finding). In-place substitution of runtime bindings is NOT BUILT; design fact: keeping the `<sc-for>` lands only item 0 of N, so full conservation needs container-level handling. Check: count `{{` in the deployed page's Playwright `innerText`.
 
+## 16. Draft manifest, entity references and build order (FR-31-27)
+
+### FR-31-27 — Draft manifest — BUILT (read-only; nothing consumes it yet)
+
+**Behaviour.** `plugins/sgs-blocks/scripts/draft-manifest/manifest.py` reads a draft and the README beside it and writes a JSON manifest (and a markdown report) that lists:
+- the **screens**: each `<main data-screen-label>` gated by an `isX` flag (`dc_template.py::find_screens`), matched to the README routes table (`readme_routes.py::read_readme_routes`) and given a kind (page, wc-archive, single-template, wc-cart, wc-checkout, wc-order-received, choice-flow) by `manifest_vocab.py::SCREEN_KIND_RULES`, with the target it is built as;
+- **header and footer**;
+- **entities** other things point at: modal, drawer, cart drawer (`sgs/cart` with `displayMode` drawer), mega menu, choice flow, and one form per page screen. An overlay is found from the script, not from names: a handler that sets state (`setState({modal:'size'})`) is tied to the flag that reads it (`sizeModalOpen: S.modal === 'size'`) by `dc_script.py::opens`. A name pairing (`openLens` with `lensOpen`) is the fallback and is marked `resolved_by: name`. Kind comes from the region's geometry (`manifest_vocab.py::GEOMETRY_RULES`). A region inside a screen is a state of that screen (`in_screen_regions`), not an entity;
+- the **reference graph**: which screen, chrome piece or entity opens or links to which, with counts;
+- a **build order** (`build_order.py::order`): global styles and Site Info; page shells (an empty page or template that only reserves the slug, so every link target exists); leaf entities; header and footer; page content. A reference edge always overrides the tier, and a cycle is reported instead of looped on.
+
+A draft with no labelled screens yields one page and no entities, so a static draft such as Mama's homepage is unaffected.
+
+**Not built.** No stage consumes the manifest. There is no per-client entity registry (kind, draft name, slug, post ID), no step that creates the entities, and no step that resolves a later reference to an entity that already exists. Those come next, followed by cloning the Home screen only (Spec 44 §11 option B).
+
+**Done when (met).** Eye Care Birmingham yields 9 screens, of which Home, About, Help and Contact are normal pages; 6 entities (menu drawer, cart drawer, size-guide modal, mega menu with 4 panels, lens choice flow, contact form); the size guide referenced by Product, Help and the footer; the mega menu distinct from the lens flow. Mama's homepage yields one page and no entities. `python -m pytest draft-manifest/tests` passes (12), and breaking either the statement-end rule or the choice-flow merge rule fails 4 of them.

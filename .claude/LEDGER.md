@@ -73,11 +73,13 @@ needs `--replace-source`. Mama's snapshot has no `source_draft` until it is next
 **Real numbers (before the snapshot changed; not re-measured):** Stage 11.6 content 12%, css 0%. Live page: 93 visible
 `{{ }}` placeholders (59 distinct), no ticker text, 7 of 8 homepage boundaries (b3-b9) missing.
 
-**Bean-directed 2026-09-20 (design pending):** use the README beyond tokens. Its Routes table says only `home` belongs on
-`/` (the missing-sections fix, Spec 44 §11 option B); its Home list names the six sections in order (a key for classless
-boundaries); its State section (`bag`, `co`, `f`, `lens`, `view`) is app state, which sorts the raw `{{ }}` text. Read-only
-proof of the text-match against a stored run comes first; a shared-pipeline change needs Bean's approval and must leave Mama's
-unchanged.
+**Draft manifest (D1123, built, read-only).** `scripts/draft-manifest/manifest.py --draft "<draft>" --out m.json --report m.md`
+lists a draft's screens (its own `data-screen-label` views, matched to the README routes table), kinds, header and footer,
+overlay entities, the reference graph and a build order (global styles, page shells, modals/forms/menus/drawers, header and
+footer, then content). Eye Care: 9 screens, 4 normal pages (Home, About, Help, Contact), 6 entities. Report:
+`reports/2026-09-20-eye-care-draft-manifest.md`. Nothing consumes it yet. Next: the per-client entity registry (built once,
+referenced many times, recognised on later references), then Home-screen-only cloning (Spec 44 §11 A and B). Bean's mapping:
+size guide = `sgs_modal`, bag drawer = `sgs/cart`, shop filter drawer = the shop archive's filter.
 
 **Open, in order:**
 1. *Problem 1, missing sections.* The "14 non-BEM" boundaries are classless sections gated on a hint (the draft has ONE

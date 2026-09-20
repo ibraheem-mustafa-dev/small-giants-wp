@@ -1,5 +1,15 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1123 [ROUTINE] — Draft manifest: screens, entities, references and build order, read-only (2026-09-20)
+
+**Decisions (Bean).** The full-site cloner must know how many pages a draft holds. Blank-canvas pages clone normally; template-tied parts (shop, product, cart, checkout, order-received), the header, footer, menus and drawers, and modals get their own runs. The size guide is its own `sgs_modal`. The bag drawer is `sgs/cart` with `displayMode` drawer. The shop's filter drawer is a variant of the shop archive's filter (Spec 30 FR-30-3), not an overlay. Referable things must be built in an order that lets later content link to them, and a later reference to something already built must be recognised.
+
+**Decisions (mine, on the evidence).** (1) Page shells come first in the build order, ahead of modals, menus and the header, because those carry links to pages and an empty shell costs nothing. (2) The Lenses screen is a choice flow, not a normal page, because the README's routes table describes it as the lens configurator; the draft also opens the same configurator as an overlay, so both point at one entity. (3) A region inside a screen is a state of that screen, not an entity.
+
+**Verified.** Eye Care Birmingham: 9 screens, 4 normal pages, 6 entities, the size guide referenced from Product, Help and the footer. Mama's homepage: 1 page, no entities. Two faults in my first output were found by reading it, not by a test: every page appeared to link to Checkout and Order confirmed (a helper definition ran on into the next statement), and the mega menu was merged into the lens flow (its opener is named `openMegaLenses`). Both are fixed and covered by tests.
+
+**Open.** Nothing consumes the manifest. Next: the per-client entity registry and its recognition step, then Home-screen-only cloning with classless sections admitted as containers (Spec 44 §11 A and B). The size-guide modal, bag drawer and filter drawer mappings rest on Bean's statements and the specs; whether Spec 30's built shop archive covers all ten filter groups is unchecked.
+
 ## D1122 [ROUTINE] — Wave 2 closed except three design inputs: inline drawer creation, Site Info logo tier, scrolled header shadow, Gate 2 and W2-u re-runs; QC council fixes (2026-09-20)
 
 **Built and live-verified on the canary** (reports named in the plan rows): (1) W2-b inline creation: "Create a new menu panel" saves a published `sgs_drawer` post seeded only from the blank starter or the framework default (never a decorated look) and selects it; the sibling-block add path is gone. (2) W2-l: Site Info `logo` is tier 2 of the logo chain, in its own class (`includes/class-sgs-site-info-logo.php`); Organization JSON-LD follows the chain; saving Site Info purges the page cache. (3) W2-n: `site-header` `shadowScrolled` / `shadowScrolledColour`, nothing paints when unset. (4) Gate 2 re-run passed on the mechanism and W2-u passed on the CPT drawer. (5) `extract-css-diff.js` prints how many elements and properties it compared and exits 3 when it compared none.
