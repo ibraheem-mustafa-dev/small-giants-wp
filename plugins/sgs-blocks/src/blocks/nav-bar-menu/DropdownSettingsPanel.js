@@ -57,7 +57,7 @@ export default function DropdownSettingsPanel( {
 	// applies the same status check), so offering it here would be a picker
 	// option that silently opens nothing.
 	// DRAWER_QUERY is shared with useCreateDrawer's `invalidateResolution` call:
-	// core-data keys its resolution cache on the stringified query, so a query
+	// core-data keys its resolution cache on the query arguments, so a query
 	// that differed by one key would leave a just-created panel missing from
 	// this list until a reload.
 	const { records: drawerPosts, isResolving: isResolvingDrawers } = useEntityRecords(

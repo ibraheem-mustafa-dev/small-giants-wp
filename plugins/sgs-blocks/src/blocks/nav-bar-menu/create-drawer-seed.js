@@ -15,7 +15,7 @@ export const DRAWER_POST_TYPE = 'sgs_drawer';
 /**
  * The picker's list query, shared so the create action can invalidate EXACTLY
  * the resolution `DropdownSettingsPanel` reads. `core-data` keys its resolution
- * cache on the stringified query, so a query that differs by one key would
+ * cache on the query arguments, so a query that differs by one key would
  * invalidate nothing and the new drawer would not appear until a reload.
  *
  * A module-level constant (not a literal at each call site) also keeps
@@ -27,13 +27,10 @@ export const DRAWER_QUERY = Object.freeze( {
 	context: 'edit',
 } );
 
-/** Title used when the operator leaves the inline name field untouched. */
-export const DEFAULT_DRAWER_TITLE = 'New menu drawer';
-
 /**
- * Seed patterns in preference order: the blank starter first (a new drawer
- * should not arrive wearing a look the operator never chose), then the
- * framework default, then any other drawer pattern.
+ * Seed patterns in preference order: the blank starter, then the framework
+ * default. A new drawer never arrives wearing a look the operator did not
+ * choose, so no other pattern is ever picked.
  */
 const PREFERRED_SEED_SLUGS = [ 'sgs/drawer-scratch', 'sgs/framework-drawer-default' ];
 
@@ -67,7 +64,8 @@ export function qualifyingDrawerPatterns( patterns ) {
  * The one pattern a newly-created drawer is seeded from.
  *
  * @param {Array} patterns `select( 'core' ).getBlockPatterns()` output.
- * @return {Object|null} The chosen pattern, or null when none is registered.
+ * @return {Object|null} The chosen pattern, or null when neither the blank
+ *                        starter nor the framework default is registered.
  */
 export function pickDrawerSeedPattern( patterns ) {
 	const qualifying = qualifyingDrawerPatterns( patterns );
@@ -77,7 +75,7 @@ export function pickDrawerSeedPattern( patterns ) {
 			return preferred;
 		}
 	}
-	return qualifying[ 0 ] || null;
+	return null;
 }
 
 /**
@@ -102,12 +100,13 @@ export function drawerSeedContent( pattern ) {
 /**
  * Normalises the inline name field into the title actually saved.
  *
- * @param {string} raw The field value.
+ * @param {string} raw      The field value.
+ * @param {string} fallback The (translated) title used when the field is blank.
  * @return {string} A non-empty title.
  */
-export function drawerTitleFrom( raw ) {
+export function drawerTitleFrom( raw, fallback ) {
 	const trimmed = typeof raw === 'string' ? raw.trim() : '';
-	return '' !== trimmed ? trimmed : DEFAULT_DRAWER_TITLE;
+	return '' !== trimmed ? trimmed : fallback;
 }
 
 /**

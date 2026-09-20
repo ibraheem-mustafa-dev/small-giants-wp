@@ -88,7 +88,7 @@ export default function useCreateDrawer( { setAttributes } ) {
 				'postType',
 				DRAWER_POST_TYPE,
 				{
-					title: drawerTitleFrom( rawTitle ),
+					title: drawerTitleFrom( rawTitle, __( 'New menu drawer', 'sgs-blocks' ) ),
 					status: 'publish',
 					content,
 				},

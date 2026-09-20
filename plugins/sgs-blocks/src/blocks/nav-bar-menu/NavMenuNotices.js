@@ -32,14 +32,12 @@ export default function NavMenuNotices( {
 					style={ { marginBottom: '16px' } }
 				>
 					{ 0 === drawerState.total ? (
-						<>
-							<p style={ { margin: '0 0 8px' } }>
-								{ __(
-									'Below the collapse size this menu becomes a burger button — but there is no menu panel for it to open, so tapping it will do nothing. Use “Create a new menu panel” in this block’s Menu panel settings, or pick an existing one.',
-									'sgs-blocks'
-								) }
-							</p>
-						</>
+						<p style={ { margin: 0 } }>
+							{ __(
+								'Below the collapse size this menu becomes a burger button — but there is no menu panel for it to open, so tapping it will do nothing. Choose a menu panel in this block’s Menu panel settings (you can create a new one there if your account allows it).',
+								'sgs-blocks'
+							) }
+						</p>
 					) : (
 						<p style={ { margin: 0 } }>
 							{ sprintf(

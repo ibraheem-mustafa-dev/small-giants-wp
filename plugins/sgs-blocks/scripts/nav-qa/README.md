@@ -70,8 +70,28 @@ adds no scrim and makes nothing `inert`, and it has no scroll lock.
 | Drawer root (`<dialog>`, id defaults to `sgs-nav-drawer`) | `dialog.sgs-nav-drawer` (carries `data-sgs-nav-drawer` and `data-sgs-nav-modality`) |
 | Drawer body (holds the menu and child blocks) | `.sgs-nav-drawer__body` |
 | Close button | `.sgs-nav-drawer__close` (parts: `.sgs-nav-drawer__close-text`, `.sgs-nav-drawer__close-glyph`, `.sgs-nav-drawer__close-bars`) |
-| Scrim (rendered only for a non-modal drawer) | `.sgs-nav-drawer__scrim` |
+| Scrim (rendered only when an anchor tier is PARTIAL-WIDTH — see below) | `.sgs-nav-drawer__scrim` |
 | Modifiers | `.sgs-nav-drawer--submenu-*`, `--close-*`, `--anim-*`, `--preset-*` |
+
+**The scrim is gated on ANCHOR, not on modality.** `render.php::$sgs_nd_needs_scrim`
+is true only when at least one of the desktop/tablet/mobile `anchor` tiers resolves
+to something other than `full-screen`; `modality` is not in that condition. The
+DEFAULT drawer is full-screen on every tier, so **it has no `.sgs-nav-drawer__scrim`
+in the DOM under either modality** — a probe that waits for one on a default drawer
+waits forever. (What *is* non-modal-only is the scrim's click LISTENER in
+`src/shared/nav-interactivity/store.js`: under `showModal()` a click-away is
+delivered on `::backdrop` with `target === dialog` instead.)
+
+Measured live on the canary 2026-09-20 —
+`document.querySelectorAll('.sgs-nav-drawer__scrim').length` after load at 1440:
+
+| Fixture | `modality` | `anchor` | scrims |
+|---|---|---|---|
+| `/qa-w2u-gate2-block-path-drawer/` | `modal` | default (full-screen) | **0** |
+| `/qa-w2u-nonmodal-drawer/` | `non-modal` | default (full-screen) | **0** |
+| `/qa-w2u-nonmodal-partial-drawer/` | `non-modal` | `{desktop:trigger,…}` | **1** |
+
+The middle row is the one that falsifies "non-modal ⇒ scrim".
 
 ### `sgs/nav-drawer-menu` (`.sgs-nav-drawer-menu`, inside the drawer only)
 
@@ -114,6 +134,20 @@ transformed or filtered ancestor). A content-scoped
 ```bash
 --scope "dialog.sgs-nav-drawer"
 ```
+
+**2b. The MEGA PANEL reparents to `<body>` too.** Same trap, different surface: a
+content-scoped `.entry-content … .sgs-nav-bar-menu__mega-panel-wrap` matches while
+the panel is closed and **0 elements once it opens** (measured 2026-09-20: after
+Enter on the trigger the panel's `parentElement` is `BODY`). Resolve it by the
+trigger's own `aria-controls` id, which survives the move:
+
+```js
+const id = document.querySelector( megaTriggerSel ).getAttribute( 'aria-controls' );
+const panel = document.getElementById( id );
+```
+
+A probe that keeps the content-scoped selector reads `panel === null` after a
+successful open and reports a working mega as broken.
 
 Working example against a desktop-anchored drawer variant fixture at 1440:
 
@@ -435,9 +469,16 @@ canary application password from `.claude/secrets/sandybrown.env`, never through
 WP-CLI, which bypasses block validation.
 
 `poc-content-plan.json` restates each variant's `sgs/nav-drawer-menu` attributes
-because authoring block markup directly does not apply a block variation's seeded
-child attributes; they must match the `navMenu()` seeds in
-`src/blocks/nav-drawer/variations.js`.
+because authoring block markup directly does not apply a look's seeded child
+attributes; they must match the corresponding drawer PATTERN,
+`theme/sgs-theme/patterns/drawer-<variant>.php`.
+
+> **The looks are patterns, not block variations.** `sgs/nav-drawer` declares no
+> variant attribute and registers no block variations — there is no
+> `src/blocks/nav-drawer/variations.js` and no `variantPreset` attribute (both
+> removed; the seven looks became `theme/sgs-theme/patterns/drawer-*.php`, seeded
+> as `sgs_drawer` posts). Any script or note still pointing at either is stale.
+> Spec 36 FR-36-6 "Desktop variants" is the authority.
 
 ```bash
 python scripts/nav-qa/build-poc-fixtures.py --plan scripts/nav-qa/poc-content-plan.json [--dry-run] [--only <variant>]

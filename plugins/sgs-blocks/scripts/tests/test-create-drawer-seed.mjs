@@ -9,10 +9,10 @@
  *     produce a panel full of page content.
  *  2. The blank starter wins over a decorated look, so a new panel never
  *     arrives wearing a look nobody chose.
- *  3. The picker query constant stays byte-identical to the one the create
- *     action invalidates — core-data keys its resolution cache on the
- *     stringified query, so a drift here is invisible until an operator finds
- *     their new panel missing from the picker.
+ *  3. The picker query constant stays identical to the one the create
+ *     action invalidates — core-data keys its resolution cache on the query
+ *     arguments, so a drift here is invisible until an operator finds their
+ *     new panel missing from the picker.
  *  4. A failed save always yields a message. A silent no-op is the failure mode
  *     this whole control exists to avoid.
  *
@@ -33,7 +33,6 @@ const P = ( process.argv[ 2 ] || path.resolve( HERE, '..', '..' ) ).split( BS ).
 const {
 	DRAWER_POST_TYPE,
 	DRAWER_QUERY,
-	DEFAULT_DRAWER_TITLE,
 	qualifyingDrawerPatterns,
 	pickDrawerSeedPattern,
 	drawerSeedContent,
@@ -106,15 +105,15 @@ check(
 		).name
 );
 check(
-	'any qualifying look is used when neither preferred starter is registered',
-	'sgs/drawer-solid-brand-light' ===
+	'no decorated look is ever picked when neither preferred starter is registered',
+	null ===
 		pickDrawerSeedPattern(
 			REGISTRY.filter(
 				( p ) =>
 					p.name !== 'sgs/drawer-scratch' &&
 					p.name !== 'sgs/framework-drawer-default'
 			)
-		).name
+		)
 );
 check(
 	'a registry with no drawer pattern picks nothing',
@@ -131,9 +130,9 @@ check( 'no pattern yields empty content, never a fabricated drawer', '' === draw
 check( 'a whitespace-only pattern counts as empty', '' === drawerSeedContent( { content: '   \n ' } ) );
 
 console.log( '\ntitle + edit url' );
-check( 'a typed name is used', 'Shop menu' === drawerTitleFrom( '  Shop menu  ' ) );
-check( 'a blank name falls back to the default', DEFAULT_DRAWER_TITLE === drawerTitleFrom( '   ' ) );
-check( 'a missing name falls back to the default', DEFAULT_DRAWER_TITLE === drawerTitleFrom( undefined ) );
+check( 'a typed name is used', 'Shop menu' === drawerTitleFrom( '  Shop menu  ', 'New menu drawer' ) );
+check( 'a blank name falls back to the given default', 'New menu drawer' === drawerTitleFrom( '   ', 'New menu drawer' ) );
+check( 'a missing name falls back to the given default', 'New menu drawer' === drawerTitleFrom( undefined, 'New menu drawer' ) );
 check( 'the edit url points at the post edit screen', 'post.php?post=42&action=edit' === drawerEditUrl( 42 ) );
 check( 'a non-positive id yields no url', '' === drawerEditUrl( 0 ) && '' === drawerEditUrl( -3 ) );
 check( 'a non-numeric id yields no url', '' === drawerEditUrl( 'x' ) );

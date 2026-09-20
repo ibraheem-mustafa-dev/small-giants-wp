@@ -15,7 +15,7 @@
 import { __, sprintf } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
 import { Button, Notice, TextControl, Flex, FlexItem } from '@wordpress/components';
-import { DEFAULT_DRAWER_TITLE, drawerEditUrl } from './create-drawer-seed';
+import { drawerEditUrl } from './create-drawer-seed';
 import useCreateDrawer from './useCreateDrawer';
 
 /**
@@ -27,6 +27,7 @@ export default function CreateDrawerControl( { setAttributes } ) {
 		useCreateDrawer( { setAttributes } );
 	const [ isNaming, setIsNaming ] = useState( false );
 	const [ title, setTitle ] = useState( '' );
+	const defaultTitle = __( 'New menu drawer', 'sgs-blocks' );
 
 	if ( ! canCreate ) {
 		return null;
@@ -55,7 +56,7 @@ export default function CreateDrawerControl( { setAttributes } ) {
 								'“%s” was created and this burger now opens it. It is a separate item, so it does not appear in this editor — open it to add your links and content.',
 								'sgs-blocks'
 							),
-							created.title || DEFAULT_DRAWER_TITLE
+							created.title || defaultTitle
 						) }
 					</p>
 					<Button
@@ -87,7 +88,7 @@ export default function CreateDrawerControl( { setAttributes } ) {
 					<TextControl
 						label={ __( 'Name the new menu panel', 'sgs-blocks' ) }
 						value={ title }
-						placeholder={ DEFAULT_DRAWER_TITLE }
+						placeholder={ defaultTitle }
 						onChange={ setTitle }
 						help={ __(
 							'Only you see this name — it is how you will find the panel in SGS → Menu drawers.',

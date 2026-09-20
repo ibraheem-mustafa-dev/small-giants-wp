@@ -974,5 +974,14 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 104
+  },
+  {
+    "id": "test-create-drawer-seed",
+    "cmd": "node scripts/tests/test-create-drawer-seed.mjs",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 105
   }
 ]
