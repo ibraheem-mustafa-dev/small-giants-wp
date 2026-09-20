@@ -500,6 +500,40 @@ class ResponsiveLogoTest extends TestCase {
 		$this->assertStringContainsString( '--logo-width:320px', $html );
 	}
 
+	/**
+	 * The default (left) placement must not emit an alignment margin: an auto margin
+	 * would take a flex row's free space before its own justify-content runs.
+	 */
+	public function test_render_default_left_emits_no_auto_margin(): void {
+		$html = render_responsive_logo(
+			array(
+				'logoId' => 10,
+				'width'  => 320,
+			)
+		);
+
+		$this->assertStringNotContainsString( 'margin-inline-end:auto', $html );
+		$this->assertStringNotContainsString( 'margin-inline-start:0', $html );
+		$this->assertStringContainsString( 'sgs-responsive-logo', $html, 'control: the logo still renders' );
+	}
+
+	/**
+	 * Control for the test above: an explicit non-default alignment also emits no auto margin
+	 * and still renders the logo.
+	 */
+	public function test_render_explicit_center_emits_no_auto_margin(): void {
+		$html = render_responsive_logo(
+			array(
+				'logoId' => 10,
+				'width'  => 320,
+				'align'  => 'center',
+			)
+		);
+
+		$this->assertStringContainsString( 'sgs-responsive-logo', $html );
+		$this->assertStringNotContainsString( 'margin-inline-end:auto', $html );
+	}
+
 	// ── render.php: alt text ──────────────────────────────────────────────────
 
 	/**

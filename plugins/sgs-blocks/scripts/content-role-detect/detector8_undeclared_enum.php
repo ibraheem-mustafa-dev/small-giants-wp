@@ -33,7 +33,7 @@
  *
  * BLIND SPOTS, stated rather than discovered later:
  *  1. Only `in_array(...)` allow-lists are recognised. A closed set expressed as a chain of
- *     `'left' === $x` comparisons (sgs/responsive-logo.align) is a real enum this misses --
+ *     `'a' === $x` comparisons is a real enum this misses --
  *     proving a comparison CHAIN is exhaustive is a different and much weaker inference,
  *     deliberately not attempted.
  *  2. Single-file: the allow-list must be in the block's own render.php.

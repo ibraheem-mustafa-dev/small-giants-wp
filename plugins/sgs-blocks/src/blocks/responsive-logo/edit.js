@@ -664,7 +664,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			   Rendered via ServerSideRender (render.php) so the canvas NEVER
 			   drifts from the frontend — animation, the site-level fallback
 			   logo (Site Info, then the WordPress site logo), the functional
-			   alt default, left-align, and the per-tier max-box all render
+			   alt default, and the per-tier max-box all render
 			   exactly as they will on the live site (a hand-built preview
 			   drifts from the frontend).
 			   Tradeoff: the SVG view.js animation itself doesn't

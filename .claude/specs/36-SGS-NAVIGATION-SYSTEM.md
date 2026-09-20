@@ -810,7 +810,7 @@ per item, glyph `aria-hidden`); `source` is `manual` | `site-info`.
 **Spec maturity: `OUTLINE`** — the resolution chain below is frozen and dispatchable on its own; the
 lockup / favicon / variant half needs a frozen attribute table first (§4 index).
 
-**Phasing: basics = Phase 1** (left-aligned default, link-to-home, per-device image, functional alt).
+**Phasing: basics = Phase 1** (left default placement, link-to-home, per-device image, functional alt).
 **lockup + favicon-sync + transparent/dark variants = Phase 3.** **Extend** `sgs/responsive-logo`.
 - **MUST — the logo resolution chain — BUILT.** The logo resolves through THREE tiers,
   first non-empty wins, evaluated per device tier:
@@ -835,7 +835,9 @@ lockup / favicon / variant half needs a frozen attribute table first (§4 index)
   follows the same chain, and saving Site Info purges the page cache
   (`plugins/sgs-blocks/includes/class-sgs-site-info-cache-purge.php::purge`), so a new logo reaches every
   placement at once.
-- **MUST (basics, Phase 1):** left-aligned default (NN/g: 6× better home-return); link-to-home on by default;
+- **MUST (basics, Phase 1):** left is the default placement (NN/g: 6× better home-return) and the block emits no
+  alignment margin: its parent places it (start alignment in a flex or grid row, text-align in block flow), so a row
+  that spreads or centres its children keeps control of the free space; link-to-home on by default;
   **separate desktop/tablet/mobile IMAGE upload** (swap the file, not resize-only); SVG upload; **functional
   alt** ("[Business] home", inline authoring hint, never "logo"); max-width/height per breakpoint;
   sticky-header compact-mark swap. **BUILT:** `colourTreatment` (`''` | `white`) forces the logo IMAGE to

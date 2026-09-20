@@ -123,7 +123,7 @@
 		"align": {
 			"type": "string",
 			"default": "left",
-			"_comment": "FR-36-22 basics: explicit left-align default (NN/g: 6x better home-return). Plain string (no enum) mirrors WP core's auto-injected align attribute shape — matches the supports.align list above without a coercion risk (an out-of-enum stored value silently resets to default)."
+			"_comment": "FR-36-22 basics: left is the default placement (NN/g: 6x better home-return); the block emits no alignment margin, its parent places it. Plain string (no enum) mirrors WP core's auto-injected align attribute shape — matches the supports.align list above without a coercion risk (an out-of-enum stored value silently resets to default)."
 		},
 		"logoId": {
 			"type": "number",

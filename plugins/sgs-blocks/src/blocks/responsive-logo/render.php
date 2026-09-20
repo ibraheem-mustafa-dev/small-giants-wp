@@ -312,15 +312,11 @@ if ( null !== $border_radius_mob_val ) {
 	$scoped_css[] = '@media(max-width:767px){' . "{$sel}{border-radius:{$border_radius_mob_val};}}";
 }
 
-// --- Explicit left-alignment default (FR-36-22 basics) — NN/g: a left-aligned
-// logo returns visitors home 6x more reliably than other placements. Only
-// applied for the 'left' choice (the block's default) so an operator's
-// explicit centre/right/wide alignment is left untouched; pins the block to
-// the start of its flex/grid/block-level container without float (float
-// would break a header flex row). ---
-if ( 'left' === $align ) {
-	$scoped_css[] = $sel . '{margin-inline-end:auto;margin-inline-start:0}';
-}
+// --- Left placement (FR-36-22 basics) — NN/g: a left-aligned logo returns visitors
+// home 6x more reliably than other placements. The block adds NO alignment margin:
+// its parent places it (start alignment in a flex or grid row, text-align in block
+// flow). An auto margin here would take the row's free space before its own
+// `justify-content` runs and override a row the operator spread or centred. ---
 
 // --- Per-tier max box (FR-36-22 basics) — caps the rendered logo box on top
 // of the `width` custom property, independently per breakpoint. Unset tiers
