@@ -18,7 +18,7 @@ stays). First test done: Claude Design followed the prompt; I patched its faults
 ticker rule and 3 button paddings reverted, manifest vocabularies closed, proposed block per section added); render check
 identical to the original except the header logo (D1132). Patched bundle:
 `sites/eye-care-ward-end/design_handoff_ward_end_eye_care_v2` (untracked; raw export kept as `..._v2_raw`). A1 DONE (D1132, `faaf79f0d`): the width evaluator is wired in; on the live test page padding and grid columns equal the draft at 375, 768 and 1440 for every
-section present. Next: plan step A2 (site settings from the saved map first, then multi-field JS-array items; the ticker container needs its own design gate). Prompt file is ONE reusable prompt.
+section present. A2 DONE (D1134): the draft's phone, review and social links and all its loop copy (13 reviews, 4 reasons, 6 shape tiles, 32 brand-marquee items, 4 ticker items) are now filled in from its own script, on by default; every review and reasons line is on the live page at 375 and 1440. A QC council also found and I fixed a converter bug (an item's gap and direction overwrote its container's, turning the review rail into a column) plus defects in my A1 and A2a code. Still open on the Eye Care page: the ticker text does not reach the blocks (own design gate), the review rail wraps instead of scrolling sideways, and 72 raw placeholders remain in the choose-your-lenses flow and mega menu (plan A3, Track D). Prompt file is ONE reusable prompt.
 
 **Where the Eye Care clone stands (test page 11).** Spec 33 gives it the draft's real palette, fonts, square corners and 13
 saved business settings. The screen route clones only the Home screen: 5 of 8 homepage sections are on the page (was 1), none

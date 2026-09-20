@@ -947,8 +947,7 @@ This FR is a pure upstream content precondition. Spec 44's Stage A/B and Spec 45
 ### FR-31-26.5 — status: resolver BUILT and correct; ticker still NOT reaching the emitted blocks
 
 **Built.** `orchestrator/js_content_resolver.py::resolve_js_array_content` + `orchestrator/resolve-js-content.js`,
-wired as Stage -1.5 in `sgs-clone-orchestrator.py` behind `--resolve-js-content` (opt-in, default off,
-true no-op when omitted). The orchestrator hands the resolver the draft's ORIGINAL folder
+wired as Stage -1.5 in `sgs-clone-orchestrator.py` default-on since A2b (D1134; `--no-resolve-js-content` opts out; a draft with no `<sc-for>` spawns no browser). The orchestrator hands the resolver the draft's ORIGINAL folder
 (`_draft_dir`, captured before Stage -2 reassigns `args.mockup` into the run directory) because that
 is where the draft's own `support.js` lives; the resolver refuses any group whose resolved text still
 contains `{{` (`_splice_resolved_items`).
@@ -965,12 +964,7 @@ top-level tags, and the only boundary that ever represented it was the `<sc-for>
 which splicing consumes. Check: `'100% genuine' in block_markup` is `False` on a flag-ON run. Needs
 its own design gate (boundary detection is a shared mechanism, Rule 7).
 
-**Disclosed scope limits (by design, not silent gaps).** Only single-text-field items resolve.
-Excluded: (a) multi-field items (e.g. REASONS: number + title + body in three separate elements);
-(b) items passed whole into a sub-component (`featured` -> `<dc-import name="Frame Card" p="{{ p }}">`,
-which after Stage -2 is a multi-field, image and conditional item). Exclusion (a) is a design choice,
-not a technical wall (each field sits in its own element, so per-field tagging would identify it);
-untested.
+**A2b (D1134): multi-field items, default-on.** `resolve_js_array_content_with_report` marks, in a temporary copy, every `{{ }}` in an item body that mentions the loop variable (a text one is wrapped in `<span data-sgs-f>`, an attribute one gets a `data-sgs-a-fK` carrier, every `<sc-if>` branch gets a hidden `data-sgs-b` presence marker), renders the draft with its own runtime, reads each field of each row by marker, and replaces the `<sc-for>` with N copies of its ORIGINAL body: each captured value replaces its mustache (HTML-escaped) and a branch the runtime did not render for that row is removed. A mustache that does not mention the loop variable (a width-driven style value) is never touched (the script-bindings stage owns it). Never silent: uncaptured fields stay raw and are listed in `run_dir/js-content-report.json` with loop, item number and expression, as are skipped loops (nested loop, conditional first child, 0 rows at load). The two guarantees in FR-31-26.3 that read "scope-narrowed" and "opt-in" are superseded by this: what stays is (3) fail-soft and the no-op for a draft without a loop. **Verified** on the Eye Care v2 bundle, live test page: 13 reviews, 4 reasons, 6 shape tiles, 32 marquee items and 4 ticker items expanded, 0 uncaptured fields, every review and reasons line present at 375 and 1440 (`orchestrator/test_js_content_resolver.py`, 23 tests, one against a real browser). **Still excluded:** a bare `{{ p }}` (a whole row passed to a sub-component, `featured`), and a loop containing another loop (`filterGroups`).
 
 ### FR-31-26.6 — loose-text lift; the real-page baseline
 
