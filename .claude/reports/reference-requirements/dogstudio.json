@@ -1,0 +1,7345 @@
+{
+ "reference": "dogstudio",
+ "url": "https://dogstudio.co",
+ "captured": "2026-09-20",
+ "browser": "chromium headless, Playwright (Chrome/141 desktop UA; iPhone UA at 375); out-of-date-browser banner dismissed via #buorgig, \"Accept\" clicked where present",
+ "rows": [
+  {
+   "surface": "header-shell",
+   "tier": 375,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "full-bleed",
+      "detail": "transparent, borderless full-width band holding only a logo and a burger; hides on scroll-down and returns on scroll-up",
+      "headerPointerEvents": "none on the band, auto on logo and burger"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.site-header",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "width": 375,
+       "viewport": 375,
+       "radius": "0px",
+       "position": "absolute"
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "width": 375,
+      "height": 69,
+      "insetTop": 0,
+      "insetLeftLogo": 35,
+      "insetRightBurger": 29,
+      "position": "absolute",
+      "zIndex": "1000",
+      "radius": 0,
+      "centredOnViewport": true,
+      "outOfDateBrowserBanner": "not shown on this UA (iPhone)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.site-header",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "rect": {
+        "top": 0,
+        "left": 0,
+        "right": 375,
+        "bottom": 69,
+        "width": 375,
+        "height": 69,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 187.5
+       },
+       "consent": "button:has-text(\"Accept\")"
+      }
+     }
+    },
+    "zone_model": {
+     "value": {
+      "zones": [
+       {
+        "name": "brand",
+        "rect": {
+         "top": 24.5,
+         "left": 35,
+         "right": 119,
+         "bottom": 51.5,
+         "width": 84,
+         "height": 27,
+         "insetLeft": 35,
+         "insetRight": 256,
+         "cx": 77
+        },
+        "contains": "SVG wordmark 84px wide"
+       },
+       {
+        "name": "cases link",
+        "rect": {
+         "top": 28,
+         "left": 169.3,
+         "right": 263.8,
+         "bottom": 41,
+         "width": 94.5,
+         "height": 13,
+         "insetLeft": 169.3,
+         "insetRight": 111.2,
+         "cx": 216.5
+        },
+        "contains": "\"All our cases\" with a left caret (375 only)"
+       },
+       {
+        "name": "trigger",
+        "rect": {
+         "top": 19,
+         "left": 314,
+         "right": 346,
+         "bottom": 49,
+         "width": 32,
+         "height": 30,
+         "insetLeft": 314,
+         "insetRight": 29,
+         "cx": 330
+        },
+        "contains": "burger button"
+       }
+      ],
+      "alignment": "logo left, burger right, both vertically level; nothing else"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.site-header",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "div.site-header": [
+        {
+         "sel": "div.site-wrapper > div.site-header",
+         "vis": true,
+         "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 375,
+          "bottom": 69,
+          "width": 375,
+          "height": 69,
+          "insetLeft": 0,
+          "insetRight": 0,
+          "cx": 187.5
+         },
+         "display": "flex",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "space-between",
+         "align": "center",
+         "padding": "20px 35px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.site-header .site-header-title": [
+        {
+         "sel": "div.site-header > div.site-header-title",
+         "vis": true,
+         "rect": {
+          "top": 25.5,
+          "left": 35,
+          "right": 119,
+          "bottom": 43.5,
+          "width": 84,
+          "height": 18,
+          "insetLeft": 35,
+          "insetRight": 256,
+          "cx": 77
+         },
+         "display": "block",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "0px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.site-header .site-header-logo": [
+        {
+         "sel": "div.site-header-title > a.site-header-logo",
+         "vis": true,
+         "rect": {
+          "top": 24.5,
+          "left": 35,
+          "right": 119,
+          "bottom": 51.5,
+          "width": 84,
+          "height": 27,
+          "insetLeft": 35,
+          "insetRight": 256,
+          "cx": 77
+         },
+         "display": "flex",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "0px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.site-header .site-header-cases": [
+        {
+         "sel": "div.site-header > a.site-header-cases",
+         "vis": true,
+         "rect": {
+          "top": 28,
+          "left": 169.3,
+          "right": 263.8,
+          "bottom": 41,
+          "width": 94.5,
+          "height": 13,
+          "insetLeft": 169.3,
+          "insetRight": 111.2,
+          "cx": 216.5
+         },
+         "display": "block",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "0px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.site-header .site-header-button": [
+        {
+         "sel": "div.site-header > button.site-header-button",
+         "vis": true,
+         "rect": {
+          "top": 19,
+          "left": 314,
+          "right": 346,
+          "bottom": 49,
+          "width": 32,
+          "height": 30,
+          "insetLeft": 314,
+          "insetRight": 29,
+          "cx": 330
+         },
+         "display": "block",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "8px 6px",
+         "maxWidth": "none"
+        }
+       ]
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "fill": "transparent",
+      "fillWhenScrolled": "#0d0e12",
+      "backdropFilter": "none",
+      "blur": false,
+      "scrim": false,
+      "boxShadow": "none",
+      "mixBlendMode": "normal",
+      "opacity": "1",
+      "before": null,
+      "after": null,
+      "textColour": "#ffffff",
+      "pageBackground": "#131419"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.site-header",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "rest": {
+        "top": 0,
+        "left": 0,
+        "width": 375,
+        "height": 69,
+        "bg": "rgba(0, 0, 0, 0)",
+        "tr": "none",
+        "op": "1",
+        "shadow": "none",
+        "blur": "none",
+        "filter": "none",
+        "radius": "0px",
+        "blend": "normal",
+        "pos": "absolute",
+        "color": "rgb(255, 255, 255)"
+       },
+       "upAfterDown": {
+        "top": 0,
+        "left": 0,
+        "width": 375,
+        "height": 69,
+        "bg": "rgb(13, 14, 18)",
+        "tr": "matrix(1, 0, 0, 1, 0, 69)",
+        "op": "1",
+        "shadow": "none",
+        "blur": "none",
+        "filter": "none",
+        "radius": "0px",
+        "blend": "normal",
+        "pos": "fixed",
+        "color": "rgb(255, 255, 255)"
+       }
+      }
+     }
+    },
+    "background_visual": {
+     "value": {
+      "kind": "none (the page WebGL scene shows through)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.site-header",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "bgImage": "none"
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "restPosition": "absolute",
+      "afterScrollPosition": "fixed",
+      "hideOnScrollDown": true,
+      "revealOnScrollUp": true,
+      "headerTopAtScroll600": -138,
+      "headerTopAfterScrollingUp300": 0,
+      "translateAtScroll600": "matrix(1, 0, 0, 1, 0, -69)",
+      "translateAfterScrollUp": "matrix(1, 0, 0, 1, 0, 69)",
+      "solidFillWhenRevealed": true,
+      "scroller": "native window scroll"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs (wheel +600, then -300)",
+      "selector": "div.site-header",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "rest": {
+        "top": 0,
+        "left": 0,
+        "width": 375,
+        "height": 69,
+        "bg": "rgba(0, 0, 0, 0)",
+        "tr": "none",
+        "op": "1",
+        "shadow": "none",
+        "blur": "none",
+        "filter": "none",
+        "radius": "0px",
+        "blend": "normal",
+        "pos": "absolute",
+        "color": "rgb(255, 255, 255)"
+       },
+       "down600": {
+        "top": -138,
+        "left": 0,
+        "width": 375,
+        "height": 69,
+        "bg": "rgb(13, 14, 18)",
+        "tr": "matrix(1, 0, 0, 1, 0, -69)",
+        "op": "1",
+        "shadow": "none",
+        "blur": "none",
+        "filter": "none",
+        "radius": "0px",
+        "blend": "normal",
+        "pos": "fixed",
+        "color": "rgb(255, 255, 255)"
+       },
+       "upAfterDown": {
+        "top": 0,
+        "left": 0,
+        "width": 375,
+        "height": 69,
+        "bg": "rgb(13, 14, 18)",
+        "tr": "matrix(1, 0, 0, 1, 0, 69)",
+        "op": "1",
+        "shadow": "none",
+        "blur": "none",
+        "filter": "none",
+        "radius": "0px",
+        "blend": "normal",
+        "pos": "fixed",
+        "color": "rgb(255, 255, 255)"
+       }
+      }
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "changes": [
+       "band 129 -> 69px",
+       "a text link \"All our cases\" appears beside the burger area",
+       "header gets a solid #0d0e12 fill once scrolled (transparent at 768 and 1440)"
+      ],
+      "drop": "nothing removed"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.site-header",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "height": 69,
+       "logoLeft": 35,
+       "cases": true,
+       "scrolledBg": "rgb(13, 14, 18)"
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "bar",
+   "tier": 375,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "no navigation bar: logo and burger only, plus one text link \"All our cases\" at this tier",
+      "items": 3
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.site-header a, button",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "links": [
+        [
+         "Return to Dogstudio's homepage",
+         true
+        ],
+        [
+         "All our news",
+         false
+        ],
+        [
+         "All our cases",
+         true
+        ]
+       ]
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "logo": {
+       "left": 35,
+       "top": 24.5,
+       "width": 84,
+       "height": 27
+      },
+      "burger": {
+       "left": 314,
+       "top": 19,
+       "width": 32,
+       "height": 30
+      },
+      "cases": {
+       "left": 169.3,
+       "top": 28,
+       "width": 94.5
+      }
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.site-header",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "div.site-header": [
+        {
+         "sel": "div.site-wrapper > div.site-header",
+         "vis": true,
+         "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 375,
+          "bottom": 69,
+          "width": 375,
+          "height": 69,
+          "insetLeft": 0,
+          "insetRight": 0,
+          "cx": 187.5
+         },
+         "display": "flex",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "space-between",
+         "align": "center",
+         "padding": "20px 35px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.site-header .site-header-title": [
+        {
+         "sel": "div.site-header > div.site-header-title",
+         "vis": true,
+         "rect": {
+          "top": 25.5,
+          "left": 35,
+          "right": 119,
+          "bottom": 43.5,
+          "width": 84,
+          "height": 18,
+          "insetLeft": 35,
+          "insetRight": 256,
+          "cx": 77
+         },
+         "display": "block",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "0px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.site-header .site-header-logo": [
+        {
+         "sel": "div.site-header-title > a.site-header-logo",
+         "vis": true,
+         "rect": {
+          "top": 24.5,
+          "left": 35,
+          "right": 119,
+          "bottom": 51.5,
+          "width": 84,
+          "height": 27,
+          "insetLeft": 35,
+          "insetRight": 256,
+          "cx": 77
+         },
+         "display": "flex",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "0px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.site-header .site-header-cases": [
+        {
+         "sel": "div.site-header > a.site-header-cases",
+         "vis": true,
+         "rect": {
+          "top": 28,
+          "left": 169.3,
+          "right": 263.8,
+          "bottom": 41,
+          "width": 94.5,
+          "height": 13,
+          "insetLeft": 169.3,
+          "insetRight": 111.2,
+          "cx": 216.5
+         },
+         "display": "block",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "0px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.site-header .site-header-button": [
+        {
+         "sel": "div.site-header > button.site-header-button",
+         "vis": true,
+         "rect": {
+          "top": 19,
+          "left": 314,
+          "right": 346,
+          "bottom": 49,
+          "width": 32,
+          "height": 30,
+          "insetLeft": 314,
+          "insetRight": 29,
+          "cx": 330
+         },
+         "display": "block",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "8px 6px",
+         "maxWidth": "none"
+        }
+       ]
+      }
+     }
+    },
+    "item_typography": {
+     "value": {
+      "fontSize": 13,
+      "fontFamily": "Heebo, Helvetica, Arial, sans-serif",
+      "fontWeight": "500",
+      "textTransform": "none",
+      "colour": "#ffffff",
+      "scalingMode": "fixed 13px at every width",
+      "series": [
+       [
+        1600,
+        "13px"
+       ],
+       [
+        1440,
+        "13px"
+       ],
+       [
+        1280,
+        "13px"
+       ],
+       [
+        1100,
+        "13px"
+       ],
+       [
+        1024,
+        "13px"
+       ],
+       [
+        900,
+        "13px"
+       ],
+       [
+        768,
+        "13px"
+       ],
+       [
+        640,
+        "13px"
+       ],
+       [
+        520,
+        "13px"
+       ],
+       [
+        414,
+        "13px"
+       ],
+       [
+        375,
+        "13px"
+       ]
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fontscale.mjs",
+      "selector": "div.site-header .site-header-cases",
+      "rawFile": "raw/dogstudio-fontscale.json",
+      "raw": [
+       [
+        1600,
+        "13px"
+       ],
+       [
+        1440,
+        "13px"
+       ],
+       [
+        1280,
+        "13px"
+       ],
+       [
+        1100,
+        "13px"
+       ],
+       [
+        1024,
+        "13px"
+       ],
+       [
+        900,
+        "13px"
+       ],
+       [
+        768,
+        "13px"
+       ],
+       [
+        640,
+        "13px"
+       ],
+       [
+        520,
+        "13px"
+       ],
+       [
+        414,
+        "13px"
+       ],
+       [
+        375,
+        "13px"
+       ]
+      ]
+     }
+    },
+    "item_states": {
+     "value": {
+      "hover": [
+       {
+        "text": "Return to Dogstudio's homepage",
+        "styleDiffs": 0
+       },
+       {
+        "text": "All our cases",
+        "styleDiffs": 0
+       }
+      ],
+      "note": "0 computed-style diffs after 650ms hover on each visible bar link",
+      "currentIndicator": "none"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs hover 650ms",
+      "selector": "div.site-header a",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": [
+       {
+        "text": "Return to Dogstudio's homepage",
+        "diffCount": 0
+       },
+       {
+        "skipped": "not visible"
+       },
+       {
+        "text": "All our cases",
+        "diffCount": 0
+       }
+      ]
+     }
+    },
+    "mechanics": {
+     "value": {
+      "openTrigger": "burger click only",
+      "hoverDropdown": false,
+      "popupHints": {
+       "ariaHaspopup": 4,
+       "ariaExpanded": [
+        "div.showreel-video > div.plyr.plyr--full-ui.plyr--video > div.plyr__controls > div.plyr__menu > button.plyr__control false"
+       ],
+       "dropdownClass": [],
+       "semantic": {
+        "nav": 0,
+        "header": 1,
+        "banner": 0,
+        "dialog": 0
+       }
+      }
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs hover + DOM query",
+      "selector": "div.site-header a",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "newBoxes": [
+        0,
+        null,
+        0
+       ],
+       "popupHints": {
+        "ariaHaspopup": 4,
+        "ariaExpanded": [
+         "div.showreel-video > div.plyr.plyr--full-ui.plyr--video > div.plyr__controls > div.plyr__menu > button.plyr__control false"
+        ],
+        "dropdownClass": [],
+        "semantic": {
+         "nav": 0,
+         "header": 1,
+         "banner": 0,
+         "dialog": 0
+        }
+       }
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "labels": [
+       "All our cases"
+      ],
+      "logoAccessibleName": "Return to Dogstudio's homepage",
+      "fixed": true
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.site-header",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "logoName": "Return to Dogstudio's homepage",
+       "links": [
+        [
+         "Return to Dogstudio's homepage",
+         true
+        ],
+        [
+         "All our news",
+         false
+        ],
+        [
+         "All our cases",
+         true
+        ]
+       ]
+      }
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "changes": [
+       "\"All our cases\" link visible"
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.site-header a",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": [
+       [
+        "Return to Dogstudio's homepage",
+        true,
+        "flex"
+       ],
+       [
+        "All our news",
+        false,
+        "none"
+       ],
+       [
+        "All our cases",
+        true,
+        "block"
+       ]
+      ]
+     }
+    }
+   }
+  },
+  {
+   "surface": "dropdown",
+   "tier": 375,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: no bar item owns a dropdown panel (the bar has no navigation links); 4 aria-haspopup and 0 dropdown/mega/submenu class matches; hover on the visible header links opened nothing (newBoxCount [0,0])",
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs hover + DOM query",
+      "selector": "div.site-header a; [aria-haspopup]; [class*=dropdown|mega|sub-menu|submenu|flyout]",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "popupHints": {
+        "ariaHaspopup": 4,
+        "ariaExpanded": [
+         "div.showreel-video > div.plyr.plyr--full-ui.plyr--video > div.plyr__controls > div.plyr__menu > button.plyr__control false"
+        ],
+        "dropdownClass": [],
+        "semantic": {
+         "nav": 0,
+         "header": 1,
+         "banner": 0,
+         "dialog": 0
+        }
+       },
+       "hover": [
+        {
+         "text": "Return to Dogstudio's homepage",
+         "newBoxCount": 0
+        },
+        {
+         "skipped": "not visible"
+        },
+        {
+         "text": "All our cases",
+         "newBoxCount": 0
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "mega",
+   "tier": 375,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: no bar item owns a mega panel (the bar has no navigation links); 4 aria-haspopup and 0 dropdown/mega/submenu class matches; hover on the visible header links opened nothing (newBoxCount [0,0])",
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs hover + DOM query",
+      "selector": "div.site-header a; [aria-haspopup]; [class*=dropdown|mega|sub-menu|submenu|flyout]",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "popupHints": {
+        "ariaHaspopup": 4,
+        "ariaExpanded": [
+         "div.showreel-video > div.plyr.plyr--full-ui.plyr--video > div.plyr__controls > div.plyr__menu > button.plyr__control false"
+        ],
+        "dropdownClass": [],
+        "semantic": {
+         "nav": 0,
+         "header": 1,
+         "banner": 0,
+         "dialog": 0
+        }
+       },
+       "hover": [
+        {
+         "text": "Return to Dogstudio's homepage",
+         "newBoxCount": 0
+        },
+        {
+         "skipped": "not visible"
+        },
+        {
+         "text": "All our cases",
+         "newBoxCount": 0
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "trigger-close",
+   "tier": 375,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "kind": "burger (three bars) that turns into an X in place",
+      "element": "button.site-header-button",
+      "separateCloseButton": false,
+      "replacesInPlace": true,
+      "bars": "three white span bars 20/16/20px x 2px"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-header-button",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "tag": "BUTTON",
+       "atPointAfterOpen": {
+        "isTrigger": true,
+        "inPanel": false
+       },
+       "htmlAfter": "<button type=\"button\" class=\"site-header-button is-active\" title=\"Toggle menu\">\n    <span class=\"u-visually-hidden\">Toggle menu</span>\n    <span class=\"button-bar button-bar--1\"></span>\n    <span class=\"button-bar button-bar--2\"></span>\n   "
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "left": 314,
+      "top": 19,
+      "width": 32,
+      "height": 30,
+      "insetRight": 29,
+      "targetSizeMeets44": false,
+      "zIndex": {
+       "button": "60",
+       "header": "1000",
+       "menu": "995"
+      }
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-header-button",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "top": 19,
+       "left": 314,
+       "right": 346,
+       "bottom": 49,
+       "width": 32,
+       "height": 30,
+       "insetLeft": 314,
+       "insetRight": 29,
+       "cx": 330
+      }
+     }
+    },
+    "item_states": {
+     "value": {
+      "open": "class is-active added; button rotates 180 degrees (matrix -1,0,0,-1); bars become an X (bar 1 +45deg, bar 3 -45deg, bar 2 scaleX 1)",
+      "closed": "bars at -6px / scaleX .8 / +6px",
+      "transition": "transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1), -webkit-transform 0.6s cubic-bezier(0.1"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "d-open.mjs (1440) + cap.mjs",
+      "selector": ".site-header-button .button-bar",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "htmlAfter": "<button type=\"button\" class=\"site-header-button is-active\" title=\"Toggle menu\">\n    <span class=\"u-visually-hidden\">Toggle menu</span>\n    <span class=\"button-bar button-bar--1\"></span>\n    <span class=\"button-bar button-bar--2\"></span>\n    <span class=\"button-bar button-bar--3\"></span>\n  </button>",
+       "transition": "transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1), -webkit-transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)"
+      }
+     }
+    },
+    "trigger_close": {
+     "value": {
+      "kind": "burger",
+      "elementSemantics": {
+       "tag": "BUTTON",
+       "type": "button",
+       "title": "Toggle menu",
+       "accessibleName": "Toggle menu (visually hidden span + title)",
+       "ariaExpanded": null
+      },
+      "closeStyle": "the same button, bars morph to an X",
+      "replacesInPlace": true,
+      "topRow": false,
+      "animation": "bar transform transition 0.6s cubic-bezier(0.165,0.84,0.44,1)",
+      "magnet": "not probed"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs click",
+      "selector": ".site-header-button",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "attrs": {
+        "type": "button",
+        "title": "Toggle menu"
+       },
+       "name": "Toggle menu",
+       "transition": "transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1), -webkit-transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)"
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "openTrigger": "click",
+      "nativeButton": true,
+      "escapeCloses": true,
+      "focusAfterOpen": "body.home.page-template.page-template-page-home",
+      "focusAfterClose": "button.site-header-button",
+      "scrollLock": "locked: body overflow hidden and wheel/PageDown do not move the page",
+      "wheelProbe": {
+       "scrollYBefore": 0,
+       "afterWheel400": 0,
+       "afterPageDown": 0,
+       "pageScrollsWhileOpen": false
+      },
+      "bodyOverflowOpen": "hidden",
+      "dialog": 0,
+      "inert": 0,
+      "ariaModal": 0,
+      "openSurvivesResize": {
+       "sameTier": true,
+       "crossTierTo": 1440,
+       "open": true
+      },
+      "openStateMarker": "body classes menu-active menu-open"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-header-button, .site-menu",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "escape": {
+        "panelClip": "none",
+        "panelOp": "0",
+        "panelVis": "visible",
+        "panelRect": {
+         "top": 0,
+         "left": 0,
+         "right": 375,
+         "bottom": 900,
+         "width": 375,
+         "height": 900,
+         "insetLeft": 0,
+         "insetRight": 0,
+         "cx": 187.5
+        },
+        "active": "html.touchevents.backgroundcliptext.objectfit > body.home.page-template.page-template-page-home",
+        "bodyOverflow": "hidden auto",
+        "closedByEscape": true
+       },
+       "resize": {
+        "openAfterResize": true,
+        "crossTo": 1440,
+        "openAfterCrossTierResize": true,
+        "bodyOverflowAfterCross": "hidden"
+       },
+       "scrollLockProbe": {
+        "scrollYBefore": 0,
+        "afterWheel400": 0,
+        "afterPageDown": 0,
+        "pageScrollsWhileOpen": false
+       },
+       "afterClose": {
+        "bodyOverflow": "hidden auto",
+        "htmlOverflow": "visible",
+        "active": "html.touchevents.backgroundcliptext.objectfit > body.home.page-template.page-template-page-home > div.site-wrapper > div.site-header > button.site-header-button",
+        "triggerText": "Toggle menu",
+        "ariaExpanded": null,
+        "open": false
+       }
+      }
+     }
+    },
+    "motion": {
+     "value": {
+      "effect": "bar-to-X morph and 180 degree rotation",
+      "transition": "transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1), -webkit-transform 0.6s cubic-bezier(0.1",
+      "spec38Tier": "V",
+      "substrate": "DOM"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-header-button",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "transition": "transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1), -webkit-transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)"
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "label": "none visible (icon only)",
+      "accessibleName": "Toggle menu"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-header-button",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "name": "Toggle menu",
+       "attrs": {
+        "type": "button",
+        "title": "Toggle menu"
+       }
+      }
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "note": "same 32x30 burger at every tier; only its inset changes (right inset 29px)",
+      "drop": "not dropped at any tier"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-header-button",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "top": 19,
+       "left": 314,
+       "right": 346,
+       "bottom": 49,
+       "width": 32,
+       "height": 30,
+       "insetLeft": 314,
+       "insetRight": 29,
+       "cx": 330
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "drawer",
+   "tier": 375,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "full-screen",
+      "reveal": "a #131419 curtain sweeps across the viewport from the left while the menu image layer and list fade in behind it",
+      "menuLayerIsTransparent": true
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-menu, .site-menu-panel, .site-menu-back",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "menu": {
+        "position": "fixed",
+        "rect": {
+         "top": 0,
+         "left": 0,
+         "right": 375,
+         "bottom": 900,
+         "width": 375,
+         "height": 900,
+         "insetLeft": 0,
+         "insetRight": 0,
+         "cx": 187.5
+        },
+        "bg": "rgba(0, 0, 0, 0)"
+       },
+       "back": "rgb(19, 20, 25)",
+       "panel": {
+        "top": 0,
+        "left": -375,
+        "right": 0,
+        "bottom": 900,
+        "width": 375,
+        "height": 900,
+        "insetLeft": -375,
+        "insetRight": 375,
+        "cx": -187.5
+       }
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "menu": {
+       "position": "fixed",
+       "inset": {
+        "top": 0,
+        "left": 0,
+        "right": 0,
+        "bottom": 0
+       },
+       "width": 375,
+       "height": 900,
+       "zIndex": "995"
+      },
+      "backLayer": {
+       "zIndex": "990",
+       "rect": {
+        "top": 0,
+        "left": 0,
+        "right": 375,
+        "bottom": 900,
+        "width": 375,
+        "height": 900,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 187.5
+       }
+      },
+      "curtain": {
+       "zIndex": "999",
+       "restLeft": 0
+      },
+      "radius": 0,
+      "centredOnViewport": true
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-menu",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "menu": {
+        "top": 0,
+        "left": 0,
+        "right": 375,
+        "bottom": 900,
+        "width": 375,
+        "height": 900,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 187.5
+       },
+       "back": {
+        "top": 0,
+        "left": 0,
+        "right": 375,
+        "bottom": 900,
+        "width": 375,
+        "height": 900,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 187.5
+       },
+       "panel": {
+        "top": 0,
+        "left": -375,
+        "right": 0,
+        "bottom": 900,
+        "width": 375,
+        "height": 900,
+        "insetLeft": -375,
+        "insetRight": 375,
+        "cx": -187.5
+       }
+      }
+     }
+    },
+    "zone_model": {
+     "value": {
+      "list": {
+       "left": 35,
+       "top": 473,
+       "count": 5,
+       "alignment": "left"
+      },
+      "footerRow": {
+       "showreel": {
+        "left": 35,
+        "top": 782
+       },
+       "contentBlock": {
+        "top": 835,
+        "left": 35,
+        "right": 340,
+        "bottom": 865,
+        "width": 305,
+        "height": 30,
+        "insetLeft": 35,
+        "insetRight": 35,
+        "cx": 187.5
+       }
+      },
+      "layout": "list and footer stack in one left-aligned column at x=35",
+      "headerControlsAbove": "the burger (z 1000 header, button z 60) stays above the menu (z 995)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-menu",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "links": [
+        [
+         "The Studio",
+         35,
+         473
+        ],
+        [
+         "Our Cases",
+         35,
+         529.8
+        ],
+        [
+         "Careers",
+         35,
+         586.6
+        ],
+        [
+         "Our Values",
+         35,
+         643.4
+        ],
+        [
+         "Contact",
+         35,
+         700.2
+        ]
+       ],
+       "showreel": {
+        "top": 782,
+        "left": 35,
+        "right": 340,
+        "bottom": 795,
+        "width": 305,
+        "height": 13,
+        "insetLeft": 35,
+        "insetRight": 35,
+        "cx": 187.5
+       },
+       "content": {
+        "top": 835,
+        "left": 35,
+        "right": 340,
+        "bottom": 865,
+        "width": 305,
+        "height": 30,
+        "insetLeft": 35,
+        "insetRight": 35,
+        "cx": 187.5
+       }
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "menuLayerFill": "transparent",
+      "backLayerFill": "#131419",
+      "curtainFill": "#131419",
+      "backdropFilter": "none",
+      "scrim": false,
+      "blur": false,
+      "opacityAtRest": "0",
+      "opacityOpen": "1",
+      "pageBehind": "covered by the opaque #131419 back layer"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-menu-back, .site-menu-panel",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "back": "rgb(19, 20, 25)",
+       "panel": "rgb(19, 20, 25)",
+       "menu": "rgba(0, 0, 0, 0)"
+      }
+     }
+    },
+    "background_visual": {
+     "value": {
+      "kind": "static image layer (picture.site-menu-back > img) over the flat colour, faded in",
+      "imageRect": {
+       "top": 0,
+       "left": 0,
+       "right": 450,
+       "bottom": 515,
+       "width": 450,
+       "height": 515,
+       "insetLeft": 0,
+       "insetRight": -75,
+       "cx": 225
+      },
+      "imageStyle": {
+       "position": "static",
+       "opacity": "1"
+      },
+      "behaviour": "fades with the menu; no parallax or follow-hover measured",
+      "menuTaglineImage": "tagline image measured at 1440 only"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-menu-back img",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "img": {
+        "top": 0,
+        "left": 0,
+        "right": 450,
+        "bottom": 515,
+        "width": 450,
+        "height": 515,
+        "insetLeft": 0,
+        "insetRight": -75,
+        "cx": 225
+       },
+       "panelMedia": {
+        "img": 0,
+        "video": 0,
+        "canvas": 0,
+        "svg": 6
+       }
+      }
+     }
+    },
+    "item_typography": {
+     "value": {
+      "fontFamily": "Heebo, Helvetica, Arial, sans-serif",
+      "fontSize": 40,
+      "fontWeight": "200",
+      "letterSpacing": "-0.8px",
+      "textTransform": "none",
+      "colour": "rgba(160, 168, 220, 0.8)",
+      "scalingMode": "stepped, and driven by viewport HEIGHT as well as width: 60px at >=1280 wide and 900 tall, 45px at 1100-520 wide or when the viewport is 713px tall, 40px at 414 and below",
+      "widthSeries": [
+       [
+        1600,
+        "60px"
+       ],
+       [
+        1440,
+        "60px"
+       ],
+       [
+        1280,
+        "60px"
+       ],
+       [
+        1100,
+        "45px"
+       ],
+       [
+        1024,
+        "45px"
+       ],
+       [
+        900,
+        "45px"
+       ],
+       [
+        768,
+        "45px"
+       ],
+       [
+        640,
+        "45px"
+       ],
+       [
+        520,
+        "45px"
+       ],
+       [
+        414,
+        "40px"
+       ],
+       [
+        375,
+        "40px"
+       ]
+      ],
+      "heightProbe": [
+       [
+        "1440x900",
+        "60px"
+       ],
+       [
+        "1352x713",
+        "45px"
+       ],
+       [
+        "1352x900",
+        "60px"
+       ],
+       [
+        "1440x713",
+        "45px"
+       ],
+       [
+        "1440x600",
+        "45px"
+       ],
+       [
+        "1440x1100",
+        "60px"
+       ],
+       [
+        "1100x713",
+        "45px"
+       ],
+       [
+        "1100x900",
+        "45px"
+       ]
+      ],
+      "caseOrigin": "source Title Case, no CSS transform"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fontscale.mjs + d-h.mjs",
+      "selector": ".site-menu-item a",
+      "rawFile": "raw/dogstudio-fontscale.json ; raw/dogstudio-heightprobe.json",
+      "raw": {
+       "width": [
+        [
+         1600,
+         "60px"
+        ],
+        [
+         1440,
+         "60px"
+        ],
+        [
+         1280,
+         "60px"
+        ],
+        [
+         1100,
+         "45px"
+        ],
+        [
+         1024,
+         "45px"
+        ],
+        [
+         900,
+         "45px"
+        ],
+        [
+         768,
+         "45px"
+        ],
+        [
+         640,
+         "45px"
+        ],
+        [
+         520,
+         "45px"
+        ],
+        [
+         414,
+         "40px"
+        ],
+        [
+         375,
+         "40px"
+        ]
+       ],
+       "height": [
+        [
+         "1440x900",
+         "60px"
+        ],
+        [
+         "1352x713",
+         "45px"
+        ],
+        [
+         "1352x900",
+         "60px"
+        ],
+        [
+         "1440x713",
+         "45px"
+        ],
+        [
+         "1440x600",
+         "45px"
+        ],
+        [
+         "1440x1100",
+         "60px"
+        ],
+        [
+         "1100x713",
+         "45px"
+        ],
+        [
+         "1100x900",
+         "45px"
+        ]
+       ]
+      }
+     }
+    },
+    "item_states": {
+     "value": {
+      "hover": "not fired at this tier (touch)",
+      "hoverColourChange": null,
+      "ornament": "no index numbers at this tier",
+      "currentIndicator": "none",
+      "separators": "none"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "d-li.mjs",
+      "selector": ".site-menu-item a",
+      "rawFile": "raw/dogstudio-li-375.json",
+      "raw": {
+       "pseudo": "none",
+       "hover": "not hovered (touch tier)",
+       "colours": [
+        "rgba(160, 168, 220, 0.8)",
+        "rgba(160, 168, 220, 0.8)"
+       ]
+      }
+     }
+    },
+    "secondary_blocks": {
+     "value": {
+      "blocks": [
+       {
+        "kind": "showreel link",
+        "text": "Watch our Showreel",
+        "typeSize": 13,
+        "weight": "500",
+        "colour": "#ffffff",
+        "icon": "right caret svg"
+       },
+       {
+        "kind": "tagline",
+        "form": "image with alt \"We Make Good Shit\""
+       },
+       {
+        "kind": "social row",
+        "items": [
+         "Facebook",
+         "Instagram",
+         "Dribbble",
+         "Twitter",
+         "Newsletter"
+        ],
+        "typeSize": 11,
+        "layout": "icon-width items (40px pitch) in a row under the showreel"
+       }
+      ],
+      "previewPane": false
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-menu-footer",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "text": "The Studio Our Cases Careers Our Values Contact Watch our Showreel Facebook Instagram Dribbble Twitter Newsletter",
+       "socials": [
+        [
+         "Facebook",
+         35,
+         835
+        ],
+        [
+         "Instagram",
+         75,
+         835
+        ],
+        [
+         "Dribbble",
+         115,
+         835
+        ],
+        [
+         "Twitter",
+         155,
+         835
+        ],
+        [
+         "Newsletter",
+         195,
+         835
+        ]
+       ],
+       "showreel": {
+        "fontSize": "13px",
+        "fontWeight": "500",
+        "textTransform": "none",
+        "letterSpacing": "normal",
+        "lineHeight": "13px",
+        "color": "rgb(255, 255, 255)",
+        "fontFamily": "Heebo, Helvetica, Arial, sans-serif"
+       }
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "openTrigger": "click on the burger",
+      "openMarker": "body.menu-active.menu-open; closing: menu-active menu-close menu-running, then menu-running, then none",
+      "escapeCloses": true,
+      "scrollLock": "locked (wheel and PageDown do not move the page; body overflow hidden)",
+      "wheelProbe": {
+       "scrollYBefore": 0,
+       "afterWheel400": 0,
+       "afterPageDown": 0,
+       "pageScrollsWhileOpen": false
+      },
+      "bodyOverflowOpen": "hidden",
+      "bodyOverflowAfterClose": "hidden auto",
+      "dialog": 0,
+      "inert": 0,
+      "ariaModal": 0,
+      "focusAfterOpen": "body.home.page-template.page-template-page-home",
+      "survivesResize": {
+       "sameTier": true,
+       "crossTierTo": 1440,
+       "open": true
+      },
+      "pointerEventsWhenClosed": "menu layer opacity 0 and pointer-events none"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-menu",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "escape": {
+        "panelClip": "none",
+        "panelOp": "0",
+        "panelVis": "visible",
+        "panelRect": {
+         "top": 0,
+         "left": 0,
+         "right": 375,
+         "bottom": 900,
+         "width": 375,
+         "height": 900,
+         "insetLeft": 0,
+         "insetRight": 0,
+         "cx": 187.5
+        },
+        "active": "html.touchevents.backgroundcliptext.objectfit > body.home.page-template.page-template-page-home",
+        "bodyOverflow": "hidden auto",
+        "closedByEscape": true
+       },
+       "lock": {
+        "scrollYBefore": 0,
+        "afterWheel400": 0,
+        "afterPageDown": 0,
+        "pageScrollsWhileOpen": false
+       },
+       "resize": {
+        "openAfterResize": true,
+        "crossTo": 1440,
+        "openAfterCrossTierResize": true,
+        "bodyOverflowAfterCross": "hidden"
+       },
+       "active": "html.touchevents.backgroundcliptext.objectfit > body.home.page-template.page-template-page-home",
+       "afterClose": {
+        "bodyOverflow": "hidden auto",
+        "htmlOverflow": "visible",
+        "active": "html.touchevents.backgroundcliptext.objectfit > body.home.page-template.page-template-page-home > div.site-wrapper > div.site-header > button.site-header-button",
+        "triggerText": "Toggle menu",
+        "ariaExpanded": null,
+        "open": false
+       }
+      }
+     }
+    },
+    "motion": {
+     "value": {
+      "open": {
+       "effect": "curtain (.site-menu-panel, #131419) translateX from -100% across to the right and away, while .site-menu-back and the list go opacity 0 -> 1 and pointer-events none -> auto",
+       "backFullyOpaqueByMs": 1830,
+       "sampleGapMs": "the page is WebGL-heavy so evaluate calls took 0.4-1 s; durations are upper bounds",
+       "firstSamples": [
+        [
+         1019,
+         "0",
+         "matrix(1, 0, 0, 1, -339.966, 0)"
+        ],
+        [
+         1129,
+         "0",
+         "matrix(1, 0, 0, 1, -169.058, 0)"
+        ],
+        [
+         1380,
+         "0",
+         "matrix(1, 0, 0, 1, -6.47045, 0)"
+        ],
+        [
+         1830,
+         "1",
+         "matrix(1, 0, 0, 1, 42.4463, 0)"
+        ]
+       ]
+      },
+      "close": {
+       "effect": "same curtain sweep in reverse with body classes menu-close menu-running",
+       "backHiddenByMs": 824,
+       "firstSamples": [
+        [
+         5,
+         "1",
+         "matrix(1, 0, 0, 1, -375, 0)"
+        ],
+        [
+         107,
+         "1",
+         "matrix(1, 0, 0, 1, -372.889, 0)"
+        ],
+        [
+         216,
+         "1",
+         "matrix(1, 0, 0, 1, -359.165, 0)"
+        ],
+        [
+         324,
+         "1",
+         "matrix(1, 0, 0, 1, -323.477, 0)"
+        ]
+       ]
+      },
+      "spec38Tier": "V reachable (translate + opacity); the site drives it from its own dog.js/main.js, no GSAP global on the page",
+      "substrate": "DOM (the page behind is a WebGL scene)"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs sampler",
+      "selector": ".site-menu-panel, .site-menu-back",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "open": [
+        [
+         1019,
+         "0",
+         "matrix(1, 0, 0, 1, -339.966, 0)"
+        ],
+        [
+         1129,
+         "0",
+         "matrix(1, 0, 0, 1, -169.058, 0)"
+        ],
+        [
+         1380,
+         "0",
+         "matrix(1, 0, 0, 1, -6.47045, 0)"
+        ],
+        [
+         1830,
+         "1",
+         "matrix(1, 0, 0, 1, 42.4463, 0)"
+        ],
+        [
+         2065,
+         "1",
+         "matrix(1, 0, 0, 1, 343.042, 0)"
+        ],
+        [
+         2205,
+         "1",
+         "matrix(1, 0, 0, 1, 370.047, 0)"
+        ],
+        [
+         2329,
+         "1",
+         "matrix(1, 0, 0, 1, -375, 0)"
+        ],
+        [
+         2469,
+         "1",
+         "matrix(1, 0, 0, 1, -375, 0)"
+        ]
+       ],
+       "close": [
+        [
+         5,
+         "1",
+         "matrix(1, 0, 0, 1, -375, 0)",
+         "-home-php page page-id-5 menu-active menu-close menu-running"
+        ],
+        [
+         107,
+         "1",
+         "matrix(1, 0, 0, 1, -372.889, 0)",
+         "-home-php page page-id-5 menu-active menu-close menu-running"
+        ],
+        [
+         216,
+         "1",
+         "matrix(1, 0, 0, 1, -359.165, 0)",
+         "-home-php page page-id-5 menu-active menu-close menu-running"
+        ],
+        [
+         324,
+         "1",
+         "matrix(1, 0, 0, 1, -323.477, 0)",
+         "-home-php page page-id-5 menu-active menu-close menu-running"
+        ],
+        [
+         431,
+         "1",
+         "matrix(1, 0, 0, 1, -121.226, 0)",
+         "-home-php page page-id-5 menu-active menu-close menu-running"
+        ],
+        [
+         526,
+         "1",
+         "matrix(1, 0, 0, 1, -37.8737, 0)",
+         "-home-php page page-id-5 menu-active menu-close menu-running"
+        ],
+        [
+         634,
+         "1",
+         "matrix(1, 0, 0, 1, -10.3322, 0)",
+         "-home-php page page-id-5 menu-active menu-close menu-running"
+        ],
+        [
+         728,
+         "1",
+         "matrix(1, 0, 0, 1, -2.63013, 0)",
+         "-home-php page page-id-5 menu-active menu-close menu-running"
+        ]
+       ]
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "linkLabels": [
+       "The Studio",
+       "Our Cases",
+       "Careers",
+       "Our Values",
+       "Contact"
+      ],
+      "count": 5,
+      "footer": [
+       "Watch our Showreel",
+       "Facebook",
+       "Instagram",
+       "Dribbble",
+       "Twitter",
+       "Newsletter"
+      ],
+      "indexNumbers": "none at this tier",
+      "fixed": true
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs + d-li.mjs",
+      "selector": ".site-menu a",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "links": [
+        "The Studio",
+        "Our Cases",
+        "Careers",
+        "Our Values",
+        "Contact"
+       ],
+       "pseudo": "none"
+      }
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "changes": [
+       "links 45 -> 40px",
+       "index numbers removed",
+       "list starts lower (y=473 here, 410 at 768, 254 at 1440)"
+      ],
+      "drop": "index numbers removed (pseudo content none)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs + d-li.mjs",
+      "selector": ".site-menu",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "listLeft": 35,
+       "listTop": 473,
+       "fontSize": "40px",
+       "index": "none"
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "footer",
+   "tier": 375,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "full-width transparent block over the page background, not a <footer> element (div.site-footer)",
+      "tag": "DIV",
+      "role": null,
+      "height": 384.3
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-footer",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "rect": {
+        "top": 515.5,
+        "left": 0,
+        "right": 375,
+        "bottom": 899.7,
+        "width": 375,
+        "height": 384.3,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 187.5
+       },
+       "tag": "DIV"
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "width": 375,
+      "height": 384.3,
+      "padding": "0px",
+      "radius": 0,
+      "contentWidth": "inner .center, 1024px wide at 1440 (208px each side)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-footer",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "rect": {
+        "top": 515.5,
+        "left": 0,
+        "right": 375,
+        "bottom": 899.7,
+        "width": 375,
+        "height": 384.3,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 187.5
+       }
+      }
+     }
+    },
+    "zone_model": {
+     "value": {
+      "blocks": [
+       "three city labels (Chicago . Amsterdam . Paris .)",
+       "social abbreviations (Fb, Ins, Dri, Tw)",
+       "heading \"Contact us\" + \"We'd love to hear from you\" + email",
+       "Privacy Policy",
+       "language switch (English / Espanol)"
+      ],
+      "groups": [
+       {
+        "left": 29,
+        "top": 659.5,
+        "width": 150,
+        "links": 4
+       },
+       {
+        "left": 169.7,
+        "top": 849.7,
+        "width": 94,
+        "links": 2
+       }
+      ],
+      "headings": [
+       "H3:Chicago .",
+       "H3:Amsterdam .",
+       "H3:Paris .",
+       "H2:Contact us"
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-footer",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "groups": [
+        {
+         "sel": "div.site-footer-block.site-footer-block--social.appear-fade-up > ul",
+         "rect": {
+          "top": 659.5,
+          "left": 29,
+          "right": 179,
+          "bottom": 719.3,
+          "width": 150,
+          "height": 59.9,
+          "insetLeft": 29,
+          "insetRight": 196,
+          "cx": 104
+         },
+         "linkCount": 4,
+         "display": "flex",
+         "gridCols": "none"
+        },
+        {
+         "sel": "div.site-footer-languages.appear-fade-up.appear-delay--5 > ul",
+         "rect": {
+          "top": 849.7,
+          "left": 169.7,
+          "right": 263.7,
+          "bottom": 874.7,
+          "width": 94,
+          "height": 25,
+          "insetLeft": 169.7,
+          "insetRight": 111.3,
+          "cx": 216.7
+         },
+         "linkCount": 2,
+         "display": "flex",
+         "gridCols": "none"
+        }
+       ],
+       "headings": [
+        "H3:Chicago .",
+        "H3:Amsterdam .",
+        "H3:Paris .",
+        "H2:Contact us"
+       ],
+       "text": "Chicago . Amsterdam . Paris . Contact us Fb Ins Dri Tw We'd love to hear from you biz@dogstudio.be Privacy Policy Language: English Español"
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "fill": "transparent",
+      "pageBackgroundBehind": "#131419",
+      "textColour": "#ffffff",
+      "backdropFilter": "none",
+      "backgroundImage": "none"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-footer",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "bg": "rgba(0, 0, 0, 0)",
+       "color": "rgb(255, 255, 255)",
+       "body": "rgb(19, 20, 25)"
+      }
+     }
+    },
+    "background_visual": {
+     "value": {
+      "kind": "none in the footer element; media inside: {\"img\":2,\"video\":0,\"canvas\":0,\"svg\":6}"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-footer",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "img": 2,
+       "video": 0,
+       "canvas": 0,
+       "svg": 6
+      }
+     }
+    },
+    "item_typography": {
+     "value": {
+      "fontFamily": "Heebo, Helvetica, Arial, sans-serif",
+      "fontSize": 11,
+      "fontWeight": "400",
+      "textTransform": "none",
+      "colour": "#a0a8dc @0.7",
+      "emailWeight": "500",
+      "legalSize": 12,
+      "languageFont": "Gilroy, Helvetica, Arial, sans-serif",
+      "scalingMode": "fixed 11px"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-footer a",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "social": {
+        "text": "Fb",
+        "rawText": "Fb",
+        "href": "https://www.facebook.com/dogstudio/",
+        "rect": {
+         "top": 659.5,
+         "left": 29,
+         "right": 59,
+         "bottom": 689.5,
+         "width": 30,
+         "height": 30,
+         "insetLeft": 29,
+         "insetRight": 316,
+         "cx": 44
+        },
+        "fontSize": "11px",
+        "fontWeight": "400",
+        "fontFamily": "Heebo, Helvetica, Arial, sans-serif",
+        "letterSpacing": "normal",
+        "textTransform": "none",
+        "color": "rgba(160, 168, 220, 0.7)"
+       },
+       "mail": {
+        "text": "biz@dogstudio.be",
+        "rawText": "biz@dogstudio.be",
+        "href": "mailto:biz@dogstudio.be",
+        "rect": {
+         "top": 775.3,
+         "left": 200.6,
+         "right": 307.6,
+         "bottom": 792.3,
+         "width": 107.1,
+         "height": 17,
+         "insetLeft": 200.6,
+         "insetRight": 67.4,
+         "cx": 254.1
+        },
+        "fontSize": "11px",
+        "fontWeight": "500",
+        "fontFamily": "Heebo, Helvetica, Arial, sans-serif",
+        "letterSpacing": "normal",
+        "textTransform": "none",
+        "color": "rgb(255, 255, 255)"
+       },
+       "legal": {
+        "text": "Privacy Policy",
+        "rawText": "Privacy Policy",
+        "href": "https://www.deptagency.com/en-nl/privacy-policy/",
+        "rect": {
+         "top": 811.3,
+         "left": 149.9,
+         "right": 225.1,
+         "bottom": 829.3,
+         "width": 75.2,
+         "height": 18,
+         "insetLeft": 149.9,
+         "insetRight": 149.9,
+         "cx": 187.5
+        },
+        "fontSize": "12px",
+        "fontWeight": "500",
+        "fontFamily": "Heebo, Helvetica, Arial, sans-serif",
+        "letterSpacing": "normal",
+        "textTransform": "none",
+        "color": "rgba(160, 168, 220, 0.7)"
+       },
+       "lang": {
+        "text": "English",
+        "rawText": "English",
+        "href": "https://dogstudio.co/",
+        "rect": {
+         "top": 849.7,
+         "left": 169.7,
+         "right": 263.7,
+         "bottom": 874.7,
+         "width": 94,
+         "height": 25,
+         "insetLeft": 169.7,
+         "insetRight": 111.3,
+         "cx": 216.7
+        },
+        "fontSize": "11px",
+        "fontWeight": "700",
+        "fontFamily": "Gilroy, Helvetica, Arial, sans-serif",
+        "letterSpacing": "normal",
+        "textTransform": "none",
+        "color": "rgb(255, 255, 255)"
+       }
+      }
+     }
+    },
+    "item_states": {
+     "value": {
+      "hover": "not measured"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-footer a",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "note": "footer hover not driven"
+      }
+     }
+    },
+    "secondary_blocks": {
+     "value": {
+      "blocks": [
+       "social abbreviations",
+       "contact email",
+       "privacy link",
+       "language switch"
+      ],
+      "newsletterInputs": 0
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-footer",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "text": "Chicago . Amsterdam . Paris . Contact us Fb Ins Dri Tw We'd love to hear from you biz@dogstudio.be Privacy Policy Language: English Español",
+       "inputs": 0
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "text": "Chicago . Amsterdam . Paris . Contact us Fb Ins Dri Tw We'd love to hear from you biz@dogstudio.be Privacy Policy Language: English Espa ol",
+      "linkCount": 8,
+      "fixed": true
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-footer",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "links": [
+        "Fb",
+        "Ins",
+        "Dri",
+        "Tw",
+        "biz@dogstudio.be",
+        "Privacy Policy",
+        "English",
+        "Español"
+       ]
+      }
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "changes": [
+       "social ul at x=29",
+       "block 384px tall (taller: more stacking)"
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-footer",
+      "rawFile": "raw/dogstudio-375.json",
+      "raw": {
+       "height": 384.3,
+       "groups": [
+        [
+         29,
+         659.5
+        ],
+        [
+         169.7,
+         849.7
+        ]
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "header-shell",
+   "tier": 768,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "full-bleed",
+      "detail": "transparent, borderless full-width band holding only a logo and a burger; hides on scroll-down and returns on scroll-up",
+      "headerPointerEvents": "none on the band, auto on logo and burger"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.site-header",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "width": 768,
+       "viewport": 768,
+       "radius": "0px",
+       "position": "absolute"
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "width": 768,
+      "height": 129,
+      "insetTop": 0,
+      "insetLeftLogo": 35,
+      "insetRightBurger": 29,
+      "position": "absolute",
+      "zIndex": "1000",
+      "radius": 0,
+      "centredOnViewport": true,
+      "outOfDateBrowserBanner": "a fixed 82px banner (#buorg) appeared on this UA; it was dismissed with its Ignore link before measuring, otherwise every offset here is +81px"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.site-header",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "rect": {
+        "top": 0,
+        "left": 0,
+        "right": 768,
+        "bottom": 129,
+        "width": 768,
+        "height": 129,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 384
+       },
+       "consent": "#buorgig + button:has-text(\"Accept\")"
+      }
+     }
+    },
+    "zone_model": {
+     "value": {
+      "zones": [
+       {
+        "name": "brand",
+        "rect": {
+         "top": 53.5,
+         "left": 35,
+         "right": 119,
+         "bottom": 83.5,
+         "width": 84,
+         "height": 30,
+         "insetLeft": 35,
+         "insetRight": 649,
+         "cx": 77
+        },
+        "contains": "SVG wordmark 84px wide"
+       },
+       {
+        "name": "trigger",
+        "rect": {
+         "top": 49,
+         "left": 707,
+         "right": 739,
+         "bottom": 79,
+         "width": 32,
+         "height": 30,
+         "insetLeft": 707,
+         "insetRight": 29,
+         "cx": 723
+        },
+        "contains": "burger button"
+       }
+      ],
+      "alignment": "logo left, burger right, both vertically level; nothing else"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.site-header",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "div.site-header": [
+        {
+         "sel": "div.site-wrapper > div.site-header",
+         "vis": true,
+         "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 768,
+          "bottom": 129,
+          "width": 768,
+          "height": 129,
+          "insetLeft": 0,
+          "insetRight": 0,
+          "cx": 384
+         },
+         "display": "flex",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "space-between",
+         "align": "center",
+         "padding": "50px 35px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.site-header .site-header-title": [
+        {
+         "sel": "div.site-header > div.site-header-title",
+         "vis": true,
+         "rect": {
+          "top": 55.5,
+          "left": 35,
+          "right": 119,
+          "bottom": 73.5,
+          "width": 84,
+          "height": 18,
+          "insetLeft": 35,
+          "insetRight": 649,
+          "cx": 77
+         },
+         "display": "block",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "0px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.site-header .site-header-logo": [
+        {
+         "sel": "div.site-header-title > a.site-header-logo",
+         "vis": true,
+         "rect": {
+          "top": 53.5,
+          "left": 35,
+          "right": 119,
+          "bottom": 83.5,
+          "width": 84,
+          "height": 30,
+          "insetLeft": 35,
+          "insetRight": 649,
+          "cx": 77
+         },
+         "display": "flex",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "0px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.site-header .site-header-cases": [
+        {
+         "sel": "div.site-header > a.site-header-cases",
+         "vis": false,
+         "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "insetLeft": 0,
+          "insetRight": 768,
+          "cx": 0
+         },
+         "display": "none",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "0px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.site-header .site-header-button": [
+        {
+         "sel": "div.site-header > button.site-header-button",
+         "vis": true,
+         "rect": {
+          "top": 49,
+          "left": 707,
+          "right": 739,
+          "bottom": 79,
+          "width": 32,
+          "height": 30,
+          "insetLeft": 707,
+          "insetRight": 29,
+          "cx": 723
+         },
+         "display": "block",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "8px 6px",
+         "maxWidth": "none"
+        }
+       ]
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "fill": "transparent",
+      "fillWhenScrolled": "transparent",
+      "backdropFilter": "none",
+      "blur": false,
+      "scrim": false,
+      "boxShadow": "none",
+      "mixBlendMode": "normal",
+      "opacity": "1",
+      "before": null,
+      "after": null,
+      "textColour": "#ffffff",
+      "pageBackground": "#131419"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.site-header",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "rest": {
+        "top": 0,
+        "left": 0,
+        "width": 768,
+        "height": 129,
+        "bg": "rgba(0, 0, 0, 0)",
+        "tr": "none",
+        "op": "1",
+        "shadow": "none",
+        "blur": "none",
+        "filter": "none",
+        "radius": "0px",
+        "blend": "normal",
+        "pos": "absolute",
+        "color": "rgb(255, 255, 255)"
+       },
+       "upAfterDown": {
+        "top": 0,
+        "left": 0,
+        "width": 768,
+        "height": 129,
+        "bg": "rgba(0, 0, 0, 0)",
+        "tr": "matrix(1, 0, 0, 1, 0, 129)",
+        "op": "1",
+        "shadow": "none",
+        "blur": "none",
+        "filter": "none",
+        "radius": "0px",
+        "blend": "normal",
+        "pos": "fixed",
+        "color": "rgb(255, 255, 255)"
+       }
+      }
+     }
+    },
+    "background_visual": {
+     "value": {
+      "kind": "none (the page WebGL scene shows through)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.site-header",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "bgImage": "none"
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "restPosition": "absolute",
+      "afterScrollPosition": "fixed",
+      "hideOnScrollDown": true,
+      "revealOnScrollUp": true,
+      "headerTopAtScroll600": -258,
+      "headerTopAfterScrollingUp300": 0,
+      "translateAtScroll600": "matrix(1, 0, 0, 1, 0, -129)",
+      "translateAfterScrollUp": "matrix(1, 0, 0, 1, 0, 129)",
+      "solidFillWhenRevealed": false,
+      "scroller": "native window scroll"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs (wheel +600, then -300)",
+      "selector": "div.site-header",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "rest": {
+        "top": 0,
+        "left": 0,
+        "width": 768,
+        "height": 129,
+        "bg": "rgba(0, 0, 0, 0)",
+        "tr": "none",
+        "op": "1",
+        "shadow": "none",
+        "blur": "none",
+        "filter": "none",
+        "radius": "0px",
+        "blend": "normal",
+        "pos": "absolute",
+        "color": "rgb(255, 255, 255)"
+       },
+       "down600": {
+        "top": -258,
+        "left": 0,
+        "width": 768,
+        "height": 129,
+        "bg": "rgba(0, 0, 0, 0)",
+        "tr": "matrix(1, 0, 0, 1, 0, -129)",
+        "op": "1",
+        "shadow": "none",
+        "blur": "none",
+        "filter": "none",
+        "radius": "0px",
+        "blend": "normal",
+        "pos": "fixed",
+        "color": "rgb(255, 255, 255)"
+       },
+       "upAfterDown": {
+        "top": 0,
+        "left": 0,
+        "width": 768,
+        "height": 129,
+        "bg": "rgba(0, 0, 0, 0)",
+        "tr": "matrix(1, 0, 0, 1, 0, 129)",
+        "op": "1",
+        "shadow": "none",
+        "blur": "none",
+        "filter": "none",
+        "radius": "0px",
+        "blend": "normal",
+        "pos": "fixed",
+        "color": "rgb(255, 255, 255)"
+       }
+      }
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "changes": [
+       "logo inset 45 -> 35px"
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.site-header",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "height": 129,
+       "logoLeft": 35,
+       "cases": false,
+       "scrolledBg": "rgba(0, 0, 0, 0)"
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "bar",
+   "tier": 768,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "no navigation bar: logo and burger only",
+      "items": 2
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.site-header a, button",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "links": [
+        [
+         "Return to Dogstudio's homepage",
+         true
+        ],
+        [
+         "All our news",
+         false
+        ],
+        [
+         "All our cases",
+         false
+        ]
+       ]
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "logo": {
+       "left": 35,
+       "top": 53.5,
+       "width": 84,
+       "height": 30
+      },
+      "burger": {
+       "left": 707,
+       "top": 49,
+       "width": 32,
+       "height": 30
+      },
+      "cases": null
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.site-header",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "div.site-header": [
+        {
+         "sel": "div.site-wrapper > div.site-header",
+         "vis": true,
+         "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 768,
+          "bottom": 129,
+          "width": 768,
+          "height": 129,
+          "insetLeft": 0,
+          "insetRight": 0,
+          "cx": 384
+         },
+         "display": "flex",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "space-between",
+         "align": "center",
+         "padding": "50px 35px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.site-header .site-header-title": [
+        {
+         "sel": "div.site-header > div.site-header-title",
+         "vis": true,
+         "rect": {
+          "top": 55.5,
+          "left": 35,
+          "right": 119,
+          "bottom": 73.5,
+          "width": 84,
+          "height": 18,
+          "insetLeft": 35,
+          "insetRight": 649,
+          "cx": 77
+         },
+         "display": "block",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "0px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.site-header .site-header-logo": [
+        {
+         "sel": "div.site-header-title > a.site-header-logo",
+         "vis": true,
+         "rect": {
+          "top": 53.5,
+          "left": 35,
+          "right": 119,
+          "bottom": 83.5,
+          "width": 84,
+          "height": 30,
+          "insetLeft": 35,
+          "insetRight": 649,
+          "cx": 77
+         },
+         "display": "flex",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "0px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.site-header .site-header-cases": [
+        {
+         "sel": "div.site-header > a.site-header-cases",
+         "vis": false,
+         "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "insetLeft": 0,
+          "insetRight": 768,
+          "cx": 0
+         },
+         "display": "none",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "0px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.site-header .site-header-button": [
+        {
+         "sel": "div.site-header > button.site-header-button",
+         "vis": true,
+         "rect": {
+          "top": 49,
+          "left": 707,
+          "right": 739,
+          "bottom": 79,
+          "width": 32,
+          "height": 30,
+          "insetLeft": 707,
+          "insetRight": 29,
+          "cx": 723
+         },
+         "display": "block",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "8px 6px",
+         "maxWidth": "none"
+        }
+       ]
+      }
+     }
+    },
+    "item_typography": {
+     "value": {
+      "note": "no text item visible at this tier; the cases link is display:none (its type is 13px at every width when shown)",
+      "series": [
+       [
+        1600,
+        "13px"
+       ],
+       [
+        1440,
+        "13px"
+       ],
+       [
+        1280,
+        "13px"
+       ],
+       [
+        1100,
+        "13px"
+       ],
+       [
+        1024,
+        "13px"
+       ],
+       [
+        900,
+        "13px"
+       ],
+       [
+        768,
+        "13px"
+       ],
+       [
+        640,
+        "13px"
+       ],
+       [
+        520,
+        "13px"
+       ],
+       [
+        414,
+        "13px"
+       ],
+       [
+        375,
+        "13px"
+       ]
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fontscale.mjs",
+      "selector": "div.site-header .site-header-cases",
+      "rawFile": "raw/dogstudio-fontscale.json",
+      "raw": [
+       [
+        1600,
+        "13px"
+       ],
+       [
+        1440,
+        "13px"
+       ],
+       [
+        1280,
+        "13px"
+       ],
+       [
+        1100,
+        "13px"
+       ],
+       [
+        1024,
+        "13px"
+       ],
+       [
+        900,
+        "13px"
+       ],
+       [
+        768,
+        "13px"
+       ],
+       [
+        640,
+        "13px"
+       ],
+       [
+        520,
+        "13px"
+       ],
+       [
+        414,
+        "13px"
+       ],
+       [
+        375,
+        "13px"
+       ]
+      ]
+     }
+    },
+    "item_states": {
+     "value": {
+      "hover": [
+       {
+        "text": "Return to Dogstudio's homepage",
+        "styleDiffs": 0
+       }
+      ],
+      "note": "0 computed-style diffs after 650ms hover on each visible bar link",
+      "currentIndicator": "none"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs hover 650ms",
+      "selector": "div.site-header a",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": [
+       {
+        "text": "Return to Dogstudio's homepage",
+        "diffCount": 0
+       },
+       {
+        "skipped": "not visible"
+       },
+       {
+        "skipped": "not visible"
+       }
+      ]
+     }
+    },
+    "mechanics": {
+     "value": {
+      "openTrigger": "burger click only",
+      "hoverDropdown": false,
+      "popupHints": {
+       "ariaHaspopup": 4,
+       "ariaExpanded": [
+        "div.showreel-video > div.plyr.plyr--full-ui.plyr--video > div.plyr__controls > div.plyr__menu > button.plyr__control false"
+       ],
+       "dropdownClass": [],
+       "semantic": {
+        "nav": 0,
+        "header": 1,
+        "banner": 0,
+        "dialog": 0
+       }
+      }
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs hover + DOM query",
+      "selector": "div.site-header a",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "newBoxes": [
+        0,
+        null,
+        null
+       ],
+       "popupHints": {
+        "ariaHaspopup": 4,
+        "ariaExpanded": [
+         "div.showreel-video > div.plyr.plyr--full-ui.plyr--video > div.plyr__controls > div.plyr__menu > button.plyr__control false"
+        ],
+        "dropdownClass": [],
+        "semantic": {
+         "nav": 0,
+         "header": 1,
+         "banner": 0,
+         "dialog": 0
+        }
+       }
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "labels": [],
+      "logoAccessibleName": "Return to Dogstudio's homepage",
+      "fixed": true
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.site-header",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "logoName": "Return to Dogstudio's homepage",
+       "links": [
+        [
+         "Return to Dogstudio's homepage",
+         true
+        ],
+        [
+         "All our news",
+         false
+        ],
+        [
+         "All our cases",
+         false
+        ]
+       ]
+      }
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "baseline": "logo and burger only; the cases link and a news link are display:none (0x0)",
+      "hiddenLinks": [
+       {
+        "name": "All our news",
+        "display": "none"
+       },
+       {
+        "name": "All our cases",
+        "display": "none"
+       }
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.site-header a",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": [
+       [
+        "Return to Dogstudio's homepage",
+        true,
+        "flex"
+       ],
+       [
+        "All our news",
+        false,
+        "none"
+       ],
+       [
+        "All our cases",
+        false,
+        "none"
+       ]
+      ]
+     }
+    }
+   }
+  },
+  {
+   "surface": "dropdown",
+   "tier": 768,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: no bar item owns a dropdown panel (the bar has no navigation links); 4 aria-haspopup and 0 dropdown/mega/submenu class matches; hover on the visible header links opened nothing (newBoxCount [0])",
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs hover + DOM query",
+      "selector": "div.site-header a; [aria-haspopup]; [class*=dropdown|mega|sub-menu|submenu|flyout]",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "popupHints": {
+        "ariaHaspopup": 4,
+        "ariaExpanded": [
+         "div.showreel-video > div.plyr.plyr--full-ui.plyr--video > div.plyr__controls > div.plyr__menu > button.plyr__control false"
+        ],
+        "dropdownClass": [],
+        "semantic": {
+         "nav": 0,
+         "header": 1,
+         "banner": 0,
+         "dialog": 0
+        }
+       },
+       "hover": [
+        {
+         "text": "Return to Dogstudio's homepage",
+         "newBoxCount": 0
+        },
+        {
+         "skipped": "not visible"
+        },
+        {
+         "skipped": "not visible"
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "mega",
+   "tier": 768,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: no bar item owns a mega panel (the bar has no navigation links); 4 aria-haspopup and 0 dropdown/mega/submenu class matches; hover on the visible header links opened nothing (newBoxCount [0])",
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs hover + DOM query",
+      "selector": "div.site-header a; [aria-haspopup]; [class*=dropdown|mega|sub-menu|submenu|flyout]",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "popupHints": {
+        "ariaHaspopup": 4,
+        "ariaExpanded": [
+         "div.showreel-video > div.plyr.plyr--full-ui.plyr--video > div.plyr__controls > div.plyr__menu > button.plyr__control false"
+        ],
+        "dropdownClass": [],
+        "semantic": {
+         "nav": 0,
+         "header": 1,
+         "banner": 0,
+         "dialog": 0
+        }
+       },
+       "hover": [
+        {
+         "text": "Return to Dogstudio's homepage",
+         "newBoxCount": 0
+        },
+        {
+         "skipped": "not visible"
+        },
+        {
+         "skipped": "not visible"
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "trigger-close",
+   "tier": 768,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "kind": "burger (three bars) that turns into an X in place",
+      "element": "button.site-header-button",
+      "separateCloseButton": false,
+      "replacesInPlace": true,
+      "bars": "three white span bars 20/16/20px x 2px"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-header-button",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "tag": "BUTTON",
+       "atPointAfterOpen": {
+        "isTrigger": true,
+        "inPanel": false
+       },
+       "htmlAfter": "<button type=\"button\" class=\"site-header-button is-active\" title=\"Toggle menu\">\n    <span class=\"u-visually-hidden\">Toggle menu</span>\n    <span class=\"button-bar button-bar--1\"></span>\n    <span class=\"button-bar button-bar--2\"></span>\n   "
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "left": 707,
+      "top": 49,
+      "width": 32,
+      "height": 30,
+      "insetRight": 29,
+      "targetSizeMeets44": false,
+      "zIndex": {
+       "button": "60",
+       "header": "1000",
+       "menu": "995"
+      }
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-header-button",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "top": 49,
+       "left": 707,
+       "right": 739,
+       "bottom": 79,
+       "width": 32,
+       "height": 30,
+       "insetLeft": 707,
+       "insetRight": 29,
+       "cx": 723
+      }
+     }
+    },
+    "item_states": {
+     "value": {
+      "open": "class is-active added; button rotates 180 degrees (matrix -1,0,0,-1); bars become an X (bar 1 +45deg, bar 3 -45deg, bar 2 scaleX 1)",
+      "closed": "bars at -6px / scaleX .8 / +6px",
+      "transition": "transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1), -webkit-transform 0.6s cubic-bezier(0.1"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "d-open.mjs (1440) + cap.mjs",
+      "selector": ".site-header-button .button-bar",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "htmlAfter": "<button type=\"button\" class=\"site-header-button is-active\" title=\"Toggle menu\">\n    <span class=\"u-visually-hidden\">Toggle menu</span>\n    <span class=\"button-bar button-bar--1\"></span>\n    <span class=\"button-bar button-bar--2\"></span>\n    <span class=\"button-bar button-bar--3\"></span>\n  </button>",
+       "transition": "transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1), -webkit-transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)"
+      }
+     }
+    },
+    "trigger_close": {
+     "value": {
+      "kind": "burger",
+      "elementSemantics": {
+       "tag": "BUTTON",
+       "type": "button",
+       "title": "Toggle menu",
+       "accessibleName": "Toggle menu (visually hidden span + title)",
+       "ariaExpanded": null
+      },
+      "closeStyle": "the same button, bars morph to an X",
+      "replacesInPlace": true,
+      "topRow": false,
+      "animation": "bar transform transition 0.6s cubic-bezier(0.165,0.84,0.44,1)",
+      "magnet": "not probed"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs click",
+      "selector": ".site-header-button",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "attrs": {
+        "type": "button",
+        "title": "Toggle menu"
+       },
+       "name": "Toggle menu",
+       "transition": "transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1), -webkit-transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)"
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "openTrigger": "click",
+      "nativeButton": true,
+      "escapeCloses": true,
+      "focusAfterOpen": "body.home.page-template.page-template-page-home",
+      "focusAfterClose": "button.site-header-button",
+      "scrollLock": "locked: body overflow hidden and wheel/PageDown do not move the page",
+      "wheelProbe": {
+       "scrollYBefore": 0,
+       "afterWheel400": 0,
+       "afterPageDown": 0,
+       "pageScrollsWhileOpen": false
+      },
+      "bodyOverflowOpen": "hidden",
+      "dialog": 0,
+      "inert": 0,
+      "ariaModal": 0,
+      "openSurvivesResize": {
+       "sameTier": true,
+       "crossTierTo": 1440,
+       "open": true
+      },
+      "openStateMarker": "body classes menu-active menu-open"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-header-button, .site-menu",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "escape": {
+        "panelClip": "none",
+        "panelOp": "0",
+        "panelVis": "visible",
+        "panelRect": {
+         "top": 0,
+         "left": 0,
+         "right": 768,
+         "bottom": 900,
+         "width": 768,
+         "height": 900,
+         "insetLeft": 0,
+         "insetRight": 0,
+         "cx": 384
+        },
+        "active": "html.no-touchevents.backgroundcliptext.objectfit > body.home.page-template.page-template-page-home",
+        "bodyOverflow": "hidden auto",
+        "closedByEscape": true
+       },
+       "resize": {
+        "openAfterResize": true,
+        "crossTo": 1440,
+        "openAfterCrossTierResize": true,
+        "bodyOverflowAfterCross": "hidden"
+       },
+       "scrollLockProbe": {
+        "scrollYBefore": 0,
+        "afterWheel400": 0,
+        "afterPageDown": 0,
+        "pageScrollsWhileOpen": false
+       },
+       "afterClose": {
+        "bodyOverflow": "hidden auto",
+        "htmlOverflow": "visible",
+        "active": "html.no-touchevents.backgroundcliptext.objectfit > body.home.page-template.page-template-page-home > div.site-wrapper > div.site-header > button.site-header-button",
+        "triggerText": "Toggle menu",
+        "ariaExpanded": null,
+        "open": false
+       }
+      }
+     }
+    },
+    "motion": {
+     "value": {
+      "effect": "bar-to-X morph and 180 degree rotation",
+      "transition": "transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1), -webkit-transform 0.6s cubic-bezier(0.1",
+      "spec38Tier": "V",
+      "substrate": "DOM"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-header-button",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "transition": "transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1), -webkit-transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)"
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "label": "none visible (icon only)",
+      "accessibleName": "Toggle menu"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-header-button",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "name": "Toggle menu",
+       "attrs": {
+        "type": "button",
+        "title": "Toggle menu"
+       }
+      }
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "note": "same 32x30 burger at every tier; only its inset changes (right inset 29px)",
+      "drop": "not dropped at any tier"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-header-button",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "top": 49,
+       "left": 707,
+       "right": 739,
+       "bottom": 79,
+       "width": 32,
+       "height": 30,
+       "insetLeft": 707,
+       "insetRight": 29,
+       "cx": 723
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "drawer",
+   "tier": 768,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "full-screen",
+      "reveal": "a #131419 curtain sweeps across the viewport from the left while the menu image layer and list fade in behind it",
+      "menuLayerIsTransparent": true
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-menu, .site-menu-panel, .site-menu-back",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "menu": {
+        "position": "fixed",
+        "rect": {
+         "top": 0,
+         "left": 0,
+         "right": 768,
+         "bottom": 900,
+         "width": 768,
+         "height": 900,
+         "insetLeft": 0,
+         "insetRight": 0,
+         "cx": 384
+        },
+        "bg": "rgba(0, 0, 0, 0)"
+       },
+       "back": "rgb(19, 20, 25)",
+       "panel": {
+        "top": 0,
+        "left": -768,
+        "right": 0,
+        "bottom": 900,
+        "width": 768,
+        "height": 900,
+        "insetLeft": -768,
+        "insetRight": 768,
+        "cx": -384
+       }
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "menu": {
+       "position": "fixed",
+       "inset": {
+        "top": 0,
+        "left": 0,
+        "right": 0,
+        "bottom": 0
+       },
+       "width": 768,
+       "height": 900,
+       "zIndex": "995"
+      },
+      "backLayer": {
+       "zIndex": "990",
+       "rect": {
+        "top": 0,
+        "left": 0,
+        "right": 768,
+        "bottom": 900,
+        "width": 768,
+        "height": 900,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 384
+       }
+      },
+      "curtain": {
+       "zIndex": "999",
+       "restLeft": 0
+      },
+      "radius": 0,
+      "centredOnViewport": true
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-menu",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "menu": {
+        "top": 0,
+        "left": 0,
+        "right": 768,
+        "bottom": 900,
+        "width": 768,
+        "height": 900,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 384
+       },
+       "back": {
+        "top": 0,
+        "left": 0,
+        "right": 768,
+        "bottom": 900,
+        "width": 768,
+        "height": 900,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 384
+       },
+       "panel": {
+        "top": 0,
+        "left": -768,
+        "right": 0,
+        "bottom": 900,
+        "width": 768,
+        "height": 900,
+        "insetLeft": -768,
+        "insetRight": 768,
+        "cx": -384
+       }
+      }
+     }
+    },
+    "zone_model": {
+     "value": {
+      "list": {
+       "left": 35,
+       "top": 410,
+       "count": 5,
+       "alignment": "left"
+      },
+      "footerRow": {
+       "showreel": {
+        "left": 35,
+        "top": 752
+       },
+       "contentBlock": {
+        "top": 815,
+        "left": 35,
+        "right": 733,
+        "bottom": 845,
+        "width": 698,
+        "height": 30,
+        "insetLeft": 35,
+        "insetRight": 35,
+        "cx": 384
+       }
+      },
+      "layout": "list and footer stack in one left-aligned column at x=35",
+      "headerControlsAbove": "the burger (z 1000 header, button z 60) stays above the menu (z 995)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-menu",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "links": [
+        [
+         "The Studio",
+         35,
+         410
+        ],
+        [
+         "Our Cases",
+         35,
+         471.4
+        ],
+        [
+         "Careers",
+         35,
+         532.8
+        ],
+        [
+         "Our Values",
+         35,
+         594.2
+        ],
+        [
+         "Contact",
+         35,
+         655.6
+        ]
+       ],
+       "showreel": {
+        "top": 752,
+        "left": 35,
+        "right": 733,
+        "bottom": 765,
+        "width": 698,
+        "height": 13,
+        "insetLeft": 35,
+        "insetRight": 35,
+        "cx": 384
+       },
+       "content": {
+        "top": 815,
+        "left": 35,
+        "right": 733,
+        "bottom": 845,
+        "width": 698,
+        "height": 30,
+        "insetLeft": 35,
+        "insetRight": 35,
+        "cx": 384
+       }
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "menuLayerFill": "transparent",
+      "backLayerFill": "#131419",
+      "curtainFill": "#131419",
+      "backdropFilter": "none",
+      "scrim": false,
+      "blur": false,
+      "opacityAtRest": "0",
+      "opacityOpen": "1",
+      "pageBehind": "covered by the opaque #131419 back layer"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-menu-back, .site-menu-panel",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "back": "rgb(19, 20, 25)",
+       "panel": "rgb(19, 20, 25)",
+       "menu": "rgba(0, 0, 0, 0)"
+      }
+     }
+    },
+    "background_visual": {
+     "value": {
+      "kind": "static image layer (picture.site-menu-back > img) over the flat colour, faded in",
+      "imageRect": {
+       "top": 0,
+       "left": 0,
+       "right": 815,
+       "bottom": 614,
+       "width": 815,
+       "height": 614,
+       "insetLeft": 0,
+       "insetRight": -47,
+       "cx": 407.5
+      },
+      "imageStyle": {
+       "position": "static",
+       "opacity": "1"
+      },
+      "behaviour": "fades with the menu; no parallax or follow-hover measured",
+      "menuTaglineImage": "tagline image measured at 1440 only"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-menu-back img",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "img": {
+        "top": 0,
+        "left": 0,
+        "right": 815,
+        "bottom": 614,
+        "width": 815,
+        "height": 614,
+        "insetLeft": 0,
+        "insetRight": -47,
+        "cx": 407.5
+       },
+       "panelMedia": {
+        "img": 0,
+        "video": 0,
+        "canvas": 0,
+        "svg": 6
+       }
+      }
+     }
+    },
+    "item_typography": {
+     "value": {
+      "fontFamily": "Heebo, Helvetica, Arial, sans-serif",
+      "fontSize": 45,
+      "fontWeight": "200",
+      "letterSpacing": "-0.9px",
+      "textTransform": "none",
+      "colour": "rgba(160, 168, 220, 0.8)",
+      "scalingMode": "stepped, and driven by viewport HEIGHT as well as width: 60px at >=1280 wide and 900 tall, 45px at 1100-520 wide or when the viewport is 713px tall, 40px at 414 and below",
+      "widthSeries": [
+       [
+        1600,
+        "60px"
+       ],
+       [
+        1440,
+        "60px"
+       ],
+       [
+        1280,
+        "60px"
+       ],
+       [
+        1100,
+        "45px"
+       ],
+       [
+        1024,
+        "45px"
+       ],
+       [
+        900,
+        "45px"
+       ],
+       [
+        768,
+        "45px"
+       ],
+       [
+        640,
+        "45px"
+       ],
+       [
+        520,
+        "45px"
+       ],
+       [
+        414,
+        "40px"
+       ],
+       [
+        375,
+        "40px"
+       ]
+      ],
+      "heightProbe": [
+       [
+        "1440x900",
+        "60px"
+       ],
+       [
+        "1352x713",
+        "45px"
+       ],
+       [
+        "1352x900",
+        "60px"
+       ],
+       [
+        "1440x713",
+        "45px"
+       ],
+       [
+        "1440x600",
+        "45px"
+       ],
+       [
+        "1440x1100",
+        "60px"
+       ],
+       [
+        "1100x713",
+        "45px"
+       ],
+       [
+        "1100x900",
+        "45px"
+       ]
+      ],
+      "caseOrigin": "source Title Case, no CSS transform"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fontscale.mjs + d-h.mjs",
+      "selector": ".site-menu-item a",
+      "rawFile": "raw/dogstudio-fontscale.json ; raw/dogstudio-heightprobe.json",
+      "raw": {
+       "width": [
+        [
+         1600,
+         "60px"
+        ],
+        [
+         1440,
+         "60px"
+        ],
+        [
+         1280,
+         "60px"
+        ],
+        [
+         1100,
+         "45px"
+        ],
+        [
+         1024,
+         "45px"
+        ],
+        [
+         900,
+         "45px"
+        ],
+        [
+         768,
+         "45px"
+        ],
+        [
+         640,
+         "45px"
+        ],
+        [
+         520,
+         "45px"
+        ],
+        [
+         414,
+         "40px"
+        ],
+        [
+         375,
+         "40px"
+        ]
+       ],
+       "height": [
+        [
+         "1440x900",
+         "60px"
+        ],
+        [
+         "1352x713",
+         "45px"
+        ],
+        [
+         "1352x900",
+         "60px"
+        ],
+        [
+         "1440x713",
+         "45px"
+        ],
+        [
+         "1440x600",
+         "45px"
+        ],
+        [
+         "1440x1100",
+         "60px"
+        ],
+        [
+         "1100x713",
+         "45px"
+        ],
+        [
+         "1100x900",
+         "45px"
+        ]
+       ]
+      }
+     }
+    },
+    "item_states": {
+     "value": {
+      "hover": "hovered link turns white (#ffffff) from rgba(160,168,220,0.8); others unchanged",
+      "hoverColourChange": {
+       "before": "rgba(160, 168, 220, 0.8)",
+       "after": "rgb(255, 255, 255)"
+      },
+      "ornament": "no index numbers at this tier",
+      "currentIndicator": "none",
+      "separators": "none"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "d-li.mjs",
+      "selector": ".site-menu-item a",
+      "rawFile": "raw/dogstudio-li-768.json",
+      "raw": {
+       "pseudo": "none",
+       "hover": "item 2 (Our Cases)",
+       "colours": [
+        "rgba(160, 168, 220, 0.8)",
+        "rgb(255, 255, 255)"
+       ]
+      }
+     }
+    },
+    "secondary_blocks": {
+     "value": {
+      "blocks": [
+       {
+        "kind": "showreel link",
+        "text": "Watch our Showreel",
+        "typeSize": 13,
+        "weight": "500",
+        "colour": "#ffffff",
+        "icon": "right caret svg"
+       },
+       {
+        "kind": "tagline",
+        "form": "image with alt \"We Make Good Shit\""
+       },
+       {
+        "kind": "social row",
+        "items": [
+         "Facebook",
+         "Instagram",
+         "Dribbble",
+         "Twitter",
+         "Newsletter"
+        ],
+        "typeSize": 11,
+        "layout": "icon-width items (40px pitch) in a row under the showreel"
+       }
+      ],
+      "previewPane": false
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-menu-footer",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "text": "The Studio Our Cases Careers Our Values Contact Watch our Showreel Facebook Instagram Dribbble Twitter Newsletter",
+       "socials": [
+        [
+         "Facebook",
+         35,
+         815
+        ],
+        [
+         "Instagram",
+         75,
+         815
+        ],
+        [
+         "Dribbble",
+         115,
+         815
+        ],
+        [
+         "Twitter",
+         155,
+         815
+        ],
+        [
+         "Newsletter",
+         195,
+         815
+        ]
+       ],
+       "showreel": {
+        "fontSize": "13px",
+        "fontWeight": "500",
+        "textTransform": "none",
+        "letterSpacing": "normal",
+        "lineHeight": "13px",
+        "color": "rgb(255, 255, 255)",
+        "fontFamily": "Heebo, Helvetica, Arial, sans-serif"
+       }
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "openTrigger": "click on the burger",
+      "openMarker": "body.menu-active.menu-open; closing: menu-active menu-close menu-running, then menu-running, then none",
+      "escapeCloses": true,
+      "scrollLock": "locked (wheel and PageDown do not move the page; body overflow hidden)",
+      "wheelProbe": {
+       "scrollYBefore": 0,
+       "afterWheel400": 0,
+       "afterPageDown": 0,
+       "pageScrollsWhileOpen": false
+      },
+      "bodyOverflowOpen": "hidden",
+      "bodyOverflowAfterClose": "hidden auto",
+      "dialog": 0,
+      "inert": 0,
+      "ariaModal": 0,
+      "focusAfterOpen": "body.home.page-template.page-template-page-home",
+      "survivesResize": {
+       "sameTier": true,
+       "crossTierTo": 1440,
+       "open": true
+      },
+      "pointerEventsWhenClosed": "menu layer opacity 0 and pointer-events none"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-menu",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "escape": {
+        "panelClip": "none",
+        "panelOp": "0",
+        "panelVis": "visible",
+        "panelRect": {
+         "top": 0,
+         "left": 0,
+         "right": 768,
+         "bottom": 900,
+         "width": 768,
+         "height": 900,
+         "insetLeft": 0,
+         "insetRight": 0,
+         "cx": 384
+        },
+        "active": "html.no-touchevents.backgroundcliptext.objectfit > body.home.page-template.page-template-page-home",
+        "bodyOverflow": "hidden auto",
+        "closedByEscape": true
+       },
+       "lock": {
+        "scrollYBefore": 0,
+        "afterWheel400": 0,
+        "afterPageDown": 0,
+        "pageScrollsWhileOpen": false
+       },
+       "resize": {
+        "openAfterResize": true,
+        "crossTo": 1440,
+        "openAfterCrossTierResize": true,
+        "bodyOverflowAfterCross": "hidden"
+       },
+       "active": "html.no-touchevents.backgroundcliptext.objectfit > body.home.page-template.page-template-page-home",
+       "afterClose": {
+        "bodyOverflow": "hidden auto",
+        "htmlOverflow": "visible",
+        "active": "html.no-touchevents.backgroundcliptext.objectfit > body.home.page-template.page-template-page-home > div.site-wrapper > div.site-header > button.site-header-button",
+        "triggerText": "Toggle menu",
+        "ariaExpanded": null,
+        "open": false
+       }
+      }
+     }
+    },
+    "motion": {
+     "value": {
+      "open": {
+       "effect": "curtain (.site-menu-panel, #131419) translateX from -100% across to the right and away, while .site-menu-back and the list go opacity 0 -> 1 and pointer-events none -> auto",
+       "backFullyOpaqueByMs": 2045,
+       "sampleGapMs": "the page is WebGL-heavy so evaluate calls took 0.4-1 s; durations are upper bounds",
+       "firstSamples": [
+        [
+         1350,
+         "0",
+         "matrix(1, 0, 0, 1, -761.575, 0)"
+        ],
+        [
+         1643,
+         "0",
+         "matrix(1, 0, 0, 1, -248.486, 0)"
+        ],
+        [
+         1866,
+         "0",
+         "matrix(1, 0, 0, 1, -26.1109, 0)"
+        ],
+        [
+         2045,
+         "1",
+         "matrix(1, 0, 0, 1, -3.8896e-07, 0)"
+        ]
+       ]
+      },
+      "close": {
+       "effect": "same curtain sweep in reverse with body classes menu-close menu-running",
+       "backHiddenByMs": 1182,
+       "firstSamples": [
+        [
+         156,
+         "1",
+         "matrix(1, 0, 0, 1, -768, 0)"
+        ],
+        [
+         432,
+         "1",
+         "matrix(1, 0, 0, 1, -768, 0)"
+        ],
+        [
+         575,
+         "1",
+         "matrix(1, 0, 0, 1, -751.916, 0)"
+        ],
+        [
+         743,
+         "1",
+         "matrix(1, 0, 0, 1, -662.494, 0)"
+        ]
+       ]
+      },
+      "spec38Tier": "V reachable (translate + opacity); the site drives it from its own dog.js/main.js, no GSAP global on the page",
+      "substrate": "DOM (the page behind is a WebGL scene)"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs sampler",
+      "selector": ".site-menu-panel, .site-menu-back",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "open": [
+        [
+         1350,
+         "0",
+         "matrix(1, 0, 0, 1, -761.575, 0)"
+        ],
+        [
+         1643,
+         "0",
+         "matrix(1, 0, 0, 1, -248.486, 0)"
+        ],
+        [
+         1866,
+         "0",
+         "matrix(1, 0, 0, 1, -26.1109, 0)"
+        ],
+        [
+         2045,
+         "1",
+         "matrix(1, 0, 0, 1, -3.8896e-07, 0)"
+        ],
+        [
+         2246,
+         "1",
+         "matrix(1, 0, 0, 1, 32.3667, 0)"
+        ],
+        [
+         2596,
+         "1",
+         "matrix(1, 0, 0, 1, 702.582, 0)"
+        ],
+        [
+         2837,
+         "1",
+         "matrix(1, 0, 0, 1, 760.459, 0)"
+        ],
+        [
+         3046,
+         "1",
+         "matrix(1, 0, 0, 1, -768, 0)"
+        ]
+       ],
+       "close": [
+        [
+         156,
+         "1",
+         "matrix(1, 0, 0, 1, -768, 0)",
+         "-home-php page page-id-5 menu-active menu-close menu-running"
+        ],
+        [
+         432,
+         "1",
+         "matrix(1, 0, 0, 1, -768, 0)",
+         "-home-php page page-id-5 menu-active menu-close menu-running"
+        ],
+        [
+         575,
+         "1",
+         "matrix(1, 0, 0, 1, -751.916, 0)",
+         "-home-php page page-id-5 menu-active menu-close menu-running"
+        ],
+        [
+         743,
+         "1",
+         "matrix(1, 0, 0, 1, -662.494, 0)",
+         "-home-php page page-id-5 menu-active menu-close menu-running"
+        ],
+        [
+         872,
+         "1",
+         "matrix(1, 0, 0, 1, -130.643, 0)",
+         "-home-php page page-id-5 menu-active menu-close menu-running"
+        ],
+        [
+         1035,
+         "1",
+         "matrix(1, 0, 0, 1, -26.0975, 0)",
+         "-home-php page page-id-5 menu-active menu-close menu-running"
+        ],
+        [
+         1182,
+         "0",
+         "matrix(1, 0, 0, 1, -1.24623, 0)",
+         "mplate-page-home-php page page-id-5 menu-active menu-running"
+        ],
+        [
+         1372,
+         "0",
+         "matrix(1, 0, 0, 1, 59.2662, 0)",
+         "home page-template-page-home-php page page-id-5 menu-running"
+        ]
+       ]
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "linkLabels": [
+       "The Studio",
+       "Our Cases",
+       "Careers",
+       "Our Values",
+       "Contact"
+      ],
+      "count": 5,
+      "footer": [
+       "Watch our Showreel",
+       "Facebook",
+       "Instagram",
+       "Dribbble",
+       "Twitter",
+       "Newsletter"
+      ],
+      "indexNumbers": "none at this tier",
+      "fixed": true
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs + d-li.mjs",
+      "selector": ".site-menu a",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "links": [
+        "The Studio",
+        "Our Cases",
+        "Careers",
+        "Our Values",
+        "Contact"
+       ],
+       "pseudo": "none"
+      }
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "changes": [
+       "list left 180 -> 35px",
+       "links 60 -> 45px",
+       "index numbers removed",
+       "footer stacks in a single column at x=35"
+      ],
+      "drop": "index numbers removed (pseudo content none)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs + d-li.mjs",
+      "selector": ".site-menu",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "listLeft": 35,
+       "listTop": 410,
+       "fontSize": "45px",
+       "index": "none"
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "footer",
+   "tier": 768,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "full-width transparent block over the page background, not a <footer> element (div.site-footer)",
+      "tag": "DIV",
+      "role": null,
+      "height": 320.3
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-footer",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "rect": {
+        "top": 579.5,
+        "left": 0,
+        "right": 768,
+        "bottom": 899.8,
+        "width": 768,
+        "height": 320.3,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 384
+       },
+       "tag": "DIV"
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "width": 768,
+      "height": 320.3,
+      "padding": "0px",
+      "radius": 0,
+      "contentWidth": "inner .center, 1024px wide at 1440 (208px each side)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-footer",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "rect": {
+        "top": 579.5,
+        "left": 0,
+        "right": 768,
+        "bottom": 899.8,
+        "width": 768,
+        "height": 320.3,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 384
+       }
+      }
+     }
+    },
+    "zone_model": {
+     "value": {
+      "blocks": [
+       "three city labels (Chicago . Amsterdam . Paris .)",
+       "social abbreviations (Fb, Ins, Dri, Tw)",
+       "heading \"Contact us\" + \"We'd love to hear from you\" + email",
+       "Privacy Policy",
+       "language switch (English / Espanol)"
+      ],
+      "groups": [
+       {
+        "left": 356,
+        "top": 659.5,
+        "width": 150,
+        "links": 4
+       },
+       {
+        "left": 366.2,
+        "top": 849.8,
+        "width": 94,
+        "links": 2
+       }
+      ],
+      "headings": [
+       "H3:Chicago .",
+       "H3:Amsterdam .",
+       "H3:Paris .",
+       "H2:Contact us"
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-footer",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "groups": [
+        {
+         "sel": "div.site-footer-block.site-footer-block--social.appear-fade-up > ul",
+         "rect": {
+          "top": 659.5,
+          "left": 356,
+          "right": 506,
+          "bottom": 719.4,
+          "width": 150,
+          "height": 59.9,
+          "insetLeft": 356,
+          "insetRight": 262,
+          "cx": 431
+         },
+         "linkCount": 4,
+         "display": "flex",
+         "gridCols": "none"
+        },
+        {
+         "sel": "div.site-footer-languages.appear-fade-up.appear-delay--5 > ul",
+         "rect": {
+          "top": 849.8,
+          "left": 366.2,
+          "right": 460.2,
+          "bottom": 874.8,
+          "width": 94,
+          "height": 25,
+          "insetLeft": 366.2,
+          "insetRight": 307.8,
+          "cx": 413.2
+         },
+         "linkCount": 2,
+         "display": "flex",
+         "gridCols": "none"
+        }
+       ],
+       "headings": [
+        "H3:Chicago .",
+        "H3:Amsterdam .",
+        "H3:Paris .",
+        "H2:Contact us"
+       ],
+       "text": "Chicago . Amsterdam . Paris . Contact us Fb Ins Dri Tw We'd love to hear from you biz@dogstudio.be Privacy Policy Language: English Español"
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "fill": "transparent",
+      "pageBackgroundBehind": "#131419",
+      "textColour": "#ffffff",
+      "backdropFilter": "none",
+      "backgroundImage": "none"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-footer",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "bg": "rgba(0, 0, 0, 0)",
+       "color": "rgb(255, 255, 255)",
+       "body": "rgb(19, 20, 25)"
+      }
+     }
+    },
+    "background_visual": {
+     "value": {
+      "kind": "none in the footer element; media inside: {\"img\":2,\"video\":0,\"canvas\":0,\"svg\":6}"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-footer",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "img": 2,
+       "video": 0,
+       "canvas": 0,
+       "svg": 6
+      }
+     }
+    },
+    "item_typography": {
+     "value": {
+      "fontFamily": "Heebo, Helvetica, Arial, sans-serif",
+      "fontSize": 11,
+      "fontWeight": "400",
+      "textTransform": "none",
+      "colour": "#a0a8dc @0.7",
+      "emailWeight": "500",
+      "legalSize": 12,
+      "languageFont": "Gilroy, Helvetica, Arial, sans-serif",
+      "scalingMode": "fixed 11px"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-footer a",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "social": {
+        "text": "Fb",
+        "rawText": "Fb",
+        "href": "https://www.facebook.com/dogstudio/",
+        "rect": {
+         "top": 659.5,
+         "left": 356,
+         "right": 386,
+         "bottom": 689.5,
+         "width": 30,
+         "height": 30,
+         "insetLeft": 356,
+         "insetRight": 382,
+         "cx": 371
+        },
+        "fontSize": "11px",
+        "fontWeight": "400",
+        "fontFamily": "Heebo, Helvetica, Arial, sans-serif",
+        "letterSpacing": "normal",
+        "textTransform": "none",
+        "color": "rgba(160, 168, 220, 0.7)"
+       },
+       "mail": {
+        "text": "biz@dogstudio.be",
+        "rawText": "biz@dogstudio.be",
+        "href": "mailto:biz@dogstudio.be",
+        "rect": {
+         "top": 775.4,
+         "left": 377.1,
+         "right": 524.1,
+         "bottom": 792.4,
+         "width": 147.1,
+         "height": 17,
+         "insetLeft": 377.1,
+         "insetRight": 243.9,
+         "cx": 450.6
+        },
+        "fontSize": "11px",
+        "fontWeight": "500",
+        "fontFamily": "Heebo, Helvetica, Arial, sans-serif",
+        "letterSpacing": "normal",
+        "textTransform": "none",
+        "color": "rgb(255, 255, 255)"
+       },
+       "legal": {
+        "text": "Privacy Policy",
+        "rawText": "Privacy Policy",
+        "href": "https://www.deptagency.com/en-nl/privacy-policy/",
+        "rect": {
+         "top": 811.4,
+         "left": 346.4,
+         "right": 421.6,
+         "bottom": 829.4,
+         "width": 75.2,
+         "height": 18,
+         "insetLeft": 346.4,
+         "insetRight": 346.4,
+         "cx": 384
+        },
+        "fontSize": "12px",
+        "fontWeight": "500",
+        "fontFamily": "Heebo, Helvetica, Arial, sans-serif",
+        "letterSpacing": "normal",
+        "textTransform": "none",
+        "color": "rgba(160, 168, 220, 0.7)"
+       },
+       "lang": {
+        "text": "English",
+        "rawText": "English",
+        "href": "https://dogstudio.co/",
+        "rect": {
+         "top": 849.8,
+         "left": 366.2,
+         "right": 460.2,
+         "bottom": 874.8,
+         "width": 94,
+         "height": 25,
+         "insetLeft": 366.2,
+         "insetRight": 307.8,
+         "cx": 413.2
+        },
+        "fontSize": "11px",
+        "fontWeight": "700",
+        "fontFamily": "Gilroy, Helvetica, Arial, sans-serif",
+        "letterSpacing": "normal",
+        "textTransform": "none",
+        "color": "rgb(255, 255, 255)"
+       }
+      }
+     }
+    },
+    "item_states": {
+     "value": {
+      "hover": "not measured"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-footer a",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "note": "footer hover not driven"
+      }
+     }
+    },
+    "secondary_blocks": {
+     "value": {
+      "blocks": [
+       "social abbreviations",
+       "contact email",
+       "privacy link",
+       "language switch"
+      ],
+      "newsletterInputs": 0
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-footer",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "text": "Chicago . Amsterdam . Paris . Contact us Fb Ins Dri Tw We'd love to hear from you biz@dogstudio.be Privacy Policy Language: English Español",
+       "inputs": 0
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "text": "Chicago . Amsterdam . Paris . Contact us Fb Ins Dri Tw We'd love to hear from you biz@dogstudio.be Privacy Policy Language: English Espa ol",
+      "linkCount": 8,
+      "fixed": true
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-footer",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "links": [
+        "Fb",
+        "Ins",
+        "Dri",
+        "Tw",
+        "biz@dogstudio.be",
+        "Privacy Policy",
+        "English",
+        "Español"
+       ]
+      }
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "changes": [
+       "social ul moves to x=356",
+       "block 320px tall"
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-footer",
+      "rawFile": "raw/dogstudio-768.json",
+      "raw": {
+       "height": 320.3,
+       "groups": [
+        [
+         356,
+         659.5
+        ],
+        [
+         366.2,
+         849.8
+        ]
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "header-shell",
+   "tier": 1440,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "full-bleed",
+      "detail": "transparent, borderless full-width band holding only a logo and a burger; hides on scroll-down and returns on scroll-up",
+      "headerPointerEvents": "none on the band, auto on logo and burger"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.site-header",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "width": 1440,
+       "viewport": 1440,
+       "radius": "0px",
+       "position": "absolute"
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "width": 1440,
+      "height": 129,
+      "insetTop": 0,
+      "insetLeftLogo": 45,
+      "insetRightBurger": 39,
+      "position": "absolute",
+      "zIndex": "1000",
+      "radius": 0,
+      "centredOnViewport": true,
+      "outOfDateBrowserBanner": "a fixed 82px banner (#buorg) appeared on this UA; it was dismissed with its Ignore link before measuring, otherwise every offset here is +81px"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.site-header",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "rect": {
+        "top": 0,
+        "left": 0,
+        "right": 1440,
+        "bottom": 129,
+        "width": 1440,
+        "height": 129,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 720
+       },
+       "consent": "#buorgig"
+      }
+     }
+    },
+    "zone_model": {
+     "value": {
+      "zones": [
+       {
+        "name": "brand",
+        "rect": {
+         "top": 53.5,
+         "left": 45,
+         "right": 129,
+         "bottom": 83.5,
+         "width": 84,
+         "height": 30,
+         "insetLeft": 45,
+         "insetRight": 1311,
+         "cx": 87
+        },
+        "contains": "SVG wordmark 84px wide"
+       },
+       {
+        "name": "trigger",
+        "rect": {
+         "top": 49,
+         "left": 1369,
+         "right": 1401,
+         "bottom": 79,
+         "width": 32,
+         "height": 30,
+         "insetLeft": 1369,
+         "insetRight": 39,
+         "cx": 1385
+        },
+        "contains": "burger button"
+       }
+      ],
+      "alignment": "logo left, burger right, both vertically level; nothing else"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.site-header",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "div.site-header": [
+        {
+         "sel": "div.site-wrapper > div.site-header",
+         "vis": true,
+         "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 1440,
+          "bottom": 129,
+          "width": 1440,
+          "height": 129,
+          "insetLeft": 0,
+          "insetRight": 0,
+          "cx": 720
+         },
+         "display": "flex",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "space-between",
+         "align": "center",
+         "padding": "50px 45px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.site-header .site-header-title": [
+        {
+         "sel": "div.site-header > div.site-header-title",
+         "vis": true,
+         "rect": {
+          "top": 55.5,
+          "left": 45,
+          "right": 129,
+          "bottom": 73.5,
+          "width": 84,
+          "height": 18,
+          "insetLeft": 45,
+          "insetRight": 1311,
+          "cx": 87
+         },
+         "display": "block",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "0px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.site-header .site-header-logo": [
+        {
+         "sel": "div.site-header-title > a.site-header-logo",
+         "vis": true,
+         "rect": {
+          "top": 53.5,
+          "left": 45,
+          "right": 129,
+          "bottom": 83.5,
+          "width": 84,
+          "height": 30,
+          "insetLeft": 45,
+          "insetRight": 1311,
+          "cx": 87
+         },
+         "display": "flex",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "0px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.site-header .site-header-cases": [
+        {
+         "sel": "div.site-header > a.site-header-cases",
+         "vis": false,
+         "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "insetLeft": 0,
+          "insetRight": 1440,
+          "cx": 0
+         },
+         "display": "none",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "0px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.site-header .site-header-button": [
+        {
+         "sel": "div.site-header > button.site-header-button",
+         "vis": true,
+         "rect": {
+          "top": 49,
+          "left": 1369,
+          "right": 1401,
+          "bottom": 79,
+          "width": 32,
+          "height": 30,
+          "insetLeft": 1369,
+          "insetRight": 39,
+          "cx": 1385
+         },
+         "display": "block",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "8px 6px",
+         "maxWidth": "none"
+        }
+       ]
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "fill": "transparent",
+      "fillWhenScrolled": "transparent",
+      "backdropFilter": "none",
+      "blur": false,
+      "scrim": false,
+      "boxShadow": "none",
+      "mixBlendMode": "normal",
+      "opacity": "1",
+      "before": null,
+      "after": null,
+      "textColour": "#ffffff",
+      "pageBackground": "#131419"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.site-header",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "rest": {
+        "top": 0,
+        "left": 0,
+        "width": 1440,
+        "height": 129,
+        "bg": "rgba(0, 0, 0, 0)",
+        "tr": "none",
+        "op": "1",
+        "shadow": "none",
+        "blur": "none",
+        "filter": "none",
+        "radius": "0px",
+        "blend": "normal",
+        "pos": "absolute",
+        "color": "rgb(255, 255, 255)"
+       },
+       "upAfterDown": {
+        "top": 0,
+        "left": 0,
+        "width": 1440,
+        "height": 129,
+        "bg": "rgba(0, 0, 0, 0)",
+        "tr": "matrix(1, 0, 0, 1, 0, 129)",
+        "op": "1",
+        "shadow": "none",
+        "blur": "none",
+        "filter": "none",
+        "radius": "0px",
+        "blend": "normal",
+        "pos": "fixed",
+        "color": "rgb(255, 255, 255)"
+       }
+      }
+     }
+    },
+    "background_visual": {
+     "value": {
+      "kind": "none (the page WebGL scene shows through)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.site-header",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "bgImage": "none"
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "restPosition": "absolute",
+      "afterScrollPosition": "fixed",
+      "hideOnScrollDown": true,
+      "revealOnScrollUp": true,
+      "headerTopAtScroll600": -258,
+      "headerTopAfterScrollingUp300": 0,
+      "translateAtScroll600": "matrix(1, 0, 0, 1, 0, -129)",
+      "translateAfterScrollUp": "matrix(1, 0, 0, 1, 0, 129)",
+      "solidFillWhenRevealed": false,
+      "scroller": "native window scroll"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs (wheel +600, then -300)",
+      "selector": "div.site-header",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "rest": {
+        "top": 0,
+        "left": 0,
+        "width": 1440,
+        "height": 129,
+        "bg": "rgba(0, 0, 0, 0)",
+        "tr": "none",
+        "op": "1",
+        "shadow": "none",
+        "blur": "none",
+        "filter": "none",
+        "radius": "0px",
+        "blend": "normal",
+        "pos": "absolute",
+        "color": "rgb(255, 255, 255)"
+       },
+       "down600": {
+        "top": -258,
+        "left": 0,
+        "width": 1440,
+        "height": 129,
+        "bg": "rgba(0, 0, 0, 0)",
+        "tr": "matrix(1, 0, 0, 1, 0, -129)",
+        "op": "1",
+        "shadow": "none",
+        "blur": "none",
+        "filter": "none",
+        "radius": "0px",
+        "blend": "normal",
+        "pos": "fixed",
+        "color": "rgb(255, 255, 255)"
+       },
+       "upAfterDown": {
+        "top": 0,
+        "left": 0,
+        "width": 1440,
+        "height": 129,
+        "bg": "rgba(0, 0, 0, 0)",
+        "tr": "matrix(1, 0, 0, 1, 0, 129)",
+        "op": "1",
+        "shadow": "none",
+        "blur": "none",
+        "filter": "none",
+        "radius": "0px",
+        "blend": "normal",
+        "pos": "fixed",
+        "color": "rgb(255, 255, 255)"
+       }
+      }
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "baseline": "band 129px, logo inset 45px"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.site-header",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "height": 129,
+       "logoLeft": 45,
+       "cases": false,
+       "scrolledBg": "rgba(0, 0, 0, 0)"
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "bar",
+   "tier": 1440,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "no navigation bar: logo and burger only",
+      "items": 2
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.site-header a, button",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "links": [
+        [
+         "Return to Dogstudio's homepage",
+         true
+        ],
+        [
+         "All our news",
+         false
+        ],
+        [
+         "All our cases",
+         false
+        ]
+       ]
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "logo": {
+       "left": 45,
+       "top": 53.5,
+       "width": 84,
+       "height": 30
+      },
+      "burger": {
+       "left": 1369,
+       "top": 49,
+       "width": 32,
+       "height": 30
+      },
+      "cases": null
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.site-header",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "div.site-header": [
+        {
+         "sel": "div.site-wrapper > div.site-header",
+         "vis": true,
+         "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 1440,
+          "bottom": 129,
+          "width": 1440,
+          "height": 129,
+          "insetLeft": 0,
+          "insetRight": 0,
+          "cx": 720
+         },
+         "display": "flex",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "space-between",
+         "align": "center",
+         "padding": "50px 45px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.site-header .site-header-title": [
+        {
+         "sel": "div.site-header > div.site-header-title",
+         "vis": true,
+         "rect": {
+          "top": 55.5,
+          "left": 45,
+          "right": 129,
+          "bottom": 73.5,
+          "width": 84,
+          "height": 18,
+          "insetLeft": 45,
+          "insetRight": 1311,
+          "cx": 87
+         },
+         "display": "block",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "0px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.site-header .site-header-logo": [
+        {
+         "sel": "div.site-header-title > a.site-header-logo",
+         "vis": true,
+         "rect": {
+          "top": 53.5,
+          "left": 45,
+          "right": 129,
+          "bottom": 83.5,
+          "width": 84,
+          "height": 30,
+          "insetLeft": 45,
+          "insetRight": 1311,
+          "cx": 87
+         },
+         "display": "flex",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "0px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.site-header .site-header-cases": [
+        {
+         "sel": "div.site-header > a.site-header-cases",
+         "vis": false,
+         "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "insetLeft": 0,
+          "insetRight": 1440,
+          "cx": 0
+         },
+         "display": "none",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "0px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.site-header .site-header-button": [
+        {
+         "sel": "div.site-header > button.site-header-button",
+         "vis": true,
+         "rect": {
+          "top": 49,
+          "left": 1369,
+          "right": 1401,
+          "bottom": 79,
+          "width": 32,
+          "height": 30,
+          "insetLeft": 1369,
+          "insetRight": 39,
+          "cx": 1385
+         },
+         "display": "block",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "8px 6px",
+         "maxWidth": "none"
+        }
+       ]
+      }
+     }
+    },
+    "item_typography": {
+     "value": {
+      "note": "no text item visible at this tier; the cases link is display:none (its type is 13px at every width when shown)",
+      "series": [
+       [
+        1600,
+        "13px"
+       ],
+       [
+        1440,
+        "13px"
+       ],
+       [
+        1280,
+        "13px"
+       ],
+       [
+        1100,
+        "13px"
+       ],
+       [
+        1024,
+        "13px"
+       ],
+       [
+        900,
+        "13px"
+       ],
+       [
+        768,
+        "13px"
+       ],
+       [
+        640,
+        "13px"
+       ],
+       [
+        520,
+        "13px"
+       ],
+       [
+        414,
+        "13px"
+       ],
+       [
+        375,
+        "13px"
+       ]
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fontscale.mjs",
+      "selector": "div.site-header .site-header-cases",
+      "rawFile": "raw/dogstudio-fontscale.json",
+      "raw": [
+       [
+        1600,
+        "13px"
+       ],
+       [
+        1440,
+        "13px"
+       ],
+       [
+        1280,
+        "13px"
+       ],
+       [
+        1100,
+        "13px"
+       ],
+       [
+        1024,
+        "13px"
+       ],
+       [
+        900,
+        "13px"
+       ],
+       [
+        768,
+        "13px"
+       ],
+       [
+        640,
+        "13px"
+       ],
+       [
+        520,
+        "13px"
+       ],
+       [
+        414,
+        "13px"
+       ],
+       [
+        375,
+        "13px"
+       ]
+      ]
+     }
+    },
+    "item_states": {
+     "value": {
+      "hover": [
+       {
+        "text": "Return to Dogstudio's homepage",
+        "styleDiffs": 0
+       }
+      ],
+      "note": "0 computed-style diffs after 650ms hover on each visible bar link",
+      "currentIndicator": "none"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs hover 650ms",
+      "selector": "div.site-header a",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": [
+       {
+        "text": "Return to Dogstudio's homepage",
+        "diffCount": 0
+       },
+       {
+        "skipped": "not visible"
+       },
+       {
+        "skipped": "not visible"
+       }
+      ]
+     }
+    },
+    "mechanics": {
+     "value": {
+      "openTrigger": "burger click only",
+      "hoverDropdown": false,
+      "popupHints": {
+       "ariaHaspopup": 4,
+       "ariaExpanded": [
+        "div.showreel-video > div.plyr.plyr--full-ui.plyr--video > div.plyr__controls > div.plyr__menu > button.plyr__control false"
+       ],
+       "dropdownClass": [],
+       "semantic": {
+        "nav": 0,
+        "header": 1,
+        "banner": 0,
+        "dialog": 0
+       }
+      }
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs hover + DOM query",
+      "selector": "div.site-header a",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "newBoxes": [
+        0,
+        null,
+        null
+       ],
+       "popupHints": {
+        "ariaHaspopup": 4,
+        "ariaExpanded": [
+         "div.showreel-video > div.plyr.plyr--full-ui.plyr--video > div.plyr__controls > div.plyr__menu > button.plyr__control false"
+        ],
+        "dropdownClass": [],
+        "semantic": {
+         "nav": 0,
+         "header": 1,
+         "banner": 0,
+         "dialog": 0
+        }
+       }
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "labels": [],
+      "logoAccessibleName": "Return to Dogstudio's homepage",
+      "fixed": true
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.site-header",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "logoName": "Return to Dogstudio's homepage",
+       "links": [
+        [
+         "Return to Dogstudio's homepage",
+         true
+        ],
+        [
+         "All our news",
+         false
+        ],
+        [
+         "All our cases",
+         false
+        ]
+       ]
+      }
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "baseline": "logo and burger only; the cases link and a news link are display:none (0x0)",
+      "hiddenLinks": [
+       {
+        "name": "All our news",
+        "display": "none"
+       },
+       {
+        "name": "All our cases",
+        "display": "none"
+       }
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.site-header a",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": [
+       [
+        "Return to Dogstudio's homepage",
+        true,
+        "flex"
+       ],
+       [
+        "All our news",
+        false,
+        "none"
+       ],
+       [
+        "All our cases",
+        false,
+        "none"
+       ]
+      ]
+     }
+    }
+   }
+  },
+  {
+   "surface": "dropdown",
+   "tier": 1440,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: no bar item owns a dropdown panel (the bar has no navigation links); 4 aria-haspopup and 0 dropdown/mega/submenu class matches; hover on the visible header links opened nothing (newBoxCount [0])",
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs hover + DOM query",
+      "selector": "div.site-header a; [aria-haspopup]; [class*=dropdown|mega|sub-menu|submenu|flyout]",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "popupHints": {
+        "ariaHaspopup": 4,
+        "ariaExpanded": [
+         "div.showreel-video > div.plyr.plyr--full-ui.plyr--video > div.plyr__controls > div.plyr__menu > button.plyr__control false"
+        ],
+        "dropdownClass": [],
+        "semantic": {
+         "nav": 0,
+         "header": 1,
+         "banner": 0,
+         "dialog": 0
+        }
+       },
+       "hover": [
+        {
+         "text": "Return to Dogstudio's homepage",
+         "newBoxCount": 0
+        },
+        {
+         "skipped": "not visible"
+        },
+        {
+         "skipped": "not visible"
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "mega",
+   "tier": 1440,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: no bar item owns a mega panel (the bar has no navigation links); 4 aria-haspopup and 0 dropdown/mega/submenu class matches; hover on the visible header links opened nothing (newBoxCount [0])",
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs hover + DOM query",
+      "selector": "div.site-header a; [aria-haspopup]; [class*=dropdown|mega|sub-menu|submenu|flyout]",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "popupHints": {
+        "ariaHaspopup": 4,
+        "ariaExpanded": [
+         "div.showreel-video > div.plyr.plyr--full-ui.plyr--video > div.plyr__controls > div.plyr__menu > button.plyr__control false"
+        ],
+        "dropdownClass": [],
+        "semantic": {
+         "nav": 0,
+         "header": 1,
+         "banner": 0,
+         "dialog": 0
+        }
+       },
+       "hover": [
+        {
+         "text": "Return to Dogstudio's homepage",
+         "newBoxCount": 0
+        },
+        {
+         "skipped": "not visible"
+        },
+        {
+         "skipped": "not visible"
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "trigger-close",
+   "tier": 1440,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "kind": "burger (three bars) that turns into an X in place",
+      "element": "button.site-header-button",
+      "separateCloseButton": false,
+      "replacesInPlace": true,
+      "bars": "three white span bars 20/16/20px x 2px"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-header-button",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "tag": "BUTTON",
+       "atPointAfterOpen": {
+        "isTrigger": true,
+        "inPanel": false
+       },
+       "htmlAfter": "<button type=\"button\" class=\"site-header-button is-active\" title=\"Toggle menu\">\n    <span class=\"u-visually-hidden\">Toggle menu</span>\n    <span class=\"button-bar button-bar--1\"></span>\n    <span class=\"button-bar button-bar--2\"></span>\n   "
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "left": 1369,
+      "top": 49,
+      "width": 32,
+      "height": 30,
+      "insetRight": 39,
+      "targetSizeMeets44": false,
+      "zIndex": {
+       "button": "60",
+       "header": "1000",
+       "menu": "995"
+      }
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-header-button",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "top": 49,
+       "left": 1369,
+       "right": 1401,
+       "bottom": 79,
+       "width": 32,
+       "height": 30,
+       "insetLeft": 1369,
+       "insetRight": 39,
+       "cx": 1385
+      }
+     }
+    },
+    "item_states": {
+     "value": {
+      "open": "class is-active added; button rotates 180 degrees (matrix -1,0,0,-1); bars become an X (bar 1 +45deg, bar 3 -45deg, bar 2 scaleX 1)",
+      "closed": "bars at -6px / scaleX .8 / +6px",
+      "transition": "transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1), -webkit-transform 0.6s cubic-bezier(0.1"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "d-open.mjs (1440) + cap.mjs",
+      "selector": ".site-header-button .button-bar",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "htmlAfter": "<button type=\"button\" class=\"site-header-button is-active\" title=\"Toggle menu\">\n    <span class=\"u-visually-hidden\">Toggle menu</span>\n    <span class=\"button-bar button-bar--1\"></span>\n    <span class=\"button-bar button-bar--2\"></span>\n    <span class=\"button-bar button-bar--3\"></span>\n  </button>",
+       "transition": "transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1), -webkit-transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)"
+      }
+     }
+    },
+    "trigger_close": {
+     "value": {
+      "kind": "burger",
+      "elementSemantics": {
+       "tag": "BUTTON",
+       "type": "button",
+       "title": "Toggle menu",
+       "accessibleName": "Toggle menu (visually hidden span + title)",
+       "ariaExpanded": null
+      },
+      "closeStyle": "the same button, bars morph to an X",
+      "replacesInPlace": true,
+      "topRow": false,
+      "animation": "bar transform transition 0.6s cubic-bezier(0.165,0.84,0.44,1)",
+      "magnet": "not probed"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs click",
+      "selector": ".site-header-button",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "attrs": {
+        "type": "button",
+        "title": "Toggle menu"
+       },
+       "name": "Toggle menu",
+       "transition": "transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1), -webkit-transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)"
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "openTrigger": "click",
+      "nativeButton": true,
+      "escapeCloses": true,
+      "focusAfterOpen": "body.home.page-template.page-template-page-home",
+      "focusAfterClose": "button.site-header-button",
+      "scrollLock": "locked: body overflow hidden and wheel/PageDown do not move the page",
+      "wheelProbe": {
+       "scrollYBefore": 0,
+       "afterWheel400": 0,
+       "afterPageDown": 0,
+       "pageScrollsWhileOpen": false
+      },
+      "bodyOverflowOpen": "hidden",
+      "dialog": 0,
+      "inert": 0,
+      "ariaModal": 0,
+      "openSurvivesResize": {
+       "sameTier": true,
+       "crossTierTo": 700,
+       "open": true
+      },
+      "openStateMarker": "body classes menu-active menu-open"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-header-button, .site-menu",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "escape": {
+        "panelClip": "none",
+        "panelOp": "0",
+        "panelVis": "visible",
+        "panelRect": {
+         "top": 0,
+         "left": 0,
+         "right": 1440,
+         "bottom": 900,
+         "width": 1440,
+         "height": 900,
+         "insetLeft": 0,
+         "insetRight": 0,
+         "cx": 720
+        },
+        "active": "html.no-touchevents.backgroundcliptext.objectfit > body.home.page-template.page-template-page-home",
+        "bodyOverflow": "hidden auto",
+        "closedByEscape": true
+       },
+       "resize": {
+        "openAfterResize": true,
+        "crossTo": 700,
+        "openAfterCrossTierResize": true,
+        "bodyOverflowAfterCross": "hidden"
+       },
+       "scrollLockProbe": {
+        "scrollYBefore": 0,
+        "afterWheel400": 0,
+        "afterPageDown": 0,
+        "pageScrollsWhileOpen": false
+       },
+       "afterClose": {
+        "bodyOverflow": "hidden auto",
+        "htmlOverflow": "visible",
+        "active": "html.no-touchevents.backgroundcliptext.objectfit > body.home.page-template.page-template-page-home > div.site-wrapper > div.site-header > button.site-header-button",
+        "triggerText": "Toggle menu",
+        "ariaExpanded": null,
+        "open": false
+       }
+      }
+     }
+    },
+    "motion": {
+     "value": {
+      "effect": "bar-to-X morph and 180 degree rotation",
+      "transition": "transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1), -webkit-transform 0.6s cubic-bezier(0.1",
+      "spec38Tier": "V",
+      "substrate": "DOM"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-header-button",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "transition": "transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1), -webkit-transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)"
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "label": "none visible (icon only)",
+      "accessibleName": "Toggle menu"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-header-button",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "name": "Toggle menu",
+       "attrs": {
+        "type": "button",
+        "title": "Toggle menu"
+       }
+      }
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "note": "same 32x30 burger at every tier; only its inset changes (right inset 39px)",
+      "drop": "not dropped at any tier"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-header-button",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "top": 49,
+       "left": 1369,
+       "right": 1401,
+       "bottom": 79,
+       "width": 32,
+       "height": 30,
+       "insetLeft": 1369,
+       "insetRight": 39,
+       "cx": 1385
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "drawer",
+   "tier": 1440,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "full-screen",
+      "reveal": "a #131419 curtain sweeps across the viewport from the left while the menu image layer and list fade in behind it",
+      "menuLayerIsTransparent": true
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-menu, .site-menu-panel, .site-menu-back",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "menu": {
+        "position": "fixed",
+        "rect": {
+         "top": 0,
+         "left": 0,
+         "right": 1440,
+         "bottom": 900,
+         "width": 1440,
+         "height": 900,
+         "insetLeft": 0,
+         "insetRight": 0,
+         "cx": 720
+        },
+        "bg": "rgba(0, 0, 0, 0)"
+       },
+       "back": "rgb(19, 20, 25)",
+       "panel": {
+        "top": 0,
+        "left": -1440,
+        "right": 0,
+        "bottom": 900,
+        "width": 1440,
+        "height": 900,
+        "insetLeft": -1440,
+        "insetRight": 1440,
+        "cx": -720
+       }
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "menu": {
+       "position": "fixed",
+       "inset": {
+        "top": 0,
+        "left": 0,
+        "right": 0,
+        "bottom": 0
+       },
+       "width": 1440,
+       "height": 900,
+       "zIndex": "995"
+      },
+      "backLayer": {
+       "zIndex": "990",
+       "rect": {
+        "top": 0,
+        "left": 0,
+        "right": 1440,
+        "bottom": 900,
+        "width": 1440,
+        "height": 900,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 720
+       }
+      },
+      "curtain": {
+       "zIndex": "999",
+       "restLeft": 0
+      },
+      "radius": 0,
+      "centredOnViewport": true
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-menu",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "menu": {
+        "top": 0,
+        "left": 0,
+        "right": 1440,
+        "bottom": 900,
+        "width": 1440,
+        "height": 900,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 720
+       },
+       "back": {
+        "top": 0,
+        "left": 0,
+        "right": 1440,
+        "bottom": 900,
+        "width": 1440,
+        "height": 900,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 720
+       },
+       "panel": {
+        "top": 0,
+        "left": -1440,
+        "right": 0,
+        "bottom": 900,
+        "width": 1440,
+        "height": 900,
+        "insetLeft": -1440,
+        "insetRight": 1440,
+        "cx": -720
+       }
+      }
+     }
+    },
+    "zone_model": {
+     "value": {
+      "list": {
+       "left": 180,
+       "top": 254.5,
+       "count": 5,
+       "alignment": "left"
+      },
+      "footerRow": {
+       "showreel": {
+        "left": 45,
+        "top": 817
+       },
+       "contentBlock": {
+        "top": 671.7,
+        "left": 1060.8,
+        "right": 1395,
+        "bottom": 830,
+        "width": 334.3,
+        "height": 158.3,
+        "insetLeft": 1060.8,
+        "insetRight": 45,
+        "cx": 1227.9
+       }
+      },
+      "layout": "list left at x=180, showreel bottom-left, tagline image + social row bottom-right",
+      "headerControlsAbove": "the burger (z 1000 header, button z 60) stays above the menu (z 995)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-menu",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "links": [
+        [
+         "The Studio",
+         180,
+         254.5
+        ],
+        [
+         "Our Cases",
+         180,
+         335.7
+        ],
+        [
+         "Careers",
+         180,
+         416.9
+        ],
+        [
+         "Our Values",
+         180,
+         498.1
+        ],
+        [
+         "Contact",
+         180,
+         579.3
+        ]
+       ],
+       "showreel": {
+        "top": 817,
+        "left": 45,
+        "right": 185.6,
+        "bottom": 830,
+        "width": 140.6,
+        "height": 13,
+        "insetLeft": 45,
+        "insetRight": 1254.4,
+        "cx": 115.3
+       },
+       "content": {
+        "top": 671.7,
+        "left": 1060.8,
+        "right": 1395,
+        "bottom": 830,
+        "width": 334.3,
+        "height": 158.3,
+        "insetLeft": 1060.8,
+        "insetRight": 45,
+        "cx": 1227.9
+       }
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "menuLayerFill": "transparent",
+      "backLayerFill": "#131419",
+      "curtainFill": "#131419",
+      "backdropFilter": "none",
+      "scrim": false,
+      "blur": false,
+      "opacityAtRest": "0",
+      "opacityOpen": "1",
+      "pageBehind": "covered by the opaque #131419 back layer"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-menu-back, .site-menu-panel",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "back": "rgb(19, 20, 25)",
+       "panel": "rgb(19, 20, 25)",
+       "menu": "rgba(0, 0, 0, 0)"
+      }
+     }
+    },
+    "background_visual": {
+     "value": {
+      "kind": "static image layer (picture.site-menu-back > img) over the flat colour, faded in",
+      "imageRect": {
+       "top": 0,
+       "left": 0,
+       "right": 1440,
+       "bottom": 760,
+       "width": 1440,
+       "height": 760,
+       "insetLeft": 0,
+       "insetRight": 0,
+       "cx": 720
+      },
+      "imageStyle": {
+       "position": "static",
+       "opacity": "1"
+      },
+      "behaviour": "fades with the menu; no parallax or follow-hover measured",
+      "menuTaglineImage": "the \"We Make Good Shit\" tagline is an <img> (baseline.png), not text"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-menu-back img",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "img": {
+        "top": 0,
+        "left": 0,
+        "right": 1440,
+        "bottom": 760,
+        "width": 1440,
+        "height": 760,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 720
+       },
+       "panelMedia": {
+        "img": 1,
+        "video": 0,
+        "canvas": 0,
+        "svg": 6
+       }
+      }
+     }
+    },
+    "item_typography": {
+     "value": {
+      "fontFamily": "Heebo, Helvetica, Arial, sans-serif",
+      "fontSize": 60,
+      "fontWeight": "200",
+      "letterSpacing": "-1.2px",
+      "textTransform": "none",
+      "colour": "rgba(160, 168, 220, 0.8)",
+      "scalingMode": "stepped, and driven by viewport HEIGHT as well as width: 60px at >=1280 wide and 900 tall, 45px at 1100-520 wide or when the viewport is 713px tall, 40px at 414 and below",
+      "widthSeries": [
+       [
+        1600,
+        "60px"
+       ],
+       [
+        1440,
+        "60px"
+       ],
+       [
+        1280,
+        "60px"
+       ],
+       [
+        1100,
+        "45px"
+       ],
+       [
+        1024,
+        "45px"
+       ],
+       [
+        900,
+        "45px"
+       ],
+       [
+        768,
+        "45px"
+       ],
+       [
+        640,
+        "45px"
+       ],
+       [
+        520,
+        "45px"
+       ],
+       [
+        414,
+        "40px"
+       ],
+       [
+        375,
+        "40px"
+       ]
+      ],
+      "heightProbe": [
+       [
+        "1440x900",
+        "60px"
+       ],
+       [
+        "1352x713",
+        "45px"
+       ],
+       [
+        "1352x900",
+        "60px"
+       ],
+       [
+        "1440x713",
+        "45px"
+       ],
+       [
+        "1440x600",
+        "45px"
+       ],
+       [
+        "1440x1100",
+        "60px"
+       ],
+       [
+        "1100x713",
+        "45px"
+       ],
+       [
+        "1100x900",
+        "45px"
+       ]
+      ],
+      "caseOrigin": "source Title Case, no CSS transform"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fontscale.mjs + d-h.mjs",
+      "selector": ".site-menu-item a",
+      "rawFile": "raw/dogstudio-fontscale.json ; raw/dogstudio-heightprobe.json",
+      "raw": {
+       "width": [
+        [
+         1600,
+         "60px"
+        ],
+        [
+         1440,
+         "60px"
+        ],
+        [
+         1280,
+         "60px"
+        ],
+        [
+         1100,
+         "45px"
+        ],
+        [
+         1024,
+         "45px"
+        ],
+        [
+         900,
+         "45px"
+        ],
+        [
+         768,
+         "45px"
+        ],
+        [
+         640,
+         "45px"
+        ],
+        [
+         520,
+         "45px"
+        ],
+        [
+         414,
+         "40px"
+        ],
+        [
+         375,
+         "40px"
+        ]
+       ],
+       "height": [
+        [
+         "1440x900",
+         "60px"
+        ],
+        [
+         "1352x713",
+         "45px"
+        ],
+        [
+         "1352x900",
+         "60px"
+        ],
+        [
+         "1440x713",
+         "45px"
+        ],
+        [
+         "1440x600",
+         "45px"
+        ],
+        [
+         "1440x1100",
+         "60px"
+        ],
+        [
+         "1100x713",
+         "45px"
+        ],
+        [
+         "1100x900",
+         "45px"
+        ]
+       ]
+      }
+     }
+    },
+    "item_states": {
+     "value": {
+      "hover": "hovered link turns white (#ffffff) from rgba(160,168,220,0.8); others unchanged",
+      "hoverColourChange": {
+       "before": "rgba(160, 168, 220, 0.8)",
+       "after": "rgb(255, 255, 255)"
+      },
+      "ornament": "two-digit index 01-05 from a CSS counter on a::before (present at 1440 only)",
+      "currentIndicator": "none",
+      "separators": "none"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "d-li.mjs",
+      "selector": ".site-menu-item a",
+      "rawFile": "raw/dogstudio-li-1440.json",
+      "raw": {
+       "pseudo": "\"0\" counter(b)",
+       "hover": "item 2 (Our Cases)",
+       "colours": [
+        "rgba(160, 168, 220, 0.8)",
+        "rgb(255, 255, 255)"
+       ]
+      }
+     }
+    },
+    "secondary_blocks": {
+     "value": {
+      "blocks": [
+       {
+        "kind": "showreel link",
+        "text": "Watch our Showreel",
+        "typeSize": 13,
+        "weight": "500",
+        "colour": "#ffffff",
+        "icon": "right caret svg"
+       },
+       {
+        "kind": "tagline",
+        "form": "image with alt \"We Make Good Shit\""
+       },
+       {
+        "kind": "social row",
+        "items": [
+         "Facebook",
+         "Instagram",
+         "Dribbble",
+         "Twitter",
+         "Newsletter"
+        ],
+        "typeSize": 11,
+        "layout": "inline text row bottom-right (word-width items)"
+       }
+      ],
+      "previewPane": false
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-menu-footer",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "text": "The Studio Our Cases Careers Our Values Contact Watch our Showreel Facebook Instagram Dribbble Twitter Newsletter",
+       "socials": [
+        [
+         "Facebook",
+         1060.8,
+         815.7
+        ],
+        [
+         "Instagram",
+         1135.8,
+         815.7
+        ],
+        [
+         "Dribbble",
+         1212.8,
+         815.7
+        ],
+        [
+         "Twitter",
+         1280.8,
+         815.7
+        ],
+        [
+         "Newsletter",
+         1342.1,
+         815.7
+        ]
+       ],
+       "showreel": {
+        "fontSize": "13px",
+        "fontWeight": "500",
+        "textTransform": "none",
+        "letterSpacing": "normal",
+        "lineHeight": "13px",
+        "color": "rgb(255, 255, 255)",
+        "fontFamily": "Heebo, Helvetica, Arial, sans-serif"
+       }
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "openTrigger": "click on the burger",
+      "openMarker": "body.menu-active.menu-open; closing: menu-active menu-close menu-running, then menu-running, then none",
+      "escapeCloses": true,
+      "scrollLock": "locked (wheel and PageDown do not move the page; body overflow hidden)",
+      "wheelProbe": {
+       "scrollYBefore": 0,
+       "afterWheel400": 0,
+       "afterPageDown": 0,
+       "pageScrollsWhileOpen": false
+      },
+      "bodyOverflowOpen": "hidden",
+      "bodyOverflowAfterClose": "hidden auto",
+      "dialog": 0,
+      "inert": 0,
+      "ariaModal": 0,
+      "focusAfterOpen": "body.home.page-template.page-template-page-home",
+      "survivesResize": {
+       "sameTier": true,
+       "crossTierTo": 700,
+       "open": true
+      },
+      "pointerEventsWhenClosed": "menu layer opacity 0 and pointer-events none"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-menu",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "escape": {
+        "panelClip": "none",
+        "panelOp": "0",
+        "panelVis": "visible",
+        "panelRect": {
+         "top": 0,
+         "left": 0,
+         "right": 1440,
+         "bottom": 900,
+         "width": 1440,
+         "height": 900,
+         "insetLeft": 0,
+         "insetRight": 0,
+         "cx": 720
+        },
+        "active": "html.no-touchevents.backgroundcliptext.objectfit > body.home.page-template.page-template-page-home",
+        "bodyOverflow": "hidden auto",
+        "closedByEscape": true
+       },
+       "lock": {
+        "scrollYBefore": 0,
+        "afterWheel400": 0,
+        "afterPageDown": 0,
+        "pageScrollsWhileOpen": false
+       },
+       "resize": {
+        "openAfterResize": true,
+        "crossTo": 700,
+        "openAfterCrossTierResize": true,
+        "bodyOverflowAfterCross": "hidden"
+       },
+       "active": "html.no-touchevents.backgroundcliptext.objectfit > body.home.page-template.page-template-page-home",
+       "afterClose": {
+        "bodyOverflow": "hidden auto",
+        "htmlOverflow": "visible",
+        "active": "html.no-touchevents.backgroundcliptext.objectfit > body.home.page-template.page-template-page-home > div.site-wrapper > div.site-header > button.site-header-button",
+        "triggerText": "Toggle menu",
+        "ariaExpanded": null,
+        "open": false
+       }
+      }
+     }
+    },
+    "motion": {
+     "value": {
+      "open": {
+       "effect": "curtain (.site-menu-panel, #131419) translateX from -100% across to the right and away, while .site-menu-back and the list go opacity 0 -> 1 and pointer-events none -> auto",
+       "backFullyOpaqueByMs": 2793,
+       "sampleGapMs": "the page is WebGL-heavy so evaluate calls took 0.4-1 s; durations are upper bounds",
+       "firstSamples": [
+        [
+         2260,
+         "0",
+         "matrix(1, 0, 0, 1, -1365.13, 0)"
+        ],
+        [
+         2571,
+         "0",
+         "matrix(1, 0, 0, 1, -295.992, 0)"
+        ],
+        [
+         2793,
+         "1",
+         "matrix(1, 0, 0, 1, -31.6802, 0)"
+        ],
+        [
+         3025,
+         "1",
+         "matrix(1, 0, 0, 1, 1.18488, 0)"
+        ]
+       ]
+      },
+      "close": {
+       "effect": "same curtain sweep in reverse with body classes menu-close menu-running",
+       "backHiddenByMs": 1211,
+       "firstSamples": [
+        [
+         216,
+         "1",
+         "matrix(1, 0, 0, 1, -1440, 0)"
+        ],
+        [
+         538,
+         "1",
+         "matrix(1, 0, 0, 1, -1440, 0)"
+        ],
+        [
+         759,
+         "1",
+         "matrix(1, 0, 0, 1, -1365.12, 0)"
+        ],
+        [
+         1039,
+         "1",
+         "matrix(1, 0, 0, 1, -295.943, 0)"
+        ]
+       ]
+      },
+      "spec38Tier": "V reachable (translate + opacity); the site drives it from its own dog.js/main.js, no GSAP global on the page",
+      "substrate": "DOM (the page behind is a WebGL scene)"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs sampler",
+      "selector": ".site-menu-panel, .site-menu-back",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "open": [
+        [
+         2260,
+         "0",
+         "matrix(1, 0, 0, 1, -1365.13, 0)"
+        ],
+        [
+         2571,
+         "0",
+         "matrix(1, 0, 0, 1, -295.992, 0)"
+        ],
+        [
+         2793,
+         "1",
+         "matrix(1, 0, 0, 1, -31.6802, 0)"
+        ],
+        [
+         3025,
+         "1",
+         "matrix(1, 0, 0, 1, 1.18488, 0)"
+        ],
+        [
+         3274,
+         "1",
+         "matrix(1, 0, 0, 1, 91.3937, 0)"
+        ],
+        [
+         3393,
+         "1",
+         "matrix(1, 0, 0, 1, 1194.98, 0)"
+        ],
+        [
+         3631,
+         "1",
+         "matrix(1, 0, 0, 1, -1440, 0)"
+        ],
+        [
+         3946,
+         "1",
+         "matrix(1, 0, 0, 1, -1440, 0)"
+        ]
+       ],
+       "close": [
+        [
+         216,
+         "1",
+         "matrix(1, 0, 0, 1, -1440, 0)",
+         "-home-php page page-id-5 menu-active menu-close menu-running"
+        ],
+        [
+         538,
+         "1",
+         "matrix(1, 0, 0, 1, -1440, 0)",
+         "-home-php page page-id-5 menu-active menu-close menu-running"
+        ],
+        [
+         759,
+         "1",
+         "matrix(1, 0, 0, 1, -1365.12, 0)",
+         "-home-php page page-id-5 menu-active menu-close menu-running"
+        ],
+        [
+         1039,
+         "1",
+         "matrix(1, 0, 0, 1, -295.943, 0)",
+         "-home-php page page-id-5 menu-active menu-close menu-running"
+        ],
+        [
+         1211,
+         "0",
+         "matrix(1, 0, 0, 1, -24.8166, 0)",
+         "mplate-page-home-php page page-id-5 menu-active menu-running"
+        ],
+        [
+         1482,
+         "0",
+         "matrix(1, 0, 0, 1, 8.10201, 0)",
+         "home page-template-page-home-php page page-id-5 menu-running"
+        ],
+        [
+         1878,
+         "0",
+         "matrix(1, 0, 0, 1, 1353.47, 0)",
+         "home page-template-page-home-php page page-id-5 menu-running"
+        ],
+        [
+         2072,
+         "0",
+         "matrix(1, 0, 0, 1, -1440, 0)",
+         "emplate-page-home page-template-page-home-php page page-id-5"
+        ]
+       ]
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "linkLabels": [
+       "The Studio",
+       "Our Cases",
+       "Careers",
+       "Our Values",
+       "Contact"
+      ],
+      "count": 5,
+      "footer": [
+       "Watch our Showreel",
+       "Facebook",
+       "Instagram",
+       "Dribbble",
+       "Twitter",
+       "Newsletter"
+      ],
+      "indexNumbers": "01-05 (CSS-generated)",
+      "fixed": true
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs + d-li.mjs",
+      "selector": ".site-menu a",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "links": [
+        "The Studio",
+        "Our Cases",
+        "Careers",
+        "Our Values",
+        "Contact"
+       ],
+       "pseudo": "\"0\" counter(b)"
+      }
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "baseline": "list x=180, 60px, index numbers, footer split left/right"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs + d-li.mjs",
+      "selector": ".site-menu",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "listLeft": 180,
+       "listTop": 254.5,
+       "fontSize": "60px",
+       "index": "\"0\" counter(b)"
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "footer",
+   "tier": 1440,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "full-width transparent block over the page background, not a <footer> element (div.site-footer)",
+      "tag": "DIV",
+      "role": null,
+      "height": 291.9
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-footer",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "rect": {
+        "top": 608.3,
+        "left": 0,
+        "right": 1440,
+        "bottom": 900.2,
+        "width": 1440,
+        "height": 291.9,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 720
+       },
+       "tag": "DIV"
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "width": 1440,
+      "height": 291.9,
+      "padding": "0px",
+      "radius": 0,
+      "contentWidth": "inner .center, 1024px wide at 1440 (208px each side)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-footer",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "rect": {
+        "top": 608.3,
+        "left": 0,
+        "right": 1440,
+        "bottom": 900.2,
+        "width": 1440,
+        "height": 291.9,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 720
+       }
+      }
+     }
+    },
+    "zone_model": {
+     "value": {
+      "blocks": [
+       "three city labels (Chicago . Amsterdam . Paris .)",
+       "social abbreviations (Fb, Ins, Dri, Tw)",
+       "heading \"Contact us\" + \"We'd love to hear from you\" + email",
+       "Privacy Policy",
+       "language switch (English / Espanol)"
+      ],
+      "groups": [
+       {
+        "left": 1047.7,
+        "top": 718.2,
+        "width": 194.3,
+        "links": 4
+       },
+       {
+        "left": 1138,
+        "top": 850.2,
+        "width": 94,
+        "links": 2
+       }
+      ],
+      "headings": [
+       "H3:Chicago .",
+       "H3:Amsterdam .",
+       "H3:Paris .",
+       "H2:Contact us"
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-footer",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "groups": [
+        {
+         "sel": "div.site-footer-block.site-footer-block--social.appear-fade-up > ul",
+         "rect": {
+          "top": 718.2,
+          "left": 1047.7,
+          "right": 1242,
+          "bottom": 741.2,
+          "width": 194.3,
+          "height": 23,
+          "insetLeft": 1047.7,
+          "insetRight": 198,
+          "cx": 1144.8
+         },
+         "linkCount": 4,
+         "display": "flex",
+         "gridCols": "none"
+        },
+        {
+         "sel": "div.site-footer-languages.appear-fade-up.appear-delay--5 > ul",
+         "rect": {
+          "top": 850.2,
+          "left": 1138,
+          "right": 1232,
+          "bottom": 875.2,
+          "width": 94,
+          "height": 25,
+          "insetLeft": 1138,
+          "insetRight": 208,
+          "cx": 1185
+         },
+         "linkCount": 2,
+         "display": "flex",
+         "gridCols": "none"
+        }
+       ],
+       "headings": [
+        "H3:Chicago .",
+        "H3:Amsterdam .",
+        "H3:Paris .",
+        "H2:Contact us"
+       ],
+       "text": "Chicago . Amsterdam . Paris . Contact us Fb Ins Dri Tw We'd love to hear from you biz@dogstudio.be Privacy Policy Language: English Español"
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "fill": "transparent",
+      "pageBackgroundBehind": "#131419",
+      "textColour": "#ffffff",
+      "backdropFilter": "none",
+      "backgroundImage": "none"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-footer",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "bg": "rgba(0, 0, 0, 0)",
+       "color": "rgb(255, 255, 255)",
+       "body": "rgb(19, 20, 25)"
+      }
+     }
+    },
+    "background_visual": {
+     "value": {
+      "kind": "none in the footer element; media inside: {\"img\":2,\"video\":0,\"canvas\":0,\"svg\":6}"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-footer",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "img": 2,
+       "video": 0,
+       "canvas": 0,
+       "svg": 6
+      }
+     }
+    },
+    "item_typography": {
+     "value": {
+      "fontFamily": "Heebo, Helvetica, Arial, sans-serif",
+      "fontSize": 11,
+      "fontWeight": "400",
+      "textTransform": "none",
+      "colour": "#a0a8dc @0.7",
+      "emailWeight": "500",
+      "legalSize": 12,
+      "languageFont": "Gilroy, Helvetica, Arial, sans-serif",
+      "scalingMode": "fixed 11px"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-footer a",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "social": {
+        "text": "Fb",
+        "rawText": "Fb",
+        "href": "https://www.facebook.com/dogstudio/",
+        "rect": {
+         "top": 718.2,
+         "left": 1106.8,
+         "right": 1139,
+         "bottom": 741.2,
+         "width": 32.3,
+         "height": 23,
+         "insetLeft": 1106.8,
+         "insetRight": 301,
+         "cx": 1122.9
+        },
+        "fontSize": "11px",
+        "fontWeight": "400",
+        "fontFamily": "Heebo, Helvetica, Arial, sans-serif",
+        "letterSpacing": "normal",
+        "textTransform": "none",
+        "color": "rgba(160, 168, 220, 0.7)"
+       },
+       "mail": {
+        "text": "biz@dogstudio.be",
+        "rawText": "biz@dogstudio.be",
+        "href": "mailto:biz@dogstudio.be",
+        "rect": {
+         "top": 854.2,
+         "left": 341.2,
+         "right": 488.3,
+         "bottom": 871.2,
+         "width": 147.1,
+         "height": 17,
+         "insetLeft": 341.2,
+         "insetRight": 951.7,
+         "cx": 414.7
+        },
+        "fontSize": "11px",
+        "fontWeight": "500",
+        "fontFamily": "Heebo, Helvetica, Arial, sans-serif",
+        "letterSpacing": "normal",
+        "textTransform": "none",
+        "color": "rgb(255, 255, 255)"
+       },
+       "legal": {
+        "text": "Privacy Policy",
+        "rawText": "Privacy Policy",
+        "href": "https://www.deptagency.com/en-nl/privacy-policy/",
+        "rect": {
+         "top": 853.7,
+         "left": 934.3,
+         "right": 1009.5,
+         "bottom": 871.7,
+         "width": 75.2,
+         "height": 18,
+         "insetLeft": 934.3,
+         "insetRight": 430.5,
+         "cx": 971.9
+        },
+        "fontSize": "12px",
+        "fontWeight": "500",
+        "fontFamily": "Heebo, Helvetica, Arial, sans-serif",
+        "letterSpacing": "normal",
+        "textTransform": "none",
+        "color": "rgba(160, 168, 220, 0.7)"
+       },
+       "lang": {
+        "text": "English",
+        "rawText": "English",
+        "href": "https://dogstudio.co/",
+        "rect": {
+         "top": 850.2,
+         "left": 1138,
+         "right": 1232,
+         "bottom": 875.2,
+         "width": 94,
+         "height": 25,
+         "insetLeft": 1138,
+         "insetRight": 208,
+         "cx": 1185
+        },
+        "fontSize": "11px",
+        "fontWeight": "700",
+        "fontFamily": "Gilroy, Helvetica, Arial, sans-serif",
+        "letterSpacing": "normal",
+        "textTransform": "none",
+        "color": "rgb(255, 255, 255)"
+       }
+      }
+     }
+    },
+    "item_states": {
+     "value": {
+      "hover": "not measured"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-footer a",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "note": "footer hover not driven"
+      }
+     }
+    },
+    "secondary_blocks": {
+     "value": {
+      "blocks": [
+       "social abbreviations",
+       "contact email",
+       "privacy link",
+       "language switch"
+      ],
+      "newsletterInputs": 0
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-footer",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "text": "Chicago . Amsterdam . Paris . Contact us Fb Ins Dri Tw We'd love to hear from you biz@dogstudio.be Privacy Policy Language: English Español",
+       "inputs": 0
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "text": "Chicago . Amsterdam . Paris . Contact us Fb Ins Dri Tw We'd love to hear from you biz@dogstudio.be Privacy Policy Language: English Espa ol",
+      "linkCount": 8,
+      "fixed": true
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-footer",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "links": [
+        "Fb",
+        "Ins",
+        "Dri",
+        "Tw",
+        "biz@dogstudio.be",
+        "Privacy Policy",
+        "English",
+        "Español"
+       ]
+      }
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "baseline": "social ul at x=1047.7, 292px block"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".site-footer",
+      "rawFile": "raw/dogstudio-1440.json",
+      "raw": {
+       "height": 291.9,
+       "groups": [
+        [
+         1047.7,
+         718.2
+        ],
+        [
+         1138,
+         850.2
+        ]
+       ]
+      }
+     }
+    }
+   }
+  }
+ ],
+ "not_measured": [
+  {
+   "surface": "header-shell",
+   "tier": 375,
+   "column": "motion",
+   "reason": "the header hide and reveal transition timing was not sampled (only end states)"
+  },
+  {
+   "surface": "trigger-close",
+   "tier": 375,
+   "column": "trigger_close.magnet",
+   "reason": "not probed"
+  },
+  {
+   "surface": "footer",
+   "tier": 375,
+   "column": "mechanics",
+   "reason": "footer behaviour not probed"
+  },
+  {
+   "surface": "footer",
+   "tier": 375,
+   "column": "motion",
+   "reason": "the footer blocks carry appear-fade-up classes; the reveal was not sampled"
+  },
+  {
+   "surface": "footer",
+   "tier": 375,
+   "column": "item_states.hover",
+   "reason": "footer link hover not driven"
+  },
+  {
+   "surface": "header-shell",
+   "tier": 768,
+   "column": "motion",
+   "reason": "the header hide and reveal transition timing was not sampled (only end states)"
+  },
+  {
+   "surface": "trigger-close",
+   "tier": 768,
+   "column": "trigger_close.magnet",
+   "reason": "not probed"
+  },
+  {
+   "surface": "footer",
+   "tier": 768,
+   "column": "mechanics",
+   "reason": "footer behaviour not probed"
+  },
+  {
+   "surface": "footer",
+   "tier": 768,
+   "column": "motion",
+   "reason": "the footer blocks carry appear-fade-up classes; the reveal was not sampled"
+  },
+  {
+   "surface": "footer",
+   "tier": 768,
+   "column": "item_states.hover",
+   "reason": "footer link hover not driven"
+  },
+  {
+   "surface": "header-shell",
+   "tier": 1440,
+   "column": "motion",
+   "reason": "the header hide and reveal transition timing was not sampled (only end states)"
+  },
+  {
+   "surface": "trigger-close",
+   "tier": 1440,
+   "column": "trigger_close.magnet",
+   "reason": "not probed"
+  },
+  {
+   "surface": "footer",
+   "tier": 1440,
+   "column": "mechanics",
+   "reason": "footer behaviour not probed"
+  },
+  {
+   "surface": "footer",
+   "tier": 1440,
+   "column": "motion",
+   "reason": "the footer blocks carry appear-fade-up classes; the reveal was not sampled"
+  },
+  {
+   "surface": "footer",
+   "tier": 1440,
+   "column": "item_states.hover",
+   "reason": "footer link hover not driven"
+  }
+ ],
+ "cross_check": [
+  {
+   "item": "drawer link size",
+   "existing": "45px at 1352x713",
+   "mine": "60px at 1440x900 and at 1352x900, 45px at 1352x713 and at 1440x713 (d-h.mjs)",
+   "verdict": "agree once explained: the size steps on viewport height (about 713 vs 900) as well as width; the earlier record used a 713px-tall window. Weight 200, letter-spacing -0.02em (-0.9px at 45px) and colour rgba(160,168,220,0.8) all agree"
+  },
+  {
+   "item": "menu fill and z-index",
+   "existing": "transparent .site-menu, z 995, fixed 0/0/0/0",
+   "mine": "rgba(0, 0, 0, 0), z 995, fixed",
+   "verdict": "agree; refinement: the visible dark fill is a separate #131419 layer (picture.site-menu-back, z 990) plus a sweeping #131419 curtain (.site-menu-panel, z 999)"
+  },
+  {
+   "item": "tagline \"We Make Good Shit\"",
+   "existing": "a large serif text tagline bottom-right",
+   "mine": "an <img> (baseline.png) with alt \"We Make Good Shit\"; no such text node in the panel",
+   "verdict": "disagree; trust this capture: panel text is only the five links, the showreel link and five social labels (innerText read)"
+  },
+  {
+   "item": "numbered list 01-05",
+   "existing": "each row prefixed 01..05",
+   "mine": "CSS counter on a::before at 1440 only; content none at 768 and 375",
+   "verdict": "agree at desktop, adds that it disappears at smaller tiers"
+  },
+  {
+   "item": "close control",
+   "existing": "separate X 32x30 top-right",
+   "mine": "same button (button.site-header-button.is-active); elementFromPoint at the burger centre after open is the button; bars morph to an X",
+   "verdict": "agree on look; refines: not a separate element"
+  },
+  {
+   "item": "scroll lock",
+   "existing": "not confirmed (hero canvas kept running)",
+   "mine": "locked: wheel +400 and PageDown leave scrollY at 0; body overflow hidden",
+   "verdict": "closed: locked at every tier"
+  },
+  {
+   "item": "social row",
+   "existing": "inline text row Facebook / Instagram / Dribbble / Twitter / Newsletter",
+   "mine": "word-width labels at 1440; icon-width (40px pitch) items at 768 and 375",
+   "verdict": "agree at desktop; tier delta added"
+  },
+  {
+   "item": "out-of-date banner",
+   "existing": "about 81px shift; Accept at 390",
+   "mine": "banner (#buorg, 82px) appears late on a desktop UA and pushes the header to top:81 until \"Ignore\" is clicked; not shown on the iPhone UA; \"Accept\" button clicked at 375 and 768",
+   "verdict": "agree; the banner can appear after 8 s so consent handling must wait 12 s"
+  },
+  {
+   "item": "motion",
+   "existing": "not captured",
+   "mine": "curtain wipe plus fade; body classes menu-open / menu-close / menu-running",
+   "verdict": "new data (coarse timing)"
+  }
+ ],
+ "capture_notes": [
+  "Columns not applicable to a surface are omitted from that row, not blank.",
+  "The page is WebGL-heavy: evaluate calls during the open animation take 0.4-1 s, so motion timings are coarse upper bounds.",
+  "Header top is 0 in every row because the 81px browser-update banner was dismissed before measuring on the desktop UA."
+ ],
+ "libs": {
+  "globalsChecked": "gsap, ScrollTrigger, Lenis, THREE, jQuery, PIXI all undefined",
+  "scripts": [
+   "www.googletagmanager.com/gtag/js?id=G-RT7CLMFLME&cx=c&_slc=1",
+   "www.google-analytics.com/analytics.js",
+   "www.googletagmanager.com/gtm.js?id=GTM-KHP4LGL",
+   "player.vimeo.com/api/player.js",
+   "dogstudio.co/app/themes/portfolio-2018/static/assets/dog/draco/draco_wasm_wrapper.js",
+   "dogstudio.co/app/themes/portfolio-2018/static/js/detectizr.js",
+   "dogstudio.co/app/themes/portfolio-2018/static/js/modernizr.js",
+   "dogstudio.co/app/themes/portfolio-2018/static/js/dog.js?v=23082019-2",
+   "dogstudio.co/cms/wp-includes/js/wp-embed.min.js?ver=4.8.2",
+   "browser-update.org/update.min.js",
+   "dogstudio.co/app/themes/portfolio-2018/static/js/main.js?v=23082019-2"
+  ]
+ }
+}

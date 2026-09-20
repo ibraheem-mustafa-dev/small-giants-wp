@@ -1,0 +1,7161 @@
+{
+ "reference": "buck",
+ "url": "https://buck.co",
+ "captured": "2026-09-20",
+ "browser": "chromium headless, Playwright (Chrome/141 desktop UA; iPhone UA at 375); consent \"Got it\" dismissed",
+ "rows": [
+  {
+   "surface": "header-shell",
+   "tier": 375,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "full-bleed",
+      "detail": "transparent brand + mini-nav row; not a <header> element (div.header, no role=banner); scrolls away with the page (not sticky)",
+      "semanticTag": "DIV"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.header",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "width": 375,
+       "viewport": 375,
+       "radius": "0px",
+       "position": "relative",
+       "tag": "DIV",
+       "semantic": {
+        "nav": 0,
+        "header": 0,
+        "banner": 0,
+        "dialog": 0
+       }
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "width": 375,
+      "height": 170,
+      "insetTop": 0,
+      "position": "relative",
+      "zIndex": "auto",
+      "radius": 0,
+      "maxWidth": "none",
+      "gridPadding": "20px",
+      "gridColumns": "8 columns of 24.375px",
+      "centredOnViewport": true
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.header .grid-8",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "hdrRect": {
+        "top": 0,
+        "left": 0,
+        "right": 375,
+        "bottom": 170,
+        "width": 375,
+        "height": 170,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 187.5
+       },
+       "grid": {
+        "sel": "div.css-0 > div.grid-8.css-d8pn3s",
+        "vis": true,
+        "rect": {
+         "top": 0,
+         "left": 0,
+         "right": 375,
+         "bottom": 64.4,
+         "width": 375,
+         "height": 64.4,
+         "insetLeft": 0,
+         "insetRight": 0,
+         "cx": 187.5
+        },
+        "display": "grid",
+        "gridCols": "24.375px 24.375px 24.375px 24.375px 24.375px 24.375px 24.375px 24.375px",
+        "gap": "40px 20px",
+        "flexDirection": "row",
+        "justify": "normal",
+        "align": "normal",
+        "padding": "20px",
+        "maxWidth": "none"
+       }
+      }
+     }
+    },
+    "zone_model": {
+     "value": {
+      "zones": [
+       {
+        "name": "brand",
+        "rect": {
+         "top": 20,
+         "left": 20,
+         "right": 44.4,
+         "bottom": 44.4,
+         "width": 24.4,
+         "height": 24.4,
+         "insetLeft": 20,
+         "insetRight": 330.6,
+         "cx": 32.2
+        },
+        "contains": "logo (animated Lottie SVG)"
+       },
+       {
+        "name": "nav",
+        "vis": false,
+        "rect": {
+         "top": 0,
+         "left": 0,
+         "right": 0,
+         "bottom": 0,
+         "width": 0,
+         "height": 0,
+         "insetLeft": 0,
+         "insetRight": 375,
+         "cx": 0
+        },
+        "contains": "nothing at this tier (display none); the hamburger lives in a separate fixed button"
+       }
+      ],
+      "alignment": "logo left, nav cluster right",
+      "utilityControls": [
+       "search icon link (an <a> without href)"
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.header .branding, .navigation-mini",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "div.header > div": [
+        {
+         "sel": "div.header.css-8l2ee1 > div.css-0",
+         "vis": true,
+         "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 375,
+          "bottom": 64.4,
+          "width": 375,
+          "height": 64.4,
+          "insetLeft": 0,
+          "insetRight": 0,
+          "cx": 187.5
+         },
+         "display": "block",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "0px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.header .grid-8": [
+        {
+         "sel": "div.css-0 > div.grid-8.css-d8pn3s",
+         "vis": true,
+         "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 375,
+          "bottom": 64.4,
+          "width": 375,
+          "height": 64.4,
+          "insetLeft": 0,
+          "insetRight": 0,
+          "cx": 187.5
+         },
+         "display": "grid",
+         "gridCols": "24.375px 24.375px 24.375px 24.375px 24.375px 24.375px 24.375px 24.375px",
+         "gap": "40px 20px",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "20px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.header .branding": [
+        {
+         "sel": "div.grid-8.css-d8pn3s > div.branding.css-1fyh48j",
+         "vis": true,
+         "rect": {
+          "top": 20,
+          "left": 20,
+          "right": 44.4,
+          "bottom": 44.4,
+          "width": 24.4,
+          "height": 24.4,
+          "insetLeft": 20,
+          "insetRight": 330.6,
+          "cx": 32.2
+         },
+         "display": "block",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "0px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.header .navigation-mini": [
+        {
+         "sel": "div.grid-8.css-d8pn3s > div.navigation-mini.css-1y1xyb5",
+         "vis": false,
+         "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "insetLeft": 0,
+          "insetRight": 375,
+          "cx": 0
+         },
+         "display": "none",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "0px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.header .navigation-mini .nav": [
+        {
+         "sel": "div.navigation-mini.css-1y1xyb5 > div.nav.css-1hqbv68",
+         "vis": false,
+         "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "insetLeft": 0,
+          "insetRight": 375,
+          "cx": 0
+         },
+         "display": "flex",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "space-between",
+         "align": "flex-start",
+         "padding": "0px",
+         "maxWidth": "none"
+        }
+       ]
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "fill": "transparent",
+      "backdropFilter": "none",
+      "blur": false,
+      "scrim": false,
+      "boxShadow": "none",
+      "mixBlendMode": "normal",
+      "opacity": "1",
+      "before": null,
+      "after": null,
+      "pageBackground": "transparent",
+      "stackAtCentre": [
+       "div.header.css-8l2ee1",
+       "main.css-i6bazn",
+       "div.css-0"
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.header",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "bg": "rgba(0, 0, 0, 0)",
+       "backdrop": "none",
+       "overlay": [
+        {
+         "sel": "body.chakra-ui-light > div#__next > div.css-0 > main.css-i6bazn > div.header.css-8l2ee1",
+         "position": "relative",
+         "zIndex": "auto",
+         "opacity": "1",
+         "bg": "rgba(0, 0, 0, 0)",
+         "bgImage": "none",
+         "pe": "auto",
+         "blend": "normal"
+        },
+        {
+         "sel": "html.js-focus-visible > body.chakra-ui-light > div#__next > div.css-0 > main.css-i6bazn",
+         "position": "static",
+         "zIndex": "auto",
+         "opacity": "1",
+         "bg": "rgba(0, 0, 0, 0)",
+         "bgImage": "none",
+         "pe": "auto",
+         "blend": "normal"
+        },
+        {
+         "sel": "html.js-focus-visible > body.chakra-ui-light > div#__next > div.css-0",
+         "position": "static",
+         "zIndex": "auto",
+         "opacity": "1",
+         "bg": "rgba(0, 0, 0, 0)",
+         "bgImage": "none",
+         "pe": "auto",
+         "blend": "normal"
+        }
+       ]
+      }
+     }
+    },
+    "background_visual": {
+     "value": {
+      "kind": "none behind the header; the logo itself is an animated Lottie SVG"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.header a.logo svg",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "bgImage": "none",
+       "logoRect": {
+        "top": 20,
+        "left": 20,
+        "right": 44.4,
+        "bottom": 44.4,
+        "width": 24.4,
+        "height": 24.4,
+        "insetLeft": 20,
+        "insetRight": 330.6,
+        "cx": 32.2
+       },
+       "logoSel": "div.css-uwwqev > a.logo.logo-buck.logo-letter-b"
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "sticky": false,
+      "headerScrollsAway": true,
+      "headerTopAtScroll600": -600,
+      "scrollY": 600,
+      "positionAtRest": "relative",
+      "positionAtScroll600": "relative",
+      "hamburgerDetachesToFixed": {
+       "firstFixedAtScrollY": 60,
+       "lastNonFixedScrollY": null,
+       "samplesStepPx": 60
+      },
+      "scroller": "native window scroll"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs + b-thresh.mjs",
+      "selector": "div.header; .btn-hamburger",
+      "rawFile": "raw/buck-375.json ; raw/buck-thresh-375.json",
+      "raw": {
+       "header": {
+        "rest": {
+         "top": 0,
+         "left": 0,
+         "width": 375,
+         "height": 170,
+         "bg": "rgba(0, 0, 0, 0)",
+         "tr": "none",
+         "op": "1",
+         "shadow": "none",
+         "blur": "none",
+         "filter": "none",
+         "radius": "0px",
+         "blend": "normal",
+         "pos": "relative",
+         "color": "rgb(0, 0, 0)"
+        },
+        "down600": {
+         "top": -600,
+         "left": 0,
+         "width": 375,
+         "height": 170,
+         "bg": "rgba(0, 0, 0, 0)",
+         "tr": "none",
+         "op": "1",
+         "shadow": "none",
+         "blur": "none",
+         "filter": "none",
+         "radius": "0px",
+         "blend": "normal",
+         "pos": "relative",
+         "color": "rgb(0, 0, 0)"
+        }
+       },
+       "hamburger": [
+        [
+         60,
+         [
+          "fixed@top0"
+         ]
+        ],
+        [
+         120,
+         [
+          "fixed@top0"
+         ]
+        ],
+        [
+         180,
+         [
+          "fixed@top0"
+         ]
+        ],
+        [
+         240,
+         [
+          "fixed@top0"
+         ]
+        ],
+        [
+         300,
+         [
+          "fixed@top0"
+         ]
+        ],
+        [
+         360,
+         [
+          "fixed@top0"
+         ]
+        ],
+        [
+         420,
+         [
+          "fixed@top0"
+         ]
+        ],
+        [
+         480,
+         [
+          "fixed@top0"
+         ]
+        ],
+        [
+         540,
+         [
+          "fixed@top0"
+         ]
+        ],
+        [
+         600,
+         [
+          "fixed@top0"
+         ]
+        ],
+        [
+         660,
+         [
+          "fixed@top0"
+         ]
+        ],
+        [
+         720,
+         [
+          "fixed@top0"
+         ]
+        ]
+       ]
+      }
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "changes": [
+       "logo 24.4px",
+       "grid padding 20",
+       "the whole mini-nav (Work, About, search, hamburger) is display:none and 0x0",
+       "a separate fixed hamburger button in #__next takes over the trigger role"
+      ],
+      "drop": "nav collapsed to 0x0; trigger migrated to a different DOM element"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.header .navigation-mini",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "navRect": {
+        "top": 0,
+        "left": 0,
+        "right": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0,
+        "insetLeft": 0,
+        "insetRight": 375,
+        "cx": 0
+       },
+       "navDisplay": "none",
+       "logoRect": {
+        "top": 20,
+        "left": 20,
+        "right": 44.4,
+        "bottom": 44.4,
+        "width": 24.4,
+        "height": 24.4,
+        "insetLeft": 20,
+        "insetRight": 330.6,
+        "cx": 32.2
+       },
+       "hdrPosition": "relative",
+       "gridPadding": "20px"
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "bar",
+   "tier": 375,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "no bar at this tier: the bar is display:none; only the logo remains",
+      "navVisible": false
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.header .navigation-mini",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "rect": {
+        "top": 0,
+        "left": 0,
+        "right": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0,
+        "insetLeft": 0,
+        "insetRight": 375,
+        "cx": 0
+       },
+       "display": "none",
+       "links": [
+        [
+         "Work",
+         false
+        ],
+        [
+         "About",
+         false
+        ],
+        [
+         "",
+         false
+        ]
+       ]
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "navRect": {
+       "top": 0,
+       "left": 0,
+       "right": 0,
+       "bottom": 0,
+       "width": 0,
+       "height": 0,
+       "insetLeft": 0,
+       "insetRight": 375,
+       "cx": 0
+      },
+      "items": [],
+      "hamburgerInBar": [],
+      "gapBetweenItems": null
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-mini a",
+      "rawFile": "raw/buck-375.json",
+      "raw": [
+       {
+        "top": 0,
+        "left": 0,
+        "right": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0,
+        "insetLeft": 0,
+        "insetRight": 375,
+        "cx": 0
+       },
+       {
+        "top": 0,
+        "left": 0,
+        "right": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0,
+        "insetLeft": 0,
+        "insetRight": 375,
+        "cx": 0
+       },
+       {
+        "top": 0,
+        "left": 0,
+        "right": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0,
+        "insetLeft": 0,
+        "insetRight": 375,
+        "cx": 0
+       }
+      ]
+     }
+    },
+    "zone_model": {
+     "value": {
+      "order": "Work, About, search icon, hamburger",
+      "ctaInBar": false,
+      "languageSwitch": false,
+      "cart": false,
+      "searchControl": "icon-only anchor without href (not a button, no name)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-mini",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "html": "see b-html.mjs dump: <a class=chakra-link> without href containing a magnifier svg"
+      }
+     }
+    },
+    "item_typography": {
+     "value": {
+      "fontFamily": "Mabry, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe ",
+      "fontSize": 20,
+      "fontWeight": "100",
+      "letterSpacing": "normal",
+      "textTransform": "none",
+      "colour": "#000000",
+      "scalingMode": "fluid (about 1.49vw) from 1280px up, floor of 20px below",
+      "series": [
+       [
+        1600,
+        "23.8222px"
+       ],
+       [
+        1440,
+        "21.44px"
+       ],
+       [
+        1280,
+        "19.0578px"
+       ],
+       [
+        1100,
+        "20px"
+       ],
+       [
+        1024,
+        "20px"
+       ],
+       [
+        900,
+        "20px"
+       ],
+       [
+        768,
+        "20px"
+       ],
+       [
+        640,
+        "20px"
+       ],
+       [
+        520,
+        "20px"
+       ],
+       [
+        414,
+        "20px"
+       ],
+       [
+        375,
+        "20px"
+       ]
+      ],
+      "caseOrigin": "source case (Title Case), no CSS transform"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fontscale.mjs",
+      "selector": "div.header .navigation-mini a",
+      "rawFile": "raw/buck-fontscale.json",
+      "raw": [
+       [
+        1600,
+        "23.8222px"
+       ],
+       [
+        1440,
+        "21.44px"
+       ],
+       [
+        1280,
+        "19.0578px"
+       ],
+       [
+        1100,
+        "20px"
+       ],
+       [
+        1024,
+        "20px"
+       ],
+       [
+        900,
+        "20px"
+       ],
+       [
+        768,
+        "20px"
+       ],
+       [
+        640,
+        "20px"
+       ],
+       [
+        520,
+        "20px"
+       ],
+       [
+        414,
+        "20px"
+       ],
+       [
+        375,
+        "20px"
+       ]
+      ]
+     }
+    },
+    "item_states": {
+     "value": {
+      "hover": "not visible at this tier (nav is display:none)",
+      "currentIndicator": "none observed (no aria-current, no class change)",
+      "ornament": "none",
+      "separators": "none"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs hover 650ms",
+      "selector": ".navigation-mini a",
+      "rawFile": "raw/buck-375.json",
+      "raw": []
+     }
+    },
+    "secondary_blocks": {
+     "value": {
+      "blocks": [],
+      "reactiveContent": false
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-mini",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "visible": false
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "openTrigger": "none in the bar except the hamburger (click)",
+      "hoverDropdown": false,
+      "popupHints": {
+       "ariaHaspopup": 0,
+       "ariaExpanded": [],
+       "dropdownClass": [],
+       "semantic": {
+        "nav": 0,
+        "header": 0,
+        "banner": 0,
+        "dialog": 0
+       }
+      },
+      "navHiddenBySpec": true
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs hover diff",
+      "selector": ".navigation-mini a",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "newBoxes": [],
+       "popupHints": {
+        "ariaHaspopup": 0,
+        "ariaExpanded": [],
+        "dropdownClass": [],
+        "semantic": {
+         "nav": 0,
+         "header": 0,
+         "banner": 0,
+         "dialog": 0
+        }
+       }
+      }
+     }
+    },
+    "motion": {
+     "value": "none at this tier",
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-mini a",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "transition": "0.2s ease-in-out"
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "labels": [
+       "Work",
+       "About",
+       "(search icon)"
+      ],
+      "fixed": true
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-mini a",
+      "rawFile": "raw/buck-375.json",
+      "raw": [
+       "Work",
+       "About",
+       ""
+      ]
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "changes": [
+       "bar removed: display:none, 0x0"
+      ],
+      "drop": "collapsed to 0x0 (element stays in DOM); trigger re-homed to a fixed button outside the header"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-mini",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "rect": {
+        "top": 0,
+        "left": 0,
+        "right": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0,
+        "insetLeft": 0,
+        "insetRight": 375,
+        "cx": 0
+       },
+       "display": "none"
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "dropdown",
+   "tier": 375,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: no bar item owns a dropdown panel; hovering each visible bar link produced no new box (newBoxCount []); 0 aria-haspopup, 0 dropdown/mega/submenu class matches; the full navigation is the full-screen drawer only",
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs hover + DOM query",
+      "selector": "div.header .navigation-mini a; [aria-haspopup]; [class*=dropdown|mega|sub-menu|submenu|flyout]",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "popupHints": {
+        "ariaHaspopup": 0,
+        "ariaExpanded": [],
+        "dropdownClass": [],
+        "semantic": {
+         "nav": 0,
+         "header": 0,
+         "banner": 0,
+         "dialog": 0
+        }
+       },
+       "hover": [],
+       "hoverNote": "no visible bar items at 375, nothing to hover"
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "mega",
+   "tier": 375,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: no bar item owns a mega panel; hovering each visible bar link produced no new box (newBoxCount []); 0 aria-haspopup, 0 dropdown/mega/submenu class matches; the full navigation is the full-screen drawer only",
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs hover + DOM query",
+      "selector": "div.header .navigation-mini a; [aria-haspopup]; [class*=dropdown|mega|sub-menu|submenu|flyout]",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "popupHints": {
+        "ariaHaspopup": 0,
+        "ariaExpanded": [],
+        "dropdownClass": [],
+        "semantic": {
+         "nav": 0,
+         "header": 0,
+         "banner": 0,
+         "dialog": 0
+        }
+       },
+       "hover": [],
+       "hoverNote": "no visible bar items at 375, nothing to hover"
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "trigger-close",
+   "tier": 375,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "kind": "icon-only burger (3 bars) button; the SAME button swaps to a close X in place",
+      "element": "BUTTON.btn-hamburger",
+      "separateCloseButton": false,
+      "replacesInPlace": true,
+      "detachesToFixedChipOnScroll": false,
+      "alwaysFixed": true,
+      "standaloneDomElementAtThisTier": "button is a direct child of #__next, outside the header"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs + b-thresh.mjs",
+      "selector": ".btn-hamburger",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "tag": "BUTTON",
+       "atPointAfterOpen": {
+        "isTrigger": true,
+        "inPanel": false,
+        "html": "<button type=\"button\" class=\"chakra-button btn btn-hamburger state-is-scrolling css-1691hxp\"><svg viewBox=\"0 0 67 54\" focusable=\"false\" class=\"chakra-icon background-shape css-fi0ww0\"><path/></path><path/></path><path/></path></svg> <svg vi"
+       },
+       "watchRest": [
+        [
+         "div.nav.css-1hqbv68 > button.chakra-button.btn.btn-hamburger",
+         "relative",
+         false
+        ],
+        [
+         "div#__next > button.chakra-button.btn.btn-hamburger",
+         "fixed",
+         true
+        ]
+       ]
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "atRest": {
+       "left": 300,
+       "top": 0,
+       "width": 55,
+       "height": 55
+      },
+      "whenFixedOnScroll": {
+       "top": 0,
+       "right": 20,
+       "width": 55,
+       "height": 55,
+       "position": "fixed"
+      },
+      "targetSize": {
+       "restHeight": 55,
+       "meets44px": true,
+       "fixedChip": 55
+      },
+      "zIndex": {
+       "rest": "9100",
+       "panel": "1300",
+       "whenFixed": "9100"
+      },
+      "radius": "9999px"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs + b-thresh.mjs",
+      "selector": ".btn-hamburger",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "rect": {
+        "top": 0,
+        "left": 300,
+        "right": 355,
+        "bottom": 55,
+        "width": 55,
+        "height": 55,
+        "insetLeft": 300,
+        "insetRight": 20,
+        "cx": 327.5
+       },
+       "watchScrolled": [
+        [
+         "fixed",
+         0,
+         0,
+         "9100"
+        ],
+        [
+         "fixed",
+         55,
+         0,
+         "9100"
+        ]
+       ]
+      }
+     }
+    },
+    "item_states": {
+     "value": {
+      "atRestBackground": "transparent",
+      "scrolledState": "a round chip (svg background-shape, class state-is-scrolling) sized 55px appears behind the bars",
+      "openIcon": "icon-close (X svg) inside the same button",
+      "ariaExpanded": null,
+      "transition": "0.2s ease-in-out"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs + b-thresh.mjs",
+      "selector": ".btn-hamburger",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "atPoint": "<button type=\"button\" class=\"chakra-button btn btn-hamburger state-is-scrolling css-1691hxp\"><svg viewBox=\"0 0 67 54\" focusable=\"false\" class=\"chakra-icon background-shape css-fi0ww0\"><path/></path><path/></path><path/></path></svg> <svg viewBox=\"0 0 18 18\" focusable=\"false\" class=\"chakra-icon icon icon-close css-1fzdgh6\"><path/></path></svg></button>",
+       "afterClose": {
+        "bodyOverflow": "auto scroll",
+        "htmlOverflow": "visible",
+        "active": "html.js-focus-visible > body.chakra-ui-light > div#__next > button.chakra-button.btn.btn-hamburger",
+        "triggerText": "",
+        "ariaExpanded": null,
+        "open": false
+       }
+      }
+     }
+    },
+    "trigger_close": {
+     "value": {
+      "kind": "icon burger (three horizontal bars, 54x26 viewBox at desktop)",
+      "elementSemantics": {
+       "tag": "BUTTON",
+       "type": "button",
+       "ariaLabel": null,
+       "accessibleName": "(empty: icon-only, no aria-label)",
+       "ariaExpanded": null
+      },
+      "closeStyle": "X icon swapped into the same button, same position",
+      "replacesInPlace": true,
+      "topRow": false,
+      "animation": "icon swap (not sampled)",
+      "magnet": "not probed"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs click",
+      "selector": ".btn-hamburger",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "attrs": {
+        "type": "button"
+       },
+       "name": "",
+       "tag": "BUTTON",
+       "atPointAfterOpen": "<button type=\"button\" class=\"chakra-button btn btn-hamburger state-is-scrolling css-1691hxp\"><svg viewBox=\"0 0 67 54\" focusable=\"false\" class=\"chakra-icon background-shape css-fi0ww0\"><path/></path><path/></path><path/></path></svg> <svg viewBox=\"0 0 18 18\" focusable=\"false\" class=\"chakra-icon icon "
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "openTrigger": "click",
+      "nativeButton": true,
+      "keyboardFocusable": true,
+      "focusAfterOpen": "button.chakra-button.btn.btn-hamburger",
+      "focusAfterClose": "button.chakra-button.btn.btn-hamburger",
+      "escapeCloses": false,
+      "scrollLock": "none: page still scrolls behind the open panel",
+      "dialog": false,
+      "inert": 0,
+      "ariaModal": 0,
+      "openSurvivesResizeSameTier": true,
+      "openSurvivesCrossTierResizeTo": {
+       "width": 1440,
+       "open": true
+      }
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".btn-hamburger, .navigation-expanded",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "escape": {
+        "panelClip": "none",
+        "panelOp": "1",
+        "panelVis": "visible",
+        "panelRect": {
+         "top": 0,
+         "left": 0,
+         "right": 375,
+         "bottom": 900,
+         "width": 375,
+         "height": 900,
+         "insetLeft": 0,
+         "insetRight": 0,
+         "cx": 187.5
+        },
+        "active": "html.js-focus-visible > body.chakra-ui-light > div#__next > button.chakra-button.btn.btn-hamburger",
+        "bodyOverflow": "auto scroll",
+        "closedByEscape": false
+       },
+       "resize": {
+        "openAfterResize": true,
+        "crossTo": 1440,
+        "openAfterCrossTierResize": true,
+        "bodyOverflowAfterCross": "auto scroll"
+       },
+       "scrollLockProbe": {
+        "scrollYBefore": 0,
+        "afterWheel400": 400,
+        "afterPageDown": 1187,
+        "pageScrollsWhileOpen": true
+       },
+       "activeAfterOpen": "html.js-focus-visible > body.chakra-ui-light > div#__next > button.chakra-button.btn.btn-hamburger"
+      }
+     }
+    },
+    "motion": {
+     "value": {
+      "effect": "bar-to-X icon swap; chip appears on scroll",
+      "spec38Tier": "V",
+      "substrate": "DOM (svg)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".btn-hamburger",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "transition": "0.2s ease-in-out"
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "label": "none (icon only)",
+      "accessibleName": null
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".btn-hamburger",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "name": "",
+       "attrs": {
+        "type": "button"
+       }
+      }
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "changes": [
+       "burger is a different, always-fixed 55x55 chip button outside the header",
+       "header-embedded burger 0x0 (display none)"
+      ],
+      "drop": "migrated to another DOM element"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs + b-thresh.mjs",
+      "selector": ".btn-hamburger",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "restRect": {
+        "top": 0,
+        "left": 300,
+        "right": 355,
+        "bottom": 55,
+        "width": 55,
+        "height": 55,
+        "insetLeft": 300,
+        "insetRight": 20,
+        "cx": 327.5
+       },
+       "firstFixedAtY": 60,
+       "hamburgersInDom": 2
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "drawer",
+   "tier": 375,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "full-screen",
+      "reveal": "slides up from the bottom (translateY 100% -> 0) with a fade",
+      "panelIsOpaque": true,
+      "inDomBeforeOpen": true
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-expanded",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "position": "fixed",
+       "rect": {
+        "top": 0,
+        "left": 0,
+        "right": 375,
+        "bottom": 900,
+        "width": 375,
+        "height": 900,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 187.5
+       },
+       "bg": "rgb(80, 128, 84)",
+       "presentBeforeOpen": true
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "position": "fixed",
+      "inset": {
+       "top": 0,
+       "left": 0,
+       "right": 0,
+       "bottom": 0
+      },
+      "width": 375,
+      "height": 900,
+      "radius": 0,
+      "zIndex": "1300",
+      "centredOnViewport": true,
+      "innerGrid": {
+       "columns": 8,
+       "first": "24.375px"
+      }
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-expanded",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "rect": {
+        "top": 0,
+        "left": 0,
+        "right": 375,
+        "bottom": 900,
+        "width": 375,
+        "height": 900,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 187.5
+       },
+       "z": "1300",
+       "grid": "24.375px 24.375px 24.375px 24.375px 24.375px 24.375px 24.375px 24.375px"
+      }
+     }
+    },
+    "zone_model": {
+     "value": {
+      "linkColumn": {
+       "left": -21.3,
+       "alignment": "left, glyph outdented into the gutter",
+       "top": 210.3
+      },
+      "footerRow": {
+       "position": {
+        "left": 20,
+        "top": 700
+       },
+       "layout": "stacked column"
+      },
+      "extraFirstItem": "search icon above WORK (mobile only)",
+      "closeControl": "the page trigger button stays above the panel (z 1400 vs 1300)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-expanded",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "links": [
+        [
+         "",
+         20,
+         170
+        ],
+        [
+         "WORK",
+         -21.3,
+         210.3
+        ],
+        [
+         "ABOUT",
+         -21.3,
+         250.6
+        ],
+        [
+         "CONTACT",
+         -21.3,
+         290.9
+        ],
+        [
+         "CAREERS",
+         -21.3,
+         331.3
+        ],
+        [
+         "GAMES",
+         -21.3,
+         371.6
+        ],
+        [
+         "GOODS",
+         -21.3,
+         411.9
+        ],
+        [
+         "LinkedIn",
+         20,
+         700
+        ],
+        [
+         "Instagram",
+         20,
+         728
+        ],
+        [
+         "Vimeo",
+         20,
+         756
+        ],
+        [
+         "Privacy Policy",
+         20,
+         784
+        ]
+       ],
+       "grid": "24.375px 24.375px 24.375px 24.375px 24.375px 24.375px 24.375px 24.375px"
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "fill": "#508054",
+      "fillNote": "a brand-palette colour chosen per page load, not per tier: this run gave 1440: #196efa, 768: #f4c054, 375: #508054 (the 2026-07-28 record saw #7f4c1e desktop and #00513c mobile)",
+      "backdropFilter": "none",
+      "scrim": false,
+      "blur": false,
+      "opacity": "1",
+      "before": null,
+      "after": null
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs (three loads)",
+      "selector": ".navigation-expanded",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "bg": "rgb(80, 128, 84)",
+       "otherLoads": {
+        "at1440": "rgb(25, 110, 250)",
+        "at768": "rgb(244, 192, 84)",
+        "at375": "rgb(80, 128, 84)"
+       }
+      }
+     }
+    },
+    "background_visual": {
+     "value": {
+      "panel": "none (flat colour)",
+      "perLinkGlyph": "each link has a leading inline SVG glyph, 25px square, hanging in the gutter left of the label",
+      "mediaElements": {
+       "img": 0,
+       "video": 0,
+       "canvas": 0,
+       "svg": 7
+      }
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-expanded",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "img": 0,
+       "video": 0,
+       "canvas": 0,
+       "svg": 7
+      }
+     }
+    },
+    "item_typography": {
+     "value": {
+      "fontFamily": "Mabry, system-ui, -apple-system, BlinkMacSystemFon",
+      "fontSize": 24,
+      "fontWeight": "100",
+      "letterSpacing": "normal",
+      "textTransform": "uppercase",
+      "colour": "#000000",
+      "scalingMode": "fluid 3.5vw from 1100px up (56 / 50.4 / 44.8 / 38.5px at 1600 / 1440 / 1280 / 1100), then stepped: 52px at 1024-900, 39.8px at 768-640, 24px at 520 and below",
+      "series": [
+       [
+        1600,
+        "56px"
+       ],
+       [
+        1440,
+        "50.4px"
+       ],
+       [
+        1280,
+        "44.8px"
+       ],
+       [
+        1100,
+        "38.5px"
+       ],
+       [
+        1024,
+        "52px"
+       ],
+       [
+        900,
+        "52px"
+       ],
+       [
+        768,
+        "39.8px"
+       ],
+       [
+        640,
+        "39.8px"
+       ],
+       [
+        520,
+        "24px"
+       ],
+       [
+        414,
+        "24px"
+       ],
+       [
+        375,
+        "24px"
+       ]
+      ],
+      "caseOrigin": "source Title Case (\"Work\"), upper-case by CSS text-transform"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fontscale.mjs",
+      "selector": ".navigation-expanded li a span",
+      "rawFile": "raw/buck-fontscale.json",
+      "raw": [
+       [
+        1600,
+        "56px"
+       ],
+       [
+        1440,
+        "50.4px"
+       ],
+       [
+        1280,
+        "44.8px"
+       ],
+       [
+        1100,
+        "38.5px"
+       ],
+       [
+        1024,
+        "52px"
+       ],
+       [
+        900,
+        "52px"
+       ],
+       [
+        768,
+        "39.8px"
+       ],
+       [
+        640,
+        "39.8px"
+       ],
+       [
+        520,
+        "24px"
+       ],
+       [
+        414,
+        "24px"
+       ],
+       [
+        375,
+        "24px"
+       ]
+      ]
+     }
+    },
+    "item_states": {
+     "value": {
+      "hover": "not fired at this tier (touch)",
+      "currentIndicator": "none observed",
+      "ornament": "leading SVG glyph per link",
+      "separators": "none"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs panel hover 700ms",
+      "selector": ".navigation-expanded li a",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "note": "panel hover only runs at width >= 700"
+      }
+     }
+    },
+    "secondary_blocks": {
+     "value": {
+      "blocks": [
+       {
+        "kind": "copyright",
+        "text": "(c) 2026 BUCK"
+       },
+       {
+        "kind": "social + legal links",
+        "items": [
+         "LinkedIn",
+         "Instagram",
+         "Vimeo",
+         "Privacy Policy"
+        ],
+        "layout": "stacked column",
+        "typeSize": 20
+       },
+       {
+        "kind": "search icon",
+        "position": "top of the list"
+       }
+      ],
+      "previewPane": false
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-expanded",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "text": "WORK ABOUT CONTACT CAREERS GAMES GOODS © 2026 BUCK LinkedIn Instagram Vimeo Privacy Policy",
+       "socials": [
+        [
+         "LinkedIn",
+         20,
+         700
+        ],
+        [
+         "Instagram",
+         20,
+         728
+        ],
+        [
+         "Vimeo",
+         20,
+         756
+        ],
+        [
+         "Privacy Policy",
+         20,
+         784
+        ]
+       ]
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "openTrigger": "click",
+      "escapeCloses": false,
+      "focusAfterOpen": "button.chakra-button.btn.btn-hamburger",
+      "scrollLock": "none: wheel and PageDown scroll the page behind the open panel",
+      "wheelProbe": {
+       "scrollYBefore": 0,
+       "afterWheel400": 400,
+       "afterPageDown": 1187,
+       "pageScrollsWhileOpen": true
+      },
+      "bodyOverflowOpen": "auto scroll",
+      "dialog": 0,
+      "inert": 0,
+      "ariaModal": 0,
+      "survivesResize": {
+       "sameTier": true,
+       "crossTierTo": 1440,
+       "open": true
+      },
+      "inDomBeforeOpen": true
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-expanded",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "escape": {
+        "panelClip": "none",
+        "panelOp": "1",
+        "panelVis": "visible",
+        "panelRect": {
+         "top": 0,
+         "left": 0,
+         "right": 375,
+         "bottom": 900,
+         "width": 375,
+         "height": 900,
+         "insetLeft": 0,
+         "insetRight": 0,
+         "cx": 187.5
+        },
+        "active": "html.js-focus-visible > body.chakra-ui-light > div#__next > button.chakra-button.btn.btn-hamburger",
+        "bodyOverflow": "auto scroll",
+        "closedByEscape": false
+       },
+       "resize": {
+        "openAfterResize": true,
+        "crossTo": 1440,
+        "openAfterCrossTierResize": true,
+        "bodyOverflowAfterCross": "auto scroll"
+       },
+       "lock": {
+        "scrollYBefore": 0,
+        "afterWheel400": 400,
+        "afterPageDown": 1187,
+        "pageScrollsWhileOpen": true
+       },
+       "panel": {
+        "body": "auto scroll",
+        "inert": 0,
+        "dialog": 0,
+        "active": "html.js-focus-visible > body.chakra-ui-light > div#__next > button.chakra-button.btn.btn-hamburger"
+       }
+      }
+     }
+    },
+    "motion": {
+     "value": {
+      "open": {
+       "effect": "translateY 900px -> 0 with opacity 0 -> 1",
+       "settledMs": 496,
+       "samples": [
+        [
+         84,
+         "0",
+         900
+        ],
+        [
+         496,
+         "1",
+         0
+        ],
+        [
+         943,
+         "1",
+         0
+        ],
+        [
+         1330,
+         "1",
+         0
+        ],
+        [
+         1737,
+         "1",
+         0
+        ],
+        [
+         2129,
+         "1",
+         0
+        ]
+       ]
+      },
+      "close": {
+       "effect": "reverse: opacity to 0 and translateY back to 900",
+       "settledMs": 248
+      },
+      "spec38Tier": "V (CSS transform + opacity transition reaches it)",
+      "substrate": "DOM"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs 90ms sampler",
+      "selector": ".navigation-expanded",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "open": [
+        [
+         84,
+         "0",
+         "matrix(1, 0, 0, 1, 0, 900)"
+        ],
+        [
+         393,
+         "0.956528",
+         "matrix(1, 0, 0, 1, 0, 39.1244)"
+        ],
+        [
+         710,
+         "1",
+         "matrix(1, 0, 0, 1, 0, 0)"
+        ],
+        [
+         1045,
+         "1",
+         "matrix(1, 0, 0, 1, 0, 0)"
+        ],
+        [
+         1330,
+         "1",
+         "matrix(1, 0, 0, 1, 0, 0)"
+        ],
+        [
+         1642,
+         "1",
+         "matrix(1, 0, 0, 1, 0, 0)"
+        ],
+        [
+         1926,
+         "1",
+         "matrix(1, 0, 0, 1, 0, 0)"
+        ],
+        [
+         2225,
+         "1",
+         "matrix(1, 0, 0, 1, 0, 0)"
+        ]
+       ],
+       "close": [
+        [
+         36,
+         "1",
+         "matrix(1, 0, 0, 1, 0, 0)"
+        ],
+        [
+         357,
+         "0",
+         "matrix(1, 0, 0, 1, 0, 900)"
+        ],
+        [
+         643,
+         "0",
+         "matrix(1, 0, 0, 1, 0, 900)"
+        ],
+        [
+         928,
+         "0",
+         "matrix(1, 0, 0, 1, 0, 900)"
+        ],
+        [
+         1214,
+         "0",
+         "matrix(1, 0, 0, 1, 0, 900)"
+        ],
+        [
+         1497,
+         "0",
+         "matrix(1, 0, 0, 1, 0, 900)"
+        ],
+        [
+         1783,
+         "0",
+         "matrix(1, 0, 0, 1, 0, 900)"
+        ],
+        [
+         2082,
+         "0",
+         "matrix(1, 0, 0, 1, 0, 900)"
+        ]
+       ]
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "linkLabels": [
+       "WORK",
+       "ABOUT",
+       "CONTACT",
+       "CAREERS",
+       "GAMES",
+       "GOODS"
+      ],
+      "count": 6,
+      "socialLabels": [
+       "LinkedIn",
+       "Instagram",
+       "Vimeo",
+       "Privacy Policy"
+      ],
+      "fixed": true,
+      "panelText": "WORK ABOUT CONTACT CAREERS GAMES GOODS © 2026 BUCK LinkedIn Instagram Vimeo Privacy Policy"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-expanded a",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "links": [
+        "",
+        "WORK",
+        "ABOUT",
+        "CONTACT",
+        "CAREERS",
+        "GAMES",
+        "GOODS",
+        "LinkedIn",
+        "Instagram",
+        "Vimeo",
+        "Privacy Policy"
+       ]
+      }
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "changes": [
+       "links 24px, left-aligned, glyph outdented -21px into the gutter",
+       "a search icon appears at the top of the list",
+       "footer stacks in a column at left 20",
+       "trigger is the separate fixed chip button"
+      ],
+      "drop": "none removed; search icon added"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-expanded",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "firstLinkLeft": -21.3,
+       "fontSize": "24px",
+       "socialsLeft": 20
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "footer",
+   "tier": 375,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "full-width coloured block (brand-palette colour per load), tag footer role=contentinfo",
+      "tag": "FOOTER",
+      "role": "contentinfo",
+      "height": 1700
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "footer",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "rect": {
+        "top": -799.9,
+        "left": 0,
+        "right": 375,
+        "bottom": 900.1,
+        "width": 375,
+        "height": 1700,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 187.5
+       },
+       "tag": "FOOTER",
+       "role": "contentinfo"
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "width": 375,
+      "height": 1700,
+      "display": "flex",
+      "flexDirection": "column",
+      "padding": "0px",
+      "radius": 0
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "footer",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "rect": {
+        "top": -799.9,
+        "left": 0,
+        "right": 375,
+        "bottom": 900.1,
+        "width": 375,
+        "height": 1700,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 187.5
+       },
+       "style": {
+        "display": "flex",
+        "padding": "0px"
+       }
+      }
+     }
+    },
+    "zone_model": {
+     "value": {
+      "officeBlocks": 5,
+      "order": [
+       "LA",
+       "NY",
+       "SYD",
+       "AMS",
+       "LDN"
+      ],
+      "groups": [
+       {
+        "left": 192.5,
+        "width": 162.5,
+        "links": 2
+       },
+       {
+        "left": 192.5,
+        "width": 162.5,
+        "links": 2
+       },
+       {
+        "left": 192.5,
+        "width": 162.5,
+        "links": 2
+       },
+       {
+        "left": 192.5,
+        "width": 162.5,
+        "links": 2
+       },
+       {
+        "left": 192.5,
+        "width": 162.5,
+        "links": 2
+       },
+       {
+        "left": 20,
+        "width": 355,
+        "links": 3
+       }
+      ],
+      "layout": "office blocks in a right-hand column, then a stacked link list",
+      "newsletter": "H2:Sign up for our newsletter — a"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "footer",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "groups": [
+        [
+         192.5,
+         -619.9,
+         162.5,
+         2
+        ],
+        [
+         192.5,
+         -353.9,
+         162.5,
+         2
+        ],
+        [
+         192.5,
+         -87.9,
+         162.5,
+         2
+        ],
+        [
+         192.5,
+         178.1,
+         162.5,
+         2
+        ],
+        [
+         192.5,
+         472.1,
+         162.5,
+         2
+        ],
+        [
+         20,
+         732.1,
+         355,
+         3
+        ]
+       ],
+       "headings": [
+        "H3:LA→\n10:49 AM",
+        "H3:NY→\n1:49 PM",
+        "H3:SYD→\n3:49 AM",
+        "H3:AMS→\n7:49 PM",
+        "H3:LDN→\n6:49 PM",
+        "H2:Sign up for our newsletter — a"
+       ]
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "fill": "#7f4c1e",
+      "fillNote": "chosen per page load, not per tier: this run gave 1440: #f4c054, 768: #ffb18e, 375: #7f4c1e",
+      "backdropFilter": "none",
+      "opacity": "1",
+      "backgroundImage": "none",
+      "textColour": "#000000"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs (three loads)",
+      "selector": "footer",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "bg": "rgb(127, 76, 30)",
+       "at375": "rgb(127, 76, 30)",
+       "at768": "rgb(255, 177, 142)",
+       "at1440": "rgb(244, 192, 84)"
+      }
+     }
+    },
+    "background_visual": {
+     "value": {
+      "kind": "none",
+      "media": {
+       "img": 0,
+       "video": 0,
+       "canvas": 0,
+       "svg": 2
+      }
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "footer",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "img": 0,
+       "video": 0,
+       "canvas": 0,
+       "svg": 2
+      }
+     }
+    },
+    "item_typography": {
+     "value": {
+      "fontFamily": "Mabry, system-ui, -apple-system, BlinkMa",
+      "fontSize": 20,
+      "fontWeight": "100",
+      "textTransform": "none",
+      "colour": "#000000",
+      "scalingMode": "follows the same fluid/floored scale as the bar (21.44px at 1440, 20px below)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "footer a",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "text": "↗",
+       "rawText": "↗",
+       "href": "https://www.google.com/maps/search/?api=1&query=120%20S%20Sa",
+       "rect": {
+        "top": -663.9,
+        "left": 247,
+        "right": 259.7,
+        "bottom": -643.9,
+        "width": 12.7,
+        "height": 20,
+        "insetLeft": 247,
+        "insetRight": 115.3,
+        "cx": 253.3
+       },
+       "fontSize": "20px",
+       "fontWeight": "100",
+       "fontFamily": "Mabry, system-ui, -apple-system, BlinkMa",
+       "letterSpacing": "normal",
+       "textTransform": "none",
+       "color": "rgb(0, 0, 0)"
+      }
+     }
+    },
+    "item_states": {
+     "value": {
+      "hover": "not measured"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "footer a",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "note": "footer link hover was not driven"
+      }
+     }
+    },
+    "secondary_blocks": {
+     "value": {
+      "blocks": [
+       "five office blocks each with a live local-time clock (h3 \"LA->\" + time element)",
+       "address with map link glyph",
+       "email and phone links",
+       "newsletter H2 heading",
+       "social + legal link row"
+      ],
+      "liveClocks": 5
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "footer",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "text": "LA→ 10:49 AM 120 S San Pedro St, 4th Floor Los Angeles, CA 90012 USA (↗) newbiz.la@buck.co +1 213 623 0111 NY→ 1:49 PM 33 35th St., Suite A600 Brooklyn, NY 11232 USA (↗) newbiz.ny@buck.co +1 212 668 0",
+       "headings": [
+        "H3:LA→\n10:49 AM",
+        "H3:NY→\n1:49 PM",
+        "H3:SYD→\n3:49 AM",
+        "H3:AMS→\n7:49 PM",
+        "H3:LDN→\n6:49 PM",
+        "H2:Sign up for our newsletter — a"
+       ]
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "text": "LA→ 10:49 AM 120 S San Pedro St, 4th Floor Los Angeles, CA 90012 USA (↗) newbiz.la@buck.co +1 213 623 0111 NY→ 1:49 PM 33 35th St., Suite A600 Brooklyn, NY 11232 USA (↗) newbiz.ny@buck.co +1 212 668 0111 SYD→ 3:49 AM L6, 52 Reservoir Street Surry Hills, NSW, 2010 Australia (↗) newbiz.syd@buck.co +61 2 8318 3445 AMS→ 7:49 PM Achtergracht 14 1017 WP Amsterdam The Netherlands (↗) newbiz.ams@buck.co 31 (0)20-3997137 LDN→ 6:49 PM 140 Old Street, 4th Floor London EC1V 9BJ United Kingdom (↗) newbiz.ldn",
+      "linkCount": 21,
+      "dynamic": "clock times are live (time[data-timezone])"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "footer",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "links": [
+        "↗",
+        "newbiz.la@buck.co",
+        "+1 213 623 0111",
+        "↗",
+        "newbiz.ny@buck.co",
+        "+1 212 668 0111",
+        "↗",
+        "newbiz.syd@buck.co"
+       ]
+      }
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "changes": [
+       "single right-hand column 162.5px wide for office blocks",
+       "link list stacks at x=20"
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "footer",
+      "rawFile": "raw/buck-375.json",
+      "raw": {
+       "groups": [
+        [
+         192.5,
+         162.5
+        ],
+        [
+         192.5,
+         162.5
+        ],
+        [
+         192.5,
+         162.5
+        ],
+        [
+         192.5,
+         162.5
+        ],
+        [
+         192.5,
+         162.5
+        ],
+        [
+         20,
+         355
+        ]
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "header-shell",
+   "tier": 768,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "full-bleed",
+      "detail": "transparent brand + mini-nav row; not a <header> element (div.header, no role=banner); scrolls away with the page (not sticky)",
+      "semanticTag": "DIV"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.header",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "width": 768,
+       "viewport": 768,
+       "radius": "0px",
+       "position": "relative",
+       "tag": "DIV",
+       "semantic": {
+        "nav": 0,
+        "header": 0,
+        "banner": 0,
+        "dialog": 0
+       }
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "width": 768,
+      "height": 170,
+      "insetTop": 0,
+      "position": "relative",
+      "zIndex": "auto",
+      "radius": 0,
+      "maxWidth": "none",
+      "gridPadding": "25px",
+      "gridColumns": "8 columns of 72.25px",
+      "centredOnViewport": true
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.header .grid-8",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "hdrRect": {
+        "top": 0,
+        "left": 0,
+        "right": 768,
+        "bottom": 170,
+        "width": 768,
+        "height": 170,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 384
+       },
+       "grid": {
+        "sel": "div.css-0 > div.grid-8.css-d8pn3s",
+        "vis": true,
+        "rect": {
+         "top": 0,
+         "left": 0,
+         "right": 768,
+         "bottom": 122.3,
+         "width": 768,
+         "height": 122.3,
+         "insetLeft": 0,
+         "insetRight": 0,
+         "cx": 384
+        },
+        "display": "grid",
+        "gridCols": "72.25px 72.25px 72.25px 72.25px 72.25px 72.25px 72.25px 72.25px",
+        "gap": "40px 20px",
+        "flexDirection": "row",
+        "justify": "normal",
+        "align": "normal",
+        "padding": "25px",
+        "maxWidth": "none"
+       }
+      }
+     }
+    },
+    "zone_model": {
+     "value": {
+      "zones": [
+       {
+        "name": "brand",
+        "rect": {
+         "top": 25,
+         "left": 25,
+         "right": 97.3,
+         "bottom": 97.3,
+         "width": 72.3,
+         "height": 72.3,
+         "insetLeft": 25,
+         "insetRight": 670.8,
+         "cx": 61.1
+        },
+        "contains": "logo (animated Lottie SVG)"
+       },
+       {
+        "name": "nav",
+        "vis": true,
+        "rect": {
+         "top": 25,
+         "left": 486.3,
+         "right": 743,
+         "bottom": 97.3,
+         "width": 256.8,
+         "height": 72.3,
+         "insetLeft": 486.3,
+         "insetRight": 25,
+         "cx": 614.6
+        },
+        "contains": "Work, About, search icon, hamburger"
+       }
+      ],
+      "alignment": "logo left, nav cluster right",
+      "utilityControls": [
+       "search icon link (an <a> without href)"
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.header .branding, .navigation-mini",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "div.header > div": [
+        {
+         "sel": "div.header.css-8l2ee1 > div.css-0",
+         "vis": true,
+         "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 768,
+          "bottom": 122.3,
+          "width": 768,
+          "height": 122.3,
+          "insetLeft": 0,
+          "insetRight": 0,
+          "cx": 384
+         },
+         "display": "block",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "0px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.header .grid-8": [
+        {
+         "sel": "div.css-0 > div.grid-8.css-d8pn3s",
+         "vis": true,
+         "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 768,
+          "bottom": 122.3,
+          "width": 768,
+          "height": 122.3,
+          "insetLeft": 0,
+          "insetRight": 0,
+          "cx": 384
+         },
+         "display": "grid",
+         "gridCols": "72.25px 72.25px 72.25px 72.25px 72.25px 72.25px 72.25px 72.25px",
+         "gap": "40px 20px",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "25px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.header .branding": [
+        {
+         "sel": "div.grid-8.css-d8pn3s > div.branding.css-1fyh48j",
+         "vis": true,
+         "rect": {
+          "top": 25,
+          "left": 25,
+          "right": 97.3,
+          "bottom": 97.3,
+          "width": 72.3,
+          "height": 72.3,
+          "insetLeft": 25,
+          "insetRight": 670.8,
+          "cx": 61.1
+         },
+         "display": "block",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "0px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.header .navigation-mini": [
+        {
+         "sel": "div.grid-8.css-d8pn3s > div.navigation-mini.css-1y1xyb5",
+         "vis": true,
+         "rect": {
+          "top": 25,
+          "left": 486.3,
+          "right": 743,
+          "bottom": 97.3,
+          "width": 256.8,
+          "height": 72.3,
+          "insetLeft": 486.3,
+          "insetRight": 25,
+          "cx": 614.6
+         },
+         "display": "block",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "0px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.header .navigation-mini .nav": [
+        {
+         "sel": "div.navigation-mini.css-1y1xyb5 > div.nav.css-1hqbv68",
+         "vis": true,
+         "rect": {
+          "top": 25,
+          "left": 486.3,
+          "right": 743,
+          "bottom": 45,
+          "width": 256.8,
+          "height": 20,
+          "insetLeft": 486.3,
+          "insetRight": 25,
+          "cx": 614.6
+         },
+         "display": "flex",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "space-between",
+         "align": "flex-start",
+         "padding": "0px",
+         "maxWidth": "none"
+        }
+       ]
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "fill": "transparent",
+      "backdropFilter": "none",
+      "blur": false,
+      "scrim": false,
+      "boxShadow": "none",
+      "mixBlendMode": "normal",
+      "opacity": "1",
+      "before": null,
+      "after": null,
+      "pageBackground": "transparent",
+      "stackAtCentre": [
+       "div.grid-8.css-d8pn3s",
+       "div.css-0",
+       "div.header.css-8l2ee1"
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.header",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "bg": "rgba(0, 0, 0, 0)",
+       "backdrop": "none",
+       "overlay": [
+        {
+         "sel": "div.css-0 > main.css-i6bazn > div.header.css-8l2ee1 > div.css-0 > div.grid-8.css-d8pn3s",
+         "position": "static",
+         "zIndex": "auto",
+         "opacity": "1",
+         "bg": "rgba(0, 0, 0, 0)",
+         "bgImage": "none",
+         "pe": "auto",
+         "blend": "normal"
+        },
+        {
+         "sel": "div#__next > div.css-0 > main.css-i6bazn > div.header.css-8l2ee1 > div.css-0",
+         "position": "static",
+         "zIndex": "auto",
+         "opacity": "1",
+         "bg": "rgba(0, 0, 0, 0)",
+         "bgImage": "none",
+         "pe": "auto",
+         "blend": "normal"
+        },
+        {
+         "sel": "body.chakra-ui-light > div#__next > div.css-0 > main.css-i6bazn > div.header.css-8l2ee1",
+         "position": "relative",
+         "zIndex": "auto",
+         "opacity": "1",
+         "bg": "rgba(0, 0, 0, 0)",
+         "bgImage": "none",
+         "pe": "auto",
+         "blend": "normal"
+        }
+       ]
+      }
+     }
+    },
+    "background_visual": {
+     "value": {
+      "kind": "none behind the header; the logo itself is an animated Lottie SVG"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.header a.logo svg",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "bgImage": "none",
+       "logoRect": {
+        "top": 25,
+        "left": 25,
+        "right": 97.3,
+        "bottom": 97.3,
+        "width": 72.3,
+        "height": 72.3,
+        "insetLeft": 25,
+        "insetRight": 670.8,
+        "cx": 61.1
+       },
+       "logoSel": "div.css-uwwqev > a.logo.logo-buck.logo-letter-b"
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "sticky": false,
+      "headerScrollsAway": true,
+      "headerTopAtScroll600": -600,
+      "scrollY": 600,
+      "positionAtRest": "relative",
+      "positionAtScroll600": "relative",
+      "hamburgerDetachesToFixed": {
+       "firstFixedAtScrollY": 240,
+       "lastNonFixedScrollY": 180,
+       "samplesStepPx": 60
+      },
+      "scroller": "native window scroll"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs + b-thresh.mjs",
+      "selector": "div.header; .btn-hamburger",
+      "rawFile": "raw/buck-768.json ; raw/buck-thresh-768.json",
+      "raw": {
+       "header": {
+        "rest": {
+         "top": 0,
+         "left": 0,
+         "width": 768,
+         "height": 170,
+         "bg": "rgba(0, 0, 0, 0)",
+         "tr": "none",
+         "op": "1",
+         "shadow": "none",
+         "blur": "none",
+         "filter": "none",
+         "radius": "0px",
+         "blend": "normal",
+         "pos": "relative",
+         "color": "rgb(0, 0, 0)"
+        },
+        "down600": {
+         "top": -600,
+         "left": 0,
+         "width": 768,
+         "height": 170,
+         "bg": "rgba(0, 0, 0, 0)",
+         "tr": "none",
+         "op": "1",
+         "shadow": "none",
+         "blur": "none",
+         "filter": "none",
+         "radius": "0px",
+         "blend": "normal",
+         "pos": "relative",
+         "color": "rgb(0, 0, 0)"
+        }
+       },
+       "hamburger": [
+        [
+         60,
+         [
+          "relative@top-43"
+         ]
+        ],
+        [
+         120,
+         [
+          "relative@top-103"
+         ]
+        ],
+        [
+         180,
+         [
+          "relative@top-163"
+         ]
+        ],
+        [
+         240,
+         [
+          "fixed@top15"
+         ]
+        ],
+        [
+         300,
+         [
+          "fixed@top15"
+         ]
+        ],
+        [
+         360,
+         [
+          "fixed@top15"
+         ]
+        ],
+        [
+         420,
+         [
+          "fixed@top15"
+         ]
+        ],
+        [
+         480,
+         [
+          "fixed@top15"
+         ]
+        ],
+        [
+         540,
+         [
+          "fixed@top15"
+         ]
+        ],
+        [
+         600,
+         [
+          "fixed@top15"
+         ]
+        ],
+        [
+         660,
+         [
+          "fixed@top15"
+         ]
+        ],
+        [
+         720,
+         [
+          "fixed@top15"
+         ]
+        ]
+       ]
+      }
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "changes": [
+       "header position absolute -> relative (in flow)",
+       "logo 150.5 -> 72.3px",
+       "grid padding 42.9 -> 25"
+      ],
+      "drop": "nothing removed"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.header .navigation-mini",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "navRect": {
+        "top": 25,
+        "left": 486.3,
+        "right": 743,
+        "bottom": 97.3,
+        "width": 256.8,
+        "height": 72.3,
+        "insetLeft": 486.3,
+        "insetRight": 25,
+        "cx": 614.6
+       },
+       "navDisplay": "block",
+       "logoRect": {
+        "top": 25,
+        "left": 25,
+        "right": 97.3,
+        "bottom": 97.3,
+        "width": 72.3,
+        "height": 72.3,
+        "insetLeft": 25,
+        "insetRight": 670.8,
+        "cx": 61.1
+       },
+       "hdrPosition": "relative",
+       "gridPadding": "25px"
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "bar",
+   "tier": 768,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "partial-width mini nav inside the header: two text links, a search icon and a hamburger, right-aligned",
+      "navVisible": true
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.header .navigation-mini",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "rect": {
+        "top": 25,
+        "left": 486.3,
+        "right": 743,
+        "bottom": 97.3,
+        "width": 256.8,
+        "height": 72.3,
+        "insetLeft": 486.3,
+        "insetRight": 25,
+        "cx": 614.6
+       },
+       "display": "block",
+       "links": [
+        [
+         "Work",
+         true
+        ],
+        [
+         "About",
+         true
+        ],
+        [
+         "",
+         true
+        ]
+       ]
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "navRect": {
+       "top": 25,
+       "left": 486.3,
+       "right": 743,
+       "bottom": 97.3,
+       "width": 256.8,
+       "height": 72.3,
+       "insetLeft": 486.3,
+       "insetRight": 25,
+       "cx": 614.6
+      },
+      "items": [
+       {
+        "name": "Work",
+        "left": 486.3,
+        "top": 17,
+        "width": 48.3
+       },
+       {
+        "name": "About",
+        "left": 562,
+        "top": 17,
+        "width": 56
+       },
+       {
+        "name": "search icon",
+        "left": 645.5,
+        "top": 17,
+        "width": 20
+       }
+      ],
+      "hamburgerInBar": [
+       {
+        "top": 17,
+        "left": 693,
+        "right": 743,
+        "bottom": 41,
+        "width": 50,
+        "height": 24,
+        "insetLeft": 693,
+        "insetRight": 25,
+        "cx": 718
+       }
+      ],
+      "gapBetweenItems": 27.5
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-mini a",
+      "rawFile": "raw/buck-768.json",
+      "raw": [
+       {
+        "top": 17,
+        "left": 486.3,
+        "right": 534.5,
+        "bottom": 45,
+        "width": 48.3,
+        "height": 28,
+        "insetLeft": 486.3,
+        "insetRight": 233.5,
+        "cx": 510.4
+       },
+       {
+        "top": 17,
+        "left": 562,
+        "right": 618,
+        "bottom": 45,
+        "width": 56,
+        "height": 28,
+        "insetLeft": 562,
+        "insetRight": 150,
+        "cx": 590
+       },
+       {
+        "top": 17,
+        "left": 645.5,
+        "right": 665.5,
+        "bottom": 45,
+        "width": 20,
+        "height": 28,
+        "insetLeft": 645.5,
+        "insetRight": 102.5,
+        "cx": 655.5
+       }
+      ]
+     }
+    },
+    "zone_model": {
+     "value": {
+      "order": "Work, About, search icon, hamburger",
+      "ctaInBar": false,
+      "languageSwitch": false,
+      "cart": false,
+      "searchControl": "icon-only anchor without href (not a button, no name)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-mini",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "html": "see b-html.mjs dump: <a class=chakra-link> without href containing a magnifier svg"
+      }
+     }
+    },
+    "item_typography": {
+     "value": {
+      "fontFamily": "Mabry, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe ",
+      "fontSize": 20,
+      "fontWeight": "100",
+      "letterSpacing": "normal",
+      "textTransform": "none",
+      "colour": "#000000",
+      "scalingMode": "fluid (about 1.49vw) from 1280px up, floor of 20px below",
+      "series": [
+       [
+        1600,
+        "23.8222px"
+       ],
+       [
+        1440,
+        "21.44px"
+       ],
+       [
+        1280,
+        "19.0578px"
+       ],
+       [
+        1100,
+        "20px"
+       ],
+       [
+        1024,
+        "20px"
+       ],
+       [
+        900,
+        "20px"
+       ],
+       [
+        768,
+        "20px"
+       ],
+       [
+        640,
+        "20px"
+       ],
+       [
+        520,
+        "20px"
+       ],
+       [
+        414,
+        "20px"
+       ],
+       [
+        375,
+        "20px"
+       ]
+      ],
+      "caseOrigin": "source case (Title Case), no CSS transform"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fontscale.mjs",
+      "selector": "div.header .navigation-mini a",
+      "rawFile": "raw/buck-fontscale.json",
+      "raw": [
+       [
+        1600,
+        "23.8222px"
+       ],
+       [
+        1440,
+        "21.44px"
+       ],
+       [
+        1280,
+        "19.0578px"
+       ],
+       [
+        1100,
+        "20px"
+       ],
+       [
+        1024,
+        "20px"
+       ],
+       [
+        900,
+        "20px"
+       ],
+       [
+        768,
+        "20px"
+       ],
+       [
+        640,
+        "20px"
+       ],
+       [
+        520,
+        "20px"
+       ],
+       [
+        414,
+        "20px"
+       ],
+       [
+        375,
+        "20px"
+       ]
+      ]
+     }
+    },
+    "item_states": {
+     "value": {
+      "hover": {
+       "effect": "opacity 1 -> 0.5",
+       "diffs": [
+        {
+         "node": "a.chakra-link.css-fekwcv",
+         "prop": "op",
+         "before": "1",
+         "after": "0.5"
+        }
+       ],
+       "transition": "0.2s ease-in-out"
+      },
+      "currentIndicator": "none observed (no aria-current, no class change)",
+      "ornament": "none",
+      "separators": "none"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs hover 650ms",
+      "selector": ".navigation-mini a",
+      "rawFile": "raw/buck-768.json",
+      "raw": [
+       {
+        "text": "Work",
+        "diffs": [
+         {
+          "node": "a.chakra-link.css-fekwcv",
+          "prop": "op",
+          "before": "1",
+          "after": "0.5"
+         }
+        ]
+       },
+       {
+        "text": "About",
+        "diffs": [
+         {
+          "node": "a.chakra-link.css-fekwcv",
+          "prop": "op",
+          "before": "1",
+          "after": "0.5"
+         }
+        ]
+       },
+       {
+        "text": "",
+        "diffs": [
+         {
+          "node": "a.chakra-link.css-fekwcv",
+          "prop": "op",
+          "before": "1",
+          "after": "0.5"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    "secondary_blocks": {
+     "value": {
+      "blocks": [
+       {
+        "kind": "search",
+        "form": "icon-only anchor without href"
+       }
+      ],
+      "reactiveContent": false
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-mini",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "visible": true
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "openTrigger": "none in the bar except the hamburger (click)",
+      "hoverDropdown": false,
+      "popupHints": {
+       "ariaHaspopup": 0,
+       "ariaExpanded": [],
+       "dropdownClass": [],
+       "semantic": {
+        "nav": 0,
+        "header": 0,
+        "banner": 0,
+        "dialog": 0
+       }
+      },
+      "navHiddenBySpec": false
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs hover diff",
+      "selector": ".navigation-mini a",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "newBoxes": [
+        0,
+        0,
+        0
+       ],
+       "popupHints": {
+        "ariaHaspopup": 0,
+        "ariaExpanded": [],
+        "dropdownClass": [],
+        "semantic": {
+         "nav": 0,
+         "header": 0,
+         "banner": 0,
+         "dialog": 0
+        }
+       }
+      }
+     }
+    },
+    "motion": {
+     "value": {
+      "hover": "opacity fade",
+      "transition": "0.2s ease-in-out",
+      "spec38Tier": "V",
+      "substrate": "DOM"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-mini a",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "transition": "0.2s ease-in-out"
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "labels": [
+       "Work",
+       "About",
+       "(search icon)"
+      ],
+      "fixed": true
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-mini a",
+      "rawFile": "raw/buck-768.json",
+      "raw": [
+       "Work",
+       "About",
+       ""
+      ]
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "changes": [
+       "same four controls; type at the 20px floor"
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-mini",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "rect": {
+        "top": 25,
+        "left": 486.3,
+        "right": 743,
+        "bottom": 97.3,
+        "width": 256.8,
+        "height": 72.3,
+        "insetLeft": 486.3,
+        "insetRight": 25,
+        "cx": 614.6
+       },
+       "display": "block"
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "dropdown",
+   "tier": 768,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: no bar item owns a dropdown panel; hovering each visible bar link produced no new box (newBoxCount [0,0,0]); 0 aria-haspopup, 0 dropdown/mega/submenu class matches; the full navigation is the full-screen drawer only",
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs hover + DOM query",
+      "selector": "div.header .navigation-mini a; [aria-haspopup]; [class*=dropdown|mega|sub-menu|submenu|flyout]",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "popupHints": {
+        "ariaHaspopup": 0,
+        "ariaExpanded": [],
+        "dropdownClass": [],
+        "semantic": {
+         "nav": 0,
+         "header": 0,
+         "banner": 0,
+         "dialog": 0
+        }
+       },
+       "hover": [
+        {
+         "text": "Work",
+         "newBoxCount": 0
+        },
+        {
+         "text": "About",
+         "newBoxCount": 0
+        },
+        {
+         "text": "",
+         "newBoxCount": 0
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "mega",
+   "tier": 768,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: no bar item owns a mega panel; hovering each visible bar link produced no new box (newBoxCount [0,0,0]); 0 aria-haspopup, 0 dropdown/mega/submenu class matches; the full navigation is the full-screen drawer only",
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs hover + DOM query",
+      "selector": "div.header .navigation-mini a; [aria-haspopup]; [class*=dropdown|mega|sub-menu|submenu|flyout]",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "popupHints": {
+        "ariaHaspopup": 0,
+        "ariaExpanded": [],
+        "dropdownClass": [],
+        "semantic": {
+         "nav": 0,
+         "header": 0,
+         "banner": 0,
+         "dialog": 0
+        }
+       },
+       "hover": [
+        {
+         "text": "Work",
+         "newBoxCount": 0
+        },
+        {
+         "text": "About",
+         "newBoxCount": 0
+        },
+        {
+         "text": "",
+         "newBoxCount": 0
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "trigger-close",
+   "tier": 768,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "kind": "icon-only burger (3 bars) button; the SAME button swaps to a close X in place",
+      "element": "BUTTON.btn-hamburger",
+      "separateCloseButton": false,
+      "replacesInPlace": true,
+      "detachesToFixedChipOnScroll": true,
+      "alwaysFixed": false,
+      "standaloneDomElementAtThisTier": "button lives inside the mini-nav, then becomes position:fixed on scroll"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs + b-thresh.mjs",
+      "selector": ".btn-hamburger",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "tag": "BUTTON",
+       "atPointAfterOpen": {
+        "isTrigger": true,
+        "inPanel": false,
+        "html": "<button type=\"button\" class=\"chakra-button btn btn-hamburger css-xyt3i0\"><svg viewBox=\"0 0 18 18\" focusable=\"false\" class=\"chakra-icon icon icon-close css-onkibi\"><path/></path></svg></button>"
+       },
+       "watchRest": [
+        [
+         "div.nav.css-1hqbv68 > button.chakra-button.btn.btn-hamburger",
+         "relative",
+         true
+        ]
+       ]
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "atRest": {
+       "left": 693,
+       "top": 17,
+       "width": 50,
+       "height": 24
+      },
+      "whenFixedOnScroll": {
+       "top": 15,
+       "right": 30,
+       "width": 64,
+       "height": 64,
+       "position": "fixed"
+      },
+      "targetSize": {
+       "restHeight": 24,
+       "meets44px": false,
+       "fixedChip": 64
+      },
+      "zIndex": {
+       "rest": "1400",
+       "panel": "1300",
+       "whenFixed": "9100"
+      },
+      "radius": "9999px"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs + b-thresh.mjs",
+      "selector": ".btn-hamburger",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "rect": {
+        "top": 17,
+        "left": 693,
+        "right": 743,
+        "bottom": 41,
+        "width": 50,
+        "height": 24,
+        "insetLeft": 693,
+        "insetRight": 25,
+        "cx": 718
+       },
+       "watchScrolled": [
+        [
+         "fixed",
+         64,
+         15,
+         "9100"
+        ]
+       ]
+      }
+     }
+    },
+    "item_states": {
+     "value": {
+      "atRestBackground": "transparent",
+      "scrolledState": "a round chip (svg background-shape, class state-is-scrolling) sized 64px appears behind the bars",
+      "openIcon": "icon-close (X svg) inside the same button",
+      "ariaExpanded": null,
+      "transition": "0.2s ease-in-out"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs + b-thresh.mjs",
+      "selector": ".btn-hamburger",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "atPoint": "<button type=\"button\" class=\"chakra-button btn btn-hamburger css-xyt3i0\"><svg viewBox=\"0 0 18 18\" focusable=\"false\" class=\"chakra-icon icon icon-close css-onkibi\"><path/></path></svg></button>",
+       "afterClose": {
+        "bodyOverflow": "auto scroll",
+        "htmlOverflow": "visible",
+        "active": "div.css-0 > div.grid-8.css-d8pn3s > div.navigation-mini.css-1y1xyb5 > div.nav.css-1hqbv68 > button.chakra-button.btn.btn-hamburger",
+        "triggerText": "",
+        "ariaExpanded": null,
+        "open": false
+       }
+      }
+     }
+    },
+    "trigger_close": {
+     "value": {
+      "kind": "icon burger (three horizontal bars, 54x26 viewBox at desktop)",
+      "elementSemantics": {
+       "tag": "BUTTON",
+       "type": "button",
+       "ariaLabel": null,
+       "accessibleName": "(empty: icon-only, no aria-label)",
+       "ariaExpanded": null
+      },
+      "closeStyle": "X icon swapped into the same button, same position",
+      "replacesInPlace": true,
+      "topRow": false,
+      "animation": "icon swap (not sampled)",
+      "magnet": "not probed"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs click",
+      "selector": ".btn-hamburger",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "attrs": {
+        "type": "button"
+       },
+       "name": "",
+       "tag": "BUTTON",
+       "atPointAfterOpen": "<button type=\"button\" class=\"chakra-button btn btn-hamburger css-xyt3i0\"><svg viewBox=\"0 0 18 18\" focusable=\"false\" class=\"chakra-icon icon icon-close css-onkibi\"><path/></path></svg></button>"
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "openTrigger": "click",
+      "nativeButton": true,
+      "keyboardFocusable": true,
+      "focusAfterOpen": "button.chakra-button.btn.btn-hamburger",
+      "focusAfterClose": "button.chakra-button.btn.btn-hamburger",
+      "escapeCloses": false,
+      "scrollLock": "none: page still scrolls behind the open panel",
+      "dialog": false,
+      "inert": 0,
+      "ariaModal": 0,
+      "openSurvivesResizeSameTier": true,
+      "openSurvivesCrossTierResizeTo": {
+       "width": 1440,
+       "open": true
+      }
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".btn-hamburger, .navigation-expanded",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "escape": {
+        "panelClip": "none",
+        "panelOp": "1",
+        "panelVis": "visible",
+        "panelRect": {
+         "top": 0,
+         "left": 0,
+         "right": 768,
+         "bottom": 900,
+         "width": 768,
+         "height": 900,
+         "insetLeft": 0,
+         "insetRight": 0,
+         "cx": 384
+        },
+        "active": "div.css-0 > div.grid-8.css-d8pn3s > div.navigation-mini.css-1y1xyb5 > div.nav.css-1hqbv68 > button.chakra-button.btn.btn-hamburger",
+        "bodyOverflow": "auto scroll",
+        "closedByEscape": false
+       },
+       "resize": {
+        "openAfterResize": true,
+        "crossTo": 1440,
+        "openAfterCrossTierResize": true,
+        "bodyOverflowAfterCross": "auto scroll"
+       },
+       "scrollLockProbe": {
+        "scrollYBefore": 0,
+        "afterWheel400": 400,
+        "afterPageDown": 1187,
+        "pageScrollsWhileOpen": true
+       },
+       "activeAfterOpen": "div.css-0 > div.grid-8.css-d8pn3s > div.navigation-mini.css-1y1xyb5 > div.nav.css-1hqbv68 > button.chakra-button.btn.btn-hamburger"
+      }
+     }
+    },
+    "motion": {
+     "value": {
+      "effect": "bar-to-X icon swap; chip appears on scroll",
+      "spec38Tier": "V",
+      "substrate": "DOM (svg)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".btn-hamburger",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "transition": "0.2s ease-in-out"
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "label": "none (icon only)",
+      "accessibleName": null
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".btn-hamburger",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "name": "",
+       "attrs": {
+        "type": "button"
+       }
+      }
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "changes": [
+       "burger 50x24, chip 64px",
+       "detaches earlier (about 180-240px of scroll)"
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs + b-thresh.mjs",
+      "selector": ".btn-hamburger",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "restRect": {
+        "top": 17,
+        "left": 693,
+        "right": 743,
+        "bottom": 41,
+        "width": 50,
+        "height": 24,
+        "insetLeft": 693,
+        "insetRight": 25,
+        "cx": 718
+       },
+       "firstFixedAtY": 240,
+       "hamburgersInDom": 1
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "drawer",
+   "tier": 768,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "full-screen",
+      "reveal": "slides up from the bottom (translateY 100% -> 0) with a fade",
+      "panelIsOpaque": true,
+      "inDomBeforeOpen": true
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-expanded",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "position": "fixed",
+       "rect": {
+        "top": 0,
+        "left": 0,
+        "right": 768,
+        "bottom": 900,
+        "width": 768,
+        "height": 900,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 384
+       },
+       "bg": "rgb(244, 192, 84)",
+       "presentBeforeOpen": true
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "position": "fixed",
+      "inset": {
+       "top": 0,
+       "left": 0,
+       "right": 0,
+       "bottom": 0
+      },
+      "width": 768,
+      "height": 900,
+      "radius": 0,
+      "zIndex": "1300",
+      "centredOnViewport": true,
+      "innerGrid": {
+       "columns": 8,
+       "first": "72.25px"
+      }
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-expanded",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "rect": {
+        "top": 0,
+        "left": 0,
+        "right": 768,
+        "bottom": 900,
+        "width": 768,
+        "height": 900,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 384
+       },
+       "z": "1300",
+       "grid": "72.25px 72.25px 72.25px 72.25px 72.25px 72.25px 72.25px 72.25px"
+      }
+     }
+    },
+    "zone_model": {
+     "value": {
+      "linkColumn": {
+       "left": 325.5,
+       "alignment": "centre-ish (left 325.5)",
+       "top": 190
+      },
+      "footerRow": {
+       "position": {
+        "left": 394,
+        "top": 763
+       },
+       "layout": "stacked column"
+      },
+      "extraFirstItem": null,
+      "closeControl": "the page trigger button stays above the panel (z 1400 vs 1300)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-expanded",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "links": [
+        [
+         "WORK",
+         325.5,
+         190
+        ],
+        [
+         "ABOUT",
+         325.5,
+         244.8
+        ],
+        [
+         "CONTACT",
+         325.5,
+         299.6
+        ],
+        [
+         "CAREERS",
+         325.5,
+         354.4
+        ],
+        [
+         "GAMES",
+         325.5,
+         409.2
+        ],
+        [
+         "GOODS",
+         325.5,
+         464
+        ],
+        [
+         "LinkedIn",
+         394,
+         763
+        ],
+        [
+         "Instagram",
+         394,
+         791
+        ],
+        [
+         "Vimeo",
+         394,
+         819
+        ],
+        [
+         "Privacy Policy",
+         394,
+         847
+        ]
+       ],
+       "grid": "72.25px 72.25px 72.25px 72.25px 72.25px 72.25px 72.25px 72.25px"
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "fill": "#f4c054",
+      "fillNote": "a brand-palette colour chosen per page load, not per tier: this run gave 1440: #196efa, 768: #f4c054, 375: #508054 (the 2026-07-28 record saw #7f4c1e desktop and #00513c mobile)",
+      "backdropFilter": "none",
+      "scrim": false,
+      "blur": false,
+      "opacity": "1",
+      "before": null,
+      "after": null
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs (three loads)",
+      "selector": ".navigation-expanded",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "bg": "rgb(244, 192, 84)",
+       "otherLoads": {
+        "at1440": "rgb(25, 110, 250)",
+        "at768": "rgb(244, 192, 84)",
+        "at375": "rgb(80, 128, 84)"
+       }
+      }
+     }
+    },
+    "background_visual": {
+     "value": {
+      "panel": "none (flat colour)",
+      "perLinkGlyph": "each link has a leading inline SVG glyph, 40px square, hanging in the gutter left of the label",
+      "mediaElements": {
+       "img": 0,
+       "video": 0,
+       "canvas": 0,
+       "svg": 6
+      }
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-expanded",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "img": 0,
+       "video": 0,
+       "canvas": 0,
+       "svg": 6
+      }
+     }
+    },
+    "item_typography": {
+     "value": {
+      "fontFamily": "Mabry, system-ui, -apple-system, BlinkMacSystemFon",
+      "fontSize": 39.8,
+      "fontWeight": "100",
+      "letterSpacing": "normal",
+      "textTransform": "uppercase",
+      "colour": "#000000",
+      "scalingMode": "fluid 3.5vw from 1100px up (56 / 50.4 / 44.8 / 38.5px at 1600 / 1440 / 1280 / 1100), then stepped: 52px at 1024-900, 39.8px at 768-640, 24px at 520 and below",
+      "series": [
+       [
+        1600,
+        "56px"
+       ],
+       [
+        1440,
+        "50.4px"
+       ],
+       [
+        1280,
+        "44.8px"
+       ],
+       [
+        1100,
+        "38.5px"
+       ],
+       [
+        1024,
+        "52px"
+       ],
+       [
+        900,
+        "52px"
+       ],
+       [
+        768,
+        "39.8px"
+       ],
+       [
+        640,
+        "39.8px"
+       ],
+       [
+        520,
+        "24px"
+       ],
+       [
+        414,
+        "24px"
+       ],
+       [
+        375,
+        "24px"
+       ]
+      ],
+      "caseOrigin": "source Title Case (\"Work\"), upper-case by CSS text-transform"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fontscale.mjs",
+      "selector": ".navigation-expanded li a span",
+      "rawFile": "raw/buck-fontscale.json",
+      "raw": [
+       [
+        1600,
+        "56px"
+       ],
+       [
+        1440,
+        "50.4px"
+       ],
+       [
+        1280,
+        "44.8px"
+       ],
+       [
+        1100,
+        "38.5px"
+       ],
+       [
+        1024,
+        "52px"
+       ],
+       [
+        900,
+        "52px"
+       ],
+       [
+        768,
+        "39.8px"
+       ],
+       [
+        640,
+        "39.8px"
+       ],
+       [
+        520,
+        "24px"
+       ],
+       [
+        414,
+        "24px"
+       ],
+       [
+        375,
+        "24px"
+       ]
+      ]
+     }
+    },
+    "item_states": {
+     "value": {
+      "hover": "hovered link drops to opacity 0.5 (others stay 1)",
+      "currentIndicator": "none observed",
+      "ornament": "leading SVG glyph per link",
+      "separators": "none"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs panel hover 700ms",
+      "selector": ".navigation-expanded li a",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "hoveredIndex1": [
+        "1",
+        "0.5",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1"
+       ]
+      }
+     }
+    },
+    "secondary_blocks": {
+     "value": {
+      "blocks": [
+       {
+        "kind": "copyright",
+        "text": "(c) 2026 BUCK"
+       },
+       {
+        "kind": "social + legal links",
+        "items": [
+         "LinkedIn",
+         "Instagram",
+         "Vimeo",
+         "Privacy Policy"
+        ],
+        "layout": "stacked column",
+        "typeSize": 20
+       }
+      ],
+      "previewPane": false
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-expanded",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "text": "WORK ABOUT CONTACT CAREERS GAMES GOODS © 2026 BUCK LinkedIn Instagram Vimeo Privacy Policy",
+       "socials": [
+        [
+         "LinkedIn",
+         394,
+         763
+        ],
+        [
+         "Instagram",
+         394,
+         791
+        ],
+        [
+         "Vimeo",
+         394,
+         819
+        ],
+        [
+         "Privacy Policy",
+         394,
+         847
+        ]
+       ]
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "openTrigger": "click",
+      "escapeCloses": false,
+      "focusAfterOpen": "button.chakra-button.btn.btn-hamburger",
+      "scrollLock": "none: wheel and PageDown scroll the page behind the open panel",
+      "wheelProbe": {
+       "scrollYBefore": 0,
+       "afterWheel400": 400,
+       "afterPageDown": 1187,
+       "pageScrollsWhileOpen": true
+      },
+      "bodyOverflowOpen": "auto scroll",
+      "dialog": 0,
+      "inert": 0,
+      "ariaModal": 0,
+      "survivesResize": {
+       "sameTier": true,
+       "crossTierTo": 1440,
+       "open": true
+      },
+      "inDomBeforeOpen": true
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-expanded",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "escape": {
+        "panelClip": "none",
+        "panelOp": "1",
+        "panelVis": "visible",
+        "panelRect": {
+         "top": 0,
+         "left": 0,
+         "right": 768,
+         "bottom": 900,
+         "width": 768,
+         "height": 900,
+         "insetLeft": 0,
+         "insetRight": 0,
+         "cx": 384
+        },
+        "active": "div.css-0 > div.grid-8.css-d8pn3s > div.navigation-mini.css-1y1xyb5 > div.nav.css-1hqbv68 > button.chakra-button.btn.btn-hamburger",
+        "bodyOverflow": "auto scroll",
+        "closedByEscape": false
+       },
+       "resize": {
+        "openAfterResize": true,
+        "crossTo": 1440,
+        "openAfterCrossTierResize": true,
+        "bodyOverflowAfterCross": "auto scroll"
+       },
+       "lock": {
+        "scrollYBefore": 0,
+        "afterWheel400": 400,
+        "afterPageDown": 1187,
+        "pageScrollsWhileOpen": true
+       },
+       "panel": {
+        "body": "auto scroll",
+        "inert": 0,
+        "dialog": 0,
+        "active": "div.css-0 > div.grid-8.css-d8pn3s > div.navigation-mini.css-1y1xyb5 > div.nav.css-1hqbv68 > button.chakra-button.btn.btn-hamburger"
+       }
+      }
+     }
+    },
+    "motion": {
+     "value": {
+      "open": {
+       "effect": "translateY 900px -> 0 with opacity 0 -> 1",
+       "settledMs": 601,
+       "samples": [
+        [
+         98,
+         "0",
+         900
+        ],
+        [
+         491,
+         "0.993029",
+         6.27399
+        ],
+        [
+         894,
+         "1",
+         0
+        ],
+        [
+         1270,
+         "1",
+         0
+        ],
+        [
+         1645,
+         "1",
+         0
+        ],
+        [
+         2019,
+         "1",
+         0
+        ]
+       ]
+      },
+      "close": {
+       "effect": "reverse: opacity to 0 and translateY back to 900",
+       "settledMs": 280
+      },
+      "spec38Tier": "V (CSS transform + opacity transition reaches it)",
+      "substrate": "DOM"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs 90ms sampler",
+      "selector": ".navigation-expanded",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "open": [
+        [
+         98,
+         "0",
+         "matrix(1, 0, 0, 1, 0, 900)"
+        ],
+        [
+         392,
+         "0.888782",
+         "matrix(1, 0, 0, 1, 0, 100.096)"
+        ],
+        [
+         694,
+         "1",
+         "matrix(1, 0, 0, 1, 0, 0)"
+        ],
+        [
+         988,
+         "1",
+         "matrix(1, 0, 0, 1, 0, 0)"
+        ],
+        [
+         1270,
+         "1",
+         "matrix(1, 0, 0, 1, 0, 0)"
+        ],
+        [
+         1552,
+         "1",
+         "matrix(1, 0, 0, 1, 0, 0)"
+        ],
+        [
+         1832,
+         "1",
+         "matrix(1, 0, 0, 1, 0, 0)"
+        ],
+        [
+         2127,
+         "1",
+         "matrix(1, 0, 0, 1, 0, 0)"
+        ]
+       ],
+       "close": [
+        [
+         29,
+         "1",
+         "matrix(1, 0, 0, 1, 0, 0)"
+        ],
+        [
+         391,
+         "0",
+         "matrix(1, 0, 0, 1, 0, 900)"
+        ],
+        [
+         691,
+         "0",
+         "matrix(1, 0, 0, 1, 0, 900)"
+        ],
+        [
+         1025,
+         "0",
+         "matrix(1, 0, 0, 1, 0, 900)"
+        ],
+        [
+         1406,
+         "0",
+         "matrix(1, 0, 0, 1, 0, 900)"
+        ],
+        [
+         1816,
+         "0",
+         "matrix(1, 0, 0, 1, 0, 900)"
+        ],
+        [
+         2117,
+         "0",
+         "matrix(1, 0, 0, 1, 0, 900)"
+        ],
+        [
+         2434,
+         "0",
+         "matrix(1, 0, 0, 1, 0, 900)"
+        ]
+       ]
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "linkLabels": [
+       "WORK",
+       "ABOUT",
+       "CONTACT",
+       "CAREERS",
+       "GAMES",
+       "GOODS"
+      ],
+      "count": 6,
+      "socialLabels": [
+       "LinkedIn",
+       "Instagram",
+       "Vimeo",
+       "Privacy Policy"
+      ],
+      "fixed": true,
+      "panelText": "WORK ABOUT CONTACT CAREERS GAMES GOODS © 2026 BUCK LinkedIn Instagram Vimeo Privacy Policy"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-expanded a",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "links": [
+        "WORK",
+        "ABOUT",
+        "CONTACT",
+        "CAREERS",
+        "GAMES",
+        "GOODS",
+        "LinkedIn",
+        "Instagram",
+        "Vimeo",
+        "Privacy Policy"
+       ]
+      }
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "changes": [
+       "links 39.8px, column moves left to 325.5",
+       "footer row stacks (x=394)"
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-expanded",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "firstLinkLeft": 325.5,
+       "fontSize": "39.8px",
+       "socialsLeft": 394
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "footer",
+   "tier": 768,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "full-width coloured block (brand-palette colour per load), tag footer role=contentinfo",
+      "tag": "FOOTER",
+      "role": "contentinfo",
+      "height": 994
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "footer",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "rect": {
+        "top": -94.4,
+        "left": 0,
+        "right": 768,
+        "bottom": 899.6,
+        "width": 768,
+        "height": 994,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 384
+       },
+       "tag": "FOOTER",
+       "role": "contentinfo"
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "width": 768,
+      "height": 994,
+      "display": "flex",
+      "flexDirection": "column",
+      "padding": "0px",
+      "radius": 0
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "footer",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "rect": {
+        "top": -94.4,
+        "left": 0,
+        "right": 768,
+        "bottom": 899.6,
+        "width": 768,
+        "height": 994,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 384
+       },
+       "style": {
+        "display": "flex",
+        "padding": "0px"
+       }
+      }
+     }
+    },
+    "zone_model": {
+     "value": {
+      "officeBlocks": 5,
+      "order": [
+       "LA",
+       "NY",
+       "SYD",
+       "AMS",
+       "LDN"
+      ],
+      "groups": [
+       {
+        "left": 25,
+        "width": 349,
+        "links": 2
+       },
+       {
+        "left": 394,
+        "width": 349,
+        "links": 2
+       },
+       {
+        "left": 25,
+        "width": 349,
+        "links": 2
+       },
+       {
+        "left": 394,
+        "width": 349,
+        "links": 2
+       },
+       {
+        "left": 25,
+        "width": 349,
+        "links": 2
+       },
+       {
+        "left": 301.8,
+        "width": 256.8,
+        "links": 3
+       }
+      ],
+      "layout": "2 columns of office blocks then a link row",
+      "newsletter": "H2:Sign up for our newsletter — a"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "footer",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "groups": [
+        [
+         25,
+         94.6,
+         349,
+         2
+        ],
+        [
+         394,
+         94.6,
+         349,
+         2
+        ],
+        [
+         25,
+         364.6,
+         349,
+         2
+        ],
+        [
+         394,
+         364.6,
+         349,
+         2
+        ],
+        [
+         25,
+         634.6,
+         349,
+         2
+        ],
+        [
+         301.8,
+         818.6,
+         256.8,
+         3
+        ]
+       ],
+       "headings": [
+        "H3:LA→\n10:49 AM",
+        "H3:NY→\n1:49 PM",
+        "H3:SYD→\n3:49 AM",
+        "H3:AMS→\n7:49 PM",
+        "H3:LDN→\n6:49 PM",
+        "H2:Sign up for our newsletter — a"
+       ]
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "fill": "#ffb18e",
+      "fillNote": "chosen per page load, not per tier: this run gave 1440: #f4c054, 768: #ffb18e, 375: #7f4c1e",
+      "backdropFilter": "none",
+      "opacity": "1",
+      "backgroundImage": "none",
+      "textColour": "#000000"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs (three loads)",
+      "selector": "footer",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "bg": "rgb(255, 177, 142)",
+       "at375": "rgb(127, 76, 30)",
+       "at768": "rgb(255, 177, 142)",
+       "at1440": "rgb(244, 192, 84)"
+      }
+     }
+    },
+    "background_visual": {
+     "value": {
+      "kind": "none",
+      "media": {
+       "img": 0,
+       "video": 0,
+       "canvas": 0,
+       "svg": 2
+      }
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "footer",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "img": 0,
+       "video": 0,
+       "canvas": 0,
+       "svg": 2
+      }
+     }
+    },
+    "item_typography": {
+     "value": {
+      "fontFamily": "Mabry, system-ui, -apple-system, BlinkMa",
+      "fontSize": 20,
+      "fontWeight": "100",
+      "textTransform": "none",
+      "colour": "#000000",
+      "scalingMode": "follows the same fluid/floored scale as the bar (21.44px at 1440, 20px below)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "footer a",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "text": "↗",
+       "rawText": "↗",
+       "href": "https://www.google.com/maps/search/?api=1&query=120%20S%20Sa",
+       "rect": {
+        "top": 50.6,
+        "left": 79.5,
+        "right": 92.2,
+        "bottom": 70.6,
+        "width": 12.7,
+        "height": 20,
+        "insetLeft": 79.5,
+        "insetRight": 675.8,
+        "cx": 85.8
+       },
+       "fontSize": "20px",
+       "fontWeight": "100",
+       "fontFamily": "Mabry, system-ui, -apple-system, BlinkMa",
+       "letterSpacing": "normal",
+       "textTransform": "none",
+       "color": "rgb(0, 0, 0)"
+      }
+     }
+    },
+    "item_states": {
+     "value": {
+      "hover": "not measured"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "footer a",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "note": "footer link hover was not driven"
+      }
+     }
+    },
+    "secondary_blocks": {
+     "value": {
+      "blocks": [
+       "five office blocks each with a live local-time clock (h3 \"LA->\" + time element)",
+       "address with map link glyph",
+       "email and phone links",
+       "newsletter H2 heading",
+       "social + legal link row"
+      ],
+      "liveClocks": 5
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "footer",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "text": "LA→ 10:49 AM 120 S San Pedro St, 4th Floor Los Angeles, CA 90012 USA (↗) newbiz.la@buck.co +1 213 623 0111 NY→ 1:49 PM 33 35th St., Suite A600 Brooklyn, NY 11232 USA (↗) newbiz.ny@buck.co +1 212 668 0",
+       "headings": [
+        "H3:LA→\n10:49 AM",
+        "H3:NY→\n1:49 PM",
+        "H3:SYD→\n3:49 AM",
+        "H3:AMS→\n7:49 PM",
+        "H3:LDN→\n6:49 PM",
+        "H2:Sign up for our newsletter — a"
+       ]
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "text": "LA→ 10:49 AM 120 S San Pedro St, 4th Floor Los Angeles, CA 90012 USA (↗) newbiz.la@buck.co +1 213 623 0111 NY→ 1:49 PM 33 35th St., Suite A600 Brooklyn, NY 11232 USA (↗) newbiz.ny@buck.co +1 212 668 0111 SYD→ 3:49 AM L6, 52 Reservoir Street Surry Hills, NSW, 2010 Australia (↗) newbiz.syd@buck.co +61 2 8318 3445 AMS→ 7:49 PM Achtergracht 14 1017 WP Amsterdam The Netherlands (↗) newbiz.ams@buck.co 31 (0)20-3997137 LDN→ 6:49 PM 140 Old Street, 4th Floor London EC1V 9BJ United Kingdom (↗) newbiz.ldn",
+      "linkCount": 21,
+      "dynamic": "clock times are live (time[data-timezone])"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "footer",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "links": [
+        "↗",
+        "newbiz.la@buck.co",
+        "+1 213 623 0111",
+        "↗",
+        "newbiz.ny@buck.co",
+        "+1 212 668 0111",
+        "↗",
+        "newbiz.syd@buck.co"
+       ]
+      }
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "changes": [
+       "office blocks 349px wide in 2 columns"
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "footer",
+      "rawFile": "raw/buck-768.json",
+      "raw": {
+       "groups": [
+        [
+         25,
+         349
+        ],
+        [
+         394,
+         349
+        ],
+        [
+         25,
+         349
+        ],
+        [
+         394,
+         349
+        ],
+        [
+         25,
+         349
+        ],
+        [
+         301.8,
+         256.8
+        ]
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "header-shell",
+   "tier": 1440,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "full-bleed",
+      "detail": "transparent brand + mini-nav row; not a <header> element (div.header, no role=banner); scrolls away with the page (not sticky)",
+      "semanticTag": "DIV"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.header",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "width": 1440,
+       "viewport": 1440,
+       "radius": "0px",
+       "position": "absolute",
+       "tag": "DIV",
+       "semantic": {
+        "nav": 0,
+        "header": 0,
+        "banner": 0,
+        "dialog": 0
+       }
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "width": 1440,
+      "height": 182.2,
+      "insetTop": 0,
+      "position": "absolute",
+      "zIndex": "auto",
+      "radius": 0,
+      "maxWidth": "none",
+      "gridPadding": "42.88px",
+      "gridColumns": "8 columns of 150.516px",
+      "centredOnViewport": true
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.header .grid-8",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "hdrRect": {
+        "top": 0,
+        "left": 0,
+        "right": 1440,
+        "bottom": 182.2,
+        "width": 1440,
+        "height": 182.2,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 720
+       },
+       "grid": {
+        "sel": "div.css-0 > div.grid-8.css-d8pn3s",
+        "vis": true,
+        "rect": {
+         "top": 0,
+         "left": 0,
+         "right": 1440,
+         "bottom": 236.3,
+         "width": 1440,
+         "height": 236.3,
+         "insetLeft": 0,
+         "insetRight": 0,
+         "cx": 720
+        },
+        "display": "grid",
+        "gridCols": "150.516px 150.516px 150.516px 150.516px 150.516px 150.516px 150.516px 150.516px",
+        "gap": "42.88px 21.44px",
+        "flexDirection": "row",
+        "justify": "normal",
+        "align": "normal",
+        "padding": "42.88px",
+        "maxWidth": "none"
+       }
+      }
+     }
+    },
+    "zone_model": {
+     "value": {
+      "zones": [
+       {
+        "name": "brand",
+        "rect": {
+         "top": 42.9,
+         "left": 42.9,
+         "right": 193.4,
+         "bottom": 193.4,
+         "width": 150.5,
+         "height": 150.5,
+         "insetLeft": 42.9,
+         "insetRight": 1246.6,
+         "cx": 118.1
+        },
+        "contains": "logo (animated Lottie SVG)"
+       },
+       {
+        "name": "nav",
+        "vis": true,
+        "rect": {
+         "top": 42.9,
+         "left": 1074.6,
+         "right": 1397.1,
+         "bottom": 193.4,
+         "width": 322.5,
+         "height": 150.5,
+         "insetLeft": 1074.6,
+         "insetRight": 42.9,
+         "cx": 1235.9
+        },
+        "contains": "Work, About, search icon, hamburger"
+       }
+      ],
+      "alignment": "logo left, nav cluster right",
+      "utilityControls": [
+       "search icon link (an <a> without href)"
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.header .branding, .navigation-mini",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "div.header > div": [
+        {
+         "sel": "div.header.css-8l2ee1 > div.css-0",
+         "vis": true,
+         "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 1440,
+          "bottom": 236.3,
+          "width": 1440,
+          "height": 236.3,
+          "insetLeft": 0,
+          "insetRight": 0,
+          "cx": 720
+         },
+         "display": "block",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "0px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.header .grid-8": [
+        {
+         "sel": "div.css-0 > div.grid-8.css-d8pn3s",
+         "vis": true,
+         "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 1440,
+          "bottom": 236.3,
+          "width": 1440,
+          "height": 236.3,
+          "insetLeft": 0,
+          "insetRight": 0,
+          "cx": 720
+         },
+         "display": "grid",
+         "gridCols": "150.516px 150.516px 150.516px 150.516px 150.516px 150.516px 150.516px 150.516px",
+         "gap": "42.88px 21.44px",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "42.88px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.header .branding": [
+        {
+         "sel": "div.grid-8.css-d8pn3s > div.branding.css-1fyh48j",
+         "vis": true,
+         "rect": {
+          "top": 42.9,
+          "left": 42.9,
+          "right": 193.4,
+          "bottom": 193.4,
+          "width": 150.5,
+          "height": 150.5,
+          "insetLeft": 42.9,
+          "insetRight": 1246.6,
+          "cx": 118.1
+         },
+         "display": "block",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "0px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.header .navigation-mini": [
+        {
+         "sel": "div.grid-8.css-d8pn3s > div.navigation-mini.css-1y1xyb5",
+         "vis": true,
+         "rect": {
+          "top": 42.9,
+          "left": 1074.6,
+          "right": 1397.1,
+          "bottom": 193.4,
+          "width": 322.5,
+          "height": 150.5,
+          "insetLeft": 1074.6,
+          "insetRight": 42.9,
+          "cx": 1235.9
+         },
+         "display": "block",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "normal",
+         "align": "normal",
+         "padding": "0px",
+         "maxWidth": "none"
+        }
+       ],
+       "div.header .navigation-mini .nav": [
+        {
+         "sel": "div.navigation-mini.css-1y1xyb5 > div.nav.css-1hqbv68",
+         "vis": true,
+         "rect": {
+          "top": 42.9,
+          "left": 1074.6,
+          "right": 1397.1,
+          "bottom": 64.3,
+          "width": 322.5,
+          "height": 21.4,
+          "insetLeft": 1074.6,
+          "insetRight": 42.9,
+          "cx": 1235.9
+         },
+         "display": "flex",
+         "gridCols": "none",
+         "gap": "normal",
+         "flexDirection": "row",
+         "justify": "space-between",
+         "align": "flex-start",
+         "padding": "0px",
+         "maxWidth": "none"
+        }
+       ]
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "fill": "transparent",
+      "backdropFilter": "none",
+      "blur": false,
+      "scrim": false,
+      "boxShadow": "none",
+      "mixBlendMode": "normal",
+      "opacity": "1",
+      "before": null,
+      "after": null,
+      "pageBackground": "transparent",
+      "stackAtCentre": [
+       "p.chakra-text.css-7kq2gc",
+       "div.css-2d0lqf",
+       "div.grid-8.css-d8pn3s"
+      ]
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.header",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "bg": "rgba(0, 0, 0, 0)",
+       "backdrop": "none",
+       "overlay": [
+        {
+         "sel": "div.css-0 > main.css-i6bazn > div.grid-8.css-lgmcpb > div.css-2d0lqf > p.chakra-text.css-7kq2gc",
+         "position": "static",
+         "zIndex": "auto",
+         "opacity": "1",
+         "bg": "rgba(0, 0, 0, 0)",
+         "bgImage": "none",
+         "pe": "auto",
+         "blend": "normal"
+        },
+        {
+         "sel": "div#__next > div.css-0 > main.css-i6bazn > div.grid-8.css-lgmcpb > div.css-2d0lqf",
+         "position": "relative",
+         "zIndex": "auto",
+         "opacity": "1",
+         "bg": "rgba(0, 0, 0, 0)",
+         "bgImage": "none",
+         "pe": "auto",
+         "blend": "normal"
+        },
+        {
+         "sel": "div.css-0 > main.css-i6bazn > div.header.css-8l2ee1 > div.css-0 > div.grid-8.css-d8pn3s",
+         "position": "static",
+         "zIndex": "auto",
+         "opacity": "1",
+         "bg": "rgba(0, 0, 0, 0)",
+         "bgImage": "none",
+         "pe": "auto",
+         "blend": "normal"
+        }
+       ]
+      }
+     }
+    },
+    "background_visual": {
+     "value": {
+      "kind": "none behind the header; the logo itself is an animated Lottie SVG"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.header a.logo svg",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "bgImage": "none",
+       "logoRect": {
+        "top": 42.9,
+        "left": 42.9,
+        "right": 193.4,
+        "bottom": 193.4,
+        "width": 150.5,
+        "height": 150.5,
+        "insetLeft": 42.9,
+        "insetRight": 1246.6,
+        "cx": 118.1
+       },
+       "logoSel": "div.css-uwwqev > a.logo.logo-buck.logo-letter-b"
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "sticky": false,
+      "headerScrollsAway": true,
+      "headerTopAtScroll600": -600,
+      "scrollY": 600,
+      "positionAtRest": "absolute",
+      "positionAtScroll600": "absolute",
+      "hamburgerDetachesToFixed": {
+       "firstFixedAtScrollY": 360,
+       "lastNonFixedScrollY": 300,
+       "samplesStepPx": 60
+      },
+      "scroller": "native window scroll"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs + b-thresh.mjs",
+      "selector": "div.header; .btn-hamburger",
+      "rawFile": "raw/buck-1440.json ; raw/buck-thresh-1440.json",
+      "raw": {
+       "header": {
+        "rest": {
+         "top": 0,
+         "left": 0,
+         "width": 1440,
+         "height": 182.2,
+         "bg": "rgba(0, 0, 0, 0)",
+         "tr": "none",
+         "op": "1",
+         "shadow": "none",
+         "blur": "none",
+         "filter": "none",
+         "radius": "0px",
+         "blend": "normal",
+         "pos": "absolute",
+         "color": "rgb(0, 0, 0)"
+        },
+        "down600": {
+         "top": -600,
+         "left": 0,
+         "width": 1440,
+         "height": 182.2,
+         "bg": "rgba(0, 0, 0, 0)",
+         "tr": "none",
+         "op": "1",
+         "shadow": "none",
+         "blur": "none",
+         "filter": "none",
+         "radius": "0px",
+         "blend": "normal",
+         "pos": "absolute",
+         "color": "rgb(0, 0, 0)"
+        }
+       },
+       "hamburger": [
+        [
+         60,
+         [
+          "relative@top-26"
+         ]
+        ],
+        [
+         120,
+         [
+          "relative@top-86"
+         ]
+        ],
+        [
+         180,
+         [
+          "relative@top-146"
+         ]
+        ],
+        [
+         240,
+         [
+          "relative@top-206"
+         ]
+        ],
+        [
+         300,
+         [
+          "relative@top-266"
+         ]
+        ],
+        [
+         360,
+         [
+          "fixed@top32"
+         ]
+        ],
+        [
+         420,
+         [
+          "fixed@top32"
+         ]
+        ],
+        [
+         480,
+         [
+          "fixed@top32"
+         ]
+        ],
+        [
+         540,
+         [
+          "fixed@top32"
+         ]
+        ],
+        [
+         600,
+         [
+          "fixed@top32"
+         ]
+        ],
+        [
+         660,
+         [
+          "fixed@top32"
+         ]
+        ],
+        [
+         720,
+         [
+          "fixed@top32"
+         ]
+        ]
+       ]
+      }
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "baseline": "absolute header 182px, 150px logo, nav in header, hamburger detaches at scroll"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.header .navigation-mini",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "navRect": {
+        "top": 42.9,
+        "left": 1074.6,
+        "right": 1397.1,
+        "bottom": 193.4,
+        "width": 322.5,
+        "height": 150.5,
+        "insetLeft": 1074.6,
+        "insetRight": 42.9,
+        "cx": 1235.9
+       },
+       "navDisplay": "block",
+       "logoRect": {
+        "top": 42.9,
+        "left": 42.9,
+        "right": 193.4,
+        "bottom": 193.4,
+        "width": 150.5,
+        "height": 150.5,
+        "insetLeft": 42.9,
+        "insetRight": 1246.6,
+        "cx": 118.1
+       },
+       "hdrPosition": "absolute",
+       "gridPadding": "42.88px"
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "bar",
+   "tier": 1440,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "partial-width mini nav inside the header: two text links, a search icon and a hamburger, right-aligned",
+      "navVisible": true
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "div.header .navigation-mini",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "rect": {
+        "top": 42.9,
+        "left": 1074.6,
+        "right": 1397.1,
+        "bottom": 193.4,
+        "width": 322.5,
+        "height": 150.5,
+        "insetLeft": 1074.6,
+        "insetRight": 42.9,
+        "cx": 1235.9
+       },
+       "display": "block",
+       "links": [
+        [
+         "Work",
+         true
+        ],
+        [
+         "About",
+         true
+        ],
+        [
+         "",
+         true
+        ]
+       ]
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "navRect": {
+       "top": 42.9,
+       "left": 1074.6,
+       "right": 1397.1,
+       "bottom": 193.4,
+       "width": 322.5,
+       "height": 150.5,
+       "insetLeft": 1074.6,
+       "insetRight": 42.9,
+       "cx": 1235.9
+      },
+      "items": [
+       {
+        "name": "Work",
+        "left": 1074.6,
+        "top": 34.3,
+        "width": 51.7
+       },
+       {
+        "name": "About",
+        "left": 1171.6,
+        "top": 34.3,
+        "width": 60
+       },
+       {
+        "name": "search icon",
+        "left": 1276.8,
+        "top": 34.3,
+        "width": 21.4
+       }
+      ],
+      "hamburgerInBar": [
+       {
+        "top": 34.3,
+        "left": 1343.5,
+        "right": 1397.1,
+        "bottom": 60,
+        "width": 53.6,
+        "height": 25.7,
+        "insetLeft": 1343.5,
+        "insetRight": 42.9,
+        "cx": 1370.3
+       }
+      ],
+      "gapBetweenItems": 45.2
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-mini a",
+      "rawFile": "raw/buck-1440.json",
+      "raw": [
+       {
+        "top": 34.3,
+        "left": 1074.6,
+        "right": 1126.4,
+        "bottom": 64.3,
+        "width": 51.7,
+        "height": 30,
+        "insetLeft": 1074.6,
+        "insetRight": 313.6,
+        "cx": 1100.5
+       },
+       {
+        "top": 34.3,
+        "left": 1171.6,
+        "right": 1231.6,
+        "bottom": 64.3,
+        "width": 60,
+        "height": 30,
+        "insetLeft": 1171.6,
+        "insetRight": 208.4,
+        "cx": 1201.6
+       },
+       {
+        "top": 34.3,
+        "left": 1276.8,
+        "right": 1298.3,
+        "bottom": 64.3,
+        "width": 21.4,
+        "height": 30,
+        "insetLeft": 1276.8,
+        "insetRight": 141.7,
+        "cx": 1287.6
+       }
+      ]
+     }
+    },
+    "zone_model": {
+     "value": {
+      "order": "Work, About, search icon, hamburger",
+      "ctaInBar": false,
+      "languageSwitch": false,
+      "cart": false,
+      "searchControl": "icon-only anchor without href (not a button, no name)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-mini",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "html": "see b-html.mjs dump: <a class=chakra-link> without href containing a magnifier svg"
+      }
+     }
+    },
+    "item_typography": {
+     "value": {
+      "fontFamily": "Mabry, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe ",
+      "fontSize": 21.4,
+      "fontWeight": "100",
+      "letterSpacing": "normal",
+      "textTransform": "none",
+      "colour": "#000000",
+      "scalingMode": "fluid (about 1.49vw) from 1280px up, floor of 20px below",
+      "series": [
+       [
+        1600,
+        "23.8222px"
+       ],
+       [
+        1440,
+        "21.44px"
+       ],
+       [
+        1280,
+        "19.0578px"
+       ],
+       [
+        1100,
+        "20px"
+       ],
+       [
+        1024,
+        "20px"
+       ],
+       [
+        900,
+        "20px"
+       ],
+       [
+        768,
+        "20px"
+       ],
+       [
+        640,
+        "20px"
+       ],
+       [
+        520,
+        "20px"
+       ],
+       [
+        414,
+        "20px"
+       ],
+       [
+        375,
+        "20px"
+       ]
+      ],
+      "caseOrigin": "source case (Title Case), no CSS transform"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fontscale.mjs",
+      "selector": "div.header .navigation-mini a",
+      "rawFile": "raw/buck-fontscale.json",
+      "raw": [
+       [
+        1600,
+        "23.8222px"
+       ],
+       [
+        1440,
+        "21.44px"
+       ],
+       [
+        1280,
+        "19.0578px"
+       ],
+       [
+        1100,
+        "20px"
+       ],
+       [
+        1024,
+        "20px"
+       ],
+       [
+        900,
+        "20px"
+       ],
+       [
+        768,
+        "20px"
+       ],
+       [
+        640,
+        "20px"
+       ],
+       [
+        520,
+        "20px"
+       ],
+       [
+        414,
+        "20px"
+       ],
+       [
+        375,
+        "20px"
+       ]
+      ]
+     }
+    },
+    "item_states": {
+     "value": {
+      "hover": {
+       "effect": "opacity 1 -> 0.5",
+       "diffs": [
+        {
+         "node": "a.chakra-link.css-fekwcv",
+         "prop": "op",
+         "before": "1",
+         "after": "0.5"
+        }
+       ],
+       "transition": "0.2s ease-in-out"
+      },
+      "currentIndicator": "none observed (no aria-current, no class change)",
+      "ornament": "none",
+      "separators": "none"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs hover 650ms",
+      "selector": ".navigation-mini a",
+      "rawFile": "raw/buck-1440.json",
+      "raw": [
+       {
+        "text": "Work",
+        "diffs": [
+         {
+          "node": "a.chakra-link.css-fekwcv",
+          "prop": "op",
+          "before": "1",
+          "after": "0.5"
+         }
+        ]
+       },
+       {
+        "text": "About",
+        "diffs": [
+         {
+          "node": "a.chakra-link.css-fekwcv",
+          "prop": "op",
+          "before": "1",
+          "after": "0.5"
+         }
+        ]
+       },
+       {
+        "text": "",
+        "diffs": [
+         {
+          "node": "a.chakra-link.css-fekwcv",
+          "prop": "op",
+          "before": "1",
+          "after": "0.5"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    "secondary_blocks": {
+     "value": {
+      "blocks": [
+       {
+        "kind": "search",
+        "form": "icon-only anchor without href"
+       }
+      ],
+      "reactiveContent": false
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-mini",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "visible": true
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "openTrigger": "none in the bar except the hamburger (click)",
+      "hoverDropdown": false,
+      "popupHints": {
+       "ariaHaspopup": 0,
+       "ariaExpanded": [],
+       "dropdownClass": [],
+       "semantic": {
+        "nav": 0,
+        "header": 0,
+        "banner": 0,
+        "dialog": 0
+       }
+      },
+      "navHiddenBySpec": false
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs hover diff",
+      "selector": ".navigation-mini a",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "newBoxes": [
+        0,
+        0,
+        0
+       ],
+       "popupHints": {
+        "ariaHaspopup": 0,
+        "ariaExpanded": [],
+        "dropdownClass": [],
+        "semantic": {
+         "nav": 0,
+         "header": 0,
+         "banner": 0,
+         "dialog": 0
+        }
+       }
+      }
+     }
+    },
+    "motion": {
+     "value": {
+      "hover": "opacity fade",
+      "transition": "0.2s ease-in-out",
+      "spec38Tier": "V",
+      "substrate": "DOM"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-mini a",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "transition": "0.2s ease-in-out"
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "labels": [
+       "Work",
+       "About",
+       "(search icon)"
+      ],
+      "fixed": true
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-mini a",
+      "rawFile": "raw/buck-1440.json",
+      "raw": [
+       "Work",
+       "About",
+       ""
+      ]
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "baseline": true
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-mini",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "rect": {
+        "top": 42.9,
+        "left": 1074.6,
+        "right": 1397.1,
+        "bottom": 193.4,
+        "width": 322.5,
+        "height": 150.5,
+        "insetLeft": 1074.6,
+        "insetRight": 42.9,
+        "cx": 1235.9
+       },
+       "display": "block"
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "dropdown",
+   "tier": 1440,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: no bar item owns a dropdown panel; hovering each visible bar link produced no new box (newBoxCount [0,0,0]); 0 aria-haspopup, 0 dropdown/mega/submenu class matches; the full navigation is the full-screen drawer only",
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs hover + DOM query",
+      "selector": "div.header .navigation-mini a; [aria-haspopup]; [class*=dropdown|mega|sub-menu|submenu|flyout]",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "popupHints": {
+        "ariaHaspopup": 0,
+        "ariaExpanded": [],
+        "dropdownClass": [],
+        "semantic": {
+         "nav": 0,
+         "header": 0,
+         "banner": 0,
+         "dialog": 0
+        }
+       },
+       "hover": [
+        {
+         "text": "Work",
+         "newBoxCount": 0
+        },
+        {
+         "text": "About",
+         "newBoxCount": 0
+        },
+        {
+         "text": "",
+         "newBoxCount": 0
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "mega",
+   "tier": 1440,
+   "presence": "absent",
+   "cells": {
+    "archetype": {
+     "value": "absent: no bar item owns a mega panel; hovering each visible bar link produced no new box (newBoxCount [0,0,0]); 0 aria-haspopup, 0 dropdown/mega/submenu class matches; the full navigation is the full-screen drawer only",
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs hover + DOM query",
+      "selector": "div.header .navigation-mini a; [aria-haspopup]; [class*=dropdown|mega|sub-menu|submenu|flyout]",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "popupHints": {
+        "ariaHaspopup": 0,
+        "ariaExpanded": [],
+        "dropdownClass": [],
+        "semantic": {
+         "nav": 0,
+         "header": 0,
+         "banner": 0,
+         "dialog": 0
+        }
+       },
+       "hover": [
+        {
+         "text": "Work",
+         "newBoxCount": 0
+        },
+        {
+         "text": "About",
+         "newBoxCount": 0
+        },
+        {
+         "text": "",
+         "newBoxCount": 0
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "trigger-close",
+   "tier": 1440,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "kind": "icon-only burger (3 bars) button; the SAME button swaps to a close X in place",
+      "element": "BUTTON.btn-hamburger",
+      "separateCloseButton": false,
+      "replacesInPlace": true,
+      "detachesToFixedChipOnScroll": true,
+      "alwaysFixed": false,
+      "standaloneDomElementAtThisTier": "button lives inside the mini-nav, then becomes position:fixed on scroll"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs + b-thresh.mjs",
+      "selector": ".btn-hamburger",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "tag": "BUTTON",
+       "atPointAfterOpen": {
+        "isTrigger": true,
+        "inPanel": false,
+        "html": "<button type=\"button\" class=\"chakra-button btn btn-hamburger css-xyt3i0\"><svg viewBox=\"0 0 18 18\" focusable=\"false\" class=\"chakra-icon icon icon-close css-onkibi\"><path/></path></svg></button>"
+       },
+       "watchRest": [
+        [
+         "div.nav.css-1hqbv68 > button.chakra-button.btn.btn-hamburger",
+         "relative",
+         true
+        ]
+       ]
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "atRest": {
+       "left": 1343.5,
+       "top": 34.3,
+       "width": 53.6,
+       "height": 25.7
+      },
+      "whenFixedOnScroll": {
+       "top": 32.2,
+       "right": 48.2,
+       "width": 68.6,
+       "height": 68.6,
+       "position": "fixed"
+      },
+      "targetSize": {
+       "restHeight": 25.7,
+       "meets44px": false,
+       "fixedChip": 68.6
+      },
+      "zIndex": {
+       "rest": "1400",
+       "panel": "1300",
+       "whenFixed": "9100"
+      },
+      "radius": "9999px"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs + b-thresh.mjs",
+      "selector": ".btn-hamburger",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "rect": {
+        "top": 34.3,
+        "left": 1343.5,
+        "right": 1397.1,
+        "bottom": 60,
+        "width": 53.6,
+        "height": 25.7,
+        "insetLeft": 1343.5,
+        "insetRight": 42.9,
+        "cx": 1370.3
+       },
+       "watchScrolled": [
+        [
+         "fixed",
+         68.6,
+         32.2,
+         "9100"
+        ]
+       ]
+      }
+     }
+    },
+    "item_states": {
+     "value": {
+      "atRestBackground": "transparent",
+      "scrolledState": "a round chip (svg background-shape, class state-is-scrolling) sized 68.6px appears behind the bars",
+      "openIcon": "icon-close (X svg) inside the same button",
+      "ariaExpanded": null,
+      "transition": "0.2s ease-in-out"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs + b-thresh.mjs",
+      "selector": ".btn-hamburger",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "atPoint": "<button type=\"button\" class=\"chakra-button btn btn-hamburger css-xyt3i0\"><svg viewBox=\"0 0 18 18\" focusable=\"false\" class=\"chakra-icon icon icon-close css-onkibi\"><path/></path></svg></button>",
+       "afterClose": {
+        "bodyOverflow": "auto scroll",
+        "htmlOverflow": "visible",
+        "active": "div.css-0 > div.grid-8.css-d8pn3s > div.navigation-mini.css-1y1xyb5 > div.nav.css-1hqbv68 > button.chakra-button.btn.btn-hamburger",
+        "triggerText": "",
+        "ariaExpanded": null,
+        "open": false
+       }
+      }
+     }
+    },
+    "trigger_close": {
+     "value": {
+      "kind": "icon burger (three horizontal bars, 54x26 viewBox at desktop)",
+      "elementSemantics": {
+       "tag": "BUTTON",
+       "type": "button",
+       "ariaLabel": null,
+       "accessibleName": "(empty: icon-only, no aria-label)",
+       "ariaExpanded": null
+      },
+      "closeStyle": "X icon swapped into the same button, same position",
+      "replacesInPlace": true,
+      "topRow": false,
+      "animation": "icon swap (not sampled)",
+      "magnet": "not probed"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs click",
+      "selector": ".btn-hamburger",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "attrs": {
+        "type": "button"
+       },
+       "name": "",
+       "tag": "BUTTON",
+       "atPointAfterOpen": "<button type=\"button\" class=\"chakra-button btn btn-hamburger css-xyt3i0\"><svg viewBox=\"0 0 18 18\" focusable=\"false\" class=\"chakra-icon icon icon-close css-onkibi\"><path/></path></svg></button>"
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "openTrigger": "click",
+      "nativeButton": true,
+      "keyboardFocusable": true,
+      "focusAfterOpen": "button.chakra-button.btn.btn-hamburger",
+      "focusAfterClose": "button.chakra-button.btn.btn-hamburger",
+      "escapeCloses": false,
+      "scrollLock": "none: page still scrolls behind the open panel",
+      "dialog": false,
+      "inert": 0,
+      "ariaModal": 0,
+      "openSurvivesResizeSameTier": true,
+      "openSurvivesCrossTierResizeTo": {
+       "width": 700,
+       "open": true
+      }
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".btn-hamburger, .navigation-expanded",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "escape": {
+        "panelClip": "none",
+        "panelOp": "1",
+        "panelVis": "visible",
+        "panelRect": {
+         "top": 0,
+         "left": 0,
+         "right": 1440,
+         "bottom": 900,
+         "width": 1440,
+         "height": 900,
+         "insetLeft": 0,
+         "insetRight": 0,
+         "cx": 720
+        },
+        "active": "div.css-0 > div.grid-8.css-d8pn3s > div.navigation-mini.css-1y1xyb5 > div.nav.css-1hqbv68 > button.chakra-button.btn.btn-hamburger",
+        "bodyOverflow": "auto scroll",
+        "closedByEscape": false
+       },
+       "resize": {
+        "openAfterResize": true,
+        "crossTo": 700,
+        "openAfterCrossTierResize": true,
+        "bodyOverflowAfterCross": "auto scroll"
+       },
+       "scrollLockProbe": {
+        "scrollYBefore": 0,
+        "afterWheel400": 400,
+        "afterPageDown": 1187,
+        "pageScrollsWhileOpen": true
+       },
+       "activeAfterOpen": "div.css-0 > div.grid-8.css-d8pn3s > div.navigation-mini.css-1y1xyb5 > div.nav.css-1hqbv68 > button.chakra-button.btn.btn-hamburger"
+      }
+     }
+    },
+    "motion": {
+     "value": {
+      "effect": "bar-to-X icon swap; chip appears on scroll",
+      "spec38Tier": "V",
+      "substrate": "DOM (svg)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".btn-hamburger",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "transition": "0.2s ease-in-out"
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "label": "none (icon only)",
+      "accessibleName": null
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".btn-hamburger",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "name": "",
+       "attrs": {
+        "type": "button"
+       }
+      }
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "baseline": "header-embedded burger 53.6x25.7, chip 68.6 when scrolled"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs + b-thresh.mjs",
+      "selector": ".btn-hamburger",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "restRect": {
+        "top": 34.3,
+        "left": 1343.5,
+        "right": 1397.1,
+        "bottom": 60,
+        "width": 53.6,
+        "height": 25.7,
+        "insetLeft": 1343.5,
+        "insetRight": 42.9,
+        "cx": 1370.3
+       },
+       "firstFixedAtY": 360,
+       "hamburgersInDom": 1
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "drawer",
+   "tier": 1440,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "full-screen",
+      "reveal": "slides up from the bottom (translateY 100% -> 0) with a fade",
+      "panelIsOpaque": true,
+      "inDomBeforeOpen": true
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-expanded",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "position": "fixed",
+       "rect": {
+        "top": 0,
+        "left": 0,
+        "right": 1440,
+        "bottom": 900,
+        "width": 1440,
+        "height": 900,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 720
+       },
+       "bg": "rgb(25, 110, 250)",
+       "presentBeforeOpen": true
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "position": "fixed",
+      "inset": {
+       "top": 0,
+       "left": 0,
+       "right": 0,
+       "bottom": 0
+      },
+      "width": 1440,
+      "height": 900,
+      "radius": 0,
+      "zIndex": "1300",
+      "centredOnViewport": true,
+      "innerGrid": {
+       "columns": 8,
+       "first": "150.516px"
+      }
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-expanded",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "rect": {
+        "top": 0,
+        "left": 0,
+        "right": 1440,
+        "bottom": 900,
+        "width": 1440,
+        "height": 900,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 720
+       },
+       "z": "1300",
+       "grid": "150.516px 150.516px 150.516px 150.516px 150.516px 150.516px 150.516px 150.516px"
+      }
+     }
+    },
+    "zone_model": {
+     "value": {
+      "linkColumn": {
+       "left": 644,
+       "alignment": "right of centre (starts at 644px, about 45% of the viewport)",
+       "top": 112.5
+      },
+      "footerRow": {
+       "position": {
+        "left": 730.7,
+        "top": 827.1
+       },
+       "layout": "inline row along the bottom"
+      },
+      "extraFirstItem": null,
+      "closeControl": "the page trigger button stays above the panel (z 1400 vs 1300)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-expanded",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "links": [
+        [
+         "WORK",
+         644,
+         112.5
+        ],
+        [
+         "ABOUT",
+         644,
+         179
+        ],
+        [
+         "CONTACT",
+         644,
+         245.5
+        ],
+        [
+         "CAREERS",
+         644,
+         312
+        ],
+        [
+         "GAMES",
+         644,
+         378.4
+        ],
+        [
+         "GOODS",
+         644,
+         444.9
+        ],
+        [
+         "LinkedIn",
+         730.7,
+         827.1
+        ],
+        [
+         "Instagram",
+         854,
+         827.1
+        ],
+        [
+         "Vimeo",
+         992,
+         827.1
+        ],
+        [
+         "Privacy Policy",
+         1094.5,
+         827.1
+        ]
+       ],
+       "grid": "150.516px 150.516px 150.516px 150.516px 150.516px 150.516px 150.516px 150.516px"
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "fill": "#196efa",
+      "fillNote": "a brand-palette colour chosen per page load, not per tier: this run gave 1440: #196efa, 768: #f4c054, 375: #508054 (the 2026-07-28 record saw #7f4c1e desktop and #00513c mobile)",
+      "backdropFilter": "none",
+      "scrim": false,
+      "blur": false,
+      "opacity": "1",
+      "before": null,
+      "after": null
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs (three loads)",
+      "selector": ".navigation-expanded",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "bg": "rgb(25, 110, 250)",
+       "otherLoads": {
+        "at1440": "rgb(25, 110, 250)",
+        "at768": "rgb(244, 192, 84)",
+        "at375": "rgb(80, 128, 84)"
+       }
+      }
+     }
+    },
+    "background_visual": {
+     "value": {
+      "panel": "none (flat colour)",
+      "perLinkGlyph": "each link has a leading inline SVG glyph, 50px square, hanging in the gutter left of the label",
+      "mediaElements": {
+       "img": 0,
+       "video": 0,
+       "canvas": 0,
+       "svg": 6
+      }
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-expanded",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "img": 0,
+       "video": 0,
+       "canvas": 0,
+       "svg": 6
+      }
+     }
+    },
+    "item_typography": {
+     "value": {
+      "fontFamily": "Mabry, system-ui, -apple-system, BlinkMacSystemFon",
+      "fontSize": 50.4,
+      "fontWeight": "100",
+      "letterSpacing": "normal",
+      "textTransform": "uppercase",
+      "colour": "#000000",
+      "scalingMode": "fluid 3.5vw from 1100px up (56 / 50.4 / 44.8 / 38.5px at 1600 / 1440 / 1280 / 1100), then stepped: 52px at 1024-900, 39.8px at 768-640, 24px at 520 and below",
+      "series": [
+       [
+        1600,
+        "56px"
+       ],
+       [
+        1440,
+        "50.4px"
+       ],
+       [
+        1280,
+        "44.8px"
+       ],
+       [
+        1100,
+        "38.5px"
+       ],
+       [
+        1024,
+        "52px"
+       ],
+       [
+        900,
+        "52px"
+       ],
+       [
+        768,
+        "39.8px"
+       ],
+       [
+        640,
+        "39.8px"
+       ],
+       [
+        520,
+        "24px"
+       ],
+       [
+        414,
+        "24px"
+       ],
+       [
+        375,
+        "24px"
+       ]
+      ],
+      "caseOrigin": "source Title Case (\"Work\"), upper-case by CSS text-transform"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "fontscale.mjs",
+      "selector": ".navigation-expanded li a span",
+      "rawFile": "raw/buck-fontscale.json",
+      "raw": [
+       [
+        1600,
+        "56px"
+       ],
+       [
+        1440,
+        "50.4px"
+       ],
+       [
+        1280,
+        "44.8px"
+       ],
+       [
+        1100,
+        "38.5px"
+       ],
+       [
+        1024,
+        "52px"
+       ],
+       [
+        900,
+        "52px"
+       ],
+       [
+        768,
+        "39.8px"
+       ],
+       [
+        640,
+        "39.8px"
+       ],
+       [
+        520,
+        "24px"
+       ],
+       [
+        414,
+        "24px"
+       ],
+       [
+        375,
+        "24px"
+       ]
+      ]
+     }
+    },
+    "item_states": {
+     "value": {
+      "hover": "hovered link drops to opacity 0.5 (others stay 1)",
+      "currentIndicator": "none observed",
+      "ornament": "leading SVG glyph per link",
+      "separators": "none"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs panel hover 700ms",
+      "selector": ".navigation-expanded li a",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "hoveredIndex1": [
+        "1",
+        "0.5",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1"
+       ]
+      }
+     }
+    },
+    "secondary_blocks": {
+     "value": {
+      "blocks": [
+       {
+        "kind": "copyright",
+        "text": "(c) 2026 BUCK"
+       },
+       {
+        "kind": "social + legal links",
+        "items": [
+         "LinkedIn",
+         "Instagram",
+         "Vimeo",
+         "Privacy Policy"
+        ],
+        "layout": "inline row",
+        "typeSize": 21.4
+       }
+      ],
+      "previewPane": false
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-expanded",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "text": "WORK ABOUT CONTACT CAREERS GAMES GOODS © 2026 BUCK LinkedIn Instagram Vimeo Privacy Policy",
+       "socials": [
+        [
+         "LinkedIn",
+         730.7,
+         827.1
+        ],
+        [
+         "Instagram",
+         854,
+         827.1
+        ],
+        [
+         "Vimeo",
+         992,
+         827.1
+        ],
+        [
+         "Privacy Policy",
+         1094.5,
+         827.1
+        ]
+       ]
+      }
+     }
+    },
+    "mechanics": {
+     "value": {
+      "openTrigger": "click",
+      "escapeCloses": false,
+      "focusAfterOpen": "button.chakra-button.btn.btn-hamburger",
+      "scrollLock": "none: wheel and PageDown scroll the page behind the open panel",
+      "wheelProbe": {
+       "scrollYBefore": 0,
+       "afterWheel400": 400,
+       "afterPageDown": 1187,
+       "pageScrollsWhileOpen": true
+      },
+      "bodyOverflowOpen": "auto scroll",
+      "dialog": 0,
+      "inert": 0,
+      "ariaModal": 0,
+      "survivesResize": {
+       "sameTier": true,
+       "crossTierTo": 700,
+       "open": true
+      },
+      "inDomBeforeOpen": true
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-expanded",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "escape": {
+        "panelClip": "none",
+        "panelOp": "1",
+        "panelVis": "visible",
+        "panelRect": {
+         "top": 0,
+         "left": 0,
+         "right": 1440,
+         "bottom": 900,
+         "width": 1440,
+         "height": 900,
+         "insetLeft": 0,
+         "insetRight": 0,
+         "cx": 720
+        },
+        "active": "div.css-0 > div.grid-8.css-d8pn3s > div.navigation-mini.css-1y1xyb5 > div.nav.css-1hqbv68 > button.chakra-button.btn.btn-hamburger",
+        "bodyOverflow": "auto scroll",
+        "closedByEscape": false
+       },
+       "resize": {
+        "openAfterResize": true,
+        "crossTo": 700,
+        "openAfterCrossTierResize": true,
+        "bodyOverflowAfterCross": "auto scroll"
+       },
+       "lock": {
+        "scrollYBefore": 0,
+        "afterWheel400": 400,
+        "afterPageDown": 1187,
+        "pageScrollsWhileOpen": true
+       },
+       "panel": {
+        "body": "auto scroll",
+        "inert": 0,
+        "dialog": 0,
+        "active": "div.css-0 > div.grid-8.css-d8pn3s > div.navigation-mini.css-1y1xyb5 > div.nav.css-1hqbv68 > button.chakra-button.btn.btn-hamburger"
+       }
+      }
+     }
+    },
+    "motion": {
+     "value": {
+      "open": {
+       "effect": "translateY 900px -> 0 with opacity 0 -> 1",
+       "settledMs": 444,
+       "samples": [
+        [
+         42,
+         "0",
+         900
+        ],
+        [
+         444,
+         "1",
+         0
+        ],
+        [
+         870,
+         "1",
+         0
+        ],
+        [
+         1290,
+         "1",
+         0
+        ],
+        [
+         1679,
+         "1",
+         0
+        ],
+        [
+         2070,
+         "1",
+         0
+        ]
+       ]
+      },
+      "close": {
+       "effect": "reverse: opacity to 0 and translateY back to 900",
+       "settledMs": 234
+      },
+      "spec38Tier": "V (CSS transform + opacity transition reaches it)",
+      "substrate": "DOM"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "cap.mjs 90ms sampler",
+      "selector": ".navigation-expanded",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "open": [
+        [
+         42,
+         "0",
+         "matrix(1, 0, 0, 1, 0, 900)"
+        ],
+        [
+         350,
+         "0.956493",
+         "matrix(1, 0, 0, 1, 0, 39.1563)"
+        ],
+        [
+         636,
+         "1",
+         "matrix(1, 0, 0, 1, 0, 0)"
+        ],
+        [
+         964,
+         "1",
+         "matrix(1, 0, 0, 1, 0, 0)"
+        ],
+        [
+         1290,
+         "1",
+         "matrix(1, 0, 0, 1, 0, 0)"
+        ],
+        [
+         1584,
+         "1",
+         "matrix(1, 0, 0, 1, 0, 0)"
+        ],
+        [
+         1883,
+         "1",
+         "matrix(1, 0, 0, 1, 0, 0)"
+        ],
+        [
+         2163,
+         "1",
+         "matrix(1, 0, 0, 1, 0, 0)"
+        ]
+       ],
+       "close": [
+        [
+         20,
+         "0.993056",
+         "matrix(1, 0, 0, 1, 0, 6.24996)"
+        ],
+        [
+         329,
+         "0",
+         "matrix(1, 0, 0, 1, 0, 900)"
+        ],
+        [
+         632,
+         "0",
+         "matrix(1, 0, 0, 1, 0, 900)"
+        ],
+        [
+         943,
+         "0",
+         "matrix(1, 0, 0, 1, 0, 900)"
+        ],
+        [
+         1251,
+         "0",
+         "matrix(1, 0, 0, 1, 0, 900)"
+        ],
+        [
+         1679,
+         "0",
+         "matrix(1, 0, 0, 1, 0, 900)"
+        ],
+        [
+         2103,
+         "0",
+         "matrix(1, 0, 0, 1, 0, 900)"
+        ],
+        [
+         2432,
+         "0",
+         "matrix(1, 0, 0, 1, 0, 900)"
+        ]
+       ]
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "linkLabels": [
+       "WORK",
+       "ABOUT",
+       "CONTACT",
+       "CAREERS",
+       "GAMES",
+       "GOODS"
+      ],
+      "count": 6,
+      "socialLabels": [
+       "LinkedIn",
+       "Instagram",
+       "Vimeo",
+       "Privacy Policy"
+      ],
+      "fixed": true,
+      "panelText": "WORK ABOUT CONTACT CAREERS GAMES GOODS © 2026 BUCK LinkedIn Instagram Vimeo Privacy Policy"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-expanded a",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "links": [
+        "WORK",
+        "ABOUT",
+        "CONTACT",
+        "CAREERS",
+        "GAMES",
+        "GOODS",
+        "LinkedIn",
+        "Instagram",
+        "Vimeo",
+        "Privacy Policy"
+       ]
+      }
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "baseline": "links right of centre at 50.4px; footer row inline"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": ".navigation-expanded",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "firstLinkLeft": 644,
+       "fontSize": "50.4px",
+       "socialsLeft": 730.7
+      }
+     }
+    }
+   }
+  },
+  {
+   "surface": "footer",
+   "tier": 1440,
+   "presence": "present",
+   "cells": {
+    "archetype": {
+     "value": {
+      "label": "full-width coloured block (brand-palette colour per load), tag footer role=contentinfo",
+      "tag": "FOOTER",
+      "role": "contentinfo",
+      "height": 1074.5
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "footer",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "rect": {
+        "top": -174.4,
+        "left": 0,
+        "right": 1440,
+        "bottom": 900.1,
+        "width": 1440,
+        "height": 1074.5,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 720
+       },
+       "tag": "FOOTER",
+       "role": "contentinfo"
+      }
+     }
+    },
+    "geometry": {
+     "value": {
+      "width": 1440,
+      "height": 1074.5,
+      "display": "flex",
+      "flexDirection": "column",
+      "padding": "0px",
+      "radius": 0
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "footer",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "rect": {
+        "top": -174.4,
+        "left": 0,
+        "right": 1440,
+        "bottom": 900.1,
+        "width": 1440,
+        "height": 1074.5,
+        "insetLeft": 0,
+        "insetRight": 0,
+        "cx": 720
+       },
+       "style": {
+        "display": "flex",
+        "padding": "0px"
+       }
+      }
+     }
+    },
+    "zone_model": {
+     "value": {
+      "officeBlocks": 5,
+      "order": [
+       "LA",
+       "NY",
+       "SYD",
+       "AMS",
+       "LDN"
+      ],
+      "groups": [
+       {
+        "left": 42.9,
+        "width": 322.5,
+        "links": 2
+       },
+       {
+        "left": 386.8,
+        "width": 322.5,
+        "links": 2
+       },
+       {
+        "left": 730.7,
+        "width": 494.4,
+        "links": 2
+       },
+       {
+        "left": 42.9,
+        "width": 322.5,
+        "links": 2
+       },
+       {
+        "left": 386.8,
+        "width": 322.5,
+        "links": 2
+       },
+       {
+        "left": 558.8,
+        "width": 494.5,
+        "links": 3
+       }
+      ],
+      "layout": "3 columns x 2 rows of office blocks, then a link row",
+      "newsletter": "H2:Sign up for our newsletter — a"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "footer",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "groups": [
+        [
+         42.9,
+         95.3,
+         322.5,
+         2
+        ],
+        [
+         386.8,
+         95.3,
+         322.5,
+         2
+        ],
+        [
+         730.7,
+         95.3,
+         494.4,
+         2
+        ],
+        [
+         42.9,
+         435.7,
+         322.5,
+         2
+        ],
+        [
+         386.8,
+         435.7,
+         322.5,
+         2
+        ],
+        [
+         558.8,
+         827.2,
+         494.5,
+         3
+        ]
+       ],
+       "headings": [
+        "H3:LA→\n10:49 AM",
+        "H3:NY→\n1:49 PM",
+        "H3:SYD→\n3:49 AM",
+        "H3:AMS→\n7:49 PM",
+        "H3:LDN→\n6:49 PM",
+        "H2:Sign up for our newsletter — a"
+       ]
+      }
+     }
+    },
+    "ground": {
+     "value": {
+      "fill": "#f4c054",
+      "fillNote": "chosen per page load, not per tier: this run gave 1440: #f4c054, 768: #ffb18e, 375: #7f4c1e",
+      "backdropFilter": "none",
+      "opacity": "1",
+      "backgroundImage": "none",
+      "textColour": "#000000"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs (three loads)",
+      "selector": "footer",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "bg": "rgb(244, 192, 84)",
+       "at375": "rgb(127, 76, 30)",
+       "at768": "rgb(255, 177, 142)",
+       "at1440": "rgb(244, 192, 84)"
+      }
+     }
+    },
+    "background_visual": {
+     "value": {
+      "kind": "none",
+      "media": {
+       "img": 0,
+       "video": 0,
+       "canvas": 0,
+       "svg": 2
+      }
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "footer",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "img": 0,
+       "video": 0,
+       "canvas": 0,
+       "svg": 2
+      }
+     }
+    },
+    "item_typography": {
+     "value": {
+      "fontFamily": "Mabry, system-ui, -apple-system, BlinkMa",
+      "fontSize": 21.4,
+      "fontWeight": "100",
+      "textTransform": "none",
+      "colour": "#000000",
+      "scalingMode": "follows the same fluid/floored scale as the bar (21.44px at 1440, 20px below)"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "footer a",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "text": "↗",
+       "rawText": "↗",
+       "href": "https://www.google.com/maps/search/?api=1&query=120%20S%20Sa",
+       "rect": {
+        "top": 47.9,
+        "left": 101.3,
+        "right": 114.9,
+        "bottom": 68.9,
+        "width": 13.6,
+        "height": 21,
+        "insetLeft": 101.3,
+        "insetRight": 1325.1,
+        "cx": 108.1
+       },
+       "fontSize": "21.44px",
+       "fontWeight": "100",
+       "fontFamily": "Mabry, system-ui, -apple-system, BlinkMa",
+       "letterSpacing": "normal",
+       "textTransform": "none",
+       "color": "rgb(0, 0, 0)"
+      }
+     }
+    },
+    "item_states": {
+     "value": {
+      "hover": "not measured"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "footer a",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "note": "footer link hover was not driven"
+      }
+     }
+    },
+    "secondary_blocks": {
+     "value": {
+      "blocks": [
+       "five office blocks each with a live local-time clock (h3 \"LA->\" + time element)",
+       "address with map link glyph",
+       "email and phone links",
+       "newsletter H2 heading",
+       "social + legal link row"
+      ],
+      "liveClocks": 5
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "footer",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "text": "LA→ 10:49 AM 120 S San Pedro St, 4th Floor Los Angeles, CA 90012 USA (↗) newbiz.la@buck.co +1 213 623 0111 NY→ 1:49 PM 33 35th St., Suite A600 Brooklyn, NY 11232 USA (↗) newbiz.ny@buck.co +1 212 668 0",
+       "headings": [
+        "H3:LA→\n10:49 AM",
+        "H3:NY→\n1:49 PM",
+        "H3:SYD→\n3:49 AM",
+        "H3:AMS→\n7:49 PM",
+        "H3:LDN→\n6:49 PM",
+        "H2:Sign up for our newsletter — a"
+       ]
+      }
+     }
+    },
+    "content": {
+     "value": {
+      "text": "LA→ 10:49 AM 120 S San Pedro St, 4th Floor Los Angeles, CA 90012 USA (↗) newbiz.la@buck.co +1 213 623 0111 NY→ 1:49 PM 33 35th St., Suite A600 Brooklyn, NY 11232 USA (↗) newbiz.ny@buck.co +1 212 668 0111 SYD→ 3:49 AM L6, 52 Reservoir Street Surry Hills, NSW, 2010 Australia (↗) newbiz.syd@buck.co +61 2 8318 3445 AMS→ 7:49 PM Achtergracht 14 1017 WP Amsterdam The Netherlands (↗) newbiz.ams@buck.co 31 (0)20-3997137 LDN→ 6:49 PM 140 Old Street, 4th Floor London EC1V 9BJ United Kingdom (↗) newbiz.ldn",
+      "linkCount": 21,
+      "dynamic": "clock times are live (time[data-timezone])"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "footer",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "links": [
+        "↗",
+        "newbiz.la@buck.co",
+        "+1 213 623 0111",
+        "↗",
+        "newbiz.ny@buck.co",
+        "+1 212 668 0111",
+        "↗",
+        "newbiz.syd@buck.co"
+       ]
+      }
+     }
+    },
+    "tier_delta": {
+     "value": {
+      "baseline": "3-col office grid"
+     },
+     "method": "static",
+     "evidence": {
+      "script": "cap.mjs",
+      "selector": "footer",
+      "rawFile": "raw/buck-1440.json",
+      "raw": {
+       "groups": [
+        [
+         42.9,
+         322.5
+        ],
+        [
+         386.8,
+         322.5
+        ],
+        [
+         730.7,
+         494.4
+        ],
+        [
+         42.9,
+         322.5
+        ],
+        [
+         386.8,
+         322.5
+        ],
+        [
+         558.8,
+         494.5
+        ]
+       ]
+      }
+     }
+    }
+   }
+  }
+ ],
+ "not_measured": [
+  {
+   "surface": "header-shell",
+   "tier": 375,
+   "column": "motion",
+   "reason": "the logo Lottie animation and the hamburger to fixed-chip transition were not sampled over time"
+  },
+  {
+   "surface": "footer",
+   "tier": 375,
+   "column": "mechanics",
+   "reason": "footer link hover and newsletter behaviour not probed"
+  },
+  {
+   "surface": "footer",
+   "tier": 375,
+   "column": "motion",
+   "reason": "no footer motion sampled (live clock ticking is text only)"
+  },
+  {
+   "surface": "footer",
+   "tier": 375,
+   "column": "item_states.hover",
+   "reason": "footer link hover was not driven"
+  },
+  {
+   "surface": "header-shell",
+   "tier": 768,
+   "column": "motion",
+   "reason": "the logo Lottie animation and the hamburger to fixed-chip transition were not sampled over time"
+  },
+  {
+   "surface": "footer",
+   "tier": 768,
+   "column": "mechanics",
+   "reason": "footer link hover and newsletter behaviour not probed"
+  },
+  {
+   "surface": "footer",
+   "tier": 768,
+   "column": "motion",
+   "reason": "no footer motion sampled (live clock ticking is text only)"
+  },
+  {
+   "surface": "footer",
+   "tier": 768,
+   "column": "item_states.hover",
+   "reason": "footer link hover was not driven"
+  },
+  {
+   "surface": "header-shell",
+   "tier": 1440,
+   "column": "motion",
+   "reason": "the logo Lottie animation and the hamburger to fixed-chip transition were not sampled over time"
+  },
+  {
+   "surface": "footer",
+   "tier": 1440,
+   "column": "mechanics",
+   "reason": "footer link hover and newsletter behaviour not probed"
+  },
+  {
+   "surface": "footer",
+   "tier": 1440,
+   "column": "motion",
+   "reason": "no footer motion sampled (live clock ticking is text only)"
+  },
+  {
+   "surface": "footer",
+   "tier": 1440,
+   "column": "item_states.hover",
+   "reason": "footer link hover was not driven"
+  },
+  {
+   "surface": "trigger-close",
+   "tier": 1440,
+   "column": "trigger_close.magnet",
+   "reason": "not probed"
+  },
+  {
+   "surface": "trigger-close",
+   "tier": 1440,
+   "column": "motion.iconSwap",
+   "reason": "the bar-to-X icon swap and the chip appearance were not sampled over time"
+  }
+ ],
+ "cross_check": [
+  {
+   "item": "drawer fill",
+   "existing": "desktop rgb(127,76,30), mobile rgb(0,81,60); suspected palette rotation",
+   "mine": "panel fill 1440: rgb(25, 110, 250), 768: rgb(244, 192, 84), 375: rgb(80, 128, 84); footer fill differs on each load too",
+   "verdict": "agree and closed: colour is chosen per page load, not per tier"
+  },
+  {
+   "item": "z-index, position, no scrim",
+   "existing": "1300, fixed, none",
+   "mine": "1300, fixed, scrim none",
+   "verdict": "agree"
+  },
+  {
+   "item": "link type",
+   "existing": "47.3px weight 100 uppercase at 1352; 24px at 400",
+   "mine": "50.4px at 1440 (3.5vw both: 47.3/1352 = 50.4/1440), 24px at 375; weight 100; uppercase",
+   "verdict": "agree; adds that the scale is fluid 3.5vw on desktop and stepped below 1100"
+  },
+  {
+   "item": "close control",
+   "existing": "separate X, 50x24, top-right; mobile in a circular chip",
+   "mine": "same button element as the burger; icon swaps to X (elementFromPoint at the trigger centre after open returns the trigger); 55px round chip at 375",
+   "verdict": "agree on look; refines: not a separate element"
+  },
+  {
+   "item": "body scroll lock",
+   "existing": "not hard-locked",
+   "mine": "wheel +400 moved scrollY 0 -> 400 with the panel open; PageDown moved it to 1187",
+   "verdict": "agree, now measured"
+  },
+  {
+   "item": "mobile search icon",
+   "existing": "appears at mobile only, above WORK",
+   "mine": "first list item at 375 is an icon anchor; not in the 1440/768 panel list. The bar (1440/768) has its own search-icon link",
+   "verdict": "agree"
+  },
+  {
+   "item": "footer row of the panel",
+   "existing": "inline desktop, stacked mobile",
+   "mine": "inline at 1440 (y 827), stacked at 768 and 375",
+   "verdict": "agree; 768 is already stacked"
+  },
+  {
+   "item": "motion",
+   "existing": "not captured",
+   "mine": "slide-up translateY 900 -> 0 with fade in about 450-670 ms; close about 300 ms",
+   "verdict": "new data"
+  }
+ ],
+ "capture_notes": [
+  "Columns not applicable to a surface are omitted from that row, not blank.",
+  "The header hamburger detaches to position:fixed after a scroll threshold; measured with 60px steps (b-thresh.mjs), so the threshold is a bracket, not an exact value.",
+  "Palette colour of drawer and footer changes per page load."
+ ],
+ "libs": {
+  "note": "window globals gsap/Lenis are undefined; framework is Next.js + Chakra UI",
+  "found": {
+   "gsap": "undefined",
+   "ScrollTrigger": "undefined",
+   "Lenis": "undefined",
+   "lenisInstance": "undefined",
+   "THREE": "undefined",
+   "Webflow": "undefined",
+   "jQuery": "undefined",
+   "barba": "undefined",
+   "swup": "undefined",
+   "PIXI": "undefined",
+   "Swiper": "undefined",
+   "scripts": [
+    "scripts.clarity.ms/0.8.70/clarity.js",
+    "www.clarity.ms/tag/9sc4ltazpu",
+    "sc.lfeeder.com/lftracker_v1_ywVkO4X2m6W8Z6Bj.js",
+    "buck.co/_next/static/chunks/polyfills-a40ef1678bae11e696dba45124eadd70.js",
+    "buck.co/_next/static/chunks/3457.f34c266a4bbf191fba8e.js",
+    "buck.co/_next/static/chunks/3846.d6cbfbde9f2c42fa0a9d.js",
+    "buck.co/_next/static/chunks/3886.ac318071195784cd31ab.js",
+    "buck.co/_next/static/chunks/webpack-ebe175136fcb1cef3ddb.js",
+    "buck.co/_next/static/chunks/framework-bb8160a97ca9c7af5646.js",
+    "buck.co/_next/static/chunks/main-e1ef281af09f370ecba9.js",
+    "buck.co/_next/static/chunks/pages/_app-00fe360c24bb4404e789.js",
+    "buck.co/_next/static/chunks/3604f23f-113b823cc645caaa9e07.js",
+    "buck.co/_next/static/chunks/1895-7ccc6e99bef946aacbca.js",
+    "buck.co/_next/static/chunks/7520-625a12c45606d0c30bd2.js",
+    "buck.co/_next/static/chunks/5061-73e3194e0fc29747c053.js",
+    "buck.co/_next/static/chunks/6678-ea568d0bd89de41dba30.js",
+    "buck.co/_next/static/chunks/6936-27ebb787dbb7a35a7b37.js",
+    "buck.co/_next/static/chunks/4877-0af2729da5a1ca2ee7d1.js",
+    "buck.co/_next/static/chunks/6494-a3c64b99f410e49b34ac.js",
+    "buck.co/_next/static/chunks/pages/index-5aebd177cf85b1a93724.js",
+    "buck.co/_next/static/_4-VAtgvx-0cRnxb3RS-G/_buildManifest.js",
+    "buck.co/_next/static/_4-VAtgvx-0cRnxb3RS-G/_ssgManifest.js",
+    "buck.co/_next/static/chunks/927-0cdd02bf78cc6fb4d915.js",
+    "buck.co/_next/static/chunks/6159-6f99f4563eb572e10600.js",
+    "buck.co/_next/static/chunks/pages/work/%5Bslug%5D-7a7248c98dae0f4d937c.js",
+    "www.googletagmanager.com/gtag/js?id=G-GEL4DCX03C"
+   ]
+  }
+ }
+}
