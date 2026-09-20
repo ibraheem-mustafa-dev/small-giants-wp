@@ -22,7 +22,9 @@
 
 **Measured (Phase 0).** Of the 75 names the evaluator resolves: 17 have no threshold inside a device tier, 37 have only the 760 threshold (snap-eligible under the 10px rule of D1129, an 8px band), 21 need the residual path (700 for 16, and 620, 1060, 1100, 1160, 1280 for 5). The evaluator's sweep floor (320) is a sweep artefact, not a draft threshold. Command: `resolve_tier_bindings` over `Eye Care Birmingham.dc.html`, grouping `intra_tier` runs by start width.
 
-**Open.** Bean to decide whether the 10px snap stays (two reviewers preferred a bounded residual for 760); whether he will run the closing prompt in Claude Design; the residual scope for a nested classless element (D1129). Wiring of the evaluator remains unbuilt until these are answered; the earlier hold (D1129) is lifted in principle.
+**Bean's answers (same day).** Keep the 10px rule AND normalise the draft platform's own stated breakpoints to ours: the draft names four (`mob` 760, `narrow` 1024, `wide` 1280, `lensStack` 700). Proposed mapping recorded in the plan (section 7 Q1): below-tablet declared breakpoints move to 768, 1024 already equals ours, 1280 stays a bounded visual breakpoint; awaiting his confirmation of the two edge cases (700 to 768, 1280 stays). The closing prompt also asks Claude Design to adopt 768/1024 and to use the attached logo file (the client's folder holds only four JPEG logo drafts). Base64 images decode deterministically to the exact embedded bytes; Eye Care's 40 logo data URIs are small thumbnails, so a hash-named sideload is a placeholder until real logo files arrive.
+
+**Open.** Bean to confirm the two edge cases; run the closing prompt in Claude Design; the residual scope for a nested classless element (D1129). Wiring of the evaluator remains unbuilt until then; the earlier hold (D1129) is lifted in principle.
 
 ## D1131 [ROUTINE] — W2-p floating header pill built and live-verified; the design's primitive changed from the on-screen edge to top offset plus height (2026-09-20)
 
