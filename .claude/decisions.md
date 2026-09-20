@@ -18,6 +18,10 @@
 
 **W3A-1 and W3A-3 measured.** W3A-1 reproduces on the pill fixture's mega panel only: the panel attaches to the header's bottom edge 21px below the item and closes at the 170ms grace (the mega's grace is hardcoded, not `submenuCloseGrace`). W3A-3 does not reproduce inside a real header; the loose-fixture behaviour came from the content-link rule in `extensions.css`, which matches `<a>` inside `.entry-content` only.
 
+**resn (Bean).** Ambient audio is covered by the existing `sgs/audio` block in `playerStyle: hidden` (checked: `plugins/sgs-blocks/src/blocks/audio/block.json::playerStyle` enum includes `hidden`, and its `render.php` header says it plays with no visible player), so it is not a gap. Bean expects the remaining resn effects to be simpler to recreate than the first verdict (the WebGL gem scene reads as no tier under Tier W's admission test); they are re-judged from a headed capture at family level, not from the headless run.
+
+**Capture browser.** Captures were first taken headless; the protocol now requires a real headed Chrome with `clientWidth`-based labels, and a spot-check measures how much headless distorted the static cells.
+
 **Open.** The W3A-1 fix (the header as one hover region) awaits the design gate. Where the references keep the burger and close control, and whether any drawer omits a top close row, is read from the table, not assumed.
 
 ## D1132 [ROUTINE] — Draft standardisation council: close the wiring gaps in existing code first; a small draft standard only for what code cannot derive; a deterministic second layer (2026-09-20)
