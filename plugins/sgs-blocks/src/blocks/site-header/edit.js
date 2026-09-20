@@ -366,7 +366,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		// The pill preview is spread LAST so its width/margin-inline win over the
 		// spacing preview's margin for a floating header — which is what the
 		// frontend does too (the float rules are emitted after the wrapper's).
-		style: { ...backgroundPaint, ...bgPreview.style, ...svgPreview.style, ...spacePreview, ...textPreview, ...floatPreview( attributes, previewTier ) },
+		style: { ...backgroundPaint, ...bgPreview.style, ...svgPreview.style, ...spacePreview, ...textPreview, ...floatPreview( { headerFloat: attributes.headerFloat, headerFloatInset: attributes.headerFloatInset, headerFloatCollapse: attributes.headerFloatCollapse, backdropBlur: attributes.backdropBlur }, previewTier ) },
 	} );
 	const refEl = useRef( null );
 
