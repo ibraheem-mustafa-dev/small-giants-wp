@@ -107,9 +107,12 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
 
 ## Wave 3B — Reference deconstruction
 - STATUS: not started.
-- W3B-1: Bean has reviewed and signed the table's columns before any measuring.
-- W3B-2, W3B-3: 12/12 references measured, every cell taken from the rendered DOM by computed style
-  (a cell quoting a source declaration fails); `labels-<site>.json` exists for all 12.
+- W3B-1: the 14 columns are signed off (completeness review against the measured data, adversarial
+  review of the table design).
+- W3B-2, W3B-3: all 11 roster references captured fresh at 375, 768 and 1440px; every static cell is
+  taken from the rendered DOM by computed style, every behaviour cell by event-driven capture or
+  marked `source-only`; every surface cell is present, absent or not-applicable; `labels-<site>.json`
+  exists for all 11.
 - W3B-4: every table row belongs to one capability family, and every family states the block
   attribute that covers it or "none".
 - W3B-5: Bean has signed the family list.
@@ -126,8 +129,8 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
 
 ## Wave 4 — Proof gate (clones)
 - STATUS: not started
-- 12/12 references measured in the requirements table (W3B-3 owes the Away, ButcherBox and
-  rabbit.tech teardowns; 9/12 today); the header and nav architecture (Wave 3C) is complete; clone
+- All 11 roster references measured in the requirements table (W3B-3 owes the Away, ButcherBox and
+  rabbit.tech captures; 8 of 11 have drawer data only today); the header and nav architecture (Wave 3C) is complete; clone
   roster = 11 (10 if the W3B-3 teardown finds a resn effect that no Spec 38 tier can express) —
   Gate 5 counts the roster.
 - Substitution policy (fonts/imagery) signed by Bean BEFORE the first clone (W4-a2).

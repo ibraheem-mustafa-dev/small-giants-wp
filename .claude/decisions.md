@@ -10,7 +10,9 @@
 
 **Corrections recorded.** Point 4 is about top-level bar items that own a dropdown or mega panel lacking the hover underline their siblings have, not about the dropdown items. Force-solid and the page 3699 drawer overhang are no longer decided on their own; both belong to Wave 3C.
 
-**Open.** Bean reviews the table columns (W3B-1). The hover-underline cause (W3A-3) is unproven. Where the references keep the burger and close control, and whether any drawer omits a top close row, is read from the table, not assumed.
+**Columns signed off (Bean delegated the sign-off to a review).** A completeness review against the measured data and an adversarial review of the table design produced 14 typed columns over three tiers, with present/absent/not-applicable per surface, measurement rules with a 2px tolerance and a static/interaction-capture/source-only tag. The measured data covers the open drawer only, for eight references (studionamma, buck, dogstudio, fantasy, lamalama, lusion, wearecollins, resn); the header shell, bar, dropdown, mega panel and footer are unmeasured for all, so W3B-2 and W3B-3 are a fresh capture. The centring clause moved from W3A-2 to W3C-1.
+
+**Open.** The hover-underline cause (W3A-3) is unproven. Where the references keep the burger and close control, and whether any drawer omits a top close row, is read from the table, not assumed.
 
 ## D1132 [ROUTINE] — Draft standardisation council: close the wiring gaps in existing code first; a small draft standard only for what code cannot derive; a deterministic second layer (2026-09-20)
 

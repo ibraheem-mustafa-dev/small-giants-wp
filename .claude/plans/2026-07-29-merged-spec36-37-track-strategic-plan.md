@@ -175,49 +175,76 @@ negative control and is verified on a real header on the canary.
 | ID | Unit | Output | Est (taxed) | CP |
 |---|---|---|---|---|
 | W3A-1 | A dropdown or mega panel stays open while the pointer travels from its parent item to the panel | pointer path bridged (no dead gap); verified with a real pointer path at 1440px | 1h (2h) | YES |
-| W3A-2 | Default dropdown surface and items | a dropdown is a visible surface by default (background, border, radius, shadow from theme tokens); no list markers, no default link underline, no marker indent; items centre-align to their parent item unless the header says otherwise | 1.5h (3h) | YES |
+| W3A-2 | Default dropdown surface and items | a dropdown is a visible surface by default (background, border, radius, shadow from theme tokens); no list markers, no default link underline, no marker indent (the dropdown's alignment to its parent item is a W3C-1 family) | 1.5h (3h) | YES |
 | W3A-3 | Top-level items that own a dropdown or mega panel get the same hover treatment as their siblings | one hover system for every bar item; cause proven before the fix (the underline is emitted for `.sgs-nav-bar-menu__link`, and the trigger elements carry that class too, so the cause is not yet known) | 1h (2h) | YES |
 | W3A-4 | Mama's Munches canary header | nav centred within the bar as the draft has it; hover text stays the draft's dark colour on the pink hover background (`itemSmartContrast` is off by default) | 1h (2h) | no |
 | W3A-5 | QA fixtures live inside a real header | nav QA fixtures rebuilt inside `sgs/site-header`, with the drawer fixtures carrying submenus and a mega item; the loose-block pages leave the canary | 1.5h (3h) | YES |
 
 ### Wave 3B — Reference deconstruction (the requirements table)
 
-Output: `reports/<date>-reference-requirements-matrix.md` — one row per reference per surface, one
-column per defining attribute, then the rows clustered into capability families. Built from the
-existing teardown data (`reports/2026-07-28-drawer-code-extraction/`, teardown run
-`20260728-112649-7bc4a8`, `labels-<site>.json`), re-measured from the rendered DOM by computed style
-(never from source declarations).
+Output: `reports/<date>-reference-requirements-matrix.md`. The table is **rows × columns × three
+tiers**: one row per reference per surface (header shell, bar, dropdown, mega panel, trigger and close,
+drawer, footer), one typed column per defining attribute, each cell recorded at 375, 768 and 1440px.
+Rows are clustered into capability families that the SGS blocks must cover.
 
-**Columns (draft, reviewed by Bean before any measuring):**
-1. Header shell — width model (full-bleed, capped, floating pill, partial-width bar), max width,
-   centring against the viewport, what sits inside (logo, nav, cart, CTA, message, language),
-   background (solid, transparent, blur) and any visual covering it (image, video, gradient, cycling
-   media) with its animation or behaviour, sticky or hide-on-scroll.
-2. Bar items — alignment in the bar (left, centred, split), hover treatment, active state,
-   separators, treatment of items that own a panel.
-3. Dropdown — anchor (item-centred, item-left, header-wide), width rule, surface (background, border,
-   radius, shadow), any background visual and its animation or behaviour, item styling, open trigger
-   (hover, click), close grace.
-4. Mega panel — width anchor (header, container, viewport), columns, content types, background visual
-   and its animation or behaviour, motion.
-5. Trigger and close button — burger style, label, magnet; the close button's style, position and
-   icon, whether it replaces the burger in place or is a separate control (and whether a top row
-   exists to hold it), and the animation between the two states.
-6. Drawer — type (full-screen, side, partial, dropdown from the header), side, width, header visible
-   over the drawer, background colour and blur, the visual covering the background (image, video,
-   gradient, cycling media) and its animation or behaviour (parallax, cross-fade, follows the hovered
-   link, autoplay), menu structure (flat, accordion submenus, two-tier), secondary content blocks.
-7. Footer — row model, column shape, secondary content.
-8. Mobile — what changes at each tier.
-9. Motion — each effect mapped to a Spec 38 tier (V, G, H, W).
-10. Content — labels and counts against `labels-<site>.json`.
-11. SGS coverage per row — the block attribute that covers it, or none.
+**What data exists.** Eight references have measured data, all of the OPEN DRAWER only
+(`.claude/reports/2026-07-28-drawer-code-extraction/`: studionamma, buck, dogstudio, fantasy, lamalama,
+lusion, wearecollins, resn; `labels-<site>.json` exists for seven of them, not resn). The header shell,
+bar, dropdown, mega panel and footer are unmeasured for every reference, and Away, ButcherBox and
+rabbit.tech are unmeasured entirely. So W3B-2 and W3B-3 are a fresh capture from the live reference
+sites (rendered DOM, computed style, event-driven capture for behaviour), not a re-read of files; the
+existing drawer JSON is a cross-check. Cells that a resting DOM cannot give (hover, close grace, motion,
+scroll behaviour) are captured by driving the page (hover, wait, diff computed styles; scroll, diff
+transforms) or, where that cannot work, read from the site's code and marked `source-only`.
+
+**Rules for every cell.**
+- The row's surface is `present`, `absent` or `not-applicable` first; `absent` is a real value and
+  clusters as its own family ("no dropdown"), never a forced fill.
+- Labels are derived from measured numbers, never eyeballed: `header width == viewport` → full-bleed;
+  narrower with equal left and right inset → capped (record px); with a radius and a top inset →
+  floating. Panel anchor: `|panelCentreX − itemCentreX| ≤ 2px` → item-centred; `|panelLeft − itemLeft|
+  ≤ 2px` → item-left; `panelWidth ≥ headerWidth − 2px` → header-wide. Centred on the viewport:
+  `|surfaceCentreX − viewportCentreX| ≤ 2px`.
+- Every column is tagged `static`, `interaction-capture` or `source-only`, and the cell records which
+  method produced it.
+- Colours are recorded as hex and sizes as px so clustering compares values, not prose.
+
+**Columns (signed off after a completeness review against the measured data and an adversarial review
+of the table design).**
+1. Archetype — header: full-bleed, capped, floating pill, partial-width bar; drawer: full-screen, side,
+   partial, floating card, card stack, dropdown from the header.
+2. Geometry — width, max-width, insets, height, radius, z-index, centring and anchor (rules above).
+3. Zone model — columns and rails, alignment, and what sits inside the surface (logo, nav, cart, CTA,
+   message, language, utility controls such as theme, sound, search, clock or status).
+4. Ground — fill, blur, scrim present or not. *(shared sub-schema A)*
+5. Background visual and its behaviour — none, image, video, gradient or cycling media; static,
+   parallax, cross-fade, follows the hovered link, autoplay. *(shared sub-schema A)*
+6. Item typography and scaling mode — size, weight, case, fluid, stepped or fixed.
+7. Item states — hover treatment, active or current indicator, ornament (index, glyph, thumbnail,
+   spacer), separators, treatment of an item that owns a panel.
+8. Secondary-block roster — kind, position, presence per tier.
+9. Trigger and close — kind, element semantics and accessible name, burger style; the close button's
+   style, position and icon; replaces the burger in place or is separate; whether a top row holds it;
+   the animation between the two states; magnet.
+10. Mechanics — open trigger (hover or click), close grace, scroll-lock, `dialog` and `inert`, focus
+    handling, sticky or hide-on-scroll, whether open state survives a resize.
+11. Motion — each effect, its Spec 38 tier (V, G, H, W) and its render substrate (DOM or canvas).
+    *(shared sub-schema B)*
+12. Content — labels, counts, case origin (source text or CSS `text-transform`), fixed or dynamic.
+13. Per-tier delta and drop mechanism — what changes at each tier, and whether an element is removed
+    from the DOM, collapsed to 0×0, reflowed or migrated to another role.
+14. SGS coverage — 14a mechanical (computed property joined to `block_attributes.css_property` through
+    `/sgs-db`) and 14b manual (a behaviour mapped to a block attribute enum); each row records which was
+    used.
+
+Clustering keys on the typed values across all surfaces, so one capability found on two surfaces (for
+example blur on a header and on a drawer) becomes one family.
 
 | ID | Unit | Output | Est (taxed) | CP |
 |---|---|---|---|---|
-| W3B-1 | Columns signed off | the column list above, reviewed and changed by Bean | 15m + Bean | YES |
-| W3B-2 | Fill the table for the 9 measured references | rows re-measured from the rendered DOM by computed style, one agent per reference, disjoint output files | 2h (4h) | YES |
-| W3B-3 | Teardown the 3 unmeasured references (Away, ButcherBox, rabbit.tech); map each resn effect to a Spec 38 tier and confirm its admission (10 vs 11); `labels-<site>.json` for the three | measured rows; 12/12 measured | 1h (2h) | YES |
+| W3B-1 | Columns signed off | the column list above, after the completeness and adversarial reviews | DONE | YES |
+| W3B-2 | Fresh capture for the 8 references with drawer data (studionamma, buck, dogstudio, fantasy, lamalama, lusion, wearecollins, resn) | header shell, bar, dropdown, mega, footer and interaction cells captured live at three tiers; drawer cells cross-checked against the existing JSON; one agent per reference, disjoint output files | 3h (5h) | YES |
+| W3B-3 | Fresh capture for Away, ButcherBox and rabbit.tech (every surface); map each resn effect to a Spec 38 tier and confirm its admission (10 vs 11); `labels-<site>.json` for the three | measured rows; all 11 roster references measured | 1.5h (3h) | YES |
 | W3B-4 | Cluster into capability families | each family: name, the references that need it, the SGS block attribute that covers it or none, verdict (covered, gap, conflicts with something built) | 1h (2h) | YES |
 | W3B-5 | Bean signs off the family list | the list of families Wave 3C builds and the order | Bean | YES |
 
@@ -240,7 +267,7 @@ drawer anchoring, force-solid) is reopened by a family, not patched on its own.
 | Wave | Order | Parallel lanes (disjoint files) | Delegate | QC checkpoint | Docs closed at the checkpoint |
 |---|---|---|---|---|---|
 | 3A | W3A-5 first; then W3A-1, W3A-2, W3A-3 together; W3A-4 from the start | L1 hover-intent JS (W3A-1) · L2 dropdown CSS include (W3A-2) · L3 item hover CSS include (W3A-3) · L4 Mama's canary content (W3A-4) | Sonnet builders per lane; main thread deploys once and verifies live | `/qc-inline` per lane; `/qc-council` on W3A-2 and W3A-3 because they change shared block defaults | Spec 36 (dropdown defaults, hover system), verify doc, LEDGER, `decisions.md` |
-| 3B | W3B-1 → (W3B-2 ‖ W3B-3) → W3B-4 → W3B-5 | one agent per reference, three references per batch, each writing its own file under `reports/reference-requirements/` | Sonnet for measuring; the strongest model for W3B-4 (clustering) | adversarial review of the columns before W3B-1 closes and of the family list before W3B-5 | the matrix report, this plan, verify doc, LEDGER, `decisions.md` |
+| 3B | (W3B-2 ‖ W3B-3) → W3B-4 → W3B-5 (W3B-1 closed) | one agent per reference, four references per batch, each writing its own file under `.claude/reports/reference-requirements/` | Sonnet for capture (browser and event-driven); the strongest model for W3B-4 (clustering) | adversarial review of the family list before W3B-5 | the matrix report, this plan, verify doc, LEDGER, `decisions.md` |
 | 3C | one design-gate per family, then build | families with disjoint files in parallel; anything touching the shared header wrapper is serial | strongest model designs; `/subagent-driven-development` builds (implementer plus two reviewers); main thread deploys and verifies live | design-gate plus `/qc-council` before each shared-mechanism build; Bean's eye on one composed real header before 3C closes | Spec 36 and Spec 37 in the same commit, verify doc, LEDGER, `decisions.md`, `specs/README.md` |
 
 **TEST (critical path):** Happy = every reference's row is expressible with block attributes and one
@@ -282,7 +309,7 @@ W2-u wave exit                  (done 2026-09-20)
 
 Wave 3 after the Wave 2 CP set (polish on final surfaces)
 W3A-5 first (fixtures inside a real header), then W3A-1..4
-W3B-1 -> W3B-2 || W3B-3 -> W3B-4 -> W3B-5 (Bean)     (W3B can start while W3A runs)
+W3B-2 || W3B-3 -> W3B-4 -> W3B-5 (Bean)     (W3B runs while W3A runs)
 W3C REQUIRES W3B-5; W3A-1..3 fold into W3C-1 if the table changes them
 W4-a2 (substitution policy, Bean) before W4-b
 W4-b REQUIRES: W2-i..u CP set + W2-f live verified + Gate 2/3 passed + W3C complete
@@ -290,7 +317,7 @@ W4-c after W4-b ACCEPTED (Bean)   ← the one deliberate serialisation
 W5-a after W4 complete
 ```
 
-CRITICAL PATH: W2-i → W2-b → W2-d → W2-r → W2-c → Gate 2 re-run → W2-u → W3A-5 → W3B-1 → W3B-2/3 → W3B-4
+CRITICAL PATH: W2-i → W2-b → W2-d → W2-r → W2-c → Gate 2 re-run → W2-u → W3A-5 → W3B-2/3 → W3B-4
 → W3B-5 (Bean) → W3C → W4-a2 → W4-b → Bean's eye → W4-c → W5-a → W5-b.
 
 **Parallel opportunities:** W3A-1..4 parallel to W3B · W3-b/e parallel · W4-c's clones
@@ -312,7 +339,7 @@ in-session reminder (Rule 7: in-session reminders die).**
 ## Phase 3 — Risk & effort
 
 **Conversion: 1 session = 5 focused hours.** Remaining effort by wave (LOW hours, from the unit
-tables): Wave 2 open units per the table above · Wave 3 ≈ 3.5h + Bean session · Wave 3A ≈ 5h · Wave 3B ≈ 4h + Bean sign-off · Wave 3C sized at W3B-5 · Wave 4 ≈ 48h
+tables): Wave 2 open units per the table above · Wave 3 ≈ 3.5h + Bean session · Wave 3A ≈ 5h · Wave 3B ≈ 6h + Bean sign-off · Wave 3C sized at W3B-5 · Wave 4 ≈ 48h
 (≈ 9.5 sessions; W4-d is 1h × 10 clones) · Wave 5 ≈ 22h (≈ 4.5 sessions). The clone waves are the
 biggest single driver: pattern-authoring and clone work runs 2–4× optimistic on this project.
 Schedule risk: a W4-b loop-back blocks W4-c entirely — the serialisation is deliberate but must be
@@ -333,7 +360,7 @@ visible.
 | Shared worktree collision with a co-active track | Medium | Commit exact paths; never `git add -A`; branch re-check in the commit command |
 | Editor-killing crash past green gates | Medium | After any edit.js / shared-component change: deploy + OPEN the real editor before closing the unit. Every block name used in editor code must be a registered block (`sgs/nav-bar-menu`, `sgs/nav-drawer-menu`, `sgs/nav-drawer`): `createBlock` does not check the slug and an unregistered one inserts a dead `core/missing` placeholder |
 | A fix built on a fixture artefact (loose blocks outside a header) | High — wasted rebuild | Every W3A unit is reproduced inside a real header first; QA fixtures are rebuilt there (W3A-5) |
-| The table's columns miss a defining attribute, so a family is missed | High — surfaces as a Wave 4 loop-back | Adversarial and completeness review of the columns before W3B-1 closes; every unmatched reference behaviour is a new column, never dropped |
+| The table's columns miss a defining attribute, so a family is missed | High — surfaces as a Wave 4 loop-back | The columns passed a completeness review against the measured data and an adversarial review; a reference behaviour no column holds is added as a column, never dropped |
 | Clustering merges two mechanisms into one family, or splits one | Medium | Adversarial review of the family list before Bean signs it (W3B-5) |
 | Parallel agents collide on shared files | Medium | Disjoint file lists in each brief; one deploy by the main thread; `git diff --stat` read after every agent |
 | Store-API price data unavailable for search (36-20) | Low | Logged as its own dispatch, not silently absorbed |
@@ -363,7 +390,7 @@ AFTER: W3A-1..5  · PASS: each fix reproduced then fixed inside a real header wi
 QC and docs steps of the checkpoint protocol done  · TYPE: auto-gate + /qc-council
 
 GATE 3B: requirements table signed
-AFTER: W3B-1..5  · PASS: 12/12 references measured by computed style; every row in one family; the
+AFTER: W3B-1..5  · PASS: all 11 roster references captured fresh at three tiers; every row in one family; the
 adversarial review of the family list answered; Bean has signed the list  · TYPE: go/no-go (Bean)
 
 GATE 3C: architecture harmonised
@@ -438,7 +465,7 @@ Stop-loss: any gate <50 → surface pivot-vs-park with two ranked paths; log in 
 
 ## First action (≤5 min, zero dependencies)
 
-W3B-1: review the requirements-table columns (§ Wave 3B) — 15 minutes, no dependencies. In parallel: W3A-5, rebuilding the QA fixtures inside a real header, which every later check depends on.
+W3A-5 (rebuild the QA fixtures inside a real header) and W3B-2/W3B-3 (fresh reference capture) start together; neither needs anything from Bean. W3B-1 is signed off.
 
 ## References
 
