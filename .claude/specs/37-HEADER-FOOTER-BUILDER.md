@@ -822,6 +822,16 @@ Behaviour styling is emitted as scoped `#uid` rules (including `@media` tiers), 
 class also enqueues the shared header-behaviour CSS/JS). Scroll-state classes in `view.js`
 (`is-header-scrolled`, `is-header-shrunk`, `is-header-scrolling-down`) are tier-agnostic JS-state
 signals only.
+**Shadow once scrolled.** A pinned header can take its own shadow once the page has scrolled:
+`plugins/sgs-blocks/src/blocks/site-header/block.json::attributes.shadowScrolled` (a shadow shape or a theme
+shadow preset slug, the same vocabulary as `shadow`) and `attributes.shadowScrolledColour`.
+`plugins/sgs-blocks/src/blocks/site-header/render.php` emits
+`{root}.is-header-scrolled{box-shadow:…}` plus `{root}{transition:box-shadow 200ms ease}` (the easing is
+folded into the `transition` shorthand the shrink and hide-on-scroll rules already write, so it is never a
+second writer) and turns the scroll-class toggle on for plain and merely sticky headers. It is a scalar, not
+tier-gated, and paints nothing when unset (the emitted CSS is byte-identical to a header without the
+attribute). It wins over the resting hover shadow while scrolled, and `prefers-reduced-motion` removes the
+easing while the end-state shadow still applies. Live-verified at 1440px and 375px.
 **Status:** `BUILT` for all five behaviours. `headerSticky` / `headerTransparent` / `headerShrink` /
 `headerHideOnScroll` emit through `sgs_emit_tier_rules()`. `contrastSafe` is a per-device object
 attribute emitted by `site-header/render.php` through `sgs_emit_tier_rules_map()`, the N-value
