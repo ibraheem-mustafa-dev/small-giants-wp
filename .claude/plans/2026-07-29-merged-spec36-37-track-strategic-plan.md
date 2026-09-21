@@ -278,8 +278,8 @@ drawer anchoring, force-solid) is reopened by a family, not patched on its own.
 
 | ID | Unit | Output | Est (taxed) | CP |
 |---|---|---|---|---|
-| W3C-1 | The nav chain, one unit at a time: U-1, U-9, U-11, U-5, U-2, U-3, U-6, U-7, U-10, U-4, U-8, U-14, U-13, U-16 | every signed family built or parked (DEC-16); the drawer's own × optional (DEC-15); the pill panel width rule kept; force-solid and the drawer clamp folded into U-1 and U-3 | about 3 to 4 sessions | YES |
-| W3C-2 | Furniture blocks (U-12), in parallel: local-time clock, language switch, back-to-top, account/log-in link | four new blocks, one agent per block in its own directory | about 1 session | no |
+| W3C-1 | The nav chain, one unit at a time: U-1, U-9, U-11, U-5, U-2, U-3, U-6, U-7, U-10, U-4, U-8, U-14, U-13, U-16 | every signed family built, nothing parked; the drawer's own × optional (DEC-15); the pill panel width rule kept; force-solid and the drawer clamp are open questions for Bean and land in U-1 and U-3 only on his answer | about 4 sessions | YES |
+| W3C-2 | Furniture blocks (U-12), in parallel: local-time clock, language switch, back-to-top, account/log-in link, store selector, wishlist, theme toggle, sound mute | eight new blocks in that priority order, one agent per block in its own directory | about 1 session | no |
 | W3C-3 | Self-changing header message (U-15), in parallel | `notice-banner` rotate, random and live-clock modes | about 1h | no |
 | W3C-4 | Gate 3C composed-header check | one composed real header matches its requirements-table row, with Bean's eye (R-31-13) | ½ session | YES |
 
@@ -407,9 +407,21 @@ AFTER: W3B-1..5  · PASS: all 13 roster references captured at three tiers; ever
 adversarial review of the family list answered; Bean has signed the list  · TYPE: go/no-go (Bean)
 
 GATE 3C: architecture harmonised
-AFTER: W3C-1..4  · PASS: every signed family built or explicitly mapped; one composed real header
-matches its table row; specs, verify doc and LEDGER state the model  · TYPE: auto + go/no-go (Bean's
-eye, R-31-13)
+AFTER: W3C-1..4  · TYPE: auto + go/no-go (Bean's eye, R-31-13)
+PASS (the one definition; the same words are in the implementation plan §7 and the verify doc):
+ 1. Every family in the signed list is covered: its exit cells reachable and at least one
+    reproduced live. Twelve families (M-01, M-02, M-05, M-06, M-12, M-23, M-26, M-29, M-41,
+    M-42, M-50, M-51) are already covered, are in no unit, and close the gate as covered. No
+    family closes the gate as parked.
+ 2. Each unit row cites its live report with `verdict: PASS`.
+ 3. `node plugins/sgs-blocks/scripts/audit-inline-styling.js --check` exits 0 and
+    `python plugins/sgs-blocks/scripts/no-inline/check-no-inline.py` passes against a
+    reachable canary.
+ 4. Two composed real headers match their reference rows: the pill on fixture page 3734
+    (lamalama) and the capped-width header on page 3733 against the reference Bean names,
+    with equal left and right gaps at 1440px, a mega panel whose width equals the header's
+    and a dropdown centred on its parent item. Bean's eye is co-authoritative (R-31-13).
+ 5. Spec 36, Spec 37, the verify doc and LEDGER state the model.
 
 GATE 4: studionamma accepted   ← THE go/no-go
 AFTER: W3C + W4-b  · PASS: Bean's eye + DP5 homes table reviewed + DP7-clean evidence

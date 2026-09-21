@@ -112,6 +112,8 @@
 
 ## Wave 3C build units
 
+> Unit scope is superseded by `.claude/plans/2026-09-21-wave-3c-implementation-plan.md` section 4; take scope from there, and full file lists from `families-master.json::units[].files`.
+
 Ordered by **uncovered** support. `independent` is computed from the units' own `files` lists, not asserted: only three units qualify.
 
 | # | id | unit | families | uncovered support | independent | size |

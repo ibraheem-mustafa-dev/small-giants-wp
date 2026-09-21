@@ -131,13 +131,21 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
 
 ## Wave 3C — Header and nav architecture harmonised
 - STATUS: ready to execute (`plans/2026-09-21-wave-3c-implementation-plan.md`); Step 0 first.
-- Every family in the signed list is built or explicitly mapped, universal across blocks, with block
-  attributes as the only responsive route (`node plugins/sgs-blocks/scripts/audit-inline-styling.js --check`
-  exits 0).
-- W3C-1: on a real capped-width header, the logo, nav and actions sit inside one surface centred on
-  the viewport (left and right gaps equal at 1440px), a mega panel's width equals the header's, and a
-  dropdown is centred on its parent item.
-- One composed real header matches its requirements-table row, with Bean's eye (R-31-13).
+
+Gate 3C passes when (the one definition; the same words are in the implementation plan §7 and the
+strategic plan's Gate 3C entry):
+
+1. Every family in the signed list is covered: its exit cells reachable and at least one reproduced
+   live. Twelve families (M-01, M-02, M-05, M-06, M-12, M-23, M-26, M-29, M-41, M-42, M-50, M-51) are
+   already covered, are in no unit, and close the gate as covered. No family closes the gate as parked.
+2. Each unit row cites its live report with `verdict: PASS`.
+3. `node plugins/sgs-blocks/scripts/audit-inline-styling.js --check` exits 0 and
+   `python plugins/sgs-blocks/scripts/no-inline/check-no-inline.py` passes against a reachable canary.
+4. Two composed real headers match their reference rows: the pill on fixture page 3734 (lamalama) and
+   the capped-width header on page 3733 against the reference Bean names, with equal left and right
+   gaps at 1440px, a mega panel whose width equals the header's and a dropdown centred on its parent
+   item. Bean's eye is co-authoritative (R-31-13).
+5. Spec 36, Spec 37, this verify doc and LEDGER state the model.
 
 ## Wave 4 — Proof gate (clones)
 - STATUS: not started
