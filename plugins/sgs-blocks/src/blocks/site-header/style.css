@@ -22,6 +22,14 @@
 	 * (header-behaviours.css — the WP admin-bar-safe range).
 	 */
 	position: relative;
+}
+
+/*
+ * The default stacking order, in a zero-specificity :where() so the header's
+ * own per-tier `zIndex` rule (includes/sgs-header-z-index.php, scoped to the
+ * block's uid) overrides it without any specificity contest.
+ */
+:where(.sgs-site-header) {
 	z-index: 100;
 }
 

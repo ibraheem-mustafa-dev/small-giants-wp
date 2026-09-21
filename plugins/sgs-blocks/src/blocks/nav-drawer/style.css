@@ -31,13 +31,14 @@
 	/* Explicit z-index scale. A native `showModal()` dialog is promoted
 	 * to the browser's top layer and ignores z-index entirely, so this value
 	 * only matters on the non-modal `.show()` path, where the dialog renders
-	 * in normal document flow. Deliberately BELOW the header's z-index:100
-	 * (site-header/style.css) so the header/burger row stays visibly and
-	 * hit-testably on top — the manoeuvre every reference site measured for
-	 * this build uses. Still above ordinary page content (z-index:1, see
-	 * site-header/style.css's own comment on that value).
+	 * in normal document flow. Deliberately BELOW the header so the header/burger
+	 * row stays visibly and hit-testably on top — the manoeuvre every reference
+	 * site measured for this build uses. The header publishes its own z-index as
+	 * `--sgs-header-z` (default 100 when unset); the drawer sits one below it, capped
+	 * at 90 and floored at 2 so it stays above ordinary page content (z-index:1,
+	 * see site-header/style.css's own comment on that value).
 	 */
-	z-index: 90;
+	z-index: min(90, max(2, calc(var(--sgs-header-z, 100) - 1)));
 }
 
 /* Height defaults live in :where() (specificity 0) so the `panelSize`
@@ -68,13 +69,14 @@
  * (header/trigger/centred) — a full-screen anchor already covers the whole
  * viewport, so nothing behind it could ever be clicked anyway. Hidden by
  * default; `.is-open` is toggled by store.js on open/close. z-index sits
- * between ordinary page content (z-index:1) and both the header (100) and
- * this file's own drawer z-index (90), so it never competes with either.
+ * between ordinary page content (z-index:1) and both the header and this
+ * file's own drawer z-index (one below the drawer), so it never competes
+ * with either.
  */
 .sgs-nav-drawer__scrim {
 	position: fixed;
 	inset: 0;
-	z-index: 89;
+	z-index: min(89, max(1, calc(var(--sgs-header-z, 100) - 2)));
 	background-color: rgba(0, 0, 0, 0.55);
 	opacity: 0;
 	pointer-events: none;

@@ -39,6 +39,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-breakpoints.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
 require_once dirname( __DIR__, 3 ) . '/includes/sgs-header-float-css.php';
 require_once dirname( __DIR__, 3 ) . '/includes/sgs-header-force-solid.php';
+require_once dirname( __DIR__, 3 ) . '/includes/sgs-header-z-index.php';
 
 // Deterministic, content-addressed uid — mirrors SGS_Container_Wrapper's own
 // md5( wp_json_encode( $attributes ) ) derivation (class-sgs-container-wrapper.php)
@@ -171,15 +172,16 @@ foreach ( array( 'desktop', 'tablet', 'mobile' ) as $sh_tier ) {
 }
 
 // Sticky + Transparent both write to the SAME base selector's `position` /
-// `top` / `z-index`. sgs_merge_tri_state_declarations() resolves both per
+// `top`. (`z-index` is NOT one of them: sgs_header_z_index_css() below is its
+// single writer, so no behaviour can revert it.) sgs_merge_tri_state_declarations() resolves both per
 // tier FIRST and emits ONE set of declarations per tier, single writer per
 // property — an off/never-configured behaviour contributes nothing at all,
 // and if both are ever genuinely ON for the same tier, Sticky (listed first)
-// wins position/top/z-index while Transparent still contributes its own
+// wins position/top while Transparent still contributes its own
 // non-colliding `background`/`left`/`right` (documented precedence, not an
 // accident of source order).
 // FLOAT ("pill") is a THIRD entry in the same merge, listed FIRST, so the
-// documented precedence is Float > Sticky > Transparent for position/top/z-index
+// documented precedence is Float > Sticky > Transparent for position/top
 // and the single-writer-per-property guarantee is untouched. Float ON for a tier
 // IMPLIES the sticky declaration for that tier: a pill that is not pinned is
 // just an inset bar that scrolls away. Its `top` is the inset rather than 0 —
@@ -196,7 +198,6 @@ $css .= sgs_merge_tri_state_declarations(
 			'props' => array(
 				'position' => 'sticky',
 				'top'      => 'var(--sgs-header-float-inset-top, 0px)',
-				'z-index'  => '100',
 			),
 		),
 		array(
@@ -204,7 +205,6 @@ $css .= sgs_merge_tri_state_declarations(
 			'props' => array(
 				'position' => 'sticky',
 				'top'      => '0',
-				'z-index'  => '100',
 			),
 		),
 		// Listed before Transparent: a tier that is force-solid has Transparent
@@ -229,12 +229,13 @@ $css .= sgs_merge_tri_state_declarations(
 				'left'       => '0',
 				'right'      => '0',
 				'background' => 'transparent',
-				'z-index'    => '100',
 			),
 		),
 	),
 	'off'
 );
+// STACKING ORDER: the per-tier `zIndex` attribute, written once, here.
+$css .= sgs_header_z_index_css( $root_sel, $attributes, sgs_header_z_index_may_publish() );
 // SCROLLED-state background for the Transparent behaviour — a distinct STATE
 // selector (root_sel + '.is-header-scrolled'), so this rule never collides
 // with the merged at-rest declarations above (single-writer design intact;

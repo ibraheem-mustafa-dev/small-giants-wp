@@ -10,7 +10,7 @@
  * FR-36-6 `non-modal`: background inertness is AUTHOR-MANAGED, with focus
  * containment "kept exactly as `modal` has them". The only content that may stay
  * live is what the mode's own z-index scale paints ABOVE the panel — the site
- * header (z-index 100 against the drawer's 90, `blocks/nav-drawer/style.css`) and
+ * header (the drawer sits one below the header's `--sgs-header-z`, `blocks/nav-drawer/style.css`) and
  * the toggle that opens and closes the drawer. Everything else is frozen at
  * whatever depth it sits, so a toggle placed in page content freezes its own
  * surroundings instead of exempting its entire ancestor branch (a `<main>` left

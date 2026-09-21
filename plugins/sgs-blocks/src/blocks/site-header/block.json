@@ -376,6 +376,11 @@
 				"desktop": {}
 			}
 		},
+		"zIndex": {
+			"type": "object",
+			"default": {},
+			"description": "Stacking order per tier: {desktop, tablet, mobile}, each a whole number from 0 to 99998, or empty to inherit the wider tier (the framework default is 100). The drawer and its scrim are kept just below the header, which needs a value of 4 or more. Written only by includes/sgs-header-z-index.php."
+		},
 		"minHeight": {
 			"type": "object",
 			"default": {}

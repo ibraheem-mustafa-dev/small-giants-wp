@@ -91,7 +91,7 @@ const SCROLL_LOCK_ATTR = 'data-sgs-nav-scroll-y';
 /**
  * The site header region. Two uses, one definition: the `header` anchor measures
  * its real bottom edge, and the non-modal freeze leaves it live because the
- * mode's z-index scale paints it ABOVE the panel (100 against the drawer's 90) —
+ * mode's z-index scale paints it ABOVE the panel (the drawer sits one below the header's `--sgs-header-z`, 100 by default) —
  * an inert element that is still painted on top reads as a dead control.
  */
 const HEADER_REGION_SELECTOR =

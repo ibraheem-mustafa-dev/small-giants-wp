@@ -26,7 +26,7 @@ import {
 	MIN_HEIGHT_OPTIONS,
 } from '../container/components/ContainerWrapperControls';
 import { ResponsiveTriStateControl, ResponsiveBoxControl, ResponsiveOverride, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, ShadowControl, resolveColourToken, SgsBoxControl, StarterLookPresetControl } from '../../components';
-import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import { NumberControl, ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { resolveTier } from '../../utils/responsive';
 import { backgroundPaintPreview, backgroundPreview, spacingPreview, isTierBoxEmpty, svgBackgroundPreview, textPaintPreview } from '../../utils';
 import { calculateRelativeLuminance, calculateContrastRatio, meetsWCAG_AA } from '../../utils/wcag-contrast';
@@ -765,6 +765,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							// interchangeable here.
 							padding: {},
 							margin: {},
+							zIndex: {},
 							backgroundImage: undefined,
 							backgroundImageTablet: undefined,
 							backgroundImageMobile: undefined,
@@ -867,6 +868,45 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 									units={ BOX_UNITS }
 									splitOnAxis={ false }
 									onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+									__next40pxDefaultSize
+								/>
+							) }
+						</ResponsiveOverride>
+					</ToolsPanelItem>
+
+					{ /* zIndex is a TIER OBJECT written by includes/sgs-header-z-index.php
+					     (the header's single z-index writer). Empty = inherit the wider
+					     tier; the framework default is 100. */ }
+					<ToolsPanelItem
+						label={ __( 'Stacking order (z-index)', 'sgs-blocks' ) }
+						hasValue={ () =>
+							Object.keys( attributes.zIndex ?? {} ).length > 0
+						}
+						onDeselect={ () => setAttributes( { zIndex: {} } ) }
+					>
+						<ResponsiveOverride
+							value={ attributes.zIndex }
+							onChange={ ( obj ) => setAttributes( { zIndex: obj } ) }
+						>
+							{ ( { tier, ownValue, setOwnValue } ) => (
+								<NumberControl
+									label={ __( 'Stacking order (z-index)', 'sgs-blocks' ) }
+									value={ ownValue ?? '' }
+									min={ 0 }
+									max={ 99998 }
+									placeholder="100"
+									onChange={ ( val ) =>
+										setOwnValue(
+											val === '' || val === undefined || val === null
+												? undefined
+												: Math.max( 0, Math.min( 99998, parseInt( val, 10 ) || 0 ) )
+										)
+									}
+									help={
+										tier === 'desktop'
+											? __( 'Where the header sits above page content. Leave empty for the default (100). Use 4 or more so the menu panel stays below the header. Tablet and mobile inherit desktop until set.', 'sgs-blocks' )
+											: undefined
+									}
 									__next40pxDefaultSize
 								/>
 							) }
