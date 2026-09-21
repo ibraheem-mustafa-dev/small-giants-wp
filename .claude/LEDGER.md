@@ -34,7 +34,7 @@ done and live-verified. The harness self-tests and the fixture fidelity check ar
 seeded as Menu drawer posts on all three test sites), the Site Info logo tier, the scrolled-state header
 shadow, the floating header pill (blur-based, matching the one true pill among the references), the formal Gate 2
 re-run and the mega + drawer integration probe. Payment icons need no
-framework feature (clients upload official artwork into the trust bar). Wave 3 is partial. Waves 3A (independent fixes) and 3B (a requirements table of 13 references: 46 capability families, signed) are done. Wave 3C (building the families: 14 nav units one at a time plus a furniture-blocks unit and a message unit in parallel) is planned in plans/2026-09-21-wave-3c-implementation-plan.md and ready to start. Waves 4 and 5 (the reference clones and the clone walker)
+framework feature (clients upload official artwork into the trust bar). Wave 3 is partial. Waves 3A (independent fixes) and 3B (a requirements table of 13 references: 46 capability families, signed) are done. Wave 3C (building the families: 14 nav units one at a time plus a furniture-blocks unit and a message unit in parallel) is planned in plans/2026-09-21-wave-3c-implementation-plan.md; Step 0a (framework DB reseed), 0b (FR-36-6 optional-close amendment) and 0f (test header #3777 and test drawer #3778 active on sandybrown; Mama's header #3648 and default drawer #3593 kept for re-activation) are done, and the units start next with U-1. Waves 4 and 5 (the reference clones and the clone walker)
 have not started.
 
 **Indus Foods** has its own dedicated test site (`lavender-dinosaur-183533.hostingersite.com`,
