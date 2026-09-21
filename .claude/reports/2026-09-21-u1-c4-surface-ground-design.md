@@ -1,7 +1,7 @@
 ---
 doc_type: design-report
 unit: U-1 commit 4 (surface ground vocabulary)
-status: COUNCIL PENDING
+status: COUNCIL DONE (GO WITH CHANGES, applied below)
 ---
 
 # U-1 commit 4: one surface-ground mechanism
@@ -70,3 +70,49 @@ standalone runner: a block declaring `surfaceBlur` emits `backdrop-filter`, one 
   blur and saturate now and opacity only when they pass a fill; state this rather than hide it.
 - `backdrop-filter` and `position:fixed` descendants inside a blurred wrapper.
 - Rename hits stored content, the converter DB row and the consistency rosters.
+
+## Council changes (opus adversarial reader + haiku verifier): all applied
+
+Blockers:
+- **B1 blur validator.** `sgs_css_length_value` must-accepts `16px 12px`, which is invalid inside `blur()`. The header's
+  `sgs_header_float_single_length` exists for that reason. It moves into `includes/helpers-css-safety.php` as
+  `sgs_css_single_length_value()` (the wrapper must not require a header-only file) and is used for blur on every
+  surface, the drawer included.
+- **B2 no new blur by default.** `mega-panel::bgBlur` is false today; the new `surfaceBlur` / `surfaceSaturate`
+  defaults stay EMPTY on every block. The `saturate(150%) blur(24px)` pair is a pattern value, not a default.
+  `surfaceSaturate` is a whole-number percent (`150`, never `1.5%`); an empty value emits nothing (`saturate(100%)`
+  is inert but still creates a containing block).
+- **B3 one `box-shadow` writer on the mega panel.** The existing unconditional two-layer literal in
+  `mega-panel/render.php` is REPLACED by the `shadow` attribute, not joined by it. `sgs_shadow_value_composed`
+  treats a multi-layer literal as a preset, so `shadowColour` is inert for it: stated in the control help.
+- **B4 fill translucency.** `sgs_surface_fill_alpha()` returns '' unless the fill is a plain colour (not a
+  gradient/image, not empty). Gradient fills are out of scope for opacity.
+Fixes: **F5** live check with a dropdown, a mega panel and a non-modal drawer open on a blurred header BEFORE any
+further block adopts blur. **F6** an orphan token's `, currentColor` tail becomes `, transparent` inside the mix.
+**F7** `0` is a legal value for opacity and saturate: null/'' comparisons, never `empty()`. **F8** wrapper
+`$base_outer_decls` entries carry no trailing `;`; the helper returns an array of declarations; the move lowers the
+header's blur rule from `.uid.sgs-site-header` to the wrapper's `.uid` (no other writer remains, so no contest).
+**F9** rename list re-derived (16 files, 5 roster JSON regenerate, two hits belong to the retired `mobile-nav`
+block and must not be touched, the dated `site-header-pill-2026-09-20.md` record is not rewritten; Spec 37 is
+edited). **F10** over-length files edited and disclosed: `mega-panel/render.php`, `nav-drawer/render.php`,
+`site-header/render.php`, `site-header/edit.js`, `mega-panel/edit.js`, `nav-drawer/edit.js`,
+`class-sgs-container-wrapper.php`. The wrapper has 34 callers (not 50).
+
+Sub-commit order: **4a** helper, validator move, wrapper, header rename plus saturate and opacity; **4b** mega-panel;
+**4c** drawer; **4d** `surfaceFadeEdge` (fantasy only).
+
+## Bean's ruling on the shared background panel (2026-09-21): add step 4e
+
+Bean: the controls belong in the shared background panel as a feature extension for every block that mounts it; the
+"dead control" objection does not apply when each block declares and renders the attributes. Accepted. The
+objection that DOES hold: the mega panel and drawer do not mount that panel, and its controls are a plain
+`PanelBody` while `SurfaceGroundControls` returns `ToolsPanelItem`s.
+
+**4e (after 4b, 4c, 4d):** mount `SurfaceGroundControls` inside `container/components/BackgroundPanel.js`, shown only
+when the block declares `surfaceBlur`; add `surfaceBlur` and `surfaceSaturate` (and `surfaceOpacity` only where the
+block passes its own fill to `sgs_surface_fill_alpha`) to every wrapper block that mounts the panel (container,
+header, footer, hero, cta-section, trust-bar, physics-canvas; `multi-button` only if it renders through the
+wrapper: check first). More than three blocks, so it ships as a survey, fix and check script (precedent:
+`scripts/fanout-overlay-sibling-attrs.py`), each block gets its canvas preview (CHECK A parity gate), and the
+council's F5 live check (dropdown, mega panel, non-modal drawer open inside a blurred header) runs before the
+fan-out is deployed.
