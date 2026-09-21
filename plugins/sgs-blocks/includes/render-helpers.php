@@ -83,6 +83,12 @@
  *                                     wp-icon glyph's `stroke="currentColor"`
  *                                     presentation attribute)
  *
+ *   helpers-reviews-inline.php      — sgs_reviews_inline_normalise,
+ *                                     sgs_reviews_inline_data (written reviews
+ *                                     shaped like the Places API's, so
+ *                                     sgs/google-reviews renders them through
+ *                                     every variant unchanged)
+ *
  * A single `require_once render-helpers.php` continues to resolve every
  * function that this file has always provided. All callers are unchanged.
  *
@@ -115,6 +121,7 @@ require_once __DIR__ . '/helpers-row-behaviour.php';
 require_once __DIR__ . '/helpers-svg-gradient.php';
 require_once __DIR__ . '/helpers-colour-variants.php';
 require_once __DIR__ . '/helpers-info-toggle.php';
+require_once __DIR__ . '/helpers-reviews-inline.php';
 require_once __DIR__ . '/media/atoms/media-type.php';
 require_once __DIR__ . '/media/atoms/video-behaviour.php';
 require_once __DIR__ . '/class-sgs-media-element.php';

@@ -26,10 +26,16 @@ import { ResponsiveOverride,
 	DesignTokenPicker,
 } from '../../components';
 import MediaElementPanel from '../../components/MediaElementPanel';
+import WrittenReviewsPanel from './components/WrittenReviewsPanel';
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		variant,
+		dataSource,
+		reviews,
+		averageRating,
+		reviewCount,
+		businessName,
 		placeId,
 		columns,
 		maxReviews,
@@ -80,6 +86,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		dotColourGradient,
 		dotColourHoverGradient,
 	} = attributes;
+
+	// The block shows written reviews when told to, or on Automatic when it holds any.
+	const showsWritten = 'inline' === dataSource || ( 'auto' === dataSource && ( reviews || [] ).length > 0 );
 
 	const blockProps = useBlockProps( {
 		className: `sgs-google-reviews sgs-google-reviews--${ variant } sgs-google-reviews--theme-${ theme }`,
@@ -299,19 +308,42 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Google Business Profile', 'sgs-blocks' ) }>
-					<TextControl
-						label={ __( 'Place ID', 'sgs-blocks' ) }
-						value={ placeId }
-						onChange={ ( value ) => setAttributes( { placeId: value } ) }
-						help={ __( 'Leave empty to use default from plugin settings.', 'sgs-blocks' ) }
+				<PanelBody title={ __( 'Reviews source', 'sgs-blocks' ) }>
+					<SelectControl
+						label={ __( 'Where the reviews come from', 'sgs-blocks' ) }
+						value={ dataSource }
+						options={ [
+							{ label: __( 'Automatic (written reviews if there are any, otherwise Google)', 'sgs-blocks' ), value: 'auto' },
+							{ label: __( 'Google (live, up to 5 reviews)', 'sgs-blocks' ), value: 'synced' },
+							{ label: __( 'Written by me (any number)', 'sgs-blocks' ), value: 'inline' },
+						] }
+						onChange={ ( value ) => setAttributes( { dataSource: value } ) }
+						help={ showsWritten
+							? __( 'Type the reviews in the "Written reviews" panel. No review markup is sent to search engines for written reviews.', 'sgs-blocks' )
+							: __( 'Google returns at most 5 reviews. Use "Written by me" to show more.', 'sgs-blocks' ) }
 						__next40pxDefaultSize
 					/>
 
-					<Notice status="info" isDismissible={ false }>
-						<p>{ __( 'Configure Google API key and default Place ID in Settings → SGS Blocks → Google Reviews.', 'sgs-blocks' ) }</p>
-					</Notice>
+					{ 'inline' !== dataSource && (
+						<>
+							<TextControl
+								label={ __( 'Place ID', 'sgs-blocks' ) }
+								value={ placeId }
+								onChange={ ( value ) => setAttributes( { placeId: value } ) }
+								help={ __( 'Leave empty to use default from plugin settings.', 'sgs-blocks' ) }
+								__next40pxDefaultSize
+							/>
+
+							<Notice status="info" isDismissible={ false }>
+								<p>{ __( 'Configure Google API key and default Place ID in Settings → SGS Blocks → Google Reviews.', 'sgs-blocks' ) }</p>
+							</Notice>
+						</>
+					) }
 				</PanelBody>
+
+				{ 'synced' !== dataSource && (
+					<WrittenReviewsPanel attributes={ attributes } setAttributes={ setAttributes } />
+				) }
 
 				{ /* INNER element (block.json's `inner`, the grid/flex layout —
 				   Spec 35 THE PLACEMENT RULE TIER 1) — `columns` is its only
@@ -670,13 +702,30 @@ export default function Edit( { attributes, setAttributes } ) {
 				<div className="sgs-google-reviews__placeholder">
 					<div className="sgs-google-reviews__placeholder-icon">⭐⭐⭐⭐⭐</div>
 					<h3>{ __( 'Google Reviews', 'sgs-blocks' ) }</h3>
-					<p>
-						{ __( 'Configure Google API settings in WordPress admin to display reviews.', 'sgs-blocks' ) }
-					</p>
+					{ showsWritten ? (
+						<>
+							<p>
+								{ businessName ? businessName + ' — ' : '' }
+								{ averageRating ? averageRating + ' ' : '' }
+								{ ( reviews || [] ).length > 0
+									? ( reviewCount || ( reviews || [] ).length ) + ' ' + __( 'written reviews', 'sgs-blocks' )
+									: __( 'Add your reviews in the "Written reviews" panel.', 'sgs-blocks' ) }
+							</p>
+							{ ( reviews || [] ).slice( 0, 3 ).map( ( review, index ) => (
+								<p key={ review._key || index } className="sgs-google-reviews__placeholder-settings">
+									<strong>{ review.author }</strong> { review.text }
+								</p>
+							) ) }
+						</>
+					) : (
+						<p>
+							{ __( 'Configure Google API settings in WordPress admin to display reviews.', 'sgs-blocks' ) }
+						</p>
+					) }
 					<p className="sgs-google-reviews__placeholder-settings">
 						<strong>{ __( 'Variant:', 'sgs-blocks' ) }</strong> { variant }<br />
 						<strong>{ __( 'Max Reviews:', 'sgs-blocks' ) }</strong> { maxReviews }<br />
-						{ placeId && (
+						{ ! showsWritten && placeId && (
 							<>
 								<strong>{ __( 'Place ID:', 'sgs-blocks' ) }</strong> { placeId }
 							</>

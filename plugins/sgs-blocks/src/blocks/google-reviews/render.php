@@ -58,6 +58,11 @@ if ( 'slider' === $variant && $sgs_gr_loop_carousel ) {
 	$sgs_gr_list_fx_attr .= ' data-sgs-loop="1"';
 }
 $place_id           = $attributes['placeId'] ?? Google_Reviews_Settings::get_settings()['place_id'] ?? '';
+// `inline` renders the reviews the client typed into the block (includes/helpers-reviews-inline.php);
+// `synced` reads Google. `auto` (the default) is `inline` when the block holds written reviews and
+// `synced` otherwise, so a converter that lifts reviews into the block needs no companion setting.
+$data_source_attr   = $attributes['dataSource'] ?? 'auto';
+$data_source        = ( 'inline' === $data_source_attr || ( 'synced' !== $data_source_attr && ! empty( $attributes['reviews'] ) ) ) ? 'inline' : 'synced';
 // `columns` is a TIER OBJECT (Spec 35 pass 4, 2026-08-11) — read each tier via
 // the normaliser, never the raw attribute (a cast on an unresolved array
 // throws "Array to int/string conversion", the D569/D570 bug class this
@@ -123,7 +128,10 @@ $dummy_reviews = array(
 	),
 );
 
-if ( empty( $place_id ) ) {
+if ( 'inline' === $data_source ) {
+	// Written reviews: the client's own text, never the demo reviews below and never a Google fetch.
+	$data = sgs_reviews_inline_data( $attributes );
+} elseif ( empty( $place_id ) ) {
 	// No API key configured — use dummy content to showcase styling.
 	$data = array(
 		'reviews'         => $dummy_reviews,
@@ -155,9 +163,10 @@ $business_name = $data['displayName']['text'] ?? '';
 $filtered_reviews = array_filter(
 	$all_reviews,
 	function ( $review ) use ( $min_rating, $text_only, $exclude_keywords ) {
-		$review_rating = $review['rating'] ?? 0;
+		// A written review may carry no rating: it has nothing to fall below the minimum.
+		$review_rating = $review['rating'] ?? null;
 
-		if ( $review_rating < $min_rating ) {
+		if ( null !== $review_rating && $review_rating < $min_rating ) {
 			return false;
 		}
 
@@ -505,21 +514,25 @@ if ( ! function_exists( 'sgs_render_stars_svg' ) ) {
 // Schema.org JSON-LD (emitted before the wrapper element).
 // ───────────────────────────────────────────────────────────────────────────
 
-$schema = array(
-	'@context'        => 'https://schema.org',
-	'@type'           => 'LocalBusiness',
-	'name'            => $business_name,
-	'aggregateRating' => array(
-		'@type'       => 'AggregateRating',
-		'ratingValue' => $rating,
-		'reviewCount' => $rating_count,
-	),
-);
+// Written reviews emit NO review schema: Google's review-snippet guidance makes reviews that the
+// reviewed business controls about itself ineligible, and there is no switch to force it on.
+if ( 'inline' !== $data_source ) {
+	$schema = array(
+		'@context'        => 'https://schema.org',
+		'@type'           => 'LocalBusiness',
+		'name'            => $business_name,
+		'aggregateRating' => array(
+			'@type'       => 'AggregateRating',
+			'ratingValue' => $rating,
+			'reviewCount' => $rating_count,
+		),
+	);
 
-// One shared encoder (FR-30-9), using JSON_HEX_TAG: without it, an unescaped
-// `</script>` in any schema value could close this tag prematurely.
-// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-encoded ld+json via Sgs_Schema HEX flags, not HTML.
-echo \SGS\Blocks\Sgs_Schema::script_tag( $schema );
+	// One shared encoder (FR-30-9), using JSON_HEX_TAG: without it, an unescaped
+	// `</script>` in any schema value could close this tag prematurely.
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-encoded ld+json via Sgs_Schema HEX flags, not HTML.
+	echo \SGS\Blocks\Sgs_Schema::script_tag( $schema );
+}
 
 // ───────────────────────────────────────────────────────────────────────────
 // Build interior HTML
@@ -662,13 +675,23 @@ else :
 		<?php echo $sgs_gr_list_fx_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built entirely from literal strings, no dynamic value. ?>
 		<?php echo $gr_nav_enabled ? 'data-wp-on--scroll="actions.syncActiveDot"' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal string, no dynamic value. ?>
 	>
+		<?php $gr_card_n = 0; ?>
 		<?php foreach ( $reviews as $review ) : ?>
 			<?php
-			$author        = $review['authorAttribution']['displayName'] ?? __( 'Anonymous', 'sgs-blocks' );
+			++$gr_card_n;
+			$author        = ( $review['authorAttribution']['displayName'] ?? '' ) ?: __( 'Anonymous', 'sgs-blocks' );
 			$author_photo  = $review['authorAttribution']['photoUri'] ?? '';
 			$text          = $review['text']['text'] ?? '';
-			$review_rating = $review['rating'] ?? 0;
-			$publish_time  = isset( $review['publishTime'] ) ? strtotime( $review['publishTime'] ) : 0;
+			// Absent for a written review with no rating: no stars are drawn for it.
+			$review_rating = $review['rating'] ?? null;
+			$publish_time  = ! empty( $review['publishTime'] ) ? strtotime( $review['publishTime'] ) : 0;
+			// Written reviews only: the date as typed, the reviewer detail line and the initials colour.
+			$date_label    = (string) ( $review['dateLabel'] ?? '' );
+			$review_meta   = (string) ( $review['meta'] ?? '' );
+			if ( ! empty( $review['avatarColour'] ) ) {
+				// One scoped rule per card (the registry's nth-child pattern), never an inline style.
+				$gr_responsive_css .= $gr_root_sel . ' .sgs-google-reviews__list > .sgs-google-reviews__review:nth-child(' . $gr_card_n . ') .sgs-google-reviews__avatar-initials{background:' . sgs_colour_value( (string) $review['avatarColour'] ) . ';}';
+			}
 			?>
 			<article class="sgs-google-reviews__review">
 				<?php if ( $show_avatar ) : ?>
@@ -693,14 +716,20 @@ else :
 				<div class="sgs-google-reviews__review-content">
 					<div class="sgs-google-reviews__review-header">
 						<strong class="sgs-google-reviews__author"><?php echo esc_html( $author ); ?></strong>
-						<?php if ( $show_date && $publish_time ) : ?>
-							<time class="sgs-google-reviews__date" datetime="<?php echo esc_attr( gmdate( 'Y-m-d', $publish_time ) ); ?>">
-								<?php echo esc_html( human_time_diff( $publish_time, time() ) . ' ago' ); ?>
+						<?php if ( $show_date && ( $publish_time || '' !== $date_label ) ) : ?>
+							<time class="sgs-google-reviews__date"<?php echo $publish_time ? ' datetime="' . esc_attr( gmdate( 'Y-m-d', $publish_time ) ) . '"' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the datetime value is escaped above, the rest is literal. ?>>
+								<?php echo esc_html( '' !== $date_label ? $date_label : human_time_diff( $publish_time, time() ) . ' ago' ); ?>
 							</time>
 						<?php endif; ?>
 					</div>
 
-					<?php echo sgs_render_stars_svg( $review_rating, $gr_star_stroke_grad['defs'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+					<?php if ( '' !== $review_meta ) : ?>
+						<span class="sgs-google-reviews__meta"><?php echo esc_html( $review_meta ); ?></span>
+					<?php endif; ?>
+
+					<?php if ( null !== $review_rating ) : ?>
+						<?php echo sgs_render_stars_svg( $review_rating, $gr_star_stroke_grad['defs'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+					<?php endif; ?>
 
 					<?php if ( ! empty( $text ) ) : ?>
 						<p class="sgs-google-reviews__text"><?php echo esc_html( $text ); ?></p>

@@ -31,6 +31,7 @@
 				"grayscale"
 			],
 			"collection": true,
+			"arrayContentLift": true,
 			"imageControls": false,
 			"_comment_mediaElements": "Rule 37-media-no-handroll fix. The reviewer avatar photo (pulled live from the Google Places API, rendered by this block's own render.php loop) now routes its object-fit through the shared media-element atom layer instead of a style.css literal. This is a NEW client control -- no pre-existing object-fit picker on this block. render.php emits the atom's --sgs-media-object-fit custom property scoped to the block wrapper ($gr_uid) and appends the shared .sgs-media-el marker class to each avatar <img>; style.css no longer hardcodes object-fit on .sgs-google-reviews__avatar img, relying on assets/css/media-atoms/object-fit.css's cover fallback (identical default).",
 			"mediaElements": [
@@ -222,6 +223,91 @@
 			]
 		},
 		"placeId": {
+			"type": "string",
+			"default": ""
+		},
+		"dataSource": {
+			"type": "string",
+			"default": "auto",
+			"enum": [
+				"auto",
+				"synced",
+				"inline"
+			],
+			"description": "auto (default): the written reviews when there are any, otherwise Google. synced: always Google (needs a place ID and API key, returns at most 5 reviews). inline: always the written reviews."
+		},
+		"reviews": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "object",
+				"properties": {
+					"author": {
+						"type": "string",
+						"role": "text-content"
+					},
+					"text": {
+						"type": "string",
+						"role": "text-content"
+					},
+					"rating": {
+						"type": "number",
+						"role": "rating",
+						"minimum": 0,
+						"maximum": 5,
+						"description": "Optional. A written review with no rating renders without stars and is never dropped by the minimum-rating filter."
+					},
+					"date": {
+						"type": "string",
+						"role": "text-content",
+						"description": "Free text shown as written ('2 years ago', 'March 2026'). Shown in preference to a computed relative time."
+					},
+					"datePublished": {
+						"type": "string",
+						"description": "Optional ISO date (YYYY-MM-DD) of the review. Used for the machine-readable datetime and for sorting; the visible text comes from 'date' when set."
+					},
+					"photo": {
+						"type": "object",
+						"role": "image-object",
+						"properties": {
+							"url": {
+								"type": "string"
+							},
+							"alt": {
+								"type": "string"
+							}
+						}
+					},
+					"meta": {
+						"type": "string",
+						"role": "text-content",
+						"description": "Reviewer detail line, for example 'Local Guide · 11 reviews'."
+					},
+					"url": {
+						"type": "string",
+						"role": "url-href",
+						"description": "Link to the original review."
+					},
+					"avatarColour": {
+						"type": "string",
+						"description": "Initials-avatar background when there is no photo. A palette slug or a CSS colour."
+					},
+					"_key": {
+						"type": "string",
+						"_note": "Client-generated stable identity (src/utils/generateItemKey.js), not a client-visible field. Keeps an item's editor state through reorder, add and remove."
+					}
+				}
+			}
+		},
+		"averageRating": {
+			"type": "number",
+			"default": 0
+		},
+		"reviewCount": {
+			"type": "number",
+			"default": 0
+		},
+		"businessName": {
 			"type": "string",
 			"default": ""
 		},
