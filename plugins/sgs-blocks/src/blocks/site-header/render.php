@@ -38,6 +38,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-breakpoints.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
 require_once dirname( __DIR__, 3 ) . '/includes/sgs-header-float-css.php';
+require_once dirname( __DIR__, 3 ) . '/includes/sgs-header-force-solid.php';
 
 // Deterministic, content-addressed uid — mirrors SGS_Container_Wrapper's own
 // md5( wp_json_encode( $attributes ) ) derivation (class-sgs-container-wrapper.php)
@@ -140,13 +141,14 @@ $sh_shrink      = isset( $attributes['headerShrink'] ) ? $attributes['headerShri
 $sh_hide        = isset( $attributes['headerHideOnScroll'] ) ? $attributes['headerHideOnScroll'] : array();
 $sh_contrast    = isset( $attributes['contrastSafe'] ) ? $attributes['contrastSafe'] : array();
 
-// FORCE-SOLID IS A TRANSPARENT SUPPRESSOR, NOT A COMPETING PAINT.
-// Force-solid means "do not go transparent at this tier". An `!important`
-// background cannot be undone per tier (`revert` would revert past the block's
-// own background too), so the mode is resolved here instead of painting a
-// competing background: no !important, no cancel declaration, and
-// Transparent's own merge below stays the single writer of
-// `background`/`position`.
+// FORCE-SOLID PAINTS THE HEADER'S RESTING BACKGROUND, THROUGH THE MERGE.
+// Force-solid means "solid at this tier": Transparent resolves off here (below)
+// AND the header's own fill, or the theme surface token when it has none, is
+// contributed as a fourth entry of the merge (sgs_header_force_solid_entry()),
+// so the merge stays the single writer of `background`. Painting it anywhere
+// else would lose to the merge's `!important`, and a wider transparent tier is
+// cancelled with `background:revert !important`, which erases the block's own
+// fill unless a `background` is contributed at this tier.
 // Every tier is resolved concrete, which the emitters handle identically (the
 // differs-from-the-tier-above minimisation still collapses equal tiers).
 // DIRECTION. Transparent has TWO states — see-through at rest, solid once
@@ -205,6 +207,9 @@ $css .= sgs_merge_tri_state_declarations(
 				'z-index'  => '100',
 			),
 		),
+		// Listed before Transparent: a tier that is force-solid has Transparent
+		// resolved off, so the two never write `background` at the same tier.
+		sgs_header_force_solid_entry( $attributes ),
 		array(
 			// Under solid-first the header RESTS solid, so the resting rule must
 			// not receive the transparent declarations at all — transparency

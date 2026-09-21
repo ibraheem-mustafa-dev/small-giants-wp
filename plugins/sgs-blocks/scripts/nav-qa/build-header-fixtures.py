@@ -278,6 +278,13 @@ FIXTURES = [
      "build": page_drawer_submenus, "header": {}},
     {"slug": "qa-hdr-hover-parity", "title": "underline hover parity: plain, dropdown and mega items",
      "build": page_hover_parity, "header": {}},
+    # U-1: transparent on desktop, force-solid on mobile (the combination whose mobile
+    # background the merge used to revert away). `contrastSafe` and `headerTransparent`
+    # are tier objects.
+    {"slug": "qa-hdr-force-solid", "title": "transparent on desktop, force-solid on mobile",
+     "build": page_full_nav,
+     "header": {"headerTransparent": {"desktop": "on"},
+                "contrastSafe": {"mobile": "force-solid"}}},
 ]
 
 
