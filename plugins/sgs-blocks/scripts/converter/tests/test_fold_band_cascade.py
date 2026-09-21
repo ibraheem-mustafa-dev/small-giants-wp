@@ -83,7 +83,10 @@ def test_band_padding_background_textalign_transfer(owner):
     # recorded gap (Step-7 Rule-4 accounting; background-color has no
     # CONTENT/GRID/OUTER attr on sgs/container today, so it stays a
     # NO_DESTINATION gap, never a silent drop).
-    assert attrs.get("contentBandPadding") == {"top": "40px"}, (attrs, gaps)
+    # TIER-of-BOXES shape (the block default is {"desktop": {}}; the fold now files each write
+    # under its own tier key like ElementResult.attrs()). The flat {"top": "40px"} this test used
+    # to pin is the legacy shape the PHP reader only tolerates as "desktop".
+    assert attrs.get("contentBandPadding") == {"desktop": {"top": "40px"}}, (attrs, gaps)
 
     def _accounted(prop: str) -> bool:
         in_attrs = any(v == "#fff7f0" for v in attrs.values())

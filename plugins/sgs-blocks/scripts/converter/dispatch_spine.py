@@ -337,6 +337,40 @@ def process_element(ctx: Any, decls: list[Any]) -> ElementResult:
             )
         for w in result.writes:
             write_is_dict = isinstance(w.value, dict)
+            # TIER-of-BOXES destination (contentBandPadding / contentBandMargin /
+            # gridItemPadding once migrated, Phase 2 2026-09-06): ONE attr whose
+            # value is {desktop:{top,right,bottom,left}, tablet:{...}, mobile:{...}}.
+            # ElementResult.attrs() and _check_conservation already file each write
+            # under its OWN tier key; this fold path must do the same. Merging the
+            # box SIDES of every tier into one flat dict made a band whose padding
+            # differs by device (`0 24px` on desktop, `0` on mobile) raise a false
+            # DESTINATION COLLISION and the whole section was dropped. A real
+            # collision is the same side, within the same tier, with two different
+            # values from two folded nodes.
+            if write_is_dict and db_lookup.box_family_is_tier_shaped(dest.block_slug, w.attr):
+                folded = dest.attrs.get(w.attr)
+                if folded is not None and not isinstance(folded, dict):
+                    raise ConservationError(
+                        f"DESTINATION SHAPE MISMATCH: attr {w.attr!r} for "
+                        f"{dest.block_slug!r} received both a box-object/tier-object "
+                        f"partial (dict) and a scalar value from different folded "
+                        f"nodes — ambiguous shape, one would be silently lost."
+                    )
+                if folded is None:
+                    folded = dest.attrs[w.attr] = {}
+                tier_key = tier_object_key(w.tier) or "desktop"
+                tier_box = folded.setdefault(tier_key, {})
+                for k, v in w.value.items():
+                    if k in tier_box and tier_box[k] != v:
+                        raise ConservationError(
+                            f"DESTINATION COLLISION: box-object/tier-object attr "
+                            f"{w.attr!r} for {dest.block_slug!r} received two "
+                            f"DIFFERENT values for key {k!r} within tier "
+                            f"{tier_key!r} ({tier_box[k]!r} vs {v!r}) from "
+                            f"different folded nodes — one would be silently lost."
+                        )
+                    tier_box.setdefault(k, v)
+                continue
             # qc-council finding #4 (2026-07-09): the per-key box-object merge
             # path is gated on ``db_lookup.box_family_for(dest.block_slug,
             # w.attr)`` — the sole legitimate signal (box-object interface

@@ -368,3 +368,55 @@ def test_destination_fold_non_box_dict_attr_written_twice_raises_collision(conn,
     process_element(_ctx(conn, dest=dest), [Decl("background-image", "a.jpg", "Base")])
     with pytest.raises(ConservationError, match="DESTINATION COLLISION"):
         process_element(_ctx(conn, dest=dest), [Decl("background-image", "42", "Base")])
+
+
+# ---------------------------------------------------------------------------
+# TIER-of-BOXES destination fold (2026-09-21). contentBandPadding is ONE attr
+# holding {desktop:{sides}, tablet:{sides}, mobile:{sides}}. The fold path must
+# file each write under its own tier, like ElementResult.attrs() does; merging
+# the sides of every tier into one flat dict raised a false DESTINATION
+# COLLISION whenever a band's padding differed by device, and the whole
+# section was dropped (Eye Care ticker, `0 24px` desktop vs `0` mobile).
+# ---------------------------------------------------------------------------
+
+def test_destination_fold_tier_of_boxes_files_each_write_under_its_own_tier(conn, monkeypatch):
+    calls = iter([
+        Write("contentBandPadding", {"top": "0", "right": "24px", "bottom": "0", "left": "24px"}, "padding", "Base"),
+        Write("contentBandPadding", {"top": "0", "right": "0", "bottom": "0", "left": "0"}, "padding", "Mobile"),
+    ])
+    monkeypatch.setitem(REGISTRY, "outer_box", lambda decl, ctx: next(calls))
+    parent_attrs: dict = {}
+    dest = Destination(block_slug="sgs/container", attrs=parent_attrs)
+
+    process_element(_ctx(conn, dest=dest), [Decl("padding", "0 24px", "Base")])
+    process_element(_ctx(conn, dest=dest), [Decl("padding", "0", "Mobile")])
+    assert parent_attrs["contentBandPadding"] == {
+        "desktop": {"top": "0", "right": "24px", "bottom": "0", "left": "24px"},
+        "mobile": {"top": "0", "right": "0", "bottom": "0", "left": "0"},
+    }
+
+
+def test_destination_fold_tier_of_boxes_same_side_same_tier_still_collides(conn, monkeypatch):
+    calls = iter([
+        Write("contentBandPadding", {"right": "24px"}, "padding-right", "Base"),
+        Write("contentBandPadding", {"right": "40px"}, "padding-right", "Base"),
+    ])
+    monkeypatch.setitem(REGISTRY, "outer_box", lambda decl, ctx: next(calls))
+    dest = Destination(block_slug="sgs/container", attrs={})
+
+    process_element(_ctx(conn, dest=dest), [Decl("padding-right", "24px", "Base")])
+    with pytest.raises(ConservationError, match="DESTINATION COLLISION"):
+        process_element(_ctx(conn, dest=dest), [Decl("padding-right", "40px", "Base")])
+
+
+def test_destination_fold_tier_of_boxes_scalar_after_dict_is_a_shape_mismatch(conn, monkeypatch):
+    calls = iter([
+        Write("contentBandPadding", {"right": "24px"}, "padding-right", "Base"),
+        Write("contentBandPadding", "20px", "padding", "Base"),
+    ])
+    monkeypatch.setitem(REGISTRY, "outer_box", lambda decl, ctx: next(calls))
+    dest = Destination(block_slug="sgs/container", attrs={})
+
+    process_element(_ctx(conn, dest=dest), [Decl("padding-right", "24px", "Base")])
+    with pytest.raises(ConservationError, match="DESTINATION SHAPE MISMATCH"):
+        process_element(_ctx(conn, dest=dest), [Decl("padding", "20px", "Base")])
