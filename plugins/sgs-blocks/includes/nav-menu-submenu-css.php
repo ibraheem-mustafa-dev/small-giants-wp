@@ -429,9 +429,7 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		// on the `.submenu-wrap` rule above. Written ONLY when submenuShadow is
 		// non-empty, so the rule's own `var(--sgs-nm-submenu-filter, none)`
 		// fallback is what an untouched nav actually renders.
-		$sgs_nm_submenu_filter = '' !== $sgs_nm_submenu_shadow
-			? 'drop-shadow(' . sgs_shadow_value_to_drop_shadow( $sgs_nm_submenu_shadow ) . ')'
-			: '';
+		$sgs_nm_submenu_filter = sgs_shadow_value_to_drop_shadow( $sgs_nm_submenu_shadow );
 
 		$sgs_nm_panel_vars = '';
 		if ( null !== $sgs_nm_submenu_border_w && '' !== $sgs_nm_submenu_border_w ) {
