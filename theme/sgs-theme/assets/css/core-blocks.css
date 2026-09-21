@@ -43,6 +43,8 @@
 	padding: var(--wp--preset--spacing--30);
 	min-width: 220px;
 }
+@media (forced-colors:active){.wp-block-navigation .has-child .wp-block-navigation__submenu-container:not(:focus-visible){outline:1px solid CanvasText;outline-offset:-1px}}
+
 
 /* Submenu links — explicit dark text regardless of transparent header or
    style-variation global link colour. The submenu background is always

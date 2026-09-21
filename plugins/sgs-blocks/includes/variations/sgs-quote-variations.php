@@ -51,6 +51,12 @@ function sgs_register_quote_styles(): void {
 					border-radius: 8px;
 					box-shadow: 0 2px 8px rgba( 0, 0, 0, 0.08 );
 				}
+				@media (forced-colors:active) {
+					.wp-block-sgs-quote.is-style-testimonial:not(:focus-visible) {
+						outline: 1px solid CanvasText;
+						outline-offset: -1px;
+					}
+				}
 			',
 		)
 	);

@@ -1028,5 +1028,32 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 110
+  },
+  {
+    "id": "check-shadow-fallback-php",
+    "cmd": "python scripts/check-shadow-fallback-php.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 111
+  },
+  {
+    "id": "check-shadow-fallback-php-self-test",
+    "cmd": "python scripts/check-shadow-fallback-php.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 112
+  },
+  {
+    "id": "test-shadow-fallback-css-self-test",
+    "cmd": "node scripts/shadow-fallback/run.js --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 113
   }
 ]

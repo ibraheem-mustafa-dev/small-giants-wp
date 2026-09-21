@@ -29,6 +29,12 @@ function sgs_register_post_grid_styles(): void {
 					border-radius: var( --wp--custom--border-radius--medium );
 					border: 0;
 				}
+				@media (forced-colors:active) {
+					.wp-block-sgs-post-grid.is-style-elevated .sgs-post-grid__card:not(:focus-visible) {
+						outline: 1px solid CanvasText;
+						outline-offset: -1px;
+					}
+				}
 			',
 		)
 	);

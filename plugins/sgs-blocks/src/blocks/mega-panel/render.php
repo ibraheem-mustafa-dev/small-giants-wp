@@ -609,6 +609,7 @@ if ( '' !== $group_border_resting_gradient ) {
 // box-shadow transition. `border-color` changes with NO transition (an
 // instant colour swap, not part of the animated property set). ------------
 $css .= $style_crd . $rel_group . '{position:relative;transition:transform .2s ease;}';
+// sgs-shadow-fallback: decorative ::after glow, not the panel edge
 $css .= $style_crd . $rel_group . '::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:0 20px 40px -12px rgba(0,0,0,.28);opacity:0;transition:opacity .3s ease;pointer-events:none;}';
 $css .= sgs_hover_state_rules( $style_crd . $rel_group, 'transform:translateY(-3px);border-color:var(--sgs-mm-accent-border)', ':focus-within' );
 $css .= sgs_hover_state_rules( $style_crd . $rel_group, 'opacity:1', ':focus-within', '::after' );

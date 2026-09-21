@@ -680,6 +680,7 @@ function sgs_shadow_decls( array $attributes, array $map ): array {
 			'' !== $hover_colour ? $hover_colour : $read( $map['colour'] ?? null )
 		);
 		if ( '' !== $hover ) {
+			// sgs-shadow-fallback: hover state only; the resting rule carries the forced-colours fallback
 			$out['hover'][] = 'box-shadow:' . $hover;
 		}
 	}

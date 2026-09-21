@@ -29,6 +29,12 @@ function sgs_register_testimonial_styles(): void {
 					border-radius: var( --wp--custom--border-radius--medium );
 					border: 0;
 				}
+				@media (forced-colors:active) {
+					.sgs-testimonial.is-style-elevated:not(:focus-visible) {
+						outline: 1px solid CanvasText;
+						outline-offset: -1px;
+					}
+				}
 			',
 		)
 	);

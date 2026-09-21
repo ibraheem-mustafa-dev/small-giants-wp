@@ -29,6 +29,12 @@ function sgs_register_info_box_styles(): void {
 					border-radius: var( --wp--custom--border-radius--medium );
 					border: 0;
 				}
+				@media (forced-colors:active) {
+					.wp-block-sgs-info-box.is-style-elevated:not(:focus-visible) {
+						outline: 1px solid CanvasText;
+						outline-offset: -1px;
+					}
+				}
 			',
 		)
 	);

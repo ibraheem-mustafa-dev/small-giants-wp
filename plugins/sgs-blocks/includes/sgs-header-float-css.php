@@ -264,6 +264,7 @@ if ( ! function_exists( 'sgs_header_float_css' ) ) {
 				isset( $attributes['shadowScrolled'] ) && is_string( $attributes['shadowScrolled'] ) ? $attributes['shadowScrolled'] : '',
 				isset( $attributes['shadowScrolledColour'] ) && is_string( $attributes['shadowScrolledColour'] ) ? $attributes['shadowScrolledColour'] : ''
 			);
+			// sgs-shadow-fallback: restates the resting shadow after a suppress rule; the wrapper base rule carries the forced-colours fallback
 			$restate = 'box-shadow:' . $resting_shadow . ';';
 
 			if ( $any_suppress && $solid_first ) {

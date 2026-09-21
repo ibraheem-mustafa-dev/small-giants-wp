@@ -218,6 +218,7 @@ $tb_extra_scoped_css = '';
 if ( 'icon-circle' === $badge_style && '' !== $icon_circle_shadow_colour_hover ) {
 	$safe_icon_circle_shadow_hover = sgs_shadow_value_composed( $icon_circle_shadow, $icon_circle_shadow_colour_hover );
 	if ( '' !== $safe_icon_circle_shadow_hover ) {
+		// sgs-shadow-fallback: hover state only; the resting rule carries the forced-colours fallback
 		$tb_extra_scoped_css .= sgs_hover_state_rules( $uid_scope . ' .sgs-trust-bar__circle', 'box-shadow:' . $safe_icon_circle_shadow_hover, ':focus-within' );
 	}
 }
@@ -544,6 +545,7 @@ if ( 'image-badge' === $badge_style ) {
 	if ( '' !== $badge_image_shadow_colour_hover ) {
 		$safe_badge_image_shadow_hover = sgs_shadow_value_composed( $badge_image_shadow, $badge_image_shadow_colour_hover );
 		if ( '' !== $safe_badge_image_shadow_hover ) {
+			// sgs-shadow-fallback: hover state only; the resting rule carries the forced-colours fallback
 			$tb_extra_scoped_css .= sgs_hover_state_rules( $img_sel, 'box-shadow:' . $safe_badge_image_shadow_hover, ':focus-within' );
 		}
 	}

@@ -578,6 +578,8 @@ h2.wc-block-mini-cart__title {
 	   at extreme contrast ratios, so a fixed-alpha shadow backstops it. */
 	box-shadow: 0 1px 3px rgb(0 0 0 / .08), 0 0 0 1px var(--sgs-elevation-line);
 }
+@media (forced-colors:active){#sgs-shop-filters:not(:focus-visible),.sgs-shop-filters:not(:focus-visible){outline:1px solid CanvasText;outline-offset:-1px}}
+
 
 /* Filters heading */
 /* `dialog.show()` (the desktop, non-modal path) moves focus INTO the dialog, so
@@ -952,6 +954,8 @@ dialog.sgs-shop-filters {
 	cursor: pointer;
 	transition: transform 0.2s ease, opacity 0.2s ease;
 }
+@media (forced-colors:active){.sgs-shop-filters__sticky-trigger:not(:focus-visible){outline:1px solid CanvasText;outline-offset:-1px}}
+
 
 .sgs-shop-filters__sticky-trigger[hidden] {
 	display: none;

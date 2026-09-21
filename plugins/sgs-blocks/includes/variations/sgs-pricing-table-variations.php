@@ -29,6 +29,12 @@ function sgs_register_pricing_table_styles(): void {
 					border-radius: var( --wp--custom--border-radius--medium );
 					border: 0;
 				}
+				@media (forced-colors:active) {
+					.wp-block-sgs-pricing-table.is-style-elevated .sgs-pricing-table__plan:not(:focus-visible) {
+						outline: 1px solid CanvasText;
+						outline-offset: -1px;
+					}
+				}
 			',
 		)
 	);

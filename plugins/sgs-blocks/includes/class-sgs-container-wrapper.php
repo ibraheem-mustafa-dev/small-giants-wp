@@ -2540,6 +2540,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			if ( $shadow && $shadow_colour_hover && $uid ) {
 				$shadow_hover_value = sgs_shadow_value_composed( $shadow, $shadow_colour_hover );
 				if ( '' !== $shadow_hover_value ) {
+					// sgs-shadow-fallback: hover state only; the resting rule carries the forced-colours fallback
 					$responsive_css .= sgs_hover_state_rules( '.' . $uid, 'box-shadow:' . $shadow_hover_value, ':focus-within' );
 				}
 			}
