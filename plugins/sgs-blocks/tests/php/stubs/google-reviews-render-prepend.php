@@ -9,7 +9,8 @@
  * loaded first (php -d auto_prepend_file=...) and supplies them, plus a Google_Reviews_Settings whose
  * fetch is driven by two environment variables:
  *
- *   SGS_GR_TEST_MODE           live | error | empty     (what the Google fetch returns)
+ *   SGS_GR_TEST_MODE           live | error | empty | unrated  (what the Google fetch returns;
+ *                              `unrated` = one review, no rating and no count: ReviewsAggregateTest)
  *   SGS_GR_TEST_SETTINGS_PLACE the site-wide place ID from the plugin settings ('' = none)
  *
  * Because the harness only declares its stand-in when the class does not exist yet, this one wins.
@@ -65,6 +66,21 @@ namespace SGS\Blocks {
 				}
 				if ( 'empty' === $mode ) {
 					return array();
+				}
+				if ( 'unrated' === $mode ) {
+					return array(
+						'displayName' => array( 'text' => 'Ward End Eye Care' ),
+						'reviews'     => array(
+							array(
+								'authorAttribution' => array(
+									'displayName' => 'Unrated Google Reviewer',
+									'photoUri'    => '',
+								),
+								'text'              => array( 'text' => 'A review that carries no star rating.' ),
+								'publishTime'       => '2026-08-01T10:00:00Z',
+							),
+						),
+					);
 				}
 
 				return array(

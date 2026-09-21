@@ -1,9 +1,9 @@
-# Visual diff — `sgs/google-reviews` — 2026-09-21 (written reviews / typed mode)
+# Visual diff — `sgs/google-reviews` — 2026-09-21 (written reviews, placeholder gating, real editor canvas, slider default)
 
 ```
 verdict: PASS
 intent_capture_passed: true
-source_sha: f14814895
+source_sha: 8497df25ab3fde97
 blocks: google-reviews trustpilot-reviews
 target: sandybrown-nightingale-600381.hostingersite.com (probe page 3775, "[probe] google reviews written mode")
 date:   2026-09-21
@@ -51,3 +51,26 @@ Probe page 3775 now holds four `sgs/google-reviews` blocks (grid written, slider
 Capture for the eye (PNG gitignored, kept locally): `google-reviews-sample-list-1440.png` shows the three sample cards with coloured initials, stars, relative dates and the Google mark. `sgs/trustpilot-reviews` changed only its schema gate (a `placeholder` source no longer prints Review schema); its markup is untouched.
 
 Not verified: the editor canvas notices (built, not opened in a browser); the live Google path against the real API (tested through a stubbed fetch).
+
+## Real block editor, slider default and empty state (deploy of this change, Eye Care test site, probe page 47)
+
+Intent: selecting any variant in the block editor shows the real block (not a stand-in); the slider variant no longer crashes; the default display type is
+slider; a rating of 0.0 is never printed; a block with nothing to show says so in the editor and emits nothing on the front end.
+
+Measured in a real Chromium editor session (WordPress 7.1, logged in, block selected via the block-editor store), console errors captured:
+
+| Block on the probe page | Canvas result |
+|---|---|
+| sample reviews, grid | one short notice ("Sample reviews: these are invented examples. Replace them with real reviews before the page goes live."), then the real cards (Aisha Khan, James Wright, Sarah Patel), aggregate "5.0 3 reviews", Google mark; no console errors |
+| sample reviews, slider | same, as a slider with arrows and dots; no `React error #130` (it crashed before) |
+| written reviews, slider | real cards, "4.5 2 reviews" (mean of the two rated reviews, derived, no schema); no errors |
+| no data (auto, no reviews, no place ID) | editor-only information notice listing the ways to add reviews; front end emits 0 bytes (before: a stray 222-byte `<style>` from the shared hover filter, which is why the notice never showed) |
+| `sgs/gallery` (same crash class, unprefixed `ToolsPanel`) | selects cleanly, no errors |
+
+Cause of the crash: `ToolsPanel` imported by its unprefixed name is undefined in this WordPress (only `__experimentalToolsPanel` exists), so the Slider Settings panel threw as soon as the block was selected. Both `sgs/google-reviews` and `sgs/gallery` did this; the build gate now fails on any direct import of an aliased primitive.
+
+Front end (page 11, real homepage, cache cleared): the reviews block carries `sgs-google-reviews--slider` (the new default), the header reads "13 reviews" with no "0.0", 13 real cards, 0 broken images.
+
+Captures for the eye (R-31-13; PNGs gitignored, kept locally): `v8_selected-1.png` (sample slider in the editor), `v8_selected-3.png`.
+
+Not verified: the editor with a real Google place ID (live fetch was tested through a stub only).

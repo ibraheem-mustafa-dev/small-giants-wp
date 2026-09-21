@@ -170,6 +170,14 @@ function resolve_hover_excluded_controls( string $block_name ): array {
  * @return string Modified block HTML.
  */
 function inject_hover_effects( string $block_content, array $block ): string {
+	// A block that rendered nothing (a dynamic block with no data returns '') has no element to decorate.
+	// Without this guard the scoped <style> below was appended to the empty string: ~222 bytes of CSS for
+	// an element that does not exist, on the front end, and in the editor a non-empty ServerSideRender
+	// response, so a block's own empty-state placeholder never showed (found 2026-09-21, sgs/google-reviews).
+	if ( '' === trim( $block_content ) ) {
+		return $block_content;
+	}
+
 	$block_name = $block['blockName'] ?? '';
 
 	// Resolve per-block defaults for this block type.

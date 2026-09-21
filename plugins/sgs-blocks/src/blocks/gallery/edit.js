@@ -41,10 +41,11 @@ import {
 	ToggleControl,
 	RadioControl,
 	Spinner,
-	ToolsPanel,
-	ToolsPanelItem,
 	FocalPointPicker,
 } from '@wordpress/components';
+// ToolsPanel/ToolsPanelItem exist only as `__experimental*` on WP 7.1 (unprefixed = undefined,
+// React error #130 on selecting the block): they must come from the primitives boundary.
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { useRef, useEffect, useMemo } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 import SgsColourPanel from '../../components/SgsColourPanel';

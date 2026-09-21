@@ -17,9 +17,14 @@ import {
 	RangeControl,
 	TextControl,
 	Notice,
-	ToolsPanel,
-	ToolsPanelItem,
 } from '@wordpress/components';
+// ToolsPanel / ToolsPanelItem exist only as `__experimental*` on WP 7.1. Importing the bare names from
+// '@wordpress/components' gives `undefined`, so selecting a slider block died with React error #130.
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import ServerSideRender from '@wordpress/server-side-render';
+import SsrPreviewGuard from '../../components/SsrPreviewGuard';
+import { SampleNotice, EmptyState, LoadingState, ErrorState } from './editor-preview';
+import { omitNullish, showsSampleNotice } from './preview-plan';
 import { ResponsiveOverride,
 	SgsBorderControl,
 	resolveColourToken,
@@ -33,9 +38,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		variant,
 		dataSource,
 		reviews,
-		averageRating,
-		reviewCount,
-		businessName,
 		placeId,
 		columns,
 		maxReviews,
@@ -93,13 +95,10 @@ export default function Edit( { attributes, setAttributes } ) {
 	// Sample reviews are invented, so they show only when the author explicitly picks them.
 	const showsSamples = 'placeholder' === dataSource;
 
-	// Nothing real to show on the live site: no written reviews to render, and Google (which this
-	// canvas cannot check) is the only other source. The front end renders nothing in that case.
-	const showsEmptyNotice = ! showsSamples && ( 'synced' === dataSource || ( reviews || [] ).length === 0 );
-
-	const blockProps = useBlockProps( {
-		className: `sgs-google-reviews sgs-google-reviews--${ variant } sgs-google-reviews--theme-${ theme }`,
-	} );
+	// The canvas is the server's own render (see editor-preview.js). The block root here is only the
+	// editor's selection wrapper: the real `.sgs-google-reviews` element is inside the preview, so it
+	// must not also carry the variant/theme classes or the front-end rules would style both.
+	const blockProps = useBlockProps( { className: 'sgs-google-reviews-editor' } );
 
 	return (
 		<>
@@ -709,52 +708,19 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				<div className="sgs-google-reviews__placeholder">
-					<div className="sgs-google-reviews__placeholder-icon">⭐⭐⭐⭐⭐</div>
-					<h3>{ __( 'Google Reviews', 'sgs-blocks' ) }</h3>
-					{ showsSamples && (
-						<Notice status="warning" isDismissible={ false } className="sgs-google-reviews__editor-notice">
-							<p>
-								{ __( 'Sample reviews are showing: three invented examples so you can build the layout. They are not real customer reviews. Before the page goes live, choose Automatic, Google or Written by me in "Reviews source" and use real reviews.', 'sgs-blocks' ) }
-							</p>
-						</Notice>
-					) }
-					{ ! showsSamples && showsEmptyNotice && (
-						<Notice status="info" isDismissible={ false } className="sgs-google-reviews__editor-notice">
-							<p>
-								{ __( 'This block shows nothing on the live site yet, because it has no real reviews to show. To fix that, do one of these:', 'sgs-blocks' ) }
-							</p>
-							<ul>
-								<li>{ __( 'Add your own reviews in the "Written reviews" panel.', 'sgs-blocks' ) }</li>
-								<li>{ __( 'Or set the Google Place ID and API key (Settings → SGS Google Reviews) so live reviews can load. This editor cannot check that connection, so a working one will still show reviews on the live site.', 'sgs-blocks' ) }</li>
-								<li>{ __( 'Or choose "Sample reviews" in "Reviews source" to build the layout with example reviews.', 'sgs-blocks' ) }</li>
-							</ul>
-						</Notice>
-					) }
-					{ ! showsSamples && ! showsEmptyNotice && (
-						<>
-							<p>
-								{ businessName ? businessName + ' — ' : '' }
-								{ averageRating ? averageRating + ' ' : '' }
-								{ ( reviewCount || ( reviews || [] ).length ) + ' ' + __( 'written reviews', 'sgs-blocks' ) }
-							</p>
-							{ ( reviews || [] ).slice( 0, 3 ).map( ( review, index ) => (
-								<p key={ review._key || index } className="sgs-google-reviews__placeholder-settings">
-									<strong>{ review.author }</strong> { review.text }
-								</p>
-							) ) }
-						</>
-					) }
-					<p className="sgs-google-reviews__placeholder-settings">
-						<strong>{ __( 'Variant:', 'sgs-blocks' ) }</strong> { variant }<br />
-						<strong>{ __( 'Max Reviews:', 'sgs-blocks' ) }</strong> { maxReviews }<br />
-						{ ! showsWritten && ! showsSamples && placeId && (
-							<>
-								<strong>{ __( 'Place ID:', 'sgs-blocks' ) }</strong> { placeId }
-							</>
-						) }
-					</p>
-				</div>
+				{ showsSampleNotice( attributes ) && <SampleNotice /> }
+				{ /* The canvas IS the server's render. `omitNullish` only strips nulls (a JS null becomes "" in the
+				   REST query string and the block-renderer 400s on it); every attribute still reaches render.php.
+				   "Nothing to show" is decided by the server: it renders nothing, and EmptyState explains why. */ }
+				<SsrPreviewGuard>
+					<ServerSideRender
+						block="sgs/google-reviews"
+						attributes={ omitNullish( attributes ) }
+						EmptyResponsePlaceholder={ EmptyState }
+						LoadingResponsePlaceholder={ LoadingState }
+						ErrorResponsePlaceholder={ ErrorState }
+					/>
+				</SsrPreviewGuard>
 			</div>
 		</>
 	);

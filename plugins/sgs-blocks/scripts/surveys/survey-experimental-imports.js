@@ -9,6 +9,12 @@
  *   --check   the gate — exit 1 on any raw import outside the barrel
  *   --self-test  proves the transform and the gate can both fail
  *
+ * A FOURTH CHECK lives in lib/primitive-alias-imports.js: a direct import of an UNPREFIXED
+ * primitive alias (`ToolsPanel`, `ToolsPanelItem`, ...) from '@wordpress/components' or
+ * '@wordpress/block-editor'. On WP 7.1 those names are `undefined` (only the `__experimental*`
+ * spelling exists), so such an import builds green and then crashes the editor with React error
+ * #130. The alias list is derived from src/components/primitives/index.js, never hand-copied.
+ *
  * WHY (Spec 35 Phase 0 item 0d, D565)
  * -----------------------------------
  * Every component primitive this tree imports from WordPress is
@@ -48,6 +54,12 @@ const path = require( 'path' );
 // Used by --self-test AND by --fix, which refuses to write a file it cannot
 // parse. A codemod that emits a SyntaxError is worse than one that does nothing.
 const parser = require( '@babel/parser' );
+const {
+	loadAliases,
+	findUnprefixedAliasImports,
+	UNPREFIXED_EXEMPT,
+	isExempt,
+} = require( './lib/primitive-alias-imports' );
 
 const REPO_SRC = path.resolve( __dirname, '..', '..', 'src' );
 const BARREL_ABS = path.join( REPO_SRC, 'components', 'primitives' );
@@ -290,6 +302,37 @@ function collectNonImport() {
 	return { exempt, flagged };
 }
 
+/**
+ * Unprefixed-alias imports under `srcRoot`, split into exempt and flagged.
+ * The alias table is derived from `<srcRoot>/components/primitives/index.js`.
+ */
+function collectUnprefixed( srcRoot = REPO_SRC ) {
+	const barrel = path.join( srcRoot, 'components', 'primitives', 'index.js' );
+	const aliases = loadAliases( fs.readFileSync( barrel, 'utf8' ) );
+	const exempt = [];
+	const flagged = [];
+	for ( const f of walk( srcRoot ) ) {
+		if ( isBarrel( f ) ) continue;
+		const rel = path.relative( srcRoot, f ).split( path.sep ).join( '/' );
+		for ( const hit of findUnprefixedAliasImports( fs.readFileSync( f, 'utf8' ), aliases ) ) {
+			( isExempt( hit.name, rel ) ? exempt : flagged ).push( { rel, ...hit } );
+		}
+	}
+	return { aliases, exempt, flagged };
+}
+
+/** Exemption entries that no longer match a real import (stale debt). */
+function staleUnprefixedExemptions( exempt ) {
+	const seen = new Set( exempt.map( ( e ) => `${ e.name }|${ e.rel }` ) );
+	const stale = [];
+	for ( const [ name, entry ] of Object.entries( UNPREFIXED_EXEMPT ) ) {
+		for ( const rel of entry.files ) {
+			if ( ! seen.has( `${ name }|${ rel }` ) ) stale.push( `${ name } in ${ rel }` );
+		}
+	}
+	return stale;
+}
+
 function modeSurvey() {
 	const results = collect();
 	const bySymbol = new Map();
@@ -339,6 +382,14 @@ function modeSurvey() {
 	for ( const f of nonImport.flagged ) {
 		console.log( `    FLAGGED ${ f.rel }  [${ f.hits.map( ( h ) => h.alias ).join( ', ' ) }]` );
 	}
+
+	// Unprefixed alias imports: undefined on WP 7.1 unless exempted with a reason.
+	const unprefixed = collectUnprefixed();
+	console.log( '' );
+	console.log( `  UNPREFIXED alias imports (policed aliases: ${ unprefixed.aliases.size }):` );
+	if ( ! unprefixed.exempt.length && ! unprefixed.flagged.length ) console.log( '    none' );
+	for ( const h of unprefixed.exempt ) console.log( `    EXEMPT  ${ h.rel }  [${ h.name }]` );
+	for ( const h of unprefixed.flagged ) console.log( `    FLAGGED ${ h.rel }  [${ h.name } from ${ h.pkg }]` );
 	return 0;
 }
 
@@ -410,9 +461,31 @@ function modeCheck() {
 		console.log( '  reasoned entry to NON_IMPORT_EXEMPT in this file.' );
 		return 1;
 	}
+	// Unprefixed alias imports (undefined on WP 7.1 => React error #130 in the editor).
+	const unprefixed = collectUnprefixed();
+	const staleUnprefixed = staleUnprefixedExemptions( unprefixed.exempt );
+	if ( staleUnprefixed.length ) {
+		console.log( '' );
+		console.log( 'BUILD BLOCKED — STALE unprefixed-alias exemption(s); the import they excuse is gone:' );
+		staleUnprefixed.forEach( ( k ) => console.log( `  ${ k }` ) );
+		console.log( '  Remove the entry from UNPREFIXED_EXEMPT in scripts/surveys/lib/primitive-alias-imports.js.' );
+		return 1;
+	}
+	if ( unprefixed.flagged.length ) {
+		console.log( '' );
+		console.log( 'BUILD BLOCKED — unprefixed primitive alias imported directly from @wordpress (undefined on WP 7.1):' );
+		for ( const h of unprefixed.flagged ) {
+			console.log( `  ${ h.rel }: ${ h.name }  (from ${ h.pkg }; only ${ h.experimental } exists there)` );
+		}
+		console.log( '' );
+		console.log( '  The build passes and the block then dies in the editor with React error #130.' );
+		console.log( "  Import it from the barrel instead: import { ToolsPanel } from '<relative>/components/primitives';" );
+		return 1;
+	}
 	if ( results.length === 0 ) {
 		const ex = nonImport.exempt.length;
-		console.log( `[check-experimental-imports] PASS — every __experimental* component import goes through src/components/primitives${ ex ? ` (+${ ex } reasoned non-import exemption(s))` : '' }.` );
+		const uex = unprefixed.exempt.length;
+		console.log( `[check-experimental-imports] PASS — every __experimental* component import goes through src/components/primitives${ ex ? ` (+${ ex } reasoned non-import exemption(s))` : '' }; no unprefixed primitive alias is imported directly from @wordpress${ uex ? ` (+${ uex } reasoned BoxControl exemption(s))` : '' }.` );
 		return 0;
 	}
 	console.log( '' );
@@ -529,8 +602,92 @@ const CASES = [
 	},
 ];
 
+/**
+ * Unprefixed-alias controls, run against a PLANTED TEMP TREE (never the real src/), so the gate
+ * is proven able to fail. Returns { failures, total }.
+ */
+function selfTestUnprefixed() {
+	const os = require( 'os' );
+	const tmp = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-alias-gate-' ) );
+	let failures = 0;
+	let total = 0;
+	const check = ( name, ok, detail ) => {
+		total++;
+		if ( ! ok ) failures++;
+		console.log( `  [${ ok ? 'PASS' : 'FAIL' }] ${ name }` );
+		if ( ! ok && detail ) console.log( `         ${ detail }` );
+	};
+	const put = ( rel, text ) => {
+		const full = path.join( tmp, rel );
+		fs.mkdirSync( path.dirname( full ), { recursive: true } );
+		fs.writeFileSync( full, text, 'utf8' );
+	};
+	try {
+		// A miniature barrel: one components alias, one block-editor alias, one STABLE re-export.
+		put( 'components/primitives/index.js',
+			"export { __experimentalToolsPanel as ToolsPanel, __experimentalText as Text } from '@wordpress/components';\n" +
+			"export { __experimentalBorderRadiusControl as BorderRadiusControl } from '@wordpress/block-editor';\n" +
+			"export { LineHeightControl } from '@wordpress/block-editor';\n" );
+		// The exact defect: a direct unprefixed import, multi-line, with a comment inside it.
+		put( 'blocks/planted/edit.js',
+			"import {\n\tPanelBody,\n\t// a comment, with a comma\n\tToolsPanel,\n\tToolsPanelItem,\n} from '@wordpress/components';\n" );
+		put( 'blocks/planted-double-quote/edit.js',
+			'import { Text as T } from "@wordpress/components";\n' );
+		put( 'blocks/planted-block-editor/edit.js',
+			"import { BorderRadiusControl } from '@wordpress/block-editor';\n" );
+		// Clean shapes that must NOT be flagged.
+		put( 'blocks/clean-barrel/edit.js',
+			"import { ToolsPanel, Text } from '../../components/primitives';\nimport { PanelBody } from '@wordpress/components';\n" );
+		put( 'blocks/clean-stable/edit.js',
+			"import { LineHeightControl } from '@wordpress/block-editor';\n" );
+		// Wrong package for the alias: `Text` is not a block-editor export, so not a hit.
+		put( 'blocks/clean-wrong-pkg/edit.js',
+			"import { Text } from '@wordpress/block-editor';\n" );
+		// A half-done migration: the name imported from BOTH the barrel and WordPress. The duplicate
+		// binding is a recoverable parse error; it must not hide the direct import.
+		put( 'blocks/planted-duplicate/edit.js',
+			"import { ToolsPanel } from '../../components/primitives';\nimport { ToolsPanel } from '@wordpress/components';\n" );
+		// Only a comment mentions it.
+		put( 'blocks/clean-comment/edit.js',
+			"// import { ToolsPanel } from '@wordpress/components';\nconst x = 1;\n" );
+
+		const { aliases, exempt, flagged } = collectUnprefixed( tmp );
+		const names = flagged.map( ( h ) => `${ h.rel }:${ h.name }` ).sort();
+		check( 'alias table is DERIVED from the barrel (2 components + 1 block-editor, stable re-export excluded)',
+			aliases.size === 3 && aliases.has( 'ToolsPanel' ) && ! aliases.has( 'LineHeightControl' ),
+			`aliases=${ [ ...aliases.keys() ].join( ',' ) }` );
+		check( 'POSITIVE — a planted multi-line direct ToolsPanel import (comment inside the block) is caught',
+			names.includes( 'blocks/planted/edit.js:ToolsPanel' ), names.join( ' ' ) );
+		check( 'POSITIVE — an aliased local (`Text as T`) in double quotes is caught',
+			names.includes( 'blocks/planted-double-quote/edit.js:Text' ), names.join( ' ' ) );
+		check( 'POSITIVE — the block-editor package is policed too',
+			names.includes( 'blocks/planted-block-editor/edit.js:BorderRadiusControl' ), names.join( ' ' ) );
+		check( 'NEGATIVE — a name that is not in the barrel (ToolsPanelItem here) is not invented',
+			! names.includes( 'blocks/planted/edit.js:ToolsPanelItem' ), names.join( ' ' ) );
+		check( 'NEGATIVE — imports from the barrel, stable exports, wrong package and comments are clean',
+			! names.some( ( n ) => n.startsWith( 'blocks/clean-' ) ), names.join( ' ' ) );
+		check( 'POSITIVE — a duplicate-binding file (half-done migration) is still caught, not silently passed',
+			names.includes( 'blocks/planted-duplicate/edit.js:ToolsPanel' ), names.join( ' ' ) );
+		check( 'exactly the 4 planted violations are reported (no more, no fewer)',
+			flagged.length === 4 && exempt.length === 0, `flagged=${ flagged.length } exempt=${ exempt.length }` );
+
+		// Exemption plumbing: exempt is honoured, and a stale one is reported.
+		check( 'isExempt honours a recorded file and rejects an unrecorded one',
+			isExempt( 'BoxControl', 'components/ResponsiveBoxControls.js' ) && ! isExempt( 'BoxControl', 'blocks/planted/edit.js' ) );
+		const stale = staleUnprefixedExemptions( [] );
+		check( 'a stale exemption (import no longer present) is detected',
+			stale.length === Object.values( UNPREFIXED_EXEMPT ).reduce( ( n, e ) => n + e.files.length, 0 ),
+			`stale=${ stale.length }` );
+	} finally {
+		fs.rmSync( tmp, { recursive: true, force: true } );
+	}
+	return { failures, total };
+}
+
 function selfTest() {
 	let failures = 0;
+	const alias = selfTestUnprefixed();
+	failures += alias.failures;
 
 	// ── D566: the non-import blind spot ──────────────────────────────────────
 	const niCases = [
@@ -603,10 +760,10 @@ function selfTest() {
 
 	console.log( '' );
 	if ( failures ) {
-		console.log( `self-test: FAIL (${ failures } of ${ CASES.length + 6 } cases)` );
+		console.log( `self-test: FAIL (${ failures } of ${ CASES.length + 6 + alias.total } cases)` );
 		return 1;
 	}
-	console.log( `self-test: PASS (${ CASES.length + 6 } cases — both quote styles, both packages, statement deletion, idempotency, comment immunity, and both gate controls)` );
+	console.log( `self-test: PASS (${ CASES.length + 6 + alias.total } cases — both quote styles, both packages, statement deletion, idempotency, comment immunity, both gate controls, and the unprefixed-alias gate against a planted temp tree)` );
 	return 0;
 }
 

@@ -12,11 +12,10 @@ import {
 	SelectControl,
 	RangeControl,
 	TextControl,
-	BoxControl,
 	ToggleControl,
 	Notice,
 } from '@wordpress/components';
-import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
+import { BoxControl, ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
 import {
 	ResponsiveOverride,
 	SpacingControl,

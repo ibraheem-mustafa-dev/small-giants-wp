@@ -21,7 +21,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 // declarations inside this block's scoped <style> tag. Mirrors sgs/hero's
 // proven sanitiser (strips everything except letters, digits, dot, %).
 // CSS-keyword sanitiser — for free-text attrs (border-style) — letters + hyphen only.
-$variant            = $attributes['variant'] ?? 'grid';
+$variant            = $attributes['variant'] ?? 'slider';
 
 /*
  * Draggable + Inertia roster opt-in (Spec 38 FR-38-13), mirroring sgs/gallery.
@@ -97,8 +97,20 @@ $data_source = $sgs_gr_resolved['source'];
 $data        = $sgs_gr_resolved['data'];
 
 $all_reviews   = $data['reviews'] ?? array();
-$rating        = $data['rating'] ?? 0;
-$rating_count  = $data['userRatingCount'] ?? 0;
+/*
+ * The score and the count are only printed when there is a real one to print. A rating of 0 means
+ * "no rating", never "0.0 out of 5" over five empty stars. Where the figure comes from:
+ *   1. `averageRating` when the author set it (> 0), or the live Google rating;
+ *   2. otherwise the mean of the written reviews that carry a numeric rating, rounded to one decimal.
+ *      That is derived from the reviews the visitor can see (sgs_reviews_inline_data), not invented,
+ *      and it never feeds schema (sgs_reviews_may_emit_schema allows live Google data only);
+ *   3. otherwise no figure and no stars at all. The count still shows when there is one
+ *      (`reviewCount`, else how many written reviews there are).
+ */
+$rating        = (float) ( $data['rating'] ?? 0 );
+$rating_count  = (int) ( $data['userRatingCount'] ?? 0 );
+$has_rating    = $rating > 0;
+$has_count     = $rating_count > 0;
 $business_name = $data['displayName']['text'] ?? '';
 
 // Filter reviews.
@@ -489,14 +501,30 @@ if ( sgs_reviews_may_emit_schema( $data_source, $data ) ) {
 
 ob_start();
 
-if ( $show_aggregate && ! in_array( $variant, array( 'badge', 'floating-badge' ), true ) ) :
+// "N review(s)" for the aggregate and the badge; only called when the count is above zero.
+$gr_count_label = static function ( int $count ): string {
+	// Plain __() rather than _n(): the shared QA render harness stubs __() but not _n().
+	/* translators: %s: number of reviews. */
+	$label = 1 === $count ? __( '%s review', 'sgs-blocks' ) : __( '%s reviews', 'sgs-blocks' );
+	return sprintf( $label, number_format( $count ) );
+};
+
+if ( $show_aggregate && ! in_array( $variant, array( 'badge', 'floating-badge' ), true ) && ( $has_rating || $has_count ) ) :
 	?>
 	<div class="sgs-google-reviews__aggregate">
-		<?php echo sgs_render_stars_svg( $rating, $gr_star_stroke_grad['defs'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+		<?php
+		if ( $has_rating ) {
+			echo sgs_render_stars_svg( $rating, $gr_star_stroke_grad['defs'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+		?>
 		<div class="sgs-google-reviews__aggregate-text">
-			<strong><?php echo esc_html( number_format( $rating, 1 ) ); ?></strong>
+			<?php if ( $has_rating ) : ?>
+				<strong><?php echo esc_html( number_format( $rating, 1 ) ); ?></strong>
+			<?php endif; ?>
 			<?php
-			echo '<span class="sgs-google-reviews__count">' . esc_html( number_format( $rating_count ) ) . ' ' . esc_html__( 'reviews', 'sgs-blocks' ) . '</span>';
+			if ( $has_count ) {
+				echo '<span class="sgs-google-reviews__count">' . esc_html( $gr_count_label( $rating_count ) ) . '</span>';
+			}
 			?>
 		</div>
 		<?php if ( $show_google_logo ) : ?>
@@ -577,10 +605,18 @@ endif;
 if ( in_array( $variant, array( 'badge', 'floating-badge' ), true ) ) :
 	?>
 	<div class="sgs-google-reviews__badge">
-		<?php echo sgs_render_stars_svg( $rating, $gr_star_stroke_grad['defs'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+		<?php
+		if ( $has_rating ) {
+			echo sgs_render_stars_svg( $rating, $gr_star_stroke_grad['defs'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+		?>
 		<div class="sgs-google-reviews__badge-text">
-			<strong><?php echo esc_html( number_format( $rating, 1 ) ); ?></strong>
-			<span><?php echo esc_html( number_format( $rating_count ) ) . ' ' . esc_html__( 'reviews', 'sgs-blocks' ); ?></span>
+			<?php if ( $has_rating ) : ?>
+				<strong><?php echo esc_html( number_format( $rating, 1 ) ); ?></strong>
+			<?php endif; ?>
+			<?php if ( $has_count ) : ?>
+				<span><?php echo esc_html( $gr_count_label( $rating_count ) ); ?></span>
+			<?php endif; ?>
 		</div>
 		<?php if ( $show_google_logo ) : ?>
 			<img

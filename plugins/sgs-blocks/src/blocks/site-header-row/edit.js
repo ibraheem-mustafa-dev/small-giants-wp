@@ -12,7 +12,6 @@ import {
 	SelectControl,
 	RangeControl,
 	TextControl,
-	BoxControl,
 	Notice,
 } from '@wordpress/components';
 import {
@@ -36,7 +35,7 @@ import { CursorFieldRowControls } from '../../components/CursorFieldRowControls'
 import { ParticleTrailRowControls } from '../../components/ParticleTrailRowControls';
 import { GridDotFieldRowControls } from '../../components/GridDotFieldRowControls';
 import { FlowingGradientRowControls } from '../../components/FlowingGradientRowControls';
-import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
+import { BoxControl, ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
 import { resolveResponsiveTier, boxShorthand, resolveContentWidthPreview, contentBandPreview } from '../../utils';
 
 // TIER 2 (THE PLACEMENT RULE, Spec 35 Part O) — `row` is the block's

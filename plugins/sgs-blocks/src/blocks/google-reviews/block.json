@@ -212,7 +212,7 @@
 	"attributes": {
 		"variant": {
 			"type": "string",
-			"default": "grid",
+			"default": "slider",
 			"enum": [
 				"grid",
 				"slider",
