@@ -7,6 +7,9 @@ here is a genuine one-off / small-family judgement call the agents confirmed has
 existing structural DB signal, per attr-classification-overrides.json's own docstring
 boundary.
 
+NOTE (2026-09-21): the six ``bgKenBurns`` css-gate/animation rows were REMOVED from ENTRIES; see the
+comment where they were. They are now boolean-visibility with no css_property in the overrides file.
+
 Writes to BOTH layers, matching D604's mechanism:
   1. attr-classification-overrides.json (reseed-durable)
   2. the live DB directly (immediate effect, no full reseed)
@@ -25,14 +28,14 @@ OVERRIDES_PATH = Path(__file__).resolve().parents[1] / "attr-classification-over
 
 # (block_slug, attr_name, role, css_property_or_None)
 ENTRIES = [
-    # --- Batch A: bgKenBurns -> css-gate (gates container's own Ken-Burns animation
-    # class; container/style.css:190-198 `animation: sgs-container-ken-burns`) ---
-    ("sgs/container", "bgKenBurns", "css-gate", "animation"),
-    ("sgs/cta-section", "bgKenBurns", "css-gate", "animation"),
-    ("sgs/hero", "bgKenBurns", "css-gate", "animation"),
-    ("sgs/site-footer", "bgKenBurns", "css-gate", "animation"),
-    ("sgs/site-header", "bgKenBurns", "css-gate", "animation"),
-    ("sgs/trust-bar", "bgKenBurns", "css-gate", "animation"),
+    # --- Batch A: bgKenBurns is NO LONGER LISTED HERE (retired 2026-09-21). This script once classified
+    # it css-gate + css_property 'animation'; that was wrong (a Ken Burns ON/OFF toggle has no CSS
+    # animation VALUE, so the converter wrote the raw draft string, e.g. bgKenBurns:"none", which PHP
+    # reads as true). attr-classification-overrides.json now holds boolean-visibility with no
+    # css_property for all six blocks. Re-running this script would UPDATE the live DB rows back to
+    # css-gate/animation (the overrides.json append is skipped for keys already present, the DB UPDATE
+    # is not), silently undoing the fix, so the rows were removed. Guarded by
+    # converter/tests/test_migration_part2_cannot_undo_bgkenburns.py. ---
 
     # --- Batch A: dragToScroll -> behaviour (Spec 38 fx grammar, same class as
     # dragMomentum/loopCarousel; css_property='fx:draggable' matches the registry

@@ -19,7 +19,14 @@ from __future__ import annotations
 
 from bs4 import Tag
 
+from converter.context import ContentGap
+from converter.services import content_gap_collector
 from converter.services.field_extractors import extract_field_value
+from converter.services.lift_helpers import (
+    DECORATIVE_IMG_REASON,
+    has_only_decorative_imgs,
+    is_decorative_img,
+)
 from converter.services.recognise_helpers import bem_element_to_canonical_slot
 from converter.db import db_lookup
 
@@ -96,8 +103,22 @@ def _match_bare_tag(node: Tag, selector: str, consumed: set[int]) -> Tag | None:
         classes = el.get("class") or []
         if any(isinstance(c, str) and c.startswith("sgs-") for c in classes):
             continue  # a recognised sub-element, not loose content
+        if is_decorative_img(el):
+            continue  # a decorative image is never a block's loose content image
         return el
     return None
+
+
+def _report_decorative_imgs(scope: Tag, slug: str, attr_name: str, reported: set[int]) -> None:
+    """Rule 4: record each decorative ``<img>`` under ``scope`` that was declined as content, ONCE
+    per image (a block with tier siblings -- photo / photoTablet / photoMobile -- would otherwise
+    report the one image per attr)."""
+    for img in scope.find_all("img"):
+        if isinstance(img, Tag) and id(img) not in reported and is_decorative_img(img):
+            reported.add(id(img))
+            content_gap_collector.record_content_gap(
+                ContentGap(f"{slug}.{attr_name}", DECORATIVE_IMG_REASON), block_slug=slug,
+            )
 
 
 # ---------------------------------------------------------------------------
@@ -165,6 +186,7 @@ def lift_scalar_content(node: Tag, slug: str, media_map: dict) -> dict:
     lifted: dict = {}
     lifted_rating_positive = False
     consumed_bare: set[int] = set()  # id() of bare tags already claimed (fallback path)
+    reported_decorative: set[int] = set()  # id() of decorative <img> already reported as skipped
     for attr_name, info in catalogue.items():
         if not isinstance(info, dict):
             continue
@@ -277,6 +299,8 @@ def lift_scalar_content(node: Tag, slug: str, media_map: dict) -> dict:
             # so a well-classed draft never reaches here (element already set above).
             element = _match_bare_tag(node, selector, consumed_bare)
             if element is None:
+                if is_media_object and has_only_decorative_imgs(node):
+                    _report_decorative_imgs(node, slug, attr_name, reported_decorative)
                 continue  # no class AND no bare tag → emit no key (strict no-op floor)
             consumed_bare.add(id(element))
 
@@ -288,6 +312,8 @@ def lift_scalar_content(node: Tag, slug: str, media_map: dict) -> dict:
         elif is_media_object:
             # Delegate to shared field_extractors — same handler as array items.
             value = extract_field_value(element, "image-object", media_map)
+            if value is None and has_only_decorative_imgs(element):
+                _report_decorative_imgs(element, slug, attr_name, reported_decorative)
             if value is not None:
                 if attr_type == "object":
                     lifted[attr_name] = value

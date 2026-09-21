@@ -35,10 +35,14 @@ from typing import Any
 from converter.block_serialization import serialize_block_attributes
 from converter.db import db_lookup
 from converter.dispatch_table import resolver_id
+from converter.context import ContentGap
 from converter.models import GAP, GapOrigin, Write
 from converter.resolvers import REGISTRY, outer_box
+from converter.services import content_gap_collector as _gap_collector
+from converter.services.gap_writer import gap_writer
 from converter.services.layer_detect import layer_detect
 from converter.services.tier_object import tier_object_key
+from converter.services.validate import write_type_violation
 
 
 class ConservationError(AssertionError):
@@ -276,6 +280,60 @@ def _check_conservation(result: ElementResult) -> None:
         )
 
 
+def _type_gate_gap(ctx: Any, decl: Any, reason: str) -> GAP:
+    """The tracked non-transfer for a rejected wrong-kind write: the GAP the dispatch counts, plus a
+    ContentGap on the run's observability channel so the rejection is visible in the gap ledger (the
+    CSS pass keeps only Writes, so a bare GAP alone would vanish)."""
+    detail = f"type gate: {reason} (draft {decl.property!r} @ {decl.tier})"
+    _gap_collector.record_content_gap(
+        ContentGap(where="write_type_gate", detail=detail), block_slug=ctx.block_slug,
+    )
+    return gap_writer(ctx, decl, GapOrigin.NO_DESTINATION, detail)
+
+
+def _reject_ill_typed_writes(ctx: Any, decl: Any, out: Any) -> Any:
+    """Turn a Write whose value is the wrong JSON kind for its attr into a tracked GAP.
+
+    Spec 31 §3.A step 7 (validate before emit) + Rule 4 (flag, never silent-drop). A resolver may hand
+    back a Write for an attr whose declared type cannot hold the value it computed (the raw string
+    ``"none"`` for a boolean Ken Burns toggle: PHP ``!empty("none")`` is true, so the animation switched
+    ON for a draft that declared none). ``validate.write_type_violation`` decides; this only routes:
+    a bare Write becomes a NO_DESTINATION GAP, a list keeps its well-typed Writes and, if none survive,
+    yields the first GAP so the declaration still counts as routed (TOTALITY) instead of leaking. Every
+    rejected write in a list gets its own ContentGap row (de-duplicated by attr + value), not only the first.
+    Anything that is not a Write / list[Write] (a GAP, None) passes through untouched.
+    """
+    if isinstance(out, Write):
+        reason = write_type_violation(ctx, out.attr, out.value)
+        if reason is None:
+            return out
+        return _type_gate_gap(ctx, decl, reason)
+    if isinstance(out, list) and out and all(isinstance(w, Write) for w in out):
+        kept: list[Write] = []
+        first_gap: "GAP | None" = None
+        reported: set[tuple[str, str]] = set()
+        for w in out:
+            reason = write_type_violation(ctx, w.attr, w.value)
+            if reason is None:
+                kept.append(w)
+                continue
+            # EVERY rejected write is reported (Rule 4: never a silent non-transfer). ``_type_gate_gap``
+            # records the ContentGap on the run's channel; only the first GAP object is returned (one
+            # declaration = one decl-result), the rest exist for their ledger row. A repeated identical
+            # write (same attr, same value) is one row, not one per repeat.
+            key = (w.attr, repr(w.value))
+            if key in reported:
+                continue
+            reported.add(key)
+            gap = _type_gate_gap(ctx, decl, reason)
+            if first_gap is None:
+                first_gap = gap
+        if len(kept) == len(out):
+            return out
+        return kept if kept else first_gap
+    return out
+
+
 def process_element(ctx: Any, decls: list[Any]) -> ElementResult:
     """Dispatch every declaration of one element; enforce the seam invariants.
 
@@ -296,7 +354,7 @@ def process_element(ctx: Any, decls: list[Any]) -> ElementResult:
             ctx.base_layer, decl.property,
             delegates_content=ctx.delegates_content, conn=ctx.conn,
         )
-        out = REGISTRY[rid](decl, ctx)
+        out = _reject_ill_typed_writes(ctx, decl, REGISTRY[rid](decl, ctx))
         if isinstance(out, Write):
             result.writes.append(out)
             result.decl_results += 1

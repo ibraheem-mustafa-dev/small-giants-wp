@@ -69,9 +69,9 @@ def test_multi_write_list_does_not_trip_conservation(conn, monkeypatch):
     # conservation must accept it (decl_results==decl_count even though writes>decl).
     def _two_writes(decl, ctx):
         return [
-            Write(attr="gridTemplateColumns", value="repeat(3, 1fr)",
+            Write(attr="gridTemplateColumns", value={"desktop": "repeat(3, 1fr)"},
                   property=decl.property, tier=decl.tier),
-            Write(attr="columns", value=3, property=decl.property, tier=decl.tier),
+            Write(attr="columns", value={"desktop": 3}, property=decl.property, tier=decl.tier),
         ]
     monkeypatch.setitem(REGISTRY, "outer_box", _two_writes)
     result = process_element(_ctx(conn), [Decl("max-width", "x", "Base")])
@@ -122,8 +122,8 @@ def test_check_conservation_fails_on_unrouted_origin():
 def test_collision_same_attr_two_writes_fails(conn, monkeypatch):
     def _dup_writes(decl, ctx):
         return [
-            Write(attr="maxWidth", value="1200px", property=decl.property, tier=decl.tier),
-            Write(attr="maxWidth", value="900px", property=decl.property, tier=decl.tier),
+            Write(attr="layout", value="grid", property=decl.property, tier=decl.tier),
+            Write(attr="layout", value="flex", property=decl.property, tier=decl.tier),
         ]
     monkeypatch.setitem(REGISTRY, "outer_box", _dup_writes)
     with pytest.raises(ConservationError, match="COLLISION"):

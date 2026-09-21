@@ -53,6 +53,7 @@ from bs4 import Tag
 
 from converter.context import ContentConservationError, ContentGap
 from converter.services.field_extractors import extract_field_value
+from converter.services.lift_helpers import DECORATIVE_IMG_REASON, is_decorative_img
 from converter.services.recognise_helpers import bem_element_to_canonical_slot
 from converter.db import db_lookup
 from converter.services import icon_resolver
@@ -248,6 +249,21 @@ def _field_owns_token(field_key: str, bem_token: str) -> bool:
 _FLAT_SELF_ROLES = frozenset({"icon-slug", "identity", "icon", "url-href", "link-href",
                               "image-object", "rating", "state-modifier-boolean"})
 
+# The extraction roles field_extractors resolves through the ONE icon chain (data-icon / data-lucide /
+# inline <svg> via icon_resolver / BEM modifier). Kept beside _FLAT_SELF_ROLES, which lists the same three.
+_ICON_FIELD_ROLES = frozenset({"icon-slug", "identity", "icon"})
+
+
+def _is_inline_svg(node: Tag) -> bool:
+    """True for an inline ``<svg>`` element itself (not a wrapper that merely contains one)."""
+    return (getattr(node, "name", None) or "").lower() == "svg"
+
+
+def _svg_of(node: Tag) -> "Tag | None":
+    """The ``<svg>`` an icon child IS or CONTAINS: the node itself when it is the svg, else its first
+    ``<svg>`` descendant (the ``<span class="__icon"><svg/></span>`` wrapper shape)."""
+    return node if _is_inline_svg(node) else node.find("svg")
+
 
 @functools.lru_cache(maxsize=1)
 def _tag_map() -> dict[str, str]:
@@ -355,6 +371,17 @@ def _match_child(
         for ch, _cs, _cr, _ct in children:
             if (id(ch), frole) not in used and _tag_identity(ch) == fident:
                 return ch
+    # L3b — inline-<svg> SHAPE match for an icon-role field (Spec 31 §3.B.0: the icon handler already
+    # reads "an inline <svg>" as icon content, see field_extractors' icon-slug chain). A draft may put
+    # the icon in the item as a BARE ``<svg>`` with no BEM class (measured: the Eye Care ticker's four
+    # items), so no tier above can bind it: L1/L1b need a BEM token, L2 derives the child's role from
+    # that token, and the tag map (L3) has no entry for ``svg``. Without this the whole icon was lost
+    # even though the item's label lifted. Runs LAST and only for an icon-role field, so it cannot
+    # change any field an earlier tier already resolved (the D308 zero->one shape).
+    if frole in _ICON_FIELD_ROLES:
+        for ch, _cs, _cr, _ct in children:
+            if (id(ch), frole) not in used and _is_inline_svg(ch):
+                return ch
     return None
 
 
@@ -362,10 +389,17 @@ def _lift_item(
     item_node: Tag,
     schema: list[tuple[str, str | None, str | None]],
     media_map: dict,
+    skipped: list[tuple[str, str]] | None = None,
 ) -> dict:
     """Lift one item into a field dict via the 3-layer match (slot, BEM-segment,
     role). Children whose BEM class resolves to no slot are KEPT (their token
-    still drives the L1b segment match — e.g. ``__name`` has no canonical slot)."""
+    still drives the L1b segment match — e.g. ``__name`` has no canonical slot).
+
+    A DECORATIVE ``<img>`` (aria-hidden / role=presentation, see
+    ``lift_helpers.is_decorative_img``) is never bound to an ``image-object`` field: it is left
+    out of that field's candidates, and ``extract_field_value`` skips it when it searches inside
+    a flat item. When the schema has an image-object field, each such image is REPORTED into
+    ``skipped`` as ``(field_key, src)`` — the caller turns it into a ContentGap (Rule 4)."""
     children: list[tuple[Tag, str | None, str | None, str | None]] = []
     for ch in item_node.find_all(True):
         if not isinstance(ch, Tag):
@@ -385,19 +419,38 @@ def _lift_item(
     for field_key, fslot, frole in schema:
         if frole is None:
             continue
-        match = _match_child(field_key, fslot, frole, children, used, item_node, is_flat)
+        candidates = (
+            [c for c in children if not is_decorative_img(c[0])]
+            if frole == "image-object" else children
+        )
+        match = _match_child(field_key, fslot, frole, candidates, used, item_node, is_flat)
         if match is None:
             continue
         value = extract_field_value(match, frole, media_map)
         if value is not None:
             item[field_key] = value
             used.add((id(match), frole))
-        elif raw_svg_fallback is None and match.find("svg") is not None:
+        elif raw_svg_fallback is None and _svg_of(match) is not None:
             # An icon child that resolved to no slug (e.g. a filled <polygon>
-            # star) — preserve its raw SVG verbatim (icon_resolver Rule 2) into
-            # the block's raw-svg field.
-            raw_svg_fallback = str(match.find("svg"))
+            # star, or a bespoke outline glyph not in the icon library) — preserve
+            # its raw SVG verbatim (icon_resolver Rule 2) into the block's raw-svg
+            # field. ``match`` may be the <svg> itself (a bare, class-less icon
+            # bound by the L3b tier) as well as a wrapper that contains one.
+            # Through the SAME wrapper strip as ``resolve_icon``'s raw fallback: the draft's own class
+            # (a BEM ``sgs-x__icon`` mirrors the draft's DOM, R-31-15), fixed width/height, style, id and
+            # data-* never reach the block; viewBox, fill, stroke and the paths do.
+            raw_svg_fallback = icon_resolver._strip_svg_wrapper_attrs(str(_svg_of(match)))
             used.add((id(match), frole))
+
+    # Report every decorative image this item declined to lift as content (Rule 4 — a skip is
+    # reported, never silent). Only when the schema HAS an image-object field: that is the one
+    # place a decorative image used to be mis-lifted, so it is the one place its absence needs a row.
+    if skipped is not None:
+        image_field = next((fk for fk, _s, r in schema if r == "image-object"), None)
+        if image_field is not None:
+            for img in item_node.find_all("img"):
+                if is_decorative_img(img):
+                    skipped.append((image_field, str(img.get("src", "") or "")))
 
     # Paired raw-svg companion: a schema field the block declares for a raw-svg
     # fallback (role None + a name that names an svg) receives the preserved SVG.
@@ -567,8 +620,14 @@ def lift_array_content(
 
         filled: list[dict] = []
         item_gaps: list = []
+        item_gaps_reported: list = []  # field-level skips: NOT item losses, outside the conservation sum
         for i, item_node in enumerate(item_nodes):
-            item_dict = _lift_item(item_node, schema, _media)
+            skipped_imgs: list[tuple[str, str]] = []
+            item_dict = _lift_item(item_node, schema, _media, skipped_imgs)
+            for field_key, src in skipped_imgs:
+                item_gaps_reported.append(
+                    ContentGap(f"{attr_name}[{i}].{field_key}", f"{DECORATIVE_IMG_REASON} (src={src!r})")
+                )
             if item_dict:
                 filled.append(item_dict)
             else:
@@ -590,5 +649,6 @@ def lift_array_content(
         if filled:
             result_attrs[attr_name] = filled
         all_gaps.extend(item_gaps)
+        all_gaps.extend(item_gaps_reported)
 
     return result_attrs, all_gaps

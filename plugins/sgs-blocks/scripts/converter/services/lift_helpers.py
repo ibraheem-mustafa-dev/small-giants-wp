@@ -178,6 +178,63 @@ def resolve_media_url(src: str, media_map: dict) -> str:
 
 
 # ---------------------------------------------------------------------------
+# is_decorative_img / first_content_img — a decorative <img> is never content
+# ---------------------------------------------------------------------------
+
+# Why this exists (measured, Eye Care draft, 2026-09-21): each of 13 review cards holds one
+# ``<img src="assets/google-g.svg" alt="" aria-hidden="true" width="17">`` — the Google "G"
+# source mark. The image-object lift took "the first <img> in the item" as the reviewer's
+# ``photo``, so 13 reviews carried a dead relative URL as their photo.
+
+DECORATIVE_IMG_REASON = "decorative image (aria-hidden) not lifted as content"
+
+# WAI-ARIA / WAI decorative-images guidance: an image is decorative when the author HIDES it
+# from the accessibility tree — ``aria-hidden="true"`` — or strips its semantics with
+# ``role="presentation"`` / ``role="none"``. An empty ``alt`` on its own is deliberately NOT
+# treated as decorative here: the draft convention is that ``alt=""`` without ``aria-hidden`` is
+# an unlabelled CONTENT image (a real avatar or photo whose author left the alt off), and
+# dropping it would lose a real photo. The author signal that survives is the explicit hide.
+_DECORATIVE_IMG_ROLES = frozenset({"presentation", "none"})
+
+
+def is_decorative_img(tag: object) -> bool:
+    """True when ``tag`` is an ``<img>`` its author marked decorative.
+
+    Decorative = ``aria-hidden="true"`` OR ``role="presentation"`` / ``role="none"``
+    (WAI decorative-images guidance). Universal and draft-agnostic: it reads the element's own
+    attributes and knows no block name, class or URL. A non-``<img>`` is never decorative.
+    """
+    if not isinstance(tag, Tag) or (tag.name or "").lower() != "img":
+        return False
+    if str(tag.get("aria-hidden", "") or "").strip().lower() == "true":
+        return True
+    return str(tag.get("role", "") or "").strip().lower() in _DECORATIVE_IMG_ROLES
+
+
+def first_content_img(element: Tag) -> Tag | None:
+    """The ``<img>`` an image-object lift should read for ``element``.
+
+    ``element`` itself when it IS an ``<img>`` — it was bound explicitly (an atomic leaf block
+    recognised on the image, or a BEM-classed image slot), so it is never second-guessed here.
+    Otherwise the first NON-decorative ``<img>`` descendant: a decorative image found by
+    searching inside a container is inferred, not bound, and must not become the container's
+    content image. ``None`` when every descendant image is decorative or there is none.
+    """
+    if (element.name or "").lower() == "img":
+        return element
+    for img in element.find_all("img"):
+        if isinstance(img, Tag) and not is_decorative_img(img):
+            return img
+    return None
+
+
+def has_only_decorative_imgs(element: Tag) -> bool:
+    """True when ``element`` holds at least one ``<img>`` descendant and every one is decorative."""
+    imgs = [i for i in element.find_all("img") if isinstance(i, Tag)]
+    return bool(imgs) and all(is_decorative_img(i) for i in imgs)
+
+
+# ---------------------------------------------------------------------------
 # scalar_media_from_img (convert.py:4098 — ported verbatim, renamed)
 # ---------------------------------------------------------------------------
 

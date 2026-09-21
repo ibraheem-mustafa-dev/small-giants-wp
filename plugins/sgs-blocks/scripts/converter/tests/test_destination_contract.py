@@ -89,13 +89,13 @@ def test_destination_write_lands_on_parent_dict(conn, monkeypatch):
     parent_attrs: dict = {}
     monkeypatch.setitem(
         REGISTRY, "outer_box",
-        lambda decl, ctx: Write("maxWidth", "1200px", decl.property, decl.tier),
+        lambda decl, ctx: Write("layout", "grid", decl.property, decl.tier),
     )
     dest = Destination(block_slug="sgs/container", attrs=parent_attrs)
     result = process_element(_ctx(conn, dest=dest), [Decl("max-width", "1200px", "Base")])
-    assert parent_attrs == {"maxWidth": "1200px"}
+    assert parent_attrs == {"layout": "grid"}
     # The ElementResult still reports the writes (progress signal unchanged).
-    assert result.attrs()["maxWidth"] == "1200px"
+    assert result.attrs()["layout"] == "grid"
 
 
 # ---------------------------------------------------------------------------
@@ -104,14 +104,14 @@ def test_destination_write_lands_on_parent_dict(conn, monkeypatch):
 # ---------------------------------------------------------------------------
 
 def test_destination_setdefault_earlier_value_wins(conn, monkeypatch):
-    parent_attrs = {"maxWidth": "960px"}   # set by an earlier path
+    parent_attrs = {"layout": "flex"}   # set by an earlier path
     monkeypatch.setitem(
         REGISTRY, "outer_box",
-        lambda decl, ctx: Write("maxWidth", "1200px", decl.property, decl.tier),
+        lambda decl, ctx: Write("layout", "grid", decl.property, decl.tier),
     )
     dest = Destination(block_slug="sgs/container", attrs=parent_attrs)
     process_element(_ctx(conn, dest=dest), [Decl("max-width", "1200px", "Base")])
-    assert parent_attrs["maxWidth"] == "960px", (
+    assert parent_attrs["layout"] == "flex", (
         "destination writes must setdefault (earlier paths win), not overwrite"
     )
 
@@ -124,7 +124,7 @@ def test_destination_setdefault_earlier_value_wins(conn, monkeypatch):
 def test_destination_slug_mismatch_raises(conn, monkeypatch):
     monkeypatch.setitem(
         REGISTRY, "outer_box",
-        lambda decl, ctx: Write("maxWidth", "1200px", decl.property, decl.tier),
+        lambda decl, ctx: Write("layout", "grid", decl.property, decl.tier),
     )
     dest = Destination(block_slug="sgs/hero", attrs={})
     with pytest.raises(ConservationError, match="DESTINATION MISMATCH"):
@@ -138,10 +138,10 @@ def test_destination_slug_mismatch_raises(conn, monkeypatch):
 def test_default_destination_is_self_behaviour_identical(conn, monkeypatch):
     monkeypatch.setitem(
         REGISTRY, "outer_box",
-        lambda decl, ctx: Write("maxWidth", "1200px", decl.property, decl.tier),
+        lambda decl, ctx: Write("layout", "grid", decl.property, decl.tier),
     )
     result = process_element(_ctx(conn), [Decl("max-width", "1200px", "Base")])
-    assert result.attrs() == {"maxWidth": "1200px"}
+    assert result.attrs() == {"layout": "grid"}
 
 
 # ---------------------------------------------------------------------------
@@ -218,6 +218,10 @@ def test_destination_fold_dict_scalar_shape_mismatch_raises(conn, monkeypatch):
         Write("padding", "20px", "padding", "Base"),
     ])
     monkeypatch.setitem(REGISTRY, "outer_box", lambda decl, ctx: next(calls))
+    # The write-type gate (validate.write_type_violation) now rejects a scalar written to an object attr
+    # BEFORE it reaches the destination fold, so this downstream guard is only reachable with the gate off.
+    # It stays as defence in depth; test_write_type_gate.py proves the gate stops the same input earlier.
+    monkeypatch.setattr("converter.dispatch_spine.write_type_violation", lambda *a, **k: None)
     dest = Destination(block_slug="sgs/container", attrs={})
 
     process_element(_ctx(conn, dest=dest), [Decl("padding-top", "10px", "Base")])
@@ -415,6 +419,7 @@ def test_destination_fold_tier_of_boxes_scalar_after_dict_is_a_shape_mismatch(co
         Write("contentBandPadding", "20px", "padding", "Base"),
     ])
     monkeypatch.setitem(REGISTRY, "outer_box", lambda decl, ctx: next(calls))
+    monkeypatch.setattr("converter.dispatch_spine.write_type_violation", lambda *a, **k: None)  # see above
     dest = Destination(block_slug="sgs/container", attrs={})
 
     process_element(_ctx(conn, dest=dest), [Decl("padding-right", "24px", "Base")])

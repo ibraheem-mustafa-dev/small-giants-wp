@@ -57,6 +57,69 @@ def attr_is_number(ctx: Any, attr: str) -> bool:
     return row is not None
 
 
+# The declared block_attributes.attr_type families a WP schema can actually enforce, keyed by the
+# JSON kind of the value about to be written. WP validates an attribute against its block.json
+# `type` at render: a value of the wrong kind is discarded (a px-string in a number attr — the CG-4
+# bug) or, worse, accepted and read by PHP truthiness (the string "none" in a boolean attr is
+# `!empty()` and switched a Ken Burns animation ON). Bool is tested before int because
+# ``isinstance(True, int)``. ``string|boolean`` is the union type some blocks declare.
+_ACCEPTED_ATTR_TYPES_BY_KIND: "tuple[tuple[type | tuple[type, ...], tuple[str, ...]], ...]" = (
+    (bool, ("boolean", "string|boolean")),
+    ((int, float), ("number", "integer")),
+    (str, ("string", "string|boolean", "rich-text")),
+    (dict, ("object",)),
+    (list, ("array",)),
+)
+_CHECKED_ATTR_TYPES: tuple[str, ...] = (
+    "boolean", "number", "integer", "string", "string|boolean", "rich-text", "object", "array",
+)
+
+
+def write_type_violation(ctx: Any, attr: str, value: Any) -> "str | None":
+    """Reason string when ``value`` is the wrong JSON kind for ``attr``'s declared type, else None.
+
+    Spec 31 §3.A step 5/7 (serialise by ``block_attributes.attr_type``; validate before emit). This is
+    the TYPE half of the emit gate: ``validate()`` above checks that the attr exists and that an
+    enum-constrained attr receives a member, but it receives the RAW CSS string a resolver is about to
+    convert, so it cannot see the value that is actually written. This runs on the final ``Write``.
+
+    Type-family membership is decided INSIDE the SQL WHERE clause (the ``attr_is_number`` /
+    ``attr_is_boolean`` discipline), so no block-slug-derived local is compared to a literal in Python
+    (gates/no_slug_literal.py). An attr the block does not declare, or one whose declared type is not
+    one of the enforceable families (``_CHECKED_ATTR_TYPES``), returns None: that is ``validate()``'s
+    call, not this gate's. ``None`` values are skipped (an absent write is not a type error).
+    """
+    if value is None:
+        return None
+    accepted: "tuple[str, ...] | None" = None
+    for kinds, types in _ACCEPTED_ATTR_TYPES_BY_KIND:
+        if isinstance(value, kinds):
+            accepted = types
+            break
+    if accepted is None:
+        return None
+    checked_marks = ",".join("?" for _ in _CHECKED_ATTR_TYPES)
+    declared = ctx.conn.execute(
+        "SELECT attr_type FROM block_attributes "
+        f"WHERE block_slug=? AND attr_name=? AND attr_type IN ({checked_marks})",
+        (ctx.block_slug, attr, *_CHECKED_ATTR_TYPES),
+    ).fetchone()
+    if declared is None:
+        return None
+    accepted_marks = ",".join("?" for _ in accepted)
+    fits = ctx.conn.execute(
+        "SELECT 1 FROM block_attributes "
+        f"WHERE block_slug=? AND attr_name=? AND attr_type IN ({accepted_marks})",
+        (ctx.block_slug, attr, *accepted),
+    ).fetchone()
+    if fits is not None:
+        return None
+    return (
+        f"{type(value).__name__} value {value!r} written to {attr!r}, which the block declares as "
+        f"{declared[0]!r} — WP discards or misreads a wrong-kind value at render"
+    )
+
+
 def validate(ctx: Any, attr: str, value: str) -> bool:
     # 1. KIND-legality (A15): content-KIND blocks have no grid layer.
     if ctx.container_kind == "content" and attr.startswith("gridItem"):

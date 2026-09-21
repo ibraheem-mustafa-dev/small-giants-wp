@@ -55,15 +55,17 @@ from bs4 import Tag
 from converter.services.lift_helpers import (
     _safe_href,
     extract_star_count,
+    first_content_img,
     rich_text_content,
     scalar_media_from_img,
 )
-from converter.services.icon_resolver import resolve_icon
+from converter.services.icon_resolver import record_icon_proposal, resolve_icon
 from converter.db import db_lookup
 
 if TYPE_CHECKING:
     pass  # noqa: F401
 
+import os
 import re
 
 # Emoji code-point ranges (pictographs, dingbats, symbols, regional indicators,
@@ -374,7 +376,9 @@ def extract_field_value(
     # image-object — resolve a scalar media dict from an <img>
     # ------------------------------------------------------------------
     if role == "image-object":
-        img_node = element if element.name == "img" else element.find("img")
+        # A decorative <img> found by searching INSIDE a container (aria-hidden / role=presentation:
+        # an icon, a source mark) is never the container's content image -- see lift_helpers.
+        img_node = first_content_img(element)
         if img_node is not None and isinstance(img_node, Tag):
             return scalar_media_from_img(img_node, _media)
         return None
@@ -472,8 +476,17 @@ def extract_field_value(
             result = resolve_icon(svg_node)
             if result.get("confidence") in ("high", "medium"):
                 return result["slug"]
-            # confidence == "none" → raw SVG falls back; return None here
-            # (callers that want the raw SVG should call resolve_icon directly).
+            # confidence == "none" → raw SVG falls back; return None here. The caller that
+            # owns a raw-svg companion field (array_content._lift_item) preserves the markup.
+            # An icon the library does not know is also RECORDED as a proposal so the library
+            # can grow from real drafts. Opt-in (writes only when SGS_ICON_PROPOSALS_LOG is set)
+            # and never raises; the draft path and run label come from the environment the
+            # orchestrator sets (SGS_ICON_SOURCE_DRAFT / SGS_RUN_LABEL), 'unknown' otherwise.
+            record_icon_proposal(
+                result,
+                source_draft=os.environ.get("SGS_ICON_SOURCE_DRAFT") or "unknown",
+                run_label=os.environ.get("SGS_RUN_LABEL") or "unknown",
+            )
 
         # Priority 3: BEM --<modifier> suffix on the element's class list.
         for cls in (element.get("class") or []):

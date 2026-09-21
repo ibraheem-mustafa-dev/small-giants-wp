@@ -308,6 +308,27 @@ def build_block_markup(
                     block_slug=rec.slug,
                 )
 
+    # step 3a1c: seamless-marquee lift (F2, 2026-09-21). A ticker / logo strip that scrolls endlessly is an
+    # infinite, X-translating animation on the element holding the block's repeated items; the block carries
+    # it as a toggle + a "below this width" switch + a duration, declared by ROLE in the DB (`marquee-toggle`
+    # / `marquee-below` / `marquee-duration`, `db_lookup.marquee_attrs_for`). The generic css_property route
+    # cannot express it (a raw `animation` value is no value for a boolean; "below which tier" is the shape
+    # of the animation across the tiers, not a declaration), so it is lifted here once for every block that
+    # declares the roles and is a no-op for every other. setdefault, like every step here: an explicit
+    # value from variant/CSS/content wins. Whatever cannot be carried (non-device-tier breakpoint, a duration
+    # with no attr, tiers that disagree) comes back as a `skipped` row and is recorded, never dropped.
+    if rec.slug is not None and css_text:
+        from converter.resolvers.marquee import lift_marquee_attrs
+
+        _mq_attrs, _mq_skipped = lift_marquee_attrs(rec.slug, section_root, _css_rules, css_text)
+        for _mq_key, _mq_val in _mq_attrs.items():
+            attrs.setdefault(_mq_key, _mq_val)
+        for _mq_where, _mq_detail in _mq_skipped:
+            _gap_collector.record_content_gap(
+                ContentGap(where=_mq_where, detail=_mq_detail),
+                block_slug=rec.slug,
+            )
+
     # step 3a2: R-31-2 TAG-IDENTITY write (CG-2 fix, 2026-07-05 — the zero-h1
     # defect; shape-normalisation fix, 2026-08-17 — the h3-vs-numeric-enum
     # defect). Recognition uses the tag to pick the block then DISCARDED it on

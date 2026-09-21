@@ -1652,6 +1652,49 @@ def attr_is_boolean(block_slug: str, attr_name: str) -> bool:
     return row is not None
 
 
+# The three roles a block uses to declare its seamless-marquee attrs (data/roles.json). The block names its
+# own attrs by role; the resolver (resolvers/marquee.py) names no block (R-31-1 / R-31-9).
+_MARQUEE_ROLES: tuple[str, ...] = ("marquee-toggle", "marquee-below", "marquee-duration")
+
+
+def marquee_attrs_for(block_slug: str) -> "dict[str, dict]":
+    """The block's marquee attrs, keyed by role: ``{role: {attr, attr_type, enum, default}}``.
+
+    Empty for a block with no marquee-* role (the great majority), which is what makes
+    ``resolvers.marquee.lift_marquee_attrs`` a universal no-op for them. ``enum`` is the decoded
+    ``enum_values`` list (or None) and ``default`` the decoded ``default_value`` (or None). One attr per
+    role; if a block ever declared two, the first by rowid wins (the role is a single-holder contract).
+    """
+    marks = ",".join("?" for _ in _MARQUEE_ROLES)
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT role, attr_name, attr_type, enum_values, default_value FROM block_attributes "
+            f"WHERE block_slug = ? AND role IN ({marks}) ORDER BY rowid",
+            (block_slug, *_MARQUEE_ROLES),
+        ).fetchall()
+    finally:
+        conn.close()
+
+    def _decode(raw: "str | None") -> object:
+        if raw is None or raw == "":
+            return None
+        try:
+            return json.loads(raw)
+        except (TypeError, ValueError):
+            return None
+
+    out: "dict[str, dict]" = {}
+    for role, attr_name, attr_type, enum_values, default_value in rows:
+        out.setdefault(role, {
+            "attr": attr_name,
+            "attr_type": attr_type,
+            "enum": _decode(enum_values),
+            "default": _decode(default_value),
+        })
+    return out
+
+
 @functools.lru_cache(maxsize=1024)
 def attr_is_colour_role(block_slug: str, attr_name: str) -> bool:
     """True iff the block's attr is DB-classified ``role='color'``.

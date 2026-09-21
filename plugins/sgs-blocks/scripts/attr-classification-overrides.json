@@ -1773,54 +1773,48 @@
 			"slug": "sgs/container",
 			"attr": "bgKenBurns",
 			"fields": {
-				"role": "css-gate",
-				"css_property": "animation",
-				"css_element": "wrapper"
+				"role": "boolean-visibility",
+				"_reason": "2026-09-21 (F3). Was role css-gate + css_property animation + css_element wrapper. bgKenBurns is a Ken Burns ON/OFF toggle: the animation itself is fixed in the block's stylesheet, so no raw CSS animation value can be a value for it. The css-gate role is only honest when a value parser turns the draft declaration into on/off (transform scale -> imageZoomHover, filter grayscale -> grayscaleHover, state_value_lift); there is no parser for the animation shorthand, so the converter routed any draft animation (a marquee, a pulse) to bgKenBurns as the raw string and emitted bgKenBurns:none, which PHP reads as true. Now matches sgs/multi-button and sgs/physics-canvas bgKenBurns (boolean-visibility, no css_property)."
 			}
 		},
 		{
 			"slug": "sgs/cta-section",
 			"attr": "bgKenBurns",
 			"fields": {
-				"role": "css-gate",
-				"css_property": "animation",
-				"css_element": "wrapper"
+				"role": "boolean-visibility",
+				"_reason": "2026-09-21 (F3). Was role css-gate + css_property animation + css_element wrapper. bgKenBurns is a Ken Burns ON/OFF toggle: the animation itself is fixed in the block's stylesheet, so no raw CSS animation value can be a value for it. The css-gate role is only honest when a value parser turns the draft declaration into on/off (transform scale -> imageZoomHover, filter grayscale -> grayscaleHover, state_value_lift); there is no parser for the animation shorthand, so the converter routed any draft animation (a marquee, a pulse) to bgKenBurns as the raw string and emitted bgKenBurns:none, which PHP reads as true. Now matches sgs/multi-button and sgs/physics-canvas bgKenBurns (boolean-visibility, no css_property)."
 			}
 		},
 		{
 			"slug": "sgs/hero",
 			"attr": "bgKenBurns",
 			"fields": {
-				"role": "css-gate",
-				"css_property": "animation",
-				"css_element": "wrapper"
+				"role": "boolean-visibility",
+				"_reason": "2026-09-21 (F3). Was role css-gate + css_property animation + css_element wrapper. bgKenBurns is a Ken Burns ON/OFF toggle: the animation itself is fixed in the block's stylesheet, so no raw CSS animation value can be a value for it. The css-gate role is only honest when a value parser turns the draft declaration into on/off (transform scale -> imageZoomHover, filter grayscale -> grayscaleHover, state_value_lift); there is no parser for the animation shorthand, so the converter routed any draft animation (a marquee, a pulse) to bgKenBurns as the raw string and emitted bgKenBurns:none, which PHP reads as true. Now matches sgs/multi-button and sgs/physics-canvas bgKenBurns (boolean-visibility, no css_property)."
 			}
 		},
 		{
 			"slug": "sgs/site-footer",
 			"attr": "bgKenBurns",
 			"fields": {
-				"role": "css-gate",
-				"css_property": "animation",
-				"css_element": "wrapper"
+				"role": "boolean-visibility",
+				"_reason": "2026-09-21 (F3). Was role css-gate + css_property animation + css_element wrapper. bgKenBurns is a Ken Burns ON/OFF toggle: the animation itself is fixed in the block's stylesheet, so no raw CSS animation value can be a value for it. The css-gate role is only honest when a value parser turns the draft declaration into on/off (transform scale -> imageZoomHover, filter grayscale -> grayscaleHover, state_value_lift); there is no parser for the animation shorthand, so the converter routed any draft animation (a marquee, a pulse) to bgKenBurns as the raw string and emitted bgKenBurns:none, which PHP reads as true. Now matches sgs/multi-button and sgs/physics-canvas bgKenBurns (boolean-visibility, no css_property)."
 			}
 		},
 		{
 			"slug": "sgs/site-header",
 			"attr": "bgKenBurns",
 			"fields": {
-				"role": "css-gate",
-				"css_property": "animation",
-				"css_element": "wrapper"
+				"role": "boolean-visibility",
+				"_reason": "2026-09-21 (F3). Was role css-gate + css_property animation + css_element wrapper. bgKenBurns is a Ken Burns ON/OFF toggle: the animation itself is fixed in the block's stylesheet, so no raw CSS animation value can be a value for it. The css-gate role is only honest when a value parser turns the draft declaration into on/off (transform scale -> imageZoomHover, filter grayscale -> grayscaleHover, state_value_lift); there is no parser for the animation shorthand, so the converter routed any draft animation (a marquee, a pulse) to bgKenBurns as the raw string and emitted bgKenBurns:none, which PHP reads as true. Now matches sgs/multi-button and sgs/physics-canvas bgKenBurns (boolean-visibility, no css_property)."
 			}
 		},
 		{
 			"slug": "sgs/trust-bar",
 			"attr": "bgKenBurns",
 			"fields": {
-				"role": "css-gate",
-				"css_property": "animation",
-				"css_element": "wrapper"
+				"role": "boolean-visibility",
+				"_reason": "2026-09-21 (F3). Was role css-gate + css_property animation + css_element wrapper. bgKenBurns is a Ken Burns ON/OFF toggle: the animation itself is fixed in the block's stylesheet, so no raw CSS animation value can be a value for it. The css-gate role is only honest when a value parser turns the draft declaration into on/off (transform scale -> imageZoomHover, filter grayscale -> grayscaleHover, state_value_lift); there is no parser for the animation shorthand, so the converter routed any draft animation (a marquee, a pulse) to bgKenBurns as the raw string and emitted bgKenBurns:none, which PHP reads as true. Now matches sgs/multi-button and sgs/physics-canvas bgKenBurns (boolean-visibility, no css_property)."
 			}
 		},
 		{
@@ -3541,6 +3535,38 @@
 			"fields": {
 				"role": "behaviour",
 				"_reason": "2026-09-14 (nav-menu-split Step 5 DB-consistency follow-up). Same shape as the pre-existing itemSeparatorHoverTreatment: a pure treatment-selector enum (none/swap/sweep or none/swap) governing WHICH hover mechanism paints, not a paintable CSS value itself. 'behaviour' is the established role for this exact control-selector class (precedent: itemBorderHoverTreatment, itemColourHoverTreatment, submenuColourHoverTreatment, burgerColourHoverTreatment, all originally sgs/nav-menu, now split across sgs/nav-bar-menu and sgs/nav-drawer-menu)."
+			}
+		},
+		{
+			"slug": "sgs/trust-bar",
+			"attr": "autoScroll",
+			"fields": {
+				"role": "marquee-toggle",
+				"_reason": "2026-09-21 (F2). Was boolean-visibility. The marquee toggle the converter now sets from the SHAPE of the draft's items-container animation (infinite + translate-X keyframes); see roles.json marquee-toggle and converter/resolvers/marquee.py."
+			}
+		},
+		{
+			"slug": "sgs/trust-bar",
+			"attr": "autoScrollBelow",
+			"fields": {
+				"role": "marquee-below",
+				"_reason": "2026-09-21 (F2). Was enum-mode. Device-tier width below which the marquee runs (0/768/1024); written from which device tiers the draft's animation is active on. See roles.json marquee-below."
+			}
+		},
+		{
+			"slug": "sgs/trust-bar",
+			"attr": "autoScrollDuration",
+			"fields": {
+				"role": "marquee-duration",
+				"_reason": "2026-09-21 (F2). Was motion. Seconds per marquee cycle, taken from the draft's animation duration. See roles.json marquee-duration."
+			}
+		},
+		{
+			"slug": "sgs/brand-strip",
+			"attr": "scrolling",
+			"fields": {
+				"role": "marquee-toggle",
+				"_reason": "2026-09-21 (F2). Was boolean-visibility. The brand strip's marquee toggle (the draft's `animation: marquee 64s linear infinite` on the strip). brand-strip has no duration attr (scrollSpeed is a slow/medium/fast preset), so the converter reports the draft duration as a gap instead of mapping it onto a preset."
 			}
 		}
 	]
