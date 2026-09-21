@@ -220,10 +220,18 @@
 			},
 			"description": "The single opt-out from the pill: below `breakpoint` the header goes full width, radius 0, inset 0. OFF by default — the pill persists at mobile. Deliberately one toggle plus one number, never three per-tier switches."
 		},
-		"backdropBlur": {
+		"surfaceBlur": {
 			"type": "string",
 			"default": "",
-			"description": "Blurs whatever sits behind the header (backdrop-filter). Same value vocabulary as sgs/nav-drawer's surfaceBlur — a CSS length, empty for none. Applied at rest and kept once scrolled: it is what makes a see-through floating header legible."
+			"description": "Backdrop blur: a single CSS length (for example 24px) that blurs whatever sits behind the header. Emitted by SGS_Container_Wrapper via includes/helpers-surface-ground.php; empty emits nothing."
+		},
+		"surfaceSaturate": {
+			"type": "number",
+			"description": "Backdrop saturation as a whole-number percentage (for example 150), paired with surfaceBlur. Unset emits nothing; 0 is a legal value."
+		},
+		"surfaceOpacity": {
+			"type": "number",
+			"description": "Fill translucency, 0 to 1: how much of the header's own colour shows. Applies to a plain colour fill only (a gradient fill is left as it is). Unset or 1 emits nothing."
 		},
 		"backgroundColour": {
 			"type": "string",

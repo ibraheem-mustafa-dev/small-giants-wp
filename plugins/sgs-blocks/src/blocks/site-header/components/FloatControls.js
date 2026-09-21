@@ -19,7 +19,6 @@ import {
 	ResponsiveTriStateControl,
 	ResponsiveOverride,
 	SgsBoxControl,
-	SgsLengthControl,
 	BOX_UNITS,
 	normaliseResponsiveBox,
 } from '../../../components';
@@ -55,7 +54,6 @@ export default function FloatControls( { attributes, setAttributes } ) {
 		headerFloat,
 		headerFloatInset,
 		headerFloatCollapse,
-		backdropBlur,
 	} = attributes;
 	const isFloating = isFloatOnAtAnyTier( headerFloat );
 	const collapse = headerFloatCollapse || {};
@@ -123,30 +121,6 @@ export default function FloatControls( { attributes, setAttributes } ) {
 							) }
 						</p>
 					</Notice>
-				</ToolsPanelItem>
-			) }
-
-			{ isFloating && (
-				<ToolsPanelItem
-					label={ __( 'Background blur', 'sgs-blocks' ) }
-					hasValue={ () => !! backdropBlur }
-					onDeselect={ () =>
-						setAttributes( {
-							backdropBlur: floatDefault( 'backdropBlur' ),
-						} )
-					}
-				>
-					<SgsLengthControl
-						label={ __( 'Background blur', 'sgs-blocks' ) }
-						help={ __(
-							'Blurs whatever sits behind the header, the way frosted glass does. This is what makes a see-through pill readable without a shadow or a border. Leave empty for none.',
-							'sgs-blocks'
-						) }
-						value={ backdropBlur || '' }
-						onChange={ ( value ) => setAttributes( { backdropBlur: value || '' } ) }
-						units={ [ { value: 'px', label: 'px' } ] }
-						presets={ false }
-					/>
 				</ToolsPanelItem>
 			) }
 

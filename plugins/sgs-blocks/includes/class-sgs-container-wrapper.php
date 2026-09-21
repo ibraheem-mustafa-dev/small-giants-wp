@@ -45,6 +45,7 @@ defined( 'ABSPATH' ) || exit;
 // calls. Without this, a layout/section composite fatals on the gap/shape code path.
 require_once __DIR__ . '/render-helpers.php';
 require_once __DIR__ . '/shape-dividers.php';
+require_once __DIR__ . '/helpers-surface-ground.php';
 
 if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
@@ -1225,6 +1226,13 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				if ( '' !== $shadow_value ) {
 					$base_outer_decls[] = 'box-shadow:' . $shadow_value;
 				}
+			}
+
+			// Surface ground: backdrop blur and saturate, for the blocks that declare
+			// `surfaceBlur` / `surfaceSaturate` (helpers-surface-ground.php). A block that
+			// declares neither gets nothing, so its CSS is byte-identical.
+			foreach ( sgs_surface_backdrop_decls( $attributes['surfaceBlur'] ?? '', $attributes['surfaceSaturate'] ?? null ) as $surface_decl ) {
+				$base_outer_decls[] = $surface_decl;
 			}
 
 			// Background image — real <img> fast path (Phase 2 LCP, mirrors

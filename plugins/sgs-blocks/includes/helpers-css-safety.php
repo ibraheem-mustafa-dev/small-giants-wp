@@ -221,6 +221,62 @@ if ( ! function_exists( 'sgs_css_length_value' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_css_single_length_value' ) ) {
+	/**
+	 * A SINGLE CSS length, safe to place inside `max()` and `blur()`.
+	 *
+	 * The shared sgs_css_length_value() validator is deliberately wider than
+	 * this: it serves shorthand properties, so it accepts whitespace-separated
+	 * lists ('16px 12px' is one of its own must-accept cases), keywords and
+	 * negatives. Every one of those is a hostile value HERE — `max(1rem 2rem,
+	 * env(safe-area-inset-top))` and `blur(10px 5px)` are syntactically invalid,
+	 * so the browser drops the whole declaration: the blur silently disappears
+	 * and the width calc() falls back to `auto`. The shared validator is not
+	 * narrowed (its other callers need the width); this narrows it for callers that need ONE length.
+	 *
+	 * Accepted: a number with one unit ('1rem', '0px', '100vw' — bare numbers
+	 * reach here already normalised to 'Npx' or a spacing-preset var()), or a
+	 * single var()/calc()/min()/max()/minmax()/clamp() call. Rejected: lists,
+	 * keywords such as 'inherit', negatives, and two calls side by side.
+	 *
+	 * @param mixed $raw Raw attribute value.
+	 * @return string A single CSS length, or '' when the value is unusable.
+	 */
+	function sgs_css_single_length_value( $raw ): string {
+		$value = sgs_css_length_value( is_string( $raw ) ? $raw : '' );
+		if ( '' === $value ) {
+			return '';
+		}
+
+		if ( preg_match( '/^\d+(\.\d+)?[a-z%]+$/i', $value ) ) {
+			return $value;
+		}
+
+		// A function call is one token only when its opening parenthesis closes
+		// on the final character — which rejects 'calc(1px) calc(2px)' and
+		// 'calc(1px) 2px'. Balance and breakout characters were already checked
+		// by the shared validator, so this only has to measure the extent.
+		if ( ! preg_match( '/^(var|calc|min|max|minmax|clamp)\(/i', $value ) || ')' !== substr( $value, -1 ) ) {
+			return '';
+		}
+		$last  = strlen( $value ) - 1;
+		$depth = 0;
+		for ( $i = (int) strpos( $value, '(' ); $i <= $last; $i++ ) {
+			if ( '(' === $value[ $i ] ) {
+				++$depth;
+				continue;
+			}
+			if ( ')' === $value[ $i ] ) {
+				--$depth;
+				if ( 0 === $depth ) {
+					return $last === $i ? $value : '';
+				}
+			}
+		}
+		return '';
+	}
+}
+
 /**
  * CLI self-check — no WordPress bootstrap required.
  *

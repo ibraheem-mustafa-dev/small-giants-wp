@@ -39,6 +39,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-breakpoints.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
 require_once dirname( __DIR__, 3 ) . '/includes/sgs-header-float-css.php';
 require_once dirname( __DIR__, 3 ) . '/includes/sgs-header-force-solid.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-surface-ground.php';
 require_once dirname( __DIR__, 3 ) . '/includes/sgs-header-z-index.php';
 
 // Deterministic, content-addressed uid — mirrors SGS_Container_Wrapper's own
@@ -82,6 +83,11 @@ if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
 }
 if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
 	$sh_bg_value = sgs_colour_value( (string) $attributes['backgroundColour'] );
+	// Fill translucency (`surfaceOpacity`): a plain colour only; a gradient is left alone.
+	$sh_bg_alpha = sgs_surface_fill_alpha( $sh_bg_value, $attributes['surfaceOpacity'] ?? null );
+	if ( '' !== $sh_bg_alpha ) {
+		$sh_bg_value = $sh_bg_alpha;
+	}
 	if ( '' !== $sh_bg_value ) {
 		$sh_color_args['background'] = $sh_bg_value;
 	}
@@ -631,7 +637,7 @@ if ( ! empty( $border_radius_mobile_obj ) ) {
 // Its collapse-to-full-width block must out-rank both the pill geometry above it
 // and the per-tier border-radius rules emitted just now, and at equal specificity
 // that is decided by source order. Emits absolutely nothing unless `headerFloat`
-// resolves 'on' at some tier or `backdropBlur` carries a value.
+// resolves 'on' at some tier.
 // See includes/sgs-header-float-css.php.
 //
 // The EFFECTIVE transparency (force-solid already resolved to off) and the

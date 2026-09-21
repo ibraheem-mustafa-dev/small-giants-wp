@@ -25,7 +25,7 @@ import {
 	BackgroundPanel,
 	MIN_HEIGHT_OPTIONS,
 } from '../container/components/ContainerWrapperControls';
-import { ResponsiveTriStateControl, ResponsiveBoxControl, ResponsiveOverride, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, ShadowControl, resolveColourToken, SgsBoxControl, StarterLookPresetControl } from '../../components';
+import { ResponsiveTriStateControl, ResponsiveBoxControl, ResponsiveOverride, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, ShadowControl, resolveColourToken, SgsBoxControl, StarterLookPresetControl, SurfaceGroundControls } from '../../components';
 import { NumberControl, ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { resolveTier } from '../../utils/responsive';
 import { backgroundPaintPreview, backgroundPreview, spacingPreview, isTierBoxEmpty, svgBackgroundPreview, textPaintPreview } from '../../utils';
@@ -304,6 +304,16 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		attributes.backgroundColourGradient,
 		colourPalette
 	);
+	// Fill translucency (`surfaceOpacity`): mirrors includes/helpers-surface-ground.php::
+	// sgs_surface_fill_alpha(), a plain colour only (a gradient fill is left as it is).
+	const surfaceOpacityPreview =
+		typeof attributes.surfaceOpacity === 'number' &&
+		attributes.surfaceOpacity < 1 &&
+		typeof backgroundPaint.backgroundColor === 'string'
+			? {
+					backgroundColor: `color-mix(in srgb, ${ backgroundPaint.backgroundColor } ${ Math.round( Math.max( 0, attributes.surfaceOpacity ) * 100 ) }%, transparent)`,
+			  }
+			: {};
 	const textPreview = textPaintPreview( attributes.textColour, attributes.textColourGradient, colourPalette );
 
 	const bgPreview = backgroundPreview( {
@@ -366,7 +376,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		// The pill preview is spread LAST so its width/margin-inline win over the
 		// spacing preview's margin for a floating header — which is what the
 		// frontend does too (the float rules are emitted after the wrapper's).
-		style: { ...backgroundPaint, ...bgPreview.style, ...svgPreview.style, ...spacePreview, ...textPreview, ...floatPreview( { headerFloat: attributes.headerFloat, headerFloatInset: attributes.headerFloatInset, headerFloatCollapse: attributes.headerFloatCollapse, backdropBlur: attributes.backdropBlur }, previewTier ) },
+		style: { ...backgroundPaint, ...surfaceOpacityPreview, ...bgPreview.style, ...svgPreview.style, ...spacePreview, ...textPreview, ...floatPreview( { headerFloat: attributes.headerFloat, headerFloatInset: attributes.headerFloatInset, headerFloatCollapse: attributes.headerFloatCollapse, surfaceBlur: attributes.surfaceBlur, surfaceSaturate: attributes.surfaceSaturate }, previewTier ) },
 	} );
 	const refEl = useRef( null );
 
@@ -766,6 +776,9 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							padding: {},
 							margin: {},
 							zIndex: {},
+							surfaceBlur: '',
+							surfaceSaturate: undefined,
+							surfaceOpacity: undefined,
 							backgroundImage: undefined,
 							backgroundImageTablet: undefined,
 							backgroundImageMobile: undefined,
@@ -912,6 +925,11 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							) }
 						</ResponsiveOverride>
 					</ToolsPanelItem>
+
+					<SurfaceGroundControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
 
 				</ToolsPanel>
 			</InspectorControls>

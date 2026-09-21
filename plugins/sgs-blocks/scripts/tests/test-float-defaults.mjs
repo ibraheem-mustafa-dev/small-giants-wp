@@ -93,13 +93,12 @@ function deepEqual( a, b ) {
 // ── 1. Every constant matches the declared default, key for key. ───────────
 const NAMES = Object.keys( FLOAT_DEFAULTS );
 report(
-	'FLOAT_DEFAULTS covers exactly the four float attributes',
-	NAMES.length === 4 &&
+	'FLOAT_DEFAULTS covers exactly the three float attributes',
+	NAMES.length === 3 &&
 		[
 			'headerFloat',
 			'headerFloatInset',
 			'headerFloatCollapse',
-			'backdropBlur',
 		].every( ( n ) => NAMES.includes( n ) ),
 	`got: ${ NAMES.join( ', ' ) }`
 );
@@ -168,7 +167,7 @@ const mustReject = [
 		{ enabled: false },
 	],
 	[ 'a non-empty float tri-state', 'headerFloat', { desktop: 'on' } ],
-	[ 'a blur default that is not empty', 'backdropBlur', '10px' ],
+	[ 'an inset default that is empty', 'headerFloatInset', {} ],
 ];
 for ( const [ label, name, wrong ] of mustReject ) {
 	report(

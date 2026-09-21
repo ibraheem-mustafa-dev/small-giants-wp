@@ -67,7 +67,6 @@ export const FLOAT_DEFAULTS = {
 		enabled: false,
 		breakpoint: DEFAULT_COLLAPSE_BREAKPOINT,
 	},
-	backdropBlur: '',
 };
 
 /**
@@ -185,19 +184,31 @@ export function resolveFloatInset( inset, tier ) {
  * resolves to 0 in the editor iframe, which is correct (there is no notch there).
  *
  * The blur previews whether or not the header floats, matching the frontend,
- * where `backdropBlur` is emitted un-gated by tier.
+ * where `surfaceBlur` is emitted un-gated by tier.
  *
  * @param {Object} attributes  Block attributes.
  * @param {string} previewTier Active device tier in the editor.
  * @return {Object} Style object for `useBlockProps`; empty when nothing applies.
  */
 export function floatPreview( attributes, previewTier ) {
-	const { headerFloat, headerFloatInset, headerFloatCollapse, backdropBlur } =
-		attributes || {};
-	const blurStyle = backdropBlur
+	const {
+		headerFloat,
+		headerFloatInset,
+		headerFloatCollapse,
+		surfaceBlur,
+		surfaceSaturate,
+	} = attributes || {};
+	const filterParts = [];
+	if ( typeof surfaceSaturate === 'number' ) {
+		filterParts.push( `saturate(${ surfaceSaturate }%)` );
+	}
+	if ( surfaceBlur ) {
+		filterParts.push( `blur(${ surfaceBlur })` );
+	}
+	const blurStyle = filterParts.length
 		? {
-				backdropFilter: `blur(${ backdropBlur })`,
-				WebkitBackdropFilter: `blur(${ backdropBlur })`,
+				backdropFilter: filterParts.join( ' ' ),
+				WebkitBackdropFilter: filterParts.join( ' ' ),
 		  }
 		: {};
 

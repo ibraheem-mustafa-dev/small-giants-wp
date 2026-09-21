@@ -86,3 +86,4 @@ export { default as StarterLookPresetControl } from './StarterLookPresetControl'
 // `<Disabled>`'s `inert` + `pointer-events:none` silently killed real CSS
 // `:hover` and JS-driven interaction across all 9 SSR-previewed blocks).
 export { default as SsrPreviewGuard } from './SsrPreviewGuard';
+export { default as SurfaceGroundControls } from './SurfaceGroundControls';

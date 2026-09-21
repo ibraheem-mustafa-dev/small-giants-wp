@@ -22,7 +22,7 @@ so a per-fixture header can only live in the page itself):
                                       account icon; the burger opens an in-content drawer
   qa-hdr-mega-dropdown-drawer-capped  same, header `maxWidth` capped (tier object)
   qa-hdr-mega-dropdown-drawer-pill    same, floating pill: `headerFloat` on every tier,
-                                      `headerFloatInset`, `backdropBlur`, `maxWidth`
+                                      `headerFloatInset`, `surfaceBlur`, `maxWidth`
   qa-hdr-drawer-submenus              header with a burger that is ALWAYS visible; the
                                       drawer's nav-drawer-menu carries submenus + a mega
                                       item (which the drawer degrades to a plain link)
@@ -273,7 +273,7 @@ CAPPED = {"maxWidth": {"desktop": "1120px"}}
 PILL = {
     "headerFloat": {"desktop": "on", "tablet": "on", "mobile": "on"},
     "headerFloatInset": {"desktop": {"top": "1rem", "right": "1rem", "left": "1rem"}},
-    "backdropBlur": "8px",
+    "surfaceBlur": "8px",
     "maxWidth": {"desktop": "1120px"},
     "borderRadius": {"desktop": {"topLeft": "8px", "topRight": "8px",
                                  "bottomLeft": "8px", "bottomRight": "8px"}},
@@ -306,6 +306,12 @@ FIXTURES = [
     # U-1: open mode and hover-intent delay on the nav bar.
     {"slug": "qa-hdr-open-click", "title": "dropdown and mega open on click only",
      "build": page_open_mode({"submenuOpenOn": "click"}), "header": {}},
+    # U-1: the shared surface ground (blur, saturate, fill opacity) on a sticky header.
+    {"slug": "qa-hdr-surface", "title": "frosted header: blur 18px, saturate 140, fill opacity 0.86",
+     "build": page_full_nav,
+     "header": {"backgroundColour": "#fcfbf8", "surfaceOpacity": 0.86, "surfaceBlur": "18px",
+                "surfaceSaturate": 140,
+                "headerSticky": {"desktop": "on", "tablet": "on", "mobile": "on"}}},
     {"slug": "qa-hdr-open-delay", "title": "hover-intent delay 400ms",
      "build": page_open_mode({"submenuIntentDelay": 400}), "header": {}},
 ]

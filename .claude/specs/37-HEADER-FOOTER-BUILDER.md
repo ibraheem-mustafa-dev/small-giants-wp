@@ -838,7 +838,7 @@ easing while the end-state shadow still applies. Live-verified at 1440px and 375
 left and right, each floored by the device safe-area inset); `attributes.headerFloatCollapse`
 (`{enabled, breakpoint}`, off by default) switches the pill to full width, square, below the breakpoint, so the
 pill persists at mobile unless the operator opts out. The width cap is the existing `maxWidth`, the shape is the
-existing `borderRadius` and `shadow`, and `attributes.backdropBlur` gives the frosted look the reference
+existing `borderRadius` and `shadow`, and `attributes.surfaceBlur` gives the frosted look the reference
 measurements show (a pill with no shadow, border or fill). Float at a tier implies pinning at that tier:
 `position`, `top` and `z-index` resolve Float > Sticky > Transparent through the one merged writer, and `top` is
 the inset. `plugins/sgs-blocks/includes/sgs-header-float-css.php::sgs_header_float_css` emits the rules.
