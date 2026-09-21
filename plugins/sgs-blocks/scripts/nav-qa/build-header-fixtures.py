@@ -228,6 +228,18 @@ def page_full_nav(menu_id: int, header_attrs: dict) -> str:
     return "\n\n".join([site_header(header_attrs, [row]), drawer(menu_id), body_filler()])
 
 
+def page_open_mode(nav_extra: dict):
+    """A header like page_full_nav whose nav bar carries extra attributes (open mode, intent delay)."""
+    def build(menu_id: int, header_attrs: dict) -> str:
+        row = middle_row([
+            block("sgs/responsive-logo", {"width": 140, "linkToHome": True}),
+            block("sgs/nav-bar-menu", {"ref": menu_id, "navLabel": "QA primary",
+                                       "itemColour": "text", "gap": "28px", **nav_extra}),
+        ])
+        return "\n\n".join([site_header(header_attrs, [row]), drawer(menu_id), body_filler()])
+    return build
+
+
 def page_drawer_submenus(menu_id: int, header_attrs: dict) -> str:
     """Header with an ALWAYS-visible burger (collapsePoint 99999), so the drawer opens at 1440."""
     row = middle_row([
@@ -291,6 +303,11 @@ FIXTURES = [
      "build": page_full_nav,
      "header": {"zIndex": {"desktop": 10, "mobile": 999},
                 "headerSticky": {"desktop": "on", "tablet": "on", "mobile": "on"}}},
+    # U-1: open mode and hover-intent delay on the nav bar.
+    {"slug": "qa-hdr-open-click", "title": "dropdown and mega open on click only",
+     "build": page_open_mode({"submenuOpenOn": "click"}), "header": {}},
+    {"slug": "qa-hdr-open-delay", "title": "hover-intent delay 400ms",
+     "build": page_open_mode({"submenuIntentDelay": 400}), "header": {}},
 ]
 
 
