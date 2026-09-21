@@ -6111,6 +6111,83 @@ def attr_for_area_property(
     return None
 
 
+@functools.lru_cache(maxsize=2048)
+def attrs_for_element_class_property(
+    block_slug: str,
+    class_name: str,
+    css_property: str,
+) -> "tuple[str, ...]":
+    """Selector-keyed per-area resolver — the SECOND lookup behind
+    ``attr_for_area_property`` (Eye Care reviews card, 2026-09-21).
+
+    ``attr_for_area_property`` keys on the BEM element TOKEN and matches
+    ``block_attributes.css_element`` literally, or through the ``slots`` alias
+    groups. That misses an attr whose own element name differs from the draft's and
+    is NOT a slot alias of it: ``sgs/google-reviews.starColour`` is
+    ``css_element='star'`` while the draft calls the star row ``rating`` (two
+    DIFFERENT canonical slots — ``rating`` and ``star`` — so neither Check 2 nor
+    Check 3 of that resolver bridges them), and ``writeReviewColour*`` are
+    ``css_element='write-review'`` while the draft's link is
+    ``review-request-url`` (no slot row exists for either name).
+
+    What the DB DOES carry for that element is ``block_attributes.derived_selector``
+    — the comma-separated BEM classes the attr styles. So identity is: the draft
+    element's own class appears in the attr's ``derived_selector`` list. The property
+    is the attr's declared ``css_property`` (comma-separated multi-property values are
+    the established convention, e.g. ``sgs/icon.iconSize``). Restricted, like the
+    base resolver, to the base tier (``css_tier`` NULL/``desktop``) and resting
+    state (``css_state`` NULL) — the tier/state siblings are re-appended by
+    ``fold_helpers.route_area_css_to_block_attrs``'s own tier mapping. A name that
+    ends in a breakpoint/state suffix whose stem is another attr of the block is a
+    sibling and is skipped as well, so a ``…Mobile`` attr never wins the base slot.
+
+    Returns every matching attr name in row order (empty tuple = honest miss). The
+    caller decides the ambiguity policy on ``len > 1``. Pre-seed DBs lacking the
+    columns yield ``()``.
+    """
+    if not block_slug or not class_name or not css_property:
+        return ()
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT attr_name, css_property, derived_selector FROM block_attributes "
+            "WHERE block_slug = ? AND derived_selector IS NOT NULL AND derived_selector != '' "
+            "AND css_property IS NOT NULL AND css_property != '' "
+            "AND css_state IS NULL AND (css_tier IS NULL OR css_tier = 'desktop') "
+            "ORDER BY rowid",
+            (block_slug,),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        return ()
+    finally:
+        conn.close()
+
+    sibling_suffixes = modifier_suffixes("breakpoint") + modifier_suffixes("state")
+    all_names = set(block_attrs(block_slug) or {})
+    wanted_class = class_name.strip().lstrip(".")
+    matches: list[str] = []
+    for attr_name, declared_props, selector_list in rows:
+        if wanted_class not in {s.strip().lstrip(".") for s in selector_list.split(",")}:
+            continue
+        if css_property not in {p.strip() for p in declared_props.split(",")}:
+            continue
+        if any(
+            attr_name.endswith(sfx) and attr_name[: -len(sfx)] in all_names
+            for sfx in sibling_suffixes
+        ):
+            continue
+        matches.append(attr_name)
+    if matches:
+        _trace(
+            "attrs_for_element_class_property_hit",
+            block_slug=block_slug,
+            class_name=wanted_class,
+            css_property=css_property,
+            attr_names=list(matches),
+        )
+    return tuple(matches)
+
+
 @functools.lru_cache(maxsize=1)
 def _slot_alias_groups() -> dict[str, list[str]]:
     """Return {canonical_slot: [every alias + the canonical itself]} for

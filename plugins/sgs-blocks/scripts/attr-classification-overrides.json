@@ -3624,8 +3624,10 @@
 			"slug": "sgs/google-reviews",
 			"attr": "starColour",
 			"fields": {
-				"derived_selector": ".sgs-google-reviews__star",
-				"_reason": "2026-09-21 (Eye Care reviews). Restores the original routing selector after an attempted, reverted seed: naming the annotated element in derived_selector only routes class-CSS drafts (styling_content.py); the Eye Care draft styles these elements INLINE, which needs a converter route that honours derived_selector in the per-area fold (a shared mechanism, awaiting the owner's approval). Until that exists the declarations are REPORTED as skipped (test_area_css_skip_reporting.py), not routed."
+				"derived_selector": ".sgs-google-reviews__star, .sgs-google-reviews__rating",
+				"css_property": "fill,color",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (Eye Care reviews). Names the draft's own element for the star colour and the property the draft states for it. The block paints the stars with `fill` on `.sgs-google-reviews__star`; a draft states the same visual fact as `color` on its star row, annotated `.sgs-google-reviews__rating` (a different canonical slot from `star`, so the slot-alias checks of attr_for_area_property cannot bridge them). derived_selector lists both classes (comma-separated, the established multi-class form, e.g. sgs/testimonial quoteFontSize); css_property lists both properties (established multi-value form, e.g. sgs/icon iconSize). Read by db_lookup.attrs_for_element_class_property, the selector-keyed second lookup of fold_helpers.route_area_css_to_block_attrs, which routes an inline or class `color` on `.sgs-google-reviews__rating` here. The hover sibling is unchanged: a state declaration routes through the state lift, not the per-area fold."
 			}
 		},
 		{
@@ -3640,16 +3642,16 @@
 			"slug": "sgs/google-reviews",
 			"attr": "writeReviewColourText",
 			"fields": {
-				"derived_selector": "",
-				"_reason": "2026-09-21 (Eye Care reviews). Restores the original routing selector after an attempted, reverted seed: naming the annotated element in derived_selector only routes class-CSS drafts (styling_content.py); the Eye Care draft styles these elements INLINE, which needs a converter route that honours derived_selector in the per-area fold (a shared mechanism, awaiting the owner's approval). Until that exists the declarations are REPORTED as skipped (test_area_css_skip_reporting.py), not routed."
+				"derived_selector": ".sgs-google-reviews__write-review, .sgs-google-reviews__review-request-url",
+				"_reason": "2026-09-21 (Eye Care reviews). Names the classes of the element this attr styles: the block's own link (`.sgs-google-reviews__write-review`, css_element 'write-review') and the draft's annotation of it (`.sgs-google-reviews__review-request-url`, named for the reviewRequestUrl field it carries; there is no slot row for either name, so attr_for_area_property has nothing to bridge). Read by db_lookup.attrs_for_element_class_property, the selector-keyed second lookup of fold_helpers.route_area_css_to_block_attrs, which routes the draft link's inline or class colour/background here. Content routing is unaffected: this attr's role is 'color', not a content role."
 			}
 		},
 		{
 			"slug": "sgs/google-reviews",
 			"attr": "writeReviewColourBackground",
 			"fields": {
-				"derived_selector": "",
-				"_reason": "2026-09-21 (Eye Care reviews). Restores the original routing selector after an attempted, reverted seed: naming the annotated element in derived_selector only routes class-CSS drafts (styling_content.py); the Eye Care draft styles these elements INLINE, which needs a converter route that honours derived_selector in the per-area fold (a shared mechanism, awaiting the owner's approval). Until that exists the declarations are REPORTED as skipped (test_area_css_skip_reporting.py), not routed."
+				"derived_selector": ".sgs-google-reviews__write-review, .sgs-google-reviews__review-request-url",
+				"_reason": "2026-09-21 (Eye Care reviews). Names the classes of the element this attr styles: the block's own link (`.sgs-google-reviews__write-review`, css_element 'write-review') and the draft's annotation of it (`.sgs-google-reviews__review-request-url`, named for the reviewRequestUrl field it carries; there is no slot row for either name, so attr_for_area_property has nothing to bridge). Read by db_lookup.attrs_for_element_class_property, the selector-keyed second lookup of fold_helpers.route_area_css_to_block_attrs, which routes the draft link's inline or class colour/background here. Content routing is unaffected: this attr's role is 'color', not a content role."
 			}
 		},
 		{

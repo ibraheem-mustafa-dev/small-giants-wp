@@ -12,6 +12,12 @@ Cause, reproduced before the fix:
   discarded. On the live page the stars render taupe and the outlined pill renders
   black, with no report anywhere.
 
+  Same day, second step: three of those 13 (the star row's colour, the request link's
+  text colour and background) have a block attribute that styles that element, found
+  through ``derived_selector`` by ``fold_helpers._selector_route_attr``, so they are now
+  ROUTED (``test_area_selector_route.py``) and their rows are gone. The other 10 have
+  no destination attribute on the block and stay reported.
+
 Fix: ``fold_helpers._report_area_skip`` / ``_report_area_skip_every_tier`` put each
 non-transfer on the EXISTING content-gap channel
 (``content_gap_collector.record_declaration_skip_candidate``), which the orchestrator
@@ -94,14 +100,16 @@ def _pairs(result: dict) -> set[tuple[str, str]]:
 # The four elements the live page renders wrong are now reported
 # ---------------------------------------------------------------------------
 
+# The three declarations that DID get a destination once the selector-keyed lookup
+# landed are asserted as ROUTED (and absent from the report) in test_area_selector_route.py:
+#   sgs-google-reviews__rating               color             #FBBC04 -> starColour
+#   sgs-google-reviews__review-request-url   color             #1A73E8 -> writeReviewColourText
+#   sgs-google-reviews__review-request-url   background-color  #fff    -> writeReviewColourBackground
 @pytest.mark.parametrize("element, prop, value", [
-    ("sgs-google-reviews__rating", "color", "#FBBC04"),                 # gold stars -> taupe
-    ("sgs-google-reviews__review-request-url", "color", "#1A73E8"),     # blue pill text -> black
     ("sgs-google-reviews__review-request-url", "border-color", "#DADCE0"),
     ("sgs-google-reviews__review-request-url", "border-width", "1px"),
     ("sgs-google-reviews__review-request-url", "border-style", "solid"),
     ("sgs-google-reviews__review-request-url", "border-radius", "20px"),
-    ("sgs-google-reviews__review-request-url", "background-color", "#fff"),
     ("sgs-google-reviews__avatar-colour", "width", "40px"),
     ("sgs-google-reviews__avatar-colour", "height", "40px"),
     ("sgs-google-reviews__avatar-colour", "border-radius", "50%"),
@@ -118,11 +126,13 @@ def test_every_unroutable_declaration_is_reported_with_its_value(element, prop, 
     assert "no_area_attr" in rows[0]["reason"] or "excluded" in rows[0]["reason"]
 
 
-def test_the_report_is_exactly_the_thirteen_genuine_skips():
+def test_the_report_is_exactly_the_ten_genuine_skips():
     """Not vacuous, and not spammy: the count is pinned, so a future change that
-    starts reporting routed declarations fails here."""
+    starts reporting routed declarations fails here. Was 13; the three that left are
+    the rating colour and the request link's colour and background, now routed to
+    ``starColour`` / ``writeReviewColourText`` / ``writeReviewColourBackground``."""
     rows = _style_rows(_run())
-    assert len(rows) == 13, json.dumps(
+    assert len(rows) == 10, json.dumps(
         [(g["element"], g["property"], g["value"]) for g in rows], indent=1)
 
 
@@ -169,7 +179,7 @@ def test_the_markup_is_byte_identical_with_and_without_reporting(monkeypatch):
 def test_the_channel_does_not_leak_between_runs():
     first = _style_rows(_run())
     second = _style_rows(_run())
-    assert len(first) == len(second) == 13
+    assert len(first) == len(second) == 10
 
 
 # ---------------------------------------------------------------------------
@@ -177,7 +187,7 @@ def test_the_channel_does_not_leak_between_runs():
 # ---------------------------------------------------------------------------
 
 def test_negative_control_without_the_report_call_the_drop_is_silent_again(monkeypatch):
-    """Break ONLY the reporting call: the same 13 declarations are still dropped
+    """Break ONLY the reporting call: the same 10 declarations are still dropped
     and the run goes back to reporting nothing — the pre-fix behaviour."""
     monkeypatch.setattr(fold_helpers, "_report_area_skip", lambda *a, **k: None)
     monkeypatch.setattr(fold_helpers, "_report_area_skip_every_tier", lambda *a, **k: None)
@@ -198,9 +208,9 @@ def test_negative_control_without_the_routed_note_a_transferred_property_is_repo
     monkeypatch,
 ):
     """Break ONLY the routed ledger: declarations another pass DID route lose their
-    cancellation and the row count rises above the 13 genuine skips."""
+    cancellation and the row count rises above the 10 genuine skips."""
     monkeypatch.setattr(fold_helpers, "_note_area_lift", lambda *a, **k: None)
-    assert len(_style_rows(_run())) > 13
+    assert len(_style_rows(_run())) > 10
 
 
 def test_negative_control_the_probe_distinguishes_a_reading_role_from_a_blind_one():

@@ -40,6 +40,7 @@ from converter.db.db_lookup import modifier_suffixes
 from converter.db import db_lookup
 from converter.services.styling_helpers import (
     collect_css_decls_for_element,
+    extract_token_or_hex,
     split_value_unit,
     strip_important,
 )
@@ -327,6 +328,35 @@ def _report_area_skip_every_tier(
         if css_prop in decls:
             _report_area_skip(child_node, owning_block, area, css_prop,
                               decls.get(css_prop), reason, tier_suffix)
+
+
+def _selector_route_attr(
+    child_node: Tag, owning_block: str, css_prop: str,
+) -> "tuple[str | None, str]":
+    """SECOND per-area lookup, run only when ``attr_for_area_property`` found nothing.
+
+    Identity comes from ``block_attributes.derived_selector`` (the classes an attr
+    styles), not from the ``css_element`` token the first lookup keys on — see
+    ``db_lookup.attrs_for_element_class_property`` for why the two differ (the
+    draft's ``rating`` vs the block's ``star``; ``review-request-url`` vs
+    ``write-review``; different canonical slots, so the slot-alias checks cannot
+    bridge them) and for the property/tier/state rules.
+
+    Returns ``(attr_name, "")`` on exactly one distinct match, ``(None, "")`` when
+    nothing matches (the caller's ordinary ``no_area_attr`` skip), and
+    ``(None, reason)`` when several DIFFERENT attrs claim the element+property — never a
+    rowid pick, the declaration is reported instead.
+    """
+    found: list[str] = []
+    for cls in child_node.get("class", []) or []:
+        for attr in db_lookup.attrs_for_element_class_property(owning_block, cls, css_prop):
+            if attr not in found:
+                found.append(attr)
+    if len(found) == 1:
+        return found[0], ""
+    if found:
+        return None, f"selector route ambiguous: {', '.join(found)}"
+    return None, ""
 
 
 # ---------------------------------------------------------------------------
@@ -733,17 +763,27 @@ def route_area_css_to_block_attrs(
         if _skip_padding_flat and css_prop.startswith("padding-"):
             continue  # routed into the box-object above (reported/noted there)
         attr_base = db_lookup.attr_for_area_property(owning_block, area, css_prop)
+        # Never changes a declaration that already routes: the selector-keyed lookup
+        # runs ONLY on a miss. `_via_selector` scopes the colour normalisation below to
+        # the newly captured routes, so an existing route's stored value is untouched.
+        _via_selector = False
+        _miss_reason = "no_area_attr"
+        if attr_base is None:
+            attr_base, _sel_note = _selector_route_attr(child_node, owning_block, css_prop)
+            _via_selector = attr_base is not None
+            if _sel_note:
+                _miss_reason = f"no_area_attr; {_sel_note}"
         if attr_base is None:
             trace(
                 "cross_node_gap_candidate",
                 owning_block=owning_block,
                 element_token=area,
                 css_property=css_prop,
-                reason="no_area_attr",
+                reason=_miss_reason,
                 source_class=_area_source_class(child_node, area),
             )
             _report_area_skip_every_tier(child_node, owning_block, area, css_prop,
-                                         _tier_sources, "no_area_attr", all_props)
+                                         _tier_sources, _miss_reason, all_props)
             continue
 
         draft_base = base_decls.get(css_prop)
@@ -787,6 +827,12 @@ def route_area_css_to_block_attrs(
                     reason="area_attr_tier_missing",
                     attr_name=dest,
                 )
+                # A tier with no override of its own inherits the base value, which the
+                # base attr already carries at every device width — that is a transfer,
+                # not a skip. Only a REAL tier override the block has no attr for is one.
+                _tier_override = {"Mobile": draft_mob, "Tablet": draft_tab}.get(tier_suffix)
+                if tier_suffix and not _tier_override:
+                    continue
                 _report_area_skip(child_node, owning_block, area, css_prop, value,
                                   f"area_attr_tier_missing ({dest})", tier_suffix)
                 continue
@@ -827,6 +873,25 @@ def route_area_css_to_block_attrs(
                         continue
             else:
                 store_val = raw_val
+                if _via_selector and db_lookup.attr_is_colour_role(owning_block, attr_base):
+                    # A colour attr is written the way every other colour route writes it
+                    # (outer_box / content_band / styling_content): a theme token slug when
+                    # the value snaps to the palette, else the concrete hex/rgb — never a
+                    # raw draft `var(--x)` or a keyword the block cannot resolve.
+                    store_val = extract_token_or_hex(raw_val)
+                    if store_val is None:
+                        trace(
+                            "cross_node_gap_candidate",
+                            owning_block=owning_block,
+                            element_token=area,
+                            css_property=css_prop,
+                            reason="area_colour_unresolvable",
+                            attr_name=dest,
+                            value=raw_val,
+                        )
+                        _report_area_skip(child_node, owning_block, area, css_prop, raw_val,
+                                          f"area_colour_unresolvable ({dest})", tier_suffix)
+                        continue
             if _attr_tier_shaped:
                 _tier_key = _tier_key_for_suffix(tier_suffix)
                 if _tier_key is None:
