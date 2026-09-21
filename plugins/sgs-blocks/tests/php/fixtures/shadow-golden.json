@@ -1,0 +1,498 @@
+[
+    {
+        "id": "control:0px 4px 12px 0px|null",
+        "shape": "0px 4px 12px 0px",
+        "colour": null,
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "0px 4px 12px 0px #0000001A"
+    },
+    {
+        "id": "control:0px 4px 12px 0px|",
+        "shape": "0px 4px 12px 0px",
+        "colour": "",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "0px 4px 12px 0px #0000001A"
+    },
+    {
+        "id": "control:0px 4px 12px 0px|#000000",
+        "shape": "0px 4px 12px 0px",
+        "colour": "#000000",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "0px 4px 12px 0px #000000"
+    },
+    {
+        "id": "control:0px 4px 12px 0px|#0000001A",
+        "shape": "0px 4px 12px 0px",
+        "colour": "#0000001A",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "0px 4px 12px 0px #0000001A"
+    },
+    {
+        "id": "control:0px 4px 12px 0px|primary",
+        "shape": "0px 4px 12px 0px",
+        "colour": "primary",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "0px 4px 12px 0px var(--wp--preset--color--primary, currentColor)"
+    },
+    {
+        "id": "control:0px 4px 12px 0px|accent",
+        "shape": "0px 4px 12px 0px",
+        "colour": "accent",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "0px 4px 12px 0px var(--wp--preset--color--accent, currentColor)"
+    },
+    {
+        "id": "control:0px 4px 12px 0px|rgba(0,0,0,0.1)",
+        "shape": "0px 4px 12px 0px",
+        "colour": "rgba(0,0,0,0.1)",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "0px 4px 12px 0px #0000001A"
+    },
+    {
+        "id": "control:0px 4px 12px 0px|red",
+        "shape": "0px 4px 12px 0px",
+        "colour": "red",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "0px 4px 12px 0px red"
+    },
+    {
+        "id": "control:0px 4px 12px 0px|var(--wp--preset--color--primary)",
+        "shape": "0px 4px 12px 0px",
+        "colour": "var(--wp--preset--color--primary)",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "0px 4px 12px 0px var(--wp--preset--color--primary)"
+    },
+    {
+        "id": "control:2px 2px 0px 0px|null",
+        "shape": "2px 2px 0px 0px",
+        "colour": null,
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "2px 2px 0px 0px #0000001A"
+    },
+    {
+        "id": "control:2px 2px 0px 0px|",
+        "shape": "2px 2px 0px 0px",
+        "colour": "",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "2px 2px 0px 0px #0000001A"
+    },
+    {
+        "id": "control:2px 2px 0px 0px|#000000",
+        "shape": "2px 2px 0px 0px",
+        "colour": "#000000",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "2px 2px 0px 0px #000000"
+    },
+    {
+        "id": "control:2px 2px 0px 0px|#0000001A",
+        "shape": "2px 2px 0px 0px",
+        "colour": "#0000001A",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "2px 2px 0px 0px #0000001A"
+    },
+    {
+        "id": "control:2px 2px 0px 0px|primary",
+        "shape": "2px 2px 0px 0px",
+        "colour": "primary",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "2px 2px 0px 0px var(--wp--preset--color--primary, currentColor)"
+    },
+    {
+        "id": "control:2px 2px 0px 0px|accent",
+        "shape": "2px 2px 0px 0px",
+        "colour": "accent",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "2px 2px 0px 0px var(--wp--preset--color--accent, currentColor)"
+    },
+    {
+        "id": "control:2px 2px 0px 0px|rgba(0,0,0,0.1)",
+        "shape": "2px 2px 0px 0px",
+        "colour": "rgba(0,0,0,0.1)",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "2px 2px 0px 0px #0000001A"
+    },
+    {
+        "id": "control:2px 2px 0px 0px|red",
+        "shape": "2px 2px 0px 0px",
+        "colour": "red",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "2px 2px 0px 0px red"
+    },
+    {
+        "id": "control:2px 2px 0px 0px|var(--wp--preset--color--primary)",
+        "shape": "2px 2px 0px 0px",
+        "colour": "var(--wp--preset--color--primary)",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "2px 2px 0px 0px var(--wp--preset--color--primary)"
+    },
+    {
+        "id": "control:0px 0px 20px 4px|null",
+        "shape": "0px 0px 20px 4px",
+        "colour": null,
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "0px 0px 20px 4px #0000001A"
+    },
+    {
+        "id": "control:0px 0px 20px 4px|",
+        "shape": "0px 0px 20px 4px",
+        "colour": "",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "0px 0px 20px 4px #0000001A"
+    },
+    {
+        "id": "control:0px 0px 20px 4px|#000000",
+        "shape": "0px 0px 20px 4px",
+        "colour": "#000000",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "0px 0px 20px 4px #000000"
+    },
+    {
+        "id": "control:0px 0px 20px 4px|#0000001A",
+        "shape": "0px 0px 20px 4px",
+        "colour": "#0000001A",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "0px 0px 20px 4px #0000001A"
+    },
+    {
+        "id": "control:0px 0px 20px 4px|primary",
+        "shape": "0px 0px 20px 4px",
+        "colour": "primary",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "0px 0px 20px 4px var(--wp--preset--color--primary, currentColor)"
+    },
+    {
+        "id": "control:0px 0px 20px 4px|accent",
+        "shape": "0px 0px 20px 4px",
+        "colour": "accent",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "0px 0px 20px 4px var(--wp--preset--color--accent, currentColor)"
+    },
+    {
+        "id": "control:0px 0px 20px 4px|rgba(0,0,0,0.1)",
+        "shape": "0px 0px 20px 4px",
+        "colour": "rgba(0,0,0,0.1)",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "0px 0px 20px 4px #0000001A"
+    },
+    {
+        "id": "control:0px 0px 20px 4px|red",
+        "shape": "0px 0px 20px 4px",
+        "colour": "red",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "0px 0px 20px 4px red"
+    },
+    {
+        "id": "control:0px 0px 20px 4px|var(--wp--preset--color--primary)",
+        "shape": "0px 0px 20px 4px",
+        "colour": "var(--wp--preset--color--primary)",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "0px 0px 20px 4px var(--wp--preset--color--primary)"
+    },
+    {
+        "id": "control:inset 0px 2px 4px 0px|null",
+        "shape": "inset 0px 2px 4px 0px",
+        "colour": null,
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "inset 0px 2px 4px 0px #0000001A"
+    },
+    {
+        "id": "control:inset 0px 2px 4px 0px|",
+        "shape": "inset 0px 2px 4px 0px",
+        "colour": "",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "inset 0px 2px 4px 0px #0000001A"
+    },
+    {
+        "id": "control:inset 0px 2px 4px 0px|#000000",
+        "shape": "inset 0px 2px 4px 0px",
+        "colour": "#000000",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "inset 0px 2px 4px 0px #000000"
+    },
+    {
+        "id": "control:inset 0px 2px 4px 0px|#0000001A",
+        "shape": "inset 0px 2px 4px 0px",
+        "colour": "#0000001A",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "inset 0px 2px 4px 0px #0000001A"
+    },
+    {
+        "id": "control:inset 0px 2px 4px 0px|primary",
+        "shape": "inset 0px 2px 4px 0px",
+        "colour": "primary",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "inset 0px 2px 4px 0px var(--wp--preset--color--primary, currentColor)"
+    },
+    {
+        "id": "control:inset 0px 2px 4px 0px|accent",
+        "shape": "inset 0px 2px 4px 0px",
+        "colour": "accent",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "inset 0px 2px 4px 0px var(--wp--preset--color--accent, currentColor)"
+    },
+    {
+        "id": "control:inset 0px 2px 4px 0px|rgba(0,0,0,0.1)",
+        "shape": "inset 0px 2px 4px 0px",
+        "colour": "rgba(0,0,0,0.1)",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "inset 0px 2px 4px 0px #0000001A"
+    },
+    {
+        "id": "control:inset 0px 2px 4px 0px|red",
+        "shape": "inset 0px 2px 4px 0px",
+        "colour": "red",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "inset 0px 2px 4px 0px red"
+    },
+    {
+        "id": "control:inset 0px 2px 4px 0px|var(--wp--preset--color--primary)",
+        "shape": "inset 0px 2px 4px 0px",
+        "colour": "var(--wp--preset--color--primary)",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "inset 0px 2px 4px 0px var(--wp--preset--color--primary)"
+    },
+    {
+        "id": "control:0px 1px 2px -1px|null",
+        "shape": "0px 1px 2px -1px",
+        "colour": null,
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "0px 1px 2px -1px #0000001A"
+    },
+    {
+        "id": "control:0px 1px 2px -1px|",
+        "shape": "0px 1px 2px -1px",
+        "colour": "",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "0px 1px 2px -1px #0000001A"
+    },
+    {
+        "id": "control:0px 1px 2px -1px|#000000",
+        "shape": "0px 1px 2px -1px",
+        "colour": "#000000",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "0px 1px 2px -1px #000000"
+    },
+    {
+        "id": "control:0px 1px 2px -1px|#0000001A",
+        "shape": "0px 1px 2px -1px",
+        "colour": "#0000001A",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "0px 1px 2px -1px #0000001A"
+    },
+    {
+        "id": "control:0px 1px 2px -1px|primary",
+        "shape": "0px 1px 2px -1px",
+        "colour": "primary",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "0px 1px 2px -1px var(--wp--preset--color--primary, currentColor)"
+    },
+    {
+        "id": "control:0px 1px 2px -1px|accent",
+        "shape": "0px 1px 2px -1px",
+        "colour": "accent",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "0px 1px 2px -1px var(--wp--preset--color--accent, currentColor)"
+    },
+    {
+        "id": "control:0px 1px 2px -1px|rgba(0,0,0,0.1)",
+        "shape": "0px 1px 2px -1px",
+        "colour": "rgba(0,0,0,0.1)",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "0px 1px 2px -1px #0000001A"
+    },
+    {
+        "id": "control:0px 1px 2px -1px|red",
+        "shape": "0px 1px 2px -1px",
+        "colour": "red",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "0px 1px 2px -1px red"
+    },
+    {
+        "id": "control:0px 1px 2px -1px|var(--wp--preset--color--primary)",
+        "shape": "0px 1px 2px -1px",
+        "colour": "var(--wp--preset--color--primary)",
+        "must_match": true,
+        "note": "control-built single layer",
+        "output": "0px 1px 2px -1px var(--wp--preset--color--primary)"
+    },
+    {
+        "id": "slug:subtle",
+        "shape": "subtle",
+        "colour": null,
+        "must_match": true,
+        "note": "theme preset slug",
+        "output": "var(--wp--preset--shadow--subtle)"
+    },
+    {
+        "id": "slug:subtle|colour",
+        "shape": "subtle",
+        "colour": "#ff0000",
+        "must_match": true,
+        "note": "slug ignores colour",
+        "output": "var(--wp--preset--shadow--subtle)"
+    },
+    {
+        "id": "slug:raised",
+        "shape": "raised",
+        "colour": null,
+        "must_match": true,
+        "note": "theme preset slug",
+        "output": "var(--wp--preset--shadow--raised)"
+    },
+    {
+        "id": "slug:raised|colour",
+        "shape": "raised",
+        "colour": "#ff0000",
+        "must_match": true,
+        "note": "slug ignores colour",
+        "output": "var(--wp--preset--shadow--raised)"
+    },
+    {
+        "id": "slug:floating",
+        "shape": "floating",
+        "colour": null,
+        "must_match": true,
+        "note": "theme preset slug",
+        "output": "var(--wp--preset--shadow--floating)"
+    },
+    {
+        "id": "slug:floating|colour",
+        "shape": "floating",
+        "colour": "#ff0000",
+        "must_match": true,
+        "note": "slug ignores colour",
+        "output": "var(--wp--preset--shadow--floating)"
+    },
+    {
+        "id": "slug:glow",
+        "shape": "glow",
+        "colour": null,
+        "must_match": true,
+        "note": "theme preset slug",
+        "output": "var(--wp--preset--shadow--glow)"
+    },
+    {
+        "id": "slug:glow|colour",
+        "shape": "glow",
+        "colour": "#ff0000",
+        "must_match": true,
+        "note": "slug ignores colour",
+        "output": "var(--wp--preset--shadow--glow)"
+    },
+    {
+        "id": "empty:null",
+        "shape": null,
+        "colour": "#000000",
+        "must_match": true,
+        "note": "empty shape",
+        "output": ""
+    },
+    {
+        "id": "empty:blank",
+        "shape": "",
+        "colour": "#000000",
+        "must_match": true,
+        "note": "empty shape",
+        "output": ""
+    },
+    {
+        "id": "empty:spaces",
+        "shape": "   ",
+        "colour": "#000000",
+        "must_match": true,
+        "note": "empty shape",
+        "output": ""
+    },
+    {
+        "id": "defect:negative-x",
+        "shape": "-2px 4px 8px 0px",
+        "colour": "#000000",
+        "must_match": false,
+        "note": "negative first offset: mangled into a slug today",
+        "output": "var(--wp--preset--shadow---2px4px8px0px000000)"
+    },
+    {
+        "id": "defect:unitless-zero",
+        "shape": "0 4px 12px 0",
+        "colour": "#000000",
+        "must_match": false,
+        "note": "unitless first length: colour ignored today",
+        "output": "0 4px 12px 0"
+    },
+    {
+        "id": "defect:none",
+        "shape": "none",
+        "colour": null,
+        "must_match": false,
+        "note": "\"none\" is treated as a slug today",
+        "output": "var(--wp--preset--shadow--none)"
+    },
+    {
+        "id": "draft:rgba-single",
+        "shape": "0 2px 4px rgba(0,0,0,.1)",
+        "colour": null,
+        "must_match": false,
+        "note": "draft-style, canonicalised by the rewrite",
+        "output": "0 2px 4px #0000001A"
+    },
+    {
+        "id": "draft:two-layer",
+        "shape": "0 30px 80px -30px rgba(0,0,0,.28), 0 2px 8px -2px rgba(0,0,0,.08)",
+        "colour": null,
+        "must_match": false,
+        "note": "two-layer literal, canonicalised by the rewrite",
+        "output": "0 30px 80px -30px #00000047, 0 2px 8px -2px #00000014"
+    },
+    {
+        "id": "defect:two-layer-control",
+        "shape": "0px 1px 2px 0px, 0px 8px 24px 0px",
+        "colour": "#00000033",
+        "must_match": false,
+        "note": "colour appended to the last layer only today",
+        "output": "0px 1px 2px 0px, 0px 8px 24px 0px #00000033"
+    }
+]
