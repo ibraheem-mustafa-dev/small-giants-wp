@@ -280,6 +280,38 @@ def _check_conservation(result: ElementResult) -> None:
         )
 
 
+def _note_routed(ctx: Any, decl: Any) -> None:
+    """Tell the gap channel this element's declaration reached an attribute.
+
+    GROUND-TRUTH: spec=31 §3.A/§13.1 R-31-4 source=dom evidence=a Mama's homepage
+    run emits ``sgs/label {"fontSize":{"desktop":12},"fontWeight":"600",…}`` for
+    ``.sgs-section-heading__label`` — the per-ELEMENT CSS pass routed those
+    declarations. The per-AREA fold over the SAME node finds no per-area attr on
+    the owning composite and records a skip candidate; without this note the
+    candidate would survive ``flush()`` and report a declaration that in fact
+    transferred. Identity (source class + ``property@tier``) is exactly the one
+    ``fold_helpers._report_area_skip`` uses, so the two cancel.
+
+    Reporting only: this function has no effect on ``result`` or the emitted
+    markup.
+    """
+    node = getattr(ctx, "node", None)
+    if node is None:
+        return
+    try:
+        classes = node.get("class", []) or []
+    except Exception:  # noqa: BLE001 — a reporting path never breaks conversion
+        return
+    element = next((c for c in classes if c.startswith("sgs-")), None)
+    if element is None:
+        return
+    _gap_collector.note_declaration_routed(
+        element=element,
+        prop=decl.property,
+        route_key=f"{decl.property}@{decl.tier or 'Base'}",
+    )
+
+
 def _type_gate_gap(ctx: Any, decl: Any, reason: str) -> GAP:
     """The tracked non-transfer for a rejected wrong-kind write: the GAP the dispatch counts, plus a
     ContentGap on the run's observability channel so the rejection is visible in the gap ledger (the
@@ -358,6 +390,7 @@ def process_element(ctx: Any, decls: list[Any]) -> ElementResult:
         if isinstance(out, Write):
             result.writes.append(out)
             result.decl_results += 1
+            _note_routed(ctx, decl)
         elif isinstance(out, GAP):
             result.gaps.append(out)
             result.decl_results += 1
@@ -365,6 +398,7 @@ def process_element(ctx: Any, decls: list[Any]) -> ElementResult:
             # Faithful multi-attribute transfer for ONE declaration (Option A).
             result.writes.extend(out)
             result.decl_results += 1
+            _note_routed(ctx, decl)
         # else: None / [] / wrong-type → a LEAK. decl_results NOT incremented;
         # _check_conservation will raise (fail-closed, never laundered).
 

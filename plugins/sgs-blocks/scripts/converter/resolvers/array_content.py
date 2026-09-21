@@ -52,7 +52,7 @@ from typing import Any
 from bs4 import Tag
 
 from converter.context import ContentConservationError, ContentGap
-from converter.services.field_extractors import extract_field_value
+from converter.services.field_extractors import background_declaration, extract_field_value
 from converter.services.lift_helpers import DECORATIVE_IMG_REASON, is_decorative_img
 from converter.services.recognise_helpers import bem_element_to_canonical_slot
 from converter.db import db_lookup
@@ -253,6 +253,12 @@ _FLAT_SELF_ROLES = frozenset({"icon-slug", "identity", "icon", "url-href", "link
 # inline <svg> via icon_resolver / BEM modifier). Kept beside _FLAT_SELF_ROLES, which lists the same three.
 _ICON_FIELD_ROLES = frozenset({"icon-slug", "identity", "icon"})
 
+# The ``roles`` table's entry for raw inline SVG markup (classification content-bearing). An item-schema field
+# declared with it (block.json ``items.properties.<field>.role``) is the block's raw-svg companion of its icon
+# field. No array_item_schema row uses it yet (sgs/trust-bar's ``iconSvg`` carries no role), which is why
+# ``_raw_svg_field_keys`` still has its documented name-based fallback.
+_RAW_SVG_FIELD_ROLE = "svg"
+
 
 def _is_inline_svg(node: Tag) -> bool:
     """True for an inline ``<svg>`` element itself (not a wrapper that merely contains one)."""
@@ -390,6 +396,8 @@ def _lift_item(
     schema: list[tuple[str, str | None, str | None]],
     media_map: dict,
     skipped: list[tuple[str, str]] | None = None,
+    unresolved_colours: list[tuple[str, str]] | None = None,
+    icon_presentation: list[dict] | None = None,
 ) -> dict:
     """Lift one item into a field dict via the 3-layer match (slot, BEM-segment,
     role). Children whose BEM class resolves to no slot are KEPT (their token
@@ -399,7 +407,16 @@ def _lift_item(
     ``lift_helpers.is_decorative_img``) is never bound to an ``image-object`` field: it is left
     out of that field's candidates, and ``extract_field_value`` skips it when it searches inside
     a flat item. When the schema has an image-object field, each such image is REPORTED into
-    ``skipped`` as ``(field_key, src)`` — the caller turns it into a ContentGap (Rule 4)."""
+    ``skipped`` as ``(field_key, src)`` — the caller turns it into a ContentGap (Rule 4).
+
+    A ``colour-background`` field whose element DID declare a background that could not be resolved to a single
+    colour (a gradient, a bare ``var(--x)``) is reported into ``unresolved_colours`` as ``(field_key, declared
+    value)`` — a skip is reported, never silent. An element with no background declaration reports nothing.
+
+    An icon child's ``<svg>`` presentation attributes (width / height / stroke / stroke-width, which the raw-svg
+    strip drops or the block's stylesheet overrides) are appended to ``icon_presentation`` as ONE dict per item
+    that has an icon svg, whichever way the icon resolved (library slug or raw svg). ``lift_array_content``
+    routes them to block attributes through the DB."""
     children: list[tuple[Tag, str | None, str | None, str | None]] = []
     for ch in item_node.find_all(True):
         if not isinstance(ch, Tag):
@@ -416,9 +433,10 @@ def _lift_item(
     item: dict = {}
     used: set[tuple[int, str]] = set()
     raw_svg_fallback: str | None = None
+    icon_seen = False
     for field_key, fslot, frole in schema:
-        if frole is None:
-            continue
+        if frole is None or frole == _RAW_SVG_FIELD_ROLE:
+            continue  # a raw-svg companion is filled by the paired-companion step below, not matched as a child
         candidates = (
             [c for c in children if not is_decorative_img(c[0])]
             if frole == "image-object" else children
@@ -426,10 +444,19 @@ def _lift_item(
         match = _match_child(field_key, fslot, frole, candidates, used, item_node, is_flat)
         if match is None:
             continue
+        if icon_presentation is not None and not icon_seen and frole in _ICON_FIELD_ROLES:
+            _icon_svg = _svg_of(match)
+            if _icon_svg is not None:
+                icon_presentation.append(icon_resolver.strip_svg_wrapper_attrs_with_presentation(str(_icon_svg))[1])
+                icon_seen = True
         value = extract_field_value(match, frole, media_map)
         if value is not None:
             item[field_key] = value
             used.add((id(match), frole))
+        elif frole == "colour-background":
+            declared = background_declaration(match)
+            if declared and unresolved_colours is not None:
+                unresolved_colours.append((field_key, declared))
         elif raw_svg_fallback is None and _svg_of(match) is not None:
             # An icon child that resolved to no slug (e.g. a filled <polygon>
             # star, or a bespoke outline glyph not in the icon library) — preserve
@@ -455,8 +482,8 @@ def _lift_item(
     # Paired raw-svg companion: a schema field the block declares for a raw-svg
     # fallback (role None + a name that names an svg) receives the preserved SVG.
     if raw_svg_fallback:
-        for field_key, _fslot, frole in schema:
-            if frole is None and field_key not in item and "svg" in field_key.lower():
+        for field_key in _raw_svg_field_keys(schema):
+            if field_key not in item:
                 item[field_key] = raw_svg_fallback
                 break
         # Spec 31 §3.B.0 — styling follows the recognised element: a SOLID glyph
@@ -565,6 +592,36 @@ def _warn_items_below_threshold(
     )
 
 
+def _raw_svg_field_keys(schema: list[tuple[str, str | None, str | None]]) -> list[str]:
+    """The item-schema fields that hold an item's RAW svg markup (the companion of the icon field).
+
+    DB-first: a field the schema DECLARES with the ``roles`` vocabulary's raw-svg role
+    (``_RAW_SVG_FIELD_ROLE``, block.json ``items.properties.<field>.role``) is the companion, whatever it is
+    called. Only when the schema declares none does the FALLBACK apply: a role-less field whose NAME names an
+    svg (``iconSvg``). Today sgs/trust-bar's ``iconSvg`` is found by that fallback because its block.json
+    carries no ``role`` on it (declaring ``"role": "svg"`` there is the missing declaration); a companion under
+    any other name (``rawGlyph``) is found by neither, and ``lift_array_content`` REPORTS that instead of
+    silently lifting nothing."""
+    declared = [fk for fk, _s, frole in schema if frole == _RAW_SVG_FIELD_ROLE]
+    if declared:
+        return declared
+    return [fk for fk, _s, frole in schema if frole is None and "svg" in fk.lower()]
+
+
+def _icon_field_slot(schema: list[tuple[str, str | None, str | None]]) -> str | None:
+    """The slot the schema's icon-role field resolves to (``None`` when it has none)."""
+    return next((fslot for _fk, fslot, frole in schema if frole in _ICON_FIELD_ROLES and fslot), None)
+
+
+def _icon_slot_of(schema: list[tuple[str, str | None, str | None]]) -> str | None:
+    """The slot an item schema's icon field resolves to, when the schema also carries a raw-svg companion
+    field (``_raw_svg_field_keys``); ``None`` otherwise. It gates the icon presentation lift: a block whose
+    items have no raw-svg field is not touched."""
+    if not _raw_svg_field_keys(schema):
+        return None
+    return _icon_field_slot(schema)
+
+
 def lift_array_content(
     node: Tag,
     slug: str,
@@ -621,12 +678,22 @@ def lift_array_content(
         filled: list[dict] = []
         item_gaps: list = []
         item_gaps_reported: list = []  # field-level skips: NOT item losses, outside the conservation sum
+        icon_presentation: list[dict] = []
         for i, item_node in enumerate(item_nodes):
             skipped_imgs: list[tuple[str, str]] = []
-            item_dict = _lift_item(item_node, schema, _media, skipped_imgs)
+            unresolved_colours: list[tuple[str, str]] = []
+            item_dict = _lift_item(item_node, schema, _media, skipped_imgs, unresolved_colours, icon_presentation)
             for field_key, src in skipped_imgs:
                 item_gaps_reported.append(
                     ContentGap(f"{attr_name}[{i}].{field_key}", f"{DECORATIVE_IMG_REASON} (src={src!r})")
+                )
+            for field_key, declared in unresolved_colours:
+                item_gaps_reported.append(
+                    ContentGap(
+                        f"{attr_name}[{i}].{field_key}",
+                        f"inline background {declared!r} is not a single colour (a gradient, or a var() with"
+                        " no palette token), so no colour was lifted",
+                    )
                 )
             if item_dict:
                 filled.append(item_dict)
@@ -648,6 +715,48 @@ def lift_array_content(
 
         if filled:
             result_attrs[attr_name] = filled
+            # The items' icon svgs carry a drawn size, stroke width and stroke colour; the raw-svg strip drops
+            # them and the block's stylesheet overrides the rest, so they reach the page only as block
+            # attributes. Routed by declared css_property + icon element (db_lookup.svg_glyph_destinations),
+            # written only when every item agrees, and every value nothing could take is reported (Rule 4).
+            icon_slot = _icon_slot_of(schema)
+            if icon_slot and icon_presentation:
+                destinations = db_lookup.svg_glyph_destinations(slug, icon_slot)
+                dest_types = {
+                    n: (attrs.get(n) or {}).get("attr_type") for names in destinations.values() for n in names
+                }
+                routed, presentation_gaps = icon_resolver.route_svg_presentation(
+                    icon_presentation, destinations, dest_types
+                )
+                for routed_attr, routed_value in routed.items():
+                    result_attrs.setdefault(routed_attr, routed_value)
+                for kind, reason in presentation_gaps:
+                    item_gaps_reported.append(ContentGap(f"{attr_name}[*].iconSvg.{kind}", reason))
+                # A value now carried by the block attribute FOR EVERY ITEM (route_svg_presentation writes
+                # only on unanimity) is dead in each item's stored svg: strip exactly those attributes.
+                dead = [
+                    svg_attr
+                    for kind, svg_attrs in icon_resolver.SVG_LIFTED_KIND_TO_ATTRS.items()
+                    if destinations.get(kind) and routed.get(destinations[kind][0]) is not None
+                    for svg_attr in svg_attrs
+                ]
+                if dead:
+                    for item_dict in filled:
+                        for svg_key in _raw_svg_field_keys(schema):
+                            if isinstance(item_dict.get(svg_key), str):
+                                item_dict[svg_key] = icon_resolver.strip_svg_open_tag_attrs(item_dict[svg_key], dead)
+            elif icon_presentation and not icon_slot:
+                # The schema has an icon field but no field identified as its raw-svg companion (none declared
+                # with the raw-svg role, none named for an svg): the presentation is only lifted for a block
+                # that keeps raw svg, so say so when the block could have taken it (Rule 4, never silent).
+                field_slot = _icon_field_slot(schema)
+                if field_slot and any(db_lookup.svg_glyph_destinations(slug, field_slot).values()):
+                    item_gaps_reported.append(ContentGap(
+                        f"{attr_name}[*].iconSvg.companion",
+                        "the items' icons carry a size / stroke, but the item schema names no raw-svg field (none"
+                        f" declared with role {_RAW_SVG_FIELD_ROLE!r}, none named for an svg), so the icon"
+                        " presentation was not lifted to block attributes",
+                    ))
         all_gaps.extend(item_gaps)
         all_gaps.extend(item_gaps_reported)
 

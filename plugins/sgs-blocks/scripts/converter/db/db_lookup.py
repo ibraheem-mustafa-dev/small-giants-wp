@@ -2277,6 +2277,28 @@ def attr_for_typography_property(block_slug: str, css_property: str) -> "str | N
     touch. ``_OUTER_ROOT_ELEMENTS`` already correctly includes ``'wrapper'``
     and is the established root-domain set used elsewhere (D-2026-08-27).
 
+    ELEMENT-DOMAIN ROUTE (2026-09-21, Eye Care ticker). A typography declaration
+    on a CONTAINER (``font-size:12.5px;letter-spacing:.04em`` on the ticker band)
+    CSS-inherits into every descendant text node, so when the block has NO
+    root-domain destination for the property but does declare element-scoped
+    ones (``sgs/trust-bar``: ``labelFontSize`` / ``titleFontSize``, css_element
+    ``label`` / ``title``), routing it to the block's text-typography attr is
+    the faithful transfer; before this it gapped silently (``resolve`` looked
+    only for the global ``fontSize`` the block never declared, and the rows
+    above were invisible to the root-domain filter). Resolved DB-first from ONE
+    authoritative signal only (see ``_typography_element_pick``): the block's own
+    ``block_selectors`` element='typography' primary-text selector must name
+    exactly one of the element-scoped attrs. A block with no such row, or whose
+    row names none/several, returns ``None`` -- the caller reports a GAP naming
+    ``typography_element_candidates``, never a guess (a block that declares ONE
+    element-level attr, e.g. sgs/nav-drawer's ``closeFontSize`` on the close
+    button, has NOT thereby said that element is its primary text: routing a
+    container's font-size there styles a button, not the block). Not reached when
+    a root-domain row exists (that answer is byte-identical to before) or when
+    the block already declares the global pick (``typography_css_to_attrs`` --
+    e.g. sgs/collapsible-text's own ``fontSize``), which ``resolve`` keeps using
+    unchanged.
+
     Returns ``None`` on ambiguity (>=2 candidates) or no match — additive
     only: the caller (``typography.resolve``) falls back to its existing
     global suffix pick unchanged, so an undeclared/ambiguous property never
@@ -2300,9 +2322,174 @@ def attr_for_typography_property(block_slug: str, css_property: str) -> "str | N
         return None
     finally:
         conn.close()
-    if len(rows) != 1:
+    if len(rows) == 1:
+        return rows[0][0]
+    if rows:
         return None
-    return rows[0][0]
+    # No root-domain row at all: the element-domain route (a block that already
+    # declares the global pick keeps it -- resolve() uses that unchanged).
+    return _typography_element_pick(block_slug, css_property)
+
+
+# The element-domain route's property scope is the typography sink's OWN list
+# (``_TYPO_LIFT_TYPOGRAPHY_CSS_PROPS``, no new list) WITHOUT the colour pair: a
+# container's inheritable TEXT properties route to an element-level text attr;
+# ``background-color`` is not inherited and ``color`` is a role='color' concern
+# with its own element naming (``badge-label``).
+
+
+# ``supports.typography`` keys that are not a typography CONTROL: a serialisation switch, the
+# default-controls panel map and the fluid-type toggle. Every other truthy key (fontSize,
+# lineHeight, textAlign, letterSpacing, fontFamily, ... in either the stable or the
+# ``__experimental*`` spelling) is a WP-native typography control the block hosts.
+_TYPOGRAPHY_SUPPORT_NON_CONTROL_KEYS = frozenset({"skipSerialization", "defaultControls", "fluid"})
+
+
+def _normalise_support_key(key: str) -> str:
+    """``__experimentalFontFamily`` -> ``fontFamily``: block.json spells the same support with
+    and without the ``__experimental`` prefix across WP versions."""
+    bare = re.sub(r"^_+(?:experimental)?", "", key or "")
+    return bare[:1].lower() + bare[1:]
+
+
+def _declares_native_typography_support(conn: sqlite3.Connection, block_slug: str) -> bool:
+    """True when the block enables ANY WP-native typography control in its
+    ``supports.typography`` (whole-block, not per property).
+
+    Such a block has a WRAPPER-level home for the container's text typography (e.g.
+    sgs/quote: 'the root's native typography.fontSize/lineHeight are wrapper-level
+    inherited defaults'). A per-property test let ``letter-spacing`` through to
+    ``attributionLetterSpacing`` on a block that natively hosts ``fontSize`` /
+    ``lineHeight``: the citation took half the container's typography and the body
+    none. So the element route stays out for EVERY typography property and the
+    declaration remains a reported gap. Keys are normalised (``__experimental*``
+    prefix dropped) and the non-control keys in
+    ``_TYPOGRAPHY_SUPPORT_NON_CONTROL_KEYS`` (e.g. ``__experimentalSkipSerialization``)
+    never count as a control."""
+    row = conn.execute(
+        "SELECT support_value FROM block_supports WHERE block_slug = ? AND support_name = 'typography' "
+        "AND COALESCE(is_stale, 0) = 0 LIMIT 1",
+        (block_slug,),
+    ).fetchone()
+    if not row:
+        return False
+    try:
+        value = json.loads(row[0])
+    except (TypeError, ValueError):
+        return False
+    if not isinstance(value, dict):
+        return False
+    return any(
+        bool(v) and _normalise_support_key(k) not in _TYPOGRAPHY_SUPPORT_NON_CONTROL_KEYS
+        for k, v in value.items()
+    )
+
+
+@functools.lru_cache(maxsize=4096)
+def _typography_element_rows(
+    block_slug: str, css_property: str,
+) -> "tuple[tuple[str, str, str | None], ...]":
+    """``(attr_name, css_element, derived_selector)`` for every ELEMENT-scoped
+    base-tier typography attr the block declares for ``css_property``: the rows
+    ``_root_domain_element_clause`` excludes, restricted to ``role='typography'``
+    (a ``select-from-enum`` size such as testimonial's ``ratingSize`` is not text
+    typography). Empty when the property is out of the typography sink's scope,
+    when the block already has a root-domain row, when it already declares the
+    global pick (nothing new to route), when it enables ANY WP-native typography
+    control (``_declares_native_typography_support``, whole-block), or on a
+    pre-seed DB."""
+    if not block_slug or css_property not in _TYPO_LIFT_TYPOGRAPHY_CSS_PROPS:
+        return ()
+    global_pick = {css: primary for css, primary, _unit in typography_css_to_attrs()}.get(css_property)
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        clause, params = _root_domain_element_clause(block_slug)
+        if conn.execute(
+            "SELECT 1 FROM block_attributes WHERE block_slug = ? AND css_property = ? "
+            f"AND ({clause}) AND (css_tier IS NULL OR css_tier = 'desktop') "
+            "AND css_state IS NULL LIMIT 1",
+            (block_slug, css_property, *params),
+        ).fetchone():
+            return ()
+        if global_pick and conn.execute(
+            "SELECT 1 FROM block_attributes WHERE block_slug = ? AND attr_name = ? LIMIT 1",
+            (block_slug, global_pick),
+        ).fetchone():
+            return ()
+        if _declares_native_typography_support(conn, block_slug):
+            return ()
+        rows = conn.execute(
+            "SELECT attr_name, css_element, derived_selector FROM block_attributes "
+            "WHERE block_slug = ? AND css_property = ? AND role = 'typography' "
+            f"AND NOT ({clause}) AND (css_tier IS NULL OR css_tier = 'desktop') "
+            "AND css_state IS NULL ORDER BY rowid",
+            (block_slug, css_property, *params),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        return ()
+    finally:
+        conn.close()
+    return tuple((r[0], r[1] or "", r[2]) for r in rows)
+
+
+def typography_element_candidates(block_slug: str, css_property: str) -> "tuple[str, ...]":
+    """The element-scoped typography attr names (rowid order) a container's
+    ``css_property`` declaration could route to when the block has no root-domain
+    destination. Used by ``resolvers/typography.py`` to NAME the candidates in the
+    GAP it raises when ``attr_for_typography_property`` cannot pick one."""
+    return tuple(r[0] for r in _typography_element_rows(block_slug, css_property))
+
+
+@functools.lru_cache(maxsize=1024)
+def _typography_primary_selectors(block_slug: str) -> "tuple[frozenset[str], frozenset[str]]":
+    """``(selectors, bem_elements)`` from the block's ``block_selectors``
+    element='typography' row(s) -- the block's OWN declaration of its primary text
+    element. ``selectors`` are the verbatim CSS selectors (comma lists split);
+    ``bem_elements`` the ``__element`` tokens of any BEM-shaped one
+    (``.sgs-trust-bar__label`` -> ``label``). A root-class selector
+    (``.wp-block-sgs-info-box``) yields no element token. Empty on a block with
+    no such row (or a pre-seed DB)."""
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT selector FROM block_selectors WHERE block_slug = ? AND element = 'typography'",
+            (block_slug,),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        return frozenset(), frozenset()
+    finally:
+        conn.close()
+    selectors = {p.strip() for (s,) in rows for p in (s or "").split(",") if p.strip()}
+    elements = {m.group(1) for s in selectors for m in re.finditer(r"__([a-z0-9]+(?:-[a-z0-9]+)*)", s)}
+    return frozenset(selectors), frozenset(elements)
+
+
+def _typography_element_pick(block_slug: str, css_property: str) -> "str | None":
+    """Pick the ONE element-scoped attr a container's typography routes to, or
+    ``None`` (never a guess). The ONLY authoritative signal is the block's
+    ``block_selectors`` element='typography' row -- the block's own declaration of
+    its primary text element: the element-scoped attr whose ``derived_selector``
+    list holds that selector verbatim, or whose ``css_element`` equals its BEM
+    ``__element``, picked when exactly one matches (two matches = still
+    ambiguous). A block with no such row yields ``None`` even when it declares a
+    single element-level attr: being the only typography attr says nothing about
+    being the block's primary text (nav-drawer's only one, ``closeFontSize``, is
+    the close button's). A populated-slot tie-break is deliberately NOT applied:
+    it needs the draft node (per-run, uncacheable) and the block's array items are
+    only lifted AFTER this CSS pass, so it would be a content-order-dependent
+    guess."""
+    rows = _typography_element_rows(block_slug, css_property)
+    if not rows:
+        return None
+    selectors, elements = _typography_primary_selectors(block_slug)
+    if not selectors:
+        return None
+    picked = [
+        attr for attr, element, derived in rows
+        if selectors & {p.strip() for p in (derived or "").split(",") if p.strip()}
+        or (element and element in elements)
+    ]
+    return picked[0] if len(picked) == 1 else None
 
 
 class AmbiguousStateAttrError(RuntimeError):
@@ -3224,7 +3411,7 @@ def typography_css_to_attrs() -> list[tuple[str, str, "str | None"]]:
     reads the DB; only the lift SCOPE (which css_properties to lift) and the
     2-property colour disambiguation are module constants.
 
-    Iteration order = _TYPO_LIFT_TYPOGRAPHY_CSS_PROPS (the 6 typography props)
+    Iteration order = _TYPO_LIFT_TYPOGRAPHY_CSS_PROPS (the 8 typography props)
     then _TYPO_COLOUR_CSS_PROPS (color, background-color).
 
     Derivation rules:
@@ -3254,7 +3441,7 @@ def typography_css_to_attrs() -> list[tuple[str, str, "str | None"]]:
         ("color",           "textColour",       None),
         ("background-color","backgroundColour", None),
     ]
-    # Ordered lift scope: 6 typography props then the 2 colour props.
+    # Ordered lift scope: the 8 typography props then the 2 colour props.
     lifted_css_props = list(_TYPO_LIFT_TYPOGRAPHY_CSS_PROPS) + list(_TYPO_COLOUR_CSS_PROPS)
     try:
         conn = sqlite3.connect(SGS_DB)
@@ -4634,6 +4821,7 @@ def detect_variant(
     populated_attrs: dict,
     child_slugs: "list[str] | None" = None,
     child_blocks: "list[tuple[str, dict]] | None" = None,
+    draft_declares: "object | None" = None,
 ) -> str | None:
     """Detect a block's variant from the draft's extracted attrs THIS run.
 
@@ -4677,6 +4865,19 @@ def detect_variant(
     `two-column-editorial`). Default `None` keeps every caller that doesn't
     pass it byte-identical to pre-2026-09-06 behaviour.
 
+    `draft_declares` (declaration-presence signal, 2026-09-21) is the OPTIONAL callable
+    ``(css_property, css_element) -> bool``: does the DRAFT itself supply that CSS property on the
+    element the slot attribute is declared for? It CORRECTS an attribute-driven pick and never makes one:
+    it is consulted only when at least one variant already scores above zero on populated attributes. Then a
+    capability slot the draft supplies scores 1 exactly as a populated attribute does, so a lifted attribute
+    that belongs to a variant the draft does not show (a bare icon size lifted from an svg that sits in a
+    styled disc) is outvoted by what the draft DECLARES, even though the converter has no attribute to lift
+    those declarations into (a disc's background, radius and shadow on an icon holder have none today).
+    Per slot the score is populated OR declared, never both, and a preset slot (`slot_value` set) is never
+    scored by declaration since a declaration carries no enum value. A draft that populated nothing still
+    returns None (the block's default), so it is never turned into an explicit value. Default `None` keeps
+    every caller that does not pass it byte-identical to before.
+
     Returns None when:
       - the block declares no variant_slots, or
       - no variant scored above zero and composition didn't resolve it, or
@@ -4689,16 +4890,32 @@ def detect_variant(
     variants = _variant_slots_map(block_slug)
     if not variants:
         return None
-    scores = sorted(
-        (
+    def _scores(declared_too: bool) -> list:
+        slot_css = box_css_catalogue(block_slug) if declared_too else {}
+
+        def _score(unique_slot: str, slot_value: "str | None") -> int:
+            populated = _slot_score(slot_value, populated_attrs, unique_slot)
+            if populated or not declared_too or slot_value is not None:
+                return populated
+            css = slot_css.get(unique_slot)
+            if not css or not css["css_element"]:
+                return 0
+            return 1 if draft_declares(css["css_property"], css["css_element"]) else 0
+
+        return sorted(
             (
-                sum(_slot_score(slot_value, populated_attrs, unique_slot) for unique_slot, slot_value in slots),
-                variant_value,
-            )
-            for variant_value, slots in variants
-        ),
-        reverse=True,
-    )
+                (
+                    sum(_score(unique_slot, slot_value) for unique_slot, slot_value in slots),
+                    variant_value,
+                )
+                for variant_value, slots in variants
+            ),
+            reverse=True,
+        )
+
+    scores = _scores(False)
+    if draft_declares is not None and scores[0][0] > 0:
+        scores = _scores(True)
     top_count, top_variant = scores[0]
     if top_count == 0:
         # See docstring point 1 — every declared variant is a candidate here,
@@ -4723,6 +4940,62 @@ def detect_variant(
         return None
     _trace("variant_detect_hit", block_slug=block_slug, variant=top_variant, count=top_count)
     return top_variant
+
+
+# The three presentation attributes of an item's own ``<svg>`` glyph, each with the ``css_property`` a block
+# declares for it in ``block_attributes`` (a ``height,width`` pair is one square size).
+_SVG_GLYPH_KIND_TO_CSS_PROPERTY = {
+    "size": "height,width",
+    "stroke-width": "stroke-width",
+    "colour": "color",
+}
+
+
+@functools.lru_cache(maxsize=256)
+def svg_glyph_destinations(block_slug: str, icon_slot: str) -> dict:
+    """Where an item icon's ``<svg>`` presentation (size, stroke width, colour) may be written.
+
+    Returns ``{kind: (attr_name, ...)}`` for ``kind`` in ``size`` / ``stroke-width`` / ``colour``: every
+    attribute the block declares (``block_attributes.css_property``) for that property, at BASE state and BASE
+    tier, on an ICON element. An element is an icon element when one of its hyphen-separated words is
+    ``icon_slot`` (the slot the item schema's icon field resolves to): ``icon``, ``icon-badge``, ``icon-bare``,
+    ``item-icon``. Looked up by (block, css_property, css_element), never by attribute name (R-31-1).
+
+    A HOLDER attribute is dropped: one that is a discriminating slot of a variant that has MORE THAN ONE
+    discriminating slot (``variant_slots``). Such a variant is defined by a decorated box (a disc with its own
+    background, radius and shadow), so its size attribute is the box's size, not the glyph's. A variant whose
+    only discriminating slot is a size (a bare, undecorated icon) is a glyph size and stays. An empty tuple
+    means the block declares no destination for that kind; two or more means it is ambiguous: the caller
+    writes nothing for either and reports a gap.
+    """
+    empty: dict = {kind: () for kind in _SVG_GLYPH_KIND_TO_CSS_PROPERTY}
+    if not block_slug or not icon_slot:
+        return empty
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT attr_name, css_property, css_element FROM block_attributes "
+            "WHERE block_slug = ? AND css_property IN (?, ?, ?) AND css_element IS NOT NULL "
+            "AND css_state IS NULL AND (css_tier IS NULL OR css_tier = 'desktop') ORDER BY rowid",
+            (block_slug, *_SVG_GLYPH_KIND_TO_CSS_PROPERTY.values()),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        # A pre-Front-1 DB without the css_* columns declares no destination for anything.
+        return empty
+    finally:
+        conn.close()
+    holder_slots = {
+        slot
+        for _variant, slots in _variant_slots_map(block_slug)
+        if len(slots) > 1
+        for slot, _slot_value in slots
+    }
+    kind_of = {prop: kind for kind, prop in _SVG_GLYPH_KIND_TO_CSS_PROPERTY.items()}
+    found: dict = {kind: [] for kind in _SVG_GLYPH_KIND_TO_CSS_PROPERTY}
+    for attr_name, css_property, css_element in rows:
+        if icon_slot in css_element.split("-") and attr_name not in holder_slots:
+            found[kind_of[css_property]].append(attr_name)
+    return {kind: tuple(names) for kind, names in found.items()}
 
 
 # ----------------------------------------------------------------------------
@@ -6870,7 +7143,14 @@ def emit_sgs_container_wrapping(
     # fills the viewport; content is constrained by the inner block's own content-width
     # logic. The className post-process (guarantee_section_className) MERGES the section BEM
     # class on top, so widthMode is preserved.
-    return _emit_wp_block_markup("sgs/container", {"widthMode": "full"}, container_children)
+    container_slug = container_default_slug()
+    if container_slug is None:
+        raise RuntimeError(
+            "emit_sgs_container_wrapping: the DB names no default container "
+            "(container_default_slug() is None: block_composition.wraps_block is empty); "
+            "run /sgs-update stage 1 -- a slug literal is never the fallback (R-31-1)."
+        )
+    return _emit_wp_block_markup(container_slug, {"widthMode": "full"}, container_children)
 
 
 # ----------------------------------------------------------------------------

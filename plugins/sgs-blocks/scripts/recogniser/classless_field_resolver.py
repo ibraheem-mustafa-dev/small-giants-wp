@@ -265,9 +265,27 @@ def _array_item_schema_rows(
 
 _URL_RE = re.compile(r"^(https?://|/|#|mailto:|tel:)", re.IGNORECASE)
 
+# A CSS hex colour (#RGB, #RGBA, #RRGGBB, #RRGGBBAA) starts with '#' exactly like a fragment
+# link, so the bare '#' prefix in _URL_RE alone made every hex colour URL-shaped: a review
+# avatar colour '#1A73E8' was placed in a per-item `url` by the url-href role fallback (proven by
+# a dry run against sgs/google-reviews.reviews, 2026-09-21). The four lengths are the ones CSS
+# defines and the ones includes/helpers-tokens.php::sgs_is_css_colour accepts. A fragment link
+# such as '#top' or '#contact' has a non-hex letter, so it stays URL-shaped; a fragment id made
+# ONLY of 3, 4, 6 or 8 hex digits (e.g. '#fee', '#decade') is inherently ambiguous with a colour
+# and is read as the colour, which is the more common draft value.
+_HEX_COLOUR_RE = re.compile(r"^#(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$", re.IGNORECASE)
+
+
+def _is_hex_colour_shaped(value: Any) -> bool:
+    return isinstance(value, str) and bool(_HEX_COLOUR_RE.match(value.strip()))
+
 
 def _is_url_shaped(value: Any) -> bool:
-    return isinstance(value, str) and bool(_URL_RE.match(value.strip()))
+    return (
+        isinstance(value, str)
+        and not _is_hex_colour_shaped(value)
+        and bool(_URL_RE.match(value.strip()))
+    )
 
 
 def _is_media_reference_shaped(value: Any) -> bool:
@@ -288,7 +306,14 @@ def _role_value_shape_matches(role: str, value: Any) -> bool:
     if role == "image-object":
         return _is_media_reference_shaped(value)
     if role in ("text-content", "content"):
-        return isinstance(value, str) and not _is_url_shaped(value) and not _is_media_reference_shaped(value)
+        # A hex colour is neither a URL (see _HEX_COLOUR_RE) nor prose: it must not fall through the
+        # text-content shape check now that _is_url_shaped no longer claims it.
+        return (
+            isinstance(value, str)
+            and not _is_url_shaped(value)
+            and not _is_hex_colour_shaped(value)
+            and not _is_media_reference_shaped(value)
+        )
     return False
 
 

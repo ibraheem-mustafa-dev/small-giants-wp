@@ -3,7 +3,7 @@
 ```
 verdict: PASS
 intent_capture_passed: true
-source_sha: 8497df25ab3fde97
+source_sha: 480e4757ea01a205
 blocks: google-reviews trustpilot-reviews
 target: sandybrown-nightingale-600381.hostingersite.com (probe page 3775, "[probe] google reviews written mode")
 date:   2026-09-21
@@ -74,3 +74,14 @@ Front end (page 11, real homepage, cache cleared): the reviews block carries `sg
 Captures for the eye (R-31-13; PNGs gitignored, kept locally): `v8_selected-1.png` (sample slider in the editor), `v8_selected-3.png`.
 
 Not verified: the editor with a real Google place ID (live fetch was tested through a stub only).
+
+## Reviews card converted as ONE block (deploy of this change, Eye Care test site page 11, real browser)
+
+This change is converter and metadata only: `block.json` gains `scalarContentLift`, an item-role declaration for `avatarColour` and a comment; no attribute, default or render path
+changed. Front end measured after the change on the real homepage (cache cleared): the whole bordered card is one `sgs/google-reviews` block (slider variant) carrying `averageRating` 4.7,
+`reviewCount` 15, `reviewRequestUrl`, the card's own border and 12px radius, and 13 reviews each with `rating` 5 and a coloured initial (11 distinct colours); 0 broken images; no "0.0"
+aggregate. The editor cases measured earlier the same day are unaffected (no editor code changed).
+
+Not faithful yet, stated plainly: the draft's gold stars (#FBBC04) render taupe, the "Write a review" pill renders black, the card is flush to its border with truncated text, and
+"See all reviews", the "Google Reviews" caption, the footnote and the scrollbar are absent. Each dropped declaration is now a reported skip row (13 on this card) instead of silent; carrying them needs the
+converter to route inline styles by the attribute's `derived_selector` (a shared-mechanism change awaiting approval) plus new block attributes for the review-card box, avatar size, star size and pill radius.

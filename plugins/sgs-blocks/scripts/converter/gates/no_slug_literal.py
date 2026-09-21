@@ -30,7 +30,20 @@ SCOPE
     dispatch_table.py, dispatch_spine.py, walk.py (widened EXECUTION Step 5,
     2026-07-04 — the FR-31-2.8 registry lands exactly there, and a slug-keyed
     registry entry is the carve-out this gate exists to catch; the old
-    "intentionally out of scope" exemption is retired).
+    "intentionally out of scope" exemption is retired); PLUS db/db_lookup.py
+    (QC-council 2026-09-21: most new converter logic lives there and the gate
+    could not see it) in SLUG-LITERAL-ONLY mode.
+
+    db_lookup.py is the DB accessor: it compares schema column names, enum
+    literals and SQL results against strings all day, and the identifier-taint
+    rule above flagged 24 such comparisons there (``'container_kind' not in
+    cols``, ``'/' in block_slug``) that are not block carve-outs. So for that one
+    file only a SLUG LITERAL ("sgs/...") compared to anything, or sitting in a
+    return/assign/arg, is a violation (``_LITERAL_ONLY_FILES``). Every scanned
+    file skips its ``if __name__ == "__main__":`` smoke-test block, which the
+    converter never runs. recogniser/ is NOT in scope: it carries 21 slug-literal
+    hits of its own (tier maps, landmark tags) that need a design decision, not a
+    baseline entry.
 
 CLI (matches the f5-commit-gate convention — run from plugins/sgs-blocks/scripts):
     python converter/gates/no_slug_literal.py --report          # list, exit 0
@@ -70,6 +83,9 @@ _SCAN_FILES = [
     _CONVERTER / "dispatch_spine.py",
     _CONVERTER / "walk.py",
 ]
+# The DB accessor: scanned for slug LITERALS only (see the module docstring).
+_LITERAL_ONLY_FILES = [_CONVERTER / "db" / "db_lookup.py"]
+_SCAN_FILES.extend(_LITERAL_ONLY_FILES)
 _BASELINE = _HERE / "no-slug-literal-baseline.json"
 
 # The carve-out identifiers the gate guards.
@@ -146,7 +162,8 @@ def _subtree_touches_target(node: ast.AST, tainted: set[str]) -> bool:
 class _CarveOutVisitor(ast.NodeVisitor):
     """Collect string-literal comparisons against a carve-out identifier."""
 
-    def __init__(self) -> None:
+    def __init__(self, literal_only: bool = False) -> None:
+        self.literal_only = literal_only
         self.findings: list[dict] = []
         # Names bound to a string-collection literal at module/function scope —
         # used to catch `x in _SPECIAL` where _SPECIAL = {"hero"}.
@@ -199,13 +216,13 @@ class _CarveOutVisitor(ast.NodeVisitor):
         # A slug literal as ANY operand is a carve-out regardless of the other operand's
         # identifier (catches a local `slug == "sgs/hero"` the target-tracking misses).
         slug_lit = any(_is_slug_literal(o) for o in operands)
-        if (touches and literalish) or slug_lit:
+        if (touches and literalish and not self.literal_only) or slug_lit:
             self._record(node)
         self.generic_visit(node)
 
     def visit_Match(self, node: ast.Match) -> None:
         # match ctx.block_slug: case "sgs/hero": ...  — the match-statement carve-out.
-        if _subtree_touches_target(node.subject, self.tainted):
+        if not self.literal_only and _subtree_touches_target(node.subject, self.tainted):
             for case in node.cases:
                 if self._pattern_has_string_literal(case.pattern):
                     self._record(case.pattern, fallback=f"match {ast.unparse(node.subject)} / case")
@@ -332,15 +349,24 @@ def _rel_path(py: Path, scan_dir: Path) -> str:
     return py.name
 
 
-def _process_file(py: Path, scan_dir: Path, violations: list[dict]) -> None:
+def _is_main_guard(node: ast.AST) -> bool:
+    """``if __name__ == "__main__":`` at module level: a CLI smoke test the converter never runs."""
+    if not isinstance(node, ast.If) or not isinstance(node.test, ast.Compare):
+        return False
+    left = node.test.left
+    return isinstance(left, ast.Name) and left.id == "__name__"
+
+
+def _process_file(py: Path, scan_dir: Path, violations: list[dict], literal_only: bool = False) -> None:
     if _is_test_file(py):
         return
     try:
         tree = ast.parse(py.read_text(encoding="utf-8", errors="replace"), filename=str(py))
     except SyntaxError:
         return
+    tree.body = [n for n in tree.body if not _is_main_guard(n)]
     rel = _rel_path(py, scan_dir)
-    visitor = _CarveOutVisitor()
+    visitor = _CarveOutVisitor(literal_only=literal_only)
     visitor._collect_assignments(tree)
     visitor.visit(tree)
     for f in visitor.findings:
@@ -373,7 +399,7 @@ def _process_file(py: Path, scan_dir: Path, violations: list[dict]) -> None:
             ),
         })
     # variant files: a bare string Constant return/assign (cheat Gap C — `return "split"`).
-    if _is_variant_file(py.name):
+    if _is_variant_file(py.name) and not literal_only:
         for f in _scan_variant_bare_strings(tree):
             key = _violation_key(rel, f["src"])
             if key in seen_keys:
@@ -403,7 +429,7 @@ def run(scan_dirs: list[Path] | None = None) -> list[dict]:
     if scan_dirs is None:
         for py in _SCAN_FILES:
             if py.exists():
-                _process_file(py, _CONVERTER, violations)
+                _process_file(py, _CONVERTER, violations, literal_only=py in _LITERAL_ONLY_FILES)
     return violations
 
 

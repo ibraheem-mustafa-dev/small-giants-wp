@@ -220,5 +220,9 @@
   "marquee-duration": [
     "styling-behaviour",
     "A NUMBER attr holding the marquee's duration in seconds for one full cycle (0 = use the block's own slow / medium / fast preset). Consumer: converter/resolvers/marquee.py (role join, no block name); the value is the duration of the draft's infinite animation. A block with no attr of this role has no way to carry the duration, so the draft's value is REPORTED as a gap rather than mapped onto a preset. Holder: sgs/trust-bar.autoScrollDuration. Added 2026-09-21."
+  ],
+  "colour-background": [
+    "content-bearing",
+    "A colour value read from the element's OWN inline background (`background:` shorthand or `background-color:`; last declaration wins) -- the array-item-schema role of a per-item background-colour field, e.g. sgs/google-reviews reviews[].avatarColour (declared in block.json items.properties.avatarColour.role, added 2026-09-21). Content-bearing because the DRAFT supplies the value: a draft that stamps a colour per card at run time yields each card's own colour. CONSUMER: converter/services/field_extractors.py::extract_field_value -> extract_background_colour, which resolves through the pipeline's one colour normaliser (styling_helpers.extract_token_or_hex: palette token slug, hex/rgb()/hsl() verbatim, white/black to hex) plus Pillow's CSS colour-name table for other named colours; converter/resolvers/array_content.py records a ContentGap when a background was declared but is not a single colour (a gradient, a bare var()). Distinct from `color` (a styling-behaviour attr-level marker for a colour VALUE that the CSS router routes) and from `colour-text` (unused): this one is READ FROM the draft element's background, not routed as CSS. Zero block_attributes rows carry it; it lives in array_item_schema.role only."
   ]
 }

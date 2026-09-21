@@ -24,7 +24,11 @@ link-content     <a href> MINUS the block's own URL       str | None
                  template (needs ``link_template``)
 plain-integer    element text verbatim                   str | None
 css-modifier     BEM --<modifier> suffix on element cls  str | None
-numeric-content  first signed decimal token in text      float | None
+numeric-content  first number in text, else in the       int | float | None
+                 aria-label (decimal-capable, verbatim)
+colour-background  the element's INLINE background       str | None
+                 colour (hex / rgb() / hsl() / named /
+                 palette token slug)
 presence-boolean element MATCHED (existence is the value) True (always)
 
 Design constraints (all inherited from Spec 31 §3.B.0 / R-31-1 / R-31-9):
@@ -54,11 +58,14 @@ from bs4 import Tag
 
 from converter.services.lift_helpers import (
     _safe_href,
+    extract_aria_number,
     extract_star_count,
     first_content_img,
+    first_number,
     rich_text_content,
     scalar_media_from_img,
 )
+from converter.services.styling_helpers import _DECL_RE, extract_token_or_hex
 from converter.services.icon_resolver import record_icon_proposal, resolve_icon
 from converter.db import db_lookup
 
@@ -291,6 +298,97 @@ def extract_link_fragment(element: "Tag", link_template: str | None) -> str | No
     return fragment or None
 
 
+# ---------------------------------------------------------------------------
+# colour-background — the element's INLINE background colour
+# ---------------------------------------------------------------------------
+# Serves a per-item colour field such as sgs/google-reviews reviews[].avatarColour (an initials-avatar
+# background, "a palette slug or a CSS colour"). Reads the inline ``style`` the draft actually carries,
+# so a draft that stamps each review's colour at run time (a loop over a palette) yields each card's own
+# colour. The value goes through the pipeline's ONE colour normaliser, styling_helpers.extract_token_or_hex
+# (Spec 31 section 3.A step 6): a palette reference becomes its token slug, hex and rgb()/hsl() literals
+# are kept verbatim (a per-instance client colour with no token equivalent), white/black become hex. No
+# second colour parser is written here.
+
+_BACKGROUND_PROPS = frozenset({"background", "background-color"})
+
+
+def _background_declaration(element: "Tag") -> str | None:
+    """The raw value of the LAST ``background`` / ``background-color`` in the element's inline style.
+
+    The last one wins, as in CSS: ``background:#000;background-color:#fff`` paints white. None when the
+    element declares neither, which is the strict no-op (the element simply has no colour to lift).
+    """
+    style = element.get("style", "")
+    if not isinstance(style, str) or not style:
+        return None
+    value: str | None = None
+    for match in _DECL_RE.finditer(style):
+        if match.group(1).strip().lower() in _BACKGROUND_PROPS:
+            value = match.group(2).strip()
+    return value or None
+
+
+def _top_level_tokens(value: str) -> list[str]:
+    """Whitespace-separated tokens of a CSS value, keeping a ``rgb(0, 0, 0)`` group as one token."""
+    tokens: list[str] = []
+    depth = 0
+    current: list[str] = []
+    for ch in value:
+        if ch == "(":
+            depth += 1
+        elif ch == ")":
+            depth = max(0, depth - 1)
+        if ch.isspace() and depth == 0:
+            if current:
+                tokens.append("".join(current))
+                current = []
+        else:
+            current.append(ch)
+    if current:
+        tokens.append("".join(current))
+    return tokens
+
+
+def _named_colour_hex(word: str) -> str | None:
+    """A CSS named colour ('crimson') as its hex value, else None.
+
+    Uses Pillow's ImageColor table (the full CSS colour-name set) rather than a hand-written dict, and
+    imports it lazily like ``webgl_style_classifier``. ``white`` / ``black`` never reach here (the shared
+    normaliser maps them); ``transparent`` / ``currentcolor`` / ``inherit`` are not in the table and so are
+    correctly refused. Without Pillow a named colour is simply not resolved (reported as a gap by the caller).
+    """
+    try:
+        from PIL import ImageColor
+    except ImportError:  # pragma: no cover - Pillow is a pipeline dependency; degrade to a gap, not a crash
+        return None
+    return ImageColor.colormap.get(word.lower())
+
+
+def extract_background_colour(element: "Tag") -> str | None:
+    """Resolve the element's inline background to a token slug or a concrete colour, else None.
+
+    ``background:`` shorthand and ``background-color:`` are both read (last declaration wins). Inside a
+    shorthand the colour is the first token that resolves to a colour; ``url(...)`` / ``no-repeat`` / size
+    tokens are skipped. A gradient (``linear-gradient(...)``), a bare unresolved ``var(--x)`` and anything
+    else that is not a single colour return None: the caller reports that as a gap, never a guess.
+    """
+    raw = _background_declaration(element)
+    if not raw or "gradient(" in raw.lower():
+        return None
+    for token in _top_level_tokens(raw):
+        colour = extract_token_or_hex(token)
+        if colour is None and token.isalpha():
+            colour = _named_colour_hex(token)
+        if colour is not None:
+            return colour
+    return None
+
+
+def background_declaration(element: "Tag") -> str | None:
+    """Public read of the raw inline background value, for a caller reporting an unresolved colour."""
+    return _background_declaration(element)
+
+
 def extract_field_value(
     element: Tag,
     role: str,
@@ -392,15 +490,28 @@ def extract_field_value(
     # ------------------------------------------------------------------
     # numeric-content — a genuinely numeric (decimal-capable) scalar read
     # verbatim from element text, e.g. sgs/testimonial.ratingScale ("9.2 /
-    # 10" -> 9.2). Distinct from 'rating' (STAR count, hardcoded 0..5 clamp
-    # via extract_star_count) and from 'plain-integer' (verbatim TEXT, no
-    # numeric parsing). Returns the FIRST signed decimal token found, as a
-    # Python float, or None when the element carries no numeric token (no
-    # guessed value, matching every other role's no-op floor).
+    # 10" -> 9.2) or sgs/google-reviews.averageRating ("4.7") / .reviewCount
+    # ("15 reviews" -> 15). Distinct from 'rating' (STAR count, hardcoded 0..5
+    # clamp via extract_star_count) and from 'plain-integer' (verbatim TEXT, no
+    # numeric parsing). Returns the FIRST number found: a float when written
+    # with a decimal part, an int when written whole, or None when the element
+    # carries no number (no guessed value, matching every other role's no-op
+    # floor). Not clamped: this role serves 0..5, 0..10 and 0..100 scales alike.
     # ------------------------------------------------------------------
     if role == "numeric-content":
-        match = re.search(r"-?\d+(?:\.\d+)?", element.get_text())
-        return float(match.group(0)) if match else None
+        # Typed by how it was written (lift_helpers.first_number): '4.7' -> 4.7, '15' -> 15, '1,204' -> 1204.
+        # Falls back to the aria-label ONLY when the text carries no number at all (a glyph-run element that
+        # states its value as aria-label="4.7 out of 5"); never to a star-glyph count, which is decoration.
+        number = first_number(element.get_text())
+        return number if number is not None else extract_aria_number(element)
+
+    # ------------------------------------------------------------------
+    # colour-background — the element's inline background colour (a per-item
+    # colour field, e.g. sgs/google-reviews reviews[].avatarColour). See the
+    # helpers above; a gradient / unresolved var() returns None (a gap).
+    # ------------------------------------------------------------------
+    if role == "colour-background":
+        return extract_background_colour(element)
 
     # ------------------------------------------------------------------
     # presence-boolean — True purely because the matched element EXISTS

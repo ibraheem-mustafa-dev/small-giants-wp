@@ -32,6 +32,8 @@
 			],
 			"collection": true,
 			"arrayContentLift": true,
+			"scalarContentLift": true,
+			"_comment_scalarContentLift": "Added 2026-09-21. The reviews[] repeater already lifts through arrayContentLift; this opts the block's own header figures into the converter's scalar lift so a draft that names them lifts them: averageRating (numeric-content) and reviewCount (numeric-content), each read from the element carrying the class <block root class>__<kebab attribute name> (attr-classification-overrides.json holds the role and derived_selector, as for sgs/testimonial.ratingScale). reviewRequestUrl (link-href) is reached by the same class-to-attribute-name route. businessName (text-content, derived_selector .sgs-google-reviews__business-name) is the CLIENT's business, so it is lifted only from a header caption that is NOT this block's own name: the annotation stage reports a caption equal to the block's own name as SKIPPED with that reason (measured on the Eye Care run: the draft's 'Google Reviews' caption is the review SOURCE label, not a business name, and the block draws its own source logo), and no businessName reaches the emit for such a draft. A real business-name caption still lifts. Metadata only: no attribute, default or render behaviour changes.",
 			"imageControls": false,
 			"_comment_mediaElements": "Rule 37-media-no-handroll fix. The reviewer avatar photo (pulled live from the Google Places API, rendered by this block's own render.php loop) now routes its object-fit through the shared media-element atom layer instead of a style.css literal. This is a NEW client control -- no pre-existing object-fit picker on this block. render.php emits the atom's --sgs-media-object-fit custom property scoped to the block wrapper ($gr_uid) and appends the shared .sgs-media-el marker class to each avatar <img>; style.css no longer hardcodes object-fit on .sgs-google-reviews__avatar img, relying on assets/css/media-atoms/object-fit.css's cover fallback (identical default).",
 			"mediaElements": [
@@ -291,6 +293,7 @@
 					},
 					"avatarColour": {
 						"type": "string",
+						"role": "colour-background",
 						"description": "Initials-avatar background when there is no photo. A palette slug or a CSS colour."
 					},
 					"_key": {

@@ -53,6 +53,70 @@ def _render_source(slug: str) -> str:
     return "\n".join(out)
 
 
+# A STATEMENT-level require/include of a literal path. Anchored to the start of a line so a docblock
+# ("(also requires helpers-x.php)") or a trailing comment never matches; the prefix is the closed set of
+# forms this repo uses: `__DIR__`, `dirname( __DIR__, N )`, `dirname( __FILE__, N )`, `SGS_BLOCKS_PATH`.
+_STATIC_REQUIRE_RE = re.compile(
+    r"^[ \t]*(?:require|include)(?:_once)?[ \t]*\(?[ \t]*"
+    r"(?P<prefix>__DIR__|SGS_BLOCKS_PATH|dirname\(\s*(?:__DIR__|__FILE__)\s*(?:,\s*(?P<levels>\d+)\s*)?\))"
+    r"[ \t]*\.[ \t]*['\"](?P<lit>[^'\"$]+\.php)['\"]",
+    re.M,
+)
+_MAX_REQUIRE_HOPS = 3
+
+
+def _static_require_targets(path: Path, src: str) -> list[Path]:
+    """Files `src` (living at `path`) statically requires. A path that cannot be resolved statically
+    (a variable, ABSPATH, a missing file) is skipped, never an error."""
+    out: list[Path] = []
+    for m in _STATIC_REQUIRE_RE.finditer(src):
+        prefix = m.group("prefix")
+        if prefix == "SGS_BLOCKS_PATH":
+            base = _PLUGIN_DIR
+        elif prefix == "__DIR__":
+            base = path.parent
+        else:
+            base = path.parent if "__DIR__" in prefix else path
+            for _ in range(int(m.group("levels") or 1)):
+                base = base.parent
+        cand = base / m.group("lit").lstrip("/\\")
+        if cand.is_file():
+            out.append(cand)
+    return out
+
+
+@lru_cache(maxsize=256)
+def _render_reach_source(slug: str) -> str:
+    """`_render_source` plus every file reachable from render.php by statically-resolvable
+    require/include, up to `_MAX_REQUIRE_HOPS` hops (visited set, so a cycle terminates).
+
+    Used by `render_reads_attr` ONLY. `_render_source` is left exactly as it was: the render-repeater
+    seeder hashes it (`recogniser/render_repeater_seeder.py::source_sha`), so widening it would re-hash
+    every block. This is a strict superset of it (its text comes first, unchanged), so a read the old
+    one found is still found: the only change is that a read two or three hops down is now found too.
+    """
+    base = _render_source(slug)
+    if not base:
+        return ""
+    rp = (_BLOCKS_DIR / _short(slug) / "render.php").resolve()
+    seen = {rp}
+    frontier = [(rp, rp.read_text(encoding="utf-8", errors="replace"))]
+    extra: list[str] = []
+    for _ in range(_MAX_REQUIRE_HOPS):
+        nxt: list[tuple[Path, str]] = []
+        for path, text in frontier:
+            for target in _static_require_targets(path, text):
+                target = target.resolve()
+                if target in seen:
+                    continue
+                seen.add(target)
+                body = target.read_text(encoding="utf-8", errors="replace")
+                extra.append(body)
+                nxt.append((target, body))
+        frontier = nxt
+    return "\n".join([base, *extra])
+
+
 def _block_attr_types(slug: str) -> dict[str, str]:
     bj = _BLOCKS_DIR / _short(slug) / "block.json"
     if not bj.exists():
@@ -112,22 +176,39 @@ def is_render_emitted_content_attr(slug: str, attr: str) -> bool:
     return any(a == attr for a, _ in render_emitted_content_attrs(slug))
 
 
-@lru_cache(maxsize=1024)
-def render_reads_attr(slug: str, attr: str) -> bool:
-    """True iff the block's render source reads `$attributes[attr]` — the RAW nested
-    signal for the emit_shape seeder (FR-31-2.6).
+@lru_cache(maxsize=512)
+def _own_source(slug: str) -> str:
+    """``_render_source`` memoised for the ``own_source_only`` answer (which asks once per attribute)."""
+    return _render_source(slug)
 
-    Unlike `render_emitted_content_attrs`, this applies NO attr-TYPE filter and NO
-    styling-media exclusion: the seeder has ALREADY narrowed to content-ROLE attrs
-    (the content-vs-styling filter, FR-31-2.2), so the only remaining question is
-    nested-vs-child = "does the block's own render emit this attr". Dropping the type
-    filter fixes number-typed content (e.g. a `rating` star-count read as
-    `(float) $attributes['ratingStars']`), which the type-filtered set wrongly missed.
-    Media content-vs-styling is NOT re-decided here — the pipeline's existing routing
-    separates a CSS `background-image` (CSS/root-supports path) from an `<img>` content
-    element (content lift), so a background attr never reaches the content walk and its
-    value is inert. Reads `render.php` + require'd helpers; catches one alias hop via
-    the whole-source scan.
+
+@lru_cache(maxsize=1024)
+def render_reads_attr(slug: str, attr: str, own_source_only: bool = False) -> bool:
+    """The emit_shape seeder's nested-vs-child signal (FR-31-2.6): does the block's render emit this attr?
+
+    CONTRACT (QC-council 2026-09-21: the earlier docstring claimed more than the code did).
+
+    * Default (``own_source_only=False``): True when ``$attributes['attr']`` (or ``["attr"]``) is read in
+      ``render.php`` or in any helper reachable from it by statically-resolvable ``require`` / ``include``,
+      up to ``_MAX_REQUIRE_HOPS`` hops (``_render_reach_source``): sgs/google-reviews reads its header
+      figures two hops down. This is EXACT for a content-bearing attribute, which is the only thing its sole
+      caller (``sgs-update-v2.py::_populate_emit_shape``, already narrowed to content-role attrs, FR-31-2.2)
+      asks about, and it is an OVER-APPROXIMATION for anything else: a shared helper that reads a same-named
+      generic attribute on behalf of every block it serves (``$attributes['borderRadius']`` in
+      includes/helpers-box.php, ``transitionDuration`` in helpers-tokens.php) makes every block that requires
+      it "read" that attribute. Measured across every block.json attribute, the default answer differs from
+      the one-hop answer for 77 attributes, of which only the four sgs/google-reviews content attributes are
+      real reads.
+    * ``own_source_only=True``: only ``render.php`` plus the helpers it requires directly (``_render_source``)
+      -- the block's OWN source. Any caller that is not asking about a content-bearing attribute passes this.
+
+    Unlike ``render_emitted_content_attrs`` this applies NO attr-TYPE filter and NO styling-media exclusion
+    (the seeder has ALREADY narrowed to content-ROLE attrs): the only question left is nested vs child =
+    "does the block's own render emit this attr". Dropping the type filter fixes number-typed content (a
+    ``rating`` star count read as ``(float) $attributes['ratingStars']``). Media content-vs-styling is not
+    re-decided here: the pipeline's routing separates a CSS ``background-image`` from an ``<img>`` content
+    element, so a background attr never reaches the content walk. Catches one alias hop via the whole-source
+    scan.
     """
-    src = _render_source(slug)
+    src = _own_source(slug) if own_source_only else _render_reach_source(slug)
     return bool(src) and _reads(src, attr)

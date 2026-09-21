@@ -51,6 +51,7 @@ from converter.db.db_lookup import (
     attr_for_typography_property,
     tier_object_base,
     typography_css_to_attrs,
+    typography_element_candidates,
 )
 
 # font-weight keyword → numeric string (faithful port of convert.py:3897).
@@ -80,6 +81,24 @@ def _typo_map() -> dict[str, tuple[str, str | None]]:
 _attr_is_number = attr_is_number
 
 
+def _element_ambiguity_gap(ctx: Any, decl: Any, prop: str) -> "GAP | None":
+    """The GAP for a container typography declaration whose block has element-level
+    destinations but no authoritative pick (None when it has none at all -- the
+    ordinary paths handle that). ONE candidate is not a pick either: a block's only
+    typography attr for a property may sit on a secondary element (nav-drawer's
+    ``closeFontSize`` is the close button's), and only the block's own
+    ``block_selectors`` 'typography' row says which element is its primary text."""
+    candidates = typography_element_candidates(ctx.block_slug, prop)
+    if not candidates:
+        return None
+    return gap_writer(
+        ctx, decl, GapOrigin.NO_DESTINATION,
+        f"{ctx.block_slug} declares no block-level {prop} attr but {len(candidates)} "
+        f"element-level one(s) ({', '.join(candidates)}) and no block_selectors "
+        f"'typography' row picks one as the block's primary text; not guessing",
+    )
+
+
 def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
     prop = decl.property
     typo_map = _typo_map()
@@ -100,10 +119,22 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
     # own D307 per-block fallback for the OUTER/CONTENT layer resolvers — see
     # db_lookup.attr_for_typography_property's docstring for the full defect.
     # Additive only: None (undeclared/ambiguous) keeps the global pick unchanged.
+    #
+    # The same lookup now also carries the ELEMENT-DOMAIN route (2026-09-21): a
+    # container's inheritable text property on a block with no root-level
+    # destination (sgs/trust-bar: labelFontSize / titleFontSize) routes to the
+    # block's primary text element -- see attr_for_typography_property. When that
+    # route finds element-level candidates and no authoritative pick (a
+    # block_selectors 'typography' row naming one), the declaration is a GAP that
+    # names them (never a rowid or only-candidate guess).
     override = attr_for_typography_property(ctx.block_slug, prop)
     if override is not None and override != primary_attr:
         primary_attr = override
         unit_attr = f"{override}Unit" if unit_attr is not None else None
+    elif override is None:
+        ambiguous = _element_ambiguity_gap(ctx, decl, prop)
+        if ambiguous is not None:
+            return ambiguous
 
     if not decl.is_device_tier:
         return gap_writer(

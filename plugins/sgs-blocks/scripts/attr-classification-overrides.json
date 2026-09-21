@@ -3584,6 +3584,89 @@
 				"role": "marquee-toggle",
 				"_reason": "2026-09-21 (F2). Was boolean-visibility. The brand strip's marquee toggle (the draft's `animation: marquee 64s linear infinite` on the strip). brand-strip has no duration attr (scrollSpeed is a slow/medium/fast preset), so the converter reports the draft duration as a gap instead of mapping it onto a preset."
 			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "averageRating",
+			"fields": {
+				"role": "numeric-content",
+				"derived_selector": ".sgs-google-reviews__average-rating",
+				"_reason": "2026-09-21 (Eye Care reviews). Was role 'behaviour', which the content walk excludes, so the header score '4.7' could never lift. It is a genuinely numeric, decimal-capable content value the DRAFT states (render.php sgs_reviews_inline_data reads it as the block's headline average, editor control WrittenReviewsPanel.js, 0..5), i.e. exactly the shape of sgs/testimonial.ratingScale -> 'numeric-content' (see that entry). NOT role 'rating': that role's extractor (lift_helpers.extract_star_count) reads an aria-label digit or a star-glyph count into an int 0..5 and can never carry 4.7. derived_selector is the class an annotated draft gives the score element (<block root class>__<kebab attribute name>); lift_scalar_content needs it, plus the block's supports.sgs.scalarContentLift opt-in."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "reviewCount",
+			"fields": {
+				"role": "numeric-content",
+				"derived_selector": ".sgs-google-reviews__review-count",
+				"_reason": "2026-09-21 (Eye Care reviews). Was role NULL (unreached). The '15 reviews' figure of the header: a numeric content value the draft states (render.php sgs_reviews_inline_data: (int) reviewCount, else the count of written reviews). 'numeric-content' returns an int for a whole number ('15 reviews' -> 15, '1,204 reviews' -> 1204). The sibling rows sgs/product-card.reviewCount / .ratingValue carry role 'rating', but that role parses star glyphs into an int and is the wrong shape for a count read from prose."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "businessName",
+			"fields": {
+				"role": "text-content",
+				"derived_selector": ".sgs-google-reviews__business-name",
+				"_reason": "2026-09-21 (Eye Care reviews). Was role NULL (unreached). Plain text the draft may state (the business the reviews are about); render side: includes/helpers-reviews-inline.php passes sanitize_text_field(businessName) as displayName. 'text-content' is the established role for a plain string content attr. No Eye Care element names the business today; the row makes a draft that does reachable."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "reviewRequestUrl",
+			"fields": {
+				"role": "link-href",
+				"_reason": "2026-09-21 (Eye Care reviews). Was role 'content', so the walk's element-driven leg (which already reaches this attr by the kebab-to-camel attribute-name match on a '__review-request-url' element) extracted the anchor's TEXT: a live conversion emitted reviewRequestUrl='See all reviews' instead of the href. It holds a URL (the 'write a review' link), which is what 'link-href' means (the alias of url-href: the nearest <a href>, sanitised by _safe_href); 30 other scalar URL attrs, e.g. sgs/button.url, carry it. No canonical_slot or derived_selector is needed or added: the attribute-name match is what routes it."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "starColour",
+			"fields": {
+				"derived_selector": ".sgs-google-reviews__star",
+				"_reason": "2026-09-21 (Eye Care reviews). Restores the original routing selector after an attempted, reverted seed: naming the annotated element in derived_selector only routes class-CSS drafts (styling_content.py); the Eye Care draft styles these elements INLINE, which needs a converter route that honours derived_selector in the per-area fold (a shared mechanism, awaiting the owner's approval). Until that exists the declarations are REPORTED as skipped (test_area_css_skip_reporting.py), not routed."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "starColourHover",
+			"fields": {
+				"derived_selector": ".sgs-google-reviews__star",
+				"_reason": "2026-09-21 (Eye Care reviews). Restores the original routing selector after an attempted, reverted seed: naming the annotated element in derived_selector only routes class-CSS drafts (styling_content.py); the Eye Care draft styles these elements INLINE, which needs a converter route that honours derived_selector in the per-area fold (a shared mechanism, awaiting the owner's approval). Until that exists the declarations are REPORTED as skipped (test_area_css_skip_reporting.py), not routed."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "writeReviewColourText",
+			"fields": {
+				"derived_selector": "",
+				"_reason": "2026-09-21 (Eye Care reviews). Restores the original routing selector after an attempted, reverted seed: naming the annotated element in derived_selector only routes class-CSS drafts (styling_content.py); the Eye Care draft styles these elements INLINE, which needs a converter route that honours derived_selector in the per-area fold (a shared mechanism, awaiting the owner's approval). Until that exists the declarations are REPORTED as skipped (test_area_css_skip_reporting.py), not routed."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "writeReviewColourBackground",
+			"fields": {
+				"derived_selector": "",
+				"_reason": "2026-09-21 (Eye Care reviews). Restores the original routing selector after an attempted, reverted seed: naming the annotated element in derived_selector only routes class-CSS drafts (styling_content.py); the Eye Care draft styles these elements INLINE, which needs a converter route that honours derived_selector in the per-area fold (a shared mechanism, awaiting the owner's approval). Until that exists the declarations are REPORTED as skipped (test_area_css_skip_reporting.py), not routed."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "writeReviewColourTextHover",
+			"fields": {
+				"derived_selector": "",
+				"_reason": "2026-09-21 (Eye Care reviews). Restores the original routing selector after an attempted, reverted seed: naming the annotated element in derived_selector only routes class-CSS drafts (styling_content.py); the Eye Care draft styles these elements INLINE, which needs a converter route that honours derived_selector in the per-area fold (a shared mechanism, awaiting the owner's approval). Until that exists the declarations are REPORTED as skipped (test_area_css_skip_reporting.py), not routed."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "writeReviewColourBackgroundHover",
+			"fields": {
+				"derived_selector": "",
+				"_reason": "2026-09-21 (Eye Care reviews). Restores the original routing selector after an attempted, reverted seed: naming the annotated element in derived_selector only routes class-CSS drafts (styling_content.py); the Eye Care draft styles these elements INLINE, which needs a converter route that honours derived_selector in the per-area fold (a shared mechanism, awaiting the owner's approval). Until that exists the declarations are REPORTED as skipped (test_area_css_skip_reporting.py), not routed."
+			}
 		}
 	]
 }

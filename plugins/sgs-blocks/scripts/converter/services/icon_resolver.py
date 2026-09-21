@@ -78,6 +78,8 @@ from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
+
     from bs4 import Tag
 
 # ---------------------------------------------------------------------------
@@ -663,13 +665,32 @@ _CLASS_ATTR_RE = re.compile(r"""\s+class\s*=\s*(?:"([^"]*)"|'([^']*)')""")
 _DRAFT_CLASS_PREFIX = "sgs-"
 
 
-def _strip_svg_wrapper_attrs(svg_str: str) -> str:
-    """
-    Remove the wrapper attributes we don't want stored: class/width/height/style/id and every ``data-*``
-    on the outer <svg> tag, plus any draft BEM class (an ``sgs-`` token) on a child element, since a draft
-    class copied into a block is a mirror of the draft's DOM (R-31-15). Keeps viewBox, fill, stroke, and
-    every child element and its drawing attributes intact. Falls back to the original string on parse error.
-    """
+# The presentation attributes the strip removes or leaves inert, and which the icon lift routes to block
+# attributes instead of discarding: the glyph's drawn size, its stroke width and its stroke colour. ``width`` /
+# ``height`` are stripped from the stored markup (the block's CSS sizes the icon); ``stroke`` / ``stroke-width``
+# stay in the markup but the block's stylesheet overrides them, so only the block attributes ever take effect.
+SVG_PRESENTATION_ATTRS = ("width", "height", "stroke", "stroke-width")
+_ATTR_PAIR_RE = re.compile(r"""\s([\w:.-]+)\s*=\s*(?:"([^"]*)"|'([^']*)')""")
+
+
+def _svg_presentation_of_open_tag(open_tag: str) -> dict[str, str]:
+    """The ``SVG_PRESENTATION_ATTRS`` present on an ``<svg ...>`` opening tag, name lower-cased, value trimmed.
+    An attribute that is absent is absent from the result: no default is ever invented."""
+    found: dict[str, str] = {}
+    for m in _ATTR_PAIR_RE.finditer(open_tag):
+        name = m.group(1).lower()
+        if name in SVG_PRESENTATION_ATTRS and name not in found:
+            value = (m.group(2) if m.group(2) is not None else m.group(3) or "").strip()
+            if value:
+                found[name] = value
+    return found
+
+
+def strip_svg_wrapper_attrs_with_presentation(svg_str: str) -> tuple[str, dict[str, str]]:
+    """Strip the wrapper attributes (see ``_strip_svg_wrapper_attrs``) AND return the presentation attributes
+    (``SVG_PRESENTATION_ATTRS``) the outer ``<svg>`` carried, read BEFORE the strip. The caller routes them to
+    block attributes through the DB; nothing here decides where they go. ``(stripped, {})`` for an svg with
+    none; the original string and ``{}`` on a parse error."""
     try:
         # Use a simple regex approach — avoids requiring lxml in the converter env.
         def _remove_attr(m: "re.Match") -> str:
@@ -688,13 +709,178 @@ def _strip_svg_wrapper_attrs(svg_str: str) -> str:
             kept = [t for t in tokens if not t.startswith(_DRAFT_CLASS_PREFIX)]
             return f' class="{" ".join(kept)}"' if kept else ""
 
+        open_match = re.search(r"<svg\b[^>]*>", svg_str)
+        presentation = _svg_presentation_of_open_tag(open_match.group(0)) if open_match else {}
         # Replace only the opening <svg …> tag (not child elements), then drop draft BEM classes below it.
         cleaned = re.sub(r"<svg\b[^>]*>", _remove_attr, svg_str, count=1)
         head_end = cleaned.find(">") + 1
         cleaned = cleaned[:head_end] + _CLASS_ATTR_RE.sub(_drop_draft_classes, cleaned[head_end:])
-        return cleaned.strip()
+        return cleaned.strip(), presentation
     except Exception:
-        return svg_str.strip()
+        return svg_str.strip(), {}
+
+
+# Which attributes of an item's own outer ``<svg>`` a lifted presentation kind (``route_svg_presentation``'s
+# kinds) makes dead: once the block attribute carries the value the block's stylesheet paints it, and the
+# stored markup's copy (a draft custom property such as ``var(--acc,#9C8B78)`` that has no definition on the
+# clone) does nothing. The size kind is absent: width / height are already stripped from the stored markup.
+SVG_LIFTED_KIND_TO_ATTRS = {"stroke-width": ("stroke-width",), "colour": ("stroke",)}
+
+
+def strip_svg_open_tag_attrs(svg_str: str, names: "Iterable[str]") -> str:
+    """``svg_str`` without the named attributes on its OUTER ``<svg ...>`` opening tag. Child elements, every
+    other attribute (``viewBox``, ``fill``, ``stroke-linecap``, ...) and an absent attribute are untouched."""
+    wanted = tuple(names)
+    if not wanted:
+        return svg_str
+
+    def _drop(m: "re.Match") -> str:
+        tag = m.group(0)
+        for attr in wanted:
+            tag = re.sub(r"""\s+""" + re.escape(attr) + r"""\s*=\s*(?:"[^"]*"|'[^']*')""", "", tag)
+        return tag
+
+    return re.sub(r"<svg\b[^>]*>", _drop, svg_str, count=1)
+
+
+def _strip_svg_wrapper_attrs(svg_str: str) -> str:
+    """
+    Remove the wrapper attributes we don't want stored: class/width/height/style/id and every ``data-*``
+    on the outer <svg> tag, plus any draft BEM class (an ``sgs-`` token) on a child element, since a draft
+    class copied into a block is a mirror of the draft's DOM (R-31-15). Keeps viewBox, fill, stroke, and
+    every child element and its drawing attributes intact. Falls back to the original string on parse error.
+    The presentation attributes it drops (width / height) are NOT lost to the icon lift: the item lift reads
+    them through ``strip_svg_wrapper_attrs_with_presentation`` and routes them to block attributes.
+    """
+    return strip_svg_wrapper_attrs_with_presentation(svg_str)[0]
+
+
+# ---------------------------------------------------------------------------
+# Item-icon presentation -> block attributes (Spec 31 section 3.A step 6, R-31-1 / R-31-9)
+# ---------------------------------------------------------------------------
+
+_LENGTH_RE = re.compile(r"^([0-9]*[.]?[0-9]+)(?:px)?$")
+_VAR_FN_RE = re.compile(r"^var\(\s*--([A-Za-z0-9_-]+)\s*(?:,(.*))?\)$", re.DOTALL)
+# A stroke value that names no colour of its own: it inherits, so there is nothing to lift and nothing to report.
+_NO_OWN_COLOUR = frozenset({"none", "currentcolor", "inherit", "transparent"})
+
+
+def _plain_number(value: float) -> "int | float":
+    return int(value) if float(value).is_integer() else value
+
+
+def _length_px(raw: str) -> "float | None":
+    """A bare number or a ``px`` length as a float; ``None`` for any other unit (em, %, ...)."""
+    m = _LENGTH_RE.match(raw.strip())
+    return float(m.group(1)) if m else None
+
+
+def _svg_stroke_colour(raw: str) -> "str | None":
+    """A stroke value as the pipeline's ONE colour normaliser reads it (``extract_token_or_hex``: a theme
+    palette slug, or a concrete hex / rgb() literal). ``var(--name, fallback)``: the custom property is tried
+    first, so a draft ``:root`` colour or a palette slug snaps exactly as in the CSS lift; when it names
+    neither, the fallback inside the ``var()`` is the colour. ``None`` when nothing resolves."""
+    from converter.services.styling_helpers import extract_token_or_hex
+
+    value = raw.strip()
+    m = _VAR_FN_RE.match(value)
+    if m is None:
+        return extract_token_or_hex(value)
+    resolved = extract_token_or_hex("var(--" + m.group(1) + ")")
+    if resolved is None and m.group(2) and m.group(2).strip():
+        resolved = extract_token_or_hex(m.group(2).strip())
+    return resolved
+
+
+def route_svg_presentation(
+    per_item: "list[dict[str, str]]",
+    destinations: "dict[str, tuple[str, ...]]",
+    attr_types: "dict[str, str | None]",
+) -> "tuple[dict[str, object], list[tuple[str, str]]]":
+    """Route the ``<svg>`` presentation of a block's items to block-level attributes.
+
+    ``per_item`` holds one dict per item that HAS an icon svg (``strip_svg_wrapper_attrs_with_presentation``'s
+    second value). ``destinations`` is ``db_lookup.svg_glyph_destinations`` (kind -> attribute names, looked
+    up by declared css_property and element, never by name). ``attr_types`` maps a destination attribute to its
+    declared ``attr_type``. Returns ``(attrs, gaps)``: ``attrs`` the values to write, ``gaps`` a
+    ``(kind, reason)`` per value the svgs carried and nothing could take.
+
+    A value is written only when EVERY item's svg gives the same one and the block declares exactly one
+    destination for it; anything else writes nothing and is reported. A missing attribute is never filled
+    with a default.
+    """
+    attrs: dict = {}
+    gaps: list = []
+    if not per_item:
+        return attrs, gaps
+
+    def _resolve_kind(kind: str, values: list, wanted: "type", note_after: "str | None" = None) -> None:
+        distinct = set(values)
+        if distinct == {None}:
+            return  # no item's svg carried this value: nothing to lift, nothing to report
+        if len(distinct) > 1:
+            gaps.append((kind, "icons differ: the items' svgs give different values, so no block-level value is written"))
+            return
+        value = values[0]
+        names = destinations.get(kind, ())
+        if not names:
+            gaps.append((kind, "the block declares no attribute for this icon value"))
+            return
+        if len(names) > 1:
+            gaps.append((kind, "ambiguous destination: the block declares several attributes for this icon value ("
+                         + ", ".join(names) + ")"))
+            return
+        name = names[0]
+        declared = attr_types.get(name)
+        written = (declared == "number" and wanted in (int, float)) or (declared == "string" and wanted is str)
+        if written:
+            attrs[name] = value
+            if note_after:
+                # A note about HOW the value was read (the width taken from a non-square icon) describes a value
+                # that was written; when nothing took it the reason above already says so, so the note would be
+                # a second gap row for one loss.
+                gaps.append((kind, note_after))
+        else:
+            gaps.append((kind, "destination " + name + " has type " + str(declared) + ", not the type this value needs"))
+
+    # size: a square glyph size in px; width and height that differ take the width and are reported.
+    sizes: list = []
+    non_square = False
+    for pres in per_item:
+        w = _length_px(pres["width"]) if "width" in pres else None
+        h = _length_px(pres["height"]) if "height" in pres else None
+        if ("width" in pres and w is None) or ("height" in pres and h is None):
+            gaps.append(("size", "an svg size is not a px length (" + ", ".join(
+                k + "=" + pres[k] for k in ("width", "height") if k in pres) + "), so no size is lifted"))
+            sizes.append(None)
+            continue
+        if w is not None and h is not None and w != h:
+            non_square = True
+        chosen = w if w is not None else h
+        sizes.append(_plain_number(chosen) if chosen is not None else None)
+    _resolve_kind("size", sizes, float, "non-square icon: width and height differ, the width is used" if non_square else None)
+
+    widths: list = []
+    for pres in per_item:
+        raw = pres.get("stroke-width")
+        n = _length_px(raw) if raw is not None else None
+        if raw is not None and n is None:
+            gaps.append(("stroke-width", "stroke-width " + raw + " is not a number, so it is not lifted"))
+        widths.append(_plain_number(n) if n is not None else None)
+    _resolve_kind("stroke-width", widths, float)
+
+    colours: list = []
+    for pres in per_item:
+        raw = pres.get("stroke")
+        if raw is None or raw.strip().lower() in _NO_OWN_COLOUR:
+            colours.append(None)
+            continue
+        colour = _svg_stroke_colour(raw)
+        if colour is None:
+            gaps.append(("colour", "stroke " + raw + " resolves to no colour, so it is not lifted"))
+        colours.append(colour)
+    _resolve_kind("colour", colours, str)
+    return attrs, gaps
 
 
 # ---------------------------------------------------------------------------

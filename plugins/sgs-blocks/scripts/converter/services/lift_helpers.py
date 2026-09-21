@@ -156,6 +156,49 @@ def extract_star_count(element: Tag) -> int:
 
 
 # ---------------------------------------------------------------------------
+# Decimal-capable numbers (numeric-content role) -- the sibling of extract_star_count
+# ---------------------------------------------------------------------------
+
+# One number token: an optional sign, then EITHER digits grouped with thousands commas ('1,204') OR
+# plain digits, then an optional decimal part. The grouped alternative comes first so '1,204 reviews'
+# reads 1204, not 1. A comma is only ever a thousands separator here: a lone ',5' is not a number.
+_NUMBER_RE = re.compile(r"-?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?")
+
+
+def first_number(text: str) -> int | float | None:
+    """The FIRST number in ``text``, or None when it holds none.
+
+    Typed by how it was written, never guessed: a token with a decimal part ('4.7') is a ``float``;
+    a whole token ('15', '1,204') is an ``int``. That is what lets one role fill both a review COUNT
+    (``reviewCount: 15``) and a rating or score (``averageRating: 4.7``, ``ratingScale: 9.2``) with the
+    right JSON type, where the previous ``float(...)`` turned every whole number into ``15.0``.
+    """
+    match = _NUMBER_RE.search(text or "")
+    if match is None:
+        return None
+    token = match.group(0).replace(",", "")
+    return float(token) if "." in token else int(token)
+
+
+def extract_aria_number(element: Tag) -> int | float | None:
+    """The first number in the element's ``aria-label``, decimal-capable, or None.
+
+    The decimal-capable counterpart of the aria branch in ``extract_star_count``: that one matches
+    ``\\b(\\d{1,2})\\b``, so ``aria-label="4.7 out of 5"`` reads 4 (the ``\\b`` sits between the 4 and the
+    dot) and it clamps to an int 0..5, so it can never carry a decimal. This one reads ``4.7``. The value is
+    returned VERBATIM: no clamp and no rescale by an ``out of N`` denominator, because the caller is a
+    generic numeric role (a 0..5 rating, a 0..10 score and a 0..100 score all use it) and only the target
+    attribute knows its own range. Deliberately does NOT fall back to counting star glyphs: a glyph run
+    is decoration, and a decorated header such as five glyphs with a clipped overlay draws 4.7 as ten
+    characters, which would read as a false 5.
+    """
+    aria = element.get("aria-label", "")
+    if not isinstance(aria, str) or not aria:
+        return None
+    return first_number(aria)
+
+
+# ---------------------------------------------------------------------------
 # resolve_media_url (convert.py:143 — ported, _MEDIA_MAP global → parameter)
 # ---------------------------------------------------------------------------
 

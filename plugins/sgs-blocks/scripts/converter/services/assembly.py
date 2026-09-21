@@ -31,7 +31,9 @@ No block or slot string literals anywhere (scanned by gates/no_slug_literal).
 """
 from __future__ import annotations
 
+import functools
 import logging
+import re
 from typing import Any
 
 _LOG = logging.getLogger(__name__)
@@ -116,6 +118,80 @@ from converter.block_serialization import parse_block_open_comment
 from converter.services import content_gap_collector as _gap_collector
 from converter.services.styling_helpers import collect_css_decls_for_element
 from converter.db import db_lookup
+
+
+# ---------------------------------------------------------------------------
+# Draft-declaration probe for variant detection (FR-31-20, declaration presence)
+# ---------------------------------------------------------------------------
+
+
+@functools.lru_cache(maxsize=512)
+def _element_identity_slots(css_element: str) -> frozenset:
+    """The canonical slot(s) a block's ``css_element`` name IS, resolved through the DB synonym table.
+
+    A name the table resolves WHOLE is that one slot and nothing else (``badge-img`` -> ``image``: an image
+    element, so an svg-bearing holder never votes for it, whatever words it shares). Only a block-specific
+    compound the table does not know (``icon-badge`` / ``icon-bare``) is read through the slots its parts resolve
+    to (``icon`` + ``badge`` / ``icon``): the DB carries no element -> selector record to do better, so this is
+    the narrowest identity it can give.
+    """
+    whole = db_lookup.canonical_slot_for(css_element)
+    if whole:
+        return frozenset({whole})
+    parts = (db_lookup.canonical_slot_for(word) for word in css_element.split("-"))
+    return frozenset(slot for slot in parts if slot)
+
+
+def _norm_element(token: str) -> str:
+    return re.sub(r"[^a-z0-9]", "", (token or "").lower())
+
+
+def _draft_declares_probe(section_root: Any, css_rules: dict):
+    """``(css_property, css_element) -> bool`` for ``db_lookup.detect_variant``: does the draft itself supply that
+    CSS property on the element a variant slot attribute is declared for?
+
+    Only an ICON HOLDER is probed: a BEM-classed element that directly contains an inline ``<svg>``. A holder
+    votes for a slot's ``css_element`` only on that element's OWN identity: its BEM element token equals the
+    ``css_element`` (normalised), or the holder's canonical slot (``bem_element_to_canonical_slot``) is one of
+    the slots the ``css_element`` resolves to in the DB (``_element_identity_slots``). A shared WORD is not an
+    identity: ``.sgs-trust-bar__badge`` (canonical slot ``badge``) shares one with both ``icon-badge`` (the
+    icon-circle disc) and ``badge-img`` (the image-badge picture), and used to vote for both, tying the two
+    variants and discarding a correct pick; ``badge-img`` resolves to ``image`` so the svg holder no longer votes
+    for it. A wrapper that merely contains the holder, an element with no recognised slot and every non-icon
+    slot element are never probed. The holder's effective declarations are read through
+    ``collect_css_decls_for_element`` (the pipeline's one cascade reader); a ``background`` shorthand counts for
+    every ``background-*`` property. A property the draft does not declare is simply False: nothing is invented,
+    and a draft with no icon holder gives a probe that is always False.
+    """
+    from converter.services.recognise_helpers import bem_element_to_canonical_slot
+
+    holders: list = []
+    for node in getattr(section_root, "find_all", lambda *_a, **_k: [])(True):
+        if getattr(node, "name", None) == "svg":
+            continue
+        if any(getattr(c, "name", None) == "svg" for c in getattr(node, "children", ())):
+            slot = bem_element_to_canonical_slot(node)
+            token = ""
+            for cls in (node.get("class", []) or []):
+                bem = db_lookup.parse_sgs_bem(cls)
+                if bem and bem.element:
+                    token = _norm_element(bem.element)
+                    break
+            if slot or token:
+                holders.append((slot, token, collect_css_decls_for_element(node, css_rules)[0]))
+
+    def _declares(css_property: str, css_element: str) -> bool:
+        identity = _element_identity_slots(css_element)
+        wanted = _norm_element(css_element)
+        for slot, token, decls in holders:
+            if not ((slot and slot in identity) or (token and token == wanted)):
+                continue
+            for prop in css_property.split(","):
+                if prop in decls or (prop.startswith("background-") and "background" in decls):
+                    return True
+        return False
+
+    return _declares
 
 
 # ---------------------------------------------------------------------------
@@ -574,7 +650,8 @@ def build_block_markup(
                 if _parsed is not None:
                     _child_blocks.append((_cb.slug, _parsed[1]))
             _detected = db_lookup.detect_variant(
-                rec.slug, attrs, child_slugs=_child_slugs, child_blocks=_child_blocks
+                rec.slug, attrs, child_slugs=_child_slugs, child_blocks=_child_blocks,
+                draft_declares=_draft_declares_probe(section_root, _css_rules),
             )
             if isinstance(_detected, str):
                 attrs[_variant_attr] = _detected

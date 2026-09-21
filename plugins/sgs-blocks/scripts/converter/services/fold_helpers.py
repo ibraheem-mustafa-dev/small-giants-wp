@@ -111,6 +111,225 @@ def _noop_record_gap(
 
 
 # ---------------------------------------------------------------------------
+# Rule 4 (NO SKIPPING): report every per-area declaration that found no
+# destination — on the gap CHANNEL, not only the trace (2026-09-21)
+# ---------------------------------------------------------------------------
+# GROUND-TRUTH: spec=31 §3.A step 8 / §13.1 R-31-4 source=code+dom evidence=
+#   every non-transfer below already built its finding as a ``trace(...)`` call
+#   and ``assembly`` injects ``_fold_trace``, which is a ``_LOG.warning`` and
+#   NOTHING else — no gap row, no ``content-gaps.json`` entry. Proven by a live
+#   ``convert_section()`` on the Eye Care reviews draft: 15 declarations on
+#   ``__rating`` / ``__review-request-url`` / ``__avatar-colour`` /
+#   ``__average-rating`` were discarded and the returned ``content_gaps`` list
+#   was EMPTY. These helpers add the missing channel write. They change no
+#   routing decision and touch neither ``parent_attrs`` nor the emitted markup.
+
+_CAMEL_BOUNDARY_RE = re.compile(r"(?<=[a-z0-9])(?=[A-Z])")
+
+
+def _kebab(name: str) -> str:
+    """``avatarColour`` -> ``avatar-colour``: the BEM element token spelling of a
+    camelCase attribute/array-item field name."""
+    return _CAMEL_BOUNDARY_RE.sub("-", name).lower()
+
+
+def _content_roles_bound_to_area(owning_block: str, area: str) -> set[str]:
+    """Every content ROLE the block declares for the BEM element token ``area``.
+
+    DB-first (R-31-1): read from ``block_attributes.derived_selector`` for
+    scalar attrs and from ``array_item_field_schema`` for an array attr's item
+    fields. No name list, no per-block branch.
+    """
+    roles: set[str] = set()
+    attrs = db_lookup.block_attrs(owning_block) or {}
+    suffix = f"__{area}"
+    for attr_name, meta in attrs.items():
+        role = meta.get("role")
+        selector = meta.get("derived_selector") or ""
+        if role and selector.endswith(suffix):
+            roles.add(role)
+        if meta.get("attr_type") != "array":
+            continue
+        try:
+            schema = db_lookup.array_item_field_schema(owning_block, attr_name)
+        except Exception:  # noqa: BLE001 — a reporting path never breaks conversion
+            continue
+        for field_key, field_role in schema:
+            if field_role and _kebab(field_key) == area:
+                roles.add(field_role)
+    return roles
+
+
+def _consumed_by_a_content_role(owning_block: str, area: str, css_prop: str, value: str) -> bool:
+    """True when a content role bound to this element READS this declaration.
+
+    A per-AREA style miss is not a skip if the CONTENT side already carried the
+    value: ``sgs/google-reviews.reviews[].avatarColour`` (role
+    ``colour-background``) lifts the avatar circle's inline ``background``, so
+    reporting that same declaration as a dropped style would be a false alarm.
+
+    Decided by RUNNING the real extractor (``field_extractors.extract_field_value``
+    — the one the content path itself uses, never a second copy of its rules)
+    against a probe element carrying only this declaration, and comparing with
+    the SAME extractor run on an otherwise identical element carrying no style.
+    The empty-style run is the built-in negative control: a role that returns
+    the same thing either way (``rating`` returns 0 for both) did not read the
+    declaration, so the declaration is still a genuine skip.
+    """
+    roles = _content_roles_bound_to_area(owning_block, area)
+    if not roles:
+        return False
+    from bs4 import BeautifulSoup
+
+    from converter.services.field_extractors import extract_field_value
+
+    def _probe(style: str):
+        markup = f'<span style="{style}"></span>' if style else "<span></span>"
+        return BeautifulSoup(markup, "html.parser").find(True)
+
+    styled = _probe(f"{css_prop}:{value}")
+    control = _probe("")
+    for role in roles:
+        try:
+            with_decl = extract_field_value(styled, role)
+            without = extract_field_value(control, role)
+        except Exception:  # noqa: BLE001 — a reporting path never breaks conversion
+            continue
+        if with_decl is not None and with_decl != without:
+            return True
+    return False
+
+
+def _declarative_selector_route(
+    owning_block: str, classes: "list[str]", css_prop: str, tier_suffix: str,
+) -> bool:
+    """True when the block declares an attribute that routes THIS property for
+    THIS element by ``derived_selector`` — the declarative Front-1 route
+    (Spec 31 §3.A/§4, ``block_attributes.css_property`` + ``derived_selector``).
+
+    ``attr_for_area_property`` keys on the BEM element TOKEN and on
+    ``css_element``, so it misses a block whose attr is seeded under a different
+    element name but names the class outright:
+    ``sgs/testimonial.quoteFontSize`` is ``css_element='quote-text'`` with
+    ``derived_selector='.sgs-testimonial__quote, .sgs-testimonial__text'``, and
+    it really does carry the draft's ``font-size`` for ``__text`` (proven: the
+    Mama's social-proof emit carries ``"quoteFontSize":"14px"``). Reporting the
+    same declaration as a per-area skip would be a false alarm.
+
+    Tier-aware, deliberately: the route only counts for a tier whose own
+    attribute exists, so a desktop value that routes never silences a mobile
+    override the block has no ``…Mobile`` sibling for.
+    """
+    if not classes:
+        return False
+    selectors = {f".{c}" for c in classes}
+    attrs = db_lookup.block_attrs(owning_block) or {}
+    # `block_attrs` does not expose `css_property`; `declared_attrs_for_css_property`
+    # is the declared column-first route for exactly that question.
+    for attr_name in db_lookup.declared_attrs_for_css_property(owning_block, css_prop):
+        declared = (attrs.get(attr_name) or {}).get("derived_selector") or ""
+        if not declared:
+            continue
+        if not ({s.strip() for s in declared.split(",")} & selectors):
+            continue
+        return f"{attr_name}{tier_suffix}" in attrs
+    return False
+
+
+def _area_source_class(child_node: Tag, area: str) -> str:
+    """The draft class this area was recognised from — the identity BOTH the skip
+    candidate and the lift note are keyed on, so they cancel each other."""
+    return next(
+        (c for c in (child_node.get("class", []) or []) if c.startswith("sgs-")),
+        area,
+    )
+
+
+def _tier_label(tier_suffix: str) -> str:
+    """This module's tier SUFFIX ('' / 'Tablet' / 'Mobile') as a report label."""
+    return tier_suffix or "Base"
+
+
+def _note_area_lift(child_node: Tag, area: str, css_prop: str, tier_suffix: str = "") -> None:
+    """Record that this per-area declaration DID reach an attribute, cancelling
+    any skip candidate another pass over the same element recorded for it."""
+    from converter.services import content_gap_collector
+
+    content_gap_collector.note_declaration_routed(
+        element=_area_source_class(child_node, area),
+        prop=css_prop,
+        route_key=f"{css_prop}@{_tier_label(tier_suffix)}",
+    )
+
+
+def _report_area_skip(
+    child_node: Tag,
+    owning_block: str,
+    area: str,
+    css_prop: str,
+    value: Any,
+    reason: str,
+    tier_suffix: str = "",
+) -> None:
+    """Put ONE unroutable per-area declaration on the gap channel (Rule 4).
+
+    Deferred: the same element's declarations are offered to several owning
+    blocks in turn, so the row is a CANDIDATE that ``content_gap_collector.flush()``
+    discards if any pass routed the same (element, property).
+    """
+    raw = "" if value is None else strip_important(str(value)).strip()
+    from converter.services import content_gap_collector
+
+    tier = _tier_label(tier_suffix)
+    if _declarative_selector_route(
+        owning_block, child_node.get("class", []) or [], css_prop, tier_suffix,
+    ) or _consumed_by_a_content_role(owning_block, area, css_prop, raw):
+        # The CONTENT side, or a declarative selector route, carried it. Mark it
+        # routed as well as skipping the
+        # row: the same element is offered to the wrapping container next, and
+        # that block declares no content role for it, so without this the
+        # second pass would re-raise the candidate the first pass cleared.
+        _note_area_lift(child_node, area, css_prop, tier_suffix)
+        return
+    content_gap_collector.record_declaration_skip_candidate(
+        block_slug=owning_block,
+        element=_area_source_class(child_node, area),
+        prop=css_prop,
+        route_key=f"{css_prop}@{tier}",
+        value=raw,
+        reason=f"per-area CSS not transferred at tier {tier} ({reason})",
+    )
+
+
+def _report_area_skip_every_tier(
+    child_node: Tag,
+    owning_block: str,
+    area: str,
+    css_prop: str,
+    tier_sources: "list[tuple[str, dict]]",
+    reason: str,
+    all_props: "set[str] | None" = None,
+) -> None:
+    """Report a property that has NO destination at all — one row per device tier
+    that actually declares it, so a tablet/mobile override is never folded into
+    the desktop row and lost from the report.
+
+    A SHORTHAND whose longhands are also present (``border`` beside
+    ``border-color``/``-style``/``-width``; ``background`` beside
+    ``background-color``) is skipped: the collection step expands shorthands into
+    longhands, so the longhand rows already carry the whole declaration and the
+    shorthand row would be the same miss counted a second time. Structural CSS
+    naming, not a per-block rule.
+    """
+    if all_props and any(p.startswith(f"{css_prop}-") for p in all_props):
+        return
+    for tier_suffix, decls in tier_sources:
+        if css_prop in decls:
+            _report_area_skip(child_node, owning_block, area, css_prop,
+                              decls.get(css_prop), reason, tier_suffix)
+
+
+# ---------------------------------------------------------------------------
 # _resolve_co_declared_var (convert.py:384 — ported verbatim, private)
 # ---------------------------------------------------------------------------
 
@@ -340,6 +559,10 @@ def route_area_css_to_block_attrs(
     tab = bp_decls.get("Tablet", {})
     mob_override = bp_decls.get("Mobile", {})
     block_attr_names = db_lookup.block_attrs(owning_block) or {}
+    # (tier suffix, declarations) for the Rule 4 skip report — same tier
+    # vocabulary the routing loop below uses, so a report row and a route note
+    # for the same declaration always carry the same identity.
+    _tier_sources: list[tuple[str, dict]] = [("", base_decls), ("Tablet", tab), ("Mobile", mob_override)]
 
     # --- FIX A (H-C1): per-slot max-width routing ----------------------------
     _mw_raw = base_decls.get("max-width")
@@ -359,15 +582,19 @@ def route_area_css_to_block_attrs(
                     trace("cross_node_css_lifted", owning_block=owning_block,
                           element_token=area, css_property="max-width",
                           layer="AREA_PER_SLOT_MAX_WIDTH", dest_attr=_mw_per_slot_attr)
+                    _note_area_lift(child_node, area, "max-width")
                 else:
                     trace("cross_node_gap_candidate", owning_block=owning_block,
                           element_token=area, css_property="max-width",
                           reason="per_slot_mw_number_unparseable", value=_mw_resolved)
+                    _report_area_skip(child_node, owning_block, area, "max-width",
+                                      _mw_resolved, "per_slot_mw_number_unparseable")
             else:
                 parent_attrs.setdefault(_mw_per_slot_attr, _mw_resolved)
                 trace("cross_node_css_lifted", owning_block=owning_block,
                       element_token=area, css_property="max-width",
                       layer="AREA_PER_SLOT_MAX_WIDTH", dest_attr=_mw_per_slot_attr)
+                _note_area_lift(child_node, area, "max-width")
     # -------------------------------------------------------------------------
 
     # --- Box-object per-area padding (FR-31-22 / Spec 31 §3.A step-3b) ----------
@@ -444,6 +671,10 @@ def route_area_css_to_block_attrs(
                         reason="tier_key_unresolved",
                         attr_name=_pad_object_base,
                     )
+                    for _side, _sv in _obj.items():
+                        _report_area_skip(child_node, owning_block, area,
+                                          f"padding-{_side}", _sv, "tier_key_unresolved",
+                                          _tier_sfx)
                     continue
                 # Merge PER TIER KEY. A setdefault on the ATTR would let the
                 # first tier win and discard the other two — the three tiers
@@ -458,10 +689,22 @@ def route_area_css_to_block_attrs(
                 # else: an earlier path already wrote a FLAT box (or a
                 # non-dict) here — earlier paths win (the Step-3 setdefault
                 # contract), so leave it rather than mixing two shapes.
+                for _side in _obj:
+                    _note_area_lift(child_node, area, f"padding-{_side}", _tier_sfx)
                 continue
             _dest = f"{_pad_object_base}{_tier_sfx}" if _tier_sfx else _pad_object_base
             if _dest in block_attr_names:
                 parent_attrs.setdefault(_dest, _obj)
+                for _side in _obj:
+                    _note_area_lift(child_node, area, f"padding-{_side}", _tier_sfx)
+            else:
+                # The box-object route claimed these sides (``_skip_padding_flat``
+                # short-circuits them out of the flat loop below) and then found no
+                # attribute to write them to — a silent drop before this row.
+                for _side, _sv in _obj.items():
+                    _report_area_skip(child_node, owning_block, area,
+                                      f"padding-{_side}", _sv,
+                                      "area_padding_attr_missing", _tier_sfx)
 
     for css_prop in sorted(all_props):
         if css_prop in _area_excluded or css_prop.startswith("--"):
@@ -478,23 +721,29 @@ def route_area_css_to_block_attrs(
                 css_property=css_prop,
                 reason="custom_property" if css_prop.startswith("--") else "cross_node_excluded_property",
             )
+            if not css_prop.startswith("--"):
+                # A custom property is a VEHICLE (its resolved value reaches the
+                # consuming declaration, which is routed on its own merits), so
+                # reporting it would double-count. An excluded real property is a
+                # genuine non-transfer and gets its row.
+                _report_area_skip_every_tier(child_node, owning_block, area, css_prop,
+                                             _tier_sources, "cross_node_excluded_property",
+                                             all_props)
             continue
         if _skip_padding_flat and css_prop.startswith("padding-"):
-            continue  # routed into the box-object above
+            continue  # routed into the box-object above (reported/noted there)
         attr_base = db_lookup.attr_for_area_property(owning_block, area, css_prop)
         if attr_base is None:
-            source_class = next(
-                (c for c in (child_node.get("class", []) or []) if c.startswith("sgs-")),
-                area,
-            )
             trace(
                 "cross_node_gap_candidate",
                 owning_block=owning_block,
                 element_token=area,
                 css_property=css_prop,
                 reason="no_area_attr",
-                source_class=source_class,
+                source_class=_area_source_class(child_node, area),
             )
+            _report_area_skip_every_tier(child_node, owning_block, area, css_prop,
+                                         _tier_sources, "no_area_attr", all_props)
             continue
 
         draft_base = base_decls.get(css_prop)
@@ -538,6 +787,8 @@ def route_area_css_to_block_attrs(
                     reason="area_attr_tier_missing",
                     attr_name=dest,
                 )
+                _report_area_skip(child_node, owning_block, area, css_prop, value,
+                                  f"area_attr_tier_missing ({dest})", tier_suffix)
                 continue
             raw_val = strip_important(value).strip()
             if _is_number:
@@ -552,6 +803,8 @@ def route_area_css_to_block_attrs(
                         attr_name=dest,
                         value=raw_val,
                     )
+                    _report_area_skip(child_node, owning_block, area, css_prop, raw_val,
+                                      f"area_attr_number_unparseable ({dest})", tier_suffix)
                     continue
                 store_val = int(_num) if float(_num).is_integer() else _num
                 if _unit and _family_unit_attr in block_attr_names:
@@ -568,6 +821,9 @@ def route_area_css_to_block_attrs(
                             attr_name=dest,
                             value=raw_val,
                         )
+                        _report_area_skip(child_node, owning_block, area, css_prop, raw_val,
+                                          f"area_attr_mixed_units ({_family_unit_attr} already "
+                                          f"{_existing_unit!r})", tier_suffix)
                         continue
             else:
                 store_val = raw_val
@@ -582,6 +838,8 @@ def route_area_css_to_block_attrs(
                         reason="tier_key_unresolved",
                         attr_name=dest,
                     )
+                    _report_area_skip(child_node, owning_block, area, css_prop, raw_val,
+                                      f"tier_key_unresolved ({dest})", tier_suffix)
                     continue
                 # Per-tier-key merge, same reasoning as the padding branch: a
                 # setdefault on the attr would let the first tier win.
@@ -593,6 +851,7 @@ def route_area_css_to_block_attrs(
                 else:
                     # An earlier path wrote a bare scalar here — earlier paths
                     # win (Step-3 setdefault contract); do not clobber it.
+                    _note_area_lift(child_node, area, css_prop, tier_suffix)
                     continue
             else:
                 parent_attrs.setdefault(dest, store_val)
@@ -605,6 +864,7 @@ def route_area_css_to_block_attrs(
                 dest_attr=dest,
                 value=store_val,
             )
+            _note_area_lift(child_node, area, css_prop, tier_suffix)
 
 
 # ---------------------------------------------------------------------------

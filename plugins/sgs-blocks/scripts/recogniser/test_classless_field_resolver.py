@@ -189,6 +189,33 @@ def test_role_fallback_value_shape_must_match() -> None:
     print("  PASS  role-fallback value-shape check rejects a non-URL-shaped value for url-href")
 
 
+def test_a_hex_colour_is_never_url_shaped_but_a_fragment_link_still_is() -> None:
+    """Cause (proven by dry run 2026-09-21): _URL_RE's bare '#' prefix made '#1A73E8' URL-shaped, so a review
+    avatar colour was role-fallback-placed in sgs/google-reviews.reviews[].url. All four CSS hex lengths are
+    colours; '#top' / '#contact' (a non-hex letter) stay fragment links."""
+    for colour in ("#1A73E8", "#fff", "#FFFF", "#1a73e880", "#000000"):
+        assert cfr._is_url_shaped(colour) is False, colour
+        assert cfr._is_hex_colour_shaped(colour) is True, colour
+    for link in ("#top", "#contact", "#faq", "#", "/reviews", "https://share.google/x", "mailto:a@b.co", "tel:+441"):
+        assert cfr._is_url_shaped(link) is True, link
+    print("  PASS  hex colours (3/4/6/8 digits) are not URL-shaped; fragment links and paths still are")
+
+
+def test_a_hex_colour_is_not_placed_in_a_url_field_or_a_text_field_by_role_fallback() -> None:
+    """End to end on the real pair that showed the bug: '#1A73E8' under an unknown key must GAP, not land in `url`.
+    The same value must not be read as prose by the text-content shape check either (it stopped being URL-shaped,
+    so without the explicit colour guard it would have slipped through there). A real link still places."""
+    colour = cfr.resolve_array_item_field("sgs/google-reviews", "reviews", cfr.DraftField(key="swatch", value="#1A73E8"))
+    assert isinstance(colour, cfr.Gap), f"got {colour!r}"
+    assert cfr._role_value_shape_matches("text-content", "#1A73E8") is False
+    assert cfr._role_value_shape_matches("url-href", "#1A73E8") is False
+    link = cfr.resolve_array_item_field(
+        "sgs/google-reviews", "reviews", cfr.DraftField(key="swatch", value="https://share.google/x")
+    )
+    assert isinstance(link, cfr.Tier1Placement) and link.field_key == "url", f"got {link!r}"
+    print("  PASS  a hex colour gaps instead of landing in url/text; a real link still places in url")
+
+
 # ---------------------------------------------------------------------------
 # section 4.2 -- Tier 2, the parent's own scalar attribute
 # ---------------------------------------------------------------------------
@@ -1092,6 +1119,8 @@ def main() -> int:
     test_role_fallback_requires_content_bearing_role()
     test_role_fallback_ambiguous_role_never_silently_picked()
     test_role_fallback_value_shape_must_match()
+    test_a_hex_colour_is_never_url_shaped_but_a_fragment_link_still_is()
+    test_a_hex_colour_is_not_placed_in_a_url_field_or_a_text_field_by_role_fallback()
     test_tier2_exact_name_content_bearing_places_field()
     test_tier2_canonical_slot_fallback_ambiguous_is_a_gap()
     test_tier2_canonical_slot_single_match_requires_value_shape()

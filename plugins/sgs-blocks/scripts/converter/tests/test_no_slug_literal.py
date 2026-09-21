@@ -171,3 +171,65 @@ def test_violation_key_is_line_independent(tmp_path):
     kb = _scan(tmp_path / "b", src_b)[0]["key"]
     # Same node source, different line → keys must agree on the source-hash half.
     assert ka.split("::")[1] == kb.split("::")[1]
+
+
+# ---------------------------------------------------------------------------
+# db_lookup.py is in scope (QC-council 2026-09-21): slug LITERALS only, smoke-test block skipped
+# ---------------------------------------------------------------------------
+
+from converter.gates import no_slug_literal as _gate  # noqa: E402
+
+
+def _scan_as_db_accessor(tmp_path: Path, monkeypatch, source: str) -> list[dict]:
+    """Run the gate's default-scope ``run()`` with a planted file registered exactly as db_lookup.py is."""
+    planted = tmp_path / "db_probe.py"
+    planted.write_text(source, encoding="utf-8")
+    monkeypatch.setattr(_gate, "_SCAN_FILES", [planted])
+    monkeypatch.setattr(_gate, "_LITERAL_ONLY_FILES", [planted])
+    return _gate.run()
+
+
+def test_db_lookup_is_in_the_default_scan_and_is_clean():
+    real = _gate._CONVERTER / "db" / "db_lookup.py"
+    assert real in _gate._SCAN_FILES and real in _gate._LITERAL_ONLY_FILES
+    assert [v for v in _gate.run() if v["file"].replace("\\", "/").endswith("db/db_lookup.py")] == []
+
+
+def test_a_slug_literal_planted_in_the_db_accessor_fails_the_gate(tmp_path, monkeypatch):
+    for src in (
+        "def w(children):\n    return emit('sgs/container', {}, children)\n",   # bare slug literal in a return
+        "def w(block_slug):\n    return block_slug == 'sgs/hero'\n",              # compared to a slug literal
+        "def w(x):\n    default = 'sgs/container'\n    return x\n",                # assigned slug literal
+    ):
+        assert _scan_as_db_accessor(tmp_path, monkeypatch, src), src
+
+
+def test_negative_control_without_the_registration_the_planted_literal_is_invisible(tmp_path, monkeypatch):
+    """The gate's pre-fix blind spot: a file outside the scan lists is never read."""
+    planted = tmp_path / "db_probe.py"
+    planted.write_text("def w(children):\n    return emit('sgs/container', {}, children)\n", encoding="utf-8")
+    monkeypatch.setattr(_gate, "_SCAN_FILES", [])
+    monkeypatch.setattr(_gate, "_LITERAL_ONLY_FILES", [])
+    assert _gate.run() == []
+
+
+def test_the_db_accessor_may_compare_schema_names_and_enum_literals(tmp_path, monkeypatch):
+    src = (
+        "def w(cols, block_slug, mod_kind):\n"
+        "    a = 'container_kind' not in cols\n"
+        "    b = '/' in block_slug\n"
+        "    c = mod_kind not in ('variant', 'state')\n"
+        "    return a, b, c\n"
+    )
+    assert _scan_as_db_accessor(tmp_path, monkeypatch, src) == []
+    # ... while the SAME source in a resolver (full mode) is still caught: the narrowing is per-file, not global.
+    assert _scan(tmp_path / "resolvers_dir", "def r(block_slug):\n    return block_slug in ('sgs/hero',)\n")
+
+
+def test_a_main_guard_smoke_test_is_not_scanned_but_module_level_code_after_it_is(tmp_path, monkeypatch):
+    src = (
+        "if __name__ == '__main__':\n"
+        "    CASE = 'sgs/container'\n"
+    )
+    assert _scan_as_db_accessor(tmp_path, monkeypatch, src) == []
+    assert _scan_as_db_accessor(tmp_path, monkeypatch, src.replace("if __name__ == '__main__':", "if True:"))

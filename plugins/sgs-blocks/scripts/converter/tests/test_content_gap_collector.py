@@ -193,8 +193,18 @@ class TestConvertSectionContentGaps:
         assert r["block_markup"].lstrip().startswith("<!-- wp:sgs/container")
         assert "wp:sgs/tabs" not in r["block_markup"]
 
-        # No sgs/tabs identity means no G3 rejection and no gaps at all.
-        assert r["content_gaps"] == []
+        # No sgs/tabs identity means no G3 rejection, so nothing on the
+        # CONTENT-unit side is dropped.
+        assert not [g for g in r["content_gaps"] if not g.get("property")]
+
+        # The per-area STYLE side is a separate channel (2026-09-21, Rule 4):
+        # once the root dissolves to sgs/container, every `sgs-tabs__*`
+        # element's own CSS has no per-area destination on the container, and
+        # each such declaration now carries a row instead of vanishing.
+        style_rows = [g for g in r["content_gaps"] if g.get("property")]
+        assert style_rows, "the per-area style-skip channel went silent"
+        assert {g["block_slug"] for g in style_rows} == {"sgs/container"}
+        assert all(g["kind"] == "dropped" and g["value"] for g in style_rows)
 
     def test_sgs_feature_grid_surfaces_both_gap_kinds(self) -> None:
         """The non-vacuous channel proof: a fixture that still produces BOTH a
@@ -221,7 +231,12 @@ class TestConvertSectionContentGaps:
             "sgs-feature-grid__text": "sgs/text",
         }
 
-        dropped = [g for g in r["content_gaps"] if g["kind"] == "dropped"]
+        # The BAND drop is keyed on `where`; the per-area STYLE rows added
+        # 2026-09-21 carry a `property` key and are counted separately below.
+        dropped = [
+            g for g in r["content_gaps"]
+            if g["kind"] == "dropped" and not g.get("property")
+        ]
         assert len(dropped) == 1
         assert dropped[0]["block_slug"] == "sgs/container"
         assert dropped[0]["where"] == "band:margin"
@@ -233,6 +248,21 @@ class TestConvertSectionContentGaps:
         # emitter already reproduces via `margin-inline:auto` on the __inner
         # band — EXCLUDED is the correct label for an intentional non-lift.
         assert dropped[0]["detail"].startswith("[EXCLUDED]")
+
+        # Per-area style skips (Rule 4, 2026-09-21): the feature-grid's own
+        # `__title` / `__text` typography has no per-area destination on the
+        # container the root dissolved to, and each declaration is now a row.
+        style_rows = [g for g in r["content_gaps"] if g.get("property")]
+        assert style_rows
+        assert {g["element"] for g in style_rows} <= {
+            "sgs-feature-grid__title", "sgs-feature-grid__text",
+            "sgs-feature-grid__item", "sgs-feature-grid__icon",
+            "sgs-feature-grid__grid", "sgs-feature-grid__header",
+            "sgs-feature-grid__inner",
+        }
+        # One row per (element, property, value) — never one per owning-block pass.
+        keys = [(g["element"], g["property"], g["value"]) for g in style_rows]
+        assert len(keys) == len(set(keys))
 
     def test_sgs_tabs_block_markup_unaffected_by_gap_collection(self) -> None:
         """Regression guard: recording gaps must never change block_markup.

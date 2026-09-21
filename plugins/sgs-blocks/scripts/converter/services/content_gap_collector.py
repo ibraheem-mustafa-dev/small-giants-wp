@@ -91,14 +91,42 @@ _FUZZY_STAGES = _FUZZY_RESOLVED_STAGES | _FUZZY_DECLINED_STAGES
 # recorded once per reader.
 _DECL_GAP_SEEN: set[tuple[str, str, str]] = set()
 
+# --------------------------------------------------------------------------
+# Deferred declaration-skip channel (Rule 4 NO-SKIPPING, 2026-09-21)
+# --------------------------------------------------------------------------
+# ``record_declaration_gap`` above is the IMMEDIATE channel: the caller already
+# knows, at the moment it calls, that the declaration reached no destination
+# anywhere. The per-area fold (``fold_helpers.route_area_css_to_block_attrs``)
+# cannot know that at call time: ONE element's declarations are offered to
+# SEVERAL owning blocks in turn (the recognised composite, then the wrapping
+# ``sgs/container``), and a property that misses on the first pass may be
+# routed on a later one. Recording immediately would therefore report
+# declarations that WERE transferred.
+#
+# So the fold records a CANDIDATE and, at every site where it actually lifts a
+# property, calls ``note_declaration_routed``. ``flush()`` resolves the two:
+# a candidate whose (element, property) was routed by ANY pass is dropped; the
+# rest become ordinary ``kind: "dropped"`` rows on the same channel the
+# orchestrator already harvests into ``content-gaps.json``. Nothing here
+# changes a routing decision or the emitted markup — it only records what the
+# existing logic already decided.
+_DECL_CANDIDATES: list[dict[str, Any]] = []
+_DECL_CANDIDATE_SEEN: set[tuple[str, str, str]] = set()
+_DECL_ROUTED: set[tuple[str, str]] = set()
+
 
 def clear() -> None:
     """Reset the accumulator. Call once at the start of a convert_section() run."""
     _GAPS.clear()
     _DECL_GAP_SEEN.clear()
+    _DECL_CANDIDATES.clear()
+    _DECL_CANDIDATE_SEEN.clear()
+    _DECL_ROUTED.clear()
 
 
-def record_declaration_gap(*, element: str, prop: str, value: str, reason: str) -> None:
+def record_declaration_gap(
+    *, element: str, prop: str, value: str, reason: str, block_slug: str = "",
+) -> None:
     """Record ONE style declaration that was deliberately not lifted.
 
     Recorded as ``kind: "dropped"`` so the orchestrator's existing harvest
@@ -106,6 +134,11 @@ def record_declaration_gap(*, element: str, prop: str, value: str, reason: str) 
     change: ``where`` becomes ``attr_or_slot``; the extra keys (``property``,
     ``value``, ``element``, ``reason``) ride along for a human reader.
     Deduplicated on (element, property, raw value).
+
+    ``block_slug`` names the block the declaration was offered to, when the
+    caller knows it. Left at ``""`` (the pre-existing behaviour, kept for the
+    ``template_binding`` callers) the harvest falls back to the section's own
+    block name.
     """
     key = (element, prop, value)
     if key in _DECL_GAP_SEEN:
@@ -113,7 +146,7 @@ def record_declaration_gap(*, element: str, prop: str, value: str, reason: str) 
     _DECL_GAP_SEEN.add(key)
     _GAPS.append({
         "kind": "dropped",
-        "block_slug": "",
+        "block_slug": block_slug,
         "where": f"{element} {{ {prop} }}",
         "detail": f"{reason}: {prop}: {value}",
         "element": element,
@@ -121,6 +154,79 @@ def record_declaration_gap(*, element: str, prop: str, value: str, reason: str) 
         "value": value,
         "reason": reason,
     })
+
+
+def note_declaration_routed(*, element: str, prop: str, route_key: str = "") -> None:
+    """Mark ``(element, route_key or prop)`` as having reached a real destination.
+
+    Cancels any deferred skip candidate for the same pair (see
+    ``record_declaration_skip_candidate``), in either order — a pass that lifts
+    the property may run before or after a pass that misses it. ``route_key``
+    lets a caller narrow the identity below the bare property name (the per-area
+    fold qualifies it by DEVICE TIER, so a routed desktop value never cancels a
+    genuinely dropped mobile override).
+    """
+    _DECL_ROUTED.add((element, route_key or prop))
+
+
+def record_declaration_skip_candidate(
+    *, block_slug: str, element: str, prop: str, value: str, reason: str,
+    route_key: str = "",
+) -> None:
+    """Record a declaration this pass could not route, pending ``flush()``.
+
+    Deduplicated on (element, route key, raw value) exactly as the immediate
+    channel is, so the same declaration offered to N owning blocks yields ONE
+    row, not N.
+    """
+    key = (element, route_key or prop, value)
+    if key in _DECL_CANDIDATE_SEEN:
+        return
+    _DECL_CANDIDATE_SEEN.add(key)
+    _DECL_CANDIDATES.append({
+        "block_slug": block_slug,
+        "element": element,
+        "prop": prop,
+        "route_key": route_key or prop,
+        "value": value,
+        "reason": reason,
+    })
+
+
+def _shorthand_route_keys(route_key: str) -> list[str]:
+    """Every SHORTHAND route key that covers ``route_key``.
+
+    ``padding-left@Base`` -> ``padding@Base``; ``border-top-width@Base`` ->
+    ``border@Base``, ``border-top@Base``. One reader may see a declaration as
+    the shorthand the draft wrote (``padding: 10px 18px``) and another as the
+    longhands it expands to, so a route noted under either spelling cancels a
+    candidate recorded under the other. Structural CSS longhand naming, not a
+    per-block or per-property list.
+    """
+    prop, _, tier = route_key.rpartition("@")
+    if not prop or "-" not in prop:
+        return []
+    parts = prop.split("-")
+    return [f"{'-'.join(parts[:i])}@{tier}" for i in range(1, len(parts))]
+
+
+def _resolve_skip_candidates() -> None:
+    """Turn every still-unrouted candidate into a real gap row. Idempotent."""
+    for cand in _DECL_CANDIDATES:
+        element, route_key = cand["element"], cand["route_key"]
+        if (element, route_key) in _DECL_ROUTED:
+            continue
+        if any((element, k) in _DECL_ROUTED for k in _shorthand_route_keys(route_key)):
+            continue
+        record_declaration_gap(
+            element=cand["element"],
+            prop=cand["prop"],
+            value=cand["value"],
+            reason=cand["reason"],
+            block_slug=cand["block_slug"],
+        )
+    _DECL_CANDIDATES.clear()
+    _DECL_CANDIDATE_SEEN.clear()
 
 
 def record_content_gap(gap: ContentGap, *, block_slug: str) -> None:
@@ -235,7 +341,9 @@ def flush() -> list[dict[str, Any]]:
     boundary's whole recursive build (root + every child ``build_block_markup``
     call) is captured as one list.
     """
+    _resolve_skip_candidates()
     out = list(_GAPS)
     _GAPS.clear()
     _DECL_GAP_SEEN.clear()
+    _DECL_ROUTED.clear()
     return out
