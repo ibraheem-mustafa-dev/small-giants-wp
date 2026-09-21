@@ -84,6 +84,8 @@ on `sgs/responsive-logo` that accepts a media-library .json, and a reusable medi
 runs in parallel with the nav chain. lamalama's live canvas mark stays a still and is recorded as a
 divergence.
 
+Research result (`.claude/reports/2026-09-21-lottie-player-research.md`): use `lottie-web` 5.13.0, light build (SVG renderer, 46.6 KB gzip, no WASM, no CDN, no `eval`). Integration: `animationSubstrate` (`svg-draw` or `lottie`), `lottieSource` (media-library .json, validated at upload, fail closed) and trigger and loop attributes on `sgs/responsive-logo`; the existing logo `<picture>` is the poster; a shared `supports.sgs.lottie` helper serves other media slots; the player loads lazily behind a swappable adapter and never loads under reduced motion. About 2 hours. Spec 38 section 1.2a parts (i) to (iii) pass. **Part (iv) needs Bean's ruling before U-17 builds:** the player is 93% of the 50 KB JS budget, so pages that use Lottie need a named allowance (as Tier W has 120 KB), plus a D-numbered decision and a section 1.2a membership amendment. Recommendation: grant a named allowance of 60 KB for pages that use Lottie and nothing else. U-17 waits on that answer; every other unit is unaffected.
+
 ## 2. Decisions already signed
 
 Full text lives in `.claude/reports/reference-requirements/families-master.json::decisions`
