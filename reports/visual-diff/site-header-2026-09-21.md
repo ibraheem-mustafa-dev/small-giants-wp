@@ -2,8 +2,8 @@
 
 verdict: PASS
 intent_capture_passed: true
-source_sha: 8884e65b565f7829
-commit_sha: 3fa812e8d (U-1 commit 3b, on top of e8c70192c commit 3 and 6eb948176 commit 2)
+source_sha: ad9ea4b53fc723ea
+commit_sha: 60d8905f0 (U-1 commit 4a fix, on top of bf2200abd 4a, 3fa812e8d 3b, e8c70192c 3 and 6eb948176 2)
 
 > `source_sha` is the `visual-report-sha.py` recipe applied to the committed bytes, at 3fa812e8d, of
 > the four site-header files changed by commits e8c70192c and 3fa812e8d (`block.json`, `edit.js`,
@@ -63,3 +63,29 @@ publishing. The slot is now claimed at the first emitted value (test: 3 cases in
 
 Not measured: the non-modal drawer opened over a low-z header (the default drawer is modal, top-layer,
 where z-index does not apply). The derived scale is verified by computed value only.
+
+---
+
+# U-1 commit 4a: shared surface ground (blur, saturate, fill opacity); `backdropBlur` renamed `surfaceBlur`
+
+Change: `includes/helpers-surface-ground.php` (blur and saturate declarations, fill translucency), the container
+wrapper emits `backdrop-filter` for any block that declares `surfaceBlur` / `surfaceSaturate`, the header's own
+blur emission is removed (one writer), `sgs_header_float_single_length` moves to `helpers-css-safety.php` as
+`sgs_css_single_length_value` (council B1), and the header gains `surfaceSaturate` and `surfaceOpacity` with a
+shared `SurfaceGroundControls` inspector component and canvas preview. Fixtures: page 3826 `qa-hdr-surface`
+(`backgroundColour #fcfbf8`, `surfaceOpacity 0.86`, `surfaceBlur 18px`, `surfaceSaturate 140`) and 3734 (pill,
+`surfaceBlur 8px`). Real headed Chrome, one window, page fully loaded.
+
+| # | Check | Result | Measured evidence |
+|---|---|---|---|
+| 12 | Wrapper emits blur and saturate | PASS | 3826: computed `backdrop-filter saturate(1.4) blur(18px)`; live rule `.sgs-container-5390ab33{backdrop-filter:saturate(140%) blur(18px)}` |
+| 13 | Fill translucency reaches the page | PASS | 3826: computed `background-color color(srgb 0.988235 0.984314 0.972549 / 0.86)` (= #fcfbf8 at 86%) |
+| 14 | Defect found and fixed | PASS | first deploy: the style engine DROPPED the `color-mix()` fill (no background rule at all, fill computed `rgba(0,0,0,0)`); fix (60d8905f0) writes a translucent fill as its own scoped rule; re-measured as row 13 |
+| 15 | Renamed attribute still blurs the pill | PASS | 3734: header computed `backdrop-filter blur(8px)`, `position sticky` |
+| 16 | Council F5: mega panel inside a blurred header | PASS | 3734, real hover on Brands: `aria-expanded true`, panel `position absolute`, rect [152,262,1120,485] wholly inside the viewport, `elementFromPoint` at the panel centre is inside the panel |
+| 17 | Unit tests | PASS | `tests/php/run-surface-ground-standalone.php` 23 of 23 (helper bounds, `0` legal, two-value blur rejected, gradient and empty fill left alone, orphan token; wrapper emits with the attributes and not without); against the previous wrapper the three wrapper cases FAIL (negative control) |
+| 18 | Pre-deploy stored-content audit | PASS | first deploy ABORTED (`undeclared-attr backdropBlur` in stored content, the pill fixture); fixture rebuilt with the new name, audit 0 NEW HIGH, deploy exit 0 |
+
+Not measured: a dropdown and a non-modal drawer open inside a blurred header (council F5 asks for both before any
+other block adopts blur; only the mega panel was checked); the editor canvas is mirrored (blur, saturate,
+opacity) but not opened in the block editor in this pass; a header with a gradient fill (opacity is left alone by design).
