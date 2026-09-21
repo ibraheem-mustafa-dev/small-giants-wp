@@ -3695,6 +3695,23 @@ def main():
              "falling through to the retired legacy extractor.",
     )
     parser.add_argument(
+        "--no-media-sideload", action="store_true", default=False,
+        help="Skip Stage 4i media sideload entirely (no inventory, no upload, no url/id "
+             "rewrite of the emitted block markup). Without this flag Stage 4i inventories "
+             "image slots on every run and, when --deploy-target is set, uploads each unique "
+             "draft image to the SGS_DEPLOY_SITE site (default sandybrown) and writes the "
+             "attachment url + id into the markup Stage 10 deploys. (default: False)",
+    )
+    parser.add_argument(
+        "--allow-partial-media", action="store_true", default=False,
+        help="With --deploy-target, deploy even when some of the draft's images failed to upload. "
+             "Default: Stage 4i FAILS CLOSED before Stage 10 and lists every file that did not upload "
+             "(a half-rewritten page would carry live attachment urls for some images and the draft's "
+             "own relative paths, dead links, for the rest). With this flag the run continues, the "
+             "failed files are listed in stage-4i.json (partial_media: true) and a warning is printed. "
+             "(default: False)",
+    )
+    parser.add_argument(
         "--no-computed-parity", action="store_true", default=False,
         help="Skip Stage 11.6 (computed-parity: universal draft-agnostic clone-vs-draft "
              "fidelity — every computed CSS property + content, matched by content, "
@@ -3803,6 +3820,14 @@ def main():
         help="Skip the site-details stage (plan step A2a, D1134): by default the phone, review, social and map "
              "values the draft's script declares replace the bare `{{ name }}` bindings that carry them. This "
              "flag leaves those bindings as they were.",
+    )
+    parser.add_argument(
+        "--collapse-loop-duplicates", action=argparse.BooleanOptionalAction, default=True,
+        help="FR-31-31 (default on): a loop the draft doubled for a seamless marquee "
+             "(`list.concat(list)`, or an ancestor running an infinite half-shift animation) is expanded "
+             "as ONE set, not two. Use --no-collapse-loop-duplicates to keep every row the draft's script "
+             "produced (the loops are still expanded; the report says which entry had evidence and was left). "
+             "Only meaningful with --resolve-js-content.",
     )
     parser.add_argument(
         "--resolve-js-content", action=argparse.BooleanOptionalAction, default=True,
@@ -3917,6 +3942,13 @@ def main():
     # image-slot.js, sibling .dc.html components) lives here, not in run_dir.
     _draft_dir = args.mockup.parent
     _draft_path = args.mockup  # ORIGINAL draft, before Stage -2 / -1.5 reassign args.mockup
+    # Icon-library proposals (converter/services/icon_resolver.py::record_icon_proposal). An icon the
+    # library, the pending list and the rejected list all lack is queued once, keyed by its path
+    # fingerprint, so re-running the same draft adds no rows. setdefault: an operator's own values win,
+    # and SGS_ICON_PROPOSALS_LOG="" would leave recording off for a scratch run.
+    os.environ.setdefault("SGS_ICON_PROPOSALS_LOG", str(ORCHESTRATOR_DIR.parent.parent / "assets" / "icons" / "icon-proposals.jsonl"))
+    os.environ.setdefault("SGS_ICON_SOURCE_DRAFT", str(_draft_path))
+    os.environ.setdefault("SGS_RUN_LABEL", run_id)
     _dc_raw = args.mockup.read_text(encoding="utf-8")
     _draft_server = _load_module_from_path(
         "sgs_draft_server", ORCHESTRATOR_DIR / "draft_server.py"
@@ -3941,7 +3973,8 @@ def main():
         )
         _resolve_js_content = _js_content_mod.resolve_js_array_content_with_report
         _js_raw = args.mockup.read_text(encoding="utf-8")
-        _js_resolved, _js_count, _js_report = _resolve_js_content(_js_raw, _draft_dir)
+        _js_resolved, _js_count, _js_report = _resolve_js_content(
+            _js_raw, _draft_dir, collapse_loop_duplicates=getattr(args, "collapse_loop_duplicates", True))
         if _js_report["resolved"] or _js_report["gaps"] or _js_report["skipped"]:
             (run_dir / "js-content-report.json").write_text(
                 json.dumps(_js_report, indent=1, ensure_ascii=False), encoding="utf-8")
@@ -3972,6 +4005,12 @@ def main():
     # Runs on args.mockup AFTER the loops are expanded and the site details are in. A draft with no manifest yields
     # the same HTML and no rows (no file). Every declaration is one row of manifest-annotation-report.json. Fail-soft:
     # an exception leaves the run copy as it was. `--no-manifest-annotation` opts out. See manifest_annotation.py.
+    #
+    # FR-31-31 rule 6: the JS content resolver's field markers (`data-src-field*`) never reach the converter. The
+    # annotator strips them from what it returns, and the guard after the try/except strips them from the run copy on
+    # EVERY path (no sectionBlocks, no rows, an exception, `--no-manifest-annotation`), so it does not matter which
+    # branch above ran. The strip is manifest_annotation.strip_field_markers, the same function the annotator uses.
+    _ma_mod = None
     if getattr(args, "manifest_annotation", True):
         try:
             _ma_mod = _load_module_from_path("sgs_manifest_annotation", ORCHESTRATOR_DIR / "manifest_annotation.py")
@@ -3981,6 +4020,12 @@ def main():
                 _ma_html, _ma_rows = _ma_mod.annotate_from_manifest(_ma_raw, _ma_lookup)
             finally:
                 _ma_lookup.close()
+            # Any change (a class added, or the resolver's field markers stripped) repoints the run copy, whether
+            # or not a declaration produced a row, so a marked copy never reaches the converter.
+            if _ma_html != _ma_raw:
+                _ma_path = run_dir / "manifest-annotated.html"
+                _ma_path.write_text(_ma_html, encoding="utf-8")
+                args.mockup = _ma_path
             if _ma_rows:
                 (run_dir / "manifest-annotation-report.json").write_text(
                     json.dumps(_ma_rows, indent=1, ensure_ascii=False), encoding="utf-8")
@@ -3994,12 +4039,28 @@ def main():
                 _ma_label = "manifest-" + _hashlib.sha1(json.dumps(_ma_rows, sort_keys=True).encode("utf-8")).hexdigest()[:10]
                 _ma_new = _ma_log.append_manifest_decisions(_ma_rows, client_slug=getattr(args, "client", None) or "unknown", run_id=_ma_label)
                 print(f"[orchestrator] manifest-annotation: {_ma_new} new decision row(s) in the recognition log")
-                if _ma_html != _ma_raw and any(r["status"] in ("applied", "partial") for r in _ma_rows):
-                    _ma_path = run_dir / "manifest-annotated.html"
-                    _ma_path.write_text(_ma_html, encoding="utf-8")
-                    args.mockup = _ma_path
         except Exception as _ma_exc:  # noqa: BLE001 -- never a new failure mode: the run copy stays as it was
             print(f"[manifest-annotation] skipped ({_ma_exc}); the run copy is left as it was")
+
+    # Field-marker guard (FR-31-31 rule 6), every path. Cheap substring test first, so a draft with no markers costs
+    # nothing and needs no module. A marked copy is NEVER edited in place (it may be the draft itself): the stripped
+    # text goes to a new file in the run directory and args.mockup is pointed at it. If the markers are there and
+    # cannot be stripped the run stops: a marker reaching the converter is a rule violation, not a warning.
+    _fm_raw = args.mockup.read_text(encoding="utf-8")
+    if "data-src-field" in _fm_raw.lower():
+        try:
+            if _ma_mod is None:
+                _ma_mod = _load_module_from_path("sgs_manifest_annotation", ORCHESTRATOR_DIR / "manifest_annotation.py")
+            _fm_clean = _ma_mod.strip_field_markers(_fm_raw)
+            if _fm_clean != _fm_raw:
+                _fm_path = run_dir / "field-markers-stripped.html"
+                _fm_path.write_text(_fm_clean, encoding="utf-8")
+                args.mockup = _fm_path
+                print(f"[orchestrator] field-markers: stripped the resolver's data-src-field markers -> {_fm_path}")
+        except Exception as _fm_exc:  # noqa: BLE001 -- a leaked marker is a rule violation: stop, do not continue
+            raise RuntimeError(
+                f"the run copy {args.mockup} carries data-src-field markers that could not be stripped "
+                f"({_fm_exc}); they must never reach the converter (FR-31-31 rule 6)") from _fm_exc
 
     # Stage -1.4 -- SCRIPT BINDINGS (plan step A1, D1132). The draft script's own width rules, evaluated
     # for the three device tiers, become the per-device values of the style bindings the converter would
@@ -4218,7 +4279,12 @@ def main():
     #      filename before uploading). Auth failure raises SideloadAuthError
     #      and is re-raised as a hard error — never silently falls back to
     #      dry-run leaving 404s in the page. Credentials are read from the
-    #      per-client env file (sandybrown: .claude/secrets/sandybrown.env).
+    #      env file of the SGS_DEPLOY_SITE site (default sandybrown; see
+    #      media-sideload.py::resolve_site_env), the site Stage 10 deploys to.
+    #      Each unique file is uploaded once (slots are grouped by resolved path)
+    #      and the uploaded url + id are then written into extract.json's
+    #      block_markup (media-sideload.py::apply_rewrite_to_run) so Stage 10
+    #      deploys markup that points at the uploaded attachments.
     #      When --deploy-target is not set: dry-run inventory only (no
     #      network calls) for operator review.
     #   2. Lazy-load attribute-staged-apply + functionality-bulk-apply
@@ -4229,11 +4295,13 @@ def main():
 
     # Determine whether this run is wired to a live deploy target. When it
     # is, promote stage-4i from inventory-only to REAL upload so the manifest
-    # carries genuine attachment ids that stage-10 (upload_and_patch.py) can
-    # consume. Credentials are read from the sandybrown env (the canonical
-    # canary env) which is always available at .claude/secrets/sandybrown.env.
+    # carries genuine attachment ids, and so the uploaded url + id are written
+    # back into extract.json's block_markup BEFORE stage-10 (upload_and_patch.py)
+    # deploys it. The site + credentials come from SGS_DEPLOY_SITE (default
+    # sandybrown) -> .claude/secrets/<site>.env, the same rule Stage 10 uses, so
+    # the images land on the site the page is deployed to. A missing env file is
+    # a hard error (media_sideload.SideloadConfigError), never a silent skip.
     _4i_do_upload: bool = bool(getattr(args, "deploy_target", None))
-    _4i_env_path: Path = REPO / ".claude" / "secrets" / "sandybrown.env"
 
     stage_4i_summary: dict = {"media_sideload": None, "modules_loaded": []}
     # Load the module before the inner try block so SideloadAuthError is always
@@ -4246,13 +4314,22 @@ def main():
         stage_4i_summary["media_sideload"] = {"error": str(exc), "mode": "load-failed"}
         msl = None  # type: ignore[assignment]
 
+    if getattr(args, "no_media_sideload", False):
+        print("[stage-4i] media-sideload skipped per --no-media-sideload")
+        stage_4i_summary["media_sideload"] = {"mode": "skipped", "reason": "--no-media-sideload"}
+        msl = None  # type: ignore[assignment]
+
     if msl is not None:
         try:
+            # mockup_root is the draft's REAL folder (_draft_dir). By this point Stages
+            # -2/-1.5/-1.45/-1.44 have repointed args.mockup at a copy inside run_dir,
+            # whose parent has no assets/ -- resolving against it made every image a
+            # "media file not found".
             sideload_report = msl.sideload_batch(
                 extract_out,
-                mockup_root=args.mockup.parent,
+                mockup_root=_draft_dir,
                 upload=_4i_do_upload,
-                env_path=_4i_env_path,
+                site=msl.deploy_site_name() if _4i_do_upload else None,
             )
             manifest_path = run_dir / "media-sideload-manifest.json"
             manifest_path.write_text(
@@ -4264,37 +4341,70 @@ def main():
                 1 for u in sideload_report.get("uploaded", []) if u.get("reused")
             )
             new_count = uploaded_count - reused_count
+            error_count = len(sideload_report.get("errors", []))
+            unverified_count = sideload_report.get("reused_unverified", 0)
             stage_4i_summary["media_sideload"] = {
                 "slots_found": sideload_report.get("slots_found", 0),
+                "unique_files": sideload_report.get("unique_files", 0),
                 "mode": sideload_report.get("mode", "dry-run"),
                 "manifest_path": str(manifest_path),
                 "uploaded": uploaded_count,
                 "new_uploads": new_count,
                 "reused": reused_count,
-                "errors": len(sideload_report.get("errors", [])),
+                "reused_unverified": unverified_count,
+                "errors": error_count,
             }
             if _4i_do_upload:
                 print(
-                    f"[stage-4i] media-sideload: {sideload_report.get('slots_found', 0)} slot(s) "
-                    f"processed — {new_count} new upload(s), {reused_count} reused, "
-                    f"{len(sideload_report.get('errors', []))} error(s); manifest at {manifest_path}"
+                    f"[stage-4i] media-sideload: {sideload_report.get('slots_found', 0)} slot(s) / "
+                    f"{sideload_report.get('unique_files', 0)} unique file(s) processed — "
+                    f"{new_count} new upload(s), {reused_count} reused, "
+                    f"{error_count} error(s); manifest at {manifest_path}"
                 )
+                if unverified_count:
+                    print(f"[stage-4i]   {unverified_count} reused by filename only (size unverified): the site "
+                          "reported no file size, so a same-named attachment of a different picture cannot be ruled out")
+                for _err in sideload_report.get("errors", []):
+                    print(f"[stage-4i]   NOT UPLOADED: {_err.get('local_path') or _err.get('urls')}: "
+                          f"{_err.get('reason')}", file=sys.stderr)
+                # Fail closed BEFORE anything is written back or deployed: url_map holds only the successes, so a
+                # partial upload would deploy 10 rewritten images and 6 dead relative links. Raises
+                # SideloadPartialError (handled below as a hard failure) unless --allow-partial-media.
+                _partial = msl.enforce_complete_upload(
+                    sideload_report, allow_partial=bool(getattr(args, "allow_partial_media", False)))
+                if _partial:
+                    stage_4i_summary["media_sideload"].update(_partial)
+                # Close the loop: url + id of every uploaded/reused file into the markup
+                # stage-10 deploys. Without this the block keeps its relative url and id 0.
+                if sideload_report.get("url_map"):
+                    _rw = msl.apply_rewrite_to_run(
+                        run_dir, extract_out, sideload_report["url_map"]
+                    )
+                    stage_4i_summary["media_sideload"]["rewritten_images"] = _rw["images_rewritten"]
+                    stage_4i_summary["media_sideload"]["still_relative"] = len(_rw["still_relative"])
+                    if _rw.get("still_relative_detail"):
+                        stage_4i_summary["media_sideload"]["still_relative_detail"] = _rw["still_relative_detail"]
+                    print(
+                        f"[stage-4i] media-rewrite: {_rw['images_rewritten']} image object(s) in "
+                        f"{_rw['blocks_changed']} block(s) now carry the uploaded url + id; "
+                        f"{len(_rw['still_relative'])} relative url(s) left unmapped"
+                    )
             else:
                 print(
                     f"[stage-4i] media-sideload: {sideload_report.get('slots_found', 0)} image slot(s) "
                     f"staged (dry-run, no --deploy-target); manifest at {manifest_path}"
                 )
-        except msl.SideloadAuthError as exc:
-            # Auth failure is a hard error when in upload mode — never swallow it.
-            # Re-raise so the caller sees an explicit message rather than a
-            # mis-diagnosed "stage-4i soft-failed" with 404s left in the page.
-            print(f"[stage-4i] media-sideload AUTH ERROR (hard-fail): {exc}", file=sys.stderr)
-            stage_4i_summary["media_sideload"] = {"error": str(exc), "mode": "auth-error"}
+        except (msl.SideloadAuthError, msl.SideloadConfigError, msl.SideloadRewriteError, msl.SideloadPartialError) as exc:
+            # Auth / config / write-back failures are hard errors in upload mode — never
+            # swallow them. Re-raise so the caller sees an explicit message rather than a
+            # mis-diagnosed "stage-4i soft-failed" with dead image URLs left in the page.
+            print(f"[stage-4i] media-sideload HARD FAIL ({type(exc).__name__}): {exc}", file=sys.stderr)
+            stage_4i_summary["media_sideload"] = {"error": str(exc), "mode": "hard-fail"}
             (run_dir / "stage-4i.json").write_text(
                 json.dumps(stage_4i_summary, indent=2, ensure_ascii=False),
                 encoding="utf-8",
             )
-            raise RuntimeError(f"Stage 4i auth error — aborting pipeline: {exc}") from exc
+            raise RuntimeError(f"Stage 4i media sideload failed — aborting pipeline: {exc}") from exc
         except Exception as exc:  # noqa: BLE001 - operator-review artefact; soft-fail
             print(f"[stage-4i] media-sideload soft-failed: {exc}", file=sys.stderr)
             stage_4i_summary["media_sideload"] = {"error": str(exc), "mode": "errored"}
@@ -4312,13 +4422,18 @@ def main():
         encoding="utf-8",
     )
     _ms = stage_4i_summary.get("media_sideload") or {}
+    # NB: the failure count is named `sideload_failures`, not `errors`: surface_pipeline_logs
+    # buckets any field starting with "error" as an ERROR even when it is 0 (see 4j below).
     _emit(_trace_for(run_dir), stage="stage_4i_media_sideload",
           mode=_ms.get("mode"),
           slots_found=_ms.get("slots_found"),
+          unique_files=_ms.get("unique_files"),
           new_uploads=_ms.get("new_uploads"),
           reused=_ms.get("reused"),
+          rewritten_images=_ms.get("rewritten_images"),
+          sideload_failures=_ms.get("errors") or 0,
           modules_loaded=stage_4i_summary.get("modules_loaded", []),
-          passed="error" not in _ms,
+          passed="error" not in _ms and not _ms.get("errors"),
           **({"error": _ms["error"]} if "error" in _ms else {}))
 
     # ------------------------------------------------------------------
