@@ -244,6 +244,22 @@ function sgs_shadow_dark_declarations( bool $refresh = false ): array {
 }
 
 /**
+ * The site's configured shadow colour (`settings.custom.shadowColour`), for the light reset.
+ *
+ * Only a palette variable or a hex colour is accepted; anything else (or nothing) falls back to
+ * black, so a hostile or missing value can never break out of the declaration.
+ *
+ * @return string A CSS colour value that is safe to print inside a declaration.
+ */
+function sgs_shadow_dark_site_colour(): string {
+	$value = function_exists( 'wp_get_global_settings' ) ? wp_get_global_settings( array( 'custom', 'shadowColour' ) ) : null;
+	if ( is_string( $value ) && preg_match( '/^(?:var\(--wp--preset--color--[a-z0-9-]+\)|#[0-9a-fA-F]{3,8})$/D', $value ) ) {
+		return $value;
+	}
+	return SGS_SHADOW_DARK_SHADOW_BASE;
+}
+
+/**
  * The stylesheet text that swaps shadow presets between their original and dark variants.
  *
  * `root` re-declares the presets on `:root` for an explicit dark theme and for a system dark
@@ -269,7 +285,7 @@ function sgs_shadow_dark_preset_css( string $scope, bool $refresh = false ): str
 		return '.sgs-on-dark>*{--wp--custom--shadow-colour:' . SGS_SHADOW_ON_DARK_COLOUR . ';' . $decls['dark'] . '}';
 	}
 	if ( 'light' === $scope ) {
-		return '.sgs-on-light>*{--wp--custom--shadow-colour:' . SGS_SHADOW_DARK_SHADOW_BASE . ';' . $decls['light'] . '}';
+		return '.sgs-on-light>*{--wp--custom--shadow-colour:' . sgs_shadow_dark_site_colour() . ';' . $decls['light'] . '}';
 	}
 	return ':root[data-theme="dark"]{' . $decls['dark'] . '}'
 		. '@media (prefers-color-scheme:dark){:root:not([data-theme="light"]):not([data-theme="dark"]){' . $decls['dark'] . '}}';

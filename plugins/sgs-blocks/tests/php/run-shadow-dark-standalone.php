@@ -27,6 +27,9 @@ if ( ! function_exists( 'esc_attr' ) ) {
 $GLOBALS['sgs_test_presets'] = array();
 if ( ! function_exists( 'wp_get_global_settings' ) ) {
 	function wp_get_global_settings( array $path ) {
+		if ( 'custom' === $path[0] ) {
+			return $GLOBALS['sgs_test_site_colour'] ?? null;
+		}
 		return $GLOBALS['sgs_test_presets'];
 	}
 }
@@ -231,6 +234,19 @@ $light = '.sgs-on-light>*{--wp--custom--shadow-colour:#000000;'
 	. '--wp--preset--shadow--pressed:inset 0px 2px 4px 0px ' . t_mix( '14' ) . ';}';
 t_eq( $light, sgs_shadow_dark_preset_css( 'light' ), 'light scope: exact reset rule with the original literals' );
 t_eq( false, str_contains( sgs_shadow_dark_preset_css( 'light' ), 'shadow--glow' ), 'light scope: an all-brand preset (no dark variant) is absent' );
+// The reset restores the SITE's configured shadow colour (a palette variable or hex), never a hostile value.
+foreach ( array(
+	'var(--wp--preset--color--text)' => 'var(--wp--preset--color--text)',
+	'#1A202C'                        => '#1A202C',
+	'red;}body{x:y'                  => '#000000',
+	'url(x)'                         => '#000000',
+	''                               => '#000000',
+) as $configured => $expected_colour ) {
+	$GLOBALS['sgs_test_site_colour'] = $configured;
+	t_eq( $expected_colour, sgs_shadow_dark_site_colour(), 'light reset colour for configured "' . $configured . '"' );
+	t_eq( true, str_starts_with( sgs_shadow_dark_preset_css( 'light' ), '.sgs-on-light>*{--wp--custom--shadow-colour:' . $expected_colour . ';' ), 'light rule carries the reset colour for "' . $configured . '"' );
+}
+unset( $GLOBALS['sgs_test_site_colour'] );
 t_eq( false, str_contains( sgs_shadow_dark_preset_css( 'light' ), 'Bad Slug' ) || str_contains( sgs_shadow_dark_preset_css( 'light' ), 'x;y' ), 'light scope: an invalid slug is skipped' );
 t_eq( false, str_contains( sgs_shadow_dark_preset_css( 'light' ), 'color-mix(in srgb, #000000' ), 'light scope: carries no dark variant value' );
 t_eq( false, str_contains( sgs_shadow_dark_preset_css( 'root' ), '.sgs-on-light' ) || str_contains( sgs_shadow_dark_preset_css( 'section' ), '.sgs-on-light' ), 'root and section scopes never include the light rule' );
