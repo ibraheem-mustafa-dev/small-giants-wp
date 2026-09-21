@@ -6111,11 +6111,17 @@ def attr_for_area_property(
     return None
 
 
+# The css_layer values that own CONTENT-BAND width and GRID / grid-area track sizing: a
+# width/height declaration on those is layout structure, not the size of an element.
+_TRACK_SIZING_LAYERS = ("CONTENT", "GRID", "GRID_AREA")
+
+
 @functools.lru_cache(maxsize=2048)
 def attrs_for_element_class_property(
     block_slug: str,
     class_name: str,
     css_property: str,
+    element_sizing: bool = False,
 ) -> "tuple[str, ...]":
     """Selector-keyed per-area resolver — the SECOND lookup behind
     ``attr_for_area_property`` (Eye Care reviews card, 2026-09-21).
@@ -6139,7 +6145,26 @@ def attrs_for_element_class_property(
     state (``css_state`` NULL) — the tier/state siblings are re-appended by
     ``fold_helpers.route_area_css_to_block_attrs``'s own tier mapping. A name that
     ends in a breakpoint/state suffix whose stem is another attr of the block is a
-    sibling and is skipped as well, so a ``…Mobile`` attr never wins the base slot.
+    sibling and is skipped as well, so a ``…Mobile`` attr never wins the base slot. That
+    name filter is a BACKSTOP for a tier/state sibling whose ``css_tier``/``css_state``
+    column was left unclassified: the live DB has none (the SQL filter above already
+    removes every classified sibling), so it is proven load-bearing by a fixture that
+    adds one (``test_area_selector_route_scope``), not by a live row.
+
+    This function answers only "which attrs style this class + property". Whether the
+    class names ONE block element is a separate question, ``selector_class_elements``.
+
+    ``element_sizing=True`` narrows the answer to attrs that size a CHILD ELEMENT, for the
+    per-area fold's excluded width/height properties (grid-track and content-band sizing
+    must never be mistaken for element size). An attr qualifies only when ALL hold, each
+    read from the DB: its ``css_property`` lists the property explicitly (already required
+    above); its ``css_element`` is a named child, not the block's root/wrapper domain
+    (``_root_domain_element_clause``, the same guard the outer-layer resolvers use); its
+    ``css_layer`` is not one that owns content-band or grid sizing (``_TRACK_SIZING_LAYERS``);
+    its ``role`` is ``layout`` and its type can hold a length (object / number / string: not a
+    boolean toggle); and its own ``derived_selector`` names the element it says it styles (some
+    listed class has that BEM element token), which rejects rows whose selector list was
+    derived from a property suffix (``.sgs-x__max``, ``.sgs-x__width``) rather than authored.
 
     Returns every matching attr name in row order (empty tuple = honest miss). The
     caller decides the ambiguity policy on ``len > 1``. Pre-seed DBs lacking the
@@ -6147,15 +6172,24 @@ def attrs_for_element_class_property(
     """
     if not block_slug or not class_name or not css_property:
         return ()
+    sizing_sql, sizing_params = "", []
+    if element_sizing:
+        root_sql, root_params = _root_domain_element_clause(block_slug)
+        sizing_sql = (
+            f" AND NOT ({root_sql}) AND role = 'layout' "
+            "AND attr_type IN ('object', 'number', 'string') "
+            f"AND (css_layer IS NULL OR css_layer NOT IN ({','.join('?' for _ in _TRACK_SIZING_LAYERS)}))"
+        )
+        sizing_params = [*root_params, *_TRACK_SIZING_LAYERS]
     conn = sqlite3.connect(SGS_DB)
     try:
         rows = conn.execute(
-            "SELECT attr_name, css_property, derived_selector FROM block_attributes "
+            "SELECT attr_name, css_property, derived_selector, css_element FROM block_attributes "
             "WHERE block_slug = ? AND derived_selector IS NOT NULL AND derived_selector != '' "
             "AND css_property IS NOT NULL AND css_property != '' "
-            "AND css_state IS NULL AND (css_tier IS NULL OR css_tier = 'desktop') "
-            "ORDER BY rowid",
-            (block_slug,),
+            "AND css_state IS NULL AND (css_tier IS NULL OR css_tier = 'desktop')"
+            + sizing_sql + " ORDER BY rowid",
+            (block_slug, *sizing_params),
         ).fetchall()
     except sqlite3.OperationalError:
         return ()
@@ -6166,8 +6200,13 @@ def attrs_for_element_class_property(
     all_names = set(block_attrs(block_slug) or {})
     wanted_class = class_name.strip().lstrip(".")
     matches: list[str] = []
-    for attr_name, declared_props, selector_list in rows:
-        if wanted_class not in {s.strip().lstrip(".") for s in selector_list.split(",")}:
+    for attr_name, declared_props, selector_list, own_element in rows:
+        listed = {s.strip().lstrip(".") for s in selector_list.split(",")}
+        if wanted_class not in listed:
+            continue
+        if element_sizing and not any(
+            (b := parse_sgs_bem(c)) is not None and b.element == own_element for c in listed
+        ):
             continue
         if css_property not in {p.strip() for p in declared_props.split(",")}:
             continue
@@ -6186,6 +6225,71 @@ def attrs_for_element_class_property(
             attr_names=list(matches),
         )
     return tuple(matches)
+
+
+@functools.lru_cache(maxsize=2048)
+def attr_css_properties(block_slug: str, attr_name: str) -> "tuple[str, ...]":
+    """The CSS properties an attribute declares (``css_property`` is a comma list, e.g.
+    ``height,width`` for a size attr that paints both). ``()`` when it declares none."""
+    if not block_slug or not attr_name:
+        return ()
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        row = conn.execute(
+            "SELECT css_property FROM block_attributes WHERE block_slug = ? AND attr_name = ?",
+            (block_slug, attr_name),
+        ).fetchone()
+    except sqlite3.OperationalError:
+        return ()
+    finally:
+        conn.close()
+    if not row or not row[0]:
+        return ()
+    return tuple(p.strip() for p in row[0].split(",") if p.strip())
+
+
+@functools.lru_cache(maxsize=2048)
+def selector_class_elements(block_slug: str, class_name: str) -> "tuple[str | None, ...]":
+    """The distinct block elements (``css_element``) that claim a draft class.
+
+    ``derived_selector`` names the classes an attr styles, but one class can be listed by
+    attrs of DIFFERENT elements: ``sgs/hero``'s ``.sgs-hero__image`` is the selector of
+    the media column's attrs (``css_element='media'``) AND of every ``splitMedia*`` attr
+    (``'split-media'``, the <img> itself). A declaration on that class cannot be assigned
+    to either without guessing, so ``fold_helpers._selector_route_attr`` reports it.
+
+    Every attr that lists the class AND carries a ``css_property`` counts, whatever its
+    tier or state (a hover sibling is the same element as its resting attr, so it cannot
+    add a spurious second one; a hover attr on another element is a real conflict).
+    Companion attrs with no ``css_property`` (units, type switches) style nothing, so they
+    make no claim and are excluded. An attr with a ``css_property`` but NO ``css_element``
+    is returned as ``None``, its own distinct element: it is a distinct element only
+    against a NAMED one (``(None,)`` alone is one shared "unnamed" claim, not a conflict).
+
+    Sorted, ``None`` last. ``()`` = no attr lists the class (or block/class empty, or a
+    pre-seed DB lacking the columns).
+    """
+    if not block_slug or not class_name:
+        return ()
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT css_element, derived_selector FROM block_attributes "
+            "WHERE block_slug = ? AND derived_selector IS NOT NULL AND derived_selector != '' "
+            "AND css_property IS NOT NULL AND css_property != ''",
+            (block_slug,),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        return ()
+    finally:
+        conn.close()
+    wanted = class_name.strip().lstrip(".")
+    found = {
+        (element or None)
+        for element, selector_list in rows
+        if wanted in {s.strip().lstrip(".") for s in selector_list.split(",")}
+    }
+    return tuple(sorted(found, key=lambda e: (e is None, e or "")))
 
 
 @functools.lru_cache(maxsize=1)

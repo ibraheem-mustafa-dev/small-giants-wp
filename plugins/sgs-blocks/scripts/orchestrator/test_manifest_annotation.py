@@ -414,7 +414,7 @@ def test_eye_care_reviews_annotated_anyway_become_a_google_reviews_block_that_dr
     kept = eye_care["kept"]
     # the block root is the bordered card that holds the header AND the rail (2 levels above the rail), not the rail
     assert re.search(r'<div class="sgs-google-reviews"[^>]*style="border:1px solid #DADCE0;border-radius:12px', kept)
-    assert '<div class="rev-rail"' in kept and kept.count('class="sgs-google-reviews__review"') == 13
+    assert re.search(r'<div class="(?:sgs-google-reviews__rail )?rev-rail"', kept) and kept.count('class="sgs-google-reviews__review"') == 13
     markup = _convert(_element(kept, "sgs-google-reviews"), kept)
     assert markup.lstrip().startswith("<!-- wp:sgs/container") and "wp:sgs/google-reviews" in markup
     block = json.loads(re.search(r"wp:sgs/google-reviews (\{.*?\}) /?-->", markup, re.S).group(1))
@@ -1015,7 +1015,7 @@ def test_eye_care_reviews_become_a_google_reviews_block_with_every_field_the_dra
     row = rows["sgs-google-reviews"]
     assert row["status"] == "applied" and row["items"] == 13
     assert row["fields"] == ["author", "text", "date", "meta", "rating", "avatarColour"]
-    assert row["header_fields"] == ["reviewRequestUrl", "averageRating", "reviewCount"] and row["target"] == "ancestor"
+    assert {"reviewRequestUrl", "averageRating", "reviewCount"} <= set(row["header_fields"]) and row["target"] == "ancestor"
     assert "data-src-field" not in out
     markup = _convert(_element(out, "sgs-google-reviews"), out)
     assert "data-src-field" not in markup

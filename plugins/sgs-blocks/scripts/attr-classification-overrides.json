@@ -3669,6 +3669,2737 @@
 				"derived_selector": "",
 				"_reason": "2026-09-21 (Eye Care reviews). Restores the original routing selector after an attempted, reverted seed: naming the annotated element in derived_selector only routes class-CSS drafts (styling_content.py); the Eye Care draft styles these elements INLINE, which needs a converter route that honours derived_selector in the per-area fold (a shared mechanism, awaiting the owner's approval). Until that exists the declarations are REPORTED as skipped (test_area_css_skip_reporting.py), not routed."
 			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "sourceLabelFontSize",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__source-label",
+				"css_property": "font-size",
+				"css_element": "source-label",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'sourceLabel' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "sourceLabelFontFamily",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__source-label",
+				"css_property": "font-family",
+				"css_element": "source-label",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'sourceLabel' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "sourceLabelFontWeight",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__source-label",
+				"css_property": "font-weight",
+				"css_element": "source-label",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'sourceLabel' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "sourceLabelFontStyle",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__source-label",
+				"css_property": "font-style",
+				"css_element": "source-label",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'sourceLabel' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "sourceLabelLineHeight",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__source-label",
+				"css_property": "line-height",
+				"css_element": "source-label",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'sourceLabel' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "sourceLabelLetterSpacing",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__source-label",
+				"css_property": "letter-spacing",
+				"css_element": "source-label",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'sourceLabel' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "sourceLabelTextTransform",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__source-label",
+				"css_property": "text-transform",
+				"css_element": "source-label",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'sourceLabel' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "sourceLabelTextDecoration",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__source-label",
+				"css_property": "text-decoration",
+				"css_element": "source-label",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'sourceLabel' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "sourceLabelTextAlign",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__source-label",
+				"css_property": "text-align",
+				"css_element": "source-label",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'sourceLabel' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "sourceLabelTextWrap",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__source-label",
+				"css_property": "text-wrap",
+				"css_element": "source-label",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'sourceLabel' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "sourceLabelFontSizeUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__source-label",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'sourceLabel' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "sourceLabelLineHeightUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__source-label",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'sourceLabel' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "sourceLabelLetterSpacingUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__source-label",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'sourceLabel' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "scoreFontSize",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__score, .sgs-google-reviews__average-rating",
+				"css_property": "font-size",
+				"css_element": "average",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'score' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "scoreFontFamily",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__score, .sgs-google-reviews__average-rating",
+				"css_property": "font-family",
+				"css_element": "average",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'score' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "scoreFontWeight",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__score, .sgs-google-reviews__average-rating",
+				"css_property": "font-weight",
+				"css_element": "average",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'score' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "scoreFontStyle",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__score, .sgs-google-reviews__average-rating",
+				"css_property": "font-style",
+				"css_element": "average",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'score' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "scoreLineHeight",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__score, .sgs-google-reviews__average-rating",
+				"css_property": "line-height",
+				"css_element": "average",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'score' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "scoreLetterSpacing",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__score, .sgs-google-reviews__average-rating",
+				"css_property": "letter-spacing",
+				"css_element": "average",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'score' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "scoreTextTransform",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__score, .sgs-google-reviews__average-rating",
+				"css_property": "text-transform",
+				"css_element": "average",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'score' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "scoreTextDecoration",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__score, .sgs-google-reviews__average-rating",
+				"css_property": "text-decoration",
+				"css_element": "average",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'score' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "scoreTextAlign",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__score, .sgs-google-reviews__average-rating",
+				"css_property": "text-align",
+				"css_element": "average",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'score' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "scoreTextWrap",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__score, .sgs-google-reviews__average-rating",
+				"css_property": "text-wrap",
+				"css_element": "average",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'score' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "scoreFontSizeUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__score, .sgs-google-reviews__average-rating",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'score' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "scoreLineHeightUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__score, .sgs-google-reviews__average-rating",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'score' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "scoreLetterSpacingUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__score, .sgs-google-reviews__average-rating",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'score' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "countFontSize",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__count, .sgs-google-reviews__review-count",
+				"css_property": "font-size",
+				"css_element": "count",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'count' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "countFontFamily",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__count, .sgs-google-reviews__review-count",
+				"css_property": "font-family",
+				"css_element": "count",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'count' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "countFontWeight",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__count, .sgs-google-reviews__review-count",
+				"css_property": "font-weight",
+				"css_element": "count",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'count' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "countFontStyle",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__count, .sgs-google-reviews__review-count",
+				"css_property": "font-style",
+				"css_element": "count",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'count' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "countLineHeight",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__count, .sgs-google-reviews__review-count",
+				"css_property": "line-height",
+				"css_element": "count",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'count' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "countLetterSpacing",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__count, .sgs-google-reviews__review-count",
+				"css_property": "letter-spacing",
+				"css_element": "count",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'count' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "countTextTransform",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__count, .sgs-google-reviews__review-count",
+				"css_property": "text-transform",
+				"css_element": "count",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'count' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "countTextDecoration",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__count, .sgs-google-reviews__review-count",
+				"css_property": "text-decoration",
+				"css_element": "count",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'count' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "countTextAlign",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__count, .sgs-google-reviews__review-count",
+				"css_property": "text-align",
+				"css_element": "count",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'count' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "countTextWrap",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__count, .sgs-google-reviews__review-count",
+				"css_property": "text-wrap",
+				"css_element": "count",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'count' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "countFontSizeUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__count, .sgs-google-reviews__review-count",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'count' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "countLineHeightUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__count, .sgs-google-reviews__review-count",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'count' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "countLetterSpacingUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__count, .sgs-google-reviews__review-count",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'count' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "authorFontSize",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__author",
+				"css_property": "font-size",
+				"css_element": "author",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'author' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "authorFontFamily",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__author",
+				"css_property": "font-family",
+				"css_element": "author",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'author' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "authorFontWeight",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__author",
+				"css_property": "font-weight",
+				"css_element": "author",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'author' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "authorFontStyle",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__author",
+				"css_property": "font-style",
+				"css_element": "author",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'author' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "authorLineHeight",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__author",
+				"css_property": "line-height",
+				"css_element": "author",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'author' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "authorLetterSpacing",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__author",
+				"css_property": "letter-spacing",
+				"css_element": "author",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'author' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "authorTextTransform",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__author",
+				"css_property": "text-transform",
+				"css_element": "author",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'author' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "authorTextDecoration",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__author",
+				"css_property": "text-decoration",
+				"css_element": "author",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'author' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "authorTextAlign",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__author",
+				"css_property": "text-align",
+				"css_element": "author",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'author' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "authorTextWrap",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__author",
+				"css_property": "text-wrap",
+				"css_element": "author",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'author' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "authorFontSizeUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__author",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'author' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "authorLineHeightUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__author",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'author' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "authorLetterSpacingUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__author",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'author' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "metaFontSize",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__meta",
+				"css_property": "font-size",
+				"css_element": "meta",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'meta' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "metaFontFamily",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__meta",
+				"css_property": "font-family",
+				"css_element": "meta",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'meta' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "metaFontWeight",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__meta",
+				"css_property": "font-weight",
+				"css_element": "meta",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'meta' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "metaFontStyle",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__meta",
+				"css_property": "font-style",
+				"css_element": "meta",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'meta' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "metaLineHeight",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__meta",
+				"css_property": "line-height",
+				"css_element": "meta",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'meta' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "metaLetterSpacing",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__meta",
+				"css_property": "letter-spacing",
+				"css_element": "meta",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'meta' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "metaTextTransform",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__meta",
+				"css_property": "text-transform",
+				"css_element": "meta",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'meta' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "metaTextDecoration",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__meta",
+				"css_property": "text-decoration",
+				"css_element": "meta",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'meta' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "metaTextAlign",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__meta",
+				"css_property": "text-align",
+				"css_element": "meta",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'meta' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "metaTextWrap",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__meta",
+				"css_property": "text-wrap",
+				"css_element": "meta",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'meta' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "metaFontSizeUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__meta",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'meta' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "metaLineHeightUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__meta",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'meta' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "metaLetterSpacingUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__meta",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'meta' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "dateFontSize",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__date",
+				"css_property": "font-size",
+				"css_element": "date",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'date' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "dateFontFamily",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__date",
+				"css_property": "font-family",
+				"css_element": "date",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'date' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "dateFontWeight",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__date",
+				"css_property": "font-weight",
+				"css_element": "date",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'date' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "dateFontStyle",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__date",
+				"css_property": "font-style",
+				"css_element": "date",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'date' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "dateLineHeight",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__date",
+				"css_property": "line-height",
+				"css_element": "date",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'date' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "dateLetterSpacing",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__date",
+				"css_property": "letter-spacing",
+				"css_element": "date",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'date' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "dateTextTransform",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__date",
+				"css_property": "text-transform",
+				"css_element": "date",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'date' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "dateTextDecoration",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__date",
+				"css_property": "text-decoration",
+				"css_element": "date",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'date' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "dateTextAlign",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__date",
+				"css_property": "text-align",
+				"css_element": "date",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'date' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "dateTextWrap",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__date",
+				"css_property": "text-wrap",
+				"css_element": "date",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'date' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "dateFontSizeUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__date",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'date' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "dateLineHeightUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__date",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'date' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "dateLetterSpacingUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__date",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'date' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "textFontSize",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__text",
+				"css_property": "font-size",
+				"css_element": "text",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'text' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "textFontFamily",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__text",
+				"css_property": "font-family",
+				"css_element": "text",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'text' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "textFontWeight",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__text",
+				"css_property": "font-weight",
+				"css_element": "text",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'text' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "textFontStyle",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__text",
+				"css_property": "font-style",
+				"css_element": "text",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'text' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "textLineHeight",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__text",
+				"css_property": "line-height",
+				"css_element": "text",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'text' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "textLetterSpacing",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__text",
+				"css_property": "letter-spacing",
+				"css_element": "text",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'text' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "textTextTransform",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__text",
+				"css_property": "text-transform",
+				"css_element": "text",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'text' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "textTextDecoration",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__text",
+				"css_property": "text-decoration",
+				"css_element": "text",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'text' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "textTextAlign",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__text",
+				"css_property": "text-align",
+				"css_element": "text",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'text' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "textTextWrap",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__text",
+				"css_property": "text-wrap",
+				"css_element": "text",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'text' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "textFontSizeUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__text",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'text' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "textLineHeightUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__text",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'text' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "textLetterSpacingUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__text",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'text' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "avatarFontSize",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__avatar-initials, .sgs-google-reviews__avatar-colour",
+				"css_property": "font-size",
+				"css_element": "avatar",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'avatar' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "avatarFontFamily",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__avatar-initials, .sgs-google-reviews__avatar-colour",
+				"css_property": "font-family",
+				"css_element": "avatar",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'avatar' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "avatarFontWeight",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__avatar-initials, .sgs-google-reviews__avatar-colour",
+				"css_property": "font-weight",
+				"css_element": "avatar",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'avatar' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "avatarFontStyle",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__avatar-initials, .sgs-google-reviews__avatar-colour",
+				"css_property": "font-style",
+				"css_element": "avatar",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'avatar' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "avatarLineHeight",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__avatar-initials, .sgs-google-reviews__avatar-colour",
+				"css_property": "line-height",
+				"css_element": "avatar",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'avatar' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "avatarLetterSpacing",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__avatar-initials, .sgs-google-reviews__avatar-colour",
+				"css_property": "letter-spacing",
+				"css_element": "avatar",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'avatar' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "avatarTextTransform",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__avatar-initials, .sgs-google-reviews__avatar-colour",
+				"css_property": "text-transform",
+				"css_element": "avatar",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'avatar' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "avatarTextDecoration",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__avatar-initials, .sgs-google-reviews__avatar-colour",
+				"css_property": "text-decoration",
+				"css_element": "avatar",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'avatar' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "avatarTextAlign",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__avatar-initials, .sgs-google-reviews__avatar-colour",
+				"css_property": "text-align",
+				"css_element": "avatar",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'avatar' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "avatarTextWrap",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__avatar-initials, .sgs-google-reviews__avatar-colour",
+				"css_property": "text-wrap",
+				"css_element": "avatar",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'avatar' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "avatarFontSizeUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__avatar-initials, .sgs-google-reviews__avatar-colour",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'avatar' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "avatarLineHeightUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__avatar-initials, .sgs-google-reviews__avatar-colour",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'avatar' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "avatarLetterSpacingUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__avatar-initials, .sgs-google-reviews__avatar-colour",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'avatar' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "footnoteFontSize",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__footnote",
+				"css_property": "font-size",
+				"css_element": "footnote",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'footnote' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "footnoteFontFamily",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__footnote",
+				"css_property": "font-family",
+				"css_element": "footnote",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'footnote' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "footnoteFontWeight",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__footnote",
+				"css_property": "font-weight",
+				"css_element": "footnote",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'footnote' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "footnoteFontStyle",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__footnote",
+				"css_property": "font-style",
+				"css_element": "footnote",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'footnote' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "footnoteLineHeight",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__footnote",
+				"css_property": "line-height",
+				"css_element": "footnote",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'footnote' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "footnoteLetterSpacing",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__footnote",
+				"css_property": "letter-spacing",
+				"css_element": "footnote",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'footnote' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "footnoteTextTransform",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__footnote",
+				"css_property": "text-transform",
+				"css_element": "footnote",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'footnote' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "footnoteTextDecoration",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__footnote",
+				"css_property": "text-decoration",
+				"css_element": "footnote",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'footnote' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "footnoteTextAlign",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__footnote",
+				"css_property": "text-align",
+				"css_element": "footnote",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'footnote' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "footnoteTextWrap",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__footnote",
+				"css_property": "text-wrap",
+				"css_element": "footnote",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'footnote' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "footnoteFontSizeUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__footnote",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'footnote' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "footnoteLineHeightUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__footnote",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'footnote' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "footnoteLetterSpacingUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__footnote",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'footnote' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "reviewLinkFontSize",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__review-link",
+				"css_property": "font-size",
+				"css_element": "review-link",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'reviewLink' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "reviewLinkFontFamily",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__review-link",
+				"css_property": "font-family",
+				"css_element": "review-link",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'reviewLink' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "reviewLinkFontWeight",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__review-link",
+				"css_property": "font-weight",
+				"css_element": "review-link",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'reviewLink' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "reviewLinkFontStyle",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__review-link",
+				"css_property": "font-style",
+				"css_element": "review-link",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'reviewLink' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "reviewLinkLineHeight",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__review-link",
+				"css_property": "line-height",
+				"css_element": "review-link",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'reviewLink' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "reviewLinkLetterSpacing",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__review-link",
+				"css_property": "letter-spacing",
+				"css_element": "review-link",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'reviewLink' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "reviewLinkTextTransform",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__review-link",
+				"css_property": "text-transform",
+				"css_element": "review-link",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'reviewLink' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "reviewLinkTextDecoration",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__review-link",
+				"css_property": "text-decoration",
+				"css_element": "review-link",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'reviewLink' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "reviewLinkTextAlign",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__review-link",
+				"css_property": "text-align",
+				"css_element": "review-link",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'reviewLink' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "reviewLinkTextWrap",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__review-link",
+				"css_property": "text-wrap",
+				"css_element": "review-link",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'reviewLink' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "reviewLinkFontSizeUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__review-link",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'reviewLink' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "reviewLinkLineHeightUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__review-link",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'reviewLink' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "reviewLinkLetterSpacingUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__review-link",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'reviewLink' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "writeReviewFontSize",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__write-review, .sgs-google-reviews__review-request-url",
+				"css_property": "font-size",
+				"css_element": "write-review",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'writeReview' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "writeReviewFontFamily",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__write-review, .sgs-google-reviews__review-request-url",
+				"css_property": "font-family",
+				"css_element": "write-review",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'writeReview' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "writeReviewFontWeight",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__write-review, .sgs-google-reviews__review-request-url",
+				"css_property": "font-weight",
+				"css_element": "write-review",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'writeReview' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "writeReviewFontStyle",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__write-review, .sgs-google-reviews__review-request-url",
+				"css_property": "font-style",
+				"css_element": "write-review",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'writeReview' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "writeReviewLineHeight",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__write-review, .sgs-google-reviews__review-request-url",
+				"css_property": "line-height",
+				"css_element": "write-review",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'writeReview' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "writeReviewLetterSpacing",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__write-review, .sgs-google-reviews__review-request-url",
+				"css_property": "letter-spacing",
+				"css_element": "write-review",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'writeReview' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "writeReviewTextTransform",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__write-review, .sgs-google-reviews__review-request-url",
+				"css_property": "text-transform",
+				"css_element": "write-review",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'writeReview' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "writeReviewTextDecoration",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__write-review, .sgs-google-reviews__review-request-url",
+				"css_property": "text-decoration",
+				"css_element": "write-review",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'writeReview' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "writeReviewTextAlign",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__write-review, .sgs-google-reviews__review-request-url",
+				"css_property": "text-align",
+				"css_element": "write-review",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'writeReview' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "writeReviewTextWrap",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__write-review, .sgs-google-reviews__review-request-url",
+				"css_property": "text-wrap",
+				"css_element": "write-review",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'writeReview' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "writeReviewFontSizeUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__write-review, .sgs-google-reviews__review-request-url",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'writeReview' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "writeReviewLineHeightUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__write-review, .sgs-google-reviews__review-request-url",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'writeReview' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "writeReviewLetterSpacingUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__write-review, .sgs-google-reviews__review-request-url",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'writeReview' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "seeAllFontSize",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
+				"css_property": "font-size",
+				"css_element": "see-all",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'seeAll' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "seeAllFontFamily",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
+				"css_property": "font-family",
+				"css_element": "see-all",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'seeAll' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "seeAllFontWeight",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
+				"css_property": "font-weight",
+				"css_element": "see-all",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'seeAll' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "seeAllFontStyle",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
+				"css_property": "font-style",
+				"css_element": "see-all",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'seeAll' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "seeAllLineHeight",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
+				"css_property": "line-height",
+				"css_element": "see-all",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'seeAll' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "seeAllLetterSpacing",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
+				"css_property": "letter-spacing",
+				"css_element": "see-all",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'seeAll' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "seeAllTextTransform",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
+				"css_property": "text-transform",
+				"css_element": "see-all",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'seeAll' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "seeAllTextDecoration",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
+				"css_property": "text-decoration",
+				"css_element": "see-all",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'seeAll' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "seeAllTextAlign",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
+				"css_property": "text-align",
+				"css_element": "see-all",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'seeAll' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "seeAllTextWrap",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
+				"css_property": "text-wrap",
+				"css_element": "see-all",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'seeAll' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "seeAllFontSizeUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'seeAll' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "seeAllLineHeightUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'seeAll' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "seeAllLetterSpacingUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'seeAll' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "fontSize",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__border",
+				"css_property": "font-size",
+				"css_element": "wrapper",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'wrapper' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "fontFamily",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__border",
+				"css_property": "font-family",
+				"css_element": "wrapper",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'wrapper' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "fontWeight",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__border",
+				"css_property": "font-weight",
+				"css_element": "wrapper",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'wrapper' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "fontStyle",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__border",
+				"css_property": "font-style",
+				"css_element": "wrapper",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'wrapper' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "lineHeight",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__border",
+				"css_property": "line-height",
+				"css_element": "wrapper",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'wrapper' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "fontSizeUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__border",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'wrapper' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "lineHeightUnit",
+			"fields": {
+				"role": "typography",
+				"derived_selector": ".sgs-google-reviews__border",
+				"_reason": "2026-09-21 (google-reviews redesign T1). One member of the 'wrapper' typography family (TypographyControls + sgs_typography_css_rule). The family's members carry css_element/css_property so a draft font declaration on the element routes to it, and a derived_selector listing the block's class and the annotator's class for the same element."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "sourceLabelColour",
+			"fields": {
+				"role": "color",
+				"derived_selector": ".sgs-google-reviews__source-label",
+				"css_property": "color",
+				"css_element": "source-label",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). css_property/css_element name the element and property this colour styles; derived_selector lists BOTH the block's own class and the class the draft annotator gives the same element (comma-separated, the established multi-class form) so db_lookup.attrs_for_element_class_property, the selector-keyed second lookup of fold_helpers.route_area_css_to_block_attrs, routes an inline or class declaration on that element here. The seeder's synthetic per-attribute selector (or none) would otherwise stand."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "scoreColour",
+			"fields": {
+				"role": "color",
+				"derived_selector": ".sgs-google-reviews__score, .sgs-google-reviews__average-rating",
+				"css_property": "color",
+				"css_element": "average",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). css_property/css_element name the element and property this colour styles; derived_selector lists BOTH the block's own class and the class the draft annotator gives the same element (comma-separated, the established multi-class form) so db_lookup.attrs_for_element_class_property, the selector-keyed second lookup of fold_helpers.route_area_css_to_block_attrs, routes an inline or class declaration on that element here. The seeder's synthetic per-attribute selector (or none) would otherwise stand."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "countColour",
+			"fields": {
+				"role": "color",
+				"derived_selector": ".sgs-google-reviews__count, .sgs-google-reviews__review-count",
+				"css_property": "color",
+				"css_element": "count",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). css_property/css_element name the element and property this colour styles; derived_selector lists BOTH the block's own class and the class the draft annotator gives the same element (comma-separated, the established multi-class form) so db_lookup.attrs_for_element_class_property, the selector-keyed second lookup of fold_helpers.route_area_css_to_block_attrs, routes an inline or class declaration on that element here. The seeder's synthetic per-attribute selector (or none) would otherwise stand."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "avatarTextColour",
+			"fields": {
+				"role": "color",
+				"derived_selector": ".sgs-google-reviews__avatar-initials, .sgs-google-reviews__avatar-colour",
+				"css_property": "color",
+				"css_element": "avatar",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). css_property/css_element name the element and property this colour styles; derived_selector lists BOTH the block's own class and the class the draft annotator gives the same element (comma-separated, the established multi-class form) so db_lookup.attrs_for_element_class_property, the selector-keyed second lookup of fold_helpers.route_area_css_to_block_attrs, routes an inline or class declaration on that element here. The seeder's synthetic per-attribute selector (or none) would otherwise stand."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "authorColour",
+			"fields": {
+				"role": "color",
+				"derived_selector": ".sgs-google-reviews__author",
+				"css_property": "color",
+				"css_element": "author",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). css_property/css_element name the element and property this colour styles; derived_selector lists BOTH the block's own class and the class the draft annotator gives the same element (comma-separated, the established multi-class form) so db_lookup.attrs_for_element_class_property, the selector-keyed second lookup of fold_helpers.route_area_css_to_block_attrs, routes an inline or class declaration on that element here. The seeder's synthetic per-attribute selector (or none) would otherwise stand."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "metaColour",
+			"fields": {
+				"role": "color",
+				"derived_selector": ".sgs-google-reviews__meta",
+				"css_property": "color",
+				"css_element": "meta",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). css_property/css_element name the element and property this colour styles; derived_selector lists BOTH the block's own class and the class the draft annotator gives the same element (comma-separated, the established multi-class form) so db_lookup.attrs_for_element_class_property, the selector-keyed second lookup of fold_helpers.route_area_css_to_block_attrs, routes an inline or class declaration on that element here. The seeder's synthetic per-attribute selector (or none) would otherwise stand."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "dateColour",
+			"fields": {
+				"role": "color",
+				"derived_selector": ".sgs-google-reviews__date",
+				"css_property": "color",
+				"css_element": "date",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). css_property/css_element name the element and property this colour styles; derived_selector lists BOTH the block's own class and the class the draft annotator gives the same element (comma-separated, the established multi-class form) so db_lookup.attrs_for_element_class_property, the selector-keyed second lookup of fold_helpers.route_area_css_to_block_attrs, routes an inline or class declaration on that element here. The seeder's synthetic per-attribute selector (or none) would otherwise stand."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "textColour",
+			"fields": {
+				"role": "color",
+				"derived_selector": ".sgs-google-reviews__text",
+				"css_property": "color",
+				"css_element": "text",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). css_property/css_element name the element and property this colour styles; derived_selector lists BOTH the block's own class and the class the draft annotator gives the same element (comma-separated, the established multi-class form) so db_lookup.attrs_for_element_class_property, the selector-keyed second lookup of fold_helpers.route_area_css_to_block_attrs, routes an inline or class declaration on that element here. The seeder's synthetic per-attribute selector (or none) would otherwise stand."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "reviewLinkColour",
+			"fields": {
+				"role": "color",
+				"derived_selector": ".sgs-google-reviews__review-link",
+				"css_property": "color",
+				"css_element": "review-link",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). css_property/css_element name the element and property this colour styles; derived_selector lists BOTH the block's own class and the class the draft annotator gives the same element (comma-separated, the established multi-class form) so db_lookup.attrs_for_element_class_property, the selector-keyed second lookup of fold_helpers.route_area_css_to_block_attrs, routes an inline or class declaration on that element here. The seeder's synthetic per-attribute selector (or none) would otherwise stand."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "footnoteColour",
+			"fields": {
+				"role": "color",
+				"derived_selector": ".sgs-google-reviews__footnote",
+				"css_property": "color",
+				"css_element": "footnote",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). css_property/css_element name the element and property this colour styles; derived_selector lists BOTH the block's own class and the class the draft annotator gives the same element (comma-separated, the established multi-class form) so db_lookup.attrs_for_element_class_property, the selector-keyed second lookup of fold_helpers.route_area_css_to_block_attrs, routes an inline or class declaration on that element here. The seeder's synthetic per-attribute selector (or none) would otherwise stand."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "cardBackground",
+			"fields": {
+				"role": "color",
+				"derived_selector": ".sgs-google-reviews__review",
+				"css_property": "background-color",
+				"css_element": "review",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). css_property/css_element name the element and property this colour styles; derived_selector lists BOTH the block's own class and the class the draft annotator gives the same element (comma-separated, the established multi-class form) so db_lookup.attrs_for_element_class_property, the selector-keyed second lookup of fold_helpers.route_area_css_to_block_attrs, routes an inline or class declaration on that element here. The seeder's synthetic per-attribute selector (or none) would otherwise stand."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "cardBorderColour",
+			"fields": {
+				"role": "color",
+				"derived_selector": ".sgs-google-reviews__review",
+				"css_property": "border-color",
+				"css_element": "review",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). css_property/css_element name the element and property this colour styles; derived_selector lists BOTH the block's own class and the class the draft annotator gives the same element (comma-separated, the established multi-class form) so db_lookup.attrs_for_element_class_property, the selector-keyed second lookup of fold_helpers.route_area_css_to_block_attrs, routes an inline or class declaration on that element here. The seeder's synthetic per-attribute selector (or none) would otherwise stand."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "headerDividerColour",
+			"fields": {
+				"role": "color",
+				"derived_selector": ".sgs-google-reviews__aggregate, .sgs-google-reviews__header",
+				"css_property": "border-bottom-color",
+				"css_element": "header",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). css_property/css_element name the element and property this colour styles; derived_selector lists BOTH the block's own class and the class the draft annotator gives the same element (comma-separated, the established multi-class form) so db_lookup.attrs_for_element_class_property, the selector-keyed second lookup of fold_helpers.route_area_css_to_block_attrs, routes an inline or class declaration on that element here. The seeder's synthetic per-attribute selector (or none) would otherwise stand."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "scrollbarColour",
+			"fields": {
+				"role": "color",
+				"derived_selector": ".sgs-google-reviews__list, .sgs-google-reviews__rail",
+				"css_property": "scrollbar-color",
+				"css_element": "list",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). css_property/css_element name the element and property this colour styles; derived_selector lists BOTH the block's own class and the class the draft annotator gives the same element (comma-separated, the established multi-class form) so db_lookup.attrs_for_element_class_property, the selector-keyed second lookup of fold_helpers.route_area_css_to_block_attrs, routes an inline or class declaration on that element here. The seeder's synthetic per-attribute selector (or none) would otherwise stand."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "starEmptyColour",
+			"fields": {
+				"role": "color",
+				"derived_selector": ".sgs-google-reviews__star--empty",
+				"css_property": "fill",
+				"css_element": "star-empty",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). css_property/css_element name the element and property this colour styles; derived_selector lists BOTH the block's own class and the class the draft annotator gives the same element (comma-separated, the established multi-class form) so db_lookup.attrs_for_element_class_property, the selector-keyed second lookup of fold_helpers.route_area_css_to_block_attrs, routes an inline or class declaration on that element here. The seeder's synthetic per-attribute selector (or none) would otherwise stand."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "writeReviewColourBorder",
+			"fields": {
+				"role": "color",
+				"derived_selector": ".sgs-google-reviews__write-review, .sgs-google-reviews__review-request-url",
+				"css_property": "border-color",
+				"css_element": "write-review",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). css_property/css_element name the element and property this colour styles; derived_selector lists BOTH the block's own class and the class the draft annotator gives the same element (comma-separated, the established multi-class form) so db_lookup.attrs_for_element_class_property, the selector-keyed second lookup of fold_helpers.route_area_css_to_block_attrs, routes an inline or class declaration on that element here. The seeder's synthetic per-attribute selector (or none) would otherwise stand."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "writeReviewColourBorderHover",
+			"fields": {
+				"role": "color",
+				"derived_selector": ".sgs-google-reviews__write-review, .sgs-google-reviews__review-request-url",
+				"css_property": "border-color",
+				"css_element": "write-review",
+				"css_layer": "OUTER",
+				"css_state": "hover",
+				"_reason": "2026-09-21 (google-reviews redesign T1). css_property/css_element name the element and property this colour styles; derived_selector lists BOTH the block's own class and the class the draft annotator gives the same element (comma-separated, the established multi-class form) so db_lookup.attrs_for_element_class_property, the selector-keyed second lookup of fold_helpers.route_area_css_to_block_attrs, routes an inline or class declaration on that element here. The seeder's synthetic per-attribute selector (or none) would otherwise stand."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "cardBorderColourGradient",
+			"fields": {
+				"role": "colour-gradient",
+				"derived_selector": ".sgs-google-reviews__review",
+				"css_property": "border-color-gradient",
+				"css_element": "review",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). css_property/css_element name the element and property this colour styles; derived_selector lists BOTH the block's own class and the class the draft annotator gives the same element (comma-separated, the established multi-class form) so db_lookup.attrs_for_element_class_property, the selector-keyed second lookup of fold_helpers.route_area_css_to_block_attrs, routes an inline or class declaration on that element here. The seeder's synthetic per-attribute selector (or none) would otherwise stand."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "seeAllColourBackground",
+			"fields": {
+				"role": "color",
+				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
+				"css_property": "background-color",
+				"css_element": "see-all",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). The see-all pill mirrors write-review: same recipe, classes .sgs-google-reviews__see-all (block) and .sgs-google-reviews__see-all-url (annotator, named for the seeAllUrl field)."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "seeAllColourBackgroundHover",
+			"fields": {
+				"role": "color",
+				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
+				"css_property": "background-color",
+				"css_element": "see-all",
+				"css_layer": "OUTER",
+				"css_state": "hover",
+				"_reason": "2026-09-21 (google-reviews redesign T1). The see-all pill mirrors write-review: same recipe, classes .sgs-google-reviews__see-all (block) and .sgs-google-reviews__see-all-url (annotator, named for the seeAllUrl field)."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "seeAllColourText",
+			"fields": {
+				"role": "color",
+				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
+				"css_property": "color",
+				"css_element": "see-all",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). The see-all pill mirrors write-review: same recipe, classes .sgs-google-reviews__see-all (block) and .sgs-google-reviews__see-all-url (annotator, named for the seeAllUrl field)."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "seeAllColourTextHover",
+			"fields": {
+				"role": "color",
+				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
+				"css_property": "color",
+				"css_element": "see-all",
+				"css_layer": "OUTER",
+				"css_state": "hover",
+				"_reason": "2026-09-21 (google-reviews redesign T1). The see-all pill mirrors write-review: same recipe, classes .sgs-google-reviews__see-all (block) and .sgs-google-reviews__see-all-url (annotator, named for the seeAllUrl field)."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "seeAllColourBorder",
+			"fields": {
+				"role": "color",
+				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
+				"css_property": "border-color",
+				"css_element": "see-all",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). The see-all pill mirrors write-review: same recipe, classes .sgs-google-reviews__see-all (block) and .sgs-google-reviews__see-all-url (annotator, named for the seeAllUrl field)."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "seeAllColourBorderHover",
+			"fields": {
+				"role": "color",
+				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
+				"css_property": "border-color",
+				"css_element": "see-all",
+				"css_layer": "OUTER",
+				"css_state": "hover",
+				"_reason": "2026-09-21 (google-reviews redesign T1). The see-all pill mirrors write-review: same recipe, classes .sgs-google-reviews__see-all (block) and .sgs-google-reviews__see-all-url (annotator, named for the seeAllUrl field)."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "seeAllColourBackgroundGradient",
+			"fields": {
+				"role": "colour-gradient",
+				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
+				"css_property": "background-image",
+				"css_element": "see-all",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). The see-all pill mirrors write-review: same recipe, classes .sgs-google-reviews__see-all (block) and .sgs-google-reviews__see-all-url (annotator, named for the seeAllUrl field)."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "seeAllColourBackgroundHoverGradient",
+			"fields": {
+				"role": "colour-gradient",
+				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
+				"css_property": "background-image",
+				"css_element": "see-all",
+				"css_layer": "OUTER",
+				"css_state": "hover",
+				"_reason": "2026-09-21 (google-reviews redesign T1). The see-all pill mirrors write-review: same recipe, classes .sgs-google-reviews__see-all (block) and .sgs-google-reviews__see-all-url (annotator, named for the seeAllUrl field)."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "seeAllColourTextGradient",
+			"fields": {
+				"role": "colour-gradient",
+				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
+				"css_property": "color-gradient",
+				"css_element": "see-all",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). The see-all pill mirrors write-review: same recipe, classes .sgs-google-reviews__see-all (block) and .sgs-google-reviews__see-all-url (annotator, named for the seeAllUrl field)."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "seeAllColourTextHoverGradient",
+			"fields": {
+				"role": "colour-gradient",
+				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
+				"css_property": "color-gradient",
+				"css_element": "see-all",
+				"css_layer": "OUTER",
+				"css_state": "hover",
+				"_reason": "2026-09-21 (google-reviews redesign T1). The see-all pill mirrors write-review: same recipe, classes .sgs-google-reviews__see-all (block) and .sgs-google-reviews__see-all-url (annotator, named for the seeAllUrl field)."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "seeAllColourBorderGradient",
+			"fields": {
+				"role": "colour-gradient",
+				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
+				"css_property": "border-color-gradient",
+				"css_element": "see-all",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). The see-all pill mirrors write-review: same recipe, classes .sgs-google-reviews__see-all (block) and .sgs-google-reviews__see-all-url (annotator, named for the seeAllUrl field)."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "seeAllColourBorderHoverGradient",
+			"fields": {
+				"role": "colour-gradient",
+				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
+				"css_property": "border-color-gradient",
+				"css_element": "see-all",
+				"css_layer": "OUTER",
+				"css_state": "hover",
+				"_reason": "2026-09-21 (google-reviews redesign T1). The see-all pill mirrors write-review: same recipe, classes .sgs-google-reviews__see-all (block) and .sgs-google-reviews__see-all-url (annotator, named for the seeAllUrl field)."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "cardPadding",
+			"fields": {
+				"role": "layout",
+				"derived_selector": ".sgs-google-reviews__review",
+				"css_property": "padding",
+				"css_element": "review",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "cardBorderWidth",
+			"fields": {
+				"role": "visual",
+				"derived_selector": ".sgs-google-reviews__review",
+				"css_property": "border-width",
+				"css_element": "review",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "cardBorderStyle",
+			"fields": {
+				"role": "visual",
+				"derived_selector": ".sgs-google-reviews__review",
+				"css_property": "border-style",
+				"css_element": "review",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "cardBorderRadius",
+			"fields": {
+				"role": "visual",
+				"derived_selector": ".sgs-google-reviews__review",
+				"css_property": "border-radius",
+				"css_element": "review",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "cardGap",
+			"fields": {
+				"role": "layout",
+				"derived_selector": ".sgs-google-reviews__review",
+				"css_property": "gap",
+				"css_element": "review",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "cardWidth",
+			"fields": {
+				"role": "layout",
+				"derived_selector": ".sgs-google-reviews__review",
+				"css_property": "flex-basis,width",
+				"css_element": "review",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "headerGap",
+			"fields": {
+				"role": "layout",
+				"derived_selector": ".sgs-google-reviews__aggregate, .sgs-google-reviews__header",
+				"css_property": "gap",
+				"css_element": "header",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "headerPadding",
+			"fields": {
+				"role": "layout",
+				"derived_selector": ".sgs-google-reviews__aggregate, .sgs-google-reviews__header",
+				"css_property": "padding",
+				"css_element": "header",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "headerDividerWidth",
+			"fields": {
+				"role": "visual",
+				"derived_selector": ".sgs-google-reviews__aggregate, .sgs-google-reviews__header",
+				"css_property": "border-bottom-width",
+				"css_element": "header",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "logoSize",
+			"fields": {
+				"role": "layout",
+				"derived_selector": ".sgs-google-reviews__google-logo",
+				"css_property": "height,width",
+				"css_element": "google-logo",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "logoOpacity",
+			"fields": {
+				"role": "visual",
+				"derived_selector": ".sgs-google-reviews__google-logo",
+				"css_property": "opacity",
+				"css_element": "google-logo",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "starSize",
+			"fields": {
+				"role": "layout",
+				"derived_selector": ".sgs-google-reviews__star, .sgs-google-reviews__rating",
+				"css_property": "height,width,font-size",
+				"css_element": "star",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "aggregateStarSize",
+			"fields": {
+				"role": "layout",
+				"derived_selector": ".sgs-google-reviews__aggregate-stars",
+				"css_property": "height,width,font-size",
+				"css_element": "aggregate-star",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "avatarSize",
+			"fields": {
+				"role": "layout",
+				"derived_selector": ".sgs-google-reviews__avatar, .sgs-google-reviews__avatar-colour",
+				"css_property": "height,width",
+				"css_element": "avatar",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "avatarBorderRadius",
+			"fields": {
+				"role": "visual",
+				"derived_selector": ".sgs-google-reviews__avatar, .sgs-google-reviews__avatar-colour",
+				"css_property": "border-radius",
+				"css_element": "avatar",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "cardLogoSize",
+			"fields": {
+				"role": "layout",
+				"derived_selector": ".sgs-google-reviews__card-logo",
+				"css_property": "height,width",
+				"css_element": "card-logo",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "textClampLines",
+			"fields": {
+				"role": "behaviour",
+				"derived_selector": ".sgs-google-reviews__text",
+				"css_property": "-webkit-line-clamp",
+				"css_element": "text",
+				"css_layer": "OUTER",
+				"_reason": "textClampLines is role behaviour, not visual: it is a content-truncation setting (line count) like its sibling textClamp, and the element vocabulary has no line-clamp member to claim it. 2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "railPadding",
+			"fields": {
+				"role": "layout",
+				"derived_selector": ".sgs-google-reviews__list, .sgs-google-reviews__rail",
+				"css_property": "padding",
+				"css_element": "list",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "scrollbar",
+			"fields": {
+				"role": "visual",
+				"derived_selector": ".sgs-google-reviews__list, .sgs-google-reviews__rail",
+				"css_property": "scrollbar-width",
+				"css_element": "list",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "arrowSize",
+			"fields": {
+				"role": "layout",
+				"derived_selector": ".sgs-google-reviews__arrow",
+				"css_property": "height,width",
+				"css_element": "arrow",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "arrowBorderWidth",
+			"fields": {
+				"role": "visual",
+				"derived_selector": ".sgs-google-reviews__arrow",
+				"css_property": "border-width",
+				"css_element": "arrow",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "arrowBorderStyle",
+			"fields": {
+				"role": "visual",
+				"derived_selector": ".sgs-google-reviews__arrow",
+				"css_property": "border-style",
+				"css_element": "arrow",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "arrowBorderRadius",
+			"fields": {
+				"role": "visual",
+				"derived_selector": ".sgs-google-reviews__arrow",
+				"css_property": "border-radius",
+				"css_element": "arrow",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "writeReviewBorderWidth",
+			"fields": {
+				"role": "visual",
+				"derived_selector": ".sgs-google-reviews__write-review, .sgs-google-reviews__review-request-url",
+				"css_property": "border-width",
+				"css_element": "write-review",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "writeReviewBorderStyle",
+			"fields": {
+				"role": "visual",
+				"derived_selector": ".sgs-google-reviews__write-review, .sgs-google-reviews__review-request-url",
+				"css_property": "border-style",
+				"css_element": "write-review",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "writeReviewBorderRadius",
+			"fields": {
+				"role": "visual",
+				"derived_selector": ".sgs-google-reviews__write-review, .sgs-google-reviews__review-request-url",
+				"css_property": "border-radius",
+				"css_element": "write-review",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "writeReviewPadding",
+			"fields": {
+				"role": "layout",
+				"derived_selector": ".sgs-google-reviews__write-review, .sgs-google-reviews__review-request-url",
+				"css_property": "padding",
+				"css_element": "write-review",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "writeReviewMinHeight",
+			"fields": {
+				"role": "layout",
+				"derived_selector": ".sgs-google-reviews__write-review, .sgs-google-reviews__review-request-url",
+				"css_property": "min-height",
+				"css_element": "write-review",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "seeAllBorderWidth",
+			"fields": {
+				"role": "visual",
+				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
+				"css_property": "border-width",
+				"css_element": "see-all",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "seeAllBorderStyle",
+			"fields": {
+				"role": "visual",
+				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
+				"css_property": "border-style",
+				"css_element": "see-all",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "seeAllBorderRadius",
+			"fields": {
+				"role": "visual",
+				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
+				"css_property": "border-radius",
+				"css_element": "see-all",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "seeAllPadding",
+			"fields": {
+				"role": "layout",
+				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
+				"css_property": "padding",
+				"css_element": "see-all",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "seeAllMinHeight",
+			"fields": {
+				"role": "layout",
+				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
+				"css_property": "min-height",
+				"css_element": "see-all",
+				"css_layer": "OUTER",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "sourceLabel",
+			"fields": {
+				"role": "text-content",
+				"derived_selector": ".sgs-google-reviews__source-label",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Content attr of a header/footer element: role names the value shape, derived_selector the classes the element carries (block class + annotator class named for the attribute), read by the content walk."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "footnote",
+			"fields": {
+				"role": "text-content",
+				"derived_selector": ".sgs-google-reviews__footnote",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Content attr of a header/footer element: role names the value shape, derived_selector the classes the element carries (block class + annotator class named for the attribute), read by the content walk."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "reviewLinkLabel",
+			"fields": {
+				"role": "text-content",
+				"derived_selector": ".sgs-google-reviews__review-link",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Content attr of a header/footer element: role names the value shape, derived_selector the classes the element carries (block class + annotator class named for the attribute), read by the content walk."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "writeReviewLabel",
+			"fields": {
+				"role": "text-content",
+				"derived_selector": ".sgs-google-reviews__write-review, .sgs-google-reviews__review-request-url",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Content attr of a header/footer element: role names the value shape, derived_selector the classes the element carries (block class + annotator class named for the attribute), read by the content walk."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "seeAllLabel",
+			"fields": {
+				"role": "text-content",
+				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Content attr of a header/footer element: role names the value shape, derived_selector the classes the element carries (block class + annotator class named for the attribute), read by the content walk."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "seeAllUrl",
+			"fields": {
+				"role": "link-href",
+				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Content attr of a header/footer element: role names the value shape, derived_selector the classes the element carries (block class + annotator class named for the attribute), read by the content walk."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "logoPosition",
+			"fields": {
+				"role": "css-modifier",
+				"derived_selector": ".sgs-google-reviews__google-logo",
+				"_reason": "2026-09-21 (google-reviews redesign T1). A css-modifier enum: it selects a BEM modifier class on the block, not a CSS property, so no css_property."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "navPosition",
+			"fields": {
+				"role": "css-modifier",
+				"derived_selector": ".sgs-google-reviews__arrow",
+				"_reason": "2026-09-21 (google-reviews redesign T1). A css-modifier enum: it selects a BEM modifier class on the block, not a CSS property, so no css_property."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "showCardLogo",
+			"fields": {
+				"role": "presence-boolean",
+				"derived_selector": ".sgs-google-reviews__card-logo",
+				"_reason": "2026-09-21 (google-reviews redesign T1). A toggle for whether an element renders (presence-boolean) or a behaviour flag (textClamp); derived_selector names the element it governs."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "showReviewLink",
+			"fields": {
+				"role": "presence-boolean",
+				"derived_selector": ".sgs-google-reviews__review-link",
+				"_reason": "2026-09-21 (google-reviews redesign T1). A toggle for whether an element renders (presence-boolean) or a behaviour flag (textClamp); derived_selector names the element it governs."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "textClamp",
+			"fields": {
+				"role": "behaviour",
+				"derived_selector": ".sgs-google-reviews__text",
+				"_reason": "2026-09-21 (google-reviews redesign T1). A toggle for whether an element renders (presence-boolean) or a behaviour flag (textClamp); derived_selector names the element it governs."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "backgroundColour",
+			"fields": {
+				"role": "color",
+				"derived_selector": ".sgs-google-reviews__background",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Wrapper background of the card, rendered by the shared SGS_Container_Wrapper from the attribute name (as testimonial/trust-bar backgroundColour). Classification (css_property/css_element wrapper) comes from the manifest attrMap; this entry records the wrapper-scoped derived_selector in the block's existing wrapper form (__border / __padding are the same synthetic per-attribute names) so every added attribute carries one."
+			}
+		},
+		{
+			"slug": "sgs/google-reviews",
+			"attr": "backgroundColourGradient",
+			"fields": {
+				"role": "colour-gradient",
+				"derived_selector": ".sgs-google-reviews__background",
+				"_reason": "2026-09-21 (google-reviews redesign T1). Wrapper background of the card, rendered by the shared SGS_Container_Wrapper from the attribute name (as testimonial/trust-bar backgroundColour). Classification (css_property/css_element wrapper) comes from the manifest attrMap; this entry records the wrapper-scoped derived_selector in the block's existing wrapper form (__border / __padding are the same synthetic per-attribute names) so every added attribute carries one."
+			}
+		},
+		{
+			"slug": "sgs/hero",
+			"attr": "splitMediaMinHeight",
+			"fields": {
+				"css_property": "min-height",
+				"css_layer": "GRID_AREA",
+				"_reason": "2026-09-21 seed fix. The derived classifier (extract-signatures.py, css-property-classifications.json) gave this attr css_property='max-width,min-height': a min-height control claiming max-width, which sgs/hero.splitMediaMaxWidth already owns. render.php (splitMediaMinHeight block) paints only min-height from this attr, and its max-width comes from splitMediaMaxWidth. With both claiming max-width the per-area resolver would have found two attrs for it, and with splitMediaMaxWidth gone a max-width would have landed in a min-height control."
+			}
 		}
 	]
 }

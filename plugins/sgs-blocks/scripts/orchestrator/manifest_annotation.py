@@ -24,6 +24,15 @@ What one declaration does
 * Header: every text unit and media element inside the block root that is not an item is mapped to one of the block's
   scalar attributes by role and value shape (``_plan_header``: a rating beside a star bar, a count, one shared link
   address) or reported in ``skipped_fields`` with its reason; text with no field and no verdict withholds the section.
+* Header links: a block with several link attributes (a "See all" and a "Write a review" pill) has each header anchor decided
+  by a ladder that reports the rung it used (``header_link_rungs``): the anchor's wording against each attribute's vocabulary,
+  then what the draft calls the anchor (aria-label, data-*, id, class), and only last its position (the order the block
+  declares its attributes). An anchor no rung decides is reported in ``skipped_fields``, never guessed.
+* Header caption, footnote, structure: a caption made of the block's own name words is the review SOURCE label (an attribute
+  the slot vocabulary calls a label), any other caption a business name; the one text after the items that shares a row with
+  the draft's own controls is the footnote when the block has exactly one text attribute left; and the structure the block's
+  attributes list a class for (``header`` row, ``rail``, ``arrow``, ``google-logo``) is classed from the draft's own structure
+  (``header_structure``: the class and the signal, or why not). Every class is one the block's ``derived_selector`` lists.
 * Items also carry a per-card rating (a row of star glyphs, when the schema has a ``rating`` field) and a colour
   bound in a style declaration (``data-src-field-style``, when the schema has a ``colour-background`` field).
 * Items: the repeated-group row for the section says how many; the items are the run of sibling elements of
@@ -152,6 +161,9 @@ class BlockLookup(Protocol):
     #       """The block's own content-bearing scalar attributes (the header field ladder maps onto these)."""
     #   def element_names(self, slug: str) -> frozenset[str]:
     #       """The element slots the block's attributes style (``star``, ``arrow``, ``write-review``...)."""
+    #   def derived_classes(self, slug: str) -> frozenset[str]:
+    #       """Every element class the block's attributes list in ``derived_selector`` (``sgs-google-reviews__header``): the
+    #       classes a draft element may carry for the converter to route an attribute to it. Without it no structure is classed."""
 
 
 def _norm(token: str) -> str:
@@ -262,6 +274,13 @@ class DbBlockLookup:
     def element_names(self, slug: str) -> frozenset[str]:
         return frozenset(r[0] for r in self._conn.execute(
             "SELECT DISTINCT css_element FROM block_attributes WHERE block_slug = ? AND css_element IS NOT NULL", (slug,)))
+
+    def derived_classes(self, slug: str) -> frozenset[str]:
+        classes: set[str] = set()
+        for (selector,) in self._conn.execute(
+                "SELECT DISTINCT derived_selector FROM block_attributes WHERE block_slug = ? AND derived_selector IS NOT NULL", (slug,)):
+            classes |= {c[1:] for c in _selector_classes(selector) if c.startswith(".")}
+        return frozenset(classes)
 
     def scalar_attrs(self, slug: str) -> list[ScalarAttr]:
         """The block's scalar attributes whose role is content-bearing (``roles.classification``). A link attribute
@@ -1306,6 +1325,16 @@ _TEXT_ROLE = "text-content"
 _STAR_TERM = "stars"      # the DB slot vocabulary's word for what a star bar shows (slot `rating`, alias `stars`)
 _STAR_WORD = "star"       # a block that styles an element called `star` / `arrow` draws that thing itself
 _ARROW_WORD = "arrow"
+# Structure the header ladder can name with the same certainty as a field: each word names an ELEMENT of a block (`header`,
+# `rail`, `arrow`, `logo`), never a block. The classes the block's attributes list in ``derived_selector``
+# (``DbBlockLookup.derived_classes``) decide whether the block cares and what the class is called; the draft's own structure
+# (the row that holds the mapped fields, the parent of the repeated items, a text-less control, a decorative mark) decides
+# which node gets it. The slot vocabulary has one word for a short caption text (`label`, aliases eyebrow / tag / kicker) and
+# it tells a source label from a business name.
+_HEADER_WORD = "header"
+_RAIL_WORD = "rail"
+_LOGO_WORD = "logo"
+_LABEL_TERM = "label"
 _CONTROL_TAGS = frozenset({"button"})
 _MEDIA_TAGS = frozenset({"img", "picture", "video", "audio", "canvas", "iframe", "input", "select", "textarea", "svg"})
 
@@ -1363,6 +1392,8 @@ class _Header:
     skipped: list[dict[str, str]] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)
     unexplained: list[str] = field(default_factory=list)
+    rungs: list[dict[str, str]] = field(default_factory=list)          # one entry per header link: the rung of the link ladder that decided it
+    structure: list[dict[str, str]] = field(default_factory=list)      # each structural element the block declares: classed (by which signal) or not recognised (why)
 
     def skip(self, label: str, reason: str) -> None:
         entry = {"field": label, "reason": reason}
@@ -1410,27 +1441,120 @@ def _star_bar_after(holder: _Node, number: float, src: str) -> _Node | None:
     return None
 
 
-def _shares_star_slot(name: str, lookup) -> bool:
-    """The attribute's name has a word that lives in the same DB slot as the star bar's own term (``rating``)."""
+def _shares_slot(name: str, term: str, lookup) -> bool:
+    """The attribute's name has a word that lives in the same DB slot as ``term`` (that slot's name or one of its aliases)."""
     slots_of = getattr(lookup, "slots_of", None)
     if slots_of is None:
         return False
-    star_slots = slots_of(_STAR_TERM)
-    return bool(star_slots) and any(slots_of(w) & star_slots for w in _kebab(name).split("-") if w)
+    slots = slots_of(term)
+    return bool(slots) and any(slots_of(w) & slots for w in _kebab(name).split("-") if w)
+
+
+def _shares_star_slot(name: str, lookup) -> bool:
+    """The attribute's name has a word that lives in the same DB slot as the star bar's own term (``rating``)."""
+    return _shares_slot(name, _STAR_TERM, lookup)
 
 
 def _declares(elements: frozenset[str], word: str) -> bool:
     return any(word == _stem(w) for name in elements for w in _kebab(name).split("-") if w)
 
 
-def _link_score(anchor_text: str, attr: ScalarAttr, elements: frozenset[str]) -> int:
-    """How many of the anchor's words are words of the attribute's name or of an element slot the block styles that
-    shares a word with the attribute's name (``write-review`` for ``reviewRequestUrl``)."""
+def _link_hits(anchor_text: str, attr: ScalarAttr, elements: frozenset[str]) -> list[str]:
+    """The anchor's words that are words of the attribute's name or of an element slot the block styles that shares a
+    word with the attribute's name (``write-review`` for ``reviewRequestUrl``)."""
     vocab = set(_attr_words(attr.name))
     for element in elements:
         if vocab & set(_attr_words(element)):
             vocab |= set(_attr_words(element))
-    return sum(1 for w in _words(anchor_text) if w in vocab)
+    return [w for w in _words(anchor_text) if w in vocab]
+
+
+def _link_score(anchor_text: str, attr: ScalarAttr, elements: frozenset[str]) -> int:
+    return len(_link_hits(anchor_text, attr, elements))
+
+
+def _selector_classes(selector: str | None) -> set[str]:
+    """The element classes a ``block_attributes.derived_selector`` lists (it may list the block's own class and the class
+    the annotator puts on a draft element, comma separated)."""
+    return {part.strip() for part in (selector or "").split(",") if part.strip()}
+
+
+def _own_class(attr: ScalarAttr, prefix: str) -> bool:
+    """The attribute lists, among the element classes it is lifted from, the one this annotator would put on its element."""
+    return "." + prefix + _kebab(attr.name) in _selector_classes(attr.selector)
+
+
+def _declared_element(classes: frozenset[str], prefix: str, word: str, name_words: set[str]) -> str | None:
+    """The BEM element (the part after ``prefix``) among the classes the block's attributes list that names ``word`` and
+    nothing but ``word`` and words of the block's own name: ``header`` for ``header``, ``google-logo`` for ``logo`` in
+    ``google-reviews`` (``google`` is a word of the block's name), never ``show-arrows`` (a toggle), ``card-logo`` (a
+    different mark) or ``arrow-colour``. Exactly one, else None (the block lists none, or which is meant is not certain)."""
+    found = sorted(e for e in (c[len(prefix):] for c in classes if c.startswith(prefix))
+                   if word in _attr_words(e) and set(_attr_words(e)) - name_words == {word})
+    return found[0] if len(found) == 1 else None
+
+
+def _link_label(link: ScalarAttr, attrs: list[ScalarAttr], prefix: str) -> ScalarAttr | None:
+    """The block's text attribute that carries the visible label of ``link``: the one ``text-content`` string whose
+    ``derived_selector`` lists the class of the link's own element (``seeAllLabel`` and ``seeAllUrl`` are both lifted from
+    the anchor that carries ``sgs-google-reviews__see-all-url``), so the anchor's text IS that attribute and it needs no
+    second class. Exactly one, or None."""
+    own = "." + prefix + _kebab(link.name)
+    found = [a for a in attrs if a.kind == "string" and not a.link_like and a.role == _TEXT_ROLE and own in _selector_classes(a.selector)]
+    return found[0] if len(found) == 1 else None
+
+
+def _own_names(node: _Node) -> str:
+    """What the draft calls an anchor besides its visible text: ``aria-label``, ``title``, ``id``, ``name``, every
+    ``data-*`` attribute (the resolver's own ``data-src-field*`` markers excepted) and the classes that are not SGS ones."""
+    bits: list[str] = []
+    for key, value in node.attrs:
+        k = key.lower()
+        if k in ("aria-label", "title", "id", "name") or (k.startswith("data-") and not k.startswith("data-src-field")):
+            bits += [k if k.startswith("data-") else "", _html.unescape(value or "")]
+    bits += [c for c in node.classes if not c.startswith("sgs-")]
+    return re.sub(r"(?<=[a-z0-9])(?=[A-Z])", " ", " ".join(bits))
+
+
+def _assign_links(anchors: list[_Node], clues: list[tuple[str, dict[int, str]]], link_attrs: list[ScalarAttr],
+                  elements: frozenset[str]) -> dict[int, tuple[ScalarAttr, str, str]]:
+    """``{id(anchor): (link attribute, rung, evidence)}`` for the header anchors the ladder could decide.
+
+    Rungs, strongest first. Each ``clues`` entry is ``(rung name, {id(anchor): text})``: the anchor's visible text, then what
+    the draft calls it (``_own_names``). Words of the text are scored against each attribute's vocabulary (``_link_hits``);
+    a pair is decided only when the score is the STRICT maximum of both its anchor's row and its attribute's column, so a
+    tie decides nothing and the anchors left over go to the next rung. The last rung is POSITION and the weakest: only when
+    as many anchors are left as link attributes, the n-th anchor in document order takes the n-th attribute in the order
+    the block declares them. Nothing else about the anchors is read (not their colours, not their addresses: two
+    header links may share one address, and a filled and an outlined pill are told apart by no framework data)."""
+    decided: dict[int, tuple[ScalarAttr, str, str]] = {}
+    for rung, texts in clues:
+        while True:
+            free_a = [n for n in anchors if id(n) not in decided]
+            taken = {d[0].name for d in decided.values()}
+            free_x = [x for x in link_attrs if x.name not in taken]
+            hits = {(id(n), x.name): _link_hits(texts[id(n)], x, elements) for n in free_a for x in free_x}
+            picks = []
+            for n in free_a:
+                for x in free_x:
+                    score = len(hits[(id(n), x.name)])
+                    if (score and all(len(hits[(id(n), y.name)]) < score for y in free_x if y is not x)
+                            and all(len(hits[(id(m), x.name)]) < score for m in free_a if m is not n)):
+                        picks.append((n, x, hits[(id(n), x.name)]))
+            if not picks:
+                break
+            for n, x, found in picks:
+                words = ", ".join(f"'{w}'" for w in dict.fromkeys(found))
+                decided[id(n)] = (x, rung, f"its {rung} has {words} in common with '{x.name}' (its own name, or an element the "
+                                           "block styles for it) and more than with any other link attribute")
+    free_a = [n for n in anchors if id(n) not in decided]
+    taken = {d[0].name for d in decided.values()}
+    free_x = [x for x in link_attrs if x.name not in taken]
+    if free_a and len(free_a) == len(free_x):
+        for i, (n, x) in enumerate(zip(free_a, free_x), 1):
+            decided[id(n)] = (x, "position", f"no wording told the links apart, so it is link {i} of {len(free_a)} left in the header, "
+                                              f"matched to link attribute {i} in the order the block declares them (weak evidence)")
+    return decided
 
 
 def _name_attrs(attrs: list[ScalarAttr], prefix: str, lookup) -> list[ScalarAttr]:
@@ -1443,12 +1567,78 @@ def _name_attrs(attrs: list[ScalarAttr], prefix: str, lookup) -> list[ScalarAttr
     the live database it names icon identities (``iconName``, ``iconSource``), never a business name."""
     slots_of = getattr(lookup, "slots_of", None)
     return [a for a in attrs
-            if a.kind == "string" and not a.link_like and a.role == _TEXT_ROLE and a.selector == "." + prefix + _kebab(a.name)
+            if a.kind == "string" and not a.link_like and a.role == _TEXT_ROLE and _own_class(a, prefix)
             and slots_of is not None and any(slots_of(w) for w in _kebab(a.name).split("-") if w)]
 
 
+def _common_ancestor(nodes: list[_Node]) -> _Node | None:
+    """The closest element that contains every node of ``nodes`` (a node is not its own ancestor)."""
+    for anc in _ancestors(nodes[0]):
+        if all(_is_inside(n, anc) for n in nodes[1:]):
+            return anc
+    return None
+
+
+def _handler_of(node: _Node) -> str:
+    """The draft's own click handler on a control (``onClick="{{ revPrev }}"``), or its ``aria-label``, as evidence text."""
+    return _attr(node, "onclick") or _attr(node, "aria-label") or ""
+
+
+def _classify_structure(head: _Header, src: str, root: _Node, members: list[_Node], rail: _Node | None, prefix: str,
+                        classes: frozenset[str], name_words: set[str], edits: _Edits, images: list[_Node],
+                        controls: list[_Node]) -> None:
+    """Class the structure the block styles (each entry of ``head.structure``: the class put on the draft, by which signal,
+    or why it was not recognised). Only a class the block's attributes LIST (``derived_selector``) is looked for; the
+    class is that listed one, and it never changes an attribute of the draft's node (the decorative mark keeps its
+    ``aria-hidden``)."""
+    def note(element: str, cls: str | None, why: str) -> None:
+        head.structure.append({"element": element, "class": cls or "", "recognised": "yes" if cls else "no", "signal": why})
+
+    def apply(element: str, node: _Node, why: str) -> None:
+        edits.add_class(node, prefix + _kebab(element))
+        note(element, prefix + _kebab(element), why)
+
+    inside_items = lambda n: any(n is m or _is_inside(n, m) or _is_inside(m, n) for m in members)   # noqa: E731
+
+    element = _declared_element(classes, prefix, _HEADER_WORD, name_words)
+    if element:
+        # the header is what sits BEFORE the items: a field mapped after them (a footnote) belongs to the footer row
+        fields = list({id(n): n for n, _a in head.claimed if not members or n.start < members[0].start}.values())
+        row = _common_ancestor(fields) if len(fields) > 1 else None
+        if len(fields) < 2:
+            pass                                    # nothing to recognise: a row of one field is not a row
+        elif row is None or row is root:
+            note(element, None, "the mapped header fields share no element below the block root, so the root itself is their row")
+        elif inside_items(row):
+            note(element, None, "the closest element holding the mapped header fields also holds the repeated items")
+        else:
+            apply(element, row, f"the closest element that holds all {len(fields)} mapped header fields "
+                                f"({', '.join(sorted({a.name for n, a in head.claimed if n in fields}))}) and none of the items")
+    element = _declared_element(classes, prefix, _RAIL_WORD, name_words)
+    if element and rail is not None and rail is not root:       # a rail that IS the block root is already the block
+        apply(element, rail, f"the element that directly holds the {len(members)} repeated items")
+    element = _declared_element(classes, prefix, _ARROW_WORD, name_words)
+    if element:
+        if controls:
+            for button in controls:
+                edits.add_class(button, prefix + _kebab(element))
+            names = ", ".join(f"'{_handler_of(b)}'" for b in controls if _handler_of(b))
+            note(element, prefix + _kebab(element),
+                 f"{len(controls)} text-less button(s) in the block outside the items" + (f", calling / labelled {names}" if names else ""))
+    element = _declared_element(classes, prefix, _LOGO_WORD, name_words)
+    if element:
+        # the converter's own test for a decorative image (lift_helpers.is_decorative_img): the class goes only on a mark
+        # the converter will never lift as content, so an author who merely left the alt text off keeps a lifted photo
+        marks = [i for i in images if _attr(i, "aria-hidden") == "true" or _attr(i, "role") in ("presentation", "none")]
+        if len(marks) == 1:
+            apply(element, marks[0], "the block's only decorative (aria-hidden) image outside the items")
+        elif marks:
+            note(element, None, f"{len(marks)} decorative images sit in the block outside the items, so which is the source mark is not certain")
+
+
 def _plan_header(src: str, root: _Node, members: list[_Node], block_name: str, attrs: list[ScalarAttr],
-                 elements: frozenset[str], lookup, edits: _Edits) -> _Header:
+                 elements: frozenset[str], lookup, edits: _Edits, rail: _Node | None = None,
+                 classes: frozenset[str] = frozenset()) -> _Header:
     """Map or report every text unit and media element of ``root`` that is not inside an item."""
     prefix = f"sgs-{block_name}__"
     head = _Header()
@@ -1473,9 +1663,35 @@ def _plan_header(src: str, root: _Node, members: list[_Node], block_name: str, a
     link_attrs = [a for a in attrs if a.link_like]
     hrefs = {_attr(n, "href") or "" for n in anchors}
     hrefs.discard("")
+    link_labels = {l.name: lab for l in link_attrs if len(link_attrs) > 1 and (lab := _link_label(l, attrs, prefix))}
     if anchors:
         texts = {id(n): _text_of(n, src) for n in anchors}
-        if len(link_attrs) != 1:
+        if len(link_attrs) > 1:
+            addressed = [n for n in anchors if (_attr(n, "href") or "").strip()]
+            for n in anchors:
+                if n not in addressed:
+                    head.skip(_quote("header link", texts[id(n)]), "it has no address to lift")
+                    head.rungs.append({"link": texts[id(n)][:40], "attribute": "", "rung": "none", "evidence": "the anchor has no href"})
+            decided = _assign_links(addressed, [("link text", texts), ("own names", {id(n): _own_names(n) for n in addressed})],
+                                    link_attrs, elements)
+            for n in addressed:
+                pick = decided.get(id(n))
+                if pick is None:
+                    names = ", ".join(f"'{x.name}'" for x in link_attrs)
+                    head.skip(_quote("header link", texts[id(n)]),
+                              f"no evidence which of the block's link attributes ({names}) it is: its wording and its own names "
+                              "did not tell them apart, and the links left over do not match the attributes left over one for one")
+                    head.rungs.append({"link": texts[id(n)][:40], "attribute": "", "rung": "none", "evidence": "no rung decided it"})
+                    continue
+                attr, rung, evidence = pick
+                claim(n, attr)
+                if attr.name in link_labels and link_labels[attr.name].name not in head.fields:
+                    head.fields.append(link_labels[attr.name].name)          # same element, same class: lifted as the anchor's text
+                head.notes.append(f"'{texts[id(n)][:40]}' (a link to {_attr(n, 'href')}) to '{attr.name}'"
+                                  + (f" and its text to '{link_labels[attr.name].name}'" if attr.name in link_labels else "")
+                                  + f" (rung '{rung}': {evidence})")
+                head.rungs.append({"link": texts[id(n)][:40], "attribute": attr.name, "rung": rung, "evidence": evidence})
+        elif len(link_attrs) != 1:
             why = ("the block has no link attribute" if not link_attrs
                    else "the block has more than one link attribute, so which one an address belongs to is not certain")
             for n in anchors:
@@ -1542,7 +1758,13 @@ def _plan_header(src: str, root: _Node, members: list[_Node], block_name: str, a
     # 3. Star glyphs, controls, the caption and everything else.
     star_drawn, arrows_drawn = _declares(elements, _STAR_WORD), _declares(elements, _ARROW_WORD)
     name_words = set(_words(block_name.replace("-", " ")))
-    identity_attrs = _name_attrs(attrs, prefix, lookup)
+    label_ids = {id(a) for a in link_labels.values()}                # a link's own label is that link's, not a caption's
+    name_cands = [a for a in _name_attrs(attrs, prefix, lookup) if id(a) not in label_ids]
+    source_attrs = [a for a in name_cands if _shares_slot(a.name, _LABEL_TERM, lookup)]      # a short caption text: the review SOURCE
+    identity_attrs = ([a for a in name_cands if a not in source_attrs] or name_cands) if source_attrs else name_cands
+    free_text = [a for a in attrs if a.kind == "string" and not a.link_like and a.role == _TEXT_ROLE and _own_class(a, prefix)
+                 and id(a) not in label_ids and a not in name_cands]   # the block's text attributes no rung above owns
+    footnote_taken = False
 
     def hidden(unit: _Unit) -> bool:
         """The unit's text sits in an ``aria-hidden="true"`` element (or inside one): decorative, not content."""
@@ -1575,12 +1797,23 @@ def _plan_header(src: str, root: _Node, members: list[_Node], block_name: str, a
             head.skip(_quote("header text", text), "decorative: the draft hides it from assistive technology (aria-hidden), "
                       "so it is not content the block should carry")
         elif control_row(unit):
-            head.skip(_quote("header text", text), "it sits in the row of the draft's own scroll controls; the block draws "
-                      "its own previous / next controls and has no field for a scroll hint")
+            if (len(free_text) == 1 and unit.text_node is None and not footnote_taken and members
+                    and holder.start >= members[-1].end):
+                claim(holder, free_text[0])
+                footnote_taken = True
+                head.notes.append(f"'{text[:40]}' to '{free_text[0].name}' (the only text after the items that shares a row with "
+                                  "the draft's own controls, and the only text attribute of the block left unassigned)")
+            else:
+                head.skip(_quote("header text", text), "it sits in the row of the draft's own scroll controls; the block draws "
+                          "its own previous / next controls and has no field for a scroll hint")
         elif (identity_attrs and len(identity_attrs) == 1 and len(loose) == 1 and unit.text_node is None
               and not set(_words(text)) <= name_words):
             claim(holder, identity_attrs[0])
             head.notes.append(f"'{text}' to '{identity_attrs[0].name}' (the only unexplained header text, and not the block's own name)")
+        elif (len(source_attrs) == 1 and unit.text_node is None and set(_words(text)) and set(_words(text)) <= name_words):
+            claim(holder, source_attrs[0])
+            head.notes.append(f"'{text}' to '{source_attrs[0].name}' (these are the block's own name words, so it names the "
+                              "review source and not a business; the attribute is a caption text the slot vocabulary calls a label)")
         elif set(_words(text)) and set(_words(text)) <= name_words:
             head.skip(_quote("header text", text), "these are the block's own name words, so it is the review source label "
                       "and not a business name; the block draws its own source logo")
@@ -1598,6 +1831,8 @@ def _plan_header(src: str, root: _Node, members: list[_Node], block_name: str, a
             if child.name not in _MEDIA_TAGS and child.name not in _CONTROL_TAGS:
                 yield from walk(child)
 
+    images: list[_Node] = []
+    controls: list[_Node] = []
     for el in walk(root):
         name = f"header <{el.name}>"
         if el.name == "img":
@@ -1605,11 +1840,13 @@ def _plan_header(src: str, root: _Node, members: list[_Node], block_name: str, a
             decorative = (_attr(el, "aria-hidden") == "true" or _attr(el, "alt") in (None, "") or _attr(el, "role") == "presentation")
             label = _quote("header image", shown)
             if decorative:
+                images.append(el)
                 head.skip(label, "a decorative image (aria-hidden or no alt text): not content; the block draws its own source logo")
             else:
                 head.unplaced(label, "an image the block has no field for")
         elif el.name in _CONTROL_TAGS:
             if not _text_of(el, src):
+                controls.append(el)
                 head.skip(_quote("header button", _attr(el, "aria-label") or ""),
                           "the block draws its own previous / next arrows" if arrows_drawn
                           else "a control the block has no equivalent for")
@@ -1617,6 +1854,7 @@ def _plan_header(src: str, root: _Node, members: list[_Node], block_name: str, a
             head.skip(name, "a graphic with no text: not lifted as content")
         else:
             head.unplaced(name, "an element the block has no field for")
+    _classify_structure(head, src, root, members, rail, prefix, classes, name_words, edits, images, controls)
     return head
 
 
@@ -1800,7 +2038,8 @@ def _declaration(src: str, root_class: str, decl, groups, section_blocks: dict, 
     field_map = _field_map(rows[0].get("fieldMap"))
     _edits, fields, status, reason, lossy, skipped = _plan_items(src, run, block_name, schemas[0], lookup, field_map, edits)
     header = _plan_header(src, owner, run.members, block_name, _call(lookup, "scalar_attrs", slug, []),
-                          _call(lookup, "element_names", slug, frozenset()), lookup, edits)
+                          _call(lookup, "element_names", slug, frozenset()), lookup, edits, rail=run.parent,
+                          classes=_call(lookup, "derived_classes", slug, frozenset()))
     header_why = (f"the block's own box holds {', '.join(header.unexplained)}, which no block field can carry"
                   if header.unexplained else None)
     beside, beside_fields = ([], [])
@@ -1833,6 +2072,10 @@ def _declaration(src: str, root_class: str, decl, groups, section_blocks: dict, 
         row["skipped_fields"] = skipped
     if header.fields:
         row["header_fields"] = header.fields
+    if header.rungs:
+        row["header_link_rungs"] = header.rungs
+    if header.structure:
+        row["header_structure"] = header.structure
     if not class_section:
         row["climbed"] = climbed
     return new_src, row

@@ -231,7 +231,17 @@ def _declarative_selector_route(
         declared = (attrs.get(attr_name) or {}).get("derived_selector") or ""
         if not declared:
             continue
-        if not ({s.strip() for s in declared.split(",")} & selectors):
+        matched = {s.strip() for s in declared.split(",")} & selectors
+        if not matched:
+            continue
+        if any(len(db_lookup.selector_class_elements(owning_block, m.lstrip("."))) > 1
+               for m in matched):
+            # A class claimed by attrs of two block elements (`sgs/hero` `.sgs-hero__image`:
+            # the media column AND the split <img>) proves no route: nothing here says
+            # WHICH element carried the declaration, and `_selector_route_attr` refuses to
+            # pick. Treating it as carried would drop it from the report with no
+            # destination anywhere. If a content pass really did lift it, that pass notes
+            # it (`note_declaration_routed`) and the deferred candidate is cancelled.
             continue
         return f"{attr_name}{tier_suffix}" in attrs
     return False
@@ -271,8 +281,14 @@ def _report_area_skip(
     value: Any,
     reason: str,
     tier_suffix: str = "",
+    *,
+    trust_declarative_route: bool = True,
 ) -> None:
     """Put ONE unroutable per-area declaration on the gap channel (Rule 4).
+
+    ``trust_declarative_route=False`` is for a caller that FOUND the destination attribute
+    and then could not write the value (an unshapeable box value): the block-declares-an-attr
+    suppression below would cancel exactly the row that says so, and no other pass carries it.
 
     Deferred: the same element's declarations are offered to several owning
     blocks in turn, so the row is a CANDIDATE that ``content_gap_collector.flush()``
@@ -282,8 +298,10 @@ def _report_area_skip(
     from converter.services import content_gap_collector
 
     tier = _tier_label(tier_suffix)
-    if _declarative_selector_route(
-        owning_block, child_node.get("class", []) or [], css_prop, tier_suffix,
+    if (
+        trust_declarative_route and _declarative_selector_route(
+            owning_block, _area_classes(child_node, area), css_prop, tier_suffix,
+        )
     ) or _consumed_by_a_content_role(owning_block, area, css_prop, raw):
         # The CONTENT side, or a declarative selector route, carried it. Mark it
         # routed as well as skipping the
@@ -310,6 +328,8 @@ def _report_area_skip_every_tier(
     tier_sources: "list[tuple[str, dict]]",
     reason: str,
     all_props: "set[str] | None" = None,
+    *,
+    trust_declarative_route: bool = True,
 ) -> None:
     """Report a property that has NO destination at all — one row per device tier
     that actually declares it, so a tablet/mobile override is never folded into
@@ -327,11 +347,106 @@ def _report_area_skip_every_tier(
     for tier_suffix, decls in tier_sources:
         if css_prop in decls:
             _report_area_skip(child_node, owning_block, area, css_prop,
-                              decls.get(css_prop), reason, tier_suffix)
+                              decls.get(css_prop), reason, tier_suffix,
+                              trust_declarative_route=trust_declarative_route)
+
+
+def _box_object_from_css(css_prop: str, raw: str) -> "tuple[dict | None, str]":
+    """A CSS box value as the object a box-family attribute stores: ``(object, "")`` or
+    ``(None, reason)``.
+
+    A box-family attribute (``block_attributes.box_family``, Spec 35) is an OBJECT, and the
+    PHP reader takes ``{top,right,bottom,left}`` (padding, margin, border-width) or
+    ``{topLeft,topRight,bottomRight,bottomLeft}`` (border-radius). WordPress drops a bare
+    string written into an object-typed attribute at render, so a routed value has to be
+    reshaped exactly the way the outer-box resolver reshapes it: the shared 1-4 value parser
+    (``root_supports._parse_padding_shorthand``), then the corner keys for a radius, and an
+    elliptical radius (``a / b``) reported because the object stores one length per corner.
+    """
+    from converter.services.root_supports import _parse_padding_shorthand
+
+    if css_prop == "border-radius" and "/" in raw:
+        return None, "elliptical radius has no box-object form"
+    sides = _parse_padding_shorthand(raw)
+    if sides is None:
+        return None, "not a 1-4 value CSS box shorthand"
+    if css_prop == "border-radius":
+        return {"topLeft": sides["top"], "topRight": sides["right"],
+                "bottomRight": sides["bottom"], "bottomLeft": sides["left"]}, ""
+    return sides, ""
+
+
+def _multi_property_values(
+    owning_block: str, attr: str, css_prop: str,
+    base_decls: dict, tab: dict, mob: dict,
+) -> "tuple[tuple[str | None, str | None, str | None], str]":
+    """``(base, tablet, mobile)`` draft values for an attr that declares SEVERAL properties.
+
+    ``avatarSize`` declares ``height,width``: it is ONE size, written once. The value is what
+    the element declares for any of them: equal declarations write that value, a single
+    declaration writes it, and DIFFERENT declarations are a conflict the attribute cannot hold
+    (a square control), so ``(values, reason)`` carries the reason naming both values and the
+    caller reports the declaration (Rule 4) instead of choosing one. A single-property attr
+    returns the plain ``(base, tablet, mobile)`` of ``css_prop`` unchanged.
+    """
+    props = db_lookup.attr_css_properties(owning_block, attr) or (css_prop,)
+    if len(props) < 2:
+        return (base_decls.get(css_prop), tab.get(css_prop), mob.get(css_prop)), ""
+    out: list[str | None] = []
+    for label, decls in (("Base", base_decls), ("Tablet", tab), ("Mobile", mob)):
+        seen = {p: strip_important(decls[p]).strip() for p in props if decls.get(p)}
+        if len(set(seen.values())) > 1:
+            named = ", ".join(f"{p}: {v}" for p, v in seen.items())
+            return (None, None, None), (
+                f"{attr} holds one value for {', '.join(props)} and the draft declares "
+                f"different ones at {label} ({named})")
+        out.append(next(iter(seen.values())) if seen else None)
+    return (out[0], out[1], out[2]), ""
+
+
+def _area_classes(child_node: Tag, area: str) -> "list[str]":
+    """The classes on this node that ARE the area: those whose own BEM element token equals it.
+
+    ``assembly._walk_area_nodes`` takes the area from the FIRST BEM class's element, and the
+    declarations this fold routes are collected for that area, so a second BEM class on the
+    same node (``sgs-x__author-name sgs-x__rating``) names a DIFFERENT element and must not
+    act as a route key or as a reason to cancel a skip row for the area. Parsed with the one
+    SGS-BEM parser (``db_lookup.parse_sgs_bem``); a modifier class of the area
+    (``sgs-x__rating--big``) is the same element and is kept.
+    """
+    out: list[str] = []
+    for cls in child_node.get("class", []) or []:
+        bem = db_lookup.parse_sgs_bem(cls)
+        if bem is not None and bem.element == area:
+            out.append(cls)
+    return out
+
+
+def _area_attr_or_ambiguity(
+    owning_block: str, area: str, css_prop: str,
+) -> "tuple[str | None, str]":
+    """``attr_for_area_property`` for the fold: an AMBIGUOUS answer is a reported skip.
+
+    The resolver raises ``AmbiguousAreaAttrError`` when two attrs contend for one
+    (block, element, property) rather than pick one by row order. That is the right policy
+    for a caller that can act on a data bug, and it stays. The fold cannot: raising here
+    aborts the whole section's conversion, and a section that never converts reports
+    nothing. So the fold turns it into ``(None, reason)``, which reaches the Rule 4 skip
+    report with the contenders named. The selector-keyed second lookup is NOT consulted
+    afterwards: the first lookup already declared this element+property contested, and a
+    second route that happened to name one contender would be exactly the guess the
+    resolver refuses to make. Returns ``(attr, "")`` / ``(None, "")`` (honest miss) /
+    ``(None, reason)`` (contested).
+    """
+    try:
+        return db_lookup.attr_for_area_property(owning_block, area, css_prop), ""
+    except db_lookup.AmbiguousAreaAttrError as exc:
+        return None, f"area attr ambiguous: {str(exc).split('; add a')[0]}"
 
 
 def _selector_route_attr(
-    child_node: Tag, owning_block: str, css_prop: str,
+    child_node: Tag, owning_block: str, css_prop: str, area: str,
+    element_sizing: bool = False,
 ) -> "tuple[str | None, str]":
     """SECOND per-area lookup, run only when ``attr_for_area_property`` found nothing.
 
@@ -342,20 +457,42 @@ def _selector_route_attr(
     ``write-review``; different canonical slots, so the slot-alias checks cannot
     bridge them) and for the property/tier/state rules.
 
+    Only the classes that ARE the area are route keys (``_area_classes``): the
+    declarations were collected for that area, so another class on the node is another
+    element's identity. A class that ``db_lookup.selector_class_elements`` shows is claimed
+    by attrs of two or more different block elements (``sgs/hero`` ``.sgs-hero__image``:
+    the media column and the split <img>) is never routed: which element the draft styled
+    cannot be known from the class, so it is reported, not guessed.
+
+    ``element_sizing`` is for the width/height properties the fold otherwise excludes: see
+    ``db_lookup.attrs_for_element_class_property`` for what qualifies an attr.
+
     Returns ``(attr_name, "")`` on exactly one distinct match, ``(None, "")`` when
     nothing matches (the caller's ordinary ``no_area_attr`` skip), and
-    ``(None, reason)`` when several DIFFERENT attrs claim the element+property — never a
-    rowid pick, the declaration is reported instead.
+    ``(None, reason)`` when several DIFFERENT attrs claim the element+property or the class
+    names several elements.
     """
     found: list[str] = []
-    for cls in child_node.get("class", []) or []:
-        for attr in db_lookup.attrs_for_element_class_property(owning_block, cls, css_prop):
+    contested: list[str] = []
+    for cls in _area_classes(child_node, area):
+        attrs = db_lookup.attrs_for_element_class_property(
+            owning_block, cls, css_prop, element_sizing)
+        if not attrs:
+            continue
+        elements = db_lookup.selector_class_elements(owning_block, cls)
+        if len(elements) > 1:
+            names = ", ".join(e if e is not None else "(no css_element)" for e in elements)
+            contested.append(f"{cls} is claimed by {len(elements)} block elements ({names})")
+            continue
+        for attr in attrs:
             if attr not in found:
                 found.append(attr)
     if len(found) == 1:
         return found[0], ""
     if found:
         return None, f"selector route ambiguous: {', '.join(found)}"
+    if contested:
+        return None, f"selector route ambiguous: {'; '.join(contested)}"
     return None, ""
 
 
@@ -578,9 +715,12 @@ def route_area_css_to_block_attrs(
     for _tier_decls in bp_decls.values():
         expand_background_border_shorthand(_tier_decls, slug=owning_block)
 
-    _area_excluded = _CROSS_NODE_EXCLUDED_PROPS | {"grid-area", "width", "height",
-                                                   "max-width", "min-width",
-                                                   "max-height", "min-height"}
+    # Width/height sizing is excluded by default (grid-area / track sizing is not element
+    # size). The selector-keyed route alone may honour one, when an attr's own css_property
+    # lists it for a named child element (see the main loop).
+    _area_size_props = frozenset({"width", "height", "max-width", "min-width",
+                                  "max-height", "min-height"})
+    _area_excluded = _CROSS_NODE_EXCLUDED_PROPS | {"grid-area"} | _area_size_props
 
     all_props: set[str] = set(base_decls)
     for tier in bp_decls.values():
@@ -597,7 +737,9 @@ def route_area_css_to_block_attrs(
     # --- FIX A (H-C1): per-slot max-width routing ----------------------------
     _mw_raw = base_decls.get("max-width")
     if _mw_raw:
-        _mw_per_slot_attr = db_lookup.attr_for_area_property(owning_block, area, "max-width")
+        # An ambiguous resolution falls through: max-width is an excluded property below,
+        # so the main loop reports it (the fold never raises out of a section).
+        _mw_per_slot_attr, _ = _area_attr_or_ambiguity(owning_block, area, "max-width")
         if _mw_per_slot_attr and _mw_per_slot_attr in block_attr_names:
             _mw_resolved = _resolve_co_declared_var(strip_important(_mw_raw).strip(), base_decls)
             _mw_meta = block_attr_names.get(_mw_per_slot_attr) or {}
@@ -647,7 +789,7 @@ def route_area_css_to_block_attrs(
     # (e.g. hero's GRID_AREA imagePadding, css_element='split-image'). Purely
     # ADDITIVE + MF-4-safe: it never changes a currently-resolving case — every
     # working name-guess path is preserved verbatim as the fallback.
-    _pad_object_base = db_lookup.attr_for_area_property(owning_block, area, "padding")
+    _pad_object_base, _ = _area_attr_or_ambiguity(owning_block, area, "padding")
     if (
         _pad_object_base is None
         or db_lookup.box_family_for(owning_block, _pad_object_base) is None
@@ -737,7 +879,18 @@ def route_area_css_to_block_attrs(
                                       "area_padding_attr_missing", _tier_sfx)
 
     for css_prop in sorted(all_props):
-        if css_prop in _area_excluded or css_prop.startswith("--"):
+        _size_attr: "str | None" = None
+        if css_prop in _area_size_props:
+            # Honoured only when the FIRST lookup found nothing, or found this very attr
+            # (a single-property size attr whose element is the area itself), and did not
+            # report a contest: every path that routes today is untouched.
+            _first_hit, _first_amb = _area_attr_or_ambiguity(owning_block, area, css_prop)
+            if not _first_amb:
+                _sized, _ = _selector_route_attr(
+                    child_node, owning_block, css_prop, area, element_sizing=True)
+                if _sized is not None and _first_hit in (None, _sized):
+                    _size_attr = _sized
+        if (css_prop in _area_excluded or css_prop.startswith("--")) and _size_attr is None:
             # Step 12 (measurement-integrity, 2026-09-09): this was the pipeline's only truly
             # SILENT CSS drop -- the declaration was tested and discarded here NINE LINES BEFORE
             # the cross_node_gap_candidate trace below could ever fire, leaving no record
@@ -762,14 +915,22 @@ def route_area_css_to_block_attrs(
             continue
         if _skip_padding_flat and css_prop.startswith("padding-"):
             continue  # routed into the box-object above (reported/noted there)
-        attr_base = db_lookup.attr_for_area_property(owning_block, area, css_prop)
+        if _size_attr is not None:
+            attr_base, _amb_note = _size_attr, ""
+        else:
+            attr_base, _amb_note = _area_attr_or_ambiguity(owning_block, area, css_prop)
         # Never changes a declaration that already routes: the selector-keyed lookup
-        # runs ONLY on a miss. `_via_selector` scopes the colour normalisation below to
-        # the newly captured routes, so an existing route's stored value is untouched.
+        # runs ONLY on a plain miss (not a contested one, see _area_attr_or_ambiguity).
+        # `_via_selector` scopes the colour normalisation below to the newly captured
+        # routes, so an existing route's stored value is untouched.
         _via_selector = False
         _miss_reason = "no_area_attr"
-        if attr_base is None:
-            attr_base, _sel_note = _selector_route_attr(child_node, owning_block, css_prop)
+        if _amb_note:
+            _miss_reason = f"no_area_attr; {_amb_note}"
+        elif _size_attr is not None:
+            _via_selector = True
+        elif attr_base is None:
+            attr_base, _sel_note = _selector_route_attr(child_node, owning_block, css_prop, area)
             _via_selector = attr_base is not None
             if _sel_note:
                 _miss_reason = f"no_area_attr; {_sel_note}"
@@ -789,6 +950,25 @@ def route_area_css_to_block_attrs(
         draft_base = base_decls.get(css_prop)
         draft_tab = tab.get(css_prop)
         draft_mob = mob_override.get(css_prop)
+        if _via_selector:
+            # An attr may declare several properties (`height,width`): one value, or a
+            # reported conflict. A single-property attr comes back unchanged.
+            (draft_base, draft_tab, draft_mob), _conflict = _multi_property_values(
+                owning_block, attr_base, css_prop, base_decls, tab, mob_override)
+            if _conflict:
+                trace(
+                    "cross_node_gap_candidate",
+                    owning_block=owning_block,
+                    element_token=area,
+                    css_property=css_prop,
+                    reason="area_multi_property_conflict",
+                    attr_name=attr_base,
+                )
+                _report_area_skip_every_tier(
+                    child_node, owning_block, area, css_prop, _tier_sources,
+                    f"area_multi_property_conflict: {_conflict}", all_props,
+                    trust_declarative_route=False)
+                continue
 
         # base_decls is already the DESKTOP-effective value (FR-31-5.2 cascade, D259);
         # bp Tablet/Mobile are overrides that differ from it. Emit the tier override
@@ -811,14 +991,31 @@ def route_area_css_to_block_attrs(
         # NULL — so it and `_pad_tier_shaped` are mutually exclusive by
         # construction and cannot both claim one attr.
         _attr_tier_shaped = db_lookup.tier_object_base(owning_block, attr_base)
+        # BOX-OBJECT destination, from the DB (`box_family`, never the attr name): the value
+        # is reshaped into the object the attr stores (see `_box_object_from_css`), for
+        # whichever lookup found the attr. A tier-of-boxes attr holds every tier in ONE
+        # object like the scalar tier object above; a flat/base-only box keeps its
+        # suffixed siblings or none, exactly as the scalar path resolves `dest`.
+        _box_family = db_lookup.box_family_for(owning_block, attr_base)
+        _box_tier_shaped = (
+            _box_family is not None
+            and db_lookup.box_family_is_tier_shaped(owning_block, attr_base)
+        )
         for tier_suffix, value in tier_values:
             if value is None:
                 continue
-            if _attr_tier_shaped:
+            if _attr_tier_shaped or _box_tier_shaped:
                 dest = attr_base
             else:
                 dest = f"{attr_base}{tier_suffix}" if tier_suffix else attr_base
             if dest not in block_attr_names:
+                # A tier with no override of its own inherits the base value, which the
+                # base attr already carries at every device width — that is a transfer,
+                # not a skip, so neither the report NOR the trace names it. Only a REAL
+                # tier override the block has no attr for is one.
+                _tier_override = {"Mobile": draft_mob, "Tablet": draft_tab}.get(tier_suffix)
+                if tier_suffix and not _tier_override:
+                    continue
                 trace(
                     "cross_node_gap_candidate",
                     owning_block=owning_block,
@@ -827,16 +1024,64 @@ def route_area_css_to_block_attrs(
                     reason="area_attr_tier_missing",
                     attr_name=dest,
                 )
-                # A tier with no override of its own inherits the base value, which the
-                # base attr already carries at every device width — that is a transfer,
-                # not a skip. Only a REAL tier override the block has no attr for is one.
-                _tier_override = {"Mobile": draft_mob, "Tablet": draft_tab}.get(tier_suffix)
-                if tier_suffix and not _tier_override:
-                    continue
                 _report_area_skip(child_node, owning_block, area, css_prop, value,
                                   f"area_attr_tier_missing ({dest})", tier_suffix)
                 continue
             raw_val = strip_important(value).strip()
+            if _box_family is not None:
+                if tier_suffix and not {"Mobile": draft_mob, "Tablet": draft_tab}.get(tier_suffix):
+                    continue  # inherits the base object, exactly as the padding branch above
+                _box_obj, _box_why = _box_object_from_css(css_prop, raw_val)
+                if _box_obj is None:
+                    trace(
+                        "cross_node_gap_candidate",
+                        owning_block=owning_block,
+                        element_token=area,
+                        css_property=css_prop,
+                        reason="area_box_value_unshapeable",
+                        attr_name=dest,
+                        value=raw_val,
+                    )
+                    _report_area_skip(child_node, owning_block, area, css_prop, raw_val,
+                                      f"area_box_value_unshapeable ({dest}: {_box_why})",
+                                      tier_suffix, trust_declarative_route=False)
+                    continue
+                if _box_tier_shaped:
+                    _box_tier_key = _tier_key_for_suffix(tier_suffix)
+                    if _box_tier_key is None:
+                        trace(
+                            "cross_node_gap_candidate",
+                            owning_block=owning_block,
+                            element_token=area,
+                            css_property=css_prop,
+                            reason="tier_key_unresolved",
+                            attr_name=dest,
+                        )
+                        _report_area_skip(child_node, owning_block, area, css_prop, raw_val,
+                                          f"tier_key_unresolved ({dest})", tier_suffix)
+                        continue
+                    _existing_box = parent_attrs.get(dest)
+                    if _existing_box is None:
+                        parent_attrs[dest] = {_box_tier_key: _box_obj}
+                    elif isinstance(_existing_box, dict) and not (
+                        set(_existing_box) & {"top", "right", "bottom", "left",
+                                              "topLeft", "topRight", "bottomRight", "bottomLeft"}
+                    ):
+                        _existing_box.setdefault(_box_tier_key, _box_obj)
+                    # else: an earlier path wrote a FLAT box here; earlier paths win.
+                else:
+                    parent_attrs.setdefault(dest, _box_obj)
+                trace(
+                    "cross_node_css_lifted",
+                    owning_block=owning_block,
+                    element_token=area,
+                    css_property=css_prop,
+                    layer="AREA",
+                    dest_attr=dest,
+                    value=_box_obj,
+                )
+                _note_area_lift(child_node, area, css_prop, tier_suffix)
+                continue
             if _is_number:
                 _num, _unit = split_value_unit(raw_val)
                 if _num is None:

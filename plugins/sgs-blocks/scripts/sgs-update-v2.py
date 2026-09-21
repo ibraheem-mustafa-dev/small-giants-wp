@@ -3344,6 +3344,25 @@ def _populate_preset_implications(
         if not value_signals:
             continue
         neutral_value = _choose_neutral_value(value_signals)
+        # HAND-PICKED LOOKS. A look whose identity is more than "has a shadow" /
+        # "has a border" (a speech-bubble card, a Google-panel copy) shares its
+        # signal with a plainer value (`elevated`, `bordered`), so the resolver
+        # can never tell them apart from a draft's declarations and would pick
+        # one alphabetically for every shadowed draft. A block declares such
+        # values in `supports.sgs.presetManualValues` {attr: [values]}; they are
+        # seeded with NO implied property (the resolver skips signal-less,
+        # non-neutral rows), so they stay choosable in the editor and are never
+        # auto-selected. Applied AFTER the neutral choice so a hand-picked look
+        # can never become the block's neutral value.
+        manual_values = (
+            (sgs_supports.get("presetManualValues") or {}).get(attr)
+            if isinstance(sgs_supports, dict)
+            and isinstance(sgs_supports.get("presetManualValues"), dict)
+            else None
+        )
+        for manual in manual_values or ():
+            if manual in value_signals and manual != neutral_value:
+                value_signals[manual] = set()
         c.execute(
             "DELETE FROM preset_implications WHERE block_slug = ? AND preset_attr = ?",
             (slug, attr),

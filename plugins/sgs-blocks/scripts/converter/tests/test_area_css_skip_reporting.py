@@ -33,6 +33,18 @@ Three suppressions keep it honest rather than spammy:
      declaration and an identical probe carrying none (its own negative control);
   3. a SHORTHAND whose longhands are present is not counted twice.
 
+Re-pinned 2026-09-21 (google-reviews reseed): the block gained ~240 attributes, one for almost
+every element the draft styles (the pill's border and radius, the avatar's radius and letter
+colour, the aggregate figure's size and colour, the card's border). The Eye Care card now routes
+the declarations that used to be the "10 genuine skips", each in the shape its attribute stores.
+The avatar's width and height, the last two, are excluded properties (grid/track sizing is
+not element sizing); `avatarSize` declares them for the avatar element, so the selector route
+now honours them (test_area_size_route.py) and this draft reports NOTHING. So the pins below
+are the reporting behaviour itself
+(one row per element+property with its value, shorthand not double counted, no leak between
+runs) exercised on an element the block has NO attribute for (`no-such-element`), which stays
+attribute-less whatever the block gains.
+
 Run from plugins/sgs-blocks/scripts:
   python -m pytest converter/tests/test_area_css_skip_reporting.py -q -p no:cacheprovider
 """
@@ -100,39 +112,58 @@ def _pairs(result: dict) -> set[tuple[str, str]]:
 # The four elements the live page renders wrong are now reported
 # ---------------------------------------------------------------------------
 
-# The three declarations that DID get a destination once the selector-keyed lookup
-# landed are asserted as ROUTED (and absent from the report) in test_area_selector_route.py:
-#   sgs-google-reviews__rating               color             #FBBC04 -> starColour
-#   sgs-google-reviews__review-request-url   color             #1A73E8 -> writeReviewColourText
-#   sgs-google-reviews__review-request-url   background-color  #fff    -> writeReviewColourBackground
-@pytest.mark.parametrize("element, prop, value", [
-    ("sgs-google-reviews__review-request-url", "border-color", "#DADCE0"),
-    ("sgs-google-reviews__review-request-url", "border-width", "1px"),
-    ("sgs-google-reviews__review-request-url", "border-style", "solid"),
-    ("sgs-google-reviews__review-request-url", "border-radius", "20px"),
-    ("sgs-google-reviews__avatar-colour", "width", "40px"),
-    ("sgs-google-reviews__avatar-colour", "height", "40px"),
-    ("sgs-google-reviews__avatar-colour", "border-radius", "50%"),
-    ("sgs-google-reviews__avatar-colour", "color", "#fff"),
-    ("sgs-google-reviews__average-rating", "font-size", "32px"),
-    ("sgs-google-reviews__average-rating", "color", "#202124"),
+# Every declaration on this draft now has a destination (asserted as ROUTED, and absent from the
+# report, in test_area_selector_route.py / test_area_box_object_shape.py / test_area_size_route.py).
+# The excluded-property report (width/height with no attr for the element) is exercised on an
+# attribute-less element, which stays attribute-less whatever the block gains:
+def test_an_excluded_property_with_no_attr_is_reported_with_its_value():
+    rows = [r for r in _synthetic_rows("width:40px;height:40px")]
+    assert sorted((r["prop"], r["value"]) for r in rows) == [("height", "40px"), ("width", "40px")]
+    assert all("cross_node_excluded_property" in r["reason"] for r in rows)
+
+
+def _synthetic_rows(style: str) -> list[dict]:
+    """Rows the fold reports for an element the block declares NO attribute for."""
+    from bs4 import BeautifulSoup
+    from converter.services import content_gap_collector as gap
+    from converter.services.fold_helpers import route_area_css_to_block_attrs
+
+    node = BeautifulSoup(
+        f'<span class="sgs-google-reviews__no-such-element" style="{style}">x</span>',
+        "html.parser").find(True)
+    seen: list[dict] = []
+    real_rec, real_note = gap.record_declaration_skip_candidate, gap.note_declaration_routed
+    gap.record_declaration_skip_candidate = lambda **kw: seen.append(kw)
+    gap.note_declaration_routed = lambda **kw: None
+    attrs: dict = {}
+    try:
+        route_area_css_to_block_attrs(node, "no-such-element", _SLUG, attrs, {},
+                                      trace=lambda *a, **k: None)
+    finally:
+        gap.record_declaration_skip_candidate, gap.note_declaration_routed = real_rec, real_note
+    assert attrs == {}, "an attribute-less element must route nothing"
+    return seen
+
+
+@pytest.mark.parametrize("prop, value", [
+    ("border-color", "#DADCE0"), ("border-width", "1px"), ("border-style", "solid"),
+    ("border-radius", "20px"), ("color", "#fff"), ("font-size", "32px"),
 ])
-def test_every_unroutable_declaration_is_reported_with_its_value(element, prop, value):
-    rows = [g for g in _style_rows(_run()) if g["element"] == element and g["property"] == prop]
-    assert len(rows) == 1, f"expected exactly one row for {element} {{ {prop} }}, got {len(rows)}"
+def test_a_declaration_with_no_attribute_is_reported_once_with_its_value(prop, value):
+    rows = [r for r in _synthetic_rows(f"{prop}:{value}") if r["prop"] == prop]
+    assert len(rows) == 1
     assert rows[0]["value"] == value
-    assert rows[0]["kind"] == "dropped"
-    assert rows[0]["block_slug"].startswith("sgs/")
-    assert "no_area_attr" in rows[0]["reason"] or "excluded" in rows[0]["reason"]
+    assert "(no_area_attr)" in rows[0]["reason"]
 
 
-def test_the_report_is_exactly_the_ten_genuine_skips():
-    """Not vacuous, and not spammy: the count is pinned, so a future change that
-    starts reporting routed declarations fails here. Was 13; the three that left are
-    the rating colour and the request link's colour and background, now routed to
-    ``starColour`` / ``writeReviewColourText`` / ``writeReviewColourBackground``."""
+def test_the_report_is_exactly_the_genuine_skips():
+    """Not vacuous, and not spammy: the count is pinned, so a future change that starts
+    reporting routed declarations fails here. History: 13 (before the selector route), 10
+    (after it), 2 (after the block gained the attrs the other eight needed), 0 (after the
+    selector route honoured the avatar's width/height through `avatarSize`). The synthetic
+    tests above keep the reporting itself proven while this pin sits at zero."""
     rows = _style_rows(_run())
-    assert len(rows) == 10, json.dumps(
+    assert rows == [], json.dumps(
         [(g["element"], g["property"], g["value"]) for g in rows], indent=1)
 
 
@@ -154,16 +185,16 @@ def test_a_declaration_the_content_side_carried_is_never_reported():
     assert '"avatarColour":"#1A73E8"' in markup.replace(" ", "")
     assert ("sgs-google-reviews__avatar-colour", "background") not in _pairs(result)
     assert ("sgs-google-reviews__avatar-colour", "background-color") not in _pairs(result)
-    assert ("sgs-google-reviews__avatar-colour", "width") in _pairs(result)
+    assert ("sgs-google-reviews__avatar-colour", "width") not in _pairs(result)  # routed to avatarSize
 
 
 def test_a_shorthand_is_not_counted_beside_its_own_longhands():
     """``border: 1px solid #DADCE0`` expands to three longhands; the shorthand key
     survives in the decls dict and would otherwise be a fourth row for one
-    declaration."""
-    pairs = _pairs(_run())
-    assert ("sgs-google-reviews__review-request-url", "border") not in pairs
-    assert ("sgs-google-reviews__review-request-url", "border-width") in pairs
+    declaration. Run on the attribute-less element so it stays a skip whatever the
+    block gains."""
+    props = sorted(r["prop"] for r in _synthetic_rows("border:1px solid #DADCE0"))
+    assert props == ["border-color", "border-style", "border-width"]
 
 
 def test_the_markup_is_byte_identical_with_and_without_reporting(monkeypatch):
@@ -179,7 +210,8 @@ def test_the_markup_is_byte_identical_with_and_without_reporting(monkeypatch):
 def test_the_channel_does_not_leak_between_runs():
     first = _style_rows(_run())
     second = _style_rows(_run())
-    assert len(first) == len(second) == 10
+    assert len(first) == len(second) == 0
+    assert len(_synthetic_rows("width:1px")) == len(_synthetic_rows("width:1px")) == 1
 
 
 # ---------------------------------------------------------------------------
@@ -187,7 +219,7 @@ def test_the_channel_does_not_leak_between_runs():
 # ---------------------------------------------------------------------------
 
 def test_negative_control_without_the_report_call_the_drop_is_silent_again(monkeypatch):
-    """Break ONLY the reporting call: the same 10 declarations are still dropped
+    """Break ONLY the reporting call: the same declarations are still dropped
     and the run goes back to reporting nothing — the pre-fix behaviour."""
     monkeypatch.setattr(fold_helpers, "_report_area_skip", lambda *a, **k: None)
     monkeypatch.setattr(fold_helpers, "_report_area_skip_every_tier", lambda *a, **k: None)
@@ -208,9 +240,10 @@ def test_negative_control_without_the_routed_note_a_transferred_property_is_repo
     monkeypatch,
 ):
     """Break ONLY the routed ledger: declarations another pass DID route lose their
-    cancellation and the row count rises above the 10 genuine skips."""
+    cancellation and rows appear for declarations that DID transfer (the draft's genuine skip
+    count is 0, so any row here is a false report)."""
     monkeypatch.setattr(fold_helpers, "_note_area_lift", lambda *a, **k: None)
-    assert len(_style_rows(_run())) > 10
+    assert len(_style_rows(_run())) > 0
 
 
 def test_negative_control_the_probe_distinguishes_a_reading_role_from_a_blind_one():

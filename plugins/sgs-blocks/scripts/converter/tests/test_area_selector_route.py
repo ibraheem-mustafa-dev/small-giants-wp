@@ -84,19 +84,36 @@ def test_the_star_rows_colour_routes_to_star_colour():
     assert attrs == {"starColour": "#FBBC04"}
 
 
-def test_the_request_links_text_colour_and_background_route_to_their_attrs():
+def test_the_request_links_declarations_route_to_their_attrs():
+    """Re-pinned 2026-09-21 after the block gained the pill's border and radius attrs:
+    the draft's whole pill (text colour, fill, border colour/width/style, radius) now has a
+    destination, each in the shape its attribute stores (the radius and width are box OBJECTS;
+    see test_area_box_object_shape.py). Before the reseed only the first two routed."""
     attrs, _ = _route(_LINK_HTML, "review-request-url")
-    assert attrs == {"writeReviewColourText": "#1A73E8", "writeReviewColourBackground": "#fff"}
+    assert attrs == {
+        "writeReviewColourText": "#1A73E8",
+        "writeReviewColourBackground": "#fff",
+        "writeReviewColourBorder": "#DADCE0",
+        "writeReviewBorderWidth": {"top": "1px", "right": "1px", "bottom": "1px", "left": "1px"},
+        "writeReviewBorderStyle": "solid",
+        "writeReviewBorderRadius": {"desktop": {
+            "topLeft": "20px", "topRight": "20px", "bottomRight": "20px", "bottomLeft": "20px"}},
+    }
 
 
 def test_what_the_block_has_no_attr_for_is_still_a_skip():
-    """Honest, not greedy: the link's border and radius have NO destination on the block,
-    so they are still reported (Rule 4), not forced onto the nearest colour attr."""
-    _, seen = _route(_LINK_HTML, "review-request-url")
+    """Honest, not greedy: a property NO attribute on the block declares for the link is
+    still reported (Rule 4), not forced onto the nearest colour attr. The link's border and
+    radius were the example until the block gained attrs for them (2026-09-21); the probe is
+    now `text-decoration-thickness`, which no attribute declares (checked below)."""
+    html = ('<a class="sgs-google-reviews__review-request-url" '
+            'style="color:#1A73E8;text-decoration-thickness:3px">x</a>')
+    assert db_lookup.attrs_for_element_class_property(
+        _SLUG, _LINK, "text-decoration-thickness") == ()
+    _, seen = _route(html, "review-request-url")
     missed = {kw["css_property"] for stage, kw in seen
               if stage == "cross_node_gap_candidate" and kw.get("reason") == "no_area_attr"}
-    assert {"border-color", "border-width", "border-style", "border-radius"} <= missed
-    assert "color" not in missed and "background-color" not in missed
+    assert missed == {"text-decoration-thickness"}
 
 
 def test_a_colour_is_written_the_way_every_other_colour_route_writes_it():
@@ -121,7 +138,8 @@ def test_the_route_reaches_the_emitted_block_and_cancels_the_skip_rows():
     assert (_STAR, "color") not in pairs
     assert (_LINK, "color") not in pairs
     assert (_LINK, "background-color") not in pairs
-    assert (_LINK, "border-radius") in pairs  # no attr: still reported
+    assert (_LINK, "border-radius") not in pairs  # routed (the pill's radius attr exists now)
+    assert ("sgs-google-reviews__avatar-colour", "width") not in pairs  # routed to avatarSize
 
 
 # ---------------------------------------------------------------------------
@@ -180,9 +198,9 @@ def test_the_second_lookup_is_not_consulted_for_a_declaration_the_first_routes(m
     calls: list[str] = []
     real = fold_helpers._selector_route_attr
 
-    def spy(child, block, prop):
+    def spy(child, block, prop, area):
         calls.append(prop)
-        return real(child, block, prop)
+        return real(child, block, prop, area)
 
     monkeypatch.setattr(fold_helpers, "_selector_route_attr", spy)
     with_spy, _ = _route(html, "media", "sgs/hero")
@@ -208,14 +226,19 @@ def test_accessor_identity_property_and_state_rules():
         assert not any(a.endswith("Hover") or a.endswith("Gradient") for a in attrs)
     # Identity half: an element class the attr does not list.
     assert f(_SLUG, "sgs-google-reviews__stars", "color") == ()
-    # Property half: a property the attr does not declare.
-    assert f(_SLUG, _STAR, "font-size") == ()
+    # Property half: a property the attr does not declare. `font-size` is declared by the
+    # star SIZE attr since the reseed (`starSize`: height, width, font-size), so the
+    # not-declared probe is `letter-spacing`; `font-size` is asserted as its OWN attr.
+    assert f(_SLUG, _STAR, "letter-spacing") == ()
+    assert f(_SLUG, _STAR, "font-size") == ("starSize",)
     assert f("", _STAR, "color") == () and f(_SLUG, "", "color") == () and f(_SLUG, _STAR, "") == ()
 
 
 def test_the_accessor_returns_only_the_base_tier_attr_of_a_family():
-    """`sgs/testimonial.quoteFontSize` has Tablet/Mobile-suffixed siblings elsewhere in the
-    catalogue; the accessor must answer with the base attr alone."""
+    """`sgs/testimonial` holds `quoteFontSize` and its `quoteFontSizeUnit` companion (no
+    css_property, so never a candidate); the accessor answers with the base attr alone. The
+    tier/state exclusion itself is proven in test_area_selector_route_scope.py, on rows
+    planted so that only one guard can catch each."""
     assert db_lookup.attrs_for_element_class_property(
         "sgs/testimonial", "sgs-testimonial__text", "font-size") == ("quoteFontSize",)
 
@@ -239,30 +262,48 @@ def test_negative_control_the_identity_half_a_class_the_attr_does_not_list_route
 
 
 def test_negative_control_the_property_half_an_unlisted_property_routes_nothing():
+    """Removing ONLY the property match must fail this. The value is a valid colour on
+    purpose: a `15px` value would fail the colour normalisation and pass for the wrong
+    reason with the filter gone. `star` (not the draft's `rating`) keeps the probe on the
+    attr's own element. `font-size` is no longer an undeclared property here (`starSize`
+    declares it), so the second probe is `letter-spacing`."""
     attrs, _ = _route(
-        f'<span class="{_STAR}" style="font-size:15px;letter-spacing:.1em">x</span>', "rating")
+        '<span class="sgs-google-reviews__star" style="background-color:#FBBC04;'
+        'letter-spacing:.1em">x</span>', "star")
     assert attrs == {}
+    for prop in ("background-color", "letter-spacing"):
+        assert db_lookup.attrs_for_element_class_property(
+            _SLUG, "sgs-google-reviews__star", prop) == ()
 
 
 @pytest.fixture
 def pre_seed_db(tmp_path, monkeypatch):
-    """The DB as it stood BEFORE the seed: the three attrs' derived_selector without the
-    draft's class, starColour declaring `fill` only. A copy, never the live file."""
+    """The DB as it stood BEFORE the draft-class seed: no attribute lists the draft's
+    `rating` / `review-request-url` classes, and starColour declares `fill` only. A copy,
+    never the live file. (The block has since gained many attrs that list those classes for
+    other properties; the copy strips the two draft classes from EVERY attr's selector list,
+    which is what "before the seed" means for the class-keyed route.)"""
     copy = tmp_path / "pre-seed.db"
     shutil.copy(db_lookup.SGS_DB, copy)
     conn = sqlite3.connect(copy)
-    conn.execute(
-        "UPDATE block_attributes SET derived_selector='.sgs-google-reviews__star', "
-        "css_property='fill' WHERE block_slug=? AND attr_name='starColour'", (_SLUG,))
-    conn.execute(
-        "UPDATE block_attributes SET derived_selector='' WHERE block_slug=? "
-        "AND attr_name IN ('writeReviewColourText','writeReviewColourBackground')", (_SLUG,))
+    drafts = {"sgs-google-reviews__rating", "sgs-google-reviews__review-request-url"}
+    for rowid, sel in conn.execute(
+            "SELECT id, derived_selector FROM block_attributes WHERE block_slug=? "
+            "AND derived_selector IS NOT NULL", (_SLUG,)).fetchall():
+        kept = [x.strip() for x in sel.split(",") if x.strip().lstrip(".") not in drafts]
+        conn.execute("UPDATE block_attributes SET derived_selector=? WHERE id=?",
+                     (", ".join(kept), rowid))
+    conn.execute("UPDATE block_attributes SET css_property='fill' "
+                 "WHERE block_slug=? AND attr_name='starColour'", (_SLUG,))
     conn.commit()
-    landed = conn.execute(
-        "SELECT derived_selector, css_property FROM block_attributes "
-        "WHERE block_slug=? AND attr_name='starColour'", (_SLUG,)).fetchone()
+    landed = [
+        sel for (sel,) in conn.execute(
+            "SELECT derived_selector FROM block_attributes WHERE block_slug=? "
+            "AND derived_selector IS NOT NULL", (_SLUG,)).fetchall()
+        if drafts & {x.strip().lstrip(".") for x in sel.split(",")}
+    ]
     conn.close()
-    assert landed == (".sgs-google-reviews__star", "fill"), "the pre-seed break did not land"
+    assert landed == [], "the pre-seed break did not land"
     monkeypatch.setattr(db_lookup, "SGS_DB", copy)
     _clear_caches()
     yield copy

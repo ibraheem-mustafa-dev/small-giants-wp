@@ -589,9 +589,10 @@ def test_eye_care_the_block_root_is_the_bordered_card_that_holds_the_header_and_
     assert row["status"] == "applied" and row["target"] == "ancestor" and row["climbed"] == 2 and row["items"] == 13
     card = re.search(r'<div class="sgs-google-reviews" data-reveal="1" style="border:1px solid #DADCE0;border-radius:12px;background:#fff;[^"]*">', out)
     assert card is not None                                            # the class is on the div that carries the border
-    assert '<div class="rev-rail"' in out and "sgs-google-reviews" not in re.search(r'<div class="rev-rail"[^>]*>', out).group(0)
+    rail = re.search(r'<div class="(?:sgs-google-reviews__rail )?rev-rail"[^>]*>', out).group(0)      # the rail may also carry the block's `__rail` class
+    assert not re.search(r'class="[^"]*\bsgs-google-reviews\b(?!__)', rail)                            # never the block ROOT class
     # the section root keeps only the draft's own class (the manifest's root class is the same word as the block class)
-    assert row["header_fields"] == ["reviewRequestUrl", "averageRating", "reviewCount"]
+    assert {"reviewRequestUrl", "averageRating", "reviewCount"} <= set(row["header_fields"])      # the redesigned block adds more (see test_manifest_reviews_header.py)
 
 
 @needs_db
@@ -600,10 +601,14 @@ def test_eye_care_header_rows_and_every_header_unit_is_accounted_for(eye_care):
     row = eye_care["rows"]["sgs-google-reviews"]
     assert row["fields"] == ["author", "text", "date", "meta", "rating"]
     skipped = _skipped(row)
-    for label in ("header link 'See all reviews'", "header text 'Google Reviews'", "header image 'google-g.svg'",
-                  "header button 'Previous reviews'", "header button 'More reviews'"):
+    for label in ("header image 'google-g.svg'", "header button 'Previous reviews'", "header button 'More reviews'"):
         assert label in skipped, label
-    assert any(f.startswith("header star bar") for f in skipped) and any(f.startswith("header text 'Scroll for more") for f in skipped)
+    # a unit is either reported skipped (the block has no field) or mapped (the redesigned block has one): never absent
+    fields = set(row["header_fields"])
+    assert "header link 'See all reviews'" in skipped or "seeAllUrl" in fields
+    assert "header text 'Google Reviews'" in skipped or "sourceLabel" in fields
+    assert any(f.startswith("header star bar") for f in skipped)
+    assert any(f.startswith("header text 'Scroll for more") for f in skipped) or "footnote" in fields
     out = eye_care["out"]
     assert re.search(r'<span class="sgs-google-reviews__average-rating"[^>]*>4\.7</span>', out)
     assert re.search(r'<span class="sgs-google-reviews__review-count"[^>]*>15 reviews</span>', out)
@@ -629,8 +634,13 @@ def test_eye_care_the_unchanged_converter_emits_one_google_reviews_block_with_th
     assert markup.count("wp:sgs/google-reviews ") == 1
     block = _google_reviews_block(markup)
     assert len(block["reviews"]) == 13 and block["reviews"][0]["author"] == "Anonymous M."
+    # not stranded as loose text blocks: outside the google-reviews block's own attributes the header text is absent
+    # (the redesigned block lifts the caption and the second link's label INTO its attributes, which is the point)
+    outside = re.sub(r"<!-- wp:sgs/google-reviews .*?-->", "", markup, flags=re.S)
     for text in ("Google Reviews", "See all reviews", "Scroll for more"):
-        assert text not in markup                                       # not stranded as loose text blocks
+        assert text not in outside, text
+    assert block.get("sourceLabel") == "Google Reviews"
+    assert block.get("seeAllLabel") == "See all reviews"
     assert "What people say" in markup                                  # the heading above the card stays its own block
     assert markup.count("wp:sgs/text") <= _convert(eye_care["raw"], "sgs-google-reviews").count("wp:sgs/text") // 2
 
@@ -657,6 +667,7 @@ def test_eye_care_annotation_is_deterministic_a_second_pass_changes_nothing_and_
     assert again == eye_care["out"]
     section = lambda page: re.search(r'<section class="sgs-google-reviews".*?</section>', page, re.S).group(0)  # noqa: E731
     undone = re.sub(r' class="sgs-google-reviews__[a-z-]+"', "", section(eye_care["out"]))
+    undone = re.sub(r'(?<=class=")sgs-google-reviews__[a-z-]+ ', "", undone)                    # an annotation class first in an existing list
     undone = undone.replace('<div class="sgs-google-reviews" data-reveal="1"', '<div data-reveal="1"')
     assert undone == ma.strip_field_markers(section(eye_care["raw"]))       # only the annotation classes were added
 
@@ -688,7 +699,8 @@ def test_the_real_databases_box_properties_for_the_reviews_block_are_measured_fr
     lookup = DbBlockLookup(db_path=roles_db)
     try:
         identity = lookup.identity_properties("sgs/google-reviews")
-        assert identity == frozenset({"border-width", "border-style", "border-color", "border-radius", "background-color", "background-image"})
+        base = frozenset({"border-width", "border-style", "border-color", "border-radius", "background-color", "background-image"})
+        assert base <= identity and all(p.startswith("border-") for p in identity - base)     # a side-specific border (a divider) may be added
         assert not (identity & {"padding", "margin", "gap", "width", "max-width", "position", "display", "overflow", "color", "fill"})
         assert {"star", "arrow", "write-review"} <= lookup.element_names("sgs/google-reviews")
         scalars = {a.name: a for a in lookup.scalar_attrs("sgs/google-reviews")}
@@ -901,7 +913,7 @@ def test_finding_4_negative_controls_two_candidates_or_no_declared_selector_with
         lookup.close()
     conn = sqlite3.connect(str(live_db))
     conn.execute("DELETE FROM block_attributes WHERE block_slug = 'sgs/google-reviews' AND attr_name = 'outletName'")
-    conn.execute("UPDATE block_attributes SET derived_selector = NULL WHERE block_slug = 'sgs/google-reviews' AND attr_name = 'businessName'")
+    conn.execute("UPDATE block_attributes SET derived_selector = NULL WHERE block_slug = 'sgs/google-reviews' AND attr_name IN ('businessName', 'sourceLabel')")
     conn.commit()
     conn.close()
     lookup = DbBlockLookup(db_path=live_db)
@@ -998,7 +1010,10 @@ def test_the_real_eye_care_run_reviews_row_is_unchanged_by_the_fix_wave():
         lookup.close()
     row = next(r for r in rows if r["root_class"] == "sgs-google-reviews")
     assert (row["status"], row["target"], row["climbed"]) == ("applied", "ancestor", 2)
-    assert row["header_fields"] == ["reviewRequestUrl", "averageRating", "reviewCount"]
+    assert {"reviewRequestUrl", "averageRating", "reviewCount"} <= set(row["header_fields"])
     assert row["fields"] == ["author", "text", "date", "meta", "rating", "avatarColour"]
     assert not any("sits outside" in r for r in _skipped(row).values())          # the section heading and eyebrow are not header text
+    for element in ("see-all-url", "source-label", "footnote", "header", "rail", "arrow", "google-logo"):    # the redesign's own classes
+        cls = "sgs-google-reviews__" + element
+        out = out.replace(f' class="{cls}"', "").replace(cls + " ", "")
     assert out == (RUN_NEW / "manifest-annotated.html").read_text(encoding="utf-8", newline="")   # the recorded annotated copy, byte for byte
