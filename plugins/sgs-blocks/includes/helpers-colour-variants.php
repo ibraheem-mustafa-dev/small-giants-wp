@@ -665,10 +665,9 @@ function sgs_shadow_decls( array $attributes, array $map ): array {
 
 	$base_shape = $read( $map['base'] );
 
-	$normal = sgs_shadow_value_composed( $base_shape, $read( $map['colour'] ?? null ) );
-	if ( '' !== $normal ) {
-		$out['normal'][] = 'box-shadow:' . $normal;
-	}
+	// The resting declaration carries the forced-colours outline fallback (it applies in every
+	// state, so the hover array does not repeat it).
+	$out['normal'] = sgs_shadow_box_decls( $base_shape, $read( $map['colour'] ?? null ) );
 
 	// Fall back to the resting SHAPE when only a hover colour is wired — see the
 	// note above. Without this a caller that has not yet adopted the hover shape

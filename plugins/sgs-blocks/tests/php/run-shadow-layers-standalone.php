@@ -153,6 +153,20 @@ t_eq( 'box-shadow:0px 4px 12px 0px #000000', $decls[0], 'the declaration is unch
 t_eq( '@media (forced-colors:active){&:not(:focus-visible){outline:1px solid CanvasText;outline-offset:-1px}}', $decls[1], 'the fallback: outline in forced colours, not while focused' );
 t_eq( 2, count( sgs_shadow_box_decls( 'raised', null ) ), 'a preset slug carries the fallback too' );
 
+// ── sgs_shadow_decls(): the seven blocks that use it carry the fallback on the resting state ──
+require_once dirname( __DIR__, 2 ) . '/includes/helpers-colour-variants.php';
+$decl_map   = sgs_shadow_attr_map( 'boxShadow', true, true );
+$decl_attrs = array(
+	'boxShadow'       => '0px 4px 12px 0px',
+	'boxShadowColour' => '#000000',
+	'boxShadowHover'  => '0px 8px 24px 0px',
+);
+$decl_state = sgs_shadow_decls( $decl_attrs, $decl_map );
+t_eq( 2, count( $decl_state['normal'] ), 'sgs_shadow_decls: resting state carries its fallback' );
+t_eq( sgs_shadow_forced_colours_decl(), $decl_state['normal'][1], 'sgs_shadow_decls: the fallback is the shared one' );
+t_eq( 1, count( $decl_state['hover'] ), 'sgs_shadow_decls: hover state does not repeat the fallback' );
+t_eq( array(), sgs_shadow_decls( array(), $decl_map )['normal'], 'sgs_shadow_decls: no shadow, no declarations and no fallback' );
+
 // ── Negative control: the harness must be able to fail ─────────────────────────────
 $before = $GLOBALS['sgs_t_fail'];
 t_eq( 'x', 'y', 'deliberate mismatch', true );
