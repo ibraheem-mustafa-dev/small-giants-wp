@@ -1,24 +1,17 @@
 <?php
 /**
- * `shadow` atom — PHP value-setter twin of
- * `src/components/media/atoms/shadow.js`.
+ * `shadow` atom: PHP value-setter twin of `src/components/media/atoms/shadow.js`.
  *
- * Replaces `sgs/media`'s old hand-rolled `sgs_shadow_value_composed()` calls
- * (`render.php`'s resting + `:hover,:focus-within` box-shadow rules built
- * directly on `$id_sel`) with two custom properties,
- * `--sgs-media-box-shadow` and `--sgs-media-box-shadow-hover`, applied on
- * `.sgs-media-el` (Wave 5c, 2026-09-01).
+ * Two custom properties, `--sgs-media-box-shadow` and `--sgs-media-box-shadow-hover`, applied
+ * on `.sgs-media-el`. The shadow itself is composed by the ONE shared composer,
+ * `sgs_shadow_layers()` (`includes/helpers-shadow-layers.php`), which parses every layer and
+ * re-emits only what it understands, so a stored value can never carry CSS out of its
+ * declaration. This atom used to keep its own mirrored copy of that rule with no sanitiser at
+ * all (a stored `...;}body{display:none}` reached the page); it now has none.
  *
- * `sgs_media_atom_shadow_resolve()` is this atom's OWN mirrored copy of the
- * shape-resolution rule `sgs_shadow_value_composed()`
- * (`includes/helpers-tokens.php`) already implements — mirrored, not
- * called, matching `box-shape.php`'s own documented approach, and kept
- * separate from the general helper so this atom's PHP/JS twins hold
- * byte-parity with EACH OTHER, not with a third function.
- *
- * `sgs_media_atom_shadow_css()` must emit BYTE-IDENTICAL declarations to the
- * JS twin's `css()` for the same attribute set — enforced by
- * `scripts/tests/test-media-atom-parity.mjs`.
+ * The JS twin composes with `src/utils/shadow-layers.js`. Both are pinned to
+ * `tests/shared/shadow-compose-cases.json`, one input-to-output table read by the PHP test and
+ * the JS test.
  *
  * @package SGS\Blocks
  */
@@ -28,44 +21,16 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 2 ) . '/helpers-media-element.php';
 require_once dirname( __DIR__, 2 ) . '/helpers-tokens.php';
 
-if ( ! function_exists( 'sgs_media_atom_shadow_is_raw_shape' ) ) {
-	/**
-	 * Is this shape string a raw CSS shadow, rather than a bare theme preset
-	 * slug? Mirrors the JS twin's `isRawShape()` exactly.
-	 *
-	 * @param mixed $shape Raw candidate.
-	 * @return bool True when $shape is a raw CSS shadow shape.
-	 */
-	function sgs_media_atom_shadow_is_raw_shape( $shape ) {
-		if ( ! is_string( $shape ) ) {
-			return false;
-		}
-		return (bool) preg_match( '/^(inset\s+)?-?[\d.]+px/i', $shape ) || 0 === strpos( $shape, 'inset' );
-	}
-}
-
 if ( ! function_exists( 'sgs_media_atom_shadow_resolve' ) ) {
 	/**
-	 * Compose a shadow SHAPE with a separate colour attribute into the final
-	 * CSS `box-shadow` value. Mirrors the JS twin's `resolveShadow()` exactly.
+	 * Compose a shadow SHAPE with a separate colour attribute into the final CSS `box-shadow` value.
 	 *
-	 * @param mixed $shape  Raw shape string, or a bare preset slug.
-	 * @param mixed $colour Colour value — ignored when $shape resolves to a preset slug.
-	 * @return string CSS `box-shadow` value, or '' when $shape is empty.
+	 * @param mixed $shape  Layers, a bare preset slug, or `none`.
+	 * @param mixed $colour Colour entry or list; ignored when $shape is a preset slug.
+	 * @return string CSS `box-shadow` value, or '' when there is nothing to draw.
 	 */
 	function sgs_media_atom_shadow_resolve( $shape, $colour ) {
-		if ( ! is_string( $shape ) || '' === $shape ) {
-			return '';
-		}
-		$trimmed = trim( $shape );
-		if ( ! sgs_media_atom_shadow_is_raw_shape( $trimmed ) ) {
-			return 'var(--wp--preset--shadow--' . $trimmed . ')';
-		}
-		$resolved_colour = sgs_colour_value( is_string( $colour ) ? $colour : '' );
-		if ( '' === $resolved_colour ) {
-			$resolved_colour = 'rgba(0,0,0,0.1)';
-		}
-		return $trimmed . ' ' . $resolved_colour;
+		return sgs_shadow_layers( is_string( $shape ) ? $shape : '', is_string( $colour ) ? $colour : '' );
 	}
 }
 

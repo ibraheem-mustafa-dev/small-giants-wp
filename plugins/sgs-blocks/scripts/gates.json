@@ -1055,5 +1055,14 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 113
+  },
+  {
+    "id": "test-shadow-layers-js",
+    "cmd": "node scripts/tests/test-shadow-layers-js.mjs",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 114
   }
 ]
