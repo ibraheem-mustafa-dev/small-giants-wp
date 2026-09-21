@@ -281,7 +281,11 @@ LIVES INSIDE the `sgs_drawer` CPT as that post's content (the CPT's template is 
 **1. The chrome top row** — rendered by render.php OUTSIDE the editable InnerBlocks. It is the *close
 button's* band; everything else in it is optional. Attribute-driven (NOT blocks, NOT InnerBlocks).
 
-*BUILT — the × close.* Always rendered, as fixed dialog chrome (see "Close is CHROME" below). Attributes:
+*BUILT — the × close.* Rendered as fixed dialog chrome (see "Close is CHROME" below) at every tier except
+one: the × is omitted at a tier only when ALL THREE hold at that tier — `modality` is `non-modal`, the bar's
+burger is rendered in the DOM (`collapsePoint` puts it there), and `closeStyle` at that tier is `burger-morph`
+(the burger, still visible above the panel, is then the live close control). In every other combination
+`render.php` forces the × on; no operator setting removes the last live close control. Attributes:
 `closeStyle` (`separate-x` | `text-swap` | `burger-morph` | `icon-and-text`), `closeLabel`, `closeIcon` (an
 icon-picker object `{source,name}`, default `{lucide, x}`, resolved by
 `plugins/sgs-blocks/includes/nav-menu-treatments.php::sgs_nav_shared_icon_markup`), `closeSize`, the close-label
@@ -344,8 +348,8 @@ opens with `.show()` (see Modality).
 ⛔ **Close is CHROME, not content.** The × is rendered by render.php as fixed dialog chrome OUTSIDE the
 editable InnerBlocks, so an operator editing the drawer's content can never delete the last close affordance
 through the block editor. This matters because on a full-screen modal on TOUCH there is no ESC key and no
-tap-outside-the-panel (the panel fills the screen), so the × is the only reliable close — it must always
-render. **What "by construction" does and does not mean:** because the × is a raw PHP string that never
+tap-outside-the-panel (the panel fills the screen), so the × is the only reliable close — it renders in every
+case except the single predicate above, where the visible burger is the close control. **What "by construction" does and does not mean:** because the × is a raw PHP string that never
 enters the parsed block tree, there is nothing in `post_content` to delete — this is strictly stronger than a
 `templateLock`/`lock:{remove}` flag, which WordPress enforces in the editor JS ONLY and which a Code-Editor
 or REST write bypasses entirely. **Any design that moves the × inside a block — including a child block of
