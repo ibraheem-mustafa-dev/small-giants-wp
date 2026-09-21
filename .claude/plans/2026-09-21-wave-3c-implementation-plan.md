@@ -16,10 +16,10 @@ inputs: .claude/reports/reference-requirements/FAMILIES-MASTER.md, .claude/repor
   signed by Bean. This plan turns that signed list into build work.
 - **The state.** Nothing in Wave 3C is built yet. The families are signed and the units below
   are the build order. Scope is FULL: every signed family is built. Nothing is parked,
-  deferred or dropped. Eight questions still need Bean's answer and nothing is built on them
-  until he answers (section 1).
+  deferred or dropped. Bean answered the eight open questions on 2026-09-21 (section 1).
+  Bean is on a time crunch: be token-efficient, run the loop as written and add no extra reviews.
 - **The four things to do first.**
-  1. Read section 1 and put the eight open questions to Bean as one short message.
+  1. Read section 1 (Bean's answers). Nothing there needs asking again.
   2. Read section 9 (commands, fixtures, gotchas, lessons) so you do not rediscover them.
   3. Run Step 0a and Step 0b (section 3). 0a needs plan mode exited because it writes
      to the shared framework database.
@@ -28,96 +28,61 @@ inputs: .claude/reports/reference-requirements/FAMILIES-MASTER.md, .claude/repor
   Spec 37 sections 1 and 2 before any drawer unit. The unit's own reference JSON rows before
   its design gate. The reading list in `.claude/prompts/2026-09-21-wave-3c-start.md` is the
   session's full gate.
-- **The open questions for Bean** are force-solid header background, the drawer clamp on
-  page 3699, the full-scope confirmation, the three accepted divergences, the over-length
-  files, deploy targets per unit, the second composed header at Gate 3C, and whether to
-  build a Lottie player and a canvas mark. Each has one
-  recommendation in section 1.
+- **Bean's answers** (section 1): force-solid gets a solid resting colour, the drawer clamp is
+  dropped, full scope, three accepted divergences, no file splits, sandybrown only, the Indus
+  Foods draft is the capped-header exemplar, and a Lottie player is built from a researched model.
 
-## 1. Open questions for Bean: nothing is built on these until he answers
+## 1. Bean's answers (2026-09-21)
 
-Put all eight to him in one message: the question, the menu, the recommendation. Each one
-gates the unit named. If a unit reaches its design gate with the question still open, build
-the unit without that item and record it in the unit row as open.
+Nothing here is open. Where an answer needs work, the step is named.
 
-**(a) Force-solid header background.** A tier set to "force solid" currently keeps a
-transparent background, so the control does nothing. Menu: (1) fix it in U-1 for every header,
-with or without the pill, the off value being the header's own resting background; (2) fix it
-only where the pill is on; (3) leave it and file it as a defect for Wave 4.
-**Recommendation: (1).** It is a hardcoded value overriding transferred CSS, which the
-project's own rule calls a cheat to remove, and a per-pill carve-out would break rule 3.
+**(a) Force-solid header background: build it.** The header already has a transparent mode. The
+"force solid" setting at a tier must give a solid resting colour: the header's own resting
+background (its surface token). Built in U-1 for every header, with or without the pill.
 
-**(b) Trigger-anchored drawer overhang.** On canary page 3699 a 420px drawer renders at
-left -376px, so most of it is off screen. Menu: (1) clamp the panel inside the viewport, in
-U-3, with a Spec 36 wording amendment in the same commit; (2) leave the anchor free and treat
-the overhang as the author's choice; (3) clamp only below the collapse point.
-**Recommendation: (1).** An off-screen surface is unreachable by pointer and keyboard, so it
-fails the accessibility baseline whatever the author intended.
+**(b) Trigger-anchored drawer overhang: dropped.** Canary page 3699 was a loose test page, so
+there is nothing to clamp; the clamp and its Spec 36 wording are not built. Page 3699 is in the trash
+(Bean approved). Pages 3692 to 3695 are the same kind of loose page and stay until
+Bean says otherwise; none of them is evidence. Testing uses real CPTs: Step 0f creates a test
+`sgs_header` and a test `sgs_drawer` post and activates them.
 
-**(c) Full scope, no parking (DEC-16 and DEC-17).** The recommendations inside DEC-16 and
-DEC-17 proposed a scope floor of three references and four of eight furniture blocks. Bean
-has not accepted either, and a clone is never a trimmed reference. This plan therefore builds
-everything: U-6 includes M-24 (sibling dim) and M-25 (two-copy label roll), U-8 includes M-20
-(Away's callout row), U-14 includes M-08 (a trigger that outlives its header, buck and resn),
-U-12 builds all eight furniture blocks, and M-10 and M-47 stay in.
-Menu: (1) build all, with each unit's smallest-support family ordered last so the tail is the
-easy thing to drop if time bites; (2) apply DEC-16's three-reference floor and DEC-17's four
-blocks; (3) name specific items to drop.
-**Recommendation: (1), build all.** A trimmed reference becomes a capability gap at Wave 4,
-which costs a loop back through this wave. Ordering the small-support families last gets the
-same time safety without deciding to lose anything now.
+**(c) Full scope: confirmed.** Every signed family is built: U-6 includes M-24 and M-25, U-8
+includes M-20, U-14 includes M-08, U-12 builds all eight furniture blocks, and M-10 and M-47 stay
+in. Inside each unit the family with the fewest references is built last, so a cut is easy if
+time runs out, but nothing is dropped or parked.
 
-**(d) Divergences from a reference that the plan accepts.** The only three places a clone will
-differ from its reference on purpose. Confirm you are happy with each.
-(1) DEC-01, resn approximated: its WebGL scene becomes a Tier V effect or an existing fx
-field, with real DOM text labels, because no Spec 38 tier renders that scene.
-(2) DEC-02, accessible defaults kept where a reference ships an accessibility defect, with one
-carve-out, close-on-scroll for lamalama.
-(3) DEC-07, buck's random fill frozen to one colour, because a new colour per page load is a
-content choice, not a capability.
-Menu: accept all three, or name any you want built properly instead.
-**Recommendation: accept all three.** Each is recorded as a divergence in the clone's report,
-so it never reads as a defect and never silently becomes a trimmed reference.
+**(d) Divergences from a reference: accepted, all three.** The only places a clone will differ from
+its reference on purpose: (1) DEC-01, resn's WebGL scene approximated with a Tier V effect or an
+existing fx field, with real DOM text for its labels; (2) DEC-02, accessible defaults kept where a
+reference ships an accessibility defect, with one carve-out, close-on-scroll for lamalama; (3) DEC-07,
+buck's random fill frozen to one colour, because a new colour per page load is a content choice.
+Each is recorded in the clone's report so it never reads as a defect.
 
-**(e) The over-length files.** Six files the units edit are two to three times the limit in
-`~/.claude/rules/code-quality.md` (300 lines PHP, 250 JS): `nav-menu-markup.php` 583,
-`nav-menu-submenu-css.php` 721, `nav-drawer/render.php` 909, `site-header/render.php` 658,
-`src/shared/nav-interactivity/store.js` 924, `src/header-behaviours/view.js` 685. Six units
-add to `nav-menu-markup.php` alone. Menu: (1) split all six before U-1; (2) split none,
-disclose each commit with `[gates-ok:pre-existing file length]`, split at Gate 3C; (3) split
-the two worst offenders first and disclose the rest.
-**Recommendation: (3).** Split `nav-menu-markup.php` and `nav-drawer/render.php` as U-1's
-first commit, a pure move with byte-identical render proved by `check-fixture-fidelity.py`;
-disclose the other four with `[gates-ok:…]` and split them at Gate 3C.
+**(e) The over-length files: leave them.** `nav-menu-markup.php`, `nav-menu-submenu-css.php`,
+`nav-drawer/render.php`, `site-header/render.php`, `store.js` and `header-behaviours/view.js` are
+two to three times the length limit. Do not split them in Wave 3C. Disclose each commit that adds
+to one with `[gates-ok:pre-existing file length]`. Bean has ruled this not worth the tokens.
 
-**(f) Deploy targets per unit.** Three targets exist and each deploy costs about six minutes.
-The `qa-hdr-*` fixtures live on sandybrown only; the other two sites carry client chrome.
-Menu: (1) all three per unit; (2) sandybrown per unit, the other two after U-1 and at Gate 3C;
-(3) sandybrown only until Gate 3C.
-**Recommendation: (2).** U-1 changes every header's emitted CSS, so the client sites need
-proving once there, and again at the gate.
+**(f) Deploy: sandybrown only.** Deploy every unit to sandybrown. When a different client's header
+or drawer is needed, switch the active header and drawer CPTs on sandybrown
+(`wp sgs header set-active <id>` and `wp sgs drawer set-active <id>`, Spec 19 section 4.14)
+instead of deploying to `indus-test` or `eye-care-test`. Those two targets are used only if Bean asks.
 
-**(h) Lottie and live-canvas logo marks (DEC-13, reopened).** Moving SVG logos already exist:
-`sgs/responsive-logo` has `animationStyle` (none, draw-on-load, hover-redraw, scroll-trigger) fed by
-`svgAnimationSource`, which takes a media-library .svg only. Lottie does not exist anywhere in the
-tree (`grep -ril lottie` over `src/`, `includes/`, `assets/` and the specs returns nothing; the
-motion registers list it as ABSENT, needing a Tier H admission and a decision entry). buck's mark is a
-Lottie JSON and lamalama's mark is a live 2D canvas, so neither can be cloned with what exists.
-Menu: (1) build a Lottie player as a Tier H admission (single-purpose, npm-bundled, loaded only where
-used, per Spec 38 §1.2a) plus a `sgs/responsive-logo` substrate value that accepts a media-library
-.json, and leave lamalama's canvas mark as a still; (2) build both the Lottie player and a canvas-2D
-mark; (3) keep both as stills and record the divergence.
-**Recommendation: (1).** A Lottie player is reusable well beyond one logo (any block that takes a media
-slot), and it keeps buck cloneable without a trimmed reference. The canvas mark is a different mechanism
-used by one reference; a still is the honest divergence until a client asks for it. If answered (1) or
-(2), U-17 (the logo substrate) becomes a unit that runs in parallel with the chain.
+**(g) The second composed header at Gate 3C: the Indus Foods draft.** Bean did not follow the
+question, so plainly: at the end of Wave 3C one finished header is checked against a reference. The
+floating-pill header has one (lamalama). An ordinary capped-width header needs a yardstick too. The
+default, unless Bean names another, is Bean's own Indus Foods Mega Menu draft: a full-width bar with
+its content capped at 1240px, dropdown and mega panels, and a mobile overlay.
 
-**(g) The second composed header at Gate 3C.** The gate checks one composed real header
-against its reference row. The pill case has a reference (lamalama); the capped-width case has
-none named. Menu: (1) name a reference for the capped case now; (2) check the pill case only;
-(3) check both, with the capped case judged by Bean's eye and no reference row.
-**Recommendation: (1).** A named row makes the gate measurable rather than a matter of
-opinion; Bean picks which of the 13 references is the capped exemplar.
+**(h) Lottie: build a Lottie player, and leave lamalama's canvas mark as a still.** Moving SVG
+logos already exist (`sgs/responsive-logo` `animationStyle` and `svgAnimationSource`, .svg from the
+media library only); Lottie exists nowhere in the tree. Bean's instruction: be efficient and
+delegate the design to a subagent that uses `/gh-research` to find a proven implementation to model.
+That research is `.claude/reports/2026-09-21-lottie-player-research.md`. U-17 is the Lottie player
+unit: a Tier H admission through Spec 38 section 1.2a (with a decision entry), a substrate value
+on `sgs/responsive-logo` that accepts a media-library .json, and a reusable media-slot attribute. It
+runs in parallel with the nav chain. lamalama's live canvas mark stays a still and is recorded as a
+divergence.
 
 ## 2. Decisions already signed
 
@@ -133,16 +98,15 @@ and `::engineering_notes`. Do not restate them elsewhere. What they change here:
 | DEC-10 | Clone what Bean's two drafts intend, not what their runtime does wrong. Where the draft's own rendering mis-clusters a panel entry, cluster it correctly. The panel-entry row shape in U-5 is a real requirement, not a draft artefact |
 | DEC-14 | Add a fourth `triggerMode` value meaning "the row's own surface is the trigger". In U-14. The three existing values are `icon`, `text`, `icon-and-text`, validated in PHP with no JSON enum |
 | DEC-15 | Amend FR-36-6: the drawer's own × becomes optional per `closeStyle` and per tier. Written into Spec 36 at Step 0b, before U-11 builds |
-| DEC-16, DEC-17 | NOT accepted as written. Their scope floor and four-of-eight split are question (c); the plan builds every family and all eight furniture blocks, smallest-support family last inside each unit |
-| DEC-01, DEC-02, DEC-07 | The three accepted divergences, in question (d). Nothing is built for them. M-08 is built, in U-14. DEC-13 (Lottie and canvas marks) is question (h) |
+| DEC-16, DEC-17 | NOT accepted as written. Their scope floor and four-of-eight split were not accepted; the plan builds every family and all eight furniture blocks (section 1c), smallest-support family last inside each unit |
+| DEC-01, DEC-02, DEC-07 | The three accepted divergences (section 1d). Nothing is built for them. M-08 is built, in U-14. DEC-13: the Lottie player is built as U-17 (section 1h) |
 | ENG-01 | z-index becomes a per-tier attribute defaulting to 100. Inside U-1 |
 | ENG-02 | `accordionExclusive` boolean, default true. Inside U-9 |
 | ENG-03 | Six `sgs/site-header` attributes are in `block.json` and rendered but missing from the framework DB. Step 0a |
 
 **Nothing in Wave 3C is parked, deferred or dropped.** A reference is never trimmed to fit the
 framework: a row with no covering attribute is a gap unit. Three items sit outside this wave
-for a stated reason rather than by parking. U-17 (the logo substrate) waits on question (h);
-and wearecollins' `m` hotkey and resn's history-back closer, because
+for a stated reason rather than by parking. wearecollins' `m` hotkey and resn's history-back closer, because
 both are alternative routes to a dismissal U-9 already builds. If Bean wants any of the three,
 each becomes a unit of its own.
 
@@ -156,6 +120,13 @@ as defects.
 - **0c runs before Wave 4**, and before U-8 or U-2 read rabbit's dropdown cells.
 - **0d runs before U-16's design gate.**
 - **0e is optional and blocks nothing.**
+- **0f runs before U-1's live check:** create and activate a test header and drawer.
+
+**0f, real test CPTs.** Canary page 3699 is already in the trash (Bean approved). Create a test `sgs_header` post and a test `sgs_drawer` post (start from the
+seeded framework header and drawer: `wp sgs header seed-starter` and `wp sgs drawer seed-starter`,
+Spec 19 section 4.14), and activate them with `wp sgs header set-active <id>` and
+`wp sgs drawer set-active <id>`. Record the ids in the LEDGER line. Live checks in the per-unit
+loop run against the activated CPTs and the `qa-hdr-*` fixtures.
 
 **0a, reseed the framework DB.** `python plugins/sgs-blocks/scripts/sgs-update-v2.py`
 (the stage map is in its module docstring; 13 stages, several pull from upstream sources).
@@ -200,7 +171,7 @@ starting and run both in one browser session.
 The 14 nav units form one connected file-overlap component (`nav-menu-markup.php` and
 `site-header/*` are the hot files), so they run ONE AT A TIME in this order. U-12 and U-15
 are disjoint from everything and run in parallel with the chain from unit 1. U-17 (the Lottie
-player, question (h)) runs in parallel if Bean chooses to build it.
+player, section 1h) runs in parallel with the chain.
 
 **This table is the execution surface and it supersedes the unit table in FAMILIES-MASTER,
 which is pre-decision.** Take scope from here; take full file lists from
@@ -221,12 +192,12 @@ visually. `none` means neither.
 
 | Order | Unit | Scope after the decisions | Families (exit cells) | Bean | Size | Lock files |
 |---|---|---|---|---|---|---|
-| 1 | U-1 | De-hardcode the nav surfaces. FIRST COMMIT wires the mega fork's `closeGrace` to `submenuCloseGrace` (`nav-menu-markup.php` builds it with a literal 170 while the non-mega fork reads the attribute); lift or parameterise `mega-disclosure.js::MAX_INTENT_DELAY_MS = 80`, which clamps a markup-declared 300; per-tier z-index (ENG-01); align the surface-ground vocabulary (fill, blur, radius and shadow diverge by name and type across site-header, mega-panel and nav-drawer). Question (a) lands here if answered | M-09, M-13, M-43, M-21 | design | medium | `nav-menu-markup.php`, `site-header/{render.php,style.css,block.json}`, `mega-panel/{render.php,style.css,block.json}`, `nav-drawer/block.json` |
+| 1 | U-1 | De-hardcode the nav surfaces. FIRST COMMIT wires the mega fork's `closeGrace` to `submenuCloseGrace` (`nav-menu-markup.php` builds it with a literal 170 while the non-mega fork reads the attribute); lift or parameterise `mega-disclosure.js::MAX_INTENT_DELAY_MS = 80`, which clamps a markup-declared 300; per-tier z-index (ENG-01); align the surface-ground vocabulary (fill, blur, radius and shadow diverge by name and type across site-header, mega-panel and nav-drawer). The force-solid tier emits the header's resting background (section 1a) | M-09, M-13, M-43, M-21 | design | medium | `nav-menu-markup.php`, `site-header/{render.php,style.css,block.json}`, `mega-panel/{render.php,style.css,block.json}`, `nav-drawer/block.json` |
 | 2 | U-9 | Dismissal routes, modality, trigger semantics, the resize rule (DEC-09), `accordionExclusive` (ENG-02), close-on-scroll (DEC-02) | M-36, M-34, M-35, M-40, M-47 | design | medium | `nav-bar-menu/block.json`, `nav-drawer/block.json`, `nav-menu-markup.php`, `src/shared/nav-interactivity/{store.js,mega-disclosure.js}` |
 | 3 | U-11 | Close-control presence, placement (`same-slot` / `top-row-start` / `top-row-end` plus an offset pair) and morph motion (DEC-15); magnet strength (M-10). Includes the `closeStyle` string to tier-object migration via `migrate-tier-object.py --property closeStyle`, with the fallthrough check that a stored flat string still resolves, and `$sgs_nd_allowed_close_styles` kept equal to the JSON enum | M-27, M-10 | eye | medium | `nav-drawer/{block.json,render.php,style.css}`, `nav-bar-menu/{block.json,style.css}` |
 | 4 | U-5 | Entry and exit animation vocabulary and item stagger. The mega fork has no entry-animation attribute today, so the animation must reach the mega interactivity context | M-31, M-32 | eye | high | `nav-drawer/{style.css,render.php,block.json}`, `mega-panel/block.json`, `nav-menu-markup.php`, `src/shared/nav-interactivity/` |
 | 5 | U-2 | Surface scrim, colour, alpha and blur per tier. The drawer hardcodes `rgba(0, 0, 0, 0.55)` twice in `style.css`; the panel fork has no scrim element at all, so U-2 adds one | M-14 | design | medium | `mega-panel/{render.php,block.json}`, `nav-drawer/{style.css,render.php,block.json}`, `src/shared/nav-interactivity/store.js` |
-| 6 | U-3 | Drawer side anchor, container inset, pitch tier object. Question (b) lands here if answered | M-17, M-46 | none | medium | `nav-drawer/{render.php,block.json}`, `nav-drawer-menu/block.json` |
+| 6 | U-3 | Drawer side anchor, container inset, pitch tier object. No drawer clamp (section 1b) | M-17, M-46 | none | medium | `nav-drawer/{render.php,block.json}`, `nav-drawer-menu/block.json` |
 | 7 | U-6 | Item hover parity: opacity and padding-shift hover (M-21), row separators (M-30), sibling dim (M-24, a list-scoped rule), two-copy label roll (M-25, a second label in the markup, needed on the bar, the drawer, the trigger and the footer). M-24 and M-25 need new markup, so they come last | M-21, M-30, M-24, M-25 | eye | high | `nav-bar-menu/{block.json,style.css}`, `nav-drawer-menu/{block.json,style.css}`, `nav-menu-markup.php`, `nav-menu-submenu-css.php` |
 | 8 | U-7 | Per-item ornament (M-22) and per-item media slot (M-15) | M-22, M-15 | none | medium | `nav-menu-markup.php`, `nav-drawer-menu/block.json`, `mega-group/`, `nav-menu-submenu-css.php` |
 | 9 | U-10 | Role migration: move a non-menu header block into the drawer per tier. Crosses the Spec 37 boundary | M-19 | design | medium | `site-header-row/block.json`, `nav-drawer/render.php`, `nav-menu-markup.php` |
@@ -321,8 +292,8 @@ the hooks take over a minute, and poll the commit's exit before claiming it land
 
 **6. Deploy.** `python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown
 --blocks-only` (`--blocks-only` ships the blocks plugin and skips the theme; drop it when a
-unit touches the theme). Per question (f), the recommendation is sandybrown per unit, with
-`indus-test` and `eye-care-test` after U-1 and again at Gate 3C. If the dirty-tree gate
+unit touches the theme). Deploy to sandybrown only (section 1f); switch the active CPTs there
+for another client's chrome. If the dirty-tree gate
 blocks: the dirt is another session's. Do not stash, do not pass `--allow-dirty`, do not
 commit it. List the paths, tell Bean, and wait.
 
@@ -398,8 +369,8 @@ Gate 3C passes when:
    `python plugins/sgs-blocks/scripts/no-inline/check-no-inline.py` passes against a
    reachable canary.
 4. Two composed real headers match their reference rows: the pill on fixture page 3734
-   (lamalama) and the capped-width header on page 3733 against the reference Bean names in
-   question (g), with equal left and right gaps at 1440px, a mega panel whose width equals the
+   (lamalama) and the capped-width header on page 3733 against the Indus Foods Mega Menu
+   draft (section 1g), with equal left and right gaps at 1440px, a mega panel whose width equals the
    header's and a dropdown centred on its parent item. Bean's eye is co-authoritative
    (R-31-13).
 5. Spec 36, Spec 37, the verify doc and `LEDGER.md` state the model.
@@ -416,8 +387,8 @@ Before W4-b (the studionamma clone) starts, all of these are closed:
   (Bean).
 - The 0c captures done and Away re-read on the UK storefront (session).
 - resn re-judged at family level from the headed capture (session).
-- The four accepted divergences (question (d)) confirmed by Bean and written into the clone
-  report template, so none of them reaches Wave 4 as an unexplained difference (Bean).
+- The three accepted divergences (section 1d) written into the clone report template, so
+  none of them reaches Wave 4 as an unexplained difference (session).
 - The Bean session booked with the evidence pack pre-built and an external ping (session
   prepares, Bean attends).
 

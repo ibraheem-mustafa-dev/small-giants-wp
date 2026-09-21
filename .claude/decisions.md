@@ -1,5 +1,9 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1136 [ROUTINE] — Wave 3C: Bean answered the eight open questions (2026-09-21)
+
+Force-solid: a solid resting colour (the header's surface token), built in U-1. The trigger-anchored drawer clamp and page 3699: dropped, page 3699 deleted, real header and drawer CPTs created and activated for testing. Full scope confirmed: no parking. Three divergences accepted (resn approximated, accessible defaults kept, buck's fill frozen). Over-length files: left as they are, each commit disclosed with `[gates-ok:pre-existing file length]`. Deploy: sandybrown only, switching the active CPTs for other clients' chrome. The capped-width composed header is checked against the Indus Foods draft. Lottie: a player is built (Tier H admission through Spec 38 section 1.2a), modelled on an implementation found by a `/gh-research` subagent (`reports/2026-09-21-lottie-player-research.md`); lamalama's canvas mark stays a still. Plan: `plans/2026-09-21-wave-3c-implementation-plan.md` section 1.
+
 ## D1135 [ROUTINE] — Wave 3B signed: 46 capability families, Bean accepted every recommended decision; Wave 3C planned (2026-09-21)
 
 **What was built.** Thirteen references captured (eleven third-party sites and Bean's two Claude Design drafts; three sites headless first, then a headed spot-check: 16 of 133 static cells differed, all explained), 74 per-group families merged to 46 (11 covered, 21 partial, 8 gap, 6 conflict), 17 build units, an adversarial review (23 findings, applied; the largest: the drawer's × is undeletable under FR-36-6 while nine references swap the burger in place, and 11 of 14 units marked parallel-safe shared files).
