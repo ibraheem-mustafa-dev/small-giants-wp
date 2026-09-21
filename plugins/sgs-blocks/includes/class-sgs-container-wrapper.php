@@ -1741,6 +1741,23 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$classes[] = $opt_block_class;
 			}
 
+			// A SOLID fill marks the container so shadows inside it follow its tone: dark
+			// gets the dark variants (`.sgs-on-dark>*`), light resets them (`.sgs-on-light>*`).
+			// A gradient or a background image is not one colour: skip both.
+			$tone_bg   = $attributes['backgroundColour'] ?? '';
+			$tone_skip = ! empty( $attributes['backgroundColourGradient'] ) || ! empty( $attributes['backgroundImage'] );
+			if ( is_string( $tone_bg ) && '' !== $tone_bg && ! $tone_skip ) {
+				$tone = function_exists( 'sgs_colour_background_tone' ) ? sgs_colour_background_tone( $tone_bg ) : '';
+				if ( 'dark' === $tone ) {
+					$classes[] = 'sgs-on-dark';
+					if ( function_exists( 'sgs_shadow_dark_enqueue' ) ) {
+						sgs_shadow_dark_enqueue();
+					}
+				} elseif ( 'light' === $tone ) {
+					$classes[] = 'sgs-on-light';
+				}
+			}
+
 			// Hover-spill-scale marker (see `$hover_spill_scale` above) — a debug/QA
 			// visibility aid only; the actual behaviour is the `.{uid}`-scoped rule
 			// emitted below once $uid exists. Harmless if present with no matching

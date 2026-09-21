@@ -26,7 +26,7 @@
 	--wp--preset--color--border: #2A4A4B;
 	--wp--preset--color--footer-bg: #0A3B3D;
 
-	/* Shadows: the site shadow colour follows the text colour, which is light here, so every shadow reads as a soft glow that separates an element from the dark page (a black shadow is invisible on a dark surface). */
+	/* Shadows on a dark page. Named shadow styles get a DERIVED dark variant (a black shadow at higher opacity plus a 1px light ring, generated from the theme presets and added after this file). A custom shadow that uses the Site colour keeps following the text colour, which is light here, so it reads as a soft glow. Both are visible; a plain black shadow is not. */
 
 	color-scheme: dark;
 }

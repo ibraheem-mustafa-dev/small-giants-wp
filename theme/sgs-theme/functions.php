@@ -323,6 +323,14 @@ function enqueue_styles(): void {
 			asset_version( 'assets/js/dark-mode.js', $theme_version ),
 			true // Load in footer — inline head script handles flash prevention.
 		);
+
+		// Shadows on a dark page: every theme shadow preset gets a derived dark variant (a black
+		// shadow at higher opacity plus a 1px light ring), generated from the theme's own presets
+		// by the blocks plugin, so a client's presets are covered with nothing hardcoded here.
+		if ( function_exists( 'sgs_shadow_dark_preset_css' ) ) {
+			// The light scope resets the presets inside a light container nested in a dark page.
+			wp_add_inline_style( 'sgs-dark-mode', sgs_shadow_dark_preset_css( 'root' ) . sgs_shadow_dark_preset_css( 'light' ) );
+		}
 	}
 
 	// M8: hide duplicate nav copies from assistive technology.

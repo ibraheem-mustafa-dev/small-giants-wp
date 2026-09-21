@@ -9,6 +9,17 @@
  * @package SGS\Blocks
  */
 
+defined( 'ABSPATH' ) || exit;
+
+/**
+ * Relative luminance below which a black shadow is barely visible on a background.
+ *
+ * About `#404040` and darker. This is a different question from text legibility (the 0.179
+ * crossover sgs_wcag_text_colour_for_bg() uses to choose black or white text), so it has its own
+ * number and can be tuned without touching the text helper.
+ */
+const SGS_COLOUR_DARK_LUMINANCE = 0.05;
+
 /**
  * Compute the WCAG 2.1 relative luminance of an sRGB hex colour.
  *
@@ -66,7 +77,7 @@ function sgs_wcag_relative_luminance( string $hex ): float {
  * Unit-reason:
  *   - #f3e5ab (pale yellow, L ≈ 0.773): black ratio ≈ 14.3, white ≈ 1.58 → #000 ✓
  *   - #000080 (navy, L ≈ 0.007): black ratio ≈ 1.08, white ≈ 20.1 → #fff ✓
- *   - #777777 (mid-grey, L ≈ 0.216): black ratio ≈ 3.9, white ratio ≈ 5.3 → #fff (≥4.5:1 ✓)
+ *   - #777777 (mid-grey, L ≈ 0.1845): black ratio ≈ 4.69, white ratio ≈ 4.47 → #000 (≥4.5:1 ✓)
  *
  * @param string $hex Background colour in #RGB or #RRGGBB hex format.
  * @return string '#000' or '#fff'.
@@ -185,4 +196,69 @@ function sgs_resolve_palette_hex( string $slug, string $fallback = '' ): string 
 	}
 
 	return $fallback;
+}
+
+/**
+ * Classify a SOLID background colour value as dark or light.
+ *
+ * Accepts a hex (#RGB / #RRGGBB), a bare palette slug (e.g. 'footer-bg'), or a
+ * `var(--wp--preset--color--SLUG)` reference. A slug is resolved to its live hex
+ * through sgs_resolve_palette_hex(). Dark means a relative luminance below
+ * SGS_COLOUR_DARK_LUMINANCE, where a black shadow is barely visible.
+ *
+ * Anything else returns '' and never throws or emits: an empty string,
+ * `transparent`, `inherit`, `currentColor`, a function (`rgb()`,
+ * `linear-gradient()`), an 8-digit hex, an unknown slug, or junk. A container
+ * whose fill is not one solid, known colour is therefore never classified.
+ *
+ * @param string $value Background colour value as stored in a block attribute.
+ * @return string 'dark', 'light', or '' when the value is not one solid known colour.
+ */
+function sgs_colour_background_tone( string $value ): string {
+	$value = trim( $value );
+
+	if ( '' === $value ) {
+		return '';
+	}
+
+	$hex = '';
+
+	if ( 1 === preg_match( '/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/', $value ) ) {
+		$hex = $value;
+	} else {
+		$slug = '';
+		if ( 1 === preg_match( '/^var\(\s*--wp--preset--color--([a-z0-9-]+)\s*\)$/', $value, $matches ) ) {
+			$slug = $matches[1];
+		} elseif ( 1 === preg_match( '/^[a-z0-9-]+$/', $value ) ) {
+			$slug = $value;
+		}
+
+		if ( '' === $slug ) {
+			return '';
+		}
+
+		$hex = sgs_resolve_palette_hex( $slug );
+		if ( '' === $hex ) {
+			return '';
+		}
+	}
+
+	// A resolved palette entry can itself be a gradient or CSS variable: the
+	// luminance helper returns -1.0 for anything that is not a plain hex.
+	$luminance = sgs_wcag_relative_luminance( $hex );
+	if ( $luminance < 0 ) {
+		return '';
+	}
+
+	return $luminance < SGS_COLOUR_DARK_LUMINANCE ? 'dark' : 'light';
+}
+
+/**
+ * Whether a SOLID background colour value is dark (see sgs_colour_background_tone()).
+ *
+ * @param string $value Background colour value as stored in a block attribute.
+ * @return bool True only when the value resolves to a dark solid colour.
+ */
+function sgs_colour_is_dark_background( string $value ): bool {
+	return 'dark' === sgs_colour_background_tone( $value );
 }

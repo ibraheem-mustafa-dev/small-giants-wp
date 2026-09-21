@@ -106,6 +106,9 @@ require_once SGS_BLOCKS_PATH . 'includes/helpers-scoped-instance-vars.php';
 // Universal hover effects — server-side CSS variable injection.
 require_once SGS_BLOCKS_PATH . 'includes/hover-effects.php';
 
+// Dark-background shadow presets: the stylesheet a dark container's children use.
+require_once SGS_BLOCKS_PATH . 'includes/shadow-dark-assets.php';
+
 // SGS Cart — dequeue wc-cart-fragments on pages using sgs/cart + inject REST config.
 require_once SGS_BLOCKS_PATH . 'includes/wc-cart-fragments.php';
 
