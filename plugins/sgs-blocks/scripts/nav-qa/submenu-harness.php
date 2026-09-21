@@ -246,5 +246,31 @@ check( 'both flattened grandchildren survive',
 $deep_html = harness_render( $r_deep, $deep_out );
 check( 'depth-3 tree renders child links', substr_count( $deep_html, 'sgs-nav-bar-menu__sublink' ) >= 2, true );
 
+echo "\n=== MEGA FORK CLOSE GRACE ===\n";
+// The mega fork used to build its interactivity context with a literal 170, so
+// submenuCloseGrace did nothing on a mega panel. Both forks must read the setting.
+function sgs_mega_render_panel_content( $id ) { return '<div class="stub-mega-panel">panel</div>'; }
+$mega_item = array(
+	'type'       => 'sgs_mega_menu',
+	'object_id'  => 7,
+	'url'        => '/products',
+	'label'      => 'Products',
+	'identifier' => 'label:Products',
+	'children'   => array(),
+);
+$mega_read = function ( $grace ) use ( $mega_item ) {
+	$mr   = new SGS_Nav_Menu_Bar_Renderer( array(), 'uid7', array( 'close_grace' => $grace ) );
+	$html = harness_render( $mr, array( $mega_item ) );
+	preg_match( "/data-wp-context='([^']*)'/", $html, $m );
+	$ctx = isset( $m[1] ) ? json_decode( $m[1], true ) : null;
+	return is_array( $ctx ) ? ( $ctx['closeGrace'] ?? null ) : null;
+};
+check( 'mega context carries submenuCloseGrace (59)', $mega_read( 59 ), 59 );
+check( 'mega context carries submenuCloseGrace (0)', $mega_read( 0 ), 0 );
+check( 'mega context default is 170', $mega_read( 170 ), 170 );
+// Negative control: a value other than the old literal must come through, or the
+// three checks above could all pass against a hardcoded 170 (the 170 one does).
+check( 'negative control: 59 is not the old literal 170', $mega_read( 59 ) !== 170, true );
+
 printf( "\n%s — %d failure(s)\n", $fails ? 'FAILED' : 'ALL PASSED', $fails );
 exit( $fails ? 1 : 0 );

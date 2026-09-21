@@ -209,9 +209,9 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 					: 'start',
 				'caret'       => ! isset( $submenu['caret'] ) || (bool) $submenu['caret'],
 
-				/* 170ms, matching the mega panel's deterministic value in this
-				 * same file. This timing governs every nav, so it is a fixed
-				 * default rather than something tuned per dropdown.
+				/* Default 170ms. This one setting governs both the dropdown and
+				 * the mega panel: both forks of `sgs_nav_bar_menu_render_items`
+				 * read it into their interactivity context.
 				 */
 				'close_grace' => isset( $submenu['close_grace'] ) ? max( 0, (int) $submenu['close_grace'] ) : 170,
 

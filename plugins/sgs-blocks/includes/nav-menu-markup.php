@@ -141,7 +141,7 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 								'isOpen'      => false,
 								'megaId'      => (string) (int) $item['object_id'],
 								'intentDelay' => 300,
-								'closeGrace'  => 170,
+								'closeGrace'  => $submenu['close_grace'],
 							)
 						);
 						$caret = function_exists( 'sgs_get_lucide_icon' ) ? sgs_get_lucide_icon( 'chevron-down' ) : '';

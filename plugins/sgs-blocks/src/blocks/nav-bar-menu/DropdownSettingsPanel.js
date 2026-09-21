@@ -237,7 +237,7 @@ export default function DropdownSettingsPanel( {
 						} )
 					}
 					help={ __(
-						'How long the dropdown waits before closing when the pointer leaves it, in milliseconds. A short delay stops it snapping shut while someone is moving towards it.',
+						'How long a dropdown or mega panel waits before closing when the pointer leaves it, in milliseconds. A short delay stops it snapping shut while someone is moving towards it.',
 						'sgs-blocks'
 					) }
 					__nextHasNoMarginBottom
