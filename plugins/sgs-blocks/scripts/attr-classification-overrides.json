@@ -2983,9 +2983,25 @@
 			"slug": "sgs/nav-drawer",
 			"attr": "surfaceOpacity",
 			"fields": {
-				"css_element": "dialog"
+				"css_property": null
 			},
-			"_why": "2026-08-28 NULL css_element fix (§6). Fallback-mechanism-only attr — modifies a sibling attr's value via color-mix() rather than owning its own attrMap key, so the classifier never resolved an element. css_property is already correctly derived as 'background-color' (verified against block_attributes before writing this entry) — only css_element was missing. 'dialog' is the block's own declared root element (block.json supports.sgs.elements.dialog, also named in its top-level elements array)."
+			"_why": "2026-09-21 routing-collision fix (U-1 surface ground). `surfaceOpacity` is a modifier of the block's own fill: PHP mixes it in through color-mix() (includes/helpers-surface-ground.php::sgs_surface_fill_alpha). It is a number, not a colour a draft can carry. The 'Opacity' suffix derivation gave it css_property 'background-color', which on sgs/site-header contends with backgroundOverlayColour for one routing slot (db-consistency Checks #1 and #8) and would let the converter write a draft's background colour into a number attribute. Non-routing is the truthful classification, the same as its siblings surfaceBlur and surfaceSaturate, and it is applied to every block that carries the attribute so the classification is universal."
+		},
+		{
+			"slug": "sgs/site-header",
+			"attr": "surfaceOpacity",
+			"fields": {
+				"css_property": null
+			},
+			"_why": "2026-09-21 routing-collision fix (U-1 surface ground). `surfaceOpacity` is a modifier of the block's own fill: PHP mixes it in through color-mix() (includes/helpers-surface-ground.php::sgs_surface_fill_alpha). It is a number, not a colour a draft can carry. The 'Opacity' suffix derivation gave it css_property 'background-color', which on sgs/site-header contends with backgroundOverlayColour for one routing slot (db-consistency Checks #1 and #8) and would let the converter write a draft's background colour into a number attribute. Non-routing is the truthful classification, the same as its siblings surfaceBlur and surfaceSaturate, and it is applied to every block that carries the attribute so the classification is universal."
+		},
+		{
+			"slug": "sgs/mega-panel",
+			"attr": "surfaceOpacity",
+			"fields": {
+				"css_property": null
+			},
+			"_why": "2026-09-21 routing-collision fix (U-1 surface ground). `surfaceOpacity` is a modifier of the block's own fill: PHP mixes it in through color-mix() (includes/helpers-surface-ground.php::sgs_surface_fill_alpha). It is a number, not a colour a draft can carry. The 'Opacity' suffix derivation gave it css_property 'background-color', which on sgs/site-header contends with backgroundOverlayColour for one routing slot (db-consistency Checks #1 and #8) and would let the converter write a draft's background colour into a number attribute. Non-routing is the truthful classification, the same as its siblings surfaceBlur and surfaceSaturate, and it is applied to every block that carries the attribute so the classification is universal."
 		},
 		{
 			"slug": "sgs/nav-drawer",
