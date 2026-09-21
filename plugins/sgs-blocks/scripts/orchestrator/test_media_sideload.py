@@ -595,6 +595,61 @@ def test_a_complete_upload_and_a_dry_run_are_not_stopped() -> None:
     assert mod.enforce_complete_upload(dry) is None
 
 
+def _http_refusal_batch(tmp: str, filename: str, status: int, phrase: str):
+    """One draft file whose upload the (fake) media endpoint refuses with an HTTP error."""
+    draft = Path(tmp) / "draft"
+    (draft / "assets").mkdir(parents=True)
+    (draft / "assets" / filename).write_bytes(b"x")
+    secrets = Path(tmp) / "secrets"
+    _write_site_env(secrets, "fake-site", "https://fake.example", "u", "p")
+
+    def uploader(file_path: Path, wp_site: str, auth_header: str):
+        raise mod.urllib.error.HTTPError(f"{wp_site}/wp-json/wp/v2/media", status, phrase, {}, None)
+
+    extract = {"logo": {"id": 0, "alt": "G", "url": f"assets/{filename}"}}
+    return mod.sideload_batch(extract, mockup_root=draft, upload=True, site="fake-site",
+                              secrets_dir=secrets, uploader=uploader)
+
+
+def test_a_refused_svg_says_the_file_type_was_refused_and_what_to_do() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        report = _http_refusal_batch(tmp, "google-g.svg", 500, "Internal Server Error")
+    (row,) = report["errors"]
+    assert row["http_status"] == 500
+    assert row["reason"] == (
+        "WordPress refused .svg (file type not allowed on this site). Enable SVG uploads for the site "
+        "(for example a safe-SVG plugin) or pass --allow-partial-media; the image stays as a relative URL. "
+        "[HTTP 500: Internal Server Error]"
+    ), row["reason"]
+    try:                                                    # the run-stopping message carries the same words
+        mod.enforce_complete_upload(report)
+    except mod.SideloadPartialError as exc:
+        assert "google-g.svg: WordPress refused .svg (file type not allowed on this site)" in str(exc)
+        assert "HTTP 500" in str(exc)
+    else:
+        raise AssertionError("a refused upload must stop the run")
+
+
+def test_a_4xx_refusal_of_a_refused_type_is_classified_too() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        report = _http_refusal_batch(tmp, "spin.JSON", 415, "Unsupported Media Type")
+    reason = report["errors"][0]["reason"]
+    assert reason.startswith("WordPress refused .json (file type not allowed on this site). Allow .json uploads"), reason
+    assert reason.endswith("[HTTP 415: Unsupported Media Type]"), reason
+
+
+def test_a_normal_image_http_error_keeps_the_plain_wording() -> None:
+    for name, status, phrase in (("photo.jpg", 500, "Internal Server Error"), ("photo.webp", 413, "Payload Too Large")):
+        with tempfile.TemporaryDirectory() as tmp:
+            report = _http_refusal_batch(tmp, name, status, phrase)
+        assert report["errors"][0]["reason"] == f"HTTP {status}: {phrase}", report["errors"][0]["reason"]
+
+
+def test_ico_is_allowed_by_core_so_it_is_never_called_a_refused_type() -> None:
+    assert mod.describe_upload_failure("favicon.ico", 500, "Internal Server Error") == "HTTP 500: Internal Server Error"
+    assert mod.describe_upload_failure("a.svg", 200, "OK") == "HTTP 200: OK"                 # never on a success code
+
+
 def main() -> int:
     print("Spec 31 Phase 5b.5 -- media-sideload contract")
     test_collect_image_slots_walks_tree()
@@ -612,6 +667,10 @@ def main() -> int:
     test_missing_env_file_fails_loudly()
     test_no_local_images_needs_no_credentials()
     test_reuse_existing_attachment_not_reupload()
+    test_a_refused_svg_says_the_file_type_was_refused_and_what_to_do()
+    test_a_4xx_refusal_of_a_refused_type_is_classified_too()
+    test_a_normal_image_http_error_keeps_the_plain_wording()
+    test_ico_is_allowed_by_core_so_it_is_never_called_a_refused_type()
     print("\nSIDELOAD-5B.5: PASS (slot walk + dry-run + env creds + auth + error handling)")
     return 0
 

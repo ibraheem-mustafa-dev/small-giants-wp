@@ -1021,12 +1021,13 @@ def test_h1_author_and_text_do_not_collapse_into_one_field_although_the_alias_ov
 
 @needs_db
 @needs_draft
-def test_h2_the_lifted_photo_is_the_google_g_logo_not_a_reviewers_picture(marked_run, alias_dbs):
-    """H2: CONFIRMED. The only image in a card is the 17px Google 'G' mark, so the converter lifts it as `photo` on
-    every review. Nothing here can fix that (the draft holds no reviewer photos); pinned so a change shows up."""
+def test_the_decorative_google_g_mark_is_never_lifted_as_a_reviewers_photo(marked_run, alias_dbs):
+    """H2, resolved by the decorative-image rule (converter/services/lift_helpers.py::is_decorative_img). The only image in
+    a card is the 17px Google 'G' mark (aria-hidden), which used to be lifted as `photo` on every review, leaving 13
+    broken images because WordPress refuses .svg uploads. It must not be lifted now."""
     out, _ = _annotated(marked_run["html"], alias_dbs["with"])
     block = _google_reviews_block(_convert(_element(out, "sgs-google-reviews"), out))
-    assert {r["photo"]["url"] for r in block["reviews"]} == {"assets/google-g.svg"}
+    assert all("photo" not in r for r in block["reviews"])
     assert all(not ({"rating", "avatarColour", "initial"} & set(r)) for r in block["reviews"])          # still not populated
     assert [i for i, r in enumerate(block["reviews"]) if "url" in r] == [2]      # only the long review has a link to lift
 

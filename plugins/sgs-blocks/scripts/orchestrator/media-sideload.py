@@ -428,6 +428,37 @@ def _is_local_image_url(url: object) -> bool:
     return isinstance(url, str) and bool(url) and not url.startswith(_ABSOLUTE_URL_PREFIXES)
 
 
+# File types WordPress core refuses to upload by default: none of these extensions is in the default list
+# returned by wp_get_mime_types() / get_allowed_mime_types(). SVG is the one a draft actually hits (logos and
+# icons); the rest are the other web-asset types a draft's media slots can point at (Lottie JSON, web fonts,
+# HTML). ``ico`` is deliberately absent: core allows it. A site can allow any of these (the `upload_mimes`
+# filter or a plugin), so the wording says "refused on this site", never "WordPress cannot".
+_TYPES_REFUSED_BY_DEFAULT: frozenset[str] = frozenset({
+    "svg", "svgz", "json", "html", "htm", "woff", "woff2", "ttf", "otf", "eot",
+})
+_SVG_TYPES: frozenset[str] = frozenset({"svg", "svgz"})
+
+
+def describe_upload_failure(local_path: str | Path, status: int, phrase: str) -> str:
+    """The report `reason` for an HTTP error from the media endpoint.
+
+    When the file's extension is one WordPress core refuses by default (``_TYPES_REFUSED_BY_DEFAULT``) and the
+    response is a 4xx/5xx, say so as an action the operator can take; the raw HTTP detail always follows, so
+    nothing is hidden. Any other file keeps the plain ``HTTP <code>: <phrase>`` wording."""
+    raw = f"HTTP {status}: {phrase}"
+    ext = Path(str(local_path)).suffix.lstrip(".").lower()
+    if status < 400 or ext not in _TYPES_REFUSED_BY_DEFAULT:
+        return raw
+    if ext in _SVG_TYPES:
+        action = "Enable SVG uploads for the site (for example a safe-SVG plugin)"
+    else:
+        action = f"Allow .{ext} uploads for the site (the upload_mimes filter or a plugin)"
+    return (
+        f"WordPress refused .{ext} (file type not allowed on this site). {action} or pass "
+        f"--allow-partial-media; the image stays as a relative URL. [{raw}]"
+    )
+
+
 def sideload_batch(
     extracted: dict,
     mockup_root: Path,
@@ -619,7 +650,8 @@ def sideload_batch(
             report["errors"].append({**row, "reason": str(e)})
         except urllib.error.HTTPError as e:
             report["errors"].append({
-                **row, "http_status": e.code, "reason": f"HTTP {e.code}: {e.reason}",
+                **row, "http_status": e.code,
+                "reason": describe_upload_failure(row["local_path"], e.code, str(e.reason)),
             })
         except (urllib.error.URLError, OSError) as e:
             report["errors"].append({**row, "reason": str(e)})
