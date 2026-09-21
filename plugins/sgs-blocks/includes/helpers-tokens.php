@@ -17,6 +17,7 @@
 // sgs_css_length_value()". Both files guard with function_exists(), so load
 // order does not matter — only that both load before either is CALLED.
 require_once __DIR__ . '/helpers-css-safety.php';
+require_once __DIR__ . '/helpers-shadow-layers.php';
 
 /**
  * Determine whether an attribute value is meaningfully set.
@@ -658,14 +659,19 @@ function sgs_shadow_value( ?string $slug_or_value ): string {
 
 	$value = trim( $slug_or_value );
 
+	if ( 'none' === strtolower( $value ) ) {
+		return 'none';
+	}
+
 	// Raw CSS shadow detection — any of the indicators below means
-	// "don't wrap in preset var, pass through".
+	// "don't wrap in preset var, pass through". A leading minus or dot is a number
+	// too: `-2px 4px 8px` is a legal shadow, not a slug.
 	$is_raw = (
 		str_starts_with( $value, 'var(' ) ||
 		str_starts_with( $value, 'inset' ) ||
 		str_starts_with( $value, 'rgb' ) ||
 		str_starts_with( $value, '0 ' ) ||
-		(bool) preg_match( '/^\d/', $value )
+		(bool) preg_match( '/^-?[\d.]/', $value )
 	);
 
 	if ( $is_raw ) {
@@ -710,25 +716,9 @@ function sgs_shadow_value( ?string $slug_or_value ): string {
  * @return string CSS box-shadow value, or '' when $shape is empty.
  */
 function sgs_shadow_value_composed( ?string $shape, ?string $colour ): string {
-	if ( ! $shape ) {
-		return '';
-	}
-
-	$shape = trim( $shape );
-
-	$is_raw_shape = (bool) preg_match( '/^(inset\s+)?-?[\d.]+px/i', $shape ) || 0 === strpos( $shape, 'inset' );
-
-	if ( ! $is_raw_shape ) {
-		// Bare preset slug — self-contained, no colour to compose in.
-		return sgs_shadow_value( $shape );
-	}
-
-	$resolved_colour = sgs_colour_value( $colour ? $colour : '' );
-	if ( '' === $resolved_colour ) {
-		$resolved_colour = 'rgba(0,0,0,0.1)';
-	}
-
-	return sgs_shadow_value( $shape . ' ' . $resolved_colour );
+	// The layered composer (includes/helpers-shadow-layers.php) is the one implementation:
+	// several layers, one colour for all or a colour per layer, a bare preset slug, `none`.
+	return sgs_shadow_layers( $shape, $colour );
 }
 
 /**
