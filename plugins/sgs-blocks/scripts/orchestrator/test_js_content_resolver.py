@@ -25,6 +25,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from js_content_resolver import (  # noqa: E402
     ATTR_MARKER_PREFIX,
+    STYLE_MARKER,
     TEXT_MARKER,
     find_expandable_sc_fors,
     inject_capture_markers,
@@ -289,10 +290,11 @@ def test_a_void_element_and_a_directive_are_never_a_text_holder():
 
 
 def test_an_attribute_that_is_wholly_one_field_is_marked_per_attribute_and_a_mixed_one_is_not():
-    slots = item_slots('<img src="{{ b.logo }}" alt="{{ b.name }}" style="padding: {{ b.pad }}">', "b")
+    slots = item_slots('<img src="{{ b.logo }}" alt="{{ b.name }}" title="by {{ b.by }}" '
+                       'style="padding: {{ b.pad }}">', "b")
     got = {s["mustache"]: (s.get("field"), s.get("marker")) for s in slots}
     assert got == {"{{ b.logo }}": ("logo", ATTR_MARKER_PREFIX + "src"), "{{ b.name }}": ("name", ATTR_MARKER_PREFIX + "alt"),
-                   "{{ b.pad }}": (None, None)}
+                   "{{ b.by }}": (None, None), "{{ b.pad }}": ("pad", STYLE_MARKER)}
 
 
 def test_the_marker_names_sit_outside_the_converters_data_sgs_namespace():
@@ -435,9 +437,11 @@ def test_the_eye_care_v2_marquee_is_collapsed_to_sixteen_brands_and_the_reviews_
     assert out.count('title="Ray-Ban"') == 1 and out.count('title="Superdry"') == 1
     reviews = next(r for r in report["resolved"] if r["loop"] == "{{ reviews }}")
     assert reviews["items"] == 13 and "loop_duplicate_collapsed" not in reviews
-    assert reviews["fields_marked"] == 13 * 5                     # initial, who, meta, date, text (colour is mixed content)
+    assert reviews["fields_marked"] == 13 * 6                     # initial, who, meta, date, text + the avatar colour (a whole style declaration)
     assert out.count('data-src-field="who"') == 13 and out.count('data-src-field="text"') == 13
     assert 'data-src-field="colour"' not in out and "background: #1A73E8" in out
+    assert out.count('data-src-field-style="colour:background"') == 13          # the avatar colour, named and located
+    assert "{{ r.colour }}" not in out
     assert {r["loop"]: r["items"] for r in report["resolved"]}["{{ reasons }}"] == 4     # a genuine list is left alone
 
 
@@ -514,3 +518,61 @@ def test_a_descendant_or_compound_selector_is_not_taken_for_this_elements_rule(t
 def test_the_evidence_text_states_what_the_css_reading_does_not_evaluate(tmp_path):
     out, _, report = _run(_class_strip(".strip{animation:marquee 40s linear infinite}"), tmp_path, _TWICE)
     assert "media queries and cascade order were not evaluated" in report["resolved"][0]["duplicate_evidence"]
+
+
+# --------------------------------------------------------------------------------------------------------------
+# A mustache that is the whole value of one CSS declaration in a `style` attribute (the avatar colour)
+# --------------------------------------------------------------------------------------------------------------
+
+def _style_slots(style: str, var: str = "r") -> list[dict]:
+    return item_slots('<span style="%s">A</span>' % style, var)
+
+
+@pytest.mark.parametrize("style, want", [
+    ("background: {{ r.colour }}", ("colour", "background")),
+    ("width:40px;background:{{ r.colour }};color:#fff", ("colour", "background")),
+    ("background:{{ r.colour }}", ("colour", "background")),
+    ("COLOR : {{ r.ink }} ;", ("ink", "color")),
+])
+def test_a_mustache_that_is_a_whole_style_declaration_value_is_marked_with_field_and_property(style, want):
+    (slot,) = _style_slots(style)
+    assert (slot["field"], slot["style_prop"]) == want and slot["marker"] == STYLE_MARKER
+
+
+@pytest.mark.parametrize("style", [
+    "width:{{ r.w }}px",                          # a unit after it: mixed
+    "border:1px solid {{ r.c }}",                 # a keyword before it inside one value: mixed
+    "width:calc({{ r.w }} + 2px)",
+    "background:{{ r.a }} {{ r.b }}",             # two mustaches in one value
+    "background:{{ r.a + r.b }}",                 # an expression, not a field
+])
+def test_negative_control_a_mixed_or_unnamed_style_value_is_never_marked(style):
+    slots = _style_slots(style)
+    assert slots and all("field" not in s and "style_prop" not in s for s in slots)
+
+
+def test_a_style_field_is_stamped_once_per_element_with_its_entries_joined_when_the_draft_has_a_manifest(tmp_path):
+    html = ('<sc-for list="{{ rows }}" as="r"><span style="background:{{ r.bg }};color:{{ r.ink }};'
+            'width:{{ r.w }}px">{{ r.initial }}</span></sc-for>' + _MANIFEST)
+    fields = {"f0": "#1A73E8", "f1": "#fff", "f2": "40", "f3": "N"}
+    out, _, report = _run(html, tmp_path, {"r1": [{"fields": fields}]})
+    assert out.count("data-src-field-style=") == 1                                   # one attribute per element
+    assert 'data-src-field-style="bg:background,ink:color"' in out
+    assert 'style="background:#1A73E8;color:#fff;width:40px"' in out                 # the value itself is intact
+    assert 'data-src-field="initial"' in out and report["resolved"][0]["fields_marked"] == 3
+
+
+def test_a_style_field_gets_no_marker_without_a_manifest_or_when_the_runtime_gave_no_value(tmp_path):
+    html = '<sc-for list="{{ rows }}" as="r"><span style="background:{{ r.bg }}">x</span></sc-for>'
+    out, _, _ = _run(html, tmp_path, {"r1": [{"fields": {"f0": "#123"}}]})
+    assert "data-src-field" not in out and 'style="background:#123"' in out            # no manifest: unchanged shape
+    out, _, report = _run(html + _MANIFEST, tmp_path, {"r1": [{"fields": {}}]})
+    assert "data-src-field" not in out and "{{ r.bg }}" in out and len(report["gaps"]) == 1
+
+
+def test_a_style_marker_is_removed_by_the_one_strip_used_on_every_path():
+    from manifest_annotation import strip_field_markers
+    doc = '<span data-src-field="initial" data-src-field-style="bg:background,ink:color" style="background:#123">N</span>'
+    assert strip_field_markers(doc) == '<span style="background:#123">N</span>'
+    prose = '<p>the attribute data-src-field-style="a:b" is documented</p>'
+    assert strip_field_markers(prose) == prose

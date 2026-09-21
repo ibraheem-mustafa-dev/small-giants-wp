@@ -34,8 +34,14 @@ consumer of the markers is `manifest_annotation.py`), a `{{ var.field }}` that i
 element that receives it (a text node that is the element's only child, or a whole attribute value) leaves a
 marker on that element: `data-src-field="field"` for text, `data-src-field-<attr>="field"` for an attribute.
 The annotator maps the draft's field names to the block's item fields by those names instead of by counting
-and ordering text, and strips every marker again. Mixed content (`Free delivery {{ i.x }}`, `padding: {{ i.p }}`)
-is never marked: no single field name describes it. The marker name deliberately sits OUTSIDE the `data-sgs-`
+and ordering text, and strips every marker again. Mixed content (`Free delivery {{ i.x }}`, `{{ i.a }} {{ i.b }}`) is never marked:
+no single field name describes it.
+
+A mustache that is the WHOLE VALUE of one CSS declaration inside a `style` attribute (`background: {{ r.colour }}`) is
+whole content too: it leaves `data-src-field-style="<field>:<property>"` on that element (`colour:background`). An
+element with several such declarations gets ONE marker, its entries comma-separated, because an attribute name may
+appear once. The annotator uses it to route a colour the draft binds to an item (an avatar circle) onto the block's
+colour item field; every other consumer ignores it, and `strip_field_markers` removes it like every other marker. The marker name deliberately sits OUTSIDE the `data-sgs-`
 namespace, because the converter's `lift_behavioural_attrs` reads any `data-sgs-<x>` as a candidate value for a
 block attribute called `x`, which would make `data-sgs-field` collide with any block that ever gains a `field`
 attribute.
@@ -95,6 +101,7 @@ _MARKER_ATTR_NAME_RE = re.compile(r"^[a-z][a-z0-9-]*$")
 # Marker attribute names. Outside the `data-sgs-` namespace on purpose (see the module docstring).
 TEXT_MARKER = "data-src-field"
 ATTR_MARKER_PREFIX = "data-src-field-"
+STYLE_MARKER = ATTR_MARKER_PREFIX + "style"
 
 _RESOLVE_SCRIPT = Path(__file__).with_name("resolve-js-content.js")
 _RENDER_TIMEOUT_SECONDS = 90
@@ -122,13 +129,15 @@ def item_slots(body: str, var: str) -> list[dict[str, Any]]:
 
     A slot that is the WHOLE content of its holder element also carries ``field`` (the property name in
     ``{{ var.field }}``), ``marker_at`` (the offset just after the holder's tag name) and ``marker`` (the marker
-    attribute name to stamp there). Mixed content never has them: no single field name describes it.
+    attribute name to stamp there). Mixed content never has them: no single field name describes it. A slot that is
+    the whole value of one CSS declaration in a ``style`` attribute also carries ``style_prop`` (the property name), and
+    its marker is ``STYLE_MARKER``.
     """
     slots: list[dict[str, Any]] = []
     field_re = re.compile(r"^\{\{\s*" + re.escape(var) + r"\.([A-Za-z_$][\w$]*)\s*\}\}$")
 
     def add(kind: str, start: int, end: int, tag_insert: int | None = None,
-            whole: tuple[int, str] | None = None) -> None:
+            whole: tuple[int, str] | tuple[int, str, str] | None = None) -> None:
         text = body[start:end]
         inner = text[2:-2].strip()
         # A bare `{{ p }}` is the whole row (in a product loop, a nested card): no single value to capture.
@@ -138,6 +147,8 @@ def item_slots(body: str, var: str) -> list[dict[str, Any]]:
             named = field_re.match(text)
             if whole is not None and named is not None:
                 slot.update({"field": named.group(1), "marker_at": whole[0], "marker": whole[1]})
+                if len(whole) == 3:
+                    slot["style_prop"] = whole[2]
             slots.append(slot)
 
     pos = 0
@@ -155,11 +166,24 @@ def item_slots(body: str, var: str) -> list[dict[str, Any]]:
                     marker = ATTR_MARKER_PREFIX + a.group(1).lower()
                     whole = (tag.end(1), marker) if (
                         m.start() == 0 and m.end() == len(value) and _MARKER_ATTR_NAME_RE.match(a.group(1).lower())) else None
+                    if whole is None and a.group(1).lower() == "style":
+                        whole = _style_declaration_holder(value, m, tag.end(1))
                     add("attr", value_at + m.start(), value_at + m.end(), tag.end(1), whole=whole)
         pos = tag.end()
     for m in _MUSTACHE_RE.finditer(body, pos):
         add("text", m.start(), m.end(), whole=_text_holder(body, m.start(), m.end()))
     return slots
+
+
+def _style_declaration_holder(value: str, mustache: re.Match, insert_at: int) -> tuple[int, str, str] | None:
+    """``(offset just after the holder's tag name, STYLE_MARKER, property)`` when the mustache is the whole value of one
+    declaration of a ``style`` attribute (``background: {{ r.colour }}``), else None. Whole means: a ``property:``
+    directly before it (start of the value or after a ``;``) and only whitespace before the next ``;`` or the end
+    after it. ``{{ r.a }}px`` or ``a {{ r.b }}`` inside one value is mixed content and never qualifies."""
+    before = re.search(r"(?:^|;)\s*([a-zA-Z-]+)\s*:\s*$", value[:mustache.start()])
+    if before is None or re.match(r"\s*(?:;|$)", value[mustache.end():]) is None:
+        return None
+    return insert_at, STYLE_MARKER, before.group(1).lower()
 
 
 def _text_holder(body: str, start: int, end: int) -> tuple[int, str] | None:
@@ -291,6 +315,7 @@ def _expand(cand: dict[str, Any], items: list[dict[str, Any]], report: dict[str,
     for number, item in enumerate(items, start=1):
         fields = item.get("fields") or {}
         edits: list[tuple[int, int, str, int]] = []
+        style_marks: dict[int, tuple[int, list[str]]] = {}
         dead = [b for b in cand.get("branches", []) if _not_rendered(b, fields)]
         for b in dead:
             edits.append((b["start"], b["end"], "", -1))
@@ -303,7 +328,11 @@ def _expand(cand: dict[str, Any], items: list[dict[str, Any]], report: dict[str,
                 edits.append((slot["start"], slot["end"],
                               _html.escape(value, quote=(slot["kind"] == "attr")), order))
                 captured += 1
-                if stamp_fields and slot.get("field"):
+                if stamp_fields and slot.get("field") and slot.get("style_prop"):
+                    entry_list = style_marks.setdefault(slot["marker_at"], (order, []))[1]
+                    entry_list.append("%s:%s" % (slot["field"], slot["style_prop"]))
+                    stamped += 1
+                elif stamp_fields and slot.get("field"):
                     edits.append((slot["marker_at"], slot["marker_at"],
                                   ' %s="%s"' % (slot["marker"], _html.escape(slot["field"], quote=True)), order))
                     stamped += 1
@@ -311,6 +340,8 @@ def _expand(cand: dict[str, Any], items: list[dict[str, Any]], report: dict[str,
                 report["gaps"].append({
                     "loop": cand["list_expr"], "item": number, "expr": slot["mustache"],
                     "reason": "the draft's runtime produced no plain value for it (a handler, a computed value or an unrendered branch)"})
+        for at, (order, entries) in style_marks.items():
+            edits.append((at, at, ' %s="%s"' % (STYLE_MARKER, _html.escape(",".join(entries), quote=True)), order))
         pieces.append(_apply(cand["body"], edits))
     entry: dict[str, Any] = {"loop": cand["list_expr"], "items": len(items),
                              "fields_captured": captured, "fields_per_item": len(cand["slots"]),

@@ -16,7 +16,16 @@ What one declaration does
   boundary selector from the first class and the voter takes the first ``sgs-`` class); the draft's own class
   stays after it so the draft CSS still matches.
 * Any other block cannot claim a section root (the converter's R1 gate demotes it to ``sgs/container``), so the
-  block's root class goes on the INNER element that repeats (the parent of the repeated items, the "rail").
+  block's root class goes on an element INSIDE the section: the BOX OWNER. From the parent of the repeated items
+  (the "rail") the annotator climbs, strictly inside the section root, to the first element that itself paints a
+  property the block also declares as part of its box (border, radius, shadow, background; ``_choose_owner``), so a
+  header drawn inside the same bordered card belongs to the block. Nothing qualifies: the rail stays the block
+  (``climbed: 0``, ``target: "inner"``).
+* Header: every text unit and media element inside the block root that is not an item is mapped to one of the block's
+  scalar attributes by role and value shape (``_plan_header``: a rating beside a star bar, a count, one shared link
+  address) or reported in ``skipped_fields`` with its reason; text with no field and no verdict withholds the section.
+* Items also carry a per-card rating (a row of star glyphs, when the schema has a ``rating`` field) and a colour
+  bound in a style declaration (``data-src-field-style``, when the schema has a ``colour-background`` field).
 * Items: the repeated-group row for the section says how many; the items are the run of sibling elements of
   identical shape inside the section (the run copy already has its loops expanded). Each gets the block's item
   class (``sgs-<block>__<array attr, singular>``), which is all the converter's array resolver needs to find them.
@@ -81,6 +90,46 @@ class ArraySchema:
     fields: tuple[ItemField, ...]
 
 
+@dataclass(frozen=True)
+class ScalarAttr:
+    """One of the block's own scalar content attributes (``averageRating``, ``reviewRequestUrl``): its DB role, its
+    value kind (``number`` | ``string`` | ``boolean``) and whether its name says it holds a link."""
+    name: str
+    role: str | None
+    kind: str
+    link_like: bool = False
+    selector: str | None = None      # ``block_attributes.derived_selector``: the element class the converter lifts the value from
+
+
+# WHY THIS IS A CONSTANT AND NOT A DATABASE READ (the one exception in this module to R-31-1, and the only one).
+# ``property_suffixes.role`` says a property PAINTS (``visual`` / ``color`` / ``colour-gradient``); it does not say
+# the property gives an element a BOX. The same ``visual`` role holds ``border-radius`` and ``box-shadow`` beside
+# ``object-fit``, ``object-position``, ``background-position|size|repeat|attachment``, ``opacity`` and ``overflow``,
+# and ``color`` holds ``background-color`` and ``border-color`` beside text ``color`` / ``stroke``. No other column
+# separates them either: ``block_attributes.css_layer`` is OUTER for ``background-attachment`` too, and ``box_family``
+# only groups inspector controls (margin / padding / border radius / border width). So the box-painting families are
+# named once, here, as an INCLUSION list: a property the list does not name (a future ``mask``, ``clip-path``) is not a
+# box until someone decides it is, which fails safe. The seed change that removes this constant is a boolean column
+# ``makes_box`` on ``property_suffixes`` (``scripts/data/property-suffixes.json``, reseeded by
+# ``converter/db/db_lookup.py::_migrate_property_suffixes``), true for the border-*, ``box-shadow``, ``background-color``
+# and ``background-image`` rows; ``DbBlockLookup.identity_properties`` would then select on it. That is a shared-database
+# schema change and is not made here.
+_BOX_PAINT_PROPERTIES = frozenset({"background-color", "background-image", "box-shadow"})
+_BORDER_PAINT_LAST_WORDS = frozenset({"width", "style", "color", "radius"})   # border-width, border-top-color, border-top-left-radius...
+
+
+def _is_box_paint(prop: str) -> bool:
+    """``prop`` (a ``block_attributes.css_property``, any ``-gradient`` / ``:tier`` suffix already folded away) is one of
+    the properties that paint a container's own box: the border family, ``box-shadow``, ``background-color`` and
+    ``background-image``. ``outline``, ``object-*``, ``background-position|size|repeat|attachment``, text ``color``,
+    ``fill``, ``stroke``, ``opacity`` and ``overflow`` never are."""
+    words = prop.split("-")
+    return prop in _BOX_PAINT_PROPERTIES or (words[0] == "border" and len(words) > 1 and words[-1] in _BORDER_PAINT_LAST_WORDS)
+
+
+_PAINT_ROLES = ("visual", "color", "colour-gradient")
+
+
 class BlockLookup(Protocol):
     """What the annotator needs to know about blocks. Tests inject a fake; ``DbBlockLookup`` is the real one."""
 
@@ -93,9 +142,16 @@ class BlockLookup(Protocol):
     def array_schemas(self, slug: str) -> list[ArraySchema] | None:
         """None when the block has no ``arrayContentLift``; else its item schemas (usually exactly one)."""
 
-    # Optional (the annotator asks with ``getattr``, so a lookup without it simply has no synonym rung):
+    # Optional (the annotator asks with ``getattr``, so a lookup without one simply lacks that rung):
     #   def slots_of(self, term: str) -> frozenset[str]:
     #       """Every element slot that has ``term`` as its name or one of its aliases (empty when none)."""
+    #   def identity_properties(self, slug: str) -> frozenset[str]:
+    #       """The CSS properties that make an element the block's BOX (border, radius, shadow, background) among the
+    #       ones the block itself declares. Without it a non-section block's root stays on the repeating parent."""
+    #   def scalar_attrs(self, slug: str) -> list[ScalarAttr]:
+    #       """The block's own content-bearing scalar attributes (the header field ladder maps onto these)."""
+    #   def element_names(self, slug: str) -> frozenset[str]:
+    #       """The element slots the block's attributes style (``star``, ``arrow``, ``write-review``...)."""
 
 
 def _norm(token: str) -> str:
@@ -189,6 +245,38 @@ class DbBlockLookup:
                 ItemField(key, role, self._is_text_like(key, role, types.get((attr, key))))
             )
         return [ArraySchema(attr, tuple(fields)) for attr, fields in by_attr.items()]
+
+    def identity_properties(self, slug: str) -> frozenset[str]:
+        """The CSS properties that make an element the block's BOX: what the block itself declares in
+        ``block_attributes.css_property`` (a ``-gradient`` or ``:tier`` suffix folded away) whose
+        ``property_suffixes`` role is a paint role AND that ``_is_box_paint`` names. Pure layout properties (padding,
+        margin, gap, width, position, display) have layout roles and never appear; ``object-fit`` and
+        ``background-position`` paint (visual role) without making a box and are excluded by ``_is_box_paint``."""
+        paints = {r[0] for r in self._conn.execute(
+            "SELECT DISTINCT css_property FROM property_suffixes WHERE css_property IS NOT NULL AND role IN (?, ?, ?)",
+            _PAINT_ROLES)}
+        declared = {re.sub(r"-gradient$", "", prop.split(":", 1)[0]) for (prop,) in self._conn.execute(
+            "SELECT DISTINCT css_property FROM block_attributes WHERE block_slug = ? AND css_property IS NOT NULL", (slug,))}
+        return frozenset(p for p in declared if p in paints and _is_box_paint(p))
+
+    def element_names(self, slug: str) -> frozenset[str]:
+        return frozenset(r[0] for r in self._conn.execute(
+            "SELECT DISTINCT css_element FROM block_attributes WHERE block_slug = ? AND css_element IS NOT NULL", (slug,)))
+
+    def scalar_attrs(self, slug: str) -> list[ScalarAttr]:
+        """The block's scalar attributes whose role is content-bearing (``roles.classification``). A link attribute
+        is one whose last name word is a ``property_suffixes`` content suffix with no CSS property (``Url``, ``Href``,
+        ``Link``) and whose role is a content role."""
+        link_words = {r[0].lower() for r in self._conn.execute(
+            "SELECT suffix FROM property_suffixes WHERE role = 'content' AND css_property IS NULL")}
+        out: list[ScalarAttr] = []
+        for name, role, kind, selector in self._conn.execute(
+            "SELECT ba.attr_name, ba.role, ba.attr_type, ba.derived_selector FROM block_attributes ba "
+            "JOIN roles r ON r.role_name = ba.role WHERE ba.block_slug = ? AND r.classification = 'content-bearing' "
+            "AND ba.attr_type IN ('string', 'number', 'integer', 'boolean') ORDER BY ba.id", (slug,)):
+            link = kind == "string" and role in ("content", "link-href", "url-href") and _kebab(name).split("-")[-1] in link_words
+            out.append(ScalarAttr(name, role, "number" if kind in ("number", "integer") else kind, link, selector))
+        return out
 
     def _json_types(self, slug: str) -> dict[tuple[str, str], str | None]:
         path = self._blocks_dir / slug.split("/", 1)[1] / "block.json"
@@ -436,6 +524,26 @@ def _apply(src: str, edits: list[Edit]) -> str:
     return out
 
 
+class _Edits(list):
+    """The string edits of one declaration. Class requests are collected per element and become ONE edit each, so two
+    reasons to class the same element (an item text field and a colour, a header field and the block root) never
+    produce two overlapping edits of one ``class`` attribute."""
+
+    def __init__(self, src: str) -> None:
+        super().__init__()
+        self.src = src
+        self._wanted: dict[int, tuple[_Node, list[str]]] = {}
+
+    def add_class(self, node: _Node, cls: str) -> None:
+        classes = self._wanted.setdefault(id(node), (node, []))[1]
+        if cls not in classes:
+            classes.append(cls)
+
+    def resolved(self) -> list[Edit]:
+        merged = [e for node, classes in self._wanted.values() if (e := _class_edit(self.src, node, classes))]
+        return [*self, *merged]
+
+
 # ---------------------------------------------------------------------------------------------------------------
 # Structure: runs of identical siblings, text units
 # ---------------------------------------------------------------------------------------------------------------
@@ -479,8 +587,9 @@ class _Unit:
     text_node: _Node | None         # a loose text node to wrap; None when the holder itself is the text element
 
 
-def _units(item: _Node, src: str) -> list[_Unit]:
-    """The text an item shows: a text-only element is one unit, a loose text node beside other elements is one."""
+def _units(item: _Node, src: str, skip: tuple[_Node, ...] = ()) -> list[_Unit]:
+    """The text an item shows: a text-only element is one unit, a loose text node beside other elements is one.
+    Elements in ``skip`` (and everything inside them) are not entered."""
     out: list[_Unit] = []
 
     def visit(el: _Node) -> None:
@@ -491,7 +600,7 @@ def _units(item: _Node, src: str) -> list[_Unit]:
                     out.append(_Unit(el, child))
                 elif not any(u.holder is el for u in out):
                     out.append(_Unit(el, None))
-            elif child.kind == "tag" and child.name not in _OPAQUE:
+            elif child.kind == "tag" and child.name not in _OPAQUE and not any(child is x for x in skip):
                 visit(child)
 
     visit(item)
@@ -761,9 +870,7 @@ def _annotate_marked(src, run: _Run, prefix: str, per_item: list[list[_ItemText]
                 seen.add(key)
                 if key not in done:
                     done.append(key)
-                e = _class_edit(src, t.unit.holder, [prefix + _kebab(key)])
-                if e:
-                    edits.append(e)
+                edits.add_class(t.unit.holder, prefix + _kebab(key))
     return done
 
 
@@ -792,6 +899,104 @@ def _classify_unmarked(per_item: list[list[_ItemText]], free: list[str], skipped
     return lossy
 
 
+_RATING_ROLE = "rating"
+_COLOUR_ROLE = "colour-background"   # DB role: a colour read from the element's OWN inline background (roles table)
+_STYLE_MARKER = "data-src-field-style"
+_BACKGROUND_PROPS = frozenset({"background", "background-color"})
+
+
+def _claim_rating(src, run: _Run, prefix: str, schema: ArraySchema, per_item: list[list[_ItemText]],
+                  edits: _Edits) -> tuple[list[tuple[str, str]], list[list[_ItemText]]]:
+    """A text unit made only of star glyphs, in a block whose item schema has ONE ``rating``-role field, is that field:
+    the element gets the field's class (the first such unit of each card) and leaves the furniture report. With no
+    rating field in the schema the glyph row stays card furniture (reported, never withheld). Returns
+    ``([(key, plain sentence)], the per-card text still to classify)``."""
+    keys = [f.key for f in schema.fields if f.role == _RATING_ROLE]
+    if len(keys) != 1:
+        return [], per_item
+    remaining: list[list[_ItemText]] = []
+    claimed = False
+    for member, texts in zip(run.members, per_item):
+        taken = False
+        keep: list[_ItemText] = []
+        for t in texts:
+            if (not taken and t.field is None and not t.conditional and t.unit.text_node is None
+                    and t.unit.holder is not member and _is_rating_row(t.text)):
+                edits.add_class(t.unit.holder, prefix + _kebab(keys[0]))
+                taken = claimed = True
+            else:
+                keep.append(t)
+        remaining.append(keep)
+    if not claimed:
+        return [], per_item
+    return [(keys[0], "each card's row of star glyphs to '%s' (the block's rating field)" % keys[0])], remaining
+
+
+def _style_marks(member: _Node) -> list[tuple[_Node, str, str]]:
+    """``(element, draft field, css property)`` for every ``data-src-field-style="field:property,..."`` marker the
+    resolver left inside one card."""
+    out: list[tuple[_Node, str, str]] = []
+    for el in [member, *_descendants(member)]:
+        for name, value in el.attrs:
+            if name == _STYLE_MARKER and value:
+                for entry in value.split(","):
+                    fld, _sep, prop = entry.partition(":")
+                    if fld.strip() and prop.strip():
+                        out.append((el, fld.strip(), prop.strip().lower()))
+    return out
+
+
+def _colour_key(name: str, keys: list[str], field_map: dict) -> tuple[str | None, str]:
+    """The colour item field a draft's style-bound field belongs to: the manifest's ``fieldMap`` first (``null`` =
+    deliberately not lifted), then the field whose name words contain the draft name (``avatarColour`` for ``colour``,
+    ``badgeColour`` for ``badge``; more than one match is not guessed), then the block's only colour field."""
+    if name in field_map:
+        target = field_map[name]
+        if target is None:
+            return None, "the manifest's fieldMap marks it as not lifted"
+        return (target, "the manifest's fieldMap") if target in keys else (
+            None, f"the manifest's fieldMap sends it to '{target}', which is not a colour field of the block")
+    by_name = [k for k in keys if _norm(k) == _norm(name) or f"-{_kebab(name)}-" in f"-{_kebab(k)}-"]
+    if len(by_name) == 1:
+        return by_name[0], "its name is a word of the field's name"
+    if len(keys) == 1:
+        return keys[0], "the block has exactly one colour field"
+    return None, ("it matches no colour field of the block by name" if not by_name
+                  else f"it matches more than one colour field ({', '.join(by_name)})")
+
+
+def _claim_colours(src, run: _Run, prefix: str, schema: ArraySchema, field_map: dict, edits: _Edits,
+                   skipped: list[dict[str, str]]) -> list[tuple[str, str]]:
+    """A colour the draft binds to a card through a style declaration (``background: {{ r.colour }}``) is the block's
+    ``colour-background`` item field (a colour read from the element's own inline background), by ``fieldMap``, name,
+    or being the only such field. The element that carries it gets the field's class (the first per card). Only a
+    ``background`` declaration is taken, because that is what the role reads; a text colour is a different thing.
+    Every style-bound field that is not taken is reported."""
+    keys = [f.key for f in schema.fields if f.role == _COLOUR_ROLE]
+    marks = [(m, el, fld, prop) for m in run.members for el, fld, prop in _style_marks(m)]
+    if not marks:
+        return []
+    done: list[tuple[str, str]] = []
+    seen: set[tuple[int, str]] = set()
+    reported: set[tuple[str, str]] = set()
+    for member, el, fld, prop in marks:
+        key, how = _colour_key(fld, keys, field_map) if keys else (None, "the block has no background-colour item field")
+        if key is not None and prop not in _BACKGROUND_PROPS:
+            key, how = None, f"it is the '{prop}' of the element, and the block's colour field is an element's background"
+        if key is None:
+            if (fld, prop) not in reported:
+                reported.add((fld, prop))
+                skipped.append({"field": f"style value '{fld}' ({prop})", "reason": how})
+            continue
+        if (id(member), key) in seen:
+            continue
+        seen.add((id(member), key))
+        edits.add_class(el, prefix + _kebab(key))
+        if all(k != key for k, _d in done):
+            done.append((key, f"the draft's '{fld}' ({prop}) to '{key}' ({how})"))
+    return done
+
+
 def _plan_marked_items(src, run: _Run, prefix: str, schema: ArraySchema, per_item: list[list[_ItemText]], lookup,
                        field_map: dict, edits: list[Edit]):
     """The field-marker mapping for one run: ``(edits, fields annotated, status, reason, lossy, skipped)``.
@@ -803,23 +1008,27 @@ def _plan_marked_items(src, run: _Run, prefix: str, schema: ArraySchema, per_ite
     text_keys = [f.key for f in schema.fields if f.text_like]
     resolved, claimed, free, skipped, lossy = _map_marked_fields(per_item, text_keys, lookup, field_map)
     done = _annotate_marked(src, run, prefix, per_item, resolved, edits, skipped)
+    extra, per_item = _claim_rating(src, run, prefix, schema, per_item, edits)
+    extra += _claim_colours(src, run, prefix, schema, field_map, edits, skipped)
     lossy = _classify_unmarked(per_item, free, skipped) or lossy
     unique: list[dict[str, str]] = []
     for entry in skipped:
         if entry not in unique:
             unique.append(entry)
-    mapped = ", ".join(f"'{owner}' to '{key}'" for key, owner in claimed.items())
+    mapped = ", ".join([f"'{owner}' to '{key}'" for key, owner in claimed.items()] + [text for _key, text in extra])
     reason = f"items annotated and mapped by the draft's field names ({mapped or 'nothing could be mapped'})"
     if unique:
         reason += "; skipped: " + "; ".join(f"'{s['field']}' ({s['reason']})" for s in unique)
     if lossy:
         reason += "; text the block has a field for could not be placed with certainty, so assigning it would be a guess"
     reason += f"; {_NON_TEXT_NOTE}"
-    return edits, [k for k in text_keys if k in done], ("partial" if lossy else "applied"), reason, lossy, unique
+    return edits, [k for k in text_keys if k in done] + [k for k, _text in extra], ("partial" if lossy else "applied"), reason, lossy, unique
 
 
-def _plan_items(src, run: _Run, block_name: str, schema: ArraySchema, lookup=None, field_map: dict | None = None):
-    """Edits and report facts for one run: ``(edits, fields annotated, status, reason, lossy, skipped fields)``.
+def _plan_items(src, run: _Run, block_name: str, schema: ArraySchema, lookup=None, field_map: dict | None = None,
+                edits: _Edits | None = None):
+    """Edits and report facts for one run: ``(edits, fields annotated, status, reason, lossy, skipped fields)``. The
+    edits are collected into ``edits`` (the same object comes back).
 
     ``lossy`` is True when the items hold text that cannot be assigned to a text field with certainty. Measured
     on the Eye Care reviews rail: once the converter claims the block and finds items it cannot fully match, it
@@ -838,11 +1047,9 @@ def _plan_items(src, run: _Run, block_name: str, schema: ArraySchema, lookup=Non
     if other_bem:
         return [], [], "partial", (f"the items already carry the BEM class '{other_bem[0]}' of another block, "
                                    "so they were left as the draft has them"), False, []
-    edits: list[Edit] = []
+    edits = edits if edits is not None else _Edits(src)
     for member in run.members:
-        e = _class_edit(src, member, [prefix + item_token])
-        if e:
-            edits.append(e)
+        edits.add_class(member, prefix + item_token)
     text_fields = [f for f in schema.fields if f.text_like]
     per_item = [_units(m, src) for m in run.members]
     counts = {len(u) for u in per_item}
@@ -866,9 +1073,7 @@ def _plan_items(src, run: _Run, block_name: str, schema: ArraySchema, lookup=Non
             if unit.text_node is None:
                 if unit.holder is member:            # the item is its own text: the converter reads it directly
                     continue
-                e = _class_edit(src, unit.holder, [cls])
-                if e:
-                    edits.append(e)
+                edits.add_class(unit.holder, cls)
             else:
                 raw = src[unit.text_node.start:unit.text_node.end]
                 lead = raw[:len(raw) - len(raw.lstrip())]
@@ -881,8 +1086,616 @@ def _plan_items(src, run: _Run, block_name: str, schema: ArraySchema, lookup=Non
                                   f"{len(text_fields)} text field(s) ({names}), so assigning them by order would be a guess"), True, []
 
 
+# ---------------------------------------------------------------------------------------------------------------
+# The box owner: which element of the draft IS the block (FR-31-31 rule 8)
+# ---------------------------------------------------------------------------------------------------------------
+# A block that cannot claim a section root goes on an element INSIDE the section. The parent of the repeated items is
+# the wrong element when the draft draws the block's box (its border, radius, background) around the items AND their
+# header: the header would then sit outside the block and fall into generic text blocks. So the annotator climbs from
+# that parent, strictly inside the section root, to the first element that itself declares a property the block also
+# declares as part of its own box (``lookup.identity_properties``). Only two sources of an element's own styling are
+# read: its inline ``style`` and top-level single-class rules of the run copy's ``<style>`` blocks (a rule inside
+# ``@media`` / ``@supports`` / ``@container`` / ``@layer``, or with a descendant, compound or pseudo selector, applies
+# conditionally or to another element and is NOT read). Cascade order and ``!important`` are not evaluated.
+
+_SIDES = frozenset({"top", "right", "bottom", "left", "inline", "block", "start", "end"})
+_NO_PAINT = frozenset({"", "none", "0", "0px", "transparent", "initial", "inherit", "unset", "revert"})
+_STYLE_TAG_RE = re.compile(r"<style\b[^>]*>(.*?)</style\s*>", re.IGNORECASE | re.DOTALL)
+_CONDITIONAL_AT_RE = re.compile(r"@(?:media|supports|container|layer|document|scope)\b[^{};]*\{")
+
+
+def _declarations(text: str) -> dict[str, str]:
+    """``{property: value}`` for one declaration block (the last declaration of a property wins). A ``;`` inside
+    parentheses (``url(data:...;base64,...)``) does not end a declaration."""
+    out: dict[str, str] = {}
+    for part in re.split(r";(?![^()]*\))", text):
+        name, sep, value = part.partition(":")
+        if sep and name.strip():
+            out[name.strip().lower()] = value.strip()
+    return out
+
+
+def _unconditional_css(sheet: str) -> str:
+    """``sheet`` without every conditional at-rule block (nested braces included)."""
+    out, pos = [], 0
+    for m in _CONDITIONAL_AT_RE.finditer(sheet):
+        if m.start() < pos:
+            continue
+        depth, i = 1, m.end()
+        while i < len(sheet) and depth:
+            depth += {"{": 1, "}": -1}.get(sheet[i], 0)
+            i += 1
+        out.append(sheet[pos:m.start()])
+        pos = i
+    out.append(sheet[pos:])
+    return "".join(out)
+
+
+def _own_declarations(node: _Node, sheet: str) -> dict[str, str]:
+    """The declarations that belong to ``node`` alone: its inline ``style`` over its single-class rules."""
+    merged: dict[str, str] = {}
+    for cls in node.classes:
+        for block in re.findall(r"(?:^|[}{;,])\s*\." + re.escape(cls) + r"(?![\w-])\s*(?:,[^{}]*)?\{([^}]*)\}", sheet):
+            merged.update(_declarations(block))
+    for name, value in node.attrs:
+        if name == "style" and value:
+            merged.update(_declarations(_html.unescape(value)))
+    return merged
+
+
+def _matches_identity(prop: str, identity: frozenset[str]) -> bool:
+    """``prop`` (a declared CSS property) is, or is a shorthand or side longhand of, an identity property.
+    ``border`` and ``border-top`` are shorthands of ``border-color``; ``border-top-color`` and ``border-top-left-radius``
+    are side longhands of ``border-color`` / ``border-radius``; ``background`` is a shorthand of ``background-color``."""
+    words = prop.split("-")
+    for q in identity:
+        qw = q.split("-")
+        if prop == q or (words[0] == qw[0] and (
+                len(words) == 1
+                or (len(words) == 2 and words[1] in _SIDES and qw[0] == "border")
+                or (len(words) > len(qw) and words[1] in _SIDES and words[-1] == qw[-1]))):
+            return True
+    return False
+
+
+def _paints_identity(declared: dict[str, str], identity: frozenset[str]) -> list[str]:
+    """The identity properties an element's declarations actually paint (a value of ``none``, ``0`` or
+    ``transparent`` paints nothing), in declaration order."""
+    return [prop for prop, value in declared.items()
+            if _matches_identity(prop, identity) and not all(w in _NO_PAINT for w in value.lower().split() or [""])]
+
+
+_FOUR_SIDES = ("top", "right", "bottom", "left")
+
+
+def _sides_of(part: str) -> "tuple[str, ...] | None":
+    """The physical sides a border property name part covers (CSS logical sides included: ``inline`` is left and right),
+    or None when the part is not a side at all (``width``, ``color``, ``radius``...). Grammar, not a property lookup."""
+    if part in _FOUR_SIDES:
+        return (part,)
+    if part == "inline":
+        return ("left", "right")
+    if part == "block":
+        return ("top", "bottom")
+    if part == "start":
+        return ("left",)
+    if part == "end":
+        return ("right",)
+    return None
+_NO_LINE = frozenset({"none", "hidden", "0", "0px", "transparent"})     # a border shorthand token that draws no line
+
+
+def _tokens(value: str) -> list[str]:
+    """The whitespace-separated tokens of a CSS value, a parenthesised group (``rgb(0, 0, 0)``) staying one token."""
+    return [t for t in re.split(r"\s+(?![^()]*\))", value.lower().strip()) if t]
+
+
+def _expand_sides(toks: list[str]) -> dict[str, str]:
+    """CSS one-to-four value expansion (top, right, bottom, left)."""
+    n = len(toks)
+    if n == 0:
+        return {}
+    if n == 1:
+        t = toks * 4
+    elif n == 2:
+        t = toks * 2
+    elif n == 3:
+        t = [toks[0], toks[1], toks[2], toks[1]]
+    else:
+        t = toks[:4]
+    return dict(zip(_FOUR_SIDES, t))
+
+
+def _border_sides(declared: dict[str, str], props: list[str]) -> tuple[set[str], bool]:
+    """``(the sides a border is drawn on, whether a radius is set)`` from the border properties in ``props``.
+
+    A shorthand (``border``, ``border-top``) draws its sides unless one of its tokens is a no-line value. A
+    ``border-width`` / ``border-style`` longhand (with or without a side, one to four values) draws a side when the
+    width is not zero and the style is not ``none`` / ``hidden``; a width alone counts (the style may come from
+    somewhere this reader cannot see, and someone who wrote a width meant a border). A colour alone never draws a
+    line. Declarations are read as a set (cascade order is not evaluated, see the reader's limits above)."""
+    width: dict[str, bool] = {}
+    style: dict[str, bool] = {}
+    radius = False
+    for prop in props:
+        words, toks = prop.split("-"), _tokens(declared[prop])
+        if words[0] != "border":
+            continue
+        if words[-1] == "radius":
+            radius = True
+            continue
+        kind = words[-1] if words[-1] in ("width", "style", "color") else None
+        parts = words[1:-1] if kind else words[1:]
+        if kind == "color" or len(parts) > 1 or (parts and _sides_of(parts[0]) is None):
+            continue
+        if kind is None:                                 # ``border`` / ``border-top``: one verdict for its sides
+            draws = not any(t in _NO_LINE for t in toks)
+            for side in (_sides_of(parts[0]) if parts else _FOUR_SIDES):
+                width[side] = style[side] = draws
+            continue
+        values = _expand_sides(toks) if not parts else {side: toks[0] for side in _sides_of(parts[0]) if toks}
+        for side, tok in values.items():
+            (width if kind == "width" else style)[side] = tok not in _NO_LINE
+    return {s for s in _FOUR_SIDES if width.get(s, True) and (style.get(s) or (s not in style and width.get(s)))}, radius
+
+
+def _makes_box(declared: dict[str, str], identity: frozenset[str]) -> list[str]:
+    """The identity properties that make this element a CONTAINING BOX, else ``[]``. A box is: a non-transparent
+    background colour or image, a box shadow, a border on ALL FOUR sides (the ``border`` shorthand does that), or a
+    border radius together with a border on any side. A divider (one side's border), an outline, a radius with
+    nothing drawn, and every property that paints without enclosing (``object-fit``, ``background-position``) are
+    not: a layout wrapper with a single rule under it is not the block's box, and stopping the climb on it would
+    leave the block's header outside the block root."""
+    painted = _paints_identity(declared, identity)
+    sides, radius = _border_sides(declared, painted)
+    fills = [p for p in painted if p == "background" or p in _BOX_PAINT_PROPERTIES]   # never background-position / -size / -repeat
+    if not fills and not (len(sides) == 4 or (radius and sides)):
+        return []
+    return fills + [p for p in painted if p.split("-")[0] == "border"]
+
+
+def _box_owner(start: _Node, root: _Node, sheet: str, identity: frozenset[str], stop_classes: set[str],
+               is_other_block) -> tuple[_Node | None, int, list[str]]:
+    """``(owner, levels climbed, properties that made it the owner)`` for the first element from ``start`` up to (never
+    including) ``root`` that is a containing box (``_makes_box``), else ``(None, 0, [])``. The climb stops, finding
+    nothing, at an element that carries another declared section's class or another built block's root class. A
+    directive element (``<sc-if>``, ``<sc-for>``) cannot carry a class and is passed through without counting as a
+    level."""
+    levels = 0
+    for node in [start, *_ancestors(start)]:
+        if node is root:
+            break
+        if _is_directive(node):
+            continue
+        if any(c in stop_classes for c in node.classes) or is_other_block(node):
+            break
+        painted = _makes_box(_own_declarations(node, sheet), identity)
+        if painted:
+            return node, levels, painted
+        levels += 1
+    return None, 0, []
+
+
+def _unit_text(unit: _Unit, src: str) -> str:
+    node = unit.text_node
+    return _squash(src[node.start:node.end] if node is not None else src[unit.holder.open_end:unit.holder.inner_end])
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# The header field ladder: furniture inside the block root that has no class and no marker (FR-31-31 rule 9)
+# ---------------------------------------------------------------------------------------------------------------
+# Once the block root is the box that also holds the header (an average rating, a review count, a link), every unit of
+# text and every media element inside it that is not an item is either MAPPED to one of the block's scalar attributes by
+# role and value shape, or REPORTED as skipped with a reason. A converter that claims the block drops what it cannot
+# place, so a text unit that ends as neither is unexplained content and withholds the declaration (exactly like an
+# unexplained item text). Nothing here reads a block name: the attributes, their roles, the element slots the block
+# styles and the slot vocabulary all come from the lookup.
+
+_STAR_GLYPHS = frozenset("★☆⭐✩✭✮✯")
+# The glyphs a per-card rating row may be made of and still be lifted correctly. ``converter/services/lift_helpers.py::
+# extract_star_count`` counts ``★`` and ``⭐`` (a filled star) and nothing else, so ``★★★★☆`` lifts as 4 (right) and
+# ``☆☆☆☆☆`` as 0 (right), but ``✭✭✭✭✭`` lifts as 0 (wrong): a row holding any other star glyph is not claimed as a rating.
+# ``test_star_glyph_sets_agree_with_the_converters_star_count`` compares this set with the converter so they cannot drift.
+_RATING_ROW_GLYPHS = frozenset("★⭐☆✩")
+_RATING_NUMBER_RE = re.compile(r"^\d(?:\.\d+)?$")
+_COUNT_TEXT_RE = re.compile(r"^(\d[\d,]*)\s+([A-Za-z][A-Za-z-]*)$")
+_NUMERAL_RE = re.compile(r"\d+(?:\.\d+)?")
+_SCALE_RE = re.compile(r"(?:out of|/|of)\s*(\d+(?:\.\d+)?)", re.IGNORECASE)   # the scale maximum in '4.7 out of 5', not a rating
+_NUMERIC_ROLE = "numeric-content"
+_TEXT_ROLE = "text-content"
+_STAR_TERM = "stars"      # the DB slot vocabulary's word for what a star bar shows (slot `rating`, alias `stars`)
+_STAR_WORD = "star"       # a block that styles an element called `star` / `arrow` draws that thing itself
+_ARROW_WORD = "arrow"
+_CONTROL_TAGS = frozenset({"button"})
+_MEDIA_TAGS = frozenset({"img", "picture", "video", "audio", "canvas", "iframe", "input", "select", "textarea", "svg"})
+
+
+def _is_star_run(text: str) -> bool:
+    return bool(text.strip()) and all(ch in _STAR_GLYPHS or ch.isspace() for ch in text)
+
+
+def _is_rating_row(text: str) -> bool:
+    """A run of star glyphs the converter counts correctly (``_RATING_ROW_GLYPHS``): the only kind claimed as a rating."""
+    return bool(text.strip()) and all(ch in _RATING_ROW_GLYPHS or ch.isspace() for ch in text)
+
+
+def _stem(word: str) -> str:
+    word = word.lower()
+    return word[:-1] if word.endswith("s") and not word.endswith("ss") and len(word) > 3 else word
+
+
+def _words(text: str) -> list[str]:
+    return [_stem(w) for w in re.findall(r"[A-Za-z]+", text)]
+
+
+def _attr_words(name: str) -> list[str]:
+    return [_stem(w) for w in _kebab(name).split("-") if w]
+
+
+def _text_of(node: _Node, src: str) -> str:
+    parts: list[str] = []
+    for child in node.children:
+        if child.kind == "text":
+            parts.append(src[child.start:child.end])
+        elif child.kind == "tag" and child.name not in _OPAQUE:
+            parts.append(_text_of(child, src))
+    return _squash(" ".join(parts))
+
+
+def _attr(node: _Node, name: str) -> str | None:
+    for key, value in node.attrs:
+        if key == name:
+            return _html.unescape(value) if value is not None else ""
+    return None
+
+
+def _quote(prefix: str, text: str) -> str:
+    return f"{prefix} '{text[:40]}'"
+
+
+@dataclass
+class _Header:
+    """What the header ladder decided: ``fields`` mapped, ``skipped`` (every unit and element not mapped, each with its
+    reason), ``notes`` (one plain sentence per mapping) and ``unexplained`` (the text or media that has no field and no
+    furniture verdict, which withholds the section)."""
+    fields: list[str] = field(default_factory=list)
+    claimed: list[tuple[_Node, ScalarAttr]] = field(default_factory=list)      # each element a field class was requested for, and the field
+    skipped: list[dict[str, str]] = field(default_factory=list)
+    notes: list[str] = field(default_factory=list)
+    unexplained: list[str] = field(default_factory=list)
+
+    def skip(self, label: str, reason: str) -> None:
+        entry = {"field": label, "reason": reason}
+        if entry not in self.skipped:
+            self.skipped.append(entry)
+
+    def unplaced(self, label: str, reason: str) -> None:
+        self.skip(label, reason)
+        if label not in self.unexplained:
+            self.unexplained.append(label)
+
+
+def _label_agrees(label: str, number: float) -> bool | None:
+    """Does a star bar's ``aria-label`` name the rating ``number``? None when the label has no numeral at all (it gives
+    no evidence: 'Five stars'). Otherwise every numeral in it must equal ``number``, the scale maximum after 'out of'
+    or '/' excepted; so '4.7 out of 5' and 'Rated 4.7 out of 5' agree with 4.7, while 'Rated 3.2 out of 5' and
+    '4.7 out of 5, based on 15 reviews' do not (a label that says something else about the rating is not evidence
+    that the bar shows this number, and withholding on it is the safe side)."""
+    scales = {m.start(1) for m in _SCALE_RE.finditer(label)}
+    numerals = [m for m in _NUMERAL_RE.finditer(label) if m.start() not in scales]
+    if not numerals:
+        return None
+    return all(abs(float(m.group()) - number) < 0.05 for m in numerals)
+
+
+def _star_bar_after(holder: _Node, number: float, src: str) -> _Node | None:
+    """The star bar right after a number element: the next sibling element (whitespace between is fine), when its
+    ``aria-label`` agrees with the number (``_label_agrees``) or, when the label has no numeral to compare, it holds
+    nothing but star glyphs (glyph geometry is then the only evidence there is, and it is no evidence of the value)."""
+    if holder.parent is None:
+        return None
+    seen = False
+    for sibling in holder.parent.children:
+        if sibling is holder:
+            seen = True
+        elif not seen or (sibling.kind == "text" and not src[sibling.start:sibling.end].strip()) or sibling.kind == "comment":
+            continue
+        elif sibling.kind != "tag":
+            return None
+        else:
+            agrees = _label_agrees(_attr(sibling, "aria-label") or "", number)
+            if agrees is not None:
+                return sibling if agrees else None
+            return sibling if _is_star_run(_text_of(sibling, src)) else None
+    return None
+
+
+def _shares_star_slot(name: str, lookup) -> bool:
+    """The attribute's name has a word that lives in the same DB slot as the star bar's own term (``rating``)."""
+    slots_of = getattr(lookup, "slots_of", None)
+    if slots_of is None:
+        return False
+    star_slots = slots_of(_STAR_TERM)
+    return bool(star_slots) and any(slots_of(w) & star_slots for w in _kebab(name).split("-") if w)
+
+
+def _declares(elements: frozenset[str], word: str) -> bool:
+    return any(word == _stem(w) for name in elements for w in _kebab(name).split("-") if w)
+
+
+def _link_score(anchor_text: str, attr: ScalarAttr, elements: frozenset[str]) -> int:
+    """How many of the anchor's words are words of the attribute's name or of an element slot the block styles that
+    shares a word with the attribute's name (``write-review`` for ``reviewRequestUrl``)."""
+    vocab = set(_attr_words(attr.name))
+    for element in elements:
+        if vocab & set(_attr_words(element)):
+            vocab |= set(_attr_words(element))
+    return sum(1 for w in _words(anchor_text) if w in vocab)
+
+
+def _name_attrs(attrs: list[ScalarAttr], prefix: str, lookup) -> list[ScalarAttr]:
+    """The block's string attributes that can carry a header caption (a business name): a ``text-content`` string
+    that (a) declares the element class the converter lifts its value from, and that class is exactly the one this
+    annotator would put on the caption (``block_attributes.derived_selector`` == ``.sgs-<block>__<attribute>``), and
+    (b) has a word in its name that the slot vocabulary knows (``name`` is an alias of the ``heading`` slot; no
+    attribute name is read here). The caller maps a caption only when exactly ONE attribute qualifies: two candidates,
+    or none, and the caption is unexplained and the section is withheld. The ``identity`` role is NOT a candidate: on
+    the live database it names icon identities (``iconName``, ``iconSource``), never a business name."""
+    slots_of = getattr(lookup, "slots_of", None)
+    return [a for a in attrs
+            if a.kind == "string" and not a.link_like and a.role == _TEXT_ROLE and a.selector == "." + prefix + _kebab(a.name)
+            and slots_of is not None and any(slots_of(w) for w in _kebab(a.name).split("-") if w)]
+
+
+def _plan_header(src: str, root: _Node, members: list[_Node], block_name: str, attrs: list[ScalarAttr],
+                 elements: frozenset[str], lookup, edits: _Edits) -> _Header:
+    """Map or report every text unit and media element of ``root`` that is not inside an item."""
+    prefix = f"sgs-{block_name}__"
+    head = _Header()
+    keep = tuple(members)
+    units = [(u, _unit_text(u, src)) for u in _units(root, src, skip=keep)]
+    used: set[int] = set()
+
+    def inside_item(node: _Node) -> bool:
+        return any(node is m or _is_inside(node, m) for m in members)
+
+    def claim(node: _Node, attr: ScalarAttr) -> None:
+        edits.add_class(node, prefix + _kebab(attr.name))
+        head.claimed.append((node, attr))
+        if attr.name not in head.fields:
+            head.fields.append(attr.name)
+
+    def rating_attr(a: ScalarAttr) -> bool:
+        return a.kind == "number" and a.role == _NUMERIC_ROLE and _shares_star_slot(a.name, lookup)
+
+    # 1. Links: every header anchor, mapped to ONE link attribute only when all of them carry one identical address.
+    anchors = [n for n in _descendants(root) if n.name == "a" and not inside_item(n)]
+    link_attrs = [a for a in attrs if a.link_like]
+    hrefs = {_attr(n, "href") or "" for n in anchors}
+    hrefs.discard("")
+    if anchors:
+        texts = {id(n): _text_of(n, src) for n in anchors}
+        if len(link_attrs) != 1:
+            why = ("the block has no link attribute" if not link_attrs
+                   else "the block has more than one link attribute, so which one an address belongs to is not certain")
+            for n in anchors:
+                head.skip(_quote("header link", texts[id(n)]), why)
+        elif len(hrefs) != 1:
+            for n in anchors:
+                head.skip(_quote("header link", texts[id(n)]),
+                          "the header's links point to different addresses, so no single address can be tied to "
+                          f"'{link_attrs[0].name}'")
+        elif len(anchors) > 1 and max(_link_score(texts[id(n)], link_attrs[0], elements) for n in anchors) == 0:
+            for n in anchors:      # several links, one address, and no word of any of them ties it to the attribute
+                head.skip(_quote("header link", texts[id(n)]),
+                          f"no evidence which link is the block's '{link_attrs[0].name}' (none of their words is a word of the "
+                          "attribute or of an element the block styles for it)")
+        else:
+            best = max(_link_score(texts[id(n)], link_attrs[0], elements) for n in anchors)
+            winner = next(n for n in anchors if _link_score(texts[id(n)], link_attrs[0], elements) == best)
+            claim(winner, link_attrs[0])
+            head.notes.append(f"'{texts[id(winner)][:40]}' (a link to {next(iter(hrefs))}) to '{link_attrs[0].name}', "
+                              "the one address every header link shares")
+            for n in anchors:
+                if n is not winner:
+                    head.skip(_quote("header link", texts[id(n)]),
+                              f"no block attribute for a second link ('{link_attrs[0].name}' already carries the address)")
+        for n in anchors:
+            for i, (u, _t) in enumerate(units):
+                if u.holder is n or _is_inside(u.holder, n):
+                    used.add(i)
+
+    # 2. Numbers: a rating beside a star bar, a count beside a noun the block names.
+    for i, (unit, text) in enumerate(units):
+        if i in used or unit.text_node is not None:
+            continue
+        if _RATING_NUMBER_RE.match(text) and float(text) <= 5:
+            bar = _star_bar_after(unit.holder, float(text), src)
+            if bar is None:
+                continue
+            found = [a for a in attrs if rating_attr(a)]
+            if len(found) == 1:
+                claim(unit.holder, found[0])
+                head.notes.append(f"'{text}' to '{found[0].name}' (a number straight before a star bar showing the same rating)")
+                used.add(i)
+                for j, (u2, _t2) in enumerate(units):
+                    if u2.holder is bar or _is_inside(u2.holder, bar):
+                        used.add(j)
+                        head.skip(_quote("header star bar", _text_of(bar, src)),
+                                  f"it repeats '{found[0].name}' as stars; the block draws its own stars from that value")
+            else:
+                head.unplaced(_quote("header text", text),
+                              "a rating beside a star bar, but the block has " + (
+                                  "no numeric rating attribute" if not found else "more than one they could fill"))
+                used.add(i)
+            continue
+        count = _COUNT_TEXT_RE.match(text)
+        if count is not None:
+            noun = _stem(count.group(2))
+            found = [a for a in attrs if a.kind == "number" and a.role == _NUMERIC_ROLE and not rating_attr(a)
+                     and noun in _attr_words(a.name)]
+            if len(found) == 1:
+                claim(unit.holder, found[0])
+                head.notes.append(f"'{text}' to '{found[0].name}' (a whole number followed by '{count.group(2)}', a word of the attribute's name)")
+                used.add(i)
+
+    # 3. Star glyphs, controls, the caption and everything else.
+    star_drawn, arrows_drawn = _declares(elements, _STAR_WORD), _declares(elements, _ARROW_WORD)
+    name_words = set(_words(block_name.replace("-", " ")))
+    identity_attrs = _name_attrs(attrs, prefix, lookup)
+
+    def hidden(unit: _Unit) -> bool:
+        """The unit's text sits in an ``aria-hidden="true"`` element (or inside one): decorative, not content."""
+        node = unit.holder
+        while node is not None and node is not root:
+            if _attr(node, "aria-hidden") == "true":
+                return True
+            node = node.parent
+        return False
+
+    def has_control(node: _Node) -> bool:
+        return any(d.name in _CONTROL_TAGS and not _text_of(d, src) for d in [node, *_descendants(node)])
+
+    def control_row(unit: _Unit) -> bool:
+        """The unit sits in a row that also holds the draft's own text-less controls (previous / next buttons)."""
+        return unit.holder.parent is not None and any(
+            s is not unit.holder and has_control(s) and not _text_of(s, src) for s in unit.holder.parent.elements)
+
+    loose = [i for i, (u, t) in enumerate(units) if i not in used and not _is_star_run(t) and not control_row(u) and not hidden(u)]
+    for i, (unit, text) in enumerate(units):
+        if i in used:
+            continue
+        holder = unit.holder
+        if _is_star_run(text):
+            if star_drawn:
+                head.skip(_quote("header star glyphs", text), "star glyphs: the block draws its own stars")
+            else:
+                head.unplaced(_quote("header star glyphs", text), "star glyphs the block has no star element for")
+        elif hidden(unit):
+            head.skip(_quote("header text", text), "decorative: the draft hides it from assistive technology (aria-hidden), "
+                      "so it is not content the block should carry")
+        elif control_row(unit):
+            head.skip(_quote("header text", text), "it sits in the row of the draft's own scroll controls; the block draws "
+                      "its own previous / next controls and has no field for a scroll hint")
+        elif (identity_attrs and len(identity_attrs) == 1 and len(loose) == 1 and unit.text_node is None
+              and not set(_words(text)) <= name_words):
+            claim(holder, identity_attrs[0])
+            head.notes.append(f"'{text}' to '{identity_attrs[0].name}' (the only unexplained header text, and not the block's own name)")
+        elif set(_words(text)) and set(_words(text)) <= name_words:
+            head.skip(_quote("header text", text), "these are the block's own name words, so it is the review source label "
+                      "and not a business name; the block draws its own source logo")
+        else:
+            head.unplaced(_quote("header text", text), "text inside the block's box with no field and no verdict; "
+                          "the block would drop it")
+
+    # 4. Media and controls: each element reported once, an empty control or a decorative image is furniture.
+    def walk(node: _Node):
+        for child in node.elements:
+            if inside_item(child) or child.name in _OPAQUE - {"svg"}:
+                continue
+            if child.name in _MEDIA_TAGS or child.name in _CONTROL_TAGS:
+                yield child
+            if child.name not in _MEDIA_TAGS and child.name not in _CONTROL_TAGS:
+                yield from walk(child)
+
+    for el in walk(root):
+        name = f"header <{el.name}>"
+        if el.name == "img":
+            shown = (_attr(el, "src") or "").rsplit("/", 1)[-1]
+            decorative = (_attr(el, "aria-hidden") == "true" or _attr(el, "alt") in (None, "") or _attr(el, "role") == "presentation")
+            label = _quote("header image", shown)
+            if decorative:
+                head.skip(label, "a decorative image (aria-hidden or no alt text): not content; the block draws its own source logo")
+            else:
+                head.unplaced(label, "an image the block has no field for")
+        elif el.name in _CONTROL_TAGS:
+            if not _text_of(el, src):
+                head.skip(_quote("header button", _attr(el, "aria-label") or ""),
+                          "the block draws its own previous / next arrows" if arrows_drawn
+                          else "a control the block has no equivalent for")
+        elif el.name == "svg":
+            head.skip(name, "a graphic with no text: not lifted as content")
+        else:
+            head.unplaced(name, "an element the block has no field for")
+    return head
+
+
+_HEADING_TAGS = frozenset({"h1", "h2", "h3", "h4", "h5", "h6"})
+_OUTSIDE_WHY = ("sits outside the block root: the block's box does not contain it, so the block does not carry it and it is "
+                "left to the converter as content beside the block")
+
+
+def _beside_the_block(src: str, root: _Node, owner: _Node, members: list[_Node], block_name: str,
+                      attrs: list[ScalarAttr], elements: frozenset[str], lookup) -> tuple[list[dict[str, str]], list[str]]:
+    """``(skipped entries, labels)`` for the text and links that sit BESIDE the block's box, not inside it.
+
+    Walking up from ``owner``, the first container that holds such a unit is the one the repeated items share with their
+    header. Every unit of it outside ``owner`` is reported (``skipped``), so nothing that misses the block root vanishes
+    silently, except the section's heading region: the text of a branch that contains an ``h1``-``h6`` (the heading with
+    its eyebrow and lede), unless it is a link. The units the header ladder would MAP by shape (a rating beside a star
+    bar, a count beside a noun the block names: numeric fields; the link and caption rungs pick by elimination and are
+    only reported) are returned as ``labels`` in every case, heading region or not: they belong to the block and the
+    block root cannot reach them, so the caller withholds the declaration."""
+    def analyse(container: _Node):
+        outside = _units(container, src, skip=(owner,))
+        if not outside:
+            return [], []
+        mapped = {id(n) for n, a in _plan_header(src, container, members, block_name, attrs, elements, lookup,
+                                                     _Edits(src)).claimed if a.kind == "number" and not _is_inside(n, owner)}
+        skipped: list[dict[str, str]] = []
+        labels: list[str] = []
+        for unit in outside:
+            chain = [unit.holder]
+            while chain[-1] is not container and chain[-1].parent is not None:
+                chain.append(chain[-1].parent)
+            text = _unit_text(unit, src)
+            branch = chain[-2] if len(chain) > 1 else chain[-1]
+            in_link = any(n.name == "a" for n in chain)
+            if any(id(n) in mapped for n in chain):
+                labels.append(_quote("text", text))
+            elif in_link or not any(n.name in _HEADING_TAGS for n in [branch, *_descendants(branch)]):
+                skipped.append({"field": _quote("header link" if in_link else "header text", text), "reason": _OUTSIDE_WHY})
+        return skipped, labels
+
+    container = owner.parent
+    while container is not None:
+        if not _is_directive(container):
+            skipped, labels = analyse(container)
+            if skipped or labels or container is root:
+                return skipped, labels
+        container = container.parent
+    return [], []
+
+
 def _declared_roots(section_blocks: dict) -> set[str]:
     return {k for k, v in section_blocks.items() if isinstance(v, dict) and v.get("suggestedBlock")}
+
+
+def _call(lookup, method: str, slug: str, default):
+    """An optional lookup method's answer for ``slug``, or ``default`` when this lookup does not have the method."""
+    fn = getattr(lookup, method, None)
+    return fn(slug) if fn is not None else default
+
+
+def _choose_owner(src: str, run: _Run, root: _Node, slug: str, lookup, block_class: str,
+                  other_roots: set[str]) -> tuple[_Node, int, str]:
+    """``(the element that carries the block's root class, levels climbed above the repeating parent, plain-English
+    note)``. Falls back to the repeating parent (0 levels) when the lookup gives no box properties or no element
+    between the parent and the section root paints one."""
+    identity = _call(lookup, "identity_properties", slug, frozenset())
+    if not identity:
+        return run.parent, 0, ("no box properties are known for the block, so its root class stays on the element that "
+                               "repeats the items")
+    sheet = _unconditional_css(chr(10).join(_STYLE_TAG_RE.findall(src)))
+    owner, levels, painted = _box_owner(run.parent, root, sheet, identity, other_roots,
+                                        lambda node: _bem_conflict(node, block_class, lookup) is not None)
+    if owner is None:
+        return run.parent, 0, ("no element between the repeated items and the section root paints a border, radius, "
+                               "shadow or background the block also has, so its root class stays on the element that "
+                               "repeats the items")
+    where = "the element that repeats the items" if levels == 0 else f"{levels} level(s) above the element that repeats the items"
+    return owner, levels, (f"the block's root class went on {where}, the first to paint {', '.join(painted)} "
+                           "(properties the block draws its own box with), so what sits beside the items in that box belongs to the block")
 
 
 def _declaration(src: str, root_class: str, decl, groups, section_blocks: dict, lookup: BlockLookup, min_rank: int,
@@ -936,20 +1749,18 @@ def _declaration(src: str, root_class: str, decl, groups, section_blocks: dict, 
         if any(o in other_roots for anc in _ancestors(root) for o in anc.classes):
             return reject("a class-section block can only claim a section root, and this element sits inside "
                           "another declared section")
-    edits: list[Edit] = []
+    edits = _Edits(src)
     if class_section:
-        edit = _class_edit(src, root, [block_class])
-        if edit:
-            edits.append(edit)
+        edits.add_class(root, block_class)
     if not rows:
         if not class_section:
             return reject("the block cannot claim a section root and the manifest declares no repeated group for "
                           "this section, so there is no inner element to annotate")
-        if not edits:
+        if not edits.resolved():
             return src, _row(root_class, slug, conf, "applied",
                              f"the section root already carries '{block_class}'; nothing to change", "root")
-        return _apply(src, edits), _row(root_class, slug, conf, "applied",
-                                        f"'{block_class}' put first in the section root's classes; no repeated group is declared", "root")
+        return _apply(src, edits.resolved()), _row(root_class, slug, conf, "applied",
+                                                   f"'{block_class}' put first in the section root's classes; no repeated group is declared", "root")
     issue: str | None = None
     if len(rows) > 1:
         issue = (f"{len(rows)} repeated groups are declared for this section, so the block's items cannot be "
@@ -964,36 +1775,66 @@ def _declaration(src: str, root_class: str, decl, groups, section_blocks: dict, 
             issue = note
         else:
             count_note = note
+    owner: _Node = root
+    climbed, climb_note = 0, ""
     if not class_section:
         if run is None:
             return reject(issue or "no run of repeated items was found")
         if run.parent is root:
             return reject("the repeated items are direct children of the section root, and a block that cannot "
                           "claim a section root has no inner element to carry its class")
-        clash = _bem_conflict(run.parent, block_class, lookup)
+        owner, climbed, climb_note = _choose_owner(src, run, root, slug, lookup, block_class,
+                                                   _declared_roots(section_blocks) - {root_class})
+        target = "ancestor" if climbed else "inner"
+        clash = _bem_conflict(owner, block_class, lookup)
         if clash:
-            return reject(f"the element that repeats the items already carries '{clash}', the root class of a different block")
-        edit = _class_edit(src, run.parent, [block_class])
-        if edit:
-            edits.append(edit)
+            return reject(f"the element that carries the block's box already carries '{clash}', the root class of a different block")
+        edits.add_class(owner, block_class)
     withheld = ("withheld so the converter cannot swallow the section's text: {why}. The section is left as "
                 "the draft has it.")
     if run is None:
         if not keep_unmapped_text:
             return reject(withheld.format(why=issue))
-        return (_apply(src, edits) if edits else src), _row(
+        return (_apply(src, edits.resolved()) if edits.resolved() else src), _row(
             root_class, slug, conf, "partial", f"root class applied but the items were not annotated: {issue}", target)
     field_map = _field_map(rows[0].get("fieldMap"))
-    item_edits, fields, status, reason, lossy, skipped = _plan_items(src, run, block_name, schemas[0], lookup, field_map)
-    if lossy and not keep_unmapped_text:
-        return reject(withheld.format(why=re.sub(r"^items annotated(?: and mapped[^;]*)?; ", "", reason)))
-    edits.extend(item_edits)
+    _edits, fields, status, reason, lossy, skipped = _plan_items(src, run, block_name, schemas[0], lookup, field_map, edits)
+    header = _plan_header(src, owner, run.members, block_name, _call(lookup, "scalar_attrs", slug, []),
+                          _call(lookup, "element_names", slug, frozenset()), lookup, edits)
+    header_why = (f"the block's own box holds {', '.join(header.unexplained)}, which no block field can carry"
+                  if header.unexplained else None)
+    beside, beside_fields = ([], [])
+    if not class_section:
+        beside, beside_fields = _beside_the_block(src, root, owner, run.members, block_name,
+                                                  _call(lookup, "scalar_attrs", slug, []),
+                                                  _call(lookup, "element_names", slug, frozenset()), lookup)
+    if beside_fields:
+        header_why = "; ".join(filter(None, [header_why, f"{', '.join(beside_fields)} belong(s) to the block's fields but "
+                                                            "sit outside the block root, which cannot reach it"]))
+    if (lossy or header_why) and not keep_unmapped_text:
+        why = ([re.sub(r"^items annotated(?: and mapped[^;]*)?; ", "", reason)] if lossy else []) + ([header_why] if header_why else [])
+        return reject(withheld.format(why="; ".join(why)))
+    if header.notes:
+        reason += "; header: mapped " + "; ".join(header.notes)
+    if header_why:
+        reason += f"; {header_why}"
+        status = "partial"
+    if not class_section:
+        reason += f"; {climb_note}"
+    for entry in [*header.skipped, *beside]:
+        if entry not in skipped:
+            skipped.append(entry)
     if count_note:
         status, reason = "partial", f"{count_note}; {reason}"
-    new_src = _apply(src, edits) if edits else src
+    resolved = edits.resolved()
+    new_src = _apply(src, resolved) if resolved else src
     row = _row(root_class, slug, conf, status, reason, target, len(run.members), fields)
     if skipped:
         row["skipped_fields"] = skipped
+    if header.fields:
+        row["header_fields"] = header.fields
+    if not class_section:
+        row["climbed"] = climbed
     return new_src, row
 
 

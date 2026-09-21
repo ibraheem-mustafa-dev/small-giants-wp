@@ -163,7 +163,8 @@ compares a leaf item's shape against the full block roster — it first narrows 
 the small set of candidates consistent with the item's PARENT context (§4.1,
 §4.3), then checks for an exact structural match within that narrowed set. A
 partial match, or a match against more than one surviving candidate, is not
-"exact" and falls to review like any unresolved case.
+"exact": it does not auto-complete, and it is reported for review like any unresolved
+case (see the last paragraph of this section for what the page gets).
 
 **(b) The specific (block-or-route, match-type) pattern has been seen before, for
 THIS client.** The first time a given pattern is used to auto-complete against a
@@ -179,8 +180,16 @@ alternative to (a). Dropped here: Stage B only runs when Stage A finds nothing,
 so the two mechanisms could never actually agree; keeping unreachable prose in a
 trust gate is worse than removing it.)*
 
-Anything that fails (a) or (b) falls to operator review, via the real, existing
-review surface (§7) — never silently dropped (Rule 4).
+Anything that fails (a) or (b) is REPORTED to the operator, via the real, existing
+review surface (§7), and is not silently dropped from the report (Rule 4). **What
+the page gets is a hole, not a fallback.** In `sgs-clone-orchestrator.py` (the classless branch
+of `stage_4_5_6_7_8_extract`) a recognised-but-not-auto-completed boundary emits NO block markup:
+its `per_section_results` entry has `status: "unmatched-classless-review"` and its `block_markup`
+is not appended to the page, so the clone has a section-shaped gap at that boundary until an
+operator resolves it (and the Stage 8 visual-parity gate will see the gap). It is
+listed in the run's `operator-review.html` (Stage 9's `unmatched_sections`) and in
+`classless-decisions.json`. "Falls to review" therefore means "reported and left empty",
+never "converted some other way".
 
 ### 3.1 What "exact structural match" means, and why parent-narrowing comes first
 
@@ -643,12 +652,12 @@ A third writer uses this same log: the manifest annotation stage. When a draft c
 | `outcome` | `applied` (the run copy was annotated in full), `partial` (annotated, but some declared items or fields could not be), `queued` (confidence below the accepted threshold, so nothing was written to the run copy and it waits for review), `rejected` (a validation failed; `reasons` says which) |
 | `stage`, `clause_a`, `clause_b` | neutral (`"none"`, `false`, `false`): the FR-44-1 clauses do not apply to a declared map |
 | `reasons`, `fields` | the validation reason (with any item text that was skipped and why, Spec 31 FR-31-31 rule 6); the block field keys the annotation mapped |
-| `target`, `items` | extra, manifest-only keys: `root` or `inner`, and the item count |
+| `target`, `items` | extra, manifest-only keys: `root`, `inner` or `ancestor` (the block root went on an ancestor of the repeating parent, FR-31-31 rule 8), and the item count |
 
 Rules that follow:
 - A row is written once per (`client_slug`, `run_id`, `boundary_id`, `outcome`); a re-run of the same run does not duplicate it.
 - **The FR-44-1(b) scan already ignores these rows:** it filters to `source == "spec44"` and to `kind == "approval"`, so a manifest row can never satisfy a client's first-look gate.
-- Operator review is to read `manifest` rows the same as every other source: `queued` and `rejected` rows go on the run's `operator-review.html` with their reasons, `applied` and `partial` rows are audit history. **Not built yet:** today `recogniser/simple_html_review_report.py` builds the page from the run's own match records and does not read this log, so the wiring for manifest rows lands with the annotation stage (Spec 31 FR-31-31). The log is the durable store either way.
+- **Manifest rows are NOT on `operator-review.html`.** `recogniser/simple_html_review_report.py` builds that page from the run's own match records and never reads this log or `manifest-annotation-report.json` (checked on the Eye Care run `2026-09-21-134838`: the page has no manifest row). A `queued` or `rejected` manifest row, with its reason, is in exactly two places: the run's `manifest-annotation-report.json` and this jsonl log (`source: "manifest"`). `applied` and `partial` rows are audit history in the same two places. Wiring manifest rows into the review page is not built; the log is the durable store. (The report's `skipped_fields`, `header_fields` and `climbed` keys are not copied into the log row; the log row carries `fields`, `target` and `items` as above.)
 
 **The review surface is real and already exists — name it, don't invent a new
 one.** This pipeline already generates `pipeline-state/<run>/operator-review.html`
@@ -752,7 +761,7 @@ off is the rollback path if a real run misbehaves — no code revert needed.
   found its content lives only in a draft `static TICKER = [...]` JS class property, invisible to
   Stage A/B (and every other extraction signal) because they operate purely on DOM text. This is
   an upstream content-availability precondition, not a Stage A/B matching defect — Spec 31's new
-  FR-31-26 resolves it BEFORE this spec's mechanisms ever run (resolver built; its downstream gap is open, see Spec 31 §15 FR-31-26.5), by rendering the draft with its own
+  FR-31-26 resolves it BEFORE this spec's mechanisms ever run (resolver built; the ticker text now reaches the emitted blocks through the manifest annotation, see Spec 31 §15 FR-31-26.5), by rendering the draft with its own
   JS runtime and splicing the resolved text back into the mockup. Neither Stage A nor Stage B
   changes at all; they simply receive real content for a class of boundary that previously handed
   them nothing.

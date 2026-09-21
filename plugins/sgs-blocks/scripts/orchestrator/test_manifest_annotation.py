@@ -410,9 +410,11 @@ def test_eye_care_reviews_annotated_anyway_become_a_google_reviews_block_that_dr
     it lifts only the photo, rating and link: the names, dates and quotes are gone and no content gap says so.
     When the converter can carry those fields this test should start failing, and the default should be revisited."""
     row = eye_care["kept_rows"]["sgs-google-reviews"]
-    assert row["status"] == "partial" and row["items"] == 13 and row["target"] == "inner"
+    assert row["status"] == "partial" and row["items"] == 13 and row["target"] == "ancestor" and row["climbed"] == 2
     kept = eye_care["kept"]
-    assert '<div class="sgs-google-reviews rev-rail"' in kept and kept.count('class="sgs-google-reviews__review"') == 13
+    # the block root is the bordered card that holds the header AND the rail (2 levels above the rail), not the rail
+    assert re.search(r'<div class="sgs-google-reviews"[^>]*style="border:1px solid #DADCE0;border-radius:12px', kept)
+    assert '<div class="rev-rail"' in kept and kept.count('class="sgs-google-reviews__review"') == 13
     markup = _convert(_element(kept, "sgs-google-reviews"), kept)
     assert markup.lstrip().startswith("<!-- wp:sgs/container") and "wp:sgs/google-reviews" in markup
     block = json.loads(re.search(r"wp:sgs/google-reviews (\{.*?\}) /?-->", markup, re.S).group(1))
@@ -912,6 +914,17 @@ needs_draft = pytest.mark.skipif(shutil.which("node") is None or not (EYE_CARE_V
                                  reason="needs node and the Eye Care v2 bundle")
 
 
+def _apply_reviews_roles(conn) -> None:
+    """The roles the header ladder and the avatar colour rely on, applied idempotently to a COPY of the framework DB so
+    these tests do not depend on which seed the live DB happens to hold (the live DB already carries them once the
+    google-reviews role seed has landed): `avatarColour` reads an element's own inline background, the two aggregate
+    numbers are numeric content, the request URL is a link."""
+    conn.execute("UPDATE array_item_schema SET role = 'colour-background' WHERE block_slug = 'sgs/google-reviews' AND field_key = 'avatarColour'")
+    for attr, role in (("averageRating", "numeric-content"), ("reviewCount", "numeric-content"),
+                       ("reviewRequestUrl", "link-href")):
+        conn.execute("UPDATE block_attributes SET role = ? WHERE block_slug = 'sgs/google-reviews' AND attr_name = ?", (role, attr))
+
+
 def _with_who_alias(src_db: Path, dest: Path, present: bool) -> Path:
     """A copy of the framework DB where `who` IS (or is NOT) an alias of the `attribution` slot. The live DB is only
     ever opened read-only; the copy is written through sqlite's own backup API."""
@@ -923,6 +936,7 @@ def _with_who_alias(src_db: Path, dest: Path, present: bool) -> Path:
     aliases = json.loads(target.execute("SELECT aliases FROM slots WHERE slot_name = 'attribution' AND scope = 'element'").fetchone()[0])
     aliases = [a for a in aliases if a != "who"] + (["who"] if present else [])
     target.execute("UPDATE slots SET aliases = ? WHERE slot_name = 'attribution' AND scope = 'element'", (json.dumps(aliases),))
+    _apply_reviews_roles(target)
     target.commit()
     target.close()
     return dest
@@ -967,6 +981,12 @@ def _draft_reviews(marked: str) -> list[dict[str, str]]:
     return out
 
 
+def _draft_avatar_colours(marked: str) -> list[str]:
+    """Each review's avatar colour as the draft's own runtime produced it (the element the resolver marked)."""
+    found = re.findall(r'<span[^>]*data-src-field-style="colour:background"[^>]*style="([^"]*)"', marked)
+    return [re.search(r"background:\s*(#[0-9A-Fa-f]{3,8})", style).group(1) for style in found]
+
+
 def _google_reviews_block(markup: str) -> dict:
     return json.loads(re.search(r"wp:sgs/google-reviews (\{.*?\}) /?-->", markup, re.S).group(1))
 
@@ -993,7 +1013,9 @@ def test_eye_care_reviews_become_a_google_reviews_block_with_every_field_the_dra
     converter. 13 reviews, each with author, text, date and meta, none of it missing, none in the wrong field."""
     out, rows = _annotated(marked_run["html"], alias_dbs["with"])
     row = rows["sgs-google-reviews"]
-    assert row["status"] == "applied" and row["items"] == 13 and row["fields"] == ["author", "text", "date", "meta"]
+    assert row["status"] == "applied" and row["items"] == 13
+    assert row["fields"] == ["author", "text", "date", "meta", "rating", "avatarColour"]
+    assert row["header_fields"] == ["reviewRequestUrl", "averageRating", "reviewCount"] and row["target"] == "ancestor"
     assert "data-src-field" not in out
     markup = _convert(_element(out, "sgs-google-reviews"), out)
     assert "data-src-field" not in markup
@@ -1003,6 +1025,8 @@ def test_eye_care_reviews_become_a_google_reviews_block_with_every_field_the_dra
     assert len(block["reviews"]) == 13 == len(expected)
     for got, want in zip(block["reviews"], expected):
         assert (got["author"], got["text"], got["date"], got["meta"]) == (want["who"], want["text"], want["date"], want["meta"])
+    assert [r["rating"] for r in block["reviews"]] == [5] * 13                    # every review really is five-star
+    assert [r["avatarColour"] for r in block["reviews"]] == _draft_avatar_colours(marked_run["html"])
     assert any(r["text"].startswith("I have had the pleasure of being a patient of Ward End Eye Care") for r in block["reviews"])
 
 
@@ -1028,7 +1052,7 @@ def test_the_decorative_google_g_mark_is_never_lifted_as_a_reviewers_photo(marke
     out, _ = _annotated(marked_run["html"], alias_dbs["with"])
     block = _google_reviews_block(_convert(_element(out, "sgs-google-reviews"), out))
     assert all("photo" not in r for r in block["reviews"])
-    assert all(not ({"rating", "avatarColour", "initial"} & set(r)) for r in block["reviews"])          # still not populated
+    assert all(r["rating"] == 5 and r["avatarColour"].startswith("#") and "initial" not in r for r in block["reviews"])
     assert [i for i, r in enumerate(block["reviews"]) if "url" in r] == [2]      # only the long review has a link to lift
 
 
@@ -1053,7 +1077,8 @@ def test_a_manifest_field_map_reaches_the_same_result_without_any_synonym_row(ma
     group["fieldMap"] = {"who": "author", "initial": None}
     html = marked_run["html"][:manifest.start(2)] + json.dumps(data) + marked_run["html"][manifest.end(2):]
     out, rows = _annotated(html, alias_dbs["without"])
-    assert rows["sgs-google-reviews"]["status"] == "applied" and rows["sgs-google-reviews"]["fields"] == ["author", "text", "date", "meta"]
+    assert rows["sgs-google-reviews"]["status"] == "applied"
+    assert rows["sgs-google-reviews"]["fields"] == ["author", "text", "date", "meta", "rating", "avatarColour"]
     block = _google_reviews_block(_convert(_element(out, "sgs-google-reviews"), out))
     assert len(block["reviews"]) == 13 and all(r["author"] and r["text"] and r["date"] and r["meta"] for r in block["reviews"])
 
