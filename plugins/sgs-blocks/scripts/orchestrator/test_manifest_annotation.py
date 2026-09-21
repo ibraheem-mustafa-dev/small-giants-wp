@@ -16,6 +16,7 @@ import importlib.util
 import json
 import os
 import re
+import shutil
 import sys
 import textwrap
 import types
@@ -564,3 +565,667 @@ def test_the_stage_is_fail_soft(tmp_path, capsys):
     args, run_dir, mockup = _run_stage(tmp_path, ticker_draft(), load=broken)
     assert args.mockup == mockup and list(run_dir.iterdir()) == []
     assert "[manifest-annotation] skipped (boom)" in capsys.readouterr().out
+
+
+# --------------------------------------------------------------------------------------------------------------
+# FR-31-31: the field-marker mapping ladder (synthetic, fake lookup)
+# --------------------------------------------------------------------------------------------------------------
+# The resolver leaves `data-src-field="<draft field>"` on an element whose whole content is one field. The annotator
+# maps those names to the block's text fields: (1) manifest fieldMap, (2) the same name, (3) a DB synonym (two names
+# that share a `slots` row), else the field is reported as skipped and, when the block still has a free text field it
+# might belong to, the whole declaration is withheld. The markers never leave the annotator.
+
+MARKER_RE = re.compile(r' data-src-field(?:-[a-z0-9-]+)?="[^"]*"')
+
+
+class SynonymLookup(FakeLookup):
+    """A fake with a slot table: `who` and `author` share the `attribution` slot, as they would once seeded."""
+
+    SLOTS = {"who": {"attribution"}, "author": {"attribution", "text"}, "text": {"text"}, "date": {"date"},
+             "initial": set(), "either": {"attribution", "date"}}
+
+    def slots_of(self, term):
+        return frozenset(self.SLOTS.get(term, set()))
+
+
+SYNONYMS = SynonymLookup()
+
+
+def _card(i: int, extra: str = "", who: str = '<b data-src-field="who">Name {i}</b>') -> str:
+    return ('<figure><span data-src-field="initial">N</span>' + who.format(i=i) +
+            f'<i data-src-field="date">May {i}</i><p data-src-field="text">Words {i}</p>'
+            '<span>&#9733;&#9733;&#9733;</span>' + extra + "</figure>")
+
+
+def _marked_wall(cards: list[str], group: dict | None = None) -> str:
+    return draft('<section class="sgs-logos"><h2>Brands</h2><div class="rail">' + "".join(cards) + "</div></section>",
+                 {"sgs-logos": {"suggestedBlock": "review-wall", "confidence": "high"}},
+                 [{"section": "sgs-logos", "count": len(cards), **(group or {})}])
+
+
+def _plain(html: str) -> str:
+    """What the annotator must hand back for a declaration it did not apply: the draft minus the markers."""
+    return MARKER_RE.sub("", html)
+
+
+def test_a_marked_field_with_the_blocks_own_name_and_a_synonym_is_mapped_and_the_leftovers_are_reported():
+    html = _marked_wall([_card(i) for i in range(3)])
+    out, rows = annotate_from_manifest(html, SYNONYMS)
+    row = rows[0]
+    assert row["status"] == "applied" and row["items"] == 3 and row["fields"] == ["author", "text", "date"]
+    assert out.count('class="sgs-review-wall__author"') == 3
+    assert out.count('class="sgs-review-wall__text"') == 3 and out.count('class="sgs-review-wall__date"') == 3
+    skipped = {s["field"]: s["reason"] for s in row["skipped_fields"]}
+    assert "initial" in skipped and "no synonym" in skipped["initial"]                # a derived initial, no field for it
+    assert any("furniture" in reason for f, reason in skipped.items() if f.startswith("unmarked text"))
+    assert all("Name %d" % i in out and "Words %d" % i in out for i in range(3))     # no text lost from the markup
+
+
+def test_the_markers_never_leave_the_annotator_whatever_the_outcome():
+    html = _marked_wall([_card(i) for i in range(3)])
+    assert "data-src-field" in html
+    for lookup in (SYNONYMS, LOOKUP):                       # mapped, and withheld (no synonym source)
+        out, _ = annotate_from_manifest(html, lookup)
+        assert "data-src-field" not in out
+    assert "data-src-field" not in annotate_from_manifest(html, SYNONYMS, min_confidence="high")[0]
+    noisy = html.replace('"sectionBlocks": {"sgs-logos"', '"x": {"sgs-logos"')       # no sectionBlocks at all
+    assert "data-src-field" not in annotate_from_manifest(noisy, SYNONYMS)[0]
+
+
+def test_only_the_markers_and_the_intended_annotations_change_the_draft():
+    """Undo the annotations and the markers and the draft comes back byte for byte."""
+    html = _marked_wall([_card(i) for i in range(3)])
+    out, _ = annotate_from_manifest(html, SYNONYMS)
+    undone = re.sub(r' class="sgs-review-wall__[a-z-]+"', "", out)
+    undone = re.sub(r'class="sgs-review-wall rail"', 'class="rail"', undone)
+    assert undone == _plain(html)
+
+
+def test_marked_annotation_is_idempotent():
+    html = _marked_wall([_card(i) for i in range(3)])
+    once, _ = annotate_from_manifest(html, SYNONYMS)
+    twice, _ = annotate_from_manifest(once, SYNONYMS)
+    assert twice == once
+
+
+def test_an_unmapped_field_withholds_the_section_when_the_block_has_a_free_text_field_it_could_be():
+    """Negative control for the synonym rung: with no synonym for `who`, `author` is still free, so the text could
+    belong there. Guessing would misplace it, so the section is left as the draft has it."""
+    html = _marked_wall([_card(i) for i in range(3)])
+    out, rows = annotate_from_manifest(html, LOOKUP)
+    assert out == _plain(html)
+    assert rows[0]["status"] == "rejected" and "withheld" in rows[0]["reason"] and "'who'" in rows[0]["reason"]
+
+
+def test_keep_unmapped_text_applies_the_mapped_part_and_reports_partial():
+    html = _marked_wall([_card(i) for i in range(3)])
+    out, rows = annotate_from_manifest(html, LOOKUP, keep_unmapped_text=True)
+    assert rows[0]["status"] == "partial" and rows[0]["fields"] == ["text", "date"]
+    assert out.count('class="sgs-review-wall__text"') == 3 and "sgs-review-wall__author" not in out
+
+
+def test_a_manifest_field_map_names_the_target_and_null_means_deliberately_not_lifted():
+    html = _marked_wall([_card(i) for i in range(3)], {"fieldMap": {"who": "author", "initial": None}})
+    out, rows = annotate_from_manifest(html, LOOKUP)                                # no synonym source needed
+    assert rows[0]["status"] == "applied" and rows[0]["fields"] == ["author", "text", "date"]
+    skipped = {s["field"]: s["reason"] for s in rows[0]["skipped_fields"]}
+    assert skipped["initial"] == "the manifest's fieldMap marks it as not lifted"
+    assert out.count("sgs-review-wall__author") == 3
+
+
+def test_a_field_map_beats_the_same_name_and_a_bad_target_is_refused_with_its_reason():
+    swapped = _marked_wall([_card(i) for i in range(3)], {"fieldMap": {"text": "date", "date": "text", "who": "author", "initial": None}})
+    out, rows = annotate_from_manifest(swapped, LOOKUP)
+    assert rows[0]["status"] == "applied" and 'class="sgs-review-wall__date"' in out and out.count("sgs-review-wall__text") == 3
+    bad = _marked_wall([_card(i) for i in range(3)], {"fieldMap": {"who": "nickname"}})
+    out, rows = annotate_from_manifest(bad, LOOKUP)
+    assert rows[0]["status"] == "rejected" and "'nickname', which is not a text field of the block" in rows[0]["reason"]
+    assert out == _plain(bad)
+
+
+def test_a_malformed_field_map_is_ignored_not_fatal():
+    for junk in ("who=author", ["who"], {"who": 3}, None):
+        html = _marked_wall([_card(i) for i in range(3)], {"fieldMap": junk})
+        out, rows = annotate_from_manifest(html, SYNONYMS)
+        assert rows[0]["status"] == "applied" and "sgs-review-wall__author" in out, junk
+
+
+def test_two_draft_fields_that_fill_one_block_field_withhold_the_section_with_a_reason():
+    html = _marked_wall([_card(i) for i in range(3)], {"fieldMap": {"who": "author", "initial": "author"}})
+    out, rows = annotate_from_manifest(html, LOOKUP)
+    assert out == _plain(html)
+    assert rows[0]["status"] == "rejected" and "would both fill 'author'" in rows[0]["reason"]
+
+
+def test_a_synonym_that_fits_two_block_fields_is_not_guessed():
+    """`either` shares a slot with `author` (attribution) and with `date`: it cannot be told apart."""
+    cards = [_card(i, who='<b data-src-field="either">Name {i}</b>') for i in range(3)]
+    out, rows = annotate_from_manifest(_marked_wall(cards), SYNONYMS)
+    assert rows[0]["status"] == "rejected" and "more than one block field" in rows[0]["reason"]
+    assert out == _plain(_marked_wall(cards))
+
+
+def test_text_with_no_field_name_that_varies_between_cards_withholds_while_a_field_is_free():
+    """Negative control for the furniture rule: `Reviewer N` differs per card and nothing says what it is."""
+    cards = [f'<figure><i data-src-field="date">May {i}</i><p data-src-field="text">Words {i}</p><em>Reviewer {i}</em></figure>'
+             for i in range(3)]                             # every marked field maps; `author` stays free
+    out, rows = annotate_from_manifest(_marked_wall(cards), SYNONYMS)
+    assert out == _plain(_marked_wall(cards)) and rows[0]["status"] == "rejected"
+    assert "no field name says what it is" in rows[0]["reason"]
+
+
+def test_unlabelled_varying_text_is_only_skipped_once_every_text_field_is_claimed():
+    cards = [_card(i, extra=f"<em>Reviewer {i}</em>") for i in range(3)]
+    out, rows = annotate_from_manifest(_marked_wall(cards), SYNONYMS)
+    assert rows[0]["status"] == "applied" and any("varies" in s["reason"] for s in rows[0]["skipped_fields"])
+    assert "Reviewer 1" in out
+
+
+def test_an_optional_link_label_in_one_card_is_furniture_not_a_reason_to_withhold():
+    """The Eye Care `Read the full review` sits in a retained <sc-if> in ONE card, so it can be neither compared
+    across cards nor left unexplained."""
+    extra = '<sc-if value="x"><a href="#">Read the full review</a></sc-if>'
+    cards = [_card(0, extra=extra)] + [_card(i) for i in (1, 2)]
+    out, rows = annotate_from_manifest(_marked_wall(cards), SYNONYMS)
+    assert rows[0]["status"] == "applied" and rows[0]["items"] == 3
+    skipped = {s["field"]: s["reason"] for s in rows[0]["skipped_fields"]}
+    assert "furniture" in skipped["unmarked text 'Read the full review'"] and "Read the full review" in out
+
+
+def test_the_same_one_card_text_outside_a_conditional_is_not_furniture():
+    """Negative control for the previous test: without the `<sc-if>` a one-card text is unexplained content."""
+    cards = [_card(0, extra="<a href='#'>Read the full review</a>")] + [_card(i) for i in (1, 2)]
+    out, rows = annotate_from_manifest(_marked_wall(cards), SYNONYMS)
+    assert rows[0]["status"] == "applied"           # every text field is claimed, so it is skipped, not withheld
+    assert any("varies" in s["reason"] for s in rows[0]["skipped_fields"])
+    cards = [_card(0, extra="<a href='#'>Read the full review</a>", who="")] + [_card(i, who="") for i in (1, 2)]
+    _, rows = annotate_from_manifest(_marked_wall(cards), SYNONYMS)
+    assert rows[0]["status"] == "rejected"          # ...but with `author` still free the unexplained text withholds
+
+
+def test_a_field_shown_twice_in_one_card_lifts_the_first_and_reports_the_second():
+    extra = '<u data-src-field="text">Words again</u>'
+    out, rows = annotate_from_manifest(_marked_wall([_card(i, extra=extra) for i in range(3)]), SYNONYMS)
+    assert rows[0]["status"] == "applied" and out.count('class="sgs-review-wall__text"') == 3
+    assert any("shown more than once" in s["reason"] for s in rows[0]["skipped_fields"])
+
+
+def test_a_draft_with_markers_on_only_some_cards_still_maps_by_name():
+    """The count-and-shape rule needed every card to hold the same amount of text; names do not."""
+    cards = [_card(0), _card(1, who=""), _card(2)]          # card 1 has no name at all
+    out, rows = annotate_from_manifest(_marked_wall(cards), SYNONYMS)
+    assert rows[0]["status"] == "applied" and rows[0]["fields"] == ["author", "text", "date"] and out.count("sgs-review-wall__author") == 2
+
+
+def test_a_draft_without_markers_still_takes_the_count_and_shape_path():
+    """Negative control: nothing here is marked, so `who`-style mapping cannot run and the old withholding applies."""
+    cards = "".join(f"<figure><b>Name {i}</b><i>May {i}</i><p>Words {i}</p></figure>" for i in range(3))
+    out, rows = annotate_from_manifest(_wall(cards, count=3, block="review-wall"), SYNONYMS)
+    assert rows[0]["status"] == "rejected" and "assigning them by order would be a guess" in rows[0]["reason"]
+    assert "skipped_fields" not in rows[0]
+
+
+def test_every_field_marker_variant_is_stripped_and_nothing_else_is_touched():
+    html = '<img data-src-field-alt="name" data-src-field-src="logo" src="a.png"><b data-src-field="who">x</b><p data-sgs-fx="1" data-src="k">y</p>'
+    wrapped = draft(html, {"sgs-none": {"suggestedBlock": "banner", "confidence": "high"}})
+    out, _ = annotate_from_manifest(wrapped, SYNONYMS)
+    assert out == wrapped.replace(' data-src-field-alt="name"', "").replace(' data-src-field-src="logo"', "").replace(' data-src-field="who"', "")
+    assert 'data-sgs-fx="1" data-src="k"' in out                                     # look-alikes are left alone
+
+
+# --------------------------------------------------------------------------------------------------------------
+# FR-31-31 rung 3: a synonym counts only through a NARROW slot (a catch-all slot is no evidence)
+# --------------------------------------------------------------------------------------------------------------
+# Live database: `verified`, `bio`, `excerpt`, `intro`, `message` and `author` are all aliases of slot `text` (16 names),
+# so "shares a slot with the block's text field" would map a badge onto a review's only text field and drop the body.
+
+class SlotLookup(FakeLookup):
+    """A block with ONE text key (`text`) and a slot table whose `text` slot is a catch-all, as on the live database."""
+
+    SLOTS = {"verified": {"text"}, "bio": {"text"}, "text": {"text"}, "author": {"attribution", "text"},
+             "who": {"attribution"}, "name": {"attribution"}, "date": {"date"}, "posted": {"date"}}
+
+    def __init__(self, broad: frozenset = frozenset({"text"})):
+        super().__init__()
+        self.broad = broad
+        text = lambda k: ItemField(k, "text-content", True)  # noqa: E731
+        self.blocks["sgs/one-text"] = (False, [ArraySchema("reviews", (text("text"),))])
+        self.blocks["sgs/named"] = (False, [ArraySchema("reviews", (text("author"), text("text")))])
+
+    def slots_of(self, term):
+        return frozenset(self.SLOTS.get(term, set()))
+
+    def is_broad_slot(self, slot):
+        return slot in self.broad
+
+
+def _badge_and_body(cards: int = 3, badge: str = "verified", body: str = "body") -> str:
+    figs = "".join(f'<figure><span data-src-field="{badge}">Verified buyer</span>'
+                   f'<p data-src-field="{body}">Really lovely, number {i}</p></figure>' for i in range(cards))
+    return draft('<section class="sgs-logos"><h2>R</h2><div class="rail">' + figs + "</div></section>",
+                 {"sgs-logos": {"suggestedBlock": "one-text", "confidence": "high"}},
+                 [{"section": "sgs-logos", "count": cards}])
+
+
+def _named_draft(*fields: tuple[str, str]) -> str:
+    tags = ("b", "i", "p", "span")                        # different tags, so the fields are not mistaken for a run of items
+    figs = "".join("<figure>" + "".join(f'<{tags[n]} data-src-field="{name}">{text} {i}</{tags[n]}>'
+                                        for n, (name, text) in enumerate(fields)) + "</figure>" for i in range(3))
+    return draft('<section class="sgs-logos"><div class="rail">' + figs + "</div></section>",
+                 {"sgs-logos": {"suggestedBlock": "named", "confidence": "high"}}, [{"section": "sgs-logos", "count": 3}])
+
+
+def test_a_badge_that_only_shares_a_catch_all_slot_does_not_claim_the_only_text_field():
+    """THE REVIEWER'S SCENARIO. `verified` and `text` share the catch-all slot `text`; `body` maps nowhere. Before the
+    fix the badge was written into the review-body field, the real body was dropped and the row said `applied`."""
+    html = _badge_and_body()
+    out, rows = annotate_from_manifest(html, SlotLookup())
+    assert rows[0]["status"] == "rejected" and out == _plain(html)          # withheld: the section keeps every word
+    assert "catch-all slot 'text'" in rows[0]["reason"]
+    assert "'verified'" in rows[0]["reason"] and "'body'" in rows[0]["reason"]      # both named, so the operator can fix it
+    assert "sgs-one-text__text" not in out
+
+
+def test_negative_control_the_same_draft_is_wrongly_applied_when_no_slot_counts_as_a_catch_all():
+    """Break just this fix (nothing is broad) and the reviewer's defect comes back: the badge lands in the text field."""
+    out, rows = annotate_from_manifest(_badge_and_body(), SlotLookup(broad=frozenset()))
+    assert rows[0]["status"] == "applied" and rows[0]["fields"] == ["text"]
+    assert 'class="sgs-one-text__text"' in out and "Verified buyer" in out.split("sgs-one-text__text")[1]
+
+
+def test_a_manifest_field_map_can_still_place_a_field_the_catch_all_slot_refused():
+    html = _badge_and_body().replace('"count": 3}', '"count": 3, "fieldMap": {"body": "text", "verified": null}}')
+    out, rows = annotate_from_manifest(html, SlotLookup())
+    assert rows[0]["status"] == "applied" and rows[0]["fields"] == ["text"]
+    assert out.count('class="sgs-one-text__text"') == 3 and "Really lovely, number 0" in out.split("sgs-one-text__text")[1]
+
+
+def test_a_narrow_slot_synonym_still_maps_and_a_leftover_with_no_free_field_is_only_reported():
+    """`who` and `author` share the narrow slot `attribution`; the derived initial has no field to go to (the Eye Care shape)."""
+    out, rows = annotate_from_manifest(_named_draft(("initial", "N"), ("who", "Ada"), ("text", "Words")), SlotLookup())
+    assert rows[0]["status"] == "applied" and rows[0]["fields"] == ["author", "text"]
+    assert out.count("sgs-named__author") == 3 and [s["field"] for s in rows[0]["skipped_fields"]] == ["initial"]
+
+
+def test_two_draft_fields_that_are_both_narrow_synonyms_of_one_key_withhold_the_section():
+    html = _named_draft(("who", "Ada"), ("name", "A. Lovelace"), ("text", "Words"))
+    out, rows = annotate_from_manifest(html, SlotLookup())
+    assert rows[0]["status"] == "rejected" and "would both fill 'author'" in rows[0]["reason"] and out == _plain(html)
+
+
+@needs_db
+def test_the_real_databases_catch_all_slots_are_measured_from_the_table_not_named(tmp_path):
+    lookup = DbBlockLookup()
+    try:
+        assert lookup.is_broad_slot("text") and lookup.is_broad_slot("label")
+        assert not lookup.is_broad_slot("attribution") and not lookup.is_broad_slot("date")
+        assert not lookup.is_broad_slot("no-such-slot")
+        assert all(lookup.slots_of(t) == frozenset({"text"}) for t in ("verified", "bio", "excerpt", "message"))
+    finally:
+        lookup.close()
+    # Same code, different data: give `attribution` twenty aliases in a COPY of the database and it becomes broad.
+    import sqlite3
+    copy = tmp_path / "wide.db"
+    source = sqlite3.connect(f"file:{DbBlockLookup.DEFAULT_DB.as_posix()}?mode=ro", uri=True)
+    target = sqlite3.connect(str(copy))
+    source.backup(target)
+    source.close()
+    target.execute("UPDATE slots SET aliases = ? WHERE slot_name = 'attribution' AND scope = 'element'",
+                   (json.dumps(["alias%d" % i for i in range(20)]),))
+    target.commit()
+    target.close()
+    wide = DbBlockLookup(db_path=copy)
+    try:
+        assert wide.is_broad_slot("attribution")
+    finally:
+        wide.close()
+
+
+@needs_db
+def test_the_reviewers_scenario_on_the_real_database_is_withheld():
+    """The same defect through the REAL slot table (a fake block schema, the live `slots` rows)."""
+    class RealSlots(SlotLookup):
+        def __init__(self):
+            super().__init__()
+            self.real = DbBlockLookup()
+
+        def slots_of(self, term):
+            return self.real.slots_of(term)
+
+        def is_broad_slot(self, slot):
+            return self.real.is_broad_slot(slot)
+
+    lookup = RealSlots()
+    try:
+        out, rows = annotate_from_manifest(_badge_and_body(), lookup)
+    finally:
+        lookup.real.close()
+    assert rows[0]["status"] == "rejected" and "catch-all slot 'text'" in rows[0]["reason"]
+
+
+# --------------------------------------------------------------------------------------------------------------
+# FR-31-31: the real Eye Care draft, resolved by the real browser, the real DB, the UNCHANGED converter
+# --------------------------------------------------------------------------------------------------------------
+
+EYE_CARE_V2 = REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care_v2"
+needs_draft = pytest.mark.skipif(shutil.which("node") is None or not (EYE_CARE_V2 / "Eye Care Birmingham.dc.html").exists(),
+                                 reason="needs node and the Eye Care v2 bundle")
+
+
+def _with_who_alias(src_db: Path, dest: Path, present: bool) -> Path:
+    """A copy of the framework DB where `who` IS (or is NOT) an alias of the `attribution` slot. The live DB is only
+    ever opened read-only; the copy is written through sqlite's own backup API."""
+    import sqlite3
+    source = sqlite3.connect(f"file:{src_db.as_posix()}?mode=ro", uri=True)
+    target = sqlite3.connect(str(dest))
+    source.backup(target)
+    source.close()
+    aliases = json.loads(target.execute("SELECT aliases FROM slots WHERE slot_name = 'attribution' AND scope = 'element'").fetchone()[0])
+    aliases = [a for a in aliases if a != "who"] + (["who"] if present else [])
+    target.execute("UPDATE slots SET aliases = ? WHERE slot_name = 'attribution' AND scope = 'element'", (json.dumps(aliases),))
+    target.commit()
+    target.close()
+    return dest
+
+
+@pytest.fixture(scope="module")
+def marked_run():
+    """The run copy the pipeline would hand the annotator: the real draft with its loops expanded and marked."""
+    from js_content_resolver import resolve_js_array_content_with_report
+    raw = (EYE_CARE_V2 / "Eye Care Birmingham.dc.html").read_text(encoding="utf-8")
+    html, count, report = resolve_js_array_content_with_report(raw, EYE_CARE_V2)
+    if count == 0:
+        pytest.skip("no browser available here: %s" % report)
+    return {"html": html, "report": report}
+
+
+@pytest.fixture(scope="module")
+def alias_dbs(tmp_path_factory):
+    folder = tmp_path_factory.mktemp("slot-dbs")
+    return {"with": _with_who_alias(DbBlockLookup.DEFAULT_DB, folder / "with-who.db", True),
+            "without": _with_who_alias(DbBlockLookup.DEFAULT_DB, folder / "without-who.db", False)}
+
+
+def _annotated(html: str, db: Path | None = None, **kwargs):
+    lookup = DbBlockLookup(db_path=db)
+    try:
+        out, rows = annotate_from_manifest(html, lookup, **kwargs)
+    finally:
+        lookup.close()
+    return out, {r["root_class"]: r for r in rows}
+
+
+def _draft_reviews(marked: str) -> list[dict[str, str]]:
+    """Every review's own values, read from the markers the real browser run left (so they are the draft's data)."""
+    import html as _h
+    cards = re.split(r'<figure style="margin:0;background:#fff;border:1px solid #E8EAED', marked.split('class="rev-rail"', 1)[1])[1:]
+    out = []
+    for card in cards:
+        fields = {name: _h.unescape(v) for name, v in re.findall(r'data-src-field="(\w+)"[^>]*>([^<]*)<', card)}
+        if "who" in fields:
+            out.append(fields)
+    return out
+
+
+def _google_reviews_block(markup: str) -> dict:
+    return json.loads(re.search(r"wp:sgs/google-reviews (\{.*?\}) /?-->", markup, re.S).group(1))
+
+
+@needs_db
+def test_the_real_databases_slot_table_lists_author_under_two_slots_and_only_reads(alias_dbs):
+    lookup = DbBlockLookup()
+    try:
+        assert lookup.slots_of("author") >= {"attribution", "text"} and lookup.slots_of("Author") == lookup.slots_of("author")
+        assert lookup.slots_of("no-such-field-name") == frozenset()
+    finally:
+        lookup.close()
+    with_who = DbBlockLookup(db_path=alias_dbs["with"])
+    try:
+        assert with_who.slots_of("who") == frozenset({"attribution"})
+    finally:
+        with_who.close()
+
+
+@needs_db
+@needs_draft
+def test_eye_care_reviews_become_a_google_reviews_block_with_every_field_the_draft_names(marked_run, alias_dbs):
+    """END TO END. Real draft -> real browser -> markers -> annotation (DB has the `who` synonym) -> the UNCHANGED
+    converter. 13 reviews, each with author, text, date and meta, none of it missing, none in the wrong field."""
+    out, rows = _annotated(marked_run["html"], alias_dbs["with"])
+    row = rows["sgs-google-reviews"]
+    assert row["status"] == "applied" and row["items"] == 13 and row["fields"] == ["author", "text", "date", "meta"]
+    assert "data-src-field" not in out
+    markup = _convert(_element(out, "sgs-google-reviews"), out)
+    assert "data-src-field" not in markup
+    assert "wp:sgs/google-reviews" in markup and "Anonymous M." in markup
+    block = _google_reviews_block(markup)
+    expected = _draft_reviews(marked_run["html"])
+    assert len(block["reviews"]) == 13 == len(expected)
+    for got, want in zip(block["reviews"], expected):
+        assert (got["author"], got["text"], got["date"], got["meta"]) == (want["who"], want["text"], want["date"], want["meta"])
+    assert any(r["text"].startswith("I have had the pleasure of being a patient of Ward End Eye Care") for r in block["reviews"])
+
+
+@needs_db
+@needs_draft
+def test_h1_author_and_text_do_not_collapse_into_one_field_although_the_alias_overlap_exists(marked_run, alias_dbs):
+    """H1 (an investigator's hypothesis): `author` is an alias of both `attribution` and `text`, so `__author` and
+    `__text` might resolve to one slot and put the review body in the name field. Refuted on the real output: the
+    array resolver matches the block's own item keys, so the names stay names and the bodies stay bodies."""
+    out, _ = _annotated(marked_run["html"], alias_dbs["with"])
+    block = _google_reviews_block(_convert(_element(out, "sgs-google-reviews"), out))
+    authors, texts = {r["author"] for r in block["reviews"]}, {r["text"] for r in block["reviews"]}
+    assert authors == {w["who"] for w in _draft_reviews(marked_run["html"])} and len(authors) == 13
+    assert not (authors & texts) and all(" " in t for t in texts)
+
+
+@needs_db
+@needs_draft
+def test_h2_the_lifted_photo_is_the_google_g_logo_not_a_reviewers_picture(marked_run, alias_dbs):
+    """H2: CONFIRMED. The only image in a card is the 17px Google 'G' mark, so the converter lifts it as `photo` on
+    every review. Nothing here can fix that (the draft holds no reviewer photos); pinned so a change shows up."""
+    out, _ = _annotated(marked_run["html"], alias_dbs["with"])
+    block = _google_reviews_block(_convert(_element(out, "sgs-google-reviews"), out))
+    assert {r["photo"]["url"] for r in block["reviews"]} == {"assets/google-g.svg"}
+    assert all(not ({"rating", "avatarColour", "initial"} & set(r)) for r in block["reviews"])          # still not populated
+    assert [i for i, r in enumerate(block["reviews"]) if "url" in r] == [2]      # only the long review has a link to lift
+
+
+@needs_db
+@needs_draft
+def test_without_the_synonym_the_reviews_are_withheld_and_the_section_survives_as_ordinary_blocks(marked_run, alias_dbs):
+    """Negative control for the DB rung. `who` has no synonym, `author` is free, so nothing is guessed."""
+    out, rows = _annotated(marked_run["html"], alias_dbs["without"])
+    row = rows["sgs-google-reviews"]
+    assert row["status"] == "rejected" and "'who'" in row["reason"] and "withheld" in row["reason"]
+    assert _element(out, "sgs-google-reviews") == MARKER_RE.sub("", _element(marked_run["html"], "sgs-google-reviews"))
+    markup = _convert(_element(out, "sgs-google-reviews"), out)
+    assert "wp:sgs/google-reviews" not in markup and "Anonymous M." in markup and "data-src-field" not in markup
+
+
+@needs_db
+@needs_draft
+def test_a_manifest_field_map_reaches_the_same_result_without_any_synonym_row(marked_run, alias_dbs):
+    manifest = re.search(r"(<script[^>]*data-sgs-manifest[^>]*>)(.*?)(</script>)", marked_run["html"], re.S)
+    data = json.loads(manifest.group(2))
+    group = next(g for g in data["repeatedGroups"] if g["section"] == "sgs-google-reviews")
+    group["fieldMap"] = {"who": "author", "initial": None}
+    html = marked_run["html"][:manifest.start(2)] + json.dumps(data) + marked_run["html"][manifest.end(2):]
+    out, rows = _annotated(html, alias_dbs["without"])
+    assert rows["sgs-google-reviews"]["status"] == "applied" and rows["sgs-google-reviews"]["fields"] == ["author", "text", "date", "meta"]
+    block = _google_reviews_block(_convert(_element(out, "sgs-google-reviews"), out))
+    assert len(block["reviews"]) == 13 and all(r["author"] and r["text"] and r["date"] and r["meta"] for r in block["reviews"])
+
+
+@needs_db
+@needs_draft
+def test_the_brand_marquee_lifts_sixteen_logos_not_thirty_two(marked_run, alias_dbs):
+    out, rows = _annotated(marked_run["html"], alias_dbs["with"])
+    assert rows["sgs-brand-marquee"]["status"] == "applied" and rows["sgs-brand-marquee"]["items"] == 16
+    markup = _convert(_element(out, "sgs-brand-marquee"), out)
+    block = json.loads(re.search(r"wp:sgs/brand-strip (\{.*?\}) /?-->", markup, re.S).group(1))
+    assert len(block["logos"]) == 16 and block["logos"][0]["media"]["alt"] == "Ray-Ban"
+    assert len({logo["media"]["alt"] for logo in block["logos"]}) == 16
+    assert "data-src-field" not in markup
+
+
+# --------------------------------------------------------------------------------------------------------------
+# FR-31-31 rule 6, at the orchestrator: a field marker NEVER reaches the converter, whichever branch of Stage -1.44 ran
+# --------------------------------------------------------------------------------------------------------------
+# The resolver stamps markers whenever the draft mentions `data-sgs-manifest` (a bare-word test, valid JSON not
+# needed). The annotator strips what it returns, but only the orchestrator decides which file the converter reads,
+# so these run the REAL Stage -1.44 source: no sectionBlocks (no rows), an annotator that raises, and the opt-out.
+
+MARKED_BODY = '<div class="card"><b data-src-field="who">Ada</b><i data-src-field-title="t">x</i></div>'
+
+
+def _marked_draft(manifest: str = '{"note": "no sectionBlocks here"}') -> str:
+    return (f'<html><body>{MARKED_BODY}<script type="application/json" data-sgs-manifest>{manifest}</script>'
+            "</body></html>")
+
+
+def _assert_converter_input_is_clean(args, mockup: Path, expected_body_without_markers: str = None) -> str:
+    seen = args.mockup.read_text(encoding="utf-8")
+    assert "data-src-field" not in seen, f"markers reach the converter through {args.mockup}"
+    assert 'class="card"' in seen and ">Ada<" in seen                      # nothing but the markers was lost
+    assert "data-src-field" in mockup.read_text(encoding="utf-8")            # the source draft itself is never edited
+    return seen
+
+
+def _loader_where_annotation_raises(name, path):
+    spec = importlib.util.spec_from_file_location(name, path)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
+    spec.loader.exec_module(module)
+    if hasattr(module, "annotate_from_manifest"):
+        def boom(*_a, **_k):
+            raise RuntimeError("annotator exploded")
+        module.annotate_from_manifest = boom
+    if hasattr(module, "LOG_PATH"):
+        raise AssertionError("the decision log must not be loaded on this path")
+    return module
+
+
+@needs_db
+def test_markers_never_reach_the_converter_when_the_manifest_has_no_section_blocks(tmp_path):
+    """Path 1: the annotator returns `(stripped html, [])`. The old stage only repointed inside `if rows:`."""
+    args, run_dir, mockup = _run_stage(tmp_path, _marked_draft())
+    _assert_converter_input_is_clean(args, mockup)
+    assert not (run_dir / "manifest-annotation-report.json").exists()
+
+
+def test_markers_never_reach_the_converter_when_the_annotator_raises(tmp_path):
+    """Path 2: the `except` branch used to leave the marked copy in place."""
+    args, run_dir, mockup = _run_stage(tmp_path, _marked_draft(), load=_loader_where_annotation_raises)
+    _assert_converter_input_is_clean(args, mockup)
+    assert args.mockup == run_dir / "field-markers-stripped.html"
+
+
+def test_markers_never_reach_the_converter_under_no_manifest_annotation(tmp_path):
+    """Path 3: the opt-out skips the annotator, and the resolver has already marked the copy."""
+    args, run_dir, mockup = _run_stage(tmp_path, _marked_draft(), flag=False)
+    _assert_converter_input_is_clean(args, mockup)
+    assert args.mockup == run_dir / "field-markers-stripped.html"
+
+
+def test_a_marked_run_copy_that_cannot_be_stripped_stops_the_run(tmp_path):
+    """The guard fails closed: a leaked marker is a rule violation, so an unloadable strip is an error, not a skip."""
+    def broken(name, path):
+        raise RuntimeError("no module")
+
+    with pytest.raises(RuntimeError, match="could not be stripped"):
+        _run_stage(tmp_path, _marked_draft(), flag=False, load=broken)
+
+
+def test_a_draft_without_markers_is_left_exactly_as_it_was_and_loads_nothing(tmp_path):
+    """The guard's cheap test: no `data-src-field` in the file, so no module load and no new file."""
+    def must_not_load(name, path):
+        raise AssertionError("no module should load for an unmarked draft")
+
+    args, run_dir, mockup = _run_stage(tmp_path, "<p>plain</p>", flag=False, load=must_not_load)
+    assert args.mockup == mockup and list(run_dir.iterdir()) == []
+
+
+@needs_db
+@needs_draft
+def test_the_real_marked_draft_never_reaches_the_converter_with_markers_on_any_path(marked_run, tmp_path):
+    """The real Eye Care run copy, resolved by the real browser, run through the real stage with annotation OFF."""
+    assert "data-src-field" in marked_run["html"]
+    args, _run_dir, _mockup = _run_stage(tmp_path, marked_run["html"], flag=False)
+    assert "data-src-field" not in args.mockup.read_text(encoding="utf-8")
+
+
+STRIP_CASES = {
+    "an element attribute": ('<b data-src-field="who" class="x">A</b>', '<b class="x">A</b>'),
+    "an attribute-marker variant, single-quoted": ("<img data-src-field-alt='n' src=\"a.png\">", '<img src="a.png">'),
+    "an unquoted value across a newline": ("<p\n data-src-field=who\n class=a>t</p>", "<p\n class=a>t</p>"),
+    "a marker on a tag inside <pre>": ('<pre><b data-src-field="x">y</b></pre>', "<pre><b>y</b></pre>"),
+    "a marker beside a data-src-field lookalike in a value": (
+        '<a title="data-src-field=1" data-src-field="f">z</a>', '<a title="data-src-field=1">z</a>'),
+}
+STRIP_UNTOUCHED = {
+    "a text node": '<p>the attribute data-src-field="x" is documented</p>',
+    "escaped markup in a <pre> sample": '<pre>&lt;b data-src-field="x"&gt;</pre>',
+    "a <script>": "<script>var s = '<b data-src-field=1>';</script>",
+    "a <style>": '<style>[data-src-field="x"] { color: red }</style>',
+    "a <textarea>": '<textarea><b data-src-field="x"></textarea>',
+    "a comment": '<!-- <b data-src-field="x"> -->',
+    "lookalike attribute names": '<p data-src-fields="k" data-src="k" data-sgs-fx="1">y</p>',
+}
+
+
+@pytest.mark.parametrize("label", sorted(STRIP_CASES))
+def test_strip_field_markers_removes_real_attributes_on_real_tags(label):
+    from manifest_annotation import strip_field_markers
+    before, after = STRIP_CASES[label]
+    assert strip_field_markers(before) == after
+
+
+@pytest.mark.parametrize("label", sorted(STRIP_UNTOUCHED))
+def test_strip_field_markers_leaves_text_scripts_styles_and_comments_alone(label):
+    """The old regex ran over the whole document, so it ate the same words wherever they appeared."""
+    from manifest_annotation import strip_field_markers
+    assert strip_field_markers(STRIP_UNTOUCHED[label]) == STRIP_UNTOUCHED[label]
+
+
+def test_strip_field_markers_is_idempotent_and_leaves_a_clean_document_byte_identical():
+    from manifest_annotation import strip_field_markers
+    doc = "".join(before for before, _ in STRIP_CASES.values()) + "".join(STRIP_UNTOUCHED.values())
+    once = strip_field_markers(doc)
+    assert strip_field_markers(once) == once and once != doc
+    clean = "<div class='a'>" + chr(13) + chr(10) + " é <p>x</p></div>"
+    assert strip_field_markers(clean) is clean
+
+
+@needs_db
+@needs_draft
+def test_the_other_declarations_on_the_real_draft_are_unaffected_by_markers(marked_run, alias_dbs):
+    out, rows = _annotated(marked_run["html"], alias_dbs["with"])
+    assert rows["sgs-trust-ticker"]["status"] == "applied" and rows["sgs-trust-ticker"]["fields"] == ["label"]
+    assert rows["sgs-hero"]["status"] == "applied" and rows["sgs-about-strip"]["status"] == "queued"
+    twice, again = _annotated(out, alias_dbs["with"])
+    assert twice == out                                       # HTML idempotent on the annotated, marker-free copy
+
+
+_LIVE_HAS_WHO = None
+
+
+def _live_has_who() -> bool:
+    global _LIVE_HAS_WHO
+    if _LIVE_HAS_WHO is None:
+        try:
+            lookup = DbBlockLookup()
+            _LIVE_HAS_WHO = "attribution" in lookup.slots_of("who")
+            lookup.close()
+        except FileNotFoundError:
+            _LIVE_HAS_WHO = False
+    return _LIVE_HAS_WHO
+
+
+@needs_db
+@needs_draft
+@pytest.mark.skipif(not _live_has_who(), reason="the live framework DB has no `who` alias on the `attribution` slot yet: "
+                    "add \"who\" to that row's aliases in plugins/sgs-blocks/scripts/data/slots.json and re-seed")
+def test_the_live_database_carries_the_who_synonym_once_seeded(marked_run):
+    out, rows = _annotated(marked_run["html"])
+    assert rows["sgs-google-reviews"]["status"] == "applied" and rows["sgs-google-reviews"]["items"] == 13

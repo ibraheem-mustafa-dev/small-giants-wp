@@ -29,6 +29,35 @@ that is a function) stays as it was and is listed in the report with its loop, i
 loop that renders zero rows at load (empty bag, nothing selected), starts with a conditional, or contains a
 nested loop is skipped with its reason.
 
+Field markers (FR-31-31, Spec 31 section 13.2): when the draft carries a `data-sgs-manifest` block (the only
+consumer of the markers is `manifest_annotation.py`), a `{{ var.field }}` that is the WHOLE content of the
+element that receives it (a text node that is the element's only child, or a whole attribute value) leaves a
+marker on that element: `data-src-field="field"` for text, `data-src-field-<attr>="field"` for an attribute.
+The annotator maps the draft's field names to the block's item fields by those names instead of by counting
+and ordering text, and strips every marker again. Mixed content (`Free delivery {{ i.x }}`, `padding: {{ i.p }}`)
+is never marked: no single field name describes it. The marker name deliberately sits OUTSIDE the `data-sgs-`
+namespace, because the converter's `lift_behavioural_attrs` reads any `data-sgs-<x>` as a candidate value for a
+block attribute called `x`, which would make `data-sgs-field` collide with any block that ever gains a `field`
+attribute.
+
+Loop-duplicate collapse: a seamless marquee is written as a list doubled in the draft script
+(`mBrands.concat(mBrands)`) so its CSS loop has no visible seam. The SGS block clones its own set at runtime, so
+keeping both halves shows every brand twice. A resolved loop whose second half repeats its first half field for
+field is collapsed to one set, but ONLY when the draft itself says it is a seamless-loop duplicate: the script
+binds that loop's variable to `x.concat(x)` / `[...x, ...x]`, OR an ancestor of the loop runs an infinite CSS
+animation whose `@keyframes` shift the strip by half (`translateX(-50%)`, the seamless-loop signature). Without
+that evidence a repeated list is content (an FAQ may repeat an entry) and is never touched. The report entry says
+`loop_duplicate_collapsed: true` with the counts before and after and the evidence. `collapse_loop_duplicates=False`
+(the orchestrator's `--no-collapse-loop-duplicates`) turns the collapse off alone: the loops are still expanded, every
+row is kept, and an entry that had evidence says `loop_duplicate_collapse_skipped` instead.
+
+What the CSS evidence reads (and does not): an ancestor's animation is taken from its inline `style` and from
+top-level rules whose selector is exactly one class (`.strip { }`, or a list of them). A rule inside `@media`,
+`@supports`, `@container` or `@layer` is skipped, and so is a rule for a descendant or compound selector
+(`.wrap .strip`, `.a.strip`): each applies only under a condition, or only to a different element, than this one, so
+counting it would over-match. Cascade ORDER and `!important` between two rules on the same element are not evaluated
+(all matching top-level rules are read together). The evidence text in the report says so.
+
 Regression safety (FR-31-26.3): (1) a draft with no `<sc-for>` returns the same string with no subprocess
 spawned; (2) fail-soft: ANY failure (server, Playwright, timeout, an unrendered runtime) returns the ORIGINAL
 html unchanged and never raises. The pipeline runs it by default; `--no-resolve-js-content` opts out.
@@ -41,6 +70,7 @@ import logging
 import re
 import subprocess
 import tempfile
+from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
 
@@ -58,6 +88,13 @@ _TAG_ATTR_RE = re.compile(r"""([a-zA-Z_:@][-\w:.@]*)\s*=\s*(?:"([^"]*)"|'([^']*)
 _FIRST_CHILD_RE = re.compile(r"^\s*<([a-zA-Z][\w-]*)", re.DOTALL)
 _UNUSABLE_VALUE_RE = re.compile(r"^\s*(?:function\b|\(?[\w$,\s]*\)?\s*=>)|\[object ")
 _NEVER_CAPTURED_ATTRS = frozenset({"ref", "key"})
+
+_MANIFEST_MARK_RE = re.compile(r"\bdata-sgs-manifest\b")
+_VOID_TAGS = frozenset("area base br col embed hr img input link meta param source track wbr".split())
+_MARKER_ATTR_NAME_RE = re.compile(r"^[a-z][a-z0-9-]*$")
+# Marker attribute names. Outside the `data-sgs-` namespace on purpose (see the module docstring).
+TEXT_MARKER = "data-src-field"
+ATTR_MARKER_PREFIX = "data-src-field-"
 
 _RESOLVE_SCRIPT = Path(__file__).with_name("resolve-js-content.js")
 _RENDER_TIMEOUT_SECONDS = 90
@@ -82,33 +119,64 @@ def item_slots(body: str, var: str) -> list[dict[str, Any]]:
     ``{"id": "fK", "kind": "text"|"attr", "start", "end", "mustache", "tag_insert"}`` where ``start``/``end``
     are offsets in ``body`` and ``tag_insert`` (attr only) is the offset just after the tag name, where a
     carrier attribute can be added without disturbing anything else.
+
+    A slot that is the WHOLE content of its holder element also carries ``field`` (the property name in
+    ``{{ var.field }}``), ``marker_at`` (the offset just after the holder's tag name) and ``marker`` (the marker
+    attribute name to stamp there). Mixed content never has them: no single field name describes it.
     """
     slots: list[dict[str, Any]] = []
+    field_re = re.compile(r"^\{\{\s*" + re.escape(var) + r"\.([A-Za-z_$][\w$]*)\s*\}\}$")
 
-    def add(kind: str, start: int, end: int, tag_insert: int | None = None) -> None:
+    def add(kind: str, start: int, end: int, tag_insert: int | None = None,
+            whole: tuple[int, str] | None = None) -> None:
         text = body[start:end]
         inner = text[2:-2].strip()
         # A bare `{{ p }}` is the whole row (in a product loop, a nested card): no single value to capture.
         if inner != var and _mentions(inner, var):
-            slots.append({"id": "f%d" % len(slots), "kind": kind, "start": start, "end": end,
-                          "mustache": text, "tag_insert": tag_insert})
+            slot: dict[str, Any] = {"id": "f%d" % len(slots), "kind": kind, "start": start, "end": end,
+                                    "mustache": text, "tag_insert": tag_insert}
+            named = field_re.match(text)
+            if whole is not None and named is not None:
+                slot.update({"field": named.group(1), "marker_at": whole[0], "marker": whole[1]})
+            slots.append(slot)
 
     pos = 0
     for tag in _TAG_RE.finditer(body):
         for m in _MUSTACHE_RE.finditer(body, pos, tag.start()):
-            add("text", m.start(), m.end())
+            add("text", m.start(), m.end(), whole=_text_holder(body, m.start(), m.end()))
         if not _is_directive(tag.group(1)):
             attrs_at = tag.start(2)
             for a in _TAG_ATTR_RE.finditer(tag.group(2)):
                 if a.group(1).lower().startswith("on") or a.group(1).lower() in _NEVER_CAPTURED_ATTRS:
                     continue
+                value = a.group(2) if a.group(2) is not None else a.group(3)
                 value_at = attrs_at + a.start(2) if a.group(2) is not None else attrs_at + a.start(3)
-                for m in _MUSTACHE_RE.finditer(a.group(2) if a.group(2) is not None else a.group(3)):
-                    add("attr", value_at + m.start(), value_at + m.end(), tag.end(1))
+                for m in _MUSTACHE_RE.finditer(value):
+                    marker = ATTR_MARKER_PREFIX + a.group(1).lower()
+                    whole = (tag.end(1), marker) if (
+                        m.start() == 0 and m.end() == len(value) and _MARKER_ATTR_NAME_RE.match(a.group(1).lower())) else None
+                    add("attr", value_at + m.start(), value_at + m.end(), tag.end(1), whole=whole)
         pos = tag.end()
     for m in _MUSTACHE_RE.finditer(body, pos):
-        add("text", m.start(), m.end())
+        add("text", m.start(), m.end(), whole=_text_holder(body, m.start(), m.end()))
     return slots
+
+
+def _text_holder(body: str, start: int, end: int) -> tuple[int, str] | None:
+    """``(offset just after the holder's tag name, TEXT_MARKER)`` when the mustache at ``body[start:end]`` is the
+    only thing inside an ordinary element (whitespace aside), else None. The element must be opened immediately
+    before the mustache and closed immediately after it."""
+    lt = body.rfind("<", 0, start)
+    if lt < 0:
+        return None
+    tag = _TAG_RE.match(body, lt)
+    if tag is None or tag.end() > start or body[tag.end():start].strip() or _is_directive(tag.group(1)):
+        return None
+    if tag.group(1).lower() in _VOID_TAGS:
+        return None
+    if not re.match(r"\s*</" + re.escape(tag.group(1)) + r"\s*>", body[end:], re.IGNORECASE):
+        return None
+    return tag.end(1), TEXT_MARKER
 
 
 def find_expandable_sc_fors(html: str) -> tuple[list[dict[str, Any]], list[dict[str, str]]]:
@@ -214,10 +282,12 @@ def _not_rendered(branch: dict[str, Any], fields: dict[str, Any]) -> bool:
     return branch["id"] not in fields
 
 
-def _expand(cand: dict[str, Any], items: list[dict[str, Any]], report: dict[str, Any]) -> str:
+def _expand(cand: dict[str, Any], items: list[dict[str, Any]], report: dict[str, Any],
+            stamp_fields: bool = False, collapse: dict[str, Any] | None = None) -> str:
     pieces: list[str] = []
     captured = 0
     pruned = 0
+    stamped = 0
     for number, item in enumerate(items, start=1):
         fields = item.get("fields") or {}
         edits: list[tuple[int, int, str, int]] = []
@@ -233,22 +303,183 @@ def _expand(cand: dict[str, Any], items: list[dict[str, Any]], report: dict[str,
                 edits.append((slot["start"], slot["end"],
                               _html.escape(value, quote=(slot["kind"] == "attr")), order))
                 captured += 1
+                if stamp_fields and slot.get("field"):
+                    edits.append((slot["marker_at"], slot["marker_at"],
+                                  ' %s="%s"' % (slot["marker"], _html.escape(slot["field"], quote=True)), order))
+                    stamped += 1
             else:
                 report["gaps"].append({
                     "loop": cand["list_expr"], "item": number, "expr": slot["mustache"],
                     "reason": "the draft's runtime produced no plain value for it (a handler, a computed value or an unrendered branch)"})
         pieces.append(_apply(cand["body"], edits))
-    report["resolved"].append({"loop": cand["list_expr"], "items": len(items),
-                               "fields_captured": captured, "fields_per_item": len(cand["slots"]),
-                               "branches_pruned": pruned})
+    entry: dict[str, Any] = {"loop": cand["list_expr"], "items": len(items),
+                             "fields_captured": captured, "fields_per_item": len(cand["slots"]),
+                             "branches_pruned": pruned}
+    if stamped:
+        entry["fields_marked"] = stamped
+    if collapse is not None:
+        entry.update(collapse)
+    report["resolved"].append(entry)
     return "".join(pieces)
 
 
+# ---------------------------------------------------------------------------------------------------------------
+# Seamless-loop duplicates (FR-31-31)
+# ---------------------------------------------------------------------------------------------------------------
+
+_LOOP_VAR_RE = re.compile(r"^\{\{\s*([A-Za-z_$][\w$]*)\s*\}\}$")
+_DOUBLED_RE = re.compile(
+    r"([A-Za-z_$][\w$.]*)\s*\.concat\(\s*\1\s*\)|\[\s*\.\.\.\s*([A-Za-z_$][\w$.]*)\s*,\s*\.\.\.\s*\2\s*\]")
+_HALF_SHIFT_RE = re.compile(r"translate(?:X|3d)?\(\s*-50%")
+
+
+def is_exact_repeat(items: list[dict[str, Any]]) -> bool:
+    """True when the item list is one set written out twice: even length, and the second half equals the first
+    half in every field of every row."""
+    half, rest = divmod(len(items), 2)
+    if rest or half == 0:
+        return False
+    return all((items[i].get("fields") or {}) == (items[i + half].get("fields") or {}) for i in range(half))
+
+
+def _script_doubles_loop(source: str, list_expr: str) -> bool:
+    """The draft's script binds this loop's variable to a list added to itself (`x.concat(x)`, `[...x, ...x]`)."""
+    named = _LOOP_VAR_RE.match(list_expr.strip())
+    if named is None:
+        return False
+    binding = re.compile(r"(?<![\w$.])" + re.escape(named.group(1)) + r"\s*[:=](?!=)([^;\n]{0,400})")
+    return any(_DOUBLED_RE.search(m.group(1)) for m in binding.finditer(source))
+
+
+def _half_shift_keyframes(source: str) -> set[str]:
+    """Names of `@keyframes` blocks that move the element by half of its own width (`translateX(-50%)`)."""
+    names: set[str] = set()
+    for m in re.finditer(r"@keyframes\s+([\w-]+)\s*\{", source):
+        depth, i = 1, m.end()
+        while i < len(source) and depth:
+            depth += {"{": 1, "}": -1}.get(source[i], 0)
+            i += 1
+        if _HALF_SHIFT_RE.search(source[m.end():i]):
+            names.add(m.group(1))
+    return names
+
+
+class _Reached(Exception):
+    """The parser reached the loop's own start tag."""
+
+
+class _AncestorScan(HTMLParser):
+    """The open elements (tag, attributes) at a source offset: the ancestors of whatever starts there."""
+
+    def __init__(self, source: str, stop: int) -> None:
+        super().__init__(convert_charrefs=False)
+        self._lines = [0] + [i + 1 for i, ch in enumerate(source) if ch == "\n"]
+        self._stop = stop
+        self.stack: list[tuple[str, dict[str, str]]] = []
+
+    def _here(self) -> int:
+        line, col = self.getpos()
+        return self._lines[line - 1] + col
+
+    def handle_starttag(self, tag, attrs):  # noqa: D401 - HTMLParser hook
+        if self._here() >= self._stop:
+            raise _Reached
+        if tag not in _VOID_TAGS:
+            self.stack.append((tag, {k: (v or "") for k, v in attrs}))
+
+    def handle_startendtag(self, tag, attrs):
+        if self._here() >= self._stop:
+            raise _Reached
+
+    def handle_endtag(self, tag):
+        for depth in range(len(self.stack) - 1, -1, -1):
+            if self.stack[depth][0] == tag:
+                del self.stack[depth:]
+                return
+
+
+def _ancestors_at(source: str, offset: int) -> list[tuple[str, dict[str, str]]]:
+    scan = _AncestorScan(source, offset)
+    try:
+        scan.feed(source)
+        scan.close()
+    except _Reached:
+        pass
+    return scan.stack
+
+
+_AT_RULE_RE = re.compile(r"@(?:media|supports|container|layer|document|scope)\b[^{};]*\{")
+
+
+def _without_conditional_blocks(source: str) -> str:
+    """``source`` with every conditional at-rule block (`@media ... { ... }`, nested braces included) removed, so a
+    rule that holds only under a condition is never mistaken for one that always holds. `@keyframes` and
+    `@font-face` are left in (they are not conditional, and `_half_shift_keyframes` reads the former)."""
+    out, pos = [], 0
+    for m in _AT_RULE_RE.finditer(source):
+        if m.start() < pos:
+            continue                                        # inside a block already removed
+        depth, i = 1, m.end()
+        while i < len(source) and depth:
+            depth += {"{": 1, "}": -1}.get(source[i], 0)
+            i += 1
+        out.append(source[pos:m.start()])
+        pos = i
+    out.append(source[pos:])
+    return "".join(out)
+
+
+def _animation_text(source: str, attrs: dict[str, str]) -> str:
+    """Every `animation*` declaration that applies to one element: inline, and from a top-level rule whose selector is
+    exactly `.class` (alone or in a comma list). Rules inside `@media`/`@supports`/`@container`/`@layer` and rules for a
+    descendant or compound selector are NOT read (see the module docstring): they apply conditionally or to another
+    element, so reading them would over-match. Cascade order is not evaluated."""
+    plain = _without_conditional_blocks(source)
+    blocks = [attrs.get("style", "")]
+    for cls in attrs.get("class", "").split():
+        blocks += re.findall(r"(?:^|[}{;,])\s*\." + re.escape(cls) + r"(?![\w-])\s*(?:,[^{}]*)?\{([^}]*)\}", plain)
+    return " ".join(d for b in blocks for d in re.findall(r"animation[\w-]*\s*:[^;]*", b))
+
+
+def _looping_ancestor(source: str, span_start: int) -> str | None:
+    """The name of a `@keyframes` that shifts by half, run infinitely by an ancestor of the loop, else None."""
+    shifting = _half_shift_keyframes(source)
+    if not shifting:
+        return None
+    for _tag, attrs in _ancestors_at(source, span_start):
+        decl = _animation_text(source, attrs)
+        if re.search(r"\binfinite\b", decl):
+            for name in re.findall(r"[A-Za-z_][\w-]*", decl):
+                if name in shifting:
+                    return name
+    return None
+
+
+def duplicate_evidence(source: str, cand: dict[str, Any]) -> str | None:
+    """Why the draft itself says this loop is a seamless-marquee duplicate, or None when it does not say so."""
+    if _script_doubles_loop(source, cand["list_expr"]):
+        return "the draft script builds the list as the same list added to itself (x.concat(x))"
+    looping = _looping_ancestor(source, cand["span"][0])
+    if looping is not None:
+        return ("an ancestor runs the infinite animation '%s', which shifts the strip by half (a seamless loop); read "
+                "from inline styles and top-level single-class rules only, so media queries and cascade order were not "
+                "evaluated" % looping)
+    return None
+
+
 def splice_expanded_items(html: str, marker_map: dict[str, dict[str, Any]],
-                          captured: dict[str, list[dict[str, Any]]]) -> tuple[str, int, dict[str, Any]]:
-    """Replace each rendered loop's `<sc-for>` with its expanded items. Returns `(html, loops, report)`."""
+                          captured: dict[str, list[dict[str, Any]]],
+                          stamp_fields: bool = False,
+                          collapse_loop_duplicates: bool = True) -> tuple[str, int, dict[str, Any]]:
+    """Replace each rendered loop's `<sc-for>` with its expanded items. Returns `(html, loops, report)`.
+
+    ``stamp_fields`` leaves a field marker on every element whose whole content is one field (see the module
+    docstring); the caller turns it on only for a draft that carries a manifest. ``collapse_loop_duplicates=False``
+    keeps every row of a loop the draft doubled (the entry records that it had evidence and was left alone).
+    """
     report: dict[str, Any] = {"resolved": [], "gaps": [], "skipped": []}
     count = 0
+    source = html
     for _marker, cand in sorted(marker_map.items(), key=lambda kv: kv[1]["span"][0], reverse=True):
         items = captured.get(_marker) or []
         if not items:
@@ -259,14 +490,28 @@ def splice_expanded_items(html: str, marker_map: dict[str, dict[str, Any]],
             _LOG.warning("js_content_resolver: loop %s came back as unrendered template text; leaving it untouched", cand["list_expr"])
             report["skipped"].append({"loop": cand["list_expr"], "reason": "the draft's runtime did not render it"})
             continue
+        collapse: dict[str, Any] | None = None
+        if is_exact_repeat(items):
+            evidence = duplicate_evidence(source, cand)
+            if evidence is not None and not collapse_loop_duplicates:
+                collapse = {"loop_duplicate_collapse_skipped": "switched off (--no-collapse-loop-duplicates)",
+                            "duplicate_evidence": evidence}
+            elif evidence is not None:
+                collapse = {"loop_duplicate_collapsed": True, "items_before_collapse": len(items),
+                            "items_after_collapse": len(items) // 2, "duplicate_evidence": evidence}
+                items = items[:len(items) // 2]
         start, end = cand["span"]
-        html = html[:start] + _expand(cand, items, report) + html[end:]
+        html = html[:start] + _expand(cand, items, report, stamp_fields, collapse) + html[end:]
         count += 1
     return html, count, report
 
 
-def resolve_js_array_content_with_report(html: str, mockup_dir: Path) -> tuple[str, int, dict[str, Any]]:
+def resolve_js_array_content_with_report(html: str, mockup_dir: Path,
+                                         collapse_loop_duplicates: bool = True) -> tuple[str, int, dict[str, Any]]:
     """Top-level entry point: `(html, loops expanded, report)`. Fail-soft at every stage; never raises.
+
+    ``collapse_loop_duplicates`` (default True) is the seamless-marquee collapse of the module docstring; False leaves
+    every row in place.
 
     A `html` with no expandable `<sc-for>` returns at once with no subprocess spawned.
     """
@@ -307,7 +552,9 @@ def resolve_js_array_content_with_report(html: str, mockup_dir: Path) -> tuple[s
         if tmp_dir is not None:
             tmp_dir.cleanup()
 
-    new_html, count, spliced = splice_expanded_items(html, marker_map, payload)
+    new_html, count, spliced = splice_expanded_items(html, marker_map, payload,
+                                                     stamp_fields=_MANIFEST_MARK_RE.search(html) is not None,
+                                                     collapse_loop_duplicates=collapse_loop_duplicates)
     spliced["skipped"] = report["skipped"] + spliced["skipped"]
     return new_html, count, spliced
 

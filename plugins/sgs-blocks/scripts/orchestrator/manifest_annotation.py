@@ -25,6 +25,13 @@ What one declaration does
   node per item and exactly one text field in the block's item schema. Anything more ambiguous is reported as
   ``partial`` with the reason; the item classes are still applied and the converter's own matching tiers do what
   they can. Never a silent guess.
+* Fields by NAME (FR-31-31 rule 6): when the JS content resolver left ``data-src-field`` markers on the run copy,
+  each marked draft field is mapped by a fixed ladder (manifest ``repeatedGroups[].fieldMap``, the block's own
+  field key, a DB synonym through a NARROW ``slots`` row; a catch-all slot is no evidence) instead of by
+  counting text. Text with no field is reported
+  in the row's ``skipped_fields``; it withholds the section only when a free block text field could still be its
+  home. Every marker is stripped from the returned HTML (``strip_field_markers``, which the orchestrator also runs
+  on the run copy on every path): none reaches the converter.
 
 Every declaration yields exactly one report row (rule 4). ``rejected`` and ``queued`` rows never change the HTML.
 A draft with no manifest, or one that does not parse, comes back byte-identical with no rows. The edits are
@@ -86,6 +93,10 @@ class BlockLookup(Protocol):
     def array_schemas(self, slug: str) -> list[ArraySchema] | None:
         """None when the block has no ``arrayContentLift``; else its item schemas (usually exactly one)."""
 
+    # Optional (the annotator asks with ``getattr``, so a lookup without it simply has no synonym rung):
+    #   def slots_of(self, term: str) -> frozenset[str]:
+    #       """Every element slot that has ``term`` as its name or one of its aliases (empty when none)."""
+
 
 def _norm(token: str) -> str:
     return re.sub(r"[-_\s]", "", token).lower()
@@ -107,9 +118,47 @@ class DbBlockLookup:
             raise FileNotFoundError(f"framework database not found: {self._db}")
         self._conn = sqlite3.connect(f"file:{self._db.as_posix()}?mode=ro", uri=True)
         self._slot_of: dict[str, str] | None = None
+        self._slot_sets: dict[str, frozenset[str]] | None = None
+        self._slot_terms: dict[str, int] | None = None
 
     def close(self) -> None:
         self._conn.close()
+
+    def slots_of(self, term: str) -> frozenset[str]:
+        """Every ``element`` slot that has ``term`` as its name or one of its aliases (name-normalised).
+
+        The DB-first synonym source (R-31-1): two field names are synonyms when they share a slot. Unlike
+        ``_slot_map`` (one slot per term, first row wins) this keeps EVERY slot, so a term listed under two slots
+        (``author`` is an alias of both ``attribution`` and ``text``) is not silently pinned to one of them."""
+        self._load_slot_sets()
+        return self._slot_sets.get(_norm(term), frozenset())
+
+    def _load_slot_sets(self) -> None:
+        if self._slot_sets is not None:
+            return
+        sets: dict[str, set[str]] = {}
+        terms: dict[str, set[str]] = {}
+        for name, aliases in self._conn.execute("SELECT slot_name, aliases FROM slots WHERE scope = 'element'"):
+            sets.setdefault(_norm(name), set()).add(name)
+            terms[name] = {_norm(name)}
+            try:
+                for alias in json.loads(aliases or "[]"):
+                    sets.setdefault(_norm(alias), set()).add(name)
+                    terms[name].add(_norm(alias))
+            except ValueError:
+                pass
+        self._slot_sets = {k: frozenset(v) for k, v in sets.items()}
+        self._slot_terms = {name: len(names) for name, names in terms.items()}
+
+    def is_broad_slot(self, slot: str) -> bool:
+        """True when ``slot`` is a catch-all: it lists more than twice the average number of names (its own name plus
+        aliases) of an ``element`` slot. Two names that share ONLY such a slot are not shown to mean the same thing
+        (on the live database ``verified``, ``bio``, ``excerpt`` and ``message`` all sit in ``text``), whereas two
+        that share a narrow slot are (``who`` and ``author`` in ``attribution``). Measured from the table itself, so
+        it moves with the data and names no slot (R-31-1)."""
+        self._load_slot_sets()
+        counts = self._slot_terms or {}
+        return bool(counts) and counts.get(slot, 0) > 2 * (sum(counts.values()) / len(counts))
 
     def canonical_slug(self, name: str) -> str | None:
         slug = name if "/" in name else f"sgs/{name}"
@@ -472,6 +521,14 @@ def _row(root_class: str, block, confidence, status: str, reason: str, target: s
             "reason": reason, "target": target, "items": items, "fields": list(fields or [])}
 
 
+def _field_map(raw) -> dict[str, str | None]:
+    """The optional ``repeatedGroups[].fieldMap``: ``{draft field name: block field key, or null for "not lifted"}``.
+    Anything that is not that shape is ignored (a bad map must not break a declaration that does not need it)."""
+    if not isinstance(raw, dict):
+        return {}
+    return {k: v for k, v in raw.items() if isinstance(k, str) and (v is None or isinstance(v, str))}
+
+
 def _read_manifest(source: str) -> dict | None:
     match = _MANIFEST_RE.search(source)
     if not match:
@@ -544,14 +601,233 @@ def _choose_run(root: _Node, hint: int | None) -> tuple[_Run | None, str | None]
 
 _NON_TEXT_NOTE = "the block's non-text fields (icons, images, links) are left to the converter's own matching"
 
+# The field markers the JS content resolver leaves on run-copy elements (js_content_resolver.TEXT_MARKER and
+# ATTR_MARKER_PREFIX). The annotator reads the text marker, then strips every marker from what it returns.
+_TEXT_MARKER = "data-src-field"
 
-def _plan_items(src, run: _Run, block_name: str, schema: ArraySchema):
-    """Edits and report facts for one run: ``(edits, fields annotated, status, reason, lossy)``.
+# What `strip_field_markers` looks at, in one left-to-right pass so that each region is claimed by exactly one
+# alternative: a comment and a raw-text element (`<script>`, `<style>`, `<textarea>`; their content is data or text,
+# never markup) are matched and handed back untouched; a start tag is matched with quote-aware attributes and only
+# THAT is edited. Text nodes and `<pre>` text are never in a start tag, so they cannot be reached.
+_STRIP_SCAN_RE = re.compile(
+    r"""(?P<skip><!--.*?-->|<(?P<raw>script|style|textarea)\b(?:[^<>"']|"[^"]*"|'[^']*')*>.*?</(?P=raw)\s*>)"""
+    r"""|(?P<tag><(?P<name>[a-zA-Z][\w:-]*)(?P<attrs>(?:[^<>"']|"[^"]*"|'[^']*')*)>)""",
+    re.IGNORECASE | re.DOTALL,
+)
+_MARKER_ATTR_RE = re.compile(
+    r"""\s+data-src-field(?:-[a-z0-9-]+)?(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s"'>=`]+))?(?=[\s/>]|$)""",
+    re.IGNORECASE,
+)
+
+
+def strip_field_markers(html: str) -> str:
+    """``html`` without the resolver's field markers (``data-src-field`` and ``data-src-field-<attr>``).
+
+    The one strip used by the annotator (every return) and by the orchestrator (any run copy that still carries
+    markers after Stage -1.44, whatever happened there). Only real attributes of real start tags are removed:
+    the same words in a text node, a ``<pre>`` sample, a ``<script>``, a ``<style>``, a ``<textarea>`` or a
+    comment are content and stay. Anything else in the document is returned byte for byte."""
+    if _TEXT_MARKER not in html.lower():
+        return html
+
+    def _sub(match: re.Match) -> str:
+        if match.group("skip") is not None:
+            return match.group(0)
+        attrs = _MARKER_ATTR_RE.sub("", match.group("attrs"))
+        if attrs == match.group("attrs"):
+            return match.group(0)
+        return "<" + match.group("name") + attrs + ">"
+
+    return _STRIP_SCAN_RE.sub(_sub, html)
+
+
+def _squash(text: str) -> str:
+    return " ".join(_html.unescape(text).split())
+
+
+@dataclass(frozen=True)
+class _ItemText:
+    """One piece of text an item shows, with what the draft says about it."""
+    unit: _Unit
+    field: str | None               # the draft field name from the marker; None for unmarked text
+    text: str
+    conditional: bool               # sits inside a retained <sc-if>: it is there for some cards only
+
+
+def _marker_of(unit: _Unit) -> str | None:
+    if unit.text_node is not None:
+        return None                 # a loose text node beside other elements is never a whole-content field
+    for name, value in unit.holder.attrs:
+        if name == _TEXT_MARKER and value:
+            return value
+    return None
+
+
+def _item_texts(member: _Node, src: str) -> list[_ItemText]:
+    out: list[_ItemText] = []
+    for unit in _units(member, src):
+        node = unit.text_node
+        raw = src[node.start:node.end] if node is not None else src[unit.holder.open_end:unit.holder.inner_end]
+        chain, cur = [], unit.holder
+        while cur is not None and cur is not member:
+            chain.append(cur)
+            cur = cur.parent
+        out.append(_ItemText(unit, _marker_of(unit), _squash(raw), any(n.name == "sc-if" for n in chain)))
+    return out
+
+
+def _resolve_field(name: str, text_keys: list[str], lookup, field_map: dict) -> tuple[str | None, str]:
+    """The mapping ladder for ONE draft field: ``(block key or None, how / why not)``.
+
+    1. The manifest's ``fieldMap`` (an explicit author decision; ``null`` means "deliberately not lifted").
+    2. The name is the block's own field key.
+    3. DB-first synonym: the name and exactly one of the block's text keys share a NARROW ``slots`` row (name or
+       alias). A catch-all slot (``lookup.is_broad_slot``) is no evidence: many unrelated names live in it, so a
+       field that shares only that is left unmapped, and the section is withheld while a text key is still free.
+    Anything else stays unmapped; a guess is never made."""
+    if name in field_map:
+        target = field_map[name]
+        if target is None:
+            return None, "the manifest's fieldMap marks it as not lifted"
+        if target in text_keys:
+            return target, "the manifest's fieldMap"
+        return None, f"the manifest's fieldMap sends it to '{target}', which is not a text field of the block"
+    same = [k for k in text_keys if _norm(k) == _norm(name)]
+    if same:
+        return same[0], "the same name"
+    slots_of = getattr(lookup, "slots_of", None)
+    if slots_of is None:
+        return None, "no block field has that name and no synonym source is available"
+    is_broad = getattr(lookup, "is_broad_slot", lambda _slot: False)
+    mine = slots_of(name)
+    shared = {k: mine & slots_of(k) for k in text_keys}
+    found = [k for k, slots in shared.items() if any(not is_broad(s) for s in slots)]
+    if len(found) == 1:
+        return found[0], "a synonym in the framework database"
+    if len(found) > 1:
+        return None, f"it is a synonym of more than one block field ({', '.join(found)}), so it cannot be told apart"
+    broad = sorted({s for slots in shared.values() for s in slots if is_broad(s)})
+    if broad:
+        return None, (f"it shares only the catch-all slot '{broad[0]}' (a slot that many unrelated names map to) "
+                      "with the block's fields, which does not show it means the same thing")
+    return None, "no block field has that name and the framework database lists no synonym for it"
+
+
+def _map_marked_fields(per_item: list[list[_ItemText]], text_keys: list[str], lookup, field_map: dict):
+    """The ladder over every marked draft field: ``(resolved, claimed, free, skipped, lossy)``.
+
+    ``resolved`` is ``{draft field: (block key or None, how / why not)}`` after the collision rule (two draft
+    fields for one block key: neither is trusted, both are dropped and the section is lossy). ``claimed`` are the
+    block keys with exactly one owner; ``free`` are the text keys nobody claimed; ``skipped`` has one entry per
+    unmapped draft field. An unmapped field is lossy only while a free text key could still be its home."""
+    names = list(dict.fromkeys(t.field for texts in per_item for t in texts if t.field))
+    resolved = {n: _resolve_field(n, text_keys, lookup, field_map) for n in names}
+    by_key: dict[str, list[str]] = {}
+    for n, (key, _how) in resolved.items():
+        if key is not None:
+            by_key.setdefault(key, []).append(n)
+    lossy = False
+    for key, owners in by_key.items():
+        if len(owners) > 1:
+            lossy = True
+            for n in owners:
+                resolved[n] = (None, f"'{owners[0]}' and '{owners[1]}' would both fill '{key}'")
+    claimed = {k: owners[0] for k, owners in by_key.items() if len(owners) == 1}
+    free = [k for k in text_keys if k not in claimed]
+    skipped: list[dict[str, str]] = []
+    for n, (key, why) in resolved.items():
+        if key is None:
+            skipped.append({"field": n, "reason": why})
+            lossy = lossy or (bool(free) and "not lifted" not in why)
+    return resolved, claimed, free, skipped, lossy
+
+
+def _annotate_marked(src, run: _Run, prefix: str, per_item: list[list[_ItemText]], resolved: dict,
+                     edits: list[Edit], skipped: list[dict[str, str]]) -> list[str]:
+    """Put the field class on the holder of each mapped marked text (the first use of a field per card). Returns
+    the block keys annotated, in first-use order."""
+    done: list[str] = []
+    for member, texts in zip(run.members, per_item):
+        seen: set[str] = set()
+        for t in texts:
+            key = resolved.get(t.field or "", (None, ""))[0]
+            if key is None:
+                continue
+            if key in seen:
+                skipped.append({"field": t.field, "reason": f"shown more than once in a card; only the first is lifted to '{key}'"})
+            elif t.unit.holder is member:
+                skipped.append({"field": t.field, "reason": "the card is its own text, so there is no element to mark"})
+            else:
+                seen.add(key)
+                if key not in done:
+                    done.append(key)
+                e = _class_edit(src, t.unit.holder, [prefix + _kebab(key)])
+                if e:
+                    edits.append(e)
+    return done
+
+
+def _classify_unmarked(per_item: list[list[_ItemText]], free: list[str], skipped: list[dict[str, str]]) -> bool:
+    """Report every distinct piece of unmarked item text; True when one of them is lossy.
+
+    Text that sits in every card, or only inside an optional part of one (a retained ``<sc-if>``), is card
+    FURNITURE (a star glyph, a link label): the block draws its own, so it is reported and never blocks. Text that
+    differs between cards with no field name is unexplained content: lossy while a free text field remains."""
+    where: dict[str, set[int]] = {}
+    for i, texts in enumerate(per_item):
+        for t in texts:
+            if t.field is None:
+                where.setdefault(t.text, set()).add(i)
+    lossy = False
+    for text, cards in where.items():
+        furniture = len(cards) == len(per_item) or all(
+            t.conditional for texts in per_item for t in texts if t.field is None and t.text == text)
+        label = f"unmarked text '{text[:40]}'"
+        if furniture:
+            skipped.append({"field": label, "reason": "the same text sits in every card (or only in an optional part of "
+                                                      "one), so it is card furniture, not the card's content; the block draws its own"})
+        else:
+            skipped.append({"field": label, "reason": "the text varies between cards but no field name says what it is"})
+            lossy = lossy or bool(free)
+    return lossy
+
+
+def _plan_marked_items(src, run: _Run, prefix: str, schema: ArraySchema, per_item: list[list[_ItemText]], lookup,
+                       field_map: dict, edits: list[Edit]):
+    """The field-marker mapping for one run: ``(edits, fields annotated, status, reason, lossy, skipped)``.
+
+    Every marked field goes through ``_resolve_field``. Text the block has no field for (a derived initial, a
+    star glyph, a static link label) is reported as skipped with its reason and never blocks the section. Text
+    the block DOES have a free field for, that no rung could place, makes the declaration lossy (withheld by
+    default), exactly like the unmarked case: guessing would put the text in the wrong field or lose it."""
+    text_keys = [f.key for f in schema.fields if f.text_like]
+    resolved, claimed, free, skipped, lossy = _map_marked_fields(per_item, text_keys, lookup, field_map)
+    done = _annotate_marked(src, run, prefix, per_item, resolved, edits, skipped)
+    lossy = _classify_unmarked(per_item, free, skipped) or lossy
+    unique: list[dict[str, str]] = []
+    for entry in skipped:
+        if entry not in unique:
+            unique.append(entry)
+    mapped = ", ".join(f"'{owner}' to '{key}'" for key, owner in claimed.items())
+    reason = f"items annotated and mapped by the draft's field names ({mapped or 'nothing could be mapped'})"
+    if unique:
+        reason += "; skipped: " + "; ".join(f"'{s['field']}' ({s['reason']})" for s in unique)
+    if lossy:
+        reason += "; text the block has a field for could not be placed with certainty, so assigning it would be a guess"
+    reason += f"; {_NON_TEXT_NOTE}"
+    return edits, [k for k in text_keys if k in done], ("partial" if lossy else "applied"), reason, lossy, unique
+
+
+def _plan_items(src, run: _Run, block_name: str, schema: ArraySchema, lookup=None, field_map: dict | None = None):
+    """Edits and report facts for one run: ``(edits, fields annotated, status, reason, lossy, skipped fields)``.
 
     ``lossy`` is True when the items hold text that cannot be assigned to a text field with certainty. Measured
     on the Eye Care reviews rail: once the converter claims the block and finds items it cannot fully match, it
     lifts the fields it can and drops the rest of the card text, with no content gap reported. The caller
     therefore withholds the whole declaration unless told to keep it.
+
+    When the resolver left field markers on the run copy the mapping is by NAME (``_plan_marked_items``);
+    otherwise it is the older count-and-shape rule below, which only maps the one certain case.
     """
     item_token = _singular(schema.attr)
     field_tokens = {_kebab(f.key) for f in schema.fields}
@@ -561,7 +837,7 @@ def _plan_items(src, run: _Run, block_name: str, schema: ArraySchema):
     other_bem = [c for m in run.members for c in m.classes if _BEM_ELEMENT_RE.match(c) and not c.startswith(prefix)]
     if other_bem:
         return [], [], "partial", (f"the items already carry the BEM class '{other_bem[0]}' of another block, "
-                                   "so they were left as the draft has them"), False
+                                   "so they were left as the draft has them"), False, []
     edits: list[Edit] = []
     for member in run.members:
         e = _class_edit(src, member, [prefix + item_token])
@@ -571,14 +847,17 @@ def _plan_items(src, run: _Run, block_name: str, schema: ArraySchema):
     per_item = [_units(m, src) for m in run.members]
     counts = {len(u) for u in per_item}
     if counts == {0}:
-        return edits, [], "applied", f"items annotated; they hold no text; {_NON_TEXT_NOTE}", False
+        return edits, [], "applied", f"items annotated; they hold no text; {_NON_TEXT_NOTE}", False, []
+    marked = [_item_texts(m, src) for m in run.members]
+    if any(t.field for texts in marked for t in texts):
+        return _plan_marked_items(src, run, prefix, schema, marked, lookup, field_map or {}, edits)
     if len(counts) != 1:
         return edits, [], "partial", ("items annotated; the items do not all hold the same amount of text, so no "
-                                      "field could be mapped"), True
+                                      "field could be mapped"), True, []
     unit_count = counts.pop()
     if not text_fields:
         return edits, [], "partial", (f"items annotated; each item holds {unit_count} piece(s) of text but the "
-                                      "block has no text field to carry it"), True
+                                      "block has no text field to carry it"), True, []
     if len(text_fields) == 1 and unit_count == 1:
         fld = text_fields[0]
         cls = prefix + _kebab(fld.key)
@@ -596,10 +875,10 @@ def _plan_items(src, run: _Run, block_name: str, schema: ArraySchema):
                 trail = raw[len(raw.rstrip()):]
                 edits.append((unit.text_node.start, unit.text_node.end,
                               f'{lead}<span class="{cls}">{raw.strip()}</span>{trail}'))
-        return edits, [fld.key], "applied", f"items annotated and the item text mapped to '{fld.key}'; {_NON_TEXT_NOTE}", False
+        return edits, [fld.key], "applied", f"items annotated and the item text mapped to '{fld.key}'; {_NON_TEXT_NOTE}", False, []
     names = ", ".join(f.key for f in text_fields)
     return edits, [], "partial", (f"items annotated; each item has {unit_count} piece(s) of text and the block has "
-                                  f"{len(text_fields)} text field(s) ({names}), so assigning them by order would be a guess"), True
+                                  f"{len(text_fields)} text field(s) ({names}), so assigning them by order would be a guess"), True, []
 
 
 def _declared_roots(section_blocks: dict) -> set[str]:
@@ -704,14 +983,18 @@ def _declaration(src: str, root_class: str, decl, groups, section_blocks: dict, 
             return reject(withheld.format(why=issue))
         return (_apply(src, edits) if edits else src), _row(
             root_class, slug, conf, "partial", f"root class applied but the items were not annotated: {issue}", target)
-    item_edits, fields, status, reason, lossy = _plan_items(src, run, block_name, schemas[0])
+    field_map = _field_map(rows[0].get("fieldMap"))
+    item_edits, fields, status, reason, lossy, skipped = _plan_items(src, run, block_name, schemas[0], lookup, field_map)
     if lossy and not keep_unmapped_text:
-        return reject(withheld.format(why=reason.replace("items annotated; ", "")))
+        return reject(withheld.format(why=re.sub(r"^items annotated(?: and mapped[^;]*)?; ", "", reason)))
     edits.extend(item_edits)
     if count_note:
         status, reason = "partial", f"{count_note}; {reason}"
     new_src = _apply(src, edits) if edits else src
-    return new_src, _row(root_class, slug, conf, status, reason, target, len(run.members), fields)
+    row = _row(root_class, slug, conf, status, reason, target, len(run.members), fields)
+    if skipped:
+        row["skipped_fields"] = skipped
+    return new_src, row
 
 
 def annotate_from_manifest(html: str, block_lookup: BlockLookup, min_confidence: str = "medium",
@@ -729,7 +1012,7 @@ def annotate_from_manifest(html: str, block_lookup: BlockLookup, min_confidence:
     manifest = _read_manifest(html)
     section_blocks = (manifest or {}).get("sectionBlocks")
     if not isinstance(section_blocks, dict) or not section_blocks:
-        return html, []
+        return strip_field_markers(html), []
     groups = manifest.get("repeatedGroups")
     current = html
     rows: list[dict] = []
@@ -737,4 +1020,6 @@ def annotate_from_manifest(html: str, block_lookup: BlockLookup, min_confidence:
         current, row = _declaration(current, root_class, decl, groups, section_blocks, block_lookup,
                                     CONFIDENCE_RANK[min_confidence], keep_unmapped_text)
         rows.append(row)
-    return current, rows
+    # The field markers are a private handshake with the JS content resolver: they served the mapping above and
+    # must not reach the converter. Every declaration has run, so they all go, in every section.
+    return strip_field_markers(current), rows

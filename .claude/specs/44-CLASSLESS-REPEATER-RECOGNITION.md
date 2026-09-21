@@ -642,7 +642,7 @@ A third writer uses this same log: the manifest annotation stage. When a draft c
 | `match_quality` | the declaration's confidence (`high`, `medium`, `low`), not `EXACT/PARTIAL/NONE` |
 | `outcome` | `applied` (the run copy was annotated in full), `partial` (annotated, but some declared items or fields could not be), `queued` (confidence below the accepted threshold, so nothing was written to the run copy and it waits for review), `rejected` (a validation failed; `reasons` says which) |
 | `stage`, `clause_a`, `clause_b` | neutral (`"none"`, `false`, `false`): the FR-44-1 clauses do not apply to a declared map |
-| `reasons`, `fields` | the validation reason; the field names the declaration covered |
+| `reasons`, `fields` | the validation reason (with any item text that was skipped and why, Spec 31 FR-31-31 rule 6); the block field keys the annotation mapped |
 | `target`, `items` | extra, manifest-only keys: `root` or `inner`, and the item count |
 
 Rules that follow:
