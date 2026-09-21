@@ -14,6 +14,7 @@ import {
 } from '@wordpress/components';
 import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, LinkPopoverField, BOX_UNITS, normaliseResponsiveBox, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, SgsBoxControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
+import { EditorIconBare, TrustBarIconPanel, TrustBarItemSpacingPanel, TrustBarMarqueeControls } from './edit-panels';
 import { colourVar, resolveShadowPreview, resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPreview, backgroundPaintPreview, textPaintPreview, spacingPreview, svgBackgroundPreview, generateItemKey, withStableItemKeys, resolveTextColourPreviewStyle, boxShorthand } from '../../utils';
 // trust-bar does not use the default <ContainerWrapperControls> aggregator —
 // its "Content band" / "Responsive spacing" panels write to flat attrs
@@ -96,6 +97,7 @@ function gridTemplateColumnsPreview( gtc, cols ) {
 
 const BADGE_STYLE_OPTIONS = [
 	{ label: __( 'Icon circle (default)', 'sgs-blocks' ), value: 'icon-circle' },
+	{ label: __( 'Icon only (no circle)', 'sgs-blocks' ), value: 'icon-bare' },
 	{ label: __( 'Text only (pill badge)', 'sgs-blocks' ), value: 'text-only' },
 	{ label: __( 'Image badge (logo / cert)', 'sgs-blocks' ), value: 'image-badge' },
 ];
@@ -304,6 +306,10 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		labelColourGradient,
 		badgeSize,
 		iconCircleSize,
+		iconBareSize,
+		iconStrokeWidth,
+		itemGap,
+		itemPadding,
 		iconCircleBackground,
 		iconCircleBackgroundGradient,
 		iconCircleBackgroundHover,
@@ -344,6 +350,12 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		autoScrollPauseOnHover,
 		shadow,
 	} = attributes;
+
+	// Both icon variants share the icon colour, label colour, item editor and grid; only
+	// the circle variant has a disc (size, background, border, shadow).
+	const isIconStyle = 'icon-circle' === badgeStyle || 'icon-bare' === badgeStyle;
+	// The circle/text/image "Badge size" control has no effect on the bare-icon variant.
+	const showBadgeSize = 'icon-bare' !== badgeStyle;
 
 	// Stable per-item `_key` for CSS scoping (Spec 35 Part 4) — backfilled
 	// silently for items authored before this field existed. useMemo keeps
@@ -468,7 +480,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	// defaults to 'grid' (block.json), and only an explicit 'flex' would fall
 	// back to the natural inline-flex wrap this block already renders without
 	// any style here.
-	const showBadgeGrid = badgeStyle === 'icon-circle' && 'flex' !== layout;
+	const showBadgeGrid = isIconStyle && 'flex' !== layout;
 	const badgeGridTemplateColumns = showBadgeGrid
 		? gridTemplateColumnsPreview( gridTemplateColumns, columns )
 		: undefined;
@@ -495,6 +507,12 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				'--sgs-trust-badge-circle-border-style': iconCircleBorderStyle || undefined,
 				'--sgs-trust-badge-circle-border-color': circleBorderColourValue,
 			} : {} ),
+			...( badgeStyle === 'icon-bare' ? {
+				'--sgs-trust-badge-icon-size': iconBareSize !== 20 ? `${ iconBareSize }px` : undefined,
+				'--sgs-trust-badge-icon-colour': iconColourValue,
+				'--sgs-trust-badge-text-colour': textColourValue,
+			} : {} ),
+			...( isIconStyle && iconStrokeWidth !== 1.8 ? { '--sgs-trust-badge-icon-stroke-width': iconStrokeWidth } : {} ),
 			...( badgeGridTemplateColumns ? {
 				display: 'grid',
 				gridTemplateColumns: badgeGridTemplateColumns,
@@ -537,6 +555,12 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		/>
 	) : null;
 
+	// Badge item spacing on the canvas (mirrors itemGap / itemPadding on the frontend).
+	const itemPreviewStyle = {
+		...spacingPreview( { padding: itemPadding }, previewTier ),
+		gap: gapCssValue( itemGap ),
+	};
+
 	const updateItem = ( index, updated ) => {
 		const next = [ ...items ];
 		next[ index ] = updated;
@@ -548,7 +572,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	};
 
 	const addItem = () => {
-		const newItem = badgeStyle === 'icon-circle'
+		const newItem = isIconStyle
 			? { icon: 'check', label: '', _key: generateItemKey() }
 			: badgeStyle === 'image-badge'
 				? { label: '', url: '', _key: generateItemKey(), objectFit: 'cover' }
@@ -704,7 +728,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					// exact case and hand-builds the row the same way — this
 					// mirrors that, not an invented shape. Moved verbatim
 					// from the deleted Appearance-panel picker; unchanged.
-					badgeStyle === 'icon-circle' && {
+					isIconStyle && {
 						key: 'icon-colour',
 						label: __( 'Icon colour', 'sgs-blocks' ),
 						states: [
@@ -806,6 +830,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
+							<TrustBarMarqueeControls attributes={ attributes } setAttributes={ setAttributes } />
 							<ToggleControl
 								label={ __( 'Pause on hover', 'sgs-blocks' ) }
 								checked={ !! autoScrollPauseOnHover }
@@ -819,7 +844,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				{ /* ── Badge items repeater (content) ─────────────────────────── */ }
 				<PanelBody title={ __( 'Badges', 'sgs-blocks' ) }>
 					{ items.map( ( item, index ) => (
-						badgeStyle === 'icon-circle' ? (
+						isIconStyle ? (
 							<IconCircleItemEditor
 								key={ item._key || index }
 								item={ item }
@@ -1041,14 +1066,16 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						     In icon-circle mode, sizing is controlled by the Icon circle size
 						     range control in the Appearance panel — showing this control there
 						     would create a dead second size control with no visible effect. */ }
-						<SelectControl
-							label={ __( 'Badge size', 'sgs-blocks' ) }
-							value={ badgeSize }
-							options={ BADGE_SIZE_OPTIONS }
-							onChange={ ( val ) => setAttributes( { badgeSize: val } ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
+						{ showBadgeSize && (
+							<SelectControl
+								label={ __( 'Badge size', 'sgs-blocks' ) }
+								value={ badgeSize }
+								options={ BADGE_SIZE_OPTIONS }
+								onChange={ ( val ) => setAttributes( { badgeSize: val } ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						) }
 						{ /* Multi-target typography switcher (2026-09-07) — label + title share
 						     ONE full control set at a time. Both targets include the full extended
 						     show* set (fontSizePresets, showFontFamily, showDecoration, etc.) per
@@ -1093,6 +1120,14 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						/>
 					</PanelBody>
 				) }
+
+				{ /* ── Icon size (bare) + line thickness (both icon variants) ──── */ }
+				{ isIconStyle && (
+					<TrustBarIconPanel attributes={ attributes } setAttributes={ setAttributes } badgeStyle={ badgeStyle } />
+				) }
+
+				{ /* ── Gap / padding on each badge item (every variant) ───────── */ }
+				<TrustBarItemSpacingPanel attributes={ attributes } setAttributes={ setAttributes } />
 
 				{ /* ── icon-circle appearance controls ──────────────────────── */ }
 				{ badgeStyle === 'icon-circle' && (
@@ -1236,7 +1271,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				     controls apply to no single element — this one is badge-scoped
 				     (`columns` drives the badge grid), so it takes the element's
 				     name, exactly as sgs/button names its icon panel "Icon". */ }
-				{ badgeStyle === 'icon-circle' && (
+				{ isIconStyle && (
 					<PanelBody title={ __( 'Badges', 'sgs-blocks' ) } initialOpen={ false }>
 						{ /*
 							  columns is a TIER OBJECT — ONE attr holding
@@ -1303,11 +1338,29 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						</p>
 					) : (
 						items.map( ( item, index ) => {
+							if ( badgeStyle === 'icon-bare' ) {
+								return (
+									<div key={ item._key || index } className="sgs-trust-bar__badge" style={ itemPreviewStyle }>
+										<EditorIconBare
+											size={ iconBareSize }
+											iconSlug={ item.icon || 'check' }
+											gradient={ iconColourGradient }
+											filled={ item.fillStyle === 'filled' }
+											fillColour={ item.fillColour ? colourVar( item.fillColour ) : undefined }
+										/>
+										<span className="sgs-trust-bar__label" style={ { color: textColourValue } }>
+											{ item.label || <em>{ __( '(no label)', 'sgs-blocks' ) }</em> }
+										</span>
+									</div>
+								);
+							}
+
 							if ( badgeStyle === 'icon-circle' ) {
 								return (
 									<div
 										key={ item._key || index }
 										className="sgs-trust-bar__badge"
+										style={ itemPreviewStyle }
 									>
 										<EditorIconCircle
 											size={ iconCircleSize }

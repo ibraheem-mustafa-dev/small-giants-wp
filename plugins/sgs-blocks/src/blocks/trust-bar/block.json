@@ -50,7 +50,13 @@
 					"iconCircleBackground",
 					"iconColour",
 					"iconCircleBorderRadius",
-					"iconCircleShadow"
+					"iconCircleShadow",
+					"iconStrokeWidth"
+				],
+				"icon-bare": [
+					"iconBareSize",
+					"iconColour",
+					"iconStrokeWidth"
 				],
 				"text-only": [],
 				"image-badge": [
@@ -75,6 +81,9 @@
 				],
 				"iconCircleBorderWidth": [
 					"iconCircleBorderWidth"
+				],
+				"itemPadding": [
+					"itemPadding"
 				],
 				"borderWidth": [
 					"borderWidth"
@@ -151,6 +160,7 @@
 						"css:box-shadow": "iconCircleShadow",
 						"css:color": "iconColour",
 						"css:stroke": "iconColourGradient",
+						"css:stroke-width": "iconStrokeWidth",
 						"css:box-shadow-color": "iconCircleShadowColour"
 					},
 					"states": {
@@ -216,11 +226,32 @@
 					},
 					"_note": "titleColourHover/titleColourHoverGradient (2026-09-07) added the hover pair — this element declares no css:background-color of its own (that lives on the separate `wrapper` element/selector), so no bg-layer precondition applies."
 				},
-				"badge-item": {
+				"item": {
 					"label": "Badge item",
+					"layer": "GRID_AREA",
 					"order": 5,
-					"clusters": [],
-					"_note": "Per-item fillStyle/fillColour (image-badge and text-only item content) are repeater-row fields, not independent block-level style controls — no badge-item-specific text/fill/layout attrs exist at the block level."
+					"clusters": [
+						"layout"
+					],
+					"prefix": "item",
+					"attrMap": {
+						"css:gap": "itemGap",
+						"css:padding": "itemPadding"
+					},
+					"_note": "The badge box of every variant (`.sgs-trust-bar__badge` as rendered; a draft may write it as `__item`, the element key the converter's per-area routing matches on, `attr_for_area_property` keys css_element on the draft's BEM element token). Declared `layer: GRID_AREA` (a per-child area of the band, like sgs/hero's content area) so the css_layer classifier does NOT fall back to its arrangement rule, which labelled itemGap GRID and let the icon-to-label gap capture the band's own items gap (`gap: 6px 32px`) that belongs in `gap`. itemGap is the icon-to-label gap inside one badge; itemPadding is the badge's own padding; both are responsive tier objects emitted as scoped rules on `.{uid}.wp-block-sgs-trust-bar .sgs-trust-bar__badge` by includes/helpers-trust-bar-item.php::sgs_trust_bar_item_css. Per-item fillStyle/fillColour (image-badge and text-only item content) remain repeater-row fields, not block-level style controls."
+				},
+				"icon-bare": {
+					"label": "Bare icon (icon-bare variant)",
+					"order": 7,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "iconBare",
+					"attrMap": {
+						"css:width": "iconBareSize",
+						"css:height": "iconBareSize"
+					},
+					"_note": "The `.sgs-trust-bar__icon` span in the icon-bare variant: the icon on its own with no circle behind it, at iconBareSize px. Colour, gradient, hover and stroke width are the same attributes as the icon-circle variant (iconColour, iconColourGradient, iconColourHover, iconStrokeWidth, declared on the icon-badge element). Emitted only when badgeStyle=icon-bare."
 				},
 				"badge-img": {
 					"label": "Badge image (image-badge variant)",
@@ -276,6 +307,7 @@
 			"default": "icon-circle",
 			"enum": [
 				"icon-circle",
+				"icon-bare",
 				"text-only",
 				"image-badge"
 			]
@@ -458,6 +490,28 @@
 			"type": "number",
 			"default": 44
 		},
+		"iconBareSize": {
+			"type": "number",
+			"default": 20,
+			"description": "icon-bare variant only. Icon size in px (8 to 96), independent of the icon-circle disc size and its 36-64px clamp."
+		},
+		"iconStrokeWidth": {
+			"type": "number",
+			"default": 1.8,
+			"description": "Stroke width of the outline icon, for the icon-circle and icon-bare variants. 1.8 is the framework default. Applies to Lucide and raw-SVG icons alike. Clamped to 0.25 to 4."
+		},
+		"itemGap": {
+			"type": "object",
+			"default": {},
+			"description": "Responsive gap inside each badge item (icon to label), a {desktop,tablet,mobile} tier object of CSS lengths. Empty keeps the variant's own default gap."
+		},
+		"itemPadding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			},
+			"description": "4-side box-object family (box_family 'itemPadding'), a {desktop,tablet,mobile} tier object of {top,right,bottom,left}. Padding of each badge item. Empty keeps the variant's own default padding."
+		},
 		"iconCircleBackground": {
 			"type": "string",
 			"default": "surface"
@@ -623,6 +677,21 @@
 		"autoScrollPauseOnHover": {
 			"type": "boolean",
 			"default": true
+		},
+		"autoScrollBelow": {
+			"type": "number",
+			"default": 0,
+			"enum": [
+				0,
+				768,
+				1024
+			],
+			"description": "Run the auto-scroll only below this viewport width in px, using the device-tier standards: 0 = at every width (default), 768 = phones only, 1024 = phones and tablets. At and above it the badges show as a normal static row. Needs autoScroll on."
+		},
+		"autoScrollDuration": {
+			"type": "number",
+			"default": 0,
+			"description": "Custom marquee duration in seconds for one full cycle (2 to 300). 0 = use the slow / medium / fast preset in autoScrollSpeed. A value here wins over the preset."
 		},
 		"layout": {
 			"type": "string",

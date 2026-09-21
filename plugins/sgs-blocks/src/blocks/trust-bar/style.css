@@ -54,7 +54,9 @@ a.sgs-trust-bar__badge:focus-visible {
 
 /* Hide pending items on the frontend — belt-and-brace alongside the `hidden` attribute. */
 .sgs-trust-bar--icon-circle .sgs-trust-bar__badge[hidden],
-.sgs-trust-bar--icon-circle .sgs-trust-bar__badge[data-pending="true"] {
+.sgs-trust-bar--icon-circle .sgs-trust-bar__badge[data-pending="true"],
+.sgs-trust-bar--icon-bare .sgs-trust-bar__badge[hidden],
+.sgs-trust-bar--icon-bare .sgs-trust-bar__badge[data-pending="true"] {
 	display: none;
 }
 
@@ -99,7 +101,8 @@ a.sgs-trust-bar__badge:focus-visible {
 	height: calc(var(--sgs-trust-badge-circle-size, 44px) * 0.45);
 	color: var(--sgs-trust-badge-icon-colour, var(--wp--preset--color--primary-dark, #0A5B5D));
 	stroke: currentColor;
-	stroke-width: 1.8;
+	/* iconStrokeWidth: emitted as a custom property only when it differs from 1.8. */
+	stroke-width: var(--sgs-trust-badge-icon-stroke-width, 1.8);
 	fill: none;
 	display: block;
 }
@@ -114,7 +117,40 @@ a.sgs-trust-bar__badge:focus-visible {
 	stroke: none;
 }
 
-.sgs-trust-bar--icon-circle .sgs-trust-bar__label {
+/* ─── icon-bare variant ──────────────────────────────────────────────────────── */
+/* The icon on its own, no circle: size iconBareSize (px), colour/gradient/hover as the
+   icon-circle variant. The badge item's own gap/padding come from itemGap/itemPadding. */
+
+.sgs-trust-bar--icon-bare .sgs-trust-bar__badge {
+	flex-direction: row;
+	gap: 8px;
+}
+
+.sgs-trust-bar__icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	line-height: 0;
+}
+
+.sgs-trust-bar__icon svg {
+	width: var(--sgs-trust-badge-icon-size, 20px);
+	height: var(--sgs-trust-badge-icon-size, 20px);
+	color: var(--sgs-trust-badge-icon-colour, var(--wp--preset--color--primary-dark, #0A5B5D));
+	stroke: currentColor;
+	stroke-width: var(--sgs-trust-badge-icon-stroke-width, 1.8);
+	fill: none;
+	display: block;
+}
+
+.sgs-trust-bar__icon--filled svg {
+	fill: var(--sgs-trust-badge-icon-fill, currentColor);
+	stroke: none;
+}
+
+.sgs-trust-bar--icon-circle .sgs-trust-bar__label,
+.sgs-trust-bar--icon-bare .sgs-trust-bar__label {
 	font-size: var(--sgs-trust-badge-label-font-size, clamp(0.8125rem, 0.8rem + 0.3vw, 0.875rem));
 	font-weight: 500;
 	line-height: 1.35;

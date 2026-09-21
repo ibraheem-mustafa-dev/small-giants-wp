@@ -3284,6 +3284,35 @@
 			"notes": "Added 2026-09-05, extending the D636/D644 gradient rollout from stroke-based icon glyphs (css:stroke above) to fill-based SVG shapes. Same mechanism, one target swapped: sgs_svg_stroke_gradient() (helpers-svg-gradient.php) gained a third $target param ('stroke'|'fill') so it can emit fill:url(#id) instead of stroke:url(#id) for glyphs whose presentation attribute is fill=\"...\" (star ratings) rather than stroke=\"currentColor\" (icon glyphs). Distinct from css:fill: that member is the FLAT fill value; this is its gradient sibling, same {flatAttr}Gradient naming convention as css:stroke's icon-colour siblings."
 		},
 		{
+			"setting_key": "css:stroke-width",
+			"category": "css-property",
+			"label": "Stroke width (SVG line thickness)",
+			"optimal_control": {
+				"component": "RangeControl (withInputField + allowReset)",
+				"props": {
+					"min": 0.25,
+					"max": 4,
+					"step": 0.05,
+					"withInputField": true,
+					"allowReset": true,
+					"resetFallbackValue": 1.8
+				},
+				"preset_layer": null,
+				"units": "unitless (SVG user units)",
+				"responsive_device_tier": false,
+				"multi_value": "none",
+				"dropdown_completeness": "n/a",
+				"alpha_clearable": "n/a",
+				"reset_disclosure": "allowReset + resetFallbackValue=1.8"
+			},
+			"shared_component": null,
+			"spec_ref": "Part H (bounded numeric -> RangeControl)",
+			"current_state": "1 instance at declaration time (sgs/trust-bar iconStrokeWidth)",
+			"divergence": null,
+			"divergence_severity": "none",
+			"notes": "Added 2026-09-21 (trust-bar icon-stroke control). A genuine CSS property the registry lacked. Distinct from css:stroke (the line PAINT, a colour) and css:border-width / css:outline-width (box edges): stroke-width is the thickness of an SVG icon's own lines, a bounded number the server clamps (0.25 to 4, sgs_trust_bar_icon_stroke_width), so a RangeControl not a length UnitControl."
+		},
+		{
 			"setting_key": "css:transform",
 			"category": "css-property",
 			"label": "Transform (flip / mirror / rotate)",

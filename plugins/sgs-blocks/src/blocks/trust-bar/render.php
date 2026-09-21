@@ -24,6 +24,10 @@ require_once dirname( __DIR__, 3 ) . '/includes/helpers-typography.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-media-element.php';
+// Bare-icon variant, stroke width, item gap/padding and the marquee-below-breakpoint option
+// live in their own files (this render.php is already over the file-length cap).
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-trust-bar-item.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-trust-bar-marquee.php';
 
 // --- Unique ID for scoped typography <style> ----------------------------------
 $uid = wp_unique_id( 'sgs-tb-' );
@@ -182,6 +186,9 @@ if ( 'icon-circle' === $badge_style ) {
 	}
 }
 
+// icon-bare / icon-circle: stroke width; icon-bare: icon size + icon/label colour vars.
+$styles = array_merge( $styles, sgs_trust_bar_icon_style_vars( $attributes, $badge_style ) );
+
 // --- Wrapper classes + data attributes (WS-4: passed to the shared helper) -----
 // trust-bar mirrors sgs/container's wrapper (containerKind='section'); its OWN
 // block classes + CSS vars + data-* attrs ride through the helper via opts.
@@ -303,6 +310,15 @@ if ( $auto_scroll ) {
 	$tb_extra_attrs['data-auto-scroll']       = 'true';
 	$tb_extra_attrs['data-auto-scroll-speed'] = $auto_scroll_speed;
 	$tb_extra_attrs['data-auto-scroll-pause'] = $auto_scroll_pause ? 'true' : 'false';
+
+	// Marquee only below a device-tier breakpoint (autoScrollBelow: 0 / 768 / 1024) and an
+	// optional custom duration in seconds. Both default to "off", which emits nothing extra.
+	$tb_marquee_below    = sgs_trust_bar_marquee_below( $attributes['autoScrollBelow'] ?? 0 );
+	$tb_marquee_duration = sgs_trust_bar_marquee_duration( $attributes['autoScrollDuration'] ?? 0 );
+	if ( $tb_marquee_below > 0 ) {
+		$tb_extra_attrs['data-auto-scroll-below'] = (string) $tb_marquee_below;
+	}
+	$tb_extra_scoped_css .= sgs_trust_bar_marquee_css( $uid_scope, $tb_marquee_below, $tb_marquee_duration );
 }
 
 // Landmark label override — a fixed 'Trust signals' aria-label is set above
@@ -433,11 +449,15 @@ $tb_extra_scoped_css .= sgs_text_states_css(
 // deliberately out of scope (css:fill territory). Both states resolved
 // together via sgs_icon_gradient_states_css() (2026-09-06 close-out) —
 // lucide-only badge glyphs, so the icon source is hardcoded here.
-$tb_icon_grad_sel = $uid_scope . ' .sgs-trust-bar__circle svg';
+$tb_icon_grad_sel = $uid_scope . ( 'icon-bare' === $badge_style ? ' .sgs-trust-bar__icon svg' : ' .sgs-trust-bar__circle svg' );
 $tb_stroke_grad   = sgs_icon_gradient_states_css( 'lucide', $icon_colour_gradient, $icon_colour_hover_gradient, $uid, $tb_icon_grad_sel );
 if ( $tb_stroke_grad['css'] ) {
 	$tb_extra_scoped_css .= implode( '', $tb_stroke_grad['css'] );
 }
+
+// Badge-item spacing (itemGap / itemPadding tier objects) and a non-default icon stroke width.
+$tb_extra_scoped_css .= sgs_trust_bar_item_css( $attributes, $root_sel );
+$tb_extra_scoped_css .= sgs_trust_bar_icon_stroke_force_css( $attributes, $badge_style, $uid_scope );
 
 // --- Optional title -----------------------------------------------------------
 // Guard against whitespace-only or HTML-only values (e.g. an empty <br> saved
@@ -586,20 +606,17 @@ foreach ( $items as $tb_item_index => $item ) {
 	);
 	$item_attrs      = '';
 
-	if ( 'icon-circle' === $badge_style ) {
-		// Determine which SVG to render inside the circle.
+	if ( 'icon-circle' === $badge_style || 'icon-bare' === $badge_style ) {
+		// Determine which SVG to render inside the circle (icon-bare: on its own, no circle).
 		// IconPicker stores the raw Lucide slug directly into item['icon'].
 		// Priority: Lucide slug > raw_svg fallback from the cloning icon resolver.
 		$icon_slug = isset( $item['icon'] ) ? sanitize_key( (string) $item['icon'] ) : '';
 		$raw_svg   = isset( $item['iconSvg'] ) ? (string) $item['iconSvg'] : '';
 
 		if ( '' !== $icon_slug ) {
-			// IconPicker stores the Lucide slug directly — resolve the sprite.
-			$svg = sgs_get_lucide_icon( $icon_slug );
-			if ( ! $svg ) {
-				// Unknown slug — fall back to check so the badge is never blank.
-				$svg = sgs_get_lucide_icon( 'check' );
-			}
+			// IconPicker stores the slug directly — resolved, sanitised through the same
+			// wp_kses allowlist as the raw-SVG branch, `check` for an unknown slug.
+			$svg = sgs_trust_bar_library_icon_svg( $icon_slug );
 		} elseif ( '' !== $raw_svg ) {
 			// Resolver returned a raw SVG fallback (no confident slug match).
 			// Sanitise with the existing sgs_svg_kses_allowed_tags() allowlist so
@@ -641,8 +658,9 @@ foreach ( $items as $tb_item_index => $item ) {
 		// Per-badge fill style: 'filled' paints a solid glyph (e.g. a filled star),
 		// exempting it from the uniform outline default in style.css. An operator
 		// can override the fill colour per badge via item.fillColour.
-		$is_filled    = isset( $item['fillStyle'] ) && 'filled' === $item['fillStyle'];
-		$circle_class = 'sgs-trust-bar__circle' . ( $is_filled ? ' sgs-trust-bar__circle--filled' : '' );
+		$is_filled       = isset( $item['fillStyle'] ) && 'filled' === $item['fillStyle'];
+		$icon_base_class = 'icon-bare' === $badge_style ? 'sgs-trust-bar__icon' : 'sgs-trust-bar__circle';
+		$circle_class    = $icon_base_class . ( $is_filled ? ' ' . $icon_base_class . '--filled' : '' );
 		if ( $is_filled && ! empty( $item['fillColour'] ) ) {
 			// sgs_colour_value() resolves a token slug → CSS var (or passes a raw
 			// colour) and already escapes the value. fillColour VARIES per item, so

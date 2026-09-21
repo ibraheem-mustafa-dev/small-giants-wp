@@ -46,6 +46,8 @@ defined( 'ABSPATH' ) || exit;
 require_once __DIR__ . '/render-helpers.php';
 require_once __DIR__ . '/shape-dividers.php';
 require_once __DIR__ . '/helpers-surface-ground.php';
+// sgs_css_length_or_sizing_keyword() — the `$sgs_css_length` closure's sanitiser.
+require_once __DIR__ . '/helpers-css-sizing-keyword.php';
 
 if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
@@ -582,9 +584,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
 			// CSS-length sanitiser for min-height (inline + injected <style> contexts).
 			// Strips everything except digits, dot, %, and unit letters so a value can
-			// never break out of its declaration.
+			// never break out of its declaration. The intrinsic sizing keywords
+			// (max-content / min-content / fit-content / fit-content(<length>)) are
+			// recognised by whole-string match FIRST, because the strip would turn
+			// `max-content` into the invalid `maxcontent` (helpers-css-sizing-keyword.php).
 			$sgs_css_length = static function ( $value ) {
-				return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
+				return sgs_css_length_or_sizing_keyword( $value );
 			};
 
 			// contentWidth token-or-literal resolver (v0.5 spec — token rename: narrow→normal, default→wide).

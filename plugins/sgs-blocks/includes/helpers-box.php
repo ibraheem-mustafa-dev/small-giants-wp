@@ -26,6 +26,7 @@ defined( 'ABSPATH' ) || exit;
 // sgs_css_length_value()". Both files guard with function_exists(), so load
 // order does not matter — only that both load before either is CALLED.
 require_once __DIR__ . '/helpers-css-safety.php';
+require_once __DIR__ . '/helpers-css-sizing-keyword.php';
 
 if ( ! function_exists( 'sgs_css_length_sanitise' ) ) {
 	/**
@@ -37,7 +38,7 @@ if ( ! function_exists( 'sgs_css_length_sanitise' ) ) {
 	 * @return string Sanitised length (may be '').
 	 */
 	function sgs_css_length_sanitise( $value ): string {
-		return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
+		return sgs_css_length_or_sizing_keyword( $value );
 	}
 }
 

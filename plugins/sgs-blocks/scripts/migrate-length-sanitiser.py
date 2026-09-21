@@ -124,6 +124,12 @@ WIDTH_OK = {
     # part of the plugin's render path and is not deployed.
     'scripts/tests/test-mega-aside-border-render.php':
         'standalone render-test harness; comment-only mentions, not deployed',
+
+    # Compares the OLD strip regex against sgs_css_length_or_sizing_keyword() on 500 inputs to prove
+    # a non-keyword value is byte-identical after the sizing-keyword change. The old shape is the
+    # test's oracle, so it must stay; the file is a phpunit test and is not deployed.
+    'tests/php/ContainerWrapperCssLengthTest.php':
+        'phpunit oracle: keeps the old strip on purpose to prove non-keyword output is unchanged; not deployed',
 }
 
 
