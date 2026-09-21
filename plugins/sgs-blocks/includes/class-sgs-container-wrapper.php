@@ -1227,10 +1227,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// `currentColor` — i.e. the shadow tracked the TEXT colour and went
 				// near-invisible on dark sections. It now defaults to rgba(0,0,0,0.1),
 				// matching cta-section (render.php:125), which has composed since D621.
-				$shadow_value = sgs_shadow_value_composed( $shadow, $shadow_colour );
-				if ( '' !== $shadow_value ) {
-					$base_outer_decls[] = 'box-shadow:' . $shadow_value;
-				}
+				// The resting declaration carries the forced-colours outline fallback.
+				$base_outer_decls = array_merge( $base_outer_decls, sgs_shadow_box_decls( $shadow, $shadow_colour ) );
 			}
 
 			// Surface ground: backdrop blur and saturate, for the blocks that declare

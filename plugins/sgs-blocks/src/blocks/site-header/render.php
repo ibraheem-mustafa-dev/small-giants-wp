@@ -352,7 +352,8 @@ if ( $sh_shadow_scrolled_on ) {
 	// !important` on this selector) removes it for visitors who ask for no motion;
 	// the end-state shadow still applies.
 	$css .= $root_sel . '{transition:box-shadow 200ms ease;}';
-	$css .= $root_sel . '.is-header-scrolled{box-shadow:' . $sh_shadow_scrolled_value . ';}';
+	// The scrolled state is its own edge, so it carries its own forced-colours fallback.
+	$css .= $root_sel . '.is-header-scrolled{' . implode( ';', sgs_shadow_box_decls( $sh_shadow_scrolled_shape, $sh_shadow_scrolled_colour ) ) . ';}';
 }
 
 // Shrink — transition/animation setup per tier, THEN the shrunk padding value

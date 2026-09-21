@@ -510,10 +510,10 @@ $has_border_width = ( '' !== $border_width_top || '' !== $border_width_right || 
 // The panel's ONE box-shadow writer: the `shadow` attribute (a theme preset slug by default, or a raw
 // single-layer shape + `shadowColour`). Empty means no shadow, as on every other SGS surface.
 $panel_shadow_raw  = isset( $attributes['shadow'] ) && is_string( $attributes['shadow'] ) ? trim( $attributes['shadow'] ) : 'floating';
-$panel_shadow_val  = '' !== $panel_shadow_raw
-	? sgs_shadow_value_composed( $panel_shadow_raw, isset( $attributes['shadowColour'] ) ? (string) $attributes['shadowColour'] : '' )
-	: '';
-$panel_shadow_decl = '' !== $panel_shadow_val ? 'box-shadow:' . $panel_shadow_val . ';' : '';
+$panel_shadow_list = '' !== $panel_shadow_raw
+	? sgs_shadow_box_decls( $panel_shadow_raw, isset( $attributes['shadowColour'] ) ? (string) $attributes['shadowColour'] : '' )
+	: array();
+$panel_shadow_decl = $panel_shadow_list ? implode( ';', $panel_shadow_list ) . ';' : '';
 
 $css .= $root_sel . '{'
 	. 'border-radius:' . ( '' !== $border_radius ? $border_radius : '20px' ) . ';'

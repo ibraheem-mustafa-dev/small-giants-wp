@@ -534,10 +534,8 @@ if ( 'image-badge' === $badge_style ) {
 	// sgs_shadow_value_composed() composes the SHAPE-only attr (D621/D622
 	// colour-panel split) with the separate colour attr; an empty/invalid
 	// stored shape resolves to '' so no declaration is emitted.
-	$safe_badge_image_shadow = sgs_shadow_value_composed( $badge_image_shadow, $badge_image_shadow_colour );
-	if ( '' !== $safe_badge_image_shadow ) {
-		$img_decls[] = 'box-shadow:' . $safe_badge_image_shadow;
-	}
+	// The resting declaration carries the forced-colours outline fallback.
+	$img_decls = array_merge( $img_decls, sgs_shadow_box_decls( $badge_image_shadow, $badge_image_shadow_colour ) );
 
 	$tb_extra_scoped_css .= $img_sel . '{' . implode( ';', $img_decls ) . '}';
 
