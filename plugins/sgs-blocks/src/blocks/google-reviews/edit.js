@@ -90,6 +90,13 @@ export default function Edit( { attributes, setAttributes } ) {
 	// The block shows written reviews when told to, or on Automatic when it holds any.
 	const showsWritten = 'inline' === dataSource || ( 'auto' === dataSource && ( reviews || [] ).length > 0 );
 
+	// Sample reviews are invented, so they show only when the author explicitly picks them.
+	const showsSamples = 'placeholder' === dataSource;
+
+	// Nothing real to show on the live site: no written reviews to render, and Google (which this
+	// canvas cannot check) is the only other source. The front end renders nothing in that case.
+	const showsEmptyNotice = ! showsSamples && ( 'synced' === dataSource || ( reviews || [] ).length === 0 );
+
 	const blockProps = useBlockProps( {
 		className: `sgs-google-reviews sgs-google-reviews--${ variant } sgs-google-reviews--theme-${ theme }`,
 	} );
@@ -316,15 +323,18 @@ export default function Edit( { attributes, setAttributes } ) {
 							{ label: __( 'Automatic (written reviews if there are any, otherwise Google)', 'sgs-blocks' ), value: 'auto' },
 							{ label: __( 'Google (live, up to 5 reviews)', 'sgs-blocks' ), value: 'synced' },
 							{ label: __( 'Written by me (any number)', 'sgs-blocks' ), value: 'inline' },
+							{ label: __( 'Sample reviews (to build the layout only)', 'sgs-blocks' ), value: 'placeholder' },
 						] }
 						onChange={ ( value ) => setAttributes( { dataSource: value } ) }
-						help={ showsWritten
-							? __( 'Type the reviews in the "Written reviews" panel. No review markup is sent to search engines for written reviews.', 'sgs-blocks' )
-							: __( 'Google returns at most 5 reviews. Use "Written by me" to show more.', 'sgs-blocks' ) }
+						help={ showsSamples
+							? __( 'Three invented example reviews, for building the layout. They are not real customer reviews, so switch to real ones before the page goes live. No review markup is sent to search engines.', 'sgs-blocks' )
+							: showsWritten
+								? __( 'Type the reviews in the "Written reviews" panel. No review markup is sent to search engines for written reviews.', 'sgs-blocks' )
+								: __( 'Google returns at most 5 reviews. Use "Written by me" to show more. With no written reviews and no working Google connection, nothing shows on the live site.', 'sgs-blocks' ) }
 						__next40pxDefaultSize
 					/>
 
-					{ 'inline' !== dataSource && (
+					{ 'inline' !== dataSource && ! showsSamples && (
 						<>
 							<TextControl
 								label={ __( 'Place ID', 'sgs-blocks' ) }
@@ -335,13 +345,13 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 
 							<Notice status="info" isDismissible={ false }>
-								<p>{ __( 'Configure Google API key and default Place ID in Settings → SGS Blocks → Google Reviews.', 'sgs-blocks' ) }</p>
+								<p>{ __( 'Configure Google API key and default Place ID in Settings → SGS Google Reviews.', 'sgs-blocks' ) }</p>
 							</Notice>
 						</>
 					) }
 				</PanelBody>
 
-				{ 'synced' !== dataSource && (
+				{ 'synced' !== dataSource && ! showsSamples && (
 					<WrittenReviewsPanel attributes={ attributes } setAttributes={ setAttributes } />
 				) }
 
@@ -702,14 +712,31 @@ export default function Edit( { attributes, setAttributes } ) {
 				<div className="sgs-google-reviews__placeholder">
 					<div className="sgs-google-reviews__placeholder-icon">⭐⭐⭐⭐⭐</div>
 					<h3>{ __( 'Google Reviews', 'sgs-blocks' ) }</h3>
-					{ showsWritten ? (
+					{ showsSamples && (
+						<Notice status="warning" isDismissible={ false } className="sgs-google-reviews__editor-notice">
+							<p>
+								{ __( 'Sample reviews are showing: three invented examples so you can build the layout. They are not real customer reviews. Before the page goes live, choose Automatic, Google or Written by me in "Reviews source" and use real reviews.', 'sgs-blocks' ) }
+							</p>
+						</Notice>
+					) }
+					{ ! showsSamples && showsEmptyNotice && (
+						<Notice status="info" isDismissible={ false } className="sgs-google-reviews__editor-notice">
+							<p>
+								{ __( 'This block shows nothing on the live site yet, because it has no real reviews to show. To fix that, do one of these:', 'sgs-blocks' ) }
+							</p>
+							<ul>
+								<li>{ __( 'Add your own reviews in the "Written reviews" panel.', 'sgs-blocks' ) }</li>
+								<li>{ __( 'Or set the Google Place ID and API key (Settings → SGS Google Reviews) so live reviews can load. This editor cannot check that connection, so a working one will still show reviews on the live site.', 'sgs-blocks' ) }</li>
+								<li>{ __( 'Or choose "Sample reviews" in "Reviews source" to build the layout with example reviews.', 'sgs-blocks' ) }</li>
+							</ul>
+						</Notice>
+					) }
+					{ ! showsSamples && ! showsEmptyNotice && (
 						<>
 							<p>
 								{ businessName ? businessName + ' — ' : '' }
 								{ averageRating ? averageRating + ' ' : '' }
-								{ ( reviews || [] ).length > 0
-									? ( reviewCount || ( reviews || [] ).length ) + ' ' + __( 'written reviews', 'sgs-blocks' )
-									: __( 'Add your reviews in the "Written reviews" panel.', 'sgs-blocks' ) }
+								{ ( reviewCount || ( reviews || [] ).length ) + ' ' + __( 'written reviews', 'sgs-blocks' ) }
 							</p>
 							{ ( reviews || [] ).slice( 0, 3 ).map( ( review, index ) => (
 								<p key={ review._key || index } className="sgs-google-reviews__placeholder-settings">
@@ -717,15 +744,11 @@ export default function Edit( { attributes, setAttributes } ) {
 								</p>
 							) ) }
 						</>
-					) : (
-						<p>
-							{ __( 'Configure Google API settings in WordPress admin to display reviews.', 'sgs-blocks' ) }
-						</p>
 					) }
 					<p className="sgs-google-reviews__placeholder-settings">
 						<strong>{ __( 'Variant:', 'sgs-blocks' ) }</strong> { variant }<br />
 						<strong>{ __( 'Max Reviews:', 'sgs-blocks' ) }</strong> { maxReviews }<br />
-						{ ! showsWritten && placeId && (
+						{ ! showsWritten && ! showsSamples && placeId && (
 							<>
 								<strong>{ __( 'Place ID:', 'sgs-blocks' ) }</strong> { placeId }
 							</>

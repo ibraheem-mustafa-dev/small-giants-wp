@@ -35,6 +35,23 @@
 	line-height: 1.6;
 }
 
+/* Canvas notice (no real reviews yet / sample reviews showing): left-aligned, readable inside the centred placeholder. */
+.sgs-google-reviews__placeholder .sgs-google-reviews__editor-notice {
+	margin: 0 0 1rem;
+	text-align: left;
+}
+
+.sgs-google-reviews__placeholder .sgs-google-reviews__editor-notice p {
+	margin: 0 0 0.5rem;
+	color: inherit;
+}
+
+.sgs-google-reviews__placeholder .sgs-google-reviews__editor-notice ul {
+	margin: 0;
+	padding-left: 1.25rem;
+	list-style: disc;
+}
+
 /* Written reviews: the per-review Move up / Move down / Remove row in the inspector. */
 .sgs-google-reviews-editor__row-actions {
 	display: flex;

@@ -232,9 +232,10 @@
 			"enum": [
 				"auto",
 				"synced",
-				"inline"
+				"inline",
+				"placeholder"
 			],
-			"description": "auto (default): the written reviews when there are any, otherwise Google. synced: always Google (needs a place ID and API key, returns at most 5 reviews). inline: always the written reviews."
+			"description": "auto (default): the written reviews when there are any, otherwise Google. synced: always Google (needs a place ID and API key, returns at most 5 reviews). inline: always the written reviews. placeholder: three clearly sample reviews for building a layout; the ONLY mode that ever shows sample reviews, and it emits no review schema. With no written reviews and no live Google data, auto/synced/inline render nothing on the front end."
 		},
 		"reviews": {
 			"type": "array",

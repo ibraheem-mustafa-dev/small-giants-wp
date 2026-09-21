@@ -57,12 +57,7 @@ $sgs_gr_loop_carousel = (bool) ( $attributes['loopCarousel'] ?? false );
 if ( 'slider' === $variant && $sgs_gr_loop_carousel ) {
 	$sgs_gr_list_fx_attr .= ' data-sgs-loop="1"';
 }
-$place_id           = $attributes['placeId'] ?? Google_Reviews_Settings::get_settings()['place_id'] ?? '';
-// `inline` renders the reviews the client typed into the block (includes/helpers-reviews-inline.php);
-// `synced` reads Google. `auto` (the default) is `inline` when the block holds written reviews and
-// `synced` otherwise, so a converter that lifts reviews into the block needs no companion setting.
-$data_source_attr   = $attributes['dataSource'] ?? 'auto';
-$data_source        = ( 'inline' === $data_source_attr || ( 'synced' !== $data_source_attr && ! empty( $attributes['reviews'] ) ) ) ? 'inline' : 'synced';
+$place_id           = sgs_reviews_place_id( $attributes, (string) ( Google_Reviews_Settings::get_settings()['place_id'] ?? '' ) );
 // `columns` is a TIER OBJECT (Spec 35 pass 4, 2026-08-11) — read each tier via
 // the normaliser, never the raw attribute (a cast on an unresolved array
 // throws "Array to int/string conversion", the D569/D570 bug class this
@@ -90,69 +85,16 @@ $autoplay_speed     = $attributes['autoplaySpeed'] ?? 5000;
 $show_dots          = $attributes['showDots'] ?? true;
 $show_arrows        = $attributes['showArrows'] ?? true;
 
-// Placeholder reviews used when API key is not configured or API call fails.
-// These demonstrate the block's styling without requiring a Google Places API key.
-$dummy_reviews = array(
-	array(
-		'authorAttribution' => array(
-			'displayName' => 'Sarah Patel',
-			'photoUri'    => '',
-		),
-		'rating'            => 5,
-		'text'              => array(
-			'text' => 'Reliable supplier for over five years now. Consistent quality, excellent service, and their account team really understands our needs.',
-		),
-		'publishTime'       => gmdate( 'c', strtotime( '-6 months' ) ),
-	),
-	array(
-		'authorAttribution' => array(
-			'displayName' => 'James Wright',
-			'photoUri'    => '',
-		),
-		'rating'            => 5,
-		'text'              => array(
-			'text' => 'Excellent product range and fast delivery times. Competitive pricing for the quality. Always our first choice for catering supplies.',
-		),
-		'publishTime'       => gmdate( 'c', strtotime( '-3 months' ) ),
-	),
-	array(
-		'authorAttribution' => array(
-			'displayName' => 'Aisha Khan',
-			'photoUri'    => '',
-		),
-		'rating'            => 5,
-		'text'              => array(
-			'text' => 'Great trade prices and a genuinely helpful account team. They go the extra mile to support our business growth.',
-		),
-		'publishTime'       => gmdate( 'c', strtotime( '-1 month' ) ),
-	),
-);
-
-if ( 'inline' === $data_source ) {
-	// Written reviews: the client's own text, never the demo reviews below and never a Google fetch.
-	$data = sgs_reviews_inline_data( $attributes );
-} elseif ( empty( $place_id ) ) {
-	// No API key configured — use dummy content to showcase styling.
-	$data = array(
-		'reviews'         => $dummy_reviews,
-		'rating'          => 4.9,
-		'userRatingCount' => 47,
-		'displayName'     => array( 'text' => __( 'Our Business', 'sgs-blocks' ) ),
-	);
-} else {
-	// Fetch reviews from API.
-	$data = Google_Reviews_Settings::fetch_reviews( $place_id );
-
-	if ( is_wp_error( $data ) ) {
-		// API error — fall back to dummy content.
-		$data = array(
-			'reviews'         => $dummy_reviews,
-			'rating'          => 4.9,
-			'userRatingCount' => 47,
-			'displayName'     => array( 'text' => __( 'Our Business', 'sgs-blocks' ) ),
-		);
-	}
+// What may be shown (includes/helpers-reviews-inline.php::sgs_reviews_resolve): written reviews, live
+// Google data, the sample set (only when the author picked `placeholder`), or nothing. `auto` (the
+// default) is written when the block holds any, otherwise Google. No real data means no output at all:
+// invented reviews are never shown to a visitor, and no wrapper or schema is printed for an empty block.
+$sgs_gr_resolved = sgs_reviews_resolve( $attributes, $place_id );
+if ( null === $sgs_gr_resolved ) {
+	return;
 }
+$data_source = $sgs_gr_resolved['source'];
+$data        = $sgs_gr_resolved['data'];
 
 $all_reviews   = $data['reviews'] ?? array();
 $rating        = $data['rating'] ?? 0;
@@ -520,9 +462,10 @@ if ( ! function_exists( 'sgs_render_stars_svg' ) ) {
 // Schema.org JSON-LD (emitted before the wrapper element).
 // ───────────────────────────────────────────────────────────────────────────
 
-// Written reviews emit NO review schema: Google's review-snippet guidance makes reviews that the
-// reviewed business controls about itself ineligible, and there is no switch to force it on.
-if ( 'inline' !== $data_source ) {
+// Schema only for real Google data (sgs_reviews_may_emit_schema). Written reviews emit NO review
+// schema: Google's review-snippet guidance makes reviews that the reviewed business controls about
+// itself ineligible, and there is no switch to force it on. The sample set is invented, so never.
+if ( sgs_reviews_may_emit_schema( $data_source, $data ) ) {
 	$schema = array(
 		'@context'        => 'https://schema.org',
 		'@type'           => 'LocalBusiness',

@@ -595,7 +595,8 @@ $inner_html = ob_get_clean();
 // ───────────────────────────────────────────────────────────────────────────
 
 $schema_html = '';
-if ( $show_schema && ! empty( $reviews ) ) {
+// Never from the invented sample set: fake reviews must not reach structured data either.
+if ( $show_schema && ! empty( $reviews ) && 'placeholder' !== $data_source ) {
 	$schema_reviews = array();
 	foreach ( $reviews as $r ) {
 		$schema_reviews[] = array(

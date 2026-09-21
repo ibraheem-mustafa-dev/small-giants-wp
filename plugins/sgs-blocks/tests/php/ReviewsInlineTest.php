@@ -140,7 +140,7 @@ final class ReviewsInlineTest extends TestCase {
 	public function test_block_json_declares_the_source_choice_and_the_item_schema(): void {
 		$attrs = $this->blockJson()['attributes'];
 		$this->assertSame( 'auto', $attrs['dataSource']['default'], 'automatic: written reviews when there are any, otherwise Google' );
-		$this->assertSame( array( 'auto', 'synced', 'inline' ), $attrs['dataSource']['enum'] );
+		$this->assertSame( array( 'auto', 'synced', 'inline', 'placeholder' ), $attrs['dataSource']['enum'] );
 		$props = $attrs['reviews']['items']['properties'];
 		foreach ( array( 'author', 'text', 'rating', 'date', 'datePublished', 'photo', 'meta', 'url', 'avatarColour' ) as $field ) {
 			$this->assertArrayHasKey( $field, $props, "review item field $field" );
@@ -156,17 +156,24 @@ final class ReviewsInlineTest extends TestCase {
 	}
 
 	public function test_automatic_means_written_reviews_when_there_are_any_and_never_beats_an_explicit_choice(): void {
-		$src = (string) file_get_contents( self::BLOCK . '/render.php' );
+		$src = (string) file_get_contents( dirname( __DIR__, 2 ) . '/includes/helpers-reviews-inline.php' );
 		// Written when told to, or when not told to use Google and the block holds reviews.
-		$this->assertStringContainsString( '\'inline\' === $data_source_attr || ( \'synced\' !== $data_source_attr && ! empty( $attributes[\'reviews\'] ) )', $src );
+		$this->assertStringContainsString( '\'inline\' === $attr || ( \'synced\' !== $attr && ! empty( $attributes[\'reviews\'] ) )', $src );
 	}
 
 	// ── render.php honesty guarantees ──────────────────────────────────────────
 
-	public function test_written_mode_emits_no_review_schema_and_never_reaches_the_demo_or_google_branches(): void {
+	public function test_written_mode_emits_no_review_schema_and_never_reaches_the_sample_or_google_branches(): void {
 		$src = (string) file_get_contents( self::BLOCK . '/render.php' );
-		$this->assertMatchesRegularExpression( "/if \\( 'inline' !== \\\$data_source \\) \\{\\s*\\\$schema = array\\(/", $src, 'schema is emitted only outside written mode' );
-		$this->assertMatchesRegularExpression( "/if \\( 'inline' === \\\$data_source \\) \\{[^}]*sgs_reviews_inline_data[^}]*\\} elseif \\( empty\\( \\\$place_id \\) \\) \\{/s", $src, 'written mode is decided BEFORE the demo and Google branches' );
+		$this->assertStringContainsString( 'sgs_reviews_resolve( $attributes, $place_id )', $src, 'render.php takes its data from the one resolver' );
+		$this->assertMatchesRegularExpression( "/if \\( null === \\\$sgs_gr_resolved \\) \\{\\s*return;/", $src, 'no data: render nothing' );
+		$this->assertMatchesRegularExpression( "/if \\( sgs_reviews_may_emit_schema\\( \\\$data_source, \\\$data \\) \\) \\{\\s*\\\$schema = array\\(/", $src, 'schema only for real Google data' );
+
+		// In the resolver, written mode is decided BEFORE the Google fetch, and the sample set is only
+		// reachable through the explicit `placeholder` choice.
+		$helper = (string) file_get_contents( dirname( __DIR__, 2 ) . '/includes/helpers-reviews-inline.php' );
+		$this->assertLessThan( strpos( $helper, '$data = $fetcher( $place_id );' ), strpos( $helper, "'inline' === \$attr" ), 'written is decided before the Google fetch' );
+		$this->assertMatchesRegularExpression( "/if \\( 'placeholder' === \\\$attr \\) \\{\\s*return array\\(\\s*'source' => 'placeholder'/", $helper );
 	}
 
 	public function test_written_reviews_are_neither_capped_nor_re_sorted(): void {
