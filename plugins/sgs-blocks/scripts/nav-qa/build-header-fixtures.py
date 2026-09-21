@@ -285,6 +285,12 @@ FIXTURES = [
      "build": page_full_nav,
      "header": {"headerTransparent": {"desktop": "on"},
                 "contrastSafe": {"mobile": "force-solid"}}},
+    # U-1: per-tier stacking order. `zIndex` is a tier object of whole numbers; the drawer
+    # scale derives from the published `--sgs-header-z`.
+    {"slug": "qa-hdr-z-index", "title": "sticky header with z-index 10 on desktop, 999 on mobile",
+     "build": page_full_nav,
+     "header": {"zIndex": {"desktop": 10, "mobile": 999},
+                "headerSticky": {"desktop": "on", "tablet": "on", "mobile": "on"}}},
 ]
 
 

@@ -235,7 +235,7 @@ $css .= sgs_merge_tri_state_declarations(
 	'off'
 );
 // STACKING ORDER: the per-tier `zIndex` attribute, written once, here.
-$css .= sgs_header_z_index_css( $root_sel, $attributes, sgs_header_z_index_may_publish() );
+$css .= sgs_header_z_index_css( $root_sel, $attributes );
 // SCROLLED-state background for the Transparent behaviour — a distinct STATE
 // selector (root_sel + '.is-header-scrolled'), so this rule never collides
 // with the merged at-rest declarations above (single-writer design intact;

@@ -8,7 +8,7 @@
  * the sticky / float / transparent behaviours in the tri-state merge carry no
  * `z-index` of their own, so a narrower tier can never `revert` it to `auto`.
  *
- * The first header of a request also publishes `--sgs-header-z` on `:root`, so
+ * The first header of a request that carries a value also publishes `--sgs-header-z` on `:root`, so
  * the drawer's stacking scale (which sits in a different DOM subtree, outside the
  * header) can stay below the header whatever value it carries. A page has one
  * header; a second sgs/site-header in the same request keeps its own z-index
@@ -67,10 +67,12 @@ if ( ! function_exists( 'sgs_header_z_index_css' ) ) {
 	 *
 	 * @param string $selector   The header's uid selector (specificity above `.sgs-site-header`).
 	 * @param array  $attributes Block attributes.
-	 * @param bool   $publish    Whether this header may publish `--sgs-header-z` (the first header only).
+	 * @param bool|null $publish Whether this header may publish `--sgs-header-z`. Null (the default) claims
+	 *                           the request's single publisher slot, but only when this header has a value
+	 *                           to publish, so a header with nothing authored never uses it up.
 	 * @return string CSS, or '' when no tier carries a value.
 	 */
-	function sgs_header_z_index_css( $selector, $attributes, $publish = true ) {
+	function sgs_header_z_index_css( $selector, $attributes, $publish = null ) {
 		$tiers = sgs_header_z_index_tiers( $attributes );
 		if ( null === $tiers['desktop'] && null === $tiers['tablet'] && null === $tiers['mobile'] ) {
 			return '';
@@ -91,6 +93,10 @@ if ( ! function_exists( 'sgs_header_z_index_css' ) ) {
 				$prev = $value;
 				continue;
 			}
+			// Claim the request's publisher slot only when there is a value to publish.
+			if ( null === $publish ) {
+				$publish = sgs_header_z_index_may_publish();
+			}
 			$decls = 'z-index:' . $value . ';';
 			$rule  = $selector . '{' . $decls . '}';
 			if ( $publish ) {
@@ -106,7 +112,7 @@ if ( ! function_exists( 'sgs_header_z_index_css' ) ) {
 
 if ( ! function_exists( 'sgs_header_z_index_may_publish' ) ) {
 	/**
-	 * True for the first header of a request, false afterwards.
+	 * True for the first caller in a request, false afterwards (the publisher slot).
 	 *
 	 * @return bool
 	 */

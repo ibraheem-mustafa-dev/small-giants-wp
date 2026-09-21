@@ -55,19 +55,19 @@ ok( '' === sgs_header_z_index_css( $sel, array( 'zIndex' => array() ) ), 'empty 
 ok( '' === sgs_header_z_index_css( $sel, array( 'zIndex' => array( 'desktop' => 100 ) ) ), 'desktop equal to the default: emits nothing' );
 
 // Desktop only: tablet and mobile inherit, so no media queries.
-$css = sgs_header_z_index_css( $sel, array( 'zIndex' => array( 'desktop' => 10 ) ) );
+$css = sgs_header_z_index_css( $sel, array( 'zIndex' => array( 'desktop' => 10 ) ), true );
 ok( '.hdr{z-index:10;}:root{--sgs-header-z:10;}' === $css, 'desktop 10: one rule plus the published variable, no media query' );
 
 // Mobile only.
-$css = sgs_header_z_index_css( $sel, array( 'zIndex' => array( 'mobile' => 999 ) ) );
+$css = sgs_header_z_index_css( $sel, array( 'zIndex' => array( 'mobile' => 999 ) ), true );
 ok( '@media (max-width:767px){.hdr{z-index:999;}:root{--sgs-header-z:999;}}' === $css, 'mobile 999 only: a mobile media rule and nothing else' );
 
 // wearecollins: 999 at mobile, 9 above.
-$css = sgs_header_z_index_css( $sel, array( 'zIndex' => array( 'desktop' => 9, 'mobile' => 999 ) ) );
+$css = sgs_header_z_index_css( $sel, array( 'zIndex' => array( 'desktop' => 9, 'mobile' => 999 ) ), true );
 ok( false !== strpos( $css, '.hdr{z-index:9;}' ) && false !== strpos( $css, '@media (max-width:767px){.hdr{z-index:999;}' ), 'desktop 9, mobile 999 (wearecollins)' );
 
 // A narrower tier set back to the default still emits (it differs from the wider tier).
-$css = sgs_header_z_index_css( $sel, array( 'zIndex' => array( 'desktop' => 10, 'mobile' => 100 ) ) );
+$css = sgs_header_z_index_css( $sel, array( 'zIndex' => array( 'desktop' => 10, 'mobile' => 100 ) ), true );
 ok( false !== strpos( $css, '@media (max-width:767px){.hdr{z-index:100;}' ), 'mobile set back to 100 after desktop 10 still emits' );
 
 // Values are clamped, never emitted raw.
@@ -81,9 +81,16 @@ ok( '' === $css, 'a junk string emits nothing' );
 $css = sgs_header_z_index_css( $sel, array( 'zIndex' => array( 'desktop' => 10 ) ), false );
 ok( '.hdr{z-index:10;}' === $css, 'a non-first header emits its z-index without publishing the variable' );
 
-// Only the first header of a request may publish.
-ok( true === sgs_header_z_index_may_publish(), 'first header may publish' );
-ok( false === sgs_header_z_index_may_publish(), 'second header may not' );
+// The publisher slot is claimed only by a header that has a value to publish.
+// (Each case below runs in the same request, in order.)
+$empty_header  = sgs_header_z_index_css( '.a', array() );
+$first_pub     = sgs_header_z_index_css( '.b', array( 'zIndex' => array( 'desktop' => 10 ) ) );
+$second_pub    = sgs_header_z_index_css( '.c', array( 'zIndex' => array( 'desktop' => 20 ) ) );
+ok( '' === $empty_header, 'a header with nothing authored emits nothing' );
+ok( false !== strpos( $first_pub, ':root{--sgs-header-z:10;}' ), 'the first header WITH a value publishes, even after an empty one' );
+ok( '.c{z-index:20;}' === $second_pub, 'a later header keeps its own z-index but does not publish' );
+// NEGATIVE CONTROL: an empty header must not have used up the slot.
+ok( false === sgs_header_z_index_may_publish(), 'the slot is now taken' );
 
 // The merge no longer carries z-index, so a tier cancel cannot revert it.
 $props_with_z = array( 'position' => 'sticky', 'top' => '0', 'z-index' => '100' );
