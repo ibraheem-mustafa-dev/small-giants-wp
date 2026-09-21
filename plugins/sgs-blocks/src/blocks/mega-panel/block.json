@@ -56,9 +56,11 @@
 						"css:border-color": "borderColour",
 						"css:border-radius": "borderRadius",
 						"css:gap": "groupGap",
-						"css:border-color-gradient": "borderColourGradient"
+						"css:border-color-gradient": "borderColourGradient",
+						"css:box-shadow": "shadow",
+						"css:box-shadow-color": "shadowColour"
 					},
-					"_note": "The `.sgs-mega-panel` root + its `.sgs-mega-panel__content` row (groupGap is pinned onto this SAME element rather than a separate content element). Block-private (containerMirror:false — this composite uses no SGS_Container_Wrapper grid/section machinery of its own; it hand-rolls its own flex/grid content-row per `style`, mirroring the wrapper's fill/box capability only). variant/style/colourScheme/accent/headings/bgBlur are variant-selector + arrangement-mode attrs, not css: property mappings, so they are deliberately absent from attrMap — they select WHICH scoped rule applies. Column COUNT is not a separate attribute — the panel accepts a flexible 1-N sgs/mega-group children (add/remove/reorder), so the number of columns IS the number of groups. group-heading/link/desc/marker are CHILD-OWNED (sgs/heading, sgs/icon-list) and are declared on THOSE blocks' own manifests, not repeated here, even though this panel's CSS paints their colour/shape uniformly. panelBg has no hover pair: the panel is a disclosure surface toggled by the `sgs/nav-bar-menu` mega-item trigger, not an element a visitor points at — there is no genuine `:hover` moment on the ROOT once it is open, only on its children (which have their own hover controls, e.g. the `icon` element below)."
+					"_note": "The `.sgs-mega-panel` root + its `.sgs-mega-panel__content` row (groupGap is pinned onto this SAME element rather than a separate content element). Block-private (containerMirror:false — this composite uses no SGS_Container_Wrapper grid/section machinery of its own; it hand-rolls its own flex/grid content-row per `style`, mirroring the wrapper's fill/box capability only). variant/style/colourScheme/accent/headings/surfaceBlur/surfaceSaturate/surfaceOpacity are variant-selector + arrangement-mode attrs, not css: property mappings, so they are deliberately absent from attrMap — they select WHICH scoped rule applies. Column COUNT is not a separate attribute — the panel accepts a flexible 1-N sgs/mega-group children (add/remove/reorder), so the number of columns IS the number of groups. group-heading/link/desc/marker are CHILD-OWNED (sgs/heading, sgs/icon-list) and are declared on THOSE blocks' own manifests, not repeated here, even though this panel's CSS paints their colour/shape uniformly. panelBg has no hover pair: the panel is a disclosure surface toggled by the `sgs/nav-bar-menu` mega-item trigger, not an element a visitor points at — there is no genuine `:hover` moment on the ROOT once it is open, only on its children (which have their own hover controls, e.g. the `icon` element below)."
 				},
 				"aside": {
 					"label": "Aside slot",
@@ -251,9 +253,28 @@
 			"default": "",
 			"description": "CSS gradient string painting the panel background via background-image (--sgs-mm-panel-bg-gradient custom property). Non-empty wins over panelBg (and the built-in translucent surface default) on the same root selector."
 		},
-		"bgBlur": {
-			"type": "boolean",
-			"default": false
+		"surfaceBlur": {
+			"type": "string",
+			"default": "",
+			"description": "Backdrop blur: a single CSS length (for example 24px) that blurs whatever sits behind the panel. Empty emits nothing. Emitted through includes/helpers-surface-ground.php."
+		},
+		"surfaceSaturate": {
+			"type": "number",
+			"description": "Backdrop saturation as a whole-number percentage (for example 150), paired with surfaceBlur. Unset emits nothing; 0 is a legal value."
+		},
+		"surfaceOpacity": {
+			"type": "number",
+			"description": "Fill translucency, 0 to 1, applied to the panel background (panelBg or the built-in surface default). A gradient fill is left as it is. Unset or 1 emits nothing."
+		},
+		"shadow": {
+			"type": "string",
+			"default": "floating",
+			"description": "Panel shadow: a theme shadow preset slug (subtle, raised, floating, glow) or a raw single-layer shape composed with shadowColour. Empty means no shadow."
+		},
+		"shadowColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour for a raw shadow shape in `shadow`; ignored when `shadow` is a theme preset slug."
 		},
 		"borderWidth": {
 			"type": "object",

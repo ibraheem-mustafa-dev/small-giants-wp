@@ -834,7 +834,7 @@
         "animation": true
       },
       "qualifies": {
-        "paintDeclarations": 38,
+        "paintDeclarations": 39,
         "replacedCoreSupports": []
       }
     },
@@ -1760,7 +1760,7 @@
         "animation": true
       },
       "qualifies": {
-        "paintDeclarations": 9,
+        "paintDeclarations": 10,
         "replacedCoreSupports": []
       }
     },

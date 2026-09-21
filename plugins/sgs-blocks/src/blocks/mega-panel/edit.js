@@ -53,6 +53,8 @@ import {
 	SgsBorderControl,
 	SgsColourPanel,
 	SgsLengthControl,
+	ShadowControl,
+	SurfaceGroundControls,
 	fillRow,
 } from '../../components';
 import MediaElementPanel from '../../components/MediaElementPanel';
@@ -60,7 +62,7 @@ import { CursorFieldRowControls } from '../../components/CursorFieldRowControls'
 import { ParticleTrailRowControls } from '../../components/ParticleTrailRowControls';
 import { GridDotFieldRowControls } from '../../components/GridDotFieldRowControls';
 import { FlowingGradientRowControls } from '../../components/FlowingGradientRowControls';
-import { colourVar } from '../../utils';
+import { colourVar, resolveShadowPreviewComposed } from '../../utils';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 /**
@@ -214,7 +216,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		groupGap,
 		panelBg,
 		panelBgGradient,
-		bgBlur,
+		surfaceBlur,
+		surfaceSaturate,
+		surfaceOpacity,
+		shadow,
+		shadowColour,
 		borderWidth,
 		borderStyle,
 		borderColour,
@@ -305,7 +311,11 @@ export default function Edit( { attributes, setAttributes } ) {
 			/^(repeating-)?(linear|radial|conic)-gradient\(/i.test( accentBackgroundImageGradient )
 				? accentBackgroundImageGradient
 				: undefined,
-		'--sgs-mm-panel-bg': panelBg ? colourVar( panelBg ) || panelBg : undefined,
+		'--sgs-mm-panel-bg': panelBg
+			? typeof surfaceOpacity === 'number' && surfaceOpacity < 1
+				? `color-mix(in srgb, ${ colourVar( panelBg ) || panelBg } ${ Math.round( Math.max( 0, surfaceOpacity ) * 100 ) }%, transparent)`
+				: colourVar( panelBg ) || panelBg
+			: undefined,
 		// panelBgGradient canvas mirror — same approach: --sgs-mm-panel-bg-gradient
 		// is consumed by style.css's dark-scheme rule and by this root's own
 		// panelBg background-color.
@@ -367,7 +377,19 @@ export default function Edit( { attributes, setAttributes } ) {
 		borderWidth: borderWidthShorthand( borderWidth ),
 		borderStyle: borderStyle || 'solid',
 		borderColor: 'var(--sgs-mm-panel-border)',
-		backdropFilter: bgBlur ? 'saturate(1.5) blur(24px)' : undefined,
+		backdropFilter: ( () => {
+			const parts = [];
+			if ( typeof surfaceSaturate === 'number' ) {
+				parts.push( `saturate(${ surfaceSaturate }%)` );
+			}
+			if ( surfaceBlur ) {
+				parts.push( `blur(${ surfaceBlur })` );
+			}
+			return parts.length ? parts.join( ' ' ) : undefined;
+		} )(),
+		boxShadow: shadow
+			? resolveShadowPreviewComposed( shadow, shadowColour )
+			: undefined,
 	};
 
 	const wrapperClassName = [
@@ -556,7 +578,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				] }
 			/>
 			<InspectorControls>
-				{ /* A ToolsPanel — all controls (bgBlur, maxWidth,
+				{ /* A ToolsPanel — all controls (surface blur, maxWidth,
 				   panelPadding, groupGap, borderRadius) are optional style/layout
 				   customisations, so none are marked isShownByDefault. Same pattern
 				   as team-member's optional controls. */ }
@@ -564,7 +586,11 @@ export default function Edit( { attributes, setAttributes } ) {
 					label={ __( 'Panel', 'sgs-blocks' ) }
 					resetAll={ () =>
 						setAttributes( {
-							bgBlur: false,
+							surfaceBlur: '',
+							surfaceSaturate: undefined,
+							surfaceOpacity: undefined,
+							shadow: 'floating',
+							shadowColour: '',
 							maxWidth: undefined,
 							panelPadding: undefined,
 							groupGap: undefined,
@@ -573,20 +599,21 @@ export default function Edit( { attributes, setAttributes } ) {
 					}
 				>
 					{ /* Fill */ }
+					<SurfaceGroundControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
+
 					<ToolsPanelItem
-						label={ __( 'Background blur', 'sgs-blocks' ) }
-						hasValue={ () => !! bgBlur }
-						onDeselect={ () => setAttributes( { bgBlur: false } ) }
+						label={ __( 'Shadow', 'sgs-blocks' ) }
+						hasValue={ () => shadow !== 'floating' || !! shadowColour }
+						onDeselect={ () => setAttributes( { shadow: 'floating', shadowColour: '' } ) }
 					>
-						<ToggleControl
-							label={ __( 'Background blur', 'sgs-blocks' ) }
-							help={ __(
-								'Adds a frosted-glass blur behind a translucent panel background.',
-								'sgs-blocks'
-							) }
-							checked={ !! bgBlur }
-							onChange={ ( value ) => setAttributes( { bgBlur: value } ) }
-							__nextHasNoMarginBottom
+						<ShadowControl
+							label={ __( 'Shadow', 'sgs-blocks' ) }
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							attrNames={ { base: 'shadow', colour: 'shadowColour' } }
 						/>
 					</ToolsPanelItem>
 

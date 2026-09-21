@@ -49,6 +49,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-surface-ground.php';
+
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // ---------------------------------------------------------------------------
@@ -74,7 +76,6 @@ $colour_scheme   = isset( $attributes['colourScheme'] ) && in_array( $attributes
 	: 'light';
 
 $headings_on = ! isset( $attributes['headings'] ) || (bool) $attributes['headings'];
-$bg_blur     = ! empty( $attributes['bgBlur'] );
 
 // One colour attribute cannot paint 4 unrelated CSS properties
 // (background-colour, border-colour, text-colour, background-image), so each
@@ -343,6 +344,13 @@ $panel_bg_value = '' !== $panel_bg_raw
 	? sgs_colour_value( $panel_bg_raw )
 	: 'color-mix(in srgb, var(--wp--preset--color--surface, #FAF9F6) 92%, transparent)';
 
+// Fill translucency (`surfaceOpacity`): mixed onto whatever the fill resolved to. A gradient
+// sibling is handled separately and is left alone by the helper.
+$panel_bg_alpha = sgs_surface_fill_alpha( $panel_bg_value, $attributes['surfaceOpacity'] ?? null );
+if ( '' !== $panel_bg_alpha ) {
+	$panel_bg_value = $panel_bg_alpha;
+}
+
 // borderColour: attr value resolves via sgs_colour_value; empty falls back to
 // a token-derived translucent border (matches the theme's light default).
 // 12% of the text colour is effectively INVISIBLE against a light panel
@@ -499,9 +507,17 @@ if ( function_exists( 'sgs_emit_responsive_css' ) ) {
 // (check-border-style-without-width.py) to recognise it as gated.
 $has_border_width = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
 
+// The panel's ONE box-shadow writer: the `shadow` attribute (a theme preset slug by default, or a raw
+// single-layer shape + `shadowColour`). Empty means no shadow, as on every other SGS surface.
+$panel_shadow_raw  = isset( $attributes['shadow'] ) && is_string( $attributes['shadow'] ) ? trim( $attributes['shadow'] ) : 'floating';
+$panel_shadow_val  = '' !== $panel_shadow_raw
+	? sgs_shadow_value_composed( $panel_shadow_raw, isset( $attributes['shadowColour'] ) ? (string) $attributes['shadowColour'] : '' )
+	: '';
+$panel_shadow_decl = '' !== $panel_shadow_val ? 'box-shadow:' . $panel_shadow_val . ';' : '';
+
 $css .= $root_sel . '{'
 	. 'border-radius:' . ( '' !== $border_radius ? $border_radius : '20px' ) . ';'
-	. 'box-shadow:0 30px 80px -30px rgba(0,0,0,.28),0 2px 8px -2px rgba(0,0,0,.08);'
+	. $panel_shadow_decl
 	. 'container-type:inline-size;'
 	. '}';
 
@@ -520,8 +536,10 @@ if ( '' !== $border_colour_gradient ) {
 	$css .= sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, $border_width_top );
 }
 
-if ( $bg_blur ) {
-	$css .= $root_sel . '{backdrop-filter:saturate(1.5) blur(24px);-webkit-backdrop-filter:saturate(1.5) blur(24px);}';
+// Backdrop blur and saturate: the shared helper (empty emits nothing).
+$panel_backdrop_decls = sgs_surface_backdrop_decls( $attributes['surfaceBlur'] ?? '', $attributes['surfaceSaturate'] ?? null );
+if ( ! empty( $panel_backdrop_decls ) ) {
+	$css .= $root_sel . '{' . implode( ';', $panel_backdrop_decls ) . ';}';
 }
 
 // ---------------------------------------------------------------------------
