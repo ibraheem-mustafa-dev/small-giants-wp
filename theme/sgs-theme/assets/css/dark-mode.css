@@ -26,8 +26,7 @@
 	--wp--preset--color--border: #2A4A4B;
 	--wp--preset--color--footer-bg: #0A3B3D;
 
-	/* Shadow adjustments for dark backgrounds */
-	--wp--custom--shadow-colour: #000000;
+	/* Shadows: the site shadow colour follows the text colour, which is light here, so every shadow reads as a soft glow that separates an element from the dark page (a black shadow is invisible on a dark surface). */
 
 	color-scheme: dark;
 }
@@ -46,8 +45,6 @@
 		--wp--preset--color--accent-light: #3D2A1A;
 		--wp--preset--color--border: #2A4A4B;
 		--wp--preset--color--footer-bg: #0A3B3D;
-
-		--wp--custom--shadow-colour: #000000;
 
 		color-scheme: dark;
 	}

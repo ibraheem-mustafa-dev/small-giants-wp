@@ -12,13 +12,14 @@ slug moves with it.
 
 Rename map: subtle -> whisper, raised -> soft (floating and glow keep their names, new values).
 Presets are `color-mix()` layers over `var(--wp--custom--shadow-colour)`, so a rebrand recolours
-every shadow at once (Glow uses the brand colour). Dark mode sets only the site colour.
+every shadow at once (Glow uses the brand colour). Dark mode sets nothing: the site colour follows the
+text colour, which is light there, so shadows become a soft glow.
 
 What it edits (text splices, never a JSON re-serialise, so formatting is untouched):
   * theme.json: `settings.shadow.presets` and `settings.custom.shadowColour`
   * a CSS variable reference `--wp--preset--shadow--<old>` in block/theme CSS and PHP
   * a shadow-named JSON key, PHP array key or JS property whose value is an old slug
-  * dark-mode.css: the per-preset overrides become one site-colour override
+  * dark-mode.css: the per-preset overrides are removed (the site colour follows the text colour)
 """
 import json
 import re
@@ -110,7 +111,7 @@ def theme_json_text(text):
 def dark_text(text):
     """dark-mode.css: per-preset overrides collapse to the site shadow colour."""
     return re.sub(r"(?m)^([ \t]*)--wp--preset--shadow--(?:subtle|raised|floating|glow):[^\n]*\n(?:[ \t]*--wp--preset--shadow--[^\n]*\n)*",
-                  lambda m: m.group(1) + "--wp--custom--shadow-colour: #000000;\n", text)
+                  lambda m: "", text)
 
 
 def plan():
@@ -173,7 +174,7 @@ def self_test():
     eq(preset_css(PRESETS[10][2]), "4px 4px 0px 0px " + SITE, "a 100% layer has no color-mix")
     eq(preset_css(PRESETS[9][2]).startswith("inset 0px 2px 4px 0px color-mix(in srgb, " + SITE + " 14%"), True, "inset first")
     dark = "  --wp--preset--shadow--subtle: 0 1px 3px rgba(0,0,0,0.3);\n  --wp--preset--shadow--glow: 0 0 20px red;\n\n  color-scheme: dark;\n"
-    eq(dark_text(dark), "  --wp--custom--shadow-colour: #000000;\n\n  color-scheme: dark;\n", "dark mode collapses")
+    eq(dark_text(dark), "\n  color-scheme: dark;\n", "dark mode overrides are removed")
     tj = '{\n  "settings": {\n    "shadow": {\n      "defaultPresets": false,\n      "presets": [\n        {"slug": "x"}\n      ]\n    },\n    "custom": {\n      "a": 1\n    }\n  }\n}\n'
     out = theme_json_text(tj)
     parsed = json.loads(out)
