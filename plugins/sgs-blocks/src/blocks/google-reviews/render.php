@@ -188,10 +188,14 @@ $filtered_reviews = array_filter(
 	}
 );
 
-// Sort reviews.
+// Sort reviews. Written reviews keep the order the client put them in (the editor has Move up / Move down).
 usort(
 	$filtered_reviews,
-	function ( $a, $b ) use ( $sort_by ) {
+	function ( $a, $b ) use ( $sort_by, $data_source ) {
+		if ( 'inline' === $data_source ) {
+			return 0;
+		}
+
 		if ( 'highest' === $sort_by ) {
 			return ( $b['rating'] ?? 0 ) <=> ( $a['rating'] ?? 0 );
 		}
@@ -208,7 +212,9 @@ usort(
 );
 
 // Limit reviews.
-$reviews = array_slice( $filtered_reviews, 0, $max_reviews );
+// Written reviews are never capped: the client chose how many to write, and a silent cut would drop
+// reviews they typed. The cap is for the Google feed, where it limits what the API returned.
+$reviews = 'inline' === $data_source ? array_values( $filtered_reviews ) : array_slice( $filtered_reviews, 0, $max_reviews );
 
 // ───────────────────────────────────────────────────────────────────────────
 // Wrapper: own classes, styles, and WP-Interactivity data-* attrs.

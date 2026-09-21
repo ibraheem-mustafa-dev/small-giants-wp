@@ -169,6 +169,13 @@ final class ReviewsInlineTest extends TestCase {
 		$this->assertMatchesRegularExpression( "/if \\( 'inline' === \\\$data_source \\) \\{[^}]*sgs_reviews_inline_data[^}]*\\} elseif \\( empty\\( \\\$place_id \\) \\) \\{/s", $src, 'written mode is decided BEFORE the demo and Google branches' );
 	}
 
+	public function test_written_reviews_are_neither_capped_nor_re_sorted(): void {
+		$src = (string) file_get_contents( self::BLOCK . '/render.php' );
+		// Found live: the default cap of 10 silently dropped 3 of 13 typed reviews.
+		$this->assertStringContainsString( '\'inline\' === $data_source ? array_values( $filtered_reviews ) : array_slice( $filtered_reviews, 0, $max_reviews )', $src );
+		$this->assertMatchesRegularExpression( '/use \( \$sort_by, \$data_source \) \{\s*if \( \'inline\' === \$data_source \) \{\s*return 0;/', $src, 'the client\'s order is kept' );
+	}
+
 	public function test_an_unrated_review_is_not_removed_by_the_minimum_rating_filter(): void {
 		$src = (string) file_get_contents( self::BLOCK . '/render.php' );
 		$this->assertStringContainsString( 'null !== $review_rating && $review_rating < $min_rating', $src );
