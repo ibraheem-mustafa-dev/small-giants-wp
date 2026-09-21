@@ -6,6 +6,8 @@
  *   style={{ backgroundColor: colourVar('primary'), padding: spacingVar('40') }}
  */
 
+import { composeShadow } from './shadow-layers.js';
+
 /**
  * Resolve a colour attribute value for an editor-canvas preview — the JS mirror
  * of `sgs_colour_value()` (includes/helpers-tokens.php).
@@ -107,61 +109,18 @@ export function transitionVar( slug ) {
 }
 
 /**
- * Resolve a wrapper-level `shadow` attribute to a CSS box-shadow value for
- * editor canvas preview. Mirrors sgs_shadow_value() (includes/helpers-tokens.php):
- * a raw CSS shadow string (built by ShadowControl) passes through unchanged;
- * a bare theme slug (legacy sm/md/lg/glow) is wrapped in the preset var().
+ * Resolve a stored shadow (SHAPE text + COLOUR text) to a CSS `box-shadow` value for the editor
+ * canvas. This is the JS twin of `sgs_shadow_value_composed()` (`includes/helpers-tokens.php`):
+ * both compose through the same parse-and-re-emit composer, so a multi-layer stack, a colour
+ * list, per-layer opacity, the site colour, a bare theme preset slug and `none` all preview
+ * exactly as the page renders them. `tests/shared/shadow-compose-cases.json` pins the two.
  *
- * Shared by every block whose wrapper mirrors sgs/container's `shadow`
- * capability (R-31-9 composite-mirror rule) — container, hero, trust-bar,
- * cta-section — so the editor canvas preview stays in sync across all of
- * them rather than each block re-implementing (or omitting) the same logic.
- *
- * @param {string} value Stored `shadow` attribute value.
- * @return {string|undefined} CSS box-shadow value, or undefined when empty.
- */
-export function resolveShadowPreview( value ) {
-	if ( ! value ) {
-		return undefined;
-	}
-	const isRaw = /^var\(|^inset|^rgb|^0 |^\d/.test( value );
-	return isRaw ? value : `var(--wp--preset--shadow--${ value })`;
-}
-
-/**
- * Resolve a shadow SHAPE (from `ShadowControl`, colour split out per
- * D621/D622) + a separate colour attribute to a CSS `box-shadow` value for
- * editor canvas preview. Mirrors the PHP compose helper
- * `sgs_shadow_value_composed()` (`includes/helpers-tokens.php`): a raw shape
- * (starts with a digit or `inset`) gets the colour appended; a bare theme
- * preset slug is self-contained and the colour is ignored.
- *
- * ⛔ SIBLING OF THE D792 BUG (fixed here 2026-08-26). The colour argument used
- * to be appended RAW: `${ shape } ${ colour }`. That is correct for a value
- * the browser already understands (hex/rgb/var()) but invalid for a palette
- * SLUG — `0 2px 4px primary` is not a valid `box-shadow`, so the browser
- * discards the whole declaration and the shadow silently vanishes from the
- * canvas while still rendering on the live page (the PHP twin resolves the
- * slug via `sgs_colour_value()`). Fixed by routing the colour through
- * `colourVar()` — the same D792 resolver, not a second parallel one — so a
- * slug becomes `var(--wp--preset--color--{slug})` and a custom colour passes
- * through unchanged (idempotent: a caller that already pre-resolved its
- * colour, e.g. `sgs/button`'s `resolveColourToken()`, is unaffected because
- * `colourVar()` treats an already-valid CSS colour as a no-op).
- *
- * @param {string} shape  Stored shadow SHAPE attribute value (or a preset slug).
- * @param {string} colour Stored colour attribute value.
+ * @param {string} shape  Stored shadow SHAPE attribute value (layers, a preset slug or `none`).
+ * @param {string} colour Stored colour attribute value (one entry, or a list matching the layers).
  * @return {string|undefined} CSS box-shadow value, or undefined when empty.
  */
 export function resolveShadowPreviewComposed( shape, colour ) {
-	if ( ! shape ) {
-		return undefined;
-	}
-	const isRawShape = /^inset|^-?\d/.test( shape );
-	if ( ! isRawShape ) {
-		return `var(--wp--preset--shadow--${ shape })`;
-	}
-	return `${ shape } ${ colourVar( colour ) || 'rgba(0,0,0,0.1)' }`;
+	return composeShadow( shape, colour ) || undefined;
 }
 
 /**

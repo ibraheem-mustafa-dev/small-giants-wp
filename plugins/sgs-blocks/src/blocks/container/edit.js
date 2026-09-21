@@ -12,7 +12,7 @@ import {
 } from "@wordpress/components";
 import { useSelect } from "@wordpress/data";
 import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, TypographyControls, SgsBoxControl } from "../../components";
-import { resolveShadowPreview, resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPaintPreview, textPaintPreview, borderPaintPreview, backgroundPreview, svgBackgroundPreview, boxShorthand, resolveBoxTierPreview, resolveContentWidthPreview, contentBandPreview, applyGridLayoutPreview, colourVar } from "../../utils";
+import { resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPaintPreview, textPaintPreview, borderPaintPreview, backgroundPreview, svgBackgroundPreview, boxShorthand, resolveBoxTierPreview, resolveContentWidthPreview, contentBandPreview, applyGridLayoutPreview, colourVar } from "../../utils";
 import {
   LayoutPanel,
   WidthPanel,
@@ -194,7 +194,7 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
   const style = {
     gap: gapCssValue( gap, previewTier ),
     minHeight: resolveResponsiveTier( attributes.minHeight, previewTier )?.value || undefined,
-    ...(shadow && { boxShadow: resolveShadowPreview( shadow ) }),
+    ...(shadow && { boxShadow: resolveShadowPreviewComposed( shadow, attributes.shadowColour ) }),
     ...bgPreview.style,
     ...svgPreview.style,
     // Base (SGS-owned) background paint — the OUTER-most layer, below the

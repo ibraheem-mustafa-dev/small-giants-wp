@@ -1,0 +1,189 @@
+/**
+ * Editor-only styles for the layered shadow control (`ShadowControl.js` and its parts).
+ * Imported by the component, never inline (Spec 32 no-inline-style contract). Layout only:
+ * colours come from WordPress admin tokens so the panel follows the editor's own theme.
+ */
+
+.sgs-shadow-control__preview {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 20px 0;
+	margin-bottom: 12px;
+	background: #f0f0f1;
+	border-radius: 2px;
+}
+
+.sgs-shadow-control__preview-box {
+	width: 72px;
+	height: 44px;
+	border-radius: 6px;
+	background: #fff;
+}
+
+.sgs-shadow-control__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	margin-bottom: 8px;
+}
+
+.sgs-shadow-control__section {
+	margin-top: 14px;
+}
+
+.sgs-shadow-control__presets {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 6px;
+}
+
+.sgs-shadow-control__card {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	min-height: 48px;
+	padding: 6px 8px;
+	text-align: left;
+	border: 1px solid #ddd;
+	border-radius: 2px;
+	background: #fff;
+	cursor: pointer;
+}
+
+.sgs-shadow-control__card[aria-pressed="true"] {
+	border-color: var(--wp-admin-theme-color, #3858e9);
+	box-shadow: inset 0 0 0 1px var(--wp-admin-theme-color, #3858e9);
+}
+
+.sgs-shadow-control__card-swatch {
+	flex: none;
+	width: 24px;
+	height: 24px;
+	border-radius: 4px;
+	background: #fff;
+}
+
+.sgs-shadow-control__elevation {
+	display: grid;
+	grid-template-columns: repeat(7, 1fr);
+	gap: 4px;
+}
+
+.sgs-shadow-control__elevation button {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 4px;
+	min-height: 48px;
+	padding: 4px 0;
+	border: 1px solid #ddd;
+	border-radius: 2px;
+	background: #fff;
+	cursor: pointer;
+}
+
+.sgs-shadow-control__elevation button[aria-pressed="true"] {
+	border-color: var(--wp-admin-theme-color, #3858e9);
+	box-shadow: inset 0 0 0 1px var(--wp-admin-theme-color, #3858e9);
+}
+
+.sgs-shadow-control__elevation-swatch {
+	display: block;
+	width: 14px;
+	height: 14px;
+	border-radius: 3px;
+	background: #fff;
+}
+
+.sgs-shadow-control__layers {
+	list-style: none;
+	margin: 0 0 10px;
+	padding: 0;
+	border: 1px solid #ddd;
+	border-radius: 2px;
+}
+
+.sgs-shadow-control__layers > li + li {
+	border-top: 1px solid #ddd;
+}
+
+.sgs-shadow-control__layer-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 2px;
+	padding: 4px;
+}
+
+.sgs-shadow-control__layer-summary {
+	display: flex;
+	flex: 1 1 120px;
+	align-items: center;
+	gap: 8px;
+	min-width: 0;
+	padding: 4px;
+	text-align: left;
+	border: 0;
+	background: none;
+	cursor: pointer;
+}
+
+.sgs-shadow-control__layer-dot {
+	flex: none;
+	width: 16px;
+	height: 16px;
+	border: 1px solid #ccc;
+	border-radius: 50%;
+}
+
+.sgs-shadow-control__layer-dot.is-raw {
+	border-style: dashed;
+	background: transparent;
+}
+
+.sgs-shadow-control__layer-fields {
+	display: grid;
+	gap: 12px;
+	padding: 8px 12px 14px;
+	background: #f6f7f7;
+}
+
+.sgs-shadow-control__pair {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 8px;
+}
+
+.sgs-shadow-control__confirm {
+	margin: 10px 0;
+	padding: 10px 12px;
+	background: #fef8ee;
+	border-left: 3px solid #f0b849;
+}
+
+.sgs-shadow-control__confirm-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 8px;
+}
+
+.sgs-shadow-control__warning {
+	margin: 8px 0 0;
+	color: #b32d2e;
+}
+
+.sgs-shadow-control__raw {
+	width: 100%;
+	min-height: 88px;
+	font-family: Menlo, Consolas, monospace;
+	font-size: 12px;
+}
+
+.sgs-shadow-control__note {
+	margin: 0 0 8px;
+	color: #757575;
+}

@@ -25,7 +25,7 @@ import {
 	elementCustomProperties,
 } from '../../components/media/canvasStyle.js';
 import {
-	resolveShadowPreview,
+	resolveShadowPreviewComposed,
 	colourVar,
 	resolveBackgroundPaintPreviewStyle,
 	textPaintPreview,
@@ -488,7 +488,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		wrapperStyle.minHeight = minHeight.desktop;
 	}
 	if ( shadow ) {
-		wrapperStyle.boxShadow = resolveShadowPreview( shadow );
+		wrapperStyle.boxShadow = resolveShadowPreviewComposed( shadow, attributes.shadowColour );
 	}
 	// HC2: desktop text-align preview for the content column.
 	// Also preview contentBackground when set.

@@ -1064,5 +1064,14 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 114
+  },
+  {
+    "id": "test-shadow-model",
+    "cmd": "node scripts/tests/test-shadow-model.mjs",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 115
   }
 ]
