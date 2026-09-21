@@ -65,6 +65,12 @@ $cases = array(
 	array( '100% opacity adds no colour-mix', $one, '#FF0000 100%' ),
 	array( 'fractional opacity', $one, 'site 12.5%' ),
 	array( 'var() colour', $one, 'var(--wp--preset--color--accent)' ),
+	// A theme preset's layers carry one strict color-mix(); any other color-mix() is not a colour.
+	array( 'a preset color-mix on the site colour', '0 1px 2px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)', null ),
+	array( 'a preset color-mix on a palette variable', '0 0 16px color-mix(in srgb, var(--wp--preset--color--primary) 55%, transparent)', null ),
+	array( 'a color-mix in the colour list', $one, 'color-mix(in srgb, #112233 40%, transparent)' ),
+	array( 'a color-mix with a hostile inner value is rejected', '0 1px 2px color-mix(in srgb, red;}body{x:y 10%, transparent)', null ),
+	array( 'a color-mix that is not against transparent is rejected', '0 1px 2px color-mix(in srgb, #112233 10%, red)', null ),
 	// Grammar.
 	array( 'inset first', 'INSET 0 2px 4px', null ),
 	array( 'inset last', '0 2px 4px inset', null ),

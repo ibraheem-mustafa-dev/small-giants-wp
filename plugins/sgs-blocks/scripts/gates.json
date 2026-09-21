@@ -1073,5 +1073,23 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 115
+  },
+  {
+    "id": "check-shadow-presets",
+    "cmd": "python scripts/migrate-shadow-presets.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 116
+  },
+  {
+    "id": "check-shadow-presets-self-test",
+    "cmd": "python scripts/migrate-shadow-presets.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 117
   }
 ]

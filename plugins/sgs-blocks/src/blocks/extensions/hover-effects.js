@@ -39,6 +39,7 @@ import {
 	TextControl,
 } from '@wordpress/components';
 import { LinkPopoverField } from '../../components';
+import { useShadowPresetOptions } from '../../components/shadow-control/useShadowPresets';
 import { __ } from '@wordpress/i18n';
 import { isExtensionHidden, isExtensionEnabled } from './hide-extensions';
 
@@ -104,14 +105,6 @@ function resolveHoverExcludedControls( settings ) {
 	const excluded = settings?.supports?.sgs?.hoverExcludeControls;
 	return Array.isArray( excluded ) ? excluded : [];
 }
-
-const SHADOW_OPTIONS = [
-	{ label: __( 'None', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Subtle', 'sgs-blocks' ), value: 'subtle' },
-	{ label: __( 'Raised', 'sgs-blocks' ), value: 'raised' },
-	{ label: __( 'Floating', 'sgs-blocks' ), value: 'floating' },
-	{ label: __( 'Brand glow', 'sgs-blocks' ), value: 'glow' },
-];
 
 const SCALE_PRESET_OPTIONS = [
 	{ label: __( 'None', 'sgs-blocks' ), value: '' },
@@ -241,6 +234,8 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 	return ( props ) => {
 		const { attributes, setAttributes, name } = props;
 		const type = getBlockType( name );
+		// The theme's own shadow presets: no second list of names to keep in step.
+		const shadowOptions = useShadowPresetOptions();
 
 		if ( type?.supports?.className === false ) {
 			return <BlockEdit { ...props } />;
@@ -364,7 +359,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 						<SelectControl
 							label={ __( 'Hover shadow', 'sgs-blocks' ) }
 							value={ sgsHoverShadow }
-							options={ SHADOW_OPTIONS }
+							options={ shadowOptions }
 							onChange={ ( val ) => setAttributes( { sgsHoverShadow: val } ) }
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize

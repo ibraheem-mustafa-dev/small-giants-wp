@@ -48,7 +48,7 @@
 			],
 			"hoverDefaults": {
 				"scalePreset": "1.02",
-				"shadow": "raised",
+				"shadow": "soft",
 				"imageZoom": true,
 				"focusRing": true
 			},

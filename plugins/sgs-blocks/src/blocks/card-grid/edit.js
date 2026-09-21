@@ -114,7 +114,7 @@ const CARD_STYLE_PRESETS = {
 		// Bare preset slug — self-contained (colour baked in by theme.json), so
 		// cardShadowColour stays empty; sgs_shadow_value_composed() ignores it
 		// for a preset slug.
-		cardShadow: 'raised',
+		cardShadow: 'soft',
 		cardShadowColour: '',
 	},
 	boxed: {

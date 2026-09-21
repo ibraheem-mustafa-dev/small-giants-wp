@@ -33,6 +33,10 @@ if ( ! function_exists( 'wp_get_global_settings' ) ) {
 					'shadow' => '0 1px 2px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.08)',
 				),
 				array(
+					'slug'   => 'whisper',
+					'shadow' => '0px 1px 2px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent), 0px 0px 0px 1px color-mix(in srgb, var(--wp--custom--shadow-colour) 5%, transparent)',
+				),
+				array(
 					'slug'   => 'pressed',
 					'shadow' => 'inset 0 2px 4px rgba(0,0,0,0.2)',
 				),
@@ -72,6 +76,11 @@ t_eq(
 	'drop-shadow(0px 1px 2px #0000001F) drop-shadow(0px 4px 8px #00000014)',
 	sgs_shadow_value_to_drop_shadow( 'var(--wp--preset--shadow--soft)' ),
 	'a multi-layer preset is read from the theme and chained'
+);
+t_eq(
+	'drop-shadow(0px 1px 2px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)) drop-shadow(0px 0px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 5%, transparent))',
+	sgs_shadow_value_to_drop_shadow( 'var(--wp--preset--shadow--whisper)' ),
+	'a theme preset written with color-mix is chained layer by layer'
 );
 t_eq( '', sgs_shadow_value_to_drop_shadow( 'var(--wp--preset--shadow--pressed)' ), 'an inset-only preset draws nothing' );
 t_eq( '', sgs_shadow_value_to_drop_shadow( 'var(--wp--preset--shadow--missing)' ), 'an unknown preset draws nothing, not invalid CSS' );

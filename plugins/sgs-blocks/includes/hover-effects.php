@@ -11,7 +11,7 @@
  *
  * Handles:
  * - sgsHoverScale (fine-grained %) + sgsHoverScalePreset (named preset)
- * - sgsHoverShadow (subtle/raised/floating/glow)
+ * - sgsHoverShadow (the slug of any theme shadow preset, `settings.shadow.presets`)
  * - sgsHoverDuration (string slug — instant/fast/medium/slow/extra-slow)
  * - sgsHoverEasing (string slug — default/ease-out/ease-in/spring/linear)
  * - sgsHoverImageZoom (boolean)
@@ -35,6 +35,17 @@ namespace SGS\Blocks;
 defined( 'ABSPATH' ) || exit;
 
 add_filter( 'render_block', __NAMESPACE__ . '\\inject_hover_effects', 10, 2 );
+
+/**
+ * Whether a hover-shadow value is a theme shadow preset SLUG. The panel offers every preset in
+ * `settings.shadow.presets`, so this checks the shape of the value, not a fixed list of names.
+ *
+ * @param mixed $value Stored `sgsHoverShadow` value.
+ * @return bool
+ */
+function is_hover_shadow_slug( $value ): bool {
+	return is_string( $value ) && 1 === preg_match( '/^[a-z][a-z0-9-]*$/', $value );
+}
 
 /**
  * Resolve per-block hover defaults from the BLOCK'S OWN DECLARATION.
@@ -274,8 +285,7 @@ function inject_hover_effects( string $block_content, array $block ): string {
 	}
 
 	if ( $hover_shadow ) {
-		$allowed_shadows = array( 'subtle', 'raised', 'floating', 'glow' );
-		if ( in_array( $hover_shadow, $allowed_shadows, true ) ) {
+		if ( is_hover_shadow_slug( $hover_shadow ) ) {
 			$css_vars[] = '--sgs-hover-shadow:var(--wp--preset--shadow--' . esc_attr( $hover_shadow ) . ')';
 		}
 	}
@@ -356,9 +366,9 @@ function inject_hover_effects( string $block_content, array $block ): string {
 	// the 'hover' opt-in extension that zero blocks declare, and duplicative
 	// of each block's own element-owned backgroundColourHover/textColourHover/
 	// borderColourHover controls. See hover-effects.js for the full removal.
-	if ( $hover_shadow && in_array( $hover_shadow, array( 'subtle', 'raised', 'floating', 'glow' ), true ) ) {
-		// Mirrors the allowlist on the --sgs-hover-shadow var above: an
-		// out-of-list value emits NO var, so it must emit no class either.
+	if ( $hover_shadow && is_hover_shadow_slug( $hover_shadow ) ) {
+		// Mirrors the slug check on the --sgs-hover-shadow var above: a value
+		// that is not a slug emits NO var, so it must emit no class either.
 		$add_classes[] = 'sgs-has-hover-shadow';
 	}
 	// ⛔ THE ALLOW-LIST MUST BE MIRRORED HERE — it was not, and the comment on the

@@ -69,6 +69,7 @@ import { LayoutPanel } from './LayoutPanel';
 import { BackgroundPanel } from './BackgroundPanel';
 import { ShapeDividersPanel } from './ShapeDividersPanel';
 import { GridItemDefaultsPanel } from './GridItemDefaultsPanel';
+import { useShadowPresetOptions } from '../../../components/shadow-control/useShadowPresets';
 
 // Re-exported for the existing call sites (and for `import { X } from './ContainerWrapperControls'`).
 export {
@@ -91,13 +92,18 @@ export const MIN_HEIGHT_OPTIONS = [
 	{ label: '600px', value: '600px' },
 ];
 
-export const SHADOW_OPTIONS = [
-	{ label: __( 'None', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Subtle', 'sgs-blocks' ), value: 'subtle' },
-	{ label: __( 'Raised', 'sgs-blocks' ), value: 'raised' },
-	{ label: __( 'Floating', 'sgs-blocks' ), value: 'floating' },
-	{ label: __( 'Brand glow', 'sgs-blocks' ), value: 'glow' },
-];
+function ShadowPresetSelect( { attributes, setAttributes } ) {
+	return (
+		<SelectControl
+			label={ __( 'Shadow', 'sgs-blocks' ) }
+			value={ attributes.shadow || '' }
+			options={ useShadowPresetOptions() }
+			onChange={ ( val ) => setAttributes( { shadow: val } ) }
+			__nextHasNoMarginBottom
+			__next40pxDefaultSize
+		/>
+	);
+}
 
 // ---------------------------------------------------------------------------
 // Sub-panels (named functions for reuse across kinds)
@@ -167,14 +173,7 @@ const KIND_PANELS = {
 		// 7. Shadow.
 		( props ) => (
 			<PanelBody title={ __( 'Shadow', 'sgs-blocks' ) } initialOpen={ false }>
-				<SelectControl
-					label={ __( 'Shadow', 'sgs-blocks' ) }
-					value={ props.attributes.shadow || '' }
-					options={ SHADOW_OPTIONS }
-					onChange={ ( val ) => props.setAttributes( { shadow: val } ) }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
-				/>
+				<ShadowPresetSelect { ...props } />
 			</PanelBody>
 		),
 		// 8. Shape dividers.

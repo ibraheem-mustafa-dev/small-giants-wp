@@ -30,6 +30,7 @@ import { useSettings } from '@wordpress/block-editor';
 import { BaseControl, TabPanel } from '@wordpress/components';
 import ShadowStateBuilder from './shadow-control/ShadowStateBuilder';
 import { makeResolveHex, presetPreviewCss } from './shadow-control/preview';
+import { flattenSettingList } from './shadow-control/useShadowPresets';
 
 /**
  * Derive ONE of a shadow family's attribute names from its base name.
@@ -87,13 +88,6 @@ export function shadowAttrKeys( base, { hover = false, hoverColour = false } = {
 		keys.hoverColour = shadowAttrName( base, 'hoverColour' );
 	}
 	return keys;
-}
-
-// `useSettings()` returns either a flat list or WordPress's origin-keyed object; flatten it
-// (custom, then theme, then default) and keep the first entry of each slug.
-function flatten( setting ) {
-	const list = Array.isArray( setting ) ? setting : [ ...( setting?.custom || [] ), ...( setting?.theme || [] ), ...( setting?.default || [] ) ];
-	return list.filter( ( item, i ) => list.findIndex( ( other ) => other.slug === item.slug ) === i );
 }
 
 const warnMissing = ( what ) => () => {
@@ -174,12 +168,12 @@ export default function ShadowControl( {
 	};
 
 	const [ presetSetting, custom, paletteSetting ] = useSettings( 'shadow.presets', 'custom', 'color.palette' );
-	const palette = flatten( paletteSetting );
+	const palette = flattenSettingList( paletteSetting );
 	const siteToken = String( custom?.shadowColour || '' );
 	const slugMatch = /^var\(--wp--preset--color--([a-z0-9-]+)\)$/.exec( siteToken );
 	const siteColor = slugMatch ? palette.find( ( p ) => p.slug === slugMatch[ 1 ] )?.color || '' : siteToken;
 	const resolveHex = makeResolveHex( palette, siteColor );
-	const presets = flatten( presetSetting ).map( ( preset ) => ( {
+	const presets = flattenSettingList( presetSetting ).map( ( preset ) => ( {
 		slug: preset.slug,
 		name: preset.name,
 		literal: preset.shadow,

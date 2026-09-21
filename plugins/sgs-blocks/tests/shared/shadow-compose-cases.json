@@ -144,6 +144,36 @@
         "expected": "0px 4px 12px 0px var(--wp--preset--color--accent)"
     },
     {
+        "name": "a preset color-mix on the site colour",
+        "shape": "0 1px 2px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)",
+        "colour": null,
+        "expected": "0px 1px 2px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)"
+    },
+    {
+        "name": "a preset color-mix on a palette variable",
+        "shape": "0 0 16px color-mix(in srgb, var(--wp--preset--color--primary) 55%, transparent)",
+        "colour": null,
+        "expected": "0px 0px 16px 0px color-mix(in srgb, var(--wp--preset--color--primary) 55%, transparent)"
+    },
+    {
+        "name": "a color-mix in the colour list",
+        "shape": "0px 4px 12px 0px",
+        "colour": "color-mix(in srgb, #112233 40%, transparent)",
+        "expected": "0px 4px 12px 0px color-mix(in srgb, #112233 40%, transparent)"
+    },
+    {
+        "name": "a color-mix with a hostile inner value is rejected",
+        "shape": "0 1px 2px color-mix(in srgb, red;}body{x:y 10%, transparent)",
+        "colour": null,
+        "expected": ""
+    },
+    {
+        "name": "a color-mix that is not against transparent is rejected",
+        "shape": "0 1px 2px color-mix(in srgb, #112233 10%, red)",
+        "colour": null,
+        "expected": ""
+    },
+    {
         "name": "inset first",
         "shape": "INSET 0 2px 4px",
         "colour": null,

@@ -86,7 +86,7 @@ $root_background_colour_hover_gradient = $attributes['backgroundColourHoverGradi
 $root_text_colour_gradient             = $attributes['textColourGradient'] ?? '';
 $root_text_colour_hover                = $attributes['textColourHover'] ?? '';
 $root_text_colour_hover_gradient       = $attributes['textColourHoverGradient'] ?? '';
-$icon_circle_shadow                    = isset( $attributes['iconCircleShadow'] ) ? (string) $attributes['iconCircleShadow'] : 'subtle';
+$icon_circle_shadow                    = isset( $attributes['iconCircleShadow'] ) ? (string) $attributes['iconCircleShadow'] : 'whisper';
 $icon_circle_shadow_colour             = isset( $attributes['iconCircleShadowColour'] ) ? (string) $attributes['iconCircleShadowColour'] : '';
 $icon_circle_shadow_colour_hover       = isset( $attributes['iconCircleShadowColourHover'] ) ? (string) $attributes['iconCircleShadowColourHover'] : '';
 

@@ -90,9 +90,16 @@ function colourIsSafe( css ) {
 	return 0 === depth && deepest <= 3;
 }
 
+// The one `color-mix()` a theme preset may carry: the site colour, a palette variable or a hex,
+// mixed with transparent. Anything else that starts `color-mix(` is not a colour.
+const PRESET_MIX = /^color-mix\(in srgb, (?:var\(--wp--custom--shadow-colour\)|var\(--wp--preset--color--[a-z0-9-]+\)|#[0-9a-f]{6}(?:[0-9a-f]{2})?) \d{1,3}(?:\.\d)?%, transparent\)$/i;
+
 function colourToCss( token ) {
 	if ( 'site' === token ) {
 		return SITE_COLOUR;
+	}
+	if ( /^color-mix\(/i.test( token ) ) {
+		return PRESET_MIX.test( token ) ? token : '';
 	}
 	// Same order as sgs_colour_value(): var(), then a real colour, then everything else is a
 	// palette slug (a `#` that is not a valid hex code is a slug with its junk stripped).

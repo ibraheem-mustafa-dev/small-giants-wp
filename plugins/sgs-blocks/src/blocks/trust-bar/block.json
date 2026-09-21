@@ -551,7 +551,7 @@
 		},
 		"iconCircleShadow": {
 			"type": "string",
-			"default": "subtle"
+			"default": "whisper"
 		},
 		"iconCircleShadowColour": {
 			"type": "string"

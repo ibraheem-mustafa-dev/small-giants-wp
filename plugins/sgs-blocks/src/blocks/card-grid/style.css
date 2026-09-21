@@ -37,7 +37,7 @@
 	border-style: solid;
 	border-color: var(--sgs-card-border-color, transparent);
 	border-width: var(--sgs-card-border-width, 0);
-	box-shadow: var(--sgs-card-shadow, var(--wp--preset--shadow--raised));
+	box-shadow: var(--sgs-card-shadow, var(--wp--preset--shadow--soft));
 }
 
 /* Image wrapper */

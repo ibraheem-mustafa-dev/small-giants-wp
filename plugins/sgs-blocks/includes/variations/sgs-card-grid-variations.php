@@ -43,11 +43,10 @@ function sgs_register_card_grid_variations( array $variations, \WP_Block_Type $b
 	// for the radius. The retired CSS's box-shadow referenced
 	// `var(--wp--custom--border-radius--medium)`... `var(--wp--custom--shadow--medium)`,
 	// a custom token that does NOT exist anywhere in theme.json (only
-	// settings.shadow.presets subtle/raised/floating/glow exist, i.e.
-	// `--wp--preset--shadow--*`) — so the old "Elevated" box-shadow was already
-	// silently rendering as none. "raised" (theme.json line 310-312,
-	// `0 4px 12px rgba(0,0,0,0.1)`) is the closest real preset to the elevated
-	// look the style's name promised.
+	// settings.shadow.presets exist, i.e. `--wp--preset--shadow--*`) — so the old
+	// "Elevated" box-shadow was already silently rendering as none. The "soft"
+	// preset (theme.json `settings.shadow.presets`) is the closest real preset to
+	// the elevated look the style's name promised.
 	$elevated_card_style = array(
 		'cardBackground'    => 'surface',
 		'cardBorderColour'  => '',
@@ -56,7 +55,7 @@ function sgs_register_card_grid_variations( array $variations, \WP_Block_Type $b
 		// Bare preset slug — self-contained (colour baked in by theme.json), so
 		// cardShadowColour stays empty; sgs_shadow_value_composed() ignores it
 		// for a preset slug (D621/D622 colour-panel split).
-		'cardShadow'        => 'raised',
+		'cardShadow'        => 'soft',
 		'cardShadowColour'  => '',
 	);
 
@@ -65,7 +64,7 @@ function sgs_register_card_grid_variations( array $variations, \WP_Block_Type $b
 	// same 8px radius, with the shadow explicitly zeroed out (the retired CSS
 	// set `box-shadow: none`). cardShadow doesn't accept the literal keyword
 	// "none" (an empty string instead falls back to the block's own
-	// `--wp--preset--shadow--raised` default in style.css:40) — a zero-length
+	// `--wp--preset--shadow--soft` default in style.css:40) — a zero-length
 	// raw SHAPE value is the real equivalent of "no shadow" and is what
 	// ShadowControl's own builder would produce for x=y=blur=spread=0. No
 	// colour token embedded any more (D621/D622) — colour is moot at zero

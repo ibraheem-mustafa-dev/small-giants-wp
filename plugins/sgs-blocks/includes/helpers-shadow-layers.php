@@ -15,9 +15,8 @@
  * not parse is dropped, never passed through. Limits are enforced here, not in the editor:
  * UI limits are not security.
  *
- * `color-mix()` for a layer's opacity is BUILT here from the parsed colour and percentage,
- * never stored and never sent through sgs_colour_value() (same approach as
- * sgs_surface_fill_alpha()).
+ * A layer's opacity `color-mix()` is BUILT here from the parsed colour and percentage, never stored
+ * (same approach as sgs_surface_fill_alpha()); only a theme preset's own strict one passes through.
  *
  * @package SGS\Blocks
  */
@@ -36,10 +35,9 @@ const SGS_SHADOW_SITE_COLOUR    = 'var(--wp--custom--shadow-colour, #000000)';
 /**
  * Split on top-level separators only (a linear scanner, never a regex).
  *
- * Parentheses are counted so `rgb(0, 0, 0)` and `color-mix(in srgb, red 4%, transparent)`
- * stay whole. A stray `)` is ignored; an unclosed `(` swallows the rest, which then fails
- * the grammar. Comma splits keep empty entries (a colour list needs them); whitespace
- * splits drop them.
+ * Parentheses are counted so `rgb(0, 0, 0)` stays whole. A stray `)` is ignored; an unclosed `(`
+ * swallows the rest, which then fails the grammar. Comma splits keep empty entries (a colour
+ * list needs them); whitespace splits drop them.
  *
  * @param string $value Text to split.
  * @param string $sep   ',' or ' ' (any whitespace).
@@ -154,7 +152,12 @@ function sgs_shadow_resolve_colour( string $entry ): ?string {
 	if ( 1 !== count( $tokens ) || 1 !== preg_match( '/^[#a-z]/i', $tokens[0] ) ) {
 		return null;
 	}
-	$css = 'site' === $tokens[0] ? SGS_SHADOW_SITE_COLOUR : sgs_colour_value( $tokens[0] );
+	// A theme preset carries ONE strict `color-mix(in srgb, <site|palette var|hex> N%, transparent)`; no other.
+	$is_mix = 1 === preg_match( '/^color-mix\(in srgb, (?:var\(--wp--custom--shadow-colour\)|var\(--wp--preset--color--[a-z0-9-]+\)|#[0-9a-f]{6}(?:[0-9a-f]{2})?) \d{1,3}(?:\.\d)?%, transparent\)$/i', $tokens[0] );
+	if ( ! $is_mix && 0 === stripos( $tokens[0], 'color-mix(' ) ) {
+		return null;
+	}
+	$css = 'site' === $tokens[0] ? SGS_SHADOW_SITE_COLOUR : ( $is_mix ? $tokens[0] : sgs_colour_value( $tokens[0] ) );
 	if ( ! sgs_shadow_colour_is_safe( $css ) ) {
 		return null;
 	}
