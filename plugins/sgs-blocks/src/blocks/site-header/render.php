@@ -84,11 +84,12 @@ if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
 if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
 	$sh_bg_value = sgs_colour_value( (string) $attributes['backgroundColour'] );
 	// Fill translucency (`surfaceOpacity`): a plain colour only; a gradient is left alone.
+	// The style engine DROPS a `color-mix()` value (measured live: no rule is emitted), so a
+	// translucent fill is written as its own scoped rule instead of going through it.
 	$sh_bg_alpha = sgs_surface_fill_alpha( $sh_bg_value, $attributes['surfaceOpacity'] ?? null );
 	if ( '' !== $sh_bg_alpha ) {
-		$sh_bg_value = $sh_bg_alpha;
-	}
-	if ( '' !== $sh_bg_value ) {
+		$css .= $root_sel . '{background-color:' . $sh_bg_alpha . ';}';
+	} elseif ( '' !== $sh_bg_value ) {
 		$sh_color_args['background'] = $sh_bg_value;
 	}
 }
