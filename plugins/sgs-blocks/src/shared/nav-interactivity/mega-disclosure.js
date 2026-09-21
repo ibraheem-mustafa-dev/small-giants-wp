@@ -873,49 +873,42 @@ const { state } = store( 'sgs/mega', {
 		 * open AND the pointer is currently tracking into it, the open is
 		 * deferred and re-polled rather than firing early.
 		 *
-		 * MAX_INTENT_DELAY_MS caps whatever the markup declares.
-		 * `nav-menu-markup.php` hardcodes
-		 * `intentDelay: 300` for both the mega and dropdown forks; that 300ms
-		 * is not just an open-panel delay — the chevron flip
-		 * (`nav-menu-submenu-css.php`'s `[aria-expanded="true"] .sgs-nav-bar-menu__caret`
-		 * rule) and the panel's own `display:block` are BOTH keyed off the
-		 * SAME `aria-expanded`/`context.isOpen` value this timer sets, so
-		 * a laggy dropdown and a laggy chevron have one cause, not two. That coupling is owned by markup/CSS files outside
-		 * this module's scope, so it cannot be split into a fast chevron +
-		 * slow panel here — the fix available at this layer is to cap the
-		 * shared delay itself. 300ms reads as sluggish to a moving pointer;
-		 * clamping to 80ms keeps enough of a window to swallow a fast
-		 * mouse-sweep across the bar (which crosses a ~100px item in well
-		 * under 80ms) while feeling instant to a pointer that actually stops
-		 * on an item — the classic hover-intent range (~80-150ms) used by
-		 * comparable nav-bar libraries. `Math.min` rather than a flat
-		 * override so a future markup value smaller than 80ms still wins.
+		 * The delay is the operator's `submenuIntentDelay` (default 80ms), carried in
+		 * the context as `intentDelay`. It is not just an open-panel delay: the chevron
+		 * flip (`nav-menu-submenu-css.php`'s `[aria-expanded="true"] .sgs-nav-bar-menu__caret`
+		 * rule) and the panel's own `display:block` are BOTH keyed off the SAME
+		 * `aria-expanded`/`context.isOpen` value this timer sets. 80ms swallows a fast
+		 * mouse-sweep across the bar (a ~100px item is crossed in well under 80ms)
+		 * while feeling instant to a pointer that stops on an item, the classic
+		 * hover-intent range (~80-150ms).
+		 *
+		 * In `click` open mode (`ctx.openOn`) hover never opens: the trigger's click
+		 * (`toggle`) is the open path, exactly as on touch.
 		 */
 		enterBridge() {
 			const ctx = getContext();
 			clearCloseTimer( ctx.megaId );
-			if ( ! canHover() || ctx.isOpen ) {
+			if ( ! canHover() || ctx.isOpen || 'click' === ctx.openOn ) {
 				return;
 			}
 			const { ref } = getElement();
 			const root = rootFor( ref );
 			clearOpenTimer( ctx.megaId );
-			const MAX_INTENT_DELAY_MS = 80;
-			const configuredDelay = Number.isFinite( ctx.intentDelay )
+			const delay = Number.isFinite( ctx.intentDelay )
 				? ctx.intentDelay
-				: 300;
-			const delay = Math.min( configuredDelay, MAX_INTENT_DELAY_MS );
+				: 80;
 			scheduleIntentOpen( ctx, root, delay );
 		},
 
 		/**
 		 * Pointer left the bridge. Cancel any pending open, and schedule a
 		 * grace-delayed close so a diagonal trigger→panel path does not slam it
-		 * shut (CF-13 — the deterministic 170ms bridge).
+		 * shut. Not in `click` open mode: a click-opened panel stays open until it is
+		 * clicked again, dismissed with Escape, or a click lands outside it.
 		 */
 		leaveBridge() {
 			const ctx = getContext();
-			if ( ! canHover() ) {
+			if ( ! canHover() || 'click' === ctx.openOn ) {
 				return;
 			}
 			clearOpenTimer( ctx.megaId );

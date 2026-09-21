@@ -272,5 +272,41 @@ check( 'mega context default is 170', $mega_read( 170 ), 170 );
 // three checks above could all pass against a hardcoded 170 (the 170 one does).
 check( 'negative control: 59 is not the old literal 170', $mega_read( 59 ) !== 170, true );
 
+echo "\n=== INTENT DELAY AND OPEN MODE (both forks) ===\n";
+// The hover-intent delay and the open mode used to be hardcoded (a literal 300 in the markup,
+// clamped to 80 in the JS, and no click mode). Both forks must carry the operator's settings.
+$ctx_of = function ( array $submenu, array $items ) {
+	$mr   = new SGS_Nav_Menu_Bar_Renderer( array(), 'uid8', $submenu );
+	$html = harness_render( $mr, $items );
+	preg_match_all( "/data-wp-context='([^']*)'/", $html, $m );
+	$out = array( 'mega' => null, 'dropdown' => null );
+	foreach ( $m[1] as $json ) {
+		$c = json_decode( $json, true );
+		if ( ! is_array( $c ) || ! isset( $c['megaId'] ) ) { continue; }
+		$out[ false !== strpos( (string) $c['megaId'], '-sub-' ) ? 'dropdown' : 'mega' ] = $c;
+	}
+	return $out;
+};
+$both_items = array(
+	$mega_item,
+	array(
+		'type' => 'custom', 'object_id' => 0, 'url' => '/services', 'label' => 'Services',
+		'identifier' => 'label:Services',
+		'children'   => array( array( 'type' => 'custom', 'object_id' => 0, 'url' => '/web', 'label' => 'Web', 'identifier' => 'label:Services>label:Web', 'children' => array() ) ),
+	),
+);
+$set = $ctx_of( array( 'intent_delay' => 40, 'open_on' => 'click' ), $both_items );
+check( 'mega context carries intentDelay (40)', $set['mega']['intentDelay'] ?? null, 40 );
+check( 'mega context carries openOn (click)', $set['mega']['openOn'] ?? null, 'click' );
+check( 'dropdown context carries intentDelay (40)', $set['dropdown']['intentDelay'] ?? null, 40 );
+check( 'dropdown context carries openOn (click)', $set['dropdown']['openOn'] ?? null, 'click' );
+$def = $ctx_of( array(), $both_items );
+check( 'default intentDelay is 80', $def['mega']['intentDelay'] ?? null, 80 );
+check( 'default openOn is hover', $def['mega']['openOn'] ?? null, 'hover' );
+$bad = $ctx_of( array( 'intent_delay' => 9999, 'open_on' => 'tap' ), $both_items );
+check( 'intentDelay is bounded to 400', $bad['mega']['intentDelay'] ?? null, 400 );
+check( 'an unknown openOn falls back to hover', $bad['dropdown']['openOn'] ?? null, 'hover' );
+check( 'negative control: 40 is neither the old 300 nor the clamp 80', ( $set['mega']['intentDelay'] ?? 0 ) !== 300 && ( $set['mega']['intentDelay'] ?? 0 ) !== 80, true );
+
 printf( "\n%s — %d failure(s)\n", $fails ? 'FAILED' : 'ALL PASSED', $fails );
 exit( $fails ? 1 : 0 );

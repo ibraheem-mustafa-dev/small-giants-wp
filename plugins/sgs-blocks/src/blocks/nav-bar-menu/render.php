@@ -184,7 +184,7 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 		 * reaches this class, so adding a colour control can never change the
 		 * rendered structure.
 		 *
-		 * @var array{align: string, caret: bool, close_grace: int}
+		 * @var array{align: string, caret: bool, close_grace: int, intent_delay: int, open_on: string}
 		 */
 		private array $submenu;
 
@@ -195,6 +195,7 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 		 * @param string $uid          This block instance's uid (CSS scope + id namespace).
 		 * @param array  $submenu      Submenu settings: align (start|center|end),
 		 *                             caret (bool), close_grace (int ms),
+		 *                             intent_delay (int ms), open_on (hover|click),
 		 *                             animation (none|fade|slide-down).
 		 */
 		public function __construct( array $featured_ids, string $uid = '', array $submenu = array() ) {
@@ -214,6 +215,12 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 				 * read it into their interactivity context.
 				 */
 				'close_grace' => isset( $submenu['close_grace'] ) ? max( 0, (int) $submenu['close_grace'] ) : 170,
+
+				// Hover-intent delay in ms, bounded to the control's own range.
+				'intent_delay' => isset( $submenu['intent_delay'] ) ? max( 0, min( 400, (int) $submenu['intent_delay'] ) ) : 80,
+
+				// Same values as block.json::submenuOpenOn's enum; anything else is hover.
+				'open_on'      => 'click' === ( $submenu['open_on'] ?? '' ) ? 'click' : 'hover',
 
 				// PHP-validated, not a JSON enum (block.json::submenuAnimation is
 				// plain string) -- an out-of-list stored value coerces to the
@@ -430,6 +437,8 @@ $bar_renderer = new SGS_Nav_Menu_Bar_Renderer(
 		'align'       => (string) ( $attributes['submenuAlign'] ?? 'start' ),
 		'caret'       => ! isset( $attributes['submenuCaret'] ) || (bool) $attributes['submenuCaret'],
 		'close_grace' => (int) ( $attributes['submenuCloseGrace'] ?? 170 ),
+		'intent_delay' => (int) ( $attributes['submenuIntentDelay'] ?? 80 ),
+		'open_on'     => (string) ( $attributes['submenuOpenOn'] ?? 'hover' ),
 		'animation'   => (string) ( $attributes['submenuAnimation'] ?? 'none' ),
 	)
 );

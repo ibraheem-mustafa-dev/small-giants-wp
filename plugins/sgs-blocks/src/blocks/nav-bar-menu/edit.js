@@ -150,6 +150,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		submenuAlign,
 		submenuCaret,
 		submenuCloseGrace,
+		submenuIntentDelay,
+		submenuOpenOn,
 		submenuAnimation,
 		submenuTopOffset,
 		submenuMinWidth,
@@ -622,6 +624,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					submenuAlign={ submenuAlign }
 					submenuCaret={ submenuCaret }
 					submenuCloseGrace={ submenuCloseGrace }
+					submenuIntentDelay={ submenuIntentDelay }
+					submenuOpenOn={ submenuOpenOn }
 				/>
 
 				<SplitPanel

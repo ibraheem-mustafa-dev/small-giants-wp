@@ -165,15 +165,22 @@ else its submenu is a simple dropdown. Dropdowns/mega exist only on `sgs/nav-bar
 
 **Interaction precision:** dropdowns/mega open on **hover on non-touch (default) / tap on touch / keyboard
 throughout** (avoids the sticky-hover mobile bug). Mechanics:
-- **Hover-intent.** Hover opens after an intent delay AND click/Enter/Space opens. The markup declares
-  `intentDelay: 300`, and `plugins/sgs-blocks/src/shared/nav-interactivity/mega-disclosure.js::MAX_INTENT_DELAY_MS`
-  (80) clamps it (`Math.min`), so the effective delay is 80 ms. There is NO operator attribute for it. The
-  delay gates the chevron flip and the panel's `display` together, because both key off the same
-  `aria-expanded` value.
+- **Hover-intent.** Hover opens after an intent delay AND click/Enter/Space opens. The delay is the operator
+  attribute `submenuIntentDelay` (`plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json::attributes.submenuIntentDelay`,
+  default 80 ms, range 0 to 400), read into the renderer's `intent_delay` and carried in both the dropdown
+  and mega interactivity contexts as `intentDelay`; `plugins/sgs-blocks/src/shared/nav-interactivity/mega-disclosure.js::enterBridge`
+  applies it with no clamp of its own. The delay gates the chevron flip and the panel's `display` together,
+  because both key off the same `aria-expanded` value.
+- **Open mode.** `submenuOpenOn` (`hover` default | `click`, the JSON enum mirrored by the PHP allow-list in
+  `plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php`), carried as `openOn` in both contexts. `click`
+  makes the trigger's click (`toggle`) the only pointer open path: hover neither opens nor, once open,
+  closes the panel, so a click-opened panel stays open until it is clicked again, dismissed with Escape, or a
+  click lands outside it. Keyboard and touch are the same in both modes.
 - **Hover BRIDGE + close-grace.** Close-grace default **170 ms**, operator attribute `submenuCloseGrace`
   (`plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json::attributes.submenuCloseGrace`, read into the
-  renderer's `close_grace` in `plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php`). It is the only
-  operator-set hover timing.
+  renderer's `close_grace` in `plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php`); it reaches both the
+  dropdown and the mega panel context. With `submenuIntentDelay` it is one of the two operator-set hover
+  timings.
 - **Safe-triangle geometry SHIPS, layered in front of the close-grace bridge.**
   `plugins/sgs-blocks/src/shared/nav-interactivity/mega-disclosure.js::isHeadingIntoOpenPanel` tests the pointer against the open panel's top-left and
   top-right corners via `::pointInTriangle` / `::triangleSign`, and `::scheduleIntentOpen` defers the open

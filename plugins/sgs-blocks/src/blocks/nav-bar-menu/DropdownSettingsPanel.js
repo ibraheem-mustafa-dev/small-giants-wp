@@ -41,6 +41,8 @@ import { DRAWER_POST_TYPE, DRAWER_QUERY } from './create-drawer-seed';
  * @param {string}   root0.submenuAlign      The block's `submenuAlign` attribute.
  * @param {boolean}  root0.submenuCaret      The block's `submenuCaret` attribute.
  * @param {number}   root0.submenuCloseGrace The block's `submenuCloseGrace` attribute.
+ * @param {number}   root0.submenuIntentDelay The block's `submenuIntentDelay` attribute.
+ * @param {string}   root0.submenuOpenOn     The block's `submenuOpenOn` attribute.
  */
 export default function DropdownSettingsPanel( {
 	navLabel,
@@ -51,6 +53,8 @@ export default function DropdownSettingsPanel( {
 	submenuAlign,
 	submenuCaret,
 	submenuCloseGrace,
+	submenuIntentDelay,
+	submenuOpenOn,
 } ) {
 	// Only PUBLISHED posts are offered — an unpublished one wouldn't resolve on
 	// the frontend either (render.php / Sgs_Drawer_Render::get_drawer_post_content()
@@ -220,6 +224,54 @@ export default function DropdownSettingsPanel( {
 					) }
 					__nextHasNoMarginBottom
 				/>
+				<SelectControl
+					label={ __( 'Open on', 'sgs-blocks' ) }
+					value={ submenuOpenOn === 'click' ? 'click' : 'hover' }
+					options={ [
+						{
+							label: __( 'Hover (or focus)', 'sgs-blocks' ),
+							value: 'hover',
+						},
+						{
+							label: __( 'Click only', 'sgs-blocks' ),
+							value: 'click',
+						},
+					] }
+					onChange={ ( value ) =>
+						setAttributes( { submenuOpenOn: value } )
+					}
+					help={ __(
+						'Click only keeps the panel open until it is clicked again, dismissed with Escape, or a click lands outside it. Touch and keyboard always work.',
+						'sgs-blocks'
+					) }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+				{ submenuOpenOn !== 'click' && (
+					<RangeControl
+						label={ __( 'Open delay', 'sgs-blocks' ) }
+						value={
+							typeof submenuIntentDelay === 'number'
+								? submenuIntentDelay
+								: 80
+						}
+						min={ 0 }
+						max={ 400 }
+						step={ 10 }
+						onChange={ ( value ) =>
+							setAttributes( {
+								submenuIntentDelay:
+									typeof value === 'number' ? value : 80,
+							} )
+						}
+						help={ __(
+							'How long the pointer must rest on a menu item before its dropdown or mega panel opens, in milliseconds. A short delay stops it opening while the pointer is only sweeping across the menu.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				) }
 				<RangeControl
 					label={ __( 'Close delay', 'sgs-blocks' ) }
 					value={

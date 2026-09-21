@@ -631,6 +631,20 @@
 			"type": "number",
 			"default": 170
 		},
+		"submenuIntentDelay": {
+			"type": "number",
+			"default": 80,
+			"description": "Milliseconds the pointer must rest on a menu item before its dropdown or mega panel opens (0 to 400). Only hover-capable pointers open on hover; touch and keyboard are unaffected."
+		},
+		"submenuOpenOn": {
+			"type": "string",
+			"enum": [
+				"hover",
+				"click"
+			],
+			"default": "hover",
+			"description": "How a dropdown or mega panel opens on a hover-capable pointer: on hover, or only when the item is clicked. Click mode keeps the panel open until it is clicked again, dismissed with Escape, or a click lands outside it. Mirrored by the PHP allow-list in render.php."
+		},
 		"submenuBg": {
 			"type": "string",
 			"default": ""

@@ -140,8 +140,9 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 							array(
 								'isOpen'      => false,
 								'megaId'      => (string) (int) $item['object_id'],
-								'intentDelay' => 300,
+								'intentDelay' => $submenu['intent_delay'],
 								'closeGrace'  => $submenu['close_grace'],
+								'openOn'      => $submenu['open_on'],
 							)
 						);
 						$caret = function_exists( 'sgs_get_lucide_icon' ) ? sgs_get_lucide_icon( 'chevron-down' ) : '';
@@ -235,8 +236,9 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 							array(
 								'isOpen'      => false,
 								'megaId'      => $sub_dom_id,
-								'intentDelay' => 300,
+								'intentDelay' => $submenu['intent_delay'],
 								'closeGrace'  => $submenu['close_grace'],
+								'openOn'      => $submenu['open_on'],
 							)
 						);
 						$sub_caret  = '';
