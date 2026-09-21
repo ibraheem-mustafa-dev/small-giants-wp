@@ -195,3 +195,49 @@ describe( 'trust-bar marquee: reduced motion', () => {
 		expect( track.classList.contains( 'sgs-trust-bar__track--ready' ) ).toBe( false );
 	} );
 } );
+
+describe( 'trust-bar marquee: every width (no breakpoint)', () => {
+	// jsdom has no layout engine: offsetWidth / getBoundingClientRect are stubbed above, so
+	// these tests prove the CLASS the script applies (the hook the stylesheet's
+	// non-shrinking `flex:0 0 auto` track rule hangs off) and where the clones go. That the
+	// track then really keeps its natural width is proven in a real browser, not here.
+	const ROW = 'sgs-trust-bar__marquee-row';
+
+	it( 'puts the marquee-row class on the track parent while the marquee runs, with no breakpoint set', () => {
+		stubMatchMedia( [] );
+		const { wrapper, track } = buildBar();
+		loadView();
+
+		expect( wrapper.classList.contains( ROW ) ).toBe( true );
+		expect( track.classList.contains( 'sgs-trust-bar__track--ready' ) ).toBe( true );
+	} );
+
+	it( 'removes the class again when the badges fit, so a static bar keeps its own layout', () => {
+		stubMatchMedia( [] );
+		Element.prototype.getBoundingClientRect = function () {
+			const isTrack = this.classList && this.classList.contains( 'sgs-trust-bar__track' );
+			return { width: isTrack ? CONTAINER_WIDTH - 50 : 0, height: 0, top: 0, left: 0, right: 0, bottom: 0 };
+		};
+		const { wrapper, track } = buildBar();
+		loadView();
+
+		expect( wrapper.classList.contains( ROW ) ).toBe( false );
+		expect( clones( wrapper ).length ).toBe( 0 );
+		expect( track.classList.contains( 'sgs-trust-bar__track--ready' ) ).toBe( false );
+	} );
+
+	it( 'appends the clones beside the track inside its own parent (the content band), not to the wrapper', () => {
+		stubMatchMedia( [] );
+		const { wrapper, track } = buildBar();
+		const band = document.createElement( 'div' );
+		band.className = 'sgs-trust-bar__band';
+		wrapper.insertBefore( band, track );
+		band.appendChild( track );
+		loadView();
+
+		expect( band.classList.contains( ROW ) ).toBe( true );
+		expect( band.querySelectorAll( ':scope > [data-sgs-marquee-clone]' ).length ).toBe( 2 );
+		expect( clones( wrapper ).length ).toBe( 0 );
+	} );
+} );
+

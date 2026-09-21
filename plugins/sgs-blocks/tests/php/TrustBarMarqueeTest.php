@@ -44,7 +44,7 @@ final class TrustBarMarqueeTest extends TestCase {
 	 * breakpoint.
 	 */
 	public function test_marquee_track_gap_inherit_is_scoped_to_the_marquee_row(): void {
-		foreach ( array( 768, 1024 ) as $below ) {
+		foreach ( array( 0, 768, 1024 ) as $below ) {
 			$css = sgs_trust_bar_marquee_css( '.sgs-tb-1', $below, 0.0 );
 
 			preg_match_all( '/([^{}]+)\{([^{}]*)\}/', $css, $rules, PREG_SET_ORDER );
@@ -125,6 +125,44 @@ final class TrustBarMarqueeTest extends TestCase {
 
 		$fraction = $this->render( array_merge( $this->scroll_attrs(), array( 'autoScrollDuration' => 12.5 ) ) );
 		$this->assertStringContainsString( 'animation-duration:12.5s;', $fraction['css'] );
+	}
+
+	// ── Marquee at every width (no breakpoint) ───────────────────────────────
+
+	/**
+	 * With no breakpoint the stylesheet's track is a shrinkable flex item, so it is never
+	 * wider than the bar and view.js (`measure`: trackWidth <= containerWidth) bails: the
+	 * badges squash and the marquee never starts. The same non-shrinking row treatment as
+	 * below a breakpoint must be emitted, scoped to the row class view.js adds, with no
+	 * media query (so the "todays output" guard still holds).
+	 */
+	public function test_marquee_at_every_width_emits_the_non_shrinking_track_row(): void {
+		$out = $this->render( $this->scroll_attrs() );
+
+		$this->assertStringContainsString( '.sgs-tb-1.sgs-trust-bar .sgs-trust-bar__marquee-row > .sgs-trust-bar__track,.sgs-tb-1.sgs-trust-bar.sgs-trust-bar__marquee-row > .sgs-trust-bar__track{flex:0 0 auto;gap:inherit;}', $out['css'] );
+		$this->assertStringContainsString( '.sgs-tb-1.sgs-trust-bar[data-auto-scroll="true"] .sgs-trust-bar__marquee-row,.sgs-tb-1.sgs-trust-bar.sgs-trust-bar__marquee-row{display:flex;flex-wrap:nowrap;justify-content:flex-start;overflow:hidden;}', $out['css'], 'the row is one nowrap line so clones sit beside the track' );
+		$this->assertStringNotContainsString( '@media', $out['css'] );
+		$this->assertStringNotContainsString( 'display:contents', $out['css'], 'the track stays a real box at every width' );
+	}
+
+	public function test_a_static_bar_carries_no_marquee_rules(): void {
+		$attrs               = $this->scroll_attrs();
+		$attrs['autoScroll'] = false;
+		$out                 = $this->render( $attrs );
+
+		$this->assertStringNotContainsString( 'marquee-row', $out['css'] );
+		$this->assertStringNotContainsString( 'flex:0 0 auto', $out['css'] );
+	}
+
+	/**
+	 * The breakpoint output is frozen: the every-width fix must not move a byte of it.
+	 */
+	public function test_marquee_below_768_css_is_byte_for_byte_unchanged(): void {
+		$expected = '@media (min-width:768px){.sgs-tb-9.sgs-trust-bar[data-auto-scroll="true"]{overflow:visible;}.sgs-tb-9.sgs-trust-bar .sgs-trust-bar__track{display:contents;}.sgs-tb-9.sgs-trust-bar .sgs-trust-bar__track[aria-hidden="true"]{display:none;}}'
+			. '@media (max-width:767px) and (prefers-reduced-motion:no-preference){.sgs-tb-9.sgs-trust-bar[data-auto-scroll="true"] .sgs-trust-bar__marquee-row,.sgs-tb-9.sgs-trust-bar.sgs-trust-bar__marquee-row{display:flex;flex-wrap:nowrap;justify-content:flex-start;overflow:hidden;}.sgs-tb-9.sgs-trust-bar .sgs-trust-bar__marquee-row > .sgs-trust-bar__track,.sgs-tb-9.sgs-trust-bar.sgs-trust-bar__marquee-row > .sgs-trust-bar__track{flex:0 0 auto;gap:inherit;}}'
+			. '@media (max-width:767px) and (prefers-reduced-motion:reduce){.sgs-tb-9.sgs-trust-bar[data-auto-scroll="true"]{overflow:visible;}.sgs-tb-9.sgs-trust-bar .sgs-trust-bar__track{flex-wrap:wrap;justify-content:center;grid-column:1/-1;width:100%;}}';
+
+		$this->assertSame( $expected, sgs_trust_bar_marquee_css( '.sgs-tb-9', 768, 0.0 ) );
 	}
 
 	// ── Helper normalisers ───────────────────────────────────────────────────

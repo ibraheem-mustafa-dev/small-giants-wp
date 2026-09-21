@@ -45,9 +45,9 @@ wrappers.forEach( ( wrapper ) => {
 	const below = parseInt( wrapper.dataset.autoScrollBelow || '0', 10 ) || 0;
 	const marqueeQuery = below > 0 ? window.matchMedia( `(max-width: ${ below - 1 }px)` ) : null;
 
-	// In below-breakpoint mode the clones sit beside the track inside its own parent (the
-	// wrapper, or the content band when there is one) so the copies form one row.
-	const cloneParent = below > 0 && track.parentElement ? track.parentElement : wrapper;
+	// The clones sit beside the track inside its own parent (the wrapper, or the content band
+	// when there is one) so the copies form one row, at every width and below a breakpoint alike.
+	const cloneParent = track.parentElement || wrapper;
 	// Set synchronously by start() BEFORE any await, so two matchMedia `change` events
 	// (rotate / resize) that arrive while images are still loading cannot both init.
 	let started = false;
@@ -83,11 +83,11 @@ wrappers.forEach( ( wrapper ) => {
 	 * If they fit, leave the layout static — no unnecessary animation.
 	 */
 	function measure() {
-		// Below-breakpoint mode: lay the track and its clones out as one row BEFORE
-		// measuring, so the track is as wide as its badges.
-		if ( below > 0 ) {
-			cloneParent.classList.add( 'sgs-trust-bar__marquee-row' );
-		}
+		// Lay the track and its clones out as one non-shrinking nowrap row BEFORE
+		// measuring, so the track is as wide as its badges. Without this the track is a
+		// shrinkable flex item that is never wider than the bar, and the overflow test
+		// below could never pass (scroll at every width, `below` 0, never started).
+		cloneParent.classList.add( 'sgs-trust-bar__marquee-row' );
 
 		// Idempotent: a re-run never stacks a second set of clones on the first.
 		cloneParent.querySelectorAll( ':scope > [data-sgs-marquee-clone]' ).forEach( ( old ) => old.remove() );

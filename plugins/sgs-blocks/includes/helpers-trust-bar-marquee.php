@@ -85,10 +85,6 @@ if ( ! function_exists( 'sgs_trust_bar_marquee_css' ) ) {
 			$css .= $root . '[data-auto-scroll="true"] .sgs-trust-bar__track--ready{animation-duration:' . sgs_trust_bar_seconds( $duration ) . ';}';
 		}
 
-		if ( $below <= 0 ) {
-			return $css;
-		}
-
 		$track = $root . ' .sgs-trust-bar__track';
 		$row   = $root . '[data-auto-scroll="true"] .sgs-trust-bar__marquee-row,' . $root . '.sgs-trust-bar__marquee-row';
 		// The track's own marquee declarations apply ONLY while view.js has put the row
@@ -97,6 +93,19 @@ if ( ! function_exists( 'sgs_trust_bar_marquee_css' ) ) {
 		// that does not scroll (no overflow, reduced motion, no JavaScript) keeps the
 		// stylesheet's own badge gap instead of inheriting the parent's.
 		$row_track = $root . ' .sgs-trust-bar__marquee-row > .sgs-trust-bar__track,' . $root . '.sgs-trust-bar__marquee-row > .sgs-trust-bar__track';
+
+		// Scroll at every width (no breakpoint). The stylesheet's track is a shrinkable
+		// flex item, so without this it is never wider than the bar and view.js
+		// (`measure`: trackWidth <= containerWidth) bails, leaving the badges squashed
+		// and never scrolling. The same row treatment as below a breakpoint lets the
+		// track keep its natural width. No media query: view.js only adds the row class
+		// while a marquee is actually running (never under reduced motion, never when
+		// the badges fit), so a static bar never matches these selectors.
+		if ( $below <= 0 ) {
+			return $css
+				. $row . '{display:flex;flex-wrap:nowrap;justify-content:flex-start;overflow:hidden;}'
+				. $row_track . '{flex:0 0 auto;gap:inherit;}';
+		}
 
 		// At and above the breakpoint: static. The track box disappears so the
 		// badges are laid out by the block wrapper; cloned tracks are hidden and

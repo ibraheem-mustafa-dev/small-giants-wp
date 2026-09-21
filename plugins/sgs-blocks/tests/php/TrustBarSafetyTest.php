@@ -56,7 +56,7 @@ final class TrustBarSafetyTest extends TestCase {
 		$this->assertSame( SGS_TRUST_BAR_DEFAULT_BARE_ICON_SIZE, sgs_trust_bar_icon_bare_size( $raw ) );
 		$this->assertSame( 0.0, sgs_trust_bar_marquee_duration( $raw ), 'a non-finite duration means "use the preset"' );
 		$this->assertSame( 0, sgs_trust_bar_marquee_below( $raw ) );
-		$this->assertSame( '', sgs_trust_bar_marquee_css( '.x', 0, sgs_trust_bar_marquee_duration( $raw ) ), 'no duration rule is emitted' );
+		$this->assertStringNotContainsString( 'animation-duration', sgs_trust_bar_marquee_css( '.x', 0, sgs_trust_bar_marquee_duration( $raw ) ), 'no duration rule is emitted' );
 	}
 
 	public function test_finite_numbers_still_pass_through_the_guard(): void {
