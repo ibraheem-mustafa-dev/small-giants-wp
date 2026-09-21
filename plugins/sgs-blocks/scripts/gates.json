@@ -1091,5 +1091,41 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 117
+  },
+  {
+    "id": "check-snapshot-shadow-presets",
+    "cmd": "python scripts/sync-snapshot-shadow-presets.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 118
+  },
+  {
+    "id": "check-snapshot-shadow-presets-self-test",
+    "cmd": "python scripts/sync-snapshot-shadow-presets.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 119
+  },
+  {
+    "id": "check-shadow-colour-rows",
+    "cmd": "python scripts/dedupe-shadow-colour-rows.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 120
+  },
+  {
+    "id": "check-shadow-colour-rows-self-test",
+    "cmd": "python scripts/dedupe-shadow-colour-rows.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 121
   }
 ]

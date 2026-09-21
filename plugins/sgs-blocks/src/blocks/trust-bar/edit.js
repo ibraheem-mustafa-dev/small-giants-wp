@@ -644,46 +644,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							},
 						],
 					},
-					badgeStyle === 'icon-circle' && iconCircleShadow && {
-						key: 'icon-circle-shadow',
-						label: __( 'Icon circle shadow colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: iconCircleShadowColour,
-								onChange: ( val ) => setAttributes( { iconCircleShadowColour: val ?? '' } ),
-								linked: true,
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: attributes.iconCircleShadowColourHover,
-								onChange: ( val ) => setAttributes( { iconCircleShadowColourHover: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-					badgeStyle === 'image-badge' && badgeImageShadow && {
-						key: 'badge-image-shadow',
-						label: __( 'Badge image shadow colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: badgeImageShadowColour,
-								onChange: ( val ) => setAttributes( { badgeImageShadowColour: val ?? '' } ),
-								linked: true,
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: attributes.badgeImageShadowColourHover,
-								onChange: ( val ) => setAttributes( { badgeImageShadowColourHover: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
 					// ── Icon circle background (colour-conformance 2026-09-06) ──
 					// Hover-state colour control added to close out the FILL
 					// surface. Paints via background-color + background-image

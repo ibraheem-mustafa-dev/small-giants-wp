@@ -190,7 +190,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		boxShadow,
 		boxShadowColour,
 		boxShadowHover,
-		boxShadowColourHover,
 	} = attributes;
 
 	const hasIcon = !! icon;
@@ -483,24 +482,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								gradientValue: iconColourHoverGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( { iconColourHoverGradient: val ?? '' } ),
-							},
-						],
-					},
-					{
-						key: 'shadow',
-						label: __( 'Shadow colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: boxShadowColour,
-								onChange: ( val ) => setAttributes( { boxShadowColour: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: boxShadowColourHover,
-								onChange: ( val ) => setAttributes( { boxShadowColourHover: val ?? '' } ),
 							},
 						],
 					},

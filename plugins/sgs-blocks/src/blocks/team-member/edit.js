@@ -473,26 +473,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								},
 						],
 					},
-					cardShadow && {
-						key: 'card-shadow',
-						label: __( 'Card shadow colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: cardShadowColour,
-								onChange: ( val ) => setAttributes( { cardShadowColour: val ?? '' } ),
-								linked: true,
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: cardShadowColourHover,
-								onChange: ( val ) => setAttributes( { cardShadowColourHover: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
 				] }
 			/>
 			<InspectorControls>

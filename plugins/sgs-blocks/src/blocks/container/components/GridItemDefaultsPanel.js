@@ -22,6 +22,7 @@ import {
 	DesignTokenPicker,
 	GradientCapableColourControl,
 	ShadowControl,
+	shadowAttrKeys,
 	ResponsiveBorderRadiusControl,
 	normaliseResponsiveBox,
 } from '../../../components';
@@ -260,10 +261,9 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 			</div>
 			<ShadowControl
 				label={ __( 'Shadow', 'sgs-blocks' ) }
-				value={ gridItemShadow }
-				onChange={ ( val ) => setAttributes( { gridItemShadow: val } ) }
-				colour={ gridItemShadowColour }
-				onColourChange={ ( val ) => setAttributes( { gridItemShadowColour: val } ) }
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				attrNames={ shadowAttrKeys( 'gridItemShadow' ) }
 			/>
 			{ /* GradientCapableColourControl, NOT DesignTokenPicker — text needs
 			     background-clip:text, which DesignTokenPicker has no mechanism for

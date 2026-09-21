@@ -525,20 +525,6 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 							},
 						],
 					},
-					shadowHover && {
-						key: 'shadowHover',
-						label: __( 'Hover shadow colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: shadowHoverColour,
-								onChange: ( val ) =>
-									setAttributes( { shadowHoverColour: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
 				] }
 			/>
 			{ /* ── Settings tab (behaviour, content, structural choices) ── */ }

@@ -5,6 +5,69 @@
   "description": "Bundled preset — colour + typography combined. For independent axes use colours/sgs-mosque and typography/sgs-mosque.",
   "slug": "sgs-mosque",
   "settings": {
+    "shadow": {
+      "defaultPresets": false,
+      "presets": [
+        {
+          "name": "Whisper",
+          "slug": "whisper",
+          "shadow": "0px 1px 2px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent), 0px 0px 0px 1px color-mix(in srgb, var(--wp--custom--shadow-colour) 5%, transparent)"
+        },
+        {
+          "name": "Soft",
+          "slug": "soft",
+          "shadow": "0px 1px 2px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 6%, transparent), 0px 4px 12px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)"
+        },
+        {
+          "name": "Lifted",
+          "slug": "lifted",
+          "shadow": "0px 1px 2px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 5%, transparent), 0px 4px 8px -2px color-mix(in srgb, var(--wp--custom--shadow-colour) 8%, transparent), 0px 12px 24px -6px color-mix(in srgb, var(--wp--custom--shadow-colour) 12%, transparent)"
+        },
+        {
+          "name": "Floating",
+          "slug": "floating",
+          "shadow": "0px 2px 4px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 4%, transparent), 0px 8px 16px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 6%, transparent), 0px 24px 48px -8px color-mix(in srgb, var(--wp--custom--shadow-colour) 12%, transparent), 0px 48px 96px -16px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)"
+        },
+        {
+          "name": "Crisp",
+          "slug": "crisp",
+          "shadow": "0px 1px 1px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 16%, transparent), 0px 2px 4px -1px color-mix(in srgb, var(--wp--custom--shadow-colour) 14%, transparent)"
+        },
+        {
+          "name": "Long",
+          "slug": "long",
+          "shadow": "0px 2px 1px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 9%, transparent), 0px 4px 2px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 9%, transparent), 0px 8px 4px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 9%, transparent), 0px 16px 8px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 9%, transparent), 0px 32px 16px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 9%, transparent)"
+        },
+        {
+          "name": "Outline",
+          "slug": "outline",
+          "shadow": "0px 0px 0px 1px color-mix(in srgb, var(--wp--custom--shadow-colour) 14%, transparent), 0px 2px 8px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 6%, transparent)"
+        },
+        {
+          "name": "Grounded",
+          "slug": "grounded",
+          "shadow": "0px 20px 20px -14px color-mix(in srgb, var(--wp--custom--shadow-colour) 26%, transparent), 0px 1px 2px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 6%, transparent)"
+        },
+        {
+          "name": "Glow",
+          "slug": "glow",
+          "shadow": "0px 0px 16px 0px color-mix(in srgb, var(--wp--preset--color--primary) 55%, transparent), 0px 0px 40px 0px color-mix(in srgb, var(--wp--preset--color--primary) 28%, transparent)"
+        },
+        {
+          "name": "Pressed",
+          "slug": "pressed",
+          "shadow": "inset 0px 2px 4px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 14%, transparent), inset 0px 0px 0px 1px color-mix(in srgb, var(--wp--custom--shadow-colour) 6%, transparent)"
+        },
+        {
+          "name": "Hard",
+          "slug": "hard",
+          "shadow": "4px 4px 0px 0px var(--wp--custom--shadow-colour)"
+        }
+      ]
+    },
+    "custom": {
+      "shadowColour": "var(--wp--preset--color--text)"
+    },
     "color": {
       "palette": [
         {

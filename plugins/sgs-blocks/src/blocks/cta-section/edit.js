@@ -508,26 +508,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							},
 						],
 					},
-					attributes.shadow && {
-						key: 'shadow',
-						label: __( 'Shadow colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: attributes.shadowColour,
-								onChange: ( val ) => setAttributes( { shadowColour: val ?? '' } ),
-								linked: true,
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: attributes.shadowColourHover,
-								onChange: ( val ) => setAttributes( { shadowColourHover: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
 				] }
 			/>
 

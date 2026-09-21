@@ -303,7 +303,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		borderColourHoverGradient,
 		borderColourGradient,
 		shadowHover,
-		shadowHoverColour,
 		scaleHover,
 		grayscaleHover,
 		transitionDuration,
@@ -494,19 +493,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								gradientValue: borderColourHoverGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( { borderColourHoverGradient: val ?? '' } ),
-							},
-						],
-					},
-					shadowHover && {
-						key: 'shadowHover',
-						label: __( 'Shadow colour (hover)', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: shadowHoverColour,
-								onChange: ( val ) => setAttributes( { shadowHoverColour: val ?? '' } ),
-								linked: true,
 							},
 						],
 					},

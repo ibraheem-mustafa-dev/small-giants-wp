@@ -505,26 +505,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								},
 						],
 					},
-					tileShadow && {
-						key: 'tileShadow',
-						label: __( 'Tile shadow colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: tileShadowColour,
-								onChange: ( val ) => setAttributes( { tileShadowColour: val ?? '' } ),
-								linked: true,
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: attributes.tileShadowColourHover,
-								onChange: ( val ) => setAttributes( { tileShadowColourHover: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
 				] }
 			/>
 			{ /* ── SETTINGS tab — behaviour / configuration ── */ }

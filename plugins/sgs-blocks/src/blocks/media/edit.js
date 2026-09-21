@@ -173,24 +173,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						attributes,
 						setAttributes,
 					} ),
-					{
-						key: 'boxShadow',
-						label: __( 'Shadow colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: attributes.boxShadowColour,
-								onChange: ( val ) => setAttributes( { boxShadowColour: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: attributes.boxShadowColourHover,
-								onChange: ( val ) => setAttributes( { boxShadowColourHover: val ?? '' } ),
-							},
-						],
-					},
 				] }
 			/>
 			<InspectorControls group="styles">
