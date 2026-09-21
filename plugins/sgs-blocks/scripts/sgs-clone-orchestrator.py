@@ -3815,6 +3815,14 @@ def main():
              "no browser. Fail-soft. Use --no-resolve-js-content to switch it off.",
     )
     parser.add_argument(
+        "--manifest-annotation", action=argparse.BooleanOptionalAction, default=True,
+        help="A Claude Design draft's `data-sgs-manifest` block proposals (`sectionBlocks` + `repeatedGroups`) "
+             "become SGS-BEM class names on the run copy (manifest_annotation.py -> manifest-annotated.html), so "
+             "the unchanged converter recognises the declared blocks. Each declaration is reported in "
+             "manifest-annotation-report.json (applied / partial / queued / rejected). A draft with no manifest "
+             "is untouched. Fail-soft. Use --no-manifest-annotation to switch it off.",
+    )
+    parser.add_argument(
         "--sc-var-cache", type=Path, default=None,
         help="Opt-in Tier B (2026-09-14, Bean-directed follow-up): the committed sc_var_hint "
              "cache sidecar path (plugins/sgs-blocks/scripts/recogniser/sc_var_classifier.py's "
@@ -3958,6 +3966,40 @@ def main():
                 print(f"[orchestrator] site-info: replaced {sum(_si_counts.values())} binding(s) {dict(_si_counts)} -> {_si_path}")
         except Exception as _si_exc:  # noqa: BLE001 -- never a new failure mode: the bindings stay as they were
             print(f"[site-info] skipped ({_si_exc}); the bindings are left as they were")
+
+    # Stage -1.44 -- MANIFEST ANNOTATION. The draft's `data-sgs-manifest` block proposals become SGS-BEM class names
+    # on the run copy (block root class first, item and field classes), so the unchanged converter recognises them.
+    # Runs on args.mockup AFTER the loops are expanded and the site details are in. A draft with no manifest yields
+    # the same HTML and no rows (no file). Every declaration is one row of manifest-annotation-report.json. Fail-soft:
+    # an exception leaves the run copy as it was. `--no-manifest-annotation` opts out. See manifest_annotation.py.
+    if getattr(args, "manifest_annotation", True):
+        try:
+            _ma_mod = _load_module_from_path("sgs_manifest_annotation", ORCHESTRATOR_DIR / "manifest_annotation.py")
+            _ma_raw = args.mockup.read_text(encoding="utf-8")
+            _ma_lookup = _ma_mod.DbBlockLookup()
+            try:
+                _ma_html, _ma_rows = _ma_mod.annotate_from_manifest(_ma_raw, _ma_lookup)
+            finally:
+                _ma_lookup.close()
+            if _ma_rows:
+                (run_dir / "manifest-annotation-report.json").write_text(
+                    json.dumps(_ma_rows, indent=1, ensure_ascii=False), encoding="utf-8")
+                _ma_counts = {s: sum(1 for r in _ma_rows if r["status"] == s) for s in ("applied", "partial", "queued", "rejected")}
+                print(f"[orchestrator] manifest-annotation: {len(_ma_rows)} declaration(s) {_ma_counts} -> "
+                      f"{run_dir / 'manifest-annotation-report.json'}")
+                # Spec 44 §7.1: each decision goes to the git-tracked recognition log with source "manifest". The
+                # run label is the hash of the rows, so a re-run that decides the same things appends nothing.
+                _ma_log = _load_module_from_path("sgs_manifest_decisions_log", ORCHESTRATOR_DIR / "manifest_decisions_log.py")
+                import hashlib as _hashlib
+                _ma_label = "manifest-" + _hashlib.sha1(json.dumps(_ma_rows, sort_keys=True).encode("utf-8")).hexdigest()[:10]
+                _ma_new = _ma_log.append_manifest_decisions(_ma_rows, client_slug=getattr(args, "client", None) or "unknown", run_id=_ma_label)
+                print(f"[orchestrator] manifest-annotation: {_ma_new} new decision row(s) in the recognition log")
+                if _ma_html != _ma_raw and any(r["status"] in ("applied", "partial") for r in _ma_rows):
+                    _ma_path = run_dir / "manifest-annotated.html"
+                    _ma_path.write_text(_ma_html, encoding="utf-8")
+                    args.mockup = _ma_path
+        except Exception as _ma_exc:  # noqa: BLE001 -- never a new failure mode: the run copy stays as it was
+            print(f"[manifest-annotation] skipped ({_ma_exc}); the run copy is left as it was")
 
     # Stage -1.4 -- SCRIPT BINDINGS (plan step A1, D1132). The draft script's own width rules, evaluated
     # for the three device tiers, become the per-device values of the style bindings the converter would

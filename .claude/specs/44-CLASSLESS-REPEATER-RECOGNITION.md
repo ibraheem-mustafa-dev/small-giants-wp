@@ -628,6 +628,28 @@ before this amendment) is treated as `source == "spec44"`** — this preserves
 existing promotion memory rather than silently resetting every client's
 first-look state on the day this field is introduced.
 
+### 7.1 The `manifest` source (added 2026-09-21, Spec 31 FR-31-31)
+
+A third writer uses this same log: the manifest annotation stage. When a draft carries its own `data-sgs-manifest` block-per-section declaration, each declaration is logged as one row written by `orchestrator/manifest_decisions_log.py::append_manifest_decisions`. It writes no new file, table or index, and it changes nothing in Stage A or Stage B.
+
+| Field | Value for a manifest row |
+|---|---|
+| `source` | `"manifest"` (alongside `"spec44"` and `"tier4-domshape"`) |
+| `kind` | `"decision"` (a manifest row is never an `approval`; only `record_human_approval` writes those) |
+| `boundary_id` | the declared root class (for example `sgs-trust-bar`) |
+| `block` | the declared block slug |
+| `match_type` | `"manifest"` |
+| `match_quality` | the declaration's confidence (`high`, `medium`, `low`), not `EXACT/PARTIAL/NONE` |
+| `outcome` | `applied` (the run copy was annotated in full), `partial` (annotated, but some declared items or fields could not be), `queued` (confidence below the accepted threshold, so nothing was written to the run copy and it waits for review), `rejected` (a validation failed; `reasons` says which) |
+| `stage`, `clause_a`, `clause_b` | neutral (`"none"`, `false`, `false`): the FR-44-1 clauses do not apply to a declared map |
+| `reasons`, `fields` | the validation reason; the field names the declaration covered |
+| `target`, `items` | extra, manifest-only keys: `root` or `inner`, and the item count |
+
+Rules that follow:
+- A row is written once per (`client_slug`, `run_id`, `boundary_id`, `outcome`); a re-run of the same run does not duplicate it.
+- **The FR-44-1(b) scan already ignores these rows:** it filters to `source == "spec44"` and to `kind == "approval"`, so a manifest row can never satisfy a client's first-look gate.
+- Operator review is to read `manifest` rows the same as every other source: `queued` and `rejected` rows go on the run's `operator-review.html` with their reasons, `applied` and `partial` rows are audit history. **Not built yet:** today `recogniser/simple_html_review_report.py` builds the page from the run's own match records and does not read this log, so the wiring for manifest rows lands with the annotation stage (Spec 31 FR-31-31). The log is the durable store either way.
+
 **The review surface is real and already exists — name it, don't invent a new
 one.** This pipeline already generates `pipeline-state/<run>/operator-review.html`
 per run (`recogniser/simple_html_review_report.py`, wired from

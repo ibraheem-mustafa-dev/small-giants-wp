@@ -251,6 +251,75 @@ def _assert_no_retired_block_collision() -> None:
 SECTION_TAGS = ("section", "header", "footer", "main", "aside", "nav")
 
 
+def _framework_db_path() -> Path:
+    """Canonical sgs-framework.db path (same file _registered_block_slug_roots
+    reads). A function, not a constant, so a test can point it at a missing
+    file to exercise the DB-unreachable branch."""
+    return Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+
+
+# Set once the first "class-section registry unreadable" warning has been
+# written, so a run over many drafts warns once, not once per call.
+_CLASS_SECTION_WARNED: bool = False
+
+
+def _class_section_slug_roots() -> set[str]:
+    """Bare slug roots (e.g. 'trust-bar' from 'sgs/trust-bar') of every block
+    whose `blocks.tier = 'class-section'` in sgs-framework.db.
+
+    Those are the only blocks the R1 gate (`converter/recognition.py::
+    recognise_section`) lets claim a section root from a class, so they are
+    the only blocks a non-landmark element may be promoted to a boundary for.
+    DB-first (Spec 31 R-31-1): no block name is written in code.
+
+    Opened read-only; never imports `converter/db/db_lookup.py` (its import
+    runs schema migrations). If the DB is missing or unreadable this returns
+    an empty set -- `auto_detect_sections` then behaves exactly as it did
+    before this rule existed -- and says so ONCE on stderr, never silently and
+    never by raising.
+    """
+    global _CLASS_SECTION_WARNED
+    import sqlite3 as _sql
+
+    db_path = _framework_db_path()
+    try:
+        if not db_path.exists():
+            raise FileNotFoundError(str(db_path))
+        conn = _sql.connect(f"file:{db_path}?mode=ro", uri=True)
+        try:
+            rows = conn.execute(
+                "SELECT slug FROM blocks WHERE tier = 'class-section'"
+            ).fetchall()
+        finally:
+            conn.close()
+    except Exception as exc:  # noqa: BLE001 - degrade, never raise
+        if not _CLASS_SECTION_WARNED:
+            _CLASS_SECTION_WARNED = True
+            sys.stderr.write(
+                "[voter] WARN: sgs-framework.db unreadable "
+                f"({type(exc).__name__}); class-section boundary promotion "
+                "disabled -- non-landmark elements such as "
+                '<div class="sgs-trust-bar"> will NOT become section boundaries.\n'
+            )
+        return set()
+    return {r[0][len("sgs/"):] for r in rows if r[0] and r[0].startswith("sgs/")}
+
+
+def _bem_root_slugs(node: Tag) -> list[str]:
+    """Every `<slug>` for which the node carries a BEM ROOT class `sgs-<slug>`
+    (no `__` element separator, no `--` modifier), in source order. A node can
+    carry several (e.g. a legacy `sgs-trust-ticker` beside the annotated
+    `sgs-trust-bar`); the caller asks whether ANY is a class-section block."""
+    slugs: list[str] = []
+    for cls in collect_class_signature(node):
+        if not cls.startswith("sgs-") or "__" in cls or "--" in cls:
+            continue
+        slug = cls[len("sgs-"):]
+        if slug:
+            slugs.append(slug)
+    return slugs
+
+
 def _is_known_legacy_role(cls: str) -> bool:
     """Return True if cls is a recognised legacy kebab role (DB lookup)."""
     if _legacy_role_lookup_for is not None:
@@ -690,6 +759,14 @@ def auto_detect_sections(soup: BeautifulSoup) -> list[tuple[Tag, str]]:
     as a transparent pass-through and recursed into at ANY depth, not just
     one level.
 
+    One exception to "a non-leaf-tag element is a pass-through": a non-`main`
+    element (any tag, e.g. `<div class="sgs-trust-bar">`) whose BEM ROOT class
+    (`sgs-<slug>`, no `__`/`--`) names a block with `blocks.tier =
+    'class-section'` in sgs-framework.db is emitted as a boundary and, like a
+    leaf section tag, NOT recursed into. The class-section set is read from the
+    DB once per call (`_class_section_slug_roots`); if the DB is unreadable the
+    rule is inert and a one-off stderr warning is written.
+
     This is a deliberate, documented extension of the existing "transparent
     container" concept (previously hardcoded to {"main", "article"} and
     capped at one level of recursion) to be name-free and depth-unlimited,
@@ -724,12 +801,29 @@ def auto_detect_sections(soup: BeautifulSoup) -> list[tuple[Tag, str]]:
         selector = f"{node.name}.{classes[0]}" if classes else node.name
         out.append((node, selector))
 
+    # Blocks whose `blocks.tier = 'class-section'` may claim a section root
+    # from a BEM root class whatever the element's tag (R1 gate,
+    # `converter/recognition.py::recognise_section`). Queried once per call.
+    class_section_slugs = _class_section_slug_roots()
+
+    def is_class_section_root(node: Tag) -> bool:
+        return bool(class_section_slugs) and any(
+            slug in class_section_slugs for slug in _bem_root_slugs(node)
+        )
+
     def walk(container: Tag) -> None:
         found_any = False
         for child in container.find_all(recursive=False):
             if not isinstance(child, Tag):
                 continue
             if child.name in leaf_section_tags:
+                emit_section(child)
+                found_any = True
+            elif child.name != "main" and is_class_section_root(child):
+                # A non-landmark element (typically a <div>) whose BEM root
+                # class names a class-section block: a boundary, not an inert
+                # wrapper. Leaf semantics -- its children are that section's
+                # content, so do not recurse.
                 emit_section(child)
                 found_any = True
             else:
