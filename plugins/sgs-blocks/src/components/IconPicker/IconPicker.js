@@ -3,7 +3,8 @@
  *
  * A "Browse icons…" button in the inspector opens a full-width modal with:
  *   - Library tabs: Lucide (1,917) · Emoji (1,914) · WordPress · Dashicons
- *   - A category sidebar that appears when a dataset has groups
+ *   - A category sidebar that appears when a dataset has groups; the Lucide tab
+ *     carries an "SGS" group for the framework's own promoted icons (sgs-group.js)
  *   - A search box that filters by name, aliases and keywords
  *   - A windowed grid: renders 120 cells at a time, loading more as the user
  *     scrolls — avoids mounting 1,900 DOM nodes at once without a virtualisation
@@ -29,6 +30,7 @@ import {
 } from '@wordpress/components';
 import IconGrid from './IconGrid';
 import IconPreview, { withInlineFillStroke } from './IconPreview';
+import { withSgsCategory } from './sgs-group';
 import { loadLucide, loadEmoji, loadWpIcons, ICON_SOURCES, DASHICONS } from './icon-data';
 import './editor.css';
 import { sanitiseSvg } from '../../utils';
@@ -225,7 +227,13 @@ export default function IconPicker( {
 
 	// ── Category lists (memoised from loaded data) ─────────────────────────────
 	const lucideCategories = useMemo(
-		() => ( lucide ? buildLucideCategories( lucide.names, lucide.tags ) : [] ),
+		() =>
+			lucide
+				? withSgsCategory(
+						buildLucideCategories( lucide.names, lucide.tags ),
+						lucide.sgsNames
+				  )
+				: [],
 		[ lucide ]
 	);
 	const emojiCategories = useMemo(

@@ -14,6 +14,8 @@
  * @package SGS\Blocks
  */
 
+import { mergeSgsIcons } from './sgs-group';
+
 const ASSETS =
 	( typeof window !== 'undefined' &&
 		window.sgsBlocksData &&
@@ -44,21 +46,22 @@ async function fetchJson( url ) {
 }
 
 /**
- * Load the Lucide SVG map + search aliases.
+ * Load the Lucide SVG map + search aliases, merged with the SGS icon library
+ * (assets/icons/sgs-icons.json). A missing or unreadable library is not an error:
+ * the picker then shows Lucide alone, exactly as before.
  *
- * @return {Promise<{map:Object, tags:Object, names:string[]}>} Lucide dataset.
+ * @return {Promise<{map:Object, tags:Object, names:string[], sgsNames:string[]}>} Lucide + SGS dataset.
  */
 export function loadLucide() {
 	if ( ! lucidePromise ) {
 		lucidePromise = Promise.all( [
 			fetchJson( ASSETS.lucide ),
 			fetchJson( ASSETS.lucideTags ).catch( () => ( {} ) ),
+			ASSETS.sgsIcons
+				? fetchJson( ASSETS.sgsIcons ).catch( () => ( {} ) )
+				: Promise.resolve( {} ),
 		] )
-			.then( ( [ map, tags ] ) => ( {
-				map,
-				tags,
-				names: Object.keys( map ),
-			} ) )
+			.then( ( [ map, tags, sgs ] ) => mergeSgsIcons( { map, tags }, sgs ) )
 			.catch( ( err ) => {
 				lucidePromise = null; // allow retry on next open
 				throw err;

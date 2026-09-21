@@ -263,6 +263,7 @@ final class SGS_Blocks {
 					'lucideTags' => $icons_url . 'lucide-tags.json?ver=' . $icon_ver( 'lucide-tags.json' ),
 					'emoji'      => $icons_url . 'emoji.json?ver=' . $icon_ver( 'emoji.json' ),
 					'wpIcons'    => $icons_url . 'wp-icons.json?ver=' . $icon_ver( 'wp-icons.json' ),
+					'sgsIcons'   => $icons_url . 'sgs-icons.json?ver=' . $icon_ver( 'sgs-icons.json' ),
 				)
 			) . ';',
 			'before'

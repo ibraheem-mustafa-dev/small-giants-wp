@@ -8,3 +8,8 @@ build/
 reports/console/
 reports/cwv/
 reports/network/
+
+# Icon-library proposals: local pipeline working state (one row per unseen icon; rewritten on every run).
+# Decisions are recorded by promote-icon.py in the tracked sgs-icons.json, not here.
+/assets/icons/icon-proposals.jsonl
+/assets/icons/icon-proposals.jsonl.lock

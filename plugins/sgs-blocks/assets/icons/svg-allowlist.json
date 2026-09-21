@@ -1,0 +1,14 @@
+{
+	"_note": "SINGLE source of truth for what a library icon (assets/icons/sgs-icons.json) may contain. Read by scripts/generate-icons.js (validates the raw library, refuses on any hit) AND scripts/promote-icon.py (normalises a proposal, refuses on any hit). Edit it here only; a cross-check test (tests/php/IconLibrarySecurityTest.php) fails if the two disagree on a hostile corpus. Distinct from includes/helpers-svg-kses.php (the wp_kses tag list, which DOES allow <use>/<image> href for logos): this list is the narrower pictogram allowlist, and it is the real security gate because the trust-bar slug branch echoes the generated PHP map.",
+	"drawingElements": ["svg", "g", "path", "rect", "circle", "ellipse", "line", "polyline", "polygon"],
+	"forbiddenAttributePrefixes": ["on"],
+	"forbiddenAttributeNames": ["href", "xlink:href"],
+	"forbiddenMarkupPatterns": ["<!\\s*(doctype|entity)", "<\\s*script", "javascript\\s*:"],
+	"paintAttributes": ["fill", "stroke"],
+	"forbiddenPaintValuePatterns": ["url\\s*\\("],
+	"refuseInRawLibrary": {
+		"_note": "The generator sees the raw library and never rewrites it, so it refuses what promote-icon.py would drop or decode while normalising.",
+		"attributeNames": ["style"],
+		"valuePatterns": ["&"]
+	}
+}
