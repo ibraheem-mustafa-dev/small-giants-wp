@@ -263,33 +263,25 @@ example blur on a header and on a drawer) becomes one family.
 | ID | Unit | Output | Est (taxed) | CP |
 |---|---|---|---|---|
 | W3B-1 | Columns signed off | the column list above, after the completeness and adversarial reviews | DONE | YES |
-| W3B-2 | Fresh capture for the 8 references with drawer data (studionamma, buck, dogstudio, fantasy, lamalama, lusion, wearecollins, resn) | header shell, bar, dropdown, mega, footer and interaction cells captured live at three tiers; drawer cells cross-checked against the existing JSON; one agent per reference, disjoint output files | 3h (5h) | YES |
-| W3B-3 | Fresh capture for Away, ButcherBox and rabbit.tech (every surface); map each resn effect to a Spec 38 tier and confirm its admission (12 vs 13); resn's ambient audio is covered by `sgs/audio` with `playerStyle: hidden` (loads and plays with no visible player; the audio context is created on the first play gesture) and is not a gap; the other resn effects are re-judged at family level from the headed capture; `labels-<site>.json` for the three | measured rows | 1.5h (3h) | YES |
-| W3B-3a | The two Claude Design drafts (Halcyon Mega Menu, Indus Foods Mega Menu): render each locally with its own runtime files, measure the rendered DOM at three tiers, and record each variant as its own rows (Halcyon: Columns, Cards, Minimal × Light, Dark; Indus: Sectors as Cards and as List). The source is Bean's, so it is read as well as measured; its runtime expands loops and stamps classes, so the render, not the source, is the measured truth | measured rows for both designs; all 13 roster references measured | 1h (2h) | YES |
-| W3B-4 | Cluster into capability families | each family: name, the references that need it, the SGS block attribute that covers it or none, verdict (covered, gap, conflicts with something built) | 1h (2h) | YES |
-| W3B-5 | Bean signs off the family list | the list of families Wave 3C builds and the order | Bean | YES |
+| W3B-2 | Fresh capture for the 8 references with drawer data (studionamma, buck, dogstudio, fantasy, lamalama, lusion, wearecollins, resn) | header shell, bar, dropdown, mega, footer and interaction cells captured live at three tiers; drawer cells cross-checked against the existing JSON; one agent per reference, disjoint output files | DONE headed and headless; see FAMILIES-MASTER.md for the gaps | YES |
+| W3B-3 | Fresh capture for Away, ButcherBox and rabbit.tech (every surface); map each resn effect to a Spec 38 tier and confirm its admission (12 vs 13); resn's ambient audio is covered by `sgs/audio` with `playerStyle: hidden` (loads and plays with no visible player; the audio context is created on the first play gesture) and is not a gap; the other resn effects are re-judged at family level from the headed capture; `labels-<site>.json` for the three | measured rows | DONE for 375 and 1440; 768 for ButcherBox and rabbit.tech is re-captured in Step 0c | YES |
+| W3B-3a | The two Claude Design drafts (Halcyon Mega Menu, Indus Foods Mega Menu): render each locally with its own runtime files, measure the rendered DOM at three tiers, and record each variant as its own rows (Halcyon: Columns, Cards, Minimal × Light, Dark; Indus: Sectors as Cards and as List). The source is Bean's, so it is read as well as measured; its runtime expands loops and stamps classes, so the render, not the source, is the measured truth | measured rows for both designs; all 13 roster references measured | DONE | YES |
+| W3B-4 | Cluster into capability families | each family: name, the references that need it, the SGS block attribute that covers it or none, verdict (covered, gap, conflicts with something built) | DONE: 74 source families merged to 46; 11 covered, 21 partial, 8 gap, 6 conflict; 17 build units; adversarially reviewed (`reports/reference-requirements/FAMILIES-MASTER.md`, `FAMILIES-REVIEW.md`) | YES |
+| W3B-5 | Bean signs off the family list | the list of families Wave 3C builds and the order | DONE: Bean signed the list on 2026-09-21 and accepted every recommended decision | YES |
 
 ### Wave 3C — Header and nav architecture harmonised from the table
 
-Sized when W3B-5 closes. Every family is universal (rule 3), driven by block attributes (rule 6),
+The list is signed and the work is planned in `plans/2026-09-21-wave-3c-implementation-plan.md` (decisions, Step 0, the 14 serial nav units plus two parallel units, the per-unit loop, the fresh-session prompt). Every family is universal (rule 3), driven by block attributes (rule 6),
 design-gated before any shared mechanism changes (rule 7), and built through the shared wrapper or
 helper the other blocks already use. Built work that disagrees with the table (the floating pill, the
 drawer anchoring, force-solid) is reopened by a family, not patched on its own.
 
 | ID | Unit | Output | Est (taxed) | CP |
 |---|---|---|---|---|
-| W3C-1 | Header width model | the header is the partial-width surface, centred against the viewport and holding logo, nav and actions together; on a floating-pill header the dropdown and mega panels take the pill's left edge and width (already built, and matching lamalama's measured pill-and-panel box); on every other header the panels take the anchor and width rule the table records (item-centred, header-wide, or capped-centred with a per-panel width) | from the table | YES |
-| W3C-2 | Trigger and close behaviour | the burger is replaced in place by the close control where the references do it; the drawer omits a separate top close row where they omit it | from the table | YES |
-| W3C-3 | Drawer placement and sizing | side, width and anchor from the model, the trigger-anchored clamp (page 3699), and the force-solid tier background (the off value is the header's own resting background) | from the table | YES |
-| W3C-4 | Remaining families | one unit per family from W3B-4 | from the table | YES |
-
-**Lanes, delegation and checkpoints**
-
-| Wave | Order | Parallel lanes (disjoint files) | Delegate | QC checkpoint | Docs closed at the checkpoint |
-|---|---|---|---|---|---|
-| 3A | W3A-5 first; then W3A-1, W3A-2, W3A-3 together; W3A-4 from the start | L1 hover-intent JS (W3A-1) · L2 dropdown CSS include (W3A-2) · L3 item hover CSS include (W3A-3) · L4 Mama's canary content (W3A-4) | Sonnet builders per lane; main thread deploys once and verifies live | `/qc-inline` per lane; `/qc-council` on W3A-2 and W3A-3 because they change shared block defaults | Spec 36 (dropdown defaults, hover system), verify doc, LEDGER, `decisions.md` |
-| 3B | (W3B-2 ‖ W3B-3) → W3B-4 → W3B-5 (W3B-1 closed) | one agent per reference, four references per batch, each writing its own file under `.claude/reports/reference-requirements/` | Sonnet for capture (browser and event-driven); the strongest model for W3B-4 (clustering) | adversarial review of the family list before W3B-5 | the matrix report, this plan, verify doc, LEDGER, `decisions.md` |
-| 3C | one design-gate per family, then build | families with disjoint files in parallel; anything touching the shared header wrapper is serial | strongest model designs; `/subagent-driven-development` builds (implementer plus two reviewers); main thread deploys and verifies live | design-gate plus `/qc-council` before each shared-mechanism build; Bean's eye on one composed real header before 3C closes | Spec 36 and Spec 37 in the same commit, verify doc, LEDGER, `decisions.md`, `specs/README.md` |
+| W3C-1 | The nav chain, one unit at a time: U-1, U-9, U-11, U-5, U-2, U-3, U-6, U-7, U-10, U-4, U-8, U-14, U-13, U-16 | every signed family built or parked (DEC-16); the drawer's own × optional (DEC-15); the pill panel width rule kept; force-solid and the drawer clamp folded into U-1 and U-3 | about 3 to 4 sessions | YES |
+| W3C-2 | Furniture blocks (U-12), in parallel: local-time clock, language switch, back-to-top, account/log-in link | four new blocks, one agent per block in its own directory | about 1 session | no |
+| W3C-3 | Self-changing header message (U-15), in parallel | `notice-banner` rotate, random and live-clock modes | about 1h | no |
+| W3C-4 | Gate 3C composed-header check | one composed real header matches its requirements-table row, with Bean's eye (R-31-13) | ½ session | YES |
 
 **TEST (critical path):** Happy = every reference's row is expressible with block attributes and one
 composed real header matches its row. Edge = the header at 375, 768 and 1440px with panels open.
@@ -486,7 +478,7 @@ Stop-loss: any gate <50 → surface pivot-vs-park with two ranked paths; log in 
 
 ## First action (≤5 min, zero dependencies)
 
-W3A-5 (rebuild the QA fixtures inside a real header) and W3B-2/W3B-3 (fresh reference capture) start together; neither needs anything from Bean. W3B-1 is signed off.
+Wave 3C Step 0 (`plans/2026-09-21-wave-3c-implementation-plan.md`): re-run `/sgs-update`, draft the FR-36-6 amendment, re-capture ButcherBox and rabbit.tech at 768 and measure footer hover, then the nav chain from U-1. The fresh-session prompt is `.claude/prompts/2026-09-21-wave-3c-start.md`.
 
 ## References
 

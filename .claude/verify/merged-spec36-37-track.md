@@ -115,7 +115,7 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
   underline, no indent, a background and border).
 
 ## Wave 3B — Reference deconstruction
-- STATUS: not started.
+- STATUS: done; Bean signed the family list on 2026-09-21.
 - W3B-1: the 14 columns are signed off (completeness review against the measured data, adversarial
   review of the table design).
 - W3B-2, W3B-3, W3B-3a: all 13 roster references captured at 375, 768 and 1440px (the two Claude Design
@@ -127,9 +127,10 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
 - W3B-4: every table row belongs to one capability family, and every family states the block
   attribute that covers it or "none".
 - W3B-5: Bean has signed the family list.
+- W3B-4 evidence: `reports/reference-requirements/FAMILIES-MASTER.md` (46 families, 11 covered, 21 partial, 8 gap, 6 conflict), `families-master.json`, and the independent review `FAMILIES-REVIEW.md` (23 findings, applied); 33 coverage checks re-run against the code.
 
 ## Wave 3C — Header and nav architecture harmonised
-- STATUS: not started; sized at W3B-5.
+- STATUS: ready to execute (`plans/2026-09-21-wave-3c-implementation-plan.md`); Step 0 first.
 - Every family in the signed list is built or explicitly mapped, universal across blocks, with block
   attributes as the only responsive route (`node plugins/sgs-blocks/scripts/audit-inline-styling.js --check`
   exits 0).
