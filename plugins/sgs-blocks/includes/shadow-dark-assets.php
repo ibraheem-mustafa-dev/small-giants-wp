@@ -5,7 +5,7 @@
  * `helpers-shadow-dark.php` derives a dark variant of every theme shadow preset (a black shadow at
  * higher opacity plus a 1px light ring). This file registers that stylesheet for the `.sgs-on-dark`
  * scope, which `SGS_Container_Wrapper` adds to a container with a dark solid background. The
- * stylesheet is REGISTERED on every request but only ENQUEUED when a dark container renders
+ * stylesheet is registered and enqueued on demand when a dark container renders
  * (`sgs_shadow_dark_enqueue()` is called from the wrapper), so a page with no dark container ships
  * none of it. In the block editor it is always enqueued. The editor canvas does not yet get the
  * `sgs-on-dark` class itself (the container's edit.js renders on the client), so a dark container's
@@ -30,24 +30,40 @@ require_once __DIR__ . '/helpers-shadow-dark.php';
  * @return void
  */
 function sgs_shadow_dark_register(): void {
+	if ( wp_style_is( 'sgs-shadow-dark', 'registered' ) ) {
+		return;
+	}
 	$css = sgs_shadow_dark_preset_css( 'section' ) . sgs_shadow_dark_preset_css( 'light' );
 	if ( '' === $css ) {
 		return;
 	}
 	wp_register_style( 'sgs-shadow-dark', false, array(), SGS_BLOCKS_VERSION );
 	wp_add_inline_style( 'sgs-shadow-dark', $css );
+}
+
+/**
+ * Editor: register and enqueue on the block-editor asset hook.
+ *
+ * @return void
+ */
+function sgs_shadow_dark_editor_assets(): void {
 	if ( is_admin() ) {
+		sgs_shadow_dark_register();
 		wp_enqueue_style( 'sgs-shadow-dark' );
 	}
 }
-add_action( 'enqueue_block_assets', 'sgs_shadow_dark_register' );
+add_action( 'enqueue_block_assets', 'sgs_shadow_dark_editor_assets' );
 
 /**
  * Enqueue the dark-scope stylesheet. Called by the container wrapper when it adds `sgs-on-dark`.
  *
+ * A block theme renders the page content BEFORE the head assets hook fires, so the handle cannot be
+ * assumed to be registered yet: register it here, on demand, then enqueue it.
+ *
  * @return void
  */
 function sgs_shadow_dark_enqueue(): void {
+	sgs_shadow_dark_register();
 	if ( wp_style_is( 'sgs-shadow-dark', 'registered' ) ) {
 		wp_enqueue_style( 'sgs-shadow-dark' );
 	}
