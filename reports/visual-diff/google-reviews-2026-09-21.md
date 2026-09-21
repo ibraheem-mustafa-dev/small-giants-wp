@@ -3,8 +3,8 @@
 ```
 verdict: PASS
 intent_capture_passed: true
-source_sha: 6d2d1984e
-blocks: google-reviews
+source_sha: f14814895
+blocks: google-reviews trustpilot-reviews
 target: sandybrown-nightingale-600381.hostingersite.com (probe page 3775, "[probe] google reviews written mode")
 date:   2026-09-21
 ```
@@ -33,6 +33,21 @@ Captures for the eye (R-31-13; PNGs are gitignored, kept beside this file locall
 `google-reviews-written-grid-375.png`. Read by the author: grid shows 13 cards in 3 columns, coloured initials, detail line,
 date, stars where rated, "4.9 15 reviews", "Write a Review"; slider shows arrows and 13 dots.
 
-## Not caused by this change, observed while measuring
-- `assets/google-logo.svg` does not exist in the repo (`git log -- plugins/sgs-blocks/assets/google-logo.svg` is empty) and returns 404 on the canary, so every `sgs/google-reviews` block shows a broken logo image at top right (blocks 1, 2 and 3 alike). A Google logo is a brand asset; adding one needs the brand guidelines read first.
-- In the synced path with no place ID or API key the block still shows three invented reviews and emits `LocalBusiness` / `AggregateRating` schema (4.9, 47 reviews) from them: visible as block 3 and its `ld+json`. Written mode does not touch this path. Gating the demo reviews behind an explicit placeholder mode is the open follow-up from the QC council.
+## Placeholder gating (commit f14814895), measured live on the canary after deploy
+
+Intent: invented reviews are shown only when the author explicitly picks `dataSource: placeholder`; with no real data the front end renders nothing and no schema; review schema is printed only for live Google data.
+
+Probe page 3775 now holds four `sgs/google-reviews` blocks (grid written, slider written, list with no reviews or place ID, list `placeholder`).
+
+| Check | Result |
+|---|---|
+| Blocks in the served HTML | 3 of the 4: the no-data block renders nothing at all (no wrapper) |
+| Card counts at 1440 and 375 | 13, 13 and 3 (the sample block) |
+| Sample names (Sarah Patel, James Wright, Aisha Khan) | each appears once, in the explicit sample block only |
+| `application/ld+json` on the page | 0 (was 1 with a 4.9 / 47 aggregate before this change) |
+| Logo | the Google "G" loads in every rendered block (commit 992913c1d) |
+| Sample block aggregate | "5.0, 3 reviews", its own numbers rather than an invented 4.9 / 47 |
+
+Capture for the eye (PNG gitignored, kept locally): `google-reviews-sample-list-1440.png` shows the three sample cards with coloured initials, stars, relative dates and the Google mark. `sgs/trustpilot-reviews` changed only its schema gate (a `placeholder` source no longer prints Review schema); its markup is untouched.
+
+Not verified: the editor canvas notices (built, not opened in a browser); the live Google path against the real API (tested through a stubbed fetch).
