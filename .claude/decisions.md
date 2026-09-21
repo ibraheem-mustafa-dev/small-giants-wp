@@ -1,5 +1,9 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1138 [ROUTINE] — Lottie player admitted with a named 60 KB JS allowance for Lottie pages (2026-09-21)
+
+Bean ruled yes. The Lottie player (`lottie-web` 5.13.0 light build, 46.6 KB gzip, chosen in `reports/2026-09-21-lottie-player-research.md`) passes Spec 38 section 1.2a parts (i) to (iii); part (iv) is this decision. Pages that use Lottie carry a named allowance of 60 KB for the player alone; every other page ships nothing extra. U-17 of Wave 3C builds it and amends section 1.2a so Tier H lists the player. lamalama's live canvas mark stays a still.
+
 ## D1137 [ROUTINE] — sgs/google-reviews written mode built; routing design revised by a second QC council (2026-09-21)
 
 **Bean's steer.** Leave the Business Profile API sync (all reviews, OAuth, Google approval) for later; build the array setup for typed mode. Place ID alone is not enough for the live path: `Google_Reviews_Settings::fetch_reviews` also needs an API key, and Google returns at most 5 reviews. Eye Care place ID `ChIJ2exjouG7cEgR8GMcMRmpX9k`.
