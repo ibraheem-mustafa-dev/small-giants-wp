@@ -16,6 +16,8 @@
 
 **Live evidence.** `reports/visual-diff/container-2026-09-23.md`, `nav-drawer-2026-09-23.md`, `nav-bar-menu-2026-09-23.md`, `container-2026-09-21.md`, `mega-panel-2026-09-21.md`.
 
+**Bean's rulings (2026-09-23).** The dark-surface shadows look right by eye on every band. `sgs/mega-panel::borderRadius` stays a single value (no per-device migration: no reference needs it). buck's `auto` z-index is accepted as a divergence: the visual result is what is measured, not the code. Open: a preset has no hover state of its own; offered a one-click "Lift on hover" in the Shadow panel's Hover tab (recommended) versus every preset lifting automatically.
+
 **Still owed (not gating U-1's closure).** Bean's eye on the dark-surface screenshot and ring strength; the live check of the edge fade (4d), the mega-panel card lift and the submenu opacity pair (PHP-tested only); the sandybrown deploy of everything since theme 1.5.91 waits on another session committing `sgs/google-reviews`; theme gradient presets read as unknown in the canvas until callers pass `useSettings('color.gradients')`; mega-panel `borderRadius` tier object awaits Bean's ruling; buck's `auto` z-index divergence awaits acceptance.
 
 **Docs.** `.claude/LEDGER.md`, `plans/2026-09-21-wave-3c-implementation-plan.md`, `.claude/verify/merged-spec36-37-track.md`, Spec 36 (spec_version 2.7), Spec 37 (spec_version 1.4.0 — the `force-solid` FR-37-44 description corrected to match the shipped behaviour) and `families-master.json` all updated in the same pass. **Next: U-2**, surface scrim colour, alpha and blur per tier (M-14), design-gated, not started.

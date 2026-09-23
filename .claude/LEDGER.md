@@ -132,12 +132,10 @@ IN FULL before touching anything — do not act on this summary.**
 - **Wave 3C** (`plans/2026-09-21-wave-3c-implementation-plan.md` §4) — **U-1 CLOSED** (mega close-grace,
   force-solid resting background, per-tier header `zIndex`, submenu intent-delay/open-mode, the
   surface-ground trio across the nav + container blocks, layered shadows, item hover paint — full list in
-  the current `decisions.md` entry). Family M-43 covered, M-21 covered pending live verification, M-09 +
-  M-13 partial (`families-master.json` names each residual). Shipped alongside the shadow-tone
-  check (`.claude/reports/2026-09-23-shadow-tone-design.md`, Bean-approved). Owed: Bean's eye on the
-  dark-surface screenshot + ring strength; live check of the edge fade, card lift and submenu opacity pair;
-  sandybrown deploy since theme 1.5.91 (waits on `sgs/google-reviews`); mega-panel `borderRadius` ruling;
-  buck's auto z-index. **Next: U-2** (scrim colour/alpha/blur per tier, M-14), design-gated.
+  the current `decisions.md` entry). M-43 and M-09 covered, M-21 covered pending live checks, M-13
+  partial (`families-master.json`). Shadow-tone check shipped (Bean signed off the look). Owed: live
+  check of the edge fade, card lift, submenu opacity; sandybrown deploy (waits on `sgs/google-reviews`);
+  Bean to choose "Lift on hover" button vs automatic preset hover. **Next: U-2** (scrim, M-14).
 - **Wave 4** (proof gate — 11 client clones incl. resn, 10 if the teardown excludes it; Bean's-eye per
   clone; every Spec 38 effect available) — not started.
 - **Wave 5** (clone walker) — not started.
