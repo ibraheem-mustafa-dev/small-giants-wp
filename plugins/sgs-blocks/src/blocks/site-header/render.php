@@ -102,7 +102,9 @@ $sh_fade_masks = array(
 );
 $sh_fade_edge  = isset( $attributes['surfaceFadeEdge'] ) && is_string( $attributes['surfaceFadeEdge'] ) ? $attributes['surfaceFadeEdge'] : 'none';
 if ( isset( $sh_fade_masks[ $sh_fade_edge ] ) ) {
-	$css .= $root_sel . '{-webkit-mask-image:' . $sh_fade_masks[ $sh_fade_edge ] . ';mask-image:' . $sh_fade_masks[ $sh_fade_edge ] . ';}';
+	$css .= $root_sel . '{-webkit-mask-image:' . $sh_fade_masks[ $sh_fade_edge ] . ';mask-image:' . $sh_fade_masks[ $sh_fade_edge ] . ';}'
+		// Forced colours keeps mask-image, so a faded edge would fade the header's text there too.
+		. '@media (forced-colors:active){' . $root_sel . '{-webkit-mask-image:none;mask-image:none;}}';
 }
 if ( isset( $attributes['backgroundColourGradient'] ) && '' !== $attributes['backgroundColourGradient'] ) {
 	$sh_gradient_value = sgs_colour_value( (string) $attributes['backgroundColourGradient'] );

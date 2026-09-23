@@ -47,7 +47,7 @@ function run_fade( string $code, array $attributes ): string {
 ok( '' === run_fade( $section, array() ), 'unset emits nothing' );
 ok( '' === run_fade( $section, array( 'surfaceFadeEdge' => 'none' ) ), 'none emits nothing' );
 $bottom = run_fade( $section, array( 'surfaceFadeEdge' => 'bottom' ) );
-ok( '.u1.sgs-site-header{-webkit-mask-image:linear-gradient(to top, transparent, #000);mask-image:linear-gradient(to top, transparent, #000);}' === $bottom, 'bottom fades the bottom edge (the fantasy reference, 0deg transparent to #000)' );
+ok( '.u1.sgs-site-header{-webkit-mask-image:linear-gradient(to top, transparent, #000);mask-image:linear-gradient(to top, transparent, #000);}@media (forced-colors:active){.u1.sgs-site-header{-webkit-mask-image:none;mask-image:none;}}' === $bottom, 'bottom fades the bottom edge (the fantasy reference, 0deg transparent to #000)' );
 $top = run_fade( $section, array( 'surfaceFadeEdge' => 'top' ) );
 ok( false !== strpos( $top, 'mask-image:linear-gradient(to bottom, transparent, #000)' ), 'top fades the top edge' );
 ok( '' === run_fade( $section, array( 'surfaceFadeEdge' => 'x;}body{display:none' ) ), 'a hostile value emits nothing' );
