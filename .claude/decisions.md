@@ -1,5 +1,17 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1144 [INCIDENT] — Reviews card reported "matching" when it was not; Google design becomes the baseline; four site-level causes fixed (2026-09-23)
+
+**What went wrong.** D1142's "matches" compared only style values of text-matched elements at two widths; Bean found six failures by eye (heading indent, fonts, logo size/side, missing card logos, arrows over the cards, dots). Standing rule now: compare at 1440/768/375, check positions, presence and loaded fonts, then look at the side-by-side captures before reporting (memory `compare-draft-vs-live-at-all-three-device-widths`).
+
+**Bean's rulings.** The Google design is the block's default look, with the other looks kept; five arrow placements, none may cover content; the navigation layer is shared (reviews first, the other two sliders later); layout choices are read from a draft's structure; the look detector keeps the default on a tie; containers with no drafted width are full width; every loaded-and-used font is captured; Google Fonts consent on by default and snapshot Google fonts self-hosted automatically; deploys must not overwrite a client's theme.
+
+**Built.** Shared slider navigation (`includes/helpers-slider-nav.php`, `assets/css/slider-nav.css`), baseline defaults (2cd55dadf, b41c4ef0b, 5f98e9050); layout-choice rungs and prefer-default rule (59d6e0ef6, 567fda19e); full width on absence (071d46fb6, 811 containers across the corpus, Mama's included, Bean-approved); fonts (43da2aa9a); deploy ships the client theme.json and fails closed (8785b1179; sandybrown and indus-test were also serving framework files). Design: `.claude/plans/2026-09-23-google-reviews-baseline-and-slider-nav-design.md`.
+
+**Verified.** Eye Care page 11 at 1440 and 375 equals the draft on every structural check; fonts self-hosted. At 768 the draft uses its content width (viewport minus scrollbar), so it shows its phone layout; at 790 both match.
+
+**Open.** Stars read slightly larger than the draft's text-glyph stars; testimonial-slider and trustpilot-reviews to adopt the shared navigation; `render.php`, `edit.js`, `assembly.py`, `manifest_annotation.py` over the file-length rule; the next theme deploy to sandybrown switches it to Mama's committed snapshot.
+
 ## D1143 [ROUTINE] — Wave 3C U-1 closed: nav surfaces de-hardcoded; universal shadow-tone check shipped alongside (2026-09-23)
 
 **U-1 (`plans/2026-09-21-wave-3c-implementation-plan.md` §4).** Six commits de-hardcode the nav surfaces per the signed families. Commit 1 (mega close-grace): the mega interactivity context in `nav-menu-markup.php` reads `submenuCloseGrace` instead of a literal 170, so the operator-set close-grace attribute now reaches the mega panel, not only the dropdown. Commit 2: `contrastSafe`'s `force-solid` value paints the header's own resting `background` (`includes/sgs-header-force-solid.php`) instead of only suppressing transparency. Commits 3/3b: `sgs/site-header` gains a per-tier `zIndex` object (`includes/sgs-header-z-index.php`), and the drawer's non-modal z-index scale derives from it. Commit 5: `submenuIntentDelay` and `submenuOpenOn` (hover or click) give an operator-set intent delay and open mode on the dropdown and mega contexts.
