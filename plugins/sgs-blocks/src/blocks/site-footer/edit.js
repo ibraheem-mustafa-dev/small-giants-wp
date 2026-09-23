@@ -174,6 +174,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		overlayGradient: attributes.overlayGradient,
 		backgroundOverlayOpacity: attributes.backgroundOverlayOpacity,
 		backgroundOverlayBlendMode: attributes.backgroundOverlayBlendMode,
+		backgroundColour: attributes.backgroundColour,
+		backgroundColourGradient: attributes.backgroundColourGradient,
+		surfaceBlur: attributes.surfaceBlur,
+		surfaceSaturate: attributes.surfaceSaturate,
 	}, colourPalette );
 
 	// Decorative SVG background layer — editor mirror. Deliberately

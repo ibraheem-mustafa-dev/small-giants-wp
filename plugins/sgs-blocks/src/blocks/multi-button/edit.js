@@ -166,6 +166,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		overlayGradient: attributes.overlayGradient,
 		backgroundOverlayOpacity: attributes.backgroundOverlayOpacity,
 		backgroundOverlayBlendMode: attributes.backgroundOverlayBlendMode,
+		backgroundColour: attributes.backgroundColour,
+		backgroundColourGradient: attributes.backgroundColourGradient,
+		surfaceBlur: attributes.surfaceBlur,
+		surfaceSaturate: attributes.surfaceSaturate,
 	}, colourPalette );
 
 	// Active device tier for the padding/margin preview below, read from the

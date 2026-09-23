@@ -47,7 +47,7 @@ import {
 	ShapeDividersPanel,
 } from '../container/components/ContainerWrapperControls';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
-import { sanitiseSvg, svgBackgroundPreview, backgroundPreview } from '../../utils';
+import { sanitiseSvg, svgBackgroundPreview, backgroundPreview, wrapperToneClass, surfaceBackdropPreview } from '../../utils';
 
 // ── Phase 1 constant options ─────────────────────────────────────────────────
 // BORDER_STYLE_OPTIONS (the local 4-option none/solid/dashed/dotted list) was removed
@@ -436,6 +436,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 
 	const wrapperStyle = {
 		...svgPreview.style,
+		...surfaceBackdropPreview( { surfaceBlur: attributes.surfaceBlur, surfaceSaturate: attributes.surfaceSaturate } ),
 		...( isSplit ? bgMediaPreview.style : {} ),
 		...resolveBackgroundPaintPreviewStyle(
 			backgroundColour,
@@ -743,6 +744,14 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		hasBackgroundPaint ? 'has-background' : null,
 		...svgPreview.className,
 		...( isSplit ? [ bgMediaPreview.className ] : [] ),
+		wrapperToneClass( {
+			backgroundOverlayColour: attributes.backgroundOverlayColour,
+			overlayGradient: attributes.overlayGradient,
+			backgroundOverlayOpacity: attributes.backgroundOverlayOpacity,
+			backgroundImage: attributes.backgroundImage,
+			backgroundColourGradient,
+			backgroundColour,
+		}, colourPalette ),
 	]
 		.filter( Boolean )
 		.join( ' ' );

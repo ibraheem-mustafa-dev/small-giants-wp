@@ -1,7 +1,7 @@
 import { resolveColourToken } from '../components/DesignTokenPicker';
 import { sanitiseSvg } from './sanitise-svg';
-import { surfaceBackdropPreview } from './surface-preview';
-import { surfaceToneClass } from './surface-tone';
+import { surfaceBackdropPreview, wrapperToneClass } from './surface-preview';
+
 
 /**
  * Shared editor-canvas mirror of the container/composite background stack —
@@ -269,34 +269,8 @@ export function backgroundPreview( attributes, colourPalette, gradientPresets = 
 		...surfaceBackdropPreview( attributes ),
 	};
 
-	// D6 (`.claude/reports/2026-09-23-shadow-tone-design.md`) — mark the
-	// canvas with the SAME `sgs-on-dark` / `sgs-on-light` class the wrapper
-	// marks the published page with (`class-sgs-container-wrapper.php`'s own
-	// `$tone_layers` build, mirrored here layer for layer: overlay colour or
-	// gradient at the overlay's own opacity, then the background image
-	// — never sampled — then the flat background gradient, then the flat
-	// background colour). Built ONCE here so every wrapper block's canvas gets
-	// it with no per-block edit.
-	const toneOverlayOpacity =
-		null !== backgroundOverlayOpacity && undefined !== backgroundOverlayOpacity && '' !== backgroundOverlayOpacity && ! Number.isNaN( parseFloat( backgroundOverlayOpacity ) )
-			? Math.max( 0.0, Math.min( 1.0, parseFloat( backgroundOverlayOpacity ) / 100 ) )
-			: 1.0;
-	const toneLayers = [];
-	if ( overlayGradient ) {
-		toneLayers.push( { gradient: overlayGradient, opacity: toneOverlayOpacity } );
-	} else if ( backgroundOverlayColour ) {
-		toneLayers.push( { colour: backgroundOverlayColour, opacity: toneOverlayOpacity } );
-	}
-	if ( hasBgImage ) {
-		toneLayers.push( { image: true } );
-	}
-	if ( backgroundColourGradient ) {
-		toneLayers.push( { gradient: backgroundColourGradient, opacity: 1.0 } );
-	}
-	if ( backgroundColour ) {
-		toneLayers.push( { colour: backgroundColour, opacity: 1.0 } );
-	}
-	const toneClass = surfaceToneClass( toneLayers, colourPalette, gradientPresets );
+	// The same surface-tone class the wrapper adds on the page.
+	const toneClass = wrapperToneClass( attributes, colourPalette, gradientPresets );
 
 	// Gate the ::before media layer / ::after overlay layer on marker classes
 	// so the pseudo-elements exist ONLY on instances that actually have
