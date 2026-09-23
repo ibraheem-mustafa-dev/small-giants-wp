@@ -711,9 +711,9 @@ def route_area_css_to_block_attrs(
     # each decls dict in place; a value the draft already declared as the
     # longhand always wins (the function only ever `setdefault`s).
     from converter.services.root_supports import expand_background_border_shorthand
-    expand_background_border_shorthand(base_decls, slug=owning_block)
+    expand_background_border_shorthand(base_decls, slug=owning_block, per_side=True)
     for _tier_decls in bp_decls.values():
-        expand_background_border_shorthand(_tier_decls, slug=owning_block)
+        expand_background_border_shorthand(_tier_decls, slug=owning_block, per_side=True)
 
     # Width/height sizing is excluded by default (grid-area / track sizing is not element
     # size). The selector-keyed route alone may honour one, when an attr's own css_property
@@ -789,7 +789,19 @@ def route_area_css_to_block_attrs(
     # (e.g. hero's GRID_AREA imagePadding, css_element='split-image'). Purely
     # ADDITIVE + MF-4-safe: it never changes a currently-resolving case — every
     # working name-guess path is preserved verbatim as the fallback.
-    _pad_object_base, _ = _area_attr_or_ambiguity(owning_block, area, "padding")
+    _pad_object_base, _pad_amb = _area_attr_or_ambiguity(owning_block, area, "padding")
+    if (
+        (_pad_object_base is None or db_lookup.box_family_for(owning_block, _pad_object_base) is None)
+        and not _pad_amb
+    ):
+        # The element's own class may name a padding box attr the css_element key cannot
+        # reach (a draft's `review-request-url` vs the block's `write-review`): the same
+        # selector-keyed second lookup the flat loop below uses, asked for the SHORTHAND,
+        # because a box attr declares `padding`, never one side. Consulted only on a plain
+        # miss; a contested answer is left to the flat loop, which reports it.
+        _sel_pad, _ = _selector_route_attr(child_node, owning_block, "padding", area)
+        if _sel_pad is not None and db_lookup.box_family_for(owning_block, _sel_pad) is not None:
+            _pad_object_base = _sel_pad
     if (
         _pad_object_base is None
         or db_lookup.box_family_for(owning_block, _pad_object_base) is None

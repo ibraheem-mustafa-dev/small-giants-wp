@@ -126,7 +126,7 @@ _ALWAYS_STRIP_SHORTHANDS: frozenset[str] = frozenset(["background", "border"])
 
 
 def expand_background_border_shorthand(
-    decls: dict[str, str], *, slug: str | None = None,
+    decls: dict[str, str], *, slug: str | None = None, per_side: bool = False,
 ) -> None:
     """Normalise ``background``/``border`` shorthand into longhands, IN PLACE.
 
@@ -189,14 +189,37 @@ def expand_background_border_shorthand(
             decls["background-image"] = bg
 
     if "border" in decls and "border-width" not in decls:
-        parts = decls["border"].strip().split()
-        for tok in parts:
-            if any(u in tok for u in ("px", "em", "rem", "pt")):
-                decls.setdefault("border-width", tok)
-            elif tok in ("solid", "dashed", "dotted", "double", "none"):
-                decls.setdefault("border-style", tok)
-            elif tok.startswith("#") or tok.startswith("var("):
-                decls.setdefault("border-color", tok)
+        _split_border_shorthand(decls, "border")
+
+    # Per-side shorthands (2026-09-22): `border-bottom: 1px solid #E8EAED` is the same
+    # shorthand scoped to one side, and a block attribute that paints one side declares the
+    # side's LONGHAND (`border-bottom-width` / `-color`). Same token rules and the same
+    # never-override-a-declared-longhand contract as the four-side case above.
+    # OPT-IN (`per_side`), for the per-area child fold only: there an attribute matches a
+    # per-side longhand only when it declares exactly that side. On the block ROOT path the
+    # outer-box resolver maps `border-bottom-width` into the all-sides `borderWidth` object,
+    # while the side's colour has no all-sides home; several blocks default `borderStyle` to
+    # `solid`, so the width alone would paint a 1px line in the text colour where the draft
+    # has a light one (measured on the corpus, 2026-09-22). That needs its own design.
+    if not per_side:
+        return
+    for _side in ("top", "right", "bottom", "left"):
+        _key = f"border-{_side}"
+        if _key in decls and f"{_key}-width" not in decls:
+            _split_border_shorthand(decls, _key)
+
+
+def _split_border_shorthand(decls: dict[str, str], key: str) -> None:
+    """Add ``{key}-width`` / ``-style`` / ``-color`` longhands read from the ``key``
+    shorthand (``border`` or ``border-<side>``), ``setdefault`` semantics: a longhand the
+    draft declared itself always wins."""
+    for tok in decls[key].strip().split():
+        if any(u in tok for u in ("px", "em", "rem", "pt")):
+            decls.setdefault(f"{key}-width", tok)
+        elif tok in ("solid", "dashed", "dotted", "double", "none"):
+            decls.setdefault(f"{key}-style", tok)
+        elif tok.startswith("#") or tok.startswith("var("):
+            decls.setdefault(f"{key}-color", tok)
 
 
 # ---------------------------------------------------------------------------

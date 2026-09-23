@@ -332,7 +332,10 @@ def test_the_second_lookup_is_not_consulted_after_an_ambiguous_first(monkeypatch
     monkeypatch.setattr(fold_helpers, "_selector_route_attr",
                         lambda *a, **k: called.append(a) or (None, ""))
     _route(_LABEL, "label", "sgs/product-card")
-    assert called == []
+    # The padding-object pre-check asks the selector route for `padding` (a plain miss on
+    # this element, not the contested property); it must never be asked for font-weight.
+    assert [a[2] for a in called if a[2] == "font-weight"] == []
+    assert all(a[2] == "padding" for a in called)
 
 
 # ---------------------------------------------------------------------------
