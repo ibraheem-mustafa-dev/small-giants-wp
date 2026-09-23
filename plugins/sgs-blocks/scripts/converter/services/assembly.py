@@ -790,6 +790,19 @@ def build_block_markup(
         if not _sec_base.get("max-width") and "full" in _align_support:
             attrs.setdefault("align", "full")
 
+    # step 7b: CONTENT-WIDTH layer absence (Spec 31 §13.6 / FR-31-21) — step 7's twin one
+    # layer in, at EVERY depth (not is_root-gated). A draft that puts no max-width on the
+    # content band spans the element, so a block whose content-width attr DEFAULTS to a cap
+    # (sgs/container's "normal" -> theme 1200px) gets the explicit no-cap token. Runs here
+    # because the band max-width can arrive from the CSS pass, the sole pass-through fold
+    # (a ScalarLift in `results`) or step 3c, and only the merged dict knows. A written
+    # value always wins. Mechanism + gates: content_width_absence module docstring.
+    from converter.services.content_width_absence import content_width_absence_attr
+
+    _cw = content_width_absence_attr(rec.slug, attrs)
+    if _cw is not None:
+        attrs[_cw[0]] = _cw[1]
+
     # step 8: token-resolution advisory check (detection-only — see
     # converter/services/token_resolution_check.py module docstring). This is
     # the ONE chokepoint where every resolver's CSS Write AND every content
