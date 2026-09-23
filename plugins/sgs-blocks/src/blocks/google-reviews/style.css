@@ -53,7 +53,7 @@
 /* Gap, padding and the divider are attributes' (`headerGap`, `headerPadding`, `headerDivider*`). */
 :where( .sgs-google-reviews__aggregate ) {
 	gap: 22px 16px;
-	margin-bottom: 0;
+	margin-bottom: 22px;
 	padding: 0 0 22px;
 	border-bottom: 1px solid var( --wp--preset--color--border-light, #e8eaed );
 }
@@ -571,6 +571,9 @@
 	text-decoration: none;
 	font-size: 14px;
 	font-weight: 500;
+	/* The fill stays inside the border: a colour painted on the button's ::after layer (the button helper) must not
+	   show a ring of this default background through the transparent border. */
+	background-clip: padding-box;
 }
 
 /* Hover background-colour is client-controllable — emitted by render.php

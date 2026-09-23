@@ -4,7 +4,7 @@
 verdict: PASS
 intent_capture_passed: true
 first_paint_capture_passed: true
-source_sha: e567c31354266756
+source_sha: 2f3bf61b843765e5
 blocks: google-reviews
 target: darkcyan-grouse-898606.hostingersite.com (Eye Care page 11, pipeline run 2026-09-23 19:17)
 date:   2026-09-23
@@ -68,3 +68,15 @@ Bean's eye on this state (R-31-13); the editor click-through after this deploy; 
 - 768 note: the draft chooses its layout from its content width (viewport minus the browser's 15px scrollbar), so at a
   768 viewport it shows its PHONE layout while the site shows tablet. At 790 the two match exactly (heading and card at
   x=52, card 671 wide, review cards 340). Not a clone defect.
+
+## Final pass (same day, run 2026-09-23 20:43, after the full-width rule, the client theme.json deploy fix and self-hosted fonts)
+
+Measured at 1440, 768 and 375 against the draft, then seen side by side:
+- 1440 and 375: heading left edge, card position and width, header G (30px, left of the caption), 13 of 13 card marks,
+  review card width, arrows below with 0 px² over any card, no dots, heading font Playfair Display and score font Roboto
+  all equal the draft. Fonts load from the site's own domain (Outfit, Playfair Display, Roboto, woff2).
+- The header divider now has the draft's 22px gap above the cards (it sat on the cards' top edges); "See all reviews"
+  no longer shows a ring of the default background through its transparent border (background-clip: padding-box).
+- 768: the differences are the draft's own container-width rule (see above); at 790 they match.
+- Still different: the stars read slightly larger than the draft's (the draft draws ★ text glyphs at 15px, whose
+  visible star is smaller than the font size; the block draws 15px SVG stars). Review cards 3 to 6px shorter.
