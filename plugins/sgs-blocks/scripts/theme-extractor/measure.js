@@ -21,6 +21,7 @@
 const { chromium } = require('playwright');
 const fs = require('fs');
 const { GENERATED_CLASS_RE, toURL, parseArgs, readHover } = require('./measure-node');
+const { FONT_USAGE_SRC } = require('./font-usage');
 
 // ── The in-page capture function (serialised into the browser context) ──────────────────────────
 // Reads getComputedStyle on the representative nodes + enough structural signal for the Python
@@ -260,6 +261,10 @@ async function main() {
     await page.waitForTimeout(400);
 
     const facts = await page.evaluate('(' + CAPTURE_SRC.toString() + ')(' + JSON.stringify(GENERATED_CLASS_RE.source) + ')');
+
+    // FR-33-18 font census, read once every face the page needs has settled (see font-usage.js).
+    await page.evaluate('document.fonts.ready.then(() => true)').catch(() => {});
+    Object.assign(facts, await page.evaluate('(' + FONT_USAGE_SRC.toString() + ')()'));
 
     // Second pass: read each button's :hover computed by actually hovering the SAME node measured
     // at rest (addressed by its capture index, not an ambiguous class selector).

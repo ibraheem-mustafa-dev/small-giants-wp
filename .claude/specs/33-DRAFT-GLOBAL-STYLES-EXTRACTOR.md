@@ -1,12 +1,12 @@
 ---
 doc_type: spec
 spec_id: 33
-spec_version: "1.5"
+spec_version: "1.6"
 project: small-giants-wp
 thread: header-footer-setup-pipeline (Part 1 of 2)
 title: "Universal Draft Global-Styles / Token Extractor"
 created: 2026-07-13
-last_verified: 2026-09-20
+last_verified: 2026-09-23
 status: complete
 references:
   - 26-SGS-GLOBAL-STYLES-AND-THEMING.md (the theming MODEL this FEEDS; FR-26-C derived-globals = a FORWARD CONTRACT, inert until Spec 26 Phase 3)
@@ -384,6 +384,21 @@ The pipeline inserting the saved values in place of the bindings is NOT built (S
 
 **Done when (met).** On the Eye Care test site Outfit loads as `100 900` and Playfair Display as `500 700`; the H1 renders in Playfair Display at weight 500.
 
+### FR-33-18 — Every loaded-and-rendered font family is captured — BUILT
+
+**Problem.** The three role slots (`body`, `heading`, `display`) say which family sets the body text and the headings. They cannot say which families the design needs on the site. Eye Care's draft loads Roboto for its Google-reviews widget and paints it on 87 elements; no role slot names it, so the snapshot dropped it.
+
+**Behaviour.** `measure.js` runs a font census (`plugins/sgs-blocks/scripts/theme-extractor/font-usage.js::FONT_USAGE_SRC`): for every rendered element that paints its own text, the computed font-family stack, weight and style, plus `document.fonts` with each face's load status. `used_fonts.py::add_rendered_families` then adds one `settings.typography.fontFamilies[]` entry per family that passes BOTH tests:
+
+1. **Loaded.** A Google Fonts CSS `<link>` or `@import` names it (host checked exactly: `fonts.googleapis.com`), or a draft `@font-face` rule declares it.
+2. **Rendered.** A census row's stack resolves to it: it is the first loaded name in that stack and no generic family (`serif`, `system-ui`...) comes before it.
+
+Each entry carries `slug`, `name`, `fontFamily` (the stack the draft writes, most-used when several), `fontWeights` and `fontStyles` (only those rendered), `google: true|false` and `_source: "rendered"`. It gets a `fontFace` only when no other entry already loads that family. The face comes from the same self-host path the role slots use (`extract.py::_resolve_family_face`). The role slots are never changed. A family that renders but is neither a Google font nor bundled is logged as a gap and not added, because there would be no file behind the name. When facts come from an older `measure.js` with no census, a gap is logged and nothing is added.
+
+**Runtime companion (plugin).** `Google_Fonts_Self_Host` (sgs-blocks) reads `google: true` entries at render time. If an entry's family has no face served from the site, it downloads the recorded weights and styles server-side into `wp-content/uploads/fonts/sgs-google/<slug>/`, using WP-Cron or `wp sgs google-fonts sync`. It then injects local `fontFace` entries and strips any remote `src`, so visitors never contact Google. It does nothing when the extractor has already self-hosted the family.
+
+**Done when (met 2026-09-23).** On the Eye Care draft the census and `document.fonts` agree: Outfit 400/500, Playfair Display 500, Roboto 400/500. The snapshot gains `outfit`, `playfair-display` and `roboto` entries with those weights, and Roboto is self-hosted as `assets/fonts/roboto/roboto-variable-latin.woff2`. The draft's link also requests Outfit 300/600 and Playfair 600/700, which nothing renders, so those weights are not recorded. Tests (`tests/test_used_fonts.py`) cover a family that is loaded but never rendered (not added), one that is rendered but never loaded (not added), and one listed after a generic (does not paint). They also confirm that removing Roboto's census rows removes Roboto. A mutation run confirmed these controls fail when the rendered check is broken.
+
 ## Known limits
 
 - **Saved values are not yet inserted.** The placeholder map is written but the pipeline does not yet replace `{{ phone }}`-style bindings with the saved Site Info values; that is the runtime-binding stage of Spec 31 (FR-31-26.6).
@@ -415,6 +430,7 @@ The pipeline inserting the saved values in place of the bindings is NOT built (S
 | FR-33-15 | vocabulary in data tables; gate `_declared_design`; unreadable table gap-logged | Eye Care live page = snapshot; 3 README wordings | vs the rendered body and primary button | Mama's and Indus byte-identical |
 | FR-33-16 | overlay keeps all base slugs; only `text-label` added | placeholder and drifting greys absent | vs live custom properties | base-slug set unchanged |
 | FR-33-17 | probe order tested with a faked network | live faces `100 900` and `500 700` | vs Google's declared range | Mama's Fraunces face equals its golden |
+| FR-33-18 | loaded AND rendered both required; exact-host link parse | Eye Care: Roboto + Outfit + Playfair entries with rendered weights | vs census + `document.fonts` | loaded-unused, rendered-unloaded and after-generic families not added |
 
 ## Website-credit recognition (Part 2 — header/footer pipeline)
 

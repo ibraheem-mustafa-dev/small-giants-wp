@@ -31,22 +31,47 @@ defined( 'ABSPATH' ) || exit;
 class Font_Collection {
 
 	/**
-	 * Wire up the init hook.
+	 * Wire up the init hook and the Google Fonts services (consent default + self-hosting).
+	 *
+	 * The services are loaded from here rather than sgs-blocks.php so every font concern has one
+	 * entry point.
 	 */
 	public function __construct() {
 		add_action( 'init', array( $this, 'register' ), 10 );
+
+		require_once __DIR__ . '/class-google-fonts-consent.php';
+		require_once __DIR__ . '/class-google-fonts-installer.php';
+		require_once __DIR__ . '/class-google-fonts-self-host.php';
+		new Google_Fonts_Consent();
+		$self_host = new Google_Fonts_Self_Host( new Google_Fonts_Installer() );
+
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			require_once __DIR__ . '/class-google-fonts-cli.php';
+			\WP_CLI::add_command( 'sgs google-fonts', new Google_Fonts_Cli( $self_host ) );
+		}
 	}
 
 	/**
-	 * Register the Google Fonts collection with the WP Font Library.
+	 * Register the SGS Google Fonts catalogue — OFF by default since 2026-09-23.
 	 *
-	 * The collection slug 'sgs-google-fonts' is unique to this plugin.
-	 * It is safe to call this method on every page load — WP deduplicates
-	 * by slug internally.
+	 * Why off: every `src` in assets/font-collections/google-fonts.json is a Google CSS2
+	 * STYLESHEET URL (fonts.googleapis.com/css2?family=...), not a font file. Core installs a
+	 * collection face by fetch()ing each src in the browser and uploading the bytes through
+	 * wp_handle_upload() with font-only mime types (WP 7.1 global-styles-ui
+	 * utils::downloadFontFaceAssets + WP_REST_Font_Faces_Controller::handle_font_file_upload),
+	 * so a face from this catalogue arrives as a text/css file named "css2?family=..." and is
+	 * refused as a disallowed file type. That is the manual download-and-upload trap. Core's own
+	 * `google-fonts` collection carries direct fonts.gstatic.com woff2 URLs and previews, and its
+	 * permission prompt is now pre-granted by Google_Fonts_Consent, so this catalogue is a broken
+	 * duplicate. Re-enable with `add_filter( 'sgs_register_google_fonts_catalogue', '__return_true' );`
+	 * only after build-font-collection.py emits real font-file URLs.
 	 *
 	 * @return void
 	 */
 	public function register(): void {
+		if ( ! apply_filters( 'sgs_register_google_fonts_catalogue', false ) ) {
+			return;
+		}
 		// WP_Font_Collection's lazy-load contract: pass the JSON file path under
 		// the `font_families` key (NOT `src`). When `font_families` is a string,
 		// core treats it as a path/URL to lazy-load via ::get_data(); when it's

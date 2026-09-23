@@ -225,6 +225,58 @@
               ]
             }
           ]
+        },
+        {
+          "slug": "playfair-display",
+          "name": "Playfair Display",
+          "fontFamily": "\"Playfair Display\", serif",
+          "google": true,
+          "fontWeights": [
+            "500"
+          ],
+          "fontStyles": [
+            "normal"
+          ],
+          "_source": "rendered"
+        },
+        {
+          "slug": "roboto",
+          "name": "Roboto",
+          "fontFamily": "Roboto, Arial, sans-serif",
+          "google": true,
+          "fontWeights": [
+            "400",
+            "500"
+          ],
+          "fontStyles": [
+            "normal"
+          ],
+          "_source": "rendered",
+          "fontFace": [
+            {
+              "fontFamily": "Roboto",
+              "fontWeight": "100 900",
+              "fontStyle": "normal",
+              "fontDisplay": "swap",
+              "src": [
+                "file:./assets/fonts/roboto/roboto-variable-latin.woff2"
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "outfit",
+          "name": "Outfit",
+          "fontFamily": "Outfit, system-ui, sans-serif",
+          "google": true,
+          "fontWeights": [
+            "400",
+            "500"
+          ],
+          "fontStyles": [
+            "normal"
+          ],
+          "_source": "rendered"
         }
       ],
       "fontSizes": [

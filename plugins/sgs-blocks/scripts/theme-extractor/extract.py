@@ -56,6 +56,7 @@ import presets as presets_mod
 import palette_refs
 import site_palette
 import usage_census
+import used_fonts
 import variant_sets as variant_sets_mod
 import typography as typo_mod
 from schema_validate import validate_theme_json
@@ -296,6 +297,20 @@ def _self_host_google_font(family: str, links: list, repo: pathlib.Path, trace: 
     return faces
 
 
+def _resolve_family_face(name: str, bundled: dict, links: list, repo: pathlib.Path, trace: list,
+                         facts: dict) -> list | None:
+    """A fontFace array for this family — from the framework's own bundled library when the
+    family is already self-hosted there, else fetched + self-hosted fresh. Same code path for
+    every font (R-31-9): no branch for "fonts we happened to bundle" vs "fonts a client draft
+    introduces". Shared by the role slots and the rendered families (FR-33-18)."""
+    if not name:
+        return None
+    bundled_face = bundled.get(name.lower())
+    if bundled_face:
+        return [dict(bundled_face)]
+    return _self_host_google_font(name, links, repo, trace, facts)
+
+
 def _overlay_font_families(baseline: dict, facts: dict, links: list, trace: list,
                             repo: pathlib.Path) -> None:
     fams = baseline.setdefault("settings", {}).setdefault("typography", {}).setdefault("fontFamilies", [])
@@ -308,17 +323,7 @@ def _overlay_font_families(baseline: dict, facts: dict, links: list, trace: list
     bundled = _bundled_faces_by_family(baseline)
 
     def _resolve_face(family_stack: str) -> list | None:
-        """A fontFace array for this family — from the framework's own bundled library when the
-        family is already self-hosted there, else fetched + self-hosted fresh. Same code path for
-        every font (R-31-9): no branch for "fonts we happened to bundle" vs "fonts a client draft
-        introduces"."""
-        name = _primary_family_name(family_stack)
-        if not name:
-            return None
-        bundled_face = bundled.get(name.lower())
-        if bundled_face:
-            return [dict(bundled_face)]
-        return _self_host_google_font(name, links, repo, trace, facts)
+        return _resolve_family_face(_primary_family_name(family_stack), bundled, links, repo, trace, facts)
 
     if "body" in by_slug:
         by_slug["body"]["fontFamily"] = body_fam
@@ -456,7 +461,13 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
     # FONT FAMILIES + font loading (FR-33-14 — every declared family must resolve to a working
     # self-hosted @font-face, whether already bundled in the framework or introduced fresh by
     # this draft)
-    _overlay_font_families(snap, facts, presets_mod.font_links(html), trace, repo)
+    links = presets_mod.font_links(html)
+    _overlay_font_families(snap, facts, links, trace, repo)
+    # FR-33-18 — every family the draft loads AND renders gets its own entry beside the role slots.
+    bundled = _bundled_faces_by_family(baseline)
+    used_fonts.add_rendered_families(
+        snap, facts, links, css, trace,
+        lambda name: _resolve_family_face(name, bundled, links, repo, trace, facts), set(bundled))
 
     # BUTTON PRESETS (FR-33-4 open bag) — MERGED onto the framework baseline, never replaced.
     #
