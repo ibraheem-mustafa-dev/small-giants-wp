@@ -93,6 +93,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		itemBorderWidth,
 		itemBorderStyle,
 		itemBorderRadius,
+		itemOpacity,
+		itemOpacityHover,
+		itemPaddingShiftHover,
+		submenuOpacity,
+		submenuOpacityHover,
 		itemFontWeightCurrent,
 		itemMagnetEnabled,
 		submenuBorderColour,
@@ -539,6 +544,11 @@ export default function Edit( { attributes, setAttributes } ) {
 					itemBorderWidth={ itemBorderWidth }
 					itemBorderStyle={ itemBorderStyle }
 					itemBorderRadius={ itemBorderRadius }
+					itemOpacity={ itemOpacity }
+					itemOpacityHover={ itemOpacityHover }
+					itemPaddingShiftHover={ itemPaddingShiftHover }
+					submenuOpacity={ submenuOpacity }
+					submenuOpacityHover={ submenuOpacityHover }
 					setAttributes={ setAttributes }
 				/>
 

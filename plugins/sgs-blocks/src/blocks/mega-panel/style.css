@@ -120,7 +120,13 @@
 }
 .wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:hover,
 .wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:focus-within {
-	transform: translateY( -3px );
+	/* panelCardLift (M-21) — editor-canvas mirror of render.php's own rule.
+	   `--sgs-mm-card-lift` is set by edit.js from the live attribute value
+	   (already the negated calc(), matching render.php's own transform); the
+	   `-3px` fallback here is ONLY what an unset custom property resolves to
+	   (never reached once edit.js sets it, but keeps this rule correct if the
+	   property is ever read outside that context). */
+	transform: translateY( var( --sgs-mm-card-lift, -3px ) );
 	border-color: var( --sgs-mm-accent-border, var( --wp--preset--color--accent ) );
 }
 .wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:hover::after,
@@ -270,6 +276,14 @@
 	padding: 11px 12px;
 	border-radius: 13px;
 }
+/* itemPaddingShiftHover (M-21) — editor-canvas mirror of render.php's own
+   rule; `--sgs-mm-item-padding-shift` is set by edit.js from the live
+   attribute value. Unset -> the `calc(12px + 0px)` fallback is a no-op,
+   identical to the resting padding above. */
+.wp-block-sgs-mega-panel[ data-mega-style='columns' ] .sgs-icon-list__item:hover,
+.wp-block-sgs-mega-panel[ data-mega-style='columns' ] .sgs-icon-list__item:focus-within {
+	padding-inline-start: calc( 12px + var( --sgs-mm-item-padding-shift, 0px ) );
+}
 .wp-block-sgs-mega-panel[ data-mega-style='columns' ] .sgs-icon-list__icon {
 	width: 34px;
 	height: 34px;
@@ -324,6 +338,11 @@
 	padding: 0;
 	border-radius: 0;
 }
+/* itemPaddingShiftHover (M-21) — see the `columns` style's own comment above. */
+.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-icon-list__item:hover,
+.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-icon-list__item:focus-within {
+	padding-inline-start: calc( 0px + var( --sgs-mm-item-padding-shift, 0px ) );
+}
 .wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-icon-list__icon {
 	width: 36px;
 	height: 36px;
@@ -345,6 +364,11 @@
 	justify-content: space-between;
 	padding: 15px 14px;
 	border-radius: 14px;
+}
+/* itemPaddingShiftHover (M-21) — see the `columns` style's own comment above. */
+.wp-block-sgs-mega-panel[ data-mega-style='minimal' ] .sgs-icon-list__item:hover,
+.wp-block-sgs-mega-panel[ data-mega-style='minimal' ] .sgs-icon-list__item:focus-within {
+	padding-inline-start: calc( 14px + var( --sgs-mm-item-padding-shift, 0px ) );
 }
 .wp-block-sgs-mega-panel[ data-mega-style='minimal' ] .sgs-icon-list__icon {
 	width: 34px;

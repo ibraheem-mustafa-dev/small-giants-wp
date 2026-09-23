@@ -553,7 +553,46 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		$css .= $uid_sel . ' .' . $bem_root . '__sublink{display:flex;align-items:center;min-height:44px;padding:0 16px;'
 			. 'text-decoration:none;white-space:nowrap;'
 			. 'color:var(--wp--preset--color--primary, currentColor);}';
-		
+
+		/*
+		 * `submenuOpacity`/`submenuOpacityHover` (M-21) — the sublink's OWN
+		 * resting/hover opacity, GENUINELY SEPARATE from the item element's
+		 * itemOpacity/itemOpacityHover (nav-menu-css.php): fantasy's own
+		 * reference needs the submenu link resting at 0.6 and brightening to 1
+		 * on hover — the opposite direction from the item's 1-to-0.5 — so one
+		 * attribute pair cannot correctly cover both elements on the same
+		 * reference. Both numbers are clamped to 0-1 for the same reason the
+		 * item pair is (a pattern/programmatic writer is not bound by the
+		 * RangeControl). Shared by the bar's dropdown AND the drawer's
+		 * accordion submenu link, same as the padding-shift block below.
+		 */
+		$submenu_opacity = $attributes['submenuOpacity'] ?? null;
+		if ( is_numeric( $submenu_opacity ) ) {
+			$css .= $sublink_sel . '{opacity:' . max( 0, min( 1, (float) $submenu_opacity ) ) . ';}';
+		}
+		$submenu_opacity_hover = $attributes['submenuOpacityHover'] ?? null;
+		if ( is_numeric( $submenu_opacity_hover ) ) {
+			$css .= sgs_hover_state_rules( $sublink_sel, 'opacity:' . max( 0, min( 1, (float) $submenu_opacity_hover ) ), ':focus-visible' );
+		}
+
+		/*
+		 * `itemPaddingShiftHover` (M-21) — an ADDITIVE hover-only inline-start
+		 * padding shift on top of the sublink's own resting '16px' literal above
+		 * (no attribute exposes that resting value on its own, so the literal is
+		 * read directly). Shared by the bar's dropdown AND the drawer's
+		 * accordion submenu link — this function is `$bem_root`-templated and
+		 * called by both blocks' render.php, so one emission covers both
+		 * targets in the design report's M-21 row (halcyon minimal, indus-foods
+		 * dropdown). The SAME attribute the `item` element (nav-menu-css.php)
+		 * reads — see that file's own note for why one attribute, not two,
+		 * covers both elements. Validated through sgs_css_single_length_value();
+		 * empty/hostile input emits no rule.
+		 */
+		$sublink_padding_shift = sgs_css_single_length_value( $attributes['itemPaddingShiftHover'] ?? '' );
+		if ( '' !== $sublink_padding_shift ) {
+			$css .= sgs_hover_state_rules( $sublink_sel, 'padding-inline-start:calc(16px + ' . $sublink_padding_shift . ')', ':focus-visible' );
+		}
+
 		/*
 		 * …EXCEPT in the drawer, where `nowrap` has nothing to wrap into.
 		 *

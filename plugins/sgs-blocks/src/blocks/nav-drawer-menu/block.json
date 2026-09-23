@@ -118,7 +118,8 @@
 						"css:font-style": "itemFontStyle",
 						"css:line-height": "itemLineHeight",
 						"css:text-decoration": "itemTextDecoration",
-						"css:text-transform": "itemTextTransform"
+						"css:text-transform": "itemTextTransform",
+						"css:opacity": "itemOpacity"
 					},
 					"states": {
 						"hover": {
@@ -130,8 +131,11 @@
 								"css:border-color": "itemBorderColourHover",
 								"css:font-weight": "itemFontWeightHover",
 								"css:text-decoration": "itemTextDecorationHover",
-								"css:text-transform": "itemTextTransformHover"
-							}
+								"css:text-transform": "itemTextTransformHover",
+								"css:opacity": "itemOpacityHover",
+								"css:padding-inline-start": "itemPaddingShiftHover"
+							},
+							"_noBaseByDesignNote": "css:padding-inline-start (itemPaddingShiftHover) has no resting counterpart by design: the value is an ADDITIVE hover-only shift on top of whatever inline-start padding is already in effect at rest (style.css's `padding: 8px 12px`), not an absolute padding of its own — a 'resting shift' control would be redundant with the item's existing padding. Same shape as css:transform (scaleHover) on sgs/icon/sgs/post-grid, Bean-ruled 2026-08-20."
 						},
 						"current": {
 							"attrMap": {
@@ -143,7 +147,7 @@
 							}
 						}
 					},
-					"_note": "The nav item LINK — every stateful control on this element targets the <a>, never the <li> (Spec 41 FR-41-1). Three states are declared: base, `hover` (render.php's `$hover_targets` = `:hover, :focus-visible`) and `current` (`[aria-current=\"page\"]`), so a visitor can distinguish WHERE THEY ARE from WHAT THEY ARE POINTING AT. The current-page state is operator-controllable through `itemColourCurrent` / `itemBgCurrent` / `itemFontWeightCurrent` (Spec 41 FR-41-1); `itemFontWeightCurrent` is the non-colour signal that satisfies WCAG 1.4.1 without relying on colour alone. `current` deliberately maps DIFFERENT attribute names from `hover`: the classifier's `extract-signatures.py::_record` is last-write-wins, so a state map byte-identical to `hover` silently overwrites the hover derivation and tags those attributes with a css_state they never render in. Every state member is EXPLICIT rather than left to the `{prefix}Suffix` convention — `css:font-weight`, `css:text-decoration` and `css:text-transform` each carry a base attribute AND a state sibling, and without an explicit entry per state both derive to the same (property, element, state=NULL) slot and collide on one routing destination. The base `css:font-weight` -> `itemFontWeight` entry is load-bearing for the same reason: a state entry with no base is the STATE_WITHOUT_BASE shape the manifest gate flags. `css:border-radius` -> `itemBorderRadius` is base-only — radius has no state on `SgsBorderControl` (Spec 41 FR-41-7)."
+					"_note": "The nav item LINK — every stateful control on this element targets the <a>, never the <li> (Spec 41 FR-41-1). Three states are declared: base, `hover` (render.php's `$hover_targets` = `:hover, :focus-visible`) and `current` (`[aria-current=\"page\"]`), so a visitor can distinguish WHERE THEY ARE from WHAT THEY ARE POINTING AT. The current-page state is operator-controllable through `itemColourCurrent` / `itemBgCurrent` / `itemFontWeightCurrent` (Spec 41 FR-41-1); `itemFontWeightCurrent` is the non-colour signal that satisfies WCAG 1.4.1 without relying on colour alone. `current` deliberately maps DIFFERENT attribute names from `hover`: the classifier's `extract-signatures.py::_record` is last-write-wins, so a state map byte-identical to `hover` silently overwrites the hover derivation and tags those attributes with a css_state they never render in. Every state member is EXPLICIT rather than left to the `{prefix}Suffix` convention — `css:font-weight`, `css:text-decoration` and `css:text-transform` each carry a base attribute AND a state sibling, and without an explicit entry per state both derive to the same (property, element, state=NULL) slot and collide on one routing destination. The base `css:font-weight` -> `itemFontWeight` entry is load-bearing for the same reason: a state entry with no base is the STATE_WITHOUT_BASE shape the manifest gate flags. `css:border-radius` -> `itemBorderRadius` is base-only — radius has no state on `SgsBorderControl` (Spec 41 FR-41-7). M-21 (2026-09-23): `css:opacity` -> itemOpacity/itemOpacityHover and `css:padding-inline-start` -> itemPaddingShiftHover (hover-only) added; itemPaddingShiftHover is ALSO mapped on the `sublink` element below (dropdown/accordion submenu link) — the SAME attribute reused across both elements, deliberately, because the reference sites only ever set one padding-shift value per instance; itemOpacity/itemOpacityHover are NOT reused on `sublink` because fantasy's own reference needs a genuinely DIFFERENT rest/hover opacity pair on its sub-link (0.6 to 1) from its item link (1 to 0.5)."
 				},
 				"indicator": {
 					"label": "Sliding indicator",
@@ -188,7 +192,8 @@
 					"clusters": [
 						"text",
 						"fill",
-						"border"
+						"border",
+						"layout"
 					],
 					"prefix": "",
 					"attrMap": {
@@ -209,7 +214,8 @@
 						"css:fill-gradient": "sublinkMarkerColourGradient",
 						"css:border-color": "submenuLinkBorderColour",
 						"css:border-width": "submenuLinkBorderWidth",
-						"css:border-style": "submenuLinkBorderStyle"
+						"css:border-style": "submenuLinkBorderStyle",
+						"css:opacity": "submenuOpacity"
 					},
 					"states": {
 						"hover": {
@@ -221,8 +227,11 @@
 								"css:text-transform": "submenuTextTransformHover",
 								"css:fill": "sublinkMarkerColourHover",
 								"css:fill-gradient": "sublinkMarkerColourHoverGradient",
-								"css:border-color": "submenuLinkBorderColourHover"
-							}
+								"css:border-color": "submenuLinkBorderColourHover",
+								"css:padding-inline-start": "itemPaddingShiftHover",
+								"css:opacity": "submenuOpacityHover"
+							},
+							"_noBaseByDesignNote": "css:padding-inline-start (itemPaddingShiftHover, M-21) has no resting counterpart by design: an ADDITIVE hover-only shift on top of the resting inline-start padding already in effect (includes/nav-menu-submenu-css.php's hardcoded `padding:0 16px`, no attribute of its own to override). Reused from the `item` element above -- see that element's own note for why the SAME attribute (not a separate submenuPaddingShiftHover) is correct here."
 						},
 						"current": {
 							"attrMap": {
@@ -233,7 +242,7 @@
 							}
 						}
 					},
-					"_note": "The submenu LINK — <a class=\"sgs-nav-drawer-menu__sublink\">, painted at render.php's own scoped `.sgs-nav-drawer-menu__sublink{...}` rule. It carries three states: base, `hover` (`sgs_hover_state_rules()` on `:hover, :focus-visible`) and `current` (`[aria-current=\"page\"]`), matching the bar item's own three-state model (Spec 41 FR-41-1 / FR-41-9). `\"prefix\": \"\"` is a deliberate, permanent opt-out from the `{prefix}Suffix` convention: a `submenu` prefix would wrongly claim submenuAlign/Caret/CloseGrace/MinWidth/Padding and the whole submenuBorder* family, which belong to the submenu PANEL (the `submenu-panel` element) rather than to this anchor. The `submenu`-prefixed typography attributes that DO belong to this anchor reach it through the explicit attrMap entries above, one per property — that is the resolution, not a prefix (Spec 41 FR-41-22c). With an empty prefix nothing here resolves by convention, so every member is explicit by necessity: each state's `css:color`, `css:background-color`, `css:font-weight`, `css:text-decoration` and `css:text-transform` names a DIFFERENT attribute from its base sibling, because without an explicit entry a base and its state sibling both derive to (property, sublink, state=NULL) and collide on one routing slot. `\"fill\"` is declared alongside `\"text\"` so the forward-resolution pass actually visits css:background-color / css:background-image and consults this attrMap; a cluster that is not declared is never iterated. submenuColourGradient is routed as a DIRECT declaration (sgs_text_colour_decl / sgs_resolve_text_colour_or_gradient) rather than a colour-valued custom property, because a `var(--x, …)` chain feeding a fixed `color:` declaration cannot switch to `background-image` for a gradient (survey.js's `paints-via-colour-valued-custom-property` refusal reason)."
+					"_note": "The submenu LINK — <a class=\"sgs-nav-drawer-menu__sublink\">, painted at render.php's own scoped `.sgs-nav-drawer-menu__sublink{...}` rule. It carries three states: base, `hover` (`sgs_hover_state_rules()` on `:hover, :focus-visible`) and `current` (`[aria-current=\"page\"]`), matching the bar item's own three-state model (Spec 41 FR-41-1 / FR-41-9). `\"prefix\": \"\"` is a deliberate, permanent opt-out from the `{prefix}Suffix` convention: a `submenu` prefix would wrongly claim submenuAlign/Caret/CloseGrace/MinWidth/Padding and the whole submenuBorder* family, which belong to the submenu PANEL (the `submenu-panel` element) rather than to this anchor. The `submenu`-prefixed typography attributes that DO belong to this anchor reach it through the explicit attrMap entries above, one per property — that is the resolution, not a prefix (Spec 41 FR-41-22c). With an empty prefix nothing here resolves by convention, so every member is explicit by necessity: each state's `css:color`, `css:background-color`, `css:font-weight`, `css:text-decoration` and `css:text-transform` names a DIFFERENT attribute from its base sibling, because without an explicit entry a base and its state sibling both derive to (property, sublink, state=NULL) and collide on one routing slot. `\"fill\"` is declared alongside `\"text\"` so the forward-resolution pass actually visits css:background-color / css:background-image and consults this attrMap; a cluster that is not declared is never iterated. submenuColourGradient is routed as a DIRECT declaration (sgs_text_colour_decl / sgs_resolve_text_colour_or_gradient) rather than a colour-valued custom property, because a `var(--x, …)` chain feeding a fixed `color:` declaration cannot switch to `background-image` for a gradient (survey.js's `paints-via-colour-valued-custom-property`  submenuOpacity/submenuOpacityHover (M-21, this task) close the fantasy reference gap left open by the item element's own opacity pair — fantasy needs the sublink resting at 0.6 opacity and brightening to 1 on hover, the OPPOSITE direction from the item's 1-to-0.5, so a genuinely separate attribute pair was required rather than reusing itemOpacity/itemOpacityHover here."
 				},
 				"submenu-panel": {
 					"label": "Submenu panel",
@@ -681,6 +690,27 @@
 			"type": "string",
 			"default": "swap",
 			"description": "How the item BORDER colour changes on hover: none / swap / sweep. PHP-validated, no JSON enum."
+		},
+		"itemOpacity": {
+			"type": "number",
+			"description": "M-21. Resting opacity (0 to 1) of the top-level item link (and its paired caret glyph). No default — unset emits no opacity rule at all (fully opaque, matching every instance shipped before this attribute existed). Reference: fantasy's top-level items rest at full opacity (unset)."
+		},
+		"itemOpacityHover": {
+			"type": "number",
+			"description": "M-21. Hover/focus-visible opacity (0 to 1) of the top-level item link (and its paired caret glyph), touch-guarded via sgs_hover_state_rules(). No default — unset emits no rule. Reference: buck/fantasy fade the hovered top-level item to 0.5 (1 to 0.5). Submenu/sublink opacity (fantasy's separate 0.6-to-1 rest/hover pair on `a.menu-sub-link`) is a GENUINELY DIFFERENT value from the top-level item's own opacity on the same reference — reusing this attribute on the sublink would apply the wrong number, so it is scoped to the item element only; see submenuOpacity/submenuOpacityHover below for the sublink's own pair."
+		},
+		"itemPaddingShiftHover": {
+			"type": "string",
+			"default": "",
+			"description": "M-21. On hover/focus, the item's own inline-start padding GROWS by this length: padding-inline-start:calc(<resting inline-start padding> + <value>). Applies to the top-level item link (style.css base 12px) and the accordion's nested submenu link (nav-menu-submenu-css.php base 16px, the same shared emitter the bar's dropdown uses) -- both read their own resting literal since neither exposes it as a single attribute. Validated through sgs_css_single_length_value(). Empty emits no shift. Reference: halcyon's mega minimal items 14 to 22px; indus-foods dropdown 6 to 12px (a per-site value, set alongside the item's own padding)."
+		},
+		"submenuOpacity": {
+			"type": "number",
+			"description": "M-21. Resting opacity (0 to 1) of the accordion's nested submenu link (`.{bem}__sublink`), the same shared emitter (nav-menu-submenu-css.php) the bar's dropdown uses. No default — unset emits no opacity rule at all. Reference: fantasy's submenu links rest at 0.6 — the OPPOSITE direction from the top-level item's own itemOpacity/itemOpacityHover pair, which is why this is a separate attribute rather than a reuse of that one."
+		},
+		"submenuOpacityHover": {
+			"type": "number",
+			"description": "M-21. Hover/focus-visible opacity (0 to 1) of the accordion's nested submenu link, touch-guarded via sgs_hover_state_rules(). No default — unset emits no rule. Reference: fantasy's submenu links brighten to full opacity (1) on hover, from a 0.6 rest — closing the M-21 exit cell the item pair alone could not cover."
 		},
 		"sweepAngle": {
 			"type": "number",

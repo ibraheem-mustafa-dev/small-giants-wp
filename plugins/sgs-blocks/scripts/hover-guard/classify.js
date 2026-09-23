@@ -47,6 +47,14 @@ const MOTION_PROPERTIES = new Set( [
 	// one of a matched pair leaves the link dimmed on touch with nothing left to
 	// undo it.
 	'background-position',
+	// Animates the box's own inline-start edge, so a stuck hover leaves an
+	// item permanently indented exactly as a stuck `transform` leaves a
+	// lifted card. Added for M-21's `itemPaddingShiftHover` (nav-bar-menu /
+	// nav-drawer-menu / mega-panel — a tap-and-hold on a touchscreen must not
+	// leave the padding shifted after the finger lifts). The same reasoning
+	// extends to any padding-* longhand a future hover-paint control shifts;
+	// widen this set on demand rather than pre-declaring every side unused.
+	'padding-inline-start',
 ] );
 
 /** Properties that count as "colour family" — never auto-guarded here. */

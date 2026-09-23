@@ -117,11 +117,31 @@
 						"hover": {
 							"attrMap": {
 								"css:border-color": "groupBorderColourHover",
-								"css:border-color-gradient": "groupBorderColourGradientHover"
-							}
+								"css:border-color-gradient": "groupBorderColourGradientHover",
+								"css:transform": "panelCardLift"
+							},
+							"_noBaseByDesignNote": "css:transform (panelCardLift) has no resting counterpart by design: a tile's resting lift is 0 by definition, so a 'resting lift' control would be clutter rather than capability. Same reasoning as css:transform (scaleHover) on sgs/icon/sgs/post-grid, Bean-ruled 2026-08-20. M-21 (2026-09-23): scoped to the `cards` style's tile only, same as the border pair above -- `columns`/`minimal` have no lift."
 						}
 					},
-					"_note": "Targets `.sgs-mega-group` (resting) and `.sgs-mega-group:hover, .sgs-mega-group:focus-within` (hover) — both scoped to the `cards` style's tile only (card hover-lift); `columns`/`minimal` styles render no group-tile border at all. Two attribute pairs share one paired css:border-color + css:border-color-gradient shape in a single attrMap entry: groupBorderColour/groupBorderColourGradient are the RESTING pair (this element's BASE attrMap), default empty string so a fresh instance renders no colour override at rest — the `cards` tile keeps its --sgs-mm-panel-border-derived border (from the `panel` element's shared token) until an operator sets one; groupBorderColourHover/groupBorderColourGradientHover are the HOVER/focus-within pair (base name = resting, base+Hover = hover, as with backgroundColourHover)."
+					"_note": "Targets `.sgs-mega-group` (resting) and `.sgs-mega-group:hover, .sgs-mega-group:focus-within` (hover) — both scoped to the `cards` style's tile only (card hover-lift); `columns`/`minimal` styles render no group-tile border at all. Two attribute pairs share one paired css:border-color + css:border-color-gradient shape in a single attrMap entry: groupBorderColour/groupBorderColourGradient are the RESTING pair (this element's BASE attrMap), default empty string so a fresh instance renders no colour override at rest — the `cards` tile keeps its --sgs-mm-panel-border-derived border (from the `panel` element's shared token) until an operator sets one; groupBorderColourHover/groupBorderColourGradientHover are the HOVER/focus-within pair (base name = resting, base+Hover = hover, as with backgroundColourHover). panelCardLift (M-21) replaces the previously-hardcoded `translateY(-3px)` on the same hover/focus-within rule -- default '3px', empty or '0' emits no transform at all (see render.php/style.css)."
+				},
+				"item": {
+					"label": "Group item",
+					"layer": "CONTENT",
+					"order": 4.5,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:padding-inline-start": "itemPaddingShiftHover"
+							},
+							"_noBaseByDesignNote": "css:padding-inline-start (itemPaddingShiftHover) has no resting counterpart by design: an ADDITIVE hover-only shift on top of whatever inline-start padding is already in effect at rest -- render.php's own per-style literal (`columns` 12px / `cards` 0px / `minimal` 14px), none of which is exposed as a single attribute of its own."
+						}
+					},
+					"_note": "CROSS-BLOCK REUSE, same shape as the `icon` element above: the actual rendered selector is `.sgs-icon-list__item` (sgs/icon-list's own `<li>`), reused here as markup inside this panel's parent-paints-child model. M-21 (2026-09-23): itemPaddingShiftHover is emitted on `:hover, :focus-within` (the item is an `<li>` containing the focusable `<a class=\"sgs-icon-list__item-link\">`, so `:focus-within` is the correct pairing, matching the `group` element's own lift/border hover rule) across all THREE group styles (columns/cards/minimal), each reading its own existing resting padding literal as the base of the calc()."
 				}
 			},
 			"hideExtensions": [
@@ -302,6 +322,16 @@
 		"asideWidth": {
 			"type": "string",
 			"default": "340px"
+		},
+		"panelCardLift": {
+			"type": "string",
+			"default": "3px",
+			"description": "M-21. The `cards` style's group-tile hover/focus-within lift distance, upward: `translateY(calc(-1 * <value>))`. Default '3px' reproduces the value hardcoded before this attribute existed (render.php + style.css both read this attribute now, no literal remains). Validated through sgs_css_single_length_value(). Empty or '0' emits no transform at all -- the border-colour/shadow hover pair on the same rule is unaffected."
+		},
+		"itemPaddingShiftHover": {
+			"type": "string",
+			"default": "",
+			"description": "M-21. On hover/focus-within, each group item's own inline-start padding GROWS by this length: padding-inline-start:calc(<resting inline-start padding> + <value>), where the resting value is each group style's own existing literal (columns 12px / cards 0px / minimal 14px). Validated through sgs_css_single_length_value(). Empty emits no shift. Reference: halcyon's mega minimal items 14 to 22px; indus-foods mega/dropdown 6 to 12px."
 		},
 		"asideSeparator": {
 			"type": "object",

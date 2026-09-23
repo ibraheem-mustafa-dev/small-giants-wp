@@ -397,6 +397,49 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	$css .= sgs_nav_shared_typography_hover_rule( $attributes, 'item', $link_sel, $item_sweep_hover );
 
 	/*
+	 * ── ITEM OPACITY + hover padding shift (M-21, item_states). ───────────────
+	 *
+	 * `itemOpacity`/`itemOpacityHover` are the TOP-LEVEL item link's own resting
+	 * and hover opacity (Spec 41 M-21 exit cell: buck/fantasy fade the hovered
+	 * item 1 to 0.5). Deliberately NOT reused on `.{bem}__sublink` — fantasy's
+	 * own reference needs a GENUINELY DIFFERENT rest/hover opacity pair on its
+	 * submenu link (0.6 to 1, the opposite direction), so the sublink has its own
+	 * pair, `submenuOpacity`/`submenuOpacityHover` (includes/nav-menu-submenu-css.php).
+	 * Both numbers are clamped to 0-1 (RangeControl already restricts the
+	 * inspector to that range; a pattern or programmatic writer is not bound by
+	 * the control, so the clamp is the real gate). Paired with $caret_svg_sel —
+	 * same reasoning as every item TEXT rule above: a dimmed item reads oddly
+	 * with a full-opacity caret glyph beside it.
+	 */
+	$item_opacity = $attributes['itemOpacity'] ?? null;
+	if ( is_numeric( $item_opacity ) ) {
+		$css .= $link_sel . ',' . $caret_svg_sel . '{opacity:' . max( 0, min( 1, (float) $item_opacity ) ) . ';}';
+	}
+	$item_opacity_hover = $attributes['itemOpacityHover'] ?? null;
+	if ( is_numeric( $item_opacity_hover ) ) {
+		$css .= sgs_hover_state_rules(
+			$link_sel . ',' . $caret_svg_sel,
+			'opacity:' . max( 0, min( 1, (float) $item_opacity_hover ) ),
+			':focus-visible'
+		);
+	}
+
+	/*
+	 * `itemPaddingShiftHover` — an ADDITIVE hover-only inline-start padding
+	 * shift, on top of style.css's own `.{bem}__link{padding:8px 12px}` (bar
+	 * AND drawer both carry that same literal, this function being shared
+	 * between the two — see the function docblock). No attribute currently
+	 * exposes that resting padding as a single value, so the literal '12px' is
+	 * read directly, matching the docblock's own "smallest honest mechanism"
+	 * instruction. Empty/hostile input -> sgs_css_single_length_value() returns
+	 * '', which the `'' !== …` gate turns into no rule at all.
+	 */
+	$item_padding_shift = sgs_css_single_length_value( $attributes['itemPaddingShiftHover'] ?? '' );
+	if ( '' !== $item_padding_shift ) {
+		$css .= sgs_hover_state_rules( $link_sel, 'padding-inline-start:calc(12px + ' . $item_padding_shift . ')', ':focus-visible' );
+	}
+
+	/*
 	 * ── ITEM BACKGROUND — ALL THREE fills on `{link}::before` (FR-41-23). ────
 	 *
 	 * ⛔ No state's fill is emitted onto `.{bem}__link` itself. If any of

@@ -233,6 +233,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		staggerOnOpen,
 		viewAllPlacement,
 		fxEffect,
+		panelCardLift,
+		itemPaddingShiftHover,
 	} = attributes;
 
 	// Motion-effect reachability flags — each names the SINGLE
@@ -365,6 +367,15 @@ export default function Edit( { attributes, setAttributes } ) {
 		'--sgs-mm-aside-sep-colour': asideSeparator?.colour
 			? colourVar( asideSeparator.colour ) || asideSeparator.colour
 			: undefined,
+		// panelCardLift / itemPaddingShiftHover (M-21) canvas mirrors — the
+		// SAME custom properties style.css's own `cards`/`columns`/`minimal`
+		// hover rules consume (see that file's own comments). A cleared value
+		// resolves to '0px' rather than `undefined` (which would fall through
+		// to style.css's `-3px`/no-shift static defaults and mis-preview an
+		// explicit clear as "still applied") — the closest a static custom
+		// property can get to render.php's "no transform/no shift" branch.
+		'--sgs-mm-card-lift': panelCardLift ? `calc(-1 * ${ panelCardLift })` : '0px',
+		'--sgs-mm-item-padding-shift': itemPaddingShiftHover || '0px',
 		maxWidth: maxWidth?.desktop || undefined,
 		// Panel padding applies directly to the ROOT (it's the panel shell
 		// itself that render.php pads, not the content row) — a real CSS
@@ -777,6 +788,32 @@ export default function Edit( { attributes, setAttributes } ) {
 						<ToggleGroupControlOption value="dark" label={ __( 'Dark', 'sgs-blocks' ) } />
 						<ToggleGroupControlOption value="auto" label={ __( 'Auto', 'sgs-blocks' ) } />
 					</ToggleGroupControl>
+
+					{ /* M-21 — item hover paint. itemPaddingShiftHover applies across
+					   all three group styles (each reads its own resting padding);
+					   panelCardLift only paints the `cards` style's own hover-lift. */ }
+					<SgsLengthControl
+						label={ __( 'Item padding shift on hover', 'sgs-blocks' ) }
+						help={ __(
+							'Grows the item’s inline-start padding by this much on hover/focus, on top of whatever padding it already has at rest.',
+							'sgs-blocks'
+						) }
+						value={ itemPaddingShiftHover || '' }
+						onChange={ ( value ) => setAttributes( { itemPaddingShiftHover: value || '' } ) }
+						presets={ false }
+					/>
+					{ 'cards' === style && (
+						<SgsLengthControl
+							label={ __( 'Card lift on hover', 'sgs-blocks' ) }
+							help={ __(
+								'How far the Cards style’s tile rises on hover/focus. Clear to remove the lift entirely.',
+								'sgs-blocks'
+							) }
+							value={ panelCardLift ?? '3px' }
+							onChange={ ( value ) => setAttributes( { panelCardLift: value ?? '' } ) }
+							presets={ false }
+						/>
+					) }
 				</PanelBody>
 
 				{ 'brands' === resolvedVariant && (

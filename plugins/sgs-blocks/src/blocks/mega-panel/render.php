@@ -327,6 +327,12 @@ $rel_icon      = ' .sgs-mega-group .sgs-icon-list__icon';
 // sibling in the same content row (never wrapped in `.sgs-mega-group`).
 $rel_card_grid = ' .wp-block-sgs-card-grid';
 
+// itemPaddingShiftHover (M-21) — computed once, emitted per style below
+// (each style reads its OWN resting inline-start padding literal, since none
+// of the three exposes it as a single attribute of its own). Validated
+// through sgs_css_single_length_value(); empty/hostile input emits no rule.
+$item_padding_shift = sgs_css_single_length_value( $attributes['itemPaddingShiftHover'] ?? '' );
+
 $css = '';
 
 // ---------------------------------------------------------------------------
@@ -583,12 +589,18 @@ if ( function_exists( 'sgs_emit_responsive_css' ) ) {
 $css .= $style_col . $rel_content . '{display:flex;flex-wrap:wrap;}';
 $css .= $style_col . $rel_group . ',' . $style_col . $rel_card_grid . '{flex:1 1 200px;min-width:0;}';
 $css .= $style_col . $rel_item . '{display:flex;align-items:flex-start;gap:13px;padding:11px 12px;border-radius:13px;}';
+if ( '' !== $item_padding_shift ) {
+	$css .= sgs_hover_state_rules( $style_col . $rel_item, 'padding-inline-start:calc(12px + ' . $item_padding_shift . ')', ':focus-within' );
+}
 $css .= $style_col . $rel_icon . '{width:34px;height:34px;border-radius:10px;background-color:var(--sgs-mm-soft);background-image:var(--sgs-mm-soft-gradient, none);' . $icon_colour_decl . ';}';
 
 // -- cards -----------------------------------------------------------------
 $css .= $style_crd . $rel_content . '{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:start;}';
 $css .= $style_crd . $rel_group . '{padding:17px;border-radius:15px;border:1px solid var(--sgs-mm-panel-border);border-color:var(--sgs-mm-group-border-resting, var(--sgs-mm-panel-border));background-color:var(--sgs-mm-card);}';
 $css .= $style_crd . $rel_item . '{display:flex;align-items:flex-start;gap:13px;padding:0;border-radius:0;}';
+if ( '' !== $item_padding_shift ) {
+	$css .= sgs_hover_state_rules( $style_crd . $rel_item, 'padding-inline-start:calc(0px + ' . $item_padding_shift . ')', ':focus-within' );
+}
 $css .= $style_crd . $rel_icon . '{width:36px;height:36px;border-radius:10px;background-color:var(--sgs-mm-soft);background-image:var(--sgs-mm-soft-gradient, none);' . $icon_colour_decl . ';}';
 
 // Resting-state border GRADIENT — masked ::before ring, scoped
@@ -611,7 +623,13 @@ if ( '' !== $group_border_resting_gradient ) {
 $css .= $style_crd . $rel_group . '{position:relative;transition:transform .2s ease;}';
 // sgs-shadow-fallback: decorative ::after glow, not the panel edge
 $css .= $style_crd . $rel_group . '::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:0 20px 40px -12px rgba(0,0,0,.28);opacity:0;transition:opacity .3s ease;pointer-events:none;}';
-$css .= sgs_hover_state_rules( $style_crd . $rel_group, 'transform:translateY(-3px);border-color:var(--sgs-mm-accent-border)', ':focus-within' );
+// panelCardLift (M-21) replaces the previously-hardcoded `translateY(-3px)`.
+// Default '3px' reproduces that exact value via calc(-1 * 3px); empty/'0'
+// emits NO transform declaration at all (the border-colour hover pair still
+// emits unconditionally — it costs nothing when the lift is switched off).
+$panel_card_lift = sgs_css_single_length_value( $attributes['panelCardLift'] ?? '' );
+$panel_card_lift_decl = '' !== $panel_card_lift ? 'transform:translateY(calc(-1 * ' . $panel_card_lift . '));' : '';
+$css .= sgs_hover_state_rules( $style_crd . $rel_group, $panel_card_lift_decl . 'border-color:var(--sgs-mm-accent-border)', ':focus-within' );
 $css .= sgs_hover_state_rules( $style_crd . $rel_group, 'opacity:1', ':focus-within', '::after' );
 $css .= '@media (prefers-reduced-motion: reduce){'
 	. $style_crd . $rel_group . '{transition:none;}'
@@ -699,6 +717,9 @@ if ( '' !== $accent_border_gradient ) {
 // -- minimal -------------------------------------------------------------
 $css .= $style_min . $rel_content . '{display:flex;flex-direction:column;gap:2px;}';
 $css .= $style_min . $rel_item . '{display:flex;align-items:center;justify-content:space-between;padding:15px 14px;border-radius:14px;}';
+if ( '' !== $item_padding_shift ) {
+	$css .= sgs_hover_state_rules( $style_min . $rel_item, 'padding-inline-start:calc(14px + ' . $item_padding_shift . ')', ':focus-within' );
+}
 $css .= $style_min . $rel_icon . '{width:34px;height:34px;border-radius:10px;background-color:var(--sgs-mm-soft);background-image:var(--sgs-mm-soft-gradient, none);' . $icon_colour_decl . ';}';
 
 // Mandatory gradient-fallback companion — @supports not(background-clip:text)
