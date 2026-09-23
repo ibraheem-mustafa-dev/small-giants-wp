@@ -693,6 +693,24 @@ $sgs_nd_close_style          = in_array( $attributes['closeStyle'] ?? 'separate-
 	? (string) $attributes['closeStyle']
 	: 'separate-x';
 
+// ── Surface tone: the drawer's children (menu items, a CTA button) can carry
+// shadows, so the drawer marks its own tone from its one fill layer, drawerBg at
+// surfaceOpacity (unset means opaque), through sgs_surface_tone_class(), the
+// resolver SGS_Container_Wrapper uses.
+$sgs_nd_tone_opacity = isset( $attributes['surfaceOpacity'] ) && is_numeric( $attributes['surfaceOpacity'] )
+	? (float) $attributes['surfaceOpacity']
+	: 1.0;
+$sgs_nd_tone_class = function_exists( 'sgs_surface_tone_class' )
+	? sgs_surface_tone_class(
+		array(
+			array(
+				'colour'  => $sgs_nd_fill_css,
+				'opacity' => $sgs_nd_tone_opacity,
+			),
+		)
+	)
+	: '';
+
 // ── Close-button SIZE (closeSize, mirrors sgs/nav-bar-menu's burgerSize mechanism —
 // nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css()'s own size block).
 // Default '44px' matches style.css's base `.sgs-nav-drawer__close` rule, which
@@ -745,6 +763,10 @@ $classes = array(
 
 if ( '' !== $sgs_nd_anim_class ) {
 	$classes[] = $sgs_nd_anim_class;
+}
+
+if ( '' !== $sgs_nd_tone_class ) {
+	$classes[] = $sgs_nd_tone_class;
 }
 
 // ── Modality selects the store's showModal()/show() branch. Read here

@@ -1,6 +1,7 @@
 import { resolveColourToken } from '../components/DesignTokenPicker';
 import { sanitiseSvg } from './sanitise-svg';
 import { surfaceBackdropPreview } from './surface-preview';
+import { surfaceToneClass } from './surface-tone';
 
 /**
  * Shared editor-canvas mirror of the container/composite background stack —
@@ -197,9 +198,17 @@ export function overlayPaintPreview( colour, gradient, opacity, blendMode, palet
  *                                 block's own `attributes` verbatim.
  * @param {Array}  colourPalette Active theme colour palette
  *                                 (`useSettings('color.palette')`).
+ * @param {Array}  [gradientPresets] Active theme gradient presets
+ *                                 (`useSettings('color.gradients')`). Optional,
+ *                                 defaults to `[]` — with no list given, a
+ *                                 PRESET gradient (`var(--wp--preset--gradient--slug)`
+ *                                 or a bare slug) cannot be resolved to its
+ *                                 stops, so `surfaceToneClass()` yields unknown
+ *                                 (no class) for that case; a LITERAL gradient
+ *                                 function string still resolves regardless.
  * @return {{style: Object, hasBgMedia: boolean, hasOverlay: boolean, hasParallax: boolean, className: string}}
  */
-export function backgroundPreview( attributes, colourPalette ) {
+export function backgroundPreview( attributes, colourPalette, gradientPresets = [] ) {
 	const {
 		backgroundImage,
 		bgVideo,
@@ -214,6 +223,8 @@ export function backgroundPreview( attributes, colourPalette ) {
 		overlayGradient,
 		backgroundOverlayOpacity,
 		backgroundOverlayBlendMode,
+		backgroundColourGradient,
+		backgroundColour,
 	} = attributes;
 
 	const hasBgImage = !! backgroundImage?.url;
@@ -258,6 +269,35 @@ export function backgroundPreview( attributes, colourPalette ) {
 		...surfaceBackdropPreview( attributes ),
 	};
 
+	// D6 (`.claude/reports/2026-09-23-shadow-tone-design.md`) — mark the
+	// canvas with the SAME `sgs-on-dark` / `sgs-on-light` class the wrapper
+	// marks the published page with (`class-sgs-container-wrapper.php`'s own
+	// `$tone_layers` build, mirrored here layer for layer: overlay colour or
+	// gradient at the overlay's own opacity, then the background image
+	// — never sampled — then the flat background gradient, then the flat
+	// background colour). Built ONCE here so every wrapper block's canvas gets
+	// it with no per-block edit.
+	const toneOverlayOpacity =
+		null !== backgroundOverlayOpacity && undefined !== backgroundOverlayOpacity && '' !== backgroundOverlayOpacity && ! Number.isNaN( parseFloat( backgroundOverlayOpacity ) )
+			? Math.max( 0.0, Math.min( 1.0, parseFloat( backgroundOverlayOpacity ) / 100 ) )
+			: 1.0;
+	const toneLayers = [];
+	if ( overlayGradient ) {
+		toneLayers.push( { gradient: overlayGradient, opacity: toneOverlayOpacity } );
+	} else if ( backgroundOverlayColour ) {
+		toneLayers.push( { colour: backgroundOverlayColour, opacity: toneOverlayOpacity } );
+	}
+	if ( hasBgImage ) {
+		toneLayers.push( { image: true } );
+	}
+	if ( backgroundColourGradient ) {
+		toneLayers.push( { gradient: backgroundColourGradient, opacity: 1.0 } );
+	}
+	if ( backgroundColour ) {
+		toneLayers.push( { colour: backgroundColour, opacity: 1.0 } );
+	}
+	const toneClass = surfaceToneClass( toneLayers, colourPalette, gradientPresets );
+
 	// Gate the ::before media layer / ::after overlay layer on marker classes
 	// so the pseudo-elements exist ONLY on instances that actually have
 	// something to paint — every other instance in the canvas is untouched
@@ -267,6 +307,7 @@ export function backgroundPreview( attributes, colourPalette ) {
 		hasBgMedia ? 'sgs-ed-has-bg-media' : '',
 		bgParallax ? 'sgs-container--parallax' : '',
 		overlayPreview.hasOverlay ? 'sgs-ed-has-overlay' : '',
+		toneClass,
 	]
 		.filter( Boolean )
 		.join( ' ' );

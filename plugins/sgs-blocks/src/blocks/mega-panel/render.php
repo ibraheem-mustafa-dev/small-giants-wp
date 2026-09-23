@@ -846,6 +846,26 @@ $css        .= $eyebrow_sel . '{'
 	. '}';
 
 // ---------------------------------------------------------------------------
+// 7b. Surface tone: the panel's children (group tiles, icons, the aside CTA) can
+// carry shadows, so the panel marks its own tone from its one fill layer, panelBg
+// at surfaceOpacity (unset means opaque), through sgs_surface_tone_class(), the
+// resolver SGS_Container_Wrapper uses. An unset panelBg gives no class.
+// ---------------------------------------------------------------------------
+$sgs_mp_tone_opacity = isset( $attributes['surfaceOpacity'] ) && is_numeric( $attributes['surfaceOpacity'] )
+	? (float) $attributes['surfaceOpacity']
+	: 1.0;
+$sgs_mp_tone_class   = function_exists( 'sgs_surface_tone_class' )
+	? sgs_surface_tone_class(
+		array(
+			array(
+				'colour'  => $panel_bg_raw,
+				'opacity' => $sgs_mp_tone_opacity,
+			),
+		)
+	)
+	: '';
+
+// ---------------------------------------------------------------------------
 // 8. Wrapper attributes + output. wp_strip_all_tags (NOT esc_html) blocks a
 // </style> breakout while leaving CSS combinators intact; every value
 // reaching $css is pre-sanitised (sgs_colour_value / sgs_css_length_sanitise
@@ -855,7 +875,7 @@ $css        .= $eyebrow_sel . '{'
 // ---------------------------------------------------------------------------
 
 $wrapper_args = array(
-	'class'             => 'sgs-mega-panel ' . $uid,
+	'class'             => 'sgs-mega-panel ' . $uid . ( '' !== $sgs_mp_tone_class ? ' ' . $sgs_mp_tone_class : '' ),
 	'data-mega-style'   => $style,
 	'data-mega-scheme'  => $colour_scheme,
 	'data-mega-variant' => $variant,

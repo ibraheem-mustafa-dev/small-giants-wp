@@ -78,7 +78,7 @@ import { ResponsiveControl, ResponsiveBoxControl, resolveColourToken, SgsColourP
 	ShadowControl, SurfaceGroundControls,
 } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
-import { resolveTextColourPreviewStyle, typographyPreviewStyle, resolveShadowPreviewComposed } from '../../utils';
+import { resolveTextColourPreviewStyle, typographyPreviewStyle, resolveShadowPreviewComposed, surfaceToneClass } from '../../utils';
 
 /**
  * Content template: menu + (optional) logo + (optional) CTA. templateLock:false.
@@ -346,12 +346,27 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		  };
 	const closeLabelStyle = typographyPreviewStyle( closeTypographyAttrs, 'close' );
 
+	// D3/D6 (`.claude/reports/2026-09-23-shadow-tone-design.md`) — the SAME
+	// one-fill-layer tone the real render.php marks itself with
+	// (sgs_surface_tone_class(), fed the resolved drawerBg at surfaceOpacity —
+	// unset means fully opaque), so a shadow on a descendant (a menu item, a
+	// CTA button) follows this drawer's own tone in the editor canvas too.
+	const toneClass = surfaceToneClass(
+		[
+			{
+				colour: drawerBg || '',
+				opacity: 'number' === typeof surfaceOpacity ? surfaceOpacity : 1,
+			},
+		],
+		palette
+	);
+
 	const blockProps = useBlockProps( {
 		// sgs-nav-drawer--close-{style} mirrors render.php's own modifier class --
 		// without it, the text-swap/burger-morph CSS (style.css, scoped under that
 		// modifier class) never applies, and the canvas always shows the
 		// separate-x icon regardless of the closeStyle control.
-		className: `sgs-nav-drawer sgs-nav-drawer__editor sgs-nav-drawer--close-${ closeStyle || 'separate-x' }${ previewOpen ? '' : ' sgs-nav-drawer__editor--collapsed' }`,
+		className: `sgs-nav-drawer sgs-nav-drawer__editor sgs-nav-drawer--close-${ closeStyle || 'separate-x' }${ previewOpen ? '' : ' sgs-nav-drawer__editor--collapsed' }${ toneClass ? ` ${ toneClass }` : '' }`,
 		style: shellStyle,
 		...bgImageA11yProps,
 	} );

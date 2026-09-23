@@ -11,6 +11,7 @@ export * from './spacing-preview';
 export * from './content-band-preview';
 export * from './grid-layout-preview';
 export * from './wcag-contrast';
+export * from './surface-tone';
 export * from './generateItemKey';
 export * from './patch-tier';
 export * from './typography-preview';

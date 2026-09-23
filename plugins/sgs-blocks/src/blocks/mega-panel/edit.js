@@ -38,6 +38,7 @@ import {
 	useBlockProps,
 	useInnerBlocksProps,
 	InspectorControls,
+	useSettings,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
@@ -62,7 +63,7 @@ import { CursorFieldRowControls } from '../../components/CursorFieldRowControls'
 import { ParticleTrailRowControls } from '../../components/ParticleTrailRowControls';
 import { GridDotFieldRowControls } from '../../components/GridDotFieldRowControls';
 import { FlowingGradientRowControls } from '../../components/FlowingGradientRowControls';
-import { colourVar, resolveShadowPreviewComposed } from '../../utils';
+import { colourVar, resolveShadowPreviewComposed, surfaceToneClass } from '../../utils';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 /**
@@ -250,6 +251,8 @@ export default function Edit( { attributes, setAttributes } ) {
 	const resolvedVariant = variant || 'general';
 	const { allowedBlocks, template } = innerBlocksConfigForVariant( resolvedVariant );
 
+	const [ colourPalette ] = useSettings( 'color.palette' );
+
 	const sepStyle = asideSeparator?.style || 'line';
 
 	// Editor-canvas colour + layout custom properties — the SAME derivation
@@ -392,10 +395,26 @@ export default function Edit( { attributes, setAttributes } ) {
 			: undefined,
 	};
 
+	// D3/D6 (`.claude/reports/2026-09-23-shadow-tone-design.md`) — the SAME
+	// one-fill-layer tone the real render.php marks itself with
+	// (sgs_surface_tone_class(), fed the resolved panelBg at surfaceOpacity —
+	// unset means fully opaque), so a shadow on a descendant follows this
+	// panel's own tone in the editor canvas too.
+	const toneClass = surfaceToneClass(
+		[
+			{
+				colour: panelBg || '',
+				opacity: 'number' === typeof surfaceOpacity ? surfaceOpacity : 1,
+			},
+		],
+		colourPalette
+	);
+
 	const wrapperClassName = [
 		'sgs-mega-panel',
 		! headings && 'sgs-mega-panel--headings-off',
 		'none' === sepStyle && 'sgs-mega-panel--aside-sep-none',
+		toneClass,
 	]
 		.filter( Boolean )
 		.join( ' ' );
