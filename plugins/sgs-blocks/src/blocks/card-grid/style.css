@@ -40,6 +40,13 @@
 	box-shadow: var(--sgs-card-shadow, var(--wp--preset--shadow--soft));
 }
 
+/* AUTOMATIC LIFT (design H4) — --sgs-card-shadow-hover is the render.php-emitted lift
+   sibling; unset (switch off, or no shadow at all) falls back to the resting value, i.e.
+   no visible change. Wrapped touch-safe by scripts/hover-guard at postbuild. */
+.sgs-card-grid--card .sgs-card-grid__item:hover {
+	box-shadow: var(--sgs-card-shadow-hover, var(--sgs-card-shadow, var(--wp--preset--shadow--soft)));
+}
+
 /* Image wrapper */
 .sgs-card-grid__image-wrap {
 	position: relative;

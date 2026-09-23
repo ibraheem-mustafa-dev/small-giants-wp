@@ -2593,6 +2593,19 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					// sgs-shadow-fallback: hover state only; the resting rule carries the forced-colours fallback
 					$responsive_css .= sgs_hover_state_rules( '.' . $uid, 'box-shadow:' . $shadow_hover_value, ':focus-within' );
 				}
+			} elseif ( $shadow && $uid ) {
+				// AUTOMATIC LIFT (design H4) — only when this block sets NO explicit hover
+				// colour at all; the explicit branch above always wins outright. Gated by
+				// sgs_shadow_hover_rules() itself (the `shadowLiftOnHover` switch and
+				// `supports.sgs.shadowLift` on the composite's OWN block type — overlay
+				// composites such as sgs/mega-panel declare the latter false and never lift).
+				$responsive_css .= sgs_shadow_hover_rules(
+					'.' . $uid,
+					$shadow,
+					$shadow_colour,
+					$attributes,
+					( $block instanceof \WP_Block ) ? (string) $block->name : ''
+				);
 			}
 
 			// MEDIA LAYER scoped rule (Phase 1, 2026-08-08) — the background image

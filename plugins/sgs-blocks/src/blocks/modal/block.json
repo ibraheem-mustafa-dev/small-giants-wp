@@ -17,6 +17,7 @@
 	"icon": "welcome-view-site",
 	"supports": {
 		"sgs": {
+			"shadowLift": false,
 			"colourExemptions": {
 				"modal-background-colour": {
 					"rule": "states",

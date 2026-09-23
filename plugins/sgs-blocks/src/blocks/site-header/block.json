@@ -154,6 +154,10 @@
 		"sgs/site-header-row"
 	],
 	"attributes": {
+		"shadowLiftOnHover": {
+			"type": "boolean",
+			"default": true
+		},
 		"padding": {
 			"type": "object",
 			"default": {

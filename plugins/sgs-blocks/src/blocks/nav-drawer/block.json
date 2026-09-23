@@ -19,6 +19,7 @@
 	"icon": "menu",
 	"supports": {
 		"sgs": {
+			"shadowLift": false,
 			"colourExemptions": {
 				"drawerBg": {
 					"rule": "states",

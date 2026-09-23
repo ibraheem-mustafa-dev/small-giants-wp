@@ -140,16 +140,19 @@ export function elementScopeClass( uid, prefix = '' ) {
  * @param {string}   [props.prefix]      Surface prefix ('' when unprefixed).
  * @param {string}   [props.blockSlug]   Block slug, for `STORED_AS` resolution.
  * @param {string[]} [props.atoms]       Declared atom ids for this element.
+ * @param {Object}   [props.extra]       Extra per-atom data forwarded verbatim to every atom's
+ *   `css()` call (e.g. `{ hoverMap }` for the `shadow` atom's automatic lift, design H4/H5,
+ *   task lift-2) — an atom that does not look for a key simply never destructures it.
  * @return {Object} `{ '--custom-property': 'value' }` pairs, possibly empty.
  */
-export function elementCustomProperties( { attributes, prefix = '', blockSlug = '', atoms = [] } ) {
+export function elementCustomProperties( { attributes, prefix = '', blockSlug = '', atoms = [], extra = {} } ) {
 	const style = {};
 	( atoms || [] ).forEach( ( id ) => {
 		const fn = ATOM_CSS[ id ];
 		if ( ! fn ) {
 			return;
 		}
-		const decls = fn( { attributes, prefix, blockSlug } ) || [];
+		const decls = fn( { attributes, prefix, blockSlug, ...extra } ) || [];
 		decls.forEach( ( decl ) => {
 			const splitAt = decl.indexOf( ':' );
 			if ( splitAt < 1 ) {

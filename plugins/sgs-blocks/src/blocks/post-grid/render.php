@@ -147,6 +147,19 @@ $hover_shadow        = sanitize_text_field( $attributes['shadowHover'] ?? '' );
 $hover_shadow_colour = sanitize_text_field( $attributes['shadowColourHover'] ?? '' );
 $hover_img_zoom      = (bool) ( $attributes['imageZoomHover'] ?? true );
 
+// HOVER shadow (design H4, task lift-2). An explicit shadowHover always wins outright —
+// the switch never suppresses an explicit choice. With nothing explicit, the automatic
+// lift fills the SAME custom property the card/flat hover rule already reads (style.css's
+// fallback chain now resolves to the resting shadow, not a hardcoded literal, when this is
+// ''), so the switch being off means truly no visible change on hover. Gated by
+// sgs_shadow_lift_enabled(); post-grid is not an overlay block.
+$hover_shadow_value = '';
+if ( $hover_shadow ) {
+	$hover_shadow_value = sgs_shadow_value_composed( $hover_shadow, $hover_shadow_colour );
+} elseif ( $shadow && sgs_shadow_lift_enabled( $attributes, ( $block instanceof \WP_Block ) ? (string) $block->name : '' ) ) {
+	$hover_shadow_value = sgs_shadow_hover_value( $shadow, $shadow_colour );
+}
+
 // Decorative-image toggle (item 18, WCAG 1.1.1). Block-level, not per-post —
 // the featured image is pulled per post from a dynamic WP_Query, so which
 // post occupies a card changes on every save/reorder/AJAX page; a per-item
@@ -288,7 +301,7 @@ $extra_styles = array_filter(
 			// hover pair below.
 			$shadow ? '--sgs-card-shadow:' . sgs_shadow_value_composed( $shadow, $shadow_colour ) : '',
 			$hover_scale ? '--sgs-hover-scale:' . esc_attr( $hover_scale ) : '',
-			$hover_shadow ? '--sgs-hover-shadow:' . sgs_shadow_value_composed( $hover_shadow, $hover_shadow_colour ) : '',
+			'' !== $hover_shadow_value ? '--sgs-hover-shadow:' . $hover_shadow_value : '',
 		),
 		$card_bg_decls,
 		sgs_transition_vars( $attributes )

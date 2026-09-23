@@ -120,7 +120,8 @@ $tile_shadow_decls = sgs_shadow_decls(
 		'colour'       => 'tileShadowColour',
 		'hover'        => 'tileShadowHover',
 		'hover_colour' => 'tileShadowColourHover',
-	)
+	),
+	$block->name ?? ''
 );
 $hover_bg_colour           = $attributes['itemBackgroundColourHover'] ?? '';
 $hover_border_colour       = $attributes['itemBorderColourHover'] ?? '';

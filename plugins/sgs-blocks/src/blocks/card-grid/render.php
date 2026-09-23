@@ -181,6 +181,17 @@ if ( ! empty( $cg_style_engine_args ) ) {
 		}
 		$card_grid_native_css .= $cg_native_css_out;
 	}
+	// AUTOMATIC LIFT (design H4) — supports.shadow has no hover attribute of its own, so this
+	// is the automatic lift ONLY (no explicit-hover branch to prefer, unlike sgs_shadow_decls()).
+	if ( isset( $cg_style_engine_args['shadow'] ) && 'none' !== $cg_style_engine_args['shadow'] ) {
+		$card_grid_native_css .= sgs_shadow_hover_rules(
+			$root_sel,
+			sgs_shadow_style_engine_shape( (string) $cg_style_engine_args['shadow'] ),
+			'',
+			$attributes,
+			( $block instanceof \WP_Block ) ? (string) $block->name : ''
+		);
+	}
 }
 
 // Typography — block.json selectors.typography targets .sgs-card-grid__title,
@@ -255,6 +266,14 @@ if ( '' !== $card_radius ) {
 }
 if ( '' !== $card_shadow ) {
 	$card_state_vars[] = '--sgs-card-shadow:' . sgs_shadow_value_composed( $card_shadow, $card_shadow_colour ) . ';';
+	// AUTOMATIC LIFT (design H4) — the card variant has no explicit hover-shadow attr of
+	// its own, so this is the automatic lift ONLY, gated by the switch/overlay rule.
+	if ( sgs_shadow_lift_enabled( $attributes, ( $block instanceof \WP_Block ) ? (string) $block->name : '' ) ) {
+		$card_shadow_hover_value = sgs_shadow_hover_value( $card_shadow, $card_shadow_colour );
+		if ( '' !== $card_shadow_hover_value ) {
+			$card_state_vars[] = '--sgs-card-shadow-hover:' . $card_shadow_hover_value . ';';
+		}
+	}
 }
 if ( ! empty( $card_state_vars ) ) {
 	$card_grid_native_css .= $root_sel . ' .sgs-card-grid__item{' . implode( '', $card_state_vars ) . '}';

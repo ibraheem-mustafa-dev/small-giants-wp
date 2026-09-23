@@ -127,6 +127,10 @@
 		"typography": ".wp-block-sgs-info-box"
 	},
 	"attributes": {
+		"shadowLiftOnHover": {
+			"type": "boolean",
+			"default": true
+		},
 		"padding": {
 			"type": "object",
 			"default": {

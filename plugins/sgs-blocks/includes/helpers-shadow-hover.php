@@ -152,3 +152,93 @@ function sgs_shadow_hover_value( ?string $shape, ?string $colour ): string {
 	}
 	return sgs_shadow_layers( $lifted, $colour );
 }
+
+/**
+ * Is the automatic lift-on-hover allowed for this block instance? (Design H4/H5.)
+ *
+ * Two independent gates, either of which turns the lift off:
+ *   1. The block-level switch, `$attributes['shadowLiftOnHover'] === false` (the client's
+ *      per-instance ToggleControl; default true when the attribute is absent/anything else).
+ *   2. The block TYPE's own declaration, `supports.sgs.shadowLift: false` — overlay surfaces
+ *      (mega-panel, nav-drawer, modal, the cart drawer…) that are already floating and always
+ *      under the pointer when open. Read via `WP_Block_Type_Registry`, guarded for a missing
+ *      registry (standalone PHP tests run outside WordPress) — a missing registry or an
+ *      unregistered block name means "no declaration", i.e. lift stays on.
+ *
+ * @param array  $attributes Block attributes (verbatim).
+ * @param string $block_name Registered block name, e.g. 'sgs/hero'. '' skips gate 2.
+ * @return bool True when the automatic lift may draw.
+ */
+function sgs_shadow_lift_enabled( array $attributes, string $block_name = '' ): bool {
+	if ( isset( $attributes['shadowLiftOnHover'] ) && false === $attributes['shadowLiftOnHover'] ) {
+		return false;
+	}
+
+	if ( '' === $block_name || ! class_exists( 'WP_Block_Type_Registry' ) ) {
+		return true;
+	}
+
+	$registered = \WP_Block_Type_Registry::get_instance()->get_registered( $block_name );
+	if ( null === $registered || ! is_array( $registered->supports ?? null ) ) {
+		return true;
+	}
+
+	$flag = $registered->supports['sgs']['shadowLift'] ?? null;
+	return false !== $flag;
+}
+
+/**
+ * The complete touch-safe hover RULE for a resting shadow (design H4).
+ *
+ * '' when: the switch is off, the block type opts out (`sgs_shadow_lift_enabled()`), or the
+ * resting shape/colour has no hover value at all (`sgs_shadow_hover_value()` returns '').
+ * Otherwise a guarded `:hover` + unguarded `:focus-visible` pair via
+ * `sgs_hover_state_rules()` — no `transition` (Council ruling, design doc H4/§Council: a
+ * second `transition` declaration would silently cancel a block's own).
+ *
+ * Callers pass an EXPLICIT hover value (a hover shape/colour the block already declares)
+ * separately and skip this helper entirely when one is set — explicit always wins.
+ *
+ * @param string $selector   One or more comma-separated base selectors (no `:hover` suffix).
+ * @param string $shape      Stored resting shape: a preset slug, a layered shape, or `none`.
+ * @param string $colour     Stored resting colour text.
+ * @param array  $attributes Block attributes (verbatim) — read for the `shadowLiftOnHover` switch.
+ * @param string $block_name Registered block name — read for `supports.sgs.shadowLift`.
+ * @return string The touch-safe hover rule pair, or '' when nothing should be drawn.
+ */
+function sgs_shadow_hover_rules( string $selector, string $shape, string $colour, array $attributes, string $block_name = '' ): string {
+	if ( '' === trim( $selector ) || ! sgs_shadow_lift_enabled( $attributes, $block_name ) ) {
+		return '';
+	}
+
+	$hover = sgs_shadow_hover_value( $shape, $colour );
+	if ( '' === $hover ) {
+		return '';
+	}
+
+	// sgs-shadow-fallback: hover state only; the caller's own resting rule carries the
+	// forced-colours fallback (every caller of this shared helper already emits one).
+	return sgs_hover_state_rules( $selector, 'box-shadow:' . $hover, ':focus-visible' );
+}
+
+/**
+ * Resolve a native WP `style.shadow` value (`supports.shadow`, the five style-engine blocks:
+ * card-grid, info-box, process-steps, testimonial, timeline) to the shape text
+ * `sgs_shadow_hover_value()` expects.
+ *
+ * The block editor's core Shadow panel stores a preset pick as `var:preset|shadow|<slug>`
+ * (the style-engine preset-reference convention, distinct from SGS's own bare-slug
+ * convention) or a raw CSS box-shadow layer list for a custom shadow. Both are handled by
+ * `sgs_shadow_hover_value()` once the preset-reference wrapper is stripped down to the slug;
+ * a raw value it cannot parse (e.g. an `rgba()` colour, which `sgs_shadow_resolve_colour()`
+ * does not accept) safely yields '' downstream rather than a guessed transform.
+ *
+ * @param string $raw The stored `style.shadow` value.
+ * @return string A bare slug or the raw shape text, ready for `sgs_shadow_hover_value()`.
+ */
+function sgs_shadow_style_engine_shape( string $raw ): string {
+	if ( 1 === preg_match( '/^var:preset\|shadow\|([a-z0-9-]+)$/i', trim( $raw ), $m ) ) {
+		return strtolower( $m[1] );
+	}
+	return $raw;
+}

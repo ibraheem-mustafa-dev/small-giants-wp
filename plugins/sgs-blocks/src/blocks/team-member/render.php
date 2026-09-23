@@ -271,6 +271,15 @@ if ( '' !== $safe_hover_shadow ) {
 // rather than a nested repeater item, since team-member's card IS the root.
 if ( '' !== $card_shadow ) {
 	$sgs_wrapper_styles[] = '--sgs-card-shadow:' . sgs_shadow_value_composed( $card_shadow, $card_shadow_colour );
+	// AUTOMATIC LIFT (design H4) — only when this instance has NO explicit hoverShadow set
+	// (the sgs-has-hover class + --sgs-hover-shadow mechanism above always wins outright,
+	// since its :hover rule sets box-shadow unconditionally regardless of --sgs-card-shadow).
+	if ( '' === $safe_hover_shadow && sgs_shadow_lift_enabled( $attributes, ( $block instanceof \WP_Block ) ? (string) $block->name : '' ) ) {
+		$card_shadow_hover_value = sgs_shadow_hover_value( $card_shadow, $card_shadow_colour );
+		if ( '' !== $card_shadow_hover_value ) {
+			$sgs_wrapper_styles[] = '--sgs-card-shadow-hover:' . $card_shadow_hover_value;
+		}
+	}
 }
 
 // ---------------------------------------------------------------------------

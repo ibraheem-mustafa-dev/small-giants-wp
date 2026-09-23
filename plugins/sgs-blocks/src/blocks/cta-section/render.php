@@ -115,7 +115,8 @@ $box_shadow_decls = sgs_shadow_decls(
 		'colour'       => 'shadowColour',
 		'hover'        => 'shadowHover',
 		'hover_colour' => 'shadowColourHover',
-	)
+	),
+	$block->name ?? ''
 );
 
 // Generate a unique ID for responsive CSS scoping. This is a CLASS (contract

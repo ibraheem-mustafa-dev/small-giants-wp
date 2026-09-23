@@ -19,6 +19,7 @@ import { __ } from '@wordpress/i18n';
 
 import { mediaStoredAttrName } from '../../MediaElementControls.js';
 import { composeShadow } from '../../../utils/shadow-layers.js';
+import { shadowHoverValue } from '../../../utils/shadow-hover.js';
 
 /**
  * @param {string} prefix    Surface prefix.
@@ -84,9 +85,14 @@ export function validate( value ) {
  * @param {Object} props.attributes
  * @param {string} [props.prefix]
  * @param {string} [props.blockSlug]
+ * @param {Object<string,string>} [props.hoverMap] `settings.custom.shadowHover` (design H4/H5,
+ *   task lift-2) — the AUTOMATIC LIFT this atom draws when no explicit hover colour is set.
+ *   Threaded in by the caller (`canvasStyle.js::elementCustomProperties()`) because this
+ *   module has no WordPress data access of its own (the purity contract,
+ *   `scripts/check-media-atom-purity.js`); absent/undefined simply means no lift resolves.
  * @return {string[]} `--custom-property:value;` declarations, never bare rules.
  */
-export function css( { attributes, prefix = '', blockSlug = '' } ) {
+export function css( { attributes, prefix = '', blockSlug = '', hoverMap } = {} ) {
 	const decls = [];
 	const keys = attrKeys( prefix, blockSlug );
 	const shape = attributes[ keys.base ];
@@ -94,7 +100,8 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 		return decls;
 	}
 
-	const resting = resolveShadow( shape, attributes[ keys.colour ] );
+	const colour = attributes[ keys.colour ];
+	const resting = resolveShadow( shape, colour );
 	if ( resting ) {
 		decls.push( `--sgs-media-box-shadow:${ resting }` );
 	}
@@ -104,6 +111,16 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 		const hover = resolveShadow( shape, hoverColour );
 		if ( hover ) {
 			decls.push( `--sgs-media-box-shadow-hover:${ hover }` );
+		}
+	} else if ( false !== attributes.shadowLiftOnHover ) {
+		// AUTOMATIC LIFT — only when NO explicit hover colour is set; the explicit branch
+		// above always wins outright. Mirrors `sgs_media_atom_shadow_css()`'s PHP branch,
+		// minus the block-TYPE-level `supports.sgs.shadowLift` gate (unavailable to a
+		// plain-Node-importable module without a WordPress import — sgs/media is not an
+		// overlay block, so the attribute-level switch alone is the gate that matters here).
+		const lift = 'string' === typeof shape ? shadowHoverValue( shape, colour, hoverMap ) : '';
+		if ( lift ) {
+			decls.push( `--sgs-media-box-shadow-hover:${ lift }` );
 		}
 	}
 

@@ -138,7 +138,8 @@ $box_shadow_decls = sgs_shadow_decls(
 		'colour'       => 'boxShadowColour',
 		'hover'        => 'boxShadowHover',
 		'hover_colour' => 'boxShadowColourHover',
-	)
+	),
+	$block->name ?? ''
 );
 
 // Hover state.

@@ -29,6 +29,7 @@
 			"text": false
 		},
 		"sgs": {
+			"shadowLift": false,
 			"iconPicker": true,
 			"headerEssential": true,
 			"imageControls": false,

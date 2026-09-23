@@ -214,6 +214,10 @@
     "root": ".wp-block-sgs-card-grid"
   },
   "attributes": {
+    "shadowLiftOnHover": {
+      "type": "boolean",
+      "default": true
+    },
     "variant": {
       "type": "string",
       "default": "card"

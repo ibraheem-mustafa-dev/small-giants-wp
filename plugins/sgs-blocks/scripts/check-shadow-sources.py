@@ -1005,6 +1005,103 @@ def evaluate_baseline(vs: list[dict], baseline: list[dict]) -> tuple[list[dict],
 # ---------------------------------------------------------------------------
 # Survey assembly + violation predicate
 # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Hover coverage (task lift-2, design H6 — .claude/reports/2026-09-23-shadow-hover-lift-design.md)
+# ---------------------------------------------------------------------------
+# The markers a file carries when its shadow emitter has been wired to the automatic-lift
+# mechanism (design H4): a direct call to the shared helper, or a call to a function that
+# ALREADY calls it internally (sgs_shadow_decls() fills the hover branch itself; the five
+# supports.shadow blocks route their raw value through sgs_shadow_style_engine_shape() first).
+HOVER_WIRED_MARKERS = (
+    "sgs_shadow_hover_rules(",
+    "sgs_shadow_decls(",
+    "sgs_shadow_style_engine_shape(",
+    "sgs_shadow_hover_value(",
+    "sgs_shadow_lift_enabled(",
+    # An explicit hand-reviewed escape hatch — NOT a code call, a literal comment token a
+    # human writes next to a shadow emitter that already has hover coverage through a
+    # DIFFERENT, pre-existing mechanism this census cannot recognise by pattern (e.g.
+    # post-grid's unconditional default hover-lift, predating design H4). Grep for this
+    # exact string before trusting one — it is a claim, not a proof, and the reviewer's
+    # name/date/reason must sit right beside it.
+    "HOVER-COVERAGE-REVIEWED:",
+)
+
+# Emitter sinks that draw a REAL box-shadow declaration — the ones a hover check applies to.
+# "unclassified" is excluded deliberately: an unclassified sink is a --check violation on its
+# own (see `violations()`); flagging it again here as "no hover" would double-count the same
+# root cause under a second name.
+HOVER_RELEVANT_SINKS = {"box-shadow", "custom-property", "style-engine-shadow"}
+
+# Shared COMPOSER library files, not consumer call sites — `sgs_shadow_layers()` /
+# `sgs_shadow_box_decls()` are used by every caller (including overlay blocks that must NOT
+# lift), so a bare emitter line inside the library itself is not a "this site needs its own
+# hover" finding; each CALLER is what the census should judge instead.
+HOVER_COVERAGE_EXCLUDED_FILES = (
+    "plugins/sgs-blocks/includes/helpers-shadow-layers.php",
+)
+
+
+def block_slug_from_render_php(relpath: str) -> str | None:
+    m = re.search(r"src/blocks/([a-z0-9-]+)/render\.php$", relpath.replace("\\", "/"))
+    return m.group(1) if m else None
+
+
+def block_shadow_lift_support(slug: str) -> bool | None:
+    """`supports.sgs.shadowLift` for `slug`, or None when the block.json is missing/unreadable
+    or declares nothing (both mean "not exempt" — the same "absent means enabled" default
+    `sgs_shadow_lift_enabled()` uses on the PHP side)."""
+    path = BLOCKS_DIR / slug / "block.json"
+    if not path.exists():
+        return None
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return None
+    flag = data.get("supports", {}).get("sgs", {}).get("shadowLift")
+    return flag if isinstance(flag, bool) else None
+
+
+def scan_hover_coverage(php_sources: list[dict]) -> list[dict]:
+    """Per-block hover-coverage census: for every render.php (or shared includes/ emitter)
+    that draws a real box-shadow, is a hover reachable? Three states per block:
+      - "overlay-exempt"  — supports.sgs.shadowLift === false (design H5); correctly never lifts.
+      - "wired"           — the file's text carries one of HOVER_WIRED_MARKERS.
+      - "MISSING"         — a real shadow emitter with no hover marker anywhere in its file —
+                            the gap this survey exists to catch, per THE-MIGRATION-METHOD
+                            (detector before edits)."""
+    by_file: dict[str, list[dict]] = {}
+    for src in php_sources:
+        if src.get("sink") not in HOVER_RELEVANT_SINKS or src.get("exempt"):
+            continue
+        if src["file"] in HOVER_COVERAGE_EXCLUDED_FILES:
+            continue
+        by_file.setdefault(src["file"], []).append(src)
+
+    rows = []
+    for relpath, sources in sorted(by_file.items()):
+        abspath = ROOT / relpath
+        text = abspath.read_text(encoding="utf-8") if abspath.exists() else ""
+        slug = block_slug_from_render_php(relpath)
+        overlay = bool(slug) and block_shadow_lift_support(slug) is False
+        wired = any(marker in text for marker in HOVER_WIRED_MARKERS)
+        if overlay:
+            status = "overlay-exempt"
+        elif wired:
+            status = "wired"
+        else:
+            status = "MISSING"
+        rows.append(
+            {
+                "file": relpath,
+                "block": f"sgs/{slug}" if slug else None,
+                "emitter_count": len(sources),
+                "status": status,
+            }
+        )
+    return rows
+
+
 def build_survey() -> dict:
     css_sources, text_shadow_total = scan_all_css()
     php_sources = scan_all_php()
@@ -1051,6 +1148,7 @@ def build_survey() -> dict:
         "supports_shadow_blocks": supports_shadow_blocks,
         "text_shadow_count": text_shadow_total,
         "unclassified": unclassified,
+        "hover_coverage": scan_hover_coverage(php_sources),
     }
 
 
@@ -1074,6 +1172,9 @@ def violations(survey: dict) -> list[dict]:
     for block in survey["supports_shadow_blocks"]:
         if block["style_engine_shadow_found"] and not block["forced_colours_covered"]:
             out.append({"kind": "supports-shadow-missing-forced-colours", "file": block["render_php"], "line": None, "detail": block["block"]})
+    for row in survey.get("hover_coverage", []):
+        if row["status"] == "MISSING":
+            out.append({"kind": "php-hover-missing", "file": row["file"], "line": None, "detail": row["block"] or row["file"]})
     return out
 
 
@@ -1121,6 +1222,16 @@ def cmd_survey() -> int:
     print(f"\nis-style-elevated variations: {len(survey['variation_sources'])}")
     for v in survey["variation_sources"]:
         print(f"  {v['file']}:{v['line']}  {v['variable']}  -> {v['classification']}")
+
+    print(f"\nHover coverage (design H6, per PHP shadow emitter file): {len(survey['hover_coverage'])}")
+    by_status: dict[str, int] = {}
+    for row in survey["hover_coverage"]:
+        by_status[row["status"]] = by_status.get(row["status"], 0) + 1
+    for status, count in sorted(by_status.items()):
+        print(f"  {status:<16} {count}")
+    for row in survey["hover_coverage"]:
+        if row["status"] == "MISSING":
+            print(f"    MISSING: {row['file']}  ({row['block']}, {row['emitter_count']} emitter site(s))")
 
     print(f"\nCould not classify: {len(survey['unclassified'])}")
     for u in survey["unclassified"]:
@@ -1400,6 +1511,61 @@ def cmd_self_test() -> int:
     print(f"  rule OFF -> forced_colours_covered = {src3_off[0]['forced_colours_covered']}")
     check("rule ON correctly reports missing forced-colours coverage", not src3[0]["forced_colours_covered"])
     check("rule OFF (disabled) STOPS reporting the gap — proves the rule is load-bearing", src3_off[0]["forced_colours_covered"])
+
+    # --- hover coverage (design H6, task lift-2) ----------------------------------------
+    print()
+    print("  --- hover coverage (H6) ---")
+
+    def hover_src(relpath: str) -> dict:
+        return {
+            "file": relpath,
+            "line": 4,
+            "function": "sgs_shadow_box_decls",
+            "snippet": "",
+            "sink": "box-shadow",
+            "sink_detail": "",
+            "forced_colours_reached": True,
+            "exempt": False,
+            "exempt_reason": "",
+        }
+
+    fixture_rel = (php_dir / "hover-must-flag.php").relative_to(ROOT).as_posix()
+    fixture_rel_pass = (php_dir / "hover-must-pass.php").relative_to(ROOT).as_posix()
+
+    # MUST-FLAG: a fixture file whose text draws a shadow but never mentions any hover
+    # marker at all — a real gap, not an overlay, not reviewed.
+    rows_flag = scan_hover_coverage([hover_src(fixture_rel)])
+    check("MUST-FLAG: a shadow emitter with no hover marker is reported MISSING", rows_flag and rows_flag[0]["status"] == "MISSING")
+
+    # MUST-PASS: an otherwise-identical fixture whose file text carries a wired marker.
+    rows_pass = scan_hover_coverage([hover_src(fixture_rel_pass)])
+    check("MUST-PASS: a shadow emitter whose file calls sgs_shadow_hover_rules() is wired", rows_pass and rows_pass[0]["status"] == "wired")
+
+    # Disabled-rule negative control: an overlay block (supports.sgs.shadowLift === false)
+    # with NO hover marker at all must be reported "overlay-exempt", never "MISSING" — proven
+    # against the REAL nav-drawer block.json (the actual overlay declaration this task added),
+    # not a synthetic fixture, so the control is observed rather than assumed.
+    real_overlay_slug = "nav-drawer"
+    check(
+        f"observed disabled-rule control: {real_overlay_slug}/block.json really declares supports.sgs.shadowLift === false",
+        block_shadow_lift_support(real_overlay_slug) is False,
+    )
+    overlay_src = hover_src(f"plugins/sgs-blocks/src/blocks/{real_overlay_slug}/render.php")
+    rows_overlay = scan_hover_coverage([overlay_src])
+    check("overlay block with NO hover marker is reported overlay-exempt, not MISSING", rows_overlay and rows_overlay[0]["status"] == "overlay-exempt")
+    # Prove the gate CAN fail: the SAME fixture with the overlay declaration ignored (as if
+    # the block.json read failed) reports MISSING instead — the check is load-bearing, not a
+    # tautology that always returns "overlay-exempt" regardless of input.
+    real_block_shadow_lift_support = block_shadow_lift_support
+    try:
+        globals()["block_shadow_lift_support"] = lambda _slug: None
+        rows_overlay_off = scan_hover_coverage([overlay_src])
+    finally:
+        globals()["block_shadow_lift_support"] = real_block_shadow_lift_support
+    check(
+        "negative control: with the overlay declaration unread, the SAME fixture is reported MISSING — proves the rule is load-bearing",
+        rows_overlay_off and rows_overlay_off[0]["status"] == "MISSING",
+    )
 
     print()
     print(f"{passed} passed, {failed} failed")

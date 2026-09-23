@@ -187,6 +187,10 @@
 		"root": ".wp-block-sgs-container"
 	},
 	"attributes": {
+		"shadowLiftOnHover": {
+			"type": "boolean",
+			"default": true
+		},
 		"templateLock": {
 			"type": "string",
 			"enum": [

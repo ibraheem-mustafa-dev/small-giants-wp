@@ -27,10 +27,33 @@
  */
 import { __ } from '@wordpress/i18n';
 import { useSettings } from '@wordpress/block-editor';
-import { BaseControl, TabPanel } from '@wordpress/components';
+import { BaseControl, TabPanel, ToggleControl } from '@wordpress/components';
 import ShadowStateBuilder from './shadow-control/ShadowStateBuilder';
 import { makeResolveHex, presetPreviewCss } from './shadow-control/preview';
 import { flattenSettingList } from './shadow-control/useShadowPresets';
+import { shadowHoverValue } from '../utils/shadow-hover';
+
+/**
+ * A plain-English label for what a resting shape's automatic lift resolves to, for the "Lift on
+ * hover" toggle's helper text (design H5: "the Hover tab says what it lifts to"). A preset-to-
+ * preset lift names the target preset (`var(--wp--preset--shadow--lifted)` -> "Lifted"); a
+ * literal/custom lift has no single preset name, so a generic phrase is used instead; no lift at
+ * all (`none`, unparseable, or no map entry) returns ''.
+ *
+ * @param {string} liftValue The `box-shadow` value from `shadowHoverValue()`.
+ * @return {string} A short label, or '' when there is nothing to lift to.
+ */
+function describeLift( liftValue ) {
+	if ( ! liftValue ) {
+		return '';
+	}
+	const presetMatch = /^var\(--wp--preset--shadow--([a-z0-9-]+)\)$/i.exec( liftValue );
+	if ( presetMatch ) {
+		const slug = presetMatch[ 1 ];
+		return slug.charAt( 0 ).toUpperCase() + slug.slice( 1 );
+	}
+	return __( 'a deeper shadow', 'sgs-blocks' );
+}
 
 /**
  * Derive ONE of a shadow family's attribute names from its base name.
@@ -148,6 +171,18 @@ export default function ShadowControl( {
 	const canEditHoverShape = typeof onValueHoverChange === 'function';
 	const hasHoverState = canEditHoverShape || typeof onColourHoverChange === 'function';
 
+	// The "Lift on hover" switch (design H5) — shown only when the block DECLARES the
+	// attribute (fanned out by scripts/fanout-shadow-lift-attr.py). `attributes` always
+	// carries a declared attribute's default, so an undeclared attribute reads as
+	// `undefined` here, not `true` — that's the presence check, not the value.
+	const declaresLift = Boolean( attributes ) && Object.prototype.hasOwnProperty.call( attributes, 'shadowLiftOnHover' );
+	const liftOnHover = declaresLift ? false !== attributes.shadowLiftOnHover : true;
+	const setLiftOnHover = ( next ) => {
+		if ( setAttributes ) {
+			setAttributes( { shadowLiftOnHover: next } );
+		}
+	};
+
 	const applyNormal = ( shape, colourText ) => {
 		if ( ! explicitBase && attrNames?.base && attrNames?.colour && setAttributes ) {
 			setAttributes( { [ attrNames.base ]: shape, [ attrNames.colour ]: colourText } );
@@ -181,11 +216,38 @@ export default function ShadowControl( {
 	} ) );
 	const shared = { presets, resolveHex, siteColor: resolveHex( 'site' ) };
 
+	// The lift-on-hover value for THIS instance's resting shape (design H5's "the Hover tab
+	// says what it lifts to"), computed only once the theme's hover map (`custom.shadowHover`)
+	// is in scope — read via the SAME `useSettings()` call the presets/palette already use,
+	// never a second call (a component only calls a WordPress data hook once per render path).
+	const liftValue = declaresLift ? shadowHoverValue( value, colour, custom?.shadowHover ) : '';
+	const liftLabel = describeLift( liftValue );
+
+	const liftToggle = declaresLift ? (
+		<ToggleControl
+			__nextHasNoMarginBottom
+			label={ __( 'Lift on hover', 'sgs-blocks' ) }
+			checked={ liftOnHover }
+			onChange={ setLiftOnHover }
+			help={
+				liftOnHover && liftLabel
+					? // translators: %s is the shadow it lifts to, e.g. "Lifted" or "a deeper shadow".
+					  __( 'Lifts to: ', 'sgs-blocks' ) + liftLabel
+					: __( 'The shadow stays still on hover.', 'sgs-blocks' )
+			}
+		/>
+	) : null;
+
+	// Show the Hover tab when the block has an EXPLICIT hover pair to edit, OR declares the
+	// automatic-lift switch with nothing else to show there yet — either way there is now
+	// something for the Hover tab to hold.
+	const showHoverTab = hasHoverState || declaresLift;
+
 	return (
 		<BaseControl label={ label } __nextHasNoMarginBottom>
 			{ /* ONE state axis, at the top: Normal / Hover own the WHOLE panel (Bean's ruling).
 			   The tabs inside are the layers model, not a second state axis. */ }
-			{ hasHoverState ? (
+			{ showHoverTab ? (
 				<TabPanel
 					className="sgs-shadow-control__states"
 					tabs={ [
@@ -195,16 +257,21 @@ export default function ShadowControl( {
 				>
 					{ ( tab ) =>
 						'hover' === tab.name ? (
-							<ShadowStateBuilder
-								{ ...shared }
-								isHover
-								canEditShape={ canEditHoverShape }
-								value={ valueHover }
-								colour={ colourHover }
-								baseValue={ value }
-								baseColour={ colour }
-								onApply={ applyHover }
-							/>
+							<>
+								{ liftToggle }
+								{ hasHoverState && (
+									<ShadowStateBuilder
+										{ ...shared }
+										isHover
+										canEditShape={ canEditHoverShape }
+										value={ valueHover }
+										colour={ colourHover }
+										baseValue={ value }
+										baseColour={ colour }
+										onApply={ applyHover }
+									/>
+								) }
+							</>
 						) : (
 							<ShadowStateBuilder { ...shared } value={ value } colour={ colour } onApply={ applyNormal } />
 						)

@@ -1181,5 +1181,23 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 127
+  },
+  {
+    "id": "shadow-lift-attr-fanout-self-test",
+    "cmd": "python scripts/fanout-shadow-lift-attr.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 128
+  },
+  {
+    "id": "shadow-lift-attr-fanout-check",
+    "cmd": "python scripts/fanout-shadow-lift-attr.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 129
   }
 ]

@@ -297,6 +297,10 @@
 		"root": ".sgs-testimonial"
 	},
 	"attributes": {
+		"shadowLiftOnHover": {
+			"type": "boolean",
+			"default": true
+		},
 		"padding": {
 			"type": "object",
 			"default": {

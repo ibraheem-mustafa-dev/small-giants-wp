@@ -148,7 +148,8 @@ $box_shadow_decls = sgs_shadow_decls(
 		'colour'       => 'boxShadowColour',
 		'hover'        => 'boxShadowHover',
 		'hover_colour' => 'boxShadowColourHover',
-	)
+	),
+	$block->name ?? ''
 );
 $hover_scale             = isset( $attributes['scaleHover'] ) && null !== $attributes['scaleHover'] ? (float) $attributes['scaleHover'] : null;
 $hover_colour            = $attributes['textColourHover'] ?? '';

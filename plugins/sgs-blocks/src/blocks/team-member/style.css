@@ -27,6 +27,15 @@
 	   resting-state inspector control. */
 	box-shadow: var(--sgs-card-shadow, var(--wp--preset--shadow--soft));
 }
+
+/* AUTOMATIC LIFT (design H4) — --sgs-card-shadow-hover is the render.php-emitted lift
+   sibling; unset (explicit hoverShadow set, switch off, or no shadow at all) falls back to
+   the resting value, i.e. no visible change here. The explicit .sgs-has-hover:hover rule
+   below has higher specificity (three classes) and always wins outright when it applies.
+   Wrapped touch-safe by scripts/hover-guard at postbuild. */
+.sgs-team-member--elevated:hover {
+	box-shadow: var(--sgs-card-shadow-hover, var(--sgs-card-shadow, var(--wp--preset--shadow--soft)));
+}
 .sgs-team-member--filled {
 	background: var(--wp--preset--color--surface-alt, #f5f7f7);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);

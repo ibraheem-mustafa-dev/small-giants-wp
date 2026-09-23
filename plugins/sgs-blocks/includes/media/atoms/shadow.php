@@ -20,6 +20,7 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 2 ) . '/helpers-media-element.php';
 require_once dirname( __DIR__, 2 ) . '/helpers-tokens.php';
+require_once dirname( __DIR__, 2 ) . '/helpers-shadow-hover.php';
 
 if ( ! function_exists( 'sgs_media_atom_shadow_resolve' ) ) {
 	/**
@@ -82,7 +83,9 @@ if ( ! function_exists( 'sgs_media_atom_shadow_css' ) ) {
 			return $decls;
 		}
 
-		$resting = sgs_media_atom_shadow_resolve( $shape, $attributes[ $keys['colour'] ] ?? null );
+		$colour = $attributes[ $keys['colour'] ] ?? null;
+
+		$resting = sgs_media_atom_shadow_resolve( $shape, $colour );
 		if ( '' !== $resting ) {
 			$decls[] = '--sgs-media-box-shadow:' . $resting;
 		}
@@ -92,6 +95,17 @@ if ( ! function_exists( 'sgs_media_atom_shadow_css' ) ) {
 			$hover = sgs_media_atom_shadow_resolve( $shape, $hover_colour );
 			if ( '' !== $hover ) {
 				$decls[] = '--sgs-media-box-shadow-hover:' . $hover;
+			}
+		} elseif ( sgs_shadow_lift_enabled( $attributes, is_string( $block_slug ) ? $block_slug : '' ) ) {
+			// AUTOMATIC LIFT (design H4, task lift-2) — only when this instance has NO
+			// explicit hover colour set; the explicit branch above always wins outright.
+			// The shared stylesheet (assets/css/media-atoms/shadow.css) already reads
+			// `--sgs-media-box-shadow-hover` on `.sgs-media-el:hover,:focus-within`, so
+			// filling the SAME custom property is "make the lift use that same path" —
+			// no new CSS rule, no new selector, nothing to duplicate or drift.
+			$lift = sgs_shadow_hover_value( is_string( $shape ) ? $shape : '', is_string( $colour ) ? $colour : '' );
+			if ( '' !== $lift ) {
+				$decls[] = '--sgs-media-box-shadow-hover:' . $lift;
 			}
 		}
 

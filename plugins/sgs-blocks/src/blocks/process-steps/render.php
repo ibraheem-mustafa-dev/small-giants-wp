@@ -394,6 +394,17 @@ if ( ! empty( $base_style_engine_args ) ) {
 		}
 		$scoped_css[] = $base_native_css_out;
 	}
+	// AUTOMATIC LIFT (design H4) — supports.shadow has no hover attribute of its own, so this
+	// is the automatic lift ONLY (no explicit-hover branch to prefer, unlike sgs_shadow_decls()).
+	if ( '' !== $style_shadow && 'none' !== $style_shadow ) {
+		$scoped_css[] = sgs_shadow_hover_rules(
+			$root_sel,
+			sgs_shadow_style_engine_shape( $style_shadow ),
+			'',
+			$attributes,
+			( $block instanceof \WP_Block ) ? (string) $block->name : ''
+		);
+	}
 }
 
 // --- Responsive padding/margin tiers — box objects, hand-built shorthand,

@@ -176,6 +176,10 @@
 		"html": false
 	},
 	"attributes": {
+		"shadowLiftOnHover": {
+			"type": "boolean",
+			"default": true
+		},
 		"_comment_ssr_nullable": "Every numeric attribute below whose default is null is declared as [ <numeric>, \"string\" ] — the house convention (sgs/heading, sgs/text). REASON: this block previews through <ServerSideRender>, which serialises an unset attribute as an EMPTY STRING into the block-renderer REST query. A schema of plain \"integer\"/\"number\" rejects \"\", the REST call returns HTTP 400, and the editor shows 'Preview failed to load' for every instance — while the frontend renders perfectly, so no frontend check can catch it. Found live 2026-07-31 by the Wave C editor probe (D388). render.php already coerces with (int) / a null check, so accepting \"\" changes no rendered output.",
 		"beforeMediaType": {
 			"type": "string",

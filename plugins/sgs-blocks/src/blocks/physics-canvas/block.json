@@ -97,6 +97,10 @@
 		"root": ".wp-block-sgs-physics-canvas"
 	},
 	"attributes": {
+		"shadowLiftOnHover": {
+			"type": "boolean",
+			"default": true
+		},
 		"padding": {
 			"type": "object",
 			"default": {

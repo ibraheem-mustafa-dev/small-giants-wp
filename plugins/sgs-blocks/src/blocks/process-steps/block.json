@@ -193,6 +193,10 @@
 		"root": ".sgs-process-steps"
 	},
 	"attributes": {
+		"shadowLiftOnHover": {
+			"type": "boolean",
+			"default": true
+		},
 		"padding": {
 			"type": "object",
 			"default": {

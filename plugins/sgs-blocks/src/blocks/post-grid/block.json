@@ -273,6 +273,10 @@
     "root": ".wp-block-sgs-post-grid"
   },
   "attributes": {
+    "shadowLiftOnHover": {
+      "type": "boolean",
+      "default": true
+    },
     "postType": {
       "type": "string",
       "default": "post"

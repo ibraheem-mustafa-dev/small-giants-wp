@@ -20,6 +20,7 @@
 		"align": false,
 		"anchor": false,
 		"sgs": {
+			"shadowLift": false,
 			"colourExemptions": {
 				"background": {
 					"rule": "states",

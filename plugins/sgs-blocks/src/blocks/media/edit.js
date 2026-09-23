@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import {
 	useBlockProps,
+	useSettings,
 	MediaPlaceholder,
 	MediaUpload,
 	MediaUploadCheck,
@@ -103,10 +104,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// (MediaPanelLayout.js mounts all 16 unprefixed), so the full
 	// MEDIA_ATOM_IDS set applies here.
 	const mediaScopeClass = mediaElementScopeClass( clientId, '' );
+	// The theme's hover map (settings.custom.shadowHover, design H1) — read here (a React
+	// component) and threaded into the shadow atom's automatic lift, which cannot call
+	// useSettings() itself (canvasStyle.js's atoms must stay plain-Node importable).
+	const [ shadowHoverSettings ] = useSettings( 'custom' );
 	const mediaElementStyle = mediaElementCustomProperties( {
 		attributes,
 		blockSlug: 'sgs/media',
 		atoms: MEDIA_ATOM_IDS,
+		extra: { hoverMap: shadowHoverSettings?.shadowHover },
 	} );
 	// The box marker is a no-op until the `overlay` atom has a colour/gradient
 	// set (media-element.css's own docblock: "no custom properties set means

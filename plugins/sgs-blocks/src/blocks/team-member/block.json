@@ -189,6 +189,10 @@
 		"root": ".wp-block-sgs-team-member"
 	},
 	"attributes": {
+		"shadowLiftOnHover": {
+			"type": "boolean",
+			"default": true
+		},
 		"padding": {
 			"type": "object",
 			"default": {

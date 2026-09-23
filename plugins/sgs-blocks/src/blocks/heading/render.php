@@ -160,7 +160,8 @@ $box_shadow_decls = sgs_shadow_decls(
 		'colour'       => 'boxShadowColour',
 		'hover'        => 'boxShadowHover',
 		'hover_colour' => 'boxShadowColourHover',
-	)
+	),
+	$block->name ?? ''
 );
 
 $transition_duration_raw = isset( $attributes['transitionDuration'] ) ? absint( $attributes['transitionDuration'] ) : 300;

@@ -186,6 +186,10 @@
 		"typography": ".sgs-timeline__title"
 	},
 	"attributes": {
+		"shadowLiftOnHover": {
+			"type": "boolean",
+			"default": true
+		},
 		"padding": {
 			"type": "object",
 			"default": {

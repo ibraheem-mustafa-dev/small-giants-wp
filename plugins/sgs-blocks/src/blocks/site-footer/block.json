@@ -140,6 +140,10 @@
 		"sgs/site-footer-row"
 	],
 	"attributes": {
+		"shadowLiftOnHover": {
+			"type": "boolean",
+			"default": true
+		},
 		"layout": {
 			"type": "string",
 			"default": "flex",

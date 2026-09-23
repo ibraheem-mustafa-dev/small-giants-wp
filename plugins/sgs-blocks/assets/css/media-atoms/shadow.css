@@ -27,7 +27,15 @@
 	transition-timing-function: ease;
 }
 
-.sgs-media-el:hover,
+/* Pointer hover is touch-guarded (the two layers of includes/helpers-hover-state.php), so a tap
+ * on a touchscreen does not leave the shadow stuck in its hover state; keyboard focus stays
+ * unguarded. */
+@media (hover: hover) and (pointer: fine) {
+	:where(:root:not(.sgs-touch-input)) .sgs-media-el:hover {
+		box-shadow: var( --sgs-media-box-shadow-hover, var( --sgs-media-box-shadow, none ) );
+	}
+}
+
 .sgs-media-el:focus-within {
 	box-shadow: var( --sgs-media-box-shadow-hover, var( --sgs-media-box-shadow, none ) );
 }

@@ -221,6 +221,15 @@ if ( 'icon-circle' === $badge_style && '' !== $icon_circle_shadow_colour_hover )
 		// sgs-shadow-fallback: hover state only; the resting rule carries the forced-colours fallback
 		$tb_extra_scoped_css .= sgs_hover_state_rules( $uid_scope . ' .sgs-trust-bar__circle', 'box-shadow:' . $safe_icon_circle_shadow_hover, ':focus-within' );
 	}
+} elseif ( 'icon-circle' === $badge_style && '' !== $icon_circle_shadow ) {
+	// AUTOMATIC LIFT (design H4) — only when this instance has NO explicit hover colour.
+	$tb_extra_scoped_css .= sgs_shadow_hover_rules(
+		$uid_scope . ' .sgs-trust-bar__circle',
+		$icon_circle_shadow,
+		$icon_circle_shadow_colour,
+		$attributes,
+		( $block instanceof \WP_Block ) ? (string) $block->name : ''
+	);
 }
 
 // HOVER-state background colours (colour-conformance 2026-09-06 closeout) —
@@ -548,6 +557,15 @@ if ( 'image-badge' === $badge_style ) {
 			// sgs-shadow-fallback: hover state only; the resting rule carries the forced-colours fallback
 			$tb_extra_scoped_css .= sgs_hover_state_rules( $img_sel, 'box-shadow:' . $safe_badge_image_shadow_hover, ':focus-within' );
 		}
+	} elseif ( '' !== $badge_image_shadow ) {
+		// AUTOMATIC LIFT (design H4) — only when this instance has NO explicit hover colour.
+		$tb_extra_scoped_css .= sgs_shadow_hover_rules(
+			$img_sel,
+			$badge_image_shadow,
+			$badge_image_shadow_colour,
+			$attributes,
+			( $block instanceof \WP_Block ) ? (string) $block->name : ''
+		);
 	}
 }
 

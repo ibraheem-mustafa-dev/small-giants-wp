@@ -127,6 +127,10 @@
 		}
 	},
 	"attributes": {
+		"shadowLiftOnHover": {
+			"type": "boolean",
+			"default": true
+		},
 		"mediaType": {
 			"type": "string",
 			"default": "image",
