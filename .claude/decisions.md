@@ -1,5 +1,17 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1142 [ROUTINE] — Selector-routed fold and the reviews block redesign: the Eye Care reviews card now matches the draft (2026-09-23)
+
+**Bean's steer.** "The pipeline should be using whatever categorical data, code or info is available to it" (approved the selector-routed fold); the reviews block must replicate the draft's Google setup and offer ready-made looks, with the attributes that setup needs.
+
+**Shared mechanism (converter, rule 7 approved).** A per-area declaration that `attr_for_area_property` misses is looked up again by the element's own class against each attribute's `derived_selector`, and the property against its `css_property` (`fold_helpers._selector_route_attr`, `db_lookup.attrs_for_element_class_property`). Guards from three cold council raters: only the class that IS the area routes; a class claimed by two block elements is reported, never guessed; an ambiguous first lookup is a skip row, not a crash; box attributes are written in their declared object shape; width/height route only for an attribute that lists them. Follow-ups found live: a padding box attr is found through the selector route (`padding` shorthand), and a one-side border shorthand expands for the per-area fold only (`per_side`) because on the root path it would paint a text-coloured line on blocks whose `borderStyle` defaults to solid. Seeder: `supports.sgs.presetManualValues` names looks chosen by hand, so detection never auto-picks them. Commits d160fe287, 859efac76, 75a4cfe57.
+
+**Block.** `sgs/google-reviews` gains 240 attributes (77 named, 13 typography families), six Styles panels, and eight looks on `cardStyle`; "Write a review" defaults to an outlined button; text clamps at 8 lines. Commit ec1e28dd4; design `.claude/plans/2026-09-21-google-reviews-block-design.md`; report `reports/visual-diff/google-reviews-2026-09-23.md`.
+
+**Verified.** Live Eye Care page 11 at 1440 and 375 against the draft: both header buttons match size and colour by pixel sample, stars gold, card radius/padding/border, avatar, captions and Roboto match; review cards 6 to 8px taller. Real editor: all looks and display types render, no failed request. Corpus of 474 sections: Mama's identical throughout.
+
+**Open.** Review cards slightly taller; the rail's 16px gap and star letter-spacing have no attribute; `render.php` (about 1,200 lines), `edit.js` (720) and `manifest_annotation.py` (about 2,100) exceed the file-length rule and need splitting; one-side borders on block ROOTS need their own design (colour has no all-sides home).
+
 ## D1141 [ROUTINE] — Editor crash and reviews canvas fixed; the whole reviews card becomes one block; ticker one slim row; council-reviewed twice (2026-09-21)
 
 **Bean's steer.** Fix the reviews block editor (giant stars stand-in, slider crash, default slider); reuse existing controls, never reinvent; typography for the ticker via the shared helper; "review all our recognition methods" before patching the draft header; all 13 reviews are five-star; do the small cleanups (marquee, svg upload message).
