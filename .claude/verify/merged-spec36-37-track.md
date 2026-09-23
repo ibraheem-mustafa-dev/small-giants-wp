@@ -130,7 +130,43 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
 - W3B-4 evidence: `reports/reference-requirements/FAMILIES-MASTER.md` (46 families, 11 covered, 21 partial, 8 gap, 6 conflict), `families-master.json`, and the independent review `FAMILIES-REVIEW.md` (23 findings, applied); 33 coverage checks re-run against the code.
 
 ## Wave 3C — Header and nav architecture harmonised
-- STATUS: ready to execute (`plans/2026-09-21-wave-3c-implementation-plan.md`); Step 0 first.
+- STATUS: under way (`plans/2026-09-21-wave-3c-implementation-plan.md`); U-1 closed, U-2 next.
+
+**U-1 exit criteria (closed):**
+- Mega close-grace reads `submenuCloseGrace` (the bug where the mega context passed a literal 170
+  instead of the attribute is fixed); `submenuIntentDelay` and `submenuOpenOn` (hover or click) give an
+  operator-set intent delay and open mode on both the dropdown and the mega panel. Live-verified.
+- `sgs/site-header` carries a per-tier `zIndex` object (ENG-01); drawer stacking derives from it.
+  Live-verified. Residual: buck's `auto` z-index value has no covering value and awaits Bean's acceptance.
+- Force-solid (`contrastSafe` = `force-solid`) paints the header's own resting background (its colour, or
+  the theme surface token when it has none) instead of suppressing transparency with no paint. Live-verified.
+- The surface-ground trio (`surfaceBlur`, `surfaceSaturate`, `surfaceOpacity`) is aligned across
+  `site-header`, `mega-panel`, `nav-drawer`, `container`, `cta-section`, `hero`, `multi-button`,
+  `physics-canvas`, `site-footer` and `trust-bar`, one `Surface` panel
+  (`container/components/BackgroundPanel.js`) and one editor preview (`src/utils/surface-preview.js`).
+  `sgs/site-header` also carries `surfaceFadeEdge` (none/top/bottom, off in forced-colours mode);
+  `mega-panel` and `nav-drawer` each gain a `shadow`/`shadowColour` writer. Live-verified:
+  `reports/visual-diff/container-2026-09-23.md`, `nav-drawer-2026-09-23.md`, `nav-bar-menu-2026-09-23.md`,
+  `container-2026-09-21.md`, `mega-panel-2026-09-21.md`. Residual: the mega-panel `borderRadius` migration
+  to a tier object awaits Bean's ruling; the edge-fade's own live check is owed.
+- Item hover paint: `itemOpacity`/`itemOpacityHover` and `submenuOpacity`/`submenuOpacityHover` on
+  `sgs/nav-bar-menu` and `sgs/nav-drawer-menu`; `itemPaddingShiftHover`; mega-panel `panelCardLift`.
+  Attributes built and PHP-tested; live verification of the card lift and the submenu opacity pair on a
+  `qa-hdr-*` fixture is owed.
+- Family coverage in `families-master.json`: M-43 and M-21 covered (M-21 pending the live check above);
+  M-09 and M-13 stay partial (residuals named above).
+- Shipped alongside U-1, not itself a U-1 family: the universal shadow-tone check (design
+  `.claude/reports/2026-09-23-shadow-tone-design.md`, Bean-approved GO WITH FIXES) — a surface is judged
+  dark when white text would be chosen for it (`helpers-colour-wcag.php::sgs_wcag_white_wins_for_luminance`),
+  `helpers-surface-tone.php::sgs_surface_tone` judges overlay/image/gradient/colour layers, the wrapper,
+  nav-drawer and mega-panel mark `sgs-on-dark`/`sgs-on-light`, and `helpers-shadow-dark.php` gives a dark
+  surface a black shadow at 2.2x plus a 1px light ring, gated by `scripts/check-shadow-sources.py`. Owed:
+  Bean's eye on the dark-surface screenshot and the ring strength.
+- Also owed, not gating U-1's own closure: the sandybrown deploy of everything since theme 1.5.91 (waits on
+  another session committing `sgs/google-reviews`); theme gradient presets read as unknown in the canvas
+  until callers pass `useSettings('color.gradients')`.
+
+**Next: U-2**, surface scrim colour, alpha and blur per tier (M-14) — design-gated, not started.
 
 Gate 3C passes when (the one definition; the same words are in the implementation plan §7 and the
 strategic plan's Gate 3C entry):

@@ -1,12 +1,12 @@
 ---
 doc_type: spec
 spec_id: 36
-spec_version: 2.6
+spec_version: 2.7
 title: SGS Navigation System
 project: small-giants-wp
 status: active
 owner: framework
-last_verified: 2026-09-19
+last_verified: 2026-09-23
 references:
   - .claude/specs/37-HEADER-FOOTER-BUILDER.md
   - .claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md
@@ -189,6 +189,17 @@ throughout** (avoids the sticky-hover mobile bug). Mechanics:
   `git grep -n "pointInTriangle\|isHeadingIntoOpenPanel\|scheduleIntentOpen" -- plugins/sgs-blocks/src/shared/nav-interactivity/mega-disclosure.js`.
 - **Outside-click dismiss.** A click outside an open mega/dropdown closes it
   (`mega-disclosure.js` document-level `outsideClickHandler`).
+- **Item hover paint (M-21).** On `sgs/nav-bar-menu` and `sgs/nav-drawer-menu`: `itemOpacity` /
+  `itemOpacityHover` set the resting/hover opacity of the top-level item link and its caret (unset emits no
+  opacity rule); `submenuOpacity` / `submenuOpacityHover` are the SAME pair for the dropdown/mega/accordion
+  submenu link, scoped separately because a reference's submenu opacity can move in the opposite direction
+  from its top-level item; `itemPaddingShiftHover` grows an item's inline-start padding on hover/focus by a
+  length, applied to both the top-level item link and the submenu link, each reading its own resting
+  literal. All four are touch-guarded via `sgs_hover_state_rules()`. On `sgs/mega-panel`: `panelCardLift`
+  (default `3px`) sets the `cards` style's group-tile hover/focus-within lift distance
+  (`translateY(calc(-1 * <value>))`); the same block's `itemPaddingShiftHover` grows a group item's own
+  inline-start padding on hover, independently of the bar/drawer attribute of the same name. `sliding pill`
+  (`itemBgHoverTreatment`), tint swap, colour, weight, underline and border stay owned by Spec 41.
 - The timing constants apply to the hover path only; WCAG 1.4.13 (Dismissible/Hoverable/Persistent) on the
   hover panel; caret on expandable items only; distinct hover+focus states; active-trail
   (`aria-current="page"` + a visible style) — NOT BUILT, see below; a per-item **"featured"** flag;
@@ -277,6 +288,13 @@ DISCLOSURE semantics, never `role="menu"` (FR-36-10), and are block-based CPT po
   (accordion or drill-down sub-panel) is NOT BUILT — see FR-36-6 "Submenu".
 - Panel content = SGS blocks only (no banned core blocks); scoped `<style>` (FR-36-13); links AND rich
   content crawlable server-rendered, **no lazy-load** (FR-36-17).
+- **Surface (M-13).** `sgs/mega-panel` carries the same surface-ground trio as the header and the drawer —
+  `surfaceBlur` (a CSS length), `surfaceSaturate` (a whole-number percentage) and `surfaceOpacity` (0 to 1,
+  applied to the panel's own fill) — through `includes/helpers-surface-ground.php`, plus its own
+  `shadow`/`shadowColour` writer (`shadow` default `floating`, one of the theme shadow presets, or a raw
+  layer stack composed with `shadowColour`; empty means no shadow). The panel's `borderRadius` stays a plain
+  string today; migrating it to a `{desktop,tablet,mobile}` tier object, matching the header and container,
+  awaits Bean's ruling.
 
 ### FR-36-6 — The drawer (`sgs/nav-drawer`) — native `<dialog>` container in the `sgs_drawer` CPT
 **ONE block, ONE InnerBlocks region, NO child blocks.** The drawer is `sgs/nav-drawer` and nothing else. It
@@ -419,6 +437,13 @@ panel**, with author-managed background inertness (the `inert` attribute, focus 
 focus-return all kept exactly as `modal` has them). The `.show()` path lives in
 `plugins/sgs-blocks/src/shared/nav-interactivity/store.js` (`git grep -n "drawer.show()" -- plugins/sgs-blocks/src/shared/nav-interactivity/store.js`).
 
+**Stacking order (M-09).** `sgs/site-header` carries a per-tier `zIndex` object
+(`{desktop,tablet,mobile}`, each a whole number 0 to 99998 or empty to inherit the wider tier; framework
+default 100), written only by `includes/sgs-header-z-index.php`. The drawer and its scrim are kept just
+below the header's own value, so a header needing to sit above the open drawer (the non-modal scale above)
+sets its `zIndex` to at least 4 more than the drawer's. Residual: one reference needs an `auto` z-index value
+rather than a number, which the attribute does not yet express and which awaits Bean's acceptance.
+
 **Why non-modal exists — measured.** Live DOM measurement of 15 top-tier reference sites:
 
 | Finding | Count |
@@ -447,8 +472,10 @@ Header rows are NOT imported into the drawer in any form (there is no "show head
 #### Desktop variants — BUILT; the design-gate record is `.claude/plans/archive/2026-07-28-nav-drawer-variants-design-gate.md`
 
 Built: the per-device `anchor` object (`full-screen` default / `header` derives width + edges from the
-header / `trigger` / `centred`) + `panelSize` (responsive) + surface opacity/blur (`surfaceOpacity`,
-`surfaceBlur`; NO scrim element — 8/8 references have none) + a background-image media layer
+header / `trigger` / `centred`) + `panelSize` (responsive) + the surface-ground trio (`surfaceBlur`,
+`surfaceSaturate`, `surfaceOpacity`, through `includes/helpers-surface-ground.php`, the same emitter the
+header and the mega panel use; NO scrim element — 8/8 references have none) + a `shadow`/`shadowColour`
+writer (M-13, same vocabulary as the mega panel's) + a background-image media layer
 (`backgroundImage*`, `backgroundImageDecorative` — painted as a CSS layer, never a frontend `<img>`) + `closeStyle` + `sgs/nav-drawer-menu` `listColumns` (in-drawer
 only) + **seven drawer looks as patterns** (`theme/sgs-theme/patterns/drawer-*.php`, keyword `featured`; the block
 declares no variant attribute and registers no block variations) +

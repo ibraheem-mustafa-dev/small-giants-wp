@@ -194,13 +194,13 @@ visually. `none` means neither.
 
 | Order | Unit | Scope after the decisions | Families (exit cells) | Bean | Size | Lock files |
 |---|---|---|---|---|---|---|
-| 1 | U-1 | De-hardcode the nav surfaces. FIRST COMMIT wires the mega fork's `closeGrace` to `submenuCloseGrace` (`nav-menu-markup.php` builds it with a literal 170 while the non-mega fork reads the attribute); lift or parameterise `mega-disclosure.js::MAX_INTENT_DELAY_MS = 80`, which clamps a markup-declared 300; per-tier z-index (ENG-01); align the surface-ground vocabulary (fill, blur, radius and shadow diverge by name and type across site-header, mega-panel and nav-drawer). The force-solid tier emits the header's resting background (section 1a) | M-09, M-13, M-43, M-21 | design | medium | `nav-menu-markup.php`, `site-header/{render.php,style.css,block.json}`, `mega-panel/{render.php,style.css,block.json}`, `nav-drawer/block.json` |
+| 1 | U-1 — **DONE** | De-hardcode the nav surfaces. FIRST COMMIT wires the mega fork's `closeGrace` to `submenuCloseGrace` (`nav-menu-markup.php` builds it with a literal 170 while the non-mega fork reads the attribute); lift or parameterise `mega-disclosure.js::MAX_INTENT_DELAY_MS = 80`, which clamps a markup-declared 300; per-tier z-index (ENG-01); align the surface-ground vocabulary (fill, blur, radius and shadow diverge by name and type across site-header, mega-panel and nav-drawer). The force-solid tier emits the header's resting background (section 1a) | M-09 (partial), M-13 (partial), M-43 (covered), M-21 (covered, live check owed) | design | medium | `nav-menu-markup.php`, `site-header/{render.php,style.css,block.json}`, `mega-panel/{render.php,style.css,block.json}`, `nav-drawer/block.json` |
 | 2 | U-9 | Dismissal routes, modality, trigger semantics, the resize rule (DEC-09), `accordionExclusive` (ENG-02), close-on-scroll (DEC-02) | M-36, M-34, M-35, M-40, M-47 | design | medium | `nav-bar-menu/block.json`, `nav-drawer/block.json`, `nav-menu-markup.php`, `src/shared/nav-interactivity/{store.js,mega-disclosure.js}` |
 | 3 | U-11 | Close-control presence, placement (`same-slot` / `top-row-start` / `top-row-end` plus an offset pair) and morph motion (DEC-15); magnet strength (M-10). Includes the `closeStyle` string to tier-object migration via `migrate-tier-object.py --property closeStyle`, with the fallthrough check that a stored flat string still resolves, and `$sgs_nd_allowed_close_styles` kept equal to the JSON enum | M-27, M-10 | eye | medium | `nav-drawer/{block.json,render.php,style.css}`, `nav-bar-menu/{block.json,style.css}` |
 | 4 | U-5 | Entry and exit animation vocabulary and item stagger. The mega fork has no entry-animation attribute today, so the animation must reach the mega interactivity context | M-31, M-32 | eye | high | `nav-drawer/{style.css,render.php,block.json}`, `mega-panel/block.json`, `nav-menu-markup.php`, `src/shared/nav-interactivity/` |
 | 5 | U-2 | Surface scrim, colour, alpha and blur per tier. The drawer hardcodes `rgba(0, 0, 0, 0.55)` twice in `style.css`; the panel fork has no scrim element at all, so U-2 adds one | M-14 | design | medium | `mega-panel/{render.php,block.json}`, `nav-drawer/{style.css,render.php,block.json}`, `src/shared/nav-interactivity/store.js` |
 | 6 | U-3 | Drawer side anchor, container inset, pitch tier object. No drawer clamp (section 1b) | M-17, M-46 | none | medium | `nav-drawer/{render.php,block.json}`, `nav-drawer-menu/block.json` |
-| 7 | U-6 | Item hover parity: opacity and padding-shift hover (M-21), row separators (M-30), sibling dim (M-24, a list-scoped rule), two-copy label roll (M-25, a second label in the markup, needed on the bar, the drawer, the trigger and the footer). M-24 and M-25 need new markup, so they come last | M-21, M-30, M-24, M-25 | eye | high | `nav-bar-menu/{block.json,style.css}`, `nav-drawer-menu/{block.json,style.css}`, `nav-menu-markup.php`, `nav-menu-submenu-css.php` |
+| 7 | U-6 | Item hover parity: opacity and padding-shift hover (M-21, delivered by U-1 — see its row), row separators (M-30), sibling dim (M-24, a list-scoped rule), two-copy label roll (M-25, a second label in the markup, needed on the bar, the drawer, the trigger and the footer). M-24 and M-25 need new markup, so they come last | M-30, M-24, M-25 | eye | high | `nav-bar-menu/{block.json,style.css}`, `nav-drawer-menu/{block.json,style.css}`, `nav-menu-markup.php`, `nav-menu-submenu-css.php` |
 | 8 | U-7 | Per-item ornament (M-22) and per-item media slot (M-15) | M-22, M-15 | none | medium | `nav-menu-markup.php`, `nav-drawer-menu/block.json`, `mega-group/`, `nav-menu-submenu-css.php` |
 | 9 | U-10 | Role migration: move a non-menu header block into the drawer per tier. Crosses the Spec 37 boundary | M-19 | design | medium | `site-header-row/block.json`, `nav-drawer/render.php`, `nav-menu-markup.php` |
 | 10 | U-4 | Type scaling mode: a formula unit, per-tier line-height; includes `business-info` for the footer half | M-45 | none | medium | `nav-bar-menu/block.json`, `nav-drawer-menu/block.json`, `nav-menu-submenu-css.php`, `business-info/block.json` |
@@ -210,6 +210,26 @@ visually. `none` means neither.
 | 14 | U-16 | Header and footer entrance animation, after the 0d measurements. Premise: `site-header` and `site-footer` carry `supports.sgs.hideExtensions`; `site-footer-row` does not | M-11 | eye | medium | `site-header/block.json`, `site-footer/block.json`, `site-footer-row/block.json` |
 | ‖ | U-12 | Eight furniture blocks, in priority order: local-time clock, language switch, back-to-top, account or log-in link, then store selector, wishlist, theme toggle, sound mute. One agent per block, each in its own new directory. Plus the two `headerEssential` flags | M-18 | none | high | eight new directories, plus `product-search/block.json` and `filter-search/block.json` (the two `headerEssential` flags, edited by the main thread) |
 | ‖ | U-15 | Self-changing header message (rotate, random, live clock) on `notice-banner`. No overlap with header or nav infrastructure | M-07 | eye | medium | `notice-banner/*` |
+
+**U-1 — done.** Shipped: mega close-grace reads `submenuCloseGrace`; force-solid paints the header's own
+resting background; per-tier `zIndex` on `sgs/site-header` with drawer stacking derived from it;
+`submenuIntentDelay` + `submenuOpenOn` (hover or click); the surface-ground trio (`surfaceBlur`,
+`surfaceSaturate`, `surfaceOpacity`) aligned across `site-header`, `mega-panel`, `nav-drawer`, `container`,
+`cta-section`, `hero`, `multi-button`, `physics-canvas`, `site-footer` and `trust-bar`; `surfaceFadeEdge` on
+the header; a `shadow`/`shadowColour` writer on `mega-panel` and `nav-drawer`; layered shadows clone as a
+shape list plus a colour list; item hover paint (`itemOpacity`/`itemOpacityHover`,
+`submenuOpacity`/`submenuOpacityHover`, `itemPaddingShiftHover`, `panelCardLift`). Exit cells: M-43 moves to
+`covered` in `families-master.json` (residual: rabbit's open state never reproduced live). M-09 stays
+`partial` (residual: buck's `auto` z-index value has no covering value, awaiting Bean's acceptance). M-21
+moves to `covered` (attributes built and PHP-tested; live verification of the card lift and the submenu
+opacity pair is owed). M-13 stays `partial` (mega-panel `borderRadius` tier-object migration
+awaits Bean's ruling; the edge-fade's live check is owed). Shipped alongside U-1: the universal shadow-tone
+check (design `.claude/reports/2026-09-23-shadow-tone-design.md`, Bean-approved GO WITH FIXES) — a surface is
+judged dark when white text would be chosen for it, a dark surface takes a black shadow at 2.2x plus a light
+ring, and the wrapper, nav-drawer and mega-panel mark `sgs-on-dark`/`sgs-on-light`. Owed: Bean's eye on the
+dark-surface screenshot and ring strength; the sandybrown deploy of everything since theme 1.5.91 (waits on
+another session committing `sgs/google-reviews`); theme gradient presets read as unknown in the canvas until
+callers pass `useSettings('color.gradients')`.
 
 Sizes are `families-master.json::units[].size` at full scope. Convert per
 `~/.claude/rules/time-estimates.md`: medium 30 to 60 minutes, high 1 to 2 hours, the whole

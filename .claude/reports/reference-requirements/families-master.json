@@ -238,25 +238,16 @@
     "wearecollins"
    ],
    "needed_by_count": 9,
-   "coverage_status": "conflict",
+   "coverage_status": "partial",
    "evidence": "measured",
    "covered_by": [
-    "sgs/site-header (z-index hardcoded 100; NO attribute)"
+    "sgs/site-header::zIndex (per-tier object {desktop,tablet,mobile}, includes/sgs-header-z-index.php)"
    ],
-   "note": "VERIFIED: site-header/render.php emits 'z-index' => '100' in all three tri-state branches and style.css:25 sets z-index:100. Eleven distinct values measured across the roster (9 to 10000, plus auto), and wearecollins needs 999 at 375 and 9 above. A hardcoded wrapper default that overrides faithfully-transferred CSS is a cheat to remove or gate.",
+   "note": "U-1 built: sgs/site-header carries a per-tier zIndex object (0 to 99998, framework default 100), written only by includes/sgs-header-z-index.php; the drawer's non-modal z-index scale (Spec 36 Modality) derives from it. Every needed_by reference except buck now has a coverable numeric value. Residual: buck needs an 'auto' z-index, which the attribute (a whole number) does not express; this divergence awaits Bean's acceptance, not a build gap.",
    "uncovered_references": [
-    "buck",
-    "butcherbox",
-    "dogstudio",
-    "fantasy",
-    "halcyon",
-    "indus-foods",
-    "lamalama",
-    "lusion",
-    "studionamma",
-    "wearecollins"
+    "buck"
    ],
-   "uncovered_count": 10
+   "uncovered_count": 1
   },
   {
    "id": "M-10",
@@ -375,13 +366,12 @@
    "coverage_status": "partial",
    "evidence": "measured",
    "covered_by": [
-    "sgs/site-header::backgroundColour/-Gradient/::backdropBlur/::border*/::shadow",
-    "sgs/mega-panel::panelBg/::bgBlur/::borderRadius/::border*",
-    "sgs/nav-drawer::drawerBg/::surfaceOpacity/::surfaceBlur/::borderRadius",
-    "sgs/site-footer::backgroundColour/-Gradient",
-    "sgs/*-row::backgroundColour"
+    "sgs/site-header::surfaceBlur/::surfaceSaturate/::surfaceOpacity/::surfaceFadeEdge/::shadow/::shadowColour",
+    "sgs/mega-panel::surfaceBlur/::surfaceSaturate/::surfaceOpacity/::shadow/::shadowColour/::borderRadius (plain string)",
+    "sgs/nav-drawer::surfaceBlur/::surfaceSaturate/::surfaceOpacity/::shadow/::shadowColour/::borderRadius",
+    "sgs/container, sgs/cta-section, sgs/hero, sgs/multi-button, sgs/physics-canvas, sgs/site-footer, sgs/trust-bar::surfaceBlur/::surfaceSaturate/::surfaceOpacity (includes/helpers-surface-ground.php, one shared emitter)"
    ],
-   "note": "MERGED across header, panel, drawer and footer: one ground vocabulary, per the composite-mirror rule. Covered on the header and the drawer (surfaceOpacity + surfaceBlur reach lamalama exactly). FOUR residual gaps: (a) mega-panel::bgBlur is a BOOLEAN emitting a literal 'saturate(1.5) blur(24px)' — halcyon clones, no other blur amount can (VERIFIED); (b) the mega panel's box-shadow is hardcoded '0 30px 80px -30px rgba(0,0,0,.28),0 2px 8px -2px rgba(0,0,0,.08)' with no attribute, so away's shadow-none and rabbit's shadow-lg are unreachable (VERIFIED); (c) site-header::backdropBlur is a length only, so halcyon's companion saturate(1.4) is unreachable and the value lands on the header box, not on fantasy's blurred trigger pill; (d) fantasy's mask-image gradient fade has no attribute (0 rows for css_property='mask-image'). RE-VERIFIED, and the merge test FAILS on names and types: fill is backgroundColour / panelBg / drawerBg; blur is a string length / a BOOLEAN / a string length; radius is a tier object / a plain '20px' string / a tier object; shadow exists on the header and on NEITHER the panel nor the drawer. The family stands (it is one capability), but the divergence IS its gap — see `ground_vocabulary_divergence` — and aligning the vocabulary to the tier-object shape is assigned to U-1 alongside the de-hardcoding.",
+   "note": "U-1 built the surface-ground trio (surfaceBlur/surfaceSaturate/surfaceOpacity) as one shared emitter (includes/helpers-surface-ground.php) across the header, the mega panel, the drawer and seven content blocks, plus a shadow/shadowColour writer on the mega panel and the drawer, and surfaceFadeEdge on the header. Every needed_by reference now has a coverable value for fill, blur, opacity and shadow. TWO residuals keep the family partial rather than closing the vocabulary-alignment exit condition this family names: (1) sgs/mega-panel::borderRadius stays a plain string while sgs/site-header and sgs/nav-drawer hold it as a {desktop,tablet,mobile} tier object; migrating it awaits Bean's ruling. (2) surfaceFadeEdge's own live check (fantasy's mask-image gradient fade) is owed.",
    "ground_vocabulary_divergence": {
     "_why": "The merge test is 'ONE block attribute or mechanism would express both sides'. Verified from block.json, the attributes DIVERGE by name and type across the four blocks, which is itself the composite-mirror bug. Recorded as this family's gap; the alignment is assigned to U-1.",
     "fill": {
@@ -406,15 +396,8 @@
     },
     "target_shape": "tier object for every box property, one name per concept across the four blocks."
    },
-   "uncovered_references": [
-    "away",
-    "buck",
-    "fantasy",
-    "halcyon",
-    "indus-foods",
-    "rabbit"
-   ],
-   "uncovered_count": 6
+   "uncovered_references": [],
+   "uncovered_count": 0
   },
   {
    "id": "M-14",
@@ -680,22 +663,21 @@
     "studionamma"
    ],
    "needed_by_count": 11,
-   "coverage_status": "partial",
+   "coverage_status": "covered",
    "evidence": "mixed",
    "covered_by": [
+    "sgs/nav-bar-menu, sgs/nav-drawer-menu::itemOpacity/::itemOpacityHover (top-level item + caret)",
+    "sgs/nav-bar-menu, sgs/nav-drawer-menu::submenuOpacity/::submenuOpacityHover (dropdown/mega/accordion sublink)",
+    "sgs/nav-bar-menu, sgs/nav-drawer-menu, sgs/mega-panel::itemPaddingShiftHover",
+    "sgs/mega-panel::panelCardLift",
     "sgs/nav-bar-menu::itemBgHoverTreatment/::itemBgHover/::itemColourHover/::itemFontWeightHover/::itemTextDecorationHover",
     "sgs/nav-drawer-menu::item*Hover (11 of its 28 *Hover attributes)",
     "sgs/nav-bar-menu::submenu*Hover",
     "sgs/mega-panel::iconBackgroundHover"
    ],
-   "note": "MERGED across bar, panel and drawer: buck's 1 -> 0.5 opacity fade appears on the BAR (group A) and in the DRAWER (group C) as the same value, and one attribute covers both. Sliding pill (itemBgHoverTreatment 'highlight'), tint swap, colour, weight, underline and border are all covered. THREE residual gaps: (a) no hover-OPACITY attribute (buck, fantasy, on two surfaces); (b) the panel CARD LIFT is hardcoded translateY(-3px) plus a fixed ::after shadow in mega-panel/style.css — halcyon's -3px exactly, indus's -6px not at all (VERIFIED); (c) no padding-left-shift-on-hover attribute (halcyon 14->22px, indus 6->12px). Also halcyon-specific: 'highlight' must NOT be gated on owning a panel (halcyon) while indus is the opposite, so both must be reachable. NEGATIVE-CONTROL CITATION added on review so it is not rebuilt: 'a panel-owning item gets the sibling hover treatment' was closed in W3A-3 as a fixture artefact (page 3763). What remains real from that thread is the gating note above — halcyon's pill moves onto the panel-LESS item and indus's does not, so 'highlight' must not be hard-gated on owning a panel.",
-   "uncovered_references": [
-    "buck",
-    "fantasy",
-    "halcyon",
-    "indus-foods"
-   ],
-   "uncovered_count": 4
+   "note": "U-1 built the three residual gaps this family named: (a) itemOpacity/itemOpacityHover give the hover-opacity value buck and fantasy need; (b) mega-panel panelCardLift (default 3px) replaces the hardcoded translateY(-3px), reachable at halcyon's -3px and settable to indus's -6px; (c) itemPaddingShiftHover gives the padding-left-shift-on-hover value (halcyon 14 to 22px, indus 6 to 12px), on the bar, the drawer and the mega panel's own group items. submenuOpacity/submenuOpacityHover give the sublink's own (often opposite-direction) pair, e.g. fantasy's 0.6 to 1 rest/hover. All four are touch-guarded via sgs_hover_state_rules(). Every attribute is built and PHP-tested; live verification of the mega-panel card lift and the submenu opacity pair on a qa-hdr-* fixture is owed.",
+   "uncovered_references": [],
+   "uncovered_count": 0
   },
   {
    "id": "M-22",
@@ -1324,20 +1306,15 @@
     "lamalama"
    ],
    "needed_by_count": 5,
-   "coverage_status": "partial",
+   "coverage_status": "covered",
    "evidence": "mixed",
    "covered_by": [
-    "(no attribute; the behaviour is a matchMedia gate in mega-disclosure.js)"
+    "sgs/nav-bar-menu::submenuIntentDelay/::submenuOpenOn (hover-intent | click, plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php)",
+    "sgs/nav-bar-menu::submenuCloseGrace (now read by the mega interactivity context, not only the dropdown)"
    ],
-   "note": "mega-disclosure.js opens on hover-intent when '(hover:hover) and (pointer:fine)' matches and on tap otherwise, plus keyboard throughout — so the hover-or-focus value (away, halcyon, indus) is the shipped default. Missing is an OPERATOR CHOICE: butcherbox's click-toggled Gifts panel and lamalama's click-toggled accordion row cannot be reproduced on a hover-capable pointer. One enum attribute (hover-intent | click) read into the interactivity context beside intentDelay. rabbit's open state was never reproduced. MERGED: the open-mode enum, the intent delay and the close grace all land in the SAME array — the mega interactivity context in includes/nav-menu-markup.php — so splitting them put two units on one object. BUG CARRIED FORWARD: that context is built with a literal \"'closeGrace' => 170\" while the dropdown branch passes \"$submenu['close_grace']\", so submenuCloseGrace has a control, is read in render.php, and does nothing on a mega panel. The open intent delay has no attribute at all (markup hardcodes 300; mega-disclosure.js clamps to MAX_INTENT_DELAY_MS = 80). And there is no operator choice of hover-intent vs click, so butcherbox's click-toggled Gifts panel and lamalama's click-toggled accordion row are unreachable on a hover-capable pointer.",
-   "uncovered_references": [
-    "away",
-    "butcherbox",
-    "halcyon",
-    "indus-foods",
-    "lamalama"
-   ],
-   "uncovered_count": 5
+   "note": "U-1 built: the mega interactivity context in includes/nav-menu-markup.php reads submenuCloseGrace instead of a literal 170 (BUG CARRIED FORWARD, fixed); submenuIntentDelay replaces the markup's hardcoded 300 (mega-disclosure.js's MAX_INTENT_DELAY_MS clamp is lifted); submenuOpenOn (hover default | click) gives the operator choice butcherbox's click-toggled Gifts panel and lamalama's click-toggled accordion row needed. Live-verified (reports in reports/visual-diff/). Residual: rabbit's open state was never reproduced live against the shipped mechanism.",
+   "uncovered_references": [],
+   "uncovered_count": 0
   },
   {
    "id": "M-45",

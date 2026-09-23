@@ -34,8 +34,8 @@ done and live-verified. The harness self-tests and the fixture fidelity check ar
 seeded as Menu drawer posts on all three test sites), the Site Info logo tier, the scrolled-state header
 shadow, the floating header pill (blur-based, matching the one true pill among the references), the formal Gate 2
 re-run and the mega + drawer integration probe. Payment icons need no
-framework feature (clients upload official artwork into the trust bar). Wave 3 is partial. Waves 3A (independent fixes) and 3B (a requirements table of 13 references: 46 capability families, signed) are done. Wave 3C (building the families: 14 nav units one at a time plus a furniture-blocks unit and a message unit in parallel) is planned in plans/2026-09-21-wave-3c-implementation-plan.md; Step 0a (framework DB reseed), 0b (FR-36-6 optional-close amendment) and 0f (test header #3777 and test drawer #3778 active on sandybrown; Mama's header #3648 and default drawer #3593 kept for re-activation) are done, and the units start next with U-1. Waves 4 and 5 (the reference clones and the clone walker)
-have not started.
+framework feature (clients upload official artwork into the trust bar). Wave 3 is partial. Waves 3A (independent fixes) and 3B (a requirements table of 13 references: 46 capability families, signed) are done. Wave 3C is under way; U-1 is closed, U-2 is next (detail below, Spec 36+37 merged track section). Waves 4
+and 5 have not started.
 
 **Indus Foods** has its own dedicated test site (`lavender-dinosaur-183533.hostingersite.com`,
 deploy target `indus-test`) because the active header/footer/theme-snapshot pointers are single
@@ -119,29 +119,35 @@ the file-length guide; untracked under `sites/eye-care-ward-end/`: the 3 MB offl
 **Read `plans/2026-07-29-merged-spec36-37-track-strategic-plan.md` + `verify/merged-spec36-37-track.md`
 IN FULL before touching anything — do not act on this summary.**
 
-- **Wave 1** (fixtures + verification) — CLOSED. Residuals: axe on the Gate-3 mega panel shows 6
-  primary-colour contrast violations on the Mama's palette, accepted by owner ruling; Bean's-eye on
-  mega motion not recorded; cart/search screenshot set not captured.
+- **Wave 1** (fixtures + verification) — CLOSED. Residuals: 6 primary-colour contrast violations on the
+  Gate-3 mega panel (Mama's palette, accepted by owner ruling); Bean's-eye on mega motion not recorded;
+  cart/search screenshot set not captured.
 - **Wave 2** (capability) — DONE a, b, c, d, e, f (live/eye verification owed), g, h, j, k, l, n, p, q, r,
-  s, t, u · PARTIAL i · CLOSED with no framework feature: o
-  (payment icons). Gate 2 re-run passed 2026-09-20 on the mechanism
-  (`.claude/reports/2026-09-20-w2-gate2-rerun.md`); fidelity is Bean's eye. The mega + drawer probe on the
-  CPT drawer passed (`.claude/reports/2026-09-20-w2u-cpt-drawer-integration.md`).
+  s, t, u · PARTIAL i · CLOSED with no framework feature: o (payment icons). Gate 2 re-run + the mega/drawer
+  CPT probe both passed 2026-09-20 (`reports/2026-09-20-w2-gate2-rerun.md`,
+  `w2u-cpt-drawer-integration.md`); fidelity is Bean's eye.
 - **Wave 3** (polish) — PARTIAL: FR-37-44/45 verified (`reports/visual-diff/site-header-2026-08-19.md`);
   FR-37-27 settled; simplicity finding 2 (canvas-click selection) open; FR-37-6 per-site CPT
   sourcing unverified; FR-37-26 blind-tester session not done; FR-37-18 conformance partial.
-- **Wave 4** (proof gate — 11 client clones incl. resn, 10 if the teardown excludes it; Bean's-eye per clone; every Spec 38 effect available) — not started.
-- **Wave 5** (clone walker — FR-37-22) — not started.
+- **Wave 3C** (`plans/2026-09-21-wave-3c-implementation-plan.md` §4) — **U-1 CLOSED** (mega close-grace,
+  force-solid resting background, per-tier header `zIndex`, submenu intent-delay/open-mode, the
+  surface-ground trio across the nav + container blocks, layered shadows, item hover paint — full list in
+  the current `decisions.md` entry). Family M-43 covered, M-21 covered pending live verification, M-09 +
+  M-13 partial (`families-master.json` names each residual). Shipped alongside the shadow-tone
+  check (`.claude/reports/2026-09-23-shadow-tone-design.md`, Bean-approved). Owed: Bean's eye on the
+  dark-surface screenshot + ring strength; live check of the edge fade, card lift and submenu opacity pair;
+  sandybrown deploy since theme 1.5.91 (waits on `sgs/google-reviews`); mega-panel `borderRadius` ruling;
+  buck's auto z-index. **Next: U-2** (scrim colour/alpha/blur per tier, M-14), design-gated.
+- **Wave 4** (proof gate — 11 client clones incl. resn, 10 if the teardown excludes it; Bean's-eye per
+  clone; every Spec 38 effect available) — not started.
+- **Wave 5** (clone walker) — not started.
 
-**First action:** Bean's decisions on the three design inputs, each report ending in a ranked menu:
-the floating pill (`.claude/reports/2026-09-20-w2p-floating-header-pill-design.md`), the collapse modes
+**First action:** Bean's decisions on three design inputs (each report ends in a ranked menu): the floating
+pill (`.claude/reports/2026-09-20-w2p-floating-header-pill-design.md`), the collapse modes
 (`.claude/reports/2026-09-20-w2m-collapse-modes-design.md`), the payment-icons host
-(`.claude/reports/2026-09-20-w2o-payment-icons-host-options.md`). In parallel: Wave 3 residuals (W3-b
-finding 2, W3-e conformance). Open defects found on the way are in `.claude/decisions.md` (D1122 and D1125).
-The 7 drawer looks are patterns (`theme/sgs-theme/patterns/drawer-*.php`, keyword `featured`, a plain manual
-keyword), seeded by `Sgs_Starter_Library_Migration` on any site whose set of library patterns
-changed, and labelled "Framework look" in the Menu drawers list. Only the drawer has a library.
-The three test sites (`sandybrown`, `indus-test`, `eye-care-test`) run the same code.
+(`.claude/reports/2026-09-20-w2o-payment-icons-host-options.md`). In parallel: Wave 3 residuals (W3-b/e).
+Defects found on the way: `.claude/decisions.md` D1122, D1125. The 7 drawer looks are patterns (Spec 36 §5
+"The seven looks as 'Menu drawer' starter patterns").
 
 ### Front E — Spec 45 classless FIELD resolution (open)
 

@@ -1,12 +1,12 @@
 ---
 doc_type: spec
 spec_id: 37
-spec_version: 1.3.0
+spec_version: 1.4.0
 title: SGS Header/Footer Builder — CPT editing home, container blocks, behaviours, binding
 project: small-giants-wp
 status: active
 authors: [Claude Code, Bean]
-last_verified: 2026-09-19
+last_verified: 2026-09-23
 references:
   - .claude/specs/36-SGS-NAVIGATION-SYSTEM.md          # nav — the extension of this spec
   - .claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md
@@ -838,10 +838,15 @@ easing while the end-state shadow still applies. Live-verified at 1440px and 375
 left and right, each floored by the device safe-area inset); `attributes.headerFloatCollapse`
 (`{enabled, breakpoint}`, off by default) switches the pill to full width, square, below the breakpoint, so the
 pill persists at mobile unless the operator opts out. The width cap is the existing `maxWidth`, the shape is the
-existing `borderRadius` and `shadow`, and `attributes.surfaceBlur` gives the frosted look the reference
-measurements show (a pill with no shadow, border or fill). Float at a tier implies pinning at that tier:
-`position`, `top` and `z-index` resolve Float > Sticky > Transparent through the one merged writer, and `top` is
-the inset. `plugins/sgs-blocks/includes/sgs-header-float-css.php::sgs_header_float_css` emits the rules.
+existing `borderRadius` and `shadow`, and the surface-ground trio (`surfaceBlur`, `surfaceSaturate`,
+`surfaceOpacity`, `includes/helpers-surface-ground.php`) gives the frosted look the reference measurements
+show (a pill with no shadow, border or fill); `surfaceFadeEdge` (`none`/`top`/`bottom`, off in
+forced-colours mode) fades one edge of the header to transparent across its full height. Float at a tier
+implies pinning at that tier: `position`, `top` and `z-index` resolve Float > Sticky > Transparent through
+the one merged writer, and `top` is the inset. The per-tier `zIndex` object (M-09, `{desktop,tablet,mobile}`,
+whole numbers 0 to 99998, framework default 100, written only by `includes/sgs-header-z-index.php`) keeps
+the drawer and its scrim just below the header (Spec 36's Modality section).
+`plugins/sgs-blocks/includes/sgs-header-float-css.php::sgs_header_float_css` emits the rules.
 Hide-on-scroll travels `calc( -100% - <top inset> )` so no sliver stays on screen. A mega panel opened from a
 floating header matches the pill's left and width, and a plain dropdown clamps inside the pill's box
 (`plugins/sgs-blocks/src/shared/nav-interactivity/panel-bounds.js::megaPanelWidth`, `::clampDropdownLeft`).
@@ -1376,12 +1381,15 @@ attribute would store values the control cannot display and silently flatten the
 
 All three contrast modes paint real, non-trivial CSS: `scrim` (a `::before` darkening overlay),
 `shadow` (a text-shadow legibility technique — cosmetic only and never WCAG-conformant, because a
-text-shadow's contrast against arbitrary imagery cannot be computed), and `force-solid` (paints
-nothing itself; it means "do not go transparent at this tier").
+text-shadow's contrast against arbitrary imagery cannot be computed), and `force-solid`, which paints the
+header's own resting `background` (its `backgroundColour`/`backgroundColourGradient` when set, else the
+theme's `surface` token, so the result is never transparent — `includes/sgs-header-force-solid.php`, one
+more entry in the same `sgs_merge_tri_state_declarations()` writer FR-37-15 describes, listed before
+`Transparent` so a force-solid tier's paint is never cancelled by the transparent behaviour).
 
 **Status:** `BUILT + LIVE-VERIFIED` (`reports/visual-diff/site-header-2026-08-19.md`: the scrim
 paints at desktop and cancels at mobile; `shadow` paints its text-shadow; `force-solid` suppresses
-transparency without an `!important` fight).
+transparency without an `!important` fight, and paints the header's own resting background instead).
 **Done when:** `contrastSafe` is per-device, consistent with its four siblings; an operator's
 explicit "None" over a transparent header is never silently rewritten — the operator sees a notice
 naming the WCAG 1.4.3 risk and the affected device tiers, and can accept the suggested `scrim` or
