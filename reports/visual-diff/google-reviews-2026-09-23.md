@@ -4,7 +4,7 @@
 verdict: PASS
 intent_capture_passed: true
 first_paint_capture_passed: true
-source_sha: ce7202add5b46aa1
+source_sha: e567c31354266756
 blocks: google-reviews
 target: darkcyan-grouse-898606.hostingersite.com (Eye Care page 11, pipeline run 2026-09-23 19:17)
 date:   2026-09-23
@@ -56,3 +56,15 @@ including SliderNavTest with a negative control per placement).
 ## Not verified
 
 Bean's eye on this state (R-31-13); the editor click-through after this deploy; dark mode.
+
+
+## Follow-up (same day): phone header, partial star, review link (live page 11, run 2026-09-23 19:44)
+
+- 375: the header G stays to the left of the caption and score (the text group starts from zero width and grows, so only
+  the buttons wrap). Measured: G x=37 left of caption, as the draft.
+- The partial header star is filled to the exact fraction (4.7 fills the fifth star to 70%) instead of rounding to a half.
+- "Read the full review": no underline by default (it returns on hover and focus); the pipeline now marks the draft's
+  link, so its #1A73E8 routes. Seen side by side at 1440 and 375: blue, no underline, as the draft.
+- 768 note: the draft chooses its layout from its content width (viewport minus the browser's 15px scrollbar), so at a
+  768 viewport it shows its PHONE layout while the site shows tablet. At 790 the two match exactly (heading and card at
+  x=52, card 671 wide, review cards 340). Not a clone defect.

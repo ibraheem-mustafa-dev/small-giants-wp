@@ -59,8 +59,11 @@
 }
 
 /* Source caption, rating figure, header stars and review count share one wrapping row; the caption takes
-   a full row of its own above the others. */
+   a full row of its own above the others. The group starts from zero width and grows (`flex: 1 1 0`), so on a
+   narrow screen it stays on the logo's line and wraps its own contents; only the buttons drop to the next line. */
 .sgs-google-reviews__aggregate-text {
+	flex: 1 1 0;
+	min-width: 0;
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
@@ -472,6 +475,12 @@
 	margin-top: -2px;
 	font-size: 13.5px;
 	color: var( --wp--preset--color--primary, #1a73e8 );
+	text-decoration: none;
+}
+
+/* A link on its own line, told apart by its colour and position: the underline returns on hover and focus. */
+:where( .sgs-google-reviews__review-link:hover, .sgs-google-reviews__review-link:focus-visible ) {
+	text-decoration: underline;
 }
 
 /* ─── Powered-by footer line ─────────────────────────────────────────────── */

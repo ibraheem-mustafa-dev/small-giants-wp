@@ -686,8 +686,12 @@ if ( ! function_exists( 'sgs_render_stars_svg' ) ) {
 	function sgs_render_stars_svg( float $star_rating, string $fill_gradient_defs = '', string $extra_class = '' ): string {
 		static $gradient_defs_emitted = array();
 
+		$star_rating = max( 0.0, min( 5.0, $star_rating ) );
 		$full_stars  = (int) floor( $star_rating );
-		$half_star   = ( $star_rating - $full_stars ) >= 0.5 ? 1 : 0;
+		// The partial star is filled to the exact fraction (4.7 fills the fifth star to 70%), as Google draws it;
+		// a sliver under 5% is not drawn.
+		$fraction    = round( $star_rating - $full_stars, 2 );
+		$half_star   = $fraction >= 0.05 ? 1 : 0;
 		$empty_stars = 5 - $full_stars - $half_star;
 
 		// SVG star path — standard 5-point polygon, 24×24 viewBox.
@@ -724,9 +728,10 @@ if ( ! function_exists( 'sgs_render_stars_svg' ) ) {
 		}
 
 		if ( $half_star ) {
-			// Half star: left half filled, right half outline, achieved via clipPath.
-			$half_svg  = '<svg class="sgs-google-reviews__star sgs-google-reviews__star--half" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">';
-			$half_svg .= '<defs><clipPath id="' . esc_attr( $uid ) . '"><rect x="0" y="0" width="12" height="24"/></clipPath></defs>';
+			// Partial star: the filled part is clipped to the fraction's share of the 24-unit width.
+			$fill_width = (string) round( 24 * $fraction, 2 );
+			$half_svg   = '<svg class="sgs-google-reviews__star sgs-google-reviews__star--half" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">';
+			$half_svg  .= '<defs><clipPath id="' . esc_attr( $uid ) . '"><rect x="0" y="0" width="' . esc_attr( $fill_width ) . '" height="24"/></clipPath></defs>';
 			$half_svg .= '<path class="sgs-google-reviews__star-outline" d="' . $star_path . '"/>';
 			$half_svg .= '<path class="sgs-google-reviews__star-fill" d="' . $star_path . '" clip-path="url(#' . esc_attr( $uid ) . ')"/>';
 			$half_svg .= '</svg>';
