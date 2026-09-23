@@ -242,6 +242,20 @@ guard (`innerText.length > 0` + element-present FIRST) and the coincidental-defa
 image as PRESENT at its real dimensions, not dropped; and the guard is documented in the source
 header alongside the FR-20-6 limits.
 
+### FR-20-12 — Draft-vs-live comparison at three widths, structure first, screenshots looked at (Bean-directed, 2026-09-23)
+The human-grade check that sits on top of the computed-parity number. A clone is not called
+matching until, at **1440, 768 and 375** (plus the 12-width sweep for anything that wraps), both
+pages have been compared on position, element presence and counts, arrangement (stacked or side
+by side, no control over content), loaded fonts, and section screenshots put side by side and
+looked at. Style values are a supplement. Elements are located inside their section by text,
+never by the first match on the page. Earned by D1144: a reviews card reported "matching" from
+style values alone had six visible failures.
+**Method, traps and tools:** `plugins/sgs-blocks/scripts/parity/draft-vs-live/README.md`
+(`three-width-probe.cjs`, `width-sweep.cjs`, `heading-positions.cjs`, `font-sources.cjs`,
+`side_by_side.py`).
+**Done when:** a comparison report lists, per width, what matches and what differs with numbers
+and a proven cause for each difference, and states that the side-by-side captures were looked at.
+
 ## Test strategy (holistic, per the pipeline)
 
 > **Tools for the columns below.** The *number* comes from `scripts/parity/computed-parity.js` (Stage 11.6 — it runs automatically on deploy; opt-out `--no-computed-parity`). The **"vs Bean's eye" cross-check is the other half of R-31-13 and runs through `/visual-qa`** (cropped-pair capture + the STOP-67 `reports/visual-diff/` report), not by eyeballing a screenshot ad hoc. Bespoke live probes → Playwright MCP; clear the CDN first (Hostinger MCP `hosting_clearWebsiteCacheV1`) or you measure a stale `?ver`. Behavioural rows on a small artefact → `/qc-inline`.

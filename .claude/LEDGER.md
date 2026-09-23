@@ -18,7 +18,7 @@ stays). First test done: Claude Design followed the prompt; I patched its faults
 ticker rule and 3 button paddings reverted, manifest vocabularies closed, proposed block per section added); render check
 identical to the original except the header logo (D1132). Patched bundle:
 `sites/eye-care-ward-end/design_handoff_ward_end_eye_care_v2` (untracked; raw export kept as `..._v2_raw`). A1 DONE (D1132, `faaf79f0d`): the width evaluator is wired in; on the live test page padding and grid columns equal the draft at 375, 768 and 1440 for every
-section present. A2 DONE (D1134): the draft's phone, review and social links and all its loop copy (13 reviews, 4 reasons, 6 shape tiles, 32 brand-marquee items, 4 ticker items) are now filled in from its own script, on by default; every review and reasons line is on the live page at 375 and 1440. A QC council also found and I fixed a converter bug (an item's gap and direction overwrote its container's, turning the review rail into a column) plus defects in my A1 and A2a code. Manifest routing (D1139-D1141) is live on the Eye Care test page: the ticker is one slim row with the draft's own icons and a marquee below 768, the whole bordered reviews card is one `sgs/google-reviews` (4.7, 15 reviews, 13 five-star reviews with coloured initials), images upload and load, the reviews editor no longer crashes. Reviews card equals the draft at 1440/375 (D1142, D1144: Google design is the block baseline, shared slider nav, full width on absence, self-hosted fonts, deploys keep the client theme.json); 36 raw placeholders remain (plan A3, Track D). Prompt file is ONE reusable prompt.
+section present. A2 DONE (D1134): the draft's phone, review and social links and all its loop copy (13 reviews, 4 reasons, 6 shape tiles, 32 brand-marquee items, 4 ticker items) are now filled in from its own script, on by default; every review and reasons line is on the live page at 375 and 1440. A QC council also found and I fixed a converter bug (an item's gap and direction overwrote its container's, turning the review rail into a column) plus defects in my A1 and A2a code. Ticker and reviews card (D1139-D1145) now equal the draft at every width (Google design is the block baseline, shared slider nav, self-hosted fonts, deploys keep the client theme.json, Spec 33 sets content/wide width); 36 raw placeholders remain (plan A3, Track D). Prompt file is ONE reusable prompt.
 
 **Where the Eye Care clone stands (test page 11).** Spec 33 gives it the draft's real palette, fonts, square corners and 13
 saved business settings. The screen route clones only the Home screen: 5 of 8 homepage sections are on the page (was 1), none
@@ -95,6 +95,10 @@ homepage sections no longer carry junk attributes (18 to 0). Evaluator BUILT and
 original. Not done: 7 names whose breakpoint stays inside a device tier (logged as gaps), and the content bindings (A2). Design: `plans/2026-09-20-A1-wire-evaluator-design.md`.
 
 **Open, in order:**
+0. *NEXT (Bean, 2026-09-23): whole-site audit of page 11 against the draft, every section, at 1440/768/375 with
+   screenshots looked at side by side.* Method + tools: `plugins/sgs-blocks/scripts/parity/draft-vs-live/README.md` (Spec 20
+   FR-20-12). Before it: the converter must mark rows
+   using the draft's wide width `contentWidth: wide` (D1145); page 11 was NOT re-cloned after the full-width revert.
 1. *Problem 1, missing sections.* The "14 non-BEM" boundaries are classless sections gated on a hint (the draft has ONE
    `class=`): 4 homepage sections (b5, b7, b8, b9), 8 other routed views, 2 chrome. Spec 44 §11: proposed (A) admit any
    classless boundary as the container default, (B) only the default routed view goes on the page, (C) fix the halt

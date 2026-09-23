@@ -1,5 +1,15 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1145 [ROUTINE] — Content width is a per-site setting read by Spec 33, not a converter rule; reviews header matches at 12 widths; comparison method written down (2026-09-23)
+
+**Bean's rulings.** "Don't keep the rule. The content and wide width values are supposed to be customisable per site, so the Spec 33 pipeline should pick this up and set it." The draft was designed for UX and CRO, so the clone must match it on every device width, not only 1440/375. The whole-site audit runs next, with screenshots at all three device widths, after a compact.
+
+**Done.** Reverted the converter full-width rule (e4ccdeeb5, reverts 071d46fb6). FR-33-19 (e73c8a66b): the extractor measures every top-level row at 1440 and 1920 and writes `settings.layout.contentSize`/`wideSize`; Eye Care contentSize 1336px (hero, best sellers, "not sure what suits you", about strip), wideSize 1440px (why buy, reviews, optician). Reviews header (679db12b6): logo and rating are one group at natural width, the caption stacks over the score row, wrapped buttons start at the left (`space-between`); draft and live agree at all 12 widths from 360 to 1920. Comparison method + tools committed: `plugins/sgs-blocks/scripts/parity/draft-vs-live/README.md`, Spec 20 FR-20-12.
+
+**Deploy note.** With Bean's go-ahead, eye-care-test was deployed with `--allow-dirty --skip-gate-full`: it carried another session's uncommitted edits (container wrapper, colour variants, shadow hover, several blocks), and the full gate tier failed only on an advisory ratchet from other blocks (rule 21, 6 vs 5).
+
+**Open.** The converter must set `contentWidth: "wide"` on rows whose draft content uses the site's wide width (only visible above 1440); page 11 has not been re-cloned since the revert; other screens use 996/1200 widths; the draft decides phone/tablet from its content width (viewport minus scrollbar), so at exactly 768–783 in a desktop browser it shows its phone layout while the site shows tablet.
+
 ## D1144 [INCIDENT] — Reviews card reported "matching" when it was not; Google design becomes the baseline; four site-level causes fixed (2026-09-23)
 
 **What went wrong.** D1142's "matches" compared only style values of text-matched elements at two widths; Bean found six failures by eye (heading indent, fonts, logo size/side, missing card logos, arrows over the cards, dots). Standing rule now: compare at 1440/768/375, check positions, presence and loaded fonts, then look at the side-by-side captures before reporting (memory `compare-draft-vs-live-at-all-three-device-widths`).
