@@ -31,14 +31,14 @@
           "colour": "site-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
     },
     {
       "file": "plugins/sgs-blocks/src/blocks/before-after/style.css",
-      "line": 286,
+      "line": 278,
       "selector": ".wp-block-sgs-before-after__handle",
       "property": "box-shadow",
       "declaration": "box-shadow: 0 2px 8px color-mix(in srgb, var(--wp--custom--shadow-colour) 25%, transparent);",
@@ -48,7 +48,7 @@
           "colour": "site-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
@@ -65,14 +65,14 @@
           "colour": "site-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
     },
     {
       "file": "plugins/sgs-blocks/src/blocks/brand-strip/style.css",
-      "line": 468,
+      "line": 460,
       "selector": ".sgs-brand-strip--hover-glow .sgs-brand-strip__item:hover",
       "property": "box-shadow",
       "declaration": "box-shadow: 0 0 0 3px var(--wp--preset--color--primary, #0F7E80);",
@@ -82,7 +82,7 @@
           "colour": "brand"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
@@ -116,14 +116,14 @@
           "colour": "preset-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
     },
     {
       "file": "plugins/sgs-blocks/src/blocks/card-grid/style.css",
-      "line": 286,
+      "line": 278,
       "selector": ".sgs-card-grid.sgs-has-hover .sgs-card-grid__item:hover",
       "property": "box-shadow",
       "declaration": "box-shadow: var(--sgs-hover-shadow, none);",
@@ -133,7 +133,7 @@
           "colour": "custom-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
@@ -167,7 +167,7 @@
           "colour": "site-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
@@ -218,7 +218,7 @@
           "colour": "preset-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
@@ -320,14 +320,14 @@
           "colour": "preset-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
     },
     {
       "file": "plugins/sgs-blocks/src/blocks/gallery/style.css",
-      "line": 296,
+      "line": 288,
       "selector": ".sgs-gallery.sgs-has-hover .sgs-gallery__item:hover",
       "property": "box-shadow",
       "declaration": "box-shadow: var(--sgs-hover-shadow, none);",
@@ -337,7 +337,7 @@
           "colour": "custom-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
@@ -473,14 +473,14 @@
           "colour": "preset-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
     },
     {
       "file": "plugins/sgs-blocks/src/blocks/info-box/style.css",
-      "line": 133,
+      "line": 125,
       "selector": ".sgs-info-box--hover-lift:hover",
       "property": "box-shadow",
       "declaration": "box-shadow: var(--wp--preset--shadow--floating);",
@@ -490,14 +490,14 @@
           "colour": "preset-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
     },
     {
       "file": "plugins/sgs-blocks/src/blocks/info-box/style.css",
-      "line": 174,
+      "line": 158,
       "selector": ".sgs-info-box--hover-glow:hover",
       "property": "box-shadow",
       "declaration": "box-shadow: 0 0 20px rgba(248, 122, 31, 0.3);",
@@ -507,14 +507,14 @@
           "colour": "brand"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
     },
     {
       "file": "plugins/sgs-blocks/src/blocks/info-box/style.css",
-      "line": 206,
+      "line": 182,
       "selector": ".sgs-info-box.sgs-has-hover:hover",
       "property": "box-shadow",
       "declaration": "box-shadow: var(--sgs-hover-shadow, none);",
@@ -524,7 +524,7 @@
           "colour": "custom-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
@@ -575,7 +575,7 @@
           "colour": "site-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
@@ -609,14 +609,14 @@
           "colour": "custom-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
     },
     {
       "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
-      "line": 208,
+      "line": 200,
       "selector": ".sgs-post-grid__card--overlay",
       "property": "box-shadow",
       "declaration": "box-shadow: var( --sgs-card-shadow );",
@@ -626,14 +626,14 @@
           "colour": "custom-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
     },
     {
       "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
-      "line": 457,
+      "line": 441,
       "selector": ".sgs-post-grid__card:hover",
       "property": "box-shadow",
       "declaration": "box-shadow: var( --sgs-hover-shadow, none );",
@@ -643,14 +643,14 @@
           "colour": "custom-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
     },
     {
       "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
-      "line": 471,
+      "line": 447,
       "selector": ".sgs-post-grid__card--card:hover, .sgs-post-grid__card--flat:hover",
       "property": "box-shadow",
       "declaration": "box-shadow: var( --sgs-hover-shadow, 0 10px 24px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent) );",
@@ -660,14 +660,14 @@
           "colour": "site-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
     },
     {
       "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
-      "line": 708,
+      "line": 676,
       "selector": ".sgs-post-grid__carousel-prev, .sgs-post-grid__carousel-next",
       "property": "box-shadow",
       "declaration": "box-shadow: 0 2px 8px color-mix(in srgb, var(--wp--custom--shadow-colour) 12%, transparent);",
@@ -684,7 +684,7 @@
     },
     {
       "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
-      "line": 728,
+      "line": 696,
       "selector": ".sgs-post-grid__carousel-prev:hover, .sgs-post-grid__carousel-next:hover, .sgs-post-grid__carousel-prev:focus-visible, .sgs-post-grid__carousel-next:focus-visible",
       "property": "box-shadow",
       "declaration": "box-shadow: 0 4px 16px color-mix(in srgb, var(--wp--custom--shadow-colour) 18%, transparent);",
@@ -694,7 +694,7 @@
           "colour": "site-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
@@ -711,14 +711,14 @@
           "colour": "custom-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
     },
     {
       "file": "plugins/sgs-blocks/src/blocks/pricing-table/style.css",
-      "line": 85,
+      "line": 77,
       "selector": ".sgs-pricing-table__plan--highlighted",
       "property": "box-shadow",
       "declaration": "box-shadow: var(--sgs-pricing-shadow-strong);",
@@ -728,7 +728,7 @@
           "colour": "custom-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
@@ -745,14 +745,14 @@
           "colour": "site-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
     },
     {
       "file": "plugins/sgs-blocks/src/blocks/process-steps/style.css",
-      "line": 211,
+      "line": 203,
       "selector": ".sgs-process-steps--hover-glow .sgs-process-steps__step:hover, .sgs-process-steps--hover-glow .sgs-process-steps__step:focus-within",
       "property": "box-shadow",
       "declaration": "box-shadow: 0 0 0 3px var(--wp--preset--color--primary, #0F7E80);",
@@ -762,7 +762,7 @@
           "colour": "brand"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
@@ -779,14 +779,14 @@
           "colour": "brand"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
     },
     {
       "file": "plugins/sgs-blocks/src/blocks/product-card/style.css",
-      "line": 1323,
+      "line": 1315,
       "selector": ".sgs-product-card__media-wrap .sgs-product-card__tag--featured, .product-card--live .product-card__media .sgs-product-card__tag--featured",
       "property": "box-shadow",
       "declaration": "box-shadow: 0 1px 4px color-mix(in srgb, var(--wp--custom--shadow-colour) 15%, transparent);",
@@ -796,7 +796,7 @@
           "colour": "site-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
@@ -813,14 +813,14 @@
           "colour": "site-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
     },
     {
       "file": "plugins/sgs-blocks/src/blocks/product-search/style.css",
-      "line": 350,
+      "line": 342,
       "selector": ".sgs-product-search--icon .sgs-product-search__panel",
       "property": "box-shadow",
       "declaration": "box-shadow: 0 6px 24px color-mix(in srgb, var(--wp--custom--shadow-colour) 12%, transparent);",
@@ -837,7 +837,7 @@
     },
     {
       "file": "plugins/sgs-blocks/src/blocks/product-search/style.css",
-      "line": 423,
+      "line": 415,
       "selector": ".sgs-product-search__dialog",
       "property": "box-shadow",
       "declaration": "box-shadow: 0 12px 48px color-mix(in srgb, var(--wp--custom--shadow-colour) 20%, transparent);",
@@ -864,7 +864,7 @@
           "colour": "site-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
@@ -983,7 +983,7 @@
           "colour": "custom-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
@@ -1000,14 +1000,14 @@
           "colour": "preset-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
     },
     {
       "file": "plugins/sgs-blocks/src/blocks/testimonial/style.css",
-      "line": 383,
+      "line": 375,
       "selector": ".sgs-testimonial--corporate-logo",
       "property": "box-shadow",
       "declaration": "box-shadow: var(--wp--preset--shadow--whisper, var(--wp--preset--shadow--soft));",
@@ -1017,14 +1017,14 @@
           "colour": "preset-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
     },
     {
       "file": "plugins/sgs-blocks/src/blocks/testimonial/style.css",
-      "line": 411,
+      "line": 395,
       "selector": ".sgs-testimonial--case-study-media",
       "property": "box-shadow",
       "declaration": "box-shadow: var(--wp--preset--shadow--soft);",
@@ -1034,14 +1034,14 @@
           "colour": "preset-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
     },
     {
       "file": "plugins/sgs-blocks/src/blocks/testimonial/style.css",
-      "line": 486,
+      "line": 462,
       "selector": ".sgs-testimonial--hover-lift:hover, .sgs-testimonial--hover-lift:focus-within",
       "property": "box-shadow",
       "declaration": "box-shadow: 0 8px 24px color-mix(in srgb, var(--wp--custom--shadow-colour) 12%, transparent);",
@@ -1051,14 +1051,14 @@
           "colour": "site-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
     },
     {
       "file": "plugins/sgs-blocks/src/blocks/testimonial/style.css",
-      "line": 504,
+      "line": 472,
       "selector": ".sgs-testimonial--hover-glow:hover, .sgs-testimonial--hover-glow:focus-within",
       "property": "box-shadow",
       "declaration": "box-shadow: 0 0 0 3px var(--wp--preset--color--primary, #0F7E80);",
@@ -1068,14 +1068,14 @@
           "colour": "brand"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
     },
     {
       "file": "plugins/sgs-blocks/src/blocks/testimonial/style.css",
-      "line": 527,
+      "line": 487,
       "selector": ".sgs-testimonial.sgs-has-hover:hover, .sgs-testimonial.sgs-has-hover:focus-within",
       "property": "box-shadow",
       "declaration": "box-shadow: var(--sgs-hover-shadow, none);",
@@ -1085,7 +1085,7 @@
           "colour": "custom-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
@@ -1102,14 +1102,14 @@
           "colour": "site-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
     },
     {
       "file": "plugins/sgs-blocks/src/blocks/testimonial-slider/style.css",
-      "line": 198,
+      "line": 190,
       "selector": ".sgs-testimonial-slider__arrow:active",
       "property": "box-shadow",
       "declaration": "box-shadow: 0 1px 4px color-mix(in srgb, var(--wp--custom--shadow-colour) 15%, transparent);",
@@ -1119,14 +1119,14 @@
           "colour": "site-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
     },
     {
       "file": "plugins/sgs-blocks/src/blocks/testimonial-slider/style.css",
-      "line": 403,
+      "line": 387,
       "selector": ".sgs-testimonial-slider--hover-lift:hover",
       "property": "box-shadow",
       "declaration": "box-shadow: 0 8px 24px color-mix(in srgb, var(--wp--custom--shadow-colour) 12%, transparent);",
@@ -1136,14 +1136,14 @@
           "colour": "site-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
     },
     {
       "file": "plugins/sgs-blocks/src/blocks/testimonial-slider/style.css",
-      "line": 431,
+      "line": 407,
       "selector": ".sgs-testimonial-slider--hover-glow:hover",
       "property": "box-shadow",
       "declaration": "box-shadow: 0 0 0 3px var(--wp--preset--color--primary, #0F7E80);",
@@ -1153,7 +1153,7 @@
           "colour": "brand"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
@@ -1191,14 +1191,14 @@
           "colour": "site-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
     },
     {
       "file": "plugins/sgs-blocks/src/blocks/trustpilot-reviews/style.css",
-      "line": 57,
+      "line": 49,
       "selector": ".sgs-trustpilot-reviews__header:hover",
       "property": "box-shadow",
       "declaration": "box-shadow: 0 8px 20px color-mix(in srgb, var(--wp--custom--shadow-colour) 8%, transparent), 0 0 0 1px color-mix(in srgb, var(--wp--custom--shadow-colour) 5%, transparent);",
@@ -1212,14 +1212,14 @@
           "colour": "site-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
     },
     {
       "file": "plugins/sgs-blocks/src/blocks/trustpilot-reviews/style.css",
-      "line": 263,
+      "line": 247,
       "selector": ".sgs-trustpilot-reviews__card:hover, .sgs-trustpilot-reviews--card-elevated .sgs-trustpilot-reviews__card:hover, .sgs-trustpilot-reviews--card-bordered .sgs-trustpilot-reviews__card:hover, .sgs-trustpilot-reviews--card-flat .sgs-trustpilot-reviews__card:hover",
       "property": "box-shadow",
       "declaration": "box-shadow: 0 6px 18px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent);",
@@ -1236,7 +1236,7 @@
     },
     {
       "file": "plugins/sgs-blocks/src/blocks/trustpilot-reviews/style.css",
-      "line": 272,
+      "line": 256,
       "selector": ".sgs-trustpilot-reviews--card-elevated .sgs-trustpilot-reviews__card",
       "property": "box-shadow",
       "declaration": "box-shadow: 0 1px 2px color-mix(in srgb, var(--wp--custom--shadow-colour) 4%, transparent), 0 2px 8px color-mix(in srgb, var(--wp--custom--shadow-colour) 4%, transparent);",
@@ -1250,7 +1250,7 @@
           "colour": "site-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
@@ -1267,7 +1267,7 @@
           "colour": "site-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
@@ -1335,7 +1335,7 @@
           "colour": "preset-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
@@ -1369,14 +1369,14 @@
           "colour": "site-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
     },
     {
       "file": "theme/sgs-theme/assets/css/core-blocks.css",
-      "line": 849,
+      "line": 841,
       "selector": ".sgs-header-cta .wp-block-button__link:hover",
       "property": "box-shadow",
       "declaration": "box-shadow: var(--wp--preset--shadow--glow);",
@@ -1386,14 +1386,14 @@
           "colour": "preset-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
     },
     {
       "file": "theme/sgs-theme/assets/css/core-blocks.css",
-      "line": 1134,
+      "line": 1118,
       "selector": ".wp-block-query-pagination .page-numbers:focus-visible, .wp-block-query-pagination .wp-block-query-pagination-next:focus-visible, .wp-block-query-pagination .wp-block-query-pagination-previous:focus-visible",
       "property": "box-shadow",
       "declaration": "box-shadow: 0 0 8px 2px var(--wp--custom--focus-ring--color-accent, rgba(245, 158, 11, 0.4));",
@@ -1441,14 +1441,14 @@
           "colour": "site-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
     },
     {
       "file": "theme/sgs-theme/assets/css/utilities.css",
-      "line": 306,
+      "line": 298,
       "selector": ".has-shadow-md",
       "property": "box-shadow",
       "declaration": "box-shadow: 0 2px 4px color-mix(in srgb, var(--wp--custom--shadow-colour) 7%, transparent), 0 6px 16px color-mix(in srgb, var(--wp--custom--shadow-colour) 8%, transparent);",
@@ -1462,14 +1462,14 @@
           "colour": "site-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
     },
     {
       "file": "theme/sgs-theme/assets/css/utilities.css",
-      "line": 320,
+      "line": 304,
       "selector": ".has-shadow-lg",
       "property": "box-shadow",
       "declaration": "box-shadow: 0 4px 8px color-mix(in srgb, var(--wp--custom--shadow-colour) 8%, transparent), 0 12px 32px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent);",
@@ -1483,7 +1483,7 @@
           "colour": "site-var"
         }
       ],
-      "forced_colours_covered": true,
+      "forced_colours_covered": false,
       "has_black_literal": false,
       "exempt": false,
       "exempt_reason": ""
@@ -1653,9 +1653,9 @@
       "snippet": "$filters[] = 'drop-shadow('",
       "sink": "drop-shadow",
       "sink_detail": "",
-      "forced_colours_reached": false,
-      "exempt": false,
-      "exempt_reason": ""
+      "forced_colours_reached": true,
+      "exempt": true,
+      "exempt_reason": "drop-shadow() renders through `filter`, which forced-colours mode does not remove (CSS Color Adjust forces only box-shadow and text-shadow to none), so it needs no outline fallback"
     },
     {
       "file": "plugins/sgs-blocks/includes/helpers-shadow-layers.php",
@@ -2021,15 +2021,7 @@
       "forced_colours_reached": true
     }
   ],
-  "variation_sources": [
-    {
-      "file": "plugins/sgs-blocks/includes/variations/sgs-card-grid-variations.php",
-      "line": 44,
-      "variable": "--wp--custom--shadow--medium",
-      "snippet": "// `var(--wp--custom--border-radius--medium)`... `var(--wp--custom--shadow--medium)`,",
-      "classification": "undefined-variable"
-    }
-  ],
+  "variation_sources": [],
   "supports_shadow_blocks": [
     {
       "block": "sgs/card-grid",

@@ -61,14 +61,6 @@
 	box-shadow: var(--sgs-pricing-shadow-soft);
 }
 
-/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
-@media (forced-colors: active) {
-	.sgs-pricing-table--card .sgs-pricing-table__plan {
-		outline: 1px solid CanvasText;
-		outline-offset: -1px;
-	}
-}
-
 .sgs-pricing-table--flat .sgs-pricing-table__plan {
 	border: none;
 	box-shadow: none;
@@ -84,14 +76,6 @@
 .sgs-pricing-table__plan--highlighted {
 	box-shadow: var(--sgs-pricing-shadow-strong);
 	z-index: 1;
-}
-
-/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
-@media (forced-colors: active) {
-	.sgs-pricing-table__plan--highlighted {
-		outline: 1px solid CanvasText;
-		outline-offset: -1px;
-	}
 }
 
 /* Popular badge. Colour/background are PHP-emitted (popularBadgeColour/

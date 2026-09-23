@@ -438,14 +438,6 @@
 	box-shadow: 0 8px 24px color-mix(in srgb, var(--wp--custom--shadow-colour) 12%, transparent);
 }
 
-/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
-@media (forced-colors: active) {
-	.sgs-brand-strip--hover-lift .sgs-brand-strip__item:hover {
-		outline: 1px solid CanvasText;
-		outline-offset: -1px;
-	}
-}
-
 .sgs-brand-strip--hover-scale .sgs-brand-strip__logo,
 .sgs-brand-strip--hover-scale .sgs-brand-strip__item .sgs-media--sgs-brand-strip {
 	transition-property: transform;
@@ -466,14 +458,6 @@
 
 .sgs-brand-strip--hover-glow .sgs-brand-strip__item:hover {
 	box-shadow: 0 0 0 3px var(--wp--preset--color--primary, #0F7E80);
-}
-
-/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
-@media (forced-colors: active) {
-	.sgs-brand-strip--hover-glow .sgs-brand-strip__item:hover {
-		outline: 1px solid CanvasText;
-		outline-offset: -1px;
-	}
 }
 
 /* ===== Focus ===== */

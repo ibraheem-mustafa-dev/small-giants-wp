@@ -234,14 +234,6 @@
 		box-shadow: var(--sgs-hover-shadow, none);
 	}
 
-/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
-@media (forced-colors: active) {
-	.sgs-team-member.sgs-has-hover:hover {
-		outline: 1px solid CanvasText;
-		outline-offset: -1px;
-	}
-}
-
 	/* Hover Image Zoom (#90, #104) */
 	.sgs-team-member.sgs-has-img-zoom .sgs-team-member__photo {
 		overflow: hidden;

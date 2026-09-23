@@ -118,14 +118,6 @@
 	transition: opacity 0.3s ease;
 	pointer-events: none;
 }
-
-/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
-@media (forced-colors: active) {
-	.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group::after {
-		outline: 1px solid CanvasText;
-		outline-offset: -1px;
-	}
-}
 .wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:hover,
 .wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:focus-within {
 	transform: translateY( -3px );

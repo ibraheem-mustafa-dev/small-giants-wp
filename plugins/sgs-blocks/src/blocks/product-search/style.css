@@ -97,14 +97,6 @@
 	box-shadow: 0 6px 24px color-mix(in srgb, var(--wp--custom--shadow-colour) 12%, transparent);
 }
 
-/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
-@media (forced-colors: active) {
-	.sgs-product-search__results {
-		outline: 1px solid CanvasText;
-		outline-offset: -1px;
-	}
-}
-
 .sgs-product-search__results:hover {
 	background: var( --sgs-ps-listbox-bg-hover, var( --sgs-ps-listbox-bg, var( --wp--preset--color--surface, #fff ) ) );
 	background-image: var( --sgs-ps-listbox-bg-hover-gradient, var( --sgs-ps-listbox-bg-gradient, none ) );

@@ -171,14 +171,6 @@
 	box-shadow: var( --sgs-card-shadow );
 }
 
-/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
-@media (forced-colors: active) {
-	.sgs-post-grid__card--card {
-		outline: 1px solid CanvasText;
-		outline-offset: -1px;
-	}
-}
-
 .sgs-post-grid__card--card .sgs-post-grid__image {
 	border-radius: var( --sgs-image-radius );
 	overflow: hidden;
@@ -206,14 +198,6 @@
 .sgs-post-grid__card--overlay {
 	border-radius: var( --sgs-card-radius );
 	box-shadow: var( --sgs-card-shadow );
-}
-
-/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
-@media (forced-colors: active) {
-	.sgs-post-grid__card--overlay {
-		outline: 1px solid CanvasText;
-		outline-offset: -1px;
-	}
 }
 
 .sgs-post-grid__card--overlay .sgs-post-grid__image-link {
@@ -457,26 +441,10 @@
 	box-shadow: var( --sgs-hover-shadow, none );
 }
 
-/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
-@media (forced-colors: active) {
-	.sgs-post-grid__card:hover {
-		outline: 1px solid CanvasText;
-		outline-offset: -1px;
-	}
-}
-
 .sgs-post-grid__card--card:hover,
 .sgs-post-grid__card--flat:hover {
 	transform: translateY( -4px ) scale( var( --sgs-hover-scale, 1 ) );
 	box-shadow: var( --sgs-hover-shadow, 0 10px 24px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent) );
-}
-
-/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
-@media (forced-colors: active) {
-	.sgs-post-grid__card--card:hover, .sgs-post-grid__card--flat:hover {
-		outline: 1px solid CanvasText;
-		outline-offset: -1px;
-	}
 }
 
 /*
@@ -726,14 +694,6 @@
 	background-color: var( --wp--preset--color--primary, #1a3a5c );
 	color: var( --wp--preset--color--text-inverse, #fff );
 	box-shadow: 0 4px 16px color-mix(in srgb, var(--wp--custom--shadow-colour) 18%, transparent);
-}
-
-/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
-@media (forced-colors: active) {
-	.sgs-post-grid__carousel-prev:hover, .sgs-post-grid__carousel-next:hover, .sgs-post-grid__carousel-prev:focus-visible, .sgs-post-grid__carousel-next:focus-visible {
-		outline: 2px solid Highlight;
-		outline-offset: 2px;
-	}
 }
 
 .sgs-post-grid__carousel-prev:disabled,

@@ -249,14 +249,6 @@
 	box-shadow: var(--wp--preset--shadow--floating);
 }
 
-/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
-@media (forced-colors: active) {
-	.sgs-gallery--hover-lift .sgs-gallery__item:hover {
-		outline: 1px solid CanvasText;
-		outline-offset: -1px;
-	}
-}
-
 /* Overlay Slide — slides up from bottom */
 .sgs-gallery--hover-overlay-slide .sgs-gallery__item {
     position: relative;
@@ -294,14 +286,6 @@
 /* Hover Shadow (#88, #102) */
 .sgs-gallery.sgs-has-hover .sgs-gallery__item:hover {
 	box-shadow: var(--sgs-hover-shadow, none);
-}
-
-/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
-@media (forced-colors: active) {
-	.sgs-gallery.sgs-has-hover .sgs-gallery__item:hover {
-		outline: 1px solid CanvasText;
-		outline-offset: -1px;
-	}
 }
 
 /* Stagger delay (#93) */

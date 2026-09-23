@@ -39,14 +39,6 @@
 	box-shadow: var(--wp--preset--shadow--soft);
 }
 
-/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
-@media (forced-colors: active) {
-	.sgs-info-box--elevated {
-		outline: 1px solid CanvasText;
-		outline-offset: -1px;
-	}
-}
-
 .sgs-info-box--filled {
 	background: var(--wp--preset--color--surface-alt, #F5F7F7);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
@@ -133,14 +125,6 @@
 	box-shadow: var(--wp--preset--shadow--floating);
 }
 
-/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
-@media (forced-colors: active) {
-	.sgs-info-box--hover-lift:hover {
-		outline: 1px solid CanvasText;
-		outline-offset: -1px;
-	}
-}
-
 /* Border accent — accent top border slides in + slight lift */
 .sgs-info-box--hover-border-accent {
 	overflow: hidden;
@@ -174,14 +158,6 @@
 	box-shadow: 0 0 20px rgba(248, 122, 31, 0.3);
 }
 
-/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
-@media (forced-colors: active) {
-	.sgs-info-box--hover-glow:hover {
-		outline: 1px solid CanvasText;
-		outline-offset: -1px;
-	}
-}
-
 /* ===== Focus for linked cards ===== */
 .sgs-info-box__link:focus-visible {
 	outline: 2px solid var(--sgs-focus-color, var(--wp--preset--color--primary-dark, #076a8e));
@@ -205,14 +181,6 @@
 	.sgs-info-box.sgs-has-hover:hover {
 		box-shadow: var(--sgs-hover-shadow, none);
 	}
-
-/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
-@media (forced-colors: active) {
-	.sgs-info-box.sgs-has-hover:hover {
-		outline: 1px solid CanvasText;
-		outline-offset: -1px;
-	}
-}
 
 	/* Grayscale to colour (#130) */
 	.sgs-info-box.sgs-has-grayscale img {

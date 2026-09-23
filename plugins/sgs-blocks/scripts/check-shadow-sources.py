@@ -798,6 +798,15 @@ def rewrite_declaration_colour(prop: str, value: str) -> tuple[str, bool]:
     return value, False
 
 
+# Forced-colours coverage of STYLESHEET shadows is owned by scripts/shadow-fallback/ (it adds
+# the outline to built block CSS at postbuild and to the theme's stylesheets, and its --check runs
+# in postbuild), and of composed PHP writers by scripts/check-shadow-fallback-php.py. This script
+# only REPORTS stylesheet coverage in the survey; --fix never inserts a fallback and --check never
+# fails on one, so there is one writer and one gate per surface. It gates what neither of those
+# sees: a colour that cannot follow the surface tone, an undefined shadow variable, and a shadow
+# serialised by the style engine (supports.shadow) without its fallback.
+CSS_FORCED_COLOURS_OWNED_ELSEWHERE = True
+
 FOCUS_RING_FALLBACK = ("outline: 2px solid Highlight;", "outline-offset: 2px;")
 DEFAULT_FORCED_FALLBACK = ("outline: 1px solid CanvasText;", "outline-offset: -1px;")
 
@@ -869,6 +878,8 @@ def apply_css_fix(original: str) -> tuple[str, list[dict]]:
                     {"action": "colour-rewritten", "line": line_no, "selector": selector_norm, "property": prop}
                 )
 
+            if CSS_FORCED_COLOURS_OWNED_ELSEWHERE:
+                continue
             covered = forced_colours_covered_css(blocks, b, own, own_cache)
             if covered:
                 continue
@@ -1045,12 +1056,14 @@ def violations(survey: dict) -> list[dict]:
     for src in survey["css_sources"]:
         if src["has_black_literal"]:
             out.append({"kind": "css-black-literal", "file": src["file"], "line": src["line"], "detail": src["declaration"]})
-        if not src["forced_colours_covered"] and not src.get("exempt"):
+        if not CSS_FORCED_COLOURS_OWNED_ELSEWHERE and not src["forced_colours_covered"] and not src.get("exempt"):
             out.append({"kind": "css-missing-forced-colours", "file": src["file"], "line": src["line"], "detail": src["declaration"]})
     for src in survey["php_sources"]:
         if src.get("exempt"):
             continue
-        if src.get("forced_colours_reached") is False:
+        # Composed writers are gated by check-shadow-fallback-php.py; only the style-engine
+        # sink, which that checker cannot see, is gated here.
+        if src.get("forced_colours_reached") is False and src.get("sink") == "style-engine-shadow":
             out.append({"kind": "php-missing-forced-colours", "file": src["file"], "line": src["line"], "detail": src.get("snippet", "")})
     for src in survey["variation_sources"]:
         if src["classification"] == "undefined-variable":
@@ -1252,13 +1265,12 @@ def cmd_self_test() -> int:
     fix_a_rewrites = [r for r in fix_a_report if r["action"] == "colour-rewritten"]
     fix_a_forced = [r for r in fix_a_report if r["action"] == "forced-colours-added"]
     check("fix-a: one colour rewrite reported", len(fix_a_rewrites) == 1)
-    check("fix-a: one forced-colours block reported", len(fix_a_forced) == 1 and not fix_a_forced[0]["focus_ring"])
+    check("fix-a: --fix adds NO forced-colours block (owned by scripts/shadow-fallback/)", not fix_a_forced and "@media (forced-colors" not in fix_a_out)
     fix_a_src, _ = scan_css_text(fix_a_out, "fixture:fix-a-after")
     check("fix-a: rewritten colour is site-var, not black-literal", fix_a_src and not fix_a_src[0]["has_black_literal"])
     check("fix-a: alpha 0.2 -> exactly 20%", "20%" in fix_a_out and "color-mix(in srgb, var(--wp--custom--shadow-colour) 20%, transparent)" in fix_a_out)
     check("fix-a: rewritten mix matches SGS_SHADOW_DARK_SITE_MIX (PHP-side regex)",
           bool(SGS_SHADOW_DARK_SITE_MIX_PY.match("color-mix(in srgb, var(--wp--custom--shadow-colour) 20%, transparent)")))
-    check("fix-a: is now forced-colours covered", fix_a_src and fix_a_src[0]["forced_colours_covered"])
     fix_a_out2, fix_a_report2 = apply_css_fix(fix_a_out)
     check("fix-a: idempotent -- a second --fix run reports nothing further", not fix_a_report2 and fix_a_out2 == fix_a_out)
 
@@ -1266,15 +1278,12 @@ def cmd_self_test() -> int:
     fix_b_text = (css_dir / "fix-focus-ring.css").read_text(encoding="utf-8")
     fix_b_out, fix_b_report = apply_css_fix(fix_b_text)
     fix_b_forced = [r for r in fix_b_report if r["action"] == "forced-colours-added"]
-    check("fix-b: one forced-colours block reported, flagged as a focus ring", len(fix_b_forced) == 1 and fix_b_forced[0]["focus_ring"])
-    check("fix-b: emits the Highlight/2px fallback", "outline: 2px solid Highlight;" in fix_b_out and "outline-offset: 2px;" in fix_b_out)
-    check("fix-b: does NOT emit the default CanvasText/1px fallback", "outline: 1px solid CanvasText;" not in fix_b_out)
+    check("fix-b: a focus-ring shadow gets no inserted fallback either", not fix_b_forced and "@media (forced-colors" not in fix_b_out)
 
     # --- `--fix`: inset shadow -- colour fixed, but reported EXEMPT, no outline added -----
     fix_c_text = (css_dir / "fix-inset-inner-line.css").read_text(encoding="utf-8")
     fix_c_out, fix_c_report = apply_css_fix(fix_c_text)
     fix_c_exempt = [r for r in fix_c_report if r["action"] == "exempt"]
-    check("fix-c: reported exempt with the inset reason", len(fix_c_exempt) == 1 and "inset" in fix_c_exempt[0]["reason"])
     check("fix-c: no forced-colours block added", "@media (forced-colors: active)" not in fix_c_out)
     check("fix-c: colour STILL rewritten despite the exemption", "var(--wp--custom--shadow-colour)" in fix_c_out or "color-mix(in srgb, var(--wp--custom--shadow-colour)" in fix_c_out)
 
@@ -1282,7 +1291,6 @@ def cmd_self_test() -> int:
     fix_d_text = (css_dir / "fix-filter-drop-shadow.css").read_text(encoding="utf-8")
     fix_d_out, fix_d_report = apply_css_fix(fix_d_text)
     fix_d_exempt = [r for r in fix_d_report if r["action"] == "exempt"]
-    check("fix-d: reported exempt with the filter/Color-Adjust reason", len(fix_d_exempt) == 1 and "filter" in fix_d_exempt[0]["reason"])
     check("fix-d: no forced-colours block added", "@media (forced-colors: active)" not in fix_d_out)
     check("fix-d: colour rewritten inside drop-shadow()", "color-mix(in srgb, var(--wp--custom--shadow-colour) 30%, transparent)" in fix_d_out)
 
@@ -1325,7 +1333,10 @@ def cmd_self_test() -> int:
     # --- Idempotence / overall violations() shape on the full built fixture set --------
     fixture_survey = {
         "css_sources": src + src2 + src3,
-        "php_sources": php_src + wrapper_src + exempt_src + custom_src,
+        "php_sources": php_src + wrapper_src + exempt_src + custom_src + [
+            {"file": "fixture:style-engine.php", "line": 1, "function": "wp_style_engine_get_styles", "snippet": "",
+             "sink": "style-engine-shadow", "sink_detail": "", "forced_colours_reached": False, "exempt": False, "exempt_reason": ""}
+        ],
         "variation_sources": [
             {"file": "fixture:must-flag-undefined-var.php", "line": 1, "variable": "--wp--custom--shadow--x", "classification": c}
             for c in finds
@@ -1338,8 +1349,10 @@ def cmd_self_test() -> int:
     vs = violations(fixture_survey)
     kinds = {v["kind"] for v in vs}
     check("fixture violation set includes css-black-literal", "css-black-literal" in kinds)
-    check("fixture violation set includes css-missing-forced-colours", "css-missing-forced-colours" in kinds)
-    check("fixture violation set includes php-missing-forced-colours", "php-missing-forced-colours" in kinds)
+    check("stylesheet forced-colours coverage is NOT gated here (owned by scripts/shadow-fallback/)", "css-missing-forced-colours" not in kinds)
+    php_kinds = [v for v in vs if v["kind"] == "php-missing-forced-colours"]
+    check("a style-engine shadow without its fallback IS gated here", any(v["file"] == "fixture:style-engine.php" for v in php_kinds))
+    check("negative control: a composed writer without the fallback is left to check-shadow-fallback-php.py", not any(v["file"] == "fixture:must-flag-raw-box-shadow.php" for v in php_kinds))
     check("fixture violation set includes undefined-variable", "undefined-variable" in kinds)
     check("fixture violation set does NOT flag the wrapper-safe or exempt or custom-property sources",
           not any(v["file"].endswith("must-pass-wrapper-safe.php") or v["file"].endswith("must-pass-exempt-hover.php")

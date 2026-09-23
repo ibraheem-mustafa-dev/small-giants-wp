@@ -44,14 +44,6 @@
 	box-shadow: 0 2px 8px color-mix(in srgb, var(--wp--custom--shadow-colour) 8%, transparent);
 }
 
-/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
-@media (forced-colors: active) {
-	.wp-block-sgs-quote.is-style-testimonial {
-		outline: 1px solid CanvasText;
-		outline-offset: -1px;
-	}
-}
-
 /* GPU-composited hover transition — only fires when hover attrs are set. */
 .wp-block-sgs-quote {
 	transition:

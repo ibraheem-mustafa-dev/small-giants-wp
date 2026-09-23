@@ -179,14 +179,6 @@
 	overflow: hidden;
 }
 
-/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
-@media (forced-colors: active) {
-	.sgs-cart__panel--flyout {
-		outline: 1px solid CanvasText;
-		outline-offset: -1px;
-	}
-}
-
 @media (prefers-reduced-motion: no-preference) {
 	.sgs-cart__panel--flyout:not([hidden]) {
 		animation: sgs-cart-flyout-in 0.15s ease-out;

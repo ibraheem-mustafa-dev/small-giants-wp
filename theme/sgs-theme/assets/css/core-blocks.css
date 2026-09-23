@@ -717,14 +717,6 @@ footer .is-style-no-bullets a:hover {
 	box-shadow: 0 12px 32px color-mix(in srgb, var(--wp--custom--shadow-colour) 12%, transparent);
 }
 
-/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
-@media (forced-colors: active) {
-	.wp-block-column > .wp-block-group.has-background:hover {
-		outline: 1px solid CanvasText;
-		outline-offset: -1px;
-	}
-}
-
 /* Inner image zoom on card hover */
 .wp-block-column > .wp-block-group.has-background .wp-block-image {
 	overflow: hidden;
@@ -847,14 +839,6 @@ footer .is-style-no-bullets a:hover {
 .sgs-header-cta .wp-block-button__link:hover {
 	transform: translateY(-1px);
 	box-shadow: var(--wp--preset--shadow--glow);
-}
-
-/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
-@media (forced-colors: active) {
-	.sgs-header-cta .wp-block-button__link:hover {
-		outline: 1px solid CanvasText;
-		outline-offset: -1px;
-	}
 }
 
 /* Hide header CTA on mobile and tablet — hamburger menu is sufficient */

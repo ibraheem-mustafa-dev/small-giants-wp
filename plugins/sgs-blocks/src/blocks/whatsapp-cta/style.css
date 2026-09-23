@@ -116,14 +116,6 @@
 	box-shadow: 0 4px 12px color-mix(in srgb, var(--wp--custom--shadow-colour) 25%, transparent);
 }
 
-/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
-@media (forced-colors: active) {
-	.sgs-whatsapp-cta--floating.sgs-whatsapp-cta__btn {
-		outline: 1px solid CanvasText;
-		outline-offset: -1px;
-	}
-}
-
 .sgs-whatsapp-cta--floating .sgs-whatsapp-cta__icon {
 	width: 28px;
 	height: 28px;

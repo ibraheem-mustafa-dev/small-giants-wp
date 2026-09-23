@@ -372,14 +372,6 @@ html {
 	box-shadow: var(--wp--preset--shadow--soft);
 }
 
-/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
-@media (forced-colors: active) {
-	.wp-block-button__link:hover {
-		outline: 1px solid CanvasText;
-		outline-offset: -1px;
-	}
-}
-
 .wp-block-button__link:active {
 	transform: translateY(0) scale(0.97);
 }

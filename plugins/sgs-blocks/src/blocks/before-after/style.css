@@ -230,14 +230,6 @@
 	box-shadow: 0 0 0 1px color-mix(in srgb, var(--wp--custom--shadow-colour) 15%, transparent);
 }
 
-/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
-@media (forced-colors: active) {
-	.wp-block-sgs-before-after__divider-line {
-		outline: 1px solid CanvasText;
-		outline-offset: -1px;
-	}
-}
-
 .wp-block-sgs-before-after[data-orientation="vertical"] .wp-block-sgs-before-after__divider-line {
 	inset: 50% 0 auto 0;
 	width: 100%;
@@ -285,14 +277,6 @@
 	justify-content: center;
 	box-shadow: 0 2px 8px color-mix(in srgb, var(--wp--custom--shadow-colour) 25%, transparent);
 	transition: transform 200ms ease-out, box-shadow 200ms ease-out;
-}
-
-/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
-@media (forced-colors: active) {
-	.wp-block-sgs-before-after__handle {
-		outline: 1px solid CanvasText;
-		outline-offset: -1px;
-	}
 }
 
 .wp-block-sgs-before-after[data-orientation="vertical"] .wp-block-sgs-before-after__handle {

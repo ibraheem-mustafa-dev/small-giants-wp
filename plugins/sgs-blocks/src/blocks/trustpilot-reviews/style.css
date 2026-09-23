@@ -44,25 +44,9 @@
 	transition: transform 220ms ease, box-shadow 220ms ease;
 }
 
-/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
-@media (forced-colors: active) {
-	.sgs-trustpilot-reviews__header {
-		outline: 1px solid CanvasText;
-		outline-offset: -1px;
-	}
-}
-
 .sgs-trustpilot-reviews__header:hover {
 	transform: scale(1.03);
 	box-shadow: 0 8px 20px color-mix(in srgb, var(--wp--custom--shadow-colour) 8%, transparent), 0 0 0 1px color-mix(in srgb, var(--wp--custom--shadow-colour) 5%, transparent);
-}
-
-/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
-@media (forced-colors: active) {
-	.sgs-trustpilot-reviews__header:hover {
-		outline: 1px solid CanvasText;
-		outline-offset: -1px;
-	}
 }
 
 /* Center the pill within its container */
@@ -270,14 +254,6 @@
 
 .sgs-trustpilot-reviews--card-elevated .sgs-trustpilot-reviews__card {
 	box-shadow: 0 1px 2px color-mix(in srgb, var(--wp--custom--shadow-colour) 4%, transparent), 0 2px 8px color-mix(in srgb, var(--wp--custom--shadow-colour) 4%, transparent);
-}
-
-/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
-@media (forced-colors: active) {
-	.sgs-trustpilot-reviews--card-elevated .sgs-trustpilot-reviews__card {
-		outline: 1px solid CanvasText;
-		outline-offset: -1px;
-	}
 }
 
 .sgs-trustpilot-reviews--card-flat .sgs-trustpilot-reviews__card {

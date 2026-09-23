@@ -29,14 +29,6 @@
 	box-shadow: var(--wp--preset--shadow--soft);
 }
 
-/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
-@media (forced-colors: active) {
-	.sgs-countdown--elevated {
-		outline: 1px solid CanvasText;
-		outline-offset: -1px;
-	}
-}
-
 .sgs-countdown--filled {
 	background: var(--wp--preset--color--surface-alt, #f5f7f7);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
