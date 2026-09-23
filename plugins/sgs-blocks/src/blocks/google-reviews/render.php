@@ -813,10 +813,14 @@ $gr_header_shown    = $show_aggregate && ! in_array( $variant, array( 'badge', '
 if ( $gr_header_shown ) :
 	?>
 	<div class="sgs-google-reviews__aggregate">
+		<?php // The logo and the rating text are ONE group at their natural width, so the buttons either sit beside it or drop below it together (never squeezing it). ?>
+		<div class="sgs-google-reviews__aggregate-main">
 		<div class="sgs-google-reviews__aggregate-text">
 			<?php if ( '' !== $gr_source_label ) : ?>
 				<span class="sgs-google-reviews__source-label"><?php echo esc_html( $gr_source_label ); ?></span>
 			<?php endif; ?>
+			<?php if ( $has_rating || $has_count ) : ?>
+			<div class="sgs-google-reviews__score-row">
 			<?php if ( $has_rating ) : ?>
 				<strong class="sgs-google-reviews__score"><?php echo esc_html( number_format( $rating, 1 ) ); ?></strong>
 			<?php endif; ?>
@@ -828,6 +832,8 @@ if ( $gr_header_shown ) :
 				echo '<span class="sgs-google-reviews__count">' . esc_html( $gr_count_label( $rating_count ) ) . '</span>';
 			}
 			?>
+			</div>
+			<?php endif; ?>
 		</div>
 		<?php if ( $show_google_logo ) : ?>
 			<img
@@ -838,6 +844,7 @@ if ( $gr_header_shown ) :
 				height="16"
 			/>
 		<?php endif; ?>
+		</div>
 		<?php echo $gr_actions_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built above from esc_url() / esc_html() only. ?>
 	</div>
 	<?php

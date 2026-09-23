@@ -4,7 +4,7 @@
 verdict: PASS
 intent_capture_passed: true
 first_paint_capture_passed: true
-source_sha: 2f3bf61b843765e5
+source_sha: de19d857ad35404e
 blocks: google-reviews
 target: darkcyan-grouse-898606.hostingersite.com (Eye Care page 11, pipeline run 2026-09-23 19:17)
 date:   2026-09-23
@@ -80,3 +80,16 @@ Measured at 1440, 768 and 375 against the draft, then seen side by side:
 - 768: the differences are the draft's own container-width rule (see above); at 790 they match.
 - Still different: the stars read slightly larger than the draft's (the draft draws ★ text glyphs at 15px, whose
   visible star is smaller than the font size; the block draws 15px SVG stars). Review cards 3 to 6px shorter.
+
+## Header at every width (same day, after Bean saw the buttons squeezed beside the rating on a phone)
+
+Width sweep, draft vs live, 12 widths (360, 390, 412, 430, 480, 600, 700, 820, 1024, 1280, 1440, 1920): card width,
+"buttons below the rating", "buttons side by side" and the See-all button's offset from the card edge all equal the
+draft at every width (the offset is 2px off from 700 up: the button's transparent 1px border). Checked by eye at 412
+and 600 side by side.
+- Cause 1: the logo and the rating text were separate header items, so a shrinking text item let the buttons share the
+  line on 480 to 600px phones. They are now one group at its natural width (`__aggregate-main`), as the draft has them.
+- Cause 2: the caption and the score row were one wrapping row, so the group measured them as one line and dropped the
+  buttons too early at 700 to 820. The caption now stacks above its own `__score-row`.
+- Cause 3: the buttons were pushed to the end with an auto margin that still applied after wrapping; the header row now
+  uses the draft's `justify-content: space-between`, so wrapped buttons start at the left edge.

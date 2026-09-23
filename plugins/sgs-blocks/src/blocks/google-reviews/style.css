@@ -44,9 +44,12 @@
 
 /* ─── Aggregate Rating Header ────────────────────────────────────────────── */
 
+/* `space-between` (the draft's own rule): the buttons sit at the end of the row beside the rating group, and when
+   they wrap below it they start at the left edge, as a lone item on a line does. */
 .sgs-google-reviews__aggregate {
 	display: flex;
 	align-items: center;
+	justify-content: space-between;
 	flex-wrap: wrap;
 }
 
@@ -58,12 +61,31 @@
 	border-bottom: 1px solid var( --wp--preset--color--border-light, #e8eaed );
 }
 
-/* Source caption, rating figure, header stars and review count share one wrapping row; the caption takes
-   a full row of its own above the others. The group starts from zero width and grows (`flex: 1 1 0`), so on a
-   narrow screen it stays on the logo's line and wraps its own contents; only the buttons drop to the next line. */
-.sgs-google-reviews__aggregate-text {
-	flex: 1 1 0;
+/* The logo and the rating text form one group at their natural width (the draft's own structure), so the
+   header row either holds the group and the buttons side by side, or drops the buttons below the whole group.
+   Inside the group the text may wrap on a very narrow screen, beside the logo. */
+.sgs-google-reviews__aggregate-main {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	flex: 0 1 auto;
 	min-width: 0;
+}
+
+/* Source caption, rating figure, header stars and review count share one wrapping row; the caption takes
+   a full row of its own above the others. */
+/* The caption stacks above the score row (the draft's own structure), so the group's natural width is the wider
+   of the two, not their sum: a single wrapping row measured them as one line and over-sized the header group. */
+.sgs-google-reviews__aggregate-text {
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 5px;
+}
+
+/* Figure, stars and count on one row, which may wrap on a very narrow screen. */
+.sgs-google-reviews__score-row {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
@@ -72,7 +94,6 @@
 }
 
 :where( .sgs-google-reviews__source-label ) {
-	flex: 0 0 100%;
 	font-size: 13px;
 	letter-spacing: 0.01em;
 	color: var( --wp--preset--color--text-muted, #5f6368 );
@@ -547,13 +568,12 @@
 	text-align: center;
 }
 
-/* In the header row: side by side at the end of the row (the leading "G" leaves the end free). */
+/* In the header row: side by side; the row's space-between places them at its end (see __aggregate). */
 :where( .sgs-google-reviews__aggregate .sgs-google-reviews__cta ) {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 10px;
 	margin-top: 0;
-	margin-left: auto;
 	text-align: start;
 }
 
@@ -900,7 +920,12 @@
 }
 
 .sgs-google-reviews--logo-leading .sgs-google-reviews__cta {
-	margin-left: auto;
+	margin-left: 0;
+}
+
+/* Trailing: the group grows so the logo can sit at its far end, beside the buttons. */
+.sgs-google-reviews--logo-trailing .sgs-google-reviews__aggregate-main {
+	flex: 1 1 auto;
 }
 
 .sgs-google-reviews--logo-trailing .sgs-google-reviews__google-logo {
