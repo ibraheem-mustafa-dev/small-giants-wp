@@ -75,9 +75,10 @@ const BG_ATTACHMENT_OPTIONS = [
 import { close } from '@wordpress/icons';
 import { ResponsiveControl, ResponsiveBoxControl, resolveColourToken, SgsColourPanel, fillRow, textRow, SgsLengthControl,
 	SgsBorderControl, IconPicker, TypographyControls, StarterLookPresetControl,
+	ShadowControl, SurfaceGroundControls,
 } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
-import { resolveTextColourPreviewStyle, typographyPreviewStyle } from '../../utils';
+import { resolveTextColourPreviewStyle, typographyPreviewStyle, resolveShadowPreviewComposed } from '../../utils';
 
 /**
  * Content template: menu + (optional) logo + (optional) CTA. templateLock:false.
@@ -137,6 +138,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		panelSize,
 		surfaceOpacity,
 		surfaceBlur,
+		surfaceSaturate,
+		shadow,
+		shadowColour,
 		closeStyle,
 		closeLabel,
 		closeIcon,
@@ -270,10 +274,23 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const [ previewOpen, setPreviewOpen ] = useState( false );
 	const shellStyle = {
 		backgroundColor:
-			surfaceOpacity < 1 && drawerBg
-				? `color-mix(in srgb, ${ resolveColourToken( drawerBg, palette ) } ${ Math.round( surfaceOpacity * 100 ) }%, transparent)`
+			typeof surfaceOpacity === 'number' && surfaceOpacity < 1 && drawerBg
+				? `color-mix(in srgb, ${ resolveColourToken( drawerBg, palette ) } ${ Math.round( Math.max( 0, surfaceOpacity ) * 100 ) }%, transparent)`
 				: resolveColourToken( drawerBg, palette ),
-		backdropFilter: surfaceBlur ? `blur( ${ surfaceBlur } )` : undefined,
+		// Same order as render.php's sgs_surface_backdrop_decls(): saturate, then blur.
+		backdropFilter: ( () => {
+			const parts = [];
+			if ( typeof surfaceSaturate === 'number' ) {
+				parts.push( `saturate(${ surfaceSaturate }%)` );
+			}
+			if ( surfaceBlur ) {
+				parts.push( `blur(${ surfaceBlur })` );
+			}
+			return parts.length ? parts.join( ' ' ) : undefined;
+		} )(),
+		boxShadow: shadow
+			? resolveShadowPreviewComposed( shadow, shadowColour )
+			: undefined,
 		maxWidth: isCompact ? panelSize?.desktop || compactWidthFallback : undefined,
 		marginInline: isCompact ? 'auto' : undefined,
 		// Editor-only preview of the background image (render.php paints the same
@@ -648,31 +665,42 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					   it uses the shared panel's default (enableAlpha=true),
 					   consistent with every other consumer of SgsColourPanel. */ }
 
-					{ /* Surface — opacity + blur on the panel itself. No separate scrim:
-					     the panel's own fill/blur IS the occlusion (8/8 reference sites
-					     skip a dedicated backdrop div). Defaults (opaque, no blur) are
-					     unchanged from before this control existed. */ }
-					<SgsLengthControl
-						label={ __( 'Panel opacity', 'sgs-blocks' ) }
-						help={ __( '100 = solid (default). Lower it to let the page show through. Needs a background colour set.', 'sgs-blocks' ) }
-						value={ `${ Math.round( ( surfaceOpacity ?? 1 ) * 100 ) }%` }
-						onChange={ ( value ) => {
-							const num = parseFloat( value );
+					{ /* Surface: fill opacity, blur, saturate and shadow on the panel itself.
+					     No separate scrim: the panel's own fill/blur IS the occlusion (8/8
+					     reference sites skip a dedicated backdrop div). Defaults (opaque, no
+					     blur, no shadow) render nothing extra. The controls are the shared
+					     SurfaceGroundControls and ShadowControl, the same ones sgs/mega-panel
+					     and sgs/site-header mount, written to the attributes the shared
+					     render helpers read. */ }
+					<ToolsPanel
+						label={ __( 'Surface', 'sgs-blocks' ) }
+						resetAll={ () =>
 							setAttributes( {
-								surfaceOpacity: Number.isFinite( num ) ? Math.max( 0, Math.min( 100, num ) ) / 100 : 1,
-							} );
-						} }
-						units={ [ { value: '%', label: '%' } ] }
-						presets={ false }
-					/>
-					<SgsLengthControl
-						label={ __( 'Background blur', 'sgs-blocks' ) }
-						help={ __( 'Blurs whatever sits behind the drawer. Leave empty for none (default).', 'sgs-blocks' ) }
-						value={ surfaceBlur || '' }
-						onChange={ ( value ) => setAttributes( { surfaceBlur: value || '' } ) }
-						units={ [ { value: 'px', label: 'px' } ] }
-						presets={ false }
-					/>
+								surfaceBlur: '',
+								surfaceSaturate: undefined,
+								surfaceOpacity: undefined,
+								shadow: '',
+								shadowColour: '',
+							} )
+						}
+					>
+						<SurfaceGroundControls
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+						/>
+						<ToolsPanelItem
+							label={ __( 'Shadow', 'sgs-blocks' ) }
+							hasValue={ () => !! shadow || !! shadowColour }
+							onDeselect={ () => setAttributes( { shadow: '', shadowColour: '' } ) }
+						>
+							<ShadowControl
+								label={ __( 'Shadow', 'sgs-blocks' ) }
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+								attrNames={ { base: 'shadow', colour: 'shadowColour' } }
+							/>
+						</ToolsPanelItem>
+					</ToolsPanel>
 
 					{ /* Layout */ }
 					<ToggleGroupControl

@@ -155,13 +155,28 @@
 			"type": "object",
 			"default": {}
 		},
-		"surfaceOpacity": {
-			"type": "number",
-			"default": 1
-		},
 		"surfaceBlur": {
 			"type": "string",
-			"default": ""
+			"default": "",
+			"description": "Backdrop blur: a single CSS length (for example 24px) that blurs whatever sits behind the drawer. Empty emits nothing. Emitted through includes/helpers-surface-ground.php."
+		},
+		"surfaceSaturate": {
+			"type": "number",
+			"description": "Backdrop saturation as a whole-number percentage (for example 150), paired with surfaceBlur. Unset emits nothing; 0 is a legal value."
+		},
+		"surfaceOpacity": {
+			"type": "number",
+			"description": "Fill translucency, 0 to 1, applied to the drawer background colour (drawerBg). A gradient or image fill is left as it is. Unset or 1 emits nothing."
+		},
+		"shadow": {
+			"type": "string",
+			"default": "",
+			"description": "Drawer shadow: a theme shadow preset slug (whisper, soft, lifted, floating, crisp, long, outline, grounded, glow, pressed, hard) or a raw layer stack composed with shadowColour. Empty means no shadow."
+		},
+		"shadowColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour for a raw shadow shape in `shadow`; ignored when `shadow` is a theme preset slug."
 		},
 		"_comment_closeStyle": "Spec 41 FR-41-12: `icon-and-text` is the FOURTH value. `separate-x` and `text-swap` are the icon/text DISPLAY axis and mirror sgs/nav-bar-menu's triggerMode, but `burger-morph` is a GLYPH choice (a CSS-drawn two-bar span, no icon and no text), so re-valuing this enum onto triggerMode's three values would delete that look. Its PHP twin is render.php::$sgs_nd_allowed_close_styles and BOTH lists must carry all four values -- a value one side accepts and the other rejects coerces silently, with no error on either side.",
 		"closeStyle": {

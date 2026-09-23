@@ -40,6 +40,7 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-tokens.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-surface-ground.php';
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-colour-wcag.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
@@ -459,26 +460,31 @@ if ( $sgs_nd_anchor_is_set || $sgs_nd_panel_is_set ) {
 // above; the drawer's OWN opaque/blur styling, not the page BEHIND it).
 // Opaque + unblurred (the existing default) emits nothing extra so an
 // untouched drawer is unaffected.
-$sgs_nd_surface_opacity = isset( $attributes['surfaceOpacity'] ) ? (float) $attributes['surfaceOpacity'] : 1.0;
-$sgs_nd_surface_opacity = max( 0.0, min( 1.0, $sgs_nd_surface_opacity ) );
-$sgs_nd_surface_blur    = sgs_css_length_value( $attributes['surfaceBlur'] ?? '' );
+// Fill translucency, backdrop blur and saturate all go through the shared surface-ground
+// helpers (includes/helpers-surface-ground.php): color-mix() keeps the resolved token as
+// the SOURCE colour (a palette change still recolours the translucent panel), an unset
+// value emits nothing, and 0 is a legal opacity or saturate value.
+$sgs_nd_fill_css   = '' !== $drawer_bg_slug ? 'var(--wp--preset--color--' . $drawer_bg_slug . ')' : '';
+$sgs_nd_fill_alpha = sgs_surface_fill_alpha( $sgs_nd_fill_css, $attributes['surfaceOpacity'] ?? null );
+if ( '' !== $sgs_nd_fill_alpha ) {
+	$css .= $root_sel . '{background-color:' . $sgs_nd_fill_alpha . ';}';
+}
 
-if ( $sgs_nd_surface_opacity < 1.0 || '' !== $sgs_nd_surface_blur ) {
-	$sgs_nd_surface_decls = '';
-	if ( $sgs_nd_surface_opacity < 1.0 && '' !== $drawer_bg_slug ) {
-		// color-mix() keeps the resolved token as the SOURCE colour (a palette
-		// change still recolours the translucent panel) while expressing the
-		// operator's chosen opacity — no separate alpha-channel attribute needed.
-		$sgs_nd_pct            = rtrim( rtrim( number_format( $sgs_nd_surface_opacity * 100, 2 ), '0' ), '.' );
-		$sgs_nd_pct            = '' !== $sgs_nd_pct ? $sgs_nd_pct : '0';
-		$sgs_nd_surface_decls .= 'background-color:color-mix(in srgb, var(--wp--preset--color--' . $drawer_bg_slug . ') ' . $sgs_nd_pct . '%, transparent);';
-	}
-	if ( '' !== $sgs_nd_surface_blur ) {
-		$sgs_nd_surface_decls .= 'backdrop-filter:blur(' . $sgs_nd_surface_blur . ');-webkit-backdrop-filter:blur(' . $sgs_nd_surface_blur . ');';
-	}
-	if ( '' !== $sgs_nd_surface_decls ) {
-		$css .= $root_sel . '{' . $sgs_nd_surface_decls . '}';
-	}
+$sgs_nd_backdrop_decls = sgs_surface_backdrop_decls( $attributes['surfaceBlur'] ?? '', $attributes['surfaceSaturate'] ?? null );
+if ( ! empty( $sgs_nd_backdrop_decls ) ) {
+	$css .= $root_sel . '{' . implode( ';', $sgs_nd_backdrop_decls ) . ';}';
+}
+
+// The drawer's ONE box-shadow writer: the `shadow` attribute (a theme preset slug or a raw
+// layer stack + `shadowColour`), composed by sgs_shadow_box_decls(), which also adds the
+// forced-colours outline fallback (the same helper the mega panel uses). Empty means no
+// shadow, so a drawer that never sets it renders nothing extra.
+$sgs_nd_shadow_raw   = isset( $attributes['shadow'] ) && is_string( $attributes['shadow'] ) ? trim( $attributes['shadow'] ) : '';
+$sgs_nd_shadow_decls = '' !== $sgs_nd_shadow_raw
+	? sgs_shadow_box_decls( $sgs_nd_shadow_raw, isset( $attributes['shadowColour'] ) ? (string) $attributes['shadowColour'] : '' )
+	: array();
+if ( ! empty( $sgs_nd_shadow_decls ) ) {
+	$css .= $root_sel . '{' . implode( ';', $sgs_nd_shadow_decls ) . ';}';
 }
 
 // ── Background image media layer (`.{uid}::before`). z-index:-1 keeps it below

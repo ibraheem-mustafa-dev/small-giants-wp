@@ -269,7 +269,7 @@
 		"shadow": {
 			"type": "string",
 			"default": "floating",
-			"description": "Panel shadow: a theme shadow preset slug (subtle, raised, floating, glow) or a raw single-layer shape composed with shadowColour. Empty means no shadow."
+			"description": "Panel shadow: a theme shadow preset slug (whisper, soft, lifted, floating, crisp, long, outline, grounded, glow, pressed, hard) or a raw layer stack composed with shadowColour. Empty means no shadow."
 		},
 		"shadowColour": {
 			"type": "string",
