@@ -239,40 +239,41 @@ def test_box_shadow_whitespace_normalised_matches_preset(conn):
     assert result.attrs().get("shadow") == "raised"
 
 
-def test_box_shadow_no_preset_match_gaps_no_destination(conn):
-    """A raw CSS box-shadow with no matching preset → honest NO_DESTINATION gap.
-
-    The shadow attr expects a slug (the wrapper renders
-    box-shadow:var(--wp--preset--shadow--{slug})); a raw value would render nothing.
-    An honest gap is the correct outcome — never a raw-value Write.
+def test_box_shadow_no_preset_match_parses_as_layered_shadow(conn):
+    """Task 4f-2: a raw CSS box-shadow with no matching preset is no longer an
+    automatic gap — it is parsed into a layered shadow (shape + colour) when the
+    composer's grammar accepts it. sgs/container declares a shadowColour sibling
+    (css_property='box-shadow-color', same css_element='wrapper'), so both lists
+    land in one call.
     """
     result = process_element(
         _ctx(conn),
         [Decl("box-shadow", "0 2px 8px rgba(0,0,0,0.5)", "Base")],
     )
-    # No shadow Write emitted.
+    attrs = result.attrs()
+    assert attrs.get("shadow") == "0px 2px 8px 0px"
+    assert attrs.get("shadowColour") == "#000000 50%"
+    assert not any(g.property == "box-shadow" for g in result.gaps)
+
+
+def test_box_shadow_grammar_rejected_value_gaps_no_destination(conn):
+    """A value that matches NO preset AND fails the layered-shadow grammar (an
+    unrecognised colour token — `var()` is not one of the composer's accepted
+    literals) → honest NO_DESTINATION gap naming the reason. Never a raw-value
+    Write: the wrapper's shadow attr grammar (a preset slug or a parsed layer
+    list) would render nothing for text it cannot parse.
+    """
+    result = process_element(
+        _ctx(conn),
+        [Decl("box-shadow", "inset 0 0 10px var(--tomato)", "Base")],
+    )
     assert result.attrs().get("shadow") is None
-    # Exactly one gap, origin=NO_DESTINATION, with a helpful detail message.
+    assert result.attrs().get("shadowColour") is None
     shadow_gaps = [g for g in result.gaps if g.property == "box-shadow"]
     assert len(shadow_gaps) == 1
     assert shadow_gaps[0].origin is GapOrigin.NO_DESTINATION
     assert "preset" in shadow_gaps[0].detail.lower()
-
-
-def test_box_shadow_no_preset_match_never_emits_raw_value(conn):
-    """Guard: the shadow attr NEVER receives a raw CSS box-shadow string.
-
-    The wrapper renders box-shadow:var(--wp--preset--shadow--{slug}) — a raw value
-    would produce an invalid var() reference and render nothing. This test proves the
-    no-cheats invariant: a raw value that doesn't match a preset always gaps, never writes.
-    """
-    raw = "inset 0 0 10px #000"
-    result = process_element(_ctx(conn), [Decl("box-shadow", raw, "Base")])
-    shadow_write = result.attrs().get("shadow")
-    assert shadow_write is None, (
-        f"outer_box must NEVER emit a raw CSS value to the shadow attr (got {shadow_write!r}); "
-        f"only preset slugs ('subtle'/'raised'/'floating'/'glow') are valid"
-    )
+    assert "var()" in shadow_gaps[0].detail
 
 
 def test_box_shadow_conservation_no_unrouted(conn):

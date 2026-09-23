@@ -1327,6 +1327,84 @@ def css_element_for(block_slug: str, attr_name: str) -> "str | None":
     return (row[0] or None) if row else None
 
 
+@functools.lru_cache(maxsize=1024)
+def attr_for_shadow_colour_sibling(block_slug: str, shadow_attr: str) -> "str | None":
+    """Return this block's ``box-shadow-color`` colour-list sibling for ``shadow_attr``
+    (Task 4f-2, ``.claude/reports/2026-09-21-u1-4f-shadow-design.md`` decisions 6 + 10).
+
+    A block that declares both a shape attr (``css_property='box-shadow'``) and a
+    colour-list attr (``css_property='box-shadow-color'``) pairs them by SAME
+    ``css_element`` AND SAME ``css_state`` — verified live: sgs/team-member's
+    ``cardShadowHover`` (css_element='wrapper', css_state='hover') pairs with
+    ``cardShadowColourHover`` (same element+state), never with the base
+    ``cardShadowColour`` (css_state IS NULL). DB-first (R-31-1): never
+    name-guess (``shadow_attr + 'Colour'``) — that fails on exactly this pair
+    (``cardShadowHover`` -> ``cardShadowColourHover`` inserts ``Colour`` BEFORE
+    ``Hover``, it does not append after), and sgs/trust-bar has TWO box-shadow-
+    color attrs on the same block (``iconCircleShadowColour`` /
+    ``badgeImageShadowColour``) disambiguated only by ``css_element``.
+
+    Restricted to ``attr_type='string'`` — the one exception found live,
+    sgs/form's ``formFocusRingOpacity`` (``attr_type='number'``), is a scalar
+    ring opacity, not a colour-list attr, and would corrupt a colour-list write
+    if matched.
+
+    When no sibling shares the element, a block with exactly ONE colour-list attr in the
+    same state pairs with it (sgs/media tags its shape and colour as different elements);
+    two or more such candidates are ambiguous and return ``None``.
+
+    Returns ``None`` when ``shadow_attr`` itself is not declared on this block,
+    or the block has no matching colour sibling — the caller then folds the
+    colours into the shape text (when the composer's grammar accepts that) or
+    gaps honestly (4f-2 brief step 3).
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        row = conn.execute(
+            "SELECT css_element, css_state FROM block_attributes "
+            "WHERE block_slug = ? AND attr_name = ?",
+            (block_slug, shadow_attr),
+        ).fetchone()
+        if row is None:
+            return None
+        element, state = row
+        query = (
+            "SELECT attr_name FROM block_attributes "
+            "WHERE block_slug = ? AND css_property = 'box-shadow-color' "
+            "AND attr_type = 'string' "
+        )
+        params: list[object] = [block_slug]
+        if element is None:
+            query += "AND css_element IS NULL "
+        else:
+            query += "AND css_element = ? "
+            params.append(element)
+        if state is None:
+            query += "AND css_state IS NULL "
+        else:
+            query += "AND css_state = ? "
+            params.append(state)
+        query += "ORDER BY rowid"
+        sibling_rows = conn.execute(query, params).fetchall()
+        if not sibling_rows:
+            # No same-element sibling. When the block has exactly ONE colour-list attr in the
+            # same state, it is the pair even if its element is tagged differently (verified
+            # live: sgs/media's boxShadow is css_element 'wrapper', its boxShadowColour 'media').
+            # Two or more candidates stay ambiguous and return None, never a guess.
+            fallback = "SELECT attr_name FROM block_attributes WHERE block_slug = ? AND css_property = 'box-shadow-color' AND attr_type = 'string' "
+            fb_params: list[object] = [block_slug]
+            if state is None:
+                fallback += "AND css_state IS NULL"
+            else:
+                fallback += "AND css_state = ?"
+                fb_params.append(state)
+            candidates = conn.execute(fallback, fb_params).fetchall()
+            sibling_rows = candidates if len(candidates) == 1 else []
+    finally:
+        conn.close()
+    return sibling_rows[0][0] if sibling_rows else None
+
+
 @functools.lru_cache(maxsize=256)
 def box_css_catalogue(block_slug: str) -> dict[str, dict]:
     """Return ``{attr_name: {css_property, css_element, box_family, tier_shape}}``

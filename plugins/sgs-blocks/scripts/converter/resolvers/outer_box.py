@@ -20,9 +20,18 @@ Real transfers (this resolver OWNS the OUTER layer):
   - ``background-attachment``→``backgroundAttachment*`` (string; DB-resolved attr name)
   - ``box-shadow``         → block's shadow attr (DB-resolved); value TOKEN-SNAPPED to
     a shadow preset slug from ``design_tokens`` (e.g. ``0 4px 12px rgba(0,0,0,0.1)``
-    → ``"md"``). On NO preset match: honest NO_DESTINATION gap (the wrapper expects a
-    slug; a raw CSS value would render nothing — no-cheats rule). Preset list is read
-    from DB at call-time, never hardcoded.
+    → ``"md"``). Preset list is read from DB at call-time, never hardcoded.
+    On NO preset match (Task 4f-2, ``.claude/services/shadow_layers.py``): the draft
+    value is parsed into a LAYERED shadow instead of an immediate gap — a multi-layer
+    shadow (e.g. Halcyon's/Indus's two-layer mega-panel shadows) writes its shape list
+    to the shadow attr and its colour list to the block's ``box-shadow-color`` sibling
+    attr (DB-resolved, never name-guessed), in ONE ``list[Write]``. A block with no
+    colour sibling folds the colours into the shape text itself (the composer's
+    per-layer grammar accepts an embedded colour). Only what the composer's own
+    grammar accepts (2-4 px lengths + optional inset + hex/rgb/rgba/transparent colour
+    per layer, ≤8 layers) is written — anything wider (``var()``, ``calc()``, a
+    non-px unit, an unrecognised colour, too many layers) stays an honest
+    NO_DESTINATION gap naming the reason (no-cheats rule, R-31-1).
 
 EXECUTION Step 12 (Phase 5, 2026-07-04) added the following to the OUTER allowlist.
 Every one of these goes through the SAME generic dispatch (attr_resolve → tier_suffix
@@ -101,6 +110,7 @@ from converter.services.attr_resolve import attr_resolve
 from converter.services.border_side import border_side_write
 from converter.services.box_side import box_side_write
 from converter.services.gap_writer import gap_writer
+from converter.services import shadow_layers
 from converter.services.styling_helpers import (
     extract_token_or_hex,
     split_value_unit,
@@ -183,6 +193,31 @@ def _shadow_token_snap(raw_value: str, conn: sqlite3.Connection) -> str | None:
                 return slug[len(_SHADOW_SLUG_PREFIX):]
             return slug  # Defensive: return as-is if prefix absent (unexpected DB row).
     return None
+
+
+def _shadow_layers_or_gap(
+    decl: Any, ctx: Any
+) -> "tuple[shadow_layers.ParsedShadow, None] | tuple[None, GAP]":
+    """Parse a draft box-shadow value that did NOT match any design_tokens
+    preset (Task 4f-2) into its stored shape/colour text pair, or an honest
+    GAP naming why the grammar rejected it.
+
+    Shared by both `box-shadow` call sites in this module (the flat-attr
+    branch in `resolve()` and the tier-object branch in
+    `_outer_tier_object_write()`) so the parse-or-gap decision is made in
+    exactly ONE place (R-31-9).
+    """
+    raw = strip_important(decl.value)
+    try:
+        parsed = shadow_layers.parse_draft_box_shadow(raw)
+    except shadow_layers.ShadowGrammarError as exc:
+        return None, gap_writer(
+            ctx, decl, GapOrigin.NO_DESTINATION,
+            f"box-shadow value {decl.value!r} does not match any shadow preset in "
+            f"design_tokens (token_type='shadow', slug LIKE 'shadow-%'), and does not "
+            f"parse as a layered shadow either: {exc}",
+        )
+    return parsed, None
 
 
 # The attr_type predicate moved to the SHARED converter.services.validate.
@@ -356,18 +391,52 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
     # preset-slug snap.
     if prop == "box-shadow":
         slug = _shadow_token_snap(decl.value, ctx.conn)
-        if slug is None:
-            return gap_writer(
-                ctx, decl, GapOrigin.NO_DESTINATION,
-                f"box-shadow value {decl.value!r} does not match any shadow preset in "
-                f"design_tokens (token_type='shadow', slug LIKE 'shadow-%'); the shadow "
-                f"attr expects a preset slug, not a raw CSS value — add a matching "
-                f"preset to design_tokens or rework the draft to use a standard shadow",
-            )
-        # The slug itself ('sm'/'md'/'lg'/'glow') is a string, not an enum-constrained
-        # attr on sgs/container (enum_values IS NULL for the shadow attr), so validate()
-        # already passed above (attr existence only). Write the slug directly.
-        return Write(attr=attr, value=slug, property=prop, tier=decl.tier)
+        if slug is not None:
+            # The slug itself ('sm'/'md'/'lg'/'glow') is a string, not an
+            # enum-constrained attr on sgs/container (enum_values IS NULL for
+            # the shadow attr), so validate() already passed above (attr
+            # existence only). Write the slug directly.
+            return Write(attr=attr, value=slug, property=prop, tier=decl.tier)
+
+        # --- Task 4f-2: no preset matched — parse the draft value into a
+        # LAYERED shadow (Halcyon's/Indus's two-layer mega-panel shadows never
+        # reach the block through the preset-only path). The shadow attr's
+        # OWN grammar (`includes/helpers-shadow-layers.php::sgs_shadow_layers`)
+        # accepts a layer list directly (same attr the preset slug uses — the
+        # composer tells the two apart by regex), so no new destination attr
+        # is needed for the SHAPE half; only the COLOUR half needs a sibling.
+        parsed, gap = _shadow_layers_or_gap(decl, ctx)
+        if gap is not None:
+            return gap
+        if parsed.is_none:
+            return Write(attr=attr, value="none", property=prop, tier=decl.tier)
+
+        # Colour sibling resolved from the DB (never name-guessed — R-31-1):
+        # the attr this SAME block maps to css_property='box-shadow-color',
+        # paired by css_element+css_state with the shadow attr just resolved.
+        colour_attr = db_lookup.attr_for_shadow_colour_sibling(ctx.block_slug, attr)
+        if colour_attr is not None and validate(ctx, colour_attr, parsed.colour):
+            # Shape + colour land in ONE list[Write] (design decision 8: never
+            # a separate setAttributes call that could leave the two lists
+            # misaligned after a later edit).
+            return [
+                Write(attr=attr, value=parsed.shape, property=prop, tier=decl.tier),
+                Write(attr=colour_attr, value=parsed.colour, property=prop, tier=decl.tier),
+            ]
+
+        # No colour sibling on this block (or it failed validate) — fold the
+        # colours into the shape text itself; the composer's per-layer parse
+        # accepts an embedded colour token (draft-style values) when no
+        # separate colour list is supplied.
+        if validate(ctx, attr, parsed.folded_shape):
+            return Write(attr=attr, value=parsed.folded_shape, property=prop, tier=decl.tier)
+
+        return gap_writer(
+            ctx, decl, GapOrigin.NO_DESTINATION,
+            f"{ctx.block_slug} has no box-shadow-color sibling attr for {attr!r} to "
+            f"hold the colour list, and folding the colours into the shape attr "
+            f"itself also failed validation",
+        )
 
     # --- box-family SELF-MERGE: a single flat declaration destined for a MERGED
     # per-side object attr (attr_type='object', e.g. sgs/text's borderWidth =
@@ -574,14 +643,36 @@ def _outer_tier_object_write(
     """
     if prop == "box-shadow":
         slug = _shadow_token_snap(decl.value, ctx.conn)
-        if slug is None:
-            return gap_writer(
-                ctx, decl, GapOrigin.NO_DESTINATION,
-                f"box-shadow value {decl.value!r} does not match any shadow preset in "
-                f"design_tokens (token_type='shadow', slug LIKE 'shadow-%'); the shadow "
-                f"attr expects a preset slug, not a raw CSS value",
+        if slug is not None:
+            return tier_object_write(ctx, decl, prop, base_attr, slug, validate_raw=slug)
+
+        # Task 4f-2 (see the twin branch in resolve() for the full rationale):
+        # no shadow attr is currently tier-object-shaped (verified live, no
+        # block has `tier_object_base(block, shadow_attr)` True today), so
+        # this branch is not reached by any current fixture — kept symmetric
+        # with resolve()'s flat-attr branch so a future migrated shadow attr
+        # does not silently lose the layered path.
+        parsed, gap = _shadow_layers_or_gap(decl, ctx)
+        if gap is not None:
+            return gap
+        if parsed.is_none:
+            return tier_object_write(ctx, decl, prop, base_attr, "none", validate_raw="none")
+
+        colour_attr = db_lookup.attr_for_shadow_colour_sibling(ctx.block_slug, base_attr)
+        if colour_attr is not None:
+            shape_write = tier_object_write(
+                ctx, decl, prop, base_attr, parsed.shape, validate_raw=parsed.shape
             )
-        return tier_object_write(ctx, decl, prop, base_attr, slug, validate_raw=slug)
+            if not isinstance(shape_write, GAP):
+                colour_write = tier_object_write(
+                    ctx, decl, prop, colour_attr, parsed.colour, validate_raw=parsed.colour
+                )
+                if not isinstance(colour_write, GAP):
+                    return [shape_write, colour_write]
+
+        return tier_object_write(
+            ctx, decl, prop, base_attr, parsed.folded_shape, validate_raw=parsed.folded_shape
+        )
 
     if db_lookup.attr_is_colour_role(ctx.block_slug, base_attr):
         v = extract_token_or_hex(strip_important(decl.value))
