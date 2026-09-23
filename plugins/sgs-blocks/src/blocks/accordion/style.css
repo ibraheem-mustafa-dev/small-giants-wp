@@ -254,7 +254,7 @@
 	background: var(--wp--preset--color--surface-alt, #ffffff);
 	border: 1px solid var(--wp--preset--color--border, #e0e0e0);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+	box-shadow: 0 1px 3px color-mix(in srgb, var(--wp--custom--shadow-colour) 4%, transparent);
 }
 
 .sgs-accordion--card .sgs-accordion-item + .sgs-accordion-item {

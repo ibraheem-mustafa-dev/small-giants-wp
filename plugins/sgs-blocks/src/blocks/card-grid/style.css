@@ -206,6 +206,14 @@
 	box-shadow: var(--wp--preset--shadow--floating);
 }
 
+/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
+@media (forced-colors: active) {
+	.sgs-card-grid--hover-lift .sgs-card-grid__item:hover {
+		outline: 1px solid CanvasText;
+		outline-offset: -1px;
+	}
+}
+
 /* Overlay Slide — slides up from bottom */
 .sgs-card-grid--overlay-slide .sgs-card-grid__item {
     position: relative;
@@ -277,6 +285,14 @@
 	.sgs-card-grid.sgs-has-hover .sgs-card-grid__item:hover {
 		box-shadow: var(--sgs-hover-shadow, none);
 	}
+
+/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
+@media (forced-colors: active) {
+	.sgs-card-grid.sgs-has-hover .sgs-card-grid__item:hover {
+		outline: 1px solid CanvasText;
+		outline-offset: -1px;
+	}
+}
 
 	/* Hover Image Zoom (#90, #104) */
 	.sgs-card-grid.sgs-has-img-zoom .sgs-card-grid__item {

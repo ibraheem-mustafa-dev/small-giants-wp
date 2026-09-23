@@ -1,0 +1,6 @@
+/* Fixture: black-literal box-shadow whose rule ALREADY declares a visible border -- --fix must
+   still rewrite the colour, but must NOT add a second forced-colors block (already covered). */
+.sgs-fixture-fix-f {
+	border: 1px solid transparent;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}

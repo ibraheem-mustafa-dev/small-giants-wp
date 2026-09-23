@@ -289,19 +289,43 @@ body.admin-bar html {
  * only defined elevation steps — do not invent a fourth in a template.
  */
 .has-shadow-sm {
-	box-shadow: 0 1px 2px rgb(0 0 0 / 6%), 0 2px 6px rgb(0 0 0 / 6%);
+	box-shadow: 0 1px 2px color-mix(in srgb, var(--wp--custom--shadow-colour) 6%, transparent), 0 2px 6px color-mix(in srgb, var(--wp--custom--shadow-colour) 6%, transparent);
+}
+
+/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
+@media (forced-colors: active) {
+	.has-shadow-sm {
+		outline: 1px solid CanvasText;
+		outline-offset: -1px;
+	}
 }
 @media (forced-colors:active){.has-shadow-sm:not(:focus-visible){outline:1px solid CanvasText;outline-offset:-1px}}
 
 
 .has-shadow-md {
-	box-shadow: 0 2px 4px rgb(0 0 0 / 7%), 0 6px 16px rgb(0 0 0 / 8%);
+	box-shadow: 0 2px 4px color-mix(in srgb, var(--wp--custom--shadow-colour) 7%, transparent), 0 6px 16px color-mix(in srgb, var(--wp--custom--shadow-colour) 8%, transparent);
+}
+
+/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
+@media (forced-colors: active) {
+	.has-shadow-md {
+		outline: 1px solid CanvasText;
+		outline-offset: -1px;
+	}
 }
 @media (forced-colors:active){.has-shadow-md:not(:focus-visible){outline:1px solid CanvasText;outline-offset:-1px}}
 
 
 .has-shadow-lg {
-	box-shadow: 0 4px 8px rgb(0 0 0 / 8%), 0 12px 32px rgb(0 0 0 / 10%);
+	box-shadow: 0 4px 8px color-mix(in srgb, var(--wp--custom--shadow-colour) 8%, transparent), 0 12px 32px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent);
+}
+
+/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
+@media (forced-colors: active) {
+	.has-shadow-lg {
+		outline: 1px solid CanvasText;
+		outline-offset: -1px;
+	}
 }
 @media (forced-colors:active){.has-shadow-lg:not(:focus-visible){outline:1px solid CanvasText;outline-offset:-1px}}
 

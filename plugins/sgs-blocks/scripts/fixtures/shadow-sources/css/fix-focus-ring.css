@@ -1,0 +1,5 @@
+/* Fixture: a shadow used as a focus ring (selector contains :focus) -- --fix must still fix
+   the colour, but the forced-colors fallback is Highlight/2px, never CanvasText/1px. */
+.sgs-fixture-fix-b:focus {
+	box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.5);
+}

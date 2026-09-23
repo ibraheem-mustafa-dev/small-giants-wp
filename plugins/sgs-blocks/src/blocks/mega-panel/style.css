@@ -113,10 +113,18 @@
 	position: absolute;
 	inset: 0;
 	border-radius: inherit;
-	box-shadow: 0 20px 40px -12px rgba( 0, 0, 0, 0.28 );
+	box-shadow: 0 20px 40px -12px color-mix(in srgb, var(--wp--custom--shadow-colour) 28%, transparent);
 	opacity: 0;
 	transition: opacity 0.3s ease;
 	pointer-events: none;
+}
+
+/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
+@media (forced-colors: active) {
+	.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group::after {
+		outline: 1px solid CanvasText;
+		outline-offset: -1px;
+	}
 }
 .wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:hover,
 .wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:focus-within {

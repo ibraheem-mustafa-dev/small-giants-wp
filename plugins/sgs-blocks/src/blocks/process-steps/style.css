@@ -178,7 +178,15 @@
 .sgs-process-steps--hover-lift .sgs-process-steps__step:hover,
 .sgs-process-steps--hover-lift .sgs-process-steps__step:focus-within {
 	transform: translateY(-4px);
-	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+	box-shadow: 0 8px 24px color-mix(in srgb, var(--wp--custom--shadow-colour) 12%, transparent);
+}
+
+/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
+@media (forced-colors: active) {
+	.sgs-process-steps--hover-lift .sgs-process-steps__step:hover, .sgs-process-steps--hover-lift .sgs-process-steps__step:focus-within {
+		outline: 2px solid Highlight;
+		outline-offset: 2px;
+	}
 }
 
 .sgs-process-steps--hover-scale .sgs-process-steps__step {
@@ -201,6 +209,14 @@
 .sgs-process-steps--hover-glow .sgs-process-steps__step:hover,
 .sgs-process-steps--hover-glow .sgs-process-steps__step:focus-within {
 	box-shadow: 0 0 0 3px var(--wp--preset--color--primary, #0F7E80);
+}
+
+/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
+@media (forced-colors: active) {
+	.sgs-process-steps--hover-glow .sgs-process-steps__step:hover, .sgs-process-steps--hover-glow .sgs-process-steps__step:focus-within {
+		outline: 2px solid Highlight;
+		outline-offset: 2px;
+	}
 }
 
 /* ===== Responsive — vertical on mobile ===== */

@@ -1,0 +1,5 @@
+/* Fixture: a drop-shadow in `filter` -- --fix must fix the colour inside drop-shadow() but
+   must NOT add a forced-colors block (filter survives forced-colours via CSS Color Adjust). */
+.sgs-fixture-fix-d {
+	filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}

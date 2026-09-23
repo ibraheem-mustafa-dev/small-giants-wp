@@ -1154,5 +1154,14 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 124
+  },
+  {
+    "id": "check-shadow-sources",
+    "cmd": "python scripts/check-shadow-sources.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 125
   }
 ]

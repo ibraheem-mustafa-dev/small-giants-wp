@@ -1,0 +1,91 @@
+{
+  "_comment": "Accepted findings for check-shadow-sources.py --check (D4/D5 shadow-tone follow-on, task-tone-4). Same discipline as editor-render-parity-baseline.json: --check reports NEW findings only (findings NOT listed here) and also fails on a baseline entry that no longer occurs (ratchet -- the baseline can only shrink). To accept a finding, add it here with a reason; to fix one, run --fix (or fix it by hand for a case --fix cannot reach), confirm it clears in --survey, then delete the entry.",
+  "_meta": {
+    "matchKey": [
+      "kind",
+      "file",
+      "line",
+      "detail"
+    ],
+    "note": "Every entry here is src/blocks/google-reviews/style.css -- the one directory this task's --fix is forbidden to touch (another session's uncommitted work). PHP findings (helpers-shadow-filter.php, sgs-card-grid-variations.php) belong to the parallel PHP-owning agent's task and are deliberately NOT baselined here -- see task-tone-4-report.md."
+  },
+  "accepted": [
+    {
+      "kind": "css-black-literal",
+      "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
+      "line": 261,
+      "detail": "box-shadow: 0 2px 4px rgba( 0, 0, 0, 0.04 );",
+      "reason": "src/blocks/google-reviews/ is another session's uncommitted work (task-tone-4 brief: never edit it). check-shadow-sources.py --fix deliberately skips this directory, so its shadow sources are left exactly as that session wrote them until it lands its own fix."
+    },
+    {
+      "kind": "css-black-literal",
+      "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
+      "line": 267,
+      "detail": "box-shadow: 0 8px 16px rgba( 0, 0, 0, 0.08 );",
+      "reason": "src/blocks/google-reviews/ is another session's uncommitted work (task-tone-4 brief: never edit it). check-shadow-sources.py --fix deliberately skips this directory, so its shadow sources are left exactly as that session wrote them until it lands its own fix."
+    },
+    {
+      "kind": "css-missing-forced-colours",
+      "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
+      "line": 267,
+      "detail": "box-shadow: 0 8px 16px rgba( 0, 0, 0, 0.08 );",
+      "reason": "src/blocks/google-reviews/ is another session's uncommitted work (task-tone-4 brief: never edit it). check-shadow-sources.py --fix deliberately skips this directory, so its shadow sources are left exactly as that session wrote them until it lands its own fix."
+    },
+    {
+      "kind": "css-black-literal",
+      "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
+      "line": 291,
+      "detail": "box-shadow: 0 4px 12px rgba( 0, 0, 0, 0.08 );",
+      "reason": "src/blocks/google-reviews/ is another session's uncommitted work (task-tone-4 brief: never edit it). check-shadow-sources.py --fix deliberately skips this directory, so its shadow sources are left exactly as that session wrote them until it lands its own fix."
+    },
+    {
+      "kind": "css-black-literal",
+      "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
+      "line": 295,
+      "detail": "box-shadow: 0 12px 24px rgba( 0, 0, 0, 0.12 );",
+      "reason": "src/blocks/google-reviews/ is another session's uncommitted work (task-tone-4 brief: never edit it). check-shadow-sources.py --fix deliberately skips this directory, so its shadow sources are left exactly as that session wrote them until it lands its own fix."
+    },
+    {
+      "kind": "css-missing-forced-colours",
+      "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
+      "line": 295,
+      "detail": "box-shadow: 0 12px 24px rgba( 0, 0, 0, 0.12 );",
+      "reason": "src/blocks/google-reviews/ is another session's uncommitted work (task-tone-4 brief: never edit it). check-shadow-sources.py --fix deliberately skips this directory, so its shadow sources are left exactly as that session wrote them until it lands its own fix."
+    },
+    {
+      "kind": "css-black-literal",
+      "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
+      "line": 471,
+      "detail": "box-shadow: 0 2px 8px rgba( 0, 0, 0, 0.08 );",
+      "reason": "src/blocks/google-reviews/ is another session's uncommitted work (task-tone-4 brief: never edit it). check-shadow-sources.py --fix deliberately skips this directory, so its shadow sources are left exactly as that session wrote them until it lands its own fix."
+    },
+    {
+      "kind": "css-black-literal",
+      "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
+      "line": 567,
+      "detail": "box-shadow: 0 4px 12px rgba( 0, 0, 0, 0.15 );",
+      "reason": "src/blocks/google-reviews/ is another session's uncommitted work (task-tone-4 brief: never edit it). check-shadow-sources.py --fix deliberately skips this directory, so its shadow sources are left exactly as that session wrote them until it lands its own fix."
+    },
+    {
+      "kind": "css-missing-forced-colours",
+      "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
+      "line": 567,
+      "detail": "box-shadow: 0 4px 12px rgba( 0, 0, 0, 0.15 );",
+      "reason": "src/blocks/google-reviews/ is another session's uncommitted work (task-tone-4 brief: never edit it). check-shadow-sources.py --fix deliberately skips this directory, so its shadow sources are left exactly as that session wrote them until it lands its own fix."
+    },
+    {
+      "kind": "css-black-literal",
+      "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
+      "line": 1112,
+      "detail": "box-shadow: 0 4px 14px rgba( 0, 0, 0, 0.1 );",
+      "reason": "src/blocks/google-reviews/ is another session's uncommitted work (task-tone-4 brief: never edit it). check-shadow-sources.py --fix deliberately skips this directory, so its shadow sources are left exactly as that session wrote them until it lands its own fix."
+    },
+    {
+      "kind": "css-missing-forced-colours",
+      "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
+      "line": 1112,
+      "detail": "box-shadow: 0 4px 14px rgba( 0, 0, 0, 0.1 );",
+      "reason": "src/blocks/google-reviews/ is another session's uncommitted work (task-tone-4 brief: never edit it). check-shadow-sources.py --fix deliberately skips this directory, so its shadow sources are left exactly as that session wrote them until it lands its own fix."
+    }
+  ]
+}

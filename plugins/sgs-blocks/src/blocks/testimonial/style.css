@@ -240,6 +240,14 @@
 	box-shadow: var(--wp--preset--shadow--soft);
 }
 
+/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
+@media (forced-colors: active) {
+	.sgs-testimonial--classic-card {
+		outline: 1px solid CanvasText;
+		outline-offset: -1px;
+	}
+}
+
 /* ============================================================ */
 /* ===== Variant: minimal-quote (accent border, type only) ===== */
 /* ============================================================ */
@@ -375,6 +383,14 @@
 	box-shadow: var(--wp--preset--shadow--whisper, var(--wp--preset--shadow--soft));
 }
 
+/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
+@media (forced-colors: active) {
+	.sgs-testimonial--corporate-logo {
+		outline: 1px solid CanvasText;
+		outline-offset: -1px;
+	}
+}
+
 :where(.sgs-testimonial--corporate-logo) {
 	background: var(--wp--preset--color--surface-alt, #fff);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
@@ -393,6 +409,14 @@
 	grid-template-columns: 1fr;
 	gap: var(--wp--preset--spacing--30, 1rem);
 	box-shadow: var(--wp--preset--shadow--soft);
+}
+
+/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
+@media (forced-colors: active) {
+	.sgs-testimonial--case-study-media {
+		outline: 1px solid CanvasText;
+		outline-offset: -1px;
+	}
 }
 
 :where(.sgs-testimonial--case-study-media) {
@@ -459,8 +483,16 @@
 	.sgs-testimonial--hover-lift:hover,
 	.sgs-testimonial--hover-lift:focus-within {
 		transform: translateY(-4px);
-		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+		box-shadow: 0 8px 24px color-mix(in srgb, var(--wp--custom--shadow-colour) 12%, transparent);
 	}
+
+/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
+@media (forced-colors: active) {
+	.sgs-testimonial--hover-lift:hover, .sgs-testimonial--hover-lift:focus-within {
+		outline: 2px solid Highlight;
+		outline-offset: 2px;
+	}
+}
 
 	.sgs-testimonial--hover-scale:hover,
 	.sgs-testimonial--hover-scale:focus-within {
@@ -471,6 +503,14 @@
 	.sgs-testimonial--hover-glow:focus-within {
 		box-shadow: 0 0 0 3px var(--wp--preset--color--primary, #0F7E80);
 	}
+
+/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
+@media (forced-colors: active) {
+	.sgs-testimonial--hover-glow:hover, .sgs-testimonial--hover-glow:focus-within {
+		outline: 2px solid Highlight;
+		outline-offset: 2px;
+	}
+}
 
 	.sgs-testimonial.sgs-has-hover-scale {
 		transition: transform var(--sgs-transition-duration, 300ms) var(--sgs-transition-easing, ease-in-out),
@@ -486,6 +526,14 @@
 	.sgs-testimonial.sgs-has-hover:focus-within {
 		box-shadow: var(--sgs-hover-shadow, none);
 	}
+
+/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
+@media (forced-colors: active) {
+	.sgs-testimonial.sgs-has-hover:hover, .sgs-testimonial.sgs-has-hover:focus-within {
+		outline: 2px solid Highlight;
+		outline-offset: 2px;
+	}
+}
 }
 
 /* ===== Reduced motion ===== */

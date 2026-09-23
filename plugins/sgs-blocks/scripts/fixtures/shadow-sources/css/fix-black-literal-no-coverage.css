@@ -1,0 +1,5 @@
+/* Fixture: plain box-shadow, black-literal alpha 0.2, no border/outline anywhere -- --fix must
+   rewrite the colour to the site colour-mix AND append a forced-colors CanvasText fallback. */
+.sgs-fixture-fix-a {
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}

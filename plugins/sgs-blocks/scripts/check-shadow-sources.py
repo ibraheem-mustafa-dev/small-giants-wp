@@ -6,8 +6,7 @@ Design: `.claude/reports/2026-09-23-shadow-tone-design.md` (D4, D5 and the Counc
 section). Precedent for the survey/fix/check/self-test shape: `dedupe-shadow-colour-rows.py`
 and `fanout-overlay-sibling-attrs.py`.
 
-WHAT THIS SCRIPT DOES (survey only in this task — `--fix` is deliberately left OUT; Bean
-sees the real counts before anything rewrites a shadow):
+WHAT THIS SCRIPT DOES:
 
   1. CSS literals — every `box-shadow:` and `filter:`/`-webkit-filter:` containing
      `drop-shadow(` in `src/blocks/*/style.css` (editor.css excluded) plus the theme's own
@@ -34,8 +33,15 @@ A VIOLATION (for `--check`) is one of:
 `brand`, `currentColor`, `preset-var` and `site-var` layers are never colour violations.
 
     python scripts/check-shadow-sources.py --survey       table + writes reports/shadow-sources-survey.json
-    python scripts/check-shadow-sources.py --check        gate: exit 1 on any violation
+    python scripts/check-shadow-sources.py --fix           deterministic CSS rewrite (colour + forced-colours); reports exemptions
+    python scripts/check-shadow-sources.py --check         gate: exit 1 on any NEW violation, ratcheted against shadow-sources-baseline.json
     python scripts/check-shadow-sources.py --self-test     fixtures prove every rule, incl. a disabled-rule control
+
+`--fix` only ever writes CSS (`src/blocks/*/style.css` except `google-reviews`, plus the
+theme's own CSS) -- never a PHP file. `--check`'s baseline ratchet (`shadow-sources-baseline.json`,
+precedent `editor-render-parity-baseline.json`) lists findings allowed to remain (google-reviews'
+un-touched findings, plus anything genuinely un-fixable): a NEW finding not in the baseline fails
+the gate, and so does a stale baseline entry that no longer occurs (the baseline can only shrink).
 
 An existing code convention this detector honours: a `// sgs-shadow-fallback: <reason>`
 comment within a few lines of a raw shadow write is a recorded, reviewed exemption (the
@@ -44,8 +50,9 @@ resting rule elsewhere on the same selector already carries the fallback) — fo
 `mega-panel/render.php` and `trust-bar/render.php`. The detector reports these as EXEMPT, not
 as violations, but always with the reason text so a reviewer can see why.
 
-UK English throughout. Nothing in this script edits a block, theme or include file — it only
-reads them.
+UK English throughout. `--survey`, `--check` and `--self-test` only ever READ files. `--fix`
+is the one mode that writes, and only to CSS (`src/blocks/*/style.css` except google-reviews,
+plus the theme's CSS) -- it never touches a PHP file.
 """
 from __future__ import annotations
 
@@ -73,6 +80,7 @@ REPORTS_DIR = PLUGIN / "reports"
 FIXTURES_DIR = HERE / "fixtures" / "shadow-sources"
 
 SURVEY_JSON = REPORTS_DIR / "shadow-sources-survey.json"
+BASELINE_JSON = HERE / "shadow-sources-baseline.json"
 
 TARGET_PHP_FUNCS = (
     "sgs_shadow_box_decls",
@@ -369,6 +377,19 @@ def scan_css_text(original: str, relpath: str, *, black_literal_enabled: bool = 
             orig_offset = map_own_offset(seg_cache[id(b)], offset + leading_ws)
             line_no = original.count("\n", 0, orig_offset) + 1
             covered = forced_colours_covered_css(blocks, b, own, own_cache)
+            bare_for_exempt = re.sub(r"(?i)\s*!\s*important\s*$", "", value_part.strip()).strip()
+            is_filter_prop = prop in ("filter", "-webkit-filter")
+            is_inset = "inset" in bare_for_exempt.lower()
+            exempt = is_filter_prop or is_inset
+            if is_filter_prop:
+                exempt_reason = (
+                    "drop-shadow() renders through `filter`, which forced-colours mode does not "
+                    "strip (CSS Color Adjust) -- no outline fallback is needed"
+                )
+            elif is_inset:
+                exempt_reason = "inset shadow used as an inner line -- reported, never auto-fixed"
+            else:
+                exempt_reason = ""
             results.append(
                 {
                     "file": relpath,
@@ -379,6 +400,8 @@ def scan_css_text(original: str, relpath: str, *, black_literal_enabled: bool = 
                     "layers": [{"text": t, "colour": c} for t, c in layers],
                     "forced_colours_covered": covered,
                     "has_black_literal": any(c == "black-literal" for _, c in layers),
+                    "exempt": exempt,
+                    "exempt_reason": exempt_reason,
                 }
             )
     return results, text_shadow_count
@@ -433,6 +456,10 @@ CUSTOM_PROP_SINK_RE = re.compile(r"""(['"])(--[\w-]+):[ \t]*\1\s*\.\s*\$(\w+)\b"
 CUSTOM_PROP_PREFIX_RE = re.compile(r"""(['"])(--[\w-]+):[ \t]*\1\s*\.\s*$""")
 BOX_SHADOW_PREFIX_RE = re.compile(r"""box-shadow\s*:\s*['"]?\s*\.\s*$|['"]box-shadow:['"]\s*\.\s*$""")
 STRING_LITERAL_BOX_SHADOW_RE = re.compile(r"""(['"])([^'"]*?box-shadow:[^'"]*?)\1""")
+DROP_SHADOW_EXEMPT_REASON = (
+    "drop-shadow() renders through `filter`, which forced-colours mode does not remove "
+    "(CSS Color Adjust forces only box-shadow and text-shadow to none), so it needs no outline fallback"
+)
 STRING_LITERAL_DROP_SHADOW_RE = re.compile(r"""(['"])([^'"]*?drop-shadow\([^'"]*?)\1""")
 SHADOW_KEY_ASSIGN_TMPL = r"\$%s\s*\[\s*'shadow'\s*\]\s*="
 FUNC_DEF_PRECEDING_RE = re.compile(r"\bfunction\s*$")
@@ -598,6 +625,8 @@ def scan_php_calls(text: str, relpath: str) -> list[dict]:
                     if bare.lower() in IGNORE_VALUES:
                         continue
             exempt, reason = find_exemption(lines, line_no)
+            if kind == "drop-shadow":
+                exempt, reason = True, DROP_SHADOW_EXEMPT_REASON
             nearby_window = code[max(0, m.start() - 200) : m.end() + 1500]
             reached = exempt or bool(FORCED_DECL_CALL_RE.search(nearby_window))
             results.append(
@@ -673,7 +702,9 @@ def scan_variations(defined_vars: set[str] | None = None) -> list[dict]:
         text = path.read_text(encoding="utf-8")
         relpath = path.relative_to(ROOT).as_posix()
         lines = text.split("\n")
-        for m in UNDEFINED_VAR_RE.finditer(text):
+        # A comment naming the variable is not a use of it: match on comment-stripped text
+        # (same length, so line numbers still line up with the real file).
+        for m in UNDEFINED_VAR_RE.finditer(strip_php_comments_preserve_length(text)):
             var_name = m.group(1)
             line_no = line_of(text, m.start())
             results.append(
@@ -686,6 +717,275 @@ def scan_variations(defined_vars: set[str] | None = None) -> list[dict]:
                 }
             )
     return results
+
+
+# ---------------------------------------------------------------------------
+# `--fix` mode (D4/D5): deterministic colour rewrite + forced-colours injection.
+# ---------------------------------------------------------------------------
+# Load-bearing format: `includes/helpers-shadow-dark.php::SGS_SHADOW_DARK_SITE_MIX` matches
+# this EXACT shape (verified live 2026-09-23):
+#   /^color-mix\(in srgb, var\(--wp--custom--shadow-colour\) (\d{1,3}(?:\.\d)?)%, transparent\)$/D
+SGS_SHADOW_DARK_SITE_MIX_PY = re.compile(
+    r"^color-mix\(in srgb, var\(--wp--custom--shadow-colour\) (\d{1,3}(?:\.\d)?)%, transparent\)$"
+)
+
+BLACK_TOKEN_RE = re.compile(
+    r"(?i)"
+    r"(?P<hex8>#000000[0-9a-f]{2})\b"
+    r"|(?P<hexbare>#000(?:000)?)\b"
+    r"|(?P<rgba>rgba\(\s*0\s*,\s*0\s*,\s*0\s*,\s*[\d.]+\s*\))"
+    r"|(?P<rgbslash>rgb\(\s*0\s+0\s+0\s*/\s*[\d.]+%?\s*\))"
+    r"|(?P<rgbcomma>rgba?\(\s*0\s*,\s*0\s*,\s*0\s*\))"
+    r"|(?P<rgbspace>rgb\(\s*0\s+0\s+0\s*\))"
+    r"|(?P<kw>\bblack\b)"
+)
+
+
+def _mix_pct(alpha: float) -> str:
+    pct_val = round(max(0.0, min(1.0, alpha)) * 100, 1)
+    if pct_val == int(pct_val):
+        return str(int(pct_val))
+    return f"{pct_val}"
+
+
+def _mix_expr(alpha: float) -> str:
+    pct = _mix_pct(alpha)
+    if pct in ("100", "100.0"):
+        return "var(--wp--custom--shadow-colour)"
+    return f"color-mix(in srgb, var(--wp--custom--shadow-colour) {pct}%, transparent)"
+
+
+def _black_token_alpha(m: re.Match) -> float:
+    if m.group("hex8"):
+        return int(m.group("hex8")[-2:], 16) / 255
+    if m.group("hexbare") or m.group("kw"):
+        return 1.0
+    if m.group("rgba"):
+        am = re.search(r",\s*([\d.]+)\s*\)$", m.group("rgba"))
+        return float(am.group(1)) if am else 1.0
+    if m.group("rgbslash"):
+        am = re.search(r"/\s*([\d.]+)(%?)\s*\)$", m.group("rgbslash"))
+        if not am:
+            return 1.0
+        val = float(am.group(1))
+        return val / 100 if am.group(2) else val
+    if m.group("rgbcomma") or m.group("rgbspace"):
+        return 1.0
+    return 1.0
+
+
+def _black_token_repl(m: re.Match) -> str:
+    return _mix_expr(_black_token_alpha(m))
+
+
+def rewrite_declaration_colour(prop: str, value: str) -> tuple[str, bool]:
+    """Rewrite every black-literal colour token in a box-shadow/filter declaration VALUE to
+    the site colour-mix form (D4). Brand colours, currentColor, preset and other variables are
+    left untouched (BLACK_TOKEN_RE only matches literal-black tokens)."""
+    prop_l = prop.lower()
+    if prop_l == "box-shadow":
+        new_value, n = BLACK_TOKEN_RE.subn(_black_token_repl, value)
+        return new_value, n > 0
+    if prop_l in ("filter", "-webkit-filter"):
+        changed = False
+        new_value = value
+        for call in extract_calls(value, "drop-shadow"):
+            new_call, n = BLACK_TOKEN_RE.subn(_black_token_repl, call)
+            if n:
+                new_value = new_value.replace(f"drop-shadow({call})", f"drop-shadow({new_call})", 1)
+                changed = True
+        return new_value, changed
+    return value, False
+
+
+FOCUS_RING_FALLBACK = ("outline: 2px solid Highlight;", "outline-offset: 2px;")
+DEFAULT_FORCED_FALLBACK = ("outline: 1px solid CanvasText;", "outline-offset: -1px;")
+
+
+def build_forced_colours_rule(selector: str, *, focus_ring: bool) -> str:
+    outline, offset = FOCUS_RING_FALLBACK if focus_ring else DEFAULT_FORCED_FALLBACK
+    return (
+        "\n\n/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */\n"
+        "@media (forced-colors: active) {\n"
+        f"\t{selector} {{\n"
+        f"\t\t{outline}\n"
+        f"\t\t{offset}\n"
+        "\t}\n"
+        "}"
+    )
+
+
+def apply_css_fix(original: str) -> tuple[str, list[dict]]:
+    """Pure function: given one CSS file's full text, return (new_text, report). `report`
+    entries: {"action": "colour-rewritten"|"forced-colours-added"|"exempt", "line", "selector",
+    "property"?, "reason"?, "focus_ring"?}. Never guesses -- a declaration only changes when a
+    black-literal token or a genuine missing-coverage gap is found by the same rules the
+    scanner uses."""
+    clean = strip_comments_preserve_length(original)
+    blocks = parse_css_blocks(clean)
+    own_cache: dict[int, str] = {}
+    seg_cache: dict[int, list[tuple[int, int, int]]] = {}
+    for b in blocks:
+        own, seg = own_text_with_map(b, original)
+        own_cache[id(b)] = own
+        seg_cache[id(b)] = seg
+
+    ops: list[tuple[int, int, str]] = []  # (start, end, replacement) -- end==start for inserts
+    report: list[dict] = []
+
+    for b in blocks:
+        own = own_cache[id(b)]
+        seg = seg_cache[id(b)]
+        selector_norm = normalise_selector(b["selector"])
+        is_focus = ":focus" in selector_norm
+        block_needs_forced = False
+
+        for raw_decl, offset in split_top_level_with_offsets(own, ";"):
+            stripped = raw_decl.strip()
+            if not stripped or ":" not in stripped:
+                continue
+            prop_part, _, value_part = stripped.partition(":")
+            prop = prop_part.strip().lower()
+            if prop not in ("box-shadow", "filter", "-webkit-filter"):
+                continue
+            bare_value = re.sub(r"(?i)\s*!\s*important\s*$", "", value_part.strip()).strip()
+            if bare_value.lower() in IGNORE_VALUES:
+                continue
+            if prop in ("filter", "-webkit-filter") and "drop-shadow(" not in bare_value:
+                continue
+
+            colon_pos = raw_decl.index(":")
+            own_value_start = offset + colon_pos + 1
+            own_value_end = offset + len(raw_decl)
+            orig_value_start = map_own_offset(seg, own_value_start)
+            orig_value_end = map_own_offset(seg, own_value_end)
+            orig_value_text = original[orig_value_start:orig_value_end]
+            line_no = original.count("\n", 0, orig_value_start) + 1
+
+            new_value, changed = rewrite_declaration_colour(prop, orig_value_text)
+            if changed:
+                ops.append((orig_value_start, orig_value_end, new_value))
+                report.append(
+                    {"action": "colour-rewritten", "line": line_no, "selector": selector_norm, "property": prop}
+                )
+
+            covered = forced_colours_covered_css(blocks, b, own, own_cache)
+            if covered:
+                continue
+            if prop in ("filter", "-webkit-filter"):
+                report.append(
+                    {
+                        "action": "exempt",
+                        "reason": "drop-shadow() renders through `filter`, which forced-colours mode does not "
+                        "strip (CSS Color Adjust) -- no outline fallback is needed",
+                        "line": line_no,
+                        "selector": selector_norm,
+                        "property": prop,
+                    }
+                )
+                continue
+            if "inset" in bare_value.lower():
+                report.append(
+                    {
+                        "action": "exempt",
+                        "reason": "inset shadow used as an inner line -- reported, never auto-fixed",
+                        "line": line_no,
+                        "selector": selector_norm,
+                        "property": prop,
+                    }
+                )
+                continue
+            block_needs_forced = True
+
+        if block_needs_forced:
+            insert_pos = b["end"] + 1
+            ops.append((insert_pos, insert_pos, build_forced_colours_rule(selector_norm, focus_ring=is_focus)))
+            report.append(
+                {
+                    "action": "forced-colours-added",
+                    "line": original.count("\n", 0, b["start"]) + 1,
+                    "selector": selector_norm,
+                    "focus_ring": is_focus,
+                }
+            )
+
+    ops.sort(key=lambda t: t[0], reverse=True)
+    text = original
+    for start, end, repl in ops:
+        text = text[:start] + repl + text[end:]
+    return text, report
+
+
+def fixable_css_targets() -> list[Path]:
+    """Every `--fix`-eligible CSS file: `css_targets()` minus `src/blocks/google-reviews/` --
+    that block is another session's uncommitted work and must never be touched (brief)."""
+    return [p for p in css_targets() if p.parent.name != "google-reviews"]
+
+
+def cmd_fix() -> int:
+    colour_count = 0
+    forced_count = 0
+    exempt_count = 0
+    per_file: dict[str, int] = {}
+    exempt_report: list[str] = []
+
+    for path in fixable_css_targets():
+        original = path.read_text(encoding="utf-8")
+        new_text, report = apply_css_fix(original)
+        relpath = path.relative_to(ROOT).as_posix()
+        if new_text != original:
+            path.write_text(new_text, encoding="utf-8", newline="\n")
+        changes = 0
+        for r in report:
+            if r["action"] == "colour-rewritten":
+                colour_count += 1
+                changes += 1
+            elif r["action"] == "forced-colours-added":
+                forced_count += 1
+                changes += 1
+            elif r["action"] == "exempt":
+                exempt_count += 1
+                exempt_report.append(f"  EXEMPT [{r['reason']}] {relpath}:{r['line']}  {r['selector']}")
+        if changes:
+            per_file[relpath] = changes
+
+    print("=" * 78)
+    print("SHADOW SOURCES --fix")
+    print("=" * 78)
+    print(f"\nColour rewrites: {colour_count}")
+    print(f"Forced-colours blocks added: {forced_count}")
+    print(f"Exemptions (reported, not auto-fixed): {exempt_count}")
+    for line in exempt_report:
+        print(line)
+    print(f"\nFiles changed: {len(per_file)}")
+    for f, n in sorted(per_file.items()):
+        print(f"  {f}: {n} change(s)")
+    return 0
+
+
+# ---------------------------------------------------------------------------
+# Baseline ratchet (`--check`): precedent `scripts/editor-render-parity-baseline.json`.
+# ---------------------------------------------------------------------------
+def load_baseline() -> list[dict]:
+    if not BASELINE_JSON.exists():
+        return []
+    data = json.loads(BASELINE_JSON.read_text(encoding="utf-8"))
+    return data.get("accepted", [])
+
+
+def violation_key(v: dict) -> tuple:
+    return (v.get("kind"), v.get("file"), v.get("line"), v.get("detail"))
+
+
+def evaluate_baseline(vs: list[dict], baseline: list[dict]) -> tuple[list[dict], list[dict]]:
+    """Return (new_violations, stale_baseline_entries). A finding passes only when it is in
+    `vs` AND in `baseline`; `--check` fails on either list being non-empty (ratchet: the
+    baseline can only shrink, never silently grow)."""
+    baseline_keys = {violation_key(b) for b in baseline}
+    found_keys = {violation_key(v) for v in vs}
+    new_violations = [v for v in vs if violation_key(v) not in baseline_keys]
+    stale_baseline = [b for b in baseline if violation_key(b) not in found_keys]
+    return new_violations, stale_baseline
 
 
 # ---------------------------------------------------------------------------
@@ -745,7 +1045,7 @@ def violations(survey: dict) -> list[dict]:
     for src in survey["css_sources"]:
         if src["has_black_literal"]:
             out.append({"kind": "css-black-literal", "file": src["file"], "line": src["line"], "detail": src["declaration"]})
-        if not src["forced_colours_covered"]:
+        if not src["forced_colours_covered"] and not src.get("exempt"):
             out.append({"kind": "css-missing-forced-colours", "file": src["file"], "line": src["line"], "detail": src["declaration"]})
     for src in survey["php_sources"]:
         if src.get("exempt"):
@@ -780,8 +1080,12 @@ def cmd_survey() -> int:
             by_colour[layer["colour"]] = by_colour.get(layer["colour"], 0) + 1
     for colour, count in sorted(by_colour.items()):
         print(f"  {colour:<16} {count}")
-    missing_fallback_css = sum(1 for s in survey["css_sources"] if not s["forced_colours_covered"])
+    missing_fallback_css = sum(1 for s in survey["css_sources"] if not s["forced_colours_covered"] and not s.get("exempt"))
     print(f"  missing forced-colours fallback: {missing_fallback_css}/{len(survey['css_sources'])}")
+    exempt_css = [s for s in survey["css_sources"] if s.get("exempt")]
+    print(f"  exempt (reported, never auto-fixed): {len(exempt_css)}")
+    for s in exempt_css:
+        print(f"    [{s['exempt_reason']}] {s['file']}:{s['line']}  {s['declaration']}")
 
     print(f"\nPHP emitter call sites: {len(survey['php_sources'])}")
     by_sink: dict[str, int] = {}
@@ -815,12 +1119,22 @@ def cmd_survey() -> int:
 def cmd_check() -> int:
     survey = build_survey()
     vs = violations(survey)
-    if not vs:
-        print("PASS — no shadow-source violations found.")
+    baseline = load_baseline()
+    new_violations, stale_baseline = evaluate_baseline(vs, baseline)
+
+    if not new_violations and not stale_baseline:
+        print(f"PASS — no NEW shadow-source violations ({len(baseline)} baselined finding(s), all still present).")
         return 0
-    print(f"FAIL — {len(vs)} shadow-source violation(s):")
-    for v in vs:
-        print(f"  [{v['kind']}] {v['file']}:{v['line']}  {v['detail']}")
+
+    if new_violations:
+        print(f"FAIL — {len(new_violations)} NEW shadow-source violation(s) (not in {BASELINE_JSON.name}):")
+        for v in new_violations:
+            print(f"  [{v['kind']}] {v['file']}:{v['line']}  {v['detail']}")
+    if stale_baseline:
+        plural = "y" if len(stale_baseline) == 1 else "ies"
+        print(f"FAIL — {len(stale_baseline)} stale baseline entr{plural} (finding no longer occurs -- shrink {BASELINE_JSON.name}):")
+        for b in stale_baseline:
+            print(f"  [{b.get('kind')}] {b.get('file')}:{b.get('line')}  {b.get('detail')}")
     return 1
 
 
@@ -920,6 +1234,94 @@ def cmd_self_test() -> int:
     check("must-pass variation fixture found one reference", len(finds2) == 1)
     check("must-pass variation fixture classified defined", finds2 == ["defined"])
 
+    comment_text = (var_dir / "must-pass-comment-only.php").read_text(encoding="utf-8")
+    check("a variable named only in a comment is not a reference", not list(UNDEFINED_VAR_RE.finditer(strip_php_comments_preserve_length(comment_text))))
+    check("negative control: the same file unstripped DOES match, so the stripping is what passes it", bool(list(UNDEFINED_VAR_RE.finditer(comment_text))))
+
+    drop_php = (php_dir / "must-pass-drop-shadow-literal.php").read_text(encoding="utf-8")
+    drop_src = [e for e in scan_php_calls(drop_php, "fixture:must-pass-drop-shadow-literal.php") if e.get("sink") == "drop-shadow"]
+    check("a PHP-built drop-shadow is found", len(drop_src) == 1)
+    check("a PHP-built drop-shadow is exempt from the forced-colours fallback", drop_src and drop_src[0]["exempt"] and drop_src[0]["forced_colours_reached"] is True)
+    box_src = [e for e in scan_php_calls(raw_php, "fixture:must-flag-raw-box-shadow.php") if e.get("sink") == "box-shadow"]
+    check("negative control: the drop-shadow exemption does not reach a raw box-shadow", box_src and not box_src[0]["exempt"])
+
+    # --- `--fix`: black-literal + no coverage -> colour rewritten, forced-colours added ---
+    fix_a_path = css_dir / "fix-black-literal-no-coverage.css"
+    fix_a_text = fix_a_path.read_text(encoding="utf-8")
+    fix_a_out, fix_a_report = apply_css_fix(fix_a_text)
+    fix_a_rewrites = [r for r in fix_a_report if r["action"] == "colour-rewritten"]
+    fix_a_forced = [r for r in fix_a_report if r["action"] == "forced-colours-added"]
+    check("fix-a: one colour rewrite reported", len(fix_a_rewrites) == 1)
+    check("fix-a: one forced-colours block reported", len(fix_a_forced) == 1 and not fix_a_forced[0]["focus_ring"])
+    fix_a_src, _ = scan_css_text(fix_a_out, "fixture:fix-a-after")
+    check("fix-a: rewritten colour is site-var, not black-literal", fix_a_src and not fix_a_src[0]["has_black_literal"])
+    check("fix-a: alpha 0.2 -> exactly 20%", "20%" in fix_a_out and "color-mix(in srgb, var(--wp--custom--shadow-colour) 20%, transparent)" in fix_a_out)
+    check("fix-a: rewritten mix matches SGS_SHADOW_DARK_SITE_MIX (PHP-side regex)",
+          bool(SGS_SHADOW_DARK_SITE_MIX_PY.match("color-mix(in srgb, var(--wp--custom--shadow-colour) 20%, transparent)")))
+    check("fix-a: is now forced-colours covered", fix_a_src and fix_a_src[0]["forced_colours_covered"])
+    fix_a_out2, fix_a_report2 = apply_css_fix(fix_a_out)
+    check("fix-a: idempotent -- a second --fix run reports nothing further", not fix_a_report2 and fix_a_out2 == fix_a_out)
+
+    # --- `--fix`: focus ring gets Highlight/2px, never CanvasText/1px ---------------------
+    fix_b_text = (css_dir / "fix-focus-ring.css").read_text(encoding="utf-8")
+    fix_b_out, fix_b_report = apply_css_fix(fix_b_text)
+    fix_b_forced = [r for r in fix_b_report if r["action"] == "forced-colours-added"]
+    check("fix-b: one forced-colours block reported, flagged as a focus ring", len(fix_b_forced) == 1 and fix_b_forced[0]["focus_ring"])
+    check("fix-b: emits the Highlight/2px fallback", "outline: 2px solid Highlight;" in fix_b_out and "outline-offset: 2px;" in fix_b_out)
+    check("fix-b: does NOT emit the default CanvasText/1px fallback", "outline: 1px solid CanvasText;" not in fix_b_out)
+
+    # --- `--fix`: inset shadow -- colour fixed, but reported EXEMPT, no outline added -----
+    fix_c_text = (css_dir / "fix-inset-inner-line.css").read_text(encoding="utf-8")
+    fix_c_out, fix_c_report = apply_css_fix(fix_c_text)
+    fix_c_exempt = [r for r in fix_c_report if r["action"] == "exempt"]
+    check("fix-c: reported exempt with the inset reason", len(fix_c_exempt) == 1 and "inset" in fix_c_exempt[0]["reason"])
+    check("fix-c: no forced-colours block added", "@media (forced-colors: active)" not in fix_c_out)
+    check("fix-c: colour STILL rewritten despite the exemption", "var(--wp--custom--shadow-colour)" in fix_c_out or "color-mix(in srgb, var(--wp--custom--shadow-colour)" in fix_c_out)
+
+    # --- `--fix`: filter drop-shadow -- colour fixed, exempt, no outline added ------------
+    fix_d_text = (css_dir / "fix-filter-drop-shadow.css").read_text(encoding="utf-8")
+    fix_d_out, fix_d_report = apply_css_fix(fix_d_text)
+    fix_d_exempt = [r for r in fix_d_report if r["action"] == "exempt"]
+    check("fix-d: reported exempt with the filter/Color-Adjust reason", len(fix_d_exempt) == 1 and "filter" in fix_d_exempt[0]["reason"])
+    check("fix-d: no forced-colours block added", "@media (forced-colors: active)" not in fix_d_out)
+    check("fix-d: colour rewritten inside drop-shadow()", "color-mix(in srgb, var(--wp--custom--shadow-colour) 30%, transparent)" in fix_d_out)
+
+    # --- `--fix`: opaque black literal (no alpha) -> plain var, never a color-mix() wrapper
+    fix_e_text = (css_dir / "fix-opaque-black.css").read_text(encoding="utf-8")
+    fix_e_out, fix_e_report = apply_css_fix(fix_e_text)
+    check("fix-e: colour rewrite reported", any(r["action"] == "colour-rewritten" for r in fix_e_report))
+    check("fix-e: opaque black becomes the PLAIN var, not color-mix()", "box-shadow: 0 2px 4px var(--wp--custom--shadow-colour);" in fix_e_out)
+    check("fix-e: the fixed declaration line never emits a redundant 100% color-mix()",
+          "color-mix" not in [ln for ln in fix_e_out.splitlines() if "box-shadow" in ln][0])
+
+    # --- `--fix`: a rule that ALREADY has a border -- colour fixed, no SECOND fallback ----
+    fix_f_text = (css_dir / "fix-already-covered.css").read_text(encoding="utf-8")
+    fix_f_out, fix_f_report = apply_css_fix(fix_f_text)
+    check("fix-f: colour rewrite reported", any(r["action"] == "colour-rewritten" for r in fix_f_report))
+    check("fix-f: no forced-colours block added (already covered by the existing border)",
+          not any(r["action"] == "forced-colours-added" for r in fix_f_report))
+    check("fix-f: no @media (forced-colors) block appended to the file", "@media (forced-colors: active)" not in fix_f_out)
+
+    # --- Baseline ratchet (precedent: editor-render-parity-baseline.json) ----------------
+    print()
+    print("  --- baseline ratchet: new / stale / accepted ---")
+    baseline_fixture = [
+        {"kind": "css-black-literal", "file": "fixture:baseline.css", "line": 10, "detail": "box-shadow: rgba(0,0,0,.1);"},
+    ]
+    vs_with_new = baseline_fixture + [
+        {"kind": "css-black-literal", "file": "fixture:baseline.css", "line": 20, "detail": "box-shadow: rgba(0,0,0,.2);"}
+    ]
+    new_v, stale_v = evaluate_baseline(vs_with_new, baseline_fixture)
+    check("a NEW finding not in the baseline is reported", len(new_v) == 1 and new_v[0]["line"] == 20)
+    check("a baselined finding that is still present is NOT reported as new", len(new_v) == 1)
+
+    new_v2, stale_v2 = evaluate_baseline([], baseline_fixture)
+    check("a stale baseline entry (no longer occurring) is reported", len(stale_v2) == 1)
+    check("no new violations reported when the only finding vanished", len(new_v2) == 0)
+
+    new_v3, stale_v3 = evaluate_baseline(baseline_fixture, baseline_fixture)
+    check("a baselined finding that still occurs passes clean (no new, no stale)", not new_v3 and not stale_v3)
+
     # --- Idempotence / overall violations() shape on the full built fixture set --------
     fixture_survey = {
         "css_sources": src + src2 + src3,
@@ -993,10 +1395,13 @@ def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     group = parser.add_mutually_exclusive_group()
     group.add_argument("--survey", action="store_true", help="Table + write reports/shadow-sources-survey.json (default)")
-    group.add_argument("--check", action="store_true", help="Gate: exit 1 on any violation")
+    group.add_argument("--check", action="store_true", help="Gate: exit 1 on any NEW violation (ratchet against shadow-sources-baseline.json)")
+    group.add_argument("--fix", action="store_true", help="Deterministic --fix: black-literal colour rewrite + forced-colours injection in CSS")
     group.add_argument("--self-test", action="store_true", help="Fixture-proven regression suite + disabled-rule controls")
     args = parser.parse_args(argv)
 
+    if args.fix:
+        return cmd_fix()
     if args.check:
         return cmd_check()
     if args.self_test:

@@ -948,7 +948,7 @@ dialog.sgs-shop-filters {
 	color: var(--sgs-product-card-btn-text, #3A2E26);
 	border: none;
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
-	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+	box-shadow: 0 4px 16px color-mix(in srgb, var(--wp--custom--shadow-colour) 18%, transparent);
 	font-weight: 600;
 	font-size: 0.9375rem;
 	cursor: pointer;

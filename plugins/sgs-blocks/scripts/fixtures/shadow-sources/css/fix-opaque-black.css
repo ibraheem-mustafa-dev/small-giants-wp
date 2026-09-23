@@ -1,0 +1,5 @@
+/* Fixture: an opaque (alpha-less) black literal -- 100% must become the plain site-colour var,
+   never a color-mix() wrapper (brief: "100% becomes the plain var(--wp--custom--shadow-colour)"). */
+.sgs-fixture-fix-e {
+	box-shadow: 0 2px 4px #000;
+}

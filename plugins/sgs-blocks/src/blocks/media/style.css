@@ -228,7 +228,7 @@
     display: grid;
     place-items: center;
     transition: opacity 0.2s, transform 0.15s;
-    box-shadow: 0 6px 24px rgba( 0, 0, 0, 0.4 );
+    box-shadow: 0 6px 24px color-mix(in srgb, var(--wp--custom--shadow-colour) 40%, transparent);
 }
 .sgs-video__centre svg { width: 34px; height: 34px; margin-left: 3px; }
 .sgs-video__centre:hover { transform: scale( 1.06 ); }
@@ -279,7 +279,7 @@
     display: grid;
     place-items: center;
     border-radius: 8px;
-    filter: drop-shadow( 0 1px 2px rgba( 0, 0, 0, 0.55 ) );
+    filter: drop-shadow( 0 1px 2px color-mix(in srgb, var(--wp--custom--shadow-colour) 55%, transparent) );
 }
 .sgs-video__btn svg { width: 22px; height: 22px; }
 .sgs-video__btn:hover { background: rgba( 255, 255, 255, 0.16 ); }

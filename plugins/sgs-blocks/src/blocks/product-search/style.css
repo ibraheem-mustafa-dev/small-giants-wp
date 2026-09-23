@@ -94,7 +94,15 @@
 	   theme-default fallback for an unset attribute. */
 	border: 1px solid var( --wp--preset--color--border, #ccc );
 	border-radius: 8px;
-	box-shadow: 0 6px 24px rgba( 0, 0, 0, 0.12 );
+	box-shadow: 0 6px 24px color-mix(in srgb, var(--wp--custom--shadow-colour) 12%, transparent);
+}
+
+/* Windows High Contrast / forced-colors (auto: check-shadow-sources.py --fix) */
+@media (forced-colors: active) {
+	.sgs-product-search__results {
+		outline: 1px solid CanvasText;
+		outline-offset: -1px;
+	}
 }
 
 .sgs-product-search__results:hover {
@@ -339,7 +347,7 @@
 	background: var( --wp--preset--color--surface, #fff );
 	border: 1px solid var( --wp--preset--color--border, #ccc );
 	border-radius: 8px;
-	box-shadow: 0 6px 24px rgba( 0, 0, 0, 0.12 );
+	box-shadow: 0 6px 24px color-mix(in srgb, var(--wp--custom--shadow-colour) 12%, transparent);
 }
 
 /* Results listbox inside the panel — anchor below the input, full panel width.
@@ -412,7 +420,7 @@
 	border: 1px solid var( --wp--preset--color--border, #ccc );
 	border-radius: 12px;
 	background: var( --wp--preset--color--surface, #fff );
-	box-shadow: 0 12px 48px rgba( 0, 0, 0, 0.2 );
+	box-shadow: 0 12px 48px color-mix(in srgb, var(--wp--custom--shadow-colour) 20%, transparent);
 }
 
 /* Once JS enhances the dialog into a true showModal() surface, the UA

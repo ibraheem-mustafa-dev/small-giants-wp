@@ -1,0 +1,5 @@
+/* Fixture: an inset shadow used as an inner line -- --fix must fix the colour (D4 still
+   applies) but must NOT add a forced-colors block; it reports the exemption instead. */
+.sgs-fixture-fix-c {
+	box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.15);
+}
