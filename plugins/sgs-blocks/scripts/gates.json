@@ -1163,5 +1163,23 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 125
+  },
+  {
+    "id": "shadow-lift-self-test",
+    "cmd": "node scripts/shadow-lift/run.js --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 126
+  },
+  {
+    "id": "shadow-lift-check",
+    "cmd": "node scripts/shadow-lift/run.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 127
   }
 ]

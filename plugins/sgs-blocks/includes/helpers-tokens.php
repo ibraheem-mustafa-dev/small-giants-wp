@@ -19,6 +19,7 @@
 require_once __DIR__ . '/helpers-css-safety.php';
 require_once __DIR__ . '/helpers-shadow-layers.php';
 require_once __DIR__ . '/helpers-shadow-filter.php';
+require_once __DIR__ . '/helpers-shadow-hover.php';
 
 /**
  * Determine whether an attribute value is meaningfully set.

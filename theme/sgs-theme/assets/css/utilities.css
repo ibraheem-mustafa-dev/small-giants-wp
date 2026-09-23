@@ -291,18 +291,24 @@ body.admin-bar html {
 .has-shadow-sm {
 	box-shadow: 0 1px 2px color-mix(in srgb, var(--wp--custom--shadow-colour) 6%, transparent), 0 2px 6px color-mix(in srgb, var(--wp--custom--shadow-colour) 6%, transparent);
 }
+@media (hover: hover) and (pointer: fine){:where(:root:not(.sgs-touch-input)) .has-shadow-sm:hover{box-shadow:0 1px 3px color-mix(in srgb, var(--wp--custom--shadow-colour) 6%, transparent), 0 3px 8px color-mix(in srgb, var(--wp--custom--shadow-colour) 6%, transparent)}}
+
 @media (forced-colors:active){.has-shadow-sm:not(:focus-visible){outline:1px solid CanvasText;outline-offset:-1px}}
 
 
 .has-shadow-md {
 	box-shadow: 0 2px 4px color-mix(in srgb, var(--wp--custom--shadow-colour) 7%, transparent), 0 6px 16px color-mix(in srgb, var(--wp--custom--shadow-colour) 8%, transparent);
 }
+@media (hover: hover) and (pointer: fine){:where(:root:not(.sgs-touch-input)) .has-shadow-md:hover{box-shadow:0 3px 5px color-mix(in srgb, var(--wp--custom--shadow-colour) 7%, transparent), 0 8px 20px color-mix(in srgb, var(--wp--custom--shadow-colour) 8%, transparent)}}
+
 @media (forced-colors:active){.has-shadow-md:not(:focus-visible){outline:1px solid CanvasText;outline-offset:-1px}}
 
 
 .has-shadow-lg {
 	box-shadow: 0 4px 8px color-mix(in srgb, var(--wp--custom--shadow-colour) 8%, transparent), 0 12px 32px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent);
 }
+@media (hover: hover) and (pointer: fine){:where(:root:not(.sgs-touch-input)) .has-shadow-lg:hover{box-shadow:0 5px 10px color-mix(in srgb, var(--wp--custom--shadow-colour) 8%, transparent), 0 15px 40px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)}}
+
 @media (forced-colors:active){.has-shadow-lg:not(:focus-visible){outline:1px solid CanvasText;outline-offset:-1px}}
 
 

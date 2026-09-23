@@ -985,7 +985,10 @@ def load_baseline() -> list[dict]:
 
 
 def violation_key(v: dict) -> tuple:
-    return (v.get("kind"), v.get("file"), v.get("line"), v.get("detail"))
+    # Keyed on the finding's text, not its line: an edit above a baselined rule moves its line
+    # number without changing the finding, and must not turn it into a "new" violation.
+    detail = " ".join(str(v.get("detail") or "").split())
+    return (v.get("kind"), v.get("file"), detail)
 
 
 def evaluate_baseline(vs: list[dict], baseline: list[dict]) -> tuple[list[dict], list[dict]]:

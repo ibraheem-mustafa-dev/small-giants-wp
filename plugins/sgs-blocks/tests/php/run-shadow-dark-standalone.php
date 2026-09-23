@@ -25,8 +25,12 @@ if ( ! function_exists( 'esc_attr' ) ) {
 }
 // The presets the stub settings return. Each test group replaces this, then refreshes the memo.
 $GLOBALS['sgs_test_presets'] = array();
+$GLOBALS['sgs_test_hover_map'] = array();
 if ( ! function_exists( 'wp_get_global_settings' ) ) {
 	function wp_get_global_settings( array $path ) {
+		if ( 'custom' === $path[0] && 'shadowHover' === ( $path[1] ?? null ) ) {
+			return $GLOBALS['sgs_test_hover_map'];
+		}
 		if ( 'custom' === $path[0] ) {
 			return $GLOBALS['sgs_test_site_colour'] ?? null;
 		}
@@ -337,6 +341,72 @@ t_eq( true, t_clean( $real_decls['light'] ), 'the real light declarations carry 
 foreach ( array( 'root', 'section', 'light' ) as $scope ) {
 	t_eq( 0, preg_match( '/[<!]|url\(|\/\*/', sgs_shadow_dark_preset_css( $scope ) ), "the real {$scope} stylesheet has no markup, !important, url() or comment text" );
 }
+
+// H3: the real theme's shadowHover map carries a dark variant for every LITERAL entry, next to
+// the presets. Slug-to-slug entries (whisper -> soft) need nothing here.
+$real_hover_map              = $theme_json['settings']['custom']['shadowHover'] ?? array();
+t_eq( true, count( $real_hover_map ) > 1, 'the real theme.json declares a shadow hover map (' . count( $real_hover_map ) . ')' );
+$GLOBALS['sgs_test_hover_map'] = $real_hover_map;
+$literal_slugs                = array();
+foreach ( $real_hover_map as $slug => $entry ) {
+	if ( 1 !== preg_match( '/^[a-z][a-z0-9-]*$/i', $entry ) ) {
+		$literal_slugs[] = $slug;
+	}
+}
+t_eq( true, count( $literal_slugs ) > 1, 'the real hover map has more than one literal entry to check (' . count( $literal_slugs ) . ')' );
+$hover_decls = sgs_shadow_dark_declarations( true );
+foreach ( $literal_slugs as $slug ) {
+	$variant = sgs_shadow_dark_variant( $real_hover_map[ $slug ] );
+	if ( null === $variant ) {
+		// An all-brand literal (glow's hover, like the glow preset itself) carries no dark
+		// variant and must be absent from every scope, exactly like the preset it mirrors.
+		t_eq( false, str_contains( $hover_decls['dark'], "--wp--custom--shadow-hover--{$slug}:" ), "hover '{$slug}' (no variant) is absent from the dark declarations" );
+		continue;
+	}
+	t_eq( true, str_contains( $hover_decls['dark'], "--wp--custom--shadow-hover--{$slug}:{$variant};" ), "hover '{$slug}' dark variant is declared" );
+	t_eq(
+		true,
+		str_contains( $hover_decls['light'], '--wp--custom--shadow-hover--' . $slug . ':' . sgs_shadow_dark_original( $real_hover_map[ $slug ] ) . ';' ),
+		"hover '{$slug}' original literal resets it in the light scope"
+	);
+	foreach ( array( 'root', 'section', 'light' ) as $scope ) {
+		t_eq( true, str_contains( sgs_shadow_dark_preset_css( $scope ), "--wp--custom--shadow-hover--{$slug}:" ), "hover '{$slug}' reaches the {$scope} scope" );
+	}
+}
+// A hover that is itself a preset reference needs no custom-property entry at all.
+t_eq( false, str_contains( $hover_decls['dark'], '--wp--custom--shadow-hover--whisper:' ), "hover 'whisper' (a preset reference, not a literal) carries no custom-property entry" );
+
+/**
+ * Negative-control stub: the H3 hover loop removed, exactly what this function looked like
+ * before H3. The checks above must be caught by it, proving they can fail, not just pass by
+ * construction.
+ *
+ * @return array{dark:string,light:string} Preset-only declarations, no hover entries.
+ */
+function sgs_shadow_dark_declarations_no_hover_stub(): array {
+	$cache = array(
+		'dark'  => '',
+		'light' => '',
+	);
+	foreach ( sgs_shadow_dark_presets() as $slug => $literal ) {
+		$variant = sgs_shadow_dark_variant( $literal );
+		if ( null !== $variant ) {
+			$cache['dark']  .= '--wp--preset--shadow--' . $slug . ':' . $variant . ';';
+			$cache['light'] .= '--wp--preset--shadow--' . $slug . ':' . sgs_shadow_dark_original( $literal ) . ';';
+		}
+	}
+	return $cache;
+}
+$no_hover_decls = sgs_shadow_dark_declarations_no_hover_stub();
+$stub_caught    = 0;
+foreach ( $literal_slugs as $slug ) {
+	if ( null !== sgs_shadow_dark_variant( $real_hover_map[ $slug ] ) && ! str_contains( $no_hover_decls['dark'], "--wp--custom--shadow-hover--{$slug}:" ) ) {
+		++$stub_caught;
+	}
+}
+$literal_slug_count = count( $literal_slugs );
+t_eq( true, $stub_caught >= 3, "negative control: a stub with the H3 loop removed is caught by {$stub_caught} of {$literal_slug_count} literal hover entries (need at least 3)" );
+$GLOBALS['sgs_test_hover_map'] = array();
 
 // A flat list is read the same as an origin-keyed array.
 $GLOBALS['sgs_test_presets'] = array(

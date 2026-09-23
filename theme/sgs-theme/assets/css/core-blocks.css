@@ -43,6 +43,8 @@
 	padding: var(--wp--preset--spacing--30);
 	min-width: 220px;
 }
+@media (hover: hover) and (pointer: fine){:where(:root:not(.sgs-touch-input)) .wp-block-navigation .has-child .wp-block-navigation__submenu-container:hover{box-shadow:var(--wp--custom--shadow-hover--floating, var(--wp--preset--shadow--floating))}}
+
 @media (forced-colors:active){.wp-block-navigation .has-child .wp-block-navigation__submenu-container:not(:focus-visible){outline:1px solid CanvasText;outline-offset:-1px}}
 
 

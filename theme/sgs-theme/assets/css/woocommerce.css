@@ -578,6 +578,9 @@ h2.wc-block-mini-cart__title {
 	   at extreme contrast ratios, so a fixed-alpha shadow backstops it. */
 	box-shadow: 0 1px 3px rgb(0 0 0 / .08), 0 0 0 1px var(--sgs-elevation-line);
 }
+@media (hover: hover) and (pointer: fine){:where(:root:not(.sgs-touch-input)) #sgs-shop-filters:hover,
+:where(:root:not(.sgs-touch-input)) .sgs-shop-filters:hover{box-shadow:0 1px 4px color-mix(in srgb, var(--wp--custom--shadow-colour) 8%, transparent), 0 0 0 1px var(--sgs-elevation-line)}}
+
 @media (forced-colors:active){#sgs-shop-filters:not(:focus-visible),.sgs-shop-filters:not(:focus-visible){outline:1px solid CanvasText;outline-offset:-1px}}
 
 
@@ -954,6 +957,8 @@ dialog.sgs-shop-filters {
 	cursor: pointer;
 	transition: transform 0.2s ease, opacity 0.2s ease;
 }
+@media (hover: hover) and (pointer: fine){:where(:root:not(.sgs-touch-input)) .sgs-shop-filters__sticky-trigger:hover{box-shadow:0 5px 20px color-mix(in srgb, var(--wp--custom--shadow-colour) 18%, transparent)}}
+
 @media (forced-colors:active){.sgs-shop-filters__sticky-trigger:not(:focus-visible){outline:1px solid CanvasText;outline-offset:-1px}}
 
 

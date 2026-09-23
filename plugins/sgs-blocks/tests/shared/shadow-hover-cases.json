@@ -1,0 +1,182 @@
+[
+    {
+        "name": "preset to preset",
+        "shape": "soft",
+        "colour": null,
+        "map": {
+            "soft": "lifted"
+        },
+        "expected": "var(--wp--preset--shadow--lifted)"
+    },
+    {
+        "name": "preset to preset is case-insensitive",
+        "shape": "Soft",
+        "colour": "#FF0000",
+        "map": {
+            "soft": "lifted"
+        },
+        "expected": "var(--wp--preset--shadow--lifted)"
+    },
+    {
+        "name": "preset to literal",
+        "shape": "floating",
+        "colour": null,
+        "map": {
+            "floating": "0px 3px 5px 0px #000000"
+        },
+        "expected": "var(--wp--custom--shadow-hover--floating)"
+    },
+    {
+        "name": "no map entry",
+        "shape": "floating",
+        "colour": null,
+        "map": {
+            "soft": "lifted"
+        },
+        "expected": ""
+    },
+    {
+        "name": "unknown preset slug",
+        "shape": "nonexistent",
+        "colour": null,
+        "map": {
+            "soft": "lifted"
+        },
+        "expected": ""
+    },
+    {
+        "name": "none",
+        "shape": "none",
+        "colour": null,
+        "map": {
+            "soft": "lifted"
+        },
+        "expected": ""
+    },
+    {
+        "name": "NONE uppercase",
+        "shape": "NONE",
+        "colour": null,
+        "map": {
+            "soft": "lifted"
+        },
+        "expected": ""
+    },
+    {
+        "name": "empty shape",
+        "shape": "",
+        "colour": null,
+        "map": {
+            "soft": "lifted"
+        },
+        "expected": ""
+    },
+    {
+        "name": "null shape",
+        "shape": null,
+        "colour": null,
+        "map": {
+            "soft": "lifted"
+        },
+        "expected": ""
+    },
+    {
+        "name": "whitespace shape",
+        "shape": "   ",
+        "colour": null,
+        "map": {
+            "soft": "lifted"
+        },
+        "expected": ""
+    },
+    {
+        "name": "inset alone",
+        "shape": "inset",
+        "colour": null,
+        "map": {
+            "soft": "lifted"
+        },
+        "expected": ""
+    },
+    {
+        "name": "hostile map literal (comment opener)",
+        "shape": "soft",
+        "colour": null,
+        "map": {
+            "soft": "0px 0px 0px 0px /* #000"
+        },
+        "expected": ""
+    },
+    {
+        "name": "empty-string map entry",
+        "shape": "soft",
+        "colour": null,
+        "map": {
+            "soft": ""
+        },
+        "expected": ""
+    },
+    {
+        "name": "one outer layer lifts",
+        "shape": "0px 4px 12px 0px",
+        "colour": "#000000",
+        "map": [],
+        "expected": "0px 5px 15px 0px #000000"
+    },
+    {
+        "name": "inset layer is untouched, outer layer lifts",
+        "shape": "0px 4px 12px 0px, inset 0px 2px 4px 0px",
+        "colour": "#000000",
+        "map": [],
+        "expected": "0px 5px 15px 0px #000000, inset 0px 2px 4px 0px #000000"
+    },
+    {
+        "name": "spread is never touched; y and blur round to the nearest whole pixel",
+        "shape": "0px 1px 2px -3px",
+        "colour": "#000000",
+        "map": [],
+        "expected": "0px 1px 3px -3px #000000"
+    },
+    {
+        "name": "an embedded colour rides through the lift unchanged, ignoring the colour argument",
+        "shape": "0px 4px 12px 0px red",
+        "colour": null,
+        "map": [],
+        "expected": "0px 5px 15px 0px red"
+    },
+    {
+        "name": "two-layer ratio (the real floating preset shape) with the default colour",
+        "shape": "0px 2px 4px 0px, 0px 8px 16px 0px",
+        "colour": null,
+        "map": [],
+        "expected": "0px 3px 5px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent), 0px 10px 20px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)"
+    },
+    {
+        "name": "negative blur is not a layer",
+        "shape": "0px 0px -4px 0px",
+        "colour": "#000000",
+        "map": [],
+        "expected": ""
+    },
+    {
+        "name": "inset in the middle is not a layer",
+        "shape": "0 2px inset 4px",
+        "colour": "#000000",
+        "map": [],
+        "expected": ""
+    },
+    {
+        "name": "nine layers exceed the layer cap",
+        "shape": "0px 1px 2px 0px, 0px 1px 2px 0px, 0px 1px 2px 0px, 0px 1px 2px 0px, 0px 1px 2px 0px, 0px 1px 2px 0px, 0px 1px 2px 0px, 0px 1px 2px 0px, 0px 1px 2px 0px",
+        "colour": "#000000",
+        "map": [],
+        "expected": ""
+    },
+    {
+        "name": "filter smuggle leaves nothing to draw",
+        "shape": "0px 0px 0px red) blur(9999px",
+        "colour": "#000000",
+        "map": [],
+        "expected": ""
+    }
+]
