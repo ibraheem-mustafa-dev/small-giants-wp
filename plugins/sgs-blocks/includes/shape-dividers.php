@@ -10,6 +10,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/helpers-colour-parse.php';
+
 /**
  * Get all available shape divider definitions.
  *
@@ -342,43 +344,6 @@ function sgs_shape_divider_gradient_id(): string {
 	static $instance = 0;
 	++$instance;
 	return 'sgs-sd-grad-' . $instance;
-}
-
-/**
- * Split a comma-separated CSS argument list on TOP-LEVEL commas only —
- * i.e. commas that are not nested inside a function call's parentheses.
- * A gradient's colour stops are comma-separated, but a stop's own colour
- * can itself be a function containing commas (`rgb(0, 0, 0)`,
- * `var(--a, --b)`), so a naive `explode(',', …)` would shred those in half.
- *
- * @param string $value The inner argument list of a gradient function.
- * @return array<int, string> Trimmed top-level segments.
- */
-function sgs_split_top_level_commas( string $value ): array {
-	$parts   = array();
-	$depth   = 0;
-	$current = '';
-	$length  = strlen( $value );
-
-	for ( $i = 0; $i < $length; $i++ ) {
-		$char = $value[ $i ];
-		if ( '(' === $char ) {
-			++$depth;
-		} elseif ( ')' === $char ) {
-			--$depth;
-		}
-		if ( ',' === $char && 0 === $depth ) {
-			$parts[] = trim( $current );
-			$current = '';
-			continue;
-		}
-		$current .= $char;
-	}
-	if ( '' !== trim( $current ) ) {
-		$parts[] = trim( $current );
-	}
-
-	return $parts;
 }
 
 /**

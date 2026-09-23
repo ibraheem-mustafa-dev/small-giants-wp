@@ -11,8 +11,20 @@
  *                                     sgs_transition_vars
  *
  *   helpers-colour-wcag.php         — sgs_wcag_relative_luminance,
+ *                                     sgs_wcag_white_wins_for_luminance,
  *                                     sgs_wcag_text_colour_for_bg,
- *                                     sgs_resolve_palette_hex
+ *                                     sgs_resolve_palette_hex,
+ *                                     sgs_colour_background_tone
+ *
+ *   helpers-colour-parse.php        — sgs_colour_resolve_hex_alpha,
+ *                                     sgs_split_top_level_commas
+ *
+ *   helpers-gradient-tone.php       — sgs_resolve_palette_gradient,
+ *                                     sgs_gradient_resolve_value, sgs_gradient_tone
+ *
+ *   helpers-surface-tone.php        — sgs_surface_tone, sgs_surface_tone_class
+ *                                     (a painted surface's dark/light tone from
+ *                                     its top-down layers)
  *
  *   helpers-media.php               — sgs_responsive_image, sgs_render_stars,
  *                                     sgs_render_media
@@ -103,6 +115,7 @@ require_once __DIR__ . '/helpers-responsive.php';
 require_once __DIR__ . '/helpers-typography.php';
 require_once __DIR__ . '/helpers-media-position.php';
 require_once __DIR__ . '/helpers-colour-wcag.php';
+require_once __DIR__ . '/helpers-surface-tone.php';
 require_once __DIR__ . '/helpers-media.php';
 require_once __DIR__ . '/helpers-tier-media.php';
 require_once __DIR__ . '/helpers-media-element.php';

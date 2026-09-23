@@ -1743,19 +1743,52 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
 			// A SOLID fill marks the container so shadows inside it follow its tone: dark
 			// gets the dark variants (`.sgs-on-dark>*`), light resets them (`.sgs-on-light>*`).
-			// A gradient or a background image is not one colour: skip both.
-			$tone_bg   = $attributes['backgroundColour'] ?? '';
-			$tone_skip = ! empty( $attributes['backgroundColourGradient'] ) || ! empty( $attributes['backgroundImage'] );
-			if ( is_string( $tone_bg ) && '' !== $tone_bg && ! $tone_skip ) {
-				$tone = function_exists( 'sgs_colour_background_tone' ) ? sgs_colour_background_tone( $tone_bg ) : '';
-				if ( 'dark' === $tone ) {
-					$classes[] = 'sgs-on-dark';
-					if ( function_exists( 'sgs_shadow_dark_enqueue' ) ) {
-						sgs_shadow_dark_enqueue();
-					}
-				} elseif ( 'light' === $tone ) {
-					$classes[] = 'sgs-on-light';
-				}
+			// Mark the surface's tone so the shadows inside it follow it (helpers-shadow-dark.php):
+			// the painted layers, top-down (overlay colour or gradient at the overlay's own
+			// opacity, the background image, which is never sampled, then the gradient, then
+			// the flat colour), judged by sgs_surface_tone_class(). No background attributes
+			// means no layers and no class.
+			$tone_layers = array();
+
+			$tone_overlay_opacity = null !== $overlay_opacity && is_numeric( $overlay_opacity )
+				? max( 0.0, min( 1.0, ( (float) $overlay_opacity ) / 100 ) )
+				: 1.0;
+
+			if ( is_string( $overlay_gradient ) && '' !== $overlay_gradient ) {
+				$tone_layers[] = array(
+					'gradient' => $overlay_gradient,
+					'opacity'  => $tone_overlay_opacity,
+				);
+			} elseif ( is_string( $overlay_colour ) && '' !== $overlay_colour ) {
+				$tone_layers[] = array(
+					'colour'  => $overlay_colour,
+					'opacity' => $tone_overlay_opacity,
+				);
+			}
+
+			if ( $has_bg_image ) {
+				$tone_layers[] = array( 'image' => true );
+			}
+
+			$tone_bg_gradient = $attributes['backgroundColourGradient'] ?? '';
+			if ( is_string( $tone_bg_gradient ) && '' !== $tone_bg_gradient ) {
+				$tone_layers[] = array(
+					'gradient' => $tone_bg_gradient,
+					'opacity'  => 1.0,
+				);
+			}
+
+			$tone_bg = $attributes['backgroundColour'] ?? '';
+			if ( is_string( $tone_bg ) && '' !== $tone_bg ) {
+				$tone_layers[] = array(
+					'colour'  => $tone_bg,
+					'opacity' => 1.0,
+				);
+			}
+
+			$tone_class = function_exists( 'sgs_surface_tone_class' ) ? sgs_surface_tone_class( $tone_layers ) : '';
+			if ( '' !== $tone_class ) {
+				$classes[] = $tone_class;
 			}
 
 			// Hover-spill-scale marker (see `$hover_spill_scale` above) — a debug/QA

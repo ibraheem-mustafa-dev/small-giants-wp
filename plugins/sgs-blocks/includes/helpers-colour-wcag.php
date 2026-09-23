@@ -2,23 +2,23 @@
 /**
  * WCAG colour-contrast helpers for SGS block server-side rendering.
  *
- * Provides sgs_wcag_relative_luminance(), sgs_wcag_text_colour_for_bg(), and
- * sgs_resolve_palette_hex() — computing WCAG 2.1 relative luminance and
- * auto-contrast text colour, and resolving theme palette slugs to hex values.
+ * Provides sgs_wcag_relative_luminance(), sgs_wcag_white_wins_for_luminance(),
+ * sgs_wcag_text_colour_for_bg(), sgs_resolve_palette_hex(), and
+ * sgs_colour_background_tone() — WCAG 2.1 relative luminance, the shared
+ * black/white contrast decision, auto-contrast text colour, palette-slug
+ * resolution, and the dark/light classification of one solid background
+ * colour (D1, 2026-09-23). The multi-layer surface-tone resolver that builds
+ * on this (D2 — gradients, overlays, images) lives in
+ * helpers-surface-tone.php, which sgs_colour_background_tone() also depends
+ * on for sgs_colour_resolve_hex_alpha() (both files are always loaded
+ * together via render-helpers.php).
  *
  * @package SGS\Blocks
  */
 
 defined( 'ABSPATH' ) || exit;
 
-/**
- * Relative luminance below which a black shadow is barely visible on a background.
- *
- * About `#404040` and darker. This is a different question from text legibility (the 0.179
- * crossover sgs_wcag_text_colour_for_bg() uses to choose black or white text), so it has its own
- * number and can be tuned without touching the text helper.
- */
-const SGS_COLOUR_DARK_LUMINANCE = 0.05;
+require_once __DIR__ . '/helpers-colour-parse.php';
 
 /**
  * Compute the WCAG 2.1 relative luminance of an sRGB hex colour.
@@ -62,34 +62,16 @@ function sgs_wcag_relative_luminance( string $hex ): float {
 }
 
 /**
- * Return `#000` or `#fff` — whichever gives the higher WCAG contrast ratio
- * against the supplied background hex colour.
+ * Whether white beats black for WCAG contrast against a background of the given
+ * relative luminance (WCAG 2.1 §1.4.3: ratio = (L_lighter+0.05)/(L_darker+0.05);
+ * prefer the candidate reaching >= 4.5:1, else the higher ratio). The shared
+ * decision behind sgs_wcag_text_colour_for_bg() (text) and a gradient's
+ * mean-luminance tone (D2/D1, 2026-09-23), so both read one rule.
  *
- * Algorithm (WCAG 2.1 §1.4.3):
- *   contrast_ratio = (L_lighter + 0.05) / (L_darker + 0.05)
- * where L_white = 1.0, L_black = 0.0.
- *
- * Tie-break: prefer the candidate that reaches ≥ 4.5 : 1. If neither does
- * (extremely mid-grey), pick the higher ratio.
- *
- * Guard: invalid hex → `#000` (safe fallback — dark text on unknown BG).
- *
- * Unit-reason:
- *   - #f3e5ab (pale yellow, L ≈ 0.773): black ratio ≈ 14.3, white ≈ 1.58 → #000 ✓
- *   - #000080 (navy, L ≈ 0.007): black ratio ≈ 1.08, white ≈ 20.1 → #fff ✓
- *   - #777777 (mid-grey, L ≈ 0.1845): black ratio ≈ 4.69, white ratio ≈ 4.47 → #000 (≥4.5:1 ✓)
- *
- * @param string $hex Background colour in #RGB or #RRGGBB hex format.
- * @return string '#000' or '#fff'.
+ * @param float $l_bg Relative luminance of the background, in [0.0, 1.0].
+ * @return bool True when white wins the contrast decision.
  */
-function sgs_wcag_text_colour_for_bg( string $hex ): string {
-	$l_bg = sgs_wcag_relative_luminance( $hex );
-
-	// Guard: unparsable hex.
-	if ( $l_bg < 0 ) {
-		return '#000';
-	}
-
+function sgs_wcag_white_wins_for_luminance( float $l_bg ): bool {
 	// Luminance of black (0.0) and white (1.0) are fixed.
 	$l_black = 0.0;
 	$l_white = 1.0;
@@ -109,14 +91,34 @@ function sgs_wcag_text_colour_for_bg( string $hex ): string {
 	$white_passes = $ratio_with_white >= 4.5;
 
 	if ( $black_passes && ! $white_passes ) {
-		return '#000';
+		return false;
 	}
 	if ( $white_passes && ! $black_passes ) {
-		return '#fff';
+		return true;
 	}
 
 	// Both pass (or neither — mid-grey edge case): pick the higher ratio.
-	return $ratio_with_black >= $ratio_with_white ? '#000' : '#fff';
+	return $ratio_with_white > $ratio_with_black;
+}
+
+/**
+ * Return `#000` or `#fff` — whichever gives the higher WCAG contrast ratio
+ * against the supplied background hex colour.
+ *
+ * Guard: invalid hex → `#000` (safe fallback — dark text on unknown BG).
+ *
+ * @param string $hex Background colour in #RGB or #RRGGBB hex format.
+ * @return string '#000' or '#fff'.
+ */
+function sgs_wcag_text_colour_for_bg( string $hex ): string {
+	$l_bg = sgs_wcag_relative_luminance( $hex );
+
+	// Guard: unparsable hex.
+	if ( $l_bg < 0 ) {
+		return '#000';
+	}
+
+	return sgs_wcag_white_wins_for_luminance( $l_bg ) ? '#fff' : '#000';
 }
 
 /**
@@ -201,15 +203,18 @@ function sgs_resolve_palette_hex( string $slug, string $fallback = '' ): string 
 /**
  * Classify a SOLID background colour value as dark or light.
  *
- * Accepts a hex (#RGB / #RRGGBB), a bare palette slug (e.g. 'footer-bg'), or a
- * `var(--wp--preset--color--SLUG)` reference. A slug is resolved to its live hex
- * through sgs_resolve_palette_hex(). Dark means a relative luminance below
- * SGS_COLOUR_DARK_LUMINANCE, where a black shadow is barely visible.
+ * Accepts every form sgs_colour_resolve_hex_alpha() resolves (hex 3/6/8, `rgb()`/
+ * `rgba()`, `black`/`white`, a palette slug or `var(--wp--preset--color--SLUG)`);
+ * an 8-digit hex's or rgba()'s alpha is ignored here — this judges the COLOUR
+ * only, never a composited result (that is sgs_surface_tone()'s job, D2).
  *
- * Anything else returns '' and never throws or emits: an empty string,
- * `transparent`, `inherit`, `currentColor`, a function (`rgb()`,
- * `linear-gradient()`), an 8-digit hex, an unknown slug, or junk. A container
- * whose fill is not one solid, known colour is therefore never classified.
+ * Dark/light is ONE definition, shared with text legibility (D1, 2026-09-23):
+ * `dark` when white text would be chosen (sgs_wcag_text_colour_for_bg() ===
+ * '#fff'), `light` when black would. A surface a designer would put white text
+ * on is a surface a black shadow disappears on.
+ *
+ * Anything else returns '' and never throws or emits: empty, `transparent`,
+ * `inherit`, `currentColor`, a gradient, an unknown slug, or junk.
  *
  * @param string $value Background colour value as stored in a block attribute.
  * @return string 'dark', 'light', or '' when the value is not one solid known colour.
@@ -221,36 +226,19 @@ function sgs_colour_background_tone( string $value ): string {
 		return '';
 	}
 
-	$hex = '';
-
-	if ( 1 === preg_match( '/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/', $value ) ) {
-		$hex = $value;
-	} else {
-		$slug = '';
-		if ( 1 === preg_match( '/^var\(\s*--wp--preset--color--([a-z0-9-]+)\s*\)$/', $value, $matches ) ) {
-			$slug = $matches[1];
-		} elseif ( 1 === preg_match( '/^[a-z0-9-]+$/', $value ) ) {
-			$slug = $value;
-		}
-
-		if ( '' === $slug ) {
-			return '';
-		}
-
-		$hex = sgs_resolve_palette_hex( $slug );
-		if ( '' === $hex ) {
-			return '';
-		}
+	$parsed = sgs_colour_resolve_hex_alpha( $value );
+	if ( '' === $parsed['hex'] ) {
+		return '';
 	}
 
 	// A resolved palette entry can itself be a gradient or CSS variable: the
 	// luminance helper returns -1.0 for anything that is not a plain hex.
-	$luminance = sgs_wcag_relative_luminance( $hex );
+	$luminance = sgs_wcag_relative_luminance( $parsed['hex'] );
 	if ( $luminance < 0 ) {
 		return '';
 	}
 
-	return $luminance < SGS_COLOUR_DARK_LUMINANCE ? 'dark' : 'light';
+	return sgs_wcag_white_wins_for_luminance( $luminance ) ? 'dark' : 'light';
 }
 
 /**
