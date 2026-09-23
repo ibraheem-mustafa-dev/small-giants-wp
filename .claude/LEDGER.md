@@ -135,7 +135,7 @@ IN FULL before touching anything — do not act on this summary.**
   the current `decisions.md` entry). M-43 and M-09 covered, M-21 covered pending live checks, M-13
   partial (`families-master.json`). Shadow-tone check shipped (Bean signed off the look). Owed: live
   check of the edge fade, card lift, submenu opacity; sandybrown deploy (waits on `sgs/google-reviews`);
-  Bean to choose "Lift on hover" button vs automatic preset hover. **Next: U-2** (scrim, M-14).
+  shadow lift on hover is the default (Bean), live-verified. **Next: U-2** (scrim, M-14).
 - **Wave 4** (proof gate — 11 client clones incl. resn, 10 if the teardown excludes it; Bean's-eye per
   clone; every Spec 38 effect available) — not started.
 - **Wave 5** (clone walker) — not started.

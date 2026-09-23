@@ -26,4 +26,33 @@ design: `.claude/reports/2026-09-23-shadow-tone-design.md`
 - Site dark mode was not re-run in this pass (it was measured on 2026-09-22; the dark-mode light-surface reset added in c82ec0fb4 is unit-tested only).
 - A theme gradient preset referenced by slug reads as unknown in the canvas until block callers pass `useSettings( 'color.gradients' )`.
 - An image with no overlay is never sampled, on the page or in the canvas.
-- Bean's eye on the screenshot (R-31-13) is owed.
+- Bean's eye (R-31-13): signed off 2026-09-23, every band looks right.
+
+---
+
+# Live verification: shadow lift on hover (every shadowed block), 2026-09-23 (appended)
+
+verdict: PASS
+intent_capture_passed: true
+commit_sha: 9a309281a (hover map, resolver, dark variants, stylesheet lift), 8b18b9d75 (PHP emitters, switch, overlays, media atom guard)
+design: `.claude/reports/2026-09-23-shadow-hover-lift-design.md`
+
+## Environment and method
+- Site: eye-care-test, plugin and theme 1.5.96 deployed after 8b18b9d75 (declared payload for another session's uncommitted google-reviews, `sgs-blocks.php`, `includes/helpers-slider-nav.php`; test site only).
+- Fixture page 53 `/qa-dark-shadow/` (sgs/container cards through `SGS_Container_Wrapper`, the path every wrapper block shares), plus a band holding a `lifted` card with `shadowLiftOnHover:false` and a `hard` card.
+- One headed Chrome window; real pointer hover through chrome-devtools at 1440x900; a touch tap with touch emulation at 390x844; `getComputedStyle` read before, during and after.
+
+## Results
+| # | Check | Result | Measured |
+|---|---|---|---|
+| 1 | Lifted card on a light band, hovered | PASS | rest = the lifted layers; hover = the floating layers (2px 4px, 8px 16px, 24px 48px -8px, 48px 96px -16px) |
+| 2 | Lifted card on the deep-teal band, hovered | PASS | hover = the dark variant of floating: the 1px light ring first, then black at 2.2x (0.088, 0.132, 0.264) |
+| 3 | Pointer moves away | PASS | the light card returns to its resting value exactly |
+| 4 | `shadowLiftOnHover:false` (negative control) | PASS | hovered, shadow unchanged |
+| 5 | Decorative preset `hard` | PASS | `4px 4px 0 0` rest, `6px 6px 0 0` hover (its own matching hover, not a soft float) |
+| 6 | Touch tap (390x844, touch emulated) | PASS | `(hover:hover) and (pointer:fine)` is false; after the tap the card still reports `:hover` (sticky hover) but its shadow is unchanged, so the lift does not stick |
+
+## Not measured
+- Every other block family (card-grid items, post-grid cards, team-member, the supports.shadow blocks, media, stylesheet shadows) is covered by standalone tests (`run-shadow-hover-rules-standalone.php` 30, `run-post-grid-hover-shadow-standalone.php` 9, `run-media-atom-shadow-hover-standalone.php` 9) and the build gates (`shadow-lift --check`, `check-shadow-sources.py --check`), not hovered live one by one.
+- Overlay blocks not lifting (mega-panel, nav-drawer, modal, cart) is declared in block.json and tested in PHP; not hovered live.
+- The editor's Lift on hover toggle was not clicked through.
