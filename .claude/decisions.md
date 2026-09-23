@@ -1,5 +1,13 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1146 [ROUTINE] — Every shadow lifts on hover by default; each preset has its own hover partner (2026-09-24)
+
+**Decision (Bean).** "Auto lift on hover should be default": everything with a shadow lifts, including non-clickable boxes, with a per-block switch to turn it off; each decorative preset gets its own matching hover rather than all becoming Floating. Rejected: a one-click button only (Bean chose the default), and a single procedural lift for presets (it cannot give each decorative style its own hover).
+**Built.** `theme.json::settings.custom.shadowHover` (whisper to soft, soft to lifted, lifted to floating, floating higher; crisp, long, outline, grounded, glow, hard with matching literals; pressed unchanged); `includes/helpers-shadow-hover.php` (`sgs_shadow_hover_value`, `sgs_shadow_hover_rules`) with a JS twin and shared cases; dark variants of the hover literals; every PHP emitter, the wrapper, card properties, supports.shadow blocks and the media atom; `scripts/shadow-lift/` for stylesheets, run BEFORE the hover guard; `shadowLiftOnHover` on 21 blocks via `scripts/fanout-shadow-lift-attr.py`; overlays (mega-panel, nav-drawer, modal, cart) declare `supports.sgs.shadowLift: false`. No `transition` is added (a second `transition` shorthand cancels a block's own).
+**Council.** Sonnet adversarial: GO WITH FIXES; both blockers (hover-guard ordering, transition shorthand) resolved in the design before the build.
+**Verified live** on eye-care-test (`reports/visual-diff/container-2026-09-23.md`): preset lift on light and dark bands, switch-off negative control, Hard's own hover, a touch tap does not stick. Commits 9a309281a, 8b18b9d75.
+**Also ruled (Bean, 2026-09-23).** Dark-surface shadows signed off by eye; mega-panel `borderRadius` stays a single value; buck's `auto` z-index accepted (the visual result is measured, not the code).
+
 ## D1145 [ROUTINE] — Content width is a per-site setting read by Spec 33, not a converter rule; reviews header matches at 12 widths; comparison method written down (2026-09-23)
 
 **Bean's rulings.** "Don't keep the rule. The content and wide width values are supposed to be customisable per site, so the Spec 33 pipeline should pick this up and set it." The draft was designed for UX and CRO, so the clone must match it on every device width, not only 1440/375. The whole-site audit runs next, with screenshots at all three device widths, after a compact.

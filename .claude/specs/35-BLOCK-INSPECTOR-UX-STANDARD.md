@@ -1127,8 +1127,9 @@ its element's panel (TIER 1) regardless of this field.)*
 
 ### 11. SHADOW
 
-1. **Canonical** — `src/components/ShadowControl.js`, storing a **CSS string**
-   (X/Y/blur/spread/colour+alpha/inset).
+1. **Canonical** — `src/components/ShadowControl.js` (Simple / Layers / Raw CSS tabs, Normal and
+   Hover states), storing a **shape list** and a **colour list** as two string attributes written
+   in one call (`attrNames`); the shape may also be a theme preset slug or `none`.
 2. **Required props** — `label`, `value`, `onChange`. **`id` REQUIRED.**
 3. **Banned lookalikes — this type's list is the whole point, because rule 07 sees exactly one of
    them:**
@@ -1159,6 +1160,9 @@ its element's panel (TIER 1) regardless of this field.)*
    boolean. The fifth is the fourth quadrant and needs the render-without-control rule.
 8. **Open** — any object-storage mode for `ShadowControl` is a shared-mechanism change → **Rule 7
    design gate.**
+9. **Hover** — every shadow lifts on hover by default: the Hover tab shows what the shadow lifts to
+   and a **Lift on hover** toggle (`shadowLiftOnHover`, default on); an explicit hover shadow wins.
+   Mechanism: `plugins/sgs-blocks/CLAUDE.md` "Shadows — what happens automatically".
 
 ### 12. THE RESPONSIVE WRAPPER FAMILY
 

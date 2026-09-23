@@ -1081,10 +1081,37 @@ its JS twin), gated at both the class-injection point and the inspector UI. `tea
 `info-box` have a working toggle. **Net: every root-hover block either has a working
 zoom/grayscale toggle or doesn't offer one at all — never a silent no-op.**
 
-**Its shadow vocabulary is four slugs** (`subtle` / `raised` / `floating` / `glow`) **with no
-colour input anywhere.** That is why a block-owned `shadowHover` + `shadowHoverColour` pair is
-NOT a duplicate of the panel's `sgsHoverShadow` and must not be removed for looking like one —
-deleting it swaps a brand-colour swatch for a four-word dropdown.
+**Its shadow vocabulary is the theme's preset slugs** (`hover-effects.php::is_hover_shadow_slug`)
+**with no colour input anywhere.** That is why a block-owned `shadowHover` + `shadowHoverColour`
+pair is NOT a duplicate of the panel's `sgsHoverShadow` and must not be removed for looking like
+one — deleting it swaps a brand-colour swatch for a preset-name dropdown.
+
+### Shadows — what happens automatically (read before touching any shadow)
+
+Every shadow follows two automatic rules; do not hand-roll either.
+
+1. **Surface tone.** A surface is dark when white text would be chosen for it
+   (`helpers-colour-wcag.php::sgs_wcag_white_wins_for_luminance`). `helpers-surface-tone.php::sgs_surface_tone`
+   judges a surface's painted layers (overlay, image, gradient, colour); `SGS_Container_Wrapper`,
+   `sgs/nav-drawer` and `sgs/mega-panel` add `sgs-on-dark` / `sgs-on-light`, and
+   `helpers-shadow-dark.php` + `helpers-shadow-dark-css.php` swap every preset (and every hover
+   partner) for its dark variant inside a dark surface. Editor twin: `src/utils/surface-tone.js`,
+   `surface-preview.js::wrapperToneClass`. Design: `.claude/reports/2026-09-23-shadow-tone-design.md`.
+2. **Lift on hover (default ON).** Each preset's hover partner lives in
+   `theme.json::settings.custom.shadowHover`; `helpers-shadow-hover.php::sgs_shadow_hover_value`
+   resolves it (a custom layered shadow lifts its outer y and blur x1.25) and
+   `::sgs_shadow_hover_rules` emits the touch-guarded rule. An explicit hover shadow wins; the
+   block attribute `shadowLiftOnHover:false` switches it off; a block declaring
+   `supports.sgs.shadowLift: false` (overlays: mega-panel, nav-drawer, modal, cart) never lifts.
+   Stylesheet shadows get their lift from `scripts/shadow-lift/` at postbuild, which runs BEFORE
+   the hover guard. No `transition` is added (a second `transition` shorthand would cancel the
+   block's own). Design: `.claude/reports/2026-09-23-shadow-hover-lift-design.md`.
+
+A new shadow colour must be the site colour (`color-mix(in srgb, var(--wp--custom--shadow-colour) N%, transparent)`)
+or a palette colour, never a black literal. Gates: `scripts/check-shadow-sources.py --check`
+(colour reachability, undefined variables, hover coverage, style-engine forced colours),
+`scripts/shadow-lift/run.js --check`, `scripts/shadow-fallback/run.js --check` (forced-colours
+outline for stylesheets), `scripts/check-shadow-fallback-php.py --check` (composed PHP writers).
 
 **Defaults are separate from the panel and are declared by the block.** `supports.sgs.hoverDefaults`
 (`{scalePreset, shadow, imageZoom, focusRing}`) is read by `resolve_hover_defaults()` in
