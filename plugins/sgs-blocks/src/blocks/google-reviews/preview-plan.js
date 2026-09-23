@@ -14,9 +14,14 @@
  * dropping a null changes nothing about what the server renders. The same holds for a
  * `null` nested inside an object or an array item (a written review with `photo: null`).
  *
- * Checked 2026-09-21: none of this block's 76 attributes declares a null default today, so
+ * Checked 2026-09-21 (after the redesign, 316 attributes): none declares a null default, so
  * the guard protects values that arrive at runtime (an editor control clearing a value with
  * `undefined`/`null`, a converter-emitted object with a null leaf) rather than defaults.
+ *
+ * The same route also rejects a value outside an attribute's `enum`, and an attribute block.json
+ * does not declare. Controls therefore never store '' in an enum that lacks it (see
+ * `borderStyleValue` in components/panel-kit.js), and tests/js/google-reviews-panels.test.js
+ * asserts every enum default is a member of its own enum.
  *
  * @package SGS\Blocks
  */

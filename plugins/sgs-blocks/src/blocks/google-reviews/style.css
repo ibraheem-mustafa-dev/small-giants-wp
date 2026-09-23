@@ -4,6 +4,16 @@
  * Semantic state colours — not in theme.json yet; overridable via custom CSS.
  * Third-party brand colours are intentional and must NOT be tokenised.
  *
+ * How a value gets here (Spec 32), in ascending strength:
+ *  1. A DEFAULT in this file, wrapped in :where() so it has no specificity. Every value an
+ *     attribute owns (logo size, avatar box, arrow box, clamp lines, scrollbar, type) is one.
+ *  2. A ready-made look (`cardStyle`): `.sgs-google-reviews--card-{slug} .sgs-google-reviews__el`,
+ *     exactly TWO classes. The looks are derived into `preset_implications` by /sgs-update.
+ *  3. An attribute the author (or the pipeline) set: a rule in the block's own scoped <style>
+ *     written by render.php at THREE classes, so it always paints over a look.
+ * The `--logo-*` and `--nav-*` structural modifiers are written only when the author made the
+ * choice; they sit AFTER the looks in this file so they win a tie at the same specificity.
+ *
  * @package SGS\Blocks
  */
 
@@ -36,45 +46,41 @@
 	flex-wrap: wrap;
 }
 
-.sgs-google-reviews__aggregate-score {
+/* Source caption, rating figure, header stars and review count share one wrapping row; the caption takes
+   a full row of its own above the others. */
+.sgs-google-reviews__aggregate-text {
 	display: flex;
-	align-items: baseline;
-	gap: 0.375rem;
+	flex-wrap: wrap;
+	align-items: center;
+	column-gap: 0.625rem;
+	row-gap: 0.25rem;
+	font-size: 1.125rem;
 }
 
-.sgs-google-reviews__aggregate-score strong {
-	font-size: 2.5rem;
+:where( .sgs-google-reviews__source-label ) {
+	flex: 0 0 100%;
+	font-size: 0.8125rem;
+	color: var( --wp--preset--color--text-muted, #555 );
+}
+
+:where( .sgs-google-reviews__score ) {
+	font-size: 2rem;
 	font-weight: 700;
 	line-height: 1;
 	color: var( --wp--preset--color--text, #1e1e1e );
 }
 
-.sgs-google-reviews__aggregate-score span {
-	font-size: 1rem;
-	color: var( --wp--preset--color--text-muted, #555 );
-}
-
-.sgs-google-reviews__aggregate-meta {
-	display: flex;
-	flex-direction: column;
-	gap: 0.25rem;
+/* Default sizes sit at zero specificity: `countFontSize` / `metaFontSize` / `dateFontSize` own them. */
+:where( .sgs-google-reviews__count ) {
+	font-size: 0.875rem;
 }
 
 .sgs-google-reviews__count {
-	font-size: 0.875rem;
 	color: var( --wp--preset--color--text-muted, #555 );
 }
 
-.sgs-google-reviews__aggregate-text {
-	font-size: 1.125rem;
-}
-
-.sgs-google-reviews__aggregate-text strong {
-	font-size: 2rem;
-	margin-right: 0.5rem;
-}
-
-.sgs-google-reviews__google-logo {
+/* The Google "G": trailing (pushed to the end of the row) unless a look or `logoPosition` says leading. */
+:where( .sgs-google-reviews__google-logo ) {
 	margin-left: auto;
 	opacity: 0.7;
 	width: 60px;
@@ -144,6 +150,13 @@
 	line-height: 1;
 }
 
+/* Star size is the custom property `--sgs-gr-star-size` (set by render.php from `starSize` /
+   `aggregateStarSize`, or by a look) so the header stars and the card stars can differ. */
+:where( .sgs-google-reviews__star ) {
+	width: var( --sgs-gr-star-size, 18px );
+	height: var( --sgs-gr-star-size, 18px );
+}
+
 /* Full star — solid filled */
 .sgs-google-reviews__star--full {
 	fill: var( --wp--preset--color--accent, #f5a623 );
@@ -186,6 +199,18 @@
 	grid-template-columns: repeat( var( --sgs-reviews-cols, 3 ), 1fr );
 }
 
+/* Wall: a dense masonry of short cards, `columns` tiles wide. */
+.sgs-google-reviews--wall .sgs-google-reviews__list {
+	display: block;
+	column-count: var( --sgs-reviews-cols, 3 );
+	column-gap: 1rem;
+}
+
+.sgs-google-reviews--wall .sgs-google-reviews__review {
+	break-inside: avoid;
+	margin-bottom: 1rem;
+}
+
 .sgs-google-reviews--cols-2 {
 	--sgs-reviews-cols: 2;
 }
@@ -224,9 +249,11 @@
 
 /* ─── Review Card ────────────────────────────────────────────────────────── */
 
+/* Head row (avatar, name, detail line, small Google "G") over a content column (stars and date, text, link). */
 .sgs-google-reviews__review {
 	display: flex;
-	gap: 1rem;
+	flex-direction: column;
+	gap: 0.75rem;
 	padding: 24px;
 	border-radius: var( --wp--custom--border-radius--medium, 8px );
 	background-color: var( --wp--preset--color--surface-alt, #fff );
@@ -246,6 +273,17 @@
 .sgs-google-reviews--card-bordered .sgs-google-reviews__review {
 	border: 1px solid var( --wp--preset--color--border, #e0e0e0 );
 	box-shadow: none;
+}
+
+/* Flat: no lift and no shadow. Named here so the look exists as a class (the seeder derives its values from
+   the class rules), and paints nothing that counts as a border or a shadow. */
+.sgs-google-reviews--card-flat .sgs-google-reviews__review {
+	box-shadow: none;
+}
+
+.sgs-google-reviews--card-flat .sgs-google-reviews__review:hover {
+	box-shadow: none;
+	transform: none;
 }
 
 .sgs-google-reviews--card-elevated .sgs-google-reviews__review {
@@ -270,12 +308,24 @@
 	box-shadow: none;
 }
 
-/* ─── Avatar ─────────────────────────────────────────────────────────────── */
+/* ─── Card head: avatar, name, detail line, card logo ────────────────────── */
 
-.sgs-google-reviews__avatar {
+:where( .sgs-google-reviews__review-header ) {
+	display: grid;
+	grid-template-columns: auto 1fr auto;
+	align-items: center;
+	column-gap: 0;
+	row-gap: 0.125rem;
+	min-width: 0;
+}
+
+:where( .sgs-google-reviews__avatar ) {
+	grid-column: 1;
+	grid-row: 1 / span 2;
 	flex-shrink: 0;
 	width: 40px;
 	height: 40px;
+	margin-right: 0.75rem;
 	border-radius: 50%;
 	overflow: hidden;
 	background-color: var( --wp--preset--color--surface-alt, #f5f7f7 );
@@ -292,7 +342,7 @@
 }
 
 /* Coloured initials fallback — uses a generated hue from the first char */
-.sgs-google-reviews__avatar-initials {
+:where( .sgs-google-reviews__avatar-initials ) {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -302,66 +352,92 @@
 	font-weight: 700;
 	color: var( --wp--preset--color--text-inverse, #fff );
 	background-color: var( --wp--preset--color--primary, #0f7e80 );
-	border-radius: 50%;
+	border-radius: inherit;
 }
 
-/* ─── Review Content ─────────────────────────────────────────────────────── */
-
-.sgs-google-reviews__review-content {
-	flex: 1;
-	min-width: 0; /* prevent overflow in grid */
-}
-
-.sgs-google-reviews__review-header {
-	display: flex;
-	align-items: baseline;
-	justify-content: space-between;
-	gap: 0.5rem;
-	margin-bottom: 0.375rem;
-	flex-wrap: wrap;
-}
-
-.sgs-google-reviews__author {
+:where( .sgs-google-reviews__author ) {
+	grid-column: 2;
+	grid-row: 1 / span 2;
+	align-self: center;
+	min-width: 0;
 	font-size: 1rem;
 	font-weight: 600;
 	line-height: 1.3;
 	color: var( --wp--preset--color--text, #1e1e1e );
 }
 
-.sgs-google-reviews__date {
+/* Written reviews: the reviewer detail line ("Local Guide · 11 reviews") under the author. */
+.sgs-google-reviews__meta {
+	grid-column: 2;
+	grid-row: 2;
+	align-self: start;
+	display: block;
+	min-width: 0;
+	color: var( --wp--preset--color--text-muted, #777 );
+}
+
+:where( .sgs-google-reviews__meta ) {
+	font-size: 0.75rem;
+}
+
+/* With a detail line the author takes the first row and the line the second; avatar spans both. */
+:where( .sgs-google-reviews__review-header:has( .sgs-google-reviews__meta ) .sgs-google-reviews__author ) {
+	grid-row: 1;
+	align-self: end;
+}
+
+:where( .sgs-google-reviews__card-logo ) {
+	grid-column: 3;
+	grid-row: 1 / span 2;
+	justify-self: end;
+	width: 17px;
+	height: 17px;
+	margin-left: 0.5rem;
+}
+
+/* ─── Card content: stars + date, text, link ─────────────────────────────── */
+
+.sgs-google-reviews__review-content {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	column-gap: 0.5625rem;
+	row-gap: 0.75rem;
+	min-width: 0; /* prevent overflow in grid */
+}
+
+:where( .sgs-google-reviews__date ) {
 	font-size: 0.8125rem;
+}
+
+.sgs-google-reviews__date {
 	color: var( --wp--preset--color--text-muted, #777 );
 	flex-shrink: 0;
 }
 
-/* Written reviews: the reviewer detail line ("Local Guide · 11 reviews") under the author. */
-.sgs-google-reviews__meta {
-	display: block;
-	font-size: 0.75rem;
-	color: var( --wp--preset--color--text-muted, #777 );
-}
-
-/* Stars sit between header and review body */
-.sgs-google-reviews__review-content .sgs-google-reviews__stars {
-	margin-bottom: 0.625rem;
-}
-
-.sgs-google-reviews__text {
+/* Line clamp: the default is 8 lines; `textClampLines` / `textClamp` (render.php) and the looks change it. */
+:where( .sgs-google-reviews__text ) {
+	flex: 0 0 100%;
 	margin: 0;
 	font-size: 0.9375rem;
 	line-height: 1.6;
 	color: var( --wp--preset--color--text-muted, #555 );
-
-	/* 4-line clamp — JS "Read more" can override this */
 	display: -webkit-box;
-	-webkit-line-clamp: 4;
+	-webkit-line-clamp: 8;
 	-webkit-box-orient: vertical;
 	overflow: hidden;
 }
 
+/* JS "Read more" can lift the clamp. */
 .sgs-google-reviews__text--expanded {
 	-webkit-line-clamp: unset;
 	overflow: visible;
+}
+
+:where( .sgs-google-reviews__review-link ) {
+	flex: 0 0 100%;
+	font-size: 0.875rem;
+	color: var( --wp--preset--color--primary, #0f7e80 );
 }
 
 /* ─── Powered-by footer line ─────────────────────────────────────────────── */
@@ -408,7 +484,7 @@
 	gap: 0.125rem;
 }
 
-.sgs-google-reviews__badge-text strong {
+:where( .sgs-google-reviews__badge-text strong ) {
 	font-size: 1.5rem;
 	font-weight: 700;
 	line-height: 1;
@@ -420,14 +496,30 @@
 	color: var( --wp--preset--color--text-muted, #777 );
 }
 
-/* ─── Write Review CTA ───────────────────────────────────────────────────── */
+/* ─── Header buttons + footnote ──────────────────────────────────────────── */
 
-.sgs-google-reviews__cta {
+/* Below the reviews (no header row): centred under the list, as before. */
+:where( .sgs-google-reviews__cta ) {
 	margin-top: 2rem;
 	text-align: center;
 }
 
-.sgs-google-reviews__write-review {
+/* In the header row: side by side. With no logo to push it, the buttons take the end of the row; a
+   trailing logo pushes both the logo and the buttons to the end. */
+:where( .sgs-google-reviews__aggregate .sgs-google-reviews__cta ) {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.625rem;
+	margin-top: 0;
+	margin-left: 0;
+	text-align: start;
+}
+
+:where( .sgs-google-reviews__aggregate:not( :has( .sgs-google-reviews__google-logo ) ) .sgs-google-reviews__cta ) {
+	margin-left: auto;
+}
+
+:where( .sgs-google-reviews__write-review, .sgs-google-reviews__see-all ) {
 	display: inline-flex;
 	align-items: center;
 	min-height: 44px;
@@ -441,24 +533,45 @@
 }
 
 /* Hover background-colour is client-controllable — emitted by render.php
-   via sgs_button_element_style_css() (writeReviewColourBackgroundHover attr)
-   at real specificity, so it wins the moment a client sets a value. The
-   rule below is the DEFAULT look, kept at zero specificity via :where() so
-   it never competes with the emitted rule — an unset attribute means this
-   still fires and today's look is unchanged. */
-:where( .sgs-google-reviews__write-review:hover ) {
+   via sgs_button_element_style_css() (writeReviewColourBackgroundHover /
+   seeAllColourBackgroundHover attrs) at real specificity, so it wins the
+   moment a client sets a value. The rule below is the DEFAULT look, kept at
+   zero specificity via :where() so it never competes with the emitted rule —
+   an unset attribute means this still fires and today's look is unchanged. */
+:where( .sgs-google-reviews__write-review:hover, .sgs-google-reviews__see-all:hover ) {
 	background-color: var( --wp--preset--color--primary-dark, #0a5b5d );
 }
 
+/* "Write a review" is the SECONDARY action beside the filled "See all reviews": by default an
+   outlined pill (transparent fill, 1px border and text in the primary colour). A colour, border
+   or padding attribute written by the author or the pipeline still wins (0,3,0 over :where). */
+:where( .sgs-google-reviews__write-review ) {
+	background-color: transparent;
+	color: var( --wp--preset--color--primary, #0f7e80 );
+	border: 1px solid var( --wp--preset--color--primary, #0f7e80 );
+}
+
+:where( .sgs-google-reviews__write-review:hover ) {
+	background-color: color-mix( in srgb, var( --wp--preset--color--primary, #0f7e80 ) 8%, transparent );
+}
+
 @media ( prefers-reduced-motion: no-preference ) {
-	.sgs-google-reviews__write-review {
+	.sgs-google-reviews__write-review,
+	.sgs-google-reviews__see-all {
 		transition: background-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
 	}
 
-	.sgs-google-reviews__write-review:hover {
+	.sgs-google-reviews__write-review:hover,
+	.sgs-google-reviews__see-all:hover {
 		transform: translateY( -2px );
 		box-shadow: 0 4px 12px rgba( 0, 0, 0, 0.15 );
 	}
+}
+
+:where( .sgs-google-reviews__footnote ) {
+	margin: 0.5rem 0 0;
+	font-size: 0.8125rem;
+	color: var( --wp--preset--color--text-muted, #555 );
 }
 
 /* ─── Slider Variant ─────────────────────────────────────────────────────── */
@@ -468,11 +581,15 @@
 	overflow-x: auto;
 	scroll-snap-type: x mandatory;
 	gap: 1.5rem;
+}
+
+/* The scrollbar is hidden by default; `scrollbar` (render.php) and the looks bring it back. */
+:where( .sgs-google-reviews--slider .sgs-google-reviews__list ) {
 	scrollbar-width: none;
 	-ms-overflow-style: none;
 }
 
-.sgs-google-reviews--slider .sgs-google-reviews__list::-webkit-scrollbar {
+:where( .sgs-google-reviews--slider .sgs-google-reviews__list )::-webkit-scrollbar {
 	display: none;
 }
 
@@ -493,22 +610,28 @@
 	position: relative;
 }
 
+/* Arrows sit over the rail by default; `navPosition: below-end` (or a look) puts them in flow below it. */
 .sgs-google-reviews__arrow {
 	position: absolute;
 	top: 50%;
 	transform: translateY( -50% );
 	z-index: 2;
+	isolation: isolate;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: 44px;
-	height: 44px;
 	padding: 0;
 	border: 1px solid var( --wp--preset--color--border, #e0e0e0 );
-	border-radius: 50%;
 	background-color: var( --wp--preset--color--surface-alt, #fff );
 	color: var( --wp--preset--color--text, #1e1e1e );
 	cursor: pointer;
+}
+
+/* Arrow box is an attribute's (`arrowSize`, `arrowBorderRadius`): a zero-specificity default. */
+:where( .sgs-google-reviews__arrow ) {
+	width: 44px;
+	height: 44px;
+	border-radius: 50%;
 }
 
 @media ( prefers-reduced-motion: no-preference ) {
@@ -537,9 +660,10 @@
 	right: 0.5rem;
 }
 
-/* Mobile: hide arrows — touch users swipe the slider natively; the arrow
+/* Mobile: hide overlay arrows — touch users swipe the slider natively; the arrow
    would otherwise overlap card text on narrow viewports. Dots remain, so a
-   single-pointer alternative to dragging is always available. */
+   single-pointer alternative to dragging is always available. Arrows placed in
+   flow (below the rail) overlap nothing and stay (see the nav modifiers below). */
 @media ( max-width: 767px ) {
 	.sgs-google-reviews__arrow {
 		display: none;
@@ -616,6 +740,508 @@
 	}
 }
 
+/* ═══ Ready-made looks (`cardStyle`) ═════════════════════════════════════════
+ * One block per look, every selector exactly TWO classes: the look modifier on the block
+ * root plus one element (the root itself is `.sgs-google-reviews.sgs-google-reviews--card-x`).
+ * A value the author sets is written by render.php at three classes and always wins.
+ * Hover rules live here too; the seeder ignores them when deriving what a look paints.
+ * Third-party brand colours (Google's blue, greys, gold) are intentional literals.
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── google-card: the Google Business reviews panel ─────────────────────── */
+
+.sgs-google-reviews.sgs-google-reviews--card-google-card {
+	padding: 28px 26px;
+	border: 1px solid #dadce0;
+	border-radius: 12px;
+	background: #fff;
+	font-family: Roboto, Arial, sans-serif;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__aggregate {
+	gap: 22px 16px;
+	margin-bottom: 0;
+	padding: 0 0 22px;
+	border-bottom: 1px solid #e8eaed;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__google-logo {
+	order: -1;
+	width: 30px;
+	height: 30px;
+	margin-left: 0;
+	opacity: 1;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__aggregate-text {
+	column-gap: 10px;
+	row-gap: 5px;
+	font-size: inherit;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__source-label {
+	font-size: 13px;
+	letter-spacing: 0.01em;
+	color: #5f6368;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__score {
+	font-size: 32px;
+	font-weight: 500;
+	line-height: 1;
+	color: #202124;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__count {
+	font-size: 13.5px;
+	color: #5f6368;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__stars {
+	--sgs-gr-star-size: 15px;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__aggregate-stars {
+	--sgs-gr-star-size: 18px;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__star--full {
+	fill: #fbbc04;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__star--empty {
+	fill: #dadce0;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__cta {
+	gap: 10px;
+	margin-left: auto;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__see-all,
+.sgs-google-reviews--card-google-card .sgs-google-reviews__write-review {
+	min-height: 40px;
+	padding: 0 22px;
+	border-radius: 20px;
+	font-size: 14px;
+	font-weight: 500;
+	box-shadow: none;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__see-all {
+	background-color: #1a73e8;
+	color: #fff;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__write-review {
+	background-color: transparent;
+	color: #1a73e8;
+	border: 1px solid #dadce0;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__see-all:hover {
+	background-color: #1765cc;
+	transform: none;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__write-review:hover {
+	background-color: #f1f6fe;
+	transform: none;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__list {
+	padding: 22px 0 14px;
+	gap: 16px;
+	scrollbar-width: thin;
+	-ms-overflow-style: auto;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__list::-webkit-scrollbar {
+	display: block;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__review {
+	flex-basis: 340px;
+	gap: 12px;
+	padding: 20px;
+	border: 1px solid #e8eaed;
+	border-radius: 8px;
+	background-color: #fff;
+	box-shadow: none;
+	transform: none;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__review:hover {
+	box-shadow: none;
+	transform: none;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__review-content {
+	column-gap: 9px;
+	row-gap: 12px;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__avatar {
+	width: 40px;
+	height: 40px;
+	margin-right: 12px;
+	border-radius: 50%;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__avatar-initials {
+	font-size: 17px;
+	font-weight: 500;
+	color: #fff;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__author {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	font-size: 14px;
+	font-weight: 500;
+	line-height: normal;
+	color: #202124;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__meta {
+	font-size: 12.5px;
+	color: #70757a;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__date {
+	font-size: 12.5px;
+	color: #70757a;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__text {
+	-webkit-line-clamp: 8;
+	font-size: 14.5px;
+	line-height: 1.6;
+	color: #3c4043;
+	text-wrap: pretty;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__review-link {
+	margin-top: -2px;
+	font-size: 13.5px;
+	color: #1a73e8;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__footnote {
+	margin: 0;
+	font-size: 13px;
+	color: #5f6368;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__slider {
+	display: grid;
+	grid-template-columns: 1fr auto auto;
+	column-gap: 8px;
+	row-gap: 6px;
+	align-items: center;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__list {
+	grid-column: 1 / -1;
+	grid-row: 1;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__arrow {
+	position: relative;
+	top: auto;
+	left: auto;
+	right: auto;
+	transform: none;
+	grid-row: 2;
+	width: 40px;
+	height: 40px;
+	border: 1px solid #dadce0;
+	border-radius: 50%;
+	background-color: #fff;
+	color: #1a73e8;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__arrow--prev {
+	grid-column: 2;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__arrow--next {
+	grid-column: 3;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__arrow:hover,
+.sgs-google-reviews--card-google-card .sgs-google-reviews__arrow:focus-visible {
+	border-color: #dadce0;
+	background-color: #f1f6fe;
+	color: #1a73e8;
+}
+
+.sgs-google-reviews--card-google-card .sgs-google-reviews__footnote {
+	grid-column: 1;
+	grid-row: 2;
+}
+
+@media ( max-width: 767px ) {
+	.sgs-google-reviews.sgs-google-reviews--card-google-card {
+		padding: 20px 16px;
+	}
+
+	.sgs-google-reviews--card-google-card .sgs-google-reviews__review {
+		flex-basis: 270px;
+	}
+
+	.sgs-google-reviews--card-google-card .sgs-google-reviews__arrow {
+		display: flex;
+	}
+}
+
+/* ─── quote-minimal: no boxes, just the words ────────────────────────────── */
+
+.sgs-google-reviews--card-quote-minimal .sgs-google-reviews__review {
+	gap: 8px;
+	padding: 0;
+	border: none;
+	border-radius: 0;
+	background-color: transparent;
+	box-shadow: none;
+}
+
+.sgs-google-reviews--card-quote-minimal .sgs-google-reviews__review:hover {
+	box-shadow: none;
+	transform: none;
+}
+
+.sgs-google-reviews--card-quote-minimal .sgs-google-reviews__text {
+	font-size: 1.0625rem;
+	font-style: italic;
+	line-height: 1.7;
+}
+
+.sgs-google-reviews--card-quote-minimal .sgs-google-reviews__avatar {
+	width: 32px;
+	height: 32px;
+	border-radius: 4px;
+}
+
+.sgs-google-reviews--card-quote-minimal .sgs-google-reviews__slider {
+	display: grid;
+	grid-template-columns: 1fr auto auto;
+	column-gap: 8px;
+	row-gap: 6px;
+	align-items: center;
+}
+
+.sgs-google-reviews--card-quote-minimal .sgs-google-reviews__list {
+	grid-column: 1 / -1;
+	grid-row: 1;
+}
+
+.sgs-google-reviews--card-quote-minimal .sgs-google-reviews__arrow {
+	position: relative;
+	top: auto;
+	left: auto;
+	right: auto;
+	transform: none;
+	grid-row: 2;
+}
+
+.sgs-google-reviews--card-quote-minimal .sgs-google-reviews__arrow--prev {
+	grid-column: 2;
+}
+
+.sgs-google-reviews--card-quote-minimal .sgs-google-reviews__arrow--next {
+	grid-column: 3;
+}
+
+.sgs-google-reviews--card-quote-minimal .sgs-google-reviews__footnote {
+	grid-column: 1;
+	grid-row: 2;
+}
+
+@media ( max-width: 767px ) {
+	.sgs-google-reviews--card-quote-minimal .sgs-google-reviews__arrow {
+		display: flex;
+	}
+}
+
+/* ─── boxed: solid, confident tiles ──────────────────────────────────────── */
+
+.sgs-google-reviews--card-boxed .sgs-google-reviews__review {
+	padding: 28px;
+	border: none;
+	border-radius: 4px;
+	background-color: var( --wp--preset--color--surface-alt, #f5f7f7 );
+	box-shadow: none;
+}
+
+.sgs-google-reviews--card-boxed .sgs-google-reviews__review:hover {
+	box-shadow: none;
+	transform: none;
+}
+
+.sgs-google-reviews--card-boxed .sgs-google-reviews__author {
+	font-weight: 700;
+}
+
+.sgs-google-reviews--card-boxed .sgs-google-reviews__card-logo {
+	display: none;
+}
+
+/* ─── bubble: a soft speech bubble with a tail, the reviewer beneath ─────── */
+
+.sgs-google-reviews--card-bubble .sgs-google-reviews__review {
+	gap: 16px;
+	padding: 0;
+	border: none;
+	background-color: transparent;
+	box-shadow: none;
+}
+
+.sgs-google-reviews--card-bubble .sgs-google-reviews__review:hover {
+	box-shadow: none;
+	transform: none;
+}
+
+.sgs-google-reviews--card-bubble .sgs-google-reviews__review-content {
+	position: relative;
+	order: 1;
+	padding: 22px;
+	border-radius: 18px;
+	background-color: #fff;
+	box-shadow: 0 4px 14px rgba( 0, 0, 0, 0.1 );
+}
+
+.sgs-google-reviews--card-bubble .sgs-google-reviews__review-content::after {
+	content: '';
+	position: absolute;
+	bottom: -9px;
+	left: 30px;
+	width: 0;
+	height: 0;
+	border-left: 9px solid transparent;
+	border-right: 9px solid transparent;
+	border-top: 9px solid #fff;
+}
+
+.sgs-google-reviews--card-bubble .sgs-google-reviews__review-header {
+	order: 2;
+	padding-left: 12px;
+}
+
+.sgs-google-reviews--card-bubble .sgs-google-reviews__avatar {
+	width: 48px;
+	height: 48px;
+}
+
+/* ─── wall-tile: a hairline tile for a dense wall of short reviews ───────── */
+
+.sgs-google-reviews--card-wall-tile .sgs-google-reviews__review {
+	gap: 8px;
+	padding: 16px;
+	border: 1px solid var( --wp--preset--color--border, #e0e0e0 );
+	border-radius: 0;
+	box-shadow: none;
+}
+
+.sgs-google-reviews--card-wall-tile .sgs-google-reviews__review:hover {
+	box-shadow: none;
+	transform: none;
+}
+
+.sgs-google-reviews--card-wall-tile .sgs-google-reviews__text {
+	-webkit-line-clamp: 3;
+}
+
+/* ─── Structural choices (written by render.php only when the author made them) ─
+ * After the looks, so at the same two-class specificity these win. */
+
+.sgs-google-reviews--logo-leading .sgs-google-reviews__google-logo {
+	order: -1;
+	margin-left: 0;
+}
+
+.sgs-google-reviews--logo-leading .sgs-google-reviews__cta {
+	margin-left: auto;
+}
+
+.sgs-google-reviews--logo-trailing .sgs-google-reviews__google-logo {
+	order: 0;
+	margin-left: auto;
+}
+
+.sgs-google-reviews--logo-trailing .sgs-google-reviews__cta {
+	margin-left: 0;
+}
+
+.sgs-google-reviews--nav-below-end .sgs-google-reviews__slider {
+	display: grid;
+	grid-template-columns: 1fr auto auto;
+	column-gap: 8px;
+	row-gap: 6px;
+	align-items: center;
+}
+
+.sgs-google-reviews--nav-below-end .sgs-google-reviews__list {
+	grid-column: 1 / -1;
+	grid-row: 1;
+}
+
+.sgs-google-reviews--nav-below-end .sgs-google-reviews__arrow {
+	position: relative;
+	top: auto;
+	left: auto;
+	right: auto;
+	transform: none;
+	grid-row: 2;
+}
+
+.sgs-google-reviews--nav-below-end .sgs-google-reviews__arrow--prev {
+	grid-column: 2;
+}
+
+.sgs-google-reviews--nav-below-end .sgs-google-reviews__arrow--next {
+	grid-column: 3;
+}
+
+.sgs-google-reviews--nav-below-end .sgs-google-reviews__footnote {
+	grid-column: 1;
+	grid-row: 2;
+}
+
+.sgs-google-reviews--nav-overlay .sgs-google-reviews__slider {
+	display: block;
+}
+
+.sgs-google-reviews--nav-overlay .sgs-google-reviews__arrow {
+	position: absolute;
+	top: 50%;
+	transform: translateY( -50% );
+}
+
+.sgs-google-reviews--nav-overlay .sgs-google-reviews__arrow--prev {
+	left: 0.5rem;
+}
+
+.sgs-google-reviews--nav-overlay .sgs-google-reviews__arrow--next {
+	right: 0.5rem;
+}
+
+.sgs-google-reviews--nav-overlay .sgs-google-reviews__footnote {
+	grid-column: auto;
+	grid-row: auto;
+}
+
+@media ( max-width: 767px ) {
+	.sgs-google-reviews--nav-below-end .sgs-google-reviews__arrow {
+		display: flex;
+	}
+
+	.sgs-google-reviews--nav-overlay .sgs-google-reviews__arrow {
+		display: none;
+	}
+}
+
 /* ─── Mobile ─────────────────────────────────────────────────────────────── */
 
 @media ( max-width: 767px ) {
@@ -623,12 +1249,7 @@
 		gap: 0.75rem;
 	}
 
-	.sgs-google-reviews__aggregate-score strong {
-		font-size: 2rem;
-	}
-
 	.sgs-google-reviews__review {
-		flex-direction: column;
 		padding: 1rem;
 	}
 

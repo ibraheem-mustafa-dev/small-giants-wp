@@ -70,9 +70,16 @@ final class ReviewsAggregateTest extends TestCase {
 		return $item;
 	}
 
-	/** Number of star icons drawn in the aggregate row or the badge, before its text block. */
+	/**
+	 * Number of star icons drawn in the aggregate row (its star run sits between the rating figure and the
+	 * review count, inside the row's text block) or in the badge (before its text block).
+	 */
 	private function aggregateStars( string $html ): int {
-		if ( ! preg_match( '#<div class="sgs-google-reviews__(?:aggregate|badge)">(.*?)<div class="sgs-google-reviews__(?:aggregate|badge)-text">#s', $html, $m ) ) {
+		if ( preg_match( '#<div class="sgs-google-reviews__aggregate">(.*?)<div class="sgs-google-reviews__aggregate-text">.*?(?:sgs-google-reviews__cta|sgs-google-reviews__google-logo|</div>\s*</div>)#s', $html, $m ) ) {
+			$row = substr( $m[0], strpos( $m[0], 'sgs-google-reviews__aggregate-text' ) );
+			return substr_count( $row, 'sgs-google-reviews__star ' );
+		}
+		if ( ! preg_match( '#<div class="sgs-google-reviews__badge">(.*?)<div class="sgs-google-reviews__badge-text">#s', $html, $m ) ) {
 			return 0;
 		}
 		return substr_count( $m[1], 'sgs-google-reviews__star ' );
@@ -116,15 +123,15 @@ final class ReviewsAggregateTest extends TestCase {
 				'reviewCount'   => 15,
 			)
 		);
-		$this->assertStringContainsString( '<strong>4.9</strong>', $html );
+		$this->assertStringContainsString( '<strong class="sgs-google-reviews__score">4.9</strong>', $html );
 		$this->assertStringContainsString( '15 reviews', $html );
-		$this->assertStringNotContainsString( '<strong>4.5</strong>', $html, 'the derived mean must not override a set figure' );
+		$this->assertStringNotContainsString( '<strong class="sgs-google-reviews__score">4.5</strong>', $html, 'the derived mean must not override a set figure' );
 		$this->assertSame( 5, $this->aggregateStars( $html ) );
 	}
 
 	public function test_with_no_average_it_is_the_mean_of_the_rated_written_reviews(): void {
 		$html = $this->render( array( 'reviews' => array( $this->review( 'A', 5 ), $this->review( 'B', 4 ), $this->review( 'C', null ) ) ) );
-		$this->assertStringContainsString( '<strong>4.5</strong>', $html, 'mean of the two rated reviews, the unrated one ignored' );
+		$this->assertStringContainsString( '<strong class="sgs-google-reviews__score">4.5</strong>', $html, 'mean of the two rated reviews, the unrated one ignored' );
 		$this->assertStringContainsString( '3 reviews', $html );
 		$this->assertStringNotContainsString( 'ld+json', $html, 'no schema from a figure derived from the visible reviews' );
 	}
@@ -169,6 +176,6 @@ final class ReviewsAggregateTest extends TestCase {
 	public function test_show_aggregate_off_hides_all_of_it(): void {
 		$html = $this->render( array( 'showAggregate' => false, 'reviews' => array( $this->review( 'A', 5 ) ) ) );
 		$this->assertStringNotContainsString( 'sgs-google-reviews__aggregate', $html );
-		$this->assertStringNotContainsString( '<strong>5.0</strong>', $html );
+		$this->assertStringNotContainsString( '<strong class="sgs-google-reviews__score">5.0</strong>', $html );
 	}
 }

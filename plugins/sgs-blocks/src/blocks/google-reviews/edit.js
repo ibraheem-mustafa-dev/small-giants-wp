@@ -32,6 +32,14 @@ import { ResponsiveOverride,
 } from '../../components';
 import MediaElementPanel from '../../components/MediaElementPanel';
 import WrittenReviewsPanel from './components/WrittenReviewsPanel';
+import { borderStyleValue } from './components/panel-kit';
+import ColourPanel from './components/ColourPanel';
+import CardPanel from './components/CardPanel';
+import HeaderPanel from './components/HeaderPanel';
+import ReviewerPanel from './components/ReviewerPanel';
+import ReviewTextPanel from './components/ReviewTextPanel';
+import ButtonsPanel from './components/ButtonsPanel';
+import NavigationPanel from './components/NavigationPanel';
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
@@ -52,7 +60,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		showGoogleLogo,
 		reviewRequestUrl,
 		theme,
-		cardStyle,
 		starColour,
 		starColourGradient,
 		starColourHover,
@@ -79,10 +86,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		arrowColourTextHover,
 		arrowColourTextGradient,
 		arrowColourTextHoverGradient,
-		arrowColourBorder,
-		arrowColourBorderHover,
-		arrowColourBorderGradient,
-		arrowColourBorderHoverGradient,
 		dotColour,
 		dotColourHover,
 		dotColourGradient,
@@ -100,8 +103,18 @@ export default function Edit( { attributes, setAttributes } ) {
 	// must not also carry the variant/theme classes or the front-end rules would style both.
 	const blockProps = useBlockProps( { className: 'sgs-google-reviews-editor' } );
 
+	// The outer border sits on the panel's own background when that is a flat colour; a gradient (or no
+	// background at all) gives the WCAG border-contrast warning nothing single to compare against.
+	const googleReviewsContrastAgainst =
+		attributes.backgroundColour && ! attributes.backgroundColourGradient ? attributes.backgroundColour : '';
+
 	return (
 		<>
+			{ /* The shared Colour panel leads the Styles tab (SgsColourPanel's own docblock: same-group
+			   fills concatenate in mount order). It holds every NEW fill and text colour on this block;
+			   the per-element panels below are the ones that were here before. */ }
+			<ColourPanel attributes={ attributes } setAttributes={ setAttributes } />
+
 			{ /* Spec 35 THE PLACEMENT RULE (D537) — the single mixed "Colour"
 			   panel is split per declared element: star fill -> "Star icon";
 			   arrow text/fill/border+hover -> "Slider arrow"; write-review
@@ -184,29 +197,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								gradientValue: arrowColourTextHoverGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( { arrowColourTextHoverGradient: val ?? '' } ),
-							},
-						] }
-					/>
-					<DesignTokenPicker
-						label={ __( 'Slider arrow border', 'sgs-blocks' ) }
-						states={ [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: arrowColourBorder,
-								onChange: ( val ) => setAttributes( { arrowColourBorder: val ?? '' } ),
-								gradientValue: arrowColourBorderGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { arrowColourBorderGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: arrowColourBorderHover,
-								onChange: ( val ) => setAttributes( { arrowColourBorderHover: val ?? '' } ),
-								gradientValue: arrowColourBorderHoverGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { arrowColourBorderHoverGradient: val ?? '' } ),
 							},
 						] }
 					/>
@@ -294,6 +284,16 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 			</InspectorControls>
+
+			{ /* Six collapsed styling sections (Styles tab). Each is one component in ./components: a PanelBody
+			   holding a ToolsPanel, every row built from a shared SGS control. Navigation exists only for the
+			   Slider display type, the one variant that has a rail and arrows. */ }
+			<CardPanel attributes={ attributes } setAttributes={ setAttributes } />
+			<HeaderPanel attributes={ attributes } setAttributes={ setAttributes } />
+			<ReviewerPanel attributes={ attributes } setAttributes={ setAttributes } />
+			<ReviewTextPanel attributes={ attributes } setAttributes={ setAttributes } />
+			<ButtonsPanel attributes={ attributes } setAttributes={ setAttributes } />
+			{ 'slider' === variant && <NavigationPanel attributes={ attributes } setAttributes={ setAttributes } /> }
 
 			<InspectorControls>
 				<ContainerWrapperControls attributes={ attributes } setAttributes={ setAttributes } kind="layout" />
@@ -518,18 +518,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( value ) => setAttributes( { theme: value } ) }
 						__next40pxDefaultSize
 					/>
-
-					<SelectControl
-						label={ __( 'Card Style', 'sgs-blocks' ) }
-						value={ cardStyle }
-						options={ [
-							{ label: __( 'Flat', 'sgs-blocks' ), value: 'flat' },
-							{ label: __( 'Bordered', 'sgs-blocks' ), value: 'bordered' },
-							{ label: __( 'Elevated', 'sgs-blocks' ), value: 'elevated' },
-						] }
-						onChange={ ( value ) => setAttributes( { cardStyle: value } ) }
-						__next40pxDefaultSize
-					/>
 				</PanelBody>
 
 				{ variant === 'slider' && (
@@ -687,13 +675,14 @@ export default function Edit( { attributes, setAttributes } ) {
 						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ attributes.borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: borderStyleValue( 'borderStyle', val ) } ) }
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourValue={ attributes.borderColour }
 						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
 						colourGradientValue={ attributes.borderColourGradient }
 						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
 						colourLinked={ true }
+						contrastAgainst={ googleReviewsContrastAgainst }
 						radiusValues={ {
 								base: attributes.borderRadius?.desktop ?? {},
 								tablet: attributes.borderRadius?.tablet ?? {},
@@ -711,11 +700,15 @@ export default function Edit( { attributes, setAttributes } ) {
 				{ showsSampleNotice( attributes ) && <SampleNotice /> }
 				{ /* The canvas IS the server's render. `omitNullish` only strips nulls (a JS null becomes "" in the
 				   REST query string and the block-renderer 400s on it); every attribute still reaches render.php.
-				   "Nothing to show" is decided by the server: it renders nothing, and EmptyState explains why. */ }
+				   "Nothing to show" is decided by the server: it renders nothing, and EmptyState explains why.
+				   httpMethod POST: the block has 300+ attributes and up to a dozen written reviews, so the GET
+				   query string (measured 12.5 KB with 13 reviews) passes the ~8 KB request-line limit web servers
+				   apply; a POST body has no such limit and keeps booleans and numbers typed. */ }
 				<SsrPreviewGuard>
 					<ServerSideRender
 						block="sgs/google-reviews"
 						attributes={ omitNullish( attributes ) }
+						httpMethod="POST"
 						EmptyResponsePlaceholder={ EmptyState }
 						LoadingResponsePlaceholder={ LoadingState }
 						ErrorResponsePlaceholder={ ErrorState }

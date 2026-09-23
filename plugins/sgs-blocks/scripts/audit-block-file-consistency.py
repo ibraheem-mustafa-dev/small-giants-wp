@@ -309,6 +309,11 @@ PREFIXED_HELPER_SUFFIXES = {
     'sgs_button_element_style_css': [
         'ColourBackground', 'ColourText', 'ColourBorder',
         'ColourBackgroundHover', 'ColourTextHover', 'ColourBorderHover',
+        # The six gradient siblings: helpers-button-style.php reads each via
+        # $read( 'Colour...Gradient' ) (added 2026-09-21; sgs/google-reviews'
+        # seeAll pill surfaced the gap, its border gradients ARE consumed).
+        'ColourBackgroundGradient', 'ColourTextGradient', 'ColourBorderGradient',
+        'ColourBackgroundHoverGradient', 'ColourTextHoverGradient', 'ColourBorderHoverGradient',
         'BorderStyle', 'BorderWidth', 'BorderRadius', 'FontWeight', 'FontSize',
         'Padding', 'WidthType',
     ],

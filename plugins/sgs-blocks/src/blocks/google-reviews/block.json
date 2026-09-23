@@ -48,6 +48,15 @@
 			"presetSelectors": [
 				"cardStyle"
 			],
+			"presetManualValues": {
+				"cardStyle": [
+					"google-card",
+					"quote-minimal",
+					"boxed",
+					"bubble",
+					"wall-tile"
+				]
+			},
 			"elements": {
 				"wrapper": {
 					"label": "Wrapper",
@@ -63,7 +72,7 @@
 					"prefix": "",
 					"attrMap": {
 						"css:color": "native:color.text",
-						"css:background-color": "native:color.background",
+						"css:background-color": "backgroundColour",
 						"css:border-width": "borderWidth",
 						"css:border-style": "borderStyle",
 						"css:border-color": "borderColour",
@@ -72,7 +81,14 @@
 						"anim:duration": "sgsAnimationDuration",
 						"anim:easing": "sgsAnimationEasing",
 						"css:max-width": "maxWidth",
-						"css:border-color-gradient": "borderColourGradient"
+						"css:border-color-gradient": "borderColourGradient",
+						"css:background-color-gradient": "backgroundColourGradient",
+						"css:padding": "padding",
+						"css:font-family": "fontFamily",
+						"css:font-size": "fontSize",
+						"css:font-weight": "fontWeight",
+						"css:font-style": "fontStyle",
+						"css:line-height": "lineHeight"
 					},
 					"_note": "Root, rendered by SGS_Container_Wrapper (container_kind=layout, wraps sgs/container — WS-4). Empty-string prefix lets the default {suffix} convention resolve the bare universal-container attrs case-insensitively: maxWidth, gap(+Tablet/Mobile), gridTemplateColumns/Rows(+Tablet/Mobile), gridAutoRows, flexDirection, flexWrap, alignItems, alignContent, justifyContent, justifyItems all resolve this way — no attrMap needed for those. Honest gaps: no display/order/overflow/width/height/max-height/min-height/box-shadow/aspect-ratio attribute exists on this block; no padding/margin attribute or native support is declared (spacing support absent); opacity/overlay/background-attachment/-position/-repeat/object-fit/object-position have no control (this block has no image element); anim:stagger/parallax/trigger have no matching attrs (no staggerDelay/parallax/scroll-trigger control here) — honest gaps, not orphans. starColour/cardStyle/theme/variant are variant/preset selectors, not style-cluster members — deliberately undeclared (no prefix claims them, so they surface neither as gap nor orphan)."
 				},
@@ -103,11 +119,14 @@
 					"order": 3,
 					"layer": "OUTER",
 					"clusters": [
-						"fill"
+						"fill",
+						"layout"
 					],
 					"attrMap": {
 						"css:fill": "starColour",
-						"css:fill-gradient": "starColourGradient"
+						"css:fill-gradient": "starColourGradient",
+						"css:height": "starSize",
+						"css:width": "starSize"
 					},
 					"states": {
 						"hover": {
@@ -117,6 +136,19 @@
 						}
 					},
 					"_note": "The rating-stars SVG (sgs_render_stars_svg(), render.php:341-390) — full/half-fill stars carry an enum-modifier class on the wrapper (sgs-google-reviews--star-{slug}, render.php:222) that style.css keys off (.sgs-google-reviews--star-{slug} .sgs-google-reviews__star--full{fill:...}, style.css:168-176). starColour's PRIMARY, visible effect is this SVG fill — earlier classification derived background-color instead, because the same attribute ALSO feeds --sgs-gr-star-colour (render.php:230-232), a custom property with a SECOND, low-visibility consumer: .sgs-google-reviews__breakdown-fill (style.css:120, the ratings-breakdown bars, hidden unless showBreakdown is on) and .sgs-google-reviews__dot.is-active::before (style.css:579, the slider pagination dot). Same one-attribute-drives-two-unrelated-CSS-properties-on-two-unrelated-elements shape as product-search's `input` element note for inputBorderColour — declared on the primary, named node (the star SVG); the background-color consumer rides the same underlying value rather than getting a second manifest entry. Palette-coverage gap (style.css only recognises 2 legacy enum values against the full open-palette control) is a separate, unfixed client-facing bug — not addressed by this classification fix."
+				},
+				"star-empty": {
+					"label": "Empty star",
+					"order": 23,
+					"layer": "OUTER",
+					"clusters": [
+						"fill"
+					],
+					"prefix": "starEmpty",
+					"attrMap": {
+						"css:fill": "starEmptyColour"
+					},
+					"_note": "The unfilled part of a star (.sgs-google-reviews__star--empty). Its own element because a cluster member claims exactly one attribute and css:fill on the star element is starColour."
 				},
 				"arrow": {
 					"label": "Slider arrow",
@@ -134,7 +166,12 @@
 						"css:color": "arrowColourText",
 						"css:color-gradient": "arrowColourTextGradient",
 						"css:border-color": "arrowColourBorder",
-						"css:border-color-gradient": "arrowColourBorderGradient"
+						"css:border-color-gradient": "arrowColourBorderGradient",
+						"css:border-width": "arrowBorderWidth",
+						"css:border-style": "arrowBorderStyle",
+						"css:border-radius": "arrowBorderRadius",
+						"css:height": "arrowSize",
+						"css:width": "arrowSize"
 					},
 					"states": {
 						"hover": {
@@ -156,14 +193,21 @@
 					"layer": "OUTER",
 					"clusters": [
 						"text",
-						"fill"
+						"fill",
+						"layout"
 					],
 					"prefix": "writeReview",
 					"attrMap": {
 						"css:background-color": "writeReviewColourBackground",
 						"css:background-image": "writeReviewColourBackgroundGradient",
 						"css:color": "writeReviewColourText",
-						"css:color-gradient": "writeReviewColourTextGradient"
+						"css:color-gradient": "writeReviewColourTextGradient",
+						"css:border-color": "writeReviewColourBorder",
+						"css:border-width": "writeReviewBorderWidth",
+						"css:border-style": "writeReviewBorderStyle",
+						"css:border-radius": "writeReviewBorderRadius",
+						"css:padding": "writeReviewPadding",
+						"css:min-height": "writeReviewMinHeight"
 					},
 					"states": {
 						"hover": {
@@ -171,11 +215,266 @@
 								"css:background-color": "writeReviewColourBackgroundHover",
 								"css:background-image": "writeReviewColourBackgroundHoverGradient",
 								"css:color": "writeReviewColourTextHover",
-								"css:color-gradient": "writeReviewColourTextHoverGradient"
+								"css:color-gradient": "writeReviewColourTextHoverGradient",
+								"css:border-color": "writeReviewColourBorderHover"
 							}
 						}
 					},
 					"_note": "The 'Write a review' CTA button (.sgs-google-reviews__write-review). Added 2026-09-03 alongside the hover-colour + gradient migration off a hardcoded style.css :hover rule -- render.php calls sgs_button_element_style_css() with prefix 'writeReview', which reads exactly this attrMap shape by $prefix.'Suffix' concatenation. writeReviewColourTextGradient/writeReviewColourTextHoverGradient added 2026-09-04 (helpers-button-style.php D942/D956 gate) -- keyed css:color-gradient, distinct from the fill's css:background-image, since render.php now passes bg_layer=true so this element's background paints on a separate ::after layer instead of this selector, freeing the text for a gradient sibling (same recipe as sgs/modal's closeColourTextGradient)."
+				},
+				"header": {
+					"label": "Header row",
+					"order": 6,
+					"layer": "OUTER",
+					"clusters": [
+						"layout"
+					],
+					"prefix": "header",
+					"attrMap": {
+						"css:gap": "headerGap",
+						"css:padding": "headerPadding",
+						"css:border-color": "headerDividerColour",
+						"css:border-width": "headerDividerWidth"
+					},
+					"_note": "headerDividerColour / headerDividerWidth are the header row's bottom divider (the row draws one edge only, border-bottom); they register on the border-colour / border-width members because the vocabulary has no per-edge bottom member."
+				},
+				"google-logo": {
+					"label": "Google logo",
+					"order": 7,
+					"layer": "OUTER",
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"prefix": "logo",
+					"attrMap": {
+						"css:height": "logoSize",
+						"css:width": "logoSize",
+						"css:opacity": "logoOpacity"
+					}
+				},
+				"source-label": {
+					"label": "Source caption",
+					"order": 8,
+					"layer": "OUTER",
+					"clusters": [
+						"text"
+					],
+					"prefix": "sourceLabel",
+					"attrMap": {
+						"css:color": "sourceLabelColour"
+					}
+				},
+				"average": {
+					"label": "Rating figure",
+					"order": 9,
+					"layer": "OUTER",
+					"clusters": [
+						"text"
+					],
+					"prefix": "score",
+					"attrMap": {
+						"css:color": "scoreColour"
+					},
+					"_note": "css_element is 'average', not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so the draft's star run (annotated __rating) would resolve to this element through the alias group instead of to the star element. The attribute prefix stays 'score'."
+				},
+				"count": {
+					"label": "Review count",
+					"order": 10,
+					"layer": "OUTER",
+					"clusters": [
+						"text"
+					],
+					"prefix": "count",
+					"attrMap": {
+						"css:color": "countColour"
+					}
+				},
+				"aggregate-star": {
+					"label": "Header stars",
+					"order": 11,
+					"layer": "OUTER",
+					"clusters": [
+						"layout"
+					],
+					"prefix": "aggregateStar",
+					"attrMap": {
+						"css:height": "aggregateStarSize",
+						"css:width": "aggregateStarSize"
+					}
+				},
+				"review": {
+					"label": "Review card",
+					"order": 12,
+					"layer": "OUTER",
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"prefix": "card",
+					"attrMap": {
+						"css:padding": "cardPadding",
+						"css:border-width": "cardBorderWidth",
+						"css:border-style": "cardBorderStyle",
+						"css:border-color": "cardBorderColour",
+						"css:border-color-gradient": "cardBorderColourGradient",
+						"css:border-radius": "cardBorderRadius",
+						"css:background-color": "cardBackground",
+						"css:gap": "cardGap",
+						"css:width": "cardWidth"
+					}
+				},
+				"avatar": {
+					"label": "Reviewer avatar",
+					"order": 13,
+					"layer": "OUTER",
+					"clusters": [
+						"text",
+						"layout"
+					],
+					"prefix": "avatar",
+					"attrMap": {
+						"css:color": "avatarTextColour",
+						"css:height": "avatarSize",
+						"css:width": "avatarSize",
+						"css:border-radius": "avatarBorderRadius"
+					}
+				},
+				"author": {
+					"label": "Reviewer name",
+					"order": 14,
+					"layer": "OUTER",
+					"clusters": [
+						"text"
+					],
+					"prefix": "author",
+					"attrMap": {
+						"css:color": "authorColour"
+					}
+				},
+				"meta": {
+					"label": "Reviewer detail line",
+					"order": 15,
+					"layer": "OUTER",
+					"clusters": [
+						"text"
+					],
+					"prefix": "meta",
+					"attrMap": {
+						"css:color": "metaColour"
+					}
+				},
+				"date": {
+					"label": "Review date",
+					"order": 16,
+					"layer": "OUTER",
+					"clusters": [
+						"text"
+					],
+					"prefix": "date",
+					"attrMap": {
+						"css:color": "dateColour"
+					}
+				},
+				"text": {
+					"label": "Review text",
+					"order": 17,
+					"layer": "OUTER",
+					"clusters": [
+						"text"
+					],
+					"prefix": "text",
+					"attrMap": {
+						"css:color": "textColour"
+					},
+					"_note": "textClamp / textClampLines cut the review text to N lines (-webkit-line-clamp); the vocabulary has no line-clamp member, so they are classified 'behaviour' in the DB override rather than claimed here."
+				},
+				"card-logo": {
+					"label": "Card Google logo",
+					"order": 18,
+					"layer": "OUTER",
+					"clusters": [
+						"layout"
+					],
+					"prefix": "cardLogo",
+					"attrMap": {
+						"css:height": "cardLogoSize",
+						"css:width": "cardLogoSize"
+					}
+				},
+				"review-link": {
+					"label": "Read-full-review link",
+					"order": 19,
+					"layer": "OUTER",
+					"clusters": [
+						"text"
+					],
+					"prefix": "reviewLink",
+					"attrMap": {
+						"css:color": "reviewLinkColour"
+					}
+				},
+				"footnote": {
+					"label": "Footnote",
+					"order": 20,
+					"layer": "OUTER",
+					"clusters": [
+						"text"
+					],
+					"prefix": "footnote",
+					"attrMap": {
+						"css:color": "footnoteColour"
+					}
+				},
+				"list": {
+					"label": "Review rail",
+					"order": 21,
+					"layer": "OUTER",
+					"clusters": [
+						"layout"
+					],
+					"prefix": "rail",
+					"attrMap": {
+						"css:padding": "railPadding"
+					},
+					"_note": "scrollbar / scrollbarColour are the rail's scrollbar settings; they do not start with this element's prefix and the vocabulary has no scrollbar member, so they are named in the DB override (css_property scrollbar-width / scrollbar-color, css_element list) rather than here."
+				},
+				"see-all": {
+					"label": "See-all-reviews button",
+					"order": 22,
+					"layer": "OUTER",
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"prefix": "seeAll",
+					"attrMap": {
+						"css:background-color": "seeAllColourBackground",
+						"css:background-image": "seeAllColourBackgroundGradient",
+						"css:color": "seeAllColourText",
+						"css:color-gradient": "seeAllColourTextGradient",
+						"css:border-color": "seeAllColourBorder",
+						"css:border-color-gradient": "seeAllColourBorderGradient",
+						"css:border-width": "seeAllBorderWidth",
+						"css:border-style": "seeAllBorderStyle",
+						"css:border-radius": "seeAllBorderRadius",
+						"css:padding": "seeAllPadding",
+						"css:min-height": "seeAllMinHeight"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "seeAllColourBackgroundHover",
+								"css:background-image": "seeAllColourBackgroundHoverGradient",
+								"css:color": "seeAllColourTextHover",
+								"css:color-gradient": "seeAllColourTextHoverGradient",
+								"css:border-color": "seeAllColourBorderHover",
+								"css:border-color-gradient": "seeAllColourBorderHoverGradient"
+							}
+						}
+					},
+					"_note": "The 'See all reviews' pill. Same recipe as the write-review and arrow elements: render.php calls sgs_button_element_style_css() with prefix 'seeAll'."
 				}
 			},
 			"fx": {
@@ -190,6 +489,51 @@
 				],
 				"borderWidth": [
 					"borderWidth"
+				],
+				"padding": [
+					"padding"
+				],
+				"headerPadding": [
+					"headerPadding"
+				],
+				"cardPadding": [
+					"cardPadding"
+				],
+				"cardBorderWidth": [
+					"cardBorderWidth"
+				],
+				"cardBorderRadius": [
+					"cardBorderRadius"
+				],
+				"avatarBorderRadius": [
+					"avatarBorderRadius"
+				],
+				"railPadding": [
+					"railPadding"
+				],
+				"arrowBorderWidth": [
+					"arrowBorderWidth"
+				],
+				"arrowBorderRadius": [
+					"arrowBorderRadius"
+				],
+				"writeReviewBorderWidth": [
+					"writeReviewBorderWidth"
+				],
+				"writeReviewBorderRadius": [
+					"writeReviewBorderRadius"
+				],
+				"writeReviewPadding": [
+					"writeReviewPadding"
+				],
+				"seeAllBorderWidth": [
+					"seeAllBorderWidth"
+				],
+				"seeAllBorderRadius": [
+					"seeAllBorderRadius"
+				],
+				"seeAllPadding": [
+					"seeAllPadding"
 				]
 			}
 		},
@@ -387,8 +731,14 @@
 			"enum": [
 				"flat",
 				"bordered",
-				"elevated"
-			]
+				"elevated",
+				"google-card",
+				"quote-minimal",
+				"boxed",
+				"bubble",
+				"wall-tile"
+			],
+			"description": "Card look: a ready-made starting style for the review cards. flat / bordered / elevated are the plain looks; google-card copies the Google Reviews panel; quote-minimal is borderless and quiet; boxed is a solid tile; bubble is a soft speech-bubble card; wall-tile is a thin-lined tile for a dense wall. Any value set in the card, avatar or star controls paints over the look."
 		},
 		"starColour": {
 			"type": "string",
@@ -641,6 +991,1442 @@
 			"type": "string",
 			"default": "",
 			"description": "Hover sibling of dotColourGradient."
+		},
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the card background instead of a flat colour. Non-empty wins over backgroundColour."
+		},
+		"headerGap": {
+			"type": "object",
+			"default": {}
+		},
+		"headerPadding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"headerDividerColour": {
+			"type": "string",
+			"default": ""
+		},
+		"headerDividerWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"logoSize": {
+			"type": "object",
+			"default": {}
+		},
+		"logoOpacity": {
+			"type": "number",
+			"default": 0.7
+		},
+		"logoPosition": {
+			"type": "string",
+			"enum": [
+				"leading",
+				"trailing"
+			],
+			"default": "trailing"
+		},
+		"sourceLabel": {
+			"type": "string",
+			"default": "",
+			"description": "The review source caption shown beside the logo (for example 'Google Reviews'). Not the client's business name."
+		},
+		"sourceLabelColour": {
+			"type": "string",
+			"default": ""
+		},
+		"scoreColour": {
+			"type": "string",
+			"default": ""
+		},
+		"countColour": {
+			"type": "string",
+			"default": ""
+		},
+		"starSize": {
+			"type": "object",
+			"default": {}
+		},
+		"aggregateStarSize": {
+			"type": "object",
+			"default": {}
+		},
+		"starEmptyColour": {
+			"type": "string",
+			"default": ""
+		},
+		"cardPadding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"cardBorderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"cardBorderStyle": {
+			"type": "string",
+			"enum": [
+				"solid",
+				"dashed",
+				"dotted",
+				"none"
+			],
+			"default": "solid"
+		},
+		"cardBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"cardBorderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the review card border with a masked ring instead of a flat colour. Non-empty wins over cardBorderColour."
+		},
+		"cardBorderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"cardBackground": {
+			"type": "string",
+			"default": ""
+		},
+		"cardGap": {
+			"type": "object",
+			"default": {}
+		},
+		"cardWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"avatarSize": {
+			"type": "object",
+			"default": {}
+		},
+		"avatarBorderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"avatarTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"authorColour": {
+			"type": "string",
+			"default": ""
+		},
+		"metaColour": {
+			"type": "string",
+			"default": ""
+		},
+		"dateColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textClamp": {
+			"type": "boolean",
+			"default": true,
+			"description": "On: the review text is cut to textClampLines lines. Off: the full review shows."
+		},
+		"textClampLines": {
+			"type": "number",
+			"default": 8
+		},
+		"showCardLogo": {
+			"type": "boolean",
+			"default": false,
+			"description": "Show a small Google 'G' at the top right of each review card."
+		},
+		"cardLogoSize": {
+			"type": "object",
+			"default": {}
+		},
+		"showReviewLink": {
+			"type": "boolean",
+			"default": false,
+			"description": "Show a 'Read the full review' link under a review that carries its own URL."
+		},
+		"reviewLinkLabel": {
+			"type": "string",
+			"default": ""
+		},
+		"reviewLinkColour": {
+			"type": "string",
+			"default": ""
+		},
+		"footnote": {
+			"type": "string",
+			"default": "",
+			"description": "A short line under the review rail, for example how many reviews left a comment."
+		},
+		"footnoteColour": {
+			"type": "string",
+			"default": ""
+		},
+		"railPadding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"scrollbar": {
+			"type": "string",
+			"enum": [
+				"hidden",
+				"thin",
+				"visible"
+			],
+			"default": "hidden"
+		},
+		"scrollbarColour": {
+			"type": "string",
+			"default": ""
+		},
+		"navPosition": {
+			"type": "string",
+			"enum": [
+				"overlay",
+				"below-end"
+			],
+			"default": "overlay"
+		},
+		"arrowSize": {
+			"type": "object",
+			"default": {}
+		},
+		"arrowBorderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"arrowBorderStyle": {
+			"type": "string",
+			"enum": [
+				"solid",
+				"dashed",
+				"dotted",
+				"none"
+			],
+			"default": "solid"
+		},
+		"arrowBorderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"writeReviewLabel": {
+			"type": "string",
+			"default": "",
+			"description": "Text of the 'Write a review' button. Empty keeps the built-in wording."
+		},
+		"writeReviewBorderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"writeReviewBorderStyle": {
+			"type": "string",
+			"enum": [
+				"solid",
+				"dashed",
+				"dotted",
+				"none"
+			],
+			"default": "solid"
+		},
+		"writeReviewColourBorder": {
+			"type": "string",
+			"default": ""
+		},
+		"writeReviewColourBorderHover": {
+			"type": "string",
+			"default": ""
+		},
+		"writeReviewBorderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"writeReviewPadding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"writeReviewMinHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"seeAllUrl": {
+			"type": "string",
+			"default": "",
+			"description": "Link for the 'See all reviews' button. Empty hides the button."
+		},
+		"seeAllLabel": {
+			"type": "string",
+			"default": "",
+			"description": "Text of the 'See all reviews' button. Empty keeps the built-in wording."
+		},
+		"seeAllColourBackground": {
+			"type": "string",
+			"default": ""
+		},
+		"seeAllColourBackgroundHover": {
+			"type": "string",
+			"default": ""
+		},
+		"seeAllColourText": {
+			"type": "string",
+			"default": ""
+		},
+		"seeAllColourTextHover": {
+			"type": "string",
+			"default": ""
+		},
+		"seeAllColourBorder": {
+			"type": "string",
+			"default": ""
+		},
+		"seeAllColourBorderHover": {
+			"type": "string",
+			"default": ""
+		},
+		"seeAllColourBackgroundGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string for the see-all button's background instead of a flat colour. Non-empty wins over the flat colour."
+		},
+		"seeAllColourBackgroundHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string for the see-all button's background (hover) instead of a flat colour. Non-empty wins over the flat colour."
+		},
+		"seeAllColourTextGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string for the see-all button's text instead of a flat colour. Non-empty wins over the flat colour."
+		},
+		"seeAllColourTextHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string for the see-all button's text (hover) instead of a flat colour. Non-empty wins over the flat colour."
+		},
+		"seeAllColourBorderGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string for the see-all button's border instead of a flat colour. Non-empty wins over the flat colour."
+		},
+		"seeAllColourBorderHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string for the see-all button's border (hover) instead of a flat colour. Non-empty wins over the flat colour."
+		},
+		"seeAllBorderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"seeAllBorderStyle": {
+			"type": "string",
+			"enum": [
+				"solid",
+				"dashed",
+				"dotted",
+				"none"
+			],
+			"default": "solid"
+		},
+		"seeAllBorderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"seeAllPadding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"seeAllMinHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"fontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"lineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"lineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"sourceLabelFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"sourceLabelFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"sourceLabelFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"sourceLabelFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"sourceLabelFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"sourceLabelLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"sourceLabelLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"sourceLabelLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"sourceLabelLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"sourceLabelTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"sourceLabelTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"sourceLabelTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"sourceLabelTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"scoreFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"scoreFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"scoreFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"scoreFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"scoreFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"scoreLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"scoreLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"scoreLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"scoreLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"scoreTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"scoreTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"scoreTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"scoreTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"countFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"countFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"countFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"countFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"countFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"countLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"countLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"countLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"countLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"countTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"countTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"countTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"countTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"authorFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"authorFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"authorFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"authorFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"authorFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"authorLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"authorLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"authorLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"authorLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"authorTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"authorTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"authorTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"authorTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"metaFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"metaFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"metaFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"metaFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"metaFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"metaLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"metaLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"metaLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"metaLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"metaTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"metaTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"metaTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"metaTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"dateFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"dateFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"dateFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"dateFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"dateFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"dateLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"dateLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"dateLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"dateLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"dateTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"dateTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"dateTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"dateTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"textFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"textFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"textFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"textFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"textFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"textLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"textLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"textLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"textLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"textTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"textTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"textTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"textTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"avatarFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"avatarFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"avatarFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"avatarFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"avatarFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"avatarLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"avatarLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"avatarLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"avatarLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"avatarTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"avatarTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"avatarTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"avatarTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"footnoteFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"footnoteFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"footnoteFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"footnoteFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"footnoteFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"footnoteLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"footnoteLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"footnoteLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"footnoteLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"footnoteTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"footnoteTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"footnoteTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"footnoteTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"reviewLinkFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"reviewLinkFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"reviewLinkFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"reviewLinkFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"reviewLinkFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"reviewLinkLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"reviewLinkLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"reviewLinkLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"reviewLinkLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"reviewLinkTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"reviewLinkTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"reviewLinkTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"reviewLinkTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"writeReviewFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"writeReviewFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"writeReviewFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"writeReviewFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"writeReviewFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"writeReviewLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"writeReviewLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"writeReviewLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"writeReviewLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"writeReviewTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"writeReviewTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"writeReviewTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"writeReviewTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"seeAllFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"seeAllFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"seeAllFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"seeAllFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"seeAllFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"seeAllLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"seeAllLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"seeAllLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"seeAllLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"seeAllTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"seeAllTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"seeAllTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"seeAllTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
 		}
 	},
 	"editorScript": "file:./index.js",

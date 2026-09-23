@@ -33,3 +33,33 @@
 	gap: 12px;
 	margin-top: 12px;
 }
+
+/* The canvas is the block's real server render, and style.css (the block's `style` asset) loads in
+   the editor canvas too, so the new elements (__source-label, __score, __aggregate-stars, __card-logo,
+   __review-link, __footnote, __see-all, __star--empty, __avatar-initials) are painted by the same
+   rules as on the live page. Only editor-only concerns live here. */
+
+/* Let a wide slider rail or wall scroll inside the canvas instead of stretching the editor column. */
+.sgs-google-reviews-editor {
+	min-width: 0;
+}
+
+/* Links and buttons in the canvas do not navigate (SsrPreviewGuard cancels the click, and a click
+   selects the block instead), so they must not offer the pointer hand. Hover colours still work. */
+.sgs-google-reviews-editor .sgs-google-reviews__see-all,
+.sgs-google-reviews-editor .sgs-google-reviews__write-review,
+.sgs-google-reviews-editor .sgs-google-reviews__review-link,
+.sgs-google-reviews-editor .sgs-google-reviews__arrow,
+.sgs-google-reviews-editor .sgs-google-reviews__dot {
+	cursor: default;
+}
+
+/* Decorative marks: a click or drag on them selects the block rather than grabbing the graphic. */
+.sgs-google-reviews-editor .sgs-google-reviews__google-logo,
+.sgs-google-reviews-editor .sgs-google-reviews__card-logo,
+.sgs-google-reviews-editor .sgs-google-reviews__aggregate-stars,
+.sgs-google-reviews-editor .sgs-google-reviews__star--empty,
+.sgs-google-reviews-editor .sgs-google-reviews__avatar-initials {
+	-webkit-user-drag: none;
+	user-select: none;
+}
