@@ -965,8 +965,17 @@
  * "Cross-atom rule: composed opacity" section.
  */
 
+/*
+ * z-index fallback is `auto`, not -1 (2026-09-24). `.sgs-media-el` is the
+ * replaced img/video (class-sgs-media-element.php::CLASS_ELEMENT); the SVG
+ * position control is only offered for SVG media (atom `types`), so a -1
+ * default reached only images and videos no client could re-layer. Where the
+ * element is a flex or grid item with no stacking context above it, -1 painted
+ * it BEHIND its section's background: the Eye Care brand strip showed 16
+ * loaded logos as a blank white band. A layer applies only when chosen.
+ */
 .sgs-media-el {
-	z-index: var( --sgs-media-svg-zindex, -1 );
+	z-index: var( --sgs-media-svg-zindex, auto );
 	text-shadow: var( --sgs-media-svg-text-shadow, none );
 }
 

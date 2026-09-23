@@ -597,6 +597,33 @@ def validate_font_faces(snapshot: dict):
     return (not errors, errors)
 
 
+def drop_inherited_heading_colour(snap: dict, trace: list) -> dict:
+    """Remove ``styles.elements.heading.color.text`` when it equals the body text colour.
+
+    WordPress prints ``elements.heading.color`` as ``h1, h2, h3, h4, h5, h6 { color: … }``, a rule
+    on the heading itself, so it beats the colour a heading would INHERIT from its section. When
+    that colour is the body text colour it changes nothing on a plain section and breaks every
+    coloured one: on the Eye Care draft's black "why buy" band the heading and the four card titles
+    painted near-black on black, while the band's text colour reached the paragraphs. In the draft
+    the headings inherit. Same value as the body means "inherit", so the key is dropped and the
+    headings take the colour of whatever they sit in. A DIFFERENT heading colour is a real design
+    choice and stays. Runs after ``merge_onto``, whose fill-only carry would otherwise restore it.
+    """
+    body = (snap.get("styles", {}).get("color") or {}).get("text")
+    heading = snap.get("styles", {}).get("elements", {}).get("heading")
+    colour = heading.get("color") if isinstance(heading, dict) else None
+    if not body or not isinstance(colour, dict) or colour.get("text") != body:
+        return snap
+    del colour["text"]
+    if not colour:
+        del heading["color"]
+    trace.append({"kind": "base", "what": "styles.elements.heading.color.text",
+                  "reason": "equal to styles.color.text, so headings inherit their section's colour "
+                            "as the draft's do (an element rule would override a coloured section)",
+                  "dropped": body})
+    return snap
+
+
 def merge_onto(snap: dict, existing: dict, trace: list) -> dict:
     """ADDITIVELY merge the generated ``snap`` onto an EXISTING client snapshot (FR-33-11 non-destruct).
 
@@ -763,6 +790,8 @@ def main(argv=None) -> int:
         existing_path = pathlib.Path(args.merge_onto)
         if existing_path.is_file():
             snap = merge_onto(snap, json.loads(existing_path.read_text(encoding="utf-8")), trace)
+
+    drop_inherited_heading_colour(snap, trace)
 
     ok, errors = validate_theme_json(snap)
     if not ok:

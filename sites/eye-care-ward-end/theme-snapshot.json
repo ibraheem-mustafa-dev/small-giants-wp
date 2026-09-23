@@ -626,9 +626,6 @@
           "fontFamily": "var:preset|font-family|heading",
           "fontWeight": "500",
           "lineHeight": "1.0"
-        },
-        "color": {
-          "text": "var:preset|color|text"
         }
       },
       "h1": {
