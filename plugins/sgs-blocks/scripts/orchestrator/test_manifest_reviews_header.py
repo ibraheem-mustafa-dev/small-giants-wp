@@ -380,8 +380,11 @@ def test_eye_care_every_new_class_lands_on_the_right_element_of_the_real_draft(e
     assert re.search(r'<a class="sgs-google-reviews__see-all-url" href="[^"]+"[^>]*background:#1A73E8[^>]*>See all reviews</a>', out)
     assert re.search(r'<a class="sgs-google-reviews__review-request-url" href="[^"]+"[^>]*>Write a review</a>', out)
     assert re.search(r'<p class="sgs-google-reviews__footnote"[^>]*>Scroll for more', out)
-    assert 'class="sgs-google-reviews__rail rev-rail"' in out and out.count('class="sgs-google-reviews__arrow"') == 2
-    assert out.count("sgs-google-reviews__google-logo") == 1
+    # the arrows and the logo may ALSO carry a layout modifier (`__arrow--below-end`, `__google-logo--leading`) when the database's
+    # default differs from the draft (design 2026-09-23 section 4, manifest_layout_choices); count the elements, not the strings
+    assert 'class="sgs-google-reviews__rail rev-rail"' in out
+    assert len(re.findall(r'class="sgs-google-reviews__arrow(?: sgs-google-reviews__arrow--[a-z-]+)?"', out)) == 2
+    assert len(re.findall(r'class="sgs-google-reviews__google-logo(?: sgs-google-reviews__google-logo--[a-z-]+)?"', out)) == 1
     assert "sgs-google-reviews__header" in re.search(r'<div class="[^"]*"[^>]*justify-content:space-between[^>]*padding-bottom:22px', out).group(0)
     assert rungs(row) == {"See all reviews": ("seeAllUrl", "link text"), "Write a review": ("reviewRequestUrl", "link text")}
     assert set(structure(row)) == {"header", "rail", "arrow", "google-logo"} and row["status"] == "applied"
@@ -410,6 +413,10 @@ def test_eye_care_only_classes_were_added_to_the_draft(eye_care):
     for cls in re.findall(r"sgs-google-reviews__[a-z-]+", undone):
         undone = undone.replace(f' class="{cls}"', "").replace(cls + " ", "")
     undone = undone.replace('<div class="sgs-google-reviews" data-reveal="1"', '<div data-reveal="1"')
+    # the layout carriers (design 2026-09-23 section 4): a `data-sgs-<attr>` marker on the block root for each written choice
+    written = [e for e in eye_care["row"].get("layout_choices", []) if e["written"] and "on the block root" in e["evidence"]]
+    for entry in written:
+        undone = undone.replace(f' data-sgs-{ma._kebab(entry["attribute"])}="{str(entry["value"]).lower()}"', "", 1)
     assert undone == ma.strip_field_markers(section(eye_care["raw"]))
 
 

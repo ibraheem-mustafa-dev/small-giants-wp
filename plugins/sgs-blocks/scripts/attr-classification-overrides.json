@@ -6097,18 +6097,6 @@
 		},
 		{
 			"slug": "sgs/google-reviews",
-			"attr": "scrollbar",
-			"fields": {
-				"role": "visual",
-				"derived_selector": ".sgs-google-reviews__list, .sgs-google-reviews__rail",
-				"css_property": "scrollbar-width",
-				"css_element": "list",
-				"css_layer": "OUTER",
-				"_reason": "2026-09-21 (google-reviews redesign T1). Box/size/scalar attr of one element: css_property/css_element/derived_selector as the colour group above (block class + annotator class). A size attr lists height,width and font-size where the draft sizes a glyph run by font-size; a padding attr lists exactly `padding` because the area fold's box-object branch resolves the destination by an exact css_property match on the element the draft class names (a longhand list would make the selector route write a bare string into the box object). css_element 'average' (the rating figure) is deliberately not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so a draft's `__rating` star run would resolve to the figure's attrs through the alias group instead of to starColour."
-			}
-		},
-		{
-			"slug": "sgs/google-reviews",
 			"attr": "arrowSize",
 			"fields": {
 				"role": "layout",

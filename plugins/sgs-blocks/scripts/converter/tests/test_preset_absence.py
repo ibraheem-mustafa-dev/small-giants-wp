@@ -72,7 +72,8 @@ import pytest  # noqa: E402
 
 from converter.context import Recognition  # noqa: E402
 from converter.db.db_lookup import SGS_DB  # noqa: E402
-from converter.resolvers.preset_absence import apply_preset_absence  # noqa: E402
+from converter.resolvers import preset_absence  # noqa: E402
+from converter.resolvers.preset_absence import _pick_value, apply_preset_absence  # noqa: E402
 
 
 def _rec(slug: str) -> Recognition:
@@ -213,7 +214,18 @@ def test_non_token_shadow_team_member_picks_elevated():
 # ---------------------------------------------------------------------------
 
 
-def test_google_reviews_shadowed_review_picks_elevated():
+@pytest.fixture
+def no_default(monkeypatch):
+    """Take the block's own default out of the pick. The three google-reviews tests below test SIGNAL DETECTION on a
+    descendant-scoped preset (does a shadow / a border / nothing reach the right value?), not the default. Since the
+    prefer-the-default-on-a-tie rule (design 2026-09-23 section 4) the outcome also depends on which value block.json
+    declares as default, and the redesign moves that default to the signal-less `google-card` look, which would then
+    (correctly) be kept for the shadowed and the bordered draft. Pinning the default to "unknown" keeps these tests about
+    what they were written to prove; the rule itself is tested in section 6."""
+    monkeypatch.setattr(preset_absence, "_block_default", lambda slug, attr: None)
+
+
+def test_google_reviews_shadowed_review_picks_elevated(no_default):
     """google-reviews's cardStyle CSS targets a DESCENDANT
     (`.sgs-google-reviews--card-elevated .sgs-google-reviews__review`), not
     the class element itself — proves the resolver's raw-decl signal
@@ -228,7 +240,7 @@ def test_google_reviews_shadowed_review_picks_elevated():
     assert result.get("cardStyle") == "elevated", result
 
 
-def test_google_reviews_bordered_review_picks_bordered():
+def test_google_reviews_bordered_review_picks_bordered(no_default):
     result = apply_preset_absence(
         _rec("sgs/google-reviews"),
         attrs_so_far={},
@@ -238,7 +250,7 @@ def test_google_reviews_bordered_review_picks_bordered():
     assert result.get("cardStyle") == "bordered", result
 
 
-def test_google_reviews_plain_review_picks_flat_neutral():
+def test_google_reviews_plain_review_picks_flat_neutral(no_default):
     """'flat' paints NO CSS rule at all (a real SelectControl option with zero
     dedicated declarations) — proves the generalised neutral-fallback seeding
     (mirrors effectHover's 'none'), not a hardcoded google-reviews carve-out."""
@@ -374,3 +386,79 @@ def test_block_with_no_preset_rows_is_a_true_no_op():
 def test_unrecognised_node_returns_empty():
     rec = Recognition(kind="unrecognised", slug=None, container_kind=None, delegates_content=None)
     assert apply_preset_absence(rec, {}, {}, {}) == {}
+
+
+# ---------------------------------------------------------------------------
+# 6. Prefer the block's default on a tie (design 2026-09-23 section 4, Bean-approved shared change). Pure-function
+#    cases on synthetic candidates (no block named), then the wiring through apply_preset_absence with a pinned default.
+# ---------------------------------------------------------------------------
+
+_B, _S, _T = frozenset({"border"}), frozenset({"box-shadow"}), frozenset({"transform"})
+_LOOKS = (("flat", frozenset(), True), ("bordered", _B, False), ("elevated", _S, False),
+          ("lift", _S | _T, False), ("manual-look", frozenset(), False))
+
+
+def test_tie_a_signal_default_that_qualifies_is_kept_over_an_equal_count_rival():
+    # border + shadow present: bordered and elevated both need one property; the default wins the tie
+    assert _pick_value(_LOOKS, {"border", "box-shadow"}, default="bordered") == "bordered"
+
+
+def test_negative_control_without_the_default_the_old_priority_decides_the_same_tie():
+    assert _pick_value(_LOOKS, {"border", "box-shadow"}, default=None) == "elevated"
+    assert _pick_value(_LOOKS, {"border", "box-shadow"}, default="flat") == "elevated"      # a neutral default is no tie-breaker
+
+
+def test_negative_control_a_signal_default_that_does_not_qualify_is_not_kept():
+    assert _pick_value(_LOOKS, {"box-shadow"}, default="bordered") == "elevated"
+
+
+def test_a_strictly_more_specific_value_still_beats_a_qualifying_default():
+    assert _pick_value(_LOOKS, {"box-shadow", "transform"}, default="elevated") == "lift"
+
+
+def test_a_signal_less_default_is_kept_when_the_draft_matches_a_one_property_look():
+    assert _pick_value(_LOOKS, {"border"}, default="manual-look") == "manual-look"
+    assert _pick_value(_LOOKS, {"box-shadow"}, default="manual-look") == "manual-look"
+
+
+def test_negative_control_the_same_draft_without_the_signal_less_default_gets_the_one_property_look():
+    assert _pick_value(_LOOKS, {"border"}, default=None) == "bordered"
+
+
+def test_negative_control_a_signal_less_default_loses_to_a_two_property_match():
+    assert _pick_value(_LOOKS, {"box-shadow", "transform"}, default="manual-look") == "lift"
+
+
+def test_negative_control_a_signal_less_default_is_not_kept_when_the_draft_paints_nothing():
+    """The neutral is the exact match for a draft that paints none of the signal properties."""
+    assert _pick_value(_LOOKS, set(), default="manual-look") == "flat"
+
+
+def test_wiring_the_default_comes_from_the_block_and_a_bordered_draft_keeps_it(monkeypatch):
+    """Through the real entry point: google-reviews' cardStyle candidates from the DB, the default pinned to the value the
+    redesign declares (a hand-picked, signal-less look). A bordered review card now keeps the default instead of
+    switching to `bordered` (design 2026-09-23 section 1: the converter chose 'bordered' so the Google look never applied)."""
+    rows = [c for c in __import__("converter.db.db_lookup", fromlist=["x"]).preset_implications_for("sgs/google-reviews")
+            if c[0] == "cardStyle"]
+    signal_less = sorted(v for _a, v, props, neutral in rows if not props and not neutral)
+    if not signal_less:
+        pytest.skip("the DB has no signal-less cardStyle look for google-reviews")
+    look = signal_less[0]
+    monkeypatch.setattr(preset_absence, "_block_default", lambda slug, attr: look)
+    bordered = {"border-width": "1px", "border-style": "solid"}
+    assert apply_preset_absence(_rec("sgs/google-reviews"), {}, bordered, {}).get("cardStyle") == look
+    monkeypatch.setattr(preset_absence, "_block_default", lambda slug, attr: None)            # negative control
+    assert apply_preset_absence(_rec("sgs/google-reviews"), {}, bordered, {}).get("cardStyle") == "bordered"
+
+
+def test_the_default_is_read_from_the_database_the_converter_is_pointed_at(tmp_path, monkeypatch):
+    """`_block_default` reads block_attributes.default_value (JSON) from db_lookup.SGS_DB, whatever that is repointed to."""
+    db = tmp_path / "d.db"
+    conn = sqlite3.connect(db)
+    conn.execute("CREATE TABLE block_attributes (block_slug TEXT, attr_name TEXT, default_value TEXT)")
+    conn.execute("INSERT INTO block_attributes VALUES ('x/y', 'look', '\"plain\"')")
+    conn.commit()
+    conn.close()
+    monkeypatch.setattr(preset_absence.db_lookup, "SGS_DB", db)
+    assert preset_absence._block_default("x/y", "look") == "plain"
+    assert preset_absence._block_default("x/y", "missing") is None

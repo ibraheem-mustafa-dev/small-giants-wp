@@ -587,7 +587,7 @@ def _google_reviews_block(markup: str) -> dict:
 def test_eye_care_the_block_root_is_the_bordered_card_that_holds_the_header_and_the_rail(eye_care):
     row, out = eye_care["rows"]["sgs-google-reviews"], eye_care["out"]
     assert row["status"] == "applied" and row["target"] == "ancestor" and row["climbed"] == 2 and row["items"] == 13
-    card = re.search(r'<div class="sgs-google-reviews" data-reveal="1" style="border:1px solid #DADCE0;border-radius:12px;background:#fff;[^"]*">', out)
+    card = re.search(r'<div class="sgs-google-reviews" data-reveal="1" style="border:1px solid #DADCE0;border-radius:12px;background:#fff;[^"]*"[^>]*>', out)   # + layout markers (manifest_layout_choices)
     assert card is not None                                            # the class is on the div that carries the border
     rail = re.search(r'<div class="(?:sgs-google-reviews__rail )?rev-rail"[^>]*>', out).group(0)      # the rail may also carry the block's `__rail` class
     assert not re.search(r'class="[^"]*\bsgs-google-reviews\b(?!__)', rail)                            # never the block ROOT class
@@ -666,8 +666,11 @@ def test_eye_care_annotation_is_deterministic_a_second_pass_changes_nothing_and_
     assert same == eye_care["out"] and {r["root_class"]: r for r in rows} == eye_care["rows"]
     assert again == eye_care["out"]
     section = lambda page: re.search(r'<section class="sgs-google-reviews".*?</section>', page, re.S).group(0)  # noqa: E731
-    undone = re.sub(r' class="sgs-google-reviews__[a-z-]+"', "", section(eye_care["out"]))
-    undone = re.sub(r'(?<=class=")sgs-google-reviews__[a-z-]+ ', "", undone)                    # an annotation class first in an existing list
+    undone = section(eye_care["out"])
+    for _ in range(3):                                                  # an element may carry an element class AND its layout modifier
+        undone = re.sub(r'(?<=class=")sgs-google-reviews__[a-z-]+ ', "", undone)                # an annotation class first in an existing list
+        undone = re.sub(r' class="sgs-google-reviews__[a-z-]+"', "", undone)
+    undone = re.sub(r' data-sgs-(?!manifest)[a-z-]+="[^"]*"', "", undone)   # the layout carriers on the block root (manifest_layout_choices)
     undone = undone.replace('<div class="sgs-google-reviews" data-reveal="1"', '<div data-reveal="1"')
     assert undone == ma.strip_field_markers(section(eye_care["raw"]))       # only the annotation classes were added
 
@@ -1013,7 +1016,9 @@ def test_the_real_eye_care_run_reviews_row_is_unchanged_by_the_fix_wave():
     assert {"reviewRequestUrl", "averageRating", "reviewCount"} <= set(row["header_fields"])
     assert row["fields"] == ["author", "text", "date", "meta", "rating", "avatarColour"]
     assert not any("sits outside" in r for r in _skipped(row).values())          # the section heading and eyebrow are not header text
-    for element in ("see-all-url", "source-label", "footnote", "header", "rail", "arrow", "google-logo"):    # the redesign's own classes
+    out = re.sub(r' data-sgs-(?!manifest)[a-z-]+="[^"]*"', "", out)          # the layout carriers (manifest_layout_choices)
+    out = re.sub(r' ?sgs-google-reviews__[a-z-]+--[a-z-]+', "", out)             # their modifier classes
+    for element in ("see-all-url", "source-label", "footnote", "header", "rail", "arrow", "google-logo", "card-logo"):    # the redesign's own classes
         cls = "sgs-google-reviews__" + element
         out = out.replace(f' class="{cls}"', "").replace(cls + " ", "")
     assert out == (RUN_NEW / "manifest-annotated.html").read_text(encoding="utf-8", newline="")   # the recorded annotated copy, byte for byte

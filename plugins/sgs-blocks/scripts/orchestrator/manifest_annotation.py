@@ -60,15 +60,34 @@ from __future__ import annotations
 
 import fnmatch
 import html as _html
+import importlib.util
 import json
 import re
 import sqlite3
+import sys
 from dataclasses import dataclass, field
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Protocol
 
 CONFIDENCE_RANK = {"low": 0, "medium": 1, "high": 2}
+
+
+def _sibling(stem: str):
+    """A sibling module of this file, loaded by PATH (this module is itself loaded by path under another name by the
+    orchestrator, so a plain ``import`` of a sibling is not guaranteed to resolve). Registered before execution so its
+    dataclasses can find their module."""
+    name = f"sgs_{stem}"
+    if name in sys.modules:
+        return sys.modules[name]
+    spec = importlib.util.spec_from_file_location(name, Path(__file__).with_name(f"{stem}.py"))
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+_layout = _sibling("manifest_layout_choices")      # the layout-choice rungs (presence, order, placement, pagination)
 
 _MANIFEST_RE = re.compile(
     r"<script\b[^>]*\bdata-sgs-manifest\b[^>]*>(.*?)</script\s*>", re.IGNORECASE | re.DOTALL
@@ -164,6 +183,9 @@ class BlockLookup(Protocol):
     #   def derived_classes(self, slug: str) -> frozenset[str]:
     #       """Every element class the block's attributes list in ``derived_selector`` (``sgs-google-reviews__header``): the
     #       classes a draft element may carry for the converter to route an attribute to it. Without it no structure is classed."""
+    #   def layout_attrs(self, slug: str) -> list[manifest_layout_choices.LayoutAttr]:
+    #       """The block's enum strings and presence booleans with their role, element class, values and default: what the
+    #       layout rungs (``manifest_layout_choices``) decide from the draft's structure. Without it no layout choice is read."""
 
 
 def _norm(token: str) -> str:
@@ -281,6 +303,25 @@ class DbBlockLookup:
                 "SELECT DISTINCT derived_selector FROM block_attributes WHERE block_slug = ? AND derived_selector IS NOT NULL", (slug,)):
             classes |= {c[1:] for c in _selector_classes(selector) if c.startswith(".")}
         return frozenset(classes)
+
+    def layout_attrs(self, slug: str) -> list:
+        """The block's string attributes with ``enum_values`` and its ``presence-boolean`` attributes, as
+        ``manifest_layout_choices.LayoutAttr`` (name, type, role, derived_selector, enum values, JSON default)."""
+        out = []
+        for name, kind, role, selector, enum, default in self._conn.execute(
+                "SELECT attr_name, attr_type, role, derived_selector, enum_values, default_value FROM block_attributes "
+                "WHERE block_slug = ? AND ((attr_type = 'string' AND enum_values IS NOT NULL) OR "
+                "(attr_type = 'boolean' AND role = 'presence-boolean')) ORDER BY id", (slug,)):
+            try:
+                values = tuple(v for v in json.loads(enum) if isinstance(v, str)) if enum else ()
+            except ValueError:
+                values = ()
+            try:
+                parsed = json.loads(default) if default is not None else None
+            except ValueError:
+                parsed = None
+            out.append(_layout.LayoutAttr(name, kind, role, selector, values, parsed))
+        return out
 
     def scalar_attrs(self, slug: str) -> list[ScalarAttr]:
         """The block's scalar attributes whose role is content-bearing (``roles.classification``). A link attribute
@@ -2040,6 +2081,8 @@ def _declaration(src: str, root_class: str, decl, groups, section_blocks: dict, 
     header = _plan_header(src, owner, run.members, block_name, _call(lookup, "scalar_attrs", slug, []),
                           _call(lookup, "element_names", slug, frozenset()), lookup, edits, rail=run.parent,
                           classes=_call(lookup, "derived_classes", slug, frozenset()))
+    layout = _layout.plan_layout_choices(sys.modules[__name__], src, owner, run.members, run.parent, block_name,
+                                         _call(lookup, "layout_attrs", slug, []), edits, lookup)
     header_why = (f"the block's own box holds {', '.join(header.unexplained)}, which no block field can carry"
                   if header.unexplained else None)
     beside, beside_fields = ([], [])
@@ -2076,6 +2119,8 @@ def _declaration(src: str, root_class: str, decl, groups, section_blocks: dict, 
         row["header_link_rungs"] = header.rungs
     if header.structure:
         row["header_structure"] = header.structure
+    if layout:
+        row["layout_choices"] = layout
     if not class_section:
         row["climbed"] = climbed
     return new_src, row

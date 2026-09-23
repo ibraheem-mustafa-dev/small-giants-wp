@@ -27,6 +27,10 @@ gate, gates/check_preset_absence_no_slug_literal.py).
 """
 from __future__ import annotations
 
+import functools
+import json
+import sqlite3
+from pathlib import Path
 from typing import Any
 
 from converter.context import Recognition
@@ -132,10 +136,55 @@ def _reconcile_properties(
     return resolved
 
 
-def _pick_value(candidates: tuple, present_props: set) -> "str | None":
+@functools.lru_cache(maxsize=256)
+def _declared_default(db_path: str, block_slug: str, attr: str) -> Any:
+    """The block's own `block.json` default for `attr` (`block_attributes.default_value`, JSON), or None when the row,
+    the column or the database is missing (soft-fail: the tie rule then simply does not apply). Keyed on the database
+    path so a caller that repoints `db_lookup.SGS_DB` (a pinned copy) never reads a stale answer."""
+    if not Path(db_path).is_file():
+        return None
+    try:
+        conn = db_lookup.get_connection(db_path)
+    except sqlite3.Error:
+        return None
+    try:
+        row = conn.execute(
+            "SELECT default_value FROM block_attributes WHERE block_slug = ? AND attr_name = ?",
+            (block_slug, attr),
+        ).fetchone()
+    except sqlite3.Error:
+        row = None
+    finally:
+        conn.close()
+    if not row or row[0] is None:
+        return None
+    try:
+        return json.loads(row[0])
+    except (TypeError, ValueError):
+        return None
+
+
+def _block_default(block_slug: str, attr: str) -> Any:
+    return _declared_default(str(db_lookup.SGS_DB), block_slug, attr)
+
+
+def _default_holds(candidates: tuple, present_props: set, default: "str | None", qualifying: list) -> bool:
+    """The tie rule of `_pick_value`: the block's default is kept (see there). `qualifying` = [(value, count, priority)]."""
+    best = max((count for _v, count, _p in qualifying), default=0)
+    for value, props, is_neutral in candidates:
+        if value != default or is_neutral:
+            continue
+        if props:
+            return props.issubset(present_props) and len(props) == best
+        return bool(qualifying) and best <= 1
+    return False
+
+
+def _pick_value(candidates: tuple, present_props: set, default: "str | None" = None) -> "str | None":
     """Component 4 step 4 — PICK.
 
     `candidates` = ((enum_value, frozenset(implied_props), is_neutral), ...).
+    `default` = the block's own `block.json` default for this attr (None when unknown).
 
     A non-neutral value QUALIFIES only when EVERY one of its implied
     properties is present — a full-match requirement, so a value needing only
@@ -143,7 +192,18 @@ def _pick_value(candidates: tuple, present_props: set) -> "str | None":
     `transform` AND `box-shadow` (e.g. "lift") when both properties are
     genuinely present; "lift" is the more specific, more correct match.
 
-    Among qualifying values: prefer more implied properties (more specific
+    PREFER THE DEFAULT ON A TIE (design 2026-09-23 §4, Bean-approved shared change). The block's default look is its
+    baseline, so it is kept whenever the draft gives no reason to leave it:
+      * a default WITH implied properties is kept when it qualifies and no qualifying value needs MORE properties
+        (an equal-count rival such as `bordered` beside a bordered default no longer displaces it);
+      * a SIGNAL-LESS, non-neutral default (a hand-picked look, `supports.sgs.presetManualValues`, seeded with no implied
+        property so it is never auto-picked; or a look whose CSS paints none of the signal properties) says nothing the
+        draft could contradict, so it ties with any ONE-property match and is kept unless a qualifying value needs two or
+        more properties (strictly more specific). It is NOT kept when the draft paints none of the signal properties at
+        all: the neutral is then the exact match (a non-neutral look paints something the draft does not).
+    A neutral default changes nothing (the neutral already wins only when nothing qualifies).
+
+    Otherwise, among qualifying values: prefer more implied properties (more specific
     match wins), then the highest-priority single property
     (`_SIGNAL_PRIORITY` — box-shadow beats border/transform on an equal-count
     tie, e.g. info-box "elevated" vs "bordered" both needing exactly 1
@@ -157,6 +217,8 @@ def _pick_value(candidates: tuple, present_props: set) -> "str | None":
         if props.issubset(present_props):
             priority = max((_SIGNAL_PRIORITY.get(p, -1) for p in props), default=-1)
             qualifying.append((value, len(props), priority))
+    if _default_holds(candidates, present_props, default, qualifying):
+        return default
     if qualifying:
         qualifying.sort(key=lambda t: (-t[1], -t[2], t[0]))
         return qualifying[0][0]
@@ -203,7 +265,8 @@ def apply_preset_absence(
         present_props = _reconcile_properties(
             rec.slug, state, candidate_props, attrs_so_far, raw_present
         )
-        picked = _pick_value(tuple(candidates), present_props)
+        default = _block_default(rec.slug, preset_attr)
+        picked = _pick_value(tuple(candidates), present_props, default if isinstance(default, str) else None)
         if picked is not None:
             out[preset_attr] = picked
     return out
