@@ -14,6 +14,7 @@
  */
 
 import { resolveTier } from '../../utils/responsive';
+import { surfaceBackdropPreview } from '../../utils/surface-preview';
 
 /**
  * The sides a pill inset actually uses. `bottom` is deliberately absent: a gap
@@ -195,22 +196,11 @@ export function floatPreview( attributes, previewTier ) {
 		headerFloat,
 		headerFloatInset,
 		headerFloatCollapse,
-		surfaceBlur,
-		surfaceSaturate,
 	} = attributes || {};
-	const filterParts = [];
-	if ( typeof surfaceSaturate === 'number' ) {
-		filterParts.push( `saturate(${ surfaceSaturate }%)` );
-	}
-	if ( surfaceBlur ) {
-		filterParts.push( `blur(${ surfaceBlur })` );
-	}
-	const blurStyle = filterParts.length
-		? {
-				backdropFilter: filterParts.join( ' ' ),
-				WebkitBackdropFilter: filterParts.join( ' ' ),
-		  }
-		: {};
+	// Shared with every other `<BackgroundPanel>` block via
+	// `src/utils/surface-preview.js` (U-1 commit 4e) — this was the ONLY
+	// block with this mirror before the fan-out; the helper now carries it.
+	const blurStyle = surfaceBackdropPreview( attributes );
 
 	if ( resolveTier( headerFloat, previewTier, 'off' ).value !== 'on' ) {
 		return blurStyle;

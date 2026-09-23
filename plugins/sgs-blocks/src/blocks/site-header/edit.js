@@ -25,7 +25,7 @@ import {
 	BackgroundPanel,
 	MIN_HEIGHT_OPTIONS,
 } from '../container/components/ContainerWrapperControls';
-import { ResponsiveTriStateControl, ResponsiveBoxControl, ResponsiveOverride, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, ShadowControl, resolveColourToken, SgsBoxControl, StarterLookPresetControl, SurfaceGroundControls } from '../../components';
+import { ResponsiveTriStateControl, ResponsiveBoxControl, ResponsiveOverride, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, ShadowControl, resolveColourToken, SgsBoxControl, StarterLookPresetControl } from '../../components';
 import { NumberControl, ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { resolveTier } from '../../utils/responsive';
 import { backgroundPaintPreview, backgroundPreview, spacingPreview, isTierBoxEmpty, svgBackgroundPreview, textPaintPreview } from '../../utils';
@@ -776,9 +776,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							padding: {},
 							margin: {},
 							zIndex: {},
-							surfaceBlur: '',
-							surfaceSaturate: undefined,
-							surfaceOpacity: undefined,
 							surfaceFadeEdge: 'none',
 							backgroundImage: undefined,
 							backgroundImageTablet: undefined,
@@ -927,10 +924,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						</ResponsiveOverride>
 					</ToolsPanelItem>
 
-					<SurfaceGroundControls
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-					/>
+					{ /* Blur, saturate and fill opacity live in the shared BackgroundPanel's Surface panel. */ }
 
 					<ToolsPanelItem
 						label={ __( 'Edge fade', 'sgs-blocks' ) }

@@ -303,6 +303,15 @@
 			"type": "string",
 			"default": ""
 		},
+		"surfaceBlur": {
+			"type": "string",
+			"default": "",
+			"description": "Backdrop blur: a single CSS length (for example 24px) that blurs whatever sits behind this block. Emitted by SGS_Container_Wrapper via includes/helpers-surface-ground.php; empty emits nothing."
+		},
+		"surfaceSaturate": {
+			"type": "number",
+			"description": "Backdrop saturation as a whole-number percentage (for example 150), paired with surfaceBlur. Unset emits nothing; 0 is a legal value."
+		},
 		"backgroundOverlayColourHover": {
 			"type": "string",
 			"default": ""

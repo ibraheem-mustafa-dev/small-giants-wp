@@ -12,6 +12,7 @@
 
 import { __ } from '@wordpress/i18n';
 import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
+import { getBlockType } from '@wordpress/blocks';
 import {
 	PanelBody,
 	SelectControl,
@@ -20,6 +21,7 @@ import {
 	ToggleControl,
 	TextareaControl,
 	TabPanel,
+	ToolsPanel,
 } from '@wordpress/components';
 import {
 	ResponsiveControl,
@@ -28,6 +30,7 @@ import {
 	SgsColourPanel,
 	SgsLengthControl,
 	MediaElementPanel,
+	SurfaceGroundControls,
 } from '../../../components';
 import { SurfaceTreatmentPanel, isSimpleBackgroundImage } from '../../../components/SurfaceTreatmentPanel';
 import { isExtensionEnabled } from '../../extensions/hide-extensions';
@@ -245,6 +248,25 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
+			{ /* Surface ground (backdrop blur, saturate, and fill opacity where the block passes its own fill to sgs_surface_fill_alpha): shown only when the block type declares surfaceBlur, read from the registered block type. */ }
+			{ getBlockType( name )?.attributes?.surfaceBlur && (
+				<ToolsPanel
+					label={ __( 'Surface', 'sgs-blocks' ) }
+					resetAll={ () =>
+						setAttributes( {
+							surfaceBlur: '',
+							surfaceSaturate: undefined,
+							surfaceOpacity: undefined,
+						} )
+					}
+				>
+					<SurfaceGroundControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						showOpacity={ !! getBlockType( name )?.attributes?.surfaceOpacity }
+					/>
+				</ToolsPanel>
+			) }
 			<TabPanel
 				tabs={ [
 					{ name: 'image', title: __( 'Image', 'sgs-blocks' ) },

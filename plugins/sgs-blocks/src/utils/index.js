@@ -5,6 +5,7 @@ export * from './objectPosition';
 export * from './cssLength';
 export * from './presetSettings';
 export * from './background-preview';
+export * from './surface-preview';
 export * from './svg-gradient-preview';
 export * from './spacing-preview';
 export * from './content-band-preview';

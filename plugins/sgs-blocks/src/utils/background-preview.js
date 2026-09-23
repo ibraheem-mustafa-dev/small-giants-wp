@@ -1,5 +1,6 @@
 import { resolveColourToken } from '../components/DesignTokenPicker';
 import { sanitiseSvg } from './sanitise-svg';
+import { surfaceBackdropPreview } from './surface-preview';
 
 /**
  * Shared editor-canvas mirror of the container/composite background stack —
@@ -250,6 +251,11 @@ export function backgroundPreview( attributes, colourPalette ) {
 		// element itself would dim the client's real content, not just the
 		// decorative layer.
 		...overlayPreview.vars,
+		// Surface ground (backdrop blur + saturate, U-1 commit 4e) — painted on
+		// the block itself (not a pseudo-element mirror), matching how
+		// `sgs/site-header`'s own `floatPreview` already applied it: `{}` when
+		// neither attribute is set.
+		...surfaceBackdropPreview( attributes ),
 	};
 
 	// Gate the ::before media layer / ::after overlay layer on marker classes
