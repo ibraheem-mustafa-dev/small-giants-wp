@@ -102,11 +102,17 @@ sys.stdout.reconfigure(encoding="utf-8")
 # `wp_content`, so a target pointing at a host that is gone (or, worse, at a
 # hostname someone else later owns) is a live hazard.
 # Adding a target is one dict entry, per R-22-9 above.
+#
+# "client" names the `sites/<client>/` whose theme-snapshot.json IS that site's
+# theme.json (None = the framework theme.json). A theme deploy ships the snapshot as
+# the theme's theme.json, so a deploy can never revert a client site to the framework
+# default — see resolve_theme_json_payload(). Keyed on this data, never on a site name.
 TARGETS = {
     "sandybrown": {
         "host": "sandybrown-nightingale-600381.hostingersite.com",
         "wp_content": "domains/sandybrown-nightingale-600381.hostingersite.com/public_html/wp-content",
         "explicit_opt_in_required": False,
+        "client": "mamas-munches",
     },
     # Dedicated Indus Foods test site — separate from sandybrown because
     # sandybrown has a single global active-header/footer/theme-snapshot pointer,
@@ -115,6 +121,7 @@ TARGETS = {
         "host": "lavender-dinosaur-183533.hostingersite.com",
         "wp_content": "domains/lavender-dinosaur-183533.hostingersite.com/public_html/wp-content",
         "explicit_opt_in_required": True,
+        "client": "indus-foods",
     },
     # Dedicated Eye Care Birmingham test site — sgs-theme + sgs-blocks +
     # WooCommerce, so deploy-and-verify clone runs of the Eye Care draft are checked on a
@@ -124,6 +131,7 @@ TARGETS = {
         "host": "darkcyan-grouse-898606.hostingersite.com",
         "wp_content": "domains/darkcyan-grouse-898606.hostingersite.com/public_html/wp-content",
         "explicit_opt_in_required": True,
+        "client": "eye-care-ward-end",
     },
 }
 
@@ -551,6 +559,346 @@ def split_dirty_by_payload(dirty: list[str], payload_prefixes: list[str]) -> tup
     return covered, uncovered
 
 
+# ---------------------------------------------------------------------------
+# Client theme.json — a theme deploy ships the target's client snapshot.
+# ---------------------------------------------------------------------------
+# PROVEN CAUSE (2026-09-23). push-theme-snapshot.py writes a client's snapshot over
+# `wp-content/themes/sgs-theme/theme.json` — a file INSIDE the theme directory. A theme
+# deploy swaps that whole directory for the repo's `theme/sgs-theme/`, whose theme.json is
+# the FRAMEWORK default. So every theme deploy silently reverted the client to the framework
+# fonts and palette. Eye Care's push backups record it three times (Playfair/Outfit pushed,
+# Inter back on the next backup), and all three targets were serving a framework theme.json.
+#
+# DESIGN: the theme upload CARRIES the client's theme.json, so no deploy can ship the
+# default to a client site in the first place. That is chosen over "re-apply the snapshot
+# after the upload", which leaves a window where the default is live and depends on a second
+# step that can be skipped or fail after the damage is done. The snapshot bytes come from
+# push-theme-snapshot.py::deploy_theme_json_bytes — one function, so a deploy re-ships exactly
+# what a push wrote. The user layer (wp_global_styles) lives in the database and a theme
+# deploy never touches it, so nothing needs re-applying there.
+THEME_JSON_PAYLOAD_NAME = "sgs-theme-json.payload"
+SNAPSHOT_REL = "sites/{client}/theme-snapshot.json"
+FRAMEWORK_THEME_JSON_REL = "theme/sgs-theme/theme.json"
+
+
+def _load_push_module():
+    """Import push-theme-snapshot.py (hyphenated filename) from this scripts directory."""
+    import importlib.util
+    path = Path(__file__).resolve().parent / "push-theme-snapshot.py"
+    spec = importlib.util.spec_from_file_location("sgs_push_theme_snapshot", path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def resolve_theme_json_payload(target: dict, root: Path = REPO_ROOT) -> tuple[bytes | None, str]:
+    """Return (the theme.json bytes this target must end up with, a label or error message).
+
+    ``target["client"]`` None -> the framework ``theme/sgs-theme/theme.json``. A named client ->
+    that client's ``theme-snapshot.json``, prepared exactly as push-theme-snapshot.py prepares
+    it. FAILS CLOSED: a named client whose snapshot is missing, unparseable or not a theme.json
+    returns (None, reason), and the deploy aborts before anything is uploaded — it never falls
+    back to the framework file, because that fallback IS the bug.
+    """
+    client = target.get("client")
+    if not client:
+        path = root / FRAMEWORK_THEME_JSON_REL
+        try:
+            return path.read_bytes(), f"framework default ({FRAMEWORK_THEME_JSON_REL})"
+        except OSError as exc:
+            return None, f"framework theme.json unreadable: {exc}"
+    path = root / SNAPSHOT_REL.format(client=client)
+    if not path.is_file():
+        return None, (f"target names client '{client}' but {path.relative_to(root).as_posix()} "
+                      "does not exist")
+    try:
+        data, note = _load_push_module().deploy_theme_json_bytes(path)
+        parsed = json.loads(data.decode("utf-8"))
+    except (OSError, ValueError) as exc:
+        return None, f"client '{client}' snapshot could not be prepared: {exc}"
+    if not (isinstance(parsed, dict) and parsed.get("version") and isinstance(parsed.get("settings"), dict)):
+        return None, f"client '{client}' snapshot is not a theme.json (no version/settings)"
+    label = f"client snapshot {SNAPSHOT_REL.format(client=client)}"
+    return data, label + (f" ({note})" if note else "")
+
+
+def build_tar_cmd(theme: bool, blocks: bool, theme_json_payload: bool) -> list[str]:
+    """The tar command step_tar runs. Pure, so the self-test packages with the real command."""
+    cmd: list[str] = ["tar", "-cf", TARBALL_NAME]
+    for ex in TAR_EXCLUDES:
+        cmd.append(f"--exclude={ex}")
+    if theme:
+        cmd.append("theme/sgs-theme")
+    if blocks:
+        cmd.append("plugins/sgs-blocks")
+    if theme and theme_json_payload:
+        cmd.append(THEME_JSON_PAYLOAD_NAME)
+    return cmd
+
+
+def build_remote_extract_cmd(wp_content: str, theme: bool, blocks: bool,
+                             theme_json_payload: bool) -> str:
+    """The remote shell command step_remote_extract runs. Pure, so the self-test runs it verbatim.
+
+    With ``theme_json_payload`` the staged theme.json replaces the framework one INSIDE THE
+    STAGING COPY, straight after extraction and before any live directory is moved. The chain is
+    `&&`-joined: if the payload is missing or empty the command stops there, the live theme is
+    never swapped, and the deploy aborts with the client's current theme.json still in place.
+    """
+    parts: list[str] = [f"WP={shlex.quote(wp_content)}"]
+    parts.append(f"tar -xf {TARBALL_NAME}")
+    if theme and theme_json_payload:
+        parts.append(f"test -s {THEME_JSON_PAYLOAD_NAME}")
+        parts.append(f"mv -f {THEME_JSON_PAYLOAD_NAME} theme/sgs-theme/theme.json")
+    if blocks:
+        # Rotate: drop the older backup, move the live copy aside, install new.
+        parts.append("rm -rf $WP/plugins/sgs-blocks.bak")
+        parts.append("if [ -d $WP/plugins/sgs-blocks ]; then "
+                     "mv $WP/plugins/sgs-blocks $WP/plugins/sgs-blocks.bak; fi")
+        parts.append("mkdir -p $WP/plugins")
+        parts.append("mv plugins/sgs-blocks $WP/plugins/")
+        # Bust the CSS-lift cache. `tar` PRESERVES mtimes on extraction, so
+        # sgs-blocks.php keeps its ORIGINAL (pre-deploy) mtime after the move
+        # above — sgs_css_check_deploy() (class-sgs-css-registry.php) keys its
+        # epoch-bump signature on SGS_BLOCKS_VERSION + that file's mtime, so a
+        # CSS-only change (no version bump) would silently never trip it and
+        # every block's lifted <style> + ?ver= would keep serving the OLD CSS
+        # after a deploy that "succeeded". touch forces the signature to
+        # change on every deploy; the rm clears the stale lifted files so
+        # they regenerate fresh on next render rather than serving until GC.
+        parts.append("touch $WP/plugins/sgs-blocks/sgs-blocks.php")
+        parts.append("rm -f $WP/uploads/sgs-css/sgs-*.css")
+    if theme:
+        # Dot-prefixed so WordPress's theme scanner (search_theme_directories())
+        # skips it — WP excludes any directory starting with "." from the theme
+        # listing, so the backup does not show up as a second "SGS Theme" on
+        # the Themes admin page. Same rotation logic as sgs-blocks.bak above,
+        # just a hidden folder name instead of a visible one.
+        parts.append("rm -rf $WP/themes/.sgs-theme.bak")
+        parts.append("if [ -d $WP/themes/sgs-theme ]; then "
+                     "mv $WP/themes/sgs-theme $WP/themes/.sgs-theme.bak; fi")
+        parts.append("mkdir -p $WP/themes")
+        parts.append("mv theme/sgs-theme $WP/themes/")
+    # Cleanup remote staging dirs + tarball
+    parts.append(f"rm -rf plugins theme {TARBALL_NAME} {THEME_JSON_PAYLOAD_NAME}")
+    return " && ".join(parts)
+
+
+def theme_json_guard_decision(live_md5: str | None, payload_md5: str,
+                              checkout_snapshot_md5: str | None) -> str:
+    """PRE-UPLOAD: may this deploy replace the live theme.json with the payload? Pure.
+
+      ``unchanged``          live already equals the payload
+      ``replace``            live differs (e.g. the framework default a past deploy left, or no
+                             file yet) — the payload restores the client's committed snapshot
+      ``abort-uncommitted``  live equals the SHARED CHECKOUT's working copy of the client
+                             snapshot, which differs from the committed one being shipped: an
+                             uncommitted snapshot was pushed, and this deploy would silently
+                             discard it. Commit the snapshot, or pass --takeover to replace it.
+    """
+    if live_md5 == payload_md5:
+        return "unchanged"
+    if checkout_snapshot_md5 and checkout_snapshot_md5 != payload_md5 and live_md5 == checkout_snapshot_md5:
+        return "abort-uncommitted"
+    return "replace"
+
+
+def _remote_md5(use_alias: bool, path: str) -> tuple[str | None, str]:
+    """(md5 or None, status) of a remote file. status: found | absent | error."""
+    remote_cmd = (f"if [ -f {shlex.quote(path)} ]; then md5sum {shlex.quote(path)}; "
+                  "else echo __ABSENT__; fi")
+    try:
+        out = subprocess.run(ssh_base_cmd(use_alias) + [remote_cmd], capture_output=True,
+                             text=True, encoding="utf-8", errors="replace", timeout=60)
+    except (subprocess.SubprocessError, OSError) as exc:
+        err(f"[theme-json] SSH failed: {exc}")
+        return None, "error"
+    text = (out.stdout or "").strip()
+    if out.returncode != 0:
+        err(f"[theme-json] SSH exit {out.returncode}: {(out.stderr or '').strip()[:200]}")
+        return None, "error"
+    if text == "__ABSENT__":
+        return None, "absent"
+    md5 = text.split()[0] if text else ""
+    return (md5, "found") if len(md5) == 32 else (None, "error")
+
+
+def step_theme_json_guard(use_alias: bool, target: dict, payload: bytes, label: str,
+                          takeover: bool) -> int:
+    """Pre-upload: log what the deploy will do to the live theme.json; abort on the one case
+    where replacing it would silently discard a snapshot someone deliberately pushed."""
+    import hashlib
+    payload_md5 = hashlib.md5(payload).hexdigest()
+    live_path = f"{target['wp_content']}/themes/sgs-theme/theme.json"
+    live_md5, status = _remote_md5(use_alias, live_path)
+    if status == "error":
+        err("[theme-json] could not read the live theme.json, so this deploy cannot tell what "
+            "it would replace. Nothing was uploaded.")
+        return 1
+    checkout_md5 = None
+    client = target.get("client")
+    if client:
+        # A worktree-isolated run is re-exec'd from a checkout of HEAD; the operator's working
+        # copy (where an uncommitted push came from) is the shared checkout run_isolated names.
+        shared_root = Path(os.environ.get("SGS_DEPLOY_SHARED_ROOT") or REPO_ROOT)
+        snap = shared_root / SNAPSHOT_REL.format(client=client)
+        if snap.is_file():
+            try:
+                wc_bytes, _ = _load_push_module().deploy_theme_json_bytes(snap)
+                checkout_md5 = hashlib.md5(wc_bytes).hexdigest()
+            except (OSError, ValueError):
+                checkout_md5 = None
+    decision = theme_json_guard_decision(live_md5, payload_md5, checkout_md5)
+    log(f"[theme-json] payload: {label} md5={payload_md5[:8]}; live md5="
+        f"{(live_md5 or status)[:8]} -> {decision}")
+    if decision == "abort-uncommitted" and not takeover:
+        err(f"[theme-json] the LIVE theme.json is the UNCOMMITTED working copy of "
+            f"{SNAPSHOT_REL.format(client=client)} (pushed by push-theme-snapshot.py), and this "
+            "deploy ships the COMMITTED version. Deploying would silently discard the pushed "
+            "snapshot. Commit the snapshot and re-run, or pass --takeover to replace it on "
+            "purpose. Nothing was uploaded.")
+        return 1
+    if decision == "abort-uncommitted":
+        log("[theme-json] --takeover: replacing the pushed uncommitted snapshot on purpose")
+    return 0
+
+
+def theme_json_verify_result(expected_md5: str, live_md5: str | None) -> bool:
+    """Post-deploy: the live theme.json must be byte-identical to the payload. Pure."""
+    return live_md5 is not None and live_md5 == expected_md5
+
+
+def step_verify_theme_json(use_alias: bool, wp_content: str, payload: bytes, label: str) -> int:
+    """POST-DEPLOY, fail closed: is the live theme.json the one this target must have?
+
+    Not governed by --skip-verify: it is the only check that the client's theme settings
+    survived the deploy, and a deploy that silently reverts them is the bug it guards."""
+    import hashlib
+    expected = hashlib.md5(payload).hexdigest()
+    live_md5, status = _remote_md5(use_alias, f"{wp_content}/themes/sgs-theme/theme.json")
+    if theme_json_verify_result(expected, live_md5):
+        log(f"[theme-json] PASS: live theme.json is the {label} (md5 {expected[:8]})")
+        return 0
+    err(f"[theme-json] FAIL: live theme.json md5={(live_md5 or status)[:8]}, expected the "
+        f"{label} md5={expected[:8]}. The client's theme settings are NOT what this deploy "
+        "shipped. Re-apply with push-theme-snapshot.py, then re-check.")
+    return 1
+
+
+def self_test_theme_json() -> list[str]:
+    """Self-test cases 8-15: the client theme.json survives a theme deploy (no network).
+
+    Runs the REAL tar command and the REAL remote extract command against a temp "repo" and a
+    temp "server" directory, so it proves the packaged bytes, not a model of them.
+    """
+    import hashlib
+    failures: list[str] = []
+    bash = shutil.which("bash")
+    if not bash:
+        return ["theme.json self-test needs bash on PATH (Git Bash on Windows)"]
+    FRAMEWORK = b'{"version": 3, "settings": {"typography": {"fontFamilies": [{"slug": "heading", "fontFamily": "Inter"}]}}}\n'
+    SNAPSHOT = b'{"version": 3, "settings": {"typography": {"fontFamilies": [{"slug": "heading", "fontFamily": "\\"Playfair Display\\", serif"}]}}}\n'
+
+    def md5(b: bytes | None) -> str | None:
+        return hashlib.md5(b).hexdigest() if b is not None else None
+
+    with tempfile.TemporaryDirectory(prefix="sgs-deploy-themejson-") as td:
+        base = Path(td)
+        repo = base / "repo"
+        (repo / "theme" / "sgs-theme").mkdir(parents=True)
+        (repo / FRAMEWORK_THEME_JSON_REL).write_bytes(FRAMEWORK)
+        (repo / "theme" / "sgs-theme" / "style.css").write_text("/* Theme Name: SGS */\n", encoding="utf-8")
+        (repo / "sites" / "acme").mkdir(parents=True)
+        (repo / SNAPSHOT_REL.format(client="acme")).write_bytes(SNAPSHOT)
+
+        def simulate(target: dict, use_payload: bool = True, drop_payload: bool = False) -> tuple[int, bytes | None]:
+            """Package + extract exactly as a real theme deploy does; return (rc, live theme.json)."""
+            server = base / f"server-{os.urandom(4).hex()}"
+            live = server / "wp-content" / "themes" / "sgs-theme"
+            live.mkdir(parents=True)
+            live.joinpath("theme.json").write_bytes(SNAPSHOT if target.get("client") else FRAMEWORK)
+            payload, _label = resolve_theme_json_payload(target, root=repo)
+            if payload is None:
+                return 99, live.joinpath("theme.json").read_bytes()
+            stage = repo / THEME_JSON_PAYLOAD_NAME
+            if use_payload:
+                stage.write_bytes(payload)
+            tar = subprocess.run(build_tar_cmd(True, False, use_payload and not drop_payload),
+                                 cwd=repo, capture_output=True, text=True)
+            stage.unlink(missing_ok=True)
+            if tar.returncode != 0:
+                return 98, None
+            shutil.move(str(repo / TARBALL_NAME), str(server / TARBALL_NAME))
+            cmd = build_remote_extract_cmd("wp-content", True, False, use_payload)
+            rc = subprocess.run([bash, "-c", cmd], cwd=server, capture_output=True, text=True).returncode
+            f = live.joinpath("theme.json")
+            return rc, (f.read_bytes() if f.exists() else None)
+
+        client_target = {"client": "acme"}
+        plain_target = {"client": None}
+
+        # 8. NEGATIVE CONTROL — the pre-fix deploy (no payload) DOES lose the snapshot. Without
+        #    this, case 9 could pass on a simulation that never overwrote anything.
+        rc, live = simulate(client_target, use_payload=False)
+        if rc != 0 or live != FRAMEWORK:
+            failures.append(f"NEGATIVE CONTROL: the pre-fix deploy did not reproduce the loss "
+                            f"(rc={rc}, live={live!r}) - the simulation cannot detect the bug")
+        # 9. A theme deploy on a target WITH a client ends with the client snapshot live.
+        rc, live = simulate(client_target)
+        if rc != 0 or live != SNAPSHOT:
+            failures.append(f"client target: live theme.json is not the snapshot after deploy "
+                            f"(rc={rc}, live={live!r})")
+        # 10. A target with NO client keeps the framework default.
+        rc, live = simulate(plain_target)
+        if rc != 0 or live != FRAMEWORK:
+            failures.append(f"no-client target: live theme.json is not the framework default "
+                            f"(rc={rc}, live={live!r})")
+        # 11. A payload missing from the tarball FAILS the extract, and the live theme (the
+        #     client's snapshot) is left untouched — never swapped for the default.
+        rc, live = simulate(client_target, drop_payload=True)
+        if rc == 0:
+            failures.append("missing payload: the remote extract exited 0 - a failed re-apply passed green")
+        if live != SNAPSHOT:
+            failures.append(f"missing payload: the live theme was swapped anyway (live={live!r})")
+        # 12. A named client with no snapshot file fails closed (no framework fallback).
+        payload, why = resolve_theme_json_payload({"client": "ghost"}, root=repo)
+        if payload is not None:
+            failures.append("missing snapshot: resolve fell back to a payload instead of failing closed")
+        # 13. An unparseable snapshot fails closed.
+        (repo / "sites" / "broken").mkdir()
+        (repo / SNAPSHOT_REL.format(client="broken")).write_bytes(b"{not json")
+        payload, why = resolve_theme_json_payload({"client": "broken"}, root=repo)
+        if payload is not None:
+            failures.append("broken snapshot: resolve returned a payload instead of failing closed")
+        # 14. Guard decisions, including the one abort case.
+        fw, sn, wc = md5(FRAMEWORK), md5(SNAPSHOT), md5(b"working-copy")
+        cases = [
+            ((sn, sn, sn), "unchanged"),
+            ((fw, sn, sn), "replace"),            # live is the default a past deploy left
+            ((None, sn, None), "replace"),        # no theme.json yet
+            ((wc, sn, wc), "abort-uncommitted"),  # an uncommitted pushed snapshot is live
+            ((fw, sn, wc), "replace"),            # WIP snapshot never pushed: not a reason to block
+        ]
+        for args_, want in cases:
+            got = theme_json_guard_decision(*args_)
+            if got != want:
+                failures.append(f"guard{args_} -> {got}, expected {want}")
+        # 15. Post-deploy verify: mismatch and unreadable both FAIL.
+        if theme_json_verify_result(sn, fw) or theme_json_verify_result(sn, None):
+            failures.append("verify: a live theme.json that is not the payload passed")
+        if not theme_json_verify_result(sn, sn):
+            failures.append("verify: a matching live theme.json failed (positive control)")
+    # 16. DATA: every real target that names a client has a real, preparable snapshot.
+    for key, tgt in TARGETS.items():
+        if "client" not in tgt:
+            failures.append(f"TARGETS['{key}'] has no 'client' key (use None for the framework default)")
+            continue
+        payload, why = resolve_theme_json_payload(tgt)
+        if payload is None:
+            failures.append(f"TARGETS['{key}']: {why}")
+    return failures
+
+
 def self_test() -> int:
     """Prove the payload-scoped dirty gate REJECTS the unsafe case, not just the happy path.
 
@@ -684,6 +1032,8 @@ def self_test() -> int:
                 f"the theme root is being dropped unconditionally: {dirty_full}"
             )
 
+    failures.extend(self_test_theme_json())
+
     if failures:
         print("[SELF-TEST FAIL]")
         for f in failures:
@@ -699,6 +1049,15 @@ def self_test() -> int:
     print("  5. SCOPE: a dirty THEME file does not block --blocks-only (it cannot ship it)")
     print("  6. SCOPE NEGATIVE CONTROL: an in-scope dirty file STILL blocks --blocks-only")
     print("  7. SCOPE is CONDITIONAL: a full deploy still sees the dirty theme file")
+    print("  8. NEGATIVE CONTROL: the pre-fix theme deploy DOES replace a client snapshot with the default")
+    print("  9. a theme deploy on a target WITH a client ends with the client snapshot live")
+    print(" 10. a target with NO client keeps the framework default theme.json")
+    print(" 11. a payload missing from the tarball FAILS the extract and leaves the live theme untouched")
+    print(" 12. a named client with no snapshot fails closed (no framework fallback)")
+    print(" 13. an unparseable snapshot fails closed")
+    print(" 14. pre-upload guard: aborts only when an UNCOMMITTED pushed snapshot is live")
+    print(" 15. post-deploy verify: a live theme.json that is not the payload FAILS")
+    print(" 16. every real TARGETS entry names a client whose snapshot prepares")
     return 0
 
 
@@ -747,7 +1106,8 @@ def step_gate_full(dry_run: bool) -> int:
     return run([resolve_exe("npm"), "run", "gate:full"], dry_run=False, cwd=PLUGIN_DIR)
 
 
-def step_tar(dry_run: bool, theme: bool, blocks: bool) -> int:
+def step_tar(dry_run: bool, theme: bool, blocks: bool,
+             theme_json_payload: bytes | None = None) -> int:
     log("[2/5] Packaging tarball")
 
     # PRE-TAR: regenerate a dev-free autoloader before packaging, and ALWAYS
@@ -774,14 +1134,14 @@ def step_tar(dry_run: bool, theme: bool, blocks: bool) -> int:
             )
             return rc
 
+    stage = REPO_ROOT / THEME_JSON_PAYLOAD_NAME
     try:
-        cmd: list[str] = ["tar", "-cf", TARBALL_NAME]
-        for ex in TAR_EXCLUDES:
-            cmd.append(f"--exclude={ex}")
-        if theme:
-            cmd.append("theme/sgs-theme")
-        if blocks:
-            cmd.append("plugins/sgs-blocks")
+        # The target's theme.json travels as its own member and replaces the framework copy
+        # inside the remote staging dir (build_remote_extract_cmd), never after the swap.
+        ship_payload = theme and theme_json_payload is not None
+        if ship_payload and not dry_run:
+            stage.write_bytes(theme_json_payload)
+        cmd = build_tar_cmd(theme, blocks, ship_payload)
         rc = run(cmd, dry_run=dry_run, cwd=REPO_ROOT)
         if rc != 0:
             err(f"tar failed (exit {rc})")
@@ -850,6 +1210,7 @@ def step_tar(dry_run: bool, theme: bool, blocks: bool) -> int:
         log(f"[2/5] Packaging tarball: OK ({TARBALL_NAME})")
         return 0
     finally:
+        stage.unlink(missing_ok=True)
         # POST-TAR restore — runs on every exit path (success, tar failure, size
         # guard). NEVER leave the working tree in the --no-dev state: the next
         # developer's `npm run build` needs PHPStan's classmap present for
@@ -879,7 +1240,7 @@ def step_scp(dry_run: bool, use_alias: bool, host_label: str) -> int:
 
 
 def step_remote_extract(dry_run: bool, use_alias: bool, wp_content: str,
-                        theme: bool, blocks: bool) -> int:
+                        theme: bool, blocks: bool, theme_json_payload: bool = False) -> int:
     """Extract + install, rotating the previous copy aside instead of deleting it.
 
     Deleting the live directory before extracting would leave nothing to roll
@@ -897,40 +1258,7 @@ def step_remote_extract(dry_run: bool, use_alias: bool, wp_content: str,
     surface it the same way in normal use.
     """
     log("[4/5] Remote extract + install")
-    parts: list[str] = [f"WP={shlex.quote(wp_content)}"]
-    parts.append(f"tar -xf {TARBALL_NAME}")
-    if blocks:
-        # Rotate: drop the older backup, move the live copy aside, install new.
-        parts.append("rm -rf $WP/plugins/sgs-blocks.bak")
-        parts.append("if [ -d $WP/plugins/sgs-blocks ]; then "
-                     "mv $WP/plugins/sgs-blocks $WP/plugins/sgs-blocks.bak; fi")
-        parts.append("mkdir -p $WP/plugins")
-        parts.append("mv plugins/sgs-blocks $WP/plugins/")
-        # Bust the CSS-lift cache. `tar` PRESERVES mtimes on extraction, so
-        # sgs-blocks.php keeps its ORIGINAL (pre-deploy) mtime after the move
-        # above — sgs_css_check_deploy() (class-sgs-css-registry.php) keys its
-        # epoch-bump signature on SGS_BLOCKS_VERSION + that file's mtime, so a
-        # CSS-only change (no version bump) would silently never trip it and
-        # every block's lifted <style> + ?ver= would keep serving the OLD CSS
-        # after a deploy that "succeeded". touch forces the signature to
-        # change on every deploy; the rm clears the stale lifted files so
-        # they regenerate fresh on next render rather than serving until GC.
-        parts.append("touch $WP/plugins/sgs-blocks/sgs-blocks.php")
-        parts.append("rm -f $WP/uploads/sgs-css/sgs-*.css")
-    if theme:
-        # Dot-prefixed so WordPress's theme scanner (search_theme_directories())
-        # skips it — WP excludes any directory starting with "." from the theme
-        # listing, so the backup does not show up as a second "SGS Theme" on
-        # the Themes admin page. Same rotation logic as sgs-blocks.bak above,
-        # just a hidden folder name instead of a visible one.
-        parts.append("rm -rf $WP/themes/.sgs-theme.bak")
-        parts.append("if [ -d $WP/themes/sgs-theme ]; then "
-                     "mv $WP/themes/sgs-theme $WP/themes/.sgs-theme.bak; fi")
-        parts.append("mkdir -p $WP/themes")
-        parts.append("mv theme/sgs-theme $WP/themes/")
-    # Cleanup remote staging dirs + tarball
-    parts.append(f"rm -rf plugins theme {TARBALL_NAME}")
-    remote_cmd = " && ".join(parts)
+    remote_cmd = build_remote_extract_cmd(wp_content, theme, blocks, theme_json_payload)
     cmd = ssh_base_cmd(use_alias) + [remote_cmd]
     rc = run(cmd, dry_run=dry_run)
     if rc != 0:
@@ -1081,7 +1409,10 @@ def run_isolated(args: "argparse.Namespace") -> int:
 
         child_argv = [sys.executable, str(wt_script)] + sys.argv[1:] + ["--no-isolate"]
         log(f"[isolate] re-exec: {fmt_cmd(child_argv)}")
-        proc = subprocess.run(child_argv, check=False)
+        # The child's REPO_ROOT is the worktree; step_theme_json_guard needs the SHARED
+        # checkout's working copy of the client snapshot (where an uncommitted push came from).
+        child_env = dict(os.environ, SGS_DEPLOY_SHARED_ROOT=str(REPO_ROOT))
+        proc = subprocess.run(child_argv, check=False, env=child_env)
         return proc.returncode
     finally:
         log(f"[isolate] removing worktree {wt_dir}")
@@ -1738,9 +2069,9 @@ def parse_args() -> argparse.Namespace:
                         "deadlock: canary-deploy the payload uncommitted, capture the "
                         "visual-diff report the pre-commit gate demands, THEN commit.")
     p.add_argument("--self-test", action="store_true",
-                   help="Run the payload-scoped dirty gate's self-test against an "
-                        "isolated temp repo (proves it still rejects the unsafe case) "
-                        "and exit. Touches no real git state.")
+                   help="Run the self-test (payload-scoped dirty gate + client theme.json "
+                        "survival) against isolated temp dirs (proves each guard still "
+                        "rejects its unsafe case) and exit. Touches no real git state or site.")
     p.add_argument("--no-isolate", action="store_true",
                    help="Build+deploy directly from this shared checkout instead of "
                         "an isolated git worktree. Isolation is the DEFAULT (D-incident "
@@ -1772,6 +2103,23 @@ def main() -> int:
         err("nothing to deploy (theme and blocks both excluded)")
         print("[ABORTED] reason: empty-scope", flush=True)
         return 1
+
+    # The theme.json this target must end up with (client snapshot, or the framework
+    # default when the target names no client). Resolved BEFORE anything runs so a
+    # missing/broken client snapshot aborts with nothing uploaded — see
+    # resolve_theme_json_payload(). A --blocks-only deploy never touches the theme.
+    theme_json_payload: bytes | None = None
+    theme_json_label = ""
+    if deploy_theme:
+        theme_json_payload, theme_json_label = resolve_theme_json_payload(target)
+        if theme_json_payload is None:
+            err(f"[theme-json] {theme_json_label}")
+            err("[theme-json] refusing to deploy the theme: it would replace this target's "
+                "theme.json with the framework default. Fix the snapshot or the TARGETS "
+                "'client' entry. Nothing was uploaded.")
+            print("[ABORTED] reason: client-theme-json-unavailable", flush=True)
+            return 1
+        log(f"[theme-json] this deploy ships: {theme_json_label}")
 
     # Git cleanliness guard — scoped to files that ship AND execute on the site.
     # Computed once, unconditionally (also feeds the isolation decision below).
@@ -1879,7 +2227,17 @@ def main() -> int:
               "HEAD does not have). Nothing was uploaded.", flush=True)
         return 1
 
-    rc = step_tar(args.dry_run, theme=deploy_theme, blocks=deploy_blocks)
+    # Would replacing the live theme.json discard a snapshot someone deliberately pushed?
+    if deploy_theme and not args.dry_run:
+        rc = step_theme_json_guard(use_alias, target, theme_json_payload, theme_json_label,
+                                   args.takeover)
+        if rc != 0:
+            print("[ABORTED] reason: theme-json-guard (the live theme.json is an uncommitted "
+                  "pushed snapshot, or could not be read). Nothing was uploaded.", flush=True)
+            return 1
+
+    rc = step_tar(args.dry_run, theme=deploy_theme, blocks=deploy_blocks,
+                  theme_json_payload=theme_json_payload)
     if rc != 0:
         print(f"[ABORTED] reason: tar-failed (exit {rc})", flush=True)
         return 1
@@ -1892,7 +2250,8 @@ def main() -> int:
 
     # [4/5] Remote extract
     rc = step_remote_extract(args.dry_run, use_alias, target["wp_content"],
-                              theme=deploy_theme, blocks=deploy_blocks)
+                              theme=deploy_theme, blocks=deploy_blocks,
+                              theme_json_payload=theme_json_payload is not None)
     if rc != 0:
         print(f"[ABORTED] reason: remote-extract-failed (exit {rc})", flush=True)
         return 1
@@ -1913,6 +2272,17 @@ def main() -> int:
     else:
         step_purge_caches(args.dry_run, use_alias, target["wp_content"],
                           target["host"])
+
+    # Post-deploy, fail closed, NOT skippable by --skip-verify: did the client's theme.json
+    # survive? A deploy that silently reverts it is exactly what this guards.
+    if deploy_theme and not args.dry_run:
+        rc = step_verify_theme_json(use_alias, target["wp_content"], theme_json_payload,
+                                    theme_json_label)
+        if rc != 0:
+            print("[DEPLOYED-BUT-THEME-SETTINGS-LOST] the deploy completed but the live "
+                  "theme.json is not this target's theme.json. Re-apply the client snapshot "
+                  "with push-theme-snapshot.py.", flush=True)
+            return 1
 
     # Post-deploy smoke test — ON by default, aborts on a broken site.
     verify_url = args.verify_url or f"https://{target['host']}/"

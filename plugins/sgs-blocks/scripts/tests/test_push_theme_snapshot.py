@@ -375,3 +375,33 @@ def test_genuinely_fresh_site_still_proceeds_without_a_flag(pts, monkeypatch):
     code, calls = _run_main(pts, monkeypatch, server=None, server_status="absent",
                             gs_state=(None, "absent"), gs_body=None)
     assert code == 0 and calls["scp"] == 1
+
+
+# ---------------------------------------------------------------------------
+# 4. deploy_theme_json_bytes: the ONE source of the client theme.json bytes, shared with
+#    build-deploy.py so a theme deploy re-ships exactly what a push wrote (2026-09-23).
+# ---------------------------------------------------------------------------
+def test_deploy_bytes_are_the_raw_file_when_nothing_is_stripped(pts, tmp_path):
+    raw = json.dumps(_snap([DECLARED]), indent=4).encode("utf-8") + b"\n"
+    path = tmp_path / "theme-snapshot.json"
+    path.write_bytes(raw)
+    data, note = pts.deploy_theme_json_bytes(path)
+    assert data == raw and note is None
+
+
+def test_deploy_bytes_apply_the_advisory_policy_and_stay_lf(pts, tmp_path):
+    path = tmp_path / "theme-snapshot.json"
+    path.write_bytes(json.dumps(_snap([DECLARED, ADVISORY_OVERLAID])).encode("utf-8"))
+    data, note = pts.deploy_theme_json_bytes(path)
+    assert note and b"\r\n" not in data
+    assert _pal(json.loads(data)) == [DECLARED, {"slug": "accent", "color": "#E68A95", "name": "Accent"}]
+
+
+def test_deploy_bytes_fail_loudly_on_a_broken_snapshot(pts, tmp_path):
+    """Negative control: build-deploy.py relies on this raising to fail a deploy closed."""
+    path = tmp_path / "theme-snapshot.json"
+    path.write_bytes(b"{not json")
+    with pytest.raises(ValueError):
+        pts.deploy_theme_json_bytes(path)
+    with pytest.raises(OSError):
+        pts.deploy_theme_json_bytes(tmp_path / "missing.json")

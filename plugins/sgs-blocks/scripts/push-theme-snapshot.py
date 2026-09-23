@@ -24,7 +24,10 @@ in the editor's spacing/shadow pickers. The two layers are NOT interchangeable:
                    for that client — it does NOT fall back to the framework file.
                    This is why every snapshot carries its own `defaultSpacingSizes`/
                    `defaultFontSizes: false`; the framework theme.json's copies never
-                   reach a client site.
+                   reach a client site. A later THEME deploy (build-deploy.py) re-ships
+                   these same bytes (`deploy_theme_json_bytes`) on any target whose
+                   TARGETS entry names this client, so a deploy no longer reverts the
+                   site to the framework theme.json (2026-09-23).
   - user layer   = operator overrides only.
 Stripping the ladder from the theme layer instead of the user layer is the failure
 this note exists to prevent: it removed `--wp--preset--spacing--*` outright and the
@@ -745,6 +748,35 @@ def prepare_deploy_snapshot(local: dict, include_advisory: bool) -> tuple[dict, 
                     f"deploy them as derived.")
 
 
+def deploy_theme_json_bytes(snapshot_path: Path, include_advisory: bool = False) -> tuple[bytes, str | None]:
+    """The EXACT bytes that land at ``wp-content/themes/sgs-theme/theme.json`` for this client.
+
+    ONE function, two callers: this script's disk push, and ``build-deploy.py``, whose theme
+    upload ships these bytes as the theme's ``theme.json`` on any target that names a client
+    (2026-09-23). Before that, a theme deploy uploaded the FRAMEWORK ``theme.json`` and silently
+    replaced whatever this script had written: the disk layer is a file inside the theme
+    directory, and a theme deploy swaps the whole directory. Keeping the bytes in one function
+    means the two paths cannot drift into shipping different files for the same client.
+
+    Unchanged snapshot -> the file's raw bytes (byte-identical to the committed file). Changed by
+    the advisory policy -> LF-terminated UTF-8 JSON (bytes, so Windows never turns it into CRLF).
+    Raises ``OSError`` / ``ValueError`` on a missing or unparseable snapshot: callers fail closed.
+    """
+    raw = snapshot_path.read_bytes()
+    local = json.loads(raw.decode("utf-8"))
+    if not isinstance(local, dict):
+        raise ValueError(f"{snapshot_path} is not a theme.json object")
+    deploy, note = prepare_deploy_snapshot(local, include_advisory)
+    if deploy == local:
+        return raw, note
+    return serialise_theme_json(deploy), note
+
+
+def serialise_theme_json(theme: dict) -> bytes:
+    """LF-terminated UTF-8 JSON as BYTES (a text-mode write on Windows would emit CRLF)."""
+    return (json.dumps(theme, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
+
+
 def backup_gate(server: dict | None, server_status: str, global_styles: dict | None,
                 gs_status: str, force_no_backup: bool) -> str:
     """Decide the FR-33-11 backup-or-abort outcome. Pure.
@@ -957,11 +989,14 @@ def main() -> int:
             return 0
 
     # FR-33-5: strip DERIVED (advisory) tokens from BOTH deployed layers unless --include-advisory.
+    # Same rule as deploy_theme_json_bytes() (which build-deploy.py uses for a theme deploy's
+    # theme.json): unchanged -> the file itself; changed -> serialise_theme_json(). So a later
+    # theme deploy re-ships exactly the bytes this push wrote.
     deploy, deploy_note = prepare_deploy_snapshot(local, args.include_advisory)
     push_path = local_path
     if deploy != local:
         push_path = repo_root() / "sites" / args.client / "theme-snapshot.deploy.tmp.json"
-        push_path.write_text(json.dumps(deploy, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        push_path.write_bytes(serialise_theme_json(deploy))
     if deploy_note:
         print(f"[push-theme-snapshot] {deploy_note}")
 

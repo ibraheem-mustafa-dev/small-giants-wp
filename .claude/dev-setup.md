@@ -443,6 +443,7 @@ extensions/
 |---|---|---|
 | `sandybrown` (default) | `https://sandybrown-nightingale-600381.hostingersite.com` | The canary — pipeline canary (Mama's Munches) and framework verification. WP 7.1 |
 | `indus-test` | `https://lavender-dinosaur-183533.hostingersite.com` | Dedicated Indus Foods test site. Opt-in: deploys only when named with `--target indus-test` |
+| `eye-care-test` | `https://darkcyan-grouse-898606.hostingersite.com` | Dedicated Eye Care Birmingham test site (client `eye-care-ward-end`). Opt-in: `--target eye-care-test` |
 
 **Why each client has its own site.** The active header, footer, drawer and theme-snapshot pointers are
 single global options per WordPress site (`sgs_active_header_cpt_id`,
@@ -488,6 +489,24 @@ The script runs the pre-deploy `gate:full` tier, builds (from an isolated `git w
 deploy; `--no-isolate` opts out), tars, scps, extracts, rotates the previous copy to `<dir>.bak`,
 cleans up, purges all three cache layers, then **GETs the site and fails the run if it is broken**.
 Deploy a framework change to the canary first.
+
+**A theme deploy ships the target's client `theme.json`.** Each `TARGETS` entry names its `client`
+(`sites/<client>/`, or `None` for the framework default). A theme deploy uploads that client's
+`theme-snapshot.json` as `themes/sgs-theme/theme.json`, using the same bytes
+`push-theme-snapshot.py` writes (`push-theme-snapshot.py::deploy_theme_json_bytes`). Before
+this change every theme deploy put the framework `theme.json` back and silently discarded the
+client's fonts and palette. The disk layer lives inside the theme directory, and the deploy
+swaps that whole directory. It fails closed in four places:
+
+| When | What happens |
+|---|---|
+| Before anything runs | The target names a client whose snapshot is missing or invalid: `[ABORTED] client-theme-json-unavailable`. It never falls back to the framework file. |
+| Before upload | The live `theme.json` is an **uncommitted** snapshot someone pushed, and this deploy ships the committed one: `[ABORTED] theme-json-guard`. Commit the snapshot, or pass `--takeover` to replace it deliberately. An unreadable live file also aborts. |
+| During extract | The snapshot is swapped into the staging copy before any live directory moves. If it is missing, the chain stops and the live theme is untouched. |
+| After deploy | The live `theme.json` md5 must equal the payload, or you get `[DEPLOYED-BUT-THEME-SETTINGS-LOST]`. `--skip-verify` does not skip this check. |
+
+The deploy never touches `wp_global_styles` (the database user layer). `--self-test` cases 8-16 prove
+all of this against a temp repo and server, including a negative control that reproduces the old loss.
 
 **The flags exist — know what you're giving up before using them:**
 
@@ -553,8 +572,16 @@ python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client mamas-munches 
 python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client indus-foods --target u945238940@141.136.39.73 \
   --target-domain lavender-dinosaur-183533.hostingersite.com
 
+# Eye Care test site
+python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client eye-care-ward-end --target u945238940@141.136.39.73 \
+  --target-domain darkcyan-grouse-898606.hostingersite.com
+
 # --no-push (alias --dry-run) prints the diff without pushing
 ```
+
+**Commit the snapshot you push.** The next theme deploy re-ships the target's **committed**
+snapshot. If you push an uncommitted one, that deploy aborts (`theme-json-guard`) rather than
+silently reverting it.
 
 ### Fast-cycle deploys
 
