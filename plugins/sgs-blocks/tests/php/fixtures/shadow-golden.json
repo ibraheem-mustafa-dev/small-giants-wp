@@ -5,7 +5,7 @@
         "colour": null,
         "must_match": true,
         "note": "control-built single layer",
-        "output": "0px 4px 12px 0px #0000001A"
+        "output": "0px 4px 12px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)"
     },
     {
         "id": "control:0px 4px 12px 0px|",
@@ -13,7 +13,7 @@
         "colour": "",
         "must_match": true,
         "note": "control-built single layer",
-        "output": "0px 4px 12px 0px #0000001A"
+        "output": "0px 4px 12px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)"
     },
     {
         "id": "control:0px 4px 12px 0px|#000000",
@@ -77,7 +77,7 @@
         "colour": null,
         "must_match": true,
         "note": "control-built single layer",
-        "output": "2px 2px 0px 0px #0000001A"
+        "output": "2px 2px 0px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)"
     },
     {
         "id": "control:2px 2px 0px 0px|",
@@ -85,7 +85,7 @@
         "colour": "",
         "must_match": true,
         "note": "control-built single layer",
-        "output": "2px 2px 0px 0px #0000001A"
+        "output": "2px 2px 0px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)"
     },
     {
         "id": "control:2px 2px 0px 0px|#000000",
@@ -149,7 +149,7 @@
         "colour": null,
         "must_match": true,
         "note": "control-built single layer",
-        "output": "0px 0px 20px 4px #0000001A"
+        "output": "0px 0px 20px 4px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)"
     },
     {
         "id": "control:0px 0px 20px 4px|",
@@ -157,7 +157,7 @@
         "colour": "",
         "must_match": true,
         "note": "control-built single layer",
-        "output": "0px 0px 20px 4px #0000001A"
+        "output": "0px 0px 20px 4px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)"
     },
     {
         "id": "control:0px 0px 20px 4px|#000000",
@@ -221,7 +221,7 @@
         "colour": null,
         "must_match": true,
         "note": "control-built single layer",
-        "output": "inset 0px 2px 4px 0px #0000001A"
+        "output": "inset 0px 2px 4px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)"
     },
     {
         "id": "control:inset 0px 2px 4px 0px|",
@@ -229,7 +229,7 @@
         "colour": "",
         "must_match": true,
         "note": "control-built single layer",
-        "output": "inset 0px 2px 4px 0px #0000001A"
+        "output": "inset 0px 2px 4px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)"
     },
     {
         "id": "control:inset 0px 2px 4px 0px|#000000",
@@ -293,7 +293,7 @@
         "colour": null,
         "must_match": true,
         "note": "control-built single layer",
-        "output": "0px 1px 2px -1px #0000001A"
+        "output": "0px 1px 2px -1px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)"
     },
     {
         "id": "control:0px 1px 2px -1px|",
@@ -301,7 +301,7 @@
         "colour": "",
         "must_match": true,
         "note": "control-built single layer",
-        "output": "0px 1px 2px -1px #0000001A"
+        "output": "0px 1px 2px -1px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)"
     },
     {
         "id": "control:0px 1px 2px -1px|#000000",

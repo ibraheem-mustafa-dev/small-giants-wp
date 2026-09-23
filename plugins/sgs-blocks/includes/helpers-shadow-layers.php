@@ -29,7 +29,7 @@ require_once __DIR__ . '/helpers-tokens.php';
 const SGS_SHADOW_MAX_BYTES      = 2000;
 const SGS_SHADOW_MAX_LAYERS     = 8;
 const SGS_SHADOW_MAX_COLOURS    = 64;
-const SGS_SHADOW_DEFAULT_COLOUR = '#0000001A';
+const SGS_SHADOW_DEFAULT_COLOUR = 'color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)';
 const SGS_SHADOW_SITE_COLOUR    = 'var(--wp--custom--shadow-colour, #000000)';
 
 /**

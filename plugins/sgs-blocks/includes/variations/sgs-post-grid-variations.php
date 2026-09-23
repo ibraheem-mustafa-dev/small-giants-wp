@@ -25,7 +25,7 @@ function sgs_register_post_grid_styles(): void {
 			'inline_style' => '
 				.wp-block-sgs-post-grid.is-style-elevated .sgs-post-grid__card {
 					background: var( --wp--preset--color--surface );
-					box-shadow: var( --wp--custom--shadow--medium );
+					box-shadow: var( --wp--preset--shadow--lifted );
 					border-radius: var( --wp--custom--border-radius--medium );
 					border: 0;
 				}

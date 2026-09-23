@@ -20,7 +20,7 @@
 
 export const MAX_BYTES = 2000;
 export const MAX_LAYERS = 8;
-export const DEFAULT_COLOUR = '#0000001A';
+export const DEFAULT_COLOUR = 'color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)';
 export const SITE_COLOUR = 'var(--wp--custom--shadow-colour, #000000)';
 
 const NAMED_FALLBACK = /^(red|green|blue|black|white|transparent|currentcolor|gray|grey)$/i;

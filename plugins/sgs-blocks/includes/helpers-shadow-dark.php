@@ -269,6 +269,15 @@ function sgs_shadow_dark_site_colour(): string {
  * `.sgs-on-light` container, so a light panel nested in a dark section shows its own shadows
  * unchanged. The scopes are separate so the caller can print `light` after `section`.
  *
+ * D7: `root` also carries a SECONDARY reset (site dark mode is unbuilt scaffolding — no
+ * setting, no toggle — so this only ever fires once dark mode itself is switched on). Site
+ * dark mode swaps the root `--wp--custom--shadow-colour` for its own (now light-toned)
+ * palette, so a `.sgs-on-light` surface nested inside dark mode must NOT inherit that
+ * inverted site colour — it hard-resets to black (`SGS_SHADOW_DARK_SHADOW_BASE`), never the
+ * site's configured colour, and re-declares every preset back to its ORIGINAL literal. Printed
+ * straight after the root dark declarations in both the explicit-theme rule and the
+ * system-preference media query, in that order.
+ *
  * @param string $scope   'root', 'section' or 'light'.
  * @param bool   $refresh True to recompute the remembered declarations (used by tests).
  * @return string CSS, or '' for an unknown scope or when no preset has a dark variant.
@@ -287,6 +296,9 @@ function sgs_shadow_dark_preset_css( string $scope, bool $refresh = false ): str
 	if ( 'light' === $scope ) {
 		return '.sgs-on-light>*{--wp--custom--shadow-colour:' . sgs_shadow_dark_site_colour() . ';' . $decls['light'] . '}';
 	}
+	$light_reset = '{--wp--custom--shadow-colour:' . SGS_SHADOW_DARK_SHADOW_BASE . ';' . $decls['light'] . '}';
 	return ':root[data-theme="dark"]{' . $decls['dark'] . '}'
-		. '@media (prefers-color-scheme:dark){:root:not([data-theme="light"]):not([data-theme="dark"]){' . $decls['dark'] . '}}';
+		. ':root[data-theme="dark"] .sgs-on-light>*' . $light_reset
+		. '@media (prefers-color-scheme:dark){:root:not([data-theme="light"]):not([data-theme="dark"]){' . $decls['dark'] . '}'
+		. ':root:not([data-theme="light"]):not([data-theme="dark"]) .sgs-on-light>*' . $light_reset . '}';
 }

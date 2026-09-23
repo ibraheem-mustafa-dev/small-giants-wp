@@ -72,6 +72,13 @@ t_eq(
 	'an inset layer is skipped'
 );
 t_eq( '', sgs_shadow_value_to_drop_shadow( sgs_shadow_layers( 'inset 0 2px 4px 0', null ) ), 'inset only draws nothing' );
+// D4/P3: a raw shape with no explicit colour follows the dark scope now — the site
+// colour variable, never the old black literal (#0000001A).
+t_eq(
+	'drop-shadow(0px 4px 12px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent))',
+	sgs_shadow_value_to_drop_shadow( sgs_shadow_layers( '0 4px 12px 0', null ) ),
+	'a colourless drop-shadow uses the site colour variable, not a black literal'
+);
 t_eq(
 	'drop-shadow(0px 1px 2px #0000001F) drop-shadow(0px 4px 8px #00000014)',
 	sgs_shadow_value_to_drop_shadow( 'var(--wp--preset--shadow--soft)' ),

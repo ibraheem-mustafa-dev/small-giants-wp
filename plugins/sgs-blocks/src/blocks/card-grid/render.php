@@ -171,7 +171,15 @@ if ( ! empty( $cg_style_engine_args ) ) {
 		array( 'selector' => $root_sel )
 	);
 	if ( ! empty( $cg_scoped_styles['css'] ) ) {
-		$card_grid_native_css .= $cg_scoped_styles['css'];
+		$cg_native_css_out = $cg_scoped_styles['css'];
+		// D5: the native supports.shadow value renders as box-shadow, which forced
+		// colours (Windows High Contrast) removes entirely. Append the shared
+		// CanvasText outline fallback to this SAME scoped rule, mirroring how
+		// sgs_shadow_box_decls() joins it for the framework's own composed shadows.
+		if ( isset( $cg_style_engine_args['shadow'] ) && 'none' !== $cg_style_engine_args['shadow'] && str_ends_with( $cg_native_css_out, '}' ) ) {
+			$cg_native_css_out = substr( $cg_native_css_out, 0, -1 ) . sgs_shadow_forced_colours_decl() . '}';
+		}
+		$card_grid_native_css .= $cg_native_css_out;
 	}
 }
 

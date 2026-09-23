@@ -15,7 +15,7 @@
         "name": "no colour uses the default",
         "shape": "0px 4px 12px 0px",
         "colour": null,
-        "expected": "0px 4px 12px 0px #0000001A"
+        "expected": "0px 4px 12px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)"
     },
     {
         "name": "none",
@@ -81,7 +81,7 @@
         "name": "an empty first entry means the default",
         "shape": "0px 1px 2px 0px, 0px 8px 24px 0px",
         "colour": ", #00FF00",
-        "expected": "0px 1px 2px 0px #0000001A, 0px 8px 24px 0px #00FF00"
+        "expected": "0px 1px 2px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent), 0px 8px 24px 0px #00FF00"
     },
     {
         "name": "an empty later entry inherits",
@@ -177,13 +177,13 @@
         "name": "inset first",
         "shape": "INSET 0 2px 4px",
         "colour": null,
-        "expected": "inset 0px 2px 4px 0px #0000001A"
+        "expected": "inset 0px 2px 4px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)"
     },
     {
         "name": "inset last",
         "shape": "0 2px 4px inset",
         "colour": null,
-        "expected": "inset 0px 2px 4px 0px #0000001A"
+        "expected": "inset 0px 2px 4px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)"
     },
     {
         "name": "inset in the middle is rejected",
@@ -201,13 +201,13 @@
         "name": "blur clamps to 100",
         "shape": "0px 0px 999px 0px",
         "colour": null,
-        "expected": "0px 0px 100px 0px #0000001A"
+        "expected": "0px 0px 100px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)"
     },
     {
         "name": "offsets clamp to 200",
         "shape": "999px -999px 0px",
         "colour": null,
-        "expected": "200px -200px 0px 0px #0000001A"
+        "expected": "200px -200px 0px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)"
     },
     {
         "name": "negative blur is rejected",
@@ -219,7 +219,7 @@
         "name": "decimals and bare numbers",
         "shape": "0 .5 1",
         "colour": null,
-        "expected": "0px 0.5px 1px 0px #0000001A"
+        "expected": "0px 0.5px 1px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)"
     },
     {
         "name": "spread",
@@ -237,7 +237,7 @@
         "name": "eight layers are allowed",
         "shape": "0px 1px 2px 0px, 0px 1px 2px 0px, 0px 1px 2px 0px, 0px 1px 2px 0px, 0px 1px 2px 0px, 0px 1px 2px 0px, 0px 1px 2px 0px, 0px 1px 2px 0px",
         "colour": null,
-        "expected": "0px 1px 2px 0px #0000001A, 0px 1px 2px 0px #0000001A, 0px 1px 2px 0px #0000001A, 0px 1px 2px 0px #0000001A, 0px 1px 2px 0px #0000001A, 0px 1px 2px 0px #0000001A, 0px 1px 2px 0px #0000001A, 0px 1px 2px 0px #0000001A"
+        "expected": "0px 1px 2px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent), 0px 1px 2px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent), 0px 1px 2px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent), 0px 1px 2px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent), 0px 1px 2px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent), 0px 1px 2px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent), 0px 1px 2px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent), 0px 1px 2px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)"
     },
     {
         "name": "breakout in a shape",

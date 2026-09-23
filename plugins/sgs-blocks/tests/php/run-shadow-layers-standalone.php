@@ -72,7 +72,7 @@ $two = '0px 1px 2px 0px, 0px 8px 24px 0px';
 t_eq( '0px 1px 2px 0px #FF0000, 0px 8px 24px 0px #00FF00', sgs_shadow_layers( $two, '#FF0000, #00FF00' ), 'colour list matches layers' );
 t_eq( '0px 1px 2px 0px #FF0000, 0px 8px 24px 0px #FF0000', sgs_shadow_layers( $two, '#FF0000' ), 'a shorter list repeats its last entry' );
 t_eq( '0px 1px 2px 0px #FF0000, 0px 8px 24px 0px #00FF00', sgs_shadow_layers( $two, '#FF0000, #00FF00, #0000FF' ), 'extra colour entries are ignored' );
-t_eq( '0px 1px 2px 0px #0000001A, 0px 8px 24px 0px #00FF00', sgs_shadow_layers( $two, ', #00FF00' ), 'an empty first entry means the default colour' );
+t_eq( '0px 1px 2px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent), 0px 8px 24px 0px #00FF00', sgs_shadow_layers( $two, ', #00FF00' ), 'an empty first entry means the default colour' );
 t_eq( '0px 1px 2px 0px #FF0000, 0px 8px 24px 0px #FF0000', sgs_shadow_layers( $two, '#FF0000, ' ), 'an empty later entry inherits the previous one' );
 t_eq(
 	'0px 1px 2px 0px #FF0000, 0px 8px 24px 0px red',
@@ -93,15 +93,15 @@ t_eq(
 t_eq( '0px 4px 12px 0px #FF0000', sgs_shadow_layers( '0px 4px 12px 0px', '#FF0000 100%' ), '100% opacity adds no color-mix' );
 
 // ── Grammar ─────────────────────────────────────────────────────────────────────────
-t_eq( 'inset 0px 2px 4px 0px #0000001A', sgs_shadow_layers( 'INSET 0 2px 4px', null ), 'inset is case-insensitive and first' );
-t_eq( 'inset 0px 2px 4px 0px #0000001A', sgs_shadow_layers( '0 2px 4px inset', null ), 'inset may be last' );
+t_eq( 'inset 0px 2px 4px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)', sgs_shadow_layers( 'INSET 0 2px 4px', null ), 'inset is case-insensitive and first' );
+t_eq( 'inset 0px 2px 4px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)', sgs_shadow_layers( '0 2px 4px inset', null ), 'inset may be last' );
 t_eq( '', sgs_shadow_layers( '0 2px inset 4px', null ), 'inset in the middle is not a layer' );
 t_eq( 'var(--wp--preset--shadow--raised)', sgs_shadow_layers( 'Raised', '#FF0000' ), 'a bare slug is a preset and ignores colour' );
 t_eq( '', sgs_shadow_layers( 'inset', null ), 'the word inset alone is not a slug' );
-t_eq( '0px 0px 100px 0px #0000001A', sgs_shadow_layers( '0px 0px 999px 0px', null ), 'blur is clamped to 100' );
-t_eq( '200px -200px 0px 0px #0000001A', sgs_shadow_layers( '999px -999px 0px', null ), 'offsets are clamped to 200' );
+t_eq( '0px 0px 100px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)', sgs_shadow_layers( '0px 0px 999px 0px', null ), 'blur is clamped to 100' );
+t_eq( '200px -200px 0px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)', sgs_shadow_layers( '999px -999px 0px', null ), 'offsets are clamped to 200' );
 t_eq( '', sgs_shadow_layers( '0px 0px -4px 0px', null ), 'negative blur is not a layer' );
-t_eq( '0px 0.5px 1px 0px #0000001A', sgs_shadow_layers( '0 .5 1', null ), 'decimals and a bare number' );
+t_eq( '0px 0.5px 1px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)', sgs_shadow_layers( '0 .5 1', null ), 'decimals and a bare number' );
 
 // ── Limits are enforced here, not in the editor ─────────────────────────────────────
 $eight = implode( ', ', array_fill( 0, 8, '0px 1px 2px 0px' ) );

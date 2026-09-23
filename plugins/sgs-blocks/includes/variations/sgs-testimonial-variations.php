@@ -25,7 +25,7 @@ function sgs_register_testimonial_styles(): void {
 			'inline_style' => '
 				.sgs-testimonial.is-style-elevated {
 					background: var( --wp--preset--color--surface );
-					box-shadow: var( --wp--custom--shadow--medium );
+					box-shadow: var( --wp--preset--shadow--lifted );
 					border-radius: var( --wp--custom--border-radius--medium );
 					border: 0;
 				}

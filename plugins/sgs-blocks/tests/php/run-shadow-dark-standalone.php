@@ -117,6 +117,24 @@ t_eq(
 	'a brand layer is kept verbatim, only the site layer is transformed'
 );
 
+// 5b. D4: the new default colour (SGS_SHADOW_DEFAULT_COLOUR) is the site colour in the exact
+// recognised form, so a raw shape (or preset) built from it classifies as `site` and gets a
+// dark variant — the colourless-shadow case now follows the dark scope instead of staying
+// invisible on a dark surface.
+t_eq(
+	true,
+	null !== sgs_shadow_dark_variant( '0px 4px 12px 0px ' . SGS_SHADOW_DEFAULT_COLOUR ),
+	'D4: a layer painted in the new default colour classifies as the site colour and gets a dark variant'
+);
+// Negative control: the dark pipeline's coupling is to the EXACT string, not the meaning — a
+// stray space inside the same color-mix (still valid CSS) is not recognised, proving the
+// coupling test above can fail.
+t_eq(
+	null,
+	sgs_shadow_dark_variant( '0px 4px 12px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10% , transparent)' ),
+	'negative control: a stray space in the color-mix breaks the site-colour match'
+);
+
 // 6. Hostile or unparseable input returns null and never emits its text.
 $valid   = '0px 1px 2px 0px ' . t_mix( '6' );
 $hostile = array(
@@ -215,10 +233,20 @@ $GLOBALS['sgs_test_presets'] = array(
 );
 $decls                       = '--wp--preset--shadow--soft:0px 0px 0px 1px color-mix(in srgb, #E8E8E8 12%, transparent), 0px 1px 2px 0px color-mix(in srgb, #000000 13.2%, transparent);'
 	. '--wp--preset--shadow--pressed:inset 0px 2px 4px 0px color-mix(in srgb, #000000 30.8%, transparent);';
+// D7: site dark mode's secondary reset — a `.sgs-on-light` surface nested inside dark mode
+// hard-resets to black and its ORIGINAL preset literals, never the site's (now inverted)
+// shadow colour. Printed straight after the root dark declarations, in the explicit-theme
+// rule and again inside the system-preference media query.
+$root_light_reset = '{--wp--custom--shadow-colour:#000000;'
+	. '--wp--preset--shadow--soft:0px 1px 2px 0px ' . t_mix( '6' ) . ';'
+	. '--wp--preset--shadow--pressed:inset 0px 2px 4px 0px ' . t_mix( '14' ) . ';}';
 t_eq(
-	':root[data-theme="dark"]{' . $decls . '}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]):not([data-theme="dark"]){' . $decls . '}}',
+	':root[data-theme="dark"]{' . $decls . '}'
+		. ':root[data-theme="dark"] .sgs-on-light>*' . $root_light_reset
+		. '@media (prefers-color-scheme:dark){:root:not([data-theme="light"]):not([data-theme="dark"]){' . $decls . '}'
+		. ':root:not([data-theme="light"]):not([data-theme="dark"]) .sgs-on-light>*' . $root_light_reset . '}',
 	sgs_shadow_dark_preset_css( 'root', true ),
-	'root scope: exact two-rule string; glow, Bad Slug, x;y and a non-string shadow are skipped'
+	'root scope: exact rule set including the D7 light-surface reset; glow, Bad Slug, x;y and a non-string shadow are skipped'
 );
 t_eq(
 	'.sgs-on-dark>*{--wp--custom--shadow-colour:#E8E8E8;' . $decls . '}',
@@ -249,7 +277,18 @@ foreach ( array(
 unset( $GLOBALS['sgs_test_site_colour'] );
 t_eq( false, str_contains( sgs_shadow_dark_preset_css( 'light' ), 'Bad Slug' ) || str_contains( sgs_shadow_dark_preset_css( 'light' ), 'x;y' ), 'light scope: an invalid slug is skipped' );
 t_eq( false, str_contains( sgs_shadow_dark_preset_css( 'light' ), 'color-mix(in srgb, #000000' ), 'light scope: carries no dark variant value' );
-t_eq( false, str_contains( sgs_shadow_dark_preset_css( 'root' ), '.sgs-on-light' ) || str_contains( sgs_shadow_dark_preset_css( 'section' ), '.sgs-on-light' ), 'root and section scopes never include the light rule' );
+// D7: section NEVER carries a light-surface reset (only site dark mode does); root NOW does,
+// hard-coded to black — a negative control proves the assertion can fail either way.
+t_eq( false, str_contains( sgs_shadow_dark_preset_css( 'section' ), '.sgs-on-light' ), 'section scope never includes the light rule' );
+t_eq( true, str_contains( sgs_shadow_dark_preset_css( 'root' ), ':root[data-theme="dark"] .sgs-on-light>*{--wp--custom--shadow-colour:#000000;' ), 'root scope carries the D7 light-surface reset, hard-coded to black' );
+t_eq( true, str_contains( sgs_shadow_dark_preset_css( 'root' ), ':root:not([data-theme="light"]):not([data-theme="dark"]) .sgs-on-light>*{--wp--custom--shadow-colour:#000000;' ), 'root scope carries the D7 reset inside the system-preference media query too' );
+// Negative control: configure a DISTINCT (non-black) site colour — the D7 reset must still be
+// the hard-coded black, proving it never follows the "light" scope's sgs_shadow_dark_site_colour().
+$GLOBALS['sgs_test_site_colour'] = 'var(--wp--preset--color--text)';
+t_eq( true, str_starts_with( sgs_shadow_dark_preset_css( 'light' ), '.sgs-on-light>*{--wp--custom--shadow-colour:var(--wp--preset--color--text);' ), 'sanity: the light scope DOES follow a configured site colour' );
+t_eq( true, str_contains( sgs_shadow_dark_preset_css( 'root' ), ':root[data-theme="dark"] .sgs-on-light>*{--wp--custom--shadow-colour:#000000;' ), 'negative control: the D7 reset stays black even when the site colour is configured to something else' );
+t_eq( false, str_contains( sgs_shadow_dark_preset_css( 'root' ), 'var(--wp--preset--color--text);--wp--preset--shadow--soft' ), 'negative control: the D7 reset never carries the configured site colour' );
+unset( $GLOBALS['sgs_test_site_colour'] );
 
 // The memo is per request: changed settings are not seen until it is refreshed.
 $GLOBALS['sgs_test_presets'] = array();

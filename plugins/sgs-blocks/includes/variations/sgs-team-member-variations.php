@@ -25,7 +25,7 @@ function sgs_register_team_member_styles(): void {
 			'inline_style' => '
 				.wp-block-sgs-team-member.is-style-elevated {
 					background: var( --wp--preset--color--surface );
-					box-shadow: var( --wp--custom--shadow--medium );
+					box-shadow: var( --wp--preset--shadow--lifted );
 					border-radius: var( --wp--custom--border-radius--medium );
 					border: 0;
 				}

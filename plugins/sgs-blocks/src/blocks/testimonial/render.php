@@ -501,7 +501,15 @@ if ( ! empty( $base_style_engine_args ) ) {
 		array( 'selector' => $root_sel )
 	);
 	if ( ! empty( $base_scoped_styles['css'] ) ) {
-		$scoped_css[] = $base_scoped_styles['css'];
+		$base_native_css_out = $base_scoped_styles['css'];
+		// D5: the native supports.shadow value renders as box-shadow, which forced
+		// colours (Windows High Contrast) removes entirely. Append the shared
+		// CanvasText outline fallback to this SAME scoped rule, mirroring how
+		// sgs_shadow_box_decls() joins it for the framework's own composed shadows.
+		if ( isset( $style_arr['shadow'] ) && '' !== $style_arr['shadow'] && 'none' !== $style_arr['shadow'] && str_ends_with( $base_native_css_out, '}' ) ) {
+			$base_native_css_out = substr( $base_native_css_out, 0, -1 ) . sgs_shadow_forced_colours_decl() . '}';
+		}
+		$scoped_css[] = $base_native_css_out;
 	}
 }
 

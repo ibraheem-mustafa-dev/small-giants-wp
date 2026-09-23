@@ -25,7 +25,7 @@ function sgs_register_pricing_table_styles(): void {
 			'inline_style' => '
 				.wp-block-sgs-pricing-table.is-style-elevated .sgs-pricing-table__plan {
 					background: var( --wp--preset--color--surface );
-					box-shadow: var( --wp--custom--shadow--medium );
+					box-shadow: var( --wp--preset--shadow--lifted );
 					border-radius: var( --wp--custom--border-radius--medium );
 					border: 0;
 				}
