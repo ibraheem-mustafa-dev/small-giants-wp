@@ -86,3 +86,18 @@ phone layout; see the README trap. None of the findings depend on it.)
 5. **Findings 2, 7** (best sellers, shapes): the JS-array content reader, plan Track A2, with its own design gate.
 6. **Finding 3** (header, footer): Spec 33 Part 2 / Track D.
 7. Then re-clone page 11 and re-run this audit at 1440/768/375.
+
+## Progress
+
+- **2026-09-24, findings 5 and 6 fixed** (commit f0d94efd4, deployed to eye-care-test):
+  - Verified live at 1440, 768 and 375:
+    - all 16 logos paint, and every `.sgs-media-el` computes `z-index: auto`;
+    - the why-buy heading and the four card titles compute `rgb(250,248,245)`;
+    - negative control: the headings on light sections stay `rgb(20,20,20)`.
+  - New detail found: the live logo tiles are 155px squares in a 230px band, against the draft's small logos in a
+    97px strip, and the draft's 64s marquee speed has no attribute to go to (b4 `content_gaps`).
+- **Found while fixing, not yet addressed:** regenerating the Eye Care snapshot from the current draft files
+  changes far more than the heading colour. The primary colour would become `#1A73E8` (Google blue), and the
+  button presets change too. The committed snapshot's `draft_source_sha256` matches none of the three draft
+  folders. Only the heading rule was applied to the committed snapshot. The drift needs its own investigation
+  before any full re-extract.
