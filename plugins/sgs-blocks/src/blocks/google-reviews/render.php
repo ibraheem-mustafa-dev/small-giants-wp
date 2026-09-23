@@ -16,6 +16,7 @@ use SGS\Blocks\Google_Reviews_Settings;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-slider-nav.php';
 
 // CSS length/unit sanitiser — for free-text attrs concatenated into raw CSS
 // declarations inside this block's scoped <style> tag. Mirrors sgs/hero's
@@ -78,12 +79,14 @@ $show_date          = $attributes['showDate'] ?? true;
 $show_google_logo   = $attributes['showGoogleLogo'] ?? true;
 $review_request_url = $attributes['reviewRequestUrl'] ?? '';
 $theme              = $attributes['theme'] ?? 'light';
-$card_style         = $attributes['cardStyle'] ?? 'bordered';
+$card_style         = $attributes['cardStyle'] ?? 'google-card';
 $star_colour        = $attributes['starColour'] ?? 'accent';
 $autoplay           = $attributes['autoplay'] ?? false;
 $autoplay_speed     = $attributes['autoplaySpeed'] ?? 5000;
-$show_dots          = $attributes['showDots'] ?? true;
 $show_arrows        = $attributes['showArrows'] ?? true;
+// Shared slider navigation (includes/helpers-slider-nav.php): where the arrows sit and how progress shows.
+$gr_nav_position = sgs_slider_nav_normalise( $attributes['navPosition'] ?? 'below-end', sgs_slider_nav_placements() );
+$gr_pagination   = sgs_slider_nav_normalise( $attributes['pagination'] ?? 'scrollbar', sgs_slider_nav_paginations() );
 
 // Redesign attributes (element content and presence). Each is read with the literal
 // `$attributes['name']` form so the seeder (`render_reads_attr`) marks the content ones nested.
@@ -92,7 +95,7 @@ $gr_footnote         = trim( (string) ( $attributes['footnote'] ?? '' ) );
 $gr_see_all_url      = trim( (string) ( $attributes['seeAllUrl'] ?? '' ) );
 $gr_see_all_label    = trim( (string) ( $attributes['seeAllLabel'] ?? '' ) );
 $gr_write_label      = trim( (string) ( $attributes['writeReviewLabel'] ?? '' ) );
-$gr_show_card_logo   = (bool) ( $attributes['showCardLogo'] ?? false );
+$gr_show_card_logo   = (bool) ( $attributes['showCardLogo'] ?? true );
 $gr_show_review_link = (bool) ( $attributes['showReviewLink'] ?? false );
 $gr_review_link_text = trim( (string) ( $attributes['reviewLinkLabel'] ?? '' ) );
 
@@ -236,14 +239,12 @@ $gr_extra_classes = array(
 
 // Structural choices are classes (style.css owns what each one does), written only when the author made the
 // choice, so a ready-made look can set them itself. They sit after the looks in style.css, so they win a tie.
-$gr_logo_position = (string) ( $attributes['logoPosition'] ?? 'trailing' );
-if ( in_array( $gr_logo_position, array( 'leading', 'trailing' ), true ) && $gr_is_set( 'logoPosition', 'trailing' ) ) {
+$gr_logo_position = (string) ( $attributes['logoPosition'] ?? 'leading' );
+if ( in_array( $gr_logo_position, array( 'leading', 'trailing' ), true ) && $gr_is_set( 'logoPosition', 'leading' ) ) {
 	$gr_extra_classes[] = 'sgs-google-reviews--logo-' . sanitize_key( $gr_logo_position );
 }
-$gr_nav_position = (string) ( $attributes['navPosition'] ?? 'overlay' );
-if ( in_array( $gr_nav_position, array( 'overlay', 'below-end' ), true ) && $gr_is_set( 'navPosition', 'overlay' ) ) {
-	$gr_extra_classes[] = 'sgs-google-reviews--nav-' . sanitize_key( $gr_nav_position );
-}
+// The arrow placement is not a root modifier: the slider's own wrapper carries the shared navigation's
+// placement classes (sgs_slider_nav_render(), below), which assets/css/slider-nav.css lays out.
 
 // Only the inner star colour remains as a custom CSS variable
 // (targets SVG fill on inner elements).
@@ -324,7 +325,7 @@ $gr_dot_bg_hover_decl = sgs_background_paint_decl( $gr_dot_colour_hover, $gr_dot
 if ( '' !== $gr_dot_bg_hover_decl ) {
 	$gr_dot_decls_hover[] = $gr_dot_bg_hover_decl . ';';
 }
-if ( $gr_dot_decls_normal || $gr_dot_decls_hover ) {
+if ( 'dots' === $gr_pagination && ( $gr_dot_decls_normal || $gr_dot_decls_hover ) ) {
 	$gr_responsive_css .= sgs_emit_state_colour_css( $gr_root_sel . ' .sgs-google-reviews__dot::before', $gr_dot_decls_normal, $gr_dot_decls_hover );
 }
 
@@ -479,7 +480,7 @@ if ( null !== $gr_divider_width ) {
 // ── Google logo: size and opacity. Opacity is written only once the author moved it off the default. ──
 $gr_logo_sel        = $gr_root_sel . ' .sgs-google-reviews__google-logo';
 $gr_responsive_css .= $gr_len_rule( $gr_logo_sel, $attributes['logoSize'] ?? null, array( 'width', 'height' ) );
-if ( $gr_is_set( 'logoOpacity', 0.7 ) && is_numeric( $attributes['logoOpacity'] ?? null ) ) {
+if ( $gr_is_set( 'logoOpacity', 1 ) && is_numeric( $attributes['logoOpacity'] ?? null ) ) {
 	$gr_responsive_css .= $gr_logo_sel . '{opacity:' . max( 0, min( 1, (float) $attributes['logoOpacity'] ) ) . ';}';
 }
 
@@ -550,23 +551,25 @@ if ( false === ( $attributes['textClamp'] ?? true ) ) {
 $gr_list_sel        = $gr_root_sel . ' .sgs-google-reviews__list';
 $gr_responsive_css .= $gr_box_rule( $gr_list_sel, $attributes['railPadding'] ?? null, 'padding', $gr_sides );
 $gr_responsive_css .= $gr_len_rule( $gr_list_sel, $attributes['gap'] ?? null, array( 'gap' ) );
-$gr_scrollbar       = (string) ( $attributes['scrollbar'] ?? 'hidden' );
-if ( in_array( $gr_scrollbar, array( 'hidden', 'thin', 'visible' ), true ) && $gr_is_set( 'scrollbar', 'hidden' ) ) {
-	if ( 'hidden' === $gr_scrollbar ) {
-		$gr_responsive_css .= $gr_list_sel . '{scrollbar-width:none;-ms-overflow-style:none;}' . $gr_list_sel . '::-webkit-scrollbar{display:none;}';
-	} else {
-		$gr_responsive_css .= $gr_list_sel . '{scrollbar-width:' . ( 'thin' === $gr_scrollbar ? 'thin' : 'auto' ) . ';-ms-overflow-style:auto;}' . $gr_list_sel . '::-webkit-scrollbar{display:block;}';
+// The scrollbar is styled only while it is the progress indicator. Dots or none hide it through the shared
+// navigation's pagination class (assets/css/slider-nav.css), so nothing is written here for them.
+if ( 'scrollbar' === $gr_pagination ) {
+	$gr_scrollbar_style = sgs_slider_nav_normalise( $attributes['scrollbarStyle'] ?? 'thin', array( 'thin', 'standard' ) );
+	if ( $gr_is_set( 'scrollbarStyle', 'thin' ) ) {
+		$gr_responsive_css .= $gr_list_sel . '{scrollbar-width:' . ( 'thin' === $gr_scrollbar_style ? 'thin' : 'auto' ) . ';}';
 	}
-}
-$gr_scrollbar_colour = sgs_colour_value( (string) ( $attributes['scrollbarColour'] ?? '' ) );
-if ( '' !== $gr_scrollbar_colour ) {
-	$gr_responsive_css .= $gr_list_sel . '{scrollbar-color:' . $gr_scrollbar_colour . ' transparent;}';
+	$gr_scrollbar_colour = sgs_colour_value( (string) ( $attributes['scrollbarColour'] ?? '' ) );
+	if ( '' !== $gr_scrollbar_colour ) {
+		$gr_responsive_css .= $gr_list_sel . '{scrollbar-color:' . $gr_scrollbar_colour . ' transparent;}';
+	}
 }
 
 // ── Buttons and arrows: box, border, radius, height, width. Type and colour come from the families above. ──
 $gr_responsive_css .= $gr_button_box( $gr_root_sel . ' .sgs-google-reviews__write-review', 'writeReview', null, $attributes['writeReviewMinHeight'] ?? null );
 $gr_responsive_css .= $gr_button_box( $gr_root_sel . ' .sgs-google-reviews__see-all', 'seeAll', null, $attributes['seeAllMinHeight'] ?? null );
 $gr_responsive_css .= $gr_button_box( $gr_root_sel . ' .sgs-google-reviews__arrow', 'arrow', $attributes['arrowSize'] ?? null );
+// The same size feeds the shared navigation's custom property, so the overlay-inset gutter always equals the button.
+$gr_responsive_css .= $gr_len_rule( $gr_root_sel . ' .sgs-google-reviews__slider', $attributes['arrowSize'] ?? null, array( '--sgs-slider-nav-arrow-size' ) );
 
 // ── One type rule per text element, each read from its own prefix by the shared typography helper. ──
 // Each call names its prefix as a literal so the attribute census can see which typography families are consumed.
@@ -925,37 +928,27 @@ if ( in_array( $variant, array( 'badge', 'floating-badge' ), true ) ) :
 	<?php
 else :
 	/*
-	 * Slider navigation (dots + arrows) is only meaningful for the slider
-	 * variant with more than one review — anything else has nothing to
-	 * navigate between. $gr_nav_enabled is the single gate the arrow
-	 * wrapper, the scroll-sync attr, and the dots block below all key off,
-	 * so toggling showDots/showArrows off REMOVES the markup rather than
-	 * hiding it (no dead controls). Before this, the slider had no
-	 * single-pointer alternative to dragging (WCAG 2.5.7).
+	 * Slider navigation is only meaningful for the slider variant with more than one review: anything
+	 * else has nothing to navigate between. $gr_nav_enabled is the single gate for the shared navigation
+	 * (includes/helpers-slider-nav.php: arrows, dots, the footnote's slot and the placement classes), the
+	 * rail class it lays out, and the scroll-sync directive, so switching arrows off or choosing a
+	 * pagination without dots REMOVES that markup rather than hiding it (no dead controls). The arrows
+	 * are the slider's single-pointer alternative to dragging (WCAG 2.5.7).
 	 */
 	$gr_nav_enabled = ( 'slider' === $variant && count( $reviews ) > 1 );
-	// The footnote rides in the slider wrapper when there is one, so the arrows can share its row.
-	$gr_footnote_html = '' !== $gr_footnote ? '<p class="sgs-google-reviews__footnote">' . esc_html( $gr_footnote ) . '</p>' : '';
+	// The footnote takes the navigation's leading slot when there is one, so it shares the arrows' row.
+	$gr_footnote_html = '' !== $gr_footnote
+		? '<p class="' . esc_attr( 'sgs-google-reviews__footnote' . ( $gr_nav_enabled ? ' sgs-slider-nav__lead' : '' ) ) . '">' . esc_html( $gr_footnote ) . '</p>'
+		: '';
+	$gr_list_class    = 'sgs-google-reviews__list' . ( $gr_nav_enabled ? ' sgs-slider-nav__rail' : '' );
+	// The active dot is re-measured on scroll only when there are dots to keep in step.
+	$gr_list_sync_attr = ( $gr_nav_enabled && 'dots' === $gr_pagination ) ? ' data-wp-on--scroll="actions.syncActiveDot"' : '';
+	ob_start();
 	?>
-	<?php if ( $gr_nav_enabled ) : ?>
-	<div class="sgs-google-reviews__slider">
-	<?php endif; ?>
-
-	<?php if ( $gr_nav_enabled && $show_arrows ) : ?>
-	<button
-		class="sgs-google-reviews__arrow sgs-google-reviews__arrow--prev"
-		type="button"
-		data-wp-on--click="actions.prevSlide"
-		aria-label="<?php esc_attr_e( 'Previous review', 'sgs-blocks' ); ?>"
-	>
-		<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="currentColor" d="M15.4 7.4 14 6l-6 6 6 6 1.4-1.4-4.6-4.6z"/></svg>
-	</button>
-	<?php endif; ?>
-
 	<div
-		class="sgs-google-reviews__list"
+		class="<?php echo esc_attr( $gr_list_class ); ?>"
 		<?php echo $sgs_gr_list_fx_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built entirely from literal strings, no dynamic value. ?>
-		<?php echo $gr_nav_enabled ? 'data-wp-on--scroll="actions.syncActiveDot"' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal string, no dynamic value. ?>
+		<?php echo $gr_list_sync_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal string, no dynamic value. ?>
 	>
 		<?php $gr_card_n = 0; ?>
 		<?php foreach ( $reviews as $review ) : ?>
@@ -1037,49 +1030,37 @@ else :
 			</article>
 		<?php endforeach; ?>
 	</div>
+	<?php
+	$gr_rail_html = (string) ob_get_clean();
 
-	<?php if ( $gr_nav_enabled && $show_arrows ) : ?>
-	<button
-		class="sgs-google-reviews__arrow sgs-google-reviews__arrow--next"
-		type="button"
-		data-wp-on--click="actions.nextSlide"
-		aria-label="<?php esc_attr_e( 'Next review', 'sgs-blocks' ); ?>"
-	>
-		<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="currentColor" d="M8.6 7.4 10 6l6 6-6 6-1.4-1.4 4.6-4.6z"/></svg>
-	</button>
-	<?php endif; ?>
-
-	<?php if ( $gr_nav_enabled && '' !== $gr_footnote_html ) : ?>
-		<?php echo $gr_footnote_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built above from esc_html() only. ?>
-	<?php endif; ?>
-
-	<?php if ( $gr_nav_enabled ) : ?>
-	</div>
-	<?php elseif ( '' !== $gr_footnote_html ) : ?>
-		<?php echo $gr_footnote_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built above from esc_html() only. ?>
-	<?php endif; ?>
-
-	<?php if ( $gr_nav_enabled && $show_dots ) : ?>
-	<div class="sgs-google-reviews__dots" role="tablist" aria-label="<?php esc_attr_e( 'Review pagination', 'sgs-blocks' ); ?>">
-		<?php foreach ( $reviews as $gr_dot_idx => $gr_dot_review ) : ?>
-			<button
-				class="sgs-google-reviews__dot<?php echo 0 === $gr_dot_idx ? ' is-active' : ''; ?>"
-				type="button"
-				role="tab"
-				<?php echo 0 === $gr_dot_idx ? 'aria-current="true"' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal string, no dynamic value. ?>
-				aria-selected="<?php echo 0 === $gr_dot_idx ? 'true' : 'false'; ?>"
-				data-sgs-index="<?php echo esc_attr( $gr_dot_idx ); ?>"
-				data-wp-on--click="actions.goToSlide"
-				aria-label="
-				<?php
-				/* translators: %d: review number (1-indexed). */
-				echo esc_attr( sprintf( __( 'Go to review %d', 'sgs-blocks' ), $gr_dot_idx + 1 ) );
-				?>
-				"
-			></button>
-		<?php endforeach; ?>
-	</div>
-	<?php endif; ?>
+	if ( $gr_nav_enabled ) {
+		sgs_slider_nav_enqueue_style();
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every part is escaped inside sgs_slider_nav_render() or above (rail, footnote).
+		echo sgs_slider_nav_render(
+			array(
+				'block'           => 'sgs-google-reviews',
+				'placement'       => $gr_nav_position,
+				'pagination'      => $gr_pagination,
+				'show_arrows'     => (bool) $show_arrows,
+				'rail_html'       => $gr_rail_html,
+				'lead_html'       => $gr_footnote_html,
+				'count'           => count( $reviews ),
+				'labels'          => array(
+					'prev' => __( 'Previous review', 'sgs-blocks' ),
+					'next' => __( 'Next review', 'sgs-blocks' ),
+					'dots' => __( 'Review pagination', 'sgs-blocks' ),
+					/* translators: %d: review number (1-indexed). */
+					'dot'  => __( 'Go to review %d', 'sgs-blocks' ),
+				),
+				'prev_directives' => array( 'data-wp-on--click' => 'actions.prevSlide' ),
+				'next_directives' => array( 'data-wp-on--click' => 'actions.nextSlide' ),
+				'dot_directives'  => array( 'data-wp-on--click' => 'actions.goToSlide' ),
+			)
+		);
+	} else {
+		echo $gr_rail_html . $gr_footnote_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the rail is escaped where it is built, the footnote above.
+	}
+	?>
 
 	<?php if ( ! $gr_header_shown ) : ?>
 		<?php echo $gr_actions_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built above from esc_url() / esc_html() only. ?>

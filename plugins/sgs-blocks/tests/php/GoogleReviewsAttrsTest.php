@@ -144,11 +144,12 @@ final class GoogleReviewsAttrsTest extends TestCase {
 			'logo'    => array(
 				array(
 					'logoSize'    => array( 'desktop' => '30px' ),
-					'logoOpacity' => 1,
+					// 2026-09-23: the default opacity is 1 (the Google baseline), so the group moves it off the default.
+					'logoOpacity' => 0.8,
 				),
 				array(
 					"{$r} .sgs-google-reviews__google-logo{width:30px;height:30px;}",
-					"{$r} .sgs-google-reviews__google-logo{opacity:1;}",
+					"{$r} .sgs-google-reviews__google-logo{opacity:0.8;}",
 				),
 			),
 			'colours' => array(
@@ -239,13 +240,15 @@ final class GoogleReviewsAttrsTest extends TestCase {
 				array(
 					'railPadding'     => $b4( '10px' ),
 					'gap'             => array( 'desktop' => 16 ),
-					'scrollbar'       => 'thin',
+					// 2026-09-23: `scrollbar` was replaced by `pagination` (default scrollbar) + `scrollbarStyle` (default
+					// thin); `standard` is the value that moves off the default.
+					'scrollbarStyle'  => 'standard',
 					'scrollbarColour' => '#DADCE0',
 				),
 				array(
 					"{$r} .sgs-google-reviews__list{padding:10px 10px 10px 10px;}",
 					"{$r} .sgs-google-reviews__list{gap:16px;}",
-					"{$r} .sgs-google-reviews__list{scrollbar-width:thin;-ms-overflow-style:auto;}",
+					"{$r} .sgs-google-reviews__list{scrollbar-width:auto;}",
 					"{$r} .sgs-google-reviews__list{scrollbar-color:#DADCE0 transparent;}",
 				),
 			),
@@ -330,16 +333,34 @@ final class GoogleReviewsAttrsTest extends TestCase {
 	}
 
 	public function test_the_logo_opacity_and_scrollbar_defaults_do_not_beat_a_look(): void {
+		// 2026-09-23 defaults: logoOpacity 1, pagination scrollbar, scrollbarStyle thin (the Google baseline).
 		$css = $this->render(
 			array(
-				'logoOpacity' => 0.7,
-				'scrollbar'   => 'hidden',
+				'logoOpacity'    => 1,
+				'pagination'     => 'scrollbar',
+				'scrollbarStyle' => 'thin',
 				'textClampLines' => 8,
 			)
 		)['css'];
 		$this->assertStringNotContainsString( 'opacity:', $css );
 		$this->assertStringNotContainsString( 'scrollbar-width', $css );
 		$this->assertStringNotContainsString( 'line-clamp', $css );
+	}
+
+	public function test_the_scrollbar_settings_are_written_only_while_the_scrollbar_is_the_indicator(): void {
+		$attrs = array(
+			'scrollbarStyle'  => 'standard',
+			'scrollbarColour' => '#123456',
+		);
+		$css   = $this->render( $attrs )['css'];
+		$this->assertStringContainsString( 'scrollbar-width:auto', $css );
+		$this->assertStringContainsString( 'scrollbar-color:#123456', $css );
+		// NEGATIVE CONTROL: with dots (or nothing) the shared layer hides the scrollbar, so its settings emit nothing.
+		foreach ( array( 'dots', 'none' ) as $pagination ) {
+			$css = $this->render( array_merge( $attrs, array( 'pagination' => $pagination ) ) )['css'];
+			$this->assertStringNotContainsString( 'scrollbar-width', $css, $pagination );
+			$this->assertStringNotContainsString( 'scrollbar-color', $css, $pagination );
+		}
 	}
 
 	// ── Typography: 12 element families + the block's own ───────────────────────────────────────────────────
@@ -445,9 +466,16 @@ final class GoogleReviewsAttrsTest extends TestCase {
 
 	public function test_the_new_elements_are_absent_by_default(): void {
 		$html = $this->render( array( 'averageRating' => 4.7 ) )['html'];
-		foreach ( array( '__source-label', '__footnote', '__see-all', '__card-logo', '__review-link' ) as $class ) {
+		foreach ( array( '__source-label', '__footnote', '__see-all', '__review-link' ) as $class ) {
 			$this->assertStringNotContainsString( 'sgs-google-reviews' . $class, $html, $class );
 		}
+	}
+
+	public function test_the_per_card_google_mark_is_on_by_default_and_the_switch_removes_it(): void {
+		// 2026-09-23: showCardLogo defaults to true (the Google baseline shows a G on every card).
+		$this->assertSame( 2, substr_count( $this->render( array() )['html'], 'class="sgs-google-reviews__card-logo"' ) );
+		// NEGATIVE CONTROL: switched off, no card carries it.
+		$this->assertStringNotContainsString( 'sgs-google-reviews__card-logo', $this->render( array( 'showCardLogo' => false ) )['html'] );
 	}
 
 	public function test_a_review_link_needs_both_the_switch_and_a_url(): void {
@@ -496,14 +524,15 @@ final class GoogleReviewsAttrsTest extends TestCase {
 				'reviewRequestUrl' => 'https://example.com/w',
 			)
 		)['html'];
-		$this->assertLessThan( strpos( $with_header, 'class="sgs-google-reviews__list"' ), strpos( $with_header, 'class="sgs-google-reviews__cta"' ), 'inside the header row, before the list' );
+		// The rail also carries the shared navigation's class, so match the class attribute's opening.
+		$this->assertLessThan( strpos( $with_header, 'class="sgs-google-reviews__list' ), strpos( $with_header, 'class="sgs-google-reviews__cta"' ), 'inside the header row, before the list' );
 		$no_header = $this->render(
 			array(
 				'showAggregate'    => false,
 				'reviewRequestUrl' => 'https://example.com/w',
 			)
 		)['html'];
-		$this->assertGreaterThan( strpos( $no_header, 'class="sgs-google-reviews__list"' ), strpos( $no_header, 'class="sgs-google-reviews__cta"' ), 'no header row: below the reviews' );
+		$this->assertGreaterThan( strpos( $no_header, 'class="sgs-google-reviews__list' ), strpos( $no_header, 'class="sgs-google-reviews__cta"' ), 'no header row: below the reviews' );
 	}
 
 	public function test_everything_printed_is_escaped(): void {
@@ -527,17 +556,14 @@ final class GoogleReviewsAttrsTest extends TestCase {
 	}
 
 	public function test_the_structural_choices_are_classes_written_only_when_made(): void {
-		$made = $this->render(
-			array(
-				'logoPosition' => 'leading',
-				'navPosition'  => 'below-end',
-			)
-		)['html'];
-		$this->assertStringContainsString( 'sgs-google-reviews--logo-leading', $made );
-		$this->assertStringContainsString( 'sgs-google-reviews--nav-below-end', $made );
-		$default = $this->render( array( 'logoPosition' => 'trailing', 'navPosition' => 'overlay' ) )['html'];
+		// 2026-09-23: leading is the default logo position, so trailing is the choice that writes a class.
+		$made = $this->render( array( 'logoPosition' => 'trailing' ) )['html'];
+		$this->assertStringContainsString( 'sgs-google-reviews--logo-trailing', $made );
+		$default = $this->render( array( 'logoPosition' => 'leading' ) )['html'];
 		$this->assertStringNotContainsString( 'sgs-google-reviews--logo-', $default );
+		// The arrow placement is no longer a root modifier: the slider wrapper carries the shared layer's class.
 		$this->assertStringNotContainsString( 'sgs-google-reviews--nav-', $default );
+		$this->assertStringContainsString( 'sgs-slider-nav--below-end', $default );
 	}
 
 	public function test_switching_the_text_clamp_off_releases_the_box(): void {
@@ -545,8 +571,8 @@ final class GoogleReviewsAttrsTest extends TestCase {
 		$this->assertStringContainsString( self::R . ' .sgs-google-reviews__text{display:block;-webkit-line-clamp:unset;overflow:visible;}', $css );
 	}
 
-	public function test_a_hidden_scrollbar_is_written_when_the_author_chose_it_and_a_colour_needs_no_style_change(): void {
-		$css = $this->render( array( 'scrollbar' => 'visible' ) )['css'];
+	public function test_a_standard_scrollbar_is_written_when_the_author_chose_it(): void {
+		$css = $this->render( array( 'scrollbarStyle' => 'standard' ) )['css'];
 		$this->assertStringContainsString( 'scrollbar-width:auto', $css );
 	}
 
@@ -671,14 +697,15 @@ final class GoogleReviewsAttrsTest extends TestCase {
 		$css = (string) preg_replace( '#/\*.*?\*/#s', '', $css );
 
 		$named = array(
-			'.sgs-google-reviews__google-logo'                                    => array( 'width: 60px', 'opacity: 0.7' ),
+			'.sgs-google-reviews__google-logo'                                    => array( 'width: 30px', 'opacity: 1' ),
 			'.sgs-google-reviews__avatar'                                         => array( 'width: 40px', 'height: 40px', 'border-radius: 50%' ),
 			'.sgs-google-reviews__avatar-initials'                                => array( 'border-radius: 50%', 'font-weight: 700' ),
 			'.sgs-google-reviews__text'                                           => array( '-webkit-line-clamp: 8' ),
 			'.sgs-google-reviews--slider .sgs-google-reviews__list'               => array( 'scrollbar-width' ),
 			'.sgs-google-reviews--slider .sgs-google-reviews__list::-webkit-scrollbar' => array( 'display: none' ),
-			'.sgs-google-reviews__arrow'                                          => array( 'width: 44px', 'height: 44px', 'border-radius: 50%' ),
-			'.sgs-google-reviews__write-review'                                   => array( 'padding: 0.75rem 2rem', 'font-weight: 600' ),
+			'.sgs-google-reviews__arrow'                                          => array( 'width:', 'height:', 'border-radius: 50%' ),
+			'.sgs-google-reviews__write-review'                                   => array( 'padding: 0 22px', 'font-weight: 500' ),
+			'.sgs-google-reviews__review'                                         => array( 'padding: 20px', 'border-radius: 8px', 'gap: 12px' ),
 		);
 		foreach ( $named as $selector => $literals ) {
 			foreach ( $this->bareRuleBodies( $css, $selector ) as $body ) {

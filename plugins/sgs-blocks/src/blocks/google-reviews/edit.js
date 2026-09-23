@@ -65,7 +65,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		starColourHover,
 		autoplay,
 		autoplaySpeed,
-		showDots,
 		showArrows,
 		dragToScroll,
 		dragMomentum,
@@ -86,10 +85,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		arrowColourTextHover,
 		arrowColourTextGradient,
 		arrowColourTextHoverGradient,
-		dotColour,
-		dotColourHover,
-		dotColourGradient,
-		dotColourHoverGradient,
 	} = attributes;
 
 	// The block shows written reviews when told to, or on Automatic when it holds any.
@@ -121,11 +116,9 @@ export default function Edit( { attributes, setAttributes } ) {
 			   text/fill+hover -> "Write-review button". Built directly with
 			   DesignTokenPicker (mirrors what SgsColourPanel does internally)
 			   since SgsColourPanel has no per-caller title override and each
-			   element needs its own panel name. `dotColour` (the slider
-			   pagination dot) has NO declared element in block.json's
-			   supports.sgs.elements — an unclaimed `fill`-family attribute —
-			   so it keeps its own small property-family panel rather than
-			   being folded into an element it doesn't belong to. */ }
+			   element needs its own panel name. The slider pagination dot's
+			   colours (`dotColour*`) live in the Navigation section beside the
+			   progress-indicator choice, shown only while dots are chosen. */ }
 			<InspectorControls group="styles">
 				<PanelBody title={ __( 'Star icon', 'sgs-blocks' ) } className="sgs-colour-panel">
 					<DesignTokenPicker
@@ -254,37 +247,6 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 			</InspectorControls>
 
-			{ /* dotColour — unclaimed `fill`-family attribute, no declared
-			   element. Kept as its own minimal property-family panel rather
-			   than folded into an element panel it does not belong to. */ }
-			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Fill', 'sgs-blocks' ) } className="sgs-colour-panel">
-					<DesignTokenPicker
-						label={ __( 'Slider pagination dot colour', 'sgs-blocks' ) }
-						states={ [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: dotColour,
-								onChange: ( val ) => setAttributes( { dotColour: val ?? '' } ),
-								gradientValue: dotColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { dotColourGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: dotColourHover,
-								onChange: ( val ) => setAttributes( { dotColourHover: val ?? '' } ),
-								gradientValue: dotColourHoverGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { dotColourHoverGradient: val ?? '' } ),
-							},
-						] }
-					/>
-				</PanelBody>
-			</InspectorControls>
-
 			{ /* Six collapsed styling sections (Styles tab). Each is one component in ./components: a PanelBody
 			   holding a ToolsPanel, every row built from a shared SGS control. Navigation exists only for the
 			   Slider display type, the one variant that has a rail and arrows. */ }
@@ -359,7 +321,9 @@ export default function Edit( { attributes, setAttributes } ) {
 				   content control today. Was a generic "Layout" panel; renamed
 				   so it reads as the element it actually belongs to rather
 				   than a catch-all. */ }
-				{ [ 'grid', 'slider', 'wall' ].includes( variant ) && (
+				{ /* The slider's cards are sized by the Card width control (340px by default, the Google
+				   baseline), so `columns` sets the grid and wall only. */ }
+				{ [ 'grid', 'wall' ].includes( variant ) && (
 					<PanelBody title={ __( 'Inner', 'sgs-blocks' ) }>
 						{ /*
 							  columns is a TIER OBJECT — ONE attr holding
@@ -527,7 +491,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( {
 								autoplay: false,
 								autoplaySpeed: 5000,
-								showDots: true,
 								showArrows: true,
 								dragToScroll: false,
 								dragMomentum: true,
@@ -567,18 +530,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 
 						<ToolsPanelItem
-							label={ __( 'Show dots', 'sgs-blocks' ) }
-							hasValue={ () => showDots !== true }
-							onDeselect={ () => setAttributes( { showDots: true } ) }
-						>
-							<ToggleControl
-								label={ __( 'Show dots', 'sgs-blocks' ) }
-								checked={ showDots }
-								onChange={ ( value ) => setAttributes( { showDots: value } ) }
-							/>
-						</ToolsPanelItem>
-
-						<ToolsPanelItem
 							label={ __( 'Show arrows', 'sgs-blocks' ) }
 							hasValue={ () => showArrows !== true }
 							onDeselect={ () => setAttributes( { showArrows: true } ) }
@@ -610,7 +561,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { dragToScroll: value } )
 								}
 								help={ __(
-									'Lets visitors click and drag with a mouse to scroll the reviews, on top of the usual arrows, dots, swipe and scrollbar.',
+									'Lets visitors click and drag with a mouse to scroll the reviews, on top of the usual arrows, swipe and scrollbar or dots.',
 									'sgs-blocks'
 								) }
 							/>

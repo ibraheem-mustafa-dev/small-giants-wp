@@ -304,8 +304,10 @@ describe( 'Card', () => {
 		const m = mount( CardPanel.default );
 		const options = m.all( 'select[aria-label="Card look"] option' ).map( ( o ) => o.value );
 		expect( [ ...options ].sort() ).toEqual( [ ...SCHEMA.cardStyle.enum ].sort() );
-		m.type( 'select[aria-label="Card look"]', 'google-card' );
-		expect( lastPatch( m ) ).toEqual( { cardStyle: 'google-card' } );
+		// 2026-09-23: google-card is the default, so the test writes a look that moves off it.
+		expect( SCHEMA.cardStyle.default ).toBe( 'google-card' );
+		m.type( 'select[aria-label="Card look"]', 'bordered' );
+		expect( lastPatch( m ) ).toEqual( { cardStyle: 'bordered' } );
 		m.unmount();
 	} );
 
@@ -369,13 +371,16 @@ describe( 'Card', () => {
 describe( 'Header', () => {
 	test( 'logo position, opacity, size and caption write their attributes', () => {
 		const m = mount( HeaderPanel.default );
-		m.type( 'select[aria-label="Google logo position"]', 'leading' );
-		m.type( 'input[aria-label="Google logo opacity"]', '1' );
+		// 2026-09-23: leading and opacity 1 are the defaults (the Google baseline), so write values off them.
+		expect( SCHEMA.logoPosition.default ).toBe( 'leading' );
+		expect( SCHEMA.logoOpacity.default ).toBe( 1 );
+		m.type( 'select[aria-label="Google logo position"]', 'trailing' );
+		m.type( 'input[aria-label="Google logo opacity"]', '0.8' );
 		m.type( 'input[aria-label="Google logo size"]', '30px' );
 		m.type( 'input[aria-label="Source caption"]', 'Google Reviews' );
 		expect( lastPatch( m ) ).toEqual( {
-			logoPosition: 'leading',
-			logoOpacity: 1,
+			logoPosition: 'trailing',
+			logoOpacity: 0.8,
 			logoSize: { desktop: '30px' },
 			sourceLabel: 'Google Reviews',
 		} );
@@ -423,16 +428,18 @@ describe( 'Reviewer', () => {
 		m.unmount();
 	} );
 
-	test( 'the card mark size shows only once the mark is switched on, and the toggle writes showCardLogo', () => {
-		const off = mount( ReviewerPanel.default );
-		expect( off.q( 'input[aria-label="Card Google mark size"]' ) ).toBeNull();
-		off.click( 'input[aria-label="Show a small Google mark on each card"]' );
-		expect( lastPatch( off ) ).toEqual( { showCardLogo: true } );
-		off.unmount();
-		const on = mount( ReviewerPanel.default, { showCardLogo: true } );
+	test( 'the card mark is on by default, its size shows only while it is on, and the toggle writes showCardLogo', () => {
+		// 2026-09-23: showCardLogo defaults to true (the Google baseline has a G on every card).
+		expect( SCHEMA.showCardLogo.default ).toBe( true );
+		const on = mount( ReviewerPanel.default );
 		on.type( 'input[aria-label="Card Google mark size"]', '17px' );
 		expect( lastPatch( on ) ).toEqual( { cardLogoSize: { desktop: '17px' } } );
+		on.click( 'input[aria-label="Show a small Google mark on each card"]' );
+		expect( lastPatch( on ) ).toMatchObject( { showCardLogo: false } );
 		on.unmount();
+		const off = mount( ReviewerPanel.default, { showCardLogo: false } );
+		expect( off.q( 'input[aria-label="Card Google mark size"]' ) ).toBeNull();
+		off.unmount();
 	} );
 
 	test( 'typography covers author, meta, date and avatar', () => {
@@ -562,28 +569,64 @@ describe( 'Buttons', () => {
 } );
 
 describe( 'Navigation', () => {
-	test( 'position, size, rail padding and scrollbar write their attributes', () => {
-		const m = mount( NavigationPanel.default, { scrollbar: 'thin' } );
-		m.type( 'select[aria-label="Arrow position"]', 'below-end' );
-		m.type( 'input[aria-label="Arrow button size"]', '40px' );
-		m.click( '[data-box="Space around the row of reviews"]' );
-		m.type( 'select[aria-label="Scrollbar"]', 'visible' );
-		m.click( '[data-picker="Scrollbar colour"]' );
-		expect( lastPatch( m ) ).toMatchObject( {
-			navPosition: 'below-end',
-			arrowSize: { desktop: '40px' },
-			railPadding: { desktop: { top: '4px' } },
-			scrollbar: 'visible',
-			scrollbarColour: 'primary',
-		} );
-		expect( [ ...m.all( 'select[aria-label="Arrow position"] option' ) ].map( ( o ) => o.value ).sort() ).toEqual( [ ...SCHEMA.navPosition.enum ].sort() );
-		expect( [ ...m.all( 'select[aria-label="Scrollbar"] option' ) ].map( ( o ) => o.value ).sort() ).toEqual( [ ...SCHEMA.scrollbar.enum ].sort() );
+	test( 'the placement select offers exactly the five navPosition values, below-end first and default', () => {
+		const m = mount( NavigationPanel.default );
+		const values = m.all( 'select[aria-label="Arrow position"] option' ).map( ( o ) => o.value );
+		expect( values ).toEqual( [ 'below-end', 'below-center', 'below-split', 'sides', 'overlay-inset' ] );
+		expect( [ ...values ].sort() ).toEqual( [ ...SCHEMA.navPosition.enum ].sort() );
+		expect( SCHEMA.navPosition.default ).toBe( 'below-end' );
+		expect( SCHEMA.navPosition.enum ).not.toContain( 'overlay' );
+		m.type( 'select[aria-label="Arrow position"]', 'sides' );
+		expect( lastPatch( m ) ).toEqual( { navPosition: 'sides' } );
 		m.unmount();
 	} );
 
-	test( 'the scrollbar colour is hidden while the scrollbar is hidden', () => {
+	test( 'the progress indicator select offers scrollbar, dots and none, scrollbar by default', () => {
 		const m = mount( NavigationPanel.default );
+		const values = m.all( 'select[aria-label="Progress indicator"] option' ).map( ( o ) => o.value );
+		expect( [ ...values ].sort() ).toEqual( [ ...SCHEMA.pagination.enum ].sort() );
+		expect( SCHEMA.pagination.default ).toBe( 'scrollbar' );
+		m.type( 'select[aria-label="Progress indicator"]', 'dots' );
+		expect( lastPatch( m ) ).toEqual( { pagination: 'dots' } );
+		m.unmount();
+	} );
+
+	test( 'the old showDots and scrollbar attributes are gone from the schema and the editor', () => {
+		expect( SCHEMA.showDots ).toBeUndefined();
+		expect( SCHEMA.scrollbar ).toBeUndefined();
+		expect( EDIT_JS ).not.toContain( 'showDots' );
+	} );
+
+	test( 'with the scrollbar: its width and colour show and write, the dot colours do not show', () => {
+		const m = mount( NavigationPanel.default );
+		expect( m.q( '[data-picker="Slider pagination dot colour"]' ) ).toBeNull();
+		m.type( 'select[aria-label="Scrollbar width"]', 'standard' );
+		m.click( '[data-picker="Scrollbar colour"]' );
+		m.type( 'input[aria-label="Arrow button size"]', '40px' );
+		m.click( '[data-box="Space around the row of reviews"]' );
+		expect( lastPatch( m ) ).toMatchObject( {
+			scrollbarStyle: 'standard',
+			scrollbarColour: 'primary',
+			arrowSize: { desktop: '40px' },
+			railPadding: { desktop: { top: '4px' } },
+		} );
+		expect( [ ...m.all( 'select[aria-label="Scrollbar width"] option' ) ].map( ( o ) => o.value ).sort() ).toEqual( [ ...SCHEMA.scrollbarStyle.enum ].sort() );
+		m.unmount();
+	} );
+
+	test( 'with dots: the dot colours show and write, the scrollbar settings do not show', () => {
+		const m = mount( NavigationPanel.default, { pagination: 'dots' } );
+		expect( m.q( 'select[aria-label="Scrollbar width"]' ) ).toBeNull();
 		expect( m.q( '[data-picker="Scrollbar colour"]' ) ).toBeNull();
+		m.click( '[data-picker="Slider pagination dot colour"]' );
+		expect( lastPatch( m ) ).toEqual( { dotColour: 'primary' } );
+		m.unmount();
+	} );
+
+	test( 'with none: neither the scrollbar settings nor the dot colours show', () => {
+		const m = mount( NavigationPanel.default, { pagination: 'none' } );
+		expect( m.q( 'select[aria-label="Scrollbar width"]' ) ).toBeNull();
+		expect( m.q( '[data-picker="Slider pagination dot colour"]' ) ).toBeNull();
 		m.unmount();
 	} );
 
@@ -599,11 +642,21 @@ describe( 'Navigation', () => {
 		m.unmount();
 	} );
 
-	test( 'reset of the scrollbar row restores both the choice and the colour', () => {
-		const m = mount( NavigationPanel.default, { scrollbar: 'thin', scrollbarColour: 'primary' } );
+	test( 'reset of the scrollbar row restores both the width and the colour', () => {
+		const m = mount( NavigationPanel.default, { scrollbarStyle: 'standard', scrollbarColour: 'primary' } );
 		expect( m.q( rowSel( 'Scrollbar' ) ).getAttribute( 'data-has-value' ) ).toBe( 'true' );
 		m.click( '[data-reset="Scrollbar"]' );
-		expect( lastPatch( m ) ).toEqual( { scrollbar: 'hidden', scrollbarColour: '' } );
+		expect( lastPatch( m ) ).toEqual( { scrollbarStyle: 'thin', scrollbarColour: '' } );
+		m.unmount();
+	} );
+
+	test( 'Reset all restores the placement and the indicator to their defaults', () => {
+		const m = mount( NavigationPanel.default, { navPosition: 'sides', pagination: 'dots' } );
+		m.click( '[data-reset-all="Navigation settings"]' );
+		const patch = lastPatch( m );
+		expect( patch.navPosition ).toBe( 'below-end' );
+		expect( patch.pagination ).toBe( 'scrollbar' );
+		expect( Object.keys( patch ).sort() ).toEqual( [ ...NavigationPanel.NAVIGATION_ATTRS ].sort() );
 		m.unmount();
 	} );
 } );

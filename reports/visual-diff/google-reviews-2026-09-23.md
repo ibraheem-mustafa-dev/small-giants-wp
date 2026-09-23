@@ -1,66 +1,58 @@
-# Visual diff — `sgs/google-reviews` — 2026-09-23 (redesign: card, header, reviewer, text, buttons and navigation attributes; eight card looks)
+# Visual diff — `sgs/google-reviews` — 2026-09-23 (Google design as the baseline; shared slider navigation with five placements)
 
 ```
 verdict: PASS
 intent_capture_passed: true
 first_paint_capture_passed: true
-source_sha: 9f85870a5899fcc1
+source_sha: ce7202add5b46aa1
 blocks: google-reviews
-target: darkcyan-grouse-898606.hostingersite.com (Eye Care page 11, cloned by the pipeline; probe page 47 "[probe] google-reviews editor")
+target: darkcyan-grouse-898606.hostingersite.com (Eye Care page 11, pipeline run 2026-09-23 19:17)
 date:   2026-09-23
 ```
 
-Intent: the block can reproduce the Eye Care draft's Google-style reviews card from the draft alone, and offers ready-made looks.
-The design is `.claude/plans/2026-09-21-google-reviews-block-design.md`. New: card box, header row, divider, logo size and
-position, source caption, a second header button ("See all reviews"), avatar size and shape, star sizes, text clamp,
-"read the full review" link, footnote, rail padding, scrollbar and arrow controls, 12 typography families, and the looks
-`google-card`, `quote-minimal`, `boxed`, `bubble` and `wall-tile` beside `flat`, `bordered` and `elevated`. Defaults:
-"Write a review" is an outlined secondary button, review text clamps at 8 lines. Every value is a scoped `<style>` rule;
-none is inline.
+Supersedes the earlier same-day report on this file, which said the card "matched" from style values alone; Bean
+then found six failures by eye (heading, font, logo, per-card logo, arrows over the cards, dots). Design:
+`.claude/plans/2026-09-23-google-reviews-baseline-and-slider-nav-design.md`.
 
-## Frontend: the live Eye Care card against the draft (real Chromium, fresh page, 1440 and 375)
+Intent of THIS change: a new block looks like the Google widget with no settings touched; arrows can be placed five
+ways (below-end default, below-center, below-split, sides, overlay-inset) and never cover a card; one progress setting
+(scrollbar default, dots, none); the logo leads at 30px; each card shows its Google mark.
 
-Pipeline run `pipeline-state/eye-care-ward-end-eye-care-birmingham-2026-09-23-171809`, deployed to page 11. The draft was
-served from its own folder and measured the same way; elements were matched by their text (rule 4a).
+## Measured on the live page against the draft (real Chromium, fresh page, all three widths)
 
-| Element | Live | Draft | |
+Elements located inside the reviews section, positions and presence compared, then the two captures put side by side
+and looked at.
+
+| Check | 1440 | 768 | 375 |
 |---|---|---|---|
-| "See all reviews" button | 137x40, fill `#1A73E8` (pixel-sampled), white text | 137x40, `#1A73E8`, white | match |
-| "Write a review" button | 134x40, white fill, `#1A73E8` text, 1px `#DADCE0` border (pixel-sampled) | 134x40, same | match |
-| "15 reviews", "Google Reviews", footnote, first author | font, size, weight and colour equal | | match |
-| Stars | gold `fill rgb(251,188,4)`, 15x15 | `#FBBC04` | match |
-| Card | 12px radius, padding 28/26 (1440) and 20/16 (375), border `#DADCE0`, Roboto | same | match |
-| Avatar | 40x40, round | 40x40 | match |
-| Review card | 340x350 (1440), 270x371 (375) | 340x344, 270x363 | 6 to 8px taller |
-| Reviews | 13 cards | 13 | match |
+| Header G: size, side of caption | 30x30, left (= draft) | 30x30, left (= draft) | **on its own row above the caption** (draft: left) |
+| Per-card G | 13 of 13 (= draft) | 13 (= draft) | 13 (= draft) |
+| Arrows | below the rail, right, 0 px² over any card; positions equal to the draft | below, 0 px² | below, 0 px², equal to the draft |
+| Dots / scrollbar | none / visible (= draft) | none / visible | none / visible |
+| Review card | 340x346 (draft 340x344) | **340 wide (draft 270)** | 270x367 (draft 270x363) |
+| Card left, width | 52, 1321 (= draft) | **52, 649 (draft 20, 713)** | 20, 320 (= draft) |
+| Heading left | **113 (draft 52)** | **52 (draft 20)** | 20 (= draft) |
+| Fonts loaded | **Inter only (draft: Roboto, Playfair, Outfit)** | same | same |
 
-The "See all reviews" element's own `background-color` reads teal: the button helper paints the fill on a `::after`
-layer over it, and the pixels show the blue. Measured by pixel sampling, not by the computed value.
+Block-local no-overlap proof for every placement (real render.php + built CSS, 1440/768/375, scroll start/middle/end):
+0 px² for all five; forcing the old overlay gives 1600 px² (the measure can fail).
 
-Still reported as not transferred, each with a reason (content-gaps): layout plumbing the block draws itself (display,
-flex, zero margins, transitions), the rail's 16px gap, the stars' letter-spacing, and the text's `max-height` (the clamp
-covers it). The header divider's `border-bottom-style` has no attribute; the block's own default is `solid`, as in the
-draft.
+## Still not faithful, and why
 
-## Editor: probe page 47, logged in, real block editor
+- Heading left edge, section padding at 768, fonts: site-level (a nested container with no drafted width falls back to
+  the theme's 1200px; the tablet spacing tier is not transferred; the Eye Care theme snapshot is not on the site and a
+  widget-only font is never captured). Diagnosed, awaiting Bean's decisions; not this block.
+- 375 header: the logo wraps above the caption. Block CSS, next change.
+- 768 review card width: the draft's 270px applies below its own breakpoint; ours only below 768. Next change.
+- Header stars draw a half star for 4.7; the draft shows a near-full fifth star. "Read the full review" is teal and
+  underlined; the draft's is blue with no underline. Next change.
 
-- All five reviews blocks select with no error screen and no console error from the block.
-- Styles tab: Card, Header, Reviewer, Review text and Buttons panels present; Navigation appears for the slider.
-- "Card look" lists all eight looks with labels; each renders in the canvas with its class and the sample reviews.
-- Display types slider, grid, list, wall and badge each re-render with no error screen and no failed canvas request
-  (the canvas request is a POST, so 13 reviews stay under the request-line limit).
-- A cleared border style stores `none` and the canvas request still succeeds.
+## Editor
 
-Captures (PNG, gitignored, kept locally): `google-reviews-live-1440.png`, `google-reviews-draft-1440.png`,
-`google-reviews-live-375.png`, `google-reviews-draft-375.png`.
-
-## Tests and gates
-
-PHP 47 tests (GoogleReviews, ReviewsAggregate), jest 77, converter suite 1372 passed; `audit-inline-styling --check`,
-`check-hardcoded-render-defaults --check`, `audit-block-file-consistency --check` and the inspector scan all pass.
+Styles tab: the Navigation panel offers the five placements and the progress setting (scrollbar width and colour only
+with scrollbar, dot colours only with dots); Card look lists all eight looks. Checked with jest (82) and PHP (72
+including SliderNavTest with a negative control per placement).
 
 ## Not verified
 
-- Bean's eye on the live card (R-31-13).
-- The looks other than the plain three on the frontend (checked in the editor canvas only).
-- Dark mode.
+Bean's eye on this state (R-31-13); the editor click-through after this deploy; dark mode.

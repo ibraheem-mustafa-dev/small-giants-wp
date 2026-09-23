@@ -2,7 +2,11 @@
  * Google Reviews — Frontend Interactivity
  *
  * Handles slider autoplay and discrete navigation (arrows + dots) for the
- * slider variant. Mirrors sgs/trustpilot-reviews's carousel mechanics
+ * slider variant. The arrows and dots are drawn by the shared slider
+ * navigation (includes/helpers-slider-nav.php); the dots exist only when the
+ * block's `pagination` is `dots`, and with `scrollbar` or `none` no dot sync
+ * runs at all (render.php wires the scroll listener only for dots, and
+ * init() skips the measurement when there are no dots). Mirrors sgs/trustpilot-reviews's carousel mechanics
  * (scroll-position wrap, rAF-throttled active-dot sync) but implemented as
  * imperative DOM helpers called FROM WP Interactivity API actions, rather
  * than a second plain-DOM `DOMContentLoaded` listener — this block already
@@ -278,8 +282,12 @@ store( 'sgs/google-reviews', {
 
 			// Set the correct active dot for the initial scroll position
 			// (e.g. RTL locales or a non-zero scroll restore) even when
-			// autoplay is off.
-			updateActiveDot( root );
+			// autoplay is off. Only when there are dots: the scrollbar and
+			// `none` indicators have nothing to keep in step.
+			const hasDots = !! root.querySelector( '.sgs-google-reviews__dot' );
+			if ( hasDots ) {
+				updateActiveDot( root );
+			}
 
 			if ( ! ctx.autoplay ) {
 				return;
@@ -313,7 +321,9 @@ store( 'sgs/google-reviews', {
 					left: reviews[ currentSlide ].offsetLeft,
 					behavior: 'smooth',
 				} );
-				updateActiveDot( root );
+				if ( hasDots ) {
+					updateActiveDot( root );
+				}
 			};
 
 			let timer = setInterval( slideNext, speed );

@@ -437,7 +437,7 @@
 					"attrMap": {
 						"css:padding": "railPadding"
 					},
-					"_note": "scrollbar / scrollbarColour are the rail's scrollbar settings; they do not start with this element's prefix and the vocabulary has no scrollbar member, so they are named in the DB override (css_property scrollbar-width / scrollbar-color, css_element list) rather than here."
+					"_note": "scrollbarStyle / scrollbarColour are the rail's scrollbar settings; they do not start with this element's prefix and the vocabulary has no scrollbar member, so they are named in the DB override (css_property scrollbar-width / scrollbar-color, css_element list; they apply only when pagination is scrollbar) rather than here."
 				},
 				"see-all": {
 					"label": "See-all-reviews button",
@@ -727,7 +727,7 @@
 		},
 		"cardStyle": {
 			"type": "string",
-			"default": "bordered",
+			"default": "google-card",
 			"enum": [
 				"flat",
 				"bordered",
@@ -738,7 +738,7 @@
 				"bubble",
 				"wall-tile"
 			],
-			"description": "Card look: a ready-made starting style for the review cards. flat / bordered / elevated are the plain looks; google-card copies the Google Reviews panel; quote-minimal is borderless and quiet; boxed is a solid tile; bubble is a soft speech-bubble card; wall-tile is a thin-lined tile for a dense wall. Any value set in the card, avatar or star controls paints over the look."
+			"description": "Card look: a ready-made starting style for the review cards. google-card (the default) is the Google Reviews panel: the baseline every look builds on, framed as one bordered panel. flat / bordered / elevated are the plain cards on the same baseline; quote-minimal is borderless and quiet; boxed is a solid tile; bubble is a soft speech-bubble card; wall-tile is a thin-lined tile for a dense wall. Any value set in the card, avatar or star controls paints over the look."
 		},
 		"starColour": {
 			"type": "string",
@@ -759,10 +759,6 @@
 		"autoplaySpeed": {
 			"type": "number",
 			"default": 5000
-		},
-		"showDots": {
-			"type": "boolean",
-			"default": true
 		},
 		"showArrows": {
 			"type": "boolean",
@@ -1031,7 +1027,7 @@
 		},
 		"logoOpacity": {
 			"type": "number",
-			"default": 0.7
+			"default": 1
 		},
 		"logoPosition": {
 			"type": "string",
@@ -1039,7 +1035,7 @@
 				"leading",
 				"trailing"
 			],
-			"default": "trailing"
+			"default": "leading"
 		},
 		"sourceLabel": {
 			"type": "string",
@@ -1158,7 +1154,7 @@
 		},
 		"showCardLogo": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Show a small Google 'G' at the top right of each review card."
 		},
 		"cardLogoSize": {
@@ -1193,15 +1189,6 @@
 				"desktop": {}
 			}
 		},
-		"scrollbar": {
-			"type": "string",
-			"enum": [
-				"hidden",
-				"thin",
-				"visible"
-			],
-			"default": "hidden"
-		},
 		"scrollbarColour": {
 			"type": "string",
 			"default": ""
@@ -1209,10 +1196,33 @@
 		"navPosition": {
 			"type": "string",
 			"enum": [
-				"overlay",
-				"below-end"
+				"below-end",
+				"below-center",
+				"below-split",
+				"sides",
+				"overlay-inset"
 			],
-			"default": "overlay"
+			"default": "below-end",
+			"description": "Where the slider arrows sit (includes/helpers-slider-nav.php). below-end: in a row under the reviews, at the end (the footnote takes the start). below-center: centred under the reviews. below-split: previous under the start edge, next under the end edge. sides: beside the reviews in one row, the reviews narrowing to make room; below 768px they move under the reviews. overlay-inset: over the edges of the reviews' row, which is inset by the arrow size plus the gap. No placement ever puts an arrow over a review."
+		},
+		"pagination": {
+			"type": "string",
+			"enum": [
+				"scrollbar",
+				"dots",
+				"none"
+			],
+			"default": "scrollbar",
+			"description": "How the slider shows where the visitor is: the row's own scrollbar (styled by scrollbarStyle and scrollbarColour), one dot per review (styled by the dot colours), or nothing. Replaces the old showDots switch and scrollbar setting, which could contradict each other."
+		},
+		"scrollbarStyle": {
+			"type": "string",
+			"enum": [
+				"thin",
+				"standard"
+			],
+			"default": "thin",
+			"description": "The scrollbar's width when pagination is scrollbar: thin, or the browser's standard scrollbar."
 		},
 		"arrowSize": {
 			"type": "object",

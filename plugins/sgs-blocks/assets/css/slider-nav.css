@@ -1,0 +1,174 @@
+/**
+ * Shared slider navigation: where the arrows, the leading slot and the dots sit around a rail.
+ *
+ * Markup: includes/helpers-slider-nav.php (sgs_slider_nav_render()). Enqueued only when a slider
+ * renders, and always in the editor canvas. Written against the generic classes only, so any
+ * slider block can adopt it; the block's own stylesheet keeps the look of the arrows and dots.
+ *
+ * The wrapper is one grid. Each placement is a grid template, so an arrow always has its own cell
+ * and can never be laid over the rail, except overlay-inset, where the arrows share the rail's
+ * cell on purpose and the rail is pushed in by the arrow size plus the gap. That inset is a
+ * MARGIN, not padding: a scroll container clips its cards at its padding box, so with padding
+ * the cards would scroll through the arrows' strip; with a margin they never enter it.
+ *
+ * Custom properties a block may set on the wrapper:
+ *   --sgs-slider-nav-arrow-size  the arrow's box (default 40px); overlay-inset insets by it.
+ *   --sgs-slider-nav-gap         the space between an arrow and its neighbour (default 8px).
+ *
+ * @package SGS\Blocks
+ */
+
+.sgs-slider-nav {
+	display: grid;
+	grid-template-columns: minmax( 0, 1fr ) auto auto;
+	grid-template-areas:
+		"rail rail rail"
+		"lead prev next"
+		"dots dots dots";
+	column-gap: var( --sgs-slider-nav-gap, 8px );
+	row-gap: 0;
+	align-items: center;
+	min-width: 0;
+}
+
+.sgs-slider-nav__rail {
+	grid-area: rail;
+	min-width: 0;
+}
+
+.sgs-slider-nav__lead {
+	grid-area: lead;
+	min-width: 0;
+	margin-block-start: 6px;
+}
+
+.sgs-slider-nav__arrow {
+	box-sizing: border-box;
+	flex-shrink: 0;
+	align-self: center;
+	margin-block-start: 6px;
+}
+
+.sgs-slider-nav__arrow--prev {
+	grid-area: prev;
+}
+
+.sgs-slider-nav__arrow--next {
+	grid-area: next;
+}
+
+/* A visible keyboard focus ring on every placement (2px, offset so it clears the arrow's own border). */
+.sgs-slider-nav__arrow:focus-visible {
+	outline: 2px solid var( --wp--preset--color--primary, #1a73e8 );
+	outline-offset: 2px;
+}
+
+.sgs-slider-nav__dots {
+	grid-area: dots;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	gap: 4px;
+	margin-block-start: 8px;
+}
+
+/* ─── below-center: the arrows centred under the rail ────────────────────── */
+
+.sgs-slider-nav--below-center {
+	grid-template-columns: minmax( 0, 1fr ) auto auto minmax( 0, 1fr );
+	grid-template-areas:
+		"rail rail rail rail"
+		"lead prev next ."
+		"dots dots dots dots";
+}
+
+/* ─── below-split: previous under the start edge, next under the end edge ── */
+
+.sgs-slider-nav--below-split {
+	grid-template-columns: auto minmax( 0, 1fr ) auto;
+	grid-template-areas:
+		"rail rail rail"
+		"prev lead next"
+		"dots dots dots";
+}
+
+.sgs-slider-nav--below-split .sgs-slider-nav__lead {
+	text-align: center;
+}
+
+/* ─── sides: [previous] [rail] [next]; the rail shrinks to make room ──────── */
+
+.sgs-slider-nav--sides {
+	grid-template-columns: auto minmax( 0, 1fr ) auto;
+	grid-template-areas:
+		"prev rail next"
+		"lead lead lead"
+		"dots dots dots";
+}
+
+.sgs-slider-nav--sides .sgs-slider-nav__arrow {
+	margin-block-start: 0;
+}
+
+/* A side gutter would eat a phone screen: under 768px the arrows move under the rail (below-end). */
+@media ( max-width: 767px ) {
+	.sgs-slider-nav--sides {
+		grid-template-columns: minmax( 0, 1fr ) auto auto;
+		grid-template-areas:
+			"rail rail rail"
+			"lead prev next"
+			"dots dots dots";
+	}
+
+	.sgs-slider-nav--sides .sgs-slider-nav__arrow {
+		margin-block-start: 6px;
+	}
+}
+
+/* ─── overlay-inset: the arrows over the rail's cell edges, the rail pushed in ── */
+
+.sgs-slider-nav--overlay-inset {
+	grid-template-columns: minmax( 0, 1fr );
+	grid-template-areas:
+		"rail"
+		"lead"
+		"dots";
+}
+
+.sgs-slider-nav--overlay-inset .sgs-slider-nav__rail {
+	margin-inline: calc( var( --sgs-slider-nav-arrow-size, 40px ) + var( --sgs-slider-nav-gap, 8px ) );
+}
+
+.sgs-slider-nav--overlay-inset .sgs-slider-nav__arrow {
+	grid-area: rail;
+	z-index: 1;
+	margin-block-start: 0;
+}
+
+.sgs-slider-nav--overlay-inset .sgs-slider-nav__arrow--prev {
+	justify-self: start;
+}
+
+.sgs-slider-nav--overlay-inset .sgs-slider-nav__arrow--next {
+	justify-self: end;
+}
+
+/* ─── Progress indicator ─────────────────────────────────────────────────── */
+
+/* The rail's own scrollbar is the default indicator; the block styles it (thin unless it says otherwise). */
+:where( .sgs-slider-nav--pagination-scrollbar .sgs-slider-nav__rail ) {
+	scrollbar-width: thin;
+}
+
+/* Dots or nothing: the scrollbar is hidden, so there is one indicator, never two. */
+.sgs-slider-nav--pagination-dots .sgs-slider-nav__rail,
+.sgs-slider-nav--pagination-none .sgs-slider-nav__rail {
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+
+.sgs-slider-nav--pagination-dots .sgs-slider-nav__rail::-webkit-scrollbar,
+.sgs-slider-nav--pagination-none .sgs-slider-nav__rail::-webkit-scrollbar {
+	display: none;
+}

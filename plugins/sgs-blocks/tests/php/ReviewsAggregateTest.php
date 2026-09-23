@@ -99,10 +99,12 @@ final class ReviewsAggregateTest extends TestCase {
 
 		$this->assertStringContainsString( 'sgs-google-reviews--slider', $html );
 		$this->assertStringNotContainsString( 'sgs-google-reviews--grid', $html, 'no variant must not fall back to the grid' );
-		$this->assertStringContainsString( 'class="sgs-google-reviews__slider"', $html, 'the slider wrapper' );
+		// 2026-09-23: the slider wrapper also carries the shared navigation's classes; the default placement is
+		// below-end and the default progress indicator is the scrollbar, so there are no dots.
+		$this->assertStringContainsString( 'class="sgs-google-reviews__slider sgs-slider-nav sgs-slider-nav--below-end sgs-slider-nav--pagination-scrollbar"', $html, 'the slider wrapper' );
 		$this->assertStringContainsString( 'sgs-google-reviews__arrow--prev', $html, 'arrows are on by default' );
 		$this->assertStringContainsString( 'sgs-google-reviews__arrow--next', $html );
-		$this->assertStringContainsString( 'class="sgs-google-reviews__dots"', $html, 'dots are on by default' );
+		$this->assertStringNotContainsString( 'sgs-google-reviews__dots', $html, 'the scrollbar, not dots, by default' );
 		$this->assertStringContainsString( '&quot;autoplay&quot;:false', $html, 'autoplay is off by default' );
 		$this->assertStringNotContainsString( 'data-sgs-fx="draggable"', $html, 'drag and loop stay opt-in' );
 	}
