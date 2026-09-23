@@ -57,6 +57,7 @@ import palette_refs
 import site_palette
 import usage_census
 import used_fonts
+import used_layout
 import variant_sets as variant_sets_mod
 import typography as typo_mod
 from schema_validate import validate_theme_json
@@ -512,6 +513,8 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
     cs = presets_mod.content_size(base_rules, trace)
     if cs and not (design and design[0].get("layout", {}).get("max_content_width")):
         settings.setdefault("layout", {})["contentSize"] = cs
+    # FR-33-19: the RENDERED content box wins over both declared widths above (FR-33-1).
+    used_layout.apply_rendered_layout(settings, facts, trace)
 
     # FR-33-13 — RESERVE the header/footer COMPONENT namespace for Part 2 (Spec 17). Part 1 owns
     # GLOBAL/base + generic presets only; Part 2's header/footer tokens (sticky/scrolled header bg,

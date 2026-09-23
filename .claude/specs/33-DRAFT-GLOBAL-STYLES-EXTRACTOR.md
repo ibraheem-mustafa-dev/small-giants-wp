@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 33
-spec_version: "1.6"
+spec_version: "1.7"
 project: small-giants-wp
 thread: header-footer-setup-pipeline (Part 1 of 2)
 title: "Universal Draft Global-Styles / Token Extractor"
@@ -155,7 +155,7 @@ palette (FR-33-2); typography families + sizes + weights + line-heights + letter
 `settings.spacing.spacingSizes`; radius → `settings.custom.borderRadius`; shadow →
 `settings.shadow.presets`; buttons → `settings.custom.buttonPresets.{primary,secondary,outline}`;
 `contentSize`/`wideSize` from `.container`/`.section` `max-width` OR a `--content-width`/`--measure`
-token (scan BEYOND `:root`). A `clamp()`/`calc()`/`min()` value is emitted **verbatim as the size
+token (scan BEYOND `:root`), superseded by the rendered content box when the census has one (FR-33-19). A `clamp()`/`calc()`/`min()` value is emitted **verbatim as the size
 string** (theme.json accepts it), never recomputed. Button presets are an **OPEN property bag** — the
 DIFF between rest-state and `:hover`-state declarations, verbatim (NOT an "idiom A vs B" enum), so a
 hover that changes colour AND transform is captured whole; `!important` stripped, value kept.
@@ -399,7 +399,26 @@ Each entry carries `slug`, `name`, `fontFamily` (the stack the draft writes, mos
 
 **Done when (met 2026-09-23).** On the Eye Care draft the census and `document.fonts` agree: Outfit 400/500, Playfair Display 500, Roboto 400/500. The snapshot gains `outfit`, `playfair-display` and `roboto` entries with those weights, and Roboto is self-hosted as `assets/fonts/roboto/roboto-variable-latin.woff2`. The draft's link also requests Outfit 300/600 and Playfair 600/700, which nothing renders, so those weights are not recorded. Tests (`tests/test_used_fonts.py`) cover a family that is loaded but never rendered (not added), one that is rendered but never loaded (not added), and one listed after a generic (does not paint). They also confirm that removing Roboto's census rows removes Roboto. A mutation run confirmed these controls fail when the rendered check is broken.
 
+### FR-33-19 — Content width and wide width come from the rendered layout — BUILT
+
+**Problem.** A client's content and wide widths are per-site settings (`settings.layout.contentSize` and `wideSize`), but the extractor took them from a declared number: a `.container` max-width or the README's "max width". A declared max-width is usually the PADDED box. Eye Care's README says 1440px; its sections are `max-width:1440px` with 52px side padding, so the content is 1336px wide. Written as contentSize, 1440 made every normal-width container 104px wider than the draft.
+
+**How the value is applied (the reason for the rule).** `SGS_Container_Wrapper` resolves `contentWidth: "normal"` to `var(--wp--style--global--content-size)` and `"wide"` to `var(--wp--style--global--wide-size)`, as the `max-width` of `.sgs-container__inner` with `margin-inline:auto`, under `box-sizing:border-box`, and the section's side padding sits on the OUTER element. The inner band has no padding by default. So contentSize must equal the draft's CONTENT box (inside padding and border), not the box the max-width was declared on. The rendered content box of a clone is then `min(viewport − outer side padding, contentSize)`, centred. With the draft's side padding on the outer element, that equals the draft's content box both where the draft's cap binds and where the viewport is narrower than it.
+
+**Behaviour.** `measure.js` runs a census (`layout-census.js::LAYOUT_CENSUS_SRC`) at 1440 and 1920. A band is a top-level row of the page: the in-flow children of the first element below `<body>` with more than one, with `<main>` expanded. For every rendered text in a band that sits inside the viewport, it records the chain of elements above it whose computed max-width is in pixels, with each one's box model and measured content box. `used_layout.py::derive` then decides at the widest viewport:
+
+1. A text's cap is the nearest element on its chain that does not paint text itself (a `ch` measure on a heading is a reading measure), is BINDING (its box equals its max-width, so neither the viewport nor an ancestor set the width), and has a content box of at least 600px (`FLOOR_PX`; the narrowest WordPress core theme contentSize is 620px, so anything narrower is a card or a form).
+2. A band is constrained only when every text in it has such a cap; its width is the widest of them. A band with any uncapped text is full width and does not vote. Header, footer and nav bands are recorded but do not vote (Spec 37 owns them).
+3. `contentSize` is the most common band width (a tie goes to the narrower). `wideSize` is the most common width wider than it that at least two bands use. With no such width, wideSize is not derived: the existing value stays, raised to contentSize if narrower.
+4. No constrained band: nothing is written and the trace says so. A value is never invented; the declared or framework value stays.
+
+The rendered value wins over the declared `.container` width (FR-33-4) and the README width (FR-33-16), per FR-33-1; the trace row records the values it superseded, the tally, and per band the cap element, its max-width, box-sizing, padding and the content box at both viewports. Facts from an older `measure.js` carry no census: a gap row is logged and nothing changes, so the Mama's and Indus goldens are unchanged. `python used_layout.py --facts <facts.json> --snapshot <snapshot> --write` updates only `settings.layout` of an existing snapshot.
+
+**Done when (met 2026-09-23).** Eye Care's home screen: four bands (hero, best sellers, "not sure what suits you", about strip) have a 1336px content box at x=52 (1440) and x=292 (1920); three (why buy, Google reviews, optician) have 1440px at x=240 (1920) and 1336px at x=52 (1440); the trust ticker has 1392px once. Result: `contentSize 1336px`, `wideSize 1440px`, replacing `1440px`/`1440px`. Tests (`tests/test_used_layout.py`, 16) include a real-browser run on three fixture drafts: two widths, no max-width at all (nothing written) and a draft whose only max-width is on a card (nothing written). A mutation run confirmed each rule (floor, text-element skip, binding, chrome, uncapped row, two-band wide minimum, most-common) is caught by a failing test.
+
 ## Known limits
+
+- **Only the screen that renders on load is measured.** A multi-screen Claude Design draft switches screens in its script. Eye Care's other screens were surveyed by hand on 2026-09-23: Shop matches the home screen (1336px); Lenses, About, Help and Contact use a `main` of `max-width:1100px` with 52px padding (996px content), and Checkout declares 1200px. Those pages need a literal `contentWidth` on their containers; the site has no third width slot.
 
 - **Saved values are not yet inserted.** The placeholder map is written but the pipeline does not yet replace `{{ phone }}`-style bindings with the saved Site Info values; that is the runtime-binding stage of Spec 31 (FR-31-26.6).
 - **Primary hover text.** The button hover diff omits keys equal to the rest state and the merge keeps the framework value, so the primary button's hover text is the framework's `#ffffff`, not the draft's off-white.
@@ -431,6 +450,7 @@ Each entry carries `slug`, `name`, `fontFamily` (the stack the draft writes, mos
 | FR-33-16 | overlay keeps all base slugs; only `text-label` added | placeholder and drifting greys absent | vs live custom properties | base-slug set unchanged |
 | FR-33-17 | probe order tested with a faked network | live faces `100 900` and `500 700` | vs Google's declared range | Mama's Fraunces face equals its golden |
 | FR-33-18 | loaded AND rendered both required; exact-host link parse | Eye Care: Roboto + Outfit + Playfair entries with rendered weights | vs census + `document.fonts` | loaded-unused, rendered-unloaded and after-generic families not added |
+| FR-33-19 | content box, not padded box; binding + floor + text-element rules | Eye Care: 1336 / 1440 from 7 voting bands | vs content boxes at 1440 and 1920 | no-width and card-only drafts write nothing; mutation run |
 
 ## Website-credit recognition (Part 2 — header/footer pipeline)
 

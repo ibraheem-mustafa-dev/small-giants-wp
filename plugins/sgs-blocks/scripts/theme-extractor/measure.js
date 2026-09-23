@@ -22,6 +22,9 @@ const { chromium } = require('playwright');
 const fs = require('fs');
 const { GENERATED_CLASS_RE, toURL, parseArgs, readHover } = require('./measure-node');
 const { FONT_USAGE_SRC } = require('./font-usage');
+const { LAYOUT_CENSUS_SRC } = require('./layout-census');
+
+const LAYOUT_CENSUS_VIEWPORTS = [1440, 1920];
 
 // ── The in-page capture function (serialised into the browser context) ──────────────────────────
 // Reads getComputedStyle on the representative nodes + enough structural signal for the Python
@@ -276,6 +279,15 @@ async function main() {
       } catch (e) {
         btn.hover = null;
       }
+    }
+
+    // FR-33-19 content-width census, last so the resize cannot disturb any reading above. 1440 is the
+    // standard desktop viewport; 1920 is wide enough for a typical content cap to bind.
+    facts.layoutCensus = [];
+    for (const width of LAYOUT_CENSUS_VIEWPORTS) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.waitForTimeout(400);
+      facts.layoutCensus.push(await page.evaluate('(' + LAYOUT_CENSUS_SRC.toString() + ')()'));
     }
 
     const json = JSON.stringify(facts, null, 2);
