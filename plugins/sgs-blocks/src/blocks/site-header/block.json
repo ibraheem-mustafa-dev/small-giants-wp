@@ -233,6 +233,12 @@
 			"type": "number",
 			"description": "Fill translucency, 0 to 1: how much of the header's own colour shows. Applies to a plain colour fill only (a gradient fill is left as it is). Unset or 1 emits nothing."
 		},
+		"surfaceFadeEdge": {
+			"type": "string",
+			"enum": [ "none", "top", "bottom" ],
+			"default": "none",
+			"description": "Fades one edge of the header to transparent across its full height with a mask-image gradient (the whole header, content included). none emits nothing."
+		},
 		"backgroundColour": {
 			"type": "string",
 			"default": ""

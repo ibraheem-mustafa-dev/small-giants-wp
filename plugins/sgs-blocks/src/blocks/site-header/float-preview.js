@@ -232,6 +232,22 @@ export function floatPreview( attributes, previewTier ) {
 }
 
 /**
+ * Canvas preview of `surfaceFadeEdge`: the same full-height mask render.php writes.
+ *
+ * @param {string} edge 'none', 'top' or 'bottom'.
+ * @return {Object} Style object; empty for 'none' or an unknown value.
+ */
+export function fadeEdgePreview( edge ) {
+	const masks = {
+		top: 'linear-gradient(to bottom, transparent, #000)',
+		bottom: 'linear-gradient(to top, transparent, #000)',
+	};
+	return masks[ edge ]
+		? { maskImage: masks[ edge ], WebkitMaskImage: masks[ edge ] }
+		: {};
+}
+
+/**
  * The float attributes a "reset all" on the Header behaviour panel must clear,
  * each restored to the value block.json declares as its default.
  *

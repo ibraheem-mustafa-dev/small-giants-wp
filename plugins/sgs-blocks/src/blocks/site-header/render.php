@@ -93,6 +93,17 @@ if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundC
 		$sh_color_args['background'] = $sh_bg_value;
 	}
 }
+// Edge fade (`surfaceFadeEdge`): a full-height mask that fades the chosen edge to
+// transparent. A closed enum, so the gradient text is fixed here and nothing from the
+// attribute reaches the CSS except by lookup.
+$sh_fade_masks = array(
+	'top'    => 'linear-gradient(to bottom, transparent, #000)',
+	'bottom' => 'linear-gradient(to top, transparent, #000)',
+);
+$sh_fade_edge  = isset( $attributes['surfaceFadeEdge'] ) && is_string( $attributes['surfaceFadeEdge'] ) ? $attributes['surfaceFadeEdge'] : 'none';
+if ( isset( $sh_fade_masks[ $sh_fade_edge ] ) ) {
+	$css .= $root_sel . '{-webkit-mask-image:' . $sh_fade_masks[ $sh_fade_edge ] . ';mask-image:' . $sh_fade_masks[ $sh_fade_edge ] . ';}';
+}
 if ( isset( $attributes['backgroundColourGradient'] ) && '' !== $attributes['backgroundColourGradient'] ) {
 	$sh_gradient_value = sgs_colour_value( (string) $attributes['backgroundColourGradient'] );
 	if ( '' !== $sh_gradient_value ) {

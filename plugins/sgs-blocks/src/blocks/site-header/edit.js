@@ -33,7 +33,7 @@ import { calculateRelativeLuminance, calculateContrastRatio, meetsWCAG_AA } from
 // Floating ("pill") mode — controls, canvas preview and reset live in their own
 // file; this module only mounts them. See FloatControls.js.
 import FloatControls from './components/FloatControls';
-import { floatPreview, floatResetAttributes } from './float-preview';
+import { floatPreview, floatResetAttributes, fadeEdgePreview } from './float-preview';
 
 /**
  * Does a tri-state {desktop,tablet,mobile} behaviour object resolve 'on' at
@@ -376,7 +376,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		// The pill preview is spread LAST so its width/margin-inline win over the
 		// spacing preview's margin for a floating header — which is what the
 		// frontend does too (the float rules are emitted after the wrapper's).
-		style: { ...backgroundPaint, ...surfaceOpacityPreview, ...bgPreview.style, ...svgPreview.style, ...spacePreview, ...textPreview, ...floatPreview( { headerFloat: attributes.headerFloat, headerFloatInset: attributes.headerFloatInset, headerFloatCollapse: attributes.headerFloatCollapse, surfaceBlur: attributes.surfaceBlur, surfaceSaturate: attributes.surfaceSaturate }, previewTier ) },
+		style: { ...backgroundPaint, ...surfaceOpacityPreview, ...bgPreview.style, ...svgPreview.style, ...spacePreview, ...textPreview, ...floatPreview( { headerFloat: attributes.headerFloat, headerFloatInset: attributes.headerFloatInset, headerFloatCollapse: attributes.headerFloatCollapse, surfaceBlur: attributes.surfaceBlur, surfaceSaturate: attributes.surfaceSaturate }, previewTier ), ...fadeEdgePreview( attributes.surfaceFadeEdge ) },
 	} );
 	const refEl = useRef( null );
 
@@ -779,6 +779,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							surfaceBlur: '',
 							surfaceSaturate: undefined,
 							surfaceOpacity: undefined,
+							surfaceFadeEdge: 'none',
 							backgroundImage: undefined,
 							backgroundImageTablet: undefined,
 							backgroundImageMobile: undefined,
@@ -930,6 +931,26 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 					/>
+
+					<ToolsPanelItem
+						label={ __( 'Edge fade', 'sgs-blocks' ) }
+						hasValue={ () => !! attributes.surfaceFadeEdge && 'none' !== attributes.surfaceFadeEdge }
+						onDeselect={ () => setAttributes( { surfaceFadeEdge: 'none' } ) }
+					>
+						<SelectControl
+							label={ __( 'Edge fade', 'sgs-blocks' ) }
+							help={ __( 'Fades one edge of the whole header to transparent, so the page shows through as it scrolls under.', 'sgs-blocks' ) }
+							value={ attributes.surfaceFadeEdge || 'none' }
+							options={ [
+								{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
+								{ label: __( 'Fade the top edge', 'sgs-blocks' ), value: 'top' },
+								{ label: __( 'Fade the bottom edge', 'sgs-blocks' ), value: 'bottom' },
+							] }
+							onChange={ ( value ) => setAttributes( { surfaceFadeEdge: value } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
 
 				</ToolsPanel>
 			</InspectorControls>
