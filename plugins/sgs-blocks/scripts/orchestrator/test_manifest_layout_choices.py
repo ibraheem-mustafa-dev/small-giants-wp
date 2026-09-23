@@ -358,3 +358,61 @@ def test_presence_the_mark_is_not_classed_inside_items_whose_fields_are_not_clas
 def test_presence_negative_control_class_driven_items_do_get_the_mark_class():
     out, _row, ch = run(draft(), LayoutLookup(defaults=OLD_DEFAULTS))
     assert classes(out).count("sgs-google-reviews__card-logo") == 3 and "NOT classed" not in ch["showCardLogo"]["evidence"]
+
+
+# --------------------------------------------------------------------------------------------------------------------
+# 5. PRESENCE: a per-item LINK the block draws itself (2026-09-23, the Eye Care "Read the full review" link)
+# --------------------------------------------------------------------------------------------------------------------
+
+REVIEW_LINK = LA("showReviewLink", "boolean", "presence-boolean", P + "review-link", (), False)
+LINK = ('<sc-if value="{{ r.long }}" hint-placeholder-val="{{ false }}"><a href="https://example.com/r" target="_blank" '
+        'style="font-size:13.5px;color:#1A73E8">Read the full review</a></sc-if>')
+
+
+def link_card(i, holders=(1,), label=None):
+    """The real card; the long reviews (``holders``) also carry the link, as the draft's ``<sc-if>`` does."""
+    if i not in holders:
+        return _card(i)
+    link = LINK if label is None else LINK.replace("Read the full review", label(i))
+    return _card(i).replace("</figure>", link + "</figure>", 1)
+
+
+def link_lookup(**kw):
+    return LayoutLookup(attrs=BASELINE + [REVIEW_LINK], **kw)
+
+
+def test_link_in_some_items_with_one_label_is_present_and_each_is_classed():
+    out, _row, ch = run(draft(card=link_card, reviews=5), link_lookup())
+    assert ch["showReviewLink"]["value"] is True and ch["showReviewLink"]["written"]
+    assert out.count('class="sgs-google-reviews__review-link"') == 1
+    assert "1 of the 5 items hold one link labelled 'Read the full review'" in ch["showReviewLink"]["evidence"]
+
+
+def test_link_negative_control_no_link_in_any_item_is_false_and_nothing_is_classed():
+    out, _row, ch = run(draft(reviews=5), link_lookup())
+    assert ch["showReviewLink"]["value"] is False and "sgs-google-reviews__review-link" not in classes(out)
+
+
+def test_link_negative_control_links_with_different_labels_are_content_not_the_blocks_link():
+    cards = lambda i: link_card(i, holders=(0, 1, 2, 3, 4), label=lambda n: f"Visit shop {n}")  # noqa: E731
+    out, _row, ch = run(draft(card=cards, reviews=5), link_lookup())
+    assert ch["showReviewLink"]["value"] is None and "sgs-google-reviews__review-link" not in classes(out)
+
+
+def test_link_negative_control_two_links_in_one_item_is_undecided():
+    cards = lambda i: link_card(i).replace("</figure>", LINK + "</figure>", 1) if i == 1 else _card(i)  # noqa: E731
+    out, _row, ch = run(draft(card=cards, reviews=5), link_lookup())
+    assert ch["showReviewLink"]["value"] is None and "sgs-google-reviews__review-link" not in classes(out)
+
+
+def test_link_a_class_whose_words_name_neither_the_item_nor_the_block_places_nothing():
+    other = LA("showShopLink", "boolean", "presence-boolean", P + "shop-link", (), False)
+    out, _row, ch = run(draft(card=link_card, reviews=5), LayoutLookup(attrs=BASELINE + [other]))
+    assert ch["showShopLink"]["value"] is None and "sgs-google-reviews__shop-link" not in classes(out)
+
+
+def test_link_the_classed_link_routes_its_own_colour_through_the_real_converter():
+    """End to end: the converter routes the link's own inline colour to the attribute that names the class."""
+    out, _row, _ch = run(draft(card=link_card, reviews=5), link_lookup())
+    block = _google_reviews_block(_convert(out, "sgs-revs"))
+    assert block.get("reviewLinkColour") == "#1A73E8"

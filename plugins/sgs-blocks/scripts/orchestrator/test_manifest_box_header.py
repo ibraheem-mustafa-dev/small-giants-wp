@@ -1018,7 +1018,7 @@ def test_the_real_eye_care_run_reviews_row_is_unchanged_by_the_fix_wave():
     assert not any("sits outside" in r for r in _skipped(row).values())          # the section heading and eyebrow are not header text
     out = re.sub(r' data-sgs-(?!manifest)[a-z-]+="[^"]*"', "", out)          # the layout carriers (manifest_layout_choices)
     out = re.sub(r' ?sgs-google-reviews__[a-z-]+--[a-z-]+', "", out)             # their modifier classes
-    for element in ("see-all-url", "source-label", "footnote", "header", "rail", "arrow", "google-logo", "card-logo"):    # the redesign's own classes
+    for element in ("see-all-url", "source-label", "footnote", "header", "rail", "arrow", "google-logo", "card-logo", "review-link"):    # the redesign's own classes
         cls = "sgs-google-reviews__" + element
         out = out.replace(f' class="{cls}"', "").replace(cls + " ", "")
     assert out == (RUN_NEW / "manifest-annotated.html").read_text(encoding="utf-8", newline="")   # the recorded annotated copy, byte for byte

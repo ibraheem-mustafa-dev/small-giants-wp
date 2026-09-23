@@ -61,6 +61,7 @@ class LayoutAttr:
 _PRESENCE_ROLE = "presence-boolean"
 _MODIFIER_ROLE = "css-modifier"
 _ITEM_TERM = "item"                                   # the slot vocabulary's word for one repeated item
+_LINK_WORD = "link"                                   # an element class naming a link the block draws
 _BEFORE = frozenset({"leading", "start", "before", "first"})
 _AFTER = frozenset({"trailing", "end", "after", "last"})
 _PLACEMENTS: dict[str, tuple[frozenset[str], ...]] = {
@@ -169,6 +170,11 @@ def _presence(attr: LayoutAttr, ctx: _Ctx) -> tuple[object, str]:
             return True, f"{len(found)} element(s) in the block carry '{cls}'"
     for cls in ctx.own_classes(attr):
         words = set(ma._attr_words(cls[len(ctx.prefix):]))
+        if _LINK_WORD in words:
+            link = _item_link(cls, words, ctx)
+            if link is not None:
+                return link
+            continue
         qualifier = words - {ma._LOGO_WORD} - ctx.name_words
         if ma._LOGO_WORD not in words or not qualifier or not all(_names_item(q, ctx) for q in qualifier):
             continue
@@ -189,6 +195,41 @@ def _presence(attr: LayoutAttr, ctx: _Ctx) -> tuple[object, str]:
             return True, f"{found}, so each got '{cls}'"
         return None, f"'{cls}': the items do not each hold one identical decorative mark ({[len(m) for m in marks]} per item), so it is not certain"
     return None, "no element carries the attribute's class and no structural rule places it"
+
+
+def _item_link(cls: str, words: set[str], ctx: _Ctx) -> "tuple[object, str] | None":
+    """A per-item LINK the block draws itself (``review-link``: the link inside one review).
+
+    The class names the item either through the slot vocabulary (``card-link``) or through the block's OWN noun
+    (``review`` in a ``google-reviews`` block), so it is per-item by name; the draft must agree by structure: every
+    anchor with that role sits inside an item, at most one per item, all with the same visible label (the block's
+    furniture label, e.g. "Read the full review"; optional per item, as a retained ``<sc-if>`` makes it). Then each
+    gets ``cls`` so the converter can route its own styles to the attributes that name it. None: not this rung.
+    """
+    ma = ctx.ma
+    rest = words - {_LINK_WORD}
+    qualifier = rest - ctx.name_words
+    per_item = bool(rest) and (all(_names_item(q, ctx) for q in qualifier) if qualifier else rest <= ctx.name_words)
+    if not per_item:
+        return None
+    if not ctx.members:
+        return None, f"'{cls}' is a link in each item, but the block has no items to look in"
+    anchors = [[d for d in ma._descendants(m) if d.name == "a" and ma._text_of(d, ctx.src)
+                and not any(c.startswith(ctx.prefix) for c in d.classes)] for m in ctx.members]
+    present = [a for a in anchors if a]
+    if not present:
+        return False, f"'{cls}' names a link in each item; none of the {len(anchors)} items holds one"
+    labels = {ma._text_of(a[0], ctx.src) for a in present}
+    if any(len(a) > 1 for a in anchors) or len(labels) != 1:
+        return None, (f"'{cls}': the items' links are not one link each with one shared label "
+                      f"({[len(a) for a in anchors]} per item, labels {sorted(labels)[:3]}), so it is not certain")
+    found = f"{len(present)} of the {len(anchors)} items hold one link labelled '{next(iter(labels))}'"
+    if not all(ctx.class_driven(m) for m in ctx.members):
+        return True, (f"{found}; the link is NOT classed, because the items carry no field classes and one class "
+                      "inside an item switches the converter's item lift from role matching to class matching")
+    for a in present:
+        ctx.edits.add_class(a[0], cls)
+    return True, f"{found}, so each got '{cls}'"
 
 
 def _order(attr: LayoutAttr, ctx: _Ctx) -> tuple[object, str]:
