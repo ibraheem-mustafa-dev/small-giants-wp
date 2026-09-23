@@ -1,0 +1,1954 @@
+{
+  "generated_by": "check-shadow-sources.py",
+  "design_doc": ".claude/reports/2026-09-23-shadow-tone-design.md",
+  "css_sources": [
+    {
+      "file": "plugins/sgs-blocks/src/blocks/accordion/style.css",
+      "line": 257,
+      "selector": ".sgs-accordion--card .sgs-accordion-item",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);",
+      "layers": [
+        {
+          "text": "0 1px 3px rgba(0, 0, 0, 0.04)",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": true,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/before-after/style.css",
+      "line": 230,
+      "selector": ".wp-block-sgs-before-after__divider-line",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 0 0 1px rgba( 0, 0, 0, 0.15 );",
+      "layers": [
+        {
+          "text": "0 0 0 1px rgba( 0, 0, 0, 0.15 )",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/before-after/style.css",
+      "line": 278,
+      "selector": ".wp-block-sgs-before-after__handle",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 2px 8px rgba( 0, 0, 0, 0.25 );",
+      "layers": [
+        {
+          "text": "0 2px 8px rgba( 0, 0, 0, 0.25 )",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/brand-strip/style.css",
+      "line": 438,
+      "selector": ".sgs-brand-strip--hover-lift .sgs-brand-strip__item:hover",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);",
+      "layers": [
+        {
+          "text": "0 8px 24px rgba(0, 0, 0, 0.12)",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/brand-strip/style.css",
+      "line": 460,
+      "selector": ".sgs-brand-strip--hover-glow .sgs-brand-strip__item:hover",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 0 0 3px var(--wp--preset--color--primary, #0F7E80);",
+      "layers": [
+        {
+          "text": "0 0 0 3px var(--wp--preset--color--primary, #0F7E80)",
+          "colour": "brand"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/card-grid/style.css",
+      "line": 40,
+      "selector": ".sgs-card-grid--card .sgs-card-grid__item",
+      "property": "box-shadow",
+      "declaration": "box-shadow: var(--sgs-card-shadow, var(--wp--preset--shadow--soft));",
+      "layers": [
+        {
+          "text": "var(--sgs-card-shadow, var(--wp--preset--shadow--soft))",
+          "colour": "custom-var"
+        }
+      ],
+      "forced_colours_covered": true,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/card-grid/style.css",
+      "line": 206,
+      "selector": ".sgs-card-grid--hover-lift .sgs-card-grid__item:hover",
+      "property": "box-shadow",
+      "declaration": "box-shadow: var(--wp--preset--shadow--floating);",
+      "layers": [
+        {
+          "text": "var(--wp--preset--shadow--floating)",
+          "colour": "preset-var"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/card-grid/style.css",
+      "line": 278,
+      "selector": ".sgs-card-grid.sgs-has-hover .sgs-card-grid__item:hover",
+      "property": "box-shadow",
+      "declaration": "box-shadow: var(--sgs-hover-shadow, none);",
+      "layers": [
+        {
+          "text": "var(--sgs-hover-shadow, none)",
+          "colour": "custom-var"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/cart/style.css",
+      "line": 52,
+      "selector": ".sgs-cart__trigger:focus-visible",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 0 8px 2px\n\t\tcolor-mix(in srgb, var(--sgs-focus-glow, var(--wp--preset--color--accent, #d8ca50)) 40%, transparent);",
+      "layers": [
+        {
+          "text": "0 0 8px 2px\n\t\tcolor-mix(in srgb, var(--sgs-focus-glow, var(--wp--preset--color--accent, #d8ca50)) 40%, transparent)",
+          "colour": "brand"
+        }
+      ],
+      "forced_colours_covered": true,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/cart/style.css",
+      "line": 178,
+      "selector": ".sgs-cart__panel--flyout",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);",
+      "layers": [
+        {
+          "text": "0 8px 24px rgba(0, 0, 0, 0.18)",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/choice-flow-question/style.css",
+      "line": 141,
+      "selector": ".sgs-choice-flow-question__option-button:hover",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 14px 32px rgba( 20, 20, 20, 0.09 );",
+      "layers": [
+        {
+          "text": "0 14px 32px rgba( 20, 20, 20, 0.09 )",
+          "colour": "brand"
+        }
+      ],
+      "forced_colours_covered": true,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/container/style.css",
+      "line": 43,
+      "selector": ":where( .sgs-container--grid > .sgs-container ), :where( .sgs-container--grid > .sgs-container__inner > .sgs-container )",
+      "property": "box-shadow",
+      "declaration": "box-shadow: var( --sgs-gi-shadow );",
+      "layers": [
+        {
+          "text": "var( --sgs-gi-shadow )",
+          "colour": "custom-var"
+        }
+      ],
+      "forced_colours_covered": true,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/countdown-timer/style.css",
+      "line": 29,
+      "selector": ".sgs-countdown--elevated",
+      "property": "box-shadow",
+      "declaration": "box-shadow: var(--wp--preset--shadow--soft);",
+      "layers": [
+        {
+          "text": "var(--wp--preset--shadow--soft)",
+          "colour": "preset-var"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/cta-section/style.css",
+      "line": 202,
+      "selector": ".sgs-cta-section__btn--solid:hover",
+      "property": "box-shadow",
+      "declaration": "box-shadow: inset 0 0 0 2px var(--wp--preset--color--accent);",
+      "layers": [
+        {
+          "text": "inset 0 0 0 2px var(--wp--preset--color--accent)",
+          "colour": "brand"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/cta-section/style.css",
+      "line": 308,
+      "selector": ".sgs-cta-section__btn--accent:hover",
+      "property": "box-shadow",
+      "declaration": "box-shadow: inset 0 0 0 2px var(--wp--preset--color--accent);",
+      "layers": [
+        {
+          "text": "inset 0 0 0 2px var(--wp--preset--color--accent)",
+          "colour": "brand"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+      "line": 225,
+      "selector": ".sgs-form-field__input:focus-visible",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 0 8px 2px\n\t\tcolor-mix(\n\t\t\tin srgb,\n\t\t\tvar(--sgs-focus-ring-colour, var(--wp--preset--color--accent, #f59e0b))\n\t\t\t\tcalc(var(--sgs-focus-ring-opacity, 1) * 100%),\n\t\t\ttransparent\n\t\t);",
+      "layers": [
+        {
+          "text": "0 0 8px 2px\n\t\tcolor-mix(\n\t\t\tin srgb,\n\t\t\tvar(--sgs-focus-ring-colour, var(--wp--preset--color--accent, #f59e0b))\n\t\t\t\tcalc(var(--sgs-focus-ring-opacity, 1) * 100%),\n\t\t\ttransparent\n\t\t)",
+          "colour": "brand"
+        }
+      ],
+      "forced_colours_covered": true,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+      "line": 879,
+      "selector": ".sgs-form-field__input:user-invalid",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);",
+      "layers": [
+        {
+          "text": "0 0 0 3px rgba(220, 38, 38, 0.15)",
+          "colour": "brand"
+        }
+      ],
+      "forced_colours_covered": true,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+      "line": 955,
+      "selector": ".sgs-form-field__input[aria-invalid=\"true\"], .sgs-form-field select[aria-invalid=\"true\"], .sgs-form-field textarea[aria-invalid=\"true\"]",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 0 0 1px var(--sgs-error-border, #dc2626);",
+      "layers": [
+        {
+          "text": "0 0 0 1px var(--sgs-error-border, #dc2626)",
+          "colour": "custom-var"
+        }
+      ],
+      "forced_colours_covered": true,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/gallery/style.css",
+      "line": 249,
+      "selector": ".sgs-gallery--hover-lift .sgs-gallery__item:hover",
+      "property": "box-shadow",
+      "declaration": "box-shadow: var(--wp--preset--shadow--floating);",
+      "layers": [
+        {
+          "text": "var(--wp--preset--shadow--floating)",
+          "colour": "preset-var"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/gallery/style.css",
+      "line": 288,
+      "selector": ".sgs-gallery.sgs-has-hover .sgs-gallery__item:hover",
+      "property": "box-shadow",
+      "declaration": "box-shadow: var(--sgs-hover-shadow, none);",
+      "layers": [
+        {
+          "text": "var(--sgs-hover-shadow, none)",
+          "colour": "custom-var"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
+      "line": 261,
+      "selector": ".sgs-google-reviews__review",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 2px 4px rgba( 0, 0, 0, 0.04 );",
+      "layers": [
+        {
+          "text": "0 2px 4px rgba( 0, 0, 0, 0.04 )",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": true,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
+      "line": 267,
+      "selector": ".sgs-google-reviews__review:hover",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 8px 16px rgba( 0, 0, 0, 0.08 );",
+      "layers": [
+        {
+          "text": "0 8px 16px rgba( 0, 0, 0, 0.08 )",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
+      "line": 291,
+      "selector": ".sgs-google-reviews--card-elevated .sgs-google-reviews__review",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 4px 12px rgba( 0, 0, 0, 0.08 );",
+      "layers": [
+        {
+          "text": "0 4px 12px rgba( 0, 0, 0, 0.08 )",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": true,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
+      "line": 295,
+      "selector": ".sgs-google-reviews--card-elevated .sgs-google-reviews__review:hover",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 12px 24px rgba( 0, 0, 0, 0.12 );",
+      "layers": [
+        {
+          "text": "0 12px 24px rgba( 0, 0, 0, 0.12 )",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
+      "line": 471,
+      "selector": ".sgs-google-reviews--badge .sgs-google-reviews__badge, .sgs-google-reviews--floating-badge .sgs-google-reviews__badge",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 2px 8px rgba( 0, 0, 0, 0.08 );",
+      "layers": [
+        {
+          "text": "0 2px 8px rgba( 0, 0, 0, 0.08 )",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": true,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
+      "line": 567,
+      "selector": ".sgs-google-reviews__write-review:hover, .sgs-google-reviews__see-all:hover",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 4px 12px rgba( 0, 0, 0, 0.15 );",
+      "layers": [
+        {
+          "text": "0 4px 12px rgba( 0, 0, 0, 0.15 )",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
+      "line": 1112,
+      "selector": ".sgs-google-reviews--card-bubble .sgs-google-reviews__review-content",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 4px 14px rgba( 0, 0, 0, 0.1 );",
+      "layers": [
+        {
+          "text": "0 4px 14px rgba( 0, 0, 0, 0.1 )",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/info-box/style.css",
+      "line": 39,
+      "selector": ".sgs-info-box--elevated",
+      "property": "box-shadow",
+      "declaration": "box-shadow: var(--wp--preset--shadow--soft);",
+      "layers": [
+        {
+          "text": "var(--wp--preset--shadow--soft)",
+          "colour": "preset-var"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/info-box/style.css",
+      "line": 125,
+      "selector": ".sgs-info-box--hover-lift:hover",
+      "property": "box-shadow",
+      "declaration": "box-shadow: var(--wp--preset--shadow--floating);",
+      "layers": [
+        {
+          "text": "var(--wp--preset--shadow--floating)",
+          "colour": "preset-var"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/info-box/style.css",
+      "line": 158,
+      "selector": ".sgs-info-box--hover-glow:hover",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 0 20px rgba(248, 122, 31, 0.3);",
+      "layers": [
+        {
+          "text": "0 0 20px rgba(248, 122, 31, 0.3)",
+          "colour": "brand"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/info-box/style.css",
+      "line": 182,
+      "selector": ".sgs-info-box.sgs-has-hover:hover",
+      "property": "box-shadow",
+      "declaration": "box-shadow: var(--sgs-hover-shadow, none);",
+      "layers": [
+        {
+          "text": "var(--sgs-hover-shadow, none)",
+          "colour": "custom-var"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/media/style.css",
+      "line": 231,
+      "selector": ".sgs-video__centre",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 6px 24px rgba( 0, 0, 0, 0.4 );",
+      "layers": [
+        {
+          "text": "0 6px 24px rgba( 0, 0, 0, 0.4 )",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": true,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/media/style.css",
+      "line": 282,
+      "selector": ".sgs-video__btn",
+      "property": "filter",
+      "declaration": "filter: drop-shadow( 0 1px 2px rgba( 0, 0, 0, 0.55 ) );",
+      "layers": [
+        {
+          "text": "0 1px 2px rgba( 0, 0, 0, 0.55 )",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": true,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/mega-panel/style.css",
+      "line": 116,
+      "selector": ".wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group::after",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 20px 40px -12px rgba( 0, 0, 0, 0.28 );",
+      "layers": [
+        {
+          "text": "0 20px 40px -12px rgba( 0, 0, 0, 0.28 )",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/modal/style.css",
+      "line": 79,
+      "selector": ".sgs-modal__dialog",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);",
+      "layers": [
+        {
+          "text": "0 8px 32px rgba(0, 0, 0, 0.2)",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": true,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
+      "line": 171,
+      "selector": ".sgs-post-grid__card--card",
+      "property": "box-shadow",
+      "declaration": "box-shadow: var( --sgs-card-shadow );",
+      "layers": [
+        {
+          "text": "var( --sgs-card-shadow )",
+          "colour": "custom-var"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
+      "line": 200,
+      "selector": ".sgs-post-grid__card--overlay",
+      "property": "box-shadow",
+      "declaration": "box-shadow: var( --sgs-card-shadow );",
+      "layers": [
+        {
+          "text": "var( --sgs-card-shadow )",
+          "colour": "custom-var"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
+      "line": 441,
+      "selector": ".sgs-post-grid__card:hover",
+      "property": "box-shadow",
+      "declaration": "box-shadow: var( --sgs-hover-shadow, none );",
+      "layers": [
+        {
+          "text": "var( --sgs-hover-shadow, none )",
+          "colour": "custom-var"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
+      "line": 447,
+      "selector": ".sgs-post-grid__card--card:hover, .sgs-post-grid__card--flat:hover",
+      "property": "box-shadow",
+      "declaration": "box-shadow: var( --sgs-hover-shadow, 0 10px 24px rgba( 0, 0, 0, 0.10 ) );",
+      "layers": [
+        {
+          "text": "var( --sgs-hover-shadow, 0 10px 24px rgba( 0, 0, 0, 0.10 ) )",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
+      "line": 676,
+      "selector": ".sgs-post-grid__carousel-prev, .sgs-post-grid__carousel-next",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 2px 8px rgba( 0, 0, 0, 0.12 );",
+      "layers": [
+        {
+          "text": "0 2px 8px rgba( 0, 0, 0, 0.12 )",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": true,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
+      "line": 696,
+      "selector": ".sgs-post-grid__carousel-prev:hover, .sgs-post-grid__carousel-next:hover, .sgs-post-grid__carousel-prev:focus-visible, .sgs-post-grid__carousel-next:focus-visible",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 4px 16px rgba( 0, 0, 0, 0.18 );",
+      "layers": [
+        {
+          "text": "0 4px 16px rgba( 0, 0, 0, 0.18 )",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/pricing-table/style.css",
+      "line": 61,
+      "selector": ".sgs-pricing-table--card .sgs-pricing-table__plan",
+      "property": "box-shadow",
+      "declaration": "box-shadow: var(--sgs-pricing-shadow-soft);",
+      "layers": [
+        {
+          "text": "var(--sgs-pricing-shadow-soft)",
+          "colour": "custom-var"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/pricing-table/style.css",
+      "line": 77,
+      "selector": ".sgs-pricing-table__plan--highlighted",
+      "property": "box-shadow",
+      "declaration": "box-shadow: var(--sgs-pricing-shadow-strong);",
+      "layers": [
+        {
+          "text": "var(--sgs-pricing-shadow-strong)",
+          "colour": "custom-var"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/process-steps/style.css",
+      "line": 181,
+      "selector": ".sgs-process-steps--hover-lift .sgs-process-steps__step:hover, .sgs-process-steps--hover-lift .sgs-process-steps__step:focus-within",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);",
+      "layers": [
+        {
+          "text": "0 8px 24px rgba(0, 0, 0, 0.12)",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/process-steps/style.css",
+      "line": 203,
+      "selector": ".sgs-process-steps--hover-glow .sgs-process-steps__step:hover, .sgs-process-steps--hover-glow .sgs-process-steps__step:focus-within",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 0 0 3px var(--wp--preset--color--primary, #0F7E80);",
+      "layers": [
+        {
+          "text": "0 0 0 3px var(--wp--preset--color--primary, #0F7E80)",
+          "colour": "brand"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/product-card/style.css",
+      "line": 643,
+      "selector": ".product-card--live:hover",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 8px 24px rgba( 58, 46, 38, 0.16 );",
+      "layers": [
+        {
+          "text": "0 8px 24px rgba( 58, 46, 38, 0.16 )",
+          "colour": "brand"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/product-card/style.css",
+      "line": 1315,
+      "selector": ".sgs-product-card__media-wrap .sgs-product-card__tag--featured, .product-card--live .product-card__media .sgs-product-card__tag--featured",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);",
+      "layers": [
+        {
+          "text": "0 1px 4px rgba(0, 0, 0, 0.15)",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/product-search/style.css",
+      "line": 97,
+      "selector": ".sgs-product-search__results",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 6px 24px rgba( 0, 0, 0, 0.12 );",
+      "layers": [
+        {
+          "text": "0 6px 24px rgba( 0, 0, 0, 0.12 )",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/product-search/style.css",
+      "line": 342,
+      "selector": ".sgs-product-search--icon .sgs-product-search__panel",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 6px 24px rgba( 0, 0, 0, 0.12 );",
+      "layers": [
+        {
+          "text": "0 6px 24px rgba( 0, 0, 0, 0.12 )",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": true,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/product-search/style.css",
+      "line": 415,
+      "selector": ".sgs-product-search__dialog",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 12px 48px rgba( 0, 0, 0, 0.2 );",
+      "layers": [
+        {
+          "text": "0 12px 48px rgba( 0, 0, 0, 0.2 )",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": true,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/quote/style.css",
+      "line": 44,
+      "selector": ".wp-block-sgs-quote.is-style-testimonial",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 2px 8px rgba( 0, 0, 0, 0.08 );",
+      "layers": [
+        {
+          "text": "0 2px 8px rgba( 0, 0, 0, 0.08 )",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/tabs/style.css",
+      "line": 121,
+      "selector": ".sgs-tabs--style-underline .sgs-tabs__tab",
+      "property": "box-shadow",
+      "declaration": "box-shadow: inset 0 -2px 0 var( --sgs-tab-indicator, transparent );",
+      "layers": [
+        {
+          "text": "inset 0 -2px 0 var( --sgs-tab-indicator, transparent )",
+          "colour": "custom-var"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/tabs/style.css",
+      "line": 125,
+      "selector": ".sgs-tabs--vertical.sgs-tabs--style-underline .sgs-tabs__tab",
+      "property": "box-shadow",
+      "declaration": "box-shadow: inset -2px 0 0 var( --sgs-tab-indicator, transparent );",
+      "layers": [
+        {
+          "text": "inset -2px 0 0 var( --sgs-tab-indicator, transparent )",
+          "colour": "custom-var"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/tabs/style.css",
+      "line": 141,
+      "selector": ".sgs-tabs--style-underline .sgs-tabs__tab[aria-selected=\"true\"], .sgs-tabs--style-underline .sgs-tabs__tab--active",
+      "property": "box-shadow",
+      "declaration": "box-shadow: inset 0 -2px 0 var( --sgs-tab-active-indicator, var( --wp--preset--color--primary, currentColor ) );",
+      "layers": [
+        {
+          "text": "inset 0 -2px 0 var( --sgs-tab-active-indicator, var( --wp--preset--color--primary, currentColor ) )",
+          "colour": "currentColor"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/tabs/style.css",
+      "line": 146,
+      "selector": ".sgs-tabs--vertical.sgs-tabs--style-underline .sgs-tabs__tab[aria-selected=\"true\"], .sgs-tabs--vertical.sgs-tabs--style-underline .sgs-tabs__tab--active",
+      "property": "box-shadow",
+      "declaration": "box-shadow: inset -2px 0 0 var( --sgs-tab-active-indicator, var( --wp--preset--color--primary, currentColor ) );",
+      "layers": [
+        {
+          "text": "inset -2px 0 0 var( --sgs-tab-active-indicator, var( --wp--preset--color--primary, currentColor ) )",
+          "colour": "currentColor"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/tabs/style.css",
+      "line": 312,
+      "selector": ".sgs-tabs--vertical.sgs-tabs--style-underline .sgs-tabs__tab[aria-selected=\"true\"], .sgs-tabs--vertical.sgs-tabs--style-underline .sgs-tabs__tab--active",
+      "property": "box-shadow",
+      "declaration": "box-shadow: inset 0 -2px 0 var( --sgs-tab-active-indicator, var( --wp--preset--color--primary, currentColor ) );",
+      "layers": [
+        {
+          "text": "inset 0 -2px 0 var( --sgs-tab-active-indicator, var( --wp--preset--color--primary, currentColor ) )",
+          "colour": "currentColor"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/tabs/style.css",
+      "line": 317,
+      "selector": ".sgs-tabs--vertical.sgs-tabs--style-underline .sgs-tabs__tab",
+      "property": "box-shadow",
+      "declaration": "box-shadow: inset 0 -2px 0 var( --sgs-tab-indicator, transparent );",
+      "layers": [
+        {
+          "text": "inset 0 -2px 0 var( --sgs-tab-indicator, transparent )",
+          "colour": "custom-var"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/team-member/style.css",
+      "line": 234,
+      "selector": ".sgs-team-member.sgs-has-hover:hover",
+      "property": "box-shadow",
+      "declaration": "box-shadow: var(--sgs-hover-shadow, none);",
+      "layers": [
+        {
+          "text": "var(--sgs-hover-shadow, none)",
+          "colour": "custom-var"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/testimonial/style.css",
+      "line": 240,
+      "selector": ".sgs-testimonial--classic-card",
+      "property": "box-shadow",
+      "declaration": "box-shadow: var(--wp--preset--shadow--soft);",
+      "layers": [
+        {
+          "text": "var(--wp--preset--shadow--soft)",
+          "colour": "preset-var"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/testimonial/style.css",
+      "line": 375,
+      "selector": ".sgs-testimonial--corporate-logo",
+      "property": "box-shadow",
+      "declaration": "box-shadow: var(--wp--preset--shadow--whisper, var(--wp--preset--shadow--soft));",
+      "layers": [
+        {
+          "text": "var(--wp--preset--shadow--whisper, var(--wp--preset--shadow--soft))",
+          "colour": "preset-var"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/testimonial/style.css",
+      "line": 395,
+      "selector": ".sgs-testimonial--case-study-media",
+      "property": "box-shadow",
+      "declaration": "box-shadow: var(--wp--preset--shadow--soft);",
+      "layers": [
+        {
+          "text": "var(--wp--preset--shadow--soft)",
+          "colour": "preset-var"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/testimonial/style.css",
+      "line": 462,
+      "selector": ".sgs-testimonial--hover-lift:hover, .sgs-testimonial--hover-lift:focus-within",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);",
+      "layers": [
+        {
+          "text": "0 8px 24px rgba(0, 0, 0, 0.12)",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/testimonial/style.css",
+      "line": 472,
+      "selector": ".sgs-testimonial--hover-glow:hover, .sgs-testimonial--hover-glow:focus-within",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 0 0 3px var(--wp--preset--color--primary, #0F7E80);",
+      "layers": [
+        {
+          "text": "0 0 0 3px var(--wp--preset--color--primary, #0F7E80)",
+          "colour": "brand"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/testimonial/style.css",
+      "line": 487,
+      "selector": ".sgs-testimonial.sgs-has-hover:hover, .sgs-testimonial.sgs-has-hover:focus-within",
+      "property": "box-shadow",
+      "declaration": "box-shadow: var(--sgs-hover-shadow, none);",
+      "layers": [
+        {
+          "text": "var(--sgs-hover-shadow, none)",
+          "colour": "custom-var"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/testimonial-slider/style.css",
+      "line": 184,
+      "selector": ".sgs-testimonial-slider__arrow:hover",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);",
+      "layers": [
+        {
+          "text": "0 4px 12px rgba(0, 0, 0, 0.2)",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/testimonial-slider/style.css",
+      "line": 190,
+      "selector": ".sgs-testimonial-slider__arrow:active",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);",
+      "layers": [
+        {
+          "text": "0 1px 4px rgba(0, 0, 0, 0.15)",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/testimonial-slider/style.css",
+      "line": 387,
+      "selector": ".sgs-testimonial-slider--hover-lift:hover",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);",
+      "layers": [
+        {
+          "text": "0 8px 24px rgba(0, 0, 0, 0.12)",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/testimonial-slider/style.css",
+      "line": 407,
+      "selector": ".sgs-testimonial-slider--hover-glow:hover",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 0 0 3px var(--wp--preset--color--primary, #0F7E80);",
+      "layers": [
+        {
+          "text": "0 0 0 3px var(--wp--preset--color--primary, #0F7E80)",
+          "colour": "brand"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/trust-bar/style.css",
+      "line": 90,
+      "selector": ".sgs-trust-bar__circle",
+      "property": "box-shadow",
+      "declaration": "box-shadow: var(--sgs-trust-badge-circle-shadow, 0 1px 2px rgba(0, 0, 0, 0.06));",
+      "layers": [
+        {
+          "text": "var(--sgs-trust-badge-circle-shadow, 0 1px 2px rgba(0, 0, 0, 0.06))",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": true,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/trustpilot-reviews/style.css",
+      "line": 42,
+      "selector": ".sgs-trustpilot-reviews__header",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.04);",
+      "layers": [
+        {
+          "text": "0 1px 3px rgba(0, 0, 0, 0.04)",
+          "colour": "black-literal"
+        },
+        {
+          "text": "0 0 0 1px rgba(0, 0, 0, 0.04)",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/trustpilot-reviews/style.css",
+      "line": 49,
+      "selector": ".sgs-trustpilot-reviews__header:hover",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.05);",
+      "layers": [
+        {
+          "text": "0 8px 20px rgba(0, 0, 0, 0.08)",
+          "colour": "black-literal"
+        },
+        {
+          "text": "0 0 0 1px rgba(0, 0, 0, 0.05)",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/trustpilot-reviews/style.css",
+      "line": 247,
+      "selector": ".sgs-trustpilot-reviews__card:hover, .sgs-trustpilot-reviews--card-elevated .sgs-trustpilot-reviews__card:hover, .sgs-trustpilot-reviews--card-bordered .sgs-trustpilot-reviews__card:hover, .sgs-trustpilot-reviews--card-flat .sgs-trustpilot-reviews__card:hover",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 6px 18px rgba(0, 0, 0, 0.10);",
+      "layers": [
+        {
+          "text": "0 6px 18px rgba(0, 0, 0, 0.10)",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": true,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/trustpilot-reviews/style.css",
+      "line": 256,
+      "selector": ".sgs-trustpilot-reviews--card-elevated .sgs-trustpilot-reviews__card",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.04);",
+      "layers": [
+        {
+          "text": "0 1px 2px rgba(0, 0, 0, 0.04)",
+          "colour": "black-literal"
+        },
+        {
+          "text": "0 2px 8px rgba(0, 0, 0, 0.04)",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/whatsapp-cta/style.css",
+      "line": 116,
+      "selector": ".sgs-whatsapp-cta--floating.sgs-whatsapp-cta__btn",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);",
+      "layers": [
+        {
+          "text": "0 4px 12px rgba(0, 0, 0, 0.25)",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": true
+    },
+    {
+      "file": "theme/sgs-theme/assets/css/core-blocks-critical.css",
+      "line": 304,
+      "selector": ":focus-visible",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 0 8px 2px color-mix(in srgb, var(--sgs-focus-glow) 40%, transparent);",
+      "layers": [
+        {
+          "text": "0 0 8px 2px color-mix(in srgb, var(--sgs-focus-glow) 40%, transparent)",
+          "colour": "custom-var"
+        }
+      ],
+      "forced_colours_covered": true,
+      "has_black_literal": false
+    },
+    {
+      "file": "theme/sgs-theme/assets/css/core-blocks-critical.css",
+      "line": 311,
+      "selector": ":root :where(.wp-element-button:focus-visible, .wp-block-button__link:focus-visible)",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 0 8px 2px color-mix(in srgb, var(--sgs-focus-glow) 40%, transparent) !important;",
+      "layers": [
+        {
+          "text": "0 0 8px 2px color-mix(in srgb, var(--sgs-focus-glow) 40%, transparent)",
+          "colour": "custom-var"
+        }
+      ],
+      "forced_colours_covered": true,
+      "has_black_literal": false
+    },
+    {
+      "file": "theme/sgs-theme/assets/css/core-blocks-critical.css",
+      "line": 319,
+      "selector": ".wp-block-navigation .wp-block-navigation-item__content:focus-visible, .wp-block-navigation a:focus-visible",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 0 8px 2px color-mix(in srgb, var(--sgs-focus-glow) 40%, transparent);",
+      "layers": [
+        {
+          "text": "0 0 8px 2px color-mix(in srgb, var(--sgs-focus-glow) 40%, transparent)",
+          "colour": "custom-var"
+        }
+      ],
+      "forced_colours_covered": true,
+      "has_black_literal": false
+    },
+    {
+      "file": "theme/sgs-theme/assets/css/core-blocks-critical.css",
+      "line": 372,
+      "selector": ".wp-block-button__link:hover",
+      "property": "box-shadow",
+      "declaration": "box-shadow: var(--wp--preset--shadow--soft);",
+      "layers": [
+        {
+          "text": "var(--wp--preset--shadow--soft)",
+          "colour": "preset-var"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "theme/sgs-theme/assets/css/core-blocks.css",
+      "line": 42,
+      "selector": ".wp-block-navigation .has-child .wp-block-navigation__submenu-container",
+      "property": "box-shadow",
+      "declaration": "box-shadow: var(--wp--preset--shadow--floating);",
+      "layers": [
+        {
+          "text": "var(--wp--preset--shadow--floating)",
+          "colour": "preset-var"
+        }
+      ],
+      "forced_colours_covered": true,
+      "has_black_literal": false
+    },
+    {
+      "file": "theme/sgs-theme/assets/css/core-blocks.css",
+      "line": 717,
+      "selector": ".wp-block-column > .wp-block-group.has-background:hover",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);",
+      "layers": [
+        {
+          "text": "0 12px 32px rgba(0, 0, 0, 0.12)",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": true
+    },
+    {
+      "file": "theme/sgs-theme/assets/css/core-blocks.css",
+      "line": 841,
+      "selector": ".sgs-header-cta .wp-block-button__link:hover",
+      "property": "box-shadow",
+      "declaration": "box-shadow: var(--wp--preset--shadow--glow);",
+      "layers": [
+        {
+          "text": "var(--wp--preset--shadow--glow)",
+          "colour": "preset-var"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": false
+    },
+    {
+      "file": "theme/sgs-theme/assets/css/core-blocks.css",
+      "line": 1118,
+      "selector": ".wp-block-query-pagination .page-numbers:focus-visible, .wp-block-query-pagination .wp-block-query-pagination-next:focus-visible, .wp-block-query-pagination .wp-block-query-pagination-previous:focus-visible",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 0 8px 2px var(--wp--custom--focus-ring--color-accent, rgba(245, 158, 11, 0.4));",
+      "layers": [
+        {
+          "text": "0 0 8px 2px var(--wp--custom--focus-ring--color-accent, rgba(245, 158, 11, 0.4))",
+          "colour": "custom-var"
+        }
+      ],
+      "forced_colours_covered": true,
+      "has_black_literal": false
+    },
+    {
+      "file": "theme/sgs-theme/assets/css/utilities.css",
+      "line": 270,
+      "selector": "*:focus-visible",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 0 8px 2px\n\t\tcolor-mix(in srgb, var(--sgs-focus-glow, var(--wp--preset--color--accent, #d8ca50)) 40%, transparent);",
+      "layers": [
+        {
+          "text": "0 0 8px 2px\n\t\tcolor-mix(in srgb, var(--sgs-focus-glow, var(--wp--preset--color--accent, #d8ca50)) 40%, transparent)",
+          "colour": "brand"
+        }
+      ],
+      "forced_colours_covered": true,
+      "has_black_literal": false
+    },
+    {
+      "file": "theme/sgs-theme/assets/css/utilities.css",
+      "line": 292,
+      "selector": ".has-shadow-sm",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 1px 2px rgb(0 0 0 / 6%), 0 2px 6px rgb(0 0 0 / 6%);",
+      "layers": [
+        {
+          "text": "0 1px 2px rgb(0 0 0 / 6%)",
+          "colour": "black-literal"
+        },
+        {
+          "text": "0 2px 6px rgb(0 0 0 / 6%)",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": true
+    },
+    {
+      "file": "theme/sgs-theme/assets/css/utilities.css",
+      "line": 298,
+      "selector": ".has-shadow-md",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 2px 4px rgb(0 0 0 / 7%), 0 6px 16px rgb(0 0 0 / 8%);",
+      "layers": [
+        {
+          "text": "0 2px 4px rgb(0 0 0 / 7%)",
+          "colour": "black-literal"
+        },
+        {
+          "text": "0 6px 16px rgb(0 0 0 / 8%)",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": true
+    },
+    {
+      "file": "theme/sgs-theme/assets/css/utilities.css",
+      "line": 304,
+      "selector": ".has-shadow-lg",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 4px 8px rgb(0 0 0 / 8%), 0 12px 32px rgb(0 0 0 / 10%);",
+      "layers": [
+        {
+          "text": "0 4px 8px rgb(0 0 0 / 8%)",
+          "colour": "black-literal"
+        },
+        {
+          "text": "0 12px 32px rgb(0 0 0 / 10%)",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": false,
+      "has_black_literal": true
+    },
+    {
+      "file": "theme/sgs-theme/assets/css/woocommerce.css",
+      "line": 307,
+      "selector": ".wc-block-components-text-input input:focus, .wc-block-components-text-input select:focus, .wc-block-components-select select:focus",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 0 0 2px color-mix(in srgb, var(--wp--preset--color--primary) 20%, transparent);",
+      "layers": [
+        {
+          "text": "0 0 0 2px color-mix(in srgb, var(--wp--preset--color--primary) 20%, transparent)",
+          "colour": "brand"
+        }
+      ],
+      "forced_colours_covered": true,
+      "has_black_literal": false
+    },
+    {
+      "file": "theme/sgs-theme/assets/css/woocommerce.css",
+      "line": 951,
+      "selector": ".sgs-shop-filters__sticky-trigger",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);",
+      "layers": [
+        {
+          "text": "0 4px 16px rgba(0, 0, 0, 0.18)",
+          "colour": "black-literal"
+        }
+      ],
+      "forced_colours_covered": true,
+      "has_black_literal": true
+    },
+    {
+      "file": "theme/sgs-theme/assets/css/woocommerce.css",
+      "line": 1952,
+      "selector": ".sgs-shop-filters .wc-block-product-filter-price-slider__range-input::-webkit-slider-thumb, .sgs-shop-filters .wc-block-price-filter__range-input::-webkit-slider-thumb",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 0 0 1px var(--wp--preset--color--primary);",
+      "layers": [
+        {
+          "text": "0 0 0 1px var(--wp--preset--color--primary)",
+          "colour": "brand"
+        }
+      ],
+      "forced_colours_covered": true,
+      "has_black_literal": false
+    },
+    {
+      "file": "theme/sgs-theme/assets/css/woocommerce.css",
+      "line": 1964,
+      "selector": ".sgs-shop-filters .wc-block-product-filter-price-slider__range-input::-moz-range-thumb, .sgs-shop-filters .wc-block-price-filter__range-input::-moz-range-thumb",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 0 0 1px var(--wp--preset--color--primary);",
+      "layers": [
+        {
+          "text": "0 0 0 1px var(--wp--preset--color--primary)",
+          "colour": "brand"
+        }
+      ],
+      "forced_colours_covered": true,
+      "has_black_literal": false
+    },
+    {
+      "file": "theme/sgs-theme/assets/css/woocommerce.css",
+      "line": 2472,
+      "selector": ".sgs-shop-filters input[type=\"range\"]::-webkit-slider-thumb",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 0 0 1px var(--wp--preset--color--primary);",
+      "layers": [
+        {
+          "text": "0 0 0 1px var(--wp--preset--color--primary)",
+          "colour": "brand"
+        }
+      ],
+      "forced_colours_covered": true,
+      "has_black_literal": false
+    },
+    {
+      "file": "theme/sgs-theme/assets/css/woocommerce.css",
+      "line": 2483,
+      "selector": ".sgs-shop-filters input[type=\"range\"]::-moz-range-thumb",
+      "property": "box-shadow",
+      "declaration": "box-shadow: 0 0 0 1px var(--wp--preset--color--primary);",
+      "layers": [
+        {
+          "text": "0 0 0 1px var(--wp--preset--color--primary)",
+          "colour": "brand"
+        }
+      ],
+      "forced_colours_covered": true,
+      "has_black_literal": false
+    }
+  ],
+  "php_sources": [
+    {
+      "file": "plugins/sgs-blocks/includes/class-sgs-container-wrapper.php",
+      "line": 1635,
+      "function": "sgs_shadow_value_composed",
+      "snippet": "$gi_shadow_value = sgs_shadow_value_composed( $grid_item_shadow, $grid_item_shadow_colour );",
+      "exempt": false,
+      "exempt_reason": "",
+      "sink": "custom-property",
+      "sink_detail": "--sgs-gi-shadow",
+      "forced_colours_reached": null
+    },
+    {
+      "file": "plugins/sgs-blocks/includes/class-sgs-container-wrapper.php",
+      "line": 2591,
+      "function": "sgs_shadow_value_composed",
+      "snippet": "$shadow_hover_value = sgs_shadow_value_composed( $shadow, $shadow_colour_hover );",
+      "exempt": true,
+      "exempt_reason": "hover state only; the resting rule carries the forced-colours fallback",
+      "sink": "box-shadow",
+      "sink_detail": "",
+      "forced_colours_reached": true
+    },
+    {
+      "file": "plugins/sgs-blocks/includes/helpers-colour-variants.php",
+      "line": 670,
+      "function": "sgs_shadow_box_decls",
+      "snippet": "$out['normal'] = sgs_shadow_box_decls( $base_shape, $read( $map['colour'] ?? null ) );",
+      "exempt": false,
+      "exempt_reason": "",
+      "sink": "wrapper-safe",
+      "forced_colours_reached": true
+    },
+    {
+      "file": "plugins/sgs-blocks/includes/helpers-colour-variants.php",
+      "line": 678,
+      "function": "sgs_shadow_value_composed",
+      "snippet": "$hover = sgs_shadow_value_composed(",
+      "exempt": true,
+      "exempt_reason": "hover state only; the resting rule carries the forced-colours fallback",
+      "sink": "box-shadow",
+      "sink_detail": "",
+      "forced_colours_reached": true
+    },
+    {
+      "file": "plugins/sgs-blocks/includes/helpers-shadow-filter.php",
+      "line": 62,
+      "function": "sgs_shadow_layers",
+      "snippet": "$composed = sgs_shadow_layers( $literal, null );",
+      "exempt": false,
+      "exempt_reason": "",
+      "sink": "unclassified",
+      "sink_detail": "",
+      "forced_colours_reached": null
+    },
+    {
+      "file": "plugins/sgs-blocks/includes/helpers-shadow-filter.php",
+      "line": 70,
+      "function": "literal-string",
+      "snippet": "$filters[] = 'drop-shadow('",
+      "sink": "drop-shadow",
+      "sink_detail": "",
+      "forced_colours_reached": false,
+      "exempt": false,
+      "exempt_reason": ""
+    },
+    {
+      "file": "plugins/sgs-blocks/includes/helpers-shadow-layers.php",
+      "line": 291,
+      "function": "sgs_shadow_layers",
+      "snippet": "$value = sgs_shadow_layers( $shape, $colour );",
+      "exempt": false,
+      "exempt_reason": "",
+      "sink": "box-shadow",
+      "sink_detail": "",
+      "forced_colours_reached": true
+    },
+    {
+      "file": "plugins/sgs-blocks/includes/helpers-tokens.php",
+      "line": 722,
+      "function": "sgs_shadow_layers",
+      "snippet": "return sgs_shadow_layers( $shape, $colour );",
+      "exempt": false,
+      "exempt_reason": "",
+      "sink": "unclassified",
+      "sink_detail": "",
+      "forced_colours_reached": null
+    },
+    {
+      "file": "plugins/sgs-blocks/includes/nav-menu-submenu-css.php",
+      "line": 424,
+      "function": "sgs_shadow_value_composed",
+      "snippet": "$sgs_nm_submenu_shadow        = sgs_shadow_value_composed(",
+      "exempt": false,
+      "exempt_reason": "",
+      "sink": "unclassified",
+      "sink_detail": "",
+      "forced_colours_reached": null
+    },
+    {
+      "file": "plugins/sgs-blocks/includes/sgs-header-float-css.php",
+      "line": 246,
+      "function": "sgs_shadow_value_composed",
+      "snippet": "$resting_shadow = sgs_shadow_value_composed(",
+      "exempt": true,
+      "exempt_reason": "restates the resting shadow after a suppress rule; the wrapper base rule carries the forced-colours fallback",
+      "sink": "box-shadow",
+      "sink_detail": "",
+      "forced_colours_reached": true
+    },
+    {
+      "file": "plugins/sgs-blocks/includes/sgs-header-float-css.php",
+      "line": 263,
+      "function": "sgs_shadow_value_composed",
+      "snippet": "$scrolled_shadow = sgs_shadow_value_composed(",
+      "exempt": false,
+      "exempt_reason": "",
+      "sink": "unclassified",
+      "sink_detail": "",
+      "forced_colours_reached": null
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/before-after/render.php",
+      "line": 122,
+      "function": "sgs_shadow_decls",
+      "snippet": "$box_shadow_decls = sgs_shadow_decls(",
+      "exempt": false,
+      "exempt_reason": "",
+      "sink": "wrapper-safe",
+      "forced_colours_reached": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/brand-strip/render.php",
+      "line": 116,
+      "function": "sgs_shadow_decls",
+      "snippet": "$tile_shadow_decls = sgs_shadow_decls(",
+      "exempt": false,
+      "exempt_reason": "",
+      "sink": "wrapper-safe",
+      "forced_colours_reached": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/button/render.php",
+      "line": 274,
+      "function": "sgs_shadow_decls",
+      "snippet": "$box_shadow_decls = sgs_shadow_decls(",
+      "exempt": false,
+      "exempt_reason": "",
+      "sink": "wrapper-safe",
+      "forced_colours_reached": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/card-grid/render.php",
+      "line": 249,
+      "function": "sgs_shadow_value_composed",
+      "snippet": "$card_state_vars[] = '--sgs-card-shadow:' . sgs_shadow_value_composed( $card_shadow, $card_shadow_colour ) . ';';",
+      "exempt": false,
+      "exempt_reason": "",
+      "sink": "custom-property",
+      "sink_detail": "--sgs-card-shadow",
+      "forced_colours_reached": null
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/card-grid/render.php",
+      "line": 635,
+      "function": "sgs_shadow_value_composed",
+      "snippet": "$wc_style_parts[] = '--sgs-hover-shadow: ' . sgs_shadow_value_composed( $hover_shadow, $hover_shadow_colour );",
+      "exempt": false,
+      "exempt_reason": "",
+      "sink": "custom-property",
+      "sink_detail": "--sgs-hover-shadow",
+      "forced_colours_reached": null
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/card-grid/render.php",
+      "line": 844,
+      "function": "sgs_shadow_value_composed",
+      "snippet": "$grid_style_parts[] = '--sgs-hover-shadow: ' . sgs_shadow_value_composed( $hover_shadow, $hover_shadow_colour );",
+      "exempt": false,
+      "exempt_reason": "",
+      "sink": "custom-property",
+      "sink_detail": "--sgs-hover-shadow",
+      "forced_colours_reached": null
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/card-grid/render.php",
+      "line": 169,
+      "function": "wp_style_engine_get_styles",
+      "snippet": "$cg_scoped_styles = wp_style_engine_get_styles(",
+      "sink": "style-engine-shadow",
+      "sink_detail": "",
+      "forced_colours_reached": false,
+      "exempt": false,
+      "exempt_reason": ""
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/cta-section/render.php",
+      "line": 111,
+      "function": "sgs_shadow_decls",
+      "snippet": "$box_shadow_decls = sgs_shadow_decls(",
+      "exempt": false,
+      "exempt_reason": "",
+      "sink": "wrapper-safe",
+      "forced_colours_reached": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/heading/render.php",
+      "line": 156,
+      "function": "sgs_shadow_decls",
+      "snippet": "$box_shadow_decls = sgs_shadow_decls(",
+      "exempt": false,
+      "exempt_reason": "",
+      "sink": "wrapper-safe",
+      "forced_colours_reached": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/info-box/render.php",
+      "line": 244,
+      "function": "sgs_shadow_value_composed",
+      "snippet": "$sgs_safe_hover_shadow = sgs_shadow_value_composed( $sgs_hover_shadow, $sgs_hover_shadow_colour );",
+      "exempt": false,
+      "exempt_reason": "",
+      "sink": "custom-property",
+      "sink_detail": "--sgs-hover-shadow",
+      "forced_colours_reached": null
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/info-box/render.php",
+      "line": 294,
+      "function": "wp_style_engine_get_styles",
+      "snippet": "$base_scoped_styles = wp_style_engine_get_styles(",
+      "sink": "style-engine-shadow",
+      "sink_detail": "",
+      "forced_colours_reached": false,
+      "exempt": false,
+      "exempt_reason": ""
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/mega-panel/render.php",
+      "line": 514,
+      "function": "sgs_shadow_box_decls",
+      "snippet": "? sgs_shadow_box_decls( $panel_shadow_raw, isset( $attributes['shadowColour'] ) ? (string) $attributes['shadowColour'] : '' )",
+      "exempt": false,
+      "exempt_reason": "",
+      "sink": "wrapper-safe",
+      "forced_colours_reached": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/nav-drawer/render.php",
+      "line": 484,
+      "function": "sgs_shadow_box_decls",
+      "snippet": "? sgs_shadow_box_decls( $sgs_nd_shadow_raw, isset( $attributes['shadowColour'] ) ? (string) $attributes['shadowColour'] : '' )",
+      "exempt": false,
+      "exempt_reason": "",
+      "sink": "wrapper-safe",
+      "forced_colours_reached": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/post-grid/render.php",
+      "line": 289,
+      "function": "sgs_shadow_value_composed",
+      "snippet": "$shadow ? '--sgs-card-shadow:' . sgs_shadow_value_composed( $shadow, $shadow_colour ) : '',",
+      "exempt": false,
+      "exempt_reason": "",
+      "sink": "custom-property",
+      "sink_detail": "--sgs-card-shadow",
+      "forced_colours_reached": null
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/post-grid/render.php",
+      "line": 291,
+      "function": "sgs_shadow_value_composed",
+      "snippet": "$hover_shadow ? '--sgs-hover-shadow:' . sgs_shadow_value_composed( $hover_shadow, $hover_shadow_colour ) : '',",
+      "exempt": false,
+      "exempt_reason": "",
+      "sink": "custom-property",
+      "sink_detail": "--sgs-hover-shadow",
+      "forced_colours_reached": null
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/process-steps/render.php",
+      "line": 382,
+      "function": "wp_style_engine_get_styles",
+      "snippet": "$base_scoped_styles = wp_style_engine_get_styles(",
+      "sink": "style-engine-shadow",
+      "sink_detail": "",
+      "forced_colours_reached": false,
+      "exempt": false,
+      "exempt_reason": ""
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/quote/render.php",
+      "line": 144,
+      "function": "sgs_shadow_decls",
+      "snippet": "$box_shadow_decls = sgs_shadow_decls(",
+      "exempt": false,
+      "exempt_reason": "",
+      "sink": "wrapper-safe",
+      "forced_colours_reached": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/site-header/render.php",
+      "line": 347,
+      "function": "sgs_shadow_value_composed",
+      "snippet": "$sh_shadow_scrolled_value  = sgs_shadow_value_composed( $sh_shadow_scrolled_shape, $sh_shadow_scrolled_colour );",
+      "exempt": false,
+      "exempt_reason": "",
+      "sink": "unclassified",
+      "sink_detail": "",
+      "forced_colours_reached": null
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/site-header/render.php",
+      "line": 367,
+      "function": "sgs_shadow_box_decls",
+      "snippet": "$css .= $root_sel . '.is-header-scrolled{' . implode( ';', sgs_shadow_box_decls( $sh_shadow_scrolled_shape, $sh_shadow_scrolled_colour ) ) . ';}';",
+      "exempt": false,
+      "exempt_reason": "",
+      "sink": "wrapper-safe",
+      "forced_colours_reached": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/team-member/render.php",
+      "line": 259,
+      "function": "sgs_shadow_value_composed",
+      "snippet": "$safe_hover_shadow = sgs_shadow_value_composed( $hover_shadow, $hover_shadow_colour );",
+      "exempt": false,
+      "exempt_reason": "",
+      "sink": "custom-property",
+      "sink_detail": "--sgs-hover-shadow",
+      "forced_colours_reached": null
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/team-member/render.php",
+      "line": 273,
+      "function": "sgs_shadow_value_composed",
+      "snippet": "$sgs_wrapper_styles[] = '--sgs-card-shadow:' . sgs_shadow_value_composed( $card_shadow, $card_shadow_colour );",
+      "exempt": false,
+      "exempt_reason": "",
+      "sink": "custom-property",
+      "sink_detail": "--sgs-card-shadow",
+      "forced_colours_reached": null
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/testimonial/render.php",
+      "line": 619,
+      "function": "sgs_shadow_value_composed",
+      "snippet": "$wrapper_vars[] = '--sgs-hover-shadow:' . sgs_shadow_value_composed( (string) $hover_shadow, (string) $hover_shadow_colour );",
+      "exempt": false,
+      "exempt_reason": "",
+      "sink": "custom-property",
+      "sink_detail": "--sgs-hover-shadow",
+      "forced_colours_reached": null
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/testimonial/render.php",
+      "line": 499,
+      "function": "wp_style_engine_get_styles",
+      "snippet": "$base_scoped_styles = wp_style_engine_get_styles(",
+      "sink": "style-engine-shadow",
+      "sink_detail": "",
+      "forced_colours_reached": false,
+      "exempt": false,
+      "exempt_reason": ""
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/text/render.php",
+      "line": 134,
+      "function": "sgs_shadow_decls",
+      "snippet": "$box_shadow_decls = sgs_shadow_decls(",
+      "exempt": false,
+      "exempt_reason": "",
+      "sink": "wrapper-safe",
+      "forced_colours_reached": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/timeline/render.php",
+      "line": 448,
+      "function": "wp_style_engine_get_styles",
+      "snippet": "$base_scoped_styles = wp_style_engine_get_styles(",
+      "sink": "style-engine-shadow",
+      "sink_detail": "",
+      "forced_colours_reached": false,
+      "exempt": false,
+      "exempt_reason": ""
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/trust-bar/render.php",
+      "line": 167,
+      "function": "sgs_shadow_value_composed",
+      "snippet": "$safe_icon_circle_shadow = sgs_shadow_value_composed( $icon_circle_shadow, $icon_circle_shadow_colour );",
+      "exempt": false,
+      "exempt_reason": "",
+      "sink": "custom-property",
+      "sink_detail": "--sgs-trust-badge-circle-shadow",
+      "forced_colours_reached": null
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/trust-bar/render.php",
+      "line": 219,
+      "function": "sgs_shadow_value_composed",
+      "snippet": "$safe_icon_circle_shadow_hover = sgs_shadow_value_composed( $icon_circle_shadow, $icon_circle_shadow_colour_hover );",
+      "exempt": true,
+      "exempt_reason": "hover state only; the resting rule carries the forced-colours fallback",
+      "sink": "box-shadow",
+      "sink_detail": "",
+      "forced_colours_reached": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/trust-bar/render.php",
+      "line": 539,
+      "function": "sgs_shadow_box_decls",
+      "snippet": "$img_decls = array_merge( $img_decls, sgs_shadow_box_decls( $badge_image_shadow, $badge_image_shadow_colour ) );",
+      "exempt": false,
+      "exempt_reason": "",
+      "sink": "wrapper-safe",
+      "forced_colours_reached": true
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/trust-bar/render.php",
+      "line": 546,
+      "function": "sgs_shadow_value_composed",
+      "snippet": "$safe_badge_image_shadow_hover = sgs_shadow_value_composed( $badge_image_shadow, $badge_image_shadow_colour_hover );",
+      "exempt": true,
+      "exempt_reason": "hover state only; the resting rule carries the forced-colours fallback",
+      "sink": "box-shadow",
+      "sink_detail": "",
+      "forced_colours_reached": true
+    }
+  ],
+  "variation_sources": [
+    {
+      "file": "plugins/sgs-blocks/includes/variations/sgs-card-grid-variations.php",
+      "line": 44,
+      "variable": "--wp--custom--shadow--medium",
+      "snippet": "// `var(--wp--custom--border-radius--medium)`... `var(--wp--custom--shadow--medium)`,",
+      "classification": "undefined-variable"
+    },
+    {
+      "file": "plugins/sgs-blocks/includes/variations/sgs-info-box-variations.php",
+      "line": 28,
+      "variable": "--wp--custom--shadow--medium",
+      "snippet": "box-shadow: var( --wp--custom--shadow--medium );",
+      "classification": "undefined-variable"
+    },
+    {
+      "file": "plugins/sgs-blocks/includes/variations/sgs-post-grid-variations.php",
+      "line": 28,
+      "variable": "--wp--custom--shadow--medium",
+      "snippet": "box-shadow: var( --wp--custom--shadow--medium );",
+      "classification": "undefined-variable"
+    },
+    {
+      "file": "plugins/sgs-blocks/includes/variations/sgs-pricing-table-variations.php",
+      "line": 28,
+      "variable": "--wp--custom--shadow--medium",
+      "snippet": "box-shadow: var( --wp--custom--shadow--medium );",
+      "classification": "undefined-variable"
+    },
+    {
+      "file": "plugins/sgs-blocks/includes/variations/sgs-team-member-variations.php",
+      "line": 28,
+      "variable": "--wp--custom--shadow--medium",
+      "snippet": "box-shadow: var( --wp--custom--shadow--medium );",
+      "classification": "undefined-variable"
+    },
+    {
+      "file": "plugins/sgs-blocks/includes/variations/sgs-testimonial-variations.php",
+      "line": 28,
+      "variable": "--wp--custom--shadow--medium",
+      "snippet": "box-shadow: var( --wp--custom--shadow--medium );",
+      "classification": "undefined-variable"
+    }
+  ],
+  "supports_shadow_blocks": [
+    {
+      "block": "sgs/card-grid",
+      "skip_serialised": true,
+      "render_php": "plugins/sgs-blocks/src/blocks/card-grid/render.php",
+      "style_engine_shadow_found": true,
+      "forced_colours_covered": false
+    },
+    {
+      "block": "sgs/info-box",
+      "skip_serialised": true,
+      "render_php": "plugins/sgs-blocks/src/blocks/info-box/render.php",
+      "style_engine_shadow_found": true,
+      "forced_colours_covered": false
+    },
+    {
+      "block": "sgs/process-steps",
+      "skip_serialised": true,
+      "render_php": "plugins/sgs-blocks/src/blocks/process-steps/render.php",
+      "style_engine_shadow_found": true,
+      "forced_colours_covered": false
+    },
+    {
+      "block": "sgs/testimonial",
+      "skip_serialised": true,
+      "render_php": "plugins/sgs-blocks/src/blocks/testimonial/render.php",
+      "style_engine_shadow_found": true,
+      "forced_colours_covered": false
+    },
+    {
+      "block": "sgs/timeline",
+      "skip_serialised": true,
+      "render_php": "plugins/sgs-blocks/src/blocks/timeline/render.php",
+      "style_engine_shadow_found": true,
+      "forced_colours_covered": false
+    }
+  ],
+  "text_shadow_count": 3,
+  "unclassified": [
+    {
+      "kind": "php",
+      "file": "plugins/sgs-blocks/includes/helpers-shadow-filter.php",
+      "line": 62,
+      "text": "$composed = sgs_shadow_layers( $literal, null );"
+    },
+    {
+      "kind": "php",
+      "file": "plugins/sgs-blocks/includes/helpers-tokens.php",
+      "line": 722,
+      "text": "return sgs_shadow_layers( $shape, $colour );"
+    },
+    {
+      "kind": "php",
+      "file": "plugins/sgs-blocks/includes/nav-menu-submenu-css.php",
+      "line": 424,
+      "text": "$sgs_nm_submenu_shadow        = sgs_shadow_value_composed("
+    },
+    {
+      "kind": "php",
+      "file": "plugins/sgs-blocks/includes/sgs-header-float-css.php",
+      "line": 263,
+      "text": "$scrolled_shadow = sgs_shadow_value_composed("
+    },
+    {
+      "kind": "php",
+      "file": "plugins/sgs-blocks/src/blocks/site-header/render.php",
+      "line": 347,
+      "text": "$sh_shadow_scrolled_value  = sgs_shadow_value_composed( $sh_shadow_scrolled_shape, $sh_shadow_scrolled_colour );"
+    }
+  ]
+}

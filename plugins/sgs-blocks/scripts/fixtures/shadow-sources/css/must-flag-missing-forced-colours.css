@@ -1,0 +1,6 @@
+/* Fixture: a whole-value shadow PRESET reference (not a colour violation on its own) but
+   with no outline/border anywhere on this selector, in this rule or a forced-colors block.
+   Must be flagged missing-forced-colours while classifying preset-var (never black-literal). */
+.sgs-fixture-preset-card {
+	box-shadow: var(--wp--preset--shadow--floating);
+}

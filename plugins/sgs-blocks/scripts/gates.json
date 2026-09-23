@@ -1127,5 +1127,32 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 121
+  },
+  {
+    "id": "check-shadow-sources-self-test",
+    "cmd": "python scripts/check-shadow-sources.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 122
+  },
+  {
+    "id": "surface-ground-fanout-self-test",
+    "cmd": "python scripts/fanout-surface-ground-attrs.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 123
+  },
+  {
+    "id": "surface-ground-fanout-check",
+    "cmd": "python scripts/fanout-surface-ground-attrs.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 124
   }
 ]

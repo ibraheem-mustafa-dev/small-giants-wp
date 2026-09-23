@@ -1,0 +1,12 @@
+/* Fixture: the site shadow-colour variable, with the same selector covered by an
+   outline inside a forced-colors media block in this same file. Must PASS both checks:
+   colour classifies site-var (not a violation) and forced-colours IS covered. */
+.sgs-fixture-panel {
+	box-shadow: 0px 1px 2px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent);
+}
+
+@media (forced-colors: active) {
+	.sgs-fixture-panel {
+		outline: 1px solid CanvasText;
+	}
+}

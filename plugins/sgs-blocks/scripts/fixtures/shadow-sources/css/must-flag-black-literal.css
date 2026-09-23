@@ -1,0 +1,5 @@
+/* Fixture: a plain black-literal box-shadow with no forced-colours coverage anywhere
+   in this file. Must be flagged as both black-literal AND missing-forced-colours. */
+.sgs-fixture-card {
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
