@@ -1,7 +1,7 @@
 ---
 doc_type: ledger
 project: small-giants-wp
-last_updated: 2026-09-21
+last_updated: 2026-09-24
 ---
 
 # small-giants-wp — LEDGER (the one living status)
@@ -133,23 +133,21 @@ IN FULL before touching anything — do not act on this summary.**
 - **Wave 3** (polish) — PARTIAL: FR-37-44/45 verified (`reports/visual-diff/site-header-2026-08-19.md`);
   FR-37-27 settled; simplicity finding 2 (canvas-click selection) open; FR-37-6 per-site CPT
   sourcing unverified; FR-37-26 blind-tester session not done; FR-37-18 conformance partial.
-- **Wave 3C** (`plans/2026-09-21-wave-3c-implementation-plan.md` §4) — **U-1 CLOSED** (mega close-grace,
-  force-solid resting background, per-tier header `zIndex`, submenu intent-delay/open-mode, the
-  surface-ground trio across the nav + container blocks, layered shadows, item hover paint — full list in
-  the current `decisions.md` entry). M-43 and M-09 covered, M-21 covered pending live checks, M-13
-  partial (`families-master.json`). Shadow-tone check shipped (Bean signed off the look). Owed: live
-  check of the edge fade, card lift, submenu opacity; sandybrown deploy (waits on `sgs/google-reviews`);
-  shadow lift on hover is the default (Bean), live-verified. **Next: U-2** (scrim, M-14).
+- **Wave 3C** (`plans/2026-09-21-wave-3c-implementation-plan.md` §4): **U-1 CLOSED** (D1143, D1146: nav
+  timings, header z-index, surface ground on nav + wrapper blocks, layered shadows, dark-surface tone, lift
+  on hover by default). Live on eye-care-test only; owed: live check of the edge fade, card lift, submenu
+  opacity; sandybrown deploy waits on another session committing `sgs/google-reviews`.
 - **Wave 4** (proof gate — 11 client clones incl. resn, 10 if the teardown excludes it; Bean's-eye per
   clone; every Spec 38 effect available) — not started.
 - **Wave 5** (clone walker) — not started.
 
-**First action:** Bean's decisions on three design inputs (each report ends in a ranked menu): the floating
-pill (`.claude/reports/2026-09-20-w2p-floating-header-pill-design.md`), the collapse modes
-(`.claude/reports/2026-09-20-w2m-collapse-modes-design.md`), the payment-icons host
-(`.claude/reports/2026-09-20-w2o-payment-icons-host-options.md`). In parallel: Wave 3 residuals (W3-b/e).
-Defects found on the way: `.claude/decisions.md` D1122, D1125. The 7 drawer looks are patterns (Spec 36 §5
-"The seven looks as 'Menu drawer' starter patterns").
+**Next session: U-2** (scrim colour, alpha, blur per tier; M-14; plan §4 row 2). Orchestration: (1) inline:
+read plan §1, §4, §5, Spec 36's drawer scrim section and `families-master.json` M-14; (2) design note, then
+`/qc-council` (two models via `/delegate`), then Bean's sign-off (shared mechanism); (3) build through
+`/subagent-driven-development`, one Sonnet implementer per commit on disjoint files, detector first if more
+than 3 blocks; (4) deploy to eye-care-test (declared `--payload` for google-reviews while it is uncommitted,
+never `--allow-dirty`), verify in one headed window, report in `reports/visual-diff/`. Acceptance: every M-14
+cell measured within 2px, or its leftover named.
 
 ### Front E — Spec 45 classless FIELD resolution (open)
 

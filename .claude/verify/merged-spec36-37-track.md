@@ -137,7 +137,7 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
   instead of the attribute is fixed); `submenuIntentDelay` and `submenuOpenOn` (hover or click) give an
   operator-set intent delay and open mode on both the dropdown and the mega panel. Live-verified.
 - `sgs/site-header` carries a per-tier `zIndex` object (ENG-01); drawer stacking derives from it.
-  Live-verified. Residual: buck's `auto` z-index value has no covering value and awaits Bean's acceptance.
+  Live-verified. buck's `auto` z-index is an accepted divergence (Bean).
 - Force-solid (`contrastSafe` = `force-solid`) paints the header's own resting background (its colour, or
   the theme surface token when it has none) instead of suppressing transparency with no paint. Live-verified.
 - The surface-ground trio (`surfaceBlur`, `surfaceSaturate`, `surfaceOpacity`) is aligned across
@@ -147,14 +147,14 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
   `sgs/site-header` also carries `surfaceFadeEdge` (none/top/bottom, off in forced-colours mode);
   `mega-panel` and `nav-drawer` each gain a `shadow`/`shadowColour` writer. Live-verified:
   `reports/visual-diff/container-2026-09-23.md`, `nav-drawer-2026-09-23.md`, `nav-bar-menu-2026-09-23.md`,
-  `container-2026-09-21.md`, `mega-panel-2026-09-21.md`. Residual: the mega-panel `borderRadius` migration
-  to a tier object awaits Bean's ruling; the edge-fade's own live check is owed.
+  `container-2026-09-21.md`, `mega-panel-2026-09-21.md`. The mega-panel `borderRadius` stays a single value
+  (Bean); the edge-fade's own live check is owed.
 - Item hover paint: `itemOpacity`/`itemOpacityHover` and `submenuOpacity`/`submenuOpacityHover` on
   `sgs/nav-bar-menu` and `sgs/nav-drawer-menu`; `itemPaddingShiftHover`; mega-panel `panelCardLift`.
   Attributes built and PHP-tested; live verification of the card lift and the submenu opacity pair on a
   `qa-hdr-*` fixture is owed.
 - Family coverage in `families-master.json`: M-43 and M-21 covered (M-21 pending the live check above);
-  M-09 and M-13 stay partial (residuals named above).
+  M-09 covered; M-13 partial until the edge-fade live check.
 - Shipped alongside U-1, not itself a U-1 family: the universal shadow-tone check (design
   `.claude/reports/2026-09-23-shadow-tone-design.md`, Bean-approved GO WITH FIXES) — a surface is judged
   dark when white text would be chosen for it (`helpers-colour-wcag.php::sgs_wcag_white_wins_for_luminance`),
