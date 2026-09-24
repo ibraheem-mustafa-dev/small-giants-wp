@@ -313,7 +313,7 @@ menu button closes it"); (3) the opener is LIVE, meaning its centre point hit-te
 (`document.elementsFromPoint`) and it has client rects, so a burger painted under the drawer, hidden or
 off-screen does not count. `render.php` emits the eligibility rule for (1) and (2), scoped to
 `[data-sgs-nav-opener-live]`; `store.js` sets that flag after `show()` and before focus, re-checks it on
-resize, and clears it at the start of `runClose`. In every other combination the × shows (under `trigger` it
+resize, and clears it once the dialog has closed (never before the exit animation, which would bring the × back mid-close). In every other combination the × shows (under `trigger` it
 wears the `separate-x` glyph); no operator setting removes the last live close control. This is DEC-15 (b)'s
 own wording ("required only when no other visible, keyboard-reachable close control is live"); the earlier
 text keyed it on `burger-morph`, which missed the references whose trigger swaps its LABEL.

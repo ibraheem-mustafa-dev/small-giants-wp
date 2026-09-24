@@ -466,11 +466,11 @@ function resolveScrim( drawerRef ) {
  * @param {HTMLElement|null} scrim  The scrim element, if any.
  */
 function runClose( drawer, scrim ) {
-	// §4.2 — removed SYNCHRONOUSLY, before any exit-animation teardown, so a
-	// fast close-reopen never sees a stale liveness flag from the previous
-	// open.
-	drawer.removeAttribute( 'data-sgs-nav-opener-live' );
-
+	// The opener-live flag is NOT cleared here: it keeps the × hidden and its
+	// top row released, and clearing it before the exit animation made the ×
+	// reappear mid-close and push the menu down (Bean, 2026-09-24). It is
+	// cleared in onNativeClose, once the dialog is closed and hidden; every
+	// open recomputes it (updateOpenerLiveness), so a reopen never inherits it.
 	if ( ! drawer.open || drawer.classList.contains( 'is-closing' ) ) {
 		return;
 	}
@@ -1004,6 +1004,8 @@ function openDrawerFor( ctx, trigger ) {
 	// Focus return is EXPLICIT (Safari does not focus buttons on click).
 	const onNativeClose = () => {
 		drawer.classList.remove( 'is-closing' );
+		// §4.2 — cleared only now the dialog is closed (see runClose).
+		drawer.removeAttribute( 'data-sgs-nav-opener-live' );
 		// Balanced with the conditional lockScroll() above (§4.6) — only
 		// unlock when this open genuinely locked.
 		if ( bookkeeping.scrollLocked ) {
