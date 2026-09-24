@@ -70,8 +70,7 @@ _REPO = Path(__file__).resolve().parents[2]
 _CLAUDE = _REPO / ".claude"
 
 # The byte cap used repo-wide for LEDGER.md / MEMORY.md (see .claude/CLAUDE.md).
-# This gate refuses to close a handoff above it (the ledger-rotate Stop hook that
-# snapshotted at this size was retired 2026-09-24).
+# This gate refuses to close a handoff above it.
 CAP_BYTES = 24576
 
 # --- decisions.md / MEMORY.md size discipline (added 2026-08-06) -------------------
@@ -640,7 +639,7 @@ def check_decisions_size(size: int | None = None, baseline: int | None = None) -
             f"{DOC_SIZE_BASELINE.name}; the fallback absolute cap is "
             f"{DECISIONS_ABS_CAP_BYTES:,} (over by {size - DECISIONS_ABS_CAP_BYTES:,})",
             "Sweep retired/superseded/non-load-bearing entries to "
-            ".claude/memory/decisions-archive.md, then record the new accepted size in "
+            ".claude/archive/decisions.md, then record the new accepted size in "
             f"{DOC_SIZE_BASELINE.name}. An absent baseline fails CLOSED on purpose.",
         )
 
@@ -660,7 +659,7 @@ def check_decisions_size(size: int | None = None, baseline: int | None = None) -
         f"baseline {baseline:,} — over the {DECISIONS_GROWTH_BUDGET:,}-byte growth budget "
         f"by {size - ceiling:,}",
         "Sweep retired/superseded/non-load-bearing entries to "
-        ".claude/memory/decisions-archive.md, then record the post-sweep size in "
+        ".claude/archive/decisions.md, then record the post-sweep size in "
         f"{DOC_SIZE_BASELINE.name}. Do NOT just raise the baseline to silence this — the "
         "baseline records a size that was ACCEPTED after a sweep, not merely the current one.",
     )
