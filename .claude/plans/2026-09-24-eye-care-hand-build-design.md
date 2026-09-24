@@ -14,8 +14,13 @@ lenses, about, help, contact), then Wave C.
   record), `filter_product_brand` filtering on the shop (unproven: reasoned, not tested), the RRP pill's "£32.00"
   vs the draft's "£32", and the trust-bar drop mode's first-paint second row.
 - Open decisions for Bean: (1) product-page tabs (`.claude/reports/2026-09-24-pdp-tabs-design.md`, recommended: a
-  seeded starting layout each client edits in the Site Editor); (2) eyewear shape glyphs (recommended: upload the
-  draft's SHAPES SVGs to the Eye Care media library as card images, not the shared icon set); (3) whether to admit
+  seeded starting layout each client edits in the Site Editor); (2) DECIDED (Bean, 2026-09-24: "they aren't really
+  icons"): the six shape glyphs are images, not icon-registry entries. Uploaded to eye-care-test as transparent
+  PNGs (3x, stroke #FAF8F5, 1.6, from the draft's SHAPES paths; sources in `sites/eye-care-ward-end/assets/shape-glyphs/`):
+  media IDs pilot 148, wayfarer 149, round 150, cat-eye 151, square 152, oversized 153, alt empty (the tile label
+  names the shape). Placement is a home-page build question: in the draft the glyph is an OVERLAY on a photo for 4
+  tiles (a/v/c/b) and on a dark "Photo to come" tile (#2B2721) for Pilot and Oversized, and `sgs/card-grid` has one
+  image slot per card; (3) whether to admit
   `disabled` as a state in `golden-controls.json` (not needed now: disabled nav items are their own manifest element).
 - Known follow-ups, not blocking: RRP pill and stock label follow the default variation only (update on variation
   change belongs with the product page, Wave C); option-picker sub-labels read term meta, check against the
