@@ -668,10 +668,21 @@ def run_universal_content_walk(rec, node, media_map, css_rules, css_text=None) -
             and i["role"].startswith("icon-")
             for i in attrs.values()
         )
+        # A node recognised by its TAG (atomic swap: a classless <img> -> sgs/media) IS
+        # the block's element, so no descendant selector can reach its content and the
+        # element-self lift is the only route. It runs even when the block has several
+        # content attrs (sgs/media: image, video, caption -> primary_content_attr None)
+        # or the scalar-content-lift capability, whose selector leg reads descendants.
+        # run_mechanism_leaf lifts at most one text, one image and one link, so this
+        # cannot over-fill. Before this, the Eye Care about-strip photo emitted an
+        # sgs/media with its styling and no image (2026-09-24 design, C2).
+        atomic_self = rec.kind == "atomic"
         if (rec.delegates_content == 0
-                and "scalar-content-lift" not in caps
                 and "array-content-lift" not in caps
-                and (db_lookup.primary_content_attr(rec.slug) is not None or icon_bearing)):
+                and (atomic_self
+                     or ("scalar-content-lift" not in caps
+                         and (db_lookup.primary_content_attr(rec.slug) is not None
+                              or icon_bearing)))):
             results.extend(ext.run_mechanism_leaf(rec, node, media_map))
 
     return results

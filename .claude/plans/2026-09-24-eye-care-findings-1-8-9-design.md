@@ -125,6 +125,28 @@ Order: C2, then C4, C3, C1 (smallest first; C1 is the largest). One commit each,
   C5 writes that route as the button's URL and logs each one as a pre-registry link, so Track D can
   rewrite them when the real pages exist. A handler that resolves to no single view stays reported.
 
+## Second review (2026-09-24): two corrections
+
+- **The evaluator is already on.** It has been on by default since D1132, via
+  `orchestrator/script_bindings_stage.py` (opt-out `--no-script-bindings`). The evidence run resolved
+  75 names, including `heroH`, `heroGrad`, `heroScrim`, `heroPos` and `heroPad` per tier. The earlier
+  line calling it "built-but-unwired" was wrong. So the hero's values are lost only because C1's
+  children are dropped. Once C1 routes them, they arrive resolved. Two exceptions:
+  - `heroGrad` and `heroScrim` differ per tier, but the hero's `overlayGradient` is not responsive,
+    so the tablet and mobile values are reported;
+  - the section's `height: {{ heroH }}` is resolved, but the hero has only `minHeight` and no
+    `height`. The miss appears only in the convert trace (`attr_for_layer_property_miss`), NOT in the
+    run's content gaps: a Rule 4 reporting hole.
+- **Aspect ratio: nothing was lost.** Evidence:
+  - `git log -S AspectRatio` over the container block, the wrapper includes and the shared components
+    shows no container aspect-ratio ever added or removed;
+  - the Mama's homepage clone artefacts carry no aspect value;
+  - the aspect settings that exist are on image-bearing blocks: `sgs/card-grid.aspectRatio`, which
+    sets the card image's ratio and has a live editor control, plus `sgs/media`, `sgs/gallery`,
+    `sgs/post-grid` and hero split-media.
+  Mama's draft puts `aspect-ratio` on image wrappers (`.product-card-image` 4/3, `.story-image` 4/5).
+  The optician panel is the same shape: a stand-in for "Photo of the clinic".
+
 ## Questions for Bean (original)
 
 1. **Approve C1 to C4 as designed?** Recommended: yes.
