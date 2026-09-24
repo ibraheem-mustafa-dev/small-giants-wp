@@ -1,16 +1,16 @@
 /**
  * Modal — frontend and editor styles.
  *
- * Uses native HTML dialog element with ::backdrop for overlay.
- * Accessible modal with built-in focus trap, Escape key handling, and smooth animations.
+ * Uses a native HTML dialog element. The dimmed layer behind it is the shared
+ * viewport scrim (U-2 Addendum A, modal migration, 2026-09-24) — a separate
+ * div painted by `includes/helpers-scrim.php`, not this block's own
+ * `::backdrop`, which is transparent (see below). Accessible modal with
+ * built-in focus trap, Escape key handling, and smooth animations.
  */
 
 .sgs-modal {
 	/* Panel: medium duration + spring easing per Group J spec */
 	--sgs-modal-transition: var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--spring, cubic-bezier(0.34, 1.56, 0.64, 1));
-	/* Backdrop: primary-dark at 70% opacity per Group J spec (FIX #8) */
-	--sgs-modal-backdrop-colour: var(--wp--preset--color--primary-dark, #0A5B5D);
-	--sgs-modal-backdrop-opacity: 0.7;
 }
 
 /* Trigger button */
@@ -123,42 +123,17 @@
 	max-width: 95vw;
 }
 
-/* Backdrop: primary-dark 70% opacity, fade fast per Group J spec */
-.sgs-modal__dialog::backdrop {
-	background-color: var(--sgs-modal-backdrop-colour);
-	background-image: var(--sgs-modal-backdrop-colour-gradient, none);
-	opacity: 0;
-	transition:
-		opacity var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1)),
-		overlay var(--sgs-modal-transition) allow-discrete,
-		display var(--sgs-modal-transition) allow-discrete;
-}
-
-.sgs-modal__dialog[open]::backdrop {
-	opacity: var(--sgs-modal-backdrop-opacity);
-}
-
 /*
- * Backdrop hover (2026-09-06, colour-conformance closeout, Case Task-1).
- * The backdrop is a real click-to-close target (view.js's closeOnOverlay
- * handler), so it is genuinely interactive, not purely decorative — hence
- * `overlayColourHover`/`overlayColourHoverGradient` exist as attributes. This
- * rarely reads as an obvious "hover effect" (the backdrop fills the whole
- * viewport outside the dialog panel, so the pointer is over it whenever it
- * isn't over the dialog content), but the mechanism is real. `::backdrop:hover`
- * is valid CSS in Chromium and Firefox. Fallback chain: hover -> resting ->
- * (resting's own fallback, set on .sgs-modal above).
+ * Backdrop: transparent (U-2 Addendum A, modal migration, 2026-09-24). The
+ * dimmed layer + hover-free fade behind the dialog is the shared scrim div
+ * now (`includes/helpers-scrim.php`, driven by scrimColour/scrimColourGradient/
+ * scrimOpacity/scrimBlur), not this pseudo-element — no colour, no image, no
+ * animation of a colour here. Kept as its own rule (rather than removed
+ * outright) so a browser's UA default `::backdrop` paint is explicitly
+ * overridden, not merely unset.
  */
-.sgs-modal__dialog::backdrop:hover {
-	background-color: var(--sgs-modal-backdrop-colour-hover, var(--sgs-modal-backdrop-colour));
-	background-image: var(--sgs-modal-backdrop-colour-hover-gradient, var(--sgs-modal-backdrop-colour-gradient, none));
-}
-
-/* Starting state for backdrop animation */
-@starting-style {
-	.sgs-modal__dialog[open]::backdrop {
-		opacity: 0;
-	}
+.sgs-modal__dialog::backdrop {
+	background: transparent;
 }
 
 /*

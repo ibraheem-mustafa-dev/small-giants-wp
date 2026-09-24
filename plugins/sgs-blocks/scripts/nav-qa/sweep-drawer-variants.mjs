@@ -153,6 +153,28 @@ async function measureGeometry( page ) {
 		const focusables = d.querySelectorAll(
 			'a[href],button:not([disabled]),input:not([disabled]),select,textarea,[tabindex]:not([tabindex="-1"])'
 		).length;
+
+		// The scrim (Wave 3C U-2, family M-14): since the drawer's `::backdrop` is
+		// now always transparent (includes/helpers-scrim.php owns the dimmer), the
+		// live colour/blur/strength lives on the shared `.sgs-scrim` div + its
+		// `::before` instead — read those, not the dialog's own `::backdrop`.
+		const scrimEl = document.querySelector( '[data-sgs-nav-scrim]' );
+		const scrim = scrimEl
+			? ( () => {
+				const scrimStyle = getComputedStyle( scrimEl );
+				const beforeStyle = getComputedStyle( scrimEl, '::before' );
+				return {
+					present: true,
+					opacity: scrimStyle.opacity,
+					pointerEvents: scrimStyle.pointerEvents,
+					backdropFilter: scrimStyle.backdropFilter,
+					backgroundColor: beforeStyle.backgroundColor,
+					backgroundImage: beforeStyle.backgroundImage,
+					beforeOpacity: beforeStyle.opacity,
+				};
+			} )()
+			: { present: false };
+
 		return {
 			ok: !! d.open && r.width > 0 && r.height > 0,
 			why: d.open ? '' : 'dialog is not open',
@@ -161,9 +183,12 @@ async function measureGeometry( page ) {
 			height: Math.round( r.height ),
 			top: Math.round( r.top ),
 			left: Math.round( r.left ),
+			// The drawer's OWN surface (surfaceOpacity/surfaceBlur) — the panel's
+			// own fill/blur, separate from the scrim behind it.
 			backgroundColor: s.backgroundColor,
 			backdropFilter: s.backdropFilter,
 			opacity: s.opacity,
+			scrim,
 			focusables,
 			navLinkCount: d.querySelectorAll( '.sgs-nav-drawer-menu__link' ).length,
 		};

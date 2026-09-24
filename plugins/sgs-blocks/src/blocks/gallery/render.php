@@ -712,7 +712,7 @@ ob_start();
 		   both, and authoring them on a native dialog is redundant. */
 		?>
 		<dialog
-			class="sgs-gallery__lightbox"
+			class="sgs-gallery__lightbox <?php echo esc_attr( $uid ); ?>"
 			aria-label="<?php esc_attr_e( 'Image lightbox', 'sgs-blocks' ); ?>"
 			data-wp-class--sgs-gallery__lightbox--open="state.isLightboxOpen"
 			data-wp-on--close="actions.closeLightbox"
@@ -863,6 +863,16 @@ if ( ! empty( $border_radius_mobile_obj ) ) {
 	if ( ! empty( $border_radius_mob_out['css'] ) ) {
 		$gallery_responsive_css .= '@media(max-width:767px){' . $border_radius_mob_out['css'] . '}';
 	}
+}
+
+// Lightbox scrim (U-2 Addendum A, 2026-09-24) — the shared viewport scrim
+// behind the lightbox, replacing its own hardcoded full-viewport background
+// (style.css, now transparent). Only when the lightbox exists at all: the
+// `open` selector matches the uid'd dialog only while it is a real top-layer
+// modal (`:modal`), which never happens when $enable_lightbox is false (no
+// <dialog> is even rendered in that case).
+if ( $enable_lightbox ) {
+	$gallery_responsive_css .= sgs_scrim_render( $attributes, $uid, array( 'open' => '.' . $uid . '.sgs-gallery__lightbox:modal' ) );
 }
 
 // CSS combinators like `>` intact. Every value reaching $gallery_responsive_css

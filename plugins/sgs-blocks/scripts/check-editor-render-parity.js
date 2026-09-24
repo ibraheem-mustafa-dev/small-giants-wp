@@ -338,6 +338,17 @@
  *   as this file's other checks already accept comparable whole-file
  *   text-search imprecision (see CHECK B blind spot 1).
  *
+ * SIGNAL 5 — DECLARED OPEN-STATE SCRIM (2026-09-24, Wave 3C U-2).
+ *   A block that declares `supports.sgs.scrim` paints its four scrim attributes
+ *   (scrimColour, scrimColourGradient, scrimOpacity, scrimBlur) through
+ *   `includes/helpers-scrim.php::sgs_scrim_render`, only while its drawer, dialog
+ *   or panel is OPEN. The editor canvas never renders that open state (the same
+ *   reason the modal's native ::backdrop was never previewed), so those four
+ *   attributes are exempt on a block that declares the support, and ONLY there:
+ *   the same names on a block without the declaration stay flagged. The render
+ *   side passes the whole attribute array to the helper, which is why Signal 1's
+ *   per-variable dataflow cannot see the consumption.
+ *
  * SIGNAL 4 — LIVE-EXTERNAL-DATA PLACEHOLDER EXEMPTION (2026-08-13, D613).
  *   Real shape: sgs/buybox and sgs/google-reviews render a static
  *   "configure this" placeholder in the editor canvas because their real
@@ -2775,6 +2786,24 @@ function collectUsedIdentifiersOutsideExcluded( ast, excludedRanges ) {
 }
 
 // ---------------------------------------------------------------------------
+// SIGNAL 5 — declared open-state scrim (Wave 3C U-2). See the header docblock.
+const SCRIM_ATTRS = new Set( [ 'scrimColour', 'scrimColourGradient', 'scrimOpacity', 'scrimBlur' ] );
+
+/**
+ * True when the block's block.json declares `supports.sgs.scrim`.
+ *
+ * @param {string} blockDir Block directory.
+ * @return {boolean} Whether the scrim support is declared.
+ */
+function declaresScrimSupport( blockDir ) {
+	try {
+		const meta = JSON.parse( fs.readFileSync( path.join( blockDir, 'block.json' ), 'utf8' ) );
+		return !! ( meta && meta.supports && meta.supports.sgs && meta.supports.sgs.scrim );
+	} catch ( e ) {
+		return false;
+	}
+}
+
 // SIGNAL 4 — live-external-data placeholder exemption (D605/D613)
 // ---------------------------------------------------------------------------
 //
@@ -3040,6 +3069,7 @@ function checkEditorCanvasDesync( blockName, dir, declaredAttrs, providesContext
 	const setAttributeGroups = collectSetAttributesGroups( src );
 	const noticeExemptSet = checkNoPreviewNoticeExemption( ast, src, declaredAttrs );
 	const liveDataPlaceholderExempt = checkLiveDataPlaceholderExemption( phpSrc, src );
+	const scrimExempt = declaresScrimSupport( dir );
 
 	const findings = [];
 	for ( const attr of destructured ) {
@@ -3073,6 +3103,9 @@ function checkEditorCanvasDesync( blockName, dir, declaredAttrs, providesContext
 		}
 		if ( liveDataPlaceholderExempt ) {
 			continue; // SIGNAL 4 — render.php reaches a live-data function; edit.js self-declares a placeholder
+		}
+		if ( scrimExempt && SCRIM_ATTRS.has( attr ) ) {
+			continue; // SIGNAL 5 — declared supports.sgs.scrim; the scrim paints only while open
 		}
 		findings.push( {
 			check: 'editor-canvas-desync',
@@ -4399,6 +4432,54 @@ function runSelfTest() {
 		failuresS3.forEach( ( f ) => log( '  - ' + f ) );
 	} else {
 		log( 'SIGNAL 3 — PASS (fallback-branch attribute exempted, early-return-guard attribute stays flagged)' );
+	}
+
+	log( '\n[check-editor-render-parity --self-test] SIGNAL 5 (declared open-state scrim)\n' );
+	const failuresS5 = [];
+	const s5EditJs = [
+		"import { InspectorControls, useBlockProps } from '@wordpress/block-editor';",
+		"import { PanelBody, RangeControl } from '@wordpress/components';",
+		'export default function Edit( { attributes, setAttributes } ) {',
+		'\tconst { scrimBlur } = attributes;',
+		'\treturn (',
+		'\t\t<div { ...useBlockProps() }>',
+		'\t\t\t<InspectorControls>',
+		'\t\t\t\t<PanelBody>',
+		'\t\t\t\t\t<RangeControl value={ scrimBlur } onChange={ ( v ) => setAttributes( { scrimBlur: v } ) } />',
+		'\t\t\t\t</PanelBody>',
+		'\t\t\t</InspectorControls>',
+		'\t\t</div>',
+		'\t);',
+		'}',
+	].join( '\n' );
+	const s5PosDir = writeBlock( 'signal5-positive', {
+		'block.json': JSON.stringify( { name: 'sgs/fixture-signal5-positive', supports: { sgs: { scrim: { open: '[open]' } } }, attributes: { scrimBlur: { type: 'object' } } } ),
+		'edit.js': s5EditJs,
+		'render.php': "<?php\n$css = sgs_scrim_render( $attributes, $uid, array( 'open' => '.x[open]' ) );\n",
+	} );
+	const s5PosMeta = readDeclaredAttrs( s5PosDir );
+	assertTrue(
+		! checkEditorCanvasDesync( s5PosMeta.name, s5PosDir, s5PosMeta.attrs ).some( ( f ) => f.attr === 'scrimBlur' ),
+		'SIGNAL 5 positive: a block declaring supports.sgs.scrim should have scrimBlur exempted, but it was flagged',
+		failuresS5
+	);
+	const s5NegDir = writeBlock( 'signal5-negative', {
+		'block.json': JSON.stringify( { name: 'sgs/fixture-signal5-negative', attributes: { scrimBlur: { type: 'object' } } } ),
+		'edit.js': s5EditJs,
+		'render.php': "<?php\n$css = sgs_scrim_render( $attributes, $uid, array( 'open' => '.x[open]' ) );\n",
+	} );
+	const s5NegMeta = readDeclaredAttrs( s5NegDir );
+	assertTrue(
+		checkEditorCanvasDesync( s5NegMeta.name, s5NegDir, s5NegMeta.attrs ).some( ( f ) => f.attr === 'scrimBlur' ),
+		'SIGNAL 5 negative control: the same attribute WITHOUT the supports.sgs.scrim declaration should stay flagged, but was exempted',
+		failuresS5
+	);
+	if ( failuresS5.length ) {
+		pass = false;
+		log( 'SIGNAL 5 — FAIL' );
+		failuresS5.forEach( ( f ) => log( '  ' + f ) );
+	} else {
+		log( 'SIGNAL 5 — PASS (declared scrim exempts its four attributes; the same name without the declaration stays flagged)' );
 	}
 
 	log( '\n[check-editor-render-parity --self-test] SIGNAL 4 (live-external-data placeholder)\n' );

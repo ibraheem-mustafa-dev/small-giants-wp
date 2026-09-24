@@ -87,3 +87,5 @@ export { default as StarterLookPresetControl } from './StarterLookPresetControl'
 // `:hover` and JS-driven interaction across all 9 SSR-previewed blocks).
 export { default as SsrPreviewGuard } from './SsrPreviewGuard';
 export { default as SurfaceGroundControls } from './SurfaceGroundControls';
+export { default as ScrimControls, scrimColourRow } from './ScrimControls';
+export { default as ShadowLiftControls } from './ShadowLiftControls';

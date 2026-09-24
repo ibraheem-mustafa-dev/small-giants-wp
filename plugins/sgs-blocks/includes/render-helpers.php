@@ -116,6 +116,7 @@ require_once __DIR__ . '/helpers-typography.php';
 require_once __DIR__ . '/helpers-media-position.php';
 require_once __DIR__ . '/helpers-colour-wcag.php';
 require_once __DIR__ . '/helpers-surface-tone.php';
+require_once __DIR__ . '/helpers-scrim.php';
 require_once __DIR__ . '/helpers-media.php';
 require_once __DIR__ . '/helpers-tier-media.php';
 require_once __DIR__ . '/helpers-media-element.php';

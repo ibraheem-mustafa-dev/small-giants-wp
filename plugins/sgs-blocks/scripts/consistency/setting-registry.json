@@ -3387,6 +3387,31 @@
 			"notes": "Outline is separately painted — it is NOT border and NOT box-shadow. The framework paints focus rings with it (sgs/form style.css:207). Added 2026-08-20: NO css:outline-* member existed at all, so sgs/form's attrMap entry for css:outline-width pointed at a member that did not exist and could never resolve."
 		},
 		{
+			"setting_key": "css:backdrop-filter",
+			"category": "css-property",
+			"label": "Backdrop blur",
+			"optimal_control": {
+				"component": "SgsLengthControl (px) under ResponsiveControl",
+				"props": {
+					"units": "px",
+					"presets": false
+				},
+				"preset_layer": null,
+				"units": "px",
+				"responsive_device_tier": true,
+				"multi_value": "none",
+				"dropdown_completeness": "n/a",
+				"alpha_clearable": false,
+				"reset_disclosure": "empty clears to none"
+			},
+			"shared_component": "ScrimControls (scrimBlur) / SurfaceGroundControls (surfaceBlur)",
+			"spec_ref": "Spec 35 Part B (length control shape)",
+			"current_state": "Added 2026-09-24 (Wave 3C U-2, M-14): scrimBlur on the six scrim adopters (nav-drawer, nav-bar-menu, cart, gallery, modal, product-search) and surfaceBlur on the surface-ground blocks.",
+			"divergence": "surfaceBlur is a flat length; scrimBlur is a per-device tier object (blur is the costliest paint on a phone).",
+			"divergence_severity": "low",
+			"notes": "The blur of whatever sits BEHIND an element. Rendered by includes/helpers-scrim.php and includes/helpers-surface-ground.php. Sibling cluster member: cluster-member-sets.json fill/css:backdrop-filter."
+		},
+		{
 			"setting_key": "css:outline-offset",
 			"category": "css-property",
 			"label": "Outline offset",

@@ -59,39 +59,14 @@
 	color: canvastext;
 }
 
-/* Native modal scrim. */
-.wp-block-sgs-nav-drawer::backdrop {
-	background-color: rgba(0, 0, 0, 0.55);
-}
-
-/* The real element `resolveScrim()` (store.js) looks for on the
- * non-modal path only, rendered by render.php ONLY for a partial-width anchor
- * (header/trigger/centred) — a full-screen anchor already covers the whole
- * viewport, so nothing behind it could ever be clicked anyway. Hidden by
- * default; `.is-open` is toggled by store.js on open/close. z-index sits
- * between ordinary page content (z-index:1) and both the header and this
- * file's own drawer z-index (one below the drawer), so it never competes
- * with either.
+/* Native modal backdrop: transparent. The scrim itself paints via the shared
+ * .{uid}-scrim div (includes/helpers-scrim.php::sgs_scrim_render()), printed at
+ * wp_footer and driven by the scrimColour/scrimColourGradient/scrimOpacity/
+ * scrimBlur attributes — one path for modal and non-modal alike, so this
+ * `::backdrop` never paints its own dimmer.
  */
-.sgs-nav-drawer__scrim {
-	position: fixed;
-	inset: 0;
-	z-index: min(89, max(1, calc(var(--sgs-header-z, 100) - 2)));
-	background-color: rgba(0, 0, 0, 0.55);
-	opacity: 0;
-	pointer-events: none;
-	transition: opacity 0.2s ease;
-}
-
-.sgs-nav-drawer__scrim.is-open {
-	opacity: 1;
-	pointer-events: auto;
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.sgs-nav-drawer__scrim {
-		transition-duration: 0.01ms;
-	}
+.wp-block-sgs-nav-drawer::backdrop {
+	background-color: transparent;
 }
 
 /* A nav-drawer-menu placed inside the drawer renders as a vertical link list.
@@ -160,10 +135,6 @@
 		animation: sgs-nav-drawer-in 0.25s ease-out;
 	}
 
-	.wp-block-sgs-nav-drawer[open]::backdrop {
-		animation: sgs-nav-drawer-backdrop-in 0.25s ease-out;
-	}
-
 	.wp-block-sgs-nav-drawer.is-closing {
 		animation: sgs-nav-drawer-out 0.2s ease-in;
 	}
@@ -190,16 +161,6 @@
 	to {
 		opacity: 0;
 		transform: translateY(-8px);
-	}
-}
-
-@keyframes sgs-nav-drawer-backdrop-in {
-	from {
-		opacity: 0;
-	}
-
-	to {
-		opacity: 1;
 	}
 }
 

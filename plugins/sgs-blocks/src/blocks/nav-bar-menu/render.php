@@ -778,6 +778,22 @@ $css .= sgs_nav_shared_submenu_css(
 // max-width, native spacing and the tiers.
 $inner_html = $bar_html . $toggle_html;
 
+// ── Scrim: the see-through layer that dims the page behind an open dropdown
+// or mega panel (Wave 3C U-2, family M-14). Off by default (the four scrim*
+// attributes all default empty/unset) — a bar that never touches them ships
+// nothing extra. The open selector matches the trigger's own aria-expanded
+// state, which stays inside this <nav> even when its panel is reparented
+// elsewhere (mega-disclosure.js), so one selector covers dropdowns and mega
+// panels alike. See includes/helpers-scrim.php::sgs_scrim_render().
+$css .= sgs_scrim_render(
+	$attributes,
+	$uid,
+	array(
+		'open'    => '.' . $uid . ' [data-sgs-mega-trigger][aria-expanded="true"]',
+		'z_index' => 'calc(var(--sgs-header-z, 100) - 1)',
+	)
+);
+
 if ( '' !== $css ) {
 	printf( '<style>%s</style>', wp_strip_all_tags( $css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via the shared helpers + esc_attr/sanitize_html_class fragments above; wp_strip_all_tags guards </style>.
 }

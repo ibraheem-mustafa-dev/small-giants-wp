@@ -278,6 +278,14 @@
 					]
 				},
 				{
+					"key": "css:backdrop-filter",
+					"label": "Backdrop blur",
+					"suffixes": [
+						"Blur"
+					],
+					"note": "2026-09-24 (Wave 3C U-2, M-14): the blur of whatever sits BEHIND an element, e.g. the shared viewport scrim (scrimBlur, includes/helpers-scrim.php) and the frosted surface ground (surfaceBlur, includes/helpers-surface-ground.php). Added as a member rather than baselined, the same way css:box-shadow-color was (element-manifest-baseline.json: zero is the floor). Suffix-only: an element whose prefix + Blur names an attribute claims it."
+				},
+				{
 					"key": "css:text-shadow",
 					"label": "Text shadow",
 					"suffixes": [

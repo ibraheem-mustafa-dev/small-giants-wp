@@ -33,6 +33,9 @@
 			"iconPicker": true,
 			"headerEssential": true,
 			"imageControls": false,
+			"scrim": {
+				"open": "[open]"
+			},
 			"colourExemptions": {
 				"badgeBackground": {
 					"rule": "states",
@@ -53,6 +56,21 @@
 				]
 			},
 			"elements": {
+				"scrim": {
+					"label": "Backdrop / scrim",
+					"order": 5,
+					"clusters": [
+						"fill"
+					],
+					"prefix": "scrim",
+					"attrMap": {
+						"css:background-color": "scrimColour",
+						"css:background-image": "scrimColourGradient",
+						"css:opacity": "scrimOpacity",
+						"css:backdrop-filter": "scrimBlur"
+					},
+					"_note": "The shared viewport scrim (Wave 3C U-2, `includes/helpers-scrim.php::sgs_scrim_render`): the see-through layer printed at wp_footer that dims the page while this block's drawer, dialog or panel is open. Mapped here so the converter can route a draft's scrim colour, strength and blur to these attributes."
+				},
 				"wrapper": {
 					"label": "Cart wrapper",
 					"order": 1,
@@ -261,6 +279,25 @@
 			"type": "string",
 			"default": "",
 			"description": "Hover-state gradient sibling of panelTextColourHover. Non-empty wins over panelTextColourHover on :hover/:focus-visible."
+		},
+		"scrimColour": {
+			"type": "string",
+			"default": "#000000",
+			"description": "Wave 3C U-2 (family M-14): the drawer's backdrop tint. Only painted in the drawer display mode; see includes/helpers-scrim.php."
+		},
+		"scrimColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"scrimOpacity": {
+			"type": "object",
+			"default": {
+				"desktop": 0.55
+			}
+		},
+		"scrimBlur": {
+			"type": "object",
+			"default": {}
 		}
 	},
 	"editorScript": "file:./index.js",

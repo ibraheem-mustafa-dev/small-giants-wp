@@ -58,7 +58,10 @@ import {
 	TypographyControls,
 	fillRow,
 	textRow,
+	ScrimControls,
+	scrimColourRow,
 } from '../../components';
+import { ToolsPanel } from '../../components/primitives';
 import {
 	ItemTextTreatment,
 	ItemBgTreatment,
@@ -582,6 +585,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			attributes,
 			setAttributes,
 		} ),
+		/* The scrim behind an open dropdown or mega panel (Wave 3C U-2, family
+		   M-14) — off by default, shared row descriptor from
+		   src/components/ScrimControls.js (label "Backdrop colour", reads
+		   correctly here); includes/helpers-scrim.php is its render twin. */
+		scrimColourRow( { attributes, setAttributes } ),
 	];
 
 	return (
@@ -744,6 +752,28 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 				/>
+
+				{ /* The scrim behind an open dropdown or mega panel (Wave 3C U-2,
+				   family M-14) — off by default; a bar that never touches it ships
+				   nothing extra. Colour lives in the top-level SgsColourPanel above
+				   (colourRows); this panel holds the per-device strength + blur.
+				   No existing dropdown/panel ToolsPanel to fold into — DropdownStylePanel
+				   is a shared component (src/shared/nav-menu-panels/) outside this
+				   block's own file, so a new panel is the correct home. */ }
+				<ToolsPanel
+					label={ __( 'Dropdown backdrop', 'sgs-blocks' ) }
+					resetAll={ () =>
+						setAttributes( {
+							scrimOpacity: {},
+							scrimBlur: {},
+						} )
+					}
+				>
+					<ScrimControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
+				</ToolsPanel>
 
 				<EffectsPanel
 					itemMagnetEnabled={ itemMagnetEnabled }

@@ -35,10 +35,14 @@
 		},
 		"interactivity": true,
 		"sgs": {
+			"scrim": {
+				"owner": ".sgs-gallery__lightbox",
+				"open": ":modal"
+			},
 			"colourExemptions": {
 				"overlay": {
 					"rule": "states",
-					"reason": "overlayColourHover is HOVER-ONLY by design (see the img-wrap element's own noBaseByDesign marker, 2026-08-15/2026-09-05) — the hover-reveal overlay only exists on hover, so there is no resting counterpart to pair it with and none should exist. The census's statesCount<2 check does not know about noBaseByDesign. Confirmed 2026-09-06 (colour-conformance FILL audit)."
+					"reason": "overlayColourHover is HOVER-ONLY by design (see the img-wrap element's own noBaseByDesign marker, 2026-08-15/2026-09-05) — the hover-reveal overlay only exists on hover, so there is no resting counterpart to pair it with and none should exist. The census's statesCount<2 check does not know about noBaseByDesign. Confirmed 2026-09-06 (colour-conformance FILL audit). Distinct from the lightbox's own `scrim*` attributes (U-2 Addendum A, 2026-09-24) — this exemption is only ever about overlayColourHover/overlayColourHoverGradient on the per-image hover-reveal, never the lightbox scrim."
 				},
 				"caption-background-colour": {
 					"rule": "states",
@@ -66,6 +70,21 @@
 				"_comment_providesNatively": "Spec 38 FR-38-13 / §7. This block owns drag-to-scroll through its OWN inspector toggle, which targets the DESCENDANT element that actually scrolls. The generic 'Scroll & effects' picker stamps data-sgs-fx onto the block ROOT, which is not the scroller here — so offering `draggable` there too would give the client TWO controls for ONE capability, and the picker's one would silently do nothing. Declaring it here removes the dud picker entry via generate-fx-qualifying-blocks.py without removing the capability, exactly as sgs/responsive-logo does for `draw`. Ruled 2026-07-31 after the roster derivation surfaced it on five blocks at once (gallery had it latently already). NOTE sgs/timeline deliberately does NOT carry this: its scroller IS the block root, so the picker lands correctly there."
 			},
 			"elements": {
+				"scrim": {
+					"label": "Backdrop / scrim",
+					"order": 6,
+					"clusters": [
+						"fill"
+					],
+					"prefix": "scrim",
+					"attrMap": {
+						"css:background-color": "scrimColour",
+						"css:background-image": "scrimColourGradient",
+						"css:opacity": "scrimOpacity",
+						"css:backdrop-filter": "scrimBlur"
+					},
+					"_note": "The shared viewport scrim (Wave 3C U-2, `includes/helpers-scrim.php::sgs_scrim_render`): the see-through layer printed at wp_footer that dims the page while this block's drawer, dialog or panel is open. Mapped here so the converter can route a draft's scrim colour, strength and blur to these attributes."
+				},
 				"grid": {
 					"label": "Grid",
 					"layer": "OUTER",
@@ -265,6 +284,28 @@
 		"enableLightbox": {
 			"type": "boolean",
 			"default": true
+		},
+		"scrimColour": {
+			"type": "string",
+			"default": "primary-dark",
+			"description": "The lightbox scrim's tint (U-2 Addendum A, 2026-09-24). Default keeps today's look — the lightbox's own full-viewport background was `color-mix(in srgb, var(--wp--preset--color--primary-dark) 90%, transparent)`; the shared scrim now paints that same colour behind a transparent dialog instead."
+		},
+		"scrimColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the lightbox scrim via includes/helpers-scrim.php::sgs_scrim_render(). Non-empty wins over scrimColour."
+		},
+		"scrimOpacity": {
+			"type": "object",
+			"default": {
+				"desktop": 0.9
+			},
+			"description": "Per-device scrim strength, 0 to 1 (U-2 Addendum A). Default 0.9 keeps the lightbox's old hardcoded 90% mix."
+		},
+		"scrimBlur": {
+			"type": "object",
+			"default": {},
+			"description": "Per-device blur of the page behind the lightbox scrim, a CSS length (U-2 Addendum A). Empty means no blur, the lightbox's existing look."
 		},
 		"showCaptions": {
 			"type": "boolean",

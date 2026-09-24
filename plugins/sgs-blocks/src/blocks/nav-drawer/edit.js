@@ -75,7 +75,7 @@ const BG_ATTACHMENT_OPTIONS = [
 import { close } from '@wordpress/icons';
 import { ResponsiveControl, ResponsiveBoxControl, resolveColourToken, SgsColourPanel, fillRow, textRow, SgsLengthControl,
 	SgsBorderControl, IconPicker, TypographyControls, StarterLookPresetControl,
-	ShadowControl, SurfaceGroundControls,
+	ShadowControl, SurfaceGroundControls, ScrimControls, scrimColourRow,
 } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { resolveTextColourPreviewStyle, typographyPreviewStyle, resolveShadowPreviewComposed, surfaceToneClass } from '../../utils';
@@ -428,6 +428,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						attributes,
 						setAttributes,
 					} ),
+					/* The scrim behind the open drawer (Wave 3C U-2, family M-14) —
+					   shared row descriptor, includes/helpers-scrim.php is its render twin. */
+					scrimColourRow( { attributes, setAttributes } ),
 				] }
 			/>
 			{ /* ── Settings tab ─────────────────────────────────────────── */ }
@@ -680,13 +683,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					   it uses the shared panel's default (enableAlpha=true),
 					   consistent with every other consumer of SgsColourPanel. */ }
 
-					{ /* Surface: fill opacity, blur, saturate and shadow on the panel itself.
-					     No separate scrim: the panel's own fill/blur IS the occlusion (8/8
-					     reference sites skip a dedicated backdrop div). Defaults (opaque, no
-					     blur, no shadow) render nothing extra. The controls are the shared
-					     SurfaceGroundControls and ShadowControl, the same ones sgs/mega-panel
-					     and sgs/site-header mount, written to the attributes the shared
-					     render helpers read. */ }
+					{ /* Surface: fill opacity, blur, saturate and shadow on the panel itself,
+					     plus the scrim behind it (Wave 3C U-2, family M-14) — the see-through
+					     layer dimming the page behind the open drawer, painted by the shared
+					     includes/helpers-scrim.php::sgs_scrim_render(). Defaults (opaque, no
+					     blur, no shadow, scrim black at 0.55) render the drawer's existing
+					     look unchanged. The controls are the shared SurfaceGroundControls,
+					     ShadowControl and ScrimControls, the same ones sgs/mega-panel and
+					     sgs/site-header mount (Scrim colour lives in the top-level
+					     SgsColourPanel above), written to the attributes the shared render
+					     helpers read. */ }
 					<ToolsPanel
 						label={ __( 'Surface', 'sgs-blocks' ) }
 						resetAll={ () =>
@@ -696,6 +702,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								surfaceOpacity: undefined,
 								shadow: '',
 								shadowColour: '',
+								scrimColour: '#000000',
+								scrimColourGradient: '',
+								scrimOpacity: { desktop: 0.55 },
+								scrimBlur: {},
 							} )
 						}
 					>
@@ -715,6 +725,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								attrNames={ { base: 'shadow', colour: 'shadowColour' } }
 							/>
 						</ToolsPanelItem>
+						<ScrimControls
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+						/>
 					</ToolsPanel>
 
 					{ /* Layout */ }

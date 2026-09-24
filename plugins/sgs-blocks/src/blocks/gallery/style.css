@@ -414,13 +414,22 @@
 	border:          0;
 	color:           inherit;
 	overflow:        hidden;
-	/* Backdrop: primary-dark at 90% opacity per spec */
-	background:      color-mix( in srgb, var( --wp--preset--color--primary-dark, #0A5B5D ) 90%, transparent );
+	/* Backdrop: transparent (U-2 Addendum A, 2026-09-24). The dimmed layer is
+	   the shared viewport scrim now (includes/helpers-scrim.php), driven by
+	   scrimColour/scrimColourGradient/scrimOpacity/scrimBlur — default 90%
+	   primary-dark, the same look this hardcoded background used to paint. */
+	background:      transparent;
 	align-items:     center;
 	justify-content: center;
 	padding:         20px;
 	/* Backdrop fade: medium duration */
 	transition: opacity var( --wp--custom--duration--medium, 300ms ) var( --wp--custom--easing--ease-out, cubic-bezier(0.16, 1, 0.3, 1) );
+}
+
+/* ::backdrop: transparent too (U-2 Addendum A) — the scrim div paints under
+   the top layer, so the UA's own backdrop must not add a second dimmer. */
+.sgs-gallery__lightbox::backdrop {
+	background: transparent;
 }
 
 /* Keyed on the NATIVE [open] attribute, which showModal() sets, rather than on

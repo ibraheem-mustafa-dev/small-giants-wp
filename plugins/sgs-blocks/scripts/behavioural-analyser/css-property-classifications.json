@@ -3451,6 +3451,33 @@
     },
     {
       "slug": "sgs/google-reviews",
+      "attr": "arrowBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "OUTER",
+        "css_element": "arrow"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "arrowBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_layer": "OUTER",
+        "css_element": "arrow"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "arrowBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_layer": "OUTER",
+        "css_element": "arrow"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
       "attr": "arrowColourBackground",
       "fields": {
         "css_property": "background-color",
@@ -3514,6 +3541,132 @@
     },
     {
       "slug": "sgs/google-reviews",
+      "attr": "authorFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_layer": "OUTER",
+        "css_element": "author"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "authorFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_layer": "OUTER",
+        "css_element": "author"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "authorFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_layer": "OUTER",
+        "css_element": "author"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "authorLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_layer": "OUTER",
+        "css_element": "author"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "authorLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_layer": "OUTER",
+        "css_element": "author"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "authorTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_layer": "OUTER",
+        "css_element": "author"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "authorTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_layer": "OUTER",
+        "css_element": "author"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "avatarFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_layer": "OUTER",
+        "css_element": "avatar-initials"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "avatarFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_layer": "OUTER",
+        "css_element": "avatar-initials"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "avatarFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_layer": "OUTER",
+        "css_element": "avatar-initials"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "avatarLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_layer": "OUTER",
+        "css_element": "avatar-initials"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "avatarLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_layer": "OUTER",
+        "css_element": "avatar-initials"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "avatarTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_layer": "OUTER",
+        "css_element": "avatar-initials"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "avatarTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_layer": "OUTER",
+        "css_element": "avatar-initials"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
@@ -3550,6 +3703,132 @@
     },
     {
       "slug": "sgs/google-reviews",
+      "attr": "countFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_layer": "OUTER",
+        "css_element": "count"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "countFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_layer": "OUTER",
+        "css_element": "count"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "countFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_layer": "OUTER",
+        "css_element": "count"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "countLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_layer": "OUTER",
+        "css_element": "count"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "countLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_layer": "OUTER",
+        "css_element": "count"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "countTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_layer": "OUTER",
+        "css_element": "count"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "countTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_layer": "OUTER",
+        "css_element": "count"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "dateFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_layer": "OUTER",
+        "css_element": "date"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "dateFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_layer": "OUTER",
+        "css_element": "date"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "dateFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_layer": "OUTER",
+        "css_element": "date"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "dateLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_layer": "OUTER",
+        "css_element": "date"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "dateLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_layer": "OUTER",
+        "css_element": "date"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "dateTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_layer": "OUTER",
+        "css_element": "date"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "dateTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_layer": "OUTER",
+        "css_element": "date"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
       "attr": "flexDirection",
       "fields": {
         "css_property": "flex-direction",
@@ -3564,6 +3843,96 @@
         "css_property": "flex-wrap",
         "css_layer": "GRID",
         "css_element": "inner"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "fontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "fontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "fontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "footnoteFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_layer": "OUTER",
+        "css_element": "footnote"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "footnoteFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_layer": "OUTER",
+        "css_element": "footnote"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "footnoteFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_layer": "OUTER",
+        "css_element": "footnote"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "footnoteLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_layer": "OUTER",
+        "css_element": "footnote"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "footnoteLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_layer": "OUTER",
+        "css_element": "footnote"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "footnoteTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_layer": "OUTER",
+        "css_element": "footnote"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "footnoteTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_layer": "OUTER",
+        "css_element": "footnote"
       }
     },
     {
@@ -3595,6 +3964,15 @@
     },
     {
       "slug": "sgs/google-reviews",
+      "attr": "headerDividerWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_layer": "OUTER",
+        "css_element": "header"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
       "attr": "justifyContent",
       "fields": {
         "css_property": "justify-content",
@@ -3613,6 +3991,24 @@
     },
     {
       "slug": "sgs/google-reviews",
+      "attr": "lineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "logoOpacity",
+      "fields": {
+        "css_property": "opacity",
+        "css_layer": "OUTER",
+        "css_element": "google-logo"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
@@ -3622,11 +4018,524 @@
     },
     {
       "slug": "sgs/google-reviews",
+      "attr": "metaFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_layer": "OUTER",
+        "css_element": "meta"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "metaFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_layer": "OUTER",
+        "css_element": "meta"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "metaFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_layer": "OUTER",
+        "css_element": "meta"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "metaLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_layer": "OUTER",
+        "css_element": "meta"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "metaLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_layer": "OUTER",
+        "css_element": "meta"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "metaTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_layer": "OUTER",
+        "css_element": "meta"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "metaTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_layer": "OUTER",
+        "css_element": "meta"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "padding",
+      "fields": {
+        "css_property": "padding",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "reviewLinkFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_layer": "OUTER",
+        "css_element": "review-link"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "reviewLinkFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_layer": "OUTER",
+        "css_element": "review-link"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "reviewLinkFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_layer": "OUTER",
+        "css_element": "review-link"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "reviewLinkLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_layer": "OUTER",
+        "css_element": "review-link"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "reviewLinkLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_layer": "OUTER",
+        "css_element": "review-link"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "reviewLinkTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_layer": "OUTER",
+        "css_element": "review-link"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "reviewLinkTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_layer": "OUTER",
+        "css_element": "review-link"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "scoreFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_layer": "OUTER",
+        "css_element": "score"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "scoreFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_layer": "OUTER",
+        "css_element": "score"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "scoreFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_layer": "OUTER",
+        "css_element": "score"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "scoreLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_layer": "OUTER",
+        "css_element": "score"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "scoreLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_layer": "OUTER",
+        "css_element": "score"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "scoreTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_layer": "OUTER",
+        "css_element": "score"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "scoreTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_layer": "OUTER",
+        "css_element": "score"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "seeAllBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "OUTER",
+        "css_element": "see-all"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "seeAllBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_layer": "OUTER",
+        "css_element": "see-all"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "seeAllBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_layer": "OUTER",
+        "css_element": "see-all"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "seeAllColourBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "see-all"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "seeAllColourBackgroundHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "see-all",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "seeAllColourBorder",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "see-all"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "seeAllColourBorderHover",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "see-all",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "seeAllColourText",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "see-all"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "seeAllColourTextHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "see-all",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "seeAllFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_layer": "OUTER",
+        "css_element": "see-all"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "seeAllFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_layer": "OUTER",
+        "css_element": "see-all"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "seeAllFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_layer": "OUTER",
+        "css_element": "see-all"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "seeAllLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_layer": "OUTER",
+        "css_element": "see-all"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "seeAllLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_layer": "OUTER",
+        "css_element": "see-all"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "seeAllPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_layer": "OUTER",
+        "css_element": "see-all"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "seeAllTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_layer": "OUTER",
+        "css_element": "see-all"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "seeAllTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_layer": "OUTER",
+        "css_element": "see-all"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "sourceLabelFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_layer": "OUTER",
+        "css_element": "source-label"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "sourceLabelFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_layer": "OUTER",
+        "css_element": "source-label"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "sourceLabelFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_layer": "OUTER",
+        "css_element": "source-label"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "sourceLabelLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_layer": "OUTER",
+        "css_element": "source-label"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "sourceLabelLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_layer": "OUTER",
+        "css_element": "source-label"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "sourceLabelTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_layer": "OUTER",
+        "css_element": "source-label"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "sourceLabelTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_layer": "OUTER",
+        "css_element": "source-label"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
       "attr": "starColour",
       "fields": {
         "css_property": "fill",
         "css_layer": "OUTER",
         "css_element": "star"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "textFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_layer": "OUTER",
+        "css_element": "text"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "textFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_layer": "OUTER",
+        "css_element": "text"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "textFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_layer": "OUTER",
+        "css_element": "text"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "textLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_layer": "OUTER",
+        "css_element": "text"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "textLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_layer": "OUTER",
+        "css_element": "text"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "textTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_layer": "OUTER",
+        "css_element": "text"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "textTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_layer": "OUTER",
+        "css_element": "text"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "writeReviewBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "OUTER",
+        "css_element": "write-review"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "writeReviewBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_layer": "OUTER",
+        "css_element": "write-review"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "writeReviewBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_layer": "OUTER",
+        "css_element": "write-review"
       }
     },
     {
@@ -3652,6 +4561,27 @@
     },
     {
       "slug": "sgs/google-reviews",
+      "attr": "writeReviewColourBorder",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "write-review"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "writeReviewColourBorderHover",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "write-review",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
       "attr": "writeReviewColourText",
       "fields": {
         "css_property": "color",
@@ -3669,6 +4599,78 @@
         "css_layer": "OUTER",
         "css_element": "write-review",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "writeReviewFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_layer": "OUTER",
+        "css_element": "write-review"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "writeReviewFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_layer": "OUTER",
+        "css_element": "write-review"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "writeReviewFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_layer": "OUTER",
+        "css_element": "write-review"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "writeReviewLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_layer": "OUTER",
+        "css_element": "write-review"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "writeReviewLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_layer": "OUTER",
+        "css_element": "write-review"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "writeReviewPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_layer": "OUTER",
+        "css_element": "write-review"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "writeReviewTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_layer": "OUTER",
+        "css_element": "write-review"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "writeReviewTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_layer": "OUTER",
+        "css_element": "write-review"
       }
     },
     {
@@ -5205,6 +6207,22 @@
       }
     },
     {
+      "slug": "sgs/mega-panel",
+      "attr": "shadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "surfaceOpacity",
+      "fields": {
+        "css_property": "background-color"
+      }
+    },
+    {
       "slug": "sgs/modal",
       "attr": "closeColourBackground",
       "fields": {
@@ -5240,14 +6258,6 @@
         "role": "color",
         "css_element": "close",
         "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/modal",
-      "attr": "overlayOpacity",
-      "fields": {
-        "css_property": "opacity",
-        "css_element": "backdrop"
       }
     },
     {
@@ -5952,26 +6962,10 @@
     },
     {
       "slug": "sgs/option-picker",
-      "attr": "margin",
-      "fields": {
-        "css_property": "margin",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/option-picker",
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
         "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/option-picker",
-      "attr": "padding",
-      "fields": {
-        "css_property": "padding",
         "css_element": "wrapper"
       }
     },
@@ -6110,7 +7104,6 @@
       "attr": "width",
       "fields": {
         "css_property": "width",
-        "css_layer": "OUTER",
         "css_element": "wrapper"
       }
     },
@@ -6476,14 +7469,6 @@
       "attr": "shadowColour",
       "fields": {
         "css_element": "card"
-      }
-    },
-    {
-      "slug": "sgs/post-grid",
-      "attr": "shadowColourHover",
-      "fields": {
-        "css_element": "card",
-        "css_state": "hover"
       }
     },
     {
@@ -8737,6 +9722,13 @@
         "css_property": "box-shadow",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "surfaceOpacity",
+      "fields": {
+        "css_property": "background-color"
       }
     },
     {
@@ -12706,6 +13698,39 @@
       }
     },
     {
+      "slug": "sgs/cart",
+      "attr": "scrimBlur",
+      "fields": {
+        "css_property": "backdrop-filter",
+        "css_element": "scrim"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "scrimColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "scrim"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "scrimColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "scrim"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "scrimOpacity",
+      "fields": {
+        "css_property": "opacity",
+        "css_element": "scrim"
+      }
+    },
+    {
       "slug": "sgs/choice-flow",
       "attr": "maxWidth",
       "fields": {
@@ -13927,6 +14952,39 @@
     },
     {
       "slug": "sgs/gallery",
+      "attr": "scrimBlur",
+      "fields": {
+        "css_property": "backdrop-filter",
+        "css_element": "scrim"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "scrimColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "scrim"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "scrimColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "scrim"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "scrimOpacity",
+      "fields": {
+        "css_property": "opacity",
+        "css_element": "scrim"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
       "attr": "sgsAnimation",
       "fields": {
         "css_property": "anim:preset",
@@ -13950,6 +15008,15 @@
         "css_property": "anim:easing",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "aggregateStarSize",
+      "fields": {
+        "css_property": "height,width",
+        "css_layer": "OUTER",
+        "css_element": "aggregate-star"
       }
     },
     {
@@ -14011,6 +15078,72 @@
     },
     {
       "slug": "sgs/google-reviews",
+      "attr": "arrowSize",
+      "fields": {
+        "css_property": "height,width",
+        "css_layer": "OUTER",
+        "css_element": "arrow"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "authorColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "author"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "avatarBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "OUTER",
+        "css_element": "avatar"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "avatarSize",
+      "fields": {
+        "css_property": "height,width",
+        "css_layer": "OUTER",
+        "css_element": "avatar"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "avatarTextColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "avatar"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "backgroundColourGradient",
+      "fields": {
+        "css_property": "background-color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
       "attr": "borderColourGradient",
       "fields": {
         "css_property": "border-color-gradient",
@@ -14038,11 +15171,284 @@
     },
     {
       "slug": "sgs/google-reviews",
+      "attr": "cardBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "review"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "cardBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "review"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "cardBorderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "review"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "cardBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "OUTER",
+        "css_element": "review"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "cardBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_layer": "OUTER",
+        "css_element": "review"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "cardBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_layer": "OUTER",
+        "css_element": "review"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "cardGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "OUTER",
+        "css_element": "review"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "cardLogoSize",
+      "fields": {
+        "css_property": "height,width",
+        "css_layer": "OUTER",
+        "css_element": "card-logo"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "cardPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_layer": "OUTER",
+        "css_element": "review"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "cardWidth",
+      "fields": {
+        "css_property": "width",
+        "css_layer": "OUTER",
+        "css_element": "review"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "countColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "count"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "dateColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "date"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "fontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "footnoteColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "footnote"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
       "attr": "gridTemplateColumns",
       "fields": {
         "css_property": "grid-template-columns",
         "css_layer": "GRID",
         "css_element": "inner"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "headerDividerColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "header"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "headerGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "OUTER",
+        "css_element": "header"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "headerPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_layer": "OUTER",
+        "css_element": "header"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "logoSize",
+      "fields": {
+        "css_property": "height,width",
+        "css_layer": "OUTER",
+        "css_element": "google-logo"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "metaColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "meta"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "railPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_layer": "OUTER",
+        "css_element": "list"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "reviewLinkColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "review-link"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "scoreColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "average"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "seeAllColourBackgroundGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_layer": "OUTER",
+        "css_element": "see-all"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "seeAllColourBackgroundHoverGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_layer": "OUTER",
+        "css_element": "see-all",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "seeAllColourBorderGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "see-all"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "seeAllColourBorderHoverGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "see-all",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "seeAllColourTextGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "see-all"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "seeAllColourTextHoverGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "see-all",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "seeAllMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_layer": "OUTER",
+        "css_element": "see-all"
       }
     },
     {
@@ -14074,6 +15480,16 @@
     },
     {
       "slug": "sgs/google-reviews",
+      "attr": "sourceLabelColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "source-label"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
       "attr": "starColourGradient",
       "fields": {
         "css_property": "fill-gradient",
@@ -14089,6 +15505,34 @@
         "css_layer": "OUTER",
         "css_element": "star",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "starEmptyColour",
+      "fields": {
+        "css_property": "fill",
+        "css_layer": "OUTER",
+        "css_element": "star-empty"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "starSize",
+      "fields": {
+        "css_property": "height,width",
+        "css_layer": "OUTER",
+        "css_element": "star"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "text"
       }
     },
     {
@@ -14127,6 +15571,15 @@
         "css_layer": "OUTER",
         "css_element": "write-review",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "writeReviewMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_layer": "OUTER",
+        "css_element": "write-review"
       }
     },
     {
@@ -15004,6 +16457,16 @@
     },
     {
       "slug": "sgs/mega-panel",
+      "attr": "itemPaddingShiftHover",
+      "fields": {
+        "css_property": "padding-inline-start",
+        "css_layer": "CONTENT",
+        "css_element": "item",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
@@ -15013,9 +16476,28 @@
     },
     {
       "slug": "sgs/mega-panel",
+      "attr": "panelCardLift",
+      "fields": {
+        "css_property": "transform",
+        "css_layer": "CONTENT",
+        "css_element": "group",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
       "attr": "panelPadding",
       "fields": {
         "css_property": "padding",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "shadow",
+      "fields": {
+        "css_property": "box-shadow",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -15065,7 +16547,15 @@
     },
     {
       "slug": "sgs/modal",
-      "attr": "overlayColour",
+      "attr": "scrimBlur",
+      "fields": {
+        "css_property": "backdrop-filter",
+        "css_element": "backdrop"
+      }
+    },
+    {
+      "slug": "sgs/modal",
+      "attr": "scrimColour",
       "fields": {
         "css_property": "background-color",
         "role": "color",
@@ -15074,7 +16564,7 @@
     },
     {
       "slug": "sgs/modal",
-      "attr": "overlayColourGradient",
+      "attr": "scrimColourGradient",
       "fields": {
         "css_property": "background-image",
         "css_element": "backdrop"
@@ -15082,21 +16572,10 @@
     },
     {
       "slug": "sgs/modal",
-      "attr": "overlayColourHover",
+      "attr": "scrimOpacity",
       "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_element": "backdrop",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/modal",
-      "attr": "overlayColourHoverGradient",
-      "fields": {
-        "css_property": "background-image",
-        "css_element": "backdrop",
-        "css_state": "hover"
+        "css_property": "opacity",
+        "css_element": "backdrop"
       }
     },
     {
@@ -15561,6 +17040,32 @@
     },
     {
       "slug": "sgs/nav-bar-menu",
+      "attr": "itemOpacity",
+      "fields": {
+        "css_property": "opacity",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemOpacityHover",
+      "fields": {
+        "css_property": "opacity",
+        "css_element": "item",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemPaddingShiftHover",
+      "fields": {
+        "css_property": "padding-inline-start",
+        "css_element": "sublink",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
       "attr": "itemSeparatorColour",
       "fields": {
         "css_property": "border-right-color",
@@ -15693,6 +17198,39 @@
         "css_property": "padding",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "scrimBlur",
+      "fields": {
+        "css_property": "backdrop-filter",
+        "css_element": "scrim"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "scrimColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "scrim"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "scrimColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "scrim"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "scrimOpacity",
+      "fields": {
+        "css_property": "opacity",
+        "css_element": "scrim"
       }
     },
     {
@@ -15921,6 +17459,23 @@
     },
     {
       "slug": "sgs/nav-bar-menu",
+      "attr": "submenuOpacity",
+      "fields": {
+        "css_property": "opacity",
+        "css_element": "sublink"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuOpacityHover",
+      "fields": {
+        "css_property": "opacity",
+        "css_element": "sublink",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
       "attr": "submenuShadow",
       "fields": {
         "css_property": "box-shadow",
@@ -16068,6 +17623,39 @@
         "css_layer": "GRID",
         "css_element": "body",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "scrimBlur",
+      "fields": {
+        "css_property": "backdrop-filter",
+        "css_element": "scrim"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "scrimColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "scrim"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "scrimColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "scrim"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "scrimOpacity",
+      "fields": {
+        "css_property": "opacity",
+        "css_element": "scrim"
       }
     },
     {
@@ -16379,6 +17967,32 @@
       "fields": {
         "css_property": "line-height",
         "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "itemOpacity",
+      "fields": {
+        "css_property": "opacity",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "itemOpacityHover",
+      "fields": {
+        "css_property": "opacity",
+        "css_element": "item",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "itemPaddingShiftHover",
+      "fields": {
+        "css_property": "padding-inline-start",
+        "css_element": "sublink",
+        "css_state": "hover"
       }
     },
     {
@@ -16737,6 +18351,23 @@
     },
     {
       "slug": "sgs/nav-drawer-menu",
+      "attr": "submenuOpacity",
+      "fields": {
+        "css_property": "opacity",
+        "css_element": "sublink"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "submenuOpacityHover",
+      "fields": {
+        "css_property": "opacity",
+        "css_element": "sublink",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
       "attr": "submenuTextAlign",
       "fields": {
         "css_property": "text-align",
@@ -16947,6 +18578,22 @@
         "css_property": "color-gradient",
         "css_element": "label",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "margin",
+      "fields": {
+        "css_property": "margin",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "padding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "wrapper"
       }
     },
     {
@@ -18054,6 +19701,39 @@
       }
     },
     {
+      "slug": "sgs/product-search",
+      "attr": "scrimBlur",
+      "fields": {
+        "css_property": "backdrop-filter",
+        "css_element": "scrim"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "scrimColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "scrim"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "scrimColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "scrim"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "scrimOpacity",
+      "fields": {
+        "css_property": "opacity",
+        "css_element": "scrim"
+      }
+    },
+    {
       "slug": "sgs/quote",
       "attr": "attributionColourGradient",
       "fields": {
@@ -18669,6 +20349,26 @@
         "css_property": "box-shadow-color",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "shadowScrolled",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "scrolled"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "shadowScrolledColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "scrolled"
       }
     },
     {
@@ -20364,6 +22064,14 @@
     },
     {
       "slug": "sgs/trust-bar",
+      "attr": "iconBareSize",
+      "fields": {
+        "css_property": "height,width",
+        "css_element": "icon-bare"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
       "attr": "iconCircleShadowColour",
       "fields": {
         "css_property": "box-shadow-color",
@@ -20387,6 +22095,32 @@
         "role": "color",
         "css_element": "icon-badge",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "iconStrokeWidth",
+      "fields": {
+        "css_property": "stroke-width",
+        "css_element": "icon-badge"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "itemGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID_AREA",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "itemPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_layer": "GRID_AREA",
+        "css_element": "item"
       }
     },
     {

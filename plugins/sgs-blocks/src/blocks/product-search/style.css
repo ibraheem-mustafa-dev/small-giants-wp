@@ -418,9 +418,13 @@
 /* Once JS enhances the dialog into a true showModal() surface, the UA
    promotes it to the top layer — the ::backdrop below only paints while a
    modal dialog is showModal()-open (a non-modal `open`-attribute dialog,
-   the no-JS fallback state, has no ::backdrop by spec). */
+   the no-JS fallback state, has no ::backdrop by spec). Wave 3C U-2
+   (family M-14): the dimming layer is the shared scrim div
+   (includes/helpers-scrim.php), not this ::backdrop — transparent so the
+   scrim is what's seen. No hardcoded dimmer paint here;
+   scripts/scrim/check-scrim.py gates it. */
 .sgs-product-search__dialog::backdrop {
-	background: rgba( 0, 0, 0, 0.5 );
+	background: transparent;
 }
 
 .sgs-product-search__dialog .sgs-product-search__close {
@@ -489,10 +493,11 @@
 	padding: 1.5rem;
 }
 
+/* Wave 3C U-2 (family M-14): transparent, no blur — both now come from the
+   shared scrim div's own scrimColour/scrimBlur (its cmdk-mode default
+   matches this rule's old values, set in render.php). */
 .sgs-product-search__dialog--cmdk::backdrop {
-	background: rgba( 0, 0, 0, 0.55 );
-	backdrop-filter: blur( 6px );
-	-webkit-backdrop-filter: blur( 6px );
+	background: transparent;
 }
 
 @keyframes sgs-ps-cmdk-fade-in {

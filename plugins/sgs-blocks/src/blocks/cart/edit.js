@@ -1,7 +1,8 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, TextControl, Notice } from '@wordpress/components';
-import { IconPreview, ResponsiveBoxControl, SgsColourPanel } from '../../components';
+import { IconPreview, ResponsiveBoxControl, SgsColourPanel, ScrimControls, scrimColourRow } from '../../components';
+import { ToolsPanel } from '../../components/primitives';
 import { colourVar } from '../../utils';
 import MediaElementPanel from '../../components/MediaElementPanel';
 import PanelSettingsControls from './PanelSettingsControls';
@@ -68,6 +69,9 @@ export default function Edit( { attributes, setAttributes } ) {
 	} = attributes;
 
 	const hasPanel = 'link' !== ( displayMode || 'link' );
+	// Wave 3C U-2 (family M-14): only the drawer display mode has a backdrop —
+	// flyout is a plain popover with no page-dimming.
+	const hasDrawer = 'drawer' === displayMode;
 
 	// WooCommerce availability flag — injected by render.php via wp_localize_script
 	// equivalent in the editor. Falls back to true when the data object is absent
@@ -200,6 +204,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							},
 						],
 					},
+					hasDrawer && scrimColourRow( { attributes, setAttributes } ),
 				] }
 			/>
 			<InspectorControls>
@@ -276,6 +281,25 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 					/>
 				</PanelBody>
+
+				{ /* Wave 3C U-2 (family M-14) — the drawer's scrim (the see-through
+				   layer dimming the page behind it). Drawer mode only: a flyout
+				   is a plain popover with no page-dimming. */ }
+				{ hasDrawer && (
+					<ToolsPanel
+						label={ __( 'Backdrop', 'sgs-blocks' ) }
+						resetAll={ () =>
+							setAttributes( {
+								scrimColour: '#000000',
+								scrimColourGradient: '',
+								scrimOpacity: { desktop: 0.55 },
+								scrimBlur: {},
+							} )
+						}
+					>
+						<ScrimControls attributes={ attributes } setAttributes={ setAttributes } />
+					</ToolsPanel>
+				) }
 			</InspectorControls>
 
 			{ /* Editor canvas — static placeholder only */ }

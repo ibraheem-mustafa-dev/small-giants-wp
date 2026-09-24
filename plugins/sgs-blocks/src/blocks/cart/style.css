@@ -213,17 +213,17 @@
 	border: 0;
 }
 
+/* Wave 3C U-2 (family M-14): the dimming layer is the shared scrim div
+   (includes/helpers-scrim.php), not this ::backdrop — transparent so the
+   scrim (which sits behind the dialog in the top layer) is what's seen.
+   No hardcoded dimmer paint here; scripts/scrim/check-scrim.py gates it. */
 .sgs-cart__panel--drawer::backdrop {
-	background-color: rgba(0, 0, 0, 0.55);
+	background: transparent;
 }
 
 @media (prefers-reduced-motion: no-preference) {
 	.sgs-cart__panel--drawer[open] {
 		animation: sgs-cart-drawer-in 0.25s ease-out;
-	}
-
-	.sgs-cart__panel--drawer[open]::backdrop {
-		animation: sgs-cart-drawer-backdrop-in 0.25s ease-out;
 	}
 
 	.sgs-cart__panel--drawer.is-closing {
@@ -252,16 +252,6 @@
 	to {
 		opacity: 0;
 		transform: translateX(100%);
-	}
-}
-
-@keyframes sgs-cart-drawer-backdrop-in {
-	from {
-		opacity: 0;
-	}
-
-	to {
-		opacity: 1;
 	}
 }
 

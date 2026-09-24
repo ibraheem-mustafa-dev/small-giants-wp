@@ -51,9 +51,13 @@
  *   • Close ×: any element INSIDE the drawer carrying  data-sgs-nav-close
  *              (chrome, rendered by render.php outside the editable InnerBlocks —
  *               FR-36-6 undeletable-by-construction).
- *   • Scrim:   (non-modal fallback only) an element carrying
- *              data-sgs-nav-scrim="{drawerRef}". Under `showModal()` the native
- *              `::backdrop` is the scrim and this element is unused.
+ *   • Scrim:   the shared viewport scrim (Wave 3C U-2, family M-14) — a
+ *              `.{uid}-scrim` div printed at `wp_footer` by
+ *              includes/helpers-scrim.php::sgs_scrim_render(), carrying
+ *              data-sgs-nav-scrim="{drawerRef}". Its visibility is driven by
+ *              CSS `:root:has(.{uid}[open])`, not by a class this store
+ *              toggles, so ONE mechanism covers modal and non-modal alike.
+ *              This store only wires its click-to-close.
  *
  * Example burger markup a consumer emits:
  *   <div data-wp-context='{"isOpen":false,"drawerRef":"sgs-nav-drawer-1"}'>
@@ -114,12 +118,16 @@ const reparented = new WeakSet();
  * `.sgs-container > :not(.sgs-container__overlay){position:relative}` (0,2,0)
  * beats the drawer's (0,1,0) `position:fixed`, and a transformed/filtered
  * ancestor would convert `fixed` into ancestor-relative positioning. Moving
- * out to <body> removes every such ancestor by construction.
+ * out to <body> removes every such ancestor by construction. The scrim itself
+ * is already printed at `wp_footer` as a direct child of `<body>`
+ * (includes/helpers-scrim.php), so appendChild() on it here is a harmless
+ * no-op re-affirmation, not a real move — kept for idempotency with any older
+ * markup and because moving the dialog after it preserves DOM paint order.
  *
  * Parameterised and WeakSet-keyed for reuse across instances.
  *
  * @param {HTMLElement}      dialog The drawer dialog element.
- * @param {HTMLElement|null} scrim  The scrim element (non-modal fallback only).
+ * @param {HTMLElement|null} scrim  The scrim element, if resolved.
  */
 function reparentToBody( dialog, scrim ) {
 	if ( reparented.has( dialog ) ) {
@@ -423,7 +431,9 @@ function resolveDrawer( ctx ) {
 }
 
 /**
- * Resolve the (optional) real scrim for a drawer id — non-modal fallback only.
+ * Resolve the shared viewport scrim for a drawer id (modal and non-modal
+ * alike — its visibility is CSS-driven, not toggled here; see the module
+ * docblock's Scrim bullet).
  *
  * @param {string} drawerRef The drawer id.
  * @return {HTMLElement|null} The scrim element, or null.
@@ -448,9 +458,6 @@ function resolveScrim( drawerRef ) {
 function runClose( drawer, scrim ) {
 	if ( ! drawer.open || drawer.classList.contains( 'is-closing' ) ) {
 		return;
-	}
-	if ( scrim ) {
-		scrim.classList.remove( 'is-open' );
 	}
 
 	// Reduced motion: no exit animation to wait for — close immediately.
@@ -746,10 +753,13 @@ function openDrawerFor( ctx, trigger ) {
 		);
 	}
 
-	// Real scrim (fallback only) — its own click listener; the `e.target === dialog`
-	// (`::backdrop`) idiom silently stops working with `.show()`.
+	// The shared scrim's own click listener (click-to-close). Its VISIBILITY is
+	// CSS-driven (`:root:has(.{uid}[open])`, includes/helpers-scrim.php), not
+	// toggled here — this store only wires the click; the `e.target === dialog`
+	// (`::backdrop`) idiom silently stops working with `.show()`, which is why a
+	// real element is still needed for the non-modal path (and works the same
+	// way for modal).
 	if ( scrim ) {
-		scrim.classList.add( 'is-open' );
 		const onScrimClick = () => runClose( drawer, scrim );
 		scrim.addEventListener( 'click', onScrimClick );
 		bookkeeping.cleanup.push( () =>
@@ -762,9 +772,6 @@ function openDrawerFor( ctx, trigger ) {
 	// Focus return is EXPLICIT (Safari does not focus buttons on click).
 	const onNativeClose = () => {
 		drawer.classList.remove( 'is-closing' );
-		if ( scrim ) {
-			scrim.classList.remove( 'is-open' );
-		}
 		unlockScroll();
 		unfreezeBackground( bookkeeping.frozen );
 		bookkeeping.cleanup.forEach( ( fn ) => fn() );

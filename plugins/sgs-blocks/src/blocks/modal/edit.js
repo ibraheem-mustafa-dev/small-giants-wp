@@ -11,11 +11,10 @@ import {
 	SelectControl,
 	TextControl,
 	ToggleControl,
-	RangeControl,
 	Notice,
 } from '@wordpress/components';
-import { resolveColourToken, DesignTokenPicker, GradientCapableColourControl, SgsColourPanel } from '../../components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import { resolveColourToken, DesignTokenPicker, GradientCapableColourControl, SgsColourPanel, ScrimControls, scrimColourRow } from '../../components';
+import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel } from '../../components/primitives';
 import { resolveTextColourPreviewStyle, resolveBackgroundPaintPreviewStyle } from '../../utils';
 
 const MAX_WIDTH_OPTIONS = [
@@ -67,11 +66,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		maxWidth,
 		closeOnOverlay,
 		modalBackground,
-		overlayColour,
-		overlayColourGradient,
-		overlayColourHover,
-		overlayColourHoverGradient,
-		overlayOpacity,
+		scrimColour,
+		scrimColourGradient,
 		closeColourBackground,
 		closeColourBackgroundHover,
 		closeColourBackgroundGradient,
@@ -150,25 +146,24 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	};
 
 	/*
-	 * triggerBackgroundHover(Gradient) + overlayColourHover(Gradient) canvas
-	 * mirror (CHECK A, 2026-09-06). render.php already paints both hover
-	 * pairs on the frontend — triggerBackgroundHover via sgs_fill_states_css()
-	 * out-specifying the static `.sgs-modal__trigger--{style}:hover` class
-	 * default, overlayColourHover via sgs_custom_property_gradient_decls()
-	 * feeding the `::backdrop`'s hover custom properties — the editor canvas
-	 * never showed either because nothing outside the two controls read the
-	 * Hover attrs. The trigger mirror targets the REAL `.sgs-modal__trigger`
-	 * button rendered below; the overlay mirror targets the SAME decorative
-	 * "Overlay preview" swatch that already reproduces the resting overlay
-	 * colour (see the swatch's own comment above) — hovering that swatch is
-	 * the honest editor-canvas equivalent of hovering the real ::backdrop,
-	 * which the canvas can never render open.
+	 * triggerBackgroundHover(Gradient) canvas mirror (CHECK A, 2026-09-06).
+	 * render.php already paints this hover pair on the frontend via
+	 * sgs_fill_states_css(), out-specifying the static
+	 * `.sgs-modal__trigger--{style}:hover` class default — the editor canvas
+	 * never showed it because nothing outside the control read the Hover
+	 * attrs. Targets the REAL `.sgs-modal__trigger` button rendered below.
 	 *
-	 * `!important` is required because the resting styles above set the SAME
-	 * background-color/-image properties as an inline `style` prop on these
-	 * same elements — an inline declaration always out-ranks an external
+	 * The scrim's own former colour hover pair
+	 * was REMOVED in the U-2 Addendum A modal migration (2026-09-24) — the
+	 * scrim div sits under the top layer and cannot be hovered by a pointer
+	 * that is over the dialog's own top-layer content, so there was no real
+	 * hover state to mirror here either.
+	 *
+	 * `!important` is required because the resting style above sets the SAME
+	 * background-color/-image properties as an inline `style` prop on this
+	 * same element — an inline declaration always out-ranks an external
 	 * stylesheet rule for the same property regardless of `:hover` matching,
-	 * so without it these rules would parse correctly and still never paint
+	 * so without it this rule would parse correctly and still never paint
 	 * whenever a resting colour is also set (the common case).
 	 */
 	const triggerBgHoverDecl =
@@ -177,17 +172,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			: triggerBackgroundHover
 				? `background-color:${ resolveColourToken( triggerBackgroundHover, palette ) } !important;`
 				: '';
-	const overlayHoverDecl =
-		overlayColourHoverGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( overlayColourHoverGradient )
-			? `background-image:${ overlayColourHoverGradient } !important;background-color:transparent !important;`
-			: overlayColourHover
-				? `background-color:${ resolveColourToken( overlayColourHover, palette ) } !important;`
-				: '';
 	const modalHoverPreviewCss = [
 		triggerBgHoverDecl &&
 			`.${ modalPreviewScope } .sgs-modal__trigger:hover,.${ modalPreviewScope } .sgs-modal__trigger:focus-visible{${ triggerBgHoverDecl }}`,
-		overlayHoverDecl &&
-			`.${ modalPreviewScope } .sgs-modal__overlay-preview-swatch:hover{${ overlayHoverDecl }}`,
 	]
 		.filter( Boolean )
 		.join( '' );
@@ -199,11 +186,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			   fill/text/link colour lives in this shared panel now, see
 			   SgsColourPanel.js's own docblock). Rendered first per that
 			   component's own ordering requirement (before any other
-			   same-group InspectorControls Fill, e.g. the "Overlay" panel
-			   below). Backdrop/overlay colour stays where it is — that's a
-			   media/section overlay, genuinely exempt from this panel. */ }
+			   same-group InspectorControls Fill, e.g. the "Backdrop" panel
+			   below). The scrim colour row (U-2 Addendum A, 2026-09-24) is
+			   added here too via the shared `scrimColourRow()` — its
+			   strength/blur siblings, which are not colours, live in their
+			   own "Backdrop" ToolsPanel instead (ScrimControls.js). */ }
 			<SgsColourPanel
 				rows={ [
+					scrimColourRow( { attributes, setAttributes } ),
 					{
 						key: 'closeText',
 						label: __( 'Close button icon colour', 'sgs-blocks' ),
@@ -257,19 +247,21 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				] }
 			/>
 			{ /* GROUND-TRUTH: block.json attributes.triggerColour /
-			   triggerBackground / modalBackground / overlayColour (4 plain
-			   string colour attrs, no shared prefix pairing — triggerColour
-			   and triggerBackground live on the SAME `.sgs-modal__trigger`
+			   triggerBackground / modalBackground (3 plain string colour
+			   attrs, no shared prefix pairing — triggerColour and
+			   triggerBackground live on the SAME `.sgs-modal__trigger`
 			   element but different CSS properties, so they are 2 separate
 			   rows, not one row with 2 states) + render.php (trigger colours
-			   -> render.php:37-43/73-75 scoped `.sgs-modal__trigger` rule;
-			   modalBackground -> the dialog's background-color;
-			   overlayColour -> the `--sgs-modal-backdrop-colour` custom
-			   property) — confirmed 2026-08-15 against the live source and
-			   this edit.js's own pre-existing comments before wiring these
-			   rows. triggerColour gained a hover pair 2026-09-07 (Task 1,
-			   colour-conformance); the other 3 remain single-state.
-			   `linked: true` per D619. None of the old
+			   -> render.php's scoped `.sgs-modal__trigger` rule;
+			   modalBackground -> the dialog's background-color) — confirmed
+			   2026-08-15 against the live source and this edit.js's own
+			   pre-existing comments before wiring these rows. triggerColour
+			   gained a hover pair 2026-09-07 (Task 1, colour-conformance);
+			   the other 2 remain single-state. scrimColour (the former
+			   overlayColour) moved into the row above via `scrimColourRow()`
+			   in the U-2 Addendum A modal migration (2026-09-24) — it now
+			   paints the shared viewport scrim, not this block's own
+			   `::backdrop`. `linked: true` per D619. None of the old
 			   DesignTokenPickers below passed `linked`, so this migration
 			   also fixes a pre-existing gap (a converter-written slug would
 			   previously have shown as "unset"). */ }
@@ -420,58 +412,26 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				</PanelBody>
 			</InspectorControls>
 
-			{ /* Overlay colour + opacity live together in one Styles-tab panel,
-			   matching the precedent BackgroundPanel.js already sets for
-			   container/cta-section/hero/multi-button/physics-canvas/site-
-			   footer/site-header/trust-bar (D717): a colour picker with alpha
-			   OFF (opacity is a separate CSS property with its own control,
-			   so two transparency mechanisms never fight over the same
-			   stored value) followed by a plain opacity slider, both in the
-			   panel for whatever they're applied to — not paired via the
-			   colour picker's own API. */ }
+			{ /* Backdrop strength + blur (U-2 Addendum A, modal migration,
+			   2026-09-24) — the shared `<ScrimControls>`, replacing the old
+			   "Overlay" panel's opacity slider (and its hover-colour row,
+			   removed — see the block.json/render.php comments). The colour
+			   row moved into the top SgsColourPanel above via
+			   `scrimColourRow()`; this panel carries only the non-colour
+			   siblings (strength, blur), per ScrimControls.js's own docblock. */ }
 			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Overlay', 'sgs-blocks' ) }>
-					<DesignTokenPicker
-						label={ __( 'Overlay colour', 'sgs-blocks' ) }
-						states={ [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: overlayColour,
-								onChange: ( val ) =>
-									setAttributes( { overlayColour: val ?? '' } ),
-								linked: true,
-								gradientValue: overlayColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { overlayColourGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: overlayColourHover,
-								onChange: ( val ) =>
-									setAttributes( { overlayColourHover: val ?? '' } ),
-								linked: true,
-								gradientValue: overlayColourHoverGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { overlayColourHoverGradient: val ?? '' } ),
-							},
-						] }
-						enableAlpha={ false }
-					/>
-					<RangeControl
-						label={ __( 'Overlay opacity', 'sgs-blocks' ) }
-						value={ overlayOpacity }
-						onChange={ ( val ) =>
-							setAttributes( { overlayOpacity: val } )
-						}
-						min={ 0 }
-						max={ 100 }
-						step={ 5 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-				</PanelBody>
+				<ToolsPanel
+					label={ __( 'Backdrop', 'sgs-blocks' ) }
+					resetAll={ () =>
+						// Reset to the block's own defaults (block.json), not to an
+						// empty object — scrimOpacity's default is desktop 0.5 (the
+						// old opacity attribute's 50/100 default), so a blank reset would
+						// silently change the default look.
+						setAttributes( { scrimOpacity: { desktop: 0.5 }, scrimBlur: {} } )
+					}
+				>
+					<ScrimControls attributes={ attributes } setAttributes={ setAttributes } />
+				</ToolsPanel>
 			</InspectorControls>
 
 			<div { ...blockProps }>
@@ -484,58 +444,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					{ triggerText }
 				</button>
 
-				{ /* Overlay colour/opacity are only visible on a real OPEN <dialog>
-					(native ::backdrop), which the editor canvas never shows — there
-					is no "open modal" preview here, only the trigger + an inline
-					content preview. Rather than leaving overlayColour/overlayOpacity
-					with zero editor representation, this swatch reproduces the exact
-					same maths render.php uses for the backdrop (colour resolved via
-					resolveColourToken, opacity/100) so an operator can see what the
-					dimmed backdrop will look like without it needing to visually BE
-					an open dialog.
-
-					Sizing/layout is set INLINE (not left to editor.css alone) —
-					this project's own mega-panel/editor.css header documents that
-					WP 7.0's iframed canvas does not always load a block's
-					editorStyle, so a class-only box could render at 0x0 and stay
-					invisible; editor.css still supplies the border/radius/colour
-					polish on top when it does load. */ }
-				<div
-					className="sgs-modal__overlay-preview-row"
-					style={ { display: 'flex', alignItems: 'center', gap: '8px' } }
-				>
-					<span
-						className="sgs-modal__overlay-preview-swatch"
-						style={ {
-							display: 'inline-block',
-							width: '28px',
-							height: '28px',
-							flexShrink: 0,
-							borderRadius: '4px',
-							border: '1px solid #e5e5e5',
-							// overlayColourGradient (2026-09-06) — mirrors render.php's
-							// gradient-wins-over-flat precedence (sgs_custom_property_
-							// gradient_decls()); resolveColourToken (not colourVar) is
-							// used for the flat branch since this picker stores a raw
-							// resolved value via resolveColourToken above, not a slug-only var().
-							...( overlayColourGradient
-								? { backgroundImage: overlayColourGradient }
-								: {
-										backgroundColor:
-											resolveColourToken( overlayColour, palette ) ||
-											undefined,
-								  } ),
-							opacity: ( overlayOpacity ?? 50 ) / 100,
-						} }
-						aria-hidden="true"
-					/>
-					<span
-						className="sgs-modal__overlay-preview-label"
-						style={ { fontSize: '0.8125rem', color: '#6b6b6b' } }
-					>
-						{ __( 'Overlay preview', 'sgs-blocks' ) }
-					</span>
-				</div>
+				{ /* The scrim preview swatch that used to live here (reproducing
+				   render.php's old backdrop-colour/opacity maths) is REMOVED in
+				   the U-2 Addendum A modal migration (2026-09-24): the canvas does
+				   not preview the scrim at all now (ScrimControls.js's own
+				   docblock — "a closed drawer or panel has none"), the same as
+				   every other scrim adopter (nav-drawer, nav-bar-menu). A closed
+				   modal has no scrim to show, so there is nothing honest to
+				   render here. */ }
 
 				{ /* GROUND-TRUTH: source=file, confirmed against render.php:110-122 +
 				   helpers-button-style.php:79-313 this session. The close button

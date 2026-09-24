@@ -164,6 +164,9 @@ function sgs_cart_panel_body_html( array $args ): string {
  *
  *     @type string $panel_id  Panel DOM id (labels the heading in both modes).
  *     @type string $drawer_id Dialog DOM id — the drawer trigger's aria-controls.
+ *     @type string $uid       Block instance's scoped-styling class (drawer only —
+ *                             Wave 3C U-2's scrim `open` selector is scoped to it,
+ *                             `.{uid}.sgs-cart__panel--drawer[open]`).
  * }
  * @return string Escaped wrapper markup, or '' when the mode has no panel.
  */
@@ -177,9 +180,15 @@ function sgs_cart_panel_wrapper_html( string $mode, string $body_html, array $ar
 	}
 
 	if ( 'drawer' === $mode ) {
+		// The uid class scopes the U-2 scrim's `open` selector to THIS instance
+		// (`.{uid}.sgs-cart__panel--drawer[open]`) — sgs_scrim_render() is called
+		// with that selector from cart/render.php, so the dialog must actually
+		// carry the class for it to match.
+		$uid_class = isset( $args['uid'] ) ? sanitize_html_class( (string) $args['uid'] ) : '';
 		return sprintf(
-			'<dialog id="%1$s" class="sgs-cart__panel sgs-cart__panel--drawer" data-sgs-nav-drawer data-sgs-cart-panel data-sgs-cart-mode="drawer" aria-labelledby="%2$s-heading"><button type="button" class="sgs-cart__panel-close" data-sgs-nav-close aria-label="%3$s">%4$s</button>%5$s</dialog>',
+			'<dialog id="%1$s" class="sgs-cart__panel sgs-cart__panel--drawer%2$s" data-sgs-nav-drawer data-sgs-cart-panel data-sgs-cart-mode="drawer" aria-labelledby="%3$s-heading"><button type="button" class="sgs-cart__panel-close" data-sgs-nav-close aria-label="%4$s">%5$s</button>%6$s</dialog>',
 			esc_attr( $args['drawer_id'] ),
+			'' !== $uid_class ? ' ' . esc_attr( $uid_class ) : '',
 			esc_attr( $args['panel_id'] ),
 			esc_attr__( 'Close cart', 'sgs-blocks' ),
 			sgs_get_lucide_icon( 'x' ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted Lucide SVG.

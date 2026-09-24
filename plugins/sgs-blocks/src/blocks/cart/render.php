@@ -368,6 +368,7 @@ $trigger_html = sgs_cart_trigger_html( $trigger_mode, $icon_and_badge_html, $tri
 // directory would never reach build/ and would fatal in production, whereas
 // includes/ ships as source and already hosts every shared render helper.
 $panel_args = array(
+	'uid'                => $uid,
 	'panel_id'           => $panel_id,
 	'drawer_id'          => $drawer_id,
 	'panel_heading'      => $panel_heading,
@@ -383,6 +384,30 @@ $panel_args = array(
 $panel_html = $has_panel
 	? sgs_cart_panel_wrapper_html( $effective_mode, sgs_cart_panel_body_html( $panel_args ), $panel_args )
 	: '';
+
+// ── Scrim (Wave 3C U-2, family M-14) — the see-through layer dimming the
+// page behind the open drawer. Only the drawer display mode has a backdrop;
+// flyout is a plain popover with no page-dimming. Shared helper + design:
+// includes/helpers-scrim.php, .claude/reports/2026-09-24-u2-scrim-design.md
+// (Addendum A). The open selector is the NON-MODAL `[open]` form (this
+// dialog is opened via store('sgs/nav') `showModal()` in modal mode, but
+// resolveDrawerMode() in store.js also supports a non-modal `.show()` path
+// for a partial-width anchor — `[open]` matches both). `data-sgs-nav-scrim`
+// carries the SAME drawer-ref value as the trigger's `drawerRef` context and
+// the dialog's own id, so store.js's resolveScrim() can find this element.
+if ( $has_panel && 'drawer' === $effective_mode ) {
+	$scrim_css = sgs_scrim_render(
+		$attributes,
+		$uid,
+		array(
+			'open' => '.' . $uid . '.sgs-cart__panel--drawer[open]',
+			'data' => array( 'sgs-nav-scrim' => $drawer_id ),
+		)
+	);
+	if ( '' !== $scrim_css ) {
+		$scoped_css[] = $scrim_css;
+	}
+}
 
 // ── Emit the scoped <style> then the trigger + (optional) panel. ────────────
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- $scoped_css entries are all pre-sanitised (sgs_colour_value/sgs_css_length/wp_style_engine_get_styles); $wrapper_attributes from get_block_wrapper_attributes(); $trigger_html/$panel_html built entirely from esc_url/esc_attr/esc_html above plus trusted Lucide SVG + wp_interactivity_data_wp_context() (self-escaping).

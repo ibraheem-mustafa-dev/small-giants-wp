@@ -33,6 +33,8 @@ import { ResponsiveBoxControls, MEDIA_SIZING_RATIO_OPTIONS,
 	resolveColourToken,
 	ShadowControl,
 	DesignTokenPicker,
+	ScrimControls,
+	scrimColourRow,
 } from '../../components';
 import {
 	PanelBody,
@@ -597,6 +599,10 @@ export default function Edit( { attributes, setAttributes } ) {
 			   'hover'-keyed state rather than a normal/hover pair. */ }
 			<SgsColourPanel
 				rows={ [
+					// The lightbox scrim's colour row (U-2 Addendum A, 2026-09-24) —
+					// only shown when the lightbox exists at all; its strength/blur
+					// siblings live in their own ToolsPanel further down (ScrimControls.js).
+					enableLightbox && scrimColourRow( { attributes, setAttributes } ),
 					{
 						key: 'overlay',
 						label: __( 'Hover overlay colour', 'sgs-blocks' ),
@@ -1008,6 +1014,23 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 						__nextHasNoMarginBottom
 					/>
+					{ /* Lightbox scrim strength + blur (U-2 Addendum A, 2026-09-24) —
+					   only shown when the lightbox exists at all, since the scrim is
+					   the lightbox's own backdrop. The colour row is the SgsColourPanel
+					   row above (also gated on enableLightbox); this ToolsPanel carries
+					   only the non-colour siblings, per ScrimControls.js's own docblock. */ }
+					{ enableLightbox && (
+						<ToolsPanel
+							label={ __( 'Lightbox backdrop', 'sgs-blocks' ) }
+							resetAll={ () =>
+								// Reset to the block's own defaults (block.json) — scrimOpacity's
+								// default is desktop 0.9, the old hardcoded 90% mix, not blank.
+								setAttributes( { scrimOpacity: { desktop: 0.9 }, scrimBlur: {} } )
+							}
+						>
+							<ScrimControls attributes={ attributes } setAttributes={ setAttributes } />
+						</ToolsPanel>
+					) }
 					<ToggleControl
 						label={ __( 'Show captions', 'sgs-blocks' ) }
 						checked={ showCaptions }

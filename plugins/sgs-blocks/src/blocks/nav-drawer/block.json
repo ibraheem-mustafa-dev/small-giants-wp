@@ -28,6 +28,9 @@
 			},
 			"containerKind": "content",
 			"containerMirror": false,
+			"scrim": {
+				"open": "[open]"
+			},
 			"boxFamilies": {
 				"drawerPadding": [
 					"drawerPadding"
@@ -44,6 +47,21 @@
 				"parallax"
 			],
 			"elements": {
+				"scrim": {
+					"label": "Backdrop / scrim",
+					"order": 5,
+					"clusters": [
+						"fill"
+					],
+					"prefix": "scrim",
+					"attrMap": {
+						"css:background-color": "scrimColour",
+						"css:background-image": "scrimColourGradient",
+						"css:opacity": "scrimOpacity",
+						"css:backdrop-filter": "scrimBlur"
+					},
+					"_note": "The shared viewport scrim (Wave 3C U-2, `includes/helpers-scrim.php::sgs_scrim_render`): the see-through layer printed at wp_footer that dims the page while this block's drawer, dialog or panel is open. Mapped here so the converter can route a draft's scrim colour, strength and blur to these attributes."
+				},
 				"dialog": {
 					"label": "Drawer container",
 					"layer": "OUTER",
@@ -416,6 +434,28 @@
 			"default": {
 				"desktop": {}
 			}
+		},
+		"scrimColour": {
+			"type": "string",
+			"default": "#000000",
+			"description": "Backdrop tint colour behind the drawer: a token slug or hex. Emitted through includes/helpers-scrim.php."
+		},
+		"scrimColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Backdrop gradient sibling of scrimColour; non-empty wins over the flat colour."
+		},
+		"scrimOpacity": {
+			"type": "object",
+			"default": {
+				"desktop": 0.55
+			},
+			"description": "Backdrop tint strength per device, 0 to 1. Default reproduces the drawer's previous hardcoded rgba(0,0,0,0.55) exactly."
+		},
+		"scrimBlur": {
+			"type": "object",
+			"default": {},
+			"description": "Backdrop blur of the page behind the drawer per device, a CSS length. Unset emits no blur."
 		}
 	},
 	"render": "file:./render.php",

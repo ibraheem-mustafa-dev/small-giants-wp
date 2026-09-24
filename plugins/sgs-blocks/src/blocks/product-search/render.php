@@ -630,6 +630,54 @@ if ( $sgs_ps_is_dialog_mode ) {
 }
 
 // -------------------------------------------------------------------------
+// Scrim (Wave 3C U-2, family M-14) — the see-through layer dimming the page
+// behind the open dialog. Design: includes/helpers-scrim.php,
+// .claude/reports/2026-09-24-u2-scrim-design.md (Addendum A). The open
+// selector MUST be `:modal`, never `[open]` — this render.php always emits
+// a literal `open` attribute for the no-JS fallback (above), which `[open]`
+// would match even while the dialog is a non-modal inline fallback with no
+// backdrop at all; `:modal` matches only a real showModal() open.
+//
+// Per-mode defaults — applied ONLY when the client has set neither
+// scrimOpacity nor scrimBlur (block.json ships both attributes empty), so an
+// unconfigured instance keeps today's look: overlay 0.5 black, cmdk 0.55
+// black + 6px blur (matching the ::backdrop rules style.css used to hardcode
+// before this migration). Any client-set tier on either attribute means the
+// client is in control — the mode default is not merged in at all.
+// -------------------------------------------------------------------------
+if ( $sgs_ps_is_dialog_mode ) {
+	$sgs_ps_scrim_mode_defaults = array(
+		'full-screen-overlay' => array(
+			'scrimColour'  => '#000000',
+			'scrimOpacity' => array( 'desktop' => 0.5 ),
+		),
+		'command-palette'     => array(
+			'scrimColour'  => '#000000',
+			'scrimOpacity' => array( 'desktop' => 0.55 ),
+			'scrimBlur'    => array( 'desktop' => '6px' ),
+		),
+	);
+
+	// Each mode default fills only a setting the client left empty, so a client's
+	// own colour, strength or blur always wins, one setting at a time.
+	$sgs_ps_scrim_attrs = $attributes;
+	foreach ( $sgs_ps_scrim_mode_defaults[ $display ] ?? array() as $sgs_ps_key => $sgs_ps_default ) {
+		if ( empty( $attributes[ $sgs_ps_key ] ) ) {
+			$sgs_ps_scrim_attrs[ $sgs_ps_key ] = $sgs_ps_default;
+		}
+	}
+
+	$sgs_ps_scrim_css = sgs_scrim_render(
+		$sgs_ps_scrim_attrs,
+		$sgs_style_uid,
+		array( 'open' => '.' . $sgs_style_uid . ':modal' )
+	);
+	if ( '' !== $sgs_ps_scrim_css ) {
+		$sgs_scoped_css[] = $sgs_ps_scrim_css;
+	}
+}
+
+// -------------------------------------------------------------------------
 // Output — branch by display mode.
 // -------------------------------------------------------------------------
 ?>

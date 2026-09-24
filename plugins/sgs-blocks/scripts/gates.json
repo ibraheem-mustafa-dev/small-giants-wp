@@ -1199,5 +1199,23 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 129
+  },
+  {
+    "id": "check-scrim-self-test",
+    "cmd": "python scripts/scrim/check-scrim.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 130
+  },
+  {
+    "id": "check-scrim",
+    "cmd": "python scripts/scrim/check-scrim.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 131
   }
 ]

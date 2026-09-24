@@ -8,7 +8,8 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, TextControl } from '@wordpress/components';
-import { ResponsiveBoxControl, ResponsiveOverride, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl } from '../../components';
+import { ResponsiveBoxControl, ResponsiveOverride, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, ScrimControls, scrimColourRow } from '../../components';
+import { ToolsPanel } from '../../components/primitives';
 import MediaElementPanel from '../../components/MediaElementPanel';
 import { borderPaintPreview, backgroundPaintPreview } from '../../utils';
 
@@ -295,6 +296,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							},
 						],
 					},
+					( isOverlay || isPalette ) && scrimColourRow( { attributes, setAttributes } ),
 				] }
 			/>
 			<InspectorControls>
@@ -527,6 +529,26 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 					/>
 				</PanelBody>
+
+				{ /* Wave 3C U-2 (family M-14) — the dialog's scrim (the see-through
+				   layer dimming the page behind it). Dialog modes only
+				   (full-screen-overlay / command-palette): inline-bar and
+				   icon-expand never open a <dialog>. */ }
+				{ ( isOverlay || isPalette ) && (
+					<ToolsPanel
+						label={ __( 'Backdrop', 'sgs-blocks' ) }
+						resetAll={ () =>
+							setAttributes( {
+								scrimColour: '',
+								scrimColourGradient: '',
+								scrimOpacity: {},
+								scrimBlur: {},
+							} )
+						}
+					>
+						<ScrimControls attributes={ attributes } setAttributes={ setAttributes } />
+					</ToolsPanel>
+				) }
 			</InspectorControls>
 
 			<div { ...blockProps }>

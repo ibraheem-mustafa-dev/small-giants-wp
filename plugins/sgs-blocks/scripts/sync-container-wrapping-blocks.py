@@ -50,11 +50,11 @@ Stage 1 reads this flag into block_composition.container_kind.
   - trust-bar: override IS load-bearing. Without it, trust-bar's `columns`
     attr would route it to KIND=layout. The override forces KIND=section
     (full-bleed wrapper + max-width grid).
-  - modal: override is redundant defence-in-depth, NOT strictly required.
-    modal IS attr-derivable to KIND=section via its `overlayColour` and
-    `overlayOpacity` attrs (both match SECTION_ATTR_RE). The
-    containerKind:"section" override on modal is therefore belt-and-braces
-    rather than load-bearing.
+  - modal: override IS load-bearing since 2026-09-24 (Wave 3C U-2). modal
+    used to be attr-derivable to KIND=section via its `overlayColour` and
+    `overlayOpacity` attrs; U-2 moved its dialog backdrop onto the shared
+    scrim (`scrimColour`, `scrimOpacity`, which SECTION_ATTR_RE does not
+    match), so containerKind:"section" is now what keeps it a section.
 
 R-22-1 (DB-first / no hardcoded dicts): block roster is derived from
 block.json source files. Attribute lists come from each block's block.json.

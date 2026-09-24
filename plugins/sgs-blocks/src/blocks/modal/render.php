@@ -26,20 +26,6 @@ $max_width          = $attributes['maxWidth'] ?? 'medium';
 $close_on_overlay   = $attributes['closeOnOverlay'] ?? true;
 $modal_background   = $attributes['modalBackground'] ?? 'white';
 $modal_background_gradient = sgs_css_gradient_value( $attributes['modalBackgroundGradient'] ?? '' );
-$overlay_colour     = $attributes['overlayColour'] ?? 'text';
-// overlayColourGradient (2026-09-06, colour-conformance closeout) — gradient
-// sibling resolved below via sgs_custom_property_gradient_decls(), same shape
-// as sgs/tabs tabBgColour/panelBgColour.
-$overlay_colour_gradient = $attributes['overlayColourGradient'] ?? '';
-$overlay_opacity    = $attributes['overlayOpacity'] ?? 50;
-
-// overlayColourHover/overlayColourHoverGradient (2026-09-06, colour-conformance
-// closeout) — the ::backdrop box is a genuine click-to-close target (view.js),
-// resolved below via the same 5-arg sgs_custom_property_gradient_decls() call.
-// Kept in their own blank-line-separated alignment group so this addition
-// does not cascade a phpcs realignment warning across the whole block above.
-$overlay_colour_hover          = (string) ( $attributes['overlayColourHover'] ?? '' );
-$overlay_colour_hover_gradient = (string) ( $attributes['overlayColourHoverGradient'] ?? '' );
 
 // modalRef (Task 1, 2026-09-14) — when set, this instance's dialog content is
 // the REFERENCED `sgs_modal` post's own content, not this instance's own
@@ -119,36 +105,19 @@ if ( $modal_background ) {
 	$dialog_rules[] = sgs_background_paint_decl( $modal_background, $modal_background_gradient );
 }
 
-// Backdrop styles stay as CSS custom-PROPERTY VALUES (not real property
-// declarations) — these are allowed on the wrapper per the no-inline
-// styling contract (Spec 32).
-$backdrop_vars = array();
-// sgs_custom_property_gradient_decls() resolves the flat colour (via
-// sgs_colour_value()) and, when set+valid, its gradient sibling — emitting
-// --sgs-modal-backdrop-colour and --sgs-modal-backdrop-colour-gradient.
-// Hover sibling (2026-09-06, colour-conformance closeout) — the ::backdrop box
-// is a genuine click-to-close target (view.js), so this 5-arg call also emits
-// --sgs-modal-backdrop-colour-hover(-gradient), consumed by a new
-// .sgs-modal__dialog::backdrop:hover rule in style.css.
-$backdrop_vars = array_merge(
-	$backdrop_vars,
-	sgs_custom_property_gradient_decls(
-		'sgs-modal-backdrop-colour',
-		$overlay_colour,
-		$overlay_colour_gradient,
-		$overlay_colour_hover,
-		$overlay_colour_hover_gradient
-	)
-);
-if ( $overlay_opacity ) {
-	$backdrop_vars[] = '--sgs-modal-backdrop-opacity:' . ( (float) $overlay_opacity / 100 );
-}
+// Backdrop — the shared viewport scrim (U-2 Addendum A, modal migration,
+// 2026-09-24). The block no longer paints its own `::backdrop`; instead it
+// calls the shared helper, which returns this block's scoped scrim CSS
+// (appended to $scoped_css_rules below) and queues the scrim's HTML for
+// `wp_footer`. The open selector matches the uid'd dialog only while it is a
+// real top-layer modal (`:modal`, not `[open]` — a plain `[open]` would also
+// match a no-JS server-rendered fallback state this block doesn't have, but
+// `:modal` is the correct native-dialog selector per the shared design doc).
+$scrim_css = sgs_scrim_render( $attributes, $uid, array( 'open' => '.' . $uid . '.sgs-modal__dialog:modal' ) );
+
 $wrapper_args = array(
 	'class' => 'sgs-modal ' . $uid,
 );
-if ( $backdrop_vars ) {
-	$wrapper_args['style'] = implode( ';', $backdrop_vars ) . ';';
-}
 
 $wrapper_attributes = get_block_wrapper_attributes( $wrapper_args );
 
@@ -192,6 +161,12 @@ $close_button_css = sgs_button_element_style_css( $attributes, 'close', $root_se
 if ( $close_button_css ) {
 	$scoped_css_rules[] = $close_button_css;
 }
+// Scrim CSS ($scrim_css, built above via sgs_scrim_render()) is scoped to the
+// uid'd dialog selector already, so it is appended here alongside every other
+// scoped rule rather than kept as a separate <style> tag.
+if ( $scrim_css ) {
+	$scoped_css_rules[] = $scrim_css;
+}
 $scoped_css = implode( '', $scoped_css_rules );
 
 // Render.
@@ -208,7 +183,7 @@ $scoped_css = implode( '', $scoped_css_rules );
 
 	<dialog
 		id="<?php echo esc_attr( $modal_id ); ?>"
-		class="sgs-modal__dialog sgs-modal__dialog--<?php echo esc_attr( $max_width ); ?>"
+		class="sgs-modal__dialog sgs-modal__dialog--<?php echo esc_attr( $max_width ); ?> <?php echo esc_attr( $uid ); ?>"
 		data-close-on-overlay="<?php echo $close_on_overlay ? 'true' : 'false'; ?>"
 		aria-labelledby="<?php echo esc_attr( $modal_id ); ?>-title"
 	>

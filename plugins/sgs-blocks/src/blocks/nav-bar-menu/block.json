@@ -45,6 +45,9 @@
 			},
 			"containerKind": "layout",
 			"collection": true,
+			"scrim": {
+				"open": " [data-sgs-mega-trigger][aria-expanded=\"true\"]"
+			},
 			"headerEssential": true,
 			"hideExtensions": [
 				"clickEffects",
@@ -52,6 +55,21 @@
 				"spacing"
 			],
 			"elements": {
+				"scrim": {
+					"label": "Backdrop / scrim",
+					"order": 10,
+					"clusters": [
+						"fill"
+					],
+					"prefix": "scrim",
+					"attrMap": {
+						"css:background-color": "scrimColour",
+						"css:background-image": "scrimColourGradient",
+						"css:opacity": "scrimOpacity",
+						"css:backdrop-filter": "scrimBlur"
+					},
+					"_note": "The shared viewport scrim (Wave 3C U-2, `includes/helpers-scrim.php::sgs_scrim_render`): the see-through layer printed at wp_footer that dims the page while this block's drawer, dialog or panel is open. Mapped here so the converter can route a draft's scrim colour, strength and blur to these attributes."
+				},
 				"wrapper": {
 					"label": "Nav wrapper",
 					"layer": "OUTER",
@@ -1130,6 +1148,26 @@
 			"type": "string",
 			"default": "swap",
 			"description": "How the menu button's BACKGROUND changes on hover: none / swap. Two options only. Governs burgerBg / burgerHoverColour. PHP-validated, no JSON enum."
+		},
+		"scrimColour": {
+			"type": "string",
+			"default": "",
+			"description": "Backdrop tint colour behind an open dropdown or mega panel: a token slug or hex. Empty means no scrim. Emitted through includes/helpers-scrim.php."
+		},
+		"scrimColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Backdrop gradient sibling of scrimColour; non-empty wins over the flat colour."
+		},
+		"scrimOpacity": {
+			"type": "object",
+			"default": {},
+			"description": "Backdrop tint strength per device, 0 to 1. Unset at every tier means no scrim — a bar that never touches this ships nothing extra."
+		},
+		"scrimBlur": {
+			"type": "object",
+			"default": {},
+			"description": "Backdrop blur of the page behind an open dropdown or mega panel, per device, a CSS length. Unset emits no blur."
 		}
 	},
 	"render": "file:./render.php",
