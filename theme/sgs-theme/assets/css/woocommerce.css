@@ -1491,6 +1491,30 @@ body.woocommerce-cart .with-empty-cart-icon,
 	container: sgs-shop-grid / inline-size;
 }
 
+/* ── 10e. Fixed column count once the grid is wide ───────────────────────────
+ *
+ * The auto-fill rule above (10c) is intrinsic — it grows columns from the
+ * card's own min-width, so its count already goes up as the container gets
+ * wider, but it never LANDS on a specific number: a 1280px container with a
+ * 240px min-card and a 24px gap intrinsically resolves to 5 columns, not the
+ * even 4-up grid a wide desktop draft calls for. This rule overrides ONLY the
+ * column count at that tier, leaving `minmax(var(--sgs-shop-card-min), 1fr)`
+ * to size each column's WIDTH exactly as 10c already does — no card-size
+ * value is duplicated here.
+ *
+ * `--sgs-shop-columns-wide` is configurable (Customizer -> Shop Filters ->
+ * "Product columns once the grid is wide"; output as this custom property by
+ * inc/shop-filters-settings.php::output_shop_columns_wide_style()). No
+ * setting configured -> the `4` fallback below applies, so an existing site
+ * renders unchanged. A CONTAINER query, not a viewport media query, matching
+ * every other tier in this file — the grid's own width is what determines
+ * its column count, not the window's. */
+@container sgs-shop-grid (min-width: 1280px) {
+	.sgs-shop-layout .wc-block-product-template {
+		grid-template-columns: repeat(var(--sgs-shop-columns-wide, 4), 1fr);
+	}
+}
+
 @container sgs-shop-grid (max-width: 495px) {
 
 	.sgs-shop-layout .product-card {
@@ -2294,6 +2318,89 @@ body.woocommerce-cart .with-empty-cart-icon,
 	.sgs-shop-filters__group-summary::after {
 		transition-duration: 0.01ms;
 	}
+}
+
+/* ── Boolean attribute toggle ("Polarised only" — any yes/no attribute term) ──
+ *
+ * Built by assets/js/sgs-shop-filters-extras.js, inserted at the top of the
+ * scrollable panel (above the accordion groups) only when the Customizer
+ * setting resolves to a real attribute + term. A standard checkbox styled as
+ * a switch — `role="switch"` + `aria-checked` kept in sync by the JS — rather
+ * than a bespoke ARIA widget, so screen readers announce it as an on/off
+ * control with native keyboard support (Space toggles a checkbox already). */
+.sgs-shop-filters__bool-filter {
+	border-bottom: 1px solid var(--sgs-filter-line, var(--wp--preset--color--border));
+	padding-bottom: var(--wp--preset--spacing--20, 0.75rem);
+	margin-bottom: var(--wp--preset--spacing--20, 0.75rem);
+}
+
+.sgs-shop-filters__bool-filter-label {
+	display: flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--20, 0.75rem);
+	/* 44px WCAG 2.2 touch-target floor, matching every other filter control. */
+	min-height: 44px;
+	cursor: pointer;
+}
+
+/* The real control: kept in the layout but visually hidden behind the drawn
+   track/thumb below, so focus, keyboard activation and screen-reader state
+   all still belong to a native <input type="checkbox">. */
+.sgs-shop-filters__bool-filter-input {
+	position: absolute;
+	width: 44px;
+	height: 24px;
+	margin: 0;
+	opacity: 0;
+	cursor: pointer;
+}
+
+.sgs-shop-filters__bool-filter-switch {
+	position: relative;
+	flex: 0 0 auto;
+	width: 44px;
+	height: 24px;
+	border-radius: 999px;
+	background: var(--sgs-filter-line, var(--wp--preset--color--border));
+	transition: background-color 0.15s ease;
+}
+
+.sgs-shop-filters__bool-filter-switch::before {
+	content: "";
+	position: absolute;
+	top: 2px;
+	left: 2px;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background: #ffffff;
+	box-shadow: 0 1px 2px color-mix(in srgb, var(--wp--custom--shadow-colour) 30%, transparent);
+	transition: transform 0.15s ease;
+}
+
+.sgs-shop-filters__bool-filter-input:checked + .sgs-shop-filters__bool-filter-switch {
+	background: var(--wp--preset--color--primary);
+}
+
+.sgs-shop-filters__bool-filter-input:checked + .sgs-shop-filters__bool-filter-switch::before {
+	transform: translateX(20px);
+}
+
+.sgs-shop-filters__bool-filter-input:focus-visible + .sgs-shop-filters__bool-filter-switch {
+	outline: 2px solid var(--wp--preset--color--primary, currentColor);
+	outline-offset: 2px;
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+	.sgs-shop-filters__bool-filter-switch,
+	.sgs-shop-filters__bool-filter-switch::before {
+		transition-duration: 0.01ms;
+	}
+}
+
+.sgs-shop-filters__bool-filter-text {
+	font-size: var(--wp--preset--font-size--small, 0.9375rem);
+	color: var(--wp--preset--color--text, #1e1e1e);
 }
 
 /* ── The panel's scrollbar ──

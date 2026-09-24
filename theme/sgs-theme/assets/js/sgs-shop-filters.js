@@ -47,7 +47,19 @@
 ( function () {
 	'use strict';
 
-	const BREAKPOINT = 782; // px — mirrors WP admin breakpoint / woocommerce.css.
+	/**
+	 * Settings localised by `inc/shop-filters-settings.php` (`wp_localize_script`
+	 * on the `sgs-shop-filters` handle). Absent on installs that haven't set the
+	 * theme up yet — every read below falls back to the pre-existing behaviour,
+	 * so a site with no settings configured renders unchanged.
+	 * @type {Object}
+	 */
+	const SETTINGS = window.sgsShopFilters || {};
+
+	// px — mirrors WP admin breakpoint / woocommerce.css by default; configurable
+	// via the Customizer (Shop Filters -> Drawer breakpoint) for a client whose
+	// draft switches to a drawer at a different width.
+	const BREAKPOINT = Number( SETTINGS.breakpoint ) > 0 ? Number( SETTINGS.breakpoint ) : 782;
 	const SCROLL_REVEAL_PX = () => window.innerHeight; // ~1 viewport of scroll.
 
 	/** Main init — runs once after DOM is ready. */
@@ -151,6 +163,12 @@
 			} );
 		}
 
+		/* The boolean attribute toggle + live result count are built by the
+		 * sibling module sgs-shop-filters-extras.js (this file is already over
+		 * the 250-line budget; new features go there, not grown in here). It
+		 * watches for this dialog to appear via its own MutationObserver, so
+		 * it needs no hook or load-order dependency from this file. */
+
 		buildAccordion( scrollWrap );
 
 		originalAside.replaceWith( dialog );
@@ -250,7 +268,9 @@
 		updateStickyCount();
 
 		// WC's filter blocks re-render their own subtree on interaction — watch
-		// for that rather than polling.
+		// for that rather than polling. (The live result-count feature in
+		// sgs-shop-filters-extras.js watches the same subtree independently,
+		// rather than sharing this observer, to keep this file's own budget.)
 		const chipsObserver = new MutationObserver( updateStickyCount );
 		chipsObserver.observe( dialog, { childList: true, subtree: true } );
 
