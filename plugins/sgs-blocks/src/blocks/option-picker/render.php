@@ -83,6 +83,7 @@ $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_t
 
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once __DIR__ . '/sub-label-support.php';
 
 // ---------------------------------------------------------------------------
 // 1. Box-object interface contract §1 + security §D sanitisers.
@@ -106,7 +107,13 @@ $option_items         = $attributes['optionItems'] ?? array();
 $default_selected     = $attributes['defaultSelected'] ?? '';
 $content_impact       = $attributes['contentImpact'] ?? array();
 $type_key             = $attributes['typeKey'] ?? '';
+$sub_label_meta_key   = isset( $attributes['subLabelMetaKey'] ) ? sanitize_key( (string) $attributes['subLabelMetaKey'] ) : '';
 $pill_style           = $attributes['pillStyle'] ?? 'outlined';
+// Validated once, up front, so the 'tile' image-size lookup (§8) and the
+// root-class build (§10) share one allow-listed value -- no duplicate list.
+$allowed_pill_styles  = array( 'outlined', 'filled', 'ghost', 'tile' );
+$pill_style_safe      = in_array( $pill_style, $allowed_pill_styles, true ) ? $pill_style : 'outlined';
+$tile_gap_raw         = isset( $attributes['tileGap'] ) ? (string) $attributes['tileGap'] : '';
 $pill_size            = $attributes['pillSize'] ?? 'medium';
 $colour_preset        = $attributes['colourPreset'] ?? '';
 $show_selected_tick   = array_key_exists( 'showSelectedTick', $attributes ) ? (bool) $attributes['showSelectedTick'] : true;
@@ -342,6 +349,15 @@ if ( '' !== $pill_sel_radius_raw ) {
 }
 if ( $border_colour ) {
 	$var_decls[] = '--sgs-op-root-border-colour:' . sgs_colour_value( $border_colour );
+}
+// Tile gap (Wave B, tile pill style only) — CSS-length string, same shape as
+// the border-radius vars above. Empty = unset, style.css's own
+// `var(--sgs-option-picker-tile-gap, 8px)` fallback governs.
+if ( '' !== $tile_gap_raw ) {
+	$tile_gap_safe = sgs_css_length_value( $tile_gap_raw );
+	if ( '' !== $tile_gap_safe ) {
+		$var_decls[] = '--sgs-option-picker-tile-gap:' . $tile_gap_safe;
+	}
 }
 
 // ---------------------------------------------------------------------------
@@ -628,13 +644,24 @@ if ( '' !== $type_key && function_exists( 'wc_get_attribute_taxonomy_names' ) ) 
 
 /* ── Build a map: option_slug => array( 'color' => string|'', 'image_id' => int ) ── */
 
-$swatch_map = array();
+$swatch_map    = array();
+$sub_label_map = array();
 
 if ( '' !== $swatch_taxonomy ) {
 	foreach ( $valid_items as $item ) {
 		$attr_term = get_term_by( 'slug', $item['key'], $swatch_taxonomy );
 		if ( ! $attr_term instanceof \WP_Term ) {
 			continue;
+		}
+
+		// Per-option sub-label -- generic client-chosen term-meta key, resolved
+		// off the SAME already-fetched term (no extra taxonomy query). Empty
+		// key/meta/value = no second line (sub-label-support.php).
+		if ( '' !== $sub_label_meta_key ) {
+			$sub_label_text = sgs_option_picker_resolve_sub_label( $attr_term, $sub_label_meta_key );
+			if ( '' !== $sub_label_text ) {
+				$sub_label_map[ $item['key'] ] = $sub_label_text;
+			}
 		}
 
 		$color_raw    = get_term_meta( $attr_term->term_id, '_sgs_swatch_color', true );
@@ -697,7 +724,7 @@ foreach ( $valid_items as $item ) {
 		$color    = $swatch['color'];
 
 		if ( $image_id > 0 ) {
-			$src_data = wp_get_attachment_image_src( $image_id, 'thumbnail' );
+			$src_data = wp_get_attachment_image_src( $image_id, sgs_option_picker_tile_image_size( $pill_style_safe ) );
 			if ( $src_data ) {
 				$img_url           = $src_data[0];
 				$img_w             = absint( $src_data[1] );
@@ -736,7 +763,21 @@ foreach ( $valid_items as $item ) {
 		}
 	}
 
-	$pill_inner = $swatch_chip_html . $swatch_image_html . esc_html( $item['label'] );
+	// Label + optional sub-label are wrapped in their own text-stack span so
+	// CSS can lay the two lines out independently of the swatch chip/image
+	// (row layout for outlined/filled/ghost pills, column layout for tiles) --
+	// the swatch stays outside this span so its own row/column position is
+	// unaffected. Same accessible name either way: both spans stay inside the
+	// <label>, so a sub-label is simply extra text an AT reads as part of the
+	// existing option label -- no separate aria-* wiring needed.
+	$item_sub_label = isset( $sub_label_map[ $item['key'] ] ) ? $sub_label_map[ $item['key'] ] : '';
+	$pill_text_html = '<span class="sgs-option-picker__pill-text"><span class="sgs-option-picker__pill-label">' . esc_html( $item['label'] ) . '</span>';
+	if ( '' !== $item_sub_label ) {
+		$pill_text_html .= '<span class="sgs-option-picker__sub-label">' . esc_html( $item_sub_label ) . '</span>';
+	}
+	$pill_text_html .= '</span>';
+
+	$pill_inner = $swatch_chip_html . $swatch_image_html . $pill_text_html;
 
 	$pills_html .= sprintf(
 		'<label class="sgs-option-picker__option" for="%s">' .
@@ -766,11 +807,10 @@ $options_div_html = sprintf(
 // the <fieldset> IS the block root.
 // ---------------------------------------------------------------------------
 
-$allowed_styles = array( 'outlined', 'filled', 'ghost' );
 $allowed_sizes  = array( 'small', 'medium', 'large' );
 $allowed_preset = array( '', 'soft', 'solid' );
 
-$safe_style  = in_array( $pill_style, $allowed_styles, true ) ? $pill_style : 'outlined';
+$safe_style  = $pill_style_safe; // Validated in §2 (includes 'tile').
 $safe_size   = in_array( $pill_size, $allowed_sizes, true ) ? $pill_size : 'medium';
 $safe_preset = in_array( $colour_preset, $allowed_preset, true ) ? $colour_preset : '';
 

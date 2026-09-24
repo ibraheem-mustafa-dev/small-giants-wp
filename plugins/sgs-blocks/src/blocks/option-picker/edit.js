@@ -29,6 +29,7 @@ import {
 import { TypographyControls, ResponsiveControl, ResponsiveBoxControl, SgsColourPanel, textRow, SgsLengthControl, SgsBorderControl, MediaElementPanel, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle, borderPaintPreview } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import SubLabelPanel from './sub-label-panel';
 
 /* ── Options ─────────────────────────────────────────────────────────────── */
 
@@ -36,6 +37,7 @@ const PILL_STYLE_OPTIONS = [
 	{ label: __( 'Outlined (default)', 'sgs-blocks' ), value: 'outlined' },
 	{ label: __( 'Filled', 'sgs-blocks' ),            value: 'filled'   },
 	{ label: __( 'Ghost', 'sgs-blocks' ),             value: 'ghost'    },
+	{ label: __( 'Tile (image + caption)', 'sgs-blocks' ), value: 'tile' },
 ];
 
 const PILL_SIZE_OPTIONS = [
@@ -92,6 +94,7 @@ function buildRootPreviewStyle( attributes ) {
 		pillSelectedBorderColour,
 		pillBorderRadius,
 		pillSelectedBorderRadius,
+		tileGap,
 	} = attributes;
 
 	const rootStyle = {};
@@ -150,6 +153,7 @@ function buildRootPreviewStyle( attributes ) {
 	if ( pillSelectedBorderColour )   rootStyle[ '--sgs-op-sel-border' ]      = colourVar( pillSelectedBorderColour );
 	if ( pillBorderRadius )           rootStyle[ '--sgs-op-pill-radius' ]     = pillBorderRadius + 'px';
 	if ( pillSelectedBorderRadius )   rootStyle[ '--sgs-op-sel-pill-radius' ] = pillSelectedBorderRadius + 'px';
+	if ( tileGap )                    rootStyle[ '--sgs-option-picker-tile-gap' ] = tileGap;
 
 	return rootStyle;
 }
@@ -167,6 +171,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		defaultSelected,
 		pillStyle,
 		pillSize,
+		tileGap,
 		colourPreset,
 		showSelectedTick,
 		pillBgColour,
@@ -342,7 +347,16 @@ export default function Edit( { attributes, setAttributes } ) {
 							...( isSelected ? pillSelectedBorderGradientPreview : {} ),
 						} }
 					>
-						{ item.label || item.key || `Option ${ index + 1 }` }
+						{ /* Matches render.php's pill-text wrapper shape so the tile
+						   style's column CSS (style.css) applies identically here.
+						   The sub-label itself lives on WooCommerce term-meta, so
+						   (like the swatch image/colour) it can't be previewed live
+						   in the editor -- see the Sub-label panel's help text. */ }
+						<span className="sgs-option-picker__pill-text">
+							<span className="sgs-option-picker__pill-label">
+								{ item.label || item.key || `Option ${ index + 1 }` }
+							</span>
+						</span>
 					</span>
 				</span>
 			);
@@ -688,6 +702,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
+
+				<SubLabelPanel attributes={ attributes } setAttributes={ setAttributes } />
 			</InspectorControls>
 
 			{ /* ── Inspector — Styles tab (appearance: label look, pill style,
@@ -785,6 +801,23 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					{ 'tile' === pillStyle && (
+						<SgsLengthControl
+							label={ __( 'Tile gap', 'sgs-blocks' ) }
+							value={ tileGap }
+							units={ [
+								{ value: 'px', label: 'px', default: 8 },
+								{ value: 'rem', label: 'rem', default: 0.5 },
+							] }
+							onChange={ ( val ) =>
+								setAttributes( { tileGap: val ?? '' } )
+							}
+							help={ __(
+								'Space between tiles. Empty uses the framework default (8px).',
+								'sgs-blocks'
+							) }
+						/>
+					) }
 					<SelectControl
 						label={ __( 'Colour preset', 'sgs-blocks' ) }
 						help={ __(

@@ -528,3 +528,161 @@
    medium/large .sgs-option-picker__pill{padding:…}`) govern — per-instance
    override available.
    ================================================================ */
+
+/* ================================================================
+   Per-option sub-label — a second caption line under an option's name
+   (render.php ".sgs-option-picker__pill-text" wraps label + sub-label so
+   the two stack independently of the swatch chip/image). Applies to ALL
+   4 pill styles, not just tile — e.g. a plain pill size chooser showing
+   "52 ▫ 18  140" under "M". No new colour attribute: the sub-label paints
+   with the pill's own resolved text colour, one step more muted via
+   opacity, so it always stays legible against whatever bg/text the client
+   sets — a hardcoded --sgs-op-sub-label-color would fight that on a dark
+   preset. Empty sub-label map = no `.sub-label` span rendered at all
+   (additive-safe, byte-identical to the pre-existing markup).
+   ================================================================ */
+
+.sgs-option-picker__pill-text {
+	display: inline-flex;
+	flex-direction: column;
+	line-height: 1.25;
+	white-space: normal;
+}
+
+.sgs-option-picker__pill-label {
+	display: block;
+}
+
+.sgs-option-picker__sub-label {
+	display: block;
+	font-size: 0.8em;
+	font-weight: 400;
+	letter-spacing: 0.02em;
+	opacity: 0.72;
+	margin-top: 0.15em;
+}
+
+/* Selected pill keeps the same muted-relative-to-text look — no separate
+   :checked override needed, the opacity rides on whatever --sgs-op-sel-text
+   the :checked rules above already set via `color` inheritance. */
+
+/* ================================================================
+   TILE style — a vertical, image-forward option card (e.g. a frame-size
+   or lens tile) instead of the horizontal pill row. Draft precedent:
+   Eye Care Birmingham's colour-tile picker (image top, caption below,
+   1px border, hover lift) — sizes below mirror its 88px medium tile and
+   8px gap; colours are framework-neutral tokens, never the draft's hex.
+   Colours/border/radius/selected-state all reuse the SAME --sgs-op-* custom
+   properties the outlined/filled/ghost styles read (§ above) — so every
+   existing pillBgColour/pillBorderColour/pillSelectedBgColour/etc control
+   already applies here, no new colour attributes needed (per Wave B task).
+   ================================================================ */
+
+.sgs-option-picker--tile .sgs-option-picker__options {
+	align-items: stretch;
+	/* Operator-configurable via the "Tile gap" control (tileGap attribute,
+	   render.php §6) — the custom property is emitted per-instance only when
+	   set; this 8px is the framework default when it isn't (Spec 35 C5). */
+	gap: var(--sgs-option-picker-tile-gap, 8px);
+}
+
+.sgs-option-picker--tile .sgs-option-picker__option {
+	align-items: stretch;
+}
+
+.sgs-option-picker--tile .sgs-option-picker__pill {
+	position: relative;
+	flex-direction: column;
+	align-items: stretch;
+	justify-content: flex-start;
+	gap: 0;
+	padding: 0 0 6px;
+	text-align: center;
+	white-space: normal;
+	overflow: hidden;
+	background-color: var(--sgs-op-bg, var(--wp--preset--color--surface, #ffffff));
+	background-image: var(--sgs-op-bg-gradient, none);
+	color: var(--sgs-op-text, var(--wp--preset--color--text, currentColor));
+	border: 1px solid var(--sgs-op-border, var(--wp--preset--color--border, #d1d5db));
+}
+
+/* Tile size — reuses the EXISTING pillSize control (small/medium/large)
+   rather than adding a new "tile size" setting; medium matches the
+   draft's 88px minmax(). */
+.sgs-option-picker--tile.sgs-option-picker--small .sgs-option-picker__pill  { width: 72px; }
+.sgs-option-picker--tile.sgs-option-picker--medium .sgs-option-picker__pill { width: 88px; }
+.sgs-option-picker--tile.sgs-option-picker--large .sgs-option-picker__pill  { width: 112px; }
+
+.sgs-option-picker--tile .sgs-option-picker__option:hover .sgs-option-picker__pill,
+.sgs-option-picker--tile .sgs-option-picker__option:focus-within .sgs-option-picker__pill {
+	border-color: var(--sgs-op-border, var(--wp--preset--color--primary, currentColor));
+	transform: translateY(-2px);
+}
+
+.sgs-option-picker--tile .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill {
+	background-color: var(--sgs-op-sel-bg, var(--wp--preset--color--surface, #ffffff));
+	color: var(--sgs-op-sel-text, var(--wp--preset--color--text, currentColor));
+	border-color: var(--sgs-op-sel-border, var(--wp--preset--color--primary, #1F7A7A));
+	border-width: 2px;
+	padding: 0 0 5px; /* compensate the +1px border so the tile height doesn't jump on selection */
+	border-radius: var(--sgs-op-sel-pill-radius, var(--sgs-op-pill-radius, var(--wp--custom--border-radius--medium, 6px)));
+}
+
+/* Selection tick — repositioned to a corner badge for the tile's column
+   layout (the shared in-flow tick from the outlined/filled/ghost rules
+   above would otherwise land above the image, ahead of every other
+   child). Uses the same --sgs-op-sel-* colour chain as the other 3 styles. */
+.sgs-option-picker--tile .sgs-option-picker__pill::before {
+	position: absolute;
+	top: 6px;
+	right: 6px;
+	margin-right: 0;
+	z-index: 1;
+}
+
+.sgs-option-picker--tile:not(.sgs-option-picker--no-tick) .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill::before {
+	border-left-color: var(--sgs-op-sel-border, var(--wp--preset--color--primary, #1F7A7A));
+	border-bottom-color: var(--sgs-op-sel-border, var(--wp--preset--color--primary, #1F7A7A));
+}
+
+/* Tile image/colour block — full tile width, 4:3 (matches the draft's
+   colour-tile aspect-ratio), replacing the small round swatch chip the
+   other 3 styles use. object-fit stays the shared media-atom cover
+   default (client-overridable per block.json's "Swatch image" panel). */
+.sgs-option-picker--tile .sgs-option-picker__swatch--image,
+.sgs-option-picker--tile .sgs-option-picker__swatch--colour {
+	width: 100%;
+	height: auto;
+	aspect-ratio: 4 / 3;
+	border-radius: 0;
+	border: 0;
+	box-shadow: none;
+	margin-bottom: 6px;
+}
+
+.sgs-option-picker--tile .sgs-option-picker__pill-text {
+	padding-inline: 6px;
+	align-items: center;
+}
+
+.sgs-option-picker--tile .sgs-option-picker__pill-label {
+	font-size: 0.9em;
+}
+
+.sgs-option-picker--tile .sgs-option-picker__sub-label {
+	font-size: 0.72em;
+}
+
+/* No image/colour meta on a tile option -- the tile still needs its
+   44x44 WCAG touch target and a sensible minimum height even with a
+   caption-only tile (option with no term-meta image). */
+.sgs-option-picker--tile .sgs-option-picker__pill {
+	min-height: 44px;
+	padding-top: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-option-picker--tile .sgs-option-picker__pill {
+		transition: none;
+	}
+}
