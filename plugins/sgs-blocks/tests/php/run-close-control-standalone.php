@@ -359,35 +359,22 @@ if ( is_callable( $sgs_nd_geometry_for_anchor ) ) {
 }
 ok( false !== strpos( $drawer_css, 'z-index: min(90, max(2, calc(var(--sgs-header-z, 100) - 1)));' ), 'style.css base z-index equals the under-header value the full-screen tier emits (a mixed-tier reset lands on the same number)' );
 // ════════════════════════════════════════════════════════════════════════════
-// Header clearance (Bean, 2026-09-24): a full-screen NON-MODAL drawer paints
-// under the header, so its content must start below the header's measured edge.
+// Full-screen non-modal (Bean, 2026-09-24, option 1): paints ABOVE the header
+// and starts at the bottom of the burger's own header row, like the trigger
+// panel; a modal full-screen drawer keeps the plain full-viewport geometry.
 // ════════════════════════════════════════════════════════════════════════════
-// Direct substr, not extract_section(): that helper trims at the section's LAST
-// "
-//", and this section's comments all come first, so it would keep only them.
-$clear_start   = strpos( $current_source, '// ── Header clearance' );
-$clear_end     = strpos( $current_source, '// ── Scrim: the see-through' );
-$clear_section = ( false !== $clear_start && false !== $clear_end && $clear_end > $clear_start ) ? substr( $current_source, $clear_start, $clear_end - $clear_start ) : '';
-ok( '' !== $clear_section, 'the header-clearance section is found in the CURRENT render.php' );
-$run_clear = function ( array $anchor, string $modality ) use ( $clear_section ): string {
-	$css                    = '';
-	$root_sel               = '.sgs-nav-drawer-test.wp-block-sgs-nav-drawer';
-	$anchor_attr_raw        = $anchor;
-	$sgs_nd_allowed_anchors = array( 'full-screen', 'header', 'trigger', 'centred' );
-	eval( $clear_section ); // phpcs:ignore Squiz.PHP.Eval.Discouraged -- CLI harness evaluating the extracted render.php section.
-	return $css;
-};
-$clear_rule = '.sgs-nav-drawer-test.wp-block-sgs-nav-drawer{--sgs-nd-header-clear:var(--sgs-drawer-header-offset, 0px);}';
-ok( false !== strpos( $run_clear( array(), 'non-modal' ), $clear_rule ), 'non-modal + default (full-screen) anchor: content clears the measured header edge' );
-ok( '' === $run_clear( array(), 'modal' ), 'modal drawer: no clearance (the top layer covers the header)' );
-ok( '' === $run_clear( array( 'desktop' => 'trigger' ), 'non-modal' ), 'non-modal + trigger anchor: no clearance (the panel paints above the header)' );
-$mixed_clear = $run_clear( array( 'desktop' => 'trigger', 'mobile' => 'full-screen' ), 'non-modal' );
-ok(
-	0 === strpos( $mixed_clear, '@media' ) && 1 === substr_count( $mixed_clear, $clear_rule ) && false !== strpos( $mixed_clear, '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){' . $clear_rule . '}' ),
-	'mixed tiers: clearance only inside the mobile media query where the tier is full-screen'
-);
-ok( false !== strpos( $drawer_css, 'padding-top: var(--sgs-nd-header-clear, 0px);' ) && false !== strpos( $drawer_css, 'top: calc(var(--sgs-nd-header-clear, 0px) + 12px);' ), 'style.css turns the clearance into dialog padding-top and moves the × down by it' );
-ok( false !== strpos( $current_source, "top:calc(var(--sgs-nd-header-clear, 0px) + ' . \$sgs_nd_close_edge_inset . 'px);" ), 'top-row-start placement also clears the header' );
+if ( is_callable( $sgs_nd_geometry_for_anchor ) ) {
+	$fs_nonmodal = $sgs_nd_geometry_for_anchor( 'full-screen', '', 'non-modal' );
+	$fs_modal    = $sgs_nd_geometry_for_anchor( 'full-screen', '', 'modal' );
+	ok( false !== strpos( $fs_nonmodal, 'top:var(--sgs-drawer-opener-row-bottom, 0px);' ) && false !== strpos( $fs_nonmodal, 'height:calc(100dvh - var(--sgs-drawer-opener-row-bottom, 0px));' ), 'non-modal full-screen starts at the bottom edge of the burger row and fills the rest of the viewport' );
+	ok( false !== strpos( $fs_nonmodal, $z_popover ), 'non-modal full-screen paints ABOVE the header (lower header rows are covered)' );
+	ok( false !== strpos( $fs_modal, 'inset:0' ) && false !== strpos( $fs_modal, $z_under ) && false === strpos( $fs_modal, 'opener-row-bottom' ), 'NEGATIVE CONTROL: modal full-screen keeps the full-viewport geometry (the checks above can tell the two apart)' );
+	ok( false !== strpos( $sgs_nd_geometry_for_anchor( 'trigger', '', 'non-modal' ), 'var(--sgs-drawer-trigger-top, 16px)' ), 'modality does not change the trigger panel' );
+}
+ok( false !== strpos( $current_source, "|| 'non-modal' === \$modality ) {" ), 'a non-modal drawer emits geometry even with no anchor attribute set (its default differs from style.css)' );
+$store_js = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/shared/nav-interactivity/store.js' );
+ok( false !== strpos( $store_js, "trigger.closest( '.sgs-site-header-row' ) || trigger" ) && false !== strpos( $store_js, "'--sgs-drawer-opener-row-bottom'," ), 'store.js measures the own header row of the burger (falling back to the burger) and writes --sgs-drawer-opener-row-bottom' );
+ok( false === strpos( $drawer_css, 'sgs-nd-header-clear' ) && false === strpos( $current_source, 'sgs-nd-header-clear' ), 'the superseded header-clearance padding is gone from style.css and render.php' );
 
 echo "\n==== $pass passed, $fail failed ====\n";
 exit( $fail > 0 ? 1 : 0 );

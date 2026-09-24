@@ -677,6 +677,28 @@ function openDrawerFor( ctx, trigger ) {
 		drawer.style.removeProperty( '--sgs-drawer-trigger-right' );
 	}
 
+	/*
+	 * The burger's own header ROW, measured for the full-screen non-modal
+	 * drawer (Bean, 2026-09-24): that drawer paints ABOVE the header and starts
+	 * at this row's bottom edge, so the burger row stays visible and live as
+	 * the close control while every lower header row is covered, the same rule
+	 * the trigger panel follows. Falls back to the burger's own bottom edge
+	 * when it sits in no site-header row; removed when there is no trigger, so
+	 * render.php's `var(…, 0px)` fallback takes over.
+	 */
+	const openerRow = trigger
+		? trigger.closest( '.sgs-site-header-row' ) || trigger
+		: null;
+	const rowRect = openerRow ? openerRow.getBoundingClientRect() : null;
+	if ( rowRect && rowRect.height > 0 ) {
+		drawer.style.setProperty(
+			'--sgs-drawer-opener-row-bottom',
+			`${ Math.max( 0, Math.round( rowRect.bottom ) ) }px`
+		);
+	} else {
+		drawer.style.removeProperty( '--sgs-drawer-opener-row-bottom' );
+	}
+
 	if ( useModal ) {
 		// FR-36-6 default: full-screen modal in the top layer — survives a
 		// transformed header ancestor; native inert background + native ESC +

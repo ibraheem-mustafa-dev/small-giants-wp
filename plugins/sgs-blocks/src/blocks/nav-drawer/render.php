@@ -124,7 +124,7 @@ $sgs_nd_allowed_anchors = array( 'full-screen', 'header', 'trigger', 'centred' )
 // fails and the × comes back automatically.
 $sgs_nd_z_under_header = 'z-index:min(90, max(2, calc(var(--sgs-header-z, 100) - 1)));';
 $sgs_nd_z_popover      = 'z-index:calc(var(--sgs-header-z, 100) + 1);';
-$sgs_nd_geometry_for_anchor = function ( $anchor_value, $panel_size ) use ( $sgs_nd_z_under_header, $sgs_nd_z_popover ) {
+$sgs_nd_geometry_for_anchor = function ( $anchor_value, $panel_size, $modality_value = 'modal' ) use ( $sgs_nd_z_under_header, $sgs_nd_z_popover ) {
 	switch ( $anchor_value ) {
 		case 'header':
 			// The real header bottom edge: the theme's utilities.css sets
@@ -145,6 +145,15 @@ $sgs_nd_geometry_for_anchor = function ( $anchor_value, $panel_size ) use ( $sgs
 			return 'position:fixed;inset:0;margin:auto;width:min(' . $cap . ', calc(100vw - 32px));height:fit-content;max-width:calc(100vw - 32px);max-height:calc(100dvh - 32px);' . $sgs_nd_z_popover;
 		case 'full-screen':
 		default:
+			// Non-modal (Bean, 2026-09-24): the drawer paints ABOVE the header
+			// and starts at the bottom of the burger's own header row
+			// (store.js measures --sgs-drawer-opener-row-bottom on open), so
+			// the burger row stays visible and live as the close control and
+			// every lower header row is covered, the rule the trigger panel
+			// follows. A modal drawer is in the top layer and covers all.
+			if ( 'non-modal' === $modality_value ) {
+				return 'position:fixed;top:var(--sgs-drawer-opener-row-bottom, 0px);right:0;bottom:auto;left:0;margin:0;width:100vw;height:calc(100dvh - var(--sgs-drawer-opener-row-bottom, 0px));max-width:100vw;max-height:calc(100dvh - var(--sgs-drawer-opener-row-bottom, 0px));' . $sgs_nd_z_popover;
+			}
 			// Identical to style.css's base rule — deliberately, so the
 			// zero-attribute (default) case never needs this closure called
 			// at all (guarded below) and an explicit 'full-screen' pick at a
@@ -428,7 +437,8 @@ if ( '' !== $close_colour_hover_effective ) {
 // actually set" so the zero-attribute default emits no geometry rule —
 // style.css's base rule already IS the full-screen geometry, so emitting it
 // again here for the untouched default would be a redundant duplicate rule.
-if ( $sgs_nd_anchor_is_set || $sgs_nd_panel_is_set ) {
+// A non-modal drawer always emits: its full-screen default differs from style.css's base rule.
+if ( $sgs_nd_anchor_is_set || $sgs_nd_panel_is_set || 'non-modal' === $modality ) {
 	$sgs_nd_anchor_desktop = sgs_resolve_tier( $anchor_attr_raw, 'desktop', 'full-screen' )['value'];
 	$sgs_nd_anchor_tablet  = sgs_resolve_tier( $anchor_attr_raw, 'tablet', 'full-screen' )['value'];
 	$sgs_nd_anchor_mobile  = sgs_resolve_tier( $anchor_attr_raw, 'mobile', 'full-screen' )['value'];
@@ -448,9 +458,9 @@ if ( $sgs_nd_anchor_is_set || $sgs_nd_panel_is_set ) {
 	$sgs_nd_panel_tablet  = sgs_responsive_sanitise_css_value( (string) sgs_resolve_tier( $panel_size_attr_raw, 'tablet', '' )['value'] );
 	$sgs_nd_panel_mobile  = sgs_responsive_sanitise_css_value( (string) sgs_resolve_tier( $panel_size_attr_raw, 'mobile', '' )['value'] );
 
-	$sgs_nd_geom_desktop = $sgs_nd_geometry_for_anchor( $sgs_nd_anchor_desktop, $sgs_nd_panel_desktop );
-	$sgs_nd_geom_tablet  = $sgs_nd_geometry_for_anchor( $sgs_nd_anchor_tablet, $sgs_nd_panel_tablet );
-	$sgs_nd_geom_mobile  = $sgs_nd_geometry_for_anchor( $sgs_nd_anchor_mobile, $sgs_nd_panel_mobile );
+	$sgs_nd_geom_desktop = $sgs_nd_geometry_for_anchor( $sgs_nd_anchor_desktop, $sgs_nd_panel_desktop , $modality );
+	$sgs_nd_geom_tablet  = $sgs_nd_geometry_for_anchor( $sgs_nd_anchor_tablet, $sgs_nd_panel_tablet , $modality );
+	$sgs_nd_geom_mobile  = $sgs_nd_geometry_for_anchor( $sgs_nd_anchor_mobile, $sgs_nd_panel_mobile , $modality );
 
 	if ( '' !== $sgs_nd_geom_desktop ) {
 		$css .= $root_sel . '{' . $sgs_nd_geom_desktop . '}';
@@ -462,34 +472,6 @@ if ( $sgs_nd_anchor_is_set || $sgs_nd_panel_is_set ) {
 	}
 	if ( $sgs_nd_geom_mobile !== $sgs_nd_geom_tablet ) {
 		$css .= '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){' . $root_sel . '{' . $sgs_nd_geom_mobile . '}}';
-	}
-}
-
-// ── Header clearance (Bean, 2026-09-24). A full-screen drawer that is NOT
-// modal paints one below the header (the burger must stay live above it), so
-// its first rows sat under the header, unreadable and unclickable. Per tier,
-// that case maps --sgs-nd-header-clear to the header's measured bottom edge
-// (store.js writes --sgs-drawer-header-offset on every open); style.css turns
-// it into the dialog's padding-top and moves the × down by it. Modal drawers
-// are in the top layer above the header, and every other anchor starts at or
-// below the header or paints above it, so they clear nothing.
-if ( 'non-modal' === $modality ) {
-	$sgs_nd_clear_for = function ( $tier ) use ( $anchor_attr_raw, $sgs_nd_allowed_anchors ) {
-		$anchor = sgs_resolve_tier( is_array( $anchor_attr_raw ) ? $anchor_attr_raw : array(), $tier, 'full-screen' )['value'];
-		$anchor = in_array( $anchor, $sgs_nd_allowed_anchors, true ) ? $anchor : 'full-screen';
-		return 'full-screen' === $anchor ? 'var(--sgs-drawer-header-offset, 0px)' : '0px';
-	};
-	$sgs_nd_clear_desktop = $sgs_nd_clear_for( 'desktop' );
-	$sgs_nd_clear_tablet  = $sgs_nd_clear_for( 'tablet' );
-	$sgs_nd_clear_mobile  = $sgs_nd_clear_for( 'mobile' );
-	if ( '0px' !== $sgs_nd_clear_desktop ) {
-		$css .= $root_sel . '{--sgs-nd-header-clear:' . $sgs_nd_clear_desktop . ';}';
-	}
-	if ( $sgs_nd_clear_tablet !== $sgs_nd_clear_desktop ) {
-		$css .= '@media (max-width:' . SGS_Breakpoints::TABLET_MAX . 'px){' . $root_sel . '{--sgs-nd-header-clear:' . $sgs_nd_clear_tablet . ';}}';
-	}
-	if ( $sgs_nd_clear_mobile !== $sgs_nd_clear_tablet ) {
-		$css .= '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){' . $root_sel . '{--sgs-nd-header-clear:' . $sgs_nd_clear_mobile . ';}}';
 	}
 }
 
@@ -965,7 +947,7 @@ $sgs_nd_placement_decls_for = function ( $placement, $offset ) use ( $sgs_nd_clo
 			. 'transform:translate(calc(-50% + ' . $x . 'px),calc(-50% + ' . $y . 'px));';
 	}
 	if ( 'top-row-start' === $placement ) {
-		return 'inset-inline-end:auto;inset-inline-start:' . $sgs_nd_close_edge_inset . 'px;top:calc(var(--sgs-nd-header-clear, 0px) + ' . $sgs_nd_close_edge_inset . 'px);'
+		return 'inset-inline-end:auto;inset-inline-start:' . $sgs_nd_close_edge_inset . 'px;top:' . $sgs_nd_close_edge_inset . 'px;'
 			. 'transform:translate(' . $x . 'px,' . $y . 'px);';
 	}
 	// top-row-end (default).
