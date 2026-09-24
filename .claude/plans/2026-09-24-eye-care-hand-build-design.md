@@ -1,8 +1,24 @@
 # Eye Care Birmingham: build the real site first, then use it to test the pipeline
 
 **Status:** APPROVED by Bean 2026-09-24 (D1149). **Wave A DONE 2026-09-24.** **Wave B framework part DONE
-2026-09-24** (deployed to eye-care-test, last commit b2757b351). **Next: Wave B pages** (header, footer, home,
-lenses, about, help, contact), then Wave C.
+2026-09-24.** **Wave B pages BUILT 2026-09-24, comparison pass in progress**, then Wave C.
+- Wave B pages on eye-care-test, each built through the editor with `scripts/wp-build-page.js` from a tree in
+  `sites/eye-care-ward-end/build/` (the reproducible record): header `sgs_header` 199 (active), mobile menu `sgs_drawer`
+  203 (the burger's own drawerRef; the global drawer pointer is untouched), mega panels 165/176/183/186, WP menu 96,
+  footer `sgs_footer` 182 (active, carries the floating WhatsApp button), Home 208 (front page), Lenses 168, Help 171,
+  About 187, Contact 190 (the four content pages use the new "Page (no title)" template).
+- Framework fixes found by building the pages (all deployed): form submit posted natively and lost its success
+  message; required selects red on load; accordion default-open item reported collapsed; footer links forced to the
+  surface colour (a dark-footer assumption, two rules); no page template without the title; WhatsApp CTA now falls back
+  to Site Info. Round 2 settings: card-grid image glyph + image overlay, process-steps list layout, brand-strip exact
+  seconds, social-icons brand marks (Google, WhatsApp, TikTok, X).
+- Waiting on Bean (shared mechanisms): (1) hide a block below/above a custom width (the header phone below 1160, which
+  also stops the header wrapping between 1060 and 1160); (2) a button whose link comes from Site Info (the Help page's
+  "Call"); (3) the outline button preset following its section's text colour (invisible on light sections today; About
+  uses a per-button override meanwhile); (4) a shop setting to drop ".00" on whole-pound prices.
+- Known follow-ups: the mega panels for Brands, Lenses and Help are simplified versions of the draft; the shape tiles'
+  "Photo to come" note has no setting; the social-icons glyph gradient paints strokes only, so it has no effect on the
+  four filled brand marks; Escape does not close a hover-opened mega panel (passed to the nav track, 2026-09-24).
 - Wave B framework part: all 22 items from section 2 of `.claude/reports/2026-09-24-eye-care-gap-map-recheck.md`
   are built, audited against Spec 32 and Spec 35, and committed one feature per commit. Two needed no code:
   `sgs/google-reviews` already draws the exact fraction (4.7 fills 70% of the fifth star); product fields got a
