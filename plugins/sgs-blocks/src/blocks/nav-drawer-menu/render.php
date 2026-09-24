@@ -471,7 +471,19 @@ $submenu_model_ctx = (string) ( $block->context['sgs/navDrawerSubmenuModel'] ?? 
 if ( ! in_array( $submenu_model_ctx, array( 'accordion', 'drill-down' ), true ) ) {
 	$submenu_model_ctx = 'accordion';
 }
-$items_html = sgs_nav_drawer_menu_render_items( $flat_items, $submenu_model_ctx, $uid, $featured_ids, $sgs_nm_sublink_marker, $mega_drawer_fallback_ids );
+
+/*
+ * Wave 3C U-11 (ENG-02, Builder-A interface #2) — `sgs/nav-drawer`'s own
+ * `accordionExclusive` attribute (default true), reached via block Context
+ * exactly like `sgs/navDrawerSubmenuModel` above. MISSING context (a parent
+ * whose block.json hasn't shipped the key yet, or this block rendered in
+ * isolation outside any drawer) resolves to `true` — today's exclusive
+ * behaviour — not `false`.
+ */
+$sgs_nm_accordion_exclusive = ! array_key_exists( 'sgs/navDrawerAccordionExclusive', $block->context )
+	|| (bool) $block->context['sgs/navDrawerAccordionExclusive'];
+
+$items_html = sgs_nav_drawer_menu_render_items( $flat_items, $submenu_model_ctx, $uid, $featured_ids, $sgs_nm_sublink_marker, $mega_drawer_fallback_ids, $sgs_nm_accordion_exclusive );
 
 // FR-41-36 — the drawer's own `drawerBg` attribute,
 // reached via the SAME real WP block-context channel as

@@ -228,7 +228,8 @@
 					"clusters": [
 						"text",
 						"fill",
-						"layout"
+						"layout",
+						"motion"
 					],
 					"prefix": "burger",
 					"attrMap": {
@@ -242,7 +243,9 @@
 						"css:font-family": "burgerFontFamily",
 						"css:font-weight": "burgerFontWeight",
 						"css:text-transform": "burgerTextTransform",
-						"css:letter-spacing": "burgerLetterSpacing"
+						"css:letter-spacing": "burgerLetterSpacing",
+						"css:transition-duration": "burgerMorphDuration",
+						"css:transition-timing-function": "burgerMorphEasing"
 					},
 					"states": {
 						"hover": {
@@ -252,7 +255,7 @@
 							}
 						}
 					},
-					"_note": "burgerColour is the icon TEXT colour (css:color); burgerHoverColour drives the button's HOVER background-color; burgerBg is its resting counterpart (a base attribute with an inspector control in the edit.js Burger panel, Normal state), so css:background-color resolves at base too. Unset burgerBg leaves style.css's `background:none` default. `css:color`->burgerColour, `css:background-color`->burgerBg and `states.hover.css:color`->burgerColourHover (sgs_hover_state_rules on `:hover, :focus-visible`) are declared EXPLICITLY, because burgerColour and burgerColourHover would otherwise both derive to (color, burger, state=NULL) and collide on one routing slot -- the hover entry is what separates them. The manifest is the durable source for these routings."
+					"_note": "burgerColour is the icon TEXT colour (css:color); burgerHoverColour drives the button's HOVER background-color; burgerBg is its resting counterpart (a base attribute with an inspector control in the edit.js Burger panel, Normal state), so css:background-color resolves at base too. Unset burgerBg leaves style.css's `background:none` default. `css:color`->burgerColour, `css:background-color`->burgerBg and `states.hover.css:color`->burgerColourHover (sgs_hover_state_rules on `:hover, :focus-visible`) are declared EXPLICITLY, because burgerColour and burgerColourHover would otherwise both derive to (color, burger, state=NULL) and collide on one routing slot -- the hover entry is what separates them. The manifest is the durable source for these routings. Spec 35 §12 audit item 5 (2026-09-24) added the `motion` cluster (already defined in cluster-member-sets.json with exactly these two members, nothing new invented) + explicit attrMap entries for burgerMorphDuration/burgerMorphEasing -- the default {prefix}{suffix} convention would resolve them to 'burgerDuration'/'burgerEasing' (prefix 'burger' + suffix 'Duration'/'Easing'), which do not match the real attribute names (burgerMorphDuration/burgerMorphEasing), so an explicit attrMap entry is required, not optional."
 				},
 				"sublink": {
 					"label": "Submenu link",
@@ -636,6 +639,32 @@
 		"itemMagnetEnabled": {
 			"type": "boolean",
 			"default": false
+		},
+		"itemMagnetStrength": {
+			"type": "number",
+			"description": "Wave 3C U-11 (M-10). The item magnet's pull FACTOR, 0.02 to 0.5. No default — unset means today's exact behaviour: `view.js::initBarEffects` calls `initMagnet(el)` with no options at all, giving `magnet.js`'s own shipped defaults (factor 0.15, an 8px cap). When set, the cap is lifted (`maxPull: Infinity`) — the pointer only ever engages while inside the item's own box (the listener is on the item), so the pull is naturally bounded by half the item's width times the factor, matching what halcyon (0.16) and indus-foods (0.14) actually measure. Shown only while `itemMagnetEnabled` is on."
+		},
+		"burgerMorph": {
+			"type": "string",
+			"default": "x",
+			"enum": [ "x", "x-rotate", "line", "none" ],
+			"description": "Wave 3C U-9 (§4.4). How the default burger glyph morphs when the drawer opens: x (default — today's pose, unchanged), x-rotate (the same X plus a 180 degree turn of the whole icon box, dogstudio), line (the top and bottom bars slide onto the middle bar; the travel distance is derived from the icon box via calc(), never a hardcoded px), none (static — no transform at all). Only affects the DEFAULT glyph — `sgs_nav_bar_menu_burger_toggle_markup()`'s own `$is_default_icon` gate (a custom `triggerIcon` has no guaranteed 3-bar shape to morph)."
+		},
+		"burgerMorphDuration": {
+			"type": "number",
+			"default": 200,
+			"description": "Wave 3C U-9 (§4.4). Burger morph transition duration in ms, 0 to 1200. Default 200 matches today's hardcoded `style.css` value exactly."
+		},
+		"burgerMorphEasing": {
+			"type": "string",
+			"default": "ease",
+			"enum": [ "ease", "default", "ease-out", "ease-in", "spring", "linear", "quart-out", "custom" ],
+			"description": "Wave 3C U-9 (§4.4). Burger morph easing curve. `ease` is the default — today's exact hardcoded value. `default`/`ease-out`/`ease-in`/`spring` resolve to the matching theme motion token (`var(--wp--custom--easing--{value})`, `AnimationControl.js::EASINGS`' own labels — 'Smooth'/'Expo out'/'Ease in'/'Spring'). `quart-out` is a literal `cubic-bezier(0.165, 0.84, 0.44, 1)` (dogstudio) — not a theme token. `linear` is the literal CSS keyword. `custom` reads `burgerMorphEasingCustom` instead (validated; falls back to `ease` when invalid)."
+		},
+		"burgerMorphEasingCustom": {
+			"type": "string",
+			"default": "",
+			"description": "Wave 3C U-9 (§4.4). A hand-typed `cubic-bezier(x1, y1, x2, y2)` curve, read only when `burgerMorphEasing` is `custom`. Validated by an anchored numeric regex (four numbers, `-?\\d*\\.?\\d+`, no exponent notation, x1 and x2 clamped to 0-1 by the CSS spec) — an invalid value is REFUSED (never passed through) and the morph falls back to `ease`."
 		},
 		"sgsCustomCss": {
 			"type": "string",

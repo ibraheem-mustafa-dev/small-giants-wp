@@ -1284,11 +1284,11 @@ icon/text display axis, but **`burger-morph` is a GLYPH choice, not a display mo
 two-bar `<span class="sgs-nav-drawer__close-bars">` that reads as an X, with no icon and no text.
 The attribute conflates two orthogonal axes, so a one-to-one mapping to `triggerMode`'s three values
 would delete a look. It therefore keeps its name and its three original values and carries a FOURTH:
-`icon-and-text`. It is a real JSON `enum`, so the value lives in **both**
-`plugins/sgs-blocks/src/blocks/nav-drawer/block.json::attributes.closeStyle.enum` AND
-`plugins/sgs-blocks/src/blocks/nav-drawer/render.php::$sgs_nd_allowed_close_styles` — an enum value
-accepted by one side and rejected by the other coerces silently to the default with no error on
-either.
+`icon-and-text`. Since Wave 3C U-11 (Spec 36 FR-36-6) `closeStyle` is a per-device tier object with a
+fifth value, `trigger`, so it has no JSON `enum`; the allowed values live in
+`plugins/sgs-blocks/src/blocks/nav-drawer/render.php::$sgs_nd_allowed_close_styles` and the editor's option
+list, and a standalone test (`plugins/sgs-blocks/tests/php/run-close-control-standalone.php`) asserts the two
+agree, because a value accepted by one side and rejected by the other coerces silently to the default.
 
 ⛔ **The new option's LABEL is "Both", not "Icon and text".** It keeps to the same 12-character
 `ToggleGroupControl` bound as the open side (Spec 35 Part O). **The STORED enum value is

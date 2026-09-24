@@ -108,6 +108,10 @@ export default function MenuSettingsPanel( {
 								setAttributes( { collapsePoint: n } );
 							}
 						} }
+						help={ __(
+							'Using two of these blocks either side of a logo (a split menu)? Give both instances the same value — a mismatch is harmless, but the two halves will switch to burger at different widths.',
+							'sgs-blocks'
+						) }
 						presets={ false }
 					/>
 				) }

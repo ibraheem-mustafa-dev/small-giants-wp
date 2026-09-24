@@ -1,0 +1,330 @@
+<?php
+/**
+ * Standalone runner for Wave 3C U-9 + U-11 "how a menu closes"
+ * (.claude/reports/2026-09-24-u9-u11-design.md), the nav-drawer/render.php side:
+ * closeStyle tier object + the revised FR-36-6 predicate (§4.2), closePlacement/
+ * closeOffset (§4.3), per-tier sizing (§4.1), closeRadius (§4.10) and the
+ * accessible-name resolution.
+ *
+ * render.php cannot be included whole outside WordPress (it needs block context
+ * and dozens of helpers), so this runner extracts the close-control section from
+ * the REAL render.php (from `$sgs_nd_allowed_close_styles` to the "Spec 35 item 18"
+ * comment) and evaluates that exact text against fixtures — a change to the
+ * shipped code is a change to what is tested, nothing here is a copy.
+ *
+ * Plain PHP, no PHPUnit. Exits non-zero on any failure.
+ *   php plugins/sgs-blocks/tests/php/run-close-control-standalone.php
+ *
+ * @package SGS\Blocks\Tests
+ */
+
+declare(strict_types=1);
+
+// CLI test harness (not shipped code).
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
+// phpcs:disable Squiz.Commenting.FunctionComment.Missing
+// phpcs:disable Squiz.PHP.Eval.Discouraged
+
+if ( ! defined( 'ABSPATH' ) ) {
+	define( 'ABSPATH', dirname( __DIR__, 2 ) . '/' );
+}
+
+if ( ! function_exists( 'esc_attr' ) ) {
+	function esc_attr( $text ): string {
+		return htmlspecialchars( (string) $text, ENT_QUOTES, 'UTF-8' );
+	}
+}
+if ( ! function_exists( 'esc_html' ) ) {
+	function esc_html( $text ): string {
+		return htmlspecialchars( (string) $text, ENT_QUOTES, 'UTF-8' );
+	}
+}
+if ( ! function_exists( 'esc_html__' ) ) {
+	function esc_html__( $text, $domain = null ): string {
+		return (string) $text;
+	}
+}
+if ( ! function_exists( 'esc_attr__' ) ) {
+	function esc_attr__( $text, $domain = null ): string {
+		return (string) $text;
+	}
+}
+if ( ! function_exists( 'sgs_nav_shared_icon_markup' ) ) {
+	// Stub — the real resolver (includes/nav-menu-treatments.php) needs a full
+	// WP bootstrap for its wp-icon/dashicon branches; structural tests here
+	// never inspect the SVG body, only where the markup lands.
+	function sgs_nav_shared_icon_markup( $icon, array $fallback ): string {
+		return '<svg data-icon="x"></svg>';
+	}
+}
+
+require_once dirname( __DIR__, 2 ) . '/includes/helpers-responsive.php';
+
+$pass = 0;
+$fail = 0;
+
+function ok( bool $cond, string $label ): void {
+	global $pass, $fail;
+	if ( $cond ) {
+		++$pass;
+		echo "PASS  $label\n";
+	} else {
+		++$fail;
+		echo "FAIL  $label\n";
+	}
+}
+
+/**
+ * Extract a named section of render.php between two unique marker strings
+ * (start marker included, end marker excluded, trimmed back to the start of
+ * the comment line that introduces the end marker's section) — same recipe as
+ * run-nav-drawer-surface-standalone.php.
+ */
+function extract_section( string $source, string $start_marker, string $end_marker ): string {
+	$start = strpos( $source, $start_marker );
+	$end   = strpos( $source, $end_marker );
+	if ( false === $start || false === $end || $end <= $start ) {
+		return '';
+	}
+	$section = substr( $source, $start, $end - $start );
+	$cut     = strrpos( $section, "\n//" );
+	return false !== $cut ? substr( $section, 0, $cut ) : $section;
+}
+
+// ── Extract the real close-control sections from the CURRENT (shipped)
+// render.php — TWO spans, because "$classes = array(…)" (uid class list, not
+// under test) sits physically between them:
+//   A: closeStyle/closePlacement/closeOffset/closeRadius resolution + CSS
+//      (style tiers, the FR-36-6 predicate, per-tier sizing, placement, radius).
+//   B: the close-button markup (variant spans, aria-label, $close_html).
+// A change to either shipped span is a change to what is tested here.
+$render_path     = dirname( __DIR__, 2 ) . '/src/blocks/nav-drawer/render.php';
+$current_source  = (string) file_get_contents( $render_path );
+$section_a       = extract_section(
+	$current_source,
+	'$sgs_nd_allowed_close_styles = array(',
+	'$classes = array('
+);
+$section_b       = extract_section(
+	$current_source,
+	'$sgs_nd_close_label = trim(',
+	'Spec 35 item 18 — the visually-hidden note'
+);
+ok( '' !== $section_a && '' !== $section_b, 'both close-control sections are found in the CURRENT nav-drawer/render.php' );
+if ( '' === $section_a || '' === $section_b ) {
+	echo "\n==== $pass passed, $fail failed ====\n";
+	exit( 1 );
+}
+$section = $section_a . "\n" . $section_b;
+
+/**
+ * Run the close-control sections against one drawer's attributes + modality
+ * and return the CSS/markup they produced.
+ *
+ * @param string $code       The PHP text of the close-control sections (A + B).
+ * @param array  $attributes The drawer attributes.
+ * @param string $modality   'modal' | 'non-modal'.
+ * @return array{css:string,close_html:string}
+ */
+function run_close_section( string $code, array $attributes, string $modality = 'modal' ): array {
+	$css       = '';
+	$uid       = 'sgs-nav-drawer-test';
+	$close_sel = '.' . $uid . '.wp-block-sgs-nav-drawer .sgs-nav-drawer__close';
+	eval( $code ); // phpcs:ignore Squiz.PHP.Eval.Discouraged -- CLI harness evaluating the extracted render.php sections (structural test only; no untrusted input reaches this eval — see the module docblock).
+	return array(
+		'css'        => $css,
+		'close_html' => $close_html ?? '',
+	);
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// §4.2 — the revised FR-36-6 predicate.
+// ════════════════════════════════════════════════════════════════════════════
+
+$modal_trigger = run_close_section( $section, array( 'closeStyle' => array( 'desktop' => 'trigger' ) ), 'modal' );
+ok( false === strpos( $modal_trigger['css'], 'data-sgs-nav-opener-live' ), 'modal + trigger: no opener-live hide rule at all (the × always shows in a modal drawer)' );
+
+$nonmodal_separate = run_close_section( $section, array( 'closeStyle' => array( 'desktop' => 'separate-x' ) ), 'non-modal' );
+ok( false === strpos( $nonmodal_separate['css'], 'data-sgs-nav-opener-live' ), 'non-modal + separate-x: no hide rule (only trigger is eligible)' );
+
+// `trigger` set at desktop with NO tablet/mobile override CASCADES (tablet
+// inherits desktop, mobile inherits tablet — §4.1's cascade rule), so all
+// three tiers resolve to `trigger` and the hide rule appears at base scope
+// AND inside both media queries.
+$nonmodal_trigger_desktop = run_close_section( $section, array( 'closeStyle' => array( 'desktop' => 'trigger' ) ), 'non-modal' );
+ok(
+	false !== strpos( $nonmodal_trigger_desktop['css'], '.sgs-nav-drawer-test[data-sgs-nav-opener-live] .sgs-nav-drawer__close{display:none;}' ),
+	'non-modal + trigger (desktop tier, no override): hide rule emitted at BASE scope'
+);
+ok(
+	false !== strpos( $nonmodal_trigger_desktop['css'], '@media (max-width:' . SGS_Breakpoints::TABLET_MAX . 'px){.sgs-nav-drawer-test[data-sgs-nav-opener-live] .sgs-nav-drawer__close{display:none;}}' )
+		&& false !== strpos( $nonmodal_trigger_desktop['css'], '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){.sgs-nav-drawer-test[data-sgs-nav-opener-live] .sgs-nav-drawer__close{display:none;}}' ),
+	'non-modal + trigger (desktop tier, no override): the cascade also hides the × at tablet AND mobile (both inherit trigger)'
+);
+
+$nonmodal_trigger_mobile = run_close_section( $section, array( 'closeStyle' => array( 'desktop' => 'separate-x', 'mobile' => 'trigger' ) ), 'non-modal' );
+ok(
+	false !== strpos( $nonmodal_trigger_mobile['css'], '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){.sgs-nav-drawer-test[data-sgs-nav-opener-live] .sgs-nav-drawer__close{display:none;}}' ),
+	'non-modal + trigger (mobile tier only): hide rule scoped inside the MOBILE media query'
+);
+ok(
+	false === strpos( $nonmodal_trigger_mobile['css'], '@media (max-width:' . SGS_Breakpoints::TABLET_MAX . 'px){.sgs-nav-drawer-test[data-sgs-nav-opener-live]' ),
+	'non-modal + trigger (mobile tier only): NO hide rule inside the TABLET media query (tablet inherited separate-x from desktop)'
+);
+
+ok(
+	false !== strpos( $modal_trigger['close_html'], '<svg data-icon="x">' ) && false === strpos( $modal_trigger['close_html'], 'close-bars' ) && false === strpos( $modal_trigger['close_html'], 'close-text' ),
+	'`trigger` renders the separate-x glyph (never the burger-morph bars or a text label)'
+);
+
+// ════════════════════════════════════════════════════════════════════════════
+// Tier cascade + allow-list.
+// ════════════════════════════════════════════════════════════════════════════
+
+$cascade = run_close_section( $section, array( 'closeStyle' => array( 'desktop' => 'text-swap' ) ) );
+ok( false !== strpos( $cascade['close_html'], 'sgs-nav-drawer__close-text' ) && false === strpos( $cascade['css'], 'close-variant' ), 'one style everywhere (desktop only set): single markup shape, no variant spans/CSS at all' );
+
+$junk_style = run_close_section( $section, array( 'closeStyle' => array( 'desktop' => 'literally-anything-else' ) ) );
+ok( false !== strpos( $junk_style['close_html'], '<svg data-icon="x">' ), 'an invalid closeStyle value coerces to the separate-x fallback, never fatals' );
+
+// edit.js allow-list parity — the same 5 values, in the same set, on both sides.
+$edit_js_path = dirname( __DIR__, 2 ) . '/src/blocks/nav-drawer/edit.js';
+$edit_js      = (string) file_get_contents( $edit_js_path );
+// Simpler, robust extraction: pull every ToggleGroupControlOption value inside
+// the "Show as" block. Spec 35 §12 audit item 3 (2026-09-24) moved this
+// control from `<ResponsiveControl>` to `<ResponsiveOverride>` (closeStyle is
+// a `"type":"object"` tier attr with no Tablet/Mobile siblings — THE PAIRING
+// IS BINDING routes it to the object-cascade primitive) — the closing tag
+// this extraction hunts for moved with it.
+$show_as_start = strpos( $edit_js, "label={ __( 'Show as', 'sgs-blocks' ) }" );
+$show_as_end   = strpos( $edit_js, "</ResponsiveOverride>", $show_as_start );
+$show_as_block = substr( $edit_js, $show_as_start, $show_as_end - $show_as_start );
+preg_match_all( '/ToggleGroupControlOption value="([a-z-]+)"/', $show_as_block, $matches );
+$edit_js_values = $matches[1] ?? array();
+sort( $edit_js_values );
+$php_values = array( 'burger-morph', 'icon-and-text', 'separate-x', 'text-swap', 'trigger' );
+ok( $edit_js_values === $php_values, 'edit.js\'s closeStyle option values are IDENTICAL to render.php\'s $sgs_nd_allowed_close_styles (found: ' . implode( ',', $edit_js_values ) . ')' );
+
+// closePlacement allow-list parity — Spec 35 audit SHOULD 11 (the design §4.1
+// equality-test obligation). Same recipe as closeStyle above: the block.json
+// enum is GONE for a tier-object attr (Spec 35 §12), so this hand-written
+// parity assertion is the only remaining guard against edit.js and
+// render.php's `$sgs_nd_allowed_placements` drifting apart.
+// Search STARTS AFTER the "Show as" control's own close tag — "Position" as a
+// label string is not unique in this file (the background-image SelectControl
+// earlier in the same panel is also labelled "Position"); anchoring the search
+// to resume where "Show as" ends skips that unrelated earlier match.
+$position_start = strpos( $edit_js, "label={ __( 'Position', 'sgs-blocks' ) }", $show_as_end );
+$position_end   = strpos( $edit_js, '</ResponsiveOverride>', $position_start );
+$position_block = substr( $edit_js, $position_start, $position_end - $position_start );
+preg_match_all( '/ToggleGroupControlOption value="([a-z-]+)"/', $position_block, $position_matches );
+$edit_js_placement_values = $position_matches[1] ?? array();
+sort( $edit_js_placement_values );
+$php_placement_values = array( 'same-slot', 'top-row-end', 'top-row-start' );
+ok(
+	$edit_js_placement_values === $php_placement_values,
+	'edit.js\'s closePlacement option values are IDENTICAL to render.php\'s $sgs_nd_allowed_placements (found: ' . implode( ',', $edit_js_placement_values ) . ')'
+);
+
+// ════════════════════════════════════════════════════════════════════════════
+// §4.1 — variant spans + per-tier sizing.
+// ════════════════════════════════════════════════════════════════════════════
+
+$mixed = run_close_section( $section, array( 'closeStyle' => array( 'desktop' => 'text-swap', 'mobile' => 'separate-x' ) ) );
+ok( false !== strpos( $mixed['close_html'], 'sgs-nav-drawer__close-variant--text-swap' ) && false !== strpos( $mixed['close_html'], 'sgs-nav-drawer__close-variant--separate-x' ), 'desktop text-swap + mobile separate-x: BOTH variant spans render' );
+ok( false !== strpos( $mixed['css'], '.sgs-nav-drawer__close-variant--text-swap{display:inline-flex' ), 'the desktop variant shows at base scope (no media query)' );
+ok(
+	false !== strpos( $mixed['css'], '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){.sgs-nav-drawer-test.wp-block-sgs-nav-drawer .sgs-nav-drawer__close .sgs-nav-drawer__close-variant{display:none;}.sgs-nav-drawer-test.wp-block-sgs-nav-drawer .sgs-nav-drawer__close .sgs-nav-drawer__close-variant--separate-x{display:inline-flex' ),
+	'the mobile tier hides every variant then shows only separate-x'
+);
+// §4.1 — "desktop text-swap + mobile separate-x gives a mobile computed width
+// of at least 44px": the mobile-tier width override forces the icon-only
+// square back, undoing desktop's width:auto.
+ok(
+	false !== strpos( $mixed['css'], '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){.sgs-nav-drawer-test.wp-block-sgs-nav-drawer .sgs-nav-drawer__close{width:44px;height:44px;min-width:44px;min-height:44px;padding:0;}}' ),
+	'mobile tier (separate-x) forces width back to the 44px square — never leaks desktop\'s width:auto'
+);
+
+$same_everywhere = run_close_section( $section, array( 'closeStyle' => array( 'desktop' => 'separate-x' ) ) );
+ok( false === strpos( $same_everywhere['css'], '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){.sgs-nav-drawer-test.wp-block-sgs-nav-drawer .sgs-nav-drawer__close{width' ), 'one style everywhere: no redundant per-tier width override emitted' );
+
+// ════════════════════════════════════════════════════════════════════════════
+// Accessible name — checked across all three tiers.
+// ════════════════════════════════════════════════════════════════════════════
+
+$aria_mobile_text = run_close_section( $section, array( 'closeStyle' => array( 'desktop' => 'separate-x', 'mobile' => 'text-swap' ), 'closeLabel' => 'Dismiss' ) );
+ok( false !== strpos( $aria_mobile_text['close_html'], 'aria-label="Dismiss"' ), 'a text-bearing tier ANYWHERE (mobile only here) drives the aria-label, even though desktop is icon-only' );
+
+$aria_glyph_only = run_close_section( $section, array( 'closeStyle' => array( 'desktop' => 'separate-x' ), 'closeLabel' => 'Dismiss' ) );
+ok( false !== strpos( $aria_glyph_only['close_html'], 'aria-label="Close menu"' ), 'no tier is text-bearing: the generic name is kept, the operator\'s label is ignored' );
+
+$aria_empty_label = run_close_section( $section, array( 'closeStyle' => array( 'desktop' => 'text-swap' ), 'closeLabel' => '' ) );
+ok( false !== strpos( $aria_empty_label['close_html'], 'aria-label="Close menu"' ) && false === strpos( $aria_empty_label['close_html'], 'aria-label=""' ), 'an empty operator label falls back to the generic name, never an empty aria-label' );
+
+// ════════════════════════════════════════════════════════════════════════════
+// §4.3 — closePlacement / closeOffset.
+// ════════════════════════════════════════════════════════════════════════════
+
+$same_slot_modal = run_close_section( $section, array( 'closePlacement' => array( 'desktop' => 'same-slot' ) ), 'modal' );
+ok( false !== strpos( $same_slot_modal['css'], 'top:var(--sgs-nav-close-y, 34px);left:var(--sgs-nav-close-x, calc(100% - 34px))' ), 'same-slot under modal: the var()-driven position is emitted' );
+
+$same_slot_nonmodal = run_close_section( $section, array( 'closePlacement' => array( 'desktop' => 'same-slot' ) ), 'non-modal' );
+ok( false === strpos( $same_slot_nonmodal['css'], '--sgs-nav-close-x' ), 'same-slot under NON-MODAL resolves to top-row-end (falls back, no var() position emitted)' );
+
+$offset_clamped = run_close_section( $section, array( 'closeOffset' => array( 'desktop' => array( 'x' => 999, 'y' => -999 ) ) ) );
+ok( false !== strpos( $offset_clamped['css'], 'translate(40px,-40px)' ), 'closeOffset is clamped to -40..40 (999 -> 40, -999 -> -40)' );
+
+$offset_start = run_close_section( $section, array( 'closePlacement' => array( 'desktop' => 'top-row-start' ), 'closeOffset' => array( 'desktop' => array( 'x' => 5, 'y' => 2 ) ) ) );
+ok( false !== strpos( $offset_start['css'], 'inset-inline-start:12px' ) && false !== strpos( $offset_start['css'], 'translate(5px,2px)' ), 'top-row-start carries its own offset translate' );
+
+// ════════════════════════════════════════════════════════════════════════════
+// §4.10 — closeRadius.
+// ════════════════════════════════════════════════════════════════════════════
+
+$radius = run_close_section( $section, array( 'closeRadius' => array( 'desktop' => '12px' ) ) );
+ok( false !== strpos( $radius['css'], 'border-radius:12px' ), 'closeRadius emits border-radius on the close selector' );
+
+$no_radius = run_close_section( $section, array() );
+ok( false === strpos( $no_radius['css'], 'border-radius' ), 'default (empty) closeRadius emits nothing — style.css\'s existing 4px keeps applying' );
+
+// ── Spec 32: no inline style attribute is written by this section ───────────────
+ok( false === strpos( $section, 'style="' ), 'the section writes no inline style attribute (Spec 32)' );
+
+// ════════════════════════════════════════════════════════════════════════════
+// NEGATIVE CONTROLS — the OLD (pre-Wave-3C-U-9/U-11) render.php must FAIL the
+// predicate/tier assertions above, proving they test genuinely NEW behaviour.
+// ════════════════════════════════════════════════════════════════════════════
+
+$git_head_source = shell_exec( 'git show HEAD:plugins/sgs-blocks/src/blocks/nav-drawer/render.php 2>&1' );
+$old_section      = is_string( $git_head_source )
+	? extract_section( $git_head_source, "\$sgs_nd_allowed_close_styles = array(", '$classes = array(' )
+	: '';
+
+if ( '' === $old_section ) {
+	ok( false, 'negative control setup: could not extract the OLD close-style section via `git show HEAD:...` (git unavailable or HEAD already carries the new code) — negative controls skipped, review manually' );
+} else {
+	ok( false === strpos( $old_section, "'trigger'" ), 'negative control baseline: the OLD render.php genuinely has no `trigger` value (proves the fixture is really the pre-change file)' );
+
+	// Old code cannot express a tier object at all: closeStyle is scalar,
+	// `in_array( $attributes['closeStyle'] ?? 'separate-x', ... )` against an
+	// ARRAY value never matches, so it silently falls to 'separate-x' and
+	// NO opener-live hide rule is EVER emitted, in ANY modality.
+	// ⚠ The OLD section's bare variable names ($css/$uid/$close_sel/$attributes)
+	// are the SAME ones the current section uses -- matched exactly so the
+	// eval'd code actually writes into them (an "$old_*"-prefixed set here
+	// would leave these untouched and the assertion below vacuous).
+	$css        = '';
+	$uid        = 'sgs-nav-drawer-test';
+	$close_sel  = '.' . $uid . '.wp-block-sgs-nav-drawer .sgs-nav-drawer__close';
+	$attributes = array( 'closeStyle' => array( 'desktop' => 'trigger' ) );
+	eval( $old_section ); // phpcs:ignore Squiz.PHP.Eval.Discouraged -- CLI harness evaluating the OLD extracted render.php section.
+	ok(
+		false === strpos( $css, 'data-sgs-nav-opener-live' ),
+		'NEGATIVE CONTROL: the OLD render.php emits NO opener-live hide rule even when handed a non-modal `trigger` tier object — proving the §4.2 predicate test above is watching genuinely new code, not something the old file already did'
+	);
+}
+
+echo "\n==== $pass passed, $fail failed ====\n";
+exit( $fail > 0 ? 1 : 0 );

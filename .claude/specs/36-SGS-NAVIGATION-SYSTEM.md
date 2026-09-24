@@ -306,29 +306,32 @@ LIVES INSIDE the `sgs_drawer` CPT as that post's content (the CPT's template is 
 **1. The chrome top row** — rendered by render.php OUTSIDE the editable InnerBlocks. It is the *close
 button's* band; everything else in it is optional. Attribute-driven (NOT blocks, NOT InnerBlocks).
 
-*BUILT — the × close.* Rendered as fixed dialog chrome (see "Close is CHROME" below) at every tier except
-one: the × is omitted at a tier only when ALL THREE hold at that tier — `modality` is `non-modal`, the bar's
-burger is rendered in the DOM (`collapsePoint` puts it there), and `closeStyle` at that tier is `burger-morph`
-(the burger, still visible above the panel, is then the live close control). In every other combination
-`render.php` forces the × on; no operator setting removes the last live close control. Attributes:
-`closeStyle` (`separate-x` | `text-swap` | `burger-morph` | `icon-and-text`), `closeLabel`, `closeIcon` (an
+*BUILT — the × close* (Wave 3C U-11, D-entry and design `.claude/reports/2026-09-24-u9-u11-design.md`).
+Rendered as fixed dialog chrome (see "Close is CHROME" below). **The × is omitted at a tier only when ALL
+THREE hold at that tier:** (1) `modality` is `non-modal`; (2) `closeStyle` at that tier is `trigger` ("the
+menu button closes it"); (3) the opener is LIVE, meaning its centre point hit-tests to itself
+(`document.elementsFromPoint`) and it has client rects, so a burger painted under the drawer, hidden or
+off-screen does not count. `render.php` emits the eligibility rule for (1) and (2), scoped to
+`[data-sgs-nav-opener-live]`; `store.js` sets that flag after `show()` and before focus, re-checks it on
+resize, and clears it at the start of `runClose`. In every other combination the × shows (under `trigger` it
+wears the `separate-x` glyph); no operator setting removes the last live close control. This is DEC-15 (b)'s
+own wording ("required only when no other visible, keyboard-reachable close control is live"); the earlier
+text keyed it on `burger-morph`, which missed the references whose trigger swaps its LABEL.
+Attributes: `closeStyle`, a per-device tier object `{desktop,tablet,mobile}` of `separate-x` | `text-swap` |
+`burger-morph` | `icon-and-text` | `trigger` (cascade desktop → tablet → mobile; stored flat strings were
+migrated by `scripts/migrate-stored-tier-scalars.py`, because WordPress coerces a schema-invalid stored value
+to the default before render; the PHP twin
+`plugins/sgs-blocks/src/blocks/nav-drawer/render.php::$sgs_nd_allowed_close_styles` must equal the editor's
+option list); `closePlacement` tier object (`top-row-end` default | `top-row-start` | `same-slot`, the × centred
+on the opener's centre, measured by `store.js`; `same-slot` needs `modal` and resolves to `top-row-end` under
+`non-modal`, where the header paints above the drawer); `closeOffset` tier object `{x,y}` px (x on the inline
+axis); `closeRadius` tier object; `closeLabel`, `closeIcon` (an
 icon-picker object `{source,name}`, default `{lucide, x}`, resolved by
-`plugins/sgs-blocks/includes/nav-menu-treatments.php::sgs_nav_shared_icon_markup`), `closeSize`, the close-label
-typography set, and the `toggleCloseColour*` colour/hover/gradient set. Gradient is routed per icon source by
-`sgs_icon_gradient_css()`; never restrict the icon source enum.
+`plugins/sgs-blocks/includes/nav-menu-treatments.php::sgs_nav_shared_icon_markup`), `closeSize` (the hit box
+never goes below 44px), the close-label typography set, and the `toggleCloseColour*` colour/hover/gradient
+set. Gradient is routed per icon source by `sgs_icon_gradient_css()`; never restrict the icon source enum.
 
 *NOT BUILT — the rest of the chrome row:*
-- **× position** — top-**right** default, switchable top-left (no attribute exists; the × is positioned by
-  `plugins/sgs-blocks/src/blocks/nav-drawer/style.css::.sgs-nav-drawer__close`).
-- **`closeStyle` per device.** `closeStyle` MUST become a per-device tier object `{desktop,tablet,mobile}` — a
-  reference site swaps text→icon at 400px and a flat string cannot express it. It is a flat
-  `"type": "string"` enum today (`plugins/sgs-blocks/src/blocks/nav-drawer/block.json::attributes.closeStyle`),
-  so this is a migration with a coercion hazard, not a new attribute: an object-typed attr receiving a
-  stored flat string coerces to the schema default silently (see the
-  `object-typed-attr-coerces-flat-to-default` and `blockjson-enum-coerces-invalid-to-default` lessons). Ship
-  the migration and the fallthrough check together. Its PHP twin
-  `plugins/sgs-blocks/src/blocks/nav-drawer/render.php::$sgs_nd_allowed_close_styles` must carry the same
-  values as the JSON enum, or a value one side accepts and the other rejects coerces silently.
 - **Canvas/frontend icon parity.** The frontend renders the picker-driven `closeIcon`; the editor canvas
   preview (`plugins/sgs-blocks/src/blocks/nav-drawer/edit.js`) renders the `close` glyph imported from
   `@wordpress/icons` for `separate-x` and `icon-and-text`. Both MUST resolve to the same picker-driven source,
@@ -413,8 +416,20 @@ accordion/submenu list in the drawer; a mega item with no nested children still 
 inside the drawer"); the desktop hover-disclosure markup the bar uses for a mega trigger has no touch
 equivalent and needs its own JS-driven build.
 
-**Dialog a11y:** focus INTO on open; Tab contained; Escape closes; focus returns to the burger;
-body-scroll-lock (incl. iOS fix); swipe-close is enhancement-over-the-×; animation reduced-motion-gated.
+**Dialog a11y:** focus INTO on open (the first VISIBLE focusable, `store.js::getFocusable`); Tab contained;
+Escape closes; focus returns to the burger if it is live, else to the first live focusable in the header
+region, never to `<body>`; body-scroll-lock (incl. iOS fix); swipe-close is enhancement-over-the-×; animation
+reduced-motion-gated.
+
+**Close routes beyond the ×** (Wave 3C U-9): Escape, backdrop and scrim click, the live trigger. **Resize
+(DEC-09):** while open, a burger carrying `data-sgs-nav-collapse` (its bar's `collapsePoint`) arms a
+`matchMedia('(min-width:Npx)')` watcher; on a change the drawer closes only if the opener is no longer live,
+so an always-burger bar never closes on a resize and a drawer otherwise reflows. **Close on scroll (DEC-02's
+one carve-out):** `closeOnScrollDistance` (px, 0 = off, the default) drops the scroll lock and closes after
+that much user-driven pointer scrolling (wheel or drag within 150ms before the scroll); keyboard, anchoring
+and programmatic scrolls never close it, and it is skipped on touch input. **Accordion:** `accordionExclusive`
+(default `true`, context `sgs/navDrawerAccordionExclusive`) — false drops the `<details name>` so rows open
+independently. Not built, for a stated reason (plan §2): a keyboard hotkey and history-back as a closer.
 Drill-down focus management is layered on top: opening a sub-panel moves focus to its Back button; closing
 it (via Back) returns focus to the `<summary>` that opened it; the top-level list is marked `inert` while a
 panel is open (Tab cannot land on an invisible link) — the shared `store.js` `getFocusable()` excludes
@@ -596,8 +611,13 @@ glyph). **BUILT** on `sgs/nav-bar-menu` (burger is bar-only), all inspector-mani
 (`icon` | `text` | `icon-and-text`), `triggerIcon` (an `IconPicker` object), `triggerLabel` (default
 "Menu"), and the magnet-hover attributes (`triggerMagnetEnabled` / `Radius` / `Strength`), specified in Spec
 41 FR-41-30/31. The burger↔X morph is built but auto-gated to the default glyph
-(`plugins/sgs-blocks/includes/nav-menu-markup.php::sgs_nav_bar_menu_burger_toggle_markup`, `$is_default_icon`);
-it is not an operator-facing choice.
+(`plugins/sgs-blocks/includes/nav-menu-markup.php::sgs_nav_bar_menu_burger_toggle_markup`, `$is_default_icon`).
+**Its pose and timing are operator choices (Wave 3C U-11):** `burgerMorph` (`x` default | `x-rotate`, an X
+plus a 180 degree turn | `line`, the bars collapse onto one line | `none`), `burgerMorphDuration` (ms,
+default 200) and `burgerMorphEasing` (named curves from the theme easing tokens plus a validated custom
+`cubic-bezier()`), delivered as custom properties; reduced motion still wins. The bar items' label magnet
+takes `itemMagnetStrength` (the pull factor; unset keeps the built-in 0.15 capped at 8px). The burger button
+carries `data-sgs-nav-collapse` (its `collapsePoint`) for FR-36-6's resize rule.
 
 **NOT BUILT:** the original shape's `triggerStyle` (`burger` | `word` | `word-burger` | `symbol`),
 `triggerSymbol`, `triggerOpenStyle` (`morph-x` | `swap-label` | `unchanged`), `triggerOpenLabel` (default

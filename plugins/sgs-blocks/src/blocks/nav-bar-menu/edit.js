@@ -142,6 +142,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		submenuOpacityHover,
 		itemFontWeightCurrent,
 		itemMagnetEnabled,
+		itemMagnetStrength,
 		submenuBorderColour,
 		submenuBorderColourGradient,
 		submenuLinkBorderWidth,
@@ -155,6 +156,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		triggerMagnetEnabled,
 		triggerMagnetRadius,
 		triggerMagnetStrength,
+		burgerMorph,
+		burgerMorphDuration,
+		burgerMorphEasing,
+		burgerMorphEasingCustom,
 		submenuAlign,
 		submenuCaret,
 		submenuCloseGrace,
@@ -625,6 +630,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					triggerMagnetEnabled={ triggerMagnetEnabled }
 					triggerMagnetRadius={ triggerMagnetRadius }
 					triggerMagnetStrength={ triggerMagnetStrength }
+					burgerMorph={ burgerMorph }
+					burgerMorphDuration={ burgerMorphDuration }
+					burgerMorphEasing={ burgerMorphEasing }
+					burgerMorphEasingCustom={ burgerMorphEasingCustom }
 					setAttributes={ setAttributes }
 				/>
 
@@ -775,9 +784,21 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 				</ToolsPanel>
 
+				{ /* Wave 3C U-10 (§4.8) — `itemMagnetStrength`. Spec 35 audit item
+				   7 (2026-09-24) folded this back into the shared `EffectsPanel`
+				   via its new optional `magnetStrength`/`onMagnetStrengthChange`
+				   prop pair — the previous standalone mount (`ItemMagnetStrengthControl.js`,
+				   now deleted) split one logical "Effects" cluster across two
+				   mount points, the banned lookalike 35A CO-2 clause 2 names.
+				   `sgs/nav-drawer-menu`'s own `edit.js` supplies neither prop, so
+				   it is unaffected. */ }
 				<EffectsPanel
 					itemMagnetEnabled={ itemMagnetEnabled }
 					setAttributes={ setAttributes }
+					magnetStrength={ itemMagnetStrength }
+					onMagnetStrengthChange={ ( val ) =>
+						setAttributes( { itemMagnetStrength: val } )
+					}
 				/>
 
 				<FeaturedPanel

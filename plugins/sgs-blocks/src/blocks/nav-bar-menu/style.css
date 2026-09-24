@@ -254,21 +254,46 @@
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
+	/*
+	 * Wave 3C U-9 (§4.4) — only engages visibly under `x-rotate` (the sole pose
+	 * that transforms this element); harmless everywhere else since the
+	 * transform never changes for `x`/`line`/`none`. Same var()-driven
+	 * duration/easing pair as `.sgs-nav-bar-menu__burger-bar` above, so the
+	 * icon box's own turn and the bars' own cross always animate in lockstep.
+	 */
+	transition: transform var(--sgs-nbm-burger-morph-duration, 200ms) var(--sgs-nbm-burger-morph-easing, ease);
 }
 
 /* Zero-specificity overridable defaults — mirrors
    `:where(.sgs-nav-bar-menu__burger svg)` above (glyph size is not `burgerSize`,
    which governs the 44px touch-target; :where() means it never masks a future
-   attr-driven rule for this element). */
+   attr-driven rule for this element).
+   `--sgs-nbm-icon-h` PUBLISHES this box's own height as a custom property so
+   the `line` pose's `calc()` (§4.4) derives its travel distance from the
+   real icon geometry rather than a hardcoded px twin of this `18px` — the two
+   values can never drift apart because the pose reads this one. */
 :where(.sgs-nav-bar-menu__burger-icon:has(.sgs-nav-bar-menu__burger-bar)) {
 	width: 24px;
-	height: 18px;
+	/* Spec 35/32 audit SHOULD 3 (2026-09-24) — `height` now READS the custom
+	   property rather than twinning its own literal beside it, so the
+	   comment's "can never drift apart" claim is actually true (two
+	   declarations of `18px` COULD drift; one declaration read twice cannot). */
+	--sgs-nbm-icon-h: 18px;
+	height: var( --sgs-nbm-icon-h );
 }
 
 .sgs-nav-bar-menu__burger-bar {
 	display: block;
 	width: 100%;
-	transition: transform 200ms ease, opacity 200ms ease;
+	/*
+	 * Wave 3C U-9 (§4.4, `burgerMorphDuration`/`burgerMorphEasing`) — the
+	 * fallbacks are today's exact hardcoded values (200ms/ease), so an
+	 * untouched nav (no render.php-written `--sgs-nbm-burger-morph-*`
+	 * custom property on `.{uid}`) transitions identically to before this
+	 * pair of controls existed.
+	 */
+	transition: transform var(--sgs-nbm-burger-morph-duration, 200ms) var(--sgs-nbm-burger-morph-easing, ease),
+		opacity var(--sgs-nbm-burger-morph-duration, 200ms) var(--sgs-nbm-burger-morph-easing, ease);
 }
 
 /* `background`/`border-radius` moved here (G20c ungated-paint fix) —
@@ -283,20 +308,78 @@
 	height: 2px;
 }
 
-.sgs-nav-bar-menu__burger[aria-expanded="true"] .sgs-nav-bar-menu__burger-bar:nth-child(1) {
+/*
+ * ═══════════════════════════════════════════════════════════════════════
+ * Wave 3C U-9 (§4.4, `burgerMorph`) — every pose below is gated on the
+ * `data-sgs-nav-burger-morph="…"` attribute `sgs_nav_bar_menu_burger_toggle_markup()`
+ * always emits for the default glyph (render.php resolves the attribute
+ * server-side, defaulting to `x`, so the attribute is never absent — no
+ * `:not([data-sgs-nav-burger-morph])` fallback branch is needed).
+ *
+ * `x` (default) — TODAY'S EXACT POSE, byte-identical to before this
+ * attribute existed: a classic hamburger-to-X cross.
+ */
+.sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="x"][aria-expanded="true"] .sgs-nav-bar-menu__burger-bar:nth-child(1) {
 	transform: translateY(8px) rotate(45deg);
 }
 
-.sgs-nav-bar-menu__burger[aria-expanded="true"] .sgs-nav-bar-menu__burger-bar:nth-child(2) {
+.sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="x"][aria-expanded="true"] .sgs-nav-bar-menu__burger-bar:nth-child(2) {
 	opacity: 0;
 }
 
-.sgs-nav-bar-menu__burger[aria-expanded="true"] .sgs-nav-bar-menu__burger-bar:nth-child(3) {
+.sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="x"][aria-expanded="true"] .sgs-nav-bar-menu__burger-bar:nth-child(3) {
 	transform: translateY(-8px) rotate(-45deg);
 }
 
+/*
+ * `x-rotate` (dogstudio) — the SAME X cross as `x` above, plus a 180 degree
+ * turn of the whole icon BOX (not the individual bars) — a distinct visual
+ * read from a flat X, matching dogstudio's `0.6s cubic-bezier(0.165, 0.84,
+ * 0.44, 1)` reference.
+ */
+.sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="x-rotate"][aria-expanded="true"] .sgs-nav-bar-menu__burger-bar:nth-child(1) {
+	transform: translateY(8px) rotate(45deg);
+}
+
+.sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="x-rotate"][aria-expanded="true"] .sgs-nav-bar-menu__burger-bar:nth-child(2) {
+	opacity: 0;
+}
+
+.sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="x-rotate"][aria-expanded="true"] .sgs-nav-bar-menu__burger-bar:nth-child(3) {
+	transform: translateY(-8px) rotate(-45deg);
+}
+
+.sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="x-rotate"][aria-expanded="true"] .sgs-nav-bar-menu__burger-icon:has(.sgs-nav-bar-menu__burger-bar) {
+	transform: rotate(180deg);
+}
+
+/*
+ * `line` (lamalama) — the top and bottom bars slide ONTO the middle bar
+ * rather than crossing into an X. The travel distance is DERIVED from the
+ * icon box via `calc()`, never a hardcoded px: half of (the icon box's own
+ * height minus one bar's own height), read from `--sgs-nbm-icon-h` (declared
+ * on the icon box itself, just below) so a future icon-size control
+ * recalculates this for free instead of drifting from a stale constant.
+ * The middle bar STAYS at opacity 1 (all three bars end up overlapping on
+ * one line, not two bars vanishing into one).
+ */
+.sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="line"][aria-expanded="true"] .sgs-nav-bar-menu__burger-bar:nth-child(1) {
+	transform: translateY(calc((var(--sgs-nbm-icon-h, 18px) - 2px) / 2));
+}
+
+.sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="line"][aria-expanded="true"] .sgs-nav-bar-menu__burger-bar:nth-child(3) {
+	transform: translateY(calc(-1 * (var(--sgs-nbm-icon-h, 18px) - 2px) / 2));
+}
+
+/*
+ * `none` — deliberately no rules at all: the bars have no attribute-gated
+ * selector to match, so they hold their resting position through the whole
+ * open/close cycle. Static by omission, not by an explicit `transform: none`.
+ */
+
 @media (prefers-reduced-motion: reduce) {
-	.sgs-nav-bar-menu__burger-bar {
+	.sgs-nav-bar-menu__burger-bar,
+	.sgs-nav-bar-menu__burger-icon:has(.sgs-nav-bar-menu__burger-bar) {
 		transition-duration: 0.01ms;
 	}
 }

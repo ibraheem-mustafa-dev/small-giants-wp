@@ -6545,6 +6545,14 @@
     },
     {
       "slug": "sgs/nav-bar-menu",
+      "attr": "burgerMorphDuration",
+      "fields": {
+        "css_property": "transition-duration",
+        "css_element": "burger"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
       "attr": "justifyContent",
       "fields": {
         "css_property": "justify-content",
@@ -6641,10 +6649,26 @@
     },
     {
       "slug": "sgs/nav-drawer",
+      "attr": "closeOffset",
+      "fields": {
+        "css_property": "transform",
+        "css_element": "close"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
       "attr": "closeSize",
       "fields": {
         "css_property": "height,width",
         "css_element": "close"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "closeStyle",
+      "fields": {
+        "css_property": "display,min-height",
+        "css_element": "close-variant"
       }
     },
     {
@@ -6681,6 +6705,14 @@
         "css_property": "background-image",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "modality",
+      "fields": {
+        "css_property": "max-width",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -16730,6 +16762,14 @@
     },
     {
       "slug": "sgs/nav-bar-menu",
+      "attr": "burgerMorphEasing",
+      "fields": {
+        "css_property": "transition-timing-function",
+        "css_element": "burger"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
       "attr": "burgerSize",
       "fields": {
         "css_property": "height,width",
@@ -17564,6 +17604,14 @@
       "attr": "closeFontFamily",
       "fields": {
         "css_property": "font-family",
+        "css_element": "close"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "closeRadius",
+      "fields": {
+        "css_property": "border-radius",
         "css_element": "close"
       }
     },

@@ -6388,6 +6388,20 @@
 				"css_layer": "GRID_AREA",
 				"_reason": "2026-09-21 seed fix. The derived classifier (extract-signatures.py, css-property-classifications.json) gave this attr css_property='max-width,min-height': a min-height control claiming max-width, which sgs/hero.splitMediaMaxWidth already owns. render.php (splitMediaMinHeight block) paints only min-height from this attr, and its max-width comes from splitMediaMaxWidth. With both claiming max-width the per-area resolver would have found two attrs for it, and with splitMediaMaxWidth gone a max-width would have landed in a min-height control."
 			}
+		},
+		{
+			"slug": "sgs/nav-bar-menu",
+			"attr": "itemMagnetStrength",
+			"fields": {
+				"role": "behaviour"
+			}
+		},
+		{
+			"slug": "sgs/nav-bar-menu",
+			"attr": "burgerMorphEasingCustom",
+			"fields": {
+				"role": "technical"
+			}
 		}
 	]
 }

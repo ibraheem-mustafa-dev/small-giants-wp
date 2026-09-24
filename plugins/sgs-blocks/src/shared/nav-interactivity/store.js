@@ -72,6 +72,12 @@
 
 import { store, getContext, getElement } from '@wordpress/interactivity';
 import { collectFreezeTargets } from './freeze-background';
+import {
+	isOpenerLive,
+	isIntentionalScroll,
+	crossedScrollDistance,
+} from './close-control';
+import { isTouchInput } from '../effects/motion-utils';
 
 /**
  * Canonical focusable-element selector. `a[href]` plus `:not([disabled])` on
@@ -314,9 +320,13 @@ function getFocusable( container ) {
  * @param {HTMLElement} container The drawer dialog element.
  */
 function focusFirstIn( container ) {
-	const focusable = container.querySelector( FOCUSABLE_SELECTOR );
-	if ( focusable ) {
-		focusable.focus();
+	// §4.2 — getFocusable() (not a raw querySelector) so a HIDDEN × (the
+	// FR-36-6 predicate's `display:none` under a live opener) is never picked
+	// as the focus target; a raw querySelector would find it and .focus()
+	// would silently no-op on a display:none element.
+	const [ first ] = getFocusable( container );
+	if ( first ) {
+		first.focus();
 		return;
 	}
 	container.setAttribute( 'tabindex', '-1' );
@@ -456,6 +466,11 @@ function resolveScrim( drawerRef ) {
  * @param {HTMLElement|null} scrim  The scrim element, if any.
  */
 function runClose( drawer, scrim ) {
+	// §4.2 — removed SYNCHRONOUSLY, before any exit-animation teardown, so a
+	// fast close-reopen never sees a stale liveness flag from the previous
+	// open.
+	drawer.removeAttribute( 'data-sgs-nav-opener-live' );
+
 	if ( ! drawer.open || drawer.classList.contains( 'is-closing' ) ) {
 		return;
 	}
@@ -555,8 +570,31 @@ function openDrawerFor( ctx, trigger ) {
 	const scrim = resolveScrim( ctx.drawerRef );
 	const bookkeeping = { trigger, scrim, frozen: [], cleanup: [] };
 
+	/*
+	 * §4.6 (DEC-02 carve-out) — closeOnScrollDistance (render.php's
+	 * `data-sgs-nav-scroll-distance`) DROPS the scroll lock, because a locked
+	 * page cannot scroll at all so the carve-out could never fire. Skipped on
+	 * a touch input regardless of the distance set (lamalama's reference only
+	 * closed on scroll with a mouse; on touch, swiping IS how people read the
+	 * menu, so a swipe-close would take that away by accident — Bean,
+	 * 2026-09-24 sign-off §8.3).
+	 */
+	const sgsNdScrollDistanceRaw = Number.parseFloat(
+		drawer.dataset.sgsNavScrollDistance || ''
+	);
+	const sgsNdScrollDistance = Number.isFinite( sgsNdScrollDistanceRaw )
+		? sgsNdScrollDistanceRaw
+		: 0;
+	const sgsNdSkipScrollLock =
+		sgsNdScrollDistance > 0 && ! isTouchInput();
+
 	reparentToBody( drawer, scrim );
-	lockScroll();
+	if ( ! sgsNdSkipScrollLock ) {
+		lockScroll();
+	}
+	// Balanced with the conditional unlockScroll() in onNativeClose below —
+	// unlockScroll() must run once for every lockScroll() and never otherwise.
+	bookkeeping.scrollLocked = ! sgsNdSkipScrollLock;
 
 	/*
 	 * The `header` anchor's
@@ -767,17 +805,238 @@ function openDrawerFor( ctx, trigger ) {
 		);
 	}
 
+	/*
+	 * §4.2 — opener liveness. Sets/removes `data-sgs-nav-opener-live` on the
+	 * dialog, which render.php's revised FR-36-6 predicate reads to decide
+	 * whether the × is hidden (non-modal + closeStyle:'trigger' tiers only).
+	 * Run ONCE immediately (order requirement: show()/showModal() already ran
+	 * above, this runs next, focusFirstIn() below runs last), then re-checked
+	 * on resize.
+	 */
+	const updateOpenerLiveness = () => {
+		const live = isOpenerLive( trigger, {
+			elementsFromPoint:
+				typeof document.elementsFromPoint === 'function'
+					? document.elementsFromPoint.bind( document )
+					: undefined,
+		} );
+		if ( live ) {
+			drawer.setAttribute( 'data-sgs-nav-opener-live', '' );
+		} else {
+			drawer.removeAttribute( 'data-sgs-nav-opener-live' );
+		}
+		return live;
+	};
+
+	/*
+	 * §4.3 `same-slot` placement — measures the opener's centre relative to
+	 * the dialog's REST box (`offsetLeft`/`offsetTop`, which the entry
+	 * transform does not change) and writes it as `--sgs-nav-close-x/-y` on
+	 * the dialog. Same measure-and-write pattern as the existing
+	 * `--sgs-drawer-trigger-top` write above. A no-op when there is no
+	 * measurable trigger — render.php's `var(…, top-row-end position)`
+	 * fallback takes over.
+	 *
+	 * Spec 35 audit SHOULD 1 (2026-09-24) — gated on render.php's
+	 * `data-sgs-nav-close-placement="same-slot"` (emitted only when at least
+	 * one tier resolves to `same-slot`), so a drawer that never uses
+	 * `same-slot` on any device never has this write an inline `style` onto
+	 * the dialog while it is open.
+	 */
+	const updateSameSlotVars = () => {
+		if ( 'same-slot' !== drawer.dataset.sgsNavClosePlacement ) {
+			return;
+		}
+		if ( ! trigger ) {
+			drawer.style.removeProperty( '--sgs-nav-close-x' );
+			drawer.style.removeProperty( '--sgs-nav-close-y' );
+			return;
+		}
+		const openerRect = trigger.getBoundingClientRect();
+		if ( ! openerRect || openerRect.width <= 0 ) {
+			return;
+		}
+		const dialogLeft = drawer.offsetLeft;
+		const dialogTop = drawer.offsetTop;
+		const cx = openerRect.left + openerRect.width / 2 - dialogLeft;
+		const cy = openerRect.top + openerRect.height / 2 - dialogTop;
+		drawer.style.setProperty( '--sgs-nav-close-x', `${ Math.round( cx ) }px` );
+		drawer.style.setProperty( '--sgs-nav-close-y', `${ Math.round( cy ) }px` );
+	};
+
+	updateOpenerLiveness();
+	updateSameSlotVars();
+
+	let sgsNdViewportRaf = 0;
+	const onViewportChange = () => {
+		if ( sgsNdViewportRaf ) {
+			return;
+		}
+		sgsNdViewportRaf = requestAnimationFrame( () => {
+			sgsNdViewportRaf = 0;
+			const wasLive = drawer.hasAttribute( 'data-sgs-nav-opener-live' );
+			const nowLive = updateOpenerLiveness();
+			// §4.2 — "if focus is on the × when it hides, focus moves to the opener."
+			// The × hides when the opener BECOMES live (the flag arms the CSS hide
+			// rule), so that is the only transition in which focus can be sitting
+			// on it; the opener is live at that moment, so it can take focus.
+			if (
+				! wasLive &&
+				nowLive &&
+				closeEl &&
+				document.activeElement === closeEl &&
+				trigger
+			) {
+				trigger.focus();
+			}
+			updateSameSlotVars();
+		} );
+	};
+	window.addEventListener( 'resize', onViewportChange );
+	bookkeeping.cleanup.push( () => {
+		window.removeEventListener( 'resize', onViewportChange );
+		if ( sgsNdViewportRaf ) {
+			cancelAnimationFrame( sgsNdViewportRaf );
+		}
+	} );
+
+	/*
+	 * DEC-09 — resize across the bar's collapse width. Keyed on the OPENER
+	 * (via liveness), not a raw media flip: an always-burger bar (collapse
+	 * above every width the site supports) never closes on a resize, because
+	 * its opener never stops being live. `data-sgs-nav-collapse` is the bar's
+	 * own collapsePoint, emitted on the trigger by nav-bar-menu (absent → no
+	 * resize watcher at all).
+	 */
+	const sgsNdCollapseWidth = trigger
+		? Number.parseInt( trigger.dataset.sgsNavCollapse, 10 )
+		: NaN;
+	if (
+		trigger &&
+		Number.isFinite( sgsNdCollapseWidth ) &&
+		sgsNdCollapseWidth > 0 &&
+		typeof window.matchMedia === 'function'
+	) {
+		const collapseMql = window.matchMedia(
+			`(min-width: ${ sgsNdCollapseWidth }px)`
+		);
+		const onCollapseChange = () => {
+			const live = updateOpenerLiveness();
+			if ( ! live ) {
+				runClose( drawer, scrim );
+			}
+		};
+		if ( typeof collapseMql.addEventListener === 'function' ) {
+			collapseMql.addEventListener( 'change', onCollapseChange );
+			bookkeeping.cleanup.push( () =>
+				collapseMql.removeEventListener( 'change', onCollapseChange )
+			);
+		} else if ( typeof collapseMql.addListener === 'function' ) {
+			// Safari <14 fallback — deprecated but still present.
+			collapseMql.addListener( onCollapseChange );
+			bookkeeping.cleanup.push( () =>
+				collapseMql.removeListener( onCollapseChange )
+			);
+		}
+	}
+
+	/*
+	 * §4.6 — close on scroll (DEC-02 carve-out), only when a distance is set
+	 * and the input is not touch (scroll lock is already dropped above under
+	 * the same condition). Fires only on scroll that FOLLOWS a wheel or a
+	 * touchmove/pointer-drag within 150ms — never keyboard, scroll-anchoring,
+	 * or a programmatic scroll.
+	 */
+	if ( sgsNdScrollDistance > 0 && ! isTouchInput() ) {
+		let sgsNdLastIntentAt = null;
+		const markIntent = () => {
+			sgsNdLastIntentAt = Date.now();
+		};
+		const onPointerMove = ( e ) => {
+			// A drag: the primary button held while the pointer moves.
+			if ( 1 === e.buttons ) {
+				markIntent();
+			}
+		};
+		const sgsNdStartScrollY = Math.max( 0, window.scrollY );
+		const onScrollClose = () => {
+			// §4.3 same-slot — the page is genuinely scrollable here (the lock
+			// is skipped whenever this whole branch runs), so re-measure on
+			// every scroll exactly as the resize handler does.
+			updateSameSlotVars();
+			if ( ! isIntentionalScroll( Date.now(), sgsNdLastIntentAt ) ) {
+				return;
+			}
+			const currentY = Math.max( 0, window.scrollY );
+			const distance = Math.abs( currentY - sgsNdStartScrollY );
+			if ( crossedScrollDistance( distance, sgsNdScrollDistance ) ) {
+				runClose( drawer, scrim );
+			}
+		};
+		window.addEventListener( 'wheel', markIntent, { passive: true } );
+		window.addEventListener( 'touchmove', markIntent, { passive: true } );
+		window.addEventListener( 'pointermove', onPointerMove, {
+			passive: true,
+		} );
+		window.addEventListener( 'scroll', onScrollClose, { passive: true } );
+		bookkeeping.cleanup.push( () => {
+			window.removeEventListener( 'wheel', markIntent );
+			window.removeEventListener( 'touchmove', markIntent );
+			window.removeEventListener( 'pointermove', onPointerMove );
+			window.removeEventListener( 'scroll', onScrollClose );
+		} );
+	} else if ( ! bookkeeping.scrollLocked ) {
+		// §4.3 same-slot — re-measure on scroll whenever the page is genuinely
+		// scrollable (not locked); the close-on-scroll branch above already
+		// re-measures nothing extra, so this only applies when scroll-close is
+		// off but the lock was still skipped for some other reason.
+		const onScrollSameSlot = () => updateSameSlotVars();
+		window.addEventListener( 'scroll', onScrollSameSlot, {
+			passive: true,
+		} );
+		bookkeeping.cleanup.push( () =>
+			window.removeEventListener( 'scroll', onScrollSameSlot )
+		);
+	}
+
 	// The native `close` event fires however the dialog closed (close(), ESC,
 	// backdrop) — ONE place to restore aria state + scroll + freeze + focus.
 	// Focus return is EXPLICIT (Safari does not focus buttons on click).
 	const onNativeClose = () => {
 		drawer.classList.remove( 'is-closing' );
-		unlockScroll();
+		// Balanced with the conditional lockScroll() above (§4.6) — only
+		// unlock when this open genuinely locked.
+		if ( bookkeeping.scrollLocked ) {
+			unlockScroll();
+		}
 		unfreezeBackground( bookkeeping.frozen );
 		bookkeeping.cleanup.forEach( ( fn ) => fn() );
 		drawerBookkeeping.delete( drawer );
 		ctx.isOpen = false;
-		if ( trigger ) {
+		/*
+		 * §4.5 (DEC-09) focus fallback — lives HERE so every close route gets
+		 * it (Escape, backdrop, scrim, ×, scroll-close, a resize crossing the
+		 * collapse width): the trigger if it is still live, else the first
+		 * live focusable in the header region, else the trigger anyway as a
+		 * last resort (never drop focus to <body>).
+		 */
+		const triggerLive = isOpenerLive( trigger, {
+			elementsFromPoint:
+				typeof document.elementsFromPoint === 'function'
+					? document.elementsFromPoint.bind( document )
+					: undefined,
+		} );
+		if ( trigger && triggerLive ) {
+			trigger.focus();
+			return;
+		}
+		const headerRegion = document.querySelector( HEADER_REGION_SELECTOR );
+		const headerFallback = headerRegion
+			? getFocusable( headerRegion )[ 0 ]
+			: null;
+		if ( headerFallback ) {
+			headerFallback.focus();
+		} else if ( trigger ) {
 			trigger.focus();
 		}
 	};

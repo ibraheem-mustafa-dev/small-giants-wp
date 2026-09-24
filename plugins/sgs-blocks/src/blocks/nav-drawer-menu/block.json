@@ -18,7 +18,8 @@
 	"textdomain": "sgs-blocks",
 	"usesContext": [
 		"sgs/navDrawerSubmenuModel",
-		"sgs/navDrawerBg"
+		"sgs/navDrawerBg",
+		"sgs/navDrawerAccordionExclusive"
 	],
 	"supports": {
 		"anchor": true,

@@ -362,9 +362,17 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_render_items' ) ) {
 		 * @param array  $mega_drawer_fallback_ids Mega item identifiers opted OUT of the
 		 *                      plain-link degrade in favour of an accordion of their own
 		 *                      nested children (megaDrawerFallbackIds attribute).
+		 * @param bool   $exclusive Wave 3C U-11, ENG-02 — `sgs/nav-drawer`'s own
+		 *                      `accordionExclusive` attribute (default true), reached via
+		 *                      block context `sgs/navDrawerAccordionExclusive`. True (today's
+		 *                      behaviour): every rendered `<details>` carries a shared
+		 *                      `name=` so the browser keeps only one open at a time. False:
+		 *                      the `name=` attribute is omitted entirely, so each `<details>`
+		 *                      opens/closes independently (away's reference opens two panels
+		 *                      at once).
 		 * @return string HTML <li> elements.
 		 */
-		function sgs_nav_drawer_menu_render_items( array $items, string $model, string $uid, array $featured_ids, string $marker_icon = '', array $mega_drawer_fallback_ids = array() ): string {
+		function sgs_nav_drawer_menu_render_items( array $items, string $model, string $uid, array $featured_ids, string $marker_icon = '', array $mega_drawer_fallback_ids = array(), bool $exclusive = true ): string {
 			$html = '';
 			foreach ( $items as $item ) {
 				$is_featured = in_array( $item['identifier'], $featured_ids, true );
@@ -462,18 +470,29 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_render_items' ) ) {
 						);
 					}
 
+					/*
+					 * Wave 3C U-11 (ENG-02) — `name=` is what makes the browser
+					 * enforce "only one open at a time" across every `<details>`
+					 * sharing it; omitting the attribute entirely (not just
+					 * emptying it) is what lets each row open independently. See
+					 * this function's own `$exclusive` docblock.
+					 */
+					$accordion_name_attr = $exclusive
+						? ' name="sgs-nav-drawer-menu-accordion-' . esc_attr( $uid ) . '"'
+						: '';
+
 					$html .= sprintf(
 						'<li class="%1$s sgs-nav-drawer-menu__item--has-submenu">'
 						. '<div class="sgs-nav-drawer-menu__accordion-row">'
 						. '%2$s'
-						. '<details class="sgs-nav-drawer-menu__accordion" name="sgs-nav-drawer-menu-accordion-%3$s" id="%4$s" data-sgs-nav-parent-label="%5$s" data-sgs-nav-back-label="%6$s">'
+						. '<details class="sgs-nav-drawer-menu__accordion"%3$s id="%4$s" data-sgs-nav-parent-label="%5$s" data-sgs-nav-back-label="%6$s">'
 						. '<summary class="sgs-nav-drawer-menu__accordion-summary" aria-label="%7$s"><span class="sgs-nav-drawer-menu__caret" aria-hidden="true">%8$s</span></summary>'
 						. '<ul class="sgs-nav-drawer-menu__submenu" data-sgs-drill-panel>%9$s</ul>'
 						. '</details>'
 						. '</div></li>',
 						esc_attr( $li_class ),
 						$label_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled above from esc_url/esc_attr/esc_html parts.
-						esc_attr( $uid ),
+						$accordion_name_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built above from a fixed literal + esc_attr( $uid ), or ''.
 						esc_attr( $details_id ),
 						esc_attr( $item['label'] ),
 						/* translators: %s is the parent menu item's label — the drill-down mode's Back button text (JS-injected; nav-drilldown.js reads this attribute rather than hardcoding English). */
@@ -516,9 +535,19 @@ if ( ! function_exists( 'sgs_nav_bar_menu_burger_toggle_markup' ) ) {
 	 *                                     morph markup. A custom `triggerIcon` (G3) keeps
 	 *                                     rendering `$burger_icon` untouched (no morph, since a
 	 *                                     morph has no well-defined shape for an arbitrary glyph).
+	 * @param int    $collapse_point      Wave 3C U-9/U-11 (DEC-09) — the bar's resolved
+	 *                                     `collapsePoint` (already sanitised by the caller the
+	 *                                     same way `nav-menu-submenu-css.php` does). Rides onto
+	 *                                     this button as `data-sgs-nav-collapse="{N}"` so
+	 *                                     `store.js` can watch the SAME width the CSS bar/burger
+	 *                                     switch uses, without a second source of truth.
+	 * @param string $burger_morph        Resolved `burgerMorph` — x (default) | x-rotate | line |
+	 *                                     none. Rides onto this button as `data-sgs-nav-burger-morph="…"`
+	 *                                     ONLY when `$is_default_icon` (the bars markup this
+	 *                                     attribute selects on only exists for the default glyph).
 	 * @return string The `<div>` + `<button>` toggle markup.
 	 */
-	function sgs_nav_bar_menu_burger_toggle_markup( string $burger_context_attr, string $drawer_ref, string $burger_icon, string $trigger_mode = 'icon', string $trigger_label = '', string $aria_attr = '', string $magnet_attrs = '', bool $is_default_icon = false ): string {
+	function sgs_nav_bar_menu_burger_toggle_markup( string $burger_context_attr, string $drawer_ref, string $burger_icon, string $trigger_mode = 'icon', string $trigger_label = '', string $aria_attr = '', string $magnet_attrs = '', bool $is_default_icon = false, int $collapse_point = 768, string $burger_morph = 'x' ): string {
 		if ( ! in_array( $trigger_mode, array( 'icon', 'text', 'icon-and-text' ), true ) ) {
 			$trigger_mode = 'icon';
 		}
@@ -569,9 +598,24 @@ if ( ! function_exists( 'sgs_nav_bar_menu_burger_toggle_markup' ) ) {
 		// not free.
 		$mode_class = 'icon' === $trigger_mode ? '' : ' sgs-nav-bar-menu__burger--' . $trigger_mode;
 
+		// Wave 3C U-9 (DEC-09, Builder-A interface #1) — always emitted, on the
+		// SAME button that carries `data-wp-on--click="actions.toggleDrawer"`,
+		// regardless of icon default/custom: store.js's resize watcher needs the
+		// collapse width whichever glyph is in use.
+		$collapse_attr = ' data-sgs-nav-collapse="' . absint( $collapse_point ) . '"';
+
+		// Wave 3C U-9 (§4.4) — the morph mode selector only has matching CSS for
+		// the restructured 3-bar default glyph (see `$icon_html`'s `$is_default_icon`
+		// branch above); a custom glyph gets no attribute at all, since there is
+		// nothing for it to select.
+		$morph_attr = '';
+		if ( $is_default_icon && in_array( $burger_morph, array( 'x', 'x-rotate', 'line', 'none' ), true ) ) {
+			$morph_attr = ' data-sgs-nav-burger-morph="' . esc_attr( $burger_morph ) . '"';
+		}
+
 		return sprintf(
 			'<div class="sgs-nav-bar-menu__toggle-wrap" data-wp-interactive="sgs/nav" %1$s data-wp-init="callbacks.pruneDanglingAriaControls">' .
-			'<button type="button" class="sgs-nav-bar-menu__burger%2$s" data-wp-on--click="actions.toggleDrawer" data-wp-bind--aria-expanded="state.isOpen" aria-controls="%3$s"%4$s%5$s>%6$s%7$s</button>' .
+			'<button type="button" class="sgs-nav-bar-menu__burger%2$s" data-wp-on--click="actions.toggleDrawer" data-wp-bind--aria-expanded="state.isOpen" aria-controls="%3$s"%4$s%5$s%8$s%9$s>%6$s%7$s</button>' .
 			'</div>',
 			$burger_context_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_interactivity_data_wp_context() self-escapes.
 			esc_attr( $mode_class ),
@@ -579,7 +623,9 @@ if ( ! function_exists( 'sgs_nav_bar_menu_burger_toggle_markup' ) ) {
 			$aria_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from a fixed literal + esc_attr__() by this function or its caller.
 			$magnet_attrs, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from fixed literals + absint()+esc_attr() values in render.php.
 			$icon_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted icon markup from sgs_nav_shared_icon_markup() (esc_attr/esc_html per source).
-			$text_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled above from an esc_html() label.
+			$text_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled above from an esc_html() label.
+			$collapse_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built above from absint().
+			$morph_attr // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built above from a fixed literal + esc_attr() against a closed allow-list.
 		);
 	}
 }

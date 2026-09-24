@@ -33,8 +33,8 @@ import {
 	TextControl,
 	SelectControl,
 	ToggleControl,
+	RangeControl,
 	Button,
-	Icon,
 } from '@wordpress/components';
 import { useState, useEffect } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
@@ -72,13 +72,12 @@ const BG_ATTACHMENT_OPTIONS = [
 	{ label: __( 'Scroll', 'sgs-blocks' ), value: 'scroll' },
 	{ label: __( 'Fixed', 'sgs-blocks' ), value: 'fixed' },
 ];
-import { close } from '@wordpress/icons';
-import { ResponsiveControl, ResponsiveBoxControl, resolveColourToken, SgsColourPanel, fillRow, textRow, SgsLengthControl,
-	SgsBorderControl, IconPicker, TypographyControls, StarterLookPresetControl,
+import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, resolveColourToken, SgsColourPanel, fillRow, textRow, SgsLengthControl,
+	SgsBorderControl, IconPicker, IconPreview, TypographyControls, StarterLookPresetControl,
 	ShadowControl, SurfaceGroundControls, ScrimControls, scrimColourRow,
 } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
-import { resolveTextColourPreviewStyle, typographyPreviewStyle, resolveShadowPreviewComposed, surfaceToneClass } from '../../utils';
+import { resolveTextColourPreviewStyle, typographyPreviewStyle, resolveShadowPreviewComposed, surfaceToneClass, resolveTier } from '../../utils';
 
 /**
  * Content template: menu + (optional) logo + (optional) CTA. templateLock:false.
@@ -142,6 +141,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		shadow,
 		shadowColour,
 		closeStyle,
+		closePlacement,
+		closeOffset,
+		closeOnScrollDistance,
+		closeRadius,
+		accordionExclusive,
 		closeLabel,
 		closeIcon,
 		closeSize,
@@ -172,6 +176,62 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const anchorDesktop = anchor?.desktop || 'full-screen';
 	const isCompact = anchorDesktop === 'trigger' || anchorDesktop === 'centred';
 	const [ palette ] = useSettings( 'color.palette' );
+
+	// ── Wave 3C U-9/U-11 (§4.9) — the canvas × preview follows the ACTIVE
+	// EDITOR DEVICE's closeStyle, so switching the global device toggle shows
+	// what that tier actually ships. Same source ResponsiveControl.js reads
+	// (WP core's getDeviceType()) — kept local rather than exported from that
+	// file, since it is a one-line map used in exactly one place here.
+	const nativeDeviceType = useSelect( ( select ) => {
+		const ed = select( 'core/editor' );
+		return ed && typeof ed.getDeviceType === 'function'
+			? ed.getDeviceType()
+			: null;
+	}, [] );
+	const activeDeviceTier =
+		{ Desktop: 'desktop', Tablet: 'tablet', Mobile: 'mobile' }[
+			nativeDeviceType
+		] || 'desktop';
+
+	/**
+	 * The tier cascade for a `{desktop,tablet,mobile}` object: desktop is
+	 * concrete, tablet inherits desktop, mobile inherits tablet — mirrors
+	 * render.php's sgs_resolve_tier() (a client-side re-implementation of the
+	 * SAME cascade semantics, not a call into PHP).
+	 *
+	 * ⛔ This used to be a locally-defined `resolveCloseTier()` — a byte-for-byte
+	 * duplicate of the shared `resolveTier()` cascade (`src/utils/responsive.js`,
+	 * also the resolver `<ResponsiveOverride>` itself uses). Spec 35 §12 audit
+	 * item 3 (2026-09-24): call the shared resolver instead of maintaining a
+	 * second copy of the same cascade. `resolveTier()` returns `{ value,
+	 * inherited }`; every call site here only needs `.value`.
+	 *
+	 * @param {Object|undefined} tierObj  The tier object.
+	 * @param {string}           tier     'desktop' | 'tablet' | 'mobile'.
+	 * @param {*}                fallback Value when every tier is unset.
+	 * @return {*} The resolved value.
+	 */
+	const resolveCloseTier = ( tierObj, tier, fallback ) =>
+		resolveTier( tierObj, tier, fallback ).value;
+
+	const closeStyleActive = resolveCloseTier( closeStyle, activeDeviceTier, 'separate-x' );
+	const closeStyleAnyTierIs = ( values ) =>
+		[ 'desktop', 'tablet', 'mobile' ].some( ( tier ) =>
+			values.includes( resolveCloseTier( closeStyle, tier, 'separate-x' ) )
+		);
+	// §4.10 — closeRadius editor-canvas mirror, keyed to the ACTIVE EDITOR
+	// DEVICE like every other closeStyle-family preview above. Default '4px'
+	// matches style.css::.sgs-nav-drawer__close's un-migrated value (today's
+	// behaviour when the tier object is empty).
+	const closeRadiusActive = resolveCloseTier( closeRadius, activeDeviceTier, '4px' );
+	// §4.9/§4.10 canvas-mirror additions (Spec 35 audit SHOULD 10) —
+	// closePlacement and closeOffset, keyed the same way as
+	// closeStyle/closeRadius above. `resolveCloseTier`'s cascade also applies
+	// to the {x,y} offset object itself (a tier with no own offset inherits
+	// the tier above's), mirroring render.php's sgs_resolve_tier() call for
+	// closeOffset (not just closePlacement).
+	const closePlacementActive = resolveCloseTier( closePlacement, activeDeviceTier, 'top-row-end' );
+	const closeOffsetActive = resolveCloseTier( closeOffset, activeDeviceTier, {} ) || {};
 
 	// ── Auto-rename on detected collision. ──
 	//
@@ -338,11 +398,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// (text-swap: uppercase; icon-and-text: none) — resolved here exactly as
 	// render.php resolves it, so an untouched instance's canvas
 	// matches the untouched instance's frontend, not just an edited one.
+	// ⚠ Keyed to the DESKTOP tier deliberately (not closeStyleActive): the
+	// close-LABEL typography stays a desktop-scoped resolution in render.php
+	// too (a documented, deliberate simplification — §4.1 is explicit about
+	// per-tier WIDTH/PADDING/TEXT-TRANSFORM sizing, not the full typography
+	// set), so matching render.php exactly here is the honest canvas mirror.
+	const closeStyleDesktop = resolveCloseTier( closeStyle, 'desktop', 'separate-x' );
 	const closeTypographyAttrs = attributes.closeTextTransform
 		? attributes
 		: {
 				...attributes,
-				closeTextTransform: 'text-swap' === closeStyle ? 'uppercase' : '',
+				closeTextTransform: 'text-swap' === closeStyleDesktop ? 'uppercase' : '',
 		  };
 	const closeLabelStyle = typographyPreviewStyle( closeTypographyAttrs, 'close' );
 
@@ -361,12 +427,54 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		palette
 	);
 
+	// `trigger` renders identically to `separate-x` in the canvas too (§4.2 —
+	// the predicate that hides it entirely is a frontend-only runtime check).
+	const closeStyleRenderActive =
+		'trigger' === closeStyleActive ? 'separate-x' : closeStyleActive;
+
+	// Spec 35 audit SHOULD 10 — closePlacement/closeOffset canvas mirror.
+	// Mirrors render.php's `$sgs_nd_placement_decls_for()` (this file's own
+	// hand-authored preview span cannot reach that scoped <style>, same
+	// reasoning as the closeSize/closeRadius mirrors above). `same-slot`'s
+	// real position is measured at runtime by store.js on the frontend — the
+	// editor has no such measurement, so it shows the SAME fallback centre
+	// render.php's var() falls back to, derived from the resolved close size
+	// (matches SHOULD-2's render.php fix, not the old hardcoded 34px).
+	const closeSizeNumPreview = parseFloat( closeSize ) || 44;
+	const sameSlotFallbackCentre = 12 + closeSizeNumPreview / 2;
+	const closePlacementPreviewStyle = ( () => {
+		const x = closeOffsetActive?.x ?? 0;
+		const y = closeOffsetActive?.y ?? 0;
+		if ( 'same-slot' === closePlacementActive ) {
+			return {
+				top: `${ sameSlotFallbackCentre }px`,
+				left: `calc(100% - ${ sameSlotFallbackCentre }px)`,
+				right: 'auto',
+				insetInlineEnd: 'auto',
+				transform: `translate(calc(-50% + ${ x }px), calc(-50% + ${ y }px))`,
+			};
+		}
+		if ( 'top-row-start' === closePlacementActive ) {
+			return {
+				insetInlineEnd: 'auto',
+				insetInlineStart: '12px',
+				top: '12px',
+				transform: `translate(${ x }px, ${ y }px)`,
+			};
+		}
+		// top-row-end (default).
+		return {
+			transform: `translate(${ x }px, ${ y }px)`,
+		};
+	} )();
+
 	const blockProps = useBlockProps( {
 		// sgs-nav-drawer--close-{style} mirrors render.php's own modifier class --
 		// without it, the text-swap/burger-morph CSS (style.css, scoped under that
-		// modifier class) never applies, and the canvas always shows the
-		// separate-x icon regardless of the closeStyle control.
-		className: `sgs-nav-drawer sgs-nav-drawer__editor sgs-nav-drawer--close-${ closeStyle || 'separate-x' }${ previewOpen ? '' : ' sgs-nav-drawer__editor--collapsed' }${ toneClass ? ` ${ toneClass }` : '' }`,
+		// modifier class) never applies. Keyed to the ACTIVE EDITOR DEVICE's
+		// resolved style (§4.9) so switching the device toggle shows what that
+		// tier actually ships, not just the desktop value.
+		className: `sgs-nav-drawer sgs-nav-drawer__editor sgs-nav-drawer--close-${ closeStyleRenderActive }${ previewOpen ? '' : ' sgs-nav-drawer__editor--collapsed' }${ toneClass ? ` ${ toneClass }` : '' }`,
 		style: shellStyle,
 		...bgImageA11yProps,
 	} );
@@ -463,6 +571,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							animateFrom: 'auto',
 							submenuModel: 'accordion',
 							modality: 'modal',
+							closeOnScrollDistance: 0,
+							accordionExclusive: true,
 						} )
 					}
 				>
@@ -504,14 +614,24 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						/>
 					</ToolsPanelItem>
 
+					{ /* Spec 35 §12 audit item 3 (2026-09-24) — `anchor` is a `"type":
+					   "object"` tier attr with NO Tablet/Mobile sibling attrs (same
+					   storage shape as closeStyle/closePlacement/closeOffset/closeRadius
+					   below), so THE PAIRING IS BINDING routes it to `ResponsiveOverride`,
+					   not the flat-sibling `ResponsiveControl` it used to mount — that
+					   pairing carried no inherit indicator and no per-tier reset. */ }
 					<ToolsPanelItem
 						label={ __( 'Panel position', 'sgs-blocks' ) }
 						hasValue={ () => !! anchor && Object.keys( anchor ).length > 0 }
 						onDeselect={ () => setAttributes( { anchor: {} } ) }
 						isShownByDefault
 					>
-						<ResponsiveControl label={ __( 'Panel position', 'sgs-blocks' ) }>
-							{ ( breakpoint ) => (
+						<ResponsiveOverride
+							label={ __( 'Panel position', 'sgs-blocks' ) }
+							value={ anchor }
+							onChange={ ( obj ) => setAttributes( { anchor: obj } ) }
+						>
+							{ ( { ownValue, effectiveValue, setOwnValue } ) => (
 								<ToggleGroupControl
 									hideLabelFromVision
 									label={ __( 'Panel position', 'sgs-blocks' ) }
@@ -519,12 +639,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										'Full screen is the default everywhere. Header, corner and centred are desktop-style variants — set a different position per device, e.g. a corner panel on desktop that becomes full screen on mobile.',
 										'sgs-blocks'
 									) }
-									value={ anchor?.[ breakpoint ] || 'full-screen' }
-									onChange={ ( value ) =>
-										setAttributes( {
-											anchor: { ...anchor, [ breakpoint ]: value || 'full-screen' },
-										} )
-									}
+									value={ ownValue || effectiveValue || 'full-screen' }
+									onChange={ ( value ) => setOwnValue( value || undefined ) }
 									isBlock
 									__nextHasNoMarginBottom
 									__next40pxDefaultSize
@@ -535,7 +651,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									<ToggleGroupControlOption value="centred" label={ __( 'Centred card', 'sgs-blocks' ) } />
 								</ToggleGroupControl>
 							) }
-						</ResponsiveControl>
+						</ResponsiveOverride>
 					</ToolsPanelItem>
 
 					{ ( anchor?.desktop === 'trigger' || anchor?.desktop === 'centred' ||
@@ -546,22 +662,23 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							hasValue={ () => !! panelSize && Object.keys( panelSize ).length > 0 }
 							onDeselect={ () => setAttributes( { panelSize: {} } ) }
 						>
-							<ResponsiveControl label={ __( 'Panel size', 'sgs-blocks' ) }>
-								{ ( breakpoint ) => (
+							<ResponsiveOverride
+								label={ __( 'Panel size', 'sgs-blocks' ) }
+								value={ panelSize }
+								onChange={ ( obj ) => setAttributes( { panelSize: obj } ) }
+							>
+								{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
 									<SgsLengthControl
 										label={ __( 'Panel size', 'sgs-blocks' ) }
 										hideLabelFromVision
 										help={ __( 'Maximum width of a corner or centred panel at this device.', 'sgs-blocks' ) }
-										value={ panelSize?.[ breakpoint ] || '' }
-										onChange={ ( value ) =>
-											setAttributes( {
-												panelSize: { ...panelSize, [ breakpoint ]: value || undefined },
-											} )
-										}
+										value={ ownValue || '' }
+										placeholder={ inherited ? effectiveValue : '' }
+										onChange={ ( value ) => setOwnValue( value || undefined ) }
 										presets={ false }
 									/>
 								) }
-							</ResponsiveControl>
+							</ResponsiveOverride>
 						</ToolsPanelItem>
 					) }
 
@@ -633,6 +750,50 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							<ToggleGroupControlOption value="accordion" label={ __( 'Accordion', 'sgs-blocks' ) } />
 							<ToggleGroupControlOption value="drill-down" label={ __( 'Drill-down', 'sgs-blocks' ) } />
 						</ToggleGroupControl>
+					</ToolsPanelItem>
+
+					{ /* Spec 35 THE PLACEMENT RULE (2026-09-24 audit item 4) — a control
+					   that styles NOTHING (no CSS property behind it) takes the pinned-first
+					   Settings ToolsPanel, never the `close` element's Styles-tab panel.
+					   `accordionExclusive` sits right beside `submenuModel` (its own
+					   condition), since it only means anything under the accordion model. */ }
+					{ 'accordion' === submenuModel && (
+						<ToolsPanelItem
+							label={ __( 'Multiple sections open', 'sgs-blocks' ) }
+							hasValue={ () => accordionExclusive === false }
+							onDeselect={ () => setAttributes( { accordionExclusive: true } ) }
+						>
+							<ToggleControl
+								label={ __( 'Allow multiple sections open at once', 'sgs-blocks' ) }
+								help={ __(
+									'Off (default): opening one submenu closes any other that was open. On: submenus open independently, so more than one can stay open together.',
+									'sgs-blocks'
+								) }
+								checked={ accordionExclusive === false }
+								onChange={ ( value ) => setAttributes( { accordionExclusive: ! value } ) }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+					) }
+
+					<ToolsPanelItem
+						label={ __( 'Close on scroll', 'sgs-blocks' ) }
+						hasValue={ () => ( closeOnScrollDistance || 0 ) > 0 }
+						onDeselect={ () => setAttributes( { closeOnScrollDistance: 0 } ) }
+					>
+						<RangeControl
+							label={ __( 'Close on scroll', 'sgs-blocks' ) }
+							help={ __(
+								'Closes the drawer once the visitor scrolls the page this many pixels (mouse or trackpad only — a touch swipe never triggers it, so swiping to read the menu still works). 0 turns this off; the page keeps scrolling normally instead of being locked while the drawer is open.',
+								'sgs-blocks'
+							) }
+							min={ 0 }
+							max={ 200 }
+							value={ closeOnScrollDistance || 0 }
+							onChange={ ( value ) => setAttributes( { closeOnScrollDistance: value ?? 0 } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
 					</ToolsPanelItem>
 				</ToolsPanel>
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
@@ -891,7 +1052,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					label={ __( 'Close button', 'sgs-blocks' ) }
 					resetAll={ () =>
 						setAttributes( {
-							closeStyle: 'separate-x',
+							closeStyle: {},
+							closePlacement: {},
+							closeOffset: {},
+							closeRadius: {},
 							closeLabel: 'Close',
 							closeIcon: { source: 'lucide', name: 'x' },
 						} )
@@ -900,9 +1064,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					{ /* ⛔ OMIT, never disable. Under `text-swap` there is
 					   no icon and under `burger-morph` the glyph is a CSS-drawn two-bar
 					   span, not an icon at all — so the picker is ABSENT in both, never
-					   greyed out. */ }
-					{ ( 'separate-x' === ( closeStyle || 'separate-x' ) ||
-						'icon-and-text' === closeStyle ) && (
+					   greyed out. Shown if ANY tier resolves to an icon-bearing style
+					   (§4.9) — over-inclusive on purpose so a tablet/mobile-only icon
+					   pick is never hidden just because desktop happens to be text-only. */ }
+					{ closeStyleAnyTierIs( [ 'separate-x', 'icon-and-text', 'trigger' ] ) && (
 						<ToolsPanelItem
 							label={ __( 'Icon', 'sgs-blocks' ) }
 							hasValue={ () =>
@@ -921,44 +1086,165 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						</ToolsPanelItem>
 					) }
 
+					{ /* Wave 3C U-9/U-11 (§4.9) — closeStyle is a `"type":"object"`
+					   TIER attr with no Tablet/Mobile siblings, so THE PAIRING IS
+					   BINDING (Spec 35 §12) routes it to `ResponsiveOverride` (inherit
+					   indicator + per-tier reset), not the flat-sibling
+					   `ResponsiveControl` it used to mount. */ }
 					<ToolsPanelItem
 						label={ __( 'Show as', 'sgs-blocks' ) }
-						hasValue={ () => closeStyle !== 'separate-x' }
-						onDeselect={ () => setAttributes( { closeStyle: 'separate-x' } ) }
+						hasValue={ () => !! closeStyle && Object.keys( closeStyle ).length > 0 }
+						onDeselect={ () => setAttributes( { closeStyle: {} } ) }
 					>
-						{ /* ⚠ FOUR values, and `burger-morph` is NOT a display mode — it is
-						   a GLYPH choice (a CSS-drawn two-bar span, no icon and no text).
-						   That is why this enum was EXTENDED rather than re-valued onto
-						   sgs/nav-bar-menu's three-value triggerMode: a naive one-to-one
-						   rename would silently delete a shipped look.
+						{ /* ⚠ FIVE values now (Spec 41 FR-41-12's four plus NEW `trigger`,
+						   §4.2 — "the menu button closes it"). `burger-morph` is NOT a
+						   display mode — it is a GLYPH choice (a CSS-drawn two-bar span, no
+						   icon and no text). That is why this enum was EXTENDED rather than
+						   re-valued onto sgs/nav-bar-menu's three-value triggerMode: a naive
+						   one-to-one rename would silently delete a shipped look.
 						   ⚠ The fourth LABEL is "Both", not "Icon and text". Measured:
 						   "Icon and text" is 13 characters, over Spec 35 Part O's
 						   12-character bound for a 2-4 option ToggleGroupControl (a bound
 						   derived from `burger-morph` on this very attribute). Part O's
 						   remedy is to shorten the LABEL — ⛔ never the stored VALUE, which
 						   stays `icon-and-text` to match the open side's triggerMode. */ }
-						<ToggleGroupControl
+						<ResponsiveOverride
 							label={ __( 'Show as', 'sgs-blocks' ) }
-							help={ __(
-								'How the always-present close control is drawn. The close button itself can never be deleted.',
-								'sgs-blocks'
-							) }
 							value={ closeStyle }
-							onChange={ ( value ) =>
-								setAttributes( { closeStyle: value || 'separate-x' } )
-							}
-							isBlock
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
+							onChange={ ( obj ) => setAttributes( { closeStyle: obj } ) }
 						>
-							<ToggleGroupControlOption value="separate-x" label={ __( '× icon', 'sgs-blocks' ) } />
-							<ToggleGroupControlOption value="text-swap" label={ __( '“Close” text', 'sgs-blocks' ) } />
-							<ToggleGroupControlOption value="burger-morph" label={ __( 'Morphed icon', 'sgs-blocks' ) } />
-							<ToggleGroupControlOption value="icon-and-text" label={ __( 'Both', 'sgs-blocks' ) } />
-						</ToggleGroupControl>
+							{ ( { ownValue, effectiveValue, setOwnValue } ) => (
+								<ToggleGroupControl
+									hideLabelFromVision
+									label={ __( 'Show as', 'sgs-blocks' ) }
+									help={ __(
+										'How the always-present close control is drawn. The close button itself can never be deleted. “Menu button closes it” hides the × entirely while the menu button stays visible and live — it reappears the moment that stops being true.',
+										'sgs-blocks'
+									) }
+									value={ ownValue || effectiveValue || 'separate-x' }
+									onChange={ ( value ) => setOwnValue( value || undefined ) }
+									isBlock
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								>
+									<ToggleGroupControlOption value="separate-x" label={ __( '× icon', 'sgs-blocks' ) } />
+									<ToggleGroupControlOption value="text-swap" label={ __( '“Close” text', 'sgs-blocks' ) } />
+									<ToggleGroupControlOption value="burger-morph" label={ __( 'Morphed icon', 'sgs-blocks' ) } />
+									<ToggleGroupControlOption value="icon-and-text" label={ __( 'Both', 'sgs-blocks' ) } />
+									<ToggleGroupControlOption value="trigger" label={ __( 'Menu button', 'sgs-blocks' ) } />
+								</ToggleGroupControl>
+							) }
+						</ResponsiveOverride>
 					</ToolsPanelItem>
 
-					{ ( 'text-swap' === closeStyle || 'icon-and-text' === closeStyle ) && (
+					{ /* Spec 35 §3 threshold table — 3 options, longest rendered label
+					   MUST be ≤12 chars for a ToggleGroupControl. "Over the menu
+					   button" was 20 chars; shortened to "On button" (9 chars). The
+					   help text always names the modal-drawer precondition (not only
+					   in the fallback branch), since the label itself no longer says
+					   "menu button" and a client choosing it needs to know why it can
+					   silently fall back. */ }
+					<ToolsPanelItem
+						label={ __( 'Position', 'sgs-blocks' ) }
+						hasValue={ () => !! closePlacement && Object.keys( closePlacement ).length > 0 }
+						onDeselect={ () => setAttributes( { closePlacement: {} } ) }
+					>
+						<ResponsiveOverride
+							label={ __( 'Position', 'sgs-blocks' ) }
+							value={ closePlacement }
+							onChange={ ( obj ) => setAttributes( { closePlacement: obj } ) }
+						>
+							{ ( { ownValue, effectiveValue, setOwnValue } ) => {
+								const resolvedPlacement = ownValue || effectiveValue || 'top-row-end';
+								return (
+									<ToggleGroupControl
+										hideLabelFromVision
+										label={ __( 'Position', 'sgs-blocks' ) }
+										help={
+											'same-slot' === resolvedPlacement && 'non-modal' === modality
+												? __( '“On button” needs a modal drawer — this falls back to the top row while “Header stays live” is on.', 'sgs-blocks' )
+												: __( 'Where the close control sits in the drawer. “On button” overlays the close control on the menu button and needs a modal drawer (“Header stays live” off).', 'sgs-blocks' )
+										}
+										value={ resolvedPlacement }
+										onChange={ ( value ) => setOwnValue( value || undefined ) }
+										isBlock
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									>
+										<ToggleGroupControlOption value="top-row-end" label={ __( 'End', 'sgs-blocks' ) } />
+										<ToggleGroupControlOption value="top-row-start" label={ __( 'Start', 'sgs-blocks' ) } />
+										<ToggleGroupControlOption value="same-slot" label={ __( 'On button', 'sgs-blocks' ) } />
+									</ToggleGroupControl>
+								);
+							} }
+						</ResponsiveOverride>
+					</ToolsPanelItem>
+
+					<ToolsPanelItem
+						label={ __( 'Position offset', 'sgs-blocks' ) }
+						hasValue={ () => !! closeOffset && Object.keys( closeOffset ).length > 0 }
+						onDeselect={ () => setAttributes( { closeOffset: {} } ) }
+					>
+						<ResponsiveOverride
+							label={ __( 'Position offset', 'sgs-blocks' ) }
+							value={ closeOffset }
+							onChange={ ( obj ) => setAttributes( { closeOffset: obj } ) }
+						>
+							{ ( { ownValue, setOwnValue } ) => (
+								<>
+									<RangeControl
+										label={ __( 'Nudge sideways', 'sgs-blocks' ) }
+										help={ __( 'Pixels — positive moves right, negative moves left.', 'sgs-blocks' ) }
+										min={ -40 }
+										max={ 40 }
+										value={ ownValue?.x ?? 0 }
+										onChange={ ( value ) =>
+											setOwnValue( { ...( ownValue || {} ), x: value ?? 0 } )
+										}
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+									<RangeControl
+										label={ __( 'Nudge up/down', 'sgs-blocks' ) }
+										help={ __( 'Pixels — positive moves down, negative moves up.', 'sgs-blocks' ) }
+										min={ -40 }
+										max={ 40 }
+										value={ ownValue?.y ?? 0 }
+										onChange={ ( value ) =>
+											setOwnValue( { ...( ownValue || {} ), y: value ?? 0 } )
+										}
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								</>
+							) }
+						</ResponsiveOverride>
+					</ToolsPanelItem>
+
+					<ToolsPanelItem
+						label={ __( 'Corner radius', 'sgs-blocks' ) }
+						hasValue={ () => !! closeRadius && Object.keys( closeRadius ).length > 0 }
+						onDeselect={ () => setAttributes( { closeRadius: {} } ) }
+					>
+						<ResponsiveOverride
+							label={ __( 'Corner radius', 'sgs-blocks' ) }
+							value={ closeRadius }
+							onChange={ ( obj ) => setAttributes( { closeRadius: obj } ) }
+						>
+							{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+								<SgsLengthControl
+									label={ __( 'Corner radius', 'sgs-blocks' ) }
+									hideLabelFromVision
+									value={ ownValue || '' }
+									placeholder={ inherited ? effectiveValue : '' }
+									onChange={ ( value ) => setOwnValue( value || undefined ) }
+									presets={ false }
+								/>
+							) }
+						</ResponsiveOverride>
+					</ToolsPanelItem>
+
+					{ closeStyleAnyTierIs( [ 'text-swap', 'icon-and-text' ] ) && (
 						<ToolsPanelItem
 							label={ __( 'Label', 'sgs-blocks' ) }
 							hasValue={ () => 'Close' !== ( closeLabel ?? 'Close' ) }
@@ -1014,7 +1300,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					   under separate-x / burger-morph. The uppercase(text-swap)/none
 					   (icon-and-text) text-transform defaults still apply while hidden
 					   (render.php resolves the per-style default). */ }
-					{ ( 'text-swap' === closeStyle || 'icon-and-text' === closeStyle ) && (
+					{ closeStyleAnyTierIs( [ 'text-swap', 'icon-and-text' ] ) && (
 						<TypographyControls
 							attributes={ attributes }
 							setAttributes={ setAttributes }
@@ -1063,36 +1349,58 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						   cannot use ServerSideRender while it hosts editable InnerBlocks —
 						   see the module docstring), so render.php's scoped closeSize <style>
 						   never reaches it. Width is only forced when the style shows text
-						   (matches render.php's own text-bearing width:auto branch). */
-						width: ( 'text-swap' === closeStyle || 'icon-and-text' === closeStyle ) ? 'auto' : ( closeSize || '44px' ),
+						   (matches render.php's own text-bearing width:auto branch). Keyed
+						   to the ACTIVE EDITOR DEVICE's resolved style (§4.9). */
+						width: ( 'text-swap' === closeStyleRenderActive || 'icon-and-text' === closeStyleRenderActive ) ? 'auto' : ( closeSize || '44px' ),
 						height: closeSize || '44px',
 						minWidth: closeSize || '44px',
 						minHeight: closeSize || '44px',
+						/* closeRadius editor-canvas mirror (§4.10) — same reasoning
+						   as the closeSize width/height above: this preview span is
+						   hand-authored JSX, so render.php's scoped closeRadius
+						   <style> never reaches it. Keyed to the ACTIVE EDITOR
+						   DEVICE's resolved value, falling back to the un-migrated
+						   4px default (style.css::.sgs-nav-drawer__close). */
+						borderRadius: closeRadiusActive,
+						// closePlacement/closeOffset editor-canvas mirror (SHOULD 10).
+						...closePlacementPreviewStyle,
 					} }
 				>
-					{ closeStyle === 'text-swap' && (
+					{ closeStyleRenderActive === 'text-swap' && (
 						<span className="sgs-nav-drawer__close-text" style={ closeLabelStyle }>
 							{ closeLabel ?? __( 'Close', 'sgs-blocks' ) }
 						</span>
 					) }
-					{ closeStyle === 'burger-morph' && (
+					{ closeStyleRenderActive === 'burger-morph' && (
 						<span className="sgs-nav-drawer__close-bars">
 							<span></span>
 							<span></span>
 						</span>
 					) }
-					{ closeStyle === 'icon-and-text' && (
+					{ closeStyleRenderActive === 'icon-and-text' && (
 						<>
 							<span className="sgs-nav-drawer__close-glyph">
-								<Icon icon={ close } />
+								{ /* closeIcon editor-canvas mirror — same shared IconPreview
+								   sgs/icon's canvas uses (src/components/IconPicker/
+								   IconPreview.js), so a glyph choice other than the
+								   declared default { lucide, x } actually shows here,
+								   mirroring render.php's sgs_nav_shared_icon_markup()
+								   resolver. */ }
+								<IconPreview
+									source={ closeIcon?.source || 'lucide' }
+									name={ closeIcon?.name || 'x' }
+								/>
 							</span>
 							<span className="sgs-nav-drawer__close-text" style={ closeLabelStyle }>
 								{ closeLabel ?? __( 'Close', 'sgs-blocks' ) }
 							</span>
 						</>
 					) }
-					{ ( ! closeStyle || closeStyle === 'separate-x' ) && (
-						<Icon icon={ close } />
+					{ ( ! closeStyleRenderActive || closeStyleRenderActive === 'separate-x' ) && (
+						<IconPreview
+							source={ closeIcon?.source || 'lucide' }
+							name={ closeIcon?.name || 'x' }
+						/>
 					) }
 				</span>
 				<div { ...innerBlocksProps } />

@@ -23,7 +23,7 @@
  * means "use whichever menu is assigned to this location" — keep it.
  */
 ?>
-<!-- wp:sgs/nav-drawer {"drawerBg":"surface","closeStyle":"text-swap"} -->
+<!-- wp:sgs/nav-drawer {"drawerBg":"surface","closeStyle":{"desktop":"text-swap"}} -->
 <!-- wp:sgs/nav-drawer-menu {"ref":0,"gap":"4px","itemFontSize":{"desktop":64,"mobile":40},"listColumns":{"desktop":2,"mobile":1}} /-->
 <!-- wp:sgs/business-info {"displayType":"email"} /-->
 <!-- /wp:sgs/nav-drawer -->

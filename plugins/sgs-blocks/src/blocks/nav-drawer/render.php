@@ -215,6 +215,22 @@ $submenu_model = in_array( $attributes['submenuModel'] ?? 'accordion', array( 'a
 	? (string) $attributes['submenuModel']
 	: 'accordion';
 
+// ── Modality — resolved EARLY (Wave 3C U-9/U-11, moved up from the wrapper-args
+// section below) because the revised FR-36-6 close predicate (§4.2) needs it
+// before the close-button CSS/markup is built, not just for the wrapper's data
+// attribute. Read here (not sniffed from browser capability, which is always
+// true) and carried as a data attribute so store.js has it before it opens
+// the dialog.
+$modality_raw = (string) ( $attributes['modality'] ?? 'modal' );
+$modality     = in_array( $modality_raw, array( 'modal', 'non-modal' ), true ) ? $modality_raw : 'modal';
+
+// ── closeOnScrollDistance (§4.6, DEC-02 carve-out) — a plain number, 0..200,
+// default 0 (off). Not a tier object (one reference, one value). Carried as a
+// data attribute so store.js knows the threshold without re-reading attrs.
+$sgs_nd_scroll_distance = isset( $attributes['closeOnScrollDistance'] ) && is_numeric( $attributes['closeOnScrollDistance'] )
+	? max( 0.0, min( 200.0, (float) $attributes['closeOnScrollDistance'] ) )
+	: 0.0;
+
 // ── Background image (backgroundImage + size/position/repeat/attachment).
 // Mirrors sgs/container's own media-LAYER pattern (class-sgs-container-wrapper.php,
 // "Background image — section kind only" block): the image paints on a
@@ -688,10 +704,53 @@ if ( 'fade' === $sgs_nd_animate_from ) {
 // ⛔ THIS LIST AND block.json::attributes.closeStyle.enum MUST AGREE, ALWAYS.
 // A value one side accepts and the other rejects coerces the stored value away
 // with NO error on either side, so the operator's choice vanishes silently.
-$sgs_nd_allowed_close_styles = array( 'separate-x', 'text-swap', 'burger-morph', 'icon-and-text' );
-$sgs_nd_close_style          = in_array( $attributes['closeStyle'] ?? 'separate-x', $sgs_nd_allowed_close_styles, true )
-	? (string) $attributes['closeStyle']
-	: 'separate-x';
+// Wave 3C U-9/U-11 (.claude/reports/2026-09-24-u9-u11-design.md §4.1): closeStyle
+// is now a TIER OBJECT (desktop concrete, tablet inherits desktop, mobile
+// inherits tablet, fallback separate-x) carrying a FIFTH value, `trigger`
+// ("the menu button closes it" — §4.2's revised FR-36-6 predicate). A stored
+// FLAT string (pre-migration content) is defended against here too —
+// migrate-stored-tier-scalars.py is the real fix for STORED post_content, but
+// a render.php that only trusted the migration would break on any
+// not-yet-migrated post between deploy and migration running.
+$sgs_nd_allowed_close_styles = array( 'separate-x', 'text-swap', 'burger-morph', 'icon-and-text', 'trigger' );
+$sgs_nd_close_style_raw      = $attributes['closeStyle'] ?? array();
+if ( is_string( $sgs_nd_close_style_raw ) ) {
+	$sgs_nd_close_style_raw = '' !== $sgs_nd_close_style_raw ? array( 'desktop' => $sgs_nd_close_style_raw ) : array();
+}
+if ( ! is_array( $sgs_nd_close_style_raw ) ) {
+	$sgs_nd_close_style_raw = array();
+}
+
+$sgs_nd_valid_close_style = function ( $value ) use ( $sgs_nd_allowed_close_styles ) {
+	return in_array( $value, $sgs_nd_allowed_close_styles, true ) ? (string) $value : 'separate-x';
+};
+
+$sgs_nd_close_style_desktop = $sgs_nd_valid_close_style( sgs_resolve_tier( $sgs_nd_close_style_raw, 'desktop', 'separate-x' )['value'] );
+$sgs_nd_close_style_tablet  = $sgs_nd_valid_close_style( sgs_resolve_tier( $sgs_nd_close_style_raw, 'tablet', 'separate-x' )['value'] );
+$sgs_nd_close_style_mobile  = $sgs_nd_valid_close_style( sgs_resolve_tier( $sgs_nd_close_style_raw, 'mobile', 'separate-x' )['value'] );
+
+// The DESKTOP tier drives everything that is not itself tiered below (the
+// modifier class, the accessible-name resolution, the icon-picker source) —
+// mirrors the anchor's own desktop-only animation resolution above.
+$sgs_nd_close_style = $sgs_nd_close_style_desktop;
+
+// `trigger` renders IDENTICALLY to `separate-x` (the × glyph) whenever it
+// actually renders — §4.2: "Where the × must render under `trigger` (not
+// eligible, or not live), it shows the `separate-x` glyph." The predicate
+// below decides WHETHER it renders at all; this decides what it looks like
+// when it does.
+$sgs_nd_render_style_for     = function ( $style ) {
+	return 'trigger' === $style ? 'separate-x' : $style;
+};
+$sgs_nd_render_style_desktop = $sgs_nd_render_style_for( $sgs_nd_close_style_desktop );
+$sgs_nd_render_style_tablet  = $sgs_nd_render_style_for( $sgs_nd_close_style_tablet );
+$sgs_nd_render_style_mobile  = $sgs_nd_render_style_for( $sgs_nd_close_style_mobile );
+
+// Any tier showing a WORD (text-swap/icon-and-text) — drives the aria-label
+// resolution below across ALL THREE tiers, not just desktop (§4.1 "Accessible
+// name" rule).
+$sgs_nd_close_any_text_bearing = in_array( 'text-swap', array( $sgs_nd_close_style_desktop, $sgs_nd_close_style_tablet, $sgs_nd_close_style_mobile ), true )
+	|| in_array( 'icon-and-text', array( $sgs_nd_close_style_desktop, $sgs_nd_close_style_tablet, $sgs_nd_close_style_mobile ), true );
 
 // ── Surface tone: the drawer's children (menu items, a CTA button) can carry
 // shadows, so the drawer marks its own tone from its one fill layer, drawerBg at
@@ -700,7 +759,7 @@ $sgs_nd_close_style          = in_array( $attributes['closeStyle'] ?? 'separate-
 $sgs_nd_tone_opacity = isset( $attributes['surfaceOpacity'] ) && is_numeric( $attributes['surfaceOpacity'] )
 	? (float) $attributes['surfaceOpacity']
 	: 1.0;
-$sgs_nd_tone_class = function_exists( 'sgs_surface_tone_class' )
+$sgs_nd_tone_class   = function_exists( 'sgs_surface_tone_class' )
 	? sgs_surface_tone_class(
 		array(
 			array(
@@ -729,6 +788,171 @@ if ( '' !== $sgs_nd_close_size ) {
 	$css                      .= $close_sel . '{'
 		. ( $sgs_nd_close_text_bearing ? 'width:auto;' : 'width:' . $sgs_nd_close_size . ';' )
 		. 'height:' . $sgs_nd_close_size . ';min-width:' . $sgs_nd_close_size . ';min-height:' . $sgs_nd_close_size . ';}';
+
+	// ── §4.1 "Per-tier sizing, not only per-tier spans": tablet/mobile get
+	// their OWN width/padding, keyed to THEIR OWN resolved style, so a desktop
+	// text-swap never leaks width:auto onto a mobile icon button. Emitted at
+	// HIGHER specificity than style.css's unconditional `.sgs-nav-drawer--close-*`
+	// modifier rules (this selector already carries the uid class + the block
+	// class + the element class, three simple selectors vs. their two), so it
+	// wins regardless of source order.
+	$sgs_nd_size_prev_bearing = $sgs_nd_close_text_bearing;
+	foreach ( array(
+		'tablet' => array( $sgs_nd_close_style_tablet, SGS_Breakpoints::TABLET_MAX ),
+		'mobile' => array( $sgs_nd_close_style_mobile, SGS_Breakpoints::MOBILE_MAX ),
+	) as $sgs_nd_close_size_tier ) {
+		list( $sgs_nd_size_tier_style, $sgs_nd_size_tier_bp ) = $sgs_nd_close_size_tier;
+		$sgs_nd_size_tier_text_bearing                        = in_array( $sgs_nd_size_tier_style, array( 'text-swap', 'icon-and-text' ), true );
+		// Tier-diff: skip a tier whose text-bearing-ness (the only thing this
+		// rule varies on) is identical to the tier above — one style
+		// everywhere emits no redundant per-tier override at all.
+		if ( $sgs_nd_size_tier_text_bearing === $sgs_nd_size_prev_bearing ) {
+			$sgs_nd_size_prev_bearing = $sgs_nd_size_tier_text_bearing;
+			continue;
+		}
+		$sgs_nd_size_tier_decls = ( $sgs_nd_size_tier_text_bearing ? 'width:auto;' : 'width:' . $sgs_nd_close_size . ';' )
+			. 'height:' . $sgs_nd_close_size . ';min-width:' . $sgs_nd_close_size . ';min-height:' . $sgs_nd_close_size . ';'
+			. ( $sgs_nd_size_tier_text_bearing ? 'padding:0 12px;' : 'padding:0;' );
+		$css                     .= '@media (max-width:' . $sgs_nd_size_tier_bp . 'px){' . $close_sel . '{' . $sgs_nd_size_tier_decls . '}}';
+		$sgs_nd_size_prev_bearing = $sgs_nd_size_tier_text_bearing;
+	}
+}
+
+// ── FR-36-6 revised predicate (§4.2, Wave 3C U-9/U-11): the × is HIDDEN, per
+// tier, only where modality is non-modal AND that tier's closeStyle is
+// `trigger` AND the opener is currently LIVE (store.js sets/removes
+// data-sgs-nav-opener-live on the dialog). Eligibility (modality + closeStyle)
+// is decided here in PHP; liveness is decided at runtime in JS — see that
+// file's isOpenerLive().
+$sgs_nd_opener_live_close_sel = '.' . $uid . '[data-sgs-nav-opener-live] .sgs-nav-drawer__close';
+foreach ( array(
+	'desktop' => array( $sgs_nd_close_style_desktop, null ),
+	'tablet'  => array( $sgs_nd_close_style_tablet, SGS_Breakpoints::TABLET_MAX ),
+	'mobile'  => array( $sgs_nd_close_style_mobile, SGS_Breakpoints::MOBILE_MAX ),
+) as $sgs_nd_predicate_tier ) {
+	list( $sgs_nd_predicate_style, $sgs_nd_predicate_bp ) = $sgs_nd_predicate_tier;
+	if ( 'non-modal' !== $modality || 'trigger' !== $sgs_nd_predicate_style ) {
+		continue;
+	}
+	$sgs_nd_predicate_rule = $sgs_nd_opener_live_close_sel . '{display:none;}';
+	$css                  .= null === $sgs_nd_predicate_bp
+		? $sgs_nd_predicate_rule
+		: '@media (max-width:' . $sgs_nd_predicate_bp . 'px){' . $sgs_nd_predicate_rule . '}';
+}
+
+// ── closePlacement (§4.3) — top-row-end (default) | top-row-start | same-slot.
+// `same-slot` requires `modal` (under non-modal the header paints above the
+// drawer, so a × under the burger would be unreachable by pointer) — PHP
+// resolves it to `top-row-end` when modality is non-modal.
+$sgs_nd_allowed_placements = array( 'top-row-end', 'top-row-start', 'same-slot' );
+$sgs_nd_placement_raw      = is_array( $attributes['closePlacement'] ?? null ) ? $attributes['closePlacement'] : array();
+$sgs_nd_valid_placement    = function ( $value ) use ( $sgs_nd_allowed_placements ) {
+	return in_array( $value, $sgs_nd_allowed_placements, true ) ? (string) $value : 'top-row-end';
+};
+$sgs_nd_resolve_placement  = function ( $tier ) use ( $sgs_nd_placement_raw, $sgs_nd_valid_placement, $modality ) {
+	$resolved = $sgs_nd_valid_placement( sgs_resolve_tier( $sgs_nd_placement_raw, $tier, 'top-row-end' )['value'] );
+	return ( 'same-slot' === $resolved && 'non-modal' === $modality ) ? 'top-row-end' : $resolved;
+};
+$sgs_nd_placement_desktop  = $sgs_nd_resolve_placement( 'desktop' );
+$sgs_nd_placement_tablet   = $sgs_nd_resolve_placement( 'tablet' );
+$sgs_nd_placement_mobile   = $sgs_nd_resolve_placement( 'mobile' );
+// Spec 35 audit SHOULD 1 (2026-09-24) — whether ANY tier resolves to
+// `same-slot`, over-inclusive on purpose (a tablet/mobile-only same-slot
+// pick must still arm the flag) so store.js's own same-slot measurement runs
+// ONLY for a drawer that genuinely uses it, never on every drawer regardless
+// of placement.
+$sgs_nd_any_same_slot = in_array(
+	'same-slot',
+	array( $sgs_nd_placement_desktop, $sgs_nd_placement_tablet, $sgs_nd_placement_mobile ),
+	true
+);
+
+// closeOffset (§4.3) — {x,y} px, -40..40. x is on the INLINE axis (mirrors RTL).
+$sgs_nd_offset_raw     = is_array( $attributes['closeOffset'] ?? null ) ? $attributes['closeOffset'] : array();
+$sgs_nd_clamp_offset   = function ( $raw ) {
+	if ( ! is_numeric( $raw ) ) {
+		return 0.0;
+	}
+	return max( -40.0, min( 40.0, (float) $raw ) );
+};
+$sgs_nd_resolve_offset = function ( $tier ) use ( $sgs_nd_offset_raw, $sgs_nd_clamp_offset ) {
+	$resolved = sgs_resolve_tier( $sgs_nd_offset_raw, $tier, array() )['value'];
+	$resolved = is_array( $resolved ) ? $resolved : array();
+	return array(
+		'x' => $sgs_nd_clamp_offset( $resolved['x'] ?? 0 ),
+		'y' => $sgs_nd_clamp_offset( $resolved['y'] ?? 0 ),
+	);
+};
+$sgs_nd_offset_desktop = $sgs_nd_resolve_offset( 'desktop' );
+$sgs_nd_offset_tablet  = $sgs_nd_resolve_offset( 'tablet' );
+$sgs_nd_offset_mobile  = $sgs_nd_resolve_offset( 'mobile' );
+
+// Spec 35 audit SHOULD 2 (2026-09-24) — ONE source for the 12px top/inline
+// edge inset AND the same-slot fallback centre, instead of twinning the
+// literal in two places. The fallback centre is derived from the RESOLVED
+// close size ($sgs_nd_close_size, §4.1 above) rather than a hardcoded 34px
+// (12 + half of the OLD hardcoded 44px default) — a client who resizes the
+// close button no longer gets a stale fallback centre the moment store.js's
+// live measurement is unavailable (first paint, JS disabled).
+$sgs_nd_close_edge_inset = 12;
+$sgs_nd_close_size_px    = 44.0;
+if ( preg_match( '/-?\d*\.?\d+/', (string) $sgs_nd_close_size, $sgs_nd_close_size_match ) ) {
+	$sgs_nd_close_size_px = (float) $sgs_nd_close_size_match[0];
+}
+$sgs_nd_same_slot_fallback_centre = $sgs_nd_close_edge_inset + ( $sgs_nd_close_size_px / 2 );
+
+/**
+ * Build placement + offset CSS declarations for one resolved tier.
+ *
+ * @param string $placement Resolved closePlacement value.
+ * @param array  $offset    Resolved {x,y} in px.
+ * @return string CSS declarations (no selector/braces).
+ */
+$sgs_nd_placement_decls_for = function ( $placement, $offset ) use ( $sgs_nd_close_edge_inset, $sgs_nd_same_slot_fallback_centre ) {
+	$x = $offset['x'];
+	$y = $offset['y'];
+	if ( 'same-slot' === $placement ) {
+		// store.js measures the opener's centre relative to the dialog's rest
+		// box and writes --sgs-nav-close-x/-y; var() falls back to the
+		// top-row-end position when JS has not measured yet. The variables are a CENTRE
+		// (the translate(-50%) below), so the fallback centre is the edge inset plus
+		// half the RESOLVED close size; a bare edge inset would hang the × off the panel.
+		return 'top:var(--sgs-nav-close-y, ' . $sgs_nd_same_slot_fallback_centre . 'px);left:var(--sgs-nav-close-x, calc(100% - ' . $sgs_nd_same_slot_fallback_centre . 'px));right:auto;inset-inline-end:auto;'
+			. 'transform:translate(calc(-50% + ' . $x . 'px),calc(-50% + ' . $y . 'px));';
+	}
+	if ( 'top-row-start' === $placement ) {
+		return 'inset-inline-end:auto;inset-inline-start:' . $sgs_nd_close_edge_inset . 'px;top:' . $sgs_nd_close_edge_inset . 'px;'
+			. 'transform:translate(' . $x . 'px,' . $y . 'px);';
+	}
+	// top-row-end (default).
+	return 'transform:translate(' . $x . 'px,' . $y . 'px);';
+};
+
+$sgs_nd_placement_default = ( 'top-row-end' === $sgs_nd_placement_desktop && 0.0 === $sgs_nd_offset_desktop['x'] && 0.0 === $sgs_nd_offset_desktop['y'] );
+if ( ! $sgs_nd_placement_default ) {
+	$css .= $close_sel . '{' . $sgs_nd_placement_decls_for( $sgs_nd_placement_desktop, $sgs_nd_offset_desktop ) . '}';
+}
+if ( $sgs_nd_placement_tablet !== $sgs_nd_placement_desktop || $sgs_nd_offset_tablet !== $sgs_nd_offset_desktop ) {
+	$css .= '@media (max-width:' . SGS_Breakpoints::TABLET_MAX . 'px){' . $close_sel . '{' . $sgs_nd_placement_decls_for( $sgs_nd_placement_tablet, $sgs_nd_offset_tablet ) . '}}';
+}
+if ( $sgs_nd_placement_mobile !== $sgs_nd_placement_tablet || $sgs_nd_offset_mobile !== $sgs_nd_offset_tablet ) {
+	$css .= '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){' . $close_sel . '{' . $sgs_nd_placement_decls_for( $sgs_nd_placement_mobile, $sgs_nd_offset_mobile ) . '}}';
+}
+
+// closeRadius (§4.10, Bean 2026-09-24) — tier object of CSS lengths, default
+// {} = today's hardcoded 4px (style.css's own `.sgs-nav-drawer__close` base
+// rule), emitted only when the operator actually sets a tier.
+if ( function_exists( 'sgs_emit_responsive_css' ) && is_array( $attributes['closeRadius'] ?? null ) && ! empty( $attributes['closeRadius'] ) ) {
+	$css .= sgs_emit_responsive_css(
+		$close_sel,
+		array(
+			array(
+				'value'        => $attributes['closeRadius'],
+				'css'          => 'border-radius',
+				'unit_default' => 'px',
+			),
+		)
+	);
 }
 
 // ── Close-button LABEL typography (closeFontSize/closeFontFamily/closeFontWeight/
@@ -758,7 +982,12 @@ $classes = array(
 	'sgs-nav-drawer',
 	$uid,
 	'sgs-nav-drawer--submenu-' . $submenu_model,
-	'sgs-nav-drawer--close-' . $sgs_nd_close_style,
+	// Keyed to the DESKTOP render style (alias-resolved so `trigger` reuses
+	// `separate-x`'s CSS) — style.css's existing `.sgs-nav-drawer--close-*`
+	// rules are unconditional (not tier-scoped), so this is the "no-JS /
+	// print / first paint" shape; the per-tier width/padding overrides above
+	// and the variant spans below are what actually differ per device.
+	'sgs-nav-drawer--close-' . $sgs_nd_render_style_desktop,
 );
 
 if ( '' !== $sgs_nd_anim_class ) {
@@ -769,11 +998,9 @@ if ( '' !== $sgs_nd_tone_class ) {
 	$classes[] = $sgs_nd_tone_class;
 }
 
-// ── Modality selects the store's showModal()/show() branch. Read here
-// (not sniffed from browser capability, which is always true) and
-// carried as a data attribute so store.js has it before it opens the dialog.
-$modality_raw = (string) ( $attributes['modality'] ?? 'modal' );
-$modality     = in_array( $modality_raw, array( 'modal', 'non-modal' ), true ) ? $modality_raw : 'modal';
+// ── Modality + closeOnScrollDistance were resolved earlier (Wave 3C U-9/U-11,
+// moved up for the FR-36-6 close predicate) — reused here as data attributes
+// so store.js has them before it opens the dialog.
 
 $wrapper_args = array(
 	'class'                 => implode( ' ', $classes ),
@@ -788,6 +1015,19 @@ $wrapper_args = array(
 		? esc_attr( $attributes['ariaLabel'] )
 		: esc_attr__( 'Navigation menu', 'sgs-blocks' ),
 );
+if ( $sgs_nd_scroll_distance > 0 ) {
+	// §4.6 — store.js reads this to know the threshold and whether to skip
+	// lockScroll() at all (a locked page can never scroll, so the carve-out
+	// would never fire); absent/0 means "off", the existing lock behaviour.
+	$wrapper_args['data-sgs-nav-scroll-distance'] = (string) $sgs_nd_scroll_distance;
+}
+if ( $sgs_nd_any_same_slot ) {
+	// Spec 35 audit SHOULD 1 (2026-09-24) — store.js's `updateSameSlotVars()`
+	// gates its opener-measurement + `--sgs-nav-close-x/-y` writes on this
+	// attribute, so a drawer that never uses `same-slot` on any tier never
+	// carries an inline `style` while open.
+	$wrapper_args['data-sgs-nav-close-placement'] = 'same-slot';
+}
 if ( $bg_image_needs_note ) {
 	$wrapper_args['aria-describedby'] = $drawer_ref . '-bg-note';
 }
@@ -821,21 +1061,74 @@ $sgs_nd_close_text = sprintf(
 		: esc_html__( 'Close', 'sgs-blocks' )
 );
 
-if ( 'text-swap' === $sgs_nd_close_style ) {
-	$sgs_nd_close_inner = $sgs_nd_close_text;
-} elseif ( 'burger-morph' === $sgs_nd_close_style ) {
-	$sgs_nd_close_inner = '<span class="sgs-nav-drawer__close-bars" aria-hidden="true"><span></span><span></span></span>';
-} elseif ( 'icon-and-text' === $sgs_nd_close_style ) {
-	// Icon first, then the word -- matching the open side. The glyph is
-	// aria-hidden because the word beside it already carries the accessible name;
-	// announcing both would read the button twice.
-	$sgs_nd_close_inner = sprintf(
-		'<span class="sgs-nav-drawer__close-glyph" aria-hidden="true">%s</span>%s',
-		$sgs_nd_close_icon,
-		$sgs_nd_close_text
-	);
+/**
+ * The button's inner markup for ONE resolved render style.
+ *
+ * @param string $style A RENDER style (never 'trigger' — already alias-resolved).
+ * @return string Trusted inner HTML.
+ */
+$sgs_nd_build_close_inner = function ( $style ) use ( $sgs_nd_close_text, $sgs_nd_close_icon ) {
+	if ( 'text-swap' === $style ) {
+		return $sgs_nd_close_text;
+	}
+	if ( 'burger-morph' === $style ) {
+		return '<span class="sgs-nav-drawer__close-bars" aria-hidden="true"><span></span><span></span></span>';
+	}
+	if ( 'icon-and-text' === $style ) {
+		// Icon first, then the word -- matching the open side. The glyph is
+		// aria-hidden because the word beside it already carries the accessible name;
+		// announcing both would read the button twice.
+		return sprintf(
+			'<span class="sgs-nav-drawer__close-glyph" aria-hidden="true">%s</span>%s',
+			$sgs_nd_close_icon,
+			$sgs_nd_close_text
+		);
+	}
+	return $sgs_nd_close_icon; // 'separate-x' (and 'trigger''s alias, §4.2) — trusted resolver markup.
+};
+
+// ── Wave 3C U-9/U-11 — per-tier variant markup (§4.1). One style everywhere
+// (the overwhelming common case) renders EXACTLY today's single-markup shape:
+// no variant wrapper spans, no extra CSS. Only when tiers genuinely diverge
+// does the button carry one `.sgs-nav-drawer__close-variant--{style}` span per
+// DISTINCT render style, with scoped CSS (below) showing only each tier's own.
+$sgs_nd_distinct_render_styles = array_values(
+	array_unique(
+		array(
+			$sgs_nd_render_style_desktop,
+			$sgs_nd_render_style_tablet,
+			$sgs_nd_render_style_mobile,
+		)
+	)
+);
+
+if ( 1 === count( $sgs_nd_distinct_render_styles ) ) {
+	$sgs_nd_close_inner = $sgs_nd_build_close_inner( $sgs_nd_render_style_desktop );
 } else {
-	$sgs_nd_close_inner = $sgs_nd_close_icon; // Trusted resolver markup.
+	$sgs_nd_close_inner = '';
+	foreach ( $sgs_nd_distinct_render_styles as $sgs_nd_variant_style ) {
+		$sgs_nd_close_inner .= sprintf(
+			'<span class="sgs-nav-drawer__close-variant sgs-nav-drawer__close-variant--%1$s">%2$s</span>',
+			esc_attr( $sgs_nd_variant_style ),
+			$sgs_nd_build_close_inner( $sgs_nd_variant_style ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_html()'d text / trusted resolver markup above.
+		);
+	}
+	// Hide every variant, then show only each tier's own — base rule keyed to
+	// the DESKTOP style (no media query, so it also covers no-JS/print), tablet
+	// and mobile rules only when their style genuinely differs (tier-diff, no
+	// redundant rule).
+	$css .= $close_sel . ' .sgs-nav-drawer__close-variant{display:none;}';
+	$css .= $close_sel . ' .sgs-nav-drawer__close-variant--' . $sgs_nd_render_style_desktop . '{display:inline-flex;align-items:center;}';
+	if ( $sgs_nd_render_style_tablet !== $sgs_nd_render_style_desktop ) {
+		$css .= '@media (max-width:' . SGS_Breakpoints::TABLET_MAX . 'px){'
+			. $close_sel . ' .sgs-nav-drawer__close-variant{display:none;}'
+			. $close_sel . ' .sgs-nav-drawer__close-variant--' . $sgs_nd_render_style_tablet . '{display:inline-flex;align-items:center;}}';
+	}
+	if ( $sgs_nd_render_style_mobile !== $sgs_nd_render_style_tablet ) {
+		$css .= '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){'
+			. $close_sel . ' .sgs-nav-drawer__close-variant{display:none;}'
+			. $close_sel . ' .sgs-nav-drawer__close-variant--' . $sgs_nd_render_style_mobile . '{display:inline-flex;align-items:center;}}';
+	}
 }
 
 /*
@@ -843,7 +1136,8 @@ if ( 'text-swap' === $sgs_nd_close_style ) {
  * the accessible name, so an aria-label saying something else breaks WCAG SC 2.5.3
  * Label in Name -- a voice-control user says what they can see and nothing happens.
  * The attribute is therefore built as a VARIABLE and interpolated, exactly as the
- * open side's $burger_aria_attr does.
+ * open side's $burger_aria_attr does. Checked across ALL THREE TIERS (§4.1) --
+ * a text-bearing tier anywhere means the visible word must be the accessible name.
  *
  * ⛔ BUT WHEN THE OPERATOR'S LABEL IS EMPTY, THE HARDCODED aria-label SURVIVES.
  * Emitting aria-label="" is an EMPTY ACCESSIBLE NAME -- strictly worse than a
@@ -851,7 +1145,7 @@ if ( 'text-swap' === $sgs_nd_close_style ) {
  * This is asserted, not reasoned about: the two glyph-only styles and the
  * empty-label case all keep the generic name.
  */
-$sgs_nd_close_visible_word = in_array( $sgs_nd_close_style, array( 'text-swap', 'icon-and-text' ), true )
+$sgs_nd_close_visible_word = $sgs_nd_close_any_text_bearing
 	? $sgs_nd_close_label
 	: '';
 $sgs_nd_close_aria_attr    = '' !== $sgs_nd_close_visible_word
@@ -861,7 +1155,7 @@ $sgs_nd_close_aria_attr    = '' !== $sgs_nd_close_visible_word
 $close_html = sprintf(
 	'<button type="button" class="sgs-nav-drawer__close" data-sgs-nav-close%s>%s</button>',
 	$sgs_nd_close_aria_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_attr()/esc_attr__() applied when the segment was built.
-	$sgs_nd_close_inner // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_html() applied above (text paths) or trusted static markup (burger-morph spans / resolver SVG).
+	$sgs_nd_close_inner // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_html() applied above (text paths) or trusted static markup (burger-morph spans / resolver SVG / variant wrapper spans built from the same).
 );
 
 // Spec 35 item 18 — the visually-hidden note the aria-describedby above

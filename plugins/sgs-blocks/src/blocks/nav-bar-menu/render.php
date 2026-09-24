@@ -139,6 +139,81 @@ if ( ! function_exists( 'sgs_nav_shared_typography_hover_rule' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_nav_bar_menu_valid_cubic_bezier' ) ) {
+	/**
+	 * Wave 3C U-9 (§4.4) — validate a hand-typed `cubic-bezier(x1, y1, x2, y2)`
+	 * curve for `burgerMorphEasingCustom`.
+	 *
+	 * BLOCK-PRIVATE (this block's own custom-curve control; not a shared
+	 * concern) — declared here, guarded, for the same second-instance-fatal
+	 * reason as `sgs_nav_shared_typography_hover_rule()` above.
+	 *
+	 * Anchored end to end (`^…$`) so a declaration breakout
+	 * (`cubic-bezier(0,0,1,1);}}body{x`) cannot slip past the four captured
+	 * groups. `-?\d*\.?\d+` never matches an exponent (`1e5` has no `e` in the
+	 * class), so exponent notation is rejected by construction, not a separate
+	 * check. `x1`/`x2` (the two X coordinates — CSS's own constraint) are
+	 * clamped to 0–1; `y1`/`y2` are free (a spring overshoot legitimately
+	 * exceeds 1, e.g. `cubic-bezier(0.34,1.56,0.64,1)`).
+	 *
+	 * @param string $value The candidate curve string, verbatim.
+	 * @return bool True when it is a real, in-range cubic-bezier() curve.
+	 */
+	function sgs_nav_bar_menu_valid_cubic_bezier( string $value ): bool {
+		$pattern = '/^cubic-bezier\(\s*(-?\d*\.?\d+)\s*,\s*(-?\d*\.?\d+)\s*,\s*(-?\d*\.?\d+)\s*,\s*(-?\d*\.?\d+)\s*\)$/';
+		if ( 1 !== preg_match( $pattern, trim( $value ), $matches ) ) {
+			return false;
+		}
+		$x1 = (float) $matches[1];
+		$x2 = (float) $matches[3];
+		return $x1 >= 0.0 && $x1 <= 1.0 && $x2 >= 0.0 && $x2 <= 1.0;
+	}
+}
+
+if ( ! function_exists( 'sgs_nav_bar_menu_resolve_burger_morph_easing_css' ) ) {
+	/**
+	 * Wave 3C U-9 (§4.4) — resolve `burgerMorphEasing` (+ its `custom` sibling
+	 * `burgerMorphEasingCustom`) to the CSS value the `--sgs-nbm-burger-morph-
+	 * easing` custom property should carry.
+	 *
+	 * Named options mirror `AnimationControl.js::EASINGS`' theme-token
+	 * convention (`default`/`ease-out`/`ease-in`/`spring` → `var(--wp--custom
+	 * --easing--{value})`) PLUS two literals that are NOT theme tokens:
+	 * `quart-out` (dogstudio's own measured curve, §3 exit-cell table) and the
+	 * bare CSS keywords `ease`/`linear`. `custom` defers to the validated
+	 * free-text curve, falling back to `ease` — never a raw, unvalidated
+	 * string reaching CSS.
+	 *
+	 * @param array $attributes Block attributes.
+	 * @return string A CSS `<easing-function>` value. Never empty.
+	 */
+	function sgs_nav_bar_menu_resolve_burger_morph_easing_css( array $attributes ): string {
+		$easing = (string) ( $attributes['burgerMorphEasing'] ?? 'ease' );
+
+		$theme_tokens = array( 'default', 'ease-out', 'ease-in', 'spring' );
+		if ( in_array( $easing, $theme_tokens, true ) ) {
+			return 'var(--wp--custom--easing--' . $easing . ')';
+		}
+
+		if ( 'quart-out' === $easing ) {
+			return 'cubic-bezier(0.165, 0.84, 0.44, 1)';
+		}
+
+		if ( 'linear' === $easing ) {
+			return 'linear';
+		}
+
+		if ( 'custom' === $easing ) {
+			$custom = trim( (string) ( $attributes['burgerMorphEasingCustom'] ?? '' ) );
+			return sgs_nav_bar_menu_valid_cubic_bezier( $custom ) ? $custom : 'ease';
+		}
+
+		// 'ease' and any unrecognised/legacy stored value both land here —
+		// today's exact hardcoded value, the safe floor.
+		return 'ease';
+	}
+}
+
 if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 	/**
 	 * Flattens a resolved menu-block tree into the sgs/nav-bar-menu FLAT bar markup.
@@ -589,6 +664,28 @@ if ( ! empty( $attributes['triggerMagnetEnabled'] ) ) {
 		. ' data-sgs-fx-magnet-strength="' . esc_attr( (string) absint( $attributes['triggerMagnetStrength'] ?? 24 ) ) . '"';
 }
 
+/*
+ * ── Wave 3C U-9/U-11 interface #1 (DEC-09) — the burger's resolved
+ * `collapsePoint`. ────────────────────────────────────────────────────────
+ * Same sanitisation `nav-menu-submenu-css.php::sgs_nav_shared_submenu_css()`
+ * applies to the SAME attribute (max(1, absint(...)), default 768) — one
+ * width, read the same way in both places, so `store.js`'s resize watcher
+ * can never disagree with the CSS bar/burger switch it is watching for.
+ */
+$sgs_nm_collapse_point = isset( $attributes['collapsePoint'] ) ? max( 1, absint( $attributes['collapsePoint'] ) ) : 768;
+
+/*
+ * ── Wave 3C U-9 (§4.4) — burger morph mode + motion. ─────────────────────
+ * `burgerMorph` carries a real block.json `enum`, so an out-of-list stored
+ * value (a hand-authored pattern, an older clone) is already coerced to the
+ * default by WordPress before this file runs — the `in_array()` re-check is
+ * the same belt-and-braces every other PHP-validated nav attribute in this
+ * file applies to a programmatic writer that bypasses the editor entirely.
+ */
+$sgs_nm_burger_morph = in_array( $attributes['burgerMorph'] ?? 'x', array( 'x', 'x-rotate', 'line', 'none' ), true )
+	? (string) ( $attributes['burgerMorph'] ?? 'x' )
+	: 'x';
+
 // wp_interactivity_data_wp_context() is the WP-canonical compact single-quoted
 // emitter (avoids the &quot; bloat get_block_wrapper_attributes() would add) —
 // mirrors the SGS_Container_Wrapper opts doc for `extra_attr_html`.
@@ -611,7 +708,9 @@ $toggle_html = $sgs_nm_show_burger ? sgs_nav_bar_menu_burger_toggle_markup(
 	$trigger_label,
 	$burger_aria_attr,
 	$burger_magnet_attrs,
-	$burger_icon_is_default
+	$burger_icon_is_default,
+	$sgs_nm_collapse_point,
+	$sgs_nm_burger_morph
 ) : '';
 
 // ── The <nav> landmark label (FR-36-10 / FR-36-11) ──────────────────────────
@@ -685,6 +784,19 @@ $bar_data_attrs            = '';
 $bar_data_attrs           .= 'pill' === $indicator_style ? ' data-sgs-nav-indicator' : '';
 $bar_data_attrs           .= $magnet_enabled ? ' data-magnet' : '';
 
+/*
+ * `itemMagnetStrength` (M-10, §4.8) — UNSET means today's exact behaviour:
+ * no `data-magnet-strength` attribute at all, so `view.js::initBarEffects`
+ * keeps calling `initMagnet(el)` with no options. Only emitted when the
+ * operator has actually set a numeric value; clamped to the control's own
+ * 0.02–0.5 range so a programmatic writer (pattern, cloning pipeline) can't
+ * push `magnet.js`'s pull factor outside what the RangeControl allows.
+ */
+$sgs_nm_item_magnet_strength = $attributes['itemMagnetStrength'] ?? null;
+if ( $magnet_enabled && is_numeric( $sgs_nm_item_magnet_strength ) ) {
+	$bar_data_attrs .= ' data-magnet-strength="' . esc_attr( (string) max( 0.02, min( 0.5, (float) $sgs_nm_item_magnet_strength ) ) ) . '"';
+}
+
 // `sgs-nav-bar-menu__bar` is this block's own BEM root. The `--drawer`
 // modifier + `data-sgs-nav-submenu-model` attribute belong to the in-drawer
 // render path, which lives on `sgs/nav-drawer-menu`'s own render.php.
@@ -735,6 +847,37 @@ $sgs_nm_justify_allowed = array( 'flex-start', 'center', 'flex-end', 'space-betw
 $sgs_nm_justify_content = (string) ( $attributes['justifyContent'] ?? '' );
 if ( in_array( $sgs_nm_justify_content, $sgs_nm_justify_allowed, true ) ) {
 	$css .= $uid_sel . '{justify-content:' . $sgs_nm_justify_content . '}';
+}
+
+/*
+ * ── Wave 3C U-9 (§4.4) — burger morph duration + easing custom properties. ──
+ * `style.css`'s base rules read `--sgs-nbm-burger-morph-duration`/`-easing`
+ * with today's exact hardcoded values as their `var()` fallbacks (200ms /
+ * ease), so this block only writes a property when the operator has moved
+ * OFF that default — an untouched nav ships nothing extra and renders
+ * byte-identical CSS to before this attribute pair existed.
+ *
+ * Naming ruling (Spec 35/32 audit SHOULD 4, 2026-09-24): FR-32-4's canonical
+ * form is `--sgs-{block}-{role}`, which for this block would be
+ * `--sgs-nav-bar-menu-*`. `nbm` is an ABBREVIATION of the block slug, same as
+ * `sgs/nav-drawer`'s own shipped `--sgs-drawer-*` custom properties abbreviate
+ * theirs — this is the established convention within the nav-* block family,
+ * not a one-off. Kept as `--sgs-nbm-*` for consistency with that sibling
+ * rather than renamed to the longer canonical form.
+ */
+$sgs_nm_morph_duration = isset( $attributes['burgerMorphDuration'] ) ? (int) $attributes['burgerMorphDuration'] : 200;
+$sgs_nm_morph_duration = max( 0, min( 1200, $sgs_nm_morph_duration ) );
+$sgs_nm_morph_easing_css = sgs_nav_bar_menu_resolve_burger_morph_easing_css( $attributes );
+
+$sgs_nm_morph_vars = '';
+if ( 200 !== $sgs_nm_morph_duration ) {
+	$sgs_nm_morph_vars .= '--sgs-nbm-burger-morph-duration:' . $sgs_nm_morph_duration . 'ms;';
+}
+if ( 'ease' !== $sgs_nm_morph_easing_css ) {
+	$sgs_nm_morph_vars .= '--sgs-nbm-burger-morph-easing:' . $sgs_nm_morph_easing_css . ';';
+}
+if ( '' !== $sgs_nm_morph_vars ) {
+	$css .= $uid_sel . '{' . $sgs_nm_morph_vars . '}';
 }
 
 // The item hover-colour default ('primary') is the same on nav-drawer-menu, so
