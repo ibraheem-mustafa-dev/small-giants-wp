@@ -12,7 +12,7 @@ date:   2026-09-23
 
 Supersedes the earlier same-day report on this file, which said the card "matched" from style values alone; Bean
 then found six failures by eye (heading, font, logo, per-card logo, arrows over the cards, dots). Design:
-`.claude/plans/2026-09-23-google-reviews-baseline-and-slider-nav-design.md`.
+`.claude/plans/archive/2026-09-23-google-reviews-baseline-and-slider-nav-design.md`.
 
 Intent of THIS change: a new block looks like the Google widget with no settings touched; arrows can be placed five
 ways (below-end default, below-center, below-split, sides, overlay-inset) and never cover a card; one progress setting

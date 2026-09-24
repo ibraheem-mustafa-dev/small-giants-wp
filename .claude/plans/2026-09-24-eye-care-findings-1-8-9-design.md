@@ -1,6 +1,8 @@
 # Eye Care findings 1, 8 and 9: converter design (2026-09-24)
 
-Status: DESIGN FOR BEAN'S APPROVAL (project rule 7: converter change). Nothing built.
+Status: C1 to C4 approved by Bean 2026-09-24. C2 BUILT (0deb3b10b). C1, C3, C4, C5 PAUSED by D1149: they
+resume in Phase 7 of `plans/2026-09-24-eye-care-hand-build-design.md`, tested against the hand-built site.
+The sections below are the design as approved; read the two review sections at the end before building.
 Audit: `reports/visual-diff/eye-care-home-audit-2026-09-24.md`. Evidence run:
 `pipeline-state/eye-care-ward-end-eye-care-birmingham-2026-09-24-000044` (v2 draft).
 

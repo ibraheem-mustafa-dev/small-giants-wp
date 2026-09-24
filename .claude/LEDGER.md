@@ -9,23 +9,16 @@ last_updated: 2026-09-24
 ## Human Summary — FOR BEAN, plain English (read this first)
 
 **DRAFT STANDARDISATION: council done, plan approved (D1132). Read `.claude/plans/2026-09-20-draft-standardisation-plan.md`.**
-Finding: the JS-to-CSS translation already exists and is simply not wired in; the pipeline also silently ignores several parts
-of a draft (`<sc-if>` conditions, `style-hover`, multi-field JS-array copy, base64 logos). The README is wrong in 8 places
-against the files, so the files are the source of truth. Plan: (A) wire and extend existing functions, no new stage, starting
-with the evaluator; (B) a small draft standard only for what code cannot derive, written into the draft by Claude Design via a
-closing prompt; (C) a deterministic checker as the second layer. Bean confirmed the breakpoint mapping (700 to 768, 1280
-stays). First test done: Claude Design followed the prompt; I patched its faults myself (deleted brand logos restored as files,
-ticker rule and 3 button paddings reverted, manifest vocabularies closed, proposed block per section added); render check
-identical to the original except the header logo (D1132). Patched bundle:
-`sites/eye-care-ward-end/design_handoff_ward_end_eye_care_v2` (untracked; raw export kept as `..._v2_raw`). A1 DONE (D1132, `faaf79f0d`): the width evaluator is wired in; on the live test page padding and grid columns equal the draft at 375, 768 and 1440 for every
-section present. A2 DONE (D1134): the draft's phone, review and social links and all its loop copy (13 reviews, 4 reasons, 6 shape tiles, 32 brand-marquee items, 4 ticker items) are now filled in from its own script, on by default; every review and reasons line is on the live page at 375 and 1440. A QC council also found and I fixed a converter bug (an item's gap and direction overwrote its container's, turning the review rail into a column) plus defects in my A1 and A2a code. Ticker and reviews card (D1139-D1145) now equal the draft at every width (Google design is the block baseline, shared slider nav, self-hosted fonts, deploys keep the client theme.json, Spec 33 sets content/wide width); 36 raw placeholders remain (plan A3, Track D). Prompt file is ONE reusable prompt.
+Plan: (A) wire and extend existing functions, no new stage; (B) a small draft standard only for what code cannot derive,
+written into the draft by Claude Design; (C) a deterministic checker as the second layer. A1 DONE (D1132): the width
+evaluator is wired in. A2 DONE (D1134): the draft's links and loop copy fill in from its own script. Ticker and reviews card
+equal the draft at every width (D1139-D1145). Open: 36 raw placeholders (plan A3, Track D). Detail: D1132-D1145.
 
-**Where the Eye Care clone stands (test page 11), 2026-09-24.** A whole-page audit against the draft at 1440/768/375
-(`reports/visual-diff/eye-care-home-audit-2026-09-24.md`) ranked 10 findings, each with a proven cause. Fixed and verified
-live: invisible brand logos (a media z-index default), headings invisible on dark bands (theme heading colour), and raw
-`{{ }}` template text at the page foot (overlay content and nested loop items, D1147; now 0 at every width). Still open, in
-order: hero empty, "Any pair here" and optician (placeholder list, lost photo, buttons as text), best sellers and shape
-tiles, header and footer. Mama's Munches is untouched by all of it.
+**Eye Care: now built by hand first (D1149, 2026-09-24).** Instead of finishing the pipeline before any client
+ships, the Eye Care site is built by hand to client-ready from Claude Design's gap map, full scope including the lens
+configurator and prescription upload. The finished site then becomes the pipeline's answer key. Plan:
+`plans/2026-09-24-eye-care-hand-build-design.md`. Next: Wave A. The clone on test page 11 stays as it is (only the
+reviews section matches the draft); its open converter fixes (C1, C3, C4, C5) are paused until Phase 7.
 
 **Nav / header / footer.** Wave 1 (fixtures + verification) is closed. Wave 2 (capabilities) is
 done and live-verified. The harness self-tests and the fixture fidelity check are in place; only the reference labels for three unmeasured sites wait on Wave 4. Done: the drawer post type, the picker
@@ -41,8 +34,8 @@ deploy target `indus-test`) because the active header/footer/theme-snapshot poin
 GLOBAL `wp_options` rows per site. Its content build is documented in `sites/indus-foods/CLAUDE.md`.
 
 Things that need Bean directly, not a subagent: the drawer-burger click retest, the mega-motion
-Bean's-eye check, and Spec 42/43
-Phase 3's precondition (real WooCommerce catalogue data).
+Bean's-eye check. (Spec 42/43 Phase 3's catalogue precondition is met for Eye Care by the draft's 16 products and
+its lens prices, D1149.)
 
 ## Blockers
 
@@ -56,8 +49,9 @@ Phase 3's precondition (real WooCommerce catalogue data).
 `sites/eye-care-ward-end/Ward End Eye Care - SGS Gap Handoff/` (new draft with `data-sgs-manifest`, gap map of
 114 graded items). Plan: `plans/2026-09-24-eye-care-hand-build-design.md` (phases 0-7, parallel waves A-D,
 model routing). **Next: Wave A** — Phase 0 gap-map re-check (Haiku, one agent per area) ‖ Phase 1 theme
-remainder ‖ Phase 2 WooCommerce data on eye-care-test. Converter findings design C1/C3/C4/C5 PAUSED (C2
-shipped) until Phase 7, where the finished site is the clone's answer key. The clone notes below still apply.
+‖ Phase 2 WooCommerce data on eye-care-test. Converter findings design C1/C3/C4/C5 PAUSED (C2 shipped) until
+Phase 7, where the finished site is the clone's answer key. The clone notes below apply to Phase 7 only; they use
+the older `design_handoff_ward_end_eye_care_v2` draft, while the build uses the Gap Handoff bundle.
 
 **Test site:** https://darkcyan-grouse-898606.hostingersite.com/eye-care-birmingham/ (page 11; WP 7.1.1 +
 WooCommerce; creds `.claude/secrets/eye-care-test.env`). Run a clone: `SGS_DEPLOY_SITE=eye-care-test`, `SSL_CERT_FILE`
@@ -72,7 +66,7 @@ Playwright `innerText`, never a tag-stripping regex; compare runs by (selector, 
 verify a stage claim by finding one string it should have produced. Files shared between bash and python: relative
 names (Git Bash `/tmp` and Python `/tmp` are different folders).
 
-**Spec 33 upgrade (done).** Plan `plans/2026-09-19-front-f-spec33-upgrade.md`. Snapshot `sites/eye-care-ward-end/
+**Spec 33 upgrade (done).** Plan `plans/archive/2026-09-19-front-f-spec33-upgrade.md`. Snapshot `sites/eye-care-ward-end/
 theme-snapshot.json` (regenerate: `theme-extractor/extract.py --client eye-care-ward-end --draft "<draft>" --merge-onto
 theme/sgs-theme/theme.json`; the extractor reads the README beside the draft, which is now tracked). Deploy order on a
 test site: `build-deploy.py --target eye-care-test --theme-only` first (it puts the framework `theme.json` back), THEN
@@ -97,7 +91,7 @@ freshness gate because another session's uncommitted Mama's snapshot carries a d
 homepage sections no longer carry junk attributes (18 to 0). Evaluator BUILT and WIRED (A1, D1132, `faaf79f0d`): `orchestrator/script_bindings.py` turns the draft's own width rules into mobile, tablet and desktop values
 (75 of 140 names, 0 mismatches against the measured render), found by what the script reads so renamed flags work; Bean's 10px / 768 breakpoint rule is
 `orchestrator/breakpoint_snap.py`; Stage -1.4 hands the map to the converter. Live test page: padding and grid columns match the draft and Bean's online copy of the
-original. Not done: 7 names whose breakpoint stays inside a device tier (logged as gaps), and the content bindings (A2). Design: `plans/2026-09-20-A1-wire-evaluator-design.md`.
+original. Not done: 7 names whose breakpoint stays inside a device tier (logged as gaps), and the content bindings (A2). Design: `plans/archive/2026-09-20-A1-wire-evaluator-design.md`.
 
 **Open, in order:**
 0. *NEXT: work through the audit's findings in its fix order* (`reports/visual-diff/eye-care-home-audit-2026-09-24.md`;

@@ -1,6 +1,6 @@
 # Spec 33 upgrade: review and QC council record (2026-09-20)
 
-Scope reviewed: the Front F build (plan `plans/2026-09-19-front-f-spec33-upgrade.md`, decision D1120, Spec 33 FR-33-15 to FR-33-17). Every reviewer and rater ran on a different model family from the implementers and was told to attack the work, not confirm it. All were read-only. Evidence scripts are in `pipeline-state/_review-*`, `_qc-a`, `_qc-b`, `_qc-c` (git-ignored).
+Scope reviewed: the Front F build (plan `plans/archive/2026-09-19-front-f-spec33-upgrade.md`, decision D1120, Spec 33 FR-33-15 to FR-33-17). Every reviewer and rater ran on a different model family from the implementers and was told to attack the work, not confirm it. All were read-only. Evidence scripts are in `pipeline-state/_review-*`, `_qc-a`, `_qc-b`, `_qc-c` (git-ignored).
 
 ## Wave review (before the first commit)
 
