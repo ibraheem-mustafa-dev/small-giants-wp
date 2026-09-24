@@ -25,6 +25,7 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
+require_once __DIR__ . '/woocommerce-reviews.php';
 
 // CSS length/unit sanitiser — for free-text attrs concatenated into raw CSS
 // declarations inside this block's scoped <style> tag. Mirrors sgs/hero.
@@ -72,11 +73,18 @@ $autoplay       = isset( $attributes['autoplay'] ) ? (bool) $attributes['autopla
 $autoplay_speed = isset( $attributes['autoplaySpeed'] ) ? intval( $attributes['autoplaySpeed'] ) : 5000;
 $show_dots      = isset( $attributes['showDots'] ) ? (bool) $attributes['showDots'] : false;
 $show_arrows    = isset( $attributes['showArrows'] ) ? (bool) $attributes['showArrows'] : true;
+// WooCommerce source settings (dataSource=woocommerce only) — see the
+// "Data source resolution" block below.
+$empty_state_message = isset( $attributes['emptyStateMessage'] ) ? (string) $attributes['emptyStateMessage'] : '';
+$woo_reviews_max     = isset( $attributes['wooReviewsMax'] ) ? max( 0, intval( $attributes['wooReviewsMax'] ) ) : 10;
+$woo_reviews_order   = ( isset( $attributes['wooReviewsOrder'] ) && in_array( $attributes['wooReviewsOrder'], array( 'newest', 'highest' ), true ) )
+	? $attributes['wooReviewsOrder']
+	: 'newest';
 
 // DMCC FR-30-10: whitelist the data source. Any unsanitised / invalid / REST-injected
 // value must NEVER fall through to fake demo reviews — coerce it to the safe synced
 // (empty-state) path, which renders genuine data or nothing, never placeholders.
-if ( ! in_array( $data_source, array( 'synced', 'inline', 'placeholder' ), true ) ) {
+if ( ! in_array( $data_source, array( 'synced', 'inline', 'placeholder', 'woocommerce' ), true ) ) {
 	$data_source = 'synced';
 }
 
@@ -121,8 +129,10 @@ $placeholder_reviews = array(
 	),
 );
 
-$reviews         = array();
-$synced_is_empty = false; // True when dataSource=synced but no live data is available.
+$reviews            = array();
+$synced_is_empty    = false; // True when dataSource=synced but no live data is available.
+$woo_is_empty       = false; // True when dataSource=woocommerce, a real product resolved, but it has no approved reviews.
+$woo_editor_preview = false; // True when dataSource=woocommerce and no product could be resolved (editor SSR preview) — placeholder + note, never a fake "0 reviews" empty state.
 
 if ( 'synced' === $data_source ) {
 	$synced = get_option( 'sgs_trustpilot_data', null );
@@ -153,6 +163,41 @@ if ( 'synced' === $data_source ) {
 	// Placeholder is for editor preview / explicit operator demo only. This is the
 	// ONLY path that may render demo data, and only via an explicit dataSource choice.
 	$reviews = $placeholder_reviews;
+} elseif ( 'woocommerce' === $data_source ) {
+	// This product's own approved WooCommerce reviews. resolve_current_product()
+	// (includes/conditional-visibility.php, loaded plugin-wide) already covers
+	// block context postId (product query-loop items) -> global $product
+	// (WooCommerce singular product templates) -> the queried object, and
+	// returns null when WooCommerce is inactive.
+	$woo_product = function_exists( '\SGS\Blocks\resolve_current_product' ) ? \SGS\Blocks\resolve_current_product( $block ) : null;
+
+	if ( $woo_product instanceof \WC_Product ) {
+		$reviews     = sgs_trustpilot_get_woocommerce_reviews( $woo_product, $woo_reviews_max, $woo_reviews_order );
+		$woo_summary = sgs_trustpilot_woocommerce_summary( $woo_product );
+		if ( 0.0 === $reviews_average ) {
+			$reviews_average = $woo_summary['average'];
+		}
+		if ( 0 === $total_reviews ) {
+			$total_reviews = $woo_summary['count'];
+		}
+		if ( empty( $reviews ) ) {
+			$woo_is_empty = true;
+		}
+	} elseif ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+		// Editor SSR preview (the `wp/v2/block-renderer` REST endpoint
+		// ServerSideRender calls) has no real product to bind to when this
+		// block sits inside a bare product template being edited — the same
+		// context gap product-card/render.php documents for its own postId
+		// fallback. Show placeholder demo content + an editor-only note
+		// (mirrors dataSource=placeholder) rather than a misleading "0
+		// reviews" empty state for a product that simply hasn't loaded.
+		$reviews            = $placeholder_reviews;
+		$woo_editor_preview = true;
+	} else {
+		// Genuine frontend render with no resolvable product context: nothing
+		// to show, never placeholder/fake reviews on a live frontend.
+		$woo_is_empty = true;
+	}
 } else {
 	// DMCC FR-30-10: any other case (e.g. inline with no reviews) renders nothing —
 	// never placeholder/fake reviews on a live frontend.
@@ -160,17 +205,20 @@ if ( 'synced' === $data_source ) {
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// Empty-state handling (DMCC FR-30-10): when synced source has no live data,
-// render the operator-chosen empty state and return early — never a broken gap.
+// Empty-state handling (DMCC FR-30-10): when synced/woocommerce source has no
+// live data, render the operator-chosen empty state and return early — never
+// a broken gap. $woo_editor_preview is deliberately excluded here: that path
+// already has placeholder content to render, not an empty state.
 // ───────────────────────────────────────────────────────────────────────────
 
-if ( $synced_is_empty ) {
+if ( $synced_is_empty || $woo_is_empty ) {
 	if ( 'coming-soon' === $empty_state ) {
-		$wrapper_attrs = get_block_wrapper_attributes( array( 'class' => 'sgs-trustpilot-reviews sgs-trustpilot-reviews--empty-state' ) );
+		$wrapper_attrs        = get_block_wrapper_attributes( array( 'class' => 'sgs-trustpilot-reviews sgs-trustpilot-reviews--empty-state' ) );
+		$empty_state_fallback = '' !== $empty_state_message ? $empty_state_message : __( 'Reviews coming soon', 'sgs-blocks' );
 		printf(
 			'<div %s><p class="sgs-trustpilot-reviews__coming-soon">%s</p></div>',
 			$wrapper_attrs, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes returns escaped attribute string.
-			esc_html__( 'Reviews coming soon', 'sgs-blocks' )
+			esc_html( $empty_state_fallback )
 		);
 	}
 	// emptyState=hide: output nothing — no gap, no layout break.
@@ -398,6 +446,14 @@ if ( $is_carousel && $sgs_tp_loop_carousel ) {
 
 ob_start();
 
+if ( $woo_editor_preview ) :
+	?>
+	<p class="sgs-trustpilot-reviews__editor-note">
+		<?php esc_html_e( 'Editor preview only — placeholder reviews shown. On the live product page this block shows that product\'s real WooCommerce reviews.', 'sgs-blocks' ); ?>
+	</p>
+	<?php
+endif;
+
 if ( $show_source_header ) :
 	?>
 	<div class="sgs-trustpilot-reviews__header">
@@ -596,7 +652,7 @@ $inner_html = ob_get_clean();
 
 $schema_html = '';
 // Never from the invented sample set: fake reviews must not reach structured data either.
-if ( $show_schema && ! empty( $reviews ) && 'placeholder' !== $data_source ) {
+if ( $show_schema && ! empty( $reviews ) && 'placeholder' !== $data_source && ! $woo_editor_preview ) {
 	$schema_reviews = array();
 	foreach ( $reviews as $r ) {
 		$schema_reviews[] = array(

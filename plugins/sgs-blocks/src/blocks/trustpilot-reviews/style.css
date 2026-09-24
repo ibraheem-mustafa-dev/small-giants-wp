@@ -132,6 +132,21 @@
 	margin: 0 0 1.25rem;
 }
 
+/* Editor-preview-only note (dataSource=woocommerce with no resolvable
+   product context). Never rendered on the frontend -- render.php only
+   emits this markup during an editor SSR preview. */
+.sgs-trustpilot-reviews__editor-note {
+	font-size: 0.85rem;
+	font-style: italic;
+	text-align: center;
+	color: var(--sgs-tp-text-muted);
+	opacity: 0.75;
+	margin: 0 0 1rem;
+	padding: 0.5rem 0.75rem;
+	background: var(--sgs-tp-card-bg);
+	border-radius: var(--sgs-tp-radius);
+}
+
 /* ── Viewport + track ───────────────────────────────────────────────────── */
 
 .sgs-trustpilot-reviews__viewport {

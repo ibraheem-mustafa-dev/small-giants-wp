@@ -138,7 +138,8 @@
 			"enum": [
 				"inline",
 				"synced",
-				"placeholder"
+				"placeholder",
+				"woocommerce"
 			]
 		},
 		"emptyState": {
@@ -148,6 +149,25 @@
 				"hide",
 				"coming-soon"
 			]
+		},
+		"emptyStateMessage": {
+			"type": "string",
+			"default": "",
+			"description": "Editable text for the 'coming-soon' empty state. Empty falls back to the default translated message. Shared by dataSource=synced and dataSource=woocommerce."
+		},
+		"wooReviewsMax": {
+			"type": "number",
+			"default": 10,
+			"description": "dataSource=woocommerce only. Maximum number of this product's own approved reviews to show. 0 = no cap."
+		},
+		"wooReviewsOrder": {
+			"type": "string",
+			"default": "newest",
+			"enum": [
+				"newest",
+				"highest"
+			],
+			"description": "dataSource=woocommerce only. Order the product's reviews by publish date or by star rating."
 		},
 		"headingLevel": {
 			"type": "string",

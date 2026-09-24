@@ -52,6 +52,12 @@ const DATA_SOURCE_OPTIONS = [
 	{ label: __( 'Inline (entered here)', 'sgs-blocks' ), value: 'inline' },
 	{ label: __( 'Synced (read from site sync settings)', 'sgs-blocks' ), value: 'synced' },
 	{ label: __( 'Placeholder (demo content)', 'sgs-blocks' ), value: 'placeholder' },
+	{ label: __( "WooCommerce (this product's reviews)", 'sgs-blocks' ), value: 'woocommerce' },
+];
+
+const WOO_REVIEWS_ORDER_OPTIONS = [
+	{ label: __( 'Newest first', 'sgs-blocks' ), value: 'newest' },
+	{ label: __( 'Highest rated first', 'sgs-blocks' ), value: 'highest' },
 ];
 
 const EMPTY_STATE_OPTIONS = [
@@ -80,6 +86,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		headingLevel,
 		dataSource,
 		emptyState,
+		emptyStateMessage,
+		wooReviewsMax,
+		wooReviewsOrder,
 		businessUnitUrl,
 		reviews,
 		trustScore,
@@ -220,24 +229,60 @@ export default function Edit( { attributes, setAttributes } ) {
 						help={ __( 'Synced reads from wp_options[sgs_trustpilot_data], populated by Settings > SGS Trustpilot Sync.', 'sgs-blocks' ) }
 						__next40pxDefaultSize
 					/>
-					{ dataSource === 'synced' && (
+					{ ( dataSource === 'synced' || dataSource === 'woocommerce' ) && (
 						<SelectControl
 							label={ __( 'When no reviews are available', 'sgs-blocks' ) }
 							value={ emptyState }
 							options={ EMPTY_STATE_OPTIONS }
 							onChange={ ( value ) => setAttributes( { emptyState: value } ) }
-							help={ __( 'Controls what shows when the synced source is empty or unreachable. "Hide" removes the section entirely; "Reviews coming soon" shows a placeholder message.', 'sgs-blocks' ) }
+							help={ __( 'Controls what shows when there are no reviews to display. "Hide" removes the section entirely; "Reviews coming soon" shows a message.', 'sgs-blocks' ) }
 							__next40pxDefaultSize
 						/>
 					) }
-					<TextControl
-						label={ __( 'Trustpilot business URL', 'sgs-blocks' ) }
-						value={ businessUnitUrl }
-						onChange={ ( value ) => setAttributes( { businessUnitUrl: value } ) }
-						placeholder="https://uk.trustpilot.com/review/example.com"
-						type="url"
-						__next40pxDefaultSize
-					/>
+					{ ( dataSource === 'synced' || dataSource === 'woocommerce' ) && emptyState === 'coming-soon' && (
+						<TextControl
+							label={ __( 'Empty state message', 'sgs-blocks' ) }
+							value={ emptyStateMessage }
+							onChange={ ( value ) => setAttributes( { emptyStateMessage: value } ) }
+							placeholder={ __( 'Reviews coming soon', 'sgs-blocks' ) }
+							help={ __( 'Leave blank to use the default message.', 'sgs-blocks' ) }
+							__next40pxDefaultSize
+						/>
+					) }
+					{ dataSource === 'woocommerce' && (
+						<>
+							<NumberControl
+								label={ __( 'Maximum reviews to show', 'sgs-blocks' ) }
+								value={ wooReviewsMax }
+								min={ 0 }
+								max={ 50 }
+								step={ 1 }
+								onChange={ ( value ) => setAttributes( { wooReviewsMax: Number.parseInt( value, 10 ) || 0 } ) }
+								help={ __( '0 shows every approved review.', 'sgs-blocks' ) }
+								__next40pxDefaultSize
+							/>
+							<SelectControl
+								label={ __( 'Order', 'sgs-blocks' ) }
+								value={ wooReviewsOrder }
+								options={ WOO_REVIEWS_ORDER_OPTIONS }
+								onChange={ ( value ) => setAttributes( { wooReviewsOrder: value } ) }
+								__next40pxDefaultSize
+							/>
+							<Notice status="info" isDismissible={ false }>
+								{ __( 'Shows the current product\'s own approved WooCommerce reviews (requires WooCommerce, and the block placed on or connected to a product). The average rating and review count come straight from that product. In the editor, outside a real product context, placeholder reviews are shown instead — see the note on the preview below.', 'sgs-blocks' ) }
+							</Notice>
+						</>
+					) }
+					{ dataSource !== 'woocommerce' && (
+						<TextControl
+							label={ __( 'Trustpilot business URL', 'sgs-blocks' ) }
+							value={ businessUnitUrl }
+							onChange={ ( value ) => setAttributes( { businessUnitUrl: value } ) }
+							placeholder="https://uk.trustpilot.com/review/example.com"
+							type="url"
+							__next40pxDefaultSize
+						/>
+					) }
 				</PanelBody>
 
 				{ /* Outer PanelBody removed 2026-08-13 — it duplicated this
