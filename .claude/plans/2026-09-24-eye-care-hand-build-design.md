@@ -12,6 +12,21 @@
   surface colour (a dark-footer assumption, two rules); no page template without the title; WhatsApp CTA now falls back
   to Site Info. Round 2 settings: card-grid image glyph + image overlay, process-steps list layout, brand-strip exact
   seconds, social-icons brand marks (Google, WhatsApp, TikTok, X).
+- Comparison pass (read-only agent, 1440/768/375) then fixes, all deployed: hero parallax layer leaked behind every
+  transparent section (clip-path on the parallax root); hero overlay collapsed to 0x0 under Ken Burns, and covered only
+  the content cap (the cap is now static inside the hero); hero sub-headline pushed right by sgs/text auto-centring;
+  sgs/heading gained maxWidth (ch allowed); 4 / 5 added to the shared aspect-ratio list; card-grid frontend image never
+  filled its ratio box or zoomed (rules named only the editor class), overlay-variant glyph now sits in the caption,
+  image glyphs sit bare, a set image overlay replaces the caption gradient; brand-strip tile links not underlined; custom
+  buttons with a border width paint it; mega triggers honour submenuCaret. Page content: dark ticker, logo centred
+  (1fr auto 1fr), icon-only burgers, no carets, About/Contact/Help spacing, borders, one-line hours, placeholder form.
+  `scripts/wp-build-page.js` now also refuses wrong-typed, off-enum and per-device-on-flat values (six borders were
+  invisible because of the last one).
+- Still differing from the draft, not yet built: the best-seller product cards (the draft's Frame Card: brand, heart,
+  SAVE badge, stars, 4-up at 1280) belong with the shop and product card in Wave C; framework gaps with proven causes:
+  sgs/accordion-item title weight is fixed at 600; sgs/form has no submit-only typography (uppercase, letter spacing);
+  sgs/business-info has no condensed hours format (Contact uses an sgs/text line); sgs/nav-bar-menu triggerMode is not
+  per-device (passed to the nav track); the shape tiles' "Photo to come" note.
 - Waiting on Bean (shared mechanisms): (1) hide a block below/above a custom width (the header phone below 1160, which
   also stops the header wrapping between 1060 and 1160); (2) a button whose link comes from Site Info (the Help page's
   "Call"); (3) the outline button preset following its section's text colour (invisible on light sections today; About
