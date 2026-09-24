@@ -169,9 +169,33 @@ def analyse_style_css(css_path: Path) -> dict:
 
 # --- Live analysis ----------------------------------------------------------
 def fetch(url: str, timeout: int = 25) -> str:
+    """Fetch `url`, trusting the certifi bundle first and the platform store second.
+
+    The two stores can disagree about the same certificate (the Windows store has
+    rejected the healthy canary as "expired"), so a verification failure under one
+    is retried once under the other — the same order as build-deploy.py::urlopen_tls.
+    """
+    import ssl
+    import urllib.error
+
+    stores = []
+    try:
+        import certifi
+        stores.append(ssl.create_default_context(cafile=certifi.where()))
+    except ImportError:
+        pass
+    stores.append(None)  # platform store
+
     req = urllib.request.Request(url, headers={"User-Agent": "sgs-no-inline-detector"})
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return resp.read().decode("utf-8", errors="replace")
+    for position, context in enumerate(stores):
+        try:
+            with urllib.request.urlopen(req, timeout=timeout, context=context) as resp:
+                return resp.read().decode("utf-8", errors="replace")
+        except urllib.error.URLError as exc:
+            if isinstance(exc.reason, ssl.SSLCertVerificationError) and position + 1 < len(stores):
+                continue
+            raise
+    raise RuntimeError("no TLS store available")
 
 
 TAG_RE = re.compile(r"<[a-zA-Z][^>]*>")

@@ -7099,9 +7099,6 @@ def stage_12_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
         path as a positional arg (e.g. `no-inline-wave3-roster-manifest.json`);
         a one-off historical verification tool for a completed migration,
         not a recurring repo-wide scanner.
-      - check-atomic-slug-literals.py — its own docstring declares it
-        RETIRED (`converter_v2/convert.py` deleted at D276); a confirmed
-        no-op, historical only.
       - check-interaction-only-css.py, check-markup-neutral.py,
         check-blockjson-metadata-only.py — pre-commit staged-diff helpers;
         each requires a specific block-name argument + a live `git diff

@@ -11,9 +11,7 @@ Spec 31 §7a check 1:
     - dict/frozenset/set/list literals whose keys/members match "sgs/[a-z-]+"
 
   Allowlist: function-scoped ('iconCircleBackground' was legitimate only in
-  _atomic_attrs_for of the now-DELETED converter_v2/convert.py;
-  check-atomic-slug-literals.py covered the _atomic_attrs_for scope for that
-  file). The _FUNC_SCOPED_ALLOWLIST entry below is now permanently dead
+  _atomic_attrs_for of the now-DELETED converter_v2/convert.py). The _FUNC_SCOPED_ALLOWLIST entry below is now permanently dead
   (EXECUTION Step 16, 2026-07-05 — the frozen file it named no longer
   exists, so the scan can never hit it) but is left in place rather than
   removed: harmless, and documents where the equivalent allowance would need
@@ -21,9 +19,7 @@ Spec 31 §7a check 1:
   slug-literal need (today it doesn't — grepped, no _atomic_attrs_for
   equivalent exists under converter/).
 
-  This check supersedes check-atomic-slug-literals.py by scanning the WHOLE
-  orchestrator tree, not just _atomic_attrs_for.  check-atomic-slug-literals.py
-  is a narrower complement; it is NOT retired by this gate.
+  This check scans the WHOLE orchestrator tree.
 
 UK English throughout.
 """
@@ -57,10 +53,7 @@ _SLUG_RE = re.compile(r'"(sgs/[a-z0-9-]+)"')
 # An entry here means: the literal is expected inside that function scope;
 # flag it if it appears OUTSIDE that function scope in that file.
 #
-# check-atomic-slug-literals.py covers _atomic_attrs_for in convert.py
-# (the inner allow-list used there).  We delegate that function scope here
-# too — any slug inside _atomic_attrs_for in converter_v2/convert.py is
-# expected and allowed.
+# Any slug inside _atomic_attrs_for in converter_v2/convert.py is allowed.
 # ---------------------------------------------------------------------------
 
 # relative to _ORCHESTRATOR
@@ -68,9 +61,8 @@ _ATOMIC_FILE_REL = "converter_v2/convert.py"  # DELETED Step 16 — allowlist en
 _ATOMIC_FUNC = "_atomic_attrs_for"
 
 # The 'iconCircleBackground' note in Spec 31 refers to a slug used inside
-# _atomic_attrs_for that is legitimate.  We allow ALL slugs inside
-# _atomic_attrs_for because check-atomic-slug-literals.py separately gates
-# which specific slugs are allowed there.
+# _atomic_attrs_for that is legitimate, so ALL slugs inside
+# _atomic_attrs_for are allowed.
 _FUNC_SCOPED_ALLOWLIST: dict[str, str] = {
     # file_rel: function_name  (slug literals inside this function are OK)
     _ATOMIC_FILE_REL: _ATOMIC_FUNC,

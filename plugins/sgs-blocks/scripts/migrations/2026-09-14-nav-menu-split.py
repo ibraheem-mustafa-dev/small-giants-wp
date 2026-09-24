@@ -137,8 +137,7 @@ BLIND_SPOT_KINDS = {
 }
 # ⚠ NO `\b` AFTER A HYPHENATED NAME. In a regex a hyphen is a non-word character, so `\b`
 # matches BETWEEN `menu` and a following `-`: `sgs/nav-menu\b` also matches inside
-# `sgs/nav-menu-anything`. Same bug class `migrate-orchestrator-rename.py` documents
-# (`\borchestrator\.py\b` matching inside `sgs-clone-orchestrator.py`). `_END` is a
+# `sgs/nav-menu-anything` (likewise `\borchestrator\.py\b` matching inside `sgs-clone-orchestrator.py`). `_END` is a
 # negative lookahead for any slug character instead — `--self-test` asserts it.
 _END = r'(?![a-zA-Z0-9_-])'
 LITERAL_PATTERNS = [

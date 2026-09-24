@@ -750,7 +750,7 @@ Check every row before building anything new.
 | Directory | Runnable files | Holds |
 |---|---|---|
 | `scripts/` | 21 | repo-wide tooling (naming lint, site utilities) |
-| `plugins/sgs-blocks/scripts/` | 915 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `plugins/sgs-blocks/scripts/` | 913 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/scripts/` | 0 | working-area helpers |
 | `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
@@ -759,7 +759,7 @@ Worktrees under `.claude/worktrees/` mirror this tree — never cite them as a s
 
 ### The prebuild gate chain — what actually blocks a build
 
-Derived from `package.json`'s `prebuild` PLUS `scripts/gates.json`, in execution order. ⛔ **These are TWO tiers, not one chain.** The five generators and the `fast` tier run on every build. The `full` tier — `pytest-oracle-converter`, `inspector-scan-run`, `audit-block-file-consistency` — was measured at 76.1% of the old chain's time and now runs PRE-DEPLOY only, via `build-deploy.py`'s `step_gate_full()`. Every gate that blocked before still blocks; only the timing changed. Run `npm run gate:list` for each gate's tier and measured cost, and `npm run gate:wired` to prove the `full` tier is still reachable. This chain is
+Derived from `package.json`'s `prebuild` PLUS `scripts/gates.json`, in execution order. ⛔ **These are TWO tiers, not one chain.** The five generators and the `fast` tier run on every build. The `full` tier — `check-dead-api-calls`, `check-render-undefined-vars`, `inspector-scan-run`, `audit-block-file-consistency` — was measured at 76.1% of the old chain's time and now runs PRE-DEPLOY only, via `build-deploy.py`'s `step_gate_full()`. Every gate that blocked before still blocks; only the timing changed. Run `npm run gate:list` for each gate's tier and measured cost, and `npm run gate:wired` to prove the `full` tier is still reachable. This chain is
 what `npm run build` runs first, and what every `/handoff` and deploy relies on.
 Each entry's purpose is quoted from the script's own header.
 
@@ -783,109 +783,107 @@ Each entry's purpose is quoted from the script's own header.
 | 16 | `check-image-controls-support.py` | Standing defence for the `imageControls` "declared-but-unverified capability" |
 | 17 | `survey-control-parity.py` | do SGS inspector controls look like NATIVE WordPress? |
 | 18 | `check-hardcoded-render-defaults.js` | STRUCTURAL GUARD (Gate B) — stops the "hardcoded render default" class of bug (F3) from regressing. An F3 violation occurs when a block declares an… |
-| 19 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
-| 20 | `check-control-ux.js` | STRUCTURAL GUARD (Step 7a, 2026-06-11) — prevents the two editor anti-patterns that produce a sub-standard inspector UX: |
-| 21 | `survey-experimental-imports.js` | ONE DETECTOR, THREE MODES (D542, Bean-locked): |
-| 22 | `check-product-search-guards.js` | STATIC PRE-FLIGHT GUARD for the product-search REST endpoint. |
-| 23 | `check_schema_drift.py` | Detect drift between the committed ``schema.sql`` and the live database's DDL. |
-| 24 | `check_value_identity.py` | Assert that named, load-bearing DB rows still hold the EXACT value they must. |
-| 25 | `capture_seed_data.py` | Capture the Phase-1 Group-5 seed tables from a LIVE database into data files. |
-| 26 | `run.py` | F6 DB-as-code consistency suite shared runner. |
-| 27 | `lint-responsive-controls.py` | FR-36-24 structural gate (R-31-9 for responsive controls). |
-| 28 | `check-tier-storage-shape.py` | Find per-device attribute families that are HALF-MIGRATED between storage shapes. |
-| 29 | `check-inert-controls.py` | Find block attributes that are OVERWRITTEN in render.php before being used. |
-| 30 | `check-undeclared-attrs.py` | Find block attributes destructured in edit.js that WordPress silently DISCARDS. |
-| 31 | `check-undefined-refs.js` | THE GAP THIS CLOSES. On 2026-08-22 three blocks shipped broken editors: sgs/text, sgs/quote and sgs/testimonial referenced `borderColourHover` /… |
-| 32 | `check-render-undefined-vars.py` | Undefined-variable gate for block render templates (PHPStan level 1). |
-| 33 | `run.py` | F5 cheat-detection gate runner. |
-| 34 | `run.py` | F5 excluded-literal tripwire gate for the SGS cloning pipeline. |
-| 35 | `coverage_check.py` | ledger.coverage_check — F5 pipeline-close coverage-conservation gate (UNACCOUNTED leg). |
-| 36 | `check-atomic-slug-literals.py` | STRUCTURAL GUARD (FR-22-3, 2026-06-13) — prevents new per-block `if slug ==` |
-| 37 | `declare_input.py` | ledger.declare_input — F2 draft-derived CSS Accounting Ledger (input parser). |
-| 38 | `audit-inline-styling.js` | WIRED INTO `prebuild` AS A REAL GATE — `node scripts/audit-inline-styling.js --check` runs on every `npm run build` and sets `process.exitCode = 1` on any… |
-| 39 | `check-id-scoped-emits.js` | STRUCTURAL GUARD — ID-scoped CSS selector emissions. |
-| 40 | `check-text-gradient-companion.js` | THE TRAP THIS GATE CATCHES. `sgs_text_decls()` (`includes/helpers-colour- variants.php`) returns `color:` DECLARATIONS ONLY. When a text GRADIENT is in… |
-| 41 | `check-preset-token-naming.py` | STRUCTURAL GATE — Spec 32 FR-32-9 (Naming Convention) self-verifier. |
-| 42 | `check-palette-slug-refs.py` | every referenced colour slug must actually exist. |
-| 43 | `check-box-family-guard.py` | STRUCTURAL GUARD — box-object interface contract (2026-07-09 plan §6). |
-| 44 | `check-jsonld-flags.py` | guard the ONE json_encode flag combination that is unsafe. |
-| 45 | `remove-vacuous-style-engine-guard.py` | Delete the vacuous `function_exists( 'wp_style_engine_get_styles' )` guard. |
-| 46 | `check-no-core-blocks.py` | Prebuild gate: NO banned core blocks in theme pattern/part/template FILES. |
-| 47 | `check-no-inline.py` | Anti-regression GATE for the framework-wide inline-zero win (Spec 32 FR-32-1 / |
-| 48 | `check-stranded-guards.py` | Anti-regression GATE for STRANDED inline-style guards (Spec 32). |
-| 49 | `check-shared-css-state-rules.js` | STRUCTURAL GUARD — stops the "state-only shared-CSS size literal" class of bug from regressing. This is the class of defect that shipped LIVE on… |
-| 50 | `check-element-manifest-conformance.js` | Spec 35 Task 2 — the CLUSTER-COHERENCE rule, made computable. |
-| 51 | `audit-feature-parity.py` | Spec 35 UNIT A — feature-parity audit. |
-| 52 | `audit-declared-vs-seeded-roles.py` | Audit: which `sgs/%` attributes LACK A MECHANISM that reaches them — the D497 gate. |
-| 53 | `check-universal-fit.js` | WARN-ONLY STRUCTURAL REPORT — maps every universal editor extension |
-| 54 | `check-duplicate-controls.js` | STRUCTURAL GUARD (WARN-ONLY) — finds the "duplicate control" class of bug: the SAME setting exposed to the client through TWO different editor controls… |
-| 55 | `check-simple-surface-cap.js` | FR-37-27 (Spec 37, .claude/specs/37-HEADER-FOOTER-BUILDER.md) — the SIMPLE SURFACE CAP, made computable. The Simple surface (`sgs/site-header` and… |
-| 56 | `audit-block-uniformity.py` | SGS Block Uniformity Audit |
-| 57 | `check-editor-render-parity.js` | NEW STRUCTURAL GUARD (2026-08-13) — closes a class of bug no existing gate in this repo catches: "a control is set up correctly on ONE side (editor OR… |
-| 58 | `check-ksort-before-hash.py` | STOP-NO-KSORT gate — never reorder $attributes before it is hashed into a uid. |
-| 59 | `check-tier-object-cast.py` | Tier-object-cast gate — never coerce a whole object-typed attribute to a string. |
-| 60 | `check-single-instance-invariants.py` | Single-instance invariant register — four named prohibitions, one shared mechanism. |
-| 61 | `check-withdrawn-figures.py` | a figure withdrawn in one file stays withdrawn everywhere. |
-| 62 | `migrate-length-sanitiser.py` | Move every LENGTH-valued call site from the crude sanitiser to the hardened one. |
-| 63 | `run-gates.py` | the consolidated gate runner. |
-| 64 | `check-doc-citations.py` | a `file:line` citation in a doc must land on what it names. |
-| 65 | `migrate-tier-object.py` | collapse a flat per-device attribute trio into ONE tier object. |
-| 66 | `lint-patterns-for-personal-data.py` | Lint SGS pattern PHP files for hardcoded personal data. |
-| 67 | `font-source-audit.js` | Font source audit — static analysis for external CDN URLs in theme.json fontFace declarations. |
-| 68 | `migrate-render-closures.py` | Adopt the shared render helpers in place of per-file inline sanitiser closures. |
-| 69 | `migrate-theme-native-spacing.py` | Migrate hand-authored `style.spacing` to the block-OWNED padding/margin attrs. |
-| 70 | `migrate-shadow-mounts.js` | WHY. ShadowControl was parameterised by VALUES AND CALLBACKS: six props hand-wired at every mount, where GradientOverlayControl's callers pass one map.… |
-| 71 | `fanout-overlay-sibling-attrs.py` | D6 (hover + responsive-tier siblings) and |
-| 72 | `check-child-lift.py` | check-child-lift — every child-lift rule in the tree stays at ZERO specificity. |
-| 73 | `check-fx-registration.py` | every shipped fx module is registered everywhere it must be. |
-| 74 | `check-colour-preview-resolver.js` | check-colour-preview-resolver — the editor canvas must resolve a colour the same way the server does. |
-| 75 | `check-border-style-without-width.py` | the "no width = no border" detector. |
-| 76 | `check-control-helper-parity.py` | Which shared controls ship the standard helper pair, and which still don't. |
-| 77 | `survey-border-control-migration.py` | Classify every block's border UI against the SgsBorderControl target shape. |
-| 78 | `migrate-border-shape-b.js` | ⛔ THIS IS NOT A BRANCH OF migrate-border-control.js. That script's header declares a hard Shape-B exclusion, on the stated grounds that "there is no… |
-| 79 | `check-hover-state-classification.py` | Gate: a `*Hover` attribute that carries a real CSS property MUST be classified |
-| 80 | `verify-transform.mjs` | Verify the PRODUCTION transform maths against ground truth from the rig. |
-| 81 | `test-sanitise-svg.mjs` | Standing gate for the editor SVG sanitiser (src/utils/sanitise-svg.js). |
-| 82 | `test-media-attr-parity.mjs` | Standing gate: the L1 media-naming helpers must agree ACROSS LANGUAGES. |
-| 83 | `test-media-injection-parity.mjs` | Standing gate: the JS injection filter and the PHP registration filter must inject the SAME attribute set for the same supports.sgs.mediaElements… |
-| 84 | `check-media-breakpoints.js` | Gate: the media-element stylesheet's breakpoints must match the ONE source. |
-| 85 | `test-media-atom-parity.mjs` | Standing gate: for every media ATOM, the JS value-setter and the PHP value- setter must emit BYTE-IDENTICAL custom-property declarations for a fixed… |
-| 86 | `check-media-atom-purity.js` | Gate: a media atom's LOGIC module must be importable by plain Node. |
-| 87 | `check-media-disclosure-coverage.js` | Gate: every media atom's `disclosure()` is exercised against REAL fixtures derived from its own `requires` map in registry.js — not a static scan. |
-| 88 | `check-enum-control-shape.py` | the D812 enum control-shape GATE. |
-| 89 | `test-hover-state-guard.mjs` | Gate wrapper for the touch-safe hover emitter's PHP self-test. |
-| 90 | `check_preset_absence_no_slug_literal.py` | scoped static gate for |
-| 91 | `migrate-orchestrator-rename.py` | Rename converter/orchestrator.py -> converter/dispatch_spine.py, and every |
-| 92 | `audit-bindable-attrs.py` | C15-5/C15-12 detector: which SGS block attributes are SAFE Block Bindings targets? |
-| 93 | `wire-border-contrast.js` | (a WCAG 3:1 border-contrast warning, built and working on the component itself — see `src/components/SgsBorderControl.js`) into every block's `edit.js`… |
-| 94 | `check-colour-attr-css-property.py` | D962-adjacent gate: no colour attribute may reach the DB with a NULL/empty |
-| 95 | `check-render-tier-object-spacing.py` | GUARD gate (Step 8 shape 2 — 'compares a derived copy to its source; 0 |
-| 96 | `logical-props-lint.py` | RTL-readiness lint for the SGS nav blocks |
-| 97 | `classify-end-shape.js` | WHY THIS EXISTS (2026-09-06, colour-conformance). Adversarial-council pre-mortem (6/6 personas graded D) found survey.js's AUTOFIXABLE verdict is… |
-| 98 | `check-style-blob-sanitisation.py` | Gate: every render.php `<style>` blob echo must pass through wp_strip_all_tags(). |
-| 99 | `check-ungated-paint-rules.py` | STRUCTURAL GUARD (WARN-ONLY for this build) — Spec 41 FR-41-35 / gate §11 G20c. |
-| 100 | `audit-serverside-render-disabled.js` | Finds every `<ServerSideRender` JSX usage across `src/blocks/*\/edit.js` and flags any that is NOT wrapped in `<Disabled>` (from `@wordpress/components`)… |
-| 101 | `test-create-drawer-seed.mjs` | Standing gate for the inline drawer-creation rules |
-| 102 | `test-nonmodal-freeze-background.mjs` | The non-modal drawer's selective background freeze — pure-logic gate. |
-| 103 | `test-panel-bounds.mjs` | Standing gate for nav panel horizontal bounds |
-| 104 | `test-float-defaults.mjs` | Standing gate for the sgs/site-header float attribute defaults |
-| 105 | `check-fixture-fidelity.py` | compare the nav-drawer POC content plan to the harvest. |
-| 106 | `check-shadow-fallback-php.py` | Every PHP writer of a `box-shadow:` declaration must carry the forced-colours fallback. |
-| 107 | `run.js` | Forced-colours shadow fallback for static stylesheets: census, fix and gate in one script. |
-| 108 | `test-shadow-layers-js.mjs` | The JS shadow composer against the SAME table the PHP composer is tested against |
-| 109 | `test-shadow-model.mjs` | The layered shadow model (src/utils/shadow-model.js): stored text <-> layers, the elevation builder and its recogniser, against the shared composer. |
-| 110 | `migrate-shadow-presets.py` | Shadow preset migration (U-1 commit 4f-1 step 6): the four old theme shadows are replaced by |
-| 111 | `sync-snapshot-shadow-presets.py` | Every client theme snapshot carries the framework's shadow presets, shadow colour and hover map. |
-| 112 | `dedupe-shadow-colour-rows.py` | One writer for a shadow's colour: the ShadowControl. Any other colour row for the same attribute |
-| 113 | `check-shadow-sources.py` | the shadow-source detector (D4/D5 follow-on, survey stage). |
-| 114 | `fanout-surface-ground-attrs.py` | U-1 commit 4e fan-out of `surfaceBlur` / |
-| 115 | `run.js` | Shadow lift on hover for static stylesheets: census, fix and gate in one script, mirroring scripts/shadow-fallback/run.js's shape (design H4, stylesheet… |
-| 116 | `fanout-shadow-lift-attr.py` | adds the `shadowLiftOnHover` block-level switch (boolean, |
-| 117 | `check-scrim.py` | the viewport-scrim detector (Wave 3C U-2, family M-14). |
-| 118 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
-| 119 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
+| 19 | `check-control-ux.js` | STRUCTURAL GUARD (Step 7a, 2026-06-11) — prevents the two editor anti-patterns that produce a sub-standard inspector UX: |
+| 20 | `survey-experimental-imports.js` | ONE DETECTOR, THREE MODES (D542, Bean-locked): |
+| 21 | `check-product-search-guards.js` | STATIC PRE-FLIGHT GUARD for the product-search REST endpoint. |
+| 22 | `check_schema_drift.py` | Detect drift between the committed ``schema.sql`` and the live database's DDL. |
+| 23 | `check_value_identity.py` | Assert that named, load-bearing DB rows still hold the EXACT value they must. |
+| 24 | `capture_seed_data.py` | Capture the Phase-1 Group-5 seed tables from a LIVE database into data files. |
+| 25 | `run.py` | F6 DB-as-code consistency suite shared runner. |
+| 26 | `lint-responsive-controls.py` | FR-36-24 structural gate (R-31-9 for responsive controls). |
+| 27 | `check-tier-storage-shape.py` | Find per-device attribute families that are HALF-MIGRATED between storage shapes. |
+| 28 | `check-inert-controls.py` | Find block attributes that are OVERWRITTEN in render.php before being used. |
+| 29 | `check-undeclared-attrs.py` | Find block attributes destructured in edit.js that WordPress silently DISCARDS. |
+| 30 | `check-undefined-refs.js` | THE GAP THIS CLOSES. On 2026-08-22 three blocks shipped broken editors: sgs/text, sgs/quote and sgs/testimonial referenced `borderColourHover` /… |
+| 31 | `run.py` | F5 cheat-detection gate runner. |
+| 32 | `run.py` | F5 excluded-literal tripwire gate for the SGS cloning pipeline. |
+| 33 | `coverage_check.py` | ledger.coverage_check — F5 pipeline-close coverage-conservation gate (UNACCOUNTED leg). |
+| 34 | `declare_input.py` | ledger.declare_input — F2 draft-derived CSS Accounting Ledger (input parser). |
+| 35 | `audit-inline-styling.js` | WIRED INTO `prebuild` AS A REAL GATE — `node scripts/audit-inline-styling.js --check` runs on every `npm run build` and sets `process.exitCode = 1` on any… |
+| 36 | `check-id-scoped-emits.js` | STRUCTURAL GUARD — ID-scoped CSS selector emissions. |
+| 37 | `check-text-gradient-companion.js` | THE TRAP THIS GATE CATCHES. `sgs_text_decls()` (`includes/helpers-colour- variants.php`) returns `color:` DECLARATIONS ONLY. When a text GRADIENT is in… |
+| 38 | `check-preset-token-naming.py` | STRUCTURAL GATE — Spec 32 FR-32-9 (Naming Convention) self-verifier. |
+| 39 | `check-palette-slug-refs.py` | every referenced colour slug must actually exist. |
+| 40 | `check-box-family-guard.py` | STRUCTURAL GUARD — box-object interface contract (2026-07-09 plan §6). |
+| 41 | `check-jsonld-flags.py` | guard the ONE json_encode flag combination that is unsafe. |
+| 42 | `remove-vacuous-style-engine-guard.py` | Delete the vacuous `function_exists( 'wp_style_engine_get_styles' )` guard. |
+| 43 | `check-no-core-blocks.py` | Prebuild gate: NO banned core blocks in theme pattern/part/template FILES. |
+| 44 | `check-no-inline.py` | Anti-regression GATE for the framework-wide inline-zero win (Spec 32 FR-32-1 / |
+| 45 | `check-stranded-guards.py` | Anti-regression GATE for STRANDED inline-style guards (Spec 32). |
+| 46 | `check-shared-css-state-rules.js` | STRUCTURAL GUARD — stops the "state-only shared-CSS size literal" class of bug from regressing. This is the class of defect that shipped LIVE on… |
+| 47 | `check-element-manifest-conformance.js` | Spec 35 Task 2 — the CLUSTER-COHERENCE rule, made computable. |
+| 48 | `audit-feature-parity.py` | Spec 35 UNIT A — feature-parity audit. |
+| 49 | `audit-declared-vs-seeded-roles.py` | Audit: which `sgs/%` attributes LACK A MECHANISM that reaches them — the D497 gate. |
+| 50 | `check-universal-fit.js` | WARN-ONLY STRUCTURAL REPORT — maps every universal editor extension |
+| 51 | `check-duplicate-controls.js` | STRUCTURAL GUARD (WARN-ONLY) — finds the "duplicate control" class of bug: the SAME setting exposed to the client through TWO different editor controls… |
+| 52 | `check-simple-surface-cap.js` | FR-37-27 (Spec 37, .claude/specs/37-HEADER-FOOTER-BUILDER.md) — the SIMPLE SURFACE CAP, made computable. The Simple surface (`sgs/site-header` and… |
+| 53 | `audit-block-uniformity.py` | SGS Block Uniformity Audit |
+| 54 | `check-editor-render-parity.js` | NEW STRUCTURAL GUARD (2026-08-13) — closes a class of bug no existing gate in this repo catches: "a control is set up correctly on ONE side (editor OR… |
+| 55 | `check-ksort-before-hash.py` | STOP-NO-KSORT gate — never reorder $attributes before it is hashed into a uid. |
+| 56 | `check-tier-object-cast.py` | Tier-object-cast gate — never coerce a whole object-typed attribute to a string. |
+| 57 | `check-single-instance-invariants.py` | Single-instance invariant register — four named prohibitions, one shared mechanism. |
+| 58 | `check-withdrawn-figures.py` | a figure withdrawn in one file stays withdrawn everywhere. |
+| 59 | `migrate-length-sanitiser.py` | Move every LENGTH-valued call site from the crude sanitiser to the hardened one. |
+| 60 | `run-gates.py` | the consolidated gate runner. |
+| 61 | `check-doc-citations.py` | a `file:line` citation in a doc must land on what it names. |
+| 62 | `migrate-tier-object.py` | collapse a flat per-device attribute trio into ONE tier object. |
+| 63 | `lint-patterns-for-personal-data.py` | Lint SGS pattern PHP files for hardcoded personal data. |
+| 64 | `font-source-audit.js` | Font source audit — static analysis for external CDN URLs in theme.json fontFace declarations. |
+| 65 | `migrate-render-closures.py` | Adopt the shared render helpers in place of per-file inline sanitiser closures. |
+| 66 | `migrate-theme-native-spacing.py` | Migrate hand-authored `style.spacing` to the block-OWNED padding/margin attrs. |
+| 67 | `migrate-shadow-mounts.js` | WHY. ShadowControl was parameterised by VALUES AND CALLBACKS: six props hand-wired at every mount, where GradientOverlayControl's callers pass one map.… |
+| 68 | `fanout-overlay-sibling-attrs.py` | D6 (hover + responsive-tier siblings) and |
+| 69 | `check-child-lift.py` | check-child-lift — every child-lift rule in the tree stays at ZERO specificity. |
+| 70 | `check-fx-registration.py` | every shipped fx module is registered everywhere it must be. |
+| 71 | `check-colour-preview-resolver.js` | check-colour-preview-resolver — the editor canvas must resolve a colour the same way the server does. |
+| 72 | `check-border-style-without-width.py` | the "no width = no border" detector. |
+| 73 | `check-control-helper-parity.py` | Which shared controls ship the standard helper pair, and which still don't. |
+| 74 | `survey-border-control-migration.py` | Classify every block's border UI against the SgsBorderControl target shape. |
+| 75 | `migrate-border-shape-b.js` | ⛔ THIS IS NOT A BRANCH OF migrate-border-control.js. That script's header declares a hard Shape-B exclusion, on the stated grounds that "there is no… |
+| 76 | `check-hover-state-classification.py` | Gate: a `*Hover` attribute that carries a real CSS property MUST be classified |
+| 77 | `verify-transform.mjs` | Verify the PRODUCTION transform maths against ground truth from the rig. |
+| 78 | `test-sanitise-svg.mjs` | Standing gate for the editor SVG sanitiser (src/utils/sanitise-svg.js). |
+| 79 | `test-media-attr-parity.mjs` | Standing gate: the L1 media-naming helpers must agree ACROSS LANGUAGES. |
+| 80 | `test-media-injection-parity.mjs` | Standing gate: the JS injection filter and the PHP registration filter must inject the SAME attribute set for the same supports.sgs.mediaElements… |
+| 81 | `check-media-breakpoints.js` | Gate: the media-element stylesheet's breakpoints must match the ONE source. |
+| 82 | `test-media-atom-parity.mjs` | Standing gate: for every media ATOM, the JS value-setter and the PHP value- setter must emit BYTE-IDENTICAL custom-property declarations for a fixed… |
+| 83 | `check-media-atom-purity.js` | Gate: a media atom's LOGIC module must be importable by plain Node. |
+| 84 | `check-media-disclosure-coverage.js` | Gate: every media atom's `disclosure()` is exercised against REAL fixtures derived from its own `requires` map in registry.js — not a static scan. |
+| 85 | `check-enum-control-shape.py` | the D812 enum control-shape GATE. |
+| 86 | `test-hover-state-guard.mjs` | Gate wrapper for the touch-safe hover emitter's PHP self-test. |
+| 87 | `check_preset_absence_no_slug_literal.py` | scoped static gate for |
+| 88 | `audit-bindable-attrs.py` | C15-5/C15-12 detector: which SGS block attributes are SAFE Block Bindings targets? |
+| 89 | `wire-border-contrast.js` | (a WCAG 3:1 border-contrast warning, built and working on the component itself — see `src/components/SgsBorderControl.js`) into every block's `edit.js`… |
+| 90 | `check-colour-attr-css-property.py` | D962-adjacent gate: no colour attribute may reach the DB with a NULL/empty |
+| 91 | `check-render-tier-object-spacing.py` | GUARD gate (Step 8 shape 2 — 'compares a derived copy to its source; 0 |
+| 92 | `logical-props-lint.py` | RTL-readiness lint for the SGS nav blocks |
+| 93 | `classify-end-shape.js` | WHY THIS EXISTS (2026-09-06, colour-conformance). Adversarial-council pre-mortem (6/6 personas graded D) found survey.js's AUTOFIXABLE verdict is… |
+| 94 | `check-style-blob-sanitisation.py` | Gate: every render.php `<style>` blob echo must pass through wp_strip_all_tags(). |
+| 95 | `check-ungated-paint-rules.py` | STRUCTURAL GUARD (WARN-ONLY for this build) — Spec 41 FR-41-35 / gate §11 G20c. |
+| 96 | `audit-serverside-render-disabled.js` | Finds every `<ServerSideRender` JSX usage across `src/blocks/*\/edit.js` and flags any that is NOT wrapped in `<Disabled>` (from `@wordpress/components`)… |
+| 97 | `test-create-drawer-seed.mjs` | Standing gate for the inline drawer-creation rules |
+| 98 | `test-nonmodal-freeze-background.mjs` | The non-modal drawer's selective background freeze — pure-logic gate. |
+| 99 | `test-panel-bounds.mjs` | Standing gate for nav panel horizontal bounds |
+| 100 | `test-float-defaults.mjs` | Standing gate for the sgs/site-header float attribute defaults |
+| 101 | `check-fixture-fidelity.py` | compare the nav-drawer POC content plan to the harvest. |
+| 102 | `check-shadow-fallback-php.py` | Every PHP writer of a `box-shadow:` declaration must carry the forced-colours fallback. |
+| 103 | `run.js` | Forced-colours shadow fallback for static stylesheets: census, fix and gate in one script. |
+| 104 | `test-shadow-layers-js.mjs` | The JS shadow composer against the SAME table the PHP composer is tested against |
+| 105 | `test-shadow-model.mjs` | The layered shadow model (src/utils/shadow-model.js): stored text <-> layers, the elevation builder and its recogniser, against the shared composer. |
+| 106 | `migrate-shadow-presets.py` | Shadow preset migration (U-1 commit 4f-1 step 6): the four old theme shadows are replaced by |
+| 107 | `sync-snapshot-shadow-presets.py` | Every client theme snapshot carries the framework's shadow presets, shadow colour and hover map. |
+| 108 | `dedupe-shadow-colour-rows.py` | One writer for a shadow's colour: the ShadowControl. Any other colour row for the same attribute |
+| 109 | `check-shadow-sources.py` | the shadow-source detector (D4/D5 follow-on, survey stage). |
+| 110 | `fanout-surface-ground-attrs.py` | U-1 commit 4e fan-out of `surfaceBlur` / |
+| 111 | `run.js` | Shadow lift on hover for static stylesheets: census, fix and gate in one script, mirroring scripts/shadow-fallback/run.js's shape (design H4, stylesheet… |
+| 112 | `fanout-shadow-lift-attr.py` | adds the `shadowLiftOnHover` block-level switch (boolean, |
+| 113 | `check-scrim.py` | the viewport-scrim detector (Wave 3C U-2, family M-14). |
+| 114 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
+| 115 | `check-render-undefined-vars.py` | Undefined-variable gate for block render templates (PHPStan level 1). |
+| 116 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
+| 117 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
 
-**119 gating scripts.** Regenerate this whole section with:
+**117 gating scripts.** Regenerate this whole section with:
 
 ```bash
 python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
@@ -893,7 +891,7 @@ python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
 
 ### I/O inventory — what each prebuild + commit-gate script reads/writes
 
-Scope: every script actually executed by the **prebuild chain** (119 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 1 resolved scripts) — 120 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
+Scope: every script actually executed by the **prebuild chain** (117 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 1 resolved scripts) — 118 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
 
 Every field below is extracted from the script's own executable code (regex over `open()`/`.read_text()`/`.write_text()`/`fs.readFileSync`/`fs.writeFileSync`/`sqlite3.connect()`/SQL keywords/argparse/`sys.exit()`/`process.exitCode`) — **never from a docstring or comment**, per this generator's own stale-header finding above. A script with no recognised call shape (e.g. I/O built dynamically, or delegated to a helper module) shows **UNVERIFIED** rather than an invented mechanism. `Read-only` is stated explicitly whenever no write call site was found at all.
 
@@ -940,12 +938,6 @@ Every field below is extracted from the script's own executable code (regex over
 - Writes: `_BASELINE_PATH`
 - CLI flags read: `--check`, `--report`, `--run-dir`, `--update-baseline`
 - Non-zero exit sites found: SystemExit(non-zero on failure)
-
-**`plugins/sgs-blocks/scripts/check-atomic-slug-literals.py`** (build)
-- Path constants: `SCRIPT_DIR` = Path(__file__).parent
-- Reads: `CONVERT_PY`
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: 0, 1, 2
 
 **`plugins/sgs-blocks/scripts/check-border-style-without-width.py`** (build)
 - Path constants: `REPO` = Path(__file__).resolve().parents[3]; `PLUGIN` = REPO / "plugins" / "sgs-blocks"; `BASELINE` = Path(__file__).with_name("border-style-without-width-baseline.json")
@@ -1393,12 +1385,6 @@ Every field below is extracted from the script's own executable code (regex over
 - CLI flags read: `--apply`, `--check`, `--fix`, `--self-test`, `--survey`
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
-**`plugins/sgs-blocks/scripts/migrate-orchestrator-rename.py`** (build)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: `tmp`
-- CLI flags read: `--apply`, `--check`, `--fix`, `--json`, `--self-test`, `--survey`
-- Non-zero exit sites found: SystemExit(non-zero on failure)
-
 **`plugins/sgs-blocks/scripts/migrate-render-closures.py`** (build)
 - Path constants: `ROOT` = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 - Reads: UNVERIFIED (no recognised read call site found)
@@ -1661,7 +1647,6 @@ for the verb you happen to have in mind.
 | `cheat-gate/check_slug_literals.py` | manifest+script-call | Check #1: per-block slug literals (whole-tree + indirect forms). |
 | `cheat-gate/models.py` | manifest+script-call+skill+test-import | shared data types for the F5 cheat-detection gate. |
 | `cheat-gate/run.py` | commit-gate+manifest+npm+script-call+settings+skill | F5 cheat-detection gate runner. |
-| `check-atomic-slug-literals.py` | manifest+npm+script-call | STRUCTURAL GUARD (FR-22-3, 2026-06-13) — prevents new per-block `if slug ==` |
 | `check-block-asset-targets.js` | manifest+npm+script-call | STRUCTURAL GUARD (post-D382 hardening) — stops the "block.json names a source filename that never gets compiled" class of bug from regressing. |
 | `check-blockjson-metadata-only.py` | manifest+script-call | visual-diff-gate helper. |
 | `check-border-style-without-width.py` | manifest | the "no width = no border" detector. |
@@ -1925,7 +1910,7 @@ for the verb you happen to have in mind.
 | `golden-master-acceptance.php` | — | SGS Golden-Master Acceptance Test — Spec 27 FR-27-R2 Empirical Acceptance Gate |
 | `golden-master-harness.php` | script-call | SGS Golden-Master Harness — Spec 27 FR-27-R2 Acceptance Gate |
 | `hover-guard/audit.js` | manifest+script-call+skill | Pure (non-mutating) audit of `:hover` rules in a CSS source string. Used both for baseline measurement (before the transform runs) and by the checker… |
-| `hover-guard/check.js` | manifest+npm+script-call+skill | Build-failing checker. Three jobs (per the brief): |
+| `hover-guard/check.js` | manifest+script-call+skill | Build-failing checker. Three jobs (per the brief): |
 | `hover-guard/classify.js` | manifest+script-call+skill | Declaration-level classification: is a hover rule "motion-only" (safe for the transform to guard automatically), or OUT OF SCOPE for this transform… |
 | `hover-guard/php-hover-scan.php` | manifest+script-call | Static PHP-side hover-guard coverage scan. |
 | `hover-guard/run-transform.js` | manifest+npm+script-call | CLI: run transform.js over every `build/blocks/*​/style.css` (or an explicit directory passed as argv[2]) and write the result back in place. |
@@ -2049,8 +2034,8 @@ for the verb you happen to have in mind.
 | `migrate-font-size-ladder.py` | manifest | rehome theme font-size preset slugs after a ladder change. |
 | `migrate-gallery-object-model.js` | manifest | onto the Spec 37 FR-37-16 {desktop,tablet,mobile} object model. |
 | `migrate-length-sanitiser.py` | manifest+script-call | Move every LENGTH-valued call site from the crude sanitiser to the hardened one. |
+| `migrate-nav-gap-tier.php` | — | Fold a stored flat `gap` on sgs/nav-bar-menu and sgs/nav-drawer-menu into its tier object (Wave 3C U-3, 2026-09-25): "gap":"28px" ->… |
 | `migrate-off-native-spacing.py` | manifest+script-call+settings | move base padding/margin off WP-native |
-| `migrate-orchestrator-rename.py` | manifest+npm+script-call | Rename converter/orchestrator.py -> converter/dispatch_spine.py, and every |
 | `migrate-overlay-tier-axis.py` | manifest | Move the overlay's responsive tier axis OFF colour and ONTO opacity (D739). |
 | `migrate-pattern-template-lock.py` | manifest | add templateLock:"contentOnly" to the outermost |
 | `migrate-phantom-colour-token.py` | manifest | Sweep colour-token slugs that no palette defines onto the real token they mean. |
@@ -2116,7 +2101,8 @@ for the verb you happen to have in mind.
 | `nav-qa/logical-props-lint.py` | manifest | RTL-readiness lint for the SGS nav blocks |
 | `nav-qa/palette-contrast-sweep.mjs` | manifest | drafts (mega-menu panels and any other self-contained SGS-BEM draft). |
 | `nav-qa/qa-close-fixture.php` | — | U-9+U-11 live-check fixture on sandybrown (wp eval-file qa-close-fixture.php <case>). Idempotent. |
-| `nav-qa/qa-motion-fixture.php` | — | U-5 live-check fixture on sandybrown (wp eval-file qa-motion-fixture.php <case>). Idempotent. |
+| `nav-qa/qa-geometry-fixture.php` | — | U-3 + U-8 live-check fixture on sandybrown (wp eval-file qa-geometry-fixture.php <case>). Idempotent. |
+| `nav-qa/qa-motion-fixture.php` | script-call | U-5 live-check fixture on sandybrown (wp eval-file qa-motion-fixture.php <case>). Idempotent. |
 | `nav-qa/shoot-drawer-pairs.mjs` | manifest+script-call | WHY |
 | `nav-qa/submenu-harness.php` | — | Stubbed harness for SGS_Nav_Menu_Bar_Renderer — walker AND render_items. |
 | `nav-qa/sweep-drawer-variants.mjs` | manifest+script-call | WHY THIS SHAPE |
@@ -2162,7 +2148,7 @@ for the verb you happen to have in mind.
 | `orchestrator/mutex.py` | manifest+script-call+skill | - Spec 31 Phase 5b.4 build mutex (FR19). |
 | `orchestrator/object_attr_shape.py` | manifest+script-call | shared object-attribute shape discriminator. |
 | `orchestrator/orchestrator_main.py` | manifest+script-call+skill | - Spec 31 Phase 5e.8 top-level entry point. |
-| `orchestrator/pipeline-stage-gate.py` | manifest+script-call+skill | post-clone structural gate for the SGS cloning pipeline. |
+| `orchestrator/pipeline-stage-gate.py` | manifest+script-call | post-clone structural gate for the SGS cloning pipeline. |
 | `orchestrator/preflight_chain.py` | manifest+script-call+skill | - Spec 31 Phase 5e.1 + 5e.2. |
 | `orchestrator/register_patterns.py` | manifest+script-call | - Spec 31 Phase 6 Step 0 +REGISTER tail. |
 | `orchestrator/resolve-js-content.js` | script-call | THE PROVEN APPROACH (FR-31-26 preamble): a draft whose `<sc-for>` content lives only in a `static ARRAY = [...]` class property has zero usable… |

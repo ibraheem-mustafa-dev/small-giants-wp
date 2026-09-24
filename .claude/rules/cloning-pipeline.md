@@ -40,3 +40,4 @@ paths:
 - Breakpoints: the device-tier system (`…Mobile` / `…Tablet` attrs) is fixed at 768/1024; an arbitrary visual breakpoint in one CSS rule is legitimate and must never be swept. Classify before changing one.
 - Drafts use SGS-BEM (Spec 00 §3); Stage 0 hard-rejects non-conforming drafts on production runs (`--draft-mode` warns, `--legacy` bypasses).
 - A migrated composite never carries a server-side legacy fallback in `render.php`; existing posts migrate by WP-CLI batch (R-31-14).
+- Before committing a change under `scripts/converter/` or `scripts/oracle/`, run their test suite from `plugins/sgs-blocks`: `python -m pytest scripts/oracle/tests/ scripts/converter/tests/ -q --deselect scripts/converter/tests/test_content_gap_collector.py::TestConvertSectionContentGaps::test_sgs_tabs_fixture_surfaces_the_proven_gaps` (about 5 minutes). The deploy does not run it: the converter never ships.
