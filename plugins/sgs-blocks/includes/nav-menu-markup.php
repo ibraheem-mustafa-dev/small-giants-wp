@@ -155,12 +155,16 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 								'openOn'      => $submenu['open_on'],
 							)
 						);
-						$caret = function_exists( 'sgs_get_lucide_icon' ) ? sgs_get_lucide_icon( 'chevron-down' ) : '';
+						// The caret honours the block's submenuCaret setting, as the
+						// plain dropdown branch below does.
+						$caret = ( $submenu['caret'] && function_exists( 'sgs_get_lucide_icon' ) )
+							? '<span class="sgs-nav-bar-menu__caret" aria-hidden="true">' . sgs_get_lucide_icon( 'chevron-down' ) . '</span>'
+							: '';
 						$html .= sprintf(
 							'<li class="%1$s sgs-nav-bar-menu__item--mega">'
 							. '<div class="sgs-nav-bar-menu__mega" data-wp-interactive="sgs/mega" %2$s data-wp-on--mouseenter="actions.enterBridge" data-wp-on--mouseleave="actions.leaveBridge" data-wp-watch="callbacks.watchOpenState">'
 							. '<button type="button" class="sgs-nav-bar-menu__link sgs-nav-bar-menu__mega-trigger" data-sgs-mega-trigger aria-expanded="false" aria-controls="%3$s" data-wp-bind--aria-expanded="context.isOpen" data-wp-on--click="actions.toggle" data-wp-on--keydown="actions.triggerKeydown">'
-							. '<span class="sgs-nav-bar-menu__label sgs-nav-bar-menu__magnet-target">%4$s</span><span class="sgs-nav-bar-menu__caret" aria-hidden="true">%5$s</span>'
+							. '<span class="sgs-nav-bar-menu__label sgs-nav-bar-menu__magnet-target">%4$s</span>%5$s'
 							. '</button>'
 							// `data-lenis-prevent`: the site runs Lenis smooth scrolling
 							// (<html class="lenis">), which intercepts wheel events
