@@ -841,6 +841,48 @@ function controlCorpus( ctx, block ) {
 	let text = own;
 	let frontier = [ own ];
 
+	// The block's OWN editor modules (siblings of edit.js in its folder) are part
+	// of its control surface exactly as edit.js is: a block that moves a panel or
+	// a colour-row builder into `inspector-extra.js` / `colourPanelRows.js` to keep
+	// edit.js under the file-length budget still offers those controls. Read whole,
+	// like edit.js, because they belong to this block alone, so the per-export
+	// scoping above (which guards SHARED files against over-crediting) does not
+	// apply. They also join the frontier so any shared component THEY render is
+	// expanded. Missed on 2026-09-24: 16 false "no control" findings on
+	// sgs/buybox and sgs/cart. Front-end and serialisation modules are skipped.
+	const blockDir = path.join( ctx.blocksDir, block.tail );
+	const NOT_EDITOR = new Set( [ 'edit.js', 'index.js', 'view.js', 'save.js', 'deprecated.js' ] );
+	// Only siblings the editor code actually IMPORTS (followed transitively), so a
+	// front-end module in the same folder (e.g. trust-bar/overflow-drop.js, a
+	// viewScriptModule) can never credit an attribute with a control it lacks.
+	if ( fs.existsSync( blockDir ) ) {
+		const candidates = new Set(
+			fs.readdirSync( blockDir ).filter(
+				( f ) => f.endsWith( '.js' ) && ! NOT_EDITOR.has( f ) && ! f.endsWith( '.test.js' )
+			)
+		);
+		const importsOf = ( src ) => {
+			const found = [];
+			const re = /from\s+['"]\.\/([\w.-]+?)(?:\.js)?['"]/g;
+			let m;
+			while ( ( m = re.exec( src ) ) ) found.push( m[ 1 ] + '.js' );
+			return found;
+		};
+		const queue = importsOf( own );
+		const taken = new Set();
+		while ( queue.length ) {
+			const f = queue.shift();
+			if ( taken.has( f ) || ! candidates.has( f ) ) continue;
+			taken.add( f );
+			const sibling = readIfExists( ctx, path.join( blockDir, f ) );
+			if ( sibling ) {
+				text += '\n' + sibling;
+				frontier.push( sibling );
+				queue.push( ...importsOf( sibling ) );
+			}
+		}
+	}
+
 	while ( frontier.length ) {
 		const next = [];
 		for ( const source of frontier ) {
