@@ -716,6 +716,7 @@ ob_start();
 			aria-label="<?php esc_attr_e( 'Image lightbox', 'sgs-blocks' ); ?>"
 			data-wp-class--sgs-gallery__lightbox--open="state.isLightboxOpen"
 			data-wp-on--close="actions.closeLightbox"
+			data-wp-on--click="actions.closeOnBackdrop"
 			data-wp-on-window--keydown="callbacks.onKeydown"
 		>
 			<button

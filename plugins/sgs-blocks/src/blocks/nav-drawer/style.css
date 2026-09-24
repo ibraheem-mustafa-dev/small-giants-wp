@@ -86,8 +86,11 @@
 	min-height: 100%;
 	box-sizing: border-box;
 	padding: clamp(16px, 6vw, 32px);
-	/* Room for the fixed × so the first content row never sits under it. */
-	padding-top: 64px;
+	/* Room for the fixed × so the first content row never sits under it.
+	   A custom property so render.php can hand the room back wherever the ×
+	   is hidden (FR-36-6: non-modal + closeStyle trigger + live opener); an
+	   operator drawerPadding top still wins, being a scoped longhand. */
+	padding-top: var(--sgs-nd-close-room, 64px);
 }
 
 /* ── × close button — fixed dialog chrome, 44px target, visible focus. ── */

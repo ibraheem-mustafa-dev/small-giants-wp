@@ -287,8 +287,8 @@
 		},
 		"scrimColour": {
 			"type": "string",
-			"default": "primary-dark",
-			"description": "The lightbox scrim's tint (U-2 Addendum A, 2026-09-24). Default keeps today's look — the lightbox's own full-viewport background was `color-mix(in srgb, var(--wp--preset--color--primary-dark) 90%, transparent)`; the shared scrim now paints that same colour behind a transparent dialog instead."
+			"default": "#000000",
+			"description": "The lightbox scrim's tint (U-2 Addendum A, 2026-09-24). Default black (Bean, 2026-09-24: a brand primary-dark tinted the lightbox pink on Mama's; a photo viewer dims to black, as the drawer and cart scrims already do). Strength stays scrimOpacity's 0.9."
 		},
 		"scrimColourGradient": {
 			"type": "string",

@@ -112,7 +112,19 @@ $sgs_nd_allowed_anchors = array( 'full-screen', 'header', 'trigger', 'centred' )
  * @param string $panel_size   Resolved, pre-sanitised panelSize length for this tier (may be '').
  * @return string CSS declarations (no selector/braces).
  */
-$sgs_nd_geometry_for_anchor = function ( $anchor_value, $panel_size ) {
+// Stacking per anchor (non-modal .show() path only; a showModal() dialog is in
+// the top layer and ignores z-index). A panel that covers the header's area
+// (full-screen) or butts against it (header) stays one below the header, so
+// the header row and its burger remain visible and clickable above it. A panel
+// that hangs from the burger (trigger) or floats (centred) is a popover and
+// paints ABOVE the whole header, so no header row can overlap it (Bean,
+// 2026-09-24: a two-row header's second row painted over the trigger panel).
+// The burger stays live under that rule because the trigger panel hangs below
+// it; if a panel ever does cover the burger, store.js's isOpenerLive() check
+// fails and the × comes back automatically.
+$sgs_nd_z_under_header = 'z-index:min(90, max(2, calc(var(--sgs-header-z, 100) - 1)));';
+$sgs_nd_z_popover      = 'z-index:calc(var(--sgs-header-z, 100) + 1);';
+$sgs_nd_geometry_for_anchor = function ( $anchor_value, $panel_size ) use ( $sgs_nd_z_under_header, $sgs_nd_z_popover ) {
 	switch ( $anchor_value ) {
 		case 'header':
 			// The real header bottom edge: the theme's utilities.css sets
@@ -124,13 +136,13 @@ $sgs_nd_geometry_for_anchor = function ( $anchor_value, $panel_size ) {
 			// --sgs-drawer-header-offset onto the dialog; that measured value takes
 			// precedence, falling back to the static --sgs-header-height (then 0)
 			// when JS hasn't run (no-JS / first paint).
-			return 'position:fixed;top:var(--sgs-drawer-header-offset, var(--sgs-header-height, 0px));right:0;bottom:auto;left:0;margin:0;width:100%;height:auto;max-width:100vw;max-height:calc(100dvh - var(--sgs-drawer-header-offset, var(--sgs-header-height, 0px)));';
+			return 'position:fixed;top:var(--sgs-drawer-header-offset, var(--sgs-header-height, 0px));right:0;bottom:auto;left:0;margin:0;width:100%;height:auto;max-width:100vw;max-height:calc(100dvh - var(--sgs-drawer-header-offset, var(--sgs-header-height, 0px)));' . $sgs_nd_z_under_header;
 		case 'trigger':
 			$cap = '' !== $panel_size ? $panel_size : '360px';
-			return 'position:fixed;top:var(--sgs-drawer-trigger-top, 16px);right:var(--sgs-drawer-trigger-right, 16px);bottom:auto;left:auto;margin:0;width:min(' . $cap . ', calc(100vw - 32px));height:auto;max-width:calc(100vw - 32px);max-height:calc(100dvh - 32px);';
+			return 'position:fixed;top:var(--sgs-drawer-trigger-top, 16px);right:var(--sgs-drawer-trigger-right, 16px);bottom:auto;left:auto;margin:0;width:min(' . $cap . ', calc(100vw - 32px));height:auto;max-width:calc(100vw - 32px);max-height:calc(100dvh - 32px);' . $sgs_nd_z_popover;
 		case 'centred':
 			$cap = '' !== $panel_size ? $panel_size : '480px';
-			return 'position:fixed;inset:0;margin:auto;width:min(' . $cap . ', calc(100vw - 32px));height:fit-content;max-width:calc(100vw - 32px);max-height:calc(100dvh - 32px);';
+			return 'position:fixed;inset:0;margin:auto;width:min(' . $cap . ', calc(100vw - 32px));height:fit-content;max-width:calc(100vw - 32px);max-height:calc(100dvh - 32px);' . $sgs_nd_z_popover;
 		case 'full-screen':
 		default:
 			// Identical to style.css's base rule — deliberately, so the
@@ -138,7 +150,7 @@ $sgs_nd_geometry_for_anchor = function ( $anchor_value, $panel_size ) {
 			// at all (guarded below) and an explicit 'full-screen' pick at a
 			// non-desktop tier still reads correctly against a differing
 			// desktop tier.
-			return 'position:fixed;inset:0;margin:0;width:100vw;height:100dvh;max-width:100vw;max-height:100dvh;';
+			return 'position:fixed;inset:0;margin:0;width:100vw;height:100dvh;max-width:100vw;max-height:100dvh;' . $sgs_nd_z_under_header;
 	}
 };
 
@@ -834,7 +846,11 @@ foreach ( array(
 	if ( 'non-modal' !== $modality || 'trigger' !== $sgs_nd_predicate_style ) {
 		continue;
 	}
-	$sgs_nd_predicate_rule = $sgs_nd_opener_live_close_sel . '{display:none;}';
+	// The × hidden also hands its reserved top row back to the content
+	// (style.css reads --sgs-nd-close-room for the body's padding-top), so no
+	// empty band is left where the × would have been (Bean, 2026-09-24).
+	$sgs_nd_predicate_rule = $sgs_nd_opener_live_close_sel . '{display:none;}'
+		. '.' . $uid . '[data-sgs-nav-opener-live]{--sgs-nd-close-room:clamp(16px, 6vw, 32px);}';
 	$css                  .= null === $sgs_nd_predicate_bp
 		? $sgs_nd_predicate_rule
 		: '@media (max-width:' . $sgs_nd_predicate_bp . 'px){' . $sgs_nd_predicate_rule . '}';

@@ -71,8 +71,8 @@ foreach ( array( 'scrimColour', 'scrimColourGradient', 'scrimOpacity', 'scrimBlu
 	ok( isset( $decoded['attributes'][ $attr ] ), "block.json declares the {$attr} attribute" );
 }
 ok(
-	'primary-dark' === ( $decoded['attributes']['scrimColour']['default'] ?? null ),
-	'scrimColour default is "primary-dark" (the old hardcoded color-mix base)'
+	'#000000' === ( $decoded['attributes']['scrimColour']['default'] ?? null ),
+	'scrimColour default is black (Bean 2026-09-24: never a brand tint)'
 );
 ok(
 	0.9 === ( $decoded['attributes']['scrimOpacity']['default']['desktop'] ?? null ),
@@ -151,6 +151,24 @@ ok(
 
 // image-overlay controls (a different, pre-existing capability) must still be present.
 ok( $has( $edit_js, 'overlayColourHover' ), 'edit.js still wires the pre-existing image-overlay hover control (untouched)' );
+
+// ── Backdrop dismiss (Bean, 2026-09-24): a click on the lightbox outside the
+// image, caption, counter and controls closes it, through the native close().
+$view_js = (string) file_get_contents( $block_dir . '/view.js' );
+ok(
+	(bool) preg_match( '/<dialog(?:(?!<button).)*?data-wp-on--click="actions\.closeOnBackdrop"/s', $render_php ),
+	'the lightbox <dialog> itself carries the backdrop-click handler'
+);
+ok(
+	$has( $view_js, 'closeOnBackdrop( event )' )
+		&& $has( $view_js, "target.closest( '.sgs-gallery__lightbox-img, .sgs-gallery__lightbox-caption, .sgs-gallery__lightbox-counter, button' )" )
+		&& $has( $view_js, 'dialogEl.close();' ),
+	'view.js closes only when the click missed the image, caption, counter and every button, via dialog.close()'
+);
+ok(
+	! (bool) preg_match( '/<button[^>]*data-wp-on--click="actions\.closeOnBackdrop"/s', $render_php ),
+	'NEGATIVE CONTROL shape: the handler is not on a button (the dialog check above can tell the two apart)'
+);
 
 echo "\n==== $pass passed, $fail failed ====\n";
 exit( $fail > 0 ? 1 : 0 );

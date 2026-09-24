@@ -21,6 +21,17 @@
 	position: relative;
 	min-width: 44px;
 	min-height: 44px;
+	/* Button reset: in drawer and flyout modes the trigger is a <button>
+	   (includes/helpers-cart-panel.php), which otherwise paints the browser's
+	   grey fill and outset border; in page mode it is an <a>, which needs none
+	   of this. Scoped pill rules set their own padding, border and fill. */
+	padding: 0;
+	border: 0;
+	background: none;
+	font: inherit;
+	cursor: pointer;
+	-webkit-appearance: none;
+	appearance: none;
 	text-decoration: none;
 	color: var(--sgs-cart-icon-colour, var(--wp--preset--color--primary));
 	border-radius: 4px;

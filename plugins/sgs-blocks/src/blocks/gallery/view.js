@@ -148,6 +148,28 @@ store( 'sgs/gallery', {
 		},
 
 		/**
+		 * A click anywhere on the lightbox that is not the image, its caption,
+		 * the counter or a control closes it (the backdrop-dismiss every
+		 * lightbox reference offers). Closing goes through the native
+		 * dialog.close(), whose `close` event is already bound to
+		 * actions.closeLightbox, so state and the scroll lock are reset by the
+		 * one existing path. Keyboard users keep Escape and the close button.
+		 *
+		 * @param {MouseEvent} event
+		 */
+		closeOnBackdrop( event ) {
+			const dialogEl = event.currentTarget;
+			const target   = event.target;
+			if ( ! dialogEl || ! dialogEl.open || ! ( target instanceof Element ) ) {
+				return;
+			}
+			if ( target.closest( '.sgs-gallery__lightbox-img, .sgs-gallery__lightbox-caption, .sgs-gallery__lightbox-counter, button' ) ) {
+				return;
+			}
+			dialogEl.close();
+		},
+
+		/**
 		 * Advance to the next image, wrapping at the end.
 		 */
 		nextImage() {

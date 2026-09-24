@@ -159,14 +159,14 @@ ok(
 	'non-modal + trigger (desktop tier, no override): hide rule emitted at BASE scope'
 );
 ok(
-	false !== strpos( $nonmodal_trigger_desktop['css'], '@media (max-width:' . SGS_Breakpoints::TABLET_MAX . 'px){.sgs-nav-drawer-test[data-sgs-nav-opener-live] .sgs-nav-drawer__close{display:none;}}' )
-		&& false !== strpos( $nonmodal_trigger_desktop['css'], '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){.sgs-nav-drawer-test[data-sgs-nav-opener-live] .sgs-nav-drawer__close{display:none;}}' ),
+	false !== strpos( $nonmodal_trigger_desktop['css'], '@media (max-width:' . SGS_Breakpoints::TABLET_MAX . 'px){.sgs-nav-drawer-test[data-sgs-nav-opener-live] .sgs-nav-drawer__close{display:none;}.sgs-nav-drawer-test[data-sgs-nav-opener-live]{--sgs-nd-close-room:clamp(16px, 6vw, 32px);}}' )
+		&& false !== strpos( $nonmodal_trigger_desktop['css'], '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){.sgs-nav-drawer-test[data-sgs-nav-opener-live] .sgs-nav-drawer__close{display:none;}.sgs-nav-drawer-test[data-sgs-nav-opener-live]{--sgs-nd-close-room:clamp(16px, 6vw, 32px);}}' ),
 	'non-modal + trigger (desktop tier, no override): the cascade also hides the × at tablet AND mobile (both inherit trigger)'
 );
 
 $nonmodal_trigger_mobile = run_close_section( $section, array( 'closeStyle' => array( 'desktop' => 'separate-x', 'mobile' => 'trigger' ) ), 'non-modal' );
 ok(
-	false !== strpos( $nonmodal_trigger_mobile['css'], '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){.sgs-nav-drawer-test[data-sgs-nav-opener-live] .sgs-nav-drawer__close{display:none;}}' ),
+	false !== strpos( $nonmodal_trigger_mobile['css'], '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){.sgs-nav-drawer-test[data-sgs-nav-opener-live] .sgs-nav-drawer__close{display:none;}.sgs-nav-drawer-test[data-sgs-nav-opener-live]{--sgs-nd-close-room:clamp(16px, 6vw, 32px);}}' ),
 	'non-modal + trigger (mobile tier only): hide rule scoped inside the MOBILE media query'
 );
 ok(
@@ -297,13 +297,13 @@ ok( false === strpos( $section, 'style="' ), 'the section writes no inline style
 // predicate/tier assertions above, proving they test genuinely NEW behaviour.
 // ════════════════════════════════════════════════════════════════════════════
 
-$git_head_source = shell_exec( 'git show HEAD:plugins/sgs-blocks/src/blocks/nav-drawer/render.php 2>&1' );
+$git_head_source = shell_exec( 'git show c36105939~1:plugins/sgs-blocks/src/blocks/nav-drawer/render.php 2>&1' );
 $old_section      = is_string( $git_head_source )
 	? extract_section( $git_head_source, "\$sgs_nd_allowed_close_styles = array(", '$classes = array(' )
 	: '';
 
 if ( '' === $old_section ) {
-	ok( false, 'negative control setup: could not extract the OLD close-style section via `git show HEAD:...` (git unavailable or HEAD already carries the new code) — negative controls skipped, review manually' );
+	ok( false, 'negative control setup: could not extract the OLD close-style section via `git show c36105939~1:...` (the commit before U-9+U-11 landed; git unavailable) — negative controls skipped, review manually' );
 } else {
 	ok( false === strpos( $old_section, "'trigger'" ), 'negative control baseline: the OLD render.php genuinely has no `trigger` value (proves the fixture is really the pre-change file)' );
 
@@ -326,5 +326,37 @@ if ( '' === $old_section ) {
 	);
 }
 
+
+// ════════════════════════════════════════════════════════════════════════════
+// Bean feedback 2026-09-24: (a) a hidden × hands its reserved top row back;
+// (b) popover anchors (trigger, centred) paint above the header, panels that
+// cover or meet the header's area (full-screen, header) stay one below it.
+// ════════════════════════════════════════════════════════════════════════════
+ok(
+	false !== strpos( $nonmodal_trigger_desktop['css'], '.sgs-nav-drawer-test[data-sgs-nav-opener-live]{--sgs-nd-close-room:clamp(16px, 6vw, 32px);}' ),
+	'non-modal + trigger: the hidden × also releases its top row (--sgs-nd-close-room shrinks to the normal body padding)'
+);
+ok(
+	false === strpos( $nonmodal_separate['css'], '--sgs-nd-close-room' ) && false === strpos( $modal_trigger['css'], '--sgs-nd-close-room' ),
+	'the × row is released ONLY where the × can hide (never for separate-x, never for a modal drawer)'
+);
+$drawer_css = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/nav-drawer/style.css' );
+ok( false !== strpos( $drawer_css, 'padding-top: var(--sgs-nd-close-room, 64px);' ), 'style.css reads the × room from --sgs-nd-close-room, default 64px' );
+
+$geom_section = extract_section( $current_source, '$sgs_nd_z_under_header = ', '$anchor_attr_raw ' );
+ok( '' !== $geom_section, 'the anchor geometry section is found in the CURRENT render.php' );
+$sgs_nd_geometry_for_anchor = null;
+eval( $geom_section ); // phpcs:ignore Squiz.PHP.Eval.Discouraged -- CLI harness evaluating the extracted render.php geometry closure.
+$z_popover = 'z-index:calc(var(--sgs-header-z, 100) + 1);';
+$z_under   = 'z-index:min(90, max(2, calc(var(--sgs-header-z, 100) - 1)));';
+ok( is_callable( $sgs_nd_geometry_for_anchor ), 'the geometry closure is defined by the extracted section' );
+if ( is_callable( $sgs_nd_geometry_for_anchor ) ) {
+	ok( false !== strpos( $sgs_nd_geometry_for_anchor( 'trigger', '' ), $z_popover ), 'trigger anchor paints ABOVE the header' );
+	ok( false !== strpos( $sgs_nd_geometry_for_anchor( 'centred', '' ), $z_popover ), 'centred anchor paints ABOVE the header' );
+	ok( false !== strpos( $sgs_nd_geometry_for_anchor( 'full-screen', '' ), $z_under ), 'full-screen anchor stays one BELOW the header (its burger must stay live on top)' );
+	ok( false !== strpos( $sgs_nd_geometry_for_anchor( 'header', '' ), $z_under ), 'header anchor stays one below the header' );
+	ok( false === strpos( $sgs_nd_geometry_for_anchor( 'full-screen', '' ), $z_popover ), 'NEGATIVE CONTROL: the full-screen string does not carry the popover z-index (the checks above can tell the two apart)' );
+}
+ok( false !== strpos( $drawer_css, 'z-index: min(90, max(2, calc(var(--sgs-header-z, 100) - 1)));' ), 'style.css base z-index equals the under-header value the full-screen tier emits (a mixed-tier reset lands on the same number)' );
 echo "\n==== $pass passed, $fail failed ====\n";
 exit( $fail > 0 ? 1 : 0 );
