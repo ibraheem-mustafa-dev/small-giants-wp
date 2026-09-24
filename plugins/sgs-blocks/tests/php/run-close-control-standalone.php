@@ -376,5 +376,39 @@ $store_js = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/shared/nav
 ok( false !== strpos( $store_js, "trigger.closest( '.sgs-site-header-row' ) || trigger" ) && false !== strpos( $store_js, "'--sgs-drawer-opener-row-bottom'," ), 'store.js measures the own header row of the burger (falling back to the burger) and writes --sgs-drawer-opener-row-bottom' );
 ok( false === strpos( $drawer_css, 'sgs-nd-header-clear' ) && false === strpos( $current_source, 'sgs-nd-header-clear' ), 'the superseded header-clearance padding is gone from style.css and render.php' );
 
+// ════════════════════════════════════════════════════════════════════════════
+// Default edge (Bean, 2026-09-24): drawers that paint above the header get the
+// theme `floating` shadow by default (cards also 20px corners); a modal
+// full-screen drawer gets nothing; an operator shadow replaces the default.
+// ════════════════════════════════════════════════════════════════════════════
+if ( ! defined( 'ABSPATH' ) ) {
+	define( 'ABSPATH', '/' );
+}
+require_once dirname( __DIR__, 2 ) . '/includes/helpers-shadow-layers.php';
+$edge_start   = strpos( $current_source, '// ── Default edge (Bean, 2026-09-24).' );
+$edge_end     = strpos( $current_source, '// ── Background image media layer' );
+$edge_section = ( false !== $edge_start && false !== $edge_end && $edge_end > $edge_start ) ? substr( $current_source, $edge_start, $edge_end - $edge_start ) : '';
+ok( '' !== $edge_section, 'the default-edge section is found in the CURRENT render.php' );
+$run_edge = function ( array $attributes, string $modality ) use ( $edge_section ): string {
+	$css                    = '';
+	$root_sel               = '.t.wp-block-sgs-nav-drawer';
+	$sgs_nd_allowed_anchors = array( 'full-screen', 'header', 'trigger', 'centred' );
+	$sgs_nd_shadow_raw      = isset( $attributes['shadow'] ) ? (string) $attributes['shadow'] : '';
+	eval( $edge_section ); // phpcs:ignore Squiz.PHP.Eval.Discouraged -- CLI harness evaluating the extracted render.php section.
+	return $css;
+};
+$edge_trigger = $run_edge( array( 'anchor' => array( 'desktop' => 'trigger' ) ), 'non-modal' );
+ok( 0 === strpos( $edge_trigger, '.t.wp-block-sgs-nav-drawer{box-shadow:var(--wp--preset--shadow--floating);' ) && false !== strpos( $edge_trigger, 'border-radius:20px;' ), 'trigger card: floating shadow and 20px corners by default' );
+ok( false !== strpos( $edge_trigger, 'forced-colors:active' ), 'the default shadow keeps its forced-colours outline' );
+$edge_fs_nonmodal = $run_edge( array(), 'non-modal' );
+ok( false !== strpos( $edge_fs_nonmodal, 'box-shadow:var(--wp--preset--shadow--floating)' ) && false !== strpos( $edge_fs_nonmodal, 'border-radius:0;' ), 'non-modal full-screen: floating shadow (the line under the burger row), square corners' );
+ok( '' === $run_edge( array(), 'modal' ), 'NEGATIVE CONTROL: modal full-screen gets no default edge at all' );
+$edge_operator = $run_edge( array( 'anchor' => array( 'desktop' => 'trigger' ), 'shadow' => 'soft' ), 'non-modal' );
+ok( false === strpos( $edge_operator, 'box-shadow' ) && false !== strpos( $edge_operator, 'border-radius:20px;' ), 'an operator shadow replaces the default shadow (the default emits none), corners still default' );
+$edge_mixed = $run_edge( array( 'anchor' => array( 'desktop' => 'trigger', 'mobile' => 'full-screen' ) ), 'modal' );
+ok( false !== strpos( $edge_mixed, '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){.t.wp-block-sgs-nav-drawer{box-shadow:none;border-radius:0;}}' ), 'mixed tiers: a modal full-screen mobile tier resets the card edge' );
+$radius_pos = strpos( $current_source, '$radius_tiers      = sgs_border_radius_tiers( $attributes );' );
+ok( false !== $radius_pos && $edge_start < $radius_pos, 'the default edge is emitted BEFORE the operator radius rule, so an operator radius wins by source order' );
+
 echo "\n==== $pass passed, $fail failed ====\n";
 exit( $fail > 0 ? 1 : 0 );

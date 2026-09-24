@@ -365,6 +365,12 @@
 	gap: 0.4em;
 	min-height: 44px;
 	padding: 8px 18px;
+	/* A visible button occupies its real box: cancel the base link's
+	   hit-area negative margin (-0.5em -0.6em), which exists only to align a
+	   bare text link with its siblings. Kept, it let the button's fill spill
+	   8px above and below its row, into the header row above (Bean,
+	   2026-09-24: a sliver of the phone button showed above an open drawer). */
+	margin: 0;
 	background: var(--wp--preset--color--primary);
 	border-radius: var(--wp--custom--border-radius--medium, 6px);
 	color: var(--wp--preset--color--text-inverse, #fff);

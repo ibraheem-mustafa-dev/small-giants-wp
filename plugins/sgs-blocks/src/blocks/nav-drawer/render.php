@@ -525,6 +525,53 @@ if ( ! empty( $sgs_nd_shadow_decls ) ) {
 	$css .= $root_sel . '{' . implode( ';', $sgs_nd_shadow_decls ) . ';}';
 }
 
+// ── Default edge (Bean, 2026-09-24). A drawer that paints ABOVE the header
+// needs a visible edge where it meets the header row, or it melts into a
+// header of the same colour: the trigger and centred cards, and a non-modal
+// full-screen drawer (which starts under the burger row), default to the
+// theme's `floating` shadow, the mega panel's default. The cards also default
+// to the mega panel's 20px corners; a full-screen drawer stays square. A
+// modal full-screen drawer covers everything and has no edge to show. Emitted
+// per tier (anchor is a tier object) and BEFORE the operator's radius rule
+// below, so an operator radius wins by source order; an operator shadow
+// replaces the default shadow entirely.
+$sgs_nd_edge_for = function ( $tier ) use ( $attributes, $sgs_nd_allowed_anchors, $modality ) {
+	$raw    = is_array( $attributes['anchor'] ?? null ) ? $attributes['anchor'] : array();
+	$anchor = sgs_resolve_tier( $raw, $tier, 'full-screen' )['value'];
+	$anchor = in_array( $anchor, $sgs_nd_allowed_anchors, true ) ? $anchor : 'full-screen';
+	$card   = in_array( $anchor, array( 'trigger', 'centred' ), true );
+	return array(
+		'shadow' => $card || ( 'full-screen' === $anchor && 'non-modal' === $modality ),
+		'radius' => $card,
+	);
+};
+$sgs_nd_default_shadow = '' === $sgs_nd_shadow_raw ? sgs_shadow_box_decls( 'floating', '' ) : array();
+$sgs_nd_edge_decls     = function ( $edge ) use ( $sgs_nd_default_shadow, $sgs_nd_shadow_raw ) {
+	$decls = array();
+	if ( '' === $sgs_nd_shadow_raw ) {
+		$decls = $edge['shadow'] && ! empty( $sgs_nd_default_shadow ) ? $sgs_nd_default_shadow : array( 'box-shadow:none' );
+	}
+	$decls[] = 'border-radius:' . ( $edge['radius'] ? '20px' : '0' );
+	return implode( ';', $decls ) . ';';
+};
+$sgs_nd_edge_prev = null;
+foreach ( array(
+	'desktop' => null,
+	'tablet'  => SGS_Breakpoints::TABLET_MAX,
+	'mobile'  => SGS_Breakpoints::MOBILE_MAX,
+) as $sgs_nd_edge_tier => $sgs_nd_edge_bp ) {
+	$sgs_nd_edge = $sgs_nd_edge_for( $sgs_nd_edge_tier );
+	// Tier-diff: skip a tier identical to the one above; the desktop tier
+	// emits only when it has an edge (the base rule has none).
+	if ( $sgs_nd_edge === $sgs_nd_edge_prev || ( null === $sgs_nd_edge_prev && ! $sgs_nd_edge['shadow'] && ! $sgs_nd_edge['radius'] ) ) {
+		$sgs_nd_edge_prev = $sgs_nd_edge;
+		continue;
+	}
+	$sgs_nd_edge_rule = $root_sel . '{' . $sgs_nd_edge_decls( $sgs_nd_edge ) . '}';
+	$css             .= null === $sgs_nd_edge_bp ? $sgs_nd_edge_rule : '@media (max-width:' . $sgs_nd_edge_bp . 'px){' . $sgs_nd_edge_rule . '}';
+	$sgs_nd_edge_prev = $sgs_nd_edge;
+}
+
 // ── Background image media layer (`.{uid}::before`). z-index:-1 keeps it below
 // the dialog's own background-colour/gradient paint and below the real
 // `.sgs-nav-drawer__body`/close-button children (both default z-index:auto,
