@@ -404,6 +404,13 @@
    sheet, which is why no `display:none` is authored here — authoring one would
    hide the dialog even when open. */
 .sgs-gallery__lightbox {
+	/* Arrow gutters (Bean, 2026-09-24): the image is capped so the prev/next
+	   buttons (12px inset + 52px + 12px clearance each side = 152px) sit in
+	   their own gutters and never over the picture, whatever its aspect ratio.
+	   Below 768px the arrows move to a bottom row instead (media query below),
+	   because two side gutters would cost ~40% of a phone's width. */
+	--sgs-gallery-lightbox-img-max-w: min( 90vw, calc( 100vw - 152px ) );
+	--sgs-gallery-lightbox-img-max-h: 80vh;
 	position:        fixed;
 	inset:           0;
 	margin:          0;
@@ -527,7 +534,7 @@ body.sgs-gallery-lightbox-open {
 	flex-direction: column;
 	align-items:    center;
 	gap:            12px;
-	max-width:      90vw;
+	max-width:      var( --sgs-gallery-lightbox-img-max-w );
 }
 
 /*
@@ -536,8 +543,8 @@ body.sgs-gallery-lightbox-open {
  */
 .sgs-gallery__lightbox-img {
 	display:    block;
-	max-width:  90vw;
-	max-height: 80vh;
+	max-width:  var( --sgs-gallery-lightbox-img-max-w );
+	max-height: var( --sgs-gallery-lightbox-img-max-h );
 	/* Lightbox full-view treatment — intentionally NOT client-controlled. The
 	 * lightbox exists to show the whole image uncropped; a client-set
 	 * object-fit here (e.g. cover) would defeat that purpose. Deliberately
@@ -660,11 +667,37 @@ body.sgs-gallery-lightbox-open {
 		);
 	}
 
-	/* Slightly larger lightbox nav buttons on touch screens */
+	/* Phones: the arrows leave the image's sides for a bottom row, either
+	   side of the "1 / 2" counter, in the thumb's reach. The image takes the
+	   full width and gives up the height of the close row (top) and the
+	   arrow row (bottom), so nothing overlaps it. */
+	.sgs-gallery__lightbox {
+		--sgs-gallery-lightbox-img-max-w: calc( 100vw - 32px );
+		--sgs-gallery-lightbox-img-max-h: calc( 100dvh - 220px );
+		padding: 72px 16px 80px;
+	}
+
 	.sgs-gallery__lightbox-prev,
 	.sgs-gallery__lightbox-next {
-		width:  48px;
-		height: 48px;
+		top:       auto;
+		bottom:    16px;
+		transform: none;
+		width:     48px;
+		height:    48px;
+	}
+
+	.sgs-gallery__lightbox-prev {
+		left: 16px;
+	}
+
+	.sgs-gallery__lightbox-next {
+		right: 16px;
+	}
+
+	/* Counter centred on the arrow row: 16px + half of 48px. */
+	.sgs-gallery__lightbox-counter {
+		bottom:    40px;
+		transform: translate( -50%, 50% );
 	}
 }
 

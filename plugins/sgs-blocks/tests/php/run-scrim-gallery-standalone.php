@@ -170,5 +170,27 @@ ok(
 	'NEGATIVE CONTROL shape: the handler is not on a button (the dialog check above can tell the two apart)'
 );
 
+// ── Arrow placement (Bean, 2026-09-24): the prev/next buttons never sit over
+// the image. Wide screens cap the image so the arrows keep their own gutters;
+// phones move the arrows to a bottom row either side of the counter.
+ok(
+	$has( $style_css, '--sgs-gallery-lightbox-img-max-w: min( 90vw, calc( 100vw - 152px ) );' )
+		&& $has( $style_css, 'max-width:  var( --sgs-gallery-lightbox-img-max-w );' ),
+	'wide screens: the lightbox image is capped at 100vw minus both arrow gutters (2 x (12 + 52 + 12) = 152px)'
+);
+ok( ! $has( $style_css, "max-width:  90vw;\n\tmax-height: 80vh;" ), 'NEGATIVE CONTROL shape: the old uncapped 90vw image rule is gone' );
+$mobile_block = '';
+if ( preg_match( '/@media \( max-width: 767px \) \{(.*?)\n\}/s', $style_css, $m ) ) {
+	$mobile_block = $m[1];
+}
+ok(
+	$has( $mobile_block, 'bottom:    16px;' ) && $has( $mobile_block, 'top:       auto;' ) && $has( $mobile_block, 'transform: none;' ),
+	'phones: the arrows move to a bottom row (top auto, bottom 16px, no vertical centring)'
+);
+ok(
+	$has( $mobile_block, '--sgs-gallery-lightbox-img-max-h: calc( 100dvh - 220px );' ) && $has( $mobile_block, 'padding: 72px 16px 80px;' ),
+	'phones: the image gives up the close row and the arrow row, so the bottom arrows cannot cover it'
+);
+
 echo "\n==== $pass passed, $fail failed ====\n";
 exit( $fail > 0 ? 1 : 0 );
