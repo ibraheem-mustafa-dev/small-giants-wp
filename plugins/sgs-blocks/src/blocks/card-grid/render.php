@@ -31,6 +31,9 @@ require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 // Per-item glyph + image-fallback-tile helpers — kept in this block's own
 // directory rather than growing this already-oversized render.php.
 require_once __DIR__ . '/glyph-fallback.php';
+// Block-wide image overlay helper (wave B round 2) — same reasoning, kept out
+// of this file.
+require_once __DIR__ . '/image-overlay.php';
 
 // CSS length/unit sanitiser — for free-text length values (border width,
 // letter-spacing) concatenated into raw CSS declarations inside this block's
@@ -117,6 +120,20 @@ $glyph_size            = (string) ( $attributes['glyphSize'] ?? '32px' );
 $glyph_colour          = (string) ( $attributes['glyphColour'] ?? '' );
 $image_fallback        = ! empty( $attributes['imageFallback'] );
 $image_fallback_colour = (string) ( $attributes['imageFallbackColour'] ?? '' );
+
+// Block-wide image overlay (Eye Care "Shop by shape" gap, wave B round 2) — a
+// colour/gradient layer painted between every card's photo and its
+// glyph/title, off by default. image-overlay.php holds the emission
+// helpers; $card_grid_overlay_decls is computed once here and reused both for
+// the scoped CSS rule (below) and to decide, per item, whether the overlay
+// <div> is rendered at all — an unset colour/gradient keeps every existing
+// page byte-identical.
+$overlay_colour         = (string) ( $attributes['overlayColour'] ?? '' );
+$overlay_gradient       = (string) ( $attributes['overlayGradient'] ?? '' );
+$overlay_opacity        = $attributes['overlayOpacity'] ?? null;
+$overlay_blend_mode     = (string) ( $attributes['overlayBlendMode'] ?? 'normal' );
+$card_grid_overlay_decls  = sgs_card_grid_image_overlay_decls( $overlay_colour, $overlay_gradient, $overlay_opacity, $overlay_blend_mode );
+$card_grid_overlay_active = '' !== $card_grid_overlay_decls;
 
 // ── Instance uid — a CLASS (matches the container/hero/quote convention) so
 // this grid's WP-native supports + title/subtitle colours can be scoped to
@@ -530,6 +547,11 @@ if ( null !== $card_pad_mob ) {
 // rule (glyph-fallback.php); empty inputs leave the property unset so
 // style.css's own var() fallback chain renders exactly as before.
 $card_grid_native_css .= sgs_card_grid_glyph_css( $root_sel, $glyph_colour, $glyph_size, $image_fallback_colour );
+
+// Block-wide image overlay (image-overlay.php) — one scoped rule targeting
+// `.sgs-card-grid__image-overlay`; empty when neither overlayColour nor
+// overlayGradient is set, matching $card_grid_overlay_active above.
+$card_grid_native_css .= sgs_card_grid_image_overlay_css( $root_sel, $card_grid_overlay_decls );
 
 // wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving CSS
 // combinators like `>` intact (contract §D — matches SGS_Container_Wrapper +
@@ -998,16 +1020,36 @@ foreach ( $items as $index => $item ) :
 	// there isn't. An unknown/missing slug renders nothing (never a broken
 	// icon). `imageFallback` gates the fallback tile itself (default off —
 	// existing sites render an unchanged empty box).
-	$item_glyph_slug   = isset( $item['glyph'] ) ? sanitize_key( (string) $item['glyph'] ) : '';
-	$item_glyph_html   = sgs_card_grid_glyph_html( $item_glyph_slug );
+	// `glyphImage` (wave B round 2) — an uploaded image in the SAME slot —
+	// wins over the Lucide slug when both are set; the Lucide path only
+	// runs when there is no usable glyphImage.
+	$item_glyph_image = ( isset( $item['glyphImage'] ) && is_array( $item['glyphImage'] ) && ! empty( $item['glyphImage']['url'] ) )
+		? $item['glyphImage']
+		: null;
+	if ( null !== $item_glyph_image ) {
+		$item_glyph_html = sgs_card_grid_glyph_image_html( $item_glyph_image );
+	} else {
+		$item_glyph_slug = isset( $item['glyph'] ) ? sanitize_key( (string) $item['glyph'] ) : '';
+		$item_glyph_html = sgs_card_grid_glyph_html( $item_glyph_slug );
+	}
 	$item_has_media    = '' !== $media_html;
 	$item_use_fallback = $image_fallback && ! $item_has_media;
 	$image_wrap_class  = 'sgs-card-grid__image-wrap' . ( $item_use_fallback ? ' sgs-card-grid__image-wrap--fallback' : '' );
+	// Image overlay (wave B round 2) — only over a real photo, never the flat
+	// image-fallback tile, matching the Ward End Eye Care draft's own
+	// `s.hasImg` gate. Rendered BEFORE the glyph/title markup below so it
+	// sits behind them (DOM order = paint order for these
+	// position:absolute siblings — same technique as the existing
+	// `.sgs-card-grid__overlay` text layer further down).
+	$item_show_overlay = $card_grid_overlay_active && $item_has_media;
 	?>
 	<<?php echo esc_attr( $item_tag ); ?> class="sgs-card-grid__item" data-card-key="<?php echo esc_attr( $card_grid_item_key ); ?>"<?php echo $link_attr; ?>>
 		<div class="<?php echo esc_attr( $image_wrap_class ); ?>"<?php echo $item_decorative ? ' aria-hidden="true"' : ''; ?>>
 			<?php if ( '' !== $media_html ) : ?>
 				<?php echo $media_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside sgs_render_media(). ?>
+			<?php endif; ?>
+			<?php if ( $item_show_overlay ) : ?>
+				<div class="sgs-card-grid__image-overlay" aria-hidden="true"></div>
 			<?php endif; ?>
 			<?php if ( '' !== $item_glyph_html ) : ?>
 				<?php echo $item_glyph_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside sgs_card_grid_glyph_html() via wp_kses(). ?>

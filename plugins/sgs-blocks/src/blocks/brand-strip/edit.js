@@ -274,6 +274,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		brandTextColourHover,
 		scrolling,
 		scrollSpeed,
+		scrollDuration,
 		scrollDirection,
 		fadeEdges,
 		fadeWidth,
@@ -643,6 +644,22 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange={ ( val ) =>
 									setAttributes( { scrollSpeed: val } )
 								}
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+							<RangeControl
+								label={ __( 'Custom scroll time (seconds)', 'sgs-blocks' ) }
+								help={ __(
+									'Seconds for one full loop. 0 uses the Scroll speed choice above; anything higher overrides it.',
+									'sgs-blocks'
+								) }
+								value={ scrollDuration ?? 0 }
+								onChange={ ( val ) =>
+									setAttributes( { scrollDuration: val ?? 0 } )
+								}
+								min={ 0 }
+								max={ 300 }
+								step={ 1 }
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>

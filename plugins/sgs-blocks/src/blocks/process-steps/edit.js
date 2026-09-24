@@ -29,7 +29,15 @@ const HOVER_EFFECT_OPTIONS = [
 	{ label: __( 'Glow', 'sgs-blocks' ), value: 'glow' },
 ];
 import { IconPicker, IconPreview, ResponsiveBoxControl, fillRow, SgsBorderControl, DesignTokenPicker, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, ShadowLiftControls } from '../../components';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
+
+// Spec 35 Part B: 2 options, short labels → ToggleGroupControl (mirrors
+// sgs/icon-list's "List content" source toggle).
+const LAYOUT_OPTIONS = [
+	{ label: __( 'Row', 'sgs-blocks' ), value: 'row' },
+	{ label: __( 'List', 'sgs-blocks' ), value: 'list' },
+];
 
 const CONNECTOR_OPTIONS = [
 	{ label: __( 'Line', 'sgs-blocks' ), value: 'line' },
@@ -111,6 +119,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const { padding, margin,
 		steps,
 		headingLevel,
+		layout,
 		connectorStyle,
 		numberStyle,
 		numberColour,
@@ -146,6 +155,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		'sgs-process-steps',
 		`sgs-process-steps--connector-${ connectorStyle }`,
 		`sgs-process-steps--number-${ numberStyle }`,
+		'list' === layout ? 'sgs-process-steps--layout-list' : '',
 		effectHover && effectHover !== 'none' ? `sgs-process-steps--hover-${ effectHover }` : '',
 	].filter( Boolean ).join( ' ' );
 
@@ -214,7 +224,8 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const numStyle = {
 		color: colourVar( numberColour ) || undefined,
-		backgroundColor: colourVar( numberBackground ) || undefined,
+		// The list layout draws no badge, so render.php drops the badge fill there.
+		backgroundColor: 'list' === layout ? undefined : colourVar( numberBackground ) || undefined,
 	};
 
 	const titleStyle = resolveTextColourPreviewStyle( titleColour, titleColourGradient, colourVar );
@@ -515,16 +526,40 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Appearance', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<SelectControl
-						label={ __( 'Connector style', 'sgs-blocks' ) }
-						value={ connectorStyle }
-						options={ CONNECTOR_OPTIONS }
+					<ToggleGroupControl
+						label={ __( 'Layout', 'sgs-blocks' ) }
+						value={ layout || 'row' }
+						isBlock
 						onChange={ ( val ) =>
-							setAttributes( { connectorStyle: val } )
+							setAttributes( { layout: val } )
 						}
+						help={ __(
+							'Row draws the existing badge-and-connector timeline. List stacks steps vertically with a plain number beside the text — no badge, no connector — for plain numbered copy.',
+							'sgs-blocks'
+						) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					/>
+					>
+						{ LAYOUT_OPTIONS.map( ( opt ) => (
+							<ToggleGroupControlOption
+								key={ opt.value }
+								value={ opt.value }
+								label={ opt.label }
+							/>
+						) ) }
+					</ToggleGroupControl>
+					{ 'list' !== layout && (
+						<SelectControl
+							label={ __( 'Connector style', 'sgs-blocks' ) }
+							value={ connectorStyle }
+							options={ CONNECTOR_OPTIONS }
+							onChange={ ( val ) =>
+								setAttributes( { connectorStyle: val } )
+							}
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
 				</PanelBody>
 
 				<PanelBody

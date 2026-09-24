@@ -12,6 +12,7 @@ import {
 } from '@wordpress/components';
 import { DesignTokenPicker, SpacingControl, ResponsiveBoxControl, LinkPopoverField, IconPreview, resolveColourToken, SgsColourPanel, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl } from '../../components';
 import { spacingVar, borderPaintPreview } from '../../utils';
+import BrandIconGlyph from './brand-icons';
 
 // Site Info mode pulls from this fixed set of networks (same 8 slugs the
 // sgs/business-info 'socials' case reads from Sgs_Site_Info — Appearance >
@@ -691,11 +692,17 @@ export default function Edit( { attributes, setAttributes } ) {
 								   src/utils/svg-gradient-preview.js) via its own
 								   loadLucide()/withInlineFillStroke() path — pass it through
 								   rather than reimplementing it here. */ }
-								<IconPreview
-									source="lucide"
-									name={ PLATFORM_ICONS[ platform ] || 'link' }
+								<BrandIconGlyph
+									platform={ platform }
 									size={ iconSize }
-									gradient={ iconGlyphColourGradient }
+									fallback={ (
+										<IconPreview
+											source="lucide"
+											name={ PLATFORM_ICONS[ platform ] || 'link' }
+											size={ iconSize }
+											gradient={ iconGlyphColourGradient }
+										/>
+									) }
 								/>
 							</span>
 							{ showLabels && (
@@ -724,11 +731,17 @@ export default function Edit( { attributes, setAttributes } ) {
 								{ 'custom' === icon.platform && icon.customIconUrl ? (
 									<img src={ icon.customIconUrl } alt="" width={ iconSize } height={ iconSize } />
 								) : (
-									<IconPreview
-										source="lucide"
-										name={ PLATFORM_ICONS[ icon.platform ] || 'link' }
+									<BrandIconGlyph
+										platform={ icon.platform }
 										size={ iconSize }
-										gradient={ iconGlyphColourGradient }
+										fallback={ (
+											<IconPreview
+												source="lucide"
+												name={ PLATFORM_ICONS[ icon.platform ] || 'link' }
+												size={ iconSize }
+												gradient={ iconGlyphColourGradient }
+											/>
+										) }
 									/>
 								) }
 							</span>

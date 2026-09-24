@@ -122,6 +122,64 @@
 	color: var(--wp--preset--color--border, #D4DBE5);
 }
 
+/* ===== List layout ===== */
+/* layout:"list" (block.json) — plain numbered copy (e.g. "how it works"),
+ * stacked steps with the number to the LEFT of the title/description on the
+ * same row, no circle/square badge fill and no connector line. CSS Grid
+ * (rather than the flex+padding-offset trick the <768px block below uses)
+ * puts the number in a fixed-content first column and the title+description
+ * in a fluid second column, so the text column cannot collapse under the
+ * number at any width, including 375px — the grid template applies
+ * regardless of viewport, it is not a mobile-only override. Two-class
+ * selectors here intentionally match the circle/square number-style rules
+ * above on specificity; this block is placed after them so source order
+ * settles the tie (no !important needed except for the connector, which
+ * mirrors the existing <768px block's own !important for the same reason). */
+
+.sgs-process-steps--layout-list {
+	flex-direction: column;
+	align-items: stretch;
+	justify-content: flex-start;
+}
+
+.sgs-process-steps--layout-list .sgs-process-steps__step {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	column-gap: var(--wp--preset--spacing--20);
+	align-items: start;
+	text-align: left;
+	width: 100%;
+}
+
+.sgs-process-steps--layout-list .sgs-process-steps__number {
+	grid-column: 1;
+	grid-row: 1 / span 2;
+	width: auto;
+	height: auto;
+	min-width: 1.5em;
+	background: none;
+	border-radius: 0;
+	margin-bottom: 0;
+	align-self: start;
+}
+
+.sgs-process-steps--layout-list .sgs-process-steps__title {
+	grid-column: 2;
+	grid-row: 1;
+	align-self: start;
+}
+
+.sgs-process-steps--layout-list .sgs-process-steps__description {
+	grid-column: 2;
+	grid-row: 2;
+	align-self: start;
+	padding-left: 0;
+}
+
+.sgs-process-steps--layout-list .sgs-process-steps__step::after {
+	display: none !important;
+}
+
 /* ===== Title ===== */
 
 .sgs-process-steps__title {

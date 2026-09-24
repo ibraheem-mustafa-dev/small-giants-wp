@@ -86,6 +86,13 @@ $allowed_heading_levels  = array( 'h2', 'h3', 'h4', 'h5', 'h6', 'p' );
 $heading_level           = in_array( $attributes['headingLevel'] ?? '', $allowed_heading_levels, true )
 	? $attributes['headingLevel']
 	: 'h3';
+// Layout — an out-of-enum stored value is otherwise silently coerced to the
+// block.json default (blockjson-enum-coerces-invalid-to-default), so it is
+// validated here too (mirrors headingLevel/borderStyle above/below).
+$allowed_layouts = array( 'row', 'list' );
+$layout           = in_array( $attributes['layout'] ?? '', $allowed_layouts, true )
+	? $attributes['layout']
+	: 'row';
 $connector_style         = $attributes['connectorStyle'] ?? 'line';
 $number_style            = $attributes['numberStyle'] ?? 'circle';
 $number_colour           = $attributes['numberColour'] ?? '';
@@ -183,6 +190,12 @@ $root_sel = '.' . $uid . '.sgs-process-steps';
 $wrapper_classes   = array( 'sgs-process-steps', $uid );
 $wrapper_classes[] = 'sgs-process-steps--connector-' . esc_attr( $connector_style );
 $wrapper_classes[] = 'sgs-process-steps--number-' . esc_attr( $number_style );
+// Only emitted for the non-default value, matching the effectHover pattern
+// just below — existing pages (no stored `layout`, default 'row') keep
+// today's markup byte-identical.
+if ( 'list' === $layout ) {
+	$wrapper_classes[] = 'sgs-process-steps--layout-list';
+}
 if ( $hover_effect && 'none' !== $hover_effect ) {
 	$wrapper_classes[] = 'sgs-process-steps--hover-' . esc_attr( $hover_effect );
 }
@@ -458,11 +471,15 @@ $desc_scope  = $root_sel . ' .sgs-process-steps__description';
 // from block.json). Prefix "title" matches the title element's own attrMap.
 $scoped_css[] = sgs_typography_css_rule( $attributes, 'title', $title_scope );
 
+// 'list' layout paints no badge fill (no circle/square box behind the
+// number) — only numberColour (the text colour) still applies, matching the
+// brief's "number keeps using the block's existing number colour/font
+// settings" while dropping the badge.
 $num_decls = array();
 if ( $number_colour ) {
 	$num_decls[] = 'color:' . sgs_colour_value( $number_colour );
 }
-if ( $number_background ) {
+if ( $number_background && 'list' !== $layout ) {
 	$num_decls[] = sgs_background_paint_decl( $number_background, $number_background_gradient );
 }
 if ( $num_decls ) {
@@ -480,7 +497,7 @@ if ( $num_decls ) {
 // (style.css:169) — so the badge colour changes in step with the effect the
 // operator has already chosen, not on a second, different target.
 $number_background_hover = (string) ( $attributes['numberBackgroundHover'] ?? '' );
-if ( '' !== $number_background_hover ) {
+if ( '' !== $number_background_hover && 'list' !== $layout ) {
 	$step_sel     = $root_sel . ' .sgs-process-steps__step';
 	$num_el       = ' .sgs-process-steps__number';
 	$scoped_css[] = sgs_hover_state_rules( $step_sel, 'background-color:' . sgs_colour_value( $number_background_hover ), ':focus-within', $num_el );

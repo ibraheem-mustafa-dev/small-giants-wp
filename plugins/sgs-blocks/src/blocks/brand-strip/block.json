@@ -391,6 +391,11 @@
 			"type": "string",
 			"default": "medium"
 		},
+		"scrollDuration": {
+			"type": "number",
+			"default": 0,
+			"description": "Custom marquee duration in seconds for one full cycle (2 to 300). 0 = use the slow / medium / fast preset in scrollSpeed. A value here wins over the preset."
+		},
 		"scrollDirection": {
 			"type": "string",
 			"default": "left",

@@ -161,6 +161,16 @@ $speed_map       = array(
 );
 $animation_speed = $speed_map[ $scroll_speed ] ?? '25s';
 
+// scrollDuration (seconds) overrides the slow/medium/fast preset above when set.
+// 0 or unset keeps the preset — every existing page renders identically. Clamped
+// 2-300s (same range as sgs/trust-bar's autoScrollDuration, the precedent for this
+// control) so an out-of-range value can't produce a stalled or flickering marquee.
+$scroll_duration_raw = $attributes['scrollDuration'] ?? 0;
+if ( is_numeric( $scroll_duration_raw ) && (float) $scroll_duration_raw > 0 ) {
+	$scroll_duration_seconds = max( 2, min( 300, (float) $scroll_duration_raw ) );
+	$animation_speed         = rtrim( rtrim( number_format( $scroll_duration_seconds, 2, '.', '' ), '0' ), '.' ) . 's';
+}
+
 // Sanitise values.
 $allowed_effects     = array( 'none', 'lift', 'scale', 'glow' );
 $safe_hover_effect   = in_array( $hover_effect, $allowed_effects, true ) ? $hover_effect : 'none';

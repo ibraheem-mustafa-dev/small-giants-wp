@@ -201,6 +201,16 @@
           "clusters": [],
           "_note": "Renamed from 'card-badge' 2026-08-15 (element-manifest drift fix) — real rendered class is `.sgs-card-grid__badge` (render.php:719), not `.sgs-card-grid__card-badge`. Per-item badge text + badgeVariant preset are content/variant fields, not exposed as independent style controls — no badge-specific text/fill/layout attrs exist on the block."
         },
+        "imageOverlay": {
+          "label": "Image overlay",
+          "order": 8,
+          "clusters": ["fill"],
+          "attrMap": {
+            "css:background-color": "overlayColour",
+            "css:background-image": "overlayGradient"
+          },
+          "_note": "New 2026-09-24 (Eye Care 'Shop by shape' gap, wave B round 2) — a block-wide colour/gradient overlay painted via `.sgs-card-grid__image-overlay` between the card photo and its glyph/title, over a photo only (never the flat image-fallback tile — mirrors the Ward End Eye Care draft's own `s.hasImg` gate). Reuses the shared `sgs_overlay_decls()` value primitive (helpers-tokens.php) — the same primitive sgs/media's overlay atom and class-sgs-container-wrapper.php's own overlay already call — via this block's own `src/blocks/card-grid/image-overlay.php` helper. `overlayOpacity`/`overlayBlendMode` have no attrMap (opacity/blend-mode are not Fill-cluster members) and stay honest, by-design orphans, same precedent as `glyphSize` on the 'glyph' element."
+        },
         "body": {
           "label": "Card body",
           "order": 4,
@@ -306,6 +316,21 @@
             "type": "string",
             "default": "",
             "description": "Lucide icon slug shown as a small glyph on this card (over the image, or inside the image-fallback tile when the card has no image — see the block-wide `imageFallback` attribute). Empty = no glyph. Resolved through the same shared icon registry as sgs/icon and sgs/trust-bar (includes/lucide-icons.php::sgs_get_lucide_icon())."
+          },
+          "glyphImage": {
+            "anyOf": [
+              { "type": "null" },
+              {
+                "type": "object",
+                "properties": {
+                  "url": { "type": "string" },
+                  "id": { "type": "number" },
+                  "alt": { "type": "string" }
+                }
+              }
+            ],
+            "role": "image-object",
+            "description": "An uploaded image (a logo mark, a shape outline, a badge) shown in the SAME `.sgs-card-grid__glyph` slot as the Lucide `glyph` icon, sized by the block-wide `glyphSize`. Wins over `glyph` when set; empty/null keeps today's Lucide-icon or no-glyph output. Mirrors items[].media's {url, id, alt} shape (MediaPicker's normalised object) — an empty alt is valid, since the wrapping span is aria-hidden and the card's title already names the glyph."
           },
           "_key": {
             "type": "string",
@@ -820,6 +845,25 @@
       "type": "string",
       "default": "",
       "description": "Background colour for the image-fallback tile (imageFallback). Empty uses the theme's surface-alt token."
+    },
+    "overlayColour": {
+      "type": "string",
+      "default": "",
+      "description": "Block-wide overlay colour (palette slug, or a raw CSS colour with alpha) painted between every card's photo and its glyph/title, so light text and a glyph stay legible over an image. Empty = no overlay (today's output, unchanged). overlayGradient wins over this when both are set. Never applied over the flat image-fallback tile — a card with no photo is unaffected. Attribute shape and control mirror sgs/media's overlayColour."
+    },
+    "overlayGradient": {
+      "type": "string",
+      "default": "",
+      "description": "Block-wide overlay gradient (a complete CSS gradient string) painted between every card's photo and its glyph/title. Wins over overlayColour when set. Empty = no overlay gradient. Attribute shape and control mirror sgs/media's overlayGradient."
+    },
+    "overlayOpacity": {
+      "type": "number",
+      "description": "Overlay opacity as a 0-100 percentage. Only applies once overlayColour or overlayGradient is set — the control is disabled otherwise. Unset = no opacity override (100%, i.e. the overlay colour's own alpha only). Attribute shape and control mirror sgs/media's overlayOpacity."
+    },
+    "overlayBlendMode": {
+      "type": "string",
+      "default": "normal",
+      "description": "CSS mix-blend-mode for the overlay. Only applies once overlayColour or overlayGradient is set — the control is disabled otherwise. 'normal' = no blend override (today's output). Attribute shape and control mirror sgs/media's overlayBlendMode."
     }
   },
   "render": "file:./render.php",

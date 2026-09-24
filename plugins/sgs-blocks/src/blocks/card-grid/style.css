@@ -88,6 +88,19 @@
 	background: var(--sgs-card-grid-fallback-bg, var(--wp--preset--color--surface-alt, #F5F7F7));
 }
 
+/* Image overlay (overlayColour/overlayGradient/overlayOpacity/overlayBlendMode,
+   wave B round 2) — a colour or gradient layer between a card's photo and
+   its glyph/title, so light text and a glyph stay legible over the photo.
+   Positioning only: background/opacity/mix-blend-mode arrive per instance
+   from render.php's scoped rule (image-overlay.php) — this element paints
+   nothing on its own, matching the "default off" contract (the <div> is
+   never rendered at all unless a colour or gradient is actually set). */
+.sgs-card-grid__image-overlay {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+}
+
 /* Per-item glyph icon — sits over the photo, or over the fallback tile,
    centred low in the tile (mirrors the "label sits under a small glyph"
    shape common to a "shop by category" tile). Colour/size are one shared
@@ -119,6 +132,17 @@
 	width: 100%;
 	height: 100%;
 	stroke: currentColor;
+}
+
+/* Uploaded IMAGE glyph (items[].glyphImage, wave B round 2) — an alternative
+   to the Lucide icon in the same `.sgs-card-grid__glyph` slot/backdrop
+   above; only the inner fill differs from the SVG rule above (an <img>
+   needs object-fit, not stroke). */
+.sgs-card-grid__glyph--image img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
 }
 
 /* Fallback-only "no glyph set" state — the card title's first letter,

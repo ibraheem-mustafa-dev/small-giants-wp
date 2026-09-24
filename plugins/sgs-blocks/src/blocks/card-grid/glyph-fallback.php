@@ -116,3 +116,35 @@ if ( ! function_exists( 'sgs_card_grid_glyph_css' ) ) {
 		return $root_sel . '{' . $decls . '}';
 	}
 }
+
+if ( ! function_exists( 'sgs_card_grid_glyph_image_html' ) ) {
+	/**
+	 * `.sgs-card-grid__glyph` markup for an uploaded IMAGE glyph
+	 * (`items[].glyphImage`, wave B round 2) — an alternative to the Lucide
+	 * icon slug, in the SAME slot, sized by the same
+	 * `--sgs-card-grid-glyph-size` custom property. Wins over `glyph` when
+	 * set — the caller (render.php) decides which of this or
+	 * sgs_card_grid_glyph_html() to call per item.
+	 *
+	 * An empty alt is a valid, deliberate choice here: the wrapping span is
+	 * already `aria-hidden="true"` (same reasoning as the Lucide glyph
+	 * above — the card's own title already names it), so alt text never
+	 * reaches assistive tech either way.
+	 *
+	 * @param array $glyph_image Item's `glyphImage` value — {url, id, alt}.
+	 *                           Caller has already checked 'url' is non-empty.
+	 * @return string `.sgs-card-grid__glyph` span markup wrapping an `<img>`,
+	 *                or '' when the URL fails to sanitise.
+	 */
+	function sgs_card_grid_glyph_image_html( array $glyph_image ): string {
+		$url = esc_url( (string) ( $glyph_image['url'] ?? '' ) );
+		if ( '' === $url ) {
+			return '';
+		}
+		$alt = isset( $glyph_image['alt'] ) ? (string) $glyph_image['alt'] : '';
+
+		return '<span class="sgs-card-grid__glyph sgs-card-grid__glyph--image" aria-hidden="true">'
+			. '<img src="' . $url . '" alt="' . esc_attr( $alt ) . '" loading="lazy">'
+			. '</span>';
+	}
+}

@@ -46,6 +46,7 @@ $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_t
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
+require_once __DIR__ . '/brand-icons.php';
 
 use SGS\Blocks\Sgs_Site_Info;
 
@@ -147,8 +148,11 @@ $platform_icons = array(
 	'snapchat'  => 'ghost',
 	'telegram'  => 'send',
 	'discord'   => 'message-square',
-	// Lucide ships no Google brand mark; 'star' reads as the review link this
-	// channel actually points at (and matches the captured Indus baseline).
+	// 'star' is the Lucide-only fallback below (reads as the review link this
+	// channel actually points at) — never reached in practice, because
+	// `sgs_social_icons_get_brand_icon()` always resolves 'google' first
+	// (brand-icons.php); kept as the safety net if that map's entry is ever
+	// removed.
 	'google'    => 'star',
 );
 
@@ -549,8 +553,17 @@ foreach ( $icons as $icon_item ) {
 		$custom_icon_alt = $icon_decorative ? '' : sanitize_text_field( $label_raw );
 		$glyph_html      = sprintf( '<img src="%s" alt="%s" width="%d" height="%d" />', esc_url( $custom_url ), esc_attr( $custom_icon_alt ), $icon_size, $icon_size );
 	} else {
-		$icon_name  = $platform_icons[ $platform ] ?? 'link';
-		$glyph_html = sgs_get_lucide_icon( $icon_name );
+		// Brand-mark override (Google/WhatsApp/TikTok/X) — see brand-icons.php
+		// for why these four platforms can't use their Lucide entry as-is.
+		// Every other platform keeps resolving through the Lucide map below,
+		// unchanged.
+		$brand_icon_svg = sgs_social_icons_get_brand_icon( $platform );
+		if ( '' !== $brand_icon_svg ) {
+			$glyph_html = $brand_icon_svg;
+		} else {
+			$icon_name  = $platform_icons[ $platform ] ?? 'link';
+			$glyph_html = sgs_get_lucide_icon( $icon_name );
+		}
 		if ( ! $sgs_social_defs_injected ) {
 			$glyph_html               = sgs_svg_inject_defs( $glyph_html, $sgs_social_stroke_grad['defs'] );
 			$glyph_html               = sgs_svg_inject_defs( $glyph_html, $sgs_social_stroke_grad_hover['defs'] );

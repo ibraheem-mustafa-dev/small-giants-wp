@@ -6496,6 +6496,26 @@
 				"role": "technical"
 			},
 			"_why": "2026-09-24 (Eye Care Wave B). A content/behaviour attribute with no style behind it; the classifier leaves role NULL, so check-element-manifest-conformance counts it UNCLASSIFIED. Role mirrors the block's own sibling attr (attributeTagTaxonomy = technical)."
+		},
+		{
+			"slug": "sgs/card-grid",
+			"attr": "overlayColour",
+			"fields": {
+				"derived_selector": ".sgs-card-grid__image-overlay",
+				"css_property": "background-color",
+				"css_element": "imageOverlay"
+			},
+			"_why": "2026-09-24 (Eye Care Wave B round 2). Painted on .sgs-card-grid__image-overlay by card-grid/image-overlay.php::sgs_card_grid_image_overlay_css() through the shared sgs_overlay_decls() primitive; extract-signatures.py reads only {block}/render.php, so a colour resolved in a sibling helper file is invisible to it. Verified by reading both files."
+		},
+		{
+			"slug": "sgs/card-grid",
+			"attr": "overlayGradient",
+			"fields": {
+				"derived_selector": ".sgs-card-grid__image-overlay",
+				"css_property": "background-image",
+				"css_element": "imageOverlay"
+			},
+			"_why": "2026-09-24 (Eye Care Wave B round 2). Painted on .sgs-card-grid__image-overlay by card-grid/image-overlay.php::sgs_card_grid_image_overlay_css() through the shared sgs_overlay_decls() primitive; extract-signatures.py reads only {block}/render.php, so a colour resolved in a sibling helper file is invisible to it. Verified by reading both files."
 		}
 	]
 }

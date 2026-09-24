@@ -40,6 +40,27 @@ const VARIANT_OPTIONS = [
 	{ label: __( 'Overlay', 'sgs-blocks' ), value: 'overlay' },
 ];
 
+// Image overlay (wave B round 2) — same option list/order as the shared
+// `MediaOverlayControls.js` BLEND_MODE_OPTIONS (sgs/media's overlay atom),
+// hand-mirrored here rather than imported: that component is JSX+opacity+
+// blend-mode all in one, and Spec 35's colours-only-in-SgsColourPanel rule
+// means this block's own overlay colour/gradient live in SgsColourPanel
+// instead, so only the option list is shared, not the component.
+const OVERLAY_BLEND_MODE_OPTIONS = [
+	{ label: __( 'Normal', 'sgs-blocks' ), value: 'normal' },
+	{ label: __( 'Multiply', 'sgs-blocks' ), value: 'multiply' },
+	{ label: __( 'Screen', 'sgs-blocks' ), value: 'screen' },
+	{ label: __( 'Overlay', 'sgs-blocks' ), value: 'overlay' },
+	{ label: __( 'Darken', 'sgs-blocks' ), value: 'darken' },
+	{ label: __( 'Lighten', 'sgs-blocks' ), value: 'lighten' },
+	{ label: __( 'Colour dodge', 'sgs-blocks' ), value: 'color-dodge' },
+	{ label: __( 'Colour burn', 'sgs-blocks' ), value: 'color-burn' },
+	{ label: __( 'Soft light', 'sgs-blocks' ), value: 'soft-light' },
+	{ label: __( 'Hard light', 'sgs-blocks' ), value: 'hard-light' },
+	{ label: __( 'Difference', 'sgs-blocks' ), value: 'difference' },
+	{ label: __( 'Exclusion', 'sgs-blocks' ), value: 'exclusion' },
+];
+
 // D649 — no JSON `enum` reliance in the UI list order matters less than the
 // allow-list itself matching render.php's exactly (mirrors sgs/icon-list).
 const HEADING_LEVEL_OPTIONS = [
@@ -243,6 +264,39 @@ function ItemEditor( { item, index, onChange, onRemove } ) {
 					'sgs-blocks'
 				) }
 			</p>
+			{ /* Uploaded IMAGE glyph (wave B round 2) — an alternative to the
+			   Lucide icon above, in the SAME slot. Reuses the same
+			   MediaPicker component as the card media picker above (never a
+			   second media-picking mechanism), restricted to images since a
+			   glyph is never a video. Wins over the Lucide glyph when set. */ }
+			<div style={ { marginBottom: '8px' } }>
+				<MediaPicker
+					value={ item.glyphImage || null }
+					onChange={ ( media ) =>
+						onChange( {
+							...item,
+							glyphImage: media
+								? { url: media.url, id: media.id, alt: media.alt || '' }
+								: null,
+						} )
+					}
+					onRemove={ () => onChange( { ...item, glyphImage: null } ) }
+					allowedTypes={ [ 'image' ] }
+					label={ __( 'Select an image glyph (optional)', 'sgs-blocks' ) }
+					instructionsImage={ __(
+						'Choose an image (a logo mark, a shape outline, a badge) instead of the Lucide icon above',
+						'sgs-blocks'
+					) }
+				/>
+			</div>
+			{ !! item.glyphImage?.url && (
+				<p style={ { margin: '0 0 8px', fontSize: 12, color: '#757575' } }>
+					{ __(
+						'This image glyph is shown instead of the Lucide icon above.',
+						'sgs-blocks'
+					) }
+				</p>
+			) }
 			<TextControl
 				label={ __( 'Title', 'sgs-blocks' ) }
 				value={ item.title || '' }
@@ -368,6 +422,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		glyphColour,
 		imageFallback,
 		imageFallbackColour,
+		overlayColour,
+		overlayGradient,
+		overlayOpacity,
+		overlayBlendMode,
 	} = attributes;
 
 	// Stable per-item `_key` for CSS scoping (Spec 35 Part 4) — backfilled
@@ -549,6 +607,22 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: imageFallbackColour,
 								onChange: ( val ) => setAttributes( { imageFallbackColour: val ?? '' } ),
 								linked: true,
+							},
+						],
+					},
+					{
+						key: 'imageOverlay',
+						label: __( 'Image overlay', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Colour or gradient', 'sgs-blocks' ),
+								value: overlayColour,
+								onChange: ( val ) => setAttributes( { overlayColour: val ?? '' } ),
+								linked: true,
+								gradientValue: overlayGradient,
+								onGradientChange: ( val ) => setAttributes( { overlayGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -1071,6 +1145,45 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
+				{ /* Image overlay opacity + blend mode (wave B round 2) — the colour/
+				   gradient itself lives in the shared SgsColourPanel mount above
+				   (THE PLACEMENT RULE); these two are not colours, so they stay
+				   here, disabled until an overlay colour or gradient is actually
+				   set (mirrors sgs/media's overlay atom — MediaOverlayControls.js
+				   gates the same two rows the same way). */ }
+				<PanelBody
+					title={ __( 'Image Overlay', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<p style={ { margin: '0 0 8px', fontSize: 12, color: '#757575' } }>
+						{ __(
+							'Set an overlay colour or gradient above (in the Image overlay colour row) to keep light text and a glyph legible over a photo. Only applies over a real photo, never the fallback tile.',
+							'sgs-blocks'
+						) }
+					</p>
+					<RangeControl
+						label={ __( 'Overlay opacity (%)', 'sgs-blocks' ) }
+						value={
+							'number' === typeof overlayOpacity ? overlayOpacity : 100
+						}
+						min={ 0 }
+						max={ 100 }
+						disabled={ ! overlayColour && ! overlayGradient }
+						onChange={ ( val ) => setAttributes( { overlayOpacity: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<SelectControl
+						label={ __( 'Overlay blend mode', 'sgs-blocks' ) }
+						value={ overlayBlendMode || 'normal' }
+						options={ OVERLAY_BLEND_MODE_OPTIONS }
+						disabled={ ! overlayColour && ! overlayGradient }
+						onChange={ ( val ) => setAttributes( { overlayBlendMode: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</PanelBody>
+
 				<PanelBody
 					title={ __( 'Grid Settings', 'sgs-blocks' ) }
 					initialOpen={ false }
@@ -1386,6 +1499,19 @@ export default function Edit( { attributes, setAttributes } ) {
 						// the raw CSS-length string, which `fontSize` accepts
 						// directly.
 						const glyphSizePx = parseInt( glyphSize, 10 ) || 32;
+						// Image overlay preview — same rule as render.php: only over a real
+						// photo, and only when a colour or gradient is set.
+						const overlayPaint = overlayGradient || colourVar( overlayColour );
+						const overlayOpacityValue = '' !== overlayOpacity && null !== overlayOpacity && undefined !== overlayOpacity && ! Number.isNaN( Number( overlayOpacity ) )
+							? Math.max( 0, Math.min( 100, Number( overlayOpacity ) ) ) / 100
+							: undefined;
+						const overlayStyle = hasMedia && overlayPaint
+							? {
+								background: overlayPaint,
+								opacity: overlayOpacityValue,
+								mixBlendMode: overlayBlendMode && 'normal' !== overlayBlendMode ? overlayBlendMode : undefined,
+							}
+							: null;
 						return (
 						<div key={ item._key } className="sgs-card-grid__item">
 							<div className={ wrapClassName } style={ wrapStyle }>
@@ -1411,7 +1537,18 @@ export default function Edit( { attributes, setAttributes } ) {
 								) : (
 									<span className="sgs-card-grid__image-placeholder" />
 								) }
-								{ !! item.glyph ? (
+								{ overlayStyle && (
+									<span className="sgs-card-grid__image-overlay" aria-hidden="true" style={ overlayStyle } />
+								) }
+								{ !! item.glyphImage?.url ? (
+									<span
+										className="sgs-card-grid__glyph sgs-card-grid__glyph--image"
+										aria-hidden="true"
+										style={ { width: glyphSize || '32px', height: glyphSize || '32px' } }
+									>
+										<img src={ item.glyphImage.url } alt="" />
+									</span>
+								) : !! item.glyph ? (
 									<span
 										className="sgs-card-grid__glyph"
 										aria-hidden="true"
