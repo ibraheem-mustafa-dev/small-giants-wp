@@ -357,8 +357,10 @@
 			"default": ""
 		},
 		"gap": {
-			"type": "string",
-			"default": "8px"
+			"type": "object",
+			"default": {
+				"desktop": "8px"
+			}
 		},
 		"listColumns": {
 			"type": "object",

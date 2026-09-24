@@ -37,7 +37,8 @@ if ( ! function_exists( 'sgs_nav_drawer_motion_keyframes' ) ) {
 	 * The keyframe pair and transform origin for one resolved shape.
 	 *
 	 * `auto` follows the drawer's anchor at the same tier: `header` expands
-	 * down from the header edge, `trigger` scales from its corner, `centred`
+	 * down from the header edge (as does `container`), a side panel slides in
+	 * from its own edge, `trigger` scales from its corner, `centred`
 	 * scales up like a modal, and `full-screen` keeps the -8px nudge.
 	 *
 	 * @param string $shape  A value from sgs_nav_drawer_motion_shapes().
@@ -47,9 +48,12 @@ if ( ! function_exists( 'sgs_nav_drawer_motion_keyframes' ) ) {
 	function sgs_nav_drawer_motion_keyframes( string $shape, string $anchor ): array {
 		if ( 'auto' === $shape ) {
 			$auto  = array(
-				'header'  => 'expand-down',
-				'trigger' => 'corner-scale',
-				'centred' => 'modal-scale',
+				'header'     => 'expand-down',
+				'container'  => 'expand-down',
+				'side-start' => 'slide-start',
+				'side-end'   => 'slide-end',
+				'trigger'    => 'corner-scale',
+				'centred'    => 'modal-scale',
 			);
 			$shape = $auto[ $anchor ] ?? 'nudge';
 		}

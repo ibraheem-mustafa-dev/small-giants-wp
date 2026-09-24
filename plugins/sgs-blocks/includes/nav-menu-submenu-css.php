@@ -205,7 +205,41 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		 * pill's own left and width, flush to its bottom edge with no gap. So
 		 * "follow the header" is the single rule that reproduces all of them.
 		 */
-		$css .= $uid_sel . ' .' . $bem_root . '__mega-panel-wrap{position:absolute;top:var(--sgs-mm-panel-top, 100%);left:var(--sgs-mm-overflow-left, 50%);right:var(--sgs-mm-overflow-right, auto);transform:translateX(var(--sgs-mm-tx, -50%));width:var(--sgs-mm-panel-width, min(1120px, calc(100vw - 56px)));max-height:var(--sgs-mm-panel-max-h, calc(100dvh - var(--sgs-header-height, 80px) - 16px));overflow-y:auto;overscroll-behavior:contain;z-index:100;display:none;}';
+		/*
+		 * TOP EDGE, both kinds (Spec 36 FR-36-4 "Gap below the header", Spec 41
+		 * FR-41-11): mega-disclosure.js::repositionPanel publishes the header's
+		 * bottom as --sgs-mm-panel-top (a pill publishes its own bottom), and
+		 * `submenuTopOffset` is the gap below it. Empty offset: no gap.
+		 */
+		$sgs_nm_top_offset = sgs_css_length_value( $attributes['submenuTopOffset'] ?? '' );
+		$sgs_nm_panel_top  = '' !== $sgs_nm_top_offset
+			? 'calc(var(--sgs-mm-panel-top, 100%) + ' . $sgs_nm_top_offset . ')'
+			: 'var(--sgs-mm-panel-top, 100%)';
+
+		/*
+		 * MEGA PLACEMENT per tier (`megaAlign`, Spec 36 FR-36-4 "Panel
+		 * placement"), written as a keyword custom-property VALUE the browser
+		 * resolves per tier; repositionPanel reads it on each open. Unset leaves
+		 * the script's `page-centred` default.
+		 */
+		$sgs_nm_mega_align = $attributes['megaAlign'] ?? null;
+		if ( is_array( $sgs_nm_mega_align ) && ! empty( $sgs_nm_mega_align ) && function_exists( 'sgs_emit_responsive_css' ) ) {
+			$css .= sgs_emit_responsive_css(
+				$uid_sel,
+				array(
+					array(
+						'value'     => $sgs_nm_mega_align,
+						'css'       => '--sgs-nbm-mega-align',
+						'transform' => static function ( $raw ) {
+							$raw = (string) $raw;
+							return in_array( $raw, array( 'start', 'center', 'end', 'page-centred', 'full-width' ), true ) ? $raw : '';
+						},
+					),
+				)
+			);
+		}
+
+		$css .= $uid_sel . ' .' . $bem_root . '__mega-panel-wrap{position:absolute;top:' . $sgs_nm_panel_top . ';left:var(--sgs-mm-overflow-left, 50%);right:var(--sgs-mm-overflow-right, auto);transform:translateX(var(--sgs-mm-tx, -50%));width:var(--sgs-mm-panel-width, min(1120px, calc(100vw - 56px)));max-height:var(--sgs-mm-panel-max-h, calc(100dvh - var(--sgs-header-height, 80px) - 16px));overflow-y:auto;overscroll-behavior:contain;z-index:100;display:none;}';
 		$css .= $uid_sel . ' .' . $bem_root . '__mega-trigger[aria-expanded="true"] ~ .' . $bem_root . '__mega-panel-wrap{display:block;}';
 		
 		/*
@@ -290,13 +324,8 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		// Same vertical bound as the mega panel above, and for the same reason — see
 		// the VERTICAL BOUND note there. A dropdown is the likelier of the two to run
 		// long, since it has no width:min() forcing a wide multi-column layout.
-		/*
-		 * `submenuTopOffset` (FR-41-11) — emitted as `calc(100% + <offset>)` so the
-		 * `100%` anchor is preserved and only the GAP is operator-owned. Empty
-		 * leaves the plain `100%` anchor.
-		 */
-		$submenu_top_offset = sgs_css_length_value( $attributes['submenuTopOffset'] ?? '' );
-		$submenu_wrap_top   = '' !== $submenu_top_offset ? 'calc(100% + ' . $submenu_top_offset . ')' : '100%';
+		// The dropdown takes the same top edge as the mega panel (see TOP EDGE above).
+		$submenu_wrap_top = $sgs_nm_panel_top;
 
 		/*
 		 * SHADOW — the panel's shadow is `filter:drop-shadow()`, not `box-shadow`.
@@ -313,7 +342,7 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		 * `submenuShadow` is non-empty, so a fresh install ships no shadow until an
 		 * operator opts in.
 		 */
-		$css .= $uid_sel . ' .' . $bem_root . '__submenu-wrap{position:absolute;top:' . $submenu_wrap_top . ';left:var(--sgs-mm-overflow-left, 0);max-height:var(--sgs-mm-panel-max-h, calc(100dvh - var(--sgs-header-height, 80px) - 16px));overflow-y:auto;overscroll-behavior:contain;z-index:100;display:none;border-radius:var(--sgs-nm-submenu-radius, var(--wp--custom--border-radius--medium, 8px));filter:var(--sgs-nm-submenu-filter, none);}';
+		$css .= $uid_sel . ' .' . $bem_root . '__submenu-wrap{position:absolute;top:' . $submenu_wrap_top . ';left:var(--sgs-mm-overflow-left, 0);width:var(--sgs-mm-panel-width, auto);max-height:var(--sgs-mm-panel-max-h, calc(100dvh - var(--sgs-header-height, 80px) - 16px));overflow-y:auto;overscroll-behavior:contain;z-index:100;display:none;border-radius:var(--sgs-nm-submenu-radius, var(--wp--custom--border-radius--medium, 8px));filter:var(--sgs-nm-submenu-filter, none);}';
 
 
 		/*
@@ -333,9 +362,17 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		 * the bridge exists only while the panel is open and can never sit
 		 * invisibly over the bar.
 		 */
-		if ( '' !== $submenu_top_offset ) {
-			$css .= $uid_sel . ' .' . $bem_root . '__submenu-wrap::before{content:"";position:absolute;left:0;right:0;bottom:100%;height:' . $submenu_top_offset . ';pointer-events:auto;}';
-		}
+		/*
+		 * The bridge hangs from the menu item (the disclosure root), not from the
+		 * panel: both wraps scroll (overflow-y:auto), and a scroll box clips any
+		 * pseudo-element drawn outside its own edges, so a bridge on the wrap
+		 * would be clipped away. On the root it is part of the element that owns
+		 * the hover, it survives the panel being reparented to <body>, and it
+		 * exists only while that root's panel is open. repositionPanel publishes
+		 * its height, the panel's top minus the item's bottom.
+		 */
+		$sgs_nm_open_root = ':has([data-sgs-mega-trigger][aria-expanded="true"])';
+		$css             .= $uid_sel . ' .' . $bem_root . '__submenu-root' . $sgs_nm_open_root . '::after,' . $uid_sel . ' .' . $bem_root . '__mega' . $sgs_nm_open_root . '::after{content:"";position:absolute;left:0;right:0;top:100%;height:var(--sgs-mm-bridge-h, 0px);pointer-events:auto;}';
 
 		/*
 		 * LIFT THE WHOLE ITEM while its submenu is open (otherwise a later block such

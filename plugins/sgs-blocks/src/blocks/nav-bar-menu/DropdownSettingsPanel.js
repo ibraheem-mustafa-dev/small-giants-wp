@@ -8,6 +8,7 @@ import {
 	Notice,
 } from '@wordpress/components';
 import { useEntityRecords } from '@wordpress/core-data';
+import { ResponsiveOverride } from '../../components';
 import CreateDrawerControl from './CreateDrawerControl';
 import { DRAWER_POST_TYPE, DRAWER_QUERY } from './create-drawer-seed';
 
@@ -39,11 +40,28 @@ import { DRAWER_POST_TYPE, DRAWER_QUERY } from './create-drawer-seed';
  * @param {number}   root0.drawerRef         The block's `drawerRef` attribute (a `sgs_drawer` post id, or 0).
  * @param {boolean}  root0.drawerNeedsAttention `showDrawerNotice` from useDrawerNotice() — opens the Menu panel section so the picker and the create action are in front of the operator when the burger opens nothing.
  * @param {string}   root0.submenuAlign      The block's `submenuAlign` attribute.
+ * @param {Object}   root0.megaAlign         The block's `megaAlign` attribute (a tier object).
  * @param {boolean}  root0.submenuCaret      The block's `submenuCaret` attribute.
  * @param {number}   root0.submenuCloseGrace The block's `submenuCloseGrace` attribute.
  * @param {number}   root0.submenuIntentDelay The block's `submenuIntentDelay` attribute.
  * @param {string}   root0.submenuOpenOn     The block's `submenuOpenOn` attribute.
  */
+/**
+ * Panel placements lined up with the page (Spec 36 FR-36-4 "Panel placement"),
+ * shared by the dropdown and mega selects.
+ */
+const PAGE_PLACEMENTS = [
+	{ label: __( 'Centred on the page', 'sgs-blocks' ), value: 'page-centred' },
+	{ label: __( 'Full width', 'sgs-blocks' ), value: 'full-width' },
+];
+
+/** Panel placements lined up with the menu item. */
+const ITEM_PLACEMENTS = [
+	{ label: __( 'Left edge of the menu item', 'sgs-blocks' ), value: 'start' },
+	{ label: __( 'Centred under the menu item', 'sgs-blocks' ), value: 'center' },
+	{ label: __( 'Right edge of the menu item', 'sgs-blocks' ), value: 'end' },
+];
+
 export default function DropdownSettingsPanel( {
 	navLabel,
 	itemSmartContrast,
@@ -51,6 +69,7 @@ export default function DropdownSettingsPanel( {
 	drawerRef,
 	drawerNeedsAttention,
 	submenuAlign,
+	megaAlign,
 	submenuCaret,
 	submenuCloseGrace,
 	submenuIntentDelay,
@@ -198,17 +217,41 @@ export default function DropdownSettingsPanel( {
 							),
 							value: 'end',
 						},
+						...PAGE_PLACEMENTS,
 					] }
 					onChange={ ( value ) =>
 						setAttributes( { submenuAlign: value } )
 					}
 					help={ __(
-						'Left is the usual choice — the first item sits closest to where the visitor clicked. If a dropdown would run off the edge of the screen it flips to the other side automatically, whichever option you pick.',
+						'Left is the usual choice: the first item sits closest to where the visitor clicked. If a dropdown would run off the edge of the screen it moves back inside, whichever option you pick.',
 						'sgs-blocks'
 					) }
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>
+				<ResponsiveOverride
+					label={ __( 'Mega panels open from', 'sgs-blocks' ) }
+					value={ megaAlign && typeof megaAlign === 'object' ? megaAlign : {} }
+					onChange={ ( obj ) => setAttributes( { megaAlign: obj } ) }
+				>
+					{ ( { ownValue, effectiveValue, setOwnValue } ) => (
+						<SelectControl
+							label={ __( 'Mega panels open from', 'sgs-blocks' ) }
+							value={ ownValue || effectiveValue || 'page-centred' }
+							options={ [
+								...PAGE_PLACEMENTS,
+								...ITEM_PLACEMENTS,
+							] }
+							onChange={ ( value ) => setOwnValue( value || undefined ) }
+							help={ __(
+								'Centred on the page is the usual choice for a wide panel. Set a different placement per device if needed.',
+								'sgs-blocks'
+							) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
+				</ResponsiveOverride>
 				<ToggleControl
 					label={ __(
 						'Show a small arrow on items that open',

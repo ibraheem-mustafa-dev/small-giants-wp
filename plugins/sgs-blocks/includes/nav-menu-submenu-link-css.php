@@ -564,14 +564,28 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_link_css' ) ) {
 			}
 		}
 
-		// `gap` — the "Item gap" control. Emitted on the BAR (the <ul> whose flex
-		// children ARE the item links), not on the root: the root's
-		// flex children are the bar and the toggle, and §4f swaps those by
-		// display:none at the collapse point, so exactly ONE flex child exists at any
-		// width — and a flex gap between one item paints nothing.
-		$nav_gap = isset( $attributes['gap'] ) ? sgs_css_length_value( (string) $attributes['gap'] ) : '';
-		if ( '' !== $nav_gap ) {
-			$root_box_css .= $uid_sel . ' .' . $bem_root . '__bar{gap:' . $nav_gap . ';}';
+		// `gap` — the "Item gap" control, a tier object. Each tier's value is
+		// written as `--sgs-nm-gap` on the root (the item separator's centring
+		// reads the same variable), and the BAR (the <ul> whose flex children ARE
+		// the item links) takes it, not the root: the root's flex children are
+		// the bar and the toggle, and §4f swaps those by display:none at the
+		// collapse point, so exactly ONE flex child exists at any width — and a
+		// flex gap between one item paints nothing.
+		$nav_gap_raw = $attributes['gap'] ?? null;
+		if ( is_array( $nav_gap_raw ) && ! empty( $nav_gap_raw ) ) {
+			$root_box_css .= sgs_emit_responsive_css(
+				$uid_sel,
+				array(
+					array(
+						'value'     => $nav_gap_raw,
+						'css'       => '--sgs-nm-gap',
+						'transform' => static function ( $raw ) {
+							return sgs_css_length_value( (string) $raw );
+						},
+					),
+				)
+			);
+			$root_box_css .= $uid_sel . ' .' . $bem_root . '__bar{gap:var(--sgs-nm-gap, 8px);}';
 		}
 
 		if ( '' !== $root_box_css ) {

@@ -220,7 +220,7 @@ def page_full_nav(menu_id: int, header_attrs: dict) -> str:
     row = middle_row([
         block("sgs/responsive-logo", {"width": 140, "linkToHome": True}),
         block("sgs/nav-bar-menu", {"ref": menu_id, "navLabel": "QA primary",
-                                   "itemColour": "text", "gap": "28px"}),
+                                   "itemColour": "text", "gap": {"desktop": "28px"}}),
         block("sgs/cart", {}),
         block("sgs/icon", {"iconName": "user", "iconSize": 20, "ariaLabel": "My Account",
                            "linkUrl": "/my-account/"}),
@@ -234,7 +234,7 @@ def page_open_mode(nav_extra: dict):
         row = middle_row([
             block("sgs/responsive-logo", {"width": 140, "linkToHome": True}),
             block("sgs/nav-bar-menu", {"ref": menu_id, "navLabel": "QA primary",
-                                       "itemColour": "text", "gap": "28px", **nav_extra}),
+                                       "itemColour": "text", "gap": {"desktop": "28px"}, **nav_extra}),
         ])
         return "\n\n".join([site_header(header_attrs, [row]), drawer(menu_id), body_filler()])
     return build
@@ -257,7 +257,7 @@ def page_hover_parity(menu_id: int, header_attrs: dict) -> str:
     row = middle_row([
         block("sgs/responsive-logo", {"width": 140, "linkToHome": True}),
         block("sgs/nav-bar-menu", {"ref": menu_id, "navLabel": "QA hover parity",
-                                   "itemColour": "text", "gap": "28px",
+                                   "itemColour": "text", "gap": {"desktop": "28px"},
                                    "itemBorderWidth": {"bottom": "2px"},
                                    "itemBorderStyle": "solid",
                                    "itemBorderColour": "transparent",

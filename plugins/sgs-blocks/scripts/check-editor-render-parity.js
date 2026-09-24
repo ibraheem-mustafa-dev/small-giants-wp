@@ -779,7 +779,10 @@ const EDITOR_INVISIBLE_BY_DESIGN = new Set( [
 	// entryEasing, entryEasingCustom, entryFade, curtainColour, itemStagger*,
 	// scrimFadeDuration; sgs/nav-bar-menu submenuAnimationDuration,
 	// submenuExitDuration, submenuAnimationEasing*, submenuItemStagger* —
-	// only observable while a drawer or panel opens or closes).
+	// only observable while a drawer or panel opens or closes), and
+	// sgs/nav-drawer anchorOffset (the gap between the open panel and the live
+	// burger or header it hangs from; the canvas previews the drawer as a
+	// stand-alone card with neither, so the gap has no counterpart there).
 	//
 	// (b) GSAP ScrollTrigger / transition CONFIG whose css_property resolves
 	// to a namespaced motion key (`fx:*`) or a real CSS property that is
@@ -822,6 +825,7 @@ const EDITOR_INVISIBLE_BY_DESIGN = new Set( [
 	'itemStaggerMax',
 	'itemStaggerOnClose',
 	'scrimFadeDuration',
+	'anchorOffset',
 	'submenuAnimationDuration',
 	'submenuExitDuration',
 	'submenuAnimationEasing',

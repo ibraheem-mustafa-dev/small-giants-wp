@@ -496,8 +496,10 @@
 			"default": ""
 		},
 		"gap": {
-			"type": "string",
-			"default": "8px"
+			"type": "object",
+			"default": {
+				"desktop": "8px"
+			}
 		},
 		"_note_nav_fill": "Nav CONTAINER surface. Scope is deliberately SURFACE ONLY (navBg / navColour and their Hover siblings): border, radius and divider are not offered here because the pill-nav and bordered-nav patterns that justify them are whole-HEADER treatments, and sgs/site-header already declares `color` + `__experimentalBorder` supports for exactly that. Do not add them here without a header-level reason. Defaults are unset, so an untouched nav paints no surface of its own. Because the drawer holds its OWN sgs/nav-drawer-menu instance, that block's identical attributes give fully independent drawer styling with no extra plumbing.",
 		"navBg": {
@@ -729,9 +731,15 @@
 			"enum": [
 				"start",
 				"center",
-				"end"
+				"end",
+				"page-centred",
+				"full-width"
 			],
 			"default": "start"
+		},
+		"megaAlign": {
+			"type": "object",
+			"default": {}
 		},
 		"submenuCaret": {
 			"type": "boolean",

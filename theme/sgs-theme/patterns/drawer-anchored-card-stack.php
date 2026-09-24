@@ -24,7 +24,7 @@
  */
 ?>
 <!-- wp:sgs/nav-drawer {"anchor":{"desktop":"trigger","tablet":"full-screen"},"panelSize":{"desktop":"310px"},"closeStyle":{"desktop":"text-swap"},"drawerAlign":"left"} -->
-<!-- wp:sgs/nav-drawer-menu {"ref":0,"gap":"4px"} /-->
+<!-- wp:sgs/nav-drawer-menu {"ref":0,"gap":{"desktop":"4px"}} /-->
 <!-- wp:sgs/business-info {"displayType":"phone"} /-->
 <!-- wp:sgs/business-info {"displayType":"email"} /-->
 <!-- /wp:sgs/nav-drawer -->

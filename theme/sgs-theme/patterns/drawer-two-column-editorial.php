@@ -24,6 +24,6 @@
  */
 ?>
 <!-- wp:sgs/nav-drawer {"drawerBg":"surface","closeStyle":{"desktop":"text-swap"}} -->
-<!-- wp:sgs/nav-drawer-menu {"ref":0,"gap":"4px","itemFontSize":{"desktop":64,"mobile":40},"listColumns":{"desktop":2,"mobile":1}} /-->
+<!-- wp:sgs/nav-drawer-menu {"ref":0,"gap":{"desktop":"4px"},"itemFontSize":{"desktop":64,"mobile":40},"listColumns":{"desktop":2,"mobile":1}} /-->
 <!-- wp:sgs/business-info {"displayType":"email"} /-->
 <!-- /wp:sgs/nav-drawer -->

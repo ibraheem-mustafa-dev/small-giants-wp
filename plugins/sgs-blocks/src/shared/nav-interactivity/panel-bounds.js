@@ -133,3 +133,62 @@ export function centreMegaLeft( { width, bounds, gutter } ) {
 export function megaPanelWidth( bounds ) {
 	return bounds.floating ? bounds.right - bounds.left : null;
 }
+
+/**
+ * The panel placements shared by both kinds (Spec 36 FR-36-4 "Panel placement").
+ * `start`, `center` and `end` line up with the menu item; `page-centred` centres
+ * in the box; `full-width` takes the box's whole width.
+ */
+export const PANEL_ALIGNS = [ 'start', 'center', 'end', 'page-centred', 'full-width' ];
+
+/**
+ * Left edge for a panel lined up with its menu item, before clamping.
+ *
+ * @param {Object} args             Arguments.
+ * @param {string} args.align       `start`, `center` or `end`.
+ * @param {number} args.anchorLeft  The menu item's left edge.
+ * @param {number} args.anchorWidth The menu item's width.
+ * @param {number} args.width       The panel's width.
+ * @return {number} Left edge.
+ */
+export function itemAlignedLeft( { align, anchorLeft, anchorWidth, width } ) {
+	if ( 'center' === align ) {
+		return anchorLeft + ( anchorWidth - width ) / 2;
+	}
+	if ( 'end' === align ) {
+		return anchorLeft + anchorWidth - width;
+	}
+	return anchorLeft;
+}
+
+/**
+ * Where a panel goes, for either kind: its left edge, and the width it takes
+ * (null keeps its own width). A dropdown keeps its width under every
+ * placement but `full-width`; a mega panel takes the pill's width under a
+ * floating header (megaPanelWidth) and the box's under `full-width`.
+ *
+ * @param {Object}  args             Arguments.
+ * @param {string}  args.align       One of PANEL_ALIGNS.
+ * @param {boolean} args.isDropdown  True for the dropdown kind.
+ * @param {number}  args.anchorLeft  The menu item's left edge.
+ * @param {number}  args.anchorWidth The menu item's width.
+ * @param {number}  args.width       The panel's own measured width.
+ * @param {Object}  args.bounds      Bounding box.
+ * @param {number}  args.gutter      Viewport-edge gutter in px.
+ * @return {{left: number, width: number|null}} Placement.
+ */
+export function placePanel( { align, isDropdown, anchorLeft, anchorWidth, width, bounds, gutter } ) {
+	if ( 'full-width' === align ) {
+		return { left: bounds.left, width: bounds.right - bounds.left };
+	}
+	const boxWidth = isDropdown ? null : megaPanelWidth( bounds );
+	const eff = null !== boxWidth ? boxWidth : width;
+	if ( 'page-centred' === align ) {
+		return { left: centreMegaLeft( { width: eff, bounds, gutter } ), width: boxWidth };
+	}
+	const desired = itemAlignedLeft( { align, anchorLeft, anchorWidth, width: eff } );
+	return {
+		left: clampDropdownLeft( { desiredLeft: desired, width: eff, bounds, gutter } ),
+		width: boxWidth,
+	};
+}

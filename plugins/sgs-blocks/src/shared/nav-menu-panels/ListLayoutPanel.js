@@ -29,7 +29,8 @@ import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
  * separate task.
  *
  * @param {Object}   root0                     Props.
- * @param {string}   root0.gap                 The block's `gap` attribute.
+ * @param {Object}   root0.gap                 The block's `gap` attribute, a tier object
+ *                                             ({ desktop, tablet, mobile }; unset tiers inherit upward).
  * @param {boolean}  root0.showColumnsControl  True on `sgs/nav-drawer-menu`, false on
  *                                             `sgs/nav-bar-menu`.
  * @param {Object}   [root0.listColumns]       The block's `listColumns` attribute — drawer only.
@@ -48,25 +49,43 @@ export default function ListLayoutPanel( {
 			label={ __( 'List layout', 'sgs-blocks' ) }
 			resetAll={ () =>
 				setAttributes( {
-					gap: '8px',
+					gap: { desktop: '8px' },
 					padding: {},
 				} )
 			}
 		>
 			<ToolsPanelItem
-				hasValue={ () => !! gap && gap !== '8px' }
+				hasValue={ () =>
+					!! gap &&
+					typeof gap === 'object' &&
+					Object.entries( gap ).some(
+						( [ tier, value ] ) => !! value && ! ( tier === 'desktop' && value === '8px' )
+					)
+				}
 				label={ __( 'Item gap', 'sgs-blocks' ) }
-				onDeselect={ () => setAttributes( { gap: '8px' } ) }
+				onDeselect={ () => setAttributes( { gap: { desktop: '8px' } } ) }
 				isShownByDefault
 			>
-				<SgsLengthControl
+				<ResponsiveOverride
 					label={ __( 'Item gap', 'sgs-blocks' ) }
-					value={ gap }
-					onChange={ ( val ) =>
-						setAttributes( { gap: val || '8px' } )
-					}
-					presets={ false }
-				/>
+					value={ gap && typeof gap === 'object' ? gap : {} }
+					onChange={ ( obj ) => setAttributes( { gap: obj } ) }
+				>
+					{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+						<SgsLengthControl
+							label={ __( 'Item gap', 'sgs-blocks' ) }
+							hideLabelFromVision
+							help={ __(
+								'Space between menu items at this device. Tablet and mobile follow desktop until set.',
+								'sgs-blocks'
+							) }
+							value={ ownValue || '' }
+							placeholder={ inherited ? effectiveValue : '' }
+							onChange={ ( val ) => setOwnValue( val || undefined ) }
+							presets={ false }
+						/>
+					) }
+				</ResponsiveOverride>
 			</ToolsPanelItem>
 
 			{ showColumnsControl && (

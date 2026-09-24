@@ -369,7 +369,7 @@ if ( is_callable( $sgs_nd_geometry_for_anchor ) ) {
 	ok( false !== strpos( $fs_nonmodal, 'top:var(--sgs-drawer-opener-row-bottom, 0px);' ) && false !== strpos( $fs_nonmodal, 'height:calc(100dvh - var(--sgs-drawer-opener-row-bottom, 0px));' ), 'non-modal full-screen starts at the bottom edge of the burger row and fills the rest of the viewport' );
 	ok( false !== strpos( $fs_nonmodal, $z_popover ), 'non-modal full-screen paints ABOVE the header (lower header rows are covered)' );
 	ok( false !== strpos( $fs_modal, 'inset:0' ) && false !== strpos( $fs_modal, $z_under ) && false === strpos( $fs_modal, 'opener-row-bottom' ), 'NEGATIVE CONTROL: modal full-screen keeps the full-viewport geometry (the checks above can tell the two apart)' );
-	ok( false !== strpos( $sgs_nd_geometry_for_anchor( 'trigger', '', 'non-modal' ), 'var(--sgs-drawer-trigger-top, 16px)' ), 'modality does not change the trigger panel' );
+	ok( $sgs_nd_geometry_for_anchor( 'trigger', '', 'non-modal' ) === $sgs_nd_geometry_for_anchor( 'trigger', '', 'modal' ) && false !== strpos( $sgs_nd_geometry_for_anchor( 'trigger', '', 'modal' ), 'var(--sgs-drawer-trigger-top' ), 'modality does not change the trigger panel' );
 }
 ok( false !== strpos( $current_source, "|| 'non-modal' === \$modality ) {" ), 'a non-modal drawer emits geometry even with no anchor attribute set (its default differs from style.css)' );
 $store_js = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/shared/nav-interactivity/store.js' );
@@ -392,7 +392,7 @@ ok( '' !== $edge_section, 'the default-edge section is found in the CURRENT rend
 $run_edge = function ( array $attributes, string $modality ) use ( $edge_section ): string {
 	$css                    = '';
 	$root_sel               = '.t.wp-block-sgs-nav-drawer';
-	$sgs_nd_allowed_anchors = array( 'full-screen', 'header', 'trigger', 'centred' );
+	$sgs_nd_allowed_anchors = array( 'full-screen', 'header', 'side-start', 'side-end', 'container', 'trigger', 'centred' );
 	$sgs_nd_shadow_raw      = isset( $attributes['shadow'] ) ? (string) $attributes['shadow'] : '';
 	eval( $edge_section ); // phpcs:ignore Squiz.PHP.Eval.Discouraged -- CLI harness evaluating the extracted render.php section.
 	return $css;

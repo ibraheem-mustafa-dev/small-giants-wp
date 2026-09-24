@@ -79,7 +79,7 @@ function run_surface( string $code, array $attributes ): string {
 	$drawer_bg_slug = isset( $attributes['drawerBg'] ) ? sanitize_slug_for_test( $attributes['drawerBg'] ) : 'surface';
 	// The default-edge block of the section reads these, resolved earlier in render.php.
 	$modality               = (string) ( $attributes['modality'] ?? 'modal' );
-	$sgs_nd_allowed_anchors = array( 'full-screen', 'header', 'trigger', 'centred' );
+	$sgs_nd_allowed_anchors = array( 'full-screen', 'header', 'side-start', 'side-end', 'container', 'trigger', 'centred' );
 	$anchor_attr_raw        = $attributes['anchor'] ?? array();
 	eval( $code ); // phpcs:ignore Squiz.PHP.Eval.Discouraged -- CLI harness evaluating the extracted render.php section.
 	return $css;

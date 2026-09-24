@@ -202,7 +202,7 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 			$this->featured_ids = array_map( 'strval', $featured_ids );
 			$this->uid          = $uid;
 			$this->submenu      = array(
-				'align'       => in_array( $submenu['align'] ?? '', array( 'start', 'center', 'end' ), true )
+				'align'       => in_array( $submenu['align'] ?? '', array( 'start', 'center', 'end', 'page-centred', 'full-width' ), true )
 					? (string) $submenu['align']
 					// Fitts's Law + every comparable builder (Bootstrap, Kadence,
 					// Elementor, GenerateBlocks) ships start-aligned nav dropdowns:

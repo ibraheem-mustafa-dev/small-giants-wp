@@ -3322,6 +3322,38 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "submitFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "submit-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "submitFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "submit-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "submitLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "submit-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "submitTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "submit-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "textDecoration",
       "fields": {
         "css_property": "text-decoration"
@@ -6722,6 +6754,15 @@
     },
     {
       "slug": "sgs/nav-drawer",
+      "attr": "anchorOffset",
+      "fields": {
+        "css_property": "top",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
       "attr": "backgroundImage",
       "fields": {
         "css_property": "background-image",
@@ -6796,14 +6837,6 @@
       "attr": "closeLetterSpacing",
       "fields": {
         "css_property": "letter-spacing",
-        "css_element": "close"
-      }
-    },
-    {
-      "slug": "sgs/nav-drawer",
-      "attr": "closeOffset",
-      "fields": {
-        "css_property": "transform",
         "css_element": "close"
       }
     },
@@ -12713,6 +12746,23 @@
     },
     {
       "slug": "sgs/accordion",
+      "attr": "headerFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "header"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "headerFontWeightOpen",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "header",
+        "css_state": "open"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
       "attr": "iconColour",
       "fields": {
         "css_property": "color",
@@ -17973,6 +18023,14 @@
       "attr": "closeFontFamily",
       "fields": {
         "css_property": "font-family",
+        "css_element": "close"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "closeOffset",
+      "fields": {
+        "css_property": "transform",
         "css_element": "close"
       }
     },

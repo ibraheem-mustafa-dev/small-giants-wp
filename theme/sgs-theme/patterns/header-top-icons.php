@@ -32,7 +32,7 @@ $sgs_my_account_url_json = wp_json_encode( esc_url_raw( $sgs_my_account_url ) );
 
 <!-- wp:sgs/site-header-row {"borderWidth":{"bottom":"1px"},"borderStyle":"solid","borderColour":"surface-alt","rowSlot":"middle","justifyContent":"space-between","padding":{"desktop":{"top":"var(--wp--preset--spacing--30)","bottom":"var(--wp--preset--spacing--30)"}}} -->
 <!-- wp:sgs/responsive-logo {"width":300,"linkToHome":true} /-->
-<!-- wp:sgs/nav-bar-menu {"ref":0,"itemColour":"text","gap":"28px"} /-->
+<!-- wp:sgs/nav-bar-menu {"ref":0,"itemColour":"text","gap":{"desktop":"28px"}} /-->
 <!-- /wp:sgs/site-header-row -->
 
 <!-- /wp:sgs/site-header -->

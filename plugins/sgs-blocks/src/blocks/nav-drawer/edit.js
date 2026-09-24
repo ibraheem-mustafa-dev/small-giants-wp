@@ -123,6 +123,17 @@ function paddingFromBox( box ) {
 	return `${ top || '0' } ${ right || '0' } ${ bottom || '0' } ${ left || '0' }`;
 }
 
+/**
+ * Whether the drawer's `anchor` tier object uses any of the given values at any tier.
+ *
+ * @param {Object}   anchor The `anchor` attribute.
+ * @param {string[]} values Anchor values to look for.
+ * @return {boolean} True when some tier is set to one of them.
+ */
+function anchorUses( anchor, values ) {
+	return [ 'desktop', 'tablet', 'mobile' ].some( ( tier ) => values.includes( anchor?.[ tier ] ) );
+}
+
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		drawerRef,
@@ -159,6 +170,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		backgroundPosition,
 		backgroundRepeat,
 		backgroundAttachment,
+		anchorOffset,
 	} = attributes;
 
 	// Desktop-tier anchor drives BOTH the editor preview shell shape and the
@@ -166,7 +178,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// sgs_resolve_tier() performs server-side, kept in sync here so what an
 	// operator sees while editing matches what ships.
 	const anchorDesktop = anchor?.desktop || 'full-screen';
-	const isCompact = anchorDesktop === 'trigger' || anchorDesktop === 'centred';
+	const isCompact = [ 'trigger', 'centred', 'container', 'side-start', 'side-end' ].includes( anchorDesktop );
 	const [ palette ] = useSettings( 'color.palette' );
 
 	// ── Wave 3C U-9/U-11 (§4.9) — the canvas × preview follows the ACTIVE
@@ -316,8 +328,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// hex for a custom colour pick (only a palette-swatch pick stores the
 	// slug) -- colourVar() (slug-only) cannot handle that half;
 	// resolveColourToken() handles both.
-	const compactWidthFallback =
-		anchorDesktop === 'centred' ? '480px' : '360px';
+	const compactWidthFallback = {
+		centred: '480px',
+		'side-start': '400px',
+		'side-end': '400px',
+		container: '100%',
+	}[ anchorDesktop ] || '360px';
 
 	// Editor-only preview state. Deliberately component state and NOT a block
 	// attribute: it must never serialise into saved content. Deliberately NOT
@@ -630,31 +646,32 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							onChange={ ( obj ) => setAttributes( { anchor: obj } ) }
 						>
 							{ ( { ownValue, effectiveValue, setOwnValue } ) => (
-								<ToggleGroupControl
+								<SelectControl
 									hideLabelFromVision
 									label={ __( 'Panel position', 'sgs-blocks' ) }
 									help={ __(
-										'Full screen is the default everywhere. Header, corner and centred are desktop-style variants — set a different position per device, e.g. a corner panel on desktop that becomes full screen on mobile.',
+										'Full screen is the default everywhere. Set a different position per device, e.g. a side panel on tablet and full screen on mobile.',
 										'sgs-blocks'
 									) }
 									value={ ownValue || effectiveValue || 'full-screen' }
+									options={ [
+										{ value: 'full-screen', label: __( 'Full screen', 'sgs-blocks' ) },
+										{ value: 'header', label: __( 'Below the header', 'sgs-blocks' ) },
+										{ value: 'side-start', label: __( 'Side panel from the start edge', 'sgs-blocks' ) },
+										{ value: 'side-end', label: __( 'Side panel from the end edge', 'sgs-blocks' ) },
+										{ value: 'container', label: __( "Lined up with the header's content", 'sgs-blocks' ) },
+										{ value: 'trigger', label: __( 'Corner panel under the menu button', 'sgs-blocks' ) },
+										{ value: 'centred', label: __( 'Centred card', 'sgs-blocks' ) },
+									] }
 									onChange={ ( value ) => setOwnValue( value || undefined ) }
-									isBlock
 									__nextHasNoMarginBottom
 									__next40pxDefaultSize
-								>
-									<ToggleGroupControlOption value="full-screen" label={ __( 'Full screen', 'sgs-blocks' ) } />
-									<ToggleGroupControlOption value="header" label={ __( 'Below header', 'sgs-blocks' ) } />
-									<ToggleGroupControlOption value="trigger" label={ __( 'Corner panel', 'sgs-blocks' ) } />
-									<ToggleGroupControlOption value="centred" label={ __( 'Centred card', 'sgs-blocks' ) } />
-								</ToggleGroupControl>
+								/>
 							) }
 						</ResponsiveOverride>
 					</ToolsPanelItem>
 
-					{ ( anchor?.desktop === 'trigger' || anchor?.desktop === 'centred' ||
-						anchor?.tablet === 'trigger' || anchor?.tablet === 'centred' ||
-						anchor?.mobile === 'trigger' || anchor?.mobile === 'centred' ) && (
+					{ anchorUses( anchor, [ 'trigger', 'centred', 'side-start', 'side-end' ] ) && (
 						<ToolsPanelItem
 							label={ __( 'Panel size', 'sgs-blocks' ) }
 							hasValue={ () => !! panelSize && Object.keys( panelSize ).length > 0 }
@@ -669,7 +686,33 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									<SgsLengthControl
 										label={ __( 'Panel size', 'sgs-blocks' ) }
 										hideLabelFromVision
-										help={ __( 'Maximum width of a corner or centred panel at this device.', 'sgs-blocks' ) }
+										help={ __( 'Maximum width of a side, corner or centred panel at this device.', 'sgs-blocks' ) }
+										value={ ownValue || '' }
+										placeholder={ inherited ? effectiveValue : '' }
+										onChange={ ( value ) => setOwnValue( value || undefined ) }
+										presets={ false }
+									/>
+								) }
+							</ResponsiveOverride>
+						</ToolsPanelItem>
+					) }
+
+					{ anchorUses( anchor, [ 'trigger', 'container' ] ) && (
+						<ToolsPanelItem
+							label={ __( 'Gap above the panel', 'sgs-blocks' ) }
+							hasValue={ () => !! anchorOffset && Object.keys( anchorOffset ).length > 0 }
+							onDeselect={ () => setAttributes( { anchorOffset: {} } ) }
+						>
+							<ResponsiveOverride
+								label={ __( 'Gap above the panel', 'sgs-blocks' ) }
+								value={ anchorOffset }
+								onChange={ ( obj ) => setAttributes( { anchorOffset: obj } ) }
+							>
+								{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+									<SgsLengthControl
+										label={ __( 'Gap above the panel', 'sgs-blocks' ) }
+										hideLabelFromVision
+										help={ __( 'Space between the panel and what it hangs from: the menu button for a corner panel (default 8px), the header for a panel lined up with its content (default 0).', 'sgs-blocks' ) }
 										value={ ownValue || '' }
 										placeholder={ inherited ? effectiveValue : '' }
 										onChange={ ( value ) => setOwnValue( value || undefined ) }

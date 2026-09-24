@@ -164,6 +164,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		burgerMorphEasing,
 		burgerMorphEasingCustom,
 		submenuAlign,
+		megaAlign,
 		submenuCaret,
 		submenuCloseGrace,
 		submenuIntentDelay,
@@ -701,6 +702,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					drawerRef={ drawerRef }
 					drawerNeedsAttention={ showDrawerNotice }
 					submenuAlign={ submenuAlign }
+					megaAlign={ megaAlign }
 					submenuCaret={ submenuCaret }
 					submenuCloseGrace={ submenuCloseGrace }
 					submenuIntentDelay={ submenuIntentDelay }

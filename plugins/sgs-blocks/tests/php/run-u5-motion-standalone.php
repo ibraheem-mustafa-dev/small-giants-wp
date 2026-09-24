@@ -66,7 +66,7 @@ function read_old( string $rel ): string {
 	return str_replace( "\r\n", "\n", (string) $out );
 }
 
-$anchors = array( 'full-screen', 'header', 'trigger', 'centred' );
+$anchors = array( 'full-screen', 'header', 'side-start', 'side-end', 'container', 'trigger', 'centred' );
 
 // ══════════════════════════════════════════════════════════════════════════
 // 1. The shared easing list: one set of values everywhere.

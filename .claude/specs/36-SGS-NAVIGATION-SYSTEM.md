@@ -193,6 +193,16 @@ throughout** (avoids the sticky-hover mobile bug). Mechanics:
   `git grep -n "pointInTriangle\|isHeadingIntoOpenPanel\|scheduleIntentOpen" -- plugins/sgs-blocks/src/shared/nav-interactivity/mega-disclosure.js`.
 - **Outside-click dismiss.** A click outside an open mega/dropdown closes it
   (`mega-disclosure.js` document-level `outsideClickHandler`).
+- **Panel placement.** One vocabulary for both kinds: `start`, `center`, `end` (the item's left edge, centred
+  under it, its right edge), `page-centred` (centred on the page, or on a floating pill) and `full-width` (the
+  page's, or the pill's, whole width). The dropdown kind reads `submenuAlign` (default `start`); the mega kind
+  reads `megaAlign` (a tier object, default `page-centred`), both on
+  `plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json`. `mega-disclosure.js::repositionPanel` places the
+  panel on each open; a dropdown keeps its own width, a mega panel takes the band. Collision clamping is always on.
+- **Gap below the header.** `submenuTopOffset` (Spec 41 FR-41-11) is the gap between the header's bottom edge
+  and the top of either kind of panel. `repositionPanel` publishes the header's bottom (`.sgs-site-header`,
+  else the bar's header row, else nothing and the stylesheet's `100%` holds) as `--sgs-mm-panel-top`; a
+  floating pill publishes its own bottom.
 - **Item hover paint (M-21).** On `sgs/nav-bar-menu` and `sgs/nav-drawer-menu`: `itemOpacity` /
   `itemOpacityHover` set the resting/hover opacity of the top-level item link and its caret (unset emits no
   opacity rule); `submenuOpacity` / `submenuOpacityHover` are the SAME pair for the dropdown/mega/accordion
@@ -266,6 +276,11 @@ DISCLOSURE semantics, never `role="menu"` (FR-36-10), and are block-based CPT po
   `sgs/mega-media-cards-1` (4-column media cards) — under `theme/sgs-theme/patterns/`. They embody the mega
   content-IA best practice (grouping, headings, one-item-per-group, vertical scan, "view all",
   descriptions — research B1/B3/B4/B8/B11).
+- **A panel post takes any blocks.** `sgs/mega-panel` is one preset inside it (link groups plus one side card).
+  Layouts outside that preset are built with structure, never as loose single blocks: `sgs/container` grids
+  set the columns and nested containers hold each group or tile. They ship as starter patterns too:
+  `sgs/mega-links-with-tiles` (link columns beside a row of image tiles, each a container of image, text and
+  button) and `sgs/mega-compact-links` (a 620px link list for a narrow, page-centred panel).
 - **Group headings (informational-only):** every mega panel gets group headings; the
   heading/grouping/one-item-per-group best practice is EMBODIED in the starter layouts but is NOT an
   enforced content contract — a heading-less multi-column panel raises an editor INFORMATIONAL notice
@@ -391,7 +406,22 @@ guarantee.** The `sgs_drawer` post itself is template-locked to one `sgs/nav-dra
 
 **Menu source:** the drawer's `sgs/nav-drawer-menu` has its own `ref` picker (FR-36-1; `ref` 0 resolves
 through the same shared chain as the bar); the inspector shows *which menu is bound* (bar vs drawer).
-**Geometry:** per-device `anchor` (`full-screen` | `header` | `trigger` | `centred`) + `panelSize`.
+**Geometry:** per-device `anchor` (`full-screen` | `header` | `side-start` | `side-end` | `container` |
+`trigger` | `centred`) + `panelSize` + `anchorOffset`, emitted per tier by
+`plugins/sgs-blocks/src/blocks/nav-drawer/render.php::$sgs_nd_geometry_for_anchor`.
+- `side-start` / `side-end`: a full-height edge panel on the inline-start or inline-end side, `panelSize` wide
+  (default 400px, never wider than the viewport). Non-modal, it starts at the burger's own header row and paints
+  above the header, the non-modal full-screen rule.
+- `container`: a panel whose left and right edges line up with the header's content box and whose top is the
+  header's bottom (modal) or the burger's row bottom (non-modal), plus `anchorOffset`.
+  `plugins/sgs-blocks/src/shared/nav-interactivity/store.js` measures the box at open and on every viewport
+  change: the burger's `.sgs-site-header-row`, its `.sgs-container__inner` band when the row renders one, else the
+  row itself, minus the element's inline padding, published as `--sgs-drawer-container-left/-right`. Outside a
+  header row the fallbacks are 16px each side.
+- `trigger`: the panel hangs below the burger by `anchorOffset` (per tier, default 8px); `container` defaults to 0.
+- Every value is consulted by the U-5 motion `auto` map (`side-*` slide from their own edge, `container` expands
+  down) and by the default edge (side panels take a shadow and a 1px primary line on their open edge; `container`,
+  `trigger` and `centred` are cards).
 
 **Submenu.** `sgs/nav-drawer` publishes its `submenuModel` attribute to descendants via block.json
 `providesContext` (`sgs/navDrawerSubmenuModel`), which `sgs/nav-drawer-menu` declares via `usesContext` and

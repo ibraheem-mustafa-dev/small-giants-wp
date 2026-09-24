@@ -24,7 +24,7 @@
  */
 ?>
 <!-- wp:sgs/nav-drawer {"drawerBg":"primary","drawerAlign":"right","closeStyle":{"desktop":"separate-x"}} -->
-<!-- wp:sgs/nav-drawer-menu {"ref":0,"gap":"4px","itemFontWeight":"100"} /-->
+<!-- wp:sgs/nav-drawer-menu {"ref":0,"gap":{"desktop":"4px"},"itemFontWeight":"100"} /-->
 <!-- wp:sgs/social-icons {"source":"site-info"} /-->
 <!-- wp:sgs/business-info {"displayType":"copyright"} /-->
 <!-- /wp:sgs/nav-drawer -->

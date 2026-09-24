@@ -45,9 +45,8 @@ import { store, getContext, getElement } from '@wordpress/interactivity';
 import {
 	boundsFromHeaderRect,
 	viewportBounds,
-	clampDropdownLeft,
-	centreMegaLeft,
-	megaPanelWidth,
+	placePanel,
+	PANEL_ALIGNS,
 } from './panel-bounds';
 
 /** Focusable-elements selector — inlined (see file header). */
@@ -335,11 +334,17 @@ function repositionPanel( root ) {
 		 * rect always overflows, and an edge-pin would glue the panel to the
 		 * item's own left/right edge — visibly off-centre. The panel can only
 		 * ever OPEN with JS (the store flips
-		 * aria-expanded), so JS owns the geometry: centre on the bar, clamp
-		 * with the draft's 28px gutters, and express the result purely as
-		 * CSS-var VALUES relative to the wrap's offsetParent (Spec 32 —
-		 * never a direct style.left write).
+		 * aria-expanded), so JS owns the geometry: place it per the operator's
+		 * alignment, clamp with the draft's 28px gutters, and express the
+		 * result purely as CSS-var VALUES relative to the wrap's offsetParent
+		 * (Spec 32 — never a direct style.left write).
+		 *
+		 * A dropdown sizes to its own content, so a width left over from a
+		 * `full-width` open at another tier is cleared before it is measured.
 		 */
+		if ( root.dataset.sgsNavDisclosure === 'dropdown' ) {
+			panel.style.removeProperty( '--sgs-mm-panel-width' );
+		}
 		const rect = panel.getBoundingClientRect();
 		// Safe-triangle (FR-36-4): reuse this existing measurement as the
 		// snapshot other triggers check their pointer trajectory against —
@@ -397,136 +402,141 @@ function repositionPanel( root ) {
 		/*
 		 * The box everything below is positioned against — the viewport for a
 		 * full-width header, the pill's own box for a floating one. Every
-		 * expression that follows reduces to the shipped arithmetic when this is
-		 * the viewport; `scripts/tests/test-panel-bounds.mjs` proves that on a
-		 * grid of inputs rather than leaving it to a reading.
+		 * expression reduces to the shipped arithmetic when this is the
+		 * viewport; `scripts/tests/test-panel-bounds.mjs` proves that on a grid
+		 * of inputs rather than leaving it to a reading.
 		 */
 		const bounds = panelBounds( root );
-		const panelTop =
-			! isDropdown && bounds.floating && null !== bounds.bottom
-				? bounds.bottom
-				: rect.top;
-		panel.style.setProperty(
-			'--sgs-mm-panel-max-h',
-			`${ Math.max(
-				window.innerHeight - panelTop - GUTTER,
-				MIN_PANEL_MAX_H
-			).toFixed( 2 ) }px`
-		);
 		const parent = panel.offsetParent;
 		if ( ! parent ) {
 			return;
 		}
 		const parentRect = parent.getBoundingClientRect();
-		const gutter = 28;
-		const width = rect.width;
+		const anchor = root.getBoundingClientRect();
 
-		if ( isDropdown ) {
-			/*
-			 * DROPDOWN geometry — aligned to its own TRIGGER, not the viewport.
-			 * Fitts's Law: the most-clicked entry should sit nearest the launch
-			 * point, so `start` is the default and matches what Bootstrap,
-			 * Elementor, GenerateBlocks and Kadence all ship for nav bars.
-			 * (Mega panels stay viewport-centred — a deliberate, different
-			 * choice for a full-width band, not evidence about dropdowns.)
-			 */
-			/*
-			 * Anchor on the whole MENU ITEM (the disclosure root, which wraps
-			 * the link and the toggle together), NOT on `[data-sgs-mega-trigger]`.
-			 *
-			 * Anchoring on the trigger would put the panel to the right of the
-			 * item, because when a parent has its own URL the trigger is the small
-			 * caret BUTTON sitting after the link, not the item itself. Visually a
-			 * dropdown belongs under its menu entry, which is what every
-			 * comparable builder does.
-			 */
-			const anchor = root.getBoundingClientRect();
-			const align = root.dataset.sgsNavSubmenuAlign || 'start';
-			let desired;
-			if ( 'center' === align ) {
-				desired = anchor.left + ( anchor.width - width ) / 2;
-			} else if ( 'end' === align ) {
-				desired = anchor.right - width;
-			} else {
-				desired = anchor.left;
-			}
-			/*
-			 * Collision handling is ALWAYS ON and structural — never a client
-			 * toggle. The operator's alignment is a preference; the framework
-			 * overrides it only where the panel would actually be clipped, which
-			 * is exactly the right-most "Contact"/"Book Now" case. Same name in
-			 * every library: Floating UI flip()+shift(), Radix avoidCollisions
-			 * (default true), Popper under Bootstrap. Note Bootstrap disables
-			 * Popper INSIDE navbars — we deliberately do not; WordPress core's
-			 * Navigation block has no auto-flip either, which is a real gap.
-			 */
-			/*
-			 * A dropdown CLAMPS inside the box and keeps its own width; it does
-			 * not take the box's. ButcherBox measures the distinction on one
-			 * site — mega panel at the bar's full width, plain `<ul>` dropdown
-			 * at 300px, sized to its own menu item.
-			 */
-			desired = clampDropdownLeft( {
-				desiredLeft: desired,
-				width,
-				bounds,
-				gutter,
-			} );
-			panel.style.setProperty( '--sgs-mm-tx', '0px' );
+		/*
+		 * TOP EDGE — the header's bottom, for both kinds (Spec 36 FR-36-4 "Gap
+		 * below the header"; the offset is added in CSS as
+		 * `calc(var(--sgs-mm-panel-top, 100%) + <submenuTopOffset>)`). Every
+		 * reference measures the gap from the header, not from the menu item.
+		 * A floating pill publishes its own bottom; a bar in no header keeps the
+		 * stylesheet's `100%`.
+		 */
+		const headerBottom = panelTopEdge( root, bounds );
+		if ( null !== headerBottom ) {
 			panel.style.setProperty(
-				'--sgs-mm-overflow-left',
-				`${ ( desired - parentRect.left ).toFixed( 2 ) }px`
+				'--sgs-mm-panel-top',
+				`${ ( headerBottom - parentRect.top ).toFixed( 2 ) }px`
 			);
-			activePanelRect = panel.getBoundingClientRect();
-			reparentPanelIfNeeded( root, panel, state.openMegaId );
-			return;
-		}
-		/*
-		 * Centre on the VIEWPORT, not the bar: the bar
-		 * shrink-wraps its items and sits wherever the header row puts it, so
-		 * bar-centred produces lopsided side-space. The
-		 * drafts centre their 1120px band on the header CONTAINER — visually
-		 * the viewport — giving symmetric space; the width clamp
-		 * (min(1120px, 100vw − 2×28px)) guarantees the panel still spans
-		 * beneath every trigger on the bar.
-		 */
-		/*
-		 * Under a FLOATING header the band is not the viewport's — it is the
-		 * pill's. The only reference with a real pill opens its panel at exactly
-		 * the pill's left and width (ratio 1.000 at 1440 and at 390) with no gap
-		 * between the two: the pill and the panel read as one card. So the width
-		 * and the top edge are published as custom-property VALUES here, each
-		 * with the stylesheet's own expression as the var() fallback, which is
-		 * what keeps a full-width header byte-identical: no float, no write, the
-		 * fallback still governs.
-		 */
-		const boundWidth = megaPanelWidth( bounds );
-		if ( null !== boundWidth ) {
-			panel.style.setProperty( '--sgs-mm-panel-width', `${ boundWidth.toFixed( 2 ) }px` );
-			if ( null !== bounds.bottom ) {
-				panel.style.setProperty(
-					'--sgs-mm-panel-top',
-					`${ ( bounds.bottom - parentRect.top ).toFixed( 2 ) }px`
-				);
-			}
 		} else {
-			panel.style.removeProperty( '--sgs-mm-panel-width' );
 			panel.style.removeProperty( '--sgs-mm-panel-top' );
 		}
-		const desired = centreMegaLeft( {
-			width: null !== boundWidth ? boundWidth : width,
+
+		/*
+		 * PLACEMENT — one vocabulary for both kinds (panel-bounds.js::placePanel):
+		 * a dropdown reads `data-sgs-nav-submenu-align` (`submenuAlign`), a mega
+		 * panel reads `--sgs-nbm-mega-align`, the per-tier `megaAlign` written by
+		 * render.php as a custom-property value. Collision clamping is always on
+		 * and structural, never a client toggle: the alignment is a preference,
+		 * overridden only where the panel would actually be clipped.
+		 */
+		const align = isDropdown
+			? root.dataset.sgsNavSubmenuAlign || 'start'
+			: readMegaAlign( root );
+		const placed = placePanel( {
+			align: PANEL_ALIGNS.includes( align ) ? align : ( isDropdown ? 'start' : 'page-centred' ),
+			isDropdown,
+			anchorLeft: anchor.left,
+			anchorWidth: anchor.width,
+			width: rect.width,
 			bounds,
-			gutter,
+			gutter: 28,
 		} );
+		if ( null !== placed.width ) {
+			panel.style.setProperty( '--sgs-mm-panel-width', `${ placed.width.toFixed( 2 ) }px` );
+		} else {
+			panel.style.removeProperty( '--sgs-mm-panel-width' );
+		}
 		panel.style.setProperty( '--sgs-mm-tx', '0px' );
 		panel.style.setProperty(
 			'--sgs-mm-overflow-left',
-			`${ ( desired - parentRect.left ).toFixed( 2 ) }px`
+			`${ ( placed.left - parentRect.left ).toFixed( 2 ) }px`
 		);
-		// Re-snapshot for the safe-triangle now the panel has moved.
-		activePanelRect = panel.getBoundingClientRect();
+
+		/*
+		 * Measured AFTER the moves above, so both values describe where the
+		 * panel now is.
+		 *
+		 * VERTICAL BOUND — the panel's own available height, published as a
+		 * custom-property VALUE (Spec 32; a direct `style.maxHeight` write would
+		 * be a property declaration). MEASURED, never derived from
+		 * `--sgs-header-height`: that is a scroll-padding token that resolves to
+		 * 0 on a non-sticky header (the framework default), so a derived bound
+		 * let the panel overflow the viewport bottom. Asking the panel where its
+		 * top edge is holds for any header, sticky, static, tall, hidden or
+		 * absent. MIN_PANEL_MAX_H keeps an oddly-measured panel usable.
+		 *
+		 * HOVER BRIDGE — the distance from the menu item's bottom to the panel's
+		 * top (the header's bottom padding plus the offset), which the pointer
+		 * crosses over neither element. The disclosure root's `::after` (published
+		 * on the root, the element that owns the hover) takes this height so
+		 * the parent item keeps its hover PAINT across it (Spec 41 FR-41-11);
+		 * openness is the close grace's job, not the bridge's.
+		 */
+		const placedRect = panel.getBoundingClientRect();
+		panel.style.setProperty(
+			'--sgs-mm-panel-max-h',
+			`${ Math.max(
+				window.innerHeight - placedRect.top - GUTTER,
+				MIN_PANEL_MAX_H
+			).toFixed( 2 ) }px`
+		);
+		root.style.setProperty(
+			'--sgs-mm-bridge-h',
+			`${ Math.max( 0, placedRect.top - anchor.bottom ).toFixed( 2 ) }px`
+		);
+		// Re-snapshot for the safe-triangle (FR-36-4) now the panel has moved.
+		activePanelRect = placedRect;
 		reparentPanelIfNeeded( root, panel, state.openMegaId );
 	} );
+}
+
+/**
+ * The top edge a panel hangs from: a floating pill's own bottom, else the
+ * header's bottom, else the bar's header row's bottom, else null (the
+ * stylesheet's `100%` holds).
+ *
+ * @param {HTMLElement} root   The disclosure root.
+ * @param {Object}      bounds The bounding box from panelBounds().
+ * @return {number|null} Viewport y of the edge, or null.
+ */
+function panelTopEdge( root, bounds ) {
+	if ( bounds.floating && null !== bounds.bottom ) {
+		return bounds.bottom;
+	}
+	const host =
+		root.closest( '.sgs-site-header' ) || root.closest( '.sgs-site-header-row' );
+	if ( ! host ) {
+		return null;
+	}
+	const hostRect = host.getBoundingClientRect();
+	return hostRect.height > 0 ? hostRect.bottom : null;
+}
+
+/**
+ * The mega panel's placement at the visitor's current tier: render.php writes
+ * the per-tier `megaAlign` as `--sgs-nbm-mega-align`, so the browser has
+ * already resolved the tier.
+ *
+ * @param {HTMLElement} root The disclosure root.
+ * @return {string} A PANEL_ALIGNS value (unset: `page-centred`).
+ */
+function readMegaAlign( root ) {
+	const value = window
+		.getComputedStyle( root )
+		.getPropertyValue( '--sgs-nbm-mega-align' )
+		.trim();
+	return PANEL_ALIGNS.includes( value ) ? value : 'page-centred';
 }
 
 /**

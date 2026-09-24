@@ -242,10 +242,10 @@ if ( ! function_exists( 'sgs_nav_shared_item_border_css' ) ) {
 		$item_separator_colour    = sgs_colour_value( (string) ( $attributes['itemSeparatorColour'] ?? '' ) );
 		$item_separator_hover     = sgs_colour_value( (string) ( $attributes['itemSeparatorColourHover'] ?? '' ) );
 		$item_separator_treatment = (string) ( $attributes['itemSeparatorHoverTreatment'] ?? 'swap' );
-		$item_separator_gap       = sgs_css_length_value( (string) ( $attributes['gap'] ?? '' ) );
-		if ( '' === $item_separator_gap ) {
-			$item_separator_gap = '8px'; // Matches this block's own `gap` attribute default (block.json) — an unset attribute still centres correctly.
-		}
+		// The item gap is a tier object written per tier as `--sgs-nm-gap`
+		// (nav-menu-submenu-link-css.php), so the separator centres at every
+		// tier; 8px matches the attribute's own default.
+		$item_separator_gap       = 'var(--sgs-nm-gap, 8px)';
 		if ( '' !== $item_separator_width && '' !== $item_separator_colour ) {
 			$item_separator_item_sel = $uid_sel . ' .' . $bem_root . '__bar:not(.' . $bem_root . '__bar--drawer) .' . $bem_root . '__item:not(:first-child)';
 

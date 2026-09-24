@@ -104,6 +104,45 @@ const SCROLL_LOCK_ATTR = 'data-sgs-nav-scroll-y';
  * mode's z-index scale paints it ABOVE the panel (the drawer sits one below the header's `--sgs-header-z`, 100 by default) —
  * an inert element that is still painted on top reads as a dead control.
  */
+/**
+ * The `container` anchor's left and right edges: the header's content box,
+ * measured from the burger's own header row. The row's content band
+ * (`.sgs-container__inner`) when it renders one, otherwise the row itself,
+ * minus the element's inline padding. `right` is taken against
+ * `documentElement.clientWidth`, the width the fixed drawer is laid out
+ * against (see the trigger measurement in the open routine). Published as
+ * custom-property VALUES; removed when there is no row, so render.php's 16px
+ * fallbacks govern. Called on open and on every viewport change.
+ *
+ * @param {HTMLElement}      drawer  The dialog.
+ * @param {HTMLElement|null} trigger The burger that opened it.
+ */
+function publishContainerInsets( drawer, trigger ) {
+	const row = trigger ? trigger.closest( '.sgs-site-header-row' ) : null;
+	const band = row
+		? row.querySelector( ':scope > .sgs-container__inner' ) || row
+		: null;
+	const rect = band ? band.getBoundingClientRect() : null;
+	if ( ! rect || rect.width <= 0 ) {
+		drawer.style.removeProperty( '--sgs-drawer-container-left' );
+		drawer.style.removeProperty( '--sgs-drawer-container-right' );
+		return;
+	}
+	const cs = window.getComputedStyle( band );
+	const left = rect.left + ( parseFloat( cs.paddingLeft ) || 0 );
+	const right =
+		document.documentElement.clientWidth -
+		( rect.right - ( parseFloat( cs.paddingRight ) || 0 ) );
+	drawer.style.setProperty(
+		'--sgs-drawer-container-left',
+		`${ Math.max( 0, Math.round( left ) ) }px`
+	);
+	drawer.style.setProperty(
+		'--sgs-drawer-container-right',
+		`${ Math.max( 0, Math.round( right ) ) }px`
+	);
+}
+
 const HEADER_REGION_SELECTOR =
 	'.wp-block-sgs-site-header, header.wp-block-template-part, body > header';
 
@@ -639,8 +678,8 @@ function openDrawerFor( ctx, trigger ) {
 	 * already run so the scrollbar is settled.
 	 *
 	 * Two deliberate corrections to the naive reading of the rect:
-	 *  - top uses `bottom + 8`, because a panel anchored to a burger hangs BELOW
-	 *    it, not over it.
+	 *  - top is the burger's own `bottom`; the gap the panel hangs below it is
+	 *    the operator's `anchorOffset`, added in render.php's CSS (default 8px).
 	 *  - right is measured from `document.documentElement.clientWidth`, not
 	 *    `window.innerWidth`, because a DOMRect's `.right` is a LEFT-origin
 	 *    coordinate; feeding it straight into the CSS `right` property would push
@@ -671,7 +710,7 @@ function openDrawerFor( ctx, trigger ) {
 	if ( tRect && tRect.width > 0 ) {
 		drawer.style.setProperty(
 			'--sgs-drawer-trigger-top',
-			`${ Math.max( 0, Math.round( tRect.bottom + 8 ) ) }px`
+			`${ Math.max( 0, Math.round( tRect.bottom ) ) }px`
 		);
 		drawer.style.setProperty(
 			'--sgs-drawer-trigger-right',
@@ -696,6 +735,8 @@ function openDrawerFor( ctx, trigger ) {
 	 * when it sits in no site-header row; removed when there is no trigger, so
 	 * render.php's `var(…, 0px)` fallback takes over.
 	 */
+	publishContainerInsets( drawer, trigger );
+
 	const openerRow = trigger
 		? trigger.closest( '.sgs-site-header-row' ) || trigger
 		: null;
@@ -922,6 +963,7 @@ function openDrawerFor( ctx, trigger ) {
 				trigger.focus();
 			}
 			updateSameSlotVars();
+			publishContainerInsets( drawer, trigger );
 		} );
 	};
 	window.addEventListener( 'resize', onViewportChange );

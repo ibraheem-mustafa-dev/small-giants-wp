@@ -19,7 +19,7 @@
 <!-- wp:sgs/site-header-row {"rowSlot":"middle","justifyContent":"space-between"} -->
 <!-- wp:sgs/responsive-logo {"width":180,"linkToHome":true} /-->
 
-<!-- wp:sgs/nav-bar-menu {"ref":0,"itemColour":"text","gap":"28px"} /-->
+<!-- wp:sgs/nav-bar-menu {"ref":0,"itemColour":"text","gap":{"desktop":"28px"}} /-->
 
 <!-- wp:sgs/container {"className":"sgs-header-icons","layout":"flex","flexWrap":"nowrap","contentWidth":{"desktop":"full"}} -->
 <!-- wp:sgs/product-search {"displayMode":"icon","buttonLabel":"Search products"} /-->

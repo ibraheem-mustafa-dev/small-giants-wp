@@ -22,7 +22,7 @@
 <!-- /wp:sgs/site-header-row -->
 
 <!-- wp:sgs/site-header-row {"borderWidth":{"top":"1px"},"borderStyle":"solid","borderColour":"surface-alt","rowSlot":"bottom","justifyContent":"center","padding":{"desktop":{"top":"var(--wp--preset--spacing--20)","bottom":"var(--wp--preset--spacing--20)"}}} -->
-<!-- wp:sgs/nav-bar-menu {"ref":0,"itemColour":"text","gap":"32px"} /-->
+<!-- wp:sgs/nav-bar-menu {"ref":0,"itemColour":"text","gap":{"desktop":"32px"}} /-->
 <!-- /wp:sgs/site-header-row -->
 
 <!-- /wp:sgs/site-header -->

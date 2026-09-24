@@ -35,6 +35,8 @@ const {
 	clampDropdownLeft,
 	centreMegaLeft,
 	megaPanelWidth,
+	placePanel,
+	itemAlignedLeft,
 } = await import(
 	'file:///' + P + '/src/shared/nav-interactivity/panel-bounds.js'
 );
@@ -289,6 +291,69 @@ check(
 			() => GUTTER
 		)
 );
+
+/* ── 6. Panel placement vocabulary (Wave 3C U-8, Spec 36 FR-36-4) ───────── */
+{
+	const vp = viewportBounds( 1440 );
+	const pill = boundsFromHeaderRect( { left: 100, right: 1340, bottom: 90 }, 1440 );
+	const base = { anchorLeft: 600, anchorWidth: 100, width: 300, gutter: GUTTER };
+	// Defaults reproduce the shipped arithmetic exactly.
+	check(
+		'dropdown start = the shipped clamp of the item left edge',
+		placePanel( { ...base, align: 'start', isDropdown: true, bounds: vp } ).left ===
+			shippedDropdownLeft( 600, 300, 1440, GUTTER )
+	);
+	check(
+		'mega page-centred = the shipped viewport centring, stylesheet width kept',
+		( () => {
+			const r = placePanel( { ...base, width: 1120, align: 'page-centred', isDropdown: false, bounds: vp } );
+			return r.left === shippedMegaLeft( 1120, 1440, GUTTER ) && null === r.width;
+		} )()
+	);
+	check(
+		'mega page-centred under a pill takes the pill box (unchanged rule)',
+		( () => {
+			const r = placePanel( { ...base, width: 1120, align: 'page-centred', isDropdown: false, bounds: pill } );
+			return r.left === 100 && r.width === 1240;
+		} )()
+	);
+	// New placements.
+	check(
+		'indus-foods More: a 300px dropdown centred on the page sits at 570',
+		placePanel( { ...base, align: 'page-centred', isDropdown: true, bounds: vp } ).left === 570
+	);
+	check(
+		'away: full-width takes the whole page (left 0, width 1440)',
+		( () => {
+			const r = placePanel( { ...base, align: 'full-width', isDropdown: false, bounds: vp } );
+			return r.left === 0 && r.width === 1440;
+		} )()
+	);
+	check(
+		'full-width under a pill takes the pill width',
+		( () => {
+			const r = placePanel( { ...base, align: 'full-width', isDropdown: true, bounds: pill } );
+			return r.left === 100 && r.width === 1240;
+		} )()
+	);
+	check(
+		'an item-centred mega panel centres on its item, then clamps inside the gutter',
+		placePanel( { ...base, width: 1120, align: 'center', isDropdown: false, bounds: vp } ).left ===
+			clampDropdownLeft( { desiredLeft: 650 - 560, width: 1120, bounds: vp, gutter: GUTTER } )
+	);
+	check(
+		'end lines the panel up with the item right edge',
+		itemAlignedLeft( { align: 'end', anchorLeft: 600, anchorWidth: 100, width: 300 } ) === 400
+	);
+	// NEGATIVE CONTROL: a placement that ignored `align` (always item-start)
+	// lands at the item, not the page centre, so the page-centred case catches it.
+	const ignoresAlign = ( args ) =>
+		clampDropdownLeft( { desiredLeft: args.anchorLeft, width: args.width, bounds: args.bounds, gutter: args.gutter } );
+	check(
+		'[neg control] an align-blind placement is REJECTED (item 600, not page 570)',
+		ignoresAlign( { ...base, bounds: vp } ) !== 570
+	);
+}
 
 console.log(
 	`\n${ passed } passed, ${ failures.length } failed` +

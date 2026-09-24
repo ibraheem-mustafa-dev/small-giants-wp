@@ -1157,12 +1157,15 @@ arrival and item stagger are `sgs/nav-drawer` attributes (Spec 36 "Motion").
 
 ### FR-41-11 — Submenu top offset, and the hover-bridge it requires
 
-The gap between the bar and the dropdown is `top:100%` on `{uid} .sgs-nav-bar-menu__submenu-wrap`.
+Both panel kinds, the dropdown (`.sgs-nav-bar-menu__submenu-wrap`) and the mega panel
+(`.sgs-nav-bar-menu__mega-panel-wrap`), sit at `top: calc(var(--sgs-mm-panel-top, 100%) + <offset>)`.
+`plugins/sgs-blocks/src/shared/nav-interactivity/mega-disclosure.js::repositionPanel` publishes
+`--sgs-mm-panel-top` as the header's bottom edge (Spec 36 FR-36-4 "Gap below the header"), so the gap is
+measured from the header, as every reference measures it.
 
 **`submenuTopOffset`, string, default `""`.** Control: `SgsLengthControl` with `presets={ false }`,
 rendered as a `ToolsPanelItem` in the "Dropdown" `ToolsPanel` beside `submenuMinWidth` and the
-border — byte-identical in shape to those two. Empty renders the plain `top:100%`. Emitted as
-`top: calc(100% + <offset>)` so the `100%` anchor is preserved and only the gap is operator-owned.
+border. Empty means no gap below the header.
 
 ⛔ **A non-zero offset creates a hover dead strip, and that reintroduces the exact bug FR-41-13
 exists to fix. It MUST ship with the bridge below.** The gap between the bar and the panel belongs
@@ -1176,15 +1179,22 @@ It governs **openness** — whether `[aria-expanded="true"] ~ .submenu-wrap{disp
 applies — and never touches CSS `:hover` at all. The panel correctly stays open across the gap; the
 parent's paint would not.
 
-**The fix — a CSS hover-bridge pseudo-element, emitted only when an offset is set:**
+**The fix — a CSS hover-bridge pseudo-element on the open item's disclosure root, sized by the script:**
 
 ```
-{uid} .sgs-nav-bar-menu__submenu-wrap::before {
+{uid} .sgs-nav-bar-menu__submenu-root:has([data-sgs-mega-trigger][aria-expanded="true"])::after,
+{uid} .sgs-nav-bar-menu__mega:has([data-sgs-mega-trigger][aria-expanded="true"])::after {
   content: ""; position: absolute; left: 0; right: 0;
-  bottom: 100%; height: <submenuTopOffset>;
+  top: 100%; height: var(--sgs-mm-bridge-h, 0px);
   pointer-events: auto;
 }
 ```
+
+`repositionPanel` publishes `--sgs-mm-bridge-h` on the root after placing the panel: the panel's top minus the
+item's bottom. That distance is the header's bottom padding plus the offset, so it can be above zero even with
+no offset set. The bridge hangs from the root, never from the panel wrap: both wraps scroll
+(`overflow-y:auto`), and a scroll box clips a pseudo-element drawn outside its own edges. The bridge fixes the
+parent's PAINT only; openness stays with `submenuCloseGrace`.
 
 Four facts that make this safe:
 
@@ -1195,9 +1205,8 @@ Four facts that make this safe:
 3. **A closed panel cannot intercept anything.** The wrap is `display:none` until
    `[aria-expanded="true"]`, and a `display:none` element has no pseudo-elements — so the bridge
    only exists while the panel is open, and never sits invisibly over the bar.
-4. **Bar-only, correctly.** `submenuTopOffset` targets `.sgs-nav-bar-menu__submenu-wrap`, which the
-   drawer block does not render at all (FR-41-1). The drawer's accordion has no offset and no gap,
-   so it needs no bridge.
+4. **Bar-only, correctly.** Both wraps exist only on `sgs/nav-bar-menu`; the drawer block renders
+   neither (FR-41-1). The drawer's accordion has no offset and no gap, so it needs no bridge.
 
 ---
 
