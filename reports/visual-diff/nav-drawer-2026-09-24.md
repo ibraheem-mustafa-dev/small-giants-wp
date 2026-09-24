@@ -47,3 +47,9 @@ Page `/qa-scrim/` (Active header 3777, Active drawer 3778: non-modal, `anchor {t
 | F6 | Empty band where the hidden x was | body `padding-top` 64px with the x `display:none` | body `padding-top` 27.27px (the normal body padding); first link 27px below the panel top; panel 381px tall (was 417) | PASS |
 
 Screenshot: `fb-drawer-after.png` (scratchpad): panel over the header's phone row, burger X on top, no empty band, basket icon plain. Bean's eye owed (R-31-13).
+
+## Close without the × reappearing (commit d3c5ee548, deployed to sandybrown)
+
+| # | Check | Result |
+|---|---|---|
+| F7 | Closing the trigger-mode drawer no longer brings the hidden × and its 64px top row back during the exit animation (the opener-live flag now clears in `onNativeClose`, after the dialog closes) | PASS: Bean tested it in the live window and confirmed the fix. Measured before the close: flag set, × `display:none`, body `padding-top` 27.27px. The per-frame recording of the close itself was not completed (the recorder ran out before the click); Bean's live check closes it |
