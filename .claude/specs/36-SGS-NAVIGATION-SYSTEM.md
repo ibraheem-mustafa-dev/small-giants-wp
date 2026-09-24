@@ -416,7 +416,7 @@ accordion/submenu list in the drawer; a mega item with no nested children still 
 inside the drawer"); the desktop hover-disclosure markup the bar uses for a mega trigger has no touch
 equivalent and needs its own JS-driven build.
 
-**Dialog a11y:** focus INTO on open (the first VISIBLE focusable, `store.js::getFocusable`); Tab contained;
+**Dialog a11y:** focus INTO on open (the first VISIBLE focusable, `plugins/sgs-blocks/src/shared/nav-interactivity/store.js::getFocusable`); Tab contained;
 Escape closes; focus returns to the burger if it is live, else to the first live focusable in the header
 region, never to `<body>`; body-scroll-lock (incl. iOS fix); swipe-close is enhancement-over-the-×; animation
 reduced-motion-gated.
@@ -447,16 +447,21 @@ a burger; a page with no burger keeps byte-identical output.
 #### Modality — `modal` (default) or `non-modal`. BUILT.
 
 The `modality` attribute on `sgs/nav-drawer` chooses. `modal` (default) opens with `showModal()`.
-`non-modal` opens with **`.show()` plus an explicit z-index scale that puts the header ABOVE the drawer
-panel**, with author-managed background inertness (the `inert` attribute, focus containment, Escape and
+`non-modal` opens with **`.show()` plus an explicit z-index scale that keeps the burger row live above or
+beside the drawer**, with author-managed background inertness (the `inert` attribute, focus containment, Escape and
 focus-return all kept exactly as `modal` has them). The `.show()` path lives in
 `plugins/sgs-blocks/src/shared/nav-interactivity/store.js` (`git grep -n "drawer.show()" -- plugins/sgs-blocks/src/shared/nav-interactivity/store.js`).
 
 **Stacking order (M-09).** `sgs/site-header` carries a per-tier `zIndex` object
 (`{desktop,tablet,mobile}`, each a whole number 0 to 99998 or empty to inherit the wider tier; framework
-default 100), written only by `includes/sgs-header-z-index.php`. The drawer and its scrim are kept just
-below the header's own value, so a header needing to sit above the open drawer (the non-modal scale above)
-sets its `zIndex` to at least 4 more than the drawer's. Residual: one reference needs an `auto` z-index value
+default 100), written only by `includes/sgs-header-z-index.php` and published as `--sgs-header-z`. Per
+anchor tier (`plugins/sgs-blocks/src/blocks/nav-drawer/render.php::$sgs_nd_geometry_for_anchor`): a
+`trigger` or `centred` panel, and a NON-MODAL `full-screen` drawer, paint one above the header
+(`--sgs-header-z` + 1), so no lower header row can overlap them; the non-modal full-screen drawer starts at
+the bottom of the burger's own `.sgs-site-header-row` (store.js writes `--sgs-drawer-opener-row-bottom` on
+open), so that row stays visible and live while every lower row is covered, the same rule the trigger
+panel follows. The `header` anchor and a modal full-screen drawer keep the under-header value (a
+`showModal()` dialog is in the top layer and ignores z-index anyway). The scrim stays below the header. Residual: one reference needs an `auto` z-index value
 rather than a number, which the attribute does not yet express and which awaits Bean's acceptance.
 
 **Why non-modal exists — measured.** Live DOM measurement of 15 top-tier reference sites:
@@ -496,6 +501,15 @@ only) + **seven drawer looks as patterns** (`theme/sgs-theme/patterns/drawer-*.p
 declares no variant attribute and registers no block variations) +
 **backdrop-click-to-close in `store('sgs/nav')`** (a `::backdrop` click closes a partial-width panel;
 full-screen is unaffected by construction).
+
+**Default edge.** A drawer that paints above the header gets a visible edge by default so it separates
+from a header of the same colour: the `trigger` and `centred` cards take the theme `floating` shadow, a
+1px solid primary border and 20px corners; a non-modal full-screen drawer takes the shadow and a 1px
+primary line along its top only; a modal full-screen drawer takes none. Emitted per anchor tier before the
+operator's border and radius rules, so any operator border, radius or shadow wins. Where the × hides
+(FR-36-6 `trigger` predicate), its reserved 64px top row is released too (`--sgs-nd-close-room`), and the
+opener-live flag clears only once the dialog has closed, so the × never reappears during the exit
+animation.
 
 **The scrim (Wave 3C U-2, M-14, D1148).** The drawer and the menu bar (`sgs/nav-bar-menu`, for every dropdown and mega panel it opens) carry the shared scrim: `supports.sgs.scrim` plus `scrimColour`, `scrimColourGradient` and per-device `scrimOpacity` and `scrimBlur`, rendered by `includes/helpers-scrim.php::sgs_scrim_render` (tint on `::before`, blur on the element, open state from CSS `:root:has(<open selector>)`, printed at `wp_footer`). Defaults: the drawer is black at 0.55; the bar has none unless set. A click on the scrim closes the surface and is absorbed, so a dismiss never follows a link underneath (lamalama's click-through is an accepted divergence). The same helper serves `sgs/modal`, the `sgs/cart` drawer, the `sgs/gallery` lightbox and `sgs/product-search`; `scripts/scrim/check-scrim.py` fails the build on any dimming block that paints its own. The earlier "NO scrim element, 8/8 references have none" held for the eight drawer-variant references only; M-14's six references show part-width drawers and panels with one. `animateFrom` is `auto|fade` with per-anchor motion defaults.
 - **Design rules (binding):** (1) **the look axis is the LOOK** — a complete-clone preset of internal
@@ -1504,7 +1518,6 @@ store, not this one. So the claim is: **one Site-Info entry is the default sourc
 | **Custom CSS field gap.** The bespoke Custom CSS field in the Advanced tab is a Spec 35A Part F anti-pattern present on every `sgs/*` block. | Framework | Unscheduled |
 | **FR-36-27 shape.** Keep it open for the `triggerStyle` / `triggerSymbol` / `triggerOpenStyle` / cross-block morph-sync shape, or close it as satisfied by Spec 41's narrower `triggerMode` / `triggerIcon` build? | Bean | Unscheduled |
 | **`listColumns` reading order.** Rows-of-2 vs column-wise reading is undecided — the reference capture for that variant failed, so there is no ground truth. | Bean | Unscheduled |
-| **Trigger-anchored drawer.** Measure the burger's real rect at open (the `--sgs-drawer-header-offset` pattern) so a `trigger` anchor follows the burger. | Framework | Unscheduled |
 | **Block-editor `sgs_mega_menu` link search (Phase 3 spike).** Does the block Nav editor surface the CPT in link search? | Framework | Phase 3 |
 | **Partial-width drawer under a hide-on-scroll header.** Needs a published hidden-state signal from Spec 37 (FR-36-9). | Spec 37 owner | Before that combination is built |
 | **Drawer defects proven live:** icon-list text is invisible on the two dark-`footer-bg` drawer variants (`P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER`); `drawerAlign: 'center'` does not centre the menu list (`P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU`). | Framework | Before the drawer variants are re-presented |

@@ -251,8 +251,14 @@ patterns); `closePlacement`, `closeOffset`, `closeRadius` added; the DEC-09 resi
 `burgerMorph`, `burgerMorphDuration`, `burgerMorphEasing`; `itemMagnetStrength`. A Spec 32/35 audit found seven Spec 35
 must-fixes, all fixed before commit. M-36, M-34, M-35, M-40, M-47, M-27 and M-10 move to `covered`. Residue, named:
 wearecollins' two-bar burger belongs to U-6; away's and rabbit's icon swap and indus-foods' 38px × are recorded
-divergences; the `m` hotkey and history-back stay outside the wave (section 2); `axe-run.mjs` with the drawer open and
-the editor round-trip of the new controls are owed.
+divergences; the `m` hotkey and history-back stay outside the wave (section 2). Bean's review then closed seven
+defects, all live-checked: the hidden × releases its top row and stays hidden through the close animation; the
+`trigger` and `centred` cards and a non-modal full-screen drawer (now starting under the burger's own header row) paint
+above the header; drawers above the header default to the `floating` shadow and a 1px primary border (cards also 20px
+corners); the business-info Button style no longer spills out of its row; the gallery lightbox dims to black, closes
+on an outside click and keeps its arrows off the image; the cart's button trigger resets browser button paint (Spec 36
+"Stacking order" and "Default edge"). Batched for one later pass (Bean: no heavy testing per edit): `axe-run.mjs` with
+the drawer open, the editor round-trip of the new controls, and Bean's eye on the gallery arrows.
 
 Sizes are `families-master.json::units[].size` at full scope. Convert per
 `~/.claude/rules/time-estimates.md`: medium 30 to 60 minutes, high 1 to 2 hours, the whole

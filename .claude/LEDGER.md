@@ -85,7 +85,7 @@ IN FULL before touching anything — do not act on this summary.**
   on hover by default). **U-2 CLOSED** (D1148: one shared scrim on drawer, menu bar, modal, cart, gallery and
   product search; one hover-shadow control). Everything is live on sandybrown (deployed 2026-09-24). Owed: live
   check of U-1's edge fade, card lift and submenu opacity; Bean's eye on the three scrim screenshots; forced
-  colours and axe with a scrim open. Test posts 3777/3778 carry the scrim fixture (backups in post meta). **U-9+U-11
+  colours and axe with a scrim open. Test posts 3777/3778 carry the close fixture's `trigger` scenario (non-modal, trigger anchor; backups in post meta). **U-9+U-11
   CLOSED** (D1150: the live-opener × rule, per-tier close control, resize and scroll closes, burger morph, magnet strength).
 - **Wave 4** (proof gate — 11 client clones incl. resn, 10 if the teardown excludes it; Bean's-eye per
   clone; every Spec 38 effect available) — not started.
@@ -96,7 +96,7 @@ U-10+U-14 (one design, council, sign-off, deploy and live check each). Lane A (n
 → U-6+U-7 → U-4 → U-10. Lane B (header behaviours): U-13 → U-14 → U-16, after A passes U-9+U-11. Lane C
 (independent): U-12, U-15, U-17 (`prompts/2026-09-24-wave-3c-lane-c.md`). Each lane edits only its own line below.
 
-- **Lane A:** U-9+U-11 CLOSED (D1150, c36105939; live PASS `reports/visual-diff/nav-drawer-2026-09-24.md`). Bean's feedback fixed live (033b783ad): x row freed, popover anchors above header, gallery dim black + outside-click close, basket button reset. Owed: axe with drawer open, editor round-trip, Bean's eye. Fixture: `scripts/nav-qa/qa-close-fixture.php <trigger|modal|same-slot|restore>`, check on `/qa-scrim/`. Then U-5 (+U-16 unless lane B has it).
+- **Lane A:** U-9+U-11 CLOSED (c36105939; live PASS `reports/visual-diff/nav-drawer-2026-09-24.md` rows 1-11 and F1-F12). Bean's review fixes all live (033b783ad to cb730f520): x row freed and stays hidden while closing; trigger/centred cards and non-modal full-screen (starts under the burger row) paint above the header; default floating shadow + 1px primary border (cards 20px corners); business-info Button no longer spills its row; gallery dims black, closes on outside click, arrows off the image; cart button trigger reset. Batched for one later pass (Bean: no heavy testing per edit): axe with drawer open, editor round-trip, Bean's eye on the gallery arrows. **Next: U-5 (+U-16 unless lane B has it).** Fixture: `scripts/nav-qa/qa-close-fixture.php <trigger|modal|same-slot|restore>` on `/qa-scrim/`.
 - **Lane B:** not started.
 - **Lane C:** not started.
 
