@@ -124,6 +124,78 @@
                 {
                   "iconSource": "lucide",
                   "iconName": "",
+                  "text": "Ray-Ban",
+                  "url": "/sunglasses?brand=Ray-Ban"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Gucci",
+                  "url": "/sunglasses?brand=Gucci"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Oakley",
+                  "url": "/sunglasses?brand=Oakley"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Prada",
+                  "url": "/sunglasses?brand=Prada"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Versace",
+                  "url": "/sunglasses?brand=Versace"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Dolce & Gabbana",
+                  "url": "/sunglasses?brand=Dolce+%26+Gabbana"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Balenciaga",
+                  "url": "/sunglasses?brand=Balenciaga"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Michael Kors",
+                  "url": "/sunglasses?brand=Michael+Kors"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Polaroid",
+                  "url": "/sunglasses?brand=Polaroid"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Police",
+                  "url": "/sunglasses?brand=Police"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Carrera",
+                  "url": "/sunglasses?brand=Carrera"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Ferrari Scuderia",
+                  "url": "/sunglasses?brand=Ferrari+Scuderia"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
                   "text": "Emporio Armani",
                   "url": "/sunglasses?brand=Emporio+Armani"
                 },
@@ -148,8 +220,62 @@
                 {
                   "iconSource": "lucide",
                   "iconName": "",
+                  "text": "Adidas Originals",
+                  "url": "/sunglasses?brand=Adidas+Originals"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Barbour",
+                  "url": "/sunglasses?brand=Barbour"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
                   "text": "Calvin Klein",
                   "url": "/sunglasses?brand=Calvin+Klein"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Chloé",
+                  "url": "/sunglasses?brand=Chlo%C3%A9"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "David Beckham",
+                  "url": "/sunglasses?brand=David+Beckham"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "DKNY",
+                  "url": "/sunglasses?brand=DKNY"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Dsquared2",
+                  "url": "/sunglasses?brand=Dsquared2"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Farah",
+                  "url": "/sunglasses?brand=Farah"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Fila",
+                  "url": "/sunglasses?brand=Fila"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Giorgio Armani",
+                  "url": "/sunglasses?brand=Giorgio+Armani"
                 },
                 {
                   "iconSource": "lucide",
@@ -160,14 +286,80 @@
                 {
                   "iconSource": "lucide",
                   "iconName": "",
+                  "text": "Lipsy",
+                  "url": "/sunglasses?brand=Lipsy"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Marc Jacobs",
+                  "url": "/sunglasses?brand=Marc+Jacobs"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "MaxMara",
+                  "url": "/sunglasses?brand=MaxMara"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Montblanc",
+                  "url": "/sunglasses?brand=Montblanc"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Mulberry",
+                  "url": "/sunglasses?brand=Mulberry"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Nike",
+                  "url": "/sunglasses?brand=Nike"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "O'Neill",
+                  "url": "/sunglasses?brand=O%27Neill"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Radley",
+                  "url": "/sunglasses?brand=Radley"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Superdry",
+                  "url": "/sunglasses?brand=Superdry"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Swarovski",
+                  "url": "/sunglasses?brand=Swarovski"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Tiffany",
+                  "url": "/sunglasses?brand=Tiffany"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
                   "text": "Tommy Hilfiger",
                   "url": "/sunglasses?brand=Tommy+Hilfiger"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
-                  "text": "See all 40 brands",
-                  "url": "/sunglasses"
+                  "text": "Vogue",
+                  "url": "/sunglasses?brand=Vogue"
                 }
               ]
             }

@@ -7,6 +7,9 @@
       "colourScheme": "light",
       "maxWidth": {
         "desktop": "1120px"
+      },
+      "groupGap": {
+        "desktop": "1px"
       }
     },
     "innerBlocks": [
@@ -15,43 +18,129 @@
         "attributes": {},
         "innerBlocks": [
           {
-            "name": "sgs/heading",
+            "name": "sgs/label",
             "attributes": {
-              "level": "h3",
-              "content": "Prescription lenses"
+              "text": "Single vision",
+              "textColour": "text-muted"
             }
           },
           {
-            "name": "sgs/icon-list",
+            "name": "sgs/heading",
             "attributes": {
-              "heading": "",
-              "markerType": "none",
-              "items": [
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Single vision — from £59: distance or reading, tinted to match the frame.",
-                  "url": "/lenses"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Varifocal — from £129: near and far in one lens, no visible line.",
-                  "url": "/lenses"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Polarised — +£40: kills glare off water, roads and windscreens.",
-                  "url": "/lenses"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Light-reactive — +£70: clear indoors, dark outside in under a minute.",
-                  "url": "/lenses"
-                }
-              ]
+              "level": "h3",
+              "content": "from £59"
+            }
+          },
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "Distance or reading, tinted to match the frame."
+            }
+          },
+          {
+            "name": "sgs/button",
+            "attributes": {
+              "label": "View lens options",
+              "url": "/prescription-lenses/"
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/mega-group",
+        "attributes": {},
+        "innerBlocks": [
+          {
+            "name": "sgs/label",
+            "attributes": {
+              "text": "Varifocal",
+              "textColour": "text-muted"
+            }
+          },
+          {
+            "name": "sgs/heading",
+            "attributes": {
+              "level": "h3",
+              "content": "from £129"
+            }
+          },
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "Near and far in one lens, no visible line."
+            }
+          },
+          {
+            "name": "sgs/button",
+            "attributes": {
+              "label": "View lens options",
+              "url": "/prescription-lenses/"
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/mega-group",
+        "attributes": {},
+        "innerBlocks": [
+          {
+            "name": "sgs/label",
+            "attributes": {
+              "text": "Polarised",
+              "textColour": "text-muted"
+            }
+          },
+          {
+            "name": "sgs/heading",
+            "attributes": {
+              "level": "h3",
+              "content": "+£40"
+            }
+          },
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "Kills glare off water, roads and windscreens."
+            }
+          },
+          {
+            "name": "sgs/button",
+            "attributes": {
+              "label": "View lens options",
+              "url": "/prescription-lenses/"
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/mega-group",
+        "attributes": {},
+        "innerBlocks": [
+          {
+            "name": "sgs/label",
+            "attributes": {
+              "text": "Light-reactive",
+              "textColour": "text-muted"
+            }
+          },
+          {
+            "name": "sgs/heading",
+            "attributes": {
+              "level": "h3",
+              "content": "+£70"
+            }
+          },
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "Clear indoors, dark outside in under a minute."
+            }
+          },
+          {
+            "name": "sgs/button",
+            "attributes": {
+              "label": "View lens options",
+              "url": "/prescription-lenses/"
             }
           }
         ]

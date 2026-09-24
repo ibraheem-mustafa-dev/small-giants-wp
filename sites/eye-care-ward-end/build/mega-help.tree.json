@@ -31,19 +31,13 @@
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Delivery & returns",
-                  "url": "/help"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Size guide",
-                  "url": "#modal-size-guide"
+                  "url": "/help/"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Frequently asked questions",
-                  "url": "/help"
+                  "url": "/help/"
                 }
               ]
             }
@@ -71,19 +65,19 @@
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "How lenses work",
-                  "url": "/lenses"
+                  "url": "/prescription-lenses/"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Reading your prescription",
-                  "url": "/help"
+                  "url": "/help/"
                 },
                 {
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Measuring your PD",
-                  "url": "/help"
+                  "url": "/help/"
                 }
               ]
             }
@@ -111,21 +105,29 @@
                   "iconSource": "lucide",
                   "iconName": "",
                   "text": "Contact & visit us",
-                  "url": "/contact"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "0121 729 8233",
-                  "url": "tel:01217298233"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "WhatsApp me",
-                  "url": "https://wa.me/4479605978"
+                  "url": "/contact/"
                 }
               ]
+            }
+          },
+          {
+            "name": "sgs/business-info",
+            "attributes": {
+              "displayType": "phone",
+              "showIcon": true
+            }
+          },
+          {
+            "name": "sgs/social-icons",
+            "attributes": {
+              "source": "site-info",
+              "colourMode": "brand",
+              "iconStyle": "plain",
+              "iconSize": 18,
+              "iconBackground": "surface-alt",
+              "iconBorderColour": "border",
+              "iconGlyphColour": "text",
+              "gap": "10"
             }
           }
         ]
