@@ -257,6 +257,29 @@ so no allow-list edit either. The main thread reads `git diff --stat` after each
 once, commits each agent's directory with its own pathspec, and deploys once. Two agents never
 share `build/`: builds are serialised in the main thread.
 
+**Pairs and lanes (Bean-approved 2026-09-24; supersedes the one-at-a-time order above).**
+Each unit carries a fixed overhead (plan read, design note, council, sign-off, full build,
+deploy, live check, docs), so related units run as ONE pair: one design note, one council,
+one sign-off, one build, one deploy, one live check, one report.
+
+| Pair | Shared concern |
+|---|---|
+| U-9 + U-11 | How a menu closes: dismissal routes plus the close control |
+| U-3 + U-8 | Where a surface sits: drawer anchor and inset, panel anchor and top offset |
+| U-6 + U-7 | New item markup in the same two menu files |
+| U-5 + U-16 | One motion vocabulary (U-16 still needs step 0d first; U-2's scrim fade joins it) |
+| U-10 + U-14 | Header-row structure |
+
+U-4 and U-13 run alone. Three lanes run as separate sessions on disjoint files:
+- **Lane A (nav and drawer):** U-9+U-11, then U-5, then U-3+U-8, then U-6+U-7, then U-4, then U-10.
+- **Lane B (header behaviours):** U-13, then U-14, then U-16. U-14 touches `nav-bar-menu/block.json`,
+  so it runs only when lane A is not mid-edit there. Start lane B after lane A is past U-9+U-11.
+- **Lane C (independent):** U-12, U-15, U-17 (prompt `.claude/prompts/2026-09-24-wave-3c-lane-c.md`).
+
+A pair that spans two lanes (U-5+U-16, U-10+U-14) runs in whichever lane reaches it first;
+the other lane then skips that unit. Sandybrown has one active test header, so lanes take
+turns to deploy and each lane verifies on its own fixture pages.
+
 **Attribute names and defaults are fixed in the unit's design report**, never invented by an
 implementer agent. Check the name does not collide first:
 `sgs-db.py sql "SELECT block_slug FROM block_attributes WHERE attr_name='<name>'"`. Enum
@@ -383,8 +406,9 @@ to the last green commit.
 section 4 records the same. The next session's prompt is written fresh from that line, starts
 with `Invoke /autopilot`, and names the next unit's exit cells.
 
-One unit per checkpoint. Do not start a second nav unit in a session that has an unverified
-deploy.
+One unit, or one approved pair (section 4, "Pairs and lanes"), per checkpoint. Do not start a
+second nav unit or pair in a session that has an unverified deploy. Each lane (A, B, C) writes
+only its own line in `LEDGER.md`, re-read from disk immediately before the edit.
 
 ## 7. Gate 3C, the one definition
 

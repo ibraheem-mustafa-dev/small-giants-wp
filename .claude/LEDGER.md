@@ -26,7 +26,7 @@ done and live-verified. The harness self-tests and the fixture fidelity check ar
 seeded as Menu drawer posts on all three test sites), the Site Info logo tier, the scrolled-state header
 shadow, the floating header pill (blur-based, matching the one true pill among the references), the formal Gate 2
 re-run and the mega + drawer integration probe. Payment icons need no
-framework feature (clients upload official artwork into the trust bar). Wave 3 is partial. Waves 3A (independent fixes) and 3B (a requirements table of 13 references: 46 capability families, signed) are done. Wave 3C is under way; U-1 and U-2 are closed, U-9 is next (detail below, Spec 36+37 merged track section). Waves 4
+framework feature (clients upload official artwork into the trust bar). Wave 3 is partial. Waves 3A (independent fixes) and 3B (a requirements table of 13 references: 46 capability families, signed) are done. Wave 3C is under way; U-1 and U-2 are closed; U-9+U-11 (paired) is in progress in lane A (detail below, Spec 36+37 merged track section). Waves 4
 and 5 have not started.
 
 **Indus Foods** has its own dedicated test site (`lavender-dinosaur-183533.hostingersite.com`,
@@ -143,10 +143,14 @@ IN FULL before touching anything — do not act on this summary.**
   clone; every Spec 38 effect available) — not started.
 - **Wave 5** (clone walker) — not started.
 
-**Next session: U-9** (dismissal routes, modality, trigger semantics, the resize rule DEC-09, `accordionExclusive`
-ENG-02, close-on-scroll DEC-02; families M-36, M-34, M-35, M-40, M-47; plan §4 row 2). Same loop as U-2 (plan §5): design
-note, `/qc-council` (two models via `/delegate`), Bean's sign-off, build, deploy to sandybrown, verify in one
-headed window, report in `reports/visual-diff/`.
+**Pairs and lanes (Bean, 2026-09-24; plan §4 "Pairs and lanes").** Pairs: U-9+U-11, U-3+U-8, U-6+U-7, U-5+U-16,
+U-10+U-14 (one design, council, sign-off, deploy and live check each). Lane A (nav/drawer): U-9+U-11 → U-5 → U-3+U-8
+→ U-6+U-7 → U-4 → U-10. Lane B (header behaviours): U-13 → U-14 → U-16, after A passes U-9+U-11. Lane C
+(independent): U-12, U-15, U-17 (`prompts/2026-09-24-wave-3c-lane-c.md`). Each lane edits only its own line below.
+
+- **Lane A:** U-9+U-11 in progress (M-36, M-34, M-35, M-40, M-47, M-27, M-10); loop step 1 (design note).
+- **Lane B:** not started.
+- **Lane C:** not started.
 
 ### Front E — Spec 45 classless FIELD resolution (open)
 
