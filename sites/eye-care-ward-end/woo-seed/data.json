@@ -1,0 +1,789 @@
+{
+  "IMG": {
+    "a": "https://images.unsplash.com/photo-1572635196237-14b3f281503f",
+    "b": "https://images.unsplash.com/photo-1473496169904-658ba7c44d8a",
+    "c": "https://images.unsplash.com/photo-1508296695146-257a814070b4",
+    "d": "https://images.unsplash.com/photo-1577803645773-f96470509666",
+    "h": "https://images.unsplash.com/photo-1509695507497-903c140c43b0",
+    "v": "https://images.unsplash.com/photo-1511499767150-a48a237f0083",
+    "e": "https://images.unsplash.com/photo-1556306535-0f09a537f0a3",
+    "f": "https://images.unsplash.com/photo-1574258495973-f010dfbb5371"
+  },
+  "COLS": {
+    "blk": [
+      "Black",
+      "#1b1b1b"
+    ],
+    "hav": [
+      "Havana",
+      "#7d5030"
+    ],
+    "gold": [
+      "Gold",
+      "#c6a469"
+    ],
+    "tort": [
+      "Tortoise",
+      "#8a5a2b"
+    ],
+    "gun": [
+      "Gunmetal",
+      "#5d6268"
+    ],
+    "ivory": [
+      "Ivory",
+      "#e8e1d3"
+    ],
+    "rose": [
+      "Rose gold",
+      "#c98f7f"
+    ],
+    "silver": [
+      "Silver",
+      "#b9bcc0"
+    ],
+    "navy": [
+      "Navy",
+      "#2b3550"
+    ],
+    "crys": [
+      "Crystal",
+      "#d9dde0"
+    ],
+    "brown": [
+      "Brown",
+      "#4e3526"
+    ],
+    "red": [
+      "Red",
+      "#8d2b26"
+    ]
+  },
+  "PRODUCTS": [
+    {
+      "id": 1,
+      "brand": "Ray-Ban",
+      "name": "Aviator Classic",
+      "code": "RB3025 · 001/58",
+      "price": 139,
+      "rrp": 171,
+      "img": null,
+      "shape": "Pilot",
+      "colour": "Gold / Green G-15",
+      "gender": "Unisex",
+      "pol": false,
+      "rating": 4.9,
+      "revs": 41,
+      "eye": 58,
+      "bridge": 14,
+      "temple": 135,
+      "mat": "Metal",
+      "hinge": "Standard barrel",
+      "nose": "Adjustable pads",
+      "ftype": "Full rim",
+      "lensCat": 3,
+      "cols": [
+        "gold",
+        "blk",
+        "gun",
+        "silver"
+      ],
+      "alt": "Ray-Ban Aviator sunglasses (placeholder photograph)"
+    },
+    {
+      "id": 2,
+      "brand": "Gucci",
+      "name": "Oversized Cat-Eye",
+      "code": "GG1566S · 001",
+      "price": 289,
+      "rrp": 340,
+      "img": "c",
+      "shape": "Cat-eye",
+      "colour": "Ivory / Brown gradient",
+      "gender": "Women",
+      "pol": false,
+      "rating": 5.0,
+      "revs": 12,
+      "eye": 56,
+      "bridge": 17,
+      "temple": 145,
+      "mat": "Acetate",
+      "hinge": "Standard barrel",
+      "nose": "Moulded bridge",
+      "ftype": "Full rim",
+      "lensCat": 2,
+      "cols": [
+        "ivory",
+        "blk",
+        "hav"
+      ],
+      "alt": "Cat-eye sunglasses (placeholder photograph)"
+    },
+    {
+      "id": 3,
+      "brand": "Oakley",
+      "name": "Holbrook",
+      "code": "OO9102 · 9102E1",
+      "price": 119,
+      "rrp": 146,
+      "img": "b",
+      "shape": "Square",
+      "colour": "Matte black / Prizm",
+      "gender": "Men",
+      "pol": true,
+      "rating": 4.8,
+      "revs": 34,
+      "eye": 55,
+      "bridge": 18,
+      "temple": 137,
+      "mat": "O-Matter",
+      "hinge": "Standard barrel",
+      "nose": "Unobtainium grip",
+      "ftype": "Full rim",
+      "lensCat": 3,
+      "cols": [
+        "blk",
+        "gun",
+        "brown"
+      ],
+      "alt": "Square sunglasses on sand (placeholder photograph)"
+    },
+    {
+      "id": 4,
+      "brand": "Prada",
+      "name": "Symbole",
+      "code": "PR 17WS · 1AB5S0",
+      "price": 239,
+      "rrp": 296,
+      "img": null,
+      "shape": "Cat-eye",
+      "colour": "White / Dark grey",
+      "gender": "Women",
+      "pol": false,
+      "rating": 4.9,
+      "revs": 19,
+      "eye": 51,
+      "bridge": 19,
+      "temple": 140,
+      "mat": "Acetate",
+      "hinge": "Sprung",
+      "nose": "Moulded bridge",
+      "ftype": "Full rim",
+      "lensCat": 3,
+      "cols": [
+        "ivory",
+        "blk",
+        "hav"
+      ],
+      "alt": "White sunglasses on a case (placeholder photograph)"
+    },
+    {
+      "id": 5,
+      "brand": "Ray-Ban",
+      "name": "Original Wayfarer",
+      "code": "RB2140 · 901",
+      "price": 129,
+      "rrp": 159,
+      "img": "a",
+      "shape": "Wayfarer",
+      "colour": "Black / Green G-15",
+      "gender": "Unisex",
+      "pol": false,
+      "rating": 4.9,
+      "revs": 58,
+      "eye": 50,
+      "bridge": 22,
+      "temple": 150,
+      "mat": "Acetate",
+      "hinge": "Standard barrel",
+      "nose": "Moulded bridge",
+      "ftype": "Full rim",
+      "lensCat": 3,
+      "cols": [
+        "blk",
+        "hav",
+        "tort",
+        "crys",
+        "navy",
+        "gold"
+      ],
+      "alt": "Ray-Ban Wayfarer sunglasses (placeholder photograph)"
+    },
+    {
+      "id": 6,
+      "brand": "Ray-Ban",
+      "name": "Round Metal",
+      "code": "RB3447 · 001",
+      "price": 135,
+      "rrp": 164,
+      "img": "v",
+      "shape": "Round",
+      "colour": "Gold / Green G-15",
+      "gender": "Unisex",
+      "pol": false,
+      "rating": 4.7,
+      "revs": 23,
+      "eye": 50,
+      "bridge": 21,
+      "temple": 145,
+      "mat": "Metal",
+      "hinge": "Standard barrel",
+      "nose": "Adjustable pads",
+      "ftype": "Full rim",
+      "lensCat": 3,
+      "cols": [
+        "gold",
+        "gun",
+        "silver"
+      ],
+      "alt": "Round metal sunglasses on marble (placeholder photograph)"
+    },
+    {
+      "id": 7,
+      "brand": "Versace",
+      "name": "Medusa Biggie",
+      "code": "VE4361 · GB1/87",
+      "price": 199,
+      "rrp": 246,
+      "img": null,
+      "shape": "Round",
+      "colour": "Black / Gold",
+      "gender": "Unisex",
+      "pol": false,
+      "rating": 4.8,
+      "revs": 15,
+      "eye": 53,
+      "bridge": 18,
+      "temple": 140,
+      "mat": "Metal",
+      "hinge": "Standard barrel",
+      "nose": "Adjustable pads",
+      "ftype": "Full rim",
+      "lensCat": 3,
+      "cols": [
+        "blk",
+        "gold",
+        "hav"
+      ]
+    },
+    {
+      "id": 8,
+      "brand": "Polaroid",
+      "name": "PLD 6003/N",
+      "code": "PLD 6003/N · DL5",
+      "price": 59,
+      "rrp": 75,
+      "img": null,
+      "shape": "Round",
+      "colour": "Havana / Grey",
+      "gender": "Unisex",
+      "pol": true,
+      "rating": 4.6,
+      "revs": 29,
+      "eye": 49,
+      "bridge": 21,
+      "temple": 140,
+      "mat": "Plastic",
+      "hinge": "Standard barrel",
+      "nose": "Moulded bridge",
+      "ftype": "Full rim",
+      "lensCat": 3,
+      "cols": [
+        "hav",
+        "blk"
+      ]
+    },
+    {
+      "id": 9,
+      "brand": "Carrera",
+      "name": "Carrera 1055/S",
+      "code": "1055/S · 003",
+      "price": 109,
+      "rrp": 139,
+      "img": null,
+      "shape": "Pilot",
+      "colour": "Matte black / Grey",
+      "gender": "Men",
+      "pol": false,
+      "rating": 4.7,
+      "revs": 11,
+      "eye": 57,
+      "bridge": 16,
+      "temple": 145,
+      "mat": "Metal",
+      "hinge": "Sprung",
+      "nose": "Adjustable pads",
+      "ftype": "Semi-rimless",
+      "lensCat": 3,
+      "cols": [
+        "blk",
+        "gun",
+        "gold"
+      ]
+    },
+    {
+      "id": 10,
+      "brand": "Ferrari Scuderia",
+      "name": "FZ6001",
+      "code": "FZ6001 · 101",
+      "price": 169,
+      "rrp": 205,
+      "img": null,
+      "shape": "Pilot",
+      "colour": "Black / Red / Grey",
+      "gender": "Men",
+      "pol": false,
+      "rating": 4.8,
+      "revs": 0,
+      "eye": 59,
+      "bridge": 15,
+      "temple": 145,
+      "mat": "Nylon",
+      "hinge": "Sprung",
+      "nose": "Rubber pads",
+      "ftype": "Full rim",
+      "lensCat": 3,
+      "cols": [
+        "blk",
+        "red"
+      ]
+    },
+    {
+      "id": 11,
+      "brand": "Superdry",
+      "name": "SDS Shockwave",
+      "code": "SDS Shockwave · 104",
+      "price": 59,
+      "rrp": 69,
+      "img": null,
+      "shape": "Rectangle",
+      "colour": "Tortoise / Brown",
+      "gender": "Unisex",
+      "pol": false,
+      "rating": 4.5,
+      "revs": 18,
+      "eye": 54,
+      "bridge": 17,
+      "temple": 140,
+      "mat": "Plastic",
+      "hinge": "Standard barrel",
+      "nose": "Moulded bridge",
+      "ftype": "Full rim",
+      "lensCat": 3,
+      "cols": [
+        "tort",
+        "blk",
+        "crys"
+      ]
+    },
+    {
+      "id": 12,
+      "brand": "Balenciaga",
+      "name": "Shield",
+      "code": "BB0095S · 001",
+      "price": 339,
+      "rrp": 400,
+      "img": null,
+      "shape": "Shield",
+      "colour": "Black",
+      "gender": "Women",
+      "pol": false,
+      "rating": 5.0,
+      "revs": 0,
+      "eye": 99,
+      "bridge": 0,
+      "temple": 130,
+      "mat": "Acetate",
+      "hinge": "Standard barrel",
+      "nose": "Moulded bridge",
+      "ftype": "Full rim",
+      "lensCat": 3,
+      "cols": [
+        "blk",
+        "silver"
+      ]
+    },
+    {
+      "id": 13,
+      "brand": "Police",
+      "name": "Lewis 10",
+      "code": "SPL872 · 0700",
+      "price": 99,
+      "rrp": 125,
+      "img": null,
+      "shape": "Pilot",
+      "colour": "Gunmetal / Blue mirror",
+      "gender": "Men",
+      "pol": true,
+      "rating": 4.6,
+      "revs": 14,
+      "eye": 58,
+      "bridge": 15,
+      "temple": 145,
+      "mat": "Metal",
+      "hinge": "Sprung",
+      "nose": "Adjustable pads",
+      "ftype": "Full rim",
+      "lensCat": 3,
+      "cols": [
+        "gun",
+        "blk",
+        "navy"
+      ]
+    },
+    {
+      "id": 14,
+      "brand": "Dolce & Gabbana",
+      "name": "DG4268",
+      "code": "DG4268 · 501/87",
+      "price": 215,
+      "rrp": 265,
+      "img": null,
+      "shape": "Butterfly",
+      "colour": "Black / Grey",
+      "gender": "Women",
+      "pol": false,
+      "rating": 4.9,
+      "revs": 9,
+      "eye": 56,
+      "bridge": 17,
+      "temple": 140,
+      "mat": "Acetate",
+      "hinge": "Standard barrel",
+      "nose": "Moulded bridge",
+      "ftype": "Full rim",
+      "lensCat": 2,
+      "cols": [
+        "blk",
+        "hav",
+        "ivory"
+      ]
+    },
+    {
+      "id": 15,
+      "brand": "Michael Kors",
+      "name": "Chelsea",
+      "code": "MK5004 · 1017R1",
+      "price": 109,
+      "rrp": 139,
+      "img": null,
+      "shape": "Pilot",
+      "colour": "Rose gold / Pink flash",
+      "gender": "Women",
+      "pol": false,
+      "rating": 4.7,
+      "revs": 26,
+      "eye": 56,
+      "bridge": 16,
+      "temple": 135,
+      "mat": "Metal",
+      "hinge": "Standard barrel",
+      "nose": "Adjustable pads",
+      "ftype": "Rimless",
+      "lensCat": 3,
+      "cols": [
+        "rose",
+        "gold",
+        "silver"
+      ]
+    },
+    {
+      "id": 16,
+      "brand": "Emporio Armani",
+      "name": "EA4033",
+      "code": "EA4033 · 5017/81",
+      "price": 115,
+      "rrp": 145,
+      "img": null,
+      "shape": "Oval",
+      "colour": "Black / Grey",
+      "gender": "Men",
+      "pol": true,
+      "rating": 4.6,
+      "revs": 13,
+      "eye": 56,
+      "bridge": 17,
+      "temple": 140,
+      "mat": "Acetate",
+      "hinge": "Sprung",
+      "nose": "Moulded bridge",
+      "ftype": "Full rim",
+      "lensCat": 3,
+      "cols": [
+        "blk",
+        "hav",
+        "navy"
+      ]
+    }
+  ],
+  "STYLE_LIST": [
+    "Pilot",
+    "Wayfarer",
+    "Square",
+    "Rectangle",
+    "Round",
+    "Oval",
+    "Cat-eye",
+    "Butterfly",
+    "Browline",
+    "Geometric",
+    "Shield",
+    "Oversized"
+  ],
+  "MATERIALS": [
+    "Acetate",
+    "Metal",
+    "Plastic",
+    "Nylon",
+    "O-Matter"
+  ],
+  "FTYPES": [
+    "Full rim",
+    "Semi-rimless",
+    "Rimless"
+  ],
+  "HINGES": [
+    "Standard barrel",
+    "Sprung"
+  ],
+  "NOSES": [
+    "Adjustable pads",
+    "Moulded bridge",
+    "Rubber pads",
+    "Unobtainium grip"
+  ],
+  "BRANDS": [
+    [
+      "Ray-Ban",
+      48,
+      1
+    ],
+    [
+      "Gucci",
+      44,
+      1
+    ],
+    [
+      "Oakley",
+      17,
+      1
+    ],
+    [
+      "Prada",
+      12,
+      1
+    ],
+    [
+      "Versace",
+      11,
+      1
+    ],
+    [
+      "Dolce & Gabbana",
+      9,
+      1
+    ],
+    [
+      "Balenciaga",
+      7,
+      1
+    ],
+    [
+      "Michael Kors",
+      18,
+      1
+    ],
+    [
+      "Polaroid",
+      12,
+      1
+    ],
+    [
+      "Police",
+      10,
+      1
+    ],
+    [
+      "Carrera",
+      9,
+      1
+    ],
+    [
+      "Ferrari Scuderia",
+      6,
+      1
+    ],
+    [
+      "Emporio Armani",
+      22,
+      0
+    ],
+    [
+      "Coach",
+      18,
+      0
+    ],
+    [
+      "Ralph Lauren",
+      16,
+      0
+    ],
+    [
+      "Diesel",
+      14,
+      0
+    ],
+    [
+      "Adidas Originals",
+      4,
+      0
+    ],
+    [
+      "Barbour",
+      3,
+      0
+    ],
+    [
+      "Calvin Klein",
+      6,
+      0
+    ],
+    [
+      "Chloé",
+      5,
+      0
+    ],
+    [
+      "David Beckham",
+      4,
+      0
+    ],
+    [
+      "DKNY",
+      3,
+      0
+    ],
+    [
+      "Dsquared2",
+      4,
+      0
+    ],
+    [
+      "Farah",
+      2,
+      0
+    ],
+    [
+      "Fila",
+      3,
+      0
+    ],
+    [
+      "Giorgio Armani",
+      5,
+      0
+    ],
+    [
+      "Hugo Boss",
+      6,
+      0
+    ],
+    [
+      "Lipsy",
+      2,
+      0
+    ],
+    [
+      "Marc Jacobs",
+      4,
+      0
+    ],
+    [
+      "MaxMara",
+      3,
+      0
+    ],
+    [
+      "Montblanc",
+      3,
+      0
+    ],
+    [
+      "Mulberry",
+      3,
+      0
+    ],
+    [
+      "Nike",
+      4,
+      0
+    ],
+    [
+      "O'Neill",
+      3,
+      0
+    ],
+    [
+      "Radley",
+      3,
+      0
+    ],
+    [
+      "Superdry",
+      5,
+      0
+    ],
+    [
+      "Swarovski",
+      3,
+      0
+    ],
+    [
+      "Tiffany",
+      3,
+      0
+    ],
+    [
+      "Tommy Hilfiger",
+      5,
+      0
+    ],
+    [
+      "Vogue",
+      6,
+      0
+    ]
+  ],
+  "SHAPES": [
+    [
+      "Pilot",
+      null,
+      "M3 10h30l-5 13a6 6 0 0 1-6 4h-9a6 6 0 0 1-6-4zM49 10h30l-5 13a6 6 0 0 1-6 4h-9a6 6 0 0 1-6-4zM33 14h16M3 10 0 7M79 10l3-3"
+    ],
+    [
+      "Wayfarer",
+      "a",
+      "M3 9h30v17H3zM49 9h30v17H49zM33 15h16M3 9 0 6M79 9l3-3"
+    ],
+    [
+      "Round",
+      "v",
+      "M18 8a9.5 9.5 0 1 0 0 19 9.5 9.5 0 0 0 0-19zM64 8a9.5 9.5 0 1 0 0 19 9.5 9.5 0 0 0 0-19zM27.5 15h27M8.5 9.5 5 6.5M73.5 9.5 77 6.5"
+    ],
+    [
+      "Cat-eye",
+      "c",
+      "M3 12c7-4 24-5 30-1l-4 11a6 6 0 0 1-6 4h-9a6 6 0 0 1-6-4zM49 11c6-4 23-3 30 1l-5 10a6 6 0 0 1-6 4h-9a6 6 0 0 1-6-4zM33 14h16M3 12 0 8M79 12l3-4"
+    ],
+    [
+      "Square",
+      "b",
+      "M3 10h30v16H3zM49 10h30v16H49zM33 16h16M3 10 0 7M79 10l3-3"
+    ],
+    [
+      "Oversized",
+      null,
+      "M2 9h32v18H2zM48 9h32v18H48zM34 16h14M2 9 0 6M80 9l2-3"
+    ]
+  ]
+}
