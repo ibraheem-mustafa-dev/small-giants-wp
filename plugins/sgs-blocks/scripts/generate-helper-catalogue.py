@@ -8,7 +8,7 @@ Sibling to generate-tooling-catalogue.py, same philosophy: a hand-maintained
 roster of PHP helper functions and JS components is a copy that rots the moment
 a new helper is added and nobody remembers to write it down, and an existing
 helper nobody knows about gets rebuilt from scratch (see
-plugins/sgs-blocks/CLAUDE.md's "Known precedent-function registry"). The
+.claude/rules/colour-emission.md's "Known precedent-function registry"). The
 tooling catalogue covers CHECKER/MIGRATION SCRIPTS; this generator covers the other half of the
 "what already exists" question — the PHP helper FUNCTIONS in
 plugins/sgs-blocks/includes/helpers-*.php and the JS components/atoms in

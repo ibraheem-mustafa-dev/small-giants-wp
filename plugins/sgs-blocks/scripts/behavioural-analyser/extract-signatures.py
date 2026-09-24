@@ -1911,7 +1911,7 @@ def _attrs_from_value_composer_calls(
 
 
 # ── Shape G: the documented colour-emission CONFIG-MAP convention ──────────────
-# `plugins/sgs-blocks/CLAUDE.md`'s "Colour EMISSION helpers" section documents a
+# `.claude/rules/colour-emission.md`'s "Colour EMISSION helpers" section documents a
 # closed set of per-mechanism composer functions that all take a `$map` argument
 # of the SAME shape — `['base' => attrName, 'hover' => attrName, 'gradient' =>
 # attrName, 'hover_gradient' => attrName]`, only 'base' required — read directly

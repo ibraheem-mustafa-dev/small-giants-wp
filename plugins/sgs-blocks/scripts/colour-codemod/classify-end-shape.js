@@ -12,7 +12,7 @@
  * instruction after it: stop trying to build a fuzzy auto-fix-vs-subagent
  * classifier. Instead classify each row against the REAL, already-documented
  * catalogue of end-goal shapes (`plugins/sgs-blocks/CLAUDE.md` "Colour
- * EMISSION helpers" + "Known precedent-function registry") so a human or a
+ * EMISSION helpers" + "Known precedent-function registry" in .claude/rules/colour-emission.md) so a human or a
  * subagent knows EXACTLY which shared helper a row should end up calling,
  * before writing a single line of PHP by hand.
  *
@@ -57,7 +57,7 @@ const { resolveMechanismFromCssProperty } = require( '../inspector-scan/core/gol
 const OUT_PATH = path.join( __dirname, 'end-shape-report.json' );
 
 // ---------------------------------------------------------------------------
-// The named end-goal shapes (verbatim from plugins/sgs-blocks/CLAUDE.md's
+// The named end-goal shapes (verbatim from .claude/rules/colour-emission.md's
 // "Colour EMISSION helpers" decision table + "Known precedent-function
 // registry"). Do NOT invent a shape not in that doc — if a row needs one,
 // that's a doc gap to fix first, not something this script should guess at.
@@ -66,7 +66,7 @@ const END_SHAPES = {
 	TEXT_FLAT: {
 		key: 'text-base-hover-flat',
 		helper: 'sgs_text_decls() / sgs_text_states_css()',
-		doc: 'CLAUDE.md "Colour EMISSION helpers" decision table, row 3',
+		doc: '.claude/rules/colour-emission.md "Colour EMISSION helpers" decision table, row 3',
 	},
 	TEXT_GRADIENT: {
 		key: 'text-gradient',
@@ -83,17 +83,17 @@ const END_SHAPES = {
 	FILL_FLAT: {
 		key: 'fill-base-hover-flat',
 		helper: 'sgs_fill_decls() / sgs_fill_states_css()',
-		doc: 'CLAUDE.md "Colour EMISSION helpers" decision table, row 1-2',
+		doc: '.claude/rules/colour-emission.md "Colour EMISSION helpers" decision table, row 1-2',
 	},
 	FILL_CUSTOM_PROPERTY_GRADIENT: {
 		key: 'fill-custom-property-gradient',
 		helper: 'sgs_custom_property_gradient_decls()',
-		doc: 'CLAUDE.md "Known precedent-function registry" — background/border custom-property gradient row',
+		doc: '.claude/rules/colour-emission.md "Known precedent-function registry" — background/border custom-property gradient row',
 	},
 	BORDER_FLAT: {
 		key: 'border-base-hover',
 		helper: 'sgs_border_states_css()',
-		doc: 'CLAUDE.md "Colour EMISSION helpers" decision table, row 4',
+		doc: '.claude/rules/colour-emission.md "Colour EMISSION helpers" decision table, row 4',
 	},
 	BUTTON_AGGREGATE: {
 		key: 'button-aggregate',
@@ -103,17 +103,17 @@ const END_SHAPES = {
 	SVG_PAINT_GRADIENT: {
 		key: 'svg-paint-gradient',
 		helper: 'sgs_svg_stroke_gradient() + sgs_svg_inject_defs()',
-		doc: 'CLAUDE.md "Known precedent-function registry" — SVG paint gradient row',
+		doc: '.claude/rules/colour-emission.md "Known precedent-function registry" — SVG paint gradient row',
 	},
 	ICON_SOURCE_AWARE_GRADIENT: {
 		key: 'icon-source-aware-gradient',
 		helper: 'sgs_icon_gradient_css()',
-		doc: 'CLAUDE.md "Known precedent-function registry" — icon gradient (source-varies) row; picks SVG-stroke for lucide/wp-icon, the text-gradient trio for dashicon/emoji',
+		doc: '.claude/rules/colour-emission.md "Known precedent-function registry" — icon gradient (source-varies) row; picks SVG-stroke for lucide/wp-icon, the text-gradient trio for dashicon/emoji',
 	},
 	PER_ITEM_LOOP: {
 		key: 'per-item-loop',
 		helper: ':nth-child(N)-scoped rule per iteration',
-		doc: 'CLAUDE.md "Known precedent-function registry" — per-item dynamic-loop colour row',
+		doc: '.claude/rules/colour-emission.md "Known precedent-function registry" — per-item dynamic-loop colour row',
 	},
 	BESPOKE_MULTI_VARIANT: {
 		key: 'bespoke-multi-variant',
@@ -125,7 +125,7 @@ const END_SHAPES = {
 		key: 'own-scoped-style-override',
 		helper:
 			"emit into the block's own $scoped_css[] array at its own selector — no new mechanism, source-order beats the compiled stylesheet",
-		doc: 'CLAUDE.md "Known precedent-function registry" — own $root_sel-scoped override row',
+		doc: '.claude/rules/colour-emission.md "Known precedent-function registry" — own $root_sel-scoped override row',
 	},
 	OUTLINE_NOT_GRADIENTABLE: {
 		key: 'outline-not-gradientable',

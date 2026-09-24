@@ -4,7 +4,7 @@
 
 A visual annotation and feedback system. Clients pin comments directly on their website pages. Replaces Atarim and ProjectHuddle with a self-hosted, zero-cost solution.
 
-Full spec: `specs/05-SGS-CLIENT-NOTES.md`
+Full spec: `.claude/specs/05-SGS-CLIENT-NOTES.md`
 
 ## Plugin Structure
 
@@ -59,18 +59,7 @@ Positions stored as percentage offsets (not pixels). Viewport width recorded for
 
 ## Build & Deploy
 
-No npm build step — this plugin is pure PHP + vanilla JS.
-
-```bash
-# Deploy plugin files (run from repo root)
-scp -r plugins/sgs-client-notes/sgs-client-notes.php plugins/sgs-client-notes/uninstall.php plugins/sgs-client-notes/includes plugins/sgs-client-notes/assets plugins/sgs-client-notes/templates hd:~/domains/palestine-lives.org/public_html/wp-content/plugins/sgs-client-notes/
-
-# Clear LiteSpeed cache (wp litespeed-purge is broken on this host)
-ssh hd "rm -rf ~/domains/palestine-lives.org/public_html/wp-content/litespeed/cache/*"
-
-# Reset PHP OPcache after deploying PHP files (CLI reset is a SEPARATE pool — must use HTTP)
-ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.org/public_html/op-reset-tmp.php" && curl -s https://palestine-lives.org/op-reset-tmp.php && ssh hd "rm ~/domains/palestine-lives.org/public_html/op-reset-tmp.php"
-```
+No npm build step — this plugin is pure PHP + vanilla JS. `build-deploy.py` does not package or deploy this plugin (it only covers `sgs-blocks`); deploying this plugin needs its own path added to that script before it can ship.
 
 ## Build Phase
 

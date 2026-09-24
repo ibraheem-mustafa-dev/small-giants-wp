@@ -168,7 +168,7 @@ if ( ! empty( $attributes['textColourHover'] ?? '' ) ) {
 }
 
 // --- Input border colour — base + hover, flat-or-gradient, one owned rule
-// (CLAUDE.md "Colour EMISSION helpers" decision table row 4). Targets the
+// (.claude/rules/colour-emission.md "Colour EMISSION helpers" decision table row 4). Targets the
 // input element directly (css_element='input' per block_attributes DB),
 // out-specifying style.css's `border: 1px solid var(...)` shorthand at
 // (0,2,0) vs (0,1,0). ---

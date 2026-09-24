@@ -127,7 +127,7 @@ $sgs_style_sel = '.' . $sgs_style_uid . '.wp-block-sgs-product-search';
 // rather than a bare custom-property array literal
 // (block_attributes.css_property).
 // inputBorderColour (border-color, css_element=input) routes through
-// sgs_border_states_css() -- CLAUDE.md "Colour EMISSION helpers".
+// sgs_border_states_css() -- .claude/rules/colour-emission.md "Colour EMISSION helpers".
 // focusRingColour (outline-color, css_element=input) is a TERMINAL
 // "outline-not-gradientable" shape (classify-end-shape.js) -- CSS
 // `outline` cannot hold a gradient (no box side to clip a masked ring

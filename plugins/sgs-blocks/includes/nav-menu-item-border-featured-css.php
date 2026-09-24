@@ -421,7 +421,7 @@ if ( ! function_exists( 'sgs_nav_shared_featured_css' ) ) {
 			// `background:var(--sgs-nm-featured-bg,…)` on the SAME selector, so
 			// background-clip:text would clip that background paint too --
 			// textSharesElementWithBackground() precondition failure (see
-			// CLAUDE.md "Colour EMISSION helpers" + submenuColourGradient's block.json
+			// .claude/rules/colour-emission.md "Colour EMISSION helpers" + submenuColourGradient's block.json
 			// note for the identical precedent on this same file's sublink element).
 			// Supporting it needs the submenu featured background moved onto its own
 			// ::after layer (sgs_block_background_layer_css()) first.

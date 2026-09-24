@@ -1,10 +1,14 @@
 # SGS Configurator Pro — Project Instructions
 
+Not built yet; this file describes the planned plugin.
+
+Unrelated to Spec 27 (`.claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md`), which is the WooCommerce variable-product/card-authoring layer. This plugin is a separate paid add-on for 3D/AR product viewing.
+
 ## What This Is
 
 A premium WordPress plugin that adds 3D product configuration with AR to any SGS website. Sold as a paid add-on (annual licence). First client: Snooza Chair by Ophir Solutions.
 
-**S-grade strategic capability** — confirmed 2026-03-20. This is a long-term competitive investment for SGS, not a one-off project.
+This is a long-term competitive investment for SGS, not a one-off project.
 
 ## Architecture
 
@@ -29,7 +33,7 @@ A premium WordPress plugin that adds 3D product configuration with AR to any SGS
 - **Mobile-first** — 60%+ of furniture browsing is mobile. Test on mid-range Android
 - **WCAG 2.2 AA** — accessible. Fallback static image gallery alongside 3D viewer
 
-## File Structure
+## Planned File Structure
 
 ```
 sgs-configurator-pro/
@@ -155,12 +159,5 @@ sgs-configurator-pro/
 - **Base price:** From £1,164.71 (ex VAT)
 - **Reference images:** Product photos in `sites/snooza-chair/assets/product-images/`
 - **Client:** Ophir Solutions (ophirsolutions.co.uk)
-- **AI model tests (2026-03-20/21):**
-  - Tripo AI 3.0 (web UI): 8/10 quality from single photo. Export paywalled ($10/month Pro)
-  - Meshy AI (web UI): 7/10 quality. Export also paywalled ($10/month Pro)
-  - TripoSR (local, free): 5/10 at 512 marching cubes resolution. Usable for dev/testing, not production
-  - Meshroom photogrammetry (local, free): FAILED — reconstructed the man (Randall) instead of the chair. Video frames with a person touching the product are unusable for photogrammetry. Would need dedicated product photos (100+ stills, no person, 3 orbit heights) to work
-  - Gate 1 verdict: **PASS** — AI model approach validated. TripoSR 5/10 is usable as dev placeholder. Tripo Pro ($10/month) recommended for production quality
-- **Video frame pipeline:** 203 frames extracted from Ophir product video. 3 segments identified. rembg could not separate man from chair (touching). Meshroom cache cleaned up
-- **Image sources:** ophirsolutions.co.uk (15 thumbnails + video), fledglings.org.uk, fortunamobility.com
-- **Local tools installed:** TripoSR (Python 3.12 venv), Meshroom 2023.3.0, rembg (background removal). All at `C:/Users/Bean/Projects/`
+
+3D model-generation tool trial log: `.claude/reports/2026-03-20-snooza-chair-3d-tool-trials.md`.

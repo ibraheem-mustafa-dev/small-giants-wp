@@ -7,7 +7,7 @@ WHAT AND WHY
 'render-helper'``) — but nothing at per-FUNCTION granularity, which is the
 actual gap that let ``sgs_svg_stroke_gradient()`` get independently
 rediscovered as "the answer" three separate times in one week (see
-plugins/sgs-blocks/CLAUDE.md's "Known precedent-function registry"). This
+.claude/rules/colour-emission.md's "Known precedent-function registry"). This
 migration adds one row per top-level ``sgs_xxx()`` function across every
 ``includes/helpers-*.php`` file, at ``family='render-helper-function'`` so a
 query can filter either granularity independently.

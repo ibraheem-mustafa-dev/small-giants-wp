@@ -133,7 +133,7 @@ Extend the regexes in the SAME commit if a new hazard shape like these is found.
 `--fix` still only writes block.json (S1). render.php (S3) and edit.js (S2) fixes are NOT
 auto-applied by this script — the survey tells you exactly which blocks need them and in
 which file, so route those to a human or a small parallel per-block dispatch, not a script
-that guesses at JSX. See `plugins/sgs-blocks/CLAUDE.md` "Survey detectors" section for how
+that guesses at JSX. See `.claude/rules/migration-scripts.md` "The triad (Bean-locked)" for how
 this fits the wider census -> fix -> gate triad (D542).
 
 THE THREE FAMILY SHAPES, and why only one of them is a target

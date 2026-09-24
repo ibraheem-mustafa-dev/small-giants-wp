@@ -80,7 +80,7 @@ if ( '' !== $trigger_colour_effective ) {
 // Trigger background fill — migrated 2026-09-06 (colour-conformance closeout,
 // Case C) off a hand-assembled entry in $trigger_rules onto sgs_fill_states_css(),
 // which owns its OWN standalone rule for this fill alone (the recommended shape
-// per CLAUDE.md's "Colour EMISSION helpers" table — the trigger button already
+// per .claude/rules/colour-emission.md's "Colour EMISSION helpers" table — the trigger button already
 // shares its selector with the colour rule above, but the FILL half needed no
 // composing, only a state pair). Adds triggerBackgroundHover/-HoverGradient: the
 // static `.sgs-modal__trigger--{style}:hover` class default (style.css) never

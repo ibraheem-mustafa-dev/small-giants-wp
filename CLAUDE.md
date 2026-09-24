@@ -21,6 +21,7 @@ SGS is a standalone WordPress block framework and AI website-builder: theme + bl
 - WCAG 2.1 AA (visible focus, 44px touch targets, 4.5:1 contrast), mobile-first. Move to 2.2 AA per public-sector/EU client.
 - No jQuery; vanilla JS with `viewScriptModule`. Motion follows Spec 38 §1's tiers (vanilla by default, GSAP/Lenis/WebGL only when earned, all npm-bundled and conditionally loaded, no CDN).
 - Every REST endpoint: nonce, capability check, sanitisation, `$wpdb->prepare()`.
+- Notifications (forms, client notes, booking) go through the N8N webhook (`sgs_n8n_webhook_url` option), never `wp_mail()`.
 - Budget: < 100 KB CSS and < 50 KB JS per page; green Core Web Vitals.
 - **No SGS block renders an inline `style="…"` declaration** (Spec 32). `node plugins/sgs-blocks/scripts/audit-inline-styling.js --check` must exit 0.
 - **Every customisable property has a block-editor inspector control** — clients never touch code or WP-CLI.
@@ -52,6 +53,7 @@ python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client <slug> --targe
 - Each client has its own test site because the active header/footer/drawer/snapshot pointers are single global options.
 - SSH: `ssh -i ~/.ssh/id_ed25519 -p 65002 u945238940@141.136.39.73` (alias `ssh hd`); WP admin user `Claude`.
 - Credentials (gitignored, always available — don't ask): `.claude/secrets/<site>.env` (`WP_USER_*`, `WP_PWD_*`, `WP_APP_PWD_*`, `WP_URL_*`).
+- Canary pages 2103, 2109, 2113, 2603, 2740, 3037 are motion-QA fixtures — never delete or repurpose (`.claude/rules/motion-qa.md`).
 
 ## Delegation
 

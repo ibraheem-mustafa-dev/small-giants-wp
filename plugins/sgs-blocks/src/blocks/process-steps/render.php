@@ -166,8 +166,8 @@ $border_radius_mobile_obj = $radius_tiers['mobile'];
 // into the SAME style-engine call as typography/shadow. Removed — that path
 // only ever emits a bare `color:`/`background-color:` declaration, which
 // silently drops a gradient string as invalid CSS. Text/background now emit
-// separately below via the shared gradient-aware primitives (see CLAUDE.md
-// "Colour EMISSION helpers" — sgs_resolve_text_colour_or_gradient() /
+// separately below via the shared gradient-aware primitives (see
+// .claude/rules/colour-emission.md "Colour EMISSION helpers" — sgs_resolve_text_colour_or_gradient() /
 // sgs_text_colour_decl() / sgs_text_colour_gradient_fallback_rule() for
 // text; sgs_fill_decls() / sgs_block_background_layer_css() for background).
 //

@@ -143,8 +143,8 @@ $accent_hover_gradient_val = sgs_css_gradient_value( $accent_hover_gradient_raw 
 // attr { top, right, bottom, left }, no tiers. Colour resolution (flat vs
 // gradient, base + hover) is delegated to the shared sgs_border_states_css()
 // helper (helpers-colour-variants.php) — the ONLY one of the four colour
-// helpers that returns finished CSS unconditionally, per CLAUDE.md's
-// precedent-function registry.
+// helpers that returns finished CSS unconditionally, per
+// .claude/rules/colour-emission.md's precedent-function registry.
 $border_style_raw = isset( $attributes['borderStyle'] ) ? sgs_css_keyword_sanitise( $attributes['borderStyle'] ) : 'solid';
 $border_width_obj = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
 $border_width_top = sgs_css_length_value( $border_width_obj['top'] ?? '' );

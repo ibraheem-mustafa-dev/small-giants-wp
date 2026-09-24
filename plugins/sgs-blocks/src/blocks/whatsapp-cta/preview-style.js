@@ -29,9 +29,9 @@ export function boxShorthand( box, keys ) {
  * CHECK A note: the caller (edit.js) passes an EXPLICIT object literal
  * naming every attribute this function reads, rather than the whole
  * `attributes` blob — a wholesale pass-through renders correctly but reads
- * as a desync to `check-editor-render-parity.js`'s CHECK A (CLAUDE.md
- * "Editor-canvas mirrors" trap 1: "enumerate attributes explicitly at the
- * call site").
+ * as a desync to `check-editor-render-parity.js`'s CHECK A
+ * (.claude/rules/block-editor-controls.md "Editor-canvas mirrors" trap 1:
+ * "enumerate attributes explicitly at the call site").
  *
  * @param {Object}   previewAttrs         Explicit subset of block attributes this preview reads.
  * @param {Function} colourVar            Design-token → CSS var resolver.

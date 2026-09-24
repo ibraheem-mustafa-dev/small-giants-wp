@@ -122,7 +122,7 @@ if ( $aside_border_has_width && null !== $aside_border_width_shorthand ) {
 	$css .= $root_sel . '{border-width:' . $aside_border_width_shorthand . ';border-style:solid;border-color:var(--sgs-mm-panel-border, rgba(0,0,0,.12));}';
 
 	// Border colour — base + hover, flat-or-gradient, one owned rule
-	// (CLAUDE.md "Colour EMISSION helpers" decision table row 4).
+	// (.claude/rules/colour-emission.md "Colour EMISSION helpers" decision table row 4).
 	$aside_border_colour_css = sgs_border_states_css(
 		$root_sel,
 		$attributes,

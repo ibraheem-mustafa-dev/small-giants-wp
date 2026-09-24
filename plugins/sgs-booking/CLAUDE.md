@@ -1,10 +1,12 @@
  # SGS Booking — Claude Code Instructions
 
+Not built yet; this file and the spec describe the planned plugin.
+
 ## What This Is
 
 A thin WordPress plugin that connects to the Small Giants Booking System (a standalone Next.js application) via its REST API. Provides Gutenberg blocks for embedding booking forms on WordPress sites. **This plugin is a frontend client only — it stores no booking data and has no database tables.**
 
-Full spec: `specs/03-SGS-BOOKING.md`
+Full spec: `.claude/specs/03-SGS-BOOKING.md`
 
 ## Architecture: Thin API Client
 
@@ -22,7 +24,7 @@ The plugin calls the booking system's REST API for everything:
 - Sends emails or notifications
 - Stores OAuth tokens
 
-## Plugin Structure
+## Planned Plugin Structure
 
 ```
 sgs-booking/
@@ -152,22 +154,6 @@ npm run start         # Dev with hot reload
 
 Source in `src/` is TypeScript (`.tsx`/`.ts`). The `build/` directory is compiled output.
 
-## Deploy
-
-```bash
-# Build first
-npm run build
-
-# Deploy plugin files (run from repo root)
-scp -r plugins/sgs-booking/sgs-booking.php plugins/sgs-booking/uninstall.php plugins/sgs-booking/includes plugins/sgs-booking/build hd:~/domains/palestine-lives.org/public_html/wp-content/plugins/sgs-booking/
-
-# Clear LiteSpeed cache (wp litespeed-purge is broken on this host)
-ssh hd "rm -rf ~/domains/palestine-lives.org/public_html/wp-content/litespeed/cache/*"
-
-# Reset PHP OPcache after deploying PHP files (CLI reset is a SEPARATE pool — must use HTTP)
-ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.org/public_html/op-reset-tmp.php" && curl -s https://palestine-lives.org/op-reset-tmp.php && ssh hd "rm ~/domains/palestine-lives.org/public_html/op-reset-tmp.php"
-```
-
 ## Phased Build
 
 - **Phase 1:** Settings page + API client + booking-form block (date/time, details, confirmation) + booking-types block
@@ -179,19 +165,8 @@ ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.o
 
 ## Booking System API Dependency
 
-The plugin requires these endpoints. Check the booking system repo to see which exist:
+The plugin depends on the booking system's REST API. Full endpoint list and phase priorities: `.claude/specs/03-SGS-BOOKING.md` §Booking System API Requirements.
 
-| Endpoint | Status |
-|---|---|
-| `GET /api/v1/health` | Exists |
-| `GET /api/v1/book/{orgSlug}/{typeSlug}/availability` | Exists |
-| `POST /api/v1/book/{orgSlug}/{typeSlug}/create` | Exists |
-| `GET /api/v1/book/{orgSlug}/{typeSlug}/ics/{bookingId}` | Exists (needs token auth fix) |
-| `GET /api/v1/book/{orgSlug}` | Needs building |
-| `GET /api/v1/book/{orgSlug}/types` | Needs building |
-| `GET /api/v1/book/{orgSlug}/{typeSlug}` | Needs building |
-| `POST /api/v1/book/{orgSlug}/{typeSlug}/payment-intent` | Needs building |
-| `GET /api/v1/bookings/{id}/status?token=` | Needs building |
-| `POST /api/v1/bookings/{id}/cancel?token=` | Needs building |
-| `GET /api/v1/book/{orgSlug}/providers` | Needs building (Phase 2) |
-| `GET /api/v1/invoices/{id}/pdf?token=` | Being built (invoice PDF download via token) |
+Existing endpoints (per the spec): `GET /api/v1/health`, `GET /api/v1/book/{orgSlug}/{typeSlug}/availability`, `POST /api/v1/book/{orgSlug}/{typeSlug}/create`, `GET /api/v1/book/{orgSlug}/{typeSlug}/ics/{bookingId}` (needs a token-auth fix before this plugin can safely use it — see the spec's security-fixes list).
+
+New endpoints the booking system still needs to build before this plugin can function: organisation info/branding, booking-types listing, single booking-type details, providers listing (Phase 2), payment-intent creation, booking status lookup, booking cancellation, booking reschedule (Phase 2), invoice PDF download.

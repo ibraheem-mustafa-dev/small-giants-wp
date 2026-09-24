@@ -1198,7 +1198,7 @@ new CSS and no second vocabulary to drift.
 check exists for. Confirm the render path first, including helpers, atoms and `render_block`
 injectors, rather than grepping the block's own files.
 
-Full pattern and the four traps that shipped defects: `plugins/sgs-blocks/CLAUDE.md` →
+Full pattern and the four traps that shipped defects: `.claude/rules/block-editor-controls.md` →
 "Editor-canvas mirrors".
 
 ### 1. Native `supports` for wrapper-level controls
@@ -1265,6 +1265,21 @@ Declare `"supports": { "sgs": { "imageControls": true } }` in `block.json` so th
 ### 8. Dead-control audit before shipping
 
 A block change is not done until the inspector has ONE control per setting + zero orphans. Audit: (1) duplicate/overlap controls, (2) dead control [control → no render], (3) render-without-control [attr render.php reads but no editor control — the guard is BLIND to this], (4) vestigial attrs.
+
+**No dead controls — parent owns LAYOUT, child owns TYPOGRAPHY (HC2).** When a composite renders
+its text via child InnerBlocks (`sgs/heading`/`sgs/text`/`sgs/label`), all typography/colour/
+font-size (every breakpoint) belongs on the CHILD, not the parent. A parent control duplicating a
+child capability is both a forbidden duplicate and usually dead by CSS specificity — a parent
+scoped rule `.{uid} .sgs-x__y{color}` (0,2,0) cannot beat the child's inline style (1,0,0,0), so it
+renders nothing. This scopes standard item 3 ("custom controls per inner text element") to blocks
+that render their own text element — not to InnerBlocks composites, whose text is child-owned.
+Verify a control renders via the live DOM (computed style on the painted element), not just "the
+attr appears in render.php".
+
+HC2 bans a parent PER-ELEMENT typography control, not a wrapper inheritable default. The
+WordPress-native `supports.typography` declared on the block ROOT is permitted: WP emits it as an
+inline style on the wrapper that children inherit via normal cascade, and any child's own explicit
+typography still overrides it. Only the per-element-parent-control form is banned.
 
 ---
 

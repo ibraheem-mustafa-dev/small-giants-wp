@@ -56,7 +56,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	// attribute the preview reads EXPLICITLY, rather than handing the whole
 	// `attributes` blob to buildRootStyle() — a wholesale pass-through
 	// renders correctly but is invisible to CHECK A's traceability scan
-	// (CLAUDE.md "Editor-canvas mirrors" trap 1).
+	// (.claude/rules/block-editor-controls.md "Editor-canvas mirrors" trap 1).
 	const blockProps = useBlockProps( {
 		className: buildRootClassName( { variant, showOnMobile, showOnDesktop } ),
 		style: buildRootStyle( {

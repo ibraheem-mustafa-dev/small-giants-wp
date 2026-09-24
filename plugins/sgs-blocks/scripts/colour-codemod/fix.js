@@ -1891,8 +1891,8 @@ function applyRenderPhpFix( phpText, plan ) {
 	// guard must apply to `:hover` ONLY, never to `:focus-visible` (keyboard
 	// users need focus styling on every device, including touchscreens). Call
 	// `sgs_hover_state_rules()` (`includes/helpers-hover-state.php`) instead —
-	// the ONE place a `:hover` rule is built (`plugins/sgs-blocks/CLAUDE.md`
-	// "Touch-safe HOVER helpers"). It splits the guarded `:hover` rule from
+	// the ONE place a `:hover` rule is built (`.claude/rules/colour-emission.md`
+	// "Touch-safe hover helpers"). It splits the guarded `:hover` rule from
 	// the unguarded `:focus-visible` rule and is exactly what the codemod's
 	// own cited reference model (nav-menu:1172,
 	// `sgs_hover_state_rules( $uid_sel . ' .sgs-nav-bar-menu__burger', 'background-color:' . sgs_colour_value( $burger_hover_slug ), ':focus-visible' )`)

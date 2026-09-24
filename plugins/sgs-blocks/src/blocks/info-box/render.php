@@ -341,7 +341,7 @@ $scoped_css[] = sgs_typography_css_rule( $attributes, '', $root_sel );
 // background-clip:text paint, so its presence alone could not have masked
 // this. sgs_text_colour_decl() is the correct primary primitive: it resolves
 // to the flat `color:` OR the full background-clip:text declaration set
-// depending on what was resolved. See CLAUDE.md "Colour EMISSION helpers". ---
+// depending on what was resolved. See .claude/rules/colour-emission.md "Colour EMISSION helpers". ---
 $sgs_info_text_normal_resolved = sgs_resolve_text_colour_or_gradient( $sgs_text_colour, (string) ( $attributes['textColourGradient'] ?? '' ) );
 $sgs_info_text_hover_resolved  = sgs_resolve_text_colour_or_gradient(
 	isset( $attributes['textColourHover'] ) ? (string) $attributes['textColourHover'] : '',
