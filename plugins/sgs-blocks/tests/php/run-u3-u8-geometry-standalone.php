@@ -206,5 +206,9 @@ $md = (string) file_get_contents( $plugin . '/src/shared/nav-interactivity/mega-
 ok( false !== strpos( $md, "root.closest( '.sgs-site-header' ) || root.closest( '.sgs-site-header-row' )" ) && false !== strpos( $md, "'--sgs-mm-panel-top'," ), 'repositionPanel publishes the header bottom for both kinds' );
 ok( false !== strpos( $md, "root.style.setProperty(\r\n\t\t\t'--sgs-mm-bridge-h'," ) || false !== strpos( $md, "root.style.setProperty(\n\t\t\t'--sgs-mm-bridge-h'," ), 'the bridge height is published on the disclosure root' );
 
+ok( false !== strpos( $md, 'const pageWidth = document.documentElement.clientWidth;' ) && false === strpos( $md, 'viewportBounds( window.innerWidth )' ), 'panels centre on the visible page width, not one that includes the scrollbar (live: 7px off centre)' );
+ok( false !== strpos( old_file( $rel . 'src/shared/nav-interactivity/mega-disclosure.js' ), 'viewportBounds( window.innerWidth )' ), 'NEGATIVE CONTROL: the pre-change code centred on innerWidth' );
+ok( false !== strpos( $md, 'restingTop - anchor.bottom' ) && false !== strpos( $md, 'parseFloat( window.getComputedStyle( panel ).top )' ), 'the bridge is sized from the panel resting top, not its mid-animation rect (live: 8px dead strip)' );
+
 echo "\n==== $pass passed, $fail failed ====\n";
 exit( $fail > 0 ? 1 : 0 );

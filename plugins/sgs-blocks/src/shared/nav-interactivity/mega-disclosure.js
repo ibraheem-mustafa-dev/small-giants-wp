@@ -284,14 +284,20 @@ function scheduleIntentOpen( ctx, root, delay ) {
  * @return {{left: number, right: number, floating: boolean}} Bounding box.
  */
 function panelBounds( root ) {
+	/*
+	 * The page's visible width, not `window.innerWidth`: innerWidth includes a
+	 * classic scrollbar, so a panel centred on it sat half a scrollbar (7px on
+	 * desktop Windows Chrome) right of the page's centre, measured live on
+	 * /qa-scrim/ (2026-09-25). `documentElement.clientWidth` is the width the
+	 * page is laid out in on every platform, and equals innerWidth wherever
+	 * scrollbars overlay.
+	 */
+	const pageWidth = document.documentElement.clientWidth;
 	const header = root.closest( 'header.sgs-site-header[data-sgs-header-float]' );
 	if ( ! header ) {
-		return viewportBounds( window.innerWidth );
+		return viewportBounds( pageWidth );
 	}
-	return boundsFromHeaderRect(
-		header.getBoundingClientRect(),
-		window.innerWidth
-	);
+	return boundsFromHeaderRect( header.getBoundingClientRect(), pageWidth );
 }
 
 /**
@@ -484,16 +490,24 @@ function repositionPanel( root ) {
 		 * openness is the close grace's job, not the bridge's.
 		 */
 		const placedRect = panel.getBoundingClientRect();
+		/*
+		 * The panel's RESTING top, from its computed `top` (the header bottom plus
+		 * the offset), never from the rect: an entry animation (U-5's fade-lift
+		 * starts 8px up) moves the rect, and a bridge sized from the rect then left
+		 * an 8px dead strip above the panel (measured live, 2026-09-25).
+		 */
+		const restingTop =
+			parentRect.top + ( parseFloat( window.getComputedStyle( panel ).top ) || 0 );
 		panel.style.setProperty(
 			'--sgs-mm-panel-max-h',
 			`${ Math.max(
-				window.innerHeight - placedRect.top - GUTTER,
+				window.innerHeight - restingTop - GUTTER,
 				MIN_PANEL_MAX_H
 			).toFixed( 2 ) }px`
 		);
 		root.style.setProperty(
 			'--sgs-mm-bridge-h',
-			`${ Math.max( 0, placedRect.top - anchor.bottom ).toFixed( 2 ) }px`
+			`${ Math.max( 0, restingTop - anchor.bottom ).toFixed( 2 ) }px`
 		);
 		// Re-snapshot for the safe-triangle (FR-36-4) now the panel has moved.
 		activePanelRect = placedRect;
