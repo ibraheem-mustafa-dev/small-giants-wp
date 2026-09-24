@@ -94,7 +94,38 @@ text blocks.
 
 Order: C2, then C4, C3, C1 (smallest first; C1 is the largest). One commit each, straight to `main`.
 
-## Questions for Bean
+## Bean's review (2026-09-24) and the resulting changes
+
+- **C1 to C4 approved.**
+- **"Couldn't the default container fix the hero, open items included?"** `sgs/container` carries the
+  same background set as `sgs/hero` (backgroundImage, overlayGradient, bgKenBurns, bgParallax;
+  checked in the DB), per the composite-mirror rule. But the container's descent has the same gap: it
+  would turn the photo layer into a nested container holding an image, and the empty overlay layers
+  into empty containers. So **C1's shape rule moves to the shared routing both paths use**. A
+  classless section recognised as the default container then gets the same background and overlay
+  routing as the hero. The section stays `sgs/hero` because the draft names it `sgs-hero` (rule 1, and
+  the client keeps the hero's editor controls). The open binding values (`heroH`, gradients, focus,
+  padding) are not a routing problem on either path: they sit in the draft script
+  (`heroH: mobile ? '82vh' : 'min(84vh, 820px)'`), which the built-but-unwired evaluator reads
+  (Track A1).
+- **Aspect ratio.** The draft does declare it: `aspect-ratio:4/5` on the optician panel only, the
+  same at every width (no binding), and 13 elements in the draft use aspect-ratio. Proposal: an
+  `aspectRatio` setting on `sgs/container`:
+  - empty by default, so it does nothing unless set;
+  - set only when the draft's element declares it;
+  - per device tier, like every other container setting;
+  - scoped to that one block, never the page.
+  That transfers the draft's own mechanism rather than inventing one. Awaiting Bean's confirmation.
+- **Links (new C5).** 404s on a test site are harmless, and the destinations are knowable
+  deterministically:
+  - `draft-manifest/dc_script.py::analyse_handler` resolves each handler to its view
+    (`goLenses` → lenses, `goSun` → shop, `goAbout` → about);
+  - the draft's embedded `data-sgs-manifest` gives each view's route (`/lenses`, `/sunglasses`,
+    `/about`).
+  C5 writes that route as the button's URL and logs each one as a pre-registry link, so Track D can
+  rewrite them when the real pages exist. A handler that resolves to no single view stays reported.
+
+## Questions for Bean (original)
 
 1. **Approve C1 to C4 as designed?** Recommended: yes.
 2. **The optician panel's 4:5 shape.** Options:
