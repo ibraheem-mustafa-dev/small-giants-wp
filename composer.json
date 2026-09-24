@@ -1,7 +1,6 @@
 {
     "require-dev": {
-        "php-stubs/wordpress-stubs": "^6.9",
-        "php-stubs/wp-cli-stubs": "^2.12",
+        "php-stubs/wordpress-stubs": "^7.1",
         "php-stubs/woocommerce-stubs": "^11.1"
     }
 }

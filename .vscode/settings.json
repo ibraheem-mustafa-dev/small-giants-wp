@@ -5,11 +5,13 @@
   },
 
   // ── PHP / Intelephense ────────────────────────────────────────────────────
-  // WordPress + WP-CLI symbol resolution for Intelephense.
+  // WordPress + WooCommerce symbol resolution for Intelephense.
   // Strategy: project-level stubs in vendor/php-stubs/ override Intelephense's
   // bundled "wordpress" stub. Bundled stubs lag behind WP core (e.g. miss
   // get_block_wrapper_attributes, wp_unique_id, modern block-editor APIs).
-  // Composer-installed stubs match WP 6.9.1 (same as palestine-lives.org).
+  // Composer-installed stubs: WordPress 7.1, WooCommerce 11.1 (matches the test sites).
+  // WP-CLI stubs were dropped 2026-09-24: no wp-cli-stubs release accepts wordpress-stubs 7.x
+  // yet, and WordPress 7.1 symbols matter far more. Re-add when one does.
   // Run `php composer.phar update` periodically to refresh.
   // vendor/ is gitignored: after a fresh clone run `php composer.phar install` at the repo
   // root, or every WordPress/WooCommerce symbol shows as undefined (2026-09-24: the folder was
@@ -18,7 +20,6 @@
   "intelephense.environment.phpVersion": "8.2.0",
   "intelephense.environment.includePaths": [
     "vendor/php-stubs/wordpress-stubs",
-    "vendor/php-stubs/wp-cli-stubs",
     "vendor/php-stubs/woocommerce-stubs"
   ],
   // Silence P1010 false positives on WordPress core functions called from inside
