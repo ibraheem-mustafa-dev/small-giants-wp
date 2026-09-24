@@ -236,6 +236,7 @@ export default function DropdownSettingsPanel( {
 				>
 					{ ( { ownValue, effectiveValue, setOwnValue } ) => (
 						<SelectControl
+							hideLabelFromVision
 							label={ __( 'Mega panels open from', 'sgs-blocks' ) }
 							value={ ownValue || effectiveValue || 'page-centred' }
 							options={ [
