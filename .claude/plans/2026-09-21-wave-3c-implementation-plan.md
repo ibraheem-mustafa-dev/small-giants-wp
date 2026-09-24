@@ -26,8 +26,7 @@ inputs: .claude/reports/reference-requirements/FAMILIES-MASTER.md, .claude/repor
   4. Start U-1 through the per-unit loop in section 5.
 - **What else to read.** Section 9's lessons before anything. Spec 36 in full before U-1.
   Spec 37 sections 1 and 2 before any drawer unit. The unit's own reference JSON rows before
-  its design gate. The reading list in `.claude/prompts/2026-09-21-wave-3c-start.md` is the
-  session's full gate.
+  its design gate.
 - **Bean's answers** (section 1): force-solid gets a solid resting colour, the drawer clamp is
   dropped, full scope, three accepted divergences, no file splits, sandybrown only, the Indus
   Foods draft is the capped-header exemplar, and a Lottie player is built from a researched model.
@@ -534,8 +533,3 @@ FAMILIES-MASTER.md for reading. Each `<ref>.json` holds `rows[]`, each with `sur
 - A gate's skip reason must be true. Never claim a live check that has not happened.
 - Bean's decisions are not assumed. "Should I start it?" waits for an answer, and a
   background-task notification is never an answer.
-
-## 10. The fresh-session prompt
-
-`.claude/prompts/2026-09-21-wave-3c-start.md` holds it until Wave 3C starts, then it is
-deleted. This plan is the record.

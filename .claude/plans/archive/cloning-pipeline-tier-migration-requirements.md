@@ -49,8 +49,7 @@ status: INPUTS — evidence captured while it was fresh. Do NOT treat as a spec 
 - **D1004 (2026-09-07) is not cited anywhere in this doc and reorders its own R8-R10 priority
   framing.** Bean ruled the header/footer clone gap outranks the motion-recognition layer this
   doc's R8-R10 section treats as the natural next step. Read R8-R10 as "open, but not next" until
-  header/footer cloning (Spec 33 Part 2 / Spec 37 per-site content, see
-  `.claude/prompts/2026-09-10-header-footer-implementation.md`) is further along.
+  header/footer cloning (Spec 33 Part 2 / Spec 37 per-site content) is further along.
 
 ---
 

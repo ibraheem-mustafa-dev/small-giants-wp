@@ -490,7 +490,7 @@ Stop-loss: any gate <50 → surface pivot-vs-park with two ranked paths; record 
 
 ## First action (≤5 min, zero dependencies)
 
-Wave 3C Step 0 (`plans/2026-09-21-wave-3c-implementation-plan.md`): re-run `/sgs-update`, draft the FR-36-6 amendment, re-capture ButcherBox and rabbit.tech at 768 and measure footer hover, then the nav chain from U-1. The fresh-session prompt is `.claude/prompts/2026-09-21-wave-3c-start.md`.
+Wave 3C Step 0 (`plans/2026-09-21-wave-3c-implementation-plan.md`): re-run `/sgs-update`, draft the FR-36-6 amendment, re-capture ButcherBox and rabbit.tech at 768 and measure footer hover, then the nav chain from U-1.
 
 ## References
 
