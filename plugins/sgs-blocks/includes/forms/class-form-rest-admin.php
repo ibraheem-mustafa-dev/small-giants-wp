@@ -65,6 +65,12 @@ class Form_REST_Admin {
 			)
 		);
 
+		// Decode + add a freshly-nonced download_url per file — never
+		// stored, always generated at response time. See decorate_files().
+		foreach ( $rows as $row ) {
+			$row->files = self::decorate_files( $row->files );
+		}
+
 		$response = new \WP_REST_Response(
 			[
 				'submissions' => $rows,
@@ -108,9 +114,61 @@ class Form_REST_Admin {
 
 		// Decode JSON columns.
 		$row->data  = json_decode( $row->data, true );
-		$row->files = $row->files ? json_decode( $row->files, true ) : [];
+		$row->files = self::decorate_files( $row->files );
 
 		return new \WP_REST_Response( $row, 200 );
+	}
+
+	/**
+	 * Decode a submission row's `files` JSON and add a fresh, nonced
+	 * `download_url` for every file that Form_Upload itself created.
+	 *
+	 * Generated here, at RESPONSE time, on every request — never stored —
+	 * because a nonce baked into the database would expire and
+	 * permanently break the link (Form_Download::download_url() docblock).
+	 *
+	 * Files uploaded before this security fix landed have no
+	 * `Form_Upload::UPLOAD_META_KEY` post meta (it did not exist yet), so
+	 * no `download_url` can be safely offered for them — adding one would
+	 * mean either weakening Form_Download's provenance check or silently
+	 * assuming every old attachment ID is safe to stream, neither of
+	 * which this change makes. For those legacy rows only, a `url`
+	 * pointing at the site's public uploads location (the one the
+	 * pre-fix code stored) is stripped so the admin API stops handing out
+	 * a raw public link; a `url` value that does NOT match the public
+	 * uploads base (unexpected/foreign data) is left untouched rather
+	 * than guessed at.
+	 *
+	 * @param string|null $files_json Raw `files` JSON column value.
+	 * @return array Decoded, decorated file entries (possibly empty).
+	 */
+	private static function decorate_files( ?string $files_json ): array {
+		$files = $files_json ? json_decode( $files_json, true ) : [];
+
+		if ( ! is_array( $files ) ) {
+			return [];
+		}
+
+		$uploads        = wp_get_upload_dir();
+		$public_baseurl = $uploads['baseurl'];
+
+		foreach ( $files as &$file ) {
+			if ( empty( $file['id'] ) ) {
+				continue;
+			}
+
+			$file_id = absint( $file['id'] );
+
+			if ( get_post_meta( $file_id, Form_Upload::UPLOAD_META_KEY, true ) ) {
+				$file['download_url'] = Form_Download::download_url( $file_id );
+				unset( $file['url'] );
+			} elseif ( isset( $file['url'] ) && 0 === strpos( (string) $file['url'], $public_baseurl ) ) {
+				unset( $file['url'] );
+			}
+		}
+		unset( $file );
+
+		return $files;
 	}
 
 	/**

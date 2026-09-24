@@ -112,7 +112,7 @@ class Form_Privacy {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		$submissions = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT id, form_id, data, created_at
+				"SELECT id, form_id, data, files, created_at
 				 FROM {$table_name}
 				 WHERE LOWER( data ) LIKE %s
 				 ORDER BY created_at DESC
@@ -139,6 +139,30 @@ class Form_Privacy {
 						'value' => is_array( $field_value )
 							? implode( ', ', array_map( 'strval', $field_value ) )
 							: (string) $field_value,
+					];
+				}
+			}
+
+			// Append uploaded file names + sizes — never a path or URL.
+			// The files themselves are private (class-form-upload.php); an
+			// admin who needs the file itself uses Form_Download's
+			// authenticated link, not this export.
+			$files = $submission->files ? json_decode( $submission->files, true ) : [];
+
+			if ( is_array( $files ) ) {
+				foreach ( $files as $file ) {
+					if ( empty( $file['name'] ) ) {
+						continue;
+					}
+
+					$item_data[] = [
+						'name'  => __( 'Uploaded file', 'sgs-blocks' ),
+						'value' => sprintf(
+							/* translators: 1: file name, 2: human-readable file size */
+							__( '%1$s (%2$s)', 'sgs-blocks' ),
+							$file['name'],
+							size_format( isset( $file['size'] ) ? (int) $file['size'] : 0 )
+						),
 					];
 				}
 			}
@@ -198,12 +222,13 @@ class Form_Privacy {
 		$email_lower = strtolower( $email_address );
 		$like        = '%' . $wpdb->esc_like( '"' . $email_lower . '"' ) . '%';
 
-		// Fetch IDs for the current batch — we delete by ID to avoid a
-		// time-of-check/time-of-delete race on the LIKE predicate.
+		// Fetch IDs (+ files, for the file cleanup below) for the current
+		// batch — rows are deleted by ID to avoid a time-of-check/
+		// time-of-delete race on the LIKE predicate.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$ids = $wpdb->get_col(
+		$rows = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT id FROM {$table_name}
+				"SELECT id, files FROM {$table_name}
 				 WHERE LOWER( data ) LIKE %s
 				 LIMIT %d",
 				$like,
@@ -211,7 +236,9 @@ class Form_Privacy {
 			)
 		);
 
+		$ids           = wp_list_pluck( $rows, 'id' );
 		$items_removed = 0;
+		$files_removed = self::delete_uploaded_files( $rows );
 
 		if ( ! empty( $ids ) ) {
 			// Build the IN ( %d, %d, … ) clause dynamically.
@@ -232,11 +259,102 @@ class Form_Privacy {
 		// If the batch was smaller than the page size there are no more rows.
 		$done = count( $ids ) < self::ITEMS_PER_PAGE;
 
+		$messages = [];
+
+		if ( $files_removed > 0 ) {
+			$messages[] = sprintf(
+				/* translators: %d: number of uploaded files deleted */
+				_n(
+					'Deleted %d uploaded file.',
+					'Deleted %d uploaded files.',
+					$files_removed,
+					'sgs-blocks'
+				),
+				$files_removed
+			);
+		}
+
 		return [
 			'items_removed'  => $items_removed,
 			'items_retained' => 0,
-			'messages'       => [],
+			'messages'       => $messages,
 			'done'           => $done,
 		];
+	}
+
+	/**
+	 * Delete every uploaded file attached to a batch of submission rows.
+	 *
+	 * Called BEFORE the submission rows themselves are deleted, so this
+	 * is the only chance to clean up the files — leaving them behind
+	 * would defeat the point of a GDPR erasure request for health data.
+	 *
+	 * Only ever touches an attachment that carries
+	 * `Form_Upload::UPLOAD_META_KEY` — a submission's `files` JSON is
+	 * otherwise-untrusted stored data, and this guard is what stops it
+	 * being used to delete an unrelated attachment.
+	 *
+	 * @param object[] $rows Rows with `id` and `files` (raw JSON) properties.
+	 * @return int Number of files actually removed from disk.
+	 */
+	private static function delete_uploaded_files( array $rows ): int {
+		$removed = 0;
+
+		foreach ( $rows as $row ) {
+			if ( empty( $row->files ) ) {
+				continue;
+			}
+
+			$files = json_decode( $row->files, true );
+
+			if ( ! is_array( $files ) ) {
+				continue;
+			}
+
+			foreach ( $files as $file ) {
+				if ( empty( $file['id'] ) ) {
+					continue;
+				}
+
+				$file_id = absint( $file['id'] );
+
+				if ( ! get_post_meta( $file_id, Form_Upload::UPLOAD_META_KEY, true ) ) {
+					continue;
+				}
+
+				$file_path = get_attached_file( $file_id );
+
+				// wp_delete_attachment() removes the attachment post and (via
+				// wp_delete_file_from_directory()) its file — but that helper
+				// refuses to delete a path outside the uploads basedir, which
+				// is exactly our outside-webroot private directory. Fall back
+				// to a manual, path-verified delete when the file survives.
+				wp_delete_attachment( $file_id, true );
+
+				if ( ! $file_path || ! file_exists( $file_path ) ) {
+					++$removed;
+					continue;
+				}
+
+				$private_dir = Form_Upload::resolve_private_dir();
+
+				if ( is_wp_error( $private_dir ) ) {
+					continue;
+				}
+
+				$real_file = realpath( $file_path );
+				$real_dir  = realpath( $private_dir['path'] );
+
+				if ( $real_file && $real_dir && 0 === strpos( $real_file, $real_dir ) ) {
+					wp_delete_file( $real_file );
+				}
+
+				if ( ! file_exists( $file_path ) ) {
+					++$removed;
+				}
+			}
+		}
+
+		return $removed;
 	}
 }

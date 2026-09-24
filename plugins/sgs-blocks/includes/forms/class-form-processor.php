@@ -114,8 +114,16 @@ class Form_Processor {
 	/**
 	 * Prepare file data for JSON storage.
 	 *
+	 * Deliberately never includes a URL. Uploads are stored in a private,
+	 * non-web-servable directory (`Form_Upload::resolve_private_dir()`) —
+	 * the only way to reach one is `Form_Download`'s capability + nonce
+	 * gated handler, which needs only the attachment `id`. Baking a public
+	 * `url` in here would (a) be dead/404 once storage moved private, and
+	 * (b) leak into the N8N webhook payload sent to a third party by
+	 * `send_webhook()` below.
+	 *
 	 * @param array $file_ids Attachment post IDs.
-	 * @return array|null File data with id, name, url, size.
+	 * @return array|null File data with id, name, size — or null.
 	 */
 	private static function prepare_files_data( array $file_ids ): ?array {
 		if ( empty( $file_ids ) ) {
@@ -127,19 +135,23 @@ class Form_Processor {
 		foreach ( $file_ids as $file_id ) {
 			$file_id = absint( $file_id );
 
-			if ( ! $file_id ) {
+			// Only accept attachments that Form_Upload itself created —
+			// this is user-supplied input (fileIds from the REST request),
+			// so without this check a submission could reference any
+			// attachment ID on the site and have it treated as one of its
+			// own files (and later be offered for admin download).
+			if ( ! $file_id || ! get_post_meta( $file_id, Form_Upload::UPLOAD_META_KEY, true ) ) {
 				continue;
 			}
 
-			$file_path = get_attached_file( $file_id );
-			$file_url  = wp_get_attachment_url( $file_id );
-			$file_name = basename( $file_path );
-			$file_size = file_exists( $file_path ) ? filesize( $file_path ) : 0;
+			$file_path  = get_attached_file( $file_id );
+			$title      = get_the_title( $file_id );
+			$file_name  = $title ? $title : basename( (string) $file_path );
+			$file_size  = $file_path && file_exists( $file_path ) ? filesize( $file_path ) : 0;
 
 			$files[] = [
 				'id'   => $file_id,
 				'name' => $file_name,
-				'url'  => $file_url,
 				'size' => $file_size,
 			];
 		}

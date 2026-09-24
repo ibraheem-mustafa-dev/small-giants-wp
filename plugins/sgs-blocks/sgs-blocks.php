@@ -84,6 +84,7 @@ require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-rest-admin.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-rest-api.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-admin.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-privacy.php';
+require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-download.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/field-render-helpers.php';
 
 // Schema output filters.
@@ -255,6 +256,7 @@ Image_Sequence_Verify::register();
 
 // Stripe payment settings and PaymentIntent AJAX handler.
 require_once SGS_BLOCKS_PATH . 'includes/stripe-settings.php';
+require_once SGS_BLOCKS_PATH . 'includes/sgs-order-confirmation-messages.php';
 Stripe_Settings::init();
 
 // Google Fonts catalogue — registers ~1,900 fonts in the editor's Manage fonts modal.
@@ -277,6 +279,7 @@ Forms\Form_REST_API::register();
 
 // Register admin settings page (webhook URL + submissions viewer).
 Forms\Form_Admin::register();
+Forms\Form_Download::register();
 
 // SGS top-level admin menu (FR-S5-1) — must register BEFORE any submenu class.
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-admin-menu.php';
