@@ -65,3 +65,10 @@ Screenshot: `fb-drawer-after.png` (scratchpad): panel over the header's phone ro
 | # | Check | Measured | Result |
 |---|---|---|---|
 | F9 | Full-screen, non-modal drawer starts at the bottom of the burger's own header row and paints above the rest of the header (Bean, option 1) | Deployed store.js wrote `--sgs-drawer-opener-row-bottom: 83px` (the burger's `.sgs-site-header-row` spans 16-83); render.php's non-modal full-screen geometry applied in the tab (test drawer stays on `trigger`): drawer 83-727, z 101; the header's second row (phone button, 75-119) is under the drawer at 97 and 115px; first link at 110-154 and clickable; burger on top, opener live, x hidden; a burger click closes it | PASS |
+
+## Default edge and phone-button row (commit b60c9ebe5, deployed at HEAD b2757b351)
+
+| # | Check | Measured | Result |
+|---|---|---|---|
+| F10 | Trigger card has a visible edge by default | `box-shadow` = the theme `floating` preset layers, `border-radius` 20px; opener live | PASS |
+| F11 | Phone button (business-info Button style) no longer spills out of its row | button 83-127px inside its row 83-127px, `margin-top` 0 (was -8px, box 75-119 in an 83-111 row); header now 143px tall; with the drawer open, the button's top pixel belongs to the drawer | PASS |
