@@ -80,6 +80,8 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 $separator                   = $attributes['separator'] ?? '/';
 $show_home                   = $attributes['showHome'] ?? true;
 $home_label                  = $attributes['homeLabel'] ?? 'Home';
+$product_page_crumbs_raw     = $attributes['productPageCrumbs'] ?? 'none';
+$product_page_crumbs         = in_array( $product_page_crumbs_raw, array( 'none', 'category', 'brand', 'both' ), true ) ? $product_page_crumbs_raw : 'none';
 $link_colour                 = $attributes['linkColour'] ?? 'text-muted';
 $link_colour_gradient        = $attributes['linkColourGradient'] ?? '';
 $link_colour_hover           = $attributes['linkColourHover'] ?? '';
@@ -443,6 +445,43 @@ if ( is_singular() ) {
 					'label' => esc_html( get_the_title( $ancestor_id ) ),
 					'url'   => esc_url( get_permalink( $ancestor_id ) ),
 				);
+			}
+		}
+
+		// Product primary category + brand (WooCommerce product pages only,
+		// opt-in via $product_page_crumbs — off ('none') leaves today's
+		// trail unchanged: Home / Shop archive / Product title). Any-client:
+		// no product/category/brand data is hardcoded, both taxonomies are
+		// existence-checked, and the block degrades to no extra crumb when
+		// a product has no term in the relevant taxonomy. Mirrors the
+		// existing brand-resolution precedent (first term wins) in
+		// Sgs_Product_Schema::resolve_brand().
+		if ( 'product' === $post->post_type && 'none' !== $product_page_crumbs ) {
+			$wants_category = in_array( $product_page_crumbs, array( 'category', 'both' ), true );
+			$wants_brand    = in_array( $product_page_crumbs, array( 'brand', 'both' ), true );
+
+			if ( $wants_category && taxonomy_exists( 'product_cat' ) ) {
+				$primary_cat_terms = get_the_terms( $post->ID, 'product_cat' );
+				if ( $primary_cat_terms && ! is_wp_error( $primary_cat_terms ) ) {
+					$primary_cat_term = $primary_cat_terms[0];
+					$primary_cat_link = get_term_link( $primary_cat_term, 'product_cat' );
+					$crumbs[]         = array(
+						'label' => esc_html( $primary_cat_term->name ),
+						'url'   => is_wp_error( $primary_cat_link ) ? '' : esc_url( $primary_cat_link ),
+					);
+				}
+			}
+
+			if ( $wants_brand && taxonomy_exists( 'product_brand' ) ) {
+				$primary_brand_terms = get_the_terms( $post->ID, 'product_brand' );
+				if ( $primary_brand_terms && ! is_wp_error( $primary_brand_terms ) ) {
+					$primary_brand_term = $primary_brand_terms[0];
+					$primary_brand_link = get_term_link( $primary_brand_term, 'product_brand' );
+					$crumbs[]           = array(
+						'label' => esc_html( $primary_brand_term->name ),
+						'url'   => is_wp_error( $primary_brand_link ) ? '' : esc_url( $primary_brand_link ),
+					);
+				}
 			}
 		}
 

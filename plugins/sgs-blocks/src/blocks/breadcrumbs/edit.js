@@ -17,6 +17,16 @@ const SEPARATOR_OPTIONS = [
 	{ label: '|', value: '|' },
 ];
 
+// Product-page extra-crumbs options. 'none' keeps today's behaviour
+// (Home / Shop archive / Product title) — off by default so existing sites
+// render unchanged (any-client rule).
+const PRODUCT_PAGE_CRUMBS_OPTIONS = [
+	{ label: __( 'Nothing extra', 'sgs-blocks' ), value: 'none' },
+	{ label: __( 'Primary category', 'sgs-blocks' ), value: 'category' },
+	{ label: __( 'Brand', 'sgs-blocks' ), value: 'brand' },
+	{ label: __( 'Both', 'sgs-blocks' ), value: 'both' },
+];
+
 // Box-object interface contract §1: a 4-side box is an object with named
 // keys, each an already-unit-bearing CSS length string or absent (unset
 // side). Build an editor-preview shorthand from the object — mirrors
@@ -75,6 +85,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		separator,
 		showHome,
 		homeLabel,
+		productPageCrumbs,
 		currentColour,
 		currentColourGradient,
 		borderColour,
@@ -163,6 +174,15 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ separator }
 						options={ SEPARATOR_OPTIONS }
 						onChange={ ( val ) => setAttributes( { separator: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<SelectControl
+						label={ __( 'On product pages, include', 'sgs-blocks' ) }
+						help={ __( 'Adds the product’s primary category and/or brand to the trail, between the shop link and the product title. Brand needs a "Product brand" taxonomy term set on the product.', 'sgs-blocks' ) }
+						value={ productPageCrumbs }
+						options={ PRODUCT_PAGE_CRUMBS_OPTIONS }
+						onChange={ ( val ) => setAttributes( { productPageCrumbs: val } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
@@ -263,6 +283,18 @@ export default function Edit( { attributes, setAttributes } ) {
 						<a href="#">{ __( 'Parent Page', 'sgs-blocks' ) }</a>
 						<span className="sgs-breadcrumbs__separator" aria-hidden="true">{ separator }</span>
 					</li>
+					{ ( productPageCrumbs === 'category' || productPageCrumbs === 'both' ) && (
+						<li className="sgs-breadcrumbs__item">
+							<a href="#">{ __( 'Category', 'sgs-blocks' ) }</a>
+							<span className="sgs-breadcrumbs__separator" aria-hidden="true">{ separator }</span>
+						</li>
+					) }
+					{ ( productPageCrumbs === 'brand' || productPageCrumbs === 'both' ) && (
+						<li className="sgs-breadcrumbs__item">
+							<a href="#">{ __( 'Brand', 'sgs-blocks' ) }</a>
+							<span className="sgs-breadcrumbs__separator" aria-hidden="true">{ separator }</span>
+						</li>
+					) }
 					<li
 						className="sgs-breadcrumbs__item sgs-breadcrumbs__item--current"
 						aria-current="page"

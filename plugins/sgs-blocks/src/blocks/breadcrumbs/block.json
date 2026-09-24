@@ -163,6 +163,17 @@
 			"type": "string",
 			"default": "Home"
 		},
+		"productPageCrumbs": {
+			"type": "string",
+			"enum": [
+				"none",
+				"category",
+				"brand",
+				"both"
+			],
+			"default": "none",
+			"description": "On single WooCommerce product pages, extra crumbs to insert between the shop archive and the product title: the product's primary category, its brand (the product_brand taxonomy, when registered), or both. Off by default so existing sites render unchanged."
+		},
 		"linkColour": {
 			"type": "string",
 			"default": "text-muted"
