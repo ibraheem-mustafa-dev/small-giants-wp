@@ -3,11 +3,22 @@
     "name": "sgs/container",
     "attributes": {
       "tagName": "section",
-      "maxWidth": { "desktop": "1100px" },
+      "maxWidth": {
+        "desktop": "1100px"
+      },
       "padding": {
-        "desktop": { "top": "104px", "bottom": "0px" },
-        "tablet": { "top": "104px", "bottom": "0px" },
-        "mobile": { "top": "56px", "bottom": "0px" }
+        "desktop": {
+          "top": "104px",
+          "bottom": "0px"
+        },
+        "tablet": {
+          "top": "104px",
+          "bottom": "0px"
+        },
+        "mobile": {
+          "top": "56px",
+          "bottom": "0px"
+        }
       },
       "layout": "stack"
     },
@@ -17,10 +28,18 @@
         "attributes": {
           "text": "Help",
           "textTransform": "uppercase",
-          "letterSpacing": { "desktop": 0.24 },
-          "fontSize": { "desktop": 12 },
+          "letterSpacing": {
+            "desktop": 0.24
+          },
+          "fontSize": {
+            "desktop": 12
+          },
           "textColour": "accent-text",
-          "margin": { "desktop": { "bottom": "10px" } }
+          "margin": {
+            "desktop": {
+              "bottom": "10px"
+            }
+          }
         }
       },
       {
@@ -28,60 +47,174 @@
         "attributes": {
           "level": "h1",
           "content": "Delivery, returns and the usual questions",
-          "fontSize": { "desktop": 48, "tablet": 48, "mobile": 34 },
-          "margin": { "desktop": { "bottom": "40px" } }
+          "fontSize": {
+            "desktop": 48,
+            "tablet": 48,
+            "mobile": 34
+          },
+          "margin": {
+            "desktop": {
+              "bottom": "40px"
+            }
+          }
         }
       },
       {
         "name": "sgs/container",
         "attributes": {
           "layout": "grid",
-          "gridTemplateColumns": { "desktop": "repeat(auto-fit,minmax(250px,1fr))", "mobile": "1fr" },
-          "gap": { "desktop": "1px" },
+          "gridTemplateColumns": {
+            "desktop": "repeat(auto-fit,minmax(250px,1fr))",
+            "mobile": "1fr"
+          },
+          "gap": {
+            "desktop": "1px"
+          },
           "backgroundColour": "border",
           "borderStyle": "solid",
-          "borderWidth": { "desktop": { "top": "1px", "right": "1px", "bottom": "1px", "left": "1px" } },
+          "borderWidth": {
+            "desktop": {
+              "top": "1px",
+              "right": "1px",
+              "bottom": "1px",
+              "left": "1px"
+            }
+          },
           "borderColour": "border",
-          "margin": { "desktop": { "bottom": "56px" } }
+          "margin": {
+            "desktop": {
+              "bottom": "56px"
+            }
+          }
         },
         "innerBlocks": [
           {
             "name": "sgs/container",
             "attributes": {
               "layout": "stack",
-              "gap": { "desktop": "10px" },
+              "gap": {
+                "desktop": "10px"
+              },
               "backgroundColour": "surface-alt",
-              "padding": { "desktop": { "top": "26px", "right": "26px", "bottom": "26px", "left": "26px" } }
+              "padding": {
+                "desktop": {
+                  "top": "26px",
+                  "right": "26px",
+                  "bottom": "26px",
+                  "left": "26px"
+                }
+              }
             },
             "innerBlocks": [
-              { "name": "sgs/text", "attributes": { "text": "UK delivery", "textTransform": "uppercase", "letterSpacing": { "desktop": 0.2 }, "fontSize": { "desktop": 12 }, "textColour": "text-label" } },
-              { "name": "sgs/text", "attributes": { "text": "Free over £75, otherwise £3.95 tracked. Frames in stock go out within one working day; prescription orders take 7–10 working days to make.", "fontSize": { "desktop": 15 } } }
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "UK delivery",
+                  "textTransform": "uppercase",
+                  "letterSpacing": {
+                    "desktop": 0.2
+                  },
+                  "fontSize": {
+                    "desktop": 12
+                  },
+                  "textColour": "text-label"
+                }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Free over £75, otherwise £3.95 tracked. Frames in stock go out within one working day; prescription orders take 7–10 working days to make.",
+                  "fontSize": {
+                    "desktop": 15
+                  }
+                }
+              }
             ]
           },
           {
             "name": "sgs/container",
             "attributes": {
               "layout": "stack",
-              "gap": { "desktop": "10px" },
+              "gap": {
+                "desktop": "10px"
+              },
               "backgroundColour": "surface-alt",
-              "padding": { "desktop": { "top": "26px", "right": "26px", "bottom": "26px", "left": "26px" } }
+              "padding": {
+                "desktop": {
+                  "top": "26px",
+                  "right": "26px",
+                  "bottom": "26px",
+                  "left": "26px"
+                }
+              }
             },
             "innerBlocks": [
-              { "name": "sgs/text", "attributes": { "text": "Collect in Birmingham", "textTransform": "uppercase", "letterSpacing": { "desktop": 0.2 }, "fontSize": { "desktop": 12 }, "textColour": "text-label" } },
-              { "name": "sgs/text", "attributes": { "text": "Free. Pick it at checkout and I'll message when it's ready. I'll adjust them to fit while you wait.", "fontSize": { "desktop": 15 } } }
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Collect in Birmingham",
+                  "textTransform": "uppercase",
+                  "letterSpacing": {
+                    "desktop": 0.2
+                  },
+                  "fontSize": {
+                    "desktop": 12
+                  },
+                  "textColour": "text-label"
+                }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Free. Pick it at checkout and I'll message when it's ready. I'll adjust them to fit while you wait.",
+                  "fontSize": {
+                    "desktop": 15
+                  }
+                }
+              }
             ]
           },
           {
             "name": "sgs/container",
             "attributes": {
               "layout": "stack",
-              "gap": { "desktop": "10px" },
+              "gap": {
+                "desktop": "10px"
+              },
               "backgroundColour": "surface-alt",
-              "padding": { "desktop": { "top": "26px", "right": "26px", "bottom": "26px", "left": "26px" } }
+              "padding": {
+                "desktop": {
+                  "top": "26px",
+                  "right": "26px",
+                  "bottom": "26px",
+                  "left": "26px"
+                }
+              }
             },
             "innerBlocks": [
-              { "name": "sgs/text", "attributes": { "text": "Returns", "textTransform": "uppercase", "letterSpacing": { "desktop": 0.2 }, "fontSize": { "desktop": 12 }, "textColour": "text-label" } },
-              { "name": "sgs/text", "attributes": { "text": "30 days on unworn frames with case and tags, refunded in full. Lenses made to your prescription can't be resold, so they're only refundable if I got them wrong.", "fontSize": { "desktop": 15 } } }
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Returns",
+                  "textTransform": "uppercase",
+                  "letterSpacing": {
+                    "desktop": 0.2
+                  },
+                  "fontSize": {
+                    "desktop": 12
+                  },
+                  "textColour": "text-label"
+                }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "30 days on unworn frames with case and tags, refunded in full. Lenses made to your prescription can't be resold, so they're only refundable if I got them wrong.",
+                  "fontSize": {
+                    "desktop": 15
+                  }
+                }
+              }
             ]
           }
         ]
@@ -93,18 +226,37 @@
           "justifyContent": "space-between",
           "alignItems": "center",
           "flexWrap": "wrap",
-          "gap": { "desktop": "16px" },
-          "margin": { "desktop": { "bottom": "16px" } }
+          "gap": {
+            "desktop": "16px"
+          },
+          "margin": {
+            "desktop": {
+              "bottom": "16px"
+            }
+          }
         },
         "innerBlocks": [
-          { "name": "sgs/heading", "attributes": { "level": "h2", "content": "Questions", "fontSize": { "desktop": 30 } } },
+          {
+            "name": "sgs/heading",
+            "attributes": {
+              "level": "h2",
+              "content": "Questions",
+              "fontSize": {
+                "desktop": 30
+              }
+            }
+          },
           {
             "name": "sgs/text",
             "attributes": {
               "text": "<a href=\"#modal-size-guide\">Size guide</a> &nbsp; <a href=\"/contact/\">Contact me</a>",
               "textTransform": "uppercase",
-              "fontSize": { "desktop": 13 },
-              "letterSpacing": { "desktop": 0.08 },
+              "fontSize": {
+                "desktop": 13
+              },
+              "letterSpacing": {
+                "desktop": 0.08
+              },
               "linkColour": "text",
               "textDecoration": "underline"
             }
@@ -121,63 +273,155 @@
           "closeIcon": "x",
           "borderColour": "border",
           "headerColour": "text",
-          "margin": { "desktop": { "bottom": "44px" } }
+          "margin": {
+            "desktop": {
+              "bottom": "44px"
+            }
+          }
         },
         "innerBlocks": [
           {
             "name": "sgs/accordion-item",
-            "attributes": { "title": "Are these frames genuine?" },
+            "attributes": {
+              "title": "Are these frames genuine?"
+            },
             "innerBlocks": [
-              { "name": "sgs/text", "attributes": { "text": "Yes. Everything comes through the brands' authorised UK suppliers to a GOC-registered clinic, boxed with its own case, cloth and warranty card. If a seller can't tell you where their stock comes from, be careful.", "fontSize": { "desktop": 15.5 }, "textColour": "text-muted" } }
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Yes. Everything comes through the brands' authorised UK suppliers to a GOC-registered clinic, boxed with its own case, cloth and warranty card. If a seller can't tell you where their stock comes from, be careful.",
+                  "fontSize": {
+                    "desktop": 15.5
+                  },
+                  "textColour": "text-muted"
+                }
+              }
             ]
           },
           {
             "name": "sgs/accordion-item",
-            "attributes": { "title": "How are you cheaper than the high street?" },
+            "attributes": {
+              "title": "How are you cheaper than the high street?"
+            },
             "innerBlocks": [
-              { "name": "sgs/text", "attributes": { "text": "I'm one optician running one clinic, not a chain with regional managers and shopping-centre rents. I price from what a frame costs me rather than working back from the RRP, and I'd rather sell more pairs fairly than fewer at a markup.", "fontSize": { "desktop": 15.5 }, "textColour": "text-muted" } }
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "I'm one optician running one clinic, not a chain with regional managers and shopping-centre rents. I price from what a frame costs me rather than working back from the RRP, and I'd rather sell more pairs fairly than fewer at a markup.",
+                  "fontSize": {
+                    "desktop": 15.5
+                  },
+                  "textColour": "text-muted"
+                }
+              }
             ]
           },
           {
             "name": "sgs/accordion-item",
-            "attributes": { "title": "Can I put prescription lenses in sunglasses?" },
+            "attributes": {
+              "title": "Can I put prescription lenses in sunglasses?"
+            },
             "innerBlocks": [
-              { "name": "sgs/text", "attributes": { "text": "Yes, in any frame here. Choose “Add my prescription” on the product and the tint gets matched to the original lenses. Heavily wrapped sports frames and very strong prescriptions sometimes need a different approach — I'll tell you before anything is made.", "fontSize": { "desktop": 15.5 }, "textColour": "text-muted" } }
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Yes, in any frame here. Choose “Add my prescription” on the product and the tint gets matched to the original lenses. Heavily wrapped sports frames and very strong prescriptions sometimes need a different approach — I'll tell you before anything is made.",
+                  "fontSize": {
+                    "desktop": 15.5
+                  },
+                  "textColour": "text-muted"
+                }
+              }
             ]
           },
           {
             "name": "sgs/accordion-item",
-            "attributes": { "title": "What do I need for a prescription order?" },
+            "attributes": {
+              "title": "What do I need for a prescription order?"
+            },
             "innerBlocks": [
-              { "name": "sgs/text", "attributes": { "text": "A prescription under two years old from a UK optician. Type it in, photograph it, or send it after you order. If your PD (pupillary distance) isn't written on it, I can measure it from a photo or in person.", "fontSize": { "desktop": 15.5 }, "textColour": "text-muted" } }
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "A prescription under two years old from a UK optician. Type it in, photograph it, or send it after you order. If your PD (pupillary distance) isn't written on it, I can measure it from a photo or in person.",
+                  "fontSize": {
+                    "desktop": 15.5
+                  },
+                  "textColour": "text-muted"
+                }
+              }
             ]
           },
           {
             "name": "sgs/accordion-item",
-            "attributes": { "title": "How long do prescription lenses take?" },
+            "attributes": {
+              "title": "How long do prescription lenses take?"
+            },
             "innerBlocks": [
-              { "name": "sgs/text", "attributes": { "text": "Seven to ten working days from receiving your prescription. Frames without prescription lenses go out within one working day.", "fontSize": { "desktop": 15.5 }, "textColour": "text-muted" } }
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Seven to ten working days from receiving your prescription. Frames without prescription lenses go out within one working day.",
+                  "fontSize": {
+                    "desktop": 15.5
+                  },
+                  "textColour": "text-muted"
+                }
+              }
             ]
           },
           {
             "name": "sgs/accordion-item",
-            "attributes": { "title": "How do I know which size to choose?" },
+            "attributes": {
+              "title": "How do I know which size to choose?"
+            },
             "innerBlocks": [
-              { "name": "sgs/text", "attributes": { "text": "Look inside the arm of a pair you already own — the first number is the lens width in millimetres. Most people are between 50 and 58. Unsure? WhatsApp me a photo of that number and I'll match it.", "fontSize": { "desktop": 15.5 }, "textColour": "text-muted" } }
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Look inside the arm of a pair you already own — the first number is the lens width in millimetres. Most people are between 50 and 58. Unsure? WhatsApp me a photo of that number and I'll match it.",
+                  "fontSize": {
+                    "desktop": 15.5
+                  },
+                  "textColour": "text-muted"
+                }
+              }
             ]
           },
           {
             "name": "sgs/accordion-item",
-            "attributes": { "title": "Can I return prescription sunglasses?" },
+            "attributes": {
+              "title": "Can I return prescription sunglasses?"
+            },
             "innerBlocks": [
-              { "name": "sgs/text", "attributes": { "text": "Frames come back within 30 days if unworn. Lenses cut to your prescription can't be resold, so they're only refundable if I got them wrong — in which case I remake or refund them in full.", "fontSize": { "desktop": 15.5 }, "textColour": "text-muted" } }
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Frames come back within 30 days if unworn. Lenses cut to your prescription can't be resold, so they're only refundable if I got them wrong — in which case I remake or refund them in full.",
+                  "fontSize": {
+                    "desktop": 15.5
+                  },
+                  "textColour": "text-muted"
+                }
+              }
             ]
           },
           {
             "name": "sgs/accordion-item",
-            "attributes": { "title": "Can I collect and have them fitted?" },
+            "attributes": {
+              "title": "Can I collect and have them fitted?"
+            },
             "innerBlocks": [
-              { "name": "sgs/text", "attributes": { "text": "Yes, and I'd rather you did. Choose “Collect in Birmingham” at checkout, I'll message when they're ready, and I'll adjust them to your face while you wait. No charge.", "fontSize": { "desktop": 15.5 }, "textColour": "text-muted" } }
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Yes, and I'd rather you did. Choose “Collect in Birmingham” at checkout, I'll message when they're ready, and I'll adjust them to your face while you wait. No charge.",
+                  "fontSize": {
+                    "desktop": 15.5
+                  },
+                  "textColour": "text-muted"
+                }
+              }
             ]
           }
         ]
@@ -189,25 +433,71 @@
           "justifyContent": "space-between",
           "alignItems": "center",
           "flexWrap": "wrap",
-          "gap": { "desktop": "20px" },
+          "gap": {
+            "desktop": "20px"
+          },
           "backgroundColour": "surface-alt",
           "borderStyle": "solid",
-          "borderWidth": { "desktop": { "top": "1px", "right": "1px", "bottom": "1px", "left": "1px" } },
+          "borderWidth": {
+            "desktop": {
+              "top": "1px",
+              "right": "1px",
+              "bottom": "1px",
+              "left": "1px"
+            }
+          },
           "borderColour": "border",
-          "padding": { "desktop": { "top": "28px", "right": "28px", "bottom": "28px", "left": "28px" } }
+          "padding": {
+            "desktop": {
+              "top": "28px",
+              "right": "28px",
+              "bottom": "28px",
+              "left": "28px"
+            }
+          }
         },
         "innerBlocks": [
           {
             "name": "sgs/container",
-            "attributes": { "layout": "stack", "gap": { "desktop": "6px" } },
+            "attributes": {
+              "layout": "stack",
+              "gap": {
+                "desktop": "6px"
+              }
+            },
             "innerBlocks": [
-              { "name": "sgs/text", "attributes": { "text": "Still not answered?", "fontFamily": "heading", "fontWeight": "500", "fontSize": { "desktop": 24 } } },
-              { "name": "sgs/text", "attributes": { "text": "Call the clinic, or send me a message and I'll get back to you.", "fontSize": { "desktop": 15 }, "textColour": "text-muted" } }
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Still not answered?",
+                  "fontFamily": "heading",
+                  "fontWeight": "500",
+                  "fontSize": {
+                    "desktop": 24
+                  }
+                }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Call the clinic, or send me a message and I'll get back to you.",
+                  "fontSize": {
+                    "desktop": 15
+                  },
+                  "textColour": "text-muted"
+                }
+              }
             ]
           },
           {
             "name": "sgs/container",
-            "attributes": { "layout": "flex", "gap": { "desktop": "10px" }, "flexWrap": "wrap" },
+            "attributes": {
+              "layout": "flex",
+              "gap": {
+                "desktop": "10px"
+              },
+              "flexWrap": "wrap"
+            },
             "innerBlocks": [
               {
                 "name": "sgs/button",
@@ -218,12 +508,30 @@
                   "colourBackground": "primary",
                   "colourBackgroundHover": "primary-dark",
                   "colourText": "primary-text",
-                  "borderRadius": { "desktop": { "topLeft": "0px", "topRight": "0px", "bottomLeft": "0px", "bottomRight": "0px" } },
-                  "minHeight": { "desktop": 52 },
-                  "fontSize": { "desktop": 13 },
-                  "letterSpacing": { "desktop": 0.1 },
+                  "borderRadius": {
+                    "desktop": {
+                      "topLeft": "0px",
+                      "topRight": "0px",
+                      "bottomLeft": "0px",
+                      "bottomRight": "0px"
+                    }
+                  },
+                  "minHeight": {
+                    "desktop": 52
+                  },
+                  "fontSize": {
+                    "desktop": 13
+                  },
+                  "letterSpacing": {
+                    "desktop": 0.1
+                  },
                   "textTransform": "uppercase",
-                  "padding": { "desktop": { "left": "24px", "right": "24px" } }
+                  "padding": {
+                    "desktop": {
+                      "left": "24px",
+                      "right": "24px"
+                    }
+                  }
                 }
               },
               {
@@ -233,11 +541,29 @@
                   "showIcon": false,
                   "textColour": "text",
                   "borderStyle": "solid",
-                  "borderWidth": { "desktop": { "top": "1px", "right": "1px", "bottom": "1px", "left": "1px" } },
+                  "borderWidth": {
+                    "desktop": {
+                      "top": "1px",
+                      "right": "1px",
+                      "bottom": "1px",
+                      "left": "1px"
+                    }
+                  },
                   "borderColour": "text",
-                  "padding": { "desktop": { "top": "17px", "right": "24px", "bottom": "17px", "left": "24px" } },
-                  "fontSize": { "desktop": 13 },
-                  "letterSpacing": { "desktop": 0.1 },
+                  "padding": {
+                    "desktop": {
+                      "top": "17px",
+                      "right": "24px",
+                      "bottom": "17px",
+                      "left": "24px"
+                    }
+                  },
+                  "fontSize": {
+                    "desktop": 13
+                  },
+                  "letterSpacing": {
+                    "desktop": 0.1
+                  },
                   "textTransform": "uppercase"
                 }
               }

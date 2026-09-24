@@ -1,31 +1,61 @@
-[{
-  "name": "sgs/mega-panel",
-  "attributes": {
-    "variant": "general",
-    "style": "columns",
-    "colourScheme": "light",
-    "maxWidth": { "desktop": "1120px" }
-  },
-  "innerBlocks": [
-    {
-      "name": "sgs/mega-group",
-      "attributes": {},
-      "innerBlocks": [
-        { "name": "sgs/heading", "attributes": { "level": "h3", "content": "Prescription lenses" } },
-        {
-          "name": "sgs/icon-list",
-          "attributes": {
-            "heading": "",
-            "markerType": "none",
-            "items": [
-              { "iconSource": "lucide", "iconName": "", "text": "Single vision — from £59: distance or reading, tinted to match the frame.", "url": "/lenses" },
-              { "iconSource": "lucide", "iconName": "", "text": "Varifocal — from £129: near and far in one lens, no visible line.", "url": "/lenses" },
-              { "iconSource": "lucide", "iconName": "", "text": "Polarised — +£40: kills glare off water, roads and windscreens.", "url": "/lenses" },
-              { "iconSource": "lucide", "iconName": "", "text": "Light-reactive — +£70: clear indoors, dark outside in under a minute.", "url": "/lenses" }
-            ]
+[
+  {
+    "name": "sgs/mega-panel",
+    "attributes": {
+      "variant": "general",
+      "style": "columns",
+      "colourScheme": "light",
+      "maxWidth": {
+        "desktop": "1120px"
+      }
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/mega-group",
+        "attributes": {},
+        "innerBlocks": [
+          {
+            "name": "sgs/heading",
+            "attributes": {
+              "level": "h3",
+              "content": "Prescription lenses"
+            }
+          },
+          {
+            "name": "sgs/icon-list",
+            "attributes": {
+              "heading": "",
+              "markerType": "none",
+              "items": [
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Single vision — from £59: distance or reading, tinted to match the frame.",
+                  "url": "/lenses"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Varifocal — from £129: near and far in one lens, no visible line.",
+                  "url": "/lenses"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Polarised — +£40: kills glare off water, roads and windscreens.",
+                  "url": "/lenses"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Light-reactive — +£70: clear indoors, dark outside in under a minute.",
+                  "url": "/lenses"
+                }
+              ]
+            }
           }
-        }
-      ]
-    }
-  ]
-}]
+        ]
+      }
+    ]
+  }
+]

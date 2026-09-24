@@ -1,63 +1,179 @@
-[{
-  "name": "sgs/mega-panel",
-  "attributes": {
-    "variant": "general",
-    "style": "columns",
-    "colourScheme": "light",
-    "maxWidth": { "desktop": "1120px" }
-  },
-  "innerBlocks": [
-    {
-      "name": "sgs/mega-group",
-      "attributes": {},
-      "innerBlocks": [
-        { "name": "sgs/heading", "attributes": { "level": "h3", "content": "Most asked for" } },
-        {
-          "name": "sgs/icon-list",
-          "attributes": {
-            "heading": "",
-            "markerType": "none",
-            "items": [
-              { "iconSource": "lucide", "iconName": "", "text": "Ray-Ban (48 frames)", "url": "/sunglasses?brand=Ray-Ban" },
-              { "iconSource": "lucide", "iconName": "", "text": "Gucci (44 frames)", "url": "/sunglasses?brand=Gucci" },
-              { "iconSource": "lucide", "iconName": "", "text": "Oakley (17 frames)", "url": "/sunglasses?brand=Oakley" },
-              { "iconSource": "lucide", "iconName": "", "text": "Michael Kors (18 frames)", "url": "/sunglasses?brand=Michael+Kors" },
-              { "iconSource": "lucide", "iconName": "", "text": "Prada (12 frames)", "url": "/sunglasses?brand=Prada" },
-              { "iconSource": "lucide", "iconName": "", "text": "Polaroid (12 frames)", "url": "/sunglasses?brand=Polaroid" },
-              { "iconSource": "lucide", "iconName": "", "text": "Versace (11 frames)", "url": "/sunglasses?brand=Versace" },
-              { "iconSource": "lucide", "iconName": "", "text": "Police (10 frames)", "url": "/sunglasses?brand=Police" },
-              { "iconSource": "lucide", "iconName": "", "text": "Carrera (9 frames)", "url": "/sunglasses?brand=Carrera" },
-              { "iconSource": "lucide", "iconName": "", "text": "Dolce & Gabbana (9 frames)", "url": "/sunglasses?brand=Dolce+%26+Gabbana" },
-              { "iconSource": "lucide", "iconName": "", "text": "Balenciaga (7 frames)", "url": "/sunglasses?brand=Balenciaga" },
-              { "iconSource": "lucide", "iconName": "", "text": "Ferrari Scuderia (6 frames)", "url": "/sunglasses?brand=Ferrari+Scuderia" }
-            ]
-          }
-        }
-      ]
+[
+  {
+    "name": "sgs/mega-panel",
+    "attributes": {
+      "variant": "general",
+      "style": "columns",
+      "colourScheme": "light",
+      "maxWidth": {
+        "desktop": "1120px"
+      }
     },
-    {
-      "name": "sgs/mega-group",
-      "attributes": {},
-      "innerBlocks": [
-        { "name": "sgs/heading", "attributes": { "level": "h3", "content": "All 40 brands" } },
-        {
-          "name": "sgs/icon-list",
-          "attributes": {
-            "heading": "",
-            "markerType": "none",
-            "items": [
-              { "iconSource": "lucide", "iconName": "", "text": "Emporio Armani", "url": "/sunglasses?brand=Emporio+Armani" },
-              { "iconSource": "lucide", "iconName": "", "text": "Coach", "url": "/sunglasses?brand=Coach" },
-              { "iconSource": "lucide", "iconName": "", "text": "Ralph Lauren", "url": "/sunglasses?brand=Ralph+Lauren" },
-              { "iconSource": "lucide", "iconName": "", "text": "Diesel", "url": "/sunglasses?brand=Diesel" },
-              { "iconSource": "lucide", "iconName": "", "text": "Calvin Klein", "url": "/sunglasses?brand=Calvin+Klein" },
-              { "iconSource": "lucide", "iconName": "", "text": "Hugo Boss", "url": "/sunglasses?brand=Hugo+Boss" },
-              { "iconSource": "lucide", "iconName": "", "text": "Tommy Hilfiger", "url": "/sunglasses?brand=Tommy+Hilfiger" },
-              { "iconSource": "lucide", "iconName": "", "text": "See all 40 brands", "url": "/sunglasses" }
-            ]
+    "innerBlocks": [
+      {
+        "name": "sgs/mega-group",
+        "attributes": {},
+        "innerBlocks": [
+          {
+            "name": "sgs/heading",
+            "attributes": {
+              "level": "h3",
+              "content": "Most asked for"
+            }
+          },
+          {
+            "name": "sgs/icon-list",
+            "attributes": {
+              "heading": "",
+              "markerType": "none",
+              "items": [
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Ray-Ban (48 frames)",
+                  "url": "/sunglasses?brand=Ray-Ban"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Gucci (44 frames)",
+                  "url": "/sunglasses?brand=Gucci"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Oakley (17 frames)",
+                  "url": "/sunglasses?brand=Oakley"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Michael Kors (18 frames)",
+                  "url": "/sunglasses?brand=Michael+Kors"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Prada (12 frames)",
+                  "url": "/sunglasses?brand=Prada"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Polaroid (12 frames)",
+                  "url": "/sunglasses?brand=Polaroid"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Versace (11 frames)",
+                  "url": "/sunglasses?brand=Versace"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Police (10 frames)",
+                  "url": "/sunglasses?brand=Police"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Carrera (9 frames)",
+                  "url": "/sunglasses?brand=Carrera"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Dolce & Gabbana (9 frames)",
+                  "url": "/sunglasses?brand=Dolce+%26+Gabbana"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Balenciaga (7 frames)",
+                  "url": "/sunglasses?brand=Balenciaga"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Ferrari Scuderia (6 frames)",
+                  "url": "/sunglasses?brand=Ferrari+Scuderia"
+                }
+              ]
+            }
           }
-        }
-      ]
-    }
-  ]
-}]
+        ]
+      },
+      {
+        "name": "sgs/mega-group",
+        "attributes": {},
+        "innerBlocks": [
+          {
+            "name": "sgs/heading",
+            "attributes": {
+              "level": "h3",
+              "content": "All 40 brands"
+            }
+          },
+          {
+            "name": "sgs/icon-list",
+            "attributes": {
+              "heading": "",
+              "markerType": "none",
+              "items": [
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Emporio Armani",
+                  "url": "/sunglasses?brand=Emporio+Armani"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Coach",
+                  "url": "/sunglasses?brand=Coach"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Ralph Lauren",
+                  "url": "/sunglasses?brand=Ralph+Lauren"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Diesel",
+                  "url": "/sunglasses?brand=Diesel"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Calvin Klein",
+                  "url": "/sunglasses?brand=Calvin+Klein"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Hugo Boss",
+                  "url": "/sunglasses?brand=Hugo+Boss"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Tommy Hilfiger",
+                  "url": "/sunglasses?brand=Tommy+Hilfiger"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "See all 40 brands",
+                  "url": "/sunglasses"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

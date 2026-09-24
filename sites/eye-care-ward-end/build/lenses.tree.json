@@ -3,11 +3,22 @@
     "name": "sgs/container",
     "attributes": {
       "tagName": "section",
-      "maxWidth": { "desktop": "1100px" },
+      "maxWidth": {
+        "desktop": "1100px"
+      },
       "padding": {
-        "desktop": { "top": "104px", "bottom": "104px" },
-        "tablet": { "top": "104px", "bottom": "104px" },
-        "mobile": { "top": "56px", "bottom": "56px" }
+        "desktop": {
+          "top": "104px",
+          "bottom": "104px"
+        },
+        "tablet": {
+          "top": "104px",
+          "bottom": "104px"
+        },
+        "mobile": {
+          "top": "56px",
+          "bottom": "56px"
+        }
       },
       "layout": "stack"
     },
@@ -17,10 +28,18 @@
         "attributes": {
           "text": "Prescription lenses",
           "textTransform": "uppercase",
-          "letterSpacing": { "desktop": 0.24 },
-          "fontSize": { "desktop": 12 },
+          "letterSpacing": {
+            "desktop": 0.24
+          },
+          "fontSize": {
+            "desktop": 12
+          },
           "textColour": "accent-text",
-          "margin": { "desktop": { "bottom": "10px" } }
+          "margin": {
+            "desktop": {
+              "bottom": "10px"
+            }
+          }
         }
       },
       {
@@ -28,30 +47,56 @@
         "attributes": {
           "level": "h1",
           "content": "Three questions, then leave the rest to me.",
-          "fontSize": { "desktop": 48, "tablet": 48, "mobile": 34 },
-          "margin": { "desktop": { "bottom": "20px" } }
+          "fontSize": {
+            "desktop": 48,
+            "tablet": 48,
+            "mobile": 34
+          },
+          "margin": {
+            "desktop": {
+              "bottom": "20px"
+            }
+          }
         }
       },
       {
         "name": "sgs/text",
         "attributes": {
           "text": "Any frame on this site can be glazed to your prescription. You tell me what they're for, how thin you want the lenses and what finish; I check the order, cut the lenses and fit them myself. Send your prescription whenever suits — before or after you order.",
-          "fontSize": { "desktop": 17 },
+          "fontSize": {
+            "desktop": 17
+          },
           "textColour": "text-muted",
           "maxWidth": 620,
           "maxWidthUnit": "px",
-          "margin": { "desktop": { "bottom": "48px" } }
+          "margin": {
+            "desktop": {
+              "bottom": "48px"
+            }
+          }
         }
       },
       {
         "name": "sgs/container",
         "attributes": {
           "layout": "grid",
-          "gridTemplateColumns": { "desktop": "repeat(auto-fit,minmax(230px,1fr))", "mobile": "1fr" },
-          "gap": { "desktop": "1px" },
+          "gridTemplateColumns": {
+            "desktop": "repeat(auto-fit,minmax(230px,1fr))",
+            "mobile": "1fr"
+          },
+          "gap": {
+            "desktop": "1px"
+          },
           "backgroundColour": "border",
           "borderStyle": "solid",
-          "borderWidth": { "desktop": { "top": "1px", "right": "1px", "bottom": "1px", "left": "1px" } },
+          "borderWidth": {
+            "desktop": {
+              "top": "1px",
+              "right": "1px",
+              "bottom": "1px",
+              "left": "1px"
+            }
+          },
           "borderColour": "border"
         },
         "innerBlocks": [
@@ -59,56 +104,220 @@
             "name": "sgs/container",
             "attributes": {
               "layout": "stack",
-              "gap": { "desktop": "6px" },
+              "gap": {
+                "desktop": "6px"
+              },
               "backgroundColour": "surface-alt",
-              "padding": { "desktop": { "top": "28px", "right": "28px", "bottom": "28px", "left": "28px" } }
+              "padding": {
+                "desktop": {
+                  "top": "28px",
+                  "right": "28px",
+                  "bottom": "28px",
+                  "left": "28px"
+                }
+              }
             },
             "innerBlocks": [
-              { "name": "sgs/text", "attributes": { "text": "Single vision", "textTransform": "uppercase", "letterSpacing": { "desktop": 0.2 }, "fontSize": { "desktop": 12 }, "textColour": "text-label" } },
-              { "name": "sgs/text", "attributes": { "text": "from £59", "fontFamily": "heading", "fontWeight": "500", "fontSize": { "desktop": 34 } } },
-              { "name": "sgs/text", "attributes": { "text": "Distance or reading, tinted to match the frame.", "fontSize": { "desktop": 14.5 }, "textColour": "text-muted" } }
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Single vision",
+                  "textTransform": "uppercase",
+                  "letterSpacing": {
+                    "desktop": 0.2
+                  },
+                  "fontSize": {
+                    "desktop": 12
+                  },
+                  "textColour": "text-label"
+                }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "from £59",
+                  "fontFamily": "heading",
+                  "fontWeight": "500",
+                  "fontSize": {
+                    "desktop": 34
+                  }
+                }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Distance or reading, tinted to match the frame.",
+                  "fontSize": {
+                    "desktop": 14.5
+                  },
+                  "textColour": "text-muted"
+                }
+              }
             ]
           },
           {
             "name": "sgs/container",
             "attributes": {
               "layout": "stack",
-              "gap": { "desktop": "6px" },
+              "gap": {
+                "desktop": "6px"
+              },
               "backgroundColour": "surface-alt",
-              "padding": { "desktop": { "top": "28px", "right": "28px", "bottom": "28px", "left": "28px" } }
+              "padding": {
+                "desktop": {
+                  "top": "28px",
+                  "right": "28px",
+                  "bottom": "28px",
+                  "left": "28px"
+                }
+              }
             },
             "innerBlocks": [
-              { "name": "sgs/text", "attributes": { "text": "Varifocal", "textTransform": "uppercase", "letterSpacing": { "desktop": 0.2 }, "fontSize": { "desktop": 12 }, "textColour": "text-label" } },
-              { "name": "sgs/text", "attributes": { "text": "from £129", "fontFamily": "heading", "fontWeight": "500", "fontSize": { "desktop": 34 } } },
-              { "name": "sgs/text", "attributes": { "text": "Near and far in one lens, no visible line.", "fontSize": { "desktop": 14.5 }, "textColour": "text-muted" } }
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Varifocal",
+                  "textTransform": "uppercase",
+                  "letterSpacing": {
+                    "desktop": 0.2
+                  },
+                  "fontSize": {
+                    "desktop": 12
+                  },
+                  "textColour": "text-label"
+                }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "from £129",
+                  "fontFamily": "heading",
+                  "fontWeight": "500",
+                  "fontSize": {
+                    "desktop": 34
+                  }
+                }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Near and far in one lens, no visible line.",
+                  "fontSize": {
+                    "desktop": 14.5
+                  },
+                  "textColour": "text-muted"
+                }
+              }
             ]
           },
           {
             "name": "sgs/container",
             "attributes": {
               "layout": "stack",
-              "gap": { "desktop": "6px" },
+              "gap": {
+                "desktop": "6px"
+              },
               "backgroundColour": "surface-alt",
-              "padding": { "desktop": { "top": "28px", "right": "28px", "bottom": "28px", "left": "28px" } }
+              "padding": {
+                "desktop": {
+                  "top": "28px",
+                  "right": "28px",
+                  "bottom": "28px",
+                  "left": "28px"
+                }
+              }
             },
             "innerBlocks": [
-              { "name": "sgs/text", "attributes": { "text": "Polarised", "textTransform": "uppercase", "letterSpacing": { "desktop": 0.2 }, "fontSize": { "desktop": 12 }, "textColour": "text-label" } },
-              { "name": "sgs/text", "attributes": { "text": "+£40", "fontFamily": "heading", "fontWeight": "500", "fontSize": { "desktop": 34 } } },
-              { "name": "sgs/text", "attributes": { "text": "Kills glare off water, roads and windscreens.", "fontSize": { "desktop": 14.5 }, "textColour": "text-muted" } }
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Polarised",
+                  "textTransform": "uppercase",
+                  "letterSpacing": {
+                    "desktop": 0.2
+                  },
+                  "fontSize": {
+                    "desktop": 12
+                  },
+                  "textColour": "text-label"
+                }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "+£40",
+                  "fontFamily": "heading",
+                  "fontWeight": "500",
+                  "fontSize": {
+                    "desktop": 34
+                  }
+                }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Kills glare off water, roads and windscreens.",
+                  "fontSize": {
+                    "desktop": 14.5
+                  },
+                  "textColour": "text-muted"
+                }
+              }
             ]
           },
           {
             "name": "sgs/container",
             "attributes": {
               "layout": "stack",
-              "gap": { "desktop": "6px" },
+              "gap": {
+                "desktop": "6px"
+              },
               "backgroundColour": "surface-alt",
-              "padding": { "desktop": { "top": "28px", "right": "28px", "bottom": "28px", "left": "28px" } }
+              "padding": {
+                "desktop": {
+                  "top": "28px",
+                  "right": "28px",
+                  "bottom": "28px",
+                  "left": "28px"
+                }
+              }
             },
             "innerBlocks": [
-              { "name": "sgs/text", "attributes": { "text": "Thinner lenses", "textTransform": "uppercase", "letterSpacing": { "desktop": 0.2 }, "fontSize": { "desktop": 12 }, "textColour": "text-label" } },
-              { "name": "sgs/text", "attributes": { "text": "+£30–£100", "fontFamily": "heading", "fontWeight": "500", "fontSize": { "desktop": 34 } } },
-              { "name": "sgs/text", "attributes": { "text": "I recommend one from your prescription strength.", "fontSize": { "desktop": 14.5 }, "textColour": "text-muted" } }
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Thinner lenses",
+                  "textTransform": "uppercase",
+                  "letterSpacing": {
+                    "desktop": 0.2
+                  },
+                  "fontSize": {
+                    "desktop": 12
+                  },
+                  "textColour": "text-label"
+                }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "+£30–£100",
+                  "fontFamily": "heading",
+                  "fontWeight": "500",
+                  "fontSize": {
+                    "desktop": 34
+                  }
+                }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "I recommend one from your prescription strength.",
+                  "fontSize": {
+                    "desktop": 14.5
+                  },
+                  "textColour": "text-muted"
+                }
+              }
             ]
           }
         ]
@@ -117,31 +326,74 @@
         "name": "sgs/container",
         "attributes": {
           "layout": "grid",
-          "gridTemplateColumns": { "desktop": "minmax(0,1.1fr) minmax(0,1fr)", "tablet": "1fr", "mobile": "1fr" },
-          "gap": { "desktop": "40px" },
-          "margin": { "desktop": { "top": "64px" } }
+          "gridTemplateColumns": {
+            "desktop": "minmax(0,1.1fr) minmax(0,1fr)",
+            "tablet": "1fr",
+            "mobile": "1fr"
+          },
+          "gap": {
+            "desktop": "40px"
+          },
+          "margin": {
+            "desktop": {
+              "top": "64px"
+            }
+          }
         },
         "innerBlocks": [
           {
             "name": "sgs/container",
-            "attributes": { "layout": "stack", "gap": { "desktop": "16px" } },
+            "attributes": {
+              "layout": "stack",
+              "gap": {
+                "desktop": "16px"
+              }
+            },
             "innerBlocks": [
-              { "name": "sgs/heading", "attributes": { "level": "h2", "content": "In every lens, no extra charge", "fontSize": { "desktop": 30 }, "margin": { "desktop": { "bottom": "16px" } } } },
+              {
+                "name": "sgs/heading",
+                "attributes": {
+                  "level": "h2",
+                  "content": "In every lens, no extra charge",
+                  "fontSize": {
+                    "desktop": 30
+                  },
+                  "margin": {
+                    "desktop": {
+                      "bottom": "16px"
+                    }
+                  }
+                }
+              },
               {
                 "name": "sgs/icon-list",
                 "attributes": {
                   "markerType": "none",
                   "gap": "11px",
-                  "itemFontSize": { "desktop": 15.5 },
+                  "itemFontSize": {
+                    "desktop": 15.5
+                  },
                   "textColour": "text-muted",
                   "source": "typed",
                   "items": [
-                    { "text": "UV400 protection" },
-                    { "text": "Anti-scratch hard coat" },
-                    { "text": "Anti-reflective back surface, so you don't catch your own eye in the lens" },
-                    { "text": "Tint matched to the frame's original lenses" },
-                    { "text": "Checked against your prescription by me before it's posted" },
-                    { "text": "Two-year guarantee on the lenses" }
+                    {
+                      "text": "UV400 protection"
+                    },
+                    {
+                      "text": "Anti-scratch hard coat"
+                    },
+                    {
+                      "text": "Anti-reflective back surface, so you don't catch your own eye in the lens"
+                    },
+                    {
+                      "text": "Tint matched to the frame's original lenses"
+                    },
+                    {
+                      "text": "Checked against your prescription by me before it's posted"
+                    },
+                    {
+                      "text": "Two-year guarantee on the lenses"
+                    }
                   ]
                 }
               }
@@ -149,19 +401,55 @@
           },
           {
             "name": "sgs/container",
-            "attributes": { "layout": "stack", "gap": { "desktop": "16px" } },
+            "attributes": {
+              "layout": "stack",
+              "gap": {
+                "desktop": "16px"
+              }
+            },
             "innerBlocks": [
-              { "name": "sgs/heading", "attributes": { "level": "h2", "content": "How it goes", "fontSize": { "desktop": 30 }, "margin": { "desktop": { "bottom": "16px" } } } },
+              {
+                "name": "sgs/heading",
+                "attributes": {
+                  "level": "h2",
+                  "content": "How it goes",
+                  "fontSize": {
+                    "desktop": 30
+                  },
+                  "margin": {
+                    "desktop": {
+                      "bottom": "16px"
+                    }
+                  }
+                }
+              },
               {
                 "name": "sgs/process-steps",
                 "attributes": {
                   "numberColour": "accent-text",
                   "steps": [
-                    { "number": "1", "title": "Choose a frame and tap “Add my prescription”.", "description": "" },
-                    { "number": "2", "title": "Pick what they're for, how thin, what finish — all with pictures.", "description": "" },
-                    { "number": "3", "title": "Send the prescription now, or after you order. I'll remind you.", "description": "" },
-                    { "number": "4", "title": "Made and checked in Birmingham, posted in 7–10 working days — or collect and I'll fit them to you in person.", "description": "" }
-                  ]
+                    {
+                      "number": "1",
+                      "title": "Choose a frame and tap “Add my prescription”.",
+                      "description": ""
+                    },
+                    {
+                      "number": "2",
+                      "title": "Pick what they're for, how thin, what finish — all with pictures.",
+                      "description": ""
+                    },
+                    {
+                      "number": "3",
+                      "title": "Send the prescription now, or after you order. I'll remind you.",
+                      "description": ""
+                    },
+                    {
+                      "number": "4",
+                      "title": "Made and checked in Birmingham, posted in 7–10 working days — or collect and I'll fit them to you in person.",
+                      "description": ""
+                    }
+                  ],
+                  "layout": "list"
                 }
               },
               {
@@ -173,13 +461,35 @@
                   "colourBackground": "primary",
                   "colourBackgroundHover": "primary-dark",
                   "colourText": "primary-text",
-                  "borderRadius": { "desktop": { "topLeft": "0px", "topRight": "0px", "bottomLeft": "0px", "bottomRight": "0px" } },
-                  "minHeight": { "desktop": 52 },
-                  "fontSize": { "desktop": 13 },
-                  "letterSpacing": { "desktop": 0.1 },
+                  "borderRadius": {
+                    "desktop": {
+                      "topLeft": "0px",
+                      "topRight": "0px",
+                      "bottomLeft": "0px",
+                      "bottomRight": "0px"
+                    }
+                  },
+                  "minHeight": {
+                    "desktop": 52
+                  },
+                  "fontSize": {
+                    "desktop": 13
+                  },
+                  "letterSpacing": {
+                    "desktop": 0.1
+                  },
                   "textTransform": "uppercase",
-                  "padding": { "desktop": { "left": "26px", "right": "26px" } },
-                  "margin": { "desktop": { "top": "28px" } }
+                  "padding": {
+                    "desktop": {
+                      "left": "26px",
+                      "right": "26px"
+                    }
+                  },
+                  "margin": {
+                    "desktop": {
+                      "top": "28px"
+                    }
+                  }
                 }
               }
             ]

@@ -3,7 +3,7 @@
     "name": "sgs/hero",
     "attributes": {
       "align": "full",
-      "backgroundColour": "#141414",
+      "backgroundColour": "primary",
       "backgroundImage": {
         "id": 174,
         "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/hero.jpg",
@@ -73,7 +73,7 @@
             "desktop": -0.015
           },
           "letterSpacingUnit": "em",
-          "textColour": "#FAF8F5",
+          "textColour": "text-inverse",
           "textWrap": "pretty",
           "className": "sgs-hero__headline"
         }
@@ -118,9 +118,9 @@
               "inheritStyle": "custom",
               "label": "Shop sunglasses",
               "url": "https://darkcyan-grouse-898606.hostingersite.com/shop/",
-              "colourBackground": "#FAF8F5",
-              "colourText": "#141414",
-              "colourBackgroundHover": "#ffffff",
+              "colourBackground": "surface",
+              "colourText": "text",
+              "colourBackgroundHover": "surface-alt",
               "borderRadius": {
                 "desktop": {}
               },
@@ -151,7 +151,7 @@
               "label": "Add your prescription",
               "url": "https://darkcyan-grouse-898606.hostingersite.com/prescription-lenses/",
               "colourBackground": "transparent",
-              "colourText": "#FAF8F5",
+              "colourText": "text-inverse",
               "borderColour": "rgba(250,248,245,.75)",
               "borderWidth": {
                 "desktop": {
@@ -218,7 +218,7 @@
           "nameLetterSpacingUnit": "em",
           "nameTextTransform": "uppercase",
           "nameColour": "#3A352F",
-          "nameColourHover": "#141414",
+          "nameColourHover": "text",
           "padding": {
             "desktop": {
               "bottom": "26px",
@@ -226,7 +226,8 @@
               "right": "0",
               "top": "26px"
             }
-          }
+          },
+          "scrollDuration": 64
         }
       }
     ]
@@ -292,7 +293,7 @@
                   },
                   "letterSpacingUnit": "em",
                   "textTransform": "uppercase",
-                  "textColour": "#6F6152",
+                  "textColour": "accent-text",
                   "margin": {
                     "desktop": {
                       "bottom": "10px"
@@ -327,7 +328,7 @@
               "label": "See everything",
               "url": "https://darkcyan-grouse-898606.hostingersite.com/shop/",
               "colourBackground": "transparent",
-              "colourText": "#141414",
+              "colourText": "text",
               "borderColour": "",
               "fontSize": {
                 "desktop": 13
@@ -498,7 +499,7 @@
   {
     "name": "sgs/container",
     "attributes": {
-      "backgroundColour": "#141414",
+      "backgroundColour": "primary",
       "contentWidth": {
         "desktop": "1440px"
       },
@@ -516,7 +517,7 @@
           "top": "56px"
         }
       },
-      "textColour": "#FAF8F5",
+      "textColour": "text-inverse",
       "textWrap": "wrap",
       "className": "sgs-why-buy"
     },
@@ -627,7 +628,7 @@
           {
             "name": "sgs/container",
             "attributes": {
-              "backgroundColour": "#141414",
+              "backgroundColour": "primary",
               "contentBandPadding": {
                 "desktop": {
                   "bottom": "34px",
@@ -659,7 +660,7 @@
                   },
                   "lineHeightUnit": "unitless",
                   "text": "01",
-                  "textColour": "#9C8B78"
+                  "textColour": "accent"
                 }
               },
               {
@@ -698,7 +699,7 @@
           {
             "name": "sgs/container",
             "attributes": {
-              "backgroundColour": "#141414",
+              "backgroundColour": "primary",
               "contentBandPadding": {
                 "desktop": {
                   "bottom": "34px",
@@ -730,7 +731,7 @@
                   },
                   "lineHeightUnit": "unitless",
                   "text": "02",
-                  "textColour": "#9C8B78"
+                  "textColour": "accent"
                 }
               },
               {
@@ -769,7 +770,7 @@
           {
             "name": "sgs/container",
             "attributes": {
-              "backgroundColour": "#141414",
+              "backgroundColour": "primary",
               "contentBandPadding": {
                 "desktop": {
                   "bottom": "34px",
@@ -801,7 +802,7 @@
                   },
                   "lineHeightUnit": "unitless",
                   "text": "03",
-                  "textColour": "#9C8B78"
+                  "textColour": "accent"
                 }
               },
               {
@@ -840,7 +841,7 @@
           {
             "name": "sgs/container",
             "attributes": {
-              "backgroundColour": "#141414",
+              "backgroundColour": "primary",
               "contentBandPadding": {
                 "desktop": {
                   "bottom": "34px",
@@ -872,7 +873,7 @@
                   },
                   "lineHeightUnit": "unitless",
                   "text": "04",
-                  "textColour": "#9C8B78"
+                  "textColour": "accent"
                 }
               },
               {
@@ -973,7 +974,7 @@
                   },
                   "letterSpacingUnit": "em",
                   "textTransform": "uppercase",
-                  "textColour": "#6F6152",
+                  "textColour": "accent-text",
                   "margin": {
                     "desktop": {
                       "bottom": "10px"
@@ -1008,7 +1009,7 @@
               "label": "All 12 styles",
               "url": "https://darkcyan-grouse-898606.hostingersite.com/shop/",
               "colourBackground": "transparent",
-              "colourText": "#141414",
+              "colourText": "text",
               "fontSize": {
                 "desktop": 13
               },
@@ -1047,14 +1048,14 @@
           "shadowLiftOnHover": true,
           "imageFallback": true,
           "imageFallbackColour": "#2B2721",
-          "glyphSize": "30px",
-          "glyphColour": "#FAF8F5",
-          "titleColour": "#FAF8F5",
+          "glyphSize": "72px",
+          "glyphColour": "text-inverse",
+          "titleColour": "text-inverse",
           "titleFontSize": {
             "desktop": 14
           },
           "titleFontSizeUnit": "px",
-          "cardBorderColour": "#E6E1DA",
+          "cardBorderColour": "border",
           "cardBorderWidth": {
             "desktop": {
               "top": "1px",
@@ -1066,61 +1067,86 @@
           "items": [
             {
               "title": "Pilot",
-              "glyph": "glasses",
               "media": null,
-              "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?shape=Pilot"
+              "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?shape=Pilot",
+              "glyphImage": {
+                "id": 148,
+                "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/pilot.png",
+                "alt": ""
+              }
             },
             {
               "title": "Wayfarer",
-              "glyph": "glasses",
               "media": {
                 "id": 175,
                 "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/wayfarer.jpg",
                 "type": "image",
                 "alt": "Wayfarer-style sunglasses"
               },
-              "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?shape=Wayfarer"
+              "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?shape=Wayfarer",
+              "glyphImage": {
+                "id": 149,
+                "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/wayfarer.png",
+                "alt": ""
+              }
             },
             {
               "title": "Round",
-              "glyph": "glasses",
               "media": {
                 "id": 177,
                 "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/round.jpg",
                 "type": "image",
                 "alt": "Round sunglasses"
               },
-              "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?shape=Round"
+              "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?shape=Round",
+              "glyphImage": {
+                "id": 150,
+                "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/round.png",
+                "alt": ""
+              }
             },
             {
               "title": "Cat-eye",
-              "glyph": "glasses",
               "media": {
                 "id": 178,
                 "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/cateye.jpg",
                 "type": "image",
                 "alt": "Cat-eye sunglasses"
               },
-              "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?shape=Cat-eye"
+              "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?shape=Cat-eye",
+              "glyphImage": {
+                "id": 151,
+                "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/cat-eye.png",
+                "alt": ""
+              }
             },
             {
               "title": "Square",
-              "glyph": "glasses",
               "media": {
                 "id": 181,
                 "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/square.jpg",
                 "type": "image",
                 "alt": "Square sunglasses"
               },
-              "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?shape=Square"
+              "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?shape=Square",
+              "glyphImage": {
+                "id": 152,
+                "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/square.png",
+                "alt": ""
+              }
             },
             {
               "title": "Oversized",
-              "glyph": "glasses",
               "media": null,
-              "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?shape=Oversized"
+              "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?shape=Oversized",
+              "glyphImage": {
+                "id": 153,
+                "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/oversized.png",
+                "alt": ""
+              }
             }
-          ]
+          ],
+          "overlayGradient": "linear-gradient(180deg,rgba(20,20,20,0) 38%,rgba(20,20,20,.72) 100%)"
         }
       }
     ]
@@ -1636,7 +1662,7 @@
       {
         "name": "sgs/container",
         "attributes": {
-          "backgroundColour": "#141414",
+          "backgroundColour": "primary",
           "minHeight": {
             "desktop": "430px"
           },
@@ -1661,7 +1687,7 @@
       {
         "name": "sgs/container",
         "attributes": {
-          "backgroundColour": "#FAF8F5",
+          "backgroundColour": "surface",
           "contentBandPadding": {
             "desktop": {
               "bottom": "68px",
@@ -1739,7 +1765,7 @@
                 }
               },
               "text": "Three questions with pictures, a price that updates as you go, and you can send your prescription whenever suits — including after you've ordered. Single vision from £59.",
-              "textColour": "#5E584F",
+              "textColour": "text-muted",
               "textWrap": "pretty"
             }
           },
@@ -1753,8 +1779,8 @@
                 }
               },
               "markerType": "number",
-              "textColour": "#141414",
-              "iconColour": "#6F6152",
+              "textColour": "text",
+              "iconColour": "accent-text",
               "items": [
                 {
                   "text": "Pick a frame, then “Add my prescription”"
@@ -1774,8 +1800,8 @@
               "inheritStyle": "custom",
               "label": "How lenses work here",
               "url": "https://darkcyan-grouse-898606.hostingersite.com/prescription-lenses/",
-              "colourBackground": "#141414",
-              "colourText": "#FAF8F5",
+              "colourBackground": "primary",
+              "colourText": "text-inverse",
               "colourBackgroundHover": "#2a2a2a",
               "fontSize": {
                 "desktop": 13
@@ -1805,7 +1831,7 @@
     "name": "sgs/container",
     "attributes": {
       "alignItems": "center",
-      "backgroundColour": "#EFEAE2",
+      "backgroundColour": "accent-light",
       "contentWidth": {
         "desktop": "1440px"
       },
@@ -1944,7 +1970,7 @@
                 }
               },
               "text": "If you're unsure about anything, just ask. Talking people through frames and lenses is what I do all day at the clinic, and I'm glad to do it here too.",
-              "textColour": "#5E584F",
+              "textColour": "text-muted",
               "textWrap": "pretty"
             }
           },
@@ -1963,10 +1989,9 @@
                 "name": "sgs/whatsapp-cta",
                 "attributes": {
                   "variant": "inline",
-                  "phoneNumber": "4479605978",
                   "message": "Hi, I'd like to know more about your frames.",
                   "label": "Message me on WhatsApp",
-                  "backgroundColour": "#25D366",
+                  "backgroundColour": "whatsapp",
                   "backgroundColourHover": "#1EBE5A",
                   "labelColour": "#0B2B17",
                   "labelFontSize": {
@@ -1990,8 +2015,8 @@
                   "label": "My qualifications",
                   "url": "https://darkcyan-grouse-898606.hostingersite.com/about/",
                   "colourBackground": "transparent",
-                  "colourText": "#141414",
-                  "borderColour": "#141414",
+                  "colourText": "text",
+                  "borderColour": "text",
                   "borderWidth": {
                     "desktop": {
                       "top": "1px",

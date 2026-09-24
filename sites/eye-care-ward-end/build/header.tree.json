@@ -11,13 +11,34 @@
       "badgeStyle": "text-only",
       "overflowMode": "drop",
       "iconColour": "accent",
-      "padding": { "desktop": { "top": "11px", "bottom": "11px", "left": "0", "right": "0" } },
-      "gap": { "desktop": "32px" },
+      "padding": {
+        "desktop": {
+          "top": "11px",
+          "bottom": "11px",
+          "left": "0",
+          "right": "0"
+        }
+      },
+      "gap": {
+        "desktop": "32px"
+      },
       "items": [
-        { "icon": "shield-check", "label": "100% genuine, supplied direct by the brands" },
-        { "icon": "truck", "label": "Free UK delivery over £75, or collect in Birmingham" },
-        { "icon": "glasses", "label": "Prescription lenses glazed here in 7–10 days" },
-        { "icon": "rotate-ccw", "label": "30 days to return, free adjustments for life" }
+        {
+          "icon": "shield-check",
+          "label": "100% genuine, supplied direct by the brands"
+        },
+        {
+          "icon": "truck",
+          "label": "Free UK delivery over £75, or collect in Birmingham"
+        },
+        {
+          "icon": "glasses",
+          "label": "Prescription lenses glazed here in 7–10 days"
+        },
+        {
+          "icon": "rotate-ccw",
+          "label": "30 days to return, free adjustments for life"
+        }
       ]
     }
   },
@@ -28,19 +49,47 @@
       "backgroundColour": "surface",
       "surfaceOpacity": 90,
       "surfaceBlur": "16px",
-      "contentWidth": { "desktop": "normal" },
-      "headerSticky": { "desktop": "on" },
-      "headerShrink": { "desktop": "on" },
-      "borderWidth": { "bottom": "1px" },
+      "contentWidth": {
+        "desktop": "normal"
+      },
+      "headerSticky": {
+        "desktop": "on"
+      },
+      "headerShrink": {
+        "desktop": "on"
+      },
+      "borderWidth": {
+        "bottom": "1px"
+      },
       "borderStyle": "solid",
       "borderColour": "border",
-      "padding": { "desktop": { "top": "20px", "bottom": "20px", "left": "24px", "right": "24px" } }
+      "padding": {
+        "desktop": {
+          "top": "20px",
+          "bottom": "20px",
+          "left": "24px",
+          "right": "24px"
+        }
+      }
     },
     "innerBlocks": [
-      { "name": "sgs/site-header-row", "attributes": { "rowSlot": "top" } },
       {
         "name": "sgs/site-header-row",
-        "attributes": { "rowSlot": "middle", "layout": "flex", "justifyContent": "space-between", "alignItems": "center", "gap": { "desktop": "16px" } },
+        "attributes": {
+          "rowSlot": "top"
+        }
+      },
+      {
+        "name": "sgs/site-header-row",
+        "attributes": {
+          "rowSlot": "middle",
+          "layout": "flex",
+          "justifyContent": "space-between",
+          "alignItems": "center",
+          "gap": {
+            "desktop": "16px"
+          }
+        },
         "innerBlocks": [
           {
             "name": "sgs/nav-bar-menu",
@@ -48,7 +97,9 @@
               "ref": 96,
               "splitSide": "before",
               "splitAfterItemId": "id:195",
-              "disabledItemIds": [ "id:195" ],
+              "disabledItemIds": [
+                "id:195"
+              ],
               "itemBadgeColour": "accent-light",
               "itemBadgeTextColour": "accent-text",
               "submenuOpenOn": "hover",
@@ -62,24 +113,90 @@
           },
           {
             "name": "sgs/container",
-            "attributes": { "layout": "flex", "flexDirection": "row", "alignItems": "center", "gap": { "desktop": "12px" }, "tagName": "div" },
+            "attributes": {
+              "layout": "flex",
+              "flexDirection": "row",
+              "alignItems": "center",
+              "gap": {
+                "desktop": "12px"
+              },
+              "tagName": "div"
+            },
             "innerBlocks": [
-              { "name": "sgs/responsive-logo", "attributes": { "logoId": 198, "width": 40, "linkToHome": true, "shrinkWidth": 30, "shrinkWidthUnit": "px" } },
+              {
+                "name": "sgs/responsive-logo",
+                "attributes": {
+                  "logoId": 198,
+                  "width": 40,
+                  "linkToHome": true,
+                  "shrinkWidth": 30,
+                  "shrinkWidthUnit": "px"
+                }
+              },
               {
                 "name": "sgs/container",
-                "attributes": { "layout": "stack", "flexDirection": "column", "gap": { "desktop": "2px" }, "tagName": "div" },
+                "attributes": {
+                  "layout": "stack",
+                  "flexDirection": "column",
+                  "gap": {
+                    "desktop": "2px"
+                  },
+                  "tagName": "div"
+                },
                 "innerBlocks": [
-                  { "name": "sgs/heading", "attributes": { "level": "h2", "content": "EYE CARE", "textTransform": "uppercase", "letterSpacing": { "desktop": 0.14 }, "letterSpacingUnit": "em", "fontSize": { "desktop": "16px" } } },
-                  { "name": "sgs/text", "attributes": { "text": "BIRMINGHAM", "textTransform": "uppercase", "fontSize": { "desktop": "9.5px" }, "letterSpacing": { "desktop": 0.32 }, "letterSpacingUnit": "em", "textColour": "text-muted" } }
+                  {
+                    "name": "sgs/heading",
+                    "attributes": {
+                      "level": "h2",
+                      "content": "EYE CARE",
+                      "textTransform": "uppercase",
+                      "letterSpacing": {
+                        "desktop": 0.14
+                      },
+                      "letterSpacingUnit": "em",
+                      "fontSize": {
+                        "desktop": "16px"
+                      }
+                    }
+                  },
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "BIRMINGHAM",
+                      "textTransform": "uppercase",
+                      "fontSize": {
+                        "desktop": "9.5px"
+                      },
+                      "letterSpacing": {
+                        "desktop": 0.32
+                      },
+                      "letterSpacingUnit": "em",
+                      "textColour": "text-muted"
+                    }
+                  }
                 ]
               }
             ]
           },
           {
             "name": "sgs/container",
-            "attributes": { "layout": "flex", "flexDirection": "row", "alignItems": "center", "gap": { "desktop": "6px" }, "tagName": "div" },
+            "attributes": {
+              "layout": "flex",
+              "flexDirection": "row",
+              "alignItems": "center",
+              "gap": {
+                "desktop": "6px"
+              },
+              "tagName": "div"
+            },
             "innerBlocks": [
-              { "name": "sgs/business-info", "attributes": { "displayType": "phone", "showIcon": true } },
+              {
+                "name": "sgs/business-info",
+                "attributes": {
+                  "displayType": "phone",
+                  "showIcon": true
+                }
+              },
               {
                 "name": "sgs/nav-bar-menu",
                 "attributes": {
@@ -102,7 +219,12 @@
                   "countPopAnimation": true,
                   "pillBorderColour": "primary",
                   "pillBorderStyle": "solid",
-                  "pillBorderWidth": { "top": "1px", "right": "1px", "bottom": "1px", "left": "1px" },
+                  "pillBorderWidth": {
+                    "top": "1px",
+                    "right": "1px",
+                    "bottom": "1px",
+                    "left": "1px"
+                  },
                   "pillBorderRadius": "999px",
                   "badgeColour": "accent",
                   "badgeTextColour": "primary-text",
@@ -113,7 +235,12 @@
           }
         ]
       },
-      { "name": "sgs/site-header-row", "attributes": { "rowSlot": "bottom" } }
+      {
+        "name": "sgs/site-header-row",
+        "attributes": {
+          "rowSlot": "bottom"
+        }
+      }
     ]
   }
 ]
