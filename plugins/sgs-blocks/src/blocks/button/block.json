@@ -144,6 +144,17 @@
 			"default": "",
 			"role": "content"
 		},
+		"linkSource": {
+			"type": "string",
+			"default": "url",
+			"enum": [
+				"url",
+				"phone",
+				"email",
+				"whatsapp"
+			],
+			"description": "Where the button's link comes from. 'url' (default) uses the typed URL/internal-link fields below. 'phone'/'email'/'whatsapp' read the value live from Appearance > SGS Site Info (Sgs_Site_Info::get()) and fall back to the typed URL when that Site Info field is empty."
+		},
 		"linkId": {
 			"type": "string",
 			"default": "",

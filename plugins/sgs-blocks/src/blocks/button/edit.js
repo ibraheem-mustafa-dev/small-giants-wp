@@ -27,6 +27,23 @@ import { resolveShadowPreviewComposed } from '../../utils/tokens';
 import { backgroundPaintPreview, textPaintPreview } from '../../utils';
 import { parseSvgGradient, SvgGradientDefs } from '../../utils/svg-gradient-preview';
 
+const LINK_SOURCE_OPTIONS = [
+	{ label: __( 'Typed URL', 'sgs-blocks' ), value: 'url' },
+	{ label: __( 'Phone (Site Info)', 'sgs-blocks' ), value: 'phone' },
+	{ label: __( 'Email (Site Info)', 'sgs-blocks' ), value: 'email' },
+	{ label: __( 'WhatsApp (Site Info)', 'sgs-blocks' ), value: 'whatsapp' },
+];
+
+// Plain-English "where does this come from" help line per Site Info source —
+// shown under the Link source dropdown once a non-URL source is picked, and
+// PHP-side sourced from the same Sgs_Site_Info keys (render.php: 'phone',
+// 'email', 'socials.whatsapp').
+const LINK_SOURCE_HELP = {
+	phone: __( 'Uses the phone number set in Appearance > SGS Site Info. If that field is empty, the typed URL below is used instead.', 'sgs-blocks' ),
+	email: __( 'Uses the email address set in Appearance > SGS Site Info. If that field is empty, the typed URL below is used instead.', 'sgs-blocks' ),
+	whatsapp: __( 'Uses the WhatsApp link set in Appearance > SGS Site Info. If that field is empty, the typed URL below is used instead.', 'sgs-blocks' ),
+};
+
 const ICON_POSITION_OPTIONS = [
 	{ label: __( 'Before label', 'sgs-blocks' ), value: 'before' },
 	{ label: __( 'After label', 'sgs-blocks' ), value: 'after' },
@@ -138,6 +155,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		linkId,
 		linkKind,
 		linkTarget,
+		linkSource,
 		rel,
 		download,
 		isSubmit,
@@ -191,6 +209,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		boxShadowColour,
 		boxShadowHover,
 	} = attributes;
+	// A Site Info link source renders an <a> from the live Site Info value, so
+	// the no-URL submit-button option does not apply to it.
+	const usesSiteInfoLink = !! linkSource && 'url' !== linkSource;
 
 	const hasIcon = !! icon;
 
@@ -492,13 +513,32 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 				{ /* Content */ }
 				<PanelBody title={ __( 'Content', 'sgs-blocks' ) } initialOpen={ true }>
+					{ /* Link source — 'url' (default) leaves the popover below as the
+					   operator's only input. A Site Info source resolves the href
+					   server-side from Appearance > SGS Site Info at render time
+					   (render.php), so the URL popover is disabled rather than
+					   removed: the typed value is kept as a fallback for when the
+					   chosen Site Info field is empty. */ }
+					<SelectControl
+						label={ __( 'Link source', 'sgs-blocks' ) }
+						value={ linkSource || 'url' }
+						options={ LINK_SOURCE_OPTIONS }
+						onChange={ ( val ) => setAttributes( { linkSource: val } ) }
+						help={ 'url' === ( linkSource || 'url' ) ? undefined : LINK_SOURCE_HELP[ linkSource ] }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 					{ /* Text is now edited on-canvas via RichText below, matching
 					   core/button — no sidebar duplicate. Link is the D609
 					   row-opens-popover shape: this compact row and the toolbar
 					   link button (BlockControls below) open the SAME popover
 					   (`../../components/LinkPopoverControl.js`), never an
 					   inline LinkControl here. */ }
-					<BaseControl label={ __( 'Link', 'sgs-blocks' ) } __nextHasNoMarginBottom>
+					<BaseControl
+						label={ __( 'Link', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+						help={ 'url' === ( linkSource || 'url' ) ? undefined : __( 'Used only as a fallback while the Site Info field above is empty.', 'sgs-blocks' ) }
+					>
 						{ /* Root cause of the row overflowing the panel (measured
 						   2026-08-13): the URL rendered as one unbroken nowrap
 						   string with nothing to shrink or truncate it — NOT
@@ -520,7 +560,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							</span>
 						</Button>
 					</BaseControl>
-					{ ! url && (
+					{ ! url && ! usesSiteInfoLink && (
 						<ToggleControl
 							label={ __( 'Submit button (type="submit")', 'sgs-blocks' ) }
 							checked={ isSubmit }

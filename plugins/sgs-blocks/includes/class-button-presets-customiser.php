@@ -160,12 +160,16 @@ function css_var( string $preset, string $role ): string {
  * Deliberately an ALLOWLIST, not a blocklist. The value is written into the
  * `wp_global_styles` post and echoed into a `:root{}` rule in the preview document,
  * so anything that could close a declaration or a `<style>` element must never
- * survive. Four shapes are permitted, which between them cover every value the
- * shipped `theme.json` presets already use:
+ * survive. These shapes are permitted, covering every value the
+ * shipped `theme.json` and client snapshot presets use:
  *
  *   - `var(--wp--preset--color--{slug})` — a theme palette token (the normal case)
  *   - `#rgb` / `#rrggbb` / `#rrggbbaa`   — a custom colour from the picker
  *   - `transparent`                       — used by the secondary + outline presets
+ *   - `currentColor`                      — follows the section's text colour (an
+ *                                           outline preset that reads on light and dark)
+ *   - `color-mix(in srgb, {colour} N%, transparent)` — a translucent tint, where
+ *                                           {colour} is `currentColor` or a palette token
  *   - `''` (empty)                        — "unset", falls back to the theme default
  *
  * @param mixed $value Raw incoming value.
@@ -188,6 +192,14 @@ function sanitise_colour_token( $value ): string {
 
 	if ( preg_match( '/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/', $value ) ) {
 		return strtolower( $value );
+	}
+
+	if ( 'currentcolor' === strtolower( $value ) ) {
+		return 'currentColor';
+	}
+
+	if ( preg_match( '/^color-mix\(in srgb, (currentColor|var\(--wp--preset--color--[a-z0-9]+(?:-[a-z0-9]+)*\)) (100|[1-9]?[0-9])%, transparent\)$/', $value ) ) {
+		return $value;
 	}
 
 	return '';

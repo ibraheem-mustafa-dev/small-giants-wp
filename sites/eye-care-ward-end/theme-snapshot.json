@@ -512,17 +512,17 @@
         },
         "outline": {
           "background": "transparent",
-          "text": "var(--wp--preset--color--primary-text)",
-          "border": "rgba(250, 248, 245, 0.75)",
+          "text": "currentColor",
+          "border": "color-mix(in srgb, currentColor 75%, transparent)",
           "border-width": "1px",
           "border-radius": "0px",
           "padding": "0px 28px 0px 28px",
           "font-size": "13px",
           "font-weight": "400",
           "min-height": "52px",
-          "hover-background": "rgba(250, 248, 245, 0.14)",
-          "hover-text": "var(--wp--preset--color--text)",
-          "hover-border": "var(--wp--preset--color--primary-text)",
+          "hover-background": "color-mix(in srgb, currentColor 14%, transparent)",
+          "hover-text": "currentColor",
+          "hover-border": "currentColor",
           "hover-transform": "matrix(1, 0, 0, 1, 0, -3)"
         }
       },
@@ -585,7 +585,7 @@
     }
   },
   "styles": {
-    "css": "@media (max-width: 767px) { :root, body { --wp--style--root--padding-left: 20px; --wp--style--root--padding-right: 20px; } }",
+    "css": "@media (max-width: 767px) { :root, body { --wp--style--root--padding-left: 20px; --wp--style--root--padding-right: 20px; } } @media (max-width: 1159px) { .sgs-site-header .sgs-business-info-wrap--phone { display: none; } }",
     "color": {
       "background": "var:preset|color|surface",
       "text": "var:preset|color|text"
