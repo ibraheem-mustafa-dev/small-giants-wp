@@ -585,7 +585,7 @@
     }
   },
   "styles": {
-    "css": "@media (max-width: 767px) { :root { --wp--style--root--padding-left: 20px; --wp--style--root--padding-right: 20px; } }",
+    "css": "@media (max-width: 767px) { :root, body { --wp--style--root--padding-left: 20px; --wp--style--root--padding-right: 20px; } }",
     "color": {
       "background": "var:preset|color|surface",
       "text": "var:preset|color|text"
