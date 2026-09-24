@@ -1,7 +1,27 @@
 # Eye Care Birmingham: build the real site first, then use it to test the pipeline
 
-**Status:** APPROVED by Bean 2026-09-24 (D1149). **Wave A DONE 2026-09-24.** Next: Wave B (section 8), working
-from section 2 of `.claude/reports/2026-09-24-eye-care-gap-map-recheck.md` (the Phase 0 build list).
+**Status:** APPROVED by Bean 2026-09-24 (D1149). **Wave A DONE 2026-09-24.** **Wave B framework part DONE
+2026-09-24** (deployed to eye-care-test, last commit b2757b351). **Next: Wave B pages** (header, footer, home,
+lenses, about, help, contact), then Wave C.
+- Wave B framework part: all 22 items from section 2 of `.claude/reports/2026-09-24-eye-care-gap-map-recheck.md`
+  are built, audited against Spec 32 and Spec 35, and committed one feature per commit. Two needed no code:
+  `sgs/google-reviews` already draws the exact fraction (4.7 fills 70% of the fifth star); product fields got a
+  design note (`.claude/reports/2026-09-24-product-field-bindings-design.md`: extend the existing `sgs-product/field`
+  bindings source, a small build still to do).
+- **Verification (Bean, 2026-09-24): no separate test page.** Each new setting is verified live at 1440/768/375
+  against the draft when the real page that uses it is built, so the page builds also surface unplanned gaps.
+  Checking during Wave B pages and Wave C: the draft-vs-live values each Wave B report named (in the session
+  record), `filter_product_brand` filtering on the shop (unproven: reasoned, not tested), the RRP pill's "£32.00"
+  vs the draft's "£32", and the trust-bar drop mode's first-paint second row.
+- Open decisions for Bean: (1) product-page tabs (`.claude/reports/2026-09-24-pdp-tabs-design.md`, recommended: a
+  seeded starting layout each client edits in the Site Editor); (2) eyewear shape glyphs (recommended: upload the
+  draft's SHAPES SVGs to the Eye Care media library as card images, not the shared icon set); (3) whether to admit
+  `disabled` as a state in `golden-controls.json` (not needed now: disabled nav items are their own manifest element).
+- Known follow-ups, not blocking: RRP pill and stock label follow the default variation only (update on variation
+  change belongs with the product page, Wave C); option-picker sub-labels read term meta, check against the
+  seeded size data before relying on them; disabling a whole dropdown parent and the same badge/disabled treatment
+  in `sgs/nav-drawer-menu`; the shared `IconPicker` has no `id` prop (Spec 35 §10); `extract-signatures.py` reads
+  only `render.php`, so colours emitted from a block's helper files need an override entry (7 added).
 - Phase 0: report above; 91 rows re-checked, the five grade-4 builds unchanged.
 - Phase 1: buttons, reduced motion and 44px targets were already in place. The side padding now matches `secPad`
   (20px below 768, 52px from 768), verified live at 375/768/1440. Section top and bottom padding (56px mobile,

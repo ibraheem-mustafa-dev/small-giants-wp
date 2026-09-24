@@ -17,7 +17,7 @@ equal the draft at every width (D1139-D1145). Open: 36 raw placeholders (plan A3
 **Eye Care: now built by hand first (D1149, 2026-09-24).** Instead of finishing the pipeline before any client
 ships, the Eye Care site is built by hand to client-ready from Claude Design's gap map, full scope including the lens
 configurator and prescription upload. The finished site then becomes the pipeline's answer key. Plan:
-`plans/2026-09-24-eye-care-hand-build-design.md`. Wave A done (re-check, theme padding, shop data). Next: Wave B. The clone on test page 11 stays as it is (only the
+`plans/2026-09-24-eye-care-hand-build-design.md`. Waves A and B-framework done (22 generic block/feature additions, deployed to eye-care-test). Next: Wave B pages (header, footer, content pages). The clone on test page 11 stays as it is (only the
 reviews section matches the draft); its open converter fixes (C1, C3, C4, C5) are paused until Phase 7.
 
 **Nav / header / footer.** Wave 1 (fixtures + verification) is closed. Wave 2 (capabilities) is
@@ -48,8 +48,8 @@ its lens prices, D1149.)
 **REDIRECTED 2026-09-24 (D1149): build the Eye Care site by hand to client-ready FIRST**, from
 `sites/eye-care-ward-end/Ward End Eye Care - SGS Gap Handoff/` (new draft with `data-sgs-manifest`, gap map of
 114 graded items). Plan: `plans/2026-09-24-eye-care-hand-build-design.md` (phases 0-7, parallel waves A-D,
-model routing). **Wave A DONE** (results in the plan's Status block). **Next: Wave B**, from section 2 of
-`reports/2026-09-24-eye-care-gap-map-recheck.md`; sage/navy palette control needs Bean's go-ahead. Converter findings design C1/C3/C4/C5 PAUSED (C2 shipped) until
+model routing). **Wave A and the Wave B framework part DONE** (plan's Status block; deployed b2757b351). **Next: Wave B pages**
+(header, footer, home, lenses, about, help, contact); features are verified live as those pages use them (Bean). Accent: taupe, global palette. Converter findings design C1/C3/C4/C5 PAUSED (C2 shipped) until
 Phase 7, where the finished site is the clone's answer key. The clone notes below apply to Phase 7 only; they use
 the older `design_handoff_ward_end_eye_care_v2` draft, while the build uses the Gap Handoff bundle.
 
