@@ -32,3 +32,18 @@ blocks: nav-drawer, nav-bar-menu, nav-drawer-menu (nav-bar-menu and nav-drawer-m
 - Tablet tier values, the `line` and `none` poses, `top-row-start`, and an always-burger bar (collapse above every width) were not exercised live; all are unit-tested (`run-close-control-standalone.php` 29/29, `run-burger-morph-standalone.php` 71/71, `nav-close-store.test.mjs`).
 - Editor round-trip of the new controls (set, save, reload in the real editor) was not done this pass. Owed.
 - Bean's eye (R-31-13): owed on the two screenshots.
+
+## Bean's feedback pass (commit 033b783ad, deployed to sandybrown)
+
+Page `/qa-scrim/` (Active header 3777, Active drawer 3778: non-modal, `anchor {trigger}`, `closeStyle {desktop: trigger}`), one headed Chrome window (chrome-devtools; Playwright was held by another session), 441px layout width.
+
+| # | Bean's item | Before (measured) | After (measured) | Result |
+|---|---|---|---|---|
+| F1 | Gallery lightbox dim is pink | scrim `primary-dark` #c56a7a at 0.9 | scrim `::before` `rgb(0,0,0)` at opacity 0.9; dialog itself transparent | PASS |
+| F2 | Lightbox does not close on an outside click | no backdrop handler existed | real click on the image: stays open (negative control); real click on the lightbox body behind the image: closes, body scroll-lock class removed, scrim opacity 0 | PASS |
+| F3 | Basket trigger has a white fill and black outline | `<button>` at UA defaults: fill rgb(240,240,240), border 1.8px outset black | fill transparent, border 0 | PASS |
+| F4 | Drawer is a part-width card not touching the right edge | by design: `anchor trigger` hangs a 360px card from the burger (top = burger bottom + 8, right edge = burger's right edge) | unchanged; answered, not a defect | n/a |
+| F5 | Drawer sits under the header and its buttons | drawer z 90 < header z 100; the header's second row (to 127px) painted over the drawer from 80px | drawer z 101; the point in the old overlap band (237,104) hits `.sgs-nav-drawer__body`; the burger still hit-tests to itself, `data-sgs-nav-opener-live` still set | PASS |
+| F6 | Empty band where the hidden x was | body `padding-top` 64px with the x `display:none` | body `padding-top` 27.27px (the normal body padding); first link 27px below the panel top; panel 381px tall (was 417) | PASS |
+
+Screenshot: `fb-drawer-after.png` (scratchpad): panel over the header's phone row, burger X on top, no empty band, basket icon plain. Bean's eye owed (R-31-13).
