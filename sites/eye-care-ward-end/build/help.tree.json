@@ -73,12 +73,10 @@
           "backgroundColour": "border",
           "borderStyle": "solid",
           "borderWidth": {
-            "desktop": {
-              "top": "1px",
-              "right": "1px",
-              "bottom": "1px",
-              "left": "1px"
-            }
+            "top": "1px",
+            "right": "1px",
+            "bottom": "1px",
+            "left": "1px"
           },
           "borderColour": "border",
           "margin": {
@@ -439,12 +437,10 @@
           "backgroundColour": "surface-alt",
           "borderStyle": "solid",
           "borderWidth": {
-            "desktop": {
-              "top": "1px",
-              "right": "1px",
-              "bottom": "1px",
-              "left": "1px"
-            }
+            "top": "1px",
+            "right": "1px",
+            "bottom": "1px",
+            "left": "1px"
           },
           "borderColour": "border",
           "padding": {
@@ -542,12 +538,10 @@
                   "textColour": "text",
                   "borderStyle": "solid",
                   "borderWidth": {
-                    "desktop": {
-                      "top": "1px",
-                      "right": "1px",
-                      "bottom": "1px",
-                      "left": "1px"
-                    }
+                    "top": "1px",
+                    "right": "1px",
+                    "bottom": "1px",
+                    "left": "1px"
                   },
                   "borderColour": "text",
                   "padding": {

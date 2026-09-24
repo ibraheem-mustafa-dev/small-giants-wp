@@ -90,12 +90,10 @@
           "backgroundColour": "border",
           "borderStyle": "solid",
           "borderWidth": {
-            "desktop": {
-              "top": "1px",
-              "right": "1px",
-              "bottom": "1px",
-              "left": "1px"
-            }
+            "top": "1px",
+            "right": "1px",
+            "bottom": "1px",
+            "left": "1px"
           },
           "borderColour": "border"
         },

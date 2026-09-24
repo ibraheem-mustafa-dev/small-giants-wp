@@ -95,6 +95,11 @@
               "text": "Eye Care Birmingham is an independent clinic in Birmingham. This shop is how it sells eyewear beyond the front door: the same frames the chains stock, priced by someone without a chain's overheads, with lenses glazed and fitted on site.",
               "fontSize": {
                 "desktop": "17px"
+              },
+              "margin": {
+                "desktop": {
+                  "bottom": "18px"
+                }
               }
             }
           },
@@ -105,6 +110,11 @@
               "textColour": "text-muted",
               "fontSize": {
                 "desktop": "16px"
+              },
+              "margin": {
+                "desktop": {
+                  "bottom": "18px"
+                }
               }
             }
           },
@@ -115,6 +125,11 @@
               "textColour": "text-muted",
               "fontSize": {
                 "desktop": "16px"
+              },
+              "margin": {
+                "desktop": {
+                  "bottom": "18px"
+                }
               }
             }
           },
@@ -148,15 +163,21 @@
                 "attributes": {
                   "label": "Shop the range",
                   "url": "/sunglasses/",
-                  "inheritStyle": "custom",
+                  "inheritStyle": "outline",
                   "colourText": "text",
                   "borderColour": "text",
                   "borderWidth": {
+                    "top": "1px",
+                    "right": "1px",
+                    "bottom": "1px",
+                    "left": "1px"
+                  },
+                  "borderRadius": {
                     "desktop": {
-                      "top": "1px",
-                      "right": "1px",
-                      "bottom": "1px",
-                      "left": "1px"
+                      "topLeft": "0px",
+                      "topRight": "0px",
+                      "bottomLeft": "0px",
+                      "bottomRight": "0px"
                     }
                   },
                   "minHeight": {
@@ -190,12 +211,10 @@
           },
           "backgroundColour": "border",
           "borderWidth": {
-            "desktop": {
-              "top": "1px",
-              "right": "1px",
-              "bottom": "1px",
-              "left": "1px"
-            }
+            "top": "1px",
+            "right": "1px",
+            "bottom": "1px",
+            "left": "1px"
           },
           "borderColour": "border"
         },
@@ -288,10 +307,9 @@
                 }
               },
               "borderWidth": {
-                "desktop": {
-                  "left": "3px"
-                }
+                "left": "3px"
               },
+              "borderStyle": "solid",
               "borderColour": "accent"
             },
             "innerBlocks": [

@@ -159,12 +159,10 @@
               "colourText": "text-inverse",
               "borderColour": "rgba(250,248,245,.75)",
               "borderWidth": {
-                "desktop": {
-                  "top": "1px",
-                  "right": "1px",
-                  "bottom": "1px",
-                  "left": "1px"
-                }
+                "top": "1px",
+                "right": "1px",
+                "bottom": "1px",
+                "left": "1px"
               },
               "borderRadius": {
                 "desktop": {}
@@ -1057,12 +1055,10 @@
           "titleFontSizeUnit": "px",
           "cardBorderColour": "border",
           "cardBorderWidth": {
-            "desktop": {
-              "top": "1px",
-              "right": "1px",
-              "bottom": "1px",
-              "left": "1px"
-            }
+            "top": "1px",
+            "right": "1px",
+            "bottom": "1px",
+            "left": "1px"
           },
           "items": [
             {
@@ -2027,12 +2023,10 @@
                   "colourText": "text",
                   "borderColour": "text",
                   "borderWidth": {
-                    "desktop": {
-                      "top": "1px",
-                      "right": "1px",
-                      "bottom": "1px",
-                      "left": "1px"
-                    }
+                    "top": "1px",
+                    "right": "1px",
+                    "bottom": "1px",
+                    "left": "1px"
                   },
                   "fontSize": {
                     "desktop": 13

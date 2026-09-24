@@ -143,9 +143,9 @@
                 }
               },
               {
-                "name": "sgs/business-info",
+                "name": "sgs/text",
                 "attributes": {
-                  "displayType": "hours",
+                  "text": "Mon–Sat 9.30–17.30<br>Collections by arrangement",
                   "fontSize": {
                     "desktop": "15px"
                   }
@@ -161,9 +161,7 @@
                 "name": "Contact form"
               },
               "borderWidth": {
-                "desktop": {
-                  "top": "1px"
-                }
+                "top": "1px"
               },
               "borderColour": "border",
               "borderStyle": "solid",
@@ -204,14 +202,16 @@
                 "attributes": {
                   "formId": "contact",
                   "submitLabel": "Send message",
-                  "successMessage": "Thanks — I'll come back to you shortly."
+                  "successMessage": "Thanks — I'll come back to you shortly.",
+                  "submitBackground": "text",
+                  "submitColour": "surface"
                 },
                 "innerBlocks": [
                   {
                     "name": "sgs/form-field-text",
                     "attributes": {
                       "fieldName": "your_name",
-                      "label": "Your name",
+                      "label": "",
                       "placeholder": "Your name",
                       "required": true,
                       "width": "half"
@@ -221,7 +221,7 @@
                     "name": "sgs/form-field-email",
                     "attributes": {
                       "fieldName": "email",
-                      "label": "Email",
+                      "label": "",
                       "placeholder": "Email",
                       "required": true,
                       "width": "half"
@@ -231,7 +231,7 @@
                     "name": "sgs/form-field-phone",
                     "attributes": {
                       "fieldName": "phone",
-                      "label": "Phone",
+                      "label": "",
                       "placeholder": "Phone (optional)",
                       "required": false,
                       "width": "half"
@@ -241,7 +241,7 @@
                     "name": "sgs/form-field-select",
                     "attributes": {
                       "fieldName": "topic",
-                      "label": "What it's about",
+                      "label": "",
                       "placeholder": "What can I help with?",
                       "required": true,
                       "width": "half",
@@ -273,7 +273,7 @@
                     "name": "sgs/form-field-textarea",
                     "attributes": {
                       "fieldName": "message",
-                      "label": "Your message",
+                      "label": "",
                       "placeholder": "Your message",
                       "required": true,
                       "width": "full"
@@ -324,12 +324,10 @@
                   "tagName": "div",
                   "flexWrap": "wrap",
                   "borderWidth": {
-                    "desktop": {
-                      "top": "1px",
-                      "right": "1px",
-                      "bottom": "1px",
-                      "left": "1px"
-                    }
+                    "top": "1px",
+                    "right": "1px",
+                    "bottom": "1px",
+                    "left": "1px"
                   },
                   "borderColour": "border",
                   "borderStyle": "solid",
@@ -376,12 +374,10 @@
                   "tagName": "div",
                   "flexWrap": "wrap",
                   "borderWidth": {
-                    "desktop": {
-                      "top": "1px",
-                      "right": "1px",
-                      "bottom": "1px",
-                      "left": "1px"
-                    }
+                    "top": "1px",
+                    "right": "1px",
+                    "bottom": "1px",
+                    "left": "1px"
                   },
                   "borderColour": "border",
                   "borderStyle": "solid",

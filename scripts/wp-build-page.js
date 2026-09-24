@@ -37,6 +37,8 @@
 const fs = require( 'fs' );
 const path = require( 'path' );
 const { createRequire } = require( 'module' );
+const os = require( 'os' );
+const { execFileSync } = require( 'child_process' );
 
 const pluginRequire = createRequire( path.join( __dirname, '..', 'plugins', 'sgs-blocks', 'package.json' ) );
 const { chromium } = pluginRequire( 'playwright' );
@@ -107,6 +109,22 @@ async function main() {
 		if ( Array.isArray( cores ) ) cores.forEach( ( c ) => { banned[ c ] = sgs; } );
 	} );
 
+	// Settings the framework DB marks as NOT per-device (is_responsive = 0). A
+	// {desktop:...} value on one of these is read as a flat value by render.php,
+	// finds nothing and silently draws nothing (e.g. borderWidth on sgs/container).
+	let flatAttrs = {};
+	try {
+		const db = path.join( os.homedir(), '.agents', 'skills', 'sgs-wp-engine', 'sgs-framework.db' ).split( path.sep ).join( '/' );
+		const query = "SELECT block_slug, attr_name FROM block_attributes WHERE is_responsive = 0 AND block_slug LIKE 'sgs/%'";
+		const out = execFileSync( 'python', [ '-c',
+			'import sqlite3,json,sys;c=sqlite3.connect("file:"+sys.argv[1]+"?mode=ro",uri=True);' +
+			'print(json.dumps([r[0]+"|"+r[1] for r in c.execute(sys.argv[2])]))',
+			db, query ], { encoding: 'utf8', timeout: 30000 } );
+		JSON.parse( out ).forEach( ( k ) => { flatAttrs[ k ] = true; } );
+	} catch ( e ) {
+		console.error( `[warn] per-device shape check skipped (framework DB not readable: ${ String( e.message ).split( /\r?\n/ )[ 0 ] })` );
+	}
+
 	const browser = await chromium.launch( { headless: true } );
 	const page = await ( await browser.newContext( { ignoreHTTPSErrors: true } ) ).newPage();
 	try {
@@ -130,7 +148,7 @@ async function main() {
 		}
 
 		// Validate the whole tree before touching the post.
-		const problems = await page.evaluate( ( { t, bannedMap } ) => {
+		const problems = await page.evaluate( ( { t, bannedMap, flat } ) => {
 			const out = [];
 			const walk = ( blocks, trail ) => blocks.forEach( ( b, i ) => {
 				const where = `${ trail }[${ i }] ${ b && b.name }`;
@@ -138,6 +156,18 @@ async function main() {
 				if ( bannedMap[ b.name ] ) out.push( `${ where }: banned core block, use ${ bannedMap[ b.name ] }` );
 				const type = window.wp.blocks.getBlockType( b.name );
 				if ( ! type ) { out.push( `${ where }: block not registered` ); return; }
+				Object.entries( b.attributes || {} ).forEach( ( [ k, v ] ) => {
+					// The block's own default wins over the DB flag: a default shaped
+					// {desktop:...} means the setting IS per-device.
+					const def = ( type.attributes[ k ] || {} ).default;
+					const defIsTiered = def && typeof def === 'object' && ! Array.isArray( def ) && 'desktop' in def;
+					if ( flat[ `${ b.name }|${ k }` ] && ! defIsTiered && v && typeof v === 'object' && ! Array.isArray( v ) ) {
+						const keys = Object.keys( v );
+						if ( keys.length && keys.every( ( x ) => [ 'desktop', 'tablet', 'mobile' ].includes( x ) ) ) {
+							out.push( `${ where }: setting "${ k }" is not per-device; give it the flat value, not {${ keys.join( ',' ) }:...}` );
+						}
+					}
+				} );
 				// WordPress silently swaps a wrong-typed or off-enum value for the default.
 				const typeOk = ( v, t ) => {
 					if ( t === 'null' ) return v === null;
@@ -163,7 +193,7 @@ async function main() {
 			} );
 			walk( t, '' );
 			return out;
-		}, { t: tree, bannedMap: banned } );
+		}, { t: tree, bannedMap: banned, flat: flatAttrs } );
 		if ( problems.length ) fail( 4, `tree rejected:\n  ${ problems.join( '\n  ' ) }` );
 
 		const built = await page.evaluate( ( { t, title, slug, status, dryRun } ) => {

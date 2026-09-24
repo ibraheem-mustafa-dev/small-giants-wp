@@ -364,6 +364,10 @@ if ( $has_border_width ) {
 $border_style_has_width = $has_border_width || in_array( $inherit_style, array( 'primary', 'secondary', 'outline' ), true );
 if ( $border_style && 'solid' !== $border_style && $border_style_has_width ) {
 	$base_decls[] = 'border-style:' . $border_style;
+} elseif ( $has_border_width && ! in_array( $inherit_style, array( 'primary', 'secondary', 'outline' ), true ) ) {
+	// A preset class supplies border-style:solid; a preset-less (custom) button
+	// has none, so a border width alone would paint nothing.
+	$base_decls[] = 'border-style:solid';
 }
 if ( $box_shadow_decls['normal'] ) {
 	$base_decls = array_merge( $base_decls, $box_shadow_decls['normal'] );
