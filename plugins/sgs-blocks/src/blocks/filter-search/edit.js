@@ -2,21 +2,18 @@
  * SGS Filter Search — editor component.
  *
  * Renders a static preview of the search input and exposes inspector controls
- * for attributeId, threshold, and placeholder. Actual filtering is
- * frontend-only (render.php + view.js).
+ * for searchMode (attribute-chips vs taxonomy-terms), taxonomy, showCounts,
+ * attributeId, threshold, and placeholder. Actual filtering/term listing is
+ * frontend-only (render.php + view.js) — the editor never fetches live terms.
  *
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
-import { PanelBody, TextControl, Notice } from '@wordpress/components';
+import { PanelBody } from '@wordpress/components';
 import { ResponsiveBoxControl, SgsColourPanel, resolveColourToken } from '../../components';
 import { borderPaintPreview, textPaintPreview } from '../../utils';
-
-// Guard the experimental NumberControl import — it may not exist on older WP
-// versions. Falls back to a plain text input (type=number) via TextControl.
-// This pattern mirrors the B3 crash lesson (dead-control crash on missing import).
-const { __experimentalNumberControl: NumberControl } = wp?.components ?? {};
+import FilterSearchSettings from './FilterSearchSettings';
 
 // Box-object interface contract §5: base-tier canvas preview shorthand
 // (mirrors sgs/buybox + sgs/whatsapp-cta). Tablet/mobile tiers live in
@@ -30,7 +27,8 @@ function boxShorthand( box ) {
 }
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
-	const { attributeId, threshold, placeholder, margin, inputBorderColour, inputBorderColourGradient, inputBorderColourHover, inputBorderColourHoverGradient, focusRingColour, textColour, textColourHover } = attributes;
+	const { searchMode, taxonomy, showCounts, attributeId, threshold, placeholder, margin, inputBorderColour, inputBorderColourGradient, inputBorderColourHover, inputBorderColourHoverGradient, focusRingColour, textColour, textColourHover } = attributes;
+	const isTermsMode = 'taxonomy-terms' === searchMode;
 
 	// D636/CHECK A: inputBorderColour/inputBorderColourGradient/textColour paint
 	// `.sgs-filter-search__input` directly on the frontend (style.css:9-20 —
@@ -137,87 +135,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Filter Search Settings', 'sgs-blocks' ) }>
-
-					{ NumberControl ? (
-						<NumberControl
-							label={ __( 'Attribute ID', 'sgs-blocks' ) }
-							help={ __(
-								'The WooCommerce product attribute ID this filter belongs to. Find it at Products → Attributes.',
-								'sgs-blocks'
-							) }
-							value={ attributeId }
-							min={ 0 }
-							onChange={ ( val ) =>
-								setAttributes( { attributeId: parseInt( val, 10 ) || 0 } )
-							}
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					) : (
-						<TextControl
-							label={ __( 'Attribute ID', 'sgs-blocks' ) }
-							help={ __(
-								'The WooCommerce product attribute ID this filter belongs to. Find it at Products → Attributes.',
-								'sgs-blocks'
-							) }
-							type="number"
-							min={ 0 }
-							value={ String( attributeId ) }
-							onChange={ ( val ) =>
-								setAttributes( { attributeId: parseInt( val, 10 ) || 0 } )
-							}
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					) }
-
-					{ NumberControl ? (
-						<NumberControl
-							label={ __( 'Minimum terms to show search', 'sgs-blocks' ) }
-							help={ __(
-								'The search input appears only when this attribute has at least this many options. Recommended: 16 (Baymard Institute threshold).',
-								'sgs-blocks'
-							) }
-							value={ threshold }
-							min={ 2 }
-							onChange={ ( val ) =>
-								setAttributes( { threshold: Math.max( 2, parseInt( val, 10 ) || 16 ) } )
-							}
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					) : (
-						<TextControl
-							label={ __( 'Minimum terms to show search', 'sgs-blocks' ) }
-							help={ __(
-								'The search input appears only when this attribute has at least this many options. Recommended: 16.',
-								'sgs-blocks'
-							) }
-							type="number"
-							min={ 2 }
-							value={ String( threshold ) }
-							onChange={ ( val ) =>
-								setAttributes( { threshold: Math.max( 2, parseInt( val, 10 ) || 16 ) } )
-							}
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					) }
-
-					<TextControl
-						label={ __( 'Placeholder text', 'sgs-blocks' ) }
-						help={ __(
-							'Leave blank to use the default: "Type to filter…"',
-							'sgs-blocks'
-						) }
-						value={ placeholder }
-						onChange={ ( val ) => setAttributes( { placeholder: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-
-				</PanelBody>
+				<FilterSearchSettings attributes={ attributes } setAttributes={ setAttributes } />
 
 				<PanelBody
 					title={ __( 'Spacing', 'sgs-blocks' ) }
@@ -251,12 +169,23 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					aria-label={ __( 'Filter search preview (inactive in editor)', 'sgs-blocks' ) }
 				/>
 				<p className="sgs-filter-search__editor-hint">
-					{ 0 === attributeId
-						? __( '⚠ Set an Attribute ID in the block settings to activate this block.', 'sgs-blocks' )
-						: (
-							/* translators: %d is the minimum-terms threshold number */
-							__( 'Shows on the frontend only when this attribute has %d+ options.', 'sgs-blocks' )
-								.replace( '%d', String( threshold ) )
+					{ isTermsMode
+						? ( '' === taxonomy
+							? __( '⚠ Set a taxonomy in the block settings to activate this block.', 'sgs-blocks' )
+							: (
+								/* translators: %d is the minimum-terms threshold number */
+								__( 'Lists every term of "%1$s" as a tickable link. The search box only appears once the taxonomy has %2$d+ terms.', 'sgs-blocks' )
+									.replace( '%1$s', taxonomy )
+									.replace( '%2$d', String( threshold ) )
+							)
+						)
+						: ( 0 === attributeId
+							? __( '⚠ Set an Attribute ID in the block settings to activate this block.', 'sgs-blocks' )
+							: (
+								/* translators: %d is the minimum-terms threshold number */
+								__( 'Shows on the frontend only when this attribute has %d+ options.', 'sgs-blocks' )
+									.replace( '%d', String( threshold ) )
+							)
 						)
 					}
 				</p>

@@ -5,20 +5,19 @@
 	"version": "1.0.0",
 	"title": "Filter Search",
 	"category": "sgs-interactive",
-	"description": "A type-to-find input that narrows a WooCommerce attribute filter's options. Auto-shown only when the attribute has more than 15 terms. Nest inside a Product Filter (Attribute) block, before its chips.",
+	"description": "A type-to-find search that narrows a filter's options. Two modes: narrow an existing WooCommerce attribute filter's chips (nest inside a Product Filter (Attribute) block), or render its own searchable, tickable term list for any product taxonomy (brand, category, tag, attribute) so it can stand alone in a filter panel. The search input is auto-shown only once the term count passes the threshold.",
 	"keywords": [
 		"filter",
 		"search",
 		"attribute",
+		"taxonomy",
+		"brand",
 		"woocommerce",
 		"shop",
 		"type to find"
 	],
 	"textdomain": "sgs-blocks",
 	"icon": "search",
-	"ancestor": [
-		"woocommerce/product-filter-attribute"
-	],
 	"supports": {
 		"html": false,
 		"reusable": false,
@@ -43,7 +42,7 @@
 					"attrMap": {
 						"css:margin": "margin"
 					},
-					"_note": "Single-element block — render.php:162-167 renders ONE root <div class=\"sgs-filter-search\">. Margin (a single TIER-of-BOXES envelope attr {desktop,tablet,mobile}, folded 2026-09-11) is the ONLY styling capability declared in supports; padding/gap/width/border/fill/text/position/motion have no supports or attrs on this block (spacing.margin is the sole `sgs` support) — every other layout member is an honest GAP, not an omission."
+					"_note": "Single-element block — render.php renders ONE root <div class=\"sgs-filter-search\"> in either mode (attribute-chips or taxonomy-terms). Margin (a single TIER-of-BOXES envelope attr {desktop,tablet,mobile}, folded 2026-09-11) is the ONLY styling capability declared in supports; padding/gap/width/border/fill/text/position/motion have no supports or attrs on this block (spacing.margin is the sole `sgs` support) — every other layout member is an honest GAP, not an omission."
 				}
 			}
 		}
@@ -54,6 +53,22 @@
 			"default": {
 				"desktop": {}
 			}
+		},
+		"searchMode": {
+			"type": "string",
+			"enum": [ "attribute-chips", "taxonomy-terms" ],
+			"default": "attribute-chips",
+			"description": "Where the search box gets its options from. 'attribute-chips' narrows the chips of an ancestor Product Filter (Attribute) block (legacy/default). 'taxonomy-terms' renders its own searchable, tickable list of a chosen taxonomy's terms — usable standalone anywhere in a filter panel."
+		},
+		"taxonomy": {
+			"type": "string",
+			"default": "",
+			"description": "Taxonomy slug used when searchMode is 'taxonomy-terms' (e.g. product_cat, product_tag, a brand taxonomy, or an attribute taxonomy pa_*). Must be registered against the product post type."
+		},
+		"showCounts": {
+			"type": "boolean",
+			"default": false,
+			"description": "Show each term's product count next to its name when searchMode is 'taxonomy-terms'."
 		},
 		"attributeId": {
 			"type": "number",
