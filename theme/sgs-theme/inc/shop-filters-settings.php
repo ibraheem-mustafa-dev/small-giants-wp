@@ -98,6 +98,11 @@ function register_shop_filter_customizer_settings( \WP_Customize_Manager $wp_cus
 			'default' => false,
 			'label'   => __( 'Add a "Brand: A to Z" sort option (uses product brands)', 'sgs-theme' ),
 		),
+		'sgs_shop_hide_zero_decimals'       => array(
+			'type'    => 'checkbox',
+			'default' => false,
+			'label'   => __( 'Hide ".00" on whole-pound prices (e.g. "£139.00" shows as "£139"; "£32.50" is unaffected)', 'sgs-theme' ),
+		),
 	);
 
 	foreach ( $fields as $setting_id => $field ) {
@@ -251,3 +256,36 @@ function output_shop_columns_wide_style(): void {
 	);
 }
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\output_shop_columns_wide_style', 20 );
+
+/**
+ * Hook WooCommerce core's own trailing-zero trimmer when the setting is on.
+ *
+ * `wc_price()` already strips a decimal part that is all zeros (e.g. "139.00"
+ * becomes "139") via `woocommerce_price_trim_zeros`; it leaves any non-zero
+ * decimal untouched (e.g. "32.50" stays "32.50"). No custom regex is needed —
+ * this only switches WooCommerce's existing behaviour on. It covers every
+ * PHP-rendered price (shop archive, product cards, single product, mini cart
+ * widget, cart, checkout and emails), all of which call `wc_price()`. It does
+ * NOT cover the block-based Cart/Checkout or Mini Cart block, which format
+ * prices in JavaScript from the Store API's `currency_minor_unit` and have no
+ * equivalent trim hook (`packages/js/currency` always renders the currency's
+ * fixed precision).
+ *
+ * @return void
+ */
+function maybe_hide_zero_price_decimals(): void {
+	if ( ! class_exists( 'WooCommerce' ) ) {
+		return;
+	}
+	add_filter( 'woocommerce_price_trim_zeros', __NAMESPACE__ . '\is_zero_price_decimals_hidden' );
+}
+add_action( 'init', __NAMESPACE__ . '\maybe_hide_zero_price_decimals' );
+
+/**
+ * Callback for `woocommerce_price_trim_zeros`.
+ *
+ * @return bool
+ */
+function is_zero_price_decimals_hidden(): bool {
+	return (bool) get_theme_mod( 'sgs_shop_hide_zero_decimals', false );
+}
