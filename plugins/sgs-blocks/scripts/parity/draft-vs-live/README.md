@@ -62,6 +62,7 @@ This method is the human-grade check that sits on top of it. A number alone neve
 | The draft's own breakpoints | At a 768 window the draft showed its phone layout: its script measures its CONTENT width (viewport minus the 15px desktop scrollbar); the site uses the viewport | Also measure 790. On real devices (overlay scrollbars) both switch at 768 |
 | A pixel-looking colour | `background-color` teal while the eye saw blue (a `::after` layer) | Rule 5 |
 | Only one phone width checked | A 375 fix broke 480–600 | The full sweep for anything that wraps |
+| The wrong draft folder | A client can hold several draft folders (Eye Care: `design_handoff_ward_end_eye_care` is the old classless v1, `..._v2` is the current one). A freshness gate that passes only proves the snapshot matches SOME draft, and a v1 clone briefly went live | Serve and clone the same folder; check which folder the last good run used before re-cloning |
 | A draft screenshot of the wrong area | A full-page clip at a width where the draft re-flowed | Clip from the measured section box, check the image |
 
 ## The tools in this folder

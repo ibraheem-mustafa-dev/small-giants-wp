@@ -20,13 +20,12 @@ identical to the original except the header logo (D1132). Patched bundle:
 `sites/eye-care-ward-end/design_handoff_ward_end_eye_care_v2` (untracked; raw export kept as `..._v2_raw`). A1 DONE (D1132, `faaf79f0d`): the width evaluator is wired in; on the live test page padding and grid columns equal the draft at 375, 768 and 1440 for every
 section present. A2 DONE (D1134): the draft's phone, review and social links and all its loop copy (13 reviews, 4 reasons, 6 shape tiles, 32 brand-marquee items, 4 ticker items) are now filled in from its own script, on by default; every review and reasons line is on the live page at 375 and 1440. A QC council also found and I fixed a converter bug (an item's gap and direction overwrote its container's, turning the review rail into a column) plus defects in my A1 and A2a code. Ticker and reviews card (D1139-D1145) now equal the draft at every width (Google design is the block baseline, shared slider nav, self-hosted fonts, deploys keep the client theme.json, Spec 33 sets content/wide width); 36 raw placeholders remain (plan A3, Track D). Prompt file is ONE reusable prompt.
 
-**Where the Eye Care clone stands (test page 11).** Spec 33 gives it the draft's real palette, fonts, square corners and 13
-saved business settings. The screen route clones only the Home screen: 5 of 8 homepage sections are on the page (was 1), none
-of the other screens' text, and raw `{{ }}` text is 53 occurrences (was 93). The guard stops raw style values reaching block
-settings. Still missing: the brand strip, best sellers and shape tiles (Spec 44 review queue, needs Bean); the spacing and
-grid columns (the draft's script states them per device and an evaluator can read them; wired in A1, D1132);
-about 13 raw content bindings. Mama's Munches is untouched by all of it. Detail: D1120 to D1130, Spec 31 FR-31-27 to
-FR-31-30, Spec 33 FR-33-15 to FR-33-17.
+**Where the Eye Care clone stands (test page 11), 2026-09-24.** A whole-page audit against the draft at 1440/768/375
+(`reports/visual-diff/eye-care-home-audit-2026-09-24.md`) ranked 10 findings, each with a proven cause. Fixed and verified
+live: invisible brand logos (a media z-index default), headings invisible on dark bands (theme heading colour), and raw
+`{{ }}` template text at the page foot (overlay content and nested loop items, D1147; now 0 at every width). Still open, in
+order: hero empty, "Any pair here" and optician (placeholder list, lost photo, buttons as text), best sellers and shape
+tiles, header and footer. Mama's Munches is untouched by all of it.
 
 **Nav / header / footer.** Wave 1 (fixtures + verification) is closed. Wave 2 (capabilities) is
 done and live-verified. The harness self-tests and the fixture fidelity check are in place; only the reference labels for three unmeasured sites wait on Wave 4. Done: the drawer post type, the picker
@@ -56,7 +55,9 @@ Phase 3's precondition (real WooCommerce catalogue data).
 **Test site:** https://darkcyan-grouse-898606.hostingersite.com/eye-care-birmingham/ (page 11; WP 7.1.1 +
 WooCommerce; creds `.claude/secrets/eye-care-test.env`). Run a clone: `SGS_DEPLOY_SITE=eye-care-test`, `SSL_CERT_FILE`
 and `NODE_EXTRA_CA_CERTS` = the certifi `cacert.pem` (Python's Windows TLS store rejects every hostingersite.com host),
-`--deploy-target page:11`, no `--skip-freshness-gate`, plus `--client eye-care-ward-end --page eye-care-birmingham
+`--mockup "sites/eye-care-ward-end/design_handoff_ward_end_eye_care_v2/Eye Care Birmingham.dc.html"` (v2 is the
+current SGS-BEM draft; v1 is old and classless), `--deploy-target page:11`, `--skip-freshness-gate` (the snapshot is
+extracted from v1, and a v2 extraction wrongly picks Google blue as primary; fix that before re-extracting), plus `--client eye-care-ward-end --page eye-care-birmingham
 --auto-section --mode draft --skip-register --no-scaffold-new-blocks --sc-var-cache
 sites/eye-care-ward-end/sc-var-hints.json --sc-var-min-confidence 0.0 --dom-shape-min-confidence 0.0 --classless-match
 --classless-auto-complete` (add `--resolve-js-content` for the flag-ON comparison). Verify "what a visitor sees" with
@@ -75,9 +76,6 @@ will halt a clone until re-extracted (intended). Scope (D1121): Spec 33 runs on 
 records `_sgsExtractor.source_draft`); any other draft inherits the saved snapshot, and re-extracting from a different draft
 needs `--replace-source`. Mama's snapshot has no `source_draft` until it is next regenerated.
 
-**Real numbers (before the snapshot changed; not re-measured):** Stage 11.6 content 12%, css 0%. Live page: 93 visible
-`{{ }}` placeholders (59 distinct), no ticker text, 7 of 8 homepage boundaries (b3-b9) missing.
-
 **Screen route (D1124, built).** A multi-screen Claude Design draft now clones ONE screen: `--screen <label>`, else the
 README's route `/` checked against the draft's default marker; other screens are skipped and reported (`other-route-view`),
 and a classless top-level section on the cloned screen is admitted as the container. Live Eye Care test page: 5 of 8
@@ -95,10 +93,11 @@ homepage sections no longer carry junk attributes (18 to 0). Evaluator BUILT and
 original. Not done: 7 names whose breakpoint stays inside a device tier (logged as gaps), and the content bindings (A2). Design: `plans/2026-09-20-A1-wire-evaluator-design.md`.
 
 **Open, in order:**
-0. *NEXT (Bean, 2026-09-23): whole-site audit of page 11 against the draft, every section, at 1440/768/375 with
-   screenshots looked at side by side.* Method + tools: `plugins/sgs-blocks/scripts/parity/draft-vs-live/README.md` (Spec 20
-   FR-20-12). Before it: the converter must mark rows
-   using the draft's wide width `contentWidth: wide` (D1145); page 11 was NOT re-cloned after the full-width revert.
+0. *NEXT: work through the audit's findings in its fix order* (`reports/visual-diff/eye-care-home-audit-2026-09-24.md`;
+   findings 4, 5, 6 done). Next is findings 1, 8, 9 (hero classless interior dropped; `<ol>` items lost; media image
+   lost; `<button onClick>` links not recognised as buttons): a converter change, so write a design for Bean first
+   (rule 7). Then 2 and 7 (JS-array content), then 3 (header/footer). Re-audit with the draft-vs-live method
+   (`plugins/sgs-blocks/scripts/parity/draft-vs-live/README.md`) after each fix, at 1440/768/375.
 1. *Problem 1, missing sections.* The "14 non-BEM" boundaries are classless sections gated on a hint (the draft has ONE
    `class=`): 4 homepage sections (b5, b7, b8, b9), 8 other routed views, 2 chrome. Spec 44 §11: proposed (A) admit any
    classless boundary as the container default, (B) only the default routed view goes on the page, (C) fix the halt
