@@ -45,6 +45,10 @@ function initAccordions() {
 				return;
 			}
 
+			// Start aria-expanded from the item's real open state (the default-open
+			// item above is opened here, after the server wrote aria-expanded).
+			summary.setAttribute( 'aria-expanded', details.open ? 'true' : 'false' );
+
 			// Wrap content for animation measurement.
 			let wrapper = content.querySelector(
 				'.sgs-accordion-item__content-inner'

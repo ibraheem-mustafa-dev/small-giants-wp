@@ -612,14 +612,18 @@ footer .wp-block-list a:hover,
 	padding-left: 0 !important;
 }
 
+/* Links follow the footer's own text colour, so they read on a light or a dark
+   footer alike; hover and keyboard focus underline rather than recolour, which
+   keeps contrast whatever the ground is. */
 footer .is-style-no-bullets a {
-	color: var(--wp--preset--color--surface, #ffffff);
+	color: inherit;
 	text-decoration: none;
-	transition: color 0.2s ease;
+	text-underline-offset: 3px;
 }
 
-footer .is-style-no-bullets a:hover {
-	color: var(--wp--preset--color--accent, #d8ca50);
+footer .is-style-no-bullets a:hover,
+footer .is-style-no-bullets a:focus-visible {
+	text-decoration: underline;
 }
 
 /* Copyright bar — credit link animation */

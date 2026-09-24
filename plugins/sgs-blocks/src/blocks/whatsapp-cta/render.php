@@ -82,6 +82,13 @@ $floating_hide_label_below = max( 0, (int) ( $attributes['floatingHideLabelBelow
 // otherwise it renders icon-only exactly as before this feature existed.
 $floating_has_visible_label = ( 'floating' === $variant && $label );
 
+// An empty number falls back to the site's WhatsApp link in Site Info
+// (socials.whatsapp, e.g. https://wa.me/447...), so one business setting feeds
+// every WhatsApp button; a number typed on the block still wins.
+if ( '' === trim( (string) $phone_number ) ) {
+	$phone_number = preg_match( '#wa\.me/\+?(\d+)#i', (string) \SGS\Blocks\Sgs_Site_Info::get( 'socials.whatsapp', '' ), $wa_match ) ? $wa_match[1] : '';
+}
+
 // Do not render if no phone number is set.
 if ( ! $phone_number ) {
 	return;

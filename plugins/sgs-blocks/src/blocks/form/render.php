@@ -526,7 +526,7 @@ $sgs_form_label_attr = '' !== $sgs_form_label
 	? ' aria-label="' . esc_attr( $sgs_form_label ) . '"'
 	: '';
 ?>
-<form class="sgs-form__inner" method="post" novalidate<?php echo $sgs_form_label_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built immediately above from esc_attr(). ?> data-wp-on-async--submit="actions.submitForm">
+<form class="sgs-form__inner" method="post" novalidate<?php echo $sgs_form_label_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built immediately above from esc_attr(). ?> data-wp-on--submit="actions.submitForm">
 
 	<input type="hidden" name="_sgs_form_id" value="<?php echo esc_attr( $form_id ); ?>" />
 

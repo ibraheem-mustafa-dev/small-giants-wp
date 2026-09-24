@@ -685,6 +685,13 @@
       ]
     },
     {
+      "name": "page-no-title",
+      "title": "Page (no title)",
+      "postTypes": [
+        "page"
+      ]
+    },
+    {
       "name": "single-product",
       "title": "Single Product",
       "postTypes": [

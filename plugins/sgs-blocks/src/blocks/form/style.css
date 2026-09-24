@@ -844,11 +844,22 @@ select.sgs-form-field__input {
    14. HTML5 validation visual states
    ---------------------------------------------------------------- */
 
-.sgs-form-field__input:invalid:not(:placeholder-shown):not(:focus) {
-	border-color: var(--sgs-error-border, #dc2626);
+/* Fallback only for browsers without :user-invalid (section 15). Plain :invalid
+   matches a required, untouched field on page load: a <select> is never
+   :placeholder-shown and an option input has no placeholder, so without this
+   guard they showed red before the visitor had done anything. */
+@supports not selector(:user-invalid) {
+	.sgs-form-field__input:invalid:not(:placeholder-shown):not(:focus) {
+		border-color: var(--sgs-error-border, #dc2626);
+	}
+
+	.sgs-form-field__option input:invalid {
+		outline: 2px solid var(--sgs-error-border, #dc2626);
+		outline-offset: 2px;
+	}
 }
 
-.sgs-form-field__option input:invalid {
+.sgs-form-field__option input:user-invalid {
 	outline: 2px solid var(--sgs-error-border, #dc2626);
 	outline-offset: 2px;
 }

@@ -7,7 +7,7 @@
  * @package SGS\Blocks
  */
 
-import { store, getContext, getElement } from '@wordpress/interactivity';
+import { store, getContext, getElement, withSyncEvent } from '@wordpress/interactivity';
 
 const { state } = store( 'sgs/form', {
 	state: {
@@ -201,9 +201,14 @@ const { state } = store( 'sgs/form', {
 		 * Submit the form.
 		 * Validates all fields, collects data, and sends to REST endpoint.
 		 *
+		 * Bound with the synchronous `data-wp-on--submit` directive and wrapped in
+		 * withSyncEvent: preventDefault() must run inside the submit event itself,
+		 * otherwise the browser also posts the form natively and the page reload
+		 * wipes the success message.
+		 *
 		 * @param {Event} event Submit event.
 		 */
-		*submitForm( event ) {
+		submitForm: withSyncEvent( function* ( event ) {
 			event.preventDefault();
 
 			const ctx = getContext();
@@ -351,7 +356,7 @@ const { state } = store( 'sgs/form', {
 					'An error occurred. Please try again later.';
 				ctx.submitting = false;
 			}
-		},
+		} ),
 
 		/**
 		 * Toggle a tile checkbox/radio (for tile-based selection fields).

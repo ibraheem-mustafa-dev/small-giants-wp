@@ -126,7 +126,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					<TextControl
 						label={ __( 'Phone number', 'sgs-blocks' ) }
 						help={ __(
-							'International format without + or spaces (e.g. 447700900000)',
+							'International format without + or spaces (e.g. 447700900000). Leave empty to use the WhatsApp link saved in Site Info.',
 							'sgs-blocks'
 						) }
 						value={ phoneNumber || '' }
@@ -279,7 +279,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			{ ! phoneNumber && (
 				<p className="sgs-whatsapp-cta__warning">
 					{ __(
-						'Set a phone number in the sidebar.',
+						'No number set here: the WhatsApp link from Site Info is used. If Site Info has none, the button is hidden.',
 						'sgs-blocks'
 					) }
 				</p>
