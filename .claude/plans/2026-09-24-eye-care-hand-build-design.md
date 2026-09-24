@@ -1,6 +1,26 @@
 # Eye Care Birmingham: build the real site first, then use it to test the pipeline
 
-**Status:** APPROVED by Bean 2026-09-24 (D1149). Nothing built yet. Next: Wave A (section 8).
+**Status:** APPROVED by Bean 2026-09-24 (D1149). **Wave A DONE 2026-09-24.** Next: Wave B (section 8), working
+from section 2 of `.claude/reports/2026-09-24-eye-care-gap-map-recheck.md` (the Phase 0 build list).
+- Phase 0: report above; 91 rows re-checked, the five grade-4 builds unchanged.
+- Phase 1: buttons, reduced motion and 44px targets were already in place. The side padding now matches `secPad`
+  (20px below 768, 52px from 768), verified live at 375/768/1440. Section top and bottom padding (56px mobile,
+  104px otherwise) is set per section on each `sgs/container` in Phase 4, because theme.json root padding is
+  sides only. Button uppercase and 0.1em spacing are per-button settings, also set in Phase 4. Sage and navy:
+  three options were found and none is built yet. The recommended one is a framework "accent palette" control
+  that reads named palettes from the client's snapshot `settings.custom`, stores the choice, and overrides the
+  accent colour variables (precedent: `includes/class-button-presets-customiser.php`). The rejected options are a
+  separate snapshot per palette (needs a developer to switch) and theme `styles/` files (puts client colours in
+  the framework). Values: sage `#8A9A86` / `#55654F` / `#E8ECE6`, navy `#3A4A6B` / `#2B3A55` / `#E4E7EE`
+  (accent / accent-text / soft). Needs Bean's go-ahead.
+- Re-extraction risk: `theme-extractor/extract.py --merge-onto` carries `styles.css` forward but not
+  `styles.spacing`, so re-extracting the Eye Care snapshot would reset the 52px side padding. Re-apply it after
+  any re-extraction.
+- Phase 2: `sites/eye-care-ward-end/woo-seed/` (repeatable; re-run with `wp eval-file`). 16 products, 49 colour
+  variations, 40 brands, 6 attributes, UK shipping (£3.95, free over £75, local pickup). Colour is a `select`
+  attribute (the installed WooCommerce 11.1.1 offers no swatch type) with hex values in `_sgs_swatch_color`.
+  Product meta: `_sgs_rrp`, `_sgs_frame_eye`, `_sgs_frame_bridge`, `_sgs_frame_temple`. The draft has images for
+  only 4 products. WooCommerce "coming soon" mode is on, so logged-out visitors see a holding page.
 **Written for:** Bean, and any cold session or agent picking up a wave. Plain English first.
 
 **Source of truth for the build:** the draft bundle in
