@@ -101,3 +101,10 @@ phone layout; see the README trap. None of the findings depend on it.)
   button presets change too. The committed snapshot's `draft_source_sha256` matches none of the three draft
   folders. Only the heading rule was applied to the committed snapshot. The drift needs its own investigation
   before any full re-extract.
+- **2026-09-24, finding 4 fixed** (D1147). The page was re-cloned from the v2 draft (run `2026-09-24-000044`), and
+  this also applies the D1145 full-width revert.
+  - Live at 1440, 768 and 375: zero `{{` characters, no stray "Click Here" button, and all real sections present.
+  - The 14 overlay pieces and 1 nested item are listed in that run's `extract.json`.
+- **Correction to the drift note above:** the snapshot was built from the v1 draft folder, and v2 is the current
+  draft. The regeneration differences are v1 against v2, not unexplained drift. A v2 extraction picks Google blue
+  as the primary colour, which is still to be fixed before the snapshot is rebuilt from v2.

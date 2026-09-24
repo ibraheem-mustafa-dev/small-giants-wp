@@ -1520,13 +1520,29 @@ def stage_1_boundary(
     tagged_path = run_dir / "tagged-mockup.html"
     if screen_route and output.get("boundaries") and tagged_path.exists():
         _sr = _load_module_from_path("sgs_screen_route", ORCHESTRATOR_DIR / "screen_route.py")
+        # The draft manifest names the draft's overlays (drawer, modal, cart, mega panel) from its own
+        # handlers and state. Content that shows only while one is open belongs to that overlay, not
+        # to this page. Read-only; a failure leaves overlays unknown (the previous behaviour) and says so.
+        _overlays: dict = {}
         try:
-            summary = _sr.apply(output, tagged_path.read_text(encoding="utf-8"), Path(draft_dir or mockup_path.parent), screen)
+            _dm = _load_module_from_path("sgs_draft_manifest", ORCHESTRATOR_DIR.parent / "draft-manifest" / "manifest.py")
+            _manifest = _dm.build_manifest(Path(mockup_path))
+            (run_dir / "draft-manifest.json").write_text(json.dumps(_manifest, indent=2, ensure_ascii=False), encoding="utf-8")
+            _overlays = _sr.overlay_flags(_manifest)
+        except Exception as exc:  # noqa: BLE001 - advisory read; the run continues without overlay tags
+            warnings.append(f"draft manifest soft-failed ({exc}); overlay content is not told apart from page content")
+        try:
+            summary = _sr.apply(output, tagged_path.read_text(encoding="utf-8"), Path(draft_dir or mockup_path.parent), screen,
+                                overlays=_overlays)
         except _sr.ScreenRouteError as exc:
             sys.exit(f"HALT (screen route): {exc}")
         if summary is not None:
             (run_dir / "screens.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
             voter_out.write_text(json.dumps(output, indent=2, ensure_ascii=False), encoding="utf-8")
+            if summary.get("overlays"):
+                warnings.append(
+                    "screen route: overlay content is not converted into this page: "
+                    + ", ".join(f"{k} ({len(v)} boundaries)" for k, v in summary["overlays"].items()))
             if summary.get("active"):
                 other = [s for s in summary["screens"] if s["label"] != summary["chosen"]]
                 warnings.append(
@@ -2073,11 +2089,45 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                 "classless path skipped, conversion behaviour unchanged"
             )
 
+    # An "item" boundary (one <sc-for> iteration) nested inside ANOTHER boundary is part of that
+    # boundary's content: its owner converts it. Converting it again on its own emits a loop
+    # template as a stray top-level section (the Eye Care audit found menu links from inside the
+    # header and a swatch button from inside a product card at the foot of the page). Map each
+    # nested item to its nearest owning boundary once; Spec 44's classless recognition, which uses
+    # an item to identify its group, still runs first and is untouched.
+    _item_owner: dict[str, str] = {}
+    _item_ids = {bid for bid, b in boundaries_by_id.items() if b.get("boundary_kind") == "item"}
+    _tagged_for_items = run_dir / "tagged-mockup.html"
+    if _item_ids and _tagged_for_items.exists():
+        try:
+            _bn = _load_module_from_path("sgs_boundary_nesting", ORCHESTRATOR_DIR / "boundary_nesting.py")
+            _item_owner = _bn.nested_item_owners(_tagged_for_items.read_text(encoding="utf-8"), _item_ids)
+        except Exception as _exc:  # noqa: BLE001 - unknown nesting leaves items on their existing path
+            aggregate_warnings.append(f"nested-item map soft-failed ({_exc}); items keep their existing path")
+
     for m in matches:
         boundary_id = m["boundary_id"]
         target_block = m["block_name"]
         boundary = boundaries_by_id.get(boundary_id, {})
         section_selector = boundary.get("selector") or args.section
+        # Overlay content (screen route + draft manifest): shows only while a drawer, modal, cart or
+        # mega panel is open, so it belongs to that overlay, never to this page. Reported against
+        # the overlay entity (Spec 36 builds overlays as their own posts), never converted here.
+        if boundary.get("screen_role") == "overlay":
+            _ov = boundary.get("overlay") or {}
+            _emit(_trace_for(run_dir), stage="stage_4_overlay_content", boundary_id=boundary_id,
+                  overlay=_ov.get("id"), overlay_kind=_ov.get("kind"),
+                  reason="boundary shows only while this overlay is open")
+            per_section_results.append({
+                "boundary_id": boundary_id, "section_id": m.get("section_id"), "selector": section_selector,
+                "block_name": target_block, "status": "overlay-content", "overlay": _ov.get("id"),
+                "overlay_kind": _ov.get("kind"), "overlay_target": _ov.get("target"),
+                "extract_path": "", "extracted_attributes": {}, "block_markup": "", "token_resolutions": [],
+                "new_tokens_written": [], "supports_decisions": [], "supports_emitted_attributes": {},
+                "supports_omitted_attributes": {}, "modifier_signals": {},
+                "class_signature": boundary.get("class_signature") or [],
+            })
+            continue
         # Screen route: a boundary on another screen of a multi-screen draft belongs to another page.
         # Reported with its text length, never converted into this one and never dropped silently.
         if boundary.get("screen_role") == "other":
@@ -2397,6 +2447,20 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                         "classless_outcome": _cl_decision.outcome,
                     })
                     continue
+
+        # Nested item (see _item_owner above): its owning boundary converts it. Reported, not dropped.
+        if boundary_id in _item_owner:
+            _emit(_trace_for(run_dir), stage="stage_4_nested_item", boundary_id=boundary_id,
+                  owner=_item_owner[boundary_id], reason="loop item inside another boundary; its owner converts it")
+            per_section_results.append({
+                "boundary_id": boundary_id, "section_id": m.get("section_id"), "selector": section_selector,
+                "block_name": target_block, "status": "nested-item", "owner": _item_owner[boundary_id],
+                "extract_path": "", "extracted_attributes": {}, "block_markup": "", "token_resolutions": [],
+                "new_tokens_written": [], "supports_decisions": [], "supports_emitted_attributes": {},
+                "supports_omitted_attributes": {}, "modifier_signals": {},
+                "class_signature": boundary.get("class_signature") or [],
+            })
+            continue
 
         # Unmatched section: confidence == 0.0 means no block / pattern / scaffold
         # matched the candidate slug. Per the 2026-05-14 retirement of

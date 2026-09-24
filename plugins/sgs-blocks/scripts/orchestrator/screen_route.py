@@ -14,6 +14,11 @@ static draft) is left completely alone: ``apply`` returns None.
 The README also lists the screen's sections by name. A section whose name, or a string the README
 quotes for it, appears verbatim in a boundary's text is recorded as ``readme_section`` on that
 boundary. It is a label only: it never chooses a block.
+
+A boundary outside every screen that shows only while an overlay is open (a drawer, modal, cart or
+mega panel named by the draft manifest, ``draft-manifest/manifest.py``) is tagged
+``screen_role="overlay"`` with the overlay's entity id. It is that overlay's content, not this
+page's: Stage 4 reports it against the overlay and never converts it into the page.
 """
 from __future__ import annotations
 
@@ -102,10 +107,36 @@ def label_sections(texts: dict[str, str], sections: list[dict], full_text: str =
     return {bid: next(iter(names)) for bid, names in found.items() if len(names) == 1}
 
 
-def apply(voter_output: dict, tagged_html: str, mockup_dir: pathlib.Path, requested: str | None = None) -> dict | None:
+def overlay_flags(manifest: dict | None) -> dict[str, dict]:
+    """gate flag -> {id, kind, target} for every overlay entity in a draft manifest, its panel flags
+    included (a mega menu's ``megaSun`` panel belongs to the ``megaAny`` overlay)."""
+    flags: dict[str, dict] = {}
+    for e in (manifest or {}).get("entities", []):
+        if not str(e.get("id", "")).startswith("overlay:"):
+            continue
+        info = {"id": e["id"], "kind": e.get("kind"), "target": e.get("target")}
+        for f in [e.get("flag"), *(e.get("panels") or [])]:
+            if f:
+                flags[f] = info
+    return flags
+
+
+def overlay_of(el, flags: dict[str, dict]) -> dict | None:
+    """The overlay whose ``<sc-if>`` gate encloses ``el`` (the outermost one), else None."""
+    hit = None
+    for gate in el.find_parents("sc-if"):
+        m = _FLAG_RE.search(gate.get("value", ""))
+        if m and m.group(1) in flags:
+            hit = flags[m.group(1)]
+    return hit
+
+
+def apply(voter_output: dict, tagged_html: str, mockup_dir: pathlib.Path, requested: str | None = None,
+          overlays: dict[str, dict] | None = None) -> dict | None:
     """Tag ``voter_output['boundaries']`` in place with ``screen``, ``screen_role`` and, for the chosen
     screen, ``readme_section``; return a summary. ``None`` (nothing touched) for a draft with fewer
-    than two labelled screens."""
+    than two labelled screens. ``overlays`` is ``overlay_flags(manifest)``; a boundary outside every
+    screen that sits under one of those gates gets ``screen_role="overlay"`` and ``overlay``."""
     from bs4 import BeautifulSoup
 
     soup = BeautifulSoup(tagged_html, "html.parser")
@@ -122,6 +153,7 @@ def apply(voter_output: dict, tagged_html: str, mockup_dir: pathlib.Path, reques
     sections = read_screen_sections(readme, [chosen["label"], row.get("view", ""), norm_view(chosen["flag"] or "")])
     per_screen: dict[str, dict] = {s["label"]: {"boundaries": [], "text_chars": 0} for s in screens}
     outside: list[str] = []
+    in_overlays: dict[str, list[str]] = {}
     default_texts: dict[str, str] = {}
     for b in voter_output.get("boundaries", []):
         el = soup.find(attrs={"data-sgs-boundary-id": b["boundary_id"]})
@@ -131,6 +163,11 @@ def apply(voter_output: dict, tagged_html: str, mockup_dir: pathlib.Path, reques
         text = el.get_text(" ", strip=True)
         b["screen_text_chars"] = len(text)
         if holder is None:
+            ov = overlay_of(el, overlays or {})
+            if ov is not None:
+                b["screen"], b["screen_role"], b["overlay"] = None, "overlay", ov
+                in_overlays.setdefault(ov["id"], []).append(b["boundary_id"])
+                continue
             b["screen"], b["screen_role"] = None, "outside"
             outside.append(b["boundary_id"])
             continue
@@ -148,5 +185,5 @@ def apply(voter_output: dict, tagged_html: str, mockup_dir: pathlib.Path, reques
             b["readme_section"] = labelled[b["boundary_id"]]
     return {"active": True, "chosen": chosen["label"], "chosen_by": how, "route": row.get("route"),
             "screens": [{"label": s["label"], "flag": s["flag"], **per_screen[s["label"]]} for s in screens],
-            "outside_screens": outside, "readme_sections_listed": [s["name"] for s in sections],
+            "outside_screens": outside, "overlays": in_overlays, "readme_sections_listed": [s["name"] for s in sections],
             "readme_section_labels": labelled}

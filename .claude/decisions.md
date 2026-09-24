@@ -1,5 +1,17 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1147 [ROUTINE] — Overlay content and nested loop items are reported, never converted into the page (2026-09-24)
+
+**Decision (Bean, design approved).** On the Eye Care page, about 20 blocks of raw loop templates (`{{ o.title }}`) sat below the last section. There were two proven routes: content that shows only while a drawer, modal, cart or mega panel is open sits outside every screen, so it was treated as page content; and a `<sc-for>` item boundary inside another boundary was converted again as a standalone section.
+**Built.**
+- `orchestrator/screen_route.py::overlay_flags` / `overlay_of`: Stage 1 now calls `draft-manifest/manifest.py::build_manifest`, read-only, written to `draft-manifest.json`. An outside-screen boundary under an overlay's gate gets `screen_role="overlay"`, and Stage 4 reports it as `overlay-content` with the overlay entity (Spec 36 builds overlays as their own posts).
+- `orchestrator/boundary_nesting.py::nested_item_owners`: an item inside another boundary is reported as `nested-item` with its owner. This is universal: static drafts have no items. Spec 44's recognition still runs first.
+**Verified.**
+- Tests: `tests/test_screen_route.py`, `tests/test_boundary_nesting.py`, with negative controls.
+- Eye Care re-clone (run `2026-09-24-000044`, v2 draft): 14 overlay pieces and 1 nested item reported; the live page carries 0 `{{` at 1440, 768 and 375, and all real sections are present. The only other markup change is the D1145 full-width revert, now live.
+- Mama's drafts carry no `<sc-for>` and no screens, so neither rule can fire there.
+**Found.** The Eye Care snapshot is extracted from the v1 draft folder (classless), while clones use v2 (SGS-BEM). Clones therefore need `--skip-freshness-gate` until v2 extraction stops picking the reviews block's Google blue as primary.
+
 ## D1146 [ROUTINE] — Every shadow lifts on hover by default; each preset has its own hover partner (2026-09-24)
 
 **Decision (Bean).** "Auto lift on hover should be default": everything with a shadow lifts, including non-clickable boxes, with a per-block switch to turn it off; each decorative preset gets its own matching hover rather than all becoming Floating. Rejected: a one-click button only (Bean chose the default), and a single procedural lift for presets (it cannot give each decorative style its own hover).
