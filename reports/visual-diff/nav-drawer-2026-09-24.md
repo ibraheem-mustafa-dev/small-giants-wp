@@ -72,3 +72,4 @@ Screenshot: `fb-drawer-after.png` (scratchpad): panel over the header's phone ro
 |---|---|---|---|
 | F10 | Trigger card has a visible edge by default | `box-shadow` = the theme `floating` preset layers, `border-radius` 20px; opener live | PASS |
 | F11 | Phone button (business-info Button style) no longer spills out of its row | button 83-127px inside its row 83-127px, `margin-top` 0 (was -8px, box 75-119 in an 83-111 row); header now 143px tall; with the drawer open, the button's top pixel belongs to the drawer | PASS |
+| F12 | Trigger card has a thin primary border by default (Bean: the shadow alone left the top edge blending into the header) | commit cb730f520: `border` 1px solid rgb(230,138,149) (= `--wp--preset--color--primary` #e68a95) all round, radius 20px, border-box width 360px, opener live; screenshot `fb-border.png` (scratchpad) shows the card edge distinct from the header | PASS |
