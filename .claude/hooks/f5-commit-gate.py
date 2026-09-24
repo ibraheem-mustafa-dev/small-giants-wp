@@ -10,12 +10,9 @@ runs each F5 gate in `--check` (baseline-aware) mode and DENIES the commit if an
 reports a NEW violation not in its committed baseline. Baselined legacy violations
 pass — only a regression blocks.
 
-Gates run (all fast, static, ~2s combined; no pytest/oracle here — those stay in
-prebuild):
-  - cheat-gate/run.py            (Spec 31 §7a — converter cheats)
-  - excluded-gate/run.py         (F4 §3 — in-code CSS-property drops)
-  - ledger/coverage_check.py     (Spec 31 §12.2.1 — UNACCOUNTED coverage join)
-  - db-consistency/run.py        (Spec 31 §12.4 — DB-as-code consistency)
+Runs ONLY when the commit stages cloning-pipeline code (`_WATCHED_CONVERTER_SEGMENTS`);
+any other commit passes instantly. db-consistency is not run here: the build's fast
+tier and `/sgs-update` stage 12 both run it. Gates are listed in `_GATES`.
 
 Bypass: add a `[gates-ok:<reason>]` token to the commit message for a deliberate
 override (mirrors the path-scope guard's `[batch-ok:...]` convention). Use sparingly.
@@ -45,7 +42,6 @@ _GATES = [
     # commit time it was a no-op green light (STOP-6 — worse than no light). The
     # REAL content-conservation check runs on EVERY clone (draft vs the LIVE page
     # source) and re-baselines there; that is the enforcement point.
-    ("DB-as-code consistency (§12.4)", "db-consistency/run.py"),
     # Modular-rebuild scaffold anti-cheat gates (design §4.1 / A7, D242).
     ("converter carve-out (no-slug-literal §4.1)", "converter/gates/no_slug_literal.py"),
     ("converter frozen-engine import-ban (§4.1)", "converter/gates/import_ban.py"),
@@ -71,6 +67,10 @@ _GATES = [
 _WATCHED_CONVERTER_SEGMENTS = (
     "plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py",
     "plugins/sgs-blocks/scripts/converter/",
+    "plugins/sgs-blocks/scripts/orchestrator/",
+    "plugins/sgs-blocks/scripts/ledger/",
+    "plugins/sgs-blocks/scripts/cheat-gate/",
+    "plugins/sgs-blocks/scripts/excluded-gate/",
 )
 
 # The subset of _GATES that specifically guard converter output. On a
@@ -224,19 +224,23 @@ def main() -> int:
     if not _is_gated_commit(cmd):
         return 0
 
+    # Pipeline-only (Bean, 2026-09-24): every gate here guards cloning-pipeline
+    # code, so a commit that stages none of it runs nothing. Block/theme CSS the
+    # cheat-gate also reads is covered by the build's fast tier (gates.json).
+    touched = _staged_converter_paths()
+    if not touched:
+        return 0
+
     failures, present_count, missing = _run_gates()
     real_blocks = [f for f in failures if "could not run" not in f]
     could_not_run = [f for f in failures if "could not run" in f]
 
-    # 0. Converter-guard (folds the retired qc-on-converter-edit stub): if this
-    #    commit stages a change to converter/orchestrator code but a converter-
-    #    REQUIRED guard is missing, fail CLOSED — the change would ship unchecked.
-    #    Read from `git diff --cached` (machine evidence), NOT a typed marker.
-    touched = _staged_converter_paths()
-    if touched:
-        missing_converter = [r for r in missing if r in _CONVERTER_REQUIRED_GATES]
-        if missing_converter:
-            return _deny(_converter_guard_deny_reason(touched, missing_converter))
+    # 0. Converter-guard (folds the retired qc-on-converter-edit stub): a
+    #    converter-REQUIRED guard missing on a pipeline commit fails CLOSED — the
+    #    change would ship unchecked. Read from `git diff --cached`, not a typed marker.
+    missing_converter = [r for r in missing if r in _CONVERTER_REQUIRED_GATES]
+    if missing_converter:
+        return _deny(_converter_guard_deny_reason(touched, missing_converter))
 
     # 1. A gate reported an actual NEW violation (returncode != 0) → DENY.
     if real_blocks:

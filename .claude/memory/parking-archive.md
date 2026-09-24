@@ -7,6 +7,26 @@ source: .claude/parking.md (Phase 6c split — doc-op programme)
 
 # Parking archive — resolved + closed + retired entries
 
+## 2026-09-24 — 1 entry RETIRED: the gate it describes was deleted
+
+Retired in the hook cull (Bean, 2026-09-24): `detector-first-commit-gate.py` was removed (bypassed 28 times in 30 days via `[repeat-ok]`), so its threshold hole no longer exists.
+
+### P-DETECTOR-FIRST-COMMIT-GATE-THRESHOLD-HOLE (ARCHIVED) - a component rollout sharing 0 lines is invisible
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-30
+
+`detector-first-commit-gate.py`'s `MIN_SHARED_LINES = 3` threshold does not catch every
+component rollout — verified against C19's real rollout commit `1612c7b1e`: gate 1 (6 files
+touched) passes, gate 2 (1 shared line vs 3 required) stops it. A rollout that shares ZERO lines
+would be equally invisible, so raising or lowering the threshold treats the symptom, not the
+cause. Not fixed because it is a shared PreToolUse hook, nobody has priced the false-positive
+cost of a stricter gate, and a gate that fires on every multi-file commit gets bypassed
+reflexively and then protects nothing. Needs a design gate from Bean, not a patch — whoever
+builds it should add a fixture from `1612c7b1e` to `--self-test` (the current self-test proves
+the gate CAN fail, not that it can see this specific case).
+
+**Trigger:** Bean design-gate session on shared-hook enforcement, or the next rollout this gate
+should have caught and didn't.
+
 ## 2026-09-18 — 2 entries RESOLVED: basket/burger reorder + drawer post-picker (Front D Wave 2 close-out)
 
 ### P-HEADER-CART-BURGER-ACTION-CLUSTER — cart pushes the burger menu inward on mobile (ARCHIVED)

@@ -49,9 +49,8 @@ USAGE
 DESIGN NOTES
   * REPORT-only by default so it can be run any time without wedging anything; `--check`
     is the gating form /handoff calls.
-  * It NEVER edits a file. Detection and remediation only — the same rule ledger-rotate.py
-    follows, and for the same reason (a hook that rewrites a doc the agent just wrote
-    fights the agent).
+  * It NEVER edits a file. Detection and remediation only (a hook that rewrites a doc
+    the agent just wrote fights the agent).
   * Each failure names the file, the measured value and the fix. A gate that fails
     illegibly gets switched off.
   * `--self-test` exists because a check that cannot fail is worse than no check
@@ -71,8 +70,8 @@ _REPO = Path(__file__).resolve().parents[2]
 _CLAUDE = _REPO / ".claude"
 
 # The byte cap used repo-wide for LEDGER.md / MEMORY.md (see .claude/CLAUDE.md).
-# Mirrors ledger-rotate.py's _THRESHOLD_BYTES deliberately: the Stop hook snapshots at
-# this size, this gate refuses to close a handoff above it.
+# This gate refuses to close a handoff above it (the ledger-rotate Stop hook that
+# snapshotted at this size was retired 2026-09-24).
 CAP_BYTES = 24576
 
 # --- decisions.md / MEMORY.md size discipline (added 2026-08-06) -------------------

@@ -10,7 +10,7 @@
 | Architecture | `architecture.md` | System design + key decisions (Part A only) |
 | Dev setup | `dev-setup.md` | Build / deploy / SSH / local environment |
 | Goals | `goals.md` | Active goals + exit criteria |
-| Living status | `LEDGER.md` | THE one status doc (plain-English top + live status + product queue + pointers). Replace-not-append; `ledger-rotate.py` Stop hook snapshots to `memory/session-YYYY-MM-DD.md` past 24576 bytes |
+| Living status | `LEDGER.md` | THE one status doc (plain-English top + live status + product queue + pointers). Replace-not-append; kept under 24576 bytes — `handoff-preflight.py --check` refuses a handoff above it |
 | Structural defences | `STOP-CATALOGUE.md` | UNCAPPED STOP catalogue + pre-flight ritual (never drop a defence; carry-forward count-check every `/handoff`) |
 | Mistakes | `mistakes.md` | Recurring-lesson log — each entry carries its rule inline; ~30 active, oldest pruned to `memory/mistakes-archive.md` |
 | Decisions | `decisions.md` | D-numbered architectural log, compressed; entries tagged `[INCIDENT]`/`[ROUTINE]` |

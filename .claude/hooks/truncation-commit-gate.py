@@ -61,6 +61,15 @@ REGROWTH_RATIO = 0.05
 REGROWTH_FLOOR = 3
 
 
+
+# Same commit matcher as f5-commit-gate.py: also catches `git -C <path> commit`,
+# `git --no-pager commit`, `git -c k=v commit`.
+_GIT_COMMIT = re.compile(
+    r"\bgit\b(?:\s+(?:-C\s+\S+|--git-dir(?:=\S+|\s+\S+)|--work-tree(?:=\S+|\s+\S+)"
+    r"|-c\s+\S+|--no-pager|--paginate|--no-replace-objects|--literal-pathspecs))*"
+    r"\s+commit\b"
+)
+
 def _git(args):
     return subprocess.run(
         ["git"] + args, capture_output=True, text=True, encoding="utf-8", errors="replace"
@@ -107,6 +116,11 @@ def find_truncations(rows, statuses, preimage=preimage_lines):
         # Only a MODIFIED file can be truncated. A deletion is explicit and a
         # new file has no pre-image to lose.
         if statuses.get(path) != "M":
+            continue
+        # Cheap exact pre-filter: a hit needs pre >= MIN_PREIMAGE_LINES and
+        # deleted >= pre * GUTTED_RATIO, so fewer deletions than that product can
+        # never hit. Skips the `git show HEAD:<path>` for almost every file.
+        if deleted < MIN_PREIMAGE_LINES * GUTTED_RATIO:
             continue
         pre = preimage(path)
         if pre < MIN_PREIMAGE_LINES:
@@ -158,7 +172,7 @@ def main() -> int:
     if data.get("tool_name") != "Bash":
         return 0
     cmd = (data.get("tool_input") or {}).get("command", "")
-    if not isinstance(cmd, str) or not re.search(r"\bgit\s+commit\b", cmd):
+    if not isinstance(cmd, str) or not _GIT_COMMIT.search(cmd):
         return 0
     if "[truncate-ok" in cmd:
         return 0

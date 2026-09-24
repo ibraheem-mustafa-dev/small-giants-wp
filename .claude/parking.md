@@ -349,22 +349,6 @@ of the media-atom system (it isn't a media-specific concern), and not in scope f
 client-controls track. A smaller, separate unification: one shared `alignment` control,
 4 adopters to migrate.
 
-### P-DETECTOR-FIRST-COMMIT-GATE-THRESHOLD-HOLE - a component rollout sharing 0 lines is invisible
-**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-30
-
-`detector-first-commit-gate.py`'s `MIN_SHARED_LINES = 3` threshold does not catch every
-component rollout — verified against C19's real rollout commit `1612c7b1e`: gate 1 (6 files
-touched) passes, gate 2 (1 shared line vs 3 required) stops it. A rollout that shares ZERO lines
-would be equally invisible, so raising or lowering the threshold treats the symptom, not the
-cause. Not fixed because it is a shared PreToolUse hook, nobody has priced the false-positive
-cost of a stricter gate, and a gate that fires on every multi-file commit gets bypassed
-reflexively and then protects nothing. Needs a design gate from Bean, not a patch — whoever
-builds it should add a fixture from `1612c7b1e` to `--self-test` (the current self-test proves
-the gate CAN fail, not that it can see this specific case).
-
-**Trigger:** Bean design-gate session on shared-hook enforcement, or the next rollout this gate
-should have caught and didn't.
-
 ### P-PARTICLE-TRAIL-VARIATIONS - two further trail looks, post-launch
 **Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-08-27
 

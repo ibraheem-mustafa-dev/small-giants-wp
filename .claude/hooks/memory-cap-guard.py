@@ -48,7 +48,44 @@ def main() -> int:
     return 0
 
 
+def _self_test():
+    """Must fire on an over-cap MEMORY.md, stay silent under the cap and on other files."""
+    import io
+    import tempfile
+    from contextlib import redirect_stdout
+
+    def run(tool, path):
+        buf = io.StringIO()
+        sys.stdin = io.StringIO(json.dumps({"tool_name": tool, "tool_input": {"file_path": path}}))
+        with redirect_stdout(buf):
+            main()
+        return buf.getvalue()
+
+    failed = 0
+    with tempfile.TemporaryDirectory() as d:
+        big, small, other = (os.path.join(d, n) for n in ("big", "small", "other"))
+        for sub in (big, small, other):
+            os.mkdir(sub)
+        open(os.path.join(big, "MEMORY.md"), "w").write("x" * (CAP + 1))
+        open(os.path.join(small, "MEMORY.md"), "w").write("x" * CAP)
+        open(os.path.join(other, "NOTES.md"), "w").write("x" * (CAP + 1))
+        cases = [
+            ("over-cap MEMORY.md warns", run("Write", os.path.join(big, "MEMORY.md")), True),
+            ("MEMORY.md exactly at cap is silent", run("Edit", os.path.join(small, "MEMORY.md")), False),
+            ("an over-cap file not named MEMORY.md is silent", run("Write", os.path.join(other, "NOTES.md")), False),
+            ("a non-edit tool is ignored", run("Bash", os.path.join(big, "MEMORY.md")), False),
+        ]
+    for name, out, want in cases:
+        ok = ("systemMessage" in out) == want
+        failed += not ok
+        print(f"  {'ok  ' if ok else 'FAIL'} {name}")
+    print("SELF-TEST " + ("PASSED" if not failed else f"FAILED ({failed})"))
+    return 1 if failed else 0
+
+
 if __name__ == "__main__":
+    if "--self-test" in sys.argv:
+        sys.exit(_self_test())
     try:
         sys.exit(main())
     except Exception:
