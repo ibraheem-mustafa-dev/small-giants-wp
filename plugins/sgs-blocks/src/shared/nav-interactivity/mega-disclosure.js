@@ -770,6 +770,37 @@ function onOutsideClick( event ) {
 /** The currently-attached document-level outside-click listener, or null. */
 let outsideClickHandler = null;
 
+/** The currently-attached document-level Escape listener, or null. */
+let escapeHandler = null;
+
+/**
+ * Escape anywhere on the page closes an open panel. A panel opened by hover
+ * leaves keyboard focus wherever it was (usually the page body), so the
+ * trigger's and panel's own keydown handlers never see the key. Presses inside
+ * a disclosure are left to those handlers, which also return focus.
+ *
+ * @param {KeyboardEvent} event The document-level keydown event.
+ */
+function onDocumentEscape( event ) {
+	if ( event.key !== 'Escape' && event.key !== 'Esc' ) {
+		return;
+	}
+	const target = event.target;
+	if (
+		target &&
+		target.closest &&
+		( target.closest( '[data-wp-interactive="sgs/mega"]' ) ||
+			target.closest( '[data-sgs-mega-panel][data-sgs-nav-fixed]' ) )
+	) {
+		return;
+	}
+	if ( state.openMegaId ) {
+		state.openMegaId = null;
+		syncTriangleWatcher();
+		syncOutsideClickWatcher();
+	}
+}
+
 /**
  * Attach/detach the document-level outside-click listener, gated strictly on
  * whether ANY disclosure is open — mirrors `syncTriangleWatcher()`'s and
@@ -786,6 +817,14 @@ function syncOutsideClickWatcher() {
 	} else if ( ! state.openMegaId && outsideClickHandler ) {
 		document.removeEventListener( 'click', outsideClickHandler );
 		outsideClickHandler = null;
+	}
+	// The page-level Escape listener shares the same "anything open" gate.
+	if ( state.openMegaId && ! escapeHandler ) {
+		escapeHandler = onDocumentEscape;
+		document.addEventListener( 'keydown', escapeHandler );
+	} else if ( ! state.openMegaId && escapeHandler ) {
+		document.removeEventListener( 'keydown', escapeHandler );
+		escapeHandler = null;
 	}
 }
 
