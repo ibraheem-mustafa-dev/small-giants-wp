@@ -27,6 +27,10 @@
   1. Header phone hidden below 1160px: Eye Care Additional CSS (the snapshot's `styles.css`, which the client edits in
      the Site Editor), not a new per-block control. One client, one element; build a general "hide below/above a
      width" control only when a second client needs it. It also stops the header wrapping between 1060 and 1160.
+     Any per-size hiding that lines up with the device tiers (768/1024) uses the device-visibility switches on the
+     block instead (`sgsHideOnMobile` / `sgsHideOnTablet` / `sgsHideOnDesktop`, `includes/device-visibility.php`);
+     an item that moves into the drawer at a size gets a copy in the drawer body and the header copy is hidden with
+     those switches (nav track, Wave 3C plan U-10). The 1160 phone cut is the only Additional CSS rule.
   2. `sgs/button` link source: the link can come from Site Info (phone, email, WhatsApp) as well as a typed URL. Use
      it for the Help page's "Call" button (it replaces the sgs/business-info phone line there).
   3. The outline button preset follows its section's text colour, so it reads on light and dark sections; then every
