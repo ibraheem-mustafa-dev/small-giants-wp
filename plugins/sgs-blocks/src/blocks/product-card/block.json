@@ -277,6 +277,24 @@
 					"prefix": "swatch",
 					"_note": "Decorative colour-swatch row (Frame Card component) — each swatch's own hue is DATA (colourSwatches[].colour), not an operator styling property, mirroring sgs/option-picker's swatch chip (which is likewise never operator-coloured). No dedicated colour/size attribute exists for the swatch ring itself — an honest gap, matching priceFromLabel's own precedent; the ring/size are fixed in style.css. Rendered via sgs_product_card_swatches_markup() (product-card-builtin-render.php) reusing option-picker's scoped-custom-property chip technique (render.php ~line 727-746), called from every render branch per R-31-9. The '+N' pill has no background fill (border + muted text only), so unlike option-picker's own pill it needs no sgs_wcag_text_colour_for_bg() contrast call."
 				},
+				"attributeTag": {
+					"label": "Attribute tag",
+					"order": 17,
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"prefix": "attributeTag",
+					"attrMap": {
+						"css:color": "attributeTagTextColour",
+						"css:background-color": "attributeTagBackgroundColour",
+						"css:border-color": "attributeTagBorderColour",
+						"css:border-width": "attributeTagBorderWidth",
+						"css:padding": "attributeTagPadding"
+					},
+					"_note": "Frame Card component: generic tag next to the product title shown when the resolved product carries a chosen WooCommerce product-attribute term or product tag (attributeTagSource/attributeTagTaxonomy/attributeTagTerm) — never hardcoded to one client's vocabulary (e.g. an optician site's 'Polarised' lens attribute). Distinct from the existing 'tag' element (trial/featured, keyed to variantStyle) and 'savingBadge' (media-overlay, independent of variant): this one sits inline beside the title, matching Frame Card.dc.html's title-row markup. css:color needed an EXPLICIT attrMap entry (2026-09-24 compliance fix) — the default `{prefix}Colour` convention would look for `attributeTagColour`, which does not exist; the real attribute is `attributeTagTextColour`, so the prior note claiming the convention resolved it was wrong and the colour reached the DB with no css_property (check-colour-attr-css-property finding). `attributeTagBorderWidth` (2026-09-24, Spec 35 C1 compliance fix) is new — border colour now lives in `SgsBorderControl` alongside width/radius rather than as a sibling `SgsColourPanel` row (radius stays the block's existing scalar `SgsLengthControl`, outside the border-control pair, per Spec 32 §6.1's pill/tag/badge scalar-radius carve-out — `onRadiusChange` is deliberately not wired to `SgsBorderControl`). Rendered via sgs_product_card_attribute_tag_markup()/sgs_product_card_wrap_title_with_attribute_tag() (src/blocks/product-card/attribute-tag.php — a block-directory-private file, NOT includes/product-card-builtin-render.php, because the typed-mode title element is owned by that shared file and this task's touch-only-this-block-directory scope could not edit it; the typed branch is instead wired by post-processing the shared render's returned HTML — see that file's own docblock)."
+				},
 				"cta": {
 					"label": "Call to action",
 					"order": 11,
@@ -1387,6 +1405,76 @@
 			"default": 4,
 			"role": "content",
 			"description": "Maximum number of colour swatches shown before collapsing the remainder into a '+N' pill. Matches the Frame Card design's 'four swatches maximum, then a +N pill'."
+		},
+		"showAttributeTag": {
+			"type": "boolean",
+			"default": false,
+			"description": "Frame Card component: show a small tag beside the product title when the product has a chosen product attribute term, or a chosen product tag. Generic — the operator picks which attribute/term or tag triggers it (e.g. an optician site's 'Polarised' lens attribute); nothing about it is hardcoded to a specific client's vocabulary."
+		},
+		"attributeTagSource": {
+			"type": "string",
+			"default": "attribute",
+			"enum": [
+				"attribute",
+				"tag"
+			],
+			"description": "What showAttributeTag checks against the resolved live product (bound modes only): a WooCommerce product ATTRIBUTE taxonomy + term, or a plain WooCommerce product TAG."
+		},
+		"attributeTagTaxonomy": {
+			"type": "string",
+			"default": "",
+			"description": "WooCommerce product attribute taxonomy slug to check (e.g. pa_lens-type — find it under Products > Attributes). Only read when attributeTagSource is 'attribute'; ignored for 'tag'."
+		},
+		"attributeTagTerm": {
+			"type": "string",
+			"default": "",
+			"role": "content",
+			"description": "Term slug within attributeTagTaxonomy (attribute mode) or the product_tag slug (tag mode) that triggers the tag. Bound modes: the tag shows only when the resolved live product actually carries this term. Typed mode has no live product to check against, so the tag shows whenever this is non-empty and showAttributeTag is on."
+		},
+		"attributeTagText": {
+			"type": "string",
+			"default": "",
+			"role": "content",
+			"description": "Tag text. Empty (default) = use the matched term's own name (e.g. 'Polarised') where it can be resolved, else the term slug title-cased."
+		},
+		"attributeTagTextColour": {
+			"type": "string",
+			"default": "",
+			"description": "Text + border colour for the attribute tag. Theme token slug or raw CSS colour. Empty = theme default (muted), matching the Frame Card design's bordered-only chip."
+		},
+		"attributeTagBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Border colour for the attribute tag. Theme token slug or raw CSS colour. Empty = theme default."
+		},
+		"attributeTagBorderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Border width for the attribute tag { top, right, bottom, left }, set alongside its colour in the border control. Empty = the style.css default (1px, matching the Frame Card design's bordered-only chip)."
+		},
+		"attributeTagBackgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Background colour for the attribute tag. Empty (default) = transparent, matching the Frame Card design's bordered-only chip (no fill)."
+		},
+		"attributeTagPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Box padding for the attribute tag { top, right, bottom, left }. Rendered scoped via the shared sgs_label_box_css_rule() helper (mirrors tagPadding/savingBadgePadding). Empty = theme default (style.css)."
+		},
+		"attributeTagBorderRadius": {
+			"type": [
+				"string",
+				"number"
+			],
+			"default": "",
+			"description": "Border radius for the attribute tag as a CSS length (e.g. '4px'). Empty = the style.css default (square corners, matching the Frame Card design source). Mirrors tagBorderRadius/savingBadgeBorderRadius."
+		},
+		"noReviewsText": {
+			"type": "string",
+			"default": "",
+			"role": "content",
+			"description": "Frame Card component: editable text shown where the star row would be when reviewCount is 0 and showRating is on. Empty (default) = show nothing at all — an untouched card with zero reviews renders no rating row. Non-empty renders that text (e.g. 'No reviews yet') in its place. Rendered by sgs_product_card_rating_markup() (includes/product-card-builtin-render.php), which every render branch calls."
 		}
 	},
 	"styles": [

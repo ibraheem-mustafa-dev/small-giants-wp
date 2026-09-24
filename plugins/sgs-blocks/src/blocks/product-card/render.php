@@ -57,6 +57,7 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 require_once dirname( __DIR__, 3 ) . '/includes/configurator-seed.php';
 require_once dirname( __DIR__, 3 ) . '/includes/product-card-builtin-render.php';
+require_once __DIR__ . '/attribute-tag.php';
 
 // The CTA below always carries .sgs-button/.sgs-button--primary classes, but it
 // is raw HTML, not a real `sgs/button` InnerBlocks instance — so WordPress's
@@ -259,6 +260,46 @@ if ( '' !== $sgs_saving_badge_text_colour ) {
 	$sgs_saving_badge_box_css .= '.' . $sgs_card_uid . ' .sgs-product-card__saving-badge{color:' . $sgs_saving_badge_text_colour . ';}';
 }
 $sgs_card_typo_css .= $sgs_saving_badge_box_css;
+
+// ── Frame Card attribute tag (generic, next to the title) — same shared box
+// helper as the saving badge above. Emitted here (shared, pre-branch-split)
+// so one control governs the tag across every render branch (R-31-9). Border
+// colour has no equivalent in sgs_label_box_css_rule() (background/padding/
+// radius only), so it is emitted as its own declaration alongside the text
+// colour, on the same selector.
+$sgs_attribute_tag_radius_raw = $attributes['attributeTagBorderRadius'] ?? '';
+$sgs_attribute_tag_box_css    = sgs_label_box_css_rule(
+	array(
+		'padding'    => is_array( $attributes['attributeTagPadding'] ?? null ) ? $attributes['attributeTagPadding'] : array(),
+		'radius'     => ( 0.0 !== floatval( $sgs_attribute_tag_radius_raw ) ) ? $sgs_attribute_tag_radius_raw : '',
+		'background' => (string) ( $attributes['attributeTagBackgroundColour'] ?? '' ),
+		'fullWidth'  => false,
+	),
+	'.' . $sgs_card_uid . ' .sgs-product-card__attribute-tag'
+);
+$sgs_attribute_tag_text_colour   = sgs_colour_value( $attributes['attributeTagTextColour'] ?? '' );
+$sgs_attribute_tag_border_colour = sgs_colour_value( $attributes['attributeTagBorderColour'] ?? '' );
+// Border width — 4-side object attr (Spec 32 S6), paired with the border
+// colour in the editor's SgsBorderControl. sgs_box_object_shorthand()
+// returns null when every side is empty, so an unset value leaves the
+// style.css default (1px solid) untouched.
+$sgs_attribute_tag_border_width = sgs_box_object_shorthand(
+	is_array( $attributes['attributeTagBorderWidth'] ?? null ) ? $attributes['attributeTagBorderWidth'] : array()
+);
+if ( '' !== $sgs_attribute_tag_text_colour || '' !== $sgs_attribute_tag_border_colour || null !== $sgs_attribute_tag_border_width ) {
+	$sgs_attribute_tag_decls = array();
+	if ( '' !== $sgs_attribute_tag_text_colour ) {
+		$sgs_attribute_tag_decls[] = 'color:' . $sgs_attribute_tag_text_colour;
+	}
+	if ( '' !== $sgs_attribute_tag_border_colour ) {
+		$sgs_attribute_tag_decls[] = 'border-color:' . $sgs_attribute_tag_border_colour;
+	}
+	if ( null !== $sgs_attribute_tag_border_width ) {
+		$sgs_attribute_tag_decls[] = 'border-width:' . $sgs_attribute_tag_border_width;
+	}
+	$sgs_attribute_tag_box_css .= '.' . $sgs_card_uid . ' .sgs-product-card__attribute-tag{' . implode( ';', $sgs_attribute_tag_decls ) . ';}';
+}
+$sgs_card_typo_css .= $sgs_attribute_tag_box_css;
 
 // ── Text-colour gradient siblings: title / desc / price / priceNote ──────
 // Mirrors the tagTextColour/tagTextColourGradient triad below (D636 rollout)
@@ -766,6 +807,10 @@ if ( 'typed' === $source_mode ) {
 	// Prepend the scoped typography + CTA <style>. Pass the uid so the trial tag
 	// carries it (the box rule above scopes to it).
 	$builtin_inner = $sgs_card_typo_tag . sgs_product_card_builtin_render( $sgs_pcard_typed_attributes, $sgs_card_uid );
+	// Frame Card: attribute tag, post-processed onto the shared builtin
+	// render's returned HTML (attribute-tag.php docblock explains why;
+	// product_id is 0 here, typed mode has no live product to check against).
+	$builtin_inner = sgs_product_card_wrap_title_with_attribute_tag( $builtin_inner, $attributes, 0, 'typed' );
 
 	// BEM modifier classes on the wrapper.
 	$builtin_classes   = $classes;
@@ -991,7 +1036,13 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\
 			<?php // Image-less featured card — in-body fallback (overlay CSS is media-scoped, so this stays in flow). ?>
 			<span class="sgs-product-card__tag sgs-product-card__tag--featured"><?php echo esc_html( $sgs_badge_overlay ); ?></span>
 		<?php endif; ?>
-		<h3><?php echo esc_html( $sgs_resolved_title ); ?></h3>
+		<div class="sgs-product-card__title-row">
+			<h3><?php echo esc_html( $sgs_resolved_title ); ?></h3>
+			<?php
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
+			echo sgs_product_card_attribute_tag_markup( $attributes, $product_id, $source_mode );
+			?>
+		</div>
 		<?php if ( '' !== $sgs_resolved_desc ) : ?>
 			<div class="product-desc"><?php echo wp_kses_post( $sgs_resolved_desc ); ?></div>
 		<?php endif; ?>
@@ -1450,13 +1501,19 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				// D649: the title carries `sgs-product-card__title` so styling keys on IDENTITY,
 				// not tag name.
 				?>
-				<<?php echo $sgs_bound_htag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- allowlisted 'h2'|'h3'|'h4'|'p'. ?> class="sgs-product-card__title">
-					<?php if ( '' !== $card_permalink ) : ?>
-						<a class="product-card__title-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"><?php echo esc_html( $sgs_resolved_title ); ?></a>
-					<?php else : ?>
-						<?php echo esc_html( $sgs_resolved_title ); ?>
-					<?php endif; ?>
-				</<?php echo $sgs_bound_htag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- allowlisted 'h2'|'h3'|'h4'|'p'. ?>>
+				<div class="sgs-product-card__title-row">
+					<<?php echo $sgs_bound_htag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- allowlisted 'h2'|'h3'|'h4'|'p'. ?> class="sgs-product-card__title">
+						<?php if ( '' !== $card_permalink ) : ?>
+							<a class="product-card__title-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"><?php echo esc_html( $sgs_resolved_title ); ?></a>
+						<?php else : ?>
+							<?php echo esc_html( $sgs_resolved_title ); ?>
+						<?php endif; ?>
+					</<?php echo $sgs_bound_htag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- allowlisted 'h2'|'h3'|'h4'|'p'. ?>>
+					<?php
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
+					echo sgs_product_card_attribute_tag_markup( $attributes, $product_id, $source_mode );
+					?>
+				</div>
 
 				<?php if ( '' !== $sgs_resolved_desc ) : ?>
 				<div class="product-desc">
@@ -1871,13 +1928,19 @@ echo sgs_product_card_saving_badge_markup( $attributes );
 		<span class="sgs-product-card__tag sgs-product-card__tag--<?php echo esc_attr( $variant_style ); ?>"><?php echo esc_html( $sgs_badge_inbody ); ?></span>
 	<?php endif; ?>
 	<?php // FP-H: heading tag from headingLevel (allowlisted string — injection-safe); title via override helper. D649: class carries the styling — see the sibling site above. ?>
-	<<?php echo $sgs_bound_htag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- allowlisted 'h2'|'h3'|'h4'|'p'. ?> class="sgs-product-card__title">
-	<?php if ( '' !== $card_permalink ) : ?>
-		<a class="product-card__title-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"><?php echo esc_html( $sgs_resolved_title ); ?></a>
-	<?php else : ?>
-		<?php echo esc_html( $sgs_resolved_title ); ?>
-	<?php endif; ?>
-	</<?php echo $sgs_bound_htag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- allowlisted 'h2'|'h3'|'h4'|'p'. ?>>
+	<div class="sgs-product-card__title-row">
+		<<?php echo $sgs_bound_htag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- allowlisted 'h2'|'h3'|'h4'|'p'. ?> class="sgs-product-card__title">
+		<?php if ( '' !== $card_permalink ) : ?>
+			<a class="product-card__title-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"><?php echo esc_html( $sgs_resolved_title ); ?></a>
+		<?php else : ?>
+			<?php echo esc_html( $sgs_resolved_title ); ?>
+		<?php endif; ?>
+		</<?php echo $sgs_bound_htag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- allowlisted 'h2'|'h3'|'h4'|'p'. ?>>
+		<?php
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
+		echo sgs_product_card_attribute_tag_markup( $attributes, $product_id, $source_mode );
+		?>
+	</div>
 
 	<?php if ( '' !== $sgs_resolved_desc ) : ?>
 		<div class="product-desc">

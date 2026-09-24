@@ -1325,6 +1325,54 @@
  * helpers, called identically from typed + all 3 bound branches, R-31-9).
  */
 
+/*
+ * Title row — wraps the product title together with the attribute tag (when
+ * shown) on one flex row, matching Frame Card.dc.html's real markup
+ * (`display:flex;justify-content:space-between;align-items:flex-start`).
+ * Present on every render branch (R-31-9); with no attribute tag configured
+ * it contains only the title and behaves exactly like a bare title did
+ * before this wrapper existed (block layout, no visual change).
+ */
+.sgs-product-card__title-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: 10px;
+}
+
+.sgs-product-card__title-row .sgs-product-card__title,
+.sgs-product-card__title-row h2,
+.sgs-product-card__title-row h3,
+.sgs-product-card__title-row h4,
+.sgs-product-card__title-row p {
+	margin: 0;
+}
+
+/*
+ * Generic attribute tag — shown beside the title when the resolved product
+ * carries an operator-chosen product attribute term or product tag (e.g. an
+ * optician site's "Polarised" lens attribute). Bordered-only chip, no fill,
+ * matching Frame Card.dc.html (`border:1px solid #D8D2C8;color:#5E584F`).
+ * Colour/border/padding/radius all come from attributeTag* attrs when set
+ * (render.php scoped rule); these are the theme-default fallbacks.
+ */
+.sgs-product-card__attribute-tag {
+	flex-shrink: 0;
+	display: inline-block;
+	font-size: 9.5px;
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	white-space: nowrap;
+	background: transparent;
+	border: 1px solid var( --wp--preset--color--border, #d8d2c8 );
+	color: var( --wp--preset--color--text-muted, #5e584f );
+}
+
+:where(.sgs-product-card__attribute-tag) {
+	padding: 4px 7px;
+}
+
 /* Rating row — star glyphs + numeric label/review-count, or the zero-review line. */
 .sgs-product-card__rating {
 	display: flex;

@@ -358,8 +358,14 @@ if ( ! function_exists( 'sgs_product_card_rating_markup' ) ) {
 		$review_count = isset( $attributes['reviewCount'] ) ? absint( $attributes['reviewCount'] ) : 0;
 
 		if ( 0 === $review_count ) {
+			// The client's own "no reviews" wording (noReviewsText). Empty (the
+			// default) renders no rating row at all for a zero-review product.
+			$no_reviews_text = trim( (string) ( $attributes['noReviewsText'] ?? '' ) );
+			if ( '' === $no_reviews_text ) {
+				return '';
+			}
 			return '<div class="sgs-product-card__rating sgs-product-card__rating--empty">'
-				. '<span class="sgs-product-card__rating-empty-text">' . esc_html__( 'No reviews yet', 'sgs-blocks' ) . '</span>'
+				. '<span class="sgs-product-card__rating-empty-text">' . esc_html( $no_reviews_text ) . '</span>'
 				. '</div>';
 		}
 

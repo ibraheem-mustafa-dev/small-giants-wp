@@ -703,6 +703,18 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 		savingBadgeBorderRadius,
 		colourSwatches,
 		swatchMaxVisible,
+		showAttributeTag,
+		attributeTagSource,
+		attributeTagTaxonomy,
+		attributeTagTerm,
+		attributeTagText,
+		attributeTagTextColour,
+		attributeTagBorderColour,
+		attributeTagBorderWidth,
+		attributeTagBackgroundColour,
+		attributeTagPadding,
+		attributeTagBorderRadius,
+		noReviewsText,
 		// Built-in CTA styling (typed + bound share the same cta* attrs).
 		ctaColourBackground,
 		ctaColourBackgroundGradient,
@@ -1346,6 +1358,32 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 					linked: true,
 				},
 			],
+		},
+		{
+			key: 'attributeTagText',
+			label: __( 'Attribute tag text colour', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: attributeTagTextColour,
+					onChange: ( val ) => setAttributes( { attributeTagTextColour: val ?? '' } ),
+					linked: true,
+				},
+			],
+		},
+		{
+			key: 'attributeTagBackground',
+			label: __( 'Attribute tag background colour', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: attributeTagBackgroundColour,
+					onChange: ( val ) => setAttributes( { attributeTagBackgroundColour: val ?? '' } ),
+					linked: true,
+				},
+			],
 		}
 	);
 	colourRows.push(
@@ -1855,7 +1893,10 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 				     below. Colours for these elements live in the Colour
 				     panel above (rating/brand/savingBadge rows). */ }
 				<PanelBody
-					title={ __( 'Rating, brand & saving badge', 'sgs-blocks' ) }
+					title={ __(
+					'Rating, brand, saving badge & attribute tag',
+					'sgs-blocks'
+				) }
 					initialOpen={ false }
 				>
 					<ToggleControl
@@ -1896,6 +1937,24 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 								__next40pxDefaultSize
 								__nextHasNoMarginBottom
 							/>
+							{ 0 === ( reviewCount ?? 0 ) && (
+								<TextControl
+									label={ __(
+										'"No reviews yet" text',
+										'sgs-blocks'
+									) }
+									help={ __(
+										'Shown where the stars would be while review count is 0. Empty (default) shows nothing.',
+										'sgs-blocks'
+									) }
+									value={ noReviewsText || '' }
+									onChange={ ( v ) =>
+										setAttributes( { noReviewsText: v } )
+									}
+									__next40pxDefaultSize
+									__nextHasNoMarginBottom
+								/>
+							) }
 						</>
 					) }
 
@@ -1993,6 +2052,149 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 								onChange={ ( v ) =>
 									setAttributes( {
 										savingBadgeBorderRadius:
+											sgsNormaliseLength( v ),
+									} )
+								}
+							/>
+						</>
+					) }
+
+					<hr />
+
+					<ToggleControl
+						label={ __(
+							'Show a tag when the product has…',
+							'sgs-blocks'
+						) }
+						help={ __(
+							'A small tag next to the title, e.g. an optician site\'s "Polarised" lens attribute. Pick which product attribute/term or product tag triggers it — nothing is hardcoded.',
+							'sgs-blocks'
+						) }
+						checked={ !! showAttributeTag }
+						onChange={ ( v ) =>
+							setAttributes( { showAttributeTag: v } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					{ showAttributeTag && (
+						<>
+							{ /* 2 options, labels ≤12 chars → ToggleGroupControl (Spec 35 C4),
+							     not the SelectControl this started as. */ }
+							<ToggleGroupControl
+								label={ __( 'Trigger type', 'sgs-blocks' ) }
+								value={ attributeTagSource || 'attribute' }
+								onChange={ ( v ) =>
+									setAttributes( { attributeTagSource: v } )
+								}
+								isBlock
+								__next40pxDefaultSize
+								__nextHasNoMarginBottom
+							>
+								<ToggleGroupControlOption
+									value="attribute"
+									label={ __( 'Attribute', 'sgs-blocks' ) }
+								/>
+								<ToggleGroupControlOption
+									value="tag"
+									label={ __( 'Tag', 'sgs-blocks' ) }
+								/>
+							</ToggleGroupControl>
+							{ 'attribute' === ( attributeTagSource || 'attribute' ) && (
+								<TextControl
+									label={ __(
+										'Attribute taxonomy slug',
+										'sgs-blocks'
+									) }
+									help={ __(
+										'e.g. pa_lens-type — find it under Products > Attributes.',
+										'sgs-blocks'
+									) }
+									value={ attributeTagTaxonomy || '' }
+									onChange={ ( v ) =>
+										setAttributes( {
+											attributeTagTaxonomy: v,
+										} )
+									}
+									__next40pxDefaultSize
+									__nextHasNoMarginBottom
+								/>
+							) }
+							<TextControl
+								label={
+									'tag' === ( attributeTagSource || 'attribute' )
+										? __( 'Product tag slug', 'sgs-blocks' )
+										: __( 'Term slug', 'sgs-blocks' )
+								}
+								help={ __(
+									'The tag shows only when the resolved product carries this term/tag.',
+									'sgs-blocks'
+								) }
+								value={ attributeTagTerm || '' }
+								onChange={ ( v ) =>
+									setAttributes( { attributeTagTerm: v } )
+								}
+								__next40pxDefaultSize
+								__nextHasNoMarginBottom
+							/>
+							<TextControl
+								label={ __( 'Tag text', 'sgs-blocks' ) }
+								help={ __(
+									'Empty (default) uses the matched term\'s own name.',
+									'sgs-blocks'
+								) }
+								value={ attributeTagText || '' }
+								onChange={ ( v ) =>
+									setAttributes( { attributeTagText: v } )
+								}
+								__next40pxDefaultSize
+								__nextHasNoMarginBottom
+							/>
+							<BoxControl
+								label={ __( 'Attribute tag padding', 'sgs-blocks' ) }
+								values={ attributeTagPadding ?? {} }
+								onChange={ ( next ) =>
+									setAttributes( { attributeTagPadding: next } )
+								}
+								__next40pxDefaultSize
+							/>
+							{ /* Border width + colour as ONE composite row (Spec 35 C1 —
+							     border colour lives in SgsBorderControl, never a sibling
+							     SgsColourPanel row), mirroring the block's own "Card
+							     border" panel above. Radius stays the block's existing
+							     scalar SgsLengthControl below, OUTSIDE the pair — a
+							     single uniform radius on a tag/pill is a deliberate
+							     scalar keep (Spec 32 §6.1), so onRadiusChange is not
+							     wired here. */ }
+							<SgsBorderControl
+								label={ __( 'Attribute tag border width', 'sgs-blocks' ) }
+								widthValues={ attributeTagBorderWidth ?? {} }
+								onWidthChange={ ( next ) =>
+									setAttributes( { attributeTagBorderWidth: next } )
+								}
+								colourLabel={ __(
+									'Attribute tag border colour',
+									'sgs-blocks'
+								) }
+								colourValue={ attributeTagBorderColour }
+								onColourChange={ ( val ) =>
+									setAttributes( {
+										attributeTagBorderColour: val ?? '',
+									} )
+								}
+								colourLinked
+								contrastAgainst={ attributeTagBackgroundColour || '' }
+							/>
+							<SgsLengthControl
+								label={ __(
+									'Attribute tag border radius',
+									'sgs-blocks'
+								) }
+								value={ attributeTagBorderRadius ?? '' }
+								units={ SGS_LENGTH_UNITS }
+								presets={ false }
+								onChange={ ( v ) =>
+									setAttributes( {
+										attributeTagBorderRadius:
 											sgsNormaliseLength( v ),
 									} )
 								}
