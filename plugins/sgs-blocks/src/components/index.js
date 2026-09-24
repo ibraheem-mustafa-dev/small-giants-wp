@@ -88,4 +88,9 @@ export { default as StarterLookPresetControl } from './StarterLookPresetControl'
 export { default as SsrPreviewGuard } from './SsrPreviewGuard';
 export { default as SurfaceGroundControls } from './SurfaceGroundControls';
 export { default as ScrimControls, scrimColourRow } from './ScrimControls';
+export {
+	default as MotionEasingControl,
+	MOTION_EASING_OPTIONS,
+	isValidCubicBezier,
+} from './MotionEasingControl';
 export { default as ShadowLiftControls } from './ShadowLiftControls';

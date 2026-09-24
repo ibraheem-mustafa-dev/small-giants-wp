@@ -413,61 +413,185 @@
 
 /*
  * ═══════════════════════════════════════════════════════════════════════
- * DROPDOWN — submenu OPEN animation (Spec 41 FR-41-10,
- * `submenuAnimation`: none|fade|slide-down). Structural shape only — the
- * trigger is the existing binary display toggle
- * (`{uid} [data-sgs-mega-trigger][aria-expanded="true"] ~
- * .sgs-nav-bar-menu__submenu-wrap{display:block;}`, nav-menu-submenu-css.php).
- * Toggling an element's OWN `display` from `none` to
- * `block` restarts any CSS animation declared on it, so a modifier class
- * that is simply PRESENT on the wrap is enough to make each open animate —
- * no JS replay logic needed. `none` (the default) applies neither modifier
- * class below.
+ * DROPDOWN AND MEGA PANELS — open and close motion (Wave 3C U-5, family M-31;
+ * `submenuAnimation`: none | fade | fade-lift | slide-down | grow). Both forks
+ * carry `.sgs-nav-bar-menu__panel-motion` plus a `--{shape}` modifier
+ * (includes/nav-menu-markup.php). A panel shows by `display` when its trigger's
+ * `aria-expanded` is true (nav-menu-submenu-css.php); `@starting-style` gives it
+ * a first frame to transition from, and `transition-behavior: allow-discrete`
+ * holds `display` until the close transition ends. A browser without the exit
+ * part closes instantly, as before. While closing, the panel takes no pointer
+ * hits and leaves the Tab order (`visibility`), so moving from one trigger to
+ * the next never re-opens the old panel. Timing and easing are values written
+ * by render.php: --sgs-nbm-panel-dur, --sgs-nbm-panel-exit-dur,
+ * --sgs-nbm-panel-ease. Under reduced motion none of this applies and a panel
+ * opens and closes whole.
+ * ═══════════════════════════════════════════════════════════════════════
  */
-.sgs-nav-bar-menu__submenu-wrap--fade {
-	animation: sgs-nav-bar-menu-submenu-fade-in 0.18s ease-out;
-}
-
-.sgs-nav-bar-menu__submenu-wrap--slide-down {
-	animation: sgs-nav-bar-menu-submenu-slide-down-in 0.26s ease-out;
-}
-
-@keyframes sgs-nav-bar-menu-submenu-fade-in {
-	from {
+@media (prefers-reduced-motion: no-preference) {
+	.sgs-nav-bar-menu__panel-motion:not(.sgs-nav-bar-menu__panel-motion--none) {
 		opacity: 0;
+		visibility: hidden;
+		pointer-events: none;
+		transition-property: opacity, translate, scale, clip-path, visibility, display;
+		transition-duration: var(--sgs-nbm-panel-exit-dur, 150ms);
+		transition-timing-function: var(--sgs-nbm-panel-ease, ease-out);
+		transition-behavior: allow-discrete;
 	}
 
-	to {
+	.sgs-nav-bar-menu__panel-motion--fade-lift,
+	.sgs-nav-bar-menu__panel-motion--slide-down {
+		translate: 0 -8px;
+	}
+
+	.sgs-nav-bar-menu__panel-motion--fade-lift {
+		scale: 0.99;
+	}
+
+	.sgs-nav-bar-menu__panel-motion--grow {
 		opacity: 1;
-	}
-}
-
-@keyframes sgs-nav-bar-menu-submenu-slide-down-in {
-	from {
-		opacity: 0;
-		transform: translateY(-8px);
+		clip-path: inset(0 0 100% 0);
 	}
 
-	to {
+	[data-sgs-mega-trigger][aria-expanded="true"] ~ .sgs-nav-bar-menu__panel-motion:not(.sgs-nav-bar-menu__panel-motion--none) {
 		opacity: 1;
-		transform: translateY(0);
+		visibility: visible;
+		pointer-events: auto;
+		translate: 0 0;
+		scale: 1;
+		clip-path: inset(0);
+		transition-duration: var(--sgs-nbm-panel-dur, 180ms);
+	}
+
+	@starting-style {
+		[data-sgs-mega-trigger][aria-expanded="true"] ~ .sgs-nav-bar-menu__panel-motion:not(.sgs-nav-bar-menu__panel-motion--none) {
+			opacity: 0;
+		}
+
+		[data-sgs-mega-trigger][aria-expanded="true"] ~ .sgs-nav-bar-menu__panel-motion.sgs-nav-bar-menu__panel-motion--fade-lift,
+		[data-sgs-mega-trigger][aria-expanded="true"] ~ .sgs-nav-bar-menu__panel-motion.sgs-nav-bar-menu__panel-motion--slide-down {
+			translate: 0 -8px;
+		}
+
+		[data-sgs-mega-trigger][aria-expanded="true"] ~ .sgs-nav-bar-menu__panel-motion.sgs-nav-bar-menu__panel-motion--fade-lift {
+			scale: 0.99;
+		}
+
+		[data-sgs-mega-trigger][aria-expanded="true"] ~ .sgs-nav-bar-menu__panel-motion.sgs-nav-bar-menu__panel-motion--grow {
+			opacity: 1;
+			clip-path: inset(0 0 100% 0);
+		}
 	}
 }
 
 /*
- * ⛔ Mandatory reduced-motion companion (FR-41-10): "the panel still opens,
- * it just arrives whole. A panel that fails to open under reduced motion is
- * a broken menu, not a calmer one." Collapsing `animation-duration` to
- * near-zero — this file's own existing convention, see the four-selector
- * rule further down — lands the animation on its `to` END STATE
- * (opacity:1, transform:none) almost instantly, which is what keeps the
- * panel opening. Removing the animation outright would instead strand the
- * wrap at its `from` state (opacity:0) — invisible, not calmer.
+ * Panel item stagger (Wave 3C U-5, family M-32). An item is a direct child of
+ * a dropdown list or of a mega panel's content row. The bar adds
+ * `.sgs-nav-bar-menu--panel-stagger` and writes --sgs-nbm-stagger-step, -dur,
+ * -max and -dist. Items re-animate on every open because a panel returning
+ * from `display:none` restarts its descendants' animations.
  */
-@media (prefers-reduced-motion: reduce) {
-	.sgs-nav-bar-menu__submenu-wrap--fade,
-	.sgs-nav-bar-menu__submenu-wrap--slide-down {
-		animation-duration: 0.01ms !important;
+:is(.sgs-nav-bar-menu__submenu, .sgs-mega-panel__content) > :nth-child(1) {
+	--sgs-i: 0;
+}
+
+:is(.sgs-nav-bar-menu__submenu, .sgs-mega-panel__content) > :nth-child(2) {
+	--sgs-i: 1;
+}
+
+:is(.sgs-nav-bar-menu__submenu, .sgs-mega-panel__content) > :nth-child(3) {
+	--sgs-i: 2;
+}
+
+:is(.sgs-nav-bar-menu__submenu, .sgs-mega-panel__content) > :nth-child(4) {
+	--sgs-i: 3;
+}
+
+:is(.sgs-nav-bar-menu__submenu, .sgs-mega-panel__content) > :nth-child(5) {
+	--sgs-i: 4;
+}
+
+:is(.sgs-nav-bar-menu__submenu, .sgs-mega-panel__content) > :nth-child(6) {
+	--sgs-i: 5;
+}
+
+:is(.sgs-nav-bar-menu__submenu, .sgs-mega-panel__content) > :nth-child(7) {
+	--sgs-i: 6;
+}
+
+:is(.sgs-nav-bar-menu__submenu, .sgs-mega-panel__content) > :nth-child(8) {
+	--sgs-i: 7;
+}
+
+:is(.sgs-nav-bar-menu__submenu, .sgs-mega-panel__content) > :nth-child(9) {
+	--sgs-i: 8;
+}
+
+:is(.sgs-nav-bar-menu__submenu, .sgs-mega-panel__content) > :nth-child(10) {
+	--sgs-i: 9;
+}
+
+:is(.sgs-nav-bar-menu__submenu, .sgs-mega-panel__content) > :nth-child(11) {
+	--sgs-i: 10;
+}
+
+:is(.sgs-nav-bar-menu__submenu, .sgs-mega-panel__content) > :nth-child(12) {
+	--sgs-i: 11;
+}
+
+:is(.sgs-nav-bar-menu__submenu, .sgs-mega-panel__content) > :nth-child(13) {
+	--sgs-i: 12;
+}
+
+:is(.sgs-nav-bar-menu__submenu, .sgs-mega-panel__content) > :nth-child(14) {
+	--sgs-i: 13;
+}
+
+:is(.sgs-nav-bar-menu__submenu, .sgs-mega-panel__content) > :nth-child(15) {
+	--sgs-i: 14;
+}
+
+:is(.sgs-nav-bar-menu__submenu, .sgs-mega-panel__content) > :nth-child(16) {
+	--sgs-i: 15;
+}
+
+:is(.sgs-nav-bar-menu__submenu, .sgs-mega-panel__content) > :nth-child(17) {
+	--sgs-i: 16;
+}
+
+:is(.sgs-nav-bar-menu__submenu, .sgs-mega-panel__content) > :nth-child(18) {
+	--sgs-i: 17;
+}
+
+:is(.sgs-nav-bar-menu__submenu, .sgs-mega-panel__content) > :nth-child(19) {
+	--sgs-i: 18;
+}
+
+:is(.sgs-nav-bar-menu__submenu, .sgs-mega-panel__content) > :nth-child(20) {
+	--sgs-i: 19;
+}
+
+:is(.sgs-nav-bar-menu__submenu, .sgs-mega-panel__content) > :nth-child(n + 21) {
+	--sgs-i: 20;
+}
+
+@supports (transition-delay: calc(sibling-index() * 1ms)) {
+	:is(.sgs-nav-bar-menu__submenu, .sgs-mega-panel__content) > * {
+		--sgs-i: calc(sibling-index() - 1);
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.sgs-nav-bar-menu--panel-stagger [data-sgs-mega-trigger][aria-expanded="true"] ~ .sgs-nav-bar-menu__panel-motion :is(.sgs-nav-bar-menu__submenu, .sgs-mega-panel__content) > * {
+		animation: sgs-nav-bar-menu-panel-item-in var(--sgs-nbm-stagger-dur, 180ms) var(--sgs-nbm-panel-ease, ease-out) both;
+		animation-delay: min(calc(var(--sgs-i, 0) * var(--sgs-nbm-stagger-step, 0ms)), var(--sgs-nbm-stagger-max, 100000ms));
+	}
+}
+
+@keyframes sgs-nav-bar-menu-panel-item-in {
+	from {
+		opacity: 0;
+		translate: 0 var(--sgs-nbm-stagger-dist, 8px);
 	}
 }
 

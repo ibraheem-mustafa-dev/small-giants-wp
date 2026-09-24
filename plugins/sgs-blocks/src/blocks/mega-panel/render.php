@@ -183,11 +183,10 @@ $max_width_obj     = is_array( $attributes['maxWidth'] ?? null ) ? $attributes['
 $panel_padding_obj = is_array( $attributes['panelPadding'] ?? null ) ? $attributes['panelPadding'] : array();
 $group_gap_obj     = is_array( $attributes['groupGap'] ?? null ) ? $attributes['groupGap'] : array( 'desktop' => '44px' );
 
-// brands-variant eyebrow + the stagger opt-in. Both are plain
-// scalar attrs on THIS block (no InnerBlocks role:content concerns — those
+// brands-variant eyebrow. A plain
+// scalar attr on THIS block (no InnerBlocks role:content concerns — those
 // only govern templateLock:contentOnly child attrs).
-$brands_eyebrow  = isset( $attributes['brandsEyebrow'] ) ? (string) $attributes['brandsEyebrow'] : '';
-$stagger_on_open = ! empty( $attributes['staggerOnOpen'] );
+$brands_eyebrow = isset( $attributes['brandsEyebrow'] ) ? (string) $attributes['brandsEyebrow'] : '';
 
 // ---------------------------------------------------------------------------
 // 0b. Block-private motion effect (Spec 38). `fxEffect`
@@ -901,13 +900,8 @@ $wrapper_args = array(
 	'data-mega-scheme'  => $colour_scheme,
 	'data-mega-variant' => $variant,
 );
-if ( $stagger_on_open ) {
-	// Presence-only attribute the shared stagger effect module (view.js)
-	// watches for — an opt-in per panel, never forced on.
-	$wrapper_args['data-stagger'] = 'true';
-}
 // Block-private fx effect (0b above) — merged in without overwriting any of
-// the keys already set (class/data-mega-*/data-stagger); $fx_wrapper_attrs is
+// the keys already set (class/data-mega-*); $fx_wrapper_attrs is
 // an empty array when fxEffect is '', so this is a no-op for every existing
 // instance that has never set one.
 $wrapper_args        = array_merge( $wrapper_args, $fx_wrapper_attrs );

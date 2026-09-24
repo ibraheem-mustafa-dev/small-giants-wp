@@ -6,12 +6,8 @@ import {
 	ShadowControl,
 	shadowAttrKeys,
 } from '../../components';
-import {
-	ToolsPanel,
-	ToolsPanelItem,
-	ToggleGroupControl,
-	ToggleGroupControlOption,
-} from '../../components/primitives';
+import { SelectControl } from '@wordpress/components';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 /**
  * SGS Nav Bar/Drawer Menu (shared, sgs/nav-bar-menu + sgs/nav-drawer-menu) —
@@ -135,32 +131,29 @@ export default function DropdownStylePanel( {
 			{ showSizingControls && (
 				<ToolsPanelItem
 					hasValue={ () => !! submenuAnimation && 'none' !== submenuAnimation }
-					label={ __( 'Open animation', 'sgs-blocks' ) }
+					label={ __( 'Open and close animation', 'sgs-blocks' ) }
 					onDeselect={ () => setAttributes( { submenuAnimation: 'none' } ) }
 				>
-					<ToggleGroupControl
-						label={ __( 'Open animation', 'sgs-blocks' ) }
+					<SelectControl
+						label={ __( 'Open and close animation', 'sgs-blocks' ) }
+						help={ __(
+							'Applies to every dropdown and mega panel. Timing and item stagger are in the Panel motion panel.',
+							'sgs-blocks'
+						) }
 						value={ submenuAnimation || 'none' }
-						isBlock
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
+						options={ [
+							{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
+							{ label: __( 'Fade', 'sgs-blocks' ), value: 'fade' },
+							{ label: __( 'Fade and lift', 'sgs-blocks' ), value: 'fade-lift' },
+							{ label: __( 'Slide down', 'sgs-blocks' ), value: 'slide-down' },
+							{ label: __( 'Grow downwards', 'sgs-blocks' ), value: 'grow' },
+						] }
 						onChange={ ( val ) =>
 							setAttributes( { submenuAnimation: val || 'none' } )
 						}
-					>
-						<ToggleGroupControlOption
-							value="none"
-							label={ __( 'None', 'sgs-blocks' ) }
-						/>
-						<ToggleGroupControlOption
-							value="fade"
-							label={ __( 'Fade', 'sgs-blocks' ) }
-						/>
-						<ToggleGroupControlOption
-							value="slide"
-							label={ __( 'Slide', 'sgs-blocks' ) }
-						/>
-					</ToggleGroupControl>
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 				</ToolsPanelItem>
 			) }
 

@@ -18,7 +18,7 @@
  * @package SGS\Blocks
  */
 
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 import {
 	useBlockProps,
 	useInnerBlocksProps,
@@ -37,6 +37,7 @@ import {
 	Button,
 } from '@wordpress/components';
 import { useState, useEffect } from '@wordpress/element';
+import MotionPanel from './MotionPanel';
 import { useSelect } from '@wordpress/data';
 
 /** backgroundSize control options — mirrors sgs/container's BackgroundPanel. */
@@ -122,14 +123,6 @@ function paddingFromBox( box ) {
 	return `${ top || '0' } ${ right || '0' } ${ bottom || '0' } ${ left || '0' }`;
 }
 
-/** Anchor → per-anchor default animation label shown at Automatic. */
-const ANCHOR_ANIM_LABEL = {
-	'full-screen': __( 'fade + drop', 'sgs-blocks' ),
-	header: __( 'expand down', 'sgs-blocks' ),
-	trigger: __( 'scale from corner', 'sgs-blocks' ),
-	centred: __( 'scale up (modal)', 'sgs-blocks' ),
-};
-
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		drawerRef,
@@ -149,7 +142,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		closeLabel,
 		closeIcon,
 		closeSize,
-		animateFrom,
 		modality,
 		drawerBg,
 		drawerTextColour,
@@ -520,6 +512,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						attributes,
 						setAttributes,
 					} ),
+					fillRow( {
+						key: 'curtainColour',
+						label: __( 'Curtain animation colour', 'sgs-blocks' ),
+						attrs: { base: 'curtainColour', gradient: 'curtainColourGradient' },
+						attributes,
+						setAttributes,
+					} ),
 					textRow( {
 						key: 'toggleCloseColour',
 						label: __( 'Close icon colour', 'sgs-blocks' ),
@@ -557,7 +556,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 				{ /* A ToolsPanel rather than a plain PanelBody — ariaLabel, drawerRef, and anchor (panel position) are
 				   core block settings and stay always-visible (isShownByDefault); panelSize,
-				   animateFrom, closeStyle, and submenuModel are genuinely optional
+				   closeStyle, and submenuModel are genuinely optional
 				   style/behaviour embellishments and are hideable/resettable per WP's native
 				   ToolsPanel pattern. */ }
 				<ToolsPanel
@@ -568,7 +567,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							drawerRef: 'sgs-nav-drawer',
 							anchor: {},
 							panelSize: {},
-							animateFrom: 'auto',
 							submenuModel: 'accordion',
 							modality: 'modal',
 							closeOnScrollDistance: 0,
@@ -705,32 +703,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					</ToolsPanelItem>
 
 					<ToolsPanelItem
-						label={ __( 'Open animation', 'sgs-blocks' ) }
-						hasValue={ () => animateFrom !== 'auto' }
-						onDeselect={ () => setAttributes( { animateFrom: 'auto' } ) }
-					>
-						<SelectControl
-							label={ __( 'Open animation', 'sgs-blocks' ) }
-							help={ sprintf(
-								/* translators: %s: the automatic animation for the current desktop panel position. */
-								__(
-									'Automatic matches the panel position (currently: %s). Visitors who ask their device to reduce motion never see any movement, whichever you choose.',
-									'sgs-blocks'
-								),
-								ANCHOR_ANIM_LABEL[ anchorDesktop ] || ANCHOR_ANIM_LABEL[ 'full-screen' ]
-							) }
-							value={ animateFrom }
-							options={ [
-								{ label: __( 'Automatic', 'sgs-blocks' ), value: 'auto' },
-								{ label: __( 'Fade only (no movement)', 'sgs-blocks' ), value: 'fade' },
-							] }
-							onChange={ ( value ) => setAttributes( { animateFrom: value } ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
-
-					<ToolsPanelItem
 						label={ __( 'Submenu behaviour', 'sgs-blocks' ) }
 						hasValue={ () => submenuModel !== 'accordion' }
 						onDeselect={ () => setAttributes( { submenuModel: 'accordion' } ) }
@@ -796,6 +768,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						/>
 					</ToolsPanelItem>
 				</ToolsPanel>
+
+				<MotionPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					anchorDesktop={ anchorDesktop }
+				/>
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }

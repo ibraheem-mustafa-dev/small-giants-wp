@@ -129,17 +129,55 @@
 	display: block;
 }
 
-/* ── Reduced-motion-gated open/close animation. The CSS owns the transitions;
-   the store toggles [open] / .is-closing. Under `prefers-reduced-motion:
-   reduce` no animation is applied (the media query below simply doesn't add
-   any). ── */
+/* ── Entry and exit motion (Wave 3C U-5). The store toggles [open] and
+   .is-closing and waits for every animation to finish before it closes the
+   dialog; the CSS owns the animations. render.php writes the per-tier shape as
+   keyframe names in --sgs-nd-anim-in / --sgs-nd-anim-out (plus the transform
+   origin), and the durations, easing and starting opacity as values
+   (includes/helpers-nav-drawer-motion.php). Every rule sits inside
+   `prefers-reduced-motion: no-preference`, so a reduced-motion user gets an
+   instant open and close. The fallbacks below are the drawer's defaults. ── */
+.wp-block-sgs-nav-drawer:dir(rtl) {
+	--sgs-nd-dir: -1;
+}
+
 @media (prefers-reduced-motion: no-preference) {
 	.wp-block-sgs-nav-drawer[open] {
-		animation: sgs-nav-drawer-in 0.25s ease-out;
+		animation-name: var(--sgs-nd-anim-in, sgs-nav-drawer-in);
+		animation-duration: var(--sgs-nd-enter-dur, 250ms);
+		animation-timing-function: var(--sgs-nd-ease, ease-out);
+		transform-origin: var(--sgs-nd-anim-origin, center);
 	}
 
 	.wp-block-sgs-nav-drawer.is-closing {
-		animation: sgs-nav-drawer-out 0.2s ease-in;
+		animation-name: var(--sgs-nd-anim-out, sgs-nav-drawer-out);
+		animation-duration: var(--sgs-nd-exit-dur, 200ms);
+		animation-fill-mode: forwards;
+	}
+
+	/* Curtain: a colour layer sweeps across and away while the content fades
+	   in behind it; the dialog's own keyframe only holds the timing. */
+	.wp-block-sgs-nav-drawer.sgs-nav-drawer--curtain[open]::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		z-index: 3;
+		pointer-events: none;
+		background: var(--sgs-nd-curtain-colour, currentColor);
+		clip-path: inset(0 0 0 100%);
+		animation: var(--sgs-nd-curtain-in, none) var(--sgs-nd-enter-dur, 250ms) var(--sgs-nd-ease, ease-out);
+	}
+
+	.wp-block-sgs-nav-drawer.sgs-nav-drawer--curtain.is-closing::before {
+		animation: var(--sgs-nd-curtain-out, none) var(--sgs-nd-exit-dur, 200ms) var(--sgs-nd-ease, ease-out) forwards;
+	}
+
+	.wp-block-sgs-nav-drawer.sgs-nav-drawer--curtain[open] > .sgs-nav-drawer__body {
+		animation: var(--sgs-nd-body-in, none) calc(var(--sgs-nd-enter-dur, 250ms) / 2) ease calc(var(--sgs-nd-enter-dur, 250ms) / 2) both;
+	}
+
+	.wp-block-sgs-nav-drawer.sgs-nav-drawer--curtain.is-closing > .sgs-nav-drawer__body {
+		animation: var(--sgs-nd-body-out, none) calc(var(--sgs-nd-exit-dur, 200ms) / 2) ease forwards;
 	}
 }
 
@@ -164,54 +202,6 @@
 	to {
 		opacity: 0;
 		transform: translateY(-8px);
-	}
-}
-
-/* ── Entry animation (animateFrom attr + per-anchor auto default). `auto`
-   (default) resolves to a per-ANCHOR class in render.php (full-screen = no
-   class, keeping the subtle vertical nudge above); `fade` is an explicit
-   opacity-only override at every anchor. All of these live INSIDE the
-   reduced-motion block below-by-reference: they are only ever applied by
-   the `no-preference` media query, so a reduced-motion user still gets no
-   movement. ── */
-@media (prefers-reduced-motion: no-preference) {
-	.wp-block-sgs-nav-drawer.sgs-nav-drawer--anim-fade[open] {
-		animation-name: sgs-nav-drawer-fade-in;
-	}
-
-	.wp-block-sgs-nav-drawer.sgs-nav-drawer--anim-fade.is-closing {
-		animation-name: sgs-nav-drawer-fade-out;
-	}
-
-	/* header anchor → expand-down (the panel grows from the header edge). */
-	.wp-block-sgs-nav-drawer.sgs-nav-drawer--anim-expand-down[open] {
-		animation-name: sgs-nav-drawer-expand-down-in;
-		transform-origin: top center;
-	}
-
-	.wp-block-sgs-nav-drawer.sgs-nav-drawer--anim-expand-down.is-closing {
-		animation-name: sgs-nav-drawer-expand-down-out;
-		transform-origin: top center;
-	}
-
-	/* trigger anchor → scale/fade from the corner the panel is pinned to. */
-	.wp-block-sgs-nav-drawer.sgs-nav-drawer--anim-corner-scale[open] {
-		animation-name: sgs-nav-drawer-corner-scale-in;
-		transform-origin: top right;
-	}
-
-	.wp-block-sgs-nav-drawer.sgs-nav-drawer--anim-corner-scale.is-closing {
-		animation-name: sgs-nav-drawer-corner-scale-out;
-		transform-origin: top right;
-	}
-
-	/* centred anchor → the modal-style scale-up (0.95 → 1). */
-	.wp-block-sgs-nav-drawer.sgs-nav-drawer--anim-modal-scale[open] {
-		animation-name: sgs-nav-drawer-modal-scale-in;
-	}
-
-	.wp-block-sgs-nav-drawer.sgs-nav-drawer--anim-modal-scale.is-closing {
-		animation-name: sgs-nav-drawer-modal-scale-out;
 	}
 }
 
@@ -304,6 +294,174 @@
 	to {
 		opacity: 0;
 		transform: scale(0.95);
+	}
+}
+
+/* Shapes added in Wave 3C U-5. `translate` (not `transform`) so a drawer
+   that is itself positioned with a transform keeps its position; the missing
+   end keyframe resolves to the element's own value. --sgs-nd-from-opacity is
+   0 when entryFade is on and 1 when off. */
+@keyframes sgs-nav-drawer-slide-start-in {
+	from {
+		translate: calc(-100% * var(--sgs-nd-dir, 1)) 0;
+		opacity: var(--sgs-nd-from-opacity, 0);
+	}
+}
+
+@keyframes sgs-nav-drawer-slide-start-out {
+	to {
+		translate: calc(-100% * var(--sgs-nd-dir, 1)) 0;
+		opacity: var(--sgs-nd-from-opacity, 0);
+	}
+}
+
+@keyframes sgs-nav-drawer-slide-end-in {
+	from {
+		translate: calc(100% * var(--sgs-nd-dir, 1)) 0;
+		opacity: var(--sgs-nd-from-opacity, 0);
+	}
+}
+
+@keyframes sgs-nav-drawer-slide-end-out {
+	to {
+		translate: calc(100% * var(--sgs-nd-dir, 1)) 0;
+		opacity: var(--sgs-nd-from-opacity, 0);
+	}
+}
+
+@keyframes sgs-nav-drawer-slide-up-in {
+	from {
+		translate: 0 100%;
+		opacity: var(--sgs-nd-from-opacity, 0);
+	}
+}
+
+@keyframes sgs-nav-drawer-slide-up-out {
+	to {
+		translate: 0 100%;
+		opacity: var(--sgs-nd-from-opacity, 0);
+	}
+}
+
+@keyframes sgs-nav-drawer-slide-down-in {
+	from {
+		translate: 0 -100%;
+		opacity: var(--sgs-nd-from-opacity, 0);
+	}
+}
+
+@keyframes sgs-nav-drawer-slide-down-out {
+	to {
+		translate: 0 -100%;
+		opacity: var(--sgs-nd-from-opacity, 0);
+	}
+}
+
+@keyframes sgs-nav-drawer-wipe-down-in {
+	from {
+		clip-path: inset(0 0 100% 0);
+		opacity: var(--sgs-nd-from-opacity, 0);
+	}
+
+	to {
+		clip-path: inset(0);
+	}
+}
+
+@keyframes sgs-nav-drawer-wipe-down-out {
+	from {
+		clip-path: inset(0);
+	}
+
+	to {
+		clip-path: inset(0 0 100% 0);
+		opacity: var(--sgs-nd-from-opacity, 0);
+	}
+}
+
+@keyframes sgs-nav-drawer-wipe-skew-in {
+	0% {
+		clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+	}
+
+	60% {
+		clip-path: polygon(0 0, 100% 0, 100% 45%, 0 75%);
+	}
+
+	100% {
+		clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+	}
+}
+
+@keyframes sgs-nav-drawer-wipe-skew-out {
+	0% {
+		clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+	}
+
+	40% {
+		clip-path: polygon(0 0, 100% 0, 100% 45%, 0 75%);
+	}
+
+	100% {
+		clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+	}
+}
+
+@keyframes sgs-nav-drawer-reveal-bar-in {
+	from {
+		clip-path: inset(0 0 calc(100% - var(--sgs-drawer-opener-row-bottom, 0px)) 0);
+	}
+
+	to {
+		clip-path: inset(0);
+	}
+}
+
+@keyframes sgs-nav-drawer-reveal-bar-out {
+	from {
+		clip-path: inset(0);
+	}
+
+	to {
+		clip-path: inset(0 0 calc(100% - var(--sgs-drawer-opener-row-bottom, 0px)) 0);
+	}
+}
+
+@keyframes sgs-nav-drawer-curtain-host {
+	from {
+		opacity: 1;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes sgs-nav-drawer-curtain-sweep-in {
+	0% {
+		clip-path: inset(0 100% 0 0);
+	}
+
+	50% {
+		clip-path: inset(0);
+	}
+
+	100% {
+		clip-path: inset(0 0 0 100%);
+	}
+}
+
+@keyframes sgs-nav-drawer-curtain-sweep-out {
+	0% {
+		clip-path: inset(0 0 0 100%);
+	}
+
+	50% {
+		clip-path: inset(0);
+	}
+
+	100% {
+		clip-path: inset(0 100% 0 0);
 	}
 }
 

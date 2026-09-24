@@ -46,9 +46,10 @@ $source      = (string) file_get_contents( $render_path );
 
 // ── The real call: sgs_scrim_render() appended to $css, built from $uid + '[open]',
 // passing the drawer ref under the 'sgs-nav-scrim' data key. ─────────────────────
-ok( false !== strpos( $source, '$css .= sgs_scrim_render(' ), 'render.php calls sgs_scrim_render() and appends its return to $css' );
-ok( false !== strpos( $source, "'open'    => '.' . \$uid . '[open]'," ), "the open selector is built from \$uid + '[open]'" );
-ok( false !== strpos( $source, "'data'    => array( 'sgs-nav-scrim' => \$drawer_ref )," ), "the drawer ref rides as the 'sgs-nav-scrim' data attribute" );
+ok( false !== strpos( $source, '$css              .= sgs_scrim_render(' ), 'render.php calls sgs_scrim_render() and appends its return to $css' );
+ok( false !== strpos( $source, "'open'     => '.' . \$uid . '[open]'," ), "the open selector is built from \$uid + '[open]'" );
+ok( false !== strpos( $source, "'enter_ms' => \$sgs_nd_scrim_fade > 0 ? \$sgs_nd_scrim_fade : \$sgs_nd_motion['enter_ms']," ), 'U-5: the scrim fades in with the drawer entry unless scrimFadeDuration is set' );
+ok( false !== strpos( $source, "'data'     => array( 'sgs-nav-scrim' => \$drawer_ref )," ), "the drawer ref rides as the 'sgs-nav-scrim' data attribute" );
 
 // ── Old scrim gate is gone. ──────────────────────────────────────────────────────
 ok( false === strpos( $source, 'sgs_nd_needs_scrim' ), 'the old $sgs_nd_needs_scrim gate is gone' );

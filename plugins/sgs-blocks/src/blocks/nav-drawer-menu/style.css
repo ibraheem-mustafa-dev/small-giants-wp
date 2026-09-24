@@ -288,3 +288,304 @@
 		transition-duration: 0.01ms !important;
 	}
 }
+
+/* ── Item stagger (Wave 3C U-5, family M-32). A contract with sgs/nav-drawer:
+   the drawer adds `.sgs-nav-drawer--stagger` (and `--stagger-close`) and
+   writes the timing as custom-property values (includes/helpers-nav-drawer-
+   motion.php); this stylesheet owns the item rules. An item is a TOP-LEVEL
+   menu item only, so a nested accordion or drill-down list never restarts the
+   count. Anything else in the drawer body (a logo, a button) arrives with the
+   last item (--sgs-nd-last-i, counted with :has()). --sgs-i counts from 0; items past the 20th share the 20th delay,
+   and the native sibling-index() replaces the table where supported. With CSS
+   alone (no stagger class) every item sits at its end pose. ── */
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(1) {
+	--sgs-i: 0;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(2) {
+	--sgs-i: 1;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(3) {
+	--sgs-i: 2;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(4) {
+	--sgs-i: 3;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(5) {
+	--sgs-i: 4;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(6) {
+	--sgs-i: 5;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(7) {
+	--sgs-i: 6;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(8) {
+	--sgs-i: 7;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(9) {
+	--sgs-i: 8;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(10) {
+	--sgs-i: 9;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(11) {
+	--sgs-i: 10;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(12) {
+	--sgs-i: 11;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(13) {
+	--sgs-i: 12;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(14) {
+	--sgs-i: 13;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(15) {
+	--sgs-i: 14;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(16) {
+	--sgs-i: 15;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(17) {
+	--sgs-i: 16;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(18) {
+	--sgs-i: 17;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(19) {
+	--sgs-i: 18;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(20) {
+	--sgs-i: 19;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(n + 21) {
+	--sgs-i: 20;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-last-child(1) {
+	--sgs-ri: 0;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-last-child(2) {
+	--sgs-ri: 1;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-last-child(3) {
+	--sgs-ri: 2;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-last-child(4) {
+	--sgs-ri: 3;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-last-child(5) {
+	--sgs-ri: 4;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-last-child(6) {
+	--sgs-ri: 5;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-last-child(7) {
+	--sgs-ri: 6;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-last-child(8) {
+	--sgs-ri: 7;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-last-child(9) {
+	--sgs-ri: 8;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-last-child(10) {
+	--sgs-ri: 9;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-last-child(11) {
+	--sgs-ri: 10;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-last-child(12) {
+	--sgs-ri: 11;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-last-child(13) {
+	--sgs-ri: 12;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-last-child(14) {
+	--sgs-ri: 13;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-last-child(15) {
+	--sgs-ri: 14;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-last-child(16) {
+	--sgs-ri: 15;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-last-child(17) {
+	--sgs-ri: 16;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-last-child(18) {
+	--sgs-ri: 17;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-last-child(19) {
+	--sgs-ri: 18;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-last-child(20) {
+	--sgs-ri: 19;
+}
+
+.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-last-child(n + 21) {
+	--sgs-ri: 20;
+}
+
+/* The drawer body learns the index of its last top-level item, so a logo or
+   button beside the menu arrives with that item. */
+.sgs-nav-drawer__body:has(.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(1):last-child) {
+	--sgs-nd-last-i: 0;
+}
+
+.sgs-nav-drawer__body:has(.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(2):last-child) {
+	--sgs-nd-last-i: 1;
+}
+
+.sgs-nav-drawer__body:has(.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(3):last-child) {
+	--sgs-nd-last-i: 2;
+}
+
+.sgs-nav-drawer__body:has(.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(4):last-child) {
+	--sgs-nd-last-i: 3;
+}
+
+.sgs-nav-drawer__body:has(.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(5):last-child) {
+	--sgs-nd-last-i: 4;
+}
+
+.sgs-nav-drawer__body:has(.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(6):last-child) {
+	--sgs-nd-last-i: 5;
+}
+
+.sgs-nav-drawer__body:has(.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(7):last-child) {
+	--sgs-nd-last-i: 6;
+}
+
+.sgs-nav-drawer__body:has(.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(8):last-child) {
+	--sgs-nd-last-i: 7;
+}
+
+.sgs-nav-drawer__body:has(.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(9):last-child) {
+	--sgs-nd-last-i: 8;
+}
+
+.sgs-nav-drawer__body:has(.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(10):last-child) {
+	--sgs-nd-last-i: 9;
+}
+
+.sgs-nav-drawer__body:has(.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(11):last-child) {
+	--sgs-nd-last-i: 10;
+}
+
+.sgs-nav-drawer__body:has(.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(12):last-child) {
+	--sgs-nd-last-i: 11;
+}
+
+.sgs-nav-drawer__body:has(.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(13):last-child) {
+	--sgs-nd-last-i: 12;
+}
+
+.sgs-nav-drawer__body:has(.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(14):last-child) {
+	--sgs-nd-last-i: 13;
+}
+
+.sgs-nav-drawer__body:has(.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(15):last-child) {
+	--sgs-nd-last-i: 14;
+}
+
+.sgs-nav-drawer__body:has(.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(16):last-child) {
+	--sgs-nd-last-i: 15;
+}
+
+.sgs-nav-drawer__body:has(.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(17):last-child) {
+	--sgs-nd-last-i: 16;
+}
+
+.sgs-nav-drawer__body:has(.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(18):last-child) {
+	--sgs-nd-last-i: 17;
+}
+
+.sgs-nav-drawer__body:has(.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(19):last-child) {
+	--sgs-nd-last-i: 18;
+}
+
+.sgs-nav-drawer__body:has(.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(20):last-child) {
+	--sgs-nd-last-i: 19;
+}
+
+.sgs-nav-drawer__body:has(.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(n + 21):last-child) {
+	--sgs-nd-last-i: 20;
+}
+
+@supports (transition-delay: calc(sibling-index() * 1ms)) {
+	.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item {
+		--sgs-i: calc(sibling-index() - 1);
+		--sgs-ri: calc(sibling-count() - sibling-index());
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.sgs-nav-drawer--stagger[open]:not(.is-closing) .sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item {
+		animation: sgs-nav-drawer-menu-item-in var(--sgs-nd-stagger-dur, 250ms) var(--sgs-nd-ease, ease-out) both;
+		animation-delay: min(calc(var(--sgs-i, 0) * var(--sgs-nd-stagger-step, 0ms)), var(--sgs-nd-stagger-max, 100000ms));
+	}
+
+	.sgs-nav-drawer--stagger[open]:not(.is-closing) .sgs-nav-drawer__body > :not(.wp-block-sgs-nav-drawer-menu) {
+		animation: sgs-nav-drawer-menu-item-in var(--sgs-nd-stagger-dur, 250ms) var(--sgs-nd-ease, ease-out) both;
+		animation-delay: min(calc(var(--sgs-nd-last-i, 0) * var(--sgs-nd-stagger-step, 0ms)), var(--sgs-nd-stagger-max, 100000ms));
+	}
+
+	.sgs-nav-drawer--stagger-close.is-closing .sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item {
+		animation: sgs-nav-drawer-menu-item-out var(--sgs-nd-stagger-dur, 250ms) var(--sgs-nd-ease, ease-out) forwards;
+		animation-delay: min(calc(var(--sgs-ri, 0) * var(--sgs-nd-stagger-step, 0ms)), var(--sgs-nd-stagger-max, 100000ms));
+	}
+}
+
+@keyframes sgs-nav-drawer-menu-item-in {
+	from {
+		opacity: 0;
+		translate: 0 var(--sgs-nd-stagger-dist, 16px);
+	}
+}
+
+@keyframes sgs-nav-drawer-menu-item-out {
+	to {
+		opacity: 0;
+		translate: 0 var(--sgs-nd-stagger-dist, 16px);
+	}
+}

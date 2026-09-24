@@ -1155,10 +1155,10 @@
         "colour": true,
         "link": false,
         "media": true,
-        "animation": false
+        "animation": true
       },
       "qualifies": {
-        "paintDeclarations": 6,
+        "paintDeclarations": 7,
         "replacedCoreSupports": []
       }
     },
@@ -1297,7 +1297,7 @@
         "animation": true
       },
       "qualifies": {
-        "paintDeclarations": 8,
+        "paintDeclarations": 9,
         "replacedCoreSupports": []
       }
     },

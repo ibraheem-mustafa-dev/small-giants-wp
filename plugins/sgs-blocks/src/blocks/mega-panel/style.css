@@ -180,35 +180,6 @@
 	margin: 0 0 16px;
 }
 
-/* -- staggered reveal — CONSUMER side of `shared/effects/stagger.js`'s
-   frozen CSS contract (see that file's doc-block). view.js writes ONLY the
-   `--sgs-stagger-*` custom-property VALUES; every declaration here defaults
-   (via the `var(…, fallback)` 2nd arg) to the fully-visible end state, so a
-   page where view.js never runs (JS-off, or the effect throws) renders
-   exactly as if the reveal had already finished — content is NEVER hidden
-   by CSS alone (rule: degrade-to-more-content-never-less). ---------------- */
-.wp-block-sgs-mega-panel[ data-stagger ] {
-	opacity: var( --sgs-stagger-panel-opacity, 1 );
-	transform: translateY( var( --sgs-stagger-panel-y, 0 ) )
-		scale( var( --sgs-stagger-panel-scale, 1 ) );
-	transition: opacity 340ms cubic-bezier( 0.16, 0.84, 0.32, 1 ),
-		transform 340ms cubic-bezier( 0.16, 0.84, 0.32, 1 );
-}
-.wp-block-sgs-mega-panel[ data-stagger ] .sgs-mega-panel__content > * {
-	opacity: var( --sgs-stagger-opacity, 1 );
-	transform: translate( var( --sgs-stagger-x, 0 ), var( --sgs-stagger-y, 0 ) );
-	transition: opacity var( --sgs-stagger-duration, 460ms )
-			cubic-bezier( 0.16, 0.84, 0.32, 1 ) var( --sgs-stagger-delay, 0ms ),
-		transform var( --sgs-stagger-duration, 460ms )
-			cubic-bezier( 0.16, 0.84, 0.32, 1 ) var( --sgs-stagger-delay, 0ms );
-}
-@media ( prefers-reduced-motion: reduce ) {
-	.wp-block-sgs-mega-panel[ data-stagger ],
-	.wp-block-sgs-mega-panel[ data-stagger ] .sgs-mega-panel__content > * {
-		transition: none !important;
-	}
-}
-
 /* -- cursor spotlight — CONSUMER side of `shared/effects/spotlight.js`'s
    frozen CSS contract. view.js applies the `data-spotlight` attribute (JS-only
    — no PHP-side attribute needed) to `.sgs-mega-aside` when present, then

@@ -2,11 +2,10 @@ import { __ } from '@wordpress/i18n';
 import {
 	PanelBody,
 	RangeControl,
-	SelectControl,
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
-import { SgsLengthControl, IconPicker } from '../../components';
+import { SgsLengthControl, IconPicker, MotionEasingControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 /**
@@ -25,49 +24,6 @@ const BURGER_MORPH_OPTIONS = [
 	{ label: __( 'Line', 'sgs-blocks' ), value: 'line' },
 	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
 ];
-
-/**
- * Wave 3C U-9 (§4.4) — named easing options. Labels reuse
- * `AnimationControl.js::EASINGS`' own wording where a shared theme token
- * exists ('Smooth'/'Expo out'/'Ease in'/'Spring'); `quart-out` and the two
- * bare CSS keywords are NOT theme tokens, so they carry their own labels.
- * Kept in THIS file rather than imported — `AnimationControl.js`'s own list
- * has different VALUES (`default`/`ease-out`/`ease-in`/`spring`/`linear`),
- * this control adds two more (`ease`, `quart-out`, `custom`) that list does
- * not have, so importing it would still need a full local remap.
- */
-const BURGER_MORPH_EASING_OPTIONS = [
-	{ label: __( 'Standard', 'sgs-blocks' ), value: 'ease' },
-	{ label: __( 'Smooth', 'sgs-blocks' ), value: 'default' },
-	{ label: __( 'Expo out', 'sgs-blocks' ), value: 'ease-out' },
-	{ label: __( 'Quart out', 'sgs-blocks' ), value: 'quart-out' },
-	{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
-	{ label: __( 'Spring', 'sgs-blocks' ), value: 'spring' },
-	{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
-	{ label: __( 'Custom curve…', 'sgs-blocks' ), value: 'custom' },
-];
-
-/**
- * Wave 3C U-9 (§4.4) — mirrors `sgs_nav_bar_menu_valid_cubic_bezier()`
- * (`render.php`) EXACTLY: anchored, four numbers (`-?\d*\.?\d+`, so an
- * exponent can never match), x1/x2 (the 1st and 3rd) clamped to 0–1. Kept in
- * sync deliberately — both sides validate the SAME string the SAME way, so
- * a value the editor accepts is never silently refused server-side.
- *
- * @param {string} value The candidate curve string.
- * @return {boolean} True when it is a real, in-range cubic-bezier() curve.
- */
-function isValidCubicBezier( value ) {
-	const match = /^cubic-bezier\(\s*(-?\d*\.?\d+)\s*,\s*(-?\d*\.?\d+)\s*,\s*(-?\d*\.?\d+)\s*,\s*(-?\d*\.?\d+)\s*\)$/.exec(
-		( value || '' ).trim()
-	);
-	if ( ! match ) {
-		return false;
-	}
-	const x1 = parseFloat( match[ 1 ] );
-	const x2 = parseFloat( match[ 3 ] );
-	return x1 >= 0 && x1 <= 1 && x2 >= 0 && x2 <= 1;
-}
 
 /**
  * SGS Nav Bar Menu (sgs/nav-bar-menu) — General tab: the "Menu Button" panel (Spec 41
@@ -113,9 +69,6 @@ export default function BurgerPanel( {
 	const showsIcon = 'icon' === mode || 'icon-and-text' === mode;
 	const showsText = 'icon' !== mode;
 	const morph = burgerMorph || 'x';
-	const easing = burgerMorphEasing || 'ease';
-	const customCurveInvalid =
-		'custom' === easing && '' !== ( burgerMorphEasingCustom || '' ) && ! isValidCubicBezier( burgerMorphEasingCustom );
 
 	return (
 		<PanelBody title={ __( 'Menu Button', 'sgs-blocks' ) } initialOpen={ false }>
@@ -276,38 +229,13 @@ export default function BurgerPanel( {
 						__next40pxDefaultSize
 					/>
 
-					<SelectControl
+					<MotionEasingControl
 						label={ __( 'Morph easing', 'sgs-blocks' ) }
-						value={ easing }
-						options={ BURGER_MORPH_EASING_OPTIONS }
-						onChange={ ( val ) => setAttributes( { burgerMorphEasing: val || 'ease' } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
+						value={ burgerMorphEasing }
+						custom={ burgerMorphEasingCustom }
+						onChange={ ( val ) => setAttributes( { burgerMorphEasing: val } ) }
+						onCustomChange={ ( val ) => setAttributes( { burgerMorphEasingCustom: val } ) }
 					/>
-
-					{ 'custom' === easing && (
-						<TextControl
-							label={ __( 'Custom curve', 'sgs-blocks' ) }
-							value={ burgerMorphEasingCustom || '' }
-							onChange={ ( val ) =>
-								setAttributes( { burgerMorphEasingCustom: val } )
-							}
-							placeholder="cubic-bezier(0.165, 0.84, 0.44, 1)"
-							help={
-								customCurveInvalid
-									? __(
-											'Not a valid curve — use cubic-bezier(x1, y1, x2, y2) with x1 and x2 between 0 and 1. Falling back to Standard until this is fixed.',
-											'sgs-blocks'
-									  )
-									: __(
-											'cubic-bezier(x1, y1, x2, y2) — x1 and x2 must be between 0 and 1.',
-											'sgs-blocks'
-									  )
-							}
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					) }
 				</>
 			) }
 		</PanelBody>

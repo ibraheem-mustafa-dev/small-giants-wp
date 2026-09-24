@@ -230,7 +230,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		asideWidth,
 		asideSeparator,
 		brandsEyebrow,
-		staggerOnOpen,
 		viewAllPlacement,
 		fxEffect,
 		panelCardLift,
@@ -436,7 +435,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		'data-mega-style': style,
 		'data-mega-scheme': colourScheme,
 		'data-mega-variant': resolvedVariant,
-		...( staggerOnOpen ? { 'data-stagger': 'true' } : {} ),
 	} );
 
 	const innerBlocksProps = useInnerBlocksProps(
@@ -833,17 +831,6 @@ export default function Edit( { attributes, setAttributes } ) {
 				) }
 
 				<PanelBody title={ __( 'Motion', 'sgs-blocks' ) } initialOpen={ false }>
-					<ToggleControl
-						label={ __( 'Stagger items on open', 'sgs-blocks' ) }
-						help={ __(
-							'Reveals each item with a short staggered fade/slide when the panel opens. Respects reduced-motion.',
-							'sgs-blocks'
-						) }
-						checked={ !! staggerOnOpen }
-						onChange={ ( value ) => setAttributes( { staggerOnOpen: value } ) }
-						__nextHasNoMarginBottom
-					/>
-
 					<ToggleGroupControl
 						label={ __( '"View all" link', 'sgs-blocks' ) }
 						help={ __(

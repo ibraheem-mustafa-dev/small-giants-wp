@@ -701,15 +701,19 @@
 			"default": "ease",
 			"enum": [
 				"ease",
+				"ease-out-css",
+				"ease-in-out",
 				"default",
 				"ease-out",
+				"quart-out",
+				"standard",
+				"drafts",
 				"ease-in",
 				"spring",
 				"linear",
-				"quart-out",
 				"custom"
 			],
-			"description": "Wave 3C U-9 (§4.4). Burger morph easing curve. `ease` is the default — today's exact hardcoded value. `default`/`ease-out`/`ease-in`/`spring` resolve to the matching theme motion token (`var(--wp--custom--easing--{value})`, `AnimationControl.js::EASINGS`' own labels — 'Smooth'/'Expo out'/'Ease in'/'Spring'). `quart-out` is a literal `cubic-bezier(0.165, 0.84, 0.44, 1)` (dogstudio) — not a theme token. `linear` is the literal CSS keyword. `custom` reads `burgerMorphEasingCustom` instead (validated; falls back to `ease` when invalid)."
+			"description": "Burger morph easing curve, from the shared motion easing list (`includes/helpers-motion-easing.php::sgs_motion_easing_css`, editor `MotionEasingControl`). `ease` is the default. `custom` reads `burgerMorphEasingCustom` (validated; falls back to `ease` when invalid)."
 		},
 		"burgerMorphEasingCustom": {
 			"type": "string",
@@ -1075,7 +1079,61 @@
 		"submenuAnimation": {
 			"type": "string",
 			"default": "fade",
-			"description": "The submenu panel's open animation: none / fade / slide-down. PHP-validated, no JSON enum. FR-41-1 default: fade — a pure-opacity transition with no directional assumption, safe regardless of overflow-flip repositioning, and degrades cleanly under prefers-reduced-motion."
+			"description": "How every dropdown and mega panel arrives and leaves: none / fade / fade-lift / slide-down / grow. PHP-validated, no JSON enum. Default fade, a pure-opacity transition with no directional assumption, safe regardless of overflow-flip repositioning. Under reduced motion panels open and close whole."
+		},
+		"submenuAnimationDuration": {
+			"type": "number",
+			"default": 180,
+			"description": "Opening time of every dropdown and mega panel, in milliseconds, 0 to 3000."
+		},
+		"submenuExitDuration": {
+			"type": "number",
+			"default": 150,
+			"description": "Closing time of every dropdown and mega panel, in milliseconds. 0 closes instantly."
+		},
+		"submenuAnimationEasing": {
+			"type": "string",
+			"default": "ease-out-css",
+			"enum": [
+				"ease",
+				"ease-out-css",
+				"ease-in-out",
+				"default",
+				"ease-out",
+				"quart-out",
+				"standard",
+				"drafts",
+				"ease-in",
+				"spring",
+				"linear",
+				"custom"
+			],
+			"description": "Speed curve for the panels opening and closing, from the shared motion easing list (includes/helpers-motion-easing.php)."
+		},
+		"submenuAnimationEasingCustom": {
+			"type": "string",
+			"default": "",
+			"description": "A cubic-bezier() curve, read only when submenuAnimationEasing is custom. Validated; an invalid curve falls back to ease-out."
+		},
+		"submenuItemStagger": {
+			"type": "number",
+			"default": 0,
+			"description": "Delay between each item arriving in a dropdown or mega panel, in milliseconds. 0 turns the stagger off."
+		},
+		"submenuItemStaggerDuration": {
+			"type": "number",
+			"default": 0,
+			"description": "Each panel item's own arrival time in milliseconds. 0 uses the panel's opening time."
+		},
+		"submenuItemStaggerMax": {
+			"type": "number",
+			"default": 0,
+			"description": "Cap on a panel item's delay in milliseconds. 0 means no cap."
+		},
+		"submenuItemStaggerDistance": {
+			"type": "number",
+			"default": 8,
+			"description": "How far each panel item travels as it arrives, in pixels. Negative means it falls from above."
 		},
 		"submenuTopOffset": {
 			"type": "string",

@@ -121,15 +121,22 @@ require_once dirname( __DIR__, 2 ) . '/includes/nav-menu-markup.php';
 // ══════════════════════════════════════════════════════════════════════════
 $render_source = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/nav-bar-menu/render.php' );
 
-$easing_fns_section = cut_between(
-	$render_source,
-	"if ( ! function_exists( 'sgs_nav_bar_menu_valid_cubic_bezier' ) ) {",
-	"if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {"
-);
-ok( '' !== $easing_fns_section, 'the easing-resolver functions are found in the real nav-bar-menu/render.php' );
-eval( $easing_fns_section ); // phpcs:ignore Squiz.PHP.Eval.Discouraged -- registers sgs_nav_bar_menu_valid_cubic_bezier() + sgs_nav_bar_menu_resolve_burger_morph_easing_css().
-ok( function_exists( 'sgs_nav_bar_menu_valid_cubic_bezier' ), 'sgs_nav_bar_menu_valid_cubic_bezier() was registered by the extracted section' );
-ok( function_exists( 'sgs_nav_bar_menu_resolve_burger_morph_easing_css' ), 'sgs_nav_bar_menu_resolve_burger_morph_easing_css() was registered by the extracted section' );
+if ( ! defined( 'ABSPATH' ) ) {
+	define( 'ABSPATH', __DIR__ );
+}
+require_once dirname( __DIR__, 2 ) . '/includes/helpers-motion-easing.php';
+ok( function_exists( 'sgs_motion_easing_css' ), 'the shared easing resolver (includes/helpers-motion-easing.php) is loaded' );
+ok( false !== strpos( $render_source, "sgs_motion_easing_css( (string) ( \$attributes['burgerMorphEasing'] ?? 'ease' ), (string) ( \$attributes['burgerMorphEasingCustom'] ?? '' ) )" ), 'nav-bar-menu/render.php resolves the burger easing through the shared resolver' );
+
+/**
+ * The burger's call shape, through the shared resolver.
+ *
+ * @param array $attributes Block attributes.
+ * @return string
+ */
+function burger_easing( array $attributes ): string {
+	return sgs_motion_easing_css( (string) ( $attributes['burgerMorphEasing'] ?? 'ease' ), (string) ( $attributes['burgerMorphEasingCustom'] ?? '' ) );
+}
 
 $morph_resolve_section = cut_between(
 	$render_source,
@@ -148,7 +155,7 @@ ok( '' !== $magnet_section, 'the itemMagnetStrength section is found in the real
 $morph_css_section = cut_between(
 	$render_source,
 	"\$sgs_nm_morph_duration = isset(",
-	"// The item hover-colour default ('primary') is the same on nav-drawer-menu"
+	'$sgs_nm_badge_bg_decl   = sgs_background_paint_decl('
 );
 ok( '' !== $morph_css_section, 'the burger-morph duration/easing custom-property section is found in the real render.php' );
 
@@ -195,27 +202,27 @@ function run_morph_css( string $code, array $attributes ): string {
 // ══════════════════════════════════════════════════════════════════════════
 // Group 1 — easing: every named option, a valid custom curve, rejected junk.
 // ══════════════════════════════════════════════════════════════════════════
-ok( 'ease' === sgs_nav_bar_menu_resolve_burger_morph_easing_css( array() ), "easing: unset attribute resolves to the literal 'ease' (today's exact value)" );
-ok( 'ease' === sgs_nav_bar_menu_resolve_burger_morph_easing_css( array( 'burgerMorphEasing' => 'ease' ) ), "easing: 'ease' resolves to the literal keyword" );
-ok( 'linear' === sgs_nav_bar_menu_resolve_burger_morph_easing_css( array( 'burgerMorphEasing' => 'linear' ) ), "easing: 'linear' resolves to the literal keyword" );
-ok( 'cubic-bezier(0.165, 0.84, 0.44, 1)' === sgs_nav_bar_menu_resolve_burger_morph_easing_css( array( 'burgerMorphEasing' => 'quart-out' ) ), "easing: 'quart-out' resolves to dogstudio's literal curve, not a theme token" );
+ok( 'ease' === burger_easing( array() ), "easing: unset attribute resolves to the literal 'ease' (today's exact value)" );
+ok( 'ease' === burger_easing( array( 'burgerMorphEasing' => 'ease' ) ), "easing: 'ease' resolves to the literal keyword" );
+ok( 'linear' === burger_easing( array( 'burgerMorphEasing' => 'linear' ) ), "easing: 'linear' resolves to the literal keyword" );
+ok( 'cubic-bezier(0.165, 0.84, 0.44, 1)' === burger_easing( array( 'burgerMorphEasing' => 'quart-out' ) ), "easing: 'quart-out' resolves to dogstudio's literal curve, not a theme token" );
 foreach ( array( 'default', 'ease-out', 'ease-in', 'spring' ) as $token ) {
 	ok(
-		'var(--wp--custom--easing--' . $token . ')' === sgs_nav_bar_menu_resolve_burger_morph_easing_css( array( 'burgerMorphEasing' => $token ) ),
+		'var(--wp--custom--easing--' . $token . ')' === burger_easing( array( 'burgerMorphEasing' => $token ) ),
 		"easing: '$token' resolves to the matching theme motion token"
 	);
 }
-ok( 'ease' === sgs_nav_bar_menu_resolve_burger_morph_easing_css( array( 'burgerMorphEasing' => 'not-a-real-option' ) ), 'easing: an out-of-list stored value falls back to ease' );
+ok( 'ease' === burger_easing( array( 'burgerMorphEasing' => 'not-a-real-option' ) ), 'easing: an out-of-list stored value falls back to ease' );
 
 // 'custom' + a valid curve.
 ok(
-	'cubic-bezier(0.34, 1.56, 0.64, 1)' === sgs_nav_bar_menu_resolve_burger_morph_easing_css(
+	'cubic-bezier(0.34, 1.56, 0.64, 1)' === burger_easing(
 		array( 'burgerMorphEasing' => 'custom', 'burgerMorphEasingCustom' => 'cubic-bezier(0.34, 1.56, 0.64, 1)' )
 	),
 	'easing: custom + a valid spring-overshoot curve (y > 1 is legal) passes through verbatim'
 );
 ok(
-	'cubic-bezier(0,0,1,1)' === sgs_nav_bar_menu_resolve_burger_morph_easing_css(
+	'cubic-bezier(0,0,1,1)' === burger_easing(
 		array( 'burgerMorphEasing' => 'custom', 'burgerMorphEasingCustom' => 'cubic-bezier(0,0,1,1)' )
 	),
 	'easing: custom + a valid curve with no internal spaces passes through'
@@ -233,21 +240,24 @@ $hostile_curves = array(
 );
 foreach ( $hostile_curves as $label => $curve ) {
 	ok(
-		'ease' === sgs_nav_bar_menu_resolve_burger_morph_easing_css( array( 'burgerMorphEasing' => 'custom', 'burgerMorphEasingCustom' => $curve ) ),
+		'ease' === burger_easing( array( 'burgerMorphEasing' => 'custom', 'burgerMorphEasingCustom' => $curve ) ),
 		"easing: custom + $label is refused, falls back to ease"
 	);
 }
 
 // Negative control: bypass the validator — prove the refusal tests above can fail.
+$helper_source = (string) file_get_contents( dirname( __DIR__, 2 ) . '/includes/helpers-motion-easing.php' );
 $bypass_validator = str_replace(
-	'return sgs_nav_bar_menu_valid_cubic_bezier( $custom ) ? $custom : \'ease\';',
+	'return sgs_motion_valid_cubic_bezier( $custom ) ? $custom : $fallback;',
 	'return $custom;',
-	$easing_fns_section
+	$helper_source
 );
-ok( $bypass_validator !== $easing_fns_section, 'negative control (easing): the validator bypass was applied to the extracted text' );
-eval( str_replace( 'sgs_nav_bar_menu_resolve_burger_morph_easing_css', 'sgs_bypassed_resolve_burger_morph_easing_css', $bypass_validator ) ); // phpcs:ignore Squiz.PHP.Eval.Discouraged
+ok( $bypass_validator !== $helper_source, 'negative control (easing): the validator bypass was applied to the helper text' );
+$bypass_validator = str_replace( array( '<?php', 'sgs_motion_easing_css', "defined( 'ABSPATH' ) || exit;" ), array( '', 'sgs_bypassed_easing_css', '' ), $bypass_validator );
+$bypass_validator = preg_replace( "/if \\( ! function_exists\\( 'sgs_motion_(valid_cubic_bezier|easing_values|ms)' \\) \\) \\{.*?\n\\}\n/s", '', $bypass_validator );
+eval( $bypass_validator ); // phpcs:ignore Squiz.PHP.Eval.Discouraged
 ok(
-	'red;}body{x' === sgs_bypassed_resolve_burger_morph_easing_css( array( 'burgerMorphEasing' => 'custom', 'burgerMorphEasingCustom' => 'red;}body{x' ) ),
+	'red;}body{x' === sgs_bypassed_easing_css( 'custom', 'red;}body{x' ),
 	'negative control (easing): with the validator bypassed, hostile input IS passed through (so the refusal tests above can fail)'
 );
 
@@ -268,7 +278,8 @@ ok( $morph_enum === $expected_morph, 'burgerMorph enum matches the PHP allow-lis
 
 ok( is_array( $easing_enum ), 'block.json declares an enum for burgerMorphEasing' );
 sort( $easing_enum );
-$expected_easing = array( 'ease', 'default', 'ease-out', 'ease-in', 'spring', 'linear', 'quart-out', 'custom' );
+$expected_easing = array( 'ease', 'ease-out-css', 'ease-in-out', 'default', 'ease-out', 'quart-out', 'standard', 'drafts', 'ease-in', 'spring', 'linear', 'custom' );
+ok( sgs_motion_easing_values() === $expected_easing, 'the shared resolver lists the same twelve easing values in editor order' );
 sort( $expected_easing );
 ok( $easing_enum === $expected_easing, 'burgerMorphEasing enum matches the resolver\'s named options + custom' );
 
@@ -340,7 +351,7 @@ ok( false !== strpos( $toggle_morph, 'data-sgs-nav-burger-morph="x-rotate"' ), '
 // and a POSIX shell, and shell_exec() runs under whichever is this system's
 // default. A failed `git show` simply returns null/empty here, which the
 // checks immediately below already handle.
-$old_markup_source = shell_exec( 'git show HEAD:plugins/sgs-blocks/includes/nav-menu-markup.php' );
+$old_markup_source = shell_exec( 'git show c36105939~1:plugins/sgs-blocks/includes/nav-menu-markup.php' );
 ok( is_string( $old_markup_source ) && '' !== trim( (string) $old_markup_source ), 'negative control (collapse/morph): the pre-task nav-menu-markup.php was read from git HEAD' );
 if ( is_string( $old_markup_source ) && '' !== trim( $old_markup_source ) ) {
 	// This block is the LAST one in the pre-task file (confirmed against git

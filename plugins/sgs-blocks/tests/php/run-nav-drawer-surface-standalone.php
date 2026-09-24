@@ -35,6 +35,8 @@ if ( ! function_exists( 'esc_attr' ) ) {
 
 require_once dirname( __DIR__, 2 ) . '/includes/helpers-tokens.php';
 require_once dirname( __DIR__, 2 ) . '/includes/helpers-surface-ground.php';
+require_once dirname( __DIR__, 2 ) . '/includes/class-sgs-breakpoints.php';
+require_once dirname( __DIR__, 2 ) . '/includes/helpers-responsive.php';
 
 $pass = 0;
 $fail = 0;
@@ -75,6 +77,10 @@ function run_surface( string $code, array $attributes ): string {
 	$css            = '';
 	$root_sel       = '.sgs-nav-drawer-test.wp-block-sgs-nav-drawer';
 	$drawer_bg_slug = isset( $attributes['drawerBg'] ) ? sanitize_slug_for_test( $attributes['drawerBg'] ) : 'surface';
+	// The default-edge block of the section reads these, resolved earlier in render.php.
+	$modality               = (string) ( $attributes['modality'] ?? 'modal' );
+	$sgs_nd_allowed_anchors = array( 'full-screen', 'header', 'trigger', 'centred' );
+	$anchor_attr_raw        = $attributes['anchor'] ?? array();
 	eval( $code ); // phpcs:ignore Squiz.PHP.Eval.Discouraged -- CLI harness evaluating the extracted render.php section.
 	return $css;
 }

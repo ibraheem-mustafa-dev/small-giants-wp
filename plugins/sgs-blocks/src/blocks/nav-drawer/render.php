@@ -484,13 +484,25 @@ if ( $sgs_nd_anchor_is_set || $sgs_nd_panel_is_set || 'non-modal' === $modality 
 // HTML) when every tier's opacity/blur resolves to invisible, so an untouched
 // drawer paints only its default (black at 0.55, reproducing the previous
 // hardcoded rgba(0,0,0,0.55) exactly).
-$css .= sgs_scrim_render(
+// ── Entry and exit motion (Wave 3C U-5): the shape per tier, the open and
+// close durations, the easing, the curtain colour and the item stagger, all as
+// custom-property values the keyframes in style.css and the item rules in
+// nav-drawer-menu/style.css read. includes/helpers-nav-drawer-motion.php.
+$sgs_nd_motion = sgs_nav_drawer_motion( $attributes, $root_sel, $anchor_attr_raw, $sgs_nd_allowed_anchors );
+$css          .= $sgs_nd_motion['css'];
+
+// The scrim fades with the drawer unless scrimFadeDuration sets its own time.
+$sgs_nd_scrim_fade = sgs_motion_ms( $attributes['scrimFadeDuration'] ?? 0, 0 );
+$css              .= sgs_scrim_render(
 	$attributes,
 	$uid,
 	array(
-		'open'    => '.' . $uid . '[open]',
-		'z_index' => 'min(89, max(1, calc(var(--sgs-header-z, 100) - 2)))',
-		'data'    => array( 'sgs-nav-scrim' => $drawer_ref ),
+		'open'     => '.' . $uid . '[open]',
+		'z_index'  => 'min(89, max(1, calc(var(--sgs-header-z, 100) - 2)))',
+		'data'     => array( 'sgs-nav-scrim' => $drawer_ref ),
+		'enter_ms' => $sgs_nd_scrim_fade > 0 ? $sgs_nd_scrim_fade : $sgs_nd_motion['enter_ms'],
+		'exit_ms'  => $sgs_nd_scrim_fade > 0 ? $sgs_nd_scrim_fade : $sgs_nd_motion['exit_ms'],
+		'easing'   => $sgs_nd_motion['easing'],
 	)
 );
 
@@ -727,42 +739,6 @@ if ( '' !== $custom_css ) {
 // store resolves the drawer by getElementById — the id + data-sgs-nav-drawer
 // survive the body-reparent). supports.anchor is false (block.json) so no
 // competing anchor id is emitted. The uid is added as a CLASS for the scoped CSS.
-
-/*
- * Entry-animation direction (animateFrom). `auto` (the default) resolves to a
- * PER-ANCHOR default motion — the drawer's own DESKTOP anchor decides which
- * animation class applies, since the anchor (not an independent direction)
- * IS the design-defining choice: full-screen keeps the base
- * fade-drop (no class, so an untouched drawer is unaffected), header expands
- * down, trigger scales/fades from its corner, centred scales up like a
- * modal. `fade` is an explicit opacity-only override available at every
- * anchor. All rules live inside the CSS's `prefers-reduced-motion:
- * no-preference` block, so a reduced-motion user is unaffected regardless.
- */
-$sgs_nd_allowed_anims = array( 'auto', 'fade' );
-$sgs_nd_animate_from  = in_array( $attributes['animateFrom'] ?? 'auto', $sgs_nd_allowed_anims, true )
-	? (string) $attributes['animateFrom']
-	: 'auto';
-
-$sgs_nd_anim_class = '';
-if ( 'fade' === $sgs_nd_animate_from ) {
-	$sgs_nd_anim_class = 'sgs-nav-drawer--anim-fade';
-} else {
-	// auto → per-anchor default. Resolve the DESKTOP anchor only for the
-	// animation choice (the entry motion is a single per-instance decision,
-	// not itself per-device) — falls back to 'full-screen' (no class) when
-	// `anchor` is unset.
-	$sgs_nd_anim_anchor = $sgs_nd_anchor_is_set
-		? sgs_resolve_tier( $anchor_attr_raw, 'desktop', 'full-screen' )['value']
-		: 'full-screen';
-	$sgs_nd_anim_anchor = in_array( $sgs_nd_anim_anchor, $sgs_nd_allowed_anchors, true ) ? $sgs_nd_anim_anchor : 'full-screen';
-	$sgs_nd_anim_map    = array(
-		'header'  => 'sgs-nav-drawer--anim-expand-down',
-		'trigger' => 'sgs-nav-drawer--anim-corner-scale',
-		'centred' => 'sgs-nav-drawer--anim-modal-scale',
-	);
-	$sgs_nd_anim_class  = $sgs_nd_anim_map[ $sgs_nd_anim_anchor ] ?? '';
-}
 
 // ── Close-button style (closeStyle). `separate-x` (default) renders the
 // × icon. `text-swap`
@@ -1078,8 +1054,8 @@ $classes = array(
 	'sgs-nav-drawer--close-' . $sgs_nd_render_style_desktop,
 );
 
-if ( '' !== $sgs_nd_anim_class ) {
-	$classes[] = $sgs_nd_anim_class;
+foreach ( $sgs_nd_motion['classes'] as $sgs_nd_motion_class ) {
+	$classes[] = $sgs_nd_motion_class;
 }
 
 if ( '' !== $sgs_nd_tone_class ) {
@@ -1103,6 +1079,9 @@ $wrapper_args = array(
 		? esc_attr( $attributes['ariaLabel'] )
 		: esc_attr__( 'Navigation menu', 'sgs-blocks' ),
 );
+foreach ( $sgs_nd_motion['data'] as $sgs_nd_data_name => $sgs_nd_data_value ) {
+	$wrapper_args[ 'data-' . $sgs_nd_data_name ] = $sgs_nd_data_value;
+}
 if ( $sgs_nd_scroll_distance > 0 ) {
 	// §4.6 — store.js reads this to know the threshold and whether to skip
 	// lockScroll() at all (a locked page can never scroll, so the carve-out

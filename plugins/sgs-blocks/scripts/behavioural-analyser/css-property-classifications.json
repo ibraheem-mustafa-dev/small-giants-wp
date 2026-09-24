@@ -6645,11 +6645,70 @@
     },
     {
       "slug": "sgs/nav-bar-menu",
+      "attr": "burgerMorphEasing",
+      "fields": {
+        "css_property": "transition-timing-function",
+        "css_element": "burger"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
       "attr": "justifyContent",
       "fields": {
         "css_property": "justify-content",
         "css_layer": "GRID",
         "css_element": "bar"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuAnimationDuration",
+      "fields": {
+        "css_property": "animation,transition-duration"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuAnimationEasing",
+      "fields": {
+        "css_property": "animation,transition-timing-function"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuExitDuration",
+      "fields": {
+        "css_property": "transition-duration",
+        "css_element": "panel-motion"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuItemStagger",
+      "fields": {
+        "css_property": "animation-delay"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuItemStaggerDistance",
+      "fields": {
+        "css_property": "translate"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuItemStaggerDuration",
+      "fields": {
+        "css_property": "animation",
+        "css_element": "submenu"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuItemStaggerMax",
+      "fields": {
+        "css_property": "animation-delay,translate"
       }
     },
     {
@@ -17044,14 +17103,6 @@
     },
     {
       "slug": "sgs/nav-bar-menu",
-      "attr": "burgerMorphEasing",
-      "fields": {
-        "css_property": "transition-timing-function",
-        "css_element": "burger"
-      }
-    },
-    {
-      "slug": "sgs/nav-bar-menu",
       "attr": "burgerSize",
       "fields": {
         "css_property": "height,width",
@@ -17926,6 +17977,23 @@
     },
     {
       "slug": "sgs/nav-drawer",
+      "attr": "curtainColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "curtain"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "curtainColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "curtain"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
       "attr": "drawerGap",
       "fields": {
         "css_property": "gap",
@@ -18004,6 +18072,14 @@
       "attr": "scrimColourGradient",
       "fields": {
         "css_property": "background-image",
+        "css_element": "scrim"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "scrimFadeDuration",
+      "fields": {
+        "css_property": "transition-duration",
         "css_element": "scrim"
       }
     },

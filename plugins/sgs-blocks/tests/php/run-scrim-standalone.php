@@ -68,10 +68,15 @@ $drawer = sgs_scrim_render(
 	'u1',
 	array( 'open' => '.u1[open]' )
 );
-ok( $has( $drawer, '.u1-scrim{position:fixed;inset:0;z-index:9990;opacity:0;pointer-events:none;transition:opacity .2s ease;--sgs-scrim-fill:#000000}' ), 'base rule: fixed, hidden, fill = the colour' );
+ok( $has( $drawer, '.u1-scrim{position:fixed;inset:0;z-index:9990;opacity:0;pointer-events:none;transition:opacity 200ms ease;--sgs-scrim-fill:#000000}' ), 'base rule: fixed, hidden, fill = the colour, fading out over the default 200ms' );
 ok( $has( $drawer, '.u1-scrim::before{content:"";position:absolute;inset:0;background:var(--sgs-scrim-fill);opacity:var(--sgs-scrim-opacity,0)}' ), 'the tint sits on ::before with its own opacity' );
 ok( $has( $drawer, '.u1-scrim{--sgs-scrim-opacity:0.55;}' ), 'desktop strength 0.55' );
-ok( $has( $drawer, ':root:has(.u1[open]) .u1-scrim{opacity:1;pointer-events:auto}' ), 'open state comes from :has() on the given selector' );
+ok( $has( $drawer, ':root:has(.u1[open]) .u1-scrim{opacity:1;pointer-events:auto;transition-duration:200ms}' ), 'open state comes from :has() on the given selector, fading in over the default 200ms' );
+$timed = sgs_scrim_render( array( 'scrimOpacity' => array( 'desktop' => 0.5 ) ), 'u9', array( 'open' => '.u9[open]', 'enter_ms' => 450, 'exit_ms' => 250, 'easing' => 'cubic-bezier(0.16, 0.84, 0.32, 1)' ) );
+ok( $has( $timed, 'transition:opacity 250ms cubic-bezier(0.16, 0.84, 0.32, 1);' ), 'U-5: the closed rule carries the owner exit time and easing' );
+ok( $has( $timed, ':root:has(.u9[open]) .u9-scrim{opacity:1;pointer-events:auto;transition-duration:450ms}' ), 'U-5: the open rule carries the owner entry time' );
+$hostile = sgs_scrim_render( array( 'scrimOpacity' => array( 'desktop' => 0.5 ) ), 'u8', array( 'open' => '.u8[open]', 'easing' => 'ease;}body{x' ) );
+ok( ! $has( $hostile, 'body{x' ) && $has( $hostile, 'transition:opacity 200ms ease;' ), 'U-5: an easing that could break out of the declaration is refused' );
 ok( ! $has( $drawer, 'backdrop-filter' ), 'no blur set: no backdrop-filter emitted' );
 ok( $has( $drawer, '@media (forced-colors:active){.u1-scrim{display:none}}' ), 'hidden in forced colours' );
 ok( $has( $drawer, '@media (prefers-reduced-motion:reduce){.u1-scrim{transition-duration:.01ms}}' ), 'reduced motion shortens the fade' );

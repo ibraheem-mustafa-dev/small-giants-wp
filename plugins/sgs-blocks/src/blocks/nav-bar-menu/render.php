@@ -139,81 +139,6 @@ if ( ! function_exists( 'sgs_nav_shared_typography_hover_rule' ) ) {
 	}
 }
 
-if ( ! function_exists( 'sgs_nav_bar_menu_valid_cubic_bezier' ) ) {
-	/**
-	 * Wave 3C U-9 (§4.4) — validate a hand-typed `cubic-bezier(x1, y1, x2, y2)`
-	 * curve for `burgerMorphEasingCustom`.
-	 *
-	 * BLOCK-PRIVATE (this block's own custom-curve control; not a shared
-	 * concern) — declared here, guarded, for the same second-instance-fatal
-	 * reason as `sgs_nav_shared_typography_hover_rule()` above.
-	 *
-	 * Anchored end to end (`^…$`) so a declaration breakout
-	 * (`cubic-bezier(0,0,1,1);}}body{x`) cannot slip past the four captured
-	 * groups. `-?\d*\.?\d+` never matches an exponent (`1e5` has no `e` in the
-	 * class), so exponent notation is rejected by construction, not a separate
-	 * check. `x1`/`x2` (the two X coordinates — CSS's own constraint) are
-	 * clamped to 0–1; `y1`/`y2` are free (a spring overshoot legitimately
-	 * exceeds 1, e.g. `cubic-bezier(0.34,1.56,0.64,1)`).
-	 *
-	 * @param string $value The candidate curve string, verbatim.
-	 * @return bool True when it is a real, in-range cubic-bezier() curve.
-	 */
-	function sgs_nav_bar_menu_valid_cubic_bezier( string $value ): bool {
-		$pattern = '/^cubic-bezier\(\s*(-?\d*\.?\d+)\s*,\s*(-?\d*\.?\d+)\s*,\s*(-?\d*\.?\d+)\s*,\s*(-?\d*\.?\d+)\s*\)$/';
-		if ( 1 !== preg_match( $pattern, trim( $value ), $matches ) ) {
-			return false;
-		}
-		$x1 = (float) $matches[1];
-		$x2 = (float) $matches[3];
-		return $x1 >= 0.0 && $x1 <= 1.0 && $x2 >= 0.0 && $x2 <= 1.0;
-	}
-}
-
-if ( ! function_exists( 'sgs_nav_bar_menu_resolve_burger_morph_easing_css' ) ) {
-	/**
-	 * Wave 3C U-9 (§4.4) — resolve `burgerMorphEasing` (+ its `custom` sibling
-	 * `burgerMorphEasingCustom`) to the CSS value the `--sgs-nbm-burger-morph-
-	 * easing` custom property should carry.
-	 *
-	 * Named options mirror `AnimationControl.js::EASINGS`' theme-token
-	 * convention (`default`/`ease-out`/`ease-in`/`spring` → `var(--wp--custom
-	 * --easing--{value})`) PLUS two literals that are NOT theme tokens:
-	 * `quart-out` (dogstudio's own measured curve, §3 exit-cell table) and the
-	 * bare CSS keywords `ease`/`linear`. `custom` defers to the validated
-	 * free-text curve, falling back to `ease` — never a raw, unvalidated
-	 * string reaching CSS.
-	 *
-	 * @param array $attributes Block attributes.
-	 * @return string A CSS `<easing-function>` value. Never empty.
-	 */
-	function sgs_nav_bar_menu_resolve_burger_morph_easing_css( array $attributes ): string {
-		$easing = (string) ( $attributes['burgerMorphEasing'] ?? 'ease' );
-
-		$theme_tokens = array( 'default', 'ease-out', 'ease-in', 'spring' );
-		if ( in_array( $easing, $theme_tokens, true ) ) {
-			return 'var(--wp--custom--easing--' . $easing . ')';
-		}
-
-		if ( 'quart-out' === $easing ) {
-			return 'cubic-bezier(0.165, 0.84, 0.44, 1)';
-		}
-
-		if ( 'linear' === $easing ) {
-			return 'linear';
-		}
-
-		if ( 'custom' === $easing ) {
-			$custom = trim( (string) ( $attributes['burgerMorphEasingCustom'] ?? '' ) );
-			return sgs_nav_bar_menu_valid_cubic_bezier( $custom ) ? $custom : 'ease';
-		}
-
-		// 'ease' and any unrecognised/legacy stored value both land here —
-		// today's exact hardcoded value, the safe floor.
-		return 'ease';
-	}
-}
-
 if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 	/**
 	 * Flattens a resolved menu-block tree into the sgs/nav-bar-menu FLAT bar markup.
@@ -301,7 +226,7 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 				// plain string) -- an out-of-list stored value coerces to the
 				// no-animation default rather than emitting an unstyled modifier
 				// class the CSS (style.css) never defines.
-				'animation'   => in_array( $submenu['animation'] ?? '', array( 'fade', 'slide-down' ), true )
+				'animation'   => in_array( $submenu['animation'] ?? '', array( 'fade', 'fade-lift', 'slide-down', 'grow' ), true )
 					? (string) $submenu['animation']
 					: 'none',
 			);
@@ -869,7 +794,7 @@ if ( in_array( $sgs_nm_justify_content, $sgs_nm_justify_allowed, true ) ) {
  */
 $sgs_nm_morph_duration = isset( $attributes['burgerMorphDuration'] ) ? (int) $attributes['burgerMorphDuration'] : 200;
 $sgs_nm_morph_duration = max( 0, min( 1200, $sgs_nm_morph_duration ) );
-$sgs_nm_morph_easing_css = sgs_nav_bar_menu_resolve_burger_morph_easing_css( $attributes );
+$sgs_nm_morph_easing_css = sgs_motion_easing_css( (string) ( $attributes['burgerMorphEasing'] ?? 'ease' ), (string) ( $attributes['burgerMorphEasingCustom'] ?? '' ) );
 
 $sgs_nm_morph_vars = '';
 if ( 200 !== $sgs_nm_morph_duration ) {
@@ -966,12 +891,34 @@ $inner_html = $bar_html . $toggle_html;
 // state, which stays inside this <nav> even when its panel is reparented
 // elsewhere (mega-disclosure.js), so one selector covers dropdowns and mega
 // panels alike. See includes/helpers-scrim.php::sgs_scrim_render().
+// ── Panel motion (Wave 3C U-5): open and close time, speed curve and item
+// stagger for every dropdown and mega panel, as values the rules in style.css
+// read. The scrim fades with the panels.
+$sgs_nm_panel_in    = sgs_motion_ms( $attributes['submenuAnimationDuration'] ?? 180, 180 );
+$sgs_nm_panel_out   = sgs_motion_ms( $attributes['submenuExitDuration'] ?? 150, 150 );
+$sgs_nm_panel_ease  = sgs_motion_easing_css( (string) ( $attributes['submenuAnimationEasing'] ?? 'ease-out-css' ), (string) ( $attributes['submenuAnimationEasingCustom'] ?? '' ), 'ease-out' );
+$sgs_nm_panel_vars  = '--sgs-nbm-panel-dur:' . $sgs_nm_panel_in . 'ms;--sgs-nbm-panel-exit-dur:' . $sgs_nm_panel_out . 'ms;--sgs-nbm-panel-ease:' . $sgs_nm_panel_ease . ';';
+$sgs_nm_stagger     = sgs_motion_ms( $attributes['submenuItemStagger'] ?? 0, 0, 1000 );
+if ( $sgs_nm_stagger > 0 ) {
+	$sgs_nm_stagger_dur = sgs_motion_ms( $attributes['submenuItemStaggerDuration'] ?? 0, 0 );
+	$sgs_nm_stagger_max = sgs_motion_ms( $attributes['submenuItemStaggerMax'] ?? 0, 0, 10000 );
+	$sgs_nm_stagger_d   = is_numeric( $attributes['submenuItemStaggerDistance'] ?? null ) ? max( -400, min( 400, (int) round( (float) $attributes['submenuItemStaggerDistance'] ) ) ) : 8;
+	$sgs_nm_panel_vars .= '--sgs-nbm-stagger-step:' . $sgs_nm_stagger . 'ms;'
+		. '--sgs-nbm-stagger-dur:' . ( $sgs_nm_stagger_dur > 0 ? $sgs_nm_stagger_dur : $sgs_nm_panel_in ) . 'ms;'
+		. '--sgs-nbm-stagger-dist:' . $sgs_nm_stagger_d . 'px;'
+		. ( $sgs_nm_stagger_max > 0 ? '--sgs-nbm-stagger-max:' . $sgs_nm_stagger_max . 'ms;' : '' );
+}
+$css .= $uid_sel . '{' . $sgs_nm_panel_vars . '}';
+
 $css .= sgs_scrim_render(
 	$attributes,
 	$uid,
 	array(
-		'open'    => '.' . $uid . ' [data-sgs-mega-trigger][aria-expanded="true"]',
-		'z_index' => 'calc(var(--sgs-header-z, 100) - 1)',
+		'open'     => '.' . $uid . ' [data-sgs-mega-trigger][aria-expanded="true"]',
+		'z_index'  => 'calc(var(--sgs-header-z, 100) - 1)',
+		'enter_ms' => $sgs_nm_panel_in,
+		'exit_ms'  => $sgs_nm_panel_out,
+		'easing'   => $sgs_nm_panel_ease,
 	)
 );
 
@@ -984,6 +931,9 @@ if ( '' !== $css ) {
 // rule above is a silent render no-op. `sgs-nav-bar-menu` is this block's own
 // BEM root; `$uid` is the per-instance scope.
 $nav_root_classes = array( 'sgs-nav-bar-menu', $uid );
+if ( $sgs_nm_stagger > 0 ) {
+	$nav_root_classes[] = 'sgs-nav-bar-menu--panel-stagger';
+}
 
 // This <nav> IS the navigation landmark, so the accessible name belongs here —
 // on the element carrying the role. Exactly one <nav> per instance and exactly

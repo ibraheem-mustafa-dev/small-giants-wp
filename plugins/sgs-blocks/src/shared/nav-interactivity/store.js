@@ -458,6 +458,47 @@ function resolveScrim( drawerRef ) {
 }
 
 /**
+ * Call `done` once every animation running on `el` or inside it has finished
+ * (Wave 3C U-5). Covers the drawer's own keyframes, a `curtain` shape's
+ * `::before` layer and a reversed item stagger, which end at different times.
+ * A fail-safe timer set to the latest animation end (plus 50ms) guarantees
+ * `done` still runs if a finish never settles; a stuck drawer is far worse
+ * than a clipped animation.
+ *
+ * @param {HTMLElement} el   The element whose subtree animations to wait on.
+ * @param {Function}    done Called exactly once.
+ */
+function whenAnimationsSettle( el, done ) {
+	let called = false;
+	let timer = 0;
+	const finish = () => {
+		if ( called ) {
+			return;
+		}
+		called = true;
+		clearTimeout( timer );
+		done();
+	};
+
+	// getAnimations() flushes style, so the animations the class change just
+	// started are already in the list.
+	const animations =
+		'function' === typeof el.getAnimations ? el.getAnimations( { subtree: true } ) : [];
+	let latest = 0;
+	animations.forEach( ( animation ) => {
+		const end = animation.effect?.getComputedTiming?.().endTime;
+		if ( Number.isFinite( end ) && end > latest ) {
+			latest = end;
+		}
+	} );
+	timer = setTimeout( finish, latest + 50 );
+
+	if ( animations.length ) {
+		Promise.allSettled( animations.map( ( animation ) => animation.finished ) ).then( finish );
+	}
+}
+
+/**
  * Close the drawer (shared by closeDrawer, the ×, the scrim, and ESC). All
  * restoration runs in the single `close`-event handler wired in openDrawer, so
  * this only sets exit timing then triggers the native close.
@@ -490,45 +531,14 @@ function runClose( drawer, scrim ) {
 	 * (vertical and directional) would never be reachable. A display:none
 	 * element animates nothing.
 	 *
-	 * So: add the class, let the animation run, close on animationend.
+	 * So: add the class, let every exit animation run (the drawer's own, a
+	 * curtain's ::before, a reversed item stagger), then close.
 	 */
 	drawer.classList.add( 'is-closing' );
 
-	let finished = false;
-	let timer = 0;
-
-	const finish = () => {
-		if ( finished ) {
-			return;
-		}
-		finished = true;
-		clearTimeout( timer );
-		drawer.removeEventListener( 'animationend', onAnimationEnd );
-		// `.is-closing` is removed by the native `close` handler, which is the
-		// single teardown point for aria/scroll/freeze/focus.
-		drawer.close();
-	};
-
-	function onAnimationEnd( e ) {
-		// animationend bubbles — ignore a child's animation finishing first.
-		if ( e.target === drawer ) {
-			finish();
-		}
-	}
-
-	drawer.addEventListener( 'animationend', onAnimationEnd );
-
-	/*
-	 * Fail-safe. If no exit animation actually runs the drawer must still
-	 * close — a stuck-open drawer is far worse than a missing animation.
-	 * Read the real computed duration rather than hardcoding one, so this
-	 * keeps working if the timing changes or a site overrides it.
-	 */
-	const declared = parseFloat(
-		window.getComputedStyle( drawer ).animationDuration
-	);
-	const ms = Number.isFinite( declared ) && declared > 0 ? declared * 1000 : 0;
-	timer = setTimeout( finish, ms + 50 );
+	// `.is-closing` is removed by the native `close` handler, which is the
+	// single teardown point for aria/scroll/freeze/focus.
+	whenAnimationsSettle( drawer, () => drawer.close() );
 }
 
 /**
@@ -1071,6 +1081,19 @@ function openDrawerFor( ctx, trigger ) {
 
 	drawerBookkeeping.set( drawer, bookkeeping );
 	ctx.isOpen = true;
+	if ( drawer.hasAttribute( 'data-sgs-nd-focus-after-entry' ) && ! prefersReducedMotion() ) {
+		// A slow entry (over 500ms) still clips its first link, so its focus
+		// ring would be invisible: hold focus on the dialog itself, then move it
+		// in once the entry has finished. Escape still closes mid-entry.
+		drawer.setAttribute( 'tabindex', '-1' );
+		drawer.focus();
+		whenAnimationsSettle( drawer, () => {
+			if ( drawer.open && ! drawer.classList.contains( 'is-closing' ) ) {
+				focusFirstIn( drawer );
+			}
+		} );
+		return;
+	}
 	focusFirstIn( drawer );
 }
 

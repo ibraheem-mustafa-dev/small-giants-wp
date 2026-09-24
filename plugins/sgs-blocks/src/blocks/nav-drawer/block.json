@@ -24,6 +24,10 @@
 				"drawerBg": {
 					"rule": "states",
 					"reason": "The drawer panel is a disclosure surface toggled open/closed by the burger trigger, not a hover target itself — only its own close button has :hover CSS (style.css). Already correctly painted with a real gradient sibling wired (drawerBgGradient, layered over the flat colour rather than replacing it: an overlay panel keeps its solid base so alpha in the gradient doesn't let the page behind show through)."
+				},
+				"curtainColour": {
+					"rule": "states",
+					"reason": "The curtain is the colour layer that sweeps across the drawer only while its curtain entry or exit animation runs (the dialog ::before, includes/helpers-nav-drawer-motion.php); it takes no pointer events and is gone once the drawer is open, so there is no hover or current state to paint. The gradient sibling (curtainColourGradient) is wired."
 				}
 			},
 			"containerKind": "content",
@@ -51,16 +55,31 @@
 					"label": "Backdrop / scrim",
 					"order": 5,
 					"clusters": [
-						"fill"
+						"fill",
+						"motion"
 					],
 					"prefix": "scrim",
 					"attrMap": {
 						"css:background-color": "scrimColour",
 						"css:background-image": "scrimColourGradient",
 						"css:opacity": "scrimOpacity",
-						"css:backdrop-filter": "scrimBlur"
+						"css:backdrop-filter": "scrimBlur",
+						"css:transition-duration": "scrimFadeDuration"
 					},
 					"_note": "The shared viewport scrim (Wave 3C U-2, `includes/helpers-scrim.php::sgs_scrim_render`): the see-through layer printed at wp_footer that dims the page while this block's drawer, dialog or panel is open. Mapped here so the converter can route a draft's scrim colour, strength and blur to these attributes."
+				},
+				"curtain": {
+					"label": "Curtain (open animation)",
+					"order": 6,
+					"clusters": [
+						"fill"
+					],
+					"prefix": "curtain",
+					"attrMap": {
+						"css:background-color": "curtainColour",
+						"css:background-image": "curtainColourGradient"
+					},
+					"_note": "The colour layer that sweeps across the drawer in the `curtain` entry animation (the dialog ::before, includes/helpers-nav-drawer-motion.php). Mapped so the converter can route a draft curtain colour (dogstudio) to curtainColour."
 				},
 				"dialog": {
 					"label": "Drawer container",
@@ -242,13 +261,89 @@
 				"name": "x"
 			}
 		},
-		"animateFrom": {
+		"entryAnimation": {
+			"type": "object",
+			"default": {},
+			"description": "How the drawer arrives and leaves, per device: auto (follows the anchor), none, fade, slide-start, slide-end, slide-up, slide-down, wipe-down, wipe-down-skew, reveal-from-bar, curtain or scale. The exit is the reverse. Allow-list: includes/helpers-nav-drawer-motion.php::sgs_nav_drawer_motion_shapes."
+		},
+		"entryDuration": {
+			"type": "number",
+			"default": 250,
+			"description": "Opening time in milliseconds, 0 to 3000."
+		},
+		"exitDuration": {
+			"type": "number",
+			"default": 200,
+			"description": "Closing time in milliseconds, 0 to 3000."
+		},
+		"entryEasing": {
 			"type": "string",
-			"default": "auto",
+			"default": "ease-out-css",
 			"enum": [
-				"auto",
-				"fade"
-			]
+				"ease",
+				"ease-out-css",
+				"ease-in-out",
+				"default",
+				"ease-out",
+				"quart-out",
+				"standard",
+				"drafts",
+				"ease-in",
+				"spring",
+				"linear",
+				"custom"
+			],
+			"description": "Speed curve for the opening and closing, from the shared motion easing list (includes/helpers-motion-easing.php)."
+		},
+		"entryEasingCustom": {
+			"type": "string",
+			"default": "",
+			"description": "A cubic-bezier() curve, read only when entryEasing is custom. Validated; an invalid curve falls back to ease-out."
+		},
+		"entryFade": {
+			"type": "boolean",
+			"default": true,
+			"description": "Slides and wipes also fade in and out. Off for a pure slide."
+		},
+		"curtainColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the layer that sweeps across in the curtain animation. Unset uses the drawer's text colour."
+		},
+		"curtainColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "A CSS gradient for the curtain layer; non-empty wins over curtainColour."
+		},
+		"itemStagger": {
+			"type": "number",
+			"default": 0,
+			"description": "Delay between each top-level menu item arriving, in milliseconds. 0 turns the stagger off."
+		},
+		"itemStaggerDistance": {
+			"type": "object",
+			"default": {},
+			"description": "How far each item travels as it arrives, per device, in pixels. Negative means it falls from above. Unset is 16."
+		},
+		"itemStaggerDuration": {
+			"type": "number",
+			"default": 0,
+			"description": "Each item's own arrival time in milliseconds. 0 uses the drawer's opening time."
+		},
+		"itemStaggerMax": {
+			"type": "number",
+			"default": 0,
+			"description": "Cap on an item's delay in milliseconds, so a long menu does not keep arriving. 0 means no cap."
+		},
+		"itemStaggerOnClose": {
+			"type": "boolean",
+			"default": false,
+			"description": "Items leave one after another, last first, when the drawer closes."
+		},
+		"scrimFadeDuration": {
+			"type": "number",
+			"default": 0,
+			"description": "Fade time of the dimmed layer behind the drawer, in milliseconds. 0 fades it with the drawer."
 		},
 		"modality": {
 			"type": "string",

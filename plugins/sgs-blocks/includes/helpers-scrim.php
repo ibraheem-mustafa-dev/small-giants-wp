@@ -117,7 +117,11 @@ if ( ! function_exists( 'sgs_scrim_render' ) ) {
 	 *                           the owner is open, e.g. `.{uid}:modal`, `.{uid}[open]` or
 	 *                           `.{uid} [data-sgs-mega-trigger][aria-expanded="true"]`;
 	 *                           `z_index` a CSS z-index expression (default 9990);
-	 *                           `data` extra `data-*` attributes (name without `data-`).
+	 *                           `data` extra `data-*` attributes (name without `data-`);
+	 *                           `enter_ms` / `exit_ms` the fade-in and fade-out time in
+	 *                           milliseconds (default 200 each) and `easing` a CSS easing
+	 *                           function (default `ease`), so the scrim fades with its owner
+	 *                           (Wave 3C U-5).
 	 * @return string Scoped CSS for the block's own `<style>`; '' when the scrim
 	 *                paints nothing at any tier (and then no HTML is queued).
 	 */
@@ -143,13 +147,19 @@ if ( ! function_exists( 'sgs_scrim_render' ) ) {
 			? (string) $args['z_index']
 			: '9990';
 
+		$enter_ms = isset( $args['enter_ms'] ) ? max( 0, min( 3000, (int) $args['enter_ms'] ) ) : 200;
+		$exit_ms  = isset( $args['exit_ms'] ) ? max( 0, min( 3000, (int) $args['exit_ms'] ) ) : 200;
+		$easing   = isset( $args['easing'] ) && ! preg_match( '/[{};<>]/', (string) $args['easing'] ) && '' !== trim( (string) $args['easing'] )
+			? trim( (string) $args['easing'] )
+			: 'ease';
+
 		$sel      = '.' . $uid . '-scrim';
 		$has_blur = false;
 		foreach ( $blur as $b ) {
 			$has_blur = $has_blur || null !== $b;
 		}
 
-		$css  = $sel . '{position:fixed;inset:0;z-index:' . $z_index . ';opacity:0;pointer-events:none;transition:opacity .2s ease;--sgs-scrim-fill:' . $fill . '}';
+		$css  = $sel . '{position:fixed;inset:0;z-index:' . $z_index . ';opacity:0;pointer-events:none;transition:opacity ' . $exit_ms . 'ms ' . $easing . ';--sgs-scrim-fill:' . $fill . '}';
 		$css .= $sel . '::before{content:"";position:absolute;inset:0;background:var(--sgs-scrim-fill);opacity:var(--sgs-scrim-opacity,0)}';
 		$css .= sgs_emit_responsive_css(
 			$sel,
@@ -174,7 +184,7 @@ if ( ! function_exists( 'sgs_scrim_render' ) ) {
 				)
 			);
 		}
-		$css .= ':root:has(' . $open . ') ' . $sel . '{opacity:1;pointer-events:auto}';
+		$css .= ':root:has(' . $open . ') ' . $sel . '{opacity:1;pointer-events:auto;transition-duration:' . $enter_ms . 'ms}';
 		$css .= '@media (prefers-reduced-motion:reduce){' . $sel . '{transition-duration:.01ms}}';
 		$css .= '@media (forced-colors:active){' . $sel . '{display:none}}';
 

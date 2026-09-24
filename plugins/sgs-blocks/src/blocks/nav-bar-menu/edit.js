@@ -88,6 +88,7 @@ import TypographyPanel from '../../shared/nav-menu-panels/TypographyPanel';
 import ItemsPanel from '../../shared/nav-menu-panels/ItemsPanel';
 import ItemSeparatorPanel from './ItemSeparatorPanel';
 import DropdownStylePanel from '../../shared/nav-menu-panels/DropdownStylePanel';
+import PanelMotionPanel from './PanelMotionPanel';
 import EffectsPanel from '../../shared/nav-menu-panels/EffectsPanel';
 import FeaturedPanel from '../../shared/nav-menu-panels/FeaturedPanel';
 // This block's OWN declared Sweep-eligibility source (FR-41-26) — read here
@@ -817,6 +818,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 				/>
+
+				<PanelMotionPanel attributes={ attributes } setAttributes={ setAttributes } />
 
 				{ /* The scrim behind an open dropdown or mega panel (Wave 3C U-2,
 				   family M-14) — off by default; a bar that never touches it ships

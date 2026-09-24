@@ -774,8 +774,12 @@ const EDITOR_INVISIBLE_BY_DESIGN = new Set( [
 	// label only), 'revealOnScroll'/'revealStagger' (sgs/timeline — reveal-
 	// animation timing, needs real scroll), 'autoScroll' (sgs/trust-bar —
 	// needs real overflow + time), 'message' (sgs/whatsapp-cta — pre-fills
-	// the opened chat, never rendered on-page), 'animateFrom' (sgs/nav-drawer
-	// — drawer-entry direction, only observable mid-open-animation).
+	// the opened chat, never rendered on-page), the drawer and panel motion
+	// attributes (sgs/nav-drawer entryAnimation, entryDuration, exitDuration,
+	// entryEasing, entryEasingCustom, entryFade, curtainColour, itemStagger*,
+	// scrimFadeDuration; sgs/nav-bar-menu submenuAnimationDuration,
+	// submenuExitDuration, submenuAnimationEasing*, submenuItemStagger* —
+	// only observable while a drawer or panel opens or closes).
 	//
 	// (b) GSAP ScrollTrigger / transition CONFIG whose css_property resolves
 	// to a namespaced motion key (`fx:*`) or a real CSS property that is
@@ -804,7 +808,28 @@ const EDITOR_INVISIBLE_BY_DESIGN = new Set( [
 	'revealStagger',
 	'autoScroll',
 	'message',
-	'animateFrom',
+	'entryAnimation',
+	'entryDuration',
+	'exitDuration',
+	'entryEasing',
+	'entryEasingCustom',
+	'entryFade',
+	'curtainColour',
+	'curtainColourGradient',
+	'itemStagger',
+	'itemStaggerDistance',
+	'itemStaggerDuration',
+	'itemStaggerMax',
+	'itemStaggerOnClose',
+	'scrimFadeDuration',
+	'submenuAnimationDuration',
+	'submenuExitDuration',
+	'submenuAnimationEasing',
+	'submenuAnimationEasingCustom',
+	'submenuItemStagger',
+	'submenuItemStaggerDuration',
+	'submenuItemStaggerMax',
+	'submenuItemStaggerDistance',
 	'fxStart',
 	'fxEnd',
 	'fxScrub',
