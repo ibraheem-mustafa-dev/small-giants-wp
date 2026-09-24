@@ -59,3 +59,9 @@ Screenshot: `fb-drawer-after.png` (scratchpad): panel over the header's phone ro
 | # | Check | Measured | Result |
 |---|---|---|---|
 | F8 | Full-screen, non-modal drawer content starts below the header | Deployed style.css, full-screen geometry and render.php's printed clearance rule applied in the tab (the test drawer stays on `trigger`). Without the rule (negative control): first link at 27px under a 127px header, click hits the header. With it: dialog padding-top 127px (the measured header edge), first link at 154px, a click reaches it, burger still live | PASS |
+
+## Full-screen non-modal starts under the burger row (commit 43def37ec, deployed; supersedes F8's padding approach)
+
+| # | Check | Measured | Result |
+|---|---|---|---|
+| F9 | Full-screen, non-modal drawer starts at the bottom of the burger's own header row and paints above the rest of the header (Bean, option 1) | Deployed store.js wrote `--sgs-drawer-opener-row-bottom: 83px` (the burger's `.sgs-site-header-row` spans 16-83); render.php's non-modal full-screen geometry applied in the tab (test drawer stays on `trigger`): drawer 83-727, z 101; the header's second row (phone button, 75-119) is under the drawer at 97 and 115px; first link at 110-154 and clickable; burger on top, opener live, x hidden; a burger click closes it | PASS |
