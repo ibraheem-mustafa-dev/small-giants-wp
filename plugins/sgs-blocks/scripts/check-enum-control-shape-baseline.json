@@ -10,7 +10,7 @@
       "detector-limitation",
       "blocked"
     ],
-    "dispositionVocabularyNote": "Closed vocabulary: by-design (correct, will never need fixing) / accepted-debt (real gap, consciously deferred) / detector-limitation (the checker itself is wrong — flags a rule violation per THE-MIGRATION-METHOD.md:455, not a normal outcome) / blocked (waiting on something external). See .claude/parking.md P-BASELINE-DISPOSITION-VOCABULARY / .claude/LEDGER.md.",
+    "dispositionVocabularyNote": "Closed vocabulary: by-design (correct, will never need fixing) / accepted-debt (real gap, consciously deferred) / detector-limitation (the checker itself is wrong — flags a rule violation per THE-MIGRATION-METHOD.md:455, not a normal outcome) / blocked (waiting on something external). See .claude/archive/parking.md P-BASELINE-DISPOSITION-VOCABULARY / .claude/LEDGER.md.",
     "bandAmended": "2026-09-07 (Bean): the enforced band is 2-4 options, not 2-5. FIVE options is now a NEUTRAL band -- ToggleGroupControl and SelectControl are both correct there and neither is recorded as a violation. Five short options is the real judgement call in the D812 table: the width at which a segmented row starts to crowd a narrow inspector sidebar and a dropdown stops feeling heavy-handed. The gate now declines to have an opinion rather than booking churn as debt. Effect: 46 violations -> 29; the 17 entries dropped below are not FIXED, they are no longer violations by the amended rule.",
     "bandAmendedDropped": [
       "quote::attributionFontStyle",

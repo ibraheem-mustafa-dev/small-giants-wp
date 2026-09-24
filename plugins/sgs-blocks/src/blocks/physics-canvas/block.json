@@ -74,7 +74,7 @@
 						"css:min-height": "minHeight",
 						"css:border-color-gradient": "borderColourGradient"
 					},
-					"_note": "Composite-mirror rule (project CLAUDE.md D152): this block MUST mirror sgs/container's wrapper capabilities (padding, max-width, contentWidth, gap, background) rather than diverging — it is a section-KIND composite so it KEEPS SGS_Container_Wrapper rather than going block-private (D294). Background migrated off native color.background onto the flat `backgroundColour` attr (D635-pattern). `supports.color.text` was turned OFF WITHOUT a replacement flat attr — every allowed child (core/image, sgs/media, sgs/icon, sgs/decorative-image) is decorative/non-textual and sgs/icon always sets its own explicit `iconColour`, so inherited `color` never painted anything visible here; adding a `textColour` attr would be a control with no visible effect."
+					"_note": "Composite-mirror rule (.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md §13.6, D152): this block MUST mirror sgs/container's wrapper capabilities (padding, max-width, contentWidth, gap, background) rather than diverging — it is a section-KIND composite so it KEEPS SGS_Container_Wrapper rather than going block-private (D294). Background migrated off native color.background onto the flat `backgroundColour` attr (D635-pattern). `supports.color.text` was turned OFF WITHOUT a replacement flat attr — every allowed child (core/image, sgs/media, sgs/icon, sgs/decorative-image) is decorative/non-textual and sgs/icon always sets its own explicit `iconColour`, so inherited `color` never painted anything visible here; adding a `textColour` attr would be a control with no visible effect."
 				},
 				"content-band": {
 					"label": "Content band (throw arena)",

@@ -2302,8 +2302,7 @@ function shouldFailBuild(
 // ---------------------------------------------------------------------------
 //
 // A gate that has never been observed to fail reads green forever whether or
-// not it is actually checking anything (mistakes.md: "a gate that cannot fail
-// reads green forever"). This plants a KNOWN dead control into a synthetic
+// not it is actually checking anything. This plants a KNOWN dead control into a synthetic
 // fixture, confirms the plant landed on disk, then asserts CHECK 3 catches it
 // — alongside a negative control (a genuinely-wired attr that must NOT be
 // flagged) and the documented editor-only exemption (fxPreset-shaped, must

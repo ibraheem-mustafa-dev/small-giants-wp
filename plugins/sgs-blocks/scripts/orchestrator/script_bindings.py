@@ -56,7 +56,7 @@ EVAL_PROCESS_TIMEOUT_S = 120.0
 # thresholds behind them (760, 1024, 1280 ...) are read from the script, never assumed.
 FLAG_NAMES: tuple[str, ...] = ("mob", "narrow", "wide")
 
-# The three fixed SGS device tiers (CLAUDE.md "Responsive breakpoint discipline"): the width each tier
+# The three fixed SGS device tiers (.claude/rules/cloning-pipeline.md's breakpoint-discipline rule): the width each tier
 # is sampled at, and the range of viewport widths that tier owns (mobile < 768, tablet < 1024).
 TIER_WIDTHS: dict[str, int] = {"mobile": 375, "tablet": 768, "desktop": 1440}
 TIER_RANGES: dict[str, tuple[int, int]] = {"mobile": (320, 767), "tablet": (768, 1023), "desktop": (1024, 2560)}

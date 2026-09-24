@@ -28,7 +28,7 @@ return array(
 	 * Down — reverse this migration (stub; see parking P-S17-G).
 	 *
 	 * Rollback for the baseline migration is a no-op. Full down() support
-	 * is deferred to a future wave — see P-S17-G in .claude/parking.md.
+	 * is deferred to a future wave — see P-S17-G in `.claude/archive/parking.md`.
 	 */
 	'down'    => static function (): void {
 		// TODO(Wave 2): implement down() support per parking P-S17-G.

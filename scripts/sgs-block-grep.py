@@ -9,8 +9,7 @@ This script searches both the literal block name AND the stripped form (without 
 combining results and ranking by confidence: both match > literal-only > stripped-only.
 
 Capture date: 2026-05-08
-Reference: c:/Users/Bean/Projects/small-giants-wp/.claude/mistakes.md
-  (Row: block-name-search-blindspot)
+Reference: Claude Code auto memory (block-name-search-blindspot lesson)
 
 Usage:
   python sgs-block-grep.py "Icon Block (single icon)"

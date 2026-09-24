@@ -13,8 +13,8 @@ references:
   - 37-HEADER-FOOTER-BUILDER.md (Part 2 sibling — the header/footer converter; reserves the header/footer token namespace, FR-33-13)
   - .claude/plans/archive/2026-07-13-header-footer-nav-system-design-gate.md (names Part 2's concrete emit target, `sgs/nav-bar-menu`+`sgs/nav-drawer-menu`+`sgs/nav-drawer`, and makes those blocks a consumer of this spec's `theme-snapshot.json` for global-style defaults, §4b)
   - 31-UNIVERSAL-CLONING-PIPELINE.md (the block pipeline; §3.A token-snap ΔE reused; the converter reads the snapshot this generates → bootstrap ordering FR-33-12)
-  - ../parking.md P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE (the parked continuation: the other-5-client rollout behind per-client reclone, FR-33-11)
-  - ../parking.md P-DRAFT-CSSVAR-COLOUR-RESOLUTION + P-DRAFT-CSSVAR-SEED-READD (consume this extractor's token map, FR-33-13)
+  - ../archive/parking.md P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE (the parked continuation: the other-5-client rollout behind per-client reclone, FR-33-11)
+  - ../archive/parking.md P-DRAFT-CSSVAR-COLOUR-RESOLUTION + P-DRAFT-CSSVAR-SEED-READD (consume this extractor's token map, FR-33-13)
 corpus_basis: sites/{mamas-munches,indus-foods,_dogfood} authored draft mockups (8 files, 3 design systems) — full union inventory in §Appendix A
 absorbs: null
 absorbed_by: null

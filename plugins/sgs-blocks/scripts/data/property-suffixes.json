@@ -739,7 +739,7 @@
       null,
       0,
       null,
-      "The still shown before playback and while paused. Renamed from the Poster suffix 2026-08-06 when sgs/media.videoPoster and sgs/image-sequence.posterMedia became thumbnail: \"poster\" is a print term and a poor client-facing label. Edited IN PLACE at this rowid because property_suffixes order is load-bearing (first row wins, STOP-CATALOGUE E1).",
+      "The still shown before playback and while paused. Renamed from the Poster suffix 2026-08-06 when sgs/media.videoPoster and sgs/image-sequence.posterMedia became thumbnail: \"poster\" is a print term and a poor client-facing label. Edited IN PLACE at this rowid because property_suffixes order is load-bearing (first row wins).",
       null
     ],
     [
@@ -1432,7 +1432,7 @@
       null,
       0,
       null,
-      "A person photo. Added 2026-08-06 when sgs/team-member.memberMedia was renamed to photo: its role came from neither a property suffix nor an override, so the new photoTablet/photoMobile tier siblings inherited NO role and the cloning pipeline could not route to them. APPENDED, not inserted — property_suffixes resolves first-row-wins with LIMIT 1, so appending cannot shadow an existing suffix (STOP-CATALOGUE E1).",
+      "A person photo. Added 2026-08-06 when sgs/team-member.memberMedia was renamed to photo: its role came from neither a property suffix nor an override, so the new photoTablet/photoMobile tier siblings inherited NO role and the cloning pipeline could not route to them. APPENDED, not inserted — property_suffixes resolves first-row-wins with LIMIT 1, so appending cannot shadow an existing suffix.",
       null
     ]
   ]

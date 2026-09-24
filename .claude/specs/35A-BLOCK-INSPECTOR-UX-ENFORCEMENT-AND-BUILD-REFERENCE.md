@@ -606,7 +606,7 @@ D2 reports and never assigns (66% precise); D8 reports a SCHEMA gap, never a rol
 DONE checklist is ABSORBED into a control-type contract or CARRIED into that document's §CARRIED
 OBLIGATIONS.
 
-The bar for "enforced" is `STOP-CATALOGUE.md` §E6 (10 points) — **"has a script" is not the bar**,
+**"Has a script" is not the bar for "enforced"**,
 and neither is "the gate reads green": a gate keyed to a component NAME has a blind spot by
 construction, which is why the contract requires each rule to enumerate its banned lookalikes.
 ⛔ No enforcement is built for a rule scoped against `block_capabilities` or icon `role` until

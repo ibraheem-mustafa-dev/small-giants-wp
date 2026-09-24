@@ -114,8 +114,8 @@ $css .= 'justify-content:' . $justify_content . ';';
 $css .= 'align-items:' . $align_items . ';';
 $css .= '}';
 
-// Tablet breakpoint (768px to 1023px — device-tier standard, CLAUDE.md
-// "Responsive breakpoint discipline").
+// Tablet breakpoint (768px to 1023px — device-tier standard,
+// .claude/rules/cloning-pipeline.md's breakpoint-discipline rule).
 $css .= '@media(max-width:1023px) and (min-width:768px){';
 $css .= $root_sel . '{';
 $css .= 'flex-direction:' . $direction_tablet . ';';
@@ -419,7 +419,7 @@ if ( ! empty( $border_radius_mobile_obj ) ) {
 // from sanitised scalars above or the output of wp_style_engine_get_styles().
 $mb_style = '<style>' . wp_strip_all_tags( $css ) . '</style>';
 
-// ⛔ kind MUST stay 'content'. Do NOT set kind='layout' here (STOP-43).
+// ⛔ kind MUST stay 'content'. Do NOT set kind='layout' here.
 // 'layout' makes SGS_Container_Wrapper emit its own display:flex / flex-wrap /
 // align-items / flex-direction as an INLINE style on this same element, built from
 // the separate non-responsive $attributes['flexDirection']. An inline style always

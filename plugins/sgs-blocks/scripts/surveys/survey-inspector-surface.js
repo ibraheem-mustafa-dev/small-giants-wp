@@ -123,7 +123,7 @@ const INFORMATIONAL_ONLY = new Set( [ 'Notice', 'Spinner', 'Tooltip' ] );
 // control` DOM node per JSX-level "row" — a disclosed, documented estimate
 // (see module header), applied only to the SECONDARY dom-estimate total.
 // The x3 is this codebase's OWN device-tier convention: base + Tablet +
-// Mobile (CLAUDE.md "Responsive breakpoint discipline"), not invented here.
+// Mobile (.claude/rules/cloning-pipeline.md's breakpoint-discipline rule), not invented here.
 const RESPONSIVE_DOM_MULTIPLIER = {
 	ResponsiveBoxControl: 3,
 	ResponsiveBoxControls: 3,

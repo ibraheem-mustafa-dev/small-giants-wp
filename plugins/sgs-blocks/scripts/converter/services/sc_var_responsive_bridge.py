@@ -53,8 +53,8 @@ from converter.db import db_lookup
 from converter.services.tier_object import tier_object_key
 
 # The correlator's probe widths (draft-responsive-probe.js VIEWPORTS default,
-# CLAUDE.md "Responsive breakpoint discipline": mobile/tablet/desktop sample
-# widths 375/768/1440) -> the converter's device-tier vocabulary. This is a
+# .claude/rules/cloning-pipeline.md's breakpoint-discipline rule: mobile/tablet/desktop
+# sample widths 375/768/1440) -> the converter's device-tier vocabulary. This is a
 # CSS-SPEC/PROJECT-CONVENTION fact (which sample width REPRESENTS which
 # tier), the same permitted-constant class as ``_FONT_WEIGHT_KEYWORDS`` in
 # ``styling_content.py`` or ``SKIP_TOP_LEVEL_TAGS`` -- not a block/attr

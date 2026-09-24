@@ -45,7 +45,7 @@ SCOPE
     hits of its own (tier maps, landmark tags) that need a design decision, not a
     baseline entry.
 
-CLI (matches the f5-commit-gate convention — run from plugins/sgs-blocks/scripts):
+CLI (the pipeline-gate convention — run from plugins/sgs-blocks/scripts):
     python converter/gates/no_slug_literal.py --report          # list, exit 0
     python converter/gates/no_slug_literal.py --check            # exit 1 on NEW (not in baseline)
     python converter/gates/no_slug_literal.py --update-baseline  # rewrite baseline

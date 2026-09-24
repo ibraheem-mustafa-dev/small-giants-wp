@@ -48,11 +48,11 @@ appears only as an unused colour-token name, never as an actual link.
 
 Both symptoms trace to the same root cause, and it's already tracked:
 
-- **Footer**: `.claude/parking.md` entry `P-SPEC37-PER-SITE-DECLIENT`
+- **Footer**: `.claude/archive/parking.md` entry `P-SPEC37-PER-SITE-DECLIENT`
   (status PARTIAL) — the CPT/"Set as active" mechanism is proven with
   generic proof content; authoring the real branded content per site
   hasn't happened yet.
-- **Header**: `.claude/parking.md` entry `P-NAV-INDUS-CUTOVER` (status
+- **Header**: `.claude/archive/parking.md` entry `P-NAV-INDUS-CUTOVER` (status
   PARTIAL) — same shape: cutover mechanism proven, branded content never
   authored. A related entry, `P-NAV-FEATURED-HOVER-DRAFT-PARITY`, records
   that the "Send to Ward" styling gap was left in deliberately, as a test
@@ -212,8 +212,8 @@ canary. Ask Bean which client to close first — don't assume.
 |---|---|
 | Full spec | `.claude/specs/37-HEADER-FOOTER-BUILDER.md` |
 | Stalled strategic plan | `.claude/plans/2026-07-29-merged-spec36-37-track-strategic-plan.md` |
-| Footer gap | `.claude/parking.md` → `P-SPEC37-PER-SITE-DECLIENT` |
-| Header gap | `.claude/parking.md` → `P-NAV-INDUS-CUTOVER`, `P-NAV-FEATURED-HOVER-DRAFT-PARITY` |
+| Footer gap | `.claude/archive/parking.md` → `P-SPEC37-PER-SITE-DECLIENT` |
+| Header gap | `.claude/archive/parking.md` → `P-NAV-INDUS-CUTOVER`, `P-NAV-FEATURED-HOVER-DRAFT-PARITY` |
 | Priority ruling | `.claude/archive/decisions.md` → D360, D419, D1004 |
 | Draft to match | `sites/mamas-munches/mockups/homepage/index.html` (nav + footer markup/CSS) |
 | Live canary | sandybrown-nightingale-600381.hostingersite.com, page 3448 (test clone) and 2742 (production homepage) |

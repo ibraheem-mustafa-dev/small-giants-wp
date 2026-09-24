@@ -105,7 +105,7 @@ Every **short standalone label or cosmetic badge** text element routes to the `l
 
 `label`-canonical aliases (recognised BEM elements) include: `eyebrow`, `kicker`, `tag`, `pill`, `badge-label`, `badge-text`, `trialTag`, `featuredTag`, `inner-label`, `slot-label`, `node-icon`, and the cosmetic-badge family `discount-label`, `discount-badge`, `value-badge`, `savings-label`, `sale-badge`, `ribbon-label` (added 2026-06-04 alongside the FR-27-B3 product-card "Best value" badge). Source of truth: `slots` row `label` (seeded by `scripts/uimax-tools/seed-slot-synonyms.py`). To route a new badge term, add its alias there + re-run the seed — never hard-code a per-block badge class.
 
-> **Known gap (cloning thread, deferred):** a separate `badge` slot exists with `standalone_block = NULL` and alias `pill` (which also lives on `label`). Wiring the bare `badge` slot → `sgs/label` and resolving the `pill` overlap is a routing change that needs the cloning thread's per-row `/sgs-clone --debug-trace` measurement gate (R-22-4) + a multi-DB audit — not done inline in the theme thread. Tracked in `parking.md`.
+> **Known gap (cloning thread, deferred):** a separate `badge` slot exists with `standalone_block = NULL` and alias `pill` (which also lives on `label`). Wiring the bare `badge` slot → `sgs/label` and resolving the `pill` overlap is a routing change that needs the cloning thread's per-row `/sgs-clone --debug-trace` measurement gate (R-22-4) + a multi-DB audit — not done inline in the theme thread. Tracked in `.claude/archive/parking.md` (`P-BADGE-SLOT-ROUTE-TO-LABEL`).
 
 ### 3.2 Section-root flag (`supports.sgs.is_section_root`)
 

@@ -1560,7 +1560,7 @@
       "current_state": "2 distinct attr names / 2 instances across 2 blocks; observed_control_types: RangeControl, SelectControl; observed_roles: visual; conformance: divergent (dedup_confidence: high)",
       "divergence": "2 attrs on RangeControl/SelectControl — RangeControl driving a keyword property is a Part B mismatch",
       "divergence_severity": "medium",
-      "notes": "Pairs with object-position and the imageControls extension (plugins CLAUDE.md 'Image controls discipline') — both should ship together whenever a block declares supports.sgs.imageControls. | Carve-out: sgs/media is a documented exception — it OPTS OUT of the shared imageControls extension (its block.json is the cloning-converter source of truth) and keeps its own native object-fit/position; do not force it onto the shared extension."
+      "notes": "Pairs with object-position and the imageControls extension (.claude/rules/block-authoring.md's image-controls rule) — both should ship together whenever a block declares supports.sgs.imageControls. | Carve-out: sgs/media is a documented exception — it OPTS OUT of the shared imageControls extension (its block.json is the cloning-converter source of truth) and keeps its own native object-fit/position; do not force it onto the shared extension."
     },
     {
       "setting_key": "css:stroke",

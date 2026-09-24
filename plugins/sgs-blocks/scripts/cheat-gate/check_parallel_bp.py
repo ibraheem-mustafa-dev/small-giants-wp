@@ -50,8 +50,8 @@ _CONVERTER = _SCRIPTS_DIR / "converter"
 # _DEVICE_TIER_SAMPLES / _DEVICE_TIER_THRESHOLDS (375/767/768/800/1023/1024/
 # 1440), which are the fixed, DOCUMENTED web-platform device-tier breakpoint
 # STANDARD (not per-block hardcoded data) — see that file's own comment +
-# CLAUDE.md's "Responsive breakpoint discipline — device-tier vs visual"
-# rule. Scanning it produced 5 false-positive findings when trialled
+# .claude/rules/cloning-pipeline.md's breakpoint-discipline rule (device-tier
+# vs visual). Scanning it produced 5 false-positive findings when trialled
 # 2026-07-05 (each a legitimate, cited constant, not the _BP_SUFFIX_MAP-class
 # violation this check exists to catch) — confirming the module docstring's
 # original whole-tree-creates-false-positives warning.

@@ -64,8 +64,8 @@ Also intentionally does NOT flag arbitrary CSS breakpoints (`min-width:600px`,
 WP's 781px column stack, etc.) — those are never editor CONTROLS, so they
 never appear in this scan's file set (`edit.js`) or its detection signature
 at all. Device-tier (Mobile/Tablet/Desktop editor controls) and arbitrary
-visual breakpoints (a CSS rule) are different concepts; see CLAUDE.md
-"Responsive breakpoint discipline".
+visual breakpoints (a CSS rule) are different concepts; see
+`.claude/rules/cloning-pipeline.md`'s breakpoint-discipline rule.
 
 DB-first (R-31-1)
 ------------------

@@ -2,5 +2,5 @@
 
 Each gate is a runnable script with ``--report / --check / --update-baseline``
 (matching the existing cheat-gate/ + ledger/ convention), wired into
-``.claude/hooks/f5-commit-gate.py`` and collected by the prebuild pytest suite.
+the git pre-commit hook ``.githooks/pre-commit`` and collected by the prebuild pytest suite.
 """

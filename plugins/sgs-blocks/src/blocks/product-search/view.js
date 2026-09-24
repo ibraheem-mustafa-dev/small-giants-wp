@@ -68,7 +68,7 @@ function initInstance( root ) {
 	// FR-36-20 MUST: ≤10 desktop / 4–8 mobile — the effective cap is read live
 	// at fetch time (not cached at init) so a resize/orientation change is
 	// honoured on the next query. 767px matches the SGS device-tier contract
-	// (mobile max-width:767px — see CLAUDE.md "Responsive breakpoint discipline").
+	// (mobile max-width:767px — see .claude/rules/cloning-pipeline.md's breakpoint-discipline rule).
 	const mobileMedia =
 		typeof window.matchMedia === 'function'
 			? window.matchMedia( '(max-width: 767px)' )

@@ -32,7 +32,7 @@
  *     measured property breakdown on this exact draft: padding 18, gridTemplateColumns 8,
  *     fontSize 8, display 1 — the focused set covers every property that measurement found.
  *   - Widths default to 375/768/1440 -- this project's fixed SGS device-tier standard
- *     (CLAUDE.md "Responsive breakpoint discipline": mobile/tablet/desktop = 768/1024,
+ *     (.claude/rules/cloning-pipeline.md's breakpoint-discipline rule: mobile/tablet/desktop = 768/1024,
  *     ALWAYS, never the draft's own arbitrary breakpoints). The draft's real internal
  *     breakpoints (620/700/760/820/1010/1024/1060/1100/1160/1280 -- all real, grepped
  *     directly from the file) are numerous and per-section; this script does not try to

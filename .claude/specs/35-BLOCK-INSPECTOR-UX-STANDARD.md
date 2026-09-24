@@ -723,7 +723,7 @@ fields). Therefore:
    Styles (same as every other colour). Storage: ONE string attribute per gradient holding the
    complete CSS value, not this contract's per-scalar `DesignTokenPicker` shape — gradient stays its
    OWN control type. Shipped on the overlay blocks; the universal rollout across all colour-capable
-   blocks is tracked as `P-GRADIENT-UNIVERSAL-ROLLOUT` (`LEDGER.md`/`parking.md`), not yet done.
+   blocks is tracked as `P-GRADIENT-UNIVERSAL-ROLLOUT` (`.claude/LEDGER.md` / `.claude/archive/parking.md`), not yet done.
 
 8a. ⭐ **Gradient is THREE mechanisms, element-dependent, not one.** Which mechanism is correct depends on
    what the row PAINTS:

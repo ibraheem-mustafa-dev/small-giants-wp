@@ -43,7 +43,7 @@ orchestrator.py  →  dispatch_table.resolver_id(block, layer, property)  →  r
 ## Anti-cheat gates (converter/gates/)
 
 Each gate is a runnable `--report / --check / --update-baseline` script, wired into
-`.claude/hooks/f5-commit-gate.py` AND collected by the prebuild pytest suite. A gate
+the git pre-commit hook (`.githooks/pre-commit`) AND collected by the prebuild pytest suite. A gate
 that exists but isn't wired protects nothing (STOP-6).
 
 | Gate | Rejects |

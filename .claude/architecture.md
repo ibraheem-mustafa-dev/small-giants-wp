@@ -104,7 +104,7 @@ with a built-in wrapper mirrors `sgs/container`'s capabilities — see §5's com
 **Fidelity measurement — computed-parity, Stage 11.6 (Spec 20).** `scripts/parity/
 computed-parity.js` compares `getComputedStyle` on the rendered clone vs the draft, matched by
 normalised TEXT CONTENT (not wrapper class, not source-declaration diff — both give
-unreliable scores, root CLAUDE.md rule 4a). Runs automatically post-deploy. **This is a per-commit
+unreliable scores, `.claude/specs/20-CLONE-FIDELITY-MEASUREMENT.md`). Runs automatically post-deploy. **This is a per-commit
 DIAGNOSTIC, never the closing gate (R-31-4)** — the pipeline never ships on a number alone.
 Closure requires the live per-section visual check plus Bean's eye (R-31-13) — script and human
 judgement are co-authoritative, neither closes alone.
@@ -318,9 +318,9 @@ the pointer — do not duplicate the content here:
 | Hard rules, deploy commands, the 7 non-negotiable rules | root `CLAUDE.md` |
 | Spec roster + the DEAD-never-cite list | `.claude/specs/README.md` |
 | Current live status, open tracks, what shipped today | `.claude/LEDGER.md` |
-| Structural defences / STOP catalogue | `.claude/STOP-CATALOGUE.md` |
-| D-numbered decision log | `.claude/archive/decisions.md` (+ `.claude/archive/decisions.md` for older ones) |
-| Open deferred work | `.claude/parking.md` |
+| Structural defences / lessons | Claude Code auto memory (not a repo path) |
+| D-numbered decision log | `.claude/archive/decisions.md` (frozen) |
+| Open deferred work | relevant plan/spec + `.claude/LEDGER.md` |
 | Cloning pipeline full detail | `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` |
 | Styling/token contract full detail | `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md` |
 | Inspector-UX standard | `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` |

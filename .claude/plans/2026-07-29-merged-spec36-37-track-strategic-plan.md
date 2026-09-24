@@ -437,7 +437,7 @@ TYPE: go/no-go (Bean)  · READINESS: computed at the time from the 4-component f
 pre-assert
 ```
 
-Stop-loss: any gate <50 → surface pivot-vs-park with two ranked paths; log in parking.md.
+Stop-loss: any gate <50 → surface pivot-vs-park with two ranked paths; record it in the relevant plan/spec and in `.claude/LEDGER.md`.
 
 ---
 

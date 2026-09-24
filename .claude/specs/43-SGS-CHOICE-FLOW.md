@@ -186,8 +186,8 @@ has nothing to do with pricing or scoring; there is no live Spec 42 FR to point 
 
 **FR-43-4 — Email-capture handoff.** Collect an email, send the result to it, optionally
 add to a mailing list (reuse whatever list/webhook mechanism `sgs/form` already has —
-this project's forms notify via N8N webhooks, never `wp_mail()`, per the root CLAUDE.md's
-naming/architecture rules; do not add a second notification path). **Rate-limiting inherits
+this project's forms notify via N8N webhooks, never `wp_mail()`; do not add a second
+notification path). **Rate-limiting inherits
 from `sgs/form`'s existing `rateLimit` config, applied per-flow-instance** (Competitor +
 Cynic MISSING finding — a quiz-style lead-capture terminal with no spam defence is an open
 relay for lead-list poisoning and N8N webhook cost amplification); this is validated

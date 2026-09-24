@@ -14,7 +14,7 @@ resolve the draft's relative ``../../research/...`` image paths is derived from
 Why pages, not posts: SGS clones websites; websites are PAGES rendered via
 `page.html` (no .entry-content max-width constraint). Posts render via
 `single.html` which constrains content-width to 800px and is wrong for
-landing-page clones. See .claude/parking.md → P-USE-PAGES-NOT-POSTS.
+landing-page clones. See root CLAUDE.md's Sites section.
 
 Reads sandybrown credentials from .claude/secrets/sandybrown.env.
 """
@@ -277,8 +277,8 @@ def main():
         new_bm = new_bm.replace(old, new)
     print(f"\nPatched block_markup: {len(bm)} -> {len(new_bm)} chars")
 
-    # D2 is a transfer-visibility DEBUG LOG, NOT a deploy artefact (STOP-52,
-    # Bean-locked 2026-07-06). The page must NEVER depend on non-block-settings
+    # D2 is a transfer-visibility DEBUG LOG, NOT a deploy artefact (Bean-locked
+    # 2026-07-06). The page must NEVER depend on non-block-settings
     # CSS: a deployed D2 block PAINTS the stranded draft rules, masking them as
     # false-COVERED and hiding the real gap set (the false-positive trap that
     # makes progress harder). So D2 is NOT inserted into the deployed page — it
@@ -301,7 +301,7 @@ def main():
         new_bm = style_block + new_bm
         print(f"[D2] SGS_EMIT_D2_PAGE override ON — prepended variation-d0-d2.css ({len(css_text)} chars) to the page")
     elif css_path.exists():
-        print(f"[D2] NOT inserted into the page (STOP-52 — debug log only at {css_path}). Set SGS_EMIT_D2_PAGE=1 to restore.")
+        print(f"[D2] NOT inserted into the page (debug log only at {css_path}). Set SGS_EMIT_D2_PAGE=1 to restore.")
     else:
         print(f"  (no variation-d0-d2.css found at {css_path})")
 

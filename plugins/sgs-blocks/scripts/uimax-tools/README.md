@@ -51,4 +51,4 @@ next regen pass.
 
 ## Captured 2026-05-10
 
-`uimax_write.py`, `seed-block-compositions.py`, and `sgs-update-uimax-sync.py` were all added 2026-05-10 as part of pre-M9 prep (parking entries P-12, P-13, P-15 in `.claude/parking.md`). The validator (`uimax-write-validator.py`) predates this session.
+`uimax_write.py`, `seed-block-compositions.py`, and `sgs-update-uimax-sync.py` were all added 2026-05-10 as part of pre-M9 prep (parking entries P-12, P-13, P-15 in `.claude/archive/parking.md`). The validator (`uimax-write-validator.py`) predates this session.

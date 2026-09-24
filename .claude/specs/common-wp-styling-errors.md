@@ -5,7 +5,7 @@
 **Use this doc when:** investigating any styling, layout, deploy, or rendering bug on an SGS WordPress site. Scan the "Error" column first — most issues match an existing entry.
 
 **Linked references:**
-- Mistakes index: [`../mistakes.md`](../mistakes.md)
+- Recurring lessons: Claude Code auto memory (not a repo path)
 - Behavioural rule on verifying rendered output before claiming done: [`~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_verify_rendered_output_not_internal_metrics.md`](file:///C:/Users/Bean/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_verify_rendered_output_not_internal_metrics.md)
 - Audit table for per-block colour + animation defaults: [`../plans/archive/block-colour-animation-defaults.md`](../plans/archive/block-colour-animation-defaults.md)
 
@@ -309,7 +309,7 @@ When a regex is filtering "single character allowed but the doubled form forbidd
 
 **Why this hides at QC level:** the css_router unit tests verify routing decisions on parsed-CSS input. They don't test the round-trip through `mamas-munches.css` → cv2-CSS-lookup → slot-resolver. /qc-inline against the live pipeline (not isolated units, per blub.db row 273) catches it. Multi-rater honest-path council caught it via Rater C pipeline forensics.
 
-**Captured 2026-05-20** by Rater C of the honest-path council. Parking entry `P-G2-PAGE-ID-SCOPE-STRIP`. Cross-link: `mistakes.md` 2026-05-20 lesson 3.
+**Captured 2026-05-20** by Rater C of the honest-path council. Parking entry `P-G2-PAGE-ID-SCOPE-STRIP` (`.claude/archive/parking.md`).
 
 ## V. Self-closing block emission breaks InnerBlocks rendering (2026-05-20 honest-path council)
 
@@ -479,6 +479,6 @@ Where `audit-invalid-blocks.php` uses `parse_blocks()` + `serialize_blocks()` to
 2. Identify the root cause by inspection (DevTools, Playwright eval, server file check). Don't speculate — confirm.
 3. Find the proven fix that works on the live site.
 4. Add a row to the appropriate section above (A/B/C/D/E/F or new section if domain doesn't fit).
-5. Cross-link from `mistakes.md` if the fix represents a recurring behavioural rule worth capturing as a feedback file.
+5. Capture a recurring behavioural rule as a Claude Code auto-memory feedback file, if the fix warrants one.
 
 Sections are scoped tightly so a future session can scan headers and jump to the relevant column without reading every row.

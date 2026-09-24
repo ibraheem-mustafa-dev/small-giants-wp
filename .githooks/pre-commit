@@ -1,31 +1,22 @@
 #!/bin/sh
 #
-# SGS pre-commit hook.
+# SGS pre-commit checks (version-controlled). Invoked by the per-machine wrapper
+# .git/hooks/pre-commit: gitleaks → .githooks/sgs-gates.sh → this file. See README.md.
 #
-# Enforces that the generated extension-attribute list stays in sync with the
-# extension JS that is its single source of truth. Without this, a JS edit that
-# adds a new `sgs*` attribute could be committed without regenerating
-# plugins/sgs-blocks/includes/extension-attributes.generated.php, which would
-# reintroduce the WP block-renderer "Invalid parameter(s): attributes" 400 on
-# ServerSideRender-preview blocks (product-card bound / trustpilot-reviews /
-# business-info / content-collection). See
-# plugins/sgs-blocks/scripts/generate-extension-attributes.js.
-#
-# ⛔ CORRECTED 2026-08-11 (D564). This header used to read "Activated repo-wide
-#    via: git config core.hooksPath .githooks" — which README.md explicitly
-#    FORBIDS, because repointing core.hooksPath would disable the Gitleaks
-#    secret scanner living in .git/hooks/. Two documents in the same directory
-#    gave opposite instructions; this one was wrong.
-#
-# Actual invocation: .git/hooks/pre-commit (a thin per-machine wrapper) calls
-#   gitleaks → .githooks/sgs-gates.sh → this file. See .githooks/README.md.
+# 1. The generated extension-attribute list must match the extension JS it is built
+#    from; a stale file brings back the block-renderer "Invalid parameter(s): attributes"
+#    400 on ServerSideRender previews.
+# 2. Cloning-pipeline gates run when the commit stages pipeline code. That code is pure
+#    Python, so the npm build never runs these; this is the only floor that catches a
+#    terminal or GUI commit.
+#    Scoped bypass for a gate tripped by unrelated shared-DB debt:
+#    SGS_F5_SKIP="<script>[,<script>]" SGS_F5_SKIP_REASON="..." git commit ...
+#    Skips only the named script(s) for this commit and logs it to reports/f5-manual-skips.log.
 
 GEN="plugins/sgs-blocks/scripts/generate-extension-attributes.js"
 
-# Only run the check when extension JS or the generated file is part of the commit.
 if git diff --cached --name-only | grep -Eq 'plugins/sgs-blocks/src/blocks/extensions/.*\.js$|plugins/sgs-blocks/includes/extension-attributes\.generated\.php$'; then
-	# Resolve a runnable node. On Windows git-bash the bare `node` shim
-	# (nvm4w) can be broken while `node.exe` works, so prefer node.exe.
+	# On Windows git-bash the bare `node` shim can be broken while `node.exe` works.
 	if command -v node.exe >/dev/null 2>&1; then
 		NODE=node.exe
 	elif command -v node >/dev/null 2>&1; then
@@ -44,41 +35,20 @@ if git diff --cached --name-only | grep -Eq 'plugins/sgs-blocks/src/blocks/exten
 	fi
 fi
 
-# ─── F5 CSS-transfer gates (the universal commit floor) ──────────────────────
-# CSS-routing/cloning code is pure Python — `npm build` never runs it, so the
-# package.json prebuild gates never fire for a Python-only change, and there is
-# no CI. This is the ONLY git-level floor (the Claude Code PreToolUse hook
-# f5-commit-gate.py is a session-scoped early-warning layer that does NOT fire
-# for a terminal `git commit` / GUI commit). Runs the 4 static gates' --check
-# (baseline-aware: only a NEW violation blocks) when the commit touches the
-# sgs-blocks plugin.
-#
-# Scoped bypass (added 2026-09-05, Bean-directed — "a safe no-verify mode"):
-# a single F5 gate script can flag a NEW violation in a block a commit never
-# touched — the gates read a live SHARED DB other concurrent sessions reseed —
-# which blocks EVERY session's commits, not just the one that happens to run
-# first. `SGS_F5_SKIP="<script>[,<script>...]"` (matching a name from the `for g`
-# list below, e.g. `db-consistency/run.py`) + a mandatory `SGS_F5_SKIP_REASON`
-# skips ONLY the named script(s), for THIS commit only — gitleaks, the
-# extension-attribute check above, sgs-gates.sh's own checks (visual-diff,
-# block-uniformity, wp-* pre-merge, inspector-scan, cheat-gate baseline-diff)
-# and every OTHER F5 script not named still run. `SKIP` without `REASON` fails
-# closed (refuses the bypass), same discipline as `SGS_VISUAL_GATE_SKIP`. Every
-# use is logged to reports/f5-manual-skips.log, tracked in git, for audit. This
-# is scoped-and-logged, not `--no-verify` (which silently discards gitleaks and
-# every other unrelated gate to get past one).
-if git diff --cached --name-only | grep -Eq '^plugins/sgs-blocks/'; then
+PIPELINE_PATHS='^plugins/sgs-blocks/scripts/(converter|orchestrator|ledger|cheat-gate|excluded-gate)/|^plugins/sgs-blocks/scripts/sgs-clone-orchestrator\.py$'
+if git diff --cached --name-only | grep -Eq "$PIPELINE_PATHS"; then
 	if command -v python.exe >/dev/null 2>&1; then PY=python.exe
 	elif command -v python >/dev/null 2>&1; then PY=python
 	elif command -v py >/dev/null 2>&1; then PY=py
 	else PY=""; fi
 	if [ -z "$PY" ]; then
-		echo "pre-commit: python not found — F5 gates SKIPPED (install python to enforce)." >&2
+		echo "pre-commit: python not found — pipeline gates SKIPPED (install python to enforce)." >&2
 	else
 		F5_DIR="plugins/sgs-blocks/scripts"
 		F5_FAIL=0
 		REPO_ROOT="$(git rev-parse --show-toplevel)"
-		for g in cheat-gate/run.py excluded-gate/run.py ledger/coverage_check.py db-consistency/run.py; do
+		for g in cheat-gate/run.py excluded-gate/run.py ledger/coverage_check.py ledger/content_gap_check.py \
+			converter/gates/no_slug_literal.py converter/gates/import_ban.py converter/gates/check_raw_sqlite.py; do
 			SKIPPED=0
 			for _skip_name in $(printf '%s' "${SGS_F5_SKIP:-}" | tr ',' ' '); do
 				if [ "$_skip_name" = "$g" ]; then
@@ -91,13 +61,11 @@ if git diff --cached --name-only | grep -Eq '^plugins/sgs-blocks/'; then
 					fi
 				fi
 			done
-			if [ "$SKIPPED" -eq 1 ]; then
-				continue
-			fi
+			[ "$SKIPPED" -eq 1 ] && continue
 			if [ -f "$F5_DIR/$g" ]; then
 				if ! ( cd "$F5_DIR" && "$PY" "$g" --check ); then
-					echo "pre-commit BLOCKED by F5 gate: $g found a NEW violation (run it with --report for detail)." >&2
-					echo "  Scoped bypass if this is genuinely pre-existing/unrelated debt: SGS_F5_SKIP=$g SGS_F5_SKIP_REASON=\"...\" git commit ..." >&2
+					echo "pre-commit BLOCKED by pipeline gate: $g found a NEW violation (run it with --report for detail)." >&2
+					echo "  Scoped bypass if this is genuinely unrelated debt: SGS_F5_SKIP=$g SGS_F5_SKIP_REASON=\"...\" git commit ..." >&2
 					F5_FAIL=1
 				fi
 			fi

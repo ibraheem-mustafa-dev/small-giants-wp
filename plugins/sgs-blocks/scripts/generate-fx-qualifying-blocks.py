@@ -742,7 +742,7 @@ def _block_provisions(
 
     # 'image' — the surface-treatment effect's target (Tier W, D479/D555 build).
     # This project MANDATES `supports.sgs.imageControls: true` on every block
-    # that renders an `<img>` (project CLAUDE.md "Image controls discipline"),
+    # that renders an `<img>` (.claude/rules/block-authoring.md's image-controls rule),
     # so that flag is the ground-truth signal for "this block has a real image
     # to shade" — the SAME idiom as 'section' above (read a supports.sgs.*
     # flag the block already carries), never a hardcoded block-name roster

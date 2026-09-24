@@ -51,7 +51,7 @@ const REQUIRED_ATTRS = [ 'borderWidth', 'borderStyle', 'borderColour' ];
 // picks up THOSE frame instances as "outermost" — never the probe's own
 // authored positive/negative pair, which are demoted to non-outermost because
 // they render as DESCENDANTS of page.html's own wrapping container. Recorded
-// 3x already: STOP-CATALOGUE.md ~L2352/L2505, mistakes.md ~L253 — "scope every
+// 3x already — "scope every
 // live-DOM query to .entry-content or the block's own uid class, never a bare
 // block-type class." Here: wrap the probe's own markup in a `core/group` with
 // a unique anchor id and scope every query to `#ROOT_ID .cls` so a page-frame

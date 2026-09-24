@@ -174,7 +174,7 @@ byte-identically by default (§11 G1).
 | **ARIA active-trail** (marking a parent as current for assistive technology because a *descendant* page is current) | Not built, and this spec does not build it. The visual ancestor Current styling is built — see FR-41-20. |
 | **A hover trio on the CURRENT state** (`itemTextDecorationCurrent` and any `…TransformCurrent` / `…WeightCurrent` beyond `itemFontWeightCurrent`) | Not offered. `TypographyControls` models resting + hover only, so a Current trio has no shared control at all, and Current already carries its own non-colour signal (`itemFontWeightCurrent`, FR-41-6). |
 | **`itemBorderColourGradient`** (a gradient ring on the ITEM border) | Cut on a pseudo-element budget, not on merit — `sgs_border_states_css()`'s ring path needs `::before`, and `::before` on the item link (`.sgs-nav-bar-menu__link` / `.sgs-nav-drawer-menu__link`) already renders the item background. See FR-41-7. The submenu PANEL border keeps its gradient (`submenuBorderColourGradient`) because nothing competes for the submenu panel's own `::before` (`.sgs-nav-bar-menu__submenu::before` / `.sgs-nav-drawer-menu__submenu::before`). |
-| **Cursor-reactive field** (and the other eight `motionSurface` effects) | Structurally eligible, deliberately not offered — the only current mechanism would bundle eight unrelated effects onto a functional navigation element. Revisit after the design gate at `.claude/parking.md` `P-FX-PER-EFFECT-BLOCK-COMPATIBILITY` lands. See FR-41-32. |
+| **Cursor-reactive field** (and the other eight `motionSurface` effects) | Structurally eligible, deliberately not offered — the only current mechanism would bundle eight unrelated effects onto a functional navigation element. Revisit after the design gate at `.claude/archive/parking.md` `P-FX-PER-EFFECT-BLOCK-COMPATIBILITY` lands. See FR-41-32. |
 
 ### 1.3 The three states — definition and vocabulary
 
@@ -2298,7 +2298,7 @@ navigation, site header, site footer — off the effects panel. Bundling eight u
 effects onto a functional navigation element is exactly what that rule exists to prevent.
 
 **(c) Revisit after the design gate lands.**
-`.claude/parking.md` `P-FX-PER-EFFECT-BLOCK-COMPATIBILITY` will build a proper
+`.claude/archive/parking.md` `P-FX-PER-EFFECT-BLOCK-COMPATIBILITY` will build a proper
 per-block/per-effect selection system. When it does, this decision should be re-taken on merit
 rather than inherited.
 

@@ -9,7 +9,8 @@ payload. The first gate that denies wins; stderr warnings pass through.
 The gates stay separate files with their own `--self-test`s:
   - git-path-scope-guard.py   — a commit must be path-scoped (shared worktree)
   - truncation-commit-gate.py — a commit must not gut a file
-  - f5-commit-gate.py         — cloning-pipeline gates, only when pipeline code is staged
+The cloning-pipeline gates run in the git pre-commit hook (.githooks/pre-commit), which
+also catches terminal and GUI commits.
 
 `--self-test` proves the runner itself: a plain command runs no gate, an
 unscoped commit is denied through the runner, a scoped one is not.
@@ -23,7 +24,7 @@ from contextlib import redirect_stdout
 from pathlib import Path
 
 _HERE = Path(__file__).resolve().parent
-_GATES = ("git-path-scope-guard.py", "truncation-commit-gate.py", "f5-commit-gate.py")
+_GATES = ("git-path-scope-guard.py", "truncation-commit-gate.py")
 
 
 def _load(filename):
@@ -59,11 +60,11 @@ def run(raw):
     if data.get("tool_name") != "Bash":
         return ""
     cmd = (data.get("tool_input") or {}).get("command", "")
-    f5 = _load("f5-commit-gate.py")
-    if not isinstance(cmd, str) or not f5._GIT_COMMIT.search(cmd):
+    scope = _load("git-path-scope-guard.py")
+    if not isinstance(cmd, str) or not scope._GIT_COMMIT.search(cmd):
         return ""
     for filename in _GATES:
-        mod = f5 if filename == "f5-commit-gate.py" else _load(filename)
+        mod = scope if filename == "git-path-scope-guard.py" else _load(filename)
         out = _run_gate(mod, raw)
         if '"deny"' in out:
             return out

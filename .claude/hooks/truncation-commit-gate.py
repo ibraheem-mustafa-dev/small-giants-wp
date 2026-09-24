@@ -7,8 +7,7 @@ WHY THIS EXISTS
 Recoverability graded D for three consecutive method rounds and was named the
 ceiling on the programme's overall grade. Seventy-plus gates exist in this repo
 and NONE inspects the SHAPE of a diff — verified by grep: `detector-first-commit-gate`
-and `f5-commit-gate` both read `git diff --cached`, but for file-to-file SIMILARITY
-and for the changed-path list respectively. Neither reads `--numstat`, and nothing
+reads `git diff --cached` only for file-to-file similarity or the changed-path list. Neither reads `--numstat`, and nothing
 anywhere compares changed lines against file length.
 
 ⛔ WHY TRUNCATION SPECIFICALLY, and not the whole-file-rewrite case too (Bean,
@@ -62,7 +61,7 @@ REGROWTH_FLOOR = 3
 
 
 
-# Same commit matcher as f5-commit-gate.py: also catches `git -C <path> commit`,
+# Commit matcher shared with git-path-scope-guard.py: also catches `git -C <path> commit`,
 # `git --no-pager commit`, `git -c k=v commit`.
 _GIT_COMMIT = re.compile(
     r"\bgit\b(?:\s+(?:-C\s+\S+|--git-dir(?:=\S+|\s+\S+)|--work-tree(?:=\S+|\s+\S+)"

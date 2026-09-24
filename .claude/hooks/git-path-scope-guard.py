@@ -20,7 +20,7 @@ import sys
 
 
 
-# Same commit matcher as f5-commit-gate.py: also catches `git -C <path> commit`,
+# Commit matcher shared with truncation-commit-gate.py: also catches `git -C <path> commit`,
 # `git --no-pager commit`, `git -c k=v commit`.
 _GIT_COMMIT = re.compile(
     r"\bgit\b(?:\s+(?:-C\s+\S+|--git-dir(?:=\S+|\s+\S+)|--work-tree(?:=\S+|\s+\S+)"

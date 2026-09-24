@@ -336,8 +336,8 @@ The contract is independent of the editing home:
   copy `cqi` to a block without a guaranteed container ancestor (silent fallback to viewport
   units is the failure mode). `scripts/diff-gap-sanitiser.php` compares the validator's gap output
   with the allowlist sanitiser byte for byte.
-- Container queries for row-level reflow (a row can collapse while the viewport is wider —
-  see STOP-CONTAINER-TIER-IS-NOT-VIEWPORT). `container-type: inline-size` stays on both rows.
+- Container queries for row-level reflow (a row can collapse while the viewport is wider).
+  `container-type: inline-size` stays on both rows.
 - **Gate:** `scrollWidth <= innerWidth` **swept 1400 → 320px in ≤10px steps**, not sampled at
   375/768/1440: a defect can live BETWEEN those tiers (clean at 770px, broken at 766px), so a
   three-tier check passes a broken row. Harness: `scripts/row-fit-sweep.mjs`
@@ -450,8 +450,7 @@ step) — renders its content exactly once on the cold-cache frontend, without c
 `wp-block-template-part` wrapper; the footer behaves identically.
 ⚠ Set the active pointer through the web-context admin action: a raw `wp option update` from a
 WP-CLI context can write an option store that differs from the live domain's (frontend
-`get_option` returns 0 while `wp option get` returns the id) —
-`STOP-SET-ACTIVE-LAYOUT-IN-THE-WEB-CONTEXT-NOT-RAW-WP-CLI-OPTION`.
+`get_option` returns 0 while `wp option get` returns the id).
 **Done when:** an operator can create a header in *SGS → Advanced Headers*, set it active, and
 see it on the frontend, with no Site Editor step anywhere in that flow. ✅ met.
 
@@ -727,7 +726,7 @@ none.
 
 #### FR-37-35 — Container-query row reflow
 `container-type: inline-size` is set on both rows, and a row reflows on its OWN width, never the
-viewport's (STOP-CONTAINER-TIER-IS-NOT-VIEWPORT). The reflow BEHAVIOUR is not an authored stack: a
+viewport's. The reflow BEHAVIOUR is not an authored stack: a
 rule such as `@container (max-width:767px){flex-basis:100%}` that collapses every child to a
 full-width line is an authored stack, not a response to running out of room, and must not be
 introduced under this FR's name. The header never stacks (§3.6); the footer's columns collapse
@@ -1021,7 +1020,7 @@ twice; the blind-tester arm is outstanding and is the authoritative half.
 - **Starter-look flow** (`reports/fr-37-26-simplicity-test/2026-09-17-starter-look-flow-re-run.md`):
   **PASS** for the FR-37-47 control's own simplicity.
 - **Blind-tester arm** (a real non-coder, screen-recorded): outstanding.
-`P-HEADER-SIMPLICITY-FINDINGS` (`.claude/parking.md`) tracks the open findings.
+`P-HEADER-SIMPLICITY-FINDINGS` (`.claude/archive/parking.md`) tracks the open findings.
 **Done when:** the test has been run and recorded, with the result — pass or fail — written
 down. A fail is a finding, not a reason to re-run until it passes. ✅ proxy arm met; blind-tester
 arm pending.
