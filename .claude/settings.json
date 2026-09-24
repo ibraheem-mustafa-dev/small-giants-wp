@@ -15,17 +15,6 @@
         ]
       }
     ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python C:/Users/Bean/Projects/small-giants-wp/.claude/hooks/decisions-sweep-auto.py",
-            "timeout": 30
-          }
-        ]
-      }
-    ],
     "PreToolUse": [
       {
         "matcher": "Bash",
