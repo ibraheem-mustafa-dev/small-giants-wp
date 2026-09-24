@@ -73,3 +73,26 @@ Screenshot: `fb-drawer-after.png` (scratchpad): panel over the header's phone ro
 | F10 | Trigger card has a visible edge by default | `box-shadow` = the theme `floating` preset layers, `border-radius` 20px; opener live | PASS |
 | F11 | Phone button (business-info Button style) no longer spills out of its row | button 83-127px inside its row 83-127px, `margin-top` 0 (was -8px, box 75-119 in an 83-111 row); header now 143px tall; with the drawer open, the button's top pixel belongs to the drawer | PASS |
 | F12 | Trigger card has a thin primary border by default (Bean: the shadow alone left the top edge blending into the header) | commit cb730f520: `border` 1px solid rgb(230,138,149) (= `--wp--preset--color--primary` #e68a95) all round, radius 20px, border-box width 360px, opener live; screenshot `fb-border.png` (scratchpad) shows the card edge distinct from the header | PASS |
+
+## U-5: how the drawer and the menu panels arrive and leave (Wave 3C U-5, 2026-09-24)
+
+verdict: PASS
+commit_sha: 01e4b5a5f (feat(nav): how the drawer and menu panels arrive and leave); Escape fix 35d98e413
+design: `.claude/reports/2026-09-24-u5-motion-design.md`
+blocks: nav-drawer, nav-bar-menu, nav-drawer-menu, mega-panel (their reports point here)
+
+Method: deployed with `build-deploy.py --target sandybrown --blocks-only` from an isolated worktree (124 of 124 fast gates). Before the deploy, sandybrown mega post 1745 ("SPIKE Brands Panel") had its stored `staggerOnOpen: true` stripped (the oldshape audit's one HIGH finding; no header references the post, so no bar took its stagger). Fixture: `scripts/nav-qa/qa-motion-fixture.php exit-cells` on test drawer 3778 and test header 3777 (backups in `_sgs_qa_motion_backup`). Page `/qa-scrim/`, one headed Chrome window (chrome-devtools), real clicks and pointer hovers, `getAnimations()`, `getComputedStyle` and `getBoundingClientRect` sampled every frame.
+
+| # | Family | Exit cell | Measured | Result |
+|---|---|---|---|---|
+| U5-1 | M-31 | away drawer 375: slides in from the start edge, `transform 0.3s ease-out`, no fade | 455px wide: one animation `sgs-nav-drawer-slide-start-in`, 300ms, on the dialog; `translate` -100% at t=4ms, -10.5% at 225ms, `none` at 455ms; opacity 1 on every frame (`entryFade` off) | PASS |
+| U5-2 | M-31 | away drawer close about 299ms | `.is-closing` ran `sgs-nav-drawer-slide-start-out` 300ms, `animation-timing-function: ease-out`; the dialog closed 295ms after `.is-closing` was added (the store waited for the animation, not a fixed timer) | PASS |
+| U5-3 | M-32 | drafts drawer stagger 55ms, capped at 320ms | five top-level items ran `sgs-nav-drawer-menu-item-in` at delays 0, 55, 110, 165, 220ms; the drawer logo beside the menu ran at 220ms, with the last item | PASS |
+| U5-4 | M-31 | halcyon / indus-foods panel entry 340ms, opacity + translateY(-8px) + scale(.99), `cubic-bezier(.16,.84,.32,1)` | 1309px wide, hover-opened "Our Story" dropdown: transitions opacity, scale and translate each 340ms; frame 1 opacity 0, translate `0px -8px`, scale 0.99; 337ms opacity 0.9999, translate -0.0008px; end 1 / 0px / 1; `transition-timing-function: cubic-bezier(0.16, 0.84, 0.32, 1)` | PASS |
+| U5-5 | M-32 | drafts panel children 460ms, delay min(i x 28, 320) | the two dropdown items ran `sgs-nav-bar-menu-panel-item-in` 460ms at delays 0 and 28ms | PASS |
+| U5-6 | M-31 | panel exit (away: fade out about 190ms) holds the panel visible, takes no pointer hits, then leaves | `--sgs-nbm-panel-exit-dur` set to 190ms in the tab only (the fixture's halcyon close is instant): on hover-out opacity 1 to 0 over 196ms with `display:block`, `visibility:visible` and `pointer-events:none` from the first frame; at 206ms `display:none`, `visibility:hidden` | PASS |
+| U5-7 | Escape (M-36 regression, reported on eye-care-test) | a hover-opened panel closes on Escape | before 35d98e413: after a hover-open `document.activeElement` was BODY and Escape left `aria-expanded="true"` (reproduced); after (deployed, fresh browser session): panel opened, focus moved to BODY, Escape set `aria-expanded="false"` and the panel `display:none`; the hover tool stopped registering after the browser restarted, so the panel was opened by a real click on its toggle and focus moved to the body, which is the same state a hover-open leaves | PASS |
+
+Recorded divergences: lusion's closed-pose rotate (links 3.5deg, other cards -3.5deg) and its 0.4s scrim close delay; fantasy's second item direction (`.js-fade-up` from +2rem). dogstudio's measured durations are upper bounds on a WebGL page, so its curtain is compared by shape and order only.
+
+Batched for the later pass (Bean: no heavy testing per edit): reduced-motion emulation with a positive control (chrome-devtools cannot emulate the media feature; the rules are inside `prefers-reduced-motion: no-preference`, asserted by `tests/php/run-u5-motion-standalone.php`), `axe-run.mjs` with the drawer open, the editor round-trip of the new Motion and Panel motion controls, Bean's eye on the shapes.

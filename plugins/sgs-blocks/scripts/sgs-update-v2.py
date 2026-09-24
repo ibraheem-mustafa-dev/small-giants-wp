@@ -7753,7 +7753,7 @@ def stage_12_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
     print(f"Stage 12 Summary:")
     for label, info in findings_by_scanner.items():
         status = info.get("status", "unknown")
-        findings = info.get("findings", 0)
+        findings = info.get("findings") or 0
         summary = info.get("summary", "")
         if findings > 0:
             print(f"  {label}: {status} ({findings} findings) — {summary[:80]}")

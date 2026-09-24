@@ -1134,26 +1134,26 @@ one shared file; the rest are bar-only.
 
 | Link | Where |
 |---|---|
-| Control | `plugins/sgs-blocks/src/shared/nav-menu-panels/DropdownStylePanel.js` — a `ToolsPanelItem` wrapping the three-option `ToggleGroupControl`, gated `showSizingControls` (bar `true` / drawer `false`) |
+| Control | `plugins/sgs-blocks/src/shared/nav-menu-panels/DropdownStylePanel.js` — a `ToolsPanelItem` wrapping a five-option `SelectControl` (`none`, `fade`, `fade-lift`, `slide-down`, `grow`), gated `showSizingControls` (bar `true` / drawer `false`); timing, easing and item stagger sit in `plugins/sgs-blocks/src/blocks/nav-bar-menu/PanelMotionPanel.js` |
 | Storage | `plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json::attributes.submenuAnimation`, `"type":"string"`, default `"fade"`, **no JSON `enum`** (FR-41-8's reasoning) |
-| Validation | `plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php` — the renderer's constructor reduces `$attributes['submenuAnimation']` to `$submenu['animation']` via `in_array( …, array( 'fade', 'slide-down' ), true ) ? … : 'none'`, so an out-of-vocabulary stored value degrades to `none` rather than reaching the markup |
-| Markup | `plugins/sgs-blocks/includes/nav-menu-markup.php::sgs_nav_bar_menu_render_items` — the wrap's class is `'sgs-nav-bar-menu__submenu-wrap'` plus `' sgs-nav-bar-menu__submenu-wrap--' . $submenu['animation']` **only when it is not `none`** |
-| Paint | `plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css::.sgs-nav-bar-menu__submenu-wrap--fade` / `::.sgs-nav-bar-menu__submenu-wrap--slide-down` → `@keyframes sgs-nav-bar-menu-submenu-fade-in` / `sgs-nav-bar-menu-submenu-slide-down-in` |
+| Validation | `plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php` — the renderer's constructor reduces `$attributes['submenuAnimation']` to `$submenu['animation']` via `in_array( …, array( 'fade', 'fade-lift', 'slide-down', 'grow' ), true ) ? … : 'none'`, so an out-of-vocabulary stored value degrades to `none` rather than reaching the markup |
+| Markup | `plugins/sgs-blocks/includes/nav-menu-markup.php::sgs_nav_bar_menu_render_items` — the dropdown wrap AND the mega panel wrap both carry `sgs-nav-bar-menu__panel-motion sgs-nav-bar-menu__panel-motion--{animation}` |
+| Paint | `plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css::.sgs-nav-bar-menu__panel-motion` — transitions on opacity, translate, scale, clip-path, visibility and `display` (`transition-behavior: allow-discrete`), entered from `@starting-style`; timing from `--sgs-nbm-panel-dur` / `--sgs-nbm-panel-exit-dur` / `--sgs-nbm-panel-ease` written by render.php |
 
-⛔ **It is a CSS `animation`, not a `transition`, and that choice is load-bearing — do not
-"simplify" it.** The trigger is the binary `display:none → block` toggle on the wrap, which a
-`transition` cannot animate at all; toggling an element's own `display` **restarts** any `animation`
-declared on it, so a modifier class that is merely PRESENT makes every open animate with **no JS
-replay logic**.
+The panel shows by the binary `display:none → block` toggle on the wrap. `@starting-style` gives the
+newly displayed wrap a first frame to transition from, and `transition-behavior: allow-discrete` holds
+`display` until the close transition ends, so the panel both arrives and leaves. While closing it takes
+no pointer hits and its `visibility` goes hidden, so it leaves the Tab order and the accessibility tree.
+A browser without the exit part closes instantly, never leaving a stuck or invisible panel. Spec 36
+"Motion" (Wave 3C U-5) holds the full vocabulary.
 
-⛔ **The mandatory reduced-motion companion collapses `animation-duration` to `0.01ms !important` —
-it does NOT remove the animation.** Removing it would strand the wrap at its `from` keyframe
-(`opacity: 0`) — invisible, not calmer, i.e. the broken menu this FR refuses. Collapsing the
-duration lands it on the `to` end state instantly, so the panel still opens.
+⛔ **Reduced motion: every panel rule sits inside `prefers-reduced-motion: no-preference`.** Under
+`reduce` none of the closed-state values (opacity 0, the -8px lift, the clip) apply, so the panel opens
+and closes whole. It is never stranded at an invisible start state.
 
-⚠ **Bar-only, correctly.** `.sgs-nav-bar-menu__submenu-wrap` exists only on `sgs/nav-bar-menu`; the
-drawer's native `<details>` accordion never renders it (FR-41-1), so it has no open animation and
-needs none.
+⚠ **Bar-only, correctly.** The panel wraps exist only on `sgs/nav-bar-menu`; the drawer's native
+`<details>` accordion never renders them (FR-41-1), so it has no panel animation. The drawer's own
+arrival and item stagger are `sgs/nav-drawer` attributes (Spec 36 "Motion").
 
 ### FR-41-11 — Submenu top offset, and the hover-bridge it requires
 

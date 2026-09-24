@@ -922,26 +922,17 @@
     "wearecollins"
    ],
    "needed_by_count": 13,
-   "coverage_status": "partial",
+   "coverage_status": "covered",
    "evidence": "mixed",
    "covered_by": [
-    "sgs/nav-bar-menu::submenuAnimation (DROPDOWN FORK ONLY)",
-    "sgs/nav-drawer::animateFrom (auto|fade)",
-    "(mega fork: NO entry-animation attribute at all)"
+    "sgs/nav-drawer::entryAnimation (per tier: auto, none, fade, slide-start/end/up/down, wipe-down, wipe-down-skew, reveal-from-bar, curtain, scale) + entryDuration/exitDuration/entryEasing/entryFade/curtainColour(+Gradient), includes/helpers-nav-drawer-motion.php (U-5)",
+    "sgs/nav-bar-menu::submenuAnimation (none, fade, fade-lift, slide-down, grow; dropdown AND mega fork via .sgs-nav-bar-menu__panel-motion) + submenuAnimationDuration/submenuExitDuration/submenuAnimationEasing (U-5)",
+    "shared easing list includes/helpers-motion-easing.php::sgs_motion_easing_css (U-5)"
    ],
    "note": "MERGED: both are 'how the nav surface arrives and leaves', and both are an enum with no duration and no easing. VERIFIED: animateFrom has exactly TWO values and 'auto' resolves to a class chosen by the DESKTOP anchor, so a full-screen drawer can only fade-drop or fade; the eleven keyframes in nav-drawer/style.css cover four shapes. Unreachable: slide from a side edge (away, butcherbox), slide up from the bottom (buck), clip-path wipe (studionamma, wearecollins), curtain sweep (dogstudio), per-card staggered arrival (lusion), the drafts' intended opacity+translateY(-8px)+scale(.99) at 340ms, and 'no animation at all'. Measured durations span 150ms to ~2.0s with no duration or easing attribute anywhere. Several durations are upper bounds (dogstudio) or headed re-reads (lusion). RE-VERIFIED, covered_by CORRECTED: submenuAnimation reaches only the dropdown fork — nav-menu-markup.php appends `sgs-nav-bar-menu__submenu-wrap--{animation}` to the DROPDOWN wrap, while the mega interactivity context carries only isOpen / megaId / intentDelay / closeGrace, and mega-panel's only motion attribute is staggerOnOpen. So the halcyon/indus 340ms panel entry that DEC-10 makes a real requirement has NO attribute on the surface that renders it.",
-   "uncovered_references": [
-    "away",
-    "buck",
-    "butcherbox",
-    "dogstudio",
-    "halcyon",
-    "indus-foods",
-    "lusion",
-    "studionamma",
-    "wearecollins"
-   ],
-   "uncovered_count": 9
+   "uncovered_references": [],
+   "uncovered_count": 0,
+   "u5_residue": "dogstudio durations are upper bounds (compared by shape and order); lusion closed-pose rotate and 0.4s scrim close delay are recorded divergences; measured live 2026-09-24: away drawer slide 300ms, drafts panel fade-lift 340ms"
   },
   {
    "id": "M-32",
@@ -959,21 +950,16 @@
     "studionamma"
    ],
    "needed_by_count": 6,
-   "coverage_status": "gap",
+   "coverage_status": "covered",
    "evidence": "mixed",
    "covered_by": [
-    "sgs/mega-panel::staggerOnOpen (panel only)"
+    "sgs/nav-drawer::itemStagger + itemStaggerDistance (per tier) / itemStaggerDuration / itemStaggerMax / itemStaggerOnClose; item rules in nav-drawer-menu/style.css (U-5)",
+    "sgs/nav-bar-menu::submenuItemStagger + Duration / Max / Distance for every dropdown and mega panel (U-5; replaces mega-panel::staggerOnOpen)"
    ],
    "note": "MERGED: the mega panel HAS staggerOnOpen (mapping to the shared stagger module's data-stagger); the DRAWER has nothing. VERIFIED: zero files under src/blocks/nav-drawer* contain the string 'stagger', and neither block.json nor the DB carries a delay or sequence attribute. Needed: one per-index delay number (0.05s fantasy and lamalama, 0.02s per card lusion, 55ms in both drafts) plus a distance and a duration. wearecollins is a measured ABSENT, not unmeasured.",
-   "uncovered_references": [
-    "fantasy",
-    "halcyon",
-    "indus-foods",
-    "lamalama",
-    "lusion",
-    "studionamma"
-   ],
-   "uncovered_count": 6
+   "uncovered_references": [],
+   "uncovered_count": 0,
+   "u5_residue": "fantasy second item direction (+2rem .js-fade-up) is a recorded divergence; lusion stagger expressed but its end pose was never captured; measured live 2026-09-24: 55ms drawer and 28ms panel steps"
   },
   {
    "id": "M-33",

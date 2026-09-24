@@ -196,7 +196,7 @@ visually. `none` means neither.
 | 1 | U-1 — **DONE** | De-hardcode the nav surfaces. FIRST COMMIT wires the mega fork's `closeGrace` to `submenuCloseGrace` (`nav-menu-markup.php` builds it with a literal 170 while the non-mega fork reads the attribute); lift or parameterise `mega-disclosure.js::MAX_INTENT_DELAY_MS = 80`, which clamps a markup-declared 300; per-tier z-index (ENG-01); align the surface-ground vocabulary (fill, blur, radius and shadow diverge by name and type across site-header, mega-panel and nav-drawer). The force-solid tier emits the header's resting background (section 1a) | M-09 (covered), M-13 (partial), M-43 (covered), M-21 (covered, live check owed) | design | medium | `nav-menu-markup.php`, `site-header/{render.php,style.css,block.json}`, `mega-panel/{render.php,style.css,block.json}`, `nav-drawer/block.json` |
 | 2 | U-9 — **DONE** (paired with U-11) | Dismissal routes, modality, trigger semantics, the resize rule (DEC-09), `accordionExclusive` (ENG-02), close-on-scroll (DEC-02) | M-36, M-34, M-35, M-40, M-47 | design | medium | `nav-bar-menu/block.json`, `nav-drawer/block.json`, `nav-menu-markup.php`, `src/shared/nav-interactivity/{store.js,mega-disclosure.js}` |
 | 3 | U-11 — **DONE** (paired with U-9) | Close-control presence, placement (`same-slot` / `top-row-start` / `top-row-end` plus an offset pair) and morph motion (DEC-15); magnet strength (M-10). Includes the `closeStyle` string to tier-object migration via `migrate-tier-object.py --property closeStyle`, with the fallthrough check that a stored flat string still resolves, and `$sgs_nd_allowed_close_styles` kept equal to the JSON enum | M-27, M-10 | eye | medium | `nav-drawer/{block.json,render.php,style.css}`, `nav-bar-menu/{block.json,style.css}` |
-| 4 | U-5 | Entry and exit animation vocabulary and item stagger. The mega fork has no entry-animation attribute today, so the animation must reach the mega interactivity context | M-31, M-32 | eye | high | `nav-drawer/{style.css,render.php,block.json}`, `mega-panel/block.json`, `nav-menu-markup.php`, `src/shared/nav-interactivity/` |
+| 4 | U-5 — **DONE** | Entry and exit animation vocabulary and item stagger. The mega fork has no entry-animation attribute today, so the animation must reach the mega interactivity context | M-31, M-32 | eye | high | `nav-drawer/{style.css,render.php,block.json}`, `mega-panel/block.json`, `nav-menu-markup.php`, `src/shared/nav-interactivity/` |
 | 5 | U-2 — **DONE** | Surface scrim, colour, alpha and blur per tier. The drawer hardcodes `rgba(0, 0, 0, 0.55)` twice in `style.css`; the panel fork has no scrim element at all, so U-2 adds one | M-14 (covered) | design | medium | `mega-panel/{render.php,block.json}`, `nav-drawer/{style.css,render.php,block.json}`, `src/shared/nav-interactivity/store.js` |
 | 6 | U-3 | Drawer side anchor, container inset, pitch tier object. No drawer clamp (section 1b) | M-17, M-46 | none | medium | `nav-drawer/{render.php,block.json}`, `nav-drawer-menu/block.json` |
 | 7 | U-6 | Item hover parity: opacity and padding-shift hover (M-21, delivered by U-1 — see its row), row separators (M-30), sibling dim (M-24, a list-scoped rule), two-copy label roll (M-25, a second label in the markup, needed on the bar, the drawer, the trigger and the footer). M-24 and M-25 need new markup, so they come last | M-30, M-24, M-25 | eye | high | `nav-bar-menu/{block.json,style.css}`, `nav-drawer-menu/{block.json,style.css}`, `nav-menu-markup.php`, `nav-menu-submenu-css.php` |
@@ -258,6 +258,25 @@ corners); the business-info Button style no longer spills out of its row; the ga
 on an outside click and keeps its arrows off the image; the cart's button trigger resets browser button paint (Spec 36
 "Stacking order" and "Default edge"). Batched for one later pass (Bean: no heavy testing per edit): `axe-run.mjs` with
 the drawer open, the editor round-trip of the new controls, and Bean's eye on the gallery arrows.
+
+**U-5 — done** (design `.claude/reports/2026-09-24-u5-motion-design.md`, two-model council GO WITH FIXES,
+Bean sign-off; commit 01e4b5a5f; live `reports/visual-diff/nav-drawer-2026-09-24.md` section "U-5"). One motion
+vocabulary for the drawer and every dropdown and mega panel (Spec 36 "Motion"): a per-tier drawer shape
+(`entryAnimation`, twelve values, replacing `animateFrom`), open and close times, a shared speed-curve list
+(`includes/helpers-motion-easing.php`, also the burger's), `entryFade`, a curtain colour, the drawer item stagger
+(top-level items, per-tier distance, no cap by default, reverse on close), and the panel set on `sgs/nav-bar-menu`
+(`submenuAnimation` gains `fade-lift` and `grow` and now reaches the mega fork; exit through `@starting-style`;
+duration, exit, easing and item stagger). `mega-panel::staggerOnOpen` and `shared/effects/stagger.js` are removed
+(stored value on sandybrown mega post 1745 stripped before deploy). Also fixed on the way: the editor's "Slide"
+option saved a value the renderer refused; Escape did not close a panel opened by hover (35d98e413). Exit cells
+measured live: away's drawer slide (300ms each way, no fade, close 295ms) and the drafts' panel fade-lift (340ms,
+-8px and 0.99, drafts curve) with the 28ms and 55ms item staggers. M-31 and M-32 move to `covered`. Residue,
+named: dogstudio's durations are upper bounds (compared by shape and order only); lusion's closed-pose rotate,
+its 0.4s scrim close delay and fantasy's second item direction are recorded divergences; lusion's end pose was
+never captured, so its stagger is expressed but not measured. Batched for the later pass (Bean: no heavy testing
+per edit): reduced-motion emulation with a positive control, axe with the drawer open, the editor round-trip of
+the new controls, and Bean's eye on the shapes. U-16 was not paired: its design gate waits on step 0d; it reuses
+this vocabulary.
 
 Sizes are `families-master.json::units[].size` at full scope. Convert per
 `~/.claude/rules/time-estimates.md`: medium 30 to 60 minutes, high 1 to 2 hours, the whole

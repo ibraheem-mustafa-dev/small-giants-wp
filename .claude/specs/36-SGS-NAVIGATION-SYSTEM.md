@@ -175,7 +175,11 @@ throughout** (avoids the sticky-hover mobile bug). Mechanics:
   `plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php`), carried as `openOn` in both contexts. `click`
   makes the trigger's click (`toggle`) the only pointer open path: hover neither opens nor, once open,
   closes the panel, so a click-opened panel stays open until it is clicked again, dismissed with Escape, or a
-  click lands outside it. Keyboard and touch are the same in both modes.
+  click lands outside it. Keyboard and touch are the same in both modes. Escape closes an open panel from
+  anywhere on the page, including one opened by hover, where keyboard focus stays on the page body: a
+  page-level keydown listener attached only while a panel is open
+  (`plugins/sgs-blocks/src/shared/nav-interactivity/mega-disclosure.js::onDocumentEscape`); presses inside a
+  disclosure stay with its own handlers, which also return focus.
 - **Hover BRIDGE + close-grace.** Close-grace default **170 ms**, operator attribute `submenuCloseGrace`
   (`plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json::attributes.submenuCloseGrace`, read into the
   renderer's `close_grace` in `plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php`); it reaches both the
@@ -511,7 +515,40 @@ operator's border and radius rules, so any operator border, radius or shadow win
 opener-live flag clears only once the dialog has closed, so the × never reappears during the exit
 animation.
 
-**The scrim (Wave 3C U-2, M-14, D1148).** The drawer and the menu bar (`sgs/nav-bar-menu`, for every dropdown and mega panel it opens) carry the shared scrim: `supports.sgs.scrim` plus `scrimColour`, `scrimColourGradient` and per-device `scrimOpacity` and `scrimBlur`, rendered by `includes/helpers-scrim.php::sgs_scrim_render` (tint on `::before`, blur on the element, open state from CSS `:root:has(<open selector>)`, printed at `wp_footer`). Defaults: the drawer is black at 0.55; the bar has none unless set. A click on the scrim closes the surface and is absorbed, so a dismiss never follows a link underneath (lamalama's click-through is an accepted divergence). The same helper serves `sgs/modal`, the `sgs/cart` drawer, the `sgs/gallery` lightbox and `sgs/product-search`; `scripts/scrim/check-scrim.py` fails the build on any dimming block that paints its own. The earlier "NO scrim element, 8/8 references have none" held for the eight drawer-variant references only; M-14's six references show part-width drawers and panels with one. `animateFrom` is `auto|fade` with per-anchor motion defaults.
+**The scrim (Wave 3C U-2, M-14, D1148).** The drawer and the menu bar (`sgs/nav-bar-menu`, for every dropdown and mega panel it opens) carry the shared scrim: `supports.sgs.scrim` plus `scrimColour`, `scrimColourGradient` and per-device `scrimOpacity` and `scrimBlur`, rendered by `includes/helpers-scrim.php::sgs_scrim_render` (tint on `::before`, blur on the element, open state from CSS `:root:has(<open selector>)`, printed at `wp_footer`). Defaults: the drawer is black at 0.55; the bar has none unless set. A click on the scrim closes the surface and is absorbed, so a dismiss never follows a link underneath (lamalama's click-through is an accepted divergence). The same helper serves `sgs/modal`, the `sgs/cart` drawer, the `sgs/gallery` lightbox and `sgs/product-search`; `scripts/scrim/check-scrim.py` fails the build on any dimming block that paints its own. The earlier "NO scrim element, 8/8 references have none" held for the eight drawer-variant references only; M-14's six references show part-width drawers and panels with one. 
+
+**Motion: how the drawer and the panels arrive and leave (Wave 3C U-5, M-31, M-32).** One vocabulary across
+the drawer and every dropdown and mega panel: a shape, an opening and a closing time, a speed curve and an item
+stagger. The speed curves are one shared list, `plugins/sgs-blocks/includes/helpers-motion-easing.php::sgs_motion_easing_css`
+(editor `src/components/MotionEasingControl.js`), also read by the burger morph.
+- **Drawer.** `entryAnimation` is a tier object: `auto` (follows the anchor at that tier: header expands down,
+  trigger scales from its corner, centred scales up, full-screen drops 8px), `none`, `fade`, `slide-start`,
+  `slide-end`, `slide-up`, `slide-down`, `wipe-down`, `wipe-down-skew`, `reveal-from-bar` (clips open from the
+  opener's header row), `curtain` (a `curtainColour` or `curtainColourGradient` layer sweeps across while the
+  content fades in) and `scale`. The close plays the shape in reverse. `entryDuration` (250ms) and
+  `exitDuration` (200ms), `entryEasing` (ease-out), `entryFade` (slides and wipes also fade). Rendered as
+  custom-property values by `plugins/sgs-blocks/includes/helpers-nav-drawer-motion.php::sgs_nav_drawer_motion`;
+  the keyframes live in `nav-drawer/style.css` and use `translate`, so a drawer positioned by `transform`
+  keeps its place.
+- **Drawer item stagger.** `itemStagger` (ms between items; 0 is off), `itemStaggerDistance` (tier object, px,
+  negative drops items from above), `itemStaggerDuration`, `itemStaggerMax` (0 means no cap) and
+  `itemStaggerOnClose` (last item leaves first). An item is a top-level drawer menu item only, so a nested
+  accordion never restarts the count; a logo or button beside the menu arrives with the last item. The item
+  rules live in `nav-drawer-menu/style.css`, keyed on values the drawer writes.
+- **Panels.** `sgs/nav-bar-menu` owns them, as it owns the scrim: `submenuAnimation` (`none`, `fade`,
+  `fade-lift`, `slide-down`, `grow`) reaches the dropdown and the mega fork alike through the shared
+  `.sgs-nav-bar-menu__panel-motion` class; `submenuAnimationDuration` (180ms), `submenuExitDuration` (150ms;
+  0 closes instantly), `submenuAnimationEasing`, and `submenuItemStagger` with its duration, cap and distance.
+  Entry and exit run through `@starting-style` and `transition-behavior: allow-discrete` on `display`; while a
+  panel closes it takes no pointer hits and leaves the Tab order, so moving from one trigger to the next never
+  re-opens the old panel. A browser without the exit part closes instantly. The bar's scrim fades with the
+  panels; the drawer's scrim fades with the drawer unless `scrimFadeDuration` is set.
+- **Close and focus.** The drawer closes only after every animation inside it has finished (the dialog's own,
+  a curtain's `::before`, a reversed item stagger): `plugins/sgs-blocks/src/shared/nav-interactivity/store.js::whenAnimationsSettle`, with a fail-safe timer.
+  When the entry is longer than 500ms, focus holds on the dialog until the entry ends, so the first link's
+  focus ring is never drawn under a wipe that still clips it.
+- **Reduced motion.** Every shape, transition and stagger sits inside `prefers-reduced-motion:
+  no-preference`; under `reduce` the drawer and the panels open and close whole.
 - **Design rules (binding):** (1) **the look axis is the LOOK** — a complete-clone preset of internal
   make-up (type scale 16–160px across references, columns, alignment, secondary-block roster) that sets
   DEFAULTS and hardcodes NOTHING; anchoring/geometry are plain per-device ATTRIBUTES (the "what the panel

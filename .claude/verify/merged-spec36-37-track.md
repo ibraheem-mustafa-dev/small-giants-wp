@@ -130,7 +130,7 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
 - W3B-4 evidence: `reports/reference-requirements/FAMILIES-MASTER.md` (46 families, 11 covered, 21 partial, 8 gap, 6 conflict), `families-master.json`, and the independent review `FAMILIES-REVIEW.md` (23 findings, applied); 33 coverage checks re-run against the code.
 
 ## Wave 3C — Header and nav architecture harmonised
-- STATUS: under way (`plans/2026-09-21-wave-3c-implementation-plan.md`); U-1, U-2 and the U-9+U-11 pair closed; lane A's next pair is U-5+U-16 (U-5 alone if lane B has taken U-16).
+- STATUS: under way (`plans/2026-09-21-wave-3c-implementation-plan.md`); U-1, U-2, the U-9+U-11 pair and U-5 closed; lane A's next pair is U-3+U-8. U-16 waits on step 0d.
 
 **U-1 exit criteria (closed):**
 - Mega close-grace reads `submenuCloseGrace` (the bug where the mega context passed a literal 170
@@ -186,8 +186,18 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
   outside the wave. Owed: axe with the drawer open, the editor round-trip of the new controls, Bean's eye on the two
   screenshots.
 
-**Next (lane A): U-5**, entry and exit animation vocabulary and item stagger, paired with U-16 unless lane B has
-taken it; design-gated.
+**U-5 exit criteria (closed; commit 01e4b5a5f, Escape fix 35d98e413):**
+- M-31 and M-32 covered. Measured live on sandybrown (`reports/visual-diff/nav-drawer-2026-09-24.md` section U-5):
+  away's drawer slide from the start edge, 300ms each way, no fade, the dialog closing 295ms after the close began;
+  the drafts' panel fade-lift (340ms, -8px, 0.99, drafts curve) with 460ms items at 0 and 28ms; the drawer's 55ms
+  item stagger with the logo arriving with the last item; the panel exit holding the panel pointer-free for 196ms, then
+  hidden. Escape now closes a panel opened by hover (reproduced before the fix, passing after).
+- Residue: dogstudio's durations are upper bounds; lusion's rotate and scrim delay and fantasy's second item direction
+  are recorded divergences. Owed in the batched pass: reduced-motion emulation, axe with the drawer open, the editor
+  round-trip of the Motion and Panel motion controls, Bean's eye on the shapes.
+
+**Next (lane A): U-3 + U-8**, where a surface sits (drawer side anchor and container inset, panel anchor and mega top
+offset); design-gated.
 
 Gate 3C passes when (the one definition; the same words are in the implementation plan §7 and the
 strategic plan's Gate 3C entry):

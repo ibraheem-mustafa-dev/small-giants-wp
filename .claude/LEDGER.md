@@ -27,7 +27,7 @@ done and live-verified. The harness self-tests and the fixture fidelity check ar
 seeded as Menu drawer posts on all three test sites), the Site Info logo tier, the scrolled-state header
 shadow, the floating header pill (blur-based, matching the one true pill among the references), the formal Gate 2
 re-run and the mega + drawer integration probe. Payment icons need no
-framework feature (clients upload official artwork into the trust bar). Wave 3 is partial. Waves 3A (independent fixes) and 3B (a requirements table of 13 references: 46 capability families, signed) are done. Wave 3C is under way; U-1, U-2 and the U-9+U-11 pair (how a menu closes) are closed; lane A's next pair is U-5+U-16 (detail below, Spec 36+37 merged track section). Waves 4
+framework feature (clients upload official artwork into the trust bar). Wave 3 is partial. Waves 3A (independent fixes) and 3B (a requirements table of 13 references: 46 capability families, signed) are done. Wave 3C is under way; U-1, U-2, the U-9+U-11 pair (how a menu closes) and U-5 (menu motion) are closed; lane A next is U-3+U-8 (detail below, Spec 36+37 merged track section). Waves 4
 and 5 have not started.
 
 **Indus Foods** has its own dedicated test site (`lavender-dinosaur-183533.hostingersite.com`,
@@ -96,7 +96,7 @@ U-10+U-14 (one design, council, sign-off, deploy and live check each). Lane A (n
 → U-6+U-7 → U-4 → U-10. Lane B (header behaviours): U-13 → U-14 → U-16, after A passes U-9+U-11. Lane C
 (independent): U-12, U-15, U-17 (`prompts/2026-09-24-wave-3c-lane-c.md`). Each lane edits only its own line below.
 
-- **Lane A:** U-9+U-11 CLOSED (c36105939; live PASS `reports/visual-diff/nav-drawer-2026-09-24.md` rows 1-11 and F1-F12). Bean's review fixes all live (033b783ad to cb730f520): x row freed and stays hidden while closing; trigger/centred cards and non-modal full-screen (starts under the burger row) paint above the header; default floating shadow + 1px primary border (cards 20px corners); business-info Button no longer spills its row; gallery dims black, closes on outside click, arrows off the image; cart button trigger reset. Batched for one later pass (Bean: no heavy testing per edit): axe with drawer open, editor round-trip, Bean's eye on the gallery arrows. **Next: U-5 (+U-16 unless lane B has it).** Fixture: `scripts/nav-qa/qa-close-fixture.php <trigger|modal|same-slot|restore>` on `/qa-scrim/`.
+- **Lane A:** U-9+U-11 and U-5 CLOSED. U-5 (motion: how the drawer and every dropdown/mega panel arrive and leave, plus item stagger; Spec 36 "Motion") is 01e4b5a5f, live PASS on `/qa-scrim/` (`reports/visual-diff/nav-drawer-2026-09-24.md` section U-5): away's drawer slide 300ms each way, the drafts' panel fade-lift 340ms with 28ms/55ms item staggers, panel close holds pointer-free then leaves. Also fixed: Escape now closes a panel opened by hover (35d98e413). M-31 and M-32 covered. Batched for one later pass (Bean: no heavy testing per edit): reduced-motion emulation, axe with drawer open, editor round-trips of the U-9/U-11 and U-5 controls, Bean's eye on the gallery arrows and the motion shapes. U-16 waits on plan step 0d (headed footer capture; ask Bean before opening Chrome). **Next: U-3+U-8** (where a surface sits: drawer anchor and inset, panel anchor and top offset). Fixtures: `scripts/nav-qa/qa-close-fixture.php` and `scripts/nav-qa/qa-motion-fixture.php <exit-cells|restore>` on `/qa-scrim/` (currently set to exit-cells).
 - **Lane B:** not started.
 - **Lane C:** not started.
 
