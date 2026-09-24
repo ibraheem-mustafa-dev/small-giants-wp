@@ -7,12 +7,11 @@ from section 2 of `.claude/reports/2026-09-24-eye-care-gap-map-recheck.md` (the 
   (20px below 768, 52px from 768), verified live at 375/768/1440. Section top and bottom padding (56px mobile,
   104px otherwise) is set per section on each `sgs/container` in Phase 4, because theme.json root padding is
   sides only. Button uppercase and 0.1em spacing are per-button settings, also set in Phase 4. Sage and navy:
-  three options were found and none is built yet. The recommended one is a framework "accent palette" control
-  that reads named palettes from the client's snapshot `settings.custom`, stores the choice, and overrides the
-  accent colour variables (precedent: `includes/class-button-presets-customiser.php`). The rejected options are a
-  separate snapshot per palette (needs a developer to switch) and theme `styles/` files (puts client colours in
-  the framework). Values: sage `#8A9A86` / `#55654F` / `#E8ECE6`, navy `#3A4A6B` / `#2B3A55` / `#E4E7EE`
-  (accent / accent-text / soft). Needs Bean's go-ahead.
+  Bean chose option 1 (2026-09-24). No new control is needed: the accent is part of the snapshot's global palette
+  (`settings.color.palette` accent / accent-text / accent-light), which the client edits in the Site Editor
+  Styles panel, as on the other client sites. Alternatives, for reference: sage `#8A9A86` / `#55654F` /
+  `#E8ECE6`, navy `#3A4A6B` / `#2B3A55` / `#E4E7EE` (accent / accent-text / soft). The draft's default and its
+  live render are taupe (`data-props` `accent` default `taupe`); Bean to confirm taupe or sage.
 - Re-extraction risk: `theme-extractor/extract.py --merge-onto` carries `styles.css` forward but not
   `styles.spacing`, so re-extracting the Eye Care snapshot would reset the 52px side padding. Re-apply it after
   any re-extraction.
@@ -34,6 +33,9 @@ from section 2 of `.claude/reports/2026-09-24-eye-care-gap-map-recheck.md` (the 
 - `WP Build Gap Map.dc.html`: 114 items, each graded 0 to 5 with the block it maps to and a best fix. The
   items are the `ROWS` array in its script; each row is `R(area, item, whatWeHave, grade, bestFix, effort)`.
 - `README.md`: intent only. Where it and the files disagree, the files win.
+
+The same draft runs live at https://mintcream-lyrebird-224487.hostingersite.com/ (use it for draft-vs-live
+comparisons).
 
 Do not confuse this bundle with the older `design_handoff_ward_end_eye_care_v2/` folder, which the clone
 command in the LEDGER uses. The two drafts differ. Build from the Gap Handoff bundle.
