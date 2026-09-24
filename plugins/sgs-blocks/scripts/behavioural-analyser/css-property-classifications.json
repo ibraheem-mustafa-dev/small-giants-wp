@@ -571,7 +571,7 @@
     },
     {
       "slug": "sgs/brand-strip",
-      "attr": "scrollSpeed",
+      "attr": "scrollDuration",
       "fields": {
         "css_property": "animation",
         "css_element": "track"
@@ -1355,6 +1355,21 @@
         "css_property": "max-width",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "overlayGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "imageOverlay"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "overlayOpacity",
+      "fields": {
+        "css_property": "opacity"
       }
     },
     {
@@ -13848,6 +13863,15 @@
         "css_property": "background-color",
         "role": "color",
         "css_element": "image-wrap"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "overlayColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "imageOverlay"
       }
     },
     {
