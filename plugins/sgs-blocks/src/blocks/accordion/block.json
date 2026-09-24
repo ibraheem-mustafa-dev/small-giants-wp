@@ -130,7 +130,9 @@
             },
             "open": {
               "attrMap": {
-                "css:font-weight": "headerFontWeightOpen"
+                "css:font-weight": "headerFontWeightOpen",
+                "css:color": "headerColourOpen",
+                "css:background-color": "headerBackgroundOpen"
               }
             }
           },
@@ -253,6 +255,16 @@
       "type": "string",
       "default": "600",
       "description": "Item header (title) font weight when closed, relayed to sgs/accordion-item via block context. Default 600 matches the pre-existing hardcoded style.css value."
+    },
+    "headerColourOpen": {
+      "type": "string",
+      "default": "",
+      "description": "Item header text colour while the item is open (palette slug). Empty keeps the stylesheet's open-state colour (primary)."
+    },
+    "headerBackgroundOpen": {
+      "type": "string",
+      "default": "",
+      "description": "Item header background while the item is open (palette slug). Empty keeps the stylesheet's open-state background (surface-alt)."
     },
     "headerFontWeightOpen": {
       "type": "string",
@@ -515,7 +527,9 @@
     "sgs/accordionHeaderColourHover": "headerColourHover",
     "sgs/accordionHeaderColourHoverGradient": "headerColourHoverGradient",
     "sgs/accordionHeaderFontWeight": "headerFontWeight",
-    "sgs/accordionHeaderFontWeightOpen": "headerFontWeightOpen"
+    "sgs/accordionHeaderFontWeightOpen": "headerFontWeightOpen",
+    "sgs/accordionHeaderColourOpen": "headerColourOpen",
+    "sgs/accordionHeaderBackgroundOpen": "headerBackgroundOpen"
   },
   "allowedBlocks": [
     "sgs/accordion-item"

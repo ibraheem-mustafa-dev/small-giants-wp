@@ -49,6 +49,8 @@ export default function Edit({ attributes, setAttributes }) {
     headerBackgroundGradient,
     headerBackgroundHover,
     headerBackgroundHoverGradient,
+    headerColourOpen,
+    headerBackgroundOpen,
     headerFontWeight,
     headerFontWeightOpen,
     iconColour,
@@ -143,6 +145,12 @@ export default function Edit({ attributes, setAttributes }) {
                 onGradientChange: (val) =>
                   setAttributes({ headerColourHoverGradient: val ?? "" }),
               },
+              {
+                key: "open",
+                label: __("Open", "sgs-blocks"),
+                value: headerColourOpen,
+                onChange: (val) => setAttributes({ headerColourOpen: val ?? "" }),
+              },
             ],
           },
           {
@@ -168,6 +176,13 @@ export default function Edit({ attributes, setAttributes }) {
                 gradientValue: headerBackgroundHoverGradient,
                 onGradientChange: (val) =>
                   setAttributes({ headerBackgroundHoverGradient: val ?? "" }),
+              },
+              {
+                key: "open",
+                label: __("Open", "sgs-blocks"),
+                value: headerBackgroundOpen,
+                onChange: (val) =>
+                  setAttributes({ headerBackgroundOpen: val ?? "" }),
               },
             ],
           },

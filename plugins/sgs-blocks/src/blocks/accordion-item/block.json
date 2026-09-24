@@ -105,7 +105,9 @@
 		"sgs/accordionCloseIcon",
 		"sgs/accordionDefaultOpen",
 		"sgs/accordionHeaderFontWeight",
-		"sgs/accordionHeaderFontWeightOpen"
+		"sgs/accordionHeaderFontWeightOpen",
+		"sgs/accordionHeaderColourOpen",
+		"sgs/accordionHeaderBackgroundOpen"
 	],
 	"attributes": {
 		"title": {

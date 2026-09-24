@@ -56,6 +56,8 @@ $header_bg_hover_gradient = $block->context['sgs/accordionHeaderBackgroundHoverG
 // style.css values.
 $header_font_weight       = $block->context['sgs/accordionHeaderFontWeight'] ?? '600';
 $header_font_weight_open  = $block->context['sgs/accordionHeaderFontWeightOpen'] ?? '700';
+$header_col_open          = $block->context['sgs/accordionHeaderColourOpen'] ?? '';
+$header_bg_open           = $block->context['sgs/accordionHeaderBackgroundOpen'] ?? '';
 $icon_col                 = $block->context['sgs/accordionIconColour'] ?? '';
 // D636/D644 icon/SVG gradient sibling — non-empty wins over icon_col above.
 $icon_col_gradient       = $block->context['sgs/accordionIconColourGradient'] ?? '';
@@ -137,6 +139,25 @@ if ( preg_match( '/^[1-9]00$/', (string) $header_font_weight_open ) ) {
 	$responsive_css .= $root_sel . '[open] > .sgs-accordion-item__header,'
 		. $root_sel . '[open] > summary > .sgs-accordion-item__header'
 		. '{font-weight:' . $header_font_weight_open . '}';
+}
+
+// Open-state header colours. Empty keeps style.css's open-state defaults. The
+// background is also repainted on the ::after layer, which carries the normal
+// background whenever one is set (sgs_block_background_layer_css()).
+$header_open_sel   = $root_sel . '[open] > .sgs-accordion-item__header,' . $root_sel . '[open] > summary > .sgs-accordion-item__header';
+$header_open_decls = array();
+$header_col_open_slug = '' !== $header_col_open ? $sgs_css_slug( $header_col_open ) : '';
+if ( '' !== $header_col_open_slug ) {
+	$header_open_decls[] = 'color:var(--wp--preset--color--' . $header_col_open_slug . ')';
+}
+$header_bg_open_slug = '' !== $header_bg_open ? $sgs_css_slug( $header_bg_open ) : '';
+if ( '' !== $header_bg_open_slug ) {
+	$header_open_decls[] = 'background-color:var(--wp--preset--color--' . $header_bg_open_slug . ')';
+	$responsive_css     .= $root_sel . '[open] > .sgs-accordion-item__header::after,' . $root_sel . '[open] > summary > .sgs-accordion-item__header::after'
+		. '{background:var(--wp--preset--color--' . $header_bg_open_slug . ')}';
+}
+if ( $header_open_decls ) {
+	$responsive_css .= $header_open_sel . '{' . implode( ';', $header_open_decls ) . '}';
 }
 
 // Icon colour — was inline `style="…"` on both icon spans, now a scoped rule.
