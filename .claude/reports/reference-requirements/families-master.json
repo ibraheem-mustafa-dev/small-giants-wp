@@ -258,17 +258,16 @@
     "indus-foods"
    ],
    "needed_by_count": 2,
-   "coverage_status": "partial",
+   "coverage_status": "covered",
    "evidence": "measured",
    "covered_by": [
-    "sgs/nav-bar-menu::itemMagnetEnabled (boolean only)"
+    "sgs/nav-bar-menu::itemMagnetEnabled (boolean only)",
+    "sgs/nav-bar-menu::itemMagnetStrength (pull factor; unset keeps 0.15 capped at 8px) (U-11, D1150)"
    ],
    "note": "VERIFIED: itemMagnetStrength and itemMagnetRadius are ABSENT while triggerMagnetStrength (default 24) and triggerMagnetRadius (default 120) exist. halcyon's 0.16 and indus's 0.14 collapse to one built-in constant. The read side already exists; this is two attributes.",
-   "uncovered_references": [
-    "halcyon",
-    "indus-foods"
-   ],
-   "uncovered_count": 2
+   "uncovered_references": [],
+   "u9u11_residue": "none: no reference measures a radius; itemMagnetRadius was dropped as a control that could not act (council)",
+   "uncovered_count": 0
   },
   {
    "id": "M-11",
@@ -835,31 +834,20 @@
     "wearecollins"
    ],
    "needed_by_count": 13,
-   "coverage_status": "conflict",
+   "coverage_status": "covered",
    "evidence": "measured",
    "covered_by": [
     "sgs/nav-drawer::closeStyle",
     "::closeIcon",
     "::closeLabel",
     "::closeSize",
-    "(presence: NO attribute — the x button is emitted unconditionally)"
+    "(presence: NO attribute — the x button is emitted unconditionally)",
+    "sgs/nav-drawer::closeStyle tier object incl. 'trigger' (FR-36-6: non-modal + trigger + live opener), closePlacement (top-row-end/top-row-start/same-slot), closeOffset, closeRadius; sgs/nav-bar-menu::burgerMorph/burgerMorphDuration/burgerMorphEasing (U-11, D1150)"
    ],
    "note": "MERGED (group B's close model, group C's close model, the placement column and the trigger-to-close motion column are one control: its model, where it sits and how it changes). RE-VERIFIED and DOWNGRADED from covered to CONFLICT. nav-drawer/render.php builds $close_html = sprintf('<button type=\"button\" class=\"sgs-nav-drawer__close\" data-sgs-nav-close...') with no guard, under the comment 'The x button itself remains fixed, undeletable chrome in EVERY style (FR-36-6)' — and the same comment adds 'It does NOT animate the header burger'. burger-morph styles THAT in-drawer button; the bar's own X morph is a separate rule at nav-bar-menu/style.css:286-294. NINE references replace the burger IN PLACE with the header still visible and NO close control inside the drawer (away@375, rabbit@375, buck, dogstudio, fantasy, lamalama, lusion, studionamma, wearecollins), so a clone of any of them renders a second close control the reference never had — and the plan's own W3C-2 target ('the drawer omits a separate top close row where they omit it') had no family building it. THREE residual gaps, all on one control: (a) PRESENCE — no per-closeStyle / per-tier control over whether the drawer emits its own x (DEC-15); (b) PLACEMENT — separate-x renders at a fixed place in the drawer's top row, so butcherbox's opposite-end placement (burger left 16, close left 335) is unreachable and halcyon's +4/-0.5px nudge is only a rounding difference; closeSize does cover indus's 38x38 against a 44x44 burger; (c) MOTION — no duration, easing or alternative morph POSE, so lamalama's three bars collapsing onto ONE horizontal line and dogstudio's extra 180deg button rotation are unreachable.",
-   "uncovered_references": [
-    "away",
-    "buck",
-    "butcherbox",
-    "dogstudio",
-    "fantasy",
-    "halcyon",
-    "indus-foods",
-    "lamalama",
-    "lusion",
-    "rabbit",
-    "studionamma",
-    "wearecollins"
-   ],
-   "uncovered_count": 12
+   "uncovered_references": [],
+   "u9u11_residue": "wearecollins' two-bar burger (bar count fixed at three, U-6 trigger markup); away's and rabbit's icon swap approximated by the x morph, and indus-foods' 38px x kept at a 44px hit box: recorded divergences",
+   "uncovered_count": 0
   },
   {
    "id": "M-29",
@@ -1046,24 +1034,16 @@
     "wearecollins"
    ],
    "needed_by_count": 13,
-   "coverage_status": "conflict",
+   "coverage_status": "covered",
    "evidence": "measured",
    "covered_by": [
-    "(Escape, outside-click and Tab-off are shipped UNCONDITIONALLY, with no attribute)"
+    "(Escape, outside-click and Tab-off are shipped UNCONDITIONALLY, with no attribute)",
+    "Escape, backdrop/scrim click and the live trigger close every drawer; sgs/nav-drawer::closeOnScrollDistance (DEC-02 carve-out, pointer scrolling only, never on touch) (U-9, D1150)"
    ],
    "note": "MERGED across the panel and the drawer, and resolved to CONFLICT (see 'What I changed'). VERIFIED: store.js binds an Escape handler and mega-disclosure.js has four Escape branches plus an outside-click handler; the DB and both block.json files carry no escape/dismiss/closeOn* attribute. Seven references do NOT close on Escape and away does not close a focus-opened panel — neither can be reproduced and neither should be (WCAG 2.1.2 / 1.4.13). THREE routes are NOT a11y defects and have no equivalent: close-on-scroll (lamalama, >20-30px), a keyboard hotkey ('m', wearecollins) and history-back as a closer (resn's hash routes).",
-   "uncovered_references": [
-    "away",
-    "buck",
-    "halcyon",
-    "indus-foods",
-    "lamalama",
-    "lusion",
-    "resn",
-    "studionamma",
-    "wearecollins"
-   ],
-   "uncovered_count": 9
+   "uncovered_references": [],
+   "u9u11_residue": "wearecollins' 'm' hotkey and resn's history-back are outside Wave 3C (plan section 2: alternative routes to a dismissal already built); Escape-does-not-close references are recorded divergences (DEC-02)",
+   "uncovered_count": 0
   },
   {
    "id": "M-35",
@@ -1089,23 +1069,17 @@
     "wearecollins"
    ],
    "needed_by_count": 13,
-   "coverage_status": "conflict",
+   "coverage_status": "covered",
    "evidence": "measured",
    "covered_by": [
     "sgs/nav-drawer::modality (modal|non-modal)",
-    "::ariaLabel"
+    "::ariaLabel",
+    "sgs/nav-drawer::modality plus the focus containment and scroll lock (lock dropped only by closeOnScrollDistance) (U-9, D1150)"
    ],
    "note": "MERGED and resolved to CONFLICT. VERIFIED: modality is the only lever and governs INERTNESS, not the lock — store.js's lockBodyScroll/SCROLL_LOCK_ATTR pair runs on both values, and the focus trap is always on. Six references deliberately let the page scroll behind the open drawer and six deliberately let Tab leave; two set body overflow:hidden and still scroll because a smooth-scroll library bypasses it (studionamma@1440, Lenis). SGS is more accessible than the references here and the baseline is non-negotiable: the shortfall closes by DECIDING the rule (DEC-02), not by loosening the default.",
-   "uncovered_references": [
-    "buck",
-    "fantasy",
-    "halcyon",
-    "indus-foods",
-    "lamalama",
-    "rabbit",
-    "studionamma"
-   ],
-   "uncovered_count": 7
+   "uncovered_references": [],
+   "u9u11_residue": "the references that let the page scroll or Tab leave are recorded divergences (DEC-02)",
+   "uncovered_count": 0
   },
   {
    "id": "M-36",
@@ -1127,28 +1101,19 @@
     "wearecollins"
    ],
    "needed_by_count": 11,
-   "coverage_status": "conflict",
+   "coverage_status": "covered",
    "evidence": "measured",
    "covered_by": [
     "sgs/nav-bar-menu::triggerLabel",
     "::navLabel",
     "sgs/nav-drawer::closeLabel",
-    "::ariaLabel"
+    "::ariaLabel",
+    "SGS keeps <button aria-expanded aria-controls> on every trigger; the references' missing names/states are recorded divergences (DEC-02) (U-9, D1150)"
    ],
    "note": "VERIFIED: every trigger is emitted as <button type=\"button\" ... aria-expanded=\"false\" aria-controls=\"<resolving id>\"> with a data-wp-bind--aria-expanded. Every reference's NAMING is reachable. The conflict is that 9 of 13 omit aria-expanded, 2 use an unfocusable <div>, buck has no accessible name at all and wearecollins' aria-controls dangles — none of which SGS can emit, and none of which it should. A faithful clone measures MORE accessible than its reference by design.",
-   "uncovered_references": [
-    "buck",
-    "dogstudio",
-    "fantasy",
-    "halcyon",
-    "indus-foods",
-    "lamalama",
-    "lusion",
-    "resn",
-    "studionamma",
-    "wearecollins"
-   ],
-   "uncovered_count": 10
+   "uncovered_references": [],
+   "u9u11_residue": "none: a faithful clone is more accessible than its reference by design; recorded at clone time",
+   "uncovered_count": 0
   },
   {
    "id": "M-39",
@@ -1213,20 +1178,17 @@
     "wearecollins"
    ],
    "needed_by_count": 13,
-   "coverage_status": "partial",
+   "coverage_status": "covered",
    "evidence": "measured",
    "covered_by": [
     "sgs/nav-bar-menu::collapsePoint (number, default 768)",
-    "::showBurger"
+    "::showBurger",
+    "sgs/nav-bar-menu::collapsePoint (data-sgs-nav-collapse on the burger) + the DEC-09 rule in store.js: close only when the opener is no longer live (U-9, D1150)"
    ],
    "note": "MERGED: all three groups clustered the same breakpoint from three surfaces and all three read 'covered'. VERIFIED: collapsePoint is a free number so 940 (halcyon) and 960 (indus) are exact, and showBurger is the always-burger case (8 of 13). Whether the hidden nav is display:none or removed from the DOM has no visible difference. CARRY FORWARD: 768 is a MOBILE tier for halcyon and indus (DEC-11). buck's 375-tier DOM migration is M-08. MERGED with open-state-survival-across-a-resize, because that policy IS the collapse point's behaviour (DEC-09's rule keys on collapsePoint). The merge DOWNGRADES this family from covered to PARTIAL, which is the honest consequence: the breakpoint itself is fully covered, but store.js contains ZERO occurrences of 'resize', so nothing closes or reflows a drawer when the viewport crosses collapsePoint while it is open, and the references show three different behaviours. COVERING ROUTE CORRECTED: showBurger is NOT the always-burger switch — render.php calls it the split-menu gate ('the right-hand half of a split menu suppresses its own burger') and nav-menu-submenu-css.php hides `__toggle-wrap` at min-width:collapsePoint. Always-burger is reached by setting collapsePoint above every width; and buck at 1440 shows bar items AND a burger in one row (zone order 'Work, About, search icon, hamburger'), which one instance cannot do — it needs two nav-bar-menu instances, one items-only with showBurger:false and one burger-only.",
-   "uncovered_references": [
-    "away",
-    "fantasy",
-    "halcyon",
-    "indus-foods"
-   ],
-   "uncovered_count": 4
+   "uncovered_references": [],
+   "u9u11_residue": "none",
+   "uncovered_count": 0
   },
   {
    "id": "M-41",
@@ -1400,16 +1362,16 @@
     "lamalama"
    ],
    "needed_by_count": 5,
-   "coverage_status": "conflict",
+   "coverage_status": "covered",
    "evidence": "measured",
    "covered_by": [
-    "sgs/nav-drawer::submenuModel (accordion|drill-down)"
+    "sgs/nav-drawer::submenuModel (accordion|drill-down)",
+    "sgs/nav-drawer::accordionExclusive (context sgs/navDrawerAccordionExclusive) (U-9, D1150)"
    ],
    "note": "VERIFIED: the markup builder emits '<details class=\"sgs-nav-drawer-menu__accordion\" name=\"sgs-nav-drawer-menu-accordion-...\">' — a named <details> group is EXCLUSIVE by construction, so opening one row closes its siblings with no attribute to turn it off. Single-open is right for 3 of the 4 accordion references, but away@768 measured two panels open at once (669.5px and 1229.9px), so the built default actively PREVENTS a measured behaviour. drill-down is an extra capability no reference uses. CITATION CORRECTED: the 'EXCLUSIVE' wording is in includes/nav-menu-markup.php, not in nav-drawer/render.php.",
-   "uncovered_references": [
-    "away"
-   ],
-   "uncovered_count": 1
+   "uncovered_references": [],
+   "u9u11_residue": "two-open-at-once is unit-tested; the live test menu had one submenu",
+   "uncovered_count": 0
   },
   {
    "id": "M-50",
@@ -2123,6 +2085,7 @@
   },
   {
    "id": "DEC-02",
+   "amended": "2026-09-24 (U-9, D1150): the lamalama close-on-scroll carve-out necessarily drops the page scroll lock while it is set (a locked page cannot scroll, so the route could never fire); it closes only on pointer-driven scrolling and never on touch input. No other accessibility opt-out.",
    "title": "Accessibility divergences: a faithful clone would be LESS accessible than its reference",
    "families": [
     "M-34",

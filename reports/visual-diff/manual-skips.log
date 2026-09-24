@@ -1744,3 +1744,13 @@
 2026-09-24 02:11:14 | nav-bar-menu | MANUAL SKIP | U-2 scrim: the live capture needs this commit deployed first; captured on the test site straight after and committed as reports/visual-diff/scrim-2026-09-24.md
 2026-09-24 02:11:15 | nav-drawer | MANUAL SKIP | U-2 scrim: the live capture needs this commit deployed first; captured on the test site straight after and committed as reports/visual-diff/scrim-2026-09-24.md
 2026-09-24 02:11:17 | product-search | MANUAL SKIP | U-2 scrim: the live capture needs this commit deployed first; captured on the test site straight after and committed as reports/visual-diff/scrim-2026-09-24.md
+2026-09-24 13:51:42 | nav-bar-menu | MANUAL SKIP | U-9+U-11: the live capture needs the deploy and the deploy needs this commit; the capture report follows straight after deploy (plan section 5 step 5)
+2026-09-24 13:51:43 | nav-drawer | MANUAL SKIP | U-9+U-11: the live capture needs the deploy and the deploy needs this commit; the capture report follows straight after deploy (plan section 5 step 5)
+2026-09-24 13:51:45 | nav-drawer-menu | MANUAL SKIP | U-9+U-11: the live capture needs the deploy and the deploy needs this commit; the capture report follows straight after deploy (plan section 5 step 5)
+2026-09-24 13:53:04 | nav-bar-menu | MANUAL SKIP | U-9+U-11: the live capture needs the deploy and the deploy needs this commit; the capture report follows straight after deploy (plan section 5 step 5)
+2026-09-24 13:53:06 | nav-drawer | MANUAL SKIP | U-9+U-11: the live capture needs the deploy and the deploy needs this commit; the capture report follows straight after deploy (plan section 5 step 5)
+2026-09-24 13:53:07 | nav-drawer-menu | MANUAL SKIP | U-9+U-11: the live capture needs the deploy and the deploy needs this commit; the capture report follows straight after deploy (plan section 5 step 5)
+2026-09-24 13:54:55 | nav-bar-menu | MANUAL SKIP | U-9+U-11: the live capture needs the deploy and the deploy needs this commit; the capture report follows straight after deploy (plan section 5 step 5)
+2026-09-24 13:54:56 | nav-drawer | MANUAL SKIP | U-9+U-11: the live capture needs the deploy and the deploy needs this commit; the capture report follows straight after deploy (plan section 5 step 5)
+2026-09-24 13:54:57 | nav-drawer-menu | MANUAL SKIP | U-9+U-11: the live capture needs the deploy and the deploy needs this commit; the capture report follows straight after deploy (plan section 5 step 5)
+2026-09-24 13:55:16 | inspector-scan | MANUAL SKIP | rule 21 grew from other sessions' uncommitted buybox/cart/option-picker/trust-bar/whatsapp-cta work; the two nav findings (margin on nav-bar-menu and nav-drawer-menu) were declared 2026-09-14 in 80f78f511 and are untouched by this diff

@@ -195,8 +195,8 @@ visually. `none` means neither.
 | Order | Unit | Scope after the decisions | Families (exit cells) | Bean | Size | Lock files |
 |---|---|---|---|---|---|---|
 | 1 | U-1 — **DONE** | De-hardcode the nav surfaces. FIRST COMMIT wires the mega fork's `closeGrace` to `submenuCloseGrace` (`nav-menu-markup.php` builds it with a literal 170 while the non-mega fork reads the attribute); lift or parameterise `mega-disclosure.js::MAX_INTENT_DELAY_MS = 80`, which clamps a markup-declared 300; per-tier z-index (ENG-01); align the surface-ground vocabulary (fill, blur, radius and shadow diverge by name and type across site-header, mega-panel and nav-drawer). The force-solid tier emits the header's resting background (section 1a) | M-09 (covered), M-13 (partial), M-43 (covered), M-21 (covered, live check owed) | design | medium | `nav-menu-markup.php`, `site-header/{render.php,style.css,block.json}`, `mega-panel/{render.php,style.css,block.json}`, `nav-drawer/block.json` |
-| 2 | U-9 | Dismissal routes, modality, trigger semantics, the resize rule (DEC-09), `accordionExclusive` (ENG-02), close-on-scroll (DEC-02) | M-36, M-34, M-35, M-40, M-47 | design | medium | `nav-bar-menu/block.json`, `nav-drawer/block.json`, `nav-menu-markup.php`, `src/shared/nav-interactivity/{store.js,mega-disclosure.js}` |
-| 3 | U-11 | Close-control presence, placement (`same-slot` / `top-row-start` / `top-row-end` plus an offset pair) and morph motion (DEC-15); magnet strength (M-10). Includes the `closeStyle` string to tier-object migration via `migrate-tier-object.py --property closeStyle`, with the fallthrough check that a stored flat string still resolves, and `$sgs_nd_allowed_close_styles` kept equal to the JSON enum | M-27, M-10 | eye | medium | `nav-drawer/{block.json,render.php,style.css}`, `nav-bar-menu/{block.json,style.css}` |
+| 2 | U-9 — **DONE** (paired with U-11) | Dismissal routes, modality, trigger semantics, the resize rule (DEC-09), `accordionExclusive` (ENG-02), close-on-scroll (DEC-02) | M-36, M-34, M-35, M-40, M-47 | design | medium | `nav-bar-menu/block.json`, `nav-drawer/block.json`, `nav-menu-markup.php`, `src/shared/nav-interactivity/{store.js,mega-disclosure.js}` |
+| 3 | U-11 — **DONE** (paired with U-9) | Close-control presence, placement (`same-slot` / `top-row-start` / `top-row-end` plus an offset pair) and morph motion (DEC-15); magnet strength (M-10). Includes the `closeStyle` string to tier-object migration via `migrate-tier-object.py --property closeStyle`, with the fallthrough check that a stored flat string still resolves, and `$sgs_nd_allowed_close_styles` kept equal to the JSON enum | M-27, M-10 | eye | medium | `nav-drawer/{block.json,render.php,style.css}`, `nav-bar-menu/{block.json,style.css}` |
 | 4 | U-5 | Entry and exit animation vocabulary and item stagger. The mega fork has no entry-animation attribute today, so the animation must reach the mega interactivity context | M-31, M-32 | eye | high | `nav-drawer/{style.css,render.php,block.json}`, `mega-panel/block.json`, `nav-menu-markup.php`, `src/shared/nav-interactivity/` |
 | 5 | U-2 — **DONE** | Surface scrim, colour, alpha and blur per tier. The drawer hardcodes `rgba(0, 0, 0, 0.55)` twice in `style.css`; the panel fork has no scrim element at all, so U-2 adds one | M-14 (covered) | design | medium | `mega-panel/{render.php,block.json}`, `nav-drawer/{style.css,render.php,block.json}`, `src/shared/nav-interactivity/store.js` |
 | 6 | U-3 | Drawer side anchor, container inset, pitch tier object. No drawer clamp (section 1b) | M-17, M-46 | none | medium | `nav-drawer/{render.php,block.json}`, `nav-drawer-menu/block.json` |
@@ -241,6 +241,18 @@ cells were measured live within tolerance (exact values). Residue, named: butche
 captured as a number (measure at its Wave 4 clone); lamalama's click-through is an accepted divergence; the scrim fade
 stays 0.2s until U-5's motion vocabulary; lusion's phone and tablet blue is the full-screen drawer's own fill, and its
 card inset is U-3 (M-46). M-14 moves to `covered`.
+
+**U-9 + U-11 — done, as one pair** (D1150; design `.claude/reports/2026-09-24-u9-u11-design.md`; live
+`reports/visual-diff/nav-drawer-2026-09-24.md`; commit c36105939). The drawer's × follows DEC-15's own wording: it is
+left out at a tier only when the drawer is `non-modal`, `closeStyle` there is the new `trigger` value and the opener is
+live (hit-tested). `closeStyle` became a tier object (stored flat values migrated on sandybrown and in seven theme
+patterns); `closePlacement`, `closeOffset`, `closeRadius` added; the DEC-09 resize rule keys on the opener's liveness;
+`closeOnScrollDistance` is DEC-02's one carve-out (pointer scrolling only, never touch); `accordionExclusive` (ENG-02);
+`burgerMorph`, `burgerMorphDuration`, `burgerMorphEasing`; `itemMagnetStrength`. A Spec 32/35 audit found seven Spec 35
+must-fixes, all fixed before commit. M-36, M-34, M-35, M-40, M-47, M-27 and M-10 move to `covered`. Residue, named:
+wearecollins' two-bar burger belongs to U-6; away's and rabbit's icon swap and indus-foods' 38px × are recorded
+divergences; the `m` hotkey and history-back stay outside the wave (section 2); `axe-run.mjs` with the drawer open and
+the editor round-trip of the new controls are owed.
 
 Sizes are `families-master.json::units[].size` at full scope. Convert per
 `~/.claude/rules/time-estimates.md`: medium 30 to 60 minutes, high 1 to 2 hours, the whole
