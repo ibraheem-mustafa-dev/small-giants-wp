@@ -21,7 +21,9 @@
  * sgs/product-card block present.
  *
  * @var array     $attributes Block attributes.
- * @var string    $content    InnerBlocks content (unused — no InnerBlocks).
+ * @var string    $content    InnerBlocks content — optional extras dropped below
+ *                            the add-to-cart form (FR-Wave-B, §8g below). Empty
+ *                            on every buybox that has no children.
  * @var \WP_Block $block      Block instance.
  *
  * @package SGS\Blocks
@@ -39,6 +41,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-product-manifest.php';
 require_once dirname( __DIR__, 3 ) . '/includes/configurator-seed.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-configurator-pricing.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-value-ladder.php';
+require_once __DIR__ . '/extras.php';
 
 // ---------------------------------------------------------------------------
 // NO-INLINE (Spec 32 / per-block migration contract): a CSS-length sanitiser
@@ -121,6 +124,25 @@ if ( $def['pctOff'] > 0 ) {
 }
 
 $stock_text = $def['inStock'] ? '' : __( 'Out of stock', 'sgs-blocks' );
+
+// FR-Wave-B: RRP saving pill (extras.php) — SSR-only, default combo, off
+// unless an RRP meta key is configured (any-client: no hardcoded meta key).
+$buybox_rrp_format = sanitize_key( (string) ( $attributes['rrpSavingFormat'] ?? 'amount' ) );
+if ( ! in_array( $buybox_rrp_format, array( 'amount', 'percentage' ), true ) ) {
+	$buybox_rrp_format = 'amount';
+}
+$buybox_rrp = sgs_buybox_rrp_pill(
+	$buybox_post_id,
+	(string) ( $attributes['rrpMetaKey'] ?? '' ),
+	(int) $def['priceMinor'],
+	(int) $decimals,
+	$buybox_rrp_format
+);
+
+// FR-Wave-B: stock-status indicator (extras.php) — SSR-only, default combo.
+// Existing $stock_text/hidden behaviour is untouched unless showStockStatus is on.
+$buybox_show_stock_status = (bool) ( $attributes['showStockStatus'] ?? false );
+$buybox_stock_status      = sgs_buybox_stock_status( (int) $def['variationId'], (bool) $def['inStock'], $stock_text );
 
 // Per-unit and discount (mirrors product-card B3 pattern).
 // FR-30-8: operator-configurable denomination — sanitised attr wins when non-empty.
@@ -527,11 +549,19 @@ if ( null !== $margin_mob_val ) {
 	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{margin:{$margin_mob_val};}}";
 }
 
+// FR-Wave-B: sticky configurator column (extras.php). Off by default — every
+// existing buybox keeps rendering exactly as before.
+$buybox_sticky          = sgs_buybox_sticky_data( $attributes );
+$buybox_wrapper_classes = 'sgs-buybox ' . $uid;
+if ( $buybox_sticky['enabled'] ) {
+	$buybox_wrapper_classes .= ' sgs-buybox--sticky-config';
+}
+
 // Wrapper attributes — includes Interactivity API bindings. uid CLASS added
 // (no 'style' key — the root carries ZERO inline property declarations;
 // every declaration lives in the scoped <style> below).
 $wrapper_attrs = get_block_wrapper_attributes(
-	array( 'class' => 'sgs-buybox ' . $uid )
+	array( 'class' => $buybox_wrapper_classes )
 );
 
 ob_start();
@@ -623,6 +653,12 @@ if ( ! empty( $border_radius_mobile_obj ) ) {
 		$scoped_css[] = '@media(max-width:767px){' . $border_radius_mob_out['css'] . '}';
 	}
 }
+
+// FR-Wave-B: sticky column / RRP pill / stock-status scoped CSS (extras.php).
+$scoped_css = array_merge(
+	$scoped_css,
+	sgs_buybox_extras_scoped_css( $attributes, $root_sel, $buybox_rrp, $buybox_sticky )
+);
 ?>
 <?php if ( $scoped_css ) : ?>
 <style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via sgs_css_length_value() / wp_style_engine_get_styles; wp_strip_all_tags guards </style> ?></style>
@@ -657,6 +693,14 @@ if ( ! empty( $border_radius_mobile_obj ) ) {
 			data-wp-bind--hidden="context.hideSale"
 			data-wp-text="context.pctDisplay"
 		><?php echo esc_html( $pct_display ); ?></span>
+		<?php
+		// ── 8a-iii. RRP saving pill (FR-Wave-B, SSR-only — same "no data-wp-*"
+		// pattern as the value-ladder below: the RRP compares the DEFAULT
+		// combo's price only, it does not recompute on a pill swap).
+		?>
+		<?php if ( ! $buybox_rrp['hidden'] ) : ?>
+		<span class="buybox__rrp-pill"><?php echo esc_html( $buybox_rrp['text'] ); ?></span>
+		<?php endif; ?>
 	</div>
 	<p
 		class="buybox__price-note buybox__price-note--per-unit"
@@ -739,7 +783,20 @@ if ( ! empty( $border_radius_mobile_obj ) ) {
 	}
 	?>
 
-	<?php // ── 8c. Stock status — hidden when in stock. ?>
+	<?php
+	// ── 8c. Stock status (FR-Wave-B). Default: hidden when in stock (today's
+	// behaviour, unchanged). showStockStatus on: an always-visible coloured
+	// dot + label, SSR-only for the default combo (extras.php).
+	?>
+	<?php if ( $buybox_show_stock_status ) : ?>
+	<p
+		class="buybox__stock buybox__stock--status <?php echo esc_attr( $buybox_stock_status['class'] ); ?>"
+		role="status"
+		aria-live="polite"
+	>
+		<span class="buybox__stock-dot" aria-hidden="true"></span><?php echo esc_html( $buybox_stock_status['label'] ); ?>
+	</p>
+	<?php else : ?>
 	<p
 		class="buybox__stock"
 		role="status"
@@ -747,6 +804,7 @@ if ( ! empty( $border_radius_mobile_obj ) ) {
 		data-wp-bind--hidden="context.inStock"
 		data-wp-text="context.stockText"
 	><?php echo esc_html( $stock_text ); ?></p>
+	<?php endif; ?>
 
 	<?php
 	// ── 8c-ii. Back-in-stock notify-me form (FR-30-10, Step 10).
@@ -831,6 +889,19 @@ if ( ! empty( $border_radius_mobile_obj ) ) {
 		aria-live="polite"
 		data-wp-text="context.availabilityNote"
 	></p>
+
+	<?php
+	// ── 8g. Optional extras (FR-Wave-B) — child blocks dropped below the
+	// add-to-cart form (a second CTA, sgs/whatsapp-cta, an sgs/icon-list
+	// assurance list…). $content is WP core's already-rendered InnerBlocks
+	// markup; only wrapped when non-empty so a buybox with no children
+	// renders byte-identical to before this feature existed.
+	?>
+	<?php if ( '' !== trim( (string) $content ) ) : ?>
+	<div class="sgs-buybox__extras">
+		<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $content is WP core InnerBlocks output, already rendered + escaped by render_block(). ?>
+	</div>
+	<?php endif; ?>
 
 	</div><?php // end .sgs-buybox__config-col ?>
 

@@ -83,6 +83,52 @@
 							}
 						}
 					}
+				},
+				"rrp-pill": {
+					"label": "RRP saving pill",
+					"order": 2,
+					"clusters": [
+						"fill",
+						"text"
+					],
+					"attrMap": {
+						"css:background-color": "rrpPillBackgroundColour",
+						"css:color": "rrpPillTextColour"
+					},
+					"_note": "FR-Wave-B. SSR-only chip shown when a configured RRP meta key resolves to a genuine saving on the default variation (extras.php::sgs_buybox_rrp_pill). Background/text colour both live here rather than on the wrapper element, since this is a distinct visual element from the price row it sits beside."
+				},
+				"stock-in-stock": {
+					"label": "In-stock label",
+					"order": 3,
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:color": "stockInStockColour"
+					},
+					"_note": "FR-Wave-B. Shown only when showStockStatus is on. Colours both the label text and the status dot (extras.php::sgs_buybox_extras_scoped_css). Split into three separate elements (in/low/out) because each is its own css:color target — one element manifest entry cannot map three attributes to the same css_property key."
+				},
+				"stock-low-stock": {
+					"label": "Low-stock label",
+					"order": 4,
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:color": "stockLowStockColour"
+					},
+					"_note": "FR-Wave-B. See stock-in-stock note — same mechanism, the low-stock state (WooCommerce per-variation stock management, extras.php::sgs_buybox_stock_status)."
+				},
+				"stock-out-of-stock": {
+					"label": "Out-of-stock label",
+					"order": 5,
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:color": "stockOutOfStockColour"
+					},
+					"_note": "FR-Wave-B. See stock-in-stock note — same mechanism, the out-of-stock state."
 				}
 			},
 			"fx": {
@@ -233,6 +279,55 @@
 			"default": {
 				"desktop": {}
 			}
+		},
+		"stickyEnabled": {
+			"type": "boolean",
+			"default": false,
+			"description": "Keep the configurator column (price, pickers, add-to-cart) pinned in view while the shopper scrolls a long product description below it. Off by default. Disabled below 768px regardless of this setting — a stuck column on a phone-width screen fights the shopper's scroll."
+		},
+		"stickyOffset": {
+			"type": "string",
+			"default": "",
+			"description": "Extra CSS length (e.g. \"12px\", \"1rem\") between the sticky column and the sticky header, on top of the header's own live height. Empty = flush against the header."
+		},
+		"rrpMetaKey": {
+			"type": "string",
+			"default": "",
+			"description": "Post-meta key holding the recommended retail price (a plain number in the shop's major currency unit, e.g. \"171.00\"). Empty = the saving pill is off. Set per-site to whatever meta key stores RRP for that catalogue."
+		},
+		"rrpSavingFormat": {
+			"type": "string",
+			"default": "amount",
+			"enum": [
+				"amount",
+				"percentage"
+			],
+			"description": "How the saving pill is worded: a money amount (\"Save £32\") or a percentage (\"Save 19%\")."
+		},
+		"rrpPillBackgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"rrpPillTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"showStockStatus": {
+			"type": "boolean",
+			"default": false,
+			"description": "Replace the plain out-of-stock line with an always-visible in-stock / low-stock / out-of-stock indicator (coloured dot + label). Off keeps today's behaviour (a line shown only when out of stock). Reflects the initially-selected variation only — it does not update if the shopper swaps to a different combination."
+		},
+		"stockInStockColour": {
+			"type": "string",
+			"default": ""
+		},
+		"stockLowStockColour": {
+			"type": "string",
+			"default": ""
+		},
+		"stockOutOfStockColour": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"editorScript": "file:./index.js",

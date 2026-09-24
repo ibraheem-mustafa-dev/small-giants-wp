@@ -52,6 +52,23 @@
 	opacity: 0.8;
 }
 
+/* ── RRP saving pill (FR-Wave-B) ───────────────────────────────────────── */
+
+.sgs-buybox .buybox__rrp-pill {
+	display: inline-block;
+	font-size: 0.8rem;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	padding: 0.35em 0.6em;
+	border-radius: var(--wp--preset--spacing--10, 4px);
+	/* Neutral default chip — any-client, no brand hue baked in; the two
+	   colour attributes (RRP pill background/text, sgs_colour_value()) are
+	   the client-facing override in the Colour panel. */
+	background: var(--sgs-buybox-rrp-bg, var(--wp--preset--color--surface-alt, #efeae2));
+	color: var(--sgs-buybox-rrp-text, inherit);
+}
+
 /* ── Stock line ────────────────────────────────────────────────────────── */
 
 .sgs-buybox .buybox__stock {
@@ -59,6 +76,53 @@
 	font-weight: 600;
 	/* 4.5:1 against white — token-overridable. */
 	color: var(--sgs-buybox-stock-colour, #b32d2e);
+}
+
+/* ── Stock status indicator (FR-Wave-B, showStockStatus attribute) ──────── */
+
+.sgs-buybox .buybox__stock--status {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	font-size: 0.9rem;
+}
+
+.sgs-buybox .buybox__stock-dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	flex-shrink: 0;
+}
+
+/* Generic semantic status colours (green/amber/red) — universal UI
+   convention, not a client brand hue. Each is overridable via its own
+   colour attribute (In-stock / Low-stock / Out-of-stock label, Colour panel).
+   Defaults are theme tokens (Spec 32 S3) — success/accent-text/error — with
+   a hex fallback ONLY for a theme that hasn't defined that preset slug,
+   matching the token-with-hex-fallback convention already used throughout
+   this file (e.g. .value-ladder__row[aria-current="true"] above). */
+.sgs-buybox .buybox__stock--in-stock {
+	color: var(--sgs-buybox-stock-in-colour, var(--wp--preset--color--success, #1b7f43));
+}
+
+.sgs-buybox .buybox__stock--in-stock .buybox__stock-dot {
+	background-color: var(--sgs-buybox-stock-in-colour, var(--wp--preset--color--success, #1b7f43));
+}
+
+.sgs-buybox .buybox__stock--low-stock {
+	color: var(--sgs-buybox-stock-low-colour, var(--wp--preset--color--accent-text, #8a6a1f));
+}
+
+.sgs-buybox .buybox__stock--low-stock .buybox__stock-dot {
+	background-color: var(--sgs-buybox-stock-low-colour, var(--wp--preset--color--accent-text, #8a6a1f));
+}
+
+.sgs-buybox .buybox__stock--out-of-stock {
+	color: var(--sgs-buybox-stock-out-colour, var(--wp--preset--color--error, #b32d2e));
+}
+
+.sgs-buybox .buybox__stock--out-of-stock .buybox__stock-dot {
+	background-color: var(--sgs-buybox-stock-out-colour, var(--wp--preset--color--error, #b32d2e));
 }
 
 /* ── Add-to-cart form ──────────────────────────────────────────────────── */
@@ -329,6 +393,14 @@
 	font-size: 0.85rem;
 	opacity: 0.75;
 	max-width: 36em;
+}
+
+/* Optional extras slot, editor view (FR-Wave-B) — full width so the "+"
+   appender and any inserted child blocks aren't squashed by the
+   placeholder's centred flex column. */
+.sgs-buybox--editor-placeholder .sgs-buybox__extras-editor {
+	width: 100%;
+	text-align: left;
 }
 
 /* ── Back-in-stock notify-me form (FR-30-10) ──────────────────────────── */
@@ -637,6 +709,28 @@
 
 .sgs-buybox__config-col {
 	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: var(--sgs-buybox-gap, 12px);
+}
+
+/* Sticky column (FR-Wave-B, stickyEnabled attribute): position/top are
+   emitted per-instance in the block's own scoped <style> (render.php ->
+   extras.php::sgs_buybox_extras_scoped_css()) since the offset is an
+   operator-set number, not a fixed value — this rule only bounds the
+   sticky element so it never grows taller than the viewport it's stuck in. */
+.sgs-buybox--sticky-config .sgs-buybox__config-col {
+	max-height: 100vh;
+	overflow-y: auto;
+}
+
+/* ── Optional extras slot (FR-Wave-B) ────────────────────────────────────
+   A second CTA, sgs/whatsapp-cta, an sgs/icon-list assurance list… dropped
+   below the add-to-cart form. Spacing comes from the parent's own flex
+   `gap` above — nothing extra needed for a single child; this rule only
+   keeps multiple children (e.g. two buttons) tidy without imposing a
+   layout choice on whatever block the operator inserts. */
+.sgs-buybox__extras {
 	display: flex;
 	flex-direction: column;
 	gap: var(--sgs-buybox-gap, 12px);

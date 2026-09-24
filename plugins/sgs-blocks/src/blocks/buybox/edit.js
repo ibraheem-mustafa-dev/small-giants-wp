@@ -1,11 +1,17 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import { useBlockProps, useInnerBlocksProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, TextControl, ToggleControl, SelectControl, Icon } from '@wordpress/components';
 import { ResponsiveBoxControl, SgsColourPanel, fillRow, textRow,
 	SgsBorderControl,
 	resolveColourToken,
 	MediaElementPanel,
 } from '../../components';
+import { BuyboxExtraPanels, getBuyboxExtraColourRows } from './inspector-extra';
+
+// A second CTA, a WhatsApp prompt, or an assurance list — the kinds of thing
+// worth dropping below the add-to-cart form. Not exhaustive (any block can be
+// force-inserted from the list view), just a sensible curated default set.
+const BUYBOX_EXTRAS_ALLOWED_BLOCKS = [ 'sgs/button', 'sgs/whatsapp-cta', 'sgs/icon-list' ];
 
 /**
  * Editor view for sgs/buybox.
@@ -60,6 +66,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			attributes,
 			setAttributes,
 		} ),
+		...getBuyboxExtraColourRows( { attributes, setAttributes } ),
 	];
 
 	// Contrast check for border colour against the buybox's own background.
@@ -72,6 +79,17 @@ export default function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps( {
 		className: 'sgs-buybox sgs-buybox--editor-placeholder',
 	} );
+
+	// Optional extras slot (a second button, a WhatsApp CTA, an assurance
+	// list…) rendered by render.php below the add-to-cart form. Empty by
+	// default — an operator who never opens the list view never sees it.
+	const extrasInnerBlocksProps = useInnerBlocksProps(
+		{ className: 'sgs-buybox__extras-editor' },
+		{
+			allowedBlocks: BUYBOX_EXTRAS_ALLOWED_BLOCKS,
+			templateLock: false,
+		}
+	);
 
 	return (
 		<>
@@ -288,6 +306,11 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
+
+				<BuyboxExtraPanels
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
@@ -395,6 +418,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						'sgs-blocks'
 					) }
 				</p>
+				<div { ...extrasInnerBlocksProps } />
 			</div>
 		</>
 	);
