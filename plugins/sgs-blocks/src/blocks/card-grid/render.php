@@ -25,6 +25,12 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-card-grid-products.php';
 // WordPress install.
 require_once dirname( __DIR__, 3 ) . '/includes/class-cpt-collection-query.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-grid-pagination.php';
+// Shared icon registry (sgs/icon, sgs/trust-bar) — reused for the per-item
+// glyph, never a second icon system.
+require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
+// Per-item glyph + image-fallback-tile helpers — kept in this block's own
+// directory rather than growing this already-oversized render.php.
+require_once __DIR__ . '/glyph-fallback.php';
 
 // CSS length/unit sanitiser — for free-text length values (border width,
 // letter-spacing) concatenated into raw CSS declarations inside this block's
@@ -102,6 +108,15 @@ $stagger_delay       = $attributes['staggerDelay'] ?? 0;
 $query_post_type     = sanitize_key( $attributes['queryPostType'] ?? 'post' );
 $query_per_page      = absint( $attributes['queryPostsPerPage'] ?? 6 );
 $query_category      = absint( $attributes['queryCategory'] ?? 0 );
+// Per-item glyph icon + image-fallback tile (Eye Care "Shop by shape" gap) —
+// block-wide size/colour, per-item glyph slug read inside the items loop
+// below. glyph-fallback.php holds the emission helpers. glyphSize is a CSS
+// LENGTH string (Spec 35 C5 — a UnitControl, not a raw-px number), sanitised
+// inside sgs_card_grid_glyph_css() via sgs_css_length_value().
+$glyph_size            = (string) ( $attributes['glyphSize'] ?? '32px' );
+$glyph_colour          = (string) ( $attributes['glyphColour'] ?? '' );
+$image_fallback        = ! empty( $attributes['imageFallback'] );
+$image_fallback_colour = (string) ( $attributes['imageFallbackColour'] ?? '' );
 
 // ── Instance uid — a CLASS (matches the container/hero/quote convention) so
 // this grid's WP-native supports + title/subtitle colours can be scoped to
@@ -510,6 +525,11 @@ $card_pad_mob = sgs_box_object_shorthand( $card_padding_mobile_obj );
 if ( null !== $card_pad_mob ) {
 	$card_grid_native_css .= '@media(max-width:767px){' . $root_sel . ' .sgs-card-grid__body{padding:' . $card_pad_mob . '}}';
 }
+
+// Per-item glyph icon + image-fallback tile — one scoped custom-property
+// rule (glyph-fallback.php); empty inputs leave the property unset so
+// style.css's own var() fallback chain renders exactly as before.
+$card_grid_native_css .= sgs_card_grid_glyph_css( $root_sel, $glyph_colour, $glyph_size, $image_fallback_colour );
 
 // wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving CSS
 // combinators like `>` intact (contract §D — matches SGS_Container_Wrapper +
@@ -973,11 +993,26 @@ foreach ( $items as $index => $item ) :
 			1
 		);
 	}
+	// Per-item glyph icon (Eye Care "Shop by shape" gap) — shown OVER the
+	// photo when there is one, or inside the image-fallback tile when
+	// there isn't. An unknown/missing slug renders nothing (never a broken
+	// icon). `imageFallback` gates the fallback tile itself (default off —
+	// existing sites render an unchanged empty box).
+	$item_glyph_slug   = isset( $item['glyph'] ) ? sanitize_key( (string) $item['glyph'] ) : '';
+	$item_glyph_html   = sgs_card_grid_glyph_html( $item_glyph_slug );
+	$item_has_media    = '' !== $media_html;
+	$item_use_fallback = $image_fallback && ! $item_has_media;
+	$image_wrap_class  = 'sgs-card-grid__image-wrap' . ( $item_use_fallback ? ' sgs-card-grid__image-wrap--fallback' : '' );
 	?>
 	<<?php echo esc_attr( $item_tag ); ?> class="sgs-card-grid__item" data-card-key="<?php echo esc_attr( $card_grid_item_key ); ?>"<?php echo $link_attr; ?>>
-		<div class="sgs-card-grid__image-wrap"<?php echo $item_decorative ? ' aria-hidden="true"' : ''; ?>>
+		<div class="<?php echo esc_attr( $image_wrap_class ); ?>"<?php echo $item_decorative ? ' aria-hidden="true"' : ''; ?>>
 			<?php if ( '' !== $media_html ) : ?>
 				<?php echo $media_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside sgs_render_media(). ?>
+			<?php endif; ?>
+			<?php if ( '' !== $item_glyph_html ) : ?>
+				<?php echo $item_glyph_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside sgs_card_grid_glyph_html() via wp_kses(). ?>
+			<?php elseif ( $item_use_fallback && ! empty( $item['title'] ) ) : ?>
+				<?php echo sgs_card_grid_fallback_initial( $item['title'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside sgs_card_grid_fallback_initial() via esc_html(). ?>
 			<?php endif; ?>
 			<?php if ( 'overlay' === $variant || 'overlay-slide' === $hover_effect ) : ?>
 				<div class="sgs-card-grid__overlay">

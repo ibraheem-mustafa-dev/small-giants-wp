@@ -149,9 +149,12 @@
         "image-wrap": {
           "label": "Image wrapper",
           "order": 4,
-          "clusters": [],
-          "prefix": "",
-          "_note": "Split from 'card-media' 2026-08-15 — the wrapping `<div class=\"sgs-card-grid__image-wrap\">` (render.php:695) that sets aspect-ratio via the `--sgs-card-grid-aspect` custom property (aspectRatio attr; markup-fallback derivation already resolves it to css_element='image-wrap'). Mirrors sgs/gallery's own 'img-wrap' element (same split, same reasoning). `prefix: \"\"` opts this element out of orphan-candidate scanning — it has no other style attrs to claim, so any gap is reported honestly rather than force-claimed."
+          "clusters": ["fill"],
+          "prefix": "imageFallback",
+          "attrMap": {
+            "css:background-color": "imageFallbackColour"
+          },
+          "_note": "Split from 'card-media' 2026-08-15 — the wrapping `<div class=\"sgs-card-grid__image-wrap\">` (render.php:695) that sets aspect-ratio via the `--sgs-card-grid-aspect` custom property (aspectRatio attr; markup-fallback derivation already resolves it to css_element='image-wrap'). Mirrors sgs/gallery's own 'img-wrap' element (same split, same reasoning). `prefix: \"\"` opted this element out of orphan-candidate scanning while it had no style attrs to claim; `imageFallbackColour` (2026-09-24, Eye Care 'Shop by shape' gap) changed that, and the blanket opt-out ALSO hid the attrMap from check-element-manifest-conformance.js's cluster-resolution pass (an element's attrMap is only consulted for clusters it has actually declared) — with `clusters: []` the entry was inert, so `imageFallbackColour` was reported as an unrelated ORPHAN under the 'image' element instead, purely because its name happens to start with \"image\" (the same literal-prefix collision that element's own `imageZoomHover` deliberately tolerates as a BY-DESIGN orphan). Fixed by narrowing this element's `prefix` to `\"imageFallback\"` (still opts it out of the OTHER `image*`-named attrs it doesn't own, e.g. it never claims `imageZoomHover`) and declaring `clusters: [\"fill\"]` so the `css:background-color` attrMap member actually resolves and claims `imageFallbackColour` — once claimed here, the 'image' element's separate prefix scan sees it as already-claimed and stops reporting it. `imageFallback` (the boolean toggle) has no css: mapping and stays an honest BY-DESIGN orphan here, the same shape as `imageZoomHover` on 'image'."
         },
         "title": {
           "label": "Card title",
@@ -206,6 +209,15 @@
             "css:padding": "cardPadding"
           },
           "_note": "The `.sgs-card-grid__body` wrapper (style.css: `padding: var(--wp--preset--spacing--30)`) holding title/subtitle/badge below the image — previously a hardcoded, non-responsive default with no attribute or editor control at all. `cardPadding` (2026-09-15, tier-object {desktop,tablet,mobile} — mirrors sgs/hero's mediaPadding/contentPadding, sgs/product-card's flat cardPadding) exposes it. Closes the gap the classless sc-var responsive correlator surfaced (D1061 follow-up): a real draft-authored responsive card-padding value (verified live on the Ward End Eye Care draft) had nowhere to land."
+        },
+        "glyph": {
+          "label": "Card glyph",
+          "order": 6,
+          "clusters": ["text"],
+          "attrMap": {
+            "css:color": "glyphColour"
+          },
+          "_note": "New 2026-09-24 (Eye Care 'Shop by shape' gap, FR-31-nn candidate) — a per-item glyph icon (`items[].glyph`, a Lucide slug) rendered as `.sgs-card-grid__glyph` inside `.sgs-card-grid__image-wrap`, over the image or over the image-fallback tile. `glyphColour`/`glyphSize` are block-wide (one glyph treatment for every card, same scope as `cardBackground`) — resolved in the block's own `src/blocks/card-grid/glyph-fallback.php` helper file (kept out of render.php, which is already over the 300-line guidance) via a `--sgs-card-grid-glyph-colour` custom property, not a direct override, so an unset colour still inherits the theme's inverse-text token (FR-35-5 pattern). `clusters: [\"text\"]` added 2026-09-24 (compliance fix) — `css:color` is a `text` cluster member (mirrors sgs/icon's own `icon` element, which resolves its `iconColour` attrMap the same way); with `clusters: []` the attrMap was declared but never consulted by check-element-manifest-conformance.js's cluster-resolution pass, so `glyphColour` reported as an ORPHAN despite the mapping being correct. `glyphSize` has no css: mapping (a custom-property-driven size, not a standard cluster member, same honest gap as sgs/icon's own `iconSize`) and stays an unclaimed orphan by the same precedent."
         }
       }
     }
@@ -289,6 +301,11 @@
             "type": "boolean",
             "default": false,
             "description": "When true, this card image is purely decorative — rendered with an empty alt attribute and aria-hidden on its wrapper so screen readers skip it (WCAG 2.1 AA 1.1.1). Manual/query modes only; wc-product/cpt-collection cards pull an informative product photo the client does not author."
+          },
+          "glyph": {
+            "type": "string",
+            "default": "",
+            "description": "Lucide icon slug shown as a small glyph on this card (over the image, or inside the image-fallback tile when the card has no image — see the block-wide `imageFallback` attribute). Empty = no glyph. Resolved through the same shared icon registry as sgs/icon and sgs/trust-bar (includes/lucide-icons.php::sgs_get_lucide_icon())."
           },
           "_key": {
             "type": "string",
@@ -783,6 +800,26 @@
       "type": "string",
       "default": "",
       "description": "CSS gradient string painting the card text on :hover instead of a flat colour. Non-empty wins over textColourHover (colour-conformance text-colour trio closeout, 2026-09-07). This attribute has NO resting counterpart — hover-only by design."
+    },
+    "glyphSize": {
+      "type": "string",
+      "default": "32px",
+      "description": "Size (a CSS length — px/em/rem) of the per-item glyph icon and the image-fallback initial letter. One glyph treatment shared block-wide, matching items[].glyph being per-item content but not per-item styled. A CSS-length string with a real unit picker (Spec 35 C5), not a raw-px number."
+    },
+    "glyphColour": {
+      "type": "string",
+      "default": "",
+      "description": "Colour for the per-item glyph icon / image-fallback initial letter. Empty inherits the theme's inverse-text token at render (FR-35-5 empty-means-inherit pattern), which keeps a glyph legible over a photo or a dark fallback tile without the client having to set anything."
+    },
+    "imageFallback": {
+      "type": "boolean",
+      "default": false,
+      "description": "When a card has no image or video, show a neutral coloured tile (optionally carrying the card's glyph, or its title's first letter) instead of an empty box. Off by default so existing sites render unchanged (any-client rule)."
+    },
+    "imageFallbackColour": {
+      "type": "string",
+      "default": "",
+      "description": "Background colour for the image-fallback tile (imageFallback). Empty uses the theme's surface-alt token."
     }
   },
   "render": "file:./render.php",

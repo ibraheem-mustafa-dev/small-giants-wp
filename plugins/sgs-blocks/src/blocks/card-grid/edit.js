@@ -27,11 +27,13 @@ import { ShadowControl, shadowAttrKeys, TypographyControls, ResponsiveBoxControl
 	GradientCapableColourControl,
 	SgsColourPanel,
 	SsrPreviewGuard,
+	IconPicker,
+	IconPreview,
 } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import MediaPicker from '../../components/MediaPicker';
 import CollectionPanel from './components/collection-panel';
-import { colourVar, spacingVar, resolveResponsiveTier, resolveTextColourPreviewStyle, generateItemKey, withStableItemKeys, focalPointToObjectPosition, patchTier } from '../../utils';
+import { colourVar, spacingVar, resolveResponsiveTier, resolveTextColourPreviewStyle, generateItemKey, withStableItemKeys, focalPointToObjectPosition, patchTier, SGS_LENGTH_UNITS, sgsNormaliseLength } from '../../utils';
 
 const VARIANT_OPTIONS = [
 	{ label: __( 'Card', 'sgs-blocks' ), value: 'card' },
@@ -212,6 +214,35 @@ function ItemEditor( { item, index, onChange, onRemove } ) {
 				) }
 				__nextHasNoMarginBottom
 			/>
+			{ /* Per-item glyph icon (Eye Care "Shop by shape" gap) — reuses the
+			   shared framework icon registry (same IconPicker as sgs/icon and
+			   sgs/trust-bar's icon-circle items), never a second icon system.
+			   Shown over the photo, or over the image-fallback tile below when
+			   the card has no media (see the block-wide "Glyph & Image
+			   Fallback" panel). Empty = no glyph. */ }
+			<IconPicker
+				label={ __( 'Glyph icon (optional)', 'sgs-blocks' ) }
+				value={ { source: 'lucide', name: item.glyph || '' } }
+				onChange={ ( { name } ) => update( 'glyph', name || '' ) }
+				sources={ [ 'lucide' ] }
+			/>
+			{ !! item.glyph && (
+				<Button
+					variant="tertiary"
+					isDestructive
+					onClick={ () => update( 'glyph', '' ) }
+					size="small"
+					style={ { marginBottom: '8px' } }
+				>
+					{ __( 'Remove glyph', 'sgs-blocks' ) }
+				</Button>
+			) }
+			<p style={ { margin: '0 0 8px', fontSize: 12, color: '#757575' } }>
+				{ __(
+					'Shown over the photo, or over the fallback tile if this card has no image.',
+					'sgs-blocks'
+				) }
+			</p>
 			<TextControl
 				label={ __( 'Title', 'sgs-blocks' ) }
 				value={ item.title || '' }
@@ -333,6 +364,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		productIds,
 		productShowLadder,
 		productEmptyMessage,
+		glyphSize,
+		glyphColour,
+		imageFallback,
+		imageFallbackColour,
 	} = attributes;
 
 	// Stable per-item `_key` for CSS scoping (Spec 35 Part 4) — backfilled
@@ -487,6 +522,35 @@ export default function Edit( { attributes, setAttributes } ) {
 							},
 						],
 						...( cardBackgroundForContrast ? { contrastAgainst: cardBackgroundForContrast } : {} ),
+					},
+					{
+						key: 'glyph',
+						label: __( 'Glyph colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Colour', 'sgs-blocks' ),
+								value: glyphColour,
+								onChange: ( val ) => setAttributes( { glyphColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					// Image-fallback background — omitted entirely (not disabled)
+					// when the feature is off, per SgsColourPanel's own
+					// rows.filter(Boolean) contract.
+					imageFallback && {
+						key: 'image-fallback',
+						label: __( 'Image fallback background', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Colour', 'sgs-blocks' ),
+								value: imageFallbackColour,
+								onChange: ( val ) => setAttributes( { imageFallbackColour: val ?? '' } ),
+								linked: true,
+							},
+						],
 					},
 				] }
 			/>
@@ -968,6 +1032,45 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 				) }
 
+				{ /* Glyph + image-fallback structural controls (Eye Care "Shop by
+				   shape" gap) — one shared size for every card's glyph/initial,
+				   and the fallback-tile toggle. Colour rows for both live in the
+				   shared SgsColourPanel mount above (THE PLACEMENT RULE). */ }
+				<PanelBody
+					title={ __( 'Glyph & Image Fallback', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					{ /* CSS length — UnitControl (via SgsLengthControl), not a
+					     raw-px RangeControl (Spec 35 C5). Mirrors this same
+					     file's own cardRadius control above. */ }
+					<SgsLengthControl
+						label={ __( 'Glyph size', 'sgs-blocks' ) }
+						value={ glyphSize || '' }
+						units={ SGS_LENGTH_UNITS }
+						presets={ false }
+						onChange={ ( val ) =>
+							setAttributes( { glyphSize: sgsNormaliseLength( val ) || '32px' } )
+						}
+						help={ __(
+							'Also sets the size of the image-fallback initial letter below.',
+							'sgs-blocks'
+						) }
+					/>
+					<ToggleControl
+						label={ __(
+							'Show a fallback tile when a card has no image',
+							'sgs-blocks'
+						) }
+						checked={ !! imageFallback }
+						onChange={ ( val ) => setAttributes( { imageFallback: val } ) }
+						help={ __(
+							'Off keeps today’s empty box. On shows a neutral coloured tile (set its colour above) carrying the card’s glyph, or its title’s first letter.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+
 				<PanelBody
 					title={ __( 'Grid Settings', 'sgs-blocks' ) }
 					initialOpen={ false }
@@ -1265,9 +1368,27 @@ export default function Edit( { attributes, setAttributes } ) {
 									? focalPointToObjectPosition( item.focalPoint || { x: 0.5, y: 0.5 } )
 									: undefined,
 						};
+						// Glyph + image-fallback tile preview — mirrors render.php's
+						// item_use_fallback/item_glyph_slug logic so the canvas
+						// matches the frontend.
+						const hasMedia = !! item.media?.url;
+						const useFallback = !! imageFallback && ! hasMedia;
+						const wrapClassName = [
+							'sgs-card-grid__image-wrap',
+							useFallback ? 'sgs-card-grid__image-wrap--fallback' : '',
+						].filter( Boolean ).join( ' ' );
+						const wrapStyle = useFallback
+							? { backgroundColor: colourVar( imageFallbackColour ) || undefined }
+							: undefined;
+						const glyphColourValue = colourVar( glyphColour ) || undefined;
+						// IconPreview's `size` prop is a unitless px number
+						// (width/height); the initial-letter span below keeps
+						// the raw CSS-length string, which `fontSize` accepts
+						// directly.
+						const glyphSizePx = parseInt( glyphSize, 10 ) || 32;
 						return (
 						<div key={ item._key } className="sgs-card-grid__item">
-							<div className="sgs-card-grid__image-wrap">
+							<div className={ wrapClassName } style={ wrapStyle }>
 								{ item.media?.url ? (
 									item.media.type === 'video' ? (
 										// eslint-disable-next-line jsx-a11y/media-has-caption
@@ -1289,6 +1410,33 @@ export default function Edit( { attributes, setAttributes } ) {
 									)
 								) : (
 									<span className="sgs-card-grid__image-placeholder" />
+								) }
+								{ !! item.glyph ? (
+									<span
+										className="sgs-card-grid__glyph"
+										aria-hidden="true"
+										style={ { color: glyphColourValue } }
+									>
+										<IconPreview
+											source="lucide"
+											name={ item.glyph }
+											size={ glyphSizePx }
+										/>
+									</span>
+								) : (
+									useFallback &&
+									item.title && (
+										<span
+											className="sgs-card-grid__glyph-initial"
+											aria-hidden="true"
+											style={ {
+												color: glyphColourValue,
+												fontSize: glyphSize || '32px',
+											} }
+										>
+											{ item.title.trim().charAt( 0 ).toUpperCase() }
+										</span>
+									)
 								) }
 								{ variant === 'overlay' && (
 									<div className="sgs-card-grid__overlay">

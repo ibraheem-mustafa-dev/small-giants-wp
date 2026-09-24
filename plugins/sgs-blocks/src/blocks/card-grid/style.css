@@ -80,6 +80,69 @@
 	background: var(--wp--preset--color--surface-alt, #F5F7F7);
 }
 
+/* Image-fallback tile (imageFallback attribute) — a neutral coloured tile
+   instead of an empty box when a card has no image/video. Off by default
+   (this rule only has visible effect once the block adds the modifier
+   class, which render.php only ever does when imageFallback is on). */
+.sgs-card-grid__image-wrap--fallback {
+	background: var(--sgs-card-grid-fallback-bg, var(--wp--preset--color--surface-alt, #F5F7F7));
+}
+
+/* Per-item glyph icon — sits over the photo, or over the fallback tile,
+   centred low in the tile (mirrors the "label sits under a small glyph"
+   shape common to a "shop by category" tile). Colour/size are one shared
+   custom property per instance (render.php via glyph-fallback.php); an
+   unset colour falls through to the theme's inverse-text token. A small
+   semi-transparent dark backdrop keeps the glyph legible regardless of
+   what is underneath it — a bright photo, a dark photo, or the (light,
+   by default) fallback tile background — without depending on the
+   operator choosing a colour that happens to contrast. */
+.sgs-card-grid__glyph {
+	position: absolute;
+	left: 50%;
+	bottom: var(--wp--preset--spacing--20, 12px);
+	transform: translateX(-50%);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--sgs-card-grid-glyph-size, 32px);
+	height: var(--sgs-card-grid-glyph-size, 32px);
+	padding: 6px;
+	box-sizing: content-box;
+	border-radius: 50%;
+	background: rgba(0, 0, 0, 0.35);
+	color: var(--sgs-card-grid-glyph-colour, var(--wp--preset--color--text-inverse, #fff));
+	pointer-events: none;
+}
+
+.sgs-card-grid__glyph svg {
+	width: 100%;
+	height: 100%;
+	stroke: currentColor;
+}
+
+/* Fallback-only "no glyph set" state — the card title's first letter,
+   centred in the tile, on the same backdrop as the glyph icon for the
+   same contrast-independent-of-background reason. */
+.sgs-card-grid__glyph-initial {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: calc(var(--sgs-card-grid-glyph-size, 32px) * 1.6);
+	height: calc(var(--sgs-card-grid-glyph-size, 32px) * 1.6);
+	border-radius: 50%;
+	background: rgba(0, 0, 0, 0.35);
+	font-size: var(--sgs-card-grid-glyph-size, 32px);
+	font-weight: 600;
+	line-height: 1;
+	color: var(--sgs-card-grid-glyph-colour, var(--wp--preset--color--text-inverse, #fff));
+	pointer-events: none;
+}
+
 /* Overlay variant — text on image */
 /* M14: replace raw rgb() gradient with CSS custom property */
 :root {
