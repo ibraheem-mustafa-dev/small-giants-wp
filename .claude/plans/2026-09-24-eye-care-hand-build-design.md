@@ -20,7 +20,7 @@ from section 2 of `.claude/reports/2026-09-24-eye-care-gap-map-recheck.md` (the 
   variations, 40 brands, 6 attributes, UK shipping (£3.95, free over £75, local pickup). Colour is a `select`
   attribute (the installed WooCommerce 11.1.1 offers no swatch type) with hex values in `_sgs_swatch_color`.
   Product meta: `_sgs_rrp`, `_sgs_frame_eye`, `_sgs_frame_bridge`, `_sgs_frame_temple`. The draft has images for
-  only 4 products. WooCommerce "coming soon" mode is on, so logged-out visitors see a holding page.
+  only 4 products. WooCommerce "coming soon" mode is off (Bean, 2026-09-24: test site), so the shop is public.
 **Written for:** Bean, and any cold session or agent picking up a wave. Plain English first.
 
 **Source of truth for the build:** the draft bundle in
