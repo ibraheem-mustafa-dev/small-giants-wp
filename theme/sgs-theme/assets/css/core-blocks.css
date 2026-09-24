@@ -229,41 +229,27 @@ footer .wp-block-heading.has-text-inverse-color.has-text-color {
 /* ─── FOOTER LINK COLOUR — H5 ─── */
 
 /*
- * All footer links inherit the global link colour (teal #0a7ea8) which gives
- * only 2.39:1 on the dark navy footer background (#2c3e50) — WCAG AA failure.
- *
- * This applies to:
- *   - Paragraph links (phone, email in business-info)
- *   - List item links (Quick Links column)
- *   - Any other anchor inside the footer template part
- *
- * Solution: force all footer links to white (surface token, 14.26:1 on navy).
- * Hover: accent-light (#e7d768) gives 7.49:1 on navy — still passes AA.
- *
- * The .has-footer-bg-background-color parent guard scopes this to the navy
- * footer section only, so any light-background blocks rendered inside
- * footer.html in future are not affected.
+ * Footer links take the footer's own text colour, so they read on a light or
+ * a dark footer alike (the footer block's text colour setting drives it; an
+ * accessible pairing is chosen there, not forced here). Hover and keyboard
+ * focus underline rather than recolour, which keeps the contrast whatever the
+ * ground is.
  */
-.has-footer-bg-background-color a,
 footer p a,
 footer li a,
 footer .wp-block-paragraph a,
-footer .wp-block-list a,
-.wp-block-template-part footer p a,
-.wp-block-template-part footer li a,
-.wp-block-template-part footer .wp-block-list a {
-	color: var(--wp--preset--color--surface, #ffffff) !important;
+footer .wp-block-list a {
+	color: inherit;
 }
 
-.has-footer-bg-background-color a:hover,
 footer p a:hover,
+footer p a:focus-visible,
 footer li a:hover,
+footer li a:focus-visible,
 footer .wp-block-paragraph a:hover,
+footer .wp-block-paragraph a:focus-visible,
 footer .wp-block-list a:hover,
-.wp-block-template-part footer p a:hover,
-.wp-block-template-part footer li a:hover,
-.wp-block-template-part footer .wp-block-list a:hover {
-	color: var(--wp--preset--color--accent-light, #e7d768) !important;
+footer .wp-block-list a:focus-visible {
 	text-decoration: underline;
 }
 
@@ -612,18 +598,11 @@ footer .wp-block-list a:hover,
 	padding-left: 0 !important;
 }
 
-/* Links follow the footer's own text colour, so they read on a light or a dark
-   footer alike; hover and keyboard focus underline rather than recolour, which
-   keeps contrast whatever the ground is. */
+/* Link-list links sit plain at rest; colour and the hover/focus underline come
+   from the FOOTER LINK COLOUR rules above. */
 footer .is-style-no-bullets a {
-	color: inherit;
 	text-decoration: none;
 	text-underline-offset: 3px;
-}
-
-footer .is-style-no-bullets a:hover,
-footer .is-style-no-bullets a:focus-visible {
-	text-decoration: underline;
 }
 
 /* Copyright bar — credit link animation */
