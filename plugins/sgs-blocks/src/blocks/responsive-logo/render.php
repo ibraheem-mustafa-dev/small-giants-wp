@@ -235,6 +235,52 @@ if ( $width_explicit ) {
 	$scoped_css[] = $sel . '{--logo-width:' . absint( $width ) . 'px}';
 }
 
+// --- Shrink-with-header/row (proven gap, 2026-09-24): headerShrink
+// (`sgs/site-header`) and rowShrink (`sgs/site-header-row`) both toggle a
+// state class on THEIR OWN root element and reduce only their padding --
+// neither reaches this block's `--logo-width` custom property, so a logo
+// nested inside a shrinking header currently stays its resting size while the
+// header/row shrinks around it (verified against the SGS-BEM draft, which
+// hand-scripts the logo's own width/height on the same scroll state). This
+// setting closes that gap generically: it targets BOTH ancestor state classes
+// -- the logo does not know (and must not need to know) which one shrunk it,
+// so a logo not nested inside either simply never matches and emits nothing
+// extra (any-client test; R-31-9, no per-block carve-out). Height is
+// deliberately NOT a separate attribute: style.scss's `&__image--desktop`
+// already sets `height:auto`, so overriding only `--logo-width` scales the
+// shrunk logo at its own natural aspect ratio for ANY uploaded artwork,
+// rather than the draft's hand-picked width/height pair which only fits its
+// own logo. Off by default -- no `shrinkWidth` key emits nothing at all,
+// byte-identical to a header that has never heard of this attribute.
+//
+// Unit-aware (Spec 35 C5): `shrinkWidth` is a plain number, the CSS unit
+// lives in the paired `shrinkWidthUnit` attribute (px|%|em|rem, same set
+// as maxWidthUnit) -- a client sizing a shrunk logo relative to its header
+// row (%) or its own base font (em/rem) is not forced into px. The composed
+// length runs through sgs_css_length_value() (contract §D), the same
+// sanitiser every other CSS-length attribute on this block uses, not a bare
+// absint() assumption.
+$shrink_width_explicit = isset( $attributes['shrinkWidth'] ) && '' !== $attributes['shrinkWidth'];
+if ( $shrink_width_explicit ) {
+	$shrink_width_unit = isset( $attributes['shrinkWidthUnit'] ) ? sanitize_key( $attributes['shrinkWidthUnit'] ) : 'px';
+	$shrink_width_raw  = (float) $attributes['shrinkWidth'] . $shrink_width_unit;
+	$shrink_width_css  = function_exists( 'sgs_css_length_value' ) ? sgs_css_length_value( $shrink_width_raw ) : '';
+	if ( '' === $shrink_width_css ) {
+		$shrink_width_css = absint( $attributes['shrinkWidth'] ) . 'px';
+	}
+	$scoped_css[] = '.is-header-shrunk ' . $sel . ',.is-row-shrunk ' . $sel . '{--logo-width:' . $shrink_width_css . '}';
+	// The transition lives on the wrapper's own `width` property (which reads
+	// `--logo-width`, style.scss), not on the custom property itself -- custom
+	// properties are not natively animatable, but a `width` declaration that
+	// RESOLVES via var() still transitions smoothly when the variable's value
+	// changes, so no `@property` registration is needed.
+	$scoped_css[] = $sel . '{transition:width 300ms ease;}';
+	// Self-contained prefers-reduced-motion reset (mirrors sgs/site-header's
+	// own instance-scoped reset, render.php) -- this is per-instance CSS, so
+	// the shared stylesheet has no equivalent rule to fall back on.
+	$scoped_css[] = '@media (prefers-reduced-motion: reduce) {' . $sel . '{transition:none !important;}}';
+}
+
 // --- Border — width/style on the wrapper, colour (flat or gradient, base +
 // hover) via the shared sgs_border_states_css() helper, radius via the
 // shared sgs_border_radius_tiers() + core style engine (base) plus

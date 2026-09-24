@@ -15,7 +15,7 @@ import {
 import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 import { Button } from '@wordpress/components';
 import { ResponsiveBoxControl, ResponsiveOverride, SgsLengthControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, SgsColourPanel, SsrPreviewGuard } from '../../components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import { ToggleGroupControl, ToggleGroupControlOption, UnitControl } from '../../components/primitives';
 
 // Units offered on the max-width/max-height UnitControls (mirrors the shared
 // TypographyControls unit-set pattern — px is the common case for a logo cap;
@@ -210,6 +210,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		svgAnimationSource,
 		animationStyle,
 		width,
+		shrinkWidth,
+		shrinkWidthUnit,
 		maxWidthUnit,
 		maxHeightUnit,
 		linkToHome,
@@ -450,6 +452,22 @@ export default function Edit( { attributes, setAttributes } ) {
 						min={ 40 }
 						max={ 600 }
 						step={ 10 }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+
+					<UnitControl
+						label={ __( 'Size when header shrinks', 'sgs-blocks' ) }
+						help={ __(
+							'Only takes effect inside an SGS header or header row that has its own "shrink on scroll" setting turned on — the logo keeps its natural proportions (only width is set, height follows automatically). Leave unset to keep the logo the same size when the header shrinks.',
+							'sgs-blocks'
+						) }
+						value={ composeMaxBoxValue( shrinkWidth, shrinkWidthUnit || 'px' ) }
+						onChange={ ( raw ) => {
+							const { num, unit } = parseMaxBoxValue( raw, shrinkWidthUnit || 'px' );
+							setAttributes( { shrinkWidth: num, shrinkWidthUnit: unit } );
+						} }
+						units={ MAX_BOX_UNITS }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
