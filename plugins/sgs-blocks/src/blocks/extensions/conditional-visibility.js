@@ -2,7 +2,8 @@
  * Conditional visibility extension — show/hide blocks based on rules.
  *
  * Adds visibility conditions (login status, user role, date range, days of
- * week, URL parameter, referrer) to ALL Gutenberg blocks (core and SGS).
+ * week, URL parameter, referrer, WooCommerce current-product reviews) to ALL
+ * Gutenberg blocks (core and SGS).
  *
  * Conditions are evaluated server-side in includes/conditional-visibility.php
  * (priority 9, runs before device-visibility.php). Nothing is added to the
@@ -118,6 +119,8 @@ function addConditionalAttributes( settings, name ) { // eslint-disable-line no-
 			sgsConditionUrlParam: { type: 'string', default: '' },
 			/** Substring matched against HTTP_REFERER */
 			sgsConditionReferrer: { type: 'string', default: '' },
+			/** 'none' | 'has' | 'none-yet' — WooCommerce current-product reviews */
+			sgsConditionProductReviews: { type: 'string', default: 'none' },
 		},
 	};
 }
@@ -231,6 +234,12 @@ function buildConditionSummary( attributes ) {
 		);
 	}
 
+	if ( 'has' === attributes.sgsConditionProductReviews ) {
+		parts.push( __( 'product has reviews', 'sgs-blocks' ) );
+	} else if ( 'none-yet' === attributes.sgsConditionProductReviews ) {
+		parts.push( __( 'product has no reviews yet', 'sgs-blocks' ) );
+	}
+
 	return parts.join( ' · ' );
 }
 
@@ -248,7 +257,8 @@ function hasActiveCondition( attributes ) {
 		!! attributes.sgsConditionDateEnd ||
 		( attributes.sgsConditionDays && attributes.sgsConditionDays.length > 0 ) ||
 		!! attributes.sgsConditionUrlParam ||
-		!! attributes.sgsConditionReferrer
+		!! attributes.sgsConditionReferrer ||
+		'none' !== attributes.sgsConditionProductReviews
 	);
 }
 
@@ -577,6 +587,41 @@ const withConditionalVisibilityControls = createHigherOrderComponent(
 									__next40pxDefaultSize
 								/>
 							</div>
+
+							{ /* ─── WooCommerce current-product reviews ─── */ }
+							{ !! window.sgsBlocksData?.wooCommerceActive && (
+								<div style={ { marginTop: '16px' } }>
+									<SelectControl
+										label={ __( 'Product reviews', 'sgs-blocks' ) }
+										value={ attributes.sgsConditionProductReviews }
+										options={ [
+											{
+												label: __( 'Any', 'sgs-blocks' ),
+												value: 'none',
+											},
+											{
+												label: __( 'Has reviews', 'sgs-blocks' ),
+												value: 'has',
+											},
+											{
+												label: __( 'No reviews yet', 'sgs-blocks' ),
+												value: 'none-yet',
+											},
+										] }
+										onChange={ ( val ) =>
+											setAttributes( {
+												sgsConditionProductReviews: val,
+											} )
+										}
+										help={ __(
+											'Show only when the product being viewed has, or has not yet had, any reviews.',
+											'sgs-blocks'
+										) }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								</div>
+							) }
 						</PanelBody>
 					</InspectorControls>
 				</>

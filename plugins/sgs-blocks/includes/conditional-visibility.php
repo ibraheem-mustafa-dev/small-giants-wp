@@ -21,6 +21,9 @@
  * - sgsConditionDays       : int[] (0=Sun … 6=Sat) — only show on these days
  * - sgsConditionUrlParam   : "key=value" — only show when GET param matches
  * - sgsConditionReferrer   : substring matched against HTTP_REFERER
+ * - sgsConditionProductReviews : 'none' | 'has' | 'none-yet' — WooCommerce
+ *   current-product review state (Spec-agnostic: ignored when WooCommerce is
+ *   inactive or no product can be resolved for the current request).
  *
  * @package SGS\Blocks
  */
@@ -29,16 +32,74 @@ namespace SGS\Blocks;
 
 defined( 'ABSPATH' ) || exit;
 
-add_filter( 'render_block', __NAMESPACE__ . '\\check_conditional_visibility', 9, 2 );
+add_filter( 'render_block', __NAMESPACE__ . '\\check_conditional_visibility', 9, 3 );
+add_action( 'enqueue_block_editor_assets', __NAMESPACE__ . '\\enqueue_product_reviews_editor_flag' );
+
+/**
+ * Tell the editor whether WooCommerce is active, so the "Product reviews"
+ * visibility control can hide itself on sites without WooCommerce.
+ *
+ * Attached to the always-present 'wp-blocks' handle (same pattern as
+ * class-sgs-blocks.php's icon-asset flag) so it is available regardless of
+ * bundle load order.
+ */
+function enqueue_product_reviews_editor_flag(): void {
+	wp_add_inline_script(
+		'wp-blocks',
+		'window.sgsBlocksData = window.sgsBlocksData || {};' .
+		'window.sgsBlocksData.wooCommerceActive = ' . ( class_exists( 'WooCommerce' ) ? 'true' : 'false' ) . ';',
+		'before'
+	);
+}
+
+/**
+ * Resolve the WooCommerce product being viewed for the current render.
+ *
+ * Resolution order: block context postId (product query-loop items) →
+ * global $product (set by WooCommerce on singular product templates) →
+ * the queried object (singular product page, fallback).
+ *
+ * @param \WP_Block|null $instance The block instance, when available (carries context).
+ * @return \WC_Product|null Resolved product, or null when WooCommerce is
+ *                           inactive or no product can be resolved.
+ */
+function resolve_current_product( $instance = null ) {
+	if ( ! function_exists( 'wc_get_product' ) ) {
+		return null;
+	}
+
+	if ( $instance instanceof \WP_Block && ! empty( $instance->context['postId'] ) ) {
+		$from_context = wc_get_product( absint( $instance->context['postId'] ) );
+		if ( $from_context instanceof \WC_Product ) {
+			return $from_context;
+		}
+	}
+
+	global $product;
+	if ( $product instanceof \WC_Product ) {
+		return $product;
+	}
+
+	$queried = get_queried_object();
+	if ( $queried instanceof \WP_Post && 'product' === $queried->post_type ) {
+		$from_queried = wc_get_product( $queried->ID );
+		if ( $from_queried instanceof \WC_Product ) {
+			return $from_queried;
+		}
+	}
+
+	return null;
+}
 
 /**
  * Suppress block output when any conditional visibility rule fails.
  *
- * @param string $block_content The rendered block HTML.
- * @param array  $block         Parsed block data including name and attrs.
+ * @param string         $block_content The rendered block HTML.
+ * @param array          $block         Parsed block data including name and attrs.
+ * @param \WP_Block|null $instance      The block instance (carries context), when available.
  * @return string Original HTML when all conditions pass; empty string otherwise.
  */
-function check_conditional_visibility( string $block_content, array $block ): string {
+function check_conditional_visibility( string $block_content, array $block, $instance = null ): string {
 
 	// Skip empty blocks (spacers, separators, comment-only blocks, etc.).
 	if ( empty( $block_content ) || empty( $block['blockName'] ) ) {
@@ -150,6 +211,29 @@ function check_conditional_visibility( string $block_content, array $block ): st
 				: '';
 
 			if ( false === strpos( $referrer, $needle ) ) {
+				return '';
+			}
+		}
+	}
+
+	// ── Condition 8: WooCommerce current-product reviews ────────────────────
+	$reviews_rule = isset( $attrs['sgsConditionProductReviews'] )
+		? (string) $attrs['sgsConditionProductReviews']
+		: 'none';
+
+	if ( 'none' !== $reviews_rule ) {
+		$current_product = resolve_current_product( $instance );
+
+		// WooCommerce inactive or no product resolved — ignore this
+		// condition (the block shows), per the extension's design.
+		if ( $current_product instanceof \WC_Product ) {
+			$has_reviews = $current_product->get_review_count() > 0;
+
+			if ( 'has' === $reviews_rule && ! $has_reviews ) {
+				return '';
+			}
+
+			if ( 'none-yet' === $reviews_rule && $has_reviews ) {
 				return '';
 			}
 		}

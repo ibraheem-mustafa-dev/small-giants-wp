@@ -111,6 +111,7 @@ return array(
 	'sgsConditionDateStart' => array( 'type' => 'string' ),
 	'sgsConditionDays' => array( 'type' => 'array' ),
 	'sgsConditionLoggedIn' => array( 'type' => 'string' ),
+	'sgsConditionProductReviews' => array( 'type' => 'string' ),
 	'sgsConditionReferrer' => array( 'type' => 'string' ),
 	'sgsConditionUrlParam' => array( 'type' => 'string' ),
 	'sgsConditionUserRole' => array( 'type' => 'array' ),
