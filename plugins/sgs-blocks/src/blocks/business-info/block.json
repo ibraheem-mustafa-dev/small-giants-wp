@@ -60,6 +60,30 @@
 				"all"
 			]
 		},
+		"hoursLayout": {
+			"type": "string",
+			"default": "rows",
+			"enum": [
+				"rows",
+				"condensed"
+			],
+			"description": "Only read by displayType 'hours'. 'rows' is one <dl> row per day (today's behaviour). 'condensed' groups consecutive days sharing the same hours string into one row, e.g. 'Mon–Sat 9.30–17.30'."
+		},
+		"hoursShowClosed": {
+			"type": "boolean",
+			"default": false,
+			"description": "Only read when hoursLayout is 'condensed'. A day with no stored hours is closed; off (default) skips it, on renders it using hoursClosedLabel."
+		},
+		"hoursClosedLabel": {
+			"type": "string",
+			"default": "Closed",
+			"description": "Only read when hoursLayout is 'condensed' and hoursShowClosed is on. The time-cell text for a closed day, e.g. 'Sun Closed'."
+		},
+		"hoursCondensedInline": {
+			"type": "boolean",
+			"default": false,
+			"description": "Only read when hoursLayout is 'condensed'. Renders the condensed rows on one line (style.css .sgs-business-hours--condensed-inline), separated by ' · ', instead of stacked rows."
+		},
 		"iconColour": {
 			"type": "string",
 			"default": ""

@@ -281,6 +281,50 @@
 	text-align: right;
 }
 
+/*
+ * Condensed hours (hoursLayout: "condensed", render.php) — same __row/__day/
+ * __time elements as the "rows" layout, so label colour/typography settings
+ * still apply; only the grouping happens server-side.
+ */
+.sgs-business-hours--condensed .sgs-business-hours__day {
+	min-width: 0;
+}
+
+/*
+ * One-line variant (hoursCondensedInline) — each row becomes an inline unit
+ * ("Mon–Sat 9.30–17.30"), rows separated by " · ". The separator is a
+ * ::before on every row but the first, so it never has to guess the
+ * markup's row count.
+ */
+.sgs-business-hours--condensed-inline {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	column-gap: 0.35em;
+}
+
+.sgs-business-hours--condensed-inline .sgs-business-hours__row {
+	display: inline-flex;
+	align-items: baseline;
+	gap: 0.35em;
+	padding: 0;
+	border-bottom: none;
+}
+
+.sgs-business-hours--condensed-inline .sgs-business-hours__row:not(:first-child)::before {
+	content: "\00B7";
+	margin-right: 0.35em;
+	opacity: 0.6;
+}
+
+.sgs-business-hours--condensed-inline .sgs-business-hours__day {
+	min-width: 0;
+}
+
+.sgs-business-hours--condensed-inline .sgs-business-hours__time {
+	text-align: left;
+}
+
 /* ── Social Links ────────────────────────────────────────────────────────── */
 
 .sgs-business-socials {

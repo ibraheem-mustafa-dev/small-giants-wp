@@ -10,7 +10,7 @@
 
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, SelectControl, ToggleControl, Notice } from '@wordpress/components';
+import { PanelBody, SelectControl, ToggleControl, TextControl, Notice } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
 import { ResponsiveBoxControl, SgsColourPanel, SsrPreviewGuard, textRow, DesignTokenPicker, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl } from '../../components';
 
@@ -35,6 +35,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		displayType,
 		showIcon,
 		labelCollapse,
+		hoursLayout,
+		hoursShowClosed,
+		hoursClosedLabel,
+		hoursCondensedInline,
 		iconColour,
 		iconColourGradient,
 		iconColourHover,
@@ -182,6 +186,59 @@ export default function Edit( { attributes, setAttributes } ) {
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
+					</PanelBody>
+				) }
+
+				{ /* Opening-hours layout — only read by render.php when
+				   displayType === 'hours'. 'condensed' groups consecutive
+				   days sharing the same stored hours string into one row. */ }
+				{ 'hours' === displayType && (
+					<PanelBody title={ __( 'Hours Layout', 'sgs-blocks' ) } initialOpen={ false }>
+						<SelectControl
+							label={ __( 'Layout', 'sgs-blocks' ) }
+							value={ hoursLayout || 'rows' }
+							options={ [
+								{ label: __( 'One row per day', 'sgs-blocks' ), value: 'rows' },
+								{ label: __( 'Condensed (group matching days)', 'sgs-blocks' ), value: 'condensed' },
+							] }
+							onChange={ ( val ) => setAttributes( { hoursLayout: val } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+						{ 'condensed' === hoursLayout && (
+							<>
+								<ToggleControl
+									label={ __( 'One line', 'sgs-blocks' ) }
+									help={ __(
+										'Run the condensed rows in a single line, separated by " · ", instead of stacking them.',
+										'sgs-blocks'
+									) }
+									checked={ !! hoursCondensedInline }
+									onChange={ ( val ) => setAttributes( { hoursCondensedInline: val } ) }
+									__nextHasNoMarginBottom
+								/>
+								<ToggleControl
+									label={ __( 'Show closed days', 'sgs-blocks' ) }
+									help={ __(
+										'A day with no stored hours is closed. Off skips it; on shows it with the label below (e.g. "Sun Closed").',
+										'sgs-blocks'
+									) }
+									checked={ !! hoursShowClosed }
+									onChange={ ( val ) => setAttributes( { hoursShowClosed: val } ) }
+									__nextHasNoMarginBottom
+								/>
+								{ hoursShowClosed && (
+									<TextControl
+										label={ __( 'Closed label', 'sgs-blocks' ) }
+										value={ hoursClosedLabel ?? '' }
+										placeholder={ __( 'Closed', 'sgs-blocks' ) }
+										onChange={ ( val ) => setAttributes( { hoursClosedLabel: val } ) }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								) }
+							</>
+						) }
 					</PanelBody>
 				) }
 

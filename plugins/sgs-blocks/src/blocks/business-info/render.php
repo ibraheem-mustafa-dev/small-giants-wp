@@ -235,25 +235,110 @@ switch ( $display_type ) {
 			'sun' => __( 'Sunday', 'sgs-blocks' ),
 		);
 
+		// Short day labels — only the condensed layout needs them; the rows
+		// layout above keeps its existing full day names unchanged.
+		$hours_day_short = array(
+			'mon' => __( 'Mon', 'sgs-blocks' ),
+			'tue' => __( 'Tue', 'sgs-blocks' ),
+			'wed' => __( 'Wed', 'sgs-blocks' ),
+			'thu' => __( 'Thu', 'sgs-blocks' ),
+			'fri' => __( 'Fri', 'sgs-blocks' ),
+			'sat' => __( 'Sat', 'sgs-blocks' ),
+			'sun' => __( 'Sun', 'sgs-blocks' ),
+		);
+
+		$hours_layout           = isset( $attributes['hoursLayout'] ) ? (string) $attributes['hoursLayout'] : 'rows';
+		$hours_show_closed      = ! empty( $attributes['hoursShowClosed'] );
+		$hours_closed_label_raw = isset( $attributes['hoursClosedLabel'] ) ? trim( (string) $attributes['hoursClosedLabel'] ) : '';
+		$hours_closed_label     = '' !== $hours_closed_label_raw ? $hours_closed_label_raw : __( 'Closed', 'sgs-blocks' );
+		$hours_condensed_inline = ! empty( $attributes['hoursCondensedInline'] );
+
 		$rows     = '';
 		$has_rows = false;
-		foreach ( $days as $slug => $label ) {
-			$value = (string) Sgs_Site_Info::get( "opening_hours.{$slug}", '' );
-			if ( '' === $value ) {
-				continue;
+
+		if ( 'condensed' === $hours_layout ) {
+			$hours_entries = array();
+			foreach ( $days as $slug => $label ) {
+				$hours_entries[] = array(
+					'short' => $hours_day_short[ $slug ],
+					'value' => (string) Sgs_Site_Info::get( "opening_hours.{$slug}", '' ),
+				);
 			}
-			$has_rows = true;
-			$rows    .= sprintf(
-				'<div class="sgs-business-hours__row"><dt class="sgs-business-hours__day">%s</dt><dd class="sgs-business-hours__time">%s</dd></div>',
-				esc_html( $label ),
-				Sgs_Site_Info::get_esc_html( "opening_hours.{$slug}" )
-			);
+
+			/**
+			 * Group consecutive days sharing the same displayed hours string
+			 * into one condensed row, e.g. mon..sat all "9.30-17.30" becomes
+			 * a single "Mon-Sat" / "9.30-17.30" row. A closed day (empty
+			 * stored value) is skipped unless $show_closed, in which case it
+			 * groups on the closed label exactly like any other value (so a
+			 * run of closed days also condenses, e.g. "Sat-Sun Closed").
+			 *
+			 * @param array  $entries      Ordered list of ['short'=>string,'value'=>string] for mon..sun.
+			 * @param bool   $show_closed  Whether a closed (empty-value) day renders a row at all.
+			 * @param string $closed_label Time-cell text substituted for an empty value.
+			 * @return array List of ['start'=>string,'end'=>string,'value'=>string] groups, day order preserved.
+			 */
+			$sgs_group_condensed_hours = static function ( array $entries, bool $show_closed, string $closed_label ): array {
+				$groups = array();
+				foreach ( $entries as $entry ) {
+					if ( '' === $entry['value'] && ! $show_closed ) {
+						continue;
+					}
+					$display_value = '' === $entry['value'] ? $closed_label : $entry['value'];
+					$last_index    = count( $groups ) - 1;
+					if ( $last_index >= 0 && $groups[ $last_index ]['value'] === $display_value ) {
+						$groups[ $last_index ]['end'] = $entry['short'];
+					} else {
+						$groups[] = array(
+							'start' => $entry['short'],
+							'end'   => $entry['short'],
+							'value' => $display_value,
+						);
+					}
+				}
+				return $groups;
+			};
+
+			$hours_condensed_groups = $sgs_group_condensed_hours( $hours_entries, $hours_show_closed, $hours_closed_label );
+
+			foreach ( $hours_condensed_groups as $hours_group ) {
+				$hours_day_text = $hours_group['start'] === $hours_group['end']
+					? $hours_group['start']
+					: $hours_group['start'] . "\u{2013}" . $hours_group['end'];
+				$has_rows       = true;
+				$rows          .= sprintf(
+					'<div class="sgs-business-hours__row"><dt class="sgs-business-hours__day">%s</dt><dd class="sgs-business-hours__time">%s</dd></div>',
+					esc_html( $hours_day_text ),
+					esc_html( $hours_group['value'] )
+				);
+			}
+		} else {
+			foreach ( $days as $slug => $label ) {
+				$value = (string) Sgs_Site_Info::get( "opening_hours.{$slug}", '' );
+				if ( '' === $value ) {
+					continue;
+				}
+				$has_rows = true;
+				$rows    .= sprintf(
+					'<div class="sgs-business-hours__row"><dt class="sgs-business-hours__day">%s</dt><dd class="sgs-business-hours__time">%s</dd></div>',
+					esc_html( $label ),
+					Sgs_Site_Info::get_esc_html( "opening_hours.{$slug}" )
+				);
+			}
+		}
+
+		$hours_wrap_classes = 'sgs-business-info sgs-business-hours';
+		if ( 'condensed' === $hours_layout ) {
+			$hours_wrap_classes .= ' sgs-business-hours--condensed';
+			if ( $hours_condensed_inline ) {
+				$hours_wrap_classes .= ' sgs-business-hours--condensed-inline';
+			}
 		}
 
 		if ( $has_rows ) {
-			$html = sprintf( '<dl class="sgs-business-info sgs-business-hours">%s</dl>', $rows );
+			$html = sprintf( '<dl class="%s">%s</dl>', esc_attr( $hours_wrap_classes ), $rows );
 		} else {
-			$html = $sgs_is_editor_render ? '<dl class="sgs-business-info sgs-business-hours"><div class="sgs-business-hours__row">' . $placeholder . '</div></dl>' : '';
+			$html = $sgs_is_editor_render ? '<dl class="' . esc_attr( $hours_wrap_classes ) . '"><div class="sgs-business-hours__row">' . $placeholder . '</div></dl>' : '';
 		}
 		break;
 
