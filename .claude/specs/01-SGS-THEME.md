@@ -435,7 +435,7 @@ The theme provides the header/footer as WordPress **template parts** (`parts/hea
 | `sgs/nav-bar-menu` | One nav-bar↔burger menu, 4-tier breakpoint | block-private root (not `SGS_Container_Wrapper`) + nav logic |
 | `sgs/nav-drawer` | Off-canvas drawer | own render.php |
 
-A block that *subsumes* the template-part/Site-Info/rules system remains forbidden (the `no-header-footer-block.py` hook still blocks bare `header`/`footer`/`nav` block slugs); it allow-lists `src/blocks/{site-header,site-footer,nav-bar-menu,nav-drawer-menu,nav-drawer}/` for these specialised containers only.
+A block that *subsumes* the template-part/Site-Info/rules system remains forbidden, as do bare `header`/`footer`/`nav` block slugs; only the specialised containers `src/blocks/{site-header,site-footer,nav-bar-menu,nav-drawer-menu,nav-drawer}/` are permitted.
 
 ### Theme-owned defaults — global styles + Site Info
 

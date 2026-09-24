@@ -5,26 +5,6 @@
   "hooks": {
     "PostToolUse": [
       {
-        "matcher": "Edit|Write|Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python C:/Users/Bean/Projects/small-giants-wp/.claude/hooks/drift-check-dispatcher.py",
-            "timeout": 10
-          }
-        ]
-      },
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python C:/Users/Bean/Projects/small-giants-wp/.claude/hooks/no-header-footer-block.py",
-            "timeout": 5
-          }
-        ]
-      },
-      {
         "matcher": "Write|Edit",
         "hooks": [
           {

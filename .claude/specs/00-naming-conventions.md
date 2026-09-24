@@ -45,7 +45,7 @@ Single source of truth for every identifier used across the SGS WordPress Framew
 
 ### 2.1 Header/footer/nav container blocks
 
-Header/footer remain WordPress template parts (Spec 37) — a monolithic block that subsumes the template-part/Site-Info/rules system is still forbidden. **Specialised container blocks used *inside* the template parts are permitted**, exactly like `sgs/card-grid`/`sgs/feature-grid`: `sgs/site-header`, `sgs/site-footer`, `sgs/site-header-row`, `sgs/site-footer-row`, and the nav blocks **`sgs/nav-bar-menu`** (bar + burger) + **`sgs/nav-drawer-menu`** (the drawer's accordion/drill-down list) + **`sgs/nav-drawer`** (off-canvas `<dialog>` drawer). The `no-header-footer-block.py` hook allow-lists these while still blocking the bare `header`/`footer`/`nav` block slugs. Design-gate: `.claude/plans/2026-07-13-header-footer-nav-system-design-gate.md`; block FRs owned by Spec 37 and **Spec 36** (the canonical nav home).
+Header/footer remain WordPress template parts (Spec 37) — a monolithic block that subsumes the template-part/Site-Info/rules system is still forbidden. **Specialised container blocks used *inside* the template parts are permitted**, exactly like `sgs/card-grid`/`sgs/feature-grid`: `sgs/site-header`, `sgs/site-footer`, `sgs/site-header-row`, `sgs/site-footer-row`, and the nav blocks **`sgs/nav-bar-menu`** (bar + burger) + **`sgs/nav-drawer-menu`** (the drawer's accordion/drill-down list) + **`sgs/nav-drawer`** (off-canvas `<dialog>` drawer). Bare `header`/`footer`/`nav` block slugs remain forbidden. Design-gate: `.claude/plans/2026-07-13-header-footer-nav-system-design-gate.md`; block FRs owned by Spec 37 and **Spec 36** (the canonical nav home).
 
 ---
 
