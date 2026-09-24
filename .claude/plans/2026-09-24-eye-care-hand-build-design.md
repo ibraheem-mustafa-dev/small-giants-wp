@@ -11,7 +11,7 @@ from section 2 of `.claude/reports/2026-09-24-eye-care-gap-map-recheck.md` (the 
   (`settings.color.palette` accent / accent-text / accent-light), which the client edits in the Site Editor
   Styles panel, as on the other client sites. Alternatives, for reference: sage `#8A9A86` / `#55654F` /
   `#E8ECE6`, navy `#3A4A6B` / `#2B3A55` / `#E4E7EE` (accent / accent-text / soft). The draft's default and its
-  live render are taupe (`data-props` `accent` default `taupe`); Bean to confirm taupe or sage.
+  live render are taupe (`data-props` `accent` default `taupe`); Bean confirmed taupe (2026-09-24), which is what the snapshot already uses.
 - Re-extraction risk: `theme-extractor/extract.py --merge-onto` carries `styles.css` forward but not
   `styles.spacing`, so re-extracting the Eye Care snapshot would reset the 52px side padding. Re-apply it after
   any re-extraction.
