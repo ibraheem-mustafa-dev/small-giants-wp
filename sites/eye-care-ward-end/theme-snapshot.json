@@ -585,6 +585,7 @@
     }
   },
   "styles": {
+    "css": "@media (max-width: 767px) { :root { --wp--style--root--padding-left: 20px; --wp--style--root--padding-right: 20px; } }",
     "color": {
       "background": "var:preset|color|surface",
       "text": "var:preset|color|text"
@@ -597,8 +598,8 @@
     },
     "spacing": {
       "padding": {
-        "left": "var:preset|spacing|40",
-        "right": "var:preset|spacing|40"
+        "left": "52px",
+        "right": "52px"
       },
       "blockGap": "var:preset|spacing|40"
     },
