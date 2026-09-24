@@ -143,6 +143,47 @@ ok( '' === sgs_shadow_hover_rules( '.sgs-fixture', 'none', '', array(), '' ), 'M
 ok( '' === sgs_shadow_hover_rules( '', 'whisper', '', array(), '' ), 'an empty selector emits nothing' );
 
 // =====================================================================================
+// ONE CONTROL (Bean's ruling, 2026-09-24) — a chosen universal `sgsHoverShadow` preset
+// overrides the automatic lift outright, everywhere `sgs_shadow_lift_enabled()` gates.
+// `.claude/reports/2026-09-23-shadow-hover-lift-design.md` + the duplicate-controls fix
+// that collapsed the Shadow panel's own "Hover shadow" picker onto this SAME attribute.
+// =====================================================================================
+
+// --- MUST-FLAG: a chosen sgsHoverShadow preset suppresses the automatic lift ------------
+$override_suppressed = sgs_shadow_hover_rules( '.sgs-fixture', 'whisper', '', array( 'sgsHoverShadow' => 'hard' ), '' );
+ok( '' === $override_suppressed, 'MUST-FLAG would-be-lift suppressed: nothing emitted when sgsHoverShadow names a chosen preset' );
+
+// --- negative control: the SAME call with sgsHoverShadow EMPTY still lifts, proving the
+// gate reads the value (a non-empty string), not merely the key's presence -------------
+$override_empty = sgs_shadow_hover_rules( '.sgs-fixture', 'whisper', '', array( 'sgsHoverShadow' => '' ), '' );
+ok( '' !== $override_empty, 'negative control: sgsHoverShadow === "" (empty = Automatic) still lifts' );
+
+// --- negative control: an invalid/unparseable sgsHoverShadow value (fails the same slug
+// shape check the class-injection path already applies) must NOT silently suppress the
+// lift — an invalid value is not a "chosen" shadow ---------------------------------------
+$override_invalid = sgs_shadow_hover_rules( '.sgs-fixture', 'whisper', '', array( 'sgsHoverShadow' => 'not a slug!' ), '' );
+ok( '' !== $override_invalid, 'negative control: an invalid sgsHoverShadow value does not suppress the lift' );
+
+// --- the switch off AND a chosen sgsHoverShadow both suppress; either alone is sufficient
+$override_and_off = sgs_shadow_hover_rules(
+	'.sgs-fixture',
+	'whisper',
+	'',
+	array(
+		'shadowLiftOnHover' => false,
+		'sgsHoverShadow'    => 'hard',
+	),
+	''
+);
+ok( '' === $override_and_off, 'both the switch off and a chosen override present: still suppressed' );
+
+// --- sgs_shadow_lift_enabled() directly: chosen preset disables the lift, independent of
+// sgs_shadow_hover_rules()'s own resting-shape logic --------------------------------------
+ok( false === sgs_shadow_lift_enabled( array( 'sgsHoverShadow' => 'hard' ) ), 'MUST-FLAG: sgs_shadow_lift_enabled() returns false when a preset is chosen' );
+ok( true === sgs_shadow_lift_enabled( array( 'sgsHoverShadow' => '' ) ), 'negative control: sgs_shadow_lift_enabled() stays true when sgsHoverShadow is empty' );
+ok( true === sgs_shadow_lift_enabled( array() ), 'negative control: sgs_shadow_lift_enabled() stays true when sgsHoverShadow is entirely absent' );
+
+// =====================================================================================
 // sgs_shadow_decls() — explicit hover always wins outright over the automatic lift
 // =====================================================================================
 

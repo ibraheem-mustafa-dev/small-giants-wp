@@ -16,7 +16,7 @@ import {
 	RangeControl,
 	RadioControl,
 } from '@wordpress/components';
-import { IconPicker, ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { IconPicker, ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, ShadowLiftControls } from '../../components';
 import { colourVar, linkColourPreviewCss, resolveTextColourPreviewStyle } from '../../utils';
 import { sanitiseSvg } from '../../utils';
 
@@ -961,6 +961,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					},
 				] }
 			/>
+			<InspectorControls group="styles">
+				<PanelBody title={ __( 'Shadow on hover', 'sgs-blocks' ) } initialOpen={ false }>
+					<ShadowLiftControls attributes={ attributes } setAttributes={ setAttributes } />
+				</PanelBody>
+			</InspectorControls>
+
 			<InspectorControls>
 				{ /* ── Entry title (TIER 1 — matches the `title` element's own
 				     "Entry title" label in supports.sgs.elements, block.json)

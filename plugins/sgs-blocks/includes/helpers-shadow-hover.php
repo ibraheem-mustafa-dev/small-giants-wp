@@ -174,6 +174,20 @@ function sgs_shadow_lift_enabled( array $attributes, string $block_name = '' ): 
 		return false;
 	}
 
+	// ONE control (Bean's ruling, 2026-09-24, `.claude/reports/2026-09-24-u2-scrim-design.md`
+	// sibling — see `.claude/reports/2026-09-23-shadow-hover-lift-design.md` for the lift
+	// design this extends): the Shadow panel's own "Hover shadow" select writes the SAME
+	// universal `sgsHoverShadow` attribute the Hover Effects panel uses (no new attribute —
+	// see src/components/ShadowControl.js). A chosen preset there OVERRIDES the automatic
+	// lift outright rather than fighting it at the same selector's :hover rule — only one of
+	// the two may ever draw. `sgs_shadow_hover_is_slug()` mirrors the shape check the class-
+	// injection path (includes/hover-effects.php::is_hover_shadow_slug()) already applies to
+	// this same attribute, so an invalid/empty value never suppresses the lift.
+	if ( isset( $attributes['sgsHoverShadow'] ) && is_string( $attributes['sgsHoverShadow'] )
+		&& sgs_shadow_hover_is_slug( $attributes['sgsHoverShadow'] ) ) {
+		return false;
+	}
+
 	if ( '' === $block_name || ! class_exists( 'WP_Block_Type_Registry' ) ) {
 		return true;
 	}

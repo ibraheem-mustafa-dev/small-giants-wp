@@ -21,8 +21,8 @@ import {
 	ToggleControl,
 	TextareaControl,
 	TabPanel,
-	ToolsPanel,
 } from '@wordpress/components';
+import { ToolsPanel } from '../../../components/primitives';
 import {
 	ResponsiveControl,
 	DesignTokenPicker,

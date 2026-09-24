@@ -77,9 +77,20 @@ function resolveBlockDefaults( settings ) {
 		return { scalePreset: '', shadow: '', imageZoom: false, focusRing: false };
 	}
 
+	// ONE control (Bean's ruling, 2026-09-24): a block that draws the automatic shadow
+	// lift (declares `shadowLiftOnHover`, the Shadow panel's own switch) must NEVER also
+	// get a non-empty `sgsHoverShadow` DEFAULT from `hoverDefaults.shadow` — that would
+	// silently pre-select a preset on every fresh instance before the operator ever opens
+	// either panel, contradicting "Automatic (matching lift)" being the real default.
+	// Found live on sgs/info-box and sgs/team-member, both of which declare
+	// `hoverDefaults.shadow: 'soft'` AND `shadowLiftOnHover` in the SAME block.json.
+	// PHP twin: resolve_hover_defaults() in includes/hover-effects.php.
+	const hasShadowLift = Boolean( settings?.attributes ) &&
+		Object.prototype.hasOwnProperty.call( settings.attributes, 'shadowLiftOnHover' );
+
 	return {
 		scalePreset: 'string' === typeof declared.scalePreset ? declared.scalePreset : '',
-		shadow:      'string' === typeof declared.shadow ? declared.shadow : '',
+		shadow:      hasShadowLift ? '' : ( 'string' === typeof declared.shadow ? declared.shadow : '' ),
 		imageZoom:   !! declared.imageZoom,
 		focusRing:   !! declared.focusRing,
 	};
@@ -261,6 +272,18 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 		const hideImageZoom = excludedHoverControls.includes( 'imageZoom' );
 		const hideGrayscale = excludedHoverControls.includes( 'grayscale' );
 
+		// ONE control (Bean's ruling, 2026-09-24, `.claude/reports/2026-09-23-shadow-hover-lift-design.md`):
+		// a block that declares `shadowLiftOnHover` (the Shadow panel's automatic-lift switch)
+		// now offers its OWN "Hover shadow" select in that SAME panel (ShadowControl.js), writing
+		// the SAME `sgsHoverShadow` attribute this universal panel would otherwise offer here —
+		// two controls for one setting (the duplicate-controls gate finding this fixes). Hiding
+		// it here is DYNAMIC (reads the block's own declared attributes), not a per-block
+		// hoverExcludeControls entry — every block gaining shadowLiftOnHover in future is
+		// covered with no second declaration.
+		const hasShadowLift = Boolean( type?.attributes ) &&
+			Object.prototype.hasOwnProperty.call( type.attributes, 'shadowLiftOnHover' );
+		const hideShadowPicker = hasShadowLift;
+
 		const {
 			sgsHoverScale,
 			sgsHoverShadow,
@@ -356,14 +379,20 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
-						<SelectControl
-							label={ __( 'Hover shadow', 'sgs-blocks' ) }
-							value={ sgsHoverShadow }
-							options={ shadowOptions }
-							onChange={ ( val ) => setAttributes( { sgsHoverShadow: val } ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
+						{ hideShadowPicker ? (
+							<p className="sgs-hover-effects__shadow-note" style={ { fontSize: '12px', fontStyle: 'italic', color: '#757575' } }>
+								{ __( 'This block’s Shadow panel already has a hover shadow setting — see “Hover shadow” there.', 'sgs-blocks' ) }
+							</p>
+						) : (
+							<SelectControl
+								label={ __( 'Hover shadow', 'sgs-blocks' ) }
+								value={ sgsHoverShadow }
+								options={ shadowOptions }
+								onChange={ ( val ) => setAttributes( { sgsHoverShadow: val } ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						) }
 						{ ! hideImageZoom && (
 						<ToggleControl
 							label={ __( 'Zoom image on hover', 'sgs-blocks' ) }

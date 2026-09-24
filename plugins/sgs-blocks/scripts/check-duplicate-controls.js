@@ -957,6 +957,21 @@ function checkHoverDuplication( blockSlug, blockDir, meta ) {
 		if ( /^sgs[A-Z]/.test( attrName ) ) {
 			continue; // this IS a universal extension attr, not a private one.
 		}
+		// ONE control (Bean's ruling, 2026-09-24, `.claude/reports/2026-09-23-shadow-hover-lift-design.md`):
+		// `shadowLiftOnHover` is the Shadow panel's automatic-lift switch (ShadowControl.js). It
+		// used to collide with the universal Hover Effects panel's "Hover shadow" picker (both
+		// nominally governing the same visual effect) — but that picker is now DYNAMICALLY
+		// hidden on any block declaring this exact attribute
+		// (src/blocks/extensions/hover-effects.js's `hasShadowLift` gate), and ShadowControl's
+		// own new "Hover shadow" select writes the SAME universal `sgsHoverShadow` attribute
+		// instead of a second one. There is now exactly one reachable control for this setting,
+		// so this attribute can never be the "two controls, one effect" shape CHECK 1 looks for.
+		// A private hover-SHAPE attr (e.g. `shadowHover` / `cardShadowHover`, still baselined
+		// separately) is UNAFFECTED — it carries a colour the panel cannot express and stays a
+		// deliberate, accepted duplicate.
+		if ( 'shadowLiftOnHover' === attrName ) {
+			continue;
+		}
 		const classification = classifyHoverAttr( attrName );
 		if ( ! classification ) {
 			continue;
@@ -2364,6 +2379,58 @@ export default function Edit( { attributes, setAttributes } ) {
 		}
 	} finally {
 		fs.rmSync( tmpRoot, { recursive: true, force: true } );
+	}
+
+	// -------------------------------------------------------------------
+	// ADDED 2026-09-24 — `shadowLiftOnHover` ONE-CONTROL exclusion (Bean's
+	// ruling, `.claude/reports/2026-09-23-shadow-hover-lift-design.md`). The
+	// universal Hover Effects panel's "Hover shadow" picker is now DYNAMICALLY
+	// hidden on any block declaring `shadowLiftOnHover` (src/blocks/extensions/
+	// hover-effects.js), and ShadowControl.js gained its own "Hover shadow"
+	// select writing the SAME `sgsHoverShadow` attribute — collapsing the two
+	// nominal controls into one reachable one. Proven with a POSITIVE case (no
+	// finding for the attribute this fix targets) and a NEGATIVE CONTROL (an
+	// unrelated shadow-category attr on the SAME block still gets flagged, so
+	// the exclusion is scoped to `shadowLiftOnHover` and not the whole
+	// category/block).
+	// -------------------------------------------------------------------
+	process.stdout.write( '\n  -- shadowLiftOnHover ONE-CONTROL exclusion (2026-09-24) --\n' );
+	{
+		const liftTmp = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-shadowlift-selftest-' ) );
+		try {
+			const blockDir = fs.mkdtempSync( path.join( liftTmp, 'block-' ) );
+			// ShadowControl mounts BOTH shadowLiftOnHover (via its declaresLift check on
+			// `attributes`, no literal setAttributes call needed in edit.js — the toggle lives
+			// INSIDE ShadowControl.js) and its own hover-shape attr `shadowHover` (a genuine,
+			// still-flagged duplicate carrying a colour the panel cannot express).
+			fs.writeFileSync(
+				path.join( blockDir, 'edit.js' ),
+				"import { ShadowControl } from '../../components';\n" +
+					'export default function Edit( { attributes, setAttributes } ) {\n' +
+					'\treturn <ShadowControl attributes={ attributes } setAttributes={ setAttributes } attrNames={ { base: \'shadow\', colour: \'shadowColour\', hover: \'shadowHover\', hoverColour: \'shadowColourHover\' } } />;\n' +
+					'}\n'
+			);
+			totalCases++;
+			const meta = {
+				attributes: {
+					shadowLiftOnHover: { type: 'boolean', default: true },
+					shadowHover: { type: 'string', default: '' },
+				},
+				supports: { sgs: { enabledExtensions: [ 'hover' ] } },
+			};
+			const findings = checkHoverDuplication( 'sgs/self-test-shadowlift', blockDir, meta );
+			const liftFinding = findings.find( ( f ) => f.attr === 'shadowLiftOnHover' );
+			const shapeFinding = findings.find( ( f ) => f.attr === 'shadowHover' );
+			const ok = ! liftFinding && !! shapeFinding;
+			allOk = allOk && ok;
+			process.stdout.write(
+				`  [${ ok ? 'OK' : 'FAIL' }] shadowLiftOnHover excluded, sibling shadowHover attr still flagged (negative control)\n` +
+					`         shadowLiftOnHover finding=${ liftFinding ? 'PRESENT (should be absent)' : 'absent (correct)' }, ` +
+					`shadowHover finding=${ shapeFinding ? 'present (correct)' : 'ABSENT (should be present)' }\n`
+			);
+		} finally {
+			fs.rmSync( liftTmp, { recursive: true, force: true } );
+		}
 	}
 
 	// ===================================================================

@@ -27,7 +27,8 @@
  */
 import { __ } from '@wordpress/i18n';
 import { useSettings } from '@wordpress/block-editor';
-import { BaseControl, TabPanel, ToggleControl } from '@wordpress/components';
+import { BaseControl, TabPanel } from '@wordpress/components';
+import ShadowLiftControls from './ShadowLiftControls';
 import ShadowStateBuilder from './shadow-control/ShadowStateBuilder';
 import { makeResolveHex, presetPreviewCss } from './shadow-control/preview';
 import { flattenSettingList } from './shadow-control/useShadowPresets';
@@ -176,12 +177,6 @@ export default function ShadowControl( {
 	// carries a declared attribute's default, so an undeclared attribute reads as
 	// `undefined` here, not `true` — that's the presence check, not the value.
 	const declaresLift = Boolean( attributes ) && Object.prototype.hasOwnProperty.call( attributes, 'shadowLiftOnHover' );
-	const liftOnHover = declaresLift ? false !== attributes.shadowLiftOnHover : true;
-	const setLiftOnHover = ( next ) => {
-		if ( setAttributes ) {
-			setAttributes( { shadowLiftOnHover: next } );
-		}
-	};
 
 	const applyNormal = ( shape, colourText ) => {
 		if ( ! explicitBase && attrNames?.base && attrNames?.colour && setAttributes ) {
@@ -223,19 +218,11 @@ export default function ShadowControl( {
 	const liftValue = declaresLift ? shadowHoverValue( value, colour, custom?.shadowHover ) : '';
 	const liftLabel = describeLift( liftValue );
 
+	// ONE control (Bean's ruling, 2026-09-24): the lift switch and the hover-shadow picker
+	// live in the shared ShadowLiftControls, also mounted by blocks that use WordPress's own
+	// shadow panel. See that file for the precedence rule.
 	const liftToggle = declaresLift ? (
-		<ToggleControl
-			__nextHasNoMarginBottom
-			label={ __( 'Lift on hover', 'sgs-blocks' ) }
-			checked={ liftOnHover }
-			onChange={ setLiftOnHover }
-			help={
-				liftOnHover && liftLabel
-					? // translators: %s is the shadow it lifts to, e.g. "Lifted" or "a deeper shadow".
-					  __( 'Lifts to: ', 'sgs-blocks' ) + liftLabel
-					: __( 'The shadow stays still on hover.', 'sgs-blocks' )
-			}
-		/>
+		<ShadowLiftControls attributes={ attributes } setAttributes={ setAttributes } liftLabel={ liftLabel } />
 	) : null;
 
 	// Show the Hover tab when the block has an EXPLICIT hover pair to edit, OR declares the

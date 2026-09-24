@@ -109,9 +109,20 @@ function resolve_hover_defaults( string $block_name ): array {
 
 	$excluded = resolve_hover_excluded_controls( $block_name );
 
+	// ONE control (Bean's ruling, 2026-09-24): a block that draws the automatic shadow
+	// lift (declares `shadowLiftOnHover`, the Shadow panel's own switch) must NEVER also
+	// get a non-empty `sgsHoverShadow` DEFAULT from `hoverDefaults.shadow` — that would
+	// silently pre-select a preset on every fresh instance before the operator ever opens
+	// either panel, contradicting "Automatic (matching lift)" being the real default.
+	// Found live on sgs/info-box and sgs/team-member, both of which declare
+	// `hoverDefaults.shadow: 'soft'` AND `shadowLiftOnHover` in the SAME block.json — every
+	// new instance was silently overriding the automatic lift with a hardcoded 'soft'
+	// before this fix. JS twin: resolveBlockDefaults() in hover-effects.js.
+	$has_shadow_lift = is_array( $type->attributes ?? null ) && array_key_exists( 'shadowLiftOnHover', $type->attributes );
+
 	return array(
 		'scale_preset' => is_string( $declared['scalePreset'] ?? null ) ? $declared['scalePreset'] : '',
-		'shadow'       => is_string( $declared['shadow'] ?? null ) ? $declared['shadow'] : '',
+		'shadow'       => $has_shadow_lift ? '' : ( is_string( $declared['shadow'] ?? null ) ? $declared['shadow'] : '' ),
 		// Gate A cleanup: a block that declares an imageZoom default but has no
 		// image element to bind it to is the D805 shape (a client-visible
 		// default with no effect) — see resolve_hover_excluded_controls() below.

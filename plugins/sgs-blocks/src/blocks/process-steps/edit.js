@@ -28,7 +28,7 @@ const HOVER_EFFECT_OPTIONS = [
 	{ label: __( 'Scale', 'sgs-blocks' ), value: 'scale' },
 	{ label: __( 'Glow', 'sgs-blocks' ), value: 'glow' },
 ];
-import { IconPicker, IconPreview, ResponsiveBoxControl, fillRow, SgsBorderControl, DesignTokenPicker, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { IconPicker, IconPreview, ResponsiveBoxControl, fillRow, SgsBorderControl, DesignTokenPicker, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, ShadowLiftControls } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
 
 const CONNECTOR_OPTIONS = [
@@ -290,6 +290,12 @@ export default function Edit( { attributes, setAttributes } ) {
 			   directly with DesignTokenPicker (mirrors what SgsColourPanel
 			   does internally) since SgsColourPanel has no per-caller title
 			   override and these four panels each need a different title. */ }
+			<InspectorControls group="styles">
+				<PanelBody title={ __( 'Shadow on hover', 'sgs-blocks' ) } initialOpen={ false }>
+					<ShadowLiftControls attributes={ attributes } setAttributes={ setAttributes } />
+				</PanelBody>
+			</InspectorControls>
+
 			<InspectorControls group="styles">
 				<PanelBody title={ __( 'Step number badge', 'sgs-blocks' ) } className="sgs-colour-panel">
 					{ /* Moved in from the Settings-tab "Appearance" panel
