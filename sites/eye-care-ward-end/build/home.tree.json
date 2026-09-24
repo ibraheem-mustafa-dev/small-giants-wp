@@ -35,7 +35,10 @@
       "contentWidth": {
         "desktop": "1440px"
       },
-      "className": "sgs-hero"
+      "className": "sgs-hero",
+      "backgroundOverlayOpacity": {
+        "desktop": 100
+      }
     },
     "innerBlocks": [
       {
@@ -75,7 +78,9 @@
           "letterSpacingUnit": "em",
           "textColour": "text-inverse",
           "textWrap": "pretty",
-          "className": "sgs-hero__headline"
+          "className": "sgs-hero__headline",
+          "maxWidth": 15,
+          "maxWidthUnit": "ch"
         }
       },
       {
@@ -201,24 +206,10 @@
         "attributes": {
           "source": "product-brands",
           "brandDisplay": "text",
-          "showNames": true,
           "scrolling": true,
           "scrollSpeed": "slow",
           "pauseOnHover": true,
           "brandLinkToShop": true,
-          "nameFontFamily": "'Playfair Display',serif",
-          "nameFontWeight": "500",
-          "nameFontSize": {
-            "desktop": 15
-          },
-          "nameFontSizeUnit": "px",
-          "nameLetterSpacing": {
-            "desktop": 0.26
-          },
-          "nameLetterSpacingUnit": "em",
-          "nameTextTransform": "uppercase",
-          "nameColour": "#3A352F",
-          "nameColourHover": "text",
           "padding": {
             "desktop": {
               "bottom": "26px",
@@ -227,7 +218,16 @@
               "top": "26px"
             }
           },
-          "scrollDuration": 64
+          "scrollDuration": 64,
+          "brandTextFontFamily": "'Playfair Display',serif",
+          "brandTextFontWeight": "500",
+          "brandTextFontSize": 15,
+          "brandTextFontSizeUnit": "px",
+          "brandTextLetterSpacing": 0.26,
+          "brandTextLetterSpacingUnit": "em",
+          "brandTextTextTransform": "uppercase",
+          "brandTextColour": "#3A352F",
+          "brandTextColourHover": "text"
         }
       }
     ]
@@ -1146,7 +1146,16 @@
               }
             }
           ],
-          "overlayGradient": "linear-gradient(180deg,rgba(20,20,20,0) 38%,rgba(20,20,20,.72) 100%)"
+          "overlayGradient": "linear-gradient(180deg,rgba(20,20,20,0) 38%,rgba(20,20,20,.72) 100%)",
+          "variant": "overlay",
+          "style": {
+            "typography": {
+              "textAlign": "center",
+              "textTransform": "uppercase",
+              "letterSpacing": "0.1em"
+            }
+          },
+          "titleFontWeight": "400"
         }
       }
     ]

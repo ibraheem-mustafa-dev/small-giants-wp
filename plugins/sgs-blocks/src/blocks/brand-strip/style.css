@@ -179,12 +179,16 @@
 	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
 }
 
+/* A tile link is the whole tile, not a link inside running text, so it carries
+   no underline (a logo tile never showed one; a text-only tile inherited the
+   theme's link underline). */
 .sgs-brand-strip__item a {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 	width: 100%;
 	height: 100%;
+	text-decoration: none;
 }
 
 /* ===== Logo image =====

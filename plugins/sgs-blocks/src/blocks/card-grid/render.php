@@ -888,6 +888,11 @@ if ( $hover_image_zoom ) {
 if ( $hover_grayscale ) {
 	$class_names[] = 'sgs-has-grayscale';
 }
+// A client-set image overlay replaces the overlay variant's built-in caption
+// gradient, so the two never stack.
+if ( $card_grid_overlay_active ) {
+	$class_names[] = 'sgs-card-grid--has-image-overlay';
+}
 if ( $stagger_delay ) {
 	$class_names[] = 'sgs-has-stagger';
 }

@@ -472,7 +472,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		'sgs-card-grid',
 		`sgs-card-grid--${ variant }`,
 		`sgs-card-grid--hover-${ effectHover }`,
-	].join( ' ' );
+		overlayColour || overlayGradient ? 'sgs-card-grid--has-image-overlay' : '',
+	].filter( Boolean ).join( ' ' );
 
 	const blockProps = useBlockProps( { className } );
 

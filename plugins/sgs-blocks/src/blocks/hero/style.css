@@ -499,10 +499,15 @@ section.sgs-hero {
 }
 
 /* Content must remain above the ken-burns pseudo-element. */
-.sgs-hero--ken-burns .sgs-hero__overlay,
 .sgs-hero--ken-burns .sgs-hero__content,
 .sgs-hero--ken-burns .sgs-hero__media {
 	position: relative;
+	z-index: 1;
+}
+
+/* The overlay also sits above it, but keeps its own absolute full-cover box:
+   making it relative collapsed it to 0x0 and hid the overlay entirely. */
+.sgs-hero--ken-burns .sgs-hero__overlay {
 	z-index: 1;
 }
 
