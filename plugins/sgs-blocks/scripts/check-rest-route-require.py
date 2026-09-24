@@ -5,7 +5,7 @@ check-rest-route-require.py
 STRUCTURAL GUARD — catches a REST route registered against a callback class
 (or function) whose DEFINING FILE is never `require`'d/`include`'d anywhere
 reachable from the plugin bootstrap, and is not covered by Composer's PSR-4
-autoloader either. This is the exact bug class of D1079 (`.claude/decisions.md`):
+autoloader either. This is the exact bug class of D1079 (`.claude/archive/decisions.md`):
 `includes/forms/class-form-rest-submission.php::Form_REST_Submission` was
 referenced by `class-form-rest-api.php`'s `/sgs-forms/v1/submit` route via
 `[ Form_REST_Submission::class, 'handle_submit' ]`, and route REGISTRATION

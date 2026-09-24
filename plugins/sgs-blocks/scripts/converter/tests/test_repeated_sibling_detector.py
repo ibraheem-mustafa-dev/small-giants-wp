@@ -1,7 +1,7 @@
 """test_repeated_sibling_detector.py -- Q2 Tier 1 structural repeated-sibling detector.
 
 Design doc: `.claude/plans/2026-09-10-bem-recognition-and-template-detection-brainstorm.md`
-"Question 2", Tier 1. Decision log: `.claude/decisions.md` (see the D-number added
+"Question 2", Tier 1. Decision log: `.claude/archive/decisions.md` (see the D-number added
 alongside this file).
 
 Three required cases per the implementer brief:

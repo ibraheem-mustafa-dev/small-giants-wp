@@ -115,7 +115,7 @@ export function initScrub( el ) {
 
 		/*
 		 * D453 EXTENDED TO fx-scrub.js (2026-08-01) — WCAG 2.4.11 / 2.4.7.
-		 * `.claude/decisions.md` D453 fixes the identical defect on
+		 * `.claude/archive/decisions.md` D453 fixes the identical defect on
 		 * `fx-pin-scrub.js`; this is the scrub-only adaptation, not a fresh
 		 * design. Read that entry for the full mechanism proof (scrubTween /
 		 * resetTo / ticker-ordering) — it is not re-derived here.

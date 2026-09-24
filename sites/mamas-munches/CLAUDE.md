@@ -1,6 +1,6 @@
 # Mama's Munches — Client Site
 
-**Status:** Built and live on the SGS framework — the canary (`sandybrown-nightingale-600381.hostingersite.com`) runs the real WooCommerce catalogue through `sgs-theme` + `sgs-blocks`. Current build status and open bugs live in `.claude/LEDGER.md` (Mama's Clone Track section) and `.claude/decisions.md`; this file is brand/product reference.
+**Status:** Built and live on the SGS framework — the canary (`sandybrown-nightingale-600381.hostingersite.com`) runs the real WooCommerce catalogue through `sgs-theme` + `sgs-blocks`. Current build status and open bugs live in `.claude/LEDGER.md` (Mama's Clone Track section) and `.claude/archive/decisions.md`; this file is brand/product reference.
 
 **Public/marketing site:** https://mamasmunches.com/ (brand facts below were captured from it)
 **Owner email:** Zainab@mamasmunches.com

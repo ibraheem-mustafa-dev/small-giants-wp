@@ -1,6 +1,6 @@
 'use strict';
 
-// GROUND-TRUTH: spec=.claude/decisions.md D540 (read verbatim 2026-08-10) +
+// GROUND-TRUTH: spec=.claude/archive/decisions.md D540 (read verbatim 2026-08-10) +
 // .claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md, the bullet beginning
 // "`contentWidth` is now a NAMED contract (D540)".
 // ^ CITED BY HEADING TEXT, NOT LINE NUMBER (repaired 2026-08-09). It previously
@@ -183,7 +183,7 @@ module.exports = {
 		const attrList = declared.join( ', ' );
 		const fixText =
 			`Either give the block a real content band, or rename the attribute to what it actually does. ` +
-			`D540 (.claude/decisions.md): \`contentWidth\` names the width of the element WRAPPING the content. ` +
+			`D540 (.claude/archive/decisions.md): \`contentWidth\` names the width of the element WRAPPING the content. ` +
 			`A block with ONE width layer uses \`maxWidth\`; one that genuinely wants a fixed width says \`width\`. ` +
 			`If the control is inert, delete it (that is what D540 did to quote/testimonial/notice-banner/team-member/product-faq) ` +
 			`and remove its inspector control in the same change.`;

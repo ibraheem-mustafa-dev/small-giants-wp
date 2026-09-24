@@ -53,7 +53,7 @@ hard-rejects them.
 
 **2026-09-14 note:** the BEM-recognition brainstorm's Tier 0 (gate wiring), Tier 1 (kebab-semantic
 slot-map fills + Webflow/Elementor/Divi), and Tier 2 (DOM-shape inference for classless sources)
-are ALL now shipped (`.claude/decisions.md` D1034/D1035/D1053/D1054) — but NOT yet re-run against
+are ALL now shipped (`.claude/archive/decisions.md` D1034/D1035/D1053/D1054) — but NOT yet re-run against
 this specific draft. Resolution path is now a re-test, not a design decision: `/sgs-clone` this
 draft fresh and check whether Tier 0's `primary_is_slot_map_hit` gate + Tier 1's fuller
 kebab-semantic slot_map now let more of its sections through, and whether Tier 2's DOM-shape

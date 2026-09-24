@@ -7,7 +7,7 @@ R8's Tier 1/2 static CSS classifiers (`motion_shape.py`/`motion_trigger.py`)
 read a draft element's `@keyframes`/`animation`/`transition` declarations
 and match them against the seeded `motion_shape_signatures` catalogue. They
 are provably bounded to STATIC CSS text -- they never touch a live page.
-D1026's honest ceiling check (`.claude/decisions.md`) found 3 real-world
+D1026's honest ceiling check (`.claude/archive/decisions.md`) found 3 real-world
 sampled effects that Tier 1/2 structurally cannot resolve because the shape
 is only ever observable by watching the REAL rendered page: a Framer
 tooltip (`:hover`-triggered, already reachable via the D1024/D1026 hover

@@ -5,7 +5,7 @@ FR-44-1 carries the Task 1 (real human approval) + Task 2 (match-diversity floor
 WHY THIS EXISTS. D1088's "35 no-matches, 0 diversions" figure was measured against an
 EMPTY `block_render_repeaters` table (the seeder wasn't wired into `/sgs-update` yet) —
 void by construction, not a real safety result. `.claude/LEDGER.md`'s Front C section and
-`.claude/decisions.md` D1088 both flag it as needing re-measurement once the table holds
+`.claude/archive/decisions.md` D1088 both flag it as needing re-measurement once the table holds
 real data. This script is that re-measurement, kept as a real script (not a throwaway
 one-off) so it can be re-run again whenever the seeded roster or the draft changes.
 

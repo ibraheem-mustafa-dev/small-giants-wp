@@ -1,6 +1,6 @@
 """Audit: which `sgs/%` attributes LACK A MECHANISM that reaches them — the D497 gate.
 
-RE-POINTED 2026-08-05 (Bean's ruling, `.claude/decisions.md` D497). This script previously
+RE-POINTED 2026-08-05 (Bean's ruling, `.claude/archive/decisions.md` D497). This script previously
 measured block.json's inline `"role"` key against `block_attributes.role` and its closing
 advice literally said "add `supports.sgs.attrRoles`" (Task E). D497 rules Task E OUT: it
 would relocate 73 auditable override lines into 84 block.json files, not reduce hand
@@ -334,7 +334,7 @@ def main() -> int:
             "\nCLOSING ADVICE (D497, supersedes the old Task E pointer): a role gap is "
             "closed by extending a MECHANISM (a detector, a suffix rule, a tier in "
             "assign-canonical.py) so it reaches the row — never by declaring a parallel "
-            "per-block channel. See .claude/decisions.md D497."
+            "per-block channel. See .claude/archive/decisions.md D497."
         )
 
         if args.check and stale:

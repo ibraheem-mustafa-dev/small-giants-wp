@@ -296,7 +296,7 @@ inventory the brief asked for.
 - `plugins/sgs-blocks/src/blocks/nav-menu/view.js` — `markCurrentPage()` (lines 55-83).
 - `plugins/sgs-blocks/src/shared/effects/nav-indicator.js` — the shared sliding pill /
   Highlight mechanism, full file read.
-- `.claude/decisions.md` D1038, `.claude/verify/spec-41-gates-interaction.md` G7 section —
+- `.claude/archive/decisions.md` D1038, `.claude/verify/spec-41-gates-interaction.md` G7 section —
   background/original bug + fix write-up.
 - `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` FR-41-1 (lines ~350-368) — the only
   existing `:has()`/current-state architectural ruling, confirmed NOT to cover E2's ask.

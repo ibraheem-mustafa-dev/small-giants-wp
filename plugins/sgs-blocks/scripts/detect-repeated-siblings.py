@@ -2,7 +2,7 @@
 """detect-repeated-siblings.py -- Q2 Tier 1 structural repeated-sibling triad CLI.
 
 Design doc: `.claude/plans/2026-09-10-bem-recognition-and-template-detection-brainstorm.md`
-"Question 2", Tier 1 (Bean-approved 2026-09-11). Decision log: `.claude/decisions.md`.
+"Question 2", Tier 1 (Bean-approved 2026-09-11). Decision log: `.claude/archive/decisions.md`.
 
 Mirrors `migrate-tier-object.py`'s survey -> fix -> fix --apply -> check -> self-test
 shape (per `plugins/sgs-blocks/CLAUDE.md` "Tier-object migration triad" section) rather

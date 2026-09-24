@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """migrate-container-flexwrap-and-stack-candidates.py — census + safe single-apply for TWO
 distinct `sgs/container` flex-row populations. They are NOT the same population and must not
-be conflated (see D774, `.claude/decisions.md`):
+be conflated (see D774, `.claude/archive/decisions.md`):
 
   POPULATION A — STORED `flexWrap`-missing containers (live WordPress DB, post_content).
       `flexWrap`'s default moved from a hidden PHP fallback into each block.json's own

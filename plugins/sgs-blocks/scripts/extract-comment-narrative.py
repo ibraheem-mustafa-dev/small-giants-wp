@@ -3,7 +3,7 @@
 
 WHY THIS EXISTS
     Comments here should explain what the code DOES. This project never
-    deprecates, and git + .claude/decisions.md already hold the history, so
+    deprecates, and git + .claude/archive/decisions.md already hold the history, so
     prior-state narrative in a source file earns nothing and costs reading.
 
     A pilot proved the cut cannot be scripted: of 148 lines removed by hand,

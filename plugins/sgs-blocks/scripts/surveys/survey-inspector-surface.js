@@ -2,7 +2,7 @@
  * survey-inspector-surface.js — Spec 35 replacement census of the WHOLE
  * inspector surface across all 83 sgs/ blocks, per D543/D544.
  *
- * WHY THIS EXISTS (read .claude/decisions.md D543 + D544 in full before
+ * WHY THIS EXISTS (read .claude/archive/decisions.md D543 + D544 in full before
  * touching this file). `check-simple-surface-cap.js` was repurposed from its
  * correct 2-block FR-37-27 job into an 83-block library census and REJECTED
  * (D543) for four proven defects:

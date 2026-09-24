@@ -447,7 +447,7 @@ from source alone:
   8px`. **FIXED, CONFIRMED.**
 
 A third defect was found while investigating these two (not on this gate's own list, see
-`.claude/decisions.md` D1038): item background fills were baking a theme palette slug into a
+`.claude/archive/decisions.md` D1038): item background fills were baking a theme palette slug into a
 literal hex instead of a live `var()` reference. Also confirmed fixed on this page:
 `sgs-nav-menu-86c20a68 .sgs-nav-menu__link::before{...background-color:
 var(--wp--preset--color--primary);}` (was `background-color:#e68a95`). **FIXED, CONFIRMED.**

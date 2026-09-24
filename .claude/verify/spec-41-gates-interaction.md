@@ -465,7 +465,7 @@ scope" lesson.
 
 ## Post-fix closure (2026-09-11, main session)
 
-Root-caused and fixed in commit `bdd80254e` (full writeup: `.claude/decisions.md` D1038):
+Root-caused and fixed in commit `bdd80254e` (full writeup: `.claude/archive/decisions.md` D1038):
 
 - **G7 mouse-hover persistence / bridge-gap** — traced to two compounding bugs in the
   FR-41-13 rescue rule this session already built: the border-hover declaration was gated

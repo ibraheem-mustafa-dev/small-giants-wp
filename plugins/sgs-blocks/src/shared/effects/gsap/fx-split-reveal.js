@@ -110,7 +110,7 @@ export function initSplitReveal( el ) {
 
 		/*
 		 * D453 EXTENDED TO fx-split-reveal.js's SCROLL ARM (2026-08-01) —
-		 * WCAG 2.4.11 / 2.4.7. See `.claude/decisions.md` D453 for the full
+		 * WCAG 2.4.11 / 2.4.7. See `.claude/archive/decisions.md` D453 for the full
 		 * mechanism; this file's investigation and the reasoning for why the
 		 * fix here is SIMPLER than pin-scrub's/fx-scrub.js's are below.
 		 *

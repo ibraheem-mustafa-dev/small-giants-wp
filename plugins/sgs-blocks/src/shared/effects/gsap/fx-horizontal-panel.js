@@ -205,7 +205,7 @@ export function initHorizontalPanel( el ) {
 			 * delete this project's only current WCAG 2.4.11 mitigation for
 			 * this effect, with nothing to catch the regression. See
 			 * `scripts/motion-qa/probe-horizontal-panel-focus.mjs` for the
-			 * measurement and `.claude/decisions.md` (D453 follow-up register)
+			 * measurement and `.claude/archive/decisions.md` (D453 follow-up register)
 			 * for the fuller writeup. This CSS behaviour lives in
 			 * `assets/css/fx-horizontal-panel.css`, outside this file's
 			 * ownership — flagged as an open follow-up to document/harden

@@ -27,7 +27,7 @@ not restated here to avoid a second copy that drifts.
 Query them live:
 - Block / attribute / table counts: `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py`
   or `python ~/.claude/hooks/wp-blocks.py dump`
-- D-ceiling: `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
+- D-ceiling: `grep -oE '^## D[0-9]+' .claude/archive/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
 - Current live status / which tracks are open: `.claude/LEDGER.md`
 
 ## 2. Stack
@@ -250,7 +250,7 @@ curated capability roster.
 ## 10. Architectural principles
 
 For what is built today or the current front, read `.claude/LEDGER.md` — the single live-status
-source. The decision log is `.claude/decisions.md`.
+source. The decision log is `.claude/archive/decisions.md`.
 
 1. **Dynamic blocks only.** Every non-trivial block uses `render` in `block.json` pointing to
    `render.php`; `save()` returns `null` or `<InnerBlocks.Content />`. PHP controls output.
@@ -319,7 +319,7 @@ the pointer — do not duplicate the content here:
 | Spec roster + the DEAD-never-cite list | `.claude/specs/README.md` |
 | Current live status, open tracks, what shipped today | `.claude/LEDGER.md` |
 | Structural defences / STOP catalogue | `.claude/STOP-CATALOGUE.md` |
-| D-numbered decision log | `.claude/decisions.md` (+ `.claude/memory/decisions-archive.md` for older ones) |
+| D-numbered decision log | `.claude/archive/decisions.md` (+ `.claude/archive/decisions.md` for older ones) |
 | Open deferred work | `.claude/parking.md` |
 | Cloning pipeline full detail | `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` |
 | Styling/token contract full detail | `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md` |

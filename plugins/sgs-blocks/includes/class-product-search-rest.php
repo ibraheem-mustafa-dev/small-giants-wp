@@ -9,7 +9,7 @@
  *
  * D638 §6 (2026-08-16): price_html/on_sale/in_stock were deliberately added
  * to the previously price-free response shape, sequenced BEFORE the
- * universal gradient rollout — see .claude/decisions.md D638 for the design
+ * universal gradient rollout — see .claude/archive/decisions.md D638 for the design
  * council that ruled this in. Every other security invariant on this file
  * (visibility fail-closed, rate limiting, RESULT_CAP) is UNCHANGED.
  *

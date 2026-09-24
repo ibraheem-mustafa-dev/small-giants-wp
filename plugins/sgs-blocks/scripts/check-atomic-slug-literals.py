@@ -132,7 +132,7 @@ if new_literals:
     print()
     print("FR-22-3 binding rule: per-block behaviour must come from DB rows, not code branches.")
     print("To legitimise a new branch, add it to ALLOW_LIST in this script with a justification,")
-    print("and record the reason in .claude/decisions.md.")
+    print("and record the reason in .claude/archive/decisions.md.")
     sys.exit(1)
 
 # Report removed literals (shrinkage is good — the allow-list should shrink over time)

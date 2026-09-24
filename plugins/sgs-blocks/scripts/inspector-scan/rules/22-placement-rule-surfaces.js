@@ -1,6 +1,6 @@
 'use strict';
 
-// GROUND-TRUTH: spec=.claude/decisions.md D537 (read verbatim 2026-08-09) +
+// GROUND-TRUTH: spec=.claude/archive/decisions.md D537 (read verbatim 2026-08-09) +
 // .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §"THE PLACEMENT RULE".
 // source=file evidence=the SURFACES list below was not derived from a guess: every
 // entry is a file this session actually had to amend when D537 was propagated
@@ -153,7 +153,7 @@ module.exports = {
 						file: full,
 						severity: 'warn',
 						detail: `"${ rel }" states the placement rule but carries no two-tier marker — it was rewritten and lost the rule, or now describes it in wording this gate cannot recognise.`,
-						fix: 'State the rule as TWO TIERS: tier 1 the element, tier 2 the property-family (see .claude/decisions.md D537). Controls that style nothing take one Settings panel, pinned first.',
+						fix: 'State the rule as TWO TIERS: tier 1 the element, tier 2 the property-family (see .claude/archive/decisions.md D537). Controls that style nothing take one Settings panel, pinned first.',
 						keyParts: [ rel, 'no-canonical-token' ],
 					} )
 				);
@@ -169,7 +169,7 @@ module.exports = {
 						file: full,
 						severity: 'warn',
 						detail: `"${ rel }" asserts the RETIRED placement framing: "${ hit[ 0 ] }" — ${ why }.`,
-						fix: 'Restate per D537 (.claude/decisions.md): tier 1 is the element, tier 2 is the property-family from cluster-member-sets.json. Controls that style nothing take one pinned Settings panel. A negated mention ("not a single catch-all block-level panel") is fine and is not what this flags.',
+						fix: 'Restate per D537 (.claude/archive/decisions.md): tier 1 is the element, tier 2 is the property-family from cluster-member-sets.json. Controls that style nothing take one pinned Settings panel. A negated mention ("not a single catch-all block-level panel") is fine and is not what this flags.',
 						keyParts: [ rel, 'retired-framing' ],
 					} )
 				);

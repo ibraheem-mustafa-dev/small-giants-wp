@@ -2,7 +2,7 @@
 
 `.claude/plans/phase-r8-motion-recognition.md` Step 13 +
 `.claude/plans/2026-09-10-r8-motion-recognition-brainstorm.md` Tier 4d
-section. Read in full before touching this module: `.claude/decisions.md`
+section. Read in full before touching this module: `.claude/archive/decisions.md`
 D1019 (the legal framing this module is required to carry verbatim in
 intent -- see "THE D1019 FRAMING" below) and D880 (the one-off Stripe
 precedent this generalises).
@@ -37,7 +37,7 @@ field: "If the D1019 legal framing text gets simplified or dropped during
 implementation ... that is a hard stop")
 ----------------------------------------------------
 `LEGAL_FRAMING_TEXT` below is not UI copy invented for this module -- it
-reproduces `.claude/decisions.md` D1019's own framing IN INTENT: this
+reproduces `.claude/archive/decisions.md` D1019's own framing IN INTENT: this
 capability is Bean's own risk-tolerance decision, NOT a legal clearance;
 rebuilding pulled material into SGS's own modular system is what makes it
 a *derivative work*, which still generally needs the original owner's
@@ -106,10 +106,10 @@ LEGAL_FRAMING_TEXT = (
     "was never obtained and remains genuinely unresolved -- this feature "
     "existing as a repeatable capability does not resolve that flag, and "
     "if anything raises the stakes, since exposure is no longer bounded to "
-    "one considered source. Full reasoning: .claude/decisions.md D1019."
+    "one considered source. Full reasoning: .claude/archive/decisions.md D1019."
 )
 
-DECISION_REFERENCE = ".claude/decisions.md D1019"
+DECISION_REFERENCE = ".claude/archive/decisions.md D1019"
 
 
 class Tier4dNotEligibleError(RuntimeError):

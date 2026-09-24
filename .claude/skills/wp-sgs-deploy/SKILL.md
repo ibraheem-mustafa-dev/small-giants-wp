@@ -227,7 +227,7 @@ Past deploy incidents the framework has captured — cross-reference before runn
 - **2026-05-05** — LiteSpeed cache plugin removed from palestine-lives + sandybrown; Phase 4 needs `wp plugin list | grep litespeed` guard
 - **2026-05-18** — `Co-Authored-By` git footer banned globally — never include in deploy commit messages
 - **2026-05-19** — Stage 9c placement bug (related: cv2 pipeline observability) — lesson #273 captured; pattern is "wire BEFORE early-return paths, verify against the live pipeline"
-- **2026-05-19** — `/deploy` → `/wp-sgs-deploy` rename + `/deploy-check` absorption — this skill's consolidation (project decision logged in `.claude/decisions.md`)
+- **2026-05-19** — `/deploy` → `/wp-sgs-deploy` rename + `/deploy-check` absorption — this skill's consolidation (project decision logged in `.claude/archive/decisions.md`)
 
 ## Consolidation notes (2026-05-19)
 

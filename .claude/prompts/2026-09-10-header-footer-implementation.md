@@ -67,7 +67,7 @@ the CPT editor, `push-theme-snapshot.py`, and the active-CPT WordPress
 option are all built and already proven to support multiple clients on
 the one shared canary at once.
 
-`.claude/decisions.md` D360 confirms the canary is running "generic proof
+`.claude/archive/decisions.md` D360 confirms the canary is running "generic proof
 CPTs #1570/#1571 left active" — this has been the known state for a while.
 
 ## Where Spec 37 actually stands (checked against the codebase today, not
@@ -128,7 +128,7 @@ programme this session closed out).
 
 ## Priority ruling already on record — don't re-litigate it
 
-`.claude/decisions.md` D1004 (2026-09-07): Bean ruled the header/footer
+`.claude/archive/decisions.md` D1004 (2026-09-07): Bean ruled the header/footer
 clone gap outranks the motion-recognition work in the tier-migration plan
 — "a named, design-gated, dependency-complete piece of work whose absence
 Bean can see on every page," versus motion being "a research-grade problem
@@ -182,7 +182,7 @@ remaining scope:
   card-grid or brand-strip content was rendering completely blank on the
   live frontend, with no error anywhere to catch it. Both attributes were
   widened to a proper `anyOf` schema and live-verified fixed. Documented
-  as `.claude/decisions.md` D1027 and D1031. Commits `6a37490e1`,
+  as `.claude/archive/decisions.md` D1027 and D1031. Commits `6a37490e1`,
   `c6a0338e6`, plus a follow-up correction `198c197b8`.
 
 ## Recommended first action (small, per ADHD Rule 2)
@@ -214,12 +214,12 @@ canary. Ask Bean which client to close first — don't assume.
 | Stalled strategic plan | `.claude/plans/2026-07-29-merged-spec36-37-track-strategic-plan.md` |
 | Footer gap | `.claude/parking.md` → `P-SPEC37-PER-SITE-DECLIENT` |
 | Header gap | `.claude/parking.md` → `P-NAV-INDUS-CUTOVER`, `P-NAV-FEATURED-HOVER-DRAFT-PARITY` |
-| Priority ruling | `.claude/decisions.md` → D360, D419, D1004 |
+| Priority ruling | `.claude/archive/decisions.md` → D360, D419, D1004 |
 | Draft to match | `sites/mamas-munches/mockups/homepage/index.html` (nav + footer markup/CSS) |
 | Live canary | sandybrown-nightingale-600381.hostingersite.com, page 3448 (test clone) and 2742 (production homepage) |
 | Per-client theme push | `plugins/sgs-blocks/scripts/push-theme-snapshot.py` (defaults to the shared canary — `DEFAULT_TARGET_DOMAIN`) |
 | Indus palette snapshot | `sites/indus-foods/theme-snapshot.json` |
 | Indus Brands content proof (mega-panel) | Canary post ID 3482, "Indus Brands Panel (Phase 2 port)"; source recovered from git history, `mega-menu-brands.html` |
-| Image-picker repeater-wipe bug + fix | `.claude/decisions.md` → D1027, D1031; commits `6a37490e1`, `c6a0338e6`, `198c197b8` |
+| Image-picker repeater-wipe bug + fix | `.claude/archive/decisions.md` → D1027, D1031; commits `6a37490e1`, `c6a0338e6`, `198c197b8` |
 | Motion-capability shipment (header-row/footer-row/mega-panel + BackgroundPanel) | Commits `a9d808166`, `e8f20637f`, `2e590df08`, `ab3970a9e`, `e572d1f2b` |
 | Heading-less mega-panel a11y notice (FR-36-12) | Commit `e7f83b8fa` |

@@ -4,7 +4,7 @@
 		"why_a_manifest": "D537 was recorded in decisions.md and nowhere else; nine live surfaces went on teaching the retired rule, including a wired scanner's own fix message. Propagating it took two commits and a two-reviewer panel, and the panel still found a surface the first pass had missed. The rule was stated in prose and enforced by nobody. This list is what makes it enforced.",
 		"how_to_add": "Wrote a new file that states the placement rule? Add its repo-root-relative path here. A surface absent from this list is unguarded — that is the exact failure mode rule 22 exists to prevent.",
 		"rule": "plugins/sgs-blocks/scripts/inspector-scan/rules/22-placement-rule-surfaces.js",
-		"decision": ".claude/decisions.md D537",
+		"decision": ".claude/archive/decisions.md D537",
 		"added": "2026-08-09"
 	},
 	"surfaces": [

@@ -269,7 +269,7 @@ def stage_neg1_motion_probe(mockup_path: Path, source_url: "str | None", run_dir
     """Stage -1 -- Phase R8 Tier 4a/4c motion-library pre-flight probe.
 
     Runs once per clone job, BEFORE Stage 0. Wires the four R8 modules
-    (`.claude/decisions.md` D1021/D1022) into the real pipeline for the
+    (`.claude/archive/decisions.md` D1021/D1022) into the real pipeline for the
     first time -- confirmed live by grep before this function existed that
     none of them had an external importer besides their own test fixtures.
 

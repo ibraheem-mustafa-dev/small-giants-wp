@@ -23,7 +23,7 @@ each round found a fundamental flaw the previous fix introduced, and all three
 attempts shared one root cause: they only ever looked at the *rendered HTML* of a
 repeated group. v2.0.0 rebuilt the mechanism from six new evidence threads —
 documented in `.claude/reports/2026-09-14-classless-recognition-next-design-attempt.md`
-and `.claude/decisions.md` D1074/D1078. Read those before touching this spec's
+and `.claude/archive/decisions.md` D1074/D1078. Read those before touching this spec's
 mechanism.
 
 ### 0.1 What changed since v2.0.0
@@ -610,7 +610,7 @@ regardless of sequencing.
   was checked), which is precisely why FR-44-1(b)'s forced-first-review exists.
 - The "top brands" framework gap → no gap; `sgs/brand-strip` already covers it.
   See §5.3.
-- Full trail: `.claude/decisions.md` D1074, D1078.
+- Full trail: `.claude/archive/decisions.md` D1074, D1078.
 
 ## 7. Permanent audit log + the real review surface
 
@@ -824,8 +824,8 @@ off is the rollback path if a real run misbehaves — no code revert needed.
 
 | Source | What |
 |---|---|
-| `.claude/decisions.md` D1074 | Full 3-round council failure trail for v1.0.0 |
-| `.claude/decisions.md` D1078 | The buybox/WooCommerce live corrections |
+| `.claude/archive/decisions.md` D1074 | Full 3-round council failure trail for v1.0.0 |
+| `.claude/archive/decisions.md` D1078 | The buybox/WooCommerce live corrections |
 | `.claude/reports/2026-09-14-claude-design-draft-field-identity-schema.md` | Thread 1 (JS/HTML signal evidence) |
 | `.claude/reports/2026-09-14-classless-recognition-next-design-attempt.md` | Full six-thread synthesis this spec is built from |
 | `.claude/reports/2026-09-14-eye-care-draft-exceptions-agreed.md` | The pre-existing CPT/template routing gap §4.5 closes |
