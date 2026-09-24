@@ -53,3 +53,9 @@ Screenshot: `fb-drawer-after.png` (scratchpad): panel over the header's phone ro
 | # | Check | Result |
 |---|---|---|
 | F7 | Closing the trigger-mode drawer no longer brings the hidden × and its 64px top row back during the exit animation (the opener-live flag now clears in `onNativeClose`, after the dialog closes) | PASS: Bean tested it in the live window and confirmed the fix. Measured before the close: flag set, × `display:none`, body `padding-top` 27.27px. The per-frame recording of the close itself was not completed (the recorder ran out before the click); Bean's live check closes it |
+
+## Full-screen non-modal header clearance (commit 9963e4b2d, deployed)
+
+| # | Check | Measured | Result |
+|---|---|---|---|
+| F8 | Full-screen, non-modal drawer content starts below the header | Deployed style.css, full-screen geometry and render.php's printed clearance rule applied in the tab (the test drawer stays on `trigger`). Without the rule (negative control): first link at 27px under a 127px header, click hits the header. With it: dialog padding-top 127px (the measured header edge), first link at 154px, a click reaches it, burger still live | PASS |
