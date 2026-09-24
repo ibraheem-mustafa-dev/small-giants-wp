@@ -142,13 +142,43 @@ Images only for prescriptions (jpeg, png, webp, heic if the server supports it).
    answer page used). The paused C1, C3, C4 and C5 go here first.
 5. Repeat for each later client site built this way, so the answer-key set grows with paid work.
 
-## 8. Decisions for Bean
+## 8. Bean's decisions (2026-09-24)
 
-1. **Lens prices** (section 5): (a) site-wide price list (recommended), (b) variations, (c) separate products.
-2. **Where the real site lives:** build on `eye-care-test`, then move to the client's own domain at
-   launch? Where is the client's hosting? (Needed by Phase 6, not before.)
-3. Anything in the gap map's "outside the code" list you already have answers for (payment gateway,
-   WhatsApp number, photos, the ninth FAQ).
+1. **Lens prices: (a), one site-wide lens price list**, as a second priced-step source in Spec 43.
+2. **Where the real site lives:** left for now; build on `eye-care-test`.
+3. **Definition of done: the site is fully functional and matches the draft.** Content the client
+   supplies (photos, the ninth FAQ, the real review text) is not ours. The payment gateway is a plugin
+   set up in Phase 6 (Stripe-based, with Klarna and wallets, plus PayPal). The WhatsApp number in the
+   draft is correct, so the gap map's "one digit short" item is closed.
+
+## 8b. Running it: waves, parallel work, models
+
+The phases above are a dependency order, not a queue. Independent work runs in parallel.
+
+| Wave | Runs in parallel | Waits for |
+|---|---|---|
+| A | Phase 0 re-check (one read-only agent per gap-map area, 9 areas) · Phase 1 theme remainder · Phase 2 WooCommerce data on the test site | nothing |
+| B | Each Phase 3 framework feature as its own agent (modal from any link; buybox slot; WhatsApp card; has-reviews condition; private file storage; plus the Phase 0 list of small block extensions, grouped one block per agent) · the header, footer and content pages (home, lenses, about, help, FAQ, contact) | Wave A's corrected list |
+| C | Shop archive · product page · bag and checkout · lens configurator and prescription (Spec 43 Phases 3 and 4 with the price list) | the Wave B features each one uses |
+| D | Launch checks · Phase 7 answer key | Wave C |
+
+**Rules that keep parallel work reliable on this shared tree:**
+- one agent per block directory or per page; no two agents in the same files;
+- agents return work uncommitted; the main session reads every diff, runs the build and gates,
+  commits with explicit paths and deploys. One build and one deploy at a time, because they share
+  `build/` and the test site;
+- pages on the test site are separate posts, so page builds can run side by side;
+- every agent gets the draft section, the gap-map row, the rules it must keep (no inline styling,
+  editor control for every setting, "any client" test) and the 3-width check it must pass.
+
+**Models:**
+- **Main session (Opus):** coordination, the design gates, reading every diff, live verification.
+  Errors here cost the most, so it stays on the strongest model.
+- **Sonnet agents:** block extensions, framework features, page and template builds, the lens
+  configurator.
+- **Haiku agents:** the Phase 0 re-check (each row is "does this attribute or file exist, and does it
+  do what the row says"), and WooCommerce data entry over WP-CLI.
+- One session per wave keeps the main session's context small and cheap.
 
 ## 9. Risks
 

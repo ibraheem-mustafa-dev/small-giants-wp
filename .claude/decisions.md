@@ -1,5 +1,12 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1149 [ROUTINE] — Build Eye Care by hand to client-ready first; the finished site becomes the pipeline's answer key (2026-09-24)
+
+**Decision (Bean).** Stop finishing the cloning pipeline before any client ships. Build the Eye Care site by hand from the Claude Design gap map (`sites/eye-care-ward-end/Ward End Eye Care - SGS Gap Handoff/`), closing each gap as a general framework feature, full scope including the lens configurator and prescription upload. Done = fully functional and matching the draft; client-supplied content is out of scope. Then clone the same draft onto a separate test page and compare rendered output against the finished site: every difference is a pipeline gap with a known destination.
+**Sub-decisions.** Lens prices = one site-wide add-on price list, a second priced-step source in Spec 43 (not WC variations). Prescription upload reuses `sgs/form-field-file` + `class-form-upload.php`, gaining private storage (files currently land in the public uploads folder). Converter findings design C1/C3/C4/C5 paused (C2 shipped 0deb3b10b); they return as Phase 7 test cases.
+**Checked.** Gap map mostly accurate; its theme row was stale (snapshot already Playfair/Outfit, ink/taupe) and it over-sized the configurator and upload (choice-flow Phases 1-2 and the uploader exist).
+**Plan.** `plans/2026-09-24-eye-care-hand-build-design.md` (phases, parallel waves, model routing).
+
 ## D1148 [ROUTINE] — One shared scrim for every block that dims the page; one hover-shadow control (2026-09-24)
 
 **Decision (Bean).** U-2 (M-14) signed off: colour or gradient plus per-device strength and blur, on the drawer and on the menu bar (so every dropdown and mega panel on a bar shares it); the bar is off unless set; lamalama's click-through is an accepted divergence (SGS absorbs the dismissing click). Widened by Bean: build it as a shared helper any dimming block adopts, so the modal (pop-up), cart drawer, gallery lightbox and product search adopt it too; the modal's backdrop hover colour is removed. Separately: blocks with a shadow get ONE hover-shadow control (the lift switch plus an optional chosen hover preset that overrides it), not two.

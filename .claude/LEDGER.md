@@ -52,6 +52,13 @@ Phase 3's precondition (real WooCommerce catalogue data).
 
 ### Front F — Eye Care Birmingham clone on a REAL page (Bean-directed)
 
+**REDIRECTED 2026-09-24 (D1149): build the Eye Care site by hand to client-ready FIRST**, from
+`sites/eye-care-ward-end/Ward End Eye Care - SGS Gap Handoff/` (new draft with `data-sgs-manifest`, gap map of
+114 graded items). Plan: `plans/2026-09-24-eye-care-hand-build-design.md` (phases 0-7, parallel waves A-D,
+model routing). **Next: Wave A** — Phase 0 gap-map re-check (Haiku, one agent per area) ‖ Phase 1 theme
+remainder ‖ Phase 2 WooCommerce data on eye-care-test. Converter findings design C1/C3/C4/C5 PAUSED (C2
+shipped) until Phase 7, where the finished site is the clone's answer key. The clone notes below still apply.
+
 **Test site:** https://darkcyan-grouse-898606.hostingersite.com/eye-care-birmingham/ (page 11; WP 7.1.1 +
 WooCommerce; creds `.claude/secrets/eye-care-test.env`). Run a clone: `SGS_DEPLOY_SITE=eye-care-test`, `SSL_CERT_FILE`
 and `NODE_EXTRA_CA_CERTS` = the certifi `cacert.pem` (Python's Windows TLS store rejects every hostingersite.com host),
