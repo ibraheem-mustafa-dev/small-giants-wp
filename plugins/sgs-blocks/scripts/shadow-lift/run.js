@@ -352,8 +352,17 @@ function main() {
 			console.log( `[shadow-lift] ${ unguardedTheme } unguarded theme lift rule(s) found` );
 		}
 
-		if ( '--check' === mode && ( total > 0 || unguardedTheme > 0 || 0 === builtFiles().length ) ) {
-			if ( 0 === builtFiles().length ) {
+		// `--require-build` (postbuild) fails when build/blocks is empty, so the
+		// check can never pass vacuously once the build has run. The prebuild
+		// gate runs straight after `clean:build`, when build/ is always empty,
+		// so there it checks the sources and theme only and says so.
+		const requireBuild = process.argv.includes( '--require-build' );
+		const noBuild = 0 === builtFiles().length;
+		if ( noBuild && ! requireBuild ) {
+			console.log( '[shadow-lift] build/blocks is empty (prebuild): sources and theme checked; the build output is checked in postbuild' );
+		}
+		if ( '--check' === mode && ( total > 0 || unguardedTheme > 0 || ( noBuild && requireBuild ) ) ) {
+			if ( noBuild ) {
 				console.error( '[shadow-lift] NOT RUN against build output: build/blocks has no stylesheets' );
 			}
 			process.exit( 1 );
@@ -361,7 +370,7 @@ function main() {
 		return;
 	}
 
-	console.error( 'usage: run.js --survey | --build | --fix-theme [--apply] | --check | --self-test' );
+	console.error( 'usage: run.js --survey | --build | --fix-theme [--apply] | --check [--require-build] | --self-test' );
 	process.exit( 2 );
 }
 

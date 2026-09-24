@@ -150,6 +150,16 @@ def _contains_box_token(s: str) -> bool:
             # ('topLeft', 'borderTopWidth').
             if after.isalpha() and after.islower():
                 continue
+            # An ALL-CAPS corner token (TL/TR/BL/BR) touching another capital is
+            # inside an upper-case word or constant ('SGS_|BL|OCKS_PATH', which
+            # failed the build 2026-09-24 on converter/services/render_emits.py's
+            # require-statement regex). A real corner reference stands alone:
+            # '(TL|TR|BL|BR)$', 'radiusTL'.
+            if tok.isupper() and len(tok) == 2 and (
+                ( before.isalpha() and before.isupper() )
+                or ( after.isalpha() and after.isupper() )
+            ):
+                continue
 
             return True
     return False

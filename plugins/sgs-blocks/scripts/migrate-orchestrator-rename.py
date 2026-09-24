@@ -180,7 +180,9 @@ def transform(text: str) -> tuple[str, dict, list]:
 # missed. Walks the whole repo, prunes never-source directories, and flags
 # anything naming our rename subject that TARGETS does not already cover.
 # ---------------------------------------------------------------------------
-PRUNE_DIRS = {'.git', '.claude', 'node_modules', 'build', 'vendor', '__pycache__'}
+# `pipeline-state` is git-ignored run output; sessions park whole-tree copies of
+# scripts/ there (e.g. `_impl-F6/before/`), which are snapshots, not source.
+PRUNE_DIRS = {'.git', '.claude', 'node_modules', 'build', 'vendor', '__pycache__', 'pipeline-state'}
 FIXTURES_MARKER = os.path.join('scripts', 'fixtures')
 _SELF_PATH = os.path.abspath(__file__)
 
