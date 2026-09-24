@@ -354,6 +354,41 @@ def read_text(path):
         return ''
 
 
+_JS_LOCAL_IMPORT_RE = re.compile(r'''from\s+['"]\./([\w.-]+?)(?:\.js)?['"]''')
+_PHP_LOCAL_REQUIRE_RE = re.compile(r'''(?:require|include)(?:_once)?\s*\(?\s*__DIR__\s*\.\s*['"]/([\w.-]+\.php)['"]''')
+
+
+def own_module_sources(block_dir, entry_sources):
+    """Sources of the block's OWN sibling modules that its entry files actually import
+    (JS `from './x'`) or require (PHP `require_once __DIR__ . '/x.php'`), followed
+    transitively. A block that splits edit.js or render.php into helpers to stay under
+    the file-length budget still consumes its attributes there; reading only the five
+    entry files flagged 34 false orphan_attr findings on brand-strip, buybox and
+    whatsapp-cta (2026-09-24). Only IMPORTED files count, so an unrelated file sitting
+    in the folder can never make an attribute look used."""
+    queue, seen, out = [], set(), []
+
+    def refs(src):
+        return ([m + '.js' for m in _JS_LOCAL_IMPORT_RE.findall(src)]
+                + _PHP_LOCAL_REQUIRE_RE.findall(src))
+
+    for src in entry_sources:
+        queue.extend(refs(src or ''))
+    entry_names = {'edit.js', 'render.php', 'save.js', 'view.js', 'index.js'}
+    while queue:
+        name = queue.pop(0)
+        if name in seen or name in entry_names:
+            continue
+        seen.add(name)
+        path = block_dir / name
+        if not path.is_file():
+            continue
+        src = read_text(path)
+        out.append(src)
+        queue.extend(refs(src))
+    return out
+
+
 def strip_comments(src):
     """Strip /* */, //, and PHP # comments so a name surviving only in a
     doc-comment is never counted as consumed/used. Applied to both PHP and JS
@@ -884,7 +919,12 @@ class BlockFiles:
         self.has_render_php_file = (block_dir / 'render.php').exists()
         self.has_save_js_file = (block_dir / 'save.js').exists()
 
-        self.own_corpus = '\n'.join([self.edit_js, self.render_php, self.save_js, self.view_js])
+        self.own_corpus = '\n'.join(
+            [self.edit_js, self.render_php, self.save_js, self.view_js]
+            + [strip_comments(src) for src in own_module_sources(block_dir, [
+                self.edit_js_raw, self.render_php_raw, self.save_js_raw, self.view_js_raw,
+            ])]
+        )
 
 
 # ---------------------------------------------------------------------------
