@@ -466,6 +466,17 @@ free. A drawer post's content is `sgs/nav-drawer` block markup; the block is the
 per page from the active or referenced post, so a duplicate `<dialog id>` cannot occur by
 construction.
 
+**Close chrome crosses the boundary (Wave 3C U-11, D1150).** The drawer post owns its close
+BEHAVIOUR through Spec 36 FR-36-6: the × is left out only when the drawer is `non-modal`,
+`closeStyle` at that tier is `trigger` and the opening burger is live, and `closeStyle`,
+`closePlacement`, `closeOffset` and `closeRadius` are per-device tier objects. Two consequences on
+this spec's side: (1) stored `sgs_drawer` posts and the seven `drawer-*.php` starter patterns carry
+`closeStyle` as `{desktop: …}` (flat values were migrated on 2026-09-24 with
+`plugins/sgs-blocks/scripts/migrate-stored-tier-scalars.py` and
+`plugins/sgs-blocks/scripts/migrate-theme-tier-scalars.py`); (2) a page whose content carries its own
+`sgs/nav-drawer` block shows that drawer instead of the Active post (the landmark guard below), so
+a live check of the Active drawer must use a page with no drawer block of its own.
+
 **Status:** `PARTIAL`.
 
 **Built:**

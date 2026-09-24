@@ -149,7 +149,7 @@ U-10+U-14 (one design, council, sign-off, deploy and live check each). Lane A (n
 → U-6+U-7 → U-4 → U-10. Lane B (header behaviours): U-13 → U-14 → U-16, after A passes U-9+U-11. Lane C
 (independent): U-12, U-15, U-17 (`prompts/2026-09-24-wave-3c-lane-c.md`). Each lane edits only its own line below.
 
-- **Lane A:** U-9+U-11 CLOSED (D1150, c36105939, live PASS `reports/visual-diff/nav-drawer-2026-09-24.md`; test posts 3777/3778 restored to the U-2 fixture). Owed: axe with the drawer open, editor round-trip of the new controls, Bean's eye on two screenshots. Next: U-5 (+U-16 unless lane B takes it), design-gated.
+- **Lane A:** U-9+U-11 CLOSED (D1150, c36105939, live PASS `reports/visual-diff/nav-drawer-2026-09-24.md`; test posts 3777/3778 restored to the U-2 fixture). Owed: axe with the drawer open, editor round-trip of the new controls, Bean's eye on two screenshots. **First next session: Bean's feedback on the U-9+U-11 menu behaviour (he is giving it after the 2026-09-24 compact); act on it before starting U-5.** Re-run a scenario with `wp eval-file plugins/sgs-blocks/scripts/nav-qa/qa-close-fixture.php <trigger|modal|same-slot|restore>` (upload it to the server home first) and check on `/qa-scrim/` (no drawer block of its own). Next unit: U-5 (+U-16 unless lane B takes it), design-gated.
 - **Lane B:** not started.
 - **Lane C:** not started.
 
