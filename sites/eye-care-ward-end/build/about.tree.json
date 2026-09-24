@@ -1,0 +1,118 @@
+[
+  {
+    "name": "sgs/container",
+    "attributes": {
+      "tagName": "main",
+      "anchor": "sgs-page-about",
+      "layout": "grid",
+      "columns": { "desktop": 2, "tablet": 1, "mobile": 1 },
+      "gridTemplateColumns": { "desktop": "1.1fr 0.9fr" },
+      "gap": { "desktop": "48px", "mobile": "32px" },
+      "alignItems": "start",
+      "maxWidth": { "desktop": "1100px" },
+      "padding": {
+        "desktop": { "top": "104px", "bottom": "104px", "left": "52px", "right": "52px" },
+        "tablet": { "top": "104px", "bottom": "104px", "left": "52px", "right": "52px" },
+        "mobile": { "top": "56px", "bottom": "56px", "left": "20px", "right": "20px" }
+      }
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/container",
+        "attributes": { "tagName": "div", "metadata": { "name": "About text" }, "flexWrap": "wrap" },
+        "innerBlocks": [
+          { "name": "sgs/text", "attributes": { "text": "About Eye Care", "textColour": "accent-text", "textTransform": "uppercase", "letterSpacing": { "desktop": 0.24 }, "letterSpacingUnit": "em", "fontSize": { "desktop": "12px" } } },
+          { "name": "sgs/heading", "attributes": { "content": "Fatima Nawaz", "level": "h1" } },
+          { "name": "sgs/text", "attributes": { "text": "BSc (Hons) Optometry · MCOptom · DipTp(IP) · Prof Cert Paediatric Eye Care", "textColour": "text-muted", "fontSize": { "desktop": "15px" }, "letterSpacing": { "desktop": 0.04 }, "letterSpacingUnit": "em" } },
+          { "name": "sgs/text", "attributes": { "text": "Eye Care Birmingham is an independent clinic in Birmingham. This shop is how it sells eyewear beyond the front door: the same frames the chains stock, priced by someone without a chain's overheads, with lenses glazed and fitted on site.", "fontSize": { "desktop": "17px" } } },
+          { "name": "sgs/text", "attributes": { "text": "Day to day I test eyes, treat eye conditions and dispense glasses. The letters below aren't decoration — they're why I can look at your prescription and tell you what will actually work in a given frame.", "textColour": "text-muted", "fontSize": { "desktop": "16px" } } },
+          { "name": "sgs/text", "attributes": { "text": "Every prescription order is checked by me before it's made. If a frame won't suit a strong prescription, I'll say so before you pay and suggest something that will.", "textColour": "text-muted", "fontSize": { "desktop": "16px" } } },
+          {
+            "name": "sgs/container",
+            "attributes": { "tagName": "div", "layout": "flex", "flexWrap": "wrap", "gap": { "desktop": "10px" }, "margin": { "desktop": { "top": "32px" } } },
+            "innerBlocks": [
+              {
+                "name": "sgs/whatsapp-cta",
+                "attributes": {
+                  "variant": "inline",
+                  "phoneNumber": "4479605978",
+                  "message": "Hi, I'd like to know more about your services.",
+                  "label": "Message me",
+                  "backgroundColour": "whatsapp"
+                }
+              },
+              {
+                "name": "sgs/button",
+                "attributes": {
+                  "label": "Shop the range",
+                  "url": "/sunglasses/",
+                  "inheritStyle": "custom",
+                  "colourText": "text",
+                  "borderColour": "text",
+                  "borderWidth": { "desktop": { "top": "1px", "right": "1px", "bottom": "1px", "left": "1px" } },
+                  "minHeight": { "desktop": "50px" },
+                  "textTransform": "uppercase",
+                  "letterSpacing": { "desktop": 0.1 },
+                  "letterSpacingUnit": "em",
+                  "fontSize": { "desktop": "13px" }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "tagName": "div",
+          "metadata": { "name": "Credential stack" },
+          "layout": "flex",
+          "flexWrap": "wrap",
+          "gap": { "desktop": "1px" },
+          "backgroundColour": "border",
+          "borderWidth": { "desktop": { "top": "1px", "right": "1px", "bottom": "1px", "left": "1px" } },
+          "borderColour": "border"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/container",
+            "attributes": { "tagName": "div", "backgroundColour": "surface-alt", "padding": { "desktop": { "top": "22px", "bottom": "22px", "left": "24px", "right": "24px" } } },
+            "innerBlocks": [
+              { "name": "sgs/heading", "attributes": { "content": "BSc (Hons)", "level": "h3", "fontSize": { "desktop": "22px" } } },
+              { "name": "sgs/text", "attributes": { "text": "An honours degree in optometry, a supervised pre-registration year, and registration with the General Optical Council.", "textColour": "text-muted", "fontSize": { "desktop": "14.5px" } } }
+            ]
+          },
+          {
+            "name": "sgs/container",
+            "attributes": { "tagName": "div", "backgroundColour": "surface-alt", "padding": { "desktop": { "top": "22px", "bottom": "22px", "left": "24px", "right": "24px" } } },
+            "innerBlocks": [
+              { "name": "sgs/heading", "attributes": { "content": "MCOptom", "level": "h3", "fontSize": { "desktop": "22px" } } },
+              { "name": "sgs/text", "attributes": { "text": "Member of the College of Optometrists, which means ongoing training and a code of clinic beyond the legal minimum.", "textColour": "text-muted", "fontSize": { "desktop": "14.5px" } } }
+            ]
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div", "backgroundColour": "surface-alt",
+              "padding": { "desktop": { "top": "22px", "bottom": "22px", "left": "24px", "right": "24px" } },
+              "borderWidth": { "desktop": { "left": "3px" } },
+              "borderColour": "accent"
+            },
+            "innerBlocks": [
+              { "name": "sgs/heading", "attributes": { "content": "DipTp(IP)", "level": "h3", "fontSize": { "desktop": "22px" } } },
+              { "name": "sgs/text", "attributes": { "text": "Independent Prescriber — a postgraduate qualification allowing me to diagnose eye conditions and prescribe medicine for them. Most opticians can't.", "textColour": "text-muted", "fontSize": { "desktop": "14.5px" } } }
+            ]
+          },
+          {
+            "name": "sgs/container",
+            "attributes": { "tagName": "div", "backgroundColour": "surface-alt", "padding": { "desktop": { "top": "22px", "bottom": "22px", "left": "24px", "right": "24px" } } },
+            "innerBlocks": [
+              { "name": "sgs/heading", "attributes": { "content": "Paediatric Eye Care", "level": "h3", "fontSize": { "desktop": "22px" } } },
+              { "name": "sgs/text", "attributes": { "text": "Additional certification in children's vision, which matters when the order is for a child.", "textColour": "text-muted", "fontSize": { "desktop": "14.5px" } } }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

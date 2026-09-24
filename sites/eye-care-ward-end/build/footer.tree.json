@@ -1,0 +1,163 @@
+[
+  {
+    "name": "sgs/site-footer",
+    "attributes": {
+      "align": "full",
+      "backgroundColour": "footer-bg",
+      "textColour": "text",
+      "contentWidth": { "desktop": "1440px" },
+      "padding": { "desktop": { "top": "0px", "bottom": "0px", "left": "20px", "right": "20px" } },
+      "borderWidth": { "top": "1px" },
+      "borderColour": "border",
+      "borderStyle": "solid"
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/site-footer-row",
+        "attributes": {
+          "rowSlot": "columns",
+          "layout": "grid",
+          "columns": { "desktop": 4, "tablet": 2, "mobile": 1 },
+          "gap": { "desktop": "36px", "mobile": "36px" },
+          "padding": { "desktop": { "top": "56px", "bottom": "56px" }, "tablet": { "top": "56px", "bottom": "56px" } }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/container",
+            "attributes": { "tagName": "div", "metadata": { "name": "Brand" }, "flexWrap": "wrap" },
+            "innerBlocks": [
+              {
+                "name": "sgs/heading",
+                "attributes": { "content": "EYE CARE", "level": "h4", "letterSpacing": { "desktop": 0.14 }, "letterSpacingUnit": "em", "fontSize": { "desktop": "18px" } }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": { "text": "BIRMINGHAM", "textColour": "text-label", "fontSize": { "desktop": "9.5px" }, "letterSpacing": { "desktop": 0.32 }, "letterSpacingUnit": "em" }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": { "text": "Designer eyewear from an independent optician in Birmingham.", "textColour": "text-muted", "fontSize": { "desktop": "14px" } }
+              },
+              {
+                "name": "sgs/social-icons",
+                "attributes": {
+                  "source": "site-info",
+                  "colourMode": "brand",
+                  "iconStyle": "plain",
+                  "iconSize": 18,
+                  "iconBackground": "surface-alt",
+                  "iconBorderColour": "border",
+                  "iconGlyphColour": "text",
+                  "gap": "10"
+                }
+              }
+            ]
+          },
+          {
+            "name": "sgs/container",
+            "attributes": { "tagName": "div", "metadata": { "name": "Shop" }, "flexWrap": "wrap" },
+            "innerBlocks": [
+              {
+                "name": "sgs/heading",
+                "attributes": { "content": "Shop", "level": "h5", "textColour": "text-label", "textTransform": "uppercase", "letterSpacing": { "desktop": 0.2 }, "letterSpacingUnit": "em", "fontSize": { "desktop": "11.5px" } }
+              },
+              {
+                "name": "core/list",
+                "attributes": { "className": "is-style-no-bullets" },
+                "innerBlocks": [
+                  { "name": "core/list-item", "attributes": { "content": "<a href=\"/sunglasses/\">Sunglasses</a>" } },
+                  { "name": "core/list-item", "attributes": { "content": "<a href=\"/sunglasses/\">All brands</a>" } },
+                  { "name": "core/list-item", "attributes": { "content": "<a href=\"/prescription-lenses/\">Prescription lenses</a>" } },
+                  { "name": "core/list-item", "attributes": { "content": "Glasses — arriving soon" } }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "sgs/container",
+            "attributes": { "tagName": "div", "metadata": { "name": "Help" }, "flexWrap": "wrap" },
+            "innerBlocks": [
+              {
+                "name": "sgs/heading",
+                "attributes": { "content": "Help", "level": "h5", "textColour": "text-label", "textTransform": "uppercase", "letterSpacing": { "desktop": 0.2 }, "letterSpacingUnit": "em", "fontSize": { "desktop": "11.5px" } }
+              },
+              {
+                "name": "core/list",
+                "attributes": { "className": "is-style-no-bullets" },
+                "innerBlocks": [
+                  { "name": "core/list-item", "attributes": { "content": "<a href=\"/help/\">Delivery &amp; returns</a>" } },
+                  { "name": "core/list-item", "attributes": { "content": "<a href=\"/help/\">FAQs</a>" } },
+                  { "name": "core/list-item", "attributes": { "content": "<a href=\"/help/\">Size guide</a>" } },
+                  { "name": "core/list-item", "attributes": { "content": "<a href=\"/contact/\">Contact</a>" } }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "sgs/container",
+            "attributes": { "tagName": "div", "metadata": { "name": "Visit or call" }, "flexWrap": "wrap" },
+            "innerBlocks": [
+              {
+                "name": "sgs/heading",
+                "attributes": { "content": "Visit or call", "level": "h5", "textColour": "text-label", "textTransform": "uppercase", "letterSpacing": { "desktop": 0.2 }, "letterSpacingUnit": "em", "fontSize": { "desktop": "11.5px" } }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": { "text": "<a href=\"/about/\">About Eye Care</a>", "fontSize": { "desktop": "14px" } }
+              },
+              {
+                "name": "sgs/business-info",
+                "attributes": { "displayType": "phone", "showIcon": false, "fontSize": { "desktop": "14px" } }
+              },
+              {
+                "name": "sgs/business-info",
+                "attributes": { "displayType": "address", "showIcon": false, "textColour": "text-muted", "fontSize": { "desktop": "14px" } }
+              },
+              {
+                "name": "sgs/business-info",
+                "attributes": { "displayType": "hours", "showIcon": false, "textColour": "text-label", "fontSize": { "desktop": "13px" } }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "sgs/site-footer-row",
+        "attributes": {
+          "rowSlot": "bottom",
+          "borderWidth": { "top": "1px" },
+          "borderStyle": "solid",
+          "borderColour": "border",
+          "justifyContent": "space-between",
+          "padding": { "desktop": { "top": "16px", "bottom": "16px" } }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/business-info",
+            "attributes": { "displayType": "copyright", "textColour": "text-label", "fontSize": { "desktop": "12px" } }
+          },
+          {
+            "name": "sgs/container",
+            "attributes": { "tagName": "div", "layout": "flex", "gap": { "desktop": "14px" } },
+            "innerBlocks": [
+              { "name": "sgs/text", "attributes": { "text": "<a href=\"/privacy/\">Privacy</a>", "fontSize": { "desktop": "12px" } } },
+              { "name": "sgs/text", "attributes": { "text": "<a href=\"/terms/\">Terms</a>", "fontSize": { "desktop": "12px" } } }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "sgs/whatsapp-cta",
+    "attributes": {
+      "variant": "floating",
+      "phoneNumber": "4479605978",
+      "message": "Hi, I'd like to know more about your services.",
+      "label": "Ask me anything",
+      "floatingScrollThreshold": 0,
+      "floatingHideLabelBelow": 768,
+      "backgroundColour": "whatsapp"
+    }
+  }
+]

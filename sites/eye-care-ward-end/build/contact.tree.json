@@ -1,0 +1,141 @@
+[
+  {
+    "name": "sgs/container",
+    "attributes": {
+      "tagName": "main",
+      "anchor": "sgs-page-contact",
+      "layout": "grid",
+      "columns": { "desktop": 2, "tablet": 1, "mobile": 1 },
+      "gridTemplateColumns": { "desktop": "1.1fr 0.9fr" },
+      "gap": { "desktop": "48px", "mobile": "32px" },
+      "alignItems": "start",
+      "maxWidth": { "desktop": "1100px" },
+      "padding": {
+        "desktop": { "top": "104px", "bottom": "104px", "left": "52px", "right": "52px" },
+        "tablet": { "top": "104px", "bottom": "104px", "left": "52px", "right": "52px" },
+        "mobile": { "top": "56px", "bottom": "56px", "left": "20px", "right": "20px" }
+      }
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/container",
+        "attributes": { "tagName": "div", "metadata": { "name": "Contact info + form" }, "flexWrap": "wrap" },
+        "innerBlocks": [
+          { "name": "sgs/text", "attributes": { "text": "Contact", "textColour": "accent-text", "textTransform": "uppercase", "letterSpacing": { "desktop": 0.24 }, "letterSpacingUnit": "em", "fontSize": { "desktop": "12px" } } },
+          { "name": "sgs/heading", "attributes": { "content": "You'll be talking to me, not a help desk.", "level": "h1" } },
+          { "name": "sgs/text", "attributes": { "text": "Frame advice, prescription questions, order updates — WhatsApp is quickest. Messages in opening hours are usually answered within the hour.", "textColour": "text-muted", "fontSize": { "desktop": "16.5px" } } },
+          {
+            "name": "sgs/whatsapp-cta",
+            "attributes": {
+              "variant": "inline",
+              "phoneNumber": "4479605978",
+              "message": "Hi, I'd like to know more about your services.",
+              "label": "WhatsApp 07960 5978",
+              "backgroundColour": "whatsapp"
+            }
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div", "layout": "grid",
+              "columns": { "desktop": 4, "tablet": 2, "mobile": 1 },
+              "gap": { "desktop": "24px" },
+              "margin": { "desktop": { "top": "36px" } }
+            },
+            "innerBlocks": [
+              { "name": "sgs/business-info", "attributes": { "displayType": "phone", "labelCollapse": "none", "fontSize": { "desktop": "15px" } } },
+              { "name": "sgs/business-info", "attributes": { "displayType": "email", "fontSize": { "desktop": "15px" } } },
+              { "name": "sgs/business-info", "attributes": { "displayType": "address", "fontSize": { "desktop": "15px" } } },
+              { "name": "sgs/business-info", "attributes": { "displayType": "hours", "fontSize": { "desktop": "15px" } } }
+            ]
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div", "metadata": { "name": "Contact form" },
+              "borderWidth": { "desktop": { "top": "1px" } }, "borderColour": "border", "borderStyle": "solid",
+              "padding": { "desktop": { "top": "32px" } }, "margin": { "desktop": { "top": "40px" } }
+            },
+            "innerBlocks": [
+              { "name": "sgs/heading", "attributes": { "content": "Or send me a message", "level": "h2", "fontSize": { "desktop": "30px" } } },
+              { "name": "sgs/text", "attributes": { "text": "I answer these myself, usually the same day.", "textColour": "text-muted", "fontSize": { "desktop": "15px" } } },
+              {
+                "name": "sgs/form",
+                "attributes": {
+                  "formId": "contact",
+                  "submitLabel": "Send message",
+                  "successMessage": "Thanks — I'll come back to you shortly."
+                },
+                "innerBlocks": [
+                  { "name": "sgs/form-field-text", "attributes": { "fieldName": "your_name", "label": "Your name", "placeholder": "Your name", "required": true, "width": "half" } },
+                  { "name": "sgs/form-field-email", "attributes": { "fieldName": "email", "label": "Email", "placeholder": "Email", "required": true, "width": "half" } },
+                  { "name": "sgs/form-field-phone", "attributes": { "fieldName": "phone", "label": "Phone", "placeholder": "Phone (optional)", "required": false, "width": "half" } },
+                  {
+                    "name": "sgs/form-field-select",
+                    "attributes": {
+                      "fieldName": "topic",
+                      "label": "What it's about",
+                      "placeholder": "What can I help with?",
+                      "required": true,
+                      "width": "half",
+                      "options": [
+                        { "value": "choosing-a-frame", "label": "Choosing a frame" },
+                        { "value": "prescription-lenses", "label": "Prescription lenses" },
+                        { "value": "an-order", "label": "An order I've placed" },
+                        { "value": "eye-test", "label": "Booking an eye test" },
+                        { "value": "something-else", "label": "Something else" }
+                      ]
+                    }
+                  },
+                  { "name": "sgs/form-field-textarea", "attributes": { "fieldName": "message", "label": "Your message", "placeholder": "Your message", "required": true, "width": "full" } }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "sgs/container",
+        "attributes": { "tagName": "div", "metadata": { "name": "Map + links" }, "layout": "flex", "columns": { "desktop": 1 }, "gap": { "desktop": "14px" } },
+        "innerBlocks": [
+          {
+            "name": "sgs/business-info",
+            "attributes": { "displayType": "map" }
+          },
+          {
+            "name": "sgs/container",
+            "attributes": { "tagName": "div", "layout": "flex", "flexWrap": "wrap", "gap": { "desktop": "10px" } },
+            "innerBlocks": [
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div", "flexWrap": "wrap",
+                  "borderWidth": { "desktop": { "top": "1px", "right": "1px", "bottom": "1px", "left": "1px" } },
+                  "borderColour": "border", "borderStyle": "solid", "backgroundColour": "surface-alt",
+                  "padding": { "desktop": { "top": "16px", "bottom": "16px", "left": "16px", "right": "16px" } }
+                },
+                "innerBlocks": [
+                  { "name": "sgs/text", "attributes": { "text": "GOOGLE", "textColour": "text-label", "textTransform": "uppercase", "letterSpacing": { "desktop": 0.16 }, "letterSpacingUnit": "em", "fontSize": { "desktop": "11.5px" } } },
+                  { "name": "sgs/text", "attributes": { "text": "<a href=\"https://share.google/9YZzTiRj2gvW1Xrpr\">Reviews &amp; hours</a>", "fontSize": { "desktop": "14px" } } }
+                ]
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div", "flexWrap": "wrap",
+                  "borderWidth": { "desktop": { "top": "1px", "right": "1px", "bottom": "1px", "left": "1px" } },
+                  "borderColour": "border", "borderStyle": "solid", "backgroundColour": "surface-alt",
+                  "padding": { "desktop": { "top": "16px", "bottom": "16px", "left": "16px", "right": "16px" } }
+                },
+                "innerBlocks": [
+                  { "name": "sgs/text", "attributes": { "text": "INSTAGRAM", "textColour": "text-label", "textTransform": "uppercase", "letterSpacing": { "desktop": 0.16 }, "letterSpacingUnit": "em", "fontSize": { "desktop": "11.5px" } } },
+                  { "name": "sgs/text", "attributes": { "text": "<a href=\"https://www.instagram.com/eyecare.birmingham/\">@eyecare.birmingham</a>", "fontSize": { "desktop": "14px" } } }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

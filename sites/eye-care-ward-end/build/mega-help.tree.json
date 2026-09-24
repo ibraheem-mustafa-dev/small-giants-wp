@@ -1,0 +1,68 @@
+[{
+  "name": "sgs/mega-panel",
+  "attributes": {
+    "variant": "general",
+    "style": "columns",
+    "colourScheme": "light",
+    "maxWidth": { "desktop": "1120px" }
+  },
+  "innerBlocks": [
+    {
+      "name": "sgs/mega-group",
+      "attributes": {},
+      "innerBlocks": [
+        { "name": "sgs/heading", "attributes": { "level": "h3", "content": "Buying here" } },
+        {
+          "name": "sgs/icon-list",
+          "attributes": {
+            "heading": "",
+            "markerType": "none",
+            "items": [
+              { "iconSource": "lucide", "iconName": "", "text": "Delivery & returns", "url": "/help" },
+              { "iconSource": "lucide", "iconName": "", "text": "Size guide", "url": "#modal-size-guide" },
+              { "iconSource": "lucide", "iconName": "", "text": "Frequently asked questions", "url": "/help" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "sgs/mega-group",
+      "attributes": {},
+      "innerBlocks": [
+        { "name": "sgs/heading", "attributes": { "level": "h3", "content": "Prescriptions" } },
+        {
+          "name": "sgs/icon-list",
+          "attributes": {
+            "heading": "",
+            "markerType": "none",
+            "items": [
+              { "iconSource": "lucide", "iconName": "", "text": "How lenses work", "url": "/lenses" },
+              { "iconSource": "lucide", "iconName": "", "text": "Reading your prescription", "url": "/help" },
+              { "iconSource": "lucide", "iconName": "", "text": "Measuring your PD", "url": "/help" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "sgs/mega-group",
+      "attributes": {},
+      "innerBlocks": [
+        { "name": "sgs/heading", "attributes": { "level": "h3", "content": "Talk to me" } },
+        {
+          "name": "sgs/icon-list",
+          "attributes": {
+            "heading": "",
+            "markerType": "none",
+            "items": [
+              { "iconSource": "lucide", "iconName": "", "text": "Contact & visit us", "url": "/contact" },
+              { "iconSource": "lucide", "iconName": "", "text": "0121 729 8233", "url": "tel:01217298233" },
+              { "iconSource": "lucide", "iconName": "", "text": "WhatsApp me", "url": "https://wa.me/4479605978" }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}]

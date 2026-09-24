@@ -1,0 +1,24 @@
+[
+  {
+    "name": "sgs/nav-drawer",
+    "attributes": {
+      "drawerAlign": "right",
+      "drawerBg": "surface",
+      "modality": "modal",
+      "panelSize": { "desktop": "100%" },
+      "submenuModel": "accordion"
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/nav-drawer-menu",
+        "attributes": {
+          "ref": 96,
+          "gap": "4px"
+        }
+      },
+      { "name": "sgs/business-info", "attributes": { "displayType": "phone", "showIcon": true } },
+      { "name": "sgs/social-icons", "attributes": { "iconSize": 18 } },
+      { "name": "sgs/whatsapp-cta", "attributes": { "variant": "inline", "label": "WhatsApp" } }
+    ]
+  }
+]

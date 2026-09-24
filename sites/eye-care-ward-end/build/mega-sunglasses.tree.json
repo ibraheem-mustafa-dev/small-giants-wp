@@ -1,0 +1,73 @@
+[{
+  "name": "sgs/mega-panel",
+  "attributes": {
+    "variant": "general",
+    "style": "columns",
+    "colourScheme": "light",
+    "maxWidth": { "desktop": "1120px" },
+    "groupGap": { "desktop": "44px" }
+  },
+  "innerBlocks": [
+    {
+      "name": "sgs/mega-group",
+      "attributes": {},
+      "innerBlocks": [
+        { "name": "sgs/heading", "attributes": { "level": "h3", "content": "By style" } },
+        {
+          "name": "sgs/icon-list",
+          "attributes": {
+            "heading": "",
+            "markerType": "none",
+            "items": [
+              { "iconSource": "lucide", "iconName": "", "text": "Pilot", "url": "/sunglasses?shape=Pilot" },
+              { "iconSource": "lucide", "iconName": "", "text": "Wayfarer", "url": "/sunglasses?shape=Wayfarer" },
+              { "iconSource": "lucide", "iconName": "", "text": "Square", "url": "/sunglasses?shape=Square" },
+              { "iconSource": "lucide", "iconName": "", "text": "Rectangle", "url": "/sunglasses?shape=Rectangle" },
+              { "iconSource": "lucide", "iconName": "", "text": "Round", "url": "/sunglasses?shape=Round" },
+              { "iconSource": "lucide", "iconName": "", "text": "Oval", "url": "/sunglasses?shape=Oval" },
+              { "iconSource": "lucide", "iconName": "", "text": "Cat-eye", "url": "/sunglasses?shape=Cat-eye" },
+              { "iconSource": "lucide", "iconName": "", "text": "Butterfly", "url": "/sunglasses?shape=Butterfly" },
+              { "iconSource": "lucide", "iconName": "", "text": "Browline", "url": "/sunglasses?shape=Browline" },
+              { "iconSource": "lucide", "iconName": "", "text": "Geometric", "url": "/sunglasses?shape=Geometric" },
+              { "iconSource": "lucide", "iconName": "", "text": "Shield", "url": "/sunglasses?shape=Shield" },
+              { "iconSource": "lucide", "iconName": "", "text": "Oversized", "url": "/sunglasses?shape=Oversized" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "sgs/mega-group",
+      "attributes": {},
+      "innerBlocks": [
+        { "name": "sgs/heading", "attributes": { "level": "h3", "content": "Shop by" } },
+        {
+          "name": "sgs/icon-list",
+          "attributes": {
+            "heading": "",
+            "markerType": "none",
+            "items": [
+              { "iconSource": "lucide", "iconName": "", "text": "Best sellers", "url": "/sunglasses?sort=featured" },
+              { "iconSource": "lucide", "iconName": "", "text": "Biggest savings", "url": "/sunglasses?sort=save" },
+              { "iconSource": "lucide", "iconName": "", "text": "Polarised", "url": "/sunglasses?pol=true" },
+              { "iconSource": "lucide", "iconName": "", "text": "Under £100", "url": "/sunglasses?price=100" },
+              { "iconSource": "lucide", "iconName": "", "text": "Women's", "url": "/sunglasses?gender=Women" },
+              { "iconSource": "lucide", "iconName": "", "text": "Men's", "url": "/sunglasses?gender=Men" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "sgs/mega-aside",
+      "attributes": { "asideFormat": "feature" },
+      "innerBlocks": [
+        { "name": "sgs/media", "attributes": { "imageId": 160, "imageAlt": "Prescription sunglasses", "objectFit": "cover", "aspectRatio": "16/10" } },
+        { "name": "sgs/label", "attributes": { "text": "Featured", "textColour": "accent" } },
+        { "name": "sgs/heading", "attributes": { "level": "h3", "content": "Prescription sunglasses" } },
+        { "name": "sgs/text", "attributes": { "text": "Any frame here, from £59" } },
+        { "name": "sgs/button", "attributes": { "label": "Add your prescription", "url": "/lenses" } }
+      ]
+    }
+  ]
+}]
