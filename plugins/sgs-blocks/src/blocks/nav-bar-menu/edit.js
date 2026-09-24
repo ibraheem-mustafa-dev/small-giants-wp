@@ -79,6 +79,7 @@ import useDrawerNotice from './useDrawerNotice';
 import useItemHoverContrast from '../../shared/nav-menu-panels/useItemHoverContrast';
 import NavMenuNotices from './NavMenuNotices';
 import MenuSettingsPanel from './MenuSettingsPanel';
+import DisabledItemsPanel from './DisabledItemsPanel';
 import BurgerPanel from './BurgerPanel';
 import DropdownSettingsPanel from './DropdownSettingsPanel';
 import SplitPanel from './SplitPanel';
@@ -113,6 +114,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		itemSeparatorHoverTreatment,
 		itemSeparatorSweepAngle,
 		featuredItemIds,
+		disabledItemIds,
 		gap,
 		navBg,
 		itemBg,
@@ -192,6 +194,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	const { menuOptions, isResolving, resolvedItems, toggleFeatured } =
 		useNavMenuSource( { ref, featuredItemIds, setAttributes } );
+
+	// Wave B — same add/remove-from-array shape as useNavMenuSource's own
+	// toggleFeatured (that hook is shared with nav-drawer-menu and is not
+	// touched here; disabledItemIds is bar-only for this pass, so the
+	// toggler lives locally instead).
+	const toggleDisabled = ( identifier, checked ) => {
+		const next = checked
+			? [ ...( disabledItemIds || [] ), identifier ]
+			: ( disabledItemIds || [] ).filter( ( id ) => id !== identifier );
+		setAttributes( { disabledItemIds: next } );
+	};
 
 	// KEPT (see file docblock) — reports whether THIS block's burger has a
 	// drawer to open. Only the bar has a burger. Report-only: creating one is
@@ -590,6 +603,37 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			attributes,
 			setAttributes,
 		} ),
+		/* Wave B — the optional per-item badge chip ("SOON", "NEW"). Copy is
+		   per-item (the operator's own WordPress menu-item Description
+		   field); colour is block-level — one row applies to every badge
+		   this bar renders. No hover state: a badge is never itself
+		   interactive. */
+		textRow( {
+			key: 'item-badge-text',
+			heading: __( 'Item badge', 'sgs-blocks' ),
+			label: __( 'Badge text colour', 'sgs-blocks' ),
+			attrs: { base: 'itemBadgeTextColour' },
+			attributes,
+			setAttributes,
+		} ),
+		fillRow( {
+			key: 'item-badge-bg',
+			label: __( 'Badge background', 'sgs-blocks' ),
+			attrs: { base: 'itemBadgeColour' },
+			attributes,
+			setAttributes,
+		} ),
+		/* Wave B — disabled item/sublink text colour (the items chosen in
+		   the Settings tab's "Disabled items" panel). No hover state: a
+		   disabled item is not interactive. */
+		textRow( {
+			key: 'item-disabled-text',
+			heading: __( 'Disabled item', 'sgs-blocks' ),
+			label: __( 'Text colour', 'sgs-blocks' ),
+			attrs: { base: 'itemDisabledColour' },
+			attributes,
+			setAttributes,
+		} ),
 		/* The scrim behind an open dropdown or mega panel (Wave 3C U-2, family
 		   M-14) — off by default, shared row descriptor from
 		   src/components/ScrimControls.js (label "Backdrop colour", reads
@@ -620,6 +664,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					isResolving={ isResolving }
 					setAttributes={ setAttributes }
 					collapsePoint={ collapsePoint }
+				/>
+
+				{ /* Wave B — data-source pick (which items render as
+				   non-interactive text), so it lives here in Settings,
+				   never in Styles (Spec 35 Part O placement rule).
+				   Colour is a Styles-tab row in the top-level
+				   SgsColourPanel above (itemDisabledColour). */ }
+				<DisabledItemsPanel
+					menuRef={ ref }
+					resolvedItems={ resolvedItems }
+					toggleDisabled={ toggleDisabled }
+					disabledItemIds={ disabledItemIds }
 				/>
 
 				<BurgerPanel

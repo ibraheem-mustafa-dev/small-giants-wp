@@ -505,6 +505,8 @@ $uid_sel    = '.' . $uid;
 $ref          = isset( $attributes['ref'] ) ? absint( $attributes['ref'] ) : 0;
 $menu_blocks  = SGS_Nav_Menu_Source::get_menu_blocks( $ref, true );
 $featured_ids = is_array( $attributes['featuredItemIds'] ?? null ) ? $attributes['featuredItemIds'] : array();
+// Wave B: identifiers rendered as non-interactive text (Disabled items panel).
+$disabled_ids = is_array( $attributes['disabledItemIds'] ?? null ) ? $attributes['disabledItemIds'] : array();
 $bar_renderer = new SGS_Nav_Menu_Bar_Renderer(
 	$featured_ids,
 	$uid,
@@ -563,7 +565,7 @@ if ( in_array( $sgs_nm_split_side, array( 'before', 'after' ), true ) ) {
 // in its OWN render.php. This block never receives drawer context and never
 // needs to detect what it is — it IS the bar. (`$flat_items` may be a SLICE
 // of the full menu — see §2b above — but the render path never forks on that.)
-$items_html = sgs_nav_bar_menu_render_items( $flat_items, $featured_ids, $uid, $bar_renderer->get_submenu() );
+$items_html = sgs_nav_bar_menu_render_items( $flat_items, $featured_ids, $uid, $bar_renderer->get_submenu(), $disabled_ids );
 
 if ( '' === $items_html ) {
 	return '';
@@ -878,6 +880,42 @@ if ( 'ease' !== $sgs_nm_morph_easing_css ) {
 }
 if ( '' !== $sgs_nm_morph_vars ) {
 	$css .= $uid_sel . '{' . $sgs_nm_morph_vars . '}';
+}
+
+/*
+ * ── Wave B — badge colour (background + text). ──────────────────────────
+ * Block-level: ONE colour applies to every badge this bar renders — the
+ * badge's own COPY is per-item (the operator's classic-menu Description
+ * field, sgs_nav_shared_badge_html()'s own docblock). Defaults
+ * ('accent-light'/'accent-text') are non-empty theme tokens (Spec 32 §3
+ * DEFAULT test, same shape as sgs/cart's badgeColour/badgeTextColour), so
+ * this rule is always emitted; style.css's own `:where()` default exists
+ * only as a defensive fallback (e.g. render bypassed) and this #uid-scoped
+ * rule (0,2,0) always wins over it regardless of source order.
+ */
+$sgs_nm_badge_bg_decl   = sgs_background_paint_decl( (string) ( $attributes['itemBadgeColour'] ?? 'accent-light' ), '' );
+$sgs_nm_badge_text_decl = sgs_text_colour_decl( (string) ( $attributes['itemBadgeTextColour'] ?? 'accent-text' ) );
+$sgs_nm_badge_css       = '';
+if ( '' !== $sgs_nm_badge_bg_decl ) {
+	$sgs_nm_badge_css .= $sgs_nm_badge_bg_decl . ';';
+}
+if ( '' !== $sgs_nm_badge_text_decl ) {
+	$sgs_nm_badge_css .= $sgs_nm_badge_text_decl . ';';
+}
+if ( '' !== $sgs_nm_badge_css ) {
+	$css .= $uid_sel . ' .sgs-nav-bar-menu__badge{' . $sgs_nm_badge_css . '}';
+}
+
+/*
+ * ── Wave B — disabled item/sublink text colour. ─────────────────────────
+ * Structural non-interactivity (cursor, pointer-events) is static in
+ * style.css; only the colour is attribute-driven. Matches
+ * `[aria-disabled="true"]`, the exact selector
+ * sgs_nav_bar_menu_render_items()/render_items() emit on a disabled item.
+ */
+$sgs_nm_disabled_decl = sgs_text_colour_decl( (string) ( $attributes['itemDisabledColour'] ?? 'text-muted' ) );
+if ( '' !== $sgs_nm_disabled_decl ) {
+	$css .= $uid_sel . ' .sgs-nav-bar-menu__link[aria-disabled="true"],' . $uid_sel . ' .sgs-nav-bar-menu__sublink[aria-disabled="true"]{' . $sgs_nm_disabled_decl . ';}';
 }
 
 // The item hover-colour default ('primary') is the same on nav-drawer-menu, so

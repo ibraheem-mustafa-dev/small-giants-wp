@@ -77,13 +77,23 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 		 * @param array  $submenu      Submenu settings: align/caret/close_grace.
 		 * @param string $uid          This block instance's uid.
 		 * @param array  $featured_ids Featured item identifiers.
+		 * @param array  $disabled_ids Wave B: identifiers rendered as
+		 *                             non-interactive, non-focusable text
+		 *                             instead of a link (the block's own
+		 *                             disabledItemIds attribute, same
+		 *                             identifier scheme as $featured_ids).
+		 *                             Optional -- callers built before Wave B
+		 *                             pass nothing and every item stays a
+		 *                             live link.
 		 * @return string HTML <li> elements.
 		 */
-		function sgs_nav_bar_menu_render_items( array $items, array $featured_ids, string $uid, array $submenu ): string {
+		function sgs_nav_bar_menu_render_items( array $items, array $featured_ids, string $uid, array $submenu, array $disabled_ids = array() ): string {
 			$html = '';
 			foreach ( $items as $item ) {
 				$is_featured = in_array( $item['identifier'], $featured_ids, true );
-				$li_class    = 'sgs-nav-bar-menu__item' . ( $is_featured ? ' sgs-nav-bar-menu__item--featured' : '' );
+				$is_disabled = in_array( $item['identifier'], $disabled_ids, true );
+				$li_class    = 'sgs-nav-bar-menu__item' . ( $is_featured ? ' sgs-nav-bar-menu__item--featured' : '' )
+					. ( $is_disabled ? ' sgs-nav-bar-menu__item--disabled' : '' );
 
 				if ( 'sgs_mega_menu' === ( $item['type'] ?? '' ) ) {
 					$panel_post_id = (int) ( $item['object_id'] ?? 0 );
@@ -215,13 +225,39 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 						 * parallel one for children.
 						 */
 						$child_featured = in_array( $child['identifier'], $featured_ids, true );
-						$child_html    .= sprintf(
-							'<li class="sgs-nav-bar-menu__subitem%s"><a class="sgs-nav-bar-menu__sublink" href="%s" data-sgs-nav-path="%s">%s</a></li>',
-							$child_featured ? ' sgs-nav-bar-menu__subitem--featured' : '',
-							esc_url( $child['url'] ),
-							esc_attr( wp_parse_url( $child['url'], PHP_URL_PATH ) ?? '' ),
-							esc_html( $child['label'] )
-						);
+
+						/*
+						 * Wave B: a CHILD can be disabled too, same
+						 * disabledItemIds scheme as the top-level branch. A
+						 * disabled sublink renders as non-link text: no
+						 * href, no data-sgs-nav-path (so markCurrentPage()
+						 * in view.js, which only queries
+						 * `[data-sgs-nav-path]`, never touches it), not
+						 * focusable.
+						 */
+						$child_disabled = in_array( $child['identifier'], $disabled_ids, true );
+
+						// Wave B: badge copy already flows through from_link()
+						// for every item including children — only the
+						// leaf top-level branch actually printed it before.
+						$child_badge = sgs_nav_shared_badge_html( (string) ( $child['badge'] ?? '' ), 'sgs-nav-bar-menu' );
+
+						if ( $child_disabled ) {
+							$child_html .= sprintf(
+								'<li class="sgs-nav-bar-menu__subitem sgs-nav-bar-menu__subitem--disabled"><span class="sgs-nav-bar-menu__sublink" aria-disabled="true">%s%s</span></li>',
+								esc_html( $child['label'] ),
+								$child_badge // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_nav_shared_badge_html() esc_attr/esc_html's internally.
+							);
+						} else {
+							$child_html .= sprintf(
+								'<li class="sgs-nav-bar-menu__subitem%s"><a class="sgs-nav-bar-menu__sublink" href="%s" data-sgs-nav-path="%s">%s%s</a></li>',
+								$child_featured ? ' sgs-nav-bar-menu__subitem--featured' : '',
+								esc_url( $child['url'] ),
+								esc_attr( wp_parse_url( $child['url'], PHP_URL_PATH ) ?? '' ),
+								esc_html( $child['label'] ),
+								$child_badge // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_nav_shared_badge_html() esc_attr/esc_html's internally.
+							);
+						}
 					}
 
 					/*
@@ -307,14 +343,31 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 					}
 				}
 
-				$html .= sprintf(
-					'<li class="%s"><a class="sgs-nav-bar-menu__link" href="%s" data-sgs-nav-path="%s"><span class="sgs-nav-bar-menu__link-text sgs-nav-bar-menu__magnet-target">%s</span>%s</a></li>',
-					esc_attr( $li_class ),
-					esc_url( $item['url'] ),
-					esc_attr( wp_parse_url( $item['url'], PHP_URL_PATH ) ?? '' ),
-					esc_html( $item['label'] ),
-					sgs_nav_shared_badge_html( (string) ( $item['badge'] ?? '' ), 'sgs-nav-bar-menu' ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_nav_shared_badge_html() esc_attr/esc_html's internally.
-				);
+				$leaf_badge = sgs_nav_shared_badge_html( (string) ( $item['badge'] ?? '' ), 'sgs-nav-bar-menu' );
+
+				// Wave B: a top-level leaf item can be disabled too — the
+				// SAME disabledItemIds scheme the earlier branches read
+				// ($is_disabled, computed once per item above). Non-link
+				// text, no href, no data-sgs-nav-path, no
+				// magnet-target (a disabled item is never a hover-effect
+				// target), aria-disabled="true".
+				if ( $is_disabled ) {
+					$html .= sprintf(
+						'<li class="%s"><span class="sgs-nav-bar-menu__link" aria-disabled="true"><span class="sgs-nav-bar-menu__link-text">%s</span>%s</span></li>',
+						esc_attr( $li_class ),
+						esc_html( $item['label'] ),
+						$leaf_badge // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_nav_shared_badge_html() esc_attr/esc_html's internally.
+					);
+				} else {
+					$html .= sprintf(
+						'<li class="%s"><a class="sgs-nav-bar-menu__link" href="%s" data-sgs-nav-path="%s"><span class="sgs-nav-bar-menu__link-text sgs-nav-bar-menu__magnet-target">%s</span>%s</a></li>',
+						esc_attr( $li_class ),
+						esc_url( $item['url'] ),
+						esc_attr( wp_parse_url( $item['url'], PHP_URL_PATH ) ?? '' ),
+						esc_html( $item['label'] ),
+						$leaf_badge // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_nav_shared_badge_html() esc_attr/esc_html's internally.
+					);
+				}
 			}
 			return $html;
 		}

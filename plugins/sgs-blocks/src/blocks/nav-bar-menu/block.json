@@ -222,6 +222,20 @@
 					},
 					"_note": "featuredFontWeightHover is a genuine hover-state weight change (only emitted when it differs from resting), declared under `text` cluster's css:font-weight member. featuredColourGradient mirrors burgerColourGradient's shape -- explicit attrMap since css:color-gradient is not resolved by the default {prefix}Suffix convention, same reason burgerColourGradient needed one. Resting LABEL form only; PILL form and the submenu-inheritance custom property stay flat (see render.php comments). featuredBgGradient/featuredBgHoverGradient: non-empty wins over the resolved featuredBg/featuredBgHover slug+hex; when active the pill foreground skips WCAG contrast-against-background maths (no single hex to test) and uses the operator's own flat colour instead (see render.php). The submenu-inheritance custom property stays hex-only, same scope boundary as featuredColourGradient above."
 				},
+				"badge": {
+					"label": "Item badge",
+					"order": 6.5,
+					"clusters": [
+						"text",
+						"fill"
+					],
+					"prefix": "itemBadge",
+					"attrMap": {
+						"css:color": "itemBadgeTextColour",
+						"css:background-color": "itemBadgeColour"
+					},
+					"_note": "Wave B. The optional per-item marker chip (\"SOON\", \"NEW\") rendered after an item's or sublink's label via includes/nav-menu-markup.php::sgs_nav_shared_badge_html(). Badge COPY is per-item (the operator's WordPress classic-menu-item Description field, repurposed -- see that function's own docblock); badge COLOUR is block-level, one Colour-panel row applying to every badge this bar renders, matching sgs/cart's badgeColour/badgeTextColour precedent (sgs-db.py: sgs/cart badgeColour default \"accent\", badgeTextColour default \"accent-text\"). No hover state -- a badge is never itself interactive. Zero-specificity `:where()` default in style.css paints a neutral accent-light/accent-text chip when an operator has not touched either attribute; render.php's own #uid-scoped rule (specificity 0,2,0) always wins over it."
+				},
 				"burger": {
 					"label": "Burger toggle",
 					"order": 7,
@@ -330,6 +344,17 @@
 						"css:box-shadow-color": "submenuShadowColour"
 					},
 					"_note": "The floating dropdown PANEL — <div class=\"sgs-nav-bar-menu__submenu\"> — as distinct from the links inside it, which are the `sublink` element (Spec 41 FR-41-9). Base only: NO `states` key at all, because the panel has neither a hover nor a current state for any property. Its visibility is a binary open/closed disclosure toggled by the trigger; once open the pointer is always over an interactive CHILD, so a pointer-driven change on the panel surface itself is never perceivable — the hoverable surface inside the panel is the LINK background (submenuLinkBg / submenuLinkBgHover / submenuLinkBgCurrent on `sublink`). Recorded as `supports.sgs.colourExemptions.submenu-bg` and `.submenu-border`. `\"prefix\": \"\"` for the same reason `sublink` carries it: a `submenu` prefix would claim submenuColour* and the submenu typography family, which belong to the LINK. Every member is therefore explicit."
+				},
+				"disabled-item": {
+					"label": "Disabled item",
+					"order": 3,
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:color": "itemDisabledColour"
+					},
+					"_note": "Wave B, 2026-09-24. A disabled menu item renders as non-link text with aria-disabled=\"true\" (render.php's own selector). Declared as its own element, NOT as a `disabled` state on `item`: `disabled` is not in golden-controls.json _meta.stateVocabulary (hover/current/scrolled; admission is Bean-approved), and declaring it as a state raised the required state count on every item colour row."
 				}
 			},
 			"boxFamilies": {
@@ -433,7 +458,14 @@
 		"justifyContent": {
 			"type": "string",
 			"default": "",
-			"enum": [ "", "flex-start", "center", "flex-end", "space-between", "space-around" ]
+			"enum": [
+				"",
+				"flex-start",
+				"center",
+				"flex-end",
+				"space-between",
+				"space-around"
+			]
 		},
 		"splitAfterItemId": {
 			"type": "string",
@@ -442,7 +474,11 @@
 		"splitSide": {
 			"type": "string",
 			"default": "",
-			"enum": [ "", "before", "after" ]
+			"enum": [
+				"",
+				"before",
+				"after"
+			]
 		},
 		"showBurger": {
 			"type": "boolean",
@@ -647,7 +683,12 @@
 		"burgerMorph": {
 			"type": "string",
 			"default": "x",
-			"enum": [ "x", "x-rotate", "line", "none" ],
+			"enum": [
+				"x",
+				"x-rotate",
+				"line",
+				"none"
+			],
 			"description": "Wave 3C U-9 (§4.4). How the default burger glyph morphs when the drawer opens: x (default — today's pose, unchanged), x-rotate (the same X plus a 180 degree turn of the whole icon box, dogstudio), line (the top and bottom bars slide onto the middle bar; the travel distance is derived from the icon box via calc(), never a hardcoded px), none (static — no transform at all). Only affects the DEFAULT glyph — `sgs_nav_bar_menu_burger_toggle_markup()`'s own `$is_default_icon` gate (a custom `triggerIcon` has no guaranteed 3-bar shape to morph)."
 		},
 		"burgerMorphDuration": {
@@ -658,7 +699,16 @@
 		"burgerMorphEasing": {
 			"type": "string",
 			"default": "ease",
-			"enum": [ "ease", "default", "ease-out", "ease-in", "spring", "linear", "quart-out", "custom" ],
+			"enum": [
+				"ease",
+				"default",
+				"ease-out",
+				"ease-in",
+				"spring",
+				"linear",
+				"quart-out",
+				"custom"
+			],
 			"description": "Wave 3C U-9 (§4.4). Burger morph easing curve. `ease` is the default — today's exact hardcoded value. `default`/`ease-out`/`ease-in`/`spring` resolve to the matching theme motion token (`var(--wp--custom--easing--{value})`, `AnimationControl.js::EASINGS`' own labels — 'Smooth'/'Expo out'/'Ease in'/'Spring'). `quart-out` is a literal `cubic-bezier(0.165, 0.84, 0.44, 1)` (dogstudio) — not a theme token. `linear` is the literal CSS keyword. `custom` reads `burgerMorphEasingCustom` instead (validated; falls back to `ease` when invalid)."
 		},
 		"burgerMorphEasingCustom": {
@@ -1197,6 +1247,29 @@
 			"type": "object",
 			"default": {},
 			"description": "Backdrop blur of the page behind an open dropdown or mega panel, per device, a CSS length. Unset emits no blur."
+		},
+		"itemBadgeColour": {
+			"type": "string",
+			"default": "accent-light",
+			"description": "Wave B — background of the optional per-item badge chip (\"SOON\", \"NEW\"). Block-level: one colour applies to every badge this bar renders. Badge COPY itself is per-item (the operator's WordPress menu-item Description field, repurposed — includes/nav-menu-markup.php::sgs_nav_shared_badge_html()). Token slug or hex, same shape as sgs/cart's badgeColour."
+		},
+		"itemBadgeTextColour": {
+			"type": "string",
+			"default": "accent-text",
+			"description": "Wave B — text colour of the optional per-item badge chip. See itemBadgeColour."
+		},
+		"disabledItemIds": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "string"
+			},
+			"description": "Wave B — item identifiers (same scheme as featuredItemIds) rendered as non-interactive, non-focusable text instead of a link. Ticked in the Settings tab's Disabled items panel."
+		},
+		"itemDisabledColour": {
+			"type": "string",
+			"default": "text-muted",
+			"description": "Wave B — text colour of a disabled item/sublink. Token slug or hex."
 		}
 	},
 	"render": "file:./render.php",

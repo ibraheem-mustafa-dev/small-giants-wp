@@ -500,3 +500,42 @@
 	transform: none;
 	z-index: 101;
 }
+
+/*
+ * Wave B — item badge. A small tinted chip after an item's or sublink's
+ * label ("SOON", "NEW"...), generic for any client — copy is per-item (the
+ * operator's own WordPress menu-item Description field), colour is
+ * block-level (itemBadgeColour / itemBadgeTextColour, render.php's own
+ * #uid-scoped rule). Zero specificity so that attribute-driven rule always
+ * wins regardless of source order (F3, check-hardcoded-render-defaults) —
+ * this only supplies the neutral theme-token chip an untouched bar ships.
+ * Real visually-hidden TEXT builds the accessible name
+ * (sgs_nav_shared_badge_html()'s own docblock), so nothing here needs an
+ * ::before/::after content trick.
+ */
+:where(.sgs-nav-bar-menu__badge) {
+	background-color: var(--wp--preset--color--accent-light);
+	border-radius: 3px;
+	color: var(--wp--preset--color--accent-text);
+	font-size: 0.65em;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	line-height: 1;
+	margin-inline-start: 0.5em;
+	padding: 0.2em 0.45em;
+	text-transform: uppercase;
+	vertical-align: middle;
+	white-space: nowrap;
+}
+
+/*
+ * Wave B — disabled item/sublink (aria-disabled="true", no href, not
+ * focusable — a Settings-tab "Disabled items" pick, disabledItemIds).
+ * Structural only; the muted colour itself is attribute-driven
+ * (itemDisabledColour, render.php's own #uid-scoped rule).
+ */
+.sgs-nav-bar-menu__link[aria-disabled="true"],
+.sgs-nav-bar-menu__sublink[aria-disabled="true"] {
+	cursor: not-allowed;
+	pointer-events: none;
+}
