@@ -4,265 +4,2026 @@
     "attributes": {
       "align": "full",
       "backgroundColour": "#141414",
-      "backgroundImage": { "id": 174, "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/hero.jpg", "alt": "Designer sunglasses resting on a rail above the sea" },
+      "backgroundImage": {
+        "id": 174,
+        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/hero.jpg",
+        "alt": "Designer sunglasses resting on a rail above the sea"
+      },
       "bgKenBurns": true,
       "bgParallax": true,
       "overlayGradient": "linear-gradient(100deg,rgba(18,18,18,.86) 0%,rgba(18,18,18,.74) 30%,rgba(18,18,18,.4) 58%,rgba(18,18,18,.04) 82%,rgba(18,18,18,0) 100%)",
-      "minHeight": { "desktop": "min(84vh, 820px)", "mobile": "82vh" },
+      "minHeight": {
+        "desktop": "min(84vh, 820px)",
+        "mobile": "82vh"
+      },
       "verticalAlignment": "bottom",
       "alignment": "left",
-      "padding": { "desktop": { "top": "0", "bottom": "72px", "left": "52px", "right": "52px" }, "mobile": { "top": "0", "bottom": "44px", "left": "20px", "right": "20px" } },
-      "contentWidth": { "desktop": "1440px" },
+      "padding": {
+        "desktop": {
+          "top": "0",
+          "bottom": "72px",
+          "left": "52px",
+          "right": "52px"
+        },
+        "mobile": {
+          "top": "0",
+          "bottom": "44px",
+          "left": "20px",
+          "right": "20px"
+        }
+      },
+      "contentWidth": {
+        "desktop": "1440px"
+      },
       "className": "sgs-hero"
     },
     "innerBlocks": [
-      { "name": "sgs/label", "attributes": { "text": "40 designer brands · Birmingham", "textColour": "#F0EBE3", "fontSize": { "desktop": 12.5 }, "fontSizeUnit": "px", "letterSpacing": { "desktop": 0.24 }, "letterSpacingUnit": "em", "textTransform": "uppercase", "className": "sgs-hero__label" } },
-      { "name": "sgs/heading", "attributes": { "level": "h1", "content": "The same designer shades. A good deal less.", "fontFamily": "'Playfair Display',serif", "fontWeight": "500", "fontSize": { "desktop": 62, "mobile": 40 }, "fontSizeUnit": "px", "lineHeight": { "desktop": 1 }, "lineHeightUnit": "unitless", "letterSpacing": { "desktop": -0.015 }, "letterSpacingUnit": "em", "textColour": "#FAF8F5", "textWrap": "pretty", "className": "sgs-hero__headline" } },
-      { "name": "sgs/text", "attributes": { "text": "I'm an optician in Birmingham, buying from the same suppliers as the high street and pricing it more sensibly. If you need your prescription in them, I glaze and fit the lenses myself.", "fontSize": { "desktop": 18, "mobile": 15.5 }, "fontSizeUnit": "px", "textColour": "#F0EBE3", "maxWidth": 47, "maxWidthUnit": "ch", "margin": { "desktop": { "top": "22px" } }, "textWrap": "pretty", "className": "sgs-hero__subheadline" } },
-      { "name": "sgs/multi-button", "attributes": { "gap": { "desktop": "12px" }, "margin": { "desktop": { "top": "32px" } } }, "innerBlocks": [
-        { "name": "sgs/button", "attributes": { "inheritStyle": "custom", "label": "Shop sunglasses", "url": "https://darkcyan-grouse-898606.hostingersite.com/shop/", "colourBackground": "#FAF8F5", "colourText": "#141414", "colourBackgroundHover": "#ffffff", "borderRadius": { "desktop": {} }, "minHeight": { "desktop": "52px" }, "fontSize": { "desktop": 13 }, "fontSizeUnit": "px", "letterSpacing": { "desktop": 0.1 }, "letterSpacingUnit": "em", "textTransform": "uppercase", "padding": { "desktop": { "left": "28px", "right": "28px" } } } },
-        { "name": "sgs/button", "attributes": { "inheritStyle": "custom", "label": "Add your prescription", "url": "https://darkcyan-grouse-898606.hostingersite.com/prescription-lenses/", "colourBackground": "transparent", "colourText": "#FAF8F5", "borderColour": "rgba(250,248,245,.75)", "borderWidth": { "desktop": { "top": "1px", "right": "1px", "bottom": "1px", "left": "1px" } }, "borderRadius": { "desktop": {} }, "minHeight": { "desktop": "52px" }, "fontSize": { "desktop": 13 }, "fontSizeUnit": "px", "letterSpacing": { "desktop": 0.1 }, "letterSpacingUnit": "em", "textTransform": "uppercase", "padding": { "desktop": { "left": "28px", "right": "28px" } } } }
-      ] }
-    ]
-  },
-  {
-    "name": "sgs/container",
-    "attributes": { "backgroundColour": "#fff", "textWrap": "wrap", "className": "sgs-brand-marquee" },
-    "innerBlocks": [
-      { "name": "sgs/brand-strip", "attributes": {
-        "source": "product-brands",
-        "brandDisplay": "text",
-        "showNames": true,
-        "scrolling": true,
-        "scrollSpeed": "slow",
-        "pauseOnHover": true,
-        "brandLinkToShop": true,
-        "nameFontFamily": "'Playfair Display',serif",
-        "nameFontWeight": "500",
-        "nameFontSize": { "desktop": 15 },
-        "nameFontSizeUnit": "px",
-        "nameLetterSpacing": { "desktop": 0.26 },
-        "nameLetterSpacingUnit": "em",
-        "nameTextTransform": "uppercase",
-        "nameColour": "#3A352F",
-        "nameColourHover": "#141414",
-        "padding": { "desktop": { "bottom": "26px", "left": "0", "right": "0", "top": "26px" } }
-      } }
-    ]
-  },
-  {
-    "name": "sgs/container",
-    "attributes": { "contentWidth": { "desktop": "1440px" }, "padding": { "desktop": { "bottom": "104px", "left": "52px", "right": "52px", "top": "104px" }, "mobile": { "bottom": "56px", "left": "20px", "right": "20px", "top": "56px" } }, "textWrap": "wrap", "className": "sgs-best-sellers" },
-    "innerBlocks": [
-      { "name": "sgs/container", "attributes": { "alignItems": "flex-end", "flexWrap": "wrap", "gap": { "desktop": "20px" }, "justifyContent": "space-between", "layout": "flex", "margin": { "desktop": { "bottom": "34px" } }, "textWrap": "wrap" }, "innerBlocks": [
-        { "name": "sgs/container", "attributes": { "textWrap": "wrap" }, "innerBlocks": [
-          { "name": "sgs/text", "attributes": { "text": "Moving fastest this month", "fontSize": { "desktop": 12 }, "fontSizeUnit": "px", "letterSpacing": { "desktop": 0.24 }, "letterSpacingUnit": "em", "textTransform": "uppercase", "textColour": "#6F6152", "margin": { "desktop": { "bottom": "10px" } } } },
-          { "name": "sgs/heading", "attributes": { "level": "h2", "content": "Best sellers", "fontFamily": "'Playfair Display',serif", "fontWeight": "500", "fontSize": { "desktop": 46, "mobile": 32 }, "fontSizeUnit": "px", "lineHeight": { "desktop": 1.02 }, "lineHeightUnit": "unitless" } }
-        ] },
-        { "name": "sgs/button", "attributes": { "inheritStyle": "custom", "label": "See everything", "url": "https://darkcyan-grouse-898606.hostingersite.com/shop/", "colourBackground": "transparent", "colourText": "#141414", "borderColour": "", "fontSize": { "desktop": 13 }, "fontSizeUnit": "px", "letterSpacing": { "desktop": 0.1 }, "letterSpacingUnit": "em", "textTransform": "uppercase", "padding": { "desktop": { "left": "0", "right": "0", "bottom": "3px" } } } }
-      ] },
-      { "name": "sgs/container", "attributes": { "layout": "grid", "gridTemplateColumns": { "desktop": "repeat(3,minmax(0,1fr))", "tablet": "repeat(2,minmax(0,1fr))", "mobile": "repeat(2,minmax(0,1fr))" }, "gap": { "desktop": "24px", "mobile": "16px" }, "textWrap": "wrap" }, "innerBlocks": [
-        { "name": "sgs/product-card", "attributes": { "sourceMode": "wc-product", "productId": 71, "showRating": true, "noReviewsText": "No reviews yet", "showSavingBadge": true, "savingLabel": "Save £32", "savingBadgePosition": "bottom-left", "showAttributeTag": false, "showPickers": true, "swatchMaxVisible": 4 } },
-        { "name": "sgs/product-card", "attributes": { "sourceMode": "wc-product", "productId": 76, "showRating": true, "noReviewsText": "No reviews yet", "showSavingBadge": true, "savingLabel": "Save £51", "savingBadgePosition": "bottom-left", "showAttributeTag": false, "showPickers": true, "swatchMaxVisible": 4 } },
-        { "name": "sgs/product-card", "attributes": { "sourceMode": "wc-product", "productId": 81, "showRating": true, "noReviewsText": "No reviews yet", "showSavingBadge": true, "savingLabel": "Save £27", "savingBadgePosition": "bottom-left", "showAttributeTag": true, "attributeTagSource": "tag", "attributeTagTerm": "polarised", "attributeTagText": "Polarised", "showPickers": true, "swatchMaxVisible": 4 } },
-        { "name": "sgs/product-card", "attributes": { "sourceMode": "wc-product", "productId": 86, "showRating": true, "noReviewsText": "No reviews yet", "showSavingBadge": true, "savingLabel": "Save £57", "savingBadgePosition": "bottom-left", "showAttributeTag": false, "showPickers": true, "swatchMaxVisible": 4 } },
-        { "name": "sgs/product-card", "attributes": { "sourceMode": "wc-product", "productId": 90, "showRating": true, "noReviewsText": "No reviews yet", "showSavingBadge": true, "savingLabel": "Save £30", "savingBadgePosition": "bottom-left", "showAttributeTag": false, "showPickers": true, "swatchMaxVisible": 4 } },
-        { "name": "sgs/product-card", "attributes": { "sourceMode": "wc-product", "productId": 98, "showRating": true, "noReviewsText": "No reviews yet", "showSavingBadge": true, "savingLabel": "Save £29", "savingBadgePosition": "bottom-left", "showAttributeTag": false, "showPickers": true, "swatchMaxVisible": 4 } },
-        { "name": "sgs/product-card", "attributes": { "sourceMode": "wc-product", "productId": 103, "showRating": true, "noReviewsText": "No reviews yet", "showSavingBadge": true, "savingLabel": "Save £47", "savingBadgePosition": "bottom-left", "showAttributeTag": false, "showPickers": true, "swatchMaxVisible": 4 } },
-        { "name": "sgs/product-card", "attributes": { "sourceMode": "wc-product", "productId": 107, "showRating": true, "noReviewsText": "No reviews yet", "showSavingBadge": true, "savingLabel": "Save £16", "savingBadgePosition": "bottom-left", "showAttributeTag": true, "attributeTagSource": "tag", "attributeTagTerm": "polarised", "attributeTagText": "Polarised", "showPickers": true, "swatchMaxVisible": 4 } }
-      ] }
-    ]
-  },
-  {
-    "name": "sgs/container",
-    "attributes": { "backgroundColour": "#141414", "contentWidth": { "desktop": "1440px" }, "padding": { "desktop": { "bottom": "104px", "left": "52px", "right": "52px", "top": "104px" }, "mobile": { "bottom": "56px", "left": "20px", "right": "20px", "top": "56px" } }, "textColour": "#FAF8F5", "textWrap": "wrap", "className": "sgs-why-buy" },
-    "innerBlocks": [
-      { "name": "sgs/container", "attributes": { "gap": { "desktop": "40px" }, "gridTemplateColumns": { "desktop": "minmax(0,1.1fr) minmax(0,1fr)", "mobile": "minmax(0,1fr)", "tablet": "minmax(0,1fr)" }, "layout": "grid", "textWrap": "wrap", "margin": { "desktop": { "bottom": "52px" } } }, "innerBlocks": [
-        { "name": "sgs/container", "attributes": { "textWrap": "wrap" }, "innerBlocks": [
-          { "name": "sgs/text", "attributes": { "text": "Why buy from me", "fontSize": { "desktop": 12 }, "fontSizeUnit": "px", "letterSpacing": { "desktop": 0.24 }, "letterSpacingUnit": "em", "margin": { "desktop": { "bottom": "10px" } }, "textTransform": "uppercase" } },
-          { "name": "sgs/heading", "attributes": { "content": "Four reasons, and not one of them is a discount code.", "fontFamily": "'Playfair Display',serif", "fontSize": { "desktop": 46, "mobile": 32 }, "fontSizeUnit": "px", "fontWeight": "500", "level": "h2", "lineHeight": { "desktop": 1.02 }, "lineHeightUnit": "unitless", "textWrap": "pretty" } }
-        ] },
-        { "name": "sgs/text", "attributes": { "fontSize": { "desktop": 16.5 }, "fontSizeUnit": "px", "maxWidth": 47, "maxWidthUnit": "ch", "text": "I'm an optician who genuinely enjoys this part of the job — finding people frames that suit them. This shop exists so I can show you the whole range properly instead of scrolling a supplier's catalogue at the counter, and because I'd rather price frames fairly than squeeze the most out of every sale.", "textColour": "#E2DCD3", "textWrap": "pretty" } }
-      ] },
-      { "name": "sgs/container", "attributes": { "backgroundColour": "rgba(250,248,245,.16)", "columns": { "desktop": 4, "tablet": 2 }, "gap": { "desktop": "1px" }, "gridTemplateColumns": { "desktop": "repeat(4,minmax(0,1fr))", "mobile": "minmax(0,1fr)", "tablet": "repeat(2,minmax(0,1fr))" }, "layout": "grid", "textWrap": "wrap" }, "innerBlocks": [
-        { "name": "sgs/container", "attributes": { "backgroundColour": "#141414", "contentBandPadding": { "desktop": { "bottom": "34px", "left": "30px", "right": "30px", "top": "34px" }, "mobile": { "bottom": "28px", "left": "22px", "right": "22px", "top": "28px" } }, "textWrap": "wrap" }, "innerBlocks": [
-          { "name": "sgs/text", "attributes": { "fontFamily": "'Playfair Display',serif", "fontSize": { "desktop": 40 }, "fontSizeUnit": "px", "fontWeight": "500", "lineHeight": { "desktop": 1 }, "lineHeightUnit": "unitless", "text": "01", "textColour": "#9C8B78" } },
-          { "name": "sgs/heading", "attributes": { "content": "Below RRP, and I show you by how much", "fontSize": { "desktop": 20 }, "fontSizeUnit": "px", "fontWeight": "500", "level": "h3", "margin": { "desktop": { "bottom": "10px", "top": "22px" } }, "textWrap": "pretty" } },
-          { "name": "sgs/text", "attributes": { "fontSize": { "desktop": 15 }, "fontSizeUnit": "px", "text": "The recommended retail price sits next to my price on every single frame. No codes to hunt for, no countdown timers, no permanent fake sale.", "textColour": "#CFC8BE", "textWrap": "pretty" } }
-        ] },
-        { "name": "sgs/container", "attributes": { "backgroundColour": "#141414", "contentBandPadding": { "desktop": { "bottom": "34px", "left": "30px", "right": "30px", "top": "34px" }, "mobile": { "bottom": "28px", "left": "22px", "right": "22px", "top": "28px" } }, "textWrap": "wrap" }, "innerBlocks": [
-          { "name": "sgs/text", "attributes": { "fontFamily": "'Playfair Display',serif", "fontSize": { "desktop": 40 }, "fontSizeUnit": "px", "fontWeight": "500", "lineHeight": { "desktop": 1 }, "lineHeightUnit": "unitless", "text": "02", "textColour": "#9C8B78" } },
-          { "name": "sgs/heading", "attributes": { "content": "I glaze the lenses myself", "fontSize": { "desktop": 20 }, "fontSizeUnit": "px", "fontWeight": "500", "level": "h3", "margin": { "desktop": { "bottom": "10px", "top": "22px" } }, "textWrap": "pretty" } },
-          { "name": "sgs/text", "attributes": { "fontSize": { "desktop": 15 }, "fontSizeUnit": "px", "text": "Your prescription doesn't get posted off to a lab in another county. I cut, fit and check the lenses here — which is also how I spot a frame that won't work before it's made.", "textColour": "#CFC8BE", "textWrap": "pretty" } }
-        ] },
-        { "name": "sgs/container", "attributes": { "backgroundColour": "#141414", "contentBandPadding": { "desktop": { "bottom": "34px", "left": "30px", "right": "30px", "top": "34px" }, "mobile": { "bottom": "28px", "left": "22px", "right": "22px", "top": "28px" } }, "textWrap": "wrap" }, "innerBlocks": [
-          { "name": "sgs/text", "attributes": { "fontFamily": "'Playfair Display',serif", "fontSize": { "desktop": 40 }, "fontSizeUnit": "px", "fontWeight": "500", "lineHeight": { "desktop": 1 }, "lineHeightUnit": "unitless", "text": "03", "textColour": "#9C8B78" } },
-          { "name": "sgs/heading", "attributes": { "content": "You can just message me", "fontSize": { "desktop": 20 }, "fontSizeUnit": "px", "fontWeight": "500", "level": "h3", "margin": { "desktop": { "bottom": "10px", "top": "22px" } }, "textWrap": "pretty" } },
-          { "name": "sgs/text", "attributes": { "fontSize": { "desktop": 15 }, "fontSizeUnit": "px", "text": "One optician, one WhatsApp number. Ask me anything about a frame or a prescription before you spend a penny.", "textColour": "#CFC8BE", "textWrap": "pretty" } }
-        ] },
-        { "name": "sgs/container", "attributes": { "backgroundColour": "#141414", "contentBandPadding": { "desktop": { "bottom": "34px", "left": "30px", "right": "30px", "top": "34px" }, "mobile": { "bottom": "28px", "left": "22px", "right": "22px", "top": "28px" } }, "textWrap": "wrap" }, "innerBlocks": [
-          { "name": "sgs/text", "attributes": { "fontFamily": "'Playfair Display',serif", "fontSize": { "desktop": 40 }, "fontSizeUnit": "px", "fontWeight": "500", "lineHeight": { "desktop": 1 }, "lineHeightUnit": "unitless", "text": "04", "textColour": "#9C8B78" } },
-          { "name": "sgs/heading", "attributes": { "content": "Collect in Birmingham, or posted tracked", "fontSize": { "desktop": 20 }, "fontSizeUnit": "px", "fontWeight": "500", "level": "h3", "margin": { "desktop": { "bottom": "10px", "top": "22px" } }, "textWrap": "pretty" } },
-          { "name": "sgs/text", "attributes": { "fontSize": { "desktop": 15 }, "fontSizeUnit": "px", "text": "Come and pick them up and I'll adjust them to you properly. Or free tracked delivery over £75.", "textColour": "#CFC8BE", "textWrap": "pretty" } }
-        ] }
-      ] }
-    ]
-  },
-  {
-    "name": "sgs/container",
-    "attributes": { "maxWidth": { "desktop": "1440px" }, "padding": { "desktop": { "bottom": "104px", "left": "52px", "right": "52px", "top": "104px" }, "mobile": { "bottom": "56px", "left": "20px", "right": "20px", "top": "56px" } }, "textWrap": "wrap", "className": "sgs-shape-tiles" },
-    "innerBlocks": [
-      { "name": "sgs/container", "attributes": { "alignItems": "flex-end", "flexWrap": "wrap", "gap": { "desktop": "20px" }, "justifyContent": "space-between", "layout": "flex", "margin": { "desktop": { "bottom": "30px" } }, "textWrap": "wrap" }, "innerBlocks": [
-        { "name": "sgs/container", "attributes": { "textWrap": "wrap" }, "innerBlocks": [
-          { "name": "sgs/text", "attributes": { "text": "Not sure what suits you?", "fontSize": { "desktop": 12 }, "fontSizeUnit": "px", "letterSpacing": { "desktop": 0.24 }, "letterSpacingUnit": "em", "textTransform": "uppercase", "textColour": "#6F6152", "margin": { "desktop": { "bottom": "10px" } } } },
-          { "name": "sgs/heading", "attributes": { "level": "h2", "content": "Start with a shape", "fontFamily": "'Playfair Display',serif", "fontWeight": "500", "fontSize": { "desktop": 46, "mobile": 32 }, "fontSizeUnit": "px", "lineHeight": { "desktop": 1.02 }, "lineHeightUnit": "unitless" } }
-        ] },
-        { "name": "sgs/button", "attributes": { "inheritStyle": "custom", "label": "All 12 styles", "url": "https://darkcyan-grouse-898606.hostingersite.com/shop/", "colourBackground": "transparent", "colourText": "#141414", "fontSize": { "desktop": 13 }, "fontSizeUnit": "px", "letterSpacing": { "desktop": 0.1 }, "letterSpacingUnit": "em", "textTransform": "uppercase", "padding": { "desktop": { "left": "0", "right": "0", "bottom": "3px" } } } }
-      ] },
-      { "name": "sgs/card-grid", "attributes": {
-        "columns": { "desktop": 6, "tablet": 3, "mobile": 2 },
-        "gap": { "desktop": "24px", "mobile": "16px" },
-        "aspectRatio": "4 / 5",
-        "effectHover": "zoom",
-        "imageZoomHover": true,
-        "shadowLiftOnHover": true,
-        "imageFallback": true,
-        "imageFallbackColour": "#2B2721",
-        "glyphSize": "30px",
-        "glyphColour": "#FAF8F5",
-        "titleColour": "#FAF8F5",
-        "titleFontSize": { "desktop": 14 },
-        "titleFontSizeUnit": "px",
-        "cardBorderColour": "#E6E1DA",
-        "cardBorderWidth": { "desktop": { "top": "1px", "right": "1px", "bottom": "1px", "left": "1px" } },
-        "items": [
-          { "title": "Pilot", "glyph": "glasses", "media": null, "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?shape=Pilot" },
-          { "title": "Wayfarer", "glyph": "glasses", "media": { "id": 175, "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/wayfarer.jpg", "type": "image", "alt": "Wayfarer-style sunglasses" }, "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?shape=Wayfarer" },
-          { "title": "Round", "glyph": "glasses", "media": { "id": 177, "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/round.jpg", "type": "image", "alt": "Round sunglasses" }, "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?shape=Round" },
-          { "title": "Cat-eye", "glyph": "glasses", "media": { "id": 178, "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/cateye.jpg", "type": "image", "alt": "Cat-eye sunglasses" }, "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?shape=Cat-eye" },
-          { "title": "Square", "glyph": "glasses", "media": { "id": 181, "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/square.jpg", "type": "image", "alt": "Square sunglasses" }, "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?shape=Square" },
-          { "title": "Oversized", "glyph": "glasses", "media": null, "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?shape=Oversized" }
+      {
+        "name": "sgs/label",
+        "attributes": {
+          "text": "40 designer brands · Birmingham",
+          "textColour": "#F0EBE3",
+          "fontSize": {
+            "desktop": 12.5
+          },
+          "fontSizeUnit": "px",
+          "letterSpacing": 0.24,
+          "letterSpacingUnit": "em",
+          "textTransform": "uppercase",
+          "className": "sgs-hero__label"
+        }
+      },
+      {
+        "name": "sgs/heading",
+        "attributes": {
+          "level": "h1",
+          "content": "The same designer shades. A good deal less.",
+          "fontFamily": "'Playfair Display',serif",
+          "fontWeight": "500",
+          "fontSize": {
+            "desktop": 62,
+            "mobile": 40
+          },
+          "fontSizeUnit": "px",
+          "lineHeight": {
+            "desktop": 1
+          },
+          "lineHeightUnit": "unitless",
+          "letterSpacing": {
+            "desktop": -0.015
+          },
+          "letterSpacingUnit": "em",
+          "textColour": "#FAF8F5",
+          "textWrap": "pretty",
+          "className": "sgs-hero__headline"
+        }
+      },
+      {
+        "name": "sgs/text",
+        "attributes": {
+          "text": "I'm an optician in Birmingham, buying from the same suppliers as the high street and pricing it more sensibly. If you need your prescription in them, I glaze and fit the lenses myself.",
+          "fontSize": {
+            "desktop": 18,
+            "mobile": 15.5
+          },
+          "fontSizeUnit": "px",
+          "textColour": "#F0EBE3",
+          "maxWidth": 47,
+          "maxWidthUnit": "ch",
+          "margin": {
+            "desktop": {
+              "top": "22px"
+            }
+          },
+          "textWrap": "pretty",
+          "className": "sgs-hero__subheadline"
+        }
+      },
+      {
+        "name": "sgs/multi-button",
+        "attributes": {
+          "gap": {
+            "desktop": "12px"
+          },
+          "margin": {
+            "desktop": {
+              "top": "32px"
+            }
+          }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/button",
+            "attributes": {
+              "inheritStyle": "custom",
+              "label": "Shop sunglasses",
+              "url": "https://darkcyan-grouse-898606.hostingersite.com/shop/",
+              "colourBackground": "#FAF8F5",
+              "colourText": "#141414",
+              "colourBackgroundHover": "#ffffff",
+              "borderRadius": {
+                "desktop": {}
+              },
+              "minHeight": {
+                "desktop": "52px"
+              },
+              "fontSize": {
+                "desktop": 13
+              },
+              "fontSizeUnit": "px",
+              "letterSpacing": {
+                "desktop": 0.1
+              },
+              "letterSpacingUnit": "em",
+              "textTransform": "uppercase",
+              "padding": {
+                "desktop": {
+                  "left": "28px",
+                  "right": "28px"
+                }
+              }
+            }
+          },
+          {
+            "name": "sgs/button",
+            "attributes": {
+              "inheritStyle": "custom",
+              "label": "Add your prescription",
+              "url": "https://darkcyan-grouse-898606.hostingersite.com/prescription-lenses/",
+              "colourBackground": "transparent",
+              "colourText": "#FAF8F5",
+              "borderColour": "rgba(250,248,245,.75)",
+              "borderWidth": {
+                "desktop": {
+                  "top": "1px",
+                  "right": "1px",
+                  "bottom": "1px",
+                  "left": "1px"
+                }
+              },
+              "borderRadius": {
+                "desktop": {}
+              },
+              "minHeight": {
+                "desktop": "52px"
+              },
+              "fontSize": {
+                "desktop": 13
+              },
+              "fontSizeUnit": "px",
+              "letterSpacing": {
+                "desktop": 0.1
+              },
+              "letterSpacingUnit": "em",
+              "textTransform": "uppercase",
+              "padding": {
+                "desktop": {
+                  "left": "28px",
+                  "right": "28px"
+                }
+              }
+            }
+          }
         ]
-      } }
+      }
     ]
   },
   {
     "name": "sgs/container",
-    "attributes": { "backgroundColour": "#fff", "contentWidth": { "desktop": "1440px" }, "padding": { "desktop": { "bottom": "104px", "left": "52px", "right": "52px", "top": "104px" }, "mobile": { "bottom": "56px", "left": "20px", "right": "20px", "top": "56px" } }, "textWrap": "wrap", "className": "sgs-google-reviews" },
+    "attributes": {
+      "backgroundColour": "#fff",
+      "textWrap": "wrap",
+      "className": "sgs-brand-marquee"
+    },
     "innerBlocks": [
-      { "name": "sgs/container", "attributes": { "contentBandMargin": { "desktop": { "bottom": "28px" } }, "textWrap": "wrap" }, "innerBlocks": [
-        { "name": "sgs/text", "attributes": { "fontSize": { "desktop": 12 }, "fontSizeUnit": "px", "letterSpacing": { "desktop": 0.24 }, "letterSpacingUnit": "em", "margin": { "desktop": { "bottom": "10px" } }, "text": "From the clinic", "textTransform": "uppercase" } },
-        { "name": "sgs/heading", "attributes": { "content": "What people say", "fontFamily": "'Playfair Display',serif", "fontSize": { "desktop": 46, "mobile": 32 }, "fontSizeUnit": "px", "fontWeight": "500", "level": "h2", "lineHeight": { "desktop": 1.02 }, "lineHeightUnit": "unitless" } }
-      ] },
-      { "name": "sgs/google-reviews", "attributes": {
-        "arrowBorderRadius": { "desktop": { "bottomLeft": "50%", "bottomRight": "50%", "topLeft": "50%", "topRight": "50%" } },
-        "arrowBorderStyle": "solid",
-        "arrowBorderWidth": { "bottom": "1px", "left": "1px", "right": "1px", "top": "1px" },
-        "arrowColourBackground": "#fff", "arrowColourBorder": "#DADCE0", "arrowColourText": "#1A73E8",
-        "arrowSize": { "desktop": "40px", "mobile": "40px", "tablet": "40px" },
-        "authorColour": "#202124", "authorFontSize": { "desktop": "14px", "mobile": "14px", "tablet": "14px" }, "authorFontWeight": "500",
-        "avatarBorderRadius": { "desktop": { "bottomLeft": "50%", "bottomRight": "50%", "topLeft": "50%", "topRight": "50%" } },
-        "avatarFontSize": { "desktop": "17px", "mobile": "17px", "tablet": "17px" }, "avatarFontWeight": "500",
-        "avatarSize": { "desktop": "40px", "mobile": "40px", "tablet": "40px" }, "avatarTextColour": "#fff",
-        "averageRating": 4.7, "backgroundColour": "#fff", "borderColour": "#DADCE0",
-        "borderRadius": { "desktop": { "bottomLeft": "12px", "bottomRight": "12px", "topLeft": "12px", "topRight": "12px" } },
-        "borderStyle": "solid", "borderWidth": { "bottom": "1px", "left": "1px", "right": "1px", "top": "1px" },
-        "cardBackground": "#fff", "cardBorderColour": "#E8EAED",
-        "cardBorderRadius": { "desktop": { "bottomLeft": "8px", "bottomRight": "8px", "topLeft": "8px", "topRight": "8px" } },
-        "cardBorderStyle": "solid", "cardBorderWidth": { "bottom": "1px", "left": "1px", "right": "1px", "top": "1px" },
-        "cardGap": { "desktop": "12px", "mobile": "12px", "tablet": "12px" },
-        "cardPadding": { "desktop": { "bottom": "20px", "left": "20px", "right": "20px", "top": "20px" } },
-        "cardStyle": "google-card", "cardWidth": { "desktop": "340px", "mobile": "270px", "tablet": "340px" },
-        "countColour": "#5F6368", "countFontSize": { "desktop": "13.5px", "mobile": "13.5px", "tablet": "13.5px" },
-        "dateColour": "#70757A", "dateFontSize": { "desktop": "12.5px", "mobile": "12.5px", "tablet": "12.5px" },
-        "fontFamily": "'Roboto',Arial,sans-serif",
-        "footnote": "Scroll for more — 13 of the 15 reviews left a comment.",
-        "footnoteColour": "#5F6368", "footnoteFontSize": { "desktop": "13px", "mobile": "13px", "tablet": "13px" },
-        "headerDividerColour": "#E8EAED", "headerDividerWidth": "1px",
-        "headerGap": { "desktop": "22px", "mobile": "22px", "tablet": "22px" },
-        "headerPadding": { "desktop": { "bottom": "22px" } },
-        "metaColour": "#70757A", "metaFontSize": { "desktop": "12.5px", "mobile": "12.5px", "tablet": "12.5px" },
-        "padding": { "desktop": { "bottom": "28px", "left": "26px", "right": "26px", "top": "28px" }, "mobile": { "bottom": "20px", "left": "16px", "right": "16px", "top": "20px" } },
-        "railPadding": { "desktop": { "bottom": "14px" } },
-        "reviewCount": 15,
-        "reviewLinkColour": "#1A73E8", "reviewLinkFontSize": { "desktop": "13.5px", "mobile": "13.5px", "tablet": "13.5px" },
-        "reviewLinkLabel": "Read the full review", "reviewLinkTextDecoration": "none",
-        "reviewRequestUrl": "https://share.google/9YZzTiRj2gvW1Xrpr",
-        "reviews": [
-          { "author": "Anonymous M.", "avatarColour": "#1A73E8", "date": "2 years ago", "meta": "6 reviews", "rating": 5, "text": "Had a lovely experience taking my daughter here. The optician Fatima is very good with children and made the experience enjoyable for my daughter. The receptionist was also very welcoming." },
-          { "author": "Neelum Mushtaq", "avatarColour": "#E8710A", "date": "a year ago", "meta": "Local Guide · 11 reviews · 8 photos", "rating": 5, "text": "Took my mum as emergency appointment. A day before spoke to fatima on call, fatima also did a video call for my mum. Got an urgent appointment next morning. Explained next few steps and booked my mum for a follow up appointment for a next week. Highly recommended, great service. 👍" },
-          { "author": "Hanif Ur-Rehman", "avatarColour": "#A142F4", "date": "5 years ago", "meta": "Local Guide · 60 reviews · 28 photos", "rating": 5, "text": "I have had the pleasure of being a patient of Ward End Eye Care since it first opened a few years ago. I have been extremely impressed by Fatima (the optician), as she has always ensured that she thoroughly checks my eyes during my eye tests. The equipment that Fatima uses is state of the art and the health of her patients is paramount.", "url": "https://share.google/9YZzTiRj2gvW1Xrpr" },
-          { "author": "Sadia K", "avatarColour": "#34A853", "date": "4 years ago", "meta": "Local Guide · 24 reviews", "rating": 5, "text": "Wow very kind and knows how to treat children of all ages. They will aways fit you in and Fatimah the optometrist will go above and beyond to help with you eye check ups. Definitely recommend" },
-          { "author": "Ajmal Mohammed", "avatarColour": "#D93025", "date": "2 years ago", "meta": "6 reviews", "rating": 5, "text": "The best optician in birmingham, great customer service from the whole team. Went out they way to see me and my mum and gave great advice." },
-          { "author": "Aamer", "avatarColour": "#00897B", "date": "6 years ago", "meta": "Local Guide · 25 reviews", "rating": 5, "text": "Optician was very knowledgable and friendly. Appointment was on time and thorough. Overall a great customer experience." },
-          { "author": "Arab-akh Akh", "avatarColour": "#F09300", "date": "6 years ago", "meta": "1 review", "rating": 5, "text": "Brought my mom here and she loved it. Got a pair of ray bans for my self aswel for cheap! Thanks for everything Ward end eye care." },
-          { "author": "Adeel Najib", "avatarColour": "#1A73E8", "date": "11 months ago", "meta": "Local Guide · 11 reviews · 1 photo", "rating": 5, "text": "Excellent professional service. Would definitely recommend." },
-          { "author": "Bushra Yasin", "avatarColour": "#7B1FA2", "date": "4 years ago", "meta": "Local Guide · 17 reviews", "rating": 5, "text": "Very professional and lovely opticians highly recommended Thank you!" },
-          { "author": "Azim Aftab", "avatarColour": "#0B8043", "date": "6 years ago", "meta": "Local Guide · 21 reviews · 3 photos", "rating": 5, "text": "Brilliant service! Optician was very welcoming and helpful." },
-          { "author": "Eshii X", "avatarColour": "#C5221F", "date": "a year ago", "meta": "Local Guide · 14 reviews · 2 photos", "rating": 5, "text": "Couldn’t be more pleased with the service and professionalism I received." },
-          { "author": "L. K.B", "avatarColour": "#3949AB", "date": "2 years ago", "meta": "4 reviews", "rating": 5, "text": "Great professional service. Thank you." },
-          { "author": "Christopher Ebanks", "avatarColour": "#E8710A", "date": "3 years ago", "meta": "1 review", "rating": 5, "text": "Great service! Best in the Ward End area!" }
-        ],
-        "scoreColour": "#202124", "scoreFontSize": { "desktop": "32px", "mobile": "32px", "tablet": "32px" }, "scoreFontWeight": "500", "scoreLineHeight": { "desktop": "1", "mobile": "1", "tablet": "1" },
-        "seeAllBorderRadius": { "desktop": { "bottomLeft": "20px", "bottomRight": "20px", "topLeft": "20px", "topRight": "20px" } },
-        "seeAllColourBackground": "#1A73E8", "seeAllColourText": "#fff", "seeAllFontSize": { "desktop": "14px", "mobile": "14px", "tablet": "14px" }, "seeAllFontWeight": "500",
-        "seeAllLabel": "See all reviews", "seeAllMinHeight": { "desktop": "40px", "mobile": "40px", "tablet": "40px" },
-        "seeAllPadding": { "desktop": { "bottom": "0", "left": "22px", "right": "22px", "top": "0" } }, "seeAllTextDecoration": "none", "seeAllUrl": "https://share.google/9YZzTiRj2gvW1Xrpr",
-        "showCardLogo": true, "showReviewLink": true, "sourceLabel": "Google Reviews", "sourceLabelColour": "#5F6368",
-        "sourceLabelFontSize": { "desktop": "13px", "mobile": "13px", "tablet": "13px" }, "sourceLabelLetterSpacing": { "desktop": ".01em", "mobile": ".01em", "tablet": ".01em" },
-        "starColour": "#FBBC04", "starSize": { "desktop": "15px", "mobile": "15px", "tablet": "15px" },
-        "textColour": "#3C4043", "textFontSize": { "desktop": "14.5px", "mobile": "14.5px", "tablet": "14.5px" }, "textLineHeight": { "desktop": "1.6", "mobile": "1.6", "tablet": "1.6" }, "textTextWrap": "pretty",
-        "writeReviewBorderRadius": { "desktop": { "bottomLeft": "20px", "bottomRight": "20px", "topLeft": "20px", "topRight": "20px" } },
-        "writeReviewBorderStyle": "solid", "writeReviewBorderWidth": { "bottom": "1px", "left": "1px", "right": "1px", "top": "1px" },
-        "writeReviewColourBorder": "#DADCE0", "writeReviewColourText": "#1A73E8",
-        "writeReviewFontSize": { "desktop": "14px", "mobile": "14px", "tablet": "14px" }, "writeReviewFontWeight": "500",
-        "writeReviewLabel": "Write a review", "writeReviewMinHeight": { "desktop": "40px", "mobile": "40px", "tablet": "40px" },
-        "writeReviewPadding": { "desktop": { "bottom": "0", "left": "22px", "right": "22px", "top": "0" } }, "writeReviewTextDecoration": "none"
-      } }
+      {
+        "name": "sgs/brand-strip",
+        "attributes": {
+          "source": "product-brands",
+          "brandDisplay": "text",
+          "showNames": true,
+          "scrolling": true,
+          "scrollSpeed": "slow",
+          "pauseOnHover": true,
+          "brandLinkToShop": true,
+          "nameFontFamily": "'Playfair Display',serif",
+          "nameFontWeight": "500",
+          "nameFontSize": {
+            "desktop": 15
+          },
+          "nameFontSizeUnit": "px",
+          "nameLetterSpacing": {
+            "desktop": 0.26
+          },
+          "nameLetterSpacingUnit": "em",
+          "nameTextTransform": "uppercase",
+          "nameColour": "#3A352F",
+          "nameColourHover": "#141414",
+          "padding": {
+            "desktop": {
+              "bottom": "26px",
+              "left": "0",
+              "right": "0",
+              "top": "26px"
+            }
+          }
+        }
+      }
     ]
   },
   {
     "name": "sgs/container",
-    "attributes": { "gap": { "desktop": "2px" }, "gridTemplateColumns": { "desktop": "minmax(0,1.1fr) minmax(0,1fr)", "mobile": "minmax(0,1fr)", "tablet": "minmax(0,1fr)" }, "layout": "grid", "maxWidth": { "desktop": "1440px" }, "padding": { "desktop": { "bottom": "104px", "left": "52px", "right": "52px", "top": "104px" }, "mobile": { "bottom": "56px", "left": "20px", "right": "20px", "top": "56px" } }, "textWrap": "wrap", "className": "sgs-about-strip" },
+    "attributes": {
+      "contentWidth": {
+        "desktop": "1440px"
+      },
+      "padding": {
+        "desktop": {
+          "bottom": "104px",
+          "left": "52px",
+          "right": "52px",
+          "top": "104px"
+        },
+        "mobile": {
+          "bottom": "56px",
+          "left": "20px",
+          "right": "20px",
+          "top": "56px"
+        }
+      },
+      "textWrap": "wrap",
+      "className": "sgs-best-sellers"
+    },
     "innerBlocks": [
-      { "name": "sgs/container", "attributes": { "backgroundColour": "#141414", "minHeight": { "desktop": "430px" }, "textWrap": "wrap" }, "innerBlocks": [
-        { "name": "sgs/media", "attributes": { "imageId": 202, "imageUrl": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/aboutstrip.jpg", "imageAlt": "Person wearing sunglasses outdoors", "height": { "desktop": "100%" }, "objectFit": "cover", "objectPosition": "center 20%" } }
-      ] },
-      { "name": "sgs/container", "attributes": { "backgroundColour": "#FAF8F5", "contentBandPadding": { "desktop": { "bottom": "68px", "left": "60px", "right": "60px", "top": "68px" }, "mobile": { "bottom": "36px", "left": "24px", "right": "24px", "top": "36px" } }, "flexDirection": "column", "justifyContent": "center", "layout": "flex", "textWrap": "wrap" }, "innerBlocks": [
-        { "name": "sgs/text", "attributes": { "fontSize": { "desktop": 12 }, "fontSizeUnit": "px", "letterSpacing": { "desktop": 0.24 }, "letterSpacingUnit": "em", "margin": { "desktop": { "bottom": "10px" } }, "text": "Prescription sunglasses", "textTransform": "uppercase" } },
-        { "name": "sgs/heading", "attributes": { "content": "Any pair here, made to your prescription.", "fontFamily": "'Playfair Display',serif", "fontSize": { "desktop": 46, "mobile": 32 }, "fontSizeUnit": "px", "fontWeight": "500", "level": "h2", "lineHeight": { "desktop": 1.02 }, "lineHeightUnit": "unitless", "margin": { "desktop": { "bottom": "18px" } }, "textWrap": "pretty" } },
-        { "name": "sgs/text", "attributes": { "fontSize": { "desktop": 16.5 }, "fontSizeUnit": "px", "margin": { "desktop": { "bottom": "30px" } }, "text": "Three questions with pictures, a price that updates as you go, and you can send your prescription whenever suits — including after you've ordered. Single vision from £59.", "textColour": "#5E584F", "textWrap": "pretty" } },
-        { "name": "sgs/icon-list", "attributes": {
-          "gap": "16px",
-          "margin": { "desktop": { "bottom": "34px" } },
-          "markerType": "number",
-          "textColour": "#141414",
-          "iconColour": "#6F6152",
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "alignItems": "flex-end",
+          "flexWrap": "wrap",
+          "gap": {
+            "desktop": "20px"
+          },
+          "justifyContent": "space-between",
+          "layout": "flex",
+          "margin": {
+            "desktop": {
+              "bottom": "34px"
+            }
+          },
+          "textWrap": "wrap"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "textWrap": "wrap"
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Moving fastest this month",
+                  "fontSize": {
+                    "desktop": 12
+                  },
+                  "fontSizeUnit": "px",
+                  "letterSpacing": {
+                    "desktop": 0.24
+                  },
+                  "letterSpacingUnit": "em",
+                  "textTransform": "uppercase",
+                  "textColour": "#6F6152",
+                  "margin": {
+                    "desktop": {
+                      "bottom": "10px"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "sgs/heading",
+                "attributes": {
+                  "level": "h2",
+                  "content": "Best sellers",
+                  "fontFamily": "'Playfair Display',serif",
+                  "fontWeight": "500",
+                  "fontSize": {
+                    "desktop": 46,
+                    "mobile": 32
+                  },
+                  "fontSizeUnit": "px",
+                  "lineHeight": {
+                    "desktop": 1.02
+                  },
+                  "lineHeightUnit": "unitless"
+                }
+              }
+            ]
+          },
+          {
+            "name": "sgs/button",
+            "attributes": {
+              "inheritStyle": "custom",
+              "label": "See everything",
+              "url": "https://darkcyan-grouse-898606.hostingersite.com/shop/",
+              "colourBackground": "transparent",
+              "colourText": "#141414",
+              "borderColour": "",
+              "fontSize": {
+                "desktop": 13
+              },
+              "fontSizeUnit": "px",
+              "letterSpacing": {
+                "desktop": 0.1
+              },
+              "letterSpacingUnit": "em",
+              "textTransform": "uppercase",
+              "padding": {
+                "desktop": {
+                  "left": "0",
+                  "right": "0",
+                  "bottom": "3px"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "layout": "grid",
+          "gridTemplateColumns": {
+            "desktop": "repeat(3,minmax(0,1fr))",
+            "tablet": "repeat(2,minmax(0,1fr))",
+            "mobile": "repeat(2,minmax(0,1fr))"
+          },
+          "gap": {
+            "desktop": "24px",
+            "mobile": "16px"
+          },
+          "textWrap": "wrap"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/product-card",
+            "attributes": {
+              "sourceMode": "wc-product",
+              "productId": 71,
+              "showRating": true,
+              "noReviewsText": "No reviews yet",
+              "showSavingBadge": true,
+              "savingLabel": "Save £32",
+              "savingBadgePosition": "bottom-left",
+              "showAttributeTag": false,
+              "showPickers": true,
+              "swatchMaxVisible": 4
+            }
+          },
+          {
+            "name": "sgs/product-card",
+            "attributes": {
+              "sourceMode": "wc-product",
+              "productId": 76,
+              "showRating": true,
+              "noReviewsText": "No reviews yet",
+              "showSavingBadge": true,
+              "savingLabel": "Save £51",
+              "savingBadgePosition": "bottom-left",
+              "showAttributeTag": false,
+              "showPickers": true,
+              "swatchMaxVisible": 4
+            }
+          },
+          {
+            "name": "sgs/product-card",
+            "attributes": {
+              "sourceMode": "wc-product",
+              "productId": 81,
+              "showRating": true,
+              "noReviewsText": "No reviews yet",
+              "showSavingBadge": true,
+              "savingLabel": "Save £27",
+              "savingBadgePosition": "bottom-left",
+              "showAttributeTag": true,
+              "attributeTagSource": "tag",
+              "attributeTagTerm": "polarised",
+              "attributeTagText": "Polarised",
+              "showPickers": true,
+              "swatchMaxVisible": 4
+            }
+          },
+          {
+            "name": "sgs/product-card",
+            "attributes": {
+              "sourceMode": "wc-product",
+              "productId": 86,
+              "showRating": true,
+              "noReviewsText": "No reviews yet",
+              "showSavingBadge": true,
+              "savingLabel": "Save £57",
+              "savingBadgePosition": "bottom-left",
+              "showAttributeTag": false,
+              "showPickers": true,
+              "swatchMaxVisible": 4
+            }
+          },
+          {
+            "name": "sgs/product-card",
+            "attributes": {
+              "sourceMode": "wc-product",
+              "productId": 90,
+              "showRating": true,
+              "noReviewsText": "No reviews yet",
+              "showSavingBadge": true,
+              "savingLabel": "Save £30",
+              "savingBadgePosition": "bottom-left",
+              "showAttributeTag": false,
+              "showPickers": true,
+              "swatchMaxVisible": 4
+            }
+          },
+          {
+            "name": "sgs/product-card",
+            "attributes": {
+              "sourceMode": "wc-product",
+              "productId": 98,
+              "showRating": true,
+              "noReviewsText": "No reviews yet",
+              "showSavingBadge": true,
+              "savingLabel": "Save £29",
+              "savingBadgePosition": "bottom-left",
+              "showAttributeTag": false,
+              "showPickers": true,
+              "swatchMaxVisible": 4
+            }
+          },
+          {
+            "name": "sgs/product-card",
+            "attributes": {
+              "sourceMode": "wc-product",
+              "productId": 103,
+              "showRating": true,
+              "noReviewsText": "No reviews yet",
+              "showSavingBadge": true,
+              "savingLabel": "Save £47",
+              "savingBadgePosition": "bottom-left",
+              "showAttributeTag": false,
+              "showPickers": true,
+              "swatchMaxVisible": 4
+            }
+          },
+          {
+            "name": "sgs/product-card",
+            "attributes": {
+              "sourceMode": "wc-product",
+              "productId": 107,
+              "showRating": true,
+              "noReviewsText": "No reviews yet",
+              "showSavingBadge": true,
+              "savingLabel": "Save £16",
+              "savingBadgePosition": "bottom-left",
+              "showAttributeTag": true,
+              "attributeTagSource": "tag",
+              "attributeTagTerm": "polarised",
+              "attributeTagText": "Polarised",
+              "showPickers": true,
+              "swatchMaxVisible": 4
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "sgs/container",
+    "attributes": {
+      "backgroundColour": "#141414",
+      "contentWidth": {
+        "desktop": "1440px"
+      },
+      "padding": {
+        "desktop": {
+          "bottom": "104px",
+          "left": "52px",
+          "right": "52px",
+          "top": "104px"
+        },
+        "mobile": {
+          "bottom": "56px",
+          "left": "20px",
+          "right": "20px",
+          "top": "56px"
+        }
+      },
+      "textColour": "#FAF8F5",
+      "textWrap": "wrap",
+      "className": "sgs-why-buy"
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "gap": {
+            "desktop": "40px"
+          },
+          "gridTemplateColumns": {
+            "desktop": "minmax(0,1.1fr) minmax(0,1fr)",
+            "mobile": "minmax(0,1fr)",
+            "tablet": "minmax(0,1fr)"
+          },
+          "layout": "grid",
+          "textWrap": "wrap",
+          "margin": {
+            "desktop": {
+              "bottom": "52px"
+            }
+          }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "textWrap": "wrap"
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Why buy from me",
+                  "fontSize": {
+                    "desktop": 12
+                  },
+                  "fontSizeUnit": "px",
+                  "letterSpacing": {
+                    "desktop": 0.24
+                  },
+                  "letterSpacingUnit": "em",
+                  "margin": {
+                    "desktop": {
+                      "bottom": "10px"
+                    }
+                  },
+                  "textTransform": "uppercase"
+                }
+              },
+              {
+                "name": "sgs/heading",
+                "attributes": {
+                  "content": "Four reasons, and not one of them is a discount code.",
+                  "fontFamily": "'Playfair Display',serif",
+                  "fontSize": {
+                    "desktop": 46,
+                    "mobile": 32
+                  },
+                  "fontSizeUnit": "px",
+                  "fontWeight": "500",
+                  "level": "h2",
+                  "lineHeight": {
+                    "desktop": 1.02
+                  },
+                  "lineHeightUnit": "unitless",
+                  "textWrap": "pretty"
+                }
+              }
+            ]
+          },
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "fontSize": {
+                "desktop": 16.5
+              },
+              "fontSizeUnit": "px",
+              "maxWidth": 47,
+              "maxWidthUnit": "ch",
+              "text": "I'm an optician who genuinely enjoys this part of the job — finding people frames that suit them. This shop exists so I can show you the whole range properly instead of scrolling a supplier's catalogue at the counter, and because I'd rather price frames fairly than squeeze the most out of every sale.",
+              "textColour": "#E2DCD3",
+              "textWrap": "pretty"
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "backgroundColour": "rgba(250,248,245,.16)",
+          "columns": {
+            "desktop": 4,
+            "tablet": 2
+          },
+          "gap": {
+            "desktop": "1px"
+          },
+          "gridTemplateColumns": {
+            "desktop": "repeat(4,minmax(0,1fr))",
+            "mobile": "minmax(0,1fr)",
+            "tablet": "repeat(2,minmax(0,1fr))"
+          },
+          "layout": "grid",
+          "textWrap": "wrap"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "backgroundColour": "#141414",
+              "contentBandPadding": {
+                "desktop": {
+                  "bottom": "34px",
+                  "left": "30px",
+                  "right": "30px",
+                  "top": "34px"
+                },
+                "mobile": {
+                  "bottom": "28px",
+                  "left": "22px",
+                  "right": "22px",
+                  "top": "28px"
+                }
+              },
+              "textWrap": "wrap"
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "fontFamily": "'Playfair Display',serif",
+                  "fontSize": {
+                    "desktop": 40
+                  },
+                  "fontSizeUnit": "px",
+                  "fontWeight": "500",
+                  "lineHeight": {
+                    "desktop": 1
+                  },
+                  "lineHeightUnit": "unitless",
+                  "text": "01",
+                  "textColour": "#9C8B78"
+                }
+              },
+              {
+                "name": "sgs/heading",
+                "attributes": {
+                  "content": "Below RRP, and I show you by how much",
+                  "fontSize": {
+                    "desktop": 20
+                  },
+                  "fontSizeUnit": "px",
+                  "fontWeight": "500",
+                  "level": "h3",
+                  "margin": {
+                    "desktop": {
+                      "bottom": "10px",
+                      "top": "22px"
+                    }
+                  },
+                  "textWrap": "pretty"
+                }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "fontSize": {
+                    "desktop": 15
+                  },
+                  "fontSizeUnit": "px",
+                  "text": "The recommended retail price sits next to my price on every single frame. No codes to hunt for, no countdown timers, no permanent fake sale.",
+                  "textColour": "#CFC8BE",
+                  "textWrap": "pretty"
+                }
+              }
+            ]
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "backgroundColour": "#141414",
+              "contentBandPadding": {
+                "desktop": {
+                  "bottom": "34px",
+                  "left": "30px",
+                  "right": "30px",
+                  "top": "34px"
+                },
+                "mobile": {
+                  "bottom": "28px",
+                  "left": "22px",
+                  "right": "22px",
+                  "top": "28px"
+                }
+              },
+              "textWrap": "wrap"
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "fontFamily": "'Playfair Display',serif",
+                  "fontSize": {
+                    "desktop": 40
+                  },
+                  "fontSizeUnit": "px",
+                  "fontWeight": "500",
+                  "lineHeight": {
+                    "desktop": 1
+                  },
+                  "lineHeightUnit": "unitless",
+                  "text": "02",
+                  "textColour": "#9C8B78"
+                }
+              },
+              {
+                "name": "sgs/heading",
+                "attributes": {
+                  "content": "I glaze the lenses myself",
+                  "fontSize": {
+                    "desktop": 20
+                  },
+                  "fontSizeUnit": "px",
+                  "fontWeight": "500",
+                  "level": "h3",
+                  "margin": {
+                    "desktop": {
+                      "bottom": "10px",
+                      "top": "22px"
+                    }
+                  },
+                  "textWrap": "pretty"
+                }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "fontSize": {
+                    "desktop": 15
+                  },
+                  "fontSizeUnit": "px",
+                  "text": "Your prescription doesn't get posted off to a lab in another county. I cut, fit and check the lenses here — which is also how I spot a frame that won't work before it's made.",
+                  "textColour": "#CFC8BE",
+                  "textWrap": "pretty"
+                }
+              }
+            ]
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "backgroundColour": "#141414",
+              "contentBandPadding": {
+                "desktop": {
+                  "bottom": "34px",
+                  "left": "30px",
+                  "right": "30px",
+                  "top": "34px"
+                },
+                "mobile": {
+                  "bottom": "28px",
+                  "left": "22px",
+                  "right": "22px",
+                  "top": "28px"
+                }
+              },
+              "textWrap": "wrap"
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "fontFamily": "'Playfair Display',serif",
+                  "fontSize": {
+                    "desktop": 40
+                  },
+                  "fontSizeUnit": "px",
+                  "fontWeight": "500",
+                  "lineHeight": {
+                    "desktop": 1
+                  },
+                  "lineHeightUnit": "unitless",
+                  "text": "03",
+                  "textColour": "#9C8B78"
+                }
+              },
+              {
+                "name": "sgs/heading",
+                "attributes": {
+                  "content": "You can just message me",
+                  "fontSize": {
+                    "desktop": 20
+                  },
+                  "fontSizeUnit": "px",
+                  "fontWeight": "500",
+                  "level": "h3",
+                  "margin": {
+                    "desktop": {
+                      "bottom": "10px",
+                      "top": "22px"
+                    }
+                  },
+                  "textWrap": "pretty"
+                }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "fontSize": {
+                    "desktop": 15
+                  },
+                  "fontSizeUnit": "px",
+                  "text": "One optician, one WhatsApp number. Ask me anything about a frame or a prescription before you spend a penny.",
+                  "textColour": "#CFC8BE",
+                  "textWrap": "pretty"
+                }
+              }
+            ]
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "backgroundColour": "#141414",
+              "contentBandPadding": {
+                "desktop": {
+                  "bottom": "34px",
+                  "left": "30px",
+                  "right": "30px",
+                  "top": "34px"
+                },
+                "mobile": {
+                  "bottom": "28px",
+                  "left": "22px",
+                  "right": "22px",
+                  "top": "28px"
+                }
+              },
+              "textWrap": "wrap"
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "fontFamily": "'Playfair Display',serif",
+                  "fontSize": {
+                    "desktop": 40
+                  },
+                  "fontSizeUnit": "px",
+                  "fontWeight": "500",
+                  "lineHeight": {
+                    "desktop": 1
+                  },
+                  "lineHeightUnit": "unitless",
+                  "text": "04",
+                  "textColour": "#9C8B78"
+                }
+              },
+              {
+                "name": "sgs/heading",
+                "attributes": {
+                  "content": "Collect in Birmingham, or posted tracked",
+                  "fontSize": {
+                    "desktop": 20
+                  },
+                  "fontSizeUnit": "px",
+                  "fontWeight": "500",
+                  "level": "h3",
+                  "margin": {
+                    "desktop": {
+                      "bottom": "10px",
+                      "top": "22px"
+                    }
+                  },
+                  "textWrap": "pretty"
+                }
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "fontSize": {
+                    "desktop": 15
+                  },
+                  "fontSizeUnit": "px",
+                  "text": "Come and pick them up and I'll adjust them to you properly. Or free tracked delivery over £75.",
+                  "textColour": "#CFC8BE",
+                  "textWrap": "pretty"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "sgs/container",
+    "attributes": {
+      "maxWidth": {
+        "desktop": "1440px"
+      },
+      "padding": {
+        "desktop": {
+          "bottom": "104px",
+          "left": "52px",
+          "right": "52px",
+          "top": "104px"
+        },
+        "mobile": {
+          "bottom": "56px",
+          "left": "20px",
+          "right": "20px",
+          "top": "56px"
+        }
+      },
+      "textWrap": "wrap",
+      "className": "sgs-shape-tiles"
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "alignItems": "flex-end",
+          "flexWrap": "wrap",
+          "gap": {
+            "desktop": "20px"
+          },
+          "justifyContent": "space-between",
+          "layout": "flex",
+          "margin": {
+            "desktop": {
+              "bottom": "30px"
+            }
+          },
+          "textWrap": "wrap"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "textWrap": "wrap"
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Not sure what suits you?",
+                  "fontSize": {
+                    "desktop": 12
+                  },
+                  "fontSizeUnit": "px",
+                  "letterSpacing": {
+                    "desktop": 0.24
+                  },
+                  "letterSpacingUnit": "em",
+                  "textTransform": "uppercase",
+                  "textColour": "#6F6152",
+                  "margin": {
+                    "desktop": {
+                      "bottom": "10px"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "sgs/heading",
+                "attributes": {
+                  "level": "h2",
+                  "content": "Start with a shape",
+                  "fontFamily": "'Playfair Display',serif",
+                  "fontWeight": "500",
+                  "fontSize": {
+                    "desktop": 46,
+                    "mobile": 32
+                  },
+                  "fontSizeUnit": "px",
+                  "lineHeight": {
+                    "desktop": 1.02
+                  },
+                  "lineHeightUnit": "unitless"
+                }
+              }
+            ]
+          },
+          {
+            "name": "sgs/button",
+            "attributes": {
+              "inheritStyle": "custom",
+              "label": "All 12 styles",
+              "url": "https://darkcyan-grouse-898606.hostingersite.com/shop/",
+              "colourBackground": "transparent",
+              "colourText": "#141414",
+              "fontSize": {
+                "desktop": 13
+              },
+              "fontSizeUnit": "px",
+              "letterSpacing": {
+                "desktop": 0.1
+              },
+              "letterSpacingUnit": "em",
+              "textTransform": "uppercase",
+              "padding": {
+                "desktop": {
+                  "left": "0",
+                  "right": "0",
+                  "bottom": "3px"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/card-grid",
+        "attributes": {
+          "columns": {
+            "desktop": 6,
+            "tablet": 3,
+            "mobile": 2
+          },
+          "gap": {
+            "desktop": "24px",
+            "mobile": "16px"
+          },
+          "aspectRatio": "4 / 5",
+          "effectHover": "zoom",
+          "imageZoomHover": true,
+          "shadowLiftOnHover": true,
+          "imageFallback": true,
+          "imageFallbackColour": "#2B2721",
+          "glyphSize": "30px",
+          "glyphColour": "#FAF8F5",
+          "titleColour": "#FAF8F5",
+          "titleFontSize": {
+            "desktop": 14
+          },
+          "titleFontSizeUnit": "px",
+          "cardBorderColour": "#E6E1DA",
+          "cardBorderWidth": {
+            "desktop": {
+              "top": "1px",
+              "right": "1px",
+              "bottom": "1px",
+              "left": "1px"
+            }
+          },
           "items": [
-            { "text": "Pick a frame, then “Add my prescription”" },
-            { "text": "Tell me what they're for, how thin, what finish" },
-            { "text": "Send your prescription now, or later — no rush" }
+            {
+              "title": "Pilot",
+              "glyph": "glasses",
+              "media": null,
+              "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?shape=Pilot"
+            },
+            {
+              "title": "Wayfarer",
+              "glyph": "glasses",
+              "media": {
+                "id": 175,
+                "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/wayfarer.jpg",
+                "type": "image",
+                "alt": "Wayfarer-style sunglasses"
+              },
+              "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?shape=Wayfarer"
+            },
+            {
+              "title": "Round",
+              "glyph": "glasses",
+              "media": {
+                "id": 177,
+                "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/round.jpg",
+                "type": "image",
+                "alt": "Round sunglasses"
+              },
+              "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?shape=Round"
+            },
+            {
+              "title": "Cat-eye",
+              "glyph": "glasses",
+              "media": {
+                "id": 178,
+                "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/cateye.jpg",
+                "type": "image",
+                "alt": "Cat-eye sunglasses"
+              },
+              "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?shape=Cat-eye"
+            },
+            {
+              "title": "Square",
+              "glyph": "glasses",
+              "media": {
+                "id": 181,
+                "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/square.jpg",
+                "type": "image",
+                "alt": "Square sunglasses"
+              },
+              "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?shape=Square"
+            },
+            {
+              "title": "Oversized",
+              "glyph": "glasses",
+              "media": null,
+              "link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?shape=Oversized"
+            }
           ]
-        } },
-        { "name": "sgs/button", "attributes": { "inheritStyle": "custom", "label": "How lenses work here", "url": "https://darkcyan-grouse-898606.hostingersite.com/prescription-lenses/", "colourBackground": "#141414", "colourText": "#FAF8F5", "colourBackgroundHover": "#2a2a2a", "fontSize": { "desktop": 13 }, "fontSizeUnit": "px", "letterSpacing": { "desktop": 0.1 }, "letterSpacingUnit": "em", "textTransform": "uppercase", "minHeight": { "desktop": "52px" }, "padding": { "desktop": { "left": "28px", "right": "28px" } } } }
-      ] }
+        }
+      }
     ]
   },
   {
     "name": "sgs/container",
-    "attributes": { "alignItems": "center", "backgroundColour": "#EFEAE2", "contentWidth": { "desktop": "1440px" }, "gap": { "desktop": "64px", "mobile": "32px", "tablet": "32px" }, "gridTemplateColumns": { "desktop": "minmax(0,.72fr) minmax(0,1fr)", "mobile": "minmax(0,1fr)", "tablet": "minmax(0,1fr)" }, "layout": "grid", "padding": { "desktop": { "bottom": "104px", "left": "52px", "right": "52px", "top": "104px" }, "mobile": { "bottom": "56px", "left": "20px", "right": "20px", "top": "56px" } }, "textWrap": "wrap", "className": "sgs-optician" },
+    "attributes": {
+      "backgroundColour": "#fff",
+      "contentWidth": {
+        "desktop": "1440px"
+      },
+      "padding": {
+        "desktop": {
+          "bottom": "104px",
+          "left": "52px",
+          "right": "52px",
+          "top": "104px"
+        },
+        "mobile": {
+          "bottom": "56px",
+          "left": "20px",
+          "right": "20px",
+          "top": "56px"
+        }
+      },
+      "textWrap": "wrap",
+      "className": "sgs-google-reviews"
+    },
     "innerBlocks": [
-      { "name": "sgs/text", "attributes": { "backgroundColour": "#DFD8CC", "borderColour": "#D0C8BA", "borderStyle": "solid", "borderWidth": { "bottom": "1px", "left": "1px", "right": "1px", "top": "1px" }, "padding": { "desktop": { "bottom": "24px", "left": "24px", "right": "24px", "top": "24px" } }, "text": "<span>Photo of the clinic</span>\n<span>The reception or the consulting room — whichever you'd rather show. No portrait needed.</span>", "textAlign": "center", "textColour": "#6B655E", "textWrap": "wrap" } },
-      { "name": "sgs/container", "attributes": { "textWrap": "wrap" }, "innerBlocks": [
-        { "name": "sgs/text", "attributes": { "fontSize": { "desktop": 12 }, "fontSizeUnit": "px", "letterSpacing": { "desktop": 0.24 }, "letterSpacingUnit": "em", "margin": { "desktop": { "bottom": "12px" } }, "text": "You're buying from a person", "textTransform": "uppercase" } },
-        { "name": "sgs/heading", "attributes": { "content": "I'm Fatima Nawaz, and I run the clinic in Birmingham.", "fontFamily": "'Playfair Display',serif", "fontSize": { "desktop": 46, "mobile": 32 }, "fontSizeUnit": "px", "fontWeight": "500", "level": "h2", "lineHeight": { "desktop": 1.02 }, "lineHeightUnit": "unitless", "margin": { "desktop": { "bottom": "22px" } }, "textWrap": "pretty" } },
-        { "name": "sgs/text", "attributes": { "fontSize": { "desktop": 17 }, "fontSizeUnit": "px", "margin": { "desktop": { "bottom": "18px" } }, "text": "Everything on this site I chose myself, and every prescription order comes across my bench before it's made. If a frame isn't going to work with your lenses, I'd rather tell you before you pay than after.", "textColour": "#4A453E", "textWrap": "pretty" } },
-        { "name": "sgs/text", "attributes": { "fontSize": { "desktop": 16 }, "fontSizeUnit": "px", "margin": { "desktop": { "bottom": "30px" } }, "text": "If you're unsure about anything, just ask. Talking people through frames and lenses is what I do all day at the clinic, and I'm glad to do it here too.", "textColour": "#5E584F", "textWrap": "pretty" } },
-        { "name": "sgs/container", "attributes": { "flexWrap": "wrap", "gap": { "desktop": "12px" }, "layout": "flex", "textWrap": "wrap" }, "innerBlocks": [
-          { "name": "sgs/whatsapp-cta", "attributes": { "variant": "inline", "phoneNumber": "4479605978", "message": "Hi, I'd like to know more about your frames.", "label": "Message me on WhatsApp", "backgroundColour": "#25D366", "backgroundColourHover": "#1EBE5A", "labelColour": "#0B2B17", "labelFontSize": { "desktop": 14 }, "labelFontSizeUnit": "px", "labelFontWeight": "500", "labelLetterSpacing": { "desktop": 0.04 }, "labelLetterSpacingUnit": "em", "borderRadius": { "desktop": {} } } },
-          { "name": "sgs/button", "attributes": { "inheritStyle": "custom", "label": "My qualifications", "url": "https://darkcyan-grouse-898606.hostingersite.com/about/", "colourBackground": "transparent", "colourText": "#141414", "borderColour": "#141414", "borderWidth": { "desktop": { "top": "1px", "right": "1px", "bottom": "1px", "left": "1px" } }, "fontSize": { "desktop": 13 }, "fontSizeUnit": "px", "letterSpacing": { "desktop": 0.1 }, "letterSpacingUnit": "em", "textTransform": "uppercase", "minHeight": { "desktop": "52px" }, "padding": { "desktop": { "left": "24px", "right": "24px" } } } }
-        ] }
-      ] }
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "contentBandMargin": {
+            "desktop": {
+              "bottom": "28px"
+            }
+          },
+          "textWrap": "wrap"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "fontSize": {
+                "desktop": 12
+              },
+              "fontSizeUnit": "px",
+              "letterSpacing": {
+                "desktop": 0.24
+              },
+              "letterSpacingUnit": "em",
+              "margin": {
+                "desktop": {
+                  "bottom": "10px"
+                }
+              },
+              "text": "From the clinic",
+              "textTransform": "uppercase"
+            }
+          },
+          {
+            "name": "sgs/heading",
+            "attributes": {
+              "content": "What people say",
+              "fontFamily": "'Playfair Display',serif",
+              "fontSize": {
+                "desktop": 46,
+                "mobile": 32
+              },
+              "fontSizeUnit": "px",
+              "fontWeight": "500",
+              "level": "h2",
+              "lineHeight": {
+                "desktop": 1.02
+              },
+              "lineHeightUnit": "unitless"
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/google-reviews",
+        "attributes": {
+          "arrowBorderRadius": {
+            "desktop": {
+              "bottomLeft": "50%",
+              "bottomRight": "50%",
+              "topLeft": "50%",
+              "topRight": "50%"
+            }
+          },
+          "arrowBorderStyle": "solid",
+          "arrowBorderWidth": {
+            "bottom": "1px",
+            "left": "1px",
+            "right": "1px",
+            "top": "1px"
+          },
+          "arrowColourBackground": "#fff",
+          "arrowColourBorder": "#DADCE0",
+          "arrowColourText": "#1A73E8",
+          "arrowSize": {
+            "desktop": "40px",
+            "mobile": "40px",
+            "tablet": "40px"
+          },
+          "authorColour": "#202124",
+          "authorFontSize": {
+            "desktop": "14px",
+            "mobile": "14px",
+            "tablet": "14px"
+          },
+          "authorFontWeight": "500",
+          "avatarBorderRadius": {
+            "desktop": {
+              "bottomLeft": "50%",
+              "bottomRight": "50%",
+              "topLeft": "50%",
+              "topRight": "50%"
+            }
+          },
+          "avatarFontSize": {
+            "desktop": "17px",
+            "mobile": "17px",
+            "tablet": "17px"
+          },
+          "avatarFontWeight": "500",
+          "avatarSize": {
+            "desktop": "40px",
+            "mobile": "40px",
+            "tablet": "40px"
+          },
+          "avatarTextColour": "#fff",
+          "averageRating": 4.7,
+          "backgroundColour": "#fff",
+          "borderColour": "#DADCE0",
+          "borderRadius": {
+            "desktop": {
+              "bottomLeft": "12px",
+              "bottomRight": "12px",
+              "topLeft": "12px",
+              "topRight": "12px"
+            }
+          },
+          "borderStyle": "solid",
+          "borderWidth": {
+            "bottom": "1px",
+            "left": "1px",
+            "right": "1px",
+            "top": "1px"
+          },
+          "cardBackground": "#fff",
+          "cardBorderColour": "#E8EAED",
+          "cardBorderRadius": {
+            "desktop": {
+              "bottomLeft": "8px",
+              "bottomRight": "8px",
+              "topLeft": "8px",
+              "topRight": "8px"
+            }
+          },
+          "cardBorderStyle": "solid",
+          "cardBorderWidth": {
+            "bottom": "1px",
+            "left": "1px",
+            "right": "1px",
+            "top": "1px"
+          },
+          "cardGap": {
+            "desktop": "12px",
+            "mobile": "12px",
+            "tablet": "12px"
+          },
+          "cardPadding": {
+            "desktop": {
+              "bottom": "20px",
+              "left": "20px",
+              "right": "20px",
+              "top": "20px"
+            }
+          },
+          "cardStyle": "google-card",
+          "cardWidth": {
+            "desktop": "340px",
+            "mobile": "270px",
+            "tablet": "340px"
+          },
+          "countColour": "#5F6368",
+          "countFontSize": {
+            "desktop": "13.5px",
+            "mobile": "13.5px",
+            "tablet": "13.5px"
+          },
+          "dateColour": "#70757A",
+          "dateFontSize": {
+            "desktop": "12.5px",
+            "mobile": "12.5px",
+            "tablet": "12.5px"
+          },
+          "fontFamily": "'Roboto',Arial,sans-serif",
+          "footnote": "Scroll for more — 13 of the 15 reviews left a comment.",
+          "footnoteColour": "#5F6368",
+          "footnoteFontSize": {
+            "desktop": "13px",
+            "mobile": "13px",
+            "tablet": "13px"
+          },
+          "headerDividerColour": "#E8EAED",
+          "headerDividerWidth": "1px",
+          "headerGap": {
+            "desktop": "22px",
+            "mobile": "22px",
+            "tablet": "22px"
+          },
+          "headerPadding": {
+            "desktop": {
+              "bottom": "22px"
+            }
+          },
+          "metaColour": "#70757A",
+          "metaFontSize": {
+            "desktop": "12.5px",
+            "mobile": "12.5px",
+            "tablet": "12.5px"
+          },
+          "padding": {
+            "desktop": {
+              "bottom": "28px",
+              "left": "26px",
+              "right": "26px",
+              "top": "28px"
+            },
+            "mobile": {
+              "bottom": "20px",
+              "left": "16px",
+              "right": "16px",
+              "top": "20px"
+            }
+          },
+          "railPadding": {
+            "desktop": {
+              "bottom": "14px"
+            }
+          },
+          "reviewCount": 15,
+          "reviewLinkColour": "#1A73E8",
+          "reviewLinkFontSize": {
+            "desktop": "13.5px",
+            "mobile": "13.5px",
+            "tablet": "13.5px"
+          },
+          "reviewLinkLabel": "Read the full review",
+          "reviewLinkTextDecoration": "none",
+          "reviewRequestUrl": "https://share.google/9YZzTiRj2gvW1Xrpr",
+          "reviews": [
+            {
+              "author": "Anonymous M.",
+              "avatarColour": "#1A73E8",
+              "date": "2 years ago",
+              "meta": "6 reviews",
+              "rating": 5,
+              "text": "Had a lovely experience taking my daughter here. The optician Fatima is very good with children and made the experience enjoyable for my daughter. The receptionist was also very welcoming."
+            },
+            {
+              "author": "Neelum Mushtaq",
+              "avatarColour": "#E8710A",
+              "date": "a year ago",
+              "meta": "Local Guide · 11 reviews · 8 photos",
+              "rating": 5,
+              "text": "Took my mum as emergency appointment. A day before spoke to fatima on call, fatima also did a video call for my mum. Got an urgent appointment next morning. Explained next few steps and booked my mum for a follow up appointment for a next week. Highly recommended, great service. 👍"
+            },
+            {
+              "author": "Hanif Ur-Rehman",
+              "avatarColour": "#A142F4",
+              "date": "5 years ago",
+              "meta": "Local Guide · 60 reviews · 28 photos",
+              "rating": 5,
+              "text": "I have had the pleasure of being a patient of Ward End Eye Care since it first opened a few years ago. I have been extremely impressed by Fatima (the optician), as she has always ensured that she thoroughly checks my eyes during my eye tests. The equipment that Fatima uses is state of the art and the health of her patients is paramount.",
+              "url": "https://share.google/9YZzTiRj2gvW1Xrpr"
+            },
+            {
+              "author": "Sadia K",
+              "avatarColour": "#34A853",
+              "date": "4 years ago",
+              "meta": "Local Guide · 24 reviews",
+              "rating": 5,
+              "text": "Wow very kind and knows how to treat children of all ages. They will aways fit you in and Fatimah the optometrist will go above and beyond to help with you eye check ups. Definitely recommend"
+            },
+            {
+              "author": "Ajmal Mohammed",
+              "avatarColour": "#D93025",
+              "date": "2 years ago",
+              "meta": "6 reviews",
+              "rating": 5,
+              "text": "The best optician in birmingham, great customer service from the whole team. Went out they way to see me and my mum and gave great advice."
+            },
+            {
+              "author": "Aamer",
+              "avatarColour": "#00897B",
+              "date": "6 years ago",
+              "meta": "Local Guide · 25 reviews",
+              "rating": 5,
+              "text": "Optician was very knowledgable and friendly. Appointment was on time and thorough. Overall a great customer experience."
+            },
+            {
+              "author": "Arab-akh Akh",
+              "avatarColour": "#F09300",
+              "date": "6 years ago",
+              "meta": "1 review",
+              "rating": 5,
+              "text": "Brought my mom here and she loved it. Got a pair of ray bans for my self aswel for cheap! Thanks for everything Ward end eye care."
+            },
+            {
+              "author": "Adeel Najib",
+              "avatarColour": "#1A73E8",
+              "date": "11 months ago",
+              "meta": "Local Guide · 11 reviews · 1 photo",
+              "rating": 5,
+              "text": "Excellent professional service. Would definitely recommend."
+            },
+            {
+              "author": "Bushra Yasin",
+              "avatarColour": "#7B1FA2",
+              "date": "4 years ago",
+              "meta": "Local Guide · 17 reviews",
+              "rating": 5,
+              "text": "Very professional and lovely opticians highly recommended Thank you!"
+            },
+            {
+              "author": "Azim Aftab",
+              "avatarColour": "#0B8043",
+              "date": "6 years ago",
+              "meta": "Local Guide · 21 reviews · 3 photos",
+              "rating": 5,
+              "text": "Brilliant service! Optician was very welcoming and helpful."
+            },
+            {
+              "author": "Eshii X",
+              "avatarColour": "#C5221F",
+              "date": "a year ago",
+              "meta": "Local Guide · 14 reviews · 2 photos",
+              "rating": 5,
+              "text": "Couldn’t be more pleased with the service and professionalism I received."
+            },
+            {
+              "author": "L. K.B",
+              "avatarColour": "#3949AB",
+              "date": "2 years ago",
+              "meta": "4 reviews",
+              "rating": 5,
+              "text": "Great professional service. Thank you."
+            },
+            {
+              "author": "Christopher Ebanks",
+              "avatarColour": "#E8710A",
+              "date": "3 years ago",
+              "meta": "1 review",
+              "rating": 5,
+              "text": "Great service! Best in the Ward End area!"
+            }
+          ],
+          "scoreColour": "#202124",
+          "scoreFontSize": {
+            "desktop": "32px",
+            "mobile": "32px",
+            "tablet": "32px"
+          },
+          "scoreFontWeight": "500",
+          "scoreLineHeight": {
+            "desktop": "1",
+            "mobile": "1",
+            "tablet": "1"
+          },
+          "seeAllBorderRadius": {
+            "desktop": {
+              "bottomLeft": "20px",
+              "bottomRight": "20px",
+              "topLeft": "20px",
+              "topRight": "20px"
+            }
+          },
+          "seeAllColourBackground": "#1A73E8",
+          "seeAllColourText": "#fff",
+          "seeAllFontSize": {
+            "desktop": "14px",
+            "mobile": "14px",
+            "tablet": "14px"
+          },
+          "seeAllFontWeight": "500",
+          "seeAllLabel": "See all reviews",
+          "seeAllMinHeight": {
+            "desktop": "40px",
+            "mobile": "40px",
+            "tablet": "40px"
+          },
+          "seeAllPadding": {
+            "desktop": {
+              "bottom": "0",
+              "left": "22px",
+              "right": "22px",
+              "top": "0"
+            }
+          },
+          "seeAllTextDecoration": "none",
+          "seeAllUrl": "https://share.google/9YZzTiRj2gvW1Xrpr",
+          "showCardLogo": true,
+          "showReviewLink": true,
+          "sourceLabel": "Google Reviews",
+          "sourceLabelColour": "#5F6368",
+          "sourceLabelFontSize": {
+            "desktop": "13px",
+            "mobile": "13px",
+            "tablet": "13px"
+          },
+          "sourceLabelLetterSpacing": {
+            "desktop": ".01em",
+            "mobile": ".01em",
+            "tablet": ".01em"
+          },
+          "starColour": "#FBBC04",
+          "starSize": {
+            "desktop": "15px",
+            "mobile": "15px",
+            "tablet": "15px"
+          },
+          "textColour": "#3C4043",
+          "textFontSize": {
+            "desktop": "14.5px",
+            "mobile": "14.5px",
+            "tablet": "14.5px"
+          },
+          "textLineHeight": {
+            "desktop": "1.6",
+            "mobile": "1.6",
+            "tablet": "1.6"
+          },
+          "textTextWrap": "pretty",
+          "writeReviewBorderRadius": {
+            "desktop": {
+              "bottomLeft": "20px",
+              "bottomRight": "20px",
+              "topLeft": "20px",
+              "topRight": "20px"
+            }
+          },
+          "writeReviewBorderStyle": "solid",
+          "writeReviewBorderWidth": {
+            "bottom": "1px",
+            "left": "1px",
+            "right": "1px",
+            "top": "1px"
+          },
+          "writeReviewColourBorder": "#DADCE0",
+          "writeReviewColourText": "#1A73E8",
+          "writeReviewFontSize": {
+            "desktop": "14px",
+            "mobile": "14px",
+            "tablet": "14px"
+          },
+          "writeReviewFontWeight": "500",
+          "writeReviewLabel": "Write a review",
+          "writeReviewMinHeight": {
+            "desktop": "40px",
+            "mobile": "40px",
+            "tablet": "40px"
+          },
+          "writeReviewPadding": {
+            "desktop": {
+              "bottom": "0",
+              "left": "22px",
+              "right": "22px",
+              "top": "0"
+            }
+          },
+          "writeReviewTextDecoration": "none"
+        }
+      }
+    ]
+  },
+  {
+    "name": "sgs/container",
+    "attributes": {
+      "gap": {
+        "desktop": "2px"
+      },
+      "gridTemplateColumns": {
+        "desktop": "minmax(0,1.1fr) minmax(0,1fr)",
+        "mobile": "minmax(0,1fr)",
+        "tablet": "minmax(0,1fr)"
+      },
+      "layout": "grid",
+      "maxWidth": {
+        "desktop": "1440px"
+      },
+      "padding": {
+        "desktop": {
+          "bottom": "104px",
+          "left": "52px",
+          "right": "52px",
+          "top": "104px"
+        },
+        "mobile": {
+          "bottom": "56px",
+          "left": "20px",
+          "right": "20px",
+          "top": "56px"
+        }
+      },
+      "textWrap": "wrap",
+      "className": "sgs-about-strip"
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "backgroundColour": "#141414",
+          "minHeight": {
+            "desktop": "430px"
+          },
+          "textWrap": "wrap"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/media",
+            "attributes": {
+              "imageId": 202,
+              "imageUrl": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/aboutstrip.jpg",
+              "imageAlt": "Person wearing sunglasses outdoors",
+              "height": {
+                "desktop": "100%"
+              },
+              "objectFit": "cover",
+              "objectPosition": "center 20%"
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "backgroundColour": "#FAF8F5",
+          "contentBandPadding": {
+            "desktop": {
+              "bottom": "68px",
+              "left": "60px",
+              "right": "60px",
+              "top": "68px"
+            },
+            "mobile": {
+              "bottom": "36px",
+              "left": "24px",
+              "right": "24px",
+              "top": "36px"
+            }
+          },
+          "flexDirection": "column",
+          "justifyContent": "center",
+          "layout": "flex",
+          "textWrap": "wrap"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "fontSize": {
+                "desktop": 12
+              },
+              "fontSizeUnit": "px",
+              "letterSpacing": {
+                "desktop": 0.24
+              },
+              "letterSpacingUnit": "em",
+              "margin": {
+                "desktop": {
+                  "bottom": "10px"
+                }
+              },
+              "text": "Prescription sunglasses",
+              "textTransform": "uppercase"
+            }
+          },
+          {
+            "name": "sgs/heading",
+            "attributes": {
+              "content": "Any pair here, made to your prescription.",
+              "fontFamily": "'Playfair Display',serif",
+              "fontSize": {
+                "desktop": 46,
+                "mobile": 32
+              },
+              "fontSizeUnit": "px",
+              "fontWeight": "500",
+              "level": "h2",
+              "lineHeight": {
+                "desktop": 1.02
+              },
+              "lineHeightUnit": "unitless",
+              "margin": {
+                "desktop": {
+                  "bottom": "18px"
+                }
+              },
+              "textWrap": "pretty"
+            }
+          },
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "fontSize": {
+                "desktop": 16.5
+              },
+              "fontSizeUnit": "px",
+              "margin": {
+                "desktop": {
+                  "bottom": "30px"
+                }
+              },
+              "text": "Three questions with pictures, a price that updates as you go, and you can send your prescription whenever suits — including after you've ordered. Single vision from £59.",
+              "textColour": "#5E584F",
+              "textWrap": "pretty"
+            }
+          },
+          {
+            "name": "sgs/icon-list",
+            "attributes": {
+              "gap": "16px",
+              "margin": {
+                "desktop": {
+                  "bottom": "34px"
+                }
+              },
+              "markerType": "number",
+              "textColour": "#141414",
+              "iconColour": "#6F6152",
+              "items": [
+                {
+                  "text": "Pick a frame, then “Add my prescription”"
+                },
+                {
+                  "text": "Tell me what they're for, how thin, what finish"
+                },
+                {
+                  "text": "Send your prescription now, or later — no rush"
+                }
+              ]
+            }
+          },
+          {
+            "name": "sgs/button",
+            "attributes": {
+              "inheritStyle": "custom",
+              "label": "How lenses work here",
+              "url": "https://darkcyan-grouse-898606.hostingersite.com/prescription-lenses/",
+              "colourBackground": "#141414",
+              "colourText": "#FAF8F5",
+              "colourBackgroundHover": "#2a2a2a",
+              "fontSize": {
+                "desktop": 13
+              },
+              "fontSizeUnit": "px",
+              "letterSpacing": {
+                "desktop": 0.1
+              },
+              "letterSpacingUnit": "em",
+              "textTransform": "uppercase",
+              "minHeight": {
+                "desktop": "52px"
+              },
+              "padding": {
+                "desktop": {
+                  "left": "28px",
+                  "right": "28px"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "sgs/container",
+    "attributes": {
+      "alignItems": "center",
+      "backgroundColour": "#EFEAE2",
+      "contentWidth": {
+        "desktop": "1440px"
+      },
+      "gap": {
+        "desktop": "64px",
+        "mobile": "32px",
+        "tablet": "32px"
+      },
+      "gridTemplateColumns": {
+        "desktop": "minmax(0,.72fr) minmax(0,1fr)",
+        "mobile": "minmax(0,1fr)",
+        "tablet": "minmax(0,1fr)"
+      },
+      "layout": "grid",
+      "padding": {
+        "desktop": {
+          "bottom": "104px",
+          "left": "52px",
+          "right": "52px",
+          "top": "104px"
+        },
+        "mobile": {
+          "bottom": "56px",
+          "left": "20px",
+          "right": "20px",
+          "top": "56px"
+        }
+      },
+      "textWrap": "wrap",
+      "className": "sgs-optician"
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/text",
+        "attributes": {
+          "backgroundColour": "#DFD8CC",
+          "borderColour": "#D0C8BA",
+          "borderStyle": "solid",
+          "borderWidth": {
+            "bottom": "1px",
+            "left": "1px",
+            "right": "1px",
+            "top": "1px"
+          },
+          "padding": {
+            "desktop": {
+              "bottom": "24px",
+              "left": "24px",
+              "right": "24px",
+              "top": "24px"
+            }
+          },
+          "text": "<span>Photo of the clinic</span>\n<span>The reception or the consulting room — whichever you'd rather show. No portrait needed.</span>",
+          "textAlign": "center",
+          "textColour": "#6B655E",
+          "textWrap": "wrap"
+        }
+      },
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "textWrap": "wrap"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "fontSize": {
+                "desktop": 12
+              },
+              "fontSizeUnit": "px",
+              "letterSpacing": {
+                "desktop": 0.24
+              },
+              "letterSpacingUnit": "em",
+              "margin": {
+                "desktop": {
+                  "bottom": "12px"
+                }
+              },
+              "text": "You're buying from a person",
+              "textTransform": "uppercase"
+            }
+          },
+          {
+            "name": "sgs/heading",
+            "attributes": {
+              "content": "I'm Fatima Nawaz, and I run the clinic in Birmingham.",
+              "fontFamily": "'Playfair Display',serif",
+              "fontSize": {
+                "desktop": 46,
+                "mobile": 32
+              },
+              "fontSizeUnit": "px",
+              "fontWeight": "500",
+              "level": "h2",
+              "lineHeight": {
+                "desktop": 1.02
+              },
+              "lineHeightUnit": "unitless",
+              "margin": {
+                "desktop": {
+                  "bottom": "22px"
+                }
+              },
+              "textWrap": "pretty"
+            }
+          },
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "fontSize": {
+                "desktop": 17
+              },
+              "fontSizeUnit": "px",
+              "margin": {
+                "desktop": {
+                  "bottom": "18px"
+                }
+              },
+              "text": "Everything on this site I chose myself, and every prescription order comes across my bench before it's made. If a frame isn't going to work with your lenses, I'd rather tell you before you pay than after.",
+              "textColour": "#4A453E",
+              "textWrap": "pretty"
+            }
+          },
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "fontSize": {
+                "desktop": 16
+              },
+              "fontSizeUnit": "px",
+              "margin": {
+                "desktop": {
+                  "bottom": "30px"
+                }
+              },
+              "text": "If you're unsure about anything, just ask. Talking people through frames and lenses is what I do all day at the clinic, and I'm glad to do it here too.",
+              "textColour": "#5E584F",
+              "textWrap": "pretty"
+            }
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "flexWrap": "wrap",
+              "gap": {
+                "desktop": "12px"
+              },
+              "layout": "flex",
+              "textWrap": "wrap"
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/whatsapp-cta",
+                "attributes": {
+                  "variant": "inline",
+                  "phoneNumber": "4479605978",
+                  "message": "Hi, I'd like to know more about your frames.",
+                  "label": "Message me on WhatsApp",
+                  "backgroundColour": "#25D366",
+                  "backgroundColourHover": "#1EBE5A",
+                  "labelColour": "#0B2B17",
+                  "labelFontSize": {
+                    "desktop": 14
+                  },
+                  "labelFontSizeUnit": "px",
+                  "labelFontWeight": "500",
+                  "labelLetterSpacing": {
+                    "desktop": 0.04
+                  },
+                  "labelLetterSpacingUnit": "em",
+                  "borderRadius": {
+                    "desktop": {}
+                  }
+                }
+              },
+              {
+                "name": "sgs/button",
+                "attributes": {
+                  "inheritStyle": "custom",
+                  "label": "My qualifications",
+                  "url": "https://darkcyan-grouse-898606.hostingersite.com/about/",
+                  "colourBackground": "transparent",
+                  "colourText": "#141414",
+                  "borderColour": "#141414",
+                  "borderWidth": {
+                    "desktop": {
+                      "top": "1px",
+                      "right": "1px",
+                      "bottom": "1px",
+                      "left": "1px"
+                    }
+                  },
+                  "fontSize": {
+                    "desktop": 13
+                  },
+                  "fontSizeUnit": "px",
+                  "letterSpacing": {
+                    "desktop": 0.1
+                  },
+                  "letterSpacingUnit": "em",
+                  "textTransform": "uppercase",
+                  "minHeight": {
+                    "desktop": "52px"
+                  },
+                  "padding": {
+                    "desktop": {
+                      "left": "24px",
+                      "right": "24px"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
     ]
   }
 ]

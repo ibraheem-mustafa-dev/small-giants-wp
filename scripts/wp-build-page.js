@@ -30,7 +30,8 @@
  * Credentials: WP_URL_<KEY>, WP_USER_<KEY>, WP_PWD_<KEY> from --env-file (never printed).
  *
  * Exit codes: 0 ok · 1 argument/tree error · 2 login failed · 3 editor did not load ·
- *             4 unknown block or setting · 5 save failed · 6 blocks invalid or changed after reload
+ *             4 unknown block, setting, wrong value type or off-list value · 5 save failed ·
+ *             6 blocks invalid, or content still changing after one settling save
  */
 
 const fs = require( 'fs' );
@@ -137,8 +138,26 @@ async function main() {
 				if ( bannedMap[ b.name ] ) out.push( `${ where }: banned core block, use ${ bannedMap[ b.name ] }` );
 				const type = window.wp.blocks.getBlockType( b.name );
 				if ( ! type ) { out.push( `${ where }: block not registered` ); return; }
-				Object.keys( b.attributes || {} ).forEach( ( k ) => {
-					if ( ! Object.prototype.hasOwnProperty.call( type.attributes, k ) ) out.push( `${ where }: unknown setting "${ k }"` );
+				// WordPress silently swaps a wrong-typed or off-enum value for the default.
+				const typeOk = ( v, t ) => {
+					if ( t === 'null' ) return v === null;
+					if ( t === 'rich-text' ) return typeof v === 'string';
+					if ( t === 'integer' ) return Number.isInteger( v );
+					if ( t === 'number' ) return typeof v === 'number';
+					if ( t === 'array' ) return Array.isArray( v );
+					if ( t === 'object' ) return v !== null && typeof v === 'object' && ! Array.isArray( v );
+					return typeof v === t;
+				};
+				Object.entries( b.attributes || {} ).forEach( ( [ k, v ] ) => {
+					const def = type.attributes[ k ];
+					if ( ! def ) { out.push( `${ where }: unknown setting "${ k }"` ); return; }
+					const types = [].concat( def.type || [] );
+					if ( types.length && ! types.some( ( t ) => typeOk( v, t ) ) ) {
+						out.push( `${ where }: setting "${ k }" must be ${ types.join( ' or ' ) }, got ${ JSON.stringify( v ).slice( 0, 60 ) }` );
+					}
+					if ( Array.isArray( def.enum ) && ! def.enum.includes( v ) ) {
+						out.push( `${ where }: setting "${ k }" must be one of ${ JSON.stringify( def.enum ) }, got ${ JSON.stringify( v ) }` );
+					}
 				} );
 				walk( b.innerBlocks || [], `${ where } >` );
 			} );
@@ -164,37 +183,56 @@ async function main() {
 			return;
 		}
 
-		await page.evaluate( () => window.wp.data.dispatch( 'core/editor' ).savePost() );
-		await page.waitForFunction(
-			() => ! window.wp.data.select( 'core/editor' ).isSavingPost() && ! window.wp.data.select( 'core/editor' ).isAutosavingPost(),
-			{ timeout: 60000 }
-		);
-		const saved = await page.evaluate( () => {
-			const errs = ( window.wp.data.select( 'core/notices' ).getNotices() || [] ).filter( ( n ) => n.status === 'error' );
-			const ed = window.wp.data.select( 'core/editor' );
-			return { error: errs.map( ( n ) => n.content ).join( ' | ' ), id: ed.getCurrentPostId(), link: ed.getPermalink() };
-		} );
-		if ( saved.error ) fail( 5, `save error: ${ saved.error }` );
-
-		// Reload: every block must parse valid and serialise to what was saved.
-		await page.goto( `${ url }/wp-admin/post.php?post=${ saved.id }&action=edit`, { waitUntil: 'domcontentloaded', timeout: 60000 } );
-		await waitForEditor( page );
-		await page.waitForTimeout( 1500 );
-		const check = await page.evaluate( () => {
-			const invalid = [];
-			const walk = ( bs ) => bs.forEach( ( b ) => {
-				if ( b.isValid === false ) invalid.push( b.name );
-				walk( b.innerBlocks || [] );
+		const save = async () => {
+			await page.evaluate( () => window.wp.data.dispatch( 'core/editor' ).savePost() );
+			await page.waitForFunction(
+				() => ! window.wp.data.select( 'core/editor' ).isSavingPost() && ! window.wp.data.select( 'core/editor' ).isAutosavingPost(),
+				{ timeout: 60000 }
+			);
+			return page.evaluate( () => {
+				const errs = ( window.wp.data.select( 'core/notices' ).getNotices() || [] ).filter( ( n ) => n.status === 'error' );
+				const ed = window.wp.data.select( 'core/editor' );
+				return { error: errs.map( ( n ) => n.content ).join( ' | ' ), id: ed.getCurrentPostId(), link: ed.getPermalink() };
 			} );
-			const blocks = window.wp.data.select( 'core/block-editor' ).getBlocks();
-			walk( blocks );
-			return { invalid, serialised: window.wp.blocks.serialize( blocks ) };
-		} );
-		const changed = check.serialised.trim() !== built.serialised.trim();
-		const result = { ok: ! check.invalid.length && ! changed, id: saved.id, link: saved.link, invalid: check.invalid, changedOnReload: changed };
-		if ( changed ) {
+		};
+		// Reload: every block must parse valid and serialise to what was saved.
+		const reload = async ( id ) => {
+			await page.goto( `${ url }/wp-admin/post.php?post=${ id }&action=edit`, { waitUntil: 'domcontentloaded', timeout: 60000 } );
+			await waitForEditor( page );
+			await page.waitForTimeout( 1500 );
+			return page.evaluate( () => {
+				const invalid = [];
+				const walk = ( bs ) => bs.forEach( ( b ) => {
+					if ( b.isValid === false ) invalid.push( b.name );
+					walk( b.innerBlocks || [] );
+				} );
+				const blocks = window.wp.data.select( 'core/block-editor' ).getBlocks();
+				walk( blocks );
+				return { invalid, serialised: window.wp.blocks.serialize( blocks ) };
+			} );
+		};
+
+		const saved = await save();
+		if ( saved.error ) fail( 5, `save error: ${ saved.error }` );
+		let expected = built.serialised;
+		let check = await reload( saved.id );
+		// A block's editor may tidy its own attributes when it first mounts (drop an
+		// empty object, add an item key). Save that once and reload again: content
+		// that settles is fine; content that keeps changing is a real fault.
+		let normalised = false;
+		if ( ! check.invalid.length && check.serialised.trim() !== expected.trim() ) {
+			const first = check.serialised;
+			const resaved = await save();
+			if ( resaved.error ) fail( 5, `save error on the settling save: ${ resaved.error }` );
+			normalised = true;
+			expected = first;
+			check = await reload( saved.id );
+		}
+		const changed = check.serialised.trim() !== expected.trim();
+		const result = { ok: ! check.invalid.length && ! changed, id: saved.id, link: saved.link, invalid: check.invalid, normalisedOnFirstLoad: normalised, changedOnReload: changed };
+		if ( changed || normalised ) {
 			const out = path.join( require( 'os' ).tmpdir(), `wp-build-page-${ saved.id }-diff.json` );
-			fs.writeFileSync( out, JSON.stringify( { before: built.serialised, after: check.serialised } ) );
+			fs.writeFileSync( out, JSON.stringify( { built: built.serialised, firstLoad: expected, lastLoad: check.serialised } ) );
 			result.diffFile = out;
 		}
 		console.log( JSON.stringify( result ) );
