@@ -8,7 +8,7 @@
       "justifyContent": "center",
       "backgroundColour": "primary",
       "textColour": "primary-text",
-      "badgeStyle": "text-only",
+      "badgeStyle": "icon-bare",
       "overflowMode": "drop",
       "iconColour": "accent",
       "padding": {
@@ -83,8 +83,10 @@
         "name": "sgs/site-header-row",
         "attributes": {
           "rowSlot": "middle",
-          "layout": "flex",
-          "justifyContent": "space-between",
+          "layout": "grid",
+          "gridTemplateColumns": {
+            "desktop": "1fr auto 1fr"
+          },
           "alignItems": "center",
           "gap": {
             "desktop": "16px"
@@ -106,8 +108,8 @@
               "collapsePoint": 1060,
               "gap": "24px",
               "itemTextTransform": "uppercase",
-              "triggerMode": "icon-and-text",
-              "triggerLabel": "Menu",
+              "triggerMode": "icon",
+              "submenuCaret": false,
               "drawerRef": 203
             }
           },
@@ -183,6 +185,7 @@
             "attributes": {
               "layout": "flex",
               "flexDirection": "row",
+              "justifyContent": "flex-end",
               "alignItems": "center",
               "gap": {
                 "desktop": "6px"
@@ -207,6 +210,7 @@
                   "collapsePoint": 1060,
                   "gap": "8px",
                   "itemTextTransform": "uppercase",
+                  "submenuCaret": false,
                   "showBurger": false
                 }
               },

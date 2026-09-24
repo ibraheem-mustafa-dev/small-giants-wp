@@ -148,6 +148,14 @@ section.sgs-hero {
 	pointer-events: none;
 }
 
+/* The background image, video and overlay are rendered inside the wrapper's
+   content cap (.sgs-container__inner), which is capped by contentWidth and as
+   tall as the content. Taking the cap out of positioning makes those
+   absolute/inset:0 layers cover the whole hero, not just the content box. */
+.sgs-hero > .sgs-container__inner {
+	position: static;
+}
+
 /* Overlay */
 .sgs-hero__overlay {
 	position: absolute;
