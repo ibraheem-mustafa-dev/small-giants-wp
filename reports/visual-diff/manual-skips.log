@@ -1610,3 +1610,137 @@
 2026-09-20 01:20:53 | site-header | MANUAL SKIP | Adds an opt-in scrolled-state shadow; with no scrolled shadow set every added CSS string is empty, so the emitted CSS is unchanged. The live before/after capture has NOT been run yet; it runs after the deploy in this same task and its report is recorded then.
 2026-09-20 01:54:56 | responsive-logo | MANUAL SKIP | Verified live on the sandybrown canary after the 2026-09-20 deploy of 5e8f1a92a: report reports/visual-diff/responsive-logo-2026-09-20.md (verdict PASS, before/after capture). This commit only moves the logo logic into its own class, points structured data at the same chain and adds a cache purge; the resolved logo markup is unchanged.
 2026-09-20 02:33:32 | site-header | MANUAL SKIP | Cancels the shrunk padding on tiers where shrink is off (output is byte-identical when shrink is unset, checked with a PHP harness), makes scroll behaviours apply to every header on a page, and adds one editor help sentence. The live check has NOT been run yet; it runs after the deploy in this same task and its report is recorded then.
+2026-09-20 03:57:22 | site-header | MANUAL SKIP | Adds an opt-in floating pill mode; with no float attribute set the emitted CSS is byte-identical to the previous commit for 23 header scenarios (PHP emitter harness) and --sgs-header-height is unchanged for every top:0 header. The live capture against the deployed pill has NOT been run yet; it runs after the deploy in this same task and its report is recorded then.
+2026-09-20 04:48:10 | site-header | MANUAL SKIP | QC-council fixes to the pill after the live PASS report (reports/visual-diff/site-header-pill-2026-09-20.md, verified on the sandybrown deploy of 1fa7fb583). With no float or blur attribute set the emitted CSS is byte-identical to the previous commit for 143 unset scenarios (PHP harness); the changes are transparent-shadow logic, blur without float, input validation, reset defaults, mega max-height under a pill, and the publisher clamp. The live re-check of these fixes has NOT been run yet; it runs after the next deploy in this same task and its report is recorded then.
+2026-09-20 23:14:39 | responsive-logo | MANUAL SKIP | the live capture needs this commit deployed first (build-deploy.py refuses uncommitted block changes); the capture report is committed immediately after, in the next commit
+2026-09-21 02:08:20 | google-reviews | MANUAL SKIP | Written-reviews mode: the capture needs the block deployed, and the deploy gate needs the commit. A live capture on the canary and the visual-diff report follow in the next commit.
+2026-09-21 02:12:09 | google-reviews | MANUAL SKIP | Written-reviews mode: the capture needs the block deployed, and the deploy gate needs the commit. A live capture on the canary and the visual-diff report follow in the next commit.
+2026-09-21 02:19:58 | google-reviews | MANUAL SKIP | Written-reviews mode fix: live capture and the visual-diff report follow in the next commit, once this is deployed to the canary.
+2026-09-21 03:04:27 | google-reviews | MANUAL SKIP | Placeholder gating: the live capture needs this deployed first (build-deploy refuses uncommitted block changes); the capture report follows in the next commit.
+2026-09-21 03:04:28 | trustpilot-reviews | MANUAL SKIP | Placeholder gating: the live capture needs this deployed first (build-deploy refuses uncommitted block changes); the capture report follows in the next commit.
+2026-09-21 03:14:17 | nav-bar-menu | MANUAL SKIP | live capture needs this commit deployed first; the capture report is committed straight after (Wave 3C U-1 commit 1)
+2026-09-21 03:24:06 | site-header | MANUAL SKIP | live capture needs this commit deployed first; the capture report is committed straight after (Wave 3C U-1 commit 2)
+2026-09-21 03:40:51 | nav-drawer | MANUAL SKIP | live capture needs this commit deployed first; the capture reports are committed straight after (Wave 3C U-1 commit 3)
+2026-09-21 03:40:52 | site-header | MANUAL SKIP | live capture needs this commit deployed first; the capture reports are committed straight after (Wave 3C U-1 commit 3)
+2026-09-21 03:47:03 | site-header | MANUAL SKIP | live capture needs this commit deployed first; the capture report is committed straight after (Wave 3C U-1 commit 3b)
+2026-09-21 04:00:08 | nav-bar-menu | MANUAL SKIP | live capture needs this commit deployed first; the capture report is committed straight after (Wave 3C U-1 commit 5)
+2026-09-21 11:59:58 | site-header | MANUAL SKIP | live capture needs this commit deployed first; the capture report is committed straight after (Wave 3C U-1 commit 4a)
+2026-09-21 12:07:02 | site-header | MANUAL SKIP | live capture needs this commit deployed first; the capture report is committed straight after (Wave 3C U-1 commit 4a fix)
+2026-09-21 12:21:53 | mega-panel | MANUAL SKIP | live capture needs this commit deployed first; the capture report is committed straight after (Wave 3C U-1 commit 4b)
+2026-09-21 12:22:33 | mega-panel | MANUAL SKIP | live capture needs this commit deployed first; the capture report is committed straight after (Wave 3C U-1 commit 4b)
+2026-09-21 12:23:19 | mega-panel | MANUAL SKIP | live capture needs this commit deployed first; the capture report is committed straight after (Wave 3C U-1 commit 4b)
+2026-09-21 17:57:23 | mega-panel | MANUAL SKIP | 4f-1 step 2a: shadow declaration now also emits a forced-colours-only outline; identical in normal rendering; live check follows at the combined 4b+4f-1 deploy
+2026-09-21 17:57:24 | site-header | MANUAL SKIP | 4f-1 step 2a: shadow declaration now also emits a forced-colours-only outline; identical in normal rendering; live check follows at the combined 4b+4f-1 deploy
+2026-09-21 17:57:25 | trust-bar | MANUAL SKIP | 4f-1 step 2a: shadow declaration now also emits a forced-colours-only outline; identical in normal rendering; live check follows at the combined 4b+4f-1 deploy
+2026-09-21 21:36:22 | card-grid | MANUAL SKIP | Shadow preset rename (subtle to whisper, raised to soft) and new preset values; the nine blocks' live reports are written at the 4f-1 deploy check, which measures the shadow on each.
+2026-09-21 21:36:23 | countdown-timer | MANUAL SKIP | Shadow preset rename (subtle to whisper, raised to soft) and new preset values; the nine blocks' live reports are written at the 4f-1 deploy check, which measures the shadow on each.
+2026-09-21 21:36:24 | info-box | MANUAL SKIP | Shadow preset rename (subtle to whisper, raised to soft) and new preset values; the nine blocks' live reports are written at the 4f-1 deploy check, which measures the shadow on each.
+2026-09-21 21:36:26 | team-member | MANUAL SKIP | Shadow preset rename (subtle to whisper, raised to soft) and new preset values; the nine blocks' live reports are written at the 4f-1 deploy check, which measures the shadow on each.
+2026-09-21 21:36:27 | testimonial | MANUAL SKIP | Shadow preset rename (subtle to whisper, raised to soft) and new preset values; the nine blocks' live reports are written at the 4f-1 deploy check, which measures the shadow on each.
+2026-09-21 21:36:28 | trust-bar | MANUAL SKIP | Shadow preset rename (subtle to whisper, raised to soft) and new preset values; the nine blocks' live reports are written at the 4f-1 deploy check, which measures the shadow on each.
+2026-09-21 22:36:31 | inspector-scan | MANUAL SKIP | Every flagged finding is sgs/google-reviews (another session's uncommitted block.json in the working tree); this commit removes editor rows and adds scripts, and touches no google-reviews file
+2026-09-23 18:02:17 | mega-panel | MANUAL SKIP | live check follows in the same session after the next deploy; eye-care-test deploy of 4c plus 4d
+2026-09-23 18:02:18 | nav-drawer | MANUAL SKIP | live check follows in the same session after the next deploy; eye-care-test deploy of 4c plus 4d
+2026-09-23 18:02:53 | mega-panel | MANUAL SKIP | live check follows in the same session after the next deploy (4c plus 4d to eye-care-test)
+2026-09-23 18:02:53 | nav-drawer | MANUAL SKIP | live check follows in the same session after the next deploy (4c plus 4d to eye-care-test)
+2026-09-23 18:03:03 | inspector-scan | MANUAL SKIP | inspector findings are sgs/google-reviews, another session's uncommitted work
+2026-09-23 18:07:54 | site-header | MANUAL SKIP | live check follows in the same session after the next deploy (4c plus 4d to eye-care-test)
+2026-09-23 18:08:03 | inspector-scan | MANUAL SKIP | inspector findings are sgs/google-reviews, another session's uncommitted work
+2026-09-23 18:27:12 | container | MANUAL SKIP | live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 18:27:14 | cta-section | MANUAL SKIP | live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 18:27:14 | hero | MANUAL SKIP | live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 18:27:15 | multi-button | MANUAL SKIP | live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 18:27:16 | physics-canvas | MANUAL SKIP | live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 18:27:17 | site-footer | MANUAL SKIP | live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 18:27:18 | trust-bar | MANUAL SKIP | live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 18:27:30 | inspector-scan | MANUAL SKIP | inspector findings are sgs/google-reviews, another session's uncommitted work
+2026-09-23 18:55:28 | card-grid | MANUAL SKIP | live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 18:55:29 | info-box | MANUAL SKIP | live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 18:55:29 | process-steps | MANUAL SKIP | live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 18:55:30 | testimonial | MANUAL SKIP | live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 18:55:31 | timeline | MANUAL SKIP | live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 18:58:00 | mega-panel | MANUAL SKIP | live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 18:58:01 | nav-drawer | MANUAL SKIP | live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 18:58:10 | inspector-scan | MANUAL SKIP | inspector findings are sgs/google-reviews, another session's uncommitted work
+2026-09-23 19:00:59 | accordion | MANUAL SKIP | stylesheet-wide shadow colour and forced-colours migration by check-shadow-sources.py --fix; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 19:01:00 | before-after | MANUAL SKIP | stylesheet-wide shadow colour and forced-colours migration by check-shadow-sources.py --fix; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 19:01:01 | brand-strip | MANUAL SKIP | stylesheet-wide shadow colour and forced-colours migration by check-shadow-sources.py --fix; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 19:01:02 | card-grid | MANUAL SKIP | stylesheet-wide shadow colour and forced-colours migration by check-shadow-sources.py --fix; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 19:01:02 | cart | MANUAL SKIP | stylesheet-wide shadow colour and forced-colours migration by check-shadow-sources.py --fix; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 19:01:03 | countdown-timer | MANUAL SKIP | stylesheet-wide shadow colour and forced-colours migration by check-shadow-sources.py --fix; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 19:01:04 | gallery | MANUAL SKIP | stylesheet-wide shadow colour and forced-colours migration by check-shadow-sources.py --fix; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 19:01:05 | info-box | MANUAL SKIP | stylesheet-wide shadow colour and forced-colours migration by check-shadow-sources.py --fix; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 19:01:06 | media | MANUAL SKIP | stylesheet-wide shadow colour and forced-colours migration by check-shadow-sources.py --fix; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 19:01:07 | mega-panel | MANUAL SKIP | stylesheet-wide shadow colour and forced-colours migration by check-shadow-sources.py --fix; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 19:01:07 | modal | MANUAL SKIP | stylesheet-wide shadow colour and forced-colours migration by check-shadow-sources.py --fix; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 19:01:08 | post-grid | MANUAL SKIP | stylesheet-wide shadow colour and forced-colours migration by check-shadow-sources.py --fix; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 19:01:09 | pricing-table | MANUAL SKIP | stylesheet-wide shadow colour and forced-colours migration by check-shadow-sources.py --fix; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 19:01:10 | process-steps | MANUAL SKIP | stylesheet-wide shadow colour and forced-colours migration by check-shadow-sources.py --fix; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 19:01:11 | product-card | MANUAL SKIP | stylesheet-wide shadow colour and forced-colours migration by check-shadow-sources.py --fix; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 19:01:11 | product-search | MANUAL SKIP | stylesheet-wide shadow colour and forced-colours migration by check-shadow-sources.py --fix; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 19:01:12 | quote | MANUAL SKIP | stylesheet-wide shadow colour and forced-colours migration by check-shadow-sources.py --fix; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 19:01:13 | team-member | MANUAL SKIP | stylesheet-wide shadow colour and forced-colours migration by check-shadow-sources.py --fix; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 19:01:14 | testimonial | MANUAL SKIP | stylesheet-wide shadow colour and forced-colours migration by check-shadow-sources.py --fix; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 19:01:15 | testimonial-slider | MANUAL SKIP | stylesheet-wide shadow colour and forced-colours migration by check-shadow-sources.py --fix; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 19:01:16 | trust-bar | MANUAL SKIP | stylesheet-wide shadow colour and forced-colours migration by check-shadow-sources.py --fix; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 19:01:16 | trustpilot-reviews | MANUAL SKIP | stylesheet-wide shadow colour and forced-colours migration by check-shadow-sources.py --fix; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 19:01:17 | whatsapp-cta | MANUAL SKIP | stylesheet-wide shadow colour and forced-colours migration by check-shadow-sources.py --fix; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 19:09:13 | before-after | MANUAL SKIP | removes duplicate forced-colours rules only; the colour rewrite is unchanged; live check follows after the next deploy to eye-care-test
+2026-09-23 19:09:14 | brand-strip | MANUAL SKIP | removes duplicate forced-colours rules only; the colour rewrite is unchanged; live check follows after the next deploy to eye-care-test
+2026-09-23 19:09:15 | card-grid | MANUAL SKIP | removes duplicate forced-colours rules only; the colour rewrite is unchanged; live check follows after the next deploy to eye-care-test
+2026-09-23 19:09:16 | cart | MANUAL SKIP | removes duplicate forced-colours rules only; the colour rewrite is unchanged; live check follows after the next deploy to eye-care-test
+2026-09-23 19:09:17 | countdown-timer | MANUAL SKIP | removes duplicate forced-colours rules only; the colour rewrite is unchanged; live check follows after the next deploy to eye-care-test
+2026-09-23 19:09:19 | gallery | MANUAL SKIP | removes duplicate forced-colours rules only; the colour rewrite is unchanged; live check follows after the next deploy to eye-care-test
+2026-09-23 19:09:20 | info-box | MANUAL SKIP | removes duplicate forced-colours rules only; the colour rewrite is unchanged; live check follows after the next deploy to eye-care-test
+2026-09-23 19:09:21 | mega-panel | MANUAL SKIP | removes duplicate forced-colours rules only; the colour rewrite is unchanged; live check follows after the next deploy to eye-care-test
+2026-09-23 19:09:23 | post-grid | MANUAL SKIP | removes duplicate forced-colours rules only; the colour rewrite is unchanged; live check follows after the next deploy to eye-care-test
+2026-09-23 19:09:24 | pricing-table | MANUAL SKIP | removes duplicate forced-colours rules only; the colour rewrite is unchanged; live check follows after the next deploy to eye-care-test
+2026-09-23 19:09:25 | process-steps | MANUAL SKIP | removes duplicate forced-colours rules only; the colour rewrite is unchanged; live check follows after the next deploy to eye-care-test
+2026-09-23 19:09:27 | product-card | MANUAL SKIP | removes duplicate forced-colours rules only; the colour rewrite is unchanged; live check follows after the next deploy to eye-care-test
+2026-09-23 19:09:28 | product-search | MANUAL SKIP | removes duplicate forced-colours rules only; the colour rewrite is unchanged; live check follows after the next deploy to eye-care-test
+2026-09-23 19:09:29 | quote | MANUAL SKIP | removes duplicate forced-colours rules only; the colour rewrite is unchanged; live check follows after the next deploy to eye-care-test
+2026-09-23 19:09:30 | team-member | MANUAL SKIP | removes duplicate forced-colours rules only; the colour rewrite is unchanged; live check follows after the next deploy to eye-care-test
+2026-09-23 19:09:31 | testimonial | MANUAL SKIP | removes duplicate forced-colours rules only; the colour rewrite is unchanged; live check follows after the next deploy to eye-care-test
+2026-09-23 19:09:31 | testimonial-slider | MANUAL SKIP | removes duplicate forced-colours rules only; the colour rewrite is unchanged; live check follows after the next deploy to eye-care-test
+2026-09-23 19:09:32 | trustpilot-reviews | MANUAL SKIP | removes duplicate forced-colours rules only; the colour rewrite is unchanged; live check follows after the next deploy to eye-care-test
+2026-09-23 19:09:33 | whatsapp-cta | MANUAL SKIP | removes duplicate forced-colours rules only; the colour rewrite is unchanged; live check follows after the next deploy to eye-care-test
+2026-09-23 19:16:31 | inspector-scan | MANUAL SKIP | inspector findings are sgs/google-reviews, another session's uncommitted work
+2026-09-23 19:28:50 | site-header | MANUAL SKIP | forced-colours-only rule; the default render is unchanged and proved by the standalone test
+2026-09-23 20:03:10 | mega-panel | MANUAL SKIP | new attributes default to no rule; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 20:03:11 | nav-bar-menu | MANUAL SKIP | new attributes default to no rule; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 20:03:12 | nav-drawer-menu | MANUAL SKIP | new attributes default to no rule; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 20:03:24 | inspector-scan | MANUAL SKIP | inspector findings are sgs/google-reviews, another session's uncommitted work
+2026-09-23 23:06:41 | before-after | MANUAL SKIP | hover-only lift plus a default-on switch; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 23:06:41 | brand-strip | MANUAL SKIP | hover-only lift plus a default-on switch; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 23:06:42 | button | MANUAL SKIP | hover-only lift plus a default-on switch; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 23:06:43 | card-grid | MANUAL SKIP | hover-only lift plus a default-on switch; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 23:06:44 | container | MANUAL SKIP | hover-only lift plus a default-on switch; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 23:06:45 | cta-section | MANUAL SKIP | hover-only lift plus a default-on switch; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 23:06:46 | heading | MANUAL SKIP | hover-only lift plus a default-on switch; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 23:06:47 | hero | MANUAL SKIP | hover-only lift plus a default-on switch; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 23:06:47 | info-box | MANUAL SKIP | hover-only lift plus a default-on switch; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 23:06:48 | media | MANUAL SKIP | hover-only lift plus a default-on switch; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 23:06:50 | physics-canvas | MANUAL SKIP | hover-only lift plus a default-on switch; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 23:06:50 | post-grid | MANUAL SKIP | hover-only lift plus a default-on switch; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 23:06:51 | process-steps | MANUAL SKIP | hover-only lift plus a default-on switch; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 23:06:52 | quote | MANUAL SKIP | hover-only lift plus a default-on switch; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 23:06:53 | site-footer | MANUAL SKIP | hover-only lift plus a default-on switch; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 23:06:54 | site-header | MANUAL SKIP | hover-only lift plus a default-on switch; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 23:06:54 | team-member | MANUAL SKIP | hover-only lift plus a default-on switch; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 23:06:55 | testimonial | MANUAL SKIP | hover-only lift plus a default-on switch; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 23:06:56 | text | MANUAL SKIP | hover-only lift plus a default-on switch; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 23:06:57 | timeline | MANUAL SKIP | hover-only lift plus a default-on switch; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 23:06:57 | trust-bar | MANUAL SKIP | hover-only lift plus a default-on switch; live check follows in the same session after the next deploy to eye-care-test
+2026-09-23 23:07:08 | inspector-scan | MANUAL SKIP | inspector findings are sgs/google-reviews, another session's uncommitted work
+2026-09-24 02:03:49 | cart | MANUAL SKIP | U-2 scrim: the live capture needs this commit deployed first; captured on the test site straight after and committed as reports/visual-diff/scrim-2026-09-24.md
+2026-09-24 02:03:49 | gallery | MANUAL SKIP | U-2 scrim: the live capture needs this commit deployed first; captured on the test site straight after and committed as reports/visual-diff/scrim-2026-09-24.md
+2026-09-24 02:03:50 | modal | MANUAL SKIP | U-2 scrim: the live capture needs this commit deployed first; captured on the test site straight after and committed as reports/visual-diff/scrim-2026-09-24.md
+2026-09-24 02:03:51 | nav-bar-menu | MANUAL SKIP | U-2 scrim: the live capture needs this commit deployed first; captured on the test site straight after and committed as reports/visual-diff/scrim-2026-09-24.md
+2026-09-24 02:03:53 | nav-drawer | MANUAL SKIP | U-2 scrim: the live capture needs this commit deployed first; captured on the test site straight after and committed as reports/visual-diff/scrim-2026-09-24.md
+2026-09-24 02:03:54 | product-search | MANUAL SKIP | U-2 scrim: the live capture needs this commit deployed first; captured on the test site straight after and committed as reports/visual-diff/scrim-2026-09-24.md
+2026-09-24 02:11:10 | cart | MANUAL SKIP | U-2 scrim: the live capture needs this commit deployed first; captured on the test site straight after and committed as reports/visual-diff/scrim-2026-09-24.md
+2026-09-24 02:11:11 | gallery | MANUAL SKIP | U-2 scrim: the live capture needs this commit deployed first; captured on the test site straight after and committed as reports/visual-diff/scrim-2026-09-24.md
+2026-09-24 02:11:12 | modal | MANUAL SKIP | U-2 scrim: the live capture needs this commit deployed first; captured on the test site straight after and committed as reports/visual-diff/scrim-2026-09-24.md
+2026-09-24 02:11:14 | nav-bar-menu | MANUAL SKIP | U-2 scrim: the live capture needs this commit deployed first; captured on the test site straight after and committed as reports/visual-diff/scrim-2026-09-24.md
+2026-09-24 02:11:15 | nav-drawer | MANUAL SKIP | U-2 scrim: the live capture needs this commit deployed first; captured on the test site straight after and committed as reports/visual-diff/scrim-2026-09-24.md
+2026-09-24 02:11:17 | product-search | MANUAL SKIP | U-2 scrim: the live capture needs this commit deployed first; captured on the test site straight after and committed as reports/visual-diff/scrim-2026-09-24.md

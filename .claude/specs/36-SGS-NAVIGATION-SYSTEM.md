@@ -367,7 +367,7 @@ rows exactly as on a normal page. There is NO `allowedBlocks` restriction and no
 **Native `<dialog>`:** focus contained; background `inert`; mandatory Escape; rely on native `<dialog>`
 semantics — ⛔ never add `role="dialog"` (implicit) or `aria-modal` (see Modality below, where the
 prohibition on `aria-modal="true"` is binding). The default `modal` mode opens with `showModal()`, giving
-top-layer promotion (which survives a transformed header ancestor) and a `::backdrop` scrim; `non-modal`
+top-layer promotion (which survives a transformed header ancestor); its dimming layer is the shared scrim (see the scrim paragraph below), never the native `::backdrop`, which stays transparent; `non-modal`
 opens with `.show()` (see Modality).
 
 ⛔ **Close is CHROME, not content.** The × is rendered by render.php as fixed dialog chrome OUTSIDE the
@@ -474,13 +474,15 @@ Header rows are NOT imported into the drawer in any form (there is no "show head
 Built: the per-device `anchor` object (`full-screen` default / `header` derives width + edges from the
 header / `trigger` / `centred`) + `panelSize` (responsive) + the surface-ground trio (`surfaceBlur`,
 `surfaceSaturate`, `surfaceOpacity`, through `includes/helpers-surface-ground.php`, the same emitter the
-header and the mega panel use; NO scrim element — 8/8 references have none) + a `shadow`/`shadowColour`
+header and the mega panel use) + a `shadow`/`shadowColour`
 writer (M-13, same vocabulary as the mega panel's) + a background-image media layer
 (`backgroundImage*`, `backgroundImageDecorative` — painted as a CSS layer, never a frontend `<img>`) + `closeStyle` + `sgs/nav-drawer-menu` `listColumns` (in-drawer
 only) + **seven drawer looks as patterns** (`theme/sgs-theme/patterns/drawer-*.php`, keyword `featured`; the block
 declares no variant attribute and registers no block variations) +
 **backdrop-click-to-close in `store('sgs/nav')`** (a `::backdrop` click closes a partial-width panel;
-full-screen is unaffected by construction). `animateFrom` is `auto|fade` with per-anchor motion defaults.
+full-screen is unaffected by construction).
+
+**The scrim (Wave 3C U-2, M-14, D1148).** The drawer and the menu bar (`sgs/nav-bar-menu`, for every dropdown and mega panel it opens) carry the shared scrim: `supports.sgs.scrim` plus `scrimColour`, `scrimColourGradient` and per-device `scrimOpacity` and `scrimBlur`, rendered by `includes/helpers-scrim.php::sgs_scrim_render` (tint on `::before`, blur on the element, open state from CSS `:root:has(<open selector>)`, printed at `wp_footer`). Defaults: the drawer is black at 0.55; the bar has none unless set. A click on the scrim closes the surface and is absorbed, so a dismiss never follows a link underneath (lamalama's click-through is an accepted divergence). The same helper serves `sgs/modal`, the `sgs/cart` drawer, the `sgs/gallery` lightbox and `sgs/product-search`; `scripts/scrim/check-scrim.py` fails the build on any dimming block that paints its own. The earlier "NO scrim element, 8/8 references have none" held for the eight drawer-variant references only; M-14's six references show part-width drawers and panels with one. `animateFrom` is `auto|fade` with per-anchor motion defaults.
 - **Design rules (binding):** (1) **the look axis is the LOOK** — a complete-clone preset of internal
   make-up (type scale 16–160px across references, columns, alignment, secondary-block roster) that sets
   DEFAULTS and hardcodes NOTHING; anchoring/geometry are plain per-device ATTRIBUTES (the "what the panel

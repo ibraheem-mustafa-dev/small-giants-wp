@@ -130,7 +130,7 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
 - W3B-4 evidence: `reports/reference-requirements/FAMILIES-MASTER.md` (46 families, 11 covered, 21 partial, 8 gap, 6 conflict), `families-master.json`, and the independent review `FAMILIES-REVIEW.md` (23 findings, applied); 33 coverage checks re-run against the code.
 
 ## Wave 3C — Header and nav architecture harmonised
-- STATUS: under way (`plans/2026-09-21-wave-3c-implementation-plan.md`); U-1 closed, U-2 next.
+- STATUS: under way (`plans/2026-09-21-wave-3c-implementation-plan.md`); U-1 and U-2 closed; U-9 next.
 
 **U-1 exit criteria (closed):**
 - Mega close-grace reads `submenuCloseGrace` (the bug where the mega context passed a literal 170
@@ -162,11 +162,20 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
   nav-drawer and mega-panel mark `sgs-on-dark`/`sgs-on-light`, and `helpers-shadow-dark.php` gives a dark
   surface a black shadow at 2.2x plus a 1px light ring, gated by `scripts/check-shadow-sources.py`. Owed:
   Bean's eye on the dark-surface screenshot and the ring strength.
-- Also owed, not gating U-1's own closure: the sandybrown deploy of everything since theme 1.5.91 (waits on
-  another session committing `sgs/google-reviews`); theme gradient presets read as unknown in the canvas
-  until callers pass `useSettings('color.gradients')`.
+- Also owed, not gating U-1's own closure: theme gradient presets read as unknown in the canvas until callers
+  pass `useSettings('color.gradients')`. (The sandybrown deploy of everything since theme 1.5.91 happened on
+  2026-09-24 with U-2.)
 
-**Next: U-2**, surface scrim colour, alpha and blur per tier (M-14) — design-gated, not started.
+**U-2 exit criteria (closed, D1148):**
+- M-14 covered: every exit cell reachable per tier through `scrimColour`, `scrimColourGradient`, `scrimOpacity`,
+  `scrimBlur` on `sgs/nav-drawer` and `sgs/nav-bar-menu` (shared helper `includes/helpers-scrim.php`, also adopted by
+  modal, cart, gallery and product-search). Measured live on sandybrown within tolerance (exact values): halcyon's
+  panel scrim (`#0a0a0c`, 0.28, blur 2px), lamalama's drawer scrim (black, 0.4, blur 16px) and away's phone cell (0)
+  (`reports/visual-diff/scrim-2026-09-24.md`). Residue: butcherbox's dropdown strength never captured as a number;
+  lamalama's click-through accepted as a divergence; the fade timing waits on U-5.
+- Owed: Bean's eye on the three scrim screenshots; forced-colours emulation and an axe run with a surface open.
+
+**Next: U-9**, dismissal routes, modality, trigger semantics, the resize rule and close-on-scroll — design-gated.
 
 Gate 3C passes when (the one definition; the same words are in the implementation plan §7 and the
 strategic plan's Gate 3C entry):

@@ -33,7 +33,7 @@ done and live-verified. The harness self-tests and the fixture fidelity check ar
 seeded as Menu drawer posts on all three test sites), the Site Info logo tier, the scrolled-state header
 shadow, the floating header pill (blur-based, matching the one true pill among the references), the formal Gate 2
 re-run and the mega + drawer integration probe. Payment icons need no
-framework feature (clients upload official artwork into the trust bar). Wave 3 is partial. Waves 3A (independent fixes) and 3B (a requirements table of 13 references: 46 capability families, signed) are done. Wave 3C is under way; U-1 is closed, U-2 is next (detail below, Spec 36+37 merged track section). Waves 4
+framework feature (clients upload official artwork into the trust bar). Wave 3 is partial. Waves 3A (independent fixes) and 3B (a requirements table of 13 references: 46 capability families, signed) are done. Wave 3C is under way; U-1 and U-2 are closed, U-9 is next (detail below, Spec 36+37 merged track section). Waves 4
 and 5 have not started.
 
 **Indus Foods** has its own dedicated test site (`lavender-dinosaur-183533.hostingersite.com`,
@@ -134,19 +134,18 @@ IN FULL before touching anything — do not act on this summary.**
   sourcing unverified; FR-37-26 blind-tester session not done; FR-37-18 conformance partial.
 - **Wave 3C** (`plans/2026-09-21-wave-3c-implementation-plan.md` §4): **U-1 CLOSED** (D1143, D1146: nav
   timings, header z-index, surface ground on nav + wrapper blocks, layered shadows, dark-surface tone, lift
-  on hover by default). Live on eye-care-test only; owed: live check of the edge fade, card lift, submenu
-  opacity; sandybrown deploy waits on another session committing `sgs/google-reviews`.
+  on hover by default). **U-2 CLOSED** (D1148: one shared scrim on drawer, menu bar, modal, cart, gallery and
+  product search; one hover-shadow control). Everything is live on sandybrown (deployed 2026-09-24). Owed: live
+  check of U-1's edge fade, card lift and submenu opacity; Bean's eye on the three scrim screenshots; forced
+  colours and axe with a scrim open. Test posts 3777/3778 carry the scrim fixture (backups in post meta).
 - **Wave 4** (proof gate — 11 client clones incl. resn, 10 if the teardown excludes it; Bean's-eye per
   clone; every Spec 38 effect available) — not started.
 - **Wave 5** (clone walker) — not started.
 
-**Next session: U-2** (scrim colour, alpha, blur per tier; M-14; plan §4 row 2). Orchestration: (1) inline:
-read plan §1, §4, §5, Spec 36's drawer scrim section and `families-master.json` M-14; (2) design note, then
-`/qc-council` (two models via `/delegate`), then Bean's sign-off (shared mechanism); (3) build through
-`/subagent-driven-development`, one Sonnet implementer per commit on disjoint files, detector first if more
-than 3 blocks; (4) deploy to eye-care-test (declared `--payload` for google-reviews while it is uncommitted,
-never `--allow-dirty`), verify in one headed window, report in `reports/visual-diff/`. Acceptance: every M-14
-cell measured within 2px, or its leftover named.
+**Next session: U-9** (dismissal routes, modality, trigger semantics, the resize rule DEC-09, `accordionExclusive`
+ENG-02, close-on-scroll DEC-02; families M-36, M-34, M-35, M-40, M-47; plan §4 row 2). Same loop as U-2 (plan §5): design
+note, `/qc-council` (two models via `/delegate`), Bean's sign-off, build, deploy to sandybrown, verify in one
+headed window, report in `reports/visual-diff/`.
 
 ### Front E — Spec 45 classless FIELD resolution (open)
 

@@ -198,7 +198,7 @@ visually. `none` means neither.
 | 2 | U-9 | Dismissal routes, modality, trigger semantics, the resize rule (DEC-09), `accordionExclusive` (ENG-02), close-on-scroll (DEC-02) | M-36, M-34, M-35, M-40, M-47 | design | medium | `nav-bar-menu/block.json`, `nav-drawer/block.json`, `nav-menu-markup.php`, `src/shared/nav-interactivity/{store.js,mega-disclosure.js}` |
 | 3 | U-11 | Close-control presence, placement (`same-slot` / `top-row-start` / `top-row-end` plus an offset pair) and morph motion (DEC-15); magnet strength (M-10). Includes the `closeStyle` string to tier-object migration via `migrate-tier-object.py --property closeStyle`, with the fallthrough check that a stored flat string still resolves, and `$sgs_nd_allowed_close_styles` kept equal to the JSON enum | M-27, M-10 | eye | medium | `nav-drawer/{block.json,render.php,style.css}`, `nav-bar-menu/{block.json,style.css}` |
 | 4 | U-5 | Entry and exit animation vocabulary and item stagger. The mega fork has no entry-animation attribute today, so the animation must reach the mega interactivity context | M-31, M-32 | eye | high | `nav-drawer/{style.css,render.php,block.json}`, `mega-panel/block.json`, `nav-menu-markup.php`, `src/shared/nav-interactivity/` |
-| 5 | U-2 | Surface scrim, colour, alpha and blur per tier. The drawer hardcodes `rgba(0, 0, 0, 0.55)` twice in `style.css`; the panel fork has no scrim element at all, so U-2 adds one | M-14 | design | medium | `mega-panel/{render.php,block.json}`, `nav-drawer/{style.css,render.php,block.json}`, `src/shared/nav-interactivity/store.js` |
+| 5 | U-2 — **DONE** | Surface scrim, colour, alpha and blur per tier. The drawer hardcodes `rgba(0, 0, 0, 0.55)` twice in `style.css`; the panel fork has no scrim element at all, so U-2 adds one | M-14 (covered) | design | medium | `mega-panel/{render.php,block.json}`, `nav-drawer/{style.css,render.php,block.json}`, `src/shared/nav-interactivity/store.js` |
 | 6 | U-3 | Drawer side anchor, container inset, pitch tier object. No drawer clamp (section 1b) | M-17, M-46 | none | medium | `nav-drawer/{render.php,block.json}`, `nav-drawer-menu/block.json` |
 | 7 | U-6 | Item hover parity: opacity and padding-shift hover (M-21, delivered by U-1 — see its row), row separators (M-30), sibling dim (M-24, a list-scoped rule), two-copy label roll (M-25, a second label in the markup, needed on the bar, the drawer, the trigger and the footer). M-24 and M-25 need new markup, so they come last | M-30, M-24, M-25 | eye | high | `nav-bar-menu/{block.json,style.css}`, `nav-drawer-menu/{block.json,style.css}`, `nav-menu-markup.php`, `nav-menu-submenu-css.php` |
 | 8 | U-7 | Per-item ornament (M-22) and per-item media slot (M-15) | M-22, M-15 | none | medium | `nav-menu-markup.php`, `nav-drawer-menu/block.json`, `mega-group/`, `nav-menu-submenu-css.php` |
@@ -230,6 +230,17 @@ ring, and the wrapper, nav-drawer and mega-panel mark `sgs-on-dark`/`sgs-on-ligh
 dark-surface screenshot and ring strength; the sandybrown deploy of everything since theme 1.5.91 (waits on
 another session committing `sgs/google-reviews`); theme gradient presets read as unknown in the canvas until
 callers pass `useSettings('color.gradients')`.
+
+**U-2 — done** (D1148; design `.claude/reports/2026-09-24-u2-scrim-design.md`; live `reports/visual-diff/scrim-2026-09-24.md`).
+Shipped as ONE shared scrim (Bean widened the scope): `includes/helpers-scrim.php` plus `scrimColour`,
+`scrimColourGradient`, per-device `scrimOpacity` and `scrimBlur` on nav-drawer and nav-bar-menu (the owner of every
+dropdown and mega panel, not mega-panel: three references dim for plain dropdowns too) and on modal, cart, gallery and
+product-search. Exit cells: halcyon and indus-foods panel cells, away's drawer and panel cells, butcherbox's drawer cell,
+lamalama's drawer cells and lusion's 1440 gradient cell are all reachable per tier; halcyon, lamalama and away's drawer
+cells were measured live within tolerance (exact values). Residue, named: butcherbox's dropdown strength was never
+captured as a number (measure at its Wave 4 clone); lamalama's click-through is an accepted divergence; the scrim fade
+stays 0.2s until U-5's motion vocabulary; lusion's phone and tablet blue is the full-screen drawer's own fill, and its
+card inset is U-3 (M-46). M-14 moves to `covered`.
 
 Sizes are `families-master.json::units[].size` at full scope. Convert per
 `~/.claude/rules/time-estimates.md`: medium 30 to 60 minutes, high 1 to 2 hours, the whole

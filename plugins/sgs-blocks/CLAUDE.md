@@ -1125,6 +1125,19 @@ either file; a new block declares its own or gets nothing.
 focusable without `tabindex` (card-grid, post-grid, process-steps, gallery and icon carry none),
 so it never matches on them. Real focus styling belongs on the focusable descendant.
 
+**One hover-shadow control (D1148).** A block that declares `shadowLiftOnHover` gets its hover shadow from
+`src/components/ShadowLiftControls.js` only: the lift switch plus "Hover shadow: Automatic / a preset", which writes
+the universal `sgsHoverShadow`. A chosen preset wins over the lift in `helpers-shadow-hover.php::sgs_shadow_lift_enabled`.
+The Hover Effects panel hides its own picker on those blocks. Never mount a second hover-shadow control.
+
+### Scrims — the layer that dims the page behind an open surface (D1148)
+
+A block that dims the viewport (a drawer, dialog, lightbox or panel) declares `supports.sgs.scrim` (`open`: the
+selector that matches while it is open, `:modal` for `showModal()` dialogs; optional `owner`) plus `scrimColour`,
+`scrimColourGradient`, `scrimOpacity` and `scrimBlur`, calls `includes/helpers-scrim.php::sgs_scrim_render` and
+mounts `ScrimControls` + `scrimColourRow`. Its own `::backdrop` stays transparent. `scripts/scrim/check-scrim.py
+--check` (a fast gate) fails the build on any block that paints a dimmer another way.
+
 ## Utility Functions
 
 Import from `../../utils`:

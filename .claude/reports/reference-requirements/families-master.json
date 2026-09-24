@@ -413,21 +413,15 @@
     "lusion"
    ],
    "needed_by_count": 6,
-   "coverage_status": "gap",
+   "coverage_status": "covered",
    "evidence": "measured",
    "covered_by": [
-    "(drawer scrim exists but is hardcoded; the panel fork has no scrim at all)"
-   ],
+        "supports.sgs.scrim + scrimColour/scrimColourGradient/scrimOpacity/scrimBlur (per-tier) on sgs/nav-drawer and sgs/nav-bar-menu (every dropdown and mega panel), includes/helpers-scrim.php::sgs_scrim_render (U-2, D1148)"
+      ],
    "note": "MERGED: group B found no scrim element on the panel fork, group C found a hardcoded one on the drawer. One attribute set (colour, alpha, blur, click-closes, per tier) expresses both. VERIFIED: zero 'scrim' in mega-panel/render.php and in nav-menu-markup.php; nav-drawer/style.css hardcodes rgba(0,0,0,0.55) twice (__scrim and ::backdrop) and the DB has no scrim attribute. TWO of the four references with a real scrim change it per tier, not four: away (alpha 0 at 375, 0.5 at 768) and lusion (opaque #0016ec at 375/768, a right-half gradient at 1440). lamalama's is the same value at every tier and butcherbox was only ever captured at 375, so neither can show a per-tier change. The per-tier requirement still stands, on away and lusion. Two of the four use the scrim as the click-to-close target.",
-   "uncovered_references": [
-    "away",
-    "butcherbox",
-    "halcyon",
-    "indus-foods",
-    "lamalama",
-    "lusion"
-   ],
-   "uncovered_count": 6
+   "uncovered_references": [],
+   "u2_residue": "butcherbox dropdown strength never captured as a number (measure at its Wave 4 clone); lamalama click-through is an accepted divergence (Bean, 2026-09-24)",
+      "uncovered_count": 0
   },
   {
    "id": "M-15",
