@@ -1,0 +1,207 @@
+#!/usr/bin/env node
+/**
+ * wp-build-page.js
+ *
+ * Builds a whole page (or header, footer, drawer, modal, mega menu) through the
+ * real block editor from a JSON block tree, so every block is serialised by its
+ * own save() and never hand-written.
+ *
+ * ============================================================================
+ * WHEN TO USE (plain English)
+ * ----------------------------------------------------------------------------
+ * Use it to lay out a page on a live site. You describe the blocks and their
+ * settings in a JSON file; the script opens the WordPress editor, refuses any
+ * block that is not registered and any setting name the block does not have,
+ * builds the blocks, saves, reloads the editor and checks every block comes
+ * back valid and unchanged. It prints the post ID and link.
+ * ============================================================================
+ *
+ * Tree file: an array of blocks, each
+ *   { "name": "sgs/container", "attributes": { ... }, "innerBlocks": [ ... ] }
+ *
+ * Usage:
+ *   node scripts/wp-build-page.js --env-file .claude/secrets/eye-care-test.env --env-key EYECARETEST \
+ *     --tree tree.json (--post-id 123 | --create page --title "About" --slug about) [--status publish] [--dry-run]
+ *
+ *   --create takes a post type: page, sgs_header, sgs_footer, sgs_drawer, sgs_modal, sgs_mega_menu, wp_block.
+ *   --post-id replaces the whole content of an existing post.
+ *   --dry-run validates the tree in the editor and saves nothing.
+ *
+ * Credentials: WP_URL_<KEY>, WP_USER_<KEY>, WP_PWD_<KEY> from --env-file (never printed).
+ *
+ * Exit codes: 0 ok · 1 argument/tree error · 2 login failed · 3 editor did not load ·
+ *             4 unknown block or setting · 5 save failed · 6 blocks invalid or changed after reload
+ */
+
+const fs = require( 'fs' );
+const path = require( 'path' );
+const { createRequire } = require( 'module' );
+
+const pluginRequire = createRequire( path.join( __dirname, '..', 'plugins', 'sgs-blocks', 'package.json' ) );
+const { chromium } = pluginRequire( 'playwright' );
+
+function parseArgs( argv ) {
+	const args = { status: 'publish', dryRun: false };
+	for ( let i = 2; i < argv.length; i++ ) {
+		const a = argv[ i ];
+		if ( a === '--env-file' ) args.envFile = argv[ ++i ];
+		else if ( a === '--env-key' ) args.envKey = argv[ ++i ];
+		else if ( a === '--tree' ) args.tree = argv[ ++i ];
+		else if ( a === '--post-id' ) args.postId = argv[ ++i ];
+		else if ( a === '--create' ) args.create = argv[ ++i ];
+		else if ( a === '--title' ) args.title = argv[ ++i ];
+		else if ( a === '--slug' ) args.slug = argv[ ++i ];
+		else if ( a === '--status' ) args.status = argv[ ++i ];
+		else if ( a === '--dry-run' ) args.dryRun = true;
+	}
+	return args;
+}
+
+function fail( code, msg ) {
+	console.error( `[FAIL] ${ msg }` );
+	process.exit( code );
+}
+
+function readEnv( file, key ) {
+	const out = {};
+	for ( const line of fs.readFileSync( file, 'utf8' ).split( /\r?\n/ ) ) {
+		const m = line.match( /^([A-Z0-9_]+)=(.*)$/ );
+		if ( m ) out[ m[ 1 ] ] = m[ 2 ].trim().replace( /^["']|["']$/g, '' );
+	}
+	const url = out[ `WP_URL_${ key }` ];
+	const user = out[ `WP_USER_${ key }` ];
+	const pwd = out[ `WP_PWD_${ key }` ];
+	if ( ! url || ! user || ! pwd ) fail( 1, `WP_URL_/WP_USER_/WP_PWD_${ key } missing from ${ file }` );
+	return { url: url.replace( /\/+$/, '' ), user, pwd };
+}
+
+async function waitForEditor( page ) {
+	await page.waitForFunction(
+		() => window.wp && window.wp.data && window.wp.blocks &&
+			window.wp.data.select( 'core/editor' ) &&
+			window.wp.data.select( 'core/editor' ).getCurrentPostId() &&
+			window.wp.blocks.getBlockTypes().length > 0,
+		{ timeout: 60000 }
+	);
+}
+
+async function main() {
+	const args = parseArgs( process.argv );
+	if ( ! args.envFile || ! args.envKey || ! args.tree ) fail( 1, '--env-file, --env-key and --tree are required' );
+	if ( ! args.postId === ! args.create ) fail( 1, 'give exactly one of --post-id or --create <post type>' );
+	let tree;
+	try {
+		tree = JSON.parse( fs.readFileSync( path.resolve( args.tree ), 'utf8' ) );
+	} catch ( e ) {
+		fail( 1, `cannot read tree: ${ e.message }` );
+	}
+	if ( ! Array.isArray( tree ) ) fail( 1, 'tree must be an array of blocks' );
+	const { url, user, pwd } = readEnv( path.resolve( args.envFile ), args.envKey );
+
+	// Core blocks that have an SGS replacement are banned on pages (block-replacements.json is the one list).
+	const replacements = JSON.parse( fs.readFileSync(
+		path.join( __dirname, '..', 'plugins', 'sgs-blocks', 'scripts', 'data', 'block-replacements.json' ), 'utf8' ) );
+	const banned = {};
+	Object.entries( replacements ).forEach( ( [ sgs, cores ] ) => {
+		if ( Array.isArray( cores ) ) cores.forEach( ( c ) => { banned[ c ] = sgs; } );
+	} );
+
+	const browser = await chromium.launch( { headless: true } );
+	const page = await ( await browser.newContext( { ignoreHTTPSErrors: true } ) ).newPage();
+	try {
+		try {
+			await page.goto( `${ url }/wp-login.php`, { waitUntil: 'domcontentloaded', timeout: 45000 } );
+			await page.fill( '#user_login', user );
+			await page.fill( '#user_pass', pwd );
+			await Promise.all( [ page.waitForURL( /wp-admin/, { timeout: 45000 } ), page.click( '#wp-submit' ) ] );
+		} catch ( e ) {
+			fail( 2, `login failed: ${ e.message }` );
+		}
+
+		const editorUrl = args.create
+			? `${ url }/wp-admin/post-new.php?post_type=${ encodeURIComponent( args.create ) }`
+			: `${ url }/wp-admin/post.php?post=${ encodeURIComponent( args.postId ) }&action=edit`;
+		await page.goto( editorUrl, { waitUntil: 'domcontentloaded', timeout: 60000 } );
+		try {
+			await waitForEditor( page );
+		} catch ( e ) {
+			fail( 3, `editor did not load at ${ editorUrl }` );
+		}
+
+		// Validate the whole tree before touching the post.
+		const problems = await page.evaluate( ( { t, bannedMap } ) => {
+			const out = [];
+			const walk = ( blocks, trail ) => blocks.forEach( ( b, i ) => {
+				const where = `${ trail }[${ i }] ${ b && b.name }`;
+				if ( ! b || typeof b.name !== 'string' ) { out.push( `${ where }: no block name` ); return; }
+				if ( bannedMap[ b.name ] ) out.push( `${ where }: banned core block, use ${ bannedMap[ b.name ] }` );
+				const type = window.wp.blocks.getBlockType( b.name );
+				if ( ! type ) { out.push( `${ where }: block not registered` ); return; }
+				Object.keys( b.attributes || {} ).forEach( ( k ) => {
+					if ( ! Object.prototype.hasOwnProperty.call( type.attributes, k ) ) out.push( `${ where }: unknown setting "${ k }"` );
+				} );
+				walk( b.innerBlocks || [], `${ where } >` );
+			} );
+			walk( t, '' );
+			return out;
+		}, { t: tree, bannedMap: banned } );
+		if ( problems.length ) fail( 4, `tree rejected:\n  ${ problems.join( '\n  ' ) }` );
+
+		const built = await page.evaluate( ( { t, title, slug, status, dryRun } ) => {
+			const make = ( b ) => window.wp.blocks.createBlock( b.name, b.attributes || {}, ( b.innerBlocks || [] ).map( make ) );
+			const blocks = t.map( make );
+			const serialised = window.wp.blocks.serialize( blocks );
+			if ( dryRun ) return { serialised };
+			window.wp.data.dispatch( 'core/block-editor' ).resetBlocks( blocks );
+			const edits = { status };
+			if ( title ) edits.title = title;
+			if ( slug ) edits.slug = slug;
+			window.wp.data.dispatch( 'core/editor' ).editPost( edits );
+			return { serialised };
+		}, { t: tree, title: args.title, slug: args.slug, status: args.status, dryRun: args.dryRun } );
+		if ( args.dryRun ) {
+			console.log( JSON.stringify( { ok: true, dryRun: true, bytes: built.serialised.length } ) );
+			return;
+		}
+
+		await page.evaluate( () => window.wp.data.dispatch( 'core/editor' ).savePost() );
+		await page.waitForFunction(
+			() => ! window.wp.data.select( 'core/editor' ).isSavingPost() && ! window.wp.data.select( 'core/editor' ).isAutosavingPost(),
+			{ timeout: 60000 }
+		);
+		const saved = await page.evaluate( () => {
+			const errs = ( window.wp.data.select( 'core/notices' ).getNotices() || [] ).filter( ( n ) => n.status === 'error' );
+			const ed = window.wp.data.select( 'core/editor' );
+			return { error: errs.map( ( n ) => n.content ).join( ' | ' ), id: ed.getCurrentPostId(), link: ed.getPermalink() };
+		} );
+		if ( saved.error ) fail( 5, `save error: ${ saved.error }` );
+
+		// Reload: every block must parse valid and serialise to what was saved.
+		await page.goto( `${ url }/wp-admin/post.php?post=${ saved.id }&action=edit`, { waitUntil: 'domcontentloaded', timeout: 60000 } );
+		await waitForEditor( page );
+		await page.waitForTimeout( 1500 );
+		const check = await page.evaluate( () => {
+			const invalid = [];
+			const walk = ( bs ) => bs.forEach( ( b ) => {
+				if ( b.isValid === false ) invalid.push( b.name );
+				walk( b.innerBlocks || [] );
+			} );
+			const blocks = window.wp.data.select( 'core/block-editor' ).getBlocks();
+			walk( blocks );
+			return { invalid, serialised: window.wp.blocks.serialize( blocks ) };
+		} );
+		const changed = check.serialised.trim() !== built.serialised.trim();
+		const result = { ok: ! check.invalid.length && ! changed, id: saved.id, link: saved.link, invalid: check.invalid, changedOnReload: changed };
+		if ( changed ) {
+			const out = path.join( require( 'os' ).tmpdir(), `wp-build-page-${ saved.id }-diff.json` );
+			fs.writeFileSync( out, JSON.stringify( { before: built.serialised, after: check.serialised } ) );
+			result.diffFile = out;
+		}
+		console.log( JSON.stringify( result ) );
+		if ( ! result.ok ) process.exitCode = 6;
+	} finally {
+		await browser.close();
+	}
+}
+
+main().catch( ( e ) => fail( 1, e.stack || e.message ) );
