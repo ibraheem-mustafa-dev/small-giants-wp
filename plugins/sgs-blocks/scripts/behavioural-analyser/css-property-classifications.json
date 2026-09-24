@@ -4832,6 +4832,15 @@
     },
     {
       "slug": "sgs/heading",
+      "attr": "maxWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/heading",
       "attr": "textAlign",
       "fields": {
         "css_property": "text-align",
