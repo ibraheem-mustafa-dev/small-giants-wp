@@ -4,9 +4,53 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2dd1290a99a64d0f492b11568a74df24",
+    "content-hash": "d2367999c5d4926080f58acaca650358",
     "packages": [],
     "packages-dev": [
+        {
+            "name": "php-stubs/woocommerce-stubs",
+            "version": "v11.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-stubs/woocommerce-stubs.git",
+                "reference": "06dfedfe33a46a12db99fd343b80f1f2f11e64f6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-stubs/woocommerce-stubs/zipball/06dfedfe33a46a12db99fd343b80f1f2f11e64f6",
+                "reference": "06dfedfe33a46a12db99fd343b80f1f2f11e64f6",
+                "shasum": ""
+            },
+            "require": {
+                "php-stubs/wordpress-stubs": "^5.3 || ^6.0 || ^7.0"
+            },
+            "require-dev": {
+                "php": "~7.1 || ~8.0",
+                "php-stubs/generator": "^0.9.0"
+            },
+            "suggest": {
+                "symfony/polyfill-php73": "Symfony polyfill backporting some PHP 7.3+ features to lower PHP versions",
+                "szepeviktor/phpstan-wordpress": "WordPress extensions for PHPStan"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "WooCommerce function and class declaration stubs for static analysis.",
+            "homepage": "https://github.com/php-stubs/woocommerce-stubs",
+            "keywords": [
+                "PHPStan",
+                "static analysis",
+                "woocommerce",
+                "wordpress"
+            ],
+            "support": {
+                "issues": "https://github.com/php-stubs/woocommerce-stubs/issues",
+                "source": "https://github.com/php-stubs/woocommerce-stubs/tree/v11.1.2"
+            },
+            "time": "2026-09-22T23:29:58+00:00"
+        },
         {
             "name": "php-stubs/wordpress-stubs",
             "version": "v6.9.1",

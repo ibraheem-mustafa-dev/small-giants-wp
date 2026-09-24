@@ -11,10 +11,15 @@
   // get_block_wrapper_attributes, wp_unique_id, modern block-editor APIs).
   // Composer-installed stubs match WP 6.9.1 (same as palestine-lives.org).
   // Run `php composer.phar update` periodically to refresh.
+  // vendor/ is gitignored: after a fresh clone run `php composer.phar install` at the repo
+  // root, or every WordPress/WooCommerce symbol shows as undefined (2026-09-24: the folder was
+  // missing and every PHP edit pasted dozens of false "undefined function" diagnostics back
+  // into Claude's context). WooCommerce stubs cover WC_Product, wc_get_product and friends.
   "intelephense.environment.phpVersion": "8.2.0",
   "intelephense.environment.includePaths": [
     "vendor/php-stubs/wordpress-stubs",
-    "vendor/php-stubs/wp-cli-stubs"
+    "vendor/php-stubs/wp-cli-stubs",
+    "vendor/php-stubs/woocommerce-stubs"
   ],
   // Silence P1010 false positives on WordPress core functions called from inside
   // a `namespace SGS\Theme;` block. PHP's global-fallback resolution makes calls
