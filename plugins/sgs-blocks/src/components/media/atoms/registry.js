@@ -317,7 +317,7 @@ export const MEDIA_ATOMS = {
 			// server-side ratio allowlist (image-sequence/render.php).
 			// `card-grid`/`gallery`/`post-grid` take free unspaced strings and
 			// are READ, not matched.
-			ratio: [ '1 / 1', '4 / 3', '3 / 2', '16 / 9', '21 / 9', '3 / 4', '2 / 3', '9 / 16' ],
+			ratio: [ '1 / 1', '4 / 3', '3 / 2', '16 / 9', '21 / 9', '4 / 5', '3 / 4', '2 / 3', '9 / 16' ],
 			shape: [ 'none', 'rounded', 'circle', 'square' ],
 			sizing: [ 'auto', 'height', 'ratio' ],
 		},

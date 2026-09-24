@@ -63,6 +63,15 @@ const EASING_OPTIONS = [
 	{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
 ];
 
+// Max width also offers ch, so a heading can wrap at a character measure (e.g. 15ch).
+const MAX_WIDTH_UNITS = [
+	{ value: 'px', label: 'px', default: 800 },
+	{ value: 'em', label: 'em', default: 20 },
+	{ value: 'rem', label: 'rem', default: 20 },
+	{ value: '%', label: '%', default: 100 },
+	{ value: 'ch', label: 'ch', default: 20 },
+];
+
 const CUSTOM_WIDTH_UNITS = [
 	{ value: 'px', label: 'px', default: undefined },
 	{ value: '%', label: '%', default: undefined },
@@ -193,7 +202,7 @@ function boxShorthand( box, keys ) {
 
 /** Build wrapper-level inline style for the editor canvas (mirrors render.php $wrapper_inline). */
 function buildWrapperStyle( attributes ) {
-	const { padding, margin, textAlign, backgroundColour, borderWidth, borderStyle, borderColour, borderColourGradient, inheritStyle, customWidth, customWidthUnit } = attributes;
+	const { padding, margin, textAlign, backgroundColour, borderWidth, borderStyle, borderColour, borderColourGradient, inheritStyle, customWidth, customWidthUnit, maxWidth, maxWidthUnit } = attributes;
 	const wrapperStyle = {};
 	// Contract §A (render.php): inheritStyle suppresses block-level wrapper
 	// styling (background/border/text-align) and inherits from the parent —
@@ -210,6 +219,9 @@ function buildWrapperStyle( attributes ) {
 		if ( '' !== customWidth && null !== customWidth && undefined !== customWidth
 			&& /^-?\d+(\.\d+)?$/.test( String( customWidth ).trim() ) ) {
 			wrapperStyle.width = `${ customWidth }${ customWidthUnit || 'px' }`;
+		}
+		if ( 'number' === typeof maxWidth && ! Number.isNaN( maxWidth ) ) {
+			wrapperStyle.maxWidth = `${ maxWidth }${ maxWidthUnit || 'px' }`;
 		}
 		// Border-width preview — SGS custom object attr (base only, no tiers).
 		const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
@@ -279,6 +291,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		scaleHover,
 		customWidth,
 		customWidthUnit,
+		maxWidth,
+		maxWidthUnit,
 		transitionDuration,
 		transitionEasing,
 	} = attributes;
@@ -536,6 +550,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							setAttributes( {
 								customWidth: ( num === undefined || num === null ) ? '' : String( num ),
 								customWidthUnit: unit,
+							} );
+						} }
+						presets={ false }
+					/>
+					<SgsLengthControl
+						label={ __( 'Max width', 'sgs-blocks' ) }
+						help={ __( 'Wraps the heading at this width without fixing it; ch counts characters.', 'sgs-blocks' ) }
+						value={ composeUnit( maxWidth, maxWidthUnit ) }
+						units={ MAX_WIDTH_UNITS }
+						onChange={ ( raw ) => {
+							const { num, unit } = parseUnit( raw, maxWidthUnit || 'px' );
+							setAttributes( {
+								maxWidth: ( num === undefined || num === null || '' === num ) ? undefined : Number( num ),
+								maxWidthUnit: unit,
 							} );
 						} }
 						presets={ false }

@@ -77,7 +77,7 @@ const LAYOUT_OPTIONS = [
 ];
 
 // C19 ratio-mode adoption (2026-08-27) — reuses MediaSizingPanel's shared
-// six-value ratio list (spaced format, "16 / 9" etc.) rather than this
+// seven-value ratio list (spaced format, "16 / 9" etc.) rather than this
 // block's own hand-rolled set. render.php's char-filter sanitiser
 // ($sgs_css_ratio) is untouched — it already accepts both spaced and
 // unspaced values safely, so no PHP change is needed here. The dropped

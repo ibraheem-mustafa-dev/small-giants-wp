@@ -241,6 +241,12 @@
    `position: fixed` on the video itself (viewport-relative instead of
    container-relative). Same touch-device disable path as the image case
    (view.js adds .no-parallax; this rule restores normal absolute flow). */
+/* The fixed video is not clipped by overflow:hidden, so without a clip it would
+   paint across the whole viewport; clip-path clips it to this container. */
+.sgs-container--parallax.sgs-container--has-bg-video {
+	clip-path: inset(0);
+}
+
 .sgs-container--parallax .sgs-container__video-bg {
 	position: fixed;
 }

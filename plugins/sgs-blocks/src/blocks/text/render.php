@@ -255,7 +255,13 @@ if ( ! function_exists( 'sgs_text_nearest_ancestor_establishes_own_alignment' ) 
 				$self_frame_seen = true;
 				continue;
 			}
-			$ancestor        = $frame['object'];
+			$ancestor = $frame['object'];
+			// sgs/hero's content column (.sgs-hero__content) is a flex column
+			// whatever its `layout` attribute says (default ''), so it always
+			// positions its children itself.
+			if ( isset( $ancestor->name ) && 'sgs/hero' === $ancestor->name ) {
+				return true;
+			}
 			$ancestor_layout = isset( $ancestor->attributes['layout'] ) ? (string) $ancestor->attributes['layout'] : '';
 			return in_array( $ancestor_layout, array( 'flex', 'grid', 'stack' ), true );
 		}

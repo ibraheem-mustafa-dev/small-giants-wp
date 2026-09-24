@@ -63,13 +63,13 @@ if ( $thumbnail_decorative ) {
 
 // Whitelist — this reaches a scoped <style> rule, so it is validated against
 // known-good values rather than trusted as free text. This array is the
-// ORIGINAL/canonical six-value ratio set (C19, 2026-08-27) — this block's
+// ORIGINAL/canonical seven-value ratio set (C19, 2026-08-27) — this block's
 // own edit.js now imports the JS-side mirror of this exact list from
 // `src/components/MediaSizingPanel.js`'s exported `RATIO_OPTIONS`, and
 // card-grid/gallery/post-grid's edit.js files do the same. PHP cannot
 // import a JS constant, so this array must be kept BYTE-IDENTICAL to
 // `RATIO_OPTIONS`'s values by hand if the set ever changes.
-$allowed_ratios = array( '16 / 9', '21 / 9', '4 / 3', '1 / 1', '3 / 4', '9 / 16' );
+$allowed_ratios = array( '16 / 9', '21 / 9', '4 / 3', '1 / 1', '4 / 5', '3 / 4', '9 / 16' );
 if ( ! in_array( $aspect_ratio, $allowed_ratios, true ) ) {
 	$aspect_ratio = '16 / 9';
 }

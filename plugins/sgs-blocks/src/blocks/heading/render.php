@@ -183,6 +183,8 @@ $border_style          = in_array( $border_style_raw, $allowed_border_styles, tr
 
 $custom_width      = $attributes['customWidth'] ?? '';
 $custom_width_unit = sgs_heading_safe_unit( $attributes['customWidthUnit'] ?? 'px' );
+$max_width_raw     = $attributes['maxWidth'] ?? '';
+$max_width_unit    = in_array( $attributes['maxWidthUnit'] ?? 'px', array( 'px', 'em', 'rem', '%', 'ch' ), true ) ? $attributes['maxWidthUnit'] : 'px';
 $inherit_style     = ! empty( $attributes['inheritStyle'] );
 
 // Text alignment — validated against allowlist; emitted scoped on the wrapper.
@@ -338,6 +340,12 @@ if ( ! $inherit_style ) {
 		$cw_val = sgs_heading_spacing_val( $custom_width, $custom_width_unit );
 		if ( $cw_val ) {
 			$wrapper_decls[] = 'width:' . $cw_val;
+		}
+	}
+	if ( is_numeric( $max_width_raw ) ) {
+		$mw_val = sgs_heading_spacing_val( $max_width_raw, $max_width_unit );
+		if ( $mw_val ) {
+			$wrapper_decls[] = 'max-width:' . $mw_val;
 		}
 	}
 	// $text_align is allowlist-validated above.

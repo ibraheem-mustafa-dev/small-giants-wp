@@ -110,6 +110,13 @@ section.sgs-hero {
    equivalent for a real image element (mirrors the same fix applied to
    sgs/container's video background, `container/style.css`). The touch-device
    `.no-parallax` disable path below already existed and needed no change. */
+/* A fixed layer is not clipped by overflow:hidden, so without a clip it paints
+   across the whole viewport and shows through every transparent section below
+   the hero. clip-path clips fixed descendants to the hero's own box. */
+.sgs-hero--parallax {
+	clip-path: inset(0);
+}
+
 .sgs-hero--parallax .sgs-hero__bg-img--parallax {
 	position: fixed;
 }

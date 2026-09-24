@@ -73,7 +73,7 @@ const HEADING_LEVEL_OPTIONS = [
 ];
 
 // C19 ratio-mode adoption (2026-08-27) — reuses MediaSizingPanel's shared
-// six-value ratio list (spaced format, "16 / 9" etc.) rather than this
+// seven-value ratio list (spaced format, "16 / 9" etc.) rather than this
 // block's own hand-rolled set (which included a non-CSS "auto" value and
 // unspaced ratios not shared with any other block). render.php now
 // whitelists against this exact six-value set, falling back to this

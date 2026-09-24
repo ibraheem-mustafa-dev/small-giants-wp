@@ -73,7 +73,7 @@ import FocalPositionField from './FocalPositionField';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanelItem } from './primitives';
 
 /**
- * The six ratios `image-sequence/render.php:54` already whitelists, in the
+ * The seven ratios `image-sequence/render.php:54` already whitelists, in the
  * SAME spaced format — see the docblock above for why this list is not
  * re-derived from that file (this component doesn't touch image-sequence;
  * it isn't piloted this pass).
@@ -83,6 +83,7 @@ export const RATIO_OPTIONS = [
 	{ label: __( '21 / 9 — cinematic', 'sgs-blocks' ), value: '21 / 9' },
 	{ label: __( '4 / 3 — classic', 'sgs-blocks' ), value: '4 / 3' },
 	{ label: __( '1 / 1 — square', 'sgs-blocks' ), value: '1 / 1' },
+	{ label: __( '4 / 5 — portrait photo', 'sgs-blocks' ), value: '4 / 5' },
 	{ label: __( '3 / 4 — portrait', 'sgs-blocks' ), value: '3 / 4' },
 	{ label: __( '9 / 16 — vertical', 'sgs-blocks' ), value: '9 / 16' },
 ];

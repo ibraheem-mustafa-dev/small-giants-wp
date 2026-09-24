@@ -74,6 +74,7 @@
 						"css:box-shadow": "boxShadow",
 						"css:box-shadow-color": "boxShadowColour",
 						"css:width": "customWidth",
+						"css:max-width": "maxWidth",
 						"css:transition-duration": "transitionDuration",
 						"css:transition-timing-function": "transitionEasing",
 						"css:color-gradient": "textColourGradient",
@@ -89,7 +90,7 @@
 							}
 						}
 					},
-					"_note": "Single-semantic-element block (D293) — the h1-h6/p/div root IS the wrapper, no separate box element. No `layer` declared: heading has no children to arrange, so the 12 ARRANGEMENT members are correctly never asked. maxWidth/height/max-height/min-height/gap/aspect-ratio/opacity/overlay/background-* image members have no attribute on this block — honest gaps (heading has no image surface). scaleHover has no cluster member in the Spec 35 vocabulary (no `transform`/`scale` member exists) so it is left unclaimed rather than force-mapped. `css:background-color`/`css:background-image` (+ their Hover siblings) moved OFF this element onto the new `background` element below (2026-08-22, text/background pseudo-element split) — this element's `css:color-gradient` paints via `background-clip:text`, which would otherwise overwrite/clip a background painted on the SAME node."
+					"_note": "Single-semantic-element block (D293) — the h1-h6/p/div root IS the wrapper, no separate box element. No `layer` declared: heading has no children to arrange, so the 12 ARRANGEMENT members are correctly never asked. height/max-height/min-height/gap/aspect-ratio/opacity/overlay/background-* image members have no attribute on this block — honest gaps (heading has no image surface). scaleHover has no cluster member in the Spec 35 vocabulary (no `transform`/`scale` member exists) so it is left unclaimed rather than force-mapped. `css:background-color`/`css:background-image` (+ their Hover siblings) moved OFF this element onto the new `background` element below (2026-08-22, text/background pseudo-element split) — this element's `css:color-gradient` paints via `background-clip:text`, which would otherwise overwrite/clip a background painted on the SAME node."
 				},
 				"background": {
 					"label": "Background",
@@ -334,6 +335,15 @@
 		"customWidthUnit": {
 			"type": "string",
 			"default": "px"
+		},
+		"maxWidth": {
+			"type": "number",
+			"description": "Maximum width of the heading (number; unit in maxWidthUnit). Empty = no cap. Lets a long heading wrap at a set measure, e.g. 15ch, without fixing its width."
+		},
+		"maxWidthUnit": {
+			"type": "string",
+			"default": "px",
+			"description": "Unit for maxWidth: px, em, rem, % or ch."
 		},
 		"textAlign": {
 			"type": "string",
