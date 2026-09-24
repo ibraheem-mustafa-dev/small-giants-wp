@@ -3010,7 +3010,7 @@
       "slug": "sgs/filter-search",
       "attr": "focusRingColour",
       "fields": {
-        "css_property": "background-color,border-color,outline-color"
+        "css_property": "outline-color"
       }
     },
     {

@@ -65,9 +65,14 @@
 	box-sizing: border-box;
 }
 
+/* The ticked box uses the theme's primary colour directly. It must NOT borrow
+   --sgs-filter-search-focus: that property belongs to focusRingColour (an outline,
+   terminal end shape `outline-not-gradientable`), is scoped to the input so it never
+   reached these links anyway, and reusing it here re-classified the attribute as a
+   fill (classify-end-shape, 2026-09-24). */
 .sgs-filter-search__term-link[aria-pressed="true"] .sgs-filter-search__term-check {
-	background-color: var( --sgs-filter-search-focus, var( --wp--preset--color--primary, #0f7e80 ) );
-	border-color: var( --sgs-filter-search-focus, var( --wp--preset--color--primary, #0f7e80 ) );
+	background-color: var( --wp--preset--color--primary, #0f7e80 );
+	border-color: var( --wp--preset--color--primary, #0f7e80 );
 }
 
 .sgs-filter-search__term-link[aria-pressed="true"] .sgs-filter-search__term-check::after {
@@ -76,7 +81,7 @@
 	width: 4px;
 	height: 8px;
 	margin: 2px auto;
-	border: solid #fff;
+	border: solid var( --wp--preset--color--primary-text, #fff );
 	border-width: 0 2px 2px 0;
 	transform: rotate( 45deg );
 }
