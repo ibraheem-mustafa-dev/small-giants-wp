@@ -50,6 +50,12 @@ $header_bg                = $block->context['sgs/accordionHeaderBackground'] ?? 
 $header_bg_gradient       = $block->context['sgs/accordionHeaderBackgroundGradient'] ?? '';
 $header_bg_hover          = $block->context['sgs/accordionHeaderBackgroundHover'] ?? '';
 $header_bg_hover_gradient = $block->context['sgs/accordionHeaderBackgroundHoverGradient'] ?? '';
+// Fallback strings match block.json's own attribute defaults (600/700) — used
+// only when this item somehow renders with no parent context (hand-authored
+// content), so behaviour never regresses from the pre-existing hardcoded
+// style.css values.
+$header_font_weight       = $block->context['sgs/accordionHeaderFontWeight'] ?? '600';
+$header_font_weight_open  = $block->context['sgs/accordionHeaderFontWeightOpen'] ?? '700';
 $icon_col                 = $block->context['sgs/accordionIconColour'] ?? '';
 // D636/D644 icon/SVG gradient sibling — non-empty wins over icon_col above.
 $icon_col_gradient       = $block->context['sgs/accordionIconColourGradient'] ?? '';
@@ -114,6 +120,23 @@ if ( '' !== $header_col_hover_effective ) {
 		$responsive_css .= sgs_hover_state_rules( $root_sel . ' .sgs-accordion-item__header', $header_col_hover_decl );
 	}
 	$responsive_css .= sgs_text_colour_gradient_fallback_rule( $root_sel . ' .sgs-accordion-item__header', $header_col_hover_effective );
+}
+
+// Header font weight (closed) + open-state font weight — replaces the
+// pre-existing hardcoded 600/700 declarations in style.css (D-2026-09-25).
+// Only digit weights from SGS_FONT_WEIGHT_OPTIONS (100-900) are ever accepted;
+// anything else is dropped rather than emitted unsanitised.
+if ( preg_match( '/^[1-9]00$/', (string) $header_font_weight ) ) {
+	$responsive_css .= $root_sel . ' .sgs-accordion-item__header{font-weight:' . $header_font_weight . '}';
+}
+// The `[open]` attribute selector on the <details> element (which carries
+// $uid) — the non-colour WCAG 1.4.1 signal alongside the open-state colour
+// change already painted above. Matches both DOM shapes style.css already
+// covers: <summary> as the header itself, or the header nested inside it.
+if ( preg_match( '/^[1-9]00$/', (string) $header_font_weight_open ) ) {
+	$responsive_css .= $root_sel . '[open] > .sgs-accordion-item__header,'
+		. $root_sel . '[open] > summary > .sgs-accordion-item__header'
+		. '{font-weight:' . $header_font_weight_open . '}';
 }
 
 // Icon colour — was inline `style="…"` on both icon spans, now a scoped rule.

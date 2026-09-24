@@ -11,7 +11,7 @@ import {
   ToggleControl,
   RangeControl,
 } from "@wordpress/components";
-import { SgsColourPanel, DesignTokenPicker, IconPicker, ResponsiveBoxControl, SgsBorderControl, TypographyControls, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from "../../components";
+import { SgsColourPanel, DesignTokenPicker, IconPicker, ResponsiveBoxControl, SgsBorderControl, TypographyControls, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SGS_FONT_WEIGHT_OPTIONS } from "../../components";
 import ContainerWrapperControls from "../container/components/ContainerWrapperControls";
 
 const STYLE_OPTIONS = [
@@ -49,6 +49,8 @@ export default function Edit({ attributes, setAttributes }) {
     headerBackgroundGradient,
     headerBackgroundHover,
     headerBackgroundHoverGradient,
+    headerFontWeight,
+    headerFontWeightOpen,
     iconColour,
     iconColourGradient,
     iconColourHover,
@@ -191,6 +193,27 @@ export default function Edit({ attributes, setAttributes }) {
             value={iconPosition}
             options={ICON_POSITION_OPTIONS}
             onChange={(val) => setAttributes({ iconPosition: val })}
+            __nextHasNoMarginBottom
+          	__next40pxDefaultSize
+          />
+          <SelectControl
+            label={__("Header font weight", "sgs-blocks")}
+            help={__("Item title weight when the item is closed.", "sgs-blocks")}
+            value={headerFontWeight || ""}
+            options={SGS_FONT_WEIGHT_OPTIONS}
+            onChange={(val) => setAttributes({ headerFontWeight: val })}
+            __nextHasNoMarginBottom
+          	__next40pxDefaultSize
+          />
+          <SelectControl
+            label={__("Header font weight (open)", "sgs-blocks")}
+            help={__(
+              "Item title weight when the item is expanded — kept distinct from colour alone for WCAG 1.4.1.",
+              "sgs-blocks",
+            )}
+            value={headerFontWeightOpen || ""}
+            options={SGS_FONT_WEIGHT_OPTIONS}
+            onChange={(val) => setAttributes({ headerFontWeightOpen: val })}
             __nextHasNoMarginBottom
           	__next40pxDefaultSize
           />

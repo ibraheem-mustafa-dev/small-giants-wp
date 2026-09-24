@@ -116,7 +116,8 @@
             "css:color": "headerColour",
             "css:background-color": "headerBackground",
             "css:background-image": "headerBackgroundGradient",
-            "css:color-gradient": "headerColourGradient"
+            "css:color-gradient": "headerColourGradient",
+            "css:font-weight": "headerFontWeight"
           },
           "states": {
             "hover": {
@@ -126,9 +127,14 @@
                 "css:color": "headerColourHover",
                 "css:color-gradient": "headerColourHoverGradient"
               }
+            },
+            "open": {
+              "attrMap": {
+                "css:font-weight": "headerFontWeightOpen"
+              }
             }
           },
-          "_note": "headerColour/headerBackground style every accordion-item's header row via block context (providesContext) — no independent header font-size/weight/line-height control exists, so the remaining text-cluster members are honest gaps. headerBackgroundGradient (colour-conformance preset-upgrade, 2026-09-06) bypasses the preset-slug mechanism entirely when set — see attribute description. headerBackgroundHover/HoverGradient (2026-09-06, FILL closeout) override the pre-existing hardcoded-default .sgs-accordion-item__header:hover rule in style.css."
+          "_note": "headerColour/headerBackground/headerFontWeight style every accordion-item's header row via block context (providesContext) — no independent header font-size/line-height control exists, so the remaining text-cluster members are honest gaps. headerBackgroundGradient (colour-conformance preset-upgrade, 2026-09-06) bypasses the preset-slug mechanism entirely when set — see attribute description. headerBackgroundHover/HoverGradient (2026-09-06, FILL closeout) override the pre-existing hardcoded-default .sgs-accordion-item__header:hover rule in style.css. headerFontWeightOpen (2026-09-25) is a genuine third state ('open', not 'hover') — it paints the `[open]` attribute selector, the non-colour WCAG 1.4.1 signal alongside the open-state colour change — and overrides the pre-existing hardcoded-default open-state font-weight rule in style.css."
         },
         "icon": {
           "label": "Toggle icon",
@@ -242,6 +248,16 @@
     "fontWeight": {
       "type": "string",
       "default": ""
+    },
+    "headerFontWeight": {
+      "type": "string",
+      "default": "600",
+      "description": "Item header (title) font weight when closed, relayed to sgs/accordion-item via block context. Default 600 matches the pre-existing hardcoded style.css value."
+    },
+    "headerFontWeightOpen": {
+      "type": "string",
+      "default": "700",
+      "description": "Item header (title) font weight when the item is open — the non-colour WCAG 1.4.1 signal alongside the open-state colour change. Default 700 matches the pre-existing hardcoded style.css value."
     },
     "fontStyle": {
       "type": "string",
@@ -497,7 +513,9 @@
     "sgs/accordionDefaultOpen": "defaultOpen",
     "sgs/accordionHeaderColourGradient": "headerColourGradient",
     "sgs/accordionHeaderColourHover": "headerColourHover",
-    "sgs/accordionHeaderColourHoverGradient": "headerColourHoverGradient"
+    "sgs/accordionHeaderColourHoverGradient": "headerColourHoverGradient",
+    "sgs/accordionHeaderFontWeight": "headerFontWeight",
+    "sgs/accordionHeaderFontWeightOpen": "headerFontWeightOpen"
   },
   "allowedBlocks": [
     "sgs/accordion-item"

@@ -39,7 +39,6 @@
 	align-items: center;
 	gap: 12px;
 	padding: 16px 20px;
-	font-weight: 600;
 	font-size: 1rem;
 	line-height: 1.4;
 	min-height: 44px; /* WCAG 2.2 AA touch target */
@@ -71,10 +70,12 @@
 .sgs-accordion-item[open] > summary > .sgs-accordion-item__header {
 	background-color: var(--wp--preset--color--surface-alt, #f5f7f7);
 	color: var(--wp--preset--color--primary, #0f7e80);
-	/* Rule 43 (WCAG 1.4.1): open state must not rely on colour alone — the
-	 * base header is already font-weight:600 (line 42), so the open state
-	 * steps up to 700 as the non-colour signal. */
-	font-weight: 700;
+	/* Rule 43 (WCAG 1.4.1): open state must not rely on colour alone — a
+	 * non-colour signal is required too. font-weight is the signal, but it is
+	 * NOT set here: sgs/accordion's headerFontWeight/headerFontWeightOpen
+	 * attributes (defaults 600/700, matching this rule's former hardcoded
+	 * values) are emitted per-instance by accordion-item/render.php, scoped
+	 * to `.{uid}[open] > .sgs-accordion-item__header`. */
 }
 
 /* :focus-visible ring */

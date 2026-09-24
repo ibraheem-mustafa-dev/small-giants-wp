@@ -103,7 +103,9 @@
 		"sgs/accordionIconColourHoverGradient",
 		"sgs/accordionOpenIcon",
 		"sgs/accordionCloseIcon",
-		"sgs/accordionDefaultOpen"
+		"sgs/accordionDefaultOpen",
+		"sgs/accordionHeaderFontWeight",
+		"sgs/accordionHeaderFontWeightOpen"
 	],
 	"attributes": {
 		"title": {
