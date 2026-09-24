@@ -6402,6 +6402,100 @@
 			"fields": {
 				"role": "technical"
 			}
+		},
+		{
+			"slug": "sgs/card-grid",
+			"attr": "glyphColour",
+			"fields": {
+				"derived_selector": ".sgs-card-grid__glyph",
+				"css_property": "color",
+				"css_element": "glyph"
+			},
+			"_why": "2026-09-24 (Eye Care Wave B). Emitted by card-grid/glyph-fallback.php::sgs_card_grid_glyph_css() as a scoped custom property that card-grid/style.css consumes; extract-signatures.py reads only {block}/render.php, so a colour resolved in a sibling helper file is invisible to it. Verified by reading both files."
+		},
+		{
+			"slug": "sgs/card-grid",
+			"attr": "imageFallbackColour",
+			"fields": {
+				"derived_selector": ".sgs-card-grid__image-wrap--fallback",
+				"css_property": "background-color",
+				"css_element": "image-wrap"
+			},
+			"_why": "2026-09-24 (Eye Care Wave B). Emitted by card-grid/glyph-fallback.php::sgs_card_grid_glyph_css() as a scoped custom property that card-grid/style.css consumes; extract-signatures.py reads only {block}/render.php, so a colour resolved in a sibling helper file is invisible to it. Verified by reading both files."
+		},
+		{
+			"slug": "sgs/product-card",
+			"attr": "attributeTagTextColour",
+			"fields": {
+				"derived_selector": ".sgs-product-card__attribute-tag",
+				"css_property": "color",
+				"css_element": "attribute-tag"
+			},
+			"_why": "2026-09-24 (Eye Care Wave B). product-card/render.php resolves it via sgs_colour_value() into a variable and emits it on '.{uid} .sgs-product-card__attribute-tag' through sgs_label_box_css_rule()/a decls array: the same two-hop shape as this block's tagTextColour entry, which the shape matcher cannot trace."
+		},
+		{
+			"slug": "sgs/product-card",
+			"attr": "attributeTagBackgroundColour",
+			"fields": {
+				"derived_selector": ".sgs-product-card__attribute-tag",
+				"css_property": "background-color",
+				"css_element": "attribute-tag"
+			},
+			"_why": "2026-09-24 (Eye Care Wave B). product-card/render.php resolves it via sgs_colour_value() into a variable and emits it on '.{uid} .sgs-product-card__attribute-tag' through sgs_label_box_css_rule()/a decls array: the same two-hop shape as this block's tagTextColour entry, which the shape matcher cannot trace."
+		},
+		{
+			"slug": "sgs/nav-bar-menu",
+			"attr": "itemBadgeColour",
+			"fields": {
+				"derived_selector": ".sgs-nav-bar-menu__badge",
+				"css_property": "background-color",
+				"css_element": "badge"
+			},
+			"_why": "2026-09-24 (Eye Care Wave B). nav-bar-menu/render.php wraps the attr in a `?? '<slug>'` default inside sgs_background_paint_decl()/sgs_text_colour_decl() and emits the declaration on a selector assembled in a later statement; the shape matcher does not pair them. Verified by reading render.php."
+		},
+		{
+			"slug": "sgs/nav-bar-menu",
+			"attr": "itemBadgeTextColour",
+			"fields": {
+				"derived_selector": ".sgs-nav-bar-menu__badge",
+				"css_property": "color",
+				"css_element": "badge"
+			},
+			"_why": "2026-09-24 (Eye Care Wave B). nav-bar-menu/render.php wraps the attr in a `?? '<slug>'` default inside sgs_background_paint_decl()/sgs_text_colour_decl() and emits the declaration on a selector assembled in a later statement; the shape matcher does not pair them. Verified by reading render.php."
+		},
+		{
+			"slug": "sgs/nav-bar-menu",
+			"attr": "itemDisabledColour",
+			"fields": {
+				"derived_selector": ".sgs-nav-bar-menu__link[aria-disabled=\"true\"]",
+				"css_property": "color",
+				"css_element": "link"
+			},
+			"_why": "2026-09-24 (Eye Care Wave B). nav-bar-menu/render.php wraps the attr in a `?? '<slug>'` default inside sgs_background_paint_decl()/sgs_text_colour_decl() and emits the declaration on a selector assembled in a later statement; the shape matcher does not pair them. Verified by reading render.php."
+		},
+		{
+			"slug": "sgs/cart",
+			"attr": "freeDeliveryMessage",
+			"fields": {
+				"role": "text-content"
+			},
+			"_why": "2026-09-24 (Eye Care Wave B). A content/behaviour attribute with no style behind it; the classifier leaves role NULL, so check-element-manifest-conformance counts it UNCLASSIFIED. Role mirrors the block's own sibling attr (pillLabel = text-content)."
+		},
+		{
+			"slug": "sgs/cart",
+			"attr": "freeDeliverySuccessMessage",
+			"fields": {
+				"role": "text-content"
+			},
+			"_why": "2026-09-24 (Eye Care Wave B). A content/behaviour attribute with no style behind it; the classifier leaves role NULL, so check-element-manifest-conformance counts it UNCLASSIFIED. Role mirrors the block's own sibling attr (pillLabel = text-content)."
+		},
+		{
+			"slug": "sgs/product-card",
+			"attr": "attributeTagTerm",
+			"fields": {
+				"role": "technical"
+			},
+			"_why": "2026-09-24 (Eye Care Wave B). A content/behaviour attribute with no style behind it; the classifier leaves role NULL, so check-element-manifest-conformance counts it UNCLASSIFIED. Role mirrors the block's own sibling attr (attributeTagTaxonomy = technical)."
 		}
 	]
 }

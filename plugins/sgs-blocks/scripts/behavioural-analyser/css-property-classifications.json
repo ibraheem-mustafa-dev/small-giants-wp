@@ -436,7 +436,7 @@
       "slug": "sgs/brand-strip",
       "attr": "columns",
       "fields": {
-        "css_property": "height,max-width,width",
+        "css_property": "height,max-width,min-width,width",
         "css_tier": "desktop",
         "css_layer": "OUTER"
       }
@@ -1526,6 +1526,24 @@
     },
     {
       "slug": "sgs/cart",
+      "attr": "freeDeliveryFillColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "freeDeliveryFill"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "freeDeliveryTrackColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "freeDeliveryTrack"
+      }
+    },
+    {
+      "slug": "sgs/cart",
       "attr": "iconColour",
       "fields": {
         "css_property": "color",
@@ -1576,6 +1594,57 @@
         "role": "color",
         "css_element": "panel",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "pillBgColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "pillBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "pillBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "pillBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "pillBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "pillTextColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "pill"
       }
     },
     {
@@ -2941,8 +3010,7 @@
       "slug": "sgs/filter-search",
       "attr": "focusRingColour",
       "fields": {
-        "css_property": "outline-color",
-        "css_element": "input"
+        "css_property": "background-color,border-color,outline-color"
       }
     },
     {
@@ -2968,6 +3036,15 @@
       "fields": {
         "css_property": "color",
         "css_element": "input"
+      }
+    },
+    {
+      "slug": "sgs/filter-search",
+      "attr": "textColourHover",
+      "fields": {
+        "css_property": "color",
+        "css_element": "term-name",
+        "css_state": "hover"
       }
     },
     {
@@ -6562,14 +6639,6 @@
     },
     {
       "slug": "sgs/nav-drawer",
-      "attr": "anchor",
-      "fields": {
-        "css_property": "max-width",
-        "css_layer": "OUTER"
-      }
-    },
-    {
-      "slug": "sgs/nav-drawer",
       "attr": "backgroundImage",
       "fields": {
         "css_property": "background-image",
@@ -7128,6 +7197,15 @@
       "attr": "pillTextTransform",
       "fields": {
         "css_property": "text-transform",
+        "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "tileGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
         "css_element": "pill"
       }
     },
@@ -8240,6 +8318,32 @@
       "fields": {
         "css_property": "transition-timing-function",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "attributeTagBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "attributeTag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "attributeTagBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "attributeTag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "attributeTagTextColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "attributeTag"
       }
     },
     {
@@ -12400,6 +12504,14 @@
       }
     },
     {
+      "slug": "sgs/whatsapp-cta",
+      "attr": "labelTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "card-text"
+      }
+    },
+    {
       "slug": "sgs/accordion",
       "attr": "borderColourGradient",
       "fields": {
@@ -12992,6 +13104,73 @@
     },
     {
       "slug": "sgs/brand-strip",
+      "attr": "brandTextColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "brand-text"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "brandTextColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "brand-text"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "brandTextColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "brand-text",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "brandTextFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "brand-text"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "brandTextFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "brand-text"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "brandTextFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "brand-text"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "brandTextLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "brand-text"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "brandTextTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "brand-text"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
       "attr": "logoFit",
       "fields": {
         "css_property": "object-fit",
@@ -13488,6 +13667,51 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "rrpPillBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "rrp-pill"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "rrpPillTextColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "rrp-pill"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "stockInStockColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "stock-in-stock"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "stockLowStockColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "stock-low-stock"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "stockOutOfStockColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "stock-out-of-stock"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "textColour",
       "fields": {
         "css_property": "color",
@@ -13584,6 +13808,15 @@
     },
     {
       "slug": "sgs/card-grid",
+      "attr": "glyphColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "glyph"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
       "attr": "grayscaleHover",
       "fields": {
         "css_property": "filter",
@@ -13606,6 +13839,15 @@
       "fields": {
         "css_property": "tag",
         "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "imageFallbackColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "image-wrap"
       }
     },
     {
@@ -13727,6 +13969,22 @@
         "css_property": "color-gradient",
         "css_element": "panel",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "pillBgColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "pillTextColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "pill"
       }
     },
     {
@@ -16876,6 +17134,24 @@
     },
     {
       "slug": "sgs/nav-bar-menu",
+      "attr": "itemBadgeColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemBadgeTextColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
       "attr": "itemBg",
       "fields": {
         "css_property": "background-color",
@@ -17026,6 +17302,15 @@
         "css_property": "color-gradient",
         "css_element": "item",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemDisabledColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "disabled-item"
       }
     },
     {
@@ -19224,6 +19509,23 @@
       "fields": {
         "css_property": "background-image",
         "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "attributeTagBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "attributeTag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "attributeTagPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "attributeTag"
       }
     },
     {
@@ -22339,6 +22641,49 @@
       "fields": {
         "css_property": "border-radius",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/whatsapp-cta",
+      "attr": "cardBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/whatsapp-cta",
+      "attr": "cardBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/whatsapp-cta",
+      "attr": "cardBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/whatsapp-cta",
+      "attr": "cardSublineColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "card-subline"
+      }
+    },
+    {
+      "slug": "sgs/whatsapp-cta",
+      "attr": "cardTitleColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "card-title"
       }
     },
     {

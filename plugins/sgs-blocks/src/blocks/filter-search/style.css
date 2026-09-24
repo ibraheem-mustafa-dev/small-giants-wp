@@ -41,7 +41,10 @@
 	gap: 10px;
 	min-height: 44px; /* WCAG 2.5.5 — 44px minimum touch target. */
 	text-decoration: none;
-	color: var( --sgs-filter-search-text, var( --wp--preset--color--text, #1a1a1a ) );
+	/* Follows the surrounding text. `textColour` styles the search INPUT only (its
+	   custom property is scoped to the input, so it never reached these links), and
+	   one colour attribute must paint one element (db-consistency F6). */
+	color: inherit;
 }
 
 .sgs-filter-search__term-link:hover .sgs-filter-search__term-name {

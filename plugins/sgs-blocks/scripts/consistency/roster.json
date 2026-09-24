@@ -111,7 +111,7 @@
       "surfaces": {
         "styling": true,
         "colour": true,
-        "link": false,
+        "link": true,
         "media": true,
         "animation": true
       },
@@ -241,7 +241,7 @@
         "colour": true,
         "link": false,
         "media": true,
-        "animation": false
+        "animation": true
       },
       "qualifies": {
         "paintDeclarations": 16,
@@ -458,7 +458,7 @@
       "surfaces": {
         "styling": false,
         "colour": true,
-        "link": false,
+        "link": true,
         "media": false,
         "animation": false
       },
