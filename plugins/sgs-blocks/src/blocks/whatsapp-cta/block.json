@@ -62,7 +62,10 @@
 						"css:color-gradient": "labelColourGradient",
 						"css:padding": "padding",
 						"css:margin": "margin",
-						"css:border-radius": "borderRadius"
+						"css:border-radius": "borderRadius",
+						"css:border-width": "cardBorderWidth",
+						"css:border-style": "cardBorderStyle",
+						"css:border-color": "cardBorderColour"
 					},
 					"states": {
 						"hover": {
@@ -73,7 +76,32 @@
 								"css:color-gradient": "labelColourHoverGradient"
 							}
 						}
-					}
+					},
+					"_note2": "Wave B (2026-09-24): cardBorderWidth/cardBorderStyle/cardBorderColour added to this SAME root element's attrMap — the card variant's border decorates the root <a>, the same element `button` already maps padding/margin/borderRadius onto (Spec 35 §14: border colour lives in SgsBorderControl, mounted here alongside the existing radius/padding controls, never in SgsColourPanel)."
+				},
+				"card-title": {
+					"label": "Card title",
+					"order": 2,
+					"prefix": "cardTitle",
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:color": "cardTitleColour"
+					},
+					"_note": "Card variant only (contract §B3: rendered inside the same single <a> root as `button`, never a wrapper of its own). `prefix: cardTitle` resolves cardTitleFontSize/Unit/FontWeight/FontStyle/LineHeight/Unit via the standard {prefix}{Suffix} convention (no explicit attrMap entry needed, mirrors sgs/pricing-table's `title` element). cardTitle itself (the RichText content) carries `role: content` on the attribute, not an element mapping."
+				},
+				"card-subline": {
+					"label": "Card sub-line",
+					"order": 3,
+					"prefix": "cardSubline",
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:color": "cardSublineColour"
+					},
+					"_note": "Card variant only, same rationale as `card-title` above."
 				}
 			}
 		},
@@ -264,6 +292,102 @@
 				"vertical-lr"
 			],
 			"default": ""
+		},
+		"cardTitle": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"cardSubline": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"cardTitleColour": {
+			"type": "string",
+			"default": "text"
+		},
+		"cardSublineColour": {
+			"type": "string",
+			"default": "text-muted"
+		},
+		"cardBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"cardBorderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Card variant border width, base tier only (Spec 35 §14 — no per-device border width). Empty = the block's own CSS default (1px)."
+		},
+		"cardBorderStyle": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"solid",
+				"dashed",
+				"dotted"
+			],
+			"description": "Card variant border style. '' = inherit the block's own CSS default (solid)."
+		},
+		"cardTitleFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"cardTitleFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"cardTitleFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"cardTitleFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"cardTitleLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"cardTitleLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"cardSublineFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"cardSublineFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"cardSublineFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"cardSublineFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"cardSublineLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"cardSublineLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"floatingScrollThreshold": {
+			"type": "number",
+			"default": 0,
+			"description": "Pixels scrolled before the floating button appears. 0 = always visible."
+		},
+		"floatingHideLabelBelow": {
+			"type": "number",
+			"default": 0,
+			"description": "Viewport width (px) below which the floating button's visible label collapses to icon-only. 0 = never hide."
 		}
 	},
 	"editorScript": "file:./index.js",

@@ -98,6 +98,10 @@
 	opacity: 0;
 	transform: scale(0.8);
 	pointer-events: none;
+	/* Hidden state is not just invisible — visibility:hidden also removes it
+	 * from the tab order and hit-testing, so a hidden floating button (below
+	 * its "show after scrolling" threshold) is never keyboard-focusable. */
+	visibility: hidden;
 	transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
@@ -105,6 +109,7 @@
 	opacity: 1;
 	transform: scale(1);
 	pointer-events: auto;
+	visibility: visible;
 }
 
 .sgs-whatsapp-cta--floating.sgs-whatsapp-cta__btn {
@@ -119,6 +124,75 @@
 .sgs-whatsapp-cta--floating .sgs-whatsapp-cta__icon {
 	width: 28px;
 	height: 28px;
+}
+
+/* Floating variant WITH a visible label (client-typed Label, "Hide label
+ * below" feature) — expands the circle into a pill. :has() is well supported
+ * across current evergreen browsers; the plain icon-only circle above is the
+ * fallback shape wherever it isn't. */
+.sgs-whatsapp-cta--floating.sgs-whatsapp-cta__btn:has(.sgs-whatsapp-cta__label--floating) {
+	width: auto;
+	height: auto;
+	min-height: 52px;
+	border-radius: 999px;
+	padding: 0 18px 0 14px;
+	justify-content: flex-start;
+	gap: var(--wp--preset--spacing--10);
+}
+
+.sgs-whatsapp-cta__label--floating {
+	font-size: var(--wp--preset--font-size--small);
+	white-space: nowrap;
+}
+
+/* ===== Card variant ===== */
+.sgs-whatsapp-cta--card.sgs-whatsapp-cta__btn {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	width: 100%;
+	text-align: left;
+	white-space: normal;
+	padding: 16px 18px;
+	min-height: 0;
+	border: 1px solid var(--wp--preset--color--border-light, #ddd);
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	background-color: var(--wp--preset--color--success-light, #e9f9ef);
+}
+
+.sgs-whatsapp-cta--card .sgs-whatsapp-cta__icon-badge {
+	flex-shrink: 0;
+	width: 38px;
+	height: 38px;
+	border-radius: 50%;
+	background-color: var(--wp--preset--color--whatsapp, #25D366);
+	color: var(--wp--preset--color--text-inverse, #fff);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.sgs-whatsapp-cta--card .sgs-whatsapp-cta__icon-badge .sgs-whatsapp-cta__icon {
+	width: 20px;
+	height: 20px;
+}
+
+.sgs-whatsapp-cta__card-text {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	text-wrap: var(--sgs-whatsapp-cta-card-text-wrap, pretty);
+}
+
+.sgs-whatsapp-cta__card-title {
+	font-size: var(--wp--preset--font-size--small);
+	color: var(--wp--preset--color--text);
+}
+
+.sgs-whatsapp-cta__card-subline {
+	display: block;
+	font-size: var(--wp--preset--font-size--small);
+	color: var(--wp--preset--color--text-muted);
 }
 
 /* ===== Visibility ===== */

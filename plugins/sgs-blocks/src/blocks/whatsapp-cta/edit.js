@@ -2,7 +2,6 @@ import { __ } from '@wordpress/i18n';
 import {
 	useBlockProps,
 	InspectorControls,
-	RichText,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
@@ -13,38 +12,36 @@ import {
 } from '@wordpress/components';
 import { TypographyControls, ResponsiveBoxControl, ResponsiveBorderRadiusControl, SgsColourPanel, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, textRow } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
+import { VariantContent, cardColourRows, CardTypographyPanel } from './card-fields';
+import { FloatingPanel } from './floating-panel';
+import { buildRootStyle, buildRootClassName } from './preview-style';
 
 const VARIANT_OPTIONS = [
 	{ label: __( 'Inline button', 'sgs-blocks' ), value: 'inline' },
 	{ label: __( 'Floating button', 'sgs-blocks' ), value: 'floating' },
 	{ label: __( 'Banner', 'sgs-blocks' ), value: 'banner' },
+	{ label: __( 'Card', 'sgs-blocks' ), value: 'card' },
 ];
 
-// Box-object interface contract §1/§5: build an editor-preview shorthand from
-// a box object — mirrors render.php's box-shorthand builders so the canvas
-// preview matches the frontend (contract §5). Only BASE tier previews here —
-// tablet/mobile tiers live in render.php's <style> media queries, which the
-// editor canvas never executes for a dynamic block (matches sgs/heading).
-function boxShorthand( box, keys ) {
-	if ( ! box || 'object' !== typeof box ) return undefined;
-	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
-	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
-}
-
 export default function Edit( { attributes, setAttributes } ) {
-	const { padding, margin,
+	const {
 		phoneNumber,
 		message,
 		variant,
 		label,
 		showOn,
-		labelColour,
-		labelColourGradient,
 		backgroundColour,
 		backgroundColourGradient,
 		backgroundColourHover,
 		backgroundColourHoverGradient,
 		borderRadius,
+		padding,
+		margin,
+		labelColour,
+		labelColourGradient,
+		cardBorderColour,
+		cardBorderWidth,
+		cardBorderStyle,
 	} = attributes;
 
 	// Visibility — tier object attr (D777/S2 fix). Only desktop/mobile ever
@@ -53,53 +50,28 @@ export default function Edit( { attributes, setAttributes } ) {
 	const showOnMobile = showOn?.mobile ?? true;
 	const showOnDesktop = showOn?.desktop ?? true;
 
-	// Root-element preview style (contract §B3: the button element IS the
-	// block root — no wrapper div). Colour/background mirror the scoped
-	// button rule; padding/margin/border-radius mirror the scoped box rule.
-	// D636 — sibling gradient attribute preview (mirrors sgs/counter's
-	// numberStyle/labelStyle wiring).
-	const rootStyle = {
-		...resolveTextColourPreviewStyle( labelColour, labelColourGradient, colourVar ),
-		backgroundColor: colourVar( backgroundColour ) || undefined,
-		// Resting fill-gradient preview (2026-09-06, FILL closeout) — mirrors
-		// render.php's background-image sibling. Hover has no canvas preview:
-		// the frontend rule is server-rendered scoped CSS with hardcoded
-		// values (sgs_hover_state_rules()), not a custom property the canvas
-		// inline style could replicate, and mouse-hover in the editor iframe
-		// is a lesser concern than the always-visible resting state.
-		...( backgroundColourGradient &&
-		/^(repeating-)?(linear|radial|conic)-gradient\(/i.test( backgroundColourGradient )
-			? { backgroundImage: backgroundColourGradient }
-			: {} ),
-	};
-	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( paddingPreview ) {
-		rootStyle.padding = paddingPreview;
-	}
-	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( marginPreview ) {
-		rootStyle.margin = marginPreview;
-	}
-	const radiusPreview = boxShorthand( borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
-	if ( radiusPreview ) {
-		rootStyle.borderRadius = radiusPreview;
-	}
-
-	// Mirrors render.php's visibility classes (sgs-whatsapp-cta--hide-mobile /
-	// --hide-desktop), driven by the SAME style.css @media rules — the editor
-	// canvas is a real viewport (device-preview toggle resizes it), so these
-	// classes hide/show the preview exactly as they do on the frontend.
-	const rootClassName = [
-		'sgs-whatsapp-cta',
-		`sgs-whatsapp-cta--${ variant }`,
-		'sgs-whatsapp-cta__btn',
-		! showOnMobile ? 'sgs-whatsapp-cta--hide-mobile' : '',
-		! showOnDesktop ? 'sgs-whatsapp-cta--hide-desktop' : '',
-	].filter( Boolean ).join( ' ' );
-
+	// Preview style/className building is extracted to preview-style.js —
+	// pure functions, no JSX — to keep this file under the JS line budget.
+	// CHECK A (check-editor-render-parity.js): the object below names every
+	// attribute the preview reads EXPLICITLY, rather than handing the whole
+	// `attributes` blob to buildRootStyle() — a wholesale pass-through
+	// renders correctly but is invisible to CHECK A's traceability scan
+	// (CLAUDE.md "Editor-canvas mirrors" trap 1).
 	const blockProps = useBlockProps( {
-		className: rootClassName,
-		style: rootStyle,
+		className: buildRootClassName( { variant, showOnMobile, showOnDesktop } ),
+		style: buildRootStyle( {
+			padding,
+			margin,
+			borderRadius,
+			labelColour,
+			labelColourGradient,
+			backgroundColour,
+			backgroundColourGradient,
+			variant,
+			cardBorderColour,
+			cardBorderWidth,
+			cardBorderStyle,
+		}, colourVar, resolveTextColourPreviewStyle ),
 	} );
 
 	return (
@@ -146,6 +118,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							},
 						],
 					},
+					...( 'card' === variant ? cardColourRows( { attributes, setAttributes } ) : [] ),
 				] }
 			/>
 			<InspectorControls>
@@ -188,6 +161,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
+				{ 'floating' === variant && (
+					<FloatingPanel attributes={ attributes } setAttributes={ setAttributes } />
+				) }
+
 				<PanelBody
 					title={ __( 'Visibility', 'sgs-blocks' ) }
 					initialOpen={ false }
@@ -220,6 +197,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						prefix="label"
 					/>
 				</PanelBody>
+
+				{ 'card' === variant && (
+					<CardTypographyPanel attributes={ attributes } setAttributes={ setAttributes } />
+				) }
 
 				{ /* ── Spacing panel ── padding/margin are each a single block-owned
 				   tier-object attr { desktop, tablet, mobile }, written via
@@ -292,35 +273,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			   render.php's early `return;` (nothing renders on the frontend
 			   when unset), so it has no frontend equivalent to match. ── */ }
 			<span { ...blockProps }>
-				<svg
-					className="sgs-whatsapp-cta__icon"
-					viewBox="0 0 24 24"
-					width="24"
-					height="24"
-					fill="currentColor"
-					aria-hidden="true"
-				>
-					<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-				</svg>
-				{ variant !== 'floating' ? (
-					<RichText
-						tagName="span"
-						className="sgs-whatsapp-cta__label"
-						value={ label }
-						onChange={ ( val ) =>
-							setAttributes( { label: val } )
-						}
-						placeholder={ __(
-							'Chat on WhatsApp',
-							'sgs-blocks'
-						) }
-					/>
-				) : (
-					<span className="sgs-whatsapp-cta__label sgs-sr-only">
-						{ label ||
-							__( 'Chat on WhatsApp', 'sgs-blocks' ) }
-					</span>
-				) }
+				<VariantContent attributes={ attributes } setAttributes={ setAttributes } />
 			</span>
 
 			{ ! phoneNumber && (

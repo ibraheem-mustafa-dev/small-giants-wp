@@ -55,6 +55,7 @@ $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_t
 
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once __DIR__ . '/variant-render.php';
 
 $phone_number    = $attributes['phoneNumber'] ?? '';
 $message         = $attributes['message'] ?? '';
@@ -72,6 +73,14 @@ $bg_gradient     = sgs_css_gradient_value( $attributes['backgroundColourGradient
 $bg_colour_hover   = '' !== (string) ( $attributes['backgroundColourHover'] ?? '' ) ? sgs_colour_value( $attributes['backgroundColourHover'] ) : '';
 $bg_gradient_hover = sgs_css_gradient_value( $attributes['backgroundColourHoverGradient'] ?? '' );
 $anchor            = isset( $attributes['anchor'] ) ? sanitize_html_class( $attributes['anchor'] ) : '';
+
+// Floating variant settings — both OFF by default (0), so an existing
+// floating button with neither attribute stored renders exactly as before.
+$floating_scroll_threshold = max( 0, (int) ( $attributes['floatingScrollThreshold'] ?? 0 ) );
+$floating_hide_label_below = max( 0, (int) ( $attributes['floatingHideLabelBelow'] ?? 0 ) );
+// A floating button only gets a VISIBLE label when the client has typed one —
+// otherwise it renders icon-only exactly as before this feature existed.
+$floating_has_visible_label = ( 'floating' === $variant && $label );
 
 // Do not render if no phone number is set.
 if ( ! $phone_number ) {
@@ -290,6 +299,32 @@ if ( '' !== $typo_css ) {
 	$scoped_css[] = $typo_css;
 }
 
+// --- Card variant: title/sub-line colour + typography + border colour. ---
+if ( 'card' === $variant ) {
+	$scoped_css = array_merge( $scoped_css, sgs_whatsapp_cta_card_css( $attributes, $uid, $root_sel ) );
+
+	// `.sgs-whatsapp-cta__card-text` is the card variant's counterpart to the
+	// plain `.sgs-whatsapp-cta__label` span (title+subline wrapper rather than
+	// a single text node) — there is no dedicated cardText*TextWrap attribute,
+	// so `labelTextWrap` (the block's one text-wrap control) owns the wrapper's
+	// value here too when set, overriding style.css's `text-wrap: pretty`
+	// default via the sanctioned var(--sgs-x, <default>) pattern
+	// (check-hardcoded-render-defaults.js F3). Allowlist matches
+	// helpers-typography.php::sgs_typography_css_rule()'s own $allowed_wraps.
+	$label_text_wrap = (string) ( $attributes['labelTextWrap'] ?? '' );
+	$allowed_wraps   = array( 'wrap', 'nowrap', 'balance', 'pretty', 'stable' );
+	if ( '' !== $label_text_wrap && in_array( $label_text_wrap, $allowed_wraps, true ) ) {
+		$scoped_css[] = '.' . $uid . ' .sgs-whatsapp-cta__card-text{--sgs-whatsapp-cta-card-text-wrap:' . $label_text_wrap . ';}';
+	}
+}
+
+// --- Floating variant: collapse the visible-label pill to icon-only below
+// the configured viewport width (0 = never, the default). ---
+$floating_hide_css = sgs_whatsapp_cta_floating_hide_label_css( $root_sel, $floating_hide_label_below, $floating_has_visible_label );
+if ( '' !== $floating_hide_css ) {
+	$scoped_css[] = $floating_hide_css;
+}
+
 // ---------------------------------------------------------------------------
 // Root element classes + attributes. Contract §B3: the <a> IS the block root
 // (no wrapper <div>) — it carries the block class, the BEM element class
@@ -311,6 +346,11 @@ $root_classes = array_merge(
 $root_attr_args = array( 'class' => implode( ' ', $root_classes ) );
 if ( $anchor ) {
 	$root_attr_args['id'] = $anchor;
+}
+// Per-instance scroll threshold, read by view.js (frontend JS has no access
+// to block attributes — only the rendered markup). 0 = always visible.
+if ( 'floating' === $variant ) {
+	$root_attr_args['data-scroll-threshold'] = (string) $floating_scroll_threshold;
 }
 $wrapper_attributes = get_block_wrapper_attributes( $root_attr_args );
 
@@ -373,10 +413,16 @@ if ( $scoped_css ) {
 	rel="noopener noreferrer"
 	<?php echo $aria_label_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- value is built from esc_attr()-wrapped output. ?>
 >
-	<?php echo $whatsapp_svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG is a hardcoded constant with no user input. ?>
-	<?php if ( 'floating' !== $variant && $label ) : ?>
-		<span class="sgs-whatsapp-cta__label"><?php echo esc_html( $label ); ?></span>
-	<?php elseif ( 'floating' === $variant ) : ?>
-		<span class="sgs-sr-only"><?php echo esc_html( $accessible_label ); ?></span>
+	<?php if ( 'card' === $variant ) : ?>
+		<?php echo sgs_whatsapp_cta_card_markup( $attributes, $whatsapp_svg ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from wp_kses_post()/the hardcoded SVG constant inside the helper. ?>
+	<?php else : ?>
+		<?php echo $whatsapp_svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG is a hardcoded constant with no user input. ?>
+		<?php if ( $floating_has_visible_label ) : ?>
+			<span class="sgs-whatsapp-cta__label sgs-whatsapp-cta__label--floating"><?php echo esc_html( $label ); ?></span>
+		<?php elseif ( 'floating' === $variant ) : ?>
+			<span class="sgs-sr-only"><?php echo esc_html( $accessible_label ); ?></span>
+		<?php elseif ( $label ) : ?>
+			<span class="sgs-whatsapp-cta__label"><?php echo esc_html( $label ); ?></span>
+		<?php endif; ?>
 	<?php endif; ?>
 </a>

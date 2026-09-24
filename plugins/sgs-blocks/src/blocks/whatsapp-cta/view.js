@@ -1,7 +1,11 @@
 /**
  * SGS WhatsApp CTA — floating button visibility logic.
  *
- * Shows floating WhatsApp button after user scrolls past 300px.
+ * Shows the floating WhatsApp button after the user scrolls past a
+ * per-instance threshold (render.php's `data-scroll-threshold`, sourced from
+ * the `floatingScrollThreshold` attribute). 0 = always visible (the default,
+ * so an existing floating button with no threshold configured is unaffected).
+ *
  * Loaded as a viewScriptModule (ES module, frontend only).
  */
 
@@ -10,11 +14,10 @@ const floatingBtns = document.querySelectorAll(
 );
 
 if ( floatingBtns.length ) {
-	const SCROLL_THRESHOLD = 300;
-
 	const toggleVisibility = () => {
-		const scrolled = window.scrollY > SCROLL_THRESHOLD;
 		floatingBtns.forEach( ( btn ) => {
+			const threshold = parseInt( btn.dataset.scrollThreshold, 10 ) || 0;
+			const scrolled = threshold === 0 || window.scrollY > threshold;
 			btn.classList.toggle( 'sgs-whatsapp-cta--visible', scrolled );
 		} );
 	};

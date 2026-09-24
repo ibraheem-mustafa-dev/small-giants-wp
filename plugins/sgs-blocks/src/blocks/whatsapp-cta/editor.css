@@ -1,6 +1,9 @@
 /* ===== SGS WhatsApp CTA — Editor Only ===== */
 
-/* Show floating variant in editor (not fixed positioned) */
+/* Show floating variant in editor (not fixed positioned). The frontend's
+ * "show after scrolling" feature relies on style.css's visibility:hidden
+ * default (so a hidden button is never keyboard-focusable) — the editor
+ * canvas never runs that scroll JS, so it must always show visible here. */
 .sgs-whatsapp-cta--floating {
 	position: relative;
 	bottom: auto;
@@ -8,4 +11,5 @@
 	opacity: 1;
 	transform: none;
 	pointer-events: auto;
+	visibility: visible;
 }
