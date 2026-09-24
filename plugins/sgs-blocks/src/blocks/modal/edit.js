@@ -16,6 +16,7 @@ import {
 import { resolveColourToken, DesignTokenPicker, GradientCapableColourControl, SgsColourPanel, ScrimControls, scrimColourRow } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel } from '../../components/primitives';
 import { resolveTextColourPreviewStyle, resolveBackgroundPaintPreviewStyle } from '../../utils';
+import { ModalAnchorNotice, ModalHashLoadToggle } from './anchor-open-controls';
 
 const MAX_WIDTH_OPTIONS = [
 	{ label: __( 'Small (480px)', 'sgs-blocks' ), value: 'small' },
@@ -76,6 +77,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		closeColourTextHover,
 		closeColourTextGradient,
 		closeColourTextHoverGradient,
+		anchor,
+		openOnHashLoad,
 	} = attributes;
 
 	const [ palette ] = useSettings( 'color.palette' );
@@ -294,6 +297,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							) }
 						</Notice>
 					) }
+					{ /* ModalAnchorNotice (anchor-open-controls.js) — "Link to
+					   this modal with #<anchor>" readout, so a client can
+					   copy the id used by view.js's single delegated click
+					   listener (matches `href="#<anchor>"` or
+					   `data-sgs-modal-open="<anchor>"` against the block's
+					   own native anchor support, supports.anchor:true).
+					   Extracted to its own file since this file already
+					   exceeds the 250-line JS limit. */ }
+					<ModalAnchorNotice anchor={ anchor } />
 					<TextControl
 						label={ __( 'Button text', 'sgs-blocks' ) }
 						value={ triggerText }
@@ -408,6 +420,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							setAttributes( { closeOnOverlay: val } )
 						}
 						__nextHasNoMarginBottom
+					/>
+					{ /* ModalHashLoadToggle (anchor-open-controls.js) —
+					   openOnHashLoad, off by default (block.json) so an
+					   existing anchor link to this block keeps its normal
+					   jump-to-position behaviour unless the operator opts in.
+					   Extracted alongside ModalAnchorNotice above. */ }
+					<ModalHashLoadToggle
+						anchor={ anchor }
+						openOnHashLoad={ openOnHashLoad }
+						setAttributes={ setAttributes }
 					/>
 				</PanelBody>
 			</InspectorControls>

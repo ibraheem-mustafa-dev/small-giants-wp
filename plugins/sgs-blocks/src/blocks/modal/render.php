@@ -24,6 +24,7 @@ $trigger_background = $attributes['triggerBackground'] ?? '';
 $trigger_background_gradient = sgs_css_gradient_value( $attributes['triggerBackgroundGradient'] ?? '' );
 $max_width          = $attributes['maxWidth'] ?? 'medium';
 $close_on_overlay   = $attributes['closeOnOverlay'] ?? true;
+$open_on_hash_load  = ! empty( $attributes['openOnHashLoad'] );
 $modal_background   = $attributes['modalBackground'] ?? 'white';
 $modal_background_gradient = sgs_css_gradient_value( $attributes['modalBackgroundGradient'] ?? '' );
 
@@ -119,6 +120,18 @@ $wrapper_args = array(
 	'class' => 'sgs-modal ' . $uid,
 );
 
+// The block's own HTML anchor (supports.anchor:true) doubles as the id a
+// client links `#<anchor>` or `data-sgs-modal-open="<anchor>"` at to open
+// THIS modal from anywhere on the page (view.js's delegated opener listener
+// resolves that id to this wrapper, then finds the nested dialog inside it).
+// Set explicitly on $wrapper_args rather than relying only on core's
+// automatic anchor-support wrapper id, mirroring before-after/render.php's
+// proven belt-and-braces pattern for a dynamic block's own wrapper.
+$anchor = $attributes['anchor'] ?? '';
+if ( $anchor ) {
+	$wrapper_args['id'] = esc_attr( $anchor );
+}
+
 $wrapper_attributes = get_block_wrapper_attributes( $wrapper_args );
 
 // Build the block's own scoped <style> — trigger + dialog colour rules that
@@ -181,10 +194,21 @@ $scoped_css = implode( '', $scoped_css_rules );
 		<?php echo esc_html( $trigger_text ); ?>
 	</button>
 
+	<?php
+	/*
+	 * data-open-on-hash-load, read by view.js's single delegated opener
+	 * listener and its hash-on-load check: any link/button targeting this
+	 * block's own HTML anchor id (`#anchor` or `data-sgs-modal-open="anchor"`)
+	 * resolves to this block's WRAPPER — which carries `id="<anchor>"` via
+	 * native anchor support (supports.anchor:true) — then finds this nested
+	 * dialog inside it.
+	 */
+	?>
 	<dialog
 		id="<?php echo esc_attr( $modal_id ); ?>"
 		class="sgs-modal__dialog sgs-modal__dialog--<?php echo esc_attr( $max_width ); ?> <?php echo esc_attr( $uid ); ?>"
 		data-close-on-overlay="<?php echo $close_on_overlay ? 'true' : 'false'; ?>"
+		data-open-on-hash-load="<?php echo $open_on_hash_load ? 'true' : 'false'; ?>"
 		aria-labelledby="<?php echo esc_attr( $modal_id ); ?>-title"
 	>
 		<button

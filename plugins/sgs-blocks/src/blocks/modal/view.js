@@ -5,118 +5,92 @@
  * Native dialog provides built-in focus trap, Escape key handling, and ::backdrop styling.
  * WCAG 2.2 AA compliant with proper ARIA attributes and keyboard navigation.
  *
+ * Two opener mechanisms feed the same open/close functions (modal-core.js):
+ * 1. This block's own trigger button (`.sgs-modal__trigger`) — wired below,
+ *    one listener per instance, unchanged shape from before.
+ * 2. ANY other element on the page (a plain text link, a button in a
+ *    different block, a filter panel, a footer link…) — open-anywhere.js's
+ *    single delegated document-level click listener.
+ *
  * @package SGS\Blocks
  */
 
-function initModals() {
-	const triggers = document.querySelectorAll( '.sgs-modal__trigger' );
+import { openModal, closeModal } from './modal-core';
+import { initGenericOpeners, initHashOnLoad } from './open-anywhere';
 
-	triggers.forEach( ( trigger ) => {
-		const modalId = trigger.dataset.modalId;
-		if ( ! modalId ) {
-			return;
-		}
+/**
+ * Wire up a single modal instance's own trigger button + close/overlay/escape
+ * behaviour.
+ *
+ * @param {HTMLElement} trigger The `.sgs-modal__trigger` button.
+ */
+function initTrigger( trigger ) {
+	const modalId = trigger.dataset.modalId;
+	if ( ! modalId ) {
+		return;
+	}
 
-		const dialog = document.getElementById( modalId );
-		if ( ! dialog ) {
-			return;
-		}
+	const dialog = document.getElementById( modalId );
+	if ( ! dialog ) {
+		return;
+	}
 
-		const closeButton = dialog.querySelector( '.sgs-modal__close' );
-		const closeOnOverlay = dialog.dataset.closeOnOverlay === 'true';
+	const closeButton = dialog.querySelector( '.sgs-modal__close' );
+	const closeOnOverlay = dialog.dataset.closeOnOverlay === 'true';
 
-		// Open modal when trigger button is clicked.
-		trigger.addEventListener( 'click', () => {
-			openModal( dialog, closeButton );
+	// Open modal when trigger button is clicked.
+	trigger.addEventListener( 'click', () => {
+		openModal( dialog, closeButton, trigger );
+	} );
+
+	// Close button.
+	if ( closeButton ) {
+		closeButton.addEventListener( 'click', () => {
+			closeModal( dialog );
 		} );
+	}
 
-		// Close button.
-		if ( closeButton ) {
-			closeButton.addEventListener( 'click', () => {
+	// Close on backdrop/overlay click.
+	// Native dialog fires a 'click' event on the dialog element when clicking the backdrop.
+	if ( closeOnOverlay ) {
+		dialog.addEventListener( 'click', ( e ) => {
+			// Check if the click was on the dialog itself (backdrop area).
+			// dialog.getBoundingClientRect() gives us the content box, excluding the backdrop.
+			const rect = dialog.getBoundingClientRect();
+			const clickedInDialog =
+				rect.top <= e.clientY &&
+				e.clientY <= rect.top + rect.height &&
+				rect.left <= e.clientX &&
+				e.clientX <= rect.left + rect.width;
+
+			if ( ! clickedInDialog ) {
 				closeModal( dialog );
-			} );
-		}
-
-		// Close on backdrop/overlay click.
-		// Native dialog fires a 'click' event on the dialog element when clicking the backdrop.
-		if ( closeOnOverlay ) {
-			dialog.addEventListener( 'click', ( e ) => {
-				// Check if the click was on the dialog itself (backdrop area).
-				// dialog.getBoundingClientRect() gives us the content box, excluding the backdrop.
-				const rect = dialog.getBoundingClientRect();
-				const clickedInDialog =
-					rect.top <= e.clientY &&
-					e.clientY <= rect.top + rect.height &&
-					rect.left <= e.clientX &&
-					e.clientX <= rect.left + rect.width;
-
-				if ( ! clickedInDialog ) {
-					closeModal( dialog );
-				}
-			} );
-		}
-
-		// Native dialog handles Escape key automatically, but we can listen for the 'cancel' event
-		// if we want to prevent default behaviour or add custom logic.
-		dialog.addEventListener( 'cancel', ( e ) => {
-			// Allow default (close on Escape).
-			// If you wanted to prevent Escape closing, you'd use e.preventDefault() here.
+			}
 		} );
+	}
+
+	// Single cleanup point for every close path — our own closeModal() calls
+	// (close button, overlay click, generic-opener from open-anywhere.js) AND
+	// native Escape/`cancel` handling all end in dialog.close(), which fires
+	// 'close'. Restores body scroll position and resets the opener's
+	// aria-expanded (openModal(), modal-core.js, sets dialog.__sgsOpener).
+	dialog.addEventListener( 'close', () => {
+		const scrollY = Number.parseInt( dialog.dataset.scrollY || '0', 10 );
+		document.body.classList.remove( 'sgs-modal-scroll-locked' );
+		document.body.style.removeProperty( '--sgs-modal-scroll-y' );
+		window.scrollTo( 0, scrollY );
+
+		if ( dialog.__sgsOpener && 'BUTTON' === dialog.__sgsOpener.tagName ) {
+			dialog.__sgsOpener.setAttribute( 'aria-expanded', 'false' );
+		}
+		dialog.__sgsOpener = null;
 	} );
 }
 
-/**
- * Open a modal using native dialog.showModal().
- *
- * Native dialog provides a built-in focus trap — Tab and Shift+Tab cycle
- * only through focusable elements inside the dialog while it is open.
- * No manual focusin/focusout listener is required; the browser enforces
- * this at the platform level when showModal() is used (WCAG 2.1 SC 2.1.2).
- *
- * Additional native behaviour:
- * - Escape key closes the dialog (fires 'cancel' event)
- * - Backdrop styling via ::backdrop pseudo-element
- * - aria-modal="true" implied by showModal()
- *
- * Additionally we lock body scroll while the modal is open so the page
- * beneath does not scroll when the user scrolls inside the dialog.
- */
-function openModal( dialog, closeButton ) {
-	dialog.showModal();
-
-	// Lock body scroll — save current position to restore on close.
-	// Real properties (overflow / position / top / width) live in style.css
-	// on the `.sgs-modal-scroll-locked` class (no-inline styling contract,
-	// Spec 32); only the scroll-position VALUE is written here, as a CSS
-	// custom-property value (allowed).
-	const scrollY = window.scrollY;
-	document.body.classList.add( 'sgs-modal-scroll-locked' );
-	document.body.style.setProperty( '--sgs-modal-scroll-y', `-${ scrollY }px` );
-	dialog.dataset.scrollY = scrollY;
-
-	// Focus the close button (first focusable element).
-	if ( closeButton ) {
-		// Small delay to ensure dialog is fully rendered.
-		setTimeout( () => {
-			closeButton.focus();
-		}, 50 );
-	}
-}
-
-/**
- * Close a modal using native dialog.close().
- *
- * Restores body scroll position after closing.
- * Native dialog automatically restores focus to the element that opened it.
- */
-function closeModal( dialog ) {
-	const scrollY = Number.parseInt( dialog.dataset.scrollY || '0', 10 );
-
-	document.body.classList.remove( 'sgs-modal-scroll-locked' );
-	document.body.style.removeProperty( '--sgs-modal-scroll-y' );
-	window.scrollTo( 0, scrollY );
-
-	dialog.close();
+function initModals() {
+	document.querySelectorAll( '.sgs-modal__trigger' ).forEach( initTrigger );
+	initGenericOpeners();
+	initHashOnLoad();
 }
 
 // Initialise on DOM ready.

@@ -251,6 +251,11 @@
 		"modalBackgroundGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"openOnHashLoad": {
+			"type": "boolean",
+			"default": false,
+			"description": "When true, this modal also opens automatically on page load if the URL's hash matches this block's HTML anchor (e.g. loading /page/#size-guide). Off by default so existing links to an anchored section keep their normal jump-to-position behaviour."
 		}
 	},
 	"render": "file:./render.php",
