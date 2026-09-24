@@ -32,7 +32,7 @@ Also read only in part: `ref=` (79), `onClick` (106; presence only), `<helmet>`,
 **"Evaluate the README section by section."** About 12 to 15 facts are unique to it and no code reads them (route URL patterns, section order and reuse claims, a few rules such as "zero-reviews state first", "keep trust signals", checkout step count). Code reads only: routes table, bold-named bullets under a screen, colour tables, font bullets, max width and radius. **It is also wrong in places:** Home section order and two missing sections (brand marquee, lens band), nav list, wordmark tracking (.14em not .26em), underline 1px not 2px, FAQ count (8 not 9), navy accent values, Frame Card padding, and it calls the bag a route when it is a drawer. **Consequence: the draft files are the source of truth; the README is a lossy, partly stale summary. Copying it blindly into the files would copy its errors.**
 
 **"Two layers: both Claude Design and a second layer?" Yes, and make the second layer deterministic.** Two AI passes can miss the same thing silently, because both read ambiguous prose. So:
-1. Claude Design writes the facts into the files (closing prompt, section 4).
+1. Claude Design writes the facts into the files (the closing prompt Bean gives Claude Design).
 2. A deterministic checker (plain code, no AI) verifies them: every checkable README claim (names, counts, numbers, routes, colours) against the files, every schema rule, and a coverage check that every draft construct has a reader or produces a gap row. It prints an exact list ("README says 9 FAQs, file has 8"), which you paste back to Claude Design or I fix in a reviewed diff.
 3. The pipeline's own gap logging and Stage 11.6 parity against the ORIGINAL draft remain the last net.
 The checker only catches what it has a rule for, so every rule ships with a planted violation that must make it fail, and the ignore audit (above) feeds it new rules.
@@ -98,9 +98,9 @@ Not in the standard: `data-slot` (not in Spec 00; Mama's uses none). Lives at `.
 - Residual scope: for a classless section root the residual targets the block wrapper (correct); for a nested classless element it would restyle the whole section (open, D1129).
 - Mama's has non-device breakpoints (600, 640, 1280): the standard must allow them, so "only 768 and 1024" is not a rule.
 
-## 4. The closing prompt for Claude Design
+## 4. The Claude Design bundle
 
-The prompt is saved, single-use, at `.claude/prompts/2026-09-20-claude-design-closing-prompt.md` (the file is the one source; this plan does not repeat the text, so the two cannot drift). It asks Claude Design to: embed one JSON manifest block (pages, collections and their intent, README rules the files do not show); put an `sgs-<name>` class on every top-level section; adopt 768 and 1024 as the device breakpoints (760 and 700 become 768; extras such as 1280 are named in the manifest); use the attached logo file and file references instead of base64; list every README-versus-files difference; and shorten the README. Attach the "ec" logo PNG. Save the result beside the current bundle as `design_handoff_ward_end_eye_care_v2` for the checker.
+The Eye Care bundle from Claude Design is `sites/eye-care-ward-end/design_handoff_ward_end_eye_care_v2`, beside the original bundle; the checker reads it.
 
 ## 5. Phases (each verified on the real Eye Care page; Mama's markup identical)
 
