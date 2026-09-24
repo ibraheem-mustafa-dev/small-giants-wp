@@ -49,10 +49,32 @@ if ( ! function_exists( 'sgs_nav_shared_sweep_eligible' ) ) {
 
 		$guard = $row['glyphGuard'] ?? null;
 		if ( is_array( $guard ) && isset( $guard['attr'] ) ) {
-			$disallowed = isset( $guard['disallowedValues'] ) && is_array( $guard['disallowedValues'] )
+			$disallowed  = isset( $guard['disallowedValues'] ) && is_array( $guard['disallowedValues'] )
 				? array_map( 'strval', $guard['disallowedValues'] )
 				: array();
-			if ( in_array( (string) ( $attributes[ (string) $guard['attr'] ] ?? '' ), $disallowed, true ) ) {
+			$guard_value = $attributes[ (string) $guard['attr'] ] ?? '';
+
+			if ( is_array( $guard_value ) ) {
+				/*
+				 * A guarded attribute (`triggerMode`) can be a TIER OBJECT rather
+				 * than a flat scalar. The guard's question is
+				 * "does Sweep have a glyph to grip ANYWHERE?", so it blocks Sweep
+				 * only when EVERY resolved tier is disallowed (e.g. every tier is
+				 * icon-only) — a single text-bearing tier keeps Sweep eligible,
+				 * because render.php then renders the text span in the DOM (it
+				 * renders it whenever ANY tier is text-bearing) for Sweep to
+				 * colour. 'icon' is triggerMode's own resolved fallback — the
+				 * only attribute using an array-shaped guard today.
+				 */
+				$sgs_nm_guard_tiers = array(
+					sgs_resolve_tier( $guard_value, 'desktop', 'icon' )['value'],
+					sgs_resolve_tier( $guard_value, 'tablet', 'icon' )['value'],
+					sgs_resolve_tier( $guard_value, 'mobile', 'icon' )['value'],
+				);
+				if ( array() === array_diff( $sgs_nm_guard_tiers, $disallowed ) ) {
+					return false;
+				}
+			} elseif ( in_array( (string) $guard_value, $disallowed, true ) ) {
 				return false;
 			}
 		}

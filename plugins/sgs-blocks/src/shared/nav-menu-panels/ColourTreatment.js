@@ -23,6 +23,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import { resolveTier } from '../../utils/responsive';
 
 /**
  * Is the `Sweep` segment offered on this row?
@@ -67,9 +68,19 @@ export function sweepEligible( eligibility, treatment, attributes ) {
 
 	// Condition 3 — the element actually has glyphs for `background-clip: text`
 	// to grip. `null` always passes, per the declared shape.
+	// A tier-object guard value (triggerMode, fallback 'icon') blocks only when EVERY tier is
+	// disallowed, matching nav-menu-treatments.php::sgs_nav_shared_sweep_eligible().
 	const guard = rule.glyphGuard;
-	if ( guard && ( guard.disallowedValues || [] ).includes( attributes[ guard.attr ] ) ) {
-		return false;
+	if ( guard ) {
+		const disallowed = guard.disallowedValues || [];
+		const raw = attributes[ guard.attr ];
+		const values =
+			raw && typeof raw === 'object'
+				? [ 'desktop', 'tablet', 'mobile' ].map( ( tier ) => resolveTier( raw, tier, 'icon' ).value )
+				: [ raw ];
+		if ( values.every( ( value ) => disallowed.includes( value ) ) ) {
+			return false;
+		}
 	}
 
 	return true;

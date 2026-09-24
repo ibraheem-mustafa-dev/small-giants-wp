@@ -62,6 +62,7 @@ import {
 	scrimColourRow,
 } from '../../components';
 import { ToolsPanel } from '../../components/primitives';
+import { resolveTier } from '../../utils';
 import {
 	ItemTextTreatment,
 	ItemBgTreatment,
@@ -217,6 +218,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		showActiveDrawerNotice,
 		showDrawerNotice,
 	} = useDrawerNotice( { clientId, drawerRef } );
+
+	// `triggerMode` is a TIER OBJECT; "any tier shows the word"
+	// (not just the desktop tier) is what gates a control that applies
+	// uniformly across every tier's markup (the burger LABEL typography below
+	// — the text span exists in the DOM the moment ANY tier is text-bearing,
+	// mirrors render.php's own $sgs_nm_trigger_any_text).
+	const triggerAnyTextBearing = [ 'desktop', 'tablet', 'mobile' ].some( ( tier ) =>
+		[ 'text', 'icon-and-text' ].includes( resolveTier( triggerMode, tier, 'icon' ).value )
+	);
 
 	// Reference element for resolving `var(--wp--preset--color--x)` stops via
 	// getComputedStyle, mirroring GradientCapableColourControl's own probe
@@ -770,7 +780,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								showWritingMode: true,
 								showHover: true,
 							},
-							...( triggerMode !== 'icon' ? [ {
+							...( triggerAnyTextBearing ? [ {
 								key: 'burger',
 								label: __( 'Menu button', 'sgs-blocks' ),
 								prefix: 'burger',

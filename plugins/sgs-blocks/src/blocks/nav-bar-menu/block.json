@@ -1254,10 +1254,13 @@
 			"default": "",
 			"description": "String, not number — matches submenuFontWeight."
 		},
+		"_comment_triggerMode": "A TIER OBJECT -- desktop is concrete, tablet inherits desktop, mobile inherits tablet, fallback 'icon'. THREE values today (icon | text | icon-and-text); Wave 3C U-14 adds a fourth. PHP-validated against ONE array in render.php (`$sgs_nm_allowed_trigger_modes`) -- keeping the allow-list in one place is what makes U-14's addition a one-line edit. A stored FLAT string (pre-migration content) is folded by scripts/migrate-stored-tier-scalars.py (-> {desktop:<value>}) -- render.php also defends against an unmigrated flat string directly. Any tier resolving to 'icon' or 'icon-and-text' renders the icon markup; any tier resolving to 'text' or 'icon-and-text' renders the label span -- both can exist in the DOM at once, shown/hidden per tier by includes/nav-menu-trigger-css.php's own media queries. Accessible name: aria-label carries the trigger label whenever ANY tier hides the visible word, omitted only when EVERY tier shows it.",
 		"triggerMode": {
-			"type": "string",
-			"default": "icon",
-			"description": "What the menu button shows: icon / text / icon-and-text. PHP-validated, no JSON enum."
+			"type": "object",
+			"default": {
+				"desktop": "icon"
+			},
+			"description": "Per-device menu-button display: icon / text / icon-and-text. Tier object -- desktop concrete, tablet inherits desktop, mobile inherits tablet. PHP-validated against includes/nav-menu-trigger-css.php's allow-list, no JSON enum."
 		},
 		"triggerLabel": {
 			"type": "string",

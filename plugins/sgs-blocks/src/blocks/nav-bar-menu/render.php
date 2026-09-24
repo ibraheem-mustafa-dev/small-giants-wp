@@ -533,34 +533,73 @@ if ( $sgs_nm_show_burger && class_exists( '\\SGS\\Blocks\\Sgs_Drawer_Render' ) )
 /*
  * ── Menu button: mode, label, icon, magnet (FR-41-12 / FR-41-30(a) / FR-41-31).
  *
- * `triggerMode` is PHP-validated, not a JSON enum — an out-of-enum stored value
- * would otherwise coerce silently back to the block.json default, which bites
- * hardest via a programmatic writer (the cloning converter, a theme pattern).
- * ⚠ The `aria-label` is built as a VARIABLE and interpolated. Inside the
- * `sprintf()` FORMAT STRING the only way to "drop" it would be to feed it '' —
- * emitting `aria-label=""`, an EMPTY accessible name, strictly worse than the
- * Label-in-Name mismatch it avoids. Under `text` and
- * `icon-and-text` the visible word IS the accessible name, so the attribute is
- * omitted entirely; under `icon` it stays.
+ * `triggerMode` is a TIER OBJECT (desktop concrete, tablet
+ * inherits desktop, mobile inherits tablet, fallback `icon`), mirroring
+ * sgs/nav-drawer's `closeStyle`. `$sgs_nm_allowed_trigger_modes` is the ONE
+ * PHP-validated allow-list (no JSON enum — an out-of-list stored value would
+ * otherwise coerce silently back to the block.json default) — Wave 3C U-14
+ * adds a fourth value here and nowhere else. A stored FLAT string
+ * (pre-migration content) is defended against directly, the same belt the
+ * migration script (`scripts/migrate-stored-tier-scalars.py`) is the real fix
+ * for.
  */
-$trigger_mode = in_array( $attributes['triggerMode'] ?? '', array( 'icon', 'text', 'icon-and-text' ), true )
-	? (string) $attributes['triggerMode']
-	: 'icon';
+$sgs_nm_allowed_trigger_modes = array( 'icon', 'text', 'icon-and-text' );
+$sgs_nm_trigger_mode_raw      = $attributes['triggerMode'] ?? array();
+if ( is_string( $sgs_nm_trigger_mode_raw ) ) {
+	$sgs_nm_trigger_mode_raw = '' !== $sgs_nm_trigger_mode_raw ? array( 'desktop' => $sgs_nm_trigger_mode_raw ) : array();
+}
+if ( ! is_array( $sgs_nm_trigger_mode_raw ) ) {
+	$sgs_nm_trigger_mode_raw = array();
+}
+
+$sgs_nm_valid_trigger_mode = function ( $value ) use ( $sgs_nm_allowed_trigger_modes ) {
+	return in_array( $value, $sgs_nm_allowed_trigger_modes, true ) ? (string) $value : 'icon';
+};
+
+$trigger_mode_desktop = $sgs_nm_valid_trigger_mode( sgs_resolve_tier( $sgs_nm_trigger_mode_raw, 'desktop', 'icon' )['value'] );
+$trigger_mode_tablet  = $sgs_nm_valid_trigger_mode( sgs_resolve_tier( $sgs_nm_trigger_mode_raw, 'tablet', 'icon' )['value'] );
+$trigger_mode_mobile  = $sgs_nm_valid_trigger_mode( sgs_resolve_tier( $sgs_nm_trigger_mode_raw, 'mobile', 'icon' )['value'] );
+
+// The DESKTOP tier drives everything not itself tiered below — mirrors
+// closeStyle's own desktop-only-drives convention.
+$trigger_mode = $trigger_mode_desktop;
+
+// Any tier showing the icon / any tier showing the word — both markup
+// elements can exist in the DOM at once (nav-menu-trigger-css.php hides
+// whichever one a given tier doesn't want); "every tier shows the word" is
+// the ONLY case that may omit aria-label (Label-in-Name, §"Accessible name").
+$sgs_nm_trigger_tiers           = array( $trigger_mode_desktop, $trigger_mode_tablet, $trigger_mode_mobile );
+$sgs_nm_trigger_any_icon        = array() !== array_intersect( $sgs_nm_trigger_tiers, array( 'icon', 'icon-and-text' ) );
+$sgs_nm_trigger_any_text        = array() !== array_intersect( $sgs_nm_trigger_tiers, array( 'text', 'icon-and-text' ) );
+$sgs_nm_trigger_every_tier_text = array() === array_diff( $sgs_nm_trigger_tiers, array( 'text', 'icon-and-text' ) );
+
+// The MARKUP mode handed to sgs_nav_bar_menu_burger_toggle_markup() — that
+// function's own icon_html/text_html/mode_class branches are keyed off a
+// single flat mode ('text' suppresses the icon; anything but 'icon'
+// renders the label). Passing the UNION of what any tier needs reproduces
+// exactly "render the icon if any tier shows it, render the label if any
+// tier shows it" without touching that shared markup function.
+$sgs_nm_trigger_markup_mode = 'icon';
+if ( $sgs_nm_trigger_any_icon && $sgs_nm_trigger_any_text ) {
+	$sgs_nm_trigger_markup_mode = 'icon-and-text';
+} elseif ( $sgs_nm_trigger_any_text ) {
+	$sgs_nm_trigger_markup_mode = 'text';
+}
 
 $trigger_label = trim( (string) ( $attributes['triggerLabel'] ?? '' ) );
 if ( '' === $trigger_label ) {
 	$trigger_label = __( 'Menu', 'sgs-blocks' );
 }
 
-$burger_icon = 'text' === $trigger_mode
-	? ''
-	: sgs_nav_shared_icon_markup(
+$burger_icon = $sgs_nm_trigger_any_icon
+	? sgs_nav_shared_icon_markup(
 		$attributes['triggerIcon'] ?? null,
 		array(
 			'source' => 'lucide',
 			'name'   => 'menu',
 		)
-	);
+	)
+	: '';
 
 /*
  * Is the resolved glyph the UNMODIFIED default ({source:lucide,name:menu})?
@@ -571,9 +610,26 @@ $burger_icon = 'text' === $trigger_mode
 $burger_icon_is_default = 'lucide' === (string) ( $attributes['triggerIcon']['source'] ?? 'lucide' )
 	&& 'menu' === (string) ( $attributes['triggerIcon']['name'] ?? 'menu' );
 
-$burger_aria_attr = 'icon' === $trigger_mode
-	? sprintf( ' aria-label="%s"', esc_attr__( 'Open menu', 'sgs-blocks' ) )
-	: '';
+/*
+ * ⚠ The `aria-label` is built as a VARIABLE and interpolated, never a `%s`
+ * inside a `sprintf()` FORMAT STRING — feeding it '' would emit
+ * `aria-label=""`, an EMPTY accessible name, strictly worse than the
+ * Label-in-Name mismatch it avoids. Whenever ANY tier hides the
+ * visible word, the button still needs an accessible name at that tier, so
+ * aria-label carries the trigger label (the same word the OTHER tiers show,
+ * so Label-in-Name still holds where the word IS visible). Only when EVERY
+ * tier shows the word is aria-label omitted entirely, letting the visible
+ * text be the accessible name.
+ */
+// No tier shows a word: a descriptive name. Some tiers show it: that same word
+// (Label-in-Name). Every tier shows it: the visible word is the name.
+if ( $sgs_nm_trigger_every_tier_text ) {
+	$burger_aria_attr = '';
+} elseif ( $sgs_nm_trigger_any_text ) {
+	$burger_aria_attr = sprintf( ' aria-label="%s"', esc_attr( $trigger_label ) );
+} else {
+	$burger_aria_attr = sprintf( ' aria-label="%s"', esc_attr__( 'Open menu', 'sgs-blocks' ) );
+}
 
 /*
  * FR-41-31 — the magnet rides as three data attributes on the button and
@@ -631,7 +687,7 @@ $toggle_html = $sgs_nm_show_burger ? sgs_nav_bar_menu_burger_toggle_markup(
 	$burger_context_attr,
 	$drawer_ref,
 	$burger_icon,
-	$trigger_mode,
+	$sgs_nm_trigger_markup_mode,
 	$trigger_label,
 	$burger_aria_attr,
 	$burger_magnet_attrs,
@@ -847,7 +903,7 @@ if ( '' !== $sgs_nm_disabled_decl ) {
 // both surfaces read alike. See sgs_nav_shared_item_state_css()'s own
 // $default_item_colour_hover docblock in includes/nav-menu-css.php.
 $css .= sgs_nav_shared_item_state_css( $attributes, $uid_sel, 'sgs-nav-bar-menu', $sgs_nm_treatments, 'primary' );
-$css .= sgs_nav_bar_menu_trigger_css( $attributes, $uid_sel, $sgs_nm_treatments, $trigger_mode );
+$css .= sgs_nav_bar_menu_trigger_css( $attributes, $uid_sel, $sgs_nm_treatments, $trigger_mode_desktop, $trigger_mode_tablet, $trigger_mode_mobile );
 $css .= sgs_nav_shared_submenu_css(
 	$attributes,
 	$uid_sel,

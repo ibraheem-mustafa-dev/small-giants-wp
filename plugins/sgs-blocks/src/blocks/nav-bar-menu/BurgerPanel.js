@@ -5,8 +5,9 @@ import {
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
-import { SgsLengthControl, IconPicker, MotionEasingControl } from '../../components';
+import { SgsLengthControl, IconPicker, MotionEasingControl, ResponsiveOverride } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import { resolveTier } from '../../utils';
 
 /**
  * Wave 3C U-9 (§4.4) — burger morph pose options.
@@ -38,7 +39,8 @@ const BURGER_MORPH_OPTIONS = [
  *
  * @param {Object}   root0                       Props.
  * @param {string}   root0.burgerSize            `burgerSize`.
- * @param {string}   root0.triggerMode           `triggerMode` — icon | text | icon-and-text.
+ * @param {Object}   root0.triggerMode           `triggerMode` — tier object {desktop,tablet,mobile},
+ *                                                each icon | text | icon-and-text.
  * @param {string}   root0.triggerLabel          `triggerLabel`.
  * @param {Object}   root0.triggerIcon           `triggerIcon` — `{ source, name }`.
  * @param {boolean}  root0.triggerMagnetEnabled  `triggerMagnetEnabled`.
@@ -65,9 +67,15 @@ export default function BurgerPanel( {
 	burgerMorphEasingCustom,
 	setAttributes,
 } ) {
-	const mode = triggerMode || 'icon';
-	const showsIcon = 'icon' === mode || 'icon-and-text' === mode;
-	const showsText = 'icon' !== mode;
+	// `triggerMode` is a TIER OBJECT. The icon picker, the
+	// Label field and the morph controls apply to EVERY tier at once (one
+	// icon glyph, one label word, one morph pose, whichever tiers use them),
+	// so they are offered the moment ANY tier needs them, not just desktop's.
+	const modes = [ 'desktop', 'tablet', 'mobile' ].map(
+		( tier ) => resolveTier( triggerMode, tier, 'icon' ).value
+	);
+	const showsIcon = modes.some( ( m ) => 'icon' === m || 'icon-and-text' === m );
+	const showsText = modes.some( ( m ) => 'text' === m || 'icon-and-text' === m );
 	const morph = burgerMorph || 'x';
 
 	return (
@@ -89,21 +97,33 @@ export default function BurgerPanel( {
 				/>
 			) }
 
-			<ToggleGroupControl
+			{ /* Per-device override, mirroring sgs/nav-drawer's own
+			   `closeStyle` control: desktop is concrete, tablet inherits desktop,
+			   mobile inherits tablet. */ }
+			<ResponsiveOverride
 				label={ __( 'Show as', 'sgs-blocks' ) }
-				value={ mode }
-				isBlock
-				__nextHasNoMarginBottom
-				__next40pxDefaultSize
-				onChange={ ( val ) => setAttributes( { triggerMode: val || 'icon' } ) }
+				value={ triggerMode }
+				onChange={ ( obj ) => setAttributes( { triggerMode: obj } ) }
 			>
-				<ToggleGroupControlOption value="icon" label={ __( 'Icon', 'sgs-blocks' ) } />
-				<ToggleGroupControlOption value="text" label={ __( 'Text', 'sgs-blocks' ) } />
-				<ToggleGroupControlOption
-					value="icon-and-text"
-					label={ __( 'Both', 'sgs-blocks' ) }
-				/>
-			</ToggleGroupControl>
+				{ ( { ownValue, effectiveValue, setOwnValue } ) => (
+					<ToggleGroupControl
+						hideLabelFromVision
+						label={ __( 'Show as', 'sgs-blocks' ) }
+						value={ ownValue || effectiveValue || 'icon' }
+						isBlock
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+						onChange={ ( val ) => setOwnValue( val || undefined ) }
+					>
+						<ToggleGroupControlOption value="icon" label={ __( 'Icon', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="text" label={ __( 'Text', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption
+							value="icon-and-text"
+							label={ __( 'Both', 'sgs-blocks' ) }
+						/>
+					</ToggleGroupControl>
+				) }
+			</ResponsiveOverride>
 
 			{ showsText && (
 				<TextControl
