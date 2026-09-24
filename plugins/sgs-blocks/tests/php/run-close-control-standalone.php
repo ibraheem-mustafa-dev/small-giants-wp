@@ -406,9 +406,13 @@ ok( '' === $run_edge( array(), 'modal' ), 'NEGATIVE CONTROL: modal full-screen g
 $edge_operator = $run_edge( array( 'anchor' => array( 'desktop' => 'trigger' ), 'shadow' => 'soft' ), 'non-modal' );
 ok( false === strpos( $edge_operator, 'box-shadow' ) && false !== strpos( $edge_operator, 'border-radius:20px;' ), 'an operator shadow replaces the default shadow (the default emits none), corners still default' );
 $edge_mixed = $run_edge( array( 'anchor' => array( 'desktop' => 'trigger', 'mobile' => 'full-screen' ) ), 'modal' );
-ok( false !== strpos( $edge_mixed, '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){.t.wp-block-sgs-nav-drawer{box-shadow:none;border-radius:0;}}' ), 'mixed tiers: a modal full-screen mobile tier resets the card edge' );
+ok( false !== strpos( $edge_mixed, '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){.t.wp-block-sgs-nav-drawer{box-shadow:none;border-radius:0;border:0;box-sizing:border-box;}}' ), 'mixed tiers: a modal full-screen mobile tier resets the card edge' );
 $radius_pos = strpos( $current_source, '$radius_tiers      = sgs_border_radius_tiers( $attributes );' );
 ok( false !== $radius_pos && $edge_start < $radius_pos, 'the default edge is emitted BEFORE the operator radius rule, so an operator radius wins by source order' );
 
+ok( false !== strpos( $edge_trigger, 'border:1px solid var(--wp--preset--color--primary);' ), 'trigger card: 1px primary border all round by default' );
+ok( false !== strpos( $edge_fs_nonmodal, 'border:0;border-top:1px solid var(--wp--preset--color--primary);' ), 'non-modal full-screen: a 1px primary line along the top only' );
+$border_pos = strpos( $current_source, '// ── Block-private border: width / style / colour (Shape B).' );
+ok( false !== $border_pos && $edge_start < $border_pos, 'the default border is emitted BEFORE the operator border rules, so an operator border wins by source order' );
 echo "\n==== $pass passed, $fail failed ====\n";
 exit( $fail > 0 ? 1 : 0 );

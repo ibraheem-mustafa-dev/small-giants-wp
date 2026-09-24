@@ -531,7 +531,8 @@ if ( ! empty( $sgs_nd_shadow_decls ) ) {
 // full-screen drawer (which starts under the burger row), default to the
 // theme's `floating` shadow, the mega panel's default. The cards also default
 // to the mega panel's 20px corners; a full-screen drawer stays square. A
-// modal full-screen drawer covers everything and has no edge to show. Emitted
+// modal full-screen drawer covers everything and has no edge to show. A thin
+// primary border marks the same edge (see the decls closure). Emitted
 // per tier (anchor is a tier object) and BEFORE the operator's radius rule
 // below, so an operator radius wins by source order; an operator shadow
 // replaces the default shadow entirely.
@@ -552,6 +553,20 @@ $sgs_nd_edge_decls     = function ( $edge ) use ( $sgs_nd_default_shadow, $sgs_n
 		$decls = $edge['shadow'] && ! empty( $sgs_nd_default_shadow ) ? $sgs_nd_default_shadow : array( 'box-shadow:none' );
 	}
 	$decls[] = 'border-radius:' . ( $edge['radius'] ? '20px' : '0' );
+	// A 1px primary line where the drawer meets the header (Bean: the shadow
+	// alone left the top edge blending into a header of the same colour):
+	// all round a card, along the top only of a full-screen drawer. The
+	// operator's borderWidth/borderColour rules below win by source order.
+	$line = '1px solid var(--wp--preset--color--primary)';
+	if ( $edge['radius'] ) {
+		$decls[] = 'border:' . $line;
+	} elseif ( $edge['shadow'] ) {
+		$decls[] = 'border:0';
+		$decls[] = 'border-top:' . $line;
+	} else {
+		$decls[] = 'border:0';
+	}
+	$decls[] = 'box-sizing:border-box';
 	return implode( ';', $decls ) . ';';
 };
 $sgs_nd_edge_prev = null;
