@@ -671,9 +671,10 @@ atom's own `borderWidthValue`/`borderStyleValue`/`borderColourValue`/`borderRadi
 zero custom logic. `survey-border-control-migration.py` follows that delegation chain: a block
 declaring the `box-shape` atom in `supports.sgs.mediaElements[].atoms` has its border classification
 resolved by checking whether `MediaBoxShapeControls.js` mounts `SgsBorderControl`, not by
-text-searching only the block's own `edit.js`. A block that declares no
-`borderWidth`/`borderStyle`/`borderColour` (radius-private-only, e.g. `sgs/whatsapp-cta`, whose
-radius rides `__experimentalBorder`) correctly does NOT mount it. Blocks whose `block.json` still
+text-searching only the block's own `edit.js`; a block's own sibling editor modules count too (e.g.
+`whatsapp-cta/card-fields.js`, `cart/PillBorderControl.js`). A block that declares no
+`borderWidth`/`borderStyle`/`borderColour` (radius-private-only, e.g. `sgs/media`) correctly does NOT
+mount it. Blocks whose `block.json` still
 declares native `__experimentalBorder` are the unmigrated set: list them with
 `git grep -l __experimentalBorder -- "src/blocks/*/block.json"`; the codemod's own `--survey`
 refuses ambiguous ones as `ambiguous-anchor`.

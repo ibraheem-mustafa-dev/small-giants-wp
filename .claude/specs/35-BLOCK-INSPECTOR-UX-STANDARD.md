@@ -1304,8 +1304,9 @@ cross-check — do not treat this guard as complete.
 > The border UI is a shared composite, `SgsBorderControl`
 > (`plugins/sgs-blocks/src/components/SgsBorderControl.js`). Mount count:
 > `git grep -l '<SgsBorderControl' -- 'plugins/sgs-blocks/src/blocks/*/edit.js' | wc -l` — derive it,
-> never cite a cached figure. `sgs/media` and `sgs/whatsapp-cta` are radius-private-only and correctly
-> don't mount it. A few blocks (`card-grid`, `media`, `multi-button`, `trust-bar`) can still carry an
+> never cite a cached figure (the mount may sit in a block's own sibling editor module, e.g.
+> `whatsapp-cta/card-fields.js` for its card border). `sgs/media` is radius-private-only and correctly
+> doesn't mount it. A few blocks (`card-grid`, `media`, `multi-button`, `trust-bar`) can still carry an
 > active native `__experimentalBorder` (width/colour/style) — codemod `--survey` refuses them
 > `ambiguous-anchor`. `plugins/sgs-blocks/CLAUDE.md`'s "Border controls" section states the same —
 > keep the two in sync. Census + ratcheted gate:

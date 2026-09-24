@@ -219,6 +219,76 @@ Prescription fields accept images only: jpeg, png and webp, set through the fiel
    the paused C1, C3, C4 and C5.
 5. Repeat for each later client site built this way, so the set of answer keys grows with paid work.
 
+### Clone run notes (Phase 7)
+
+These use the older `design_handoff_ward_end_eye_care_v2` draft and test page 11. They matter only when the clone is
+re-run against the finished site.
+
+**Test site:** https://darkcyan-grouse-898606.hostingersite.com/eye-care-birmingham/ (page 11; WP 7.1.1 +
+WooCommerce; creds `.claude/secrets/eye-care-test.env`). Run a clone: `SGS_DEPLOY_SITE=eye-care-test`, `SSL_CERT_FILE`
+and `NODE_EXTRA_CA_CERTS` = the certifi `cacert.pem` (Python's Windows TLS store rejects every hostingersite.com host),
+`--mockup "sites/eye-care-ward-end/design_handoff_ward_end_eye_care_v2/Eye Care Birmingham.dc.html"` (v2 is the
+current SGS-BEM draft; v1 is old and classless), `--deploy-target page:11`, `--skip-freshness-gate` (the snapshot is
+extracted from v1, and a v2 extraction wrongly picks Google blue as primary; fix that before re-extracting), plus `--client eye-care-ward-end --page eye-care-birmingham
+--auto-section --mode draft --skip-register --no-scaffold-new-blocks --sc-var-cache
+sites/eye-care-ward-end/sc-var-hints.json --sc-var-min-confidence 0.0 --dom-shape-min-confidence 0.0 --classless-match
+--classless-auto-complete` (add `--resolve-js-content` for the flag-ON comparison). Verify "what a visitor sees" with
+Playwright `innerText`, never a tag-stripping regex; compare runs by (selector, block) identity, never `boundary_id`;
+verify a stage claim by finding one string it should have produced. Files shared between bash and python: relative
+names (Git Bash `/tmp` and Python `/tmp` are different folders).
+
+**Spec 33 upgrade (done).** Plan `plans/archive/2026-09-19-front-f-spec33-upgrade.md`. Snapshot `sites/eye-care-ward-end/
+theme-snapshot.json` (regenerate: `theme-extractor/extract.py --client eye-care-ward-end --draft "<draft>" --merge-onto
+theme/sgs-theme/theme.json`; the extractor reads the README beside the draft, which is now tracked). Deploy order on a
+test site: `build-deploy.py --target eye-care-test --theme-only` first (it puts the framework `theme.json` back), THEN
+`push-theme-snapshot.py --client eye-care-ward-end --target u945238940@141.136.39.73 --target-domain <host> --yes`. Saved
+values: `sync-business-info.py --draft "<draft>" --target-domain <host> --push --map-out
+sites/eye-care-ward-end/site-info-placeholder-map.json`. A Claude Design snapshot from before the second freshness key
+will halt a clone until re-extracted (intended). Scope (D1121): Spec 33 runs on a client's source draft only (the snapshot
+records `_sgsExtractor.source_draft`); any other draft inherits the saved snapshot, and re-extracting from a different draft
+needs `--replace-source`. Mama's snapshot has no `source_draft` until it is next regenerated.
+
+**Screen route (D1124, built).** A multi-screen Claude Design draft now clones ONE screen: `--screen <label>`, else the
+README's route `/` checked against the draft's default marker; other screens are skipped and reported (`other-route-view`),
+and a classless top-level section on the cloned screen is admitted as the container. Live Eye Care test page: 5 of 8
+homepage sections (was 1), no other-screen text, raw `{ }` text 53 (was 93). Still missing: b3, b4, b6 (the FR-44-1 review
+queue) and the raw layout bindings in attributes (`padding` `{ secPad }`; the README's Spacing section can resolve them).
+Mama's is untouched (identical markup route on/off). Draft manifest (D1123, read-only): `scripts/draft-manifest/manifest.py`
+lists screens, kinds, entities, references and a build order; report `reports/2026-09-20-eye-care-draft-manifest.md`. Next:
+the per-client entity registry, then clone About, Help and Contact with `--screen`. Mama's clones currently halt at the
+freshness gate because another session's uncommitted Mama's snapshot carries a different draft's hash.
+
+**Layout bindings (D1128).** Guard BUILT: a style value that is an unresolved `{{ }}` binding is dropped and reported, so the
+homepage sections no longer carry junk attributes (18 to 0). Evaluator BUILT and WIRED (A1, D1132, `faaf79f0d`): `orchestrator/script_bindings.py` turns the draft's own width rules into mobile, tablet and desktop values
+(75 of 140 names, 0 mismatches against the measured render), found by what the script reads so renamed flags work; Bean's 10px / 768 breakpoint rule is
+`orchestrator/breakpoint_snap.py`; Stage -1.4 hands the map to the converter. Live test page: padding and grid columns match the draft and Bean's online copy of the
+original. Not done: 7 names whose breakpoint stays inside a device tier (logged as gaps), and the content bindings (A2). Design: `plans/archive/2026-09-20-A1-wire-evaluator-design.md`.
+
+**Open, in order:**
+0. *NEXT: work through the audit's findings in its fix order* (`reports/visual-diff/eye-care-home-audit-2026-09-24.md`;
+   findings 4, 5, 6 done). Next is findings 1, 8, 9 (hero classless interior dropped; `<ol>` items lost; media image
+   lost; `<button onClick>` links not recognised as buttons): a converter change, so write a design for Bean first
+   (rule 7). Then 2 and 7 (JS-array content), then 3 (header/footer). Re-audit with the draft-vs-live method
+   (`plugins/sgs-blocks/scripts/parity/draft-vs-live/README.md`) after each fix, at 1440/768/375.
+1. *Problem 1, missing sections.* The "14 non-BEM" boundaries are classless sections gated on a hint (the draft has ONE
+   `class=`): 4 homepage sections (b5, b7, b8, b9), 8 other routed views, 2 chrome. Spec 44 §11: proposed (A) admit any
+   classless boundary as the container default, (B) only the default routed view goes on the page, (C) fix the halt
+   message and report lost text. NOT designed; needs a design gate; must not change Mama's. Not proven: that the large
+   sections convert cleanly. Reports: `reports/2026-09-19-inv-non-bem-sections.md`.
+2. *Runtime `{{ }}` bindings (Stage 2) and the last part of the Spec 33 plan.* Kinds: site settings (`{{ phone }}`), page
+   copy, cart/checkout state, styling values. Keeping the `<sc-for>` lands only item 0 of N. The saved-settings half is the
+   placeholder map above; the pipeline must read it and insert the values. Success: visible placeholders 93 -> 0 for content
+   bindings.
+3. *Cloned buttons paint transparent* (26 measured on the live page, including one with `colourBackground` `#141414`):
+   block or converter side, not the theme; investigate before Task 3 closes.
+4. Needs Bean directly: the 15 `classless-review` boundaries (`operator-review.html`), design-gate approvals.
+
+**Small gaps (not assigned):** other consumers of `args.mockup` after the Stage -2 reassign not audited for the
+JS-resolver wrong-directory class; the primary button's hover text keeps the framework value (Spec 33 Known limits);
+`test_site_info_binding.php` has 11 failures that exist at HEAD; `measure.js` (332 lines) and `extract.py` (over 700) exceed
+the file-length guide; untracked under `sites/eye-care-ward-end/`: the 3 MB offline draft copy, `sc-var-hints.json`,
+`uploads/`, `CLAUDE.md` (Bean decides). Front C residual: the AI-fallback tier (Spec 44 §11) stays parked (Bean).
+
 ## 8. Running it: waves, parallel work, models
 
 The phases are a dependency order, not a queue. Independent work runs at the same time.
