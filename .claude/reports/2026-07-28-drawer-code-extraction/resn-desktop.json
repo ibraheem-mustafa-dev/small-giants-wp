@@ -1,0 +1,38 @@
+{
+  "site": "resn.co.nz",
+  "viewport": "desktop",
+  "opened": true,
+  "reason_if_not": "",
+  "panel": {
+    "html_outline": "<div class=\"js-menu-page menu-page\"><nav class=\"js-menu menu\"><div class=\"hover-blocker js-hover-blocker\"></div><div class=\"js-menu-about menu-item has-text-effect\"><canvas class=\"text-effect-canvas\"/></div><div class=\"js-menu-work menu-item has-text-effect\"><canvas class=\"text-effect-canvas\"/></div><div class=\"js-menu-contact menu-item has-text-effect\"><canvas class=\"text-effect-canvas\"/></div></nav></div>",
+    "computed": {
+      "position": "static (positioning handled by the parent .js-menu-page / rootNode layer, not the nav itself — this is a canvas-composited single-page-app shell, not conventional fixed CSS)",
+      "top": "auto", "right": "auto", "bottom": "auto", "left": "auto",
+      "width": "1346px (~full viewport)", "height": "713px (full viewport)", "max-width": "none",
+      "background-color": "rgba(0,0,0,0) — transparent, composited directly over the persistent WebGL/3D background scene",
+      "backdrop-filter": "none", "z-index": "auto", "display": "flex", "pointer-events": "auto"
+    }
+  },
+  "backdrop": { "exists": false, "computed": null, "note": "no scrim; menu items render directly over the always-present animated 3D artwork background — the artwork dims/refocuses via its own WebGL shader (glitch/chromatic-aberration effect visible), not a CSS overlay" },
+  "menu_list": {
+    "computed": { "display": "flex", "note": "3 items laid out horizontally, evenly spaced, vertically centred over the 3D scene; each item's text is rendered via an individual <canvas class=text-effect-canvas> (custom shader-driven text distortion/hover effect), not plain DOM text" },
+    "column_count_observed": 3,
+    "link_count": 3
+  },
+  "menu_link": {
+    "computed": { "font-family": "Fort-Extralight, Arial, sans-serif", "font-size": "58.5px", "font-weight": "400", "color": "rgb(255,255,255)", "display": "block" },
+    "hover_effect_note": "canvas-rendered text with a visible distortion/glitch effect on the letterforms even at rest (chromatic-aberration-style fragmenting), implying a custom WebGL hover-warp effect per item"
+  },
+  "secondary_blocks": [
+    { "kind": "other", "position_in_panel": "top-left", "summary": "small droplet/brand glyph, persists from the main header" },
+    { "kind": "other", "position_in_panel": "top-right", "summary": "'Discover' text link + hamburger-derived icon, remains visible as the menu's own header row" }
+  ],
+  "close": {
+    "kind": "burger-morph",
+    "computed": { "position": "top-right, same slot as the trigger (.js-shell__button--menu, 18x18px)" },
+    "note": "the same button used to open toggles closed — no distinct X observed; icon likely morphs (burger-morph) though the morph animation itself wasn't captured statically"
+  },
+  "motion": { "panel_transition_or_animation": "not captured (heavy WebGL/canvas app — computed CSS transition is not the driver; animation happens via a render loop, not CSS)", "item_stagger": "not observable via computed style" },
+  "mechanics": { "dialog": false, "inert_count": 0, "body_overflow": "not confirmed", "scroll_lock_method_note": "not confirmed — single-page WebGL app, conventional scroll-lock semantics may not apply" },
+  "notes": "STRUCTURAL: unique among the 8 — the ENTIRE menu is a WebGL/canvas application, not a CSS/DOM drawer. Only 3 items (About/Work/Contact), horizontally centred, each with a custom shader text effect. No promo cards, no forms, no footer utility row — the whole surface is the artwork itself. Confirms the task brief's expectation that this drawer needed the direct #!/menu approach; the earlier direct-hash-URL load reliably stalled on the loading illustration (2 consecutive attempts, ~15s wait each) — a fresh navigate to the plain homepage followed by clicking the real .js-shell__button--menu trigger was what worked. Not tested at mobile/tablet per the brief (desktop only)."
+}

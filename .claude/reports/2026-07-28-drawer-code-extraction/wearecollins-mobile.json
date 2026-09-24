@@ -1,0 +1,29 @@
+{
+  "site": "wearecollins.com",
+  "viewport": "mobile",
+  "opened": true,
+  "reason_if_not": "",
+  "panel": {
+    "html_outline": "single-column, centre-aligned version of the desktop DOM: logo+X header, centred 3-item nav, pill CTA, then the 3 story cards stacked full-width below (Team/Careers/Press tertiary links are ABSENT — not just hidden — at this width; newsletter input still present in DOM but not visibly reached by scrolling in the captured viewport)",
+    "computed": { "note": "same fixed full-viewport opaque panel as desktop, rgb(20,7,0)" }
+  },
+  "backdrop": { "exists": false, "computed": null },
+  "menu_list": {
+    "computed": { "text-align": "center (vs left-aligned at desktop)", "note": "left/right 2-column split collapses to one centred column; story cards move from a dedicated right rail to inline full-width cards below the nav" },
+    "column_count_observed": 1,
+    "link_count": 3
+  },
+  "menu_link": {
+    "computed": { "font-size": "48px (down from 72px desktop)", "line-height": "48px", "text-align": "center" },
+    "hover_effect_note": "serif face retained at mobile, just smaller and centred instead of left-aligned"
+  },
+  "secondary_blocks": [
+    { "kind": "contact/CTA", "position_in_panel": "centred, below nav", "summary": "same pill 'Work with us' button, centred" },
+    { "kind": "other", "position_in_panel": "below CTA, full-width stacked", "summary": "3 story promo cards — same content as desktop, now full-width inline cards instead of a side rail" },
+    { "kind": "newsletter-form", "position_in_panel": "present in DOM, not reached in the captured viewport", "summary": "email input still exists but wasn't visible after scrolling the captured 850px viewport" }
+  ],
+  "close": { "kind": "separate-x", "computed": { "note": "same X, top-right, header now centred logo above it" } },
+  "motion": { "panel_transition_or_animation": "not captured", "item_stagger": "not observable" },
+  "mechanics": { "dialog": false, "inert_count": 0, "body_overflow": "not confirmed", "scroll_lock_method_note": "not confirmed" },
+  "notes": "DEVICE-TIER CHANGE: the tertiary link row (Team/Careers/Press) is DROPPED ENTIRELY at mobile (element not found in DOM query, not merely hidden) — a content-priority decision. The right-column promo rail becomes inline full-width cards, and text-alignment flips left->centre. This is the biggest content-removal (not just reflow) seen alongside fantasy.co's dropped CTA line."
+}

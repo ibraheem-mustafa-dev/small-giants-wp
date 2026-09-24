@@ -1,0 +1,31 @@
+{
+  "site": "studionamma.com",
+  "viewport": "mobile",
+  "opened": true,
+  "reason_if_not": "",
+  "panel": {
+    "html_outline": "same DOM as desktop; the 2-column grid collapses to a single column and 'LET'S TALK' (the desktop header CTA) is folded IN as the final list item, dark-mode toggle is dropped from the header",
+    "computed": {
+      "position": "fixed", "top": "0px", "right": "0px", "bottom": "0px", "left": "0px",
+      "width": "400px (100vw)", "height": "850px (100vh)",
+      "background-color": "rgb(250,250,250) — same as desktop"
+    }
+  },
+  "backdrop": { "exists": false, "computed": null },
+  "menu_list": {
+    "computed": { "display": "grid", "grid-template-columns": "376px (single column, down from 640px+640px)", "gap": "8px", "note": "the 2-column primary/secondary split MERGES into one continuous stacked list at mobile: HOME/WORK/SERVICES/APPROACH/STUDIO/PLANS/NEWS/LET'S TALK" },
+    "column_count_observed": 1,
+    "link_count": 8
+  },
+  "menu_link": {
+    "computed": { "font-size": "64px (down from 160px desktop — a >2x reduction, not a small responsive step)", "line-height": "60px" },
+    "hover_effect_note": "still oversized/editorial at mobile, just proportionally smaller"
+  },
+  "secondary_blocks": [
+    { "kind": "contact/CTA", "position_in_panel": "bottom of the merged list, as the last item", "summary": "'LET'S TALK' promoted from a persistent header button (desktop) into an in-list nav item (mobile) — a content-role change, not just a reposition" }
+  ],
+  "close": { "kind": "text-swap", "computed": { "note": "same 'MENU'->'CLOSE' text-swap, still paired with the dark-mode icon toggle at the same header slot" } },
+  "motion": { "panel_transition_or_animation": "not captured", "item_stagger": "not observable" },
+  "mechanics": { "dialog": false, "inert_count": 0, "body_overflow": "not confirmed", "scroll_lock_method_note": "not confirmed" },
+  "notes": "DEVICE-TIER CHANGE: the 2-column primary/secondary split is a DESKTOP-ONLY structure; at mobile it becomes one merged list AND the persistent header CTA ('LET'S TALK') is absorbed into the list as its own item — a genuine content-role migration between viewports, not pure CSS reflow. Confirmed per the task brief: this site's drawer state does not survive a live viewport resize while open (had to reload + reopen for mobile), consistent with the brief's note that studionamma closes on resize."
+}

@@ -1,0 +1,39 @@
+{
+  "site": "wearecollins.com",
+  "viewport": "desktop",
+  "opened": true,
+  "reason_if_not": "",
+  "panel": {
+    "html_outline": "<div class=\"menu\"><header>COLLINS logo + X close</header><div class=\"left-col\"><ul><li><a>Case Studies</a></li><li><a>Programs</a></li><li><a>Arts & Culture</a></li></ul><div class=\"cta-row\"><a class=\"pill-cta\">Work with us</a><a>Team</a><a>Careers</a><a>Press</a></div><div class=\"newsletter\">Keep up to date<input placeholder='Your email'/></div><div class=\"social-row\">X (Twitter) / LinkedIn / Instagram</div></div><div class=\"right-col promo-list\"><a class=\"story-card\">[thumb] Story: Woods Hole Film Festival x COLLINS</a><a class=\"story-card\">[thumb] Story: The M.A.D School x COLLINS</a><a class=\"story-card\">[thumb] Story: Documenting the greats</a></div></div>",
+    "computed": {
+      "position": "fixed", "top": "0px", "right": "0px", "bottom": "-639px (overshoot below viewport, animation artefact)", "left": "0px",
+      "width": "100vw (1352px)", "height": "100vh (713px)", "max-width": "none",
+      "background-color": "rgb(20,7,0) — near-black warm brown, fully opaque",
+      "backdrop-filter": "none", "z-index": "1", "display": "flex"
+    }
+  },
+  "backdrop": { "exists": false, "computed": null, "note": "opaque panel, no scrim needed" },
+  "menu_list": {
+    "computed": { "display": "flex", "flex-direction": "column", "gap": "16px", "note": "left column: 3 primary nav items + a pill-styled 'Work with us' CTA sharing a row with 3 plain text links (Team/Careers/Press) + a newsletter signup + social row, ALL stacked in one left column; right column is a separate promo-list of 3 story cards" },
+    "column_count_observed": 1,
+    "link_count": 3
+  },
+  "menu_link": {
+    "computed": { "font-family": "\"Portrait Text\", serif", "font-size": "72px", "font-weight": "400", "line-height": "72px", "letter-spacing": "-1.44px", "text-transform": "none", "color": "rgb(255,255,255)", "text-decoration": "none", "display": "block" },
+    "hover_effect_note": "the only one of the 8 sites using a SERIF display face for the primary nav (all others use sans/condensed sans) — editorial/publishing tone"
+  },
+  "secondary_blocks": [
+    { "kind": "contact/CTA", "position_in_panel": "left column, below nav", "summary": "pill-shaped white 'Work with us' button beside 3 plain text links (Team / Careers / Press) in one row" },
+    { "kind": "newsletter-form", "position_in_panel": "left column, lower", "summary": "'Keep up to date' label + email input with mail icon" },
+    { "kind": "social-links", "position_in_panel": "bottom-right of left column", "summary": "X (Twitter) / LinkedIn / Instagram inline text row" },
+    { "kind": "other", "position_in_panel": "right column (dedicated half-width zone)", "summary": "3 stacked 'Story' promo cards, each with a thumbnail image, 'Story' label, headline, and arrow icon — a full content-marketing rail, most substantial secondary-block zone of all 8 sites" }
+  ],
+  "close": {
+    "kind": "separate-x",
+    "computed": { "position": "relative (top-right)", "top": "0px", "right": "0px", "left": "0px", "width": "28px", "height": "18px" },
+    "note": "explicit X glyph, top-right"
+  },
+  "motion": { "panel_transition_or_animation": "not captured (bottom:-639px overshoot implies a vertical slide/reveal transform)", "item_stagger": "not observable" },
+  "mechanics": { "dialog": false, "inert_count": 0, "body_overflow": "hidden", "scroll_lock_method_note": "body overflow:hidden while open" },
+  "notes": "STRUCTURAL: distinct split-zone layout — LEFT column carries nav + CTA row + newsletter + socials (4 stacked block types in one column), RIGHT column is a dedicated promo/content rail (3 story cards with imagery). This is the richest secondary-content archetype of the 8 (most block KINDS in a single drawer) and the only serif-typography nav."
+}

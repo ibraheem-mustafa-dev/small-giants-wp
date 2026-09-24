@@ -1,0 +1,44 @@
+{
+  "site": "fantasy.co",
+  "viewport": "desktop",
+  "opened": true,
+  "reason_if_not": "",
+  "panel": {
+    "html_outline": "<div class=\"menu fixed inset-x-0 -inset-y-100 bg-black\"><header>logo + X close</header><ul class=\"centre-stack\"><li><a>Work</a></li><li><a>Services</a></li><li><a>Impact</a></li></ul><div class=\"tertiary-row\"><a>Contact</a><a>Latest</a><a>Careers</a></div><div class=\"cta-line\">Ready to launch an intelligent experience? <a>Let's talk</a></div><a class=\"promo-card\">HOW FANTASY SHIPPED LIV GOLF IN 72 DAYS [thumb]</a></div>",
+    "computed": {
+      "position": "fixed",
+      "top": "-100px (oversized inset for scroll/parallax overshoot)",
+      "right": "0px", "bottom": "-100px", "left": "0px",
+      "width": "100vw (1337px measured)",
+      "height": "viewport+200px (913px measured, -100 top/-100 bottom overshoot)",
+      "max-width": "none",
+      "background-color": "rgb(0,0,0) — fully OPAQUE solid black",
+      "backdrop-filter": "none",
+      "z-index": "9",
+      "display": "block"
+    }
+  },
+  "backdrop": { "exists": false, "computed": null, "note": "no separate scrim needed — the panel itself is opaque black covering everything" },
+  "menu_list": {
+    "computed": { "display": "list-item (each row is a <li>, centred as a block stack)", "flex-direction": "row", "align-items": "normal", "justify-content": "normal", "gap": "normal", "note": "3 primary items centred both axes on the page; a separate tertiary row (Contact/Latest/Careers) sits below in a horizontal inline row" },
+    "column_count_observed": 1,
+    "link_count": 3
+  },
+  "menu_link": {
+    "computed": { "font-family": "sans (system sans stack)", "font-size": "70px", "font-weight": "400", "line-height": "70px", "letter-spacing": "-2.1px", "text-transform": "none", "color": "rgb(255,255,255)", "text-decoration": "none", "padding": "0px", "display": "flex" },
+    "hover_effect_note": "largest type scale of all 8 sites observed so far (70px) — pure statement-typography centred layout"
+  },
+  "secondary_blocks": [
+    { "kind": "other", "position_in_panel": "centre, below primary 3 items", "summary": "tertiary horizontal link row: Contact / Latest / Careers, small grey text" },
+    { "kind": "contact/CTA", "position_in_panel": "bottom-left", "summary": "inline sentence CTA: 'Ready to launch an intelligent experience? Let's talk' (underlined link)" },
+    { "kind": "promo-card", "position_in_panel": "bottom-right", "summary": "dark card link with headline 'HOW FANTASY SHIPPED LIV GOLF IN 72 DAYS' + small thumbnail image — a case-study/content promo, not a nav item" }
+  ],
+  "close": {
+    "kind": "separate-x",
+    "computed": { "position": "relative (top-right of header bar)", "top": "0px", "right": "0px", "left": "0px", "width": "62px", "height": "50px" },
+    "note": "explicit dark rounded-square X button replacing the 'Menu' text toggle"
+  },
+  "motion": { "panel_transition_or_animation": "not captured (the -100px top/bottom inset overshoot strongly implies a slide/reveal transform animation)", "item_stagger": "js-fade class on each list item suggests a fade-in stagger, not confirmed by computed style" },
+  "mechanics": { "dialog": false, "inert_count": 0, "body_overflow": "visible (not hard-locked at document.body — scroll lock likely applied elsewhere or omitted)", "scroll_lock_method_note": "body overflow reads 'visible' with menu open — worth a live re-check, may lock via html or a wrapper element instead" },
+  "notes": "STRUCTURAL: true full-bleed OPAQUE (not blurred/transparent) panel, dead-centre primary nav in oversized 70px type, plus a distinct tertiary-link row AND a content/case-study promo card as a secondary block — a 4th distinct archetype (centred-statement + promo-card hybrid)."
+}

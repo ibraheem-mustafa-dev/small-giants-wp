@@ -1,0 +1,33 @@
+{
+  "site": "buck.co",
+  "viewport": "mobile",
+  "opened": true,
+  "reason_if_not": "",
+  "panel": {
+    "html_outline": "same structure as desktop but menu list left-aligned (not centred/right-of-centre), a search icon glyph appears ABOVE the WORK item, and the footer social row stacks vertically instead of inline",
+    "computed": {
+      "position": "fixed", "top": "0px", "right": "0px", "bottom": "0px", "left": "0px",
+      "width": "400px (100vw)", "height": "850px (100vh)",
+      "background-color": "rgb(0,81,60) — a DIFFERENT solid colour than desktop's rgb(127,76,30); BUCK appears to rotate/randomise its brand-palette background per page-load, not a device-tier CSS rule"
+    }
+  },
+  "backdrop": { "exists": false, "computed": null },
+  "menu_list": {
+    "computed": { "note": "left-aligned vertical stack, no longer right-of-centre" },
+    "column_count_observed": 1,
+    "link_count": 6
+  },
+  "menu_link": {
+    "computed": { "font-size": "24px (down from 47px desktop, roughly half)", "line-height": "24px", "letter-spacing": "normal", "text-transform": "uppercase" },
+    "hover_effect_note": "much larger step-down than a typical clamp — looks like a discrete mobile breakpoint font-size, not fluid scaling"
+  },
+  "secondary_blocks": [
+    { "kind": "search", "position_in_panel": "top, above menu list", "summary": "small magnifying-glass icon appears at mobile only (not present in desktop capture)" },
+    { "kind": "footer-text", "position_in_panel": "bottom", "summary": "© 2026 BUCK, now stacked above the social row rather than inline beside it" },
+    { "kind": "social-links", "position_in_panel": "bottom", "summary": "LinkedIn / Instagram / Vimeo / Privacy Policy — stacked VERTICALLY at mobile vs inline row at desktop" }
+  ],
+  "close": { "kind": "separate-x", "computed": { "note": "same X glyph, top-right, now inside a visible circular hit-target chip" } },
+  "motion": { "panel_transition_or_animation": "not captured", "item_stagger": "not observable" },
+  "mechanics": { "dialog": false, "inert_count": 0, "body_overflow": "not confirmed", "scroll_lock_method_note": "not confirmed" },
+  "notes": "DEVICE-TIER CHANGE: menu list alignment flips (right-of-centre desktop -> left mobile); footer utility row flips (inline desktop -> stacked mobile); a search affordance appears ONLY at mobile; large font-size step (47px->24px, not a fluid scale). Background colour differs from desktop capture but this is suspected palette-rotation, not a mobile-specific token — flag for re-check before treating as a device-tier design decision."
+}

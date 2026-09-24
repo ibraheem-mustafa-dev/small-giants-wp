@@ -1,0 +1,45 @@
+{
+  "site": "lusion.co",
+  "viewport": "mobile",
+  "opened": true,
+  "reason_if_not": "",
+  "panel": {
+    "html_outline": "same 4-card DOM as desktop (menu-list-card / newsletter-card / lets-talk-card / labs-card) but at mobile the newsletter card collapses to h:0 and the 'LET'S TALK' card (h:0 on desktop) becomes the visible one — an inverse swap",
+    "computed": {
+      "position": "absolute",
+      "top": "78px",
+      "right": "15px",
+      "left": "15px (full-width minus 15px margins, right-anchor logic replaced by symmetric inset)",
+      "width": "370px",
+      "height": "452px",
+      "max-width": "none",
+      "margin": "0px",
+      "padding": "0px",
+      "background-color": "rgba(0,0,0,0)",
+      "backdrop-filter": "none",
+      "border-radius": "0px",
+      "overflow": "visible",
+      "z-index": "auto",
+      "display": "flex"
+    }
+  },
+  "backdrop": { "exists": true, "computed": { "background-color": "rgb(0, 22, 236)", "backdrop-filter": null, "opacity": null, "pointer-events": null }, "note": "full-bleed solid blue fills the page behind the white cards at mobile — NOT present as a distinct scrim at desktop (desktop keeps the 3D canvas visible); unclear if this blue is the drawer's own scrim or the page's underlying brand-blue section scrolled into view. Flag as needing a visual re-check." },
+  "menu_list": {
+    "computed": { "display": "flex", "flex-direction": "column", "padding": "16px 5px (assumed same as desktop)", "background-color": "rgb(255,255,255)" },
+    "column_count_observed": 1,
+    "link_count": 4
+  },
+  "menu_link": {
+    "computed": { "font-family": "Aeonik (assumed same)", "font-size": "16px", "font-weight": "400", "text-transform": "uppercase", "color": "rgb(0,0,0)", "display": "block" },
+    "hover_effect_note": "HOME shows filled-dot active indicator, same as desktop"
+  },
+  "secondary_blocks": [
+    { "kind": "newsletter-form", "position_in_panel": "collapsed (h:0) at mobile", "summary": "present in DOM but not visible — desktop-only reveal" },
+    { "kind": "contact/CTA", "position_in_panel": "inline, 3rd card", "summary": "'LET'S TALK' white card with a small icon — visible at mobile (collapsed at desktop), inverse of the newsletter card" },
+    { "kind": "other", "position_in_panel": "bottom", "summary": "black 'LABS' promo card, identical to desktop" }
+  ],
+  "close": { "kind": "text-swap", "computed": { "position": "static" }, "note": "header collapses to a single circular 3-dot button at mobile (no separate MENU/CLOSE text labels visible in the cropped screenshot — icon-only)" },
+  "motion": { "panel_transition_or_animation": "not captured", "item_stagger": "not cheaply observable" },
+  "mechanics": { "dialog": false, "inert_count": 0, "body_overflow": "hidden", "scroll_lock_method_note": "same mechanism as desktop" },
+  "notes": "STRUCTURAL: same 4-card stack as desktop, but panel becomes edge-inset (15px both sides) rather than right-anchored, AND which secondary card is visible SWAPS between newsletter (desktop) and contact-CTA (mobile) — a per-device content-priority swap, not just a layout reflow."
+}

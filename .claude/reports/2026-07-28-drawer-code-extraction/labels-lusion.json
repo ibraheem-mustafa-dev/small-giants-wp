@@ -1,0 +1,29 @@
+{
+  "site": "lusion.co",
+  "harvested": "2026-07-29",
+  "desktop": {
+    "opened": true,
+    "reason_if_not": null,
+    "primary_links": [
+      {"text": "Home", "css_uppercase": true},
+      {"text": "About us", "css_uppercase": true},
+      {"text": "Projects", "css_uppercase": true},
+      {"text": "Contact", "css_uppercase": true}
+    ],
+    "secondary_blocks": [
+      {"kind": "active-indicator", "position_in_panel": "inline, right of 'Home'", "exact_text": "(no text — filled dot marking the active/current nav item)"},
+      {"kind": "newsletter-form", "position_in_panel": "2nd stacked card, below the nav-link card", "exact_text": "Subscribe to our newsletter", "note": "heading text; input placeholder 'Your email'; submit control is an icon-only circular arrow button with no visible label"},
+      {"kind": "promo-card", "position_in_panel": "bottom, 3rd stacked card (dark)", "exact_text": "Labs", "note": "R&D sub-brand promo card with a small icon + arrow, own dark background"}
+    ],
+    "counts": {"primary": 4, "secondary_blocks": 3}
+  },
+  "mobile": {
+    "opened": true,
+    "reason_if_not": null,
+    "mobile_deltas": [
+      {"change": "dropped", "kind": "newsletter-form", "exact_text": "Subscribe to our newsletter", "note": "element still exists in the DOM but collapses to 0x0 (getBoundingClientRect width:0, height:0) at 400px — proven not merely scrolled-off"},
+      {"change": "added", "kind": "contact/CTA", "exact_text": "Let's talk", "note": "this exact card is present in the DOM on desktop too but sits at 0 height there (a collapsed 'hidden-cta' slot per the earlier CSS-extraction pass); on mobile it renders as a full visible white card between the nav-link card and the Labs card"}
+    ]
+  },
+  "notes": "STRUCTURAL confirmed: right-anchored stack of independently-cardded blocks (nav-link card / newsletter card / Labs promo card on desktop; nav-link card / Let's talk card / Labs card on mobile), not one continuous panel. Trigger = button with accessible name 'Menu button' in the header; label text-swaps to 'Close' when open. All primary link text is source Title Case (Home/About us/Projects/Contact), rendered uppercase purely via CSS text-transform — confirmed by reading textContent directly (not the rendered/computed text)."
+}
