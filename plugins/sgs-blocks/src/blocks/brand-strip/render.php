@@ -59,6 +59,8 @@ $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_t
 
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once __DIR__ . '/product-brands-source.php';
+require_once __DIR__ . '/brand-display-render.php';
 
 // ---------------------------------------------------------------------------
 // 1. Security sanitiser (contract §D) — CSS-length sanitiser for box/side
@@ -70,6 +72,15 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 // ---------------------------------------------------------------------------
 
 $logos               = $attributes['logos'] ?? array();
+// Source: 'manual' (default, unchanged) or 'product-brands' — replaces the
+// hand-typed repeater with a live WooCommerce `product_brand` taxonomy
+// query. Empty array (WooCommerce off / taxonomy missing / no terms) simply
+// renders the existing empty state further down — no fatal, no assumption.
+$brand_source = isset( $attributes['source'] ) ? sanitize_key( $attributes['source'] ) : 'manual';
+if ( 'product-brands' === $brand_source ) {
+	$logos = sgs_brand_strip_get_product_brand_logos( $attributes );
+}
+$brand_display       = sgs_brand_strip_resolve_display( $attributes );
 $scrolling           = $attributes['scrolling'] ?? false;
 $scroll_speed        = $attributes['scrollSpeed'] ?? 'medium';
 $scroll_direction    = $attributes['scrollDirection'] ?? 'left';
@@ -522,6 +533,14 @@ if ( $show_names && function_exists( 'sgs_typography_css_rule' ) ) {
 	}
 }
 
+// --- Brand-text fallback typography/colour (Display: Text only / Logo, else
+// text) — emitted only when the element can render (mirrors the caption
+// block's own "never emit CSS for an element that never renders" rule).
+// Helper lives in brand-display-render.php (see its own header for why). ---
+if ( 'logos' !== $brand_display ) {
+	$scoped_css = array_merge( $scoped_css, sgs_brand_strip_text_style_css( $attributes, $root_sel ) );
+}
+
 // --- Responsive padding/margin tiers — box objects, hand-built shorthand,
 // scoped @media on the SAME selector (contract §B2: tablet max-width:1023px,
 // mobile max-width:767px). ---
@@ -638,55 +657,79 @@ if ( ! empty( $logos ) ) {
 			);
 		}
 
-		if ( null === $media || empty( $media['url'] ) ) {
+		$logo_name = isset( $logo['name'] ) ? sanitize_text_field( (string) $logo['name'] ) : '';
+
+		// Display: 'logos' (default, unchanged) skips an item with no image —
+		// exactly the pre-existing behaviour. 'text' forces every item to the
+		// text fallback; 'logo-else-text' uses the image when present and
+		// falls back to the brand name otherwise (the Product-brands source
+		// commonly has terms with no thumbnail set). Helper lives in
+		// brand-display-render.php.
+		$bs_text_mode = sgs_brand_strip_is_text_item( $brand_display, $media );
+
+		if ( ! $bs_text_mode && ( null === $media || empty( $media['url'] ) ) ) {
+			continue;
+		}
+		if ( $bs_text_mode && '' === $logo_name ) {
+			// Nothing to show — no image and no name to fall back to.
 			continue;
 		}
 
-		$logo_name       = isset( $logo['name'] ) ? sanitize_text_field( (string) $logo['name'] ) : '';
-		$has_caption     = $show_names && '' !== $logo_name;
+		// Text-mode tiles never also show the separate "logo name" caption
+		// (showNames) — the brand name IS the visible content already, so a
+		// caption underneath would repeat it.
+		$has_caption     = $show_names && '' !== $logo_name && ! $bs_text_mode;
 		$logo_decorative = ! empty( $logo['decorative'] );
 
-		if ( $logo_decorative ) {
-			// Explicit editorial choice (WCAG 2.1 AA 1.1.1) — hide this logo
-			// from assistive tech entirely, regardless of caption or operator
-			// alt text.
-			$media['alt'] = '';
-		} elseif ( $has_caption ) {
-			// Caption is on-screen and carries the accessible name — the
-			// image becomes decorative so screen readers announce the name
-			// once, not twice.
-			$media['alt'] = '';
-		} elseif ( ! empty( $logo['alt'] ) ) {
-			// Operator alt text overrides media alt when set.
-			$media['alt'] = $logo['alt'];
-		}
+		if ( $bs_text_mode ) {
+			$logo_html = '<span class="sgs-brand-strip__brand-text">' . esc_html( $logo_name ) . '</span>';
+		} else {
+			if ( $logo_decorative ) {
+				// Explicit editorial choice (WCAG 2.1 AA 1.1.1) — hide this logo
+				// from assistive tech entirely, regardless of caption or operator
+				// alt text.
+				$media['alt'] = '';
+			} elseif ( $has_caption ) {
+				// Caption is on-screen and carries the accessible name — the
+				// image becomes decorative so screen readers announce the name
+				// once, not twice.
+				$media['alt'] = '';
+			} elseif ( ! empty( $logo['alt'] ) ) {
+				// Operator alt text overrides media alt when set.
+				$media['alt'] = $logo['alt'];
+			}
 
-		$logo_html = sgs_render_media( $media, 'sgs/brand-strip' );
-		if ( '' === $logo_html ) {
-			continue;
-		}
-		// Marker classes for the shared media-element atom layer (see the
-		// object-fit emission above) — every logo shares the SAME scope
-		// class (unprefixed, single element per block), so the atom's
-		// --sgs-media-object-fit value applies to each tile identically.
-		if ( class_exists( 'SGS_Media_Element' ) ) {
-			$sgs_bs_scope_class  = SGS_Media_Element::scope_class( $uid, '' );
-			$sgs_bs_marker_class = implode( ' ', SGS_Media_Element::element_classes( $sgs_bs_scope_class ) );
-			$logo_html           = preg_replace(
-				'/(<img\b[^>]*\bclass="[^"]*)"/',
-				'$1 ' . $sgs_bs_marker_class . '"',
-				$logo_html,
-				1
-			);
-		}
-		if ( $logo_decorative ) {
-			// Belt-and-braces alongside the empty alt above — aria-hidden
-			// stops assistive tech announcing the image at all, not just
-			// skipping its (already-empty) accessible name.
-			$logo_html = preg_replace( '/<img\b/', '<img aria-hidden="true"', $logo_html, 1 );
+			$logo_html = sgs_render_media( $media, 'sgs/brand-strip' );
+			if ( '' === $logo_html ) {
+				continue;
+			}
+			// Marker classes for the shared media-element atom layer (see the
+			// object-fit emission above) — every logo shares the SAME scope
+			// class (unprefixed, single element per block), so the atom's
+			// --sgs-media-object-fit value applies to each tile identically.
+			if ( class_exists( 'SGS_Media_Element' ) ) {
+				$sgs_bs_scope_class  = SGS_Media_Element::scope_class( $uid, '' );
+				$sgs_bs_marker_class = implode( ' ', SGS_Media_Element::element_classes( $sgs_bs_scope_class ) );
+				$logo_html           = preg_replace(
+					'/(<img\b[^>]*\bclass="[^"]*)"/',
+					'$1 ' . $sgs_bs_marker_class . '"',
+					$logo_html,
+					1
+				);
+			}
+			if ( $logo_decorative ) {
+				// Belt-and-braces alongside the empty alt above — aria-hidden
+				// stops assistive tech announcing the image at all, not just
+				// skipping its (already-empty) accessible name.
+				$logo_html = preg_replace( '/<img\b/', '<img aria-hidden="true"', $logo_html, 1 );
+			}
 		}
 
 		$name_id = $has_caption ? $uid . '-name-' . $logo_index : '';
+		// Text-mode tiles get an extra modifier class so style.css can lay
+		// them out as an auto-width label instead of the fixed-size logo
+		// square (see the `--text` rule in style.css).
+		$bs_item_class = 'sgs-brand-strip__item' . ( $bs_text_mode ? ' sgs-brand-strip__item--text' : '' );
 
 		// Shared SgsLinkControl object shape { url, opensInNewTab, rel } (Spec 35
 		// Task 2) resolved via the shared sgs_link_attributes() render helper —
@@ -709,11 +752,11 @@ if ( ! empty( $logos ) ) {
 
 		if ( $has_caption ) {
 			$logos_html .= '<div class="sgs-brand-strip__tile">';
-			$logos_html .= '<div class="sgs-brand-strip__item" data-logo-key="' . esc_attr( $bs_item_key ) . '">' . $logo_html . '</div>';
+			$logos_html .= '<div class="' . esc_attr( $bs_item_class ) . '" data-logo-key="' . esc_attr( $bs_item_key ) . '">' . $logo_html . '</div>';
 			$logos_html .= '<span id="' . esc_attr( $name_id ) . '" class="sgs-brand-strip__name">' . esc_html( $logo_name ) . '</span>';
 			$logos_html .= '</div>';
 		} else {
-			$logos_html .= '<div class="sgs-brand-strip__item" data-logo-key="' . esc_attr( $bs_item_key ) . '">';
+			$logos_html .= '<div class="' . esc_attr( $bs_item_class ) . '" data-logo-key="' . esc_attr( $bs_item_key ) . '">';
 			$logos_html .= $logo_html;
 			$logos_html .= '</div>';
 		}

@@ -141,7 +141,32 @@
 					"prefix": "",
 					"_note": "The inner node the hover colour shifts actually target (.sgs-brand-strip__item, render.php line 510/514) - nested INSIDE .sgs-brand-strip__tile (border/padding/shadow/gap), a genuinely different DOM node. itemBackgroundColourHover/itemBorderColourHover/itemBorderColourHoverGradient carry the 'item' prefix (renamed 2026-08-20 from the former bare backgroundColourHover/textColourHover/borderColourHover/borderColourHoverGradient) so the plain unprefixed names are freed for a future root-level colour panel. Found live 2026-08-15: DB tagged 3 attrs css_element='item', undeclared until now. ⚠ PREFIX HELD AT \"\" PENDING BEAN'S SIGN-OFF (2026-08-20). The /sgs-update reseed HAS taught attr-role-map.json the item* names, so the earlier ORPHAN:UNCLASSIFIED blocker is gone and prefix:\"item\" now resolves cleanly. What stops it is different: with the prefix set, these are scanned and classified as ORPHAN:STYLE-DEFECT, pushing that count up. element-manifest-baseline.json states raising a baseline is STOP-THE-LINE and needs Bean's sign-off. Flip to \"item\" together with either that sign-off or, better, declaring the colour cluster member on this element so these are CLAIMED rather than orphaned. (itemTextColourHover, formerly a fourth member of this group, was removed 2026-09-07 as a dead control — .sgs-brand-strip__item never contains a text node.)"
 				},
-				"track": {
+				"brand-text": {
+				"label": "Brand text (no-logo fallback)",
+				"order": 4,
+				"clusters": [
+					"text"
+				],
+				"prefix": "brandText",
+				"_note": "Text fallback shown when Display is 'Text only', or on a per-item basis under 'Logo, else text' when that item's source has no image (chiefly the Product-brands source, where a WooCommerce brand term commonly has no thumbnail set). A DIFFERENT element from 'caption' above — caption is an optional label UNDER a logo image; this IS the visible content when there is no image, rendered on .sgs-brand-strip__brand-text (render.php + brand-display-render.php).",
+				"attrMap": {
+					"css:font-size": "brandTextFontSize",
+					"css:font-family": "brandTextFontFamily",
+					"css:font-weight": "brandTextFontWeight",
+					"css:letter-spacing": "brandTextLetterSpacing",
+					"css:text-transform": "brandTextTextTransform",
+					"css:color": "brandTextColour",
+					"css:color-gradient": "brandTextColourGradient"
+				},
+				"states": {
+					"hover": {
+						"attrMap": {
+							"css:color": "brandTextColourHover"
+						}
+					}
+				}
+			},
+			"track": {
 					"label": "Marquee track",
 					"order": 6,
 					"clusters": [],
@@ -272,6 +297,91 @@
 					}
 				}
 			}
+		},
+		"source": {
+			"type": "string",
+			"default": "manual",
+			"enum": [
+				"manual",
+				"product-brands"
+			],
+			"description": "Where the brand list comes from. 'manual' is the existing hand-typed logos[] repeater (unchanged default — existing sites render identically). 'product-brands' queries WooCommerce's core `product_brand` taxonomy live and ignores logos[]. Naming follows the block.json 'source' convention already used by sgs/card-grid, sgs/social-icons and sgs/icon-list (never 'sourceMode', which is a distinct semantic reserved for sgs/product-card's live-configurator modes)."
+		},
+		"brandOrder": {
+			"type": "string",
+			"default": "name",
+			"enum": [
+				"name",
+				"count",
+				"term_order"
+			],
+			"description": "Product-brands source only. Order the queried terms by name (A–Z), count (most products first) or the taxonomy's own term order."
+		},
+		"brandHideEmpty": {
+			"type": "boolean",
+			"default": true,
+			"description": "Product-brands source only. Hide a brand with zero published products."
+		},
+		"brandMaxItems": {
+			"type": "number",
+			"default": 20,
+			"description": "Product-brands source only. Maximum number of brand terms to query (1–100)."
+		},
+		"brandLinkToShop": {
+			"type": "boolean",
+			"default": true,
+			"description": "Product-brands source only. Link each brand tile to its WooCommerce term archive (shop-by-brand page)."
+		},
+		"brandDisplay": {
+			"type": "string",
+			"default": "logos",
+			"enum": [
+				"logos",
+				"text",
+				"logo-else-text"
+			],
+			"description": "How each brand tile renders. 'logos' (default, unchanged behaviour) shows only items with an image and skips the rest. 'text' always renders the brand name as text. 'logo-else-text' shows the image when one exists and falls back to the name as text otherwise — the common case for the Product-brands source, where a WooCommerce brand term often has no thumbnail set."
+		},
+		"brandTextFontSize": {
+			"type": "number",
+			"default": 15
+		},
+		"brandTextFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"brandTextFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"brandTextFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"brandTextLetterSpacing": {
+			"type": "number",
+			"default": 0
+		},
+		"brandTextLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"brandTextTextTransform": {
+			"type": "string",
+			"default": ""
+		},
+		"brandTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"brandTextColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painted through the brand-text fallback via background-clip:text. Non-empty wins over brandTextColour at render time (D636)."
+		},
+		"brandTextColourHover": {
+			"type": "string",
+			"default": ""
 		},
 		"scrolling": {
 			"type": "boolean",

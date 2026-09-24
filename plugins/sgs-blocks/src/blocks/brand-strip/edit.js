@@ -17,6 +17,7 @@ import { SgsColourPanel, SsrPreviewGuard, ResponsiveControl, ResponsiveBoxContro
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar, generateItemKey, withStableItemKeys } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import { SourcePanel, BrandTextStylePanel } from './source-controls';
 
 const LOGO_OBJECT_FIT_OPTIONS = [
 	{ label: __( 'Cover (crop to fill)', 'sgs-blocks' ), value: 'cover' },
@@ -266,6 +267,11 @@ function buildWrapperStyle( attributes ) {
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		logos: rawLogos,
+		source,
+		brandDisplay,
+		brandTextColour,
+		brandTextColourGradient,
+		brandTextColourHover,
 		scrolling,
 		scrollSpeed,
 		scrollDirection,
@@ -505,26 +511,60 @@ export default function Edit( { attributes, setAttributes } ) {
 								},
 						],
 					},
+					...( 'logos' !== ( brandDisplay || 'logos' )
+						? [
+								{
+									key: 'brandText',
+									label: __( 'Brand text colour (no-logo fallback)', 'sgs-blocks' ),
+									gradientCapable: true,
+									states: [
+										{
+											key: 'normal',
+											label: __( 'Normal', 'sgs-blocks' ),
+											value: brandTextColour,
+											onChange: ( val ) => setAttributes( { brandTextColour: val ?? '' } ),
+											gradientValue: brandTextColourGradient,
+											onGradientChange: ( val ) =>
+												setAttributes( { brandTextColourGradient: val ?? '' } ),
+										},
+										{
+											key: 'hover',
+											label: __( 'Hover', 'sgs-blocks' ),
+											value: brandTextColourHover,
+											onChange: ( val ) => setAttributes( { brandTextColourHover: val ?? '' } ),
+										},
+									],
+								},
+						  ]
+						: [] ),
 				] }
 			/>
 			{ /* ── SETTINGS tab — behaviour / configuration ── */ }
 			<InspectorControls>
-				<PanelBody title={ __( 'Logos', 'sgs-blocks' ) } initialOpen={ true }>
-					{ logos.map( ( logo, index ) => (
-						<LogoEditor
-							key={ logo._key || index }
-							logo={ logo }
-							index={ index }
-							onChange={ ( updated ) =>
-								updateLogo( index, updated )
-							}
-							onRemove={ () => removeLogo( index ) }
-						/>
-					) ) }
-					<Button variant="secondary" onClick={ addLogo }>
-						{ __( 'Add logo', 'sgs-blocks' ) }
-					</Button>
-				</PanelBody>
+				<SourcePanel attributes={ attributes } setAttributes={ setAttributes } />
+
+				{ /* Manual-entry UI only makes sense for the manual source —
+				   hidden (not merely disabled) once Product brands is picked
+				   so there is no dead "Add logo" affordance for a list the
+				   query already fills. */ }
+				{ 'manual' === ( source || 'manual' ) && (
+					<PanelBody title={ __( 'Logos', 'sgs-blocks' ) } initialOpen={ true }>
+						{ logos.map( ( logo, index ) => (
+							<LogoEditor
+								key={ logo._key || index }
+								logo={ logo }
+								index={ index }
+								onChange={ ( updated ) =>
+									updateLogo( index, updated )
+								}
+								onRemove={ () => removeLogo( index ) }
+							/>
+						) ) }
+						<Button variant="secondary" onClick={ addLogo }>
+							{ __( 'Add logo', 'sgs-blocks' ) }
+						</Button>
+					</PanelBody>
+				) }
 
 				<PanelBody
 					title={ __( 'Layout', 'sgs-blocks' ) }
@@ -981,6 +1021,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 				</PanelBody>
 
+				<BrandTextStylePanel attributes={ attributes } setAttributes={ setAttributes } />
+
 				<PanelBody
 					title={ __( 'Strip spacing (responsive)', 'sgs-blocks' ) }
 					initialOpen={ false }
@@ -1017,7 +1059,10 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
-					{ logos.length === 0 ? (
+					{ /* Product-brands source starts with an empty `logos[]` (the
+					   query supplies the real list server-side) — only show the
+					   "add logos" empty state for the manual source. */ }
+					{ logos.length === 0 && 'product-brands' !== source ? (
 						<p className="sgs-brand-strip__empty">
 							{ __( 'Add logos in the sidebar panel.', 'sgs-blocks' ) }
 						</p>

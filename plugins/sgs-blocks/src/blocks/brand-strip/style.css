@@ -220,6 +220,37 @@
 	display: block;
 }
 
+/* ===== Text-only tile (Display: Text only / Logo, else text) =====
+ * A brand rendered as TEXT (no image) does not fit the fixed logo SQUARE
+ * above — it needs an auto (content-driven) width, like a horizontal list
+ * item, while keeping the row's shared height so it lines up with any
+ * sibling image tiles in "Logo, else text" mode. Chrome (background/border/
+ * shadow/radius) is switched off here too: a text label reads as a label,
+ * not a card. `.sgs-brand-strip__brand-text`'s own typography is emitted
+ * scoped by render.php (prefix `brandText`; see brand-display-render.php). */
+.sgs-brand-strip__item--text {
+	width: auto;
+	min-width: var(--sgs-tile-size);
+	padding-left: var(--sgs-tile-padding, 10px);
+	padding-right: var(--sgs-tile-padding, 10px);
+	background-color: transparent;
+	background-image: none;
+	border-color: transparent;
+	box-shadow: none;
+}
+
+.sgs-brand-strip__brand-text {
+	/* 0.9375rem = the brandTextFontSize block.json default (15px) restated as
+	 * a plain fallback -- no `--sgs-brand-text-font-size` custom property is
+	 * ever set (render.php emits a real font-size declaration on the scoped
+	 * `.{uid}.sgs-brand-strip .sgs-brand-strip__brand-text` selector instead,
+	 * which always wins on specificity), so a var() reference here would name
+	 * a variable nothing writes -- this is the plain CSS default. */
+	font-size: 0.9375rem;
+	white-space: nowrap;
+	color: currentColor;
+}
+
 /* ===== Tile shape (none / square / circle) — Bean control ===== */
 /* Square (default) uses --sgs-tile-radius (rounded square). Circle forces a
  * full round; the tile is already square (width = height) so 50% is a circle.
