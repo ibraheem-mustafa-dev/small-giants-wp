@@ -465,6 +465,34 @@ if ( $sgs_nd_anchor_is_set || $sgs_nd_panel_is_set ) {
 	}
 }
 
+// ── Header clearance (Bean, 2026-09-24). A full-screen drawer that is NOT
+// modal paints one below the header (the burger must stay live above it), so
+// its first rows sat under the header, unreadable and unclickable. Per tier,
+// that case maps --sgs-nd-header-clear to the header's measured bottom edge
+// (store.js writes --sgs-drawer-header-offset on every open); style.css turns
+// it into the dialog's padding-top and moves the × down by it. Modal drawers
+// are in the top layer above the header, and every other anchor starts at or
+// below the header or paints above it, so they clear nothing.
+if ( 'non-modal' === $modality ) {
+	$sgs_nd_clear_for = function ( $tier ) use ( $anchor_attr_raw, $sgs_nd_allowed_anchors ) {
+		$anchor = sgs_resolve_tier( is_array( $anchor_attr_raw ) ? $anchor_attr_raw : array(), $tier, 'full-screen' )['value'];
+		$anchor = in_array( $anchor, $sgs_nd_allowed_anchors, true ) ? $anchor : 'full-screen';
+		return 'full-screen' === $anchor ? 'var(--sgs-drawer-header-offset, 0px)' : '0px';
+	};
+	$sgs_nd_clear_desktop = $sgs_nd_clear_for( 'desktop' );
+	$sgs_nd_clear_tablet  = $sgs_nd_clear_for( 'tablet' );
+	$sgs_nd_clear_mobile  = $sgs_nd_clear_for( 'mobile' );
+	if ( '0px' !== $sgs_nd_clear_desktop ) {
+		$css .= $root_sel . '{--sgs-nd-header-clear:' . $sgs_nd_clear_desktop . ';}';
+	}
+	if ( $sgs_nd_clear_tablet !== $sgs_nd_clear_desktop ) {
+		$css .= '@media (max-width:' . SGS_Breakpoints::TABLET_MAX . 'px){' . $root_sel . '{--sgs-nd-header-clear:' . $sgs_nd_clear_tablet . ';}}';
+	}
+	if ( $sgs_nd_clear_mobile !== $sgs_nd_clear_tablet ) {
+		$css .= '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){' . $root_sel . '{--sgs-nd-header-clear:' . $sgs_nd_clear_mobile . ';}}';
+	}
+}
+
 // ── Scrim: the see-through layer that dims the page behind the open drawer
 // (Wave 3C U-2, family M-14). One shared helper paints it for every adopter —
 // includes/helpers-scrim.php::sgs_scrim_render() — driven by the four scrim*
@@ -937,7 +965,7 @@ $sgs_nd_placement_decls_for = function ( $placement, $offset ) use ( $sgs_nd_clo
 			. 'transform:translate(calc(-50% + ' . $x . 'px),calc(-50% + ' . $y . 'px));';
 	}
 	if ( 'top-row-start' === $placement ) {
-		return 'inset-inline-end:auto;inset-inline-start:' . $sgs_nd_close_edge_inset . 'px;top:' . $sgs_nd_close_edge_inset . 'px;'
+		return 'inset-inline-end:auto;inset-inline-start:' . $sgs_nd_close_edge_inset . 'px;top:calc(var(--sgs-nd-header-clear, 0px) + ' . $sgs_nd_close_edge_inset . 'px);'
 			. 'transform:translate(' . $x . 'px,' . $y . 'px);';
 	}
 	// top-row-end (default).
