@@ -17,8 +17,9 @@ equal the draft at every width (D1139-D1145). Open: 36 raw placeholders (plan A3
 **Eye Care: now built by hand first (D1149, 2026-09-24).** Instead of finishing the pipeline before any client
 ships, the Eye Care site is built by hand to client-ready from Claude Design's gap map, full scope including the lens
 configurator and prescription upload. The finished site then becomes the pipeline's answer key. Plan:
-`plans/2026-09-24-eye-care-hand-build-design.md`. Waves A and B-framework done (22 generic block/feature additions,
-deployed to eye-care-test). Next: Wave B pages (header, footer, content pages). The old clone on test page 11 and its
+`plans/2026-09-24-eye-care-hand-build-design.md`. Waves A and B built: the seven Wave B pages are live on eye-care-test
+and compared with the draft. Next: the nine Wave B close-out items (plan Status block), then Wave C (shop, product page,
+checkout, lens configurator, prescription). The old clone on test page 11 and its
 converter fixes (C1, C3, C4, C5) wait for Phase 7.
 
 **Nav / header / footer.** Wave 1 (fixtures + verification) is closed. Wave 2 (capabilities) is
@@ -50,16 +51,15 @@ Plan: `plans/2026-09-24-eye-care-hand-build-design.md` (Status block = current t
 Ward End Eye Care - SGS Gap Handoff/`, live at https://mintcream-lyrebird-224487.hostingersite.com/. Test site:
 https://darkcyan-grouse-898606.hostingersite.com (creds `.claude/secrets/eye-care-test.env`).
 
-**Now.** Wave A done (re-check, theme padding, shop data). Wave B framework part done: 22 generic block/feature
-additions, audited against Spec 32/35, deployed to eye-care-test (b2757b351). No pages built yet, so the site does not
-look like the draft. Shape glyphs uploaded as images (media 148-153). Accent: taupe (global palette).
+**Now.** Waves A and B built. The seven Wave B parts (header, footer, home, lenses, about, help, contact) are live on
+eye-care-test, built through the editor with `scripts/wp-build-page.js` from the trees in
+`sites/eye-care-ward-end/build/`; framework gaps they exposed are fixed and deployed (main b315f2daa; eye-care-test
+runs bb861c1d2, docs only since). A draft-vs-live comparison closed the large differences; nine close-out items remain,
+with Bean's decisions recorded. No blockers.
 
-**Next, in order:**
-1. Wave B pages: header, footer, home, lenses, about, help, contact, built in the block editor with the Wave B
-   settings; compare with the draft at 1440/768/375 and fix gaps generically. Verification of the new settings happens
-   here (Bean: no separate test page). Checks owed are listed in the plan's Status block.
-2. Wave C: shop, product page, bag and checkout, lens configurator and prescription (plan §5, §6).
-3. Phase 7: the finished site becomes the clone's answer key; the pipeline clone-run notes are in the plan's §7.
+**Resume from:** the plan's Status block, "Wave B close-out" (items 1 to 9, then a final 1440/768/375 comparison);
+then Wave C (shop, product page and the shared product card, bag and checkout, lens configurator, prescription; plan
+§5, §6); then Phase 7 (plan §7).
 
 **Parked (detail in the plan's Status block):** product-page tabs decision (Bean); `disabled` as a golden state
 (Bean, only if wanted); product-field bindings build; RRP/stock label per variation; nav-drawer badge/disabled; the

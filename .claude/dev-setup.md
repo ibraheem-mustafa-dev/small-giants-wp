@@ -749,10 +749,10 @@ Check every row before building anything new.
 
 | Directory | Runnable files | Holds |
 |---|---|---|
-| `scripts/` | 20 | repo-wide tooling (naming lint, site utilities) |
-| `plugins/sgs-blocks/scripts/` | 777 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
-| `.claude/scripts/` | 2 | working-area helpers |
-| `.claude/hooks/` | 13 | session + commit hooks (handoff preflight, doc gates) |
+| `scripts/` | 21 | repo-wide tooling (naming lint, site utilities) |
+| `plugins/sgs-blocks/scripts/` | 915 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `.claude/scripts/` | 0 | working-area helpers |
+| `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
 
 Worktrees under `.claude/worktrees/` mirror this tree — never cite them as a source.
@@ -766,7 +766,7 @@ Each entry's purpose is quoted from the script's own header.
 | # | Script | Purpose (from its own header) |
 |---|---|---|
 | 1 | `build-roster.py` | Spec 35 UNIT A0 — enumerate the block roster + per-block surface flags from the DB. |
-| 2 | `generate-icons.js` | Generates includes/lucide-icons.php from lucide-static SVG files. |
+| 2 | `generate-icons.js` | Generates includes/lucide-icons.php from lucide-static SVG files, plus the SGS icon library (assets/icons/sgs-icons.json) merged into the same PHP map so… |
 | 3 | `generate-extension-attributes.js` | Single source of truth for the cross-block `sgs*` editor-extension attributes. |
 | 4 | `generate-svg-allowlist.js` | Single source of truth for the SVG sanitiser allowlist, PHP -> JS. |
 | 5 | `generate-media-attributes.mjs` | Single source of truth for the media attribute TYPE map, JS -> PHP. |
@@ -865,10 +865,27 @@ Each entry's purpose is quoted from the script's own header.
 | 98 | `check-style-blob-sanitisation.py` | Gate: every render.php `<style>` blob echo must pass through wp_strip_all_tags(). |
 | 99 | `check-ungated-paint-rules.py` | STRUCTURAL GUARD (WARN-ONLY for this build) — Spec 41 FR-41-35 / gate §11 G20c. |
 | 100 | `audit-serverside-render-disabled.js` | Finds every `<ServerSideRender` JSX usage across `src/blocks/*\/edit.js` and flags any that is NOT wrapped in `<Disabled>` (from `@wordpress/components`)… |
-| 101 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
-| 102 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
+| 101 | `test-create-drawer-seed.mjs` | Standing gate for the inline drawer-creation rules |
+| 102 | `test-nonmodal-freeze-background.mjs` | The non-modal drawer's selective background freeze — pure-logic gate. |
+| 103 | `test-panel-bounds.mjs` | Standing gate for nav panel horizontal bounds |
+| 104 | `test-float-defaults.mjs` | Standing gate for the sgs/site-header float attribute defaults |
+| 105 | `check-fixture-fidelity.py` | compare the nav-drawer POC content plan to the harvest. |
+| 106 | `check-shadow-fallback-php.py` | Every PHP writer of a `box-shadow:` declaration must carry the forced-colours fallback. |
+| 107 | `run.js` | Forced-colours shadow fallback for static stylesheets: census, fix and gate in one script. |
+| 108 | `test-shadow-layers-js.mjs` | The JS shadow composer against the SAME table the PHP composer is tested against |
+| 109 | `test-shadow-model.mjs` | The layered shadow model (src/utils/shadow-model.js): stored text <-> layers, the elevation builder and its recogniser, against the shared composer. |
+| 110 | `migrate-shadow-presets.py` | Shadow preset migration (U-1 commit 4f-1 step 6): the four old theme shadows are replaced by |
+| 111 | `sync-snapshot-shadow-presets.py` | Every client theme snapshot carries the framework's shadow presets, shadow colour and hover map. |
+| 112 | `dedupe-shadow-colour-rows.py` | One writer for a shadow's colour: the ShadowControl. Any other colour row for the same attribute |
+| 113 | `check-shadow-sources.py` | the shadow-source detector (D4/D5 follow-on, survey stage). |
+| 114 | `fanout-surface-ground-attrs.py` | U-1 commit 4e fan-out of `surfaceBlur` / |
+| 115 | `run.js` | Shadow lift on hover for static stylesheets: census, fix and gate in one script, mirroring scripts/shadow-fallback/run.js's shape (design H4, stylesheet… |
+| 116 | `fanout-shadow-lift-attr.py` | adds the `shadowLiftOnHover` block-level switch (boolean, |
+| 117 | `check-scrim.py` | the viewport-scrim detector (Wave 3C U-2, family M-14). |
+| 118 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
+| 119 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
 
-**102 gating scripts.** Regenerate this whole section with:
+**119 gating scripts.** Regenerate this whole section with:
 
 ```bash
 python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
@@ -876,7 +893,7 @@ python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
 
 ### I/O inventory — what each prebuild + commit-gate script reads/writes
 
-Scope: every script actually executed by the **prebuild chain** (102 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 14 resolved scripts) — 114 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
+Scope: every script actually executed by the **prebuild chain** (119 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 1 resolved scripts) — 120 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
 
 Every field below is extracted from the script's own executable code (regex over `open()`/`.read_text()`/`.write_text()`/`fs.readFileSync`/`fs.writeFileSync`/`sqlite3.connect()`/SQL keywords/argparse/`sys.exit()`/`process.exitCode`) — **never from a docstring or comment**, per this generator's own stale-header finding above. A script with no recognised call shape (e.g. I/O built dynamically, or delegated to a helper module) shows **UNVERIFIED** rather than an invented mechanism. `Read-only` is stated explicitly whenever no write call site was found at all.
 
@@ -893,7 +910,7 @@ Every field below is extracted from the script's own executable code (regex over
 - Writes: `BASELINE_FILE`
 - Non-zero exit sites found: 0, 1
 
-**`plugins/sgs-blocks/scripts/audit-block-uniformity.py`** (build+commit)
+**`plugins/sgs-blocks/scripts/audit-block-uniformity.py`** (build)
 - Reads: UNVERIFIED (no recognised read call site found)
 - Writes: **read-only** — no write call site found in source
 - Non-zero exit sites found: 2
@@ -929,11 +946,6 @@ Every field below is extracted from the script's own executable code (regex over
 - Reads: `CONVERT_PY`
 - Writes: **read-only** — no write call site found in source
 - Non-zero exit sites found: 0, 1, 2
-
-**`plugins/sgs-blocks/scripts/check-blockjson-metadata-only.py`** (commit)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: SystemExit(non-zero on failure)
 
 **`plugins/sgs-blocks/scripts/check-border-style-without-width.py`** (build)
 - Path constants: `REPO` = Path(__file__).resolve().parents[3]; `PLUGIN` = REPO / "plugins" / "sgs-blocks"; `BASELINE` = Path(__file__).with_name("border-style-without-width-baseline.json")
@@ -1004,16 +1016,6 @@ Every field below is extracted from the script's own executable code (regex over
 - Writes: `BASELINE_FILE`
 - Non-zero exit sites found: exit(0), exit(1)
 
-**`plugins/sgs-blocks/scripts/check-editor-canvas-css.py`** (commit)
-- Reads: `bj`
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: SystemExit(non-zero on failure)
-
-**`plugins/sgs-blocks/scripts/check-editor-only.py`** (commit)
-- Reads: `bj`, `full`
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: SystemExit(non-zero on failure)
-
 **`plugins/sgs-blocks/scripts/check-editor-render-parity.js`** (build)
 - Reads: `BASELINE_FILE`, `blockJsonPath`
 - Writes: **read-only** — no write call site found in source
@@ -1069,11 +1071,6 @@ Every field below is extracted from the script's own executable code (regex over
 - Writes: **read-only** — no write call site found in source
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
-**`plugins/sgs-blocks/scripts/check-interaction-only-css.py`** (commit)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: SystemExit(non-zero on failure)
-
 **`plugins/sgs-blocks/scripts/check-jsonld-flags.py`** (build)
 - Reads: `bad`
 - Writes: `bad`
@@ -1084,11 +1081,6 @@ Every field below is extracted from the script's own executable code (regex over
 - Reads: `fixture`
 - Writes: `tmp_path`
 - CLI flags read: `--check`, `--self-test`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-markup-neutral.py`** (commit)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
 **`plugins/sgs-blocks/scripts/check-media-atom-purity.js`** (build)
@@ -1141,6 +1133,19 @@ Every field below is extracted from the script's own executable code (regex over
 - CLI flags read: `--check`, `--self-test`
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
+**`plugins/sgs-blocks/scripts/check-shadow-fallback-php.py`** (build)
+- Path constants: `ROOT` = Path(__file__).resolve().parents[1]
+- Reads: UNVERIFIED (no recognised read call site found)
+- Writes: **read-only** — no write call site found in source
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
+
+**`plugins/sgs-blocks/scripts/check-shadow-sources.py`** (build)
+- Path constants: `HERE` = Path(__file__).resolve().parent               # plugins/sgs-blocks/scripts/; `PLUGIN` = HERE.parent                                  # plugins/sgs-blocks/; `ROOT` = PLUGIN.parents[1]                              # small-giants-wp/
+- Reads: `BASELINE_JSON`, `abspath`, `black_css`, `block_json`, `fix_a_path`, `missing_fc_css`, `pass_css`, `snap`, `theme_json`
+- Writes: `SURVEY_JSON`
+- CLI flags read: `--check`, `--fix`, `--self-test`, `--survey`
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
+
 **`plugins/sgs-blocks/scripts/check-shared-css-state-rules.js`** (build)
 - Reads: `BASELINE_FILE`, `fullPath`
 - Writes: **read-only** — no write call site found in source
@@ -1185,12 +1190,6 @@ Every field below is extracted from the script's own executable code (regex over
 **`plugins/sgs-blocks/scripts/check-tier-storage-shape.py`** (build)
 - Path constants: `REPO` = pathlib.Path(__file__).resolve().parents[3]; `BLOCKS_DIR` = REPO / 'plugins' / 'sgs-blocks' / 'src' / 'blocks'
 - Reads: `bj`
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/check-token-rename-neutral.py`** (commit)
-- Path constants: `REPO` = Path(__file__).resolve().parents[3]; `BLOCKS` = REPO / "plugins" / "sgs-blocks" / "src" / "blocks"
-- Reads: UNVERIFIED (no recognised read call site found)
 - Writes: **read-only** — no write call site found in source
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
@@ -1293,6 +1292,12 @@ Every field below is extracted from the script's own executable code (regex over
 - CLI flags read: `--check`, `--live-db`, `--self-test`
 - Non-zero exit sites found: SystemExit(non-zero on failure)
 
+**`plugins/sgs-blocks/scripts/dedupe-shadow-colour-rows.py`** (build)
+- Path constants: `ROOT` = Path(__file__).resolve().parents[3]
+- Reads: `block_json`
+- Writes: **read-only** — no write call site found in source
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
+
 **`plugins/sgs-blocks/scripts/excluded-gate/run.py`** (build)
 - Reads: `_BASELINE_PATH`, `sqlite3:str(_DB_PATH`
 - Writes: `_BASELINE_PATH`
@@ -1306,15 +1311,29 @@ Every field below is extracted from the script's own executable code (regex over
 - CLI flags read: `--apply`, `--check`, `--fix`, `--self-test`, `--survey`
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
+**`plugins/sgs-blocks/scripts/fanout-shadow-lift-attr.py`** (build)
+- Path constants: `PLUGIN_ROOT` = Path(__file__).resolve().parent.parent
+- Reads: UNVERIFIED (no recognised read call site found)
+- Writes: **read-only** — no write call site found in source
+- CLI flags read: `--apply`, `--check`, `--fix`, `--self-test`, `--survey`
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
+
+**`plugins/sgs-blocks/scripts/fanout-surface-ground-attrs.py`** (build)
+- Path constants: `REPO_ROOT` = Path(__file__).resolve().parent.parent.parent.parent; `PLUGIN_ROOT` = Path(__file__).resolve().parent.parent
+- Reads: UNVERIFIED (no recognised read call site found)
+- Writes: **read-only** — no write call site found in source
+- CLI flags read: `--apply`, `--check`, `--fix`, `--self-test`, `--survey`
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
+
 **`plugins/sgs-blocks/scripts/generate-extension-attributes.js`** (build)
 - Reads: `OUT_FILE`
 - Writes: `OUT_FILE`
 - Non-zero exit sites found: exit(1)
 
 **`plugins/sgs-blocks/scripts/generate-icons.js`** (build)
-- Reads: `OUTPUT_FILE`, `WP_ICONS_PHP`
-- Writes: `OUTPUT_FILE`
-- Non-zero exit sites found: exit(1)
+- Reads: `ALLOWLIST_FILE`, `LIBRARY_FILE`, `OUTPUT_FILE`, `WP_ICONS_PHP`, `tagsSrc`, `target`
+- Writes: `OUTPUT_FILE`, `target`
+- Non-zero exit sites found: exit(0), exit(1)
 
 **`plugins/sgs-blocks/scripts/generate-media-attributes.mjs`** (build)
 - Reads: `OUT_FILE`
@@ -1336,7 +1355,7 @@ Every field below is extracted from the script's own executable code (regex over
 - Writes: **read-only** — no write call site found in source
 - Non-zero exit sites found: exit(1)
 
-**`plugins/sgs-blocks/scripts/inspector-scan/run.js`** (build+commit)
+**`plugins/sgs-blocks/scripts/inspector-scan/run.js`** (build)
 - Reads: `RULES_JSON_PATH`
 - Writes: **read-only** — no write call site found in source
 - Non-zero exit sites found: exit(0), exit(1)
@@ -1361,18 +1380,6 @@ Every field below is extracted from the script's own executable code (regex over
 - DB tables (sgs-framework.db): block_attributes
 - CLI flags read: `--check`, `--db-context`, `--quiet`, `--self-test`
 - Non-zero exit sites found: 0
-
-**`plugins/sgs-blocks/scripts/lints/bem-lint.py`** (commit)
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--json`, `--mode`, `--self-test`, `path`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/lints/token-lint.py`** (commit)
-- Reads: `html_path`, `style_variation_path`, `tmp_path`
-- Writes: `json.dump->fh`, `json.dump->tmp`, `style_variation_path`
-- CLI flags read: `--apply-to`, `--dry-run`, `--inline-styles`, `--json`, `--mode`, `--no-new-tokens`, `--self-test`, `--theme`, `--variation`, `path`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
 **`plugins/sgs-blocks/scripts/migrate-border-shape-b.js`** (build)
 - Reads: UNVERIFIED (no recognised read call site found)
@@ -1399,6 +1406,12 @@ Every field below is extracted from the script's own executable code (regex over
 - CLI flags read: `--apply`, `--check`, `--fix`, `--only`, `--self-test`, `--skip`, `--survey`
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
+**`plugins/sgs-blocks/scripts/migrate-shadow-presets.py`** (build)
+- Path constants: `ROOT` = Path(__file__).resolve().parents[3]
+- Reads: `DARK`, `tj`
+- Writes: **read-only** — no write call site found in source
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
+
 **`plugins/sgs-blocks/scripts/migrate-theme-native-spacing.py`** (build)
 - Path constants: `REPO` = Path(__file__).resolve().parents[3]; `THEME` = REPO / "theme" / "sgs-theme"; `BLOCKS` = REPO / "plugins" / "sgs-blocks" / "src" / "blocks"
 - Reads: `bj`
@@ -1412,6 +1425,13 @@ Every field below is extracted from the script's own executable code (regex over
 - Writes: `bj`, `ej`
 - DB tables (sgs-framework.db): block_attributes
 - CLI flags read: `--all-properties`, `--apply`, `--check`, `--check-db-parity`, `--fix`, `--json`, `--property`, `--self-test`, `--survey`
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
+
+**`plugins/sgs-blocks/scripts/nav-qa/check-fixture-fidelity.py`** (build)
+- Path constants: `HERE` = Path(__file__).resolve().parent; `REPO_ROOT` = HERE.parents[3]
+- Reads: UNVERIFIED (no recognised read call site found)
+- Writes: **read-only** — no write call site found in source
+- CLI flags read: `--check`, `--json`, `--labels-dir`, `--plan`, `--self-test`
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
 **`plugins/sgs-blocks/scripts/nav-qa/logical-props-lint.py`** (build)
@@ -1451,6 +1471,23 @@ Every field below is extracted from the script's own executable code (regex over
 - Writes: **read-only** — no write call site found in source
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
+**`plugins/sgs-blocks/scripts/scrim/check-scrim.py`** (build)
+- Path constants: `HERE` = Path(__file__).resolve().parent           # plugins/sgs-blocks/scripts/scrim/; `PLUGIN` = HERE.parents[1]                          # plugins/sgs-blocks/
+- Reads: `inc`, `style`
+- Writes: **read-only** — no write call site found in source
+- CLI flags read: `--apply`, `--check`, `--fix`, `--self-test`, `--survey`
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
+
+**`plugins/sgs-blocks/scripts/shadow-fallback/run.js`** (build)
+- Reads: UNVERIFIED (no recognised read call site found)
+- Writes: **read-only** — no write call site found in source
+- Non-zero exit sites found: exit(1), exit(2)
+
+**`plugins/sgs-blocks/scripts/shadow-lift/run.js`** (build)
+- Reads: `THEME_JSON`, `candidate`
+- Writes: **read-only** — no write call site found in source
+- Non-zero exit sites found: exit(1), exit(2)
+
 **`plugins/sgs-blocks/scripts/survey-border-control-migration.py`** (build)
 - Path constants: `ROOT` = _find_repo_root(os.path.dirname(__file__))
 - Reads: `os.path.join(synthetic_dir`
@@ -1480,6 +1517,22 @@ Every field below is extracted from the script's own executable code (regex over
 - Non-zero exit sites found: 1
 
 **`plugins/sgs-blocks/scripts/surveys/survey-experimental-imports.js`** (build)
+- Reads: `barrel`
+- Writes: `full`
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
+
+**`plugins/sgs-blocks/scripts/sync-snapshot-shadow-presets.py`** (build)
+- Path constants: `ROOT` = Path(__file__).resolve().parents[3]
+- Reads: `FRAMEWORK`
+- Writes: **read-only** — no write call site found in source
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
+
+**`plugins/sgs-blocks/scripts/tests/test-create-drawer-seed.mjs`** (build)
+- Reads: UNVERIFIED (no recognised read call site found)
+- Writes: **read-only** — no write call site found in source
+- Non-zero exit sites found: exit(0), exit(1)
+
+**`plugins/sgs-blocks/scripts/tests/test-float-defaults.mjs`** (build)
 - Reads: UNVERIFIED (no recognised read call site found)
 - Writes: **read-only** — no write call site found in source
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
@@ -1504,7 +1557,27 @@ Every field below is extracted from the script's own executable code (regex over
 - Writes: **read-only** — no write call site found in source
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
+**`plugins/sgs-blocks/scripts/tests/test-nonmodal-freeze-background.mjs`** (build)
+- Reads: UNVERIFIED (no recognised read call site found)
+- Writes: **read-only** — no write call site found in source
+- Non-zero exit sites found: exit(1)
+
+**`plugins/sgs-blocks/scripts/tests/test-panel-bounds.mjs`** (build)
+- Reads: UNVERIFIED (no recognised read call site found)
+- Writes: **read-only** — no write call site found in source
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
+
 **`plugins/sgs-blocks/scripts/tests/test-sanitise-svg.mjs`** (build)
+- Reads: UNVERIFIED (no recognised read call site found)
+- Writes: **read-only** — no write call site found in source
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
+
+**`plugins/sgs-blocks/scripts/tests/test-shadow-layers-js.mjs`** (build)
+- Reads: UNVERIFIED (no recognised read call site found)
+- Writes: **read-only** — no write call site found in source
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
+
+**`plugins/sgs-blocks/scripts/tests/test-shadow-model.mjs`** (build)
 - Reads: UNVERIFIED (no recognised read call site found)
 - Writes: **read-only** — no write call site found in source
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
@@ -1514,24 +1587,6 @@ Every field below is extracted from the script's own executable code (regex over
 - Writes: **read-only** — no write call site found in source
 - DB tables (sgs-framework.db): block_attributes, slots
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`plugins/sgs-blocks/scripts/visual-report-sha.py`** (commit)
-- Path constants: `REPO` = Path(__file__).resolve().parents[3]
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- Non-zero exit sites found: 0, 1, 2
-
-**`plugins/sgs-blocks/scripts/wp-pre-merge-gate.py`** (commit)
-- Path constants: `REPO` = Path(__file__).resolve().parents[3]; `SGS_BLOCKS_DIR` = REPO / "plugins" / "sgs-blocks"
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--hooks`, `--soft`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
-**`scripts/css-pattern-audit.js`** (commit)
-- Reads: `filePath`
-- Writes: `args.report`
-- Non-zero exit sites found: exit(0)
 
 **`scripts/font-source-audit.js`** (build)
 - Reads: `filePath`
@@ -1559,7 +1614,7 @@ always cheaper than a fresh build plus its brainstorm, QC and tests.
 for the SUBJECT (colour, gradient, token, element, inline, parity), never
 for the verb you happen to have in mind.
 
-#### `plugins/sgs-blocks/scripts/` — 693 scripts
+#### `plugins/sgs-blocks/scripts/` — 772 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -1567,7 +1622,7 @@ for the verb you happen to have in mind.
 | `assert-comment-only-diff.py` | manifest | Assert a diff changed COMMENTS ONLY — no executable code. |
 | `audit-bindable-attrs.py` | manifest+npm | C15-5/C15-12 detector: which SGS block attributes are SAFE Block Bindings targets? |
 | `audit-block-file-consistency.py` | manifest+script-call | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
-| `audit-block-uniformity.py` | commit-gate+manifest+script-call | SGS Block Uniformity Audit |
+| `audit-block-uniformity.py` | manifest+script-call | SGS Block Uniformity Audit |
 | `audit-declared-vs-seeded-roles.py` | manifest+script-call | Audit: which `sgs/%` attributes LACK A MECHANISM that reaches them — the D497 gate. |
 | `audit-feature-parity.py` | manifest+script-call | Spec 35 UNIT A — feature-parity audit. ⚠ **header disputes this — it IS wired** |
 | `audit-inline-styling.js` | manifest+npm+script-call | WIRED INTO `prebuild` AS A REAL GATE — `node scripts/audit-inline-styling.js --check` runs on every `npm run build` and sets `process.exitCode = 1`… ⚠ **header disputes this — it IS wired** |
@@ -1584,6 +1639,15 @@ for the verb you happen to have in mind.
 | `build-deploy.py` | manifest+script-call | One-shot SGS build + tar + scp + remote extract + cleanup. |
 | `build-font-collection.py` | manifest | Generates a WordPress Font Library collection manifest (google-fonts.json) from the |
 | `build-tier-fixture-page.py` | manifest+script-call | Build (and publish) ONE canary page carrying every block that has migrated |
+| `business_info/__init__.py` | manifest+script-call | Business-details extraction and push for Spec 33 FR-33-14. |
+| `business_info/credentials.py` | script-call | REST credential resolution for the Site Info push (mirrors push-theme-snapshot.py). |
+| `business_info/extract.py` | manifest+script-call+skill | Extraction of high-confidence business-details fields from a draft's HTML. |
+| `business_info/label_context.py` | script-call | Where a label is allowed to sit. A label inside a form, dialog, wizard or review summary is |
+| `business_info/placeholder_map.py` | script-call | The placeholder map: which `{{ binding }}` in a draft template resolves to which Site Info key. |
+| `business_info/push.py` | manifest+script-call | The Site Info REST push: POST /wp-json/sgs/v1/site-info (fill-if-empty unless overwrite). |
+| `business_info/script_source.py` | script-call | Source 1: the draft script's runtime data object (`key: 'value'` pairs in VOCABULARY). |
+| `business_info/shapes.py` | script-call | Shape validation: a value is kept only if it LOOKS like the field it claims to be. |
+| `business_info/vocabulary.py` | script-call | Vocabulary and shape tables for the business-details extractor. DATA only, no behaviour. |
 | `capture-tier-fixture.py` | manifest+script-call | Measure the tier-fixture page — one scoped measurement per block, three viewports. |
 | `census-colour-paint-route.py` | manifest | Census: how does each block's render.php route its COLOUR PAINT? |
 | `cheat-gate/__init__.py` | manifest+script-call | cheat-gate — F5 anti-cheat detection suite for the SGS cloning pipeline. |
@@ -1596,10 +1660,10 @@ for the verb you happen to have in mind.
 | `cheat-gate/check_sentinel.py` | manifest+script-call | Check #7: sentinel leakage ('unitless' string). |
 | `cheat-gate/check_slug_literals.py` | manifest+script-call | Check #1: per-block slug literals (whole-tree + indirect forms). |
 | `cheat-gate/models.py` | manifest+script-call+skill+test-import | shared data types for the F5 cheat-detection gate. |
-| `cheat-gate/run.py` | commit-gate+hook+manifest+npm+script-call+settings+skill | F5 cheat-detection gate runner. |
+| `cheat-gate/run.py` | commit-gate+manifest+npm+script-call+settings+skill | F5 cheat-detection gate runner. |
 | `check-atomic-slug-literals.py` | manifest+npm+script-call | STRUCTURAL GUARD (FR-22-3, 2026-06-13) — prevents new per-block `if slug ==` |
 | `check-block-asset-targets.js` | manifest+npm+script-call | STRUCTURAL GUARD (post-D382 hardening) — stops the "block.json names a source filename that never gets compiled" class of bug from regressing. |
-| `check-blockjson-metadata-only.py` | commit-gate+manifest+script-call | visual-diff-gate helper. |
+| `check-blockjson-metadata-only.py` | manifest+script-call | visual-diff-gate helper. |
 | `check-border-style-without-width.py` | manifest | the "no width = no border" detector. |
 | `check-box-family-guard.py` | manifest+npm+script-call | STRUCTURAL GUARD — box-object interface contract (2026-07-09 plan §6). |
 | `check-child-lift.py` | manifest | check-child-lift — every child-lift rule in the tree stays at ZERO specificity. |
@@ -1616,8 +1680,8 @@ for the verb you happen to have in mind.
 | `check-device-toggle.js` | manifest+npm+script-call | (src/blocks/extensions/responsive-device-toggle.js). ⚠ **header disputes this — it IS wired** |
 | `check-doc-citations.py` | manifest | a `file:line` citation in a doc must land on what it names. |
 | `check-duplicate-controls.js` | manifest+script-call | STRUCTURAL GUARD (WARN-ONLY) — finds the "duplicate control" class of bug: the SAME setting exposed to the client through TWO different editor… |
-| `check-editor-canvas-css.py` | commit-gate+manifest | visual-diff-gate helper (branch 6). |
-| `check-editor-only.py` | commit-gate+manifest+script-call | visual-diff-gate helper (branch 5). |
+| `check-editor-canvas-css.py` | manifest | visual-diff-gate helper (branch 6). |
+| `check-editor-only.py` | manifest+script-call | visual-diff-gate helper (branch 5). |
 | `check-editor-render-parity.js` | manifest+npm+script-call | NEW STRUCTURAL GUARD (2026-08-13) — closes a class of bug no existing gate in this repo catches: "a control is set up correctly on ONE side (editor… |
 | `check-element-manifest-conformance.js` | manifest+npm+script-call | Spec 35 Task 2 — the CLUSTER-COHERENCE rule, made computable. |
 | `check-empty-inspector-containers.js` | manifest+npm+script-call | STRUCTURAL GUARD — an inspector container rendered with NO children. |
@@ -1628,10 +1692,10 @@ for the verb you happen to have in mind.
 | `check-hover-state-classification.py` | manifest+npm | Gate: a `*Hover` attribute that carries a real CSS property MUST be classified |
 | `check-id-scoped-emits.js` | manifest+npm+script-call | STRUCTURAL GUARD — ID-scoped CSS selector emissions. |
 | `check-inert-controls.py` | manifest+npm+script-call | Find block attributes that are OVERWRITTEN in render.php before being used. |
-| `check-interaction-only-css.py` | commit-gate+manifest+script-call | visual-diff-gate helper. |
+| `check-interaction-only-css.py` | manifest+script-call | visual-diff-gate helper. |
 | `check-jsonld-flags.py` | manifest+npm | guard the ONE json_encode flag combination that is unsafe. |
 | `check-ksort-before-hash.py` | manifest+npm+script-call | STOP-NO-KSORT gate — never reorder $attributes before it is hashed into a uid. |
-| `check-markup-neutral.py` | commit-gate+manifest+script-call | visual-diff-gate helper. |
+| `check-markup-neutral.py` | manifest+script-call | visual-diff-gate helper. |
 | `check-media-atom-purity.js` | manifest+npm+script-call | Gate: a media atom's LOGIC module must be importable by plain Node. |
 | `check-media-breakpoints.js` | manifest+npm | Gate: the media-element stylesheet's breakpoints must match the ONE source. |
 | `check-media-disclosure-coverage.js` | manifest | Gate: every media atom's `disclosure()` is exercised against REAL fixtures derived from its own `requires` map in registry.js — not a static scan. |
@@ -1644,6 +1708,8 @@ for the verb you happen to have in mind.
 | `check-render-undefined-vars.py` | manifest+npm+script-call | Undefined-variable gate for block render templates (PHPStan level 1). |
 | `check-rest-route-require.py` | npm | STRUCTURAL GUARD — catches a REST route registered against a callback class |
 | `check-shader-sources.py` | manifest+npm | structural gate for Tier W `*.frag.js` shader sources. |
+| `check-shadow-fallback-php.py` | manifest+npm+script-call | Every PHP writer of a `box-shadow:` declaration must carry the forced-colours fallback. |
+| `check-shadow-sources.py` | manifest | the shadow-source detector (D4/D5 follow-on, survey stage). |
 | `check-shared-css-state-rules.js` | manifest+npm+script-call | STRUCTURAL GUARD — stops the "state-only shared-CSS size literal" class of bug from regressing. This is the class of defect that shipped LIVE on… |
 | `check-shared-panel-schema.js` | manifest+npm+script-call | STRUCTURAL GUARD — closes the gap in the "dead control" family that check-dead-controls.js (control exists, nothing renders it) and… |
 | `check-simple-surface-cap.js` | manifest+script-call | FR-37-27 (Spec 37, .claude/specs/37-HEADER-FOOTER-BUILDER.md) — the SIMPLE SURFACE CAP, made computable. The Simple surface (`sgs/site-header` and… |
@@ -1652,7 +1718,7 @@ for the verb you happen to have in mind.
 | `check-text-gradient-companion.js` | manifest+npm | THE TRAP THIS GATE CATCHES. `sgs_text_decls()` (`includes/helpers-colour- variants.php`) returns `color:` DECLARATIONS ONLY. When a text GRADIENT is… |
 | `check-tier-object-cast.py` | manifest+npm+script-call | Tier-object-cast gate — never coerce a whole object-typed attribute to a string. |
 | `check-tier-storage-shape.py` | manifest+script-call | Find per-device attribute families that are HALF-MIGRATED between storage shapes. |
-| `check-token-rename-neutral.py` | commit-gate+manifest | Is a block's staged change ONLY a preset-token RENAME whose resolved value is unchanged? |
+| `check-token-rename-neutral.py` | manifest | Is a block's staged change ONLY a preset-token RENAME whose resolved value is unchanged? |
 | `check-undeclared-attrs.py` | manifest+npm+script-call | Find block attributes destructured in edit.js that WordPress silently DISCARDS. |
 | `check-undefined-refs.js` | manifest+npm+script-call | THE GAP THIS CLOSES. On 2026-08-22 three blocks shipped broken editors: sgs/text, sgs/quote and sgs/testimonial referenced `borderColourHover` /… |
 | `check-undefined-refs.selftest.js` | manifest+script-call | Self-test for check-undefined-refs.js. |
@@ -1694,16 +1760,16 @@ for the verb you happen to have in mind.
 | `converter/context.py` | manifest+script-call+skill | typed per-element context + declaration for the modular converter. |
 | `converter/coverage_report.py` | manifest+script-call | the Bean-visible sign-off grid (design §5). |
 | `converter/db/__init__.py` | manifest+script-call | converter/db — the modular engine's own DB-accessor package. |
-| `converter/db/db_lookup.py` | hook+manifest+script-call+skill+test-import | DB-backed canonical lookups for the converter. |
+| `converter/db/db_lookup.py` | manifest+script-call+skill+test-import | DB-backed canonical lookups for the converter. |
 | `converter/dispatch_spine.py` | manifest+script-call | dispatch + conservation spine (design §3 / §4). |
 | `converter/dispatch_table.py` | manifest+script-call | the DB-sourced routing function (design §2). |
 | `converter/entry.py` | manifest+script-call+skill+test-import | Stage 4 pipeline entry point for the modular converter (`converter/`). |
 | `converter/gates/__init__.py` | manifest+script-call | Anti-cheat gates the scaffold ships (design §4.1). |
 | `converter/gates/check_content_attr_collisions.py` | manifest | DB gate: attrs the content resolver cannot tell apart. |
 | `converter/gates/check_preset_absence_no_slug_literal.py` | manifest+npm+script-call | scoped static gate for |
-| `converter/gates/check_raw_sqlite.py` | hook+manifest+script-call | AST gate: no converter/ file opens sqlite3 directly. |
-| `converter/gates/import_ban.py` | hook+manifest+script-call | AST gate: no converter/ file may import the frozen engine. |
-| `converter/gates/no_slug_literal.py` | hook+manifest+script-call | AST gate: no block-slug / variant / slot carve-outs in resolver bodies. |
+| `converter/gates/check_raw_sqlite.py` | commit-gate+manifest+script-call | AST gate: no converter/ file opens sqlite3 directly. |
+| `converter/gates/import_ban.py` | commit-gate+manifest+script-call | AST gate: no converter/ file may import the frozen engine. |
+| `converter/gates/no_slug_literal.py` | commit-gate+manifest+script-call | AST gate: no block-slug / variant / slot carve-outs in resolver bodies. |
 | `converter/models.py` | manifest+script-call+skill+test-import | the Write / GAP result types every resolver returns. |
 | `converter/recognition.py` | manifest+script-call | Stage-2 block recognition (modular rebuild, step-3 stage 1). |
 | `converter/resolvers/__init__.py` | manifest+script-call | Resolver registry — resolver_id (from dispatch_table) → resolve callable. |
@@ -1711,6 +1777,7 @@ for the verb you happen to have in mind.
 | `converter/resolvers/content_band.py` | manifest+script-call | content_band — the CONTENT-layer resolver (Spec 31 §3.A, layer L2). |
 | `converter/resolvers/grid.py` | manifest+script-call | grid — the GRID-layer resolver (Spec 31 §3.A, layer L3 / D207 grid engine). |
 | `converter/resolvers/load_settle_probe.py` | manifest+script-call | - Tier 4b "page-load-settle" motion probe (D1032). |
+| `converter/resolvers/marquee.py` | manifest+script-call | lift a draft's seamless-marquee animation onto the block's own marquee attrs. |
 | `converter/resolvers/motion_library_signals.py` | manifest+script-call | Tier 4a DOM-runtime-signal detection for GSAP/Lenis/Three.js -- Phase R8 Step 10. |
 | `converter/resolvers/motion_shape.py` | manifest+script-call | Tier 1 CSS declaration-shape classifier — Phase R8 Step 3. |
 | `converter/resolvers/motion_stagger.py` | manifest+script-call | Tier 3 stagger/repetition detector — Phase R8 Step 9. |
@@ -1753,9 +1820,11 @@ for the verb you happen to have in mind.
 | `converter/services/root_supports.py` | manifest+script-call | root-CSS-to-WP-native-style lift for the modular engine. |
 | `converter/services/sc_var_responsive_bridge.py` | script-call | - turns a correlated classless-draft measurement |
 | `converter/services/section_passes.py` | manifest+script-call | the two universal section passes, ported from the frozen |
+| `converter/services/shadow_layers.py` | script-call | shadow_layers — parse a draft `box-shadow` CSS value into the stored |
 | `converter/services/sibling_shape_prefilter.py` | manifest+script-call | - standalone sibling shape-alike pre-filter. |
 | `converter/services/state_value_lift.py` | manifest+script-call | state_value_lift — direct (block, css_property, css_state) resolution + |
 | `converter/services/styling_helpers.py` | manifest+script-call | ported helper functions for the styling-attr lift. |
+| `converter/services/template_binding.py` | script-call | template_binding -- refuse to lift a style value that is an unresolved template binding. |
 | `converter/services/test_tier4a_gate_hardening_fixtures.py` | — | Ad-hoc verification harness for the Tier 4a gate hardening fix |
 | `converter/services/test_webgl_reference_puller_fixtures.py` | — | Ad-hoc verification harness for webgl_reference_puller.py (Phase R8 Step 13). |
 | `converter/services/text_leaf.py` | manifest+script-call | text-leaf detection + text-capability gate. |
@@ -1769,7 +1838,7 @@ for the verb you happen to have in mind.
 | `converter/services/variant_detect.py` | manifest | variant_detect — recognise a block's variant from its BEM modifier + the DB. |
 | `converter/services/webgl_reference_puller.py` | manifest+script-call | Tier 4d -- operator-confirmed WebGL reference-file pulling. |
 | `converter/services/webgl_style_classifier.py` | manifest+script-call | Tier 4c -- WebGL visual-style approximation via screenshot classification. |
-| `converter/walk.py` | hook+manifest+script-call | the single walker entry + TOTAL structural-signature registry. |
+| `converter/walk.py` | manifest+script-call | the single walker entry + TOTAL structural-signature registry. |
 | `converter/webgl_draw_call_probe.py` | manifest+script-call | - Tier 4a's ONE new execution probe (Step 10). |
 | `copy-built-styles.js` | manifest+npm+script-call | Postbuild: copy style-index.css to style.css per block. |
 | `coverage-matrix/classifier.py` | manifest+script-call | assigns a CellState to each (block, column) pair. |
@@ -1792,7 +1861,7 @@ for the verb you happen to have in mind.
 | `db-consistency/check_variants.py` | manifest+script-call | Check #3: variant discriminator AMBIGUITY on the lift surface. |
 | `db-consistency/models.py` | manifest+script-call+skill+test-import | shared data types for the F6 DB-consistency suite. |
 | `db-consistency/resolver_bridge.py` | manifest+script-call | reuse the REAL resolver derivation for F6 checks. |
-| `db-consistency/run.py` | commit-gate+hook+manifest+npm+script-call+settings+skill | F6 DB-as-code consistency suite shared runner. |
+| `db-consistency/run.py` | commit-gate+manifest+npm+script-call+settings+skill | F6 DB-as-code consistency suite shared runner. |
 | `dbschema/capture_seed_data.py` | manifest+script-call | Capture the Phase-1 Group-5 seed tables from a LIVE database into data files. |
 | `dbschema/check_schema_drift.py` | manifest+script-call | Detect drift between the committed ``schema.sql`` and the live database's DDL. |
 | `dbschema/check_value_identity.py` | manifest+script-call | Assert that named, load-bearing DB rows still hold the EXACT value they must. |
@@ -1806,18 +1875,28 @@ for the verb you happen to have in mind.
 | `dbschema/seed_history.py` | manifest+script-call | Record the last N seeding runs' row counts and REPORT what moved unexpectedly. |
 | `dbschema/wp_reference_archive.py` | manifest+script-call | Preserve the ORPHANED WordPress reference corpus (`hooks` + `docs`). |
 | `dead-api-checker/tokenize-calls.php` | manifest+script-call | Tokenize-calls.php |
+| `dedupe-shadow-colour-rows.py` | manifest+script-call | One writer for a shadow's colour: the ShadowControl. Any other colour row for the same attribute |
 | `detect-repeated-siblings.py` | manifest+script-call | - Q2 Tier 1 structural repeated-sibling triad CLI. |
 | `diff-gap-sanitiser.php` | — | Differential test: sgs_container_gap_value() old allowlist vs the new sgs_css_length_value()-delegating implementation. |
+| `draft-manifest/build_order.py` | script-call | Build order: a dependency-respecting sequence, tiers first, dependencies always winning. |
+| `draft-manifest/dc_script.py` | script-call | Read a Claude Design draft's script: what each handler does and what each flag means. |
+| `draft-manifest/dc_template.py` | script-call | Read a Claude Design draft's template: its screens, overlay regions and the handlers wired to them. |
+| `draft-manifest/manifest.py` | script-call | Spec 31 draft manifest: what a draft contains, what refers to what, and the order to build it in. |
+| `draft-manifest/manifest_report.py` | script-call | Markdown report for a draft manifest: the same facts as the JSON, in reading order. |
+| `draft-manifest/manifest_vocab.py` | script-call | Draft manifest vocabulary: every word-list and lookup the manifest uses, held as data. |
+| `draft-manifest/readme_routes.py` | script-call | The README's routes table: which views the design says exist, their route and purpose. |
 | `drift-validator/validate.py` | manifest+script-call+skill | Spec 19 Stage 9 — Drift Validator |
 | `e2e-authoring-acceptance.php` | — | SGS QA-AUTHORING Gate — FR-27 Cluster C End-to-End Authoring Acceptance Test |
 | `excluded-gate/__init__.py` | manifest+script-call | excluded-gate — F5 excluded-literal tripwire gate. |
 | `excluded-gate/db_check.py` | manifest+script-call | cross-reference detected signatures against excluded_properties DB table. |
 | `excluded-gate/models.py` | manifest+script-call+skill+test-import | shared data types for the F5 excluded-literal gate. |
-| `excluded-gate/run.py` | commit-gate+hook+manifest+npm+script-call+settings+skill | F5 excluded-literal tripwire gate for the SGS cloning pipeline. |
+| `excluded-gate/run.py` | commit-gate+manifest+npm+script-call+settings+skill | F5 excluded-literal tripwire gate for the SGS cloning pipeline. |
 | `excluded-gate/scanner.py` | manifest+script-call | import-graph-wide scan for CSS-property exclusion literals. |
 | `extract-button-presets.py` | manifest | Pipeline step: extract a draft mockup's `.sgs-button--{variant}` + `:hover` CSS |
 | `extract-comment-narrative.py` | manifest | Find comment blocks that NARRATE CHANGES rather than describe behaviour. |
-| `fanout-overlay-sibling-attrs.py` | manifest+npm | D6 (hover + responsive-tier siblings) and |
+| `fanout-overlay-sibling-attrs.py` | manifest+npm+script-call | D6 (hover + responsive-tier siblings) and |
+| `fanout-shadow-lift-attr.py` | manifest | adds the `shadowLiftOnHover` block-level switch (boolean, |
+| `fanout-surface-ground-attrs.py` | manifest+script-call | U-1 commit 4e fan-out of `surfaceBlur` / |
 | `fix-missing-padding-margin-destructure.py` | manifest | one-shot fix for a real bug |
 | `fix-render-tier-object-spacing.py` | manifest+script-call | One-off fix (2026-09-06): render.php CSS-emission side of the tier-object |
 | `fix-spacing-preset-names.py` | manifest | Renames numeric spacing-preset ``name`` fields (e.g. "2".."9") in per-client |
@@ -1828,7 +1907,7 @@ for the verb you happen to have in mind.
 | `generate-fx-effects-php.py` | manifest+script-call | writes includes/generated-fx-effects.php from fx_effects. |
 | `generate-fx-qualifying-blocks.py` | manifest+script-call | derives the block -> qualifying-fx-effects |
 | `generate-helper-catalogue.py` | manifest+script-call | DERIVE the helper/component/atom catalogue in |
-| `generate-icons.js` | manifest+npm+script-call | Generates includes/lucide-icons.php from lucide-static SVG files. |
+| `generate-icons.js` | manifest+npm+script-call | Generates includes/lucide-icons.php from lucide-static SVG files, plus the SGS icon library (assets/icons/sgs-icons.json) merged into the same PHP… |
 | `generate-markup-examples.py` | manifest+script-call | Generate markup examples for all 69 SGS blocks with block.json files. |
 | `generate-media-attributes.mjs` | manifest+npm+script-call | Single source of truth for the media attribute TYPE map, JS -> PHP. |
 | `generate-media-stylesheet.mjs` | manifest+npm+script-call | Concatenate the media-atom CSS partials into the one enqueued stylesheet. |
@@ -1849,7 +1928,7 @@ for the verb you happen to have in mind.
 | `hover-guard/check.js` | manifest+npm+script-call+skill | Build-failing checker. Three jobs (per the brief): |
 | `hover-guard/classify.js` | manifest+script-call+skill | Declaration-level classification: is a hover rule "motion-only" (safe for the transform to guard automatically), or OUT OF SCOPE for this transform… |
 | `hover-guard/php-hover-scan.php` | manifest+script-call | Static PHP-side hover-guard coverage scan. |
-| `hover-guard/run-transform.js` | manifest+npm | CLI: run transform.js over every `build/blocks/*​/style.css` (or an explicit directory passed as argv[2]) and write the result back in place. |
+| `hover-guard/run-transform.js` | manifest+npm+script-call | CLI: run transform.js over every `build/blocks/*​/style.css` (or an explicit directory passed as argv[2]) and write the result back in place. |
 | `hover-guard/selector-split.js` | manifest+script-call | Selector-level classification for the hover guard. |
 | `hover-guard/test-fixtures/anti-vacuity-dead-detector.js` | manifest | ANTI-VACUITY PROOF, not a shipped part of the tool. Simulates a "dead detector" (one that has stopped detecting `:hover` rules at all — the failure… |
 | `hover-guard/transform.js` | manifest+script-call+skill | Build-time transform: wraps motion-only `:hover` rules in compiled block CSS with BOTH touch-safety layers (see includes/helpers-hover-state.php for… |
@@ -1859,7 +1938,7 @@ for the verb you happen to have in mind.
 | `inspector-scan/core/extensions.js` | manifest+script-call | GROUND-TRUTH: spec=task brief 2026-08-08 (extensionsDir plumbing) source=file evidence=live-read plugins/sgs-blocks/src/blocks/extensions/ on… |
 | `inspector-scan/core/finding.js` | manifest+script-call | GROUND-TRUTH: spec=none source=file evidence=live-read plugins/sgs-blocks/scripts/inspector-scan/core/roster.js (`BLOCKS_DIR =… |
 | `inspector-scan/core/golden.js` | manifest+script-call | core/golden.js — the shared GOLDEN-CONTROL engine (C4 step 1, 2026-08-19). |
-| `inspector-scan/core/report.js` | manifest+script-call+skill | Report is generated by iterating the rule REGISTRY (rules.json order), never a second hand-written order list — this is the direct mitigation for H7… |
+| `inspector-scan/core/report.js` | manifest+script-call | Report is generated by iterating the rule REGISTRY (rules.json order), never a second hand-written order list — this is the direct mitigation for H7… |
 | `inspector-scan/core/roster.js` | manifest+script-call | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=file evidence=live-read… |
 | `inspector-scan/core/selftest.js` | manifest+script-call | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md §4.9 source=file evidence=live-read… |
 | `inspector-scan/core/sources.js` | manifest+script-call | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=file evidence=`@babel/*` confirmed NOT a declared… |
@@ -1874,8 +1953,8 @@ for the verb you happen to have in mind.
 | `inspector-scan/rules/18-decorative-image-aria.js` | manifest | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/01-enforcer-truth-matrix.md row 18 source=file evidence=row 18 verdict "ABSENT (claim… |
 | `inspector-scan/rules/20-pattern-template-lock.js` | manifest+script-call | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/01-enforcer-truth-matrix.md row 20 source=file evidence=row 20 verdict "ABSENT (claim… |
 | `inspector-scan/rules/21-render-without-control.js` | manifest+script-call | GROUND-TRUTH: spec=.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §"The defect register" ("The fourth quadrant: declared + rendered + NO… |
-| `inspector-scan/rules/22-placement-rule-surfaces.js` | manifest | GROUND-TRUTH: spec=.claude/archive/decisions.md D537 (read verbatim 2026-08-09) + .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §"THE PLACEMENT… |
-| `inspector-scan/rules/23-content-width-needs-inner-band.js` | manifest | GROUND-TRUTH: spec=.claude/archive/decisions.md D540 (read verbatim 2026-08-10) + .claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md… |
+| `inspector-scan/rules/22-placement-rule-surfaces.js` | manifest | GROUND-TRUTH: spec=.claude/archive/decisions.md D537 (read verbatim 2026-08-09) + .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §"THE… |
+| `inspector-scan/rules/23-content-width-needs-inner-band.js` | manifest | GROUND-TRUTH: spec=.claude/archive/decisions.md D540 (read verbatim 2026-08-10) +… |
 | `inspector-scan/rules/24-raw-canonical-component.js` | manifest+script-call | GROUND-TRUTH: spec=.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §1 COLOUR / §2 LINK (read live 2026-08-10). §1.1/§1.3: canonical =… |
 | `inspector-scan/rules/25-no-own-device-switcher.js` | manifest | GROUND-TRUTH: spec=task brief 2026-08-10 (global device toggle regression guard) + live read of src/components/ResponsiveControl.js… |
 | `inspector-scan/rules/26-responsive-duplicate.js` | manifest | GROUND-TRUTH: spec=.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §12 (THE RESPONSIVE WRAPPER FAMILY) source=file evidence=live-read… |
@@ -1897,10 +1976,10 @@ for the verb you happen to have in mind.
 | `inspector-scan/rules/43-colour-only-state-indicator.js` | manifest | GROUND-TRUTH: spec=.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md PART F |
 | `inspector-scan/rules/44-help-text-not-described.js` | manifest | GROUND-TRUTH: spec=.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md PART F |
 | `inspector-scan/rules/45-typography-full-replacement.js` | manifest | GROUND-TRUTH: spec=plugins/sgs-blocks/CLAUDE.md "TYPOGRAPHY — use the SHARED component, never bespoke font controls" (Bean R-22-13, 2026-06-11) +… |
-| `inspector-scan/run.js` | commit-gate+manifest+npm+script-call+skill | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… ⚠ **header disputes this — it IS wired** |
+| `inspector-scan/run.js` | manifest+npm+script-call+skill | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… ⚠ **header disputes this — it IS wired** |
 | `ledger/__init__.py` | manifest+script-call | ledger — F2 draft-derived CSS Accounting Ledger (input parser). |
-| `ledger/content_gap_check.py` | hook+manifest+script-call+test-import | ledger.content_gap_check — F5 ContentGap visibility gate (the content-dropping channel). |
-| `ledger/coverage_check.py` | commit-gate+hook+manifest+npm+script-call+test-import | ledger.coverage_check — F5 pipeline-close coverage-conservation gate (UNACCOUNTED leg). |
+| `ledger/content_gap_check.py` | commit-gate+manifest+script-call+test-import | ledger.content_gap_check — F5 ContentGap visibility gate (the content-dropping channel). |
+| `ledger/coverage_check.py` | commit-gate+manifest+npm+script-call+test-import | ledger.coverage_check — F5 pipeline-close coverage-conservation gate (UNACCOUNTED leg). |
 | `ledger/declare_input.py` | manifest+npm+script-call+test-import | ledger.declare_input — F2 draft-derived CSS Accounting Ledger (input parser). |
 | `ledger/models.py` | manifest+script-call+skill+test-import | ledger.models — data model for F2 CSS Accounting Ledger (input half). |
 | `lib/stage8-cli.js` | manifest+script-call | to keep stage8-audit.js under the repo's 250-line limit. No browser, no network — `makeRunId` is deterministic given an explicit `now` (never calls… |
@@ -1914,11 +1993,11 @@ for the verb you happen to have in mind.
 | `lib/stage8-self-test.js` | manifest+script-call | launches a browser or touches the network — every assertion runs against fixture Lighthouse Result objects, so the SAME pure functions that a real… |
 | `lint-responsive-controls.py` | manifest+script-call | FR-36-24 structural gate (R-31-9 for responsive controls). |
 | `lints/__init__.py` | manifest+script-call |  |
-| `lints/bem-lint.py` | commit-gate+hook+manifest+script-call+skill | BEM compliance lint — Stage 0.1 of /sgs-clone (Spec 31). |
-| `lints/lint-spec-drift.py` | hook+manifest+npm+script-call | Spec-drift lint — do the specs describe things that actually EXIST? ⚠ **header disputes this — it IS wired** |
+| `lints/bem-lint.py` | manifest+script-call+skill | BEM compliance lint — Stage 0.1 of /sgs-clone (Spec 31). |
+| `lints/lint-spec-drift.py` | manifest+npm+script-call | Spec-drift lint — do the specs describe things that actually EXIST? ⚠ **header disputes this — it IS wired** |
 | `lints/lint-theme-css-hardcodes.py` | manifest+script-call | Theme-CSS hardcode lint — arbitrary typography/colour literals in THEME CSS. |
-| `lints/token-lint.py` | commit-gate+hook+manifest+script-call | Token-discovery lint — Stage 0.5 of /sgs-clone (Spec 31, FR38). |
-| `make-visual-diff-reports.py` | commit-gate+manifest+script-call | Emit visual-diff reports, each citing ITS OWN measurement. |
+| `lints/token-lint.py` | manifest+script-call | Token-discovery lint — Stage 0.5 of /sgs-clone (Spec 31, FR38). |
+| `make-visual-diff-reports.py` | manifest+script-call | Emit visual-diff reports, each citing ITS OWN measurement. |
 | `migrate-border-content.php` | — | block-private Shape-B attributes. Run with `wp eval-file`. |
 | `migrate-border-control.js` | manifest+script-call | an already block-private border UI (width + style + colour) in edit.js. |
 | `migrate-border-radius-render.py` | manifest | Codemod: swap the per-block hand-rolled border-radius tier read in |
@@ -1977,6 +2056,7 @@ for the verb you happen to have in mind.
 | `migrate-phantom-colour-token.py` | manifest | Sweep colour-token slugs that no palette defines onto the real token they mean. |
 | `migrate-product-card-image-id.py` | manifest | backfill `imageId` (a real WordPress |
 | `migrate-render-closures.py` | manifest+npm+script-call | Adopt the shared render helpers in place of per-file inline sanitiser closures. |
+| `migrate-shadow-presets.py` | manifest | Shadow preset migration (U-1 commit 4f-1 step 6): the four old theme shadows are replaced by |
 | `migrate-stored-tier-scalars.py` | manifest+script-call | fold a flat per-device scalar into ONE tier object, |
 | `migrate-theme-attr-rename.py` | manifest+script-call | rename ONE attribute key, scoped to ONE block slug, |
 | `migrate-theme-native-spacing.py` | manifest+npm | Migrate hand-authored `style.spacing` to the block-OWNED padding/margin attrs. |
@@ -2023,15 +2103,24 @@ for the verb you happen to have in mind.
 | `motion-qa/probe-wave-c.mjs` | manifest+script-call | Spec 38 Wave C — live browser probe for every shipped Wave C effect. |
 | `motion-qa/run-live-probes.mjs` | manifest+npm+script-call | Live motion-QA runner — the standing post-deploy motion check. |
 | `nav-qa/axe-run.mjs` | manifest+script-call | blocks (Spec 36 §8 / FR-36-16: "axe = 0 on the OPEN drawer AND an OPEN desktop mega"). |
+| `nav-qa/build-header-fixtures.py` | — | nav QA fixtures whose nav blocks sit INSIDE a real site header. |
 | `nav-qa/build-poc-fixtures.py` | manifest | create the nav-drawer variant POC fixtures on the canary. |
+| `nav-qa/check-fixture-fidelity.py` | manifest | compare the nav-drawer POC content plan to the harvest. |
 | `nav-qa/crawl-assert.mjs` | manifest | bar+dropdown+mega link AND mega content must be present in the PRE-JS HTML (what a crawler / no-JS user gets), never injected client-side. |
 | `nav-qa/elementfrompoint-sweep.mjs` | manifest+script-call | occlusion sweep, carried verbatim from Spec 34 FR-S9-5 / FR-34-7. |
+| `nav-qa/extended-probe.mjs` | — | Extended open-drawer measurement probe (measurement-vs-eye rule). |
+| `nav-qa/lib/elementfrompoint-sweep-selftest.mjs` | script-call | `elementFromPoint` occlusion sweep. |
 | `nav-qa/lib/openness-guard.mjs` | manifest+script-call | for every nav-qa script that measures or captures an interactive surface. |
+| `nav-qa/lib/shoot-drawer-pairs-selftest.mjs` | script-call | WHY |
+| `nav-qa/lib/sweep-drawer-variants-selftest.mjs` | script-call | A sweep whose assertions cannot fail reads green forever. Every control here runs one of the sweep's REAL decision functions (handed in as `targets`… |
 | `nav-qa/logical-props-lint.py` | manifest | RTL-readiness lint for the SGS nav blocks |
 | `nav-qa/palette-contrast-sweep.mjs` | manifest | drafts (mega-menu panels and any other self-contained SGS-BEM draft). |
+| `nav-qa/qa-close-fixture.php` | — | U-9+U-11 live-check fixture on sandybrown (wp eval-file qa-close-fixture.php <case>). Idempotent. |
+| `nav-qa/qa-motion-fixture.php` | — | U-5 live-check fixture on sandybrown (wp eval-file qa-motion-fixture.php <case>). Idempotent. |
 | `nav-qa/shoot-drawer-pairs.mjs` | manifest+script-call | WHY |
 | `nav-qa/submenu-harness.php` | — | Stubbed harness for SGS_Nav_Menu_Bar_Renderer — walker AND render_items. |
 | `nav-qa/sweep-drawer-variants.mjs` | manifest+script-call | WHY THIS SHAPE |
+| `nav-qa/w2u-probe.mjs` | — | W2-u — mega-menu + drawer SAME-PAGE integration probe. |
 | `no-inline/check-no-inline.py` | manifest+npm+script-call | Anti-regression GATE for the framework-wide inline-zero win (Spec 32 FR-32-1 / |
 | `no-inline/check-stranded-guards.py` | manifest+npm | Anti-regression GATE for STRANDED inline-style guards (Spec 32). |
 | `no-inline/detect.py` | manifest+script-call+skill | No-inline detector — the worklist generator for the framework-wide inline-zero |
@@ -2050,30 +2139,40 @@ for the verb you happen to have in mind.
 | `oracle/render_oracle.py` | manifest+script-call | oracle.render_oracle — F3 render-oracle: the live Playwright capture leg. |
 | `oracle/run_canary_proof.py` | manifest+script-call | oracle.run_canary_proof — F3-core-B: the live-canary LANDED proof (separate named command). |
 | `oracle/verdict.py` | manifest+script-call+skill+test-import | oracle.verdict — the verdict function for the F3 LANDED oracle. |
-| `orchestrator/atomic-block-scaffold.py` | hook+manifest+script-call+skill | - Spec 31 Phase 5b.8 atomic-block scaffold. |
+| `orchestrator/atomic-block-scaffold.py` | manifest+script-call+skill | - Spec 31 Phase 5b.8 atomic-block scaffold. |
 | `orchestrator/attribute-staged-apply.py` | manifest+script-call+skill | - Spec 31 Phase 5b.6 attribute staged-application. |
-| `orchestrator/autonomy_gate.py` | hook+manifest+script-call+skill | - Spec 31 Phase 5e.4 + 5e.5 + 5e.6 + 5e.7. |
+| `orchestrator/autonomy_gate.py` | manifest+script-call+skill | - Spec 31 Phase 5e.4 + 5e.5 + 5e.6 + 5e.7. |
+| `orchestrator/boundary_nesting.py` | script-call | Which loop-item boundaries sit inside another boundary. |
+| `orchestrator/breakpoint_snap.py` | script-call | breakpoint_snap: round a draft script's width thresholds to our device edges (Bean's rule, D1129/D1132). |
 | `orchestrator/check_attr_schema_conformance.py` | manifest+script-call | Task 3 (G2): fail closed when the converter |
 | `orchestrator/check_flat_tier_regression.py` | manifest+script-call | Spec 35 flat-to-object migration divergence gate. |
 | `orchestrator/check_no_mirror.py` | manifest+script-call | R-31-15 anti-mirror gate for the cloning converter. |
-| `orchestrator/critical-fix-verification.py` | hook+manifest+script-call+skill | - Spec 31 Phase 5f.1 acceptance harness. |
+| `orchestrator/critical-fix-verification.py` | manifest+script-call+skill | - Spec 31 Phase 5f.1 acceptance harness. |
 | `orchestrator/css_router.py` | manifest+script-call+test-import | Spec 16 §FR6 four-destination CSS router. |
 | `orchestrator/draft-responsive-probe.js` | manifest+script-call | THE PROBLEM (plain English): `computed-parity.js` measures draft-vs-CLONE fidelity AFTER a clone exists — it hard-requires --draft AND --clone… |
 | `orchestrator/draft_server.py` | script-call | Serve an original Claude Design draft folder over HTTP for Stage 11.6. |
 | `orchestrator/expected_rules.py` | manifest+script-call | - Per-section CSS rule baseline for Phase 9 walkdown. |
 | `orchestrator/functionality-bulk-apply.py` | manifest+script-call+skill | - Spec 31 Phase 5b.7 bulk-application. |
-| `orchestrator/js_content_resolver.py` | script-call | resolve `<sc-for>` groups whose repeated content |
+| `orchestrator/js_content_resolver.py` | script-call | expand `<sc-for>` loops whose repeated content lives ONLY in a draft's |
 | `orchestrator/lingua_franca.py` | manifest+script-call+skill | - Spec 31 Phase 5c (FR9) convention-to-SGS-BEM converter. |
+| `orchestrator/manifest_annotation.py` | script-call | manifest_annotation: turn a Claude Design draft's block proposals into SGS-BEM class names on the run copy. |
+| `orchestrator/manifest_decisions_log.py` | script-call | Write the manifest annotation stage's decisions to Spec 44's audit log. |
+| `orchestrator/manifest_layout_choices.py` | script-call | manifest_layout_choices: read a block's LAYOUT CHOICES from the draft's structure (design 2026-09-23 section 4). |
 | `orchestrator/media-sideload.py` | manifest+script-call+skill | - Spec 31 Phase 5b.5 media sideloader. |
 | `orchestrator/mutex.py` | manifest+script-call+skill | - Spec 31 Phase 5b.4 build mutex (FR19). |
 | `orchestrator/object_attr_shape.py` | manifest+script-call | shared object-attribute shape discriminator. |
-| `orchestrator/orchestrator_main.py` | hook+manifest+script-call+skill | - Spec 31 Phase 5e.8 top-level entry point. |
+| `orchestrator/orchestrator_main.py` | manifest+script-call+skill | - Spec 31 Phase 5e.8 top-level entry point. |
 | `orchestrator/pipeline-stage-gate.py` | manifest+script-call+skill | post-clone structural gate for the SGS cloning pipeline. |
 | `orchestrator/preflight_chain.py` | manifest+script-call+skill | - Spec 31 Phase 5e.1 + 5e.2. |
-| `orchestrator/register_patterns.py` | hook+manifest+script-call | - Spec 31 Phase 6 Step 0 +REGISTER tail. |
+| `orchestrator/register_patterns.py` | manifest+script-call | - Spec 31 Phase 6 Step 0 +REGISTER tail. |
 | `orchestrator/resolve-js-content.js` | script-call | THE PROVEN APPROACH (FR-31-26 preamble): a draft whose `<sc-for>` content lives only in a `static ARRAY = [...]` class property has zero usable… |
-| `orchestrator/stage1_boundary_hook.py` | hook+manifest+script-call+skill | - Spec 31 Phase 5c.4 Stage 1 BOUNDARY hook. |
-| `orchestrator/staged_merge.py` | hook+manifest+script-call+skill | - Spec 31 Phase 5e.3 staged-merge orchestrator. |
+| `orchestrator/screen_route.py` | script-call | Screen route: which screen of a multi-screen draft a clone run turns into the page. |
+| `orchestrator/script-bindings-eval.js` | script-call | Read by `script_bindings.py::resolve_tier_bindings`. It receives, as JSON on stdin, the draft's own declarations (`const effW = ...`, `const mob =… |
+| `orchestrator/script_bindings.py` | script-call | Script bindings: the per-device values a Claude Design draft's script gives its template. |
+| `orchestrator/script_bindings_stage.py` | script-call | script_bindings_stage: turn a draft script's own width rules into the per-run value map the converter reads. |
+| `orchestrator/site_info_values.py` | script-call | site_info_values: put the draft's own business details in place of the `{{ name }}` bindings that carry them. |
+| `orchestrator/stage1_boundary_hook.py` | manifest+script-call+skill | - Spec 31 Phase 5c.4 Stage 1 BOUNDARY hook. |
+| `orchestrator/staged_merge.py` | manifest+script-call+skill | - Spec 31 Phase 5e.3 staged-merge orchestrator. |
 | `orchestrator/staged_output.py` | manifest+script-call+skill | - Spec 31 Phase 5b.1 staged-output dir convention. |
 | `orchestrator/surface_pipeline_logs.py` | manifest+script-call | Surface structured per-severity logs from trace.jsonl at pipeline end. |
 | `orchestrator/test_atomic_block_scaffold.py` | — | Spec 31 Phase 5b.8 self-test for atomic-block-scaffold.py. |
@@ -2084,9 +2183,16 @@ for the verb you happen to have in mind.
 | `orchestrator/test_css_router.py` | — | Unit tests for css_router.py — Spec 16 §FR6 four-destination router. |
 | `orchestrator/test_draft_server.py` | — | Stage 11.6 draft-server helper (D1116): a DSL draft is detected by content, served over |
 | `orchestrator/test_functionality_bulk_apply.py` | — | Spec 31 Phase 5b.7 self-test for functionality-bulk-apply.py. |
-| `orchestrator/test_js_content_resolver.py` | — | JS-array-sourced repeated content resolution (Spec 31 FR-31-26, D1108/D1109 |
+| `orchestrator/test_js_content_resolver.py` | — | JS-array-sourced repeated content (Spec 31 FR-31-26; multi-field items and default-on in plan step A2b, D1134). |
 | `orchestrator/test_lingua_franca.py` | — | Spec 31 Phase 5c.2 + 5c.3 self-test for lingua_franca.py. |
+| `orchestrator/test_manifest_annotation.py` | — | manifest_annotation: a draft's `data-sgs-manifest` block proposals become SGS-BEM classes on the run copy. |
+| `orchestrator/test_manifest_box_header.py` | — | manifest_annotation: the box owner climb, the header field ladder, the per-review rating and the avatar colour |
+| `orchestrator/test_manifest_decisions_log.py` | — | Tests for manifest_decisions_log.py (Spec 31 FR-31-31 write-back to Spec 44's log). |
+| `orchestrator/test_manifest_layout_choices.py` | — | manifest_layout_choices: layout choices read from the draft's structure (design 2026-09-23-google-reviews-baseline-and-slider-nav |
+| `orchestrator/test_manifest_reviews_header.py` | — | manifest_annotation: the redesigned reviews header (design 2026-09-21-google-reviews-block-design.md section 5, R3). |
+| `orchestrator/test_media_rewrite.py` | — | Group A (2026-09-21): closing the media loop. |
 | `orchestrator/test_media_sideload.py` | — | Spec 31 Phase 5b.5 self-test for media-sideload.py. |
+| `orchestrator/test_media_stage_4i.py` | — | Group A (2026-09-21): structural guards on the Stage 4i wiring in sgs-clone-orchestrator.py. |
 | `orchestrator/test_mutex.py` | — | Spec 31 Phase 5b.4 self-test for mutex.py. |
 | `orchestrator/test_orchestrator_main.py` | — | Spec 31 Phase 5e.8 self-test for orchestrator_main.py. |
 | `orchestrator/test_preflight_chain.py` | — | Spec 31 Phase 5e.1 + 5e.2 self-test for preflight_chain.py. |
@@ -2099,9 +2205,10 @@ for the verb you happen to have in mind.
 | `orchestrator/trace.py` | manifest+script-call | - Structured trace-logger for /sgs-clone pipeline runs. |
 | `orchestrator/upload_and_patch.py` | manifest+script-call+skill | One-shot: upload all mockup images to sandybrown WP Media Library + |
 | `orchestrator/validate-stage-artifact.py` | manifest+script-call+skill | - Spec 31 Phase 5b.2 per-stage validator. |
-| `orchestrator/visual_qa_capture.py` | hook+manifest+script-call | - Stage 8 autonomy-gate capture stub. |
-| `orchestrator/wp_integration.py` | hook+manifest+script-call+skill | - Spec 31 Phase 5d.7 + 5d.9 + 5d.10. |
+| `orchestrator/visual_qa_capture.py` | manifest+script-call | - Stage 8 autonomy-gate capture stub. |
+| `orchestrator/wp_integration.py` | manifest+script-call+skill | - Spec 31 Phase 5d.7 + 5d.9 + 5d.10. |
 | `parity/computed-parity.js` | manifest+script-call | Spec 20 v1.1.0 (Clone Fidelity Measurement). The number tracks VISIBLE fidelity and PAIRS with Bean's eye — it never closes alone (Spec 31 §7b /… |
+| `parity/draft-vs-live/side_by_side.py` | — | Put draft and live captures next to each other so they can be LOOKED at (method step 6, README.md). |
 | `parity/extract-css-diff.js` | manifest+script-call | THE STANDARD first step for matching a clone section to its reference |
 | `pattern-classify.py` | manifest+script-call+skill | SGS Pattern Classifier |
 | `pattern-fingerprint.py` | manifest+script-call+skill | Compute a deterministic fingerprint for an HTML pattern + CSS bundle. |
@@ -2118,6 +2225,7 @@ for the verb you happen to have in mind.
 | `probes/probe-smil-bypass.mjs` | manifest+script-call | (.claude/prompts/2026-09-01-media-owed-debts.md): the SMIL bypass |
 | `product-search-leak-check.php` | manifest+script-call | SGS Product Search — Behavioural Leak Test (FR-30-5 Named Enforcement Runner). |
 | `programme-progress.py` | manifest+npm+script-call | burn-down reporter for the tier-object migration programme. |
+| `promote-icon.py` | script-call | human promote / reject step for SGS icon proposals. |
 | `prove-selftest-can-fail.py` | manifest+script-call | Prove a detector's --self-test is LOAD-BEARING, not decorative. |
 | `push-theme-snapshot.py` | manifest+script-call | Deploy a per-client theme.json snapshot to a WP site. |
 | `qa/assert-css-effect.js` | manifest+script-call | BACKGROUND. fix.js's own 15-assertion self-test (--self-test) is entirely edit-correctness: was the row planned fixable, does DRY RUN write nothing… |
@@ -2137,18 +2245,18 @@ for the verb you happen to have in mind.
 | `recogniser/__init__.py` | manifest+script-call | SGS clone-pipeline recogniser modules. |
 | `recogniser/array_schema_eliminator.py` | script-call | Stage B recognition for a repeated, classless draft group — Spec 44 §5. |
 | `recogniser/attribute-gap-writer.py` | manifest+script-call+skill | - Spec 31 Phase 5a.4 attribute-gap writes. |
-| `recogniser/bucket-c-classifier.py` | hook+manifest+script-call+skill | - Spec 31 Phase 5a.2 (FR10). |
+| `recogniser/bucket-c-classifier.py` | manifest+script-call+skill | - Spec 31 Phase 5a.2 (FR10). |
 | `recogniser/classless_draft_adapter.py` | script-call | Draft-side input adapter for Spec 44's Stage A / Stage B — the missing half. |
 | `recogniser/classless_field_resolver.py` | script-call | - Spec 45 field-mapping resolver, Tiers 1-3. |
 | `recogniser/classless_trust_gate.py` | script-call | FR-44-1's trust gate, §7's audit log, and the end-of-run summary — Spec 44 Task 4. |
-| `recogniser/confidence-matrix.py` | hook+manifest+script-call+skill | - Stage 2 of /sgs-clone pipeline. |
+| `recogniser/confidence-matrix.py` | manifest+script-call+skill | - Stage 2 of /sgs-clone pipeline. |
 | `recogniser/dom_shape_classifier.py` | manifest+script-call | - Q1 Tier 2 DOM-shape heuristic classifier. |
 | `recogniser/functionality-gap-detector.py` | manifest+script-call+skill | - Spec 31 Phase 5a.3 (FR8 functionality leg). |
 | `recogniser/gap-review-report.py` | manifest+script-call+skill | - Spec 31 Phase 5a.5 operator-review surface. |
-| `recogniser/leftover-bucket-router.py` | hook+manifest+script-call+skill | - Stage 9 leftover routing. |
+| `recogniser/leftover-bucket-router.py` | manifest+script-call+skill | - Stage 9 leftover routing. |
 | `recogniser/measure-classless-baseline.py` | script-call | Front C Task 3 — re-measure Spec 44's safety baseline against the real Eye Care |
 | `recogniser/measure-classless-frame-card.py` | — | Spec 44 completion register item 3 — generalisation check: run the real Stage A -> |
-| `recogniser/per-section-convention-voter.py` | hook+manifest+script-call+skill | - Stage 1 of /sgs-clone pipeline. |
+| `recogniser/per-section-convention-voter.py` | manifest+script-call+skill | - Stage 1 of /sgs-clone pipeline. |
 | `recogniser/render_repeater_recogniser.py` | script-call | Stage A recognition for a repeated, classless draft group — Spec 44 §3.1/§4.1/§4.3/§4.4. |
 | `recogniser/render_repeater_seeder.py` | script-call | Seed `block_render_repeaters` — Spec 44 §4.2/§4.3 Steps 1-2 (2026-09-17). |
 | `recogniser/sc_var_classifier.py` | manifest+script-call | - Claude Design `sc-for` variable-name classifier. |
@@ -2157,6 +2265,7 @@ for the verb you happen to have in mind.
 | `recogniser/simple_html_review_report.py` | manifest+script-call+skill | - Stage 9 operator-review HTML render. |
 | `recogniser/test_array_schema_eliminator.py` | — | Self-test for array_schema_eliminator.py — Spec 44 §5, §5.2, §5.3, §10. |
 | `recogniser/test_attribute_gap_writer.py` | — | Spec 31 Phase 5a.4 self-test for attribute-gap-writer.py. |
+| `recogniser/test_auto_detect_class_section_boundary.py` | — | Self-test for per-section-convention-voter.py::auto_detect_sections -- |
 | `recogniser/test_bucket_c_classifier.py` | — | Spec 31 Phase 5a.2 self-test for bucket-c-classifier.py. |
 | `recogniser/test_classless_draft_adapter.py` | — | Self-test for classless_draft_adapter.py — Spec 44's DRAFT-side input derivation. |
 | `recogniser/test_classless_field_resolver.py` | — | Self-test for classless_field_resolver.py (Spec 45 Tiers 1-3). |
@@ -2178,9 +2287,10 @@ for the verb you happen to have in mind.
 | `remove-dead-flat-spacing-destructure.py` | manifest | one-shot cleanup for the Group 1 |
 | `remove-vacuous-style-engine-guard.py` | manifest+npm | Delete the vacuous `function_exists( 'wp_style_engine_get_styles' )` guard. |
 | `row-fit-sweep.mjs` | manifest | row-fit-sweep — reusable Playwright width-sweep verification harness. |
-| `run-gates.py` | manifest+npm+script-call | the consolidated gate runner. |
+| `run-gates.py` | commit-gate+manifest+npm+script-call | the consolidated gate runner. |
 | `run-motion-fx-generators.js` | manifest+npm+script-call | motion-fx generator chain (seed-motion-fx-registry.py, generate-fx-effects-php.py, generate-fx-qualifying-blocks.py). |
 | `scan-component-adoption.js` | manifest+script-call | WHY THIS EXISTS |
+| `scrim/check-scrim.py` | manifest | the viewport-scrim detector (Wave 3C U-2, family M-14). |
 | `seed-48-sku-fixture-v2.php` | — | SGS 48-SKU Fixture — v2 ADDITIVE presentation-meta seeder (Spec 27 Phase 2). |
 | `seed-48-sku-fixture.php` | script-call | SGS 48-SKU WooCommerce Fixture — Developer Script |
 | `seed-component-adoption.py` | manifest+script-call | write the unification ADOPTION LEDGER to `components`. |
@@ -2188,8 +2298,13 @@ for the verb you happen to have in mind.
 | `seed-motion-fx-registry.py` | manifest+script-call | idempotent editorial seeder for the Spec 38 motion system. |
 | `seed-render-composition.py` | script-call | write `block_render_composition` (Spec 31 §13.9). |
 | `seed-render-singletons.py` | script-call | write `block_render_singletons` (Spec 31 §13.10). |
-| `sgs-clone-orchestrator.py` | hook+manifest+script-call+settings+skill | sgs-clone orchestrator (Phase 7 rewire). |
-| `sgs-update-v2.py` | manifest+script-call+skill | 13-stage holistic refresh of the SGS framework knowledge base. |
+| `sgs-clone-orchestrator.py` | commit-gate+manifest+script-call+settings+skill | sgs-clone orchestrator (Phase 7 rewire). |
+| `sgs-update-v2.py` | manifest+script-call | 13-stage holistic refresh of the SGS framework knowledge base. |
+| `shadow-fallback/run.js` | manifest+npm+script-call+skill | Forced-colours shadow fallback for static stylesheets: census, fix and gate in one script. |
+| `shadow-fallback/transform.js` | manifest+script-call+skill | Forced-colours shadow fallback for STATIC stylesheets (Wave 3C U-1 commit 4f-1). |
+| `shadow-lift/fixtures.js` | script-call+test-import | Self-test fixtures for scripts/shadow-lift — one CSS input + an assertion function per case. run.js's `--self-test` drives these; kept in their own… |
+| `shadow-lift/run.js` | manifest+npm+script-call+skill | Shadow lift on hover for static stylesheets: census, fix and gate in one script, mirroring scripts/shadow-fallback/run.js's shape (design H4… |
+| `shadow-lift/transform.js` | manifest+script-call+skill | Shadow lift on hover for STATIC stylesheets (design H4, stylesheet part — `.claude/reports/2026-09-23-shadow-hover-lift-design.md`). |
 | `shared_utils.py` | manifest+script-call | Shared, zero-dependency utilities for the SGS clone scripts. |
 | `stage8-audit.js` | manifest+npm+script-call | ONE Lighthouse run. ⚠ **header disputes this — it IS wired** |
 | `strip-dead-radius-legacy-args.py` | manifest | Strip the provably-dead legacy tier args from sgs_border_radius_tiers() calls. |
@@ -2207,6 +2322,7 @@ for the verb you happen to have in mind.
 | `surveys/fetch-native-control-contracts.sh` | manifest+script-call | Fetch the CANONICAL prop contract for each WordPress core control primitive straight from the Gutenberg source, so a golden describes the real… |
 | `surveys/lib/control-detection.js` | manifest+script-call | Answers ONE question per (block, attribute): **can a client set this?** |
 | `surveys/lib/php-kind-consumption.js` | manifest+script-call | BRANCH-AWARE CONSUMPTION ANALYSER for the shared container wrapper. |
+| `surveys/lib/primitive-alias-imports.js` | script-call | PROBLEM THIS EXISTS FOR |
 | `surveys/lib/wrapper-capability-selftest.js` | manifest+script-call | Self-test for the wrapper-capability census. |
 | `surveys/survey-background-colour-support.py` | manifest+npm+script-call | Track A completion audit — native colour/gradient background support. |
 | `surveys/survey-box-controls.py` | manifest+npm | "--survey" census of the BOX (4-side) and BORDER |
@@ -2227,21 +2343,39 @@ for the verb you happen to have in mind.
 | `surveys/survey-responsive-shape.py` | manifest+npm+script-call | the responsive STORAGE-SHAPE census. |
 | `surveys/survey-typography-controls.py` | manifest+npm | Phase 0.0 "--survey" census of the TYPOGRAPHY |
 | `surveys/survey-wrapper-capability.js` | manifest+script-call | PHASE 0 CENSUS for the shared-wrapper decomposition. |
-| `sync-business-info.py` | manifest+script-call | Tier-1 business-data extractor + pusher (D325). |
+| `sync-business-info.py` | manifest+script-call | Tier-1 business-data extractor + pusher (D325, Spec 33 FR-33-14). |
 | `sync-container-wrapping-blocks.py` | manifest+script-call | Tracks every SGS block that is container-bearing (wraps children via InnerBlocks, |
+| `sync-snapshot-shadow-presets.py` | manifest | Every client theme snapshot carries the framework's shadow presets, shadow colour and hover map. |
 | `test-hover-state-guard.php` | manifest | Gate: the touch-safe hover emitter emits the shape it claims to. |
 | `test-pack-pricing-cascade.php` | — | Standalone cascade-resolver test runner for Spec 28 P3 (FR-28-6). |
 | `test_render_singleton_seeder.py` | — | Self-test for seed-render-singletons.py — Spec 31 §13.10. |
 | `theme-extractor/colour.py` | manifest+script-call+skill | colour parsing + CIEDE2000 dedup for the Spec 33 extractor. |
+| `theme-extractor/declared_layout.py` | script-call | Spec 33 declared layout and shape: the README's content width and corner radius as theme settings. |
+| `theme-extractor/declared_reconcile.py` | script-call | Spec 33 declared design checked against the RENDERED page (FR-33-1: computed wins). |
+| `theme-extractor/declared_sources.py` | script-call | Spec 33 declared-source readers: the design system a draft states outright. |
 | `theme-extractor/derive.py` | manifest+script-call | Pass B: PROVISIONAL palette derivation for drafts that declare NO :root tokens (FR-33-5). |
 | `theme-extractor/extract.py` | manifest+script-call+skill | the Spec 33 draft global-styles extractor (CLI orchestrator). |
+| `theme-extractor/font-usage.js` | script-call | FONT_USAGE_SRC is serialised into the browser context by measure.js, so it must not close over anything in Node scope. |
+| `theme-extractor/font_weights.py` | script-call | weight evidence for the Google fonts the extractor self-hosts (Spec 33). |
+| `theme-extractor/heading_weight.py` | script-call | Heading font weight from measurement (Spec 33, declared-design path only). |
+| `theme-extractor/layout-census.js` | script-call | LAYOUT_CENSUS_SRC is serialised into the browser context by measure.js, so it must not close over anything in Node scope. measure.js runs it once per… |
+| `theme-extractor/measure-node.js` | script-call | read). Nothing here runs in the browser except HOVER_READ_SRC, which is serialised into the page and therefore must not close over anything. |
 | `theme-extractor/measure.js` | manifest+script-call | THE IRON LAW (Spec 33 FR-33-1/33-3): the value the extractor ships is always the COMPUTED value on a really-rendered node — never a raw source… |
 | `theme-extractor/palette.py` | manifest+script-call | build the theme colour palette from draft tokens (Spec 33 FR-33-1/2/9). |
+| `theme-extractor/palette_refs.py` | script-call | Spec 33: route palette colours into buttons and the page base. |
+| `theme-extractor/palette_vocab.py` | script-call | Spec 33 declared-design vocabulary: every role word and threshold as DATA, in one place. |
 | `theme-extractor/presets.py` | manifest+script-call | button presets, layout, and font families for the Spec 33 extractor. |
 | `theme-extractor/roles.py` | manifest+script-call | colour ROLE inference by usage-context (Spec 33 FR-33-2). |
 | `theme-extractor/schema_validate.py` | manifest+script-call | theme.json v3 structural validation (Spec 33 FR-33-7). |
+| `theme-extractor/site_palette.py` | script-call | Spec 33 declared-design overlay: a per-site palette built from what a draft DECLARES. |
 | `theme-extractor/token_map.py` | manifest+script-call | declared-CSS parsing for the Spec 33 extractor (tinycss2, not regex). |
 | `theme-extractor/typography.py` | manifest+script-call | base + heading typography from COMPUTED nodes (Spec 33 FR-33-3, the drift-killer). |
+| `theme-extractor/usage_census.py` | script-call | Colour usage census for a draft's HTML and JavaScript. |
+| `theme-extractor/usage_js.py` | script-call | Quote-aware bracket structure of a draft's script, for the colour census' JS-bound scan. |
+| `theme-extractor/usage_roles.py` | script-call | Spec 33 usage-proposed fallback roles: neutral palette slots a README's wording did not fill. |
+| `theme-extractor/used_fonts.py` | script-call | FR-33-18: every font family a draft LOADS and actually RENDERS becomes a |
+| `theme-extractor/used_layout.py` | script-call | FR-33-19: the site's content width and wide width, read from the draft's RENDERED layout. |
+| `theme-extractor/variant_sets.py` | script-call | Spec 33 script variant sets: switchable brand colour sets a draft holds in its own script. |
 | `toolindex/build_index.py` | script-call | extracts a searchable purpose index from every script in |
 | `toolindex/query.py` | manifest+script-call+skill | free-text search over the tool index built by build_index.py. |
 | `uimax-tools/enrich-db.py` | manifest+script-call | SGS Framework DB Enrichment — 10 targets in one idempotent pass. |
@@ -2249,22 +2383,22 @@ for the verb you happen to have in mind.
 | `uimax-tools/seed-slot-synonyms.py` | manifest+script-call | Seed sgs-framework.db `slots` table with BEM element → standalone_block mappings |
 | `uimax-tools/sgs-update-uimax-sync.py` | manifest+script-call | sgs-update Stage 3 + Stage 4 — uimax sync extension. |
 | `uimax-tools/test_uimax_write_validator.py` | — | Tests for uimax-write-validator.py — Rosetta Stone discipline (Row 213) only. |
-| `uimax-tools/uimax-write-validator.py` | hook+manifest+script-call+skill | Pre-write validator for uimax tables. |
+| `uimax-tools/uimax-write-validator.py` | manifest+script-call+skill | Pre-write validator for uimax tables. |
 | `uimax-tools/uimax_write.py` | manifest+script-call+skill | Validate-then-write helper for uimax tables. |
 | `value-matcher/inheritance.py` | manifest+script-call | Default-inheritance lookup module. |
 | `value-matcher/match.py` | manifest+script-call | Token value-matcher for the SGS Deterministic Draft-to-SGS Converter pipeline. |
 | `variant-value-extractor/extract-variation-values.js` | manifest+script-call | each variation's `attributes` object as PLAIN JSON to stdout. |
-| `visual-report-sha.py` | commit-gate+manifest+script-call | Content hash binding a visual-diff report to the change it actually describes. |
-| `wp-pre-merge-gate.py` | commit-gate+manifest | Pre-merge validation gate for SGS WordPress plugin changes. |
+| `visual-report-sha.py` | manifest+script-call | Content hash binding a visual-diff report to the change it actually describes. |
+| `wp-pre-merge-gate.py` | manifest | Pre-merge validation gate for SGS WordPress plugin changes. |
 
-#### `scripts/` — 18 scripts
+#### `scripts/` — 19 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
 | `apply-block-attrs-batch.js` | — | One-off companion to wp-update-block-attrs.js for the Indus homepage attribute-mirror task (2026-07-16). Handles the case wp-update-block-attrs.js… |
 | `brand-palette-sampler.py` | — |  |
 | `colour-parity-audit.js` | — | Colour Parity Audit — automated comparison between mockup HTML brief and SGS variation JSON. |
-| `css-pattern-audit.js` | commit-gate | CSS pattern audit — static analysis for risky patterns in deployed/built CSS. |
+| `css-pattern-audit.js` | — | CSS pattern audit — static analysis for risky patterns in deployed/built CSS. |
 | `font-source-audit.js` | manifest+npm | Font source audit — static analysis for external CDN URLs in theme.json fontFace declarations. |
 | `global-styles-reset.js` | skill | wp_global_styles reset + reapply. |
 | `lib/oldshape-mappings.js` | script-call | wp-migrate-oldshape-blocks.js (Track B content restore, 2026-07-15). |
@@ -2277,6 +2411,7 @@ for the verb you happen to have in mind.
 | `sgs-block-grep.py` | — | SGS block-name search utility — fixes the block-name-search-blindspot failure mode. |
 | `verify-restored-page.js` | — | The Track B definition-of-done requires the restore to be proven on the REAL page via computed DOM (R-31-11), not on assertion output or the emitted… |
 | `wc-pages-responsive-audit.js` | manifest+script-call | FR-30-11 — WooCommerce page-type responsive + budget verification gate. |
+| `wp-build-page.js` | — | Builds a whole page (or header, footer, drawer, modal, mega menu) through the real block editor from a JSON block tree, so every block is serialised… |
 | `wp-migrate-oldshape-blocks.js` | manifest+script-call | block migrations (Track B, 2026-07-15), through the BLOCK EDITOR ONLY. |
 | `wp-update-block-attrs.js` | script-call+skill | Reusable Playwright helper that updates a block's attributes on a live WordPress post by going through the editor — using wp.blocks.createBlock(name… |
 
@@ -2333,6 +2468,13 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_cart_panel_body_html` | `function sgs_cart_panel_body_html( array $args ): string` | Build the shared mini-cart panel body. |
 | `sgs_cart_panel_wrapper_html` | `function sgs_cart_panel_wrapper_html( string $mode, string $body_html, array $args ): string` | Wrap the panel body in the element the display mode's ARIA pattern requires. |
 
+#### `includes/helpers-colour-parse.php` — 2 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_colour_resolve_hex_alpha` | `function sgs_colour_resolve_hex_alpha( string $value ): array` | Resolve a SOLID colour value to a 6-digit hex plus its own alpha (0.0-1.0). |
+| `sgs_split_top_level_commas` | `function sgs_split_top_level_commas( string $value ): array` | Split a comma-separated CSS argument list on TOP-LEVEL commas only — i.e. commas that are not nested inside a function call's parentheses.… |
+
 #### `includes/helpers-colour-variants.php` — 9 function(s)
 
 | Function | Signature | Purpose |
@@ -2345,16 +2487,19 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_overlay_decls_for` | `function sgs_overlay_decls_for( array $attributes, array $map ): array` | Build the OVERLAY DECLARATIONS for a block, per state. |
 | `sgs_shadow_attr` | `function sgs_shadow_attr( string $base, string $part = 'base' ): string` | Derive ONE of a shadow family's attribute names from its base name. |
 | `sgs_shadow_attr_map` | `function sgs_shadow_attr_map( string $base, bool $with_hover_shape = false, bool $with_hover_colour = false…` | The full attribute-name map for a shadow family, ready for sgs_shadow_decls(). |
-| `sgs_shadow_decls` | `function sgs_shadow_decls( array $attributes, array $map ): array` | Build the SHADOW DECLARATIONS for a block, per state. |
+| `sgs_shadow_decls` | `function sgs_shadow_decls( array $attributes, array $map, string $block_name = '' ): array` | Build the SHADOW DECLARATIONS for a block, per state. |
 
-#### `includes/helpers-colour-wcag.php` — 4 function(s)
+#### `includes/helpers-colour-wcag.php` — 7 function(s)
 
 | Function | Signature | Purpose |
 |---|---|---|
 | `sgs_wcag_relative_luminance` | `function sgs_wcag_relative_luminance( string $hex ): float` | Compute the WCAG 2.1 relative luminance of an sRGB hex colour. |
+| `sgs_wcag_white_wins_for_luminance` | `function sgs_wcag_white_wins_for_luminance( float $l_bg ): bool` | Whether white beats black for WCAG contrast against a background of the given relative luminance (WCAG 2.1 §1.4.3: ratio =… |
 | `sgs_wcag_text_colour_for_bg` | `function sgs_wcag_text_colour_for_bg( string $hex ): string` | Return `#000` or `#fff` — whichever gives the higher WCAG contrast ratio against the supplied background hex colour. |
 | `sgs_wcag_preferred_text_colour_for_bg` | `function sgs_wcag_preferred_text_colour_for_bg( string $bg_hex, string $preferred_hex ): string` | Return a PREFERRED foreground colour when it meets WCAG AA (>= 4.5:1) against the given background; otherwise degrade to the binary… |
 | `sgs_resolve_palette_hex` | `function sgs_resolve_palette_hex( string $slug, string $fallback = '' ): string` | Resolve a theme.json palette colour to its hex value by slug, reading the MERGED global settings (default → theme → user/wp_global_styles)… |
+| `sgs_colour_background_tone` | `function sgs_colour_background_tone( string $value ): string` | Classify a SOLID background colour value as dark or light. |
+| `sgs_colour_is_dark_background` | `function sgs_colour_is_dark_background( string $value ): bool` | Whether a SOLID background colour value is dark (see sgs_colour_background_tone()). |
 
 #### `includes/helpers-configurator-pricing.php` — 4 function(s)
 
@@ -2378,13 +2523,29 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_container_tier_min_column_width` | `function sgs_container_tier_min_column_width( array $attributes, string $tier ): ?string` | Resolve the effective intrinsic-columns BASIS (minimum column width) for one device tier, from `sgs/container`'s client-configurable… |
 | `sgs_block_wants_intrinsic_columns` | `function sgs_block_wants_intrinsic_columns( $block ): bool` | Does this block type opt in to content-aware column collapse? |
 
-#### `includes/helpers-css-safety.php` — 3 function(s)
+#### `includes/helpers-css-safety.php` — 4 function(s)
 
 | Function | Signature | Purpose |
 |---|---|---|
 | `sgs_css_length_value_preset_slugs` | `function sgs_css_length_value_preset_slugs(): array` | Return the currently-registered WP spacing-preset slugs (e.g. ['10','20', '30','40','50','60']), read live from theme.json via… |
 | `sgs_css_length_value` | `function sgs_css_length_value( $value )` | Validate and normalise a CSS length-shaped value for safe inline emission. |
+| `sgs_css_single_length_value` | `function sgs_css_single_length_value( $raw ): string` | A SINGLE CSS length, safe to place inside `max()` and `blur()`. |
 | `sgs_css_length_value_self_test` | `function sgs_css_length_value_self_test()` | Run every accept/reject/backward-compat case and report an honest count. |
+
+#### `includes/helpers-css-sizing-keyword.php` — 2 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_css_sizing_keyword` | `function sgs_css_sizing_keyword( $value ): string` | Return a CSS intrinsic sizing keyword in canonical form, or '' when the value is not one. |
+| `sgs_css_length_or_sizing_keyword` | `function sgs_css_length_or_sizing_keyword( $value ): string` | Sanitise a CSS length, letting the intrinsic sizing keywords through intact. |
+
+#### `includes/helpers-gradient-tone.php` — 3 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_resolve_palette_gradient` | `function sgs_resolve_palette_gradient( string $slug, string $fallback = '' ): string` | Resolve a theme.json gradient preset to its CSS value by slug, reading the MERGED global settings (default → theme → user), same origin… |
+| `sgs_gradient_resolve_value` | `function sgs_gradient_resolve_value( string $value ): string` | Resolve a gradient attribute value to a literal CSS gradient string. |
+| `sgs_gradient_tone` | `function sgs_gradient_tone( string $value ): string` | Judge a gradient's tone as the WEIGHTED MEAN luminance of its stops — each stop weighted by the share of the 0-100% line closest to it… |
 
 #### `includes/helpers-hover-state.php` — 3 function(s)
 
@@ -2448,6 +2609,25 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 |---|---|---|
 | `sgs_mega_render_panel_content` | `function sgs_mega_render_panel_content( int $panel_id ): ?string` | Resolve a mega panel post ID to its rendered inner HTML, guarding against self-reference recursion + runaway depth. |
 
+#### `includes/helpers-motion-easing.php` — 4 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_motion_easing_values` | `function sgs_motion_easing_values(): array` | Every named easing value, in editor order. Mirrors the JSON enums. |
+| `sgs_motion_valid_cubic_bezier` | `function sgs_motion_valid_cubic_bezier( string $value ): bool` | Validate a hand-typed `cubic-bezier(x1, y1, x2, y2)` curve. |
+| `sgs_motion_easing_css` | `function sgs_motion_easing_css( string $value, string $custom = '', string $fallback = 'ease' ): string` | Resolve a named easing (plus its custom curve) to a CSS easing function. |
+| `sgs_motion_ms` | `function sgs_motion_ms( $raw, int $default, int $max = 3000 ): int` | Clamp a duration attribute to 0..$max whole milliseconds. |
+
+#### `includes/helpers-nav-drawer-motion.php` — 5 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_nav_drawer_motion_shapes` | `function sgs_nav_drawer_motion_shapes(): array` | Every `entryAnimation` value. Mirrors the JSON enum of the tier values. |
+| `sgs_nav_drawer_motion_keyframes` | `function sgs_nav_drawer_motion_keyframes( string $shape, string $anchor ): array` | The keyframe pair and transform origin for one resolved shape. |
+| `sgs_nav_drawer_motion_tier_decls` | `function sgs_nav_drawer_motion_tier_decls( string $shape, string $anchor ): string` | The custom-property declarations for one tier's shape. |
+| `sgs_nav_drawer_motion` | `function sgs_nav_drawer_motion( array $attributes, string $root_sel, $anchor_raw, array $allowed_anchors )…` | Build the drawer's motion CSS, root classes and root data attributes. |
+| `sgs_nav_drawer_motion_distance` | `function sgs_nav_drawer_motion_distance( $raw )` | One tier's item travel distance: a bare number is pixels, and negative means the item falls from above. |
+
 #### `includes/helpers-responsive.php` — 15 function(s)
 
 | Function | Signature | Purpose |
@@ -2468,6 +2648,17 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_resolve_on_tiers` | `function sgs_resolve_on_tiers( $raw, $on_marker, $default )` | Resolve a `{desktop,tablet,mobile}` responsive object into the list of tiers where the effective value equals $on_marker, via the canonical… |
 | `sgs_merge_tri_state_declarations` | `function sgs_merge_tri_state_declarations( $selector, $behaviours, $default = 'off', $on_marker = 'on' )` | Merge several tri-state ('on'/'off'/'inherit') behaviours that may write to the SAME selector into ONE set of declarations per tier, with a… |
 
+#### `includes/helpers-reviews-inline.php` — 6 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_reviews_inline_normalise` | `function sgs_reviews_inline_normalise( $items ): array` | Turn written review items into Places-API-shaped review rows. |
+| `sgs_reviews_inline_data` | `function sgs_reviews_inline_data( array $attributes ): array` | The full data object `sgs/google-reviews` renders from, built from block attributes. |
+| `sgs_reviews_placeholder_data` | `function sgs_reviews_placeholder_data(): array` | The three sample reviews shown ONLY when an author explicitly picks `dataSource: "placeholder"`. |
+| `sgs_reviews_place_id` | `function sgs_reviews_place_id( array $attributes, string $settings_place_id ): string` | The Google place ID to fetch: the block's own, else the site-wide one from the plugin settings. |
+| `sgs_reviews_resolve` | `function sgs_reviews_resolve( array $attributes, string $place_id, ?callable $fetcher = null ): ?array` | Decide what `sgs/google-reviews` may show, in order: written, live Google, sample, or nothing. |
+| `sgs_reviews_may_emit_schema` | `function sgs_reviews_may_emit_schema( string $source, array $data ): bool` | Whether `LocalBusiness` + `AggregateRating` JSON-LD may be printed for this data. |
+
 #### `includes/helpers-row-behaviour.php` — 3 function(s)
 
 | Function | Signature | Purpose |
@@ -2483,6 +2674,102 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_scope_class_for_root` | `function sgs_scope_class_for_root( string $root_tag_html, string $prefix ): string` | Find an existing SGS uid-pattern class (`sgs-<slug>-<8hex>`, the pattern every migrated render.php already emits as its scoping selector… |
 | `sgs_append_scoped_var_style` | `function sgs_append_scoped_var_style( string $block_content, string $scope_class, array $declarations )…` | Append a scoped `<style>` rule declaring CSS custom properties on the given scope class, to a block's rendered HTML. No-op when there are… |
 | `sgs_extract_root_opening_tag` | `function sgs_extract_root_opening_tag( string $root_and_beyond ): string` | Extract just the root element's OPENING tag from a block-content substring that starts at the real root (i.e. past any leading… |
+
+#### `includes/helpers-scrim.php` — 7 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_scrim_opacity_value` | `function sgs_scrim_opacity_value( $raw )` | Clamp one tier's tint strength to 0..1; anything non-numeric is unset. |
+| `sgs_scrim_blur_value` | `function sgs_scrim_blur_value( $raw )` | Sanitise one tier's blur radius. A bare number is pixels. |
+| `sgs_scrim_tiers` | `function sgs_scrim_tiers( $raw, callable $formatter )` | Normalise a tier attribute and apply a per-tier formatter. |
+| `sgs_scrim_is_visible` | `function sgs_scrim_is_visible( array $opacity, array $blur )` | Whether the scrim paints anything at any device tier. |
+| `sgs_scrim_render` | `function sgs_scrim_render( array $attributes, string $uid, array $args )` | Build a block's scrim: its scoped CSS, and queue its HTML for `wp_footer`. |
+| `sgs_scrim_queue` | `function sgs_scrim_queue( $uid = null, $html = null )` | Queue (or, with no argument, read) the scrim HTML printed at `wp_footer`. Keyed by uid, so a block rendered twice queues one scrim. |
+| `sgs_scrim_print_footer` | `function sgs_scrim_print_footer()` | Print every queued scrim as a direct child of `<body>`. |
+
+#### `includes/helpers-shadow-dark-css.php` — 5 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_shadow_dark_presets` | `function sgs_shadow_dark_presets(): array` | The theme's shadow presets as one flat list, one entry per slug. |
+| `sgs_shadow_dark_original` | `function sgs_shadow_dark_original( string $literal ): string` | The presets' original layers, joined with `, `, exactly as the theme writes them. |
+| `sgs_shadow_dark_declarations` | `function sgs_shadow_dark_declarations( bool $refresh = false ): array` | The declaration lists for every preset that has a dark variant, computed once per request. |
+| `sgs_shadow_dark_site_colour` | `function sgs_shadow_dark_site_colour(): string` | The site's configured shadow colour (`settings.custom.shadowColour`), for the light reset. |
+| `sgs_shadow_dark_preset_css` | `function sgs_shadow_dark_preset_css( string $scope, bool $refresh = false ): string` | The stylesheet text that swaps shadow presets between their original and dark variants. |
+
+#### `includes/helpers-shadow-dark.php` — 6 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_shadow_dark_format_alpha` | `function sgs_shadow_dark_format_alpha( float $value ): string` | Format an opacity as a percentage number with no trailing zeros ("26.4", "20", "13.2"). |
+| `sgs_shadow_dark_scale_alpha` | `function sgs_shadow_dark_scale_alpha( float $alpha ): float` | The opacity a site-colour layer takes on a dark background: the original scaled by SGS_SHADOW_DARK_STRENGTH, rounded to one decimal place… |
+| `sgs_shadow_dark_colour` | `function sgs_shadow_dark_colour( float $alpha ): string` | The dark-background colour for a scaled opacity: the bare colour at full strength, otherwise a `color-mix()` built here from the constant… |
+| `sgs_shadow_dark_ring_layer` | `function sgs_shadow_dark_ring_layer(): string` | The 1px light ring that keeps a raised element readable on a dark background. |
+| `sgs_shadow_dark_classify_colour` | `function sgs_shadow_dark_classify_colour( string $colour ): ?array` | Classify a parsed layer's colour text. |
+| `sgs_shadow_dark_variant` | `function sgs_shadow_dark_variant( string $literal ): ?string` | The dark variant of one shadow preset literal. |
+
+#### `includes/helpers-shadow-filter.php` — 2 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_shadow_preset_literal` | `function sgs_shadow_preset_literal( string $slug ): string` | The literal shadow value of a theme preset, from the theme's settings. |
+| `sgs_shadow_value_to_drop_shadow` | `function sgs_shadow_value_to_drop_shadow( string $composed ): string` | Convert a composed `box-shadow` value into a `filter` value: one `drop-shadow()` per layer. |
+
+#### `includes/helpers-shadow-hover.php` — 7 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_shadow_hover_is_slug` | `function sgs_shadow_hover_is_slug( string $text ): bool` | Is `$text` a bare preset-slug reference — the same rule `sgs_shadow_layers()` uses to recognise one, minus `none` (which never resolves to… |
+| `sgs_shadow_hover_raw_map` | `function sgs_shadow_hover_raw_map(): array` | The hover map (`settings.custom.shadowHover`) as slug => hover text, first origin wins. |
+| `sgs_shadow_hover_lift_shape` | `function sgs_shadow_hover_lift_shape( string $shape ): ?string` | Lift a custom layered shape (not a preset slug): each OUTER layer's y offset and blur x1.25, rounded to the nearest whole pixel; x, spread… |
+| `sgs_shadow_hover_value` | `function sgs_shadow_hover_value( ?string $shape, ?string $colour ): string` | The hover shadow value for a resting shadow (`box-shadow`-ready CSS, or '' for none). |
+| `sgs_shadow_lift_enabled` | `function sgs_shadow_lift_enabled( array $attributes, string $block_name = '' ): bool` | Is the automatic lift-on-hover allowed for this block instance? (Design H4/H5.) |
+| `sgs_shadow_hover_rules` | `function sgs_shadow_hover_rules( string $selector, string $shape, string $colour, array $attributes, string…` | The complete touch-safe hover RULE for a resting shadow (design H4). |
+| `sgs_shadow_style_engine_shape` | `function sgs_shadow_style_engine_shape( string $raw ): string` | Resolve a native WP `style.shadow` value (`supports.shadow`, the five style-engine blocks: card-grid, info-box, process-steps, testimonial… |
+
+#### `includes/helpers-shadow-layers.php` — 9 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_shadow_split_top` | `function sgs_shadow_split_top( string $value, string $sep ): array` | Split on top-level separators only (a linear scanner, never a regex). |
+| `sgs_shadow_parse_length` | `function sgs_shadow_parse_length( string $token ): ?float` | Parse one length token: an optional minus, up to 4 digits and 3 decimals, optional `px`. A bare `0` is legal. Anything else (em, %… |
+| `sgs_shadow_format_length` | `function sgs_shadow_format_length( float $value ): string` | Format a number as a px length with no trailing zeros ("4px", "0.5px", "0px"). |
+| `sgs_shadow_colour_is_safe` | `function sgs_shadow_colour_is_safe( string $css ): bool` | Is a resolved colour safe to emit? Balanced parentheses, at most 3 deep, no comment openers or closers, no `!`, no control characters, and… |
+| `sgs_shadow_resolve_colour` | `function sgs_shadow_resolve_colour( string $entry ): ?string` | Resolve ONE colour-list entry (`site`, a palette slug or CSS colour, plus an optional `N%` opacity) to a CSS colour. Opacity below 100… |
+| `sgs_shadow_parse_layer` | `function sgs_shadow_parse_layer( string $layer ): ?array` | Parse one shadow layer into fields. `inset` may be first or last (any case). 2 to 4 lengths. An optional single colour token is an embedded… |
+| `sgs_shadow_layers` | `function sgs_shadow_layers( ?string $shape, ?string $colour ): string` | Compose a stored shadow (shape text + colour text) into a CSS `box-shadow` value. |
+| `sgs_shadow_forced_colours_decl` | `function sgs_shadow_forced_colours_decl(): string` | The forced-colours (high-contrast) fallback. Browsers remove box-shadow in that mode, so an element that depends on its shadow for an edge… |
+| `sgs_shadow_box_decls` | `function sgs_shadow_box_decls( ?string $shape, ?string $colour ): array` | The full `box-shadow` declaration set for a stored shadow: the declaration plus its forced-colours fallback. Empty when there is nothing to… |
+
+#### `includes/helpers-slider-nav.php` — 10 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_slider_nav_placements` | `function sgs_slider_nav_placements(): array` | The arrow placements, the first being the default. |
+| `sgs_slider_nav_paginations` | `function sgs_slider_nav_paginations(): array` | The progress indicators, the first being the default. |
+| `sgs_slider_nav_normalise` | `function sgs_slider_nav_normalise( $value, array $allowed ): string` | A stored value when it is one of the allowed ones, otherwise the default (the first). |
+| `sgs_slider_nav_classes` | `function sgs_slider_nav_classes( string $placement, string $pagination ): array` | The generic wrapper classes for a placement and a progress indicator. |
+| `sgs_slider_nav_directives` | `function sgs_slider_nav_directives( array $directives ): string` | Interactivity directives as attribute markup. Only `data-wp-*` names pass; values are escaped. |
+| `sgs_slider_nav_arrow_html` | `function sgs_slider_nav_arrow_html( string $direction, string $block, string $label, array $directives )…` | One arrow button: the block's own element classes beside the generic ones. |
+| `sgs_slider_nav_dots_html` | `function sgs_slider_nav_dots_html( int $count, string $block, string $label, string $dot_label, array…` | The dots: one button per item, the first marked current. |
+| `sgs_slider_nav_render` | `function sgs_slider_nav_render( array $args ): string` | The whole navigation: rail, arrows, leading slot and dots, in reading order for the placement. |
+| `sgs_slider_nav_enqueue_style` | `function sgs_slider_nav_enqueue_style(): void` | Enqueue the shared stylesheet. Called by a slider block's render when its navigation renders. |
+| `sgs_slider_nav_editor_assets` | `function sgs_slider_nav_editor_assets(): void` | Editor: the canvas preview is a server render, which never runs the page's enqueue, so the stylesheet is always loaded into the editor… |
+
+#### `includes/helpers-surface-ground.php` — 3 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_surface_saturate_value` | `function sgs_surface_saturate_value( $raw )` | A whole-number saturate percentage, 0 to 500, or null when nothing is set. |
+| `sgs_surface_backdrop_decls` | `function sgs_surface_backdrop_decls( $blur, $saturate = null ): array` | Declarations (no trailing semicolons) for the backdrop filter. |
+| `sgs_surface_fill_alpha` | `function sgs_surface_fill_alpha( $fill, $opacity ): string` | A fill colour mixed with transparency, or '' when it cannot be done. |
+
+#### `includes/helpers-surface-tone.php` — 2 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_surface_tone` | `function sgs_surface_tone( array $layers ): string` | Judge what a composed surface looks like from its painted layers, top-down . |
+| `sgs_surface_tone_class` | `function sgs_surface_tone_class( array $layers ): string` | The `sgs-on-dark` / `sgs-on-light` marker class for a composed surface, enqueuing the dark-shadow stylesheet when the surface is dark. |
 
 #### `includes/helpers-svg-gradient.php` — 4 function(s)
 
@@ -2508,7 +2795,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_tier_media_has_source` | `function sgs_tier_media_has_source( array $spec ): bool` | Does a tier spec resolve to something renderable? |
 | `sgs_tier_media_toggle_css` | `function sgs_tier_media_toggle_css( array $present, string $base_class, string $uid ): string` | Breakpoint rules that show exactly one tier at any width. |
 
-#### `includes/helpers-tokens.php` — 34 function(s)
+#### `includes/helpers-tokens.php` — 33 function(s)
 
 | Function | Signature | Purpose |
 |---|---|---|
@@ -2529,7 +2816,6 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_colour_value` | `function sgs_colour_value( ?string $slug_or_value ): string` | Resolve a colour attribute value to a CSS colour string. |
 | `sgs_shadow_value` | `function sgs_shadow_value( ?string $slug_or_value ): string` | Resolve a shadow attribute value to a CSS box-shadow string. |
 | `sgs_shadow_value_composed` | `function sgs_shadow_value_composed( ?string $shape, ?string $colour ): string` | Compose a shadow SHAPE (offset-x/offset-y/blur/spread + optional `inset`, no embedded colour — `ShadowControl`'s stored value under the… |
-| `sgs_shadow_value_to_drop_shadow` | `function sgs_shadow_value_to_drop_shadow( string $shadow_value ): string` | Convert a composed `box-shadow` value (from `sgs_shadow_value_composed()`) into the argument `filter: drop-shadow()` accepts. |
 | `sgs_css_gradient_value` | `function sgs_css_gradient_value( ?string $value ): string` | Validate a CSS gradient value for safe emission into a scoped rule / custom property. |
 | `sgs_background_paint_value` | `function sgs_background_paint_value( ?string $colour, ?string $gradient ): array` | Resolve a colour attribute + its sibling gradient attribute to the correct `background-*` CSS declaration — Builder 1 of the D636 universal… |
 | `sgs_background_paint_decl` | `function sgs_background_paint_decl( ?string $colour, ?string $gradient ): string` | Convenience wrapper around sgs_background_paint_value() that returns the full CSS declaration string (`property:value`, no trailing… |
@@ -2547,6 +2833,29 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_font_size_value` | `function sgs_font_size_value( ?string $slug_or_value ): string` | Resolve a font-size attribute value to a CSS font-size string. |
 | `sgs_transition_vars` | `function sgs_transition_vars( array $attributes ): array` | Build CSS custom properties for transition duration and easing. |
 
+#### `includes/helpers-trust-bar-item.php` — 9 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_trust_bar_finite_number` | `function sgs_trust_bar_finite_number( $raw ): bool` | Whether a stored value is a usable number: numeric AND finite. |
+| `sgs_trust_bar_icon_stroke_width` | `function sgs_trust_bar_icon_stroke_width( $raw ): float` | Normalise `iconStrokeWidth`. |
+| `sgs_trust_bar_icon_bare_size` | `function sgs_trust_bar_icon_bare_size( $raw ): int` | Normalise `iconBareSize` (px). |
+| `sgs_trust_bar_number` | `function sgs_trust_bar_number( float $value ): string` | Format a float for CSS without a locale decimal separator or trailing zeros. |
+| `sgs_trust_bar_icon_style_vars` | `function sgs_trust_bar_icon_style_vars( array $attributes, string $badge_style ): array` | CSS custom-property declarations for the icon variants, for the wrapper's scoped rule. |
+| `sgs_trust_bar_icon_stroke_force_css` | `function sgs_trust_bar_icon_stroke_force_css( array $attributes, string $badge_style, string $uid_scope )…` | Make a non-default stroke width reach every drawn element inside the icon. |
+| `sgs_trust_bar_scrub_spacing` | `function sgs_trust_bar_scrub_spacing( $value, int $depth )` | Drop everything from a spacing value that cannot become a CSS length. |
+| `sgs_trust_bar_library_icon_svg` | `function sgs_trust_bar_library_icon_svg( string $slug ): string` | SVG for an icon slug (Lucide, WordPress or SGS library), sanitised for output. |
+| `sgs_trust_bar_item_css` | `function sgs_trust_bar_item_css( array $attributes, string $root_sel ): string` | Scoped CSS for the badge item's own spacing: `itemGap` (icon to label) and `itemPadding`, both responsive tier objects. |
+
+#### `includes/helpers-trust-bar-marquee.php` — 4 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_trust_bar_marquee_below` | `function sgs_trust_bar_marquee_below( $raw ): int` | Normalise the `autoScrollBelow` attribute to one of the device-tier standards. |
+| `sgs_trust_bar_marquee_duration` | `function sgs_trust_bar_marquee_duration( $raw ): float` | Normalise the custom marquee duration in seconds. |
+| `sgs_trust_bar_seconds` | `function sgs_trust_bar_seconds( float $seconds ): string` | Format a duration in seconds for CSS ("30s", "12.5s"); locale-independent. |
+| `sgs_trust_bar_marquee_css` | `function sgs_trust_bar_marquee_css( string $uid_scope, int $below, float $duration ): string` | Scoped CSS for the marquee options. Empty when neither option is set, so a default block's output is unchanged. |
+
 #### `includes/helpers-typography.php` — 4 function(s)
 
 | Function | Signature | Purpose |
@@ -2563,7 +2872,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_saving_display` | `function sgs_saving_display( int $anchor_per_unit_pence, int $pack_per_unit_pence, string $framing_mode, bool…` | Plain-text saving label for one row of the comparative value ladder (Spec 28 P1). |
 | `sgs_value_ladder` | `function sgs_value_ladder( array $combos, ?int $base_pence, string $framing_mode, bool $decoy_enabled, string…` | Build a sorted, deduplicated comparative value ladder for a product's combos (Spec 28 P1). |
 
-**25 files, 133 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
+**42 files, 222 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
 
 ### JS shared editor components — `src/components/*.js`
 
@@ -2590,6 +2899,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `MediaGalleryPicker.js` | `MediaGalleryPicker (default)` | MediaGalleryPicker — shared bulk multi-select media component for SGS blocks. |
 | `MediaPicker.js` | `MediaPicker (default)` | MediaPicker — shared media-slot component for SGS blocks. |
 | `MediaSizingPanel.js` | `MediaSizingPanel (default)`, `RATIO_OPTIONS` | MediaSizingPanel — the shared "media size & crop" panel (C19, 2026-08-27). |
+| `MotionEasingControl.js` | `MotionEasingControl (default)`, `isValidCubicBezier`, `MOTION_EASING_OPTIONS` | MotionEasingControl: the shared named-easing picker for nav motion (Wave 3C U-5). One list read by the burger morph, the drawer… |
 | `ParticleTrailRowControls.js` | `ParticleTrailRowControls` | ParticleTrailRowControls — shared particle-trail (FR-38-32) controls for blocks that reach the effect via a block-private escape… |
 | `ResponsiveBoxControl.js` | `ResponsiveBoxControl (default)`, `ResponsiveBorderRadiusControl`, `BOX_UNITS`… | ResponsiveBoxControl / ResponsiveBorderRadiusControl — shared responsive box-family editor controls (Box-object interface… |
 | `ResponsiveBoxControls.js` | `ResponsiveBoxControls (default)` | ResponsiveBoxControls — Spec 37 FR-37-16 per-device spacing + width panel. |
@@ -2599,6 +2909,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `RowQuickInsertAppender.js` | `RowQuickInsertAppender (default)` | Promoted quick-insert appender for a freeform row block (site-header-row / site-footer-row). Steering, not gating: the row still… |
 | `RowScrollBehaviourControls.js` | `RowScrollBehaviourControls (default)` | RowScrollBehaviourControls — per-row transparent / hide-on-scroll toggles |
 | `ScaleAxisControl.js` | `ScaleAxisControl (default)` | ScaleAxisControl — 2-axis (X/Y) proportional scale control with a link/unlink toggle (Spec 35A §F.2.3, D637). |
+| `ScrimControls.js` | `ScrimControls (default)`, `scrimColourRow` | ScrimControls: the shared inspector controls for a viewport scrim, the see-through layer that dims the page behind an open… |
 | `SgsBooleanField.js` | `SgsBooleanField (default)` | SgsBooleanField — the SGS standard BOOLEAN control (golden-controls.json goldens/input.json `boolean` row, Bean-approved live… |
 | `SgsBorderControl.js` | `SgsBorderControl (default)` | SgsBorderControl — the border control PAIR, matching WP core's native `BorderBoxControl` layout (Bean-directed 2026-08-27 Task 0… |
 | `SgsBoxControl.js` | `SgsBoxControl (default)` | SgsBoxControl — compact 4-side box editor (padding / margin / border-width), built from native primitives with a hand-aligned row… |
@@ -2606,14 +2917,17 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `SgsFreeTextField.js` | `SgsFreeTextField (default)` | SgsFreeTextField — the SGS standard FREE-TEXT / BARE-NUMBER control |
 | `SgsLengthControl.js` | `SgsLengthControl (default)` | SgsLengthControl — thin SGS wrapper for a length/unit value (Bean-directed new build, 2026-08-19; same construction pattern… |
 | `SgsMultiSelectField.js` | `SgsMultiSelectField (default)` | SgsMultiSelectField — the SGS standard MULTI-SELECT / TOKEN control |
-| `ShadowControl.js` | `ShadowControl (default)`, `shadowAttrName`, `shadowAttrKeys` | ShadowControl — shared real shadow builder (Spec 35A Part I action item 3). |
+| `ShadowControl.js` | `ShadowControl (default)`, `shadowAttrName`, `shadowAttrKeys` | ShadowControl — the shared layered box-shadow control. |
+| `ShadowLiftControls.js` | `ShadowLiftControls (default)` | ShadowLiftControls: the ONE hover-shadow control (Bean's ruling, 2026-09-24). |
 | `SpacingControl.js` | `SpacingControl (default)` | Spacing control that reads theme.json spacing presets. |
 | `SsrPreviewGuard.js` | `SsrPreviewGuard (default)` | SsrPreviewGuard — replaces `<Disabled>` around `<ServerSideRender>` previews. |
+| `starter-look-owned-keys.js` | `deepClone`, `parseExplicitBlocks`, `findExplicitRoot`, `collectOwnedKeys`… | Owned-key derivation for the Starter Look preset control (FR-37-47). |
 | `StarterLookPresetControl.js` | `StarterLookPresetControl (default)` | SGS Starter Look preset control (FR-37-47). |
+| `SurfaceGroundControls.js` | `SurfaceGroundControls (default)` | SurfaceGroundControls: the shared inspector controls for a frosted surface |
 | `SurfaceTreatmentPanel.js` | `isSimpleBackgroundImage`, `SurfaceTreatmentPanel` | SurfaceTreatmentPanel — shared surface-treatment (grain/halftone/duotone) controls for blocks that reach the effect via… |
 | `TypographyControls.js` | `TypographyControls (default)`, `typographyAttrName`, `typographyAttrKeys`… | TypographyControls — shared, uniform typography UI for every SGS block. |
 
-**41 files.**
+**46 files.**
 
 ### JS media atoms — `src/components/media/atoms/*.js`
 
@@ -2647,7 +2961,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `overlay.js` | `validateGradient`, `resolveColour`, `resolvePaint`, `attrKeys`, `disclosure`… | `overlay` atom — L2b control + disclosure + validator + value-setter. |
 | `registry.js` | `basesForAtoms`, `atomsForElement`, `MEDIA_ATOMS`, `MEDIA_ATOM_IDS` | L2b — the ATOM registry. The middle level between names and panels. |
 | `shadow.control.js` | `control` | `shadow` atom — CONTROL half (JSX). |
-| `shadow.js` | `attrKeys`, `isRawShape`, `resolveShadow`, `disclosure`, `validate`, `css` | `shadow` atom — L2b control + disclosure + validator + value-setter. |
+| `shadow.js` | `attrKeys`, `resolveShadow`, `disclosure`, `validate`, `css` | `shadow` atom: L2b control + disclosure + validator + value-setter. |
 | `source.control.js` | `control` | Atom: SOURCE (control half) — the editor UI. |
 | `source.js` | `resolveMediaType`, `disclosure`, `validate`, `css`, `TYPE_VOCABULARY` | Atom: SOURCE (logic half) — which media is showing. |
 | `svg-presentation.control.js` | `control` | `svg-presentation` atom — CONTROL half (JSX). |

@@ -58,6 +58,7 @@ python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client <slug> --targe
 | Work | Route to |
 |---|---|
 | Heavy WP build (pages, templates, blocks, migrations) | `wp-sgs-developer` agent |
+| Lay out a page, header, footer, drawer or modal on a live site | `scripts/wp-build-page.js` from a JSON block tree (it builds through the editor and refuses unknown, wrong-typed, off-enum or wrongly shaped settings); keep the tree in `sites/<client>/build/` |
 | SGS block / theme / client-site work | `/sgs-wp-engine` (+ `/wp-block-development` for core block-API questions) |
 | Deploy | `build-deploy.py`, ceremony via `/wp-sgs-deploy` |
 | Visual / a11y check of a built page | `/visual-qa`, `/a11y-audit`, Playwright |
