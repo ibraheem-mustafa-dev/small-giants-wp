@@ -26,6 +26,12 @@
           "_baseline_color": "#0F4C4C"
         },
         {
+          "slug": "primary-hover",
+          "color": "#2A2A2A",
+          "name": "Primary Hover",
+          "_source": "declared"
+        },
+        {
           "slug": "accent",
           "color": "#9C8B78",
           "name": "Accent",
