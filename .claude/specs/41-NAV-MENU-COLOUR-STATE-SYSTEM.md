@@ -1113,11 +1113,11 @@ drawer's accordion has no equivalent wrapper). The dropdown appears via a binary
 `{uid} [data-sgs-mega-trigger][aria-expanded="true"] ~ .sgs-nav-bar-menu__submenu-wrap{display:block;}`
 — and the open animation is layered on that toggle.
 
-**`submenuAnimation`, string, default `"fade"`.** Values: `none` | `fade` | `slide-down`.
-PHP-validated, no JSON enum, same reasoning as FR-41-8. `fade` is a pure-opacity transition with no
-directional assumption, safe regardless of overflow-flip repositioning. Control:
-`ToggleGroupControl` + `ToggleGroupControlOption` — three options, inside the framework's
-data-driven segmented threshold.
+**`submenuAnimation`, string, default `"fade"`.** Values: `none` | `fade` | `fade-lift` |
+`slide-down` | `grow`. PHP-validated, no JSON enum, same reasoning as FR-41-8. `fade` is a
+pure-opacity transition with no directional assumption, safe regardless of overflow-flip
+repositioning. Control: a five-option `SelectControl` (past the segmented threshold); the timing,
+easing and item stagger live in the bar's "Panel motion" panel.
 
 ⛔ **A `prefers-reduced-motion: reduce` companion is mandatory** for `fade` and `slide-down`: the
 panel still opens, it just arrives whole. A panel that fails to open under reduced motion is a

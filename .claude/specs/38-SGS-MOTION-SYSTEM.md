@@ -1934,6 +1934,10 @@ reliably inferred from scraped JS — an inferred effect is a guess, and guesses
 
 ## 12. Dependencies + related docs
 
+- **Shared speed-curve list:** `plugins/sgs-blocks/includes/helpers-motion-easing.php::sgs_motion_easing_css`
+  (editor `plugins/sgs-blocks/src/components/MotionEasingControl.js`) is the one named-easing vocabulary
+  for block-owned transitions and keyframes (the burger morph, the drawer and the menu panels, Spec 36
+  "Motion"). A new block-owned motion control reads it rather than defining its own curve list.
 - **Runtime dependency:** `src/shared/effects/` house contracts (motion-utils LIVE
   reduced-motion check, shared rAF budget, init→cleanup, fail-open). The mega-panel effects are
   live-proven. Row-collapse reduced motion is measured by the repeatable probe
