@@ -107,6 +107,15 @@ $auto_scroll       = ! empty( $attributes['autoScroll'] );
 $auto_scroll_speed = sanitize_html_class( $attributes['autoScrollSpeed'] ?? 'medium' );
 $auto_scroll_pause = isset( $attributes['autoScrollPauseOnHover'] ) ? (bool) $attributes['autoScrollPauseOnHover'] : true;
 
+// --- Overflow mode ('wrap' default / 'drop') ----------------------------------
+// 'drop' keeps a single row and lets view.js hide whichever trailing badges do
+// not fit (see overflow-drop.js). Meaningless once auto-scroll is on — the
+// marquee already guarantees a single row by scrolling — so it never applies
+// there; $tb_overflow_mode is read again just below the auto-scroll branch.
+$tb_overflow_mode_raw = isset( $attributes['overflowMode'] ) ? sanitize_key( (string) $attributes['overflowMode'] ) : 'wrap';
+$tb_overflow_mode     = in_array( $tb_overflow_mode_raw, array( 'wrap', 'drop' ), true ) ? $tb_overflow_mode_raw : 'wrap';
+$tb_overflow_drop     = ( 'drop' === $tb_overflow_mode && ! $auto_scroll );
+
 // Clamp circle size.
 $icon_circle_size = max( 36, min( 64, $icon_circle_size ) );
 
@@ -329,6 +338,12 @@ if ( $auto_scroll ) {
 		$tb_extra_attrs['data-auto-scroll-below'] = (string) $tb_marquee_below;
 	}
 	$tb_extra_scoped_css .= sgs_trust_bar_marquee_css( $uid_scope, $tb_marquee_below, $tb_marquee_duration );
+}
+
+if ( $tb_overflow_drop ) {
+	// view.js (overflow-drop.js) reads this to find blocks to measure; the
+	// value is also the CSS hook if a future variant needs one.
+	$tb_extra_attrs['data-overflow-mode'] = 'drop';
 }
 
 // Landmark label override — a fixed 'Trust signals' aria-label is set above
@@ -805,6 +820,17 @@ $typo_css .= sgs_typography_css_rule( $attributes, 'title', $title_sel );
 $all_scoped_css = $tb_extra_scoped_css . $typo_css . $tb_per_item_css;
 $style_block    = $all_scoped_css ? '<style>' . wp_strip_all_tags( $all_scoped_css ) . '</style>' : '';
 
+// Overflow mode 'drop' needs the badges to actually wrap onto further rows in
+// flex layout (layout='grid' already wraps via grid-auto-flow) so overflow-drop.js
+// can find the natural row break and hide anything past row one — a local copy
+// of $attributes forces flexWrap='wrap' for THIS render call only, regardless of
+// the operator's own flexWrap choice; every other use of $attributes above is
+// untouched.
+$tb_wrapper_render_attributes = $attributes;
+if ( $tb_overflow_drop ) {
+	$tb_wrapper_render_attributes['flexWrap'] = 'wrap';
+}
+
 // WS-4: outer wrapper via the shared helper; trust-bar keeps its interior.
 // $style_block — built entirely from wp_style_engine_get_styles() +
 // sgs_typography_css_rule() + sanitised colour/keyword/length values, then
@@ -812,5 +838,5 @@ $style_block    = $all_scoped_css ? '<style>' . wp_strip_all_tags( $all_scoped_c
 // $title_html  — built with wp_kses_post + esc_attr.
 // $badges_html — all user content escaped via esc_html/esc_url/esc_attr/sgs_get_lucide_icon.
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
-echo $style_block . SGS_Container_Wrapper::render( $attributes, $block, $title_html . $badges_html, SGS_Container_Wrapper::resolve_kind( $block, 'section' ), $tb_wrapper_opts );
+echo $style_block . SGS_Container_Wrapper::render( $tb_wrapper_render_attributes, $block, $title_html . $badges_html, SGS_Container_Wrapper::resolve_kind( $block, 'section' ), $tb_wrapper_opts );
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

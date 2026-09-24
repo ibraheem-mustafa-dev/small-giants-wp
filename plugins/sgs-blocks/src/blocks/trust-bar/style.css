@@ -60,6 +60,18 @@ a.sgs-trust-bar__badge:focus-visible {
 	display: none;
 }
 
+/* [hidden] on .sgs-trust-bar__badge for text-only/image-badge (overflow-drop.js,
+ * see the "Overflow: drop mode" section below): without this, the variant's own
+ * `.sgs-trust-bar--text-only .sgs-trust-bar__badge{…}` / `--image-badge` rule
+ * (2 classes, same 0,2,0 specificity as `[hidden]` alone) would beat the UA
+ * stylesheet's `[hidden]{display:none}` on author-vs-UA precedence, so a badge
+ * this script hides would still render. Compound selector below is 0,3,0,
+ * matching the icon-circle/icon-bare pattern above. */
+.sgs-trust-bar--text-only .sgs-trust-bar__badge[hidden],
+.sgs-trust-bar--image-badge .sgs-trust-bar__badge[hidden] {
+	display: none;
+}
+
 .sgs-trust-bar--icon-circle .sgs-trust-bar__badge {
 	flex-direction: row;
 	gap: 10px;
@@ -287,6 +299,35 @@ a.sgs-trust-bar__badge:focus-visible {
 .sgs-trust-bar[data-auto-scroll-speed="slow"]   .sgs-trust-bar__track--ready { animation-duration: 40s; }
 .sgs-trust-bar[data-auto-scroll-speed="medium"] .sgs-trust-bar__track--ready { animation-duration: 25s; }
 .sgs-trust-bar[data-auto-scroll-speed="fast"]   .sgs-trust-bar__track--ready { animation-duration: 15s; }
+
+/* ─── Overflow: drop mode ────────────────────────────────────────────────────── */
+/*
+ * overflowMode="drop" (default is "wrap", unchanged) marks the root with
+ * data-overflow-mode="drop" (render.php); overflow-drop.js then measures which
+ * badges landed on a row after the first and hides them with the native
+ * `hidden` attribute. No layout CSS is needed here — render.php already forces
+ * flex-wrap: wrap for a flex-layout block in drop mode (grid layout wraps rows
+ * on its own), so the badges lay out onto natural rows for the script to read.
+ * The `[hidden]` display:none overrides just above this section are what makes
+ * the hidden badges actually disappear once the script sets the attribute.
+ *
+ * Editor canvas (CHECK A / C11): overflow-drop.js never runs in the editor
+ * (viewScriptModule, frontend only), so the control needs a different way to
+ * show the client what it does. edit.js adds `.is-overflow-drop` to the
+ * canvas root when the control is set to "Hide extra items" (and auto-scroll
+ * is off, matching render.php's own gating) — this class never appears on
+ * the frontend, which instead gets `data-overflow-mode="drop"` above.
+ */
+/* :where() keeps this at zero specificity (check-hardcoded-render-defaults.js
+ * Gate B — `flexWrap` is a real attr the wrapper CSS already owns elsewhere
+ * in this file; a plain rule here would compete with it as a second, opaque
+ * source of truth for the same property. Zero specificity means this only
+ * ever wins by being an editor-canvas-only class no other rule targets, not
+ * by out-ranking the operator's own flexWrap choice.) */
+:where(.sgs-trust-bar.is-overflow-drop) {
+	flex-wrap: nowrap;
+	overflow: hidden;
+}
 
 /* ─── Reduced motion ─────────────────────────────────────────────────────────── */
 

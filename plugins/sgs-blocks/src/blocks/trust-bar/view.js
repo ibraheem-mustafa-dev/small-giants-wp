@@ -25,6 +25,11 @@
  * Loaded as a viewScriptModule (ES module, frontend only — never runs in editor).
  */
 
+// "drop" overflow mode (overflowMode="drop") is a separate concern — kept in
+// its own file to stay under the 250-line budget for this one; it self-runs
+// on import.
+import './overflow-drop.js';
+
 const wrappers = document.querySelectorAll( '.sgs-trust-bar[data-auto-scroll="true"]' );
 
 wrappers.forEach( ( wrapper ) => {

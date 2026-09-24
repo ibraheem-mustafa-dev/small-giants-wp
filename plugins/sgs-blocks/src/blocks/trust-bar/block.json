@@ -1003,6 +1003,15 @@
 				"nowrap"
 			]
 		},
+		"overflowMode": {
+			"type": "string",
+			"default": "wrap",
+			"enum": [
+				"wrap",
+				"drop"
+			],
+			"description": "What happens when the badges do not all fit on one line. 'wrap' (default) lets them flow onto a second line, unchanged from the block's prior behaviour. 'drop' keeps a single row and hides whichever trailing badges do not fit (measured live on the frontend by view.js; hidden badges use the native `hidden` attribute so they are never focusable or read by a screen reader). Ignored while autoScroll is on — the marquee already keeps a single row by scrolling."
+		},
 		"contentWidth": {
 			"type": "object",
 			"default": {}

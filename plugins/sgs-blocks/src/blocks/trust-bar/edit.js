@@ -114,6 +114,11 @@ const AUTO_SCROLL_SPEED_OPTIONS = [
 	{ label: __( 'Fast (15s)', 'sgs-blocks' ),    value: 'fast' },
 ];
 
+const OVERFLOW_MODE_OPTIONS = [
+	{ label: __( 'Wrap to a new line (default)', 'sgs-blocks' ), value: 'wrap' },
+	{ label: __( 'Hide extra items', 'sgs-blocks' ), value: 'drop' },
+];
+
 // ─── Editor sub-components ────────────────────────────────────────────────────
 
 /** Circle wrapper with the actual selected icon for editor preview. */
@@ -348,6 +353,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		autoScroll,
 		autoScrollSpeed,
 		autoScrollPauseOnHover,
+		overflowMode,
 		shadow,
 	} = attributes;
 
@@ -454,6 +460,15 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		margin: attributes.margin,
 	}, previewTier );
 
+	// overflowMode="drop" canvas reflection (CHECK A / C11) — front-end-only
+	// behaviour (overflow-drop.js measures + hides real DOM rows), so the
+	// editor canvas has no equivalent script to run. Adding this modifier
+	// class instead gives the control a visible effect in the editor: a
+	// single-row `flex-wrap:nowrap` rule in style.css (never reached on the
+	// frontend, since render.php/view.js never add this class there).
+	// Ignored while autoScroll is on, matching render.php's own gating.
+	const isOverflowDrop = 'drop' === overflowMode && ! autoScroll;
+
 	// Build className based on active variant.
 	const blockClassName = [
 		'sgs-trust-bar',
@@ -461,6 +476,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		`sgs-trust-bar--${ badgeSize }`,
 		bgPreview.className,
 		...svgPreview.className,
+		isOverflowDrop ? 'is-overflow-drop' : '',
 	]
 		.filter( Boolean )
 		.join( ' ' );
@@ -777,6 +793,17 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 				{ /* ── Auto-scroll (behaviour) ───────────────────────────────── */ }
 				<PanelBody title={ __( 'Auto-scroll', 'sgs-blocks' ) } initialOpen={ false }>
+					{ ! autoScroll && (
+						<SelectControl
+							label={ __( "When items don't fit", 'sgs-blocks' ) }
+							help={ __( "What happens when the badges don't all fit on one line. Hidden items are removed from the tab order and from screen readers too. Only visible once published — the editor canvas always shows every badge.", 'sgs-blocks' ) }
+							value={ overflowMode ?? 'wrap' }
+							options={ OVERFLOW_MODE_OPTIONS }
+							onChange={ ( val ) => setAttributes( { overflowMode: val } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
 					<ToggleControl
 						label={ __( 'Enable auto-scroll', 'sgs-blocks' ) }
 						help={ __( 'When the number of badges exceeds what fits on screen, the row scrolls automatically like a marquee.', 'sgs-blocks' ) }
