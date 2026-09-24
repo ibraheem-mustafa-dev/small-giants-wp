@@ -134,10 +134,23 @@
 	stroke: currentColor;
 }
 
-/* Uploaded IMAGE glyph (items[].glyphImage, wave B round 2) — an alternative
-   to the Lucide icon in the same `.sgs-card-grid__glyph` slot/backdrop
-   above; only the inner fill differs from the SVG rule above (an <img>
-   needs object-fit, not stroke). */
+/* Uploaded IMAGE glyph (items[].glyphImage) — an alternative to the Lucide
+   icon in the same `.sgs-card-grid__glyph` slot. An uploaded mark (a logo, a
+   shape outline) carries its own design, so it sits bare: no round backdrop
+   and no padding. Legibility over a photo comes from the image overlay. */
+.sgs-card-grid__glyph--image {
+	padding: 0;
+	border-radius: 0;
+	background: none;
+}
+
+/* In the overlay variant the glyph sits in the caption column, above the title. */
+.sgs-card-grid__overlay .sgs-card-grid__glyph {
+	position: static;
+	transform: none;
+	margin-bottom: var(--wp--preset--spacing--10, 10px);
+}
+
 .sgs-card-grid__glyph--image img {
 	display: block;
 	width: 100%;

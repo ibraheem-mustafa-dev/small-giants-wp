@@ -259,6 +259,14 @@ if ( ! empty( $cg_typography_args ) ) {
 }
 if ( isset( $attributes['style']['typography']['textAlign'] ) && in_array( $attributes['style']['typography']['textAlign'], array( 'left', 'center', 'right' ), true ) ) {
 	$card_grid_native_css .= $root_sel . ' .sgs-card-grid__title{text-align:' . $attributes['style']['typography']['textAlign'] . '}';
+	// The overlay caption is a flex column: align its items with the title, so
+	// a glyph shown in the caption lines up with the title under it.
+	$cg_caption_align      = array(
+		'left'   => 'flex-start',
+		'center' => 'center',
+		'right'  => 'flex-end',
+	);
+	$card_grid_native_css .= $root_sel . ' .sgs-card-grid__overlay{align-items:' . $cg_caption_align[ $attributes['style']['typography']['textAlign'] ] . '}';
 }
 
 // FR-35-5 STATE_WITHOUT_BASE fix — resting-state fill/border/shadow for the
@@ -1042,6 +1050,9 @@ foreach ( $items as $index => $item ) :
 	// position:absolute siblings — same technique as the existing
 	// `.sgs-card-grid__overlay` text layer further down).
 	$item_show_overlay = $card_grid_overlay_active && $item_has_media;
+	// In the overlay variant the glyph belongs to the caption, above the title,
+	// instead of being pinned to the bottom of the image where the caption sits.
+	$glyph_in_caption = ( 'overlay' === $variant );
 	?>
 	<<?php echo esc_attr( $item_tag ); ?> class="sgs-card-grid__item" data-card-key="<?php echo esc_attr( $card_grid_item_key ); ?>"<?php echo $link_attr; ?>>
 		<div class="<?php echo esc_attr( $image_wrap_class ); ?>"<?php echo $item_decorative ? ' aria-hidden="true"' : ''; ?>>
@@ -1051,13 +1062,16 @@ foreach ( $items as $index => $item ) :
 			<?php if ( $item_show_overlay ) : ?>
 				<div class="sgs-card-grid__image-overlay" aria-hidden="true"></div>
 			<?php endif; ?>
-			<?php if ( '' !== $item_glyph_html ) : ?>
+			<?php if ( '' !== $item_glyph_html && ! $glyph_in_caption ) : ?>
 				<?php echo $item_glyph_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside sgs_card_grid_glyph_html() via wp_kses(). ?>
-			<?php elseif ( $item_use_fallback && ! empty( $item['title'] ) ) : ?>
+			<?php elseif ( '' === $item_glyph_html && $item_use_fallback && ! empty( $item['title'] ) ) : ?>
 				<?php echo sgs_card_grid_fallback_initial( $item['title'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside sgs_card_grid_fallback_initial() via esc_html(). ?>
 			<?php endif; ?>
 			<?php if ( 'overlay' === $variant || 'overlay-slide' === $hover_effect ) : ?>
 				<div class="sgs-card-grid__overlay">
+					<?php if ( '' !== $item_glyph_html && $glyph_in_caption ) : ?>
+						<?php echo $item_glyph_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside the glyph helpers via wp_kses()/esc_url(). ?>
+					<?php endif; ?>
 					<?php if ( ! empty( $item['title'] ) ) : ?>
 						<span class="sgs-card-grid__title"><?php echo esc_html( $item['title'] ); ?></span>
 					<?php endif; ?>

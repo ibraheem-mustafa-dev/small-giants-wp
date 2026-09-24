@@ -1512,6 +1512,31 @@ export default function Edit( { attributes, setAttributes } ) {
 								mixBlendMode: overlayBlendMode && 'normal' !== overlayBlendMode ? overlayBlendMode : undefined,
 							}
 							: null;
+						// Mirrors render.php: an uploaded image glyph wins over the Lucide
+						// slug; in the overlay variant the glyph sits in the caption.
+						const glyphInCaption = variant === 'overlay';
+						let glyphNode = null;
+						if ( item.glyphImage?.url ) {
+							glyphNode = (
+								<span
+									className="sgs-card-grid__glyph sgs-card-grid__glyph--image"
+									aria-hidden="true"
+									style={ { width: glyphSize || '32px', height: glyphSize || '32px' } }
+								>
+									<img src={ item.glyphImage.url } alt="" />
+								</span>
+							);
+						} else if ( item.glyph ) {
+							glyphNode = (
+								<span
+									className="sgs-card-grid__glyph"
+									aria-hidden="true"
+									style={ { color: glyphColourValue } }
+								>
+									<IconPreview source="lucide" name={ item.glyph } size={ glyphSizePx } />
+								</span>
+							);
+						}
 						return (
 						<div key={ item._key } className="sgs-card-grid__item">
 							<div className={ wrapClassName } style={ wrapStyle }>
@@ -1540,27 +1565,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								{ overlayStyle && (
 									<span className="sgs-card-grid__image-overlay" aria-hidden="true" style={ overlayStyle } />
 								) }
-								{ !! item.glyphImage?.url ? (
-									<span
-										className="sgs-card-grid__glyph sgs-card-grid__glyph--image"
-										aria-hidden="true"
-										style={ { width: glyphSize || '32px', height: glyphSize || '32px' } }
-									>
-										<img src={ item.glyphImage.url } alt="" />
-									</span>
-								) : !! item.glyph ? (
-									<span
-										className="sgs-card-grid__glyph"
-										aria-hidden="true"
-										style={ { color: glyphColourValue } }
-									>
-										<IconPreview
-											source="lucide"
-											name={ item.glyph }
-											size={ glyphSizePx }
-										/>
-									</span>
-								) : (
+								{ glyphNode && ! glyphInCaption ? glyphNode : (
+									! glyphNode &&
 									useFallback &&
 									item.title && (
 										<span
@@ -1577,6 +1583,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								) }
 								{ variant === 'overlay' && (
 									<div className="sgs-card-grid__overlay">
+										{ glyphInCaption && glyphNode }
 										{ item.title && (
 											<span
 												className="sgs-card-grid__title"
