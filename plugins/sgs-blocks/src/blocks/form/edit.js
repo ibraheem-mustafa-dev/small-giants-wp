@@ -26,6 +26,27 @@ const SUBMIT_STYLE_OPTIONS = [
 	{ label: __( 'Success', 'sgs-blocks' ), value: 'success' },
 ];
 
+const SUBMIT_FONT_WEIGHT_OPTIONS = [
+	{ label: __( 'Default', 'sgs-blocks' ), value: '' },
+	{ label: __( '100 — Thin', 'sgs-blocks' ), value: '100' },
+	{ label: __( '200 — Extra Light', 'sgs-blocks' ), value: '200' },
+	{ label: __( '300 — Light', 'sgs-blocks' ), value: '300' },
+	{ label: __( '400 — Regular', 'sgs-blocks' ), value: '400' },
+	{ label: __( '500 — Medium', 'sgs-blocks' ), value: '500' },
+	{ label: __( '600 — Semibold', 'sgs-blocks' ), value: '600' },
+	{ label: __( '700 — Bold', 'sgs-blocks' ), value: '700' },
+	{ label: __( '800 — Extra Bold', 'sgs-blocks' ), value: '800' },
+	{ label: __( '900 — Black', 'sgs-blocks' ), value: '900' },
+];
+
+const SUBMIT_TEXT_TRANSFORM_OPTIONS = [
+	{ label: __( 'Default', 'sgs-blocks' ), value: '' },
+	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
+	{ label: __( 'Uppercase', 'sgs-blocks' ), value: 'uppercase' },
+	{ label: __( 'Lowercase', 'sgs-blocks' ), value: 'lowercase' },
+	{ label: __( 'Capitalize', 'sgs-blocks' ), value: 'capitalize' },
+];
+
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		formId,
@@ -43,6 +64,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		submitBackground,
 		submitBackgroundHover,
 		submitBackgroundHoverGradient,
+		submitFontWeight,
+		submitFontSize,
+		submitTextTransform,
+		submitLetterSpacing,
 		progressBarColour,
 		progressBarColourGradient,
 		progressBarColourHover,
@@ -95,6 +120,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const submitButtonStyle = {
 		...submitTextPreviewStyle,
 		backgroundColor: resolveColourToken( submitBackground, palette ) || undefined,
+		fontWeight: submitFontWeight || undefined,
+		fontSize: submitFontSize ? `${ submitFontSize }px` : undefined,
+		textTransform: submitTextTransform || undefined,
+		letterSpacing: submitLetterSpacing || undefined,
 	};
 	const progressBarStyle = {
 		backgroundColor: resolveColourToken( progressBarColour, palette ) || undefined,
@@ -617,6 +646,64 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						onChange={ ( value ) =>
 							setAttributes( { submitStyle: value } )
 						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					{ /* Typography overrides for the submit button only — the shared
+					   TypographyControls above (prefix "") targets the whole form
+					   root, not `.sgs-form__button--submit`, which style.css fixes
+					   at font-weight:600/font-size:small. Each control defaults to
+					   "unset" so an existing form's rendered button is unchanged
+					   until an operator picks a value. */ }
+					<SelectControl
+						label={ __( 'Button Font Weight', 'sgs-blocks' ) }
+						value={ submitFontWeight || '' }
+						options={ SUBMIT_FONT_WEIGHT_OPTIONS }
+						onChange={ ( value ) =>
+							setAttributes( { submitFontWeight: value } )
+						}
+						help={ __(
+							'Default follows the button style (600).',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<NumberControl
+						label={ __( 'Button Font Size (px)', 'sgs-blocks' ) }
+						value={ submitFontSize || '' }
+						min={ 0 }
+						onChange={ ( value ) =>
+							setAttributes( {
+								submitFontSize: parseInt( value, 10 ) || 0,
+							} )
+						}
+						help={ __(
+							'0 keeps the theme default size.',
+							'sgs-blocks'
+						) }
+						__next40pxDefaultSize
+					/>
+					<SelectControl
+						label={ __( 'Button Text Transform', 'sgs-blocks' ) }
+						value={ submitTextTransform || '' }
+						options={ SUBMIT_TEXT_TRANSFORM_OPTIONS }
+						onChange={ ( value ) =>
+							setAttributes( { submitTextTransform: value } )
+						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<TextControl
+						label={ __( 'Button Letter Spacing', 'sgs-blocks' ) }
+						value={ submitLetterSpacing || '' }
+						onChange={ ( value ) =>
+							setAttributes( { submitLetterSpacing: value } )
+						}
+						help={ __(
+							'A CSS length, e.g. 0.1em or 2px. Leave blank for none.',
+							'sgs-blocks'
+						) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>

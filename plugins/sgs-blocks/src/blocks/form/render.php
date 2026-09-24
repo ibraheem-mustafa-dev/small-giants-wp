@@ -340,6 +340,46 @@ if ( '' !== $submit_colour_effective || $submit_fill_decls['normal'] || $submit_
 	);
 }
 
+// Submit button typography (font-weight/font-size/text-transform/letter-
+// spacing) — `.sgs-form__button` (style.css) fixes font-weight:600 and
+// font-size:var(--wp--preset--font-size--small); these are independent
+// overrides on the SAME scoped rule as the colour block above so the
+// submit button can go uppercase / tracked without a new stylesheet class.
+// Each is its own gate: unset emits nothing, so an existing form with none
+// of these set keeps the stylesheet's own values unchanged.
+$submit_font_weight_raw      = (string) ( $attributes['submitFontWeight'] ?? '' );
+$submit_allowed_font_weights = array( '100', '200', '300', '400', '500', '600', '700', '800', '900' );
+$submit_font_weight          = in_array( $submit_font_weight_raw, $submit_allowed_font_weights, true ) ? $submit_font_weight_raw : '';
+
+$submit_font_size_raw = $attributes['submitFontSize'] ?? '';
+$submit_font_size     = ( '' !== $submit_font_size_raw && null !== $submit_font_size_raw ) ? absint( $submit_font_size_raw ) : 0;
+
+$submit_text_transform_raw       = (string) ( $attributes['submitTextTransform'] ?? '' );
+$submit_allowed_text_transforms  = array( 'none', 'uppercase', 'lowercase', 'capitalize' );
+$submit_text_transform           = in_array( $submit_text_transform_raw, $submit_allowed_text_transforms, true ) ? $submit_text_transform_raw : '';
+
+$submit_letter_spacing = sgs_css_length_value( (string) ( $attributes['submitLetterSpacing'] ?? '' ) );
+
+$submit_typography_decls = array();
+if ( '' !== $submit_font_weight ) {
+	$submit_typography_decls[] = 'font-weight:' . $submit_font_weight;
+}
+if ( 0 !== $submit_font_size ) {
+	$submit_typography_decls[] = 'font-size:' . $submit_font_size . 'px';
+}
+if ( '' !== $submit_text_transform ) {
+	$submit_typography_decls[] = 'text-transform:' . $submit_text_transform;
+}
+if ( '' !== $submit_letter_spacing ) {
+	$submit_typography_decls[] = 'letter-spacing:' . $submit_letter_spacing;
+}
+if ( ! empty( $submit_typography_decls ) ) {
+	if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {
+		$sgs_form_supports_classes[] = $sgs_form_uid;
+	}
+	$sgs_form_supports_css .= '.' . $sgs_form_uid . ' .sgs-form__button--submit{' . implode( ';', $submit_typography_decls ) . '}';
+}
+
 $submit_colour_hover = $attributes['submitColourHover'] ?? '';
 $submit_colour_gradient_hover = $attributes['submitColourHoverGradient'] ?? '';
 $submit_colour_effective_hover = sgs_resolve_text_colour_or_gradient( $submit_colour_hover, $submit_colour_gradient_hover );
