@@ -102,8 +102,8 @@ const DESTRUCTURED_ACCESS = /\{[^{}]*?(__experimental[A-Za-z0-9_]+)\s*:\s*([A-Za
  * is accepted debt, not an oversight — and it is visible in `--survey` output.
  */
 const NON_IMPORT_EXEMPT = {
-	'blocks/filter-search/edit.js':
-		'deliberate compat guard — reads wp.components at runtime and falls back to TextControl when the experimental export is absent on older WP',
+	'blocks/filter-search/FilterSearchSettings.js':
+		'deliberate compat guard — reads wp.components at runtime and falls back to TextControl when the experimental export is absent on older WP; moved here from edit.js when the inspector panel body was split out for the 250-line file limit',
 	'blocks/product-search/edit.js':
 		'deliberate compat guard — require() inside try/catch so a missing module cannot crash the editor; falls back to TextControl',
 	'components/SgsMultiSelectField.js':

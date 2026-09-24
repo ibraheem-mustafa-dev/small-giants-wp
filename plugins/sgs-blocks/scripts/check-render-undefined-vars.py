@@ -85,7 +85,7 @@ def _run(paths=None):
         str(CONFIG),
         "--no-progress",
         "--error-format=json",
-        "--memory-limit=1G",
+        "--memory-limit=2G",  # 2G since the 4.5 MB WooCommerce stub (2026-09-24); 1G ran out
     ]
     if paths:
         cmd += [str(p) for p in paths]

@@ -116,7 +116,7 @@
         "animation": true
       },
       "qualifies": {
-        "paintDeclarations": 13,
+        "paintDeclarations": 16,
         "replacedCoreSupports": []
       }
     },
@@ -206,7 +206,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 27,
+        "paintDeclarations": 35,
         "replacedCoreSupports": []
       }
     },
@@ -225,7 +225,7 @@
         "animation": true
       },
       "qualifies": {
-        "paintDeclarations": 21,
+        "paintDeclarations": 26,
         "replacedCoreSupports": []
       }
     },
@@ -244,7 +244,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 13,
+        "paintDeclarations": 16,
         "replacedCoreSupports": []
       }
     },
@@ -463,7 +463,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 4,
+        "paintDeclarations": 9,
         "replacedCoreSupports": []
       }
     },
@@ -1132,7 +1132,7 @@
         "animation": true
       },
       "qualifies": {
-        "paintDeclarations": 9,
+        "paintDeclarations": 11,
         "replacedCoreSupports": [
           "anchor",
           "ariaLabel",
@@ -1215,7 +1215,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 25,
+        "paintDeclarations": 31,
         "replacedCoreSupports": []
       }
     },
@@ -1316,7 +1316,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 47,
+        "paintDeclarations": 49,
         "replacedCoreSupports": []
       }
     },
@@ -1779,7 +1779,7 @@
         "animation": true
       },
       "qualifies": {
-        "paintDeclarations": 25,
+        "paintDeclarations": 27,
         "replacedCoreSupports": []
       }
     },
@@ -1798,7 +1798,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 3,
+        "paintDeclarations": 8,
         "replacedCoreSupports": []
       }
     }

@@ -36,6 +36,9 @@ parameters:
     - includes
   scanFiles:
     - sgs-blocks.php
+    # WooCommerce is not installed locally; its stubs resolve WC_Product, wc_get_product etc.
+    # (added 2026-09-24, retiring the six WooCommerce baseline entries).
+    - vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
 
   # WordPress injects exactly these three into a block's render.php. They are undefined
   # to any static analyser and would otherwise be 69 of the 87 findings.

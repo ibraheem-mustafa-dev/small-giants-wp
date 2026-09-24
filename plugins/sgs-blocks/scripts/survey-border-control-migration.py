@@ -33,9 +33,8 @@ radius stays native either way, out of scope for SgsBorderControl):
                          other border UI). Shape-A target -- the bulk of the 63-block
                          scope's "already block-private" half.
     ANOMALY            -- has SOME border-related attrs but not a full colour+width+
-                         style set (e.g. whatsapp-cta: radius-only native, no private
-                         colour/width/style attrs at all -- no border colour capability
-                         exists on that block today) -- flagged for human triage, never
+                         style set (e.g. label: some border attrs but not the full private
+                         colour/width/style set) -- flagged for human triage, never
                          auto-classified into Shape A or B.
     NO_BORDER_SUPPORT  -- no border capability at all (native or private). Out of scope.
 
@@ -223,7 +222,7 @@ CEILING = {
     # prefixed families too) out of this bucket. The remaining 4
     # (filter-search/label/mega-aside/whatsapp-cta) are genuine partial-border
     # anomalies, unaffected by this fix.
-    'ANOMALY': 4,
+    'ANOMALY': 3,  # lowered 2026-09-24: whatsapp-cta and cart migrated to SgsBorderControl (Wave B)
 }
 
 
@@ -278,8 +277,18 @@ def classify_block(block_dir):
     )
 
     edit_js = _read(os.path.join(block_dir, 'edit.js'))
+    # The block's OWN editor modules count too: a block that moves a panel out of
+    # edit.js into a sibling component (to keep edit.js under the file-length budget)
+    # still mounts the control. edit.js alone missed sgs/whatsapp-cta's card-fields.js
+    # (2026-09-24). Front-end/serialisation modules are not editor code.
+    own_editor_js = ''.join(
+        _read(os.path.join(block_dir, name))
+        for name in sorted(os.listdir(block_dir))
+        if name.endswith('.js') and name not in ('edit.js', 'view.js', 'save.js', 'deprecated.js')
+    ) if os.path.isdir(block_dir) else ''
     uses_sgs_border_control = (
         'SgsBorderControl' in edit_js
+        or 'SgsBorderControl' in own_editor_js
         or _delegated_atom_mounts_sgs_border_control(bj)
         or _delegated_shared_file_mounts_sgs_border_control(edit_js)
     )
@@ -554,14 +563,14 @@ def self_test():
                 d['native_border_keys']
             ))
 
-    # Fixture 4 (anomaly / negative control on the happy path): whatsapp-cta has
-    # radius-only native and NO private colour/width/style -- must be ANOMALY, never
-    # silently promoted to NATIVE_PARTIAL's Shape-A bucket.
-    if 'whatsapp-cta' not in results or results['whatsapp-cta']['category'] != 'ANOMALY':
-        failures.append('whatsapp-cta should classify ANOMALY (no border colour '
-                         'capability at all), got %s' % (
-                             results.get('whatsapp-cta', {}).get('category')
-                         ))
+    # Fixture 4 (anomaly / negative control on the happy path): label has SOME
+    # border-shaped attrs but not the full private colour+width+style set -- must be
+    # ANOMALY, never silently promoted into a Shape-A bucket. (Was whatsapp-cta until
+    # 2026-09-24, when its new card variant gained a real SgsBorderControl border.)
+    if 'label' not in results or results['label']['category'] != 'ANOMALY':
+        failures.append('label should classify ANOMALY (partial border set), got %s' % (
+            results.get('label', {}).get('category')
+        ))
 
     # Fixture 5 (negative control): a block with genuinely no border support at all.
     if 'icon' not in results or results['icon']['category'] != 'NO_BORDER_SUPPORT':

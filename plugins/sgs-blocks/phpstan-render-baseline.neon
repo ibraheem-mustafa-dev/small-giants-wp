@@ -23,10 +23,8 @@
 #     burying it in a blanket rule would hide the next partial that gets it wrong.
 #     OWED: give the partial an explicit contract (extract() guard or a docblock).
 #
-#   MISSING THIRD-PARTY SYMBOLS (WooCommerce not installed locally) — 6 entries
-#     wc_get_product / wc_get_cart_url / wc_get_checkout_url / WC_Product. All are
-#     already runtime-guarded in the blocks. OWED: add `php-stubs/woocommerce-stubs`
-#     to require-dev; that retires all six honestly rather than by suppression.
+#   MISSING THIRD-PARTY SYMBOLS — RETIRED 2026-09-24: `php-stubs/woocommerce-stubs` is now in
+#     require-dev and scanned by phpstan-render.neon, so the six WooCommerce entries are gone.
 #
 #   MISSING OWN CONSTANT — 2 entries
 #     google-reviews/render.php — SGS_BLOCKS_PATH is defined in sgs-blocks.php (line 28)
@@ -67,24 +65,6 @@ parameters:
 			path: src/blocks/buybox/notify-form.php
 
 		-
-			message: '#^Class WC_Product not found\.$#'
-			identifier: class.notFound
-			count: 2
-			path: src/blocks/buybox/render.php
-
-		-
-			message: '#^Function wc_get_product not found\.$#'
-			identifier: function.notFound
-			count: 1
-			path: src/blocks/buybox/render.php
-
-		-
-			message: '#^Function wc_get_cart_url not found\.$#'
-			identifier: function.notFound
-			count: 1
-			path: src/blocks/cart/render.php
-
-		-
 			message: '#^Variable \$sgs_container_supports_css on left side of \?\? always exists and is not nullable\.$#'
 			identifier: nullCoalesce.variable
 			count: 1
@@ -107,17 +87,6 @@ parameters:
 			identifier: variable.undefined
 			count: 1
 			path: src/blocks/icon-list/render.php
-
-		-
-			message: '#^Function wc_get_checkout_url not found\.$#'
-			identifier: function.notFound
-			count: 2
-			path: src/blocks/product-card/render.php
-
-		# Shape-B border migration (2026-08-30): guards left dead because the
-		# migration removed their only populator. These say "always exists" --
-		# the OPPOSITE of the undefined-variable defect this gate catches. Not
-		# deleted: each guard's BODY assigns variables used further down.
 
 		-
 			message: '#^Variable \$base_style_engine_args in empty\(\) always exists and is always falsy\.$#'

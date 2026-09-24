@@ -430,13 +430,25 @@ def _load_block_jsons() -> dict[str, dict]:
 
 
 def _richtext_blocks() -> set[str]:
-    """Blocks whose edit.js imports/uses RichText — the 'text' provision test."""
+    """Blocks whose editor code imports/uses RichText — the 'text' provision test.
+
+    Reads every editor module in the block folder, not only edit.js: a block that
+    moves its RichText fields into a sibling component (to keep edit.js under the
+    file-length budget) still edits text. Checking edit.js alone once silently
+    dropped every effect from sgs/whatsapp-cta. Front-end and serialisation
+    modules (view.js, save.js, deprecated.js) are not editor code and are skipped.
+    """
     found: set[str] = set()
+    skip = {"view.js", "save.js", "deprecated.js"}
     for edit_js in sorted(BLOCKS_DIR.glob("*/edit.js")):
-        try:
-            content = edit_js.read_text(encoding="utf-8")
-        except OSError:
-            continue
+        content = ""
+        for module in sorted(edit_js.parent.glob("*.js")):
+            if module.name in skip:
+                continue
+            try:
+                content += module.read_text(encoding="utf-8") + "\n"
+            except OSError:
+                continue
         if re.search(r"\bRichText\b", content):
             block_dir = edit_js.parent
             block_json_path = block_dir / "block.json"
