@@ -141,6 +141,45 @@
 						}
 					},
 					"_note": "FR-36-19 — the flyout/drawer panel surface. panelBg/panelTextColour do not follow {prefix}{suffix} — explicit attrMap. Only rendered when displayMode is flyout|drawer. Gradient siblings use the same hand-built ::after reasoning as the badge element above (the panel's own --flyout/--drawer modifiers declare position:absolute/fixed, at the same specificity a uid-scoped sgs_block_background_layer_css() rule would carry). panelTextColourHover/panelTextColourHoverGradient are safe for the same reason as the badge above — the panel's own background always lives on its ::after layer."
+				},
+				"pill": {
+					"label": "Trigger pill (text style)",
+					"order": 6,
+					"clusters": [ "text", "fill", "layout" ],
+					"prefix": "pill",
+					"attrMap": {
+						"css:background-color": "pillBgColour",
+						"css:background-image": "pillBgColourGradient",
+						"css:color": "pillTextColour",
+						"css:color-gradient": "pillTextColourGradient",
+						"css:border-color": "pillBorderColour",
+						"css:border-width": "pillBorderWidth",
+						"css:border-style": "pillBorderStyle",
+						"css:border-radius": "pillBorderRadius"
+					},
+					"contentAttrs": [ "pillLabel" ],
+					"_note": "Wave B — triggerStyle:'pill' swaps the icon+badge trigger for a word (pillLabel) beside the live item count, in a pill (matches a 'Bag'/'Cart' text trigger draft shape). Only rendered/styled when triggerStyle is 'pill' — the icon element above stays the trigger for triggerStyle:'icon' (the default). HAND-BUILT ::after for the background (same reasoning as badge/panel above: .sgs-cart__trigger is already position:relative in style.css, and a text gradient's background-clip:text must not be clipped by the pill's own fill) — pillTextColour styles the LABEL only; the count beside it keeps using the existing badgeTextColour/badgeTextColourGradient attributes (same badge element, restyled inline for the pill via CSS, so one colour control governs the count in both trigger styles). Border (compliance correction, Spec 35 §14/§1 field 9f): pillBorderWidth (box object, base only) + pillBorderStyle (enum) + pillBorderColour (flat, no gradient sibling) mount through `SgsBorderControl`, mirroring sgs/whatsapp-cta's cardBorderWidth/cardBorderStyle/cardBorderColour (card-fields.js CardTypographyPanel) — no ad-hoc second colour mechanism. pillBorderRadius stays the one exception: a plain CSS-length STRING (default '' — CSS default of border-radius:999px in style.css governs), NOT a responsive 4-corner tier object, per Spec 32 §6.1's deliberate-keep for a single uniform pill radius (mirrors sgs/option-picker's pillBorderRadius) — `SgsBorderControl`'s `onRadiusChange` pairing is typed for that 4-corner tier shape, so pairing this scalar there would force the very object migration §6.1 exempts; it is mounted immediately alongside the composite instead (PillBorderControl.js). `layout` cluster added (compliance pass) purely so css:border-color/css:border-width/css:border-style/css:border-radius — all members of that cluster, per scripts/consistency/cluster-member-sets.json — resolve against this element's own attrMap instead of reporting ORPHAN:STYLE-DEFECT; no other `layout` member (padding/margin/gap/etc.) has an attrMap entry here, so none of them are newly claimed."
+				},
+				"freeDeliveryTrack": {
+					"label": "Free-delivery progress track",
+					"order": 7,
+					"clusters": [ "fill" ],
+					"prefix": "freeDelivery",
+					"attrMap": {
+						"css:background-color": "freeDeliveryTrackColour"
+					},
+					"contentAttrs": [ "freeDeliveryMessage", "freeDeliverySuccessMessage" ],
+					"_note": "Wave B — the empty background of the free-delivery progress bar in the mini-cart panel (flyout or drawer). Only rendered when a threshold (manual override or the WooCommerce free-shipping zone method's min_amount) resolves to a positive number; both empty hides the whole feature. Built entirely client-side (panel-render.js) against Store API cart totals — see render.php's data-free-delivery-* attributes on the block wrapper, which is the only part of this feature render.php can own (the panel BODY markup lives in the shared includes/helpers-cart-panel.php, outside this build's file scope). freeDeliveryMessage/freeDeliverySuccessMessage (the progress-bar's two text states, edited in PanelSettingsControls.js) are declared here as `contentAttrs` — the content half of this element, not a style attribute, following Spec 35's PLACEMENT model (THE ELEMENT MANIFEST §ContentAttrs)."
+				},
+				"freeDeliveryFill": {
+					"label": "Free-delivery progress fill",
+					"order": 8,
+					"clusters": [ "fill" ],
+					"prefix": "freeDelivery",
+					"attrMap": {
+						"css:background-color": "freeDeliveryFillColour"
+					},
+					"_note": "Wave B — the filled portion of the free-delivery progress bar, width driven live by a --sgs-cart-free-delivery-pct custom property (panel-render.js element.style.setProperty()) — a custom-property VALUE, never a raw style=\"width:...\" declaration (Spec 32 FR-32-4; mirrors sgs/audio's --sgs-progress and sgs/before-after's --sgs-before-after-position)."
 				}
 			}
 		}
@@ -298,6 +337,88 @@
 		"scrimBlur": {
 			"type": "object",
 			"default": {}
+		},
+		"triggerStyle": {
+			"type": "string",
+			"default": "icon",
+			"enum": [
+				"icon",
+				"pill"
+			],
+			"description": "Wave B — 'icon' is the existing icon+badge trigger. 'pill' replaces the icon with an editable word (pillLabel) beside the live item count, in a pill shape."
+		},
+		"pillLabel": {
+			"type": "string",
+			"default": "Cart"
+		},
+		"pillBgColour": {
+			"type": "string",
+			"default": ""
+		},
+		"pillBgColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the trigger pill's background via background-image. Non-empty wins over pillBgColour at render time."
+		},
+		"pillTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"pillTextColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the pill label text via background-clip:text. Non-empty wins over pillTextColour at render time."
+		},
+		"pillBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"pillBorderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Pill border width, base tier only (Spec 35 §14 — no per-device border width). Empty = the block's own CSS default (1px)."
+		},
+		"pillBorderStyle": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"solid",
+				"dashed",
+				"dotted"
+			],
+			"description": "Pill border style. '' = inherit the block's own CSS default (solid)."
+		},
+		"pillBorderRadius": {
+			"type": "string",
+			"default": "",
+			"description": "CSS length (e.g. \"999px\" or \"50%\"). Empty uses style.css's own border-radius:999px default (fully rounded)."
+		},
+		"countPopAnimation": {
+			"type": "boolean",
+			"default": false,
+			"description": "Wave B — whether the live item count plays a short scale animation when it increases. Always off under prefers-reduced-motion regardless of this setting."
+		},
+		"freeDeliveryThresholdOverride": {
+			"type": "string",
+			"default": "",
+			"description": "Wave B — manual override for the free-delivery threshold, in the store's currency major unit (e.g. \"75\"). Empty uses the WooCommerce free-shipping method's min_amount for the store's base-country shipping zone. Both empty hides the progress bar."
+		},
+		"freeDeliveryMessage": {
+			"type": "string",
+			"default": "You're %s away from free delivery"
+		},
+		"freeDeliverySuccessMessage": {
+			"type": "string",
+			"default": "You've unlocked free delivery!"
+		},
+		"freeDeliveryFillColour": {
+			"type": "string",
+			"default": ""
+		},
+		"freeDeliveryTrackColour": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"editorScript": "file:./index.js",

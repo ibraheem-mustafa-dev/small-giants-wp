@@ -17,20 +17,31 @@ import {
 	formatMoney,
 } from './store-api';
 import { escapeHtml, itemRowHtml } from './item-row-template';
+import {
+	initFreeDeliveryElement,
+	updateFreeDeliveryProgress,
+} from './free-delivery';
 
 /**
  * Wire one panel instance against the Store API.
  *
- * @param {HTMLElement} panelRoot            The `[data-sgs-cart-panel]` element.
- * @param {Object}      [opts]               Options.
- * @param {Function}    [opts.onCartUpdated] Callback fired with the fresh
- *                                           cart object after every
- *                                           successful load/mutation — used
- *                                           by view.js to keep every badge
- *                                           on the page in sync.
+ * @param {HTMLElement} panelRoot                  The `[data-sgs-cart-panel]` element.
+ * @param {Object}      [opts]                     Options.
+ * @param {Function}    [opts.onCartUpdated]       Callback fired with the fresh
+ *                                                 cart object after every
+ *                                                 successful load/mutation — used
+ *                                                 by view.js to keep every badge
+ *                                                 on the page in sync.
+ * @param {Object}      [opts.freeDelivery]        Wave B, U-2 free-delivery progress data
+ *                                                 (from the block wrapper's
+ *                                                 `data-free-delivery-*` attributes).
+ * @param {string}      [opts.freeDelivery.threshold] The resolved threshold, as a
+ *                                                    numeric string, or '' to hide the bar.
+ * @param {string}      [opts.freeDelivery.message] The "you're %s away" message template.
+ * @param {string}      [opts.freeDelivery.successMessage] The message shown once unlocked.
  * @return {Object} A `{ refresh }` controller.
  */
-export function initPanel( panelRoot, { onCartUpdated } = {} ) {
+export function initPanel( panelRoot, { onCartUpdated, freeDelivery } = {} ) {
 	const itemsEl = panelRoot.querySelector( '[data-sgs-cart-items]' );
 
 	if ( ! itemsEl ) {
@@ -40,6 +51,7 @@ export function initPanel( panelRoot, { onCartUpdated } = {} ) {
 	const footerEl = panelRoot.querySelector( '[data-sgs-cart-footer]' );
 	const subtotalEl = panelRoot.querySelector( '[data-sgs-cart-subtotal]' );
 	const statusEl = panelRoot.querySelector( '[data-sgs-cart-status]' );
+	const freeDeliveryEl = initFreeDeliveryElement( panelRoot, itemsEl, freeDelivery );
 
 	const emptyMessage = itemsEl.dataset.emptyMessage || 'Your cart is empty';
 	const emptyCtaLabel = itemsEl.dataset.emptyCtaLabel || 'Continue shopping';
@@ -92,6 +104,9 @@ export function initPanel( panelRoot, { onCartUpdated } = {} ) {
 		if ( footerEl ) {
 			footerEl.hidden = true;
 		}
+		if ( freeDeliveryEl ) {
+			freeDeliveryEl.hidden = true;
+		}
 	}
 
 	/**
@@ -131,6 +146,7 @@ export function initPanel( panelRoot, { onCartUpdated } = {} ) {
 		} else {
 			renderItems( cart );
 		}
+		updateFreeDeliveryProgress( freeDeliveryEl, cart, freeDelivery );
 		if ( 'function' === typeof onCartUpdated ) {
 			onCartUpdated( cart );
 		}

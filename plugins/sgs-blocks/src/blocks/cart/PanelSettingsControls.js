@@ -21,6 +21,9 @@ import {
  * @param {string}   root0.checkoutLabel           "Checkout" button text.
  * @param {boolean}  root0.autoOpenOnAdd           Whether the panel auto-opens on add.
  * @param {boolean}  root0.hideOnCartCheckoutPages Whether the panel is suppressed on cart/checkout.
+ * @param {string}   root0.freeDeliveryThresholdOverride Manual free-delivery threshold override.
+ * @param {string}   root0.freeDeliveryMessage     The "you're %s away" progress message template.
+ * @param {string}   root0.freeDeliverySuccessMessage The message shown once the threshold is reached.
  * @param {Function} root0.setAttributes           The block's attribute setter.
  */
 export default function PanelSettingsControls( {
@@ -33,6 +36,9 @@ export default function PanelSettingsControls( {
 	checkoutLabel,
 	autoOpenOnAdd,
 	hideOnCartCheckoutPages,
+	freeDeliveryThresholdOverride,
+	freeDeliveryMessage,
+	freeDeliverySuccessMessage,
 	setAttributes,
 } ) {
 	return (
@@ -146,6 +152,53 @@ export default function PanelSettingsControls( {
 							setAttributes( { hideOnCartCheckoutPages: val } )
 						}
 						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+			) }
+
+			{ hasPanel && (
+				<PanelBody
+					title={ __( 'Free-delivery progress', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<TextControl
+						label={ __(
+							'Threshold override (optional)',
+							'sgs-blocks'
+						) }
+						help={ __(
+							"Leave blank to use the WooCommerce free-shipping method's minimum order amount for this store. Leave both blank to hide the bar.",
+							'sgs-blocks'
+						) }
+						type="number"
+						value={ freeDeliveryThresholdOverride }
+						onChange={ ( val ) =>
+							setAttributes( { freeDeliveryThresholdOverride: val } )
+						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<TextControl
+						label={ __( 'Progress message', 'sgs-blocks' ) }
+						help={ __(
+							'%s is replaced with the amount remaining, formatted in the store’s currency.',
+							'sgs-blocks'
+						) }
+						value={ freeDeliveryMessage }
+						onChange={ ( val ) =>
+							setAttributes( { freeDeliveryMessage: val } )
+						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<TextControl
+						label={ __( 'Success message', 'sgs-blocks' ) }
+						value={ freeDeliverySuccessMessage }
+						onChange={ ( val ) =>
+							setAttributes( { freeDeliverySuccessMessage: val } )
+						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 			) }

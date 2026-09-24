@@ -80,6 +80,19 @@ $aria_label                 = sanitize_text_field( $attributes['ariaLabel'] ?? _
 $show_zero                  = ! empty( $attributes['showZero'] );
 $hide_when_empty            = ! empty( $attributes['hideWhenEmpty'] );
 
+// Wave B, U-1 — text-pill trigger style. 'icon' (default) keeps the existing
+// icon+badge trigger; 'pill' swaps the icon for an editable word (pillLabel)
+// beside the live item count (same badge element, restyled — see style.css).
+$trigger_style       = ( 'pill' === ( $attributes['triggerStyle'] ?? 'icon' ) ) ? 'pill' : 'icon';
+$pill_label          = sanitize_text_field( $attributes['pillLabel'] ?? __( 'Cart', 'sgs-blocks' ) );
+$pill_bg_colour      = (string) ( $attributes['pillBgColour'] ?? '' );
+$pill_text_colour    = (string) ( $attributes['pillTextColour'] ?? '' );
+$pill_border_colour  = (string) ( $attributes['pillBorderColour'] ?? '' );
+$pill_border_width_box = is_array( $attributes['pillBorderWidth'] ?? null ) ? $attributes['pillBorderWidth'] : array();
+$pill_border_style_raw = sanitize_key( (string) ( $attributes['pillBorderStyle'] ?? '' ) );
+$pill_border_radius  = (string) ( $attributes['pillBorderRadius'] ?? '' );
+$count_pop_animation = ! empty( $attributes['countPopAnimation'] );
+
 // FR-36-19 panel attrs.
 $panel_heading      = sanitize_text_field( $attributes['panelHeading'] ?? __( 'Your cart', 'sgs-blocks' ) );
 $empty_cart_message = sanitize_text_field( $attributes['emptyCartMessage'] ?? __( 'Your cart is empty', 'sgs-blocks' ) );
@@ -112,6 +125,61 @@ $on_cart_or_checkout = $wc_active && function_exists( 'is_cart' ) && function_ex
 $effective_mode      = ( $hide_on_cart_pages && $on_cart_or_checkout ) ? 'link' : $display_mode;
 $has_panel           = $wc_active && in_array( $effective_mode, array( 'flyout', 'drawer' ), true );
 
+// ── Wave B, U-2 — free-delivery progress bar threshold ───────────────────────
+// Manual override wins outright; otherwise read the WooCommerce free-shipping
+// method's `min_amount` from the shipping zone matching the STORE'S OWN base
+// country (never the visitor's — the panel is generic chrome, not a per-visitor
+// shipping quote, and Store API doesn't expose the zone match pre-checkout).
+// Both empty → null → the bar is hidden entirely (panel-render.js). As a
+// CLOSURE assigned to a local variable, never a top-level `function` — this
+// file is `require`d fresh per block instance (see the BUILD-SAFETY note
+// above); a second `sgs/cart` on the same page would fatal on redeclaration.
+$sgs_cart_resolve_free_shipping_min_amount = function () {
+	if ( ! class_exists( 'WC_Shipping_Zones' ) || ! function_exists( 'wc_get_base_location' ) ) {
+		return null;
+	}
+	$base_location = wc_get_base_location();
+	$package       = array(
+		'destination' => array(
+			'country'  => is_array( $base_location ) ? (string) ( $base_location['country'] ?? '' ) : '',
+			'state'    => is_array( $base_location ) ? (string) ( $base_location['state'] ?? '' ) : '',
+			'postcode' => '',
+		),
+	);
+	$zone          = WC_Shipping_Zones::get_zone_matching_package( $package );
+	if ( ! $zone ) {
+		return null;
+	}
+	foreach ( $zone->get_shipping_methods( true ) as $method ) {
+		if ( 'free_shipping' !== $method->id || ! $method->is_enabled() ) {
+			continue;
+		}
+		$min_amount = $method->get_option( 'min_amount', '' );
+		if ( is_numeric( $min_amount ) && (float) $min_amount > 0 ) {
+			return (float) $min_amount;
+		}
+	}
+	return null;
+};
+
+$free_delivery_threshold_override = trim( (string) ( $attributes['freeDeliveryThresholdOverride'] ?? '' ) );
+$free_delivery_threshold          = null;
+if ( '' !== $free_delivery_threshold_override && is_numeric( $free_delivery_threshold_override ) ) {
+	$free_delivery_threshold = (float) $free_delivery_threshold_override;
+} elseif ( $has_panel ) {
+	$free_delivery_threshold = $sgs_cart_resolve_free_shipping_min_amount();
+}
+$free_delivery_message = sanitize_text_field(
+	$attributes['freeDeliveryMessage'] ?? sprintf(
+		/* translators: %s is a literal "%s" placeholder the frontend JS replaces with a wc_price-formatted amount (Store API cart totals are only known client-side) — never expanded server-side. */
+		__( "You're %s away from free delivery", 'sgs-blocks' ),
+		'%s'
+	)
+);
+$free_delivery_success_message = sanitize_text_field( $attributes['freeDeliverySuccessMessage'] ?? __( "You've unlocked free delivery!", 'sgs-blocks' ) );
+$free_delivery_fill_colour     = (string) ( $attributes['freeDeliveryFillColour'] ?? '' );
+$free_delivery_track_colour    = (string) ( $attributes['freeDeliveryTrackColour'] ?? '' );
+
 // ── SSR count: always 0 to avoid cached stale counts ─────────────────────────
 // The view.js module replaces this via the Store API within ~200 ms.
 $ssr_count = 0;
@@ -125,6 +193,9 @@ $sgs_cart_vars = array(
 	'--sgs-cart-icon-size:' . $icon_size . 'px',
 	'--sgs-cart-icon-colour:' . sgs_colour_value( $icon_colour ),
 );
+if ( $has_panel && '' !== $free_delivery_track_colour ) {
+	$sgs_cart_vars[] = '--sgs-cart-free-delivery-track:' . sgs_colour_value( $free_delivery_track_colour );
+}
 
 // ── Margin — `margin` is a single block-owned TIER-of-BOXES envelope attr
 // {desktop,tablet,mobile}, read once via
@@ -205,7 +276,7 @@ if ( '' !== $badge_text_effective ) {
 // own background always lives on its ::after layer above, never on
 // $badge_sel itself, so background-clip:text here can never clip a
 // background.
-$badge_text_hover          = (string) ( $attributes['badgeTextColourHover'] ?? '' );
+$badge_text_hover           = (string) ( $attributes['badgeTextColourHover'] ?? '' );
 $badge_text_hover_gradient  = (string) ( $attributes['badgeTextColourHoverGradient'] ?? '' );
 $badge_text_hover_effective = sgs_resolve_text_colour_or_gradient( $badge_text_hover, $badge_text_hover_gradient );
 if ( '' !== $badge_text_hover_effective ) {
@@ -258,6 +329,75 @@ if ( $has_panel ) {
 	}
 }
 
+// Trigger pill (Wave B, U-1): background via the same HAND-BUILT ::after
+// reasoning as badge/panel above (`.sgs-cart__trigger` is already
+// `position:relative` in style.css, so the ::after has a positioning context
+// without this code adding one). pillTextColour styles the LABEL only — the
+// count beside it keeps reading badgeTextColour/badgeTextColourGradient
+// (same badge element, restyled for the pill by style.css). Border-colour is
+// flat-only (no gradient sibling); border-radius always emits so an operator
+// starts from the draft's fully-rounded default without a manual set.
+if ( 'pill' === $trigger_style ) {
+	$pill_sel       = $sel . ' .sgs-cart__trigger';
+	$pill_label_sel = $sel . ' .sgs-cart__pill-label';
+
+	$pill_bg_gradient = (string) ( $attributes['pillBgColourGradient'] ?? '' );
+	$pill_bg_paint    = sgs_background_paint_decl( $pill_bg_colour, $pill_bg_gradient );
+	if ( '' !== $pill_bg_paint ) {
+		$scoped_css[] = $pill_sel . '::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;' . $pill_bg_paint . ';}';
+	}
+
+	$pill_text_gradient  = (string) ( $attributes['pillTextColourGradient'] ?? '' );
+	$pill_text_effective = sgs_resolve_text_colour_or_gradient( $pill_text_colour, $pill_text_gradient );
+	if ( '' !== $pill_text_effective ) {
+		$pill_text_decl = sgs_text_colour_decl( $pill_text_effective );
+		if ( '' !== $pill_text_decl ) {
+			$scoped_css[] = $pill_label_sel . '{' . $pill_text_decl . ';}';
+		}
+		$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $pill_label_sel, $pill_text_effective );
+	}
+
+	if ( '' !== $pill_border_colour ) {
+		$scoped_css[] = $pill_sel . '{border-color:' . sgs_colour_value( $pill_border_colour ) . ';}';
+	}
+
+	// Border width — box object, base only (Spec 35 §14, no per-device width).
+	// The CSS default (1px, style.css) applies when unset. Mirrors
+	// sgs/whatsapp-cta's cardBorderWidth (variant-render.php).
+	$pill_border_width_val = sgs_box_object_shorthand( $pill_border_width_box );
+	if ( null !== $pill_border_width_val ) {
+		$scoped_css[] = $pill_sel . '{border-width:' . $pill_border_width_val . ';}';
+	}
+
+	// Border style — allow-listed against the block.json enum; a free-text
+	// value never reaches CSS unfiltered (S5).
+	if ( in_array( $pill_border_style_raw, array( 'solid', 'dashed', 'dotted' ), true ) ) {
+		$scoped_css[] = $pill_sel . '{border-style:' . $pill_border_style_raw . ';}';
+	}
+
+	// Scalar length (Spec 32 S7): sgs_css_length_value() sanitises and passes
+	// the value through with its own unit; empty leaves style.css's own
+	// border-radius:999px default in place (no override emitted).
+	if ( '' !== $pill_border_radius ) {
+		$pill_border_radius_safe = sgs_css_length_value( $pill_border_radius );
+		if ( '' !== $pill_border_radius_safe ) {
+			$scoped_css[] = $pill_sel . '{border-radius:' . $pill_border_radius_safe . ';}';
+		}
+	}
+}
+
+// Free-delivery progress bar (Wave B, U-2) — track/fill are flat colours
+// only (no gradient sibling, mirrors pillBorderColour's simplification
+// above); the element these target is inserted by panel-render.js, so the
+// selector only ever matches once the operator has opened the panel.
+// Track colour is fed as the --sgs-cart-free-delivery-track custom property
+// (declared above in $sgs_cart_vars) that style.css::.sgs-cart__free-delivery-track
+// consumes via var(--sgs-cart-free-delivery-track, <default>) — the sanctioned
+// overridable-default pattern (check-hardcoded-render-defaults.js F3).
+if ( $has_panel && '' !== $free_delivery_fill_colour ) {
+	$scoped_css[] = $sel . ' .sgs-cart__free-delivery-fill{background-color:' . sgs_colour_value( $free_delivery_fill_colour ) . ';}';
+}
+
 // ── Media-element atom layer (rule 37-media-no-handroll fix) — item-thumbnail
 // object-fit only. The thumbnail <img> itself is added to the DOM later by
 // panel-render.js/item-row-template.js (Store API hydration), never by this
@@ -281,7 +421,7 @@ if ( $has_panel && class_exists( 'SGS_Media_Element' ) ) {
 }
 
 // ── Wrapper classes ───────────────────────────────────────────────────────────
-$wrapper_classes = array( 'sgs-cart', $uid, 'sgs-cart--mode-' . $effective_mode );
+$wrapper_classes = array( 'sgs-cart', $uid, 'sgs-cart--mode-' . $effective_mode, 'sgs-cart--trigger-' . $trigger_style );
 if ( ! $wc_active ) {
 	$wrapper_classes[] = 'sgs-cart--wc-inactive';
 }
@@ -292,14 +432,25 @@ if ( $hide_when_empty && 0 === $ssr_count ) {
 	$wrapper_classes[] = 'sgs-cart--hidden-empty';
 }
 
+// Wave B data attrs read by view.js (count-pop) / panel-render.js
+// (free-delivery progress, only meaningful — and only ever emitted — when
+// the block has a flyout/drawer panel to render it in).
+$wrapper_data_attributes = array(
+	'class'                 => implode( ' ', $wrapper_classes ),
+	'data-show-zero'        => $show_zero ? 'true' : 'false',
+	'data-hide-when-empty'  => $hide_when_empty ? '1' : '0',
+	'data-display-mode'     => esc_attr( $effective_mode ),
+	'data-auto-open-on-add' => $auto_open_on_add ? '1' : '0',
+	'data-count-pop'        => $count_pop_animation ? '1' : '0',
+);
+if ( $has_panel ) {
+	$wrapper_data_attributes['data-free-delivery-threshold']       = ( null !== $free_delivery_threshold ) ? (string) $free_delivery_threshold : '';
+	$wrapper_data_attributes['data-free-delivery-message']         = $free_delivery_message;
+	$wrapper_data_attributes['data-free-delivery-success-message'] = $free_delivery_success_message;
+}
+
 $wrapper_attributes = get_block_wrapper_attributes(
-	array(
-		'class'                 => implode( ' ', $wrapper_classes ),
-		'data-show-zero'        => $show_zero ? 'true' : 'false',
-		'data-hide-when-empty'  => $hide_when_empty ? '1' : '0',
-		'data-display-mode'     => esc_attr( $effective_mode ),
-		'data-auto-open-on-add' => $auto_open_on_add ? '1' : '0',
-	)
+	$wrapper_data_attributes
 );
 
 // ── Icon SVG ─────────────────────────────────────────────────────────────────
@@ -345,6 +496,20 @@ $icon_and_badge_html = sprintf(
 	absint( $ssr_count )
 );
 
+// Wave B, U-1 — 'pill' trigger style: the word (pillLabel) replaces the icon;
+// the count keeps the SAME `.sgs-cart__badge` element/attribute (style.css
+// restyles it inline, not as an overlay), so badgeColour/badgeTextColour
+// keep governing the count's colours in both trigger styles — one control,
+// not two.
+$pill_and_badge_html = sprintf(
+	'<span class="sgs-cart__pill-label">%1$s</span><span class="sgs-cart__badge sgs-cart__badge--pill%2$s" role="status" aria-live="polite" aria-atomic="true" data-sgs-cart-count>%3$d</span>',
+	esc_html( $pill_label ),
+	( $ssr_count > 0 || $show_zero ) ? ' sgs-cart__badge--visible' : '',
+	absint( $ssr_count )
+);
+
+$trigger_inner_html = ( 'pill' === $trigger_style ) ? $pill_and_badge_html : $icon_and_badge_html;
+
 // ── Trigger markup (FR-36-10) ──────────────────────────────────────────────
 // The mode decides the ELEMENT: an <a> for link (full no-JS fallback), a real
 // <button> for flyout/drawer. Built in includes/helpers-cart-panel.php — see
@@ -357,7 +522,7 @@ $trigger_args = array(
 );
 
 $trigger_mode = ( 'link' === $effective_mode || ! $has_panel ) ? 'link' : $effective_mode;
-$trigger_html = sgs_cart_trigger_html( $trigger_mode, $icon_and_badge_html, $trigger_args );
+$trigger_html = sgs_cart_trigger_html( $trigger_mode, $trigger_inner_html, $trigger_args );
 
 // ── Panel markup (FR-36-19) ────────────────────────────────────────────────
 // flyout and drawer share ONE body skeleton and differ only in the wrapper

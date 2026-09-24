@@ -113,6 +113,81 @@
 	display: block;
 }
 
+/* ── Trigger — pill style (Wave B, U-1): a word (pillLabel) + the live count,
+   in a pill, instead of the icon+badge overlay. Structural shape only —
+   colours/border/radius come from render.php's scoped rule (pillBgColour/
+   pillTextColour/pillBorderColour/pillBorderRadius). ─────────────────────── */
+.sgs-cart--trigger-pill .sgs-cart__trigger {
+	min-width: auto;
+	gap: 8px;
+	padding: 0 14px;
+	border: 1px solid transparent;
+	border-radius: 999px;
+	font-size: 0.8rem;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+}
+
+.sgs-cart__pill-label {
+	display: inline-block;
+	white-space: nowrap;
+}
+
+/* The pill's count sits inline next to the label — not the icon mode's
+   absolutely-positioned overlay badge — so its OWN fill (the render.php
+   ::after used for the icon-mode badge's background) is switched off with
+   `!important`: it necessarily loses the cascade to the scoped <style> tag
+   that creates it (same specificity, later source order), so only
+   `!important` can reliably suppress it. badgeTextColour continues to
+   colour the count text in both trigger styles (this rule never touches
+   `color`). */
+.sgs-cart--trigger-pill .sgs-cart__badge {
+	position: static;
+	display: none;
+	min-width: 0;
+	height: auto;
+	padding: 0;
+	font-size: inherit;
+	font-weight: inherit;
+	line-height: inherit;
+	pointer-events: none;
+}
+
+.sgs-cart--trigger-pill .sgs-cart__badge::after {
+	content: none !important; /* stylelint-disable-line declaration-no-important */
+}
+
+.sgs-cart--trigger-pill .sgs-cart__badge--visible {
+	display: inline-block;
+}
+
+/* Wave B, U-1 — "count pop": a short scale animation on the live count when
+   an item is added (view.js toggles this class; never on initial hydration).
+   Disabled outright under prefers-reduced-motion in the existing block below,
+   and per-instance via the "Animate count on change" toggle (countPopAnimation
+   attribute — view.js reads `data-count-pop` and skips adding the class at
+   all when it's off, so this rule is inert rather than merely invisible). */
+@media (prefers-reduced-motion: no-preference) {
+	.sgs-cart__badge--pop {
+		animation: sgs-cart-count-pop 0.35s ease;
+	}
+}
+
+@keyframes sgs-cart-count-pop {
+	0% {
+		transform: scale(1);
+	}
+
+	40% {
+		transform: scale(1.35);
+	}
+
+	100% {
+		transform: scale(1);
+	}
+}
+
 /* ── Has-items modifier — added by view.js ─────────────────────────────────── */
 /* Useful for parent-chain CSS hooks (e.g. header styling when cart has items) */
 .sgs-cart--has-items .sgs-cart__trigger {
@@ -471,6 +546,49 @@
 .sgs-cart__item-remove:focus-visible {
 	outline: 2px solid currentColor;
 	outline-offset: 2px;
+}
+
+/* ── Free-delivery progress (Wave B, U-2) — built entirely client-side by
+   panel-render.js (the panel body markup itself lives in the shared
+   includes/helpers-cart-panel.php, outside this build's file scope), inserted
+   into the panel skeleton before the item list. Track/fill colours come from
+   render.php's scoped rule (freeDeliveryTrackColour/freeDeliveryFillColour);
+   the fill's WIDTH is set live via a `--sgs-cart-free-delivery-pct` custom
+   PROPERTY value (panel-render.js `element.style.setProperty()`), never a raw
+   `style="width:…"` declaration (Spec 32 FR-32-4 — mirrors sgs/audio's
+   `--sgs-progress` and sgs/before-after's `--sgs-before-after-position`). ─── */
+.sgs-cart__free-delivery {
+	margin-bottom: 12px;
+}
+
+.sgs-cart__free-delivery-text {
+	margin: 0 0 6px;
+	font-size: 0.8rem;
+}
+
+.sgs-cart__free-delivery-track {
+	height: 6px;
+	overflow: hidden;
+	background-color: var(--sgs-cart-free-delivery-track, var(--wp--preset--color--border-light, #e5e7eb));
+	border-radius: 999px;
+}
+
+.sgs-cart__free-delivery-fill {
+	height: 100%;
+	width: var(--sgs-cart-free-delivery-pct, 0%);
+	background-color: var(--wp--preset--color--primary, #111);
+	border-radius: inherit;
+	transition: width 0.3s ease;
+}
+
+.sgs-cart__free-delivery--complete .sgs-cart__free-delivery-text {
+	font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-cart__free-delivery-fill {
+		transition: none;
+	}
 }
 
 /* ── Footer — subtotal + transparency note + CTAs ────────────────────────────── */

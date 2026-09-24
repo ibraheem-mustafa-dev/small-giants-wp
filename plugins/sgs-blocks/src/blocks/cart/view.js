@@ -45,6 +45,7 @@ import '../../shared/nav-interactivity/store';
 import { fetchCart } from './store-api';
 import { initPanel } from './panel-render';
 import { initFlyout } from './flyout';
+import { maybeAnimateCountPop } from './count-pop';
 
 /**
  * Update every sgs/cart widget on the page with the given cart's live count.
@@ -60,12 +61,17 @@ function updateCartWidgets( cart ) {
 	document.querySelectorAll( '.sgs-cart' ).forEach( ( widget ) => {
 		const showZero = widget.dataset.showZero === 'true';
 		const hideWhenEmpty = widget.dataset.hideWhenEmpty === '1';
+		const countPopEnabled = widget.dataset.countPop === '1';
 		const trigger = widget.querySelector( '[data-sgs-cart-trigger]' );
 		const badge = widget.querySelector( '[data-sgs-cart-count]' );
 
 		if ( ! trigger || ! badge ) {
 			return;
 		}
+
+		// Wave B, U-1 — "count pop": see count-pop.js for the reduced-motion
+		// + per-instance-toggle + increase-only gating.
+		maybeAnimateCountPop( badge, count, countPopEnabled );
 
 		badge.textContent = String( count );
 
@@ -110,6 +116,17 @@ function initWidgetPanel( widget ) {
 
 	const autoOpenOnAdd = widget.dataset.autoOpenOnAdd === '1';
 
+	// Wave B, U-2 — free-delivery progress data, read from the block wrapper
+	// (render.php only ever emits these when the block has a panel — see
+	// `$has_panel` there). Threaded through to `panel-render.js`, which builds
+	// and updates the progress bar client-side (the panel BODY markup lives in
+	// the shared includes/helpers-cart-panel.php, outside this build's scope).
+	const freeDelivery = {
+		threshold: widget.dataset.freeDeliveryThreshold || '',
+		message: widget.dataset.freeDeliveryMessage || '',
+		successMessage: widget.dataset.freeDeliverySuccessMessage || '',
+	};
+
 	if ( 'flyout' === mode ) {
 		const flyout = initFlyout( widget );
 		if ( ! flyout ) {
@@ -117,6 +134,7 @@ function initWidgetPanel( widget ) {
 		}
 		const panel = initPanel( panelRoot, {
 			onCartUpdated: updateCartWidgets,
+			freeDelivery,
 		} );
 		flyout.setOnOpen( panel.refresh );
 		return {
@@ -127,7 +145,10 @@ function initWidgetPanel( widget ) {
 		};
 	}
 
-	const panel = initPanel( panelRoot, { onCartUpdated: updateCartWidgets } );
+	const panel = initPanel( panelRoot, {
+		onCartUpdated: updateCartWidgets,
+		freeDelivery,
+	} );
 
 	// drawer — the shared store owns open/close (imported above for its side
 	// effect). Refresh the panel content on every trigger click; a fresh

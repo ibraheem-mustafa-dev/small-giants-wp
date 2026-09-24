@@ -1,12 +1,14 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, TextControl, Notice } from '@wordpress/components';
-import { IconPreview, ResponsiveBoxControl, SgsColourPanel, ScrimControls, scrimColourRow } from '../../components';
+import { IconPreview, ResponsiveBoxControl, SgsColourPanel, ScrimControls } from '../../components';
 import { ToolsPanel } from '../../components/primitives';
 import { colourVar } from '../../utils';
 import MediaElementPanel from '../../components/MediaElementPanel';
 import PanelSettingsControls from './PanelSettingsControls';
 import TriggerSettingsControls from './TriggerSettingsControls';
+import PillBorderControl from './PillBorderControl';
+import buildCartColourRows from './colourPanelRows';
 
 // Box-object interface contract §5: base-tier canvas preview shorthand
 // (mirrors sgs/buybox + sgs/whatsapp-cta). Tablet/mobile tiers live in
@@ -66,12 +68,25 @@ export default function Edit( { attributes, setAttributes } ) {
 		panelTextColourGradient,
 		panelTextColourHover,
 		panelTextColourHoverGradient,
+		triggerStyle,
+		pillLabel,
+		pillBorderColour,
+		pillBorderWidth,
+		pillBorderStyle,
+		pillBorderRadius,
+		countPopAnimation,
+		freeDeliveryThresholdOverride,
+		freeDeliveryMessage,
+		freeDeliverySuccessMessage,
 	} = attributes;
 
 	const hasPanel = 'link' !== ( displayMode || 'link' );
 	// Wave 3C U-2 (family M-14): only the drawer display mode has a backdrop —
 	// flyout is a plain popover with no page-dimming.
 	const hasDrawer = 'drawer' === displayMode;
+	// Wave B, U-1 — 'pill' swaps the icon+badge trigger for a word beside the
+	// live count, in a pill.
+	const hasPill = 'pill' === ( triggerStyle || 'icon' );
 
 	// WooCommerce availability flag — injected by render.php via wp_localize_script
 	// equivalent in the editor. Falls back to true when the data object is absent
@@ -88,124 +103,21 @@ export default function Edit( { attributes, setAttributes } ) {
 	};
 
 	const blockProps = useBlockProps( {
-		className: 'sgs-cart sgs-cart--editor-preview',
+		className: `sgs-cart sgs-cart--editor-preview sgs-cart--trigger-${
+			hasPill ? 'pill' : 'icon'
+		}`,
 		style,
 	} );
 
 	return (
 		<>
 			<SgsColourPanel
-				rows={ [
-					{
-						key: 'icon',
-						label: __( 'Icon colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: iconColour,
-								onChange: ( val ) => setAttributes( { iconColour: val ?? '' } ),
-								linked: true,
-								gradientValue: iconColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { iconColourGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: iconColourHover,
-								onChange: ( val ) => setAttributes( { iconColourHover: val ?? '' } ),
-								linked: true,
-								gradientValue: iconColourHoverGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { iconColourHoverGradient: val ?? '' } ),
-							},
-						],
-					},
-					{
-						key: 'badgeBackground',
-						label: __( 'Badge background', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: badgeColour,
-								onChange: ( val ) => setAttributes( { badgeColour: val ?? '' } ),
-								linked: true,
-								gradientValue: badgeColourGradient,
-								onGradientChange: ( val ) => setAttributes( { badgeColourGradient: val ?? '' } ),
-							},
-						],
-					},
-					{
-						key: 'badgeText',
-						label: __( 'Badge text colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: badgeTextColour,
-								onChange: ( val ) => setAttributes( { badgeTextColour: val ?? '' } ),
-								linked: true,
-								gradientValue: badgeTextColourGradient,
-								onGradientChange: ( val ) => setAttributes( { badgeTextColourGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: badgeTextColourHover,
-								onChange: ( val ) => setAttributes( { badgeTextColourHover: val ?? '' } ),
-								linked: true,
-								gradientValue: badgeTextColourHoverGradient,
-								onGradientChange: ( val ) => setAttributes( { badgeTextColourHoverGradient: val ?? '' } ),
-							},
-						],
-					},
-					hasPanel && {
-						key: 'panelBackground',
-						label: __( 'Panel background', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: panelBg,
-								onChange: ( val ) => setAttributes( { panelBg: val ?? '' } ),
-								linked: true,
-								gradientValue: panelBgGradient,
-								onGradientChange: ( val ) => setAttributes( { panelBgGradient: val ?? '' } ),
-							},
-						],
-					},
-					hasPanel && {
-						key: 'panelText',
-						label: __( 'Panel text colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: panelTextColour,
-								onChange: ( val ) => setAttributes( { panelTextColour: val ?? '' } ),
-								linked: true,
-								gradientValue: panelTextColourGradient,
-								onGradientChange: ( val ) => setAttributes( { panelTextColourGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: panelTextColourHover,
-								onChange: ( val ) => setAttributes( { panelTextColourHover: val ?? '' } ),
-								linked: true,
-								gradientValue: panelTextColourHoverGradient,
-								onGradientChange: ( val ) => setAttributes( { panelTextColourHoverGradient: val ?? '' } ),
-							},
-						],
-					},
-					hasDrawer && scrimColourRow( { attributes, setAttributes } ),
-				] }
+				rows={ buildCartColourRows( {
+					attributes,
+					setAttributes,
+					hasPanel,
+					hasDrawer,
+				} ) }
 			/>
 			<InspectorControls>
 				<PanelSettingsControls
@@ -218,6 +130,9 @@ export default function Edit( { attributes, setAttributes } ) {
 					checkoutLabel={ checkoutLabel }
 					autoOpenOnAdd={ autoOpenOnAdd }
 					hideOnCartCheckoutPages={ hideOnCartCheckoutPages }
+					freeDeliveryThresholdOverride={ freeDeliveryThresholdOverride }
+					freeDeliveryMessage={ freeDeliveryMessage }
+					freeDeliverySuccessMessage={ freeDeliverySuccessMessage }
 					setAttributes={ setAttributes }
 				/>
 
@@ -226,6 +141,9 @@ export default function Edit( { attributes, setAttributes } ) {
 					iconSize={ iconSize }
 					showZero={ showZero }
 					hideWhenEmpty={ hideWhenEmpty }
+					triggerStyle={ triggerStyle }
+					pillLabel={ pillLabel }
+					countPopAnimation={ countPopAnimation }
 					setAttributes={ setAttributes }
 				/>
 
@@ -262,6 +180,20 @@ export default function Edit( { attributes, setAttributes } ) {
 						title={ __( 'Item thumbnail', 'sgs-blocks' ) }
 					/>
 				) }
+
+				<PillBorderControl
+					isPill={ hasPill }
+					pillBorderColour={ pillBorderColour }
+					pillBorderWidth={ pillBorderWidth }
+					pillBorderStyle={ pillBorderStyle }
+					pillBorderRadius={ pillBorderRadius }
+					contrastAgainst={
+						attributes.pillBgColour && ! attributes.pillBgColourGradient
+							? attributes.pillBgColour
+							: ''
+					}
+					setAttributes={ setAttributes }
+				/>
 
 				<PanelBody
 					title={ __( 'Spacing', 'sgs-blocks' ) }
@@ -319,19 +251,29 @@ export default function Edit( { attributes, setAttributes } ) {
 				<span
 					className="sgs-cart__trigger sgs-cart__trigger--editor"
 					aria-label={ ariaLabel }
+					style={ {
+						borderRadius: hasPill ? pillBorderRadius || undefined : undefined,
+						borderColor: hasPill ? colourVar( pillBorderColour ) || undefined : undefined,
+					} }
 				>
-					<span className="sgs-cart__icon" aria-hidden="true">
-						<IconPreview
-							source="lucide"
-							name={ iconName }
-							size={ iconSize }
-							gradient={ iconColourGradient }
-						/>
-					</span>
+					{ hasPill ? (
+						<span className="sgs-cart__pill-label">
+							{ pillLabel || __( 'Cart', 'sgs-blocks' ) }
+						</span>
+					) : (
+						<span className="sgs-cart__icon" aria-hidden="true">
+							<IconPreview
+								source="lucide"
+								name={ iconName }
+								size={ iconSize }
+								gradient={ iconColourGradient }
+							/>
+						</span>
+					) }
 					<span
 						className={ `sgs-cart__badge${
-							showZero ? ' sgs-cart__badge--visible' : ''
-						}` }
+							hasPill ? ' sgs-cart__badge--pill' : ''
+						}${ showZero ? ' sgs-cart__badge--visible' : '' }` }
 					>
 						0
 					</span>
