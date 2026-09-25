@@ -156,6 +156,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		burgerSize,
 		triggerMode,
 		triggerLabel,
+		triggerIconPosition,
 		triggerIcon,
 		triggerMagnetEnabled,
 		triggerMagnetRadius,
@@ -694,6 +695,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					burgerSize={ burgerSize }
 					triggerMode={ triggerMode }
 					triggerLabel={ triggerLabel }
+					triggerIconPosition={ triggerIconPosition }
 					triggerIcon={ triggerIcon }
 					triggerMagnetEnabled={ triggerMagnetEnabled }
 					triggerMagnetRadius={ triggerMagnetRadius }

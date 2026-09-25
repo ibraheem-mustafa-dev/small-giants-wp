@@ -240,6 +240,15 @@
 	order: 1;
 }
 
+/* triggerIconPosition 'before': the icon leads the label. */
+.sgs-nav-bar-menu__burger--icon-and-text.sgs-nav-bar-menu__burger--icon-before .sgs-nav-bar-menu__burger-icon {
+	order: 1;
+}
+
+.sgs-nav-bar-menu__burger--icon-and-text.sgs-nav-bar-menu__burger--icon-before .sgs-nav-bar-menu__burger-text {
+	order: 2;
+}
+
 /*
  * Burger↔X morph. Only the DEFAULT (unmodified) trigger glyph is
  * restructured into three real `<span>` bars by

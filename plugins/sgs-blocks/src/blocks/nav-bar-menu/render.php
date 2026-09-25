@@ -693,7 +693,8 @@ $toggle_html = $sgs_nm_show_burger ? sgs_nav_bar_menu_burger_toggle_markup(
 	$burger_magnet_attrs,
 	$burger_icon_is_default,
 	$sgs_nm_collapse_point,
-	$sgs_nm_burger_morph
+	$sgs_nm_burger_morph,
+	'before' === ( $attributes['triggerIconPosition'] ?? 'after' ) ? 'before' : 'after'
 ) : '';
 
 // ── The <nav> landmark label (FR-36-10 / FR-36-11) ──────────────────────────

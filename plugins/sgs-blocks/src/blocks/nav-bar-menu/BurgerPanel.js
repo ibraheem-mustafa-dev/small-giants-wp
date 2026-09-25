@@ -42,6 +42,7 @@ const BURGER_MORPH_OPTIONS = [
  * @param {Object}   root0.triggerMode           `triggerMode` — tier object {desktop,tablet,mobile},
  *                                                each icon | text | icon-and-text.
  * @param {string}   root0.triggerLabel          `triggerLabel`.
+ * @param {string}   root0.triggerIconPosition   `triggerIconPosition` — before | after.
  * @param {Object}   root0.triggerIcon           `triggerIcon` — `{ source, name }`.
  * @param {boolean}  root0.triggerMagnetEnabled  `triggerMagnetEnabled`.
  * @param {number}   root0.triggerMagnetRadius   `triggerMagnetRadius`.
@@ -57,6 +58,7 @@ export default function BurgerPanel( {
 	burgerSize,
 	triggerMode,
 	triggerLabel,
+	triggerIconPosition,
 	triggerIcon,
 	triggerMagnetEnabled,
 	triggerMagnetRadius,
@@ -76,6 +78,7 @@ export default function BurgerPanel( {
 	);
 	const showsIcon = modes.some( ( m ) => 'icon' === m || 'icon-and-text' === m );
 	const showsText = modes.some( ( m ) => 'text' === m || 'icon-and-text' === m );
+	const showsBoth = modes.some( ( m ) => 'icon-and-text' === m );
 	const morph = burgerMorph || 'x';
 
 	return (
@@ -137,6 +140,20 @@ export default function BurgerPanel( {
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>
+			) }
+
+			{ showsBoth && (
+				<ToggleGroupControl
+					label={ __( 'Icon position', 'sgs-blocks' ) }
+					value={ triggerIconPosition || 'after' }
+					onChange={ ( val ) => setAttributes( { triggerIconPosition: val || 'after' } ) }
+					isBlock
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				>
+					<ToggleGroupControlOption value="before" label={ __( 'Before', 'sgs-blocks' ) } />
+					<ToggleGroupControlOption value="after" label={ __( 'After', 'sgs-blocks' ) } />
+				</ToggleGroupControl>
 			) }
 
 			<SgsLengthControl

@@ -605,7 +605,7 @@ if ( ! function_exists( 'sgs_nav_bar_menu_burger_toggle_markup' ) ) {
 	 *                                     attribute selects on only exists for the default glyph).
 	 * @return string The `<div>` + `<button>` toggle markup.
 	 */
-	function sgs_nav_bar_menu_burger_toggle_markup( string $burger_context_attr, string $drawer_ref, string $burger_icon, string $trigger_mode = 'icon', string $trigger_label = '', string $aria_attr = '', string $magnet_attrs = '', bool $is_default_icon = false, int $collapse_point = 768, string $burger_morph = 'x' ): string {
+	function sgs_nav_bar_menu_burger_toggle_markup( string $burger_context_attr, string $drawer_ref, string $burger_icon, string $trigger_mode = 'icon', string $trigger_label = '', string $aria_attr = '', string $magnet_attrs = '', bool $is_default_icon = false, int $collapse_point = 768, string $burger_morph = 'x', string $icon_position = 'after' ): string {
 		if ( ! in_array( $trigger_mode, array( 'icon', 'text', 'icon-and-text' ), true ) ) {
 			$trigger_mode = 'icon';
 		}
@@ -655,6 +655,9 @@ if ( ! function_exists( 'sgs_nav_bar_menu_burger_toggle_markup' ) ) {
 		// No modifier class under `icon` (FR-41-12): a class nothing styles is
 		// not free.
 		$mode_class = 'icon' === $trigger_mode ? '' : ' sgs-nav-bar-menu__burger--' . $trigger_mode;
+		if ( 'icon-and-text' === $trigger_mode && 'before' === $icon_position ) {
+			$mode_class .= ' sgs-nav-bar-menu__burger--icon-before';
+		}
 
 		// Wave 3C U-9 (DEC-09, Builder-A interface #1) — always emitted, on the
 		// SAME button that carries `data-wp-on--click="actions.toggleDrawer"`,

@@ -1266,6 +1266,15 @@
 			"type": "string",
 			"default": "Menu"
 		},
+		"triggerIconPosition": {
+			"type": "string",
+			"default": "after",
+			"enum": [
+				"before",
+				"after"
+			],
+			"description": "Where the icon sits relative to the label when a tier shows both: after (default) or before. A visual reorder only; DOM and reading order are unchanged."
+		},
 		"triggerIcon": {
 			"type": "object",
 			"default": {
