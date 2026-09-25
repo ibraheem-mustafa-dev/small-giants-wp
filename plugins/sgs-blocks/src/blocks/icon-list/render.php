@@ -367,6 +367,19 @@ if ( function_exists( 'sgs_typography_css_rule' ) ) {
 	}
 }
 
+// The optional per-item description line: its own colour and typography
+// (`descriptionColour`, the `description*` TypographyControls set). style.css
+// supplies the muted, smaller default in :where(), so these always win.
+$description_sel            = $root_sel . ' .sgs-icon-list__description';
+$description_colour         = trim( (string) ( $attributes['descriptionColour'] ?? '' ) );
+if ( '' !== $description_colour ) {
+	$scoped_css[] = $description_sel . '{color:' . sgs_colour_value( $description_colour ) . ';}';
+}
+$description_typography_css = sgs_typography_css_rule( $attributes, 'description', $description_sel );
+if ( '' !== $description_typography_css ) {
+	$scoped_css[] = $description_typography_css;
+}
+
 // --- Block-level DEFAULT icon/text colour — emitted ONCE, scoped, never
 // inline on the repeated <li> elements. Every item inherits this unless it
 // declares its own iconColour/iconColourGradient (step 7 below). Flat colour
@@ -728,6 +741,12 @@ foreach ( $resolved_items as $item ) {
 
 	$item_text = $item['text'] ?? '';
 	$item_url  = isset( $item['url'] ) ? esc_url( $item['url'] ) : '';
+	// Optional second line. Inside the link when the item links, so the whole
+	// row stays one click target.
+	$item_description      = trim( (string) ( $item['description'] ?? '' ) );
+	$item_description_html = '' !== $item_description
+		? '<span class="sgs-icon-list__description">' . esc_html( $item_description ) . '</span>'
+		: '';
 
 	// Wrap text in <a> when a per-item URL is provided. `data-sgs-nav-path`
 	// mirrors nav-bar-menu/view.js's contract exactly (FR-36-26a rule 2):
@@ -749,10 +768,10 @@ foreach ( $resolved_items as $item ) {
 			! empty( $item['newTab'] ) ? ' target="_blank" rel="noopener noreferrer"' : '',
 			// The label roll (M-25) wraps the text INSIDE the link, so the link
 			// stays the one focus target; unchanged when the roll is off.
-			sgs_label_roll_wrap_html( wp_kses( $item_text, $linked_allowed ), $sgs_ilist_roll )
+			sgs_label_roll_wrap_html( wp_kses( $item_text, $linked_allowed ), $sgs_ilist_roll ) . $item_description_html
 		);
 	} else {
-		$text_content = sgs_label_roll_wrap_html( wp_kses_post( $item_text ), $sgs_ilist_roll );
+		$text_content = sgs_label_roll_wrap_html( wp_kses_post( $item_text ), $sgs_ilist_roll ) . $item_description_html;
 	}
 
 	$items_html .= sprintf(

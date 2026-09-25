@@ -170,6 +170,18 @@
 						"css:font-weight": "numberFontWeight"
 					},
 					"_note": "Wave 3C U-7, M-22: the ::marker of a `numbered` list item (a real <ol>)."
+				},
+				"item-description": {
+					"label": "Item description",
+					"order": 8,
+					"clusters": [
+						"text"
+					],
+					"prefix": "description",
+					"attrMap": {
+						"css:color": "descriptionColour"
+					},
+					"_note": "The optional second line under an item's text (render.php, `.sgs-icon-list__description`). Typography routes through TypographyControls' `description` target + sgs_typography_css_rule( $attributes, 'description', ... ), so the {prefix}{suffix} convention resolves descriptionFontSize etc."
 				}
 			},
 			"colourExemptions": {
@@ -247,6 +259,10 @@
 					"url": {
 						"type": "string",
 						"role": "url-href"
+					},
+					"description": {
+						"type": "string",
+						"description": "Optional second line under this item's text (a smaller, muted description). Empty renders nothing."
 					}
 				}
 			}
@@ -785,6 +801,113 @@
 			"default": ""
 		},
 		"textElWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"descriptionColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of each item's description line. Empty keeps the muted default."
+		},
+		"descriptionFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"descriptionFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"descriptionFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"descriptionFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"descriptionFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"descriptionTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"descriptionTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"descriptionLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"descriptionLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"descriptionLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"descriptionLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"descriptionTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"descriptionTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"descriptionTextColumns": {
+			"type": "number"
+		},
+		"descriptionTextIndent": {
+			"type": "string",
+			"default": ""
+		},
+		"descriptionWritingMode": {
 			"type": "string",
 			"enum": [
 				"",

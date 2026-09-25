@@ -6680,6 +6680,16 @@
 				"css_property": "border-color"
 			},
 			"_why": "2026-09-25. The divider colour paints the item rows' border lines (drawn with border-top/border-bottom shorthands, which the analyser reads literally); the property it sets is border-color, the mechanism the colour census resolves."
+		},
+		{
+			"slug": "sgs/icon-list",
+			"attr": "descriptionColour",
+			"fields": {
+				"derived_selector": ".sgs-icon-list__description",
+				"css_property": "color",
+				"css_element": "item-description"
+			},
+			"_why": "Wave 3C lane A (numbered compact-links rows): the per-item description line's colour, emitted by icon-list/render.php as a scoped `.sgs-icon-list__description{color:…}` rule built from a variable selector, which extract-signatures.py does not resolve. Element item-description (block.json supports.sgs.elements)."
 		}
 	]
 }

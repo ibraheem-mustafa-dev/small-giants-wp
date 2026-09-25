@@ -138,6 +138,14 @@ function ItemEditor({ item, fallback, onChange, onRemove }) {
         __nextHasNoMarginBottom
       	__next40pxDefaultSize
       />
+      <TextControl
+        label={__("Description (optional)", "sgs-blocks")}
+        help={__("A smaller second line under the text.", "sgs-blocks")}
+        value={item.description || ""}
+        onChange={(val) => onChange({ ...item, description: val })}
+        __nextHasNoMarginBottom
+        __next40pxDefaultSize
+      />
       <GradientCapableColourControl
         label={__("Icon colour (this item)", "sgs-blocks")}
         states={[
@@ -324,6 +332,9 @@ export default function Edit({ attributes, setAttributes }) {
       : {}),
   };
   const textStyle = { color: colourVar(textColour) || undefined };
+  const descriptionStyle = {
+    color: colourVar(attributes.descriptionColour) || undefined,
+  };
   const itemStyle = itemPaddingBlock ? { paddingBlock: itemPaddingBlock } : undefined;
 
   const updateItem = (index, updatedItem) => {
@@ -364,6 +375,11 @@ export default function Edit({ attributes, setAttributes }) {
         )}
         <span className="sgs-icon-list__text" style={textStyle}>
           {item.text}
+          {item.description && (
+            <span className="sgs-icon-list__description" style={descriptionStyle}>
+              {item.description}
+            </span>
+          )}
         </span>
       </li>
     );
@@ -475,6 +491,13 @@ export default function Edit({ attributes, setAttributes }) {
               gradient: "textColourGradient",
               hoverGradient: "textColourHoverGradient",
             },
+            attributes,
+            setAttributes,
+          }),
+          textRow({
+            key: "description",
+            label: __("Description colour", "sgs-blocks"),
+            attrs: { base: "descriptionColour" },
             attributes,
             setAttributes,
           }),
@@ -784,6 +807,21 @@ export default function Edit({ attributes, setAttributes }) {
                 key: "text",
                 label: __("Item text (span)", "sgs-blocks"),
                 prefix: "textEl",
+                fontSizePresets: true,
+                showFontFamily: true,
+                showDecoration: true,
+                showTransform: true,
+                showLetterSpacing: true,
+                showTextAlign: true,
+                showTextWrap: true,
+                showTextColumns: true,
+                showTextIndent: true,
+                showWritingMode: true,
+              },
+              {
+                key: "description",
+                label: __("Item description", "sgs-blocks"),
+                prefix: "description",
                 fontSizePresets: true,
                 showFontFamily: true,
                 showDecoration: true,

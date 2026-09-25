@@ -131,6 +131,18 @@
 	line-height: 1.5;
 }
 
+/* The optional per-item description line: its own line, smaller, normal
+ * weight. Colour is inherited (no fixed muted value, for the same contrast
+ * reason as the text below); descriptionColour and the description*
+ * typography set override these zero-specificity defaults. */
+:where(.sgs-icon-list__description) {
+	display: block;
+	font-size: 0.875em;
+	font-weight: 400;
+	line-height: 1.45;
+	margin-block-start: 2px;
+}
+
 /* NO rest-state colour fallback here — deliberately. A
  * `.sgs-icon-list__text:not([style*="color"]) { color: var(--wp--preset--color--text) }`
  * rule would only ever match INLINE output; this block emits no inline style,
