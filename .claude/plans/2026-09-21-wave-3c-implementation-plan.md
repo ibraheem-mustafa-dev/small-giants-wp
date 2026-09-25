@@ -292,8 +292,9 @@ included the scrollbar, pre-existing for mega panels; the bridge sized mid-anima
 mega panel and a dropdown on the page centre below the header, away's two tiles side by side. M-17, M-46, M-16 and M-20
 move to `covered`. Residue, named: away's drawer callouts inside its accordion become U-7's "the mega panel renders
 inside the drawer accordion" (Spec 36 FR-36-5's unbuilt item), and U-7 checks whether its per-item media slot (M-15) is
-reachable the same way first. Found here, outside the wave: an `sgs/container` grid set to `contentWidth: full` drops
-its column count (the column rule targets the content band `full` removes), owned by the container block. Batched for
+reachable the same way first. Found here and fixed (7fea496c4, Bean): an `sgs/container` set to `contentWidth: full` shrank
+to its content when it was itself a grid or flex item, because the wrapper's centring margin fell back onto the outer
+box; centring is now per tier, only where the width is a real cap. Batched for
 the later pass: axe with the new drawers open, the editor round-trip of the four new controls, Bean's eye on the three
 patterns once they have imagery.
 
