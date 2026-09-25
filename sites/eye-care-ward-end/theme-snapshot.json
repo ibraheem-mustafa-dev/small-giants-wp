@@ -98,6 +98,16 @@
           "_source": "declared"
         },
         {
+          "slug": "whatsapp-soft",
+          "name": "WhatsApp soft",
+          "color": "#E9F9EF"
+        },
+        {
+          "slug": "whatsapp-line",
+          "name": "WhatsApp line",
+          "color": "#B7E5C7"
+        },
+        {
           "slug": "surface",
           "color": "#FAF8F5",
           "name": "Surface",
