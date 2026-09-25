@@ -86,6 +86,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		showHome,
 		homeLabel,
 		productPageCrumbs,
+		showArchiveCrumb,
+		showCurrentCrumb,
 		currentColour,
 		currentColourGradient,
 		borderColour,
@@ -186,6 +188,20 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					<ToggleControl
+						label={ __( 'Show the archive crumb', 'sgs-blocks' ) }
+						help={ __( 'On a single post or product, the link to its archive (e.g. the shop page).', 'sgs-blocks' ) }
+						checked={ showArchiveCrumb !== false }
+						onChange={ ( val ) => setAttributes( { showArchiveCrumb: val } ) }
+						__nextHasNoMarginBottom
+					/>
+					<ToggleControl
+						label={ __( 'Show the current page', 'sgs-blocks' ) }
+						help={ __( 'End the trail with this page’s own title.', 'sgs-blocks' ) }
+						checked={ showCurrentCrumb !== false }
+						onChange={ ( val ) => setAttributes( { showCurrentCrumb: val } ) }
+						__nextHasNoMarginBottom
+					/>
 				</PanelBody>
 
 				{ /* ── Spacing panel ── padding/margin are each a single block-owned
@@ -279,10 +295,12 @@ export default function Edit( { attributes, setAttributes } ) {
 							<span className="sgs-breadcrumbs__separator" aria-hidden="true">{ separator }</span>
 						</li>
 					) }
-					<li className="sgs-breadcrumbs__item">
-						<a href="#">{ __( 'Parent Page', 'sgs-blocks' ) }</a>
-						<span className="sgs-breadcrumbs__separator" aria-hidden="true">{ separator }</span>
-					</li>
+					{ showArchiveCrumb !== false && (
+						<li className="sgs-breadcrumbs__item">
+							<a href="#">{ __( 'Parent Page', 'sgs-blocks' ) }</a>
+							<span className="sgs-breadcrumbs__separator" aria-hidden="true">{ separator }</span>
+						</li>
+					) }
 					{ ( productPageCrumbs === 'category' || productPageCrumbs === 'both' ) && (
 						<li className="sgs-breadcrumbs__item">
 							<a href="#">{ __( 'Category', 'sgs-blocks' ) }</a>
@@ -295,13 +313,13 @@ export default function Edit( { attributes, setAttributes } ) {
 							<span className="sgs-breadcrumbs__separator" aria-hidden="true">{ separator }</span>
 						</li>
 					) }
-					<li
+					{ showCurrentCrumb !== false && ( <li
 						className="sgs-breadcrumbs__item sgs-breadcrumbs__item--current"
 						aria-current="page"
 						style={ resolveTextColourPreviewStyle( currentColour, currentColourGradient, colourVar ) }
 					>
 						{ __( 'Current Page', 'sgs-blocks' ) }
-					</li>
+					</li> ) }
 				</ol>
 			</nav>
 		</>

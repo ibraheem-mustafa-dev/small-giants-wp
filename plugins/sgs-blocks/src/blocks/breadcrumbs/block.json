@@ -174,6 +174,16 @@
 			"default": "none",
 			"description": "On single WooCommerce product pages, extra crumbs to insert between the shop archive and the product title: the product's primary category, its brand (the product_brand taxonomy, when registered), or both. Off by default so existing sites render unchanged."
 		},
+		"showArchiveCrumb": {
+			"type": "boolean",
+			"default": true,
+			"description": "On a single post, product or custom post, show the crumb for its post-type archive (e.g. the shop page, 'Products'). Off gives Home / Sunglasses / Ray-Ban instead of Home / Products / Sunglasses / Ray-Ban."
+		},
+		"showCurrentCrumb": {
+			"type": "boolean",
+			"default": true,
+			"description": "On a single post, product or page, end the trail with the current page's own title. Off ends it at the last parent (e.g. the brand)."
+		},
 		"linkColour": {
 			"type": "string",
 			"default": "text-muted"

@@ -82,6 +82,8 @@ $show_home                   = $attributes['showHome'] ?? true;
 $home_label                  = $attributes['homeLabel'] ?? 'Home';
 $product_page_crumbs_raw     = $attributes['productPageCrumbs'] ?? 'none';
 $product_page_crumbs         = in_array( $product_page_crumbs_raw, array( 'none', 'category', 'brand', 'both' ), true ) ? $product_page_crumbs_raw : 'none';
+$show_archive_crumb          = ! isset( $attributes['showArchiveCrumb'] ) || (bool) $attributes['showArchiveCrumb'];
+$show_current_crumb          = ! isset( $attributes['showCurrentCrumb'] ) || (bool) $attributes['showCurrentCrumb'];
 $link_colour                 = $attributes['linkColour'] ?? 'text-muted';
 $link_colour_gradient        = $attributes['linkColourGradient'] ?? '';
 $link_colour_hover           = $attributes['linkColourHover'] ?? '';
@@ -418,7 +420,7 @@ if ( is_singular() ) {
 	if ( $post ) {
 		// Post type archive link.
 		$post_type = get_post_type_object( $post->post_type );
-		if ( $post_type && $post_type->has_archive ) {
+		if ( $show_archive_crumb && $post_type && $post_type->has_archive ) {
 			$crumbs[] = array(
 				'label' => esc_html( $post_type->labels->name ),
 				'url'   => esc_url( get_post_type_archive_link( $post->post_type ) ),
@@ -485,11 +487,13 @@ if ( is_singular() ) {
 			}
 		}
 
-		// Current page (no link).
-		$crumbs[] = array(
-			'label' => esc_html( get_the_title( $post->ID ) ),
-			'url'   => '',
-		);
+		// Current page (no link), unless showCurrentCrumb is off.
+		if ( $show_current_crumb ) {
+			$crumbs[] = array(
+				'label' => esc_html( get_the_title( $post->ID ) ),
+				'url'   => '',
+			);
+		}
 	}
 } elseif ( is_archive() ) {
 	add_filter( 'get_the_archive_title_prefix', '__return_empty_string' );
