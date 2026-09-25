@@ -580,16 +580,18 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		 */
 		
 		/*
-		 * Submenu text defaults to the palette's `primary` token, so rows follow the
-		 * palette AND every style variation for free; the operator's own colour still
-		 * overrides, below. It must not be `color:...,inherit`, which out-specifies the
-		 * theme's global link rule and forces inherited body text so the palette never
-		 * applies. The framework honours the palette the client chose rather than
-		 * quietly substituting a different colour.
+		 * Submenu text defaults to the palette's `text` token, the same default the
+		 * drawer's sublinks use: the row paints `surface` at rest (FR-41-36), and `text`
+		 * on `surface` is readable on every palette, where a brand `primary` on a light
+		 * surface is not (Mama's Munches pink on cream measures 2.24:1). The brand
+		 * colour reaches the dropdown as the Hover row fill (`submenuLinkBgHover`).
+		 * The operator's own `submenuColour` still overrides, below. It must not be
+		 * `color:...,inherit`, which out-specifies the theme's global link rule and
+		 * forces inherited body text so the palette never applies.
 		 */
 		$css .= $uid_sel . ' .' . $bem_root . '__sublink{display:flex;align-items:center;min-height:44px;padding:0 16px;'
 			. 'text-decoration:none;white-space:nowrap;'
-			. 'color:var(--wp--preset--color--primary, currentColor);}';
+			. 'color:var(--wp--preset--color--text, currentColor);}';
 
 		/*
 		 * `submenuOpacity`/`submenuOpacityHover` (M-21) — the sublink's OWN
@@ -646,26 +648,7 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		 * below any higher-specificity operator override rather than outranking one.
 		 */
 		$css .= $uid_sel . ' :where(.' . $bem_root . '__bar--drawer) .' . $bem_root . '__sublink{white-space:normal;overflow-wrap:break-word;}';
-		
-		/*
-		 * …and in the drawer specifically, sublink text defaults to the palette's
-		 * `text` token (falling back to `inherit`), not the flat bar's `primary`
-		 * default directly above. The drawer's nested submenu row always paints a
-		 * real, deterministic surface: `submenuLinkBg` (block.json) defaults to
-		 * 'surface' (cream) and the drill-down panel rule's fallback matches the
-		 * accordion-mode chain (see style.css), regardless of the `drawerBg` the
-		 * operator picked. With a fixed backdrop the text colour needs no
-		 * per-instance contrast computation — it can be a plain default token, like
-		 * every other drawer text element.
-		 *
-		 * Same (0,2,0) technique as the `nowrap` fix
-		 * immediately above -- `:where()` costs nothing, `$uid_sel` + `.sublink`
-		 * keeps real specificity, positioned AFTER the base rule (wins over it in
-		 * the drawer) but BEFORE the operator's `submenuColour` block below (loses
-		 * to it when the operator has actually set one). `text` (dark) on `surface`
-		 * (cream) is a high-contrast pairing (see wcag-contrast.js).
-		 */
-		$css .= $uid_sel . ' :where(.' . $bem_root . '__bar--drawer) .' . $bem_root . '__sublink{color:var(--wp--preset--color--text, inherit);}';
+
 		// submenuColourGradient is the gradient sibling; routed as a direct decl
 		// (not the custom-property chain above)
 		// because a `var(--x, …)` fed into a fixed `color:` declaration cannot

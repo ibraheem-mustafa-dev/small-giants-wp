@@ -107,7 +107,7 @@ $hostile_opacity = run_item_state( $item_section, array( 'itemOpacity' => 'red;}
 ok( '' === $hostile_opacity, 'item: a non-numeric (hostile) opacity value emits nothing' );
 
 $shift = run_item_state( $item_section, array( 'itemPaddingShiftHover' => '8px' ) );
-ok( false !== strpos( $shift, 'padding-inline-start:calc(12px + 8px)' ), 'item: padding shift adds onto the resting 12px literal' );
+ok( false !== strpos( $shift, 'padding-inline-start:calc(var(--sgs-nav-link-pad-start, 12px) + 8px)' ), 'item: padding shift adds onto the resting inline-start padding (itemPadding, default 12px)' );
 ok( false !== strpos( $shift, SGS_HOVER_MEDIA ), 'item: the padding-shift rule is touch-guarded' );
 
 ok( '' === run_item_state( $item_section, array( 'itemPaddingShiftHover' => 'red;}body{x' ) ), 'item: a hostile padding-shift value emits nothing' );
