@@ -53,6 +53,7 @@ export default function ScrollSidewaysPanel( { attributes, setAttributes } ) {
 					{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
 						<SgsLengthControl
 							label={ __( 'Item width', 'sgs-blocks' ) }
+							hideLabelFromVision
 							help={ __( 'Width of each item in the row. Empty: 80%.', 'sgs-blocks' ) }
 							value={ ownValue || '' }
 							placeholder={ inherited ? effectiveValue : '80%' }
