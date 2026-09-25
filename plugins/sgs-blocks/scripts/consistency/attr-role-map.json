@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "..\\..\\..\\..\\..\\.claude\\skills\\sgs-wp-engine\\sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 8332,
+    "row_count": 8334,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -1144,6 +1144,7 @@
     "sgs/buybox::decoyEnabled": "boolean-visibility",
     "sgs/buybox::dragMomentum": "behaviour",
     "sgs/buybox::dragToScroll": "behaviour",
+    "sgs/buybox::extrasBeforeCount": "behaviour",
     "sgs/buybox::framingMode": "select-from-enum",
     "sgs/buybox::fx": "behaviour",
     "sgs/buybox::fxDisableMobile": "behaviour",
@@ -4753,7 +4754,7 @@
     "sgs/nav-bar-menu::triggerDetachAfter": "behaviour",
     "sgs/nav-bar-menu::triggerDetachBackground": "color",
     "sgs/nav-bar-menu::triggerDetachBackgroundHover": "color",
-    "sgs/nav-bar-menu::triggerDetachOffset": null,
+    "sgs/nav-bar-menu::triggerDetachOffset": "styling",
     "sgs/nav-bar-menu::triggerDetachRadius": "visual",
     "sgs/nav-bar-menu::triggerDetachSize": "select-from-enum",
     "sgs/nav-bar-menu::triggerDetachZIndex": "position",
@@ -6998,6 +6999,7 @@
     "sgs/tabs::gridAutoRows": "layout",
     "sgs/tabs::gridTemplateColumns": "layout",
     "sgs/tabs::gridTemplateRows": "layout",
+    "sgs/tabs::hideEmptyTabs": "boolean-visibility",
     "sgs/tabs::justifyContent": "layout",
     "sgs/tabs::justifyItems": "layout",
     "sgs/tabs::layout": "layout",
