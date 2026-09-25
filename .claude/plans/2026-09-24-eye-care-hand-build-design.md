@@ -92,6 +92,17 @@
   4. Mobile menu Sunglasses and Brands link to /shop/ until category pages exist (Wave C).
 - Known follow-up, not blocking: the social-icons glyph gradient paints strokes only, so it has no effect on the four
   filled brand marks (Google, WhatsApp, TikTok, X).
+- **Wave C progress (2026-09-25):** (1) shared product card DONE (`plans/2026-09-25-eye-care-product-card.md`); (2)
+  product page, zero-reviews state, DONE (`plans/2026-09-25-eye-care-product-page.md`; real frame sizes from
+  jpopticians.com, Bean 2026-09-25); (3) shop archive DONE: the site's own `archive-product` template from
+  `build/archive-product.tree.json` (generator `build/gen_archive_product.py`), shop page titled Sunglasses (`/shop/`
+  unchanged), theme Shop Filters settings (card minimum 250px, gap 18px, narrow grid, plain panel), phone drawer built
+  by `sgs-shop-filters.js` (WordPress 7.1 saves editor-made Custom HTML empty). Brand filter PROVEN: WooCommerce 11's
+  parameter is `?brands=ray-ban` (not `filter_product_brand`), 3 Ray-Bans, survives reload. Verified at 1440/768/375.
+  Owed shop polish: one-row toolbar ("16 frames · Filter · Featured"), colour swatches in the Colour filter (WooCommerce
+  has no swatch display), a Gender filter (no gender data seeded), brand search box. Framework debt found: the theme's
+  default `archive-product.html` hard-codes another client's filters (Flavour/Size by attribute ID), and its
+  `@container sgs-shop-grid (min-width:1280px)` columns rule queries its own container so it has never applied.
 - **Wave C: next** (Bean, 2026-09-25: pages and the configurator while the nav track rebuilds header, footer and
   menus; do not touch those surfaces). Order: (1) the shared product card (the draft's Frame Card: brand, heart,
   SAVE badge, stars, 4-up at 1280; Home's best sellers use it), then the product page, zero-reviews state first;
