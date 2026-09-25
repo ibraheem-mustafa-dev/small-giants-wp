@@ -20,6 +20,7 @@ import {
 	SsrPreviewGuard,
 } from '../../components';
 import { BUTTON_PRESETS } from '../button/presets';
+import { ListingContentPanel, ListingShapePanel } from './listing-panels';
 import {
 	PanelBody,
 	SelectControl,
@@ -1857,6 +1858,13 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 						loading={ wcProductLoading }
 					/>
 				) }
+
+				{ isBound && (
+					<ListingContentPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
+				) }
 			</InspectorControls>
 
 			<InspectorControls group="styles">
@@ -1870,6 +1878,10 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 					setAttributes={ setAttributes }
 					kind="content"
 					showContentBand={ false }
+				/>
+				<ListingShapePanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
 				/>
 				<PanelBody
 					title={ __( 'Card padding', 'sgs-blocks' ) }

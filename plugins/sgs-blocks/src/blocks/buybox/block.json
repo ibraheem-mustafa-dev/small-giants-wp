@@ -95,7 +95,7 @@
 						"css:background-color": "rrpPillBackgroundColour",
 						"css:color": "rrpPillTextColour"
 					},
-					"_note": "FR-Wave-B. SSR-only chip shown when a configured RRP meta key resolves to a genuine saving on the default variation (extras.php::sgs_buybox_rrp_pill). Background/text colour both live here rather than on the wrapper element, since this is a distinct visual element from the price row it sits beside."
+					"_note": "FR-Wave-B. SSR-only chip shown when a configured RRP meta key resolves to a genuine saving on the default variation (includes/product-rrp.php::sgs_product_rrp_saving). Background/text colour both live here rather than on the wrapper element, since this is a distinct visual element from the price row it sits beside."
 				},
 				"stock-in-stock": {
 					"label": "In-stock label",

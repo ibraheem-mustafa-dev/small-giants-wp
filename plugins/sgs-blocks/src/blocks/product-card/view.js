@@ -58,6 +58,7 @@
  */
 
 import { store, getContext, getElement } from '@wordpress/interactivity';
+import './wishlist';
 
 /**
  * Module-level WeakMap: ctx → card ref.

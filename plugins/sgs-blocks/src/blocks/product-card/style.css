@@ -1527,3 +1527,91 @@
 	width: 17px;
 	height: 17px;
 }
+
+/*
+ * ── Listing-card settings (live-data mode) ───────────────────────────────────
+ * showShadow off: border only at rest; the hover lift keeps its shadow.
+ */
+.product-card.product-card--flat {
+	box-shadow: none;
+}
+
+/*
+ * imageAspectRatio: the image box follows the card's width at the chosen
+ * shape instead of the fixed imageHeight. The image and the no-image
+ * placeholder fill the box.
+ */
+.product-card--image-ratio .product-card__media,
+.product-card--image-ratio .sgs-product-card__media-wrap {
+	--sgs-product-card-image-height: 100%;
+	height: auto;
+	aspect-ratio: var( --sgs-product-card-image-aspect, 1 / 1 );
+	overflow: hidden;
+}
+
+/* The RRP, struck through beside the price (rrpMetaKey). */
+.sgs-product-card__rrp {
+	font-size: 13px;
+	color: var( --wp--preset--color--text-muted, #77716a );
+}
+
+/*
+ * Wishlist heart (showWishlist) on the image's top-right corner. The visible
+ * circle is 36px; ::after widens the hit area to 44px (WCAG 2.5.8).
+ * aria-pressed carries the saved state; the heart fills when saved.
+ */
+.sgs-product-card__wishlist {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	z-index: 2;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 36px;
+	height: 36px;
+	padding: 0;
+	border-radius: 50%;
+	border: 1px solid var( --wp--preset--color--border, #e0dad1 );
+	background: color-mix( in srgb, var( --wp--preset--color--surface, #ffffff ) 92%, transparent );
+	color: var( --wp--preset--color--text, #141414 );
+	cursor: pointer;
+	transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.sgs-product-card__wishlist::after {
+	content: "";
+	position: absolute;
+	inset: -4px;
+}
+
+.sgs-product-card__wishlist svg {
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 1.7;
+	stroke-linecap: round;
+}
+
+.sgs-product-card__wishlist[aria-pressed="true"] svg {
+	fill: currentColor;
+}
+
+.sgs-product-card__wishlist:hover {
+	background: var( --wp--preset--color--surface, #ffffff );
+	transform: scale( 1.08 );
+}
+
+.sgs-product-card__wishlist:focus-visible {
+	outline: 2px solid var( --wp--preset--color--primary, #141414 );
+	outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-product-card__wishlist {
+		transition: none;
+	}
+
+	.sgs-product-card__wishlist:hover {
+		transform: none;
+	}
+}

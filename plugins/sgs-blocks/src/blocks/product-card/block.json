@@ -1475,6 +1475,60 @@
 			"default": "",
 			"role": "content",
 			"description": "Frame Card component: editable text shown where the star row would be when reviewCount is 0 and showRating is on. Empty (default) = show nothing at all — an untouched card with zero reviews renders no rating row. Non-empty renders that text (e.g. 'No reviews yet') in its place. Rendered by sgs_product_card_rating_markup() (includes/product-card-builtin-render.php), which every render branch calls."
+		},
+		"rrpMetaKey": {
+			"type": "string",
+			"default": "",
+			"description": "Live-data mode: post-meta key holding the product's recommended retail price (a plain number, e.g. \"171\"). When set and the RRP is above the price, the RRP shows struck through beside the price and an empty savingLabel is filled with the saving (\"Save £32\"). Empty = off. Same setting as sgs/buybox; read by includes/product-rrp.php::sgs_product_rrp_saving."
+		},
+		"rrpSavingFormat": {
+			"type": "string",
+			"default": "amount",
+			"enum": [
+				"amount",
+				"percentage"
+			],
+			"description": "How the saving badge filled from the RRP is worded: a money amount (\"Save £32\") or a percentage (\"Save 19%\")."
+		},
+		"swatchAttribute": {
+			"type": "string",
+			"default": "",
+			"description": "Live-data mode: the variation attribute (e.g. pa_colour) whose terms fill the colour dots when colourSwatches is empty. Each term's colour is its _sgs_swatch_color term meta. Empty = the first variation attribute whose terms carry a colour."
+		},
+		"showDescription": {
+			"type": "boolean",
+			"default": true,
+			"description": "Live-data mode: show the product's short description under the title. Off for listing grids."
+		},
+		"showCta": {
+			"type": "boolean",
+			"default": true,
+			"description": "Live-data mode: show the card's button (View product / Add to cart / Buy now). Off for listing grids where the whole card links to the product."
+		},
+		"showWishlist": {
+			"type": "boolean",
+			"default": false,
+			"description": "Live-data mode: a heart button on the image (top-right) that saves the product to the visitor's wishlist, kept in their browser. aria-pressed carries the saved state."
+		},
+		"imageAspectRatio": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"16 / 9",
+				"21 / 9",
+				"4 / 3",
+				"1 / 1",
+				"4 / 5",
+				"3 / 4",
+				"9 / 16"
+			],
+			"description": "Image box shape. Empty = the fixed image height (imageHeight). A ratio makes the box follow the card's width at that shape."
+		},
+		"showShadow": {
+			"type": "boolean",
+			"default": true,
+			"description": "The card's resting drop shadow. Off = border only; the hover lift keeps its shadow."
 		}
 	},
 	"styles": [

@@ -41,6 +41,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-product-manifest.php';
 require_once dirname( __DIR__, 3 ) . '/includes/configurator-seed.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-configurator-pricing.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-value-ladder.php';
+require_once dirname( __DIR__, 3 ) . '/includes/product-rrp.php';
 require_once __DIR__ . '/extras.php';
 
 // ---------------------------------------------------------------------------
@@ -131,7 +132,7 @@ $buybox_rrp_format = sanitize_key( (string) ( $attributes['rrpSavingFormat'] ?? 
 if ( ! in_array( $buybox_rrp_format, array( 'amount', 'percentage' ), true ) ) {
 	$buybox_rrp_format = 'amount';
 }
-$buybox_rrp = sgs_buybox_rrp_pill(
+$buybox_rrp = sgs_product_rrp_saving(
 	$buybox_post_id,
 	(string) ( $attributes['rrpMetaKey'] ?? '' ),
 	(int) $def['priceMinor'],

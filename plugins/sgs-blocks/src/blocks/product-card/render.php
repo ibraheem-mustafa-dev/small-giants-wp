@@ -58,6 +58,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 require_once dirname( __DIR__, 3 ) . '/includes/configurator-seed.php';
 require_once dirname( __DIR__, 3 ) . '/includes/product-card-builtin-render.php';
 require_once __DIR__ . '/attribute-tag.php';
+require_once dirname( __DIR__, 3 ) . '/includes/product-card-live-fill.php';
 
 // The CTA below always carries .sgs-button/.sgs-button--primary classes, but it
 // is raw HTML, not a real `sgs/button` InnerBlocks instance — so WordPress's
@@ -123,6 +124,8 @@ $picker_style_attrs = array(
 // showPickers: when false, suppress all in-card option-picker renders (variable
 // and non-variable paths). Default true = existing behaviour unchanged (R-22-9).
 $sgs_show_pickers = isset( $attributes['showPickers'] ) ? (bool) $attributes['showPickers'] : true;
+// showCta: live-data mode's button (View product / Add to cart / Buy now); off for listing grids.
+$sgs_show_cta = isset( $attributes['showCta'] ) ? (bool) $attributes['showCta'] : true;
 
 $classes = array( 'product-card' );
 if ( 'trial' === $variant_style ) {
@@ -130,6 +133,9 @@ if ( 'trial' === $variant_style ) {
 }
 if ( 'featured' === $variant_style ) {
 	$classes[] = 'featured-card';
+}
+if ( isset( $attributes['showShadow'] ) && false === $attributes['showShadow'] ) {
+	$classes[] = 'product-card--flat';
 }
 
 /* ── Build inline styles for per-block CSS-var overrides (cardMaxWidth, imageHeight) ── */
@@ -147,6 +153,11 @@ if ( '' !== $card_max_width && preg_match( $sgs_css_length_re, $card_max_width )
 }
 if ( '' !== $image_height && preg_match( $sgs_css_length_re, $image_height ) ) {
 	$inline_styles[] = '--sgs-product-card-image-height:' . esc_attr( $image_height ) . ';';
+}
+$sgs_image_aspect = (string) ( $attributes['imageAspectRatio'] ?? '' );
+if ( in_array( $sgs_image_aspect, array( '16 / 9', '21 / 9', '4 / 3', '1 / 1', '4 / 5', '3 / 4', '9 / 16' ), true ) ) {
+	$inline_styles[] = '--sgs-product-card-image-aspect:' . $sgs_image_aspect . ';';
+	$classes[]       = 'product-card--image-ratio';
 }
 // CSS-length + CSS-keyword sanitisers for any free-text style value concatenated
 // into the scoped <style> below (border width/radius = length; border style =
@@ -959,8 +970,13 @@ if ( null === $data ) {
  * PRICE IS NEVER RESOLVED THROUGH THIS MECHANISM — price paths have no override
  * branch (legal: page ↔ schema ↔ feed parity).
  */
+// Frame Card elements (brand, rating, RRP saving, colour dots, wishlist) from the live product.
+$attributes = sgs_product_card_live_fill( $attributes, $product_id, $source_mode );
+
 $sgs_resolved_title = sgs_product_card_resolve_element( $attributes, 'name', $attributes['productName'] ?? '', $data['title'] );
-$sgs_resolved_desc  = sgs_product_card_resolve_element( $attributes, 'description', $attributes['description'] ?? '', $data['short_desc'] );
+$sgs_resolved_desc  = ( isset( $attributes['showDescription'] ) && false === $attributes['showDescription'] )
+	? ''
+	: sgs_product_card_resolve_element( $attributes, 'description', $attributes['description'] ?? '', $data['short_desc'] );
 
 // Image: URL + alt resolve as a pair — when the typed image wins, the typed alt
 // accompanies it (a live alt under a typed image would mis-describe).
@@ -1023,6 +1039,8 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\
 			echo sgs_product_card_brand_markup( $attributes );
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
 			echo sgs_product_card_saving_badge_markup( $attributes );
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
+			echo sgs_product_card_wishlist_markup( $attributes );
 			?>
 			<?php if ( '' !== $sgs_badge_overlay ) : ?>
 				<span class="sgs-product-card__tag sgs-product-card__tag--featured"><?php echo esc_html( $sgs_badge_overlay ); ?></span>
@@ -1061,10 +1079,12 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\
 			<?php endif; ?>
 			<?php
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
+			echo sgs_product_card_rrp_markup( $attributes );
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
 			echo sgs_product_card_swatches_markup( $attributes, $sgs_card_uid );
 			?>
 		</div>
-		<?php if ( '' !== $ro_permalink ) : ?>
+		<?php if ( $sgs_show_cta && '' !== $ro_permalink ) : ?>
 			<?php
 			// FP-H: CTA label + URL via the override helper (this branch is link-only,
 			// so the learn-more URL rule applies).
@@ -1450,6 +1470,8 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			echo sgs_product_card_brand_markup( $attributes );
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
 			echo sgs_product_card_saving_badge_markup( $attributes );
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
+			echo sgs_product_card_wishlist_markup( $attributes );
 			?>
 			<?php if ( '' !== $sgs_badge_overlay ) : ?>
 				<?php // F7: featured badge overlays the media box (position:relative already on .product-card__media). ?>
@@ -1603,6 +1625,8 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 					><?php echo esc_html( $discount_label ); ?></span>
 					<?php
 					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
+					echo sgs_product_card_rrp_markup( $attributes );
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
 					echo sgs_product_card_swatches_markup( $attributes, $sgs_card_uid );
 					?>
 				</div>
@@ -1699,7 +1723,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				// $sgs_cta_behaviour resolved (and Q2-demoted) once at the top of the live-data section.
 				$add_to_cart_id = absint( $data['wc_id'] );
 
-				if ( $add_to_cart_id > 0 ) :
+				if ( $sgs_show_cta && $add_to_cart_id > 0 ) :
 					$product_permalink = esc_url( get_permalink( $add_to_cart_id ) );
 
 					/*
@@ -1916,6 +1940,8 @@ ob_start();
 echo sgs_product_card_brand_markup( $attributes );
 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
 echo sgs_product_card_saving_badge_markup( $attributes );
+// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
+echo sgs_product_card_wishlist_markup( $attributes );
 ?>
 <?php if ( '' !== $sgs_badge_overlay ) : ?>
 	<span class="sgs-product-card__tag sgs-product-card__tag--featured"><?php echo esc_html( $sgs_badge_overlay ); ?></span>
@@ -2038,11 +2064,13 @@ echo sgs_product_card_saving_badge_markup( $attributes );
 		<?php endif; ?>
 		<?php
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
+		echo sgs_product_card_rrp_markup( $attributes );
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
 		echo sgs_product_card_swatches_markup( $attributes, $sgs_card_uid );
 		?>
 	</div>
 
-	<?php if ( $add_to_cart_id > 0 ) : ?>
+	<?php if ( $sgs_show_cta && $add_to_cart_id > 0 ) : ?>
 		<?php
 		/*
 		 * A3 (QC) + U9 (FR-27-B1): progressive-enhancement add-to-cart.

@@ -6,6 +6,8 @@
  * not to grow it further) — every function here is called from render.php,
  * which stays the single source of the render sequence and wrapper markup.
  *
+ * The RRP pill's text comes from the shared includes/product-rrp.php.
+ *
  * All three features are deliberately SSR-only, mirroring this block's own
  * existing "SSR-only — no data-wp-* on ladder nodes" pattern (see render.php's
  * comparative value-ladder, FR-30-8): the sticky offset is per-instance
@@ -46,69 +48,6 @@ if ( ! function_exists( 'sgs_buybox_sticky_data' ) ) {
 		return array(
 			'enabled' => $enabled,
 			'offset'  => $offset,
-		);
-	}
-}
-
-if ( ! function_exists( 'sgs_buybox_rrp_pill' ) ) {
-	/**
-	 * Build the "Save £X" / "Save X%" pill text for the DEFAULT variation.
-	 *
-	 * The RRP lives in a block-configurable post-meta key (never a hardcoded
-	 * client key — R-31-1 / any-client test) so every SGS site can point it
-	 * at whatever field its own catalogue import already populates.
-	 *
-	 * @param int    $post_id              The product's post ID.
-	 * @param string $meta_key             Raw (unsanitised) meta-key attribute value.
-	 * @param int    $current_price_minor  The default combo's current price, in minor units (pence).
-	 * @param int    $decimals             Currency decimal places (from the manifest).
-	 * @param string $format               'amount' or 'percentage'.
-	 * @return array{hidden: bool, text: string}
-	 */
-	function sgs_buybox_rrp_pill( int $post_id, string $meta_key, int $current_price_minor, int $decimals, string $format ): array {
-		$hidden_result = array(
-			'hidden' => true,
-			'text'   => '',
-		);
-
-		$meta_key = sanitize_key( $meta_key );
-		if ( '' === $meta_key || $post_id <= 0 || $current_price_minor <= 0 ) {
-			return $hidden_result;
-		}
-
-		$rrp_raw = get_post_meta( $post_id, $meta_key, true );
-		if ( ! is_numeric( $rrp_raw ) ) {
-			return $hidden_result;
-		}
-
-		$decimals  = max( 0, $decimals );
-		$rrp_minor = (int) round( ( (float) $rrp_raw ) * ( 10 ** $decimals ) );
-
-		// Only show a saving that is genuinely a saving.
-		if ( $rrp_minor <= $current_price_minor ) {
-			return $hidden_result;
-		}
-
-		$saving_minor = $rrp_minor - $current_price_minor;
-
-		if ( 'percentage' === $format ) {
-			$pct = (int) round( ( $saving_minor / $rrp_minor ) * 100 );
-			return array(
-				'hidden' => false,
-				/* translators: %d is the percentage saved off the RRP, e.g. "Save 19%". */
-				'text'   => sprintf( __( 'Save %d%%', 'sgs-blocks' ), $pct ),
-			);
-		}
-
-		$saving_major   = $saving_minor / ( 10 ** $decimals );
-		$amount_display = function_exists( 'wc_price' )
-			? wp_strip_all_tags( wc_price( $saving_major ) )
-			: number_format( $saving_major, $decimals );
-
-		return array(
-			'hidden' => false,
-			/* translators: %s is the formatted money amount saved off the RRP, e.g. "Save £32". */
-			'text'   => sprintf( __( 'Save %s', 'sgs-blocks' ), $amount_display ),
 		);
 	}
 }
@@ -173,7 +112,7 @@ if ( ! function_exists( 'sgs_buybox_extras_scoped_css' ) ) {
 	 *
 	 * @param array  $attributes Block attributes.
 	 * @param string $root_sel   The block's unique root selector (render.php's $root_sel).
-	 * @param array  $rrp        Result of sgs_buybox_rrp_pill().
+	 * @param array  $rrp        Result of sgs_product_rrp_saving() (includes/product-rrp.php).
 	 * @param array  $sticky     Result of sgs_buybox_sticky_data().
 	 * @return string[] CSS rule strings to append to render.php's $scoped_css.
 	 */
