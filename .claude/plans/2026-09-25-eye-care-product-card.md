@@ -1,6 +1,21 @@
 # Eye Care Wave C task 1: the shared product card (the draft's Frame Card)
 
-**Status:** IN PROGRESS 2026-09-25. Parent plan: `2026-09-24-eye-care-hand-build-design.md` (Wave C).
+**Status:** DONE 2026-09-25 (framework 62a13e4e6 → 193a365a8, live on eye-care-test; Home tree rebuilt to page 208).
+Parent plan: `2026-09-24-eye-care-hand-build-design.md` (Wave C).
+
+**Verified live** (`scratchpad` best-sellers probe, draft vs live, side by side looked at): card widths 321 / 323 / 163
+at 1440 / 768 / 375 on both; brand Playfair 12.5px/500, title Outfit 16px/400, price Outfit 18px/500, RRP 13px struck
+through, 4 colour dots in the shop's term order, heart, SAVE badge from `_sgs_rrp`, square image, Polarised tag.
+Accepted divergences: stars (the test shop has no reviews, so "No reviews yet" is the live truth); at 375 the RRP sits
+beside the price rather than on the dots' line. The saving badge's 400 weight / 0.1em / 12px inset (193a365a8) ships
+with the next deploy.
+Also found and fixed on the way: a font preset slug (`body`) in any SGS typography font-family was emitted literally
+(browser fell back to serif) and now emits its preset variable; "From" shows only when variation prices differ; all 16
+products had been silently drafted by the product preflight gate (seed now maps colour terms to Google `color`, gives
+photo-less products the shared "Photo to come" image, publishes last).
+**Deferred:** the saved-items page and account-stored wishlist stay with the wishlist build (parent plan, gap map
+"Wishlist hearts with persistence"); the preflight gate reverting an already-published product on any failing re-save
+is a behaviour question recorded for Bean.
 **Written for:** Bean and any session picking up Wave C.
 
 **Goal:** one product card, the existing `sgs/product-card` in live WooCommerce mode, that matches
