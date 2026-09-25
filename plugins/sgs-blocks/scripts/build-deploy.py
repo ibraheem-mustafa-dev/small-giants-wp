@@ -154,7 +154,12 @@ BUILD_DIR = PLUGIN_DIR / "build"
 # worktree". `resolve_composer()` below tries every real location, in order,
 # and only fails once none of them work.
 COMPOSER_PHAR = REPO_ROOT / "composer.phar"
-TARBALL_NAME = "sgs-deploy.tar"
+# Every deploy uploads to the same shared SSH home, so each run names its own
+# upload, theme.json payload and unpacking folder: two sessions deploying at
+# once (to any target) no longer overwrite or delete each other's files.
+RUN_ID = f"{os.getpid()}-{int(time.time())}"
+TARBALL_NAME = f"sgs-deploy-{RUN_ID}.tar"
+REMOTE_STAGING_DIR = f"sgs-deploy-{RUN_ID}"
 # Ceiling for the packaged tarball. MEASURED, not guessed. With scripts/, the
 # dev-only vendor packages (per composer's own `dev-package-names` list -- see
 # TAR_EXCLUDES) and the test/pipeline residue excluded, a blocks-only tarball is
@@ -576,7 +581,7 @@ def split_dirty_by_payload(dirty: list[str], payload_prefixes: list[str]) -> tup
 # push-theme-snapshot.py::deploy_theme_json_bytes — one function, so a deploy re-ships exactly
 # what a push wrote. The user layer (wp_global_styles) lives in the database and a theme
 # deploy never touches it, so nothing needs re-applying there.
-THEME_JSON_PAYLOAD_NAME = "sgs-theme-json.payload"
+THEME_JSON_PAYLOAD_NAME = f"sgs-theme-json-{RUN_ID}.payload"
 SNAPSHOT_REL = "sites/{client}/theme-snapshot.json"
 FRAMEWORK_THEME_JSON_REL = "theme/sgs-theme/theme.json"
 
@@ -645,8 +650,13 @@ def build_remote_extract_cmd(wp_content: str, theme: bool, blocks: bool,
     `&&`-joined: if the payload is missing or empty the command stops there, the live theme is
     never swapped, and the deploy aborts with the client's current theme.json still in place.
     """
-    parts: list[str] = [f"WP={shlex.quote(wp_content)}"]
-    parts.append(f"tar -xf {TARBALL_NAME}")
+    # $WP is absolute before the cd below: the targets' wp_content is relative to the SSH home.
+    wp = shlex.quote(wp_content) if wp_content.startswith("/") else f'"$PWD"/{shlex.quote(wp_content)}'
+    parts: list[str] = [f"WP={wp}"]
+    parts.append(f"rm -rf {REMOTE_STAGING_DIR}")
+    parts.append(f"mkdir {REMOTE_STAGING_DIR}")
+    parts.append(f"cd {REMOTE_STAGING_DIR}")
+    parts.append(f"tar -xf ../{TARBALL_NAME}")
     if theme and theme_json_payload:
         parts.append(f"test -s {THEME_JSON_PAYLOAD_NAME}")
         parts.append(f"mv -f {THEME_JSON_PAYLOAD_NAME} theme/sgs-theme/theme.json")
@@ -679,8 +689,9 @@ def build_remote_extract_cmd(wp_content: str, theme: bool, blocks: bool,
                      "mv $WP/themes/sgs-theme $WP/themes/.sgs-theme.bak; fi")
         parts.append("mkdir -p $WP/themes")
         parts.append("mv theme/sgs-theme $WP/themes/")
-    # Cleanup remote staging dirs + tarball
-    parts.append(f"rm -rf plugins theme {TARBALL_NAME} {THEME_JSON_PAYLOAD_NAME}")
+    # Cleanup this run's staging folder and tarball only
+    parts.append("cd ..")
+    parts.append(f"rm -rf {REMOTE_STAGING_DIR} {TARBALL_NAME}")
     return " && ".join(parts)
 
 
