@@ -82,7 +82,8 @@ if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
 		$sh_color_args['text'] = $sh_text_value;
 	}
 }
-if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
+if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour']
+	&& empty( $attributes['backgroundColourGradient'] ) ) {
 	$sh_bg_value = sgs_colour_value( (string) $attributes['backgroundColour'] );
 	// Fill translucency (`surfaceOpacity`): a plain colour only; a gradient is left alone.
 	// The style engine DROPS a `color-mix()` value (measured live: no rule is emitted), so a
@@ -94,24 +95,29 @@ if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundC
 		$sh_color_args['background'] = $sh_bg_value;
 	}
 }
-// Edge fade (`surfaceFadeEdge`): a full-height mask that fades the chosen edge to
-// transparent. A closed enum, so the gradient text is fixed here and nothing from the
-// attribute reaches the CSS except by lookup.
-$sh_fade_masks = array(
-	'top'    => 'linear-gradient(to bottom, transparent, #000)',
-	'bottom' => 'linear-gradient(to top, transparent, #000)',
+// Background GRADIENT (`backgroundColourGradient`) — a BLOCK-PRIVATE attribute (never
+// core's native style.color.gradient), storing a raw CSS gradient function (optionally
+// with var(--wp--preset--color--x) colour-token stops). It needs SGS's own gradient
+// resolver — sgs_background_paint_value(), which validates through
+// sgs_css_gradient_value() — same as sgs/container and sgs/site-header-row.
+// sgs_colour_value() (the flat-slug resolver) cannot read this shape at all and used to
+// mis-render it as a broken preset lookup (proven live, 2026-09-25). A valid gradient
+// wins over the flat colour above and is emitted as its own scoped, NON-`!important`
+// rule — deliberately outside $sh_color_args/the style engine, which has no state axis
+// and would flatten a gradient to a solid colour.
+// TRANSPARENT MODE STILL WINS WITHOUT ANY EXTRA GATING HERE: the tri-state merge below
+// (sgs_merge_tri_state_declarations()) writes `background:transparent !important` on
+// this SAME selector for any tier where Transparent resolves on. An `!important`
+// declaration always beats a non-`!important` one for the same longhand (the
+// `background` shorthand expands to `background-image` too) regardless of source order
+// or selector specificity — exactly the mechanism the surfaceOpacity alpha rule above
+// already relies on. No transparent-mode check is needed here.
+$sh_gradient_paint = sgs_background_paint_value(
+	(string) ( $attributes['backgroundColour'] ?? '' ),
+	(string) ( $attributes['backgroundColourGradient'] ?? '' )
 );
-$sh_fade_edge  = isset( $attributes['surfaceFadeEdge'] ) && is_string( $attributes['surfaceFadeEdge'] ) ? $attributes['surfaceFadeEdge'] : 'none';
-if ( isset( $sh_fade_masks[ $sh_fade_edge ] ) ) {
-	$css .= $root_sel . '{-webkit-mask-image:' . $sh_fade_masks[ $sh_fade_edge ] . ';mask-image:' . $sh_fade_masks[ $sh_fade_edge ] . ';}'
-		// Forced colours keeps mask-image, so a faded edge would fade the header's text there too.
-		. '@media (forced-colors:active){' . $root_sel . '{-webkit-mask-image:none;mask-image:none;}}';
-}
-if ( isset( $attributes['backgroundColourGradient'] ) && '' !== $attributes['backgroundColourGradient'] ) {
-	$sh_gradient_value = sgs_colour_value( (string) $attributes['backgroundColourGradient'] );
-	if ( '' !== $sh_gradient_value ) {
-		$sh_color_args['gradient'] = $sh_gradient_value;
-	}
+if ( 'background-image' === $sh_gradient_paint['property'] ) {
+	$css .= $root_sel . '{background-image:' . $sh_gradient_paint['value'] . ';}';
 }
 if ( ! empty( $sh_color_args ) ) {
 	$sh_style_engine_args['color'] = $sh_color_args;
@@ -310,7 +316,7 @@ if ( $sh_solid_first ) {
 	// above rather than replacing it — the colour stays as the fallback for a
 	// browser that cannot render the gradient value.
 	if ( isset( $attributes['backgroundColourScrolledGradient'] ) && '' !== $attributes['backgroundColourScrolledGradient'] ) {
-		$sh_scrolled_gradient = sgs_colour_value( (string) $attributes['backgroundColourScrolledGradient'] );
+		$sh_scrolled_gradient = sgs_css_gradient_value( (string) $attributes['backgroundColourScrolledGradient'] );
 		if ( '' !== $sh_scrolled_gradient ) {
 			$sh_scrolled_decls .= 'background-image:' . $sh_scrolled_gradient . ' !important;';
 		}

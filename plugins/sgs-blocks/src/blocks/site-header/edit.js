@@ -28,12 +28,12 @@ import {
 import { ResponsiveTriStateControl, ResponsiveBoxControl, ResponsiveOverride, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, ShadowControl, resolveColourToken, SgsBoxControl, StarterLookPresetControl } from '../../components';
 import { NumberControl, ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { resolveTier } from '../../utils/responsive';
-import { backgroundPaintPreview, backgroundPreview, spacingPreview, isTierBoxEmpty, svgBackgroundPreview, textPaintPreview } from '../../utils';
+import { backgroundPaintPreview, backgroundPreview, spacingPreview, isTierBoxEmpty, svgBackgroundPreview, textPaintPreview, flattenPresetSetting } from '../../utils';
 import { calculateRelativeLuminance, calculateContrastRatio, meetsWCAG_AA } from '../../utils/wcag-contrast';
 // Floating ("pill") mode — controls, canvas preview and reset live in their own
 // file; this module only mounts them. See FloatControls.js.
 import FloatControls from './components/FloatControls';
-import { floatPreview, floatResetAttributes, fadeEdgePreview } from './float-preview';
+import { floatPreview, floatResetAttributes } from './float-preview';
 
 /**
  * Does a tri-state {desktop,tablet,mobile} behaviour object resolve 'on' at
@@ -286,6 +286,11 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	// parallax attrs; the shared mirror (src/utils/background-preview.js)
 	// previews them on the canvas the same way sgs/container does.
 	const [ colourPalette ] = useSettings( 'color.palette' );
+	// The theme's gradient presets, normalised by flattenPresetSetting() —
+	// useSettings() returns a flat array or an origin-keyed object depending on
+	// the feature — so backgroundPreview() can resolve a preset SLUG to its CSS stops.
+	const [ rawGradientPresets ] = useSettings( 'color.gradients' );
+	const gradientPresets = flattenPresetSetting( rawGradientPresets );
 
 	// SGS-owned flat background colour/gradient + text colour canvas preview —
 	// site-header had NEITHER mirror (site-footer's edit.js already had
@@ -334,7 +339,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		backgroundColourGradient: attributes.backgroundColourGradient,
 		surfaceBlur: attributes.surfaceBlur,
 		surfaceSaturate: attributes.surfaceSaturate,
-	}, colourPalette );
+	}, colourPalette, gradientPresets );
 
 	// Decorative SVG background layer — editor mirror. Deliberately
 	// NOT folded into backgroundPreview()'s return: that helper paints via
@@ -380,7 +385,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		// The pill preview is spread LAST so its width/margin-inline win over the
 		// spacing preview's margin for a floating header — which is what the
 		// frontend does too (the float rules are emitted after the wrapper's).
-		style: { ...backgroundPaint, ...surfaceOpacityPreview, ...bgPreview.style, ...svgPreview.style, ...spacePreview, ...textPreview, ...floatPreview( { headerFloat: attributes.headerFloat, headerFloatInset: attributes.headerFloatInset, headerFloatCollapse: attributes.headerFloatCollapse, surfaceBlur: attributes.surfaceBlur, surfaceSaturate: attributes.surfaceSaturate }, previewTier ), ...fadeEdgePreview( attributes.surfaceFadeEdge ) },
+		style: { ...backgroundPaint, ...surfaceOpacityPreview, ...bgPreview.style, ...svgPreview.style, ...spacePreview, ...textPreview, ...floatPreview( { headerFloat: attributes.headerFloat, headerFloatInset: attributes.headerFloatInset, headerFloatCollapse: attributes.headerFloatCollapse, surfaceBlur: attributes.surfaceBlur, surfaceSaturate: attributes.surfaceSaturate }, previewTier ) },
 	} );
 	const refEl = useRef( null );
 
@@ -784,7 +789,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							padding: {},
 							margin: {},
 							zIndex: {},
-							surfaceFadeEdge: 'none',
 							backgroundImage: undefined,
 							backgroundImageTablet: undefined,
 							backgroundImageMobile: undefined,
@@ -933,26 +937,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					</ToolsPanelItem>
 
 					{ /* Blur, saturate and fill opacity live in the shared BackgroundPanel's Surface panel. */ }
-
-					<ToolsPanelItem
-						label={ __( 'Edge fade', 'sgs-blocks' ) }
-						hasValue={ () => !! attributes.surfaceFadeEdge && 'none' !== attributes.surfaceFadeEdge }
-						onDeselect={ () => setAttributes( { surfaceFadeEdge: 'none' } ) }
-					>
-						<SelectControl
-							label={ __( 'Edge fade', 'sgs-blocks' ) }
-							help={ __( 'Fades one edge of the whole header to transparent, so the page shows through as it scrolls under.', 'sgs-blocks' ) }
-							value={ attributes.surfaceFadeEdge || 'none' }
-							options={ [
-								{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-								{ label: __( 'Fade the top edge', 'sgs-blocks' ), value: 'top' },
-								{ label: __( 'Fade the bottom edge', 'sgs-blocks' ), value: 'bottom' },
-							] }
-							onChange={ ( value ) => setAttributes( { surfaceFadeEdge: value } ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
 
 				</ToolsPanel>
 			</InspectorControls>
