@@ -6581,7 +6581,7 @@
 			"fields": {
 				"derived_selector": ".sgs-nav-bar-menu__detach .sgs-nav-bar-menu__burger",
 				"css_property": "background-color",
-				"css_element": "burger"
+				"css_element": "detach-chip"
 			},
 			"_why": "Wave 3C U-14 (M-08): the detaching chip's fill. render.php feeds includes/nav-detach-chip.php::sgs_nav_detach_chip_css(), which paints background-color on the chip's copy of the burger button (.{uid}.sgs-nav-bar-menu__detach .sgs-nav-bar-menu__burger); extract-signatures.py scans only the block's own render.php/style.css, so it cannot see a rule emitted from an include. Mirrors burgerBg's own row (background-color on the burger)."
 		},
@@ -6591,7 +6591,7 @@
 			"fields": {
 				"derived_selector": ".sgs-nav-bar-menu__detach .sgs-nav-bar-menu__burger",
 				"css_property": "background-color",
-				"css_element": "burger",
+				"css_element": "detach-chip",
 				"css_state": "hover"
 			},
 			"_why": "Wave 3C U-14 (M-08): the detaching chip's fill. render.php feeds includes/nav-detach-chip.php::sgs_nav_detach_chip_css(), which paints background-color on the chip's copy of the burger button (.{uid}.sgs-nav-bar-menu__detach .sgs-nav-bar-menu__burger); extract-signatures.py scans only the block's own render.php/style.css, so it cannot see a rule emitted from an include. Mirrors burgerBg's own row (background-color on the burger)."
@@ -6602,7 +6602,7 @@
 			"fields": {
 				"derived_selector": ".sgs-nav-bar-menu__detach .sgs-nav-bar-menu__burger",
 				"css_property": "border-radius",
-				"css_element": "burger"
+				"css_element": "detach-chip"
 			},
 			"_why": "Wave 3C U-14 (M-08): the detaching chip's corner rounding, painted by includes/nav-detach-chip.php::sgs_nav_detach_chip_css() on the chip's copy of the burger; extract-signatures.py cannot see an include's rule. Size, offset and z-index are chip geometry published as custom properties or on the fixed wrapper, not a routable draft property."
 		}

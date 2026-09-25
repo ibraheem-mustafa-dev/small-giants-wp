@@ -275,6 +275,27 @@
 					},
 					"_note": "burgerColour is the icon TEXT colour (css:color); burgerHoverColour drives the button's HOVER background-color; burgerBg is its resting counterpart (a base attribute with an inspector control in the edit.js Burger panel, Normal state), so css:background-color resolves at base too. Unset burgerBg leaves style.css's `background:none` default. `css:color`->burgerColour, `css:background-color`->burgerBg and `states.hover.css:color`->burgerColourHover (sgs_hover_state_rules on `:hover, :focus-visible`) are declared EXPLICITLY, because burgerColour and burgerColourHover would otherwise both derive to (color, burger, state=NULL) and collide on one routing slot -- the hover entry is what separates them. The manifest is the durable source for these routings. Spec 35 §12 audit item 5 (2026-09-24) added the `motion` cluster (already defined in cluster-member-sets.json with exactly these two members, nothing new invented) + explicit attrMap entries for burgerMorphDuration/burgerMorphEasing -- the default {prefix}{suffix} convention would resolve them to 'burgerDuration'/'burgerEasing' (prefix 'burger' + suffix 'Duration'/'Easing'), which do not match the real attribute names (burgerMorphDuration/burgerMorphEasing), so an explicit attrMap entry is required, not optional."
 				},
+				"detach-chip": {
+					"label": "Detached menu button",
+					"order": 11,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"prefix": "triggerDetach",
+					"attrMap": {
+						"css:background-color": "triggerDetachBackground",
+						"css:border-radius": "triggerDetachRadius"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "triggerDetachBackgroundHover"
+							}
+						}
+					},
+					"_note": "Wave 3C U-14 (M-08): the chip copy of the burger printed on wp_footer by includes/nav-detach-chip.php (.{uid}.sgs-nav-bar-menu__detach .sgs-nav-bar-menu__burger). Its own element, so its fill never contends with the header burger's burgerBg / burgerHoverColour routing slot."
+				},
 				"sublink": {
 					"label": "Submenu link",
 					"order": 8,
