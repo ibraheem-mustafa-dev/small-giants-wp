@@ -236,6 +236,15 @@
 }
 
 /*
+ * Full screen: the close button (2.75rem, pinned at the safe-area top) sits
+ * over the content, so the content starts below it; otherwise anything at
+ * the top right (a flow's step label) slides under the button.
+ */
+.sgs-modal__dialog--fullscreen .sgs-modal__inner {
+	padding-top: calc(max(1rem, env(safe-area-inset-top)) + 3.5rem);
+}
+
+/*
  * Scroll-lock — applied to <body> while a modal dialog is open (view.js).
  * Real properties live here (not inline) per the no-inline styling contract
  * (Spec 32); view.js only writes the --sgs-modal-scroll-y VALUE.

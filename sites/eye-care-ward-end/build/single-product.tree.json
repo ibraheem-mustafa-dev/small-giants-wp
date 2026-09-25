@@ -174,7 +174,7 @@
                 "name": "sgs/button",
                 "attributes": {
                   "label": "Add my prescription",
-                  "url": "/prescription-lenses/",
+                  "url": "#lens-configurator",
                   "inheritStyle": "primary",
                   "widthType": {
                     "desktop": "full"
@@ -797,25 +797,49 @@
                     },
                     "innerBlocks": [
                       {
-                        "name": "sgs/text",
+                        "name": "sgs/container",
                         "attributes": {
-                          "text": "This pair, measured",
+                          "layout": "flex",
+                          "justifyContent": "space-between",
+                          "alignItems": "baseline",
+                          "flexWrap": "wrap",
+                          "gap": {
+                            "desktop": "14px"
+                          },
                           "margin": {
                             "desktop": {
                               "bottom": "16px"
                             }
+                          }
+                        },
+                        "innerBlocks": [
+                          {
+                            "name": "sgs/text",
+                            "attributes": {
+                              "text": "This pair, measured",
+                              "fontSize": {
+                                "desktop": 11
+                              },
+                              "fontSizeUnit": "px",
+                              "letterSpacing": {
+                                "desktop": 0.16
+                              },
+                              "letterSpacingUnit": "em",
+                              "textTransform": "uppercase",
+                              "textColour": "text-label"
+                            }
                           },
-                          "fontSize": {
-                            "desktop": 11
-                          },
-                          "fontSizeUnit": "px",
-                          "letterSpacing": {
-                            "desktop": 0.16
-                          },
-                          "letterSpacingUnit": "em",
-                          "textTransform": "uppercase",
-                          "textColour": "text-label"
-                        }
+                          {
+                            "name": "sgs/text",
+                            "attributes": {
+                              "text": "<a href=\"#size-guide\">Which size am I?</a>",
+                              "fontSize": {
+                                "desktop": 13
+                              },
+                              "fontSizeUnit": "px"
+                            }
+                          }
+                        ]
                       },
                       {
                         "name": "sgs/container",
@@ -1949,6 +1973,36 @@
         ]
       }
     ]
+  },
+  {
+    "name": "sgs/modal",
+    "attributes": {
+      "anchor": "lens-configurator",
+      "triggerStyle": "none",
+      "triggerText": "Add prescription lenses",
+      "size": "fullscreen",
+      "modalBackground": "surface"
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/choice-flow",
+        "attributes": {
+          "flowId": "lens-configurator",
+          "flowIsLinked": true
+        }
+      }
+    ]
+  },
+  {
+    "name": "sgs/modal",
+    "attributes": {
+      "anchor": "size-guide",
+      "triggerStyle": "none",
+      "triggerText": "Which size am I?",
+      "maxWidth": "large",
+      "modalBackground": "surface",
+      "modalRef": 461
+    }
   },
   {
     "name": "core/template-part",

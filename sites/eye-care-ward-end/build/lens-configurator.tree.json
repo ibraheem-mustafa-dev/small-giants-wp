@@ -1,0 +1,331 @@
+[
+  {
+    "name": "sgs/choice-flow",
+    "attributes": {
+      "title": "Add prescription lenses",
+      "maxWidth": "1200px",
+      "progressStyle": "bar",
+      "showPricePanel": true,
+      "pricePanelTitle": "Your order"
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/form-step",
+        "attributes": {
+          "label": "What they're for"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/heading",
+            "attributes": {
+              "level": "h2",
+              "fontFamily": "heading",
+              "fontWeight": "500",
+              "fontSize": {
+                "desktop": 40,
+                "mobile": 30
+              },
+              "fontSizeUnit": "px",
+              "lineHeight": {
+                "desktop": 1.05
+              },
+              "lineHeightUnit": "unitless",
+              "margin": {
+                "desktop": {
+                  "bottom": "8px"
+                }
+              },
+              "content": "What will you use them for?"
+            }
+          },
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "fontSize": {
+                "desktop": 15.5
+              },
+              "fontSizeUnit": "px",
+              "textColour": "text-muted",
+              "margin": {
+                "desktop": {
+                  "bottom": "26px"
+                }
+              },
+              "text": "Your prescription tells you which. If there's an “ADD” column on it, varifocal is probably what you're after."
+            }
+          },
+          {
+            "name": "sgs/choice-flow-question",
+            "attributes": {
+              "layout": "grid",
+              "priceGroup": "lens-use",
+              "options": [
+                {
+                  "label": "Distance",
+                  "value": "distance",
+                  "nextStepId": "",
+                  "image": {
+                    "id": 455,
+                    "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-distance.png",
+                    "alt": ""
+                  },
+                  "helpText": "Uses the main line of your prescription. This is what most people want in sunglasses — sharp vision looking ahead and into the distance."
+                },
+                {
+                  "label": "Reading",
+                  "value": "reading",
+                  "nextStepId": "",
+                  "image": {
+                    "id": 457,
+                    "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-reading.png",
+                    "alt": ""
+                  },
+                  "helpText": "For reading in the garden or by the pool. Uses the “ADD” value on your prescription. You won't want to drive in these."
+                },
+                {
+                  "label": "Varifocal",
+                  "value": "varifocal",
+                  "nextStepId": "",
+                  "image": {
+                    "id": 458,
+                    "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-varifocal.png",
+                    "alt": ""
+                  },
+                  "helpText": "Distance at the top, reading at the bottom, blended in between with no visible line. Usually for over-40s. I take the fitting measurements from a photo or in person."
+                },
+                {
+                  "label": "No prescription",
+                  "value": "none",
+                  "nextStepId": "__terminal__",
+                  "image": {
+                    "id": 456,
+                    "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-none.png",
+                    "alt": ""
+                  },
+                  "helpText": "Adds the frame to your bag exactly as the brand made it, with its original tinted lenses. You can always add prescription lenses later.",
+                  "addToBagNow": true
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/form-step",
+        "attributes": {
+          "label": "How thin"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/heading",
+            "attributes": {
+              "level": "h2",
+              "fontFamily": "heading",
+              "fontWeight": "500",
+              "fontSize": {
+                "desktop": 40,
+                "mobile": 30
+              },
+              "fontSizeUnit": "px",
+              "lineHeight": {
+                "desktop": 1.05
+              },
+              "lineHeightUnit": "unitless",
+              "margin": {
+                "desktop": {
+                  "bottom": "8px"
+                }
+              },
+              "content": "How thin would you like them?"
+            }
+          },
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "fontSize": {
+                "desktop": 15.5
+              },
+              "fontSizeUnit": "px",
+              "textColour": "text-muted",
+              "margin": {
+                "desktop": {
+                  "bottom": "26px"
+                }
+              },
+              "text": "Thinner lenses are lighter and sit neater in the frame. If you don't know your numbers, Standard is a safe pick — I'll check when your prescription arrives and tell you if something thinner is worth it."
+            }
+          },
+          {
+            "name": "sgs/choice-flow-question",
+            "attributes": {
+              "layout": "grid",
+              "priceGroup": "lens-thickness",
+              "options": [
+                {
+                  "label": "Standard · 1.5",
+                  "value": "std",
+                  "nextStepId": "",
+                  "image": {
+                    "id": 451,
+                    "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/thickness-std.png",
+                    "alt": ""
+                  },
+                  "helpText": "The standard lens material. Perfectly good for a mild prescription — going thinner would make no visible difference and cost you money for nothing."
+                },
+                {
+                  "label": "Thin · 1.6",
+                  "value": "thin",
+                  "nextStepId": "",
+                  "image": {
+                    "id": 452,
+                    "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/thickness-thin.png",
+                    "alt": ""
+                  },
+                  "helpText": "Noticeably slimmer at the edge and lighter on your nose. The usual choice once your prescription gets past about ±2.00."
+                },
+                {
+                  "label": "Extra thin · 1.67",
+                  "value": "xthin",
+                  "nextStepId": "",
+                  "image": {
+                    "id": 454,
+                    "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/thickness-xthin.png",
+                    "alt": ""
+                  },
+                  "helpText": "Worth it for a stronger prescription — it stops the lens edge standing proud of the frame and reduces the way strong lenses distort how your eyes look."
+                },
+                {
+                  "label": "Ultra thin · 1.74",
+                  "value": "ultra",
+                  "nextStepId": "",
+                  "image": {
+                    "id": 453,
+                    "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/thickness-ultra.png",
+                    "alt": ""
+                  },
+                  "helpText": "The thinnest lens material available. If your prescription is strong, this is the difference between glasses you want to wear and glasses you tolerate."
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/form-step",
+        "attributes": {
+          "label": "Finish"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/heading",
+            "attributes": {
+              "level": "h2",
+              "fontFamily": "heading",
+              "fontWeight": "500",
+              "fontSize": {
+                "desktop": 40,
+                "mobile": 30
+              },
+              "fontSizeUnit": "px",
+              "lineHeight": {
+                "desktop": 1.05
+              },
+              "lineHeightUnit": "unitless",
+              "margin": {
+                "desktop": {
+                  "bottom": "8px"
+                }
+              },
+              "content": "What finish?"
+            }
+          },
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "fontSize": {
+                "desktop": 15.5
+              },
+              "fontSizeUnit": "px",
+              "textColour": "text-muted",
+              "margin": {
+                "desktop": {
+                  "bottom": "26px"
+                }
+              },
+              "text": "All of them block 100% of UV and come scratch-resistant."
+            }
+          },
+          {
+            "name": "sgs/choice-flow-question",
+            "attributes": {
+              "layout": "grid",
+              "priceGroup": "lens-finish",
+              "options": [
+                {
+                  "label": "Tinted to match",
+                  "value": "tint",
+                  "nextStepId": "",
+                  "image": {
+                    "id": 450,
+                    "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/finish-tint.png",
+                    "alt": ""
+                  },
+                  "helpText": "I match the tint to the lenses the brand fitted, so the frame looks exactly as designed. Nobody will know they're prescription."
+                },
+                {
+                  "label": "Polarised",
+                  "value": "pol",
+                  "nextStepId": "",
+                  "image": {
+                    "id": 449,
+                    "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/finish-pol.png",
+                    "alt": ""
+                  },
+                  "helpText": "A filter that cuts reflected glare rather than just dimming everything. If you drive a lot or spend time near water, this is the upgrade worth paying for."
+                },
+                {
+                  "label": "Light-reactive",
+                  "value": "photo",
+                  "nextStepId": "",
+                  "image": {
+                    "id": 448,
+                    "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/finish-photo.png",
+                    "alt": ""
+                  },
+                  "helpText": "One pair that works indoors and out. Worth knowing they react to UV, so they stay lighter behind a car windscreen."
+                },
+                {
+                  "label": "Clear",
+                  "value": "clear",
+                  "nextStepId": "",
+                  "image": {
+                    "id": 447,
+                    "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/finish-clear.png",
+                    "alt": ""
+                  },
+                  "helpText": "Sunglasses frames make excellent everyday glasses. Anti-reflective coating both sides, included."
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/form-step",
+        "attributes": {
+          "label": "Your bag"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/choice-flow-result",
+            "attributes": {
+              "action": "add-to-bag",
+              "heading": "Ready for your bag",
+              "body": "Your frame and lenses go in together. I'll ask for your prescription at checkout — you don't need it to hand now, and nothing gets made until I've checked it."
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

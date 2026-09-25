@@ -81,7 +81,11 @@ MEASURES = [("Lens width", "meta._sgs_frame_eye", "Across one lens at its widest
             ("Bridge", "meta._sgs_frame_bridge", "The gap between the lenses, where the frame sits on your nose."),
             ("Temple length", "meta._sgs_frame_temple", "The arm, from the hinge to the tip, ear bend included.")]
 sizing = [
-    txt("This pair, measured", margin={"desktop": {"bottom": "16px"}}, **LABEL),
+    B("sgs/container", dict(layout="flex", justifyContent="space-between", alignItems="baseline", flexWrap="wrap",
+                            gap={"desktop": "14px"}, margin={"desktop": {"bottom": "16px"}}), [
+        txt("This pair, measured", **LABEL),
+        txt('<a href="#size-guide">Which size am I?</a>', fontSize={"desktop": 13}, fontSizeUnit="px"),
+    ]),
     B("sgs/container", dict(layout="stack", gap={"desktop": "1px"}, backgroundColour="border", borderWidth=BOX,
                             borderColour="border"), [
         B("sgs/container", dict(
@@ -100,6 +104,9 @@ FAQS = [
     ("Delivery and returns", "Free UK delivery over £75, otherwise £3.95 tracked. Free collection in Birmingham. 30 days to return unworn frames; prescription lenses are refundable only if I got them wrong."),
     ("Adjustments and repairs", "Bring them in any time and I'll straighten, tighten or re-fit them for nothing, whether you bought them here last week or last year."),
 ]
+
+# The size guide's sgs_modal post on eye-care-test (gen_size_guide.py, built with wp-build-page.js --create sgs_modal).
+SIZE_GUIDE_MODAL = 461
 
 HOME = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'home.tree.json')
 
@@ -168,7 +175,7 @@ tree = [
                                       lineHeight={"desktop": 1.02}, lineHeightUnit="unitless",
                                       metadata=bind("content", "title"))),
                 btxt("short_description", fontSize={"desktop": 13.5}, fontSizeUnit="px", textColour="text-muted"),
-                B("sgs/button", dict(label="Add my prescription", url="/prescription-lenses/", inheritStyle="primary",
+                B("sgs/button", dict(label="Add my prescription", url="#lens-configurator", inheritStyle="primary",
                                      widthType={"desktop": "full"}, textTransform="uppercase",
                                      letterSpacing={"desktop": 0.12}, letterSpacingUnit="em",
                                      fontSize={"desktop": 13}, fontSizeUnit="px")),
@@ -216,6 +223,15 @@ tree = [
                 collection("pa_shape", 12)]),
         ]),
     ]),
+    # Opened by links, never by a button of their own (triggerStyle none): "Add my prescription" links
+    # #lens-configurator, "Which size am I?" links #size-guide. The lens flow is the saved Choice Flow
+    # lens-configurator (gen_lens_configurator.py), shown by a linked sgs/choice-flow (Spec 43 FR-43-6).
+    B("sgs/modal", dict(anchor="lens-configurator", triggerStyle="none", triggerText="Add prescription lenses",
+                        size="fullscreen", modalBackground="surface"), [
+        B("sgs/choice-flow", dict(flowId="lens-configurator", flowIsLinked=True)),
+    ]),
+    B("sgs/modal", dict(anchor="size-guide", triggerStyle="none", triggerText="Which size am I?", maxWidth="large",
+                        modalBackground="surface", modalRef=SIZE_GUIDE_MODAL)),
     B("core/template-part", {"slug": "footer", "tagName": "footer"}),
 ]
 

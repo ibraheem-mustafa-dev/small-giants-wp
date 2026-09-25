@@ -1,0 +1,532 @@
+[
+  {
+    "name": "sgs/heading",
+    "attributes": {
+      "level": "h2",
+      "content": "Which size am I?",
+      "fontFamily": "heading",
+      "fontWeight": "500",
+      "fontSize": {
+        "desktop": 24
+      },
+      "fontSizeUnit": "px",
+      "margin": {
+        "desktop": {
+          "bottom": "20px"
+        }
+      }
+    }
+  },
+  {
+    "name": "sgs/text",
+    "attributes": {
+      "text": "The quickest way: pick up a pair of glasses you already like the fit of and look at the inside of the left arm. You'll find three numbers printed there.",
+      "fontSize": {
+        "desktop": 16
+      },
+      "fontSizeUnit": "px",
+      "textColour": "text-muted",
+      "margin": {
+        "desktop": {
+          "bottom": "20px"
+        }
+      }
+    }
+  },
+  {
+    "name": "sgs/container",
+    "attributes": {
+      "backgroundColour": "surface-alt",
+      "borderWidth": {
+        "top": "1px",
+        "right": "1px",
+        "bottom": "1px",
+        "left": "1px"
+      },
+      "borderColour": "border",
+      "margin": {
+        "desktop": {
+          "bottom": "22px"
+        }
+      },
+      "padding": {
+        "desktop": {
+          "top": "22px",
+          "right": "22px",
+          "bottom": "22px",
+          "left": "22px"
+        }
+      }
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "layout": "grid",
+          "gridTemplateColumns": {
+            "desktop": "repeat(3,minmax(0,1fr))",
+            "mobile": "repeat(3,minmax(0,1fr))"
+          },
+          "gap": {
+            "desktop": "10px"
+          }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "55",
+              "fontFamily": "heading",
+              "fontWeight": "500",
+              "fontSize": {
+                "desktop": 32,
+                "mobile": 26
+              },
+              "fontSizeUnit": "px",
+              "letterSpacing": {
+                "desktop": 0.04
+              },
+              "letterSpacingUnit": "em",
+              "textAlign": "center"
+            }
+          },
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "▫ 18",
+              "fontFamily": "heading",
+              "fontWeight": "500",
+              "fontSize": {
+                "desktop": 32,
+                "mobile": 26
+              },
+              "fontSizeUnit": "px",
+              "letterSpacing": {
+                "desktop": 0.04
+              },
+              "letterSpacingUnit": "em",
+              "textAlign": "center"
+            }
+          },
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "137",
+              "fontFamily": "heading",
+              "fontWeight": "500",
+              "fontSize": {
+                "desktop": 32,
+                "mobile": 26
+              },
+              "fontSizeUnit": "px",
+              "letterSpacing": {
+                "desktop": 0.04
+              },
+              "letterSpacingUnit": "em",
+              "textAlign": "center"
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "layout": "grid",
+          "gridTemplateColumns": {
+            "desktop": "repeat(3,minmax(0,1fr))",
+            "mobile": "repeat(3,minmax(0,1fr))"
+          },
+          "gap": {
+            "desktop": "10px"
+          },
+          "margin": {
+            "desktop": {
+              "top": "10px"
+            }
+          }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "Lens width",
+              "fontSize": {
+                "desktop": 12
+              },
+              "fontSizeUnit": "px",
+              "letterSpacing": {
+                "desktop": 0.1
+              },
+              "letterSpacingUnit": "em",
+              "textTransform": "uppercase",
+              "textColour": "text-label",
+              "textAlign": "center"
+            }
+          },
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "Bridge",
+              "fontSize": {
+                "desktop": 12
+              },
+              "fontSizeUnit": "px",
+              "letterSpacing": {
+                "desktop": 0.1
+              },
+              "letterSpacingUnit": "em",
+              "textTransform": "uppercase",
+              "textColour": "text-label",
+              "textAlign": "center"
+            }
+          },
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "Temple",
+              "fontSize": {
+                "desktop": 12
+              },
+              "fontSizeUnit": "px",
+              "letterSpacing": {
+                "desktop": 0.1
+              },
+              "letterSpacingUnit": "em",
+              "textTransform": "uppercase",
+              "textColour": "text-label",
+              "textAlign": "center"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "sgs/container",
+    "attributes": {
+      "layout": "stack",
+      "contentWidth": {
+        "desktop": "full"
+      },
+      "gap": {
+        "desktop": "1px"
+      },
+      "backgroundColour": "border",
+      "borderWidth": {
+        "top": "1px",
+        "right": "1px",
+        "bottom": "1px",
+        "left": "1px"
+      },
+      "borderColour": "border",
+      "margin": {
+        "desktop": {
+          "bottom": "22px"
+        }
+      }
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "backgroundColour": "surface-alt",
+          "padding": {
+            "desktop": {
+              "top": "18px",
+              "right": "20px",
+              "bottom": "18px",
+              "left": "20px"
+            }
+          }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "Lens width — 42 to 62mm",
+              "fontSize": {
+                "desktop": 15.5
+              },
+              "fontSizeUnit": "px",
+              "fontWeight": "500"
+            }
+          },
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "The width of one lens at its widest. This is the number that decides whether a frame looks too small or too big on you.",
+              "fontSize": {
+                "desktop": 14.5
+              },
+              "fontSizeUnit": "px",
+              "textColour": "text-muted",
+              "margin": {
+                "desktop": {
+                  "top": "5px"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "backgroundColour": "surface-alt",
+          "padding": {
+            "desktop": {
+              "top": "18px",
+              "right": "20px",
+              "bottom": "18px",
+              "left": "20px"
+            }
+          }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "Bridge — 14 to 24mm",
+              "fontSize": {
+                "desktop": 15.5
+              },
+              "fontSizeUnit": "px",
+              "fontWeight": "500"
+            }
+          },
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "The gap between the lenses that sits over your nose. Too narrow and they pinch; too wide and they slide down.",
+              "fontSize": {
+                "desktop": 14.5
+              },
+              "fontSizeUnit": "px",
+              "textColour": "text-muted",
+              "margin": {
+                "desktop": {
+                  "top": "5px"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "backgroundColour": "surface-alt",
+          "padding": {
+            "desktop": {
+              "top": "18px",
+              "right": "20px",
+              "bottom": "18px",
+              "left": "20px"
+            }
+          }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "Temple — 130 to 150mm",
+              "fontSize": {
+                "desktop": 15.5
+              },
+              "fontSizeUnit": "px",
+              "fontWeight": "500"
+            }
+          },
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "The length of the arm, ear bend included. I can adjust this in person, so it's the least critical of the three.",
+              "fontSize": {
+                "desktop": 14.5
+              },
+              "fontSizeUnit": "px",
+              "textColour": "text-muted",
+              "margin": {
+                "desktop": {
+                  "top": "5px"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "sgs/container",
+    "attributes": {
+      "layout": "stack",
+      "contentWidth": {
+        "desktop": "full"
+      },
+      "gap": {
+        "desktop": "1px"
+      },
+      "backgroundColour": "border",
+      "borderWidth": {
+        "top": "1px",
+        "right": "1px",
+        "bottom": "1px",
+        "left": "1px"
+      },
+      "borderColour": "border",
+      "margin": {
+        "desktop": {
+          "bottom": "22px"
+        }
+      }
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "backgroundColour": "surface-alt",
+          "padding": {
+            "desktop": {
+              "top": "16px",
+              "right": "20px",
+              "bottom": "16px",
+              "left": "20px"
+            }
+          },
+          "layout": "flex",
+          "justifyContent": "space-between",
+          "gap": {
+            "desktop": "12px"
+          }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "Small",
+              "fontSize": {
+                "desktop": 15
+              },
+              "fontSizeUnit": "px"
+            }
+          },
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "lens width up to 52mm",
+              "fontSize": {
+                "desktop": 15
+              },
+              "fontSizeUnit": "px",
+              "textColour": "text-muted"
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "backgroundColour": "surface-alt",
+          "padding": {
+            "desktop": {
+              "top": "16px",
+              "right": "20px",
+              "bottom": "16px",
+              "left": "20px"
+            }
+          },
+          "layout": "flex",
+          "justifyContent": "space-between",
+          "gap": {
+            "desktop": "12px"
+          }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "Medium",
+              "fontSize": {
+                "desktop": 15
+              },
+              "fontSizeUnit": "px"
+            }
+          },
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "53 to 57mm",
+              "fontSize": {
+                "desktop": 15
+              },
+              "fontSizeUnit": "px",
+              "textColour": "text-muted"
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "backgroundColour": "surface-alt",
+          "padding": {
+            "desktop": {
+              "top": "16px",
+              "right": "20px",
+              "bottom": "16px",
+              "left": "20px"
+            }
+          },
+          "layout": "flex",
+          "justifyContent": "space-between",
+          "gap": {
+            "desktop": "12px"
+          }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "Large",
+              "fontSize": {
+                "desktop": 15
+              },
+              "fontSizeUnit": "px"
+            }
+          },
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "58mm and above",
+              "fontSize": {
+                "desktop": 15
+              },
+              "fontSizeUnit": "px",
+              "textColour": "text-muted"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "sgs/whatsapp-cta",
+    "attributes": {
+      "variant": "card",
+      "cardTitle": "Can't find the numbers?",
+      "cardSubline": "Send me a photo of the inside of the arm and I'll read it for you.",
+      "backgroundColour": "whatsapp-soft",
+      "cardBorderColour": "whatsapp-line",
+      "cardBorderWidth": {
+        "top": "1px",
+        "right": "1px",
+        "bottom": "1px",
+        "left": "1px"
+      },
+      "cardBorderStyle": "solid",
+      "cardTitleColour": "text",
+      "cardSublineColour": "text-muted"
+    }
+  }
+]
