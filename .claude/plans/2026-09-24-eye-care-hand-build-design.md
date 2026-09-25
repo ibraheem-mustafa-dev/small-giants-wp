@@ -133,8 +133,10 @@ key), with the owed Wave C polish alongside.
   accent progress fill, header with step eyebrow and Close, sticky footer, the draft's option descriptions, "Standard
   · 1.5" and "Send it later" pre-selected with their badges; the £268 path proven at 1440 and 375. Owed, shop polish (already listed above): colour swatches, filter panels open by
   default, the results count and sort row. For Bean: the size buttons read the real lens width (55 / 58 / 62, from
-  the jpopticians sizes chosen 2026-09-25) where the draft says S / M / L. For the nav track: the floating WhatsApp
-  "Ask me anything" bubble sits over the product page's "Need advice?" text at 1440.
+  the jpopticians sizes chosen 2026-09-25) where the draft says S / M / L. For the nav track: `floatingHideNearInline`
+  (default `true`, f9af77509) steps the floating WhatsApp bubble aside while the product page's "Need advice?"
+  card is on screen at 1440, and brings it back once scrolled past; live-verified on eye-care-test, including
+  the shop page (no inline CTA), which keeps the bubble visible throughout.
 - **Wave C task 6 (bag, checkout, prescription): BUILT and proven (see the task 6 plan's Outcome)**, `plans/2026-09-25-eye-care-bag-checkout-prescription.md`
   (Bean 2026-09-25: the prescription is the configurator's 4th question, per pair, as Glasses Direct does; pennies
   on every price, only savings drop ".00").

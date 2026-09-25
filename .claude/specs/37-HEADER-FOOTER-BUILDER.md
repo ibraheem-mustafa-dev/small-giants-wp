@@ -817,7 +817,11 @@ simple toggle plus a "Customise per device" reveal. Server-side, per-tier resolu
 `#uid`-scoped `@media` rules via `sgs_emit_tier_rules()`, through a single-writer merge pass
 (`sgs_merge_tri_state_declarations()`) so a behaviour that is off at every tier emits nothing and a
 narrow tier can genuinely cancel a wide one (independent emitters relying on `!important` and
-source order collide on a shared selector). `site-header-row` / `site-footer-row` use the same
+source order collide on a shared selector). `sgs_merge_tri_state_declarations()` also accepts a
+per-behaviour `fallback` map: Transparent's background fallback repaints the header's own resting
+fill on a tier where Transparent is off while a wider tier has it on, rather than leaving that
+narrower tier unpainted (live on a navy header: transparent at 1440px, `rgb(26,26,46)` at 375px).
+`site-header-row` / `site-footer-row` use the same
 canonical `sgs_resolve_on_tiers()` resolver (`'on'`/`'off'` tri-state). The canonical
 `resolveTier()` (`src/utils/responsive.js`) / `sgs_resolve_tier()` (`includes/helpers-responsive.php`)
 is the one inheritance mechanism in both runtimes — no second cascade exists. The theme pattern
@@ -850,8 +854,9 @@ left and right, each floored by the device safe-area inset); `attributes.headerF
 pill persists at mobile unless the operator opts out. The width cap is the existing `maxWidth`, the shape is the
 existing `borderRadius` and `shadow`, and the surface-ground trio (`surfaceBlur`, `surfaceSaturate`,
 `surfaceOpacity`, `includes/helpers-surface-ground.php`) gives the frosted look the reference measurements
-show (a pill with no shadow, border or fill); `surfaceFadeEdge` (`none`/`top`/`bottom`, off in
-forced-colours mode) fades one edge of the header to transparent across its full height. Float at a tier
+show (a pill with no shadow, border or fill); a faded ground (fantasy) is the header's own gradient fill
+(`backgroundColourGradient`, resolved by `sgs_background_paint_value()` and, once scrolled,
+`sgs_css_gradient_value()`) rather than a separate edge-fade attribute. Float at a tier
 implies pinning at that tier: `position`, `top` and `z-index` resolve Pass-through > Float > Sticky >
 Transparent through the one merged writer, and `top` is the inset. The per-tier `zIndex` object (M-09, `{desktop,tablet,mobile}`,
 whole numbers 0 to 99998, framework default 100, written only by `includes/sgs-header-z-index.php`) keeps

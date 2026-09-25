@@ -193,7 +193,7 @@ visually. `none` means neither.
 
 | Order | Unit | Scope after the decisions | Families (exit cells) | Bean | Size | Lock files |
 |---|---|---|---|---|---|---|
-| 1 | U-1 — **DONE** | De-hardcode the nav surfaces. FIRST COMMIT wires the mega fork's `closeGrace` to `submenuCloseGrace` (`nav-menu-markup.php` builds it with a literal 170 while the non-mega fork reads the attribute); lift or parameterise `mega-disclosure.js::MAX_INTENT_DELAY_MS = 80`, which clamps a markup-declared 300; per-tier z-index (ENG-01); align the surface-ground vocabulary (fill, blur, radius and shadow diverge by name and type across site-header, mega-panel and nav-drawer). The force-solid tier emits the header's resting background (section 1a) | M-09 (covered), M-13 (partial), M-43 (covered), M-21 (covered, live check owed) | design | medium | `nav-menu-markup.php`, `site-header/{render.php,style.css,block.json}`, `mega-panel/{render.php,style.css,block.json}`, `nav-drawer/block.json` |
+| 1 | U-1 — **DONE** | De-hardcode the nav surfaces. FIRST COMMIT wires the mega fork's `closeGrace` to `submenuCloseGrace` (`nav-menu-markup.php` builds it with a literal 170 while the non-mega fork reads the attribute); lift or parameterise `mega-disclosure.js::MAX_INTENT_DELAY_MS = 80`, which clamps a markup-declared 300; per-tier z-index (ENG-01); align the surface-ground vocabulary (fill, blur, radius and shadow diverge by name and type across site-header, mega-panel and nav-drawer). The force-solid tier emits the header's resting background (section 1a) | M-09 (covered), M-13 (covered), M-43 (covered), M-21 (covered) | design | medium | `nav-menu-markup.php`, `site-header/{render.php,style.css,block.json}`, `mega-panel/{render.php,style.css,block.json}`, `nav-drawer/block.json` |
 | 2 | U-9 — **DONE** (paired with U-11) | Dismissal routes, modality, trigger semantics, the resize rule (DEC-09), `accordionExclusive` (ENG-02), close-on-scroll (DEC-02) | M-36, M-34, M-35, M-40, M-47 | design | medium | `nav-bar-menu/block.json`, `nav-drawer/block.json`, `nav-menu-markup.php`, `src/shared/nav-interactivity/{store.js,mega-disclosure.js}` |
 | 3 | U-11 — **DONE** (paired with U-9) | Close-control presence, placement (`same-slot` / `top-row-start` / `top-row-end` plus an offset pair) and morph motion (DEC-15); magnet strength (M-10). Includes the `closeStyle` string to tier-object migration via `migrate-tier-object.py --property closeStyle`, with the fallthrough check that a stored flat string still resolves, and `$sgs_nd_allowed_close_styles` kept equal to the JSON enum | M-27, M-10 | eye | medium | `nav-drawer/{block.json,render.php,style.css}`, `nav-bar-menu/{block.json,style.css}` |
 | 4 | U-5 — **DONE** | Entry and exit animation vocabulary and item stagger. The mega fork has no entry-animation attribute today, so the animation must reach the mega interactivity context | M-31, M-32 | eye | high | `nav-drawer/{style.css,render.php,block.json}`, `mega-panel/block.json`, `nav-menu-markup.php`, `src/shared/nav-interactivity/` |
@@ -214,21 +214,27 @@ visually. `none` means neither.
 resting background; per-tier `zIndex` on `sgs/site-header` with drawer stacking derived from it;
 `submenuIntentDelay` + `submenuOpenOn` (hover or click); the surface-ground trio (`surfaceBlur`,
 `surfaceSaturate`, `surfaceOpacity`) aligned across `site-header`, `mega-panel`, `nav-drawer`, `container`,
-`cta-section`, `hero`, `multi-button`, `physics-canvas`, `site-footer` and `trust-bar`; `surfaceFadeEdge` on
-the header; a `shadow`/`shadowColour` writer on `mega-panel` and `nav-drawer`; layered shadows clone as a
-shape list plus a colour list; item hover paint (`itemOpacity`/`itemOpacityHover`,
-`submenuOpacity`/`submenuOpacityHover`, `itemPaddingShiftHover`, `panelCardLift`). Exit cells: M-43 moves to
-`covered` in `families-master.json` (residual: rabbit's open state never reproduced live). M-09 moves to
-`covered` (buck's `auto` z-index is an accepted divergence, Bean). M-21
-moves to `covered` (attributes built and PHP-tested; live verification of the card lift and the submenu
-opacity pair is owed). M-13 stays `partial` (the mega-panel `borderRadius` stays a single value, Bean; the
-edge-fade's live check is owed). Shipped alongside U-1: the universal shadow-tone
-check (design `.claude/reports/2026-09-23-shadow-tone-design.md`, Bean-approved GO WITH FIXES) — a surface is
-judged dark when white text would be chosen for it, a dark surface takes a black shadow at 2.2x plus a light
-ring, and the wrapper, nav-drawer and mega-panel mark `sgs-on-dark`/`sgs-on-light`. Owed: Bean's eye on the
-dark-surface screenshot and ring strength; the sandybrown deploy of everything since theme 1.5.91 (waits on
-another session committing `sgs/google-reviews`); theme gradient presets read as unknown in the canvas until
-callers pass `useSettings('color.gradients')`.
+`cta-section`, `hero`, `multi-button`, `physics-canvas`, `site-footer` and `trust-bar`; a
+`shadow`/`shadowColour` writer on `mega-panel` and `nav-drawer`; layered shadows clone as a shape list plus a
+colour list; item hover paint (`itemOpacity`/`itemOpacityHover`, `submenuOpacity`/`submenuOpacityHover`,
+`itemPaddingShiftHover`, `panelCardLift`). The faded ground (fantasy) is the
+header's own gradient fill (`backgroundColourGradient`, resolved by `sgs_background_paint_value()` and, once
+scrolled, `sgs_css_gradient_value()`), live-verified on sandybrown (`/qa-scrim/`, fixture
+`scripts/nav-qa/qa-u1-owed-fixture.php`, probe `scripts/nav-qa/u1-owed-probe.mjs`: top pixel 129, bottom 254
+over white, no mask on the header, dropdown still clickable). The same probe live-verified the card lift and
+the submenu opacity pair: fantasy's submenu link opacity 0.6 at rest to 1 hovered; indus-foods' 6px card lift
+with a negative control (an empty lift does not move the card; fixed in ae50c7626, mega-panel `style.css`'s
+fallback was -3px). Exit cells: M-43 moves to `covered` in `families-master.json` (residual: rabbit's open
+state never reproduced live). M-09 moves to `covered` (buck's `auto` z-index is an accepted divergence,
+Bean). M-21 moves to `covered`. M-13 moves to `covered` (its only open item, the edge-fade live check, is
+now proven; the mega-panel `borderRadius` staying a single value is a Bean-approved acceptance, not a gap).
+Shipped alongside U-1: the universal shadow-tone check (design
+`.claude/reports/2026-09-23-shadow-tone-design.md`, Bean-approved GO WITH FIXES) — a surface is judged dark
+when white text would be chosen for it, a dark surface takes a black shadow at 2.2x plus a light ring, and
+the wrapper, nav-drawer and mega-panel mark `sgs-on-dark`/`sgs-on-light`. Owed: Bean's eye on the
+dark-surface screenshot and ring strength. Theme gradient presets now resolve in the editor canvas preview
+and tone check (0ec253b35): every caller of `backgroundPreview()`/`wrapperToneClass()`/`surfaceToneClass()`
+passes `useSettings('color.gradients')` via `flattenPresetSetting()`.
 
 **U-2 — done** (D1148; design `.claude/reports/2026-09-24-u2-scrim-design.md`; live `reports/visual-diff/scrim-2026-09-24.md`).
 Shipped as ONE shared scrim (Bean widened the scope): `includes/helpers-scrim.php` plus `scrimColour`,

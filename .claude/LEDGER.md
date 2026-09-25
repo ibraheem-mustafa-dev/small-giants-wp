@@ -86,9 +86,8 @@ IN FULL before touching anything — do not act on this summary.**
 - **Wave 3C** (`plans/2026-09-21-wave-3c-implementation-plan.md` §4): **U-1 CLOSED** (D1143, D1146: nav
   timings, header z-index, surface ground on nav + wrapper blocks, layered shadows, dark-surface tone, lift
   on hover by default). **U-2 CLOSED** (D1148: one shared scrim on drawer, menu bar, modal, cart, gallery and
-  product search; one hover-shadow control). Everything is live on sandybrown (deployed 2026-09-24). Owed: live
-  check of U-1's edge fade, card lift and submenu opacity; Bean's eye on the three scrim screenshots; forced
-  colours and axe with a scrim open. Test posts 3777/3778 carry the close fixture's `trigger` scenario (non-modal, trigger anchor; backups in post meta). **U-9+U-11
+  product search; one hover-shadow control). Everything is live on sandybrown (deployed 2026-09-24). Owed:
+  Bean's eye on the three scrim screenshots. Test posts 3777/3778 carry the close fixture's `trigger` scenario (non-modal, trigger anchor; backups in post meta). **U-9+U-11
   CLOSED** (D1150: the live-opener × rule, per-tier close control, resize and scroll closes, burger morph, magnet strength).
 - **Wave 4** (proof gate — 11 client clones incl. resn, 10 if the teardown excludes it; Bean's-eye per
   clone; every Spec 38 effect available) — not started.

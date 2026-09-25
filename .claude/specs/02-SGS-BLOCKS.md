@@ -590,8 +590,10 @@ The icon circle has an overridable default border; a title placeholder never lea
 - `label` — RichText (for inline/banner: "Chat on WhatsApp")
 - `showOnMobile` — boolean
 - `showOnDesktop` — boolean
+- `floatingHideNearInline` — boolean (default `true`): the floating bubble steps aside (hidden,
+  inert) while any non-floating WhatsApp CTA is on screen, and returns once none is visible.
 
-**Render:** Static `save()` with `viewScriptModule` for floating button visibility logic (show after scroll, hide on certain pages).
+**Render:** Static `save()` with `viewScriptModule` for floating button visibility logic (show after scroll, hide on certain pages, and `floatingHideNearInline`).
 
 ---
 

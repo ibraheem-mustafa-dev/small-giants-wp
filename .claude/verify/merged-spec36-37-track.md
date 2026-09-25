@@ -133,7 +133,10 @@ Live reports: `reports/visual-diff/nav-bar-menu-*.md`, `nav-drawer-*.md`, `nav-d
 ## Wave 3C — Header and nav architecture harmonised
 - STATUS: under way (`plans/2026-09-21-wave-3c-implementation-plan.md`). U-1, U-2 and all of lane A (U-9+U-11, U-5,
   U-3+U-8, U-6+U-7, U-4, U-10+U-14) are closed, including lane A's batched QA pass. Open: lane B (U-13, then U-16,
-  which waits on step 0d), lane C (U-12, U-15, U-17), U-1's and U-2's owed live checks, and Gate 3C below.
+  which waits on step 0d), lane C (U-12, U-15, U-17), and Gate 3C below.
+- D (0f8b97287): a Transparent tier falling back to a narrower non-Transparent tier keeps the header's own resting
+  fill via `sgs_merge_tri_state_declarations()`'s per-behaviour `fallback` map. Live on a navy header: transparent
+  at 1440, `rgb(26,26,46)` at 375.
 
 **U-1 exit criteria (closed):**
 - Mega close-grace reads `submenuCloseGrace` (the bug where the mega context passed a literal 170
@@ -147,17 +150,21 @@ Live reports: `reports/visual-diff/nav-bar-menu-*.md`, `nav-drawer-*.md`, `nav-d
   `site-header`, `mega-panel`, `nav-drawer`, `container`, `cta-section`, `hero`, `multi-button`,
   `physics-canvas`, `site-footer` and `trust-bar`, one `Surface` panel
   (`container/components/BackgroundPanel.js`) and one editor preview (`src/utils/surface-preview.js`).
-  `sgs/site-header` also carries `surfaceFadeEdge` (none/top/bottom, off in forced-colours mode);
-  `mega-panel` and `nav-drawer` each gain a `shadow`/`shadowColour` writer. Live-verified:
+  `mega-panel` and `nav-drawer` each gain a `shadow`/`shadowColour` writer. The faded ground (fantasy) is the
+  header's own gradient fill (`backgroundColourGradient`, resolved by `sgs_background_paint_value()` and, once
+  scrolled, `sgs_css_gradient_value()`); there is no header-wide mask, so dropdowns and mega panels below the
+  header stay visible. Live-verified:
   `reports/visual-diff/container-2026-09-23.md`, `nav-drawer-2026-09-23.md`, `nav-bar-menu-2026-09-23.md`,
-  `container-2026-09-21.md`, `mega-panel-2026-09-21.md`. The mega-panel `borderRadius` stays a single value
-  (Bean); the edge-fade's own live check is owed.
+  `container-2026-09-21.md`, `mega-panel-2026-09-21.md`, and the fantasy gradient fill on sandybrown
+  (`/qa-scrim/`, fixture `scripts/nav-qa/qa-u1-owed-fixture.php`, probe `scripts/nav-qa/u1-owed-probe.mjs`:
+  top pixel 129, bottom 254 over white, no mask on the header, dropdown still clickable). The mega-panel
+  `borderRadius` stays a single value (Bean).
 - Item hover paint: `itemOpacity`/`itemOpacityHover` and `submenuOpacity`/`submenuOpacityHover` on
   `sgs/nav-bar-menu` and `sgs/nav-drawer-menu`; `itemPaddingShiftHover`; mega-panel `panelCardLift`.
-  Attributes built and PHP-tested; live verification of the card lift and the submenu opacity pair on a
-  `qa-hdr-*` fixture is owed.
-- Family coverage in `families-master.json`: M-43 and M-21 covered (M-21 pending the live check above);
-  M-09 covered; M-13 partial until the edge-fade live check.
+  Live-verified on the same `qa-hdr-*` fixture and probe: fantasy's submenu link opacity 0.6 at rest to 1
+  hovered; indus-foods' 6px card lift with a negative control (an empty lift does not move the card; fixed in
+  ae50c7626, mega-panel `style.css`'s fallback was -3px).
+- Family coverage in `families-master.json`: M-43, M-21, M-09 and M-13 covered.
 - Shipped alongside U-1, not itself a U-1 family: the universal shadow-tone check (design
   `.claude/reports/2026-09-23-shadow-tone-design.md`, Bean-approved GO WITH FIXES) — a surface is judged
   dark when white text would be chosen for it (`helpers-colour-wcag.php::sgs_wcag_white_wins_for_luminance`),
@@ -165,9 +172,10 @@ Live reports: `reports/visual-diff/nav-bar-menu-*.md`, `nav-drawer-*.md`, `nav-d
   nav-drawer and mega-panel mark `sgs-on-dark`/`sgs-on-light`, and `helpers-shadow-dark.php` gives a dark
   surface a black shadow at 2.2x plus a 1px light ring, gated by `scripts/check-shadow-sources.py`. Owed:
   Bean's eye on the dark-surface screenshot and the ring strength.
-- Also owed, not gating U-1's own closure: theme gradient presets read as unknown in the canvas until callers
-  pass `useSettings('color.gradients')`. (The sandybrown deploy of everything since theme 1.5.91 happened on
-  2026-09-24 with U-2.)
+- Theme gradient presets now resolve in the editor canvas preview and tone check (0ec253b35): every caller of
+  `backgroundPreview()`/`wrapperToneClass()`/`surfaceToneClass()` passes `useSettings('color.gradients')` via
+  `flattenPresetSetting()`. (The sandybrown deploy of everything since theme 1.5.91 happened on 2026-09-24
+  with U-2.)
 
 **U-2 exit criteria (closed, D1148):**
 - M-14 covered: every exit cell reachable per tier through `scrimColour`, `scrimColourGradient`, `scrimOpacity`,
@@ -176,7 +184,11 @@ Live reports: `reports/visual-diff/nav-bar-menu-*.md`, `nav-drawer-*.md`, `nav-d
   panel scrim (`#0a0a0c`, 0.28, blur 2px), lamalama's drawer scrim (black, 0.4, blur 16px) and away's phone cell (0)
   (`reports/visual-diff/scrim-2026-09-24.md`). Residue: butcherbox's dropdown strength never captured as a number;
   lamalama's click-through accepted as a divergence; the fade timing waits on U-5.
-- Owed: Bean's eye on the three scrim screenshots; forced-colours emulation and an axe run with a surface open.
+- Forced-colours checked live: with a dropdown's scrim open under forced colours, the scrim hides by design
+  (`includes/helpers-scrim.php` has an explicit forced-colors `display:none`), the open dropdown keeps a 1px
+  solid border and its links take the system link colour. The axe run with a surface open was done in lane A's
+  batched pass (`reports/visual-diff/nav-drawer-2026-09-25.md`).
+- Owed: Bean's eye on the three scrim screenshots.
 
 **U-9 + U-11 exit criteria (closed as one pair, D1150):**
 - M-36, M-34, M-35, M-40, M-47, M-27, M-10 covered. Measured live on sandybrown with a negative control each

@@ -366,15 +366,16 @@
     "wearecollins"
    ],
    "needed_by_count": 13,
-   "coverage_status": "partial",
+   "coverage_status": "covered",
    "evidence": "measured",
    "covered_by": [
-    "sgs/site-header::surfaceBlur/::surfaceSaturate/::surfaceOpacity/::surfaceFadeEdge/::shadow/::shadowColour",
+    "sgs/site-header::surfaceBlur/::surfaceSaturate/::surfaceOpacity/::shadow/::shadowColour",
+    "sgs/site-header::backgroundColourGradient (faded ground, fantasy)",
     "sgs/mega-panel::surfaceBlur/::surfaceSaturate/::surfaceOpacity/::shadow/::shadowColour/::borderRadius (plain string)",
     "sgs/nav-drawer::surfaceBlur/::surfaceSaturate/::surfaceOpacity/::shadow/::shadowColour/::borderRadius",
     "sgs/container, sgs/cta-section, sgs/hero, sgs/multi-button, sgs/physics-canvas, sgs/site-footer, sgs/trust-bar::surfaceBlur/::surfaceSaturate/::surfaceOpacity (includes/helpers-surface-ground.php, one shared emitter)"
    ],
-   "note": "U-1 built the surface-ground trio (surfaceBlur/surfaceSaturate/surfaceOpacity) as one shared emitter (includes/helpers-surface-ground.php) across the header, the mega panel, the drawer and seven content blocks, plus a shadow/shadowColour writer on the mega panel and the drawer, and surfaceFadeEdge on the header. Every needed_by reference now has a coverable value for fill, blur, opacity and shadow. TWO residuals keep the family partial rather than closing the vocabulary-alignment exit condition this family names: (1) sgs/mega-panel::borderRadius stays a plain string while sgs/site-header and sgs/nav-drawer hold it as a {desktop,tablet,mobile} tier object; Bean ruled it stays a single value (no reference needs a per-device radius). (2) surfaceFadeEdge's own live check (fantasy's mask-image gradient fade) is owed.",
+   "note": "U-1 built the surface-ground trio (surfaceBlur/surfaceSaturate/surfaceOpacity) as one shared emitter (includes/helpers-surface-ground.php) across the header, the mega panel, the drawer and seven content blocks, plus a shadow/shadowColour writer on the mega panel and the drawer. Every needed_by reference has a coverable value for fill, blur, opacity and shadow: fantasy's faded ground is the header's own gradient fill (backgroundColourGradient), reproduced live as a gradient (top pixel 129, bottom 254 over white, no mask on the header, dropdown still clickable) after surfaceFadeEdge was removed from sgs/site-header (it masked the whole header, hiding every dropdown and mega panel below it). sgs/mega-panel::borderRadius stays a plain string while sgs/site-header and sgs/nav-drawer hold it as a {desktop,tablet,mobile} tier object; Bean ruled it stays a single value (no reference needs a per-device radius).",
    "ground_vocabulary_divergence": {
     "_why": "The merge test is 'ONE block attribute or mechanism would express both sides'. Verified from block.json, the attributes DIVERGE by name and type across the four blocks, which is itself the composite-mirror bug. Recorded as this family's gap; the alignment is assigned to U-1.",
     "fill": {
