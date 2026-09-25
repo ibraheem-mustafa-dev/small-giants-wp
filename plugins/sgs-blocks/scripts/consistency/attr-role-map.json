@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "..\\..\\..\\..\\..\\Users\\Bean\\.claude\\skills\\sgs-wp-engine\\sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 8374,
+    "row_count": 8376,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -1835,6 +1835,8 @@
     "sgs/container::overlayGradient": "colour-gradient",
     "sgs/container::overlayGradientHover": "colour-gradient",
     "sgs/container::padding": "layout",
+    "sgs/container::scrollItemWidth": "layout",
+    "sgs/container::scrollSideways": "layout",
     "sgs/container::shadow": "visual",
     "sgs/container::shadowColour": "color",
     "sgs/container::shadowColourHover": "color",

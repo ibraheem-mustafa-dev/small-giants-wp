@@ -14525,6 +14525,15 @@
     },
     {
       "slug": "sgs/container",
+      "attr": "scrollSideways",
+      "fields": {
+        "css_property": "overflow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/container",
       "attr": "shadowColour",
       "fields": {
         "css_property": "box-shadow-color",
