@@ -311,7 +311,9 @@ final class Product_Bindings {
 				// division); empty for simple products (they show the exact price).
 				$is_variable     = $product->is_type( 'variable' );
 				$price_from_html = '';
-				if ( $is_variable && \method_exists( $product, 'get_variation_price' ) ) {
+				// Only when the variations' prices differ: every colour at £139 reads "£139".
+				if ( $is_variable && \method_exists( $product, 'get_variation_price' )
+					&& (string) $product->get_variation_price( 'min', false ) !== (string) $product->get_variation_price( 'max', false ) ) {
 					$min_raw     = $product->get_variation_price( 'min', false );
 					$min_display = \function_exists( 'wc_get_price_to_display' )
 						? \wc_get_price_to_display( $product, array( 'price' => $min_raw ) )

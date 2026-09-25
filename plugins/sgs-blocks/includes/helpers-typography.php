@@ -75,11 +75,43 @@ if ( ! function_exists( 'sgs_font_family_sanitise' ) ) {
 	 * in quote/render.php's `$ff_safe` and product-card/render.php's
 	 * `$sgs_title_ff_safe` workarounds, now consolidated to one definition.
 	 *
+	 * A bare theme font preset slug ("body", "heading") becomes its preset
+	 * variable, so the value follows the site's own font choice.
+	 *
 	 * @param mixed $value Raw font-family value.
 	 * @return string Sanitised font-family (may be '').
 	 */
 	function sgs_font_family_sanitise( $value ): string {
-		return preg_replace( '/[^a-zA-Z0-9 ,"\'\-]/', '', (string) $value );
+		$clean = preg_replace( '/[^a-zA-Z0-9 ,"\'\-]/', '', (string) $value );
+		if ( preg_match( '/^[a-z0-9-]+$/', $clean ) && in_array( $clean, sgs_font_family_preset_slugs(), true ) ) {
+			return 'var(--wp--preset--font-family--' . $clean . ')';
+		}
+		return $clean;
+	}
+}
+
+if ( ! function_exists( 'sgs_font_family_preset_slugs' ) ) {
+	/**
+	 * Slugs of every font-family preset the site defines (theme, custom and
+	 * default origins), cached per request.
+	 *
+	 * @return string[] Preset slugs.
+	 */
+	function sgs_font_family_preset_slugs(): array {
+		static $slugs = null;
+		if ( null !== $slugs ) {
+			return $slugs;
+		}
+		$slugs    = array();
+		$families = function_exists( 'wp_get_global_settings' ) ? wp_get_global_settings( array( 'typography', 'fontFamilies' ) ) : array();
+		foreach ( (array) $families as $origin ) {
+			foreach ( (array) $origin as $family ) {
+				if ( is_array( $family ) && ! empty( $family['slug'] ) ) {
+					$slugs[] = (string) $family['slug'];
+				}
+			}
+		}
+		return $slugs;
 	}
 }
 

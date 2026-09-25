@@ -148,8 +148,9 @@
 /* Price row */
 .product-card .price-row {
 	display: flex;
+	flex-wrap: wrap;
 	align-items: baseline;
-	gap: 10px;
+	gap: 6px 10px;
 	/* A5 (QC): margin removed — flex gap on .product-card-body handles rhythm. */
 	margin: 0;
 }

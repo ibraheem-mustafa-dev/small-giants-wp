@@ -81,30 +81,23 @@ if ( ! function_exists( 'sgs_product_card_live_fill' ) ) {
 
 if ( ! function_exists( 'sgs_product_card_live_swatches' ) ) {
 	/**
-	 * Colour swatches from a variable product's attribute terms, in the
-	 * product's own term order. A term without `_sgs_swatch_color` is skipped.
+	 * Colour swatches from a variable product's attribute terms, in the shop's
+	 * own term order (the order the option pickers use). A term without
+	 * `_sgs_swatch_color` is skipped.
 	 *
-	 * @param \WC_Product $product   A variable product.
-	 * @param string      $taxonomy  Attribute taxonomy to read; '' = auto.
+	 * @param \WC_Product $product  A variable product.
+	 * @param string      $taxonomy Attribute taxonomy to read; '' = auto.
 	 * @return array<int, array{key: string, label: string, colour: string}>
 	 */
 	function sgs_product_card_live_swatches( $product, string $taxonomy ): array {
-		$taxonomy   = sanitize_key( $taxonomy );
-		$candidates = array();
-		foreach ( $product->get_attributes() as $attr ) {
-			if ( ! is_object( $attr ) || ! $attr->is_taxonomy() || ! $attr->get_variation() ) {
+		$taxonomy = sanitize_key( $taxonomy );
+		foreach ( $product->get_variation_attributes() as $attr_taxonomy => $slugs ) {
+			if ( ! taxonomy_exists( $attr_taxonomy ) || ( '' !== $taxonomy && $taxonomy !== $attr_taxonomy ) ) {
 				continue;
 			}
-			if ( '' !== $taxonomy && $taxonomy !== $attr->get_name() ) {
-				continue;
-			}
-			$candidates[] = $attr;
-		}
-
-		foreach ( $candidates as $attr ) {
 			$swatches = array();
-			foreach ( $attr->get_options() as $term_id ) {
-				$term = get_term( (int) $term_id, $attr->get_name() );
+			foreach ( (array) $slugs as $slug ) {
+				$term = get_term_by( 'slug', (string) $slug, $attr_taxonomy );
 				if ( ! $term instanceof \WP_Term ) {
 					continue;
 				}

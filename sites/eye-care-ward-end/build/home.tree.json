@@ -353,13 +353,13 @@
         "attributes": {
           "layout": "grid",
           "gridTemplateColumns": {
-            "desktop": "repeat(3,minmax(0,1fr))",
+            "desktop": "repeat(auto-fill,minmax(280px,1fr))",
             "tablet": "repeat(2,minmax(0,1fr))",
             "mobile": "repeat(2,minmax(0,1fr))"
           },
           "gap": {
-            "desktop": "24px",
-            "mobile": "16px"
+            "desktop": "18px",
+            "mobile": "10px"
           },
           "textWrap": "wrap"
         },
@@ -369,14 +369,57 @@
             "attributes": {
               "sourceMode": "wc-product",
               "productId": 71,
+              "showAttributeTag": false,
               "showRating": true,
               "noReviewsText": "No reviews yet",
               "showSavingBadge": true,
-              "savingLabel": "Save £32",
               "savingBadgePosition": "bottom-left",
-              "showAttributeTag": false,
-              "showPickers": true,
-              "swatchMaxVisible": 4
+              "showBrandOverlay": true,
+              "brandFontFamily": "heading",
+              "brandFontWeight": "500",
+              "brandFontSize": {
+                "desktop": 12.5
+              },
+              "brandFontSizeUnit": "px",
+              "brandLetterSpacing": {
+                "desktop": 0.26
+              },
+              "brandLetterSpacingUnit": "em",
+              "showPickers": false,
+              "showDescription": false,
+              "showCta": false,
+              "showWishlist": true,
+              "rrpMetaKey": "_sgs_rrp",
+              "swatchMaxVisible": 4,
+              "imageAspectRatio": "1 / 1",
+              "showShadow": false,
+              "borderRadius": {
+                "desktop": {
+                  "topLeft": "0px",
+                  "topRight": "0px",
+                  "bottomLeft": "0px",
+                  "bottomRight": "0px"
+                }
+              },
+              "cardPadding": {
+                "top": "16px",
+                "right": "16px",
+                "bottom": "18px",
+                "left": "16px"
+              },
+              "titleFontFamily": "body",
+              "titleFontSize": {
+                "desktop": 16
+              },
+              "titleFontSizeUnit": "px",
+              "titleFontWeight": "400",
+              "titleLineHeight": 1.25,
+              "priceFontFamily": "body",
+              "priceFontSize": {
+                "desktop": 18
+              },
+              "priceFontSizeUnit": "px",
+              "priceFontWeight": "500"
             }
           },
           {
@@ -384,14 +427,57 @@
             "attributes": {
               "sourceMode": "wc-product",
               "productId": 76,
+              "showAttributeTag": false,
               "showRating": true,
               "noReviewsText": "No reviews yet",
               "showSavingBadge": true,
-              "savingLabel": "Save £51",
               "savingBadgePosition": "bottom-left",
-              "showAttributeTag": false,
-              "showPickers": true,
-              "swatchMaxVisible": 4
+              "showBrandOverlay": true,
+              "brandFontFamily": "heading",
+              "brandFontWeight": "500",
+              "brandFontSize": {
+                "desktop": 12.5
+              },
+              "brandFontSizeUnit": "px",
+              "brandLetterSpacing": {
+                "desktop": 0.26
+              },
+              "brandLetterSpacingUnit": "em",
+              "showPickers": false,
+              "showDescription": false,
+              "showCta": false,
+              "showWishlist": true,
+              "rrpMetaKey": "_sgs_rrp",
+              "swatchMaxVisible": 4,
+              "imageAspectRatio": "1 / 1",
+              "showShadow": false,
+              "borderRadius": {
+                "desktop": {
+                  "topLeft": "0px",
+                  "topRight": "0px",
+                  "bottomLeft": "0px",
+                  "bottomRight": "0px"
+                }
+              },
+              "cardPadding": {
+                "top": "16px",
+                "right": "16px",
+                "bottom": "18px",
+                "left": "16px"
+              },
+              "titleFontFamily": "body",
+              "titleFontSize": {
+                "desktop": 16
+              },
+              "titleFontSizeUnit": "px",
+              "titleFontWeight": "400",
+              "titleLineHeight": 1.25,
+              "priceFontFamily": "body",
+              "priceFontSize": {
+                "desktop": 18
+              },
+              "priceFontSizeUnit": "px",
+              "priceFontWeight": "500"
             }
           },
           {
@@ -399,17 +485,60 @@
             "attributes": {
               "sourceMode": "wc-product",
               "productId": 81,
-              "showRating": true,
-              "noReviewsText": "No reviews yet",
-              "showSavingBadge": true,
-              "savingLabel": "Save £27",
-              "savingBadgePosition": "bottom-left",
               "showAttributeTag": true,
               "attributeTagSource": "tag",
               "attributeTagTerm": "polarised",
               "attributeTagText": "Polarised",
-              "showPickers": true,
-              "swatchMaxVisible": 4
+              "showRating": true,
+              "noReviewsText": "No reviews yet",
+              "showSavingBadge": true,
+              "savingBadgePosition": "bottom-left",
+              "showBrandOverlay": true,
+              "brandFontFamily": "heading",
+              "brandFontWeight": "500",
+              "brandFontSize": {
+                "desktop": 12.5
+              },
+              "brandFontSizeUnit": "px",
+              "brandLetterSpacing": {
+                "desktop": 0.26
+              },
+              "brandLetterSpacingUnit": "em",
+              "showPickers": false,
+              "showDescription": false,
+              "showCta": false,
+              "showWishlist": true,
+              "rrpMetaKey": "_sgs_rrp",
+              "swatchMaxVisible": 4,
+              "imageAspectRatio": "1 / 1",
+              "showShadow": false,
+              "borderRadius": {
+                "desktop": {
+                  "topLeft": "0px",
+                  "topRight": "0px",
+                  "bottomLeft": "0px",
+                  "bottomRight": "0px"
+                }
+              },
+              "cardPadding": {
+                "top": "16px",
+                "right": "16px",
+                "bottom": "18px",
+                "left": "16px"
+              },
+              "titleFontFamily": "body",
+              "titleFontSize": {
+                "desktop": 16
+              },
+              "titleFontSizeUnit": "px",
+              "titleFontWeight": "400",
+              "titleLineHeight": 1.25,
+              "priceFontFamily": "body",
+              "priceFontSize": {
+                "desktop": 18
+              },
+              "priceFontSizeUnit": "px",
+              "priceFontWeight": "500"
             }
           },
           {
@@ -417,14 +546,57 @@
             "attributes": {
               "sourceMode": "wc-product",
               "productId": 86,
+              "showAttributeTag": false,
               "showRating": true,
               "noReviewsText": "No reviews yet",
               "showSavingBadge": true,
-              "savingLabel": "Save £57",
               "savingBadgePosition": "bottom-left",
-              "showAttributeTag": false,
-              "showPickers": true,
-              "swatchMaxVisible": 4
+              "showBrandOverlay": true,
+              "brandFontFamily": "heading",
+              "brandFontWeight": "500",
+              "brandFontSize": {
+                "desktop": 12.5
+              },
+              "brandFontSizeUnit": "px",
+              "brandLetterSpacing": {
+                "desktop": 0.26
+              },
+              "brandLetterSpacingUnit": "em",
+              "showPickers": false,
+              "showDescription": false,
+              "showCta": false,
+              "showWishlist": true,
+              "rrpMetaKey": "_sgs_rrp",
+              "swatchMaxVisible": 4,
+              "imageAspectRatio": "1 / 1",
+              "showShadow": false,
+              "borderRadius": {
+                "desktop": {
+                  "topLeft": "0px",
+                  "topRight": "0px",
+                  "bottomLeft": "0px",
+                  "bottomRight": "0px"
+                }
+              },
+              "cardPadding": {
+                "top": "16px",
+                "right": "16px",
+                "bottom": "18px",
+                "left": "16px"
+              },
+              "titleFontFamily": "body",
+              "titleFontSize": {
+                "desktop": 16
+              },
+              "titleFontSizeUnit": "px",
+              "titleFontWeight": "400",
+              "titleLineHeight": 1.25,
+              "priceFontFamily": "body",
+              "priceFontSize": {
+                "desktop": 18
+              },
+              "priceFontSizeUnit": "px",
+              "priceFontWeight": "500"
             }
           },
           {
@@ -432,14 +604,57 @@
             "attributes": {
               "sourceMode": "wc-product",
               "productId": 90,
+              "showAttributeTag": false,
               "showRating": true,
               "noReviewsText": "No reviews yet",
               "showSavingBadge": true,
-              "savingLabel": "Save £30",
               "savingBadgePosition": "bottom-left",
-              "showAttributeTag": false,
-              "showPickers": true,
-              "swatchMaxVisible": 4
+              "showBrandOverlay": true,
+              "brandFontFamily": "heading",
+              "brandFontWeight": "500",
+              "brandFontSize": {
+                "desktop": 12.5
+              },
+              "brandFontSizeUnit": "px",
+              "brandLetterSpacing": {
+                "desktop": 0.26
+              },
+              "brandLetterSpacingUnit": "em",
+              "showPickers": false,
+              "showDescription": false,
+              "showCta": false,
+              "showWishlist": true,
+              "rrpMetaKey": "_sgs_rrp",
+              "swatchMaxVisible": 4,
+              "imageAspectRatio": "1 / 1",
+              "showShadow": false,
+              "borderRadius": {
+                "desktop": {
+                  "topLeft": "0px",
+                  "topRight": "0px",
+                  "bottomLeft": "0px",
+                  "bottomRight": "0px"
+                }
+              },
+              "cardPadding": {
+                "top": "16px",
+                "right": "16px",
+                "bottom": "18px",
+                "left": "16px"
+              },
+              "titleFontFamily": "body",
+              "titleFontSize": {
+                "desktop": 16
+              },
+              "titleFontSizeUnit": "px",
+              "titleFontWeight": "400",
+              "titleLineHeight": 1.25,
+              "priceFontFamily": "body",
+              "priceFontSize": {
+                "desktop": 18
+              },
+              "priceFontSizeUnit": "px",
+              "priceFontWeight": "500"
             }
           },
           {
@@ -447,14 +662,57 @@
             "attributes": {
               "sourceMode": "wc-product",
               "productId": 98,
+              "showAttributeTag": false,
               "showRating": true,
               "noReviewsText": "No reviews yet",
               "showSavingBadge": true,
-              "savingLabel": "Save £29",
               "savingBadgePosition": "bottom-left",
-              "showAttributeTag": false,
-              "showPickers": true,
-              "swatchMaxVisible": 4
+              "showBrandOverlay": true,
+              "brandFontFamily": "heading",
+              "brandFontWeight": "500",
+              "brandFontSize": {
+                "desktop": 12.5
+              },
+              "brandFontSizeUnit": "px",
+              "brandLetterSpacing": {
+                "desktop": 0.26
+              },
+              "brandLetterSpacingUnit": "em",
+              "showPickers": false,
+              "showDescription": false,
+              "showCta": false,
+              "showWishlist": true,
+              "rrpMetaKey": "_sgs_rrp",
+              "swatchMaxVisible": 4,
+              "imageAspectRatio": "1 / 1",
+              "showShadow": false,
+              "borderRadius": {
+                "desktop": {
+                  "topLeft": "0px",
+                  "topRight": "0px",
+                  "bottomLeft": "0px",
+                  "bottomRight": "0px"
+                }
+              },
+              "cardPadding": {
+                "top": "16px",
+                "right": "16px",
+                "bottom": "18px",
+                "left": "16px"
+              },
+              "titleFontFamily": "body",
+              "titleFontSize": {
+                "desktop": 16
+              },
+              "titleFontSizeUnit": "px",
+              "titleFontWeight": "400",
+              "titleLineHeight": 1.25,
+              "priceFontFamily": "body",
+              "priceFontSize": {
+                "desktop": 18
+              },
+              "priceFontSizeUnit": "px",
+              "priceFontWeight": "500"
             }
           },
           {
@@ -462,14 +720,57 @@
             "attributes": {
               "sourceMode": "wc-product",
               "productId": 103,
+              "showAttributeTag": false,
               "showRating": true,
               "noReviewsText": "No reviews yet",
               "showSavingBadge": true,
-              "savingLabel": "Save £47",
               "savingBadgePosition": "bottom-left",
-              "showAttributeTag": false,
-              "showPickers": true,
-              "swatchMaxVisible": 4
+              "showBrandOverlay": true,
+              "brandFontFamily": "heading",
+              "brandFontWeight": "500",
+              "brandFontSize": {
+                "desktop": 12.5
+              },
+              "brandFontSizeUnit": "px",
+              "brandLetterSpacing": {
+                "desktop": 0.26
+              },
+              "brandLetterSpacingUnit": "em",
+              "showPickers": false,
+              "showDescription": false,
+              "showCta": false,
+              "showWishlist": true,
+              "rrpMetaKey": "_sgs_rrp",
+              "swatchMaxVisible": 4,
+              "imageAspectRatio": "1 / 1",
+              "showShadow": false,
+              "borderRadius": {
+                "desktop": {
+                  "topLeft": "0px",
+                  "topRight": "0px",
+                  "bottomLeft": "0px",
+                  "bottomRight": "0px"
+                }
+              },
+              "cardPadding": {
+                "top": "16px",
+                "right": "16px",
+                "bottom": "18px",
+                "left": "16px"
+              },
+              "titleFontFamily": "body",
+              "titleFontSize": {
+                "desktop": 16
+              },
+              "titleFontSizeUnit": "px",
+              "titleFontWeight": "400",
+              "titleLineHeight": 1.25,
+              "priceFontFamily": "body",
+              "priceFontSize": {
+                "desktop": 18
+              },
+              "priceFontSizeUnit": "px",
+              "priceFontWeight": "500"
             }
           },
           {
@@ -477,17 +778,60 @@
             "attributes": {
               "sourceMode": "wc-product",
               "productId": 107,
-              "showRating": true,
-              "noReviewsText": "No reviews yet",
-              "showSavingBadge": true,
-              "savingLabel": "Save £16",
-              "savingBadgePosition": "bottom-left",
               "showAttributeTag": true,
               "attributeTagSource": "tag",
               "attributeTagTerm": "polarised",
               "attributeTagText": "Polarised",
-              "showPickers": true,
-              "swatchMaxVisible": 4
+              "showRating": true,
+              "noReviewsText": "No reviews yet",
+              "showSavingBadge": true,
+              "savingBadgePosition": "bottom-left",
+              "showBrandOverlay": true,
+              "brandFontFamily": "heading",
+              "brandFontWeight": "500",
+              "brandFontSize": {
+                "desktop": 12.5
+              },
+              "brandFontSizeUnit": "px",
+              "brandLetterSpacing": {
+                "desktop": 0.26
+              },
+              "brandLetterSpacingUnit": "em",
+              "showPickers": false,
+              "showDescription": false,
+              "showCta": false,
+              "showWishlist": true,
+              "rrpMetaKey": "_sgs_rrp",
+              "swatchMaxVisible": 4,
+              "imageAspectRatio": "1 / 1",
+              "showShadow": false,
+              "borderRadius": {
+                "desktop": {
+                  "topLeft": "0px",
+                  "topRight": "0px",
+                  "bottomLeft": "0px",
+                  "bottomRight": "0px"
+                }
+              },
+              "cardPadding": {
+                "top": "16px",
+                "right": "16px",
+                "bottom": "18px",
+                "left": "16px"
+              },
+              "titleFontFamily": "body",
+              "titleFontSize": {
+                "desktop": 16
+              },
+              "titleFontSizeUnit": "px",
+              "titleFontWeight": "400",
+              "titleLineHeight": 1.25,
+              "priceFontFamily": "body",
+              "priceFontSize": {
+                "desktop": 18
+              },
+              "priceFontSizeUnit": "px",
+              "priceFontWeight": "500"
             }
           }
         ]

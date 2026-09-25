@@ -369,6 +369,9 @@ foreach ( $data['PRODUCTS'] as $p ) {
 			wp_set_object_terms( $product_id, array( (int) $brand_term->term_id ), $brand_taxonomy );
 		}
 	}
+	// The draft's `pol` flag: a "Polarised" product tag (the card's attribute tag reads it).
+	wp_set_object_terms( $product_id, ! empty( $p['pol'] ) ? array( 'Polarised' ) : array(), 'product_tag', false );
+
 	if ( $tax_shape && isset( $shape_term_ids[ $p['shape'] ] ) ) {
 		wp_set_object_terms( $product_id, array( $shape_term_ids[ $p['shape'] ] ), $tax_shape );
 	}
