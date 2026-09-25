@@ -109,6 +109,12 @@ if ( '' !== $question ) {
 	echo '<h3 class="sgs-choice-flow-question__title">' . esc_html( $question ) . '</h3>';
 }
 
+// Option polish (Spec 43 §5): `isDefault` pre-selects one option per step
+// (client-side, view.js reads data-default — choice-flow/defaults.js)
+// without auto-advancing. Only the FIRST flagged option renders
+// data-default="1" — a second flagged option is a stored data mistake.
+$default_rendered = false;
+
 if ( $is_product_attribute_step ) {
 	echo '<ul class="sgs-choice-flow-question__options sgs-choice-flow-question__options--' . esc_attr( $options_layout ) . '">';
 	foreach ( $generated_options as $generated_option ) {
@@ -119,9 +125,16 @@ if ( $is_product_attribute_step ) {
 		$tags         = $merged['tags'];
 		$price_label  = (string) $merged['priceLabel'];
 		$disabled     = ! empty( $merged['disabled'] );
+		$badge        = (string) $merged['badge'];
+		$description  = (string) $merged['description'];
+		$is_default   = ! empty( $merged['isDefault'] ) && ! $default_rendered;
 
 		if ( '' === $label ) {
 			continue;
+		}
+
+		if ( $is_default ) {
+			$default_rendered = true;
 		}
 
 		echo '<li class="sgs-choice-flow-question__option">';
@@ -135,11 +148,20 @@ if ( $is_product_attribute_step ) {
 		if ( '' !== $price_label ) {
 			echo ' data-price-label="' . esc_attr( $price_label ) . '"';
 		}
+		if ( $is_default ) {
+			echo ' data-default="1"';
+		}
 		if ( $disabled ) {
 			echo ' disabled aria-disabled="true"';
 		}
 		echo '>';
+		if ( '' !== $badge ) {
+			echo '<span class="sgs-choice-flow-question__option-badge">' . esc_html( $badge ) . '</span>';
+		}
 		echo '<span class="sgs-choice-flow-question__option-label">' . esc_html( $label ) . '</span>';
+		if ( '' !== $description ) {
+			echo '<span class="sgs-choice-flow-question__option-description">' . esc_html( $description ) . '</span>';
+		}
 		if ( '' !== $price_label ) {
 			echo '<span class="sgs-choice-flow-question__option-price">' . esc_html( $price_label ) . '</span>';
 		}
@@ -191,8 +213,19 @@ if ( $is_product_attribute_step ) {
 			}
 		}
 
+		// Option polish (Spec 43 §5): only the first option flagged
+		// isDefault renders data-default="1" -- see the matching comment on
+		// the product-attribute branch above.
+		$badge       = isset( $option['badge'] ) ? (string) $option['badge'] : '';
+		$description = isset( $option['description'] ) ? (string) $option['description'] : '';
+		$is_default  = ! empty( $option['isDefault'] ) && ! $default_rendered;
+
 		if ( '' === $label ) {
 			continue;
+		}
+
+		if ( $is_default ) {
+			$default_rendered = true;
 		}
 
 		echo '<li class="sgs-choice-flow-question__option">';
@@ -209,7 +242,14 @@ if ( $is_product_attribute_step ) {
 			echo ' data-price="' . esc_attr( $addon_price_decimal ) . '"';
 			echo ' data-price-label="' . esc_attr( $label ) . '"';
 		}
+		if ( $is_default ) {
+			echo ' data-default="1"';
+		}
 		echo '>';
+
+		if ( '' !== $badge ) {
+			echo '<span class="sgs-choice-flow-question__option-badge">' . esc_html( $badge ) . '</span>';
+		}
 
 		if ( '' !== $image_url ) {
 			echo '<span class="sgs-choice-flow-question__option-media">';
@@ -218,6 +258,10 @@ if ( $is_product_attribute_step ) {
 		}
 
 		echo '<span class="sgs-choice-flow-question__option-label">' . esc_html( $label ) . '</span>';
+
+		if ( '' !== $description ) {
+			echo '<span class="sgs-choice-flow-question__option-description">' . esc_html( $description ) . '</span>';
+		}
 
 		if ( null !== $addon_price_decimal ) {
 			echo '<span class="sgs-choice-flow-question__option-price">' . esc_html( sgs_choice_flow_format_addon_price( $addon_price_decimal ) ) . '</span>';

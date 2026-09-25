@@ -42,6 +42,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/configurator-seed.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-configurator-pricing.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-value-ladder.php';
 require_once dirname( __DIR__, 3 ) . '/includes/product-rrp.php';
+require_once dirname( __DIR__, 3 ) . '/includes/buybox-modal-cta.php';
 require_once __DIR__ . '/extras.php';
 
 // ---------------------------------------------------------------------------
@@ -426,6 +427,17 @@ $add_to_cart_label_raw = $attributes['addToCartLabel'] ?? '';
 $add_to_cart_label     = '' !== sanitize_text_field( $add_to_cart_label_raw )
 	? sanitize_text_field( $add_to_cart_label_raw )
 	: __( 'Add to Cart', 'sgs-blocks' );
+
+// Spec 43 Phase 3/4 §5a — the button either adds to the cart (default) or
+// opens an sgs/modal (typically holding a choice-flow) instead. Falls back to
+// cart mode when 'modal' is selected but no modal anchor is set — never a
+// button that opens nothing.
+$add_to_cart_action = sanitize_key( (string) ( $attributes['addToCartAction'] ?? 'cart' ) );
+if ( ! in_array( $add_to_cart_action, array( 'cart', 'modal' ), true ) ) {
+	$add_to_cart_action = 'cart';
+}
+$add_to_cart_modal_id    = sanitize_text_field( (string) ( $attributes['addToCartModalId'] ?? '' ) );
+$add_to_cart_opens_modal = ( 'modal' === $add_to_cart_action && '' !== $add_to_cart_modal_id );
 
 // Eye Care Wave C: add-to-cart button style preset + optional price display.
 // sgs_buybox_add_to_cart_class() allowlists to '' (today's look) or
@@ -942,16 +954,33 @@ if ( '' !== $sgs_bb_price_typo_css ) {
 	</div>
 	<?php endif; ?>
 
-	<?php
-	// ── 8d. Add-to-cart form (mirrors product-card L948-963 proxy form pattern).
-	// HIDDEN WHEN OUT OF STOCK: `data-wp-bind--disabled` evaluates a single path
-	// and the Interactivity API has no `||`, so gating the button on both stock
-	// and pending would need new store state; hiding the form is the same read
-	// of existing context, uses the `!` negation already used in
-	// form/render.php:356,369,377, mirrors the notify-me wrapper 15 lines above,
-	// and leaves the notify-me form as the offered action instead of a dead
-	// control.
-	?>
+	<?php if ( $add_to_cart_opens_modal ) : ?>
+		<?php
+		// ── 8d (modal mode). Spec 43 Phase 3/4 §5a — opens an sgs/modal instead
+		// of submitting the cart. Built in includes/buybox-modal-cta.php so this
+		// render.php stays byte-identical in cart mode (the only path this
+		// contract's size cap allows). Same hidden-when-out-of-stock gate as the
+		// cart-mode form below, and the SAME opener mechanism sgs/modal's own
+		// open-anywhere.js already provides — no second mechanism invented.
+		echo sgs_buybox_modal_cta_html( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_buybox_modal_cta_html() escapes every value it interpolates.
+			$add_to_cart_label,
+			$add_to_cart_button_classes,
+			$add_to_cart_show_price,
+			$price_display,
+			$add_to_cart_modal_id
+		);
+		?>
+	<?php else : ?>
+		<?php
+		// ── 8d. Add-to-cart form (mirrors product-card L948-963 proxy form pattern).
+		// HIDDEN WHEN OUT OF STOCK: `data-wp-bind--disabled` evaluates a single path
+		// and the Interactivity API has no `||`, so gating the button on both stock
+		// and pending would need new store state; hiding the form is the same read
+		// of existing context, uses the `!` negation already used in
+		// form/render.php:356,369,377, mirrors the notify-me wrapper 15 lines above,
+		// and leaves the notify-me form as the offered action instead of a dead
+		// control.
+		?>
 	<form
 		class="buybox__cart-form"
 		data-wp-bind--hidden="!context.inStock"
@@ -983,6 +1012,7 @@ if ( '' !== $sgs_bb_price_typo_css ) {
 			<?php endif; ?>
 		</button>
 	</form>
+	<?php endif; ?>
 
 	<?php // ── 8e. Cart-status error region — ARIA-live with dismiss button. ?>
 	<?php

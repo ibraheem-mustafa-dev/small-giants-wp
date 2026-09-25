@@ -42,9 +42,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-				</PanelBody>
-				{ 'email' === action && (
-					<PanelBody title={ __( 'Email capture', 'sgs-blocks' ) }>
+					{ 'email' === action && (
+						<>
 						<NumberControl
 							label={ __( 'Rate limit', 'sgs-blocks' ) }
 							value={ rateLimit }
@@ -78,8 +77,9 @@ export default function Edit( { attributes, setAttributes } ) {
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
-					</PanelBody>
-				) }
+						</>
+					) }
+				</PanelBody>
 				<PanelBody title={ __( 'Result Matching', 'sgs-blocks' ) }>
 					<TextControl
 						label={ __( 'Match tags', 'sgs-blocks' ) }

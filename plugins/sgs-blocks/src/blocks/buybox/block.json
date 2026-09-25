@@ -174,6 +174,20 @@
 			"default": "",
 			"description": "Override the Add to Cart button label. Empty = use the default translated string."
 		},
+		"addToCartAction": {
+			"type": "string",
+			"default": "cart",
+			"enum": [
+				"cart",
+				"modal"
+			],
+			"description": "'cart' adds the selected variation to the cart directly (default). 'modal' opens an sgs/modal instead — used when the modal holds a choice-flow that asks further questions and finishes the purchase (Spec 43 Phase 3/4)."
+		},
+		"addToCartModalId": {
+			"type": "string",
+			"default": "",
+			"description": "The HTML anchor set on the sgs/modal block this button opens, when addToCartAction is 'modal'. Empty falls back to cart mode even when 'modal' is selected."
+		},
 		"perUnitDenomination": {
 			"type": "string",
 			"default": "",

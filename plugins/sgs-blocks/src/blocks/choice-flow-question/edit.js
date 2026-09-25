@@ -13,6 +13,7 @@ import { VStack } from '../../components/primitives';
 import MediaPicker from '../../components/MediaPicker';
 import AddonPricingPanel from './AddonPricingPanel';
 import ProductAttributePanel from './ProductAttributePanel';
+import OptionPolishFields from './OptionPolishFields';
 
 // Reserved sentinel (FR-43-2 / spec brief) — "jump straight to whichever
 // result step is reachable" rather than a specific sibling sgs/form-step.
@@ -306,6 +307,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 									) }
 									__nextHasNoMarginBottom
 								/>
+								<OptionPolishFields option={ option } index={ index } onChange={ updateOption } />
 								<VStack spacing={ 1 } className="sgs-choice-flow-question__option-row-actions">
 									<Button
 										isSmall

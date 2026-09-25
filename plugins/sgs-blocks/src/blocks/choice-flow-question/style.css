@@ -116,6 +116,7 @@
 /* ---------------------------------------------------------------------- */
 
 .sgs-choice-flow-question__option-button {
+	position: relative; /* anchors .option-badge (Spec 43 §5) */
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
@@ -179,6 +180,45 @@
 
 .sgs-choice-flow-question__option-label {
 	display: block;
+}
+
+/* Option polish (Spec 43 §5): `badge` renders a small pill in the option
+   card's top-right corner (e.g. "EASIEST" on a pre-selected option) and
+   `description` renders one muted line under the label. Both are purely
+   presentational — absent from the markup entirely when the attribute is
+   empty, matching every other optional per-option zone in this file. */
+.sgs-choice-flow-question__option-badge {
+	position: absolute;
+	top: -10px;
+	right: 12px;
+	display: inline-block;
+	padding: 2px 10px;
+	border-radius: 999px;
+	background-color: var( --wp--preset--color--accent, #1f7a7a );
+	color: var( --wp--preset--color--accent-text, #fff );
+	font-size: 0.75em;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+}
+
+.sgs-choice-flow-question__option-description {
+	display: block;
+	margin-top: 4px;
+	color: var( --wp--preset--color--text-muted, #6b7280 );
+	font-size: 0.875em;
+	line-height: 1.4;
+}
+
+/* The pre-selected option (client-marked via data-default="1" — see
+   choice-flow/defaults.js) gets the same visual treatment as a chosen
+   option: a filled border in the primary token, so it reads as "already
+   picked" before the shopper touches anything, without auto-advancing the
+   flow. Uses the same border-colour role the hover/focus states already
+   use, so selected/hover/focus never visually conflict. */
+.sgs-choice-flow-question__option-button--selected {
+	border-color: var( --wp--preset--color--primary, #1f7a7a );
+	box-shadow: 0 0 0 1px var( --wp--preset--color--primary, #1f7a7a );
 }
 
 /* FR-43-17 — priced add-on step: the option's price, read from the

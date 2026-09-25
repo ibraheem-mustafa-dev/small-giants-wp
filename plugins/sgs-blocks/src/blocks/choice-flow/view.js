@@ -73,6 +73,7 @@ import { recordPlainAnswer, forgetAnswersFrom, uploadFlowFile } from './flow-fie
 import { initVariation, clearVariationChoicesAfter, handleProductOptionClick } from './variation.js';
 import { initChrome } from './chrome.js';
 import { initEmailResults } from './email.js';
+import { applyDefaultSelections } from './defaults.js';
 
 const TERMINAL_SENTINEL = '__terminal__';
 
@@ -643,6 +644,7 @@ function initFlow( flowRoot ) {
 	// listener once. Independent of step restoration below.
 	initPricePanel( flowRoot );
 	initVariation( flowRoot );
+	applyDefaultSelections( flowRoot );
 
 	const restored = restoreFlowState( flowRoot );
 
