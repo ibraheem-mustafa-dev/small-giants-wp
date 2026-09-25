@@ -208,9 +208,8 @@ does not produce real matches on real data for it to consume.
 - **Canary:** sandybrown, WP 7.1. Production homepage page **2742**. Fresh-clone verification
   page **3448** for cloning-pipeline work. **Indus test site:** its own dedicated site
   (`lavender-dinosaur-183533.hostingersite.com`, `indus-test` deploy target).
-- **Visual-diff coverage:** `nav-bar-menu` has one report
-  (`reports/visual-diff/nav-bar-menu-2026-09-17.md`), scoped to the item-separator only.
-  **`sgs/nav-drawer-menu` has NO visual-diff report** — owed.
+- **Visual-diff coverage:** `reports/visual-diff/nav-bar-menu-*.md` (latest 2026-09-23) and the files below.
+  `sgs/nav-drawer-menu` has `reports/visual-diff/nav-drawer-menu-2026-09-24.md` and `-25.md`.
 - **Known failing tests (unverified since last noted):**
   `test_preflight_chain::test_precommit_gate_drift_pass` (drift-validator path missing),
   `test_validate_stage_artifact::test_stage_9_coverage_gap_levels`,

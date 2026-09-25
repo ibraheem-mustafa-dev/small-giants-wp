@@ -11,7 +11,7 @@ every criterion below has machine evidence or a recorded Bean sign-off — never
 
 The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link list) and
 `sgs/nav-drawer` (drawer panel), under `plugins/sgs-blocks/src/blocks/<slug>/`.
-`sgs/nav-drawer-menu` has no visual-diff report yet.
+Live reports: `reports/visual-diff/nav-bar-menu-*.md`, `nav-drawer-*.md`, `nav-drawer-menu-*.md`, `mega-panel-*.md`, `site-header-*.md`.
 
 ## Wave 1 — Fixture & verification
 - STATUS: CLOSED — all six units live-verified: the Gate 3 composed-nav fixture (page 1842, mega
@@ -33,7 +33,8 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
   right-site keyed). Proof: `node plugins/sgs-blocks/scripts/nav-qa/sweep-drawer-variants.mjs --self-test`
   (47/47), `shoot-drawer-pairs.mjs --self-test` (16/16), `elementfrompoint-sweep.mjs --self-test` (3/3),
   `python plugins/sgs-blocks/scripts/nav-qa/check-fixture-fidelity.py --self-test` (14/14) and `--check`
-  (exit 0). Open: `labels-<site>.json` for Away, ButcherBox, rabbit.tech, generated in W3B-3.
+  (exit 0). Open: `labels-butcherbox.json` and `labels-rabbit.json` (8 label files exist, in
+  `.claude/reports/2026-07-28-drawer-code-extraction/`; Away's is there), taken with step 0c's headed captures.
 - CPT parity (Gate 2): computed-parity JSON — default `sgs_drawer` post render vs the default drawer,
   **drawer OPEN** (a closed-vs-closed comparison is vacuous), property-identical, negative control
   run. Passed 2026-09-20 on the mechanism (`.claude/reports/2026-09-20-w2-gate2-rerun.md`), fidelity left to Bean's eye.
@@ -90,7 +91,7 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
   bounds.
 
 ## Wave 3A — Independent fixes
-- STATUS: not started.
+- STATUS: done (W3A-1 to W3A-5 below, each met or closed with no change).
 - Every fix is first reproduced inside a real `sgs/site-header` (the loose-block QA pages prove
   nothing about a header). A defect that does not reproduce there is closed with no change.
 - W3A-1: a real pointer path from a parent item to its dropdown and to its mega panel keeps the panel
@@ -122,7 +123,7 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
   drafts by rendering each locally with its own runtime files, one row set per variant); every static cell is
   taken from the rendered DOM by computed style, every behaviour cell by event-driven capture or
   marked `source-only`; every surface cell is present, absent or not-applicable; `labels-<site>.json`
-  exists for the eleven third-party references. Captured headed, or spot-checked headed with the
+  exists for eight third-party references (ButcherBox and rabbit.tech are owed with step 0c). Captured headed, or spot-checked headed with the
   differences recorded (`.claude/reports/reference-requirements/HEADED-SPOTCHECK.md`).
 - W3B-4: every table row belongs to one capability family, and every family states the block
   attribute that covers it or "none".
@@ -130,7 +131,9 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
 - W3B-4 evidence: `reports/reference-requirements/FAMILIES-MASTER.md` (46 families, 11 covered, 21 partial, 8 gap, 6 conflict), `families-master.json`, and the independent review `FAMILIES-REVIEW.md` (23 findings, applied); 33 coverage checks re-run against the code.
 
 ## Wave 3C — Header and nav architecture harmonised
-- STATUS: under way (`plans/2026-09-21-wave-3c-implementation-plan.md`); U-1, U-2, the U-9+U-11 pair, U-5, the U-3+U-8 pair and the U-6+U-7 pair closed; lane A's next is the two-bar burger, then U-4. U-16 waits on step 0d.
+- STATUS: under way (`plans/2026-09-21-wave-3c-implementation-plan.md`). U-1, U-2 and all of lane A (U-9+U-11, U-5,
+  U-3+U-8, U-6+U-7, U-4, U-10+U-14) are closed, including lane A's batched QA pass. Open: lane B (U-13, then U-16,
+  which waits on step 0d), lane C (U-12, U-15, U-17), U-1's and U-2's owed live checks, and Gate 3C below.
 
 **U-1 exit criteria (closed):**
 - Mega close-grace reads `submenuCloseGrace` (the bug where the mega context passed a literal 170
@@ -229,8 +232,16 @@ commit 0fbe085f1 plus DB/gate fixes through 5781740e7).
 - Residue: none per family. Batched: axe with the drawer opened from the chip, keyboard order past the chip, the
   four new controls' editor round-trip, the logged-out admin-bar-free offset.
 
-**Next (lane A):** the batched QA pass below. `sgs/mega-panel`'s opaque default fill and the numbered compact-links pattern (with `sgs/icon-list`'s
-per-item description) are delivered (2026-09-25).
+**U-4 (type scaling), closed, cut by Bean** (`.claude/reports/2026-09-25-u4-type-scaling-design.md`, commit 61ae4cf99):
+`vw` and `vh` font-size units in the shared typography control; a menu item at 1.5vw read 19.64px at 1309px and
+24.55px at 1636px. Formula sizes stay in each agency clone's custom CSS (M-45).
+
+**Lane A batched QA pass, done** (`reports/visual-diff/nav-drawer-2026-09-25.md` section "Lane A batched QA pass";
+fixes d954c83f8, 6962dd0e6). It clears the "batched" items listed under U-5, U-9 + U-11, U-3 + U-8, U-6 + U-7 and
+U-10 + U-14: axe 0 on the drawer from the burger (1440, 375), from the chip, in the side and header-content placements
+and on the keyboard-opened dropdown; keyboard order past the chip; reduced motion (0 moving animations with the drawer
+open); every new control's editor round-trip. Still owed from those units: Bean's eye on the screenshots and shapes, and
+the three starter patterns once they have imagery.
 
 Gate 3C passes when (the one definition; the same words are in the implementation plan §7 and the
 strategic plan's Gate 3C entry):
