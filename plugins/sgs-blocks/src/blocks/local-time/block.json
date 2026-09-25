@@ -1,0 +1,257 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/local-time",
+	"version": "1.0.0",
+	"title": "Local Time",
+	"category": "sgs-content",
+	"description": "A live clock for one time zone — a city/label plus a time that ticks on the frontend. Server-rendered so no-JS and cached pages still show a correct time.",
+	"keywords": [
+		"clock",
+		"time",
+		"timezone",
+		"time zone",
+		"local time",
+		"world clock"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "clock",
+	"supports": {
+		"align": false,
+		"anchor": true,
+		"html": false,
+		"color": {
+			"text": false,
+			"background": false,
+			"gradients": false,
+			"__experimentalSkipSerialization": true
+		},
+		"sgs": {
+			"elements": {
+				"wrapper": {
+					"label": "Clock",
+					"order": 1,
+					"clusters": [
+						"layout"
+					],
+					"isWrapper": true,
+					"attrMap": {
+						"css:gap": "gap"
+					}
+				},
+				"label": {
+					"label": "Label",
+					"order": 2,
+					"clusters": [
+						"text"
+					],
+					"prefix": "label",
+					"attrMap": {
+						"css:color-gradient": "labelColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "labelColourHover",
+								"css:color-gradient": "labelColourHoverGradient"
+							}
+						}
+					}
+				},
+				"time": {
+					"label": "Time",
+					"order": 3,
+					"clusters": [
+						"text"
+					],
+					"prefix": "time",
+					"attrMap": {
+						"css:color-gradient": "timeColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "timeColourHover",
+								"css:color-gradient": "timeColourHoverGradient"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"selectors": {
+		"root": ".sgs-local-time"
+	},
+	"attributes": {
+		"timeZone": {
+			"type": "string",
+			"default": ""
+		},
+		"label": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"labelPosition": {
+			"type": "string",
+			"enum": [ "before", "after", "above" ],
+			"default": "before"
+		},
+		"separator": {
+			"type": "string",
+			"default": ""
+		},
+		"hourCycle": {
+			"type": "string",
+			"enum": [ "h12", "h23" ],
+			"default": "h23"
+		},
+		"showSeconds": {
+			"type": "boolean",
+			"default": false
+		},
+		"showPeriod": {
+			"type": "boolean",
+			"default": true
+		},
+		"gap": {
+			"type": "object",
+			"default": {}
+		},
+		"labelColour": {
+			"type": "string",
+			"default": ""
+		},
+		"labelColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"labelColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"labelColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"timeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"timeColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"timeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"timeColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"labelFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"labelFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"labelFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"labelFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"labelLineHeight": {
+			"type": "number"
+		},
+		"labelLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"labelFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"labelTextTransform": {
+			"type": "string",
+			"enum": [ "", "none", "uppercase", "lowercase", "capitalize" ],
+			"default": ""
+		},
+		"labelTextDecoration": {
+			"type": "string",
+			"enum": [ "", "none", "underline", "line-through" ],
+			"default": ""
+		},
+		"labelLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"labelLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"timeFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"timeFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"timeFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"timeFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"timeLineHeight": {
+			"type": "number"
+		},
+		"timeLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"timeFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"timeTextTransform": {
+			"type": "string",
+			"enum": [ "", "none", "uppercase", "lowercase", "capitalize" ],
+			"default": ""
+		},
+		"timeTextDecoration": {
+			"type": "string",
+			"enum": [ "", "none", "underline", "line-through" ],
+			"default": ""
+		},
+		"timeLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"timeLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"viewScriptModule": "file:./view.js",
+	"example": {
+		"attributes": {
+			"timeZone": "Europe/London",
+			"label": "London",
+			"separator": "→"
+		}
+	}
+}

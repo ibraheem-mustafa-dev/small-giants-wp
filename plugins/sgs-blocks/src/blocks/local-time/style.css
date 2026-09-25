@@ -1,0 +1,34 @@
+/* ===== SGS Local Time — Frontend + Editor ===== */
+
+.sgs-local-time {
+	display: inline-flex;
+	align-items: baseline;
+	gap: 0.4em;
+}
+
+.sgs-local-time--above {
+	display: inline-flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 0.15em;
+}
+
+.sgs-local-time__label {
+	white-space: nowrap;
+}
+
+.sgs-local-time__sep {
+	white-space: nowrap;
+}
+
+/* Tabular numerals stop the digits jiggling the layout width on every tick. */
+.sgs-local-time__time {
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+
+/* ─── Editor preview ─────────────────────────────────────────────────────── */
+
+.wp-block-sgs-local-time.sgs-local-time {
+	display: inline-flex;
+}
