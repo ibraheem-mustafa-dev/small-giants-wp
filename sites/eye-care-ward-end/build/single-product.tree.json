@@ -178,7 +178,16 @@
                   "inheritStyle": "primary",
                   "widthType": {
                     "desktop": "full"
-                  }
+                  },
+                  "textTransform": "uppercase",
+                  "letterSpacing": {
+                    "desktop": 0.12
+                  },
+                  "letterSpacingUnit": "em",
+                  "fontSize": {
+                    "desktop": 13
+                  },
+                  "fontSizeUnit": "px"
                 }
               },
               {

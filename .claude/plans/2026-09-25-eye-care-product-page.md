@@ -1,6 +1,17 @@
 # Eye Care Wave C task 2: the product page (zero-reviews state first)
 
-**Status:** IN PROGRESS 2026-09-25. Parent plan: `2026-09-24-eye-care-hand-build-design.md` (Wave C).
+**Status:** DONE 2026-09-25 (zero-reviews state), live on eye-care-test, framework through f632eebda.
+Verified draft vs live at 1440 / 768 / 375 for product 71 (`scratchpad` pdp3 captures, side by side, looked at):
+breadcrumb, stacked gallery at 768 and 375, brand / name / code, price with RRP and "You save", stock line, colour
+tiles (4 a row, 3 + 1 on phones), sizes with measurements, both buttons in the draft's order, WhatsApp card,
+assurances, tabs with the product's description, Good to know, the no-reviews card with the live Google rating, More
+from Ray-Ban and Similar shapes (right products, 4-up grid).
+Owed polish (small, recorded here): picker labels in the draft's small uppercase with the chosen value on the right
+(the buybox forwards no picker label typography); the add-to-cart label's uppercase/letter spacing (no typography
+setting on that button); the gallery's "Save £32 off RRP" badge; sizes 3-across below 480px (the buybox's 2-column
+phone rule). Parked to their tasks: "Which size am I?" (task 5), "from +£59" on the prescription button and opening the
+configurator (task 4), the Klarna/wallets line (parent plan phase 6, payments), the reviews-present state.
+Parent plan: `2026-09-24-eye-care-hand-build-design.md` (Wave C).
 Built and live on eye-care-test: framework items 1–5 below, plus buybox draft-parity settings (picker styles and
 measurement sub-line, price typography, "RRP £171" and "You save", add-to-cart style and price, blocks above the
 add-to-cart, stock wording, stackBelow, no height cap on the sticky column), breadcrumbs showArchiveCrumb /
