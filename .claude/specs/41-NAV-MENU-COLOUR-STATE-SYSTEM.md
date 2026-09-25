@@ -2296,7 +2296,9 @@ OTHER item of that same list takes the dim values; each list dims on its own. Bu
 `plugins/sgs-blocks/includes/helpers-item-effects.php::sgs_sibling_dim_css`: one hand-built `:has()` rule wrapped with
 `sgs_hover_media_wrap()` (never `sgs_hover_guarded_rule()`, which splits its selector on every comma), plus a
 separate keyboard rule keyed on `:focus-visible` (never `:focus-within`, which a tap on an accordion
-`<summary>` would hold). Not on `sgs/nav-bar-menu`: no reference dims bar items (Bean, 2026-09-25). The colour
+`<summary>` would hold), written `list:has(> item :focus-visible)` with one level of `:has()` (a `:has()` nested
+in a `:has()` is invalid CSS and the browser drops the rule; `tests/php/run-u6-u7-item-markup-standalone.php`
+asserts no nesting). Not on `sgs/nav-bar-menu`: no reference dims bar items (Bean, 2026-09-25). The colour
 row carries a `states` exemption: the row IS a pointer-driven state. A dimmed colour below 4.5:1 is a
 transient state, reported by the row's contrast warning, never clamped.
 
@@ -2625,7 +2627,7 @@ blast radius is the whole write path, not just the readers — the converter emi
 | Claim | Reading | Verdict |
 |---|---|---|
 | `itemFontSize` is a tier object | `block.json` declares `itemFontSize` as **`{"type":"object","default":{}}`** — a `{desktop,tablet,mobile}` TIER OBJECT | TRUE |
-| The editor writes the whole tier object | `plugins/sgs-blocks/src/components/TypographyControls.js::TypographyControls` computes `fontSizeIsTiered = isTieredValue( fontSizeRaw )`; `isTieredValue` returns true for any non-null, non-array object, so `{}` qualifies. The tiered branch renders `<ResponsiveOverride>` and writes **`{ [ k.fontSize ]: obj }`** — one attribute | TRUE — the flat tier keys are never written on these blocks |
+| The editor writes the whole tier object | `plugins/sgs-blocks/src/components/TypographyControls.js::TypographyControls` computes `fontSizeIsTiered = isTieredValue( fontSizeRaw )`; `isTieredValue` returns true for any non-null object and for an EMPTY array: the `{}` default reaches the editor as `[]` (WordPress passes block defaults through PHP, where an empty array JSON-encodes as a list), so both qualify (`tests/js/typography-tier-shape.test.js`). The tiered branch renders `<ResponsiveOverride>` and writes **`{ [ k.fontSize ]: obj }`** — one attribute | TRUE — the flat tier keys are never written on these blocks |
 | The emitter reads the tier object | `sgs_typography_css_rule()` branches on `$size_is_tiered = is_array( $attributes[ $k_size ] )` and pushes a `$tiered_specs` entry emitting per-tier `@media` CSS via `sgs_emit_responsive_css()`. `FontSizeTablet` / `FontSizeMobile` are read **only** in the `else` (`$flat_specs`) branch | TRUE — the flat tier keys are never read on these blocks |
 | Tablet and mobile font size persist and render | Both surfaces take the tiered path, and the mount passes no `showResponsive={ false }` (it defaults `true`) | TRUE — end to end |
 

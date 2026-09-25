@@ -256,8 +256,8 @@ defects, all live-checked: the hidden × releases its top row and stays hidden t
 above the header; drawers above the header default to the `floating` shadow and a 1px primary border (cards also 20px
 corners); the business-info Button style no longer spills out of its row; the gallery lightbox dims to black, closes
 on an outside click and keeps its arrows off the image; the cart's button trigger resets browser button paint (Spec 36
-"Stacking order" and "Default edge"). Batched for one later pass (Bean: no heavy testing per edit): `axe-run.mjs` with
-the drawer open, the editor round-trip of the new controls, and Bean's eye on the gallery arrows.
+"Stacking order" and "Default edge"). The lane A QA pass (d954c83f8, `reports/visual-diff/nav-drawer-2026-09-25.md` section "Lane A batched QA pass") closed axe with the drawer open
+and the editor round-trip of the close controls; Bean's eye on the gallery arrows is still open.
 
 **U-5 — done** (design `.claude/reports/2026-09-24-u5-motion-design.md`, two-model council GO WITH FIXES,
 Bean sign-off; commit 01e4b5a5f; live `reports/visual-diff/nav-drawer-2026-09-24.md` section "U-5"). One motion
@@ -273,9 +273,9 @@ measured live: away's drawer slide (300ms each way, no fade, close 295ms) and th
 -8px and 0.99, drafts curve) with the 28ms and 55ms item staggers. M-31 and M-32 move to `covered`. Residue,
 named: dogstudio's durations are upper bounds (compared by shape and order only); lusion's closed-pose rotate,
 its 0.4s scrim close delay and fantasy's second item direction are recorded divergences; lusion's end pose was
-never captured, so its stagger is expressed but not measured. Batched for the later pass (Bean: no heavy testing
-per edit): reduced-motion emulation with a positive control, axe with the drawer open, the editor round-trip of
-the new controls, and Bean's eye on the shapes. U-16 was not paired: its design gate waits on step 0d; it reuses
+never captured, so its stagger is expressed but not measured. The lane A QA pass (d954c83f8, `reports/visual-diff/nav-drawer-2026-09-25.md` section "Lane A batched QA pass") closed
+reduced motion (14 and 20 animations without the emulation, 0 with it, same end state), axe on the open drawer and
+the editor round-trip of the new controls; Bean's eye on the shapes is still open. U-16 was not paired: its design gate waits on step 0d; it reuses
 this vocabulary.
 
 **U-3 + U-8 — done, as one pair** (design `.claude/reports/2026-09-24-u3-u8-design.md`, two-model council GO
@@ -293,9 +293,9 @@ mega panel and a dropdown on the page centre below the header, away's two tiles 
 move to `covered`. Away's drawer callouts (a mega panel inside the drawer accordion) were delivered by U-6 + U-7.
 Found here and fixed (7fea496c4, Bean): an `sgs/container` set to `contentWidth: full` shrank
 to its content when it was itself a grid or flex item, because the wrapper's centring margin fell back onto the outer
-box; centring is now per tier, only where the width is a real cap. Batched for
-the later pass: axe with the new drawers open, the editor round-trip of the four new controls, Bean's eye on the three
-patterns once they have imagery.
+box; centring is now per tier, only where the width is a real cap. The lane A QA pass closed axe with the side
+and header-content drawers open (0 each) and the editor round-trip of the placement controls; Bean's eye on the three
+patterns, once they have imagery, is still open.
 
 **U-6 + U-7 — done, as one pair** (design `.claude/reports/2026-09-25-u6-u7-design.md`, two-model council GO WITH
 FIXES, Bean sign-off; commits 3aae1950c, 777ee5dd4; live `reports/visual-diff/nav-drawer-2026-09-25.md` section
@@ -330,9 +330,9 @@ surface token and the dark scheme's own fill is opaque `rgb(20,20,25)`; transluc
 the reading the tone logic already used (`render.php::$panel_bg_value`, `::$dark_panel_bg`); `sgs/nav-bar-menu` link padding as a setting (`itemPadding`, 4cf0b9069 and f06b7133f; handed over by the Eye
 Care build; live: 14px 24px read back on the fixture, and the hover shift adds to the custom left padding, 24px + 8px
 = 32px) and a per-run upload name, theme.json payload name and unpacking folder in `build-deploy.py` (7c61b7d16; live:
-the sandybrown deploy used `sgs-deploy-<pid>-<time>` and left nothing in the SSH home). Also fixed after Bean's review: the drawer scrollbar (thin, tinted, no arrows, clear of the rounded corners) and a wheel over an open drawer no longer scrolls the page and closes it (Lenis `prevent` on open dialogs); live `reports/visual-diff/nav-drawer-2026-09-25.md` F1, F2. Batched for the
-later pass: axe with the drawer open, keyboard dim, reduced-motion emulation, the editor round-trip of the new
-controls. Fixture `scripts/nav-qa/qa-item-markup-fixture.php` is applied on sandybrown (`restore` undoes it,
+the sandybrown deploy used `sgs-deploy-<pid>-<time>` and left nothing in the SSH home). Also fixed after Bean's review: the drawer scrollbar (thin, tinted, no arrows, clear of the rounded corners) and a wheel over an open drawer no longer scrolls the page and closes it (Lenis `prevent` on open dialogs); live `reports/visual-diff/nav-drawer-2026-09-25.md` F1, F2. The lane A QA pass
+(d954c83f8, `reports/visual-diff/nav-drawer-2026-09-25.md` section "Lane A batched QA pass") closed axe with the drawer open, reduced motion and the editor round-trip, and fixed keyboard
+sibling dim, which never fired (a `:has()` nested in a `:has()` is invalid CSS). Fixture `scripts/nav-qa/qa-item-markup-fixture.php` is applied on sandybrown (`restore` undoes it,
 including the added menu-119 page link and page 2742's featured image).
 
 **U-4 — done, cut to units** (design and Bean's decision `.claude/reports/2026-09-25-u4-type-scaling-design.md`,
@@ -354,10 +354,13 @@ not the collapse point). U-14: `headerPassThrough` (M-52, fixed with structural 
 the burger printed on `wp_footer`, one open state per drawer in the store). All four families move to `covered`.
 Lesson from the build: a new `supports.sgs.elements` entry and override rows each trip their own DB gate; run the
 full local `npm run build` (all gates) before the first deploy, not after.
-Batched for the QA pass (lane A's one open task): axe with the drawer opened from the detaching chip and on a
-container "Scroll sideways" row; tab order past the chip; focus rings inside a Scroll sideways row (its
-`overflow-y:hidden` can clip them); editor round-trips of the four U-10/U-14 controls, icon-list's Description field
-and colour/typography rows, and the container's Scroll sideways controls. Fixture cases `header-row` and
+The lane A QA pass is done (d954c83f8, `reports/visual-diff/nav-drawer-2026-09-25.md` section "Lane A batched QA pass"): axe 0 on the drawer opened from the header burger (1440, 375)
+and from the chip, and on a Scroll sideways row; the chip is the last tab stop (printed on `wp_footer`) and works by
+keyboard; every new control round-trips in the real editor. Fixed on the way: a Scroll sideways row clipped a focus
+ring top and bottom (8px block room added; the first item's inline start is still trimmed at rest, Bean to decide);
+an empty chip background now paints the opaque surface token (Bean, option a: buck fills its chip); and
+`TypographyControls.js::isTieredValue` read the editor's `[]` default as a flat value, so a custom font size, line
+height or letter spacing on a fresh block was lost on reload. Fixture cases `header-row` and
 `detach-chip` in `scripts/nav-qa/qa-item-markup-fixture.php` set the U-10/U-14 settings up on `/qa-scrim/`.
 
 Sizes are `families-master.json::units[].size` at full scope. Convert per

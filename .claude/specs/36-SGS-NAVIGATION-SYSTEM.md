@@ -723,8 +723,8 @@ amended to a separate attribute): below the collapse point the burger's `::after
 moves to the button's children at those tiers, and other row blocks sit above the overlay
 (`plugins/sgs-blocks/includes/nav-trigger-surface-css.php`). The detaching chip (M-08, buck): `triggerDetach` (tier on/off),
 `triggerDetachAfter` (tier px), `triggerDetachSize` (tier px, never below 44), `triggerDetachOffset` (tier
-`{x,y}`, x from the inline end), `triggerDetachRadius`, `triggerDetachBackground`(`Hover`),
-`triggerDetachZIndex` (110). Once the header's burger is off screen and the page has scrolled past the tier's
+`{x,y}`, x from the inline end), `triggerDetachRadius`, `triggerDetachBackground`(`Hover`; empty paints the opaque surface token, as buck's chip is
+filled once it detaches), `triggerDetachZIndex` (110). Once the header's burger is off screen and the page has scrolled past the tier's
 threshold, a second copy of the burger (the same markup call, wrapper `__detach-wrap`, printed on `wp_footer` by
 `plugins/sgs-blocks/includes/nav-detach-chip.php` because a row's transform would trap a fixed child) shows fixed in the top
 inline-end corner, below the admin bar; `plugins/sgs-blocks/src/shared/nav-interactivity/detach-chip.js` sets `is-detached`. Every
@@ -1620,7 +1620,6 @@ store, not this one. So the claim is: **one Site-Info entry is the default sourc
 | Question | Owner | Due |
 |---|---|---|
 | **Dialog-engine duplication.** `sgs/modal` hand-rolls its own `showModal()` while the drawer delegates to `store('sgs/nav')` — two `<dialog>` engines. Should a shared dialog-geometry primitive (carrying a modal/non-modal flag, serving drawer, modal, cart flyout, search overlay) unify them? | Framework | Unscheduled |
-| **`axe` on the OPEN drawer is not verified.** `plugins/sgs-blocks/scripts/nav-qa/axe-run.mjs --open` times out on `locator.click` (harness actionability — the burger opens correctly under a direct click); the result is INCONCLUSIVE, not a pass. | Framework | Before Gate-2 closes |
 | **`conditional-visibility.js` has no `hideExtensions` slug**, so no block can opt out of it (`git grep -n -i hideExtensions -- plugins/sgs-blocks/src/blocks/extensions/conditional-visibility.js` returns nothing). Kept on nav blocks deliberately (member-only / promo-window navs are legitimate); needs a slug for whoever wants it hideable. | Framework | Unscheduled |
 | **Custom CSS field gap.** The bespoke Custom CSS field in the Advanced tab is a Spec 35A Part F anti-pattern present on every `sgs/*` block. | Framework | Unscheduled |
 | **FR-36-27 shape.** Keep it open for the `triggerStyle` / `triggerSymbol` / `triggerOpenStyle` / cross-block morph-sync shape, or close it as satisfied by Spec 41's narrower `triggerMode` / `triggerIcon` build? | Bean | Unscheduled |

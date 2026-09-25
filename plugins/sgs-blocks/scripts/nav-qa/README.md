@@ -177,6 +177,11 @@ node scripts/nav-qa/axe-run.mjs <page-with-a-mega-item> \
   --open ".entry-content .sgs-nav-bar-menu__mega-trigger" --open-via keyboard \
   --scope ".entry-content .sgs-nav-bar-menu__mega-panel-wrap" --viewport 1440
 
+# Open the drawer from the detaching chip, which shows only after scrolling:
+# a short window (--height, default 1200) so the page can scroll, then --scroll
+node scripts/nav-qa/axe-run.mjs <qa-scrim-url> --height 450 --scroll 380 \
+  --open ".sgs-nav-bar-menu__detach button" --scope ".sgs-nav-drawer" --viewport 1440
+
 # Machine-readable output for a gate script to parse
 node scripts/nav-qa/axe-run.mjs <url> --open <sel> --scope <sel> --json
 ```
