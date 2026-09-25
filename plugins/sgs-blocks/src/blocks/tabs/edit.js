@@ -12,6 +12,7 @@ import {
 	SelectControl,
 	RangeControl,
 	TextControl,
+	ToggleControl,
 	Button,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
@@ -70,6 +71,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		panelBorderColour,
 		panelBorderColourGradient,
 		transitionDuration,
+		hideEmptyTabs,
 	} = attributes;
 
 	const [ activeEditorTab, setActiveEditorTab ] = useState( 0 );
@@ -395,6 +397,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						step={ 50 }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
+					/>
+					<ToggleControl
+						label={ __( 'Hide empty tabs', 'sgs-blocks' ) }
+						help={ __(
+							'Hide a tab whose content renders empty (no text or media), together with its button.',
+							'sgs-blocks'
+						) }
+						checked={ hideEmptyTabs }
+						onChange={ ( val ) =>
+							setAttributes( { hideEmptyTabs: val } )
+						}
+						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
 

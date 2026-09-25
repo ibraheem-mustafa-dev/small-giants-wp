@@ -61,6 +61,23 @@ foreach ( $block->inner_blocks as $inner_block ) {
 	);
 }
 
+// Drop a tab whose rendered content is empty (no text, no media), together
+// with its button — mirrors WooCommerce's own core Product Details block.
+// Re-indexed via array_values() so the first REMAINING tab becomes the
+// active one below ($is_first checks against 0), and the block-id hash
+// below counts only the tabs that will actually render.
+$hide_empty_tabs = ! isset( $attributes['hideEmptyTabs'] ) || (bool) $attributes['hideEmptyTabs'];
+if ( $hide_empty_tabs ) {
+	$tabs = array_values( // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- local render.php scope; $tabs is not a WP global.
+		array_filter(
+			$tabs,
+			static function ( $tab ) {
+				return ! sgs_tab_content_is_empty( $tab['content'] );
+			}
+		)
+	);
+}
+
 if ( empty( $tabs ) ) {
 	return;
 }
