@@ -469,21 +469,19 @@
     "rabbit"
    ],
    "needed_by_count": 6,
-   "coverage_status": "partial",
+   "coverage_status": "covered",
    "evidence": "mixed",
    "covered_by": [
     "sgs/mega-panel::maxWidth",
     "sgs/nav-bar-menu::submenuMinWidth",
-    "::submenuAlign",
-    "::submenuTopOffset (dropdown fork only)",
-    "mega-disclosure.js::repositionPanel + panel-bounds.js (panel follows a pill header)"
+    "::submenuAlign (start, center, end, page-centred, full-width; U-8)",
+    "::megaAlign (per tier, same five values; U-8)",
+    "::submenuTopOffset (both forks, measured from the header bottom; U-8)",
+    "mega-disclosure.js::repositionPanel + panel-bounds.js::placePanel (panel follows a pill header)"
    ],
-   "note": "MERGED (three geometry columns, one panel-positioning mechanism). The shipped wrap width min(1120px, calc(100vw - 56px)) is byte-for-byte the rule derived from both drafts, and maxWidth defaults to 1120px (VERIFIED). Gaps: (a) there is no anchor ENUM — viewport-centring is the mega fork's fixed behaviour and item-left is the dropdown's, so a wide item-left panel or an item-centred mega has no expression; (b) submenuTopOffset is a DROPDOWN attribute only, so halcyon's 10px and indus's 12px mega gaps have no operator control. rabbit's open state was never reproduced. COVERED VALUE ADDED on review, so W3C-1 has a row to cite: 'on a floating-pill header the dropdown and mega panels take the pill's left edge and width' is BUILT — panel-bounds.js states 'on a (\"pill\") header it is the pill ... the mega panel must be the pill's own width, flush to its bottom edge', written by mega-disclosure.js::repositionPanel as the --sgs-mm-panel-width / --sgs-mm-panel-top override when the header measures as inset from both viewport edges. It matches lamalama, the only reference with a real pill.",
-   "uncovered_references": [
-    "halcyon",
-    "indus-foods"
-   ],
-   "uncovered_count": 2
+   "note": "MERGED (three geometry columns, one panel-positioning mechanism). The shipped wrap width min(1120px, calc(100vw - 56px)) is byte-for-byte the rule derived from both drafts, and maxWidth defaults to 1120px (VERIFIED). Gaps: (a) there is no anchor ENUM — viewport-centring is the mega fork's fixed behaviour and item-left is the dropdown's, so a wide item-left panel or an item-centred mega has no expression; (b) submenuTopOffset is a DROPDOWN attribute only, so halcyon's 10px and indus's 12px mega gaps have no operator control. rabbit's open state was never reproduced. COVERED VALUE ADDED on review, so W3C-1 has a row to cite: 'on a floating-pill header the dropdown and mega panels take the pill's left edge and width' is BUILT — panel-bounds.js states 'on a (\"pill\") header it is the pill ... the mega panel must be the pill's own width, flush to its bottom edge', written by mega-disclosure.js::repositionPanel as the --sgs-mm-panel-width / --sgs-mm-panel-top override when the header measures as inset from both viewport edges. It matches lamalama, the only reference with a real pill. COVERED (Wave 3C U-8, 2026-09-25): the anchor enum is one vocabulary for both forks, the top gap reaches mega panels and is measured from the header, as the references measure it. indus-foods' 620px panels are mega panel posts from the starter pattern sgs/mega-compact-links. Measured live: a mega panel and a dropdown centred on the page below the header.",
+   "uncovered_references": [],
+   "uncovered_count": 0
   },
   {
    "id": "M-17",
@@ -509,18 +507,17 @@
     "wearecollins"
    ],
    "needed_by_count": 13,
-   "coverage_status": "partial",
+   "coverage_status": "covered",
    "evidence": "measured",
    "covered_by": [
-    "sgs/nav-drawer::anchor (full-screen|header|trigger|centred)",
-    "::panelSize"
+    "sgs/nav-drawer::anchor (per tier: full-screen, header, side-start, side-end, container, trigger, centred)",
+    "::panelSize (width cap for side, trigger, centred)",
+    "::anchorOffset (per tier; gap below the burger or the header, U-3)",
+    "store.js::publishContainerInsets (the header content box, measured on open and resize, U-3)"
    ],
-   "note": "MERGED (the cap is only meaningful under a non-full-screen anchor). VERIFIED: the anchor allow-list is exactly ['full-screen','header','trigger','centred']. Missing: the SIDE DRAWER (away@768: left 0, top 0, 390x900, full height, partial width) and lusion's CONTAINER-INSET card stack (insets matching the header container, not the viewport). away@768's 390px cap is blocked by the missing anchor, not by panelSize. MERGED: internal scrolling of the drawer's own content (formerly its own family) is a PROPERTY of this one — its covering attribute IS `anchor`, because every anchor emits a max-height:calc(100dvh - offset) and a bounded panel scrolls its body. Covered; it adds no gap.",
-   "uncovered_references": [
-    "away",
-    "lusion"
-   ],
-   "uncovered_count": 2
+   "note": "MERGED (the cap is only meaningful under a non-full-screen anchor). VERIFIED: the anchor allow-list is exactly ['full-screen','header','trigger','centred']. Missing: the SIDE DRAWER (away@768: left 0, top 0, 390x900, full height, partial width) and lusion's CONTAINER-INSET card stack (insets matching the header container, not the viewport). away@768's 390px cap is blocked by the missing anchor, not by panelSize. MERGED: internal scrolling of the drawer's own content (formerly its own family) is a PROPERTY of this one — its covering attribute IS `anchor`, because every anchor emits a max-height:calc(100dvh - offset) and a bounded panel scrolls its body. Covered; it adds no gap. COVERED (Wave 3C U-3, 2026-09-25): away's 390px side drawer is `side-start`, lusion's header-content panel is `container`, lusion's 12.8px corner gap is `anchorOffset`; all measured live (reports/visual-diff/nav-drawer-2026-09-25.md).",
+   "uncovered_references": [],
+   "uncovered_count": 0
   },
   {
    "id": "M-18",
@@ -619,18 +616,17 @@
     "indus-foods"
    ],
    "needed_by_count": 3,
-   "coverage_status": "partial",
+   "coverage_status": "covered",
    "evidence": "measured",
    "covered_by": [
     "sgs/mega-aside::asideFormat (feature|preview|cta)",
-    "sgs/mega-panel::asideWidth (default 340px)",
-    "::asideSeparator"
+    "sgs/mega-panel::asideWidth",
+    "::asideSeparator",
+    "mega panel post composition: theme pattern sgs/mega-links-with-tiles (container grids, U-8)"
    ],
-   "note": "VERIFIED: allowed_formats = ('feature','preview','cta') at mega-aside/render.php:47 — one value each for halcyon's feature card, halcyon's preview pane and indus's Own Brands CTA. Gap: away's callout ROW (two or three image tiles side by side at the right of the panel); a mega-panel renders exactly one aside column. MERGED: the hover-reactive preview rail (formerly its own family) is one VALUE of this rail — asideFormat='preview' sits in the same PHP allow-list as 'feature' and 'cta' (mega-aside/render.php:47), so it is not a separate capability. It is covered; the family's residual gap is unchanged (away's callout ROW of two or three image tiles: a mega-panel renders exactly one aside column).",
-   "uncovered_references": [
-    "away"
-   ],
-   "uncovered_count": 1
+   "note": "VERIFIED: allowed_formats = ('feature','preview','cta') at mega-aside/render.php:47 — one value each for halcyon's feature card, halcyon's preview pane and indus's Own Brands CTA. Gap: away's callout ROW (two or three image tiles side by side at the right of the panel); a mega-panel renders exactly one aside column. MERGED: the hover-reactive preview rail (formerly its own family) is one VALUE of this rail — asideFormat='preview' sits in the same PHP allow-list as 'feature' and 'cta' (mega-aside/render.php:47), so it is not a separate capability. It is covered; the family's residual gap is unchanged (away's callout ROW of two or three image tiles: a mega-panel renders exactly one aside column). COVERED (Wave 3C U-8, 2026-09-25, Bean): a mega panel post takes any blocks, and sgs/mega-panel is one preset inside it (one side card), so away's callout row is a container layout, shipped as the starter pattern sgs/mega-links-with-tiles; measured live, two tiles 272 wide side by side.",
+   "uncovered_references": [],
+   "uncovered_count": 0
   },
   {
    "id": "M-21",
@@ -1317,22 +1313,20 @@
     "wearecollins"
    ],
    "needed_by_count": 12,
-   "coverage_status": "partial",
+   "coverage_status": "covered",
    "evidence": "measured",
    "covered_by": [
-    "sgs/nav-drawer-menu::listColumns (per-tier)",
+    "sgs/nav-drawer-menu::gap (per-tier object, U-3; also sgs/nav-bar-menu::gap)",
+    "::listColumns (per-tier)",
     "::itemTextAlign",
-    "::gap",
     "::padding",
     "::itemTextIndent",
-    "sgs/nav-drawer::drawerAlign"
+    "sgs/nav-drawer::drawerAlign",
+    "drawer body composition: theme pattern sgs/drawer-offset-column (per-tier container insets, U-3)"
    ],
-   "note": "Column count is per-tier (studionamma's 2-col-at-1440-only, wearecollins' grid) and alignment is left/centre/right. TWO misses (VERIFIED): (a) nav-drawer-menu::gap is a single STRING '8px', so lusion's 43.5px-at-375 / 58px-above pitch needs a tier object; (b) buck's column sits at ~45% of the viewport, which is a fourth position drawerAlign's three values cannot express.",
-   "uncovered_references": [
-    "buck",
-    "lusion"
-   ],
-   "uncovered_count": 2
+   "note": "Column count is per-tier (studionamma's 2-col-at-1440-only, wearecollins' grid) and alignment is left/centre/right. TWO misses (VERIFIED): (a) nav-drawer-menu::gap is a single STRING '8px', so lusion's 43.5px-at-375 / 58px-above pitch needs a tier object; (b) buck's column sits at ~45% of the viewport, which is a fourth position drawerAlign's three values cannot express. COVERED (Wave 3C U-3, 2026-09-25): (a) gap is a tier object; lusion's pitch is gap 0 on the 44px touch-target rows (43.99 live) and 14 above; (b) buck's column and its separate footer row are two containers in the drawer body with per-tier start insets, shipped as the starter pattern sgs/drawer-offset-column.",
+   "uncovered_references": [],
+   "uncovered_count": 0
   },
   {
    "id": "M-47",

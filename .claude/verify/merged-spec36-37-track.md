@@ -130,7 +130,7 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
 - W3B-4 evidence: `reports/reference-requirements/FAMILIES-MASTER.md` (46 families, 11 covered, 21 partial, 8 gap, 6 conflict), `families-master.json`, and the independent review `FAMILIES-REVIEW.md` (23 findings, applied); 33 coverage checks re-run against the code.
 
 ## Wave 3C — Header and nav architecture harmonised
-- STATUS: under way (`plans/2026-09-21-wave-3c-implementation-plan.md`); U-1, U-2, the U-9+U-11 pair and U-5 closed; lane A's next pair is U-3+U-8. U-16 waits on step 0d.
+- STATUS: under way (`plans/2026-09-21-wave-3c-implementation-plan.md`); U-1, U-2, the U-9+U-11 pair, U-5 and the U-3+U-8 pair closed; lane A's next pair is U-6+U-7. U-16 waits on step 0d.
 
 **U-1 exit criteria (closed):**
 - Mega close-grace reads `submenuCloseGrace` (the bug where the mega context passed a literal 170
@@ -196,8 +196,18 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
   are recorded divergences. Owed in the batched pass: reduced-motion emulation, axe with the drawer open, the editor
   round-trip of the Motion and Panel motion controls, Bean's eye on the shapes.
 
-**Next (lane A): U-3 + U-8**, where a surface sits (drawer side anchor and container inset, panel anchor and mega top
-offset); design-gated.
+**U-3 + U-8 exit criteria (closed; commits 9f3fc5071, 51d4be574, dd2db8a1f):**
+- M-17, M-46, M-16 and M-20 covered. Measured live on sandybrown (`reports/visual-diff/nav-drawer-2026-09-25.md`):
+  away's 390px side drawer (left 0, top 0, full height, modal); lusion's header-content panel (edges equal the header
+  row's content box); lusion's corner panel 13.08 below the burger against 12.8; lusion's pitch 43.99 (gap 0 on 44px
+  rows); a mega panel and a dropdown centred on the page (0.01, 0.99) and 9.99 below the header with a 10px offset; the
+  hover bridge covering the whole gap; away's two tiles side by side in `sgs/mega-links-with-tiles`.
+- Residue: away's drawer callouts become U-7's "mega panel inside the drawer accordion". Owed in the batched pass: axe
+  with the side and container drawers open, the editor round-trip of the four new controls, Bean's eye on the three
+  starter patterns once they have imagery.
+
+**Next (lane A): U-6 + U-7**, new item markup (hover parity, separators, sibling dim, label roll; per-item ornament
+and media, which first checks the mega-panel-in-drawer route); design-gated.
 
 Gate 3C passes when (the one definition; the same words are in the implementation plan §7 and the
 strategic plan's Gate 3C entry):

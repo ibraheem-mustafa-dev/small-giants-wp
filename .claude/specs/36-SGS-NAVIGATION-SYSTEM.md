@@ -197,7 +197,7 @@ throughout** (avoids the sticky-hover mobile bug). Mechanics:
   under it, its right edge), `page-centred` (centred on the page, or on a floating pill) and `full-width` (the
   page's, or the pill's, whole width). The dropdown kind reads `submenuAlign` (default `start`); the mega kind
   reads `megaAlign` (a tier object, default `page-centred`), both on
-  `plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json`. `mega-disclosure.js::repositionPanel` places the
+  `plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json`. `plugins/sgs-blocks/src/shared/nav-interactivity/mega-disclosure.js::repositionPanel` places the
   panel on each open; a dropdown keeps its own width, a mega panel takes the band. Collision clamping is always on.
 - **Gap below the header.** `submenuTopOffset` (Spec 41 FR-41-11) is the gap between the header's bottom edge
   and the top of either kind of panel. `repositionPanel` publishes the header's bottom (`.sgs-site-header`,

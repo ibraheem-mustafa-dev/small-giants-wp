@@ -82,7 +82,7 @@ $bar_set    = array(
 	'submenuAlign'     => 'page-centred',
 	'submenuTopOffset' => '10px',
 	// Collapse to the burger below 1600, so the drawer opens at every tier (lusion's corner panel at 1440, away's side panel at 768).
-	'collapsePoint'    => 1600,
+	'collapsePoint'    => 1024,
 );
 
 $d = get_post_field( 'post_content', $drawer_id );

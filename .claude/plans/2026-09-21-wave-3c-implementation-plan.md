@@ -198,12 +198,12 @@ visually. `none` means neither.
 | 3 | U-11 — **DONE** (paired with U-9) | Close-control presence, placement (`same-slot` / `top-row-start` / `top-row-end` plus an offset pair) and morph motion (DEC-15); magnet strength (M-10). Includes the `closeStyle` string to tier-object migration via `migrate-tier-object.py --property closeStyle`, with the fallthrough check that a stored flat string still resolves, and `$sgs_nd_allowed_close_styles` kept equal to the JSON enum | M-27, M-10 | eye | medium | `nav-drawer/{block.json,render.php,style.css}`, `nav-bar-menu/{block.json,style.css}` |
 | 4 | U-5 — **DONE** | Entry and exit animation vocabulary and item stagger. The mega fork has no entry-animation attribute today, so the animation must reach the mega interactivity context | M-31, M-32 | eye | high | `nav-drawer/{style.css,render.php,block.json}`, `mega-panel/block.json`, `nav-menu-markup.php`, `src/shared/nav-interactivity/` |
 | 5 | U-2 — **DONE** | Surface scrim, colour, alpha and blur per tier. The drawer hardcodes `rgba(0, 0, 0, 0.55)` twice in `style.css`; the panel fork has no scrim element at all, so U-2 adds one | M-14 (covered) | design | medium | `mega-panel/{render.php,block.json}`, `nav-drawer/{style.css,render.php,block.json}`, `src/shared/nav-interactivity/store.js` |
-| 6 | U-3 | Drawer side anchor, container inset, pitch tier object. No drawer clamp (section 1b) | M-17, M-46 | none | medium | `nav-drawer/{render.php,block.json}`, `nav-drawer-menu/block.json` |
+| 6 | U-3 — **DONE** (paired with U-8) | Drawer side anchor, container inset, pitch tier object. No drawer clamp (section 1b) | M-17, M-46 | none | medium | `nav-drawer/{render.php,block.json}`, `nav-drawer-menu/block.json` |
 | 7 | U-6 | Item hover parity: opacity and padding-shift hover (M-21, delivered by U-1 — see its row), row separators (M-30), sibling dim (M-24, a list-scoped rule), two-copy label roll (M-25, a second label in the markup, needed on the bar, the drawer, the trigger and the footer). M-24 and M-25 need new markup, so they come last | M-30, M-24, M-25 | eye | high | `nav-bar-menu/{block.json,style.css}`, `nav-drawer-menu/{block.json,style.css}`, `nav-menu-markup.php`, `nav-menu-submenu-css.php` |
 | 8 | U-7 | Per-item ornament (M-22) and per-item media slot (M-15) | M-22, M-15 | none | medium | `nav-menu-markup.php`, `nav-drawer-menu/block.json`, `mega-group/`, `nav-menu-submenu-css.php` |
 | 9 | U-10 | Role migration: move a non-menu header block into the drawer per tier. Crosses the Spec 37 boundary. First design question (Bean, 2026-09-25): the composition route, a copy of the block in the drawer body plus the header copy hidden at that tier with the existing device-visibility extension (`includes/device-visibility.php`, `sgsHideOnMobile/Tablet/Desktop`); Bean calls it the right use of those settings. Eye Care does this today with Additional CSS, which that route replaces. Blocks reading Site Info carry no duplicate data | M-19 | design | medium | `site-header-row/block.json`, `nav-drawer/render.php`, `nav-menu-markup.php` |
 | 10 | U-4 | Type scaling mode: a formula unit, per-tier line-height; includes `business-info` for the footer half | M-45 | none | medium | `nav-bar-menu/block.json`, `nav-drawer-menu/block.json`, `nav-menu-submenu-css.php`, `business-info/block.json` |
-| 11 | U-8 | Panel geometry: anchor enum and mega top offset (M-16). "Panel follows the pill" is a covered value of M-16, already built. Then Away's callout row (M-20), the aside or callout column count, which comes last on one reference | M-16, M-20 | none | medium | `nav-menu-submenu-css.php`, `mega-panel/{block.json,render.php}`, `mega-aside/render.php` |
+| 11 | U-8 — **DONE** (paired with U-3) | Panel geometry: anchor enum and mega top offset (M-16). "Panel follows the pill" is a covered value of M-16, already built. Then Away's callout row (M-20), the aside or callout column count, which comes last on one reference | M-16, M-20 | none | medium | `nav-menu-submenu-css.php`, `mega-panel/{block.json,render.php}`, `mega-aside/render.php` |
 | 12 | U-14 | Band pass-through, a zero-height shell (M-52); the surface-trigger `triggerMode` value (M-39, DEC-14); then a trigger that outlives its header, the detaching chip (M-08, buck and resn), last on two references. Do not reuse `class-sgs-floating-ui-renderer.php` as is: its container is `aria-hidden`, and FR-36-8's priority-plus-More text contradicts it | M-52, M-39, M-08 | design | medium | `site-header/{render.php,block.json,style.css}`, `site-header-row/block.json`, `nav-bar-menu/block.json` |
 | 13 | U-13 | Header scroll intelligence: section-adaptive ink (M-04), then direction-keyed restyle (M-03, one reference, last) | M-04, M-03 | design | high | `src/header-behaviours/view.js`, `includes/class-sgs-header-behaviours.php`, `site-header/*` |
 | 14 | U-16 | Header and footer entrance animation, after the 0d measurements. Premise: `site-header` and `site-footer` carry `supports.sgs.hideExtensions`; `site-footer-row` does not | M-11 | eye | medium | `site-header/block.json`, `site-footer/block.json`, `site-footer-row/block.json` |
@@ -278,6 +278,25 @@ per edit): reduced-motion emulation with a positive control, axe with the drawer
 the new controls, and Bean's eye on the shapes. U-16 was not paired: its design gate waits on step 0d; it reuses
 this vocabulary.
 
+**U-3 + U-8 — done, as one pair** (design `.claude/reports/2026-09-24-u3-u8-design.md`, two-model council GO
+WITH FIXES, Bean sign-off; commits 9f3fc5071, 51d4be574, dd2db8a1f; live `reports/visual-diff/nav-drawer-2026-09-25.md`).
+The drawer gains `side-start`, `side-end` and `container` positions and a per-tier `anchorOffset`; the menu item `gap`
+is a tier object on both menu blocks (stored values folded by `scripts/migrate-nav-gap-tier.php`, which every other
+site runs before it takes the deploy); dropdowns and mega panels share one placement vocabulary (`submenuAlign`
+widened, `megaAlign` new, per tier) and sit `submenuTopOffset` below the header's bottom; the hover bridge hangs from the
+open item. Bean's direction: a mega panel post and the drawer body take any blocks, so callout tiles, narrow panels and
+buck's offset column are structured starter patterns (`sgs/mega-links-with-tiles`, `sgs/mega-compact-links`,
+`sgs/drawer-offset-column`), not attributes. The live check found and fixed two defects (panels centred on a width that
+included the scrollbar, pre-existing for mega panels; the bridge sized mid-animation). Exit cells measured live: away's
+390px side drawer, lusion's header-content panel and 12.8px corner-panel gap, lusion's pitch (gap 0 on 44px rows), a
+mega panel and a dropdown on the page centre below the header, away's two tiles side by side. M-17, M-46, M-16 and M-20
+move to `covered`. Residue, named: away's drawer callouts inside its accordion become U-7's "the mega panel renders
+inside the drawer accordion" (Spec 36 FR-36-5's unbuilt item), and U-7 checks whether its per-item media slot (M-15) is
+reachable the same way first. Found here, outside the wave: an `sgs/container` grid set to `contentWidth: full` drops
+its column count (the column rule targets the content band `full` removes), owned by the container block. Batched for
+the later pass: axe with the new drawers open, the editor round-trip of the four new controls, Bean's eye on the three
+patterns once they have imagery.
+
 Sizes are `families-master.json::units[].size` at full scope. Convert per
 `~/.claude/rules/time-estimates.md`: medium 30 to 60 minutes, high 1 to 2 hours, the whole
 chain about 4 sessions with U-12's eight blocks running in parallel throughout. Revise
@@ -307,7 +326,7 @@ one sign-off, one build, one deploy, one live check, one report.
 | U-10 + U-14 | Header-row structure |
 
 U-4 and U-13 run alone. Three lanes run as separate sessions on disjoint files:
-- **Lane A (nav and drawer):** U-9+U-11, then U-5, then U-3+U-8, then U-6+U-7, then U-4, then U-10.
+- **Lane A (nav and drawer):** U-9+U-11, then U-5, then U-3+U-8 (all done), then U-6+U-7, then U-4, then U-10.
 - **Lane B (header behaviours):** U-13, then U-14, then U-16. U-14 touches `nav-bar-menu/block.json`,
   so it runs only when lane A is not mid-edit there. Start lane B after lane A is past U-9+U-11.
 - **Lane C (independent):** U-12, U-15, U-17 (prompt `.claude/prompts/2026-09-24-wave-3c-lane-c.md`).
