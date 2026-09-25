@@ -1,29 +1,27 @@
-# Live verification: a full-width container keeps its grid-item stretch, 2026-09-25
+# Live verification: sgs/container, 2026-09-25 (Scroll sideways)
 
 verdict: PASS
 intent_capture_passed: true
-commit_sha: 7fea496c4 (fix(container): a container whose contentWidth is 'full' keeps its grid-item stretch)
-blocks: container (the shared SGS_Container_Wrapper, so every block that routes through it)
+commit_sha: 85ddc09a1 (feat(container): Scroll sideways), 119247a82, a71fde293 (gate fixes), role rows committed separately
 
-## Method
-Sandybrown, deployed with `build-deploy.py --target sandybrown --blocks-only` (120 of 120 fast gates). Probe page
-`/qa-u8-patterns/` (3901, private): an outer grid container (`1fr auto`) holding two nested grid containers with three
-columns each, one with `contentWidth: full` (`.u38-full`), one at the default width (`.u38-normal`). One headed Chrome
-window, `getBoundingClientRect` and `getComputedStyle`.
+Design `.claude/reports/2026-09-25-container-scroll-sideways-design.md` (Bean option a1). Deployed to sandybrown
+(build-deploy, all gates, motion probes green, including Lenis `allowNestedScroll`).
 
-## Cause, proven before the fix
-The only rule setting position or size on `.u38-full` was `.sgs-container-<uid>{margin-inline:auto}` from
-`SGS_Container_Wrapper::render` (the contentWidth centring, which fell back to the outer box because `full` renders no
-content band). Removing only that margin in the tab took the box from 123px to 780px and its columns from one to two;
-putting it back re-broke it.
+`plugins/sgs-blocks/tests/php/wp-eval-container-scroll-row.php` on sandybrown: 4 of 7 before the deploy (the row
+checks 3 to 5 failed), 7 of 7 after.
 
-## Results
+`sgs/mega-links-with-tiles` on a temporary draft page (3946, deleted after), its tiles grid set to
+`scrollSideways: {desktop: off, mobile: on}`, `scrollItemWidth: {mobile: 236px}` (away / drawer / 375: two callouts
+236 x 338.8 in a 375px drawer):
 
-| Check | Before (7fea496c4~1) | After | Result |
-|---|---|---|---|
-| `.u38-full` in its 780px track | 123 wide, centred at 329, one track | 780 wide at 0, two tracks (385.17 each; the 16rem minimum column width) | PASS |
-| `.u38-normal` (control) | 388 wide | 388 wide | unchanged |
-| A capped width's CSS | `.uid{margin-inline:auto}` | identical (standalone test) | unchanged |
+| Check | Phone width (innerWidth 455, 1.1x zoom) | Desktop (innerWidth 1309) |
+|---|---|---|
+| Row display / direction / wrap | flex / row / nowrap | grid |
+| Snap | x mandatory, tiles `start` | none |
+| Tile widths | 236, 236 (away's 236) | 272, 272 (the grid's two columns) |
+| Row client / scroll width | 351 / 488: scrolls | 560 / 560 |
+| A sideways scroll | moved 0 to 137 and snapped | n/a |
+| Page sideways overflow | none | none |
 
-Test: `plugins/sgs-blocks/tests/php/run-container-fullwidth-grid-standalone.php`, 12 passed, negative control against
-eebb37b8f (the pre-change wrapper centres a `full` container).
+Batched for the later pass: the editor round-trip of the two new controls, axe on the row (it holds buttons, so it is
+keyboard-reachable), focus-ring clipping under `overflow-y:hidden`.
