@@ -55,16 +55,8 @@ CARD = dict(
     priceFontWeight="500", showAttributeTag=True, attributeTagSource="tag", attributeTagTerm="polarised",
     attributeTagText="Polarised")
 
-TOGGLE_HTML = """<button type="button" class="sgs-shop-filters__toggle" aria-expanded="false" aria-controls="sgs-shop-filters">
-	<svg aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="10" y1="18" x2="14" y2="18"/></svg>
-	<span>Filter</span>
-</button>"""
-HEADER_HTML = """<div class="sgs-shop-filters__header">
-	<h2 class="sgs-shop-filters__heading">Filter</h2>
-	<button type="button" class="sgs-shop-filters__close" aria-label="Close filters">
-		<svg aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-	</button>
-</div>"""
+# The Filter button and the panel header are built by the theme's sgs-shop-filters.js (WordPress 7.1 saves an
+# editor-made Custom HTML block empty, so the template carries no raw HTML).
 
 filters = [
     B("woocommerce/product-filter-active", {},
@@ -98,11 +90,9 @@ tree = [
                                    "style": {"typography": {"fontSize": "46px", "fontWeight": "500",
                                                             "lineHeight": "1.02"}},
                                    "fontFamily": "heading"}),
-            B("core/html", {"content": TOGGLE_HTML}),
             B("sgs/container", {"tagName": "div", "className": "sgs-shop-layout", "contentWidth": {"desktop": "full"},
                                 "margin": {"desktop": {"top": "28px"}}}, [
                 B("sgs/container", {"tagName": "aside", "anchor": "sgs-shop-filters", "className": "sgs-shop-filters"}, [
-                    B("core/html", {"content": HEADER_HTML}),
                     B("woocommerce/product-filters", {"style": {"spacing": {"padding": {"top": "0", "bottom": "0"}}}},
                       filters),
                 ]),

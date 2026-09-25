@@ -63,7 +63,41 @@
 	const SCROLL_REVEAL_PX = () => window.innerHeight; // ~1 viewport of scroll.
 
 	/** Main init — runs once after DOM is ready. */
+	/**
+	 * Builds the Filter button and the panel header when a template carries the
+	 * filter panel without them. Custom HTML blocks made in the editor save empty
+	 * on WordPress 7.1, so a Site Editor copy of the shop template cannot carry
+	 * that markup; the theme file's own copies are used when present.
+	 *
+	 * @param {HTMLElement} aside The #sgs-shop-filters panel.
+	 */
+	function ensureParts( aside ) {
+		const icon = ( lines ) => '<svg aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + lines + '</svg>';
+		if ( ! document.querySelector( '.sgs-shop-filters__toggle' ) ) {
+			const button = document.createElement( 'button' );
+			button.type = 'button';
+			button.className = 'sgs-shop-filters__toggle';
+			button.setAttribute( 'aria-expanded', 'false' );
+			button.setAttribute( 'aria-controls', aside.id );
+			button.innerHTML = icon( '<line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="10" y1="18" x2="14" y2="18"/>' ) + '<span></span>';
+			button.querySelector( 'span' ).textContent = SETTINGS.toggleLabel || 'Filter';
+			const layout = aside.closest( '.sgs-shop-layout' ) || aside;
+			layout.parentNode.insertBefore( button, layout );
+		}
+		if ( ! aside.querySelector( '.sgs-shop-filters__header' ) ) {
+			const header = document.createElement( 'div' );
+			header.className = 'sgs-shop-filters__header';
+			header.innerHTML = '<h2 class="sgs-shop-filters__heading"></h2><button type="button" class="sgs-shop-filters__close" aria-label="Close filters">' + icon( '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>' ) + '</button>';
+			header.querySelector( 'h2' ).textContent = SETTINGS.toggleLabel || 'Filter';
+			aside.insertBefore( header, aside.firstChild );
+		}
+	}
+
 	function init() {
+		const panel = document.getElementById( 'sgs-shop-filters' );
+		if ( panel ) {
+			ensureParts( panel );
+		}
 		const toggle = document.querySelector( '.sgs-shop-filters__toggle' );
 		const originalAside = document.getElementById( 'sgs-shop-filters' );
 
