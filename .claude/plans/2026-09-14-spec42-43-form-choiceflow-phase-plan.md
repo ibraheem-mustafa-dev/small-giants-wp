@@ -137,13 +137,13 @@ FR-43-9 (the block's own small IAPI store — decided, not a build-time fork), F
 (inserter disambiguation). **This is the first genuinely sellable feature in either spec** —
 a complete qualification quiz, zero WooCommerce/pricing/modal dependency.
 
-**Phase 3 — priced WC-variation steps + real purchase.** FR-43-1's priced step type,
-FR-43-10/10a (binds to `sgs/buybox`'s existing `Product_Manifest`, not a new pricing
-system), FR-43-5 (unmodified `/sgs/v1/cart/add-item` proxy reuse), FR-43-4's rate-limit
-note. **Precondition, not a build task:** the target product's priced attributes (e.g.
-lens thickness/finish) must already exist as real WooCommerce attribute terms with real
-per-variation pricing — a catalogue-setup step in WooCommerce's own admin UI, done before
-this phase's block work starts, not during it.
+**Phase 3 — priced steps + real purchase.** Built first as the add-on price list (Spec 43 v1.4.0 FR-43-17 to
+FR-43-20) for the Eye Care lens configurator: the price list and its settings page, the cart/order integration
+(`woocommerce_before_calculate_totals`, cart item data, order line meta), the proxy's optional `addons` argument,
+priced add-on questions, the live price panel and the purchase terminal. The variation source (FR-43-10/10a,
+`Product_Manifest`) follows for flows that resolve a product's own axes. **Precondition:** for the add-on source,
+the price list filled in (seeded for Eye Care from the draft); for the variation source, real WooCommerce
+variations.
 
 **Phase 4 — modal delivery + Mama's Munches acceptance criterion.** FR-43-6 (`sgs_modal`
 delivery, `flowRef` + shared `LinkControl` picker), FR-43-7 (explicitly demoted to this

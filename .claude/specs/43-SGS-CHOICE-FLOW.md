@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 43
-spec_version: 1.3.0
+spec_version: 1.4.0
 status: active
 owner: framework
 date: 2026-09-14
@@ -59,6 +59,12 @@ derived_from:
     `sgs/choice-flow-question` today, and neither is lens/pricing-specific: a plain
     qualification quiz benefits from both identically. FR-43-15/FR-43-16 below add them to the
     plain-question step type now, universal to any `sgs/choice-flow`, not deferred to Phase 3.
+  - **2026-09-25 (v1.4.0), owner decision 2026-09-24 (`plans/2026-09-24-eye-care-hand-build-design.md` section 5):**
+    eyewear lens prices are ONE site-wide add-on price list, not WooCommerce variations. Variations were rejected
+    (every frame would need one variation per colour x size x use x thickness x finish); separate lens products
+    were rejected (two bag lines per pair). v1.4.0 adds "add-on price list" as a second priced-step source beside
+    "product variation" (FR-43-17 to FR-43-20); the variation source stays for flows that resolve a product's own
+    axes (Mama's Munches).
 ---
 
 # Spec 43 — `sgs/choice-flow`
@@ -122,6 +128,9 @@ time based on which shares more cleanly — see §6) can be any of:
   (thickness/finish modelled as real WC attribute terms on one variable product — see §6
   FR-43-10). Renders each step's options via `sgs/option-picker`'s tile UI, bound to that
   step's manifest-derived axis, not its typed/free-text mode.
+- **Priced add-on step (v1.4.0, FR-43-17)** — a question whose options are the options of one group in the
+  site-wide add-on price list; the chosen option's price is added to the product being bought. Any client can use
+  it: an optician's lens type, thickness and finish; a print shop's finishes; a bakery's add-ons.
 - **Plain data-capture step** — reuses `sgs/form`'s existing field blocks (text, file
   upload) unchanged. The prescription/eye-test-upload use case — explicitly does **not**
   affect price; a flow can freely mix priced and unpriced steps.
@@ -146,6 +155,31 @@ a short explanation for choices a client may not understand from the label alone
 "varifocal" means) — again, universal: a qualification quiz's options benefit from the same
 mechanism whenever a choice needs more context than fits in a label. Optional — an option
 with no `helpText` renders with no `?` button at all, not a disabled one.
+
+**FR-43-17 — add-on price list (v1.4.0).** One site-wide list of add-on groups, each a list of options
+`{key, label, price}` (price in the shop's currency, entered the same way product prices are), kept on one settings
+page (WooCommerce > Add-on prices, capability `manage_woocommerce`, nonce-checked, every field sanitised). A priced
+add-on step names one group (`priceGroup`); its option values are that group's option keys, and the price each
+option shows is read from the list at render time, never typed into the block. Changing a price on the settings
+page changes every flow and every cart line from the next recalculation (FR-43-18).
+
+**FR-43-18 — the list is the only price authority (v1.4.0).** The browser sends only `{group, key}` pairs with the
+add-to-cart request (the `/sgs/v1/cart/add-item` proxy's optional `addons` argument, or the Store API's
+`woocommerce_store_api_add_to_cart_data`). The server resolves each pair against the list: an unknown group or key,
+or two options from one group, rejects the request. The resolved lines (group, key, label, price) are stored as cart
+item data; `woocommerce_before_calculate_totals` sets the line's price to the product's own price plus the sum of
+its add-on prices re-read from the list; the lines are copied to the order item's meta and shown in the bag, the
+checkout and the order as one line, e.g. "Single vision · Thin 1.67 · Polarised grey". No client-sent price,
+total or label is ever used.
+
+**FR-43-19 — live price panel (v1.4.0).** A flow with priced add-on steps can show a running total beside its
+questions: the product's current price, then one row per chosen add-on (its label and price, "included" for 0),
+then the total. Display only; FR-43-18 is the authority.
+
+**FR-43-20 — what is being bought (v1.4.0).** A purchase terminal in a flow with add-on steps adds the page's
+current product: on a product page, the variation the shopper has chosen there (colour, size), which the buybox
+publishes when it changes; otherwise a product set on the flow. A step's option may end the flow as "no add-ons"
+(the draft's "No prescription": the frame alone goes in the bag).
 
 **FR-43-2 — branching.** Any step gains a `nextStepMap` attribute: answer value → target
 step ID. This is the one genuinely new mechanism this spec introduces (per-step routing,
@@ -350,10 +384,10 @@ progress indicator, and a Tier-V CSS step transition). Grounded against the real
 Eye Care lens-configurator source, not a generic reference. Still zero WooCommerce/pricing/
 modal — those stay Phase 3/4.
 
-**Phase 3 — priced WC-variation steps + real purchase.** FR-43-1's priced step type,
-FR-43-10/FR-43-10a, FR-43-5, FR-43-4's rate-limit note. Requires the target product's
-lens/flavour/etc. attributes to already exist as real WooCommerce variations (FR-43-10a's
-catalogue-setup precondition).
+**Phase 3 — priced steps + real purchase.** FR-43-1's priced step types, FR-43-17 to FR-43-20 (add-on price
+list: built first, for the Eye Care lens configurator), FR-43-10/FR-43-10a (variation source), FR-43-5, FR-43-4's
+rate-limit note. The variation source still requires the product's attributes to exist as real WooCommerce
+variations; the add-on source requires only the price list to be filled in.
 
 **Phase 4 — modal delivery + Mama's Munches acceptance criterion.** FR-43-6, FR-43-7
 (explicitly not part of v1 — see FR-43-7's own text).
@@ -362,7 +396,7 @@ catalogue-setup precondition).
 (mandatory rebuild, only after Phase 1 proves stable and the instance count is known),
 FR-42-7b, FR-42-10/FR-43-14 (clone-orchestrator CPT-creation gap), FR-42-13 (analytics).
 
-## 10. Requirement index (v1.3.0)
+## 10. Requirement index (v1.4.0)
 
 | FR | One-line |
 |---|---|
@@ -385,3 +419,7 @@ FR-42-7b, FR-42-10/FR-43-14 (clone-orchestrator CPT-creation gap), FR-42-13 (ana
 | FR-43-14 | Cloning pipeline can't create a flow CPT — shared gap with Spec 42, fix once |
 | FR-43-15 | Per-option image (universal, not lens-specific) — grounded in the real lens-flow source |
 | FR-43-16 | Per-option help-text `?` toggle (universal, not lens-specific) — grounded in the real lens-flow source |
+| FR-43-17 | Add-on price list: a second priced-step source (site-wide groups of `{key, label, price}`, one settings page) |
+| FR-43-18 | The list is the only price authority: `{group, key}` from the browser, resolved and priced server-side, stored on the cart and order line |
+| FR-43-19 | Live price panel beside the questions (display only) |
+| FR-43-20 | What is bought: the page's chosen variation, or a set product; a "no add-ons" exit |
