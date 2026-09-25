@@ -382,6 +382,18 @@ if ( '' !== $drawer_text_effective_hover ) {
 	$css .= sgs_text_colour_gradient_fallback_rule( $body_sel . ':hover', $drawer_text_effective_hover );
 }
 
+// The dialog is the scroll container. Its scrollbar (style.css: thin, a tint of
+// the ink on a transparent track) takes its ink from the drawer's own text
+// colour, which is painted on the body, not the root, so the root's
+// currentColor would miss it. A gradient text colour leaves the ink at the
+// root's own colour (the WCAG pairing for drawerBg).
+if ( '' !== $drawer_text_effective && ! preg_match( '/gradient\(/i', $drawer_text_effective ) ) {
+	$sgs_nd_scroll_ink = sgs_colour_value( $drawer_text_effective );
+	if ( '' !== $sgs_nd_scroll_ink ) {
+		$css .= $root_sel . '{--sgs-nd-scrollbar-ink:' . $sgs_nd_scroll_ink . ';}';
+	}
+}
+
 /*
  * Content alignment on the drawer body, PLUS the same pick published as two
  * inheritable custom properties so descendant blocks can honour it.

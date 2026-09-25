@@ -41,6 +41,16 @@
 	z-index: min(90, max(2, calc(var(--sgs-header-z, 100) - 1)));
 }
 
+/* The dialog is the scroll container, so this is the drawer's scrollbar: thin,
+   its thumb a tint of the drawer's ink on a transparent track, so it sits in the
+   panel's own colours and inside its corners rather than as the browser's grey
+   bar. render.php publishes the drawer text colour as --sgs-nd-scrollbar-ink;
+   unset, the ink is the dialog's own colour. Zero specificity. */
+:where(.wp-block-sgs-nav-drawer) {
+	scrollbar-width: thin;
+	scrollbar-color: color-mix(in srgb, var(--sgs-nd-scrollbar-ink, currentColor) 35%, transparent) transparent;
+}
+
 /* Height defaults live in :where() (specificity 0) so the `panelSize`
    attr's per-tier emitted rules (render.php) always win — the F3 gate's
    sanctioned overridable-default shape. */
