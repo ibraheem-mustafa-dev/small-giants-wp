@@ -2782,7 +2782,11 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// Stack joins this (Task 1) — it is display:flex, so its children carry
 			// the exact same min-width:auto/min-height:auto shrink refusal as flex.
 			if ( $uid && ( 'grid' === $layout || 'flex' === $layout || 'stack' === $layout ) ) {
-				$responsive_css .= $grid_sel . '>*{min-width:0;min-height:0}';
+				// Zero specificity (:where) so the backstop only replaces the UA
+				// `auto`: a child's own min-width/min-height (a nested container's
+				// minHeight, sgs/button's 48px floor) always wins. At (0,2,0) it
+				// zeroed every authored min-height on a grid/flex child.
+				$responsive_css .= ':where(' . $grid_sel . '>*){min-width:0;min-height:0}';
 			}
 
 			if ( $has_responsive_attr ) {
@@ -3435,8 +3439,25 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					 * (nothing here overrides an authored value; only an
 					 * absent tier gets a resolved one).
 					 */
-					$sgs_gtc_obj      = sgs_responsive_normalise_object( $attributes['gridTemplateColumns'] );
-					$sgs_gtc_resolved = array();
+					/*
+					 * A count fills a template-less tier only when that tier's
+					 * count was AUTHORED, or when no wider tier has a literal
+					 * template. `$attributes['columns']` always carries the
+					 * block.json defaults (2/2/1), so it cannot say whether the
+					 * author chose a count; the raw parsed attrs can. Without
+					 * this, a template set for desktop only was replaced below
+					 * 1024 by the default repeat(2,1fr) and then one column,
+					 * instead of inheriting (the scalar path's rule: a set base
+					 * template governs every narrower tier). An authored count
+					 * (Mama's footer: columns {3,3,1} + a desktop/tablet
+					 * template) still collapses the tier, as before.
+					 */
+					$sgs_gtc_obj            = sgs_responsive_normalise_object( $attributes['gridTemplateColumns'] );
+					$sgs_gtc_cols_authored  = ( $block instanceof \WP_Block && isset( $block->parsed_block['attrs']['columns'] ) )
+						? sgs_responsive_normalise_object( $block->parsed_block['attrs']['columns'] )
+						: array();
+					$sgs_gtc_wider_template = false;
+					$sgs_gtc_resolved       = array();
 					foreach (
 						array(
 							'desktop' => $columns,
@@ -3447,6 +3468,10 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						$sgs_gtc_explicit = $sgs_gtc_obj[ $sgs_gtc_tier ] ?? null;
 						if ( is_string( $sgs_gtc_explicit ) && '' !== trim( $sgs_gtc_explicit ) ) {
 							$sgs_gtc_resolved[ $sgs_gtc_tier ] = $sgs_gtc_explicit;
+							$sgs_gtc_wider_template            = true;
+						} elseif ( $sgs_gtc_wider_template && null === ( $sgs_gtc_cols_authored[ $sgs_gtc_tier ] ?? null ) ) {
+							// Unset tier under a wider template: sgs_emit_responsive_css() inherits it.
+							continue;
 						} elseif ( 'grid' === $layout && $sgs_gtc_count ) {
 							$sgs_gtc_resolved[ $sgs_gtc_tier ] = $intrinsic_columns
 								? sgs_intrinsic_columns_track( absint( $sgs_gtc_count ), sgs_container_tier_gap( $attributes, $sgs_gtc_tier ), sgs_container_tier_min_column_width( $attributes, $sgs_gtc_tier ) )

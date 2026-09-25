@@ -582,26 +582,12 @@ if ( $icon ) {
 // rule (not inline on the element), the tier overrides do not need
 // !important to win.
 //
-// The base tier is now ALWAYS emitted (falling back to style.css's own
-// 48px default when no explicit minHeight is set) rather than only when
-// $min_height was truthy. Root cause (2026-08-27, found live on the Mama's
-// Munches canary clone — "Read the full story" + "Find out more" both
-// computed min-height:0px): sgs/container's shrink-to-fit backstop
-// (class-sgs-container-wrapper.php, `>*{min-width:0;min-height:0}` on its
-// flex/grid direct children) matches at (0,2,0) specificity — TWO classes
-// (.uid>.inner>*) — which beats this block's own base `.sgs-button{min-
-// height:48px}` rule in style.css at (0,1,0).
-//
-// ⛔ CORRECTED 2026-08-27 (same day, caught by a live re-check before this
-// "fix" shipped): emitting the SAME (0,2,0)-specificity selector here
-// (`.{$uid}.sgs-button`) does NOT reliably resolve the tie. The claim that
-// "this block's own <style> always renders after its parent container's"
-// was measured FALSE live — the browser's own CSSOM confirmed the
-// container's (0,2,0) rule can appear LATER than this one, so on an equal
-// specificity tie the container still wins and min-height still computes
-// to 0. The selector below repeats the uid class (`.{$uid}.{$uid}`) to
-// reach (0,3,0) — strictly higher than the container's (0,2,0) — so this
-// wins regardless of source order, not by a source-order assumption.
+// The base tier is ALWAYS emitted (falling back to style.css's own 48px
+// default when no explicit minHeight is set). sgs/container's shrink-to-fit
+// backstop (`:where(… >*){min-width:0;min-height:0}` on its flex/grid
+// direct children) has zero specificity, so this rule wins; the repeated
+// uid class (`.{$uid}.{$uid}`, (0,3,0)) also keeps it ahead of any other
+// ancestor rule regardless of source order.
 $min_height_base  = null !== $min_height ? $min_height : 48;
 $min_height_decls = array( ".{$uid}.{$uid}.sgs-button{min-height:{$min_height_base}{$min_height_unit};}" );
 if ( null !== $min_height_tab ) {
