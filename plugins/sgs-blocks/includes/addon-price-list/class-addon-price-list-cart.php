@@ -28,6 +28,13 @@ final class Addon_Price_List_Cart {
 	/** Cart-item-data / order-item-meta key holding the resolved, priced lines. */
 	const LINES_KEY = 'sgs_addons';
 
+	/**
+	 * Each cart product object's own price before add-ons, for this request.
+	 *
+	 * @var \WeakMap<\WC_Product, float>|null
+	 */
+	private static ?\WeakMap $base_prices = null;
+
 	/** Wire WC hooks. */
 	public static function register(): void {
 		\add_filter( 'woocommerce_add_cart_item_data', array( __CLASS__, 'add_cart_item_data' ), 10, 3 );
@@ -113,8 +120,16 @@ final class Addon_Price_List_Cart {
 				$addon_total                  = $resolved['total'];
 			}
 
-			$base_price = (float) $cart_item['data']->get_price( 'edit' );
-			$cart_item['data']->set_price( $base_price + (float) $addon_total );
+			// WooCommerce totals a cart several times per request (add, then
+			// checkout), on the same product object, so its price already
+			// holds the add-ons from the last pass. Keep the frame's own price
+			// from the first pass this object is seen, or the add-ons stack.
+			self::$base_prices ??= new \WeakMap();
+			$product = $cart_item['data'];
+			if ( ! isset( self::$base_prices[ $product ] ) ) {
+				self::$base_prices[ $product ] = (float) $product->get_price( 'edit' );
+			}
+			$product->set_price( self::$base_prices[ $product ] + (float) $addon_total );
 		}
 	}
 
