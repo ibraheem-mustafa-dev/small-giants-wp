@@ -66,11 +66,32 @@
             "attributes": {
               "rrpMetaKey": "_sgs_rrp",
               "rrpSavingFormat": "amount",
+              "rrpShowPrice": true,
+              "rrpSavingPrefix": "You save",
+              "rrpPillBackgroundColour": "accent-light",
+              "rrpPillTextColour": "accent-text",
               "showStockStatus": true,
+              "stockInStockLabel": "In stock — dispatched next working day",
+              "stockInStockColour": "success",
               "stickyEnabled": true,
               "stickyOffset": "24px",
               "showLadder": false,
-              "extrasBeforeCount": 3
+              "priceFontFamily": "heading",
+              "priceFontSize": {
+                "desktop": 38
+              },
+              "priceFontSizeUnit": "px",
+              "priceFontWeight": "500",
+              "pickerSwatchStyle": "tile",
+              "pickerStyle": "outlined",
+              "pickerSubLabelMetaKey": "_sgs_size_measure",
+              "pickerShowSelectedTick": false,
+              "addToCartLabel": "Add to bag as they are",
+              "addToCartStyle": "outline",
+              "addToCartShowPrice": true,
+              "extrasBeforeCount": 3,
+              "extrasBeforeCartCount": 1,
+              "stackBelow": "tablet"
             },
             "innerBlocks": [
               {
@@ -154,7 +175,10 @@
                 "attributes": {
                   "label": "Add my prescription",
                   "url": "/prescription-lenses/",
-                  "inheritStyle": "primary"
+                  "inheritStyle": "primary",
+                  "widthType": {
+                    "desktop": "full"
+                  }
                 }
               },
               {
@@ -162,14 +186,47 @@
                 "attributes": {
                   "variant": "card",
                   "cardTitle": "Need advice?",
-                  "cardSubline": "Message me on WhatsApp — I'm an optician, and I'm happy to help."
+                  "cardSubline": "Message me on WhatsApp — I'm an optician, and I'm happy to help.",
+                  "backgroundColour": "whatsapp-soft",
+                  "cardBorderColour": "whatsapp-line",
+                  "cardBorderWidth": {
+                    "top": "1px",
+                    "right": "1px",
+                    "bottom": "1px",
+                    "left": "1px"
+                  },
+                  "cardBorderStyle": "solid",
+                  "cardTitleColour": "text",
+                  "cardSublineColour": "text-muted",
+                  "margin": {
+                    "desktop": {
+                      "top": "22px"
+                    }
+                  }
                 }
               },
               {
                 "name": "sgs/icon-list",
                 "attributes": {
                   "source": "typed",
-                  "markerType": "none",
+                  "markerType": "icon",
+                  "icon": "check",
+                  "iconColour": "accent-text",
+                  "iconBackgroundColour": "accent-light",
+                  "iconBoxSize": "26px",
+                  "iconSize": "small",
+                  "dividers": true,
+                  "dividerEdges": true,
+                  "dividerColour": "border",
+                  "itemPaddingBlock": "16px",
+                  "itemFontSize": {
+                    "desktop": 14.5
+                  },
+                  "margin": {
+                    "desktop": {
+                      "top": "24px"
+                    }
+                  },
                   "items": [
                     {
                       "text": "Genuine and boxed with the brand's own case, cloth and two-year guarantee."
@@ -211,7 +268,8 @@
               {
                 "name": "sgs/tabs",
                 "attributes": {
-                  "hideEmptyTabs": true
+                  "hideEmptyTabs": true,
+                  "mobileLayout": "row"
                 },
                 "innerBlocks": [
                   {
@@ -1608,13 +1666,7 @@
                       "writeReviewTextDecoration": "none",
                       "variant": "badge",
                       "showGoogleLogo": true,
-                      "showAggregate": true,
-                      "margin": {
-                        "desktop": {
-                          "top": "0px",
-                          "bottom": "0px"
-                        }
-                      }
+                      "showAggregate": true
                     }
                   }
                 ]
@@ -1700,8 +1752,7 @@
                     "widthType": "fill"
                   },
                   "collection": "woocommerce/product-collection/product-catalog",
-                  "sgsSameTermAs": "product_brand",
-                  "className": "sgs-product-rail"
+                  "sgsSameTermAs": "product_brand"
                 },
                 "innerBlocks": [
                   {
@@ -1842,8 +1893,7 @@
                     "widthType": "fill"
                   },
                   "collection": "woocommerce/product-collection/product-catalog",
-                  "sgsSameTermAs": "pa_shape",
-                  "className": "sgs-product-rail"
+                  "sgsSameTermAs": "pa_shape"
                 },
                 "innerBlocks": [
                   {

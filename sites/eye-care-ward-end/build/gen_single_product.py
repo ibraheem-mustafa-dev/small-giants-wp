@@ -60,7 +60,7 @@ def collection(taxonomy, query_id):
                   "woocommerceHandPickedProducts": []},
         "tagName": "div", "displayLayout": {"type": "flex", "columns": 4, "shrinkColumns": True},
         "dimensions": {"widthType": "fill"}, "collection": "woocommerce/product-collection/product-catalog",
-        "sgsSameTermAs": taxonomy, "className": "sgs-product-rail"},
+        "sgsSameTermAs": taxonomy},
         [B("woocommerce/product-template", {}, [B("sgs/product-card", dict(CARD))])])
 
 
@@ -117,7 +117,7 @@ def _find(nodes, name):
 # The clinic's Google rating comes from the same Google reviews block settings as Home, shown compact.
 with open(HOME, encoding='utf-8') as fh:
     GOOGLE = dict(_find(json.load(fh), 'sgs/google-reviews')['attributes'])
-GOOGLE.update(variant="badge", showGoogleLogo=True, showAggregate=True, margin={"desktop": {"top": "0px", "bottom": "0px"}})
+GOOGLE.update(variant="badge", showGoogleLogo=True, showAggregate=True)
 
 # Shown only while the product has no reviews (conditional visibility, "none-yet").
 NO_REVIEWS = B("sgs/container", dict(
@@ -149,8 +149,15 @@ tree = [
             B("sgs/breadcrumbs", dict(productPageCrumbs="both", showArchiveCrumb=False, showCurrentCrumb=False, fontSize={"desktop": 12.5}, fontSizeUnit="px",
                                       letterSpacing={"desktop": 0.04}, letterSpacingUnit="em", linkColour="text-muted",
                                       currentColour="text-muted", margin={"desktop": {"bottom": "22px"}})),
-            B("sgs/buybox", dict(rrpMetaKey="_sgs_rrp", rrpSavingFormat="amount", showStockStatus=True,
-                                 stickyEnabled=True, stickyOffset="24px", showLadder=False, extrasBeforeCount=3), [
+            B("sgs/buybox", dict(
+                rrpMetaKey="_sgs_rrp", rrpSavingFormat="amount", rrpShowPrice=True, rrpSavingPrefix="You save",
+                rrpPillBackgroundColour="accent-light", rrpPillTextColour="accent-text",
+                showStockStatus=True, stockInStockLabel="In stock — dispatched next working day",
+                stockInStockColour="success", stickyEnabled=True, stickyOffset="24px", showLadder=False,
+                priceFontFamily="heading", priceFontSize={"desktop": 38}, priceFontSizeUnit="px", priceFontWeight="500",
+                pickerSwatchStyle="tile", pickerStyle="outlined", pickerSubLabelMetaKey="_sgs_size_measure",
+                pickerShowSelectedTick=False, addToCartLabel="Add to bag as they are", addToCartStyle="outline",
+                addToCartShowPrice=True, extrasBeforeCount=3, extrasBeforeCartCount=1, stackBelow="tablet"), [
                 btxt("brand", fontFamily="heading", fontWeight="500", fontSize={"desktop": 20}, fontSizeUnit="px",
                      letterSpacing={"desktop": 0.3}, letterSpacingUnit="em", textTransform="uppercase"),
                 B("sgs/heading", dict(level="h1", content="", fontFamily="heading", fontWeight="500",
@@ -158,10 +165,17 @@ tree = [
                                       lineHeight={"desktop": 1.02}, lineHeightUnit="unitless",
                                       metadata=bind("content", "title"))),
                 btxt("short_description", fontSize={"desktop": 13.5}, fontSizeUnit="px", textColour="text-muted"),
-                B("sgs/button", dict(label="Add my prescription", url="/prescription-lenses/", inheritStyle="primary")),
+                B("sgs/button", dict(label="Add my prescription", url="/prescription-lenses/", inheritStyle="primary",
+                                     widthType={"desktop": "full"})),
                 B("sgs/whatsapp-cta", dict(variant="card", cardTitle="Need advice?",
-                                           cardSubline="Message me on WhatsApp — I'm an optician, and I'm happy to help.")),
-                B("sgs/icon-list", dict(source="typed", markerType="none", items=[
+                                           cardSubline="Message me on WhatsApp — I'm an optician, and I'm happy to help.",
+                                           backgroundColour="whatsapp-soft", cardBorderColour="whatsapp-line",
+                                           cardBorderWidth=BOX, cardBorderStyle="solid", cardTitleColour="text",
+                                           cardSublineColour="text-muted", margin={"desktop": {"top": "22px"}})),
+                B("sgs/icon-list", dict(source="typed", markerType="icon", icon="check", iconColour="accent-text",
+                                        iconBackgroundColour="accent-light", iconBoxSize="26px", iconSize="small",
+                                        dividers=True, dividerEdges=True, dividerColour="border", itemPaddingBlock="16px",
+                                        itemFontSize={"desktop": 14.5}, margin={"desktop": {"top": "24px"}}, items=[
                     {"text": "Genuine and boxed with the brand's own case, cloth and two-year guarantee."},
                     {"text": "Free UK delivery over £75, or collect in Birmingham and I'll adjust them to fit while you wait."},
                     {"text": "Adjustments, tightening and re-fitting are free for as long as you own them."}])),
@@ -171,7 +185,7 @@ tree = [
                 gridTemplateColumns={"desktop": "minmax(0,1.35fr) minmax(0,1fr)", "tablet": "minmax(0,1fr)",
                                      "mobile": "minmax(0,1fr)"},
                 gap={"desktop": "18px", "mobile": "10px"}, margin=SECTION_GAP), [
-                B("sgs/tabs", dict(hideEmptyTabs=True), [
+                B("sgs/tabs", dict(hideEmptyTabs=True, mobileLayout="row"), [
                     B("sgs/tab", {"label": "Description"},
                       [B("core/post-content", {"textColor": "text-muted",
                                                "style": {"typography": {"fontSize": "16px", "lineHeight": "1.6"}}})]),
