@@ -112,10 +112,28 @@
 						}
 					},
 					"_note": "iconColour/iconColourHover explicitly mapped (base + states.hover) since 2026-09-04 (D956) -- both used to resolve via the default {prefix}{suffix} convention, which routed them to the SAME (css:color, element=icon, state=NULL) slot with no way to tell them apart, a real routing-determinism ambiguity (F6 Check #1/#8). Emitted as scoped rules (`.{uid} .sgs-notice-banner__icon{color:...}` base, a touch-guarded :hover + unguarded :focus-visible pair for the Hover attr via sgs_hover_state_rules()), not inline -- gated on iconColour being set. `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php)."
+					},
+					"arrows": {
+						"label": "Rotation arrows",
+						"order": 3,
+						"clusters": [
+							"fill"
+						],
+						"attrMap": {
+							"css:color": "arrowColour"
+						},
+						"states": {
+							"hover": {
+								"attrMap": {
+									"css:color": "arrowColourHover"
+								}
+							}
+						},
+						"_note": "U-15 — rotate mode's previous/next controls only (block.json::messageMode). Explicit attrMap (not the default {prefix}{suffix} convention) because the block has no `arrow` PREFIX declared. Emitted scoped on `.sgs-notice-banner__prev`/`.sgs-notice-banner__next` via sgs_hover_state_rules(), gated on arrowColour being set."
+					}
 				}
 			}
-		}
-	},
+		},
 	"selectors": {
 		"root": ".sgs-notice-banner",
 		"typography": ".sgs-notice-banner"
@@ -369,6 +387,49 @@
 				"vertical-rl",
 				"vertical-lr"
 			],
+			"default": ""
+		},
+		"messageMode": {
+			"type": "string",
+			"enum": [
+				"static",
+				"rotate",
+				"random"
+			],
+			"default": "static",
+			"description": "U-15: static shows every sgs/notice-message child stacked (or the single child). rotate/random need at least two sgs/notice-message children to take effect — with fewer, the banner renders exactly as static."
+		},
+		"rotateInterval": {
+			"type": "number",
+			"default": 5,
+			"description": "Seconds between automatic rotations (2 to 30). rotate mode only."
+		},
+		"messageTransition": {
+			"type": "string",
+			"enum": [
+				"none",
+				"fade",
+				"slide-up",
+				"slide-left"
+			],
+			"default": "fade"
+		},
+		"showMessageArrows": {
+			"type": "boolean",
+			"default": false,
+			"description": "rotate mode only — previous/next controls that also pause auto-rotation."
+		},
+		"pauseOnHover": {
+			"type": "boolean",
+			"default": true,
+			"description": "rotate mode only — hover or focus within the banner pauses rotation."
+		},
+		"arrowColour": {
+			"type": "string",
+			"default": ""
+		},
+		"arrowColourHover": {
+			"type": "string",
 			"default": ""
 		}
 	},

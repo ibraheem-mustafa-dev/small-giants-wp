@@ -170,3 +170,141 @@
 		transition: none !important;
 	}
 }
+
+/* ===== U-15: self-changing messages =====
+ * `.claude/reports/2026-09-26-u15-notice-message-design.md` §3.3.
+ * The `.is-enhanced` class is only ever set by view.js AFTER hydration
+ * (design §3.3) — a page with no JS shows every message stacked in normal
+ * flow, never one collapsed into a grid cell. */
+
+.sgs-notice-banner__messages {
+	flex: 1;
+	min-width: 0;
+}
+
+.sgs-notice-banner.is-enhanced .sgs-notice-banner__messages {
+	display: grid;
+}
+
+.sgs-notice-banner.is-enhanced .sgs-notice-banner__messages > .sgs-notice-message {
+	grid-area: 1 / 1;
+	visibility: hidden;
+	opacity: 0;
+}
+
+.sgs-notice-banner.is-enhanced .sgs-notice-banner__messages > .sgs-notice-message.is-active {
+	visibility: visible;
+	opacity: 1;
+}
+
+/* Transitions — keyed off the banner's own messageTransition attribute
+ * (design §3.3: opacity for fade, translate for the slides), 300ms, applied
+ * only to the message swapping in/out. */
+.sgs-notice-banner--transition-fade.is-enhanced .sgs-notice-banner__messages > .sgs-notice-message {
+	transition: opacity 0.3s ease;
+}
+
+.sgs-notice-banner--transition-slide-up.is-enhanced .sgs-notice-banner__messages > .sgs-notice-message {
+	transition: opacity 0.3s ease, translate 0.3s ease;
+	translate: 0 8px;
+}
+
+.sgs-notice-banner--transition-slide-up.is-enhanced .sgs-notice-banner__messages > .sgs-notice-message.is-active {
+	translate: 0 0;
+}
+
+.sgs-notice-banner--transition-slide-left.is-enhanced .sgs-notice-banner__messages > .sgs-notice-message {
+	transition: opacity 0.3s ease, translate 0.3s ease;
+	translate: 12px 0;
+}
+
+.sgs-notice-banner--transition-slide-left.is-enhanced .sgs-notice-banner__messages > .sgs-notice-message.is-active {
+	translate: 0 0;
+}
+
+/* Reduced motion: a message change is instant — rotation itself continues
+ * (it is a content change, not motion), only the visual swap is not
+ * animated. */
+@media (prefers-reduced-motion: reduce) {
+	.sgs-notice-banner.is-enhanced .sgs-notice-banner__messages > .sgs-notice-message {
+		transition: none !important;
+		translate: none !important;
+	}
+}
+
+/* ===== Pause + rotation arrows ===== */
+
+.sgs-notice-banner__pause,
+.sgs-notice-banner__prev,
+.sgs-notice-banner__next {
+	/* 44 × 44 px minimum touch target (WCAG 2.2 AA). */
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	min-height: 44px;
+	padding: 0;
+	flex-shrink: 0;
+	background: none;
+	border: none;
+	cursor: pointer;
+	color: inherit;
+	opacity: 0.8;
+	border-radius: 4px;
+	transition: opacity 0.15s ease;
+}
+
+.sgs-notice-banner__pause:hover,
+.sgs-notice-banner__prev:hover,
+.sgs-notice-banner__next:hover {
+	opacity: 1;
+}
+
+.sgs-notice-banner__pause:focus-visible,
+.sgs-notice-banner__prev:focus-visible,
+.sgs-notice-banner__next:focus-visible {
+	outline: 2px solid var(--sgs-focus-color, currentcolor);
+	outline-offset: 2px;
+	opacity: 1;
+}
+
+/* Pause icon — two bars (playing); the CSS-only "paused" look is a single
+ * triangle, driven off aria-pressed so no extra JS-toggled class is needed. */
+.sgs-notice-banner__pause-icon {
+	display: inline-block;
+	width: 12px;
+	height: 12px;
+	position: relative;
+}
+
+.sgs-notice-banner__pause-icon::before,
+.sgs-notice-banner__pause-icon::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	width: 4px;
+	height: 100%;
+	background: currentcolor;
+}
+
+.sgs-notice-banner__pause-icon::before {
+	left: 0;
+}
+
+.sgs-notice-banner__pause-icon::after {
+	left: 8px;
+}
+
+.sgs-notice-banner__pause[aria-pressed="true"] .sgs-notice-banner__pause-icon {
+	width: 0;
+	height: 0;
+	border-top: 6px solid transparent;
+	border-bottom: 6px solid transparent;
+	border-left: 10px solid currentcolor;
+	background: none;
+}
+
+.sgs-notice-banner__pause[aria-pressed="true"] .sgs-notice-banner__pause-icon::before,
+.sgs-notice-banner__pause[aria-pressed="true"] .sgs-notice-banner__pause-icon::after {
+	content: none;
+}

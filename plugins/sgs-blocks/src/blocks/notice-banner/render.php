@@ -66,6 +66,7 @@ $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_t
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/wp-icons.php';
+require_once __DIR__ . '/helpers.php';
 
 // FR-22-6: $text is no longer rendered here — the text content slot is now
 // an InnerBlocks child (sgs/text), emitted via $content below.
@@ -380,12 +381,40 @@ if ( $mobile_box_decls ) {
 }
 
 // -------------------------------------------------------------------------
+// U-15 self-changing messages (`.claude/reports/2026-09-26-u15-notice-message-design.md`
+// §3.2/§3.3). Two or more sgs/notice-message children AND messageMode
+// rotate/random switches the banner into "enhanced" mode; static mode or
+// fewer than two message children renders BYTE-IDENTICAL to the pre-U-15
+// output below (the `$sgs_nb_enhanced` branch is skipped entirely).
+// -------------------------------------------------------------------------
+$sgs_nb_message_mode  = sgs_notice_banner_resolve_message_mode( $attributes['messageMode'] ?? 'static' );
+$sgs_nb_message_count = sgs_notice_banner_message_count( $block->parsed_block ?? array() );
+$sgs_nb_enhanced      = in_array( $sgs_nb_message_mode, array( 'rotate', 'random' ), true ) && $sgs_nb_message_count >= 2;
+
+if ( $sgs_nb_enhanced ) {
+	$sgs_nb_rotate_interval    = sgs_notice_banner_clamp_interval( $attributes['rotateInterval'] ?? 5 );
+	$sgs_nb_transition         = sgs_notice_banner_resolve_transition( $attributes['messageTransition'] ?? 'fade' );
+	$sgs_nb_show_arrows        = 'rotate' === $sgs_nb_message_mode && ! empty( $attributes['showMessageArrows'] );
+	$sgs_nb_pause_on_hover     = ! isset( $attributes['pauseOnHover'] ) || ! empty( $attributes['pauseOnHover'] );
+	$sgs_nb_arrow_colour       = (string) ( $attributes['arrowColour'] ?? '' );
+	$sgs_nb_arrow_colour_hover = (string) ( $attributes['arrowColourHover'] ?? '' );
+
+	$sgs_nb_arrow_css = sgs_notice_banner_arrow_colour_css( $root_sel, $sgs_nb_arrow_colour, $sgs_nb_arrow_colour_hover );
+	if ( $sgs_nb_arrow_css ) {
+		$scoped_css[] = $sgs_nb_arrow_css;
+	}
+}
+
+// -------------------------------------------------------------------------
 // Wrapper classes — BEM root + variant modifier + preset colour/align classes
 // re-added manually (the color/typography supports are skip-serialised so WP
 // no longer auto-adds has-* classes for them).
 // -------------------------------------------------------------------------
 
 $sgs_wrapper_classes = array( 'sgs-notice-banner', 'sgs-notice-banner--' . sanitize_html_class( $variant ), $uid );
+if ( $sgs_nb_enhanced ) {
+	$sgs_wrapper_classes[] = 'sgs-notice-banner--transition-' . sanitize_html_class( $sgs_nb_transition );
+}
 
 if ( '' !== $preset_text_slug ) {
 	$sgs_wrapper_classes[] = 'has-text-color';
@@ -412,7 +441,27 @@ $sgs_inner_html = '';
 if ( $icon_html ) {
 	$sgs_inner_html .= '<span class="sgs-notice-banner__icon" aria-hidden="true">' . $icon_html . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from first-party icon maps; dashicon slug + emoji escaped above.
 }
-$sgs_inner_html .= $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WP core InnerBlocks output.
+// U-15 (§3.3): static mode, or fewer than two sgs/notice-message children,
+// takes this EXACT pre-U-15 branch — $content goes straight in, unchanged.
+if ( $sgs_nb_enhanced ) {
+	// aria-live is 'off' while auto-rotating (the WAI carousel pattern — a
+	// screen reader is not interrupted every rotateInterval seconds); the
+	// view.js store switches it to 'polite' while paused or after an arrow.
+	$sgs_inner_html .= '<div class="sgs-notice-banner__messages" aria-live="off">' . $content . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WP core InnerBlocks output (sgs/notice-message children).
+
+	if ( 'rotate' === $sgs_nb_message_mode ) {
+		// WCAG 2.2.2: moving content that starts automatically and runs past
+		// 5s needs a visible pause control. Always renders in rotate mode.
+		$sgs_inner_html .= '<button class="sgs-notice-banner__pause" type="button" aria-pressed="false" aria-label="' . esc_attr__( 'Pause announcements', 'sgs-blocks' ) . '" data-wp-on--click="actions.togglePause" data-wp-bind--aria-pressed="context.pausedByButton"><span class="sgs-notice-banner__pause-icon" aria-hidden="true"></span></button>';
+
+		if ( $sgs_nb_show_arrows ) {
+			$sgs_inner_html .= '<button class="sgs-notice-banner__prev" type="button" aria-label="' . esc_attr__( 'Previous announcement', 'sgs-blocks' ) . '" data-wp-on--click="actions.prevMessage"><span aria-hidden="true">&lsaquo;</span></button>';
+			$sgs_inner_html .= '<button class="sgs-notice-banner__next" type="button" aria-label="' . esc_attr__( 'Next announcement', 'sgs-blocks' ) . '" data-wp-on--click="actions.nextMessage"><span aria-hidden="true">&rsaquo;</span></button>';
+		}
+	}
+} else {
+	$sgs_inner_html .= $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WP core InnerBlocks output.
+}
 
 // Close button — announcement + dismissible only.
 // The × is a decorative glyph; the accessible name comes from aria-label.
@@ -483,6 +532,42 @@ if ( $is_announcement && $dismissible ) {
 	if ( $is_announcement ) {
 		$extra_attrs['aria-label'] = __( 'Site announcement', 'sgs-blocks' );
 	}
+}
+
+// -------------------------------------------------------------------------
+// U-15: rotate/random messages context. Appended AFTER the dismiss branch
+// above (never reorders its keys, so a dismissible announcement's existing
+// output is unchanged when it is also enhanced) rather than folded into it —
+// static mode / fewer than two message children never reaches this block at
+// all ($sgs_nb_enhanced is false), which is what keeps that path byte-
+// identical to the pre-U-15 render.
+// -------------------------------------------------------------------------
+if ( $sgs_nb_enhanced ) {
+	$sgs_nb_context = array(
+		'messageMode'       => $sgs_nb_message_mode,
+		'rotateInterval'    => $sgs_nb_rotate_interval,
+		'messageTransition' => $sgs_nb_transition,
+		'pauseOnHover'      => $sgs_nb_pause_on_hover,
+		'messageCount'      => $sgs_nb_message_count,
+		'activeIndex'       => 0,
+		'pausedByButton'    => false,
+		'pausedByHover'     => false,
+		'isEnhanced'        => false,
+	);
+
+	if ( isset( $extra_attrs['data-wp-context'] ) ) {
+		// Already interactive (a dismissible announcement) — merge contexts
+		// under the SAME 'sgs/notice-banner' namespace/store.
+		$sgs_nb_existing_context = json_decode( $extra_attrs['data-wp-context'], true );
+		$extra_attrs['data-wp-context'] = wp_json_encode(
+			array_merge( is_array( $sgs_nb_existing_context ) ? $sgs_nb_existing_context : array(), $sgs_nb_context )
+		);
+	} else {
+		$extra_attrs['data-wp-interactive'] = 'sgs/notice-banner';
+		$extra_attrs['data-wp-context']     = wp_json_encode( $sgs_nb_context );
+		$extra_attrs['data-wp-watch']       = 'callbacks.init';
+	}
+	$extra_attrs['data-wp-class--is-enhanced'] = 'context.isEnhanced';
 }
 
 // -------------------------------------------------------------------------

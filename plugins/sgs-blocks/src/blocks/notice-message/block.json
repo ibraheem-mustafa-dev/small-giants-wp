@@ -1,0 +1,93 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/notice-message",
+	"version": "0.1.0",
+	"title": "SGS Notice Message",
+	"category": "sgs-content",
+	"description": "One rotating or randomised message inside an SGS Notice Banner (U-15). Add two or more inside a banner to enable rotation.",
+	"keywords": [
+		"notice",
+		"message",
+		"slide",
+		"rotate",
+		"announcement"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "megaphone",
+	"parent": [
+		"sgs/notice-banner"
+	],
+	"supports": {
+		"html": false,
+		"reusable": false,
+		"color": {
+			"background": false,
+			"text": false,
+			"gradients": false,
+			"__experimentalSkipSerialization": true
+		},
+		"sgs": {
+			"hideExtensions": [
+				"animation",
+				"fx"
+			],
+			"elements": {
+				"message": {
+					"label": "Message",
+					"layer": "CONTENT",
+					"order": 1,
+					"clusters": [
+						"text",
+						"fill"
+					],
+					"isWrapper": true,
+					"attrMap": {
+						"css:color": "textColour",
+						"css:background-color": "backgroundColour",
+						"css:background-image": "backgroundColourGradient",
+						"css:color-gradient": "textColourGradient"
+					},
+					"_note": "CONTENT-kind, block-private — no SGS_Container_Wrapper. Colour is painted TWICE by render.php: once on the banner root via :has() while this message is active (§3.1), once on the message's own uid class so stacked no-JS messages each keep their own text colour. Both reads land on the same two attrMap entries; the :has() emission is the primary paint, the own-uid rule the no-JS fallback."
+				},
+				"innerBlocks": {
+					"label": "Message content",
+					"order": 2,
+					"clusters": [],
+					"_note": "Native InnerBlocks, no template lock and no allowedBlocks restriction (any block type; sgs/text is the seeded starter). Mirrors sgs/accordion-item's open panel-content slot."
+				}
+			}
+		}
+	},
+	"attributes": {
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"label": {
+			"type": "string",
+			"default": "",
+			"description": "Editor-only name shown in the list view. Never rendered on the frontend."
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
+	"example": {
+		"attributes": {
+			"label": "Slide 1"
+		}
+	}
+}

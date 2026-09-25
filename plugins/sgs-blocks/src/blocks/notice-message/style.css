@@ -1,0 +1,8 @@
+/* ===== SGS Notice Message — Frontend ===== */
+
+.sgs-notice-message {
+	display: flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--10, 8px);
+	width: 100%;
+}

@@ -8,11 +8,27 @@ import {
 	PanelBody,
 	SelectControl,
 	ToggleControl,
+	RangeControl,
 	Notice,
 } from '@wordpress/components';
+import { useSelect } from '@wordpress/data';
 import { IconPicker, IconPreview, ResponsiveBoxControl, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { colourVar } from '../../utils';
 import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+
+// U-15 (`.claude/reports/2026-09-26-u15-notice-message-design.md` §3.2).
+const MESSAGE_MODE_OPTIONS = [
+	{ label: __( 'Static', 'sgs-blocks' ), value: 'static' },
+	{ label: __( 'Rotate', 'sgs-blocks' ), value: 'rotate' },
+	{ label: __( 'Random', 'sgs-blocks' ), value: 'random' },
+];
+
+const MESSAGE_TRANSITION_OPTIONS = [
+	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
+	{ label: __( 'Fade', 'sgs-blocks' ), value: 'fade' },
+	{ label: __( 'Slide up', 'sgs-blocks' ), value: 'slide-up' },
+	{ label: __( 'Slide left', 'sgs-blocks' ), value: 'slide-left' },
+];
 
 // Box-object interface contract — length units for the kept-scalar maxWidth
 // attr (base only, matches the pre-existing attribute set). contentWidth was
@@ -138,7 +154,7 @@ function buildWrapperStyle( attributes ) {
 	return wrapperStyle;
 }
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		variant,
 		showIcon,
@@ -155,9 +171,25 @@ export default function Edit( { attributes, setAttributes } ) {
 		backgroundColour,
 		backgroundColourGradient,
 		textAlign,
+		messageMode,
+		rotateInterval,
+		messageTransition,
+		showMessageArrows,
+		pauseOnHover,
 	} = attributes;
 
 	const isAnnouncement = 'announcement' === displayMode;
+
+	// U-15 §3.2: the rotation panel only shows once there are two or more
+	// sgs/notice-message children to rotate between.
+	const messageChildCount = useSelect(
+		( select ) =>
+			select( 'core/block-editor' )
+				.getBlocks( clientId )
+				.filter( ( block ) => 'sgs/notice-message' === block.name ).length,
+		[ clientId ]
+	);
+	const canRotate = messageChildCount >= 2;
 
 	// Mirrors render.php's own allowlist exactly (left/center/right only —
 	// 'justify' is not a valid has-text-align-* class) so the editor canvas
@@ -260,6 +292,20 @@ export default function Edit( { attributes, setAttributes } ) {
 							},
 						],
 					},
+					// U-15 §3.2: only relevant once rotate + arrows are switched on —
+					// SgsColourPanel omits a falsy row entirely (rows.filter(Boolean)).
+					canRotate && 'rotate' === messageMode && showMessageArrows
+						? fillRow( {
+								key: 'arrowColour',
+								label: __( 'Rotation arrow colour', 'sgs-blocks' ),
+								attrs: {
+									base: 'arrowColour',
+									hover: 'arrowColourHover',
+								},
+								attributes,
+								setAttributes,
+						  } )
+						: null,
 				] }
 			/>
 			<InspectorControls>
@@ -431,6 +477,86 @@ export default function Edit( { attributes, setAttributes } ) {
 							</ToolsPanelItem>
 						) }
 					</ToolsPanel>
+					{ /* U-15 §3.2: two or more sgs/notice-message children switch
+					   the banner into rotate/random mode. Fewer than two, the
+					   controls stay hidden and the banner renders static — a
+					   Notice explains the missing precondition instead of a
+					   dead control. */ }
+					<PanelBody title={ __( 'Messages', 'sgs-blocks' ) } initialOpen={ false }>
+						{ ! canRotate && (
+							<Notice status="info" isDismissible={ false }>
+								{ __(
+									'Add two or more Message blocks to rotate.',
+									'sgs-blocks'
+								) }
+							</Notice>
+						) }
+						{ canRotate && (
+							<>
+								<ToggleGroupControl
+									label={ __( 'Message mode', 'sgs-blocks' ) }
+									value={ messageMode }
+									onChange={ ( val ) => setAttributes( { messageMode: val } ) }
+									isBlock
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								>
+									{ MESSAGE_MODE_OPTIONS.map( ( option ) => (
+										<ToggleGroupControlOption
+											key={ option.value }
+											value={ option.value }
+											label={ option.label }
+										/>
+									) ) }
+								</ToggleGroupControl>
+								{ 'rotate' === messageMode && (
+									<>
+										<RangeControl
+											label={ __( 'Rotate every (seconds)', 'sgs-blocks' ) }
+											value={ rotateInterval }
+											onChange={ ( val ) =>
+												setAttributes( { rotateInterval: val ?? 5 } )
+											}
+											min={ 2 }
+											max={ 30 }
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+										/>
+										<ToggleControl
+											label={ __( 'Show previous/next arrows', 'sgs-blocks' ) }
+											checked={ !! showMessageArrows }
+											onChange={ ( val ) =>
+												setAttributes( { showMessageArrows: val } )
+											}
+											__nextHasNoMarginBottom
+										/>
+										<ToggleControl
+											label={ __( 'Pause on hover or focus', 'sgs-blocks' ) }
+											checked={ pauseOnHover !== false }
+											onChange={ ( val ) =>
+												setAttributes( { pauseOnHover: val } )
+											}
+											__nextHasNoMarginBottom
+										/>
+									</>
+								) }
+								<SelectControl
+									label={ __( 'Transition', 'sgs-blocks' ) }
+									value={ messageTransition }
+									options={ MESSAGE_TRANSITION_OPTIONS }
+									onChange={ ( val ) =>
+										setAttributes( { messageTransition: val } )
+									}
+									help={ __(
+										'A message change is instant for visitors who prefer reduced motion.',
+										'sgs-blocks'
+									) }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							</>
+						) }
+					</PanelBody>
 			</InspectorControls>
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
