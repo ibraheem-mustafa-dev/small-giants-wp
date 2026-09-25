@@ -52,6 +52,23 @@ if ( null === $data ) {
 	exit( 1 );
 }
 
+// Real per-product sizes, keyed by the draft's `code` field. Optional — a missing file just
+// means every product falls back to its single data.json eye/bridge/temple as its one size.
+$sizes_path    = dirname( $data_path ) . '/sizes-jpopticians.json';
+$sizes_by_code = array();
+if ( file_exists( $sizes_path ) ) {
+	$sizes_data = json_decode( file_get_contents( $sizes_path ), true );
+	if ( is_array( $sizes_data ) && ! empty( $sizes_data['products'] ) ) {
+		foreach ( $sizes_data['products'] as $size_row ) {
+			if ( isset( $size_row['code'] ) ) {
+				$sizes_by_code[ $size_row['code'] ] = $size_row;
+			}
+		}
+	}
+} else {
+	echo "  NOTE: sizes file not found ({$sizes_path}) — every product falls back to its single data.json size.\n";
+}
+
 $stats = array(
 	'brands_created'    => 0,
 	'brands_updated'    => 0,
@@ -61,6 +78,7 @@ $stats = array(
 	'products_updated'  => 0,
 	'variations_created' => 0,
 	'variations_updated' => 0,
+	'variations_deleted' => 0,
 	'images_sideloaded' => 0,
 	'images_skipped'    => 0,
 );
@@ -216,6 +234,109 @@ function sgs_seed_sideload_image( string $url, int $post_parent, string $descrip
 	return (int) $attachment_id;
 }
 
+/**
+ * The `pa_frame-size` term slug for a given measurement triple: "<eye>-<bridge>-<temple>",
+ * e.g. "55-14-135". Two frames sharing a lens width but differing in bridge/temple get
+ * distinct slugs (and so distinct terms), because the slug carries all three numbers.
+ *
+ * @param array $size Size row with 'eye', 'bridge', 'temple' (all int).
+ * @return string Term slug.
+ */
+function sgs_seed_size_slug( array $size ): string {
+	return $size['eye'] . '-' . $size['bridge'] . '-' . $size['temple'];
+}
+
+/**
+ * Find-or-create a `pa_frame-size` term for one eye/bridge/temple measurement, idempotently
+ * (by slug, since two sizes can share a lens-width NAME but never a slug). The term name is
+ * just the lens width ("55"); the full measurement lives on `_sgs_size_measure` term meta
+ * ("55□14 135", U+25A1) for display, and `_sgs_variesby_value` = 'size' so the product
+ * preflight gate's variesBy check passes.
+ *
+ * @param int    $eye      Lens width (mm).
+ * @param int    $bridge   Bridge width (mm).
+ * @param int    $temple   Temple length (mm).
+ * @param string $taxonomy The `pa_frame-size` taxonomy name.
+ * @param array  $stats    Stats accumulator (passed by reference).
+ * @return int Term ID, or 0 on failure.
+ */
+function sgs_seed_find_or_create_size_term( int $eye, int $bridge, int $temple, string $taxonomy, array &$stats ): int {
+	$slug    = sgs_seed_size_slug( array( 'eye' => $eye, 'bridge' => $bridge, 'temple' => $temple ) );
+	$measure = $eye . '□' . $bridge . ' ' . $temple;
+
+	$existing = get_term_by( 'slug', $slug, $taxonomy );
+	if ( $existing ) {
+		update_term_meta( $existing->term_id, '_sgs_size_measure', $measure );
+		update_term_meta( $existing->term_id, '_sgs_variesby_value', 'size' );
+		$stats['attr_terms_updated']++;
+		return (int) $existing->term_id;
+	}
+
+	$result = wp_insert_term( (string) $eye, $taxonomy, array( 'slug' => $slug ) );
+	if ( is_wp_error( $result ) ) {
+		echo "  ERROR creating size term '{$slug}' in {$taxonomy}: " . $result->get_error_message() . "\n";
+		return 0;
+	}
+
+	update_term_meta( (int) $result['term_id'], '_sgs_size_measure', $measure );
+	update_term_meta( (int) $result['term_id'], '_sgs_variesby_value', 'size' );
+	$stats['attr_terms_created']++;
+
+	return (int) $result['term_id'];
+}
+
+/**
+ * The sizes a product ships in, smallest lens-width first: the real sizes from
+ * sizes-jpopticians.json when that product was `found` there, otherwise a single size from
+ * data.json's own eye/bridge/temple fields.
+ *
+ * @param array $p             One data.json PRODUCTS row.
+ * @param array $sizes_by_code sizes-jpopticians.json rows keyed by `code`.
+ * @return array List of ['eye' => int, 'bridge' => int, 'temple' => int], smallest eye first.
+ */
+function sgs_seed_product_sizes( array $p, array $sizes_by_code ): array {
+	$entry = $sizes_by_code[ $p['code'] ] ?? null;
+	$sizes = array();
+
+	if ( $entry && 'found' === ( $entry['status'] ?? '' ) && ! empty( $entry['sizes'] ) ) {
+		foreach ( $entry['sizes'] as $size_row ) {
+			$sizes[] = array(
+				'eye'    => (int) $size_row['eye'],
+				'bridge' => (int) $size_row['bridge'],
+				'temple' => (int) $size_row['temple'],
+			);
+		}
+	} else {
+		$sizes[] = array(
+			'eye'    => (int) $p['eye'],
+			'bridge' => (int) $p['bridge'],
+			'temple' => (int) $p['temple'],
+		);
+	}
+
+	usort(
+		$sizes,
+		function ( $a, $b ) {
+			return $a['eye'] <=> $b['eye'];
+		}
+	);
+
+	return $sizes;
+}
+
+/**
+ * The product's default size: the middle one of three, the first of two, or the only one.
+ *
+ * @param array $sizes Sizes from sgs_seed_product_sizes(), smallest first.
+ * @return array The chosen ['eye' => int, 'bridge' => int, 'temple' => int].
+ */
+function sgs_seed_default_size( array $sizes ): array {
+	if ( 3 === count( $sizes ) ) {
+		return $sizes[1];
+	}
+	return $sizes[0];
+}
+
 // ─────────────────────────────── 1. store currency ───────────────────────────────
 
 update_option( 'woocommerce_currency', 'GBP' );
@@ -246,6 +367,7 @@ $tax_material = sgs_seed_find_or_create_attribute( 'Material', 'material' );
 $tax_ftype    = sgs_seed_find_or_create_attribute( 'Frame type', 'frame-type' );
 $tax_hinge    = sgs_seed_find_or_create_attribute( 'Hinge', 'hinge' );
 $tax_nose     = sgs_seed_find_or_create_attribute( 'Nose pads', 'nose-pad' );
+$tax_size     = sgs_seed_find_or_create_attribute( 'Frame size', 'frame-size' );
 
 // Colour terms — name + hex, hex stored on _sgs_swatch_color (framework-standard key).
 $colour_term_ids = array(); // code (e.g. 'blk') => term_id
@@ -352,7 +474,20 @@ foreach ( $data['PRODUCTS'] as $p ) {
 	// one price per product, not per colour).
 	$product->set_regular_price( (string) $p['price'] );
 
-	// ── build the colour attribute (variation-enabled) + the non-variation attributes ──
+	// ── sizes: the real jpopticians sizes when found, else the single data.json size ──
+	$sizes                = sgs_seed_product_sizes( $p, $sizes_by_code );
+	$default_size         = sgs_seed_default_size( $sizes );
+	$size_slug_to_term_id = array();
+	if ( $tax_size ) {
+		foreach ( $sizes as $size ) {
+			$term_id = sgs_seed_find_or_create_size_term( $size['eye'], $size['bridge'], $size['temple'], $tax_size, $stats );
+			if ( $term_id ) {
+				$size_slug_to_term_id[ sgs_seed_size_slug( $size ) ] = $term_id;
+			}
+		}
+	}
+
+	// ── build the colour + size attributes (variation-enabled) + the non-variation attributes ──
 	$attributes = array();
 
 	if ( $tax_colour && ! empty( $p['cols'] ) ) {
@@ -371,6 +506,16 @@ foreach ( $data['PRODUCTS'] as $p ) {
 			$attr->set_variation( true );
 			$attributes[ $tax_colour ] = $attr;
 		}
+	}
+
+	if ( $tax_size && $size_slug_to_term_id ) {
+		$attr = new WC_Product_Attribute();
+		$attr->set_id( wc_attribute_taxonomy_id_by_name( $tax_size ) );
+		$attr->set_name( $tax_size );
+		$attr->set_options( array_values( $size_slug_to_term_id ) );
+		$attr->set_visible( true );
+		$attr->set_variation( true );
+		$attributes[ $tax_size ] = $attr;
 	}
 
 	$non_variation_map = array(
@@ -392,14 +537,28 @@ foreach ( $data['PRODUCTS'] as $p ) {
 		}
 	}
 
+	// Default selection: the product's first colour + its default size (middle of 3, first of
+	// 2, the only one of 1) — what the variation-swatch UI pre-selects on page load.
+	$default_attributes = array();
+	if ( $tax_colour && ! empty( $p['cols'] ) && isset( $colour_term_ids[ $p['cols'][0] ] ) && $colour_term_ids[ $p['cols'][0] ] ) {
+		$default_colour_term = get_term( $colour_term_ids[ $p['cols'][0] ], $tax_colour );
+		if ( $default_colour_term && ! is_wp_error( $default_colour_term ) ) {
+			$default_attributes[ $tax_colour ] = $default_colour_term->slug;
+		}
+	}
+	if ( $tax_size && isset( $size_slug_to_term_id[ sgs_seed_size_slug( $default_size ) ] ) ) {
+		$default_attributes[ $tax_size ] = sgs_seed_size_slug( $default_size );
+	}
+	$product->set_default_attributes( $default_attributes );
+
 	$product->set_attributes( $attributes );
 	$product_id = $product->save();
 
 	// Now that we have a real ID, (re-)apply product-level meta + taxonomy terms.
 	update_post_meta( $product_id, '_sgs_rrp', $p['rrp'] );
-	update_post_meta( $product_id, '_sgs_frame_eye', $p['eye'] );
-	update_post_meta( $product_id, '_sgs_frame_bridge', $p['bridge'] );
-	update_post_meta( $product_id, '_sgs_frame_temple', $p['temple'] );
+	update_post_meta( $product_id, '_sgs_frame_eye', $default_size['eye'] );
+	update_post_meta( $product_id, '_sgs_frame_bridge', $default_size['bridge'] );
+	update_post_meta( $product_id, '_sgs_frame_temple', $default_size['temple'] );
 
 	if ( $brand_taxonomy ) {
 		$brand_term = get_term_by( 'name', $p['brand'], $brand_taxonomy );
@@ -434,6 +593,9 @@ foreach ( $data['PRODUCTS'] as $p ) {
 		}
 		wp_set_object_terms( $product_id, $colour_ids_for_product, $tax_colour );
 	}
+	if ( $tax_size && $size_slug_to_term_id ) {
+		wp_set_object_terms( $product_id, array_values( $size_slug_to_term_id ), $tax_size );
+	}
 
 	// ── image: sideload if the draft names one, else skip + report ──
 	if ( ! empty( $p['img'] ) && isset( $data['IMG'][ $p['img'] ] ) ) {
@@ -454,38 +616,72 @@ foreach ( $data['PRODUCTS'] as $p ) {
 		$stats['images_skipped']++;
 	}
 
-	// ── variations: one per colour ──
-	if ( $tax_colour && ! empty( $p['cols'] ) ) {
+	// ── variations: one per colour × size ──
+	if ( $tax_colour && ! empty( $p['cols'] ) && $tax_size && $size_slug_to_term_id ) {
 		$existing_variation_ids = $product->get_children();
-		$existing_by_colour     = array();
+		$existing_by_pair       = array(); // "colour_slug|size_slug" => variation id.
 		foreach ( $existing_variation_ids as $vid ) {
-			$vattrs = wc_get_product( $vid )->get_attributes();
-			$slug   = $vattrs[ $tax_colour ] ?? '';
-			if ( $slug ) {
-				$existing_by_colour[ $slug ] = $vid;
+			$vattrs      = wc_get_product( $vid )->get_attributes();
+			$colour_slug = $vattrs[ $tax_colour ] ?? '';
+			$size_slug   = $vattrs[ $tax_size ] ?? '';
+			if ( $colour_slug && $size_slug ) {
+				$existing_by_pair[ $colour_slug . '|' . $size_slug ] = $vid;
 			}
 		}
+
+		$wanted_pairs = array();
 
 		foreach ( $p['cols'] as $code ) {
 			if ( ! isset( $colour_term_ids[ $code ] ) || ! $colour_term_ids[ $code ] ) {
 				continue;
 			}
-			$term      = get_term( $colour_term_ids[ $code ], $tax_colour );
-			$term_slug = $term->slug;
+			$colour_term = get_term( $colour_term_ids[ $code ], $tax_colour );
+			$colour_slug = $colour_term->slug;
 
-			$variation_id = $existing_by_colour[ $term_slug ] ?? 0;
-			$variation    = $variation_id ? wc_get_product( $variation_id ) : new WC_Product_Variation();
-			$variation->set_parent_id( $product_id );
-			$variation->set_regular_price( (string) $p['price'] );
-			$variation->set_sku( $sku . '-' . $term_slug );
-			$variation->set_attributes( array( $tax_colour => $term_slug ) );
-			$variation->set_status( 'publish' );
-			$variation->save();
+			foreach ( $sizes as $size ) {
+				$size_slug = sgs_seed_size_slug( $size );
+				if ( ! isset( $size_slug_to_term_id[ $size_slug ] ) ) {
+					continue;
+				}
+				$pair_key       = $colour_slug . '|' . $size_slug;
+				$wanted_pairs[] = $pair_key;
 
-			if ( $variation_id ) {
-				$stats['variations_updated']++;
-			} else {
-				$stats['variations_created']++;
+				$existing_variation_id = $existing_by_pair[ $pair_key ] ?? 0;
+				$variation              = $existing_variation_id ? wc_get_product( $existing_variation_id ) : new WC_Product_Variation();
+				$variation->set_parent_id( $product_id );
+				$variation->set_regular_price( (string) $p['price'] );
+				$variation->set_sku( $sku . '-' . $colour_slug . '-' . $size_slug );
+				$variation->set_attributes(
+					array(
+						$tax_colour => $colour_slug,
+						$tax_size   => $size_slug,
+					)
+				);
+				$variation->set_status( 'publish' );
+				$variation_id = $variation->save();
+
+				update_post_meta( $variation_id, '_sgs_frame_eye', $size['eye'] );
+				update_post_meta( $variation_id, '_sgs_frame_bridge', $size['bridge'] );
+				update_post_meta( $variation_id, '_sgs_frame_temple', $size['temple'] );
+
+				if ( $existing_variation_id ) {
+					$stats['variations_updated']++;
+				} else {
+					$stats['variations_created']++;
+				}
+			}
+		}
+
+		// Delete any child variation whose (colour, size) pair is no longer wanted — e.g. the
+		// old colour-only variations from before pa_frame-size existed, which have no size value.
+		foreach ( $existing_variation_ids as $vid ) {
+			$vattrs      = wc_get_product( $vid )->get_attributes();
+			$colour_slug = $vattrs[ $tax_colour ] ?? '';
+			$size_slug   = $vattrs[ $tax_size ] ?? '';
+			$pair_key    = $colour_slug . '|' . $size_slug;
+			if ( ! in_array( $pair_key, $wanted_pairs, true ) ) {
+				wp_delete_post( $vid, true );
+				$stats['variations_deleted']++;
 			}
 		}
 	}

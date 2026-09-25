@@ -1,0 +1,171 @@
+{
+  "source": "https://jpopticians.com/",
+  "retrieved": "2026-09-25",
+  "products": [
+    {
+      "code": "RB3025 · 001/58",
+      "brand": "Ray-Ban",
+      "name": "Aviator Classic",
+      "status": "found",
+      "url": "https://jpopticians.com/jp_uk/sunglasses/ray-ban/rb3025",
+      "sizes": [
+        { "label": "55", "eye": 55, "bridge": 14, "temple": 135 },
+        { "label": "58", "eye": 58, "bridge": 14, "temple": 135 },
+        { "label": "62", "eye": 62, "bridge": 14, "temple": 140 }
+      ],
+      "note": "Read from the product's JSON-LD variant list (3 sizes). Our draft's 58/14/135 matches the middle size exactly."
+    },
+    {
+      "code": "GG1566S · 001",
+      "brand": "Gucci",
+      "name": "Oversized Cat-Eye",
+      "status": "found",
+      "url": "https://jpopticians.com/jp_uk/sunglasses/gucci/gg1566s",
+      "sizes": [
+        { "label": "55", "eye": 55, "bridge": 17, "temple": 120 }
+      ],
+      "note": "Only one size listed (colourways Tortoise and Black, both shown out of stock). Site's real numbers (55-17-120) differ from our draft (56-17-145); use the site's figures."
+    },
+    {
+      "code": "OO9102 · 9102E1",
+      "brand": "Oakley",
+      "name": "Holbrook",
+      "status": "found",
+      "url": "https://jpopticians.com/jp_uk/sunglasses/oakley/oo9102",
+      "sizes": [
+        { "label": "55", "eye": 55, "bridge": 18, "temple": 137 }
+      ],
+      "note": "Single size on the site; matches our draft exactly (55/18/137)."
+    },
+    {
+      "code": "PR 17WS · 1AB5S0",
+      "brand": "Prada",
+      "name": "Symbole",
+      "status": "not_found",
+      "url": null,
+      "sizes": [],
+      "note": "No Prada sunglasses at all found on jpopticians.com — brand does not appear in the sunglasses nav, and searches for 'Prada', 'PR 17WS' and 'Symbole' return zero product matches."
+    },
+    {
+      "code": "RB2140 · 901",
+      "brand": "Ray-Ban",
+      "name": "Original Wayfarer",
+      "status": "found",
+      "url": "https://jpopticians.com/jp_uk/sunglasses/ray-ban/rb2140",
+      "sizes": [
+        { "label": "50", "eye": 50, "bridge": 22, "temple": 150 },
+        { "label": "52", "eye": 52, "bridge": 22, "temple": 150 }
+      ],
+      "note": "2 sizes on the site (50 and 52 only — no 54). Our draft's 50/22/150 matches the smaller size exactly."
+    },
+    {
+      "code": "RB3447 · 001",
+      "brand": "Ray-Ban",
+      "name": "Round Metal",
+      "status": "found",
+      "url": "https://jpopticians.com/jp_uk/sunglasses/ray-ban/rb3447",
+      "sizes": [
+        { "label": "47", "eye": 47, "bridge": 21, "temple": 140 },
+        { "label": "50", "eye": 50, "bridge": 21, "temple": 145 },
+        { "label": "53", "eye": 53, "bridge": 21, "temple": 145 }
+      ],
+      "note": "3 sizes on the site. Our draft's 50/21/145 matches the middle size exactly."
+    },
+    {
+      "code": "VE4361 · GB1/87",
+      "brand": "Versace",
+      "name": "Medusa Biggie",
+      "status": "not_found",
+      "url": null,
+      "sizes": [],
+      "note": "No Versace sunglasses found on jpopticians.com — brand not in the sunglasses nav, and searches for 'Versace' and 'VE4361' return zero product matches."
+    },
+    {
+      "code": "PLD 6003/N · DL5",
+      "brand": "Polaroid",
+      "name": "PLD 6003/N",
+      "status": "not_found",
+      "url": null,
+      "sizes": [],
+      "note": "Polaroid is carried (12 other PLD models found under /jp_uk/sunglasses/polaroid/), but PLD 6003/N specifically is not among them, and direct URL guesses (pld6003n, pld-6003-n) 404."
+    },
+    {
+      "code": "1055/S · 003",
+      "brand": "Carrera",
+      "name": "Carrera 1055/S",
+      "status": "not_found",
+      "url": null,
+      "sizes": [],
+      "note": "Carrera is carried (Carrera 1067S and Carrera 315S found under /jp_uk/sunglasses/carrera/), but Carrera 1055/S is not among them, and direct URL guesses 404."
+    },
+    {
+      "code": "FZ6001 · 101",
+      "brand": "Ferrari Scuderia",
+      "name": "FZ6001",
+      "status": "not_found",
+      "url": null,
+      "sizes": [],
+      "note": "Ferrari Scuderia is carried (FZ5001, FZ5003, FZ5005, FZ6002U, FZ6003U, FZ6006, FZ6012U, FZ6020U, FZ6026, FZ6027U, FZ6028U found under /jp_uk/sunglasses/ferrari-scuderia/), but FZ6001 is not among them, and direct URL guesses (fz6001, fz6001u, fz6001a) 404."
+    },
+    {
+      "code": "SDS Shockwave · 104",
+      "brand": "Superdry",
+      "name": "SDS Shockwave",
+      "status": "found",
+      "url": "https://jpopticians.com/jp_uk/sunglasses/superdry/sds-shockwave-superdry-sunglasses",
+      "sizes": [
+        { "label": "55", "eye": 55, "bridge": 17, "temple": 145 }
+      ],
+      "note": "Single size on the site (55/17/145); our draft has 54/17/140 — use the site's figures. The page's own <title> tag reads 'SDS Shockwave Superdry Sunglasses | Spex4Less' (a sister-site branding leftover in the page metadata), but the URL, domain and JSON-LD product data are genuinely jpopticians.com's."
+    },
+    {
+      "code": "BB0095S · 001",
+      "brand": "Balenciaga",
+      "name": "Shield",
+      "status": "not_found",
+      "url": null,
+      "sizes": [],
+      "note": "Balenciaga is carried (BB0102SA and BB0310SK found under /jp_uk/sunglasses/balenciaga/), but BB0095S is not among them."
+    },
+    {
+      "code": "SPL872 · 0700",
+      "brand": "Police",
+      "name": "Lewis 10",
+      "status": "not_found",
+      "url": null,
+      "sizes": [],
+      "note": "Searches for 'SPL872', 'Police Lewis 10' and 'Lewis' return zero sunglasses product matches; the one 'Police' hit found ('VPLG30') is an unrelated model in the prescription-glasses range, not this sunglasses model."
+    },
+    {
+      "code": "DG4268 · 501/87",
+      "brand": "Dolce & Gabbana",
+      "name": "DG4268",
+      "status": "not_found",
+      "url": null,
+      "sizes": [],
+      "note": "D&G is carried only in prescription glasses (e.g. DG 5031), not sunglasses — no /sunglasses/dolce-and-gabbana category exists, and DG4268 direct URL guesses all 404."
+    },
+    {
+      "code": "MK5004 · 1017R1",
+      "brand": "Michael Kors",
+      "name": "Chelsea",
+      "status": "found",
+      "url": "https://jpopticians.com/jp_uk/sunglasses/michael-kors/mk5004",
+      "sizes": [
+        { "label": "60", "eye": 60, "bridge": 13, "temple": 140 }
+      ],
+      "note": "Single size, read from the page's embedded configurable-options data (JSON-LD variant list was empty, both colourways shown as low/out of stock). Site's real numbers (60-13-140) differ from our draft (56-16-135); use the site's figures."
+    },
+    {
+      "code": "EA4033 · 5017/81",
+      "brand": "Emporio Armani",
+      "name": "EA4033",
+      "status": "found",
+      "url": "https://jpopticians.com/jp_uk/sunglasses/emporio-armani/ea4033",
+      "sizes": [
+        { "label": "56", "eye": 56, "bridge": 17, "temple": 140 }
+      ],
+      "note": "Single size on the site; matches our draft exactly (56/17/140)."
+    }
+  ]
+}

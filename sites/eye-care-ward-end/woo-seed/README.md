@@ -14,11 +14,21 @@ draft/target and re-run).
     future SGS swatch-rendering block can read it with no new meta key)
   - `pa_shape`, `pa_material`, `pa_frame-type`, `pa_hinge`, `pa_nose-pad`
 - **16 variable products**, one per draft `PRODUCTS` entry, SKU = the draft's `code` field
-  slugified (e.g. `RB3025 · 001/58` → `RB3025-001-58`). One variation per colour (49
-  variations total) — there is no size axis in this catalogue.
+  slugified (e.g. `RB3025 · 001/58` → `RB3025-001-58`). One variation per colour × size.
+- **`pa_frame-size`** — a second variation attribute, added so a product with more than one
+  real-world size (from `sizes-jpopticians.json`) offers a genuine Size choice rather than
+  one frame per colour only. Each product's sizes come from `sizes-jpopticians.json` when
+  that product's `code` was `found` there; otherwise it falls back to a single size built
+  from data.json's own eye/bridge/temple fields. Term name is the lens width ("55"); term
+  slug is `<eye>-<bridge>-<temple>` (e.g. `55-14-135`) so two frames sharing a lens width but
+  differing bridge/temple get distinct terms; each term carries `_sgs_size_measure`
+  ("55□14 135") and `_sgs_variesby_value` = `size` (the preflight gate's variesBy check).
+  Variations are now keyed on (colour, size); a product's default attributes are its first
+  colour plus its default size (middle of 3, first of 2, the only one of 1).
 - Product-level meta: `_sgs_rrp` (int, £), `_sgs_frame_eye`, `_sgs_frame_bridge`,
-  `_sgs_frame_temple` (mm) — see "Meta keys" below for why these are product-level, not
-  per-variation.
+  `_sgs_frame_temple` (mm) — now the product's *default* size (see above), with the same
+  three keys also written per-variation with that variation's own size. See "Meta keys"
+  below for why these existed as product-level meta in the first place.
 - **UK shipping zone**: Flat rate £3.95, Free shipping over £75, Local Pickup.
 
 ## Running it
