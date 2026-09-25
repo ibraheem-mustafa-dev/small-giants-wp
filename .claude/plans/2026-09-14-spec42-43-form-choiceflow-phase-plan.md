@@ -7,12 +7,22 @@ cost_estimate: "~5 min agent time, Phase 0 only"
 docscore_grade: not-run (ad-hoc, in-flight — see phase-planner Stage 7 note on active plans)
 ---
 
-**Status (2026-09-25):** Phases 0, 1 and 2 SHIPPED. Phase 0's fix landed with Phase 1 (fc6c66444: the
-CPT-linked config lookup refuses to guess `requireLogin`, `class-form-rest-submission.php::handle_submit`).
-Phase 3's add-on price-list source (FR-43-17 to FR-43-20) and Phase 4's FR-43-6 SHIPPED as the Eye Care lens
-configurator (live on eye-care-test, proven end to end; `plans/2026-09-24-eye-care-hand-build-design.md` Status).
-Still open: Phase 3's variation source (FR-43-10/10a) and Phase 4's FR-43-7 (Mama's Munches). Phase 5 is
-unchanged.
+**Status (2026-09-26):** Phases 0 to 4 SHIPPED; Phase 5 open.
+- Phase 0: landed with Phase 1 (fc6c66444); proven live 2026-09-25 (an unresolvable formId gets 503, a real form 200).
+- Phase 3: add-on price list (FR-43-17 to 20) as the Eye Care lens configurator; product-option steps reading any
+  product attribute (FR-43-10/10a), purchase from the flow's own variation (FR-43-5), email-capture ending with a
+  server-read rate limit (FR-43-4). Commits 63d1bf426, 0bb4fc61d, 812a4d93f, 137c8e3de, a8b00ef82.
+- Phase 4: linked flows inline or in a popup (FR-43-6); Mama's Munches (FR-43-7) on sandybrown product 3990 as two
+  journeys: full customisation in a popup (page 4012, flow 4008) and pack on the product page then "Choose your
+  flavours" (flow 4010, per-product template, buybox popup mode FR-43-22). Flow chrome (progress colour, header,
+  sticky footer, option badge/description/default) built and applied to the Eye Care configurator.
+- Proof: live QA 2026-09-26 at 1440 and 375 (journeys, cart rows, tampered variation 400, cross-page state,
+  resume, editor round trip, email 200/429/400/403/404, Eye Care 268 path); evidence in c:	mp\qa-choiceflow\.
+- Open, recorded here: Zainab confirms the pack prices (8 = 6, 12 = 8.50, 20 = 12, 40 = 22); the Zookies product
+  (513, draft) is not set up; the flavour term "chocolate" is lower-case (shared with test product 540); on Mama's
+  palette the focus outline (primary pink on cream) is 2.25:1 against the 3:1 target (a client-palette choice);
+  a flow that covers only some of a product's variation attributes does not merge the rest from the page buybox
+  (every product built so far has one variation attribute).
 
 # Phase 0 — Fix the fail-open `requireLogin` bug (Spec 42 FR-42-0)
 
@@ -37,7 +47,8 @@ one-function fix with a named test).
       `requireLogin` is read; Phase 1 made the lookup cache-independent via `resolve_form()`)
 - [x] A login-gated form with its config cache warm still accepts a genuine logged-in
       submission (no regression)
-- [ ] Deployed to sandybrown and verified live via a real POST, not just a unit assertion
+- [x] Deployed to sandybrown and verified live via a real POST, not just a unit assertion (2026-09-25:
+      `formId` "qa-nonexistent-form" gets 503 `form_config_unavailable`; control form "focus-test-40" gets 200)
 
 **Entry context (read before starting):**
 - `plugins/sgs-blocks/includes/forms/class-form-rest-submission.php::handle_submit` — the
@@ -140,7 +151,7 @@ FR-43-9 (the block's own small IAPI store — decided, not a build-time fork), F
 (inserter disambiguation). **This is the first genuinely sellable feature in either spec** —
 a complete qualification quiz, zero WooCommerce/pricing/modal dependency.
 
-**Phase 3 — priced steps + real purchase.** Built first as the add-on price list (Spec 43 v1.4.0 FR-43-17 to
+**Phase 3 — priced steps + real purchase. SHIPPED (2026-09-26).** Built first as the add-on price list (Spec 43 v1.4.0 FR-43-17 to
 FR-43-20) for the Eye Care lens configurator: the price list and its settings page, the cart/order integration
 (`woocommerce_before_calculate_totals`, cart item data, order line meta), the proxy's optional `addons` argument,
 priced add-on questions, the live price panel and the purchase terminal. The variation source (FR-43-10/10a,
@@ -148,10 +159,9 @@ priced add-on questions, the live price panel and the purchase terminal. The var
 the price list filled in (seeded for Eye Care from the draft); for the variation source, real WooCommerce
 variations.
 
-**Phase 4 — modal delivery + Mama's Munches acceptance criterion.** FR-43-6 SHIPPED (2026-09-25): a
+**Phase 4 — modal delivery + Mama's Munches acceptance criterion. SHIPPED (2026-09-26).** FR-43-6 (2026-09-25): a
 `sgs_choice_flow` post shown by a linked `sgs/choice-flow` (`flowId` + `flowIsLinked`, the Linked Form picker's
-shape), inline or inside a fullscreen `sgs/modal`. FR-43-7 still open (explicitly demoted to this phase per the
-spec's own text — a UX preference, not a capability gap).
+shape), inline or inside a fullscreen `sgs/modal`. FR-43-7 (2026-09-26): Mama's two journeys, see Status.
 
 **Phase 5 — mandatory rebuild + deferred items.** FR-42-9 (rebuild, ONLY after Phase 1 has
 run on the canary for a full session and the real instance count is known — run

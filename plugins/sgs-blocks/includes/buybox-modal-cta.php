@@ -1,8 +1,7 @@
 <?php
 /**
- * Sgs/buybox — "open a modal" Add to Cart mode (Spec 43 Phase 3/4, plan
- * .claude/plans/2026-09-25-choice-flow-phase3-4-contract.md §5a: Mama's
- * journey B, "Choose your flavours").
+ * Sgs/buybox — "open a modal" Add to Cart mode (Spec 43 FR-43-22, e.g. Mama's
+ * "Choose your flavours").
  *
  * Builds the CTA markup rendered instead of the cart-submitting `<form>` when
  * the block's `addToCartAction` attribute is 'modal'. The button opens an

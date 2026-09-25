@@ -1,20 +1,18 @@
 /**
- * SGS Choice Flow — client-side variation resolution (Spec 43 Phase 3/4, §3
- * of `.claude/plans/2026-09-25-choice-flow-phase3-4-contract.md`).
+ * SGS Choice Flow — client-side variation resolution (Spec 43 FR-43-10).
  *
  * A product-option step in `variation` mode (FR-43-10a) lets a shopper pick
  * one term per variation-forming attribute inside the flow, instead of on a
  * page buybox. This module accumulates picks per flow instance and, once
  * every variation-mode attribute has a choice, resolves the exact WooCommerce
  * variation from the combo map the root block seeds (`data-flow-combos` —
- * `includes/choice-flow-variation-seed.php`, §2; keyed exactly as
+ * `includes/choice-flow-variation-seed.php`; keyed exactly as
  * `Product_Manifest::build()`'s `\ksort( $key_parts )` step: taxonomy
  * ascending, `tax:slug` joined by `|`, mirrored here as `Object.keys().sort()`).
  *
  * State lives in this module's own `WeakMap`. Once a variation resolves,
- * this calls `pricing.js`'s `setFlowVariationBase()` — NOT yet present there
- * (adding it here pushes that file over its 250-line cap) — see this file's
- * build report for the exact block the main thread must add.
+ * this calls `pricing.js`'s `setFlowVariationBase()`, which takes precedence
+ * over a page buybox's `sgs-variation-change` event.
  *
  * @package SGS\Blocks
  */

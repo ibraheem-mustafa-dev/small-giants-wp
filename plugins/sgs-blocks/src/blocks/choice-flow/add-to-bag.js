@@ -15,7 +15,7 @@ import { getResolvedVariation } from './variation.js';
 
 /**
  * Whether this flow ever asked a variation-mode product-option question
- * (Spec 43 Phase 3/4 contract §2 — `data-flow-combos` is seeded on the flow
+ * (Spec 43 FR-43-10 — `data-flow-combos` is seeded on the flow
  * root only when at least one descendant `sgs/choice-flow-question` has a
  * `productAttribute` in variation mode; it's absent for every other flow).
  * Used to tell "this is a simple/answer-mode flow with no variation to
@@ -60,7 +60,7 @@ export async function handleAddToBagClick( buttonEl ) {
 	const endpoint = buttonEl.getAttribute( 'data-endpoint' );
 	const nonce = buttonEl.getAttribute( 'data-nonce' );
 
-	// FR-43-10a / contract §3: the flow's own variation-mode product-option
+	// FR-43-10a: the flow's own variation-mode product-option
 	// steps are the authority on what's being bought when they resolve —
 	// they override a page buybox's base, per the same section's precedence
 	// rule. Only when they DON'T resolve (this flow has no such steps at
@@ -95,8 +95,8 @@ export async function handleAddToBagClick( buttonEl ) {
 	}
 
 	const id = finalVariationId > 0 ? finalVariationId : finalProductId;
-	// Taxonomy-keyed, per contract §3 ("the proxy accepts taxonomy-keyed
-	// attributes") — identical shape whether the attributes came from the
+	// Taxonomy-keyed (the proxy accepts taxonomy-keyed
+	// attributes) — identical shape whether the attributes came from the
 	// flow's own resolution or the buybox fallback.
 	const variation = Object.entries( finalAttributes ).map( ( [ attribute, value ] ) => ( {
 		attribute,

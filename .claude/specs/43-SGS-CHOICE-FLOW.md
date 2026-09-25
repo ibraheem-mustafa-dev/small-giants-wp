@@ -430,10 +430,12 @@ list: built first, for the Eye Care lens configurator), FR-43-10/FR-43-10a (vari
 rate-limit note. The variation source still requires the product's attributes to exist as real WooCommerce
 variations; the add-on source requires only the price list to be filled in. **Add-on source SHIPPED 2026-09-25**
 (FR-43-17 to FR-43-20, plus FR-43-21 answers and fields) as the Eye Care lens configurator, proven end to end on
-eye-care-test; the variation source (FR-43-10/10a), FR-43-5 and FR-43-4's rate-limit note are not built.
+eye-care-test. **Variation source, purchase and email ending SHIPPED 2026-09-26** (FR-43-10/10a as product-option
+steps over any attribute, FR-43-5, FR-43-4), proven live on sandybrown.
 
 **Phase 4 — modal delivery + Mama's Munches acceptance criterion.** FR-43-6 SHIPPED 2026-09-25 (linked flow, inline
-or in a fullscreen `sgs/modal`); FR-43-7 not built (explicitly not part of v1 — see FR-43-7's own text).
+or in a fullscreen `sgs/modal`); FR-43-7 and FR-43-22 SHIPPED 2026-09-26 (Mama's two journeys on sandybrown
+product 3990).
 
 **Phase 5 — everything else, independently deferrable, no fixed order.** Spec 42 FR-42-9
 (mandatory rebuild, only after Phase 1 proves stable and the instance count is known),

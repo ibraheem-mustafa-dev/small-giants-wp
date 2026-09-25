@@ -3,8 +3,7 @@ import { InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, TextControl } from '@wordpress/components';
 
 /**
- * "Button action" panel for sgs/buybox (Spec 43 Phase 3/4 §5a, plan
- * .claude/plans/2026-09-25-choice-flow-phase3-4-contract.md).
+ * "Button action" panel for sgs/buybox (Spec 43 FR-43-22).
  *
  * Lets the operator send the Add to Cart button either to the cart (default)
  * or to open an sgs/modal instead — typically one holding a choice-flow that
