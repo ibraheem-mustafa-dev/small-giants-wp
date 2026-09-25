@@ -161,6 +161,18 @@ final class Cart_Proxy {
 						),
 						'validate_callback' => array( __CLASS__, 'validate_addons_shape' ),
 					),
+					// Spec 43 FR-43-21 — a flow's unpriced answers and the fields
+					// in its purchase step ({label, value} or {label, file_id}).
+					// Accepted or refused in SGS\Blocks\Flow_Fields_Cart::
+					// add_cart_item_data() (length limits, and a file only when
+					// this cart session uploaded it); a refusal aborts the add.
+					'fields'    => array(
+						'required'          => false,
+						'type'              => 'array',
+						'default'           => array(),
+						'description'       => \__( 'Array of {label, value} or {label, file_id} answers carried to the cart line.', 'sgs-blocks' ),
+						'items'             => array( 'type' => 'object' ),
+					),
 				),
 			)
 		);
@@ -714,6 +726,10 @@ final class Cart_Proxy {
 		$addon_pairs    = (array) $request->get_param( 'addons' );
 		if ( ! empty( $addon_pairs ) ) {
 			$cart_item_data['sgs_addon_pairs'] = $addon_pairs;
+		}
+		$flow_fields = $request->get_param( 'fields' );
+		if ( ! empty( $flow_fields ) ) {
+			$cart_item_data['sgs_flow_fields_raw'] = $flow_fields;
 		}
 
 		// ── Step 7: Add to cart ───────────────────────────────────────────────

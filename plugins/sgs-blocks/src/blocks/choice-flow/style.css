@@ -359,3 +359,14 @@
 	padding-top: 10px;
 	font-weight: 600;
 }
+
+/* ===== Form fields in a purchase step (FR-43-21) =====
+ * sgs/form's field layout (full / half / third on a six-track grid) keys off
+ * an `sgs-form` size container, which a flow has no sgs/form to provide. The
+ * steps area takes that container name so the same width settings lay out
+ * the same way here.
+ */
+.sgs-choice-flow__inner {
+	container: sgs-form / inline-size;
+	min-width: 0;
+}

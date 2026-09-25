@@ -69,6 +69,7 @@ import { store } from '@wordpress/interactivity';
 import { INFO_TOGGLE_SELECTOR, handleInfoToggleClick } from '../../shared/info-toggle.js';
 import { initPricePanel, recordAddonAnswer, resetAddonAnswers } from './pricing.js';
 import { handleAddToBagClick } from './add-to-bag.js';
+import { recordPlainAnswer, forgetAnswersFrom, uploadFlowFile } from './flow-fields.js';
 
 const TERMINAL_SENTINEL = '__terminal__';
 
@@ -399,12 +400,19 @@ function showStepByIndex( flowRoot, targetIndex ) {
 	}
 
 	if ( steps.length > 0 ) {
-		const progress = ( targetIndex + 1 ) / steps.length;
+		// Progress counts the questions only. A branching flow can end in
+		// several result steps (one per path), so counting those would read
+		// "Step 1 of 8" for a three-question flow; a result step is "complete".
+		const questionSteps = steps.filter( ( stepEl ) => ! stepEl.querySelector( '.sgs-choice-flow-result' ) );
+		const total = questionSteps.length || steps.length;
+		const questionIndex = questionSteps.indexOf( targetStepEl );
+		const position = questionIndex === -1 ? total : questionIndex + 1;
+		const progress = questionIndex === -1 ? 1 : position / total;
 		flowRoot.style.setProperty( '--sgs-choice-flow-progress', String( progress ) );
 
 		const stepCountEl = flowRoot.querySelector( STEP_COUNT_SELECTOR );
 		if ( stepCountEl ) {
-			stepCountEl.textContent = `Step ${ targetIndex + 1 } of ${ steps.length }`;
+			stepCountEl.textContent = `Step ${ position } of ${ total }`;
 		}
 
 		const stepLabelEl = flowRoot.querySelector( STEP_LABEL_SELECTOR );
@@ -416,9 +424,9 @@ function showStepByIndex( flowRoot, targetIndex ) {
 		// when the flow's own progressStyle doesn't match (buildStepperMarkup/
 		// updateStepperState bail on a missing .stepper container;
 		// updateProgressBadge bails on flowRoot.dataset.progressStyle itself).
-		buildStepperMarkup( flowRoot, steps );
-		updateStepperState( flowRoot, targetIndex );
-		updateProgressBadge( flowRoot, targetIndex + 1, steps.length, progress );
+		buildStepperMarkup( flowRoot, questionSteps.length ? questionSteps : steps );
+		updateStepperState( flowRoot, questionIndex === -1 ? total : questionIndex );
+		updateProgressBadge( flowRoot, position, total, progress );
 	}
 
 	updateBackButtonVisibility( flowRoot );
@@ -542,6 +550,9 @@ function handleOptionClick( buttonEl ) {
 			buttonEl.getAttribute( 'data-price-label' ) || '',
 			buttonEl.getAttribute( 'data-price' ) || '0'
 		);
+	} else {
+		// FR-43-21: an unpriced answer travels with the purchase as a field.
+		recordPlainAnswer( flowRoot, currentIndex, currentStepEl, buttonEl );
 	}
 
 	// FR-43-20: "no add-ons" exit — clears any add-ons already chosen on this
@@ -604,6 +615,7 @@ function handleBackClick( buttonEl ) {
 	}
 
 	const previousIndex = instanceState.history.pop();
+	forgetAnswersFrom( flowRoot, previousIndex );
 	showStepByIndex( flowRoot, previousIndex );
 	persistFlowState( flowRoot, previousIndex, instanceState.tags, instanceState.history );
 }
@@ -696,7 +708,15 @@ if ( document.readyState === 'loading' ) {
 }
 
 // Namespace registration (codebase convention — matches sgs/form/view.js's
-// own store('sgs/form', ...) call). No reactive state/actions are needed by
-// this engine (see file-level docblock on the click-wiring decision and the
-// WeakMap-based private state above), so this registers the namespace only.
-store( 'sgs/choice-flow', {} );
+// own store('sgs/form', ...) call). Navigation needs no reactive state (see
+// the file-level docblock on the click-wiring decision and the WeakMap-based
+// private state above); the one action is the file upload below.
+store( 'sgs/choice-flow', {
+	actions: {
+		// FR-43-21: a file field in a purchase step (its own
+		// data-wp-on--change="actions.uploadFile" resolves to this store).
+		*uploadFile( event ) {
+			yield uploadFlowFile( event );
+		},
+	},
+} );

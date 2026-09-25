@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 43
-spec_version: 1.5.0
+spec_version: 1.6.0
 status: active
 owner: framework
 date: 2026-09-14
@@ -69,6 +69,9 @@ derived_from:
     CPT):** FR-43-6 reference mechanism settled as `flowId` + `flowIsLinked` on `sgs/choice-flow` itself (the
     `sgs/form` `formId` precedent, and the attribute the Choice Flows usage column already counted), not a
     separate `flowRef` on the modal: one linked-block mechanism serves inline and modal delivery alike.
+  - **2026-09-25 (v1.6.0), owner decision (Bean, 2026-09-25: the prescription is asked in the configurator, per pair,
+    as Glasses Direct does):** FR-43-21 adds answers and fields carried to the bag line, so a flow can end in
+    "upload a photo" or "type the numbers" without a checkout form.
 ---
 
 # Spec 43 — `sgs/choice-flow`
@@ -184,6 +187,19 @@ then the total. Display only; FR-43-18 is the authority.
 current product: on a product page, the variation the shopper has chosen there (colour, size), which the buybox
 publishes when it changes; otherwise a product set on the flow. A step's option may end the flow as "no add-ons"
 (the draft's "No prescription": the frame alone goes in the bag).
+
+**FR-43-21 — answers and fields travel with the purchase (v1.6.0).** A purchase terminal also sends (a) the answer
+to every unpriced question on the path actually taken (label = the step's label, value = the chosen option's
+label; priced answers already travel as FR-43-18 pairs) and (b) every text, number or file field placed in the
+terminal's own step (a result step may hold form fields beside the result, so an option can route to "a result
+that asks for a photo" with no extra navigation). Required fields are checked in the browser before the request.
+The server sanitises every entry (at most 16; a label up to 60 characters, a value up to 200), stores them on the
+cart line, shows each as its own row on the line (bag, cart, checkout) and copies them to the order line. A file
+field uploads through a cart-scoped endpoint (`POST /sgs/v1/cart/upload`: the rest nonce, the forms rate limit,
+the private uploader) that stamps the file with the shopper's cart session; the server accepts a file ID only
+when that stamp matches the adding session, shows it as "Photo uploaded", and gives staff a download link on the
+order screen and in the new-order email (capability and nonce checked). Generic: engraving text, a photo for a
+custom print, a prescription.
 
 **FR-43-2 — branching.** Any step gains a `nextStepMap` attribute: answer value → target
 step ID. This is the one genuinely new mechanism this spec introduces (per-step routing,
@@ -431,3 +447,4 @@ FR-42-7b, FR-42-10/FR-43-14 (clone-orchestrator CPT-creation gap), FR-42-13 (ana
 | FR-43-18 | The list is the only price authority: `{group, key}` from the browser, resolved and priced server-side, stored on the cart and order line |
 | FR-43-19 | Live price panel beside the questions (display only) |
 | FR-43-20 | What is bought: the page's chosen variation, or a set product; a "no add-ons" exit |
+| FR-43-21 | Unpriced answers on the path and fields in the terminal step travel with the purchase; file fields via a session-stamped cart upload |

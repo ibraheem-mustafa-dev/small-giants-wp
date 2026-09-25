@@ -10,6 +10,7 @@
  */
 
 import { getAddonSummary } from './pricing.js';
+import { collectFlowFields, validateTerminalFields } from './flow-fields.js';
 
 /**
  * Handle a click on a `sgs/choice-flow-result` "Add to bag" button
@@ -28,6 +29,11 @@ export async function handleAddToBagClick( buttonEl ) {
 	const flowRoot = buttonEl.closest( '[data-wp-interactive="sgs/choice-flow"]' );
 	const resultEl = buttonEl.closest( '.sgs-choice-flow-result' );
 	if ( ! flowRoot || ! resultEl ) {
+		return;
+	}
+
+	// FR-43-21: the purchase step's own fields must be complete first.
+	if ( ! validateTerminalFields( resultEl ) ) {
 		return;
 	}
 
@@ -59,6 +65,10 @@ export async function handleAddToBagClick( buttonEl ) {
 	} ) );
 
 	const body = { id, quantity: 1, addons };
+	const fields = collectFlowFields( flowRoot, resultEl );
+	if ( fields.length ) {
+		body.fields = fields;
+	}
 	if ( variation.length ) {
 		body.variation = variation;
 	}

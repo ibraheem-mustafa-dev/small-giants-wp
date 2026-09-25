@@ -96,7 +96,7 @@
                 {
                   "label": "No prescription",
                   "value": "none",
-                  "nextStepId": "__terminal__",
+                  "nextStepId": "7",
                   "image": {
                     "id": 456,
                     "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-none.png",
@@ -313,15 +313,230 @@
       {
         "name": "sgs/form-step",
         "attributes": {
-          "label": "Your bag"
+          "label": "Your prescription"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/heading",
+            "attributes": {
+              "level": "h2",
+              "fontFamily": "heading",
+              "fontWeight": "500",
+              "fontSize": {
+                "desktop": 40,
+                "mobile": 30
+              },
+              "fontSizeUnit": "px",
+              "lineHeight": {
+                "desktop": 1.05
+              },
+              "lineHeightUnit": "unitless",
+              "margin": {
+                "desktop": {
+                  "bottom": "8px"
+                }
+              },
+              "content": "Your prescription"
+            }
+          },
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "fontSize": {
+                "desktop": 15.5
+              },
+              "fontSizeUnit": "px",
+              "textColour": "text-muted",
+              "margin": {
+                "desktop": {
+                  "bottom": "26px"
+                }
+              },
+              "text": "It needs to be under two years old and from a UK optician — whoever tested your eyes has to give you a copy if you ask. You don't need it to hand right now."
+            }
+          },
+          {
+            "name": "sgs/choice-flow-question",
+            "attributes": {
+              "layout": "grid",
+              "options": [
+                {
+                  "label": "Send it later",
+                  "value": "later",
+                  "nextStepId": "4",
+                  "helpText": "Order now and I'll WhatsApp you a link for it. Nothing gets made until it arrives."
+                },
+                {
+                  "label": "Upload a photo",
+                  "value": "upload",
+                  "nextStepId": "5",
+                  "helpText": "A phone photo of the paper copy is fine."
+                },
+                {
+                  "label": "Type it in",
+                  "value": "type",
+                  "nextStepId": "6",
+                  "helpText": "If you've got the numbers in front of you."
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/form-step",
+        "attributes": {
+          "label": "Send it later"
         },
         "innerBlocks": [
           {
             "name": "sgs/choice-flow-result",
             "attributes": {
               "action": "add-to-bag",
-              "heading": "Ready for your bag",
-              "body": "Your frame and lenses go in together. I'll ask for your prescription at checkout — you don't need it to hand now, and nothing gets made until I've checked it."
+              "heading": "Perfect — order now and I'll WhatsApp you a link for it.",
+              "body": "I make the lenses once it arrives, nothing is charged twice, and if you change your mind before I cut them I refund the lenses in full."
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/form-step",
+        "attributes": {
+          "label": "Upload a photo"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/form-field-file",
+            "attributes": {
+              "fieldName": "rx_photo",
+              "label": "Photo of your prescription",
+              "required": true,
+              "allowedTypes": [
+                "image/jpeg",
+                "image/png",
+                "image/webp"
+              ],
+              "maxSize": 10,
+              "uploadText": "Drop a photo or screenshot here",
+              "helpText": "A phone photo of the paper copy is fine, as long as every number is readable."
+            }
+          },
+          {
+            "name": "sgs/choice-flow-result",
+            "attributes": {
+              "action": "add-to-bag",
+              "heading": "Add your photo",
+              "body": "Your frame and lenses go in together."
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/form-step",
+        "attributes": {
+          "label": "Type it in"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/form-field-number",
+            "attributes": {
+              "fieldName": "rx_r_sph",
+              "label": "Right SPH",
+              "width": "third",
+              "step": "0.25",
+              "min": "-30",
+              "max": "30",
+              "placeholder": "-2.25",
+              "required": true
+            }
+          },
+          {
+            "name": "sgs/form-field-number",
+            "attributes": {
+              "fieldName": "rx_r_cyl",
+              "label": "Right CYL",
+              "width": "third",
+              "step": "0.25",
+              "min": "-10",
+              "max": "10",
+              "placeholder": "-0.50",
+              "required": false
+            }
+          },
+          {
+            "name": "sgs/form-field-number",
+            "attributes": {
+              "fieldName": "rx_r_axis",
+              "label": "Right AXIS",
+              "width": "third",
+              "step": "1",
+              "min": "0",
+              "max": "180",
+              "placeholder": "180",
+              "required": false
+            }
+          },
+          {
+            "name": "sgs/form-field-number",
+            "attributes": {
+              "fieldName": "rx_l_sph",
+              "label": "Left SPH",
+              "width": "third",
+              "step": "0.25",
+              "min": "-30",
+              "max": "30",
+              "placeholder": "-2.00",
+              "required": true
+            }
+          },
+          {
+            "name": "sgs/form-field-number",
+            "attributes": {
+              "fieldName": "rx_l_cyl",
+              "label": "Left CYL",
+              "width": "third",
+              "step": "0.25",
+              "min": "-10",
+              "max": "10",
+              "placeholder": "-0.25",
+              "required": false
+            }
+          },
+          {
+            "name": "sgs/form-field-number",
+            "attributes": {
+              "fieldName": "rx_l_axis",
+              "label": "Left AXIS",
+              "width": "third",
+              "step": "1",
+              "min": "0",
+              "max": "180",
+              "placeholder": "175",
+              "required": false
+            }
+          },
+          {
+            "name": "sgs/choice-flow-result",
+            "attributes": {
+              "action": "add-to-bag",
+              "heading": "Type in your prescription",
+              "body": "Copy the numbers exactly, including the + or −. If a box is empty or says “DS”, leave it blank. I read every prescription myself before anything is cut."
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/form-step",
+        "attributes": {
+          "label": "Frame only"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/choice-flow-result",
+            "attributes": {
+              "action": "add-to-bag",
+              "heading": "Your frame, as the brand made it",
+              "body": "It goes in your bag with its original tinted lenses. You can add prescription lenses later."
             }
           }
         ]

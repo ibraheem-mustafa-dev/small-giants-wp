@@ -33,6 +33,9 @@ def opt(value, label, media_id, file, help_text, **extra):
     return o
 
 
+# Step order (0-based, the flow's own DOM order): questions 0-3, then one result per path.
+STEP_LATER, STEP_UPLOAD, STEP_TYPE, STEP_FRAME_ONLY = 4, 5, 6, 7
+
 H2 = dict(level="h2", fontFamily="heading", fontWeight="500", fontSize={"desktop": 40, "mobile": 30},
           fontSizeUnit="px", lineHeight={"desktop": 1.05}, lineHeightUnit="unitless",
           margin={"desktop": {"bottom": "8px"}})
@@ -60,7 +63,7 @@ use = B("sgs/choice-flow-question", dict(layout="grid", priceGroup="lens-use", o
         "over-40s. I take the fitting measurements from a photo or in person."),
     opt("none", "No prescription", 456, "use-none.png",
         "Adds the frame to your bag exactly as the brand made it, with its original tinted lenses. You can always "
-        "add prescription lenses later.", nextStepId="__terminal__", addToBagNow=True),
+        "add prescription lenses later.", nextStepId=str(STEP_FRAME_ONLY), addToBagNow=True),
 ]))
 
 thickness = B("sgs/choice-flow-question", dict(layout="grid", priceGroup="lens-thickness", options=[
@@ -92,6 +95,46 @@ finish = B("sgs/choice-flow-question", dict(layout="grid", priceGroup="lens-fini
         "Sunglasses frames make excellent everyday glasses. Anti-reflective coating both sides, included."),
 ]))
 
+rx = B("sgs/choice-flow-question", dict(layout="grid", options=[
+    {"label": "Send it later", "value": "later", "nextStepId": str(STEP_LATER),
+     "helpText": "Order now and I'll WhatsApp you a link for it. Nothing gets made until it arrives."},
+    {"label": "Upload a photo", "value": "upload", "nextStepId": str(STEP_UPLOAD),
+     "helpText": "A phone photo of the paper copy is fine."},
+    {"label": "Type it in", "value": "type", "nextStepId": str(STEP_TYPE),
+     "helpText": "If you've got the numbers in front of you."},
+]))
+
+READY = "Your frame and lenses go in together."
+
+
+def result(label, heading, body, fields=None):
+    """A purchase step: optional fields, then the add-to-bag result (Spec 43 FR-43-21)."""
+    return B("sgs/form-step", {"label": label}, (fields or []) + [
+        B("sgs/choice-flow-result", dict(action="add-to-bag", heading=heading, body=body))])
+
+
+def rx_box(name, label, step, lo, hi, placeholder, required=False):
+    return B("sgs/form-field-number", dict(fieldName=name, label=label, width="third", step=step, min=lo, max=hi,
+                                          placeholder=placeholder, required=required))
+
+
+TYPED = [
+    rx_box("rx_r_sph", "Right SPH", "0.25", "-30", "30", "-2.25", True),
+    rx_box("rx_r_cyl", "Right CYL", "0.25", "-10", "10", "-0.50"),
+    rx_box("rx_r_axis", "Right AXIS", "1", "0", "180", "180"),
+    rx_box("rx_l_sph", "Left SPH", "0.25", "-30", "30", "-2.00", True),
+    rx_box("rx_l_cyl", "Left CYL", "0.25", "-10", "10", "-0.25"),
+    rx_box("rx_l_axis", "Left AXIS", "1", "0", "180", "175"),
+]
+TYPED_HELP = ("Copy the numbers exactly, including the + or −. If a box is empty or says “DS”, leave it blank. I read "
+              "every prescription myself before anything is cut.")
+
+PHOTO = [B("sgs/form-field-file", dict(
+    fieldName="rx_photo", label="Photo of your prescription", required=True,
+    allowedTypes=["image/jpeg", "image/png", "image/webp"], maxSize=10,
+    uploadText="Drop a photo or screenshot here",
+    helpText="A phone photo of the paper copy is fine, as long as every number is readable."))]
+
 tree = [
     B("sgs/choice-flow", dict(title="Add prescription lenses", maxWidth="1200px", progressStyle="bar",
                               showPricePanel=True, pricePanelTitle="Your order"), [
@@ -104,12 +147,16 @@ tree = [
              thickness),
         step("Finish", "What finish?",
              "All of them block 100% of UV and come scratch-resistant.", finish),
-        B("sgs/form-step", {"label": "Your bag"}, [
-            B("sgs/choice-flow-result", dict(
-                action="add-to-bag", heading="Ready for your bag",
-                body="Your frame and lenses go in together. I'll ask for your prescription at checkout — you don't "
-                     "need it to hand now, and nothing gets made until I've checked it.")),
-        ]),
+        step("Your prescription", "Your prescription",
+             "It needs to be under two years old and from a UK optician — whoever tested your eyes has to give you "
+             "a copy if you ask. You don't need it to hand right now.", rx),
+        result("Send it later", "Perfect — order now and I'll WhatsApp you a link for it.",
+               "I make the lenses once it arrives, nothing is charged twice, and if you change your mind before I cut "
+               "them I refund the lenses in full."),
+        result("Upload a photo", "Add your photo", READY, PHOTO),
+        result("Type it in", "Type in your prescription", TYPED_HELP, TYPED),
+        result("Frame only", "Your frame, as the brand made it",
+               "It goes in your bag with its original tinted lenses. You can add prescription lenses later."),
     ]),
 ]
 

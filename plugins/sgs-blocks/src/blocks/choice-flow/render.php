@@ -233,6 +233,12 @@ echo '<div class="sgs-choice-flow__progress" aria-hidden="true"><div class="sgs-
 
 echo '<div class="sgs-choice-flow__body' . ( $show_price_panel ? ' sgs-choice-flow__body--with-panel' : '' ) . '">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed string, no dynamic content.
 echo '<div class="sgs-choice-flow__inner">';
+// FR-43-21: form fields in a purchase step are styled by sgs/form's own
+// stylesheet (the field blocks carry none), which a page with no sgs/form
+// would never load.
+if ( false !== strpos( $content, 'sgs-form-field' ) ) {
+	wp_enqueue_style( generate_block_asset_handle( 'sgs/form', 'style' ) );
+}
 echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- InnerBlocks content is pre-rendered/sanitised by the block editor's own save pipeline.
 echo '</div>';
 

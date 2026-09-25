@@ -8,12 +8,8 @@
  * gated by the same `manage_options` capability the forms admin already
  * requires to view submissions (Form_REST_API::require_manage_options()),
  * plus a per-file nonce, that streams the file with a forced download
- * disposition.
- *
- * Not wired into the plugin bootstrap by this change — see this class's
- * PHPDoc and the task report for the two-line addition `sgs-blocks.php`
- * needs, and the small addition `Form_REST_Admin` needs to surface
- * `download_url()` to the admin UI instead of a raw file URL.
+ * disposition. Registered from sgs-blocks.php; choice-flow uploads on an
+ * order use it too (includes/flow-fields/class-flow-fields-cart.php).
  *
  * @package SGS\Blocks\Forms
  */

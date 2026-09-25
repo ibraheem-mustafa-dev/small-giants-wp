@@ -206,6 +206,9 @@ final class SGS_Blocks {
 		// settings page, and the cart/order integration that reads it as the
 		// only price authority. See that folder's load.php for the full wiring.
 		require_once SGS_BLOCKS_PATH . 'includes/addon-price-list/load.php';
+		// Choice-flow answers and fields carried to the cart line, with a
+		// session-stamped upload for file fields (Spec 43 FR-43-21).
+		require_once SGS_BLOCKS_PATH . 'includes/flow-fields/load.php';
 	}
 
 	/**
