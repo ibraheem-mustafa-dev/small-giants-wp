@@ -6,7 +6,10 @@
       "maxWidth": "1200px",
       "progressStyle": "bar",
       "showPricePanel": true,
-      "pricePanelTitle": "Your order"
+      "pricePanelTitle": "Your order",
+      "progressColour": "accent",
+      "showHeader": true,
+      "stickyFooter": true
     },
     "innerBlocks": [
       {
@@ -69,7 +72,8 @@
                     "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-distance.png",
                     "alt": ""
                   },
-                  "helpText": "Uses the main line of your prescription. This is what most people want in sunglasses — sharp vision looking ahead and into the distance."
+                  "helpText": "Uses the main line of your prescription. This is what most people want in sunglasses — sharp vision looking ahead and into the distance.",
+                  "description": "Driving, walking about, everyday wear."
                 },
                 {
                   "label": "Reading",
@@ -80,7 +84,8 @@
                     "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-reading.png",
                     "alt": ""
                   },
-                  "helpText": "For reading in the garden or by the pool. Uses the “ADD” value on your prescription. You won't want to drive in these."
+                  "helpText": "For reading in the garden or by the pool. Uses the “ADD” value on your prescription. You won't want to drive in these.",
+                  "description": "Close work, in the sun."
                 },
                 {
                   "label": "Varifocal",
@@ -91,7 +96,8 @@
                     "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-varifocal.png",
                     "alt": ""
                   },
-                  "helpText": "Distance at the top, reading at the bottom, blended in between with no visible line. Usually for over-40s. I take the fitting measurements from a photo or in person."
+                  "helpText": "Distance at the top, reading at the bottom, blended in between with no visible line. Usually for over-40s. I take the fitting measurements from a photo or in person.",
+                  "description": "Near and far in one lens, no line."
                 },
                 {
                   "label": "No prescription",
@@ -103,6 +109,7 @@
                     "alt": ""
                   },
                   "helpText": "Adds the frame to your bag exactly as the brand made it, with its original tinted lenses. You can always add prescription lenses later.",
+                  "description": "Keep the lenses they come with.",
                   "addToBagNow": true
                 }
               ]
@@ -170,7 +177,10 @@
                     "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/thickness-std.png",
                     "alt": ""
                   },
-                  "helpText": "The standard lens material. Perfectly good for a mild prescription — going thinner would make no visible difference and cost you money for nothing."
+                  "helpText": "The standard lens material. Perfectly good for a mild prescription — going thinner would make no visible difference and cost you money for nothing.",
+                  "description": "Fine for most prescriptions up to about ±2.00.",
+                  "isDefault": true,
+                  "badge": "Most people pick this"
                 },
                 {
                   "label": "Thin · 1.6",
@@ -181,7 +191,8 @@
                     "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/thickness-thin.png",
                     "alt": ""
                   },
-                  "helpText": "Noticeably slimmer at the edge and lighter on your nose. The usual choice once your prescription gets past about ±2.00."
+                  "helpText": "Noticeably slimmer at the edge and lighter on your nose. The usual choice once your prescription gets past about ±2.00.",
+                  "description": "Around 20% thinner. For ±2.00 to ±4.00."
                 },
                 {
                   "label": "Extra thin · 1.67",
@@ -192,7 +203,8 @@
                     "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/thickness-xthin.png",
                     "alt": ""
                   },
-                  "helpText": "Worth it for a stronger prescription — it stops the lens edge standing proud of the frame and reduces the way strong lenses distort how your eyes look."
+                  "helpText": "Worth it for a stronger prescription — it stops the lens edge standing proud of the frame and reduces the way strong lenses distort how your eyes look.",
+                  "description": "Around 35% thinner. For ±4.00 to ±6.00."
                 },
                 {
                   "label": "Ultra thin · 1.74",
@@ -203,7 +215,8 @@
                     "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/thickness-ultra.png",
                     "alt": ""
                   },
-                  "helpText": "The thinnest lens material available. If your prescription is strong, this is the difference between glasses you want to wear and glasses you tolerate."
+                  "helpText": "The thinnest lens material available. If your prescription is strong, this is the difference between glasses you want to wear and glasses you tolerate.",
+                  "description": "The thinnest made. For ±6.00 and above."
                 }
               ]
             }
@@ -270,7 +283,8 @@
                     "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/finish-tint.png",
                     "alt": ""
                   },
-                  "helpText": "I match the tint to the lenses the brand fitted, so the frame looks exactly as designed. Nobody will know they're prescription."
+                  "helpText": "I match the tint to the lenses the brand fitted, so the frame looks exactly as designed. Nobody will know they're prescription.",
+                  "description": "Same colour and depth as the original lenses."
                 },
                 {
                   "label": "Polarised",
@@ -281,7 +295,8 @@
                     "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/finish-pol.png",
                     "alt": ""
                   },
-                  "helpText": "A filter that cuts reflected glare rather than just dimming everything. If you drive a lot or spend time near water, this is the upgrade worth paying for."
+                  "helpText": "A filter that cuts reflected glare rather than just dimming everything. If you drive a lot or spend time near water, this is the upgrade worth paying for.",
+                  "description": "Kills glare off water, roads and windscreens."
                 },
                 {
                   "label": "Light-reactive",
@@ -292,7 +307,8 @@
                     "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/finish-photo.png",
                     "alt": ""
                   },
-                  "helpText": "One pair that works indoors and out. Worth knowing they react to UV, so they stay lighter behind a car windscreen."
+                  "helpText": "One pair that works indoors and out. Worth knowing they react to UV, so they stay lighter behind a car windscreen.",
+                  "description": "Clear indoors, dark outside in under a minute."
                 },
                 {
                   "label": "Clear",
@@ -303,7 +319,8 @@
                     "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/finish-clear.png",
                     "alt": ""
                   },
-                  "helpText": "Sunglasses frames make excellent everyday glasses. Anti-reflective coating both sides, included."
+                  "helpText": "Sunglasses frames make excellent everyday glasses. Anti-reflective coating both sides, included.",
+                  "description": "Turn them into everyday glasses."
                 }
               ]
             }
@@ -364,19 +381,21 @@
                   "label": "Send it later",
                   "value": "later",
                   "nextStepId": "4",
-                  "helpText": "Order now and I'll WhatsApp you a link for it. Nothing gets made until it arrives."
+                  "description": "Order now and I'll WhatsApp you a link for it. Nothing gets made until it arrives.",
+                  "isDefault": true,
+                  "badge": "Easiest"
                 },
                 {
                   "label": "Upload a photo",
                   "value": "upload",
                   "nextStepId": "5",
-                  "helpText": "A phone photo of the paper copy is fine."
+                  "description": "A phone photo of the paper copy is fine."
                 },
                 {
                   "label": "Type it in",
                   "value": "type",
                   "nextStepId": "6",
-                  "helpText": "If you've got the numbers in front of you."
+                  "description": "If you've got the numbers in front of you."
                 }
               ]
             }

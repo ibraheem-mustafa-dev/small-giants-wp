@@ -120,8 +120,7 @@ key), with the owed Wave C polish alongside.
   stacked on every cart recalculation (257/316/375 for one line, 0a2f465cf, test
   `tests/php/run-addon-price-list-cart-standalone.php`), a `src/` require that 500'd the site (293692aea, new
   gate `check-no-src-requires.py`), nameless modal dialogs (36d0ff818). Lens option pictures: media 447-458.
-  Gaps: option cards have no description line (the draft's "Driving, walking about, everyday wear."); the draft's
-  left aside (frame photo + running lines) is the price panel on the right. The 4th question ("Your prescription")
+  Gap: the draft's left aside (frame photo + running lines) is the price panel on the right. The 4th question ("Your prescription")
   was added in task 6 (Spec 43 FR-43-21).
 - **Wave C task 5 (size guide) DONE (2026-09-25):** `sgs_modal` 461 (`build/gen_size_guide.py`), a triggerless
   `sgs/modal` (anchor `size-guide`, large) on the product template, opened by "Which size am I?" in the Sizing tab.
@@ -130,7 +129,9 @@ key), with the owed Wave C polish alongside.
   session's scratchpad):** fixed: checkout pre-selected paid delivery on a free-delivery order
   (`includes/woocommerce-shipping-rates.php`). The framework half of the flow chrome is built (Spec 43 v1.7.0,
   2026-09-25): progress colour, optional header (logo, step eyebrow, Close), sticky footer, per-option badge,
-  description and default; applying them to the lens configurator (post 463) is its own step. Owed, shop polish (already listed above): colour swatches, filter panels open by
+  description and default. Applied to the lens configurator (post 463, `build/gen_lens_configurator.py`, 2026-09-26):
+  accent progress fill, header with step eyebrow and Close, sticky footer, the draft's option descriptions, "Standard
+  · 1.5" and "Send it later" pre-selected with their badges; the £268 path proven at 1440 and 375. Owed, shop polish (already listed above): colour swatches, filter panels open by
   default, the results count and sort row. For Bean: the size buttons read the real lens width (55 / 58 / 62, from
   the jpopticians sizes chosen 2026-09-25) where the draft says S / M / L. For the nav track: the floating WhatsApp
   "Ask me anything" bubble sits over the product page's "Need advice?" text at 1440.

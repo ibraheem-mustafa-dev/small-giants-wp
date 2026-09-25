@@ -27,8 +27,10 @@ def img(media_id, file):
     return {"id": media_id, "url": MEDIA + file, "alt": ""}
 
 
-def opt(value, label, media_id, file, help_text, **extra):
+def opt(value, label, media_id, file, help_text, description="", **extra):
     o = {"label": label, "value": value, "nextStepId": "", "image": img(media_id, file), "helpText": help_text}
+    if description:
+        o["description"] = description
     o.update(extra)
     return o
 
@@ -54,54 +56,69 @@ def step(label, heading, intro, question):
 use = B("sgs/choice-flow-question", dict(layout="grid", priceGroup="lens-use", options=[
     opt("distance", "Distance", 455, "use-distance.png",
         "Uses the main line of your prescription. This is what most people want in sunglasses — sharp vision "
-        "looking ahead and into the distance."),
+        "looking ahead and into the distance.", description="Driving, walking about, everyday wear."),
     opt("reading", "Reading", 457, "use-reading.png",
         "For reading in the garden or by the pool. Uses the “ADD” value on your prescription. You won't want to "
-        "drive in these."),
+        "drive in these.", description="Close work, in the sun."),
     opt("varifocal", "Varifocal", 458, "use-varifocal.png",
         "Distance at the top, reading at the bottom, blended in between with no visible line. Usually for "
-        "over-40s. I take the fitting measurements from a photo or in person."),
+        "over-40s. I take the fitting measurements from a photo or in person.",
+        description="Near and far in one lens, no line."),
     opt("none", "No prescription", 456, "use-none.png",
         "Adds the frame to your bag exactly as the brand made it, with its original tinted lenses. You can always "
-        "add prescription lenses later.", nextStepId=str(STEP_FRAME_ONLY), addToBagNow=True),
+        "add prescription lenses later.", description="Keep the lenses they come with.",
+        nextStepId=str(STEP_FRAME_ONLY), addToBagNow=True),
 ]))
 
+# Badge/default text is verbatim from the draft: thickness's "std" carries "Most people pick this"
+# (Eye Care Birmingham.dc.html:1429, the `rec` flag on thickOptions:1998); the prescription step's
+# "later" carries "Easiest" (dc.html:1483, the `pref` flag on rxModes:2018).
 thickness = B("sgs/choice-flow-question", dict(layout="grid", priceGroup="lens-thickness", options=[
     opt("std", "Standard · 1.5", 451, "thickness-std.png",
         "The standard lens material. Perfectly good for a mild prescription — going thinner would make no visible "
-        "difference and cost you money for nothing."),
+        "difference and cost you money for nothing.",
+        description="Fine for most prescriptions up to about ±2.00.",
+        isDefault=True, badge="Most people pick this"),
     opt("thin", "Thin · 1.6", 452, "thickness-thin.png",
         "Noticeably slimmer at the edge and lighter on your nose. The usual choice once your prescription gets past "
-        "about ±2.00."),
+        "about ±2.00.", description="Around 20% thinner. For ±2.00 to ±4.00."),
     opt("xthin", "Extra thin · 1.67", 454, "thickness-xthin.png",
         "Worth it for a stronger prescription — it stops the lens edge standing proud of the frame and reduces the "
-        "way strong lenses distort how your eyes look."),
+        "way strong lenses distort how your eyes look.",
+        description="Around 35% thinner. For ±4.00 to ±6.00."),
     opt("ultra", "Ultra thin · 1.74", 453, "thickness-ultra.png",
         "The thinnest lens material available. If your prescription is strong, this is the difference between "
-        "glasses you want to wear and glasses you tolerate."),
+        "glasses you want to wear and glasses you tolerate.",
+        description="The thinnest made. For ±6.00 and above."),
 ]))
 
 finish = B("sgs/choice-flow-question", dict(layout="grid", priceGroup="lens-finish", options=[
     opt("tint", "Tinted to match", 450, "finish-tint.png",
         "I match the tint to the lenses the brand fitted, so the frame looks exactly as designed. Nobody will know "
-        "they're prescription."),
+        "they're prescription.", description="Same colour and depth as the original lenses."),
     opt("pol", "Polarised", 449, "finish-pol.png",
         "A filter that cuts reflected glare rather than just dimming everything. If you drive a lot or spend time "
-        "near water, this is the upgrade worth paying for."),
+        "near water, this is the upgrade worth paying for.",
+        description="Kills glare off water, roads and windscreens."),
     opt("photo", "Light-reactive", 448, "finish-photo.png",
         "One pair that works indoors and out. Worth knowing they react to UV, so they stay lighter behind a car "
-        "windscreen."),
+        "windscreen.", description="Clear indoors, dark outside in under a minute."),
     opt("clear", "Clear", 447, "finish-clear.png",
-        "Sunglasses frames make excellent everyday glasses. Anti-reflective coating both sides, included."),
+        "Sunglasses frames make excellent everyday glasses. Anti-reflective coating both sides, included.",
+        description="Turn them into everyday glasses."),
 ]))
 
+# The draft's prescription step (dc.html:1481-1486) shows its `desc` directly under the title with no
+# "?" toggle at all (unlike the three steps above) — so that copy maps to `description` here, not
+# `helpText`; a `helpText` value would wrongly add a toggle button the draft never has on this step.
 rx = B("sgs/choice-flow-question", dict(layout="grid", options=[
     {"label": "Send it later", "value": "later", "nextStepId": str(STEP_LATER),
-     "helpText": "Order now and I'll WhatsApp you a link for it. Nothing gets made until it arrives."},
+     "description": "Order now and I'll WhatsApp you a link for it. Nothing gets made until it arrives.",
+     "isDefault": True, "badge": "Easiest"},
     {"label": "Upload a photo", "value": "upload", "nextStepId": str(STEP_UPLOAD),
-     "helpText": "A phone photo of the paper copy is fine."},
+     "description": "A phone photo of the paper copy is fine."},
     {"label": "Type it in", "value": "type", "nextStepId": str(STEP_TYPE),
-     "helpText": "If you've got the numbers in front of you."},
+     "description": "If you've got the numbers in front of you."},
 ]))
 
 READY = "Your frame and lenses go in together."
@@ -136,8 +153,16 @@ PHOTO = [B("sgs/form-field-file", dict(
     helpText="A phone photo of the paper copy is fine, as long as every number is readable."))]
 
 tree = [
+    # Root polish (this session, matching dc.html:1307-1320,1537 exactly):
+    # - progressColour "accent" (#9C8B78 taupe) = the draft's var(--acc,#9C8B78) fill.
+    # - showHeader on: the draft's header row above the progress bar (a decorative glasses mark, not the
+    #   site's real logo — headerLogo stays empty) plus a "Step N of M" eyebrow the block builds itself.
+    # - closeLabel left at the block default "Close", which already matches dc.html:1317's visible text.
+    # - stickyFooter on: dc.html's footer row (:1537) stays pinned at the bottom of the flex column while
+    #   the body scrolls (:1322's flex:1;overflow:auto) — the same visual effect stickyFooter produces.
     B("sgs/choice-flow", dict(title="Add prescription lenses", maxWidth="1200px", progressStyle="bar",
-                              showPricePanel=True, pricePanelTitle="Your order"), [
+                              showPricePanel=True, pricePanelTitle="Your order",
+                              progressColour="accent", showHeader=True, stickyFooter=True), [
         step("What they're for", "What will you use them for?",
              "Your prescription tells you which. If there's an “ADD” column on it, varifocal is probably what "
              "you're after.", use),
