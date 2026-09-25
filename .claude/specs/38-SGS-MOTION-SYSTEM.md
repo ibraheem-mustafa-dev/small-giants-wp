@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 38
-spec_version: 1.1
+spec_version: 1.2
 status: active
 title: SGS Motion System — the four-tier motion doctrine (V/G/H/W) + the GSAP (Tier G) effects layer
 created: 2026-07-29
@@ -66,7 +66,14 @@ apply, never completely walled off from areas of potential.
    CDN, and conditionally loaded on the same registry as Tier G, so a site not using it ships
    zero bytes of it; (iv) its admission is recorded as a D-numbered decision naming what it
    replaces. Tier H is a named list, not a category anyone may extend by analogy — **current
-   membership: Lenis (site-level smooth scrolling) and nothing else.**
+   membership: Lenis (site-level smooth scrolling) and the Lottie player (`lottie-web` 5.13.0
+   light build, SVG renderer, playing designer-supplied animation files; D1151), and nothing
+   else.** The Lottie player replaces nothing shipped; it adds the capability the motion register
+   listed as absent. It is offered as the `lottie` media type (the logo, the Media block, the hero
+   split media and the shared wrapper background) and loads only after its trigger fires, never
+   under reduced motion. **Byte allowance: a NAMED 60KB JS allowance for pages that render a
+   Lottie animation, for the player alone**; pages without one ship nothing extra. Design:
+   `.claude/reports/2026-09-26-u17-lottie-design.md`.
    Tier H carries the identical house contracts as Tier V and G (§1.6): live reduced-motion,
    `init → cleanup`, fail-open no-JS, bfcache teardown, Spec 32 no-inline styling.
 2b. **Tier W (rendering substrate) — WebGL.** Bean-approved on all four
