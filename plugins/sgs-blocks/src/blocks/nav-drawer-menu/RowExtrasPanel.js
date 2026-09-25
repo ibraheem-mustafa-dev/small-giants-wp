@@ -33,6 +33,7 @@ function TierToggle( { label, help, value, options, onChange } ) {
 			{ ( { ownValue, effectiveValue, setOwnValue } ) => (
 				<ToggleGroupControl
 					label={ label }
+					hideLabelFromVision
 					help={ help }
 					value={ ownValue || effectiveValue || options[ 0 ].value }
 					onChange={ ( val ) => setOwnValue( val || undefined ) }
@@ -64,6 +65,7 @@ function TierLength( { label, help, value, onChange } ) {
 			{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
 				<SgsLengthControl
 					label={ label }
+					hideLabelFromVision
 					help={ help }
 					value={ ownValue || '' }
 					placeholder={ inherited ? effectiveValue : '' }

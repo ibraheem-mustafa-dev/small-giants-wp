@@ -369,6 +369,7 @@
     "wp_get_nav_menu_object",
     "wp_get_nav_menus",
     "wp_get_post_terms",
+    "wp_get_registered_image_subsizes",
     "wp_get_theme",
     "wp_get_upload_dir",
     "wp_handle_upload",

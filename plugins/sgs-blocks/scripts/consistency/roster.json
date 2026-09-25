@@ -1045,7 +1045,7 @@
       "surfaces": {
         "styling": false,
         "colour": false,
-        "link": false,
+        "link": true,
         "media": false,
         "animation": false
       },
