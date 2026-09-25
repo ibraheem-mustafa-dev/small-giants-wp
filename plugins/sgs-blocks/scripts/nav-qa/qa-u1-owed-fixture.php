@@ -8,13 +8,12 @@
  * Run `qa-item-markup-fixture.php restore` first, so this fixture starts from the untouched header.
  *
  * Cases:
- *   exit-cells  header: fantasy's ground, a black fill at 0.5 with its bottom edge faded out
- *               (`surfaceFadeEdge` bottom). Bar: menu 119 (Shop dropdown, Brands mega panel),
+ *   exit-cells  header: fantasy's ground, black at 0.5 fading to clear at the bottom edge, as a
+ *               gradient fill (`backgroundColourGradient`). Bar: menu 119 (Shop dropdown, Brands mega panel),
  *               collapse below 1024 so both open at 1440, fantasy's submenu link resting at 0.6 and
  *               brightening to 1. Mega panel: the `cards` style with indus-foods' 6px card lift.
- *   no-fade     exit-cells without the edge fade (the fade masks the whole header, so it hides the
- *               dropdowns and mega panels hanging below it; measured 2026-09-25).
- *   controls    the negative controls: no fade, no submenu opacity pair, no card lift (empty).
+ *   controls    the negative controls: a flat black fill at 0.5, no submenu opacity pair, no card
+ *               lift (empty).
  *   restore     put the pre-fixture bodies back.
  */
 
@@ -38,7 +37,7 @@ if ( 'restore' === $case ) {
 	return;
 }
 
-if ( ! in_array( $case, array( 'exit-cells', 'no-fade', 'controls' ), true ) ) {
+if ( ! in_array( $case, array( 'exit-cells', 'controls' ), true ) ) {
 	echo "unknown case {$case}\n";
 	return;
 }
@@ -69,13 +68,12 @@ $merge = static function ( string $content, string $block, array $set ): string 
 	);
 };
 
-$on   = 'controls' !== $case;
-$fade = 'exit-cells' === $case;
+$on = 'exit-cells' === $case;
 
 $header_set = array(
-	'backgroundColour' => '#000000',
-	'surfaceOpacity'   => 0.5,
-	'surfaceFadeEdge'  => $fade ? 'bottom' : 'none',
+	'backgroundColour'         => '#000000',
+	'surfaceOpacity'           => 0.5,
+	'backgroundColourGradient' => $on ? 'linear-gradient(to bottom,rgba(0,0,0,0.5),rgba(0,0,0,0))' : null,
 );
 $bar_set    = array(
 	'ref'                 => 119,

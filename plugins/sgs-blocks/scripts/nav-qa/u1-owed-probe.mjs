@@ -4,24 +4,24 @@
  *   node plugins/sgs-blocks/scripts/nav-qa/u1-owed-probe.mjs <url> [--expect on|off]
  *
  * At 1440 (headless):
- *   1. Edge fade: the header's computed mask-image, and the painted alpha of its black fill at the
- *      top and bottom of the band (read from a screenshot over a white page, so a lighter pixel
- *      means a more transparent fill). Forced colours: mask-image must be none.
+ *   1. Faded ground (fantasy): the header's black gradient fill paints dark at the top of the band
+ *      and nearly clear at the bottom (read from a screenshot over a white page, so a lighter pixel
+ *      means a more transparent fill), with no mask on the header, so nothing hanging below it
+ *      (dropdowns, mega panels) is hidden. Section 2 then hovers a dropdown link, which fails
+ *      if anything covers it.
  *   2. Submenu opacity: a dropdown sublink's opacity at rest and while hovered.
  *   3. Card lift: a `cards` mega group's translateY and its box's top shift while hovered.
  *   4. U-2 forced colours with a scrim open: the dropdown's scrim and panel stay painted, the
  *      panel keeps a visible boundary, and the sublinks read a system colour.
  *
  * `--expect on` asserts the fixture's exit-cells values; `--expect off` asserts the controls case
- * (no mask, opacity 1 at rest, no lift). `--no-fade` skips the fade assertions (the fixture's
- * no-fade case). Exits 1 on any failed assertion.
+ * (a flat fill, opacity 1 at rest, no lift). Exits 1 on any failed assertion.
  */
 import { chromium } from 'playwright';
 
 const url = process.argv[ 2 ];
 const expectIdx = process.argv.indexOf( '--expect' );
 const expect = expectIdx > -1 ? process.argv[ expectIdx + 1 ] : 'on';
-const noFade = process.argv.includes( '--no-fade' );
 if ( ! url ) {
 	console.error( 'usage: u1-owed-probe.mjs <url> [--expect on|off]' );
 	process.exit( 2 );
@@ -41,7 +41,7 @@ await page.goto( `${ url }${ url.includes( '?' ) ? '&' : '?' }nocache=${ Date.no
 // A white page behind the header, so painted fill alpha reads as darkness.
 await page.addStyleTag( { content: 'html,body{background:#fff !important}' } );
 
-// ── 1. Edge fade ────────────────────────────────────────────────────────────
+// ── 1. Faded ground ────────────────────────────────────────────────────────────
 const header = page.locator( 'header.sgs-site-header' ).first();
 const mask = await header.evaluate( ( el ) => getComputedStyle( el ).maskImage || getComputedStyle( el ).webkitMaskImage );
 const box = await header.boundingBox();
@@ -66,20 +66,13 @@ const topPx = await sample( box.y + 2 );
 const botPx = await sample( box.y + box.height - 2 );
 console.log( `pixel near top ${ topPx.join( ',' ) }; near bottom ${ botPx.join( ',' ) } (255 = no fill painted)` );
 
-if ( noFade ) {
-	console.log( 'edge fade: skipped (--no-fade)' );
-} else if ( 'on' === expect ) {
-	check( /linear-gradient\(to top/.test( mask ) || /linear-gradient\(0deg/.test( mask ), 'edge fade: mask-image is a bottom-edge fade' );
-	check( botPx[ 0 ] - topPx[ 0 ] > 60, 'edge fade: the bottom of the band paints lighter (more transparent) than the top' );
+check( 'none' === mask, 'no mask-image on the header' );
+if ( 'on' === expect ) {
+	check( topPx[ 0 ] < 150, 'faded ground: the top of the band paints the black fill (at about 0.5)' );
+	check( botPx[ 0 ] - topPx[ 0 ] > 60, 'faded ground: the bottom of the band paints lighter (more transparent) than the top' );
 } else {
-	check( 'none' === mask, 'control: no mask-image' );
-	check( Math.abs( botPx[ 0 ] - topPx[ 0 ] ) < 10, 'control: top and bottom paint the same fill' );
+	check( Math.abs( botPx[ 0 ] - topPx[ 0 ] ) < 10, 'control: top and bottom paint the same flat fill' );
 }
-
-await page.emulateMedia( { forcedColors: 'active' } );
-const fcMask = await header.evaluate( ( el ) => getComputedStyle( el ).maskImage || getComputedStyle( el ).webkitMaskImage );
-check( 'none' === fcMask, `forced colours: mask-image is none (read ${ fcMask })` );
-await page.emulateMedia( { forcedColors: 'none' } );
 
 // ── 2. Submenu opacity ──────────────────────────────────────────────────────
 const noTransitions = await page.addStyleTag( { content: '*,*::before,*::after{transition:none !important;animation-duration:0s !important}' } );
