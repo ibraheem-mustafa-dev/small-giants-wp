@@ -139,5 +139,6 @@ return array(
 	'sgsObjectPosition' => array( 'type' => 'object' ),
 	'sgsParallax' => array( 'type' => 'string' ),
 	'sgsParallaxStrength' => array( 'type' => 'number' ),
+	'sgsSameTermAs' => array( 'type' => 'string' ),
 	'sgsStaggerDelay' => array( 'type' => 'number' ),
 );

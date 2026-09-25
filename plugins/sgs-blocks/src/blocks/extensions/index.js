@@ -28,6 +28,10 @@
  *   cpt-default-panel.js. sgs_header/sgs_footer were removed 2026-09-17,
  *   same day as added, once confirmed duplicate of Sgs_Active_Layout's
  *   existing "Active" admin mechanism for those two CPTs.
+ * - Product Collection "same term" extension: adds a `sgsSameTermAs`
+ *   taxonomy-picker panel to WooCommerce's `woocommerce/product-collection`
+ *   block only — see product-collection-same-term.js. The frontend query
+ *   change is server-side (includes/product-collection-same-term.php).
  */
 import './responsive-device-toggle';
 import './animation';
@@ -40,6 +44,7 @@ import './fx';
 import './responsive-visibility';
 import './media-elements';
 import './cpt-default-panel';
+import './product-collection-same-term';
 
 // The two colour-picker fork stylesheets that carry genuinely NEW SGS
 // classnames (not core's own `.components-*` names, which `wp-components`

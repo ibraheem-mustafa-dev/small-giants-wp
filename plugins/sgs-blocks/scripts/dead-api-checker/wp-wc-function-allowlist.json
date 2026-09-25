@@ -164,6 +164,7 @@
     "is_front_page",
     "is_home",
     "is_multisite",
+    "is_object_in_taxonomy",
     "is_page",
     "is_post_type_archive",
     "is_product",

@@ -139,6 +139,12 @@ final class SGS_Blocks {
 		// the p10/p11 dynamic-block attribute-injection siblings to share.
 		require_once SGS_BLOCKS_PATH . 'includes/fx-flip-woocommerce.php';
 
+		// Product Collection "same term" extension — `woocommerce/product-collection`
+		// only. Adds the `sgsSameTermAs` attribute (registered server-side) and, on a
+		// single-product template, filters the block's frontend query to other
+		// products sharing the current product's terms in that taxonomy.
+		require_once SGS_BLOCKS_PATH . 'includes/product-collection-same-term.php';
+
 		// Pattern slug backward-compat shim (sgs-theme/ → sgs/ aliases, 1-cycle deprecation).
 		require_once SGS_BLOCKS_PATH . 'includes/class-pattern-slug-shim.php';
 		Pattern_Slug_Shim::register();
