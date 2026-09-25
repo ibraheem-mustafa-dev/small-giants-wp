@@ -101,10 +101,14 @@
 					"label": "Item row",
 					"order": 3,
 					"clusters": [
-						"text"
+						"text",
+						"layout"
 					],
 					"prefix": "item",
-					"_note": "The per-item `<li class=\"sgs-icon-list__item\">` row (`$item_row_sel`, fed to `sgs_typography_css_rule( $attributes, 'item', $item_row_sel )` — the shared TypographyControls emitter). Owns itemFontSize/FontSizeUnit/FontWeight/FontStyle/LineHeight/LineHeightUnit, all resolved via the default `item`+suffix convention. This is a DISTINCT DOM node from item-text's `<span class=\"sgs-icon-list__text\">` (`$text_sel`). The item-row's itemFontSize/itemLineHeight family belongs to this element, not item-text. Same split rationale as the `heading` element below."
+					"_note": "The per-item `<li class=\"sgs-icon-list__item\">` row (`$item_row_sel`, fed to `sgs_typography_css_rule( $attributes, 'item', $item_row_sel )` — the shared TypographyControls emitter). Owns itemFontSize/FontSizeUnit/FontWeight/FontStyle/LineHeight/LineHeightUnit, all resolved via the default `item`+suffix convention. This is a DISTINCT DOM node from item-text's `<span class=\"sgs-icon-list__text\">` (`$text_sel`). The item-row's itemFontSize/itemLineHeight family belongs to this element, not item-text. Same split rationale as the `heading` element below.",
+					"attrMap": {
+						"css:padding": "itemPaddingBlock"
+					}
 				},
 				"item-text": {
 					"label": "Item text",

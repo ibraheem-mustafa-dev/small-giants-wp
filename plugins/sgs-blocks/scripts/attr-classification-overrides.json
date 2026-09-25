@@ -6648,6 +6648,30 @@
 				"role": "behaviour"
 			},
 			"_why": "2026-09-25 (Eye Care Wave C product page). How many of the buybox's extra-area child blocks render above the price instead of below the add-to-cart form: a placement behaviour, no CSS property."
+		},
+		{
+			"slug": "sgs/buybox",
+			"attr": "extrasBeforeCartCount",
+			"fields": {
+				"role": "behaviour"
+			},
+			"_why": "2026-09-25 (Eye Care product page). How many of the buybox's extra blocks render between the pickers and add-to-cart: a placement behaviour, no CSS property."
+		},
+		{
+			"slug": "sgs/buybox",
+			"attr": "rrpSavingPrefix",
+			"fields": {
+				"role": "text-content"
+			},
+			"_why": "2026-09-25 (Eye Care product page). The words before the saving in the RRP pill ('You save'): visible text."
+		},
+		{
+			"slug": "sgs/icon-list",
+			"attr": "itemPaddingBlock",
+			"fields": {
+				"role": "layout"
+			},
+			"_why": "2026-09-25 (Eye Care product page). Vertical padding inside each list item (padding-block on the item row)."
 		}
 	]
 }
