@@ -490,6 +490,17 @@
 	overflow-wrap: break-word;
 }
 
+/* A line's variation and item data (add-ons, a flow's answers), one per row. */
+.sgs-cart__item-details {
+	margin: 0.25rem 0 0;
+	padding: 0;
+	list-style: none;
+	font-size: 0.8rem;
+	line-height: 1.4;
+	color: var(--wp--preset--color--text-muted, #5e584f);
+	overflow-wrap: break-word;
+}
+
 .sgs-cart__item-row {
 	display: flex;
 	align-items: center;

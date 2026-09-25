@@ -43,8 +43,44 @@ export function escapeHtml( str ) {
 }
 
 /**
- * Build one item row's markup: thumbnail, name, inline qty-edit input,
- * line price, and a remove button.
+ * Plain text from a Store API string that may carry markup or entities.
+ *
+ * @param {string} str Raw value.
+ * @return {string} Its text content.
+ */
+function plainText( str ) {
+	return new DOMParser().parseFromString( String( str ?? '' ), 'text/html' ).body.textContent.trim();
+}
+
+/**
+ * The line's details: its variation (colour, size) and every item-data row
+ * (add-ons, a flow's answers), one per line.
+ *
+ * @param {Object} item A Store API cart item.
+ * @return {string} A list's HTML, or '' when there is nothing to show.
+ */
+function detailsHtml( item ) {
+	const rows = [ ...( item.variation || [] ), ...( item.item_data || [] ) ]
+		.map( ( row ) => {
+			const label = plainText( row.attribute ?? row.name ?? row.key );
+			const value = plainText( row.display ?? row.value );
+			return label && value ? `${ label }: ${ value }` : '';
+		} )
+		.filter( Boolean );
+	if ( ! rows.length ) {
+		return '';
+	}
+	return (
+		'<ul class="sgs-cart__item-details">' +
+		rows.map( ( row ) => `<li>${ escapeHtml( row ) }</li>` ).join( '' ) +
+		'</ul>'
+	);
+}
+
+/**
+ * Build one item row's markup: thumbnail, name, the line's details
+ * (variation and item data), inline qty-edit input, line price, and a
+ * remove button.
  *
  * @param {Object} item   A Store API cart item.
  * @param {Object} totals The cart's `totals` object (currency metadata).
@@ -94,6 +130,7 @@ export function itemRowHtml( item, totals ) {
 		thumbHtml +
 		'<div class="sgs-cart__item-info">' +
 		`<span class="sgs-cart__item-name">${ name }</span>` +
+		detailsHtml( item ) +
 		'<div class="sgs-cart__item-row">' +
 		qtyLabelHtml +
 		qtyInputHtml +

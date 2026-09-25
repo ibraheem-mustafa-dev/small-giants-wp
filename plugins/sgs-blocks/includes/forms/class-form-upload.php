@@ -103,6 +103,10 @@ class Form_Upload {
 			return $dirs;
 		};
 
+		// wp_handle_upload() lives in an admin include that a front-end REST
+		// request never loads (WP-CLI and wp-admin do, which hides this).
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+
 		add_filter( 'upload_dir', $filter );
 
 		$upload = wp_handle_upload(
