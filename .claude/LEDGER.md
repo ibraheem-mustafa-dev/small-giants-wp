@@ -52,16 +52,18 @@ Plan: `plans/2026-09-24-eye-care-hand-build-design.md` (Status block = current t
 Ward End Eye Care - SGS Gap Handoff/`, live at https://mintcream-lyrebird-224487.hostingersite.com/. Test site:
 https://darkcyan-grouse-898606.hostingersite.com (creds `.claude/secrets/eye-care-test.env`).
 
-**Now (2026-09-25).** Wave C tasks 1-3 DONE, live on eye-care-test and verified at 1440/768/375: the shared listing
-card (Home best sellers), the product page (the site's own `single-product` template; real frame sizes from
-jpopticians.com) and the shop (the site's own `archive-product` template; brand filter proven, `?brands=`). Task 4
-(lens configurator) IN FLIGHT: Spec 43 v1.4.0 adds the add-on price list (1aaa11f37); framework agent work was left
-committed but NOT yet reseeded or deployed (price list, modal, choice-flow;
-possibly `src/blocks/choice-flow*` and `product-card/view.js`; the modal part is committed): review, gate, commit, reseed, deploy before building
-on it. Header, footer, mobile menu and mega panels stay with the nav track (Bean, 2026-09-25). No blockers.
+**Now (2026-09-25, main 705fd11bd, all live on eye-care-test).** Wave C tasks 1-6 DONE and proven in a real browser:
+listing card, product page, shop; the lens configurator (a Choice Flow post, `lens-configurator` = post 463, opened
+full screen from "Add my prescription"; four questions incl. "Your prescription" per pair; one bag line at £268 for
+Distance/Thin/Polarised; tampered add-on or file requests refused); the size guide (`sgs_modal` 461); bag drawer
+detail rows; checkout placed an order end to end (store now GB-only with the draft's three delivery options, UK County
+hidden, free delivery pre-selected, staff download link for uploaded prescriptions). Spec 43 is v1.6.0 (FR-43-6 linked
+flow, FR-43-21 answers and fields). The final design review ran; its owed items are in the plan's Status block. No
+payment gateway is enabled on eye-care-test (a launch item for Bean). Header, footer, mobile menu and mega panels stay
+with the nav track. No blockers.
 
-**Resume from:** the plan's Status block, "Wave C progress" and "Wave C: next" (task 4 onward); product page detail in
-`plans/2026-09-25-eye-care-product-page.md`.
+**Resume from:** the plan's Status block, "Wave C design review" (owed choice-flow chrome and shop polish) and Phase 6
+(launch readiness); task 6 detail and parked items in `plans/2026-09-25-eye-care-bag-checkout-prescription.md`.
 
 **Parked (detail in the plan's Status block and the task plans):** owed product-page and shop polish; theme default
 shop template hard-codes another client's filters; the theme's 1280px shop-columns container rule never applies;

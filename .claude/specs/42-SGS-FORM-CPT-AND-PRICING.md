@@ -141,9 +141,9 @@ slug". WordPress core already ships exactly this interaction — `wp.blockEditor
 (the same component behind the Navigation and Button blocks' "Add link"), filterable to one
 post type via `suggestionsQuery={ type: 'post', subtype: 'sgs_form' }`, resolving through the
 standard `__experimentalFetchLinkSuggestions` REST search. This requires only
-`show_in_rest: true` on the CPT (§3) — zero new REST surface. **Spec 43's `flowRef` picker
-must use this exact same mechanism, filtered to `sgs_choice_flow` instead — one picker
-component, two post-type filters, never two implementations.**
+`show_in_rest: true` on the CPT (§3) — zero new REST surface. **Spec 43's "Linked flow" picker
+(`sgs/choice-flow` `flowId` + `flowIsLinked`, FR-43-6) uses this exact same mechanism, filtered to
+`sgs_choice_flow` — one picker component, two post-type filters, never two implementations.**
 
 **FR-42-4:** the form-embed block/attribute stores the resolved slug (not a raw post ID —
 see §2) via `LinkControl`, filtered to `sgs_form`.

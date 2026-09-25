@@ -35,7 +35,9 @@ sgs-blocks/
     ├── heading-anchors.php       # Auto-generates heading IDs for Table of Contents
     ├── lucide-icons.php          # Auto-generated Lucide icon library (exempt from the 300-line PHP limit)
     ├── render-helpers.php        # Autoloads shared colour/font-size/box helper files
-    └── forms/                    # Form processing engine (REST API, DB, submissions)
+    ├── addon-price-list/         # Site-wide priced add-ons: settings page, cart pricing, CLI seed (Spec 43 FR-43-17 to 20)
+    ├── flow-fields/              # Choice-flow answers and fields on the cart line, session-stamped upload (FR-43-21)
+    └── forms/                    # Form processing engine (REST API, DB, submissions, private uploads)
 ```
 
 ## Block Pattern (Every Block Follows This)

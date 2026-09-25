@@ -639,15 +639,17 @@ The icon circle has an overridable default border; a title placeholder never lea
 
 ### 20. Modal (`sgs/modal`)
 
-**Purpose:** Lightbox/modal overlay triggered by button click.
+**Purpose:** Lightbox/modal overlay, opened by its own trigger button or by any link to its anchor.
 
 **Attributes:**
-- `triggerText` — string (button label)
-- `triggerStyle` — primary | secondary | text-link
+- `triggerText` — string (button label; also the dialog's accessible name when no `sgs_modal` post is referenced)
+- `triggerStyle` — primary | secondary | text-link | none (no button: opened only by `#<anchor>` links or `data-sgs-modal-open`)
 - `maxWidth` — small (480px) | medium (640px) | large (800px) | full
+- `size` — default | fullscreen (the whole viewport; content starts below the close button)
+- `modalRef` — an `sgs_modal` post whose content (and title, as the accessible name) the dialog shows
 - `closeOnOverlay` — boolean (default: true)
 
-**Inner blocks:** Yes — modal content accepts any blocks.
+**Inner blocks:** Yes — modal content accepts any blocks (used when no `modalRef` is set).
 
 **Render:** Dynamic `render.php` + `viewScriptModule` for open/close logic via Interactivity API. Uses `<dialog>` element for native accessibility. Focus trap and Escape key handling built-in.
 

@@ -2,7 +2,9 @@
 
 **Status:** APPROVED by Bean 2026-09-24 (D1149). **Wave A DONE 2026-09-24.** **Wave B framework part DONE
 2026-09-24.** **Wave B DONE 2026-09-25** (pages built 2026-09-24; close-out items 1-9 and part 2 done and live
-2026-09-25). **Next: Wave C** (section "Wave C: next", below the Wave B record).
+2026-09-25). **Wave C DONE 2026-09-25** (tasks 1-6 live on eye-care-test and proven; the design review's owed items
+are in "Wave C design review" below). **Next: Wave D** (section 8: Phase 6 launch readiness, then the Phase 7 answer
+key), with the owed Wave C polish alongside.
 - Wave B pages on eye-care-test, each built through the editor with `scripts/wp-build-page.js` from a tree in
   `sites/eye-care-ward-end/build/` (the reproducible record): header `sgs_header` 199 (active), mobile menu `sgs_drawer`
   203 (the burger's own drawerRef; the global drawer pointer is untouched), mega panels 165/176/183/186, WP menu 96,
@@ -119,8 +121,8 @@
   `tests/php/run-addon-price-list-cart-standalone.php`), a `src/` require that 500'd the site (293692aea, new
   gate `check-no-src-requires.py`), nameless modal dialogs (36d0ff818). Lens option pictures: media 447-458.
   Gaps: option cards have no description line (the draft's "Driving, walking about, everyday wear."); the draft's
-  left aside (frame photo + running lines) is the price panel on the right; the draft's 4th question ("Your
-  prescription") is task 6 (`plans/2026-09-25-eye-care-bag-checkout-prescription.md`, D1).
+  left aside (frame photo + running lines) is the price panel on the right. The 4th question ("Your prescription")
+  was added in task 6 (Spec 43 FR-43-21).
 - **Wave C task 5 (size guide) DONE (2026-09-25):** `sgs_modal` 461 (`build/gen_size_guide.py`), a triggerless
   `sgs/modal` (anchor `size-guide`, large) on the product template, opened by "Which size am I?" in the Sizing tab.
   Gap: the buybox's size picker has no slot for the draft's "Which size am I?" link beside the Size label.
@@ -136,15 +138,6 @@
 - **Wave C task 6 (bag, checkout, prescription): BUILT and proven (see the task 6 plan's Outcome)**, `plans/2026-09-25-eye-care-bag-checkout-prescription.md`
   (Bean 2026-09-25: the prescription is the configurator's 4th question, per pair, as Glasses Direct does; pennies
   on every price, only savings drop ".00").
-- **Wave C: next** (Bean, 2026-09-25: pages and the configurator while the nav track rebuilds header, footer and
-  menus; do not touch those surfaces). Order: (1) the shared product card (the draft's Frame Card: brand, heart,
-  SAVE badge, stars, 4-up at 1280; Home's best sellers use it), then the product page, zero-reviews state first;
-  (2) the shop archive; (3) the lens configurator: amend Spec 43 with the "add-on price list" priced-step source
-  (section 5), then choice-flow Phase 3 (priced steps, bag line) and Phase 4 (modal delivery) from
-  `plans/2026-09-14-spec42-43-form-choiceflow-phase-plan.md`; (4) the size-guide modal (no `sgs_modal` posts exist
-  yet) and opening a modal from any link; (5) bag drawer and checkout with the prescription step (section 6; private
-  upload storage already exists in `includes/forms/class-form-upload.php`). Data is in place: 16 products,
-  49 colour variations, 40 brands.
 - Wave B framework part: all 22 items from section 2 of `.claude/reports/2026-09-24-eye-care-gap-map-recheck.md`
   are built, audited against Spec 32 and Spec 35, and committed one feature per commit. Two needed no code:
   `sgs/google-reviews` already draws the exact fraction (4.7 fills 70% of the fifth star); product fields got a
