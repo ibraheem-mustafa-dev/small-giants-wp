@@ -291,6 +291,7 @@
     "wc_get_orders",
     "wc_get_page_id",
     "wc_get_page_permalink",
+    "wc_get_price_decimals",
     "wc_get_price_to_display",
     "wc_get_product",
     "wc_get_product_category_list",
