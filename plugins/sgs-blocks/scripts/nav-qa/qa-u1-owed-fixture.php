@@ -14,6 +14,8 @@
  *               brightening to 1. Mega panel: the `cards` style with indus-foods' 6px card lift.
  *   controls    the negative controls: a flat black fill at 0.5, no submenu opacity pair, no card
  *               lift (empty).
+ *   transparent-tiers  header only: a navy fill (#1a1a2e), Transparent on at desktop and off at
+ *               mobile, so the mobile header must paint its own fill (not the browser default).
  *   restore     put the pre-fixture bodies back.
  */
 
@@ -37,7 +39,7 @@ if ( 'restore' === $case ) {
 	return;
 }
 
-if ( ! in_array( $case, array( 'exit-cells', 'controls' ), true ) ) {
+if ( ! in_array( $case, array( 'exit-cells', 'controls', 'transparent-tiers' ), true ) ) {
 	echo "unknown case {$case}\n";
 	return;
 }
@@ -67,6 +69,21 @@ $merge = static function ( string $content, string $block, array $set ): string 
 		1
 	);
 };
+
+if ( 'transparent-tiers' === $case ) {
+	$h = $merge(
+		get_post_field( 'post_content', $header_id ),
+		'sgs/site-header',
+		array(
+			'backgroundColour'  => '#1a1a2e',
+			'headerTransparent' => array( 'desktop' => 'on', 'mobile' => 'off' ),
+		)
+	);
+	wp_update_post( wp_slash( array( 'ID' => $header_id, 'post_content' => $h ) ) );
+	preg_match( '#<!-- wp:sgs/site-header (\{.*?\}) #s', get_post_field( 'post_content', $header_id ), $tm );
+	echo "case: {$case}\nheader: " . ( $tm[1] ?? 'NOT FOUND' ) . "\n";
+	return;
+}
 
 $on = 'exit-cells' === $case;
 
