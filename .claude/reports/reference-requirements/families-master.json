@@ -439,18 +439,16 @@
     "wearecollins"
    ],
    "needed_by_count": 7,
-   "coverage_status": "partial",
+   "coverage_status": "covered",
    "evidence": "measured",
    "covered_by": [
     "sgs/site-footer::backgroundImage*/::bgVideo*/::backgroundOverlay*",
-    "sgs/nav-drawer::backgroundImage/::backgroundSize/::backgroundPosition"
+    "sgs/nav-drawer::backgroundImage/::backgroundSize/::backgroundPosition",
+    "sgs/nav-drawer-menu::itemMedia (the linked page's featured image; GIF/WebP full size)/::itemMediaReveal (per tier: none | always | hover)/::itemMediaWidth/::itemMediaHeight/::itemMediaRadius"
    ],
-   "note": "Static image layers, per-tier background video and a tinted overlay are covered (studionamma's looping footer video, fantasy's white-panel-over-black-90%, dogstudio's drawer image layer). Gap: the per-link leading glyph (buck) and the per-link hover thumbnail (studionamma) are one per-item media slot, counted once, in M-22 — buck's per-page-load random fill is a content-supply question (DEC-07); resn's WebGL scene is DEC-01.",
-   "uncovered_references": [
-    "buck",
-    "studionamma"
-   ],
-   "uncovered_count": 2
+   "note": "Static image layers, per-tier background video and a tinted overlay are covered (studionamma's looping footer video, fantasy's white-panel-over-black-90%, dogstudio's drawer image layer). Gap: the per-link leading glyph (buck) and the per-link hover thumbnail (studionamma) are one per-item media slot, counted once, in M-22 — buck's per-page-load random fill is a content-supply question (DEC-07); resn's WebGL scene is DEC-01. COVERED (Wave 3C U-7, 2026-09-25): studionamma's hover thumbnail measured live (width 0 at rest, 160 x 112 on hover, the linked page's featured image; reports/visual-diff/nav-drawer-2026-09-25.md section \"U-6 + U-7\"); buck's leading glyph is the M-22 ornament. Residue, named: a per-page VIDEO source (Bean wants short clips; a featured image can only be an image, so GIFs work today) is parked in the Wave 3C plan's U-7 row; buck's per-load random fill is DEC-07.",
+   "uncovered_references": [],
+   "uncovered_count": 0
   },
   {
    "id": "M-16",
@@ -686,22 +684,19 @@
     "studionamma"
    ],
    "needed_by_count": 8,
-   "coverage_status": "partial",
+   "coverage_status": "covered",
    "evidence": "measured",
    "covered_by": [
     "sgs/nav-bar-menu::submenuCaret",
     "sgs/mega-panel::iconBackground/::iconColour (+hover pair)",
-    "sgs/nav-drawer-menu::sublinkMarker* (7 attrs)"
+    "sgs/nav-drawer-menu::sublinkMarker* (7 attrs)",
+    "sgs/nav-drawer-menu::itemOrnament (per tier: none | index | icon)/::itemOrnamentIcon/::itemOrnamentIconHover/::itemOrnamentSize/::itemOrnamentColour (+Hover)/::itemOrnamentGap",
+    "sgs/nav-drawer-menu::itemExpanderIcon/::itemExpanderRotate",
+    "sgs/icon-list::numberFormat/::numberColour/::numberFontSize/::numberFontWeight"
    ],
-   "note": "MERGED: the caret on panel-owning items, the icon-host tile, the index number and the leading glyph are one ornament vocabulary and the gaps are identical on the panel and the drawer. Covered: caret (submenuCaret, applied only to items that own a submenu) and the icon-host tile on the mega fork. GAPS: (a) the INDEX NUMBER (indus 01..05, dogstudio's drawer counter) — no counter, ordinal or ::before rule anywhere, and dogstudio drops it below 1440 so it must be per-tier; (b) a decorative leading glyph on a PRIMARY row (buck, lamalama) — nav-drawer-menu carries only the seven sublinkMarker* attributes (VERIFIED), all on SUB-items; (c) a per-item media slot (studionamma's hover-expanded thumbnail); (d) the dropdown fork has no icon-host attribute at all. REVIEW POINT RECORDED, not split: the review called this an over-merge across four render sites (a boolean caret, an icon tile on mega-panel, seven sublinkMarker* attrs on sub-items, a CSS counter and a hover-reactive media element). That is true of the COVERED half and irrelevant to the gap: the three missing things — an index number, a decorative leading glyph on a PRIMARY row, and a per-item media slot — are all the same missing slot on the same markup builder (nav-menu-markup.php::sgs_nav_drawer_menu_render_items and its mega sibling), per tier. Splitting it would put one slot in three units. The per-link hover thumbnail is counted HERE and nowhere else (M-15's duplicate mention removed).",
-   "uncovered_references": [
-    "buck",
-    "dogstudio",
-    "indus-foods",
-    "lamalama",
-    "studionamma"
-   ],
-   "uncovered_count": 5
+   "note": "MERGED: the caret on panel-owning items, the icon-host tile, the index number and the leading glyph are one ornament vocabulary and the gaps are identical on the panel and the drawer. Covered: caret (submenuCaret, applied only to items that own a submenu) and the icon-host tile on the mega fork. GAPS: (a) the INDEX NUMBER (indus 01..05, dogstudio's drawer counter) — no counter, ordinal or ::before rule anywhere, and dogstudio drops it below 1440 so it must be per-tier; (b) a decorative leading glyph on a PRIMARY row (buck, lamalama) — nav-drawer-menu carries only the seven sublinkMarker* attributes (VERIFIED), all on SUB-items; (c) a per-item media slot (studionamma's hover-expanded thumbnail); (d) the dropdown fork has no icon-host attribute at all. REVIEW POINT RECORDED, not split: the review called this an over-merge across four render sites (a boolean caret, an icon tile on mega-panel, seven sublinkMarker* attrs on sub-items, a CSS counter and a hover-reactive media element). That is true of the COVERED half and irrelevant to the gap: the three missing things — an index number, a decorative leading glyph on a PRIMARY row, and a per-item media slot — are all the same missing slot on the same markup builder (nav-menu-markup.php::sgs_nav_drawer_menu_render_items and its mega sibling), per tier. Splitting it would put one slot in three units. The per-link hover thumbnail is counted HERE and nowhere else (M-15's duplicate mention removed). COVERED (Wave 3C U-7, 2026-09-25): dogstudio's two-digit index measured live at desktop (12px counter, decorative) and absent at tablet and mobile; the expander glyph and its open turn measured (45deg); indus-foods' numbered rows are an icon-list numbered list with numberFormat decimal-leading-zero inside its compact-links panel, and the same panel renders in the drawer with the drawer's sub-item marker colour (reports/visual-diff/nav-drawer-2026-09-25.md section \"U-6 + U-7\"). Residue, named: buck's glyphs, if they differ per link, cannot be drawn by one icon per menu (Wave 4 buck clone checks at capture). Gap (d) (a dropdown icon host) has no uncovered reference behind it.",
+   "uncovered_references": [],
+   "uncovered_count": 0
   },
   {
    "id": "M-23",
@@ -738,15 +733,16 @@
     "wearecollins"
    ],
    "needed_by_count": 2,
-   "coverage_status": "gap",
+   "coverage_status": "covered",
    "evidence": "thin",
-   "covered_by": [],
-   "note": "MERGED: group A found it on wearecollins' footer and group C on wearecollins' drawer, plus resn's per-item canvas dissolve (the hovered item holds its lit-pixel count while the others lose 40-98%). One mechanism: dim the non-hovered siblings of a list. Every hover attribute in the tree repaints the element BEING hovered; nothing repaints its siblings. Evidence thin: footer hover was never driven on any reference, so the footer half rests on one measured drawer case.",
-   "uncovered_references": [
-    "resn",
-    "wearecollins"
+   "covered_by": [
+    "sgs/nav-drawer-menu::siblingDimColour (+Gradient)/::siblingDimOpacity",
+    "sgs/icon-list::siblingDimColour (+Gradient)/::siblingDimOpacity (footer link lists)",
+    "includes/helpers-item-effects.php::sgs_sibling_dim_css (list-scoped :has(), touch-guarded hover, :focus-visible keyboard)"
    ],
-   "uncovered_count": 2
+   "note": "MERGED: group A found it on wearecollins' footer and group C on wearecollins' drawer, plus resn's per-item canvas dissolve (the hovered item holds its lit-pixel count while the others lose 40-98%). One mechanism: dim the non-hovered siblings of a list. Every hover attribute in the tree repaints the element BEING hovered; nothing repaints its siblings. Evidence thin: footer hover was never driven on any reference, so the footer half rests on one measured drawer case. COVERED (Wave 3C U-6, 2026-09-25): wearecollins' drawer dim measured live (siblings rgb(76,76,76) while the hovered row keeps its own colour, 0.7s on its curve; reports/visual-diff/nav-drawer-2026-09-25.md section \"U-6 + U-7\"). Residue, named: the hovered item's faster 0.45s return (one duration both ways); resn's canvas pixel dissolve is DEC-01 (siblingDimOpacity is a placeholder expression); wearecollins' social links (sgs/social-icons) belong to its Wave 4 clone. Not on the bar (no reference, Bean).",
+   "uncovered_references": [],
+   "uncovered_count": 0
   },
   {
    "id": "M-25",
@@ -761,15 +757,17 @@
     "studionamma"
    ],
    "needed_by_count": 2,
-   "coverage_status": "gap",
+   "coverage_status": "covered",
    "evidence": "measured",
-   "covered_by": [],
-   "note": "SPLIT OUT of the hover families because it is markup, not paint: the item needs a SECOND label copy and a paired transform (studionamma's bar label rises out as an alternate slides in; lusion's drawer text rolls up to a clone; lusion's trigger label slides out as the new one slides in). No attribute provides a second label on any menu block. SURFACE ADDED on review: the roll is on the FOOTER too — studionamma's footer item_states reads 'roll label markup present: each link has two copies of its text' at all three tiers. So the mechanism is needed on the bar, the drawer, the trigger AND the footer, which is four render sites for one missing markup slot.",
-   "uncovered_references": [
-    "lusion",
-    "studionamma"
+   "covered_by": [
+    "sgs/nav-bar-menu::labelRoll (+ itemMotionDuration/itemMotionEasing) on items and the trigger word",
+    "sgs/nav-bar-menu::triggerHoverLabel/::triggerOpenLabel (Spec 36 FR-36-27 swap-label)",
+    "sgs/nav-drawer-menu::labelRoll",
+    "sgs/icon-list::labelRoll (footer)"
    ],
-   "uncovered_count": 2
+   "note": "SPLIT OUT of the hover families because it is markup, not paint: the item needs a SECOND label copy and a paired transform (studionamma's bar label rises out as an alternate slides in; lusion's drawer text rolls up to a clone; lusion's trigger label slides out as the new one slides in). No attribute provides a second label on any menu block. SURFACE ADDED on review: the roll is on the FOOTER too — studionamma's footer item_states reads 'roll label markup present: each link has two copies of its text' at all three tiers. So the mechanism is needed on the bar, the drawer, the trigger AND the footer, which is four render sites for one missing markup slot. COVERED (Wave 3C U-6, 2026-09-25): lusion's drawer roll and the MENU -> CLOSE trigger measured live (the resting copy translateY(-100%), the open copy in place; the button's accessible name reads CLOSE while open, WCAG 2.5.3; reports/visual-diff/nav-drawer-2026-09-25.md section \"U-6 + U-7\"). Residue, named: studionamma's up-scale transform origin was never captured (shape expressed, origin unmeasured); its DARK MODE roll belongs to U-12's theme toggle; LET'S TALK! -> CONTACT US is a hover alternate label on sgs/button (Wave 4 studionamma clone).",
+   "uncovered_references": [],
+   "uncovered_count": 0
   },
   {
    "id": "M-26",
@@ -882,18 +880,16 @@
     "lamalama"
    ],
    "needed_by_count": 3,
-   "coverage_status": "partial",
+   "coverage_status": "covered",
    "evidence": "mixed",
    "covered_by": [
-    "sgs/nav-drawer-menu::itemBorderWidth/::itemBorderStyle/::itemBorderColour"
+    "sgs/nav-drawer-menu::itemBorderWidth (bottom edge = the row separator, Spec 41 FR-41-36)/::itemBorderColour",
+    "sgs/nav-bar-menu::submenuLinkBorder* (dropdown rows, 1px by default)",
+    "sgs/icon-list item + item border (rows of a mega panel pattern)"
    ],
-   "note": "A bottom-only rule is reachable through the object-typed itemBorderWidth if the operator zeroes three sides, but the DRAWER has no separator control of its own while the BAR block carries a dedicated itemSeparator quintet (Width/Style/Colour/ColourHover/SweepAngle). Parity, not a new mechanism. butcherbox and rabbit were not measured.",
-   "uncovered_references": [
-    "halcyon",
-    "indus-foods",
-    "lamalama"
-   ],
-   "uncovered_count": 3
+   "note": "A bottom-only rule is reachable through the object-typed itemBorderWidth if the operator zeroes three sides, but the DRAWER has no separator control of its own while the BAR block carries a dedicated itemSeparator quintet (Width/Style/Colour/ColourHover/SweepAngle). Parity, not a new mechanism. butcherbox and rabbit were not measured. COVERED (Wave 3C U-6, 2026-09-25): no new setting was needed; halcyon's drawer separator (1px #16140a at 0.1) measured live with the existing bottom itemBorderWidth edge (reports/visual-diff/nav-drawer-2026-09-25.md section \"U-6 + U-7\"). The rule also paints under the last row; no reference measured its absence. indus-foods' dropdown rows are sgs/mega-compact-links panels (icon-list rows).",
+   "uncovered_references": [],
+   "uncovered_count": 0
   },
   {
    "id": "M-31",

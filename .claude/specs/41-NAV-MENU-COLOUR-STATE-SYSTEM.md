@@ -1230,7 +1230,7 @@ burger is a `<button class="sgs-nav-bar-menu__burger">` built by
 
 | Attribute | Type | Default | Purpose | Control |
 |---|---|---|---|---|
-| `triggerMode` | object (tier) | `{"desktop":"icon"}` | Per device: `icon` \| `text` \| `icon-and-text` for each of desktop, tablet, mobile (tablet inherits desktop, mobile inherits tablet). PHP-validated against one list, `render.php::$sgs_nm_allowed_trigger_modes`, no JSON enum. The button renders the icon if any tier shows it and the label if any tier shows it; `includes/nav-menu-trigger-css.php` hides each per tier. Accessible name: "Open menu" when no tier shows the word, the label when some do, none when all do. A stored flat string folds to `{desktop}`. | `ResponsiveOverride` + `ToggleGroupControl` (three options) |
+| `triggerMode` | object (tier) | `{"desktop":"icon"}` | Per device: `icon` \| `text` \| `icon-and-text` for each of desktop, tablet, mobile (tablet inherits desktop, mobile inherits tablet). PHP-validated against one list, `plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php::$sgs_nm_allowed_trigger_modes`, no JSON enum. The button renders the icon if any tier shows it and the label if any tier shows it; `includes/nav-menu-trigger-css.php` hides each per tier. Accessible name: "Open menu" when no tier shows the word, the label when some do, none when all do. A stored flat string folds to `{desktop}`. | `ResponsiveOverride` + `ToggleGroupControl` (three options) |
 | `triggerIconPosition` | string | `"after"` | `before` \| `after`: where the icon sits when a tier shows both. A visual reorder only. | `ToggleGroupControl`, shown when a tier is `icon-and-text` |
 | `triggerLabel` | string | `"Menu"` | The visible word, used by `text` and `icon-and-text`. | native `TextControl` with `__nextHasNoMarginBottom __next40pxDefaultSize`, matching this block's existing `navLabel` / `drawerRef` text fields — **not** `SgsFreeTextField`, which has zero adopters on this block |
 | `triggerIcon` | object | `{"source":"lucide","name":"menu"}` | The glyph (FR-41-30(a)). | the framework Icon Picker |
@@ -2286,6 +2286,42 @@ reduced motion is asking to remove.
 **Acceptance: §11 G17.** With `triggerMagnetEnabled` false (its default), the rendered button
 markup carries no magnet attribute, and **no magnet module or stylesheet is enqueued on
 the page** — assert the absence of the asset, not just the absence of the attribute.
+
+### FR-41-39 — Sibling dim: the OTHER items change while one is hovered
+
+**Status: BUILT** (Wave 3C U-6, M-24; design `.claude/reports/2026-09-25-u6-u7-design.md` 3c).
+`sgs/nav-drawer-menu` and `sgs/icon-list` (footer link lists) carry `siblingDimColour` (+`Gradient`, the
+text-gradient trio) and `siblingDimOpacity`. While one item of a list is hovered or keyboard-focused, every
+OTHER item of that same list takes the dim values; each list dims on its own. Built by
+`plugins/sgs-blocks/includes/helpers-item-effects.php::sgs_sibling_dim_css`: one hand-built `:has()` rule wrapped with
+`sgs_hover_media_wrap()` (never `sgs_hover_guarded_rule()`, which splits its selector on every comma), plus a
+separate keyboard rule keyed on `:focus-visible` (never `:focus-within`, which a tap on an accordion
+`<summary>` would hold). Not on `sgs/nav-bar-menu`: no reference dims bar items (Bean, 2026-09-25). The colour
+row carries a `states` exemption: the row IS a pointer-driven state. A dimmed colour below 4.5:1 is a
+transient state, reported by the row's contrast warning, never clamped.
+
+### FR-41-40 — Two-copy label roll, and the trigger's hover and open words
+
+**Status: BUILT** (Wave 3C U-6, M-25; design 3d). `labelRoll` (`''` | `up` | `up-scale`) on
+`sgs/nav-bar-menu` (items and the trigger word), `sgs/nav-drawer-menu` and `sgs/icon-list`. Off emits no extra
+markup; on, the label gains an `aria-hidden` copy and rolls to it on hover or keyboard focus, inside an
+`overflow:clip` inline grid, with no transform under reduced motion. One timing pair per block,
+`itemMotionDuration` and `itemMotionEasing` (+`Custom`), times every item effect. The trigger adds
+`triggerHoverLabel` and `triggerOpenLabel` (Spec 36 FR-36-27's swap-label): the copies bind `aria-hidden` to
+`state.isOpen`, so the button's accessible name is the visible word (WCAG 2.5.3), and open beats hover.
+
+### FR-41-41 — Drawer row extras: ornament, expander glyph, per-item media
+
+**Status: BUILT** (Wave 3C U-7, M-22 and M-15; design 3e and 3f). `sgs/nav-drawer-menu` only (no reference
+draws them on the bar). `itemOrnament` per tier (`none` | `index` | `icon`): a decorative two-digit counter
+(`content: counter() / ""`) or `itemOrnamentIcon`, with an optional crossfading `itemOrnamentIconHover`,
+`itemOrnamentSize` per tier, `itemOrnamentColour` (+`Hover`) and `itemOrnamentGap`; the colour row carries a
+`gradient` exemption (one span holds a counter or an SVG glyph, and no single gradient paints both).
+`itemExpanderIcon` and `itemExpanderRotate` replace the hardcoded chevron and its 180 degree turn.
+`itemMedia: featured-image` shows each linked page's own featured image beside its label (custom links show
+none; a GIF or WebP is served at `full` so it keeps animating), revealed per tier by `itemMediaReveal`
+(`none` | `always` | `hover`, growing from width 0 on hover or keyboard focus) and sized by
+`itemMediaWidth`/`itemMediaHeight` per tier and `itemMediaRadius`. The image is decorative (`alt=""`).
 
 ### FR-41-32 — Cursor-reactive field: eligible, deliberately NOT offered, revisit after the design gate
 

@@ -199,8 +199,8 @@ visually. `none` means neither.
 | 4 | U-5 — **DONE** | Entry and exit animation vocabulary and item stagger. The mega fork has no entry-animation attribute today, so the animation must reach the mega interactivity context | M-31, M-32 | eye | high | `nav-drawer/{style.css,render.php,block.json}`, `mega-panel/block.json`, `nav-menu-markup.php`, `src/shared/nav-interactivity/` |
 | 5 | U-2 — **DONE** | Surface scrim, colour, alpha and blur per tier. The drawer hardcodes `rgba(0, 0, 0, 0.55)` twice in `style.css`; the panel fork has no scrim element at all, so U-2 adds one | M-14 (covered) | design | medium | `mega-panel/{render.php,block.json}`, `nav-drawer/{style.css,render.php,block.json}`, `src/shared/nav-interactivity/store.js` |
 | 6 | U-3 — **DONE** (paired with U-8) | Drawer side anchor, container inset, pitch tier object. No drawer clamp (section 1b) | M-17, M-46 | none | medium | `nav-drawer/{render.php,block.json}`, `nav-drawer-menu/block.json` |
-| 7 | U-6 | Item hover parity: opacity and padding-shift hover (M-21, delivered by U-1 — see its row), row separators (M-30), sibling dim (M-24, a list-scoped rule), two-copy label roll (M-25, a second label in the markup, needed on the bar, the drawer, the trigger and the footer). M-24 and M-25 need new markup, so they come last | M-30, M-24, M-25 | eye | high | `nav-bar-menu/{block.json,style.css}`, `nav-drawer-menu/{block.json,style.css}`, `nav-menu-markup.php`, `nav-menu-submenu-css.php` |
-| 8 | U-7 | Per-item ornament (M-22) and per-item media slot (M-15) | M-22, M-15 | none | medium | `nav-menu-markup.php`, `nav-drawer-menu/block.json`, `mega-group/`, `nav-menu-submenu-css.php` |
+| 7 | U-6 — **DONE** (paired with U-7) | Item hover parity: opacity and padding-shift hover (M-21, delivered by U-1 — see its row), row separators (M-30), sibling dim (M-24, a list-scoped rule), two-copy label roll (M-25, a second label in the markup, needed on the bar, the drawer, the trigger and the footer). M-24 and M-25 need new markup, so they come last | M-30, M-24, M-25 | eye | high | `nav-bar-menu/{block.json,style.css}`, `nav-drawer-menu/{block.json,style.css}`, `nav-menu-markup.php`, `nav-menu-submenu-css.php` |
+| 8 | U-7 — **DONE** (paired with U-6) | Per-item ornament (M-22) and per-item media slot (M-15) | M-22, M-15 | none | medium | `nav-menu-markup.php`, `nav-drawer-menu/block.json`, `mega-group/`, `nav-menu-submenu-css.php` |
 | 9 | U-10 | Role migration: move a non-menu header block into the drawer per tier. Crosses the Spec 37 boundary. First design question (Bean, 2026-09-25): the composition route, a copy of the block in the drawer body plus the header copy hidden at that tier with the existing device-visibility extension (`includes/device-visibility.php`, `sgsHideOnMobile/Tablet/Desktop`); Bean calls it the right use of those settings. Eye Care does this today with Additional CSS, which that route replaces. Blocks reading Site Info carry no duplicate data | M-19 | design | medium | `site-header-row/block.json`, `nav-drawer/render.php`, `nav-menu-markup.php` |
 | 10 | U-4 | Type scaling mode: a formula unit, per-tier line-height; includes `business-info` for the footer half | M-45 | none | medium | `nav-bar-menu/block.json`, `nav-drawer-menu/block.json`, `nav-menu-submenu-css.php`, `business-info/block.json` |
 | 11 | U-8 — **DONE** (paired with U-3) | Panel geometry: anchor enum and mega top offset (M-16). "Panel follows the pill" is a covered value of M-16, already built. Then Away's callout row (M-20), the aside or callout column count, which comes last on one reference | M-16, M-20 | none | medium | `nav-menu-submenu-css.php`, `mega-panel/{block.json,render.php}`, `mega-aside/render.php` |
@@ -297,6 +297,33 @@ to its content when it was itself a grid or flex item, because the wrapper's cen
 box; centring is now per tier, only where the width is a real cap. Batched for
 the later pass: axe with the new drawers open, the editor round-trip of the four new controls, Bean's eye on the three
 patterns once they have imagery.
+
+**U-6 + U-7 — done, as one pair** (design `.claude/reports/2026-09-25-u6-u7-design.md`, two-model council GO WITH
+FIXES, Bean sign-off; commits 3aae1950c, 777ee5dd4; live `reports/visual-diff/nav-drawer-2026-09-25.md` section
+"U-6 + U-7"). A mega item in the drawer renders its own panel post inside its accordion (`megaDrawerMode`, Spec 36
+FR-36-6), with no JS and no floating shell; both menu forks render panels through one helper. Sibling dim
+(drawer menu, icon-list; not on the bar, Bean), the two-copy label roll (bar items, drawer items, icon-list and the
+trigger word with `triggerHoverLabel`/`triggerOpenLabel`, the accessible name following the visible word), the
+drawer row ornament (a per-tier index counter or icon, an expander glyph and its open turn) and per-item media (the
+linked page's featured image, GIF/WebP full size) are new settings (Spec 41 FR-41-39 to FR-41-41); icon-list numbered
+lists gain a number format. Row separators needed no new setting. Exit cells measured live: halcyon's separator,
+wearecollins' dim, lusion's roll and MENU to CLOSE, dogstudio's index at desktop only, a 45 degree expander turn,
+studionamma's 160 x 112 hover thumbnail, and a mega panel inside the drawer at mobile. M-30, M-24, M-25, M-22 and
+M-15 move to `covered`. Correction to U-3 + U-8's row 14: indus-foods' "More" is a compact-links panel (its rows carry
+descriptions and numbers). Residue and follow-ups, named: studionamma's up-scale origin (never captured); the hovered
+item's faster return in wearecollins (one duration both ways); resn's canvas dissolve (DEC-01); buck's per-link
+glyphs if they differ (Wave 4 buck clone); studionamma's DARK MODE roll (U-12) and its button's hover word (Wave 4
+studionamma clone); wearecollins' social-link dim (Wave 4 wearecollins clone). Owed, lane A, first: wearecollins'
+two-bar burger (M-27 residue from U-9 + U-11, assigned to this pair's trigger markup and missed by its design; the
+burger's bar count is fixed at three: a two-bar option with its X morph). Then: the numbered
+compact-links starter pattern (`sgs/mega-compact-links-numbered`, authored in the real editor) with a live check of
+icon-list numbers; away's 375 two-up tile scroller, checked on a post built from `sgs/mega-links-with-tiles`; a
+per-page menu VIDEO source (Bean: the thumbnails are often short clips; a featured image can only be an image, so
+GIFs work today); `sgs/nav-bar-menu` link padding as a setting (8px 12px is hardcoded; handed over by the Eye Care
+session, recorded in its plan `2026-09-24-eye-care-hand-build-design.md` close-out part 2 item 6). Batched for the
+later pass: axe with the drawer open, keyboard dim, reduced-motion emulation, the editor round-trip of the new
+controls. Fixture `scripts/nav-qa/qa-item-markup-fixture.php` is applied on sandybrown (`restore` undoes it,
+including the added menu-119 page link and page 2742's featured image).
 
 Sizes are `families-master.json::units[].size` at full scope. Convert per
 `~/.claude/rules/time-estimates.md`: medium 30 to 60 minutes, high 1 to 2 hours, the whole

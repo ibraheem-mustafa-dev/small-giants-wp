@@ -37,3 +37,27 @@ blocks: nav-drawer, nav-bar-menu, nav-drawer-menu (nav-bar-menu and nav-drawer-m
 
 ## Batched for the later pass (Bean: no heavy testing per edit)
 `axe-run.mjs` with the side and container drawers open; the editor round-trip of the Panel position select, Gap above the panel, Item gap (per device) and Mega panels open from; Bean's eye on the three starter patterns once they have imagery.
+
+## U-6 + U-7 (new item markup), 2026-09-25
+
+verdict: PASS
+commit_sha: 3aae1950c (feat(nav): new item markup); gate fixes 777ee5dd4 (Row extras labels, dead-API allowlist)
+design: `.claude/reports/2026-09-25-u6-u7-design.md`
+blocks: nav-drawer-menu, nav-bar-menu, mega-panel, icon-list
+
+**Method.** Deployed with `build-deploy.py --target sandybrown --blocks-only` from an isolated worktree (checksums of `includes/helpers-item-effects.php` and `includes/nav-drawer-menu-items.php` match local). `qa-geometry-fixture.php restore`, then `plugins/sgs-blocks/scripts/nav-qa/qa-item-markup-fixture.php exit-cells` on test header 3777 and drawer 3778: the drawer menu points at menu 119 (`qa-hdr-nav`, holding the mega item "Brands", panel post 1745), plus one added page link (the homepage, page 2742, given featured image 3459 for the media cell; both tagged and undone by `restore`). Page `/qa-scrim/`, one headed Chrome window (chrome-devtools), real clicks and real pointer hover, `getComputedStyle`, `getBoundingClientRect`. Page widths from `documentElement.clientWidth`: 1439, 815 (tablet tier), 441 (mobile tier; the smallest this window reaches).
+
+| # | Family | Exit cell | Measured | Result |
+|---|---|---|---|---|
+| 1 | M-30 | halcyon drawer: row separator 1px solid #16140a at 0.1 | existing bottom `itemBorderWidth` edge: border-bottom 1px (reported 0.909 at the page's 1.1 zoom), solid, `rgba(22, 20, 10, 0.1)`, top 0. A line also paints under the last row, as the design recorded | PASS |
+| 2 | M-24 | wearecollins drawer: siblings drop to #4c4c4c while the hovered item keeps its colour, 0.7s on cubic-bezier(0.215,0.61,0.355,1) | hover on "Home page": the other four rows `rgb(76, 76, 76)`, the hovered row keeps its own hover colour `rgb(230, 138, 149)`; transition `0.7s cubic-bezier(0.215, 0.61, 0.355, 1)` | PASS |
+| 3 | M-25 | lusion drawer: the text rolls up to a copy | hovered row: copy a `translateY(-100%)` (the two-line box, 52.8 = 2 x 26.4, wraps identically in both copies), copy b in place; each link's accessible name is read once ("Home", not "Home Home") | PASS |
+| 4 | M-25 | lusion / studionamma trigger: MENU rolls to CLOSE while open | closed: button named "MENU"; open: named "CLOSE", `aria-expanded="true"`, copy a `aria-hidden="true"` and translated out, copy c `aria-hidden="false"` in place (WCAG 2.5.3) | PASS |
+| 5 | M-22 | dogstudio drawer: two-digit index 01-05 at 1440 only | 1439: ornament shown, `::before` content `counter(sgs-ndm-item, decimal-leading-zero) / ""` at 12px on every row; 815 and 755: `display: none` | PASS |
+| 6 | M-22 | lamalama / halcyon expander glyph turning when open | `itemExpanderRotate` 45: the open caret reads `matrix(0.707107, 0.707107, -0.707107, 0.707107, 0, 0)` | PASS |
+| 7 | M-15, M-22 | studionamma drawer: the hovered link grows an inline thumbnail, width 0 to 160, height 112; others unchanged | at rest width 0; on hover 160 x 112, `cookies-stacked-5.jpeg` (the linked page's featured image); custom links render no media; 815 and 441: `display: none` | PASS |
+| 8 | route 1 (Spec 36 FR-36-6) | away drawer: the mega item's panel inside its accordion | 441: "Brands" opens `ul.sgs-nav-drawer-menu__submenu > li.__mega-body > .wp-block-sgs-mega-panel.sgs-mega-panel--in-drawer`; its two link groups, the image aside and "View all Brands" are in the dialog; panel background transparent, no box-shadow, 0 radius, 0 border, no max-width, 0 padding, `container-type: inline-size` kept, content stacked in one column; no horizontal overflow; no duplicate `id` on the page. Screenshot `reports/visual-diff/u6-u7-drawer-mega-375.png` (local only; screenshots are gitignored) | PASS |
+
+**Negative controls.** Each probe's pre-change value: `run-u6-u7-item-markup-standalone.php` runs the pre-change `nav-menu-markup.php` from acad7d5e0 and proves a mega item was a plain link with no ornament; live, the 815/441 tiers are the controls for rows 5 and 7 (the same page, the ornament and media absent), and the resting state is the control for rows 2, 3 and 7 (no dim, no translate, width 0).
+
+**Not measured, named.** The icon-list number format (row 18 of the design) has no numbered list on this fixture; it is covered by the build's editor-parity gate and a render test is owed with the numbered compact-links pattern (Wave 3C plan, U-7 row). Away's 375 tile row (a two-up horizontal scroller) needs a mega post authored with `sgs/mega-links-with-tiles`; panel post 1745 is a columns preset. Batched for the later pass (Bean: no heavy testing per edit): axe with the drawer open, keyboard `:focus-visible` dim, reduced-motion emulation, the editor round-trip of the new controls.

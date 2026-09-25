@@ -130,7 +130,7 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
 - W3B-4 evidence: `reports/reference-requirements/FAMILIES-MASTER.md` (46 families, 11 covered, 21 partial, 8 gap, 6 conflict), `families-master.json`, and the independent review `FAMILIES-REVIEW.md` (23 findings, applied); 33 coverage checks re-run against the code.
 
 ## Wave 3C — Header and nav architecture harmonised
-- STATUS: under way (`plans/2026-09-21-wave-3c-implementation-plan.md`); U-1, U-2, the U-9+U-11 pair, U-5 and the U-3+U-8 pair closed; lane A's next pair is U-6+U-7. U-16 waits on step 0d.
+- STATUS: under way (`plans/2026-09-21-wave-3c-implementation-plan.md`); U-1, U-2, the U-9+U-11 pair, U-5, the U-3+U-8 pair and the U-6+U-7 pair closed; lane A's next is the two-bar burger, then U-4. U-16 waits on step 0d.
 
 **U-1 exit criteria (closed):**
 - Mega close-grace reads `submenuCloseGrace` (the bug where the mega context passed a literal 170
@@ -182,7 +182,7 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
   x-rotate morph at 0.6s quart-out; close-on-scroll at 24px (7px stays open, 37px closes, a programmatic scroll does not);
   the resize rule (720 stays open, 1100 closes, focus on a live header control); `accordionExclusive` drops the
   `<details name>`; the item magnet at 0.16 (12.76px against 12.8).
-- Residue: two-bar burger (U-6); icon swaps and indus-foods' 38px × recorded as divergences; hotkey and history-back
+- Residue: two-bar burger (owed, lane A, after U-6 + U-7); icon swaps and indus-foods' 38px × recorded as divergences; hotkey and history-back
   outside the wave. Owed: axe with the drawer open, the editor round-trip of the new controls, Bean's eye on the two
   screenshots.
 
@@ -206,8 +206,20 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
   with the side and container drawers open, the editor round-trip of the four new controls, Bean's eye on the three
   starter patterns once they have imagery.
 
-**Next (lane A): U-6 + U-7**, new item markup (hover parity, separators, sibling dim, label roll; per-item ornament
-and media, which first checks the mega-panel-in-drawer route); design-gated.
+**U-6 + U-7 exit criteria (closed; commits 3aae1950c, 777ee5dd4):**
+- M-30, M-24, M-25, M-22 and M-15 covered. Measured live on sandybrown (`reports/visual-diff/nav-drawer-2026-09-25.md`
+  section "U-6 + U-7"): halcyon's row separator (existing bottom `itemBorderWidth`, rgba(22,20,10,0.1)); wearecollins'
+  sibling dim (rgb(76,76,76), 0.7s on its curve); lusion's label roll and the trigger's MENU to CLOSE with the
+  accessible name following the visible word; dogstudio's index at desktop only; a 45 degree expander turn;
+  studionamma's 160 x 112 hover thumbnail from the linked page's featured image; a mega panel inside the drawer
+  accordion at mobile with no floating shell.
+- Residue: studionamma's up-scale origin, wearecollins' hovered-item return time, resn's canvas dissolve (DEC-01),
+  buck's per-link glyphs (Wave 4). Owed, lane A: wearecollins' two-bar burger (above; missed by this pair's design),
+  the numbered compact-links pattern and a live icon-list numbers check, away's 375 tile scroller, a per-page menu
+  video source, the bar's link padding setting. Batched: axe with the drawer open, keyboard dim, reduced motion, the
+  editor round-trip.
+
+**Next (lane A):** the two-bar burger, then U-4 (type scaling); design-gated.
 
 Gate 3C passes when (the one definition; the same words are in the implementation plan §7 and the
 strategic plan's Gate 3C entry):

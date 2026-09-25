@@ -135,7 +135,7 @@ FR-36-24). Neither instance reads the other's state.
 |---|---|---|
 | `sgs/nav-bar-menu` | block (dynamic), `"ancestor": ["sgs/site-header-row"]` | The menu on a header row: a horizontal **bar** with dropdown/mega triggers (desktop); **below its collapse point it renders a burger that opens the drawer** (FR-36-8) — NOT an inline list. Split layout (`splitAfterItemId` / `splitSide` / `showBurger`), a menu-item-description badge (e.g. "SOON"), and the menu-button presentation (`triggerMode` / `triggerIcon` / `triggerLabel`, FR-36-27) are built. Block-private root (no `SGS_Container_Wrapper`) — see FR-36-13. May ship pre-set flavours via `registerBlockVariation`. |
 | `sgs/nav-drawer-menu` | block (dynamic), `"ancestor": ["sgs/nav-drawer"]` | The menu inside a drawer: a vertical **accordion/drill-down list**, chosen via the `submenuModel` context published by `sgs/nav-drawer`. Structurally cannot be inserted anywhere else (editor-enforced by its `ancestor` constraint). Two-tier lists (`listColumns`, `splitAfterItemId` / `splitSide`) are built. |
-| `sgs_mega_menu` | **CPT** (block-based, container-like) | A rich mega panel = a per-client editable, block-based post (`sgs/mega-panel` with `sgs/mega-group` / `sgs/mega-aside` columns and any SGS blocks), edited in its own findable admin screen. **Attached to a menu item the normal WP way** (add it to the menu in Appearance → Menus like a page — FR-36-5). Rendered at the item's real position; inside the drawer a mega item is a plain link by default (FR-36-6). KIND = section/layout (keeps `SGS_Container_Wrapper`). |
+| `sgs_mega_menu` | **CPT** (block-based, container-like) | A rich mega panel = a per-client editable, block-based post (`sgs/mega-panel` with `sgs/mega-group` / `sgs/mega-aside` columns and any SGS blocks), edited in its own findable admin screen. **Attached to a menu item the normal WP way** (add it to the menu in Appearance → Menus like a page — FR-36-5). Rendered at the item's real position; inside the drawer the same panel renders in the item's accordion by default (FR-36-6). KIND = section/layout (keeps `SGS_Container_Wrapper`). |
 | `sgs_drawer` | **CPT** ("Menu drawer"), revisions, template-locked | The off-canvas panel a burger opens, edited on its own screen. Registered in `plugins/sgs-blocks/includes/class-sgs-block-cpts.php`; Active model in `plugins/sgs-blocks/includes/class-sgs-active-layout.php` (`Sgs_Active_Layout::AREA_DRAWER`); printed on `wp_footer` by `plugins/sgs-blocks/includes/class-sgs-drawer-render.php`. Owned by Spec 37 FR-37-43; drawer BEHAVIOUR is FR-36-6. |
 | `sgs/nav-drawer` | block (dynamic) | The off-canvas **container** the burger opens — the content of an `sgs_drawer` post. A fixed × close (chrome) above ONE InnerBlocks body seeded with `sgs/nav-drawer-menu`. A native `<dialog>` (default `showModal()`, top-layer → survives a transformed header ancestor; `.show()` opt-in). No child blocks; no header-row import (FR-36-6). |
 | Shared nav plumbing | `viewScriptModule` + a `@wordpress/interactivity` `store('sgs/nav')` (PUBLIC API — the established SGS pattern; NOT a block, NOT core-nav internals) | One open/close/focus/`inert`/intent-timing utility for the disclosure (dropdown + mega) + dialog (drawer) surfaces. Framework-reusable. |
@@ -303,8 +303,8 @@ DISCLOSURE semantics, never `role="menu"` (FR-36-10), and are block-based CPT po
 - **Whole-card link:** a mega panel's featured cards may use a whole-card clickable-link overlay (the Spec 35A
   Part I gap) — budget it in the layout spec.
 - **Real-position render:** renders at the menu item's real position, never last.
-- **Mobile:** inside the drawer a mega item is a plain link by default; the full panel rendered inline
-  (accordion or drill-down sub-panel) is NOT BUILT — see FR-36-6 "Submenu".
+- **Mobile:** inside the drawer the same panel renders in the item's accordion (or drill-down sub-panel)
+  by default, with no floating shell — see FR-36-6 "Mega items in the drawer".
 - Panel content = SGS blocks only (no banned core blocks); scoped `<style>` (FR-36-13); links AND rich
   content crawlable server-rendered, **no lazy-load** (FR-36-17).
 - **Surface (M-13).** `sgs/mega-panel` carries the same surface-ground trio as the header and the drawer —
@@ -442,13 +442,23 @@ label read from a `data-sgs-nav-back-label` attribute render.php has already tra
 module carries no hardcoded English), and returns focus to the `<summary>` on Back. With NO JS,
 `drill-down`'s fallback IS the accordion.
 
-**Mega items in the drawer.** A mega-menu item inside the drawer is a plain link by default (its own URL,
-else `#`). **Built opt-in:** `sgs/nav-drawer-menu` `megaDrawerFallbackIds` lists items authored as a
-`core/navigation-submenu` with real nested child links, which then render as an ordinary nested
-accordion/submenu list in the drawer; a mega item with no nested children still degrades to a plain link.
-**NOT BUILT:** the full mega CPT panel rendered inline in the drawer (FR-36-5's "the same panel renders
-inside the drawer"); the desktop hover-disclosure markup the bar uses for a mega trigger has no touch
-equivalent and needs its own JS-driven build.
+**Mega items in the drawer.** `sgs/nav-drawer-menu` `megaDrawerMode` (`panel` default | `link`). Under
+`panel` a mega item renders its own mega panel post inside its accordion row: the panel is server-rendered
+block content, so no JS is needed; the body is `ul.sgs-nav-drawer-menu__submenu > li.sgs-nav-drawer-menu__mega-body`,
+which `nav-drilldown.js` already handles. Both menu forks render a panel through one helper,
+`plugins/sgs-blocks/includes/helpers-mega-render.php::sgs_mega_render_item_panel`; the render context (`''` or `drawer`) rides a
+push/pop stack read by `sgs_mega_render_context()`, and in the drawer `sgs/mega-panel` hashes its own class
+and draws no floating shell (fill, border, radius, shadow, backdrop, width cap, padding, the `cards` hover
+glow, the tone class) while keeping `container-type` for its narrow stack; its text follows the drawer. The
+drawer's `sublinkMarkerColour` also colours an embedded panel's list markers (`--sgs-list-marker-colour`).
+`link` (or a panel that resolves to nothing) gives a plain link. `megaDrawerFallbackIds` takes precedence
+for an item authored as a `core/navigation-submenu` with real nested child links: those render as an
+ordinary accordion instead. A panel holding a form should stay `link` (a panel renders twice on a page, so
+any fixed `id` inside it would repeat).
+**Authoring rule for mega panel posts.** A panel rooted in an `sgs/container` (the starter patterns) is not
+touched by the drawer context, so its paint (padding, width cap, fill) is set on the desktop tier only,
+never an explicit text colour, with columns set per tier including mobile. Then the same post reads as a
+floating panel on the bar and as flat content in the drawer.
 
 **Dialog a11y:** focus INTO on open (the first VISIBLE focusable, `plugins/sgs-blocks/src/shared/nav-interactivity/store.js::getFocusable`); Tab contained;
 Escape closes; focus returns to the burger if it is live, else to the first live focusable in the header
@@ -701,10 +711,13 @@ default 200) and `burgerMorphEasing` (named curves from the theme easing tokens 
 takes `itemMagnetStrength` (the pull factor; unset keeps the built-in 0.15 capped at 8px). The burger button
 carries `data-sgs-nav-collapse` (its `collapsePoint`) for FR-36-6's resize rule.
 
+**Swap-label, built (Wave 3C U-6):** `triggerOpenLabel` (the word while the drawer is open, '' none) and
+`triggerHoverLabel` (the word on hover), animated by `labelRoll` (`up` | `up-scale`) and the shared
+`itemMotionDuration`/`itemMotionEasing`. The copies bind `aria-hidden` to `state.isOpen`, so the button's
+accessible name is the visible word (WCAG 2.5.3); open wins over hover.
 **NOT BUILT:** the original shape's `triggerStyle` (`burger` | `word` | `word-burger` | `symbol`),
-`triggerSymbol`, `triggerOpenStyle` (`morph-x` | `swap-label` | `unchanged`), `triggerOpenLabel` (default
-"Close"), and the cross-block open-state sync in `store('sgs/nav')` that would drive them (true cross-block
-morph = store state-wiring, NOT a GSAP effect). The drawer's own `closeStyle` stays on the drawer: trigger =
+`triggerSymbol`, and a separate `triggerOpenStyle` switch (the `morph-x` pose is `burgerMorph`, `swap-label`
+is setting `triggerOpenLabel`). The drawer's own `closeStyle` stays on the drawer: trigger =
 the bar's, close chrome = the Menu drawer's.
 **Done when:** the NOT BUILT attrs render + round-trip in the editor, the open-state morph/swap is
 live-verified with focus-return intact, and each attr appears in the Spec 35 manifest.
