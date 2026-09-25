@@ -1,8 +1,8 @@
 {
   "_meta": {
-    "generated_from": "..\\..\\..\\..\\..\\.claude\\skills\\sgs-wp-engine\\sgs-framework.db",
+    "generated_from": "..\\..\\..\\..\\..\\Users\\Bean\\.claude\\skills\\sgs-wp-engine\\sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 8372,
+    "row_count": 8374,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -1263,6 +1263,7 @@
     "sgs/buybox::showLadder": "boolean-visibility",
     "sgs/buybox::showStockStatus": "boolean-visibility",
     "sgs/buybox::soldOutLabel": "text-content",
+    "sgs/buybox::stackBelow": "enum-mode",
     "sgs/buybox::stickyEnabled": "boolean-visibility",
     "sgs/buybox::stickyOffset": "technical",
     "sgs/buybox::stockInStockColour": "color",
@@ -7042,6 +7043,7 @@
     "sgs/tabs::justifyItems": "layout",
     "sgs/tabs::layout": "layout",
     "sgs/tabs::maxWidth": "layout",
+    "sgs/tabs::mobileLayout": "layout",
     "sgs/tabs::orientation": "enum-mode",
     "sgs/tabs::panelBgColour": "color",
     "sgs/tabs::panelBgColourGradient": "colour-gradient",
