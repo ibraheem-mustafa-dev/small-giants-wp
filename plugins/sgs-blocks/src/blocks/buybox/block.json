@@ -290,6 +290,15 @@
 			"default": "",
 			"description": "Extra CSS length (e.g. \"12px\", \"1rem\") between the sticky column and the sticky header, on top of the header's own live height. Empty = flush against the header."
 		},
+		"stackBelow": {
+			"type": "string",
+			"default": "mobile",
+			"enum": [
+				"mobile",
+				"tablet"
+			],
+			"description": "Where the gallery and configurator sit side by side: 'mobile' = from 768px up (stacked on phones), 'tablet' = from 1024px up (stacked on phones and tablets)."
+		},
 		"rrpMetaKey": {
 			"type": "string",
 			"default": "",

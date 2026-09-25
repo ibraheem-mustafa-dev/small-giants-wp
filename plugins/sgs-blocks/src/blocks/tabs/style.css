@@ -361,13 +361,13 @@
    restructuring the DOM into true accordion semantics.
    ───────────────────────────────────────────────────────────────────────────── */
 @media ( max-width: 767px ) {
-	.sgs-tabs--horizontal .sgs-tabs__nav {
+	.sgs-tabs--horizontal:not(.sgs-tabs--mobile-row) .sgs-tabs__nav {
 		flex-direction: column;
 		gap: 0.25rem;
 		border-bottom: none;
 	}
 
-	.sgs-tabs--horizontal .sgs-tabs__tab {
+	.sgs-tabs--horizontal:not(.sgs-tabs--mobile-row) .sgs-tabs__tab {
 		display: block;
 		width: 100%;
 		text-align: left;
@@ -381,7 +381,7 @@
 		position: relative;
 	}
 
-	.sgs-tabs--horizontal .sgs-tabs__tab[aria-selected="true"] {
+	.sgs-tabs--horizontal:not(.sgs-tabs--mobile-row) .sgs-tabs__tab[aria-selected="true"] {
 		background-color: var( --wp--preset--color--surface-alt, #f5f7f7 );
 		border-color: var( --wp--preset--color--primary, currentColor );
 		color: var( --wp--preset--color--primary, currentColor );
@@ -392,14 +392,19 @@
 	}
 
 	/* Hide the underline indicator at mobile — full-button styling carries the active state */
-	.sgs-tabs--horizontal.sgs-tabs--style-underline .sgs-tabs__nav::after {
+	.sgs-tabs--horizontal:not(.sgs-tabs--mobile-row).sgs-tabs--style-underline .sgs-tabs__nav::after {
 		display: none;
 	}
 
-	.sgs-tabs--horizontal .sgs-tabs__panel {
+	.sgs-tabs--horizontal:not(.sgs-tabs--mobile-row) .sgs-tabs__panel {
 		margin-top: 0.75rem;
 		padding: 1rem;
 		border: 1px solid var( --sgs-panel-border, #e5e7eb );
 		border-radius: var( --wp--custom--border-radius--small, 4px );
 	}
+}
+
+/* mobileLayout 'row': the tab row stays a row on phones, wrapping when it has to. */
+.sgs-tabs--horizontal.sgs-tabs--mobile-row .sgs-tabs__nav {
+	flex-wrap: wrap;
 }

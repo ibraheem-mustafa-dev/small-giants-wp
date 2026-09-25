@@ -579,6 +579,9 @@
    ================================================================ */
 
 .sgs-option-picker--tile .sgs-option-picker__options {
+	/* Tiles fill the row: as many columns as fit at the tile size, sharing the spare width. */
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(var(--sgs-option-picker-tile-width, 88px), 1fr));
 	align-items: stretch;
 	/* Operator-configurable via the "Tile gap" control (tileGap attribute,
 	   render.php §6) — the custom property is emitted per-instance only when
@@ -609,9 +612,10 @@
 /* Tile size — reuses the EXISTING pillSize control (small/medium/large)
    rather than adding a new "tile size" setting; medium matches the
    draft's 88px minmax(). */
-.sgs-option-picker--tile.sgs-option-picker--small .sgs-option-picker__pill  { width: 72px; }
-.sgs-option-picker--tile.sgs-option-picker--medium .sgs-option-picker__pill { width: 88px; }
-.sgs-option-picker--tile.sgs-option-picker--large .sgs-option-picker__pill  { width: 112px; }
+.sgs-option-picker--tile.sgs-option-picker--small  { --sgs-option-picker-tile-width: 72px; }
+.sgs-option-picker--tile.sgs-option-picker--medium { --sgs-option-picker-tile-width: 88px; }
+.sgs-option-picker--tile.sgs-option-picker--large  { --sgs-option-picker-tile-width: 112px; }
+.sgs-option-picker--tile .sgs-option-picker__pill { width: 100%; }
 
 .sgs-option-picker--tile .sgs-option-picker__option:hover .sgs-option-picker__pill,
 .sgs-option-picker--tile .sgs-option-picker__option:focus-within .sgs-option-picker__pill {

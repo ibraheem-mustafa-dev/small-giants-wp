@@ -587,6 +587,9 @@ $buybox_wrapper_classes = 'sgs-buybox ' . $uid;
 if ( $buybox_sticky['enabled'] ) {
 	$buybox_wrapper_classes .= ' sgs-buybox--sticky-config';
 }
+if ( 'tablet' === ( $attributes['stackBelow'] ?? 'mobile' ) ) {
+	$buybox_wrapper_classes .= ' sgs-buybox--stack-tablet';
+}
 
 // Wrapper attributes — includes Interactivity API bindings. uid CLASS added
 // (no 'style' key — the root carries ZERO inline property declarations;

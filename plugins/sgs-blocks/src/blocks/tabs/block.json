@@ -265,6 +265,15 @@
 			"default": true,
 			"description": "Hide a tab whose content renders empty (no text or media), together with its button."
 		},
+		"mobileLayout": {
+			"type": "string",
+			"default": "stack",
+			"enum": [
+				"stack",
+				"row"
+			],
+			"description": "Horizontal tabs below 768px: 'stack' turns the tab row into full-width stacked buttons; 'row' keeps the tab row (wrapping if needed), as on larger screens."
+		},
 		"contentWidth": {
 			"type": "object",
 			"default": {}

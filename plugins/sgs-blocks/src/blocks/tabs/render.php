@@ -154,6 +154,9 @@ $extra_classes = array(
 	'sgs-tabs--align-' . esc_attr( $tab_align ),
 	$tabs_uid,
 );
+if ( 'row' === ( $attributes['mobileLayout'] ?? 'stack' ) ) {
+	$extra_classes[] = 'sgs-tabs--mobile-row';
+}
 
 // Skip-serialised `color` support stops WP auto-adding the standard
 // has-*-color / has-*-background-color classes onto the wrapper — re-add them

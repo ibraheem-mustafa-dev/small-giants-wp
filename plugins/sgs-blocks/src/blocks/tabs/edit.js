@@ -72,6 +72,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		panelBorderColourGradient,
 		transitionDuration,
 		hideEmptyTabs,
+		mobileLayout,
 	} = attributes;
 
 	const [ activeEditorTab, setActiveEditorTab ] = useState( 0 );
@@ -104,7 +105,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		`sgs-tabs--${ orientation }`,
 		`sgs-tabs--style-${ tabStyle }`,
 		`sgs-tabs--align-${ tabAlignment }`,
-	].join( ' ' );
+		mobileLayout === 'row' ? 'sgs-tabs--mobile-row' : '',
+	]
+		.filter( Boolean )
+		.join( ' ' );
 
 	const cssVars = {};
 	if ( tabTextColour ) {
@@ -419,6 +423,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							setAttributes( { hideEmptyTabs: val } )
 						}
 						__nextHasNoMarginBottom
+					/>
+					<SelectControl
+						label={ __( 'On phones', 'sgs-blocks' ) }
+						help={ __( 'Below 768px: stack the tabs as full-width buttons, or keep them as a row.', 'sgs-blocks' ) }
+						value={ mobileLayout || 'stack' }
+						options={ [
+							{ label: __( 'Stacked buttons', 'sgs-blocks' ), value: 'stack' },
+							{ label: __( 'Keep the tab row', 'sgs-blocks' ), value: 'row' },
+						] }
+						onChange={ ( val ) => setAttributes( { mobileLayout: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 

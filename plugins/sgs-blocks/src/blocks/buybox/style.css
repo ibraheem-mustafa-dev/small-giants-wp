@@ -795,14 +795,16 @@
 	gap: var(--sgs-buybox-gap, 12px);
 }
 
-/* Sticky column (FR-Wave-B, stickyEnabled attribute): position/top are
-   emitted per-instance in the block's own scoped <style> (render.php ->
-   extras.php::sgs_buybox_extras_scoped_css()) since the offset is an
-   operator-set number, not a fixed value — this rule only bounds the
-   sticky element so it never grows taller than the viewport it's stuck in. */
-.sgs-buybox--sticky-config .sgs-buybox__config-col {
-	max-height: 100vh;
-	overflow-y: auto;
+/* Sticky column (stickyEnabled): position/top are emitted per instance in the
+   block's scoped <style> (extras.php::sgs_buybox_extras_scoped_css()). The
+   column is never height-capped: a column taller than the screen scrolls with
+   the page instead of hiding its lower content inside its own scroll box. */
+
+/* stackBelow 'tablet': one column up to 1023px, two from 1024px. */
+@media (min-width: 768px) and (max-width: 1023px) {
+	.sgs-buybox.sgs-buybox--stack-tablet {
+		grid-template-columns: minmax(0, 1fr);
+	}
 }
 
 /* ── Optional extras slot (FR-Wave-B) ────────────────────────────────────

@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { PanelBody, ToggleControl, TextControl, RangeControl } from '@wordpress/components';
+import { PanelBody, ToggleControl, TextControl, RangeControl, SelectControl } from '@wordpress/components';
 import { fillRow, textRow, SgsLengthControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
@@ -22,6 +22,7 @@ const STICKY_OFFSET_UNITS = [
 export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 	const {
 		stickyEnabled,
+		stackBelow,
 		stickyOffset,
 		rrpMetaKey,
 		rrpSavingFormat,
@@ -35,6 +36,18 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 				title={ __( 'Sticky column', 'sgs-blocks' ) }
 				initialOpen={ false }
 			>
+				<SelectControl
+					label={ __( 'Side by side from', 'sgs-blocks' ) }
+					help={ __( 'Below this width the gallery sits above the details.', 'sgs-blocks' ) }
+					value={ stackBelow || 'mobile' }
+					options={ [
+						{ label: __( 'Tablet and up (768px)', 'sgs-blocks' ), value: 'mobile' },
+						{ label: __( 'Desktop only (1024px)', 'sgs-blocks' ), value: 'tablet' },
+					] }
+					onChange={ ( val ) => setAttributes( { stackBelow: val } ) }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
 				<ToggleControl
 					label={ __( 'Stick while scrolling', 'sgs-blocks' ) }
 					checked={ !! stickyEnabled }
