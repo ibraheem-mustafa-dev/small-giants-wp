@@ -3256,12 +3256,10 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				 * Reuses sgs_responsive_normalise_object() rather than inspecting keys
 				 * directly, so it stays correct if the tier vocabulary ever changes.
 				 *
-				 * ⚠ Deliberate residual: a token that RESOLVES to no rule (contentWidth
-				 * 'full' → '') still counts as "set" here. That emits margin-inline:auto
-				 * on a full-width band, which is inert (full width leaves no space to
-				 * share). Gating on the resolved value would mean running each tier
-				 * through its transform, which is the emitter-level coupling Bean
-				 * declined in favour of the simple fix — recorded, not overlooked.
+				 * A token that RESOLVES to no rule (contentWidth 'full' → '') still
+				 * counts as "set" here; the contentWidth centring below reads each
+				 * tier's own value, so a `full` tier emits no centring (an auto margin
+				 * with no width is NOT inert on a grid or flex item: it shrinks it).
 				 *
 				 * @param mixed $raw Stored attribute value, any shape.
 				 * @return bool
@@ -3730,8 +3728,36 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// Centring is a BAND property and follows $band_obj_sel, never $grid_sel
 				// — see the note at $band_obj_sel. On the outer it silently disabled
 				// grid-item stretch (defect 2 there).
+				//
+				// ONLY WHERE A TIER'S WIDTH IS A REAL CAP. `full` resolves to no width,
+				// and with no width there is no band, so $band_obj_sel falls back to the
+				// OUTER. An auto inline margin on an outer that is itself a grid or flex
+				// item shrinks it to its content and centres it: a nested grid set to
+				// `full` measured 123px wide, centred, one track, inside a 780px track
+				// (/qa-u8-patterns/, 2026-09-25; removing only the margin restored 780px
+				// and its columns). So a `full` tier emits no centring, and a `full` tier
+				// under a capped wider tier resets the inherited auto margin to 0.
 				if ( '' !== $band_obj_sel && $sgs_tier_object_has_value( $attributes['contentWidth'] ?? null ) ) {
-					$responsive_css .= $band_obj_sel . '{margin-inline:auto}';
+					$sgs_cw_obj    = sgs_responsive_normalise_object( $attributes['contentWidth'] );
+					$sgs_cw_capped = null;
+					foreach ( array(
+						'desktop' => null,
+						'tablet'  => SGS_Breakpoints::TABLET_MAX,
+						'mobile'  => SGS_Breakpoints::MOBILE_MAX,
+					) as $sgs_cw_tier => $sgs_cw_bp ) {
+						$sgs_cw_raw = $sgs_cw_obj[ $sgs_cw_tier ] ?? null;
+						if ( null === $sgs_cw_raw || '' === $sgs_cw_raw ) {
+							continue; // Inherits the tier above.
+						}
+						$sgs_cw_is_cap = 'full' !== $sgs_cw_raw;
+						if ( $sgs_cw_is_cap === $sgs_cw_capped || ( null === $sgs_cw_capped && ! $sgs_cw_is_cap ) ) {
+							$sgs_cw_capped = $sgs_cw_is_cap;
+							continue; // No change from the tier above (or an uncapped base).
+						}
+						$sgs_cw_rule    = $band_obj_sel . '{margin-inline:' . ( $sgs_cw_is_cap ? 'auto' : '0' ) . '}';
+						$responsive_css .= null === $sgs_cw_bp ? $sgs_cw_rule : '@media (max-width:' . $sgs_cw_bp . 'px){' . $sgs_cw_rule . '}';
+						$sgs_cw_capped   = $sgs_cw_is_cap;
+					}
 				}
 
 				// OUTER shadow — tier-capable (Spec 35 Phase 1.4b, STAGE 2). VERIFIED
