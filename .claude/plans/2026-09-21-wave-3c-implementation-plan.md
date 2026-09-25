@@ -320,7 +320,7 @@ compact-links starter pattern (`sgs/mega-compact-links-numbered`, authored in th
 icon-list numbers; away's 375 two-up tile scroller, checked on a post built from `sgs/mega-links-with-tiles`; a
 per-page menu VIDEO source (Bean: the thumbnails are often short clips; a featured image can only be an image, so
 GIFs work today); `sgs/nav-bar-menu` link padding as a setting (8px 12px is hardcoded; handed over by the Eye Care
-session, recorded in its plan `2026-09-24-eye-care-hand-build-design.md` close-out part 2 item 6). Batched for the
+session, recorded in its plan `2026-09-24-eye-care-hand-build-design.md` close-out part 2 item 6); a per-run tarball name in `build-deploy.py` (every deploy to the shared SSH account writes `~/sgs-deploy.tar`, so two sessions deploying at once overwrite each other's upload; until then deploys are serialised by message). Also fixed after Bean's review: the drawer scrollbar (thin, tinted, no arrows, clear of the rounded corners) and a wheel over an open drawer no longer scrolls the page and closes it (Lenis `prevent` on open dialogs); live `reports/visual-diff/nav-drawer-2026-09-25.md` F1, F2. Batched for the
 later pass: axe with the drawer open, keyboard dim, reduced-motion emulation, the editor round-trip of the new
 controls. Fixture `scripts/nav-qa/qa-item-markup-fixture.php` is applied on sandybrown (`restore` undoes it,
 including the added menu-119 page link and page 2742's featured image).
