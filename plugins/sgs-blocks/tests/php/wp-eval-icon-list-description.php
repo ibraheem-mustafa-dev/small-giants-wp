@@ -46,9 +46,9 @@ $html  = render_block(
 	)
 );
 $css   = implode( "\n", array_map( static fn( $m ) => $m, (array) ( preg_match_all( '#<style[^>]*>(.*?)</style>#s', $html, $mm ) ? $mm[1] : array() ) ) );
-if ( function_exists( 'sgs_css_registry_collected' ) ) {
-	$css .= (string) sgs_css_registry_collected();
-}
+// On the front end, includes/class-sgs-css-registry.php::sgs_lift_block_css()
+// lifts the block's <style> into this collector instead of leaving it inline.
+$css .= implode( "\n", (array) ( $GLOBALS['sgs_collected_css'] ?? array() ) );
 
 $pass = 0;
 $fail = 0;
