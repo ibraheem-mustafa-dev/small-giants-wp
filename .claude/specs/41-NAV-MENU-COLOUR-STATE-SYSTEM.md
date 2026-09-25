@@ -1230,7 +1230,8 @@ burger is a `<button class="sgs-nav-bar-menu__burger">` built by
 
 | Attribute | Type | Default | Purpose | Control |
 |---|---|---|---|---|
-| `triggerMode` | string | `"icon"` | `icon` \| `text` \| `icon-and-text`. PHP-validated, no JSON enum. | `ToggleGroupControl` + `ToggleGroupControlOption` (three options) |
+| `triggerMode` | object (tier) | `{"desktop":"icon"}` | Per device: `icon` \| `text` \| `icon-and-text` for each of desktop, tablet, mobile (tablet inherits desktop, mobile inherits tablet). PHP-validated against one list, `render.php::$sgs_nm_allowed_trigger_modes`, no JSON enum. The button renders the icon if any tier shows it and the label if any tier shows it; `includes/nav-menu-trigger-css.php` hides each per tier. Accessible name: "Open menu" when no tier shows the word, the label when some do, none when all do. A stored flat string folds to `{desktop}`. | `ResponsiveOverride` + `ToggleGroupControl` (three options) |
+| `triggerIconPosition` | string | `"after"` | `before` \| `after`: where the icon sits when a tier shows both. A visual reorder only. | `ToggleGroupControl`, shown when a tier is `icon-and-text` |
 | `triggerLabel` | string | `"Menu"` | The visible word, used by `text` and `icon-and-text`. | native `TextControl` with `__nextHasNoMarginBottom __next40pxDefaultSize`, matching this block's existing `navLabel` / `drawerRef` text fields — **not** `SgsFreeTextField`, which has zero adopters on this block |
 | `triggerIcon` | object | `{"source":"lucide","name":"menu"}` | The glyph (FR-41-30(a)). | the framework Icon Picker |
 
@@ -2508,7 +2509,8 @@ runtime to the menu button. Neither reads the other's attributes.
 | `submenuBorderColourGradient` | Both | string | `""` | Normal-state gradient sibling |
 | `submenuShadow` | Bar | string | `""` | Shadow **shape** on the floating panel (§9.9) |
 | `submenuShadowColour` | Bar | string | `""` | Its colour — the name is forced by `plugins/sgs-blocks/src/components/ShadowControl.js::shadowAttrKeys`'s rule `colour = <base>Colour` |
-| `triggerMode` | Bar | string | `"icon"` | FR-41-12 |
+| `triggerMode` | Bar | object (tier) | `{"desktop":"icon"}` | FR-41-12 |
+| `triggerIconPosition` | Bar | string | `"after"` | FR-41-12 |
 | `triggerLabel` | Bar | string | `"Menu"` | FR-41-12 |
 | `triggerMagnetEnabled` | Bar | boolean | `false` | FR-41-31 — menu-button magnetic pull, off by default |
 | `triggerMagnetRadius` | Bar | number | `120` | FR-41-31 — `RangeControl` min 20 max 400, matching `fx-magnet.js`'s real clamp |
@@ -2809,8 +2811,9 @@ primitive at 2-3 options.
 | Control | Component | Attribute | Default |
 |---|---|---|---|
 | Icon *(shown when `triggerMode` is `icon` or `icon-and-text`)* | `IconPicker` (FR-41-30a) | `triggerIcon` | `{"source":"lucide","name":"menu"}` |
-| Show as | `ToggleGroupControl` — **Icon \| Text \| Both** | `triggerMode` | `"icon"` |
-| ↳ Label *(shown when not `icon`)* | `TextControl` (`__nextHasNoMarginBottom __next40pxDefaultSize`) | `triggerLabel` | `"Menu"` |
+| Show as *(per device)* | `ResponsiveOverride` + `ToggleGroupControl` — **Icon \| Text \| Both** | `triggerMode` | `{"desktop":"icon"}` |
+| ↳ Icon position *(shown when a tier is Both)* | `ToggleGroupControl` — **Before \| After** | `triggerIconPosition` | `"after"` |
+| ↳ Label *(shown when any tier is not `icon`)* | `TextControl` (`__nextHasNoMarginBottom __next40pxDefaultSize`) | `triggerLabel` | `"Menu"` |
 | Size | `SgsLengthControl` | `burgerSize` | `"44px"` |
 | Magnetic pull | `ToggleControl` (FR-41-31) | `triggerMagnetEnabled` | `false` |
 | ↳ Pull distance *(shown when on)* | `RangeControl` min 20 max 400 | `triggerMagnetRadius` | `120` |

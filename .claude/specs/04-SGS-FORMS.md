@@ -63,6 +63,8 @@ The wrapper block that handles the entire form lifecycle.
 | `formName` | string | Human-readable form name (for admin reference) |
 | `submitLabel` | string | Submit button text (default: "Submit") |
 | `submitStyle` | string | Button style: primary, success, accent |
+| `submitFontWeight` / `submitFontSize` / `submitTextTransform` / `submitLetterSpacing` | string / number / string / string | Submit button typography on the scoped `.sgs-form__button--submit` rule; unset keeps the stylesheet (600, small preset size) |
+| `submitPadding` / `submitMinHeight` | object (box) / number | Submit button padding and minimum height (px); unset keeps 0.75rem 2rem and 44px |
 | `successMessage` | string | Message shown after successful submission |
 | `successRedirect` | string | URL to redirect to after submission (optional, overrides message) |
 | `n8nWebhookUrl` | string | N8N webhook URL for notifications |

@@ -1,7 +1,8 @@
 # Eye Care Birmingham: build the real site first, then use it to test the pipeline
 
 **Status:** APPROVED by Bean 2026-09-24 (D1149). **Wave A DONE 2026-09-24.** **Wave B framework part DONE
-2026-09-24.** **Wave B pages BUILT and compared 2026-09-24; close-out list below**, then Wave C.
+2026-09-24.** **Wave B pages BUILT 2026-09-24; close-out items 1-9 DONE and live 2026-09-25; the final comparison's
+residual list (close-out part 2, below) remains**, then Wave C.
 - Wave B pages on eye-care-test, each built through the editor with `scripts/wp-build-page.js` from a tree in
   `sites/eye-care-ward-end/build/` (the reproducible record): header `sgs_header` 199 (active), mobile menu `sgs_drawer`
   203 (the burger's own drawerRef; the global drawer pointer is untouched), mega panels 165/176/183/186, WP menu 96,
@@ -22,31 +23,59 @@
   (1fr auto 1fr), icon-only burgers, no carets, About/Contact/Help spacing, borders, one-line hours, placeholder form.
   `scripts/wp-build-page.js` now also refuses wrong-typed, off-enum and per-device-on-flat values (six borders were
   invisible because of the last one).
-- **Wave B close-out (next session; Bean's decisions 2026-09-24).** Wave B closes when each item below is live on
-  eye-care-test and the pages pass a final 1440/768/375 comparison with the draft:
-  1. Header phone hidden below 1160px: Eye Care Additional CSS (the snapshot's `styles.css`, which the client edits in
-     the Site Editor), not a new per-block control. One client, one element; build a general "hide below/above a
-     width" control only when a second client needs it. It also stops the header wrapping between 1060 and 1160.
-     Any per-size hiding that lines up with the device tiers (768/1024) uses the device-visibility switches on the
-     block instead (`sgsHideOnMobile` / `sgsHideOnTablet` / `sgsHideOnDesktop`, `includes/device-visibility.php`);
-     an item that moves into the drawer at a size gets a copy in the drawer body and the header copy is hidden with
-     those switches (nav track, Wave 3C plan U-10). The 1160 phone cut is the only Additional CSS rule.
-  2. `sgs/button` link source: the link can come from Site Info (phone, email, WhatsApp) as well as a typed URL. Use
-     it for the Help page's "Call" button (it replaces the sgs/business-info phone line there).
-  3. The outline button preset follows its section's text colour, so it reads on light and dark sections; then every
-     button on every Wave B page matches its draft counterpart (style and label).
-  4. A shop setting "Hide .00 on whole-pound prices" (WooCommerce, site-wide: shop, cards, cart, checkout); Eye Care
-     turns it on (the draft shows "£32").
-  5. `sgs/accordion-item` title weight: a setting in place of the fixed 600/700; Help uses the draft's regular weight.
-  6. Contact form: move it onto the form CPT (`sgs_form` post, linked from the page's `sgs/form`); then check whether
-     the submit style preset can carry uppercase and letter spacing. Only if not, add submit-button typography to
-     `sgs/form` (scoped to `.sgs-form__button--submit`).
-  7. `sgs/business-info` condensed hours ("Mon–Sat 9.30–17.30", consecutive days with the same hours grouped) so the
-     footer and Contact read hours from Site Info instead of six rows or a typed line.
-  8. `sgs/nav-bar-menu` `triggerMode` per device (icon + "Menu" at tablet, icon only at phone). The nav track's U-14
-     (`.claude/plans/2026-09-21-wave-3c-implementation-plan.md`) owns `triggerMode`: check its state first and
-     co-ordinate with that session.
-  9. Content: rebuild the Brands, Lenses and Help mega panels to the draft (they are simplified today).
+- **Wave B close-out items 1-9: DONE 2026-09-25, live on eye-care-test** (Bean's decisions 2026-09-24).
+  1. Header phone hidden below 1160px: the one Eye Care Additional CSS rule (snapshot `styles.css`). Per-size hiding that
+     lines up with the 768/1024 tiers uses `sgsHideOnMobile/Tablet/Desktop` instead (nav track U-10 for drawer copies).
+  2. `sgs/button` `linkSource` (url | phone | email | whatsapp from Site Info, typed URL as fallback); Help's Call is an
+     outline button to tel:01217298233.
+  3. Button presets: the outline preset follows its section's text colour (`currentColor`), and the button stylesheet
+     now reads every preset role, including geometry (border-width, radius, font-size, weight, padding, min-height), which
+     it ignored before; `fontWeight` defaults to unset so the preset's weight applies. Palette gains `primary-hover`
+     #2A2A2A and `whatsapp-hover` #1EBE5A (the draft's hovers).
+  4. Shop setting "Hide .00 on whole-pound prices" (Customizer > Shop Filters, theme mod `sgs_shop_hide_zero_decimals`),
+     on for Eye Care: `wc_price(139)` gives £139, `wc_price(32.5)` gives £32.50. Gap for Wave C: WooCommerce's block
+     Cart, Checkout and Mini Cart format prices in JavaScript from the Store API and have no trim hook, so a block
+     checkout shows £139.00; decide classic or block checkout with that in mind.
+  5. `sgs/accordion` `headerFontWeight` / `headerFontWeightOpen` (defaults 600/700) and open-state colours
+     (`headerColourOpen`, `headerBackgroundOpen`); Help uses 400.
+  6. Contact form on the form CPT: `sgs_form` post 285 (slug `contact`), linked from page 190's `sgs/form`
+     (`formIsLinked`). New `sgs/form` submit typography, padding and min-height; live submit reads "SEND MESSAGE",
+     52px, and a real submission returned 200 with the success message.
+  7. `sgs/business-info` `hoursLayout: condensed` ("Mon–Sat 9.30–17.30"); footer and Contact use it.
+  8. `sgs/nav-bar-menu` `triggerMode` is a tier object and `triggerIconPosition` places the icon; the header shows the
+     icon then "Menu" at desktop and tablet, the icon only at 375. The Wave 3C plan's DEC-14 row names where U-14's
+     fourth value goes.
+  9. Brands, Lenses and Help mega panels rebuilt to the draft's content; both menus `megaAlign: full-width`.
+  Also fixed after the final comparison: the header's middle row keeps `1fr auto 1fr` at every tier (one row at 375);
+  menu items 13.5px/400/0.06em and a 0 gap on the left menu (one row from 1060 to 1440); Lenses h1 capped at 18ch;
+  Home steps show numerals (`sgs/process-steps` list).
+- **Wave B close-out part 2 (next session).** From the final read-only comparison (1440/790/768/375), each proven:
+  Framework:
+  1. `sgs/business-info` copyright hardcodes the word "Copyright" before the Site Info value (which already starts
+     with ©): add an attribute to omit it (`render.php` copyright case).
+  2. `sgs/mega-group` has no link: the draft's mega cards are one link each (Lenses panel).
+  3. `sgs/process-steps` number has no font-family setting (`.sgs-process-steps__number`); the draft's numerals are
+     Playfair Display.
+  4. Home "Any pair here, made to your prescription": a `height:100%` cover image in a grid row adds its intrinsic
+     height to the row (section 1708px, draft 856px). Needs `min-height:0` on the grid/flex item wrapper
+     (`class-sgs-container-wrapper.php` or the media box-shape rule); the container wrapper is the nav/container
+     session's file, so co-ordinate.
+  5. `sgs/container`: a template set for desktop only is overridden below 1024 by the default column counts
+     (`repeat(3,1fr)`, then one column) instead of inheriting. Eye Care works round it by setting all tiers.
+  6. `sgs/nav-bar-menu` link padding (8px 12px) is hardcoded with no setting (nav track).
+  7. `sgs/social-icons`: brand marks paint `currentColor` (Google should be its four colours) and there is no boxed
+     (bordered square) style; the footer and drawer need both. Order is content (draft: Instagram, Google, WhatsApp).
+  8. `scripts/wp-build-page.js` cannot refuse an off-list value for an attribute validated only in PHP (no JSON enum):
+     `markerType: "number"` passed and rendered check icons. Consider reading the PHP allow-lists it can resolve.
+  Content (trees):
+  9. Mobile menu (`sgs_drawer` 203) to the draft: EYE CARE wordmark, large Playfair primary list with dividers
+     (Sunglasses, Brands, Prescription lenses, Glasses SOON), a small secondary list (About Eye Care; Delivery, returns
+     & FAQs; Size guide; Contact), the phone in a bordered box, three boxed social icons (WhatsApp tinted), no pill.
+  10. Mega panels' look: plain (not underlined) links, no scrim, Brands' "Most asked for" as a 5-column bordered tile
+      grid with the count under each name, Sunglasses' promo a plain image banner (no added card and button).
+  11. Contact details as a labelled 2x2 grid (Phone, Email, Clinic, Hours; no icons): check `sgs/business-info`'s
+      label and icon options before calling it framework.
+  12. Help: the draft says "Call the clinic on {phone}"; the FAQ close icon is a thin ×.
   Decided not to build: the shape tiles' "Photo to come" note (a draft artefact; real photos replace it).
   Moved to Wave C: the best-seller product cards (the draft's Frame Card: brand, heart, SAVE badge, stars, 4-up at
   1280) are the shared product card, built with the shop.
@@ -60,8 +89,7 @@
 - **Verification (Bean, 2026-09-24): no separate test page.** Each new setting is verified live at 1440/768/375
   against the draft when the real page that uses it is built, so the page builds also surface unplanned gaps.
   Checking during Wave B pages and Wave C: the draft-vs-live values each Wave B report named (in the session
-  record), `filter_product_brand` filtering on the shop (unproven: reasoned, not tested), the RRP pill's "£32.00"
-  vs the draft's "£32", and the trust-bar drop mode's first-paint second row.
+  record), `filter_product_brand` filtering on the shop (unproven: reasoned, not tested) and the trust-bar drop mode's first-paint second row.
 - Open decisions for Bean: (1) product-page tabs (`.claude/reports/2026-09-24-pdp-tabs-design.md`, recommended: a
   seeded starting layout each client edits in the Site Editor); (2) DECIDED (Bean, 2026-09-24: "they aren't really
   icons"): the six shape glyphs are images, not icon-registry entries. Uploaded to eye-care-test as transparent

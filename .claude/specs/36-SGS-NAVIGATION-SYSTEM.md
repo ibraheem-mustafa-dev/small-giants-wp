@@ -689,7 +689,8 @@ capability.
 ### FR-36-27 — Burger trigger presentation — PARTIAL
 The references make the trigger a designed element (one renders the word "MENU", one a symbol, one a morphing
 glyph). **BUILT** on `sgs/nav-bar-menu` (burger is bar-only), all inspector-manifested: `triggerMode`
-(`icon` | `text` | `icon-and-text`), `triggerIcon` (an `IconPicker` object), `triggerLabel` (default
+(`icon` | `text` | `icon-and-text`, per device: a tier object), `triggerIconPosition` (icon before or after the
+label), `triggerIcon` (an `IconPicker` object), `triggerLabel` (default
 "Menu"), and the magnet-hover attributes (`triggerMagnetEnabled` / `Radius` / `Strength`), specified in Spec
 41 FR-41-30/31. The burger↔X morph is built but auto-gated to the default glyph
 (`plugins/sgs-blocks/includes/nav-menu-markup.php::sgs_nav_bar_menu_burger_toggle_markup`, `$is_default_icon`).

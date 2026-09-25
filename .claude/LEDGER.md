@@ -1,7 +1,7 @@
 ---
 doc_type: ledger
 project: small-giants-wp
-last_updated: 2026-09-24
+last_updated: 2026-09-25
 ---
 
 # small-giants-wp — LEDGER (the one living status)
@@ -17,8 +17,9 @@ equal the draft at every width (D1139-D1145). Open: 36 raw placeholders (plan A3
 **Eye Care: now built by hand first (D1149, 2026-09-24).** Instead of finishing the pipeline before any client
 ships, the Eye Care site is built by hand to client-ready from Claude Design's gap map, full scope including the lens
 configurator and prescription upload. The finished site then becomes the pipeline's answer key. Plan:
-`plans/2026-09-24-eye-care-hand-build-design.md`. Waves A and B built: the seven Wave B pages are live on eye-care-test
-and compared with the draft. Next: the nine Wave B close-out items (plan Status block), then Wave C (shop, product page,
+`plans/2026-09-24-eye-care-hand-build-design.md`. Waves A and B built: the seven Wave B pages are live on eye-care-test,
+the nine close-out items are done, and a final comparison left a short proven list (plan Status block, close-out part 2:
+eight framework settings and four content fixes, the mobile menu the largest). Then Wave C (shop, product page,
 checkout, lens configurator, prescription). The old clone on test page 11 and its
 converter fixes (C1, C3, C4, C5) wait for Phase 7.
 
@@ -51,15 +52,16 @@ Plan: `plans/2026-09-24-eye-care-hand-build-design.md` (Status block = current t
 Ward End Eye Care - SGS Gap Handoff/`, live at https://mintcream-lyrebird-224487.hostingersite.com/. Test site:
 https://darkcyan-grouse-898606.hostingersite.com (creds `.claude/secrets/eye-care-test.env`).
 
-**Now.** Waves A and B built. The seven Wave B parts (header, footer, home, lenses, about, help, contact) are live on
-eye-care-test, built through the editor with `scripts/wp-build-page.js` from the trees in
-`sites/eye-care-ward-end/build/`; framework gaps they exposed are fixed and deployed (main b315f2daa; eye-care-test
-runs bb861c1d2, docs only since). A draft-vs-live comparison closed the large differences; nine close-out items remain,
-with Bean's decisions recorded. No blockers.
+**Now.** Waves A and B built; the nine Wave B close-out items are done and live (2026-09-25): button link from Site
+Info, presets that follow the section colour and carry their geometry, hide-.00 prices, accordion title weight and open
+colours, the contact form on `sgs_form` post 285, condensed hours, per-device burger (`triggerMode` tier object) with
+icon position, mega panels rebuilt and full width, header one row at every width. Pages are built through the editor
+with `scripts/wp-build-page.js` from `sites/eye-care-ward-end/build/`. main and eye-care-test at 618e08746 plus content
+since (docs and trees only). No blockers.
 
-**Resume from:** the plan's Status block, "Wave B close-out" (items 1 to 9, then a final 1440/768/375 comparison);
-then Wave C (shop, product page and the shared product card, bag and checkout, lens configurator, prescription; plan
-§5, §6); then Phase 7 (plan §7).
+**Resume from:** the plan's Status block, "Wave B close-out part 2" (items 1 to 12, each proven by the final
+comparison), then a last 1440/768/375 comparison; then Wave C (shop, product page and the shared product card, bag and
+checkout, lens configurator, prescription; plan §5, §6); then Phase 7 (plan §7).
 
 **Parked (detail in the plan's Status block):** product-page tabs decision (Bean); `disabled` as a golden state
 (Bean, only if wanted); product-field bindings build; RRP/stock label per variation; nav-drawer badge/disabled; the
