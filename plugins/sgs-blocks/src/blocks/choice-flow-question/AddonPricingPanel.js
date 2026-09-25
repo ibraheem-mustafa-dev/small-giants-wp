@@ -6,7 +6,7 @@
  * Reads the site-wide add-on price list off `window.sgsBlocksData
  * .choiceFlowAddonGroups` — the same REST-free `wp_add_inline_script()`
  * channel `includes/product-collection-same-term.php` uses for its own
- * taxonomy list (see `choice-flow-question/editor-data.php`). The global is
+ * taxonomy list (see `includes/addon-price-list/editor-data.php`). The global is
  * an empty array (rendering just a "None" option, never a fatal) whenever
  * the price-list settings page doesn't exist yet.
  *

@@ -1190,5 +1190,14 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 131
+  },
+  {
+    "id": "check-no-src-requires",
+    "cmd": "python scripts/check-no-src-requires.py",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 132
   }
 ]

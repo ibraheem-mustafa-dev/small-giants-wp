@@ -8,17 +8,9 @@
  * always-present 'wp-blocks' handle, read by edit.js as
  * `window.sgsBlocksData.choiceFlowAddonGroups`.
  *
- * Behind `function_exists( 'sgs_addon_price_list' )` — that function belongs
- * to the add-on price-list settings page (Spec 43 FR-43-17, a parallel
- * build), so this degrades to an empty group list (a plain "None" option in
- * the editor control) until that page exists, rather than fataling.
- *
- * WIRING NOTE: this file must be `require_once`'d from
- * `includes/class-sgs-blocks.php` (alongside the other `includes/*.php`
- * hook files) for `add_action()` below to ever run — no file under
- * `src/blocks/` is auto-loaded. Out of this task's permitted scope
- * (`src/blocks/choice-flow*` + `product-card/view.js` only); flagged here
- * rather than silently left non-functional.
+ * Required by this folder's load.php. It lives here, not beside the block,
+ * because only `build/` ships a block's files: a plugin-level require of a
+ * `src/blocks/` path fatals every page on the server.
  *
  * @package SGS\Blocks
  */

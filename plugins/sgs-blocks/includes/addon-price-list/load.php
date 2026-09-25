@@ -33,6 +33,9 @@ if ( \is_admin() ) {
 require_once __DIR__ . '/class-addon-price-list-cart.php';
 Addon_Price_List_Cart::register();
 
+// The list's groups for sgs/choice-flow-question's "Price from list" control.
+require_once __DIR__ . '/editor-data.php';
+
 // `wp sgs addon-prices seed <file.json>` — CLI only.
 if ( \defined( 'WP_CLI' ) && \WP_CLI ) {
 	require_once __DIR__ . '/class-addon-price-list-cli.php';
