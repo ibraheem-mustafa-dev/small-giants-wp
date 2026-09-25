@@ -211,6 +211,8 @@ final class SGS_Blocks {
 		require_once SGS_BLOCKS_PATH . 'includes/flow-fields/load.php';
 		// UK checkout: no County field (block checkout blocks an empty optional one).
 		require_once SGS_BLOCKS_PATH . 'includes/woocommerce-checkout-address.php';
+		// Free delivery applies: no paid delivery option beside it.
+		require_once SGS_BLOCKS_PATH . 'includes/woocommerce-shipping-rates.php';
 	}
 
 	/**
