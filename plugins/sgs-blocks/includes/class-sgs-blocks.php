@@ -209,6 +209,8 @@ final class SGS_Blocks {
 		// Choice-flow answers and fields carried to the cart line, with a
 		// session-stamped upload for file fields (Spec 43 FR-43-21).
 		require_once SGS_BLOCKS_PATH . 'includes/flow-fields/load.php';
+		// UK checkout: no County field (block checkout blocks an empty optional one).
+		require_once SGS_BLOCKS_PATH . 'includes/woocommerce-checkout-address.php';
 	}
 
 	/**
