@@ -65,6 +65,7 @@
     "esc_textarea",
     "esc_url",
     "esc_url_raw",
+    "generate_block_asset_handle",
     "get_admin_page_title",
     "get_attached_file",
     "get_avatar",
