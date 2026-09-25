@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "..\\..\\..\\..\\..\\.claude\\skills\\sgs-wp-engine\\sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 8257,
+    "row_count": 8259,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -559,12 +559,14 @@
     "sgs/accordion::headerBackgroundGradient": "colour-gradient",
     "sgs/accordion::headerBackgroundHover": "color",
     "sgs/accordion::headerBackgroundHoverGradient": "colour-gradient",
+    "sgs/accordion::headerBackgroundOpen": "color",
     "sgs/accordion::headerColour": "color",
     "sgs/accordion::headerColourGradient": "colour-gradient",
     "sgs/accordion::headerColourHover": "color",
     "sgs/accordion::headerColourHoverGradient": "colour-gradient",
+    "sgs/accordion::headerColourOpen": "color",
     "sgs/accordion::headerFontWeight": "typography",
-    "sgs/accordion::headerFontWeightOpen": null,
+    "sgs/accordion::headerFontWeightOpen": "styling",
     "sgs/accordion::iconColour": "color",
     "sgs/accordion::iconColourGradient": "color",
     "sgs/accordion::iconColourHover": "color",
@@ -4723,7 +4725,7 @@
     "sgs/nav-bar-menu::submenuWritingMode": "select-from-enum",
     "sgs/nav-bar-menu::sweepAngle": null,
     "sgs/nav-bar-menu::triggerIcon": "enum-class-probe",
-    "sgs/nav-bar-menu::triggerLabel": null,
+    "sgs/nav-bar-menu::triggerLabel": "a11y-text",
     "sgs/nav-bar-menu::triggerMagnetEnabled": "boolean-visibility",
     "sgs/nav-bar-menu::triggerMagnetRadius": "visual",
     "sgs/nav-bar-menu::triggerMagnetStrength": null,
