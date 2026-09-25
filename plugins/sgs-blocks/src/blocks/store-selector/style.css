@@ -1,0 +1,94 @@
+/* ===== SGS Store Selector — Frontend + Editor ===== */
+
+.sgs-store-selector {
+	position: relative;
+	display: inline-block;
+}
+
+/* ─── Trigger ────────────────────────────────────────────────────────────── */
+
+.sgs-store-selector__trigger {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	min-height: 44px;
+	min-width: 44px;
+	padding: 0.5rem 0.75rem;
+	cursor: pointer;
+	border: none;
+	background: none;
+	appearance: none;
+	font: inherit;
+	color: inherit;
+}
+
+.sgs-store-selector__trigger:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary, #1e40af);
+	outline-offset: 3px;
+	border-radius: 3px;
+}
+
+/* ─── Panel / list ───────────────────────────────────────────────────────── */
+
+.sgs-store-selector__list {
+	position: absolute;
+	top: 100%;
+	z-index: 20;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	margin: 4px 0 0;
+	padding: 8px;
+	list-style: none;
+	min-width: 180px;
+	background: var(--wp--preset--color--background, #fff);
+}
+
+.sgs-store-selector--panel-start .sgs-store-selector__list {
+	left: 0;
+}
+
+.sgs-store-selector--panel-end .sgs-store-selector__list {
+	right: 0;
+}
+
+.sgs-store-selector__list[hidden] {
+	display: none;
+}
+
+.sgs-store-selector__item a {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	min-height: 44px;
+	padding: 0.5rem 0.75rem;
+	text-decoration: none;
+	color: inherit;
+}
+
+.sgs-store-selector__item a:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary, #1e40af);
+	outline-offset: -2px;
+	border-radius: 3px;
+}
+
+.sgs-store-selector__item a[aria-current="true"] {
+	font-weight: 600;
+}
+
+/* ─── Flags ──────────────────────────────────────────────────────────────── */
+
+.sgs-store-selector__flag {
+	display: inline-block;
+	flex-shrink: 0;
+	object-fit: cover;
+}
+
+/* ─── Reduced motion ─────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-store-selector__list {
+		transition-duration: 0.01ms !important;
+		animation-duration: 0.01ms !important;
+	}
+}

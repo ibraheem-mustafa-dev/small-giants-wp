@@ -1,0 +1,235 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/store-selector",
+	"version": "1.0.0",
+	"title": "Store Selector",
+	"category": "sgs-interactive",
+	"description": "A trigger button plus a disclosure list of country/store links, with the current store detected from the visitor's host and path.",
+	"keywords": [
+		"store",
+		"country",
+		"locale",
+		"selector",
+		"flag",
+		"away"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "location-alt",
+	"supports": {
+		"align": false,
+		"anchor": true,
+		"html": false,
+		"color": {
+			"text": false,
+			"background": false,
+			"gradients": false,
+			"__experimentalSkipSerialization": true
+		},
+		"sgs": {
+			"imageControls": true,
+			"boxFamilies": {
+				"padding": [
+					"panelPadding"
+				]
+			},
+			"elements": {
+				"trigger": {
+					"label": "Trigger button",
+					"order": 1,
+					"clusters": [
+						"text"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:color": "triggerColour",
+						"css:font-size": "fontSize",
+						"css:font-weight": "fontWeight",
+						"css:font-style": "fontStyle",
+						"css:line-height": "lineHeight"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "triggerColourHover"
+							}
+						}
+					}
+				},
+				"panel": {
+					"label": "Store list",
+					"order": 2,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"attrMap": {
+						"css:background-color": "panelBackground",
+						"css:padding": "panelPadding",
+						"css:border-color": "borderColour",
+						"css:border-style": "borderStyle",
+						"css:border-width": "borderWidth",
+						"css:border-radius": "borderRadius"
+					}
+				},
+				"item": {
+					"label": "Store link",
+					"order": 3,
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:color": "itemColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "itemColourHover"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"selectors": {
+		"root": ".sgs-store-selector"
+	},
+	"attributes": {
+		"triggerPrefix": {
+			"type": "string",
+			"default": ""
+		},
+		"stores": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "object"
+			}
+		},
+		"flagSize": {
+			"type": "object",
+			"default": {}
+		},
+		"panelAlign": {
+			"type": "string",
+			"enum": [
+				"start",
+				"end"
+			],
+			"default": "start"
+		},
+		"panelPadding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"gap": {
+			"type": "object",
+			"default": {}
+		},
+		"triggerColour": {
+			"type": "string",
+			"default": ""
+		},
+		"triggerColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"panelBackground": {
+			"type": "string",
+			"default": ""
+		},
+		"itemColour": {
+			"type": "string",
+			"default": ""
+		},
+		"itemColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"fontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"lineHeight": {
+			"type": "number"
+		},
+		"lineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"fontFamily": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"viewScriptModule": "file:./view.js",
+	"example": {
+		"attributes": {
+			"triggerPrefix": "Select store",
+			"stores": [
+				{ "label": "United States", "url": "https://example.com/us/", "flagId": 0, "flagUrl": "" },
+				{ "label": "United Kingdom", "url": "https://example.com/uk/", "flagId": 0, "flagUrl": "" }
+			]
+		}
+	}
+}
