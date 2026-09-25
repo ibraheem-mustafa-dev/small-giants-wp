@@ -254,6 +254,8 @@ foreach ( $data['COLS'] as $code => $pair ) {
 	$term_id = sgs_seed_find_or_create_term( $colour_name, $tax_colour, $stats );
 	if ( $term_id ) {
 		update_term_meta( $term_id, '_sgs_swatch_color', $hex );
+		// Google variesBy axis: the product preflight gate needs it before a variable product can publish.
+		update_term_meta( $term_id, '_sgs_variesby_value', 'color' );
 		$colour_term_ids[ $code ] = $term_id;
 	}
 }
@@ -285,6 +287,42 @@ foreach ( $data['NOSES'] as $nose_name ) {
 }
 
 echo "  Shape/Material/Frame-type/Hinge/Nose-pad terms processed.\n";
+
+/**
+ * The shared "Photo to come" image (woo-seed/photo-to-come.png), uploaded once and reused.
+ *
+ * @return int Attachment ID, or 0 on failure.
+ */
+function sgs_seed_placeholder_image(): int {
+	static $id = null;
+	if ( null !== $id ) {
+		return $id;
+	}
+	$existing = get_posts(
+		array(
+			'post_type'   => 'attachment',
+			'post_status' => 'inherit',
+			'title'       => 'Photo to come',
+			'numberposts' => 1,
+			'fields'      => 'ids',
+		)
+	);
+	if ( $existing ) {
+		$id = (int) $existing[0];
+		return $id;
+	}
+	require_once ABSPATH . 'wp-admin/includes/file.php';
+	require_once ABSPATH . 'wp-admin/includes/media.php';
+	require_once ABSPATH . 'wp-admin/includes/image.php';
+	$tmp = wp_tempnam( 'photo-to-come.png' );
+	copy( __DIR__ . '/photo-to-come.png', $tmp );
+	$att = media_handle_sideload( array( 'name' => 'photo-to-come.png', 'tmp_name' => $tmp ), 0, 'Photo to come' );
+	$id  = is_wp_error( $att ) ? 0 : (int) $att;
+	if ( $id ) {
+		update_post_meta( $id, '_wp_attachment_image_alt', '' );
+	}
+	return $id;
+}
 
 // ─────────────────────────────── 4. products ───────────────────────────────
 
@@ -406,7 +444,13 @@ foreach ( $data['PRODUCTS'] as $p ) {
 			$stats['images_sideloaded']++;
 		}
 	} else {
-		$img_skipped[] = $sku . ' (' . $name . ')';
+		// No draft photo: the shared "Photo to come" image (the draft's own placeholder tile), so the
+		// product preflight gate (a variable product needs an image) lets it publish.
+		$placeholder_id = sgs_seed_placeholder_image();
+		if ( $placeholder_id ) {
+			set_post_thumbnail( $product_id, $placeholder_id );
+		}
+		$img_skipped[] = $sku . ' (' . $name . ') - placeholder';
 		$stats['images_skipped']++;
 	}
 
@@ -459,6 +503,18 @@ foreach ( $data['PRODUCTS'] as $p ) {
 	} else {
 		$stats['products_updated']++;
 		echo "  Updated: {$name} (SKU {$sku}, id={$product_id})\n";
+	}
+
+	// Publish last, once variations, colour mappings and the image exist: the product preflight
+	// gate reverts a variable product to draft if it publishes without them.
+	wp_update_post(
+		array(
+			'ID'          => $product_id,
+			'post_status' => 'publish',
+		)
+	);
+	if ( 'publish' !== get_post_status( $product_id ) ) {
+		echo "  NOT PUBLISHED (preflight): {$name} " . wp_json_encode( get_post_meta( $product_id, '_sgs_preflight_issues', true ) ) . "\n";
 	}
 }
 
