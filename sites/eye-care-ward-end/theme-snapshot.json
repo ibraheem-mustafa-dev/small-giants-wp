@@ -92,6 +92,12 @@
           "_baseline_color": "#25D366"
         },
         {
+          "slug": "whatsapp-hover",
+          "color": "#1EBE5A",
+          "name": "WhatsApp Hover",
+          "_source": "declared"
+        },
+        {
           "slug": "surface",
           "color": "#FAF8F5",
           "name": "Surface",
