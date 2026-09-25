@@ -21,10 +21,14 @@
  *
  * Usage:
  *   node scripts/wp-build-page.js --env-file .claude/secrets/eye-care-test.env --env-key EYECARETEST \
- *     --tree tree.json (--post-id 123 | --create page --title "About" --slug about) [--status publish] [--dry-run]
+ *     --tree tree.json (--post-id 123 | --create page --title "About" --slug about |
+ *                       --template-part sgs-pdp-content | --template single-product) [--status publish] [--dry-run]
  *
  *   --create takes a post type: page, sgs_header, sgs_footer, sgs_drawer, sgs_modal, sgs_mega_menu, sgs_form, wp_block.
  *   --post-id replaces the whole content of an existing post.
+ *   --template-part / --template save this site's own copy of a theme template part or template (the copy the
+ *   Site Editor saves, which overrides the theme file). The tree is validated in the Site Editor's block registry
+ *   and the saved copy is read back and checked exactly like a page.
  *   --dry-run validates the tree in the editor and saves nothing.
  *
  * Credentials: WP_URL_<KEY>, WP_USER_<KEY>, WP_PWD_<KEY> from --env-file (never printed).
@@ -55,6 +59,8 @@ function parseArgs( argv ) {
 		else if ( a === '--title' ) args.title = argv[ ++i ];
 		else if ( a === '--slug' ) args.slug = argv[ ++i ];
 		else if ( a === '--status' ) args.status = argv[ ++i ];
+		else if ( a === '--template-part' ) args.templatePart = argv[ ++i ];
+		else if ( a === '--template' ) args.template = argv[ ++i ];
 		else if ( a === '--dry-run' ) args.dryRun = true;
 	}
 	return args;
@@ -88,10 +94,50 @@ async function waitForEditor( page ) {
 	);
 }
 
+/**
+ * Save this site's own copy of a theme template part or template through the REST route the Site Editor uses,
+ * then read it back: every block must parse valid and serialise to what was saved.
+ *
+ * @param {Object}  page   Playwright page on the Site Editor.
+ * @param {Array}   tree   Block tree.
+ * @param {string}  route  'template-parts' or 'templates'.
+ * @param {string}  slug   Template (part) slug, e.g. sgs-pdp-content.
+ * @param {boolean} dryRun Validate and serialise only.
+ * @return {Promise<Object>} Result for the JSON report.
+ */
+async function buildTemplate( page, tree, route, slug, dryRun ) {
+	return page.evaluate( async ( { t, r, sl, dry } ) => {
+		const make = ( b ) => window.wp.blocks.createBlock( b.name, b.attributes || {}, ( b.innerBlocks || [] ).map( make ) );
+		const serialised = window.wp.blocks.serialize( t.map( make ) );
+		if ( dry ) return { ok: true, dryRun: true, bytes: serialised.length };
+		const themes = await window.wp.apiFetch( { path: '/wp/v2/themes?status=active' } );
+		const id = `${ themes[ 0 ].stylesheet }//${ sl }`;
+		const restPath = `/wp/v2/${ r }/${ id }`;
+		try {
+			await window.wp.apiFetch( { path: restPath, method: 'POST', data: { content: serialised } } );
+		} catch ( e ) {
+			return { ok: false, code: 5, error: `save failed: ${ e.message || e.code }` };
+		}
+		const saved = await window.wp.apiFetch( { path: `${ restPath }?context=edit` } );
+		const raw = ( saved.content && saved.content.raw ) || '';
+		const invalid = [];
+		const walk = ( bs ) => bs.forEach( ( b ) => {
+			if ( b.isValid === false ) invalid.push( b.name );
+			walk( b.innerBlocks || [] );
+		} );
+		const parsed = window.wp.blocks.parse( raw );
+		walk( parsed );
+		const changed = window.wp.blocks.serialize( parsed ).trim() !== serialised.trim();
+		return { ok: ! invalid.length && ! changed, id, source: saved.source, invalid, changedOnReload: changed, code: 6 };
+	}, { t: tree, r: route, sl: slug, dry: dryRun } );
+}
+
 async function main() {
 	const args = parseArgs( process.argv );
 	if ( ! args.envFile || ! args.envKey || ! args.tree ) fail( 1, '--env-file, --env-key and --tree are required' );
-	if ( ! args.postId === ! args.create ) fail( 1, 'give exactly one of --post-id or --create <post type>' );
+	if ( [ args.postId, args.create, args.templatePart, args.template ].filter( Boolean ).length !== 1 ) {
+		fail( 1, 'give exactly one of --post-id, --create <post type>, --template-part <slug> or --template <slug>' );
+	}
 	let tree;
 	try {
 		tree = JSON.parse( fs.readFileSync( path.resolve( args.tree ), 'utf8' ) );
@@ -137,12 +183,25 @@ async function main() {
 			fail( 2, `login failed: ${ e.message }` );
 		}
 
-		const editorUrl = args.create
-			? `${ url }/wp-admin/post-new.php?post_type=${ encodeURIComponent( args.create ) }`
-			: `${ url }/wp-admin/post.php?post=${ encodeURIComponent( args.postId ) }&action=edit`;
+		const templateSlug = args.templatePart || args.template;
+		let editorUrl;
+		if ( templateSlug ) {
+			editorUrl = `${ url }/wp-admin/site-editor.php`;
+		} else if ( args.create ) {
+			editorUrl = `${ url }/wp-admin/post-new.php?post_type=${ encodeURIComponent( args.create ) }`;
+		} else {
+			editorUrl = `${ url }/wp-admin/post.php?post=${ encodeURIComponent( args.postId ) }&action=edit`;
+		}
 		await page.goto( editorUrl, { waitUntil: 'domcontentloaded', timeout: 60000 } );
 		try {
-			await waitForEditor( page );
+			if ( templateSlug ) {
+				await page.waitForFunction(
+					() => window.wp && window.wp.blocks && window.wp.apiFetch && window.wp.blocks.getBlockTypes().length > 0,
+					{ timeout: 60000 }
+				);
+			} else {
+				await waitForEditor( page );
+			}
 		} catch ( e ) {
 			fail( 3, `editor did not load at ${ editorUrl }` );
 		}
@@ -195,6 +254,13 @@ async function main() {
 			return out;
 		}, { t: tree, bannedMap: banned, flat: flatAttrs } );
 		if ( problems.length ) fail( 4, `tree rejected:\n  ${ problems.join( '\n  ' ) }` );
+
+		if ( templateSlug ) {
+			const result = await buildTemplate( page, tree, args.templatePart ? 'template-parts' : 'templates', templateSlug, args.dryRun );
+			console.log( JSON.stringify( result ) );
+			if ( ! result.ok ) process.exitCode = result.code || 6;
+			return;
+		}
 
 		const built = await page.evaluate( ( { t, title, slug, status, dryRun } ) => {
 			const make = ( b ) => window.wp.blocks.createBlock( b.name, b.attributes || {}, ( b.innerBlocks || [] ).map( make ) );
