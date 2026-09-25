@@ -1,0 +1,625 @@
+[
+  {
+    "name": "core/template-part",
+    "attributes": {
+      "slug": "header",
+      "tagName": "header"
+    }
+  },
+  {
+    "name": "sgs/container",
+    "attributes": {
+      "tagName": "main",
+      "anchor": "main",
+      "contentWidth": {
+        "desktop": "full"
+      }
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "maxWidth": {
+            "desktop": "1440px"
+          },
+          "padding": {
+            "desktop": {
+              "top": "48px",
+              "right": "52px",
+              "bottom": "90px",
+              "left": "52px"
+            },
+            "mobile": {
+              "top": "28px",
+              "right": "20px",
+              "bottom": "60px",
+              "left": "20px"
+            }
+          }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "Shop",
+              "fontSize": {
+                "desktop": 12
+              },
+              "fontSizeUnit": "px",
+              "letterSpacing": {
+                "desktop": 0.24
+              },
+              "letterSpacingUnit": "em",
+              "textTransform": "uppercase",
+              "textColour": "accent-text",
+              "margin": {
+                "desktop": {
+                  "bottom": "10px"
+                }
+              }
+            }
+          },
+          {
+            "name": "core/query-title",
+            "attributes": {
+              "type": "archive",
+              "level": 1,
+              "showPrefix": false,
+              "style": {
+                "typography": {
+                  "fontSize": "46px",
+                  "fontWeight": "500",
+                  "lineHeight": "1.02"
+                }
+              },
+              "fontFamily": "heading"
+            }
+          },
+          {
+            "name": "core/html",
+            "attributes": {
+              "content": "<button type=\"button\" class=\"sgs-shop-filters__toggle\" aria-expanded=\"false\" aria-controls=\"sgs-shop-filters\">\n\t<svg aria-hidden=\"true\" focusable=\"false\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><line x1=\"4\" y1=\"6\" x2=\"20\" y2=\"6\"/><line x1=\"8\" y1=\"12\" x2=\"16\" y2=\"12\"/><line x1=\"10\" y1=\"18\" x2=\"14\" y2=\"18\"/></svg>\n\t<span>Filter</span>\n</button>"
+            }
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "className": "sgs-shop-layout",
+              "contentWidth": {
+                "desktop": "full"
+              },
+              "margin": {
+                "desktop": {
+                  "top": "28px"
+                }
+              }
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "aside",
+                  "anchor": "sgs-shop-filters",
+                  "className": "sgs-shop-filters"
+                },
+                "innerBlocks": [
+                  {
+                    "name": "core/html",
+                    "attributes": {
+                      "content": "<div class=\"sgs-shop-filters__header\">\n\t<h2 class=\"sgs-shop-filters__heading\">Filter</h2>\n\t<button type=\"button\" class=\"sgs-shop-filters__close\" aria-label=\"Close filters\">\n\t\t<svg aria-hidden=\"true\" focusable=\"false\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><line x1=\"18\" y1=\"6\" x2=\"6\" y2=\"18\"/><line x1=\"6\" y1=\"6\" x2=\"18\" y2=\"18\"/></svg>\n\t</button>\n</div>"
+                    }
+                  },
+                  {
+                    "name": "woocommerce/product-filters",
+                    "attributes": {
+                      "style": {
+                        "spacing": {
+                          "padding": {
+                            "top": "0",
+                            "bottom": "0"
+                          }
+                        }
+                      }
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "woocommerce/product-filter-active",
+                        "attributes": {},
+                        "innerBlocks": [
+                          {
+                            "name": "woocommerce/product-filter-removable-chips",
+                            "attributes": {}
+                          },
+                          {
+                            "name": "woocommerce/product-filter-clear-button",
+                            "attributes": {},
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/button",
+                                "attributes": {
+                                  "label": "Clear all filters",
+                                  "className": "wp-block-button__link"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "name": "sgs/heading",
+                        "attributes": {
+                          "content": "Colour",
+                          "level": "h3",
+                          "className": "sgs-shop-filters__group-heading",
+                          "fontSize": {
+                            "desktop": 12
+                          },
+                          "fontSizeUnit": "px",
+                          "fontWeight": "400",
+                          "letterSpacing": {
+                            "desktop": 0.18
+                          },
+                          "letterSpacingUnit": "em",
+                          "textTransform": "uppercase"
+                        }
+                      },
+                      {
+                        "name": "woocommerce/product-filter-attribute",
+                        "attributes": {
+                          "attributeId": 2,
+                          "queryType": "or",
+                          "displayStyle": "woocommerce/product-filter-chips",
+                          "showCounts": true
+                        },
+                        "innerBlocks": [
+                          {
+                            "name": "woocommerce/product-filter-chips",
+                            "attributes": {}
+                          }
+                        ]
+                      },
+                      {
+                        "name": "sgs/heading",
+                        "attributes": {
+                          "content": "Price",
+                          "level": "h3",
+                          "className": "sgs-shop-filters__group-heading",
+                          "fontSize": {
+                            "desktop": 12
+                          },
+                          "fontSizeUnit": "px",
+                          "fontWeight": "400",
+                          "letterSpacing": {
+                            "desktop": 0.18
+                          },
+                          "letterSpacingUnit": "em",
+                          "textTransform": "uppercase"
+                        }
+                      },
+                      {
+                        "name": "woocommerce/product-filter-price",
+                        "attributes": {},
+                        "innerBlocks": [
+                          {
+                            "name": "woocommerce/product-filter-price-slider",
+                            "attributes": {}
+                          }
+                        ]
+                      },
+                      {
+                        "name": "sgs/heading",
+                        "attributes": {
+                          "content": "Brand",
+                          "level": "h3",
+                          "className": "sgs-shop-filters__group-heading",
+                          "fontSize": {
+                            "desktop": 12
+                          },
+                          "fontSizeUnit": "px",
+                          "fontWeight": "400",
+                          "letterSpacing": {
+                            "desktop": 0.18
+                          },
+                          "letterSpacingUnit": "em",
+                          "textTransform": "uppercase"
+                        }
+                      },
+                      {
+                        "name": "woocommerce/product-filter-taxonomy",
+                        "attributes": {
+                          "taxonomy": "product_brand",
+                          "displayStyle": "woocommerce/product-filter-checkbox-list",
+                          "showCounts": true
+                        },
+                        "innerBlocks": [
+                          {
+                            "name": "woocommerce/product-filter-checkbox-list",
+                            "attributes": {}
+                          }
+                        ]
+                      },
+                      {
+                        "name": "sgs/heading",
+                        "attributes": {
+                          "content": "Style",
+                          "level": "h3",
+                          "className": "sgs-shop-filters__group-heading",
+                          "fontSize": {
+                            "desktop": 12
+                          },
+                          "fontSizeUnit": "px",
+                          "fontWeight": "400",
+                          "letterSpacing": {
+                            "desktop": 0.18
+                          },
+                          "letterSpacingUnit": "em",
+                          "textTransform": "uppercase"
+                        }
+                      },
+                      {
+                        "name": "woocommerce/product-filter-attribute",
+                        "attributes": {
+                          "attributeId": 3,
+                          "queryType": "or",
+                          "displayStyle": "woocommerce/product-filter-chips",
+                          "showCounts": true
+                        },
+                        "innerBlocks": [
+                          {
+                            "name": "woocommerce/product-filter-chips",
+                            "attributes": {}
+                          }
+                        ]
+                      },
+                      {
+                        "name": "sgs/heading",
+                        "attributes": {
+                          "content": "Material",
+                          "level": "h3",
+                          "className": "sgs-shop-filters__group-heading",
+                          "fontSize": {
+                            "desktop": 12
+                          },
+                          "fontSizeUnit": "px",
+                          "fontWeight": "400",
+                          "letterSpacing": {
+                            "desktop": 0.18
+                          },
+                          "letterSpacingUnit": "em",
+                          "textTransform": "uppercase"
+                        }
+                      },
+                      {
+                        "name": "woocommerce/product-filter-attribute",
+                        "attributes": {
+                          "attributeId": 4,
+                          "queryType": "or",
+                          "displayStyle": "woocommerce/product-filter-checkbox-list",
+                          "showCounts": true
+                        },
+                        "innerBlocks": [
+                          {
+                            "name": "woocommerce/product-filter-checkbox-list",
+                            "attributes": {}
+                          }
+                        ]
+                      },
+                      {
+                        "name": "sgs/heading",
+                        "attributes": {
+                          "content": "Frame type",
+                          "level": "h3",
+                          "className": "sgs-shop-filters__group-heading",
+                          "fontSize": {
+                            "desktop": 12
+                          },
+                          "fontSizeUnit": "px",
+                          "fontWeight": "400",
+                          "letterSpacing": {
+                            "desktop": 0.18
+                          },
+                          "letterSpacingUnit": "em",
+                          "textTransform": "uppercase"
+                        }
+                      },
+                      {
+                        "name": "woocommerce/product-filter-attribute",
+                        "attributes": {
+                          "attributeId": 5,
+                          "queryType": "or",
+                          "displayStyle": "woocommerce/product-filter-checkbox-list",
+                          "showCounts": true
+                        },
+                        "innerBlocks": [
+                          {
+                            "name": "woocommerce/product-filter-checkbox-list",
+                            "attributes": {}
+                          }
+                        ]
+                      },
+                      {
+                        "name": "sgs/heading",
+                        "attributes": {
+                          "content": "Hinge",
+                          "level": "h3",
+                          "className": "sgs-shop-filters__group-heading",
+                          "fontSize": {
+                            "desktop": 12
+                          },
+                          "fontSizeUnit": "px",
+                          "fontWeight": "400",
+                          "letterSpacing": {
+                            "desktop": 0.18
+                          },
+                          "letterSpacingUnit": "em",
+                          "textTransform": "uppercase"
+                        }
+                      },
+                      {
+                        "name": "woocommerce/product-filter-attribute",
+                        "attributes": {
+                          "attributeId": 6,
+                          "queryType": "or",
+                          "displayStyle": "woocommerce/product-filter-checkbox-list",
+                          "showCounts": true
+                        },
+                        "innerBlocks": [
+                          {
+                            "name": "woocommerce/product-filter-checkbox-list",
+                            "attributes": {}
+                          }
+                        ]
+                      },
+                      {
+                        "name": "sgs/heading",
+                        "attributes": {
+                          "content": "Nose pads",
+                          "level": "h3",
+                          "className": "sgs-shop-filters__group-heading",
+                          "fontSize": {
+                            "desktop": 12
+                          },
+                          "fontSizeUnit": "px",
+                          "fontWeight": "400",
+                          "letterSpacing": {
+                            "desktop": 0.18
+                          },
+                          "letterSpacingUnit": "em",
+                          "textTransform": "uppercase"
+                        }
+                      },
+                      {
+                        "name": "woocommerce/product-filter-attribute",
+                        "attributes": {
+                          "attributeId": 7,
+                          "queryType": "or",
+                          "displayStyle": "woocommerce/product-filter-checkbox-list",
+                          "showCounts": true
+                        },
+                        "innerBlocks": [
+                          {
+                            "name": "woocommerce/product-filter-checkbox-list",
+                            "attributes": {}
+                          }
+                        ]
+                      },
+                      {
+                        "name": "sgs/heading",
+                        "attributes": {
+                          "content": "Lenses",
+                          "level": "h3",
+                          "className": "sgs-shop-filters__group-heading",
+                          "fontSize": {
+                            "desktop": 12
+                          },
+                          "fontSizeUnit": "px",
+                          "fontWeight": "400",
+                          "letterSpacing": {
+                            "desktop": 0.18
+                          },
+                          "letterSpacingUnit": "em",
+                          "textTransform": "uppercase"
+                        }
+                      },
+                      {
+                        "name": "woocommerce/product-filter-taxonomy",
+                        "attributes": {
+                          "taxonomy": "product_tag",
+                          "displayStyle": "woocommerce/product-filter-chips",
+                          "showCounts": true
+                        },
+                        "innerBlocks": [
+                          {
+                            "name": "woocommerce/product-filter-chips",
+                            "attributes": {}
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "woocommerce/product-collection",
+                "attributes": {
+                  "queryId": 0,
+                  "query": {
+                    "inherit": true,
+                    "perPage": 24,
+                    "isProductCollectionBlock": true
+                  },
+                  "tagName": "div",
+                  "displayLayout": {
+                    "type": "flex",
+                    "columns": 3,
+                    "shrinkColumns": true
+                  },
+                  "queryContextIncludes": [
+                    "collection"
+                  ]
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "div",
+                      "className": "sgs-shop-toolbar",
+                      "layout": "flex",
+                      "justifyContent": "space-between",
+                      "alignItems": "center",
+                      "flexWrap": "wrap",
+                      "contentWidth": {
+                        "desktop": "full"
+                      },
+                      "margin": {
+                        "desktop": {
+                          "bottom": "18px"
+                        }
+                      }
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "woocommerce/product-results-count",
+                        "attributes": {}
+                      },
+                      {
+                        "name": "woocommerce/catalog-sorting",
+                        "attributes": {}
+                      }
+                    ]
+                  },
+                  {
+                    "name": "woocommerce/product-template",
+                    "attributes": {},
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/product-card",
+                        "attributes": {
+                          "sourceMode": "wc-product",
+                          "showRating": true,
+                          "noReviewsText": "No reviews yet",
+                          "showSavingBadge": true,
+                          "savingBadgePosition": "bottom-left",
+                          "showBrandOverlay": true,
+                          "brandFontFamily": "heading",
+                          "brandFontWeight": "500",
+                          "brandFontSize": {
+                            "desktop": 12.5
+                          },
+                          "brandFontSizeUnit": "px",
+                          "brandLetterSpacing": {
+                            "desktop": 0.26
+                          },
+                          "brandLetterSpacingUnit": "em",
+                          "showPickers": false,
+                          "showDescription": false,
+                          "showCta": false,
+                          "showWishlist": true,
+                          "rrpMetaKey": "_sgs_rrp",
+                          "swatchMaxVisible": 4,
+                          "imageAspectRatio": "1 / 1",
+                          "showShadow": false,
+                          "borderRadius": {
+                            "desktop": {
+                              "topLeft": "0px",
+                              "topRight": "0px",
+                              "bottomLeft": "0px",
+                              "bottomRight": "0px"
+                            }
+                          },
+                          "cardPadding": {
+                            "top": "16px",
+                            "right": "16px",
+                            "bottom": "18px",
+                            "left": "16px"
+                          },
+                          "titleFontFamily": "body",
+                          "titleFontSize": {
+                            "desktop": 16
+                          },
+                          "titleFontSizeUnit": "px",
+                          "titleFontWeight": "400",
+                          "titleLineHeight": 1.25,
+                          "priceFontFamily": "body",
+                          "priceFontSize": {
+                            "desktop": 18
+                          },
+                          "priceFontSizeUnit": "px",
+                          "priceFontWeight": "500",
+                          "showAttributeTag": true,
+                          "attributeTagSource": "tag",
+                          "attributeTagTerm": "polarised",
+                          "attributeTagText": "Polarised"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "core/query-pagination",
+                    "attributes": {
+                      "layout": {
+                        "type": "flex",
+                        "justifyContent": "center"
+                      }
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "core/query-pagination-previous",
+                        "attributes": {}
+                      },
+                      {
+                        "name": "core/query-pagination-numbers",
+                        "attributes": {}
+                      },
+                      {
+                        "name": "core/query-pagination-next",
+                        "attributes": {}
+                      }
+                    ]
+                  },
+                  {
+                    "name": "woocommerce/product-collection-no-results",
+                    "attributes": {},
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/text",
+                        "attributes": {
+                          "text": "Nothing matches all of that. Loosen a filter, or message me and I'll see what I can find.",
+                          "textAlign": "center"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "Every pair is genuine, bought through the brands' authorised UK suppliers, and comes boxed with its own case and cloth. Prescription lenses can go in any of them.",
+              "fontSize": {
+                "desktop": 13
+              },
+              "fontSizeUnit": "px",
+              "textColour": "text-label",
+              "margin": {
+                "desktop": {
+                  "top": "28px"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "core/template-part",
+    "attributes": {
+      "slug": "footer",
+      "tagName": "footer"
+    }
+  }
+]
