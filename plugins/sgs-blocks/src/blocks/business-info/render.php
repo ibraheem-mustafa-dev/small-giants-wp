@@ -524,6 +524,23 @@ if ( '' === $html && ! $sgs_is_editor_render ) {
 	return '';
 }
 
+// Text around a single-line value ("Call the clinic on {phone}, or …"):
+// inserted inside the value's <p>, outside its link, so the Site Info value
+// reads as part of one sentence. The --inline-text modifier switches the <p>
+// from flex to inline flow, so the words wrap as prose and punctuation sits
+// directly against the value.
+$text_before = isset( $attributes['textBefore'] ) ? (string) $attributes['textBefore'] : '';
+$text_after  = isset( $attributes['textAfter'] ) ? (string) $attributes['textAfter'] : '';
+if ( ( '' !== $text_before || '' !== $text_after ) && 0 === strpos( $html, '<p class="sgs-business-info ' ) && '</p>' === substr( $html, -4 ) ) {
+	$html = '<p class="sgs-business-info sgs-business-info--inline-text ' . substr( $html, strlen( '<p class="sgs-business-info ' ) );
+	$open = strpos( $html, '>' ) + 1;
+	$html = substr( $html, 0, $open )
+		. ( '' !== $text_before ? '<span class="sgs-business-info__before">' . esc_html( $text_before ) . '</span>' : '' )
+		. substr( $html, $open, -4 )
+		. ( '' !== $text_after ? '<span class="sgs-business-info__after">' . esc_html( $text_after ) . '</span>' : '' )
+		. '</p>';
+}
+
 // ---------------------------------------------------------------------------
 // NO-INLINE: this block emits zero inline style property declarations.
 // Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js

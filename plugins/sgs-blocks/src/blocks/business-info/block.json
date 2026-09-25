@@ -84,6 +84,16 @@
 			"default": false,
 			"description": "Only read when hoursLayout is 'condensed'. Renders the condensed rows on one line (style.css .sgs-business-hours--condensed-inline), separated by ' · ', instead of stacked rows."
 		},
+		"textBefore": {
+			"type": "string",
+			"default": "",
+			"description": "Text rendered before a single-line value (phone, email, address, copyright…), inside the same paragraph and outside the link, e.g. 'Call the clinic on '. Include any trailing space. Setting this or textAfter switches the line to inline flow."
+		},
+		"textAfter": {
+			"type": "string",
+			"default": "",
+			"description": "Text rendered after a single-line value, inside the same paragraph and outside the link, e.g. ', or send us a message.'."
+		},
 		"copyrightPrefix": {
 			"type": "string",
 			"default": "Copyright",

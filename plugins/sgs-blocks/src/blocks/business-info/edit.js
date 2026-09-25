@@ -40,6 +40,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		hoursClosedLabel,
 		hoursCondensedInline,
 		copyrightPrefix,
+		textBefore,
+		textAfter,
 		iconColour,
 		iconColourGradient,
 		iconColourHover,
@@ -242,6 +244,25 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 					</PanelBody>
 				) }
+
+				<PanelBody title={ __( 'Surrounding Text', 'sgs-blocks' ) } initialOpen={ false }>
+					<TextControl
+						label={ __( 'Text before', 'sgs-blocks' ) }
+						help={ __( 'Shown before the value in the same line, e.g. "Call the clinic on ". Include the trailing space. Single-line values only.', 'sgs-blocks' ) }
+						value={ textBefore ?? '' }
+						onChange={ ( val ) => setAttributes( { textBefore: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<TextControl
+						label={ __( 'Text after', 'sgs-blocks' ) }
+						help={ __( 'Shown straight after the value, e.g. ", or send us a message."', 'sgs-blocks' ) }
+						value={ textAfter ?? '' }
+						onChange={ ( val ) => setAttributes( { textAfter: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</PanelBody>
 
 				{ /* Copyright prefix — only read by render.php when
 				   displayType === 'copyright'. Empty omits the word,

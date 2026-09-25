@@ -41,11 +41,13 @@
  * instance via the custom property. `min()` guarantees the floor can never
  * exceed the row itself, so a very narrow row stacks-free rather than
  * overflowing on the floor's account. `rem` (not px/cqi) so it tracks browser
- * text zoom — WCAG 1.4.4.
+ * text zoom — WCAG 1.4.4. It never exceeds the logo's own authored width
+ * (`--logo-width`, set by sgs/responsive-logo's width control), so a logo set
+ * smaller than the floor keeps its size.
  */
 .sgs-site-header-row .wp-block-sgs-responsive-logo,
 .sgs-site-header-row .wp-block-site-logo {
-	min-width: min(100%, var(--sgs-header-logo-min, 7.5rem));
+	min-width: min(100%, var(--logo-width, var(--sgs-header-logo-min, 7.5rem)), var(--sgs-header-logo-min, 7.5rem));
 }
 
 /* Interactive controls keep a 44px minimum touch target (WCAG 2.5.8).

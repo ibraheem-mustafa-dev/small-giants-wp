@@ -310,7 +310,7 @@ The contract is independent of the editing home:
 - **Header cluster rows NEVER wrap or stack.** `flex-wrap: nowrap` +
   `min-width: 0` on children. The row yields by SHRINKING — gap first, then every child
   proportionally (flexbox's own algorithm; no JS), each stopping at its own floor: interactive
-  controls at 44px, the logo at `min(100%, var(--sgs-header-logo-min, 7.5rem))`.
+  controls at 44px, the logo at `min(100%, var(--sgs-header-logo-min, 7.5rem))`, never above the logo's own authored width (`--logo-width`).
   The logo carries no `flex-shrink: 0` and must not gain one — unshrinkable at 240px it overflows
   a 320px viewport once wrapping is gone (WCAG 1.4.10).
 - **Footer column rows collapse INTRINSICALLY, not at a breakpoint.** The

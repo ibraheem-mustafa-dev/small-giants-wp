@@ -42,6 +42,16 @@
 	margin: 0;
 }
 
+/* textBefore / textAfter set: the value flows inline inside a sentence. */
+.sgs-business-info.sgs-business-info--inline-text {
+	display: block;
+}
+
+.sgs-business-info--inline-text .sgs-business-info__link {
+	display: inline-flex;
+	vertical-align: baseline;
+}
+
 .sgs-business-info__icon {
 	display: inline-flex;
 	align-items: center;

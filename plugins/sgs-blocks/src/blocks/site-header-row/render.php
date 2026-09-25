@@ -7,7 +7,8 @@
  * (style.css), so the row never wraps or stacks — it yields by SHRINKING
  * (gap first, then every child proportionally), each stopping at its own
  * floor: interactive controls at 44px, the logo at
- * min(100%, var(--sgs-header-logo-min, 7.5rem)) (Spec 37 §3.6 / FR-37-12).
+ * min(100%, var(--sgs-header-logo-min, 7.5rem)), never above the logo's own
+ * authored width (Spec 37 §3.6 / FR-37-12).
  *
  * Outer rendering is delegated ENTIRELY to the shared SGS_Container_Wrapper
  * (composite-mirror, R-31-9) — no divergent per-block styling path. The
