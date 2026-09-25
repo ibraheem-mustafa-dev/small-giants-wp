@@ -231,7 +231,7 @@
 		},
 		"fontWeight": {
 			"type": "string",
-			"default": "600"
+			"default": ""
 		},
 		"fontStyle": {
 			"type": "string",
