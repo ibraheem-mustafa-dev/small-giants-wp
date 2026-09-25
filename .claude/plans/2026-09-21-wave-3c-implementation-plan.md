@@ -319,11 +319,10 @@ studionamma clone); wearecollins' social-link dim (Wave 4 wearecollins clone). w
 compact-links starter pattern (`sgs/mega-compact-links-numbered`, authored in the real editor) with a live check of
 icon-list numbers; away's 375 two-up tile scroller, checked on a post built from `sgs/mega-links-with-tiles`; a
 per-page menu VIDEO source (Bean: the thumbnails are often short clips; a featured image can only be an image, so
-GIFs work today); `sgs/mega-panel`'s
-empty `panelBg` falls back to a 92% translucent surface (`render.php`, `$panel_bg_value`) while the same file's tone logic
-treats unset `surfaceOpacity` as opaque, so an untouched panel shows the page through it (Eye Care sets
-`panelBg: surface-alt`; decide an opaque default, with translucency from `surfaceOpacity` only). Delivered from
-this list: `sgs/nav-bar-menu` link padding as a setting (`itemPadding`, 4cf0b9069 and f06b7133f; handed over by the Eye
+GIFs work today). Delivered from
+this list: `sgs/mega-panel`'s opaque default fill (Bean, option a, 2026-09-25): an empty `panelBg` paints the
+surface token and the dark scheme's own fill is opaque `rgb(20,20,25)`; translucency comes only from `surfaceOpacity`,
+the reading the tone logic already used (`render.php::$panel_bg_value`, `::$dark_panel_bg`); `sgs/nav-bar-menu` link padding as a setting (`itemPadding`, 4cf0b9069 and f06b7133f; handed over by the Eye
 Care build; live: 14px 24px read back on the fixture, and the hover shift adds to the custom left padding, 24px + 8px
 = 32px) and a per-run upload name, theme.json payload name and unpacking folder in `build-deploy.py` (7c61b7d16; live:
 the sandybrown deploy used `sgs-deploy-<pid>-<time>` and left nothing in the SSH home). Also fixed after Bean's review: the drawer scrollbar (thin, tinted, no arrows, clear of the rounded corners) and a wheel over an open drawer no longer scrolls the page and closes it (Lenis `prevent` on open dialogs); live `reports/visual-diff/nav-drawer-2026-09-25.md` F1, F2. Batched for the

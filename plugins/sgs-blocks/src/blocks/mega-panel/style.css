@@ -70,7 +70,7 @@
 	--sgs-mm-muted: #9a9992;
 	--sgs-mm-soft: color-mix( in srgb, var( --sgs-mm-accent-bg, var( --wp--preset--color--accent ) ) 16%, transparent );
 	--sgs-mm-soft-image: color-mix( in srgb, var( --sgs-mm-accent-image, var( --wp--preset--color--accent ) ) 16%, transparent );
-	--sgs-mm-panel-bg: rgba( 20, 20, 25, 0.82 );
+	--sgs-mm-panel-bg: rgb( 20, 20, 25 );
 	--sgs-mm-card: rgba( 255, 255, 255, 0.04 );
 	--sgs-mm-panel-border: rgba( 255, 255, 255, 0.11 );
 	color: var( --sgs-mm-text );

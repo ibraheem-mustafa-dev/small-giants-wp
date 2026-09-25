@@ -351,10 +351,12 @@ $accent_border_value = sgs_colour_value( $accent_border_slug );
 $accent_image_value  = sgs_colour_value( $accent_image_slug );
 
 // panelBg: attr value (token slug or raw colour) resolves via sgs_colour_value;
-// empty falls back to a token-based translucent surface default.
+// empty falls back to the opaque surface token. Translucency comes only from
+// `surfaceOpacity` (below), the same reading the tone logic further down uses
+// (unset means opaque), so an untouched panel never shows the page through it.
 $panel_bg_value = '' !== $panel_bg_raw
 	? sgs_colour_value( $panel_bg_raw )
-	: 'color-mix(in srgb, var(--wp--preset--color--surface, #FAF9F6) 92%, transparent)';
+	: 'var(--wp--preset--color--surface, #FAF9F6)';
 
 // Fill translucency (`surfaceOpacity`): mixed onto whatever the fill resolved to. A gradient
 // sibling is handled separately and is left alone by the helper.
@@ -456,11 +458,18 @@ if ( '' !== $group_border_resting_value ) {
 // are emitted: forced `dark`, and `auto` bound to an EXPLICIT
 // `:root[data-theme="dark"]` site switcher. There is no "auto follows OS with
 // no switcher" rule (no prefers-color-scheme-only dark).
+// The dark scheme's own fill is opaque too; `surfaceOpacity` applies to it
+// exactly as to the light fill.
+$dark_panel_bg       = 'rgb(20,20,25)';
+$dark_panel_bg_alpha = sgs_surface_fill_alpha( $dark_panel_bg, $attributes['surfaceOpacity'] ?? null );
+if ( '' !== $dark_panel_bg_alpha ) {
+	$dark_panel_bg = $dark_panel_bg_alpha;
+}
 $dark_props = '--sgs-mm-text:#f3f2ee;'
 	. '--sgs-mm-muted:#9a9992;'
 	. '--sgs-mm-soft:color-mix(in srgb, var(--sgs-mm-accent-bg) 16%, transparent);'
 	. '--sgs-mm-soft-image:color-mix(in srgb, var(--sgs-mm-accent-image) 16%, transparent);'
-	. '--sgs-mm-panel-bg:rgba(20,20,25,.82);'
+	. '--sgs-mm-panel-bg:' . $dark_panel_bg . ';'
 	. '--sgs-mm-card:rgba(255,255,255,.04);'
 	. '--sgs-mm-panel-border:rgba(255,255,255,.11);'
 	. 'color:var(--sgs-mm-text);'
