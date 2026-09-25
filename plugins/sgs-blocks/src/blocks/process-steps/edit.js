@@ -126,6 +126,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		numberColourHover,
 		numberColourHoverGradient,
 		numberBackground,
+		numberFontFamily,
 		titleColour,
 		titleColourGradient,
 		titleColourHover,
@@ -226,6 +227,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		color: colourVar( numberColour ) || undefined,
 		// The list layout draws no badge, so render.php drops the badge fill there.
 		backgroundColor: 'list' === layout ? undefined : colourVar( numberBackground ) || undefined,
+		// numberFontFamily stores the raw CSS font-family STRING verbatim
+		// (TypographyControls' showFontFamily picker, not a preset slug — see
+		// sgs_font_family_sanitise()'s own docblock in helpers-typography.php),
+		// so it can be handed to the canvas style object with no lookup.
+		fontFamily: numberFontFamily || undefined,
 	};
 
 	const titleStyle = resolveTextColourPreviewStyle( titleColour, titleColourGradient, colourVar );
@@ -364,6 +370,23 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						);
 					} )() }
+					{ /* Font-family only — the number badge has no per-instance
+					     size/weight/line-height attrs (numberFontSize/Weight/
+					     LineHeight are honest gaps, still static style.css), so
+					     every other TypographyControls field is switched off.
+					     Reuses the same shared TypographyControls/
+					     sgs_typography_css_rule() mechanism already proven on
+					     the `title` element below, prefix "number" matching the
+					     number element's own attrMap prefix. */ }
+					<TypographyControls showFontFamily
+						showSize={ false }
+						showWeight={ false }
+						showStyle={ false }
+						showLineHeight={ false }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="number"
+					/>
 				</PanelBody>
 			</InspectorControls>
 

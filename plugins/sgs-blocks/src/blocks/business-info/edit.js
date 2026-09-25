@@ -39,6 +39,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		hoursShowClosed,
 		hoursClosedLabel,
 		hoursCondensedInline,
+		copyrightPrefix,
 		iconColour,
 		iconColourGradient,
 		iconColourHover,
@@ -239,6 +240,23 @@ export default function Edit( { attributes, setAttributes } ) {
 								) }
 							</>
 						) }
+					</PanelBody>
+				) }
+
+				{ /* Copyright prefix — only read by render.php when
+				   displayType === 'copyright'. Empty omits the word,
+				   leaving just "© {year} {name}" with no leading space. */ }
+				{ 'copyright' === displayType && (
+					<PanelBody title={ __( 'Copyright Line', 'sgs-blocks' ) } initialOpen={ false }>
+						<TextControl
+							label={ __( 'Copyright prefix', 'sgs-blocks' ) }
+							help={ __( 'Leave empty to show only © and the year.', 'sgs-blocks' ) }
+							value={ copyrightPrefix ?? '' }
+							placeholder={ __( 'Copyright', 'sgs-blocks' ) }
+							onChange={ ( val ) => setAttributes( { copyrightPrefix: val } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
 					</PanelBody>
 				) }
 

@@ -433,9 +433,23 @@ switch ( $display_type ) {
 					$copyright_clean = trim( $name_raw );
 				}
 			}
+			// copyrightPrefix is editable per block (default "Copyright"); an
+			// empty string omits the word entirely with no leading space
+			// left behind. The literal default is run through esc_html__()
+			// so it stays translatable; a custom value the operator typed
+			// is their own text and is only escaped, never translated.
+			$copyright_prefix_raw = isset( $attributes['copyrightPrefix'] ) ? (string) $attributes['copyrightPrefix'] : 'Copyright';
+			$copyright_prefix_raw = trim( $copyright_prefix_raw );
+			if ( '' === $copyright_prefix_raw ) {
+				$copyright_prefix = '';
+			} elseif ( 'Copyright' === $copyright_prefix_raw ) {
+				$copyright_prefix = esc_html__( 'Copyright', 'sgs-blocks' );
+			} else {
+				$copyright_prefix = esc_html( $copyright_prefix_raw );
+			}
 			$html = sprintf(
-				'<p class="sgs-business-info sgs-business-copyright">%s &copy; %s %s</p>',
-				esc_html__( 'Copyright', 'sgs-blocks' ),
+				'<p class="sgs-business-info sgs-business-copyright">%s&copy; %s %s</p>',
+				'' !== $copyright_prefix ? $copyright_prefix . ' ' : '',
 				esc_html( gmdate( 'Y' ) ),
 				esc_html( $copyright_clean )
 			);

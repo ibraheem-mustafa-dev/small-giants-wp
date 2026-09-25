@@ -125,7 +125,8 @@
 					"attrMap": {
 						"css:color": "numberColour",
 						"css:background-color": "numberBackground",
-						"css:background-image": "numberBackgroundGradient"
+						"css:background-image": "numberBackgroundGradient",
+						"css:font-family": "numberFontFamily"
 					},
 					"states": {
 						"hover": {
@@ -139,7 +140,7 @@
 							]
 						}
 					},
-					"_note": "numberStyle (circle/square/none variant) is a structural/variant selector, not a style-cluster member — not mapped. Both colour members resolve via default convention (`number`+`Colour`/`Background`). numberColourHoverGradient (2026-09-05) mirrors the wrapper element's textColourHoverGradient sibling pattern — hover text colour or gradient, ancestor-hover shape (`.step:hover .number{color}`), lifted from sgs/post-grid's textColourHover precedent (see the block's own CLAUDE.md known-precedent registry). When the new `layout` attribute (also a structural/variant selector, not mapped) is 'list', render.php suppresses numberBackground/numberBackgroundGradient/numberBackgroundHover — the number keeps numberColour but paints no badge fill, matching the plain-numbered-copy layout."
+					"_note": "numberStyle (circle/square/none variant) is a structural/variant selector, not a style-cluster member — not mapped. Both colour members resolve via default convention (`number`+`Colour`/`Background`). numberColourHoverGradient (2026-09-05) mirrors the wrapper element's textColourHoverGradient sibling pattern — hover text colour or gradient, ancestor-hover shape (`.step:hover .number{color}`), lifted from sgs/post-grid's textColourHover precedent (see the block's own CLAUDE.md known-precedent registry). When the new `layout` attribute (also a structural/variant selector, not mapped) is 'list', render.php suppresses numberBackground/numberBackgroundGradient/numberBackgroundHover — the number keeps numberColour but paints no badge fill, matching the plain-numbered-copy layout. numberFontFamily (2026-09-25) reuses the shared TypographyControls/sgs_typography_css_rule() mechanism already proven on the `title` element — the only-set-properties-emitted helper is called with prefix 'number' even though numberFontSize/numberFontWeight/numberLineHeight remain honest gaps (unlike `title`, the number's size/weight are still static style.css, not per-instance attrs); only font-family is offered in the editor."
 				},
 				"description": {
 					"label": "Step description",
@@ -449,6 +450,10 @@
 			"default": ""
 		},
 		"numberColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"numberFontFamily": {
 			"type": "string",
 			"default": ""
 		},

@@ -80,6 +80,21 @@
 	color: var(--sgs-social-glyph-hover);
 }
 
+/* Boxed style — outlined's square sibling. A bordered square box around
+ * each glyph (e.g. the Eye Care draft's footer + mobile-menu social row),
+ * rather than outlined's circle. Reads the same --sgs-social-border custom
+ * property as outlined; the only difference is border-radius. */
+.sgs-social-icons--boxed .sgs-social-icons__item {
+	border: 1px solid var(--sgs-social-border);
+	border-radius: 0;
+	padding: 8px;
+}
+
+.sgs-social-icons--boxed .sgs-social-icons__item:hover {
+	border-color: var(--sgs-social-border-hover);
+	color: var(--sgs-social-glyph-hover);
+}
+
 /* Pill style. Reads the same --sgs-social-bg custom property as the other
  * shaped styles (filled/outlined/pill); render.php emits it from
  * iconBackground/iconBackgroundGradient, so an operator's chosen background

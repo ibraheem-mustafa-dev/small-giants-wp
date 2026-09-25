@@ -1050,7 +1050,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 0,
+        "paintDeclarations": 1,
         "replacedCoreSupports": []
       }
     },
@@ -1539,7 +1539,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 13,
+        "paintDeclarations": 15,
         "replacedCoreSupports": [
           "anchor",
           "border",

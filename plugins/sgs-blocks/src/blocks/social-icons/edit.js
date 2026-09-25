@@ -94,6 +94,7 @@ const STYLE_OPTIONS = [
 	{ label: __( 'Plain', 'sgs-blocks' ), value: 'plain' },
 	{ label: __( 'Filled', 'sgs-blocks' ), value: 'filled' },
 	{ label: __( 'Outlined', 'sgs-blocks' ), value: 'outlined' },
+	{ label: __( 'Boxed', 'sgs-blocks' ), value: 'boxed' },
 	{ label: __( 'Pill', 'sgs-blocks' ), value: 'pill' },
 ];
 
@@ -232,15 +233,16 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	// iconBorderColourGradient real mechanism (render.php): a masked
 	// `::before` ring via `sgs_border_gradient_css()`, scoped to
-	// `.sgs-social-icons--outlined .sgs-social-icons__item` — the gradient
-	// border only ever paints on the OUTLINED style variant; plain/filled/pill
-	// have no border to gradient at all. `borderPaintPreview()`'s
-	// `border-image` is the same documented approximation `sgs/container`
-	// already uses for a masked-ring border (real technique needs a
-	// `::before` pseudo-element a plain inline style cannot reach) — applied
-	// only when the style variant actually has a visible border, mirroring
-	// the frontend's selector gate exactly.
-	const itemBorderGradientPreview = 'outlined' === iconStyle
+	// `.sgs-social-icons--outlined .sgs-social-icons__item,
+	// .sgs-social-icons--boxed .sgs-social-icons__item` — the gradient
+	// border only ever paints on the two bordered style variants (outlined:
+	// circular; boxed: square); plain/filled/pill have no border to gradient
+	// at all. `borderPaintPreview()`'s `border-image` is the same documented
+	// approximation `sgs/container` already uses for a masked-ring border
+	// (real technique needs a `::before` pseudo-element a plain inline style
+	// cannot reach) — applied only when the style variant actually has a
+	// visible border, mirroring the frontend's selector gate exactly.
+	const itemBorderGradientPreview = ( 'outlined' === iconStyle || 'boxed' === iconStyle )
 		? borderPaintPreview( iconBorderColour, iconBorderColourGradient, palette )
 		: {};
 	const itemBorderImage = itemBorderGradientPreview.borderImage;
@@ -695,6 +697,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								<BrandIconGlyph
 									platform={ platform }
 									size={ iconSize }
+									colourMode={ colourMode }
 									fallback={ (
 										<IconPreview
 											source="lucide"
@@ -734,6 +737,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									<BrandIconGlyph
 										platform={ icon.platform }
 										size={ iconSize }
+										colourMode={ colourMode }
 										fallback={ (
 											<IconPreview
 												source="lucide"

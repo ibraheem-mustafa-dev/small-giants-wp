@@ -56,8 +56,8 @@ $icon_size    = (int) ( $attributes['iconSize'] ?? 24 );
 $show_labels  = (bool) ( $attributes['showLabels'] ?? false );
 // Icon colour is one attribute PER real CSS property (background-color / border-color / color) because the
 // resting/hover token can feed up to 3 different declarations depending on
-// `iconStyle` (plain: color; filled: background; outlined: border-color +
-// color — simultaneously, both from the same value), and a single
+// `iconStyle` (plain: color; filled: background; outlined/boxed: border-color
+// + color — simultaneously, both from the same value), and a single
 // gradient-capable value can't serve all three (a gradient is not a valid
 // border-color or currentColor value).
 $icon_background                = $attributes['iconBackground'] ?? 'text-muted';
@@ -130,7 +130,7 @@ if ( empty( $icons ) ) {
 }
 
 // Allowlist the style variant so it can never break out of a class/selector.
-$allowed_styles = array( 'plain', 'filled', 'outlined', 'pill' );
+$allowed_styles = array( 'plain', 'filled', 'outlined', 'pill', 'boxed' );
 $style_type     = in_array( $style_type_raw, $allowed_styles, true ) ? $style_type_raw : 'plain';
 
 $platform_icons = array(
@@ -361,10 +361,11 @@ if ( null !== $wrapper_border_radius_mob_val ) {
 	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{border-radius:{$wrapper_border_radius_mob_val};}}";
 }
 
-// --- Border gradient (border builder) — masked ::before, outlined style only. ---
+// --- Border gradient (border builder) — masked ::before, the two bordered
+// styles only (outlined: circular; boxed: square — see style.css). ---
 if ( '' !== $icon_border_gradient ) {
 	$scoped_css[] = sgs_border_gradient_css(
-		"{$root_sel}.sgs-social-icons--outlined .sgs-social-icons__item",
+		"{$root_sel}.sgs-social-icons--outlined .sgs-social-icons__item, {$root_sel}.sgs-social-icons--boxed .sgs-social-icons__item",
 		$icon_border_gradient,
 		'' !== $icon_border_gradient_hover ? $icon_border_gradient_hover : sgs_colour_value( $icon_border_colour_hover ),
 		'1px'
@@ -557,7 +558,7 @@ foreach ( $icons as $icon_item ) {
 		// for why these four platforms can't use their Lucide entry as-is.
 		// Every other platform keeps resolving through the Lucide map below,
 		// unchanged.
-		$brand_icon_svg = sgs_social_icons_get_brand_icon( $platform );
+		$brand_icon_svg = sgs_social_icons_get_brand_icon( $platform, $colour_mode );
 		if ( '' !== $brand_icon_svg ) {
 			$glyph_html = $brand_icon_svg;
 		} else {

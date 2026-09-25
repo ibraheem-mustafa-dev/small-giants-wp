@@ -471,6 +471,15 @@ $desc_scope  = $root_sel . ' .sgs-process-steps__description';
 // from block.json). Prefix "title" matches the title element's own attrMap.
 $scoped_css[] = sgs_typography_css_rule( $attributes, 'title', $title_scope );
 
+// Step number font-family — same shared TypographyControls/
+// sgs_typography_css_rule() mechanism as the title element above, prefix
+// "number" matching the number element's own attrMap prefix. Only
+// numberFontFamily is declared on this element (numberFontSize/Weight/
+// LineHeight remain honest gaps, still static style.css), so every other
+// property this helper reads is simply unset and emits nothing —
+// only-set-properties-emitted, same discipline as every other caller.
+$scoped_css[] = sgs_typography_css_rule( $attributes, 'number', $num_scope );
+
 // 'list' layout paints no badge fill (no circle/square box behind the
 // number) — only numberColour (the text colour) still applies, matching the
 // brief's "number keeps using the block's existing number colour/font

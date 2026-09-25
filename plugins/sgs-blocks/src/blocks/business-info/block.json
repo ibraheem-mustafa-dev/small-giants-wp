@@ -84,6 +84,11 @@
 			"default": false,
 			"description": "Only read when hoursLayout is 'condensed'. Renders the condensed rows on one line (style.css .sgs-business-hours--condensed-inline), separated by ' · ', instead of stacked rows."
 		},
+		"copyrightPrefix": {
+			"type": "string",
+			"default": "Copyright",
+			"description": "Only read by displayType 'copyright'. The word printed before '© {year} {name}'. An empty string omits the word entirely, leaving no leading space (e.g. '© 2026 Acme Ltd')."
+		},
 		"iconColour": {
 			"type": "string",
 			"default": ""

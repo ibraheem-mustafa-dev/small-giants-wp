@@ -24,9 +24,25 @@
 					"order": 1,
 					"clusters": [],
 					"isWrapper": true,
-					"_note": "The `.sgs-mega-group` column wrapper. Carries NO styling attributes of its own by design (parent-paints-child): the parent sgs/mega-panel's scoped CSS paints this element per data-mega-style / data-mega-scheme, so every group restyles uniformly when the panel's style or scheme switches. Its content (a heading + an sgs/icon-list) is child-owned. Honest zero-cluster element."
+					"_note": "The `.sgs-mega-group` column wrapper. Carries NO styling attributes of its own by design (parent-paints-child): the parent sgs/mega-panel's scoped CSS paints this element per data-mega-style / data-mega-scheme, so every group restyles uniformly when the panel's style or scheme switches. Its content (a heading + an sgs/icon-list) is child-owned. Honest zero-cluster element. `url`/`opensInNewTab`/`rel` (below) make this wrapper itself an optional link — render.php renders `<a>` in place of `<div>` when set AND the content carries no nested `<a>`/`<button>`; no style cluster of its own since a link carries no paint, only href/target/rel."
 				}
 			}
+		}
+	},
+	"attributes": {
+		"url": {
+			"type": "string",
+			"default": "",
+			"role": "url-href",
+			"description": "Optional destination for the whole group — when set (and the group's content contains no nested link or button), the group renders as a single `<a>` instead of a `<div>`."
+		},
+		"opensInNewTab": {
+			"type": "boolean",
+			"default": false
+		},
+		"rel": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"editorScript": "file:./index.js",

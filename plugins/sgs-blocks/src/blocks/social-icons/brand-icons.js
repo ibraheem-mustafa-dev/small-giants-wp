@@ -12,8 +12,22 @@
  * licence. Same source/fetch date as `brand-icons.php` — keep both files in
  * sync if a path ever needs updating.
  *
+ * The Google mark is the one exception: in 'brand' colour mode it renders as
+ * the official four-colour "G" (GOOGLE_BRAND_PATHS below) instead of the
+ * single-colour currentColor glyph, mirroring `brand-icons.php`'s
+ * `sgs_social_icons_get_brand_icon( $platform, $colour_mode )`.
+ *
  * @package SGS\Blocks
  */
+
+// Official Google "G" mark, one <path> per brand colour. Same source/fetch
+// date as brand-icons.php's 'google-brand' entry — keep both in sync.
+const GOOGLE_BRAND_PATHS = [
+	{ fill: '#4285F4', d: 'M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z' },
+	{ fill: '#34A853', d: 'M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z' },
+	{ fill: '#FBBC05', d: 'M11.69 28.18A13.8 13.8 0 0 1 11 24c0-1.45.25-2.86.69-4.18v-5.7H4.34A21.9 21.9 0 0 0 2 24c0 3.55.85 6.91 2.34 9.88l7.35-5.7z' },
+	{ fill: '#EA4335', d: 'M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z' },
+];
 
 export const BRAND_ICON_PATHS = {
 	google: 'M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z',
@@ -31,13 +45,35 @@ export const BRAND_ICON_PATHS = {
  * caller-supplied `fallback` element (an `IconPreview`) otherwise.
  *
  * @param {Object}      props
- * @param {string}      props.platform Platform slug.
- * @param {number}      [props.size]   Pixel size of the glyph. Default 24.
- * @param {JSX.Element} props.fallback Element to render when this platform
+ * @param {string}      props.platform    Platform slug.
+ * @param {number}      [props.size]      Pixel size of the glyph. Default 24.
+ * @param {string}      [props.colourMode] The block's `colourMode` attribute
+ *   ('theme' or 'brand'). Only affects 'google', which renders its official
+ *   multi-colour mark in 'brand' mode instead of the flat currentColor glyph
+ *   — a flat "G" can never be officially multi-coloured, mirroring
+ *   `brand-icons.php`'s `sgs_social_icons_get_brand_icon()`.
+ * @param {JSX.Element} props.fallback    Element to render when this platform
  *   has no brand override (the caller's own `IconPreview`).
  * @return {JSX.Element}
  */
-export default function BrandIconGlyph( { platform, size = 24, fallback } ) {
+export default function BrandIconGlyph( { platform, size = 24, colourMode = 'theme', fallback } ) {
+	if ( 'google' === platform && 'brand' === colourMode ) {
+		return (
+			<svg
+				className="sgs-brand-icon sgs-brand-icon-google sgs-brand-icon-google--colour"
+				xmlns="http://www.w3.org/2000/svg"
+				width={ size }
+				height={ size }
+				viewBox="0 0 48 48"
+				role="img"
+			>
+				{ GOOGLE_BRAND_PATHS.map( ( { fill, d } ) => (
+					<path key={ fill } fill={ fill } d={ d } />
+				) ) }
+			</svg>
+		);
+	}
+
 	const path = BRAND_ICON_PATHS[ platform ];
 	if ( ! path ) {
 		return fallback;

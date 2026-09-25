@@ -4,9 +4,15 @@
  * Every colour/shape/arrangement decision for this element is painted by the
  * PARENT sgs/mega-panel's own scoped <style> (keyed on data-mega-style /
  * data-mega-scheme, targeting `.sgs-mega-group` as a descendant —
- * parent-paints-child). This stylesheet carries only the one structural
- * invariant that is true regardless of which style/scheme the parent picks:
- * a group always stacks its own heading above its own link list.
+ * parent-paints-child, tag-agnostic: every selector there keys on the
+ * `.sgs-mega-group` CLASS only, never a `div`-qualified one, so rendering the
+ * element as `<a>` instead of `<div>` — see render.php — changes nothing it
+ * paints). This stylesheet carries only the structural invariants that are
+ * true regardless of which style/scheme the parent picks: a group always
+ * stacks its own heading above its own link list, and a LINKED group (the
+ * `.sgs-mega-group--link` modifier render.php adds when `url` is set) resets
+ * the browser's default anchor styling so it reads as plain content, not a
+ * text link, while staying visibly focusable.
  *
  * @package SGS\Blocks
  */
@@ -15,4 +21,17 @@
 	display: flex;
 	flex-direction: column;
 	min-width: 0;
+}
+
+/* Linked group — reset anchor defaults so the card still reads as content,
+   not a text link; brighten only on hover/focus, never darken (no colour
+   declaration here at all — colour stays whatever the parent paints). */
+.sgs-mega-group--link {
+	color: inherit;
+	text-decoration: none;
+}
+
+.sgs-mega-group--link:focus-visible {
+	outline: 2px solid var( --wp--preset--color--accent, currentColor );
+	outline-offset: 2px;
 }
