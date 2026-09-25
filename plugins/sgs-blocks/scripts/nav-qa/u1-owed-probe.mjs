@@ -128,7 +128,9 @@ if ( 'on' === expect ) {
 	check( /matrix\(1, 0, 0, 1, 0, -6\)/.test( lift ), 'card lift: translateY(-6px) (indus-foods)' );
 	check( Math.abs( restTop - hoverTop - 6 ) < 0.5, 'card lift: the box rises 6px' );
 } else {
-	check( 'none' === lift && Math.abs( restTop - hoverTop ) < 0.5, 'control: no lift' );
+	// An empty lift resolves to translateY(0): `none` or a zero-offset matrix both mean no lift.
+	const zero = 'none' === lift || /matrix\(1, 0, 0, 1, 0, 0\)/.test( lift );
+	check( zero && Math.abs( restTop - hoverTop ) < 0.5, 'control: no lift' );
 }
 
 await noTransitions.evaluate( ( el ) => el.remove() );
