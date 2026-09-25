@@ -18,6 +18,7 @@
 	"parent": [
 		"sgs/form-step"
 	],
+	"usesContext": [ "sgs/choice-flow/productId" ],
 	"supports": {
 		"html": false,
 		"sgs": {
@@ -64,6 +65,11 @@
 			"type": "string",
 			"default": "",
 			"description": "FR-43-17 (v1.4.0): names one group in the site-wide add-on price list (WooCommerce > Add-on prices). When set, this question is a priced add-on step — each option's `value` is expected to be one of that group's option keys, and its price is read from the list at render time, never typed into the block. Empty string = plain question, no pricing."
+		},
+		"productAttribute": {
+			"type": "string",
+			"default": "",
+			"description": "Spec 43 Phase 3/4 (FR-43-10/10a): a `pa_*` taxonomy on the flow's own product. When set, this step is a product-option step — its options are generated from the product's attribute terms at render time (not typed), and it can't be combined with `priceGroup` (the editor clears `priceGroup` when this is chosen). Empty string = not a product-option step."
 		},
 		"options": {
 			"type": "array",
@@ -113,6 +119,21 @@
 						"type": "boolean",
 						"default": false,
 						"description": "FR-43-20 (v1.4.0): choosing this option adds the page's product with NO add-ons and ends the flow (the draft's 'No prescription — keep the lenses they come with'). Clears any add-on answers already accumulated on this path; the operator still routes it to a result step via `nextStepId` (usually the add-to-bag terminal) — this flag only guarantees the add-on list is empty when it gets there."
+					},
+					"isDefault": {
+						"type": "boolean",
+						"default": false,
+						"description": "Spec 43 Phase 3/4 §1/§5: pre-selects this option on load and records it as the answer, without auto-advancing. Rendering this pre-selection (Wave 2, question view.js) is not built here — only the stored flag."
+					},
+					"badge": {
+						"type": "string",
+						"default": "",
+						"description": "Spec 43 Phase 3/4 §1/§5: short pill label (up to 20 characters) rendered on the option card, e.g. 'Popular'. Empty string = no badge. Rendering (Wave 2) is not built here — only the stored value."
+					},
+					"description": {
+						"type": "string",
+						"default": "",
+						"description": "Spec 43 Phase 3/4 §1/§5: one line of explanatory copy (up to 140 characters) rendered under the option's label. Empty string = no description line. Rendering (Wave 2) is not built here — only the stored value."
 					}
 				}
 			}

@@ -21,6 +21,7 @@ import textRow from '../../components/colour-variants/textRow';
 import { colourVar } from '../../utils';
 import PricingSettingsPanel from './PricingSettingsPanel';
 import LinkedFlowPanel from './LinkedFlowPanel';
+import ChromePanel from './ChromePanel';
 
 // Box-object interface contract — length units for the kept-scalar maxWidth
 // attr (base only). Mirrors sgs/notice-banner/edit.js's LENGTH_UNITS exactly
@@ -626,6 +627,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					setAttributes={ setAttributes }
 				/>
 			</InspectorControls>
+			<ChromePanel attributes={ attributes } setAttributes={ setAttributes } />
 
 			<div { ...blockProps }>
 				{ title && (

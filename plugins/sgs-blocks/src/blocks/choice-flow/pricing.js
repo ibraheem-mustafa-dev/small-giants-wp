@@ -216,12 +216,40 @@ function handleVariationChange( event ) {
 		priceMinor: typeof detail.priceMinor === 'number' ? detail.priceMinor : null,
 		decimals: typeof detail.decimals === 'number' ? detail.decimals : 2,
 	};
-	if ( ! live.productId ) {
+	storeLiveBase( live );
+}
+
+/**
+ * Record a live base and re-render every panel. A base a flow's own
+ * product-option steps resolved is never replaced by a page buybox event.
+ *
+ * @param {Object} live Live base (productId, variationId, attributes, priceMinor, decimals, fromFlow?).
+ */
+function storeLiveBase( live ) {
+	if ( ! live.productId || ( liveBases.get( live.productId )?.fromFlow && ! live.fromFlow ) ) {
 		return;
 	}
 	liveBases.set( live.productId, live );
 	lastLiveBase = live;
 	document.querySelectorAll( '[data-wp-interactive="sgs/choice-flow"]' ).forEach( renderPricePanel );
+}
+
+/**
+ * Apply the variation a flow's own product-option steps resolved
+ * (`variation.js`), taking precedence over the page buybox's event.
+ *
+ * @param {HTMLElement} flowRoot Flow wrapper element.
+ * @param {{productId: number, variationId: number, attributes: Object, priceMinor: number|null}} overlay Resolved variation.
+ */
+export function setFlowVariationBase( flowRoot, overlay ) {
+	storeLiveBase( {
+		productId: parseInt( overlay.productId, 10 ) || 0,
+		variationId: parseInt( overlay.variationId, 10 ) || 0,
+		attributes: overlay.attributes && 'object' === typeof overlay.attributes ? overlay.attributes : {},
+		priceMinor: typeof overlay.priceMinor === 'number' ? overlay.priceMinor : null,
+		decimals: parseInt( flowRoot.getAttribute( 'data-flow-decimals' ), 10 ) || 2,
+		fromFlow: true,
+	} );
 }
 
 /**

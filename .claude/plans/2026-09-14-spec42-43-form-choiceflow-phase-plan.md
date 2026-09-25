@@ -29,11 +29,13 @@ yet); per phase-planner's own note, docscore only applies once the plan moves to
 one-function fix with a named test).
 
 **Phase success criteria (done when):**
-- [ ] `class-form-rest-submission.php::handle_submit` refuses the submission (HTTP 503)
+- [x] `class-form-rest-submission.php::handle_submit` refuses the submission (HTTP 503)
       when its `requireLogin` config cannot be resolved, instead of defaulting to `false`
-- [ ] A login-gated form with its config cache cold (or deliberately cleared) rejects an
-      anonymous submission with a clear error, not a silent 200
-- [ ] A login-gated form with its config cache warm still accepts a genuine logged-in
+      (fc6c66444; `tests/php/FormSubmissionTest.php` FR-42-0 block, with a negative control)
+- [x] A login-gated form with its config cache cold (or deliberately cleared) rejects an
+      anonymous submission with a clear error, not a silent 200 (the guard runs before
+      `requireLogin` is read; Phase 1 made the lookup cache-independent via `resolve_form()`)
+- [x] A login-gated form with its config cache warm still accepts a genuine logged-in
       submission (no regression)
 - [ ] Deployed to sandybrown and verified live via a real POST, not just a unit assertion
 

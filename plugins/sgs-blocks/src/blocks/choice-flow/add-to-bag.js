@@ -11,6 +11,24 @@
 
 import { getAddonSummary } from './pricing.js';
 import { collectFlowFields, validateTerminalFields } from './flow-fields.js';
+import { getResolvedVariation } from './variation.js';
+
+/**
+ * Whether this flow ever asked a variation-mode product-option question
+ * (Spec 43 Phase 3/4 contract §2 — `data-flow-combos` is seeded on the flow
+ * root only when at least one descendant `sgs/choice-flow-question` has a
+ * `productAttribute` in variation mode; it's absent for every other flow).
+ * Used to tell "this is a simple/answer-mode flow with no variation to
+ * resolve" (fine — falls straight to the buybox base) apart from "this flow
+ * IS variable but the shopper's picks don't (yet) resolve to a purchasable
+ * combo" (an error, not a silent fallback).
+ *
+ * @param {HTMLElement} flowRoot Flow wrapper element.
+ * @return {boolean} True when the flow has at least one variation-mode step.
+ */
+function flowHasVariationSteps( flowRoot ) {
+	return flowRoot.hasAttribute( 'data-flow-combos' );
+}
 
 /**
  * Handle a click on a `sgs/choice-flow-result` "Add to bag" button
@@ -42,6 +60,12 @@ export async function handleAddToBagClick( buttonEl ) {
 	const endpoint = buttonEl.getAttribute( 'data-endpoint' );
 	const nonce = buttonEl.getAttribute( 'data-nonce' );
 
+	// FR-43-10a / contract §3: the flow's own variation-mode product-option
+	// steps are the authority on what's being bought when they resolve —
+	// they override a page buybox's base, per the same section's precedence
+	// rule. Only when they DON'T resolve (this flow has no such steps at
+	// all) does the existing buybox/seeded base apply.
+	const resolvedVariation = getResolvedVariation( flowRoot );
 	const { productId, variationId, attributes, addons, rows } = getAddonSummary( flowRoot );
 
 	if ( summaryEl ) {
@@ -50,7 +74,19 @@ export async function handleAddToBagClick( buttonEl ) {
 			: '';
 	}
 
-	if ( ! productId && ! variationId ) {
+	if ( flowHasVariationSteps( flowRoot ) && ! resolvedVariation ) {
+		if ( statusEl ) {
+			statusEl.dataset.state = 'error';
+			statusEl.textContent = 'Please choose every option above before adding this to your bag.';
+		}
+		return;
+	}
+
+	const finalProductId = resolvedVariation ? resolvedVariation.productId : productId;
+	const finalVariationId = resolvedVariation ? resolvedVariation.variationId : variationId;
+	const finalAttributes = resolvedVariation ? resolvedVariation.attributes : attributes;
+
+	if ( ! finalProductId && ! finalVariationId ) {
 		if ( statusEl ) {
 			statusEl.dataset.state = 'error';
 			statusEl.textContent = 'No product to add — please start again from the product page.';
@@ -58,8 +94,11 @@ export async function handleAddToBagClick( buttonEl ) {
 		return;
 	}
 
-	const id = variationId > 0 ? variationId : productId;
-	const variation = Object.entries( attributes ).map( ( [ attribute, value ] ) => ( {
+	const id = finalVariationId > 0 ? finalVariationId : finalProductId;
+	// Taxonomy-keyed, per contract §3 ("the proxy accepts taxonomy-keyed
+	// attributes") — identical shape whether the attributes came from the
+	// flow's own resolution or the buybox fallback.
+	const variation = Object.entries( finalAttributes ).map( ( [ attribute, value ] ) => ( {
 		attribute,
 		value,
 	} ) );

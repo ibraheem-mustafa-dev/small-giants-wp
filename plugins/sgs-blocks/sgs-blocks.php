@@ -86,6 +86,9 @@ require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-admin.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-privacy.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-download.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/field-render-helpers.php';
+// Choice-flow email-capture terminal (Spec 43 FR-43-4) — its own self-registering
+// route class, same shape as Flow_Fields_Upload.
+require_once SGS_BLOCKS_PATH . 'includes/forms/class-choice-flow-submit.php';
 
 // Schema output filters.
 require_once SGS_BLOCKS_PATH . 'includes/review-schema.php';
@@ -266,6 +269,7 @@ new Font_Collection();
 
 // Register REST API endpoints.
 Forms\Form_REST_API::register();
+Forms\Choice_Flow_Submit::register();
 
 // No Lucide icon REST bridge is registered: WP 7.0's icon registry
 // (wp-includes/class-wp-icons-registry.php) is deliberately CLOSED to third

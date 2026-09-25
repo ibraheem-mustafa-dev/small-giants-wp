@@ -158,8 +158,83 @@
 .sgs-choice-flow__progress-fill {
 	height: 100%;
 	width: calc(var(--sgs-choice-flow-progress, 0) * 100%);
-	background-color: var(--wp--preset--color--primary, #1F7A7A);
+	/* --sgs-choice-flow-progress-colour is set by render.php's own scoped
+	   <style> (choice-flow-chrome.php::sgs_choice_flow_chrome_progress_colour_css())
+	   only when the progressColour attribute is set — the default below is
+	   byte-identical to this rule's own value before that control existed. */
+	background-color: var(--sgs-choice-flow-progress-colour, var(--wp--preset--color--primary, #1F7A7A));
 	transition: width 250ms ease-out;
+}
+
+/* ===== Root chrome: optional header (Eye Care hand-build design gap) =====
+ * Logo + "Step N of M" eyebrow (client-filled by chrome.js's
+ * mirrorStepEyebrow(), mirroring the existing `.sgs-choice-flow__step-count`
+ * text) + a Close button, shown only when `showHeader` is on
+ * (choice-flow-chrome.php::sgs_choice_flow_chrome_header_html()). Sits ABOVE
+ * this file's own step-indicator row, which stays as-is (it still reads
+ * `.sgs-choice-flow__step-count` — this header duplicates that text, not
+ * the mechanism, so a flow can use one, the other, or neither).
+ */
+.sgs-choice-flow__chrome-header {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-bottom: 16px;
+}
+
+.sgs-choice-flow__chrome-logo {
+	max-height: 32px;
+	width: auto;
+	flex-shrink: 0;
+}
+
+.sgs-choice-flow__chrome-eyebrow {
+	flex: 1 1 auto;
+	font-size: 13px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: var(--wp--preset--color--primary-dark, #0F4C4C);
+}
+
+.sgs-choice-flow__chrome-close {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	min-height: 44px;
+	min-width: 44px;
+	padding: 8px 16px;
+	background-color: transparent;
+	border: none;
+	font-family: inherit;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--wp--preset--color--text, #1A202C);
+	cursor: pointer;
+	flex-shrink: 0;
+}
+
+.sgs-choice-flow__chrome-close[hidden] {
+	display: none;
+}
+
+.sgs-choice-flow__chrome-close:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary, #1F7A7A);
+	outline-offset: 2px;
+}
+
+/* ===== Root chrome: sticky footer (Eye Care hand-build design gap) =====
+ * `stickyFooter:true` pins this file's EXISTING footer (the Back button —
+ * see the plain `.sgs-choice-flow__footer` rule above; a result step's own
+ * primary action renders inside `.sgs-choice-flow__inner` and is unaffected)
+ * to the bottom of the viewport, with safe-area padding for notched devices.
+ */
+.sgs-choice-flow--sticky-footer .sgs-choice-flow__footer {
+	position: sticky;
+	bottom: 0;
+	z-index: 1;
+	background-color: var(--wp--preset--color--surface, #fff);
+	padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
 }
 
 /* ===== Progress style variants (user-directed, 2026-09-15) =====
@@ -199,7 +274,7 @@
 	color: var(--wp--preset--color--text-muted, #606D80);
 	font-size: 13px;
 	font-weight: 600;
-	background-color: #fff;
+	background-color: var(--wp--preset--color--surface, #fff);
 	flex-shrink: 0;
 }
 
@@ -248,8 +323,8 @@
 	height: 30px;
 	padding: 0 10px;
 	border-radius: 999px;
-	border: 2px solid var(--wp--preset--color--primary, #1F7A7A);
-	background-color: #fff;
+	border: 2px solid var(--sgs-choice-flow-progress-colour, var(--wp--preset--color--primary, #1F7A7A));
+	background-color: var(--wp--preset--color--surface, #fff);
 	color: var(--wp--preset--color--primary-dark, #0F4C4C);
 	font-size: 12px;
 	font-weight: 700;

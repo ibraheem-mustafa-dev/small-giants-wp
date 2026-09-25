@@ -1,9 +1,10 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls, RichText } from '@wordpress/block-editor';
 import { PanelBody, TextControl, SelectControl } from '@wordpress/components';
+import { NumberControl } from '../../components/primitives';
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { heading, body, matchTags, action } = attributes;
+	const { heading, body, matchTags, action, rateLimit, emailLabel, submitLabel, successMessage } = attributes;
 
 	const blockProps = useBlockProps( { className: 'sgs-choice-flow-result' } );
 
@@ -31,16 +32,54 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ [
 							{ label: __( 'Recommendation (heading + body)', 'sgs-blocks' ), value: 'recommend' },
 							{ label: __( 'Add to bag', 'sgs-blocks' ), value: 'add-to-bag' },
+							{ label: __( 'Email capture', 'sgs-blocks' ), value: 'email' },
 						] }
 						onChange={ ( val ) => setAttributes( { action: val } ) }
 						help={ __(
-							'Add to bag shows a summary of the chosen add-ons and a real Add to bag button — the product/variation and every priced answer on the path taken.',
+							'Add to bag shows a summary of the chosen add-ons and a real Add to bag button — the product/variation and every priced answer on the path taken. Email capture shows an email form that stores the path’s answers as a form submission.',
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
+				{ 'email' === action && (
+					<PanelBody title={ __( 'Email capture', 'sgs-blocks' ) }>
+						<NumberControl
+							label={ __( 'Rate limit', 'sgs-blocks' ) }
+							value={ rateLimit }
+							min={ 1 }
+							max={ 50 }
+							onChange={ ( value ) =>
+								setAttributes( { rateLimit: parseInt( value, 10 ) || 5 } )
+							}
+							help={ __( 'Maximum submissions accepted per IP address, per hour.', 'sgs-blocks' ) }
+							__next40pxDefaultSize
+						/>
+						<TextControl
+							label={ __( 'Email field label', 'sgs-blocks' ) }
+							value={ emailLabel }
+							onChange={ ( val ) => setAttributes( { emailLabel: val } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+						<TextControl
+							label={ __( 'Submit button label', 'sgs-blocks' ) }
+							value={ submitLabel }
+							onChange={ ( val ) => setAttributes( { submitLabel: val } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+						<TextControl
+							label={ __( 'Success message', 'sgs-blocks' ) }
+							value={ successMessage }
+							onChange={ ( val ) => setAttributes( { successMessage: val } ) }
+							help={ __( 'Shown in place of the form once the submission succeeds.', 'sgs-blocks' ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</PanelBody>
+				) }
 				<PanelBody title={ __( 'Result Matching', 'sgs-blocks' ) }>
 					<TextControl
 						label={ __( 'Match tags', 'sgs-blocks' ) }
@@ -87,6 +126,26 @@ export default function Edit( { attributes, setAttributes } ) {
 						{ __( 'Chosen add-ons will summarise here.', 'sgs-blocks' ) }
 						<button type="button" disabled className="sgs-choice-flow-result__add-to-bag">
 							{ __( 'Add to bag', 'sgs-blocks' ) }
+						</button>
+					</div>
+				) }
+				{ /* Canvas preview only — the real submit handler is built client-side
+				   by choice-flow/email.js; this is a static stand-in so the `action`
+				   attribute reflects visibly in the editor canvas. */ }
+				{ 'email' === action && (
+					<div className="sgs-choice-flow-result__email-form">
+						<label className="sgs-choice-flow-result__email-label" htmlFor="sgs-choice-flow-result-email-preview">
+							{ emailLabel || __( 'Email address', 'sgs-blocks' ) }
+						</label>
+						<input
+							type="email"
+							id="sgs-choice-flow-result-email-preview"
+							className="sgs-choice-flow-result__email-input"
+							disabled
+							placeholder="you@example.com"
+						/>
+						<button type="button" disabled className="sgs-choice-flow-result__email-submit">
+							{ submitLabel || __( 'Submit', 'sgs-blocks' ) }
 						</button>
 					</div>
 				) }

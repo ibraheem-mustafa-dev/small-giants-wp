@@ -17,6 +17,9 @@
     "parent": [
         "sgs/form-step"
     ],
+    "usesContext": [
+        "sgs/choiceFlowId"
+    ],
     "supports": {
         "html": false,
         "anchor": false,
@@ -60,9 +63,28 @@
         },
         "action": {
             "type": "string",
-            "enum": [ "recommend", "add-to-bag" ],
+            "enum": [ "recommend", "add-to-bag", "email" ],
             "default": "recommend",
-            "description": "FR-43-20 (v1.4.0): 'recommend' (default) is this block's original plain result screen. 'add-to-bag' shows a summary of the chosen priced add-ons and an Add to bag button that POSTs the page's product/variation (or the flow's own `flowProductId`) plus every priced answer on the path taken to /sgs/v1/cart/add-item — the same secure proxy sgs/buybox already uses."
+            "description": "FR-43-20 (v1.4.0): 'recommend' (default) is this block's original plain result screen. 'add-to-bag' shows a summary of the chosen priced add-ons and an Add to bag button that POSTs the page's product/variation (or the flow's own `flowProductId`) plus every priced answer on the path taken to /sgs/v1/cart/add-item — the same secure proxy sgs/buybox already uses. 'email' (FR-43-4) shows an email-capture form that POSTs to /sgs/v1/choice-flow/submit — the path's answers plus the address, stored as a form submission and forwarded to N8N, no wp_mail()."
+        },
+        "rateLimit": {
+            "type": "integer",
+            "default": 5,
+            "minimum": 1,
+            "maximum": 50,
+            "description": "FR-43-4: maximum email submissions accepted per IP address, per hour, for this result step. Read server-side only — never trusted from the request."
+        },
+        "emailLabel": {
+            "type": "string",
+            "default": "Email address"
+        },
+        "submitLabel": {
+            "type": "string",
+            "default": "Submit"
+        },
+        "successMessage": {
+            "type": "string",
+            "default": "Thanks — we'll be in touch shortly."
         }
     },
     "render": "file:./render.php",

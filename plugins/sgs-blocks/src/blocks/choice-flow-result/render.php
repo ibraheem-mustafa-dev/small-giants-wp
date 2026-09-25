@@ -49,7 +49,19 @@ $body          = isset( $attributes['body'] ) ? (string) $attributes['body'] : '
 $match_tags    = isset( $attributes['matchTags'] ) && is_array( $attributes['matchTags'] )
 	? array_values( array_filter( array_map( 'sanitize_text_field', $attributes['matchTags'] ) ) )
 	: array();
-$result_action = isset( $attributes['action'] ) && 'add-to-bag' === $attributes['action'] ? 'add-to-bag' : 'recommend';
+$result_action = isset( $attributes['action'] ) && in_array( $attributes['action'], array( 'add-to-bag', 'email' ), true )
+	? $attributes['action']
+	: 'recommend';
+
+$email_label     = isset( $attributes['emailLabel'] ) && '' !== trim( (string) $attributes['emailLabel'] )
+	? (string) $attributes['emailLabel']
+	: __( 'Email address', 'sgs-blocks' );
+$submit_label    = isset( $attributes['submitLabel'] ) && '' !== trim( (string) $attributes['submitLabel'] )
+	? (string) $attributes['submitLabel']
+	: __( 'Submit', 'sgs-blocks' );
+$success_message = isset( $attributes['successMessage'] ) && '' !== trim( (string) $attributes['successMessage'] )
+	? (string) $attributes['successMessage']
+	: __( "Thanks — we'll be in touch shortly.", 'sgs-blocks' );
 
 $wrapper_attributes = get_block_wrapper_attributes(
 	array(
@@ -76,6 +88,39 @@ if ( 'add-to-bag' === $result_action ) {
 	echo ' data-endpoint="' . esc_url( rest_url( 'sgs/v1/cart/add-item' ) ) . '"';
 	echo '>' . esc_html__( 'Add to bag', 'sgs-blocks' ) . '</button>';
 	echo '<div class="sgs-choice-flow-result__cart-status" role="status" aria-live="polite"></div>';
+}
+
+if ( 'email' === $result_action ) {
+	// FR-43-4: flowRef names the flow the route reads its rateLimit config
+	// from. A saved flow's slug reaches this block via block context
+	// (sgs/choiceFlowId — the linking block stamps it onto the saved flow's
+	// root as it renders it); an inline flow has no slug, so it falls back to
+	// "page:<postId>:0", the first flow on the current page
+	// (Choice_Flow_Submit::resolve_flow()).
+	$flow_id_context = isset( $block->context['sgs/choiceFlowId'] ) ? sanitize_title( (string) $block->context['sgs/choiceFlowId'] ) : '';
+	$flow_ref        = '' !== $flow_id_context ? $flow_id_context : ( 'page:' . get_the_ID() . ':0' );
+
+	$field_uid = 'sgs-cfr-email-' . wp_unique_id();
+
+	echo '<form class="sgs-choice-flow-result__email-form" novalidate>';
+	echo '<div class="sgs-choice-flow-result__email-field">';
+	echo '<label class="sgs-choice-flow-result__email-label" for="' . esc_attr( $field_uid ) . '">' . esc_html( $email_label ) . '</label>';
+	echo '<input type="email" id="' . esc_attr( $field_uid ) . '" class="sgs-choice-flow-result__email-input" autocomplete="email" required />';
+	echo '</div>';
+	// No-inline (Spec 32): off-screen honeypot positioning lives in style.css's
+	// .sgs-choice-flow-result__honeypot rule — this div carries only its class.
+	echo '<div class="sgs-choice-flow-result__honeypot" aria-hidden="true">';
+	echo '<label for="' . esc_attr( $field_uid ) . '-hp">' . esc_html__( 'Leave this field empty', 'sgs-blocks' ) . '</label>';
+	echo '<input type="text" id="' . esc_attr( $field_uid ) . '-hp" name="sgs_hp" tabindex="-1" autocomplete="off" />';
+	echo '</div>';
+	echo '<button type="submit" class="sgs-choice-flow-result__email-submit"';
+	echo ' data-nonce="' . esc_attr( wp_create_nonce( 'wp_rest' ) ) . '"';
+	echo ' data-endpoint="' . esc_url( rest_url( 'sgs/v1/choice-flow/submit' ) ) . '"';
+	echo ' data-flow-ref="' . esc_attr( $flow_ref ) . '"';
+	echo '>' . esc_html( $submit_label ) . '</button>';
+	echo '<div class="sgs-choice-flow-result__email-status" role="status" aria-live="polite"></div>';
+	echo '</form>';
+	echo '<div class="sgs-choice-flow-result__email-success" hidden>' . esc_html( $success_message ) . '</div>';
 }
 
 echo '</div>';

@@ -54,7 +54,9 @@ defined( 'ABSPATH' ) || exit;
 // Without this require, that call is an undefined-function FATAL the
 // moment any option carries help text (caught live, 2026-09-15).
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/class-product-manifest.php';
 require_once __DIR__ . '/helpers-addon-pricing.php';
+require_once dirname( __DIR__, 3 ) . '/includes/choice-flow-product-attribute-step.php';
 
 $question       = isset( $attributes['question'] ) ? (string) $attributes['question'] : '';
 $options        = isset( $attributes['options'] ) && is_array( $attributes['options'] ) ? $attributes['options'] : array();
@@ -68,9 +70,38 @@ $price_group   = isset( $attributes['priceGroup'] ) ? (string) $attributes['pric
 $group_options = sgs_choice_flow_addon_group_options( $price_group );
 $group_label   = '' !== $price_group ? sgs_choice_flow_addon_group_label( $price_group ) : '';
 
-$wrapper_attributes = get_block_wrapper_attributes(
-	array( 'class' => 'sgs-choice-flow-question' )
-);
+// Spec 43 Phase 3/4 §1 (FR-43-10/10a): `productAttribute` names a `pa_*`
+// taxonomy on the flow's own product, making this a product-option step —
+// its options are GENERATED from the product's attribute terms rather than
+// typed, merged with any per-term extras stored in `options[]` (keyed by
+// value = term slug). `productAttribute` wins over `priceGroup` when both
+// are set (the editor is responsible for clearing `priceGroup` when this is
+// chosen — see ProductAttributePanel.js).
+$product_attribute = isset( $attributes['productAttribute'] ) ? (string) $attributes['productAttribute'] : '';
+$attribute_mode    = '';
+$generated_options = array();
+if ( '' !== $product_attribute && function_exists( 'wc_get_product' ) ) {
+	$flow_product_id = sgs_choice_flow_resolve_flow_product_id( $block );
+	$flow_product    = $flow_product_id > 0 ? wc_get_product( $flow_product_id ) : false;
+
+	if ( $flow_product ) {
+		$attribute_mode = sgs_choice_flow_product_attribute_mode( $flow_product, $product_attribute );
+
+		if ( 'variation' === $attribute_mode ) {
+			$generated_options = sgs_choice_flow_variation_mode_options( $flow_product_id, $product_attribute );
+		} elseif ( 'answer' === $attribute_mode ) {
+			$generated_options = sgs_choice_flow_answer_mode_options( $flow_product_id, $product_attribute );
+		}
+	}
+}
+$is_product_attribute_step = '' !== $product_attribute && '' !== $attribute_mode && ! empty( $generated_options );
+
+$wrapper_args = array( 'class' => 'sgs-choice-flow-question' );
+if ( $is_product_attribute_step ) {
+	$wrapper_args['data-product-attribute'] = $product_attribute;
+	$wrapper_args['data-attribute-mode']    = $attribute_mode;
+}
+$wrapper_attributes = get_block_wrapper_attributes( $wrapper_args );
 
 echo '<div ' . $wrapper_attributes . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() returns pre-escaped markup.
 
@@ -78,7 +109,45 @@ if ( '' !== $question ) {
 	echo '<h3 class="sgs-choice-flow-question__title">' . esc_html( $question ) . '</h3>';
 }
 
-if ( ! empty( $options ) ) {
+if ( $is_product_attribute_step ) {
+	echo '<ul class="sgs-choice-flow-question__options sgs-choice-flow-question__options--' . esc_attr( $options_layout ) . '">';
+	foreach ( $generated_options as $generated_option ) {
+		$merged       = sgs_choice_flow_merge_option_extras( $generated_option, $options );
+		$label        = (string) $merged['label'];
+		$value        = (string) $merged['value'];
+		$next_step_id = (string) $merged['nextStepId'];
+		$tags         = $merged['tags'];
+		$price_label  = (string) $merged['priceLabel'];
+		$disabled     = ! empty( $merged['disabled'] );
+
+		if ( '' === $label ) {
+			continue;
+		}
+
+		echo '<li class="sgs-choice-flow-question__option">';
+		echo '<button type="button" class="sgs-choice-flow-question__option-button"';
+		echo ' data-value="' . esc_attr( $value ) . '"';
+		echo ' data-product-attribute="' . esc_attr( $product_attribute ) . '"';
+		echo ' data-term="' . esc_attr( $value ) . '"';
+		echo ' data-attribute-mode="' . esc_attr( $attribute_mode ) . '"';
+		echo ' data-next-step-id="' . esc_attr( $next_step_id ) . '"';
+		echo ' data-tags="' . esc_attr( implode( ',', $tags ) ) . '"';
+		if ( '' !== $price_label ) {
+			echo ' data-price-label="' . esc_attr( $price_label ) . '"';
+		}
+		if ( $disabled ) {
+			echo ' disabled aria-disabled="true"';
+		}
+		echo '>';
+		echo '<span class="sgs-choice-flow-question__option-label">' . esc_html( $label ) . '</span>';
+		if ( '' !== $price_label ) {
+			echo '<span class="sgs-choice-flow-question__option-price">' . esc_html( $price_label ) . '</span>';
+		}
+		echo '</button>';
+		echo '</li>';
+	}
+	echo '</ul>';
+} elseif ( ! empty( $options ) ) {
 	echo '<ul class="sgs-choice-flow-question__options sgs-choice-flow-question__options--' . esc_attr( $options_layout ) . '"';
 	if ( '' !== $price_group ) {
 		echo ' data-price-group="' . esc_attr( $price_group ) . '" data-price-group-label="' . esc_attr( $group_label ) . '"';

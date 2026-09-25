@@ -84,6 +84,8 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__ ) . '/choice-flow-question/helpers-addon-pricing.php';
+require_once dirname( __DIR__, 3 ) . '/includes/choice-flow-chrome.php';
+require_once dirname( __DIR__, 3 ) . '/includes/choice-flow-variation-seed.php';
 
 // FR-43-6 — a linked flow renders the referenced sgs_choice_flow post's own
 // sgs/choice-flow (its steps, pricing and styling) in place of this block,
@@ -109,7 +111,14 @@ if ( $flow_is_linked ) {
 	}
 
 	$sgs_choice_flow_rendering[ $flow_ref_slug ] = true;
-	echo (string) do_blocks( $referenced_flow->post_content ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- do_blocks() output is core-trusted block HTML, same provenance as sgs/form's linked path.
+	// The referenced post's own root carries the slug as flowId (never
+	// flowIsLinked), so its steps know which saved flow they belong to.
+	foreach ( parse_blocks( $referenced_flow->post_content ) as $flow_part ) {
+		if ( 'sgs/choice-flow' === $flow_part['blockName'] ) {
+			$flow_part['attrs']['flowId'] = $flow_ref_slug;
+		}
+		echo render_block( $flow_part ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core-rendered block HTML, same provenance as sgs/form's linked path.
+	}
 	unset( $sgs_choice_flow_rendering[ $flow_ref_slug ] );
 	return;
 }
@@ -187,9 +196,12 @@ $back_css = sgs_button_element_style_css( $attributes, 'back', "{$root_sel} .sgs
 if ( '' !== $back_css ) {
 	$scoped_css[] = $back_css;
 }
+$scoped_css[] = sgs_choice_flow_chrome_progress_colour_css( $attributes, $root_sel );
+
+$inner_parsed = isset( $block->parsed_block['innerBlocks'] ) && is_array( $block->parsed_block['innerBlocks'] ) ? $block->parsed_block['innerBlocks'] : array();
 
 $wrapper_args = array(
-	'class'                 => 'sgs-choice-flow ' . $uid,
+	'class'                 => trim( 'sgs-choice-flow ' . $uid . ' ' . sgs_choice_flow_chrome_classes( $attributes ) ),
 	'data-wp-interactive'   => 'sgs/choice-flow',
 	// FR-43-19/20: the flow's first-paint product/price, read by view.js's
 	// pricing module. A live `sgs-variation-change` event (item 5, the page's
@@ -209,11 +221,15 @@ if ( '' !== $flow_title ) {
 
 $wrapper_attributes = get_block_wrapper_attributes( $wrapper_args );
 
+$scoped_css = array_filter( $scoped_css );
 if ( $scoped_css ) {
 	echo '<style>' . wp_strip_all_tags( implode( '', $scoped_css ) ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_strip_all_tags() blocks a </style> breakout; every value above is pre-sanitised via sgs_css_length_value()/sgs_box_object_shorthand() (contract §D, matches sgs/quote + sgs/notice-banner).
 }
 
-echo '<div ' . $wrapper_attributes . ' data-progress-style="' . esc_attr( $progress_style ) . '">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() returns pre-escaped markup.
+echo '<div ' . $wrapper_attributes . sgs_choice_flow_variation_seed_attr( $inner_parsed, $resolved_product_id ) . ' data-progress-style="' . esc_attr( $progress_style ) . '">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() and the seed helper return pre-escaped markup.
+
+$step_total = count( array_filter( $inner_parsed, static fn( $b ) => 'sgs/form-step' === ( $b['blockName'] ?? '' ) ) );
+echo sgs_choice_flow_chrome_header_html( $attributes, $step_total ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper returns pre-escaped markup.
 
 echo '<div class="sgs-choice-flow__header">';
 echo '<div class="sgs-choice-flow__step-indicator">';

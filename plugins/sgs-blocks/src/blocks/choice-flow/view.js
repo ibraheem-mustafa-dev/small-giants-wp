@@ -70,6 +70,9 @@ import { INFO_TOGGLE_SELECTOR, handleInfoToggleClick } from '../../shared/info-t
 import { initPricePanel, recordAddonAnswer, resetAddonAnswers } from './pricing.js';
 import { handleAddToBagClick } from './add-to-bag.js';
 import { recordPlainAnswer, forgetAnswersFrom, uploadFlowFile } from './flow-fields.js';
+import { initVariation, clearVariationChoicesAfter, handleProductOptionClick } from './variation.js';
+import { initChrome } from './chrome.js';
+import { initEmailResults } from './email.js';
 
 const TERMINAL_SENTINEL = '__terminal__';
 
@@ -527,6 +530,7 @@ function handleOptionClick( buttonEl ) {
 		flowState.set( flowRoot, { tags: new Set(), history: [] } );
 	}
 	const instanceState = flowState.get( flowRoot );
+	handleProductOptionClick( flowRoot, buttonEl, currentIndex );
 
 	const rawTags = buttonEl.getAttribute( 'data-tags' ) || '';
 	rawTags
@@ -550,7 +554,7 @@ function handleOptionClick( buttonEl ) {
 			buttonEl.getAttribute( 'data-price-label' ) || '',
 			buttonEl.getAttribute( 'data-price' ) || '0'
 		);
-	} else {
+	} else if ( 'variation' !== buttonEl.getAttribute( 'data-attribute-mode' ) ) {
 		// FR-43-21: an unpriced answer travels with the purchase as a field.
 		recordPlainAnswer( flowRoot, currentIndex, currentStepEl, buttonEl );
 	}
@@ -616,6 +620,7 @@ function handleBackClick( buttonEl ) {
 
 	const previousIndex = instanceState.history.pop();
 	forgetAnswersFrom( flowRoot, previousIndex );
+	clearVariationChoicesAfter( flowRoot, previousIndex );
 	showStepByIndex( flowRoot, previousIndex );
 	persistFlowState( flowRoot, previousIndex, instanceState.tags, instanceState.history );
 }
@@ -637,6 +642,7 @@ function initFlow( flowRoot ) {
 	// render.php data attributes, and bind the page-wide variation-change
 	// listener once. Independent of step restoration below.
 	initPricePanel( flowRoot );
+	initVariation( flowRoot );
 
 	const restored = restoreFlowState( flowRoot );
 
@@ -657,7 +663,11 @@ function initFlow( flowRoot ) {
  * Bootstrap every `sgs/choice-flow` instance present on the page.
  */
 function initAllFlows() {
-	document.querySelectorAll( FLOW_SELECTOR ).forEach( initFlow );
+	document.querySelectorAll( FLOW_SELECTOR ).forEach( ( flowRoot ) => {
+		initFlow( flowRoot );
+		initChrome( flowRoot );
+		initEmailResults( flowRoot, () => Array.from( flowState.get( flowRoot )?.tags || [] ) );
+	} );
 }
 
 // Single delegated click listener — resolves the actual option button via

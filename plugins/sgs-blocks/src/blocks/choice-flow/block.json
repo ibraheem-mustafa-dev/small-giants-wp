@@ -158,7 +158,36 @@
 			"type": "integer",
 			"default": 0,
 			"description": "FR-43-20 (v1.4.0): the product this flow adds to the bag when it is NOT embedded on that product's own page (where the page's own product/variation is used instead — see render.php). 0 = none set; a flow with priced add-on steps and no product set here, opened off a product page, cannot resolve a base price."
+		},
+		"progressColour": {
+			"type": "string",
+			"default": "",
+			"description": "Root polish (Eye Care hand-build design gap): the progress bar fill's colour, a palette slug or hex. Empty = the existing default (the 'primary' token, unchanged from before this control existed)."
+		},
+		"showHeader": {
+			"type": "boolean",
+			"default": false,
+			"description": "Root polish: an optional header row above the progress bar — a logo, a 'Step N of M' eyebrow and a Close button (only shown when the flow is inside an sgs/modal)."
+		},
+		"headerLogo": {
+			"type": "object",
+			"default": {},
+			"description": "Root polish: the optional header's logo image, {id,url,alt}. Empty object = no logo shown."
+		},
+		"closeLabel": {
+			"type": "string",
+			"default": "Close",
+			"description": "Root polish: the header's Close button label, shown as visible text (with a decorative × alongside it, hidden from assistive tech)."
+		},
+		"stickyFooter": {
+			"type": "boolean",
+			"default": false,
+			"description": "Root polish: pins the existing footer (Back button plus the terminal's primary action) to the bottom of the viewport while a step is in view."
 		}
+	},
+	"providesContext": {
+		"sgs/choice-flow/productId": "flowProductId",
+		"sgs/choiceFlowId": "flowId"
 	},
 	"allowedBlocks": [
 		"sgs/form-step"

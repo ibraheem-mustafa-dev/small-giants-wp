@@ -79,3 +79,88 @@
 .sgs-choice-flow-result__cart-status[data-state="error"] {
 	color: var(--wp--preset--color--error, #b3261e);
 }
+
+/* FR-43-4 — 'email' terminal (choice-flow/email.js drives the submit). */
+.sgs-choice-flow-result__email-form,
+.sgs-choice-flow-result__email-form-preview {
+	display: flex;
+	flex-direction: column;
+	gap: var(--wp--preset--spacing--10, 8px);
+	max-width: 24rem;
+}
+
+.sgs-choice-flow-result__email-field,
+.sgs-choice-flow-result__email-form-preview {
+	display: flex;
+	flex-direction: column;
+	gap: var(--wp--preset--spacing--10, 8px);
+}
+
+.sgs-choice-flow-result__email-label {
+	font-size: var(--wp--preset--font-size--small, 14px);
+	font-weight: 600;
+}
+
+.sgs-choice-flow-result__email-input {
+	box-sizing: border-box;
+	width: 100%;
+	min-height: 44px;
+	padding: 0.75rem 1rem;
+	border: 1px solid var(--wp--preset--color--border, #ccc);
+	border-radius: var(--wp--custom--border-radius--small, 4px);
+	font-size: var(--wp--preset--font-size--regular, 16px);
+}
+
+.sgs-choice-flow-result__email-input:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary, #1f7a7a);
+	outline-offset: 2px;
+}
+
+/* Honeypot — hidden offscreen, not display:none, so bots parsing the DOM
+   still see and fill it (same technique as sgs/form's own honeypot). */
+.sgs-choice-flow-result__honeypot {
+	position: absolute;
+	left: -9999px;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+}
+
+.sgs-choice-flow-result__email-submit {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 44px;
+	padding: 12px 24px;
+	border: none;
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	background-color: var(--wp--preset--color--primary, #1f7a7a);
+	color: var(--wp--preset--color--text-inverse, #fff);
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.sgs-choice-flow-result__email-submit:disabled {
+	opacity: 0.6;
+	cursor: default;
+}
+
+.sgs-choice-flow-result__email-submit:hover:not(:disabled) {
+	background-color: var(--wp--preset--color--primary-dark, #14595a);
+}
+
+.sgs-choice-flow-result__email-status {
+	font-size: var(--wp--preset--font-size--small, 14px);
+}
+
+.sgs-choice-flow-result__email-status:empty {
+	display: none;
+}
+
+.sgs-choice-flow-result__email-status[data-state="error"] {
+	color: var(--wp--preset--color--error, #b3261e);
+}
+
+.sgs-choice-flow-result__email-success {
+	font-size: var(--wp--preset--font-size--regular, 16px);
+}

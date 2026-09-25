@@ -12,6 +12,7 @@ import {
 import { VStack } from '../../components/primitives';
 import MediaPicker from '../../components/MediaPicker';
 import AddonPricingPanel from './AddonPricingPanel';
+import ProductAttributePanel from './ProductAttributePanel';
 
 // Reserved sentinel (FR-43-2 / spec brief) — "jump straight to whichever
 // result step is reachable" rather than a specific sibling sgs/form-step.
@@ -35,7 +36,7 @@ function slugifyLabel( label ) {
 		.replace( /^-+|-+$/g, '' );
 }
 
-export default function Edit( { attributes, setAttributes, clientId } ) {
+export default function Edit( { attributes, setAttributes, clientId, context } ) {
 	const { question, options, layout, priceGroup } = attributes;
 
 	const blockProps = useBlockProps( {
@@ -183,6 +184,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
+				<ProductAttributePanel attributes={ attributes } setAttributes={ setAttributes } clientId={ clientId } context={ context } />
 				<AddonPricingPanel
 					priceGroup={ priceGroup }
 					options={ options }
