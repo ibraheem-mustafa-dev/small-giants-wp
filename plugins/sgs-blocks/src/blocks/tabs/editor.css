@@ -62,3 +62,11 @@
 .sgs-tabs__panels .sgs-tab--active {
 	display: block;
 }
+
+/* ─── hideEmptyTabs preview: an empty tab is hidden on the site ─────────────── */
+
+.sgs-tabs__nav .sgs-tabs__tab.sgs-tabs__tab--hidden-when-empty {
+	opacity: 0.55;
+	outline: 1px dashed currentColor;
+	outline-offset: -4px;
+}

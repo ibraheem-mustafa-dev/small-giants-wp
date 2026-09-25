@@ -89,6 +89,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		[ clientId ]
 	);
 
+	// hideEmptyTabs preview: a tab with no blocks inside is dropped on the site,
+	// so the editor marks its button (it stays here so it can still be filled).
+	const tabIsEmpty = useSelect(
+		( select ) =>
+			select( 'core/block-editor' )
+				.getBlocks( clientId )
+				.map( ( block ) => ! ( block.innerBlocks || [] ).length ),
+		[ clientId ]
+	);
+
 	const wrapperClassName = [
 		'sgs-tabs',
 		`sgs-tabs--${ orientation }`,
@@ -490,9 +500,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								className={ [
 									'sgs-tabs__tab',
 									isActive ? 'sgs-tabs__tab--active' : '',
+									hideEmptyTabs && tabIsEmpty[ index ]
+										? 'sgs-tabs__tab--hidden-when-empty'
+										: '',
 								]
 									.filter( Boolean )
 									.join( ' ' ) }
+								title={
+									hideEmptyTabs && tabIsEmpty[ index ]
+										? __( 'Empty: hidden on the site until it has content', 'sgs-blocks' )
+										: undefined
+								}
 								style={ textPreview }
 								aria-selected={ isActive }
 								onClick={ () => setActiveEditorTab( index ) }
