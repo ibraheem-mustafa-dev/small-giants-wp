@@ -312,9 +312,10 @@ M-15 move to `covered`. Correction to U-3 + U-8's row 14: indus-foods' "More" is
 descriptions and numbers). Residue and follow-ups, named: studionamma's up-scale origin (never captured); the hovered
 item's faster return in wearecollins (one duration both ways); resn's canvas dissolve (DEC-01); buck's per-link
 glyphs if they differ (Wave 4 buck clone); studionamma's DARK MODE roll (U-12) and its button's hover word (Wave 4
-studionamma clone); wearecollins' social-link dim (Wave 4 wearecollins clone). Owed, lane A, first: wearecollins'
-two-bar burger (M-27 residue from U-9 + U-11, assigned to this pair's trigger markup and missed by its design; the
-burger's bar count is fixed at three: a two-bar option with its X morph). Then: the numbered
+studionamma clone); wearecollins' social-link dim (Wave 4 wearecollins clone). wearecollins' two-bar burger (M-27 residue from U-9 + U-11, missed by this pair's design) is delivered:
+`burgerBarCount` (design `.claude/reports/2026-09-25-two-bar-burger-design.md`; commits a19a5c6ee, c16bcb949; live
+`reports/visual-diff/nav-drawer-2026-09-25.md` section "Two-bar burger": two bars 6.51px apart cross into an X in
+0.45s on wearecollins' curve; bar thickness and width are a recorded divergence). Owed, lane A: the numbered
 compact-links starter pattern (`sgs/mega-compact-links-numbered`, authored in the real editor) with a live check of
 icon-list numbers; away's 375 two-up tile scroller, checked on a post built from `sgs/mega-links-with-tiles`; a
 per-page menu VIDEO source (Bean: the thumbnails are often short clips; a featured image can only be an image, so

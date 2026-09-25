@@ -68,3 +68,23 @@ blocks: nav-drawer-menu, nav-bar-menu, mega-panel, icon-list
 |---|---|---|---|---|
 | F1 | The drawer's scrollbar was the browser's grey default, and its arrows and bar stuck out of the rounded card | the dialog is the scroll container; `scrollbar-width`/`scrollbar-color` were `auto` (15px); Chrome on Windows keeps its arrow buttons under the standard properties and does not clip the bar to the corners | Chrome and Safari draw it through the `::-webkit-scrollbar` parts: no buttons, a transparent track inset 20px top and bottom, a rounded thumb in a 35% tint of the drawer's text colour (`--sgs-nd-scrollbar-ink` from render.php); Firefox keeps thin standard properties | 441 wide, "Brands" open: the bar is 10px and starts below the corner curve. A dark pixel on the card's top-right corner stays with the scrollbar hidden: it is the header's ✕ behind the card's rounded corner, not the scrollbar |
 | F2 | A wheel over the open drawer closed it, even though the drawer could scroll | Lenis took the wheel and scrolled the PAGE, tripping close-on-scroll: six ticks over the drawer moved the page 719px and closed it; with the dialog opted out of Lenis, 0px and open | `smooth-scroll.js`: Lenis `prevent` hands any open `<dialog>` back to native scrolling | over the drawer: page 0px, drawer open; control, the same wheel over the page outside it: page 719px, drawer closed (close-on-scroll intact). Motion probes all green after the deploy (a first run hit a bad page load and read no effect markup; a rerun passed) |
+
+## Two-bar burger (M-27 residue), 2026-09-25
+
+Design `.claude/reports/2026-09-25-two-bar-burger-design.md`; commits a19a5c6ee, c16bcb949; deployed to sandybrown.
+Fixture `plugins/sgs-blocks/scripts/nav-qa/qa-item-markup-fixture.php two-bar` (exit-cells plus `burgerBarCount: 2`,
+`burgerMorph: x`, 450ms, `cubic-bezier(0.645,0.045,0.355,1)`). Checked on `/qa-scrim/` at 1440 in the chrome-devtools
+window (1.1x zoom: `documentElement.clientWidth` 1295), by clicking the burger and sampling the bars with
+`requestAnimationFrame`.
+
+| Exit cell | Expected | Live |
+|---|---|---|
+| Bar count (wearecollins, halcyon, indus-foods) | 2 | 2 spans; icon `sgs-nav-bar-menu__burger-icon--two-bar`, box 8.49px tall |
+| Bar spacing (halcyon, indus-foods: 1.5px bars, 5px gap = 6.5px centre to centre) | 6.5px | 6.51px (cy 122.44 and 128.95) |
+| Morph timing (wearecollins) | 0.45s `cubic-bezier(0.645,0.045,0.355,1)` | computed `transition: transform 0.45s cubic-bezier(0.645, 0.045, 0.355, 1)`; mid-turn at 120, 225 and 350ms, settled by 600ms |
+| X at open (wearecollins) | two bars crossed at ±45deg in the same slot | `matrix(0.707107, ±0.707107, …, 0, ±3.25)`; both opacity 1; centres 0.01px apart |
+
+Screenshot (local, gitignored): `reports/visual-diff/two-bar-burger-open-1440.png`. Three-bar default: markup byte-identical to the parent
+commit (`tests/php/run-burger-two-bar-standalone.php`, 23 of 23, negative control: the pre-change function given 2
+still draws three bars). Recorded divergence: bar thickness 2px and width 24px against the references' 1.5px and 16
+to 18px.

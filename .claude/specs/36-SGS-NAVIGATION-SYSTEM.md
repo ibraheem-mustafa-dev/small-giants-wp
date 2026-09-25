@@ -707,7 +707,10 @@ label), `triggerIcon` (an `IconPicker` object), `triggerLabel` (default
 **Its pose and timing are operator choices (Wave 3C U-11):** `burgerMorph` (`x` default | `x-rotate`, an X
 plus a 180 degree turn | `line`, the bars collapse onto one line | `none`), `burgerMorphDuration` (ms,
 default 200) and `burgerMorphEasing` (named curves from the theme easing tokens plus a validated custom
-`cubic-bezier()`), delivered as custom properties; reduced motion still wins. The bar items' label magnet
+`cubic-bezier()`), delivered as custom properties; reduced motion still wins. `burgerBarCount` (3 default, or
+2) sets how many bars the default glyph draws; two bars sit 6.5px apart centre to centre and have their own pose
+under every `burgerMorph` value (wearecollins' two bars cross into an X). Bar thickness (2px) and width (24px)
+are structural, a recorded divergence from the references' 1.5px bars 16 to 18px wide. The bar items' label magnet
 takes `itemMagnetStrength` (the pull factor; unset keeps the built-in 0.15 capped at 8px). The burger button
 carries `data-sgs-nav-collapse` (its `collapsePoint`) for FR-36-6's resize rule.
 
