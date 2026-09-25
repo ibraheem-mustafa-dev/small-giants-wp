@@ -4750,7 +4750,7 @@
     "sgs/nav-bar-menu::submenuWritingMode": "select-from-enum",
     "sgs/nav-bar-menu::sweepAngle": null,
     "sgs/nav-bar-menu::triggerDetach": null,
-    "sgs/nav-bar-menu::triggerDetachAfter": null,
+    "sgs/nav-bar-menu::triggerDetachAfter": "behaviour",
     "sgs/nav-bar-menu::triggerDetachBackground": "color",
     "sgs/nav-bar-menu::triggerDetachBackgroundHover": "color",
     "sgs/nav-bar-menu::triggerDetachOffset": null,
