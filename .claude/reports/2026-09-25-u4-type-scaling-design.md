@@ -3,6 +3,27 @@
 Wave 3C lane A. Plan `2026-09-21-wave-3c-implementation-plan.md` §4 row 10; family
 `families-master.json::families[M-45]`; unit `units[U-4]`.
 
+## Decision (Bean, 2026-09-25): cut to vw/vh units
+
+After the council, Bean ruled the formula design too heavy for a niche need: only five design-studio references
+(buck, dogstudio, fantasy, lusion, wearecollins) scale menu type beyond three fixed sizes, and SGS clients are UK SMEs
+who will not. What was built instead (61ae4cf99, live on sandybrown):
+
+- `vw` and `vh` join `px`, `em` and `rem` in the shared typography control's font-size units
+  (`src/components/TypographyControls.js::FONT_SIZE_UNIT_SLUGS`), so any text element in any block with a typography
+  panel can grow with the screen's width or height. The server already kept any unit `sgs_responsive_sanitise_unit`
+  allows. Live: a menu item at 1.5vw read 19.64px at a 1309px window and 24.55px at 1636px (1.5% both times).
+- In passing, `src/blocks/heading/edit.js::buildPreviewFontSize` reads the desktop tier first, so a custom heading size
+  previews in the editor canvas (it string-coerced the tier object to `[object Object]`).
+
+Not built: the formula field, the formula-vs-preset rule in `sgs_font_size_value()` (its first test already misread the
+preset slug `2xl`), per-tier menu line height (no reference needs it; unitless expresses all five). A cloned site that
+needs a formula size (a step, a height rule, a capped vw) puts it in the client's custom CSS in
+`sites/<client>/theme-snapshot.json`; §3 below keeps the exact formula for each reference for those clones. Fantasy's
+per-tier vw sizes are now expressible with the unit alone; lusion and wearecollins are exact with fixed sizes.
+
+The sections below are the design as reviewed, kept as the record of what the formula approach would have needed.
+
 ## 1. The problem
 
 A menu's item text can only take three fixed sizes, one per device tier (desktop, tablet below 1024px, mobile below

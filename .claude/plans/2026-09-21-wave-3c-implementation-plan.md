@@ -328,6 +328,14 @@ later pass: axe with the drawer open, keyboard dim, reduced-motion emulation, th
 controls. Fixture `scripts/nav-qa/qa-item-markup-fixture.php` is applied on sandybrown (`restore` undoes it,
 including the added menu-119 page link and page 2742's featured image).
 
+**U-4 — done, cut to units** (design and Bean's decision `.claude/reports/2026-09-25-u4-type-scaling-design.md`,
+two-model council GO WITH FIXES, then cut by Bean; commit 61ae4cf99; live `reports/visual-diff/nav-drawer-2026-09-25.md`
+section "U-4"). Formula type sizes were ruled too niche for SME clients: `vw` and `vh` join the shared typography
+control's font-size units instead, so every text element can grow with the screen; `sgs/heading`'s editor preview of a
+custom size is fixed on the way. M-45 is covered for fixed and vw-scaled sizes (lusion, wearecollins exact; fantasy by
+per-tier vw); buck's and dogstudio's step and height rules go in each clone's custom CSS (`sites/<client>/theme-snapshot.json`),
+with the exact formula for each in the design note's §3. Per-tier menu line height is not built (no reference needs it).
+
 Sizes are `families-master.json::units[].size` at full scope. Convert per
 `~/.claude/rules/time-estimates.md`: medium 30 to 60 minutes, high 1 to 2 hours, the whole
 chain about 4 sessions with U-12's eight blocks running in parallel throughout. Revise

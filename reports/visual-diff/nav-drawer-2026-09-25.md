@@ -88,3 +88,18 @@ Screenshot (local, gitignored): `reports/visual-diff/two-bar-burger-open-1440.pn
 commit (`tests/php/run-burger-two-bar-standalone.php`, 23 of 23, negative control: the pre-change function given 2
 still draws three bars). Recorded divergence: bar thickness 2px and width 24px against the references' 1.5px and 16
 to 18px.
+
+## U-4 (type scaling, cut to vw/vh units), 2026-09-25
+
+Commit 61ae4cf99, deployed to sandybrown (all 120 fast gates, the 4 full gates and the 3 live motion probes green). The
+fixture's `sgs/nav-bar-menu` (header 3777) was set to `itemFontSize: {desktop: 1.5}`, `itemFontSizeUnit: vw` on
+`/qa-scrim/`, read in the chrome-devtools window, then the two keys were removed again (the pre-fixture backup has
+neither).
+
+| Window (`window.innerWidth`) | Expected (1.5%) | `.sgs-nav-bar-menu__link` computed font-size |
+|---|---|---|
+| 1309px | 19.635px | 19.6364px |
+| 1636px | 24.54px | 24.5455px |
+
+The server build carries the new unit list (`build/blocks/heading/index.js` contains `"vw","vh"`). The editor picker and
+the heading preview fix join the batched editor round-trip pass.
