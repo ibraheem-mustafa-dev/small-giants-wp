@@ -6564,6 +6564,16 @@
 				"role": "behaviour"
 			},
 			"_why": "2026-09-25 (Wave 3C U-7). The degrees the accordion expander glyph turns while its <details> is open: an open-state behaviour of the disclosure control. The layout cluster's css:transform member applies to the OUTER layer only."
+		},
+		{
+			"slug": "sgs/product-card",
+			"attr": "productId",
+			"fields": {
+				"css_property": null,
+				"css_tier": null,
+				"css_layer": null
+			},
+			"_why": "MIS-DERIVED css_property cleared 2026-09-25. productId is the connected product's ID (content), not a style. The emission probe saw different CSS when the product changed (the live product now fills the brand, colour dots and RRP, each with its own scoped rules) and read that as grid-template-columns."
 		}
 	]
 }
