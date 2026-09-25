@@ -23,7 +23,7 @@
  *   node scripts/wp-build-page.js --env-file .claude/secrets/eye-care-test.env --env-key EYECARETEST \
  *     --tree tree.json (--post-id 123 | --create page --title "About" --slug about) [--status publish] [--dry-run]
  *
- *   --create takes a post type: page, sgs_header, sgs_footer, sgs_drawer, sgs_modal, sgs_mega_menu, wp_block.
+ *   --create takes a post type: page, sgs_header, sgs_footer, sgs_drawer, sgs_modal, sgs_mega_menu, sgs_form, wp_block.
  *   --post-id replaces the whole content of an existing post.
  *   --dry-run validates the tree in the editor and saves nothing.
  *
