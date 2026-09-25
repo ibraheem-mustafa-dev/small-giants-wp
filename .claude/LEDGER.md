@@ -52,22 +52,20 @@ Plan: `plans/2026-09-24-eye-care-hand-build-design.md` (Status block = current t
 Ward End Eye Care - SGS Gap Handoff/`, live at https://mintcream-lyrebird-224487.hostingersite.com/. Test site:
 https://darkcyan-grouse-898606.hostingersite.com (creds `.claude/secrets/eye-care-test.env`).
 
-**Now.** Wave B is done and live (2026-09-25): all pages, the nine close-out items and close-out part 2 (new
-settings: business-info copyright prefix and text around a value, mega-group card link, process-steps number font,
-social-icons boxed style with the four-colour Google mark; container desktop-only templates inherit down and a
-grid child's own min-height now applies; icon-list link decoration; header logo floor capped by its width). Pages are
-built through the editor with `scripts/wp-build-page.js` from `sites/eye-care-ward-end/build/`. main and eye-care-test
-at 35f25de0b (trees 2004930f6). No blockers. Header, footer, mobile menu and mega panels are left to the nav track's
-rebuild (Bean, 2026-09-25).
+**Now (2026-09-25).** Wave C tasks 1-3 DONE, live on eye-care-test and verified at 1440/768/375: the shared listing
+card (Home best sellers), the product page (the site's own `single-product` template; real frame sizes from
+jpopticians.com) and the shop (the site's own `archive-product` template; brand filter proven, `?brands=`). Task 4
+(lens configurator) IN FLIGHT: Spec 43 v1.4.0 adds the add-on price list (1aaa11f37); framework agent work was left
+UNCOMMITTED in the tree when the session ended (`plugins/sgs-blocks/includes/addon-price-list/`, `src/blocks/modal/`,
+possibly `src/blocks/choice-flow*` and `product-card/view.js`): review, gate, commit, reseed, deploy before building
+on it. Header, footer, mobile menu and mega panels stay with the nav track (Bean, 2026-09-25). No blockers.
 
-**Resume from:** the plan's Status block, "Wave C: next": the shared product card and product page (zero-reviews
-first), the shop archive, the lens configurator (Spec 43 add-on price list, then choice-flow Phases 3-4), the
-size-guide modal, bag and checkout with the prescription step; the four "Wave B residuals" are listed there. Then
-Phase 7 (plan §7).
+**Resume from:** the plan's Status block, "Wave C progress" and "Wave C: next" (task 4 onward); product page detail in
+`plans/2026-09-25-eye-care-product-page.md`.
 
-**Parked (detail in the plan's Status block):** product-page tabs decision (Bean); `disabled` as a golden state
-(Bean, only if wanted); product-field bindings build; RRP/stock label per variation; nav-drawer badge/disabled; the
-shared `IconPicker` `id` prop; `extract-signatures.py` reads only render.php.
+**Parked (detail in the plan's Status block and the task plans):** owed product-page and shop polish; theme default
+shop template hard-codes another client's filters; the theme's 1280px shop-columns container rule never applies;
+`disabled` as a golden state (Bean, only if wanted); nav-drawer badge/disabled; the shared `IconPicker` `id` prop.
 
 ### Spec 36+37 merged track (after Front F)
 

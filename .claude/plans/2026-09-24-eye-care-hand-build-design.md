@@ -103,6 +103,20 @@
   has no swatch display), a Gender filter (no gender data seeded), brand search box. Framework debt found: the theme's
   default `archive-product.html` hard-codes another client's filters (Flavour/Size by attribute ID), and its
   `@container sgs-shop-grid (min-width:1280px)` columns rule queries its own container so it has never applied.
+- **Wave C task 4 (lens configurator) IN FLIGHT (2026-09-25):** Spec 43 v1.4.0 FR-43-17 to FR-43-20 committed
+  (1aaa11f37). Framework, UNCOMMITTED at session end, to review and finish: (A) `plugins/sgs-blocks/includes/
+  addon-price-list/` (option `sgs_addon_price_list`; `sgs_addon_price_list()`, `sgs_addon_group()`,
+  `sgs_addon_resolve()`, `sgs_addon_summary()`; WooCommerce > Add-on prices page; cart hooks; `/sgs/v1/cart/add-item`
+  optional `addons` arg; `wp sgs addon-prices seed`; `woo-seed/addon-prices.json`); (B) choice-flow priced add-on
+  questions (`priceGroup`, option `addToBagNow`), live price panel (`showPricePanel`), result `action: add-to-bag`,
+  and the `sgs-variation-change` window event from `product-card/view.js` (may not have been written); (C)
+  `sgs/modal` `triggerStyle: none` and `size: fullscreen`. Lens option pictures rendered from the draft's own SVGs:
+  `sites/eye-care-ward-end/assets/lens-options/*.png`, uploaded to eye-care-test media 447-458 (finish clear 447,
+  photo 448, pol 449, tint 450; thickness std 451, thin 452, ultra 453, xthin 454; use distance 455, none 456,
+  reading 457, varifocal 458). Content still to build: an `sgs_modal` post (fullscreen, no trigger, anchor
+  `lens-configurator`) holding the choice-flow (steps "What will you use them for?", "How thin would you like
+  them?", "What finish?" from the draft, then the result), placed in the product template with the "Add my
+  prescription" button linking `#lens-configurator`.
 - **Wave C: next** (Bean, 2026-09-25: pages and the configurator while the nav track rebuilds header, footer and
   menus; do not touch those surfaces). Order: (1) the shared product card (the draft's Frame Card: brand, heart,
   SAVE badge, stars, 4-up at 1280; Home's best sellers use it), then the product page, zero-reviews state first;
