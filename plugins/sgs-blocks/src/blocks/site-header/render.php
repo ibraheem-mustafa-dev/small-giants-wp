@@ -82,6 +82,13 @@ if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
 		$sh_color_args['text'] = $sh_text_value;
 	}
 }
+// The header's own RESTING background-colour value (before any Transparent/
+// Force-solid overlay) — captured here so it can be REUSED, not recomputed,
+// as the concrete replacement Transparent's per-tier "off" cancel paints
+// (sgs_merge_tri_state_declarations()'s optional `fallback` map, below). '' means
+// the header genuinely has no colour fill at this tier (Transparent's off-fallback
+// then reads 'transparent', matching this exact resting state).
+$sh_resting_bg_color = '';
 if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour']
 	&& empty( $attributes['backgroundColourGradient'] ) ) {
 	$sh_bg_value = sgs_colour_value( (string) $attributes['backgroundColour'] );
@@ -90,9 +97,11 @@ if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundC
 	// translucent fill is written as its own scoped rule instead of going through it.
 	$sh_bg_alpha = sgs_surface_fill_alpha( $sh_bg_value, $attributes['surfaceOpacity'] ?? null );
 	if ( '' !== $sh_bg_alpha ) {
-		$css .= $root_sel . '{background-color:' . $sh_bg_alpha . ';}';
+		$css               .= $root_sel . '{background-color:' . $sh_bg_alpha . ';}';
+		$sh_resting_bg_color = $sh_bg_alpha;
 	} elseif ( '' !== $sh_bg_value ) {
 		$sh_color_args['background'] = $sh_bg_value;
+		$sh_resting_bg_color          = $sh_bg_value;
 	}
 }
 // Background GRADIENT (`backgroundColourGradient`) — a BLOCK-PRIVATE attribute (never
@@ -116,8 +125,13 @@ $sh_gradient_paint = sgs_background_paint_value(
 	(string) ( $attributes['backgroundColour'] ?? '' ),
 	(string) ( $attributes['backgroundColourGradient'] ?? '' )
 );
+// The header's own RESTING gradient value ('' when none/invalid) — reused
+// below both as Transparent's off-fallback and (passed through, unchanged
+// resolution) by Force-solid, instead of a third independent resolution.
+$sh_resting_bg_image = '';
 if ( 'background-image' === $sh_gradient_paint['property'] ) {
-	$css .= $root_sel . '{background-image:' . $sh_gradient_paint['value'] . ';}';
+	$css                .= $root_sel . '{background-image:' . $sh_gradient_paint['value'] . ';}';
+	$sh_resting_bg_image = $sh_gradient_paint['value'];
 }
 if ( ! empty( $sh_color_args ) ) {
 	$sh_style_engine_args['color'] = $sh_color_args;
@@ -217,6 +231,18 @@ foreach ( array( 'desktop', 'tablet', 'mobile' ) as $sh_tier ) {
 // declaration is still valid on a tier where no inset resolved.
 $sh_float = isset( $attributes['headerFloat'] ) ? $attributes['headerFloat'] : array();
 
+// Transparent's per-tier "off" FALLBACK for `background` — see
+// sgs_merge_tri_state_declarations()'s docblock (helpers-responsive.php): a
+// tier-cancel `revert` rolls the cascade back past the header's OWN
+// non-`!important` resting-fill rules above (same author origin), not just
+// Transparent's own declaration, so it cannot be relied on to restore them.
+// This reproduces the header's exact resting paint from the SAME resolved
+// values those rules already used ($sh_resting_bg_color/$sh_resting_bg_image
+// above) — never recomputed — so a tier with no colour/gradient at all falls
+// back to 'transparent'/'none', byte-identical to today's resting state.
+$sh_transparent_off_fallback = 'background-color:' . ( '' !== $sh_resting_bg_color ? $sh_resting_bg_color : 'transparent' ) . ' !important;'
+	. 'background-image:' . ( '' !== $sh_resting_bg_image ? $sh_resting_bg_image : 'none' ) . ' !important;';
+
 $css .= sgs_merge_tri_state_declarations(
 	$root_sel,
 	array(
@@ -240,26 +266,35 @@ $css .= sgs_merge_tri_state_declarations(
 		),
 		// Listed before Transparent: a tier that is force-solid has Transparent
 		// resolved off, so the two never write `background` at the same tier.
-		sgs_header_force_solid_entry( $attributes ),
+		// Reuses the resting gradient resolved above instead of resolving it a
+		// second time; force-solid's own colour/surface-token logic is unchanged.
+		sgs_header_force_solid_entry( $attributes, $sh_resting_bg_image ),
 		array(
 			// Under solid-first the header RESTS solid, so the resting rule must
 			// not receive the transparent declarations at all — transparency
 			// moves to the scrolled rule below. Passing an all-off object (not
 			// an empty one) keeps every tier concrete, which is what stops a
 			// stored desktop value cascading back in.
-			'raw'   => $sh_solid_first
+			'raw'      => $sh_solid_first
 				? array(
 					'desktop' => 'off',
 					'tablet'  => 'off',
 					'mobile'  => 'off',
 				)
 				: $sh_transparent_effective,
-			'props' => array(
+			'props'    => array(
 				'position'   => 'absolute',
 				'top'        => '0',
 				'left'       => '0',
 				'right'      => '0',
 				'background' => 'transparent',
+			),
+			// A narrower tier that drops Transparent's `background` (and no other
+			// active behaviour there re-claims it — Force-solid would, via its own
+			// `background` key) repaints the header's real resting fill instead of
+			// a blind `revert`.
+			'fallback' => array(
+				'background' => $sh_transparent_off_fallback,
 			),
 		),
 	),

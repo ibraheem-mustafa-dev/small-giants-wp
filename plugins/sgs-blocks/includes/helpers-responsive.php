@@ -875,13 +875,29 @@ if ( ! function_exists( 'sgs_merge_tri_state_declarations' ) ) {
 	 * behaviour may still contribute its OWN non-colliding properties).
 	 * Narrower tiers still correctly cancel a wider tier's declaration — but
 	 * only for a property that was genuinely active at the wider tier and is
-	 * no longer active at the narrower one (an explicit `revert`), so the
-	 * "narrower tier cancels wider tier" capability is preserved without
-	 * resorting to blind unconditional off-css.
+	 * no longer active at the narrower one. The cancel is `prop:revert
+	 * !important` UNLESS the behaviour that contributed that property at the
+	 * wider tier declares a `fallback` for it (an optional per-behaviour
+	 * `'fallback' => [ prop => 'decl(s) !important;' ]` map alongside `raw`/
+	 * `props`), in which case that caller-supplied declaration text is emitted
+	 * instead. This exists because `revert` rolls the cascade back past the
+	 * WHOLE author origin (every rule in every stylesheet this page owns), not
+	 * just the current declaration — a property whose "off" state must show a
+	 * concrete value that another, non-`!important` author rule already paints
+	 * (e.g. Transparent's `background` cancel needs to repaint the header's own
+	 * resting fill, not fall through to the browser's default) cannot rely on
+	 * `revert` to reach that other rule, because `revert` skips it too. A
+	 * behaviour that has no `fallback` for a property keeps today's `revert`
+	 * (correct for `position`/`top`/`left`/`right`, whose "off" state is
+	 * legitimately the browser default). `fallback` is optional and per-prop;
+	 * omitting it entirely reproduces this function's previous behaviour
+	 * exactly (backward compatible — no signature change).
 	 *
 	 * @param string $selector   Base selector (unqualified — used for every tier).
-	 * @param array  $behaviours List of `[ 'raw' => mixed, 'props' => [ prop => value ] ]`,
-	 *                           in PRECEDENCE order (first wins a shared property).
+	 * @param array  $behaviours List of `[ 'raw' => mixed, 'props' => [ prop => value ],
+	 *                           'fallback' => [ prop => 'decl(s) !important;' ] ]` (the
+	 *                           `fallback` key is optional), in PRECEDENCE order (first
+	 *                           wins a shared property).
 	 * @param string $default   Value `sgs_resolve_tier()` uses when a tier inherits
 	 *                           with nothing wider set (e.g. 'off').
 	 * @param string $on_marker Per-tier value that counts as "on" (default 'on').
@@ -896,10 +912,12 @@ if ( ! function_exists( 'sgs_merge_tri_state_declarations' ) ) {
 			'mobile'  => SGS_Breakpoints::MOBILE_MAX,
 		);
 
-		$active_props_by_tier = array();
+		$active_props_by_tier   = array();
+		$active_source_by_tier  = array();
 		foreach ( $tiers as $tier ) {
-			$props = array();
-			foreach ( $behaviours as $spec ) {
+			$props   = array();
+			$sources = array();
+			foreach ( $behaviours as $b_index => $spec ) {
 				$resolved = sgs_resolve_tier( $spec['raw'], $tier, $default );
 				if ( $on_marker !== $resolved['value'] ) {
 					continue;
@@ -908,17 +926,21 @@ if ( ! function_exists( 'sgs_merge_tri_state_declarations' ) ) {
 					// First-listed behaviour with this tier's ON state wins the
 					// property; a later behaviour may still add its own keys.
 					if ( ! array_key_exists( $prop, $props ) ) {
-						$props[ $prop ] = $value;
+						$props[ $prop ]   = $value;
+						$sources[ $prop ] = $b_index;
 					}
 				}
 			}
-			$active_props_by_tier[ $tier ] = $props;
+			$active_props_by_tier[ $tier ]  = $props;
+			$active_source_by_tier[ $tier ] = $sources;
 		}
 
-		$css        = '';
-		$prev_props = array();
+		$css         = '';
+		$prev_props  = array();
+		$prev_source = array();
 		foreach ( $tiers as $i => $tier ) {
-			$props = $active_props_by_tier[ $tier ];
+			$props   = $active_props_by_tier[ $tier ];
+			$sources = $active_source_by_tier[ $tier ];
 
 			// Skip a tier whose resolved active-property set is identical to
 			// the wider tier's — nothing changed, mirrors sgs_emit_tier_rules()'s
@@ -933,10 +955,17 @@ if ( ! function_exists( 'sgs_merge_tri_state_declarations' ) ) {
 			}
 			// Cancel any property that was active at a WIDER tier but is no
 			// longer active here — the genuine narrow-cancels-wide capability.
+			// Prefer the contributing behaviour's own `fallback` declaration for
+			// that property over a blind `revert` (see the docblock above).
 			foreach ( $prev_props as $prop => $value ) {
-				if ( ! array_key_exists( $prop, $props ) ) {
-					$decls .= $prop . ':revert !important;';
+				if ( array_key_exists( $prop, $props ) ) {
+					continue;
 				}
+				$source_index = $prev_source[ $prop ] ?? null;
+				$fallback     = ( null !== $source_index && isset( $behaviours[ $source_index ]['fallback'][ $prop ] ) )
+					? $behaviours[ $source_index ]['fallback'][ $prop ]
+					: null;
+				$decls       .= null !== $fallback ? $fallback : ( $prop . ':revert !important;' );
 			}
 
 			if ( '' !== $decls ) {
@@ -948,7 +977,8 @@ if ( ! function_exists( 'sgs_merge_tri_state_declarations' ) ) {
 				}
 			}
 
-			$prev_props = $props;
+			$prev_props  = $props;
+			$prev_source = $sources;
 		}
 
 		return $css;
