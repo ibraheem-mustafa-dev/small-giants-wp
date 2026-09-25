@@ -30,6 +30,15 @@
  * yet to bind an action to — inventing a data-wp-interactive contract ahead
  * of that store would be a guess, not a reuse of an existing convention.
  *
+ * Priced add-on step (FR-43-17, v1.4.0): when `priceGroup` names a group in
+ * the site-wide add-on price list, each option's price (read from the list,
+ * never typed into the block — FR-43-18) renders next to its label, and the
+ * button carries `data-price-group` / `data-price` / `data-price-label` so
+ * `sgs/choice-flow`'s own view.js can build the FR-43-19 live price panel
+ * and FR-43-20's add-to-bag payload without a second server round-trip. An
+ * option whose `value` isn't in the group renders with no price (flagged in
+ * the editor only — see edit.js).
+ *
  * @var array     $attributes Block attributes (sanitised by block.json defaults).
  * @var string    $content    Inner block content (unused — this block has no InnerBlocks).
  * @var \WP_Block $block      Block instance.
@@ -45,10 +54,19 @@ defined( 'ABSPATH' ) || exit;
 // Without this require, that call is an undefined-function FATAL the
 // moment any option carries help text (caught live, 2026-09-15).
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once __DIR__ . '/helpers-addon-pricing.php';
 
 $question       = isset( $attributes['question'] ) ? (string) $attributes['question'] : '';
 $options        = isset( $attributes['options'] ) && is_array( $attributes['options'] ) ? $attributes['options'] : array();
 $options_layout = isset( $attributes['layout'] ) && 'list' === $attributes['layout'] ? 'list' : 'grid';
+
+// FR-43-17: this question is a priced add-on step when `priceGroup` names a
+// real group in the site-wide list. `$group_options` is empty (no prices
+// render) when unset, the price-list API doesn't exist yet, or the named
+// group is gone — the question still works as a plain multiple-choice step.
+$price_group   = isset( $attributes['priceGroup'] ) ? (string) $attributes['priceGroup'] : '';
+$group_options = sgs_choice_flow_addon_group_options( $price_group );
+$group_label   = '' !== $price_group ? sgs_choice_flow_addon_group_label( $price_group ) : '';
 
 $wrapper_attributes = get_block_wrapper_attributes(
 	array( 'class' => 'sgs-choice-flow-question' )
@@ -61,7 +79,11 @@ if ( '' !== $question ) {
 }
 
 if ( ! empty( $options ) ) {
-	echo '<ul class="sgs-choice-flow-question__options sgs-choice-flow-question__options--' . esc_attr( $options_layout ) . '">';
+	echo '<ul class="sgs-choice-flow-question__options sgs-choice-flow-question__options--' . esc_attr( $options_layout ) . '"';
+	if ( '' !== $price_group ) {
+		echo ' data-price-group="' . esc_attr( $price_group ) . '" data-price-group-label="' . esc_attr( $group_label ) . '"';
+	}
+	echo '>';
 	foreach ( $options as $option ) {
 		$label        = isset( $option['label'] ) ? (string) $option['label'] : '';
 		$value        = isset( $option['value'] ) ? (string) $option['value'] : '';
@@ -81,6 +103,25 @@ if ( ! empty( $options ) ) {
 		// button at all, not a disabled one.
 		$help_text = isset( $option['helpText'] ) ? (string) $option['helpText'] : '';
 
+		// FR-43-20: this option ends the flow adding the product with no
+		// add-ons. A plain boolean data flag — the actual "end the flow"
+		// behaviour is the operator's own `nextStepId` routing (usually the
+		// add-to-bag terminal); this only tells view.js to clear any add-ons
+		// already accumulated on this path before it gets there.
+		$add_to_bag_now = ! empty( $option['addToBagNow'] );
+
+		// FR-43-17/18: this option's price, read from the list — never from
+		// the option's own stored data. Absent (no price rendered) when this
+		// question isn't a priced step, or this option's value isn't one of
+		// the group's option keys (editor-flagged, not a frontend error).
+		$addon_price_decimal = null;
+		if ( ! empty( $group_options ) ) {
+			$addon_option = sgs_choice_flow_addon_option_by_key( $group_options, $value );
+			if ( null !== $addon_option && isset( $addon_option['price'] ) ) {
+				$addon_price_decimal = (string) $addon_option['price'];
+			}
+		}
+
 		if ( '' === $label ) {
 			continue;
 		}
@@ -91,6 +132,14 @@ if ( ! empty( $options ) ) {
 		echo ' data-value="' . esc_attr( $value ) . '"';
 		echo ' data-next-step-id="' . esc_attr( $next_step_id ) . '"';
 		echo ' data-tags="' . esc_attr( implode( ',', $tags ) ) . '"';
+		if ( $add_to_bag_now ) {
+			echo ' data-add-to-bag-now="1"';
+		}
+		if ( null !== $addon_price_decimal ) {
+			echo ' data-price-group="' . esc_attr( $price_group ) . '"';
+			echo ' data-price="' . esc_attr( $addon_price_decimal ) . '"';
+			echo ' data-price-label="' . esc_attr( $label ) . '"';
+		}
 		echo '>';
 
 		if ( '' !== $image_url ) {
@@ -100,6 +149,11 @@ if ( ! empty( $options ) ) {
 		}
 
 		echo '<span class="sgs-choice-flow-question__option-label">' . esc_html( $label ) . '</span>';
+
+		if ( null !== $addon_price_decimal ) {
+			echo '<span class="sgs-choice-flow-question__option-price">' . esc_html( sgs_choice_flow_format_addon_price( $addon_price_decimal ) ) . '</span>';
+		}
+
 		echo '</button>';
 
 		if ( '' !== $help_text ) {

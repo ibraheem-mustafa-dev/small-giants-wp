@@ -291,3 +291,71 @@
 		transform: none;
 	}
 }
+
+/* ===== Price panel (FR-43-19, v1.4.0) =====
+ * `.sgs-choice-flow__body` wraps the steps + the optional price panel so the
+ * two can sit side by side. Two columns from 1024px up (steps first, panel
+ * beside); below that the panel simply falls to a second row in DOM order —
+ * no reordering needed, `showPricePanel:false` renders no
+ * `.sgs-choice-flow__price-panel` element at all (no empty gap).
+ */
+.sgs-choice-flow__body {
+	display: block;
+}
+
+@media (min-width: 1024px) {
+	.sgs-choice-flow__body--with-panel {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+		gap: 32px;
+		align-items: start;
+	}
+}
+
+.sgs-choice-flow__price-panel {
+	margin-top: 24px;
+	padding: 20px;
+	border: 1px solid var(--wp--preset--color--border, #d4dbe5);
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	background-color: var(--wp--preset--color--surface-alt, #f8f7f4);
+}
+
+@media (min-width: 1024px) {
+	.sgs-choice-flow__price-panel {
+		margin-top: 0;
+		position: sticky;
+		top: 24px;
+	}
+}
+
+.sgs-choice-flow__price-panel-title {
+	margin: 0 0 12px;
+	font-size: 1rem;
+}
+
+.sgs-choice-flow__price-panel-base-row,
+.sgs-choice-flow__price-panel-total-row,
+.sgs-choice-flow__price-panel-rows li {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 6px 0;
+}
+
+.sgs-choice-flow__price-panel-rows {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	border-top: 1px solid var(--wp--preset--color--border, #d4dbe5);
+	border-bottom: 1px solid var(--wp--preset--color--border, #d4dbe5);
+}
+
+.sgs-choice-flow__price-panel-rows:empty {
+	border: none;
+}
+
+.sgs-choice-flow__price-panel-total-row {
+	padding-top: 10px;
+	font-weight: 600;
+}

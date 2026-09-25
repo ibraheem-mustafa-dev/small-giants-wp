@@ -444,6 +444,32 @@ function perUnitDisplay( combo, ctx ) {
 }
 
 /**
+ * Announce the card's currently-resolved product/variation/price to the rest
+ * of the page (Spec 43 FR-43-20 — a `sgs/choice-flow`'s price panel and
+ * add-to-bag terminal have no manifest of their own, so they read this
+ * event instead). Dispatched once on init and again every time
+ * `applyPillSelection()` resolves a new combo — the single place this card's
+ * combo/price is re-resolved.
+ *
+ * @param {Object} ctx The card's live Interactivity context proxy.
+ */
+function dispatchVariationChange( ctx ) {
+	const combo = ctx.combos && ctx.selectedKey ? ctx.combos[ ctx.selectedKey ] : null;
+	window.dispatchEvent(
+		new CustomEvent( 'sgs-variation-change', {
+			detail: {
+				productId: parseInt( ctx.addToCartId, 10 ) || 0,
+				variationId: parseInt( ctx.selectedVariationId, 10 ) || 0,
+				attributes: ctx.selectedAxes || {},
+				priceMinor: combo ? combo.priceMinor : null,
+				decimals: typeof ctx.decimals === 'number' ? ctx.decimals : 2,
+				priceDisplay: ctx.priceDisplay || '',
+			},
+		} )
+	);
+}
+
+/**
  * Apply a pill selection to the card's seeded context (multi-axis, SSR-safe).
  *
  * Mutates the seeded display keys on the live Interactivity proxy so the
@@ -605,6 +631,10 @@ function applyPillSelection( ctx, detail ) {
 				} );
 			}
 		}
+
+		// FR-43-20: this IS "the resolved combo changes" — the single place
+		// this card's combo/price is re-resolved.
+		dispatchVariationChange( ctx );
 	} else {
 		// Invalid/unavailable combination (U5 will pre-grey these pills).
 		// Set a safe non-purchasable state; do not touch price or image.
@@ -731,6 +761,11 @@ store( 'sgs/product-card', {
 
 			// Initial availability pass — no announcement on first paint.
 			applyAvailability( ref, ctx, true );
+
+			// FR-43-20: announce this card's initial product/variation/price once
+			// on load, so a sgs/choice-flow price panel elsewhere on the page has
+			// a value before the shopper ever touches a pill.
+			dispatchVariationChange( ctx );
 
 			ref.addEventListener( 'sgs:option-selected', ( event ) => {
 				applyPillSelection( ctx, event.detail );

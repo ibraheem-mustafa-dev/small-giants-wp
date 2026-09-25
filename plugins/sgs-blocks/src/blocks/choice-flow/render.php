@@ -83,8 +83,30 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__ ) . '/choice-flow-question/helpers-addon-pricing.php';
 
 $flow_title = isset( $attributes['title'] ) ? (string) $attributes['title'] : '';
+
+// -------------------------------------------------------------------------
+// FR-43-19/FR-43-20 (v1.4.0) — price panel + "what is being bought".
+// Resolution order: the page's own product (a single product template) wins
+// — the flow prices/purchases whatever the shopper is already looking at —
+// falling back to `flowProductId` when the flow is used off a product page.
+// The buybox/product-card's own live combo swap (a window
+// `sgs-variation-change` event) overrides this static value client-side the
+// moment it fires; this is only the first-paint value.
+// -------------------------------------------------------------------------
+
+$show_price_panel  = ! empty( $attributes['showPricePanel'] );
+$price_panel_title = isset( $attributes['pricePanelTitle'] ) ? (string) $attributes['pricePanelTitle'] : '';
+$flow_product_id   = isset( $attributes['flowProductId'] ) ? absint( $attributes['flowProductId'] ) : 0;
+
+$page_product_id     = is_singular( 'product' ) ? absint( get_queried_object_id() ) : 0;
+$resolved_product_id = $page_product_id > 0 ? $page_product_id : $flow_product_id;
+
+$flow_price = $resolved_product_id > 0
+	? sgs_choice_flow_resolve_product_price_minor( $resolved_product_id )
+	: null;
 
 // -------------------------------------------------------------------------
 // Box-object interface contract — maxWidth (kept-scalar string) + padding
@@ -138,8 +160,15 @@ if ( '' !== $back_css ) {
 }
 
 $wrapper_args = array(
-	'class'               => 'sgs-choice-flow ' . $uid,
-	'data-wp-interactive' => 'sgs/choice-flow',
+	'class'                 => 'sgs-choice-flow ' . $uid,
+	'data-wp-interactive'   => 'sgs/choice-flow',
+	// FR-43-19/20: the flow's first-paint product/price, read by view.js's
+	// pricing module. A live `sgs-variation-change` event (item 5, the page's
+	// own buybox/product-card) overwrites these client-side the moment it
+	// fires — this is only the value at render time.
+	'data-flow-product-id'  => (string) $resolved_product_id,
+	'data-flow-price-minor' => null !== $flow_price ? (string) $flow_price['minor'] : '',
+	'data-flow-decimals'    => null !== $flow_price ? (string) $flow_price['decimals'] : '2',
 );
 
 if ( '' !== $flow_title ) {
@@ -169,9 +198,35 @@ if ( 'circles' === $progress_style ) {
 }
 
 echo '<div class="sgs-choice-flow__progress" aria-hidden="true"><div class="sgs-choice-flow__progress-fill"></div></div>';
+
+echo '<div class="sgs-choice-flow__body' . ( $show_price_panel ? ' sgs-choice-flow__body--with-panel' : '' ) . '">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed string, no dynamic content.
 echo '<div class="sgs-choice-flow__inner">';
 echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- InnerBlocks content is pre-rendered/sanitised by the block editor's own save pipeline.
 echo '</div>';
+
+// FR-43-19: the live price panel is DISPLAY ONLY — every row + the total is
+// built/updated entirely by view.js's pricing module (it alone knows which
+// priced-add-on options have been chosen along the path taken). This shell
+// only reserves the markup + heading; an empty rows list renders nothing
+// extra (no flash of a stray total before the first paint pass runs).
+if ( $show_price_panel ) {
+	echo '<aside class="sgs-choice-flow__price-panel" aria-live="polite">';
+	if ( '' !== $price_panel_title ) {
+		echo '<h4 class="sgs-choice-flow__price-panel-title">' . esc_html( $price_panel_title ) . '</h4>';
+	}
+	echo '<div class="sgs-choice-flow__price-panel-base-row">';
+	echo '<span class="sgs-choice-flow__price-panel-base-label">' . esc_html__( 'Base price', 'sgs-blocks' ) . '</span>';
+	echo '<span class="sgs-choice-flow__price-panel-base-value"></span>';
+	echo '</div>';
+	echo '<ul class="sgs-choice-flow__price-panel-rows"></ul>';
+	echo '<div class="sgs-choice-flow__price-panel-total-row">';
+	echo '<span class="sgs-choice-flow__price-panel-total-label">' . esc_html__( 'Total', 'sgs-blocks' ) . '</span>';
+	echo '<span class="sgs-choice-flow__price-panel-total-value"></span>';
+	echo '</div>';
+	echo '</aside>';
+}
+
+echo '</div>'; // .sgs-choice-flow__body
 
 // Bottom sticky footer — Back button only (this flow's option-click-to-
 // advance model needs no separate forward button; see render.php's own

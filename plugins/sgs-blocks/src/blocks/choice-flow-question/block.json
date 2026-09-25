@@ -60,6 +60,11 @@
 			"default": "grid",
 			"description": "User-reported gap (2026-09-15): the AthleanX/Invisalign/lens-flow references show several steps with options stacked VERTICALLY, styled differently to a grid step (smaller side-by-side thumbnail rather than a full-width image banner) — 'grid' keeps the existing 1-col-mobile/2-col-desktop card grid; 'list' forces a single-column stacked row layout at every breakpoint, letting an operator vary this per step/question rather than one fixed layout for the whole flow."
 		},
+		"priceGroup": {
+			"type": "string",
+			"default": "",
+			"description": "FR-43-17 (v1.4.0): names one group in the site-wide add-on price list (WooCommerce > Add-on prices). When set, this question is a priced add-on step — each option's `value` is expected to be one of that group's option keys, and its price is read from the list at render time, never typed into the block. Empty string = plain question, no pricing."
+		},
 		"options": {
 			"type": "array",
 			"default": [],
@@ -103,6 +108,11 @@
 						"type": "string",
 						"default": "",
 						"description": "FR-43-16 (v1.3.0): optional per-option explanatory copy, revealed by a floating '?' toggle overlaid on the option card. Empty string = no toggle button renders at all (not a disabled one)."
+					},
+					"addToBagNow": {
+						"type": "boolean",
+						"default": false,
+						"description": "FR-43-20 (v1.4.0): choosing this option adds the page's product with NO add-ons and ends the flow (the draft's 'No prescription — keep the lenses they come with'). Clears any add-on answers already accumulated on this path; the operator still routes it to a result step via `nextStepId` (usually the add-to-bag terminal) — this flag only guarantees the add-on list is empty when it gets there."
 					}
 				}
 			}

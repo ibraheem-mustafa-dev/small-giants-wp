@@ -1,0 +1,282 @@
+/**
+ * SGS Choice Flow — pricing module (Spec 43 FR-43-17 to FR-43-20, v1.4.0).
+ *
+ * Kept as its own file rather than growing `view.js` (already well over this
+ * codebase's 250-line JS guideline) — `view.js` calls the handful of exports
+ * below at the points it already resolves a step click / initialises a flow;
+ * everything add-on/price-specific lives here. The 'add-to-bag' terminal's
+ * own POST is a further split, `add-to-bag.js` (reads this module's
+ * `getAddonSummary()`), to keep this file itself under the same guideline.
+ *
+ * Ownership split (FR-43-18 — the server-side price list is the ONLY price
+ * authority):
+ *   - This module never invents a price. Every price it shows or sends came
+ *     from a `data-price` attribute `choice-flow-question/render.php` already
+ *     read off the site-wide add-on price list at render time.
+ *   - The FR-43-19 panel here is DISPLAY ONLY. The actual charge is resolved
+ *     server-side, in `/sgs/v1/cart/add-item`'s `addons` handling (a parallel
+ *     build — see `add-to-bag.js`), from `{group, key}` pairs alone; this
+ *     module never sends a price or a total.
+ *
+ * "What is being bought" (FR-43-20): a page's own `sgs/buybox`/
+ * `sgs/product-card` announces its live variation via a window
+ * `sgs-variation-change` CustomEvent (built in `product-card/view.js`) —
+ * listened for here, module-scoped (one listener for the whole page, not
+ * per-flow instance: there is normally exactly one buybox per product page).
+ * A flow's own `data-flow-product-id`/`data-flow-price-minor`/
+ * `data-flow-decimals` (`choice-flow/render.php`) are the first-paint
+ * fallback, read once per instance and overwritten the moment a live event
+ * arrives.
+ *
+ * @package SGS\Blocks
+ */
+
+const PRICE_PANEL_SELECTOR = '.sgs-choice-flow__price-panel';
+const PANEL_BASE_VALUE_SELECTOR = '.sgs-choice-flow__price-panel-base-value';
+const PANEL_ROWS_SELECTOR = '.sgs-choice-flow__price-panel-rows';
+const PANEL_TOTAL_VALUE_SELECTOR = '.sgs-choice-flow__price-panel-total-value';
+
+/**
+ * Per-flow-instance add-on state: which priced-question group each chosen
+ * option belongs to, keyed by GROUP so a later answer in the same group
+ * (e.g. the shopper went Back and picked differently) simply overwrites the
+ * earlier one rather than accumulating duplicates.
+ *
+ * @type {WeakMap<HTMLElement, {answers: Map<string, {key: string, label: string, price: string}>, base: {productId: number, variationId: number, attributes: Object, priceMinor: number|null, decimals: number}}>}
+ */
+const flowPricingState = new WeakMap();
+
+/**
+ * The page's current base product/variation, from the live
+ * `sgs-variation-change` event. Null until the first event fires — flows
+ * fall back to their own render.php-seeded `data-flow-*` values until then.
+ *
+ * @type {{productId: number, variationId: number, attributes: Object, priceMinor: number|null, decimals: number}|null}
+ */
+let liveBaseProduct = null;
+
+/** Guards the module-level `sgs-variation-change` listener to once. */
+let variationListenerBound = false;
+
+/**
+ * @param {number}      minor    Amount in minor currency units.
+ * @param {number}      decimals Currency decimal places.
+ * @return {string} A plain formatted amount, e.g. "£9.99". No currency
+ *                   symbol is assumed beyond "£" (this codebase's default
+ *                   client base) when no symbol is otherwise available —
+ *                   acceptable for a DISPLAY-only panel; the cart/order
+ *                   totals a shopper actually pays are always WooCommerce's
+ *                   own, server-formatted output.
+ */
+function formatMinor( minor, decimals ) {
+	const amount = minor / 10 ** decimals;
+	return (
+		'£' +
+		amount.toLocaleString( undefined, {
+			minimumFractionDigits: decimals,
+			maximumFractionDigits: decimals,
+		} )
+	);
+}
+
+/**
+ * Read a flow's render.php-seeded first-paint product/price.
+ *
+ * @param {HTMLElement} flowRoot Flow wrapper element.
+ * @return {{productId: number, variationId: number, attributes: Object, priceMinor: number|null, decimals: number}}
+ */
+function readSeededBase( flowRoot ) {
+	const productId = parseInt( flowRoot.getAttribute( 'data-flow-product-id' ), 10 ) || 0;
+	const minorRaw = flowRoot.getAttribute( 'data-flow-price-minor' );
+	const decimals = parseInt( flowRoot.getAttribute( 'data-flow-decimals' ), 10 ) || 2;
+	return {
+		productId,
+		variationId: 0,
+		attributes: {},
+		priceMinor: minorRaw && minorRaw !== '' ? parseInt( minorRaw, 10 ) : null,
+		decimals,
+	};
+}
+
+/**
+ * Ensure this flow instance has pricing state, seeded from its own
+ * render.php data attributes on first call.
+ *
+ * @param {HTMLElement} flowRoot Flow wrapper element.
+ * @return {{answers: Map<string, Object>, base: Object}} This instance's state.
+ */
+function ensureState( flowRoot ) {
+	if ( ! flowPricingState.has( flowRoot ) ) {
+		flowPricingState.set( flowRoot, {
+			answers: new Map(),
+			base: readSeededBase( flowRoot ),
+		} );
+	}
+	return flowPricingState.get( flowRoot );
+}
+
+/**
+ * Re-render the FR-43-19 price panel for one flow instance. A no-op when the
+ * flow has no panel container (`showPricePanel:false` never emits one).
+ *
+ * @param {HTMLElement} flowRoot Flow wrapper element.
+ */
+function renderPricePanel( flowRoot ) {
+	const panelEl = flowRoot.querySelector( PRICE_PANEL_SELECTOR );
+	if ( ! panelEl ) {
+		return;
+	}
+
+	const state = ensureState( flowRoot );
+	const base = liveBaseProduct || state.base;
+
+	const baseValueEl = panelEl.querySelector( PANEL_BASE_VALUE_SELECTOR );
+	if ( baseValueEl ) {
+		baseValueEl.textContent =
+			base.priceMinor !== null ? formatMinor( base.priceMinor, base.decimals ) : '—';
+	}
+
+	const rowsEl = panelEl.querySelector( PANEL_ROWS_SELECTOR );
+	let addonTotalMinor = 0;
+	if ( rowsEl ) {
+		rowsEl.innerHTML = '';
+		state.answers.forEach( ( answer ) => {
+			const priceValue = parseFloat( answer.price );
+			const priceMinor = Number.isFinite( priceValue )
+				? Math.round( priceValue * 10 ** base.decimals )
+				: 0;
+			addonTotalMinor += priceMinor;
+
+			const rowEl = document.createElement( 'li' );
+			const labelEl = document.createElement( 'span' );
+			labelEl.textContent = answer.groupLabel
+				? `${ answer.groupLabel } — ${ answer.label }`
+				: answer.label;
+			const valueEl = document.createElement( 'span' );
+			valueEl.textContent = priceMinor > 0 ? formatMinor( priceMinor, base.decimals ) : 'Included';
+			rowEl.appendChild( labelEl );
+			rowEl.appendChild( valueEl );
+			rowsEl.appendChild( rowEl );
+		} );
+	}
+
+	const totalValueEl = panelEl.querySelector( PANEL_TOTAL_VALUE_SELECTOR );
+	if ( totalValueEl ) {
+		totalValueEl.textContent =
+			base.priceMinor !== null
+				? formatMinor( base.priceMinor + addonTotalMinor, base.decimals )
+				: '—';
+	}
+}
+
+/**
+ * Module-level `sgs-variation-change` listener (item 5 — `product-card/
+ * view.js` dispatches this whenever the page's own buybox/product-card
+ * resolves a new combo, and once on init). Updates every flow on the page —
+ * there is normally exactly one buybox per product page, so a page-wide
+ * value is the correct scope; a flow with its OWN `flowProductId` (used off
+ * that product's page) never receives this event in practice since no
+ * buybox/product-card for a different product would dispatch it there.
+ *
+ * @param {CustomEvent} event The `sgs-variation-change` event.
+ */
+function handleVariationChange( event ) {
+	const detail = event?.detail || {};
+	liveBaseProduct = {
+		productId: parseInt( detail.productId, 10 ) || 0,
+		variationId: parseInt( detail.variationId, 10 ) || 0,
+		attributes: detail.attributes && 'object' === typeof detail.attributes ? detail.attributes : {},
+		priceMinor: typeof detail.priceMinor === 'number' ? detail.priceMinor : null,
+		decimals: typeof detail.decimals === 'number' ? detail.decimals : 2,
+	};
+	document.querySelectorAll( '[data-wp-interactive="sgs/choice-flow"]' ).forEach( renderPricePanel );
+}
+
+/**
+ * Initialise this flow instance's pricing state + panel, and bind the
+ * module-level variation-change listener once. Called from `view.js`'s
+ * `initFlow()`.
+ *
+ * @param {HTMLElement} flowRoot Flow wrapper element.
+ */
+export function initPricePanel( flowRoot ) {
+	ensureState( flowRoot );
+
+	if ( ! variationListenerBound ) {
+		variationListenerBound = true;
+		window.addEventListener( 'sgs-variation-change', handleVariationChange );
+	}
+
+	renderPricePanel( flowRoot );
+}
+
+/**
+ * Record a priced-add-on answer (FR-43-17/19), called from `view.js`'s
+ * `handleOptionClick()` when the clicked option carries `data-price-group`.
+ * A no-op when `group` is empty (the option isn't part of a priced step).
+ *
+ * @param {HTMLElement} flowRoot   Flow wrapper element.
+ * @param {string}      group      The add-on group key.
+ * @param {string}      groupLabel The group's own label (for the panel row).
+ * @param {string}      key        The chosen option's key (matches a price-
+ *                                  list option key — this IS the value the
+ *                                  server resolves, per FR-43-18).
+ * @param {string}      label      The chosen option's label.
+ * @param {string}      price      The chosen option's decimal price string.
+ */
+export function recordAddonAnswer( flowRoot, group, groupLabel, key, label, price ) {
+	if ( ! group ) {
+		return;
+	}
+	const state = ensureState( flowRoot );
+	state.answers.set( group, { key, label, groupLabel, price } );
+	renderPricePanel( flowRoot );
+}
+
+/**
+ * Clear every accumulated add-on answer for a flow instance (FR-43-20's
+ * "no add-ons" exit — `addToBagNow`), called from `view.js` when the clicked
+ * option carries `data-add-to-bag-now`.
+ *
+ * @param {HTMLElement} flowRoot Flow wrapper element.
+ */
+export function resetAddonAnswers( flowRoot ) {
+	const state = ensureState( flowRoot );
+	state.answers.clear();
+	renderPricePanel( flowRoot );
+}
+
+/**
+ * Build the add-to-bag payload for a flow instance: the resolved product/
+ * variation (live event, falling back to the flow's own seeded data) plus
+ * every priced answer accumulated on the path taken.
+ *
+ * @param {HTMLElement} flowRoot Flow wrapper element.
+ * @return {{productId: number, variationId: number, attributes: Object, addons: Array<{group: string, key: string}>, rows: Array<{label: string, priceLabel: string}>}}
+ */
+export function getAddonSummary( flowRoot ) {
+	const state = ensureState( flowRoot );
+	const base = liveBaseProduct && liveBaseProduct.productId ? liveBaseProduct : state.base;
+
+	const addons = [];
+	const rows = [];
+	state.answers.forEach( ( answer, group ) => {
+		addons.push( { group, key: answer.key } );
+		const priceValue = parseFloat( answer.price );
+		rows.push( {
+			label: answer.groupLabel ? `${ answer.groupLabel } — ${ answer.label }` : answer.label,
+			priceLabel:
+				Number.isFinite( priceValue ) && priceValue > 0
+					? formatMinor( Math.round( priceValue * 10 ** base.decimals ), base.decimals )
+					: 'included',
+		} );
+	} );
+
+	return {
+		productId: base.productId || 0,
+		variationId: base.variationId || 0,
+		attributes: base.attributes || {},
+		addons,
+		rows,
+	};
+}

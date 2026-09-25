@@ -1,9 +1,9 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls, RichText } from '@wordpress/block-editor';
-import { PanelBody, TextControl } from '@wordpress/components';
+import { PanelBody, TextControl, SelectControl } from '@wordpress/components';
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { heading, body, matchTags } = attributes;
+	const { heading, body, matchTags, action } = attributes;
 
 	const blockProps = useBlockProps( { className: 'sgs-choice-flow-result' } );
 
@@ -24,6 +24,23 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
+				<PanelBody title={ __( 'Terminal action', 'sgs-blocks' ) }>
+					<SelectControl
+						label={ __( 'Action', 'sgs-blocks' ) }
+						value={ action || 'recommend' }
+						options={ [
+							{ label: __( 'Recommendation (heading + body)', 'sgs-blocks' ), value: 'recommend' },
+							{ label: __( 'Add to bag', 'sgs-blocks' ), value: 'add-to-bag' },
+						] }
+						onChange={ ( val ) => setAttributes( { action: val } ) }
+						help={ __(
+							'Add to bag shows a summary of the chosen add-ons and a real Add to bag button — the product/variation and every priced answer on the path taken.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</PanelBody>
 				<PanelBody title={ __( 'Result Matching', 'sgs-blocks' ) }>
 					<TextControl
 						label={ __( 'Match tags', 'sgs-blocks' ) }
@@ -60,6 +77,19 @@ export default function Edit( { attributes, setAttributes } ) {
 					allowedFormats={ [ 'core/bold', 'core/italic', 'core/link' ] }
 					multiline="p"
 				/>
+				{ /* Canvas preview only — the real summary + Add to bag button are
+				   built client-side by sgs/choice-flow's own pricing module (it
+				   alone knows the path taken); this is a static stand-in so the
+				   `action` attribute reflects visibly in the editor canvas
+				   (check-editor-render-parity.js CHECK A). */ }
+				{ 'add-to-bag' === action && (
+					<div className="sgs-choice-flow-result__addon-summary-preview">
+						{ __( 'Chosen add-ons will summarise here.', 'sgs-blocks' ) }
+						<button type="button" disabled className="sgs-choice-flow-result__add-to-bag">
+							{ __( 'Add to bag', 'sgs-blocks' ) }
+						</button>
+					</div>
+				) }
 			</div>
 		</>
 	);

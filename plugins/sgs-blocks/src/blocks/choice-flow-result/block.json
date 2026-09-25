@@ -57,6 +57,12 @@
             "items": {
                 "type": "string"
             }
+        },
+        "action": {
+            "type": "string",
+            "enum": [ "recommend", "add-to-bag" ],
+            "default": "recommend",
+            "description": "FR-43-20 (v1.4.0): 'recommend' (default) is this block's original plain result screen. 'add-to-bag' shows a summary of the chosen priced add-ons and an Add to bag button that POSTs the page's product/variation (or the flow's own `flowProductId`) plus every priced answer on the path taken to /sgs/v1/cart/add-item — the same secure proxy sgs/buybox already uses."
         }
     },
     "render": "file:./render.php",

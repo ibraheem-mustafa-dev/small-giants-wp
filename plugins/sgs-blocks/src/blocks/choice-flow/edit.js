@@ -19,6 +19,7 @@ import {
 import fillRow from '../../components/colour-variants/fillRow';
 import textRow from '../../components/colour-variants/textRow';
 import { colourVar } from '../../utils';
+import PricingSettingsPanel from './PricingSettingsPanel';
 
 // Box-object interface contract — length units for the kept-scalar maxWidth
 // attr (base only). Mirrors sgs/notice-banner/edit.js's LENGTH_UNITS exactly
@@ -409,6 +410,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		backBorderWidth,
 		backBorderStyle,
 		backBorderRadius,
+		showPricePanel,
+		pricePanelTitle,
+		flowProductId,
 	} = attributes;
 
 	const blockProps = useBlockProps( {
@@ -602,6 +606,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						onRadiusChange={ ( _tier, next ) => setAttributes( { backBorderRadius: next } ) }
 					/>
 				</PanelBody>
+				<PricingSettingsPanel
+					showPricePanel={ showPricePanel }
+					pricePanelTitle={ pricePanelTitle }
+					flowProductId={ flowProductId }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			<div { ...blockProps }>

@@ -206,6 +206,8 @@ final class SGS_Blocks {
 		// settings page, and the cart/order integration that reads it as the
 		// only price authority. See that folder's load.php for the full wiring.
 		require_once SGS_BLOCKS_PATH . 'includes/addon-price-list/load.php';
+		// Choice-flow priced questions: the price-list groups for the editor's "Price from list" control.
+		require_once SGS_BLOCKS_PATH . 'src/blocks/choice-flow-question/editor-data.php';
 	}
 
 	/**

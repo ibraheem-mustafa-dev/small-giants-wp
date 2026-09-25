@@ -133,6 +133,21 @@
 			"enum": [ "bar", "circles", "badge" ],
 			"default": "bar",
 			"description": "User-directed (2026-09-15): operator choice across the 3 real reference patterns found live — 'bar' (the client's own real lens-configurator: a plain thin fill bar, step name as separate text above), 'circles' (AthleanX: numbered circle stepper with connecting lines, above a separate plain bar), 'badge' (Invisalign: a step-count pill riding directly on the fill track, styled like a slider thumb)."
+		},
+		"showPricePanel": {
+			"type": "boolean",
+			"default": false,
+			"description": "FR-43-19 (v1.4.0): shows a running-total panel beside the steps (two columns from 1024px, stacked below on narrower screens) — the product's current price, one row per chosen priced add-on, then the total. Display only; the server-side add-on price list (FR-43-18) is the sole price authority for what actually gets charged."
+		},
+		"pricePanelTitle": {
+			"type": "string",
+			"default": "Your order",
+			"description": "FR-43-19 (v1.4.0): heading shown above the price panel. Bean's 2026-09-24 decision (plans/2026-09-24-eye-care-hand-build-design.md §5): default 'Your order', not the eyewear draft's client-specific 'Your pair'."
+		},
+		"flowProductId": {
+			"type": "integer",
+			"default": 0,
+			"description": "FR-43-20 (v1.4.0): the product this flow adds to the bag when it is NOT embedded on that product's own page (where the page's own product/variation is used instead — see render.php). 0 = none set; a flow with priced add-on steps and no product set here, opened off a product page, cannot resolve a base price."
 		}
 	},
 	"allowedBlocks": [

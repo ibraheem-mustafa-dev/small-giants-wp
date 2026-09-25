@@ -30,3 +30,52 @@
 .sgs-choice-flow-result__body > * + * {
 	margin-top: var(--wp--preset--spacing--20, 16px);
 }
+
+/* FR-43-20 (v1.4.0) — 'add-to-bag' terminal. Rows are built entirely
+   client-side by sgs/choice-flow's own pricing module. */
+.sgs-choice-flow-result__addon-summary,
+.sgs-choice-flow-result__addon-summary-preview {
+	margin: 0 0 var(--wp--preset--spacing--20, 16px);
+	font-size: var(--wp--preset--font-size--regular, 16px);
+	color: var(--wp--preset--color--text-muted, #6b7280);
+}
+
+.sgs-choice-flow-result__addon-summary:empty {
+	display: none;
+}
+
+.sgs-choice-flow-result__add-to-bag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 44px;
+	padding: 12px 24px;
+	border: none;
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	background-color: var(--wp--preset--color--primary, #1f7a7a);
+	color: var(--wp--preset--color--background, #fff);
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.sgs-choice-flow-result__add-to-bag:disabled {
+	opacity: 0.6;
+	cursor: default;
+}
+
+.sgs-choice-flow-result__add-to-bag:hover:not(:disabled) {
+	background-color: var(--wp--preset--color--primary-dark, #14595a);
+}
+
+.sgs-choice-flow-result__cart-status {
+	margin-top: var(--wp--preset--spacing--10, 8px);
+	font-size: var(--wp--preset--font-size--small, 14px);
+}
+
+.sgs-choice-flow-result__cart-status:empty {
+	display: none;
+}
+
+.sgs-choice-flow-result__cart-status[data-state="error"] {
+	color: var(--wp--preset--color--error, #b3261e);
+}

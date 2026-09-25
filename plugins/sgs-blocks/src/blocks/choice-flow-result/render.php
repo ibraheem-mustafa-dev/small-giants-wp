@@ -21,6 +21,16 @@
  * result's tags overlap most with the tags accumulated along the path taken
  * wins — decided entirely client-side by the IAPI store, not here.
  *
+ * FR-43-20 (v1.4.0) `action: "add-to-bag"`: this terminal instead shows a
+ * summary of the priced add-ons chosen along the path taken + an "Add to
+ * bag" button. The summary text and the actual POST to
+ * `/sgs/v1/cart/add-item` are built entirely client-side by
+ * `sgs/choice-flow`'s own pricing module (it alone knows the path taken) —
+ * this file only renders the button + empty summary/status containers, plus
+ * the REST nonce + endpoint URL the button needs (same "embed server-known
+ * values as data-*, never guess them in JS" pattern `sgs/product-card`'s own
+ * render.php uses for `restNonce`).
+ *
  * NO-INLINE (Spec 32): this block emits zero inline `style` property
  * declarations. No per-instance colour/typography attribute exists on this
  * block this phase (task-scoped: "keep minimal, no colour panel needed this
@@ -34,16 +44,18 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$heading    = isset( $attributes['heading'] ) ? (string) $attributes['heading'] : '';
-$body       = isset( $attributes['body'] ) ? (string) $attributes['body'] : '';
-$match_tags = isset( $attributes['matchTags'] ) && is_array( $attributes['matchTags'] )
+$heading       = isset( $attributes['heading'] ) ? (string) $attributes['heading'] : '';
+$body          = isset( $attributes['body'] ) ? (string) $attributes['body'] : '';
+$match_tags    = isset( $attributes['matchTags'] ) && is_array( $attributes['matchTags'] )
 	? array_values( array_filter( array_map( 'sanitize_text_field', $attributes['matchTags'] ) ) )
 	: array();
+$result_action = isset( $attributes['action'] ) && 'add-to-bag' === $attributes['action'] ? 'add-to-bag' : 'recommend';
 
 $wrapper_attributes = get_block_wrapper_attributes(
 	array(
 		'class'           => 'sgs-choice-flow-result',
 		'data-match-tags' => implode( ',', $match_tags ),
+		'data-action'     => $result_action,
 	)
 );
 
@@ -55,6 +67,15 @@ if ( '' !== trim( wp_strip_all_tags( $heading ) ) ) {
 
 if ( '' !== trim( wp_strip_all_tags( $body ) ) ) {
 	echo '<div class="sgs-choice-flow-result__body">' . wp_kses_post( $body ) . '</div>';
+}
+
+if ( 'add-to-bag' === $result_action ) {
+	echo '<div class="sgs-choice-flow-result__addon-summary"></div>';
+	echo '<button type="button" class="sgs-choice-flow-result__add-to-bag"';
+	echo ' data-nonce="' . esc_attr( wp_create_nonce( 'wp_rest' ) ) . '"';
+	echo ' data-endpoint="' . esc_url( rest_url( 'sgs/v1/cart/add-item' ) ) . '"';
+	echo '>' . esc_html__( 'Add to bag', 'sgs-blocks' ) . '</button>';
+	echo '<div class="sgs-choice-flow-result__cart-status" role="status" aria-live="polite"></div>';
 }
 
 echo '</div>';

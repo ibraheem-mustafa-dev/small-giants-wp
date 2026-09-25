@@ -6,10 +6,12 @@ import {
 	TextControl,
 	TextareaControl,
 	SelectControl,
+	ToggleControl,
 	Button,
 } from '@wordpress/components';
 import { VStack } from '../../components/primitives';
 import MediaPicker from '../../components/MediaPicker';
+import AddonPricingPanel from './AddonPricingPanel';
 
 // Reserved sentinel (FR-43-2 / spec brief) — "jump straight to whichever
 // result step is reachable" rather than a specific sibling sgs/form-step.
@@ -34,7 +36,7 @@ function slugifyLabel( label ) {
 }
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
-	const { question, options, layout } = attributes;
+	const { question, options, layout, priceGroup } = attributes;
 
 	const blockProps = useBlockProps( {
 		className: 'sgs-choice-flow-question',
@@ -132,6 +134,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					tags: [],
 					image: null,
 					helpText: '',
+					addToBagNow: false,
 				},
 			],
 		} );
@@ -180,6 +183,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
+				<AddonPricingPanel
+					priceGroup={ priceGroup }
+					options={ options }
+					setAttributes={ setAttributes }
+				/>
 				<PanelBody title={ __( 'Options', 'sgs-blocks' ) } initialOpen={ true }>
 					<VStack spacing={ 4 }>
 						{ options.map( ( option, index ) => (
@@ -284,6 +292,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										'sgs-blocks'
 									) }
 									rows={ 3 }
+									__nextHasNoMarginBottom
+								/>
+								<ToggleControl
+									label={ __( 'Add to bag now (no add-ons)', 'sgs-blocks' ) }
+									checked={ !! option.addToBagNow }
+									onChange={ ( val ) => updateOption( index, 'addToBagNow', val ) }
+									help={ __(
+										'Ends the flow adding the product with no add-ons — e.g. “No prescription, keep the lenses they come with”. Still route this option to a result step below.',
+										'sgs-blocks'
+									) }
 									__nextHasNoMarginBottom
 								/>
 								<VStack spacing={ 1 } className="sgs-choice-flow-question__option-row-actions">

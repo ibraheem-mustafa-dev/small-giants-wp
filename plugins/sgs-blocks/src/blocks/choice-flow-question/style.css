@@ -181,6 +181,17 @@
 	display: block;
 }
 
+/* FR-43-17 — priced add-on step: the option's price, read from the
+   site-wide list at render time (never typed into the block). Absent
+   entirely for a plain question, matching the label-only markup this file
+   already renders in that case. */
+.sgs-choice-flow-question__option-price {
+	display: block;
+	margin-top: 4px;
+	font-size: 0.875em;
+	color: var( --wp--preset--color--text-muted, #6b7280 );
+}
+
 /* FR-43-16's '?' help-toggle + panel now lives in the shared
    src/shared/info-toggle.css (imported at the top of this file) as
    .sgs-info-toggle / .sgs-info-toggle__panel — see that file. */

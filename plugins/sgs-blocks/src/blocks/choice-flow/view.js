@@ -67,6 +67,8 @@
 
 import { store } from '@wordpress/interactivity';
 import { INFO_TOGGLE_SELECTOR, handleInfoToggleClick } from '../../shared/info-toggle.js';
+import { initPricePanel, recordAddonAnswer, resetAddonAnswers } from './pricing.js';
+import { handleAddToBagClick } from './add-to-bag.js';
 
 const TERMINAL_SENTINEL = '__terminal__';
 
@@ -80,6 +82,7 @@ const STEP_LABEL_SELECTOR = '.sgs-choice-flow__step-label';
 const STEPPER_SELECTOR = '.sgs-choice-flow__stepper';
 const PROGRESS_SELECTOR = '.sgs-choice-flow__progress';
 const PROGRESS_BADGE_SELECTOR = '.sgs-choice-flow__progress-badge';
+const ADD_TO_BAG_BUTTON_SELECTOR = '.sgs-choice-flow-result__add-to-bag';
 
 /**
  * Per-instance flag: has this flow's `.sgs-choice-flow__stepper` container
@@ -524,6 +527,30 @@ function handleOptionClick( buttonEl ) {
 		.filter( Boolean )
 		.forEach( ( tag ) => instanceState.tags.add( tag ) );
 
+	// FR-43-17/19: a priced add-on step's option carries data-price-group +
+	// data-price (choice-flow-question/render.php) — record it for the
+	// live price panel + the eventual add-to-bag payload.
+	const priceGroup = buttonEl.getAttribute( 'data-price-group' ) || '';
+	if ( priceGroup ) {
+		const optionsEl = buttonEl.closest( '.sgs-choice-flow-question__options' );
+		const groupLabel = optionsEl ? optionsEl.getAttribute( 'data-price-group-label' ) || '' : '';
+		recordAddonAnswer(
+			flowRoot,
+			priceGroup,
+			groupLabel,
+			buttonEl.getAttribute( 'data-value' ) || '',
+			buttonEl.getAttribute( 'data-price-label' ) || '',
+			buttonEl.getAttribute( 'data-price' ) || '0'
+		);
+	}
+
+	// FR-43-20: "no add-ons" exit — clears any add-ons already chosen on this
+	// path before the operator's own nextStepId routes onward (usually to the
+	// add-to-bag terminal).
+	if ( buttonEl.hasAttribute( 'data-add-to-bag-now' ) ) {
+		resetAddonAnswers( flowRoot );
+	}
+
 	const nextStepId = buttonEl.getAttribute( 'data-next-step-id' ) || '';
 
 	let targetIndex;
@@ -594,6 +621,11 @@ function initFlow( flowRoot ) {
 		return;
 	}
 
+	// FR-43-19: seed/refresh this instance's price panel from its own
+	// render.php data attributes, and bind the page-wide variation-change
+	// listener once. Independent of step restoration below.
+	initPricePanel( flowRoot );
+
 	const restored = restoreFlowState( flowRoot );
 
 	if ( restored && restored.stepIndex >= 0 && restored.stepIndex < steps.length ) {
@@ -634,6 +666,14 @@ document.addEventListener( 'click', ( event ) => {
 	const backButtonEl = event.target.closest( BACK_BUTTON_SELECTOR );
 	if ( backButtonEl ) {
 		handleBackClick( backButtonEl );
+		return;
+	}
+
+	// FR-43-20: the 'add-to-bag' terminal's own button — handled entirely in
+	// pricing.js (it owns the add-on state this needs).
+	const addToBagButtonEl = event.target.closest( ADD_TO_BAG_BUTTON_SELECTOR );
+	if ( addToBagButtonEl ) {
+		handleAddToBagClick( addToBagButtonEl );
 		return;
 	}
 
