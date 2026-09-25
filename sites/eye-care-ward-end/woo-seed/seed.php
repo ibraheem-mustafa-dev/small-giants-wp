@@ -411,6 +411,40 @@ foreach ( $data['NOSES'] as $nose_name ) {
 echo "  Shape/Material/Frame-type/Hinge/Nose-pad terms processed.\n";
 
 /**
+ * The product description, as the draft writes it (its `blurb()` plus the Description tab's four lines):
+ * a paragraph on the shape, the fit of the default size and the lenses, then a list.
+ *
+ * @param array $p    Draft product row.
+ * @param array $size The product's default size ['eye', 'bridge', 'temple'].
+ * @return string Description HTML.
+ */
+function sgs_seed_description( array $p, array $size ): string {
+	$shapes = array(
+		'Pilot'     => 'The pilot shape is about as universally flattering as eyewear gets — the teardrop softens a square jaw and adds length to a rounder face.',
+		'Square'    => 'A square frame gives a rounder or heart-shaped face some structure, and it is the shape most people find easiest to wear every day.',
+		'Round'     => 'Round frames soften stronger, more angular features. They sit best on longer faces and they never really go out of fashion.',
+		'Cat-eye'   => 'The cat-eye lifts the outer corner of the eye and draws attention upwards, which is why it flatters most face shapes.',
+		'Shield'    => 'A single wrapped lens with proper coverage at the sides. Bolder than most, and genuinely better at keeping low sun out.',
+		'Rectangle' => 'A narrow rectangular lens keeps the proportions quiet — a good choice if you want sunglasses nobody comments on.',
+	);
+	$eye  = (int) ( $size['eye'] ?? $p['eye'] );
+	$fit  = 'measures ' . $eye . 'mm across each lens' . ( $eye <= 50 ? ', which is on the small side' : ( $eye >= 58 ? ', which is on the wider side' : '' ) );
+	$lens = ! empty( $p['pol'] )
+		? 'The lenses are polarised as standard, so glare off wet roads and water is cut rather than just dimmed.'
+		: 'The lenses block 100% of UV as the brand supplies them, and I can swap in polarised if you would rather.';
+	$blurb = 'The ' . $p['brand'] . ' ' . $p['name'] . ', in ' . $p['colour'] . '. ' . ( $shapes[ $p['shape'] ] ?? '' )
+		. ' This size ' . $fit . '. ' . $lens . ' Prescription lenses go in this frame without any trouble — single vision or varifocal — and I cut and fit them here.';
+	$lens_line = ( ! empty( $p['pol'] ) ? 'Polarised lenses, category ' : 'Tinted lenses, category ' ) . $p['lensCat'];
+	$items     = array(
+		$p['shape'] . ' shape in ' . $p['mat'] . ', ' . $p['colour'],
+		$lens_line . ', 100% UV400',
+		"Boxed with the brand's own case, cloth and two-year manufacturer's warranty — claims handled by me, not a call centre",
+		'Prescription lenses available in this frame — single vision or varifocal',
+	);
+	return '<p>' . esc_html( $blurb ) . '</p><ul><li>' . implode( '</li><li>', array_map( 'esc_html', $items ) ) . '</li></ul>';
+}
+
+/**
  * The shared "Photo to come" image (woo-seed/photo-to-come.png), uploaded once and reused.
  *
  * @return int Attachment ID, or 0 on failure.
@@ -466,7 +500,7 @@ foreach ( $data['PRODUCTS'] as $p ) {
 	$product->set_status( 'publish' );
 	$product->set_catalog_visibility( 'visible' );
 	$product->set_sku( $sku );
-	$product->set_description( $p['colour'] . ' · ' . $p['ftype'] . ' · ' . $p['mat'] );
+	$product->set_description( sgs_seed_description( $p, sgs_seed_default_size( sgs_seed_product_sizes( $p, $sizes_by_code ) ) ) );
 	$product->set_short_description( $p['code'] );
 
 	// Base regular price so the parent has a displayable range even before

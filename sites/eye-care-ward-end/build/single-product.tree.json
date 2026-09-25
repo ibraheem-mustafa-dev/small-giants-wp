@@ -42,6 +42,8 @@
             "name": "sgs/breadcrumbs",
             "attributes": {
               "productPageCrumbs": "both",
+              "showArchiveCrumb": false,
+              "showCurrentCrumb": false,
               "fontSize": {
                 "desktop": 12.5
               },
@@ -219,22 +221,13 @@
                     },
                     "innerBlocks": [
                       {
-                        "name": "sgs/text",
+                        "name": "core/post-content",
                         "attributes": {
-                          "text": "",
-                          "fontSize": {
-                            "desktop": 16.5
-                          },
-                          "fontSizeUnit": "px",
-                          "textColour": "text-muted",
-                          "metadata": {
-                            "bindings": {
-                              "text": {
-                                "source": "sgs-product/field",
-                                "args": {
-                                  "key": "short_description"
-                                }
-                              }
+                          "textColor": "text-muted",
+                          "style": {
+                            "typography": {
+                              "fontSize": "16px",
+                              "lineHeight": "1.6"
                             }
                           }
                         }
@@ -1133,6 +1126,512 @@
                 "mobile": {
                   "top": "56px"
                 }
+              },
+              "sgsConditionProductReviews": "none-yet",
+              "borderWidth": {
+                "top": "1px",
+                "right": "0px",
+                "bottom": "0px",
+                "left": "0px"
+              },
+              "borderColour": "border",
+              "padding": {
+                "desktop": {
+                  "top": "44px"
+                }
+              }
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "layout": "flex",
+                  "justifyContent": "space-between",
+                  "alignItems": "center",
+                  "flexWrap": "wrap",
+                  "gap": {
+                    "desktop": "20px"
+                  },
+                  "backgroundColour": "surface-alt",
+                  "borderWidth": {
+                    "top": "1px",
+                    "right": "1px",
+                    "bottom": "1px",
+                    "left": "1px"
+                  },
+                  "borderColour": "border",
+                  "borderRadius": {
+                    "desktop": {
+                      "topLeft": "12px",
+                      "topRight": "12px",
+                      "bottomLeft": "12px",
+                      "bottomRight": "12px"
+                    }
+                  },
+                  "padding": {
+                    "desktop": {
+                      "top": "26px",
+                      "right": "24px",
+                      "bottom": "26px",
+                      "left": "24px"
+                    }
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/container",
+                    "attributes": {},
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/text",
+                        "attributes": {
+                          "text": "No reviews on this frame yet — it's new to the shop.",
+                          "fontSize": {
+                            "desktop": 15
+                          },
+                          "fontSizeUnit": "px",
+                          "fontWeight": "500"
+                        }
+                      },
+                      {
+                        "name": "sgs/text",
+                        "attributes": {
+                          "text": "Buy this pair and you can be the first to review it.",
+                          "fontSize": {
+                            "desktop": 13.5
+                          },
+                          "fontSizeUnit": "px",
+                          "textColour": "text-muted",
+                          "margin": {
+                            "desktop": {
+                              "top": "4px"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/google-reviews",
+                    "attributes": {
+                      "arrowBorderRadius": {
+                        "desktop": {
+                          "bottomLeft": "50%",
+                          "bottomRight": "50%",
+                          "topLeft": "50%",
+                          "topRight": "50%"
+                        }
+                      },
+                      "arrowBorderStyle": "solid",
+                      "arrowBorderWidth": {
+                        "bottom": "1px",
+                        "left": "1px",
+                        "right": "1px",
+                        "top": "1px"
+                      },
+                      "arrowColourBackground": "#fff",
+                      "arrowColourBorder": "#DADCE0",
+                      "arrowColourText": "#1A73E8",
+                      "arrowSize": {
+                        "desktop": "40px",
+                        "mobile": "40px",
+                        "tablet": "40px"
+                      },
+                      "authorColour": "#202124",
+                      "authorFontSize": {
+                        "desktop": "14px",
+                        "mobile": "14px",
+                        "tablet": "14px"
+                      },
+                      "authorFontWeight": "500",
+                      "avatarBorderRadius": {
+                        "desktop": {
+                          "bottomLeft": "50%",
+                          "bottomRight": "50%",
+                          "topLeft": "50%",
+                          "topRight": "50%"
+                        }
+                      },
+                      "avatarFontSize": {
+                        "desktop": "17px",
+                        "mobile": "17px",
+                        "tablet": "17px"
+                      },
+                      "avatarFontWeight": "500",
+                      "avatarSize": {
+                        "desktop": "40px",
+                        "mobile": "40px",
+                        "tablet": "40px"
+                      },
+                      "avatarTextColour": "#fff",
+                      "averageRating": 4.7,
+                      "backgroundColour": "#fff",
+                      "borderColour": "#DADCE0",
+                      "borderRadius": {
+                        "desktop": {
+                          "bottomLeft": "12px",
+                          "bottomRight": "12px",
+                          "topLeft": "12px",
+                          "topRight": "12px"
+                        }
+                      },
+                      "borderStyle": "solid",
+                      "borderWidth": {
+                        "bottom": "1px",
+                        "left": "1px",
+                        "right": "1px",
+                        "top": "1px"
+                      },
+                      "cardBackground": "#fff",
+                      "cardBorderColour": "#E8EAED",
+                      "cardBorderRadius": {
+                        "desktop": {
+                          "bottomLeft": "8px",
+                          "bottomRight": "8px",
+                          "topLeft": "8px",
+                          "topRight": "8px"
+                        }
+                      },
+                      "cardBorderStyle": "solid",
+                      "cardBorderWidth": {
+                        "bottom": "1px",
+                        "left": "1px",
+                        "right": "1px",
+                        "top": "1px"
+                      },
+                      "cardGap": {
+                        "desktop": "12px",
+                        "mobile": "12px",
+                        "tablet": "12px"
+                      },
+                      "cardPadding": {
+                        "desktop": {
+                          "bottom": "20px",
+                          "left": "20px",
+                          "right": "20px",
+                          "top": "20px"
+                        }
+                      },
+                      "cardStyle": "google-card",
+                      "cardWidth": {
+                        "desktop": "340px",
+                        "mobile": "270px",
+                        "tablet": "340px"
+                      },
+                      "countColour": "#5F6368",
+                      "countFontSize": {
+                        "desktop": "13.5px",
+                        "mobile": "13.5px",
+                        "tablet": "13.5px"
+                      },
+                      "dateColour": "#70757A",
+                      "dateFontSize": {
+                        "desktop": "12.5px",
+                        "mobile": "12.5px",
+                        "tablet": "12.5px"
+                      },
+                      "fontFamily": "'Roboto',Arial,sans-serif",
+                      "footnote": "Scroll for more — 13 of the 15 reviews left a comment.",
+                      "footnoteColour": "#5F6368",
+                      "footnoteFontSize": {
+                        "desktop": "13px",
+                        "mobile": "13px",
+                        "tablet": "13px"
+                      },
+                      "headerDividerColour": "#E8EAED",
+                      "headerDividerWidth": "1px",
+                      "headerGap": {
+                        "desktop": "22px",
+                        "mobile": "22px",
+                        "tablet": "22px"
+                      },
+                      "headerPadding": {
+                        "desktop": {
+                          "bottom": "22px"
+                        }
+                      },
+                      "metaColour": "#70757A",
+                      "metaFontSize": {
+                        "desktop": "12.5px",
+                        "mobile": "12.5px",
+                        "tablet": "12.5px"
+                      },
+                      "padding": {
+                        "desktop": {
+                          "bottom": "28px",
+                          "left": "26px",
+                          "right": "26px",
+                          "top": "28px"
+                        },
+                        "mobile": {
+                          "bottom": "20px",
+                          "left": "16px",
+                          "right": "16px",
+                          "top": "20px"
+                        }
+                      },
+                      "railPadding": {
+                        "desktop": {
+                          "bottom": "14px"
+                        }
+                      },
+                      "reviewCount": 15,
+                      "reviewLinkColour": "#1A73E8",
+                      "reviewLinkFontSize": {
+                        "desktop": "13.5px",
+                        "mobile": "13.5px",
+                        "tablet": "13.5px"
+                      },
+                      "reviewLinkLabel": "Read the full review",
+                      "reviewLinkTextDecoration": "none",
+                      "reviewRequestUrl": "https://share.google/9YZzTiRj2gvW1Xrpr",
+                      "reviews": [
+                        {
+                          "author": "Anonymous M.",
+                          "avatarColour": "#1A73E8",
+                          "date": "2 years ago",
+                          "meta": "6 reviews",
+                          "rating": 5,
+                          "text": "Had a lovely experience taking my daughter here. The optician Fatima is very good with children and made the experience enjoyable for my daughter. The receptionist was also very welcoming."
+                        },
+                        {
+                          "author": "Neelum Mushtaq",
+                          "avatarColour": "#E8710A",
+                          "date": "a year ago",
+                          "meta": "Local Guide · 11 reviews · 8 photos",
+                          "rating": 5,
+                          "text": "Took my mum as emergency appointment. A day before spoke to fatima on call, fatima also did a video call for my mum. Got an urgent appointment next morning. Explained next few steps and booked my mum for a follow up appointment for a next week. Highly recommended, great service. 👍"
+                        },
+                        {
+                          "author": "Hanif Ur-Rehman",
+                          "avatarColour": "#A142F4",
+                          "date": "5 years ago",
+                          "meta": "Local Guide · 60 reviews · 28 photos",
+                          "rating": 5,
+                          "text": "I have had the pleasure of being a patient of Ward End Eye Care since it first opened a few years ago. I have been extremely impressed by Fatima (the optician), as she has always ensured that she thoroughly checks my eyes during my eye tests. The equipment that Fatima uses is state of the art and the health of her patients is paramount.",
+                          "url": "https://share.google/9YZzTiRj2gvW1Xrpr"
+                        },
+                        {
+                          "author": "Sadia K",
+                          "avatarColour": "#34A853",
+                          "date": "4 years ago",
+                          "meta": "Local Guide · 24 reviews",
+                          "rating": 5,
+                          "text": "Wow very kind and knows how to treat children of all ages. They will aways fit you in and Fatimah the optometrist will go above and beyond to help with you eye check ups. Definitely recommend"
+                        },
+                        {
+                          "author": "Ajmal Mohammed",
+                          "avatarColour": "#D93025",
+                          "date": "2 years ago",
+                          "meta": "6 reviews",
+                          "rating": 5,
+                          "text": "The best optician in birmingham, great customer service from the whole team. Went out they way to see me and my mum and gave great advice."
+                        },
+                        {
+                          "author": "Aamer",
+                          "avatarColour": "#00897B",
+                          "date": "6 years ago",
+                          "meta": "Local Guide · 25 reviews",
+                          "rating": 5,
+                          "text": "Optician was very knowledgable and friendly. Appointment was on time and thorough. Overall a great customer experience."
+                        },
+                        {
+                          "author": "Arab-akh Akh",
+                          "avatarColour": "#F09300",
+                          "date": "6 years ago",
+                          "meta": "1 review",
+                          "rating": 5,
+                          "text": "Brought my mom here and she loved it. Got a pair of ray bans for my self aswel for cheap! Thanks for everything Ward end eye care."
+                        },
+                        {
+                          "author": "Adeel Najib",
+                          "avatarColour": "#1A73E8",
+                          "date": "11 months ago",
+                          "meta": "Local Guide · 11 reviews · 1 photo",
+                          "rating": 5,
+                          "text": "Excellent professional service. Would definitely recommend."
+                        },
+                        {
+                          "author": "Bushra Yasin",
+                          "avatarColour": "#7B1FA2",
+                          "date": "4 years ago",
+                          "meta": "Local Guide · 17 reviews",
+                          "rating": 5,
+                          "text": "Very professional and lovely opticians highly recommended Thank you!"
+                        },
+                        {
+                          "author": "Azim Aftab",
+                          "avatarColour": "#0B8043",
+                          "date": "6 years ago",
+                          "meta": "Local Guide · 21 reviews · 3 photos",
+                          "rating": 5,
+                          "text": "Brilliant service! Optician was very welcoming and helpful."
+                        },
+                        {
+                          "author": "Eshii X",
+                          "avatarColour": "#C5221F",
+                          "date": "a year ago",
+                          "meta": "Local Guide · 14 reviews · 2 photos",
+                          "rating": 5,
+                          "text": "Couldn’t be more pleased with the service and professionalism I received."
+                        },
+                        {
+                          "author": "L. K.B",
+                          "avatarColour": "#3949AB",
+                          "date": "2 years ago",
+                          "meta": "4 reviews",
+                          "rating": 5,
+                          "text": "Great professional service. Thank you."
+                        },
+                        {
+                          "author": "Christopher Ebanks",
+                          "avatarColour": "#E8710A",
+                          "date": "3 years ago",
+                          "meta": "1 review",
+                          "rating": 5,
+                          "text": "Great service! Best in the Ward End area!"
+                        }
+                      ],
+                      "scoreColour": "#202124",
+                      "scoreFontSize": {
+                        "desktop": "32px",
+                        "mobile": "32px",
+                        "tablet": "32px"
+                      },
+                      "scoreFontWeight": "500",
+                      "scoreLineHeight": {
+                        "desktop": "1",
+                        "mobile": "1",
+                        "tablet": "1"
+                      },
+                      "seeAllBorderRadius": {
+                        "desktop": {
+                          "bottomLeft": "20px",
+                          "bottomRight": "20px",
+                          "topLeft": "20px",
+                          "topRight": "20px"
+                        }
+                      },
+                      "seeAllColourBackground": "#1A73E8",
+                      "seeAllColourText": "#fff",
+                      "seeAllFontSize": {
+                        "desktop": "14px",
+                        "mobile": "14px",
+                        "tablet": "14px"
+                      },
+                      "seeAllFontWeight": "500",
+                      "seeAllLabel": "See all reviews",
+                      "seeAllMinHeight": {
+                        "desktop": "40px",
+                        "mobile": "40px",
+                        "tablet": "40px"
+                      },
+                      "seeAllPadding": {
+                        "desktop": {
+                          "bottom": "0",
+                          "left": "22px",
+                          "right": "22px",
+                          "top": "0"
+                        }
+                      },
+                      "seeAllTextDecoration": "none",
+                      "seeAllUrl": "https://share.google/9YZzTiRj2gvW1Xrpr",
+                      "showCardLogo": true,
+                      "showReviewLink": true,
+                      "sourceLabel": "Google Reviews",
+                      "sourceLabelColour": "#5F6368",
+                      "sourceLabelFontSize": {
+                        "desktop": "13px",
+                        "mobile": "13px",
+                        "tablet": "13px"
+                      },
+                      "sourceLabelLetterSpacing": {
+                        "desktop": ".01em",
+                        "mobile": ".01em",
+                        "tablet": ".01em"
+                      },
+                      "starColour": "#FBBC04",
+                      "starSize": {
+                        "desktop": "15px",
+                        "mobile": "15px",
+                        "tablet": "15px"
+                      },
+                      "textColour": "#3C4043",
+                      "textFontSize": {
+                        "desktop": "14.5px",
+                        "mobile": "14.5px",
+                        "tablet": "14.5px"
+                      },
+                      "textLineHeight": {
+                        "desktop": "1.6",
+                        "mobile": "1.6",
+                        "tablet": "1.6"
+                      },
+                      "textTextWrap": "pretty",
+                      "writeReviewBorderRadius": {
+                        "desktop": {
+                          "bottomLeft": "20px",
+                          "bottomRight": "20px",
+                          "topLeft": "20px",
+                          "topRight": "20px"
+                        }
+                      },
+                      "writeReviewBorderStyle": "solid",
+                      "writeReviewBorderWidth": {
+                        "bottom": "1px",
+                        "left": "1px",
+                        "right": "1px",
+                        "top": "1px"
+                      },
+                      "writeReviewColourBorder": "#DADCE0",
+                      "writeReviewColourText": "#1A73E8",
+                      "writeReviewFontSize": {
+                        "desktop": "14px",
+                        "mobile": "14px",
+                        "tablet": "14px"
+                      },
+                      "writeReviewFontWeight": "500",
+                      "writeReviewLabel": "Write a review",
+                      "writeReviewMinHeight": {
+                        "desktop": "40px",
+                        "mobile": "40px",
+                        "tablet": "40px"
+                      },
+                      "writeReviewPadding": {
+                        "desktop": {
+                          "bottom": "0",
+                          "left": "22px",
+                          "right": "22px",
+                          "top": "0"
+                        }
+                      },
+                      "writeReviewTextDecoration": "none",
+                      "variant": "badge",
+                      "showGoogleLogo": true,
+                      "showAggregate": true,
+                      "margin": {
+                        "desktop": {
+                          "top": "0px",
+                          "bottom": "0px"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "layout": "stack",
+              "margin": {
+                "desktop": {
+                  "top": "84px"
+                },
+                "mobile": {
+                  "top": "56px"
+                }
               }
             },
             "innerBlocks": [
@@ -1278,6 +1777,7 @@
           {
             "name": "sgs/container",
             "attributes": {
+              "layout": "stack",
               "margin": {
                 "desktop": {
                   "top": "84px"

@@ -101,6 +101,44 @@ FAQS = [
     ("Adjustments and repairs", "Bring them in any time and I'll straighten, tighten or re-fit them for nothing, whether you bought them here last week or last year."),
 ]
 
+HOME = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'home.tree.json')
+
+
+def _find(nodes, name):
+    for n in nodes:
+        if n.get('name') == name:
+            return n
+        hit = _find(n.get('innerBlocks', []), name)
+        if hit:
+            return hit
+    return None
+
+
+# The clinic's Google rating comes from the same Google reviews block settings as Home, shown compact.
+with open(HOME, encoding='utf-8') as fh:
+    GOOGLE = dict(_find(json.load(fh), 'sgs/google-reviews')['attributes'])
+GOOGLE.update(variant="badge", showGoogleLogo=True, showAggregate=True, margin={"desktop": {"top": "0px", "bottom": "0px"}})
+
+# Shown only while the product has no reviews (conditional visibility, "none-yet").
+NO_REVIEWS = B("sgs/container", dict(
+    margin=SECTION_GAP, sgsConditionProductReviews="none-yet",
+    borderWidth={"top": "1px", "right": "0px", "bottom": "0px", "left": "0px"}, borderColour="border",
+    padding={"desktop": {"top": "44px"}}), [
+    B("sgs/container", dict(
+        layout="flex", justifyContent="space-between", alignItems="center", flexWrap="wrap", gap={"desktop": "20px"},
+        backgroundColour="surface-alt", borderWidth=BOX, borderColour="border",
+        borderRadius={"desktop": {"topLeft": "12px", "topRight": "12px", "bottomLeft": "12px", "bottomRight": "12px"}},
+        padding={"desktop": {"top": "26px", "right": "24px", "bottom": "26px", "left": "24px"}}), [
+        B("sgs/container", {}, [
+            txt("No reviews on this frame yet — it's new to the shop.", fontSize={"desktop": 15}, fontSizeUnit="px",
+                fontWeight="500"),
+            txt("Buy this pair and you can be the first to review it.", fontSize={"desktop": 13.5}, fontSizeUnit="px",
+                textColour="text-muted", margin={"desktop": {"top": "4px"}}),
+        ]),
+        B("sgs/google-reviews", GOOGLE),
+    ]),
+])
+
 tree = [
     B("core/template-part", {"slug": "header", "tagName": "header"}),
     B("sgs/container", dict(tagName="main", anchor="main", contentWidth={"desktop": "full"}), [
@@ -108,7 +146,7 @@ tree = [
             maxWidth={"desktop": "1440px"},
             padding={"desktop": {"top": "48px", "right": "52px", "bottom": "90px", "left": "52px"},
                      "mobile": {"top": "28px", "right": "20px", "bottom": "60px", "left": "20px"}}), [
-            B("sgs/breadcrumbs", dict(productPageCrumbs="both", fontSize={"desktop": 12.5}, fontSizeUnit="px",
+            B("sgs/breadcrumbs", dict(productPageCrumbs="both", showArchiveCrumb=False, showCurrentCrumb=False, fontSize={"desktop": 12.5}, fontSizeUnit="px",
                                       letterSpacing={"desktop": 0.04}, letterSpacingUnit="em", linkColour="text-muted",
                                       currentColour="text-muted", margin={"desktop": {"bottom": "22px"}})),
             B("sgs/buybox", dict(rrpMetaKey="_sgs_rrp", rrpSavingFormat="amount", showStockStatus=True,
@@ -135,7 +173,8 @@ tree = [
                 gap={"desktop": "18px", "mobile": "10px"}, margin=SECTION_GAP), [
                 B("sgs/tabs", dict(hideEmptyTabs=True), [
                     B("sgs/tab", {"label": "Description"},
-                      [btxt("short_description", fontSize={"desktop": 16.5}, fontSizeUnit="px", textColour="text-muted")]),
+                      [B("core/post-content", {"textColor": "text-muted",
+                                               "style": {"typography": {"fontSize": "16px", "lineHeight": "1.6"}}})]),
                     B("sgs/tab", {"label": "Details"}, [details_grid]),
                     B("sgs/tab", {"label": "Sizing"}, sizing),
                 ]),
@@ -148,11 +187,12 @@ tree = [
                          [txt(a, fontSize={"desktop": 15}, fontSizeUnit="px", textColour="text-muted")]) for q, a in FAQS]),
                 ]),
             ]),
-            B("sgs/container", dict(margin=SECTION_GAP), [
+            NO_REVIEWS,
+            B("sgs/container", dict(layout="stack", margin=SECTION_GAP), [
                 B("sgs/heading", dict(content="", metadata=bind("content", "brand", before="More from "),
                                       margin={"desktop": {"bottom": "24px"}}, **H2)),
                 collection("product_brand", 11)]),
-            B("sgs/container", dict(margin=SECTION_GAP), [
+            B("sgs/container", dict(layout="stack", margin=SECTION_GAP), [
                 B("sgs/heading", dict(content="Similar shapes", margin={"desktop": {"bottom": "24px"}}, **H2)),
                 collection("pa_shape", 12)]),
         ]),
