@@ -315,10 +315,10 @@ glyphs if they differ (Wave 4 buck clone); studionamma's DARK MODE roll (U-12) a
 studionamma clone); wearecollins' social-link dim (Wave 4 wearecollins clone). wearecollins' two-bar burger (M-27 residue from U-9 + U-11, missed by this pair's design) is delivered:
 `burgerBarCount` (design `.claude/reports/2026-09-25-two-bar-burger-design.md`; commits a19a5c6ee, c16bcb949; live
 `reports/visual-diff/nav-drawer-2026-09-25.md` section "Two-bar burger": two bars 6.51px apart cross into an X in
-0.45s on wearecollins' curve; bar thickness and width are a recorded divergence). Owed, lane A: away's 375 two-up tile scroller, checked on a post built from `sgs/mega-links-with-tiles`; a
-per-page menu VIDEO source (Bean: the thumbnails are often short clips; a featured image can only be an image, so
-GIFs work today). Delivered from
-this list: the numbered compact-links starter pattern (`sgs/mega-compact-links-numbered`, authored in the real editor and
+0.45s on wearecollins' curve; bar thickness and width are a recorded divergence). Owed, lane A: away's 375 two-up tile scroller, checked on a post built from `sgs/mega-links-with-tiles`. Delivered from
+this list: the menu thumbnail as a short clip, closed by GIF (Bean, 2026-09-25: the video option is GIF-based; live, an animated
+GIF set as the linked page's featured image renders as the drawer thumbnail at its full-size original, 3 frames, looping,
+no resized static copy); the numbered compact-links starter pattern (`sgs/mega-compact-links-numbered`, authored in the real editor and
 serialised from the saved post; its rows needed a new per-item `description` on `sgs/icon-list`, Bean option a, 8441095ec;
 live: a real `<ol>`, `decimal-leading-zero`, 12px 700 numbers, the description a block line inside the link);
 `sgs/mega-panel`'s opaque default fill (Bean, option a, 2026-09-25): an empty `panelBg` paints the

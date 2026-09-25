@@ -161,3 +161,11 @@ lengthened by a test-only injected style (it is shorter than 400px of scroll).
 
 Batched for the later pass: axe with the drawer opened from the chip, keyboard order past the chip, editor round-trips
 of the four new controls.
+
+## Menu thumbnail as a short clip: closed by GIF, 2026-09-25
+
+Bean: the menu "video" option is GIF-based. Checked on `/qa-scrim/` (`two-bar` fixture, drawer at 1440, `innerWidth`
+1309): a 3-frame looping GIF (attachment 3945, 320 x 224) set as the linked page's (2742) featured image renders as the
+drawer item's thumbnail from the full-size original (`qa-anim.gif`, natural 320 x 224, no srcset, no resized copy); the
+served file has 3 graphic-control blocks and a NETSCAPE2.0 loop, so it plays. Restored: 2742's featured image back to
+3459, the GIF deleted.
