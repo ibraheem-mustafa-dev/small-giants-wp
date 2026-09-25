@@ -17634,6 +17634,14 @@
     },
     {
       "slug": "sgs/nav-bar-menu",
+      "attr": "itemPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
       "attr": "itemPaddingShiftHover",
       "fields": {
         "css_property": "padding-inline-start",

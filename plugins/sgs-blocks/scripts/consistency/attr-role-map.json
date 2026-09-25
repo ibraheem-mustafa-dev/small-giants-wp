@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "..\\..\\..\\..\\..\\.claude\\skills\\sgs-wp-engine\\sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 8309,
+    "row_count": 8310,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -4648,6 +4648,7 @@
     "sgs/nav-bar-menu::itemMotionEasingCustom": "technical",
     "sgs/nav-bar-menu::itemOpacity": "visual",
     "sgs/nav-bar-menu::itemOpacityHover": "visual",
+    "sgs/nav-bar-menu::itemPadding": "layout",
     "sgs/nav-bar-menu::itemPaddingShiftHover": "styling",
     "sgs/nav-bar-menu::itemSeparatorColour": "color",
     "sgs/nav-bar-menu::itemSeparatorColourHover": "color",
