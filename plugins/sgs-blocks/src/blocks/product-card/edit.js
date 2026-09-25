@@ -2474,9 +2474,10 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 							attributes={ attributes }
 							setAttributes={ setAttributes }
 							prefix="brand"
-							showWeight={ false }
+							showFontFamily
 							showStyle={ false }
 							showLineHeight={ false }
+							showLetterSpacing
 						/>
 					</PanelBody>
 				) }

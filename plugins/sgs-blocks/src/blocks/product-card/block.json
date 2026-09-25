@@ -1337,6 +1337,23 @@
 			"type": "string",
 			"default": "px"
 		},
+		"brandFontFamily": {
+			"type": "string",
+			"default": "",
+			"description": "Brand overlay font family (a theme font preset or a CSS font-family string). Empty = the card's body font."
+		},
+		"brandFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"brandLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"brandLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
 		"showSavingBadge": {
 			"type": "boolean",
 			"default": false,

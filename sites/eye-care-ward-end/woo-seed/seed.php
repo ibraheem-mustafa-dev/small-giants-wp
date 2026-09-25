@@ -294,7 +294,8 @@ $img_skipped = array();
 
 foreach ( $data['PRODUCTS'] as $p ) {
 	$sku  = sgs_seed_sku_from_code( $p['code'] );
-	$name = $p['brand'] . ' ' . $p['name'];
+	// The brand is its own field (product_brand), shown by the card and product page; the title is the model name.
+	$name = $p['name'];
 
 	$product_id = sgs_seed_find_product_by_sku( $sku );
 	$is_new     = ! $product_id;
