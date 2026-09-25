@@ -342,6 +342,12 @@ function sgs_seed_default_size( array $sizes ): array {
 update_option( 'woocommerce_currency', 'GBP' );
 echo "Store currency set to GBP.\n";
 
+// A Birmingham shop selling to the UK only (the draft's "Free UK delivery").
+update_option( 'woocommerce_default_country', 'GB' );
+update_option( 'woocommerce_allowed_countries', 'specific' );
+update_option( 'woocommerce_specific_allowed_countries', array( 'GB' ) );
+echo "Store country set to GB, selling to GB only.\n";
+
 // ─────────────────────────────── 2. brands ───────────────────────────────
 
 echo "\n=== Brands ===\n";
@@ -776,6 +782,19 @@ if ( ! $zone_id ) {
 $zone->set_locations( array( array( 'code' => 'GB', 'type' => 'country' ) ) );
 $zone->save();
 
+/**
+ * Save a zone method's OWN settings. `$method->update_option()` writes the
+ * method type's global option, not this instance's, which left every method
+ * with no cost or title (a "Flat rate" that charged nothing).
+ *
+ * @param WC_Shipping_Method $method   The zone method instance.
+ * @param array              $settings Settings to set.
+ */
+function sgs_seed_zone_method_settings( WC_Shipping_Method $method, array $settings ) {
+	$method->init_instance_settings();
+	update_option( $method->get_instance_option_key(), array_merge( $method->instance_settings, $settings ) );
+}
+
 $existing_methods = $zone->get_shipping_methods();
 $has_flat_rate     = false;
 $has_free_shipping = false;
@@ -794,9 +813,7 @@ foreach ( $existing_methods as $m ) {
 
 if ( ! $has_flat_rate ) {
 	$instance_id = $zone->add_shipping_method( 'flat_rate' );
-	$flat        = new WC_Shipping_Flat_Rate( $instance_id );
-	$flat->update_option( 'cost', '3.95' );
-	$flat->update_option( 'title', 'Standard delivery' );
+	sgs_seed_zone_method_settings( new WC_Shipping_Flat_Rate( $instance_id ), array( 'title' => 'Tracked UK delivery', 'cost' => '3.95', 'tax_status' => 'none' ) );
 	echo "  Added Flat rate: £3.95 (instance {$instance_id})\n";
 } else {
 	echo "  Flat rate already present — left as-is (re-run does not duplicate).\n";
@@ -804,10 +821,7 @@ if ( ! $has_flat_rate ) {
 
 if ( ! $has_free_shipping ) {
 	$instance_id = $zone->add_shipping_method( 'free_shipping' );
-	$free        = new WC_Shipping_Free_Shipping( $instance_id );
-	$free->update_option( 'requires', 'min_amount' );
-	$free->update_option( 'min_amount', '75' );
-	$free->update_option( 'title', 'Free UK delivery' );
+	sgs_seed_zone_method_settings( new WC_Shipping_Free_Shipping( $instance_id ), array( 'title' => 'Free UK delivery', 'requires' => 'min_amount', 'min_amount' => '75' ) );
 	echo "  Added Free shipping: over £75 (instance {$instance_id})\n";
 } else {
 	echo "  Free shipping already present — left as-is.\n";
@@ -838,6 +852,10 @@ if (
 if ( ! $has_local_pickup ) {
 	$instance_id = $zone->add_shipping_method( $pickup_method_id );
 	if ( $instance_id ) {
+		$pickup_methods = $zone->get_shipping_methods();
+		if ( isset( $pickup_methods[ $instance_id ] ) ) {
+			sgs_seed_zone_method_settings( $pickup_methods[ $instance_id ], array( 'title' => 'Collect in Birmingham', 'cost' => '0' ) );
+		}
 		echo "  Added {$pickup_method_id} (instance {$instance_id})\n";
 	} else {
 		echo "  FAILED to add {$pickup_method_id} as a zone method — it does not declare 'shipping-zones' support.\n";

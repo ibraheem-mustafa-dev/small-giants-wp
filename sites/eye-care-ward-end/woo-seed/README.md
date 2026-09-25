@@ -29,7 +29,7 @@ draft/target and re-run).
   `_sgs_frame_temple` (mm) — now the product's *default* size (see above), with the same
   three keys also written per-variation with that variation's own size. See "Meta keys"
   below for why these existed as product-level meta in the first place.
-- **UK shipping zone**: Flat rate £3.95, Free shipping over £75, Local Pickup.
+- **Store country** GB, selling to GB only. **UK shipping zone**: "Tracked UK delivery" £3.95, "Free UK delivery" over £75, "Collect in Birmingham" (each method's own instance settings; see `sgs_seed_zone_method_settings()`).
 
 ## Running it
 
