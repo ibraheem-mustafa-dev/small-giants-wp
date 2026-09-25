@@ -278,7 +278,16 @@ item-markup `two-bar` again.
 | axe at 1440 | the burger is hidden at desktop in this fixture (UNMEASURED, correct); the page-centred dropdown opened by keyboard: 1 serious color-contrast, see below |
 | Editor round-trip (page 3972, deleted) | drawer "Panel position" (`anchor {desktop:trigger}`; `side-end` and `container` also offered and stored), "Gap above the panel" 12px (`anchorOffset {desktop:12px}`, an optional item in the Drawer ⋮ menu); bar "Item gap" 20 (`gap {desktop:20px}`), "Open from" page-centred (`submenuAlign`, a string by design), "Mega panels open from" full width (`megaAlign {desktop:full-width}`), "Distance below the bar" 10 (`submenuTopOffset 10px`). After save and reload: no differences, no invalid blocks, nothing dirty |
 
-Open finding, not changed in this pass: a bar dropdown's links default to the palette's `primary` colour
-(`plugins/sgs-blocks/includes/nav-menu-submenu-css.php`, the `__sublink` base rule), so on Mama's Munches (primary
-`#e68a95`) they read 2.24:1 on the cream surface `#fbf3dc` at rest (4.5:1 needed). Focus turns them `text`, which
-passes. The drawer's sublinks already default to `text`. Decision for Bean (close-out).
+Dropdown link contrast, fixed at the close-out (6962dd0e6): a bar dropdown's links defaulted to the palette's
+`primary` (`plugins/sgs-blocks/includes/nav-menu-submenu-css.php::sgs_nav_shared_submenu_css`, the `__sublink` base
+rule), so on Mama's Munches (primary `#e68a95`) they read 2.24:1 on the cream surface `#fbf3dc` at rest. Bean chose
+`text`, as the drawer's sublinks already used; the brand colour stays as the Hover row fill (`submenuLinkBgHover`).
+Deployed to sandybrown (`build-deploy.py --target sandybrown --blocks-only`, all gates, local and server md5 of the
+file equal). With the fixture above, `axe-run.mjs … --open ".sgs-site-header .sgs-nav-bar-menu__subtoggle"
+--open-via keyboard --scope ".sgs-site-header .sgs-nav-bar-menu__submenu" --viewport 1440 --require-open`: guard PASS
+(200 x 90, 2 focusable), 0 violations (1 serious color-contrast before). Test:
+`tests/php/run-nav-sublink-default-colour-standalone.php`, 8 of 8, negative control on 7a633476c. Fixture ended on
+`two-bar`.
+
+Scroll sideways first-item ring (defect 2 above): Bean accepted the inline-start trim at scroll position 0; recorded
+in Spec 02's Scroll sideways line.

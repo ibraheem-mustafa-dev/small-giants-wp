@@ -357,11 +357,15 @@ full local `npm run build` (all gates) before the first deploy, not after.
 The lane A QA pass is done (d954c83f8, `reports/visual-diff/nav-drawer-2026-09-25.md` section "Lane A batched QA pass"): axe 0 on the drawer opened from the header burger (1440, 375)
 and from the chip, and on a Scroll sideways row; the chip is the last tab stop (printed on `wp_footer`) and works by
 keyboard; every new control round-trips in the real editor. Fixed on the way: a Scroll sideways row clipped a focus
-ring top and bottom (8px block room added; the first item's inline start is still trimmed at rest, Bean to decide);
+ring top and bottom (8px block room added; the first item's inline start stays trimmed at rest, accepted by Bean and
+recorded in Spec 02's Scroll sideways line);
 an empty chip background now paints the opaque surface token (Bean, option a: buck fills its chip); and
 `TypographyControls.js::isTieredValue` read the editor's `[]` default as a flat value, so a custom font size, line
 height or letter spacing on a fresh block was lost on reload. Fixture cases `header-row` and
 `detach-chip` in `scripts/nav-qa/qa-item-markup-fixture.php` set the U-10/U-14 settings up on `/qa-scrim/`.
+Close-out (6962dd0e6, live on sandybrown): bar dropdown links default to the palette's `text`, not `primary` (Mama's
+Munches pink on cream read 2.24:1); the brand colour stays as the Hover row fill. axe on the keyboard-opened dropdown
+at 1440 with the `exit-cells` geometry fixture: 0 violations.
 
 Sizes are `families-master.json::units[].size` at full scope. Convert per
 `~/.claude/rules/time-estimates.md`: medium 30 to 60 minutes, high 1 to 2 hours, the whole
