@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "..\\..\\..\\..\\..\\.claude\\skills\\sgs-wp-engine\\sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 8318,
+    "row_count": 8322,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -5716,8 +5716,12 @@
     "sgs/product-card::borderStyle": "visual",
     "sgs/product-card::borderWidth": "visual",
     "sgs/product-card::brandColour": "color",
+    "sgs/product-card::brandFontFamily": "typography",
     "sgs/product-card::brandFontSize": "typography",
     "sgs/product-card::brandFontSizeUnit": "typography",
+    "sgs/product-card::brandFontWeight": "typography",
+    "sgs/product-card::brandLetterSpacing": "typography",
+    "sgs/product-card::brandLetterSpacingUnit": "typography",
     "sgs/product-card::brandName": "text-content",
     "sgs/product-card::cardMaxWidth": "layout",
     "sgs/product-card::cardPadding": "layout",

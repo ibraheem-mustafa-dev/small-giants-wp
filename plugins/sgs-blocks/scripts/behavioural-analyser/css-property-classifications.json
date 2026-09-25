@@ -6935,6 +6935,16 @@
     },
     {
       "slug": "sgs/nav-drawer",
+      "attr": "drawerTextColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "GRID",
+        "css_element": "body"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
       "attr": "modality",
       "fields": {
         "css_property": "max-width",
@@ -8574,6 +8584,22 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "brandFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "brand"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "brandLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "brand"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "cardMaxWidth",
       "fields": {
         "css_property": "max-width",
@@ -8860,6 +8886,14 @@
       "fields": {
         "css_property": "font-size",
         "css_element": "price-note"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "productId",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_layer": "GRID"
       }
     },
     {
@@ -18207,16 +18241,6 @@
       "attr": "drawerPadding",
       "fields": {
         "css_property": "padding",
-        "css_layer": "GRID",
-        "css_element": "body"
-      }
-    },
-    {
-      "slug": "sgs/nav-drawer",
-      "attr": "drawerTextColour",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
         "css_layer": "GRID",
         "css_element": "body"
       }
