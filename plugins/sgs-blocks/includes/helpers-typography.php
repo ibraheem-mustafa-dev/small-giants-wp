@@ -11,7 +11,7 @@
  *
  * Attribute shape (prefix '' shown; prefix 'label' → labelFontSize etc.):
  *   fontSize        number   (e.g. 18)        — desktop
- *   fontSizeUnit    string   (px|em|rem)
+ *   fontSizeUnit    string   (px|em|rem|vw|vh)
  *   fontSizeTablet  number
  *   fontSizeMobile  number
  *   fontFamily      string   (e.g. 'Montserrat, sans-serif') — no responsive

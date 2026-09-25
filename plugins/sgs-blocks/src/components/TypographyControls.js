@@ -315,12 +315,13 @@ function textIndentSliderBounds( unit ) {
  * which builds the object form itself — handing it the object array produces a
  * picker with no usable units.
  *
- * The set is narrower than core's default (`px/em/rem/vw/vh`) on purpose: it
- * matches the PHP helper's accepted units, which `sgs_responsive_sanitise_unit()`
- * strips to `[a-z]`. Offering `vw`/`vh` here would let a client choose a unit
- * the server then renders differently from the editor preview.
+ * The set is core's default. `vw` and `vh` size text from the screen's width
+ * or height (text that grows with the screen); the server keeps any unit
+ * `sgs_responsive_sanitise_unit()` allows (`[a-z%]`), and the editor canvas
+ * resolves them against its own preview width, so the preview matches the
+ * device being previewed.
  */
-const FONT_SIZE_UNIT_SLUGS = [ 'px', 'em', 'rem' ];
+const FONT_SIZE_UNIT_SLUGS = [ 'px', 'em', 'rem', 'vw', 'vh' ];
 
 /**
  * ⛔ There is deliberately NO line-height unit list any more.

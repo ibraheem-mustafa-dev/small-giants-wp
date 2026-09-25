@@ -159,8 +159,8 @@ function buildTextStyle( attributes ) {
 	// value, not the read itself.
 	//
 	// Copied deliberately from sgs/text's identical resolveDesktop helper — the
-	// block that hit this first. `fontSize` needs no such guard: it routes
-	// through buildPreviewFontSize(), which already handles the tiered shape.
+	// block that hit this first. `fontSize` is a tier object too, so it is
+	// resolved the same way before buildPreviewFontSize() reads it.
 	const resolveDesktop = ( val ) =>
 		val !== null && typeof val === 'object' && ! Array.isArray( val ) ? val.desktop : val;
 	const lineHeightVal = resolveDesktop( lineHeight );
@@ -170,7 +170,7 @@ function buildTextStyle( attributes ) {
 		...resolveTextColourPreviewStyle( textColour, textColourGradient, colourVar ),
 		// A string fontSize is a theme preset slug — resolve to the preset
 		// custom property (mirrors sgs_font_size_value() server-side).
-		fontSize: buildPreviewFontSize( fontSize, fontSizeUnit ),
+		fontSize: buildPreviewFontSize( resolveDesktop( fontSize ), fontSizeUnit ),
 		fontWeight: fontWeight || undefined,
 		lineHeight: lineHeightVal ? `${ lineHeightVal }${ lineHeightUnit }` : undefined,
 		letterSpacing: ( letterSpacingVal !== null && letterSpacingVal !== undefined )
