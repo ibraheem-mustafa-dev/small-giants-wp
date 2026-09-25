@@ -62,6 +62,29 @@ export function ModalAnchorNotice( { anchor } ) {
  * @param {Function} props.setAttributes    Block editor setAttributes.
  * @return {JSX.Element} The control.
  */
+/**
+ * Warning shown when triggerStyle:'none' (no trigger button rendered) AND the
+ * block has no HTML anchor set — with neither, nothing on the page can open
+ * this modal at all (no button, no `#anchor`/`data-sgs-modal-open` target for
+ * a link elsewhere to point at). Distinct from ModalAnchorNotice above, which
+ * is informational for every triggerStyle; this one only fires for the
+ * specific combination that leaves the modal completely unreachable.
+ *
+ * @param {Object} props        Component props.
+ * @param {string} props.anchor The block's current HTML anchor value.
+ * @return {JSX.Element} The warning notice.
+ */
+export function ModalNoOpenerWarning( { anchor } ) {
+	return (
+		<Notice status="warning" isDismissible={ false }>
+			{ __(
+				'Trigger button is set to "None" and no HTML anchor is set — nothing can open this modal. Set an HTML anchor (Advanced panel) so a link or button elsewhere on the page can target it.',
+				'sgs-blocks'
+			) }
+		</Notice>
+	);
+}
+
 export function ModalHashLoadToggle( { anchor, openOnHashLoad, setAttributes } ) {
 	return (
 		<ToggleControl

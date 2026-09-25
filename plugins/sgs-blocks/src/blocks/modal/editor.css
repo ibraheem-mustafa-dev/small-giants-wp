@@ -31,3 +31,18 @@
 	padding: var(--wp--preset--spacing--40, 2rem);
 	border-radius: var(--wp--custom--border-radius--small, 4px);
 }
+
+/* triggerStyle:'none' — no trigger button is rendered on the frontend, so the
+   canvas shows this placeholder in its place rather than nothing at all. */
+.sgs-modal__no-trigger-placeholder {
+	display: inline-flex;
+	align-items: center;
+	min-height: 44px;
+	padding: 0.875rem 1.5rem;
+	border: 2px dashed var(--wp--preset--color--border-light, #e5e5e5);
+	border-radius: var(--wp--custom--border-radius--small, 4px);
+	background-color: var(--wp--preset--color--surface-alt, #fafafa);
+	color: var(--wp--preset--color--text-muted, #6b6b6b);
+	font-size: 0.875rem;
+	font-style: italic;
+}

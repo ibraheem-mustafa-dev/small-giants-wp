@@ -22,6 +22,11 @@
  * - Focus returns to whatever had focus when showModal() was called (the
  *   opener, since clicking a link/button focuses it first) — this is native
  *   dialog.close() behaviour, unaffected by which opener triggered the open.
+ *   This is already opener-agnostic, not hardcoded to the block's own trigger
+ *   button: it works identically whether `opener` (the 3rd argument below) is
+ *   this block's own `.sgs-modal__trigger`, an unrelated link/button elsewhere
+ *   on the page (open-anywhere.js's generic-opener listener), or `null` (a
+ *   page-load hash open, initHashOnLoad() — nothing to return focus to).
  *
  * Additionally we lock body scroll while the modal is open so the page
  * beneath does not scroll when the user scrolls inside the dialog, and set

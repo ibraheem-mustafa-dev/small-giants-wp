@@ -14,18 +14,25 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // Extract attributes with defaults.
-$trigger_text       = $attributes['triggerText'] ?? __( 'Open Modal', 'sgs-blocks' );
-$trigger_style      = $attributes['triggerStyle'] ?? 'primary';
-$trigger_colour     = $attributes['triggerColour'] ?? '';
+$trigger_text   = $attributes['triggerText'] ?? __( 'Open Modal', 'sgs-blocks' );
+$trigger_style  = $attributes['triggerStyle'] ?? 'primary';
+$trigger_colour = $attributes['triggerColour'] ?? '';
 // D956 — triggerColourGradient is the gradient sibling (778879732 rollout,
 // Phase 3); the D942 comment below already anticipated + freed this slot.
-$trigger_colour_gradient = $attributes['triggerColourGradient'] ?? '';
-$trigger_background = $attributes['triggerBackground'] ?? '';
+$trigger_colour_gradient     = $attributes['triggerColourGradient'] ?? '';
+$trigger_background          = $attributes['triggerBackground'] ?? '';
 $trigger_background_gradient = sgs_css_gradient_value( $attributes['triggerBackgroundGradient'] ?? '' );
-$max_width          = $attributes['maxWidth'] ?? 'medium';
-$close_on_overlay   = $attributes['closeOnOverlay'] ?? true;
-$open_on_hash_load  = ! empty( $attributes['openOnHashLoad'] );
-$modal_background   = $attributes['modalBackground'] ?? 'white';
+$max_width                   = $attributes['maxWidth'] ?? 'medium';
+// size:'fullscreen' (step-by-step flows, e.g. a configurator) fills the
+// viewport instead of using a maxWidth variant — the two are mutually
+// exclusive, so the maxWidth modifier class below is swapped for the
+// fullscreen one rather than emitted alongside it.
+$size                      = $attributes['size'] ?? 'default';
+$is_fullscreen             = 'fullscreen' === $size;
+$dialog_size_class         = $is_fullscreen ? 'sgs-modal__dialog--fullscreen' : 'sgs-modal__dialog--' . $max_width;
+$close_on_overlay          = $attributes['closeOnOverlay'] ?? true;
+$open_on_hash_load         = ! empty( $attributes['openOnHashLoad'] );
+$modal_background          = $attributes['modalBackground'] ?? 'white';
 $modal_background_gradient = sgs_css_gradient_value( $attributes['modalBackgroundGradient'] ?? '' );
 
 // modalRef (Task 1, 2026-09-14) — when set, this instance's dialog content is
@@ -144,8 +151,8 @@ if ( $trigger_rules ) {
 	$scoped_css_rules[] = sgs_text_colour_gradient_fallback_rule( $root_sel . ' .sgs-modal__trigger', $trigger_colour_effective );
 }
 
-$trigger_colour_hover = $attributes['triggerColourHover'] ?? '';
-$trigger_colour_gradient_hover = $attributes['triggerColourHoverGradient'] ?? '';
+$trigger_colour_hover           = $attributes['triggerColourHover'] ?? '';
+$trigger_colour_gradient_hover  = $attributes['triggerColourHoverGradient'] ?? '';
 $trigger_colour_effective_hover = sgs_resolve_text_colour_or_gradient( $trigger_colour_hover, $trigger_colour_gradient_hover );
 if ( '' !== $trigger_colour_effective_hover ) {
 	$trigger_colour_effective_hover_decl = sgs_text_colour_decl( $trigger_colour_effective_hover );
@@ -185,14 +192,16 @@ $scoped_css = implode( '', $scoped_css_rules );
 // Render.
 ?>
 <div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() is pre-escaped. ?>>
-	<button
-		type="button"
-		class="sgs-modal__trigger sgs-modal__trigger--<?php echo esc_attr( $trigger_style ); ?>"
-		data-modal-id="<?php echo esc_attr( $modal_id ); ?>"
-		aria-haspopup="dialog"
-	>
-		<?php echo esc_html( $trigger_text ); ?>
-	</button>
+	<?php if ( 'none' !== $trigger_style ) : ?>
+		<button
+			type="button"
+			class="sgs-modal__trigger sgs-modal__trigger--<?php echo esc_attr( $trigger_style ); ?>"
+			data-modal-id="<?php echo esc_attr( $modal_id ); ?>"
+			aria-haspopup="dialog"
+		>
+			<?php echo esc_html( $trigger_text ); ?>
+		</button>
+	<?php endif; ?>
 
 	<?php
 	/*
@@ -206,7 +215,7 @@ $scoped_css = implode( '', $scoped_css_rules );
 	?>
 	<dialog
 		id="<?php echo esc_attr( $modal_id ); ?>"
-		class="sgs-modal__dialog sgs-modal__dialog--<?php echo esc_attr( $max_width ); ?> <?php echo esc_attr( $uid ); ?>"
+		class="sgs-modal__dialog <?php echo esc_attr( $dialog_size_class ); ?> <?php echo esc_attr( $uid ); ?>"
 		data-close-on-overlay="<?php echo $close_on_overlay ? 'true' : 'false'; ?>"
 		data-open-on-hash-load="<?php echo $open_on_hash_load ? 'true' : 'false'; ?>"
 		aria-labelledby="<?php echo esc_attr( $modal_id ); ?>-title"

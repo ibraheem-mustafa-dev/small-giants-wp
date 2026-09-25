@@ -19,29 +19,20 @@ import { openModal, closeModal } from './modal-core';
 import { initGenericOpeners, initHashOnLoad } from './open-anywhere';
 
 /**
- * Wire up a single modal instance's own trigger button + close/overlay/escape
- * behaviour.
+ * Wire up a single dialog's own close button, overlay-click and close-cleanup
+ * behaviour. Runs for EVERY `.sgs-modal__dialog` on the page, regardless of
+ * whether that instance has its own trigger button — triggerStyle:'none'
+ * (block.json) renders no trigger at all (the modal is opened only by a
+ * link/data-sgs-modal-open element elsewhere, via open-anywhere.js, or a
+ * page-load hash), but its close button and overlay click must still work.
+ * Previously this was wired inside initTrigger() below, so a trigger-less
+ * dialog silently got none of it.
  *
- * @param {HTMLElement} trigger The `.sgs-modal__trigger` button.
+ * @param {HTMLDialogElement} dialog The `.sgs-modal__dialog` element.
  */
-function initTrigger( trigger ) {
-	const modalId = trigger.dataset.modalId;
-	if ( ! modalId ) {
-		return;
-	}
-
-	const dialog = document.getElementById( modalId );
-	if ( ! dialog ) {
-		return;
-	}
-
+function initDialog( dialog ) {
 	const closeButton = dialog.querySelector( '.sgs-modal__close' );
 	const closeOnOverlay = dialog.dataset.closeOnOverlay === 'true';
-
-	// Open modal when trigger button is clicked.
-	trigger.addEventListener( 'click', () => {
-		openModal( dialog, closeButton, trigger );
-	} );
 
 	// Close button.
 	if ( closeButton ) {
@@ -73,7 +64,9 @@ function initTrigger( trigger ) {
 	// (close button, overlay click, generic-opener from open-anywhere.js) AND
 	// native Escape/`cancel` handling all end in dialog.close(), which fires
 	// 'close'. Restores body scroll position and resets the opener's
-	// aria-expanded (openModal(), modal-core.js, sets dialog.__sgsOpener).
+	// aria-expanded (openModal(), modal-core.js, sets dialog.__sgsOpener —
+	// tracked regardless of which mechanism opened the dialog, so this reset
+	// is not limited to the block's own trigger button).
 	dialog.addEventListener( 'close', () => {
 		const scrollY = Number.parseInt( dialog.dataset.scrollY || '0', 10 );
 		document.body.classList.remove( 'sgs-modal-scroll-locked' );
@@ -87,7 +80,34 @@ function initTrigger( trigger ) {
 	} );
 }
 
+/**
+ * Wire up a single modal instance's own trigger button, if it has one.
+ * Absent entirely when triggerStyle:'none' — those dialogs still get
+ * initDialog()'s close/overlay/cleanup wiring above; they simply have no
+ * button of their own to open them.
+ *
+ * @param {HTMLElement} trigger The `.sgs-modal__trigger` button.
+ */
+function initTrigger( trigger ) {
+	const modalId = trigger.dataset.modalId;
+	if ( ! modalId ) {
+		return;
+	}
+
+	const dialog = document.getElementById( modalId );
+	if ( ! dialog ) {
+		return;
+	}
+
+	const closeButton = dialog.querySelector( '.sgs-modal__close' );
+
+	trigger.addEventListener( 'click', () => {
+		openModal( dialog, closeButton, trigger );
+	} );
+}
+
 function initModals() {
+	document.querySelectorAll( '.sgs-modal__dialog' ).forEach( initDialog );
 	document.querySelectorAll( '.sgs-modal__trigger' ).forEach( initTrigger );
 	initGenericOpeners();
 	initHashOnLoad();

@@ -140,8 +140,10 @@
 			"enum": [
 				"primary",
 				"secondary",
-				"text-link"
-			]
+				"text-link",
+				"none"
+			],
+			"description": "'none' renders no trigger button at all — the modal is opened only by a link/data-sgs-modal-open element elsewhere on the page, or on page-load hash (openOnHashLoad)."
 		},
 		"triggerColour": {
 			"type": "string"
@@ -171,6 +173,15 @@
 				"large",
 				"full"
 			]
+		},
+		"size": {
+			"type": "string",
+			"default": "default",
+			"enum": [
+				"default",
+				"fullscreen"
+			],
+			"description": "'fullscreen' fills the viewport (100vw x 100dvh, no border radius, scrollable content) for a step-by-step flow such as a configurator. maxWidth is ignored in this mode."
 		},
 		"closeOnOverlay": {
 			"type": "boolean",

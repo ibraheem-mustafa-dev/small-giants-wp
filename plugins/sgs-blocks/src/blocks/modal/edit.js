@@ -16,13 +16,18 @@ import {
 import { resolveColourToken, DesignTokenPicker, GradientCapableColourControl, SgsColourPanel, ScrimControls, scrimColourRow } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel } from '../../components/primitives';
 import { resolveTextColourPreviewStyle, resolveBackgroundPaintPreviewStyle } from '../../utils';
-import { ModalAnchorNotice, ModalHashLoadToggle } from './anchor-open-controls';
+import { ModalAnchorNotice, ModalHashLoadToggle, ModalNoOpenerWarning } from './anchor-open-controls';
 
 const MAX_WIDTH_OPTIONS = [
 	{ label: __( 'Small (480px)', 'sgs-blocks' ), value: 'small' },
 	{ label: __( 'Medium (640px)', 'sgs-blocks' ), value: 'medium' },
 	{ label: __( 'Large (800px)', 'sgs-blocks' ), value: 'large' },
 	{ label: __( 'Full Width', 'sgs-blocks' ), value: 'full' },
+];
+
+const SIZE_OPTIONS = [
+	{ label: __( 'Default', 'sgs-blocks' ), value: 'default' },
+	{ label: __( 'Fullscreen', 'sgs-blocks' ), value: 'fullscreen' },
 ];
 
 // Mirrors the `.sgs-modal__dialog--{maxWidth}` width variants in style.css.
@@ -65,6 +70,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		triggerBackgroundHover,
 		triggerBackgroundHoverGradient,
 		maxWidth,
+		size,
 		closeOnOverlay,
 		modalBackground,
 		scrimColour,
@@ -123,8 +129,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// DesignTokenPicker has no `linked` prop, so it always stores a raw CSS
 	// value, never a slug -- resolveColourToken() (not colourVar(), which is
 	// slug-only) is the correct resolver.
+	const isFullscreenSize = 'fullscreen' === size;
 	const contentPreviewStyle = {
-		maxWidth: MAX_WIDTH_VALUES[ maxWidth ] || undefined,
+		// Fullscreen ignores maxWidth entirely (render.php swaps the modifier
+		// class rather than emitting both) — the canvas preview mirrors that
+		// by filling the available width instead of clamping to a variant.
+		maxWidth: isFullscreenSize ? '100%' : MAX_WIDTH_VALUES[ maxWidth ] || undefined,
+		borderRadius: isFullscreenSize ? 0 : undefined,
 		backgroundColor: resolveColourToken( modalBackground, palette ) || undefined,
 	};
 
@@ -328,7 +339,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						<ToggleGroupControlOption value="primary" label={ __( 'Primary', 'sgs-blocks' ) } />
 						<ToggleGroupControlOption value="secondary" label={ __( 'Secondary', 'sgs-blocks' ) } />
 						<ToggleGroupControlOption value="text-link" label={ __( 'Text Link', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="none" label={ __( 'None', 'sgs-blocks' ) } />
 					</ToggleGroupControl>
+					{ /* 'none' — no trigger button on the page at all; the modal
+					   opens only via a link/data-sgs-modal-open element elsewhere
+					   (or a page-load hash). Without an HTML anchor there is
+					   nothing on the page that could target it. */ }
+					{ 'none' === triggerStyle && ! anchor && (
+						<ModalNoOpenerWarning anchor={ anchor } />
+					) }
 					{ /* Moved in from the shared SgsColourPanel (D622 — an
 					     element-scoped colour belongs in its own element's
 					     TIER 1 panel; "trigger button" is a declared element
@@ -380,12 +399,31 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						] }
 					/>
 					<SelectControl
+						label={ __( 'Size', 'sgs-blocks' ) }
+						help={ __(
+							'Fullscreen fills the whole viewport with no border radius — for a step-by-step flow such as a configurator. Ignores Max width below.',
+							'sgs-blocks'
+						) }
+						value={ size }
+						options={ SIZE_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { size: val || 'default' } )
+						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					{ /* Max width is meaningless once Size is Fullscreen (render.php
+					   swaps the modifier class rather than emitting both) —
+					   disabled rather than hidden so the operator's last choice
+					   isn't lost if they switch back. */ }
+					<SelectControl
 						label={ __( 'Max width', 'sgs-blocks' ) }
 						value={ maxWidth }
 						options={ MAX_WIDTH_OPTIONS }
 						onChange={ ( val ) =>
 							setAttributes( { maxWidth: val } )
 						}
+						disabled={ 'fullscreen' === size }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
@@ -458,13 +496,35 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 			<div { ...blockProps }>
 				{ modalHoverPreviewCss && <style>{ modalHoverPreviewCss }</style> }
-				<button
-					className={ `sgs-modal__trigger sgs-modal__trigger--${ triggerStyle }` }
-					style={ triggerButtonStyle }
-					type="button"
-				>
-					{ triggerText }
-				</button>
+				{ 'none' === triggerStyle ? (
+					// No trigger button is rendered on the frontend at all —
+					// this placeholder tells the operator how the modal opens
+					// instead, rather than showing nothing (render.php mirrors
+					// this by omitting the <button> entirely).
+					<p className="sgs-modal__no-trigger-placeholder">
+						{ anchor
+							? sprintf(
+									/* translators: %s: the block's HTML anchor id. */
+									__(
+										'Opened by links to #%s — no button on the page.',
+										'sgs-blocks'
+									),
+									anchor
+							  )
+							: __(
+									'Opened by links elsewhere on the page — no button on the page. Set an HTML anchor below so a link can target it.',
+									'sgs-blocks'
+							  ) }
+					</p>
+				) : (
+					<button
+						className={ `sgs-modal__trigger sgs-modal__trigger--${ triggerStyle }` }
+						style={ triggerButtonStyle }
+						type="button"
+					>
+						{ triggerText }
+					</button>
+				) }
 
 				{ /* The scrim preview swatch that used to live here (reproducing
 				   render.php's old backdrop-colour/opacity maths) is REMOVED in
