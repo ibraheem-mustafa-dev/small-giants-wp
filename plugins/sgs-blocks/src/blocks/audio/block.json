@@ -5,7 +5,7 @@
 	"version": "1.0.0",
 	"title": "SGS Audio",
 	"category": "sgs-content",
-	"description": "Audio player with seven visual styles — from a quiet minimal pill to live spectrum bars, an oscilloscope, and a gradient that pulses to the sound. Reacts to the real audio via the Web Audio API; falls back to a native player with no JavaScript.",
+	"description": "Audio player with eight visual styles — from a quiet minimal pill to live spectrum bars, an oscilloscope, a gradient that pulses to the sound, and a compact sound on/off toggle. Reacts to the real audio via the Web Audio API; falls back to a native player with no JavaScript.",
 	"keywords": [
 		"audio",
 		"sound",
@@ -145,8 +145,46 @@
 				"radial",
 				"oscilloscope",
 				"gradient-pulse",
-				"hidden"
+				"hidden",
+				"toggle"
 			]
+		},
+		"toggleLabel": {
+			"type": "string",
+			"default": "Sound",
+			"description": "The sound toggle's accessible name (aria-label) — stays the accessible name even when toggleShowLabel hides the visible text at a tier. playerStyle:toggle only."
+		},
+		"toggleShowLabel": {
+			"type": "boolean",
+			"default": false,
+			"description": "Desktop tier: show the visible label text next to the icon. Default false (icon-only; the label is still the accessible name via aria-label). Framework flat tier convention (BooleanResponsiveControl) — Desktop is always a concrete boolean, Tablet/Mobile override via the two sibling attrs below (null = inherit the tier above)."
+		},
+		"toggleShowLabelTablet": {
+			"type": [
+				"boolean",
+				"null",
+				"string"
+			],
+			"default": null,
+			"description": "Tablet override for toggleShowLabel. null = inherit Desktop. 'string' is in the type union only because @wordpress/server-side-render's GET transport serialises a null value to an empty string in the REST query string (see sgs/before-after videoAutoplayTablet) — render.php treats '' identically to null."
+		},
+		"toggleShowLabelMobile": {
+			"type": [
+				"boolean",
+				"null",
+				"string"
+			],
+			"default": null,
+			"description": "Mobile override for toggleShowLabel. null = inherit the resolved Tablet value. Same REST-shim 'string' union as toggleShowLabelTablet."
+		},
+		"toggleIcon": {
+			"type": "string",
+			"default": "bars",
+			"enum": [
+				"bars",
+				"speaker"
+			],
+			"description": "playerStyle:toggle only. 'bars' — a 3-bar equaliser icon that animates only while playing (reuses the existing reactive analyser loop; static under reduced motion). 'speaker' — a static speaker icon that swaps sound-on/sound-off with play state."
 		},
 		"reactiveSensitivity": {
 			"type": "number",

@@ -6,8 +6,12 @@
  * instance to its `playerStyle`: a custom accessible transport + (for the reactive styles)
  * a Web Audio `AnalyserNode` that reacts to the REAL audio.
  *
- * Styles: minimal | waveform | spectrum | radial | oscilloscope | gradient-pulse | hidden.
+ * Styles: minimal | waveform | spectrum | radial | oscilloscope | gradient-pulse | hidden | toggle.
  * `hidden` is left as-is (native element plays; no visible player).
+ * `toggle` builds a compact sound on/off `<button class="sgs-audio__toggle">`
+ * that plays/pauses THIS track and, via `localStorage['sgs-sound']`, mutes or
+ * unmutes every OTHER `<audio>`/`<video>` on the page — see enhance()'s
+ * `toggle` branch for the full contract.
  *
  * Web Audio notes:
  *  - `createMediaElementSource` may be called only ONCE per element (guarded) and routes
@@ -81,6 +85,9 @@ function resolveColour( root, name, fallback ) {
 
 const ICON_PLAY = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>';
 const ICON_PAUSE = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/></svg>';
+const ICON_TOGGLE_BARS = '<span class="sgs-audio__toggle-bar"></span><span class="sgs-audio__toggle-bar"></span><span class="sgs-audio__toggle-bar"></span>';
+const ICON_SPEAKER_ON = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M4 9v6h4l5 5V4L8 9H4z" fill="currentColor"/><path d="M16.5 12c0-1.77-.77-3.29-2-4.24v8.48c1.23-.95 2-2.47 2-4.24z" fill="currentColor"/><path d="M14.5 4.6v2.09c2.89 1.02 5 3.77 5 7.31s-2.11 6.29-5 7.31v2.09c4.01-1.06 7-4.7 7-9.4s-2.99-8.34-7-9.4z" fill="currentColor"/></svg>';
+const ICON_SPEAKER_OFF = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M4 9v6h4l5 5V4L8 9H4z" fill="currentColor"/><path d="M19.5 5.5 18.44 4.44 4.44 18.44 5.5 19.5l3.2-3.2L14 21V13.7l3.83 3.83c-.44.37-.94.68-1.5.92v2.1c1.03-.32 1.96-.86 2.75-1.56L21.5 21.5l1.06-1.06L19.5 17.4V5.5Zm-1.83 1.83L15.83 9.17c.42.7.67 1.5.67 2.33 0 .34-.05.67-.13.98l1.5 1.5c.29-.75.46-1.6.46-2.48 0-2.07-.94-3.93-2.66-5.17Z" fill="currentColor"/></svg>';
 
 /** Build the shared analyser graph for one audio element (once). */
 function buildGraph( audio, sensitivity ) {
@@ -267,6 +274,107 @@ function enhance( root ) {
 	if ( style === 'minimal' ) {
 		const seek = makeSeek( audio, 'sgs-audio__seek' );
 		viz.append( play, seek, time );
+		return;
+	}
+
+	if ( style === 'toggle' ) {
+		const toggleLabel = root.getAttribute( 'data-toggle-label' ) || 'Sound';
+		const toggleIcon = root.getAttribute( 'data-toggle-icon' ) === 'speaker' ? 'speaker' : 'bars';
+
+		const btn = document.createElement( 'button' );
+		btn.type = 'button';
+		btn.className = 'sgs-audio__toggle';
+		btn.setAttribute( 'aria-pressed', 'false' );
+		btn.setAttribute( 'aria-label', toggleLabel );
+
+		const iconWrap = document.createElement( 'span' );
+		iconWrap.className = 'sgs-audio__toggle-icon';
+		iconWrap.setAttribute( 'aria-hidden', 'true' );
+		iconWrap.innerHTML = toggleIcon === 'speaker' ? ICON_SPEAKER_OFF : ICON_TOGGLE_BARS;
+
+		const labelSpan = document.createElement( 'span' );
+		labelSpan.className = 'sgs-audio__toggle-label';
+		labelSpan.textContent = toggleLabel;
+
+		btn.append( iconWrap, labelSpan );
+		viz.append( btn );
+
+		// Mute/unmute every OTHER <audio>/<video> on the page (never this
+		// block's own element) — the toggle is a page-wide "sound" switch,
+		// not just a transport for its own track.
+		const setOthersMuted = ( muted ) => {
+			document.querySelectorAll( 'audio, video' ).forEach( ( el ) => {
+				if ( el !== audio ) {
+					el.muted = muted;
+				}
+			} );
+		};
+
+		const syncPressed = ( playing ) => {
+			btn.setAttribute( 'aria-pressed', playing ? 'true' : 'false' );
+			if ( toggleIcon === 'speaker' ) {
+				iconWrap.innerHTML = playing ? ICON_SPEAKER_ON : ICON_SPEAKER_OFF;
+			}
+		};
+
+		btn.addEventListener( 'click', () => {
+			if ( audio.paused ) {
+				const ctx = audioCtx();
+				if ( ctx && ctx.state === 'suspended' ) {
+					ctx.resume();
+				}
+				audio.play();
+			} else {
+				audio.pause();
+			}
+		} );
+
+		audio.addEventListener( 'play', () => {
+			syncPressed( true );
+			try {
+				window.localStorage.setItem( 'sgs-sound', 'on' );
+			} catch ( e ) {
+				// Storage blocked (private mode / disabled) — state just won't persist.
+			}
+			setOthersMuted( false );
+			window.dispatchEvent( new CustomEvent( 'sgs-sound-change', { detail: { on: true } } ) );
+		} );
+		audio.addEventListener( 'pause', () => {
+			syncPressed( false );
+			try {
+				window.localStorage.setItem( 'sgs-sound', 'off' );
+			} catch ( e ) {
+				// Storage blocked (private mode / disabled) — state just won't persist.
+			}
+			setOthersMuted( true );
+			window.dispatchEvent( new CustomEvent( 'sgs-sound-change', { detail: { on: false } } ) );
+		} );
+
+		// Init: NEVER autoplay (render.php also forces audioAutoplay off for
+		// this style) — this track stays paused until pressed. The stored
+		// global preference only decides the mute state applied to every
+		// OTHER media element already on the page at this point.
+		let storedOn = false;
+		try {
+			storedOn = window.localStorage.getItem( 'sgs-sound' ) === 'on';
+		} catch ( e ) {
+			// Storage blocked — default to muted-others (safe: no surprise sound).
+		}
+		setOthersMuted( ! storedOn );
+		syncPressed( false );
+
+		if ( toggleIcon === 'bars' ) {
+			// Bars animate only while playing — runReactive() itself gates on
+			// playing / reduced-motion / on-screen, and paints one static
+			// frame at rest (also the reduced-motion representation).
+			const bars = Array.from( iconWrap.querySelectorAll( '.sgs-audio__toggle-bar' ) );
+			runReactive( root, audio, ( freq ) => {
+				bars.forEach( ( bar, i ) => {
+					const v = freq ? freq[ i * 4 ] / 255 : 0.15;
+					bar.style.setProperty( '--sgs-bar-scale', String( Math.max( 0.15, v ) ) );
+				} );
+			}, sensitivity );
+		}
 		return;
 	}
 

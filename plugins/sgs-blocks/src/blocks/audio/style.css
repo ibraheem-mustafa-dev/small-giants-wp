@@ -212,11 +212,132 @@
 	color: var( --wp--preset--color--text-inverse, #fff );
 }
 
+/* ---- 8. toggle — a compact sound on/off button; icon + optional label ---- */
+.sgs-audio__toggle {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	min-width: 44px;
+	min-height: 44px;
+	padding: 4px 10px;
+	border: none;
+	background: none;
+	color: var( --sgs-audio-accent, #c9821f );
+	cursor: pointer;
+	font: inherit;
+	font-size: 0.85em;
+	font-weight: 600;
+	line-height: 1;
+}
+.sgs-audio__toggle:hover {
+	filter: brightness( 1.15 );
+}
+.sgs-audio__toggle:focus-visible {
+	outline: 2px solid var( --sgs-focus-color, currentColor );
+	outline-offset: 3px;
+}
+
+.sgs-audio__toggle-icon {
+	display: inline-flex;
+	align-items: flex-end;
+	justify-content: center;
+	gap: 2px;
+	width: 20px;
+	height: 16px;
+	flex: none;
+}
+.sgs-audio__toggle-icon svg {
+	width: 18px;
+	height: 18px;
+	display: block;
+}
+/* The bars icon — view.js writes ONLY the --sgs-bar-scale custom property per
+ * bar (no-inline contract); this rule consumes it. Fallback 0.15 matches the
+ * idle/paused representation (short static bars), same idle-fallback pattern
+ * as the radial style's --sgs-glow-opacity / gradient-pulse's --sgs-viz-bg. */
+.sgs-audio__toggle-bar {
+	display: block;
+	width: 3px;
+	height: 100%;
+	border-radius: 2px;
+	background: currentColor;
+	transform: scaleY( var( --sgs-bar-scale, 0.15 ) );
+	transform-origin: bottom;
+	transition: transform 0.08s linear;
+}
+
+/* Visually hidden by default (icon-only) — toggleLabel stays the accessible
+ * name via the button's aria-label regardless of this visibility. Per-tier
+ * override via data-toggle-show-label(-tablet|-mobile), each already resolved
+ * server-side to a concrete "1"/"0" (render.php's null-means-inherit chain),
+ * so these are plain attribute selectors, no cascade guesswork. */
+.sgs-audio__toggle-label {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect( 0 0 0 0 );
+	clip-path: inset( 50% );
+	white-space: nowrap;
+}
+.sgs-audio--toggle[data-toggle-show-label="1"] .sgs-audio__toggle-label {
+	position: static;
+	width: auto;
+	height: auto;
+	overflow: visible;
+	clip: auto;
+	clip-path: none;
+	white-space: nowrap;
+}
+@media ( max-width: 1023px ) {
+	.sgs-audio--toggle[data-toggle-show-label-tablet="1"] .sgs-audio__toggle-label {
+		position: static;
+		width: auto;
+		height: auto;
+		overflow: visible;
+		clip: auto;
+		clip-path: none;
+	}
+	.sgs-audio--toggle[data-toggle-show-label-tablet="0"] .sgs-audio__toggle-label {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect( 0 0 0 0 );
+		clip-path: inset( 50% );
+		white-space: nowrap;
+	}
+}
+@media ( max-width: 767px ) {
+	.sgs-audio--toggle[data-toggle-show-label-mobile="1"] .sgs-audio__toggle-label {
+		position: static;
+		width: auto;
+		height: auto;
+		overflow: visible;
+		clip: auto;
+		clip-path: none;
+	}
+	.sgs-audio--toggle[data-toggle-show-label-mobile="0"] .sgs-audio__toggle-label {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect( 0 0 0 0 );
+		clip-path: inset( 50% );
+		white-space: nowrap;
+	}
+}
+
 @media ( prefers-reduced-motion: reduce ) {
 	.sgs-audio__play {
 		transition: none;
 	}
 	.sgs-audio__viz--pulse {
+		transition: none;
+	}
+	.sgs-audio__toggle-bar {
 		transition: none;
 	}
 }

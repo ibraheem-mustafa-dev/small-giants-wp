@@ -8,7 +8,7 @@
  * `playerStyle` — a custom transport + a Web Audio visualiser that reacts to the
  * real audio (spectrum / oscilloscope / gradient-pulse / radial).
  *
- * The seven player styles:
+ * The eight player styles:
  *   minimal        — a quiet pill: play + progress track + timecode
  *   waveform       — pre-rendered peaks that fill with playback
  *   spectrum       — live frequency bars (Web Audio AnalyserNode)
@@ -16,6 +16,11 @@
  *   oscilloscope   — a live waveform line on a dark scope
  *   gradient-pulse — the player background shifts colour + brightness to the sound
  *   hidden         — audio loads + plays but renders no visible player
+ *   toggle         — a compact sound on/off button (view.js builds the button;
+ *                    render.php only carries the data-toggle-* hooks it reads).
+ *                    Never autoplays — playing/pausing this track is always a
+ *                    user gesture, and toggling it mutes/unmutes every other
+ *                    <audio>/<video> on the page (localStorage `sgs-sound`).
  *
  * @var array     $attributes Block attributes.
  * @var string    $content    Inner block content (unused).
@@ -43,8 +48,8 @@ defined( 'ABSPATH' ) || exit;
 // other block's render.php has had a chance to load it. Requiring the
 // defining file directly, here, removes the load-order dependency.
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
-$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
-$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_tiers   = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers    = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
 $sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
 $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
 
@@ -56,9 +61,34 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 // values (mirrors sgs/label + sgs/heading + sgs/container).
 // ---------------------------------------------------------------------------
 
-$allowed_styles = array( 'minimal', 'waveform', 'spectrum', 'radial', 'oscilloscope', 'gradient-pulse', 'hidden' );
+$allowed_styles = array( 'minimal', 'waveform', 'spectrum', 'radial', 'oscilloscope', 'gradient-pulse', 'hidden', 'toggle' );
 $player_style   = $attributes['playerStyle'] ?? 'minimal';
 $player_style   = in_array( $player_style, $allowed_styles, true ) ? $player_style : 'minimal';
+
+// playerStyle:toggle — the sound on/off button is built entirely by view.js
+// (progressive enhancement; the native <audio> below is the no-JS fallback,
+// same as every other style). render.php only carries the data-toggle-*
+// hooks the view module reads: label (accessible name), icon choice, and the
+// per-tier show-label resolution (framework flat tier convention — Desktop
+// concrete boolean, Tablet/Mobile null-means-inherit, matching
+// sgs/before-after's videoAutoplayTablet/Mobile).
+$toggle_label = isset( $attributes['toggleLabel'] ) ? trim( (string) $attributes['toggleLabel'] ) : '';
+$toggle_label = '' !== $toggle_label ? $toggle_label : __( 'Sound', 'sgs-blocks' );
+
+$toggle_icon_raw = isset( $attributes['toggleIcon'] ) ? (string) $attributes['toggleIcon'] : 'bars';
+$toggle_icon     = in_array( $toggle_icon_raw, array( 'bars', 'speaker' ), true ) ? $toggle_icon_raw : 'bars';
+
+$toggle_show_label_base = ! empty( $attributes['toggleShowLabel'] );
+
+$toggle_show_label_tablet_raw = $attributes['toggleShowLabelTablet'] ?? null;
+$toggle_show_label_mobile_raw = $attributes['toggleShowLabelMobile'] ?? null;
+// '' is the REST GET null-serialisation shim (addQueryArgs can't represent a
+// real null) — treat identically to a real null (inherit the tier above).
+$toggle_show_label_tablet_inherits = ( null === $toggle_show_label_tablet_raw || '' === $toggle_show_label_tablet_raw );
+$toggle_show_label_mobile_inherits = ( null === $toggle_show_label_mobile_raw || '' === $toggle_show_label_mobile_raw );
+
+$toggle_show_label_tablet_effective = $toggle_show_label_tablet_inherits ? $toggle_show_label_base : (bool) $toggle_show_label_tablet_raw;
+$toggle_show_label_mobile_effective = $toggle_show_label_mobile_inherits ? $toggle_show_label_tablet_effective : (bool) $toggle_show_label_mobile_raw;
 
 // 0-100, "how snappy the reactive visualisers feel" — a continuous slider
 // (§ discoverability review) rather than a 3-value enum, mapped to the two
@@ -75,9 +105,14 @@ $audio_mime   = isset( $attributes['audioMimeType'] ) ? (string) $attributes['au
 $controls     = isset( $attributes['audioControls'] ) ? (bool) $attributes['audioControls'] : true;
 $loop         = ! empty( $attributes['audioLoop'] );
 $autoplay     = ! empty( $attributes['audioAutoplay'] );
-$preload_raw  = isset( $attributes['audioPreload'] ) ? (string) $attributes['audioPreload'] : 'metadata';
-$preload      = in_array( $preload_raw, array( 'none', 'metadata', 'auto' ), true ) ? $preload_raw : 'metadata';
-$audio_title  = isset( $attributes['title'] ) ? trim( (string) $attributes['title'] ) : '';
+// A sound toggle never autoplays — playing this track is always a user
+// gesture (pressing the button), regardless of the audioAutoplay attribute.
+if ( 'toggle' === $player_style ) {
+	$autoplay = false;
+}
+$preload_raw = isset( $attributes['audioPreload'] ) ? (string) $attributes['audioPreload'] : 'metadata';
+$preload     = in_array( $preload_raw, array( 'none', 'metadata', 'auto' ), true ) ? $preload_raw : 'metadata';
+$audio_title = isset( $attributes['title'] ) ? trim( (string) $attributes['title'] ) : '';
 
 // Resolve internal source from the WP media library.
 $resolved_url  = $audio_url;
@@ -337,15 +372,21 @@ $wrapper_classes = array(
 	'sgs-audio--' . sanitize_html_class( $player_style ),
 	$uid,
 );
-$wrapper_attrs   = get_block_wrapper_attributes(
-	array(
-		'class'                     => implode( ' ', $wrapper_classes ),
-		'data-player-style'         => $player_style,
-		'data-reactive-sensitivity' => $reactive_sensitivity,
-		'data-loop'                 => $loop ? '1' : '0',
-		'data-autoplay'             => $autoplay ? '1' : '0',
-	)
+$root_attr_args  = array(
+	'class'                     => implode( ' ', $wrapper_classes ),
+	'data-player-style'         => $player_style,
+	'data-reactive-sensitivity' => $reactive_sensitivity,
+	'data-loop'                 => $loop ? '1' : '0',
+	'data-autoplay'             => $autoplay ? '1' : '0',
 );
+if ( 'toggle' === $player_style ) {
+	$root_attr_args['data-toggle-label']             = $toggle_label;
+	$root_attr_args['data-toggle-icon']              = $toggle_icon;
+	$root_attr_args['data-toggle-show-label']        = $toggle_show_label_base ? '1' : '0';
+	$root_attr_args['data-toggle-show-label-tablet'] = $toggle_show_label_tablet_effective ? '1' : '0';
+	$root_attr_args['data-toggle-show-label-mobile'] = $toggle_show_label_mobile_effective ? '1' : '0';
+}
+$wrapper_attrs = get_block_wrapper_attributes( $root_attr_args );
 ?>
 <?php if ( $scoped_css ) : ?>
 <style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via sgs_css_length_value() / wp_style_engine_get_styles; wp_strip_all_tags guards </style> breakout. ?></style>

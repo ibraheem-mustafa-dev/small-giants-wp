@@ -10,7 +10,8 @@ import {
 	ButtonGroup,
 	Notice,
 } from '@wordpress/components';
-import { SgsColourPanel, ResponsiveBoxControl, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl } from '../../components';
+import { SgsColourPanel, ResponsiveBoxControl, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, BooleanResponsiveControl } from '../../components';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { boxShorthand } from '../../utils/spacing-preview';
 
 /** Editor-canvas mirror of render.php's border block — width/style/colour(+gradient)/radius. */
@@ -35,8 +36,11 @@ function buildBorderPreviewStyle( { borderStyle, borderWidth, borderColour, bord
 	return preview;
 }
 
-// Shared with isReactive below so the two can't drift apart.
-const REACTIVE_STYLES = [ 'spectrum', 'radial', 'oscilloscope', 'gradient-pulse' ];
+// Shared with isReactive below so the two can't drift apart. `toggle` is
+// listed as reactive too — its `bars` icon (the default) reuses the same
+// analyser loop, so the Reactivity slider is relevant to it exactly like
+// the other four.
+const REACTIVE_STYLES = [ 'spectrum', 'radial', 'oscilloscope', 'gradient-pulse', 'toggle' ];
 
 const STYLE_OPTIONS = [
 	{ value: 'minimal', label: __( 'Minimal Pill', 'sgs-blocks' ), hint: __( 'Quiet: play + progress + timecode', 'sgs-blocks' ) },
@@ -46,6 +50,7 @@ const STYLE_OPTIONS = [
 	{ value: 'oscilloscope', label: __( 'Oscilloscope', 'sgs-blocks' ), hint: __( 'Live waveform line on a scope', 'sgs-blocks' ) },
 	{ value: 'gradient-pulse', label: __( 'Gradient Pulse', 'sgs-blocks' ), hint: __( 'Background shifts colour to the sound', 'sgs-blocks' ) },
 	{ value: 'hidden', label: __( 'Hidden', 'sgs-blocks' ), hint: __( 'Plays with no visible player', 'sgs-blocks' ) },
+	{ value: 'toggle', label: __( 'Sound Toggle', 'sgs-blocks' ), hint: __( 'A compact sound on/off button — mutes every other player on the page', 'sgs-blocks' ) },
 ];
 const STATIC_STYLES = STYLE_OPTIONS.filter( ( opt ) => ! REACTIVE_STYLES.includes( opt.value ) );
 const REACTIVE_STYLE_OPTIONS = STYLE_OPTIONS.filter( ( opt ) => REACTIVE_STYLES.includes( opt.value ) );
@@ -65,6 +70,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		audioSource,
 		audioId,
 		playerStyle,
+		toggleLabel,
+		toggleShowLabel,
+		toggleShowLabelTablet,
+		toggleShowLabelMobile,
+		toggleIcon,
 		reactiveSensitivity,
 		audioControls,
 		audioLoop,
@@ -238,6 +248,39 @@ export default function Edit( { attributes, setAttributes } ) {
 						</div>
 					) }
 				</PanelBody>
+
+				{ 'toggle' === playerStyle && (
+					<PanelBody title={ __( 'Sound toggle', 'sgs-blocks' ) } initialOpen={ true }>
+						<TextControl
+							label={ __( 'Label', 'sgs-blocks' ) }
+							help={ __( 'Always the accessible name (aria-label), even when hidden from view below.', 'sgs-blocks' ) }
+							value={ toggleLabel || '' }
+							onChange={ ( value ) => setAttributes( { toggleLabel: value } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+						<BooleanResponsiveControl
+							label={ __( 'Show label text', 'sgs-blocks' ) }
+							help={ __( 'Off shows the icon only (label stays the accessible name).', 'sgs-blocks' ) }
+							attrBase="toggleShowLabel"
+							attrTablet="toggleShowLabelTablet"
+							attrMobile="toggleShowLabelMobile"
+							attributes={ { toggleShowLabel, toggleShowLabelTablet, toggleShowLabelMobile } }
+							setAttributes={ setAttributes }
+						/>
+						<ToggleGroupControl
+							label={ __( 'Icon', 'sgs-blocks' ) }
+							value={ toggleIcon || 'bars' }
+							onChange={ ( value ) => setAttributes( { toggleIcon: value } ) }
+							isBlock
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						>
+							<ToggleGroupControlOption value="bars" label={ __( 'Bars', 'sgs-blocks' ) } />
+							<ToggleGroupControlOption value="speaker" label={ __( 'Speaker', 'sgs-blocks' ) } />
+						</ToggleGroupControl>
+					</PanelBody>
+				) }
 
 				<PanelBody title={ __( 'Audio source', 'sgs-blocks' ) } initialOpen={ true }>
 					<SelectControl
