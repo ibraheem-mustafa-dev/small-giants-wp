@@ -56,7 +56,7 @@ https://darkcyan-grouse-898606.hostingersite.com (creds `.claude/secrets/eye-car
 card (Home best sellers), the product page (the site's own `single-product` template; real frame sizes from
 jpopticians.com) and the shop (the site's own `archive-product` template; brand filter proven, `?brands=`). Task 4
 (lens configurator) IN FLIGHT: Spec 43 v1.4.0 adds the add-on price list (1aaa11f37); framework agent work was left
-UNCOMMITTED in the tree when the session ended (`plugins/sgs-blocks/includes/addon-price-list/`,
+UNCOMMITTED in the tree when the session ended (the price list and modal parts are now committed;
 possibly `src/blocks/choice-flow*` and `product-card/view.js`; the modal part is committed): review, gate, commit, reseed, deploy before building
 on it. Header, footer, mobile menu and mega panels stay with the nav track (Bean, 2026-09-25). No blockers.
 

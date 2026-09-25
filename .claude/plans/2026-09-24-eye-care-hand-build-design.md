@@ -104,7 +104,7 @@
   default `archive-product.html` hard-codes another client's filters (Flavour/Size by attribute ID), and its
   `@container sgs-shop-grid (min-width:1280px)` columns rule queries its own container so it has never applied.
 - **Wave C task 4 (lens configurator) IN FLIGHT (2026-09-25):** Spec 43 v1.4.0 FR-43-17 to FR-43-20 committed
-  (1aaa11f37). Framework, UNCOMMITTED at session end, to review and finish: (A) `plugins/sgs-blocks/includes/
+  (1aaa11f37). Framework: (A, COMMITTED, not deployed) `plugins/sgs-blocks/includes/
   addon-price-list/` (option `sgs_addon_price_list`; `sgs_addon_price_list()`, `sgs_addon_group()`,
   `sgs_addon_resolve()`, `sgs_addon_summary()`; WooCommerce > Add-on prices page; cart hooks; `/sgs/v1/cart/add-item`
   optional `addons` arg; `wp sgs addon-prices seed`; `woo-seed/addon-prices.json`); (B) choice-flow priced add-on
