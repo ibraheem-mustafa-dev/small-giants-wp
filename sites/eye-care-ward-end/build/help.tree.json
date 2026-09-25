@@ -476,14 +476,36 @@
                 }
               },
               {
-                "name": "sgs/text",
+                "name": "sgs/container",
                 "attributes": {
-                  "text": "Call the clinic, or send me a message and I'll get back to you.",
-                  "fontSize": {
-                    "desktop": 15
+                  "tagName": "div",
+                  "layout": "flex",
+                  "alignItems": "baseline",
+                  "flexWrap": "wrap",
+                  "gap": {
+                    "desktop": "4px"
                   },
-                  "textColour": "text-muted"
-                }
+                  "margin": {
+                    "desktop": {
+                      "top": "6px"
+                    }
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/business-info",
+                    "attributes": {
+                      "displayType": "phone",
+                      "showIcon": false,
+                      "labelCollapse": "none",
+                      "fontSize": {
+                        "desktop": "15px"
+                      },
+                      "textBefore": "Call the clinic on ",
+                      "textAfter": ", or send me a message and I'll get back to you."
+                    }
+                  }
+                ]
               }
             ]
           },

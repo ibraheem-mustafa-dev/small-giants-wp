@@ -2,7 +2,7 @@
   {
     "name": "sgs/nav-drawer",
     "attributes": {
-      "drawerAlign": "right",
+      "drawerAlign": "left",
       "drawerBg": "surface",
       "modality": "modal",
       "panelSize": {
@@ -12,40 +12,203 @@
     },
     "innerBlocks": [
       {
-        "name": "sgs/nav-drawer-menu",
+        "name": "sgs/container",
         "attributes": {
-          "ref": 96,
-          "gap": {
-            "desktop": "4px"
+          "tagName": "div",
+          "layout": "flex",
+          "justifyContent": "space-between",
+          "alignItems": "center"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "EYE CARE",
+              "fontFamily": "heading",
+              "fontWeight": "500",
+              "letterSpacing": {
+                "desktop": 0.14
+              },
+              "letterSpacingUnit": "em",
+              "fontSize": {
+                "desktop": "15px"
+              }
+            }
           }
-        }
+        ]
       },
       {
-        "name": "sgs/business-info",
+        "name": "sgs/container",
         "attributes": {
-          "displayType": "phone",
-          "showIcon": true
-        }
+          "tagName": "nav",
+          "layout": "stack",
+          "margin": {
+            "desktop": {
+              "top": "32px"
+            }
+          }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/icon-list",
+            "attributes": {
+              "markerType": "none",
+              "items": [
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Sunglasses",
+                  "url": "/shop/"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Brands",
+                  "url": "/shop/"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Prescription lenses",
+                  "url": "/prescription-lenses/"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Glasses — SOON",
+                  "url": ""
+                }
+              ],
+              "itemTextDecoration": "none",
+              "itemFontFamily": "heading",
+              "itemFontWeight": "500",
+              "itemFontSize": {
+                "desktop": "34px"
+              },
+              "dividers": true,
+              "gap": "40"
+            }
+          }
+        ]
       },
       {
-        "name": "sgs/social-icons",
+        "name": "sgs/container",
         "attributes": {
-          "source": "site-info",
-          "colourMode": "brand",
-          "iconStyle": "plain",
-          "iconSize": 18,
-          "iconBackground": "surface-alt",
-          "iconBorderColour": "border",
-          "iconGlyphColour": "text",
-          "gap": "10"
-        }
+          "tagName": "nav",
+          "layout": "stack",
+          "margin": {
+            "desktop": {
+              "top": "28px"
+            }
+          }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/icon-list",
+            "attributes": {
+              "markerType": "none",
+              "items": [
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "About Eye Care",
+                  "url": "/about/"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Delivery, returns &amp; FAQs",
+                  "url": "/help/"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Size guide",
+                  "url": "#modal-size-guide"
+                },
+                {
+                  "iconSource": "lucide",
+                  "iconName": "",
+                  "text": "Contact",
+                  "url": "/contact/"
+                }
+              ],
+              "itemTextDecoration": "none",
+              "itemFontSize": {
+                "desktop": "15px"
+              },
+              "itemLetterSpacing": {
+                "desktop": 0.04
+              },
+              "gap": "30"
+            }
+          }
+        ]
       },
       {
-        "name": "sgs/whatsapp-cta",
+        "name": "sgs/container",
         "attributes": {
-          "variant": "inline",
-          "label": "WhatsApp"
-        }
+          "tagName": "div",
+          "layout": "stack",
+          "gap": {
+            "desktop": "12px"
+          },
+          "margin": {
+            "desktop": {
+              "top": "28px"
+            }
+          }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "borderWidth": {
+                "top": "1px",
+                "right": "1px",
+                "bottom": "1px",
+                "left": "1px"
+              },
+              "borderColour": "border",
+              "borderStyle": "solid",
+              "backgroundColour": "surface-alt",
+              "padding": {
+                "desktop": {
+                  "top": "14px",
+                  "bottom": "14px",
+                  "left": "16px",
+                  "right": "16px"
+                }
+              }
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/business-info",
+                "attributes": {
+                  "displayType": "phone",
+                  "showIcon": true,
+                  "fontSize": {
+                    "desktop": "15px"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "sgs/social-icons",
+            "attributes": {
+              "source": "site-info",
+              "colourMode": "brand",
+              "iconStyle": "boxed",
+              "iconSize": 18,
+              "iconBackground": "surface-alt",
+              "iconBorderColour": "border",
+              "iconGlyphColour": "text",
+              "gap": "10"
+            }
+          }
+        ]
       }
     ]
   }

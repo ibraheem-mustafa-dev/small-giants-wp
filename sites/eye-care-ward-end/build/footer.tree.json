@@ -102,7 +102,7 @@
                 "attributes": {
                   "source": "site-info",
                   "colourMode": "brand",
-                  "iconStyle": "plain",
+                  "iconStyle": "boxed",
                   "iconSize": 18,
                   "iconBackground": "surface-alt",
                   "iconBorderColour": "border",
@@ -326,6 +326,7 @@
             "name": "sgs/business-info",
             "attributes": {
               "displayType": "copyright",
+              "copyrightPrefix": "",
               "textColour": "text-label",
               "fontSize": {
                 "desktop": "12px"

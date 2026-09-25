@@ -7,7 +7,8 @@
       "colourScheme": "light",
       "maxWidth": {
         "desktop": "1120px"
-      }
+      },
+      "panelBg": "surface-alt"
     },
     "innerBlocks": [
       {
@@ -39,7 +40,8 @@
                   "text": "Frequently asked questions",
                   "url": "/help/"
                 }
-              ]
+              ],
+              "itemTextDecoration": "none"
             }
           }
         ]
@@ -79,7 +81,8 @@
                   "text": "Measuring your PD",
                   "url": "/help/"
                 }
-              ]
+              ],
+              "itemTextDecoration": "none"
             }
           }
         ]
@@ -107,7 +110,8 @@
                   "text": "Contact & visit us",
                   "url": "/contact/"
                 }
-              ]
+              ],
+              "itemTextDecoration": "none"
             }
           },
           {

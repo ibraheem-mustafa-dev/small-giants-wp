@@ -10,12 +10,16 @@
       },
       "groupGap": {
         "desktop": "1px"
-      }
+      },
+      "panelBg": "surface-alt"
     },
     "innerBlocks": [
       {
         "name": "sgs/mega-group",
-        "attributes": {},
+        "attributes": {
+          "url": "/prescription-lenses/",
+          "opensInNewTab": false
+        },
         "innerBlocks": [
           {
             "name": "sgs/label",
@@ -28,7 +32,7 @@
             "name": "sgs/heading",
             "attributes": {
               "level": "h3",
-              "content": "from £59"
+              "content": "from \u00c2\u00a359"
             }
           },
           {
@@ -41,7 +45,10 @@
       },
       {
         "name": "sgs/mega-group",
-        "attributes": {},
+        "attributes": {
+          "url": "/prescription-lenses/",
+          "opensInNewTab": false
+        },
         "innerBlocks": [
           {
             "name": "sgs/label",
@@ -54,7 +61,7 @@
             "name": "sgs/heading",
             "attributes": {
               "level": "h3",
-              "content": "from £129"
+              "content": "from \u00c2\u00a3129"
             }
           },
           {
@@ -67,7 +74,10 @@
       },
       {
         "name": "sgs/mega-group",
-        "attributes": {},
+        "attributes": {
+          "url": "/prescription-lenses/",
+          "opensInNewTab": false
+        },
         "innerBlocks": [
           {
             "name": "sgs/label",
@@ -80,7 +90,7 @@
             "name": "sgs/heading",
             "attributes": {
               "level": "h3",
-              "content": "+£40"
+              "content": "+\u00c2\u00a340"
             }
           },
           {
@@ -93,7 +103,10 @@
       },
       {
         "name": "sgs/mega-group",
-        "attributes": {},
+        "attributes": {
+          "url": "/prescription-lenses/",
+          "opensInNewTab": false
+        },
         "innerBlocks": [
           {
             "name": "sgs/label",
@@ -106,7 +119,7 @@
             "name": "sgs/heading",
             "attributes": {
               "level": "h3",
-              "content": "+£70"
+              "content": "+\u00c2\u00a370"
             }
           },
           {

@@ -1671,23 +1671,15 @@
           "minHeight": {
             "desktop": "430px"
           },
-          "textWrap": "wrap"
+          "textWrap": "wrap",
+          "backgroundImage": {
+            "id": 202,
+            "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/aboutstrip.jpg",
+            "alt": "Person wearing sunglasses outdoors"
+          },
+          "backgroundPosition": "center 20%"
         },
-        "innerBlocks": [
-          {
-            "name": "sgs/media",
-            "attributes": {
-              "imageId": 202,
-              "imageUrl": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/aboutstrip.jpg",
-              "imageAlt": "Person wearing sunglasses outdoors",
-              "height": {
-                "desktop": "100%"
-              },
-              "objectFit": "cover",
-              "objectPosition": "center 20%"
-            }
-          }
-        ]
+        "innerBlocks": []
       },
       {
         "name": "sgs/container",

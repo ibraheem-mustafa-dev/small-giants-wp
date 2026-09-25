@@ -7,7 +7,8 @@
       "colourScheme": "light",
       "maxWidth": {
         "desktop": "1120px"
-      }
+      },
+      "panelBg": "surface-alt"
     },
     "innerBlocks": [
       {
@@ -22,92 +23,629 @@
             }
           },
           {
-            "name": "sgs/icon-list",
+            "name": "sgs/container",
             "attributes": {
-              "heading": "",
-              "markerType": "none",
-              "items": [
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Ray-Ban (48 frames)",
-                  "url": "/sunglasses?brand=Ray-Ban"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Gucci (44 frames)",
-                  "url": "/sunglasses?brand=Gucci"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Oakley (17 frames)",
-                  "url": "/sunglasses?brand=Oakley"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Michael Kors (18 frames)",
-                  "url": "/sunglasses?brand=Michael+Kors"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Prada (12 frames)",
-                  "url": "/sunglasses?brand=Prada"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Polaroid (12 frames)",
-                  "url": "/sunglasses?brand=Polaroid"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Versace (11 frames)",
-                  "url": "/sunglasses?brand=Versace"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Police (10 frames)",
-                  "url": "/sunglasses?brand=Police"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Carrera (9 frames)",
-                  "url": "/sunglasses?brand=Carrera"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Dolce & Gabbana (9 frames)",
-                  "url": "/sunglasses?brand=Dolce+%26+Gabbana"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Balenciaga (7 frames)",
-                  "url": "/sunglasses?brand=Balenciaga"
-                },
-                {
-                  "iconSource": "lucide",
-                  "iconName": "",
-                  "text": "Ferrari Scuderia (6 frames)",
-                  "url": "/sunglasses?brand=Ferrari+Scuderia"
+              "tagName": "div",
+              "layout": "grid",
+              "columns": {
+                "desktop": 5,
+                "tablet": 3,
+                "mobile": 2
+              },
+              "gap": {
+                "desktop": "1px"
+              },
+              "backgroundColour": "border",
+              "borderStyle": "solid",
+              "borderWidth": {
+                "top": "1px",
+                "right": "1px",
+                "bottom": "1px",
+                "left": "1px"
+              },
+              "borderColour": "border",
+              "margin": {
+                "desktop": {
+                  "bottom": "30px"
                 }
-              ]
-            }
-          }
-        ]
-      },
-      {
-        "name": "sgs/mega-group",
-        "attributes": {},
-        "innerBlocks": [
+              },
+              "minColumnWidth": {
+                "desktop": 180,
+                "tablet": 150,
+                "mobile": 130
+              }
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "stack",
+                  "alignItems": "center",
+                  "textAlign": "center",
+                  "gap": {
+                    "desktop": "6px"
+                  },
+                  "backgroundColour": "surface-alt",
+                  "padding": {
+                    "desktop": {
+                      "top": "20px",
+                      "bottom": "20px",
+                      "left": "14px",
+                      "right": "14px"
+                    }
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "<a href=\"/sunglasses?brand=Ray-Ban\">RAY-BAN</a>",
+                      "fontFamily": "heading",
+                      "fontWeight": "500",
+                      "fontSize": {
+                        "desktop": "14px"
+                      },
+                      "letterSpacing": {
+                        "desktop": 0.2
+                      },
+                      "letterSpacingUnit": "em",
+                      "textDecoration": "none"
+                    }
+                  },
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "48 frames",
+                      "fontSize": {
+                        "desktop": "11.5px"
+                      },
+                      "textColour": "text-label"
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "stack",
+                  "alignItems": "center",
+                  "textAlign": "center",
+                  "gap": {
+                    "desktop": "6px"
+                  },
+                  "backgroundColour": "surface-alt",
+                  "padding": {
+                    "desktop": {
+                      "top": "20px",
+                      "bottom": "20px",
+                      "left": "14px",
+                      "right": "14px"
+                    }
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "<a href=\"/sunglasses?brand=Gucci\">GUCCI</a>",
+                      "fontFamily": "heading",
+                      "fontWeight": "500",
+                      "fontSize": {
+                        "desktop": "14px"
+                      },
+                      "letterSpacing": {
+                        "desktop": 0.2
+                      },
+                      "letterSpacingUnit": "em",
+                      "textDecoration": "none"
+                    }
+                  },
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "44 frames",
+                      "fontSize": {
+                        "desktop": "11.5px"
+                      },
+                      "textColour": "text-label"
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "stack",
+                  "alignItems": "center",
+                  "textAlign": "center",
+                  "gap": {
+                    "desktop": "6px"
+                  },
+                  "backgroundColour": "surface-alt",
+                  "padding": {
+                    "desktop": {
+                      "top": "20px",
+                      "bottom": "20px",
+                      "left": "14px",
+                      "right": "14px"
+                    }
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "<a href=\"/sunglasses?brand=Oakley\">OAKLEY</a>",
+                      "fontFamily": "heading",
+                      "fontWeight": "500",
+                      "fontSize": {
+                        "desktop": "14px"
+                      },
+                      "letterSpacing": {
+                        "desktop": 0.2
+                      },
+                      "letterSpacingUnit": "em",
+                      "textDecoration": "none"
+                    }
+                  },
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "17 frames",
+                      "fontSize": {
+                        "desktop": "11.5px"
+                      },
+                      "textColour": "text-label"
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "stack",
+                  "alignItems": "center",
+                  "textAlign": "center",
+                  "gap": {
+                    "desktop": "6px"
+                  },
+                  "backgroundColour": "surface-alt",
+                  "padding": {
+                    "desktop": {
+                      "top": "20px",
+                      "bottom": "20px",
+                      "left": "14px",
+                      "right": "14px"
+                    }
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "<a href=\"/sunglasses?brand=Michael+Kors\">MICHAEL KORS</a>",
+                      "fontFamily": "heading",
+                      "fontWeight": "500",
+                      "fontSize": {
+                        "desktop": "14px"
+                      },
+                      "letterSpacing": {
+                        "desktop": 0.2
+                      },
+                      "letterSpacingUnit": "em",
+                      "textDecoration": "none"
+                    }
+                  },
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "18 frames",
+                      "fontSize": {
+                        "desktop": "11.5px"
+                      },
+                      "textColour": "text-label"
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "stack",
+                  "alignItems": "center",
+                  "textAlign": "center",
+                  "gap": {
+                    "desktop": "6px"
+                  },
+                  "backgroundColour": "surface-alt",
+                  "padding": {
+                    "desktop": {
+                      "top": "20px",
+                      "bottom": "20px",
+                      "left": "14px",
+                      "right": "14px"
+                    }
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "<a href=\"/sunglasses?brand=Prada\">PRADA</a>",
+                      "fontFamily": "heading",
+                      "fontWeight": "500",
+                      "fontSize": {
+                        "desktop": "14px"
+                      },
+                      "letterSpacing": {
+                        "desktop": 0.2
+                      },
+                      "letterSpacingUnit": "em",
+                      "textDecoration": "none"
+                    }
+                  },
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "12 frames",
+                      "fontSize": {
+                        "desktop": "11.5px"
+                      },
+                      "textColour": "text-label"
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "stack",
+                  "alignItems": "center",
+                  "textAlign": "center",
+                  "gap": {
+                    "desktop": "6px"
+                  },
+                  "backgroundColour": "surface-alt",
+                  "padding": {
+                    "desktop": {
+                      "top": "20px",
+                      "bottom": "20px",
+                      "left": "14px",
+                      "right": "14px"
+                    }
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "<a href=\"/sunglasses?brand=Polaroid\">POLAROID</a>",
+                      "fontFamily": "heading",
+                      "fontWeight": "500",
+                      "fontSize": {
+                        "desktop": "14px"
+                      },
+                      "letterSpacing": {
+                        "desktop": 0.2
+                      },
+                      "letterSpacingUnit": "em",
+                      "textDecoration": "none"
+                    }
+                  },
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "12 frames",
+                      "fontSize": {
+                        "desktop": "11.5px"
+                      },
+                      "textColour": "text-label"
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "stack",
+                  "alignItems": "center",
+                  "textAlign": "center",
+                  "gap": {
+                    "desktop": "6px"
+                  },
+                  "backgroundColour": "surface-alt",
+                  "padding": {
+                    "desktop": {
+                      "top": "20px",
+                      "bottom": "20px",
+                      "left": "14px",
+                      "right": "14px"
+                    }
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "<a href=\"/sunglasses?brand=Versace\">VERSACE</a>",
+                      "fontFamily": "heading",
+                      "fontWeight": "500",
+                      "fontSize": {
+                        "desktop": "14px"
+                      },
+                      "letterSpacing": {
+                        "desktop": 0.2
+                      },
+                      "letterSpacingUnit": "em",
+                      "textDecoration": "none"
+                    }
+                  },
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "11 frames",
+                      "fontSize": {
+                        "desktop": "11.5px"
+                      },
+                      "textColour": "text-label"
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "stack",
+                  "alignItems": "center",
+                  "textAlign": "center",
+                  "gap": {
+                    "desktop": "6px"
+                  },
+                  "backgroundColour": "surface-alt",
+                  "padding": {
+                    "desktop": {
+                      "top": "20px",
+                      "bottom": "20px",
+                      "left": "14px",
+                      "right": "14px"
+                    }
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "<a href=\"/sunglasses?brand=Police\">POLICE</a>",
+                      "fontFamily": "heading",
+                      "fontWeight": "500",
+                      "fontSize": {
+                        "desktop": "14px"
+                      },
+                      "letterSpacing": {
+                        "desktop": 0.2
+                      },
+                      "letterSpacingUnit": "em",
+                      "textDecoration": "none"
+                    }
+                  },
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "10 frames",
+                      "fontSize": {
+                        "desktop": "11.5px"
+                      },
+                      "textColour": "text-label"
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "stack",
+                  "alignItems": "center",
+                  "textAlign": "center",
+                  "gap": {
+                    "desktop": "6px"
+                  },
+                  "backgroundColour": "surface-alt",
+                  "padding": {
+                    "desktop": {
+                      "top": "20px",
+                      "bottom": "20px",
+                      "left": "14px",
+                      "right": "14px"
+                    }
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "<a href=\"/sunglasses?brand=Carrera\">CARRERA</a>",
+                      "fontFamily": "heading",
+                      "fontWeight": "500",
+                      "fontSize": {
+                        "desktop": "14px"
+                      },
+                      "letterSpacing": {
+                        "desktop": 0.2
+                      },
+                      "letterSpacingUnit": "em",
+                      "textDecoration": "none"
+                    }
+                  },
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "9 frames",
+                      "fontSize": {
+                        "desktop": "11.5px"
+                      },
+                      "textColour": "text-label"
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "stack",
+                  "alignItems": "center",
+                  "textAlign": "center",
+                  "gap": {
+                    "desktop": "6px"
+                  },
+                  "backgroundColour": "surface-alt",
+                  "padding": {
+                    "desktop": {
+                      "top": "20px",
+                      "bottom": "20px",
+                      "left": "14px",
+                      "right": "14px"
+                    }
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "<a href=\"/sunglasses?brand=Dolce+%26+Gabbana\">DOLCE & GABBANA</a>",
+                      "fontFamily": "heading",
+                      "fontWeight": "500",
+                      "fontSize": {
+                        "desktop": "14px"
+                      },
+                      "letterSpacing": {
+                        "desktop": 0.2
+                      },
+                      "letterSpacingUnit": "em",
+                      "textDecoration": "none"
+                    }
+                  },
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "9 frames",
+                      "fontSize": {
+                        "desktop": "11.5px"
+                      },
+                      "textColour": "text-label"
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "stack",
+                  "alignItems": "center",
+                  "textAlign": "center",
+                  "gap": {
+                    "desktop": "6px"
+                  },
+                  "backgroundColour": "surface-alt",
+                  "padding": {
+                    "desktop": {
+                      "top": "20px",
+                      "bottom": "20px",
+                      "left": "14px",
+                      "right": "14px"
+                    }
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "<a href=\"/sunglasses?brand=Balenciaga\">BALENCIAGA</a>",
+                      "fontFamily": "heading",
+                      "fontWeight": "500",
+                      "fontSize": {
+                        "desktop": "14px"
+                      },
+                      "letterSpacing": {
+                        "desktop": 0.2
+                      },
+                      "letterSpacingUnit": "em",
+                      "textDecoration": "none"
+                    }
+                  },
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "7 frames",
+                      "fontSize": {
+                        "desktop": "11.5px"
+                      },
+                      "textColour": "text-label"
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "stack",
+                  "alignItems": "center",
+                  "textAlign": "center",
+                  "gap": {
+                    "desktop": "6px"
+                  },
+                  "backgroundColour": "surface-alt",
+                  "padding": {
+                    "desktop": {
+                      "top": "20px",
+                      "bottom": "20px",
+                      "left": "14px",
+                      "right": "14px"
+                    }
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "<a href=\"/sunglasses?brand=Ferrari+Scuderia\">FERRARI SCUDERIA</a>",
+                      "fontFamily": "heading",
+                      "fontWeight": "500",
+                      "fontSize": {
+                        "desktop": "14px"
+                      },
+                      "letterSpacing": {
+                        "desktop": 0.2
+                      },
+                      "letterSpacingUnit": "em",
+                      "textDecoration": "none"
+                    }
+                  },
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "6 frames",
+                      "fontSize": {
+                        "desktop": "11.5px"
+                      },
+                      "textColour": "text-label"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
           {
             "name": "sgs/heading",
             "attributes": {
@@ -238,7 +776,7 @@
                 {
                   "iconSource": "lucide",
                   "iconName": "",
-                  "text": "Chloé",
+                  "text": "Chlo\u00c3\u00a9",
                   "url": "/sunglasses?brand=Chlo%C3%A9"
                 },
                 {
@@ -361,7 +899,8 @@
                   "text": "Vogue",
                   "url": "/sunglasses?brand=Vogue"
                 }
-              ]
+              ],
+              "itemTextDecoration": "none"
             }
           }
         ]

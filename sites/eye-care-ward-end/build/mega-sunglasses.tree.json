@@ -10,7 +10,8 @@
       },
       "groupGap": {
         "desktop": "44px"
-      }
+      },
+      "panelBg": "surface-alt"
     },
     "innerBlocks": [
       {
@@ -102,7 +103,8 @@
                   "text": "Oversized",
                   "url": "/sunglasses?shape=Oversized"
                 }
-              ]
+              ],
+              "itemTextDecoration": "none"
             }
           }
         ]
@@ -145,7 +147,7 @@
                 {
                   "iconSource": "lucide",
                   "iconName": "",
-                  "text": "Under £100",
+                  "text": "Under \u00c2\u00a3100",
                   "url": "/sunglasses?price=100"
                 },
                 {
@@ -160,54 +162,24 @@
                   "text": "Men's",
                   "url": "/sunglasses?gender=Men"
                 }
-              ]
+              ],
+              "itemTextDecoration": "none"
             }
           }
         ]
       },
       {
-        "name": "sgs/mega-aside",
+        "name": "sgs/media",
         "attributes": {
-          "asideFormat": "feature"
-        },
-        "innerBlocks": [
-          {
-            "name": "sgs/media",
-            "attributes": {
-              "imageId": 160,
-              "imageAlt": "Prescription sunglasses",
-              "objectFit": "cover",
-              "aspectRatio": "16/10"
-            }
-          },
-          {
-            "name": "sgs/label",
-            "attributes": {
-              "text": "Featured",
-              "textColour": "accent"
-            }
-          },
-          {
-            "name": "sgs/heading",
-            "attributes": {
-              "level": "h3",
-              "content": "Prescription sunglasses"
-            }
-          },
-          {
-            "name": "sgs/text",
-            "attributes": {
-              "text": "Any frame here, from £59"
-            }
-          },
-          {
-            "name": "sgs/button",
-            "attributes": {
-              "label": "Add your prescription",
-              "url": "/lenses"
-            }
-          }
-        ]
+          "mediaType": "image",
+          "imageId": 160,
+          "imageAlt": "Prescription sunglasses",
+          "objectFit": "cover",
+          "aspectRatio": "16 / 10",
+          "caption": "Prescription sunglasses<br>Any frame here, from \u00c2\u00a359",
+          "captionColour": "text",
+          "linkUrl": "/prescription-lenses/"
+        }
       }
     ]
   }
