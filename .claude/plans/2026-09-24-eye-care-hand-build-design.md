@@ -128,10 +128,9 @@ key), with the owed Wave C polish alongside.
   Gap: the buybox's size picker has no slot for the draft's "Which size am I?" link beside the Size label.
 - **Wave C design review (2026-09-25, Sonnet design-reviewer, draft vs live at 1440/768/375, screenshots in that
   session's scratchpad):** fixed: checkout pre-selected paid delivery on a free-delivery order
-  (`includes/woocommerce-shipping-rates.php`). Owed, framework (`sgs/choice-flow`): a progress-bar colour control
-  (the fill paints black; the draft's is the brand accent), an optional flow header (logo, step eyebrow, labelled
-  "Close ×"), a sticky Back / Add to bag footer, and a default-selected option with a badge (the draft pre-selects
-  "Send it later", "EASIEST"). Owed, shop polish (already listed above): colour swatches, filter panels open by
+  (`includes/woocommerce-shipping-rates.php`). The framework half of the flow chrome is built (Spec 43 v1.7.0,
+  2026-09-25): progress colour, optional header (logo, step eyebrow, Close), sticky footer, per-option badge,
+  description and default; applying them to the lens configurator (post 463) is its own step. Owed, shop polish (already listed above): colour swatches, filter panels open by
   default, the results count and sort row. For Bean: the size buttons read the real lens width (55 / 58 / 62, from
   the jpopticians sizes chosen 2026-09-25) where the draft says S / M / L. For the nav track: the floating WhatsApp
   "Ask me anything" bubble sits over the product page's "Need advice?" text at 1440.

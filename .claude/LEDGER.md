@@ -37,8 +37,7 @@ deploy target `indus-test`) because the active header/footer/theme-snapshot poin
 GLOBAL `wp_options` rows per site. Its content build is documented in `sites/indus-foods/CLAUDE.md`.
 
 Things that need Bean directly, not a subagent: the drawer-burger click retest, the mega-motion
-Bean's-eye check. (Spec 42/43 Phase 3's catalogue precondition is met for Eye Care by the draft's 16 products and
-its lens prices, D1149.)
+Bean's-eye check.
 
 ## Blockers
 
@@ -57,8 +56,8 @@ listing card, product page, shop; the lens configurator (a Choice Flow post, `le
 full screen from "Add my prescription"; four questions incl. "Your prescription" per pair; one bag line at £268 for
 Distance/Thin/Polarised; tampered add-on or file requests refused); the size guide (`sgs_modal` 461); bag drawer
 detail rows; checkout placed an order end to end (store now GB-only with the draft's three delivery options, UK County
-hidden, free delivery pre-selected, staff download link for uploaded prescriptions). Spec 43 is v1.6.0 (FR-43-6 linked
-flow, FR-43-21 answers and fields). The final design review ran; its owed items are in the plan's Status block. No
+hidden, free delivery pre-selected, staff download link for uploaded prescriptions). Spec 43 is v1.7.0 (FR-43-6 linked
+flow, FR-43-21 answers and fields, product-option steps, email ending, flow chrome). The final design review ran; its owed items are in the plan's Status block. No
 payment gateway is enabled on eye-care-test (a launch item for Bean). Header, footer, mobile menu and mega panels stay
 with the nav track. No blockers.
 
@@ -115,9 +114,6 @@ does not produce real matches on real data for it to consume.
   clicks failed to open the drawer in automated testing) still occurs now the duplicate-burger fix
   has shipped. If it still fails, dispatch a fresh `/systematic-debugging`.
 - **Mega-motion Bean's-eye (R-31-13).** Book it with the next live URL.
-- **Spec 42/43 Phase 3 precondition.** Real WooCommerce attribute/variation catalogue data must
-  exist before Phase 3 (priced WC-variation steps) can be built — a WooCommerce-admin
-  catalogue-setup task, not block-engine work.
 
 ## Methodology guardrails (all still true)
 
@@ -230,7 +226,7 @@ does not produce real matches on real data for it to consume.
 | **Classless recognition (Spec 44) — built; AI-fallback tier parked** | `specs/44-CLASSLESS-REPEATER-RECOGNITION.md`; `.claude/reports/2026-09-18-spec44-full-pipeline-stage-breakdown.md` |
 | **Structural-facts trio (repeaters + composition + singletons)** — built and validated, consumer wiring open | `specs/31-UNIVERSAL-CLONING-PIPELINE.md` §13.9-§13.10 |
 | **Classless FIELD resolution (Spec 45)** — all 4 tiers built, no real input yet | `specs/45-CLASSLESS-FIELD-RESOLUTION.md` |
-| **Form CPT + choice-flow** — Phases 0-2 shipped; Phase 3's add-on source and Phase 4's linked flow shipped as the Eye Care lens configurator (Front F, Wave C) | `specs/42-SGS-FORM-CPT-AND-PRICING.md` + `specs/43-SGS-CHOICE-FLOW.md` + `plans/2026-09-14-spec42-43-form-choiceflow-phase-plan.md` |
+| **Form CPT + choice-flow** — Phases 0-4 shipped: add-on and product-option pricing, email ending, linked flows in popups, flow chrome; Mama's two journeys live on sandybrown (product 3990). Phase 5 (rebuild existing forms, delete guard, clone-pipeline CPT creation, analytics) open | `specs/42-SGS-FORM-CPT-AND-PRICING.md` + `specs/43-SGS-CHOICE-FLOW.md` + `plans/2026-09-14-spec42-43-form-choiceflow-phase-plan.md` |
 | Nav menu colour/state system | `specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` |
 | Per-draft accepted design differences | `sites/mamas-munches/accepted-differences.md` |
 | Cloning pipeline spec + binding rules | `specs/31-UNIVERSAL-CLONING-PIPELINE.md` |
