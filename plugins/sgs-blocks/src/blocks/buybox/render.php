@@ -132,18 +132,30 @@ $buybox_rrp_format = sanitize_key( (string) ( $attributes['rrpSavingFormat'] ?? 
 if ( ! in_array( $buybox_rrp_format, array( 'amount', 'percentage' ), true ) ) {
 	$buybox_rrp_format = 'amount';
 }
-$buybox_rrp = sgs_product_rrp_saving(
+// Eye Care Wave C: customisable saving-pill prefix ("Save" / "You save" / …).
+// '' would still resolve to the translated "Save" inside the helper, but the
+// block.json default is the literal "Save" (matches soldOutLabel/
+// unavailableLabel's own literal-default convention on this block).
+$buybox_rrp_prefix = sanitize_text_field( (string) ( $attributes['rrpSavingPrefix'] ?? 'Save' ) );
+$buybox_rrp        = sgs_product_rrp_saving(
 	$buybox_post_id,
 	(string) ( $attributes['rrpMetaKey'] ?? '' ),
 	(int) $def['priceMinor'],
 	(int) $decimals,
-	$buybox_rrp_format
+	$buybox_rrp_format,
+	$buybox_rrp_prefix
 );
+
+// Eye Care Wave C: struck-through "RRP <amount>" beside the price, shown only
+// when the saving pill itself applies (same DEFAULT-combo-only, SSR-only
+// scope as the pill).
+$buybox_rrp_show_price = (bool) ( $attributes['rrpShowPrice'] ?? false );
 
 // FR-Wave-B: stock-status indicator (extras.php) — SSR-only, default combo.
 // Existing $stock_text/hidden behaviour is untouched unless showStockStatus is on.
 $buybox_show_stock_status = (bool) ( $attributes['showStockStatus'] ?? false );
-$buybox_stock_status      = sgs_buybox_stock_status( (int) $def['variationId'], (bool) $def['inStock'], $stock_text );
+$buybox_stock_in_label    = sanitize_text_field( (string) ( $attributes['stockInStockLabel'] ?? '' ) );
+$buybox_stock_status      = sgs_buybox_stock_status( (int) $def['variationId'], (bool) $def['inStock'], $stock_text, $buybox_stock_in_label );
 
 // Per-unit and discount (mirrors product-card B3 pattern).
 // FR-30-8: operator-configurable denomination — sanitised attr wins when non-empty.
@@ -415,6 +427,24 @@ $add_to_cart_label     = '' !== sanitize_text_field( $add_to_cart_label_raw )
 	? sanitize_text_field( $add_to_cart_label_raw )
 	: __( 'Add to Cart', 'sgs-blocks' );
 
+// Eye Care Wave C: add-to-cart button style preset + optional price display.
+// sgs_buybox_add_to_cart_class() allowlists to '' (today's look) or
+// primary|secondary|outline (extras.php) — style.css's
+// `.buybox__add-to-cart--{style}` rules read the SAME
+// `--wp--custom--button-presets--{style}--*` tokens sgs/button's own presets
+// do, so the two stay visually matched without depending on sgs/button's
+// stylesheet being enqueued on this page.
+$add_to_cart_style_class = sgs_buybox_add_to_cart_class( sanitize_key( (string) ( $attributes['addToCartStyle'] ?? '' ) ) );
+$add_to_cart_show_price  = (bool) ( $attributes['addToCartShowPrice'] ?? false );
+
+$add_to_cart_button_classes = 'wp-element-button buybox__add-to-cart';
+if ( '' !== $add_to_cart_style_class ) {
+	$add_to_cart_button_classes .= ' buybox__add-to-cart--' . $add_to_cart_style_class;
+}
+if ( $add_to_cart_show_price ) {
+	$add_to_cart_button_classes .= ' buybox__add-to-cart--show-price';
+}
+
 // ---------------------------------------------------------------------------
 // NO-INLINE (Spec 32): uid is a CLASS (mirrors sgs/label/sgs/heading/
 // sgs/container). `margin` is a block-private object attr (base + the two
@@ -660,6 +690,15 @@ $scoped_css = array_merge(
 	$scoped_css,
 	sgs_buybox_extras_scoped_css( $attributes, $root_sel, $buybox_rrp, $buybox_sticky )
 );
+
+// Eye Care Wave C: price typography (font-family/size/weight) — shared
+// TypographyControls prefix 'price', scoped to the current-price figure only
+// (mirrors sgs/product-card's own priceFontFamily/priceFontSize/
+// priceFontWeight trio and sgs_typography_css_rule() call).
+$sgs_bb_price_typo_css = sgs_typography_css_rule( $attributes, 'price', $root_sel . ' .buybox__price--current' );
+if ( '' !== $sgs_bb_price_typo_css ) {
+	$scoped_css[] = $sgs_bb_price_typo_css;
+}
 ?>
 <?php if ( $scoped_css ) : ?>
 <style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via sgs_css_length_value() / wp_style_engine_get_styles; wp_strip_all_tags guards </style> ?></style>
@@ -679,16 +718,22 @@ $scoped_css = array_merge(
 	// ── 8-config. Configurator column — right column, all interactive content.
 	// extrasBeforeCount (FR-Wave-B extension): when set, the extras slot's
 	// first N children render here, above the price, instead of all of them
-	// dropping below the add-to-cart form (8g below). 0 keeps the original
-	// $content path byte-identical — see sgs_buybox_split_extras() docblock.
-	$buybox_extras_before_count = (int) max( 0, (int) ( $attributes['extrasBeforeCount'] ?? 0 ) );
-	$buybox_extras_before_html  = '';
-	$buybox_extras_after_html   = $content;
+	// dropping below the add-to-cart form (8g below). extrasBeforeCartCount
+	// (Eye Care Wave C): the NEXT M children render between the pickers/stock
+	// status and the add-to-cart form (8c-iii below). Both 0 keeps the
+	// original $content path byte-identical — see sgs_buybox_split_extras()
+	// docblock.
+	$buybox_extras_before_count      = (int) max( 0, (int) ( $attributes['extrasBeforeCount'] ?? 0 ) );
+	$buybox_extras_before_cart_count = (int) max( 0, (int) ( $attributes['extrasBeforeCartCount'] ?? 0 ) );
+	$buybox_extras_before_html       = '';
+	$buybox_extras_before_cart_html  = '';
+	$buybox_extras_after_html        = $content;
 
-	if ( $buybox_extras_before_count > 0 && $block->inner_blocks->count() > 0 ) {
-		$buybox_extras_split       = sgs_buybox_split_extras( $block->inner_blocks, $buybox_extras_before_count );
-		$buybox_extras_before_html = $buybox_extras_split['before'];
-		$buybox_extras_after_html  = $buybox_extras_split['after'];
+	if ( ( $buybox_extras_before_count > 0 || $buybox_extras_before_cart_count > 0 ) && $block->inner_blocks->count() > 0 ) {
+		$buybox_extras_split            = sgs_buybox_split_extras( $block->inner_blocks, $buybox_extras_before_count, $buybox_extras_before_cart_count );
+		$buybox_extras_before_html      = $buybox_extras_split['before'];
+		$buybox_extras_before_cart_html = $buybox_extras_split['beforeCart'];
+		$buybox_extras_after_html       = $buybox_extras_split['after'];
 	}
 	?>
 	<div class="sgs-buybox__config-col">
@@ -716,7 +761,17 @@ $scoped_css = array_merge(
 			data-wp-text="context.pctDisplay"
 		><?php echo esc_html( $pct_display ); ?></span>
 		<?php
-		// ── 8a-iii. RRP saving pill (FR-Wave-B, SSR-only — same "no data-wp-*"
+		// ── 8a-iii. Struck-through "RRP <amount>" (Eye Care Wave C, rrpShowPrice) —
+		// same DEFAULT-combo-only, SSR-only scope as the pill directly below.
+		?>
+		<?php if ( $buybox_rrp_show_price && ! $buybox_rrp['hidden'] ) : ?>
+		<span class="buybox__rrp-price">
+			<span class="sgs-sr-only"><?php esc_html_e( 'Recommended retail price', 'sgs-blocks' ); ?></span>
+			<?php esc_html_e( 'RRP', 'sgs-blocks' ); ?> <s><?php echo esc_html( $buybox_rrp['rrp_display'] ); ?></s>
+		</span>
+		<?php endif; ?>
+		<?php
+		// ── 8a-iv. RRP saving pill (FR-Wave-B, SSR-only — same "no data-wp-*"
 		// pattern as the value-ladder below: the RRP compares the DEFAULT
 		// combo's price only, it does not recompute on a pill swap).
 		?>
@@ -772,6 +827,18 @@ $scoped_css = array_merge(
 
 	<?php
 	// ── 8b. Per-axis option-picker blocks (single-variant suppression: skip axes with <2 terms) ──
+	// Eye Care Wave C: pickerSwatchStyle/pickerStyle/pickerSubLabelMetaKey/
+	// pickerShowSelectedTick forwarded to every rendered picker below — only a
+	// non-empty override is passed on, so an unset value leaves option-picker's
+	// OWN default governing (block.json's own contract for these attrs).
+	$buybox_allowed_picker_styles = array( '', 'outlined', 'filled', 'ghost', 'tile' );
+	$buybox_picker_swatch_style   = sanitize_key( (string) ( $attributes['pickerSwatchStyle'] ?? '' ) );
+	$buybox_picker_swatch_style   = in_array( $buybox_picker_swatch_style, $buybox_allowed_picker_styles, true ) ? $buybox_picker_swatch_style : '';
+	$buybox_picker_plain_style    = sanitize_key( (string) ( $attributes['pickerStyle'] ?? '' ) );
+	$buybox_picker_plain_style    = in_array( $buybox_picker_plain_style, $buybox_allowed_picker_styles, true ) ? $buybox_picker_plain_style : '';
+	$buybox_picker_sub_label_key  = sanitize_key( (string) ( $attributes['pickerSubLabelMetaKey'] ?? '' ) );
+	$buybox_picker_show_tick      = array_key_exists( 'pickerShowSelectedTick', $attributes ) ? (bool) $attributes['pickerShowSelectedTick'] : true;
+
 	foreach ( $manifest['axes'] as $axis ) {
 		$terms = $axis['terms'] ?? array();
 
@@ -781,25 +848,39 @@ $scoped_css = array_merge(
 			continue;
 		}
 
+		$buybox_axis_taxonomy = (string) ( $axis['taxonomy'] ?? '' );
+		$buybox_axis_style    = sgs_buybox_axis_has_swatch( $buybox_axis_taxonomy, $terms )
+			? $buybox_picker_swatch_style
+			: $buybox_picker_plain_style;
+
+		$buybox_picker_attrs = array(
+			'label'            => $axis['label'],
+			'showLabel'        => true,
+			'optionItems'      => array_map(
+				static function ( $t ) {
+					return array(
+						'key'   => $t['slug'],
+						'label' => $t['label'],
+					);
+				},
+				$terms
+			),
+			'defaultSelected'  => $manifest['defaultAxes'][ $axis['taxonomy'] ] ?? '',
+			'typeKey'          => $axis['taxonomy'],
+			'showSelectedTick' => $buybox_picker_show_tick,
+		);
+		if ( '' !== $buybox_axis_style ) {
+			$buybox_picker_attrs['pillStyle'] = $buybox_axis_style;
+		}
+		if ( '' !== $buybox_picker_sub_label_key ) {
+			$buybox_picker_attrs['subLabelMetaKey'] = $buybox_picker_sub_label_key;
+		}
+
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() returns fully-rendered, escaped block markup.
 		echo render_block(
 			array(
 				'blockName' => 'sgs/option-picker',
-				'attrs'     => array(
-					'label'           => $axis['label'],
-					'showLabel'       => true,
-					'optionItems'     => array_map(
-						static function ( $t ) {
-							return array(
-								'key'   => $t['slug'],
-								'label' => $t['label'],
-							);
-						},
-						$terms
-					),
-					'defaultSelected' => $manifest['defaultAxes'][ $axis['taxonomy'] ] ?? '',
-					'typeKey'         => $axis['taxonomy'],
-				),
+				'attrs'     => $buybox_picker_attrs,
 			)
 		);
 	}
@@ -848,6 +929,17 @@ $scoped_css = array_merge(
 	?>
 
 	<?php
+	// ── 8c-iii. Extras between the pickers/stock status and the add-to-cart
+	// form (Eye Care Wave C, extrasBeforeCartCount) — the same rendered-child
+	// markup sgs_buybox_split_extras() already produced above (8-config).
+	?>
+	<?php if ( '' !== trim( (string) $buybox_extras_before_cart_html ) ) : ?>
+	<div class="sgs-buybox__extras sgs-buybox__extras--before-cart">
+		<?php echo $buybox_extras_before_cart_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WP core InnerBlocks output, already rendered + escaped by WP_Block::render(). ?>
+	</div>
+	<?php endif; ?>
+
+	<?php
 	// ── 8d. Add-to-cart form (mirrors product-card L948-963 proxy form pattern).
 	// HIDDEN WHEN OUT OF STOCK: `data-wp-bind--disabled` evaluates a single path
 	// and the Interactivity API has no `||`, so gating the button on both stock
@@ -866,12 +958,26 @@ $scoped_css = array_merge(
 	>
 		<button
 			type="submit"
-			class="wp-element-button buybox__add-to-cart"
+			class="<?php echo esc_attr( $add_to_cart_button_classes ); ?>"
 			data-wp-bind--disabled="context.pending"
 			data-wp-bind--aria-busy="context.pending"
 		>
+			<?php if ( $add_to_cart_show_price ) : ?>
+			<span class="buybox__add-to-cart-content">
+				<svg class="buybox__cart-icon" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+				<span class="buybox__cart-label"><?php echo esc_html( $add_to_cart_label ); ?></span>
+			</span>
+				<?php
+				// Bound directly to the SAME context.priceDisplay path the price row
+				// (8a) already reads — reactive on a variation swap for free, since the
+				// button label itself is static (no data-wp-text) and does not need its
+				// own re-render logic to stay in sync.
+				?>
+				<span class="buybox__cart-price" data-wp-text="context.priceDisplay"><?php echo esc_html( $price_display ); ?></span>
+			<?php else : ?>
 			<svg class="buybox__cart-icon" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
 			<span class="buybox__cart-label"><?php echo esc_html( $add_to_cart_label ); ?></span>
+			<?php endif; ?>
 		</button>
 	</form>
 
@@ -927,7 +1033,7 @@ $scoped_css = array_merge(
 	</div>
 	<?php endif; ?>
 
-	</div><?php // end .sgs-buybox__config-col ?>
+	</div><?php // end .sgs-buybox__config-col. ?>
 
 	<?php
 	// ── 8-island. Gallery data-island (FR-30-10 Step-10a, all-variation fix).

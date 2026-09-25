@@ -333,6 +333,93 @@
 			"type": "number",
 			"default": 0,
 			"description": "How many of the extras slot's first child blocks render at the top of the configurator column, above the price. The rest stay below the add-to-cart form. 0 = all below, the current behaviour."
+		},
+		"extrasBeforeCartCount": {
+			"type": "number",
+			"default": 0,
+			"description": "After the extrasBeforeCount children (above the price), how many of the NEXT extras-slot children render between the pickers/stock status and the add-to-cart form. The rest stay below the form. 0 = none, the current behaviour."
+		},
+		"pickerSwatchStyle": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"outlined",
+				"filled",
+				"ghost",
+				"tile"
+			],
+			"description": "Pill style forwarded to an option-picker axis whose terms carry a colour or image swatch (e.g. Colour), detected via each term's _sgs_swatch_color/_sgs_swatch_image_id meta. Empty = that picker's own default."
+		},
+		"pickerStyle": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"outlined",
+				"filled",
+				"ghost",
+				"tile"
+			],
+			"description": "Pill style forwarded to every other option-picker axis (no colour/image swatch, e.g. Size). Empty = that picker's own default."
+		},
+		"pickerSubLabelMetaKey": {
+			"type": "string",
+			"default": "",
+			"description": "Term-meta key forwarded to every option picker as its subLabelMetaKey — a second caption line under each option (e.g. a frame size's eye/bridge/temple measurement). Empty = no second line."
+		},
+		"pickerShowSelectedTick": {
+			"type": "boolean",
+			"default": true,
+			"description": "Forwarded to every option picker's showSelectedTick."
+		},
+		"priceFontFamily": {
+			"type": "string",
+			"default": "",
+			"description": "Font family for the current-price element, sourced from theme.json's typography.fontFamilies preset list via the shared TypographyControls font-family picker. Empty = inherit the theme's default (body) font."
+		},
+		"priceFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"priceFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"priceFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"rrpShowPrice": {
+			"type": "boolean",
+			"default": false,
+			"description": "When the RRP saving applies, also show \"RRP <amount>\" in the price row with the amount struck through (plus a visually-hidden \"Recommended retail price\" label for screen readers)."
+		},
+		"rrpSavingPrefix": {
+			"type": "string",
+			"default": "Save",
+			"description": "The words before the amount in the RRP saving pill, e.g. \"You save\" gives \"You save £32\". Also used with the percentage format (\"You save 19%\")."
+		},
+		"addToCartStyle": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"primary",
+				"secondary",
+				"outline"
+			],
+			"description": "Add-to-cart button style preset (matches the SGS button presets). Empty = today's accent-colour look."
+		},
+		"addToCartShowPrice": {
+			"type": "boolean",
+			"default": false,
+			"description": "Show the current price at the right end of the add-to-cart button (label on the left, price on the right)."
+		},
+		"stockInStockLabel": {
+			"type": "string",
+			"default": "",
+			"description": "Replaces the in-stock label text only (e.g. \"In stock — dispatched next working day\"). Empty = WooCommerce's own availability text. Low-stock and out-of-stock wording are unchanged."
 		}
 	},
 	"editorScript": "file:./index.js",

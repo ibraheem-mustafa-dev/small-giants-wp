@@ -25,9 +25,13 @@ if ( ! function_exists( 'sgs_product_rrp_saving' ) ) {
 	 * @param int    $current_price_minor The current price in minor units (pence).
 	 * @param int    $decimals            Currency decimal places.
 	 * @param string $format              'amount' or 'percentage'.
+	 * @param string $prefix              Optional. The words before the amount/percentage
+	 *                                    (e.g. "Save", "You save"). '' (default) falls back
+	 *                                    to the translated "Save" — every existing caller
+	 *                                    that doesn't pass this keeps its exact prior text.
 	 * @return array{hidden: bool, text: string, rrp_display: string}
 	 */
-	function sgs_product_rrp_saving( int $post_id, string $meta_key, int $current_price_minor, int $decimals, string $format ): array {
+	function sgs_product_rrp_saving( int $post_id, string $meta_key, int $current_price_minor, int $decimals, string $format, string $prefix = '' ): array {
 		$hidden_result = array(
 			'hidden'      => true,
 			'text'        => '',
@@ -58,15 +62,16 @@ if ( ! function_exists( 'sgs_product_rrp_saving' ) ) {
 				: number_format( $major, $decimals );
 		};
 
-		$saving_minor = $rrp_minor - $current_price_minor;
+		$saving_minor     = $rrp_minor - $current_price_minor;
+		$prefix_sanitised = '' !== trim( $prefix ) ? sanitize_text_field( $prefix ) : __( 'Save', 'sgs-blocks' );
 
 		if ( 'percentage' === $format ) {
 			$pct = (int) round( ( $saving_minor / $rrp_minor ) * 100 );
-			/* translators: %d is the percentage saved off the RRP, e.g. "Save 19%". */
-			$text = sprintf( __( 'Save %d%%', 'sgs-blocks' ), $pct );
+			/* translators: 1: saving-prefix words (e.g. "Save"), 2: the percentage saved off the RRP. */
+			$text = sprintf( __( '%1$s %2$d%%', 'sgs-blocks' ), $prefix_sanitised, $pct );
 		} else {
-			/* translators: %s is the formatted money amount saved off the RRP, e.g. "Save £32". */
-			$text = sprintf( __( 'Save %s', 'sgs-blocks' ), $format_money( $saving_minor ) );
+			/* translators: 1: saving-prefix words (e.g. "Save"), 2: the formatted money amount saved off the RRP. */
+			$text = sprintf( __( '%1$s %2$s', 'sgs-blocks' ), $prefix_sanitised, $format_money( $saving_minor ) );
 		}
 
 		return array(

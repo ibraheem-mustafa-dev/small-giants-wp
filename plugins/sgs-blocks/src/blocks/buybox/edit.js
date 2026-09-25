@@ -7,6 +7,8 @@ import { ResponsiveBoxControl, SgsColourPanel, fillRow, textRow,
 	MediaElementPanel,
 } from '../../components';
 import { BuyboxExtraPanels, getBuyboxExtraColourRows } from './inspector-extra';
+import { BuyboxExtraSettingsPanels2 } from './inspector-extra-2';
+import { BuyboxExtraStylesPanels } from './inspector-extra-3';
 
 // A second CTA, a WhatsApp prompt, or an assurance list — the kinds of thing
 // worth dropping below the add-to-cart form. Not exhaustive (any block can be
@@ -311,6 +313,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 				/>
+				<BuyboxExtraSettingsPanels2
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
@@ -405,6 +411,11 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 					/>
 				</PanelBody>
+
+				<BuyboxExtraStylesPanels
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			<div { ...blockProps }>

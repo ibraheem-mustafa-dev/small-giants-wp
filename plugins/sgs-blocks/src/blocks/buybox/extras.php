@@ -59,13 +59,16 @@ if ( ! function_exists( 'sgs_buybox_stock_status' ) ) {
 	 * management (falling back to the site's global low-stock notification
 	 * threshold) — never a fabricated or hardcoded quantity.
 	 *
-	 * @param int    $variation_id  The default combo's variation product ID.
-	 * @param bool   $in_stock      The default combo's in-stock flag (manifest).
-	 * @param string $fallback_text The manifest's own out-of-stock text (e.g. "Out of stock"
-	 *                              or the JS store's "Unavailable" — see product-card/view.js).
+	 * @param int    $variation_id       The default combo's variation product ID.
+	 * @param bool   $in_stock           The default combo's in-stock flag (manifest).
+	 * @param string $fallback_text      The manifest's own out-of-stock text (e.g. "Out of stock"
+	 *                                   or the JS store's "Unavailable" — see product-card/view.js).
+	 * @param string $custom_in_stock_label Optional (Eye Care Wave C, stockInStockLabel). Replaces
+	 *                                   the IN-STOCK label only when non-empty — low-stock and
+	 *                                   out-of-stock wording are untouched by this parameter.
 	 * @return array{class: string, label: string}
 	 */
-	function sgs_buybox_stock_status( int $variation_id, bool $in_stock, string $fallback_text ): array {
+	function sgs_buybox_stock_status( int $variation_id, bool $in_stock, string $fallback_text, string $custom_in_stock_label = '' ): array {
 		if ( ! $in_stock ) {
 			return array(
 				'class' => 'buybox__stock--out-of-stock',
@@ -98,8 +101,69 @@ if ( ! function_exists( 'sgs_buybox_stock_status' ) ) {
 
 		return array(
 			'class' => 'buybox__stock--in-stock',
-			'label' => __( 'In stock', 'sgs-blocks' ),
+			'label' => '' !== $custom_in_stock_label ? $custom_in_stock_label : __( 'In stock', 'sgs-blocks' ),
 		);
+	}
+}
+
+if ( ! function_exists( 'sgs_buybox_axis_has_swatch' ) ) {
+	/**
+	 * Whether any of an axis's terms carry a colour or image swatch (term meta
+	 * `_sgs_swatch_color` / `_sgs_swatch_image_id`) — mirrors option-picker/
+	 * render.php's own swatch_map lookup (§8, FR-27-B2). Used here ONLY to
+	 * decide which of the two picker-style overrides (pickerSwatchStyle vs
+	 * pickerStyle) a given axis receives; option-picker's own render.php still
+	 * does the authoritative per-term lookup that actually paints the swatch.
+	 *
+	 * @param string $taxonomy The axis's WooCommerce attribute taxonomy.
+	 * @param array  $terms    The axis's terms, each {slug, label, ...} (manifest shape).
+	 * @return bool True when at least one term has a swatch colour or image.
+	 */
+	function sgs_buybox_axis_has_swatch( string $taxonomy, array $terms ): bool {
+		if ( '' === $taxonomy || ! taxonomy_exists( $taxonomy ) ) {
+			return false;
+		}
+
+		foreach ( $terms as $term_row ) {
+			$slug = (string) ( $term_row['slug'] ?? '' );
+			if ( '' === $slug ) {
+				continue;
+			}
+
+			$term = get_term_by( 'slug', $slug, $taxonomy );
+			if ( ! $term instanceof \WP_Term ) {
+				continue;
+			}
+
+			$colour   = sanitize_hex_color( (string) get_term_meta( $term->term_id, '_sgs_swatch_color', true ) );
+			$image_id = absint( get_term_meta( $term->term_id, '_sgs_swatch_image_id', true ) );
+
+			if ( $colour || $image_id > 0 ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+}
+
+if ( ! function_exists( 'sgs_buybox_add_to_cart_class' ) ) {
+	/**
+	 * Allowlist an addToCartStyle value into its BEM modifier class, or '' for
+	 * today's look. Mirrors sgs/button's primary/secondary/outline preset
+	 * names — style.css's `.buybox__add-to-cart--{style}` rules read the SAME
+	 * `--wp--custom--button-presets--{style}--*` design tokens sgs/button's own
+	 * `.sgs-button--{style}` rules do (style.css docblock), so the two stay
+	 * visually matched without this block depending on sgs/button's stylesheet
+	 * being enqueued (buybox/ file-scope contract — this block's own CSS is
+	 * self-contained).
+	 *
+	 * @param string $style Raw addToCartStyle attribute value.
+	 * @return string '' or 'primary'|'secondary'|'outline'.
+	 */
+	function sgs_buybox_add_to_cart_class( string $style ): string {
+		$allowed = array( 'primary', 'secondary', 'outline' );
+		return in_array( $style, $allowed, true ) ? $style : '';
 	}
 }
 
@@ -166,27 +230,36 @@ if ( ! function_exists( 'sgs_buybox_extras_scoped_css' ) ) {
 
 if ( ! function_exists( 'sgs_buybox_split_extras' ) ) {
 	/**
-	 * Split the extras slot's rendered child markup into a "before" group (the
-	 * first N children, shown above the price row) and an "after" group (the
-	 * rest, shown below the add-to-cart form — today's default position).
+	 * Split the extras slot's rendered child markup into three groups: "before"
+	 * (the first N children, shown above the price row), "beforeCart" (the NEXT
+	 * M children, shown between the pickers/stock status and the add-to-cart
+	 * form — Eye Care Wave C, extrasBeforeCartCount), and "after" (the rest,
+	 * shown below the add-to-cart form — today's default position).
 	 *
 	 * Renders each child individually via WP_Block::render() rather than
 	 * slicing render.php's own $content string, since $content is one
 	 * concatenated blob with no per-child boundary to cut on.
 	 *
-	 * @param \WP_Block_List $inner_blocks The buybox's InnerBlocks children.
-	 * @param int            $before_count How many leading children go in the "before" group (already sanitised non-negative).
-	 * @return array{before: string, after: string}
+	 * @param \WP_Block_List $inner_blocks     The buybox's InnerBlocks children.
+	 * @param int            $before_count     How many leading children go in the "before" group (already sanitised non-negative).
+	 * @param int            $before_cart_count Optional. How many children AFTER the "before" group go in the
+	 *                                          "beforeCart" group (already sanitised non-negative). Default 0 — every
+	 *                                          existing caller (and every buybox with extrasBeforeCartCount unset/0)
+	 *                                          gets an empty "beforeCart" group, byte-identical to before this param existed.
+	 * @return array{before: string, beforeCart: string, after: string}
 	 */
-	function sgs_buybox_split_extras( \WP_Block_List $inner_blocks, int $before_count ): array {
-		$before = '';
-		$after  = '';
-		$index  = 0;
+	function sgs_buybox_split_extras( \WP_Block_List $inner_blocks, int $before_count, int $before_cart_count = 0 ): array {
+		$before      = '';
+		$before_cart = '';
+		$after       = '';
+		$index       = 0;
 
 		foreach ( $inner_blocks as $inner_block ) {
 			$markup = $inner_block->render();
 			if ( $index < $before_count ) {
 				$before .= $markup;
+			} elseif ( $index < $before_count + $before_cart_count ) {
+				$before_cart .= $markup;
 			} else {
 				$after .= $markup;
 			}
@@ -194,8 +267,9 @@ if ( ! function_exists( 'sgs_buybox_split_extras' ) ) {
 		}
 
 		return array(
-			'before' => $before,
-			'after'  => $after,
+			'before'     => $before,
+			'beforeCart' => $before_cart,
+			'after'      => $after,
 		);
 	}
 }

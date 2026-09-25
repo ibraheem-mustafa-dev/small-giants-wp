@@ -52,6 +52,17 @@
 	opacity: 0.8;
 }
 
+/* ── Struck-through RRP (Eye Care Wave C, rrpShowPrice) ──────────────────── */
+
+.sgs-buybox .buybox__rrp-price {
+	font-size: 0.95rem;
+	opacity: 0.7;
+}
+
+.sgs-buybox .buybox__rrp-price s {
+	text-decoration: line-through;
+}
+
 /* ── RRP saving pill (FR-Wave-B) ───────────────────────────────────────── */
 
 .sgs-buybox .buybox__rrp-pill {
@@ -176,6 +187,76 @@
 
 .sgs-buybox .buybox__cart-icon {
 	flex-shrink: 0;
+}
+
+/* ── Add-to-cart style presets (Eye Care Wave C, addToCartStyle) ─────────
+   Self-contained: reads the SAME --wp--custom--button-presets--{style}--*
+   design tokens sgs/button's own .sgs-button--{style} rules do (Spec 32
+   Component Styling Token Contract), so an addToCartStyle choice visually
+   matches the site's real button presets WITHOUT this block depending on
+   sgs/button's stylesheet being enqueued on the page (buybox/ file-scope
+   contract — every declaration this block needs lives in its own style.css).
+   Framework fallbacks mirror button/style.css's own preset defaults. ────── */
+
+.sgs-buybox .buybox__add-to-cart--primary {
+	border: var(--wp--custom--button-presets--primary--border-width, 2px) solid var(--wp--custom--button-presets--primary--border, var(--wp--preset--color--primary));
+	border-radius: var(--wp--custom--button-presets--primary--border-radius, 8px);
+	background: var(--wp--custom--button-presets--primary--background, var(--wp--preset--color--primary));
+	color: var(--wp--custom--button-presets--primary--text, var(--wp--preset--color--text-inverse, #fff));
+}
+
+.sgs-buybox .buybox__add-to-cart--primary:hover:not([disabled]) {
+	filter: none;
+	background: var(--wp--custom--button-presets--primary--hover-background, var(--wp--preset--color--text));
+	border-color: var(--wp--custom--button-presets--primary--hover-border, var(--wp--preset--color--text));
+	color: var(--wp--custom--button-presets--primary--hover-text, var(--wp--preset--color--text-inverse, #fff));
+}
+
+.sgs-buybox .buybox__add-to-cart--secondary {
+	border: var(--wp--custom--button-presets--secondary--border-width, 2px) solid var(--wp--custom--button-presets--secondary--border, var(--wp--preset--color--primary));
+	border-radius: var(--wp--custom--button-presets--secondary--border-radius, 8px);
+	background: var(--wp--custom--button-presets--secondary--background, transparent);
+	color: var(--wp--custom--button-presets--secondary--text, var(--wp--preset--color--primary));
+}
+
+.sgs-buybox .buybox__add-to-cart--secondary:hover:not([disabled]) {
+	filter: none;
+	background: var(--wp--custom--button-presets--secondary--hover-background, var(--wp--preset--color--primary));
+	border-color: var(--wp--custom--button-presets--secondary--hover-border, var(--wp--preset--color--primary));
+	color: var(--wp--custom--button-presets--secondary--hover-text, var(--wp--preset--color--text-inverse, #fff));
+}
+
+.sgs-buybox .buybox__add-to-cart--outline {
+	border: var(--wp--custom--button-presets--outline--border-width, 2px) solid var(--wp--custom--button-presets--outline--border, var(--wp--preset--color--border));
+	border-radius: var(--wp--custom--button-presets--outline--border-radius, 8px);
+	background: var(--wp--custom--button-presets--outline--background, transparent);
+	color: var(--wp--custom--button-presets--outline--text, var(--wp--preset--color--text));
+}
+
+.sgs-buybox .buybox__add-to-cart--outline:hover:not([disabled]) {
+	filter: none;
+	background: var(--wp--custom--button-presets--outline--hover-background, var(--wp--preset--color--surface-alt));
+	border-color: var(--wp--custom--button-presets--outline--hover-border, var(--wp--preset--color--primary));
+	color: var(--wp--custom--button-presets--outline--hover-text, var(--wp--preset--color--text));
+}
+
+/* ── Add-to-cart price display (Eye Care Wave C, addToCartShowPrice) ─────
+   Label group stays centred as its own flex item; the price sits at the
+   opposite end via justify-content:space-between on the button itself. */
+
+.sgs-buybox .buybox__add-to-cart--show-price {
+	justify-content: space-between;
+}
+
+.sgs-buybox .buybox__add-to-cart-content {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.sgs-buybox .buybox__cart-price {
+	font-weight: 700;
+	white-space: nowrap;
 }
 
 /* ── Cart-status error region (dismissible, ARIA-live) ────────────────── */
