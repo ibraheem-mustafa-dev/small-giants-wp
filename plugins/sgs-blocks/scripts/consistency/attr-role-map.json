@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "..\\..\\..\\..\\..\\.claude\\skills\\sgs-wp-engine\\sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 8306,
+    "row_count": 8308,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -954,7 +954,9 @@
     "sgs/business-info::margin": "layout",
     "sgs/business-info::padding": "layout",
     "sgs/business-info::showIcon": "boolean-visibility",
+    "sgs/business-info::textAfter": "text-content",
     "sgs/business-info::textAlign": "typography",
+    "sgs/business-info::textBefore": "text-content",
     "sgs/business-info::textColour": "color",
     "sgs/business-info::textColourGradient": "colour-gradient",
     "sgs/business-info::textColourHover": "color",
