@@ -28,7 +28,7 @@ defined( 'ABSPATH' ) || exit;
  * @return array<int, array{key: string, label: string, options: array}>
  */
 function sgs_choice_flow_editor_addon_groups(): array {
-	if ( ! function_exists( 'sgs_addon_price_list' ) ) {
+	if ( ! function_exists( __NAMESPACE__ . '\sgs_addon_price_list' ) ) {
 		return array();
 	}
 

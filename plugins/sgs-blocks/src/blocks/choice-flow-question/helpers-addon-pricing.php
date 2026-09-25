@@ -2,14 +2,13 @@
 /**
  * Add-on price list helpers — Spec 43 FR-43-17/FR-43-18 (v1.4.0).
  *
- * Pure, side-effect-free lookups over the site-wide add-on price list a
- * parallel session owns (WooCommerce > Add-on prices). This file calls
- * exactly two external entry points, both behind `function_exists()` so
- * `sgs/choice-flow-question`, `sgs/choice-flow` and `sgs/choice-flow-result`
- * keep working (with prices simply absent) before those functions exist:
+ * Pure, side-effect-free lookups over the site-wide add-on price list
+ * (WooCommerce > Add-on prices, includes/addon-price-list/). This file is in
+ * the global namespace and the list's API is in SGS\Blocks, so every call and
+ * `function_exists()` check uses the fully qualified name; a bare name finds
+ * nothing and every price silently disappears:
  *
- *   - `sgs_addon_price_list(): array`      — every group.
- *   - `sgs_addon_group( string $key ): ?array` — one group by key.
+ *   - `\SGS\Blocks\sgs_addon_group( string $key ): ?array` — one group by key.
  *
  * Contract (owner spec, not invented here): a group is
  * `{key, label, options: [{key, label, price}]}`, `price` a decimal string.
@@ -35,11 +34,11 @@ if ( ! function_exists( 'sgs_choice_flow_addon_group_options' ) ) {
 	 *         or the group itself isn't found.
 	 */
 	function sgs_choice_flow_addon_group_options( string $group_key ): array {
-		if ( '' === $group_key || ! function_exists( 'sgs_addon_group' ) ) {
+		if ( '' === $group_key || ! function_exists( '\SGS\Blocks\sgs_addon_group' ) ) {
 			return array();
 		}
 
-		$group = sgs_addon_group( $group_key );
+		$group = \SGS\Blocks\sgs_addon_group( $group_key );
 		if ( ! is_array( $group ) || empty( $group['options'] ) || ! is_array( $group['options'] ) ) {
 			return array();
 		}
@@ -57,11 +56,11 @@ if ( ! function_exists( 'sgs_choice_flow_addon_group_label' ) ) {
 	 * @return string Group label, or '' when unresolvable.
 	 */
 	function sgs_choice_flow_addon_group_label( string $group_key ): string {
-		if ( '' === $group_key || ! function_exists( 'sgs_addon_group' ) ) {
+		if ( '' === $group_key || ! function_exists( '\SGS\Blocks\sgs_addon_group' ) ) {
 			return '';
 		}
 
-		$group = sgs_addon_group( $group_key );
+		$group = \SGS\Blocks\sgs_addon_group( $group_key );
 		return is_array( $group ) && isset( $group['label'] ) ? (string) $group['label'] : '';
 	}
 }

@@ -47,13 +47,38 @@ const PANEL_TOTAL_VALUE_SELECTOR = '.sgs-choice-flow__price-panel-total-value';
 const flowPricingState = new WeakMap();
 
 /**
- * The page's current base product/variation, from the live
- * `sgs-variation-change` event. Null until the first event fires — flows
- * fall back to their own render.php-seeded `data-flow-*` values until then.
+ * Live base product/variation per product ID, from `sgs-variation-change`.
+ * Every product card on a page (the buybox, and each card in a "More from"
+ * or "Similar" row) dispatches it, so a flow reads only the entry for its
+ * own product (render.php seeds `data-flow-product-id`: the page's product,
+ * else `flowProductId`). Until that product's event fires, the seeded
+ * values stand.
+ *
+ * @type {Map<number, {productId: number, variationId: number, attributes: Object, priceMinor: number|null, decimals: number}>}
+ */
+const liveBases = new Map();
+
+/**
+ * The most recent event, for a flow with no product of its own (no product
+ * page, no `flowProductId`): the only product it can mean is the last one
+ * the shopper touched.
  *
  * @type {{productId: number, variationId: number, attributes: Object, priceMinor: number|null, decimals: number}|null}
  */
-let liveBaseProduct = null;
+let lastLiveBase = null;
+
+/**
+ * The base product a flow prices and buys.
+ *
+ * @param {{base: Object}} state This flow instance's pricing state.
+ * @return {{productId: number, variationId: number, attributes: Object, priceMinor: number|null, decimals: number}}
+ */
+function currentBase( state ) {
+	if ( state.base.productId ) {
+		return liveBases.get( state.base.productId ) || state.base;
+	}
+	return lastLiveBase || state.base;
+}
 
 /** Guards the module-level `sgs-variation-change` listener to once. */
 let variationListenerBound = false;
@@ -128,7 +153,7 @@ function renderPricePanel( flowRoot ) {
 	}
 
 	const state = ensureState( flowRoot );
-	const base = liveBaseProduct || state.base;
+	const base = currentBase( state );
 
 	const baseValueEl = panelEl.querySelector( PANEL_BASE_VALUE_SELECTOR );
 	if ( baseValueEl ) {
@@ -172,23 +197,26 @@ function renderPricePanel( flowRoot ) {
 /**
  * Module-level `sgs-variation-change` listener (item 5 — `product-card/
  * view.js` dispatches this whenever the page's own buybox/product-card
- * resolves a new combo, and once on init). Updates every flow on the page —
- * there is normally exactly one buybox per product page, so a page-wide
- * value is the correct scope; a flow with its OWN `flowProductId` (used off
- * that product's page) never receives this event in practice since no
- * buybox/product-card for a different product would dispatch it there.
+ * resolves a new combo, and once on init). Records the combo under its
+ * product ID and re-renders every flow's panel; each flow then reads only
+ * its own product's entry (see `liveBases`).
  *
  * @param {CustomEvent} event The `sgs-variation-change` event.
  */
 function handleVariationChange( event ) {
 	const detail = event?.detail || {};
-	liveBaseProduct = {
+	const live = {
 		productId: parseInt( detail.productId, 10 ) || 0,
 		variationId: parseInt( detail.variationId, 10 ) || 0,
 		attributes: detail.attributes && 'object' === typeof detail.attributes ? detail.attributes : {},
 		priceMinor: typeof detail.priceMinor === 'number' ? detail.priceMinor : null,
 		decimals: typeof detail.decimals === 'number' ? detail.decimals : 2,
 	};
+	if ( ! live.productId ) {
+		return;
+	}
+	liveBases.set( live.productId, live );
+	lastLiveBase = live;
 	document.querySelectorAll( '[data-wp-interactive="sgs/choice-flow"]' ).forEach( renderPricePanel );
 }
 
@@ -256,7 +284,7 @@ export function resetAddonAnswers( flowRoot ) {
  */
 export function getAddonSummary( flowRoot ) {
 	const state = ensureState( flowRoot );
-	const base = liveBaseProduct && liveBaseProduct.productId ? liveBaseProduct : state.base;
+	const base = currentBase( state );
 
 	const addons = [];
 	const rows = [];
