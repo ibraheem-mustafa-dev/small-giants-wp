@@ -85,7 +85,9 @@
           "rowSlot": "middle",
           "layout": "grid",
           "gridTemplateColumns": {
-            "desktop": "1fr auto 1fr"
+            "desktop": "1fr auto 1fr",
+            "tablet": "1fr auto 1fr",
+            "mobile": "1fr auto 1fr"
           },
           "alignItems": "center",
           "gap": {
@@ -131,7 +133,10 @@
                 "desktop": 0.06
               },
               "itemLetterSpacingUnit": "em",
-              "triggerIconPosition": "before"
+              "triggerIconPosition": "before",
+              "megaAlign": {
+                "desktop": "full-width"
+              }
             }
           },
           {
@@ -243,7 +248,10 @@
                   "itemLetterSpacing": {
                     "desktop": 0.06
                   },
-                  "itemLetterSpacingUnit": "em"
+                  "itemLetterSpacingUnit": "em",
+                  "megaAlign": {
+                    "desktop": "full-width"
+                  }
                 }
               },
               {

@@ -1775,26 +1775,34 @@
             }
           },
           {
-            "name": "sgs/icon-list",
+            "name": "sgs/process-steps",
             "attributes": {
-              "gap": "16px",
+              "layout": "list",
+              "headingLevel": "p",
+              "numberColour": "accent-text",
+              "titleColour": "text",
+              "titleFontWeight": "400",
+              "titleFontSize": {
+                "desktop": 15.5
+              },
+              "titleFontSizeUnit": "px",
               "margin": {
                 "desktop": {
                   "bottom": "34px"
                 }
               },
-              "markerType": "number",
-              "textColour": "text",
-              "iconColour": "accent-text",
-              "items": [
+              "steps": [
                 {
-                  "text": "Pick a frame, then “Add my prescription”"
+                  "number": "1",
+                  "title": "Pick a frame, then “Add my prescription”"
                 },
                 {
-                  "text": "Tell me what they're for, how thin, what finish"
+                  "number": "2",
+                  "title": "Tell me what they're for, how thin, what finish"
                 },
                 {
-                  "text": "Send your prescription now, or later — no rush"
+                  "number": "3",
+                  "title": "Send your prescription now, or later — no rush"
                 }
               ]
             }

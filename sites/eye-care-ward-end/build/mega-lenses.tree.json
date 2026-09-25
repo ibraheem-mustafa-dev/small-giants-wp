@@ -36,13 +36,6 @@
             "attributes": {
               "text": "Distance or reading, tinted to match the frame."
             }
-          },
-          {
-            "name": "sgs/button",
-            "attributes": {
-              "label": "View lens options",
-              "url": "/prescription-lenses/"
-            }
           }
         ]
       },
@@ -68,13 +61,6 @@
             "name": "sgs/text",
             "attributes": {
               "text": "Near and far in one lens, no visible line."
-            }
-          },
-          {
-            "name": "sgs/button",
-            "attributes": {
-              "label": "View lens options",
-              "url": "/prescription-lenses/"
             }
           }
         ]
@@ -102,13 +88,6 @@
             "attributes": {
               "text": "Kills glare off water, roads and windscreens."
             }
-          },
-          {
-            "name": "sgs/button",
-            "attributes": {
-              "label": "View lens options",
-              "url": "/prescription-lenses/"
-            }
           }
         ]
       },
@@ -134,13 +113,6 @@
             "name": "sgs/text",
             "attributes": {
               "text": "Clear indoors, dark outside in under a minute."
-            }
-          },
-          {
-            "name": "sgs/button",
-            "attributes": {
-              "label": "View lens options",
-              "url": "/prescription-lenses/"
             }
           }
         ]

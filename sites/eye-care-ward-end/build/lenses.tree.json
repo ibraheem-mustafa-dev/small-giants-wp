@@ -56,7 +56,9 @@
             "desktop": {
               "bottom": "20px"
             }
-          }
+          },
+          "maxWidth": 18,
+          "maxWidthUnit": "ch"
         }
       },
       {
