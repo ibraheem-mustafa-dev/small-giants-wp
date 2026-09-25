@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "..\\..\\..\\..\\..\\.claude\\skills\\sgs-wp-engine\\sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 8308,
+    "row_count": 8309,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -4571,6 +4571,7 @@
     "sgs/multi-button::textColourGradient": "colour-gradient",
     "sgs/multi-button::textColourHover": "color",
     "sgs/multi-button::textColourHoverGradient": "colour-gradient",
+    "sgs/nav-bar-menu::burgerBarCount": "enum-mode",
     "sgs/nav-bar-menu::burgerBg": "color",
     "sgs/nav-bar-menu::burgerBgGradient": "colour-gradient",
     "sgs/nav-bar-menu::burgerBgHoverTreatment": "behaviour",
