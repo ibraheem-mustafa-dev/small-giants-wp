@@ -6672,6 +6672,14 @@
 				"role": "layout"
 			},
 			"_why": "2026-09-25 (Eye Care product page). Vertical padding inside each list item (padding-block on the item row)."
+		},
+		{
+			"slug": "sgs/icon-list",
+			"attr": "dividerColour",
+			"fields": {
+				"css_property": "border-color"
+			},
+			"_why": "2026-09-25. The divider colour paints the item rows' border lines (drawn with border-top/border-bottom shorthands, which the analyser reads literally); the property it sets is border-color, the mechanism the colour census resolves."
 		}
 	]
 }
