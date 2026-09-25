@@ -296,7 +296,8 @@
                   "textColour": "text-label",
                   "fontSize": {
                     "desktop": "13px"
-                  }
+                  },
+                  "hoursLayout": "condensed"
                 }
               }
             ]

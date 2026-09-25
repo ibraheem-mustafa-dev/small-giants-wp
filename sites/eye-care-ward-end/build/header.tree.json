@@ -106,11 +106,32 @@
               "itemBadgeTextColour": "accent-text",
               "submenuOpenOn": "hover",
               "collapsePoint": 1060,
-              "gap": "24px",
+              "gap": {
+                "desktop": "0px"
+              },
               "itemTextTransform": "uppercase",
-              "triggerMode": "icon",
+              "triggerMode": {
+                "desktop": "icon-and-text",
+                "mobile": "icon"
+              },
               "submenuCaret": false,
-              "drawerRef": 203
+              "drawerRef": 203,
+              "burgerTextTransform": "none",
+              "burgerFontWeight": "400",
+              "burgerFontSize": "12.5",
+              "burgerLetterSpacing": {
+                "desktop": 0.1
+              },
+              "itemFontSize": {
+                "desktop": 13.5
+              },
+              "itemFontSizeUnit": "px",
+              "itemFontWeight": "400",
+              "itemLetterSpacing": {
+                "desktop": 0.06
+              },
+              "itemLetterSpacingUnit": "em",
+              "triggerIconPosition": "before"
             }
           },
           {
@@ -208,10 +229,21 @@
                   "splitAfterItemId": "id:195",
                   "submenuOpenOn": "hover",
                   "collapsePoint": 1060,
-                  "gap": "8px",
+                  "gap": {
+                    "desktop": "8px"
+                  },
                   "itemTextTransform": "uppercase",
                   "submenuCaret": false,
-                  "showBurger": false
+                  "showBurger": false,
+                  "itemFontSize": {
+                    "desktop": 13.5
+                  },
+                  "itemFontSizeUnit": "px",
+                  "itemFontWeight": "400",
+                  "itemLetterSpacing": {
+                    "desktop": 0.06
+                  },
+                  "itemLetterSpacingUnit": "em"
                 }
               },
               {

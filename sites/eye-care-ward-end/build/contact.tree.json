@@ -143,9 +143,20 @@
                 }
               },
               {
+                "name": "sgs/business-info",
+                "attributes": {
+                  "displayType": "hours",
+                  "hoursLayout": "condensed",
+                  "showIcon": false,
+                  "fontSize": {
+                    "desktop": "15px"
+                  }
+                }
+              },
+              {
                 "name": "sgs/text",
                 "attributes": {
-                  "text": "Mon–Sat 9.30–17.30<br>Collections by arrangement",
+                  "text": "Collections by arrangement",
                   "fontSize": {
                     "desktop": "15px"
                   }
@@ -201,85 +212,8 @@
                 "name": "sgs/form",
                 "attributes": {
                   "formId": "contact",
-                  "submitLabel": "Send message",
-                  "successMessage": "Thanks — I'll come back to you shortly.",
-                  "submitBackground": "text",
-                  "submitColour": "surface"
-                },
-                "innerBlocks": [
-                  {
-                    "name": "sgs/form-field-text",
-                    "attributes": {
-                      "fieldName": "your_name",
-                      "label": "",
-                      "placeholder": "Your name",
-                      "required": true,
-                      "width": "half"
-                    }
-                  },
-                  {
-                    "name": "sgs/form-field-email",
-                    "attributes": {
-                      "fieldName": "email",
-                      "label": "",
-                      "placeholder": "Email",
-                      "required": true,
-                      "width": "half"
-                    }
-                  },
-                  {
-                    "name": "sgs/form-field-phone",
-                    "attributes": {
-                      "fieldName": "phone",
-                      "label": "",
-                      "placeholder": "Phone (optional)",
-                      "required": false,
-                      "width": "half"
-                    }
-                  },
-                  {
-                    "name": "sgs/form-field-select",
-                    "attributes": {
-                      "fieldName": "topic",
-                      "label": "",
-                      "placeholder": "What can I help with?",
-                      "required": true,
-                      "width": "half",
-                      "options": [
-                        {
-                          "value": "choosing-a-frame",
-                          "label": "Choosing a frame"
-                        },
-                        {
-                          "value": "prescription-lenses",
-                          "label": "Prescription lenses"
-                        },
-                        {
-                          "value": "an-order",
-                          "label": "An order I've placed"
-                        },
-                        {
-                          "value": "eye-test",
-                          "label": "Booking an eye test"
-                        },
-                        {
-                          "value": "something-else",
-                          "label": "Something else"
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    "name": "sgs/form-field-textarea",
-                    "attributes": {
-                      "fieldName": "message",
-                      "label": "",
-                      "placeholder": "Your message",
-                      "required": true,
-                      "width": "full"
-                    }
-                  }
-                ]
+                  "formIsLinked": true
+                }
               }
             ]
           }

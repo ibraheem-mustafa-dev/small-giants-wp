@@ -15,7 +15,9 @@
         "name": "sgs/nav-drawer-menu",
         "attributes": {
           "ref": 96,
-          "gap": "4px"
+          "gap": {
+            "desktop": "4px"
+          }
         }
       },
       {
