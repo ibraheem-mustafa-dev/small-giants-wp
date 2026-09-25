@@ -151,9 +151,11 @@
 				"url",
 				"phone",
 				"email",
-				"whatsapp"
+				"whatsapp",
+				"top",
+				"account"
 			],
-			"description": "Where the button's link comes from. 'url' (default) uses the typed URL/internal-link fields below. 'phone'/'email'/'whatsapp' read the value live from Appearance > SGS Site Info (Sgs_Site_Info::get()) and fall back to the typed URL when that Site Info field is empty."
+			"description": "Where the button's link comes from. 'url' (default) uses the typed URL/internal-link fields below. 'phone'/'email'/'whatsapp' read the value live from Appearance > SGS Site Info (Sgs_Site_Info::get()) and fall back to the typed URL when that Site Info field is empty. 'top' scrolls to the top of the page (view.js manages focus). 'account' links to the WooCommerce My Account page, or the login screen when WooCommerce is inactive."
 		},
 		"linkId": {
 			"type": "string",
@@ -469,6 +471,7 @@
 		}
 	},
 	"editorScript": "file:./index.js",
+	"viewScriptModule": "file:./view.js",
 	"style": "file:./style-index.css",
 	"editorStyle": "file:./index.css",
 	"render": "file:./render.php",

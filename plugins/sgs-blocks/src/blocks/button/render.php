@@ -36,6 +36,7 @@ $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_t
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-link-source.php';
 
 // ---------------------------------------------------------------------------
 // 1. Extract and sanitise attributes.
@@ -78,37 +79,22 @@ if ( $sgs_link_id ) {
 $stored_url    = isset( $attributes['url'] ) ? (string) $attributes['url'] : '';
 $effective_url = $resolved_url ? $resolved_url : $stored_url;
 
-// Link source (Site Info) — an operator can point the button's href at a live
-// Site Info value instead of a typed URL, so a phone/email/WhatsApp change in
-// Appearance > SGS Site Info updates every button using it with no edit here.
-// 'url' (the default) leaves $effective_url from the resolution above
-// untouched. A non-'url' source with an EMPTY Site Info value falls back to
-// $effective_url (typed URL or resolved internal link) rather than rendering
-// a dead link.
-$link_source = isset( $attributes['linkSource'] ) ? sanitize_text_field( $attributes['linkSource'] ) : 'url';
-if ( in_array( $link_source, array( 'phone', 'email', 'whatsapp' ), true ) ) {
-	switch ( $link_source ) {
-		case 'phone':
-			// Matches business-info/render.php's phone normalisation exactly
-			// (strip everything except digits and a leading +) so the same
-			// number produces the same tel: href on both blocks.
-			$sgs_site_info_phone = (string) \SGS\Blocks\Sgs_Site_Info::get( 'phone', '' );
-			$sgs_site_info_href  = '' !== $sgs_site_info_phone ? 'tel:' . preg_replace( '/[^0-9+]/', '', $sgs_site_info_phone ) : '';
-			break;
-		case 'email':
-			// Matches business-info/render.php's email link (antispambot-obscured
-			// mailto:), gated on is_email() the same way.
-			$sgs_site_info_email = (string) \SGS\Blocks\Sgs_Site_Info::get( 'email', '' );
-			$sgs_site_info_href  = ( '' !== $sgs_site_info_email && is_email( $sgs_site_info_email ) ) ? 'mailto:' . antispambot( $sgs_site_info_email ) : '';
-			break;
-		case 'whatsapp':
-			// socials.whatsapp is stored as a full https://wa.me/... URL
-			// (esc_url_raw-sanitised on write) — used as-is, no rebuilding.
-			$sgs_site_info_href = (string) \SGS\Blocks\Sgs_Site_Info::get( 'socials.whatsapp', '' );
-			break;
-	}
-	if ( '' !== trim( $sgs_site_info_href ) ) {
-		$effective_url = $sgs_site_info_href;
+// Link source (Site Info + fixed destinations) — an operator can point the
+// button's href at a live Site Info value, or a fixed destination the block
+// itself resolves, instead of a typed URL. 'url' (the default) leaves
+// $effective_url from the resolution above untouched. Resolution itself
+// lives in sgs_resolve_link_source() (includes/helpers-link-source.php,
+// U-12 §F) so this render.php stays a thin caller: 'phone'/'email'/
+// 'whatsapp' fall back to $effective_url (typed URL or resolved internal
+// link) when the Site Info field is empty; 'top'/'account' always resolve
+// to a real destination and ignore the typed URL.
+$link_source                 = isset( $attributes['linkSource'] ) ? sanitize_text_field( $attributes['linkSource'] ) : 'url';
+$sgs_link_source_wrapper_extra = array();
+if ( in_array( $link_source, array( 'phone', 'email', 'whatsapp', 'top', 'account' ), true ) ) {
+	$sgs_resolved_link = sgs_resolve_link_source( $link_source, $effective_url );
+	$effective_url     = $sgs_resolved_link['url'];
+	foreach ( $sgs_resolved_link['attrs'] as $sgs_link_attr_key => $sgs_link_attr_val ) {
+		$sgs_link_source_wrapper_extra[ sanitize_key( $sgs_link_attr_key ) ] = sanitize_text_field( (string) $sgs_link_attr_val );
 	}
 }
 
@@ -996,13 +982,18 @@ if ( '' !== $text_gradient_value || '' !== $text_gradient_hover_value ) {
 }
 
 $wrapper_attr = get_block_wrapper_attributes(
-	array(
-		'id'          => $uid,
-		// D303: $uid is ALSO a class so the class-scoped per-instance rules
-		// (`.{$uid}.sgs-button` = 0,2,0, never `#uid`) match this element and can be
-		// overridden by the appended sgsCustomCss residual by source order.
-		'class'       => trim( $merged_class . ' ' . $uid ),
-		'data-preset' => $safe_inherit_style,
+	array_merge(
+		array(
+			'id'          => $uid,
+			// D303: $uid is ALSO a class so the class-scoped per-instance rules
+			// (`.{$uid}.sgs-button` = 0,2,0, never `#uid`) match this element and can be
+			// overridden by the appended sgsCustomCss residual by source order.
+			'class'       => trim( $merged_class . ' ' . $uid ),
+			'data-preset' => $safe_inherit_style,
+		),
+		// U-12 §F: 'top' adds data-sgs-link-source="top" here so view.js can
+		// find the button without matching on every button on the page.
+		$sgs_link_source_wrapper_extra
 	)
 );
 

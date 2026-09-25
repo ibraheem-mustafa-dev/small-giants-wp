@@ -32,16 +32,26 @@ const LINK_SOURCE_OPTIONS = [
 	{ label: __( 'Phone (Site Info)', 'sgs-blocks' ), value: 'phone' },
 	{ label: __( 'Email (Site Info)', 'sgs-blocks' ), value: 'email' },
 	{ label: __( 'WhatsApp (Site Info)', 'sgs-blocks' ), value: 'whatsapp' },
+	{ label: __( 'Back to top', 'sgs-blocks' ), value: 'top' },
+	{ label: __( 'Account', 'sgs-blocks' ), value: 'account' },
 ];
 
-// Plain-English "where does this come from" help line per Site Info source —
-// shown under the Link source dropdown once a non-URL source is picked, and
-// PHP-side sourced from the same Sgs_Site_Info keys (render.php: 'phone',
-// 'email', 'socials.whatsapp').
+// Link sources that resolve their own destination and never fall back to the
+// typed URL field — the URL row below the dropdown is hidden entirely for
+// these (U-12 §F), rather than shown-but-disabled like the Site Info sources.
+const FIXED_DESTINATION_LINK_SOURCES = [ 'top', 'account' ];
+
+// Plain-English "where does this come from" help line per non-URL source —
+// shown under the Link source dropdown once picked. Site Info sources are
+// PHP-side sourced from the matching Sgs_Site_Info keys (render.php: 'phone',
+// 'email', 'socials.whatsapp'); 'top'/'account' are resolved by
+// sgs_resolve_link_source() (includes/helpers-link-source.php).
 const LINK_SOURCE_HELP = {
 	phone: __( 'Uses the phone number set in Appearance > SGS Site Info. If that field is empty, the typed URL below is used instead.', 'sgs-blocks' ),
 	email: __( 'Uses the email address set in Appearance > SGS Site Info. If that field is empty, the typed URL below is used instead.', 'sgs-blocks' ),
 	whatsapp: __( 'Uses the WhatsApp link set in Appearance > SGS Site Info. If that field is empty, the typed URL below is used instead.', 'sgs-blocks' ),
+	top: __( 'Scrolls smoothly to the top of the page and moves keyboard/screen-reader focus there.', 'sgs-blocks' ),
+	account: __( 'Links to the WooCommerce My Account page, or the login screen when WooCommerce is not active.', 'sgs-blocks' ),
 };
 
 const ICON_POSITION_OPTIONS = [
@@ -212,6 +222,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// A Site Info link source renders an <a> from the live Site Info value, so
 	// the no-URL submit-button option does not apply to it.
 	const usesSiteInfoLink = !! linkSource && 'url' !== linkSource;
+	// 'top'/'account' resolve their own destination and never read the typed
+	// URL — the URL field is hidden entirely for these (U-12 §F), rather than
+	// kept visible as a fallback the way the Site Info sources are.
+	const hidesUrlField = FIXED_DESTINATION_LINK_SOURCES.includes( linkSource );
 
 	const hasIcon = !! icon;
 
@@ -534,33 +548,35 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					   link button (BlockControls below) open the SAME popover
 					   (`../../components/LinkPopoverControl.js`), never an
 					   inline LinkControl here. */ }
-					<BaseControl
-						label={ __( 'Link', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-						help={ 'url' === ( linkSource || 'url' ) ? undefined : __( 'Used only as a fallback while the Site Info field above is empty.', 'sgs-blocks' ) }
-					>
-						{ /* Root cause of the row overflowing the panel (measured
-						   2026-08-13): the URL rendered as one unbroken nowrap
-						   string with nothing to shrink or truncate it — NOT
-						   core LinkControl's 350px floor (that component isn't
-						   mounted here). Fix: the label is a flex child allowed
-						   to shrink (`min-width:0`, `LinkPopoverControl.css`) and
-						   ellipsis-truncated; the full URL stays reachable via
-						   `title` for a mouse/AT tooltip. */ }
-						<Button
-							ref={ sidebarLinkRef }
-							variant="tertiary"
-							className="sgs-link-popover__row"
-							icon={ linkIcon }
-							title={ url || undefined }
-							onClick={ () => openLinkPopover( sidebarLinkRef ) }
+					{ ! hidesUrlField && (
+						<BaseControl
+							label={ __( 'Link', 'sgs-blocks' ) }
+							__nextHasNoMarginBottom
+							help={ 'url' === ( linkSource || 'url' ) ? undefined : __( 'Used only as a fallback while the Site Info field above is empty.', 'sgs-blocks' ) }
 						>
-							<span className="sgs-link-popover__row-label">
-								{ url ? url : __( 'Add link', 'sgs-blocks' ) }
-							</span>
-						</Button>
-					</BaseControl>
-					{ ! url && ! usesSiteInfoLink && (
+							{ /* Root cause of the row overflowing the panel (measured
+							   2026-08-13): the URL rendered as one unbroken nowrap
+							   string with nothing to shrink or truncate it — NOT
+							   core LinkControl's 350px floor (that component isn't
+							   mounted here). Fix: the label is a flex child allowed
+							   to shrink (`min-width:0`, `LinkPopoverControl.css`) and
+							   ellipsis-truncated; the full URL stays reachable via
+							   `title` for a mouse/AT tooltip. */ }
+							<Button
+								ref={ sidebarLinkRef }
+								variant="tertiary"
+								className="sgs-link-popover__row"
+								icon={ linkIcon }
+								title={ url || undefined }
+								onClick={ () => openLinkPopover( sidebarLinkRef ) }
+							>
+								<span className="sgs-link-popover__row-label">
+									{ url ? url : __( 'Add link', 'sgs-blocks' ) }
+								</span>
+							</Button>
+						</BaseControl>
+					) }
+					{ ! url && ! usesSiteInfoLink && ! hidesUrlField && (
 						<ToggleControl
 							label={ __( 'Submit button (type="submit")', 'sgs-blocks' ) }
 							checked={ isSubmit }
