@@ -1,0 +1,114 @@
+/**
+ * SGS Language Switch — frontend + editor styles.
+ *
+ * No-inline contract (Spec 32): colours/typography/gap/padding are all
+ * emitted by render.php into this instance's own scoped <style> tag; this
+ * stylesheet only carries structural/layout rules with no per-client value.
+ */
+
+.sgs-language-switch {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 0.5em;
+}
+
+.sgs-language-switch__prefix {
+	white-space: nowrap;
+}
+
+.sgs-language-switch__list {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 0.4em;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.sgs-language-switch__item {
+	display: inline-flex;
+}
+
+.sgs-language-switch__link {
+	display: inline-flex;
+	align-items: center;
+	min-height: 44px;
+	min-width: 44px;
+	justify-content: center;
+	text-decoration: none;
+}
+
+.sgs-language-switch__link:focus-visible {
+	outline: 2px solid currentColor;
+	outline-offset: 2px;
+}
+
+.sgs-language-switch__link[aria-current="true"] {
+	font-weight: 600;
+	pointer-events: none;
+	cursor: default;
+}
+
+.sgs-language-switch__separator {
+	user-select: none;
+}
+
+.sgs-language-switch--disclosure {
+	position: relative;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 0;
+}
+
+.sgs-language-switch__trigger {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35em;
+	min-height: 44px;
+	min-width: 44px;
+	padding: 0.5em 0.75em;
+	background: transparent;
+	border: 1px solid currentColor;
+	border-radius: 4px;
+	cursor: pointer;
+	font: inherit;
+	color: inherit;
+}
+
+.sgs-language-switch__trigger:focus-visible {
+	outline: 2px solid currentColor;
+	outline-offset: 2px;
+}
+
+.sgs-language-switch__panel {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	z-index: 10;
+	min-width: 160px;
+	margin-top: 0.25em;
+}
+
+.sgs-language-switch__panel .sgs-language-switch__list {
+	flex-direction: column;
+	align-items: stretch;
+}
+
+.sgs-language-switch__panel .sgs-language-switch__link {
+	justify-content: flex-start;
+	width: 100%;
+}
+
+.sgs-sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}

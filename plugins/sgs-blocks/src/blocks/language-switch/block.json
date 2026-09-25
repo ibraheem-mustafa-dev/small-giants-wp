@@ -1,0 +1,138 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/language-switch",
+	"version": "1.0.0",
+	"title": "Language Switch",
+	"category": "sgs-interactive",
+	"description": "A hand-set list of language links (code, URL, optional custom label). Shows the current language via aria-current, and reads language names/tags through PHP's intl extension when it is available.",
+	"keywords": [
+		"language",
+		"locale",
+		"translate",
+		"hreflang",
+		"switcher",
+		"i18n"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "translation",
+	"supports": {
+		"align": false,
+		"anchor": true,
+		"html": false,
+		"color": {
+			"text": false,
+			"background": false,
+			"gradients": false,
+			"__experimentalSkipSerialization": true
+		}
+	},
+	"selectors": {
+		"root": ".sgs-language-switch"
+	},
+	"attributes": {
+		"display": {
+			"type": "string",
+			"enum": [ "inline", "single-link", "disclosure" ],
+			"default": "inline"
+		},
+		"prefixLabel": {
+			"type": "string",
+			"default": ""
+		},
+		"labelStyle": {
+			"type": "string",
+			"enum": [ "autonym", "code", "custom" ],
+			"default": "autonym"
+		},
+		"separator": {
+			"type": "string",
+			"default": "/"
+		},
+		"languages": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "object"
+			}
+		},
+		"linkColour": {
+			"type": "string",
+			"default": ""
+		},
+		"linkColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"linkColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"linkColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"currentColour": {
+			"type": "string",
+			"default": ""
+		},
+		"separatorColour": {
+			"type": "string",
+			"default": ""
+		},
+		"panelBackground": {
+			"type": "string",
+			"default": ""
+		},
+		"fontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"lineHeight": {
+			"type": "number"
+		},
+		"lineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"gap": {
+			"type": "object",
+			"default": {}
+		},
+		"panelPadding": {
+			"type": "object",
+			"default": {}
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"viewScriptModule": "file:./view.js",
+	"example": {
+		"attributes": {
+			"display": "inline",
+			"labelStyle": "autonym",
+			"languages": [
+				{ "code": "en", "url": "#", "customLabel": "" },
+				{ "code": "es", "url": "#", "customLabel": "" }
+			]
+		}
+	}
+}
