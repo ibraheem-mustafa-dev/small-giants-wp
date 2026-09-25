@@ -65,13 +65,25 @@ if ( ! function_exists( 'sgs_product_rrp_saving' ) ) {
 		$saving_minor     = $rrp_minor - $current_price_minor;
 		$prefix_sanitised = '' !== trim( $prefix ) ? sanitize_text_field( $prefix ) : __( 'Save', 'sgs-blocks' );
 
+		/**
+		 * Whether a whole-pound saving drops its ".00" ("Save £32", not
+		 * "Save £32.00"). Only the saving amount: prices and the RRP always
+		 * show their pennies. The theme's Shop setting switches it on.
+		 *
+		 * @param bool $trim Default false.
+		 */
+		$trim_saving = (bool) apply_filters( 'sgs_saving_trim_zeros', false );
+		$saving_text = ( $trim_saving && 0 === $saving_minor % ( 10 ** $decimals ) && function_exists( 'wc_price' ) )
+			? wp_strip_all_tags( wc_price( $saving_minor / ( 10 ** $decimals ), array( 'decimals' => 0 ) ) )
+			: $format_money( $saving_minor );
+
 		if ( 'percentage' === $format ) {
 			$pct = (int) round( ( $saving_minor / $rrp_minor ) * 100 );
 			/* translators: 1: saving-prefix words (e.g. "Save"), 2: the percentage saved off the RRP. */
 			$text = sprintf( __( '%1$s %2$d%%', 'sgs-blocks' ), $prefix_sanitised, $pct );
 		} else {
 			/* translators: 1: saving-prefix words (e.g. "Save"), 2: the formatted money amount saved off the RRP. */
-			$text = sprintf( __( '%1$s %2$s', 'sgs-blocks' ), $prefix_sanitised, $format_money( $saving_minor ) );
+			$text = sprintf( __( '%1$s %2$s', 'sgs-blocks' ), $prefix_sanitised, $saving_text );
 		}
 
 		return array(

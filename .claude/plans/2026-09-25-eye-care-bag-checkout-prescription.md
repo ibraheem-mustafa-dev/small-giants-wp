@@ -4,7 +4,7 @@ plan_id: eye-care-bag-checkout-prescription
 project: small-giants-wp
 parent: plans/2026-09-24-eye-care-hand-build-design.md (Wave C task 6, section 6)
 date: 2026-09-25
-status: draft, waiting on Bean's two decisions below
+status: ready to build (Bean decided D1 and D2, 2026-09-25)
 ---
 
 # Eye Care: bag drawer, checkout and the prescription step
@@ -23,42 +23,35 @@ last question ("Your prescription": Send it later / Upload a photo / Type it in,
 | Staff download link | Written but **not switched on**: `includes/forms/class-form-download.php` (capability + nonce + provenance check, `readfile`). |
 | Retention | Only on a personal-data erasure request (`class-form-privacy.php::erase_data`). No time-based deletion. |
 | Checkout | The theme's stock WooCommerce block checkout (`parts/sgs-checkout-content.html`). No custom checkout blocks exist yet. |
-| ".00" at checkout | The block Cart, Checkout and Mini Cart format prices in JavaScript and ignore `woocommerce_price_trim_zeros`, so they show £139.00 while the rest of the site shows £139. The configurator panel now follows the setting (c4250eb02). |
+| Prices | Full amounts with pennies everywhere, cart and checkout included; only a whole-pound saving drops ".00" ("Save £32"). Bean 2026-09-25; `sgs_saving_trim_zeros`. Nothing to build at checkout. |
 
-## Decisions for Bean
+## Decisions (Bean, 2026-09-25)
 
-**D1. Where the shopper gives their prescription.**
-- (a) **Both places, as the draft shows.** The configurator's 4th question records the choice (and the photo or
-  numbers); checkout step 3 shows it and offers an upload to anyone who picked "Send it later". Most faithful;
-  the photo has to be uploaded before the item goes in the bag, then carried on the bag line to the order.
-- (b) **Checkout only.** The configurator ends at "Add to bag"; checkout step 3 asks once per order (Send it later /
-  Upload / Type it in). One upload path, one set of numbers per order, about half the work. Differs from the draft's
-  4-question configurator.
-- Recommendation: **(b)**. One prescription per order covers almost every real order (one person's glasses), the
-  upload happens once in one place, and the draft's "it can wait" message fits checkout better. (a) can be added
-  later without undoing (b).
+**D1. The prescription is given in the configurator, per pair.** Bean asked which is better for UX; the UK leader
+Glasses Direct asks for it straight after the vision type, per pair, with "enter now", "send it later" or "use a
+saved one" (glassesdirect.co.uk/help/how-to-order), and Specsavers collects it per pair while ordering. Per pair also
+covers two pairs for two people. So: the configurator's 4th question, "Your prescription" (Send it later, the
+default / Upload a photo / Type it in), recorded on that bag line; checkout step 3 shows each pair's choice and offers
+an upload only for a pair set to "Send it later", never a second form.
 
-**D2. Prices at checkout (£139.00 versus £139).**
-- (a) **Keep the block checkout and accept ".00" there.** No extra work; the one place prices differ.
-- (b) **Keep the block checkout and make it drop ".00" too.** Unproven how: WooCommerce's checkout price filters
-  wrap an already-formatted price (a `<price/>` placeholder) rather than choose its decimals, which come from the
-  currency data the Store API sends. Needs a short research step (WooCommerce source) before it is promised.
-- (c) **Switch to the classic checkout.** `wc_price` everywhere, but the draft's sectioned layout and the
-  prescription step become template overrides instead of blocks.
-- Recommendation: **(a) now, (b) as a follow-up** once the research says it can be done cleanly for every client.
+**D2. Pennies everywhere.** Prices, cart and checkout show full amounts; only savings drop ".00". The block checkout
+needs no price work.
 
-## Steps (after D1 and D2; with D1 = b)
+## Steps
 
-1. **Bag drawer lines** (~10 min): `item-row-template.js` shows each line's `item_data` (the lens summary) and, for a
-   frame with no lenses, the draft's "Add prescription lenses" link back to the product's `#lens-configurator`.
-2. **Staff download link on** (~10 min): load `class-form-download.php`; the order screen and WooCommerce's new-order
+1. **Configurator question 4** (~20 min): a new `sgs/choice-flow` step for the prescription: three options, an upload
+   through the private uploader (images only: jpeg, png, webp) and the six typed boxes (SPH, CYL, AXIS per eye).
+   The answer rides on the add-to-bag request and is stored with the cart line (mode, attachment ID, typed values),
+   then copied to the order line. Framework work: a question option that reveals an upload or a small field group,
+   and the add-to-bag payload carrying it; validated server-side like the add-on pairs.
+2. **Bag drawer lines** (~10 min): `item-row-template.js` shows each line's `item_data` (lens summary and
+   prescription status) and, for a frame with no lenses, the draft's "Add prescription lenses" link to the product's
+   `#lens-configurator`.
+3. **Staff download link on** (~10 min): load `class-form-download.php`; the order screen and WooCommerce's new-order
    email show a staff-only link per uploaded file.
-3. **Checkout prescription block** (~30 min): a checkout inner block (`registerCheckoutBlock`, Store API extension
-   data for mode + attachment ID + typed values, saved to order meta). It renders nothing when the bag has no lens
-   line, so checkout drops to three steps on its own. Upload goes through the private uploader (images only: jpeg,
-   png, webp); "Send it later" shows the draft's WhatsApp note.
-4. **Price format** (D2 = b only, after its research step): the block cart and checkout follow
-   `woocommerce_price_trim_zeros`.
+4. **Checkout prescription step** (~20 min): a checkout inner block that lists each lens pair's prescription status
+   and offers an upload for "Send it later" pairs; renders nothing without a lens line (checkout drops to three
+   steps).
 5. **Checkout layout** (~15 min): the draft's section order and headings in the Eye Care checkout template copy.
 6. **Verify**: a lens order end to end in a real browser (bag drawer line, checkout step, upload stored outside the web
    root, staff link on the order), a frame-only order (three steps), and a direct request for the file's URL refused.

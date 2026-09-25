@@ -33,10 +33,10 @@
      now reads every preset role, including geometry (border-width, radius, font-size, weight, padding, min-height), which
      it ignored before; `fontWeight` defaults to unset so the preset's weight applies. Palette gains `primary-hover`
      #2A2A2A and `whatsapp-hover` #1EBE5A (the draft's hovers).
-  4. Shop setting "Hide .00 on whole-pound prices" (Customizer > Shop Filters, theme mod `sgs_shop_hide_zero_decimals`),
-     on for Eye Care: `wc_price(139)` gives £139, `wc_price(32.5)` gives £32.50. Gap for Wave C: WooCommerce's block
-     Cart, Checkout and Mini Cart format prices in JavaScript from the Store API and have no trim hook, so a block
-     checkout shows £139.00; decide classic or block checkout with that in mind.
+  4. Shop setting "Hide .00 on whole-pound savings" (Customizer > Shop Filters, theme mod `sgs_shop_hide_zero_decimals`),
+     on for Eye Care: "Save £32", not "Save £32.00". Prices, the RRP, cart and checkout always show pennies (Bean,
+     2026-09-25: orders are not always whole pounds, so the site standardises on full amounts); the setting feeds the
+     plugin's `sgs_saving_trim_zeros` filter (`includes/product-rrp.php::sgs_product_rrp_saving`).
   5. `sgs/accordion` `headerFontWeight` / `headerFontWeightOpen` (defaults 600/700) and open-state colours
      (`headerColourOpen`, `headerBackgroundOpen`); Help uses 400.
   6. Contact form on the form CPT: `sgs_form` post 285 (slug `contact`), linked from page 190's `sgs/form`
@@ -124,8 +124,9 @@
 - **Wave C task 5 (size guide) DONE (2026-09-25):** `sgs_modal` 461 (`build/gen_size_guide.py`), a triggerless
   `sgs/modal` (anchor `size-guide`, large) on the product template, opened by "Which size am I?" in the Sizing tab.
   Gap: the buybox's size picker has no slot for the draft's "Which size am I?" link beside the Size label.
-- **Wave C task 6 (bag, checkout, prescription): PLANNED**, `plans/2026-09-25-eye-care-bag-checkout-prescription.md`,
-  waiting on Bean's D1 (where the prescription is given) and D2 (".00" at checkout).
+- **Wave C task 6 (bag, checkout, prescription): READY TO BUILD**, `plans/2026-09-25-eye-care-bag-checkout-prescription.md`
+  (Bean 2026-09-25: the prescription is the configurator's 4th question, per pair, as Glasses Direct does; pennies
+  on every price, only savings drop ".00").
 - **Wave C: next** (Bean, 2026-09-25: pages and the configurator while the nav track rebuilds header, footer and
   menus; do not touch those surfaces). Order: (1) the shared product card (the draft's Frame Card: brand, heart,
   SAVE badge, stars, 4-up at 1280; Home's best sellers use it), then the product page, zero-reviews state first;
