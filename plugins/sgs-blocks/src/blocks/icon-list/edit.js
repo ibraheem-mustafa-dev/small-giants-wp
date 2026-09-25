@@ -189,7 +189,12 @@ export default function Edit({ attributes, setAttributes }) {
     iconColourGradient,
     iconColourHoverGradient,
     iconSize,
+    iconBackgroundColour,
+    iconBoxSize,
     dividers,
+    dividerColour,
+    dividerEdges,
+    itemPaddingBlock,
     textColour,
     gap,
     borderWidth,
@@ -261,6 +266,11 @@ export default function Edit({ attributes, setAttributes }) {
     if (numberFontSize) previewStyle["--sgs-ilist-num-size"] = numberFontSize;
     if (numberFontWeight) previewStyle["--sgs-ilist-num-weight"] = numberFontWeight;
   }
+  // Divider colour override — a custom-property VALUE (matches render.php's
+  // scoped rule); style.css's divider rules read it via a var() fallback.
+  if (dividers && dividerColour) {
+    previewStyle["--sgs-icon-list-divider-colour"] = colourVar(dividerColour);
+  }
   const paddingPreview = boxShorthand(padding?.desktop, ["top", "right", "bottom", "left"]);
   if (paddingPreview) previewStyle.padding = paddingPreview;
   const marginPreview = boxShorthand(margin?.desktop, ["top", "right", "bottom", "left"]);
@@ -287,12 +297,34 @@ export default function Edit({ attributes, setAttributes }) {
   const HeadingTag = headingLevel || "h3";
 
   const blockProps = useBlockProps({
-    className: `sgs-icon-list sgs-icon-list--icon-${iconSize} sgs-icon-list--marker-${resolvedMarkerType}`,
+    className: [
+      "sgs-icon-list",
+      `sgs-icon-list--icon-${iconSize}`,
+      `sgs-icon-list--marker-${resolvedMarkerType}`,
+      dividers && "sgs-icon-list--dividers",
+      dividers && dividerEdges && "sgs-icon-list--divider-edges",
+    ]
+      .filter(Boolean)
+      .join(" "),
     style: { ...previewStyle, gap: spacingVar(gap) || undefined },
   });
 
-  const iconStyle = { color: colourVar(iconColour) || undefined };
+  const iconStyle = {
+    color: colourVar(iconColour) || undefined,
+    // Icon background circle — empty colour keeps today's output (no
+    // circle); a set colour also sizes the span into a circle, matching
+    // render.php's scoped rule.
+    ...(iconBackgroundColour
+      ? {
+          backgroundColor: colourVar(iconBackgroundColour),
+          borderRadius: "50%",
+          width: iconBoxSize || "26px",
+          height: iconBoxSize || "26px",
+        }
+      : {}),
+  };
   const textStyle = { color: colourVar(textColour) || undefined };
+  const itemStyle = itemPaddingBlock ? { paddingBlock: itemPaddingBlock } : undefined;
 
   const updateItem = (index, updatedItem) => {
     const updated = [...items];
@@ -320,7 +352,7 @@ export default function Edit({ attributes, setAttributes }) {
   const listItemNodes = items.map((item, index) => {
     const resolved = resolveItemIcon(item, fallback);
     return (
-      <li key={index} className="sgs-icon-list__item">
+      <li key={index} className="sgs-icon-list__item" style={itemStyle}>
         {showMarkerIcon && (
           <span
             className="sgs-icon-list__icon"
@@ -426,6 +458,14 @@ export default function Edit({ attributes, setAttributes }) {
               },
             ],
           },
+          showIconColourRow &&
+            fillRow({
+              key: "icon-background",
+              label: __("Icon background circle", "sgs-blocks"),
+              attrs: { base: "iconBackgroundColour" },
+              attributes,
+              setAttributes,
+            }),
           textRow({
             key: "text",
             label: __("Text colour", "sgs-blocks"),
@@ -438,6 +478,15 @@ export default function Edit({ attributes, setAttributes }) {
             attributes,
             setAttributes,
           }),
+          // Colour of the lines drawn between items (omitted when dividers are off).
+          dividers &&
+            fillRow({
+              key: "divider",
+              label: __("Divider colour", "sgs-blocks"),
+              attrs: { base: "dividerColour" },
+              attributes,
+              setAttributes,
+            }),
           // Wave 3C U-7: numbers of a numbered list (omitted otherwise).
           "numbered" === markerType &&
             textRow({
@@ -642,6 +691,15 @@ export default function Edit({ attributes, setAttributes }) {
             __nextHasNoMarginBottom
           	__next40pxDefaultSize
           />
+          {showIconColourRow && !!iconBackgroundColour && (
+            <SgsLengthControl
+              label={__("Icon circle size", "sgs-blocks")}
+              help={__("Diameter of the icon background circle. Empty uses 26px.", "sgs-blocks")}
+              value={iconBoxSize || ""}
+              onChange={(val) => setAttributes({ iconBoxSize: val || "" })}
+              presets={false}
+            />
+          )}
           <SelectControl
             label={__("Spacing", "sgs-blocks")}
             value={gap}
@@ -656,6 +714,14 @@ export default function Edit({ attributes, setAttributes }) {
             onChange={(val) => setAttributes({ dividers: val })}
             __nextHasNoMarginBottom
           />
+          {dividers && (
+            <ToggleControl
+              label={__("Also box the list (line above first, below last)", "sgs-blocks")}
+              checked={!!dividerEdges}
+              onChange={(val) => setAttributes({ dividerEdges: val })}
+              __nextHasNoMarginBottom
+            />
+          )}
         </PanelBody>
 
       </InspectorControls>
@@ -765,6 +831,13 @@ export default function Edit({ attributes, setAttributes }) {
           		/>
           	) }
           </ResponsiveOverride>
+          <SgsLengthControl
+            label={__("Item vertical padding", "sgs-blocks")}
+            help={__("Top and bottom padding inside each item row — useful breathing room on a divided list.", "sgs-blocks")}
+            value={itemPaddingBlock || ""}
+            onChange={(val) => setAttributes({ itemPaddingBlock: val || "" })}
+            presets={false}
+          />
         </PanelBody>
 
         {/* Box-object interface contract §1/§5: borderWidth is an SGS custom

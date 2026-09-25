@@ -284,6 +284,31 @@
 			"type": "boolean",
 			"default": false
 		},
+		"dividerColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the divider lines drawn between items when `dividers` is on. Empty keeps today's default border-colour token."
+		},
+		"dividerEdges": {
+			"type": "boolean",
+			"default": false,
+			"description": "With `dividers` on, also draw a line above the first item and below the last, boxing the list."
+		},
+		"iconBackgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Fills a circle behind each item's icon (e.g. a soft beige circle with a dark tick). Empty = no circle."
+		},
+		"iconBoxSize": {
+			"type": "string",
+			"default": "",
+			"description": "Diameter of the icon background circle. Empty resolves to 26px when `iconBackgroundColour` is set; has no effect otherwise."
+		},
+		"itemPaddingBlock": {
+			"type": "string",
+			"default": "",
+			"description": "Vertical padding (top and bottom) inside each item row, e.g. for breathing room on a divided list."
+		},
 		"backgroundColour": {
 			"type": "string",
 			"default": ""

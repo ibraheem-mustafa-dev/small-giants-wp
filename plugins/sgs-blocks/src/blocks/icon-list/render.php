@@ -53,9 +53,9 @@ defined( 'ABSPATH' ) || exit;
 // otherwise fatal with "Call to undefined function". Requiring the
 // defining file directly, here, removes the load-order dependency.
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
-$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
-$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
-$sgs_radius_tiers       = sgs_responsive_normalise_object( $attributes['borderRadius'] ?? null );
+$sgs_tor_padding_tiers   = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers    = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_radius_tiers        = sgs_responsive_normalise_object( $attributes['borderRadius'] ?? null );
 $sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
 $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
 
@@ -134,12 +134,19 @@ $default_icon   = $attributes['icon'] ?? 'check';
 $default_source = $attributes['defaultIconSource'] ?? 'lucide';
 $icon_colour    = $attributes['iconColour'] ?? '';
 // Icon/SVG gradient sibling — non-empty wins over iconColour above.
-$icon_colour_gradient = $attributes['iconColourGradient'] ?? '';
+$icon_colour_gradient       = $attributes['iconColourGradient'] ?? '';
 $icon_colour_hover_gradient = $attributes['iconColourHoverGradient'] ?? '';
-$icon_size      = $attributes['iconSize'] ?? 'medium';
-$dividers       = ! empty( $attributes['dividers'] );
-$text_colour    = $attributes['textColour'] ?? '';
-$gap            = $attributes['gap'] ?? '20';
+$icon_size                  = $attributes['iconSize'] ?? 'medium';
+$dividers                   = ! empty( $attributes['dividers'] );
+$divider_colour             = $attributes['dividerColour'] ?? '';
+$divider_edges              = ! empty( $attributes['dividerEdges'] );
+// Icon background circle — empty colour keeps today's output (no circle,
+// no size override). Sanitised as a single CSS length (shared sanitiser).
+$icon_bg_colour     = trim( (string) ( $attributes['iconBackgroundColour'] ?? '' ) );
+$icon_box_size      = sgs_css_length_value( $attributes['iconBoxSize'] ?? '' );
+$item_padding_block = sgs_css_length_value( $attributes['itemPaddingBlock'] ?? '' );
+$text_colour        = $attributes['textColour'] ?? '';
+$gap                = $attributes['gap'] ?? '20';
 
 // FR-36-26c: heading + marker-type. `heading` blank = no heading element at
 // all. `headingLevel`/`markerType` carry no JSON `enum` (an out-of-enum
@@ -371,6 +378,23 @@ if ( $icon_colour ) {
 		$scoped_css[] = sgs_hover_state_rules( $icon_sel, 'color:' . sgs_colour_value( $attributes['iconColourHover'] ), ':focus-visible' );
 	}
 }
+// --- Icon background circle — a filled circle behind every item's icon
+// glyph (block-level only, matches the block-level icon colour above; no
+// per-item override exists for this setting). Empty colour = no circle,
+// today's output unchanged. iconBoxSize empty resolves to 26px, but only
+// once a background colour is actually set — it has no effect on its own. ---
+if ( '' !== $icon_bg_colour ) {
+	$icon_box_size_value = '' !== $icon_box_size ? $icon_box_size : '26px';
+	$scoped_css[]        = "{$icon_sel}{background-color:" . sgs_colour_value( $icon_bg_colour ) . ";border-radius:50%;width:{$icon_box_size_value};height:{$icon_box_size_value};}";
+}
+// --- Item vertical padding (top and bottom) — scoped to the item row, e.g.
+// so a divided list gets breathing room. Independent of the dividers'
+// own padding-top; this block's own <style> is emitted after the compiled
+// stylesheet so equal-or-greater specificity wins by source order (matches
+// option-picker's precedent for overriding a static default). ---
+if ( '' !== $item_padding_block ) {
+	$scoped_css[] = "{$item_row_sel}{padding-block:{$item_padding_block};}";
+}
 // Text colour (flat-or-gradient, resting + hover) — scoped to the item text
 // element, never the root <ul>, matching the block's declared css:color slot.
 // sgs_text_colour_decl() is the primary primitive: unlike a bare `color:`
@@ -567,6 +591,18 @@ if ( $mobile_decls ) {
 $list_visual_classes = 'sgs-icon-list sgs-icon-list--icon-' . esc_attr( $icon_size ) . ' sgs-icon-list--marker-' . esc_attr( $marker_type );
 if ( $dividers ) {
 	$list_visual_classes .= ' sgs-icon-list--dividers';
+	// dividerEdges only makes sense with dividers on — boxes the list with a
+	// line above the first item and below the last, in addition to the
+	// between-item lines.
+	if ( $divider_edges ) {
+		$list_visual_classes .= ' sgs-icon-list--divider-edges';
+	}
+	// Divider colour override — a custom-property VALUE (contract-permitted,
+	// same pattern as the gap var below), read by style.css's divider rules
+	// via a var() fallback chain. Empty keeps today's default border-colour token.
+	if ( '' !== $divider_colour ) {
+		$scoped_css[] = "{$root_sel}{--sgs-icon-list-divider-colour:" . sgs_colour_value( $divider_colour ) . ';}';
+	}
 }
 
 $wrapper_only_classes = $uid;
@@ -672,11 +708,11 @@ foreach ( $resolved_items as $item ) {
 		$item_icon_gradient_hover  = ( isset( $item['iconColourGradientHover'] ) && '' !== $item['iconColourGradientHover'] )
 			? $item['iconColourGradientHover']
 			: $icon_colour_hover_gradient;
-		$item_sel           = "{$root_sel} .sgs-icon-list__item:nth-child({$sgs_icon_list_item_idx}) .sgs-icon-list__icon";
-		$item_grad_selector = in_array( $item_source, array( 'dashicon', 'emoji' ), true ) ? $item_sel : "{$item_sel} svg";
-		$item_grad          = sgs_icon_gradient_states_css( $item_source, $item_icon_gradient, $item_icon_gradient_hover, $uid . '-ig-' . $sgs_icon_list_item_idx, $item_grad_selector );
-		$svg = sgs_svg_inject_defs( $svg, $item_grad['defs_base'] );
-		$svg = sgs_svg_inject_defs( $svg, $item_grad['defs_hover'] );
+		$item_sel                  = "{$root_sel} .sgs-icon-list__item:nth-child({$sgs_icon_list_item_idx}) .sgs-icon-list__icon";
+		$item_grad_selector        = in_array( $item_source, array( 'dashicon', 'emoji' ), true ) ? $item_sel : "{$item_sel} svg";
+		$item_grad                 = sgs_icon_gradient_states_css( $item_source, $item_icon_gradient, $item_icon_gradient_hover, $uid . '-ig-' . $sgs_icon_list_item_idx, $item_grad_selector );
+		$svg                       = sgs_svg_inject_defs( $svg, $item_grad['defs_base'] );
+		$svg                       = sgs_svg_inject_defs( $svg, $item_grad['defs_hover'] );
 		if ( $item_grad['css'] ) {
 			$scoped_css = array_merge( $scoped_css, $item_grad['css'] );
 		} else {

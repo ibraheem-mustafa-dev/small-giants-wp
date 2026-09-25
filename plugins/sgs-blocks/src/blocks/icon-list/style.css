@@ -60,8 +60,21 @@
  * (contributed by the column gap itself), so the divider lands centred in the
  * existing rhythm instead of doubling it. */
 .sgs-icon-list--dividers .sgs-icon-list__item + .sgs-icon-list__item {
-	border-top: 1px solid var(--wp--preset--color--border, #e0e0e0);
+	border-top: 1px solid var(--sgs-icon-list-divider-colour, var(--wp--preset--color--border, #e0e0e0));
 	padding-top: calc(var(--sgs-icon-list-gap, var(--wp--preset--spacing--20)) / 2);
+}
+
+/* dividerEdges (`dividerEdges` attr, requires `dividers`) — boxes the list:
+ * a line above the first item and below the last, in addition to the
+ * between-item lines above. Shares the same colour custom property. */
+.sgs-icon-list--dividers.sgs-icon-list--divider-edges .sgs-icon-list__item:first-child {
+	border-top: 1px solid var(--sgs-icon-list-divider-colour, var(--wp--preset--color--border, #e0e0e0));
+	padding-top: calc(var(--sgs-icon-list-gap, var(--wp--preset--spacing--20)) / 2);
+}
+
+.sgs-icon-list--dividers.sgs-icon-list--divider-edges .sgs-icon-list__item:last-child {
+	border-bottom: 1px solid var(--sgs-icon-list-divider-colour, var(--wp--preset--color--border, #e0e0e0));
+	padding-bottom: calc(var(--sgs-icon-list-gap, var(--wp--preset--spacing--20)) / 2);
 }
 
 /* Icon container */
