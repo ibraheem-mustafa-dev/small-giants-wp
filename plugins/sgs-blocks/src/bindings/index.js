@@ -175,3 +175,5 @@ registerBlockBindingsSource( {
 		return SITE_INFO_FIELDS;
 	},
 } );
+
+import './product-field';

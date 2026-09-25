@@ -20,6 +20,8 @@ namespace SGS\Blocks;
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/product-field-values.php';
+
 /**
  * Class Product_Bindings
  *
@@ -33,6 +35,24 @@ final class Product_Bindings {
 	 */
 	public static function register(): void {
 		\add_action( 'init', array( __CLASS__, 'register_source' ), 15 );
+		\add_action( 'enqueue_block_editor_assets', array( __CLASS__, 'publish_field_list' ), 20 );
+	}
+
+	/**
+	 * Give the editor's binding picker this site's product fields
+	 * (`window.sgsProductFields`, read by src/bindings/product-field.js).
+	 * The `sgs-block-bindings` bundle is enqueued at priority 10 by
+	 * Sgs_Site_Info_Binding::enqueue_editor_script().
+	 */
+	public static function publish_field_list(): void {
+		if ( ! \function_exists( 'wc_get_product' ) || ! \wp_script_is( 'sgs-block-bindings', 'enqueued' ) ) {
+			return;
+		}
+		\wp_add_inline_script(
+			'sgs-block-bindings',
+			'window.sgsProductFields = ' . \wp_json_encode( \sgs_product_field_list() ) . ';',
+			'before'
+		);
 	}
 
 	/**
@@ -63,7 +83,8 @@ final class Product_Bindings {
 	 * @return mixed Resolved value, or empty string on failure.
 	 */
 	public static function get_value( array $source_args, $block, $attribute ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
-		$key        = isset( $source_args['key'] ) ? \sanitize_key( $source_args['key'] ) : '';
+		// Dot notation (attribute.pa_material, meta._sgs_frame_eye): keep the dot.
+		$key        = isset( $source_args['key'] ) ? \preg_replace( '/[^a-z0-9_.\-]/', '', \strtolower( (string) $source_args['key'] ) ) : '';
 		$source     = isset( $source_args['source'] ) ? \sanitize_key( $source_args['source'] ) : 'auto';
 		$product_id = isset( $source_args['product_id'] )
 			? \absint( $source_args['product_id'] )
@@ -72,6 +93,11 @@ final class Product_Bindings {
 		// Fall back to the block's context postId if no explicit product_id.
 		if ( 0 === $product_id && ! empty( $block->context['postId'] ) ) {
 			$product_id = \absint( $block->context['postId'] );
+		}
+
+		// A block placed straight in the single-product template has no loop context: use the page's product.
+		if ( 0 === $product_id && \is_singular( 'product' ) ) {
+			$product_id = \absint( \get_queried_object_id() );
 		}
 
 		if ( 0 === $product_id || '' === $key ) {
@@ -83,7 +109,14 @@ final class Product_Bindings {
 			|| ( 'auto' === $source && \function_exists( 'wc_get_product' ) );
 
 		if ( $use_wc ) {
-			return self::resolve_wc_field( $product_id, $key );
+			$value = self::resolve_wc_field( $product_id, $key );
+			if ( '' === $value ) {
+				return '';
+			}
+			// Optional text around the value ("More from " + brand, "58" + " mm"). An empty value stays empty.
+			$before = isset( $source_args['before'] ) ? \esc_html( (string) $source_args['before'] ) : '';
+			$after  = isset( $source_args['after'] ) ? \esc_html( (string) $source_args['after'] ) : '';
+			return $before . $value . $after;
 		}
 
 		return self::resolve_cpt_field( $product_id, $key );
@@ -139,7 +172,8 @@ final class Product_Bindings {
 				return \wp_kses_post( $product->get_short_description() );
 		}
 
-		return '';
+		// Brand, SKU, attribute.<taxonomy>, meta.<key> (includes/product-field-values.php).
+		return \esc_html( \sgs_product_field_value( $product, $key ) );
 	}
 
 	// ── SGS CPT branch ────────────────────────────────────────────────────────
