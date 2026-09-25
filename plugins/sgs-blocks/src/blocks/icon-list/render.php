@@ -349,9 +349,9 @@ if ( function_exists( 'sgs_typography_css_rule' ) ) {
 	}
 	// The item decoration lands on the <li>; a linked item's <a> carries the
 	// theme's own link underline, which a parent's `none` cannot remove. When
-	// either item decoration is set, the link takes the row's value (resting
-	// and hover alike); unset leaves links with the theme's link style.
-	if ( ! empty( $attributes['itemTextDecoration'] ) || ! empty( $attributes['itemTextDecorationHover'] ) ) {
+	// itemTextDecoration is set, the link takes the row's value; unset leaves
+	// links with the theme's link style.
+	if ( ! empty( $attributes['itemTextDecoration'] ) ) {
 		$scoped_css[] = $item_row_sel . ' .sgs-icon-list__item-link{text-decoration:inherit}';
 	}
 	$text_typography_css = sgs_typography_css_rule( $attributes, 'textEl', $text_sel );
