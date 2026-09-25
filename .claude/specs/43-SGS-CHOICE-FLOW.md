@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 43
-spec_version: 1.6.0
+spec_version: 1.7.0
 status: active
 owner: framework
 date: 2026-09-14
@@ -72,6 +72,11 @@ derived_from:
   - **2026-09-25 (v1.6.0), owner decision (Bean, 2026-09-25: the prescription is asked in the configurator, per pair,
     as Glasses Direct does):** FR-43-21 adds answers and fields carried to the bag line, so a flow can end in
     "upload a photo" or "type the numbers" without a checkout form.
+  - **2026-09-25 (v1.7.0), owner direction (Bean, 2026-09-25: Mama's four choices, only the pack changes the price;
+    two journeys, full customisation in a popup or pack on the page then "Choose your flavours"):** a product-option
+    step reads ANY attribute of the flow's product (FR-43-10); an attribute that creates variations resolves the
+    variation and its price, one that does not is an unpriced answer on the bag line (FR-43-21). FR-43-4 (email
+    ending), FR-43-5 and FR-43-7 built; FR-43-22 adds the buybox button that opens a popup.
 ---
 
 # Spec 43 — `sgs/choice-flow`
@@ -246,6 +251,15 @@ from `sgs/form`'s existing `rateLimit` config, applied per-flow-instance** (Comp
 Cynic MISSING finding — a quiz-style lead-capture terminal with no spam defence is an open
 relay for lead-list poisoning and N8N webhook cost amplification); this is validated
 against FR-42-8's now-cache-independent config lookup, not the vulnerable transient path.
+Built (v1.7.0) as the `email` action of `sgs/choice-flow-result` (email label, submit label, success message,
+`rateLimit` 1 to 50, default 5) and `POST /sgs/v1/choice-flow/submit`
+(`includes/forms/class-choice-flow-submit.php`): rest nonce, honeypot (a filled one gets a fake success and nothing
+is stored), `is_email`, answers on the path (at most 16; label 60, value 200) and tags (at most 20, `sanitize_key`),
+then `Form_REST_Submission::check_rate_limit()` and `Form_Processor::process()`, which stores the submission and
+fires the N8N webhook. The rate limit is read from the saved block, never the request: `flowRef` is the saved flow's
+slug (the linking block stamps it onto the flow post's root as it renders it) or `page:<postId>:0` for a flow placed
+directly on a page. Proof: `tests/php/run-choice-flow-submit-standalone.php` (the 5th submission allowed, the 6th
+refused with 429).
 
 **FR-43-5 — Real purchase (corrected, v1.2.0).** Add to cart with a server-computed total
 — by calling Spec 27's **existing, already-shipped, already-secure**
@@ -261,7 +275,10 @@ a new minor-unit currency contract, or a new server-side surcharge-resolution me
 that whole mechanism existed only because v1.0.0 (and this spec's own v1.1.0) assumed a NEW
 pricing system with no security precedent. It isn't needed: this reuses a precedent that
 already prices against live WooCommerce data, never a WordPress revision and never a
-client-submitted delta of any kind.
+client-submitted delta of any kind. Built (v1.7.0): `choice-flow/add-to-bag.js` sends the flow's own resolved
+variation (`id` = variation ID, taxonomy-keyed `variation[]`) and falls back to the page buybox's variation; a
+variable product with no resolved variation shows an inline error and sends nothing. A variation the flow resolved
+is never replaced by a later buybox event (`pricing.js::storeLiveBase`).
 
 ## 4. Delivery — inline or full-screen modal
 
@@ -277,20 +294,17 @@ block placed on a page) or full-screen (the linked block inside a `sgs/modal`, `
 opened by any link to the modal's anchor or by its own trigger). The Choice Flows list's
 "Embedded on N pages" column counts `flowId` references.
 
-**FR-43-7 (Mama's Munches case — demoted to post-v1, Ship-PM MUST-FIX).** A variable
-product with many flavour/pack-size combinations gets a `sgs/choice-flow` with one priced
-WooCommerce-variation step per attribute (flavour, then pack size — the same step type as
-FR-43-1's merged priced step, now used with zero branching), opened full-screen via
-`sgs_modal`, replacing the inline pill-picker UI. This is a **sequential,
-one-decision-per-screen** presentation — confirmed by the owner, not a single screen with
-all pickers together. **Scope correction:** this is explicitly a UX/presentation preference,
-not a capability gap — the spec's own text already says "nothing about flavour/pack-size
-selection is conditionally dependent between steps," meaning it exercises none of
-`sgs/choice-flow`'s defining mechanism (FR-43-2 branching) and depends on the WC-variation
-step type, `sgs_modal` delivery, AND the priced-step mechanism all existing first. It is
-**not** part of the v1 acceptance criteria (see §10 Phasing) — if the current inline
-pill-picker is genuinely too cramped, that is a CSS fix available this week, independent of
-this spec's timeline.
+**FR-43-7 (Mama's Munches, v1.7.0).** One variable product with four choices: Number in Pack creates the
+variations (and the price); Flavour, Topping and Dietary are product attributes that do not, so they travel as
+answers on the bag line. Two journeys, both a sequential, one-decision-per-screen flow in a full-screen `sgs/modal`:
+(A) full customisation: Flavour, Topping, Dietary, then Number in Pack, then add to bag; (B) the pack is picked on the
+product page, whose buybox button reads "Choose your flavours" and opens the flow for the other three (FR-43-22).
+Neither uses branching.
+
+**FR-43-22 (v1.7.0) — the buybox button can open a popup.** `sgs/buybox` `addToCartAction` (`cart` | `modal`) and
+`addToCartModalId` (the `sgs/modal`'s anchor): in `modal` mode the button opens that modal through the modal's own
+open-anywhere listener (`data-sgs-modal-open`) instead of adding to the cart, keeps the in-stock gate and keeps
+announcing the chosen variation, so a flow inside the modal buys it. No modal named falls back to `cart`.
 
 ## 5. CPT — `sgs_choice_flow`
 
@@ -325,17 +339,20 @@ step-navigation runtime itself is net-new. **Spec 27's configurator is dropped f
 counting a third, uncommitted consumer to justify an abstraction is how a two-consumer
 sharing decision gets over-engineered for a consumer that never arrives.
 
-**FR-43-10 (rewritten, v1.2.0).** A priced step calls `sgs/buybox`'s existing manifest +
-pricing mechanism directly — `Product_Manifest::build_manifest()` (or its equivalent public
-entry point) for the live combo data, `sgs_configurator_mode_price()` /
-`sgs_configurator_format_minor()` for display — and renders its options via
-`sgs/option-picker`'s tile UI **bound to that manifest data** (the option-picker's existing
-WC-bound mode, which already resolves against a real, stable, server-side `term_id` — see
-FR-43-10a). Do not re-implement manifest building, price computation, or tile rendering a
-second time; do not re-implement variation resolution a second time. A `sgs/choice-flow`
-priced step is, mechanically, one axis of a `sgs/buybox` instance split across screens —
-the same manifest, the same pricing helpers, the same option-picker binding mode, reused
-verbatim, not rebuilt.
+**FR-43-10 (rewritten, v1.2.0; v1.7.0 any attribute).** A product-option step names one attribute of the flow's
+product (`productAttribute`, a `pa_*` taxonomy; the product is the page's own product on a product page, else the
+root's `flowProductId`). Its mode is read from the product (`WC_Product_Attribute::get_variation()`): an attribute
+that creates variations is a priced step; one that does not is an unpriced answer (its terms as options, recorded
+like a plain answer, carried to the bag line by FR-43-21). A priced step calls `sgs/buybox`'s existing manifest +
+pricing mechanism directly — `Product_Manifest::build()` for the live combo data, `sgs_configurator_mode_price()` /
+`sgs_configurator_format_minor()` for display. Its options render as the flow's own option buttons (so branching,
+Back, badges and styling apply unchanged), one per term slug, each labelled "from £X" (the cheapest in-stock combo
+holding that term) or, when the product has one variation attribute, its exact price; a term with no in-stock combo
+is disabled. The root seeds the manifest's combos to the browser (`data-flow-combos`, variation ID, price and stock
+per combo key, left out above 24 KB), which picks the variation once every priced step has a choice; the cart proxy
+re-validates the variation and its attributes server-side (Spec 27), so the browser's lookup is display only. No
+manifest building or price computation is re-implemented. Code: `includes/choice-flow-product-attribute-step.php`,
+`includes/choice-flow-variation-seed.php`, `choice-flow/variation.js`.
 
 **FR-43-10a (rewritten, v1.2.0 — supersedes the v1.1.0 typed/manual fallback entirely).**
 The v1.1.0 text proposed a fallback for `sgs/option-picker`'s typed/manual mode
@@ -346,7 +363,7 @@ code (`plugins/sgs-blocks/includes/helpers-configurator-pricing.php`,
 mechanism of its own to fall back to — the price authority was always `sgs/buybox`'s
 manifest, not option-picker. **Requirement (replacing the old (a)/(b) either-or): every
 priced step in `sgs/choice-flow` MUST bind to a real WooCommerce attribute/variation via
-the manifest (option-picker's WC-bound mode, inheriting its stable `term_id` for free).
+the manifest (option-picker's WC-bound mode, inheriting its stable term slugs for free).
 Typed/manual pricing is not a supported path for `sgs/choice-flow` and must not ship.**
 This means the eyewear lens flow requires lens thickness and finish/tint to exist as real
 WooCommerce attribute terms with real per-variation pricing on the underlying product —
@@ -434,10 +451,10 @@ FR-42-7b, FR-42-10/FR-43-14 (clone-orchestrator CPT-creation gap), FR-42-13 (ana
 | FR-43-4 | Terminal: email-capture lead-gen handoff (N8N webhook, not `wp_mail()`) + inherited rate-limit |
 | FR-43-5 | Terminal: real purchase via Spec 27's `/sgs/v1/cart/add-item` proxy, unmodified — corrected citation, no bespoke security apparatus |
 | FR-43-6 | A saved `sgs_choice_flow` post shown by a linked `sgs/choice-flow` (`flowId` + `flowIsLinked`, same picker as Spec 42), inline or inside a full-screen `sgs/modal` |
-| FR-43-7 | Mama's Munches: demoted to Phase 4, explicitly not a v1 acceptance criterion |
+| FR-43-7 | Mama's Munches: one product, only the pack priced; full-customisation popup and pick-on-page-then-popup journeys |
 | FR-43-8 | `sgs_choice_flow` CPT — same literal capability/cache/revision values as Spec 42, not a parallel decision |
 | FR-43-9 | Own small IAPI store, decided now — `sgs/form-step` has no runtime to extend, `sgs/form/view.js`'s engine stays block-private in v1 |
-| FR-43-10 | Priced steps bind to real WC variations via `sgs/buybox`'s existing manifest — corrected, no new pricing system |
+| FR-43-10 | A product-option step reads any attribute of the flow's product: variation attributes price via `Product_Manifest::build()`, the rest are unpriced answers |
 | FR-43-10a | Typed/manual pricing withdrawn as a path; WC-binding is the only supported route |
 | FR-43-11 | Distinct plain-English inserter descriptions vs `sgs/form` |
 | FR-43-12 | Recommendation-matching rule: build-time call, keep simple |
@@ -450,3 +467,4 @@ FR-42-7b, FR-42-10/FR-43-14 (clone-orchestrator CPT-creation gap), FR-42-13 (ana
 | FR-43-19 | Live price panel beside the questions (display only) |
 | FR-43-20 | What is bought: the page's chosen variation, or a set product; a "no add-ons" exit |
 | FR-43-21 | Unpriced answers on the path and fields in the terminal step travel with the purchase; file fields via a session-stamped cart upload |
+| FR-43-22 | The buybox button can open a popup (`addToCartAction: modal`) so a flow finishes a purchase started on the product page |

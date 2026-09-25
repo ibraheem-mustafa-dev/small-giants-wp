@@ -456,3 +456,8 @@
 .sgs-choice-flow .sgs-form-step > :not(.sgs-form-field) {
 	grid-column: 1 / -1;
 }
+
+/* With the header on, its eyebrow carries "Step N of M"; the indicator row keeps only the step label. */
+.sgs-choice-flow--has-header .sgs-choice-flow__step-count {
+	display: none;
+}

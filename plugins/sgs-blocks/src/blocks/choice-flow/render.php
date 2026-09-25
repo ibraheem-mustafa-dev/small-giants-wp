@@ -229,7 +229,8 @@ if ( $scoped_css ) {
 
 echo '<div ' . $wrapper_attributes . sgs_choice_flow_variation_seed_attr( $inner_parsed, $resolved_product_id ) . ' data-progress-style="' . esc_attr( $progress_style ) . '">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() and the seed helper return pre-escaped markup.
 
-$step_total = count( array_filter( $inner_parsed, static fn( $b ) => 'sgs/form-step' === ( $b['blockName'] ?? '' ) ) );
+// Questions only, as view.js counts them: a step holding a result is not numbered.
+$step_total = count( array_filter( $inner_parsed, static fn( $b ) => 'sgs/form-step' === ( $b['blockName'] ?? '' ) && false === strpos( serialize_blocks( $b['innerBlocks'] ?? array() ), 'wp:sgs/choice-flow-result' ) ) );
 echo sgs_choice_flow_chrome_header_html( $attributes, $step_total ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper returns pre-escaped markup.
 
 echo '<div class="sgs-choice-flow__header">';
