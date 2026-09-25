@@ -20,7 +20,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
-require_once __DIR__ . '/sgs-header-pass-through.php';
+require_once __DIR__ . '/helpers-responsive.php';
+require_once __DIR__ . '/helpers-tier-queries.php';
 
 if ( ! function_exists( 'sgs_nav_bar_menu_trigger_surface_css' ) ) {
 	/**

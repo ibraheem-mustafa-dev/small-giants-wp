@@ -9,6 +9,13 @@
 	border-color: var(--wp--preset--color--primary, #0F7E80);
 }
 
+/* "Scroll sideways" canvas preview (edit.js marks the row at the previewed
+ * device): each block in the row takes the item width, as on the frontend. */
+.sgs-container--scroll-row > .block-editor-block-list__block {
+	flex: 0 0 var(--sgs-scroll-item-width, 80%);
+	min-width: 0;
+}
+
 /* Mirror of style.css — ensures editor preview reflects the content-width cap. */
 .sgs-container__inner {
 	box-sizing: border-box;

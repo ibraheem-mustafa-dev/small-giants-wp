@@ -44,6 +44,7 @@ defined( 'ABSPATH' ) || exit;
 // file (and not render-helpers.php) must still resolve every function the wrapper
 // calls. Without this, a layout/section composite fatals on the gap/shape code path.
 require_once __DIR__ . '/render-helpers.php';
+require_once __DIR__ . '/container-scroll-row-css.php';
 require_once __DIR__ . '/shape-dividers.php';
 require_once __DIR__ . '/helpers-surface-ground.php';
 // sgs_css_length_or_sizing_keyword() — the `$sgs_css_length` closure's sanitiser.
@@ -1130,6 +1131,17 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// tier-column-count, grid-template responsive tiers) — those emit
 			// grid-specific properties that have no meaning on a flex container.
 			$grid_on_inner = ( ( 'grid' === $layout || 'flex' === $layout || 'stack' === $layout ) && $has_band_props && null === $opt_wrap_inner );
+			// "Scroll sideways" (includes/container-scroll-row-css.php): on at some
+			// tier, the items' row must be the __inner (the element whose direct
+			// children are the items), so it forces the two-layer structure the
+			// same way container queries do, here, at $band_will_render and at
+			// $do_wrap, and it mints a uid on its own. Not with the GSAP
+			// horizontal-panel effect, which owns that element's scrolling.
+			$sgs_scroll_row_on = 'horizontal-panel' !== ( $attributes['fx'] ?? '' )
+				&& ! empty( sgs_resolve_on_tiers( $attributes['scrollSideways'] ?? array(), 'on', 'off' ) );
+			if ( $sgs_scroll_row_on ) {
+				$grid_on_inner = true;
+			}
 			// Container queries (Spec 37 FR-37-16): force the two-layer structure so the
 			// flex/grid container (where gap applies) is the __inner — a DESCENDANT of
 			// the container-type outer — so @container queries can respond to the
@@ -2328,6 +2340,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// D293) so these OUTER/BAND/GRID box properties never emit inline for a
 			// block with no responsive tiers.
 			$needs_uid = $has_responsive_attr
+				|| $sgs_scroll_row_on
 				|| $has_object_tier_value
 				|| $has_base_spacing
 				|| $has_base_max_width
@@ -3386,7 +3399,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				if ( $container_queries && ( 'grid' === $layout || 'flex' === $layout || 'stack' === $layout ) ) {
 					$band_will_render = true;
 				}
-				if ( 'horizontal-panel' === ( $attributes['fx'] ?? '' ) ) {
+				if ( 'horizontal-panel' === ( $attributes['fx'] ?? '' ) || $sgs_scroll_row_on ) {
 					$band_will_render = true;
 				}
 				$band_obj_sel = $uid
@@ -3877,6 +3890,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// ----------------------------------------------------------------
 			// Responsive <style> tag — prepended to output.
 			// ----------------------------------------------------------------
+			// "Scroll sideways" goes LAST, so at equal specificity it wins over the
+			// grid/flex rules written above on the same selector.
+			if ( $sgs_scroll_row_on && $uid ) {
+				$responsive_css .= sgs_container_scroll_row_css( $grid_sel, $attributes, $container_queries, $attributes['contentBandPadding'] ?? array() );
+			}
+
 			$style_tag = '';
 			if ( $responsive_css && $uid ) {
 				// NOT esc_html() — the band selector uses the child combinator '>'
@@ -3909,6 +3928,9 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// Stack joins this (Task 1) — same two-layer forcing reason as the
 			// $grid_on_inner container-queries gate above.
 			if ( $container_queries && ( 'grid' === $layout || 'flex' === $layout || 'stack' === $layout ) ) {
+				$do_wrap = true;
+			}
+			if ( $sgs_scroll_row_on ) {
 				$do_wrap = true;
 			}
 

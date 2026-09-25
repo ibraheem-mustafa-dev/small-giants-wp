@@ -86,6 +86,7 @@
 						"css:border-color": "borderColour",
 						"css:border-color-gradient": "borderColourGradient",
 						"css:border-radius": "borderRadius",
+						"css:overflow": "scrollSideways",
 						"css:max-width": "maxWidth",
 						"css:min-height": "minHeight",
 						"css:box-shadow": "shadow",
@@ -610,6 +611,16 @@
 				"wrap",
 				"nowrap"
 			]
+		},
+		"scrollSideways": {
+			"type": "object",
+			"default": {},
+			"description": "Scroll sideways, per device tier (on/off/inherit): the container's items sit in one native row that scrolls sideways and snaps into place. No GSAP, no pin (includes/container-scroll-row-css.php)."
+		},
+		"scrollItemWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Per tier CSS length: the width of each item in a sideways-scrolling row. Unset: 80%."
 		},
 		"contentWidth": {
 			"type": "object",

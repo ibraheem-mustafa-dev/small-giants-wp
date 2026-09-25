@@ -25,55 +25,7 @@ defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/class-sgs-breakpoints.php';
 require_once __DIR__ . '/helpers-responsive.php';
-
-if ( ! function_exists( 'sgs_tier_media_queries' ) ) {
-	/**
-	 * The exact media condition for each named tier (desktop >= 1024, tablet
-	 * 768 to 1023, mobile <= 767), each optionally narrowed by `$and`.
-	 *
-	 * @param string[] $tiers Tier names.
-	 * @param string   $and   Extra condition, e.g. '(max-width:1059px)', or ''.
-	 * @return string[] Media conditions, in desktop, tablet, mobile order.
-	 */
-	function sgs_tier_media_queries( array $tiers, string $and = '' ): array {
-		$mobile_max = (int) SGS_Breakpoints::MOBILE_MAX;
-		$tablet_max = (int) SGS_Breakpoints::TABLET_MAX;
-		$queries    = array(
-			'desktop' => '(min-width:' . ( $tablet_max + 1 ) . 'px)',
-			'tablet'  => '(min-width:' . ( $mobile_max + 1 ) . 'px) and (max-width:' . $tablet_max . 'px)',
-			'mobile'  => '(max-width:' . $mobile_max . 'px)',
-		);
-		$list       = array();
-		foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
-			if ( in_array( $tier, $tiers, true ) ) {
-				$list[] = $queries[ $tier ] . ( '' !== $and ? ' and ' . $and : '' );
-			}
-		}
-		return $list;
-	}
-}
-
-if ( ! function_exists( 'sgs_tier_exact_media_css' ) ) {
-	/**
-	 * Wrap `$rules` so they apply at exactly the given tiers, with no cascade
-	 * into other tiers. All three tiers and no extra condition: no wrapper.
-	 *
-	 * @param string[] $tiers Tier names the rules apply at.
-	 * @param string   $rules CSS rules.
-	 * @param string   $and   Extra condition every tier's query must also meet.
-	 * @return string CSS.
-	 */
-	function sgs_tier_exact_media_css( array $tiers, string $rules, string $and = '' ): string {
-		$list = sgs_tier_media_queries( $tiers, $and );
-		if ( '' === $rules || empty( $list ) ) {
-			return '';
-		}
-		if ( 3 === count( $list ) && '' === $and ) {
-			return $rules;
-		}
-		return '@media ' . implode( ',', $list ) . '{' . $rules . '}';
-	}
-}
+require_once __DIR__ . '/helpers-tier-queries.php';
 
 if ( ! function_exists( 'sgs_header_pass_through_entry' ) ) {
 	/**

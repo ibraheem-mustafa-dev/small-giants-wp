@@ -6690,6 +6690,24 @@
 				"css_element": "item-description"
 			},
 			"_why": "Wave 3C lane A (numbered compact-links rows): the per-item description line's colour, emitted by icon-list/render.php as a scoped `.sgs-icon-list__description{color:…}` rule built from a variable selector, which extract-signatures.py does not resolve. Element item-description (block.json supports.sgs.elements)."
+		},
+		{
+			"slug": "sgs/container",
+			"attr": "scrollSideways",
+			"fields": {
+				"role": "layout",
+				"css_property": "overflow",
+				"css_element": "wrapper"
+			},
+			"_why": "Container \"Scroll sideways\" (away's 375 tile scroller): emitted by includes/container-scroll-row-css.php, called from SGS_Container_Wrapper::render(), which extract-signatures.py does not scan. scrollSideways is the wrapper element's css:overflow (block.json attrMap); scrollItemWidth is each item's flex-basis in that row."
+		},
+		{
+			"slug": "sgs/container",
+			"attr": "scrollItemWidth",
+			"fields": {
+				"role": "layout"
+			},
+			"_why": "Container \"Scroll sideways\" (away's 375 tile scroller): emitted by includes/container-scroll-row-css.php, called from SGS_Container_Wrapper::render(), which extract-signatures.py does not scan. scrollSideways is the wrapper element's css:overflow (block.json attrMap); scrollItemWidth is each item's flex-basis in that row."
 		}
 	]
 }

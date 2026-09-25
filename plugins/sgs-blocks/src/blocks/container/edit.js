@@ -12,6 +12,8 @@ import {
 } from "@wordpress/components";
 import { useSelect } from "@wordpress/data";
 import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, TypographyControls, SgsBoxControl } from "../../components";
+import ScrollSidewaysPanel from "./components/ScrollSidewaysPanel";
+import { resolveOnTiers } from "../../utils/responsive";
 import { resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPaintPreview, textPaintPreview, borderPaintPreview, backgroundPreview, svgBackgroundPreview, boxShorthand, resolveBoxTierPreview, resolveContentWidthPreview, contentBandPreview, applyGridLayoutPreview, colourVar } from "../../utils";
 import {
   LayoutPanel,
@@ -363,6 +365,27 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
     layout,
   } );
 
+  // "Scroll sideways" at the previewed device: the items' row (the band when one
+  // renders, else the root) previews as the same one-line row the frontend
+  // draws (includes/container-scroll-row-css.php), without snap, which would
+  // fight block selection. editor.css sizes the blocks in the marked row.
+  const scrollRowPreview =
+    "horizontal-panel" !== attributes.fx &&
+    resolveOnTiers( attributes.scrollSideways, "on", "off" ).includes( previewTier );
+  if ( scrollRowPreview ) {
+    Object.assign( hasBandProps ? bandStyle : style, {
+      display: "flex",
+      flexDirection: "row",
+      flexWrap: "nowrap",
+      justifyContent: "flex-start",
+      alignItems: "stretch",
+      overflowX: "auto",
+      overflowY: "hidden",
+      "--sgs-scroll-item-width":
+        resolveResponsiveTier( attributes.scrollItemWidth, previewTier )?.value || undefined,
+    } );
+  }
+
   const className = [
     "sgs-container",
     layout && `sgs-container--${layout}`,
@@ -392,7 +415,12 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
   // wiring site-header; CHECK A still passed throughout, because it verifies an
   // attribute NAME is referenced outside the Inspector, not that the CSS it
   // produces is correct.
-  const editorClassName = [ className, bgPreview.className, ...svgPreview.className ]
+  const editorClassName = [
+    className,
+    bgPreview.className,
+    ...svgPreview.className,
+    scrollRowPreview && ! hasBandProps && "sgs-container--scroll-row",
+  ]
     .filter( Boolean )
     .join( " " );
 
@@ -408,7 +436,14 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
   // useInnerBlocksProps is called exactly once either way — branching the ARGUMENT, never
   // the hook, so this cannot trip the rules of hooks.
   const innerBlocksProps = useInnerBlocksProps(
-    hasBandProps ? { className: "sgs-container__inner", style: bandStyle } : blockProps,
+    hasBandProps
+      ? {
+          className: scrollRowPreview
+            ? "sgs-container__inner sgs-container--scroll-row"
+            : "sgs-container__inner",
+          style: bandStyle,
+        }
+      : blockProps,
     {
       orientation: layout === "stack" ? "vertical" : undefined,
       templateLock: attributes.templateLock || undefined,
@@ -563,6 +598,8 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
               OUTER block, not the inner band). See ContentBandWidthControl's
               own docblock in WidthPanel.js for the split. */}
           <WidthPanel attributes={ attributes } setAttributes={ setAttributes } showContentBand={ false } />
+          <hr style={ { margin: "16px 0" } } />
+          <ScrollSidewaysPanel attributes={ attributes } setAttributes={ setAttributes } />
           { /* `minHeight` is a TIER OBJECT — {desktop,tablet,mobile} — so it uses
                ResponsiveOverride. */ }
           <ResponsiveOverride

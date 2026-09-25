@@ -265,10 +265,19 @@ export function initSmoothScroll() {
 			 * the page 719px and closed it; with the dialog opted out, 0px and the
 			 * drawer stayed open). Lenis hands a prevented event back to the
 			 * browser, so the dialog scrolls itself, and its
-			 * `overscroll-behavior: contain` keeps the page still at its ends. Same
-			 * purpose as the `data-lenis-prevent` the mega panels carry.
+			 * `overscroll-behavior: contain` keeps the page still at its ends.
 			 */
 			prevent: ( node ) => 'DIALOG' === node.nodeName && node.open,
+			/*
+			 * Any element that can itself scroll in the gesture's direction
+			 * scrolls natively: a container set to "Scroll sideways" (a native
+			 * horizontal row), a mega panel's own vertical overflow, the shop
+			 * filters. Without it Lenis cancels a trackpad swipe over such an
+			 * element (its small deltaY passes as a page scroll) and the row
+			 * never moves. Lenis checks each ancestor's overflow and
+			 * scroll size itself (hasNestedScroll).
+			 */
+			allowNestedScroll: true,
 		} );
 
 		const raf = ( time ) => {
