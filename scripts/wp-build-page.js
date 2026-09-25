@@ -108,7 +108,7 @@ async function waitForEditor( page ) {
 async function buildTemplate( page, tree, route, slug, dryRun ) {
 	return page.evaluate( async ( { t, r, sl, dry } ) => {
 		const make = ( b ) => window.wp.blocks.createBlock( b.name, b.attributes || {}, ( b.innerBlocks || [] ).map( make ) );
-		const serialised = window.wp.blocks.serialize( t.map( make ) );
+		let serialised = window.wp.blocks.serialize( t.map( make ) );
 		if ( dry ) return { ok: true, dryRun: true, bytes: serialised.length };
 		const themes = await window.wp.apiFetch( { path: '/wp/v2/themes?status=active' } );
 		const id = `${ themes[ 0 ].stylesheet }//${ sl }`;
@@ -118,17 +118,41 @@ async function buildTemplate( page, tree, route, slug, dryRun ) {
 		} catch ( e ) {
 			return { ok: false, code: 5, error: `save failed: ${ e.message || e.code }` };
 		}
-		const saved = await window.wp.apiFetch( { path: `${ restPath }?context=edit` } );
-		const raw = ( saved.content && saved.content.raw ) || '';
-		const invalid = [];
-		const walk = ( bs ) => bs.forEach( ( b ) => {
-			if ( b.isValid === false ) invalid.push( b.name );
-			walk( b.innerBlocks || [] );
-		} );
-		const parsed = window.wp.blocks.parse( raw );
-		walk( parsed );
-		const changed = window.wp.blocks.serialize( parsed ).trim() !== serialised.trim();
-		return { ok: ! invalid.length && ! changed, id, source: saved.source, invalid, changedOnReload: changed, code: 6 };
+		// Read back: every block must parse valid and serialise to what was saved.
+		const readBack = async () => {
+			const saved = await window.wp.apiFetch( { path: `${ restPath }?context=edit` } );
+			const invalidNames = [];
+			const walk = ( bs ) => bs.forEach( ( b ) => {
+				if ( b.isValid === false ) invalidNames.push( b.name );
+				walk( b.innerBlocks || [] );
+			} );
+			const parsed = window.wp.blocks.parse( ( saved.content && saved.content.raw ) || '' );
+			walk( parsed );
+			return { saved, invalidNames, text: window.wp.blocks.serialize( parsed ).trim() };
+		};
+		let back = await readBack();
+		// WordPress normalises on save (it adds "theme" to template-part blocks): save the settled
+		// text once more; content that then holds still is fine, content that keeps changing is a fault.
+		let normalised = false;
+		if ( ! back.invalidNames.length && back.text !== serialised.trim() ) {
+			const settled = back.text;
+			await window.wp.apiFetch( { path: restPath, method: 'POST', data: { content: settled } } );
+			back = await readBack();
+			normalised = true;
+			serialised = settled;
+		}
+		const saved = back.saved;
+		const invalid = back.invalidNames;
+		const reloaded = back.text;
+		const changed = reloaded !== serialised.trim();
+		let firstDiff;
+		if ( changed ) {
+			let i = 0;
+			const sent = serialised.trim();
+			while ( i < sent.length && sent[ i ] === reloaded[ i ] ) i++;
+			firstDiff = { at: i, sent: sent.slice( Math.max( 0, i - 80 ), i + 160 ), reloaded: reloaded.slice( Math.max( 0, i - 80 ), i + 160 ) };
+		}
+		return { ok: ! invalid.length && ! changed, id, source: saved.source, invalid, normalisedOnFirstLoad: normalised, changedOnReload: changed, firstDiff, code: 6 };
 	}, { t: tree, r: route, sl: slug, dry: dryRun } );
 }
 
