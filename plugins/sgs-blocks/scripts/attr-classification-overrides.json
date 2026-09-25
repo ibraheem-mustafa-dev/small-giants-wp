@@ -6697,7 +6697,8 @@
 			"fields": {
 				"role": "layout",
 				"css_property": "overflow",
-				"css_element": "wrapper"
+				"css_element": "wrapper",
+				"css_layer": "OUTER"
 			},
 			"_why": "Container \"Scroll sideways\" (away's 375 tile scroller): emitted by includes/container-scroll-row-css.php, called from SGS_Container_Wrapper::render(), which extract-signatures.py does not scan. scrollSideways is the wrapper element's css:overflow (block.json attrMap); scrollItemWidth is each item's flex-basis in that row."
 		},
