@@ -53,6 +53,13 @@ $dialog_inner_html = null !== $referenced_modal ? (string) do_blocks( $reference
 // Generate unique ID for this modal instance.
 $modal_id = 'sgs-modal-' . wp_unique_id();
 
+// The dialog's accessible name: the referenced sgs_modal post's title, else
+// the trigger text (a triggerless modal with no reference falls back to it too).
+$dialog_label = null !== $referenced_modal ? get_the_title( $referenced_modal ) : '';
+if ( '' === $dialog_label ) {
+	$dialog_label = $trigger_text;
+}
+
 // Scoped-CSS class uid — this block has supports.anchor:true, so the uid MUST
 // be a CLASS (never an id) to avoid colliding with the user-set anchor id.
 $uid      = 'sgs-modal-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
@@ -218,7 +225,7 @@ $scoped_css = implode( '', $scoped_css_rules );
 		class="sgs-modal__dialog <?php echo esc_attr( $dialog_size_class ); ?> <?php echo esc_attr( $uid ); ?>"
 		data-close-on-overlay="<?php echo $close_on_overlay ? 'true' : 'false'; ?>"
 		data-open-on-hash-load="<?php echo $open_on_hash_load ? 'true' : 'false'; ?>"
-		aria-labelledby="<?php echo esc_attr( $modal_id ); ?>-title"
+		aria-label="<?php echo esc_attr( wp_strip_all_tags( $dialog_label ) ); ?>"
 	>
 		<button
 			type="button"
