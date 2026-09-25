@@ -24,7 +24,7 @@ checkout, lens configurator, prescription). The old clone on test page 11 and it
 converter fixes (C1, C3, C4, C5) wait for Phase 7.
 
 **Nav / header / footer.** Wave 1 (fixtures + verification) is closed. Wave 2 (capabilities) is
-done and live-verified. The harness self-tests and the fixture fidelity check are in place; only the reference labels for three unmeasured sites wait on Wave 4. Done: the drawer post type, the picker
+done and live-verified. The harness self-tests and the fixture fidelity check are in place; only the reference labels for ButcherBox and rabbit.tech wait, on step 0c (before Wave 4). Done: the drawer post type, the picker
 (including creating a drawer inline), trigger controls, scoped behaviours, the 7 drawer looks (patterns
 seeded as Menu drawer posts on all three test sites), the Site Info logo tier, the scrolled-state header
 shadow, the floating header pill (blur-based, matching the one true pill among the references), the formal Gate 2
@@ -87,7 +87,11 @@ IN FULL before touching anything — do not act on this summary.**
   timings, header z-index, surface ground on nav + wrapper blocks, layered shadows, dark-surface tone, lift
   on hover by default). **U-2 CLOSED** (D1148: one shared scrim on drawer, menu bar, modal, cart, gallery and
   product search; one hover-shadow control). Everything is live on sandybrown (deployed 2026-09-24). Owed:
-  Bean's eye on the three scrim screenshots. Test posts 3777/3778 carry the close fixture's `trigger` scenario (non-modal, trigger anchor; backups in post meta). **U-9+U-11
+  Bean's eye on the three scrim screenshots. U-1's and U-2's owed live checks closed 2026-09-25 (verify file, U-1 and U-2
+  sections; fixture and probe in `plugins/sgs-blocks/scripts/nav-qa/README.md` §10), with five fixes live: the header's
+  gradient fill paints and `surfaceFadeEdge` is removed (it hid every dropdown), a header Transparent on desktop keeps
+  its own fill where it is off, an empty mega card lift no longer lifts, theme gradient presets resolve in the editor
+  canvas, and a floating WhatsApp bubble steps aside while an inline WhatsApp button is on screen. **U-9+U-11
   CLOSED** (D1150: the live-opener × rule, per-tier close control, resize and scroll closes, burger morph, magnet strength).
 - **Wave 4** (proof gate — 11 client clones incl. resn, 10 if the teardown excludes it; Bean's-eye per
   clone; every Spec 38 effect available) — not started.
@@ -98,7 +102,7 @@ U-10+U-14 (one design, council, sign-off, deploy and live check each). Lane A (n
 → U-6+U-7 → U-4 → U-10+U-14 (all done). Lane B (header behaviours): U-13 → U-16 (U-14 built by lane A). Lane C
 (independent): U-12, U-15, U-17 (`prompts/2026-09-24-wave-3c-lane-c.md`). Each lane edits only its own line below.
 
-- **Lane A:** CLOSED, including the batched QA pass. Every lane A unit and owed build item is live on sandybrown; `main` at 6962dd0e6 or later, deployed. The QA pass (`reports/visual-diff/nav-drawer-2026-09-25.md` section "Lane A batched QA pass"): axe 0 on every drawer state (header burger, detaching chip, side and header-content placements) and on a Scroll sideways row; keyboard, reduced motion and every new control's editor round-trip pass. It found and fixed four defects (d954c83f8): keyboard sibling dim never fired (nested `:has()`), a Scroll sideways row clipped focus rings, the chip was see-through (now the surface token, Bean option a), and `TypographyControls` lost a custom font size, line height or letter spacing on reload on any fresh block. Open, Bean's eye only: gallery arrows, motion shapes, item effects, the U-3+U-8 patterns once they have imagery (plan `.claude/plans/2026-09-21-wave-3c-implementation-plan.md` §4). Both close-out decisions are applied: bar dropdown links default to the palette's `text` (6962dd0e6, deployed, axe 0 on the open dropdown), and the first Scroll sideways item's trimmed inline-start ring is accepted (Spec 02). Fixture on sandybrown: `plugins/sgs-blocks/scripts/nav-qa/qa-item-markup-fixture.php` `two-bar`. U-16 waits on plan step 0d.
+- **Lane A:** CLOSED, including the batched QA pass. Every lane A unit and owed build item is live on sandybrown; `main` at 62757ed5e or later, deployed to sandybrown and eye-care-test. The QA pass (`reports/visual-diff/nav-drawer-2026-09-25.md` section "Lane A batched QA pass"): axe 0 on every drawer state (header burger, detaching chip, side and header-content placements) and on a Scroll sideways row; keyboard, reduced motion and every new control's editor round-trip pass. It found and fixed four defects (d954c83f8): keyboard sibling dim never fired (nested `:has()`), a Scroll sideways row clipped focus rings, the chip was see-through (now the surface token, Bean option a), and `TypographyControls` lost a custom font size, line height or letter spacing on reload on any fresh block. Open, Bean's eye only: gallery arrows, motion shapes, item effects, the U-3+U-8 patterns once they have imagery (plan `.claude/plans/2026-09-21-wave-3c-implementation-plan.md` §4). Both close-out decisions are applied: bar dropdown links default to the palette's `text` (6962dd0e6, deployed, axe 0 on the open dropdown), and the first Scroll sideways item's trimmed inline-start ring is accepted (Spec 02). Fixture on sandybrown: `plugins/sgs-blocks/scripts/nav-qa/qa-item-markup-fixture.php` `two-bar`. U-16 waits on plan step 0d.
 - **Lane B:** not started.
 - **Lane C:** not started.
 

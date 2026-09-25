@@ -213,7 +213,7 @@ throughout** (avoids the sticky-hover mobile bug). Mechanics:
   `itemPadding` (`sgs/nav-bar-menu` only) is the top-level link's padding, a per-device box of top, right, bottom
   and left ("Link padding" in the List layout panel); unset sides keep the default 8px 12px. All four are touch-guarded via `sgs_hover_state_rules()`. On `sgs/mega-panel`: `panelCardLift`
   (default `3px`) sets the `cards` style's group-tile hover/focus-within lift distance
-  (`translateY(calc(-1 * <value>))`); the same block's `itemPaddingShiftHover` grows a group item's own
+  (`translateY(calc(-1 * <value>))`; empty or `0` means no lift); the same block's `itemPaddingShiftHover` grows a group item's own
   inline-start padding on hover, independently of the bar/drawer attribute of the same name. `sliding pill`
   (`itemBgHoverTreatment`), tint swap, colour, weight, underline and border stay owned by Spec 41.
 - The timing constants apply to the hover path only; WCAG 1.4.13 (Dismissible/Hoverable/Persistent) on the

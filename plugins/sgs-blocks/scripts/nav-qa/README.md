@@ -541,6 +541,28 @@ its own delimiters, never by line number, and exits `1` on any failure.
 php scripts/nav-qa/submenu-harness.php
 ```
 
+## 10. `qa-u1-owed-fixture.php` + `u1-owed-probe.mjs` — surface paint on the live header
+
+The fixture edits sandybrown's ACTIVE test header (post 3777, the one every page shows) and
+mega menu post 1745, so it must be restored in the same command that measures, never left
+applied between steps. Cases: `exit-cells` (fantasy's faded ground as a gradient fill, a
+dropdown at 0.6 to 1 opacity, indus-foods' 6px card lift), `controls` (a flat fill, no
+opacity pair, an empty lift), `transparent-tiers` (a navy header, Transparent on at desktop
+and off at mobile), `restore`. The probe asserts at 1440: painted fill alpha at the top and
+bottom of the band with no mask on the header, the dropdown link's opacity at rest and
+hovered (a hover that fails because something covers the link fails the run), the card lift,
+and forced colours with the dropdown's scrim open. `--expect on|off` picks the exit-cell or
+control assertions.
+
+```bash
+WP=domains/sandybrown-nightingale-600381.hostingersite.com/public_html
+scp scripts/nav-qa/qa-u1-owed-fixture.php scripts/nav-qa/qa-item-markup-fixture.php hd:/tmp/
+restore() { ssh hd "cd $WP && wp eval-file /tmp/qa-u1-owed-fixture.php restore; wp eval-file /tmp/qa-item-markup-fixture.php two-bar; wp litespeed-purge all"; }
+trap restore EXIT
+ssh hd "cd $WP && wp eval-file /tmp/qa-item-markup-fixture.php restore && wp eval-file /tmp/qa-u1-owed-fixture.php exit-cells && wp litespeed-purge all"
+node scripts/nav-qa/u1-owed-probe.mjs https://sandybrown-nightingale-600381.hostingersite.com/qa-scrim/ --expect on
+```
+
 ## Notes for the acceptance gate
 
 - Run all of them against **both** gate targets, Mama's (flat bar plus drawer) and
