@@ -5653,6 +5653,71 @@
     },
     {
       "slug": "sgs/icon-list",
+      "attr": "descriptionColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "item-description"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "descriptionFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "item-description"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "descriptionFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "item-description"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "descriptionFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "item-description"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "descriptionLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "item-description"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "descriptionLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "item-description"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "descriptionTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "item-description"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "descriptionTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "item-description"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
       "attr": "dividerColour",
       "fields": {
         "css_property": "border-bottom,border-top",
