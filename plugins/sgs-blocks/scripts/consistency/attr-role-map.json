@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "..\\..\\..\\..\\..\\.claude\\skills\\sgs-wp-engine\\sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 8301,
+    "row_count": 8306,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -927,6 +927,7 @@
     "sgs/business-info::borderRadius": "visual",
     "sgs/business-info::borderStyle": "visual",
     "sgs/business-info::borderWidth": "visual",
+    "sgs/business-info::copyrightPrefix": "text-content",
     "sgs/business-info::displayType": "select-from-enum",
     "sgs/business-info::fontFamily": "typography",
     "sgs/business-info::fontSize": "typography",
@@ -4311,6 +4312,9 @@
     "sgs/mega-aside::asideFormat": "enum-mode",
     "sgs/mega-aside::asidePadding": "layout",
     "sgs/mega-aside::asideRadius": "visual",
+    "sgs/mega-group::opensInNewTab": "boolean-visibility",
+    "sgs/mega-group::rel": null,
+    "sgs/mega-group::url": "link-href",
     "sgs/mega-panel::accentBackgroundImage": "color",
     "sgs/mega-panel::accentBackgroundImageGradient": "colour-gradient",
     "sgs/mega-panel::asideSeparator": "styling",
@@ -5655,6 +5659,7 @@
     "sgs/process-steps::numberColour": "color",
     "sgs/process-steps::numberColourHover": "color",
     "sgs/process-steps::numberColourHoverGradient": "colour-gradient",
+    "sgs/process-steps::numberFontFamily": "typography",
     "sgs/process-steps::numberStyle": "behaviour",
     "sgs/process-steps::padding": "layout",
     "sgs/process-steps::sgsAnimation": "motion",

@@ -19847,6 +19847,14 @@
     },
     {
       "slug": "sgs/process-steps",
+      "attr": "numberFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
       "attr": "padding",
       "fields": {
         "css_property": "padding",
