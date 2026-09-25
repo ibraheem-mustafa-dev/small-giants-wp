@@ -89,7 +89,7 @@ IN FULL before touching anything — do not act on this summary.**
   product search; one hover-shadow control). Everything is live on sandybrown (deployed 2026-09-24). Owed:
   Bean's eye on the three scrim screenshots. U-1's and U-2's owed live checks closed 2026-09-25 (verify file, U-1 and U-2
   sections; fixture and probe in `plugins/sgs-blocks/scripts/nav-qa/README.md` §10), with five fixes live: the header's
-  gradient fill paints and `surfaceFadeEdge` is removed (it hid every dropdown), a header Transparent on desktop keeps
+  faded ground is its gradient fill, with no header mask over dropdowns, a header Transparent on desktop keeps
   its own fill where it is off, an empty mega card lift no longer lifts, theme gradient presets resolve in the editor
   canvas, and a floating WhatsApp bubble steps aside while an inline WhatsApp button is on screen. **U-9+U-11
   CLOSED** (D1150: the live-opener × rule, per-tier close control, resize and scroll closes, burger morph, magnet strength).

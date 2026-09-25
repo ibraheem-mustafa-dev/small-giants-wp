@@ -21,8 +21,8 @@ colour inheritance), so the drawer and its header are built and judged together.
 
 **The nav blocks.** `sgs/nav-bar-menu` (the bar), `sgs/nav-drawer-menu` (the drawer's link list) and
 `sgs/nav-drawer` (the drawer panel), all under `plugins/sgs-blocks/src/blocks/<slug>/`. The drawer
-itself lives in the `sgs_drawer` custom post type. `sgs/nav-drawer-menu` has no visual-diff report
-yet.
+itself lives in the `sgs_drawer` custom post type. Live reports: `reports/visual-diff/nav-bar-menu-*.md`,
+`nav-drawer-*.md`, `nav-drawer-menu-*.md`, `mega-panel-*.md`, `site-header-*.md`.
 
 **The shape:** verify what is deployed (Wave 1, closed) → build the capabilities, including the
 drawer's own edit screen (Wave 2, done) → polish the operator experience (Wave 3, partial) → fix the
