@@ -77,7 +77,13 @@ function terminalFields( resultEl ) {
  */
 function fieldLabel( fieldEl ) {
 	const labelEl = fieldEl.querySelector( 'label' );
-	return labelEl ? labelEl.textContent.replace( /\*/g, '' ).trim() : '';
+	if ( ! labelEl ) {
+		return '';
+	}
+	// Without the required marker and its screen-reader "(required)".
+	const copy = labelEl.cloneNode( true );
+	copy.querySelectorAll( '.sgs-form-field__required, .sgs-sr-only' ).forEach( ( el ) => el.remove() );
+	return copy.textContent.trim();
 }
 
 /**
