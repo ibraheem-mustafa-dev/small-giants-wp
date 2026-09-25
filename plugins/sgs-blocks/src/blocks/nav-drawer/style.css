@@ -41,14 +41,50 @@
 	z-index: min(90, max(2, calc(var(--sgs-header-z, 100) - 1)));
 }
 
-/* The dialog is the scroll container, so this is the drawer's scrollbar: thin,
-   its thumb a tint of the drawer's ink on a transparent track, so it sits in the
-   panel's own colours and inside its corners rather than as the browser's grey
-   bar. render.php publishes the drawer text colour as --sgs-nd-scrollbar-ink;
-   unset, the ink is the dialog's own colour. Zero specificity. */
-:where(.wp-block-sgs-nav-drawer) {
-	scrollbar-width: thin;
-	scrollbar-color: color-mix(in srgb, var(--sgs-nd-scrollbar-ink, currentColor) 35%, transparent) transparent;
+/* The dialog is the scroll container, so this is the drawer's scrollbar: a
+   rounded thumb in a tint of the drawer's ink, on a transparent track, with no
+   arrow buttons, held clear of the panel's rounded corners. render.php publishes
+   the drawer text colour as --sgs-nd-scrollbar-ink; unset, the ink is the
+   dialog's own colour.
+   Chrome and Safari draw it through the ::-webkit-scrollbar parts, the only
+   route that removes the arrow buttons and insets the track (Chrome keeps its
+   arrows under the standard properties and ignores these parts once
+   scrollbar-width or scrollbar-color is set, so those are given only to
+   browsers without the parts: Firefox, which draws no arrows). */
+.wp-block-sgs-nav-drawer::-webkit-scrollbar {
+	background: transparent;
+	height: 10px;
+	width: 10px;
+}
+
+.wp-block-sgs-nav-drawer::-webkit-scrollbar-button {
+	display: none;
+	height: 0;
+	width: 0;
+}
+
+.wp-block-sgs-nav-drawer::-webkit-scrollbar-track,
+.wp-block-sgs-nav-drawer::-webkit-scrollbar-corner {
+	background: transparent;
+}
+
+/* Keeps the thumb out of a rounded corner (20px is the card corner). */
+.wp-block-sgs-nav-drawer::-webkit-scrollbar-track {
+	margin-block: 20px;
+}
+
+.wp-block-sgs-nav-drawer::-webkit-scrollbar-thumb {
+	background-clip: padding-box;
+	background-color: color-mix(in srgb, var(--sgs-nd-scrollbar-ink, currentColor) 35%, transparent);
+	border: 3px solid transparent;
+	border-radius: 999px;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+	:where(.wp-block-sgs-nav-drawer) {
+		scrollbar-width: thin;
+		scrollbar-color: color-mix(in srgb, var(--sgs-nd-scrollbar-ink, currentColor) 35%, transparent) transparent;
+	}
 }
 
 /* Height defaults live in :where() (specificity 0) so the `panelSize`
