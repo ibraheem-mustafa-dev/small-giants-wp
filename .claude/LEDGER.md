@@ -52,16 +52,18 @@ Plan: `plans/2026-09-24-eye-care-hand-build-design.md` (Status block = current t
 Ward End Eye Care - SGS Gap Handoff/`, live at https://mintcream-lyrebird-224487.hostingersite.com/. Test site:
 https://darkcyan-grouse-898606.hostingersite.com (creds `.claude/secrets/eye-care-test.env`).
 
-**Now.** Waves A and B built; the nine Wave B close-out items are done and live (2026-09-25): button link from Site
-Info, presets that follow the section colour and carry their geometry, hide-.00 prices, accordion title weight and open
-colours, the contact form on `sgs_form` post 285, condensed hours, per-device burger (`triggerMode` tier object) with
-icon position, mega panels rebuilt and full width, header one row at every width. Pages are built through the editor
-with `scripts/wp-build-page.js` from `sites/eye-care-ward-end/build/`. main and eye-care-test at 618e08746 plus content
-since (docs and trees only). No blockers.
+**Now.** Wave B is done and live (2026-09-25): all pages, the nine close-out items and close-out part 2 (new
+settings: business-info copyright prefix and text around a value, mega-group card link, process-steps number font,
+social-icons boxed style with the four-colour Google mark; container desktop-only templates inherit down and a
+grid child's own min-height now applies; icon-list link decoration; header logo floor capped by its width). Pages are
+built through the editor with `scripts/wp-build-page.js` from `sites/eye-care-ward-end/build/`. main and eye-care-test
+at 35f25de0b (trees 2004930f6). No blockers. Header, footer, mobile menu and mega panels are left to the nav track's
+rebuild (Bean, 2026-09-25).
 
-**Resume from:** the plan's Status block, "Wave B close-out part 2" (items 1 to 12, each proven by the final
-comparison), then a last 1440/768/375 comparison; then Wave C (shop, product page and the shared product card, bag and
-checkout, lens configurator, prescription; plan §5, §6); then Phase 7 (plan §7).
+**Resume from:** the plan's Status block, "Wave C: next": the shared product card and product page (zero-reviews
+first), the shop archive, the lens configurator (Spec 43 add-on price list, then choice-flow Phases 3-4), the
+size-guide modal, bag and checkout with the prescription step; the four "Wave B residuals" are listed there. Then
+Phase 7 (plan §7).
 
 **Parked (detail in the plan's Status block):** product-page tabs decision (Bean); `disabled` as a golden state
 (Bean, only if wanted); product-field bindings build; RRP/stock label per variation; nav-drawer badge/disabled; the
@@ -229,7 +231,7 @@ does not produce real matches on real data for it to consume.
 | **Classless recognition (Spec 44) — built; AI-fallback tier parked** | `specs/44-CLASSLESS-REPEATER-RECOGNITION.md`; `.claude/reports/2026-09-18-spec44-full-pipeline-stage-breakdown.md` |
 | **Structural-facts trio (repeaters + composition + singletons)** — built and validated, consumer wiring open | `specs/31-UNIVERSAL-CLONING-PIPELINE.md` §13.9-§13.10 |
 | **Classless FIELD resolution (Spec 45)** — all 4 tiers built, no real input yet | `specs/45-CLASSLESS-FIELD-RESOLUTION.md` |
-| **Form CPT + choice-flow** — Phase 0 ready | `specs/42-SGS-FORM-CPT-AND-PRICING.md` + `specs/43-SGS-CHOICE-FLOW.md` + `plans/2026-09-14-spec42-43-form-choiceflow-phase-plan.md` |
+| **Form CPT + choice-flow** — Phases 0-2 shipped; Phases 3-4 are the Eye Care lens configurator (Front F, Wave C) | `specs/42-SGS-FORM-CPT-AND-PRICING.md` + `specs/43-SGS-CHOICE-FLOW.md` + `plans/2026-09-14-spec42-43-form-choiceflow-phase-plan.md` |
 | Nav menu colour/state system | `specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` |
 | Per-draft accepted design differences | `sites/mamas-munches/accepted-differences.md` |
 | Cloning pipeline spec + binding rules | `specs/31-UNIVERSAL-CLONING-PIPELINE.md` |

@@ -1,8 +1,8 @@
 # Eye Care Birmingham: build the real site first, then use it to test the pipeline
 
 **Status:** APPROVED by Bean 2026-09-24 (D1149). **Wave A DONE 2026-09-24.** **Wave B framework part DONE
-2026-09-24.** **Wave B pages BUILT 2026-09-24; close-out items 1-9 DONE and live 2026-09-25; the final comparison's
-residual list (close-out part 2, below) remains**, then Wave C.
+2026-09-24.** **Wave B DONE 2026-09-25** (pages built 2026-09-24; close-out items 1-9 and part 2 done and live
+2026-09-25). **Next: Wave C** (section "Wave C: next", below the Wave B record).
 - Wave B pages on eye-care-test, each built through the editor with `scripts/wp-build-page.js` from a tree in
   `sites/eye-care-ward-end/build/` (the reproducible record): header `sgs_header` 199 (active), mobile menu `sgs_drawer`
   203 (the burger's own drawerRef; the global drawer pointer is untouched), mega panels 165/176/183/186, WP menu 96,
@@ -49,38 +49,57 @@ residual list (close-out part 2, below) remains**, then Wave C.
   Also fixed after the final comparison: the header's middle row keeps `1fr auto 1fr` at every tier (one row at 375);
   menu items 13.5px/400/0.06em and a 0 gap on the left menu (one row from 1060 to 1440); Lenses h1 capped at 18ch;
   Home steps show numerals (`sgs/process-steps` list).
-- **Wave B close-out part 2 (next session).** From the final read-only comparison (1440/790/768/375), each proven:
-  Framework:
-  1. `sgs/business-info` copyright hardcodes the word "Copyright" before the Site Info value (which already starts
-     with ©): add an attribute to omit it (`render.php` copyright case).
-  2. `sgs/mega-group` has no link: the draft's mega cards are one link each (Lenses panel).
-  3. `sgs/process-steps` number has no font-family setting (`.sgs-process-steps__number`); the draft's numerals are
-     Playfair Display.
-  4. Home "Any pair here, made to your prescription": a `height:100%` cover image in a grid row adds its intrinsic
-     height to the row (section 1708px, draft 856px). Needs `min-height:0` on the grid/flex item wrapper
-     (`class-sgs-container-wrapper.php` or the media box-shape rule); the container wrapper is the nav/container
-     session's file, so co-ordinate.
-  5. `sgs/container`: a template set for desktop only is overridden below 1024 by the default column counts
-     (`repeat(3,1fr)`, then one column) instead of inheriting. Eye Care works round it by setting all tiers.
-  6. `sgs/nav-bar-menu` link padding (8px 12px) is hardcoded with no setting (nav track).
-  7. `sgs/social-icons`: brand marks paint `currentColor` (Google should be its four colours) and there is no boxed
-     (bordered square) style; the footer and drawer need both. Order is content (draft: Instagram, Google, WhatsApp).
-  8. `scripts/wp-build-page.js` cannot refuse an off-list value for an attribute validated only in PHP (no JSON enum):
-     `markerType: "number"` passed and rendered check icons. Consider reading the PHP allow-lists it can resolve.
-  Content (trees):
-  9. Mobile menu (`sgs_drawer` 203) to the draft: EYE CARE wordmark, large Playfair primary list with dividers
-     (Sunglasses, Brands, Prescription lenses, Glasses SOON), a small secondary list (About Eye Care; Delivery, returns
-     & FAQs; Size guide; Contact), the phone in a bordered box, three boxed social icons (WhatsApp tinted), no pill.
-  10. Mega panels' look: plain (not underlined) links, no scrim, Brands' "Most asked for" as a 5-column bordered tile
-      grid with the count under each name, Sunglasses' promo a plain image banner (no added card and button).
-  11. Contact details as a labelled 2x2 grid (Phone, Email, Clinic, Hours; no icons): check `sgs/business-info`'s
-      label and icon options before calling it framework.
-  12. Help: the draft says "Call the clinic on {phone}"; the FAQ close icon is a thin ×.
+- **Wave B close-out part 2: DONE 2026-09-25, live on eye-care-test (framework at 35f25de0b, trees 2004930f6).**
+  Framework (all deployed):
+  - `sgs/business-info` `copyrightPrefix` (empty omits the word) and `textBefore`/`textAfter` (text around a value
+    inside its line; the line switches to inline flow). Footer: "© 2026 Eye Care Birmingham…"; Help: "Call the
+    clinic on {phone}, or send me a message…" is one block.
+  - `sgs/mega-group` `url`/`opensInNewTab`/`rel`: the whole card is one link (Lenses panel, 4 cards to
+    /prescription-lenses/).
+  - `sgs/process-steps` `numberFontFamily` (raw CSS font-family string, e.g. `"Playfair Display", serif`).
+  - `sgs/social-icons` `iconStyle: boxed` (square bordered box) and, in brand mode, the four-colour Google mark.
+  - `sgs/container`: a template set for desktop only now governs tablet and mobile (a count fills a tier only when that
+    tier's count was authored); the grid/flex-child shrink backstop is `:where()`, so a child's own min-height
+    applies (the Home image cell's 430px read 0 before). Header middle row now desktop-only, proven one row at 768/375.
+  - `sgs/site-header-row`: the logo floor never exceeds the logo's authored width (the 120px floor had beaten the
+    40px mark once the backstop stopped masking it; the sweep found no other masked rule that was wrong).
+  - `sgs/icon-list`: linked items follow `itemTextDecoration` (the underline sat on the
+    `<a>`, which a `none` on the `<li>` could not remove).
+  Proven causes that differed from the list: item 4 was not `min-height:0` (already present) but the backstop's
+  specificity plus a percentage height on an image whose parent has no height; the image cell is now a container
+  background (alt kept), Home section 826px at 1440 (draft 856).
+  Content (all built): mobile menu (icon-list links, phone box, boxed brand social icons, left-aligned), mega panels
+  (`panelBg: surface-alt`, plain links, Brands 5-column tile grid, Lenses linked cards, Sunglasses plain promo image),
+  Contact labelled 2x2 grid, Help sentence, footer copyright and boxed icons.
+  Routed elsewhere: `sgs/nav-bar-menu` link padding and `sgs/mega-panel`'s translucent empty-`panelBg` default are
+  in the Wave 3C plan's lane A follow-ups (nav track owns those blocks).
+  Decided not to build: `scripts/wp-build-page.js` reading PHP allow-lists. Of about 285 `in_array` checks in block
+  render files only 110 are inline literals; the rest go through variables and helpers (icon-list's `markerType`
+  uses `sgs_list_marker_sanitise_type()`), so they cannot be read without running PHP. JSON `enum`s are left off on
+  purpose (WordPress coerces an off-enum value to the default). A PHP registry of allow-lists exposed over REST is
+  the viable design if off-list values keep slipping through.
   Decided not to build: the shape tiles' "Photo to come" note (a draft artefact; real photos replace it).
-  Moved to Wave C: the best-seller product cards (the draft's Frame Card: brand, heart, SAVE badge, stars, 4-up at
-  1280) are the shared product card, built with the shop.
+- **Wave B residuals (small, Eye Care surfaces):**
+  1. `sgs/media` inside a grid/flex row: an agent reported that the aspect ratio applies to the `<img>` only, so the
+     `<figure class="sgs-media-box">` stretched to the row height (669px) and a caption overlay painted over the whole
+     stretched box (Sunglasses mega promo). Unproven: verify on the live Sunglasses panel first; if true, fix in the
+     media atoms (`includes/media/atoms/`) and restore the promo's on-image caption overlay.
+  2. `sgs/social-icons`: item order is fixed when `source: site-info` (draft: Instagram, Google, WhatsApp; live:
+     Instagram, WhatsApp, Google) and there is no per-item tint (the draft's green WhatsApp box in the mobile menu).
+     A small setting on the block; footer/drawer surfaces, so after the nav track's rebuild.
+  3. Glasses "SOON" in the mobile menu is item text (icon-list has no per-item badge).
+  4. Mobile menu Sunglasses and Brands link to /shop/ until category pages exist (Wave C).
 - Known follow-up, not blocking: the social-icons glyph gradient paints strokes only, so it has no effect on the four
   filled brand marks (Google, WhatsApp, TikTok, X).
+- **Wave C: next** (Bean, 2026-09-25: pages and the configurator while the nav track rebuilds header, footer and
+  menus; do not touch those surfaces). Order: (1) the shared product card (the draft's Frame Card: brand, heart,
+  SAVE badge, stars, 4-up at 1280; Home's best sellers use it), then the product page, zero-reviews state first;
+  (2) the shop archive; (3) the lens configurator: amend Spec 43 with the "add-on price list" priced-step source
+  (section 5), then choice-flow Phase 3 (priced steps, bag line) and Phase 4 (modal delivery) from
+  `plans/2026-09-14-spec42-43-form-choiceflow-phase-plan.md`; (4) the size-guide modal (no `sgs_modal` posts exist
+  yet) and opening a modal from any link; (5) bag drawer and checkout with the prescription step (section 6; private
+  upload storage already exists in `includes/forms/class-form-upload.php`). Data is in place: 16 products,
+  49 colour variations, 40 brands.
 - Wave B framework part: all 22 items from section 2 of `.claude/reports/2026-09-24-eye-care-gap-map-recheck.md`
   are built, audited against Spec 32 and Spec 35, and committed one feature per commit. Two needed no code:
   `sgs/google-reviews` already draws the exact fraction (4.7 fills 70% of the fifth star); product fields got a

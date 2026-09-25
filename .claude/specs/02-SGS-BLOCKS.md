@@ -486,7 +486,7 @@ The icon circle has an overridable default border; a title placeholder never lea
 - `showDots` / `showArrows` — boolean
 - `slidesVisible` — number (default: 3)
 - `columns`/`columnsMobile`/`columnsTablet` — grid columns
-- `gridTemplateColumns`/`Tablet`/`Mobile`, `gridTemplateRows`/`Tablet`/`Mobile`, `gridAutoRows` — explicit grid templates
+- `gridTemplateColumns`/`Tablet`/`Mobile`, `gridTemplateRows`/`Tablet`/`Mobile`, `gridAutoRows` — explicit grid templates. A template-less tier takes the wider tier's template unless that tier's `columns` count was authored (then the count's `repeat(N,1fr)` applies); the defaults 2/2/1 never replace an authored template. Direct grid/flex children get a zero-specificity `min-width:0;min-height:0` backstop, so a child's own minimum size wins.
 - `gap`/`gapTablet`/`gapMobile`, `justifyItems`, `alignContent`, `templateMode` (free | grid-section | card-grid)
 - `nameFontSize`, hover attrs (`hoverBackgroundColour`/`hoverTextColour`/`hoverBorderColour`/`hoverEffect`), `transitionDuration`/`transitionEasing`
 - Width/flex attrs: `widthMode`/`Mobile`/`Tablet`/`Desktop`, `customWidth`/`customWidthUnit`, `contentWidth`, `maxWidth`, `flexDirection`, `flexWrap`, `justifyContent`

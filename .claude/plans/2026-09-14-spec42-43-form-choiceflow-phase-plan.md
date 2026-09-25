@@ -7,6 +7,12 @@ cost_estimate: "~5 min agent time, Phase 0 only"
 docscore_grade: not-run (ad-hoc, in-flight — see phase-planner Stage 7 note on active plans)
 ---
 
+**Status (2026-09-25):** Phases 0, 1 and 2 SHIPPED. Phase 0's fix landed with Phase 1 (fc6c66444: the
+CPT-linked config lookup refuses to guess `requireLogin`, `class-form-rest-submission.php::handle_submit`).
+Next: Phases 3 and 4, built as the Eye Care lens configurator (Wave C of
+`plans/2026-09-24-eye-care-hand-build-design.md`, section 5), after Spec 43 gains the "add-on price list"
+priced-step source beside "product variation". Phase 5 is unchanged.
+
 # Phase 0 — Fix the fail-open `requireLogin` bug (Spec 42 FR-42-0)
 
 **USP:** Closes a live, unauthenticated-submission security defect on the canary today,
