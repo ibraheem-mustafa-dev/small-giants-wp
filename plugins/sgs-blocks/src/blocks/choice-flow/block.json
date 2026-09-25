@@ -80,6 +80,16 @@
 			"type": "string",
 			"default": ""
 		},
+		"flowId": {
+			"type": "string",
+			"default": "",
+			"description": "FR-43-6: the slug of a sgs_choice_flow post (Choice Flows admin screen) this block renders in place of its own steps. Same by-slug reference as sgs/form's formId (Spec 42 §2)."
+		},
+		"flowIsLinked": {
+			"type": "boolean",
+			"default": false,
+			"description": "True only when flowId was set by the Linked flow picker: the discriminator between 'not linked' (renders its own steps) and 'linked, but the flow post is gone' (renders the fallback). The flow post's own sgs/choice-flow never carries it, which is what stops a linked flow rendering itself."
+		},
 		"maxWidth": {
 			"type": "string",
 			"default": "800px"

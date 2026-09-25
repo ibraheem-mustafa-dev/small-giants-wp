@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 43
-spec_version: 1.4.0
+spec_version: 1.5.0
 status: active
 owner: framework
 date: 2026-09-14
@@ -65,6 +65,10 @@ derived_from:
     were rejected (two bag lines per pair). v1.4.0 adds "add-on price list" as a second priced-step source beside
     "product variation" (FR-43-17 to FR-43-20); the variation source stays for flows that resolve a product's own
     axes (Mama's Munches).
+  - **2026-09-25 (v1.5.0), owner direction (Bean, 2026-09-25: the lens configurator is built through the flow
+    CPT):** FR-43-6 reference mechanism settled as `flowId` + `flowIsLinked` on `sgs/choice-flow` itself (the
+    `sgs/form` `formId` precedent, and the attribute the Choice Flows usage column already counted), not a
+    separate `flowRef` on the modal: one linked-block mechanism serves inline and modal delivery alike.
 ---
 
 # Spec 43 — `sgs/choice-flow`
@@ -245,13 +249,17 @@ client-submitted delta of any kind.
 
 ## 4. Delivery — inline or full-screen modal
 
-**FR-43-6.** A `sgs/choice-flow` instance is openable two ways: embedded inline on a page
-like any other block, or opened full-screen via the `sgs_modal` mechanism shipped this
-same session (Task 1) — a "Customise" / "Choose options" trigger button (on a product
-card, a CTA, anywhere) references the flow the same way a modal trigger references a
-`sgs_modal` post: a `flowRef` attribute resolved via `LinkControl` filtered to the
-`sgs_choice_flow` post type (same picker mechanism as Spec 42 FR-42-4 — do not build a
-third bespoke picker).
+**FR-43-6 (v1.5.0).** A flow is saved once as a `sgs_choice_flow` post (Choice Flows admin
+screen) and shown wherever it is needed by a `sgs/choice-flow` block linked to it: the block's
+"Linked flow" picker (`LinkPopoverField` filtered to `sgs_choice_flow`, the same picker as Spec 42
+FR-42-4's "Linked Form") writes the post's slug into `flowId` and sets `flowIsLinked`, and
+render.php draws that post's own `sgs/choice-flow` (steps, pricing, styling) in its place. A link
+whose post is gone renders a fallback message (plus an editor notice for `edit_sgs_forms`
+holders), the same two-audience degrade as FR-42-7a; the flow post's own block never carries
+`flowIsLinked`, which is what stops a flow rendering itself. Delivery is either inline (the linked
+block placed on a page) or full-screen (the linked block inside a `sgs/modal`, `size: fullscreen`,
+opened by any link to the modal's anchor or by its own trigger). The Choice Flows list's
+"Embedded on N pages" column counts `flowId` references.
 
 **FR-43-7 (Mama's Munches case — demoted to post-v1, Ship-PM MUST-FIX).** A variable
 product with many flavour/pack-size combinations gets a `sgs/choice-flow` with one priced
@@ -407,7 +415,7 @@ FR-42-7b, FR-42-10/FR-43-14 (clone-orchestrator CPT-creation gap), FR-42-13 (ana
 | FR-43-3 | Terminal: recommendation result screen |
 | FR-43-4 | Terminal: email-capture lead-gen handoff (N8N webhook, not `wp_mail()`) + inherited rate-limit |
 | FR-43-5 | Terminal: real purchase via Spec 27's `/sgs/v1/cart/add-item` proxy, unmodified — corrected citation, no bespoke security apparatus |
-| FR-43-6 | Delivery: inline or full-screen via `sgs_modal`, `flowRef` + `LinkControl`, same picker as Spec 42 |
+| FR-43-6 | A saved `sgs_choice_flow` post shown by a linked `sgs/choice-flow` (`flowId` + `flowIsLinked`, same picker as Spec 42), inline or inside a full-screen `sgs/modal` |
 | FR-43-7 | Mama's Munches: demoted to Phase 4, explicitly not a v1 acceptance criterion |
 | FR-43-8 | `sgs_choice_flow` CPT — same literal capability/cache/revision values as Spec 42, not a parallel decision |
 | FR-43-9 | Own small IAPI store, decided now — `sgs/form-step` has no runtime to extend, `sgs/form/view.js`'s engine stays block-private in v1 |

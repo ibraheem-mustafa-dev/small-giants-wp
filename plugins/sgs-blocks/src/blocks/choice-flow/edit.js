@@ -20,6 +20,7 @@ import fillRow from '../../components/colour-variants/fillRow';
 import textRow from '../../components/colour-variants/textRow';
 import { colourVar } from '../../utils';
 import PricingSettingsPanel from './PricingSettingsPanel';
+import LinkedFlowPanel from './LinkedFlowPanel';
 
 // Box-object interface contract — length units for the kept-scalar maxWidth
 // attr (base only). Mirrors sgs/notice-banner/edit.js's LENGTH_UNITS exactly
@@ -413,6 +414,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		showPricePanel,
 		pricePanelTitle,
 		flowProductId,
+		flowId,
+		flowIsLinked,
 	} = attributes;
 
 	const blockProps = useBlockProps( {
@@ -424,7 +427,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		{ className: 'sgs-choice-flow__inner' },
 		{
 			allowedBlocks: ALLOWED_BLOCKS,
-			template: TEMPLATE,
+			// A linked flow shows another post's steps (FR-43-6), so it gets
+			// no starter steps of its own.
+			template: flowIsLinked ? undefined : TEMPLATE,
 			templateLock: false,
 			orientation: 'vertical',
 		}
@@ -441,7 +446,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		[ clientId ]
 	);
 
-	const errors = useMemo( () => validateFlow( steps ), [ steps ] );
+	const errors = useMemo(
+		() => ( flowIsLinked ? [] : validateFlow( steps ) ),
+		[ steps, flowIsLinked ]
+	);
 
 	// Reorder-desync guard (see remapStepReferencesOnReorder's own docblock).
 	// previousStepOrder persists across renders without itself triggering a
@@ -497,6 +505,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	return (
 		<>
 			<InspectorControls>
+				<LinkedFlowPanel
+					flowId={ flowId }
+					flowIsLinked={ flowIsLinked }
+					setAttributes={ setAttributes }
+				/>
 				<PanelBody title={ __( 'Choice Flow Settings', 'sgs-blocks' ) }>
 					<TextControl
 						label={ __( 'Flow title', 'sgs-blocks' ) }
@@ -639,7 +652,21 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						</ul>
 					</Notice>
 				) }
-				<div { ...innerBlocksProps } />
+				{ flowIsLinked ? (
+					<Notice
+						status="info"
+						isDismissible={ false }
+						className="sgs-choice-flow__linked-notice"
+					>
+						{ sprintf(
+							/* translators: %s: the linked flow's slug. */
+							__( 'Showing the saved flow “%s”. Edit its steps under Choice Flows.', 'sgs-blocks' ),
+							flowId
+						) }
+					</Notice>
+				) : (
+					<div { ...innerBlocksProps } />
+				) }
 				{ /* Editor-canvas-only preview of the Back button's colour/border
 				   styling (Spec 32-safe: inline style here, zero inline style
 				   on the actual frontend render.php output). Static, never

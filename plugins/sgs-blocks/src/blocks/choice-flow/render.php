@@ -85,6 +85,35 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__ ) . '/choice-flow-question/helpers-addon-pricing.php';
 
+// FR-43-6 — a linked flow renders the referenced sgs_choice_flow post's own
+// sgs/choice-flow (its steps, pricing and styling) in place of this block,
+// the same by-slug, fail-closed reference sgs/form uses for sgs_form posts.
+// Gated on flowIsLinked so the flow post's own block never resolves itself;
+// the static stack also stops a flow that links to itself, however deep.
+$flow_ref_slug  = isset( $attributes['flowId'] ) ? sanitize_title( (string) $attributes['flowId'] ) : '';
+$flow_is_linked = ! empty( $attributes['flowIsLinked'] ) && '' !== $flow_ref_slug;
+if ( $flow_is_linked ) {
+	static $sgs_choice_flow_rendering = array();
+	$referenced_flow = isset( $sgs_choice_flow_rendering[ $flow_ref_slug ] ) || ! class_exists( '\SGS\Blocks\Sgs_Block_CPTs' )
+		? null
+		: \SGS\Blocks\Sgs_Block_CPTs::resolve_choice_flow( $flow_ref_slug );
+
+	if ( null === $referenced_flow ) {
+		echo '<div class="sgs-choice-flow sgs-choice-flow--broken-reference">';
+		if ( current_user_can( 'edit_sgs_forms' ) ) {
+			echo '<p class="sgs-choice-flow__admin-notice" role="alert">' . esc_html__( "This flow's link is broken: go to Choice Flows, find the linked flow, and publish it or unlink this block.", 'sgs-blocks' ) . '</p>';
+		}
+		echo '<p class="sgs-choice-flow__fallback-message">' . esc_html__( "This isn't available right now. Please contact us instead.", 'sgs-blocks' ) . '</p>';
+		echo '</div>';
+		return;
+	}
+
+	$sgs_choice_flow_rendering[ $flow_ref_slug ] = true;
+	echo (string) do_blocks( $referenced_flow->post_content ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- do_blocks() output is core-trusted block HTML, same provenance as sgs/form's linked path.
+	unset( $sgs_choice_flow_rendering[ $flow_ref_slug ] );
+	return;
+}
+
 $flow_title = isset( $attributes['title'] ) ? (string) $attributes['title'] : '';
 
 // -------------------------------------------------------------------------

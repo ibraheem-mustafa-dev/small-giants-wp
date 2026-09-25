@@ -24,7 +24,7 @@
  *     --tree tree.json (--post-id 123 | --create page --title "About" --slug about |
  *                       --template-part sgs-pdp-content | --template single-product) [--status publish] [--dry-run]
  *
- *   --create takes a post type: page, sgs_header, sgs_footer, sgs_drawer, sgs_modal, sgs_mega_menu, sgs_form, wp_block.
+ *   --create takes a post type: page, sgs_header, sgs_footer, sgs_drawer, sgs_modal, sgs_mega_menu, sgs_form, sgs_choice_flow, wp_block.
  *   --post-id replaces the whole content of an existing post.
  *   --template-part / --template save this site's own copy of a theme template part or template (the copy the
  *   Site Editor saves, which overrides the theme file). The tree is validated in the Site Editor's block registry
