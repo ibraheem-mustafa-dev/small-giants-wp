@@ -215,8 +215,7 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
   accordion at mobile with no floating shell.
 - Residue: studionamma's up-scale origin, wearecollins' hovered-item return time, resn's canvas dissolve (DEC-01),
   buck's per-link glyphs (Wave 4). Delivered since: wearecollins' two-bar burger (`burgerBarCount`) and the bar's
-  link padding setting (`itemPadding`). Owed, lane A: the numbered compact-links pattern and a live icon-list numbers
-  check, away's 375 tile scroller, a per-page menu video source. Batched: axe with the drawer open, keyboard dim, reduced motion, the
+  link padding setting (`itemPadding`). Owed, lane A: away's 375 tile scroller, a per-page menu video source. Batched: axe with the drawer open, keyboard dim, reduced motion, the
   editor round-trip.
 
 **U-10 + U-14 (header-row structure), done 2026-09-25** (design `.claude/reports/2026-09-25-u10-u14-design.md`;
@@ -230,8 +229,9 @@ commit 0fbe085f1 plus DB/gate fixes through 5781740e7).
 - Residue: none per family. Batched: axe with the drawer opened from the chip, keyboard order past the chip, the
   four new controls' editor round-trip, the logged-out admin-bar-free offset.
 
-**Next (lane A):** the owed items above (numbered compact-links pattern, away's tile scroller, a per-page menu
-video source). `sgs/mega-panel`'s opaque default fill is delivered (2026-09-25).
+**Next (lane A):** the owed items above (away's tile scroller, a per-page menu
+video source). `sgs/mega-panel`'s opaque default fill and the numbered compact-links pattern (with `sgs/icon-list`'s
+per-item description) are delivered (2026-09-25).
 
 Gate 3C passes when (the one definition; the same words are in the implementation plan §7 and the
 strategic plan's Gate 3C entry):

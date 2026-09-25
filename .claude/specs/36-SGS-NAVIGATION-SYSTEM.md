@@ -282,7 +282,9 @@ DISCLOSURE semantics, never `role="menu"` (FR-36-10), and are block-based CPT po
   Layouts outside that preset are built with structure, never as loose single blocks: `sgs/container` grids
   set the columns and nested containers hold each group or tile. They ship as starter patterns too:
   `sgs/mega-links-with-tiles` (link columns beside a row of image tiles, each a container of image, text and
-  button) and `sgs/mega-compact-links` (a 620px link list for a narrow, page-centred panel).
+  button), `sgs/mega-compact-links` (a 620px link list for a narrow, page-centred panel) and
+  `sgs/mega-compact-links-numbered` (the same panel with numbered rows, `01` style, each link carrying a
+  description line: `sgs/icon-list` `markerType` numbered plus its per-item `description`).
 - **Group headings (informational-only):** every mega panel gets group headings; the
   heading/grouping/one-item-per-group best practice is EMBODIED in the starter layouts but is NOT an
   enforced content contract — a heading-less multi-column panel raises an editor INFORMATIONAL notice

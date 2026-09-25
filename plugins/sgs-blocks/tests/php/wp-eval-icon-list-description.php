@@ -57,8 +57,8 @@ $ok   = static function ( bool $cond, string $label ) use ( &$pass, &$fail ) {
 	echo ( $cond ? 'PASS  ' : 'FAIL  ' ) . $label . "\n";
 };
 
-$ok( (bool) preg_match( '#<a [^>]*class="sgs-icon-list__item-link"[^>]*>.*?<span class="sgs-icon-list__description">Three decades of heritage &lt;b&gt;&amp;&lt;/b&gt; care</span></a>#s', $html ), '1 linked item: escaped description inside its link' );
-$ok( (bool) preg_match( '#<span class="sgs-icon-list__text">[^<]*Careers<span class="sgs-icon-list__description">Join the team</span></span>#s', $html ), '2 unlinked item: description inside its text span' );
+$ok( (bool) preg_match( '#<a [^>]*class="sgs-icon-list__item-link"[^>]*>.*? <span class="sgs-icon-list__description">Three decades of heritage &lt;b&gt;&amp;&lt;/b&gt; care</span></a>#s', $html ), '1 linked item: escaped description inside its link, a space before it (accessible name)' );
+$ok( (bool) preg_match( '#<span class="sgs-icon-list__text">[^<]*Careers <span class="sgs-icon-list__description">Join the team</span></span>#s', $html ), '2 unlinked item: description inside its text span' );
 $ok( 2 === substr_count( $html, 'sgs-icon-list__description' ), '3 an item without a description renders none (2 spans for 3 items)' );
 $ok( (bool) preg_match( '~\.sgs-icon-list__description\{color:#0a7ea8;?\}~i', $html . $css ), '4 descriptionColour emits a scoped rule' );
 $ok( (bool) preg_match( '#\.sgs-icon-list__description\{[^}]*font-size:13px#i', $html . $css ), '5 descriptionFontSize emits a scoped rule' );

@@ -742,10 +742,12 @@ foreach ( $resolved_items as $item ) {
 	$item_text = $item['text'] ?? '';
 	$item_url  = isset( $item['url'] ) ? esc_url( $item['url'] ) : '';
 	// Optional second line. Inside the link when the item links, so the whole
-	// row stays one click target.
+	// row stays one click target. The leading space keeps the words apart in the
+	// accessible name ("Our story Where we started"); the span is a block, so
+	// the space paints nothing.
 	$item_description      = trim( (string) ( $item['description'] ?? '' ) );
 	$item_description_html = '' !== $item_description
-		? '<span class="sgs-icon-list__description">' . esc_html( $item_description ) . '</span>'
+		? ' <span class="sgs-icon-list__description">' . esc_html( $item_description ) . '</span>'
 		: '';
 
 	// Wrap text in <a> when a per-item URL is provided. `data-sgs-nav-path`

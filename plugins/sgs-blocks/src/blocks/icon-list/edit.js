@@ -375,6 +375,7 @@ export default function Edit({ attributes, setAttributes }) {
         )}
         <span className="sgs-icon-list__text" style={textStyle}>
           {item.text}
+          {item.description && " "}
           {item.description && (
             <span className="sgs-icon-list__description" style={descriptionStyle}>
               {item.description}
