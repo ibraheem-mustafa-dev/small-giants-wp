@@ -1162,7 +1162,7 @@ its element's panel (TIER 1) regardless of this field.)*
    design gate.**
 9. **Hover** — every shadow lifts on hover by default: the Hover tab shows what the shadow lifts to
    and a **Lift on hover** toggle (`shadowLiftOnHover`, default on); an explicit hover shadow wins.
-   Mechanism: `plugins/sgs-blocks/CLAUDE.md` "Shadows — what happens automatically".
+   Mechanism: `.claude/rules/colour-emission.md` "Shadows — automatic, do not hand-roll".
 
 ### 12. THE RESPONSIVE WRAPPER FAMILY
 
@@ -1308,7 +1308,7 @@ cross-check — do not treat this guard as complete.
 > `whatsapp-cta/card-fields.js` for its card border). `sgs/media` is radius-private-only and correctly
 > doesn't mount it. A few blocks (`card-grid`, `media`, `multi-button`, `trust-bar`) can still carry an
 > active native `__experimentalBorder` (width/colour/style) — codemod `--survey` refuses them
-> `ambiguous-anchor`. `plugins/sgs-blocks/CLAUDE.md`'s "Border controls" section states the same —
+> `ambiguous-anchor`. `.claude/rules/block-editor-controls.md`'s "Border controls" section states the same —
 > keep the two in sync. Census + ratcheted gate:
 > `plugins/sgs-blocks/scripts/survey-border-control-migration.py` (`PRIVATE_NEEDS_SWAP` must stay 0).
 >

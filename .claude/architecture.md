@@ -203,9 +203,9 @@ Every block: (1) native `supports` for wrapper-level editor controls; (2) custom
 controls for each inner text element, colour via `SgsColourPanel` (the standard shared
 component); (3) custom attrs + controls for every CTA; (4) Block Selectors API in `block.json`
 targets native typography to the block's primary text element. Border controls standardise on
-`SgsBorderControl` (one shape for width + colour + style across the framework). Full detail +
-the colour/border helper registries: `plugins/sgs-blocks/CLAUDE.md` "Block Customisation
-Standard".
+`SgsBorderControl` (one shape for width + colour + style across the framework). Full detail:
+`plugins/sgs-blocks/CLAUDE.md` "Block Customisation Standard"; the colour/border helper
+registries: `.claude/rules/colour-emission.md` and `.claude/rules/block-editor-controls.md`.
 
 ## 7. Per-client theming
 
@@ -325,5 +325,6 @@ the pointer — do not duplicate the content here:
 | Styling/token contract full detail | `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md` |
 | Inspector-UX standard | `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` |
 | Motion system full detail | `.claude/specs/38-SGS-MOTION-SYSTEM.md` |
-| Block-level architecture, colour/border helper registries | `plugins/sgs-blocks/CLAUDE.md` |
+| Block-level architecture | `plugins/sgs-blocks/CLAUDE.md` |
+| Colour/border helper registries | `.claude/rules/colour-emission.md`, `.claude/rules/block-editor-controls.md` |
 | Build / deploy / SSH / credentials | `.claude/dev-setup.md` |

@@ -54,7 +54,7 @@
 //      decidable from JSX text position: does `<SgsColourPanel` (the
 //      canonical colour mount, plugins/sgs-blocks/CLAUDE.md "Colour
 //      controls") appear before `<TypographyControls` (the canonical
-//      typography mount, same doc, "TYPOGRAPHY — use the SHARED component")
+//      typography mount, same doc, "Block Customisation Standard" item 2)
 //      when a block mounts both? Narrow and safe-default on purpose (skip
 //      when either is absent) — the same "a false absence here is safe"
 //      discipline rule 35 states for its own title match.

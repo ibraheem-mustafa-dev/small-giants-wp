@@ -167,8 +167,8 @@ The design is a semantic BEM variant class consuming `--wp--custom--{component}-
     `src/blocks/form/render.php`'s own copy). Reproduce the site list with
     `git grep -n border_style_raw -- plugins/sgs-blocks/src plugins/sgs-blocks/includes`.
   - **Rule 2 (blob-level `wp_strip_all_tags()`).** `plugins/sgs-blocks/scripts/check-style-blob-sanitisation.py`
-    is a blocking gate (registered in `scripts/gates.json`, fast tier, and in `package.json`'s
-    `postbuild`). Survey/fix/check/self-test triad (THE-MIGRATION-METHOD shape). It parses every
+    is a blocking gate (registered in `scripts/gates.json`, fast tier only — removed from `package.json`'s
+    `postbuild` because it ran twice). Survey/fix/check/self-test triad (THE-MIGRATION-METHOD shape). It parses every
     render.php with a literal `<style` tag across four emission shapes —
     `printf`/`sprintf` with one-or-more `%s` placeholders (resolved by PLACEHOLDER POSITION, not
     argument order, because `sprintf( '<style id="%s">%s</style>', esc_attr($uid),

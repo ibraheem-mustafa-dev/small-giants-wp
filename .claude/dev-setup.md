@@ -327,7 +327,7 @@ import { DesignTokenPicker } from '../../components';
 />
 ```
 
-In `render.php`, resolve the stored value with `sgs_colour_value()` (`includes/helpers-tokens.php`), which turns a design-token slug into its CSS variable and passes a real CSS colour through. Never guard a CSS fallback colour with `:not([style*="color"])` — no SGS block emits an inline `style` property declaration, so that guard always matches (see `plugins/sgs-blocks/CLAUDE.md` "Colour controls").
+In `render.php`, resolve the stored value with `sgs_colour_value()` (`includes/helpers-tokens.php`), which turns a design-token slug into its CSS variable and passes a real CSS colour through. Never guard a CSS fallback colour with `:not([style*="color"])` — no SGS block emits an inline `style` property declaration, so that guard always matches (see `.claude/rules/block-editor-controls.md` "Colour controls").
 
 ### AnimationControl
 
@@ -1960,7 +1960,7 @@ for the verb you happen to have in mind.
 | `inspector-scan/rules/42-no-op-reset-controls.js` | manifest | GROUND-TRUTH: spec=.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md PART F |
 | `inspector-scan/rules/43-colour-only-state-indicator.js` | manifest | GROUND-TRUTH: spec=.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md PART F |
 | `inspector-scan/rules/44-help-text-not-described.js` | manifest | GROUND-TRUTH: spec=.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md PART F |
-| `inspector-scan/rules/45-typography-full-replacement.js` | manifest | GROUND-TRUTH: spec=plugins/sgs-blocks/CLAUDE.md "TYPOGRAPHY — use the SHARED component, never bespoke font controls" (Bean R-22-13, 2026-06-11) +… |
+| `inspector-scan/rules/45-typography-full-replacement.js` | manifest | GROUND-TRUTH: spec=plugins/sgs-blocks/CLAUDE.md "Block Customisation Standard" item 2 (Bean R-22-13, 2026-06-11) +… |
 | `inspector-scan/run.js` | manifest+npm+script-call+skill | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… ⚠ **header disputes this — it IS wired** |
 | `ledger/__init__.py` | manifest+script-call | ledger — F2 draft-derived CSS Accounting Ledger (input parser). |
 | `ledger/content_gap_check.py` | commit-gate+manifest+script-call+test-import | ledger.content_gap_check — F5 ContentGap visibility gate (the content-dropping channel). |

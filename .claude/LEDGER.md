@@ -237,4 +237,4 @@ does not produce real matches on real data for it to consume.
 | System architecture | `architecture.md` |
 | Goals + exit criteria | root `CLAUDE.md` (purpose) + `LEDGER.md` (current fronts) |
 | Structural defences / lessons | Claude Code auto memory (not a repo path) |
-| Colour + border helper registries | `plugins/sgs-blocks/CLAUDE.md` |
+| Colour + border helper registries | `.claude/rules/colour-emission.md` (registries), `.claude/rules/block-editor-controls.md` (controls) |

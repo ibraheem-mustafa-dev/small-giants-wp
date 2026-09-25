@@ -39,8 +39,8 @@ apply, never completely walled off from areas of potential.
 ## 1. The motion-tier doctrine (constitutional) — V / G / H / W
 
 > **This section is the written home of the SGS motion principle.** The one-line "vanilla JS
-> only / no external libraries" statements in root `CLAUDE.md`, `plugins/sgs-blocks/CLAUDE.md`,
-> `theme/sgs-theme/CLAUDE.md`, Spec 01 and Spec 02 point here.
+> only / no external libraries" statements in root `CLAUDE.md`, `theme/sgs-theme/CLAUDE.md`,
+> Spec 01 and Spec 02 point here.
 
 1. **Tier V (default) — vanilla/CSS.** Every effect is assigned to the **cheapest tier that can
    achieve it**. Entrances, stagger, hovers, parallax (CSS scroll-driven first), marquees,
@@ -1383,8 +1383,7 @@ pattern is core's, not an invention of this spec.
 
 **Written homes of the vanilla-first principle** (there is NO literal "no GSAP" rule):
 root `CLAUDE.md` Non-negotiables ("No jQuery — vanilla JS only frontend");
-`plugins/sgs-blocks/CLAUDE.md` Key Rules ("Frontend JS: vanilla only, no jQuery, no external
-libraries"); `theme/sgs-theme/CLAUDE.md` Performance Budget ("No jQuery, no external CDN");
+`theme/sgs-theme/CLAUDE.md` Performance Budget ("No jQuery, no external CDN");
 Spec 01 ("no heavy animation libraries"); Spec 02 ("No external JS libraries — vanilla JS for
 frontend interactivity").
 

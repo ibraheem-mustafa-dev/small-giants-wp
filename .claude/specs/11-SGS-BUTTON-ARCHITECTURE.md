@@ -190,7 +190,7 @@ For each affected block:
 
 1. **Add InnerBlocks slot** with default template `[['sgs/multi-button', {}, [['sgs/button', { inheritStyle: 'primary', label: '...' }], ['sgs/button', { inheritStyle: 'secondary', label: '...' }]]]]`.
 
-No `deprecated.js` and no version bumps pre-production (D271/D293). Attribute changes ship without a deprecation path; see `plugins/sgs-blocks/CLAUDE.md` §block deprecations.
+No `deprecated.js` and no version bumps pre-production (D271/D293). Attribute changes ship without a deprecation path; see `.claude/rules/block-authoring.md`.
 
 ## 6. Build phases
 

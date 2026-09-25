@@ -290,7 +290,8 @@ colour control without `enableAlpha`, a URL field not using the canonical link c
 
 The Part K structural gate is `plugins/sgs-blocks/scripts/inspector-scan/run.js`: fail-closed for
 `gate`-mode rules (`rules.json`), wired into `prebuild`; each rule ships a self-test proving it can
-fail. Full per-gate rationale: `plugins/sgs-blocks/CLAUDE.md` §prebuild gates.
+fail. Full per-gate rationale: each gate script's own header (see `plugins/sgs-blocks/CLAUDE.md` §
+Gates for the fast/full tier split and `npm run gate:list`).
 
 **Gates enforcing THIS spec.**
 
@@ -504,8 +505,9 @@ PLACEMENT RULE.
   text (the two-axis model, the prop_map rows, the custom-property split, the measurement controls):
   **PART O** (Spec 35) §12 (THE RESPONSIVE WRAPPER FAMILY) — do not duplicate it here, it drifts.
   Summary: `inspector-scan` rule 26 is the detector; `WidthPanel`'s duplicate "… by viewport" controls
-  are one shared tier mechanism; `sgs/gallery` uses the FR-37-16 object model (its Block Build Status
-  row is in `plugins/sgs-blocks/CLAUDE.md`); `sgs/hero`'s responsive attrs are full triples. 14
+  are one shared tier mechanism; `sgs/gallery` uses the FR-37-16 object model (its per-block status is
+  queried via `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py` / `/wp-blocks`); `sgs/hero`'s
+  responsive attrs are full triples. 14
   properties are tier-capable — 6 as data-driven `prop_map` rows (layout set); the remaining SEVEN
   (the `gridItem*` custom-property set plus `shadow`) are NOT yet tier-capable — do not treat them as
   shipped. There is no `contentBandBackground` attribute: a background always fills its container's

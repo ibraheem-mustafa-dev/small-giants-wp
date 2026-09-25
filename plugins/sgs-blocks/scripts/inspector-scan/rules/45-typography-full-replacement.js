@@ -1,7 +1,7 @@
 'use strict';
 
-// GROUND-TRUTH: spec=plugins/sgs-blocks/CLAUDE.md "TYPOGRAPHY — use the SHARED
-// component, never bespoke font controls" (Bean R-22-13, 2026-06-11) +
+// GROUND-TRUTH: spec=plugins/sgs-blocks/CLAUDE.md "Block Customisation Standard"
+// item 2 (Bean R-22-13, 2026-06-11) +
 // scripts/consistency/cluster-member-sets.json `clusters.text.owningComponent`
 // ("TypographyControls + DesignTokenPicker") source=file evidence=live-read
 // 2026-09-05.
@@ -253,7 +253,7 @@ module.exports = {
 					severity: 'warn',
 					kind: 'native-typography-declared',
 					detail: `${ block.slug } — block.json still declares a real native \`supports.typography\` sub-capability. Bean's architecture decision (2026-09-05) is a FULL replacement of native typography support with the shared TypographyControls component + sgs_typography_css_rule() helper, everywhere — a native declaration is a violation on its own, independent of whether its selector currently resolves to anything real (that is rule 33's separate question).`,
-					fix: `Remove \`supports.typography\` from block.json and replace this element's font-size/weight/style/line-height/letter-spacing/text-align/text-transform/text-decoration controls with the shared \`TypographyControls\` component in edit.js, wired to \`sgs_typography_css_rule( $attributes, '<prefix>', '<selector>' )\` in render.php (plugins/sgs-blocks/CLAUDE.md "TYPOGRAPHY — use the SHARED component").`,
+					fix: `Remove \`supports.typography\` from block.json and replace this element's font-size/weight/style/line-height/letter-spacing/text-align/text-transform/text-decoration controls with the shared \`TypographyControls\` component in edit.js, wired to \`sgs_typography_css_rule( $attributes, '<prefix>', '<selector>' )\` in render.php (plugins/sgs-blocks/CLAUDE.md "Block Customisation Standard" item 2).`,
 					keyParts: [ 'native-typography-declared' ],
 				} )
 			);
@@ -285,7 +285,7 @@ module.exports = {
 					severity: 'warn',
 					kind: 'typography-gap-no-mechanism',
 					detail: `${ block.slug } — declares a text-cluster element (supports.sgs.elements, clusters:["text"]) but has NEITHER native \`supports.typography\` NOR the shared \`TypographyControls\`/\`sgs_typography_css_rule()\` mechanism. This element has typography-shaped attributes with no way to control them.`,
-					fix: `Add \`TypographyControls\` to edit.js for this element and wire it to \`sgs_typography_css_rule( $attributes, '<prefix>', '<selector>' )\` in render.php, per plugins/sgs-blocks/CLAUDE.md "TYPOGRAPHY — use the SHARED component".`,
+					fix: `Add \`TypographyControls\` to edit.js for this element and wire it to \`sgs_typography_css_rule( $attributes, '<prefix>', '<selector>' )\` in render.php, per plugins/sgs-blocks/CLAUDE.md "Block Customisation Standard" item 2.`,
 					keyParts: [ 'typography-gap-no-mechanism' ],
 				} )
 			);

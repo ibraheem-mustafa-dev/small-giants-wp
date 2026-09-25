@@ -395,7 +395,7 @@ left. `borderHoverAnimationDirection` is not a declared attribute and no control
 emitter reads it defensively off the raw `$attributes` only when `sweepAngle` is absent, so content
 saved with that key still renders its chosen direction. (WordPress does not strip an undeclared key
 from an already-parsed block's attrs before `render.php` runs; see the note on editor-invisible versus
-render-invisible attributes in `plugins/sgs-blocks/CLAUDE.md`.) The text/glyph Sweep (FR-41-26) is a
+render-invisible attributes in `.claude/rules/block-authoring.md`.) The text/glyph Sweep (FR-41-26) is a
 fixed left-to-right gradient and does not use this primitive.
 
 **The same mechanism drives FR-41-37's separator hover** through `itemSeparatorHoverTreatment` /
@@ -1778,7 +1778,7 @@ bare `{link}:hover` here would be an unguarded hover rule, and `hover-guard/chec
 the PHP emitters as well as the stylesheets.
 
 ⛔ **The `@supports not ((background-clip:text))` fallback is MANDATORY and is not optional
-belt-and-braces.** `plugins/sgs-blocks/CLAUDE.md`'s precedent registry marks it required for EVERY
+belt-and-braces.** `.claude/rules/colour-emission.md`'s precedent registry marks it required for EVERY
 `background-clip:text` paint in this codebase, for one reason: `-webkit-text-fill-color:transparent`
 applies on a browser that does not support the clip, so the glyphs render transparent over nothing
 and **the text is invisible** — a total content loss, not a degraded effect. Emit it by calling the
@@ -1789,7 +1789,7 @@ for a gradient, which is exactly the branch this sweep needs. It sits alongside,
 covers a browser that never supported the mechanism at all.
 
 **Why this is safe on the item link without the `textSharesElementWithBackground` workaround
-recorded in `plugins/sgs-blocks/CLAUDE.md`'s precedent registry.** That precondition exists because
+recorded in `.claude/rules/colour-emission.md`'s precedent registry.** That precondition exists because
 `background-clip: text` clips the element's WHOLE background-painting area to the glyph shapes — a
 problem only when the SAME selector also paints a real background. The item link
 (`.{bem_root}__link`) carries **no** background paint of its own: the item background paints on
@@ -1819,7 +1819,7 @@ builder evaluates per row:
 >    background-painting area to the glyph shapes, so any real background on the same selector is
 >    destroyed; and conversely a `background` SHORTHAND on that selector resets the sweep's own
 >    `background-image` to `none`, leaving transparent glyphs over nothing. This is the
->    `textSharesElementWithBackground` precondition recorded in `plugins/sgs-blocks/CLAUDE.md`'s
+>    `textSharesElementWithBackground` precondition recorded in `.claude/rules/colour-emission.md`'s
 >    precedent registry.
 >
 >    ⛔ **"Attribute-driven" is not the whole question.** The condition is about what the RENDERED
