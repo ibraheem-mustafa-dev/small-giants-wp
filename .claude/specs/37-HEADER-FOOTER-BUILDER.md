@@ -999,7 +999,7 @@ shown only inside an `sgs/site-header`) adds `sgs-hide-collapsed` / `sgs-only-co
 those rules at the collapse point of the `sgs/nav-bar-menu` that owns its burger
 (`plugins/sgs-blocks/includes/sgs-header-pass-through.php::sgs_header_collapse_visibility_css`), so the two can never disagree at a
 collapse point that is not a tier edge. No burger-owning menu: no rule, everything shows. A width set by content
-fit rather than by the burger (Eye Care's phone at 1160px) stays the block's own custom CSS.
+fit rather than by the burger (Eye Care's phone at 1160px) is a rare one-off and stays in the site's Additional CSS.
 
 **HIDE, not REMOVE.** The cascade hides via CSS; it never forks the block tree per tier.
 `device-visibility.php` generates `display:none` media queries and states *"Content remains in the

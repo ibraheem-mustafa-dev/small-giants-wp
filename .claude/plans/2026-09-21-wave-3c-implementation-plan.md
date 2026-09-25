@@ -344,7 +344,7 @@ FIXES, Bean sign-off; commit 0fbe085f1, then DB rows and gate fixes 96b375e53, d
 5781740e7; live `reports/visual-diff/nav-drawer-2026-09-25.md` section "U-10 + U-14"). U-10 (M-19) is composition: a
 copy in the drawer body, the header copy hidden by tier or, new, exactly while the menu shows its burger
 (`sgsCollapseVisibility`, a universal extension attribute whose rules the header writes at its burger-owning menu's
-`collapsePoint`). Eye Care's phone keeps 1160px as its own custom CSS (Bean: that width is where its bar stops fitting,
+`collapsePoint`). Eye Care's phone keeps its 1160px rule in Additional CSS (Bean: a rare one-off; that width is where its bar stops fitting,
 not the collapse point). U-14: `headerPassThrough` (M-52, fixed with structural pointer-events), `triggerSurface`
 (M-39; DEC-14 amended to a separate attribute) and the detaching chip (`triggerDetach*`, M-08, buck; a second copy of
 the burger printed on `wp_footer`, one open state per drawer in the store). All four families move to `covered`.
