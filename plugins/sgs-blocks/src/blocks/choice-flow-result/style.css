@@ -53,7 +53,7 @@
 	border: none;
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	background-color: var(--wp--preset--color--primary, #1f7a7a);
-	color: var(--wp--preset--color--background, #fff);
+	color: var(--wp--preset--color--text-inverse, #fff);
 	font-weight: 600;
 	cursor: pointer;
 }
