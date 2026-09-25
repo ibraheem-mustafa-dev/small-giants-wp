@@ -198,6 +198,9 @@ $wrapper_args = array(
 	'data-flow-product-id'  => (string) $resolved_product_id,
 	'data-flow-price-minor' => null !== $flow_price ? (string) $flow_price['minor'] : '',
 	'data-flow-decimals'    => null !== $flow_price ? (string) $flow_price['decimals'] : '2',
+	// WooCommerce's own "drop .00 on whole amounts" switch, so the panel's
+	// JS-formatted prices match wc_price() everywhere else on the site.
+	'data-flow-trim-zeros'  => apply_filters( 'woocommerce_price_trim_zeros', false ) ? '1' : '0',
 );
 
 if ( '' !== $flow_title ) {

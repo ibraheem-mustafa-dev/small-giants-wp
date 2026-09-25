@@ -85,7 +85,9 @@ let variationListenerBound = false;
 
 /**
  * @param {number}      minor    Amount in minor currency units.
- * @param {number}      decimals Currency decimal places.
+ * @param {number}      decimals  Currency decimal places.
+ * @param {boolean}     trimZeros Drop the decimals on a whole amount (WooCommerce's
+ *                                `woocommerce_price_trim_zeros`, seeded by render.php).
  * @return {string} A plain formatted amount, e.g. "£9.99". No currency
  *                   symbol is assumed beyond "£" (this codebase's default
  *                   client base) when no symbol is otherwise available —
@@ -93,13 +95,14 @@ let variationListenerBound = false;
  *                   totals a shopper actually pays are always WooCommerce's
  *                   own, server-formatted output.
  */
-function formatMinor( minor, decimals ) {
+function formatMinor( minor, decimals, trimZeros = false ) {
 	const amount = minor / 10 ** decimals;
+	const places = trimZeros && minor % 10 ** decimals === 0 ? 0 : decimals;
 	return (
 		'£' +
 		amount.toLocaleString( undefined, {
-			minimumFractionDigits: decimals,
-			maximumFractionDigits: decimals,
+			minimumFractionDigits: places,
+			maximumFractionDigits: places,
 		} )
 	);
 }
@@ -135,6 +138,7 @@ function ensureState( flowRoot ) {
 		flowPricingState.set( flowRoot, {
 			answers: new Map(),
 			base: readSeededBase( flowRoot ),
+			trimZeros: flowRoot.getAttribute( 'data-flow-trim-zeros' ) === '1',
 		} );
 	}
 	return flowPricingState.get( flowRoot );
@@ -158,7 +162,7 @@ function renderPricePanel( flowRoot ) {
 	const baseValueEl = panelEl.querySelector( PANEL_BASE_VALUE_SELECTOR );
 	if ( baseValueEl ) {
 		baseValueEl.textContent =
-			base.priceMinor !== null ? formatMinor( base.priceMinor, base.decimals ) : '—';
+			base.priceMinor !== null ? formatMinor( base.priceMinor, base.decimals, state.trimZeros ) : '—';
 	}
 
 	const rowsEl = panelEl.querySelector( PANEL_ROWS_SELECTOR );
@@ -178,7 +182,7 @@ function renderPricePanel( flowRoot ) {
 				? `${ answer.groupLabel } — ${ answer.label }`
 				: answer.label;
 			const valueEl = document.createElement( 'span' );
-			valueEl.textContent = priceMinor > 0 ? formatMinor( priceMinor, base.decimals ) : 'Included';
+			valueEl.textContent = priceMinor > 0 ? formatMinor( priceMinor, base.decimals, state.trimZeros ) : 'Included';
 			rowEl.appendChild( labelEl );
 			rowEl.appendChild( valueEl );
 			rowsEl.appendChild( rowEl );
@@ -189,7 +193,7 @@ function renderPricePanel( flowRoot ) {
 	if ( totalValueEl ) {
 		totalValueEl.textContent =
 			base.priceMinor !== null
-				? formatMinor( base.priceMinor + addonTotalMinor, base.decimals )
+				? formatMinor( base.priceMinor + addonTotalMinor, base.decimals, state.trimZeros )
 				: '—';
 	}
 }
@@ -295,7 +299,7 @@ export function getAddonSummary( flowRoot ) {
 			label: answer.groupLabel ? `${ answer.groupLabel } — ${ answer.label }` : answer.label,
 			priceLabel:
 				Number.isFinite( priceValue ) && priceValue > 0
-					? formatMinor( Math.round( priceValue * 10 ** base.decimals ), base.decimals )
+					? formatMinor( Math.round( priceValue * 10 ** base.decimals ), base.decimals, state.trimZeros )
 					: 'included',
 		} );
 	} );
