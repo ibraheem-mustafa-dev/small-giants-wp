@@ -12,7 +12,7 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { PanelBody, TextControl } from '@wordpress/components';
+import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
 
 function toNonNegativeInt( raw ) {
 	const parsed = parseInt( raw, 10 );
@@ -20,7 +20,11 @@ function toNonNegativeInt( raw ) {
 }
 
 export function FloatingPanel( { attributes, setAttributes } ) {
-	const { floatingScrollThreshold, floatingHideLabelBelow } = attributes;
+	const {
+		floatingScrollThreshold,
+		floatingHideLabelBelow,
+		floatingHideNearInline,
+	} = attributes;
 
 	return (
 		<PanelBody title={ __( 'Floating button', 'sgs-blocks' ) } initialOpen={ false }>
@@ -50,6 +54,18 @@ export function FloatingPanel( { attributes, setAttributes } ) {
 				}
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
+			/>
+			<ToggleControl
+				label={ __( 'Step aside when a WhatsApp button is on screen', 'sgs-blocks' ) }
+				help={ __(
+					'Hides the floating button while any other WhatsApp button on the page is visible, so the same CTA never shows twice at once.',
+					'sgs-blocks'
+				) }
+				checked={ floatingHideNearInline ?? true }
+				onChange={ ( val ) =>
+					setAttributes( { floatingHideNearInline: val } )
+				}
+				__nextHasNoMarginBottom
 			/>
 		</PanelBody>
 	);

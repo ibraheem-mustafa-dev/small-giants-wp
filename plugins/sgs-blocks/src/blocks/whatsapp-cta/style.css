@@ -112,6 +112,22 @@
 	visibility: visible;
 }
 
+/* Step-aside-near-inline (view.js, `floatingHideNearInline`) — a non-floating
+ * sgs/whatsapp-cta is on screen, so this one steps aside rather than sit on
+ * top of it. Wins over --visible (source order) so the "shown after scroll"
+ * and "stepped aside" states can never both paint the button visible. */
+.sgs-whatsapp-cta--floating.sgs-whatsapp-cta--stepped-aside {
+	opacity: 0;
+	transform: scale(0.8) translateY(12px);
+	pointer-events: none;
+	visibility: hidden;
+	/* visibility switches to hidden only once the fade/slide finishes (the
+	 * 0.3s delay), so the bubble is still visibly animating out rather than
+	 * vanishing on the spot; switching back to visible is instant (no
+	 * delay), matching the base --floating rule's own show/hide precedent. */
+	transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s;
+}
+
 .sgs-whatsapp-cta--floating.sgs-whatsapp-cta__btn {
 	width: 56px;
 	height: 56px;
@@ -224,6 +240,10 @@
 	}
 
 	.sgs-whatsapp-cta--floating {
+		transition: none;
+	}
+
+	.sgs-whatsapp-cta--floating.sgs-whatsapp-cta--stepped-aside {
 		transition: none;
 	}
 

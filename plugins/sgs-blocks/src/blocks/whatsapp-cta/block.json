@@ -388,6 +388,11 @@
 			"type": "number",
 			"default": 0,
 			"description": "Viewport width (px) below which the floating button's visible label collapses to icon-only. 0 = never hide."
+		},
+		"floatingHideNearInline": {
+			"type": "boolean",
+			"default": true,
+			"description": "Floating button steps aside (and leaves the tab order) whenever a non-floating sgs/whatsapp-cta is on screen, so the same WhatsApp CTA never shows twice at once."
 		}
 	},
 	"editorScript": "file:./index.js",

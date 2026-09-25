@@ -81,6 +81,12 @@ $floating_hide_label_below = max( 0, (int) ( $attributes['floatingHideLabelBelow
 // A floating button only gets a VISIBLE label when the client has typed one —
 // otherwise it renders icon-only exactly as before this feature existed.
 $floating_has_visible_label = ( 'floating' === $variant && $label );
+// Step-aside-near-inline (default true) — the floating button hides itself
+// while any non-floating sgs/whatsapp-cta (inline/banner/card) is on screen,
+// so the same CTA never shows twice at once. view.js reads this data
+// attribute (frontend JS has no access to block attributes, only rendered
+// markup) and runs an IntersectionObserver only when it is present.
+$floating_hide_near_inline = ! isset( $attributes['floatingHideNearInline'] ) || (bool) $attributes['floatingHideNearInline'];
 
 // An empty number falls back to the site's WhatsApp link in Site Info
 // (socials.whatsapp, e.g. https://wa.me/447...), so one business setting feeds
@@ -358,6 +364,9 @@ if ( $anchor ) {
 // to block attributes — only the rendered markup). 0 = always visible.
 if ( 'floating' === $variant ) {
 	$root_attr_args['data-scroll-threshold'] = (string) $floating_scroll_threshold;
+	if ( $floating_hide_near_inline ) {
+		$root_attr_args['data-sgs-wa-hide-near-inline'] = 'true';
+	}
 }
 $wrapper_attributes = get_block_wrapper_attributes( $root_attr_args );
 
