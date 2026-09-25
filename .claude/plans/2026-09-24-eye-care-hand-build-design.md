@@ -105,20 +105,27 @@
   has no swatch display), a Gender filter (no gender data seeded), brand search box. Framework debt found: the theme's
   default `archive-product.html` hard-codes another client's filters (Flavour/Size by attribute ID), and its
   `@container sgs-shop-grid (min-width:1280px)` columns rule queries its own container so it has never applied.
-- **Wave C task 4 (lens configurator) IN FLIGHT (2026-09-25):** Spec 43 v1.4.0 FR-43-17 to FR-43-20 committed
-  (1aaa11f37). Framework: (A, COMMITTED, not deployed) `plugins/sgs-blocks/includes/
-  addon-price-list/` (option `sgs_addon_price_list`; `sgs_addon_price_list()`, `sgs_addon_group()`,
-  `sgs_addon_resolve()`, `sgs_addon_summary()`; WooCommerce > Add-on prices page; cart hooks; `/sgs/v1/cart/add-item`
-  optional `addons` arg; `wp sgs addon-prices seed`; `woo-seed/addon-prices.json`); (B) choice-flow priced add-on
-  questions (`priceGroup`, option `addToBagNow`), live price panel (`showPricePanel`), result `action: add-to-bag`,
-  and the `sgs-variation-change` window event from `product-card/view.js` (COMMITTED, not deployed); (C)
-  `sgs/modal` `triggerStyle: none` and `size: fullscreen` (COMMITTED, not yet reseeded or deployed). Lens option pictures rendered from the draft's own SVGs:
-  `sites/eye-care-ward-end/assets/lens-options/*.png`, uploaded to eye-care-test media 447-458 (finish clear 447,
-  photo 448, pol 449, tint 450; thickness std 451, thin 452, ultra 453, xthin 454; use distance 455, none 456,
-  reading 457, varifocal 458). Content still to build: an `sgs_modal` post (fullscreen, no trigger, anchor
-  `lens-configurator`) holding the choice-flow (steps "What will you use them for?", "How thin would you like
-  them?", "What finish?" from the draft, then the result), placed in the product template with the "Add my
-  prescription" button linking `#lens-configurator`.
+- **Wave C task 4 (lens configurator) DONE and live (2026-09-25):** Spec 43 v1.5.0. The add-on price list
+  (`includes/addon-price-list/`, WooCommerce > Add-on prices, seeded on eye-care-test with `wp sgs addon-prices
+  seed`: lens-use, lens-thickness, lens-finish) is the only price authority. The flow is the Choice Flow
+  `lens-configurator` (eye-care-test post 463, `build/gen_lens_configurator.py`), shown on the product template
+  by a linked `sgs/choice-flow` (`flowId`, FR-43-6, Bean 2026-09-25: built through the flow CPT) inside a
+  triggerless fullscreen `sgs/modal` that "Add my prescription" opens (`#lens-configurator`). PROVEN in a real
+  browser on product 71: Distance, Thin 1.6, Polarised adds ONE line at £268 (139+59+30+40) reading "Options:
+  Distance · Thin · 1.6 · Polarised"; an unknown key, unknown group or two keys in one group are refused (409)
+  and a client-sent price is ignored (priced from the list). Fixed on the way: priced options carried no prices
+  (namespace mismatch, a93deb6ca), the flow bought whichever product card loaded last (a93deb6ca), add-ons
+  stacked on every cart recalculation (257/316/375 for one line, 0a2f465cf, test
+  `tests/php/run-addon-price-list-cart-standalone.php`), a `src/` require that 500'd the site (293692aea, new
+  gate `check-no-src-requires.py`), nameless modal dialogs (36d0ff818). Lens option pictures: media 447-458.
+  Gaps: option cards have no description line (the draft's "Driving, walking about, everyday wear."); the draft's
+  left aside (frame photo + running lines) is the price panel on the right; the draft's 4th question ("Your
+  prescription") is task 6 (`plans/2026-09-25-eye-care-bag-checkout-prescription.md`, D1).
+- **Wave C task 5 (size guide) DONE (2026-09-25):** `sgs_modal` 461 (`build/gen_size_guide.py`), a triggerless
+  `sgs/modal` (anchor `size-guide`, large) on the product template, opened by "Which size am I?" in the Sizing tab.
+  Gap: the buybox's size picker has no slot for the draft's "Which size am I?" link beside the Size label.
+- **Wave C task 6 (bag, checkout, prescription): PLANNED**, `plans/2026-09-25-eye-care-bag-checkout-prescription.md`,
+  waiting on Bean's D1 (where the prescription is given) and D2 (".00" at checkout).
 - **Wave C: next** (Bean, 2026-09-25: pages and the configurator while the nav track rebuilds header, footer and
   menus; do not touch those surfaces). Order: (1) the shared product card (the draft's Frame Card: brand, heart,
   SAVE badge, stars, 4-up at 1280; Home's best sellers use it), then the product page, zero-reviews state first;

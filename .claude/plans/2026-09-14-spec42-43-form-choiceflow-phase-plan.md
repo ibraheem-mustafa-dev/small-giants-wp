@@ -9,9 +9,10 @@ docscore_grade: not-run (ad-hoc, in-flight — see phase-planner Stage 7 note on
 
 **Status (2026-09-25):** Phases 0, 1 and 2 SHIPPED. Phase 0's fix landed with Phase 1 (fc6c66444: the
 CPT-linked config lookup refuses to guess `requireLogin`, `class-form-rest-submission.php::handle_submit`).
-Next: Phases 3 and 4, built as the Eye Care lens configurator (Wave C of
-`plans/2026-09-24-eye-care-hand-build-design.md`, section 5), after Spec 43 gains the "add-on price list"
-priced-step source beside "product variation". Phase 5 is unchanged.
+Phase 3's add-on price-list source (FR-43-17 to FR-43-20) and Phase 4's FR-43-6 SHIPPED as the Eye Care lens
+configurator (live on eye-care-test, proven end to end; `plans/2026-09-24-eye-care-hand-build-design.md` Status).
+Still open: Phase 3's variation source (FR-43-10/10a) and Phase 4's FR-43-7 (Mama's Munches). Phase 5 is
+unchanged.
 
 # Phase 0 — Fix the fail-open `requireLogin` bug (Spec 42 FR-42-0)
 
@@ -145,9 +146,10 @@ priced add-on questions, the live price panel and the purchase terminal. The var
 the price list filled in (seeded for Eye Care from the draft); for the variation source, real WooCommerce
 variations.
 
-**Phase 4 — modal delivery + Mama's Munches acceptance criterion.** FR-43-6 (`sgs_modal`
-delivery, `flowRef` + shared `LinkControl` picker), FR-43-7 (explicitly demoted to this
-phase per the spec's own text — a UX preference, not a capability gap).
+**Phase 4 — modal delivery + Mama's Munches acceptance criterion.** FR-43-6 SHIPPED (2026-09-25): a
+`sgs_choice_flow` post shown by a linked `sgs/choice-flow` (`flowId` + `flowIsLinked`, the Linked Form picker's
+shape), inline or inside a fullscreen `sgs/modal`. FR-43-7 still open (explicitly demoted to this phase per the
+spec's own text — a UX preference, not a capability gap).
 
 **Phase 5 — mandatory rebuild + deferred items.** FR-42-9 (rebuild, ONLY after Phase 1 has
 run on the canary for a full session and the real instance count is known — run
