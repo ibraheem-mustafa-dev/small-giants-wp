@@ -1,51 +1,36 @@
 /**
  * SGS Theme — Dark Mode
  *
- * Uses [data-theme="dark"] on <html> for toggled dark mode,
- * and @media (prefers-color-scheme: dark) for OS-level preference.
+ * Colour VALUES are no longer declared here. `theme/sgs-theme/functions.php`
+ * (`dark_mode_mapping_css()`) prints a per-slug
+ * `--wp--preset--color--<slug>: var(--wp--custom--dark--<slug>)` mapping as inline CSS
+ * on this stylesheet's handle, built from `wp_get_global_settings(['custom','dark'])`
+ * (`settings.custom.dark`, written by `scripts/derive-dark-palette.py` via
+ * `push-theme-snapshot.py::prepare_deploy_snapshot`). Palette slugs vary per client, so
+ * a static file cannot list them (U-12 §D.4, 2026-09-26) — this file owns only the
+ * state-selector scaffold, image dimming, and the toggle controls' own styling.
  *
- * All colours use CSS custom properties from theme.json, overridden here.
- * Blocks using var(--wp--preset--color--*) automatically adapt.
+ * States: `[data-theme="dark"]` (explicit toggle), `[data-theme="auto"][data-prefers-dark="true"]`
+ * (explicit "follow the OS" choice while the OS is dark), and the bare
+ * `@media (prefers-color-scheme: dark)` fallback for the moment before `dark-mode.js` has
+ * run (or with JS disabled) when no theme has been chosen yet at all.
  *
  * @package SGS\Theme
  */
 
-/* ─── Dark palette overrides ─── */
-
 :root[data-theme="dark"],
 :root[data-theme="auto"][data-prefers-dark="true"] {
-	--wp--preset--color--surface: #121212;
-	--wp--preset--color--surface-alt: #1E1E1E;
-	--wp--preset--color--text: #E8E8E8;
-	--wp--preset--color--text-muted: #A0A0A0;
-	--wp--preset--color--text-inverse: #333333;
-	--wp--preset--color--primary: #1AACAE;
-	--wp--preset--color--primary-dark: #0F7E80;
-	--wp--preset--color--accent: #FFA04D;
-	--wp--preset--color--accent-light: #3D2A1A;
-	--wp--preset--color--border: #2A4A4B;
-	--wp--preset--color--footer-bg: #0A3B3D;
-
-	/* Shadows on a dark page. Named shadow styles get a DERIVED dark variant (a black shadow at higher opacity plus a 1px light ring, generated from the theme presets and added after this file). A custom shadow that uses the Site colour keeps following the text colour, which is light here, so it reads as a soft glow. Both are visible; a plain black shadow is not. */
-
 	color-scheme: dark;
+
+	/* Shadows on a dark page. Named shadow styles get a DERIVED dark variant (a black
+	shadow at higher opacity plus a 1px light ring, generated from the theme presets and
+	added after this file via sgs_shadow_dark_preset_css()). A custom shadow that uses the
+	Site colour keeps following the text colour, which is light here, so it reads as a soft
+	glow. Both are visible; a plain black shadow is not. */
 }
 
-/* OS-level preference (no toggle needed) */
 @media (prefers-color-scheme: dark) {
 	:root:not([data-theme="light"]):not([data-theme="dark"]) {
-		--wp--preset--color--surface: #121212;
-		--wp--preset--color--surface-alt: #1E1E1E;
-		--wp--preset--color--text: #E8E8E8;
-		--wp--preset--color--text-muted: #A0A0A0;
-		--wp--preset--color--text-inverse: #333333;
-		--wp--preset--color--primary: #1AACAE;
-		--wp--preset--color--primary-dark: #0F7E80;
-		--wp--preset--color--accent: #FFA04D;
-		--wp--preset--color--accent-light: #3D2A1A;
-		--wp--preset--color--border: #2A4A4B;
-		--wp--preset--color--footer-bg: #0A3B3D;
-
 		color-scheme: dark;
 	}
 }
@@ -63,7 +48,7 @@
 	}
 }
 
-/* ─── Dark mode toggle button ─── */
+/* ─── sgs/theme-toggle — switch style (toggleStyle:"switch") ─── */
 
 .sgs-dark-mode-toggle {
 	background: transparent;
@@ -75,6 +60,7 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
+	gap: 0.5em;
 	min-width: 44px;
 	min-height: 44px;
 	transition: background-color var(--wp--custom--transition--fast, 0.15s ease);
@@ -99,7 +85,8 @@
 	stroke-linejoin: round;
 }
 
-/* Show/hide sun/moon icons based on theme */
+/* Show/hide sun/moon icons based on the CURRENT theme, not any one toggle's own state —
+[data-theme] lives on <html>, so every toggle on the page (header + drawer copies) agrees. */
 .sgs-dark-mode-toggle .sgs-icon-moon {
 	display: block;
 }
@@ -114,6 +101,39 @@
 
 :root[data-theme="dark"] .sgs-dark-mode-toggle .sgs-icon-sun {
 	display: block;
+}
+
+/* ─── sgs/theme-toggle — segmented style (toggleStyle:"segmented") ─── */
+
+.sgs-theme-toggle--segmented {
+	display: inline-flex;
+	gap: 2px;
+	padding: 2px;
+	border-radius: var(--wp--custom--border-radius--small, 4px);
+	background-color: var(--wp--preset--color--surface-alt);
+}
+
+.sgs-theme-toggle--segmented [role="radio"] {
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	min-width: 44px;
+	min-height: 44px;
+	padding: 0.375rem 0.75rem;
+	border-radius: inherit;
+	color: currentColor;
+	font: inherit;
+	transition: background-color var(--wp--custom--transition--fast, 0.15s ease);
+}
+
+.sgs-theme-toggle--segmented [role="radio"][aria-checked="true"] {
+	background-color: var(--wp--preset--color--surface);
+	font-weight: 600;
+}
+
+.sgs-theme-toggle--segmented [role="radio"]:focus-visible {
+	outline: 2px solid var(--sgs-focus-color, var(--wp--preset--color--primary-dark));
+	outline-offset: 2px;
 }
 
 /* Reduced-motion audit 2026-05-08: 1 redundant rule removed; 0 kept */

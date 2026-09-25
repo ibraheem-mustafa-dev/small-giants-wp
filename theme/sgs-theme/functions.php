@@ -149,6 +149,49 @@ function dark_mode_inline_script(): void {
 add_action( 'wp_head', __NAMESPACE__ . '\dark_mode_inline_script', 0 );
 
 /**
+ * Per-slug preset -> dark custom-property mapping CSS (U-12 §D.4).
+ *
+ * `settings.custom.dark` (written by scripts/derive-dark-palette.py via
+ * push-theme-snapshot.py::prepare_deploy_snapshot) carries one derived dark hex per
+ * palette slug this client's snapshot defines. Slugs vary per client, so the static
+ * dark-mode.css stylesheet cannot list them — this repoints
+ * `--wp--preset--color--<slug>` at `var(--wp--custom--dark--<slug>)` (the custom
+ * property WordPress itself already emits from `settings.custom.dark.<slug>`) for
+ * every slug present, under both the explicit `[data-theme="dark"]`/`"auto"` states
+ * AND the bare `@media (prefers-color-scheme: dark)` fallback dark-mode.css also
+ * declares (the moment before dark-mode.js has run, or with JS disabled, when no
+ * theme has been chosen yet).
+ *
+ * @param array<string,string> $dark_colours Slug => derived dark hex. Only the KEYS
+ *                                            drive this mapping — the VALUES already
+ *                                            reach the page via theme.json's own
+ *                                            `--wp--custom--dark--<slug>` property.
+ * @return string CSS, or '' when there is nothing to map.
+ */
+function dark_mode_mapping_css( array $dark_colours ): string {
+	$decls = '';
+	foreach ( array_keys( $dark_colours ) as $slug ) {
+		if ( ! is_string( $slug ) ) {
+			continue;
+		}
+		$safe = preg_replace( '/[^a-z0-9-]/', '', strtolower( $slug ) );
+		if ( '' === $safe ) {
+			continue;
+		}
+		// WordPress kebab-cases settings.custom keys when it prints them
+		// (`surface2` becomes `--wp--custom--dark--surface-2`), so the custom
+		// side uses the same converter or a digit-bearing slug maps to nothing.
+		$custom = \function_exists( '_wp_to_kebab_case' ) ? \_wp_to_kebab_case( $safe ) : $safe;
+		$decls .= "--wp--preset--color--{$safe}:var(--wp--custom--dark--{$custom});";
+	}
+	if ( '' === $decls ) {
+		return '';
+	}
+	return ':root[data-theme="dark"],:root[data-theme="auto"][data-prefers-dark="true"]{' . $decls . '}'
+		. '@media (prefers-color-scheme: dark){:root:not([data-theme="light"]):not([data-theme="dark"]){' . $decls . '}}';
+}
+
+/**
  * Preload the hero block background image on front-page/single posts.
  *
  * H15: The hero background image is the LCP element on most pages. Preloading
@@ -309,8 +352,11 @@ function enqueue_styles(): void {
 	// via wp_add_inline_style() from a per-site mu-plugin — never gated on a
 	// theme_mod here.
 
-	// Dark mode — only load when the feature is enabled.
-	if ( get_option( 'sgs_dark_mode_enabled', false ) ) {
+	// Dark mode — only load when THIS client's theme.json carries derived dark colours
+	// (settings.custom.dark, written by scripts/derive-dark-palette.py via
+	// push-theme-snapshot.py::prepare_deploy_snapshot).
+	$sgs_dark_custom = wp_get_global_settings( array( 'custom', 'dark' ) );
+	if ( is_array( $sgs_dark_custom ) && ! empty( $sgs_dark_custom ) ) {
 		wp_enqueue_style(
 			'sgs-dark-mode',
 			get_theme_file_uri( 'assets/css/dark-mode.css' ),
@@ -325,6 +371,12 @@ function enqueue_styles(): void {
 			asset_version( 'assets/js/dark-mode.js', $theme_version ),
 			true // Load in footer — inline head script handles flash prevention.
 		);
+
+		// Per-slug preset -> dark custom-property mapping (D.4): every palette slug this
+		// client's snapshot carries gets --wp--preset--color--<slug> repointed at its
+		// derived dark value while dark mode is active. Slugs vary per client, so this
+		// cannot live in the static stylesheet — built here from the resolved settings.
+		wp_add_inline_style( 'sgs-dark-mode', dark_mode_mapping_css( $sgs_dark_custom ) );
 
 		// Shadows on a dark page: every theme shadow preset gets a derived dark variant (a black
 		// shadow at higher opacity plus a 1px light ring), generated from the theme's own presets

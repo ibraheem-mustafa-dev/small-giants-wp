@@ -1,0 +1,74 @@
+/**
+ * sgs/theme-toggle — structural (non-colour) styling.
+ *
+ * Colour/border/padding/typography come from the block's own scoped <style>
+ * (render.php, Spec 32 no-inline). The shared `.sgs-dark-mode-toggle` /
+ * `.sgs-theme-toggle--segmented` classes (state, icon show/hide, hover/focus)
+ * live in theme/sgs-theme/assets/css/dark-mode.css — this file only owns layout
+ * that is the SAME regardless of which theme is active.
+ *
+ * @package SGS\Blocks
+ */
+
+.sgs-theme-toggle__icon {
+	display: inline-flex;
+	line-height: 0;
+}
+
+.sgs-theme-toggle__icon svg {
+	width: 1em;
+	height: 1em;
+	font-size: 20px;
+}
+
+.sgs-theme-toggle__label {
+	display: inline-block;
+}
+
+/* iconOnly (per tier) — the label stays in the DOM as the accessible name but is
+visually hidden; never `display:none` (that would also remove it from the
+accessible name computation on some AT/browser combinations). */
+.sgs-theme-toggle--icon-only .sgs-theme-toggle__label {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+@media (max-width: 1023px) {
+	.sgs-theme-toggle--icon-only-tablet .sgs-theme-toggle__label {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
+	}
+}
+
+@media (max-width: 767px) {
+	.sgs-theme-toggle--icon-only-mobile .sgs-theme-toggle__label {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
+	}
+}
+
+.sgs-theme-toggle-notice {
+	font-style: italic;
+	opacity: 0.75;
+}

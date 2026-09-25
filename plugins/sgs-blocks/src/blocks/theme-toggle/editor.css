@@ -1,0 +1,9 @@
+/**
+ * sgs/theme-toggle — editor-only styling.
+ *
+ * @package SGS\Blocks
+ */
+
+.sgs-theme-toggle-notice {
+	margin-top: 4px;
+}

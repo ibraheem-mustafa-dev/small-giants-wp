@@ -81,6 +81,23 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 # The generic host-matched secrets lookup lives with the Site Info push; one copy, not two.
 from business_info.credentials import credentials_from_secrets  # noqa: E402
 
+# scripts/derive-dark-palette.py (U-12 §D) has a hyphen in its filename, so it cannot be
+# `import`ed by name — load it from its file path instead. Both `prepare_deploy_snapshot`
+# below and `build-deploy.py` (via `deploy_theme_json_bytes`) go through THIS one loaded
+# module, so there is exactly one dark-palette derivation in play.
+import importlib.util as _importlib_util  # noqa: E402
+
+
+def _load_derive_dark_palette():
+    path = Path(__file__).resolve().parent / "derive-dark-palette.py"
+    spec = _importlib_util.spec_from_file_location("sgs_derive_dark_palette", path)
+    module = _importlib_util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+_dark_palette = _load_derive_dark_palette()
+
 # Windows consoles default to cp1252, which cannot encode the '->' arrow glyph
 # used in diff output -> UnicodeEncodeError. Force UTF-8 on the standard streams.
 sys.stdout.reconfigure(encoding="utf-8")
@@ -731,21 +748,62 @@ def drop_internal_palette_keys(snapshot: dict) -> tuple[dict, int]:
     return out, changed
 
 
+def apply_dark_palette(snapshot: dict) -> tuple[dict, str | None]:
+    """Return (copy-with-dark-derived-and-_sgsDark-stripped, one-line note or None).
+
+    U-12 §D.1: ``_sgsDark`` is an internal config key (like ``_sgsExtractor``) and is
+    NEVER deployed. When ``_sgsDark.enabled`` is true, ``settings.custom.dark.<slug>``
+    is populated from ``scripts/derive-dark-palette.py::derive()`` first — WordPress's
+    own preset machinery turns that into a ``--wp--custom--dark--<slug>`` custom
+    property, which ``functions.php::dark_mode_mapping_css()`` reads at render time.
+
+    Raises ``DarkPaletteContrastError`` (propagates to the caller) when any derived
+    colour pair still fails its WCAG target after the minimum-change search — the
+    deploy stops rather than shipping colours that fail their own contrast gate
+    (D.3: "any failing pair makes the script exit non-zero, naming the pair and
+    ratio, and the deploy stops").
+    """
+    if "_sgsDark" not in snapshot:
+        return snapshot, None
+    import copy as _copy
+
+    out = _copy.deepcopy(snapshot)
+    cfg = out.pop("_sgsDark", None) or {}
+    if not cfg.get("enabled"):
+        return out, None
+    result = _dark_palette.derive({**out, "_sgsDark": cfg})
+    if result["failures"]:
+        raise _dark_palette.DarkPaletteContrastError(result["failures"])
+    out.setdefault("settings", {}).setdefault("custom", {})["dark"] = result["dark"]
+    n = len(result["dark"])
+    return out, f"derived {n} dark palette colour{'s' if n != 1 else ''} into settings.custom.dark"
+
+
 def prepare_deploy_snapshot(local: dict, include_advisory: bool) -> tuple[dict, str | None]:
-    """Return (payload-to-push, one-line note or None). Pure: no I/O. Without
-    ``--include-advisory`` advisory entries are restored/removed (see ``apply_advisory_policy``);
-    with it they pass through, minus the internal ``_baseline_color`` key."""
+    """Return (payload-to-push, one-line note or None). Pure: no I/O (aside from the
+    dark-palette step's deliberate ``DarkPaletteContrastError`` raise on a genuine
+    contrast failure — see ``apply_dark_palette``). Without ``--include-advisory``
+    advisory entries are restored/removed (see ``apply_advisory_policy``); with it
+    they pass through, minus the internal ``_baseline_color`` key. The dark-palette
+    derivation (U-12 §D) runs AFTER the advisory-policy step, on whichever payload
+    that step produced, so both paths ship dark colours identically."""
     if include_advisory:
         deploy, n = drop_internal_palette_keys(local)
         note = (f"dropped the internal _baseline_color key from {n} palette entr"
                 f"{'y' if n == 1 else 'ies'} (not a theme.json field)") if n else None
-        return deploy, note
-    deploy, restored, removed = apply_advisory_policy(local)
-    if not (restored or removed):
-        return deploy, None
-    return deploy, (f"FR-33-5: {restored} advisory (derived) palette token(s) restored to the base "
-                    f"theme value, {removed} removed (no base value) — pass --include-advisory to "
-                    f"deploy them as derived.")
+    else:
+        deploy, restored, removed = apply_advisory_policy(local)
+        note = None if not (restored or removed) else (
+            f"FR-33-5: {restored} advisory (derived) palette token(s) restored to the base "
+            f"theme value, {removed} removed (no base value) — pass --include-advisory to "
+            f"deploy them as derived."
+        )
+
+    deploy, dark_note = apply_dark_palette(deploy)
+    if dark_note:
+        note = f"{note}; {dark_note}" if note else dark_note
+
+    return deploy, note
 
 
 def deploy_theme_json_bytes(snapshot_path: Path, include_advisory: bool = False) -> tuple[bytes, str | None]:
