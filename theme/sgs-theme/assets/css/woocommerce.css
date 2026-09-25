@@ -583,6 +583,33 @@ h2.wc-block-mini-cart__title {
 
 @media (forced-colors:active){#sgs-shop-filters:not(:focus-visible),.sgs-shop-filters:not(:focus-visible){outline:1px solid CanvasText;outline-offset:-1px}}
 
+/* ── "Filter panel style" setting (Customizer -> Shop Filters). Default
+ * "Panel" is every rule above — unchanged from today. "Plain" adds
+ * `sgs-shop-filters-plain` to `<body>` (inc/shop-filters-layout-settings.php)
+ * and strips the fill/border/radius/padding/shadow this element carries in
+ * both its states: the sticky desktop rail AND the pre-enhancement plain
+ * `<aside>` fallback (`:not(:modal)` is true for both, since `:modal` only
+ * ever matches an OPEN top-layer `<dialog>`). The mobile bottom sheet
+ * (`dialog.sgs-shop-filters:modal`, 8d below) is deliberately excluded, so it
+ * keeps its own solid surface and stays readable over the dimmed page behind
+ * it regardless of this setting. Higher specificity than the panel rule above
+ * (id + class + element beats id alone) wins outright, independent of source
+ * order. */
+body.sgs-shop-filters-plain #sgs-shop-filters:not(:modal),
+body.sgs-shop-filters-plain .sgs-shop-filters:not(:modal) {
+	background: none;
+	border: 0;
+	border-radius: 0;
+	padding: 0;
+	box-shadow: none;
+}
+
+@media (hover: hover) and (pointer: fine){
+	body.sgs-shop-filters-plain #sgs-shop-filters:hover:not(:modal),
+	body.sgs-shop-filters-plain .sgs-shop-filters:hover:not(:modal){
+		box-shadow: none;
+	}
+}
 
 /* Filters heading */
 /* `dialog.show()` (the desktop, non-modal path) moves focus INTO the dialog, so
@@ -1377,10 +1404,19 @@ body.woocommerce-cart .with-empty-cart-icon,
  *
  * The intrinsic column count is preserved — it still derives from
  * --sgs-shop-card-min, so no column number is hardcoded and mobile still resolves
- * to one full-width readable card with no breakpoint involved. */
+ * to one full-width readable card with no breakpoint involved.
+ *
+ * Both values are configurable per site (Customizer -> Shop Filters ->
+ * "Gap between product cards" / "Product card minimum width"; output as the
+ * `--sgs-shop-col-gap-setting` / `--sgs-shop-card-min-setting` custom
+ * properties by inc/shop-filters-layout-settings.php). No setting configured
+ * -> the 24px / 240px fallbacks below apply, so an existing site renders
+ * unchanged. Changing the card minimum does NOT recompute the 495px 1-up
+ * threshold in the container query further down this file — see the note
+ * there. */
 .sgs-shop-layout .wc-block-product-template {
-	--sgs-shop-col-gap: 24px;
-	--sgs-shop-card-min: 240px;
+	--sgs-shop-col-gap: var(--sgs-shop-col-gap-setting, 24px);
+	--sgs-shop-card-min: var(--sgs-shop-card-min-setting, 240px);
 
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(var(--sgs-shop-card-min), 1fr));
@@ -1515,9 +1551,19 @@ body.woocommerce-cart .with-empty-cart-icon,
 	}
 }
 
+/* ── 10f. "Product grid on narrow screens" setting (Customizer -> Shop
+ * Filters). Default "Rows" is every rule in this container query, below —
+ * unchanged from today, so an unconfigured site is unaffected. Each row-mode
+ * selector is guarded with `:where(body:not(.sgs-shop-narrow-grid))`, a
+ * zero-specificity wrapper (`:where()` never adds to the specificity of its
+ * argument), so the guard changes WHICH rule applies without raising any
+ * selector's weight against the rest of this file. Setting "Grid" adds
+ * `sgs-shop-narrow-grid` to `<body>` (inc/shop-filters-layout-settings.php),
+ * which turns every row-mode rule below off and turns on the two-column grid
+ * rule at the end of this block instead. */
 @container sgs-shop-grid (max-width: 495px) {
 
-	.sgs-shop-layout .product-card {
+	:where(body:not(.sgs-shop-narrow-grid)) .sgs-shop-layout .product-card {
 		flex-direction: row;
 		align-items: flex-start;
 
@@ -1542,7 +1588,7 @@ body.woocommerce-cart .with-empty-cart-icon,
 	 * be raised with `position:relative; z-index:1` or the overlay will eat
 	 * it. Nothing else is interactive in this mode today — the CTA and the
 	 * thumb strip are both hidden below. */
-	.sgs-shop-layout .product-card .product-card__title-link::after {
+	:where(body:not(.sgs-shop-narrow-grid)) .sgs-shop-layout .product-card .product-card__title-link::after {
 		content: "";
 		position: absolute;
 		inset: 0;
@@ -1552,7 +1598,7 @@ body.woocommerce-cart .with-empty-cart-icon,
 	/* The stretched anchor is invisible, so the focus ring has to be drawn on
 	   the card instead or keyboard users get no visible focus at all (WCAG
 	   2.4.7). `:focus-visible` inside keeps it off mouse clicks. */
-	.sgs-shop-layout .product-card:has( .product-card__title-link:focus-visible ) {
+	:where(body:not(.sgs-shop-narrow-grid)) .sgs-shop-layout .product-card:has( .product-card__title-link:focus-visible ) {
 		outline: 2px solid var( --wp--preset--color--primary-text, #3a2e26 );
 		outline-offset: 2px;
 	}
@@ -1579,8 +1625,8 @@ body.woocommerce-cart .with-empty-cart-icon,
 	 * because the block's own CSS happens to put `overflow:hidden` on the
 	 * `.product-card__media` class and not on `.sgs-product-card__media-wrap`
 	 * — i.e. it was right by accident, on one of the two markup paths. */
-	.sgs-shop-layout .product-card .product-card__media,
-	.sgs-shop-layout .product-card .sgs-product-card__media-wrap {
+	:where(body:not(.sgs-shop-narrow-grid)) .sgs-shop-layout .product-card .product-card__media,
+	:where(body:not(.sgs-shop-narrow-grid)) .sgs-shop-layout .product-card .sgs-product-card__media-wrap {
 		flex: 0 0 132px;
 		align-self: flex-start;
 		aspect-ratio: 1;
@@ -1589,12 +1635,12 @@ body.woocommerce-cart .with-empty-cart-icon,
 		overflow: hidden;
 	}
 
-	.sgs-shop-layout .product-card .product-card__img-link {
+	:where(body:not(.sgs-shop-narrow-grid)) .sgs-shop-layout .product-card .product-card__img-link {
 		display: block;
 		height: 100%;
 	}
 
-	.sgs-shop-layout .product-card .product-card-img {
+	:where(body:not(.sgs-shop-narrow-grid)) .sgs-shop-layout .product-card .product-card-img {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
@@ -1603,7 +1649,7 @@ body.woocommerce-cart .with-empty-cart-icon,
 	/* The no-image placeholder is authored at a fixed 220px for the vertical
 	   card. Told to fill the square box instead of setting its own height, so
 	   a product without a photo occupies the same footprint as one with. */
-	.sgs-shop-layout .product-card .product-card__no-image {
+	:where(body:not(.sgs-shop-narrow-grid)) .sgs-shop-layout .product-card .product-card__no-image {
 		width: 100%;
 		height: 100%;
 	}
@@ -1612,7 +1658,7 @@ body.woocommerce-cart .with-empty-cart-icon,
 	   card carrying one measured 290px against 203px for a card without. Two
 	   lines keeps the strips close to uniform, which is the whole point of the
 	   horizontal treatment; the full text is on the product page. */
-	.sgs-shop-layout .product-card .product-desc {
+	:where(body:not(.sgs-shop-narrow-grid)) .sgs-shop-layout .product-card .product-desc {
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
 		-webkit-box-orient: vertical;
@@ -1632,7 +1678,7 @@ body.woocommerce-cart .with-empty-cart-icon,
 	 *
 	 * Text is TOP-aligned. 6 of 6 reference rows top-align; none centre it and
 	 * none use space-between to pin the price to the bottom. */
-	.sgs-shop-layout .product-card .product-card-body {
+	:where(body:not(.sgs-shop-narrow-grid)) .sgs-shop-layout .product-card .product-card-body {
 		flex: 1 1 auto;
 		min-width: 0;
 		padding: 14px 16px;
@@ -1644,8 +1690,8 @@ body.woocommerce-cart .with-empty-cart-icon,
 	   entire observed range — which is what pushed most names onto a second
 	   line in a 153px measure. 17px keeps Fraunces feeling deliberate while
 	   fitting ~18 characters per line instead of ~14. */
-	.sgs-shop-layout .product-card .sgs-product-card__title,
-	.sgs-shop-layout .product-card .product-card__title-link {
+	:where(body:not(.sgs-shop-narrow-grid)) .sgs-shop-layout .product-card .sgs-product-card__title,
+	:where(body:not(.sgs-shop-narrow-grid)) .sgs-shop-layout .product-card .product-card__title-link {
 		font-size: 17px;
 		line-height: 1.3;
 	}
@@ -1654,7 +1700,7 @@ body.woocommerce-cart .with-empty-cart-icon,
 	   visual subject of a row whose subject should be the product. Median
 	   across the six reference rows is ~19px. Kept in Fraunces 700 so it still
 	   reads as a value rather than as data. */
-	.sgs-shop-layout .product-card .price {
+	:where(body:not(.sgs-shop-narrow-grid)) .sgs-shop-layout .product-card .price {
 		font-size: var(--wp--preset--font-size--large);
 	}
 
@@ -1662,7 +1708,7 @@ body.woocommerce-cart .with-empty-cart-icon,
 	   reference rows carry a navigational button; where a button exists at all
 	   it is transactional ("Add"), a genuinely different action that would earn
 	   its own control rather than inheriting this one. */
-	.sgs-shop-layout .product-card .product-card__add-to-cart {
+	:where(body:not(.sgs-shop-narrow-grid)) .sgs-shop-layout .product-card .product-card__add-to-cart {
 		display: none;
 	}
 
@@ -1672,7 +1718,7 @@ body.woocommerce-cart .with-empty-cart-icon,
 	   it cost 8px on every card. Measured: body 244.6 -> 236.6px.
 	   ⚠ It is also why positional selectors (:last-child, :nth-last-child)
 	   against .product-card-body are off by one. Section 9 already hit this. */
-	.sgs-shop-layout .product-card .product-card__cart-status:empty {
+	:where(body:not(.sgs-shop-narrow-grid)) .sgs-shop-layout .product-card .product-card__cart-status:empty {
 		display: none;
 	}
 
@@ -1684,8 +1730,22 @@ body.woocommerce-cart .with-empty-cart-icon,
 	   listing, not the ability to choose a size or flavour. That is what IKEA,
 	   Amazon and Waitrose all do on a mobile list. `display:none` correctly
 	   removes them from the tab order and the accessibility tree. */
-	.sgs-shop-layout .product-card .product-card__thumbs {
+	:where(body:not(.sgs-shop-narrow-grid)) .sgs-shop-layout .product-card .product-card__thumbs {
 		display: none;
+	}
+
+	/* "Grid" setting: two upright cards a row instead of the horizontal-strip
+	   treatment above (all of which is now scoped off via the guard). Cards
+	   keep their normal vertical layout from `.sgs-shop-layout .product-card`
+	   (flex-direction: column, set unconditionally earlier in this file) —
+	   only the template's column count changes here. Uses the same
+	   `--sgs-shop-col-gap` custom property as every other tier (already 16px
+	   at this width via the 767px media query below, or the site's own
+	   configured gap on a wide container that still happens to be this
+	   narrow). */
+	.sgs-shop-narrow-grid .sgs-shop-layout .wc-block-product-template {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		column-gap: var(--sgs-shop-col-gap);
 	}
 }
 

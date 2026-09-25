@@ -7,11 +7,16 @@
  * word, colour, price or copy is hardcoded — every value here is a neutral
  * default, and every new behaviour stays off until a client sets it.
  *
- * REQUIRE LINE NEEDED (functions.php is a shared loader — not edited by this
- * task; the main session should add, next to the existing colour-helpers.php
- * require):
+ * Required by functions.php next to the other inc/ files.
  *
- *   require_once __DIR__ . '/inc/shop-filters-settings.php';
+ * Per-site shop-layout theme mods (registered in the sibling file
+ * inc/shop-filters-layout-settings.php, required below). Each can be set
+ * directly — via WP-CLI (`wp theme mod set <name> <value>`) or a mu-plugin —
+ * without touching the Customizer UI, since the theme mod is the one source
+ * both paths read: sgs_shop_card_min_width (string, '' or '120'-'480' px;
+ * '' = 240px default), sgs_shop_col_gap (string, '' or '0'-'64' px; '' = 24px
+ * default), sgs_shop_narrow_layout ('rows'|'grid', default 'rows'),
+ * sgs_shop_filter_panel_style ('panel'|'plain', default 'panel').
  *
  * @package SGS\Theme
  */
@@ -19,6 +24,8 @@
 namespace SGS\Theme;
 
 defined( 'ABSPATH' ) || exit;
+
+require_once __DIR__ . '/shop-filters-layout-settings.php';
 
 /**
  * Register the "Shop Filters" Customizer section + its controls.
