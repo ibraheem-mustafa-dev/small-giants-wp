@@ -149,6 +149,8 @@ Turnstile::register();
 // Stores ONLY email + timestamp — no IP ever persisted.
 require_once SGS_BLOCKS_PATH . 'includes/class-stock-notify.php';
 Stock_Notify::register();
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-wishlist-rest.php';
+Sgs_Wishlist_Rest::register();
 
 // Configurator — swatch fields on WooCommerce attribute term screens (FR-27-B2 authoring UI).
 require_once SGS_BLOCKS_PATH . 'includes/configurator-term-fields.php';

@@ -1,0 +1,61 @@
+.sgs-wishlist-link {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--10, 0.25em);
+	position: relative;
+	min-width: 44px;
+	min-height: 44px;
+	padding: 10px;
+	text-decoration: none;
+	color: currentColor;
+}
+
+.sgs-wishlist-link:focus-visible {
+	outline: 2px solid var(--wp--preset--color--accent, #1e6091);
+	outline-offset: 2px;
+}
+
+.sgs-wishlist-link__icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.sgs-wishlist-link__icon svg {
+	width: 24px;
+	height: 24px;
+}
+
+/* Icon-only by default (design D per exit-cell "away | bar / all | wishlist
+   24×24 icon"): the label stays in the DOM for assistive tech, and
+   render.php only unclips it per-tier when showLabel is explicitly on. */
+.sgs-wishlist-link__label {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+.sgs-wishlist-link__badge {
+	display: none;
+	align-items: center;
+	justify-content: center;
+	min-width: 16px;
+	height: 16px;
+	padding: 0 4px;
+	border-radius: 999px;
+	font-size: 11px;
+	line-height: 16px;
+	position: absolute;
+	top: 2px;
+	right: 2px;
+	background-color: var(--wp--preset--color--accent, #1e6091);
+	color: var(--wp--preset--color--white, #fff);
+}
+
+.sgs-wishlist-link__badge--visible {
+	display: inline-flex;
+}

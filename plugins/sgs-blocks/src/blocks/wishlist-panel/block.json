@@ -1,0 +1,115 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/wishlist-panel",
+	"version": "0.1.0",
+	"title": "SGS Wishlist Panel",
+	"category": "sgs-interactive",
+	"description": "The saved-items panel: every product on the visitor's wishlist, with Move to basket / Notify me / Remove. Lives on the cart page by default (Wave 3C U-12 §E, the two-tier wishlist).",
+	"keywords": [
+		"wishlist",
+		"saved for later",
+		"favourites"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "heart",
+	"supports": {
+		"align": [
+			"wide",
+			"full"
+		],
+		"anchor": true,
+		"html": false,
+		"color": {
+			"background": false,
+			"text": false
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true
+		},
+		"sgs": {
+			"imageControls": true,
+			"boxFamilies": {
+				"margin": [
+					"margin"
+				]
+			}
+		}
+	},
+	"attributes": {
+		"heading": {
+			"type": "string",
+			"default": "Saved for later"
+		},
+		"emptyText": {
+			"type": "string",
+			"default": "Your wishlist is empty."
+		},
+		"emptyLinkLabel": {
+			"type": "string",
+			"default": "Continue shopping"
+		},
+		"showWhenEmpty": {
+			"type": "boolean",
+			"default": false
+		},
+		"showPrice": {
+			"type": "boolean",
+			"default": true
+		},
+		"showStock": {
+			"type": "boolean",
+			"default": true
+		},
+		"columns": {
+			"type": "object",
+			"default": {}
+		},
+		"gap": {
+			"type": "object",
+			"default": {}
+		},
+		"headingColour": {
+			"type": "string",
+			"default": ""
+		},
+		"itemNameColour": {
+			"type": "string",
+			"default": ""
+		},
+		"priceColour": {
+			"type": "string",
+			"default": ""
+		},
+		"stockColour": {
+			"type": "string",
+			"default": ""
+		},
+		"buttonBackgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"buttonTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"linkColour": {
+			"type": "string",
+			"default": ""
+		},
+		"linkColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"margin": {
+			"type": "object",
+			"default": {}
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./editor.css",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"viewScriptModule": "file:./view.js"
+}

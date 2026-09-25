@@ -23,6 +23,7 @@ function apiBase() {
 	const wpRoot =
 		window?.wpApiSettings?.root ||
 		window?.sgsCartData?.restUrl ||
+		window?.sgsWishlistData?.restUrl ||
 		'/wp-json';
 	return wpRoot.replace( /\/$/, '' ) + '/wc/store/v1';
 }
@@ -105,6 +106,33 @@ export function removeCartItem( key ) {
 		method: 'POST',
 		body: { key },
 	} );
+}
+
+/**
+ * Add a product (or variation) to the cart.
+ *
+ * @param {number} id       Product or variation id.
+ * @param {number} quantity Quantity (default 1).
+ * @return {Promise<Object>} The updated cart.
+ */
+export function addCartItem( id, quantity = 1 ) {
+	return request( '/cart/add-item', {
+		method: 'POST',
+		body: { id, quantity },
+	} );
+}
+
+/**
+ * Fetch products' current public data (price, stock, image, permalink).
+ *
+ * @param {number[]} ids Product ids (at most 100).
+ * @return {Promise<Array>} Store API product objects, in no guaranteed order.
+ */
+export function fetchProducts( ids ) {
+	if ( ! Array.isArray( ids ) || 0 === ids.length ) {
+		return Promise.resolve( [] );
+	}
+	return request( '/products?include=' + ids.join( ',' ) + '&per_page=100' );
 }
 
 /**

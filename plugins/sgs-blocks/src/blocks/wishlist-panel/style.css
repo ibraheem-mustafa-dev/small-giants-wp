@@ -1,0 +1,150 @@
+.sgs-wishlist-panel {
+	--sgs-wishlist-panel-columns: 3;
+	--sgs-wishlist-panel-gap: 1rem;
+}
+
+.sgs-wishlist-panel__heading {
+	margin: 0 0 var(--wp--preset--spacing--30, 1rem) 0;
+}
+
+.sgs-wishlist-panel__status {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+.sgs-wishlist-panel__items {
+	display: grid;
+	grid-template-columns: repeat(var(--sgs-wishlist-panel-columns), 1fr);
+	gap: var(--sgs-wishlist-panel-gap);
+}
+
+.sgs-wishlist-panel__items[aria-busy="true"] {
+	min-height: 3em;
+}
+
+.sgs-wishlist-panel__row {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	padding: 1rem;
+	border: 1px solid var(--wp--preset--color--border, #ddd);
+	border-radius: var(--wp--preset--spacing--10, 4px);
+}
+
+.sgs-wishlist-panel__row-link {
+	display: block;
+}
+
+.sgs-wishlist-panel__row-thumb {
+	width: 100%;
+	height: auto;
+	aspect-ratio: 1 / 1;
+	object-fit: cover;
+	display: block;
+}
+
+.sgs-wishlist-panel__row-thumb--placeholder {
+	background: var(--wp--preset--color--light, #eee);
+	aspect-ratio: 1 / 1;
+	display: block;
+}
+
+.sgs-wishlist-panel__row-info {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+}
+
+.sgs-wishlist-panel__row-name {
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.sgs-wishlist-panel__row-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.sgs-wishlist-panel__move-to-basket,
+.sgs-wishlist-panel__remove,
+.sgs-wishlist-panel__notify-toggle {
+	min-height: 44px;
+	padding: 0 1rem;
+	border: 0;
+	cursor: pointer;
+}
+
+.sgs-wishlist-panel__move-to-basket {
+	background-color: var(--wp--preset--color--accent, #1e6091);
+	color: var(--wp--preset--color--white, #fff);
+	border-radius: var(--wp--preset--spacing--10, 4px);
+}
+
+.sgs-wishlist-panel__remove,
+.sgs-wishlist-panel__notify-toggle {
+	background: transparent;
+	text-decoration: underline;
+	min-width: 44px;
+}
+
+.sgs-wishlist-panel__move-to-basket:focus-visible,
+.sgs-wishlist-panel__remove:focus-visible,
+.sgs-wishlist-panel__notify-toggle:focus-visible,
+.sgs-save-for-later:focus-visible {
+	outline: 2px solid var(--wp--preset--color--accent, #1e6091);
+	outline-offset: 2px;
+}
+
+.sgs-wishlist-panel__notify-form {
+	flex-basis: 100%;
+}
+
+.sgs-wishlist-panel__notify-inner {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem;
+	margin-top: 0.5rem;
+}
+
+.sgs-wishlist-panel__notify-consent {
+	display: flex;
+	align-items: center;
+	gap: 0.375rem;
+}
+
+.sgs-wishlist-panel__empty-message {
+	margin: 0 0 0.75rem 0;
+}
+
+.sgs-wishlist-panel__empty-cta {
+	display: inline-block;
+	min-height: 44px;
+	line-height: 44px;
+	padding: 0 1rem;
+	background-color: var(--wp--preset--color--accent, #1e6091);
+	color: var(--wp--preset--color--white, #fff);
+	text-decoration: none;
+	border-radius: var(--wp--preset--spacing--10, 4px);
+}
+
+/* The Save-for-later button injected into WooCommerce's own cart rows
+   (src/blocks/wishlist-panel/save-for-later.js). Scoped here (not
+   sgs/cart's stylesheet — that block's own build only touches its flyout
+   lines) since this is the same JS module that inserts it. */
+.sgs-save-for-later {
+	min-height: 44px;
+	padding: 0 0.75rem;
+	margin-left: 0.5rem;
+	background: transparent;
+	border: 0;
+	text-decoration: underline;
+	cursor: pointer;
+}

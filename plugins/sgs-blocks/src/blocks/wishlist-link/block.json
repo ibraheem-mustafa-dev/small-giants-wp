@@ -1,0 +1,90 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/wishlist-link",
+	"version": "0.1.0",
+	"title": "SGS Wishlist Link",
+	"category": "sgs-interactive",
+	"description": "A header/footer wishlist icon-link with a live saved-item count badge. Links to the wishlist panel (or a custom URL).",
+	"keywords": [
+		"wishlist",
+		"saved",
+		"favourites",
+		"heart"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "heart",
+	"supports": {
+		"align": [
+			"left",
+			"center",
+			"right"
+		],
+		"anchor": true,
+		"html": false,
+		"color": {
+			"background": false,
+			"text": false
+		},
+		"sgs": {
+			"headerEssential": true,
+			"iconPicker": true,
+			"imageControls": false
+		}
+	},
+	"attributes": {
+		"wishlistUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"iconSource": {
+			"type": "string",
+			"default": ""
+		},
+		"iconName": {
+			"type": "string",
+			"default": ""
+		},
+		"showCount": {
+			"type": "boolean",
+			"default": true
+		},
+		"showLabel": {
+			"type": "object",
+			"default": {}
+		},
+		"label": {
+			"type": "string",
+			"default": "Wishlist"
+		},
+		"iconColour": {
+			"type": "string",
+			"default": ""
+		},
+		"iconColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"badgeBackgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"badgeTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"iconSize": {
+			"type": "object",
+			"default": {}
+		},
+		"margin": {
+			"type": "object",
+			"default": {}
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./editor.css",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"viewScriptModule": "file:./view.js"
+}

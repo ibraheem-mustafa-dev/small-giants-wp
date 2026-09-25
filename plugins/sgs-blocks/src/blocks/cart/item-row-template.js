@@ -93,6 +93,13 @@ export function itemRowHtml( item, totals ) {
 	const key = escapeHtml( item.key );
 	const qty = Number( item.quantity ) || 0;
 	const qtyInputId = `sgs-cart-qty-${ key }`;
+	// Wave 3C U-12 §E "Save for later": the wishlist only accepts a parent
+	// PRODUCT id (a variation's own id is post type product_variation, which
+	// Sgs_Wishlist_Rest::product_is_valid() rejects) — mirrors
+	// src/blocks/wishlist-panel/match-row.js::wishlistProductIdForCartItem().
+	const wishlistProductId = Number( item.parent_id ) > 0
+		? Number( item.parent_id )
+		: Number( item.id ) || 0;
 
 	// `sgs-media-el` (rule 37-media-no-handroll fix) is the shared media-element
 	// atom marker (includes/class-sgs-media-element.php /
@@ -125,6 +132,16 @@ export function itemRowHtml( item, totals ) {
 		'<span aria-hidden="true">&times;</span>' +
 		'</button>';
 
+	// Wave 3C U-12 §E: the SAME "Save for later" action as the wishlist
+	// panel's cart-page enhancer (src/blocks/wishlist-panel/save-for-later.js),
+	// but as the flyout's own markup — a valid product id is required (skips
+	// silently on a malformed cart item rather than saving id 0).
+	const saveForLaterHtml = wishlistProductId > 0
+		? `<button type="button" class="sgs-cart__item-save-for-later" data-key="${ key }" data-product-id="${ wishlistProductId }">` +
+			escapeHtml( 'Save for later' ) +
+			'</button>'
+		: '';
+
 	return (
 		`<div class="sgs-cart__item" data-key="${ key }">` +
 		thumbHtml +
@@ -138,6 +155,7 @@ export function itemRowHtml( item, totals ) {
 			linePrice
 		) }</span>` +
 		'</div>' +
+		saveForLaterHtml +
 		'</div>' +
 		removeButtonHtml +
 		'</div>'

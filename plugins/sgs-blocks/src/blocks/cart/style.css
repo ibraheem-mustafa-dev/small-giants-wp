@@ -533,6 +533,31 @@
 	margin-left: auto;
 }
 
+/* Save for later (Wave 3C U-12 §E) — sits in the qty/price row alongside the
+   qty input, flows onto its own line via flex-wrap when space is tight. */
+.sgs-cart__item-save-for-later {
+	display: inline-flex;
+	align-items: center;
+	min-height: 44px;
+	padding: 0 8px;
+	background: transparent;
+	border: 0;
+	cursor: pointer;
+	font-size: 0.8rem;
+	text-decoration: underline;
+	color: inherit;
+	opacity: 0.85;
+}
+
+.sgs-cart__item-save-for-later:hover {
+	opacity: 1;
+}
+
+.sgs-cart__item-save-for-later:focus-visible {
+	outline: 2px solid currentColor;
+	outline-offset: 2px;
+}
+
 .sgs-cart__item-remove {
 	display: inline-flex;
 	align-items: center;

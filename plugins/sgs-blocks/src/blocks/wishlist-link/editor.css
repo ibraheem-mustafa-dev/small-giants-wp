@@ -1,0 +1,27 @@
+.wp-block-sgs-wishlist-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.wp-block-sgs-wishlist-link .sgs-wishlist-link__label {
+	position: static;
+	width: auto;
+	height: auto;
+	overflow: visible;
+	clip: auto;
+	clip-path: none;
+	white-space: normal;
+}
+
+.wp-block-sgs-wishlist-link .sgs-wishlist-link__badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 16px;
+	height: 16px;
+	padding: 0 4px;
+	border-radius: 999px;
+	font-size: 11px;
+	background: #ddd;
+}

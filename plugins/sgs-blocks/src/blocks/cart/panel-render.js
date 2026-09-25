@@ -21,6 +21,7 @@ import {
 	initFreeDeliveryElement,
 	updateFreeDeliveryProgress,
 } from './free-delivery';
+import { addWishlistId } from '../../shared/wishlist-store';
 
 /**
  * Wire one panel instance against the Store API.
@@ -219,6 +220,31 @@ export function initPanel( panelRoot, { onCartUpdated, freeDelivery } = {} ) {
 			announce( 'Item removed from your cart.' );
 		} catch {
 			announce( 'Could not remove that item. Please try again.' );
+			setBusy( false );
+		}
+	} );
+
+	// Save for later (Wave 3C U-12 §E): add to the wishlist, then remove the
+	// line the same way the Remove button does — ADD, never toggle (a toggle
+	// would wrongly remove an item the shopper already had saved).
+	itemsEl.addEventListener( 'click', async ( event ) => {
+		const button = event.target.closest(
+			'button.sgs-cart__item-save-for-later'
+		);
+		if ( ! button ) {
+			return;
+		}
+		const key = button.dataset.key;
+		const productId = Number( button.dataset.productId );
+
+		setBusy( true );
+		try {
+			await addWishlistId( productId );
+			const cart = await removeCartItem( key );
+			render( cart );
+			announce( 'Saved for later.' );
+		} catch {
+			announce( 'Could not save that item for later. Please try again.' );
 			setBusy( false );
 		}
 	} );

@@ -1,0 +1,9 @@
+.wp-block-sgs-wishlist-panel {
+	padding: 1rem;
+	border: 1px dashed #ccc;
+}
+
+.wp-block-sgs-wishlist-panel .sgs-wishlist-panel__editor-note {
+	color: #757575;
+	font-style: italic;
+}
