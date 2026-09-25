@@ -208,8 +208,10 @@ throughout** (avoids the sticky-hover mobile bug). Mechanics:
   opacity rule); `submenuOpacity` / `submenuOpacityHover` are the SAME pair for the dropdown/mega/accordion
   submenu link, scoped separately because a reference's submenu opacity can move in the opposite direction
   from its top-level item; `itemPaddingShiftHover` grows an item's inline-start padding on hover/focus by a
-  length, applied to both the top-level item link and the submenu link, each reading its own resting
-  literal. All four are touch-guarded via `sgs_hover_state_rules()`. On `sgs/mega-panel`: `panelCardLift`
+  length, applied to both the top-level item link and the submenu link, each adding to its own resting padding
+  (the top-level link's is `itemPadding`'s left side where set, else 12px; the submenu link's is 16px).
+  `itemPadding` (`sgs/nav-bar-menu` only) is the top-level link's padding, a per-device box of top, right, bottom
+  and left ("Link padding" in the List layout panel); unset sides keep the default 8px 12px. All four are touch-guarded via `sgs_hover_state_rules()`. On `sgs/mega-panel`: `panelCardLift`
   (default `3px`) sets the `cards` style's group-tile hover/focus-within lift distance
   (`translateY(calc(-1 * <value>))`); the same block's `itemPaddingShiftHover` grows a group item's own
   inline-start padding on hover, independently of the bar/drawer attribute of the same name. `sliding pill`

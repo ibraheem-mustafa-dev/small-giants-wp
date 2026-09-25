@@ -476,11 +476,12 @@ Gitignored; never committed.
 > `build-deploy.py` carries three defences: a scoped dirty gate, a fail-closed post-deploy
 > smoke test, and a `.bak` rotation for one-command rollback.
 
-> **One deploy or DB reseed at a time, across sessions.** Every target uploads to the same
-> `~/sgs-deploy.tar` on the shared SSH account, so two deploys at once overwrite each other's
-> upload ("remote extract failed"). The build gates read the shared framework DB, so a deploy during
-> another session's stage-1 reseed fails its DB gates. Message the other active sessions and
-> take turns; nothing is replaced when either abort happens.
+> **Take turns on a DB reseed, and on deploys to the same target.** Each deploy run uploads and
+> unpacks under its own name in the shared SSH home (`sgs-deploy-<pid>-<time>.tar` and folder), so
+> deploys to different targets can run at once. Two deploys to the SAME target still race on that
+> site's live-folder swap and `.bak` rotation. The build gates read the shared framework DB, so a
+> deploy during another session's stage-1 reseed fails its DB gates. Message the other active
+> sessions before a reseed or a same-target deploy; nothing is replaced when either abort happens.
 
 ```bash
 # Canary (default — sandybrown)

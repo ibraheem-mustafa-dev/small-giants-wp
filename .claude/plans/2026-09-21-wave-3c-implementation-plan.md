@@ -319,11 +319,14 @@ studionamma clone); wearecollins' social-link dim (Wave 4 wearecollins clone). w
 compact-links starter pattern (`sgs/mega-compact-links-numbered`, authored in the real editor) with a live check of
 icon-list numbers; away's 375 two-up tile scroller, checked on a post built from `sgs/mega-links-with-tiles`; a
 per-page menu VIDEO source (Bean: the thumbnails are often short clips; a featured image can only be an image, so
-GIFs work today); `sgs/nav-bar-menu` link padding as a setting (8px 12px is hardcoded; handed over by the Eye Care
-session, recorded in its plan `2026-09-24-eye-care-hand-build-design.md` close-out part 2 item 6); `sgs/mega-panel`'s
+GIFs work today); `sgs/mega-panel`'s
 empty `panelBg` falls back to a 92% translucent surface (`render.php`, `$panel_bg_value`) while the same file's tone logic
 treats unset `surfaceOpacity` as opaque, so an untouched panel shows the page through it (Eye Care sets
-`panelBg: surface-alt`; decide an opaque default, with translucency from `surfaceOpacity` only); a per-run tarball name in `build-deploy.py` (every deploy to the shared SSH account writes `~/sgs-deploy.tar`, so two sessions deploying at once overwrite each other's upload; until then deploys are serialised by message). Also fixed after Bean's review: the drawer scrollbar (thin, tinted, no arrows, clear of the rounded corners) and a wheel over an open drawer no longer scrolls the page and closes it (Lenis `prevent` on open dialogs); live `reports/visual-diff/nav-drawer-2026-09-25.md` F1, F2. Batched for the
+`panelBg: surface-alt`; decide an opaque default, with translucency from `surfaceOpacity` only). Delivered from
+this list: `sgs/nav-bar-menu` link padding as a setting (`itemPadding`, 4cf0b9069 and f06b7133f; handed over by the Eye
+Care build; live: 14px 24px read back on the fixture, and the hover shift adds to the custom left padding, 24px + 8px
+= 32px) and a per-run upload name, theme.json payload name and unpacking folder in `build-deploy.py` (7c61b7d16; live:
+the sandybrown deploy used `sgs-deploy-<pid>-<time>` and left nothing in the SSH home). Also fixed after Bean's review: the drawer scrollbar (thin, tinted, no arrows, clear of the rounded corners) and a wheel over an open drawer no longer scrolls the page and closes it (Lenis `prevent` on open dialogs); live `reports/visual-diff/nav-drawer-2026-09-25.md` F1, F2. Batched for the
 later pass: axe with the drawer open, keyboard dim, reduced-motion emulation, the editor round-trip of the new
 controls. Fixture `scripts/nav-qa/qa-item-markup-fixture.php` is applied on sandybrown (`restore` undoes it,
 including the added menu-119 page link and page 2742's featured image).
@@ -365,7 +368,8 @@ one sign-off, one build, one deploy, one live check, one report.
 | U-10 + U-14 | Header-row structure |
 
 U-4 and U-13 run alone. Three lanes run as separate sessions on disjoint files:
-- **Lane A (nav and drawer):** U-9+U-11, then U-5, then U-3+U-8 (all done), then U-6+U-7, then U-4, then U-10.
+- **Lane A (nav and drawer):** U-9+U-11, U-5, U-3+U-8, U-6+U-7 and U-4 (all done), then U-10, paired with U-14
+  (lane B has not started, so lane A runs the pair and lane B then skips U-14).
 - **Lane B (header behaviours):** U-13, then U-14, then U-16. U-14 touches `nav-bar-menu/block.json`,
   so it runs only when lane A is not mid-edit there. Start lane B after lane A is past U-9+U-11.
 - **Lane C (independent):** U-12, U-15, U-17 (prompt `.claude/prompts/2026-09-24-wave-3c-lane-c.md`).

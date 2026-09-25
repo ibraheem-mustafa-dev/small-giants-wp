@@ -103,3 +103,24 @@ neither).
 
 The server build carries the new unit list (`build/blocks/heading/index.js` contains `"vw","vh"`). The editor picker and
 the heading preview fix join the batched editor round-trip pass.
+
+## Link padding (`itemPadding`) and per-run deploy names, 2026-09-25
+
+Commits 4cf0b9069 (setting), f06b7133f (generated rows), 7c61b7d16 (deploy script); deployed to sandybrown (120 fast
+gates, 4 full gates, 3 live motion probes green). The deploy itself used the new per-run names
+(`sgs-deploy-33728-1790309527.tar` and folder); afterwards the SSH home held no `sgs-deploy*` file and no `~/plugins`
+or `~/theme` folder.
+
+On `/qa-scrim/` at `window.innerWidth` 1636 (the bar shows; collapse is 1600), with header 3777's
+`sgs/nav-bar-menu` set to `itemPadding: {desktop: 14px 24px 14px 24px}` and `itemPaddingShiftHover: 8px`:
+
+| Check | Expected | Live |
+|---|---|---|
+| Resting link padding | 14px 24px 14px 24px | 14px 24px 14px 24px |
+| `--sgs-nav-link-pad-start` | 24px | 24px |
+| Hovered "Shop" link, padding-left (real pointer hover) | 24px + 8px = 32px (the old rule gave 12px + 8px = 20px) | 32px |
+| Unhovered "FAQs" link, padding-left | 24px | 24px |
+
+Both keys were then removed again (the fixture backup has neither). Test: `tests/php/run-nav-link-padding-standalone.php`
+(7 of 7, negative control on d95f232c0). Deploy script: `--self-test` 16 of 16, plus a simulated second run whose
+upload and unpacked folder survived this run's cleanup.

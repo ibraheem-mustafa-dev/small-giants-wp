@@ -71,8 +71,9 @@
   Content (all built): mobile menu (icon-list links, phone box, boxed brand social icons, left-aligned), mega panels
   (`panelBg: surface-alt`, plain links, Brands 5-column tile grid, Lenses linked cards, Sunglasses plain promo image),
   Contact labelled 2x2 grid, Help sentence, footer copyright and boxed icons.
-  Routed elsewhere: `sgs/nav-bar-menu` link padding and `sgs/mega-panel`'s translucent empty-`panelBg` default are
-  in the Wave 3C plan's lane A follow-ups (nav track owns those blocks).
+  Routed to the Wave 3C plan's lane A (nav track owns those blocks): `sgs/nav-bar-menu` link padding is now a
+  setting, `itemPadding` ("Link padding" in the List layout panel; 4cf0b9069, live on sandybrown), so the Eye Care
+  header can set its own; `sgs/mega-panel`'s translucent empty-`panelBg` default is still owed there.
   Decided not to build: `scripts/wp-build-page.js` reading PHP allow-lists. Of about 285 `in_array` checks in block
   render files only 110 are inline literals; the rest go through variables and helpers (icon-list's `markerType`
   uses `sgs_list_marker_sanitise_type()`), so they cannot be read without running PHP. JSON `enum`s are left off on

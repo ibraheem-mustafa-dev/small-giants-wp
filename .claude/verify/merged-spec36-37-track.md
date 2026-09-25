@@ -214,12 +214,13 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
   studionamma's 160 x 112 hover thumbnail from the linked page's featured image; a mega panel inside the drawer
   accordion at mobile with no floating shell.
 - Residue: studionamma's up-scale origin, wearecollins' hovered-item return time, resn's canvas dissolve (DEC-01),
-  buck's per-link glyphs (Wave 4). Owed, lane A: wearecollins' two-bar burger (above; missed by this pair's design),
-  the numbered compact-links pattern and a live icon-list numbers check, away's 375 tile scroller, a per-page menu
-  video source, the bar's link padding setting. Batched: axe with the drawer open, keyboard dim, reduced motion, the
+  buck's per-link glyphs (Wave 4). Delivered since: wearecollins' two-bar burger (`burgerBarCount`) and the bar's
+  link padding setting (`itemPadding`). Owed, lane A: the numbered compact-links pattern and a live icon-list numbers
+  check, away's 375 tile scroller, a per-page menu video source, `sgs/mega-panel`'s translucent empty-`panelBg`
+  default. Batched: axe with the drawer open, keyboard dim, reduced motion, the
   editor round-trip.
 
-**Next (lane A):** the two-bar burger, then U-4 (type scaling); design-gated.
+**Next (lane A):** U-10 + U-14 (header-row structure); design-gated.
 
 Gate 3C passes when (the one definition; the same words are in the implementation plan §7 and the
 strategic plan's Gate 3C entry):
