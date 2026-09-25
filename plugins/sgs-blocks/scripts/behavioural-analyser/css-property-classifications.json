@@ -1129,6 +1129,20 @@
       }
     },
     {
+      "slug": "sgs/buybox",
+      "attr": "priceFontSize",
+      "fields": {
+        "css_property": "font-size"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "priceFontWeight",
+      "fields": {
+        "css_property": "font-weight"
+      }
+    },
+    {
       "slug": "sgs/card-grid",
       "attr": "alignContent",
       "fields": {
@@ -5639,6 +5653,14 @@
     },
     {
       "slug": "sgs/icon-list",
+      "attr": "dividerColour",
+      "fields": {
+        "css_property": "border-bottom,border-top",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
       "attr": "headingFontSize",
       "fields": {
         "css_property": "font-size",
@@ -5691,6 +5713,14 @@
       "fields": {
         "css_property": "text-transform",
         "css_element": "heading"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "iconBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "item-icon"
       }
     },
     {
@@ -16531,6 +16561,14 @@
     },
     {
       "slug": "sgs/icon-list",
+      "attr": "itemPaddingBlock",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
       "attr": "margin",
       "fields": {
         "css_property": "margin",
@@ -18157,6 +18195,57 @@
         "css_property": "text-transform",
         "css_element": "sublink",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "triggerDetachBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "detach-chip"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "triggerDetachBackgroundHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "detach-chip",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "triggerDetachOffset",
+      "fields": {
+        "css_property": "top",
+        "css_element": "detach-chip"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "triggerDetachRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "detach-chip"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "triggerDetachSize",
+      "fields": {
+        "css_property": "height,width",
+        "css_element": "detach-chip"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "triggerDetachZIndex",
+      "fields": {
+        "css_property": "z-index",
+        "css_element": "detach-chip"
       }
     },
     {
