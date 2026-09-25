@@ -6640,6 +6640,14 @@
 				"css_element": "detach-chip"
 			},
 			"_why": "Wave 3C U-14 (M-08): the detaching chip's geometry, claimed by the detach-chip element's attrMap (block.json) and emitted by includes/nav-detach-chip.php::sgs_nav_detach_chip_css() as custom properties on the fixed chip wrapper (--sgs-nav-detach-size / -y) and its z-index; extract-signatures.py cannot see an include's rule, so the values are declared here to survive a reseed (db-consistency check #8)."
+		},
+		{
+			"slug": "sgs/buybox",
+			"attr": "extrasBeforeCount",
+			"fields": {
+				"role": "behaviour"
+			},
+			"_why": "2026-09-25 (Eye Care Wave C product page). How many of the buybox's extra-area child blocks render above the price instead of below the add-to-cart form: a placement behaviour, no CSS property."
 		}
 	]
 }
