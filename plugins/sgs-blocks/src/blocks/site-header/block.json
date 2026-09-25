@@ -196,6 +196,11 @@
 			"type": "object",
 			"default": {}
 		},
+		"headerPassThrough": {
+			"type": "object",
+			"default": {},
+			"description": "Float over the page, per device tier (tri-state on/off/inherit): the header is position:fixed (takes no space, pinned under the admin bar), and only its structure lets clicks through to the page; every block in it keeps its clicks. Wave 3C U-14, family M-52."
+		},
 		"contrastSafe": {
 			"type": "object",
 			"default": {}

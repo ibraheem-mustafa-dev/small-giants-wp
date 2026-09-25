@@ -54,6 +54,7 @@ import {
 	Notice,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
+import CollapseVisibilityControl from './CollapseVisibilityControl';
 
 /**
  * Guard against double registration.
@@ -278,7 +279,7 @@ const { sprintf } = wp.i18n;
 const withConditionalVisibilityControls = createHigherOrderComponent(
 	( BlockEdit ) => {
 		return ( props ) => {
-			const { name, attributes, setAttributes } = props;
+			const { name, attributes, setAttributes, clientId } = props;
 
 			// Skip blocks that do not support className.
 			const blockType = getBlockType( name );
@@ -383,6 +384,11 @@ const withConditionalVisibilityControls = createHigherOrderComponent(
 									setAttributes( { sgsHideOnDesktop: val } )
 								}
 								__nextHasNoMarginBottom
+							/>
+							<CollapseVisibilityControl
+								clientId={ clientId }
+								value={ attributes.sgsCollapseVisibility }
+								setAttributes={ setAttributes }
 							/>
 
 							{ /* Active-condition notice — shown above the rule fields */ }

@@ -1365,6 +1365,48 @@
 			"default": 24,
 			"description": "Pull strength, 2-80 — the range matches fx-magnet.js's own clamp."
 		},
+		"triggerSurface": {
+			"type": "object",
+			"default": {},
+			"description": "Whole row opens the menu, per device tier (on/off/inherit): below the collapse point the burger's hit area stretches over its header row; other blocks in the row keep their own clicks. Wave 3C U-14, family M-39, DEC-14 as amended."
+		},
+		"triggerDetach": {
+			"type": "object",
+			"default": {},
+			"description": "Detaching burger, per device tier (on/off/inherit): once the header's burger scrolls off screen it reappears as a fixed chip in the top inline-end corner. Wave 3C U-14, family M-08."
+		},
+		"triggerDetachAfter": {
+			"type": "object",
+			"default": {},
+			"description": "Per tier, px: the chip also waits until the page has scrolled this far. Unset or 0: as soon as the burger leaves the screen."
+		},
+		"triggerDetachSize": {
+			"type": "object",
+			"default": {},
+			"description": "Per tier, px: chip diameter (default 56, never below 44)."
+		},
+		"triggerDetachOffset": {
+			"type": "object",
+			"default": {},
+			"description": "Per tier {x, y} px: distance from the inline-end edge (x) and the top (y). Default 20/20."
+		},
+		"triggerDetachRadius": {
+			"type": "string",
+			"default": "9999px"
+		},
+		"triggerDetachBackground": {
+			"type": "string",
+			"default": ""
+		},
+		"triggerDetachBackgroundHover": {
+			"type": "string",
+			"default": ""
+		},
+		"triggerDetachZIndex": {
+			"type": "number",
+			"default": 110,
+			"description": "Chip stacking order; above the header's default 100."
+		},
 		"burgerColourHoverTreatment": {
 			"type": "string",
 			"default": "swap",

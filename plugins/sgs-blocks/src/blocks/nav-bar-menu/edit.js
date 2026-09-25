@@ -82,6 +82,7 @@ import NavMenuNotices from './NavMenuNotices';
 import MenuSettingsPanel from './MenuSettingsPanel';
 import DisabledItemsPanel from './DisabledItemsPanel';
 import BurgerPanel from './BurgerPanel';
+import ButtonReachPanel from './ButtonReachPanel';
 import DropdownSettingsPanel from './DropdownSettingsPanel';
 import SplitPanel from './SplitPanel';
 import ListLayoutPanel from '../../shared/nav-menu-panels/ListLayoutPanel';
@@ -600,6 +601,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				/>
 			),
 		} ),
+		fillRow( {
+			key: 'detach-bg',
+			label: __( 'Detached button background', 'sgs-blocks' ),
+			attrs: {
+				base: 'triggerDetachBackground',
+				hover: 'triggerDetachBackgroundHover',
+			},
+			attributes,
+			setAttributes,
+		} ),
 		textRow( {
 			key: 'featured-text',
 			heading: __( 'Featured', 'sgs-blocks' ),
@@ -715,6 +726,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					burgerMorphDuration={ burgerMorphDuration }
 					burgerMorphEasing={ burgerMorphEasing }
 					burgerMorphEasingCustom={ burgerMorphEasingCustom }
+					setAttributes={ setAttributes }
+				/>
+
+				<ButtonReachPanel
+					attributes={ attributes }
 					setAttributes={ setAttributes }
 				/>
 

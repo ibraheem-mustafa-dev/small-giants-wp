@@ -184,7 +184,12 @@
 	 * @param {HTMLElement} header
 	 */
 	function warnIfStickyIsSilentlyBroken( header ) {
-		if ( header.dataset.sgsHeaderSticky !== '1' ) {
+		// "Float over the page" is position:fixed, which a transformed or
+		// filtered ancestor breaks the same way, so it gets the same advisory.
+		if (
+			header.dataset.sgsHeaderSticky !== '1' &&
+			header.dataset.sgsHeaderPassThrough !== '1'
+		) {
 			return;
 		}
 		const breaker = findStickyBreakingAncestor( header );

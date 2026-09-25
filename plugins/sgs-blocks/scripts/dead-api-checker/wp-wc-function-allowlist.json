@@ -377,6 +377,7 @@
     "wp_insert_attachment",
     "wp_insert_term",
     "wp_interactivity_data_wp_context",
+    "wp_interactivity_process_directives",
     "wp_interactivity_state",
     "wp_is_connector_registered",
     "wp_is_mobile",

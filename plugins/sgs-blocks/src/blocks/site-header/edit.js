@@ -480,6 +480,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		headerTransparent,
 		headerShrink,
 		headerHideOnScroll,
+		headerPassThrough,
 		contrastSafe,
 		backgroundColour,
 		backgroundColourGradient,
@@ -504,7 +505,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	// stops a client enabling a setting that visibly does nothing. Same pattern
 	// as sgs/button's `edit.js`, which conditionally renders its "Collapse
 	// label to icon" ToolsPanelItem on `iconPosition !== 'only'`.
-	const isStickyOn = isOnAtAnyTier( headerSticky );
+	// "Float over the page" (headerPassThrough) pins the header too (it is
+	// position:fixed), so a shrink is just as visible there.
+	const isStickyOn =
+		isOnAtAnyTier( headerSticky ) || isOnAtAnyTier( headerPassThrough );
 
 	// Contrast safety over hero is similarly a sub-behaviour, but of
 	// TRANSPARENT, not Sticky: a header with a solid resting background has no
@@ -962,6 +966,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							headerTransparent: {},
 							headerShrink: {},
 							headerHideOnScroll: {},
+							headerPassThrough: {},
 							contrastSafe: {},
 							...floatResetAttributes(),
 						} )
@@ -1000,6 +1005,29 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 					/>
+
+					<ToolsPanelItem
+						label={ __( 'Float over the page', 'sgs-blocks' ) }
+						hasValue={ () =>
+							Object.keys( headerPassThrough || {} ).length > 0
+						}
+						onDeselect={ () =>
+							setAttributes( { headerPassThrough: {} } )
+						}
+					>
+						<ResponsiveTriStateControl
+							label={ __( 'Float over the page', 'sgs-blocks' ) }
+							help={ __(
+								'The header takes no space and stays pinned at the top. Clicks on its empty band reach the page underneath; its blocks still work. Give the first section enough top padding to clear it.',
+								'sgs-blocks'
+							) }
+							value={ headerPassThrough }
+							onChange={ ( value ) =>
+								setAttributes( { headerPassThrough: value } )
+							}
+							defaultValue="off"
+						/>
+					</ToolsPanelItem>
 
 					<ToolsPanelItem
 						label={ __(

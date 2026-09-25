@@ -159,6 +159,19 @@ function inject_device_visibility_classes( string $block_content, array $block )
 		$classes[] = 'sgs-hide-desktop';
 	}
 
+	// "When the menu collapses to a burger" (Wave 3C U-10). The header writes
+	// the matching rules at its burger-owning menu's collapse point
+	// (site-header/render.php); the JS twin is responsive-visibility.js's
+	// COLLAPSE_CLASSES. An off-list value adds nothing.
+	$collapse_classes = array(
+		'hide' => 'sgs-hide-collapsed',
+		'only' => 'sgs-only-collapsed',
+	);
+	$collapse_value   = (string) ( $attrs['sgsCollapseVisibility'] ?? '' );
+	if ( isset( $collapse_classes[ $collapse_value ] ) ) {
+		$classes[] = $collapse_classes[ $collapse_value ];
+	}
+
 	// Nothing to do if no visibility attributes are set.
 	if ( empty( $classes ) ) {
 		return $block_content;

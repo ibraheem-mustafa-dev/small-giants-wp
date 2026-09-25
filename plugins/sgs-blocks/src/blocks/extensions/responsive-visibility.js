@@ -48,6 +48,18 @@ window.__sgsDeviceVisibilityRegistered = true;
  * @param {Object} settings Block settings object.
  * @return {boolean} True if the block supports className.
  */
+/**
+ * `sgsCollapseVisibility` value → wrapper class. The header writes the rules
+ * for these classes at its own burger-owning menu's collapse point
+ * (site-header/render.php); the PHP twin is device-visibility.php.
+ *
+ * @type {Object<string,string>}
+ */
+const COLLAPSE_CLASSES = {
+	hide: 'sgs-hide-collapsed',
+	only: 'sgs-only-collapsed',
+};
+
 function supportsClassName( settings ) {
 	if ( settings?.supports?.className === false ) {
 		return false;
@@ -74,6 +86,7 @@ function addVisibilityAttributes( settings, name ) {
 			sgsHideOnMobile: { type: 'boolean', default: false },
 			sgsHideOnTablet: { type: 'boolean', default: false },
 			sgsHideOnDesktop: { type: 'boolean', default: false },
+			sgsCollapseVisibility: { type: 'string', default: '' },
 		},
 	};
 }
@@ -111,6 +124,10 @@ function addVisibilityClasses( props, blockType, attributes ) {
 	if ( attributes.sgsHideOnDesktop ) {
 		classes.push( 'sgs-hide-desktop' );
 	}
+	const collapseClass = COLLAPSE_CLASSES[ attributes.sgsCollapseVisibility ];
+	if ( collapseClass ) {
+		classes.push( collapseClass );
+	}
 
 	if ( classes.length ) {
 		return {
@@ -141,7 +158,8 @@ const withVisibilityEditorStyles = createHigherOrderComponent(
 			const isHidden =
 				attributes.sgsHideOnMobile ||
 				attributes.sgsHideOnTablet ||
-				attributes.sgsHideOnDesktop;
+				attributes.sgsHideOnDesktop ||
+				!! COLLAPSE_CLASSES[ attributes.sgsCollapseVisibility ];
 
 			if ( ! isHidden ) {
 				return <BlockListBlock { ...props } />;
@@ -157,6 +175,12 @@ const withVisibilityEditorStyles = createHigherOrderComponent(
 			}
 			if ( attributes.sgsHideOnDesktop ) {
 				hiddenOn.push( __( 'desktop', 'sgs-blocks' ) );
+			}
+			if ( 'hide' === attributes.sgsCollapseVisibility ) {
+				hiddenOn.push( __( 'burger menu', 'sgs-blocks' ) );
+			}
+			if ( 'only' === attributes.sgsCollapseVisibility ) {
+				hiddenOn.push( __( 'full menu', 'sgs-blocks' ) );
 			}
 
 			const wrapperProps = {

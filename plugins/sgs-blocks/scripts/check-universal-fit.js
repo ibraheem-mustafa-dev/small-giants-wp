@@ -348,7 +348,7 @@ const EXTENSIONS = [
 		id: 'responsiveVisibility',
 		file: 'responsive-visibility.js',
 		panel: 'Device visibility',
-		attrs: [ 'sgsHideOnMobile', 'sgsHideOnTablet', 'sgsHideOnDesktop' ],
+		attrs: [ 'sgsHideOnMobile', 'sgsHideOnTablet', 'sgsHideOnDesktop', 'sgsCollapseVisibility' ],
 		hideSlug: null, // NO opt-out mechanism in source — UTILITY, see isUtility below.
 		appliesTo: ( b ) => b.supportsClassName,
 		// Advanced-tab, opt-in-by-use: all three toggles default off/false.

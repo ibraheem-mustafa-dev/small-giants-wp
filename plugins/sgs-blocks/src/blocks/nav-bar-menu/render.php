@@ -67,6 +67,8 @@ require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-css.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-item-border-featured-css.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-trigger-css.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-submenu-css.php';
+require_once dirname( __DIR__, 3 ) . '/includes/nav-trigger-surface-css.php';
+require_once dirname( __DIR__, 3 ) . '/includes/nav-detach-chip.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-submenu-link-css.php';
 // class-sgs-container-wrapper.php is deliberately NOT required — this block
 // renders its root block-private (see §5). Requiring it would add a
@@ -541,8 +543,9 @@ if ( $sgs_nm_show_burger && class_exists( '\\SGS\\Blocks\\Sgs_Drawer_Render' ) )
  * inherits desktop, mobile inherits tablet, fallback `icon`), mirroring
  * sgs/nav-drawer's `closeStyle`. `$sgs_nm_allowed_trigger_modes` is the ONE
  * PHP-validated allow-list (no JSON enum — an out-of-list stored value would
- * otherwise coerce silently back to the block.json default) — Wave 3C U-14
- * adds a fourth value here and nowhere else. A stored FLAT string
+ * otherwise coerce silently back to the block.json default). "The whole row
+ * opens the menu" is its own attribute, `triggerSurface` (DEC-14 as amended,
+ * includes/nav-trigger-surface-css.php), not a value here. A stored FLAT string
  * (pre-migration content) is defended against directly, the same belt the
  * migration script (`scripts/migrate-stored-tier-scalars.py`) is the real fix
  * for.
@@ -707,6 +710,39 @@ $toggle_html = $sgs_nm_show_burger ? sgs_nav_bar_menu_burger_toggle_markup(
 	),
 	$sgs_nm_burger_bar_count
 ) : '';
+
+// Wave 3C U-14 (M-08) — the detaching chip: a second copy of this burger, built
+// by the same markup call (no magnet), queued for wp_footer outside the header.
+// See includes/nav-detach-chip.php.
+if ( $sgs_nm_show_burger && ! empty( sgs_resolve_on_tiers( $attributes['triggerDetach'] ?? array(), 'on', 'off' ) ) ) {
+	sgs_nav_detach_chip_queue(
+		$uid,
+		sgs_nav_detach_chip_wrap(
+			$uid,
+			sgs_nav_bar_menu_burger_toggle_markup(
+				$burger_context_attr,
+				$drawer_ref,
+				$burger_icon,
+				$sgs_nm_trigger_markup_mode,
+				$trigger_label,
+				$burger_aria_attr,
+				'',
+				$burger_icon_is_default,
+				$sgs_nm_collapse_point,
+				$sgs_nm_burger_morph,
+				'before' === ( $attributes['triggerIconPosition'] ?? 'after' ) ? 'before' : 'after',
+				array(
+					'roll'  => (string) ( $attributes['labelRoll'] ?? '' ),
+					'hover' => trim( (string) ( $attributes['triggerHoverLabel'] ?? '' ) ),
+					'open'  => trim( (string) ( $attributes['triggerOpenLabel'] ?? '' ) ),
+				),
+				$sgs_nm_burger_bar_count,
+				'sgs-nav-bar-menu__detach-wrap'
+			),
+			$attributes
+		)
+	);
+}
 
 // ── The <nav> landmark label (FR-36-10 / FR-36-11) ──────────────────────────
 // The landmark ITSELF is this block's root: the final `printf()` at the end of
@@ -920,6 +956,11 @@ $css .= sgs_nav_shared_item_state_css( $attributes, $uid_sel, 'sgs-nav-bar-menu'
 $css .= sgs_label_roll_css( $uid_sel, ' .sgs-nav-bar-menu__link', '', $attributes );
 $css .= sgs_label_roll_css( $uid_sel, ' .sgs-nav-bar-menu__burger', ' .sgs-nav-bar-menu__burger[aria-expanded="true"]', $attributes );
 $css .= sgs_nav_bar_menu_trigger_css( $attributes, $uid_sel, $sgs_nm_treatments, $trigger_mode_desktop, $trigger_mode_tablet, $trigger_mode_mobile );
+if ( $sgs_nm_show_burger ) {
+	// Wave 3C U-14: "Whole row opens the menu" (M-39) and the detaching chip (M-08).
+	$css .= sgs_nav_bar_menu_trigger_surface_css( $attributes, $uid_sel, $sgs_nm_collapse_point );
+	$css .= sgs_nav_detach_chip_css( $attributes, $uid_sel, $sgs_nm_collapse_point );
+}
 $css .= sgs_nav_shared_submenu_css(
 	$attributes,
 	$uid_sel,

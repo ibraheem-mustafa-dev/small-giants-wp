@@ -515,9 +515,12 @@ if ( ! function_exists( 'sgs_nav_bar_menu_burger_toggle_markup' ) ) {
 	 * @param int    $bar_count           Resolved `burgerBarCount`: 3 (default) or 2. The
 	 *                                     default glyph draws this many bars; 2 also adds the
 	 *                                     `--two-bar` icon modifier its morph poses select on.
+	 * @param string $wrap_class          The wrapper class: `sgs-nav-bar-menu__toggle-wrap` in the
+	 *                                     header, `sgs-nav-bar-menu__detach-wrap` for the detaching
+	 *                                     chip's copy (Wave 3C U-14), which the collapse switch never shows.
 	 * @return string The `<div>` + `<button>` toggle markup.
 	 */
-	function sgs_nav_bar_menu_burger_toggle_markup( string $burger_context_attr, string $drawer_ref, string $burger_icon, string $trigger_mode = 'icon', string $trigger_label = '', string $aria_attr = '', string $magnet_attrs = '', bool $is_default_icon = false, int $collapse_point = 768, string $burger_morph = 'x', string $icon_position = 'after', array $label_roll = array(), int $bar_count = 3 ): string {
+	function sgs_nav_bar_menu_burger_toggle_markup( string $burger_context_attr, string $drawer_ref, string $burger_icon, string $trigger_mode = 'icon', string $trigger_label = '', string $aria_attr = '', string $magnet_attrs = '', bool $is_default_icon = false, int $collapse_point = 768, string $burger_morph = 'x', string $icon_position = 'after', array $label_roll = array(), int $bar_count = 3, string $wrap_class = 'sgs-nav-bar-menu__toggle-wrap' ): string {
 		if ( ! in_array( $trigger_mode, array( 'icon', 'text', 'icon-and-text' ), true ) ) {
 			$trigger_mode = 'icon';
 		}
@@ -595,7 +598,7 @@ if ( ! function_exists( 'sgs_nav_bar_menu_burger_toggle_markup' ) ) {
 		}
 
 		return sprintf(
-			'<div class="sgs-nav-bar-menu__toggle-wrap" data-wp-interactive="sgs/nav" %1$s data-wp-init="callbacks.pruneDanglingAriaControls">' .
+			'<div class="%10$s" data-wp-interactive="sgs/nav" %1$s data-wp-init="callbacks.pruneDanglingAriaControls">' .
 			'<button type="button" class="sgs-nav-bar-menu__burger%2$s" data-wp-on--click="actions.toggleDrawer" data-wp-bind--aria-expanded="state.isOpen" aria-controls="%3$s"%4$s%5$s%8$s%9$s>%6$s%7$s</button>' .
 			'</div>',
 			$burger_context_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_interactivity_data_wp_context() self-escapes.
@@ -606,7 +609,8 @@ if ( ! function_exists( 'sgs_nav_bar_menu_burger_toggle_markup' ) ) {
 			$icon_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted icon markup from sgs_nav_shared_icon_markup() (esc_attr/esc_html per source).
 			$text_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled above from an esc_html() label.
 			$collapse_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built above from absint().
-			$morph_attr // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built above from a fixed literal + esc_attr() against a closed allow-list.
+			$morph_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built above from a fixed literal + esc_attr() against a closed allow-list.
+			esc_attr( $wrap_class )
 		);
 	}
 }

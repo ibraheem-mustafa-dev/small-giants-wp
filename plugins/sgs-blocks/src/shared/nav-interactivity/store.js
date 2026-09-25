@@ -32,11 +32,11 @@
  *                           and ×, staying live in the header row).
  *
  * State (bind with `data-wp-bind--…`):
- *   state.isOpen          — reactive boolean, per instance (a derived getter that
- *                           reads the caller's context). Bind on the burger:
+ *   state.isOpen          — reactive boolean for the caller's drawer (a derived
+ *                           getter over state.openByRef, keyed by the context's
+ *                           drawerRef, so every opener of one drawer agrees).
+ *                           Bind on the burger:
  *                           `data-wp-bind--aria-expanded="state.isOpen"`.
- *                           (context.isOpen is the underlying source and may be
- *                            bound directly too.)
  *
  * Context (`data-wp-context` on the wrapper that CONTAINS the burger):
  *   {
@@ -78,6 +78,7 @@ import {
 	crossedScrollDistance,
 } from './close-control';
 import { isTouchInput } from '../effects/motion-utils';
+import { initDetachChips } from './detach-chip';
 
 /**
  * Canonical focusable-element selector. `a[href]` plus `:not([disabled])` on
@@ -590,10 +591,13 @@ function runClose( drawer, scrim ) {
  * @param {HTMLElement} trigger The burger/toggle element (for focus return).
  */
 function openDrawerFor( ctx, trigger ) {
-	if ( ctx.isOpen ) {
+	const drawer = resolveDrawer( ctx );
+	// Already open (from this opener or another one of the same drawer, e.g.
+	// the detaching chip) → no-op; the drawer element is the truth, not this
+	// opener's own context.
+	if ( drawer && drawer.open ) {
 		return;
 	}
-	const drawer = resolveDrawer( ctx );
 	// Dangling drawerRef → no-op (the editor Notice is the block's job, FR-36-9a).
 	// Missing non-modal `<dialog>` support → no-op too: the toggle simply does
 	// nothing and the server-rendered links are unaffected (progressive enhancement).
@@ -1089,6 +1093,7 @@ function openDrawerFor( ctx, trigger ) {
 		bookkeeping.cleanup.forEach( ( fn ) => fn() );
 		drawerBookkeeping.delete( drawer );
 		ctx.isOpen = false;
+		setOpenByRef( ctx.drawerRef, false );
 		/*
 		 * §4.5 (DEC-09) focus fallback — lives HERE so every close route gets
 		 * it (Escape, backdrop, scrim, ×, scroll-close, a resize crossing the
@@ -1123,6 +1128,7 @@ function openDrawerFor( ctx, trigger ) {
 
 	drawerBookkeeping.set( drawer, bookkeeping );
 	ctx.isOpen = true;
+	setOpenByRef( ctx.drawerRef, true );
 	if ( drawer.hasAttribute( 'data-sgs-nd-focus-after-entry' ) && ! prefersReducedMotion() ) {
 		// A slow entry (over 500ms) still clips its first link, so its focus
 		// ring would be invisible: hold focus on the dialog itself, then move it
@@ -1187,17 +1193,50 @@ window.addEventListener( 'pageshow', dismissOnBfcacheRestore );
  * Store registration — the public `store('sgs/nav')` surface.
  * ========================================================================== */
 
-const { actions } = store( 'sgs/nav', {
+/**
+ * The store's state, assigned once `store()` has registered (the open/close
+ * paths above only run on user events, after registration).
+ *
+ * @type {Object|null}
+ */
+let navState = null;
+
+/**
+ * Record a drawer's open state, keyed by its id, so every opener of that
+ * drawer (the header burger and the detaching chip, Wave 3C U-14) reads one
+ * truth for `aria-expanded`. The object is replaced, not mutated, so the
+ * change is reactive for a key seen for the first time.
+ *
+ * @param {string}  drawerRef The drawer id.
+ * @param {boolean} open      Whether it is open.
+ */
+function setOpenByRef( drawerRef, open ) {
+	if ( ! navState || ! drawerRef ) {
+		return;
+	}
+	navState.openByRef = { ...navState.openByRef, [ drawerRef ]: open };
+}
+
+const { actions, state } = store( 'sgs/nav', {
 	state: {
 		/**
-		 * Reactive per-instance open flag. A derived getter reading the caller's
-		 * context so `data-wp-bind--aria-expanded="state.isOpen"` on the burger
-		 * tracks THIS instance (multiple navs never cross-bind).
+		 * Open state per drawer id (see setOpenByRef()).
+		 */
+		openByRef: {},
+		/**
+		 * Reactive open flag for the caller's drawer, so
+		 * `data-wp-bind--aria-expanded="state.isOpen"` on every opener of the
+		 * same drawer agrees, while two navs with different drawers never
+		 * cross-bind. A context with no drawerRef falls back to its own flag.
 		 *
-		 * @return {boolean} Whether this instance's drawer is open.
+		 * @return {boolean} Whether this opener's drawer is open.
 		 */
 		get isOpen() {
-			return !! getContext().isOpen;
+			const ctx = getContext();
+			if ( ctx.drawerRef ) {
+				return !! state.openByRef[ ctx.drawerRef ];
+			}
+			return !! ctx.isOpen;
 		},
 	},
 	callbacks: {
@@ -1275,5 +1314,11 @@ const { actions } = store( 'sgs/nav', {
 		},
 	},
 } );
+
+navState = state;
+
+// Wave 3C U-14 (M-08): the detaching chips printed on wp_footer. A module
+// script runs after the document is parsed, so the chips are in the DOM.
+initDetachChips();
 
 export { actions, FOCUSABLE_SELECTOR };

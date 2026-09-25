@@ -41,6 +41,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/sgs-header-float-css.php';
 require_once dirname( __DIR__, 3 ) . '/includes/sgs-header-force-solid.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-surface-ground.php';
 require_once dirname( __DIR__, 3 ) . '/includes/sgs-header-z-index.php';
+require_once dirname( __DIR__, 3 ) . '/includes/sgs-header-pass-through.php';
 
 // Deterministic, content-addressed uid — mirrors SGS_Container_Wrapper's own
 // md5( wp_json_encode( $attributes ) ) derivation (class-sgs-container-wrapper.php)
@@ -213,6 +214,10 @@ $sh_float = isset( $attributes['headerFloat'] ) ? $attributes['headerFloat'] : a
 $css .= sgs_merge_tri_state_declarations(
 	$root_sel,
 	array(
+		// "Float over the page" (headerPassThrough) is listed FIRST: fixed, so it
+		// takes no space, pinned under the admin bar when one renders. See
+		// includes/sgs-header-pass-through.php.
+		sgs_header_pass_through_entry( $attributes ),
 		array(
 			'raw'   => $sh_float,
 			'props' => array(
@@ -256,6 +261,11 @@ $css .= sgs_merge_tri_state_declarations(
 );
 // STACKING ORDER: the per-tier `zIndex` attribute, written once, here.
 $css .= sgs_header_z_index_css( $root_sel, $attributes );
+// Pass-through's structural pointer-events pair, and the "When the menu
+// collapses to a burger" rules at this header's burger-owning menu's collapse
+// point (includes/sgs-header-pass-through.php).
+$css .= sgs_header_pass_through_css( $root_sel, $attributes );
+$css .= sgs_header_collapse_visibility_css( $root_sel, isset( $block->parsed_block ) && is_array( $block->parsed_block ) ? $block->parsed_block : array() );
 // SCROLLED-state background for the Transparent behaviour — a distinct STATE
 // selector (root_sel + '.is-header-scrolled'), so this rule never collides
 // with the merged at-rest declarations above (single-writer design intact;
@@ -548,6 +558,9 @@ $sh_extra_attrs = array( 'id' => $uid );
 // Float implies sticky, so a float-only header must still get the
 // "an ancestor is silently breaking sticky" advisory.
 $sh_sticky_any_tier     = ! empty( sgs_resolve_on_tiers( $sh_sticky, 'on', 'off' ) ) || $sh_float_any_tier;
+// Pass-through is position:fixed, which a transformed or filtered ancestor
+// breaks just as it breaks sticky, so it gets the same advisory.
+$sh_pass_through_any_tier = ! empty( sgs_resolve_on_tiers( $attributes['headerPassThrough'] ?? array(), 'on', 'off' ) );
 $sh_scroll_behaviour_on = ! empty( sgs_resolve_on_tiers( $sh_transparent, 'on', 'off' ) )
 	|| ! empty( sgs_resolve_on_tiers( $sh_shrink, 'on', 'off' ) )
 	|| ! empty( sgs_resolve_on_tiers( $sh_hide, 'on', 'off' ) )
@@ -563,6 +576,9 @@ if ( $sh_scroll_behaviour_on ) {
 }
 if ( $sh_float_any_tier ) {
 	$sh_extra_attrs['data-sgs-header-float'] = '1';
+}
+if ( $sh_pass_through_any_tier ) {
+	$sh_extra_attrs['data-sgs-header-pass-through'] = '1';
 }
 
 
