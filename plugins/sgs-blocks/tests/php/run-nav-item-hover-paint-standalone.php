@@ -261,10 +261,10 @@ ok( '' !== run_mega_shift( $bypass_mega_shift, array( 'itemPaddingShiftHover' =>
 list( $lift_section ) = cut_between(
 	$mega_source,
 	"\$panel_card_lift = sgs_css_single_length_value",
-	"opacity:1"
+	"@media (prefers-reduced-motion: reduce){'"
 );
 ok( '' !== $lift_section, 'the panelCardLift section is found in the real render.php' );
-// Trim back to just before the sibling opacity-fade rule (a different attribute pair).
+// Trim back to just before the reduced-motion rule that follows the lift.
 $lift_section = (string) substr( $lift_section, 0, (int) strrpos( $lift_section, "\n\$css" ) );
 
 function run_lift( string $code, array $attributes ): string {

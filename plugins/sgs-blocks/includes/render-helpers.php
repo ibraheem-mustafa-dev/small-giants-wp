@@ -119,6 +119,7 @@ require_once __DIR__ . '/helpers-surface-tone.php';
 require_once __DIR__ . '/helpers-scrim.php';
 require_once __DIR__ . '/helpers-motion-easing.php';
 require_once __DIR__ . '/helpers-nav-drawer-motion.php';
+require_once __DIR__ . '/helpers-item-effects.php';
 require_once __DIR__ . '/helpers-media.php';
 require_once __DIR__ . '/helpers-tier-media.php';
 require_once __DIR__ . '/helpers-media-element.php';

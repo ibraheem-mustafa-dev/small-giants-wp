@@ -190,8 +190,106 @@
 	content: "";
 }
 
+.sgs-nav-drawer-menu__caret {
+	display: inline-flex;
+	transition: transform var(--sgs-ndm-motion, 200ms ease);
+}
+
 .sgs-nav-drawer-menu__accordion[open] > .sgs-nav-drawer-menu__accordion-summary .sgs-nav-drawer-menu__caret {
-	transform: rotate(180deg);
+	transform: rotate(var(--sgs-ndm-expander-rotate, 180deg));
+}
+
+/*
+ * Wave 3C U-6 + U-7 row options (design .claude/reports/2026-09-25-u6-u7-design.md).
+ * Structure only; render.php emits the per-instance, per-tier custom
+ * properties (includes/nav-drawer-menu-extras-css.php) and the hover rules.
+ *
+ * Leading ornament: an index counter or a glyph, shown per tier. The number
+ * is decorative (alternative text "" where supported); the list's own order
+ * already carries it.
+ */
+.sgs-nav-drawer-menu__bar {
+	counter-reset: sgs-ndm-item;
+}
+
+.sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item {
+	counter-increment: sgs-ndm-item;
+}
+
+.sgs-nav-drawer-menu__ornament {
+	align-items: center;
+	color: var(--sgs-ndm-orn-colour, currentColor);
+	display: var(--sgs-ndm-orn-display, none);
+	flex: none;
+	font-size: var(--sgs-ndm-orn-size, 0.75em);
+	font-variant-numeric: tabular-nums;
+	line-height: 1;
+	margin-inline-end: var(--sgs-ndm-orn-gap, 0.5em);
+	position: relative;
+	transition: color var(--sgs-ndm-motion, 200ms ease);
+}
+
+.sgs-nav-drawer-menu__ornament::before {
+	content: var(--sgs-ndm-orn-content, none);
+}
+
+@supports (content: "x" / "") {
+	.sgs-nav-drawer-menu__ornament::before {
+		content: var(--sgs-ndm-orn-content, none) / "";
+	}
+}
+
+.sgs-nav-drawer-menu__ornament-glyph {
+	display: var(--sgs-ndm-orn-glyph, none);
+	height: 1em;
+	transition: opacity var(--sgs-ndm-motion, 200ms ease);
+	width: 1em;
+}
+
+.sgs-nav-drawer-menu__ornament-glyph svg {
+	display: block;
+	height: 100%;
+	width: 100%;
+}
+
+.sgs-nav-drawer-menu__ornament-glyph--hover {
+	inset: 0;
+	opacity: 0;
+	position: absolute;
+}
+
+/* Per-item media: the linked page's featured image, beside the label. */
+.sgs-nav-drawer-menu__media {
+	display: var(--sgs-ndm-media-display, none);
+	flex: none;
+	height: var(--sgs-ndm-media-rest, var(--sgs-ndm-media-h, 112px));
+	margin-inline-start: var(--sgs-ndm-media-rest, 0.75em);
+	overflow: hidden;
+	transition: width var(--sgs-ndm-motion, 200ms ease), height var(--sgs-ndm-motion, 200ms ease), margin var(--sgs-ndm-motion, 200ms ease);
+	width: var(--sgs-ndm-media-rest, var(--sgs-ndm-media-w, 160px));
+}
+
+.sgs-nav-drawer-menu__media-img {
+	display: block;
+	height: 100%;
+	object-fit: cover;
+	width: 100%;
+}
+
+/* A mega item's panel inside its accordion (Spec 36 FR-36-6). */
+.sgs-nav-drawer-menu__mega-body {
+	display: block;
+	list-style: none;
+	padding: 0 12px 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-nav-drawer-menu__caret,
+	.sgs-nav-drawer-menu__ornament,
+	.sgs-nav-drawer-menu__ornament-glyph,
+	.sgs-nav-drawer-menu__media {
+		transition: none;
+	}
 }
 
 .sgs-nav-drawer-menu__accordion-summary:focus-visible {

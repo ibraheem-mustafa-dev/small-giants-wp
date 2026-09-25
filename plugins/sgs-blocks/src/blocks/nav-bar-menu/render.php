@@ -229,6 +229,9 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 				'animation'   => in_array( $submenu['animation'] ?? '', array( 'fade', 'fade-lift', 'slide-down', 'grow' ), true )
 					? (string) $submenu['animation']
 					: 'none',
+
+				// Wave 3C U-6 (M-25): the item label roll, '' | up | up-scale.
+				'label_roll'  => sgs_label_roll_value( $submenu['label_roll'] ?? '' ),
 			);
 		}
 
@@ -442,6 +445,7 @@ $bar_renderer = new SGS_Nav_Menu_Bar_Renderer(
 		'intent_delay' => (int) ( $attributes['submenuIntentDelay'] ?? 80 ),
 		'open_on'     => (string) ( $attributes['submenuOpenOn'] ?? 'hover' ),
 		'animation'   => (string) ( $attributes['submenuAnimation'] ?? 'none' ),
+		'label_roll'  => (string) ( $attributes['labelRoll'] ?? '' ),
 	)
 );
 $flat_items   = $bar_renderer->flatten( $menu_blocks );
@@ -694,7 +698,12 @@ $toggle_html = $sgs_nm_show_burger ? sgs_nav_bar_menu_burger_toggle_markup(
 	$burger_icon_is_default,
 	$sgs_nm_collapse_point,
 	$sgs_nm_burger_morph,
-	'before' === ( $attributes['triggerIconPosition'] ?? 'after' ) ? 'before' : 'after'
+	'before' === ( $attributes['triggerIconPosition'] ?? 'after' ) ? 'before' : 'after',
+	array(
+		'roll'  => (string) ( $attributes['labelRoll'] ?? '' ),
+		'hover' => trim( (string) ( $attributes['triggerHoverLabel'] ?? '' ) ),
+		'open'  => trim( (string) ( $attributes['triggerOpenLabel'] ?? '' ) ),
+	)
 ) : '';
 
 // ── The <nav> landmark label (FR-36-10 / FR-36-11) ──────────────────────────
@@ -904,6 +913,10 @@ if ( '' !== $sgs_nm_disabled_decl ) {
 // both surfaces read alike. See sgs_nav_shared_item_state_css()'s own
 // $default_item_colour_hover docblock in includes/nav-menu-css.php.
 $css .= sgs_nav_shared_item_state_css( $attributes, $uid_sel, 'sgs-nav-bar-menu', $sgs_nm_treatments, 'primary' );
+// Wave 3C U-6 (M-25): the label roll on items and on the trigger's word; the
+// trigger's open word wins over its hover word.
+$css .= sgs_label_roll_css( $uid_sel, ' .sgs-nav-bar-menu__link', '', $attributes );
+$css .= sgs_label_roll_css( $uid_sel, ' .sgs-nav-bar-menu__burger', ' .sgs-nav-bar-menu__burger[aria-expanded="true"]', $attributes );
 $css .= sgs_nav_bar_menu_trigger_css( $attributes, $uid_sel, $sgs_nm_treatments, $trigger_mode_desktop, $trigger_mode_tablet, $trigger_mode_mobile );
 $css .= sgs_nav_shared_submenu_css(
 	$attributes,

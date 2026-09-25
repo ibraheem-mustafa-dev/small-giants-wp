@@ -302,7 +302,14 @@ if ( '' !== $fx_effect ) {
 // verbatim, never reordered).
 // ---------------------------------------------------------------------------
 
-$uid         = 'sgs-mega-panel-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+// Render context (Spec 36 FR-36-6 "Mega items in the drawer"): the same post
+// renders in the bar's floating panel and inside a drawer accordion. In the
+// drawer it draws no floating shell (fill, border, radius, shadow, backdrop,
+// width cap, padding, the cards hover glow) and its text follows the drawer.
+// The context is folded into the hash so the drawer copy gets its own class
+// and the bar copy's class is unchanged.
+$sgs_mm_in_drawer = function_exists( 'sgs_mega_render_context' ) && 'drawer' === sgs_mega_render_context();
+$uid              = 'sgs-mega-panel-' . substr( md5( wp_json_encode( $attributes ) . ( $sgs_mm_in_drawer ? 'drawer' : '' ) ), 0, 8 );
 $root_sel    = '.' . $uid . '.wp-block-sgs-mega-panel';
 $content_sel = $root_sel . ' .sgs-mega-panel__content';
 $group_sel   = $root_sel . ' .sgs-mega-group';
@@ -421,9 +428,9 @@ $css .= $root_sel . '{'
 	// bypasses the color-mix()-derived soft-image tint entirely when set and is
 	// a complete no-op when unset.
 	. ( '' !== $accent_image_gradient ? '--sgs-mm-accent-image-gradient:' . $accent_image_gradient . ';' : '' )
-	. 'color:var(--sgs-mm-text);'
-	. 'background-color:var(--sgs-mm-panel-bg);'
-	. 'background-image:var(--sgs-mm-panel-bg-gradient, none);'
+	. ( $sgs_mm_in_drawer
+		? '--sgs-mm-text:currentColor;--sgs-mm-muted:color-mix(in srgb, currentColor 72%, transparent);color:inherit;'
+		: 'color:var(--sgs-mm-text);background-color:var(--sgs-mm-panel-bg);background-image:var(--sgs-mm-panel-bg-gradient, none);' )
 	. '}';
 
 // Resting-state group-tile border custom property — only
@@ -464,10 +471,14 @@ $dark_props = '--sgs-mm-text:#f3f2ee;'
 	// accent/soft custom properties above it do.
 	. 'background-image:var(--sgs-mm-panel-bg-gradient, none);';
 
-// Forced per-panel dark (operator explicitly picked `dark` regardless of site mode).
-$css .= $root_sel . '[data-mega-scheme="dark"]{' . $dark_props . '}';
-// `auto` following an EXPLICIT site-wide dark switcher only.
-$css .= ':root[data-theme="dark"] ' . $root_sel . '[data-mega-scheme="auto"]{' . $dark_props . '}';
+// Forced per-panel dark (operator explicitly picked `dark` regardless of site mode),
+// and `auto` following an EXPLICIT site-wide dark switcher only. Neither applies
+// in the drawer, where the panel has no fill of its own and its text follows
+// the drawer.
+if ( ! $sgs_mm_in_drawer ) {
+	$css .= $root_sel . '[data-mega-scheme="dark"]{' . $dark_props . '}';
+	$css .= ':root[data-theme="dark"] ' . $root_sel . '[data-mega-scheme="auto"]{' . $dark_props . '}';
+}
 
 // ---------------------------------------------------------------------------
 // 3. Panel shell: max-width / padding (responsive object model, also
@@ -475,7 +486,7 @@ $css .= ':root[data-theme="dark"] ' . $root_sel . '[data-mega-scheme="auto"]{' .
 // shadow, optional backdrop-filter.
 // ---------------------------------------------------------------------------
 
-if ( function_exists( 'sgs_emit_responsive_css' ) ) {
+if ( ! $sgs_mm_in_drawer && function_exists( 'sgs_emit_responsive_css' ) ) {
 	$css .= sgs_emit_responsive_css(
 		$root_sel,
 		array(
@@ -520,13 +531,14 @@ $panel_shadow_list = '' !== $panel_shadow_raw
 	: array();
 $panel_shadow_decl = $panel_shadow_list ? implode( ';', $panel_shadow_list ) . ';' : '';
 
+// `container-type` stays in the drawer: the `@container (max-width: 640px)`
+// stack rule in style.css reads it.
 $css .= $root_sel . '{'
-	. 'border-radius:' . ( '' !== $border_radius ? $border_radius : '20px' ) . ';'
-	. $panel_shadow_decl
+	. ( $sgs_mm_in_drawer ? '' : 'border-radius:' . ( '' !== $border_radius ? $border_radius : '20px' ) . ';' . $panel_shadow_decl )
 	. 'container-type:inline-size;'
 	. '}';
 
-if ( $has_border_width ) {
+if ( $has_border_width && ! $sgs_mm_in_drawer ) {
 	$css .= $root_sel . '{'
 		. 'border-style:' . $border_style . ';'
 		. 'border-width:' . "{$border_width_top} {$border_width_right} {$border_width_bottom} {$border_width_left}" . ';'
@@ -537,13 +549,13 @@ if ( $has_border_width ) {
 // Border gradient — masked ::before on the panel root.
 // Mask ring thickness follows the operator's own top-side width, so the
 // gradient ring stays in step with a resized border.
-if ( '' !== $border_colour_gradient ) {
+if ( '' !== $border_colour_gradient && ! $sgs_mm_in_drawer ) {
 	$css .= sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, $border_width_top );
 }
 
 // Backdrop blur and saturate: the shared helper (empty emits nothing).
 $panel_backdrop_decls = sgs_surface_backdrop_decls( $attributes['surfaceBlur'] ?? '', $attributes['surfaceSaturate'] ?? null );
-if ( ! empty( $panel_backdrop_decls ) ) {
+if ( ! empty( $panel_backdrop_decls ) && ! $sgs_mm_in_drawer ) {
 	$css .= $root_sel . '{' . implode( ';', $panel_backdrop_decls ) . ';}';
 }
 
@@ -620,8 +632,12 @@ if ( '' !== $group_border_resting_gradient ) {
 // box-shadow transition. `border-color` changes with NO transition (an
 // instant colour swap, not part of the animated property set). ------------
 $css .= $style_crd . $rel_group . '{position:relative;transition:transform .2s ease;}';
-// sgs-shadow-fallback: decorative ::after glow, not the panel edge
-$css .= $style_crd . $rel_group . '::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:0 20px 40px -12px rgba(0,0,0,.28);opacity:0;transition:opacity .3s ease;pointer-events:none;}';
+// The hover glow is the floating panel's; the drawer copy has no shell, so no glow.
+if ( ! $sgs_mm_in_drawer ) {
+	// sgs-shadow-fallback: decorative ::after glow, not the panel edge
+	$css .= $style_crd . $rel_group . '::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:0 20px 40px -12px rgba(0,0,0,.28);opacity:0;transition:opacity .3s ease;pointer-events:none;}';
+	$css .= sgs_hover_state_rules( $style_crd . $rel_group, 'opacity:1', ':focus-within', '::after' );
+}
 // panelCardLift (M-21) replaces the previously-hardcoded `translateY(-3px)`.
 // Default '3px' reproduces that exact value via calc(-1 * 3px); empty/'0'
 // emits NO transform declaration at all (the border-colour hover pair still
@@ -629,7 +645,6 @@ $css .= $style_crd . $rel_group . '::after{content:"";position:absolute;inset:0;
 $panel_card_lift = sgs_css_single_length_value( $attributes['panelCardLift'] ?? '' );
 $panel_card_lift_decl = '' !== $panel_card_lift ? 'transform:translateY(calc(-1 * ' . $panel_card_lift . '));' : '';
 $css .= sgs_hover_state_rules( $style_crd . $rel_group, $panel_card_lift_decl . 'border-color:var(--sgs-mm-accent-border)', ':focus-within' );
-$css .= sgs_hover_state_rules( $style_crd . $rel_group, 'opacity:1', ':focus-within', '::after' );
 $css .= '@media (prefers-reduced-motion: reduce){'
 	. $style_crd . $rel_group . '{transition:none;}'
 	. $style_crd . $rel_group . '::after{transition:none;}'
@@ -874,7 +889,9 @@ $css        .= $eyebrow_sel . '{'
 $sgs_mp_tone_opacity = isset( $attributes['surfaceOpacity'] ) && is_numeric( $attributes['surfaceOpacity'] )
 	? (float) $attributes['surfaceOpacity']
 	: 1.0;
-$sgs_mp_tone_class   = function_exists( 'sgs_surface_tone_class' )
+// In the drawer the panel paints no fill, so it marks no tone of its own (the
+// drawer's own tone class governs its children).
+$sgs_mp_tone_class   = ( ! $sgs_mm_in_drawer && function_exists( 'sgs_surface_tone_class' ) )
 	? sgs_surface_tone_class(
 		array(
 			array(
@@ -895,7 +912,7 @@ $sgs_mp_tone_class   = function_exists( 'sgs_surface_tone_class' )
 // ---------------------------------------------------------------------------
 
 $wrapper_args = array(
-	'class'             => 'sgs-mega-panel ' . $uid . ( '' !== $sgs_mp_tone_class ? ' ' . $sgs_mp_tone_class : '' ),
+	'class'             => 'sgs-mega-panel ' . $uid . ( '' !== $sgs_mp_tone_class ? ' ' . $sgs_mp_tone_class : '' ) . ( $sgs_mm_in_drawer ? ' sgs-mega-panel--in-drawer' : '' ),
 	'data-mega-style'   => $style,
 	'data-mega-scheme'  => $colour_scheme,
 	'data-mega-variant' => $variant,

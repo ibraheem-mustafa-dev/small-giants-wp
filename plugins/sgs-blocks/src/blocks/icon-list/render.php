@@ -596,6 +596,29 @@ if ( $uses_dashicon ) {
 // ---------------------------------------------------------------------------
 
 $render_marker_icon = in_array( $marker_type, array( 'icon', 'emoji' ), true );
+
+// Wave 3C U-6 + U-7 (design .claude/reports/2026-09-25-u6-u7-design.md 3c, 3d,
+// 3g): sibling dim, the label roll and the numbered list's number style. The
+// list is the root element or sits inside a wrapper, so it is matched both ways.
+$sgs_ilist_roll     = sgs_label_roll_value( $attributes['labelRoll'] ?? '' );
+$sgs_ilist_list_sel = ':is(' . $root_sel . '.sgs-icon-list, ' . $root_sel . ' .sgs-icon-list)';
+$scoped_css[]       = sgs_sibling_dim_css( $sgs_ilist_list_sel, '.sgs-icon-list__item', ' :is(.sgs-icon-list__text, .sgs-icon-list__item-link)', $attributes );
+$scoped_css[]       = sgs_label_roll_css( $root_sel, ' .sgs-icon-list__item', '', $attributes );
+if ( 'numbered' === $marker_type ) {
+	$sgs_ilist_num_decls = array( 'color:var(--sgs-list-marker-colour, ' . ( '' !== trim( (string) ( $attributes['numberColour'] ?? '' ) ) ? sgs_colour_value( $attributes['numberColour'] ) : 'currentColor' ) . ')' );
+	$sgs_ilist_num_size  = sgs_css_single_length_value( $attributes['numberFontSize'] ?? '' );
+	if ( '' !== $sgs_ilist_num_size ) {
+		$sgs_ilist_num_decls[] = 'font-size:' . $sgs_ilist_num_size;
+	}
+	$sgs_ilist_num_weight = (string) ( $attributes['numberFontWeight'] ?? '' );
+	if ( preg_match( '/^[1-9]00$|^(normal|bold)$/', $sgs_ilist_num_weight ) ) {
+		$sgs_ilist_num_decls[] = 'font-weight:' . $sgs_ilist_num_weight;
+	}
+	if ( 'decimal-leading-zero' === ( $attributes['numberFormat'] ?? '' ) ) {
+		$scoped_css[] = $sgs_ilist_list_sel . '{list-style-type:decimal-leading-zero;}';
+	}
+	$scoped_css[] = $sgs_ilist_list_sel . ' > .sgs-icon-list__item::marker{' . implode( ';', $sgs_ilist_num_decls ) . ';}';
+}
 // Per-item colour/gradient — each item resolves its OWN colour
 // and gradient (falling back to the block-level default when unset), and its
 // OWN icon source decides the gradient TECHNIQUE via sgs_icon_gradient_css().
@@ -681,10 +704,12 @@ foreach ( $resolved_items as $item ) {
 			$item_url,
 			esc_attr( wp_parse_url( $item_url, PHP_URL_PATH ) ?? '' ),
 			! empty( $item['newTab'] ) ? ' target="_blank" rel="noopener noreferrer"' : '',
-			wp_kses( $item_text, $linked_allowed )
+			// The label roll (M-25) wraps the text INSIDE the link, so the link
+			// stays the one focus target; unchanged when the roll is off.
+			sgs_label_roll_wrap_html( wp_kses( $item_text, $linked_allowed ), $sgs_ilist_roll )
 		);
 	} else {
-		$text_content = wp_kses_post( $item_text );
+		$text_content = sgs_label_roll_wrap_html( wp_kses_post( $item_text ), $sgs_ilist_roll );
 	}
 
 	$items_html .= sprintf(

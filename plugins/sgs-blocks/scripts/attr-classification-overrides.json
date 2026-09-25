@@ -6516,6 +6516,54 @@
 				"css_element": "imageOverlay"
 			},
 			"_why": "2026-09-24 (Eye Care Wave B round 2). Painted on .sgs-card-grid__image-overlay by card-grid/image-overlay.php::sgs_card_grid_image_overlay_css() through the shared sgs_overlay_decls() primitive; extract-signatures.py reads only {block}/render.php, so a colour resolved in a sibling helper file is invisible to it. Verified by reading both files."
+		},
+		{
+			"slug": "sgs/nav-drawer-menu",
+			"attr": "itemMotionEasingCustom",
+			"fields": {
+				"role": "technical"
+			},
+			"_why": "2026-09-25 (Wave 3C U-6). A hand-typed cubic-bezier() read only when itemMotionEasing is custom; same role as sgs/nav-bar-menu burgerMorphEasingCustom. The classifier records no role for free-text curve strings."
+		},
+		{
+			"slug": "sgs/nav-bar-menu",
+			"attr": "itemMotionEasingCustom",
+			"fields": {
+				"role": "technical"
+			},
+			"_why": "2026-09-25 (Wave 3C U-6). A hand-typed cubic-bezier() read only when itemMotionEasing is custom; same role as sgs/nav-bar-menu burgerMorphEasingCustom. The classifier records no role for free-text curve strings."
+		},
+		{
+			"slug": "sgs/icon-list",
+			"attr": "itemMotionEasingCustom",
+			"fields": {
+				"role": "technical"
+			},
+			"_why": "2026-09-25 (Wave 3C U-6). A hand-typed cubic-bezier() read only when itemMotionEasing is custom; same role as sgs/nav-bar-menu burgerMorphEasingCustom. The classifier records no role for free-text curve strings."
+		},
+		{
+			"slug": "sgs/nav-drawer-menu",
+			"attr": "itemOrnament",
+			"fields": {
+				"role": "select-from-enum"
+			},
+			"_why": "2026-09-25 (Wave 3C U-7). A per-tier MODE selector (none | index | icon) for the drawer row ornament. It resolves to css:display on the ornament element, but the layout cluster's css:display member applies to OUTER/GRID layers only, so no cluster member can claim it."
+		},
+		{
+			"slug": "sgs/nav-drawer-menu",
+			"attr": "itemMediaReveal",
+			"fields": {
+				"role": "select-from-enum"
+			},
+			"_why": "2026-09-25 (Wave 3C U-7). A per-tier MODE selector (none | always | hover) for the per-item media. Same layer restriction as itemOrnament."
+		},
+		{
+			"slug": "sgs/nav-drawer-menu",
+			"attr": "itemExpanderRotate",
+			"fields": {
+				"role": "behaviour"
+			},
+			"_why": "2026-09-25 (Wave 3C U-7). The degrees the accordion expander glyph turns while its <details> is open: an open-state behaviour of the disclosure control. The layout cluster's css:transform member applies to the OUTER layer only."
 		}
 	]
 }

@@ -116,7 +116,8 @@
 						"text",
 						"fill",
 						"layout",
-						"border"
+						"border",
+						"motion"
 					],
 					"prefix": "item",
 					"attrMap": {
@@ -134,7 +135,9 @@
 						"css:line-height": "itemLineHeight",
 						"css:text-decoration": "itemTextDecoration",
 						"css:text-transform": "itemTextTransform",
-						"css:opacity": "itemOpacity"
+						"css:opacity": "itemOpacity",
+						"css:transition-duration": "itemMotionDuration",
+						"css:transition-timing-function": "itemMotionEasing"
 					},
 					"states": {
 						"hover": {
@@ -1265,6 +1268,54 @@
 		"triggerLabel": {
 			"type": "string",
 			"default": "Menu"
+		},
+		"labelRoll": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"up",
+				"up-scale"
+			],
+			"description": "Wave 3C U-6, M-25 (.claude/reports/2026-09-25-u6-u7-design.md 3d). Two-copy label roll on hover or keyboard focus: '' off (no extra markup), `up` (the label rolls up to a copy of itself), `up-scale` (the outgoing copy also shrinks to 0.8). Honours reduced motion."
+		},
+		"itemMotionDuration": {
+			"type": "number",
+			"description": "Wave 3C U-6 (.claude/reports/2026-09-25-u6-u7-design.md 3c). ONE item-motion time in ms (0 to 3000) shared by this block's item effects (sibling dim, label roll, the ornament crossfade). Unset resolves to 300."
+		},
+		"itemMotionEasing": {
+			"type": "string",
+			"default": "ease",
+			"enum": [
+				"ease",
+				"ease-out-css",
+				"ease-in-out",
+				"default",
+				"ease-out",
+				"quart-out",
+				"standard",
+				"drafts",
+				"ease-in",
+				"spring",
+				"linear",
+				"custom"
+			],
+			"description": "Item-motion easing curve, from the shared motion easing list (includes/helpers-motion-easing.php)."
+		},
+		"itemMotionEasingCustom": {
+			"type": "string",
+			"default": "",
+			"description": "A hand-typed `cubic-bezier(x1, y1, x2, y2)` curve, read only when `itemMotionEasing` is `custom` (validated by sgs_motion_valid_cubic_bezier)."
+		},
+		"triggerHoverLabel": {
+			"type": "string",
+			"default": "",
+			"description": "Wave 3C U-6, M-25 (.claude/reports/2026-09-25-u6-u7-design.md 3d). The word the text trigger rolls to on hover ('' none). Needs labelRoll."
+		},
+		"triggerOpenLabel": {
+			"type": "string",
+			"default": "",
+			"description": "Spec 36 FR-36-27's swap-label open style: the word the text trigger shows while its drawer is open ('' none). The button's accessible name follows the visible word. Needs labelRoll."
 		},
 		"triggerIconPosition": {
 			"type": "string",

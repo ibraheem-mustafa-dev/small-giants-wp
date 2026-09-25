@@ -46,12 +46,21 @@ if ( ! function_exists( 'sgs_mega_render_panel_content' ) ) {
 	 * a minimal `{object, object_id}` shape — the same two fields a real
 	 * `nav_menu_item` carries — so there is ONE resolution code path, not two.
 	 *
-	 * @param int $panel_id The `sgs_mega_menu` post ID (a menu item's object_id).
+	 * The render context rides on a stack for the duration of `do_blocks()`:
+	 * `''` is the bar's floating panel, `drawer` is the same post rendered
+	 * inside a drawer accordion. `sgs/mega-panel`'s render.php reads the top
+	 * of the stack through sgs_mega_render_context() and, in the drawer,
+	 * emits no floating shell (Spec 36 FR-36-6 "Mega items in the drawer").
+	 * A stack rather than one value, so a panel nested inside a panel with a
+	 * different context cannot leak its context outwards.
+	 *
+	 * @param int    $panel_id The `sgs_mega_menu` post ID (a menu item's object_id).
+	 * @param string $context  '' (bar) or 'drawer'.
 	 * @return string|null Rendered panel HTML, or null when the target is
 	 *                     missing/trashed/not-a-panel/unpublished, OR when the
 	 *                     recursion guard trips (caller degrades to a plain link).
 	 */
-	function sgs_mega_render_panel_content( int $panel_id ): ?string {
+	function sgs_mega_render_panel_content( int $panel_id, string $context = '' ): ?string {
 		static $sgs_mega_rendering = array();
 
 		if ( $panel_id <= 0 ) {
@@ -79,12 +88,82 @@ if ( ! function_exists( 'sgs_mega_render_panel_content' ) ) {
 		}
 
 		$sgs_mega_rendering[ $panel_id ] = true;
+		$GLOBALS['sgs_mega_render_context_stack'][] = 'drawer' === $context ? 'drawer' : '';
 		try {
 			$html = do_blocks( $panel->post_content );
 		} finally {
 			unset( $sgs_mega_rendering[ $panel_id ] );
+			array_pop( $GLOBALS['sgs_mega_render_context_stack'] );
 		}
 
 		return $html;
+	}
+}
+
+if ( ! function_exists( 'sgs_mega_render_context' ) ) {
+	/**
+	 * The context of the mega panel currently rendering: '' (bar, or no
+	 * panel on the stack) or 'drawer'.
+	 *
+	 * @return string
+	 */
+	function sgs_mega_render_context(): string {
+		$stack = $GLOBALS['sgs_mega_render_context_stack'] ?? array();
+		return is_array( $stack ) && ! empty( $stack ) ? (string) end( $stack ) : '';
+	}
+}
+
+if ( ! function_exists( 'sgs_mega_render_item_panel' ) ) {
+	/**
+	 * Render a mega menu item's panel with its "View all" fallback, for either
+	 * menu fork. One path for the bar and the drawer.
+	 *
+	 * When the panel post ships no CTA of its own (no `wp:sgs/button` in its
+	 * STORED content, checked before rendering because the answer decides
+	 * whether to register the footer filter), a "View all {label}" link to the
+	 * item's own URL is handed to `sgs/mega-panel`'s footer slot through the
+	 * `sgs_mega_panel_footer_html` filter, which is removed straight after so
+	 * it never leaks into the next item's panel.
+	 *
+	 * @param array  $item          A flattened menu item (object_id, url, label).
+	 * @param string $viewall_class The fallback link's class.
+	 * @param string $context       '' (bar) or 'drawer'.
+	 * @return string|null Rendered panel HTML, or null (caller degrades to a plain link).
+	 */
+	function sgs_mega_render_item_panel( array $item, string $viewall_class, string $context = '' ): ?string {
+		$panel_post_id = (int) ( $item['object_id'] ?? 0 );
+		$panel_post    = $panel_post_id ? get_post( $panel_post_id ) : null;
+		$panel_has_cta = $panel_post instanceof \WP_Post
+			&& false !== strpos( (string) $panel_post->post_content, 'wp:sgs/button' );
+
+		$url     = (string) ( $item['url'] ?? '' );
+		$viewall = '';
+		if ( ! $panel_has_cta && '#' !== $url && '' !== $url ) {
+			$viewall = sprintf(
+				'<a class="%s" href="%s">%s</a>',
+				esc_attr( $viewall_class ),
+				esc_url( $url ),
+				// translators: %s is the mega-menu item's own label (e.g. "Products").
+				esc_html( sprintf( __( 'View all %s', 'sgs-blocks' ), (string) ( $item['label'] ?? '' ) ) )
+			);
+		}
+
+		$filter = null;
+		if ( '' !== $viewall ) {
+			$filter = static function ( $html, $id ) use ( $viewall, $panel_post_id ) {
+				return (int) $id === $panel_post_id ? $viewall : $html;
+			};
+			add_filter( 'sgs_mega_panel_footer_html', $filter, 10, 2 );
+		}
+
+		try {
+			$panel_html = sgs_mega_render_panel_content( $panel_post_id, $context );
+		} finally {
+			if ( null !== $filter ) {
+				remove_filter( 'sgs_mega_panel_footer_html', $filter, 10 );
+			}
+		}
+
+		return $panel_html;
 	}
 }

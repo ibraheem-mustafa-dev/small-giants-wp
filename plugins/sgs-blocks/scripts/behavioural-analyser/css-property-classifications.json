@@ -5769,6 +5769,31 @@
     },
     {
       "slug": "sgs/icon-list",
+      "attr": "numberColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "item-number"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "numberFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "item-number"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "numberFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "item-number"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
       "attr": "textElFontSize",
       "fields": {
         "css_property": "font-size",
@@ -16448,6 +16473,22 @@
     },
     {
       "slug": "sgs/icon-list",
+      "attr": "itemMotionDuration",
+      "fields": {
+        "css_property": "transition-duration",
+        "css_element": "item-dimmed"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "itemMotionEasing",
+      "fields": {
+        "css_property": "transition-timing-function",
+        "css_element": "item-dimmed"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
       "attr": "margin",
       "fields": {
         "css_property": "margin",
@@ -16460,6 +16501,31 @@
       "fields": {
         "css_property": "padding",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "siblingDimColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "item-dimmed"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "siblingDimColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "item-dimmed"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "siblingDimOpacity",
+      "fields": {
+        "css_property": "opacity",
+        "css_element": "item-dimmed"
       }
     },
     {
@@ -17535,6 +17601,22 @@
     },
     {
       "slug": "sgs/nav-bar-menu",
+      "attr": "itemMotionDuration",
+      "fields": {
+        "css_property": "transition-duration",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemMotionEasing",
+      "fields": {
+        "css_property": "transition-timing-function",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
       "attr": "itemOpacity",
       "fields": {
         "css_property": "opacity",
@@ -18457,6 +18539,14 @@
     },
     {
       "slug": "sgs/nav-drawer-menu",
+      "attr": "itemExpanderRotate",
+      "fields": {
+        "css_property": "transform",
+        "css_element": "expander"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemFontSize",
       "fields": {
         "css_property": "font-size",
@@ -18507,6 +18597,54 @@
     },
     {
       "slug": "sgs/nav-drawer-menu",
+      "attr": "itemMediaHeight",
+      "fields": {
+        "css_property": "height",
+        "css_element": "media"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "itemMediaRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "media"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "itemMediaReveal",
+      "fields": {
+        "css_property": "display",
+        "css_element": "media"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "itemMediaWidth",
+      "fields": {
+        "css_property": "width",
+        "css_element": "media"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "itemMotionDuration",
+      "fields": {
+        "css_property": "transition-duration",
+        "css_element": "item-dimmed"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "itemMotionEasing",
+      "fields": {
+        "css_property": "transition-timing-function",
+        "css_element": "item-dimmed"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemOpacity",
       "fields": {
         "css_property": "opacity",
@@ -18520,6 +18658,50 @@
         "css_property": "opacity",
         "css_element": "item",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "itemOrnament",
+      "fields": {
+        "css_property": "display",
+        "css_element": "ornament"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "itemOrnamentColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "ornament"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "itemOrnamentColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "ornament",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "itemOrnamentGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "ornament"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "itemOrnamentSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "ornament"
       }
     },
     {
@@ -18641,6 +18823,31 @@
         "css_property": "padding",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "siblingDimColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "item-dimmed"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "siblingDimColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "item-dimmed"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "siblingDimOpacity",
+      "fields": {
+        "css_property": "opacity",
+        "css_element": "item-dimmed"
       }
     },
     {

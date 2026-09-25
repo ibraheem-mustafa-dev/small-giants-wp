@@ -92,6 +92,7 @@ import DropdownStylePanel from '../../shared/nav-menu-panels/DropdownStylePanel'
 import PanelMotionPanel from './PanelMotionPanel';
 import EffectsPanel from '../../shared/nav-menu-panels/EffectsPanel';
 import FeaturedPanel from '../../shared/nav-menu-panels/FeaturedPanel';
+import ItemEffectsPanel from '../../shared/nav-menu-panels/ItemEffectsPanel';
 // This block's OWN declared Sweep-eligibility source (FR-41-26) — read here
 // rather than inside the shared ColourRowExtras/ColourTreatment modules,
 // which do not statically import either block's manifest (see
@@ -156,6 +157,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		burgerSize,
 		triggerMode,
 		triggerLabel,
+		triggerHoverLabel,
+		triggerOpenLabel,
+		labelRoll,
+		itemMotionDuration,
+		itemMotionEasing,
+		itemMotionEasingCustom,
 		triggerIconPosition,
 		triggerIcon,
 		triggerMagnetEnabled,
@@ -695,6 +702,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					burgerSize={ burgerSize }
 					triggerMode={ triggerMode }
 					triggerLabel={ triggerLabel }
+					triggerHoverLabel={ triggerHoverLabel }
+					triggerOpenLabel={ triggerOpenLabel }
 					triggerIconPosition={ triggerIconPosition }
 					triggerIcon={ triggerIcon }
 					triggerMagnetEnabled={ triggerMagnetEnabled }
@@ -865,6 +874,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				   mount points, the banned lookalike 35A CO-2 clause 2 names.
 				   `sgs/nav-drawer-menu`'s own `edit.js` supplies neither prop, so
 				   it is unaffected. */ }
+				<ItemEffectsPanel
+					showDim={ false }
+					labelRoll={ labelRoll }
+					itemMotionDuration={ itemMotionDuration }
+					itemMotionEasing={ itemMotionEasing }
+					itemMotionEasingCustom={ itemMotionEasingCustom }
+					setAttributes={ setAttributes }
+				/>
+
 				<EffectsPanel
 					itemMagnetEnabled={ itemMagnetEnabled }
 					setAttributes={ setAttributes }

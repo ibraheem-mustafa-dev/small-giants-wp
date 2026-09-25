@@ -45,6 +45,14 @@
 				"submenu-border": {
 					"rule": "states",
 					"reason": "The panel's border sits on the same structurally non-hoverable surface as its background, for the same reason: once the panel is open the pointer is always over an interactive CHILD. Per-state border colour inside the panel belongs to the LINK, whose own three-state family (submenuLinkBg / submenuLinkBgHover / submenuLinkBgCurrent) is where a pointer-driven change is actually perceivable. submenuBorderColour is therefore Normal-only (Spec 41 FR-41-9)."
+				},
+				"sibling-dim": {
+					"rule": "states",
+					"reason": "The row IS a pointer-driven state: its colour paints the OTHER items only while one item is hovered or keyboard-focused (a list-scoped :has() rule). There is no resting moment for it to differ from, so a separate Hover swatch would describe nothing."
+				},
+				"ornament": {
+					"rule": "gradient",
+					"reason": "One ornament span holds either a counter (::before text) or an SVG glyph drawn in currentColor, per tier. The text-gradient trio sets color:transparent, which erases the SVG glyph, and an SVG stroke gradient cannot paint the counter text, so one gradient value cannot serve both modes of the same element. Structurally impossible for this element, not undecided."
 				}
 			},
 			"collection": true,
@@ -263,6 +271,73 @@
 						"css:border-style": "submenuBorderStyle"
 					},
 					"_note": "The floating dropdown PANEL — <div class=\"sgs-nav-drawer-menu__submenu\"> — as distinct from the links inside it, which are the `sublink` element (Spec 41 FR-41-9). Base only: NO `states` key at all, because the panel has neither a hover nor a current state for any property. Its visibility is a binary open/closed disclosure toggled by the trigger; once open the pointer is always over an interactive CHILD, so a pointer-driven change on the panel surface itself is never perceivable — the hoverable surface inside the panel is the LINK background (submenuLinkBg / submenuLinkBgHover / submenuLinkBgCurrent on `sublink`). Recorded as `supports.sgs.colourExemptions.submenu-bg` and `.submenu-border`. `\"prefix\": \"\"` for the same reason `sublink` carries it: a `submenu` prefix would claim submenuColour* and the submenu typography family, which belong to the LINK. Every member is therefore explicit. The submenuMinWidth/submenuBorderRadius/submenuShadow/submenuShadowColour attrMap entries are not declared on this block: the drawer's accordion-nested submenu panel does not offer these controls; the bar block (sgs/nav-bar-menu) declares them."
+				},
+				"item-dimmed": {
+					"label": "Dimmed sibling item",
+					"order": 10,
+					"clusters": [
+						"text",
+						"motion"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:color": "siblingDimColour",
+						"css:opacity": "siblingDimOpacity",
+						"css:transition-duration": "itemMotionDuration",
+						"css:transition-timing-function": "itemMotionEasing",
+						"css:color-gradient": "siblingDimColourGradient"
+					},
+					"_note": "Wave 3C U-6, M-24: every OTHER item in the same list while one is hovered or keyboard-focused (a list-scoped :has() rule, includes/helpers-item-effects.php::sgs_sibling_dim_css). itemMotionDuration/itemMotionEasing are the ONE shared item-motion pair (sibling dim, label roll, ornament crossfade); explicit because the {prefix}{suffix} convention cannot derive them."
+				},
+				"ornament": {
+					"label": "Row ornament",
+					"order": 11,
+					"clusters": [
+						"text",
+						"layout"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:color": "itemOrnamentColour",
+						"css:font-size": "itemOrnamentSize",
+						"css:display": "itemOrnament",
+						"css:gap": "itemOrnamentGap"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "itemOrnamentColourHover"
+							}
+						}
+					},
+					"_note": "Wave 3C U-7, M-22: the decorative leading number or glyph (.sgs-nav-drawer-menu__ornament) before each primary row label."
+				},
+				"expander": {
+					"label": "Accordion expander",
+					"order": 12,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:transform": "itemExpanderRotate"
+					},
+					"_note": "Wave 3C U-7: the <summary> expander glyph (.sgs-nav-drawer-menu__caret). itemExpanderRotate is the rotate() applied while its accordion is open; itemExpanderIcon is the glyph (icon source)."
+				},
+				"media": {
+					"label": "Item media",
+					"order": 13,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:display": "itemMediaReveal",
+						"css:width": "itemMediaWidth",
+						"css:height": "itemMediaHeight",
+						"css:border-radius": "itemMediaRadius"
+					},
+					"_note": "Wave 3C U-7, M-15/M-22: the per-item featured-image thumbnail (.sgs-nav-drawer-menu__media). itemMediaReveal is per tier: none / always / hover (grows from width 0)."
 				}
 			},
 			"boxFamilies": {
@@ -310,7 +385,9 @@
 						]
 					}
 				}
-			}
+			},
+			"imageControls": false,
+			"_note_imageControls": "Opt-out: the only <img> is the per-item media thumbnail (itemMedia), a decorative slot showing each linked page's own featured image, sized by itemMediaWidth/itemMediaHeight/itemMediaRadius and always object-fit cover. It is not an operator-placed image, so the image-controls panel (focal point, fit, filters) does not apply."
 		}
 	},
 	"attributes": {
@@ -351,6 +428,147 @@
 				"type": "string"
 			},
 			"description": "Per-item opt-OUT from the mega-menu item's default plain-link degrade in the DRAWER form only. A mega-typed item authored as a core/navigation-submenu with real nested child links renders those children as an ordinary accordion/submenu list in the drawer when its identifier is listed here, instead of collapsing to a plain link. A mega item with NO nested children still degrades to a plain link regardless (nothing to list). The BAR/desktop form is completely unaffected — it keeps the full mega-panel disclosure either way. Unset (default []): every mega item degrades to a plain link in the drawer (FR-36-5 reserves the FULL mega-panel-inside-the-drawer build as future work)."
+		},
+		"megaDrawerMode": {
+			"type": "string",
+			"default": "panel",
+			"enum": [
+				"panel",
+				"link"
+			],
+			"description": "Wave 3C U-7 (.claude/reports/2026-09-25-u6-u7-design.md 3a; Spec 36 FR-36-6). How a mega-menu item shows in the drawer: `panel` renders its mega panel post inside its own accordion (no floating shell; text follows the drawer), `link` is a plain link. An item listed in megaDrawerFallbackIds with real nested children keeps its children accordion either way."
+		},
+		"labelRoll": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"up",
+				"up-scale"
+			],
+			"description": "Wave 3C U-6, M-25 (.claude/reports/2026-09-25-u6-u7-design.md 3d). Two-copy label roll on hover or keyboard focus: '' off (no extra markup), `up` (the label rolls up to a copy of itself), `up-scale` (the outgoing copy also shrinks to 0.8). Honours reduced motion."
+		},
+		"siblingDimColour": {
+			"type": "string",
+			"default": "",
+			"description": "Wave 3C U-6, M-24 (.claude/reports/2026-09-25-u6-u7-design.md 3c). Text colour of the OTHER items in the same list while one is hovered or keyboard-focused. '' off."
+		},
+		"siblingDimColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Gradient sibling of siblingDimColour (text-gradient trio: background-clip:text with a first-stop fallback). Non-empty wins over the flat colour."
+		},
+		"siblingDimOpacity": {
+			"type": "number",
+			"description": "Wave 3C U-6, M-24. Opacity (0 to 1) of the other items in the same list while one is hovered or keyboard-focused. Unset off."
+		},
+		"itemMotionDuration": {
+			"type": "number",
+			"description": "Wave 3C U-6 (.claude/reports/2026-09-25-u6-u7-design.md 3c). ONE item-motion time in ms (0 to 3000) shared by this block's item effects (sibling dim, label roll, the ornament crossfade). Unset resolves to 300."
+		},
+		"itemMotionEasing": {
+			"type": "string",
+			"default": "ease",
+			"enum": [
+				"ease",
+				"ease-out-css",
+				"ease-in-out",
+				"default",
+				"ease-out",
+				"quart-out",
+				"standard",
+				"drafts",
+				"ease-in",
+				"spring",
+				"linear",
+				"custom"
+			],
+			"description": "Item-motion easing curve, from the shared motion easing list (includes/helpers-motion-easing.php)."
+		},
+		"itemMotionEasingCustom": {
+			"type": "string",
+			"default": "",
+			"description": "A hand-typed `cubic-bezier(x1, y1, x2, y2)` curve, read only when `itemMotionEasing` is `custom` (validated by sgs_motion_valid_cubic_bezier)."
+		},
+		"itemOrnament": {
+			"type": "object",
+			"default": {},
+			"description": "Wave 3C U-7, M-22 (.claude/reports/2026-09-25-u6-u7-design.md 3e). Per tier ({desktop,tablet,mobile}), what leads each primary row: `none`, `index` (a decorative two-digit counter, 01, 02 …) or `icon` (itemOrnamentIcon)."
+		},
+		"itemOrnamentIcon": {
+			"type": "object",
+			"default": {
+				"source": "lucide",
+				"name": "arrow-right"
+			},
+			"description": "The leading glyph when itemOrnament is `icon` (IconPicker {source,name})."
+		},
+		"itemOrnamentIconHover": {
+			"type": "object",
+			"default": {},
+			"description": "Optional hover glyph; crossfades with itemOrnamentIcon on hover or keyboard focus."
+		},
+		"itemOrnamentSize": {
+			"type": "object",
+			"default": {},
+			"description": "Per tier: the glyph box, or the number's font size for `index`. Unset 0.75em."
+		},
+		"itemOrnamentColour": {
+			"type": "string",
+			"default": "",
+			"description": "Ornament colour; '' inherits the row's text colour."
+		},
+		"itemOrnamentColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Ornament colour on hover or keyboard focus."
+		},
+		"itemOrnamentGap": {
+			"type": "string",
+			"default": "",
+			"description": "Space between the ornament and the label. Unset 0.5em."
+		},
+		"itemExpanderIcon": {
+			"type": "object",
+			"default": {
+				"source": "lucide",
+				"name": "chevron-down"
+			},
+			"description": "Wave 3C U-7, M-22 (.claude/reports/2026-09-25-u6-u7-design.md 3e). The accordion expander glyph (IconPicker {source,name})."
+		},
+		"itemExpanderRotate": {
+			"type": "number",
+			"default": 180,
+			"description": "Degrees the expander glyph turns while its accordion is open (-360 to 360). 45 turns a plus into a cross."
+		},
+		"itemMedia": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"featured-image"
+			],
+			"description": "Wave 3C U-7, M-15/M-22 (.claude/reports/2026-09-25-u6-u7-design.md 3f). Per-item media: '' none, `featured-image` shows the linked page's own featured image beside its label (a GIF or WebP is served full size so it keeps animating). Custom links show none."
+		},
+		"itemMediaReveal": {
+			"type": "object",
+			"default": {},
+			"description": "Per tier: `none`, `always`, or `hover` (grows from nothing on hover or keyboard focus of its row)."
+		},
+		"itemMediaWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Per tier media width. Unset 160px."
+		},
+		"itemMediaHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Per tier media height. Unset 112px."
+		},
+		"itemMediaRadius": {
+			"type": "string",
+			"default": "",
+			"description": "Media corner radius."
 		},
 		"navLabel": {
 			"type": "string",

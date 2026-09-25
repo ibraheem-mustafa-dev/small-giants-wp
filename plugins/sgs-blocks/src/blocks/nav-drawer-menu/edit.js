@@ -57,6 +57,8 @@ import DropdownStylePanel from '../../shared/nav-menu-panels/DropdownStylePanel'
 import EffectsPanel from '../../shared/nav-menu-panels/EffectsPanel';
 import FeaturedPanel from '../../shared/nav-menu-panels/FeaturedPanel';
 import MegaDrawerPanel from '../../shared/nav-menu-panels/MegaDrawerPanel';
+import ItemEffectsPanel from '../../shared/nav-menu-panels/ItemEffectsPanel';
+import RowExtrasPanel from './RowExtrasPanel';
 // This block's OWN declared Sweep-eligibility source (FR-41-26) — read here
 // rather than inside the shared ColourRowExtras/ColourTreatment modules,
 // which do not statically import either block's manifest (see
@@ -115,6 +117,13 @@ export default function Edit( { attributes, setAttributes } ) {
 		featuredFontWeight,
 		featuredFontWeightHover,
 		megaDrawerFallbackIds,
+		megaDrawerMode,
+		siblingDimOpacity,
+		labelRoll,
+		itemMotionDuration,
+		itemMotionEasing,
+		itemMotionEasingCustom,
+		itemOrnament,
 		splitAfterItemId,
 		splitSide,
 	} = attributes;
@@ -144,6 +153,10 @@ export default function Edit( { attributes, setAttributes } ) {
 	// FR-41-30(b) — the sublink-marker colour row is revealed only once the
 	// operator picks a DIFFERENT icon than the declared default (chevron-right).
 	const SGS_NM_SUBLINK_MARKER_ICON_DEFAULT = { source: 'lucide', name: 'chevron-right' };
+	const ornamentInUse = Object.values(
+		itemOrnament && typeof itemOrnament === 'object' ? itemOrnament : {}
+	).some( ( v ) => 'index' === v || 'icon' === v );
+
 	const sublinkMarkerIconIsCustom =
 		( sublinkMarkerIcon?.source ?? SGS_NM_SUBLINK_MARKER_ICON_DEFAULT.source ) !==
 			SGS_NM_SUBLINK_MARKER_ICON_DEFAULT.source ||
@@ -410,8 +423,9 @@ export default function Edit( { attributes, setAttributes } ) {
 			],
 		},
 		// OMITTED (not disabled) unless `sublinkMarkerIcon` differs from its
-		// declared chevron-right default.
-		sublinkMarkerIconIsCustom &&
+		// declared chevron-right default, or mega items show their panels in
+		// the drawer (the row then also colours the panel's list markers).
+		( sublinkMarkerIconIsCustom || 'link' !== megaDrawerMode ) &&
 			textRow( {
 				key: 'sublink-marker',
 				label: __( 'Sublink marker colour', 'sgs-blocks' ),
@@ -426,6 +440,23 @@ export default function Edit( { attributes, setAttributes } ) {
 				attributes,
 				setAttributes,
 			} ),
+		// Wave 3C U-7: the leading ornament (shown only once a tier uses one).
+		ornamentInUse &&
+			textRow( {
+				key: 'ornament',
+				label: __( 'Row ornament colour', 'sgs-blocks' ),
+				attrs: { base: 'itemOrnamentColour', hover: 'itemOrnamentColourHover' },
+				attributes,
+				setAttributes,
+			} ),
+		// Wave 3C U-6 (M-24): the colour the other rows take while one is hovered.
+		textRow( {
+			key: 'sibling-dim',
+			label: __( 'Dimmed rows (while another is hovered)', 'sgs-blocks' ),
+			attrs: { base: 'siblingDimColour', gradient: 'siblingDimColourGradient' },
+			attributes,
+			setAttributes,
+		} ),
 		textRow( {
 			key: 'featured-text',
 			heading: __( 'Featured', 'sgs-blocks' ),
@@ -590,9 +621,21 @@ export default function Edit( { attributes, setAttributes } ) {
 				<MegaDrawerPanel
 					menuRef={ ref }
 					resolvedItems={ resolvedItems }
+					megaDrawerMode={ megaDrawerMode }
 					megaDrawerFallbackIds={ megaDrawerFallbackIds }
 					setAttributes={ setAttributes }
 				/>
+
+				<ItemEffectsPanel
+					siblingDimOpacity={ siblingDimOpacity }
+					labelRoll={ labelRoll }
+					itemMotionDuration={ itemMotionDuration }
+					itemMotionEasing={ itemMotionEasing }
+					itemMotionEasingCustom={ itemMotionEasingCustom }
+					setAttributes={ setAttributes }
+				/>
+
+				<RowExtrasPanel attributes={ attributes } setAttributes={ setAttributes } />
 			</InspectorControls>
 
 			<div { ...blockProps }>

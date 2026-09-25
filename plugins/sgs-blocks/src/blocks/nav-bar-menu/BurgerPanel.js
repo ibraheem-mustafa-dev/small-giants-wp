@@ -42,6 +42,8 @@ const BURGER_MORPH_OPTIONS = [
  * @param {Object}   root0.triggerMode           `triggerMode` — tier object {desktop,tablet,mobile},
  *                                                each icon | text | icon-and-text.
  * @param {string}   root0.triggerLabel          `triggerLabel`.
+ * @param {string}   root0.triggerHoverLabel     `triggerHoverLabel` (Wave 3C U-6, M-25).
+ * @param {string}   root0.triggerOpenLabel      `triggerOpenLabel` (Spec 36 FR-36-27 swap-label).
  * @param {string}   root0.triggerIconPosition   `triggerIconPosition` — before | after.
  * @param {Object}   root0.triggerIcon           `triggerIcon` — `{ source, name }`.
  * @param {boolean}  root0.triggerMagnetEnabled  `triggerMagnetEnabled`.
@@ -58,6 +60,8 @@ export default function BurgerPanel( {
 	burgerSize,
 	triggerMode,
 	triggerLabel,
+	triggerHoverLabel,
+	triggerOpenLabel,
 	triggerIconPosition,
 	triggerIcon,
 	triggerMagnetEnabled,
@@ -140,6 +144,30 @@ export default function BurgerPanel( {
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>
+			) }
+
+			{ /* Wave 3C U-6 (M-25): the rolling trigger word. Both need the
+			   Item effects panel's label roll to move; the open word is what
+			   a screen reader announces while the menu is open. */ }
+			{ showsText && (
+				<>
+					<TextControl
+						label={ __( 'Word on hover (optional)', 'sgs-blocks' ) }
+						value={ triggerHoverLabel ?? '' }
+						onChange={ ( val ) => setAttributes( { triggerHoverLabel: val } ) }
+						help={ __( 'Rolls in on hover when Label roll is on (Item effects).', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<TextControl
+						label={ __( 'Word while open (optional)', 'sgs-blocks' ) }
+						value={ triggerOpenLabel ?? '' }
+						onChange={ ( val ) => setAttributes( { triggerOpenLabel: val } ) }
+						help={ __( 'For example "Close". Rolls in while the menu is open when Label roll is on.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</>
 			) }
 
 			{ showsBoth && (

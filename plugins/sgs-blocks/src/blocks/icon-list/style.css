@@ -28,6 +28,16 @@
 	padding-inline-start: 1.5em;
 }
 
+/* Numbers: the editor canvas sets these custom properties; on the frontend
+   render.php emits the same values as a scoped `::marker` rule. A drawer's
+   sub-item marker colour (--sgs-list-marker-colour) wins when this list sits in
+   a mega panel inside the drawer. */
+.sgs-icon-list--marker-numbered > .sgs-icon-list__item::marker {
+	color: var(--sgs-list-marker-colour, var(--sgs-ilist-num-colour, currentColor));
+	font-size: var(--sgs-ilist-num-size, inherit);
+	font-weight: var(--sgs-ilist-num-weight, inherit);
+}
+
 .sgs-icon-list--marker-bullet .sgs-icon-list__item,
 .sgs-icon-list--marker-numbered .sgs-icon-list__item,
 .sgs-icon-list--marker-none .sgs-icon-list__item {

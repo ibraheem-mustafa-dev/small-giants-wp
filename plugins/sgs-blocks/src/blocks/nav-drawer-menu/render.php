@@ -483,7 +483,11 @@ if ( ! in_array( $submenu_model_ctx, array( 'accordion', 'drill-down' ), true ) 
 $sgs_nm_accordion_exclusive = ! array_key_exists( 'sgs/navDrawerAccordionExclusive', $block->context )
 	|| (bool) $block->context['sgs/navDrawerAccordionExclusive'];
 
-$items_html = sgs_nav_drawer_menu_render_items( $flat_items, $submenu_model_ctx, $uid, $featured_ids, $sgs_nm_sublink_marker, $mega_drawer_fallback_ids, $sgs_nm_accordion_exclusive );
+// Wave 3C U-6 + U-7 row options (mega mode, roll, ornament, expander, media),
+// resolved once (includes/nav-drawer-menu-items.php).
+$sgs_nm_row_options = sgs_nav_drawer_menu_row_options( $attributes );
+
+$items_html = sgs_nav_drawer_menu_render_items( $flat_items, $submenu_model_ctx, $uid, $featured_ids, $sgs_nm_sublink_marker, $mega_drawer_fallback_ids, $sgs_nm_accordion_exclusive, $sgs_nm_row_options );
 
 // FR-41-36 — the drawer's own `drawerBg` attribute,
 // reached via the SAME real WP block-context channel as
@@ -593,6 +597,8 @@ $css .= sgs_nav_shared_submenu_css(
 // FR-41-30(b): sublink-marker colour CSS, built above alongside the marker's
 // own SVG defs injection.
 $css .= $sgs_nm_marker_css;
+// Wave 3C U-6 + U-7: ornament, expander rotation, media, sibling dim, roll.
+$css .= sgs_nav_drawer_menu_extras_css( $attributes, '.sgs-nav-drawer-menu' . $uid_sel );
 
 // ── 5. Assemble — BLOCK-PRIVATE root.
 // Same as the bar block's render.php — see that file's own §5 comment for the

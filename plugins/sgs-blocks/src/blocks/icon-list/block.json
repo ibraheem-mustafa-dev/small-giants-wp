@@ -135,6 +135,43 @@
 					],
 					"prefix": "heading",
 					"_note": "Optional list heading (`.sgs-icon-list__heading`). Custom typography resolves via prefix `heading` + the text cluster (headingFontSize/FontWeight/FontStyle/LineHeight). Declared as its OWN element so heading* typography routes to element=heading, DISTINCT from item* text."
+				},
+				"item-dimmed": {
+					"label": "Dimmed sibling item",
+					"order": 6,
+					"clusters": [
+						"text",
+						"motion"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:color": "siblingDimColour",
+						"css:opacity": "siblingDimOpacity",
+						"css:transition-duration": "itemMotionDuration",
+						"css:transition-timing-function": "itemMotionEasing",
+						"css:color-gradient": "siblingDimColourGradient"
+					},
+					"_note": "Wave 3C U-6, M-24: every OTHER item in the same list while one is hovered or keyboard-focused (a list-scoped :has() rule, includes/helpers-item-effects.php::sgs_sibling_dim_css). itemMotionDuration/itemMotionEasing are the ONE shared item-motion pair (sibling dim, label roll, ornament crossfade); explicit because the {prefix}{suffix} convention cannot derive them."
+				},
+				"item-number": {
+					"label": "Item number",
+					"order": 7,
+					"clusters": [
+						"text"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:color": "numberColour",
+						"css:font-size": "numberFontSize",
+						"css:font-weight": "numberFontWeight"
+					},
+					"_note": "Wave 3C U-7, M-22: the ::marker of a `numbered` list item (a real <ol>)."
+				}
+			},
+			"colourExemptions": {
+				"sibling-dim": {
+					"rule": "states",
+					"reason": "The row IS a pointer-driven state: its colour paints the OTHER items only while one item is hovered or keyboard-focused (a list-scoped :has() rule). There is no resting moment for it to differ from, so a separate Hover swatch would describe nothing."
 				}
 			}
 		}
@@ -336,6 +373,82 @@
 		"markerType": {
 			"type": "string",
 			"default": "icon"
+		},
+		"siblingDimColour": {
+			"type": "string",
+			"default": "",
+			"description": "Wave 3C U-6, M-24 (.claude/reports/2026-09-25-u6-u7-design.md 3c). Text colour of the OTHER items in the same list while one is hovered or keyboard-focused. '' off."
+		},
+		"siblingDimColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Gradient sibling of siblingDimColour (text-gradient trio: background-clip:text with a first-stop fallback). Non-empty wins over the flat colour."
+		},
+		"siblingDimOpacity": {
+			"type": "number",
+			"description": "Wave 3C U-6, M-24. Opacity (0 to 1) of the other items in the same list while one is hovered or keyboard-focused. Unset off."
+		},
+		"labelRoll": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"up",
+				"up-scale"
+			],
+			"description": "Wave 3C U-6, M-25 (.claude/reports/2026-09-25-u6-u7-design.md 3d). Two-copy label roll on hover or keyboard focus: '' off (no extra markup), `up` (the label rolls up to a copy of itself), `up-scale` (the outgoing copy also shrinks to 0.8). Honours reduced motion."
+		},
+		"itemMotionDuration": {
+			"type": "number",
+			"description": "Wave 3C U-6 (.claude/reports/2026-09-25-u6-u7-design.md 3c). ONE item-motion time in ms (0 to 3000) shared by this block's item effects (sibling dim, label roll, the ornament crossfade). Unset resolves to 300."
+		},
+		"itemMotionEasing": {
+			"type": "string",
+			"default": "ease",
+			"enum": [
+				"ease",
+				"ease-out-css",
+				"ease-in-out",
+				"default",
+				"ease-out",
+				"quart-out",
+				"standard",
+				"drafts",
+				"ease-in",
+				"spring",
+				"linear",
+				"custom"
+			],
+			"description": "Item-motion easing curve, from the shared motion easing list (includes/helpers-motion-easing.php)."
+		},
+		"itemMotionEasingCustom": {
+			"type": "string",
+			"default": "",
+			"description": "A hand-typed `cubic-bezier(x1, y1, x2, y2)` curve, read only when `itemMotionEasing` is `custom` (validated by sgs_motion_valid_cubic_bezier)."
+		},
+		"numberFormat": {
+			"type": "string",
+			"default": "decimal",
+			"enum": [
+				"decimal",
+				"decimal-leading-zero"
+			],
+			"description": "Wave 3C U-7, M-22 (.claude/reports/2026-09-25-u6-u7-design.md 3g). Number style of a `numbered` list: 1, 2 … or 01, 02 …"
+		},
+		"numberColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of a `numbered` list's numbers. A drawer's sub-item marker colour takes precedence when this list renders inside a mega panel in the drawer."
+		},
+		"numberFontSize": {
+			"type": "string",
+			"default": "",
+			"description": "Font size of a `numbered` list's numbers."
+		},
+		"numberFontWeight": {
+			"type": "string",
+			"default": "",
+			"description": "Font weight of a `numbered` list's numbers."
 		},
 		"source": {
 			"type": "string",

@@ -249,7 +249,9 @@ check( 'depth-3 tree renders child links', substr_count( $deep_html, 'sgs-nav-ba
 echo "\n=== MEGA FORK CLOSE GRACE ===\n";
 // The mega fork used to build its interactivity context with a literal 170, so
 // submenuCloseGrace did nothing on a mega panel. Both forks must read the setting.
-function sgs_mega_render_panel_content( $id ) { return '<div class="stub-mega-panel">panel</div>'; }
+function sgs_mega_render_panel_content( $id, $context = '' ) { return '<div class="stub-mega-panel">panel</div>'; }
+// Both menu forks render a mega panel through this one helper (helpers-mega-render.php).
+function sgs_mega_render_item_panel( $item, $viewall_class, $context = '' ) { return sgs_mega_render_panel_content( (int) ( $item['object_id'] ?? 0 ), $context ); }
 $mega_item = array(
 	'type'       => 'sgs_mega_menu',
 	'object_id'  => 7,

@@ -1,6 +1,7 @@
 <?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName -- shared per-instance include; class namespace lives in the block slug.
 /**
- * SGS Nav Bar Menu / Nav Drawer Menu — shared markup renderers: the two
+ * SGS Nav Bar Menu / Nav Drawer Menu — shared markup renderers (the drawer's
+ * per-row pieces live in `nav-drawer-menu-items.php`, required below): the two
  * flat-list renderers (`sgs_nav_bar_menu_render_items()`,
  * `sgs_nav_drawer_menu_render_items()`) and the burger/trigger markup builder
  * (`sgs_nav_bar_menu_burger_toggle_markup()`). `$featured_ids`, `$uid` and
@@ -29,6 +30,8 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+
+require_once __DIR__ . '/nav-drawer-menu-items.php';
 
 if ( ! function_exists( 'sgs_nav_shared_badge_html' ) ) {
 	/**
@@ -96,51 +99,11 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 					. ( $is_disabled ? ' sgs-nav-bar-menu__item--disabled' : '' );
 
 				if ( 'sgs_mega_menu' === ( $item['type'] ?? '' ) ) {
-					$panel_post_id = (int) ( $item['object_id'] ?? 0 );
-
-					/*
-					 * Does the panel ship its own CTA? Checked against the STORED
-					 * post_content (a `wp:sgs/button` marker) rather than the
-					 * rendered HTML, because the answer decides whether to register
-					 * the footer filter BEFORE do_blocks() runs — checking rendered
-					 * output would be a chicken-and-egg (the panel is already built
-					 * by then). A block comment is the same source of truth the
-					 * editor writes, so this cannot drift from what renders.
-					 */
-					$panel_post    = $panel_post_id ? get_post( $panel_post_id ) : null;
-					$panel_has_cta = $panel_post instanceof WP_Post
-						&& false !== strpos( (string) $panel_post->post_content, 'wp:sgs/button' );
-
-					// Build the fallback link BEFORE rendering so it can be handed
-					// to sgs/mega-panel's footer slot (it must render INSIDE the
-					// panel, never as a sibling).
-					$viewall_for_panel = '';
-					if ( ! $panel_has_cta && '#' !== $item['url'] && '' !== $item['url'] ) {
-						$viewall_for_panel = sprintf(
-							'<a class="sgs-nav-bar-menu__mega-viewall" href="%s">%s</a>',
-							esc_url( $item['url'] ),
-							// translators: %s is the mega-menu item's own label (e.g. "Products").
-							esc_html( sprintf( __( 'View all %s', 'sgs-blocks' ), $item['label'] ) )
-						);
-					}
-
-					$viewall_filter = null;
-					if ( '' !== $viewall_for_panel ) {
-						$viewall_filter = static function ( $html, $id ) use ( $viewall_for_panel, $panel_post_id ) {
-							return (int) $id === $panel_post_id ? $viewall_for_panel : $html;
-						};
-						add_filter( 'sgs_mega_panel_footer_html', $viewall_filter, 10, 2 );
-					}
-
-					$panel_html = function_exists( 'sgs_mega_render_panel_content' )
-						? sgs_mega_render_panel_content( $panel_post_id )
+					// The panel plus its "View all" fallback, through the one
+					// helper the drawer fork also uses (helpers-mega-render.php).
+					$panel_html = function_exists( 'sgs_mega_render_item_panel' )
+						? sgs_mega_render_item_panel( $item, 'sgs-nav-bar-menu__mega-viewall' )
 						: null;
-
-					// Remove immediately — the slot must never leak into the NEXT
-					// mega item's panel on the same bar.
-					if ( null !== $viewall_filter ) {
-						remove_filter( 'sgs_mega_panel_footer_html', $viewall_filter, 10 );
-					}
 					if ( null !== $panel_html ) {
 						// Instance-scoped id (reviewer finding): fold in $uid so
 						// two nav-menus bound to the SAME menu can't collide (axe
@@ -183,7 +146,7 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 							esc_attr( $li_class ),
 							$mega_ctx, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_interactivity_data_wp_context() self-escapes.
 							esc_attr( $panel_dom_id ),
-							esc_html( $item['label'] ),
+							sgs_label_roll_markup( (string) $item['label'], (string) ( $submenu['label_roll'] ?? '' ) ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_label_roll_markup() esc_html's the label.
 							$caret, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted static SVG from sgs_get_lucide_icon().
 							$panel_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- do_blocks() output; already-safe rendered block HTML. The "View all" fallback (when the panel has no CTA of its own) is INSIDE this string, injected via sgs_mega_panel_footer_html.
 							esc_attr( $submenu['animation'] ?? 'none' )
@@ -302,7 +265,7 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 								. '<span class="screen-reader-text">%s</span>%s</button>',
 								esc_url( $item['url'] ),
 								esc_attr( wp_parse_url( $item['url'], PHP_URL_PATH ) ?? '' ),
-								esc_html( $item['label'] ),
+								sgs_label_roll_markup( (string) $item['label'], (string) ( $submenu['label_roll'] ?? '' ) ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_label_roll_markup() esc_html's the label.
 								esc_attr( $sub_dom_id ),
 								/* translators: %s is the parent menu item's label. */
 								esc_html( sprintf( __( 'Show submenu for %s', 'sgs-blocks' ), $item['label'] ) ),
@@ -313,7 +276,7 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 								'<button type="button" class="sgs-nav-bar-menu__link sgs-nav-bar-menu__subtoggle" data-sgs-mega-trigger aria-expanded="false" aria-controls="%s" data-wp-bind--aria-expanded="context.isOpen" data-wp-on--click="actions.toggle" data-wp-on--keydown="actions.triggerKeydown">'
 								. '<span class="sgs-nav-bar-menu__link-text sgs-nav-bar-menu__magnet-target">%s</span>%s</button>',
 								esc_attr( $sub_dom_id ),
-								esc_html( $item['label'] ),
+								sgs_label_roll_markup( (string) $item['label'], (string) ( $submenu['label_roll'] ?? '' ) ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_label_roll_markup() esc_html's the label.
 								$sub_caret // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted static SVG from sgs_get_lucide_icon().
 							);
 						}
@@ -369,7 +332,7 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 						esc_attr( $li_class ),
 						esc_url( $item['url'] ),
 						esc_attr( wp_parse_url( $item['url'], PHP_URL_PATH ) ?? '' ),
-						esc_html( $item['label'] ),
+						sgs_label_roll_markup( (string) $item['label'], (string) ( $submenu['label_roll'] ?? '' ) ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_label_roll_markup() esc_html's the label.
 						$leaf_badge // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_nav_shared_badge_html() esc_attr/esc_html's internally.
 					);
 				}
@@ -392,23 +355,16 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_render_items' ) ) {
 		 * models except the `data-sgs-nav-submenu-model` flag consumed by that
 		 * script and by style.css.
 		 *
-		 * A mega-menu item degrades to a plain link inside the drawer (its own
-		 * `url`, else '#') rather than emitting the desktop hover-disclosure
-		 * markup `render_items()` builds — that markup has no touch equivalent
-		 * and dragging it into a `<details>` would need its own JS-driven mega-
-		 * in-drawer build. Declared here, not silently dropped: FR-36-5 names
-		 * "the same panel renders inside the drawer" as a future item that is not
-		 * built.
+		 * A mega-menu item renders its mega panel post inside its own accordion
+		 * row (`megaDrawerMode` `panel`, the default): the panel is server-
+		 * rendered block content, so it needs no JS, and it renders in the
+		 * `drawer` context, where `sgs/mega-panel` draws no floating shell.
+		 * `link` (or a panel that resolves to nothing) gives a plain link.
 		 *
-		 * $mega_drawer_fallback_ids is a narrower slice of that item: when a
-		 * mega-typed item is authored as a `core/navigation-submenu` carrying
-		 * REAL nested child links (not the CPT mega panel — its own menu
-		 * children) AND its identifier is listed here, those children render as
-		 * an ordinary accordion/submenu list instead of the plain-link degrade.
-		 * A mega item with no nested children still degrades to a plain link
-		 * regardless of this list (nothing to show as an accordion). The bar/
-		 * desktop form is untouched either way — it always gets the full mega
-		 * panel. Unset (default empty array) leaves every mega item a plain link.
+		 * $mega_drawer_fallback_ids takes precedence: a mega-typed item authored
+		 * as a `core/navigation-submenu` carrying REAL nested child links, with
+		 * its identifier listed here, renders those children as an ordinary
+		 * accordion instead of its panel. The bar form always gets the panel.
 		 *
 		 * @param array  $items Flattened items from flatten().
 		 * @param string $model 'accordion' or 'drill-down' (validated by caller).
@@ -428,43 +384,66 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_render_items' ) ) {
 		 *                      the `name=` attribute is omitted entirely, so each `<details>`
 		 *                      opens/closes independently (away's reference opens two panels
 		 *                      at once).
+		 * @param array  $options Row options from sgs_nav_drawer_menu_row_options()
+		 *                      (mega mode, label roll, ornament, expander, media).
 		 * @return string HTML <li> elements.
 		 */
-		function sgs_nav_drawer_menu_render_items( array $items, string $model, string $uid, array $featured_ids, string $marker_icon = '', array $mega_drawer_fallback_ids = array(), bool $exclusive = true ): string {
+		function sgs_nav_drawer_menu_render_items( array $items, string $model, string $uid, array $featured_ids, string $marker_icon = '', array $mega_drawer_fallback_ids = array(), bool $exclusive = true, array $options = array() ): string {
+			// Row options (ornament, roll, media, expander, mega mode) resolved
+			// once by the caller; a caller that passes none gets the defaults.
+			$options += sgs_nav_drawer_menu_row_options( array() );
+
 			$html = '';
 			foreach ( $items as $item ) {
 				$is_featured = in_array( $item['identifier'], $featured_ids, true );
 				$li_class    = 'sgs-nav-drawer-menu__item sgs-nav-drawer-menu__item--drawer' . ( $is_featured ? ' sgs-nav-drawer-menu__item--featured' : '' );
+				$link_html   = sprintf(
+					'<li class="%1$s"><a class="sgs-nav-drawer-menu__link" href="%2$s" data-sgs-nav-path="%3$s">%4$s%5$s</a></li>',
+					esc_attr( $li_class ),
+					esc_url( $item['url'] ),
+					esc_attr( wp_parse_url( $item['url'], PHP_URL_PATH ) ?? '' ),
+					sgs_nav_drawer_menu_label_inner( $item, $options ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_html'd label, trusted icon markup, wp_get_attachment_image().
+					sgs_nav_shared_badge_html( (string) ( $item['badge'] ?? '' ), 'sgs-nav-drawer-menu' ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_nav_shared_badge_html() esc_attr/esc_html's internally.
+				);
 
-				// Mega item — documented degrade (see docblock above), UNLESS the
-				// operator opted this item into the accordion fallback AND it
-				// actually carries real nested children to show.
+				/*
+				 * Mega item (Spec 36 FR-36-6 "Mega items in the drawer"). An item
+				 * listed in megaDrawerFallbackIds that carries real nested children
+				 * renders those children as an ordinary accordion (falls through).
+				 * Otherwise, with megaDrawerMode `panel` (the default), the item's
+				 * mega panel post renders inside its accordion, in the drawer
+				 * context (no floating shell); `link`, or a panel that resolves to
+				 * nothing, gives a plain link.
+				 */
 				if ( 'sgs_mega_menu' === ( $item['type'] ?? '' ) ) {
 					$mega_children = isset( $item['children'] ) && is_array( $item['children'] ) ? $item['children'] : array();
 					$mega_fallback = ! empty( $mega_children ) && in_array( $item['identifier'], $mega_drawer_fallback_ids, true );
 					if ( ! $mega_fallback ) {
-						$html .= sprintf(
-							'<li class="%1$s"><a class="sgs-nav-drawer-menu__link" href="%2$s" data-sgs-nav-path="%3$s"><span class="sgs-nav-drawer-menu__link-text">%4$s</span></a></li>',
-							esc_attr( $li_class ),
-							esc_url( $item['url'] ),
-							esc_attr( wp_parse_url( $item['url'], PHP_URL_PATH ) ?? '' ),
-							esc_html( $item['label'] )
-						);
+						$panel_html = ( 'panel' === $options['mega_mode'] && function_exists( 'sgs_mega_render_item_panel' ) )
+							? sgs_mega_render_item_panel( $item, 'sgs-nav-drawer-menu__mega-viewall', 'drawer' )
+							: null;
+						if ( null !== $panel_html && '' !== trim( $panel_html ) ) {
+							$html .= sgs_nav_drawer_menu_accordion_html(
+								$item,
+								$li_class,
+								$uid,
+								$exclusive,
+								'<li class="sgs-nav-drawer-menu__mega-body">' . $panel_html . '</li>',
+								$options,
+								' sgs-nav-drawer-menu__item--mega'
+							);
+							continue;
+						}
+						$html .= $link_html;
 						continue;
 					}
-					// Falls through to the ordinary children-accordion rendering
-					// below, exactly as though this were a plain dropdown item.
 				}
 
 				$children = isset( $item['children'] ) && is_array( $item['children'] ) ? $item['children'] : array();
 				if ( $children ) {
-					// A small right-pointing marker in each sub-item's indent, using the
-					// same caret family for both "this expands" (chevron-down,
-					// rotates on open) and "this is a leaf" (chevron-right, static).
-					// FR-41-30(b): the glyph is operator-chosen (`sublinkMarkerIcon`),
-					// resolved by render.php through the same source-aware resolver
-					// `sgs/icon` uses and handed in already-rendered. The stored default
-					// is lucide/chevron-right, so an untouched nav shows a right chevron.
+					// A small right-pointing marker in each sub-item's indent
+					// (FR-41-30(b): operator-chosen `sublinkMarkerIcon`, resolved by
+					// render.php and handed in already-rendered).
 					$sub_marker = '' !== $marker_icon
 						? '<span class="sgs-nav-drawer-menu__sublink-marker" aria-hidden="true">' . $marker_icon . '</span>'
 						: '';
@@ -479,98 +458,22 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_render_items' ) ) {
 							$child_featured ? ' sgs-nav-drawer-menu__subitem--featured' : '',
 							esc_url( $child['url'] ),
 							esc_attr( wp_parse_url( $child['url'], PHP_URL_PATH ) ?? '' ),
-							$sub_marker, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted static SVG from sgs_get_lucide_icon(), same pattern as $caret elsewhere in this file.
+							$sub_marker, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted static SVG from sgs_get_lucide_icon().
 							esc_html( $child['label'] )
 						);
 					}
 
-					// Every child had an empty label — degrade to a plain link
-					// (mirrors render_items()'s own null-panel/empty-children degrade).
+					// Every child had an empty label: degrade to a plain link.
 					if ( '' === $child_html ) {
-						$html .= sprintf(
-							'<li class="%1$s"><a class="sgs-nav-drawer-menu__link" href="%2$s" data-sgs-nav-path="%3$s"><span class="sgs-nav-drawer-menu__link-text">%4$s</span></a></li>',
-							esc_attr( $li_class ),
-							esc_url( $item['url'] ),
-							esc_attr( wp_parse_url( $item['url'], PHP_URL_PATH ) ?? '' ),
-							esc_html( $item['label'] )
-						);
+						$html .= $link_html;
 						continue;
 					}
 
-					$details_id = $uid . '-drill-' . substr( md5( $item['identifier'] ), 0, 8 );
-					$caret      = function_exists( 'sgs_get_lucide_icon' ) ? sgs_get_lucide_icon( 'chevron-down' ) : '';
-
-					/*
-					 * Split parent-link from expander (FR-36-6 — "split parent-link
-					 * from expander"). A parent WITH a URL keeps a real, separately
-					 * clickable link AND an adjacent expander toggle (mirrors the
-					 * bar's own `sgs-nav-drawer-menu__subtoggle` split); a parent with NO
-					 * URL of its own has nothing to link to, so its label renders as
-					 * plain text next to the expander instead of a dead `href="#"`.
-					 */
-					if ( ! empty( $item['has_url'] ) ) {
-						$label_html = sprintf(
-							'<a class="sgs-nav-drawer-menu__link" href="%1$s" data-sgs-nav-path="%2$s"><span class="sgs-nav-drawer-menu__link-text">%3$s</span></a>',
-							esc_url( $item['url'] ),
-							esc_attr( wp_parse_url( $item['url'], PHP_URL_PATH ) ?? '' ),
-							esc_html( $item['label'] )
-						);
-					} else {
-						// `aria-disabled="true"` names what this span
-						// already visually IS: a link-styled element with no href, not
-						// a real interactive control. Without it, AT that exposes
-						// elements by their visual/class styling alone can announce
-						// this as a link that goes nowhere; the expander button right
-						// next to it is the actual interactive control.
-						$label_html = sprintf(
-							'<span class="sgs-nav-drawer-menu__link sgs-nav-drawer-menu__link--label" aria-disabled="true"><span class="sgs-nav-drawer-menu__link-text">%s</span></span>',
-							esc_html( $item['label'] )
-						);
-					}
-
-					/*
-					 * Wave 3C U-11 (ENG-02) — `name=` is what makes the browser
-					 * enforce "only one open at a time" across every `<details>`
-					 * sharing it; omitting the attribute entirely (not just
-					 * emptying it) is what lets each row open independently. See
-					 * this function's own `$exclusive` docblock.
-					 */
-					$accordion_name_attr = $exclusive
-						? ' name="sgs-nav-drawer-menu-accordion-' . esc_attr( $uid ) . '"'
-						: '';
-
-					$html .= sprintf(
-						'<li class="%1$s sgs-nav-drawer-menu__item--has-submenu">'
-						. '<div class="sgs-nav-drawer-menu__accordion-row">'
-						. '%2$s'
-						. '<details class="sgs-nav-drawer-menu__accordion"%3$s id="%4$s" data-sgs-nav-parent-label="%5$s" data-sgs-nav-back-label="%6$s">'
-						. '<summary class="sgs-nav-drawer-menu__accordion-summary" aria-label="%7$s"><span class="sgs-nav-drawer-menu__caret" aria-hidden="true">%8$s</span></summary>'
-						. '<ul class="sgs-nav-drawer-menu__submenu" data-sgs-drill-panel>%9$s</ul>'
-						. '</details>'
-						. '</div></li>',
-						esc_attr( $li_class ),
-						$label_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled above from esc_url/esc_attr/esc_html parts.
-						$accordion_name_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built above from a fixed literal + esc_attr( $uid ), or ''.
-						esc_attr( $details_id ),
-						esc_attr( $item['label'] ),
-						/* translators: %s is the parent menu item's label — the drill-down mode's Back button text (JS-injected; nav-drilldown.js reads this attribute rather than hardcoding English). */
-						esc_attr( sprintf( __( 'Back to %s', 'sgs-blocks' ), $item['label'] ) ),
-						/* translators: %s is the parent menu item's label. */
-						esc_attr( sprintf( __( 'Show submenu for %s', 'sgs-blocks' ), $item['label'] ) ),
-						$caret, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted static SVG from sgs_get_lucide_icon().
-						$child_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled above from esc_url/esc_attr/esc_html parts.
-					);
+					$html .= sgs_nav_drawer_menu_accordion_html( $item, $li_class, $uid, $exclusive, $child_html, $options );
 					continue;
 				}
 
-				$html .= sprintf(
-					'<li class="%1$s"><a class="sgs-nav-drawer-menu__link" href="%2$s" data-sgs-nav-path="%3$s"><span class="sgs-nav-drawer-menu__link-text">%4$s</span>%5$s</a></li>',
-					esc_attr( $li_class ),
-					esc_url( $item['url'] ),
-					esc_attr( wp_parse_url( $item['url'], PHP_URL_PATH ) ?? '' ),
-					esc_html( $item['label'] ),
-					sgs_nav_shared_badge_html( (string) ( $item['badge'] ?? '' ), 'sgs-nav-drawer-menu' ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_nav_shared_badge_html() esc_attr/esc_html's internally.
-				);
+				$html .= $link_html;
 			}
 			return $html;
 		}
@@ -603,9 +506,15 @@ if ( ! function_exists( 'sgs_nav_bar_menu_burger_toggle_markup' ) ) {
 	 *                                     none. Rides onto this button as `data-sgs-nav-burger-morph="…"`
 	 *                                     ONLY when `$is_default_icon` (the bars markup this
 	 *                                     attribute selects on only exists for the default glyph).
+	 * @param string $icon_position       `triggerIconPosition`: before | after (a visual reorder).
+	 * @param array  $label_roll          Wave 3C U-6 (M-25): `roll` (labelRoll), `hover`
+	 *                                     (triggerHoverLabel) and `open` (triggerOpenLabel). The
+	 *                                     visible word rolls to `hover` on hover (only when set)
+	 *                                     and to `open` while the drawer is open; the button's
+	 *                                     name follows the visible word.
 	 * @return string The `<div>` + `<button>` toggle markup.
 	 */
-	function sgs_nav_bar_menu_burger_toggle_markup( string $burger_context_attr, string $drawer_ref, string $burger_icon, string $trigger_mode = 'icon', string $trigger_label = '', string $aria_attr = '', string $magnet_attrs = '', bool $is_default_icon = false, int $collapse_point = 768, string $burger_morph = 'x', string $icon_position = 'after' ): string {
+	function sgs_nav_bar_menu_burger_toggle_markup( string $burger_context_attr, string $drawer_ref, string $burger_icon, string $trigger_mode = 'icon', string $trigger_label = '', string $aria_attr = '', string $magnet_attrs = '', bool $is_default_icon = false, int $collapse_point = 768, string $burger_morph = 'x', string $icon_position = 'after', array $label_roll = array() ): string {
 		if ( ! in_array( $trigger_mode, array( 'icon', 'text', 'icon-and-text' ), true ) ) {
 			$trigger_mode = 'icon';
 		}
@@ -650,7 +559,14 @@ if ( ! function_exists( 'sgs_nav_bar_menu_burger_toggle_markup' ) ) {
 
 		$text_html = 'icon' === $trigger_mode
 			? ''
-			: '<span class="sgs-nav-bar-menu__burger-text">' . esc_html( $trigger_label ) . '</span>';
+			: '<span class="sgs-nav-bar-menu__burger-text">' . sgs_label_roll_markup(
+				$trigger_label,
+				(string) ( $label_roll['roll'] ?? '' ),
+				(string) ( $label_roll['hover'] ?? '' ),
+				(string) ( $label_roll['open'] ?? '' ),
+				'' !== (string) ( $label_roll['hover'] ?? '' ),
+				'state.isOpen'
+			) . '</span>';
 
 		// No modifier class under `icon` (FR-41-12): a class nothing styles is
 		// not free.

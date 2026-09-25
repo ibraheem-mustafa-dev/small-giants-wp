@@ -1,34 +1,33 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody, CheckboxControl } from '@wordpress/components';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 /**
- * SGS Nav Bar/Drawer Menu (shared, sgs/nav-bar-menu + sgs/nav-drawer-menu) — Settings tab: "Mega menu (drawer)" PanelBody.
+ * SGS Nav Drawer Menu — Settings tab: "Mega menu (drawer)" PanelBody.
  *
- * Bean 2026-09-13: "there should be an option to not show a mega menu item
- * on the nav drawer version since not everyone wants them." A mega-typed
- * item always degrades to a plain link inside the drawer (Spec 36 FR-36-5
- * reserves the FULL mega-panel-inside-the-drawer build as future work). This
- * panel offers the narrower, already-buildable slice: for a mega item
- * authored WITH real nested child links (a core/navigation-submenu, not a
- * bare core/navigation-link), ticking it here renders those children as an
- * ordinary accordion/submenu list in the drawer instead of the plain-link
- * degrade. Mirrors FeaturedPanel.js's checklist shape exactly — same
- * identifier scheme, same toggle-array pattern.
+ * `megaDrawerMode` (Spec 36 FR-36-6, Wave 3C U-7): `panel` (default) shows a
+ * mega item's own mega panel post inside its accordion in the drawer (no
+ * floating shell, text in the drawer's colours); `link` makes it a plain
+ * link. Bean 2026-09-13: not everyone wants mega panels in the drawer.
  *
- * Only mega items are listed; a mega item with no nested children is shown
- * with a disabled row + explanatory help text, since there is nothing to
- * fall back to.
+ * The checklist below takes precedence for one item: a mega item authored
+ * WITH real nested child links (a core/navigation-submenu), ticked here,
+ * shows those sub-links as an ordinary accordion list instead of its panel.
+ * A mega item with no nested children is shown with a disabled row. Mirrors
+ * FeaturedPanel.js's checklist shape (same identifier scheme and toggle).
  *
  * @param {Object}   root0                        Props.
  * @param {number}   root0.menuRef                The block's `ref` attribute (menu id).
  * @param {Array}    root0.resolvedItems          From useNavMenuSource() — each item
- *                                                 now also carries `isMega`/`hasChildren`.
+ *                                                 also carries `isMega`/`hasChildren`.
+ * @param {string}   root0.megaDrawerMode         The block's `megaDrawerMode` attribute.
  * @param {string[]} root0.megaDrawerFallbackIds  The block's `megaDrawerFallbackIds` attribute.
  * @param {Function} root0.setAttributes          The block's attribute setter.
  */
 export default function MegaDrawerPanel( {
 	menuRef,
 	resolvedItems,
+	megaDrawerMode,
 	megaDrawerFallbackIds,
 	setAttributes,
 } ) {
@@ -48,6 +47,21 @@ export default function MegaDrawerPanel( {
 			title={ __( 'Mega menu (drawer)', 'sgs-blocks' ) }
 			initialOpen={ false }
 		>
+			<ToggleGroupControl
+				label={ __( 'Mega items in the drawer', 'sgs-blocks' ) }
+				help={ __(
+					'Panel shows each mega item’s own panel inside its drawer accordion. Link makes it a plain link.',
+					'sgs-blocks'
+				) }
+				value={ 'link' === megaDrawerMode ? 'link' : 'panel' }
+				onChange={ ( val ) => setAttributes( { megaDrawerMode: 'link' === val ? 'link' : 'panel' } ) }
+				isBlock
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
+			>
+				<ToggleGroupControlOption value="panel" label={ __( 'Panel', 'sgs-blocks' ) } />
+				<ToggleGroupControlOption value="link" label={ __( 'Link', 'sgs-blocks' ) } />
+			</ToggleGroupControl>
 			{ 0 === menuRef && (
 				<p>
 					{ __(
@@ -90,7 +104,7 @@ export default function MegaDrawerPanel( {
 			{ megaItems.length > 0 && (
 				<p className="sgs-nav-panel__inspector-note">
 					{ __(
-						'Ticked items show their own sub-links as a plain list in the nav drawer instead of the full mega-menu panel. The desktop bar always shows the full mega panel either way — this only affects the drawer.',
+						'Ticked items show their own sub-links as a plain list in the nav drawer instead of their mega panel. The desktop bar always shows the full mega panel either way — this only affects the drawer.',
 						'sgs-blocks'
 					) }
 				</p>

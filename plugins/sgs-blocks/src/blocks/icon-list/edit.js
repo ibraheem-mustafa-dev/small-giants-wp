@@ -23,7 +23,9 @@ import {
   normaliseResponsiveBox,
   SgsBoxControl,
   GradientCapableColourControl,
+  SgsLengthControl,
 } from "../../components";
+import ItemEffectsPanel from "../../shared/nav-menu-panels/ItemEffectsPanel";
 import { colourVar, spacingVar } from "../../utils";
 import { ToggleGroupControl, ToggleGroupControlOption } from "../../components/primitives";
 
@@ -200,6 +202,14 @@ export default function Edit({ attributes, setAttributes }) {
     source,
     menuRef,
     renderLandmark,
+    siblingDimOpacity,
+    labelRoll,
+    itemMotionDuration,
+    itemMotionEasing,
+    itemMotionEasingCustom,
+    numberFormat,
+    numberFontSize,
+    numberFontWeight,
   } = attributes;
 
   // Contrast check for border — warn if border fails WCAG contrast against
@@ -242,6 +252,15 @@ export default function Edit({ attributes, setAttributes }) {
   // Editor-canvas preview only (contract §A note above) — mirrors render.php's
   // scoped output so the canvas matches the frontend.
   const previewStyle = {};
+  // Numbered-list numbers (Wave 3C U-7): the canvas mirrors render.php's
+  // `::marker` rule through custom properties (a marker cannot take an inline
+  // style); style.css's `--marker-numbered` rule reads them.
+  if ("numbered" === markerType) {
+    if ("decimal-leading-zero" === numberFormat) previewStyle.listStyleType = "decimal-leading-zero";
+    if (attributes.numberColour) previewStyle["--sgs-ilist-num-colour"] = colourVar(attributes.numberColour);
+    if (numberFontSize) previewStyle["--sgs-ilist-num-size"] = numberFontSize;
+    if (numberFontWeight) previewStyle["--sgs-ilist-num-weight"] = numberFontWeight;
+  }
   const paddingPreview = boxShorthand(padding?.desktop, ["top", "right", "bottom", "left"]);
   if (paddingPreview) previewStyle.padding = paddingPreview;
   const marginPreview = boxShorthand(margin?.desktop, ["top", "right", "bottom", "left"]);
@@ -419,6 +438,23 @@ export default function Edit({ attributes, setAttributes }) {
             attributes,
             setAttributes,
           }),
+          // Wave 3C U-7: numbers of a numbered list (omitted otherwise).
+          "numbered" === markerType &&
+            textRow({
+              key: "number",
+              label: __("Number colour", "sgs-blocks"),
+              attrs: { base: "numberColour" },
+              attributes,
+              setAttributes,
+            }),
+          // Wave 3C U-6 (M-24): the colour the other items take while one is hovered.
+          textRow({
+            key: "sibling-dim",
+            label: __("Dimmed items (while another is hovered)", "sgs-blocks"),
+            attrs: { base: "siblingDimColour", gradient: "siblingDimColourGradient" },
+            attributes,
+            setAttributes,
+          }),
         ]}
       />
       <InspectorControls>
@@ -553,6 +589,42 @@ export default function Edit({ attributes, setAttributes }) {
               />
             ))}
           </ToggleGroupControl>
+          {"numbered" === markerType && (
+            <>
+              <ToggleGroupControl
+                label={__("Number style", "sgs-blocks")}
+                value={numberFormat || "decimal"}
+                isBlock
+                onChange={(val) => setAttributes({ numberFormat: val || "decimal" })}
+                __nextHasNoMarginBottom
+                __next40pxDefaultSize
+              >
+                <ToggleGroupControlOption value="decimal" label="1, 2, 3" />
+                <ToggleGroupControlOption value="decimal-leading-zero" label="01, 02, 03" />
+              </ToggleGroupControl>
+              <SgsLengthControl
+                label={__("Number size", "sgs-blocks")}
+                value={numberFontSize || ""}
+                onChange={(val) => setAttributes({ numberFontSize: val || "" })}
+                presets={false}
+              />
+              <SelectControl
+                label={__("Number weight", "sgs-blocks")}
+                value={numberFontWeight || ""}
+                options={[
+                  { value: "", label: __("Default", "sgs-blocks") },
+                  { value: "400", label: __("Regular (400)", "sgs-blocks") },
+                  { value: "500", label: __("Medium (500)", "sgs-blocks") },
+                  { value: "600", label: __("Semibold (600)", "sgs-blocks") },
+                  { value: "700", label: __("Bold (700)", "sgs-blocks") },
+                  { value: "800", label: __("Extra bold (800)", "sgs-blocks") },
+                ]}
+                onChange={(val) => setAttributes({ numberFontWeight: val })}
+                __nextHasNoMarginBottom
+                __next40pxDefaultSize
+              />
+            </>
+          )}
           {["icon", "emoji"].includes(markerType || "icon") && (
             <IconPicker
               label={__("Default icon", "sgs-blocks")}
@@ -731,6 +803,15 @@ export default function Edit({ attributes, setAttributes }) {
             } }
           />
         </PanelBody>
+
+        <ItemEffectsPanel
+          siblingDimOpacity={siblingDimOpacity}
+          labelRoll={labelRoll}
+          itemMotionDuration={itemMotionDuration}
+          itemMotionEasing={itemMotionEasing}
+          itemMotionEasingCustom={itemMotionEasingCustom}
+          setAttributes={setAttributes}
+        />
       </InspectorControls>
 
       {canvasPreview}
