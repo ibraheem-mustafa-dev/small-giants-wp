@@ -1334,7 +1334,11 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   any dialog overlay) scrolls natively, never the page behind it: Lenis's `prevent` option
   (`src/shared/effects/smooth-scroll.js`) hands the dialog back to the browser. Without it a wheel
   over an open drawer scrolled the PAGE and tripped the drawer's close-on-scroll (measured: 719px
-  and closed; with the dialog opted out, 0px and open).
+  and closed; with the dialog opted out, 0px and open); (h) any element that can itself scroll in
+  the gesture's direction scrolls natively: Lenis's `allowNestedScroll` (same file) checks each
+  ancestor's overflow and scroll size, so a container set to "Scroll sideways" (Spec 02,
+  `scrollSideways`), a mega panel's own overflow and the shop filters take their own swipes instead
+  of a trackpad's small `deltaY` scrolling the page.
 
   > The competing `scroll-behavior:smooth` CSS driver (`core-blocks-critical.css`) was measured
   > live with Lenis running and does not conflict: long smooth scrolls ease cleanly, anchor

@@ -25,7 +25,8 @@
   invisible because of the last one).
 - **Wave B close-out items 1-9: DONE 2026-09-25, live on eye-care-test** (Bean's decisions 2026-09-24).
   1. Header phone hidden below 1160px: the one Eye Care Additional CSS rule (snapshot `styles.css`). Per-size hiding that
-     lines up with the 768/1024 tiers uses `sgsHideOnMobile/Tablet/Desktop` instead (nav track U-10 for drawer copies).
+     lines up with the 768/1024 tiers uses `sgsHideOnMobile/Tablet/Desktop` instead; hiding a header block exactly where its menu becomes a burger
+     uses `sgsCollapseVisibility` (nav track U-10, done). The 1160px phone rule stays in Additional CSS (Bean).
   2. `sgs/button` `linkSource` (url | phone | email | whatsapp from Site Info, typed URL as fallback); Help's Call is an
      outline button to tel:01217298233.
   3. Button presets: the outline preset follows its section's text colour (`currentColor`), and the button stylesheet
@@ -73,7 +74,8 @@
   Contact labelled 2x2 grid, Help sentence, footer copyright and boxed icons.
   Routed to the Wave 3C plan's lane A (nav track owns those blocks): `sgs/nav-bar-menu` link padding is now a
   setting, `itemPadding` ("Link padding" in the List layout panel; 4cf0b9069, live on sandybrown), so the Eye Care
-  header can set its own; `sgs/mega-panel`'s translucent empty-`panelBg` default is still owed there.
+  header can set its own; `sgs/mega-panel` is now opaque by default (an empty `panelBg` paints the surface token,
+  f70687138), so an untouched panel no longer shows the page through it.
   Decided not to build: `scripts/wp-build-page.js` reading PHP allow-lists. Of about 285 `in_array` checks in block
   render files only 110 are inline literals; the rest go through variables and helpers (icon-list's `markerType`
   uses `sgs_list_marker_sanitise_type()`), so they cannot be read without running PHP. JSON `enum`s are left off on

@@ -246,7 +246,9 @@ that narrower question is the residual, not "no control exists" · schema → le
     behaviours are built on it (explicit-off override and sticky+transparent coexistence included).
     General block VISIBILITY remains EXCLUDED (scope note above): `responsive-visibility.js` is three
     INDEPENDENT flat booleans (`sgsHideOnMobile`/`Tablet`/`Desktop`, `default:false`) with no
-    inheritance — deliberately. The §3.8 header-CONTENT cascade feature is a separate consumer owned
+    inheritance — deliberately. Its fourth control, `sgsCollapseVisibility` (hide or show a header block while
+    the header's menu shows its burger), keys on one width, that menu's `collapsePoint`, and is no tier cascade
+    either (Spec 37 FR-37-24). The §3.8 header-CONTENT cascade feature is a separate consumer owned
     by Spec 37. `headerSticky`/`headerTransparent`/`headerShrink`/`headerHideOnScroll` are
     `{"type":"object","default":{}}` (`site-header/block.json`). Spec 37 FR-37-14 (behaviour
     tri-state) consumes the canonical `resolveTier()` cascade — see Part M.

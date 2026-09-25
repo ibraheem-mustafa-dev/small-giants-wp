@@ -97,7 +97,7 @@ and `::engineering_notes`. Do not restate them elsewhere. What they change here:
 | DEC-04 | Step 0c. DEC-05: Step 0d. DEC-11: the drafts' 768 rows are mobile, so they have no tablet row |
 | DEC-09 | The drawer closes when the viewport crosses `collapsePoint` while open; otherwise it stays open and reflows. One rule, no attribute. In U-9 |
 | DEC-10 | Clone what Bean's two drafts intend, not what their runtime does wrong. Where the draft's own rendering mis-clusters a panel entry, cluster it correctly. The panel-entry row shape in U-5 is a real requirement, not a draft artefact |
-| DEC-14 | Add a fourth `triggerMode` value meaning "the row's own surface is the trigger". In U-14. `triggerMode` is a tier object `{desktop, tablet, mobile}` (44c949301, for Eye Care); the three existing values are `icon`, `text`, `icon-and-text`, validated in PHP against the one list `nav-bar-menu/render.php::$sgs_nm_allowed_trigger_modes`, no JSON enum, so the fourth value is added there and to the editor control in `BurgerPanel.js` |
+| DEC-14 | "The row's own surface is the trigger", built in U-14 as a SEPARATE tier on/off attribute, `sgs/nav-bar-menu::triggerSurface`, not a fourth `triggerMode` value (Bean, with both council members, 2026-09-25): `triggerMode` chooses what the button shows, the surface its hit area, so every presentation keeps it. Full text: `families-master.json::decisions` DEC-14 `resolution` |
 | DEC-15 | Amend FR-36-6: the drawer's own × becomes optional per `closeStyle` and per tier. Written into Spec 36 at Step 0b, before U-11 builds |
 | DEC-16, DEC-17 | NOT accepted as written. Their scope floor and four-of-eight split were not accepted; the plan builds every family and all eight furniture blocks (section 1c), smallest-support family last inside each unit |
 | DEC-01, DEC-02, DEC-07 | The three accepted divergences (section 1d). Nothing is built for them. M-08 is built, in U-14. DEC-13: the Lottie player is built as U-17 (section 1h) |
@@ -353,7 +353,12 @@ not the collapse point). U-14: `headerPassThrough` (M-52, fixed with structural 
 (M-39; DEC-14 amended to a separate attribute) and the detaching chip (`triggerDetach*`, M-08, buck; a second copy of
 the burger printed on `wp_footer`, one open state per drawer in the store). All four families move to `covered`.
 Lesson from the build: a new `supports.sgs.elements` entry and override rows each trip their own DB gate; run the
-full local `npm run build` (all 120 gates) before the first deploy, not after.
+full local `npm run build` (all gates) before the first deploy, not after.
+Batched for the QA pass (lane A's one open task): axe with the drawer opened from the detaching chip and on a
+container "Scroll sideways" row; tab order past the chip; focus rings inside a Scroll sideways row (its
+`overflow-y:hidden` can clip them); editor round-trips of the four U-10/U-14 controls, icon-list's Description field
+and colour/typography rows, and the container's Scroll sideways controls. Fixture cases `header-row` and
+`detach-chip` in `scripts/nav-qa/qa-item-markup-fixture.php` set the U-10/U-14 settings up on `/qa-scrim/`.
 
 Sizes are `families-master.json::units[].size` at full scope. Convert per
 `~/.claude/rules/time-estimates.md`: medium 30 to 60 minutes, high 1 to 2 hours, the whole
