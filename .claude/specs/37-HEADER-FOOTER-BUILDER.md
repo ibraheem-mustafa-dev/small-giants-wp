@@ -852,8 +852,8 @@ existing `borderRadius` and `shadow`, and the surface-ground trio (`surfaceBlur`
 `surfaceOpacity`, `includes/helpers-surface-ground.php`) gives the frosted look the reference measurements
 show (a pill with no shadow, border or fill); `surfaceFadeEdge` (`none`/`top`/`bottom`, off in
 forced-colours mode) fades one edge of the header to transparent across its full height. Float at a tier
-implies pinning at that tier: `position`, `top` and `z-index` resolve Float > Sticky > Transparent through
-the one merged writer, and `top` is the inset. The per-tier `zIndex` object (M-09, `{desktop,tablet,mobile}`,
+implies pinning at that tier: `position`, `top` and `z-index` resolve Pass-through > Float > Sticky >
+Transparent through the one merged writer, and `top` is the inset. The per-tier `zIndex` object (M-09, `{desktop,tablet,mobile}`,
 whole numbers 0 to 99998, framework default 100, written only by `includes/sgs-header-z-index.php`) keeps
 the drawer and its scrim just below the header (Spec 36's Modality section).
 `plugins/sgs-blocks/includes/sgs-header-float-css.php::sgs_header_float_css` emits the rules.
@@ -863,6 +863,18 @@ floating header matches the pill's left and width, and a plain dropdown clamps i
 `--sgs-header-height` is the pinned header's bottom edge, its `top` offset plus its height, which is simply its
 height for every header at `top: 0`; `plugins/sgs-blocks/src/header-behaviours/view.js` publishes it. With no
 float attribute set the emitted CSS is byte-identical to a header without the feature.
+**Float over the page (pass-through, Wave 3C U-14, M-52).**
+`plugins/sgs-blocks/src/blocks/site-header/block.json::attributes.headerPassThrough` is a per-tier tri-state like
+`headerSticky`. At an ON tier the header is `position:fixed` (it takes no space and stays pinned; `top` adds
+`--wp-admin--admin-bar--height`, so a logged-in operator's header is not hidden under the admin bar) and only its
+structure passes clicks: the header root, `.sgs-site-header-row`, `.sgs-container__inner` and the menu's own frame
+(`.sgs-nav-bar-menu`, `__bar`) get `pointer-events:none`; every other row child, and the menu's items, toggle and
+open panels, get `pointer-events:auto`. So any block a client drops in keeps its whole box and only the empty band
+and the gaps between menu items reach the page (dogstudio's "none on the band, auto on logo and burger";
+lamalama's zero-height shell). It is the first entry in the merged writer
+(`plugins/sgs-blocks/includes/sgs-header-pass-through.php::sgs_header_pass_through_entry`); the pointer pair is
+`::sgs_header_pass_through_css`. `view.js`'s broken-ancestor advisory covers it (`data-sgs-header-pass-through`),
+and "Shrink on scroll" shows for it, since it pins.
 **Status:** `BUILT` for all five behaviours. `headerSticky` / `headerTransparent` / `headerShrink` /
 `headerHideOnScroll` emit through `sgs_emit_tier_rules()`. `contrastSafe` is a per-device object
 attribute emitted by `site-header/render.php` through `sgs_emit_tier_rules_map()`, the N-value
@@ -979,6 +991,15 @@ block in the framework (`includes/device-visibility.php`,
 ("Mobile inherits from desktop unless overridden"). Spec 35 owns the build; §3.8 of this spec states
 the header/footer behaviour that depends on it. Changing the visibility extension from a header/footer
 spec would diverge from R-31-9 and the composite-mirror rule.
+
+**At the collapse point, not a tier (Wave 3C U-10, M-19).** A header block that moves into the drawer
+(a copy in the drawer body, the header copy hidden) can hide exactly while the menu shows its burger:
+the extension's `sgsCollapseVisibility` (`''` | `hide` | `only`, control "When the menu collapses to a burger",
+shown only inside an `sgs/site-header`) adds `sgs-hide-collapsed` / `sgs-only-collapsed`, and the header writes
+those rules at the collapse point of the `sgs/nav-bar-menu` that owns its burger
+(`plugins/sgs-blocks/includes/sgs-header-pass-through.php::sgs_header_collapse_visibility_css`), so the two can never disagree at a
+collapse point that is not a tier edge. No burger-owning menu: no rule, everything shows. A width set by content
+fit rather than by the burger (Eye Care's phone at 1160px) stays the block's own custom CSS.
 
 **HIDE, not REMOVE.** The cascade hides via CSS; it never forks the block tree per tier.
 `device-visibility.php` generates `display:none` media queries and states *"Content remains in the

@@ -220,7 +220,19 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
   default. Batched: axe with the drawer open, keyboard dim, reduced motion, the
   editor round-trip.
 
-**Next (lane A):** U-10 + U-14 (header-row structure); design-gated.
+**U-10 + U-14 (header-row structure), done 2026-09-25** (design `.claude/reports/2026-09-25-u10-u14-design.md`;
+commit 0fbe085f1 plus DB/gate fixes through 5781740e7).
+- M-19, M-52, M-39 and M-08 covered. Measured live on sandybrown (`reports/visual-diff/nav-drawer-2026-09-25.md`
+  section "U-10 + U-14") at 1440 (`innerWidth` 1309): `sgsCollapseVisibility` hide/only swap at the 1600 collapse
+  point; `headerPassThrough` fixed under the admin bar, an empty band point hits page content (negative control:
+  the header), the logo hits its link; `triggerSurface`'s overlay equals the row (1200 x 67.47) with the magnet on,
+  and a click on the row's middle opens the drawer; buck's chip hidden at scrollY 300, fixed 68.6 x 68.6 at 360,
+  both openers' `aria-expanded` agree.
+- Residue: none per family. Batched: axe with the drawer opened from the chip, keyboard order past the chip, the
+  four new controls' editor round-trip, the logged-out admin-bar-free offset.
+
+**Next (lane A):** the owed items above (numbered compact-links pattern, away's tile scroller, a per-page menu
+video source, `sgs/mega-panel`'s opaque `panelBg` default).
 
 Gate 3C passes when (the one definition; the same words are in the implementation plan §7 and the
 strategic plan's Gate 3C entry):

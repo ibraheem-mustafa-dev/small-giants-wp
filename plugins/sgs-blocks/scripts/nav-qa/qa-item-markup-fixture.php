@@ -16,6 +16,12 @@
  *               "Close" while open.
  *   two-bar     exit-cells plus wearecollins' burger: two bars that cross into an X in 450ms on
  *               cubic-bezier(0.645,0.045,0.355,1). Design: .claude/reports/2026-09-25-two-bar-burger-design.md.
+ *   header-row  U-10 + U-14 (design .claude/reports/2026-09-25-u10-u14-design.md): exit-cells plus, on the
+ *               header, "Float over the page" at desktop (M-52), the top row's phone set to hide while the
+ *               menu is a burger and its email to show only then (M-19), and "Whole row opens the menu" at
+ *               desktop with the burger magnet on (M-39).
+ *   detach-chip exit-cells plus buck's detaching chip at desktop (M-08): the header does not stick, the chip
+ *               waits for 330px of scroll, 68.6px, 48px from the side and 32px from the top.
  *   restore     put the pre-fixture bodies back.
  */
 
@@ -56,7 +62,7 @@ if ( 'restore' === $case ) {
 	return;
 }
 
-if ( ! in_array( $case, array( 'exit-cells', 'two-bar' ), true ) ) {
+if ( ! in_array( $case, array( 'exit-cells', 'two-bar', 'header-row', 'detach-chip' ), true ) ) {
 	echo "unknown case {$case}\n";
 	return;
 }
@@ -165,10 +171,36 @@ if ( 'two-bar' === $case ) {
 	);
 }
 
+$header_set = array();
+if ( 'header-row' === $case ) {
+	$bar_set    += array(
+		'triggerSurface'       => array( 'desktop' => 'on' ),
+		'triggerMagnetEnabled' => true,
+	);
+	$header_set  = array( 'headerPassThrough' => array( 'desktop' => 'on' ) );
+}
+if ( 'detach-chip' === $case ) {
+	$bar_set    += array(
+		'triggerDetach'       => array( 'desktop' => 'on' ),
+		'triggerDetachAfter'  => array( 'desktop' => 330 ),
+		'triggerDetachSize'   => array( 'desktop' => 68.6 ),
+		'triggerDetachOffset' => array( 'desktop' => array( 'x' => 48, 'y' => 32 ) ),
+	);
+	$header_set  = array( 'headerSticky' => array( 'desktop' => 'off' ) );
+}
+
 $d = $merge( get_post_field( 'post_content', $drawer_id ), 'sgs/nav-drawer-menu', $menu_set );
 wp_update_post( wp_slash( array( 'ID' => $drawer_id, 'post_content' => $d ) ) );
 
 $h = $merge( get_post_field( 'post_content', $header_id ), 'sgs/nav-bar-menu', $bar_set );
+if ( $header_set ) {
+	$h = $merge( $h, 'sgs/site-header', $header_set );
+}
+if ( 'header-row' === $case ) {
+	// The top row's first two business-info blocks (phone, then email).
+	$h = preg_replace( '#<!-- wp:sgs/business-info \{"displayType":"phone","labelCollapse"#', '<!-- wp:sgs/business-info {"sgsCollapseVisibility":"hide","displayType":"phone","labelCollapse"', $h, 1 );
+	$h = preg_replace( '#<!-- wp:sgs/business-info \{"displayType":"email","labelCollapse"#', '<!-- wp:sgs/business-info {"sgsCollapseVisibility":"only","displayType":"email","labelCollapse"', $h, 1 );
+}
 wp_update_post( wp_slash( array( 'ID' => $header_id, 'post_content' => $h ) ) );
 
 preg_match( '#<!-- wp:sgs/nav-drawer-menu (\{.*?\}) #s', get_post_field( 'post_content', $drawer_id ), $mm );

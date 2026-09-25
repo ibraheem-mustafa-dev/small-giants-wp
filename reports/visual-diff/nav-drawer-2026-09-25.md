@@ -124,3 +124,40 @@ On `/qa-scrim/` at `window.innerWidth` 1636 (the bar shows; collapse is 1600), w
 Both keys were then removed again (the fixture backup has neither). Test: `tests/php/run-nav-link-padding-standalone.php`
 (7 of 7, negative control on d95f232c0). Deploy script: `--self-test` 16 of 16, plus a simulated second run whose
 upload and unpacked folder survived this run's cleanup.
+
+## U-10 + U-14 (header-row structure), 2026-09-25
+
+Commits 0fbe085f1 (build), 96b375e53, d91764560, 5a511b9a6, 8baee8dee, 5781740e7 (DB rows and gate fixes); design
+`.claude/reports/2026-09-25-u10-u14-design.md`. Deployed to sandybrown (build-deploy, motion probes green). Fixture
+`plugins/sgs-blocks/scripts/nav-qa/qa-item-markup-fixture.php` cases `header-row` and `detach-chip` on `/qa-scrim/`
+(header 3777, drawer 3778, menu collapse 1600), then put back to `two-bar`. Chrome window at 1440, `innerWidth` 1309
+(1.1x zoom), logged in (admin bar 32px).
+
+`header-row`: "Float over the page" at desktop, the top row's phone `sgsCollapseVisibility: hide`, its email `only`,
+"Whole row opens the menu" at desktop with the burger magnet on.
+
+| Family / check | Expected | Live |
+|---|---|---|
+| M-19 at 1636 (above collapse 1600) | phone shown, email hidden | phone `block`, email `none` |
+| M-19 at 1309 (burger showing) | phone hidden, email shown | phone `none`, email `block` |
+| M-52 header | fixed, under the admin bar, band passes clicks | `position:fixed`, `top:32px`, `pointer-events:none` |
+| M-52 empty band point (top row, 5px in) | page content | a page modal trigger behind the header |
+| M-52 negative control (band re-enabled) | the header | the header |
+| M-52 logo centre | the logo's home link | home link |
+| M-39 burger `::after` | the row's box | 1200 x 67.47 = the row, 1200 x 67.47; burger transform `none` with the magnet on |
+| M-39 click at the row's empty middle | opens the drawer | hit the burger, drawer open, `aria-expanded="true"`; close: `false`, focus on the burger |
+
+`detach-chip`: Sticky off at desktop, `triggerDetach` desktop on, after 330px, size 68.6, offset 48/32. The page was
+lengthened by a test-only injected style (it is shorter than 400px of scroll).
+
+| Check (buck's cells) | Expected | Live |
+|---|---|---|
+| scrollY 0 | no chip | hidden |
+| scrollY 300: burger off screen (bottom -152), under 330 | no chip (buck: last non-fixed 300) | hidden |
+| scrollY 360 | fixed chip 68.6 x 68.6, 48 from the side, 32 below the admin bar (buck: first fixed 360) | 68.6 x 68.6, right 47.5, top 64 (32 + 32), z-index 110, radius 9999px |
+| Chip click | drawer opens, one open state | open; chip and header burger both `aria-expanded="true"` |
+| Close | both closed, focus back on the chip | both `false`, focus on the chip |
+| Back to scrollY 0 | no chip | hidden |
+
+Batched for the later pass: axe with the drawer opened from the chip, keyboard order past the chip, editor round-trips
+of the four new controls.

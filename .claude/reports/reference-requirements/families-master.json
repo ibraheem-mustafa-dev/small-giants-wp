@@ -210,15 +210,21 @@
     "resn"
    ],
    "needed_by_count": 2,
-   "coverage_status": "gap",
+   "coverage_status": "covered",
    "evidence": "measured",
-   "covered_by": [],
-   "note": "RE-SCOPED from five references to TWO. The first pass inflated this family by absorbing every pinned thing group A had clustered together. Re-read against the tree and the cells: studionamma's bottom strip is covered (M-06), and lamalama's top-right card and lusion's scroll indicator are decorative pinned elements, not header controls that need a header attribute. What is genuinely missing is ONE mechanism for ONE reference: buck's header scrolls away while its burger detaches into a fixed round chip with its own z-index (9100 over the header's 1400) and its own threshold (300-360px at 1440, 180-240px at 768), which buck.md states directly — 'The header is not the sticky element, the burger is'. Every SGS scroll behaviour acts on the header or a header row; nothing keeps a single CONTROL alive after its header has gone or changes that control's form. resn rides along only under DEC-01(b), and M-52 (band pass-through) is the mechanism that actually makes resn clonable as a header.",
-   "uncovered_references": [
-    "buck",
-    "resn"
+   "covered_by": [
+    "sgs/nav-bar-menu::triggerDetach",
+    "::triggerDetachAfter",
+    "::triggerDetachSize",
+    "::triggerDetachOffset",
+    "::triggerDetachRadius",
+    "::triggerDetachBackground",
+    "::triggerDetachZIndex",
+    "sgs/site-header::headerPassThrough (resn)"
    ],
-   "uncovered_count": 2
+   "note": "RE-SCOPED from five references to TWO. The first pass inflated this family by absorbing every pinned thing group A had clustered together. Re-read against the tree and the cells: studionamma's bottom strip is covered (M-06), and lamalama's top-right card and lusion's scroll indicator are decorative pinned elements, not header controls that need a header attribute. What is genuinely missing is ONE mechanism for ONE reference: buck's header scrolls away while its burger detaches into a fixed round chip with its own z-index (9100 over the header's 1400) and its own threshold (300-360px at 1440, 180-240px at 768), which buck.md states directly — 'The header is not the sticky element, the burger is'. Every SGS scroll behaviour acts on the header or a header row; nothing keeps a single CONTROL alive after its header has gone or changes that control's form. resn rides along only under DEC-01(b), and M-52 (band pass-through) is the mechanism that actually makes resn clonable as a header. U-14 (2026-09-25): the detaching chip, a second copy of the burger printed outside the header and shown once the header burger is off screen past a per-tier threshold. Live: hidden at scrollY 300, 68.6 x 68.6 fixed at 360 (buck's cells); resn rides M-52.",
+   "uncovered_references": [],
+   "uncovered_count": 0
   },
   {
    "id": "M-09",
@@ -415,12 +421,12 @@
    "coverage_status": "covered",
    "evidence": "measured",
    "covered_by": [
-        "supports.sgs.scrim + scrimColour/scrimColourGradient/scrimOpacity/scrimBlur (per-tier) on sgs/nav-drawer and sgs/nav-bar-menu (every dropdown and mega panel), includes/helpers-scrim.php::sgs_scrim_render (U-2, D1148)"
-      ],
+    "supports.sgs.scrim + scrimColour/scrimColourGradient/scrimOpacity/scrimBlur (per-tier) on sgs/nav-drawer and sgs/nav-bar-menu (every dropdown and mega panel), includes/helpers-scrim.php::sgs_scrim_render (U-2, D1148)"
+   ],
    "note": "MERGED: group B found no scrim element on the panel fork, group C found a hardcoded one on the drawer. One attribute set (colour, alpha, blur, click-closes, per tier) expresses both. VERIFIED: zero 'scrim' in mega-panel/render.php and in nav-menu-markup.php; nav-drawer/style.css hardcodes rgba(0,0,0,0.55) twice (__scrim and ::backdrop) and the DB has no scrim attribute. TWO of the four references with a real scrim change it per tier, not four: away (alpha 0 at 375, 0.5 at 768) and lusion (opaque #0016ec at 375/768, a right-half gradient at 1440). lamalama's is the same value at every tier and butcherbox was only ever captured at 375, so neither can show a per-tier change. The per-tier requirement still stands, on away and lusion. Two of the four use the scrim as the click-to-close target.",
    "uncovered_references": [],
    "u2_residue": "butcherbox dropdown strength never captured as a number (measure at its Wave 4 clone); lamalama click-through is an accepted divergence (Bean, 2026-09-24)",
-      "uncovered_count": 0
+   "uncovered_count": 0
   },
   {
    "id": "M-15",
@@ -583,23 +589,18 @@
     "wearecollins"
    ],
    "needed_by_count": 10,
-   "coverage_status": "partial",
+   "coverage_status": "covered",
    "evidence": "mixed",
    "covered_by": [
     "sgs/nav-bar-menu::featuredItemIds",
     "sgs/nav-drawer-menu::megaDrawerFallbackIds",
-    "::ref"
+    "::ref",
+    "extension::sgsHideOnMobile/Tablet/Desktop",
+    "extension::sgsCollapseVisibility"
    ],
-   "note": "The MENU's own degrade is covered (one menu renders as a bar above collapsePoint and an accordion below, with a per-item mega opt-out). Not covered: migrating a NON-MENU header block into the drawer at a tier — studionamma's CTA, away's Help/Log-in/store selector, buck's added search icon. Today the only route is wearecollins' two-DOM-copies mechanism, by hand.",
-   "uncovered_references": [
-    "away",
-    "buck",
-    "fantasy",
-    "lusion",
-    "studionamma",
-    "wearecollins"
-   ],
-   "uncovered_count": 6
+   "note": "The MENU's own degrade is covered (one menu renders as a bar above collapsePoint and an accordion below, with a per-item mega opt-out). Not covered: migrating a NON-MENU header block into the drawer at a tier — studionamma's CTA, away's Help/Log-in/store selector, buck's added search icon. Today the only route is wearecollins' two-DOM-copies mechanism, by hand. U-10 (2026-09-25): non-menu blocks migrate by composition, a copy in the drawer body and the header copy hidden by tier (sgsHideOn*) or exactly while the menu shows its burger (sgsCollapseVisibility, written by the header at its burger-owning menu's collapsePoint). Live: hide/only swapped at the 1600 collapse point.",
+   "uncovered_references": [],
+   "uncovered_count": 0
   },
   {
    "id": "M-20",
@@ -1116,20 +1117,18 @@
     "wearecollins"
    ],
    "needed_by_count": 13,
-   "coverage_status": "partial",
+   "coverage_status": "covered",
    "evidence": "measured",
    "covered_by": [
-    "sgs/nav-bar-menu::triggerMode (icon|text|icon-and-text)",
+    "sgs/nav-bar-menu::triggerMode (icon|text|icon-and-text, per tier)",
     "::triggerIcon",
     "::triggerLabel",
-    "::burger* paint row"
+    "::burger* paint row",
+    "::triggerSurface"
    ],
-   "note": "MERGED — and the two groups DISAGREED on status (A partial, B covered); resolved to PARTIAL (see 'What I changed'). The three shapes, the icon choice, the label and the full paint set are covered. Residual gaps: (a) triggerMode is a plain string, NOT per-tier (VERIFIED), so fantasy's label dropping at 375 is unreachable; (b) the whole-bar-is-the-trigger pattern (lamalama) has no attribute — the trigger is always a discrete control inside the row. The detached-trigger values that made A read 'partial' move to M-08.",
-   "uncovered_references": [
-    "fantasy",
-    "lamalama"
-   ],
-   "uncovered_count": 2
+   "note": "MERGED — and the two groups DISAGREED on status (A partial, B covered); resolved to PARTIAL (see 'What I changed'). The three shapes, the icon choice, the label and the full paint set are covered. Residual gaps: (a) triggerMode is a plain string, NOT per-tier (VERIFIED), so fantasy's label dropping at 375 is unreachable; (b) the whole-bar-is-the-trigger pattern (lamalama) has no attribute — the trigger is always a discrete control inside the row. The detached-trigger values that made A read 'partial' move to M-08. Residue (a) closed by the per-tier triggerMode (44c949301); residue (b) closed by triggerSurface in U-14 (2026-09-25, DEC-14 resolution).",
+   "uncovered_references": [],
+   "uncovered_count": 0
   },
   {
    "id": "M-40",
@@ -1423,17 +1422,14 @@
     "studionamma"
    ],
    "needed_by_count": 4,
-   "coverage_status": "gap",
+   "coverage_status": "covered",
    "evidence": "measured",
-   "covered_by": [],
-   "note": "NEW FAMILY. The header band exists as a landmark but does not intercept the page: dogstudio measures headerPointerEvents 'none on the band, auto on logo and burger' at all three tiers; lamalama's <header> measures 0px high with a fixed child pill (headerElementRect.height 0); studionamma's shell is text only with no painted box. VERIFIED: sgs/site-header has NO pointer-events attribute and its style.css contains zero pointer-events rules. This is also the mechanism that makes resn clonable AS A HEADER under DEC-01(b) — a landmark <header> whose band is inert with pinned live children — which the first pass wrote off as impossible ('sgs/site-header always renders a <header>'). It wants one per-tier attribute (band pointer-events, with the children re-enabled) and it shrinks M-08 to buck alone.",
-   "uncovered_references": [
-    "dogstudio",
-    "lamalama",
-    "resn",
-    "studionamma"
+   "covered_by": [
+    "sgs/site-header::headerPassThrough"
    ],
-   "uncovered_count": 4
+   "note": "NEW FAMILY. The header band exists as a landmark but does not intercept the page: dogstudio measures headerPointerEvents 'none on the band, auto on logo and burger' at all three tiers; lamalama's <header> measures 0px high with a fixed child pill (headerElementRect.height 0); studionamma's shell is text only with no painted box. VERIFIED: sgs/site-header has NO pointer-events attribute and its style.css contains zero pointer-events rules. This is also the mechanism that makes resn clonable AS A HEADER under DEC-01(b) — a landmark <header> whose band is inert with pinned live children — which the first pass wrote off as impossible ('sgs/site-header always renders a <header>'). It wants one per-tier attribute (band pointer-events, with the children re-enabled) and it shrinks M-08 to buck alone. U-14 (2026-09-25): headerPassThrough (tier on/off) makes the header position:fixed (no space, pinned under the admin bar) with structural pointer-events: band, rows, inner bands and the menu frame pass clicks; every row block and the menu's items, toggle and panels keep theirs. Live: an empty band point hit page content, the logo hit its link.",
+   "uncovered_references": [],
+   "uncovered_count": 0
   }
  ],
  "units": [
@@ -2214,7 +2210,8 @@
     "(a) Add a triggerMode value meaning 'the row's own surface is the trigger' (U-14).",
     "(b) Clone lamalama with a discrete trigger and record the divergence."
    ],
-   "recommendation": "(a). The pill header is already built and matches lamalama's measured box, so the surface-trigger is the one missing piece of an otherwise complete reference — and lamalama's large-hit-area pattern is the accessible one, which makes it worth having generally."
+   "recommendation": "(a). The pill header is already built and matches lamalama's measured box, so the surface-trigger is the one missing piece of an otherwise complete reference — and lamalama's large-hit-area pattern is the accessible one, which makes it worth having generally.",
+   "resolution": "Built in U-14 (2026-09-25) as a SEPARATE attribute, sgs/nav-bar-menu::triggerSurface (tier on/off), not a fourth triggerMode value (Bean, with both council members): triggerMode chooses what the button shows, the surface chooses its hit area, so a surface keeps every presentation (lamalama's bars, or a word). Live: the burger's ::after measured 1200 x 67.47 = the row."
   },
   {
    "id": "DEC-15",

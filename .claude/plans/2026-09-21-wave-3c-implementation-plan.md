@@ -201,10 +201,10 @@ visually. `none` means neither.
 | 6 | U-3 — **DONE** (paired with U-8) | Drawer side anchor, container inset, pitch tier object. No drawer clamp (section 1b) | M-17, M-46 | none | medium | `nav-drawer/{render.php,block.json}`, `nav-drawer-menu/block.json` |
 | 7 | U-6 — **DONE** (paired with U-7) | Item hover parity: opacity and padding-shift hover (M-21, delivered by U-1 — see its row), row separators (M-30), sibling dim (M-24, a list-scoped rule), two-copy label roll (M-25, a second label in the markup, needed on the bar, the drawer, the trigger and the footer). M-24 and M-25 need new markup, so they come last | M-30, M-24, M-25 | eye | high | `nav-bar-menu/{block.json,style.css}`, `nav-drawer-menu/{block.json,style.css}`, `nav-menu-markup.php`, `nav-menu-submenu-css.php` |
 | 8 | U-7 — **DONE** (paired with U-6) | Per-item ornament (M-22) and per-item media slot (M-15) | M-22, M-15 | none | medium | `nav-menu-markup.php`, `nav-drawer-menu/block.json`, `mega-group/`, `nav-menu-submenu-css.php` |
-| 9 | U-10 | Role migration: move a non-menu header block into the drawer per tier. Crosses the Spec 37 boundary. First design question (Bean, 2026-09-25): the composition route, a copy of the block in the drawer body plus the header copy hidden at that tier with the existing device-visibility extension (`includes/device-visibility.php`, `sgsHideOnMobile/Tablet/Desktop`); Bean calls it the right use of those settings. Eye Care does this today with Additional CSS, which that route replaces. Blocks reading Site Info carry no duplicate data | M-19 | design | medium | `site-header-row/block.json`, `nav-drawer/render.php`, `nav-menu-markup.php` |
+| 9 | U-10 — **DONE** (paired with U-14) | Role migration: move a non-menu header block into the drawer per tier. Crosses the Spec 37 boundary. First design question (Bean, 2026-09-25): the composition route, a copy of the block in the drawer body plus the header copy hidden at that tier with the existing device-visibility extension (`includes/device-visibility.php`, `sgsHideOnMobile/Tablet/Desktop`); Bean calls it the right use of those settings. Eye Care does this today with Additional CSS, which that route replaces. Blocks reading Site Info carry no duplicate data | M-19 | design | medium | `site-header-row/block.json`, `nav-drawer/render.php`, `nav-menu-markup.php` |
 | 10 | U-4 | Type scaling mode: a formula unit, per-tier line-height; includes `business-info` for the footer half | M-45 | none | medium | `nav-bar-menu/block.json`, `nav-drawer-menu/block.json`, `nav-menu-submenu-css.php`, `business-info/block.json` |
 | 11 | U-8 — **DONE** (paired with U-3) | Panel geometry: anchor enum and mega top offset (M-16). "Panel follows the pill" is a covered value of M-16, already built. Then Away's callout row (M-20), the aside or callout column count, which comes last on one reference | M-16, M-20 | none | medium | `nav-menu-submenu-css.php`, `mega-panel/{block.json,render.php}`, `mega-aside/render.php` |
-| 12 | U-14 | Band pass-through, a zero-height shell (M-52); the surface-trigger `triggerMode` value (M-39, DEC-14); then a trigger that outlives its header, the detaching chip (M-08, buck and resn), last on two references. Do not reuse `class-sgs-floating-ui-renderer.php` as is: its container is `aria-hidden`, and FR-36-8's priority-plus-More text contradicts it | M-52, M-39, M-08 | design | medium | `site-header/{render.php,block.json,style.css}`, `site-header-row/block.json`, `nav-bar-menu/block.json` |
+| 12 | U-14 — **DONE** (paired with U-10) | Band pass-through, a zero-height shell (M-52); the surface trigger (M-39, DEC-14, built as the separate `triggerSurface` attribute); then a trigger that outlives its header, the detaching chip (M-08, buck and resn), last on two references. Do not reuse `class-sgs-floating-ui-renderer.php` as is: its container is `aria-hidden`, and FR-36-8's priority-plus-More text contradicts it | M-52, M-39, M-08 | design | medium | `site-header/{render.php,block.json,style.css}`, `site-header-row/block.json`, `nav-bar-menu/block.json` |
 | 13 | U-13 | Header scroll intelligence: section-adaptive ink (M-04), then direction-keyed restyle (M-03, one reference, last) | M-04, M-03 | design | high | `src/header-behaviours/view.js`, `includes/class-sgs-header-behaviours.php`, `site-header/*` |
 | 14 | U-16 | Header and footer entrance animation, after the 0d measurements. Premise: `site-header` and `site-footer` carry `supports.sgs.hideExtensions`; `site-footer-row` does not | M-11 | eye | medium | `site-header/block.json`, `site-footer/block.json`, `site-footer-row/block.json` |
 | ‖ | U-12 | Eight furniture blocks, in priority order: local-time clock, language switch, back-to-top, account or log-in link, then store selector, wishlist, theme toggle, sound mute. One agent per block, each in its own new directory. Plus the two `headerEssential` flags | M-18 | none | high | eight new directories, plus `product-search/block.json` and `filter-search/block.json` (the two `headerEssential` flags, edited by the main thread) |
@@ -339,6 +339,18 @@ custom size is fixed on the way. M-45 is covered for fixed and vw-scaled sizes (
 per-tier vw); buck's and dogstudio's step and height rules go in each clone's custom CSS (`sites/<client>/theme-snapshot.json`),
 with the exact formula for each in the design note's §3. Per-tier menu line height is not built (no reference needs it).
 
+**U-10 + U-14 — done, as one pair** (design `.claude/reports/2026-09-25-u10-u14-design.md`, two-model council GO WITH
+FIXES, Bean sign-off; commit 0fbe085f1, then DB rows and gate fixes 96b375e53, d91764560, 5a511b9a6, 8baee8dee,
+5781740e7; live `reports/visual-diff/nav-drawer-2026-09-25.md` section "U-10 + U-14"). U-10 (M-19) is composition: a
+copy in the drawer body, the header copy hidden by tier or, new, exactly while the menu shows its burger
+(`sgsCollapseVisibility`, a universal extension attribute whose rules the header writes at its burger-owning menu's
+`collapsePoint`). Eye Care's phone keeps 1160px as its own custom CSS (Bean: that width is where its bar stops fitting,
+not the collapse point). U-14: `headerPassThrough` (M-52, fixed with structural pointer-events), `triggerSurface`
+(M-39; DEC-14 amended to a separate attribute) and the detaching chip (`triggerDetach*`, M-08, buck; a second copy of
+the burger printed on `wp_footer`, one open state per drawer in the store). All four families move to `covered`.
+Lesson from the build: a new `supports.sgs.elements` entry and override rows each trip their own DB gate; run the
+full local `npm run build` (all 120 gates) before the first deploy, not after.
+
 Sizes are `families-master.json::units[].size` at full scope. Convert per
 `~/.claude/rules/time-estimates.md`: medium 30 to 60 minutes, high 1 to 2 hours, the whole
 chain about 4 sessions with U-12's eight blocks running in parallel throughout. Revise
@@ -368,10 +380,8 @@ one sign-off, one build, one deploy, one live check, one report.
 | U-10 + U-14 | Header-row structure |
 
 U-4 and U-13 run alone. Three lanes run as separate sessions on disjoint files:
-- **Lane A (nav and drawer):** U-9+U-11, U-5, U-3+U-8, U-6+U-7 and U-4 (all done), then U-10, paired with U-14
-  (lane B has not started, so lane A runs the pair and lane B then skips U-14).
-- **Lane B (header behaviours):** U-13, then U-14, then U-16. U-14 touches `nav-bar-menu/block.json`,
-  so it runs only when lane A is not mid-edit there. Start lane B after lane A is past U-9+U-11.
+- **Lane A (nav and drawer):** U-9+U-11, U-5, U-3+U-8, U-6+U-7, U-4 and U-10+U-14 (all done); lane B skips U-14.
+- **Lane B (header behaviours):** U-13, then U-16 (U-14 was built by lane A).
 - **Lane C (independent):** U-12, U-15, U-17 (prompt `.claude/prompts/2026-09-24-wave-3c-lane-c.md`).
 
 A pair that spans two lanes (U-5+U-16, U-10+U-14) runs in whichever lane reaches it first;

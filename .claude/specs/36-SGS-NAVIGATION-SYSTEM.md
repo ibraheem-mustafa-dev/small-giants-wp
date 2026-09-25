@@ -715,6 +715,18 @@ under every `burgerMorph` value (wearecollins' two bars cross into an X). Bar th
 are structural, a recorded divergence from the references' 1.5px bars 16 to 18px wide. The bar items' label magnet
 takes `itemMagnetStrength` (the pull factor; unset keeps the built-in 0.15 capped at 8px). The burger button
 carries `data-sgs-nav-collapse` (its `collapsePoint`) for FR-36-6's resize rule.
+**Reach, built (Wave 3C U-14):** `triggerSurface` (tier on/off, "Whole row opens the menu", M-39, DEC-14 as
+amended to a separate attribute): below the collapse point the burger's `::after` stretches over its
+`.sgs-site-header-row`, so a click anywhere on the row is a click on the button (no JS); the magnet's transform
+moves to the button's children at those tiers, and other row blocks sit above the overlay
+(`plugins/sgs-blocks/includes/nav-trigger-surface-css.php`). The detaching chip (M-08, buck): `triggerDetach` (tier on/off),
+`triggerDetachAfter` (tier px), `triggerDetachSize` (tier px, never below 44), `triggerDetachOffset` (tier
+`{x,y}`, x from the inline end), `triggerDetachRadius`, `triggerDetachBackground`(`Hover`),
+`triggerDetachZIndex` (110). Once the header's burger is off screen and the page has scrolled past the tier's
+threshold, a second copy of the burger (the same markup call, wrapper `__detach-wrap`, printed on `wp_footer` by
+`plugins/sgs-blocks/includes/nav-detach-chip.php` because a row's transform would trap a fixed child) shows fixed in the top
+inline-end corner, below the admin bar; `plugins/sgs-blocks/src/shared/nav-interactivity/detach-chip.js` sets `is-detached`. Every
+opener of one drawer reads one open state (`plugins/sgs-blocks/src/shared/nav-interactivity/store.js::state.openByRef`), so `aria-expanded` agrees on both.
 
 **Swap-label, built (Wave 3C U-6):** `triggerOpenLabel` (the word while the drawer is open, '' none) and
 `triggerHoverLabel` (the word on hover), animated by `labelRoll` (`up` | `up-scale`) and the shared
@@ -770,6 +782,11 @@ reachable on the target page). "Crawlable without JS" ≠ "every panel opens wit
   element and its link while collapsing its label to icon-only. The `ResponsiveTriStateControl`
   (on/off/inherit tri-state, P2 §4.1) is **BUILT** — adopt it, never invent a parallel control (R-31-9).
   Full per-device model + ownership split: FR-36-24.
+- **Moving a header block into the drawer (Wave 3C U-10, M-19) — BUILT by composition.** A copy of the block
+  goes in the drawer body and the header copy is hidden: by tier with `sgsHideOnMobile/Tablet/Desktop`, or
+  exactly while this menu shows its burger with `sgsCollapseVisibility` (`hide` | `only`), whose rules the
+  header writes at this block's `collapsePoint` (Spec 37 FR-37-24, "At the collapse point, not a tier").
+  Blocks reading Site Info carry no duplicate data.
 
 ### FR-36-24 — Per-device content + settings (beside FR-36-8; Spectra-standard)
 Every header/footer/nav CONTAINER piece (rows + the pieces in §4) supports, per device tier
