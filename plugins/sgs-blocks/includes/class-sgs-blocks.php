@@ -199,6 +199,13 @@ final class SGS_Blocks {
 		require_once SGS_BLOCKS_PATH . 'includes/pack-pricing-settings.php';
 		require_once SGS_BLOCKS_PATH . 'includes/pack-pricing-category-fields.php';
 		require_once SGS_BLOCKS_PATH . 'includes/pack-pricing-product-fields.php';
+
+		// Add-on price list (Spec 43 FR-43-17 to FR-43-20) — one site-wide list
+		// of add-on groups (an optician's lens type/thickness/finish, a print
+		// shop's finishes, a bakery's add-ons), the WooCommerce > Add-on prices
+		// settings page, and the cart/order integration that reads it as the
+		// only price authority. See that folder's load.php for the full wiring.
+		require_once SGS_BLOCKS_PATH . 'includes/addon-price-list/load.php';
 	}
 
 	/**

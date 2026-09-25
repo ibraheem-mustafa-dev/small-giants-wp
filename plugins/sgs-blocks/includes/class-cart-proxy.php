@@ -134,9 +134,59 @@ final class Cart_Proxy {
 							),
 						),
 					),
+					// Spec 43 FR-43-18 — the add-on price list is the only price
+					// authority: the browser sends only {group, key} pairs, never
+					// a price or a label. Resolved server-side by
+					// SGS\Blocks\sgs_addon_resolve() inside the
+					// woocommerce_add_cart_item_data hook this call fires (see
+					// Addon_Price_List_Cart::add_cart_item_data()) — an unknown
+					// group/key or a duplicate group aborts the add.
+					'addons'    => array(
+						'required'          => false,
+						'type'              => 'array',
+						'default'           => array(),
+						'description'       => \__( 'Array of {group, key} add-on selections, resolved and priced server-side.', 'sgs-blocks' ),
+						'items'             => array(
+							'type'       => 'object',
+							'properties' => array(
+								'group' => array(
+									'type'              => 'string',
+									'sanitize_callback' => 'sanitize_key',
+								),
+								'key'   => array(
+									'type'              => 'string',
+									'sanitize_callback' => 'sanitize_key',
+								),
+							),
+						),
+						'validate_callback' => array( __CLASS__, 'validate_addons_shape' ),
+					),
 				),
 			)
 		);
+	}
+
+	/**
+	 * `validate_callback` for the `addons` REST arg — every entry must be an
+	 * object shaped {group, key} with non-empty scalar values. Sanitisation
+	 * of the individual values happens per-item via `sanitize_key` above;
+	 * this only rejects a malformed shape before it reaches the handler.
+	 *
+	 * @param mixed $value The raw `addons` param.
+	 * @return bool
+	 */
+	public static function validate_addons_shape( $value ): bool {
+		if ( ! \is_array( $value ) ) {
+			return false;
+		}
+		foreach ( $value as $pair ) {
+			if ( ! \is_array( $pair ) || ! isset( $pair['group'], $pair['key'] )
+				|| ! \is_scalar( $pair['group'] ) || ! \is_scalar( $pair['key'] )
+				|| '' === \trim( (string) $pair['group'] ) || '' === \trim( (string) $pair['key'] ) ) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	// ── Availability handler ──────────────────────────────────────────────────
@@ -653,6 +703,19 @@ final class Cart_Proxy {
 			);
 		}
 
+		// Spec 43 FR-43-18 — thread the client's {group, key} add-on pairs
+		// through as cart item data. Only {group, key} ever leaves the
+		// browser; SGS\Blocks\Addon_Price_List_Cart::add_cart_item_data()
+		// (hooked to woocommerce_add_cart_item_data, which
+		// WC()->cart->add_to_cart() fires below) resolves and prices them
+		// server-side and throws to abort the add on an unknown/duplicate
+		// group or key.
+		$cart_item_data = array();
+		$addon_pairs    = (array) $request->get_param( 'addons' );
+		if ( ! empty( $addon_pairs ) ) {
+			$cart_item_data['sgs_addon_pairs'] = $addon_pairs;
+		}
+
 		// ── Step 7: Add to cart ───────────────────────────────────────────────
 		// WC()->cart->add_to_cart() recomputes price + re-validates stock.
 		// Returns a cart item key string on success, false on failure.
@@ -665,7 +728,8 @@ final class Cart_Proxy {
 			$cart_product_id,
 			$final_qty,
 			$cart_variation_id,
-			$variation_attributes_for_wc
+			$variation_attributes_for_wc,
+			$cart_item_data
 		);
 
 		if ( false === $cart_item_key ) {

@@ -1,0 +1,31 @@
+[
+	{
+		"key": "lens-use",
+		"label": "What they're for",
+		"options": [
+			{ "key": "distance", "label": "Distance", "price": "59.00" },
+			{ "key": "reading", "label": "Reading", "price": "59.00" },
+			{ "key": "varifocal", "label": "Varifocal", "price": "129.00" }
+		]
+	},
+	{
+		"key": "lens-thickness",
+		"label": "How thin",
+		"options": [
+			{ "key": "std", "label": "Standard · 1.5", "price": "0.00" },
+			{ "key": "thin", "label": "Thin · 1.6", "price": "30.00" },
+			{ "key": "xthin", "label": "Extra thin · 1.67", "price": "60.00" },
+			{ "key": "ultra", "label": "Ultra thin · 1.74", "price": "100.00" }
+		]
+	},
+	{
+		"key": "lens-finish",
+		"label": "Finish",
+		"options": [
+			{ "key": "tint", "label": "Tinted to match", "price": "0.00" },
+			{ "key": "pol", "label": "Polarised", "price": "40.00" },
+			{ "key": "photo", "label": "Light-reactive", "price": "70.00" },
+			{ "key": "clear", "label": "Clear", "price": "0.00" }
+		]
+	}
+]
