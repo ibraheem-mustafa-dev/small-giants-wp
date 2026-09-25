@@ -22,6 +22,7 @@
 			"wide"
 		],
 		"sgs": {
+			"headerEssential": true,
 			"scrim": {
 				"open": ":modal"
 			},
