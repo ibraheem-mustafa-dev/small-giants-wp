@@ -256,6 +256,19 @@ export function initSmoothScroll() {
 			 * put a second driver on the same click for no measured gain.
 			 */
 			anchors: false,
+			/*
+			 * An open <dialog> (the nav drawer, a modal, any dialog overlay)
+			 * scrolls natively, never the page behind it. Without this, a wheel
+			 * over a drawer was taken by Lenis and scrolled the PAGE, which moved
+			 * scrollY and tripped the drawer's own close-on-scroll: proven on
+			 * sandybrown /qa-scrim/ (six wheel ticks over the open drawer scrolled
+			 * the page 719px and closed it; with the dialog opted out, 0px and the
+			 * drawer stayed open). Lenis hands a prevented event back to the
+			 * browser, so the dialog scrolls itself, and its
+			 * `overscroll-behavior: contain` keeps the page still at its ends. Same
+			 * purpose as the `data-lenis-prevent` the mega panels carry.
+			 */
+			prevent: ( node ) => 'DIALOG' === node.nodeName && node.open,
 		} );
 
 		const raf = ( time ) => {
