@@ -138,6 +138,7 @@ foreach ( array( 'device-visibility.php', 'sgs-header-pass-through.php', 'nav-tr
 }
 require_once $root . '/includes/helpers-css-safety.php';
 require_once $root . '/includes/helpers-responsive.php';
+require_once $root . '/includes/helpers-tokens.php';
 require_once $root . '/includes/device-visibility.php';
 require_once $root . '/includes/sgs-header-pass-through.php';
 require_once $root . '/includes/nav-trigger-surface-css.php';
@@ -221,6 +222,9 @@ ok( false !== strpos( $ccss, '{display:none;position:fixed;top:calc(var(--wp-adm
 ok( false !== strpos( $ccss, '--sgs-nav-detach-size:68.6px' ) && false !== strpos( $ccss, '--sgs-nav-detach-size:44px' ), '5h per-tier size, never below 44px' );
 ok( false !== strpos( $ccss, '@media (min-width:1024px) and (max-width:1099px){.sgs-nav-bar-menu-abc123.sgs-nav-bar-menu__detach.is-detached{display:block;}}' ), '5i shown only at ON tiers below the collapse point' );
 ok( '' === sgs_nav_detach_chip_css( array(), '.m', 1100 ), '5j off emits nothing' );
+ok( false !== strpos( $ccss, '.sgs-nav-bar-menu__burger{background-color:var(--wp--preset--color--surface, #FAF9F6);}' ), '5k an empty chip background paints the opaque surface token' );
+$chip_bg = sgs_nav_detach_chip_css( array_merge( $chip_attrs, array( 'triggerDetachBackground' => 'primary' ) ), '.m', 1100 );
+ok( false !== strpos( $chip_bg, '{background-color:var(--wp--preset--color--primary, currentColor);}' ) && false === strpos( $chip_bg, 'color--surface' ), '5l a chosen chip background replaces the surface token' );
 
 echo "\n$pass passed, $fail failed\n";
 exit( $fail > 0 ? 1 : 0 );

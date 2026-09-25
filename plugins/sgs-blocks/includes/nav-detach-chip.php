@@ -144,10 +144,10 @@ if ( ! function_exists( 'sgs_nav_detach_chip_css' ) ) {
 		$css  = $wrap . '{display:none;position:fixed;top:calc(var(--wp-admin--admin-bar--height, 0px) + var(--sgs-nav-detach-y, 20px));inset-inline-end:var(--sgs-nav-detach-x, 20px);z-index:' . $z . ';}';
 		$css .= $button . '{width:var(--sgs-nav-detach-size, 56px);height:var(--sgs-nav-detach-size, 56px);min-width:44px;min-height:44px;border-radius:' . ( '' !== $radius ? $radius : '9999px' ) . ';}';
 
-		$bg = (string) ( $attributes['triggerDetachBackground'] ?? '' );
-		if ( '' !== $bg ) {
-			$css .= $button . '{background-color:' . sgs_colour_value( $bg ) . ';}';
-		}
+		// Empty paints the opaque surface token: the chip floats over any content,
+		// so a see-through fill would let its glyph vanish over a matching section.
+		$bg       = (string) ( $attributes['triggerDetachBackground'] ?? '' );
+		$css     .= $button . '{background-color:' . ( '' !== $bg ? sgs_colour_value( $bg ) : 'var(--wp--preset--color--surface, #FAF9F6)' ) . ';}';
 		$bg_hover = (string) ( $attributes['triggerDetachBackgroundHover'] ?? '' );
 		if ( '' !== $bg_hover ) {
 			$css .= sgs_hover_state_rules( $button, 'background-color:' . sgs_colour_value( $bg_hover ), ':focus-visible' );

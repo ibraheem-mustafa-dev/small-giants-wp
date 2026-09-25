@@ -139,8 +139,14 @@ const SGS_TYPOGRAPHY_MODIFIED_SUFFIX = ' •';
  * @param {*} val Stored attribute value.
  * @return {boolean} True when tiered-object shaped.
  */
-function isTieredValue( val ) {
-	return val !== null && typeof val === 'object' && ! Array.isArray( val );
+export function isTieredValue( val ) {
+	// An unset tier object reaches the editor as `[]`: block.json's `{}`
+	// default passes through PHP, where an empty array JSON-encodes as a list.
+	// No typography value is ever a real list, so an empty one is an empty tier.
+	if ( Array.isArray( val ) ) {
+		return 0 === val.length;
+	}
+	return val !== null && typeof val === 'object';
 }
 
 /**

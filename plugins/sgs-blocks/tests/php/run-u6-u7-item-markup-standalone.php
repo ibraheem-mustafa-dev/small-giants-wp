@@ -137,7 +137,8 @@ ok( array( '' ) === $GLOBALS['sgs_test_ctx_seen'], 'the bar fork renders its pan
 ok( '' === sgs_sibling_dim_css( '.L', '.i', ' .p', array() ), 'sibling dim emits nothing when unset' );
 $dim = sgs_sibling_dim_css( '.L', '.i', ' .p', array( 'siblingDimColour' => '#4c4c4c' ) );
 ok( false !== strpos( $dim, ':where(:root:not(.sgs-touch-input)) .L:has(> .i:hover) > .i:not(:hover) .p{color:#4c4c4c;}' ), 'the hover rule is list-scoped and touch-guarded as ONE unsplit selector' );
-ok( false !== strpos( $dim, '.L:has(> .i:has(:focus-visible)) > .i:not(:has(:focus-visible)) .p{color:#4c4c4c;}' ), 'the keyboard rule keys on :focus-visible' );
+ok( false !== strpos( $dim, '.L:has(> .i :focus-visible) > .i:not(:has(:focus-visible)) .p{color:#4c4c4c;}' ), 'the keyboard rule keys on :focus-visible' );
+ok( ! preg_match( '/:has\([^{]*:has\(/', preg_replace( '/:not\(:has\([^)]*\)\)/', '', $dim ) ), 'no :has() inside a :has() (browsers drop the whole rule)' );
 ok( false === strpos( $dim, 'focus-within' ), 'no :focus-within (a tap on a <summary> would hold the dim)' );
 $dim_grad = sgs_sibling_dim_css( '.L', '.i', ' .p', array( 'siblingDimColourGradient' => 'linear-gradient(90deg,#111111,#222222)' ) );
 ok( false !== strpos( $dim_grad, 'background-clip:text' ) && false !== strpos( $dim_grad, '@supports not' ), 'a gradient dim uses the text-gradient trio with its fallback' );

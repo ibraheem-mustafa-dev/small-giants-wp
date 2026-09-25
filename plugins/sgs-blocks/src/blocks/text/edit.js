@@ -159,8 +159,9 @@ function buildEditorStyle( attributes ) {
 	// device-toggle preview, which WP re-renders this same function under).
 	// Resolve before use so `${fontSize}` never string-concatenates the whole
 	// object into the literal text "[object Object]".
+	// An unset tier object arrives as `[]` (see TypographyControls.js::isTieredValue).
 	const resolveDesktop = ( val ) =>
-		val !== null && typeof val === 'object' && ! Array.isArray( val ) ? val.desktop : val;
+		val !== null && typeof val === 'object' ? ( Array.isArray( val ) ? undefined : val.desktop ) : val;
 	const fontSizeVal = resolveDesktop( fontSize );
 	const lineHeightVal = resolveDesktop( lineHeight );
 	const letterSpacingVal = resolveDesktop( letterSpacing );

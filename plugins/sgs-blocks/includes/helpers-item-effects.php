@@ -73,7 +73,8 @@ if ( ! function_exists( 'sgs_sibling_dim_css' ) ) {
 		$body = implode( ';', $decls );
 
 		$hover_sel = $list_sel . ':has(> ' . $item_sel . ':hover) > ' . $item_sel . ':not(:hover)' . $paint_sel;
-		$key_sel   = $list_sel . ':has(> ' . $item_sel . ':has(:focus-visible)) > ' . $item_sel . ':not(:has(:focus-visible))' . $paint_sel;
+		// One level of :has() only: a :has() nested in another is invalid and the browser drops the rule.
+		$key_sel = $list_sel . ':has(> ' . $item_sel . ' :focus-visible) > ' . $item_sel . ':not(:has(:focus-visible))' . $paint_sel;
 
 		$css  = $list_sel . ' > ' . $item_sel . $paint_sel . '{transition:color ' . sgs_item_motion_transition( $attributes ) . ',opacity ' . sgs_item_motion_transition( $attributes ) . ';}';
 		$css .= sgs_hover_media_wrap( SGS_HOVER_NOT_TOUCH . ' ' . $hover_sel . '{' . $body . ';}' );

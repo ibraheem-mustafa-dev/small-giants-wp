@@ -38,7 +38,11 @@
  * -----
  *   node axe-run.mjs <url> [--open <selector>] [--open-via click|keyboard]
  *                          [--scope <selector>] [--viewport <width>]
- *                          [--require-open] [--allow-closed] [--json]
+ *                          [--height <px>] [--scroll <px>] [--require-open] [--allow-closed] [--json]
+ *
+ * --scroll <px> scrolls the page before the open step, for a trigger that only
+ * shows after scrolling (the detaching burger chip). --height <px> sets the
+ * window height (default 1200); a page no taller than the window cannot scroll.
  *
  * --open-via
  * -----------
@@ -110,6 +114,8 @@ function parseArgs( argv ) {
 		requireOpen: false,
 		allowClosed: false,
 		openVia: 'click',
+		scroll: 0,
+		height: 1200,
 	};
 	const rest = [ ...argv ];
 	args.url = rest.shift();
@@ -119,6 +125,8 @@ function parseArgs( argv ) {
 		else if ( flag === '--open-via' ) args.openVia = rest.shift();
 		else if ( flag === '--scope' ) args.scope = rest.shift();
 		else if ( flag === '--viewport' ) args.viewport = parseInt( rest.shift(), 10 );
+		else if ( flag === '--height' ) args.height = parseInt( rest.shift(), 10 );
+		else if ( flag === '--scroll' ) args.scroll = parseInt( rest.shift(), 10 );
 		else if ( flag === '--json' ) args.json = true;
 		else if ( flag === '--require-open' ) args.requireOpen = true;
 		else if ( flag === '--allow-closed' ) args.allowClosed = true;
@@ -137,7 +145,7 @@ function parseArgs( argv ) {
 function usageAndExit( message ) {
 	process.stderr.write(
 		`axe-run: ${ message }\n\n` +
-		'Usage: node axe-run.mjs <url> [--open <selector>] [--scope <selector>] [--viewport <width>] [--json]\n'
+		'Usage: node axe-run.mjs <url> [--open <selector>] [--scope <selector>] [--viewport <width>] [--scroll <px>] [--json]\n'
 	);
 	process.exit( 2 );
 }
@@ -182,13 +190,18 @@ async function main() {
 	let exitCode = 0;
 
 	try {
-		const page = await browser.newPage( { viewport: { width: args.viewport, height: 1200 } } );
+		const page = await browser.newPage( { viewport: { width: args.viewport, height: args.height } } );
 
 		try {
 			await page.goto( args.url, { waitUntil: 'networkidle', timeout: 30000 } );
 		} catch ( e ) {
 			process.stderr.write( `axe-run: navigation to "${ args.url }" failed — ${ e.message }\n` );
 			process.exit( 2 );
+		}
+
+		if ( args.scroll > 0 ) {
+			await page.evaluate( ( y ) => window.scrollTo( 0, y ), args.scroll );
+			await page.waitForTimeout( 600 );
 		}
 
 		if ( args.open ) {

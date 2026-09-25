@@ -90,6 +90,11 @@ export async function scrollTriggerIntoView( page, selector ) {
 	await page.evaluate( ( sel ) => {
 		const node = document.querySelector( sel );
 		if ( ! node ) return;
+		// A trigger inside a fixed box (the detaching chip) is always in view, and
+		// centring it would scroll the page back above the point that shows it.
+		for ( let el = node; el; el = el.parentElement ) {
+			if ( 'fixed' === getComputedStyle( el ).position ) return;
+		}
 		const r = node.getBoundingClientRect();
 		window.scrollBy( 0, r.top - window.innerHeight / 2 );
 	}, selector );

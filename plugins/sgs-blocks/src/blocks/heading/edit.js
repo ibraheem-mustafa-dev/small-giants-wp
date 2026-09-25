@@ -161,8 +161,9 @@ function buildTextStyle( attributes ) {
 	// Copied deliberately from sgs/text's identical resolveDesktop helper — the
 	// block that hit this first. `fontSize` is a tier object too, so it is
 	// resolved the same way before buildPreviewFontSize() reads it.
+	// An unset tier object arrives as `[]` (see TypographyControls.js::isTieredValue).
 	const resolveDesktop = ( val ) =>
-		val !== null && typeof val === 'object' && ! Array.isArray( val ) ? val.desktop : val;
+		val !== null && typeof val === 'object' ? ( Array.isArray( val ) ? undefined : val.desktop ) : val;
 	const lineHeightVal = resolveDesktop( lineHeight );
 	const letterSpacingVal = resolveDesktop( letterSpacing );
 

@@ -7,7 +7,8 @@
  * item width is used, 80% when unset, and an unsafe width falls back to 80%;
  * off everywhere and the empty default emit nothing (every existing container
  * byte-identical); container queries add the @container twin; an empty
- * selector emits nothing. Negative control: the parent commit has no such
+ * selector emits nothing; the row gets 8px of block room for a focus ring,
+ * added to any band padding and margin. Negative control: the parent commit has no such
  * file, so the runner fails at its first check.
  *
  * Plain PHP, no PHPUnit. Exits non-zero on any failure.
@@ -67,6 +68,10 @@ ok( false !== strpos( $cq, '@container (max-width:767px){' ), '7 container queri
 ok( '' === sgs_container_scroll_row_css( '', array( 'scrollSideways' => array( 'mobile' => 'on' ) ) ), '8 no selector, nothing' );
 $padded = sgs_container_scroll_row_css( $row, array( 'scrollSideways' => array( 'mobile' => 'on' ) ), false, array( 'desktop' => array( 'left' => '24px', 'right' => 'var:preset|spacing|30' ) ) );
 ok( false !== strpos( $padded, 'scroll-padding-inline-start:24px;scroll-padding-inline-end:var(--wp--preset--spacing--30);' ), '9 band side padding becomes scroll padding (preset resolved)' );
+$ring = sgs_container_scroll_row_css( $row, array( 'scrollSideways' => array( 'mobile' => 'on' ) ) );
+ok( false !== strpos( $ring, 'padding-block-start:8px;margin-block-start:-8px;padding-block-end:8px;margin-block-end:-8px;' ), '10 8px of block room for a focus ring, taken back by a negative margin' );
+$banded = sgs_container_scroll_row_css( $row, array( 'scrollSideways' => array( 'mobile' => 'on' ) ), false, array( 'mobile' => array( 'top' => '20px' ) ), array( 'mobile' => array( 'bottom' => 'var:preset|spacing|20' ) ) );
+ok( false !== strpos( $banded, 'padding-block-start:calc(20px + 8px);margin-block-start:-8px;padding-block-end:8px;margin-block-end:calc(var(--wp--preset--spacing--20) - 8px);' ), '11 band padding and band margin are added to, not replaced' );
 
 echo "\n$pass passed, $fail failed\n";
 exit( $fail > 0 ? 1 : 0 );

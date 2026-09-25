@@ -3893,7 +3893,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// "Scroll sideways" goes LAST, so at equal specificity it wins over the
 			// grid/flex rules written above on the same selector.
 			if ( $sgs_scroll_row_on && $uid ) {
-				$responsive_css .= sgs_container_scroll_row_css( $grid_sel, $attributes, $container_queries, $attributes['contentBandPadding'] ?? array() );
+				$responsive_css .= sgs_container_scroll_row_css( $grid_sel, $attributes, $container_queries, $attributes['contentBandPadding'] ?? array(), $attributes['contentBandMargin'] ?? array() );
 			}
 
 			$style_tag = '';
