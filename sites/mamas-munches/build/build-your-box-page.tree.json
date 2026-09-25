@@ -1,0 +1,55 @@
+[
+  { "name": "core/template-part", "attributes": { "slug": "header", "tagName": "header" } },
+  {
+    "name": "sgs/container",
+    "attributes": { "tagName": "main", "contentWidth": { "desktop": "full" }, "flexWrap": "wrap" },
+    "innerBlocks": [
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "tagName": "div",
+          "contentWidth": { "desktop": "normal" },
+          "flexDirection": "column",
+          "padding": { "top": "var:preset|spacing|60", "bottom": "var:preset|spacing|60" }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/heading",
+            "attributes": {
+              "content": "Build your box",
+              "level": "h1",
+              "textColour": "text",
+              "margin": { "bottom": "var:preset|spacing|40" }
+            }
+          },
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "Pick your flavour, topping, dietary needs and pack size — flow QA fixture for Mama's Munches (product 3990)."
+            }
+          },
+          {
+            "name": "sgs/modal",
+            "attributes": {
+              "anchor": "build-your-box",
+              "triggerStyle": "primary",
+              "triggerText": "Build your box",
+              "size": "fullscreen",
+              "modalBackground": "surface"
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/choice-flow",
+                "attributes": {
+                  "flowId": "mamas-build-your-box",
+                  "flowIsLinked": true
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  { "name": "core/template-part", "attributes": { "slug": "footer", "tagName": "footer" } }
+]

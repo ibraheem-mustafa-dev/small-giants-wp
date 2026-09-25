@@ -256,11 +256,9 @@ const safeStorage = {
  * (different prefix entirely) or with a sibling `sgs/choice-flow` instance
  * on the same page.
  *
- * Prefers an explicit `data-flow-id`/`id` on the wrapper if a later
- * render.php ever adds one (forward-compatible); falls back to this
- * instance's 0-based position amongst all `sgs/choice-flow` roots on the
- * page, which is stable for the lifetime of a single page view — the only
- * lifetime sessionStorage needs.
+ * Uses render.php's `data-flow-id` (page ID + the flow's attribute hash):
+ * sessionStorage lasts for the whole tab, so a key must never repeat across
+ * pages. Falls back to the instance's position on the page.
  *
  * @param {HTMLElement} flowRoot Flow wrapper element.
  * @return {string} Storage key.
@@ -646,7 +644,9 @@ function initFlow( flowRoot ) {
 	initVariation( flowRoot );
 	applyDefaultSelections( flowRoot );
 
-	const restored = restoreFlowState( flowRoot );
+	// A flow ending in add to bag or email sends answers that are not persisted,
+	// so it always starts from step 1 rather than resuming without them.
+	const restored = flowRoot.querySelector( '[data-action="add-to-bag"], [data-action="email"]' ) ? null : restoreFlowState( flowRoot );
 
 	if ( restored && restored.stepIndex >= 0 && restored.stepIndex < steps.length ) {
 		flowState.set( flowRoot, {

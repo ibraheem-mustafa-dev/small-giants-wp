@@ -1,0 +1,137 @@
+[
+  { "name": "core/template-part", "attributes": { "slug": "header", "tagName": "header" } },
+  {
+    "name": "sgs/container",
+    "attributes": { "tagName": "main", "anchor": "main", "contentWidth": { "desktop": "full" }, "flexWrap": "wrap" },
+    "innerBlocks": [
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "tagName": "div",
+          "backgroundColour": "surface-alt",
+          "contentWidth": { "desktop": "normal" },
+          "flexDirection": "column"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "contentWidth": { "desktop": "normal" },
+              "padding": { "top": "var:preset|spacing|50", "bottom": "var:preset|spacing|50" }
+            },
+            "innerBlocks": [
+              { "name": "woocommerce/breadcrumbs", "attributes": {} },
+              {
+                "name": "core/post-title",
+                "attributes": { "level": 1, "textColor": "text", "fontSize": "xx-large" }
+              },
+              { "name": "woocommerce/product-rating", "attributes": {} },
+              {
+                "name": "sgs/buybox",
+                "attributes": {
+                  "addToCartAction": "modal",
+                  "addToCartModalId": "choose-flavours",
+                  "addToCartLabel": "Choose your flavours"
+                }
+              },
+              {
+                "name": "sgs/modal",
+                "attributes": {
+                  "anchor": "choose-flavours",
+                  "triggerStyle": "none",
+                  "triggerText": "Choose your flavours",
+                  "size": "fullscreen",
+                  "modalBackground": "surface"
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/choice-flow",
+                    "attributes": { "flowId": "mamas-choose-flavours", "flowIsLinked": true }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "sgs/container",
+        "attributes": { "tagName": "div", "contentWidth": { "desktop": "normal" } },
+        "innerBlocks": [
+          { "name": "core/template-part", "attributes": { "slug": "sgs-pdp-content" } }
+        ]
+      },
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "tagName": "div",
+          "backgroundColour": "surface-alt",
+          "contentWidth": { "desktop": "normal" },
+          "flexDirection": "column"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "contentWidth": { "desktop": "normal" },
+              "flexDirection": "column",
+              "padding": { "top": "var:preset|spacing|60", "bottom": "var:preset|spacing|60" }
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/heading",
+                "attributes": { "content": "You might also like", "level": "h2", "textColour": "text", "margin": { "bottom": "var:preset|spacing|40" } }
+              },
+              {
+                "name": "woocommerce/product-collection",
+                "attributes": {
+                  "queryId": 1,
+                  "query": {
+                    "perPage": 4,
+                    "pages": 1,
+                    "offset": 0,
+                    "postType": "product",
+                    "order": "asc",
+                    "orderBy": "title",
+                    "search": "",
+                    "exclude": [],
+                    "inherit": false,
+                    "taxQuery": {},
+                    "isProductCollectionBlock": true,
+                    "featured": false,
+                    "woocommerceOnSale": false,
+                    "woocommerceStockStatus": ["instock", "outofstock", "onbackorder"],
+                    "woocommerceAttributes": [],
+                    "woocommerceHandPickedProducts": []
+                  },
+                  "tagName": "div",
+                  "displayLayout": { "type": "flex", "columns": 4, "shrinkColumns": true },
+                  "dimensions": { "widthType": "fill" },
+                  "collection": "woocommerce/product-collection/related",
+                  "hideControls": ["inherit", "filterable"],
+                  "queryContextIncludes": ["collection"],
+                  "className": "sgs-product-rail"
+                },
+                "innerBlocks": [
+                  {
+                    "name": "woocommerce/product-template",
+                    "attributes": {},
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/product-card",
+                        "attributes": { "sourceMode": "wc-product", "showPickers": false, "ctaBehaviour": "learn-more", "showLadder": false }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  { "name": "core/template-part", "attributes": { "slug": "footer", "tagName": "footer" } }
+]

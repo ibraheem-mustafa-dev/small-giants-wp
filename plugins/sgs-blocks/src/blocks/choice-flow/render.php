@@ -203,6 +203,7 @@ $inner_parsed = isset( $block->parsed_block['innerBlocks'] ) && is_array( $block
 $wrapper_args = array(
 	'class'                 => trim( 'sgs-choice-flow ' . $uid . ' ' . sgs_choice_flow_chrome_classes( $attributes ) ),
 	'data-wp-interactive'   => 'sgs/choice-flow',
+	'data-flow-id'          => get_the_ID() . '-' . $uid, // Session-state key: unique per page and flow.
 	// FR-43-19/20: the flow's first-paint product/price, read by view.js's
 	// pricing module. A live `sgs-variation-change` event (item 5, the page's
 	// own buybox/product-card) overwrites these client-side the moment it

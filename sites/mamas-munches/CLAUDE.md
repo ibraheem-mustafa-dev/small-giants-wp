@@ -23,7 +23,13 @@
 | **Topping** | Chocolate Chip / White Chocolate Chip / No Topping | 3 |
 | **Dietary Requirements** | Regular / Vegan | 2 |
 
-Total variant combinations: **4 × 2 × 3 × 2 = 48 SKUs** — WooCommerce variable product attributes.
+Only the pack size changes the price, so only **Number in Pack** creates WooCommerce variations (4). Flavour, Topping
+and Dietary are product attributes that don't create variations: the shopper picks them in a choice flow and they
+travel to the bag line as answers (Spec 43 FR-43-7, FR-43-21).
+
+On sandybrown this is product **3990** "Classic Lactation Cookies" (`sites/mamas-munches/build/seed-lactation-cookies.php`).
+Its pack prices come from the Classics line in `research/lead-research-2026-04-30.md`: 8 = £6, 12 = £8.50, 20 = £12,
+40 = £22. **Zainab still has to confirm these prices.** Product 513 (draft) is the Zookies line, not yet set up.
 
 ### Wanted but not built
 

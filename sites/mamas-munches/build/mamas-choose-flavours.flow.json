@@ -1,0 +1,79 @@
+[
+  {
+    "name": "sgs/choice-flow",
+    "attributes": {
+      "flowId": "mamas-choose-flavours",
+      "title": "Choose your flavours",
+      "showHeader": true,
+      "stickyFooter": true,
+      "closeLabel": "Close"
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/form-step",
+        "attributes": { "label": "Flavour" },
+        "innerBlocks": [
+          {
+            "name": "sgs/choice-flow-question",
+            "attributes": {
+              "question": "Choose your flavour",
+              "productAttribute": "pa_flavour",
+              "options": [
+                { "label": "chocolate", "value": "chocolate" },
+                { "label": "Classic Oat", "value": "classic-oat" }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/form-step",
+        "attributes": { "label": "Topping" },
+        "innerBlocks": [
+          {
+            "name": "sgs/choice-flow-question",
+            "attributes": {
+              "question": "Choose a topping",
+              "productAttribute": "pa_topping",
+              "options": [
+                { "label": "Chocolate Chip", "value": "chocolate-chip" },
+                { "label": "White Chocolate Chip", "value": "white-chocolate-chip" },
+                { "label": "No Topping", "value": "no-topping" }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/form-step",
+        "attributes": { "label": "Dietary" },
+        "innerBlocks": [
+          {
+            "name": "sgs/choice-flow-question",
+            "attributes": {
+              "question": "Any dietary needs?",
+              "productAttribute": "pa_dietary",
+              "options": [
+                { "label": "Regular", "value": "regular" },
+                { "label": "Vegan", "value": "vegan" }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/form-step",
+        "attributes": { "label": "Result" },
+        "innerBlocks": [
+          {
+            "name": "sgs/choice-flow-result",
+            "attributes": {
+              "heading": "Add to bag",
+              "action": "add-to-bag"
+            }
+          }
+        ]
+      }
+    ]
+  }
+]
