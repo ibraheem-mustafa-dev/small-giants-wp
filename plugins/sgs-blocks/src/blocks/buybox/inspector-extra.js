@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { PanelBody, ToggleControl, TextControl } from '@wordpress/components';
+import { PanelBody, ToggleControl, TextControl, RangeControl } from '@wordpress/components';
 import { fillRow, textRow, SgsLengthControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
@@ -26,6 +26,7 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 		rrpMetaKey,
 		rrpSavingFormat,
 		showStockStatus,
+		extrasBeforeCount,
 	} = attributes;
 
 	return (
@@ -129,6 +130,27 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 						'sgs-blocks'
 					) }
 					__nextHasNoMarginBottom
+				/>
+			</PanelBody>
+
+			<PanelBody
+				title={ __( 'Extras placement', 'sgs-blocks' ) }
+				initialOpen={ false }
+			>
+				<RangeControl
+					label={ __( 'Blocks above the price', 'sgs-blocks' ) }
+					help={ __(
+						"The first N blocks in this box's extra area show above the price; the rest show below the add-to-cart button.",
+						'sgs-blocks'
+					) }
+					value={ extrasBeforeCount || 0 }
+					min={ 0 }
+					max={ 10 }
+					onChange={ ( val ) =>
+						setAttributes( { extrasBeforeCount: val ?? 0 } )
+					}
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
 				/>
 			</PanelBody>
 		</>

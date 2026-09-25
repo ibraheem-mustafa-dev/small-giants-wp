@@ -675,8 +675,29 @@ $scoped_css = array_merge(
 		<?php require __DIR__ . '/gallery-col.php'; ?>
 	</div>
 
-	<?php // ── 8-config. Configurator column — right column, all interactive content. ?>
+	<?php
+	// ── 8-config. Configurator column — right column, all interactive content.
+	// extrasBeforeCount (FR-Wave-B extension): when set, the extras slot's
+	// first N children render here, above the price, instead of all of them
+	// dropping below the add-to-cart form (8g below). 0 keeps the original
+	// $content path byte-identical — see sgs_buybox_split_extras() docblock.
+	$buybox_extras_before_count = (int) max( 0, (int) ( $attributes['extrasBeforeCount'] ?? 0 ) );
+	$buybox_extras_before_html  = '';
+	$buybox_extras_after_html   = $content;
+
+	if ( $buybox_extras_before_count > 0 && $block->inner_blocks->count() > 0 ) {
+		$buybox_extras_split       = sgs_buybox_split_extras( $block->inner_blocks, $buybox_extras_before_count );
+		$buybox_extras_before_html = $buybox_extras_split['before'];
+		$buybox_extras_after_html  = $buybox_extras_split['after'];
+	}
+	?>
 	<div class="sgs-buybox__config-col">
+
+	<?php if ( '' !== trim( (string) $buybox_extras_before_html ) ) : ?>
+	<div class="sgs-buybox__extras sgs-buybox__extras--before">
+		<?php echo $buybox_extras_before_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WP core InnerBlocks output, already rendered + escaped by WP_Block::render(). ?>
+	</div>
+	<?php endif; ?>
 
 	<?php // ── 8a. Price row FIRST (CRO: price anchor visible before the pickers — uimax e-commerce hierarchy rule). ?>
 	<div class="buybox__price-row" aria-live="polite">
@@ -892,15 +913,17 @@ $scoped_css = array_merge(
 	></p>
 
 	<?php
-	// ── 8g. Optional extras (FR-Wave-B) — child blocks dropped below the
-	// add-to-cart form (a second CTA, sgs/whatsapp-cta, an sgs/icon-list
-	// assurance list…). $content is WP core's already-rendered InnerBlocks
-	// markup; only wrapped when non-empty so a buybox with no children
-	// renders byte-identical to before this feature existed.
+	// ── 8g. Optional extras (FR-Wave-B, extended by extrasBeforeCount) — child
+	// blocks dropped below the add-to-cart form (a second CTA,
+	// sgs/whatsapp-cta, an sgs/icon-list assurance list…), or the trailing
+	// remainder once extrasBeforeCount has taken its share above the price
+	// (8-config above). $buybox_extras_after_html is $content unchanged when
+	// extrasBeforeCount is 0, so a buybox with no children — or the feature
+	// left off — renders byte-identical to before this feature existed.
 	?>
-	<?php if ( '' !== trim( (string) $content ) ) : ?>
+	<?php if ( '' !== trim( (string) $buybox_extras_after_html ) ) : ?>
 	<div class="sgs-buybox__extras">
-		<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $content is WP core InnerBlocks output, already rendered + escaped by render_block(). ?>
+		<?php echo $buybox_extras_after_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WP core InnerBlocks output, already rendered + escaped by render_block()/WP_Block::render(). ?>
 	</div>
 	<?php endif; ?>
 

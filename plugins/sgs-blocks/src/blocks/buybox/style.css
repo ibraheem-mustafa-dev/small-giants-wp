@@ -735,3 +735,16 @@
 	flex-direction: column;
 	gap: var(--sgs-buybox-gap, 12px);
 }
+
+/* ── Optional extras slot, "before" group (extrasBeforeCount) ────────────
+   Same internal layout as .sgs-buybox__extras above — a second wrapper for
+   the leading N children, shown above the price row instead of below the
+   add-to-cart form. .sgs-buybox__config-col is itself a flex column with
+   its own `gap` (above), so the space below this wrapper and before the
+   price row is already handled there; no extra margin needed on either
+   side or the two gaps would stack. */
+.sgs-buybox__extras--before {
+	display: flex;
+	flex-direction: column;
+	gap: var(--sgs-buybox-gap, 12px);
+}

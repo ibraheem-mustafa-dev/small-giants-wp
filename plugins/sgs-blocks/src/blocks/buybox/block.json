@@ -328,6 +328,11 @@
 		"stockOutOfStockColour": {
 			"type": "string",
 			"default": ""
+		},
+		"extrasBeforeCount": {
+			"type": "number",
+			"default": 0,
+			"description": "How many of the extras slot's first child blocks render at the top of the configurator column, above the price. The rest stay below the add-to-cart form. 0 = all below, the current behaviour."
 		}
 	},
 	"editorScript": "file:./index.js",

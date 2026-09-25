@@ -163,3 +163,39 @@ if ( ! function_exists( 'sgs_buybox_extras_scoped_css' ) ) {
 		return $css;
 	}
 }
+
+if ( ! function_exists( 'sgs_buybox_split_extras' ) ) {
+	/**
+	 * Split the extras slot's rendered child markup into a "before" group (the
+	 * first N children, shown above the price row) and an "after" group (the
+	 * rest, shown below the add-to-cart form — today's default position).
+	 *
+	 * Renders each child individually via WP_Block::render() rather than
+	 * slicing render.php's own $content string, since $content is one
+	 * concatenated blob with no per-child boundary to cut on.
+	 *
+	 * @param \WP_Block_List $inner_blocks The buybox's InnerBlocks children.
+	 * @param int            $before_count How many leading children go in the "before" group (already sanitised non-negative).
+	 * @return array{before: string, after: string}
+	 */
+	function sgs_buybox_split_extras( \WP_Block_List $inner_blocks, int $before_count ): array {
+		$before = '';
+		$after  = '';
+		$index  = 0;
+
+		foreach ( $inner_blocks as $inner_block ) {
+			$markup = $inner_block->render();
+			if ( $index < $before_count ) {
+				$before .= $markup;
+			} else {
+				$after .= $markup;
+			}
+			++$index;
+		}
+
+		return array(
+			'before' => $before,
+			'after'  => $after,
+		);
+	}
+}
