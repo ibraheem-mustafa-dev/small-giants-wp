@@ -29,7 +29,7 @@ done and live-verified. The harness self-tests and the fixture fidelity check ar
 seeded as Menu drawer posts on all three test sites), the Site Info logo tier, the scrolled-state header
 shadow, the floating header pill (blur-based, matching the one true pill among the references), the formal Gate 2
 re-run and the mega + drawer integration probe. Payment icons need no
-framework feature (clients upload official artwork into the trust bar). Wave 3 is partial. Waves 3A (independent fixes) and 3B (a requirements table of 13 references: 46 capability families, signed) are done. Wave 3C is under way; U-1, U-2, the U-9+U-11 pair (how a menu closes), U-5 (menu motion), the U-3+U-8 pair (where a drawer and a panel sit) and the U-6+U-7 pair (new item markup) are closed; lane A next is U-10 + U-14 (U-4 closed; detail below, Spec 36+37 merged track section). Waves 4
+framework feature (clients upload official artwork into the trust bar). Wave 3 is partial. Waves 3A (independent fixes) and 3B (a requirements table of 13 references: 46 capability families, signed) are done. Wave 3C is under way: U-1, U-2 and all of lane A (the nav bar, drawer and header placement) are closed and live; lane B (header behaviours: U-13, then U-16) and lane C (U-12, U-15, U-17) have not started (detail below, Spec 36+37 merged track section). Waves 4
 and 5 have not started.
 
 **Indus Foods** has its own dedicated test site (`lavender-dinosaur-183533.hostingersite.com`,
