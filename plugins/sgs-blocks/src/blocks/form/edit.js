@@ -68,6 +68,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		submitFontSize,
 		submitTextTransform,
 		submitLetterSpacing,
+		submitPadding,
+		submitMinHeight,
 		progressBarColour,
 		progressBarColourGradient,
 		progressBarColourHover,
@@ -124,6 +126,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		fontSize: submitFontSize ? `${ submitFontSize }px` : undefined,
 		textTransform: submitTextTransform || undefined,
 		letterSpacing: submitLetterSpacing || undefined,
+		padding:
+			submitPadding && Object.values( submitPadding ).some( Boolean )
+				? [ 'top', 'right', 'bottom', 'left' ].map( ( side ) => submitPadding[ side ] || '0' ).join( ' ' )
+				: undefined,
+		minHeight: submitMinHeight ? `${ submitMinHeight }px` : undefined,
 	};
 	const progressBarStyle = {
 		backgroundColor: resolveColourToken( progressBarColour, palette ) || undefined,
@@ -705,6 +712,22 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<SgsBoxControl
+						label={ __( 'Button Padding', 'sgs-blocks' ) }
+						values={ submitPadding && typeof submitPadding === 'object' ? submitPadding : {} }
+						units={ BOX_UNITS }
+						onChange={ ( next ) => setAttributes( { submitPadding: next || {} } ) }
+					/>
+					<NumberControl
+						label={ __( 'Button Minimum Height (px)', 'sgs-blocks' ) }
+						value={ submitMinHeight || '' }
+						min={ 0 }
+						onChange={ ( value ) =>
+							setAttributes( { submitMinHeight: value ? parseInt( value, 10 ) : 0 } )
+						}
+						help={ __( 'Leave blank for the default 44px.', 'sgs-blocks' ) }
 						__next40pxDefaultSize
 					/>
 				</PanelBody>

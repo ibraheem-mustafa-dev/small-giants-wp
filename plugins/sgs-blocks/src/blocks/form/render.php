@@ -373,6 +373,15 @@ if ( '' !== $submit_text_transform ) {
 if ( '' !== $submit_letter_spacing ) {
 	$submit_typography_decls[] = 'letter-spacing:' . $submit_letter_spacing;
 }
+$submit_padding_box = is_array( $attributes['submitPadding'] ?? null ) ? $attributes['submitPadding'] : array();
+$submit_padding     = function_exists( 'sgs_box_object_shorthand' ) ? sgs_box_object_shorthand( $submit_padding_box ) : null;
+if ( null !== $submit_padding ) {
+	$submit_typography_decls[] = 'padding:' . $submit_padding;
+}
+$submit_min_height = absint( $attributes['submitMinHeight'] ?? 0 );
+if ( 0 !== $submit_min_height ) {
+	$submit_typography_decls[] = 'min-height:' . $submit_min_height . 'px';
+}
 if ( ! empty( $submit_typography_decls ) ) {
 	if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {
 		$sgs_form_supports_classes[] = $sgs_form_uid;

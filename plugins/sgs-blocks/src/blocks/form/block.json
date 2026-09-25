@@ -102,7 +102,8 @@
 					"order": 3,
 					"clusters": [
 						"text",
-						"fill"
+						"fill",
+						"layout"
 					],
 					"prefix": "submit",
 					"attrMap": {
@@ -110,7 +111,9 @@
 						"css:font-weight": "submitFontWeight",
 						"css:font-size": "submitFontSize",
 						"css:text-transform": "submitTextTransform",
-						"css:letter-spacing": "submitLetterSpacing"
+						"css:letter-spacing": "submitLetterSpacing",
+						"css:padding": "submitPadding",
+						"css:min-height": "submitMinHeight"
 					},
 					"states": {
 						"hover": {
@@ -287,6 +290,16 @@
 			"type": "string",
 			"default": "",
 			"description": "Submit button letter-spacing as a CSS length (e.g. \"0.1em\", \"2px\"). Empty = unset."
+		},
+		"submitPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Submit button padding as a box {top,right,bottom,left}. Empty = the stylesheet's 0.75rem 2rem."
+		},
+		"submitMinHeight": {
+			"type": "number",
+			"default": 0,
+			"description": "Submit button minimum height in px. 0 = the stylesheet's 44px."
 		},
 		"progressBarColour": {
 			"type": "string",
