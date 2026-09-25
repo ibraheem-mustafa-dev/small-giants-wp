@@ -126,6 +126,7 @@
 						"css:background-color": "itemBg",
 						"css:background-image": "itemBgGradient",
 						"css:border-radius": "itemBorderRadius",
+						"css:padding": "itemPadding",
 						"css:border-color": "itemBorderColour",
 						"css:border-width": "itemBorderWidth",
 						"css:border-style": "itemBorderStyle",
@@ -366,6 +367,9 @@
 				],
 				"submenuPadding": [
 					"submenuPadding"
+				],
+				"itemPadding": [
+					"itemPadding"
 				]
 			},
 			"_note_sweep_eligibility": "The ONE declarative source for the Sweep-treatment eligibility predicate, read by BOTH surfaces — edit.js decides whether to offer the Sweep segment, render.php decides whether to emit Sweep CSS — with neither re-deriving the rule (Spec 41 FR-41-26). It is NOT an `elements` entry and routes no CSS property; it sits beside colourExemptions / hideExtensions / boxFamilies. Three keys per row: `blockingBackgroundAttrs` (Sweep is withdrawn when ANY named attribute is non-empty, because background-clip:text clips the element's whole background-painting area to the glyph shapes — every state's background counts, not just the resting one), `blockingGradientAttrs` (the row's own text gradient writes background-image on the identical selector, so whichever loses is invisible) and `glyphGuard` (background-clip:text needs glyphs to grip; null means the element always has them). Every attribute named below must exist in `attributes` — a typo reads as permanently empty, so the predicate would always pass and the rule would silently cease to exist.",
@@ -798,6 +802,11 @@
 		"submenuPadding": {
 			"type": "object",
 			"default": {}
+		},
+		"itemPadding": {
+			"type": "object",
+			"default": {},
+			"description": "4-side box-object family (box_family 'itemPadding'), a {desktop,tablet,mobile} tier object of {top,right,bottom,left}. Padding inside each top-level menu link. Empty keeps the default 8px 12px; the left side is also what itemPaddingShiftHover adds to."
 		},
 		"navBgGradient": {
 			"type": "string",

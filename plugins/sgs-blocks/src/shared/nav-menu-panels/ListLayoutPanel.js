@@ -35,6 +35,10 @@ import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
  *                                             `sgs/nav-bar-menu`.
  * @param {Object}   [root0.listColumns]       The block's `listColumns` attribute — drawer only.
  * @param {Object}   root0.padding             The block's `padding` attribute.
+ * @param {boolean}  [root0.showItemPadding]   True on `sgs/nav-bar-menu` only: shows
+ *                                             "Link padding" (`itemPadding`).
+ * @param {Object}   [root0.itemPadding]       The bar's `itemPadding` attribute, a tier
+ *                                             object of {top,right,bottom,left} boxes.
  * @param {Function} root0.setAttributes       The block's attribute setter.
  */
 export default function ListLayoutPanel( {
@@ -42,6 +46,8 @@ export default function ListLayoutPanel( {
 	showColumnsControl,
 	listColumns,
 	padding,
+	showItemPadding = false,
+	itemPadding,
 	setAttributes,
 } ) {
 	return (
@@ -51,6 +57,7 @@ export default function ListLayoutPanel( {
 				setAttributes( {
 					gap: { desktop: '8px' },
 					padding: {},
+					...( showItemPadding ? { itemPadding: {} } : {} ),
 				} )
 			}
 		>
@@ -148,6 +155,30 @@ export default function ListLayoutPanel( {
 					) }
 				</ResponsiveOverride>
 			</ToolsPanelItem>
+
+			{ showItemPadding && (
+				<ToolsPanelItem
+					hasValue={ () => Object.keys( itemPadding ?? {} ).length > 0 }
+					label={ __( 'Link padding', 'sgs-blocks' ) }
+					onDeselect={ () => setAttributes( { itemPadding: {} } ) }
+					isShownByDefault
+				>
+					<ResponsiveOverride
+						value={ itemPadding }
+						onChange={ ( obj ) => setAttributes( { itemPadding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Link padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+				</ToolsPanelItem>
+			) }
 		</ToolsPanel>
 	);
 }

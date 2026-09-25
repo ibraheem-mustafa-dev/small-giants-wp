@@ -71,6 +71,40 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	$css .= sgs_typography_css_rule( $attributes, 'item', $link_sel );
 
 	/*
+	 * 4a-i. Item link padding (`itemPadding`, sgs/nav-bar-menu only): a
+	 * {desktop,tablet,mobile} tier object of {top,right,bottom,left}, emitted
+	 * per side at (0,2,0) over style.css's `.{bem}__link{padding:8px 12px}`
+	 * (0,1,0), so an unset side or tier keeps that default. The resting
+	 * inline-start side is also published as `--sgs-nav-link-pad-start`, which
+	 * the `itemPaddingShiftHover` rule below adds its shift to.
+	 */
+	$item_padding = $attributes['itemPadding'] ?? null;
+	if ( is_array( $item_padding ) && array() !== $item_padding ) {
+		$item_padding_start = array();
+		foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
+			if ( isset( $item_padding[ $tier ]['left'] ) && '' !== $item_padding[ $tier ]['left'] ) {
+				$item_padding_start[ $tier ] = $item_padding[ $tier ]['left'];
+			}
+		}
+		$css .= sgs_emit_responsive_css(
+			$link_sel,
+			array(
+				array(
+					'value'        => $item_padding,
+					'css'          => 'padding',
+					'box'          => true,
+					'unit_default' => 'px',
+				),
+				array(
+					'value'        => $item_padding_start,
+					'css'          => '--sgs-nav-link-pad-start',
+					'unit_default' => 'px',
+				),
+			)
+		);
+	}
+
+	/*
 	 * Caret oversize. `.{bem}__caret svg` has no
 	 * font-size of its own to run `width:1em;height:1em` against (the sibling
 	 * rule nav-menu-submenu-css.php emits) — it falls back to the browser's UA
@@ -426,17 +460,16 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 
 	/*
 	 * `itemPaddingShiftHover` — an ADDITIVE hover-only inline-start padding
-	 * shift, on top of style.css's own `.{bem}__link{padding:8px 12px}` (bar
-	 * AND drawer both carry that same literal, this function being shared
-	 * between the two — see the function docblock). No attribute currently
-	 * exposes that resting padding as a single value, so the literal '12px' is
-	 * read directly, matching the docblock's own "smallest honest mechanism"
-	 * instruction. Empty/hostile input -> sgs_css_single_length_value() returns
-	 * '', which the `'' !== …` gate turns into no rule at all.
+	 * shift, on top of the resting inline-start padding: `itemPadding`'s left
+	 * side where set (published as `--sgs-nav-link-pad-start` in 4a-i above),
+	 * else style.css's own `.{bem}__link{padding:8px 12px}` (bar AND drawer
+	 * both carry that literal; this function is shared between the two), hence
+	 * the 12px fallback. Empty/hostile input -> sgs_css_single_length_value()
+	 * returns '', which the `'' !== …` gate turns into no rule at all.
 	 */
 	$item_padding_shift = sgs_css_single_length_value( $attributes['itemPaddingShiftHover'] ?? '' );
 	if ( '' !== $item_padding_shift ) {
-		$css .= sgs_hover_state_rules( $link_sel, 'padding-inline-start:calc(12px + ' . $item_padding_shift . ')', ':focus-visible' );
+		$css .= sgs_hover_state_rules( $link_sel, 'padding-inline-start:calc(var(--sgs-nav-link-pad-start, 12px) + ' . $item_padding_shift . ')', ':focus-visible' );
 	}
 
 	/*
