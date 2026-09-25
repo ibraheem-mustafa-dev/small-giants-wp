@@ -51,6 +51,7 @@ defined( 'ABSPATH' ) || exit;
 
 const SGS_SAME_TERM_BLOCK_NAME = 'woocommerce/product-collection';
 const SGS_SAME_TERM_ATTR       = 'sgsSameTermAs';
+const SGS_SAME_TERM_CONTEXT    = 'sgs/sameTermAs';
 
 /**
  * Register the `sgsSameTermAs` attribute server-side, Product Collection only.
@@ -60,9 +61,20 @@ const SGS_SAME_TERM_ATTR       = 'sgsSameTermAs';
  * @return array
  */
 function sgs_register_same_term_attribute( array $args, string $block_name ): array {
+	// The query filter receives the inner product-template block, so the collection passes the
+	// setting down as block context (sgs/sameTermAs) and the template reads it.
+	if ( 'woocommerce/product-template' === $block_name ) {
+		$uses                 = isset( $args['uses_context'] ) && is_array( $args['uses_context'] ) ? $args['uses_context'] : array();
+		$uses[]               = SGS_SAME_TERM_CONTEXT;
+		$args['uses_context'] = array_values( array_unique( $uses ) );
+		return $args;
+	}
 	if ( SGS_SAME_TERM_BLOCK_NAME !== $block_name ) {
 		return $args;
 	}
+	$provides                          = isset( $args['provides_context'] ) && is_array( $args['provides_context'] ) ? $args['provides_context'] : array();
+	$provides[ SGS_SAME_TERM_CONTEXT ] = SGS_SAME_TERM_ATTR;
+	$args['provides_context']          = $provides;
 
 	$existing = isset( $args['attributes'] ) && is_array( $args['attributes'] ) ? $args['attributes'] : array();
 	if ( ! isset( $existing[ SGS_SAME_TERM_ATTR ] ) ) {
@@ -208,7 +220,7 @@ function sgs_apply_same_term_query( $query, $block, $page ) { // phpcs:ignore Va
 		return $query;
 	}
 
-	$taxonomy = sgs_same_term_sanitise_taxonomy( (string) ( $block->attributes[ SGS_SAME_TERM_ATTR ] ?? '' ) );
+	$taxonomy = sgs_same_term_sanitise_taxonomy( (string) ( $block->context[ SGS_SAME_TERM_CONTEXT ] ?? ( $block->attributes[ SGS_SAME_TERM_ATTR ] ?? '' ) ) );
 	if ( '' === $taxonomy ) {
 		return $query;
 	}
