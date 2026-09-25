@@ -1203,10 +1203,12 @@
               {
                 "name": "sgs/container",
                 "attributes": {
-                  "layout": "flex",
-                  "justifyContent": "space-between",
+                  "layout": "grid",
+                  "gridTemplateColumns": {
+                    "desktop": "minmax(0,1fr) auto",
+                    "mobile": "minmax(0,1fr)"
+                  },
                   "alignItems": "center",
-                  "flexWrap": "wrap",
                   "gap": {
                     "desktop": "20px"
                   },
@@ -1323,23 +1325,6 @@
                       },
                       "avatarTextColour": "#fff",
                       "averageRating": 4.7,
-                      "backgroundColour": "#fff",
-                      "borderColour": "#DADCE0",
-                      "borderRadius": {
-                        "desktop": {
-                          "bottomLeft": "12px",
-                          "bottomRight": "12px",
-                          "topLeft": "12px",
-                          "topRight": "12px"
-                        }
-                      },
-                      "borderStyle": "solid",
-                      "borderWidth": {
-                        "bottom": "1px",
-                        "left": "1px",
-                        "right": "1px",
-                        "top": "1px"
-                      },
                       "cardBackground": "#fff",
                       "cardBorderColour": "#E8EAED",
                       "cardBorderRadius": {
@@ -1413,20 +1398,6 @@
                         "desktop": "12.5px",
                         "mobile": "12.5px",
                         "tablet": "12.5px"
-                      },
-                      "padding": {
-                        "desktop": {
-                          "bottom": "28px",
-                          "left": "26px",
-                          "right": "26px",
-                          "top": "28px"
-                        },
-                        "mobile": {
-                          "bottom": "20px",
-                          "left": "16px",
-                          "right": "16px",
-                          "top": "20px"
-                        }
                       },
                       "railPadding": {
                         "desktop": {

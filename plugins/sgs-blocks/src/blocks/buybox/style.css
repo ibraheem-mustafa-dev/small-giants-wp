@@ -320,10 +320,11 @@
  */
 
 /* Switch the options row from flex to a 3-column grid so 12 flavour pills
-   sit in 4 neat rows instead of wrapping loosely. Column gap matches row gap
+   sit in 4 neat rows instead of wrapping loosely. Tile pickers keep their own
+   fill grid (option-picker style.css). Column gap matches row gap
    for visual balance; both use the same 8px rhythm. The legend-to-pills gap
    is tightened by overriding the margin-bottom on the label. */
-.sgs-buybox .sgs-option-picker__options {
+.sgs-buybox .sgs-option-picker:not(.sgs-option-picker--tile) .sgs-option-picker__options {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
 	gap: 8px;
@@ -335,7 +336,7 @@
 /* 2-column fallback at narrow widths — 3 × ~80 px minimum columns need at
    least ~260 px of usable space; below 480 px a 2-column grid is safer. */
 @media (max-width: 480px) {
-	.sgs-buybox .sgs-option-picker__options {
+	.sgs-buybox .sgs-option-picker:not(.sgs-option-picker--tile) .sgs-option-picker__options {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 }

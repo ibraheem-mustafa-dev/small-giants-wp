@@ -118,6 +118,9 @@ def _find(nodes, name):
 with open(HOME, encoding='utf-8') as fh:
     GOOGLE = dict(_find(json.load(fh), 'sgs/google-reviews')['attributes'])
 GOOGLE.update(variant="badge", showGoogleLogo=True, showAggregate=True)
+# Inside the card the badge sits bare: no frame, ground or padding of its own.
+for _k in [k for k in GOOGLE if k.startswith(('border', 'background', 'padding', 'boxShadow', 'shadow'))]:
+    del GOOGLE[_k]
 
 # Shown only while the product has no reviews (conditional visibility, "none-yet").
 NO_REVIEWS = B("sgs/container", dict(
@@ -125,8 +128,8 @@ NO_REVIEWS = B("sgs/container", dict(
     borderWidth={"top": "1px", "right": "0px", "bottom": "0px", "left": "0px"}, borderColour="border",
     padding={"desktop": {"top": "44px"}}), [
     B("sgs/container", dict(
-        layout="flex", justifyContent="space-between", alignItems="center", flexWrap="wrap", gap={"desktop": "20px"},
-        backgroundColour="surface-alt", borderWidth=BOX, borderColour="border",
+        layout="grid", gridTemplateColumns={"desktop": "minmax(0,1fr) auto", "mobile": "minmax(0,1fr)"},
+        alignItems="center", gap={"desktop": "20px"}, backgroundColour="surface-alt", borderWidth=BOX, borderColour="border",
         borderRadius={"desktop": {"topLeft": "12px", "topRight": "12px", "bottomLeft": "12px", "bottomRight": "12px"}},
         padding={"desktop": {"top": "26px", "right": "24px", "bottom": "26px", "left": "24px"}}), [
         B("sgs/container", {}, [
