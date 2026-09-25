@@ -8,7 +8,7 @@ import {
 import { PanelBody, RangeControl, SelectControl, Notice, BoxControl } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, fillRow, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, resolveColourToken, SgsBoxControl } from '../../components';
-import { backgroundPreview, spacingPreview, svgBackgroundPreview } from '../../utils';
+import { backgroundPreview, spacingPreview, svgBackgroundPreview, flattenPresetSetting } from '../../utils';
 // Reused directly rather than duplicated (Spec 35 Part B / composite-mirror rule,
 // D152): physics-canvas KEEPS SGS_Container_Wrapper (containerKind: 'section'), so
 // its box + width controls must be the SAME shape sgs/container itself exposes —
@@ -66,6 +66,11 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	// canvas — the shared mirror (src/utils/background-preview.js, 2026-08-26)
 	// fixes that the same way sgs/container already did.
 	const [ colourPalette ] = useSettings( 'color.palette' );
+	// The theme's gradient presets, normalised by flattenPresetSetting() —
+	// useSettings() returns a flat array or an origin-keyed object depending on
+	// the feature — so backgroundPreview() can resolve a preset SLUG to its CSS stops.
+	const [ rawGradientPresets ] = useSettings( 'color.gradients' );
+	const gradientPresets = flattenPresetSetting( rawGradientPresets );
 	// Decorative SVG background layer — editor mirror (2026-09-05). Sibling of
 	// backgroundPreview() below, deliberately NOT folded into it: that helper
 	// paints via `--sgs-ed-bg-*` custom properties on a ::before, whereas the
@@ -104,7 +109,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		backgroundColourGradient: attributes.backgroundColourGradient,
 		surfaceBlur: attributes.surfaceBlur,
 		surfaceSaturate: attributes.surfaceSaturate,
-	}, colourPalette );
+	}, colourPalette, gradientPresets );
 
 	// Active device tier for the padding/margin preview below — this block had
 	// no previewTier mechanism of its own, so this follows sgs/container's

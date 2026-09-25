@@ -63,7 +63,7 @@ import { CursorFieldRowControls } from '../../components/CursorFieldRowControls'
 import { ParticleTrailRowControls } from '../../components/ParticleTrailRowControls';
 import { GridDotFieldRowControls } from '../../components/GridDotFieldRowControls';
 import { FlowingGradientRowControls } from '../../components/FlowingGradientRowControls';
-import { colourVar, resolveShadowPreviewComposed, surfaceToneClass } from '../../utils';
+import { colourVar, resolveShadowPreviewComposed, surfaceToneClass, flattenPresetSetting } from '../../utils';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 /**
@@ -253,6 +253,12 @@ export default function Edit( { attributes, setAttributes } ) {
 	const { allowedBlocks, template } = innerBlocksConfigForVariant( resolvedVariant );
 
 	const [ colourPalette ] = useSettings( 'color.palette' );
+	// The theme's gradient presets, normalised by flattenPresetSetting() —
+	// useSettings() returns a flat array or an origin-keyed object depending on
+	// the feature — so surfaceToneClass() can resolve panelBgGradient's preset
+	// SLUG to its CSS stops.
+	const [ rawGradientPresets ] = useSettings( 'color.gradients' );
+	const gradientPresets = flattenPresetSetting( rawGradientPresets );
 
 	const sepStyle = asideSeparator?.style || 'line';
 
@@ -409,16 +415,21 @@ export default function Edit( { attributes, setAttributes } ) {
 	// one-fill-layer tone the real render.php marks itself with
 	// (sgs_surface_tone_class(), fed the resolved panelBg at surfaceOpacity —
 	// unset means fully opaque), so a shadow on a descendant follows this
-	// panel's own tone in the editor canvas too.
-	const toneClass = surfaceToneClass(
-		[
-			{
-				colour: panelBg || '',
-				opacity: 'number' === typeof surfaceOpacity ? surfaceOpacity : 1,
-			},
-		],
-		colourPalette
-	);
+	// panel's own tone in the editor canvas too. panelBgGradient is its own
+	// top-down layer, ahead of the flat colour — a gradient always wins over the
+	// flat colour, mirroring backgroundPaintPreview()'s precedence rule.
+	const toneLayers = [];
+	if ( panelBgGradient ) {
+		toneLayers.push( {
+			gradient: panelBgGradient,
+			opacity: 'number' === typeof surfaceOpacity ? surfaceOpacity : 1,
+		} );
+	}
+	toneLayers.push( {
+		colour: panelBg || '',
+		opacity: 'number' === typeof surfaceOpacity ? surfaceOpacity : 1,
+	} );
+	const toneClass = surfaceToneClass( toneLayers, colourPalette, gradientPresets );
 
 	const wrapperClassName = [
 		'sgs-mega-panel',

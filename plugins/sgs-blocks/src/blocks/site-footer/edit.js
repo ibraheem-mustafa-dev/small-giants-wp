@@ -22,7 +22,7 @@ import {
 } from '../container/components/ContainerWrapperControls';
 import { ResponsiveBoxControl, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsColourPanel, SgsBorderControl, resolveColourToken, SgsBoxControl, StarterLookPresetControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
-import { backgroundPaintPreview, backgroundPreview, spacingPreview, svgBackgroundPreview, textPaintPreview } from '../../utils';
+import { backgroundPaintPreview, backgroundPreview, spacingPreview, svgBackgroundPreview, textPaintPreview, flattenPresetSetting } from '../../utils';
 import { calculateRelativeLuminance, calculateContrastRatio, meetsWCAG_AA } from '../../utils/wcag-contrast';
 
 const ALLOWED_BLOCKS = [ 'sgs/site-footer-row' ];
@@ -142,6 +142,11 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	// parallax attrs; the shared mirror (src/utils/background-preview.js)
 	// previews them on the canvas the same way sgs/container does.
 	const [ colourPalette ] = useSettings( 'color.palette' );
+	// The theme's gradient presets, normalised by flattenPresetSetting() —
+	// useSettings() returns a flat array or an origin-keyed object depending on
+	// the feature — so backgroundPreview() can resolve a preset SLUG to its CSS stops.
+	const [ rawGradientPresets ] = useSettings( 'color.gradients' );
+	const gradientPresets = flattenPresetSetting( rawGradientPresets );
 
 	// SGS-owned flat background colour/gradient canvas preview — the gap this
 	// fix closes. `sgs_background_paint_decl()` (helpers-tokens.php) emits
@@ -178,7 +183,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		backgroundColourGradient: attributes.backgroundColourGradient,
 		surfaceBlur: attributes.surfaceBlur,
 		surfaceSaturate: attributes.surfaceSaturate,
-	}, colourPalette );
+	}, colourPalette, gradientPresets );
 
 	// Decorative SVG background layer — editor mirror. Deliberately
 	// NOT folded into backgroundPreview()'s return: that helper paints via

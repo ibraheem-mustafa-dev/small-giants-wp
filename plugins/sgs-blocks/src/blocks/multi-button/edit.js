@@ -10,7 +10,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 // WS-4: shared sgs/container wrapper editor controls (layout kind).
 import ContainerWrapperControls, { BackgroundPanel } from '../container/components/ContainerWrapperControls';
 import { ResponsiveOverride, SpacingControl, SgsColourPanel, fillRow, ResponsiveBoxControl, SGS_FONT_WEIGHT_OPTIONS, textRow, SgsBorderControl, resolveColourToken, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
-import { backgroundPreview, spacingPreview, isTierBoxEmpty, svgBackgroundPreview, boxShorthand, resolveTextColourPreviewStyle } from '../../utils';
+import { backgroundPreview, spacingPreview, isTierBoxEmpty, svgBackgroundPreview, boxShorthand, resolveTextColourPreviewStyle, flattenPresetSetting } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
 	PanelBody,
@@ -132,6 +132,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// canvas — the shared mirror (src/utils/background-preview.js, 2026-08-26)
 	// fixes that the same way sgs/container already did.
 	const [ colourPalette ] = useSettings( 'color.palette' );
+	// The theme's gradient presets, normalised by flattenPresetSetting() —
+	// useSettings() returns a flat array or an origin-keyed object depending on
+	// the feature — so backgroundPreview() can resolve a preset SLUG to its CSS stops.
+	const [ rawGradientPresets ] = useSettings( 'color.gradients' );
+	const gradientPresets = flattenPresetSetting( rawGradientPresets );
 	// Decorative SVG background layer — editor mirror (2026-09-05). Sibling of
 	// backgroundPreview() below, deliberately NOT folded into it: that helper
 	// paints via `--sgs-ed-bg-*` custom properties on a ::before, whereas the
@@ -170,7 +175,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		backgroundColourGradient: attributes.backgroundColourGradient,
 		surfaceBlur: attributes.surfaceBlur,
 		surfaceSaturate: attributes.surfaceSaturate,
-	}, colourPalette );
+	}, colourPalette, gradientPresets );
 
 	// Active device tier for the padding/margin preview below, read from the
 	// SAME source sgs/container's editor mirror reads (`core/editor`

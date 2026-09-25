@@ -78,7 +78,7 @@ import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, resolveCol
 	ShadowControl, SurfaceGroundControls, ScrimControls, scrimColourRow,
 } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
-import { resolveTextColourPreviewStyle, typographyPreviewStyle, resolveShadowPreviewComposed, surfaceToneClass, resolveTier } from '../../utils';
+import { resolveTextColourPreviewStyle, typographyPreviewStyle, resolveShadowPreviewComposed, surfaceToneClass, resolveTier, flattenPresetSetting } from '../../utils';
 
 /**
  * Content template: menu + (optional) logo + (optional) CTA. templateLock:false.
@@ -155,6 +155,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		closeSize,
 		modality,
 		drawerBg,
+		drawerBgGradient,
 		drawerTextColour,
 		drawerTextColourGradient,
 		toggleCloseColour,
@@ -180,6 +181,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const anchorDesktop = anchor?.desktop || 'full-screen';
 	const isCompact = [ 'trigger', 'centred', 'container', 'side-start', 'side-end' ].includes( anchorDesktop );
 	const [ palette ] = useSettings( 'color.palette' );
+	// The theme's gradient presets, normalised by flattenPresetSetting() —
+	// useSettings() returns a flat array or an origin-keyed object depending on
+	// the feature — so surfaceToneClass() can resolve drawerBgGradient's preset
+	// SLUG to its CSS stops.
+	const [ rawGradientPresets ] = useSettings( 'color.gradients' );
+	const gradientPresets = flattenPresetSetting( rawGradientPresets );
 
 	// ── Wave 3C U-9/U-11 (§4.9) — the canvas × preview follows the ACTIVE
 	// EDITOR DEVICE's closeStyle, so switching the global device toggle shows
@@ -425,15 +432,21 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// (sgs_surface_tone_class(), fed the resolved drawerBg at surfaceOpacity —
 	// unset means fully opaque), so a shadow on a descendant (a menu item, a
 	// CTA button) follows this drawer's own tone in the editor canvas too.
-	const toneClass = surfaceToneClass(
-		[
-			{
-				colour: drawerBg || '',
-				opacity: 'number' === typeof surfaceOpacity ? surfaceOpacity : 1,
-			},
-		],
-		palette
-	);
+	// drawerBgGradient is its own top-down layer, ahead of the flat colour — a
+	// gradient always wins over the flat colour, mirroring
+	// backgroundPaintPreview()'s precedence rule.
+	const toneLayers = [];
+	if ( drawerBgGradient ) {
+		toneLayers.push( {
+			gradient: drawerBgGradient,
+			opacity: 'number' === typeof surfaceOpacity ? surfaceOpacity : 1,
+		} );
+	}
+	toneLayers.push( {
+		colour: drawerBg || '',
+		opacity: 'number' === typeof surfaceOpacity ? surfaceOpacity : 1,
+	} );
+	const toneClass = surfaceToneClass( toneLayers, palette, gradientPresets );
 
 	// `trigger` renders identically to `separate-x` in the canvas too (§4.2 —
 	// the predicate that hides it entirely is a frontend-only runtime check).

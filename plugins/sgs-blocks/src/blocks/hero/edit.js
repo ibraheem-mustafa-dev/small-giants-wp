@@ -32,6 +32,7 @@ import {
 	backgroundPaintPreview,
 	resolveResponsiveTier,
 	patchTier,
+	flattenPresetSetting,
 } from '../../utils';
 // No-inline migration: hero no longer uses the default
 // <ContainerWrapperControls> aggregator — its unconditional "Content band" /
@@ -343,6 +344,12 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	// and mediaBackground/mediaBackgroundGradient canvas previews below, same
 	// hook sgs/container's edit.js uses for the identical purpose.
 	const [ colourPalette ] = useSettings( 'color.palette' );
+	// The theme's gradient presets, normalised by flattenPresetSetting() —
+	// useSettings() returns a flat array or an origin-keyed object depending on
+	// the feature — so wrapperToneClass() can resolve a preset SLUG in
+	// backgroundColourGradient to its CSS stops for the sgs-on-dark/sgs-on-light check.
+	const [ rawGradientPresets ] = useSettings( 'color.gradients' );
+	const gradientPresets = flattenPresetSetting( rawGradientPresets );
 
 	// Wave 6 — resolve the split-media SOURCE from the `source` atom's own
 	// Id/Url pair ONLY (the picker in HeroSplitMediaSourceSection writes
@@ -751,7 +758,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 			backgroundImage: attributes.backgroundImage,
 			backgroundColourGradient,
 			backgroundColour,
-		}, colourPalette ),
+		}, colourPalette, gradientPresets ),
 	]
 		.filter( Boolean )
 		.join( ' ' );

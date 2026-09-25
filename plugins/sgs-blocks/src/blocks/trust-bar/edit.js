@@ -15,7 +15,7 @@ import {
 import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, LinkPopoverField, BOX_UNITS, normaliseResponsiveBox, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, SgsBoxControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { EditorIconBare, TrustBarIconPanel, TrustBarItemSpacingPanel, TrustBarMarqueeControls } from './edit-panels';
-import { colourVar, resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPreview, backgroundPaintPreview, textPaintPreview, spacingPreview, svgBackgroundPreview, generateItemKey, withStableItemKeys, resolveTextColourPreviewStyle, boxShorthand } from '../../utils';
+import { colourVar, resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPreview, backgroundPaintPreview, textPaintPreview, spacingPreview, svgBackgroundPreview, generateItemKey, withStableItemKeys, resolveTextColourPreviewStyle, boxShorthand, flattenPresetSetting } from '../../utils';
 // trust-bar does not use the default <ContainerWrapperControls> aggregator —
 // its "Content band" / "Responsive spacing" panels write to flat attrs
 // (contentBandPaddingTop, paddingTopTablet, …) this block does not declare;
@@ -392,6 +392,11 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	// canvas — the shared mirror (src/utils/background-preview.js, 2026-08-26)
 	// fixes that the same way sgs/container already did.
 	const [ colourPalette ] = useSettings( 'color.palette' );
+	// The theme's gradient presets, normalised by flattenPresetSetting() —
+	// useSettings() returns a flat array or an origin-keyed object depending on
+	// the feature — so backgroundPreview() can resolve a preset SLUG to its CSS stops.
+	const [ rawGradientPresets ] = useSettings( 'color.gradients' );
+	const gradientPresets = flattenPresetSetting( rawGradientPresets );
 	// Root wrapper background/text paint — mirrors render.php's
 	// `sgs_background_paint_decl( $root_background_colour, $root_background_colour_gradient )`
 	// (backgroundColour/backgroundColourGradient → root `.sgs-trust-bar` background)
@@ -441,7 +446,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		backgroundColourGradient: attributes.backgroundColourGradient,
 		surfaceBlur: attributes.surfaceBlur,
 		surfaceSaturate: attributes.surfaceSaturate,
-	}, colourPalette );
+	}, colourPalette, gradientPresets );
 
 	// Active device tier for the padding/margin preview below — this block had
 	// no previewTier mechanism of its own, so this follows sgs/container's

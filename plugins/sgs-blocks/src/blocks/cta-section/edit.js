@@ -16,7 +16,7 @@ import {
 } from '@wordpress/components';
 import MediaPicker from '../../components/MediaPicker';
 import { resolveShadowPreviewComposed } from '../../utils/tokens';
-import { backgroundPreview, svgBackgroundPreview, applyGridLayoutPreview } from '../../utils';
+import { backgroundPreview, svgBackgroundPreview, applyGridLayoutPreview, flattenPresetSetting } from '../../utils';
 import { ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, resolveColourToken, TypographyControls, SgsBoxControl } from '../../components';
 // cta-section does not mount the default <ContainerWrapperControls> aggregator
 // wholesale (matches sgs/container's own edit.js). `padding`, `margin` and
@@ -135,6 +135,11 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	// (resolveColourToken against the live palette), so backgroundPreview()'s
 	// overlay-colour mirror below actually shows on canvas.
 	const [ colourPalette ] = useSettings( 'color.palette' );
+	// The theme's gradient presets, normalised by flattenPresetSetting() —
+	// useSettings() returns a flat array or an origin-keyed object depending on
+	// the feature — so backgroundPreview() can resolve a preset SLUG to its CSS stops.
+	const [ rawGradientPresets ] = useSettings( 'color.gradients' );
+	const gradientPresets = flattenPresetSetting( rawGradientPresets );
 
 	// Editor-canvas mirror for the shared whole-block BACKGROUND PANEL family —
 	// backgroundRepeat / backgroundAttachment / bgVideo / backgroundOverlayBlendMode
@@ -171,7 +176,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		backgroundColourGradient: attributes.backgroundColourGradient,
 		surfaceBlur: attributes.surfaceBlur,
 		surfaceSaturate: attributes.surfaceSaturate,
-	}, colourPalette );
+	}, colourPalette, gradientPresets );
 
 	// Decorative SVG background layer — editor-canvas mirror (2026-09-05), the
 	// same integration sgs/container carries (its edit.js is the worked

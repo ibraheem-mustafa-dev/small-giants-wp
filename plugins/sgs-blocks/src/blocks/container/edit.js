@@ -14,7 +14,7 @@ import { useSelect } from "@wordpress/data";
 import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, TypographyControls, SgsBoxControl } from "../../components";
 import ScrollSidewaysPanel from "./components/ScrollSidewaysPanel";
 import { resolveOnTiers } from "../../utils/responsive";
-import { resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPaintPreview, textPaintPreview, borderPaintPreview, backgroundPreview, svgBackgroundPreview, boxShorthand, resolveBoxTierPreview, resolveContentWidthPreview, contentBandPreview, applyGridLayoutPreview, colourVar } from "../../utils";
+import { resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPaintPreview, textPaintPreview, borderPaintPreview, backgroundPreview, svgBackgroundPreview, boxShorthand, resolveBoxTierPreview, resolveContentWidthPreview, contentBandPreview, applyGridLayoutPreview, colourVar, flattenPresetSetting } from "../../utils";
 import {
   LayoutPanel,
   WidthPanel,
@@ -133,11 +133,17 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
   } = attributes;
 
   // D288/D636: colours are stored as theme-token SLUGS or a custom hex, and
-  // gradients as a raw CSS gradient string — resolved the same way the
-  // button block's editor preview does (resolveColourToken against the live
+  // gradients as EITHER a raw CSS gradient string OR a theme gradient-preset
+  // SLUG (e.g. "primary-to-accent") — resolved the same way the button
+  // block's editor preview does (resolveColourToken against the live
   // palette), so a preset applied in the inspector actually shows on canvas
   // rather than looking like a no-op.
   const [ colourPalette ] = useSettings( "color.palette" );
+  // The theme's gradient presets, normalised by flattenPresetSetting() —
+  // useSettings() returns a flat array or an origin-keyed object depending on
+  // the feature — so backgroundPreview() can resolve a preset SLUG to its CSS stops.
+  const [ rawGradientPresets ] = useSettings( "color.gradients" );
+  const gradientPresets = flattenPresetSetting( rawGradientPresets );
 
   // Active device tier for the preview, read from the SAME source the inspector's
   // global device toggle writes (`core/editor` getDeviceType) — mirrors
@@ -195,7 +201,7 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
     backgroundColourGradient: attributes.backgroundColourGradient,
     surfaceBlur: attributes.surfaceBlur,
     surfaceSaturate: attributes.surfaceSaturate,
-  }, colourPalette );
+  }, colourPalette, gradientPresets );
 
   const style = {
     gap: gapCssValue( gap, previewTier ),
