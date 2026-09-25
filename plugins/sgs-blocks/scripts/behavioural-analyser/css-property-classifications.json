@@ -3346,6 +3346,22 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "submitMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_element": "submit-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "submitPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "submit-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "submitTextTransform",
       "fields": {
         "css_property": "text-transform",
