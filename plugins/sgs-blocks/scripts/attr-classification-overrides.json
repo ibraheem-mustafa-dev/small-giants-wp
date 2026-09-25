@@ -6605,6 +6605,14 @@
 				"css_element": "detach-chip"
 			},
 			"_why": "Wave 3C U-14 (M-08): the detaching chip's corner rounding, painted by includes/nav-detach-chip.php::sgs_nav_detach_chip_css() on the chip's copy of the burger; extract-signatures.py cannot see an include's rule. Size, offset and z-index are chip geometry published as custom properties or on the fixed wrapper, not a routable draft property."
+		},
+		{
+			"slug": "sgs/nav-bar-menu",
+			"attr": "triggerDetachAfter",
+			"fields": {
+				"role": "behaviour"
+			},
+			"_why": "Wave 3C U-14 (M-08): the detaching chip's scroll threshold (px of page scroll before it shows), read by src/shared/nav-interactivity/detach-chip.js from data-sgs-nav-detach-after; it paints nothing, so no cluster member claims it."
 		}
 	]
 }

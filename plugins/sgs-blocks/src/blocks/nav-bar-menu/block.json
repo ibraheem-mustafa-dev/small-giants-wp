@@ -280,12 +280,17 @@
 					"order": 11,
 					"clusters": [
 						"fill",
-						"layout"
+						"layout",
+						"position"
 					],
 					"prefix": "triggerDetach",
 					"attrMap": {
 						"css:background-color": "triggerDetachBackground",
-						"css:border-radius": "triggerDetachRadius"
+						"css:border-radius": "triggerDetachRadius",
+						"css:width": "triggerDetachSize",
+						"css:height": "triggerDetachSize",
+						"css:top": "triggerDetachOffset",
+						"css:z-index": "triggerDetachZIndex"
 					},
 					"states": {
 						"hover": {
