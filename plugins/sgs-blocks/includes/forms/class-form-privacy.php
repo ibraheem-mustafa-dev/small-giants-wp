@@ -324,32 +324,11 @@ class Form_Privacy {
 
 				$file_path = get_attached_file( $file_id );
 
-				// wp_delete_attachment() removes the attachment post and (via
-				// wp_delete_file_from_directory()) its file — but that helper
-				// refuses to delete a path outside the uploads basedir, which
-				// is exactly our outside-webroot private directory. Fall back
-				// to a manual, path-verified delete when the file survives.
+				// Deleting the attachment also deletes its private file
+				// (Form_Upload::delete_private_file() on delete_attachment).
 				wp_delete_attachment( $file_id, true );
 
 				if ( ! $file_path || ! file_exists( $file_path ) ) {
-					++$removed;
-					continue;
-				}
-
-				$private_dir = Form_Upload::resolve_private_dir();
-
-				if ( is_wp_error( $private_dir ) ) {
-					continue;
-				}
-
-				$real_file = realpath( $file_path );
-				$real_dir  = realpath( $private_dir['path'] );
-
-				if ( $real_file && $real_dir && 0 === strpos( $real_file, $real_dir ) ) {
-					wp_delete_file( $real_file );
-				}
-
-				if ( ! file_exists( $file_path ) ) {
 					++$removed;
 				}
 			}

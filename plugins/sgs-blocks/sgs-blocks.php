@@ -280,6 +280,8 @@ Forms\Form_REST_API::register();
 // Register admin settings page (webhook URL + submissions viewer).
 Forms\Form_Admin::register();
 Forms\Form_Download::register();
+// A deleted SGS upload takes its private file with it (core only deletes inside uploads/).
+Forms\Form_Upload::register();
 
 // SGS top-level admin menu (FR-S5-1) — must register BEFORE any submenu class.
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-admin-menu.php';

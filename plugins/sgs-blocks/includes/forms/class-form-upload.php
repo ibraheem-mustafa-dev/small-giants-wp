@@ -41,6 +41,37 @@ class Form_Upload {
 	 */
 	const DIR_SUFFIX_OPTION = 'sgs_form_private_dir_suffix';
 
+	/** Wire the file clean-up hook. */
+	public static function register(): void {
+		add_action( 'delete_attachment', [ __CLASS__, 'delete_private_file' ] );
+	}
+
+	/**
+	 * Delete an SGS upload's file when its attachment is deleted, by any
+	 * route (media screen, privacy eraser, code). WordPress core only deletes
+	 * files inside the uploads folder, and these live outside it on purpose,
+	 * so without this the file would outlive its record. Only a path inside
+	 * the private folder is ever touched.
+	 *
+	 * @param int $post_id Attachment being deleted.
+	 */
+	public static function delete_private_file( $post_id ): void {
+		$post_id = absint( $post_id );
+		if ( ! $post_id || ! get_post_meta( $post_id, self::UPLOAD_META_KEY, true ) ) {
+			return;
+		}
+		$private_dir = self::resolve_private_dir();
+		if ( is_wp_error( $private_dir ) ) {
+			return;
+		}
+		$file_path = get_attached_file( $post_id );
+		$real_file = $file_path ? realpath( $file_path ) : false;
+		$real_dir  = realpath( $private_dir['path'] );
+		if ( $real_file && $real_dir && 0 === strpos( $real_file, trailingslashit( $real_dir ) ) ) {
+			wp_delete_file( $real_file );
+		}
+	}
+
 	/**
 	 * Handle file upload from REST request.
 	 *
