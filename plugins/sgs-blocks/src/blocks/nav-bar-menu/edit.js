@@ -168,6 +168,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		triggerMagnetEnabled,
 		triggerMagnetRadius,
 		triggerMagnetStrength,
+		burgerBarCount,
 		burgerMorph,
 		burgerMorphDuration,
 		burgerMorphEasing,
@@ -709,6 +710,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					triggerMagnetEnabled={ triggerMagnetEnabled }
 					triggerMagnetRadius={ triggerMagnetRadius }
 					triggerMagnetStrength={ triggerMagnetStrength }
+					burgerBarCount={ burgerBarCount }
 					burgerMorph={ burgerMorph }
 					burgerMorphDuration={ burgerMorphDuration }
 					burgerMorphEasing={ burgerMorphEasing }

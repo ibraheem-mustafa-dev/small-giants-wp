@@ -19,6 +19,11 @@ import { resolveTier } from '../../utils';
  * ('x' | 'x-rotate' | 'line' | 'none'); this array still doubles as the
  * options list for the ToggleGroupControlOption render below.
  */
+const BURGER_BAR_OPTIONS = [
+	{ value: 3, label: __( 'Three', 'sgs-blocks' ) },
+	{ value: 2, label: __( 'Two', 'sgs-blocks' ) },
+];
+
 const BURGER_MORPH_OPTIONS = [
 	{ label: __( 'X (default)', 'sgs-blocks' ), value: 'x' },
 	{ label: __( 'X + rotate', 'sgs-blocks' ), value: 'x-rotate' },
@@ -49,6 +54,7 @@ const BURGER_MORPH_OPTIONS = [
  * @param {boolean}  root0.triggerMagnetEnabled  `triggerMagnetEnabled`.
  * @param {number}   root0.triggerMagnetRadius   `triggerMagnetRadius`.
  * @param {number}   root0.triggerMagnetStrength `triggerMagnetStrength`.
+ * @param {number}   root0.burgerBarCount         `burgerBarCount` — 3 | 2.
  * @param {string}   root0.burgerMorph            `burgerMorph` — x | x-rotate | line | none.
  * @param {number}   root0.burgerMorphDuration     `burgerMorphDuration`, ms, 0–1200.
  * @param {string}   root0.burgerMorphEasing       `burgerMorphEasing`.
@@ -67,6 +73,7 @@ export default function BurgerPanel( {
 	triggerMagnetEnabled,
 	triggerMagnetRadius,
 	triggerMagnetStrength,
+	burgerBarCount,
 	burgerMorph,
 	burgerMorphDuration,
 	burgerMorphEasing,
@@ -250,6 +257,31 @@ export default function BurgerPanel( {
 			   Spec 35 §3 threshold table (2026-09-24 audit item 1) — a
 			   4-option, ≤12-char enum is a `ToggleGroupControl`, not a
 			   `SelectControl`. */ }
+			{ showsIcon && (
+				<ToggleGroupControl
+					label={ __( 'Bars', 'sgs-blocks' ) }
+					help={ __(
+						'How many lines the menu button draws. Only affects the default icon — a custom icon keeps its own shape.',
+						'sgs-blocks'
+					) }
+					value={ 2 === burgerBarCount ? 2 : 3 }
+					onChange={ ( val ) =>
+						setAttributes( { burgerBarCount: 2 === Number( val ) ? 2 : 3 } )
+					}
+					isBlock
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				>
+					{ BURGER_BAR_OPTIONS.map( ( option ) => (
+						<ToggleGroupControlOption
+							key={ option.value }
+							value={ option.value }
+							label={ option.label }
+						/>
+					) ) }
+				</ToggleGroupControl>
+			) }
+
 			{ showsIcon && (
 				<ToggleGroupControl
 					label={ __( 'Morph', 'sgs-blocks' ) }

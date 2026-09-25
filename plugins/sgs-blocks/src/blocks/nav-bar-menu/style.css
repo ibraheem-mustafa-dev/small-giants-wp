@@ -381,6 +381,33 @@
 }
 
 /*
+ * Two bars (`burgerBarCount: 2`, wearecollins, halcyon, indus-foods). The
+ * icon box shrinks to 8.5px so the two 2px bars sit 6.5px apart centre to
+ * centre, the references' spacing. Every pose is restated for two bars at a
+ * higher specificity than the three-bar rules above: `:nth-child(2)` is the
+ * BOTTOM bar here, so the three-bar `x` hide would otherwise swallow it.
+ * The travel is derived from the icon box, as in `line` above.
+ */
+.sgs-nav-bar-menu__burger-icon--two-bar {
+	--sgs-nbm-icon-h: 8.5px;
+}
+
+.sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="x"][aria-expanded="true"] .sgs-nav-bar-menu__burger-icon--two-bar .sgs-nav-bar-menu__burger-bar:nth-child(1),
+.sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="x-rotate"][aria-expanded="true"] .sgs-nav-bar-menu__burger-icon--two-bar .sgs-nav-bar-menu__burger-bar:nth-child(1) {
+	transform: translateY(calc((var(--sgs-nbm-icon-h, 8.5px) - 2px) / 2)) rotate(45deg);
+}
+
+.sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="x"][aria-expanded="true"] .sgs-nav-bar-menu__burger-icon--two-bar .sgs-nav-bar-menu__burger-bar:nth-child(2),
+.sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="x-rotate"][aria-expanded="true"] .sgs-nav-bar-menu__burger-icon--two-bar .sgs-nav-bar-menu__burger-bar:nth-child(2) {
+	opacity: 1;
+	transform: translateY(calc(-1 * (var(--sgs-nbm-icon-h, 8.5px) - 2px) / 2)) rotate(-45deg);
+}
+
+.sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph="line"][aria-expanded="true"] .sgs-nav-bar-menu__burger-icon--two-bar .sgs-nav-bar-menu__burger-bar:nth-child(2) {
+	transform: translateY(calc(-1 * (var(--sgs-nbm-icon-h, 8.5px) - 2px) / 2));
+}
+
+/*
  * `none` — deliberately no rules at all: the bars have no attribute-gated
  * selector to match, so they hold their resting position through the whole
  * open/close cycle. Static by omission, not by an explicit `transform: none`.

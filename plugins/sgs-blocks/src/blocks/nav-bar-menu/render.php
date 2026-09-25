@@ -672,6 +672,7 @@ $sgs_nm_collapse_point = isset( $attributes['collapsePoint'] ) ? max( 1, absint(
 $sgs_nm_burger_morph = in_array( $attributes['burgerMorph'] ?? 'x', array( 'x', 'x-rotate', 'line', 'none' ), true )
 	? (string) ( $attributes['burgerMorph'] ?? 'x' )
 	: 'x';
+$sgs_nm_burger_bar_count = 2 === (int) ( $attributes['burgerBarCount'] ?? 3 ) ? 2 : 3;
 
 // wp_interactivity_data_wp_context() is the WP-canonical compact single-quoted
 // emitter (avoids the &quot; bloat get_block_wrapper_attributes() would add) —
@@ -703,7 +704,8 @@ $toggle_html = $sgs_nm_show_burger ? sgs_nav_bar_menu_burger_toggle_markup(
 		'roll'  => (string) ( $attributes['labelRoll'] ?? '' ),
 		'hover' => trim( (string) ( $attributes['triggerHoverLabel'] ?? '' ) ),
 		'open'  => trim( (string) ( $attributes['triggerOpenLabel'] ?? '' ) ),
-	)
+	),
+	$sgs_nm_burger_bar_count
 ) : '';
 
 // ── The <nav> landmark label (FR-36-10 / FR-36-11) ──────────────────────────

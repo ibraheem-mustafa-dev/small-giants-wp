@@ -14,6 +14,8 @@
  *               hover thumbnail at desktop (160 x 112), a 45deg expander turn, mega items as panels.
  *               Bar: collapse at 1600 so the drawer opens at 1440; the trigger word "Menu" rolls to
  *               "Close" while open.
+ *   two-bar     exit-cells plus wearecollins' burger: two bars that cross into an X in 450ms on
+ *               cubic-bezier(0.645,0.045,0.355,1). Design: .claude/reports/2026-09-25-two-bar-burger-design.md.
  *   restore     put the pre-fixture bodies back.
  */
 
@@ -54,7 +56,7 @@ if ( 'restore' === $case ) {
 	return;
 }
 
-if ( 'exit-cells' !== $case ) {
+if ( ! in_array( $case, array( 'exit-cells', 'two-bar' ), true ) ) {
 	echo "unknown case {$case}\n";
 	return;
 }
@@ -153,6 +155,15 @@ $bar_set  = array(
 	'triggerLabel'     => 'Menu',
 	'triggerOpenLabel' => 'Close',
 );
+if ( 'two-bar' === $case ) {
+	$bar_set += array(
+		'burgerBarCount'          => 2,
+		'burgerMorph'             => 'x',
+		'burgerMorphDuration'     => 450,
+		'burgerMorphEasing'       => 'custom',
+		'burgerMorphEasingCustom' => 'cubic-bezier(0.645,0.045,0.355,1)',
+	);
+}
 
 $d = $merge( get_post_field( 'post_content', $drawer_id ), 'sgs/nav-drawer-menu', $menu_set );
 wp_update_post( wp_slash( array( 'ID' => $drawer_id, 'post_content' => $d ) ) );

@@ -512,9 +512,12 @@ if ( ! function_exists( 'sgs_nav_bar_menu_burger_toggle_markup' ) ) {
 	 *                                     visible word rolls to `hover` on hover (only when set)
 	 *                                     and to `open` while the drawer is open; the button's
 	 *                                     name follows the visible word.
+	 * @param int    $bar_count           Resolved `burgerBarCount`: 3 (default) or 2. The
+	 *                                     default glyph draws this many bars; 2 also adds the
+	 *                                     `--two-bar` icon modifier its morph poses select on.
 	 * @return string The `<div>` + `<button>` toggle markup.
 	 */
-	function sgs_nav_bar_menu_burger_toggle_markup( string $burger_context_attr, string $drawer_ref, string $burger_icon, string $trigger_mode = 'icon', string $trigger_label = '', string $aria_attr = '', string $magnet_attrs = '', bool $is_default_icon = false, int $collapse_point = 768, string $burger_morph = 'x', string $icon_position = 'after', array $label_roll = array() ): string {
+	function sgs_nav_bar_menu_burger_toggle_markup( string $burger_context_attr, string $drawer_ref, string $burger_icon, string $trigger_mode = 'icon', string $trigger_label = '', string $aria_attr = '', string $magnet_attrs = '', bool $is_default_icon = false, int $collapse_point = 768, string $burger_morph = 'x', string $icon_position = 'after', array $label_roll = array(), int $bar_count = 3 ): string {
 		if ( ! in_array( $trigger_mode, array( 'icon', 'text', 'icon-and-text' ), true ) ) {
 			$trigger_mode = 'icon';
 		}
@@ -540,8 +543,9 @@ if ( ! function_exists( 'sgs_nav_bar_menu_burger_toggle_markup' ) ) {
 				// CSS-only burger↔X morph in style.css has genuine independently-
 				// animatable structure to work with. Always wrapped (both `icon`
 				// and `icon-and-text`), unlike the custom-icon branch below.
-				$icon_html = '<span class="sgs-nav-bar-menu__burger-icon" aria-hidden="true">'
-					. str_repeat( '<span class="sgs-nav-bar-menu__burger-bar"></span>', 3 )
+				$bar_count = 2 === $bar_count ? 2 : 3;
+				$icon_html = '<span class="sgs-nav-bar-menu__burger-icon' . ( 2 === $bar_count ? ' sgs-nav-bar-menu__burger-icon--two-bar' : '' ) . '" aria-hidden="true">'
+					. str_repeat( '<span class="sgs-nav-bar-menu__burger-bar"></span>', $bar_count )
 					. '</span>';
 			} else {
 				// ⚠ Under `icon-and-text` a real visible word names the button, so the

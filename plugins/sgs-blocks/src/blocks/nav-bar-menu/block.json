@@ -696,6 +696,15 @@
 			],
 			"description": "Wave 3C U-9 (§4.4). How the default burger glyph morphs when the drawer opens: x (default — today's pose, unchanged), x-rotate (the same X plus a 180 degree turn of the whole icon box, dogstudio), line (the top and bottom bars slide onto the middle bar; the travel distance is derived from the icon box via calc(), never a hardcoded px), none (static — no transform at all). Only affects the DEFAULT glyph — `sgs_nav_bar_menu_burger_toggle_markup()`'s own `$is_default_icon` gate (a custom `triggerIcon` has no guaranteed 3-bar shape to morph)."
 		},
+		"burgerBarCount": {
+			"type": "number",
+			"default": 3,
+			"enum": [
+				2,
+				3
+			],
+			"description": "How many bars the default burger glyph draws: 3 (default) or 2 (wearecollins, halcyon, indus-foods). Two bars sit 6.5px apart centre to centre and follow every `burgerMorph` pose. Only affects the DEFAULT glyph; a custom `triggerIcon` keeps its own shape."
+		},
 		"burgerMorphDuration": {
 			"type": "number",
 			"default": 200,
