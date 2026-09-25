@@ -202,7 +202,7 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
   row's content box); lusion's corner panel 13.08 below the burger against 12.8; lusion's pitch 43.99 (gap 0 on 44px
   rows); a mega panel and a dropdown centred on the page (0.01, 0.99) and 9.99 below the header with a 10px offset; the
   hover bridge covering the whole gap; away's two tiles side by side in `sgs/mega-links-with-tiles`.
-- Residue: away's drawer callouts become U-7's "mega panel inside the drawer accordion". Owed in the batched pass: axe
+- Residue: away's drawer callouts (a mega panel inside the drawer accordion) were delivered by U-6 + U-7. Owed in the batched pass: axe
   with the side and container drawers open, the editor round-trip of the four new controls, Bean's eye on the three
   starter patterns once they have imagery.
 

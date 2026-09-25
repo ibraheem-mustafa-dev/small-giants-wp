@@ -1330,7 +1330,11 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   presentation; (f) the companion stylesheet ships on the SAME conditional terms as the script —
   without its `.lenis.lenis-smooth iframe { pointer-events: none }` rule, wheel events over a
   cross-origin iframe are swallowed and the page stops scrolling wherever the pointer sits over
-  an `sgs/media` or `sgs/business-info` embed.
+  an `sgs/media` or `sgs/business-info` embed; (g) an open `<dialog>` (the nav drawer, a modal,
+  any dialog overlay) scrolls natively, never the page behind it: Lenis's `prevent` option
+  (`src/shared/effects/smooth-scroll.js`) hands the dialog back to the browser. Without it a wheel
+  over an open drawer scrolled the PAGE and tripped the drawer's close-on-scroll (measured: 719px
+  and closed; with the dialog opted out, 0px and open).
 
   > The competing `scroll-behavior:smooth` CSS driver (`core-blocks-critical.css`) was measured
   > live with Lenis running and does not conflict: long smooth scrolls ease cleanly, anchor

@@ -1176,6 +1176,8 @@ or WP coerces to the default.
 | `source` | string | `'typed'` | `typed` \| `menu`. Never a JSON enum, same reason |
 | `menuRef` | integer | `0` | The `nav_menu` term id when `source: menu`. `0` = unset |
 | `markerType` | string | `'icon'` | `icon` \| `emoji` \| `bullet` \| `numbered` \| `none` |
+| `numberFormat` | string | `'decimal'` | `decimal` \| `decimal-leading-zero` (01, 02 …) for a `numbered` list; with `numberColour`, `numberFontSize`, `numberFontWeight` it paints the `<ol>`'s `::marker`. A drawer's `sublinkMarkerColour` wins inside an embedded mega panel (`--sgs-list-marker-colour`). Wave 3C U-7 |
+| `siblingDimColour` (+`Gradient`), `siblingDimOpacity`, `labelRoll`, `itemMotionDuration`/`Easing` | — | — | Sibling dim and the two-copy label roll on the list's items (Spec 41 FR-41-39, FR-41-40), e.g. a footer menu list |
 | `renderLandmark` | boolean | `false` | Emits the `<nav>` wrapper. Set `true` by default ONLY when `source: menu` (FR-36-26a rule 3) |
 | `heading*` typography family | per R-22-13 | — | `headingFontSize`/`Unit`/`Tablet`/`Mobile`, `headingFontWeight`, `headingFontStyle`, `headingLineHeight`/`Unit` |
 | `item*` typography family | per R-22-13 | — | Same suffix set, prefix `item` |
@@ -1379,7 +1381,7 @@ utility pieces (§4) + cross-cutting FRs are phased INTO this plan so a solo bui
   NO mini-cart drawer. **Gate-1** (Mama's live + drawer a11y + crawl + Bean's eye) is the pre-registered
   exit.
 - **Phase 2 — Indus + rich desktop + mobile modes + the pieces:** the `sgs_mega_menu` CPT + native (classic)
-  attach + real-position render + mobile-in-drawer (plain link default; full panel NOT BUILT — FR-36-6);
+  attach + real-position render + mobile-in-drawer (the panel inside the drawer accordion by default, `megaDrawerMode` `link` available — FR-36-6);
   safe-triangle + hover-intent; the collapse mode (burger→drawer, built — FR-36-8); **the utility pieces — search, social, business-info, and the cart mini-cart
   (FR-36-19..23).** **Gate-2** = the full §8 incl. the Indus mega. **After Gate-2 passes, before Phase 3:**
   update **Spec 33 Part 2** with the true header/footer setup (the clone pipeline comes after the nav is
