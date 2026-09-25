@@ -124,7 +124,16 @@
 - **Wave C task 5 (size guide) DONE (2026-09-25):** `sgs_modal` 461 (`build/gen_size_guide.py`), a triggerless
   `sgs/modal` (anchor `size-guide`, large) on the product template, opened by "Which size am I?" in the Sizing tab.
   Gap: the buybox's size picker has no slot for the draft's "Which size am I?" link beside the Size label.
-- **Wave C task 6 (bag, checkout, prescription): READY TO BUILD**, `plans/2026-09-25-eye-care-bag-checkout-prescription.md`
+- **Wave C design review (2026-09-25, Sonnet design-reviewer, draft vs live at 1440/768/375, screenshots in that
+  session's scratchpad):** fixed: checkout pre-selected paid delivery on a free-delivery order
+  (`includes/woocommerce-shipping-rates.php`). Owed, framework (`sgs/choice-flow`): a progress-bar colour control
+  (the fill paints black; the draft's is the brand accent), an optional flow header (logo, step eyebrow, labelled
+  "Close ×"), a sticky Back / Add to bag footer, and a default-selected option with a badge (the draft pre-selects
+  "Send it later", "EASIEST"). Owed, shop polish (already listed above): colour swatches, filter panels open by
+  default, the results count and sort row. For Bean: the size buttons read the real lens width (55 / 58 / 62, from
+  the jpopticians sizes chosen 2026-09-25) where the draft says S / M / L. For the nav track: the floating WhatsApp
+  "Ask me anything" bubble sits over the product page's "Need advice?" text at 1440.
+- **Wave C task 6 (bag, checkout, prescription): BUILT and proven (see the task 6 plan's Outcome)**, `plans/2026-09-25-eye-care-bag-checkout-prescription.md`
   (Bean 2026-09-25: the prescription is the configurator's 4th question, per pair, as Glasses Direct does; pennies
   on every price, only savings drop ".00").
 - **Wave C: next** (Bean, 2026-09-25: pages and the configurator while the nav track rebuilds header, footer and
