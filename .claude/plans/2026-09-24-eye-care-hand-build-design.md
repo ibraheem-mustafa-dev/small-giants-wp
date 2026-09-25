@@ -109,7 +109,7 @@
   `sgs_addon_resolve()`, `sgs_addon_summary()`; WooCommerce > Add-on prices page; cart hooks; `/sgs/v1/cart/add-item`
   optional `addons` arg; `wp sgs addon-prices seed`; `woo-seed/addon-prices.json`); (B) choice-flow priced add-on
   questions (`priceGroup`, option `addToBagNow`), live price panel (`showPricePanel`), result `action: add-to-bag`,
-  and the `sgs-variation-change` window event from `product-card/view.js` (may not have been written); (C)
+  and the `sgs-variation-change` window event from `product-card/view.js` (COMMITTED, not deployed); (C)
   `sgs/modal` `triggerStyle: none` and `size: fullscreen` (COMMITTED, not yet reseeded or deployed). Lens option pictures rendered from the draft's own SVGs:
   `sites/eye-care-ward-end/assets/lens-options/*.png`, uploaded to eye-care-test media 447-458 (finish clear 447,
   photo 448, pol 449, tint 450; thickness std 451, thin 452, ultra 453, xthin 454; use distance 455, none 456,
