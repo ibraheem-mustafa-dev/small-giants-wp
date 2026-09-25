@@ -1733,21 +1733,16 @@ body.woocommerce-cart .with-empty-cart-icon,
 	:where(body:not(.sgs-shop-narrow-grid)) .sgs-shop-layout .product-card .product-card__thumbs {
 		display: none;
 	}
-
-	/* "Grid" setting: two upright cards a row instead of the horizontal-strip
-	   treatment above (all of which is now scoped off via the guard). Cards
-	   keep their normal vertical layout from `.sgs-shop-layout .product-card`
-	   (flex-direction: column, set unconditionally earlier in this file) —
-	   only the template's column count changes here. Uses the same
-	   `--sgs-shop-col-gap` custom property as every other tier (already 16px
-	   at this width via the 767px media query below, or the site's own
-	   configured gap on a wide container that still happens to be this
-	   narrow). */
-	.sgs-shop-narrow-grid .sgs-shop-layout .wc-block-product-template {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		column-gap: var(--sgs-shop-col-gap);
-	}
 }
+
+/* "Grid" setting (sgs_shop_narrow_layout): upright cards, two a row on a narrow grid. A container
+   query cannot style its own container, and the template IS the sgs-shop-grid container, so this
+   sits outside it: each column's minimum is the smaller of the card minimum and half the row, which
+   is two columns once the row is narrower than two card minimums and unchanged on wider rows. */
+.sgs-shop-narrow-grid .sgs-shop-layout .wc-block-product-template {
+	grid-template-columns: repeat(auto-fill, minmax(min(var(--sgs-shop-card-min), calc(50% - var(--sgs-shop-col-gap) / 2)), 1fr));
+}
+
 
 /* Mobile keeps a tighter gutter; the column count still resolves itself from the
  * minimum card width above, so a phone gets one full-width readable card rather
@@ -2572,10 +2567,10 @@ body.woocommerce-cart .with-empty-cart-icon,
 /* (5) Font inheritance for every control WooCommerce renders inside the panel.
  * One rule rather than per-control repetition — form elements are the only
  * things in the subtree that need telling. */
-.sgs-shop-filters select,
-.sgs-shop-filters input,
-.sgs-shop-filters button,
-.sgs-shop-filters textarea {
+/* Zero specificity: a default every control's own rule overrides (at (0,1,1) it
+ * beat .sgs-shop-filters__apply's white text, leaving the drawer's "Show results"
+ * button dark on dark). */
+:where(.sgs-shop-filters) :where(select, input, button, textarea) {
 	font-family: inherit;
 	color: inherit;
 }
