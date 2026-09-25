@@ -148,13 +148,21 @@
 	/* Preset-only border reservation (see the base-rule comment above) — every
 	   preset needs the same box regardless of whether its border-colour is
 	   visually distinct from its background. */
-	border-width: 2px;
+	border-width: var(--wp--custom--button-presets--primary--border-width, 2px);
 	border-style: solid;
 	/* Preset-only rounded corners, moved here 2026-09-07 for the same reason as
 	   the border reservation directly above: this IS the framework's designed
 	   button look, but it must not reach a preset-less button whose draft
 	   declared no radius. */
-	border-radius: 10px;
+	border-radius: var(--wp--custom--button-presets--primary--border-radius, 10px);
+	/* Sizing from the client preset (theme-snapshot buttonPresets), with the
+	   framework look as the fallback. A multi-button group default sits
+	   between them for weight and size; a per-instance setting (render.php
+	   .uid rule) beats all of these. */
+	font-weight: var(--wp--custom--button-presets--primary--font-weight, var(--sgs-mb-btn-font-weight-default, 600));
+	font-size: var(--wp--custom--button-presets--primary--font-size, var(--sgs-mb-btn-font-size-default, 15px));
+	padding: var(--wp--custom--button-presets--primary--padding, 14px 24px);
+	min-height: var(--wp--custom--button-presets--primary--min-height, 48px);
 	--sgs-btn-color: var(--wp--custom--button-presets--primary--text, var(--wp--preset--color--text-inverse));
 	--sgs-btn-bg: var(--wp--custom--button-presets--primary--background, var(--wp--preset--color--primary));
 	--sgs-btn-border: var(--wp--custom--button-presets--primary--border, var(--wp--preset--color--primary));
@@ -165,9 +173,17 @@
 }
 
 .sgs-button--secondary {
-	border-width: 2px;
+	border-width: var(--wp--custom--button-presets--secondary--border-width, 2px);
 	border-style: solid;
-	border-radius: 10px;
+	border-radius: var(--wp--custom--button-presets--secondary--border-radius, 10px);
+	/* Sizing from the client preset (theme-snapshot buttonPresets), with the
+	   framework look as the fallback. A multi-button group default sits
+	   between them for weight and size; a per-instance setting (render.php
+	   .uid rule) beats all of these. */
+	font-weight: var(--wp--custom--button-presets--secondary--font-weight, var(--sgs-mb-btn-font-weight-default, 600));
+	font-size: var(--wp--custom--button-presets--secondary--font-size, var(--sgs-mb-btn-font-size-default, 15px));
+	padding: var(--wp--custom--button-presets--secondary--padding, 14px 24px);
+	min-height: var(--wp--custom--button-presets--secondary--min-height, 48px);
 	--sgs-btn-color: var(--wp--custom--button-presets--secondary--text, var(--wp--preset--color--primary));
 	--sgs-btn-bg: var(--wp--custom--button-presets--secondary--background, transparent);
 	--sgs-btn-border: var(--wp--custom--button-presets--secondary--border, var(--wp--preset--color--primary));
@@ -178,9 +194,17 @@
 }
 
 .sgs-button--outline {
-	border-width: 2px;
+	border-width: var(--wp--custom--button-presets--outline--border-width, 2px);
 	border-style: solid;
-	border-radius: 10px;
+	border-radius: var(--wp--custom--button-presets--outline--border-radius, 10px);
+	/* Sizing from the client preset (theme-snapshot buttonPresets), with the
+	   framework look as the fallback. A multi-button group default sits
+	   between them for weight and size; a per-instance setting (render.php
+	   .uid rule) beats all of these. */
+	font-weight: var(--wp--custom--button-presets--outline--font-weight, var(--sgs-mb-btn-font-weight-default, 600));
+	font-size: var(--wp--custom--button-presets--outline--font-size, var(--sgs-mb-btn-font-size-default, 15px));
+	padding: var(--wp--custom--button-presets--outline--padding, 14px 24px);
+	min-height: var(--wp--custom--button-presets--outline--min-height, 48px);
 	--sgs-btn-color: var(--wp--custom--button-presets--outline--text, var(--wp--preset--color--text));
 	--sgs-btn-bg: var(--wp--custom--button-presets--outline--background, transparent);
 	--sgs-btn-border: var(--wp--custom--button-presets--outline--border, var(--wp--preset--color--border));
