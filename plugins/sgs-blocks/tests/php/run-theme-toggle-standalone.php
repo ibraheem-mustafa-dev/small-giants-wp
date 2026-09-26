@@ -75,8 +75,8 @@ ok(
 		&& null === $block_json['attributes']['iconOnlyMobile']['default'],
 	'block.json: iconOnlyMobile defaults to null (inherit the resolved Tablet value)'
 );
-ok( 'object' === ( ( $block_json['attributes']['iconLight'] ?? array() )['type'] ?? null ), 'block.json: iconLight is typed object ({source,name})' );
-ok( 'object' === ( ( $block_json['attributes']['iconDark'] ?? array() )['type'] ?? null ), 'block.json: iconDark is typed object ({source,name})' );
+ok( 'object' === ( ( $block_json['attributes']['lightIcon'] ?? array() )['type'] ?? null ), 'block.json: lightIcon is typed object ({source,name})' );
+ok( 'object' === ( ( $block_json['attributes']['darkIcon'] ?? array() )['type'] ?? null ), 'block.json: darkIcon is typed object ({source,name})' );
 
 // ---------------------------------------------------------------------------
 // render.php — source-level checks.

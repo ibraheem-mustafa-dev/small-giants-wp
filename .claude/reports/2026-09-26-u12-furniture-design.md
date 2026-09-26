@@ -128,7 +128,7 @@ Tests (`plugins/sgs-blocks/scripts/tests/test_derive_dark_palette.py`), run on t
 | `label` | string | "Dark mode" | TextControl |
 | `labelRoll` | enum per `includes/helpers-item-effects.php::sgs_label_roll_value` | "" (off) | SelectControl |
 | `iconOnly` | object tier (boolean per tier) | {} | BooleanResponsiveControl |
-| `iconLight`, `iconDark` | icon names via IconPicker | `sun`, `moon` | IconPicker |
+| `lightIcon`, `darkIcon` | icon names via IconPicker | `sun`, `moon` | IconPicker |
 | colour rows (text, hover, pressed, icon), border, radius, padding (tier), typography | | | the standard components |
 
 `switch`: `<button type="button" class="sgs-theme-toggle sgs-dark-mode-toggle" aria-pressed="false">` with the visible label (visually hidden, but still the accessible name, when icon-only at a tier), the roll markup from `sgs_label_roll_markup`. `segmented`: `<div role="radiogroup" aria-label="Colour scheme">` with three `<button role="radio" aria-checked data-sgs-theme-choice="light|dark|auto">`. The block's `render.php` adds nothing when the site has no dark palette, except a comment for editors; the editor shows a notice "Dark colours are off for this site" with the fix. Test: markup for both styles; negative control: an off-enum style falls back to `switch`.

@@ -150,14 +150,14 @@
 			"default": null,
 			"description": "Mobile override for iconOnly. null = inherit the resolved Tablet value. Same REST-shim 'string' union as iconOnlyTablet."
 		},
-		"iconLight": {
+		"lightIcon": {
 			"type": "object",
 			"default": {
 				"source": "lucide",
 				"name": "sun"
 			}
 		},
-		"iconDark": {
+		"darkIcon": {
 			"type": "object",
 			"default": {
 				"source": "lucide",

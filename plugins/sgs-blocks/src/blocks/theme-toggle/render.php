@@ -111,13 +111,13 @@ $sgs_tt_resolve_icon = static function ( $icon ) {
 };
 
 $sgs_tt_icon_light_html = $sgs_tt_resolve_icon(
-	$attributes['iconLight'] ?? array(
+	$attributes['lightIcon'] ?? array(
 		'source' => 'lucide',
 		'name'   => 'sun',
 	)
 );
 $sgs_tt_icon_dark_html  = $sgs_tt_resolve_icon(
-	$attributes['iconDark'] ?? array(
+	$attributes['darkIcon'] ?? array(
 		'source' => 'lucide',
 		'name'   => 'moon',
 	)

@@ -35,8 +35,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		iconOnly,
 		iconOnlyTablet,
 		iconOnlyMobile,
-		iconLight,
-		iconDark,
+		lightIcon,
+		darkIcon,
 		textColour,
 		textColourHover,
 		textColourPressed,
@@ -135,13 +135,13 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 							<IconPicker
 								label={ __( 'Light-mode icon', 'sgs-blocks' ) }
-								value={ iconLight }
-								onChange={ ( val ) => setAttributes( { iconLight: val } ) }
+								value={ lightIcon }
+								onChange={ ( val ) => setAttributes( { lightIcon: val } ) }
 							/>
 							<IconPicker
 								label={ __( 'Dark-mode icon', 'sgs-blocks' ) }
-								value={ iconDark }
-								onChange={ ( val ) => setAttributes( { iconDark: val } ) }
+								value={ darkIcon }
+								onChange={ ( val ) => setAttributes( { darkIcon: val } ) }
 							/>
 						</>
 					) }
