@@ -350,6 +350,8 @@
     "wp_date",
     "wp_delete_attachment",
     "wp_delete_file",
+    "wp_tempnam",
+    "wp_get_image_editor",
     "wp_dequeue_script",
     "wp_deregister_script",
     "wp_deregister_style",

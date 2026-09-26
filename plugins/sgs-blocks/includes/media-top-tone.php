@@ -221,6 +221,11 @@ function sgs_media_top_tone_measure_luminance( string $file_path ): ?float {
 		return null;
 	}
 
+	// wp_tempnam() lives in wp-admin/includes/file.php, which a front-end or
+	// REST upload request does not load.
+	if ( ! function_exists( 'wp_tempnam' ) && defined( 'ABSPATH' ) && file_exists( ABSPATH . 'wp-admin/includes/file.php' ) ) {
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+	}
 	$tmp_path = function_exists( 'wp_tempnam' ) ? wp_tempnam( 'sgs-top-tone' ) : tempnam( sys_get_temp_dir(), 'sgs-top-tone' );
 	if ( ! is_string( $tmp_path ) || '' === $tmp_path ) {
 		return null;
