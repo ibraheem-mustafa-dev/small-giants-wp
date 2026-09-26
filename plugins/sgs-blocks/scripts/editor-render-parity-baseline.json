@@ -188,16 +188,16 @@
     {
       "check": "editor-canvas-desync",
       "block": "sgs/theme-toggle",
-      "attr": "iconLight",
+      "attr": "lightIcon",
       "disposition": "by-design",
       "reason": "Custom icon override for the LIGHT-mode state specifically -- the static editor canvas always shows the toggle's resting (undetermined-theme) frame, never a live light/dark state switch, so a state-specific icon swap has nothing to preview against."
     },
     {
       "check": "editor-canvas-desync",
       "block": "sgs/theme-toggle",
-      "attr": "iconDark",
+      "attr": "darkIcon",
       "disposition": "by-design",
-      "reason": "Same as iconLight (see that entry) -- a state-specific icon override with no live state switch in the static canvas to preview."
+      "reason": "Same as lightIcon (see that entry) -- a state-specific icon override with no live state switch in the static canvas to preview."
     },
     {
       "check": "editor-canvas-desync",
