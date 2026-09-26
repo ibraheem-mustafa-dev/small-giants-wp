@@ -127,7 +127,7 @@ function renderPhp( attrs ) {
 		' * Regenerate with `npm run build` (or `node scripts/generate-extension-attributes.js`).'
 	);
 	lines.push(
-		' * Single source of truth = the `sgs*` attribute definitions in src/blocks/extensions/**/*.js.'
+		' * Single source of truth = the `sgs*` attribute definitions in src/blocks/extensions/ (recursive) *.js files.'
 	);
 	lines.push( ' *' );
 	lines.push( ' * @package SGS\\Blocks' );
