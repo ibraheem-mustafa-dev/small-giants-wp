@@ -355,6 +355,93 @@ check(
 	);
 }
 
+/*
+ * ── 7. `contentWidth` (U-18 G4): a mega panel centres/aligns at its own
+ * content width, not the wrap's box, whenever that content is narrower.
+ * `width` here plays the role of the wrap's own measured width (1120, the
+ * stylesheet fallback) so `contentWidth` is the one made narrower per case.
+ */
+{
+	const vp1440 = viewportBounds( 1440 );
+	const vp768 = viewportBounds( 768 );
+	const base = { anchorLeft: 600, anchorWidth: 100, width: 1120, gutter: GUTTER, align: 'page-centred', isDropdown: false };
+
+	check(
+		'page-centred mega at 1440, contentWidth 620 -> left 410, width 620',
+		( () => {
+			const r = placePanel( { ...base, bounds: vp1440, contentWidth: 620 } );
+			return r.left === 410 && r.width === 620;
+		} )()
+	);
+	check(
+		'page-centred mega at 1440, contentWidth 300 -> left 570, width 300',
+		( () => {
+			const r = placePanel( { ...base, bounds: vp1440, contentWidth: 300 } );
+			return r.left === 570 && r.width === 300;
+		} )()
+	);
+	check(
+		'page-centred mega at 1440, contentWidth 1080 -> left 180, width 1080',
+		( () => {
+			const r = placePanel( { ...base, bounds: vp1440, contentWidth: 1080 } );
+			return r.left === 180 && r.width === 1080;
+		} )()
+	);
+	// At 768 a 620-wide panel's raw centre is (768-620)/2 = 74, which is already
+	// past the 28px gutter, so `centreMegaLeft`'s gutter clamp never engages and
+	// the result is that raw centre, exactly as the pre-existing mega centring
+	// arithmetic (`Math.max( raw, gutter )`) gives for any case that already
+	// clears the gutter.
+	check(
+		'page-centred mega at 768, contentWidth 620 -> left 74 (clears the 28px gutter unclamped)',
+		( () => {
+			const r = placePanel( { ...base, bounds: vp768, contentWidth: 620 } );
+			return r.left === 74 && r.width === 620;
+		} )()
+	);
+	check(
+		'contentWidth equal to the box width is NOT narrower -> identical to omitting it',
+		( () => {
+			const withEqual = placePanel( { ...base, bounds: vp1440, contentWidth: 1120 } );
+			const without = placePanel( { ...base, bounds: vp1440 } );
+			return withEqual.left === without.left && withEqual.width === without.width;
+		} )()
+	);
+	check(
+		'contentWidth wider than the box -> identical to omitting it',
+		( () => {
+			const withWider = placePanel( { ...base, bounds: vp1440, contentWidth: 1600 } );
+			const without = placePanel( { ...base, bounds: vp1440 } );
+			return withWider.left === without.left && withWider.width === without.width;
+		} )()
+	);
+	check(
+		'full-width ignores a narrow contentWidth -> identical to omitting it',
+		( () => {
+			const withNarrow = placePanel( { ...base, align: 'full-width', bounds: vp1440, contentWidth: 300 } );
+			const without = placePanel( { ...base, align: 'full-width', bounds: vp1440 } );
+			return withNarrow.left === without.left && withNarrow.width === without.width;
+		} )()
+	);
+	// A floating pill (left 100, right 1340 at 1440 -> width 1240): a narrower
+	// contentWidth centres on the PILL's own box, not the full viewport.
+	const pill1440 = boundsFromHeaderRect( { left: 100, right: 1340, bottom: 90 }, 1440 );
+	check(
+		'a floating pill with a narrow contentWidth centres on the pill box, not the viewport',
+		( () => {
+			const r = placePanel( { ...base, bounds: pill1440, contentWidth: 620 } );
+			return r.left === 410 && r.width === 620;
+		} )()
+	);
+	// NEGATIVE CONTROL: a placement that ignored `contentWidth` entirely would
+	// keep centring the box width (1120) and land at 160, not 410 -- this must
+	// differ from the real result above.
+	check(
+		'[neg control] ignoring contentWidth is REJECTED (would land at 160, not 410)',
+		centreMegaLeft( { width: 1120, bounds: pill1440, gutter: GUTTER } ) !== 410
+	);
+}
+
 console.log(
 	`\n${ passed } passed, ${ failures.length } failed` +
 		( failures.length ? `\n  - ${ failures.join( '\n  - ' ) }` : '' )

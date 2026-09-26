@@ -165,30 +165,50 @@ export function itemAlignedLeft( { align, anchorLeft, anchorWidth, width } ) {
  * Where a panel goes, for either kind: its left edge, and the width it takes
  * (null keeps its own width). A dropdown keeps its width under every
  * placement but `full-width`; a mega panel takes the pill's width under a
- * floating header (megaPanelWidth) and the box's under `full-width`.
+ * floating header (megaPanelWidth) and the box's under `full-width` — UNLESS
+ * `contentWidth` (the mega panel's own rendered content, narrower than that
+ * box) is supplied, in which case the mega panel takes `contentWidth` instead
+ * and centres/aligns within the box at that narrower width. `full-width`
+ * ignores `contentWidth` entirely — it is an explicit "take the whole box"
+ * choice. A dropdown always ignores `contentWidth` too; it already sizes to
+ * its own content via `width`. When `contentWidth` is not narrower than the
+ * width the panel would otherwise get, the result is identical to omitting it.
  *
- * @param {Object}  args             Arguments.
- * @param {string}  args.align       One of PANEL_ALIGNS.
- * @param {boolean} args.isDropdown  True for the dropdown kind.
- * @param {number}  args.anchorLeft  The menu item's left edge.
- * @param {number}  args.anchorWidth The menu item's width.
- * @param {number}  args.width       The panel's own measured width.
- * @param {Object}  args.bounds      Bounding box.
- * @param {number}  args.gutter      Viewport-edge gutter in px.
+ * @param {Object}      args              Arguments.
+ * @param {string}      args.align        One of PANEL_ALIGNS.
+ * @param {boolean}     args.isDropdown   True for the dropdown kind.
+ * @param {number}      args.anchorLeft   The menu item's left edge.
+ * @param {number}      args.anchorWidth  The menu item's width.
+ * @param {number}      args.width        The panel's own measured width.
+ * @param {Object}      args.bounds       Bounding box.
+ * @param {number}      args.gutter       Viewport-edge gutter in px.
+ * @param {number|null} [args.contentWidth] A mega panel's own content width, or null.
  * @return {{left: number, width: number|null}} Placement.
  */
-export function placePanel( { align, isDropdown, anchorLeft, anchorWidth, width, bounds, gutter } ) {
+export function placePanel( {
+	align,
+	isDropdown,
+	anchorLeft,
+	anchorWidth,
+	width,
+	bounds,
+	gutter,
+	contentWidth = null,
+} ) {
 	if ( 'full-width' === align ) {
 		return { left: bounds.left, width: bounds.right - bounds.left };
 	}
 	const boxWidth = isDropdown ? null : megaPanelWidth( bounds );
 	const eff = null !== boxWidth ? boxWidth : width;
+	const useContent = ! isDropdown && null !== contentWidth && contentWidth < eff;
+	const placedWidth = useContent ? contentWidth : eff;
+	const returnedWidth = useContent ? contentWidth : boxWidth;
 	if ( 'page-centred' === align ) {
-		return { left: centreMegaLeft( { width: eff, bounds, gutter } ), width: boxWidth };
+		return { left: centreMegaLeft( { width: placedWidth, bounds, gutter } ), width: returnedWidth };
 	}
-	const desired = itemAlignedLeft( { align, anchorLeft, anchorWidth, width: eff } );
+	const desired = itemAlignedLeft( { align, anchorLeft, anchorWidth, width: placedWidth } );
 	return {
-		left: clampDropdownLeft( { desiredLeft: desired, width: eff, bounds, gutter } ),
-		width: boxWidth,
+		left: clampDropdownLeft( { desiredLeft: desired, width: placedWidth, bounds, gutter } ),
+		width: returnedWidth,
 	};
 }

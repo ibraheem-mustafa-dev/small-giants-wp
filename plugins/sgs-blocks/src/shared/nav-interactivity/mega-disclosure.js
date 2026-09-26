@@ -300,6 +300,35 @@ function panelBounds( root ) {
 	return boundsFromHeaderRect( header.getBoundingClientRect(), pageWidth );
 }
 
+/** Tags inside a mega panel wrap that never count as its rendered content. */
+const CONTENT_SKIP_TAGS = new Set( [ 'STYLE', 'SCRIPT', 'TEMPLATE' ] );
+
+/**
+ * A mega panel's own content width — the widest ELEMENT child of the wrap
+ * (`[data-sgs-mega-panel]`), skipping `<style>`, `<script>` and `<template>`.
+ * The wrap holds whatever the mega-menu post renders, and the first child is
+ * not guaranteed to be the actual panel content (`sgs/mega-panel` or similar),
+ * so every qualifying child is measured and the widest wins. Falls back to
+ * the wrap's own measured width when it has no qualifying children.
+ *
+ * @param {HTMLElement} panel     The `[data-sgs-mega-panel]` wrap.
+ * @param {number}      wrapWidth The wrap's own measured width (fallback).
+ * @return {number} The measured content width.
+ */
+function measurePanelContentWidth( panel, wrapWidth ) {
+	let widest = 0;
+	let found = false;
+	for ( const child of panel.children ) {
+		if ( CONTENT_SKIP_TAGS.has( child.tagName ) ) {
+			continue;
+		}
+		found = true;
+		widest = Math.max( widest, child.getBoundingClientRect().width );
+	}
+	// Nothing laid out yet (0px) is not a width: keep the wrap's own.
+	return found && widest > 0 ? widest : wrapWidth;
+}
+
 /**
  * Reposition a panel that overflows the right viewport edge — expressed purely
  * as CSS custom-property VALUES (`--sgs-mm-overflow-left/-right`), never a
@@ -345,13 +374,14 @@ function repositionPanel( root ) {
 		 * result purely as CSS-var VALUES relative to the wrap's offsetParent
 		 * (Spec 32 — never a direct style.left write).
 		 *
-		 * A dropdown sizes to its own content, so a width left over from a
-		 * `full-width` open at another tier is cleared before it is measured.
+		 * Cleared for BOTH kinds before measuring: a width left over from a
+		 * `full-width` open at another tier — or a mega panel's own
+		 * narrower content width from a previous open — must not leak into
+		 * this measurement.
 		 */
-		if ( root.dataset.sgsNavDisclosure === 'dropdown' ) {
-			panel.style.removeProperty( '--sgs-mm-panel-width' );
-		}
+		panel.style.removeProperty( '--sgs-mm-panel-width' );
 		const rect = panel.getBoundingClientRect();
+		const isDropdown = root.dataset.sgsNavDisclosure === 'dropdown';
 		// Safe-triangle (FR-36-4): reuse this existing measurement as the
 		// snapshot other triggers check their pointer trajectory against —
 		// no second layout read.
@@ -404,7 +434,6 @@ function repositionPanel( root ) {
 		 */
 		const GUTTER = 16;
 		const MIN_PANEL_MAX_H = 200;
-		const isDropdown = root.dataset.sgsNavDisclosure === 'dropdown';
 		/*
 		 * The box everything below is positioned against — the viewport for a
 		 * full-width header, the pill's own box for a floating one. Every
@@ -449,6 +478,16 @@ function repositionPanel( root ) {
 		const align = isDropdown
 			? root.dataset.sgsNavSubmenuAlign || 'start'
 			: readMegaAlign( root );
+		/*
+		 * A mega panel's box (the wrap) is wider than the panel block it
+		 * contains (`--sgs-mm-panel-width`'s stylesheet fallback is
+		 * `min(1120px, calc(100vw - 56px))`, but `sgs/mega-panel` sets its own
+		 * `max-width`), so centring on the wrap alone left a narrower panel
+		 * sitting at the wrap's left edge instead of the page centre. Measuring
+		 * the widest qualifying child gives `placePanel` the panel's own
+		 * width to centre/align at, when that is narrower than the box.
+		 */
+		const contentWidth = isDropdown ? null : measurePanelContentWidth( panel, rect.width );
 		const placed = placePanel( {
 			align: PANEL_ALIGNS.includes( align ) ? align : ( isDropdown ? 'start' : 'page-centred' ),
 			isDropdown,
@@ -457,6 +496,7 @@ function repositionPanel( root ) {
 			width: rect.width,
 			bounds,
 			gutter: 28,
+			contentWidth,
 		} );
 		if ( null !== placed.width ) {
 			panel.style.setProperty( '--sgs-mm-panel-width', `${ placed.width.toFixed( 2 ) }px` );
