@@ -2492,6 +2492,16 @@
     },
     {
       "slug": "sgs/cta-section",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
       "attr": "backgroundColourGradient",
       "fields": {
         "css_property": "background-color-gradient",
@@ -2806,6 +2816,16 @@
       "attr": "shadow",
       "fields": {
         "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -9175,6 +9195,14 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "priceLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "price"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "priceNoteColour",
       "fields": {
         "css_property": "color",
@@ -15405,16 +15433,6 @@
     },
     {
       "slug": "sgs/cta-section",
-      "attr": "backgroundColour",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/cta-section",
       "attr": "backgroundColourHover",
       "fields": {
         "css_property": "background-color",
@@ -15523,16 +15541,6 @@
       "fields": {
         "css_property": "text-align",
         "css_element": "headline"
-      }
-    },
-    {
-      "slug": "sgs/cta-section",
-      "attr": "textColour",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
       }
     },
     {
@@ -21037,6 +21045,16 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "borderColourHover",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "borderRadius",
       "fields": {
         "css_property": "border-radius",
@@ -21142,6 +21160,23 @@
       "fields": {
         "css_property": "padding",
         "css_element": "savingBadge"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "swatchHoverGrow",
+      "fields": {
+        "css_property": "transform",
+        "css_element": "swatch",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "swatchSize",
+      "fields": {
+        "css_property": "width",
+        "css_element": "swatch"
       }
     },
     {

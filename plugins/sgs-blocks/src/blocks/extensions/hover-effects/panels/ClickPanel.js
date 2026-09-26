@@ -13,7 +13,7 @@ import { __ } from '@wordpress/i18n';
 // Lazy-import DesignTokenPicker if available, fallback to nothing.
 let DesignTokenPicker;
 try {
-	DesignTokenPicker = require( '../../../components' ).DesignTokenPicker;
+	DesignTokenPicker = require( '../../../../components' ).DesignTokenPicker;
 } catch {
 	DesignTokenPicker = null;
 }

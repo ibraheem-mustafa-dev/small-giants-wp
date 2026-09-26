@@ -9,7 +9,7 @@
  */
 import { PanelBody, TextControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { LinkPopoverField } from '../../../components';
+import { LinkPopoverField } from '../../../../components';
 
 /**
  * @param {Object}   props
