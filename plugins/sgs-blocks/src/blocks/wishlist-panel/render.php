@@ -128,8 +128,21 @@ foreach ( array(
 	$scoped_css[] = $media ? $media . '{' . $rule . '}' : $rule;
 }
 
+// A grid showing one column on phones lays each item out as a compact row
+// (photo beside details). The phone count cascades mobile, tablet, desktop,
+// then style.css's own phone default of 1.
+$mobile_cols = 1;
+foreach ( array( 'mobile', 'tablet', 'desktop' ) as $tier ) {
+	$cols = $columns_tiers[ $tier ] ?? null;
+	if ( null !== $cols && '' !== $cols && is_numeric( $cols ) ) {
+		$mobile_cols = absint( $cols );
+		break;
+	}
+}
+$mobile_rows = 'grid' === $layout && 1 === $mobile_cols ? ' sgs-wishlist-panel--mobile-rows' : '';
+
 $wrapper_attrs = get_block_wrapper_attributes(
-	array( 'class' => 'sgs-wishlist-panel sgs-wishlist-panel--' . $layout . ' ' . $uid )
+	array( 'class' => 'sgs-wishlist-panel sgs-wishlist-panel--' . $layout . $mobile_rows . ' ' . $uid )
 );
 
 $label_data = sgs_wishlist_panel_label_data( $attributes );

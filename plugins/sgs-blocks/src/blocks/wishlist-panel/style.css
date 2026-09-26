@@ -3,7 +3,7 @@
 	--sgs-wishlist-panel-gap: 1rem;
 }
 
-/* Default columns per tier (4 / 3 / 2); the block's columns control
+/* Default columns per tier (4 / 3 / 1); the block's columns control
    overrides these through its own scoped rule. */
 @media (max-width: 1023px) {
 	.sgs-wishlist-panel {
@@ -13,7 +13,26 @@
 
 @media (max-width: 767px) {
 	.sgs-wishlist-panel {
-		--sgs-wishlist-panel-columns: 2;
+		--sgs-wishlist-panel-columns: 1;
+	}
+
+	/* One-column phone grid: each item is a compact row, photo beside its
+	   details and actions (render.php adds the modifier). */
+	.sgs-wishlist-panel--mobile-rows .sgs-wishlist-panel__row {
+		display: grid;
+		grid-template-columns: 5rem minmax(0, 1fr);
+		column-gap: 0.75rem;
+		row-gap: 0.5rem;
+		align-items: start;
+		padding: 0.75rem;
+	}
+
+	.sgs-wishlist-panel--mobile-rows .sgs-wishlist-panel__row-link {
+		grid-row: 1 / span 2;
+	}
+
+	.sgs-wishlist-panel--mobile-rows .sgs-wishlist-panel__row-actions {
+		grid-column: 2;
 	}
 }
 

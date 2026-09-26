@@ -173,6 +173,16 @@
 	gap: var(--sgs-account-gap, 1rem);
 }
 
+/* Wide accounts show every quick card on one row, so a fifth card never
+   sits alone under the other four. */
+@container sgs-account (min-width: 1200px) {
+	.sgs-account__quick-cards {
+		grid-template-columns: none;
+		grid-auto-flow: column;
+		grid-auto-columns: minmax(0, 1fr);
+	}
+}
+
 a.sgs-account__quick-card {
 	display: flex;
 	flex-direction: column;

@@ -29,8 +29,17 @@ export default function Edit( { attributes, setAttributes } ) {
 	const cap = Number( maxItems ) > 0 ? Math.min( Number( maxItems ), sampleCount ) : sampleCount;
 	const showViewAll = Number( maxItems ) > 0 && Number( maxItems ) < sampleCount;
 
+	// Mirrors render.php: a one-column phone grid shows compact rows.
+	const columns = attributes.columns || {};
+	const phoneTier = [ 'mobile', 'tablet', 'desktop' ].find(
+		( tier ) => columns[ tier ] !== undefined && columns[ tier ] !== null && columns[ tier ] !== ''
+	);
+	const mobileRows = 'grid' === previewLayout && 1 === Number( phoneTier ? columns[ phoneTier ] : 1 );
+
 	const blockProps = useBlockProps( {
-		className: `sgs-wishlist-panel sgs-wishlist-panel--${ previewLayout }`,
+		className: `sgs-wishlist-panel sgs-wishlist-panel--${ previewLayout }${
+			mobileRows ? ' sgs-wishlist-panel--mobile-rows' : ''
+		}`,
 	} );
 
 	const colourRows = [
