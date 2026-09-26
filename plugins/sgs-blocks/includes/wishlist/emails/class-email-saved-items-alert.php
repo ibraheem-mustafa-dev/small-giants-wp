@@ -193,6 +193,15 @@ final class Email_Saved_Items_Alert extends \WC_Email {
 				'default'     => $this->get_default_additional_content(),
 				'desc_tip'    => true,
 			),
+			'email_type'         => array(
+				'title'       => __( 'Email type', 'sgs-blocks' ),
+				'type'        => 'select',
+				'description' => __( 'Choose which format of email to send.', 'sgs-blocks' ),
+				'default'     => 'html',
+				'class'       => 'email_type wc-enhanced-select',
+				'options'     => $this->get_email_type_options(),
+				'desc_tip'    => true,
+			),
 		);
 	}
 
