@@ -22,6 +22,7 @@ import { colourVar } from '../../utils';
 import PricingSettingsPanel from './PricingSettingsPanel';
 import SummaryPanel from './SummaryPanel';
 import FlowLayoutPanel from './FlowLayoutPanel';
+import ShowcasePanel from './ShowcasePanel';
 import LinkedFlowPanel from './LinkedFlowPanel';
 import ChromePanel from './ChromePanel';
 import FlowNavigationPanel from './FlowNavigationPanel';
@@ -636,6 +637,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			</InspectorControls>
 			<ChromePanel attributes={ attributes } setAttributes={ setAttributes } />
 			<FlowLayoutPanel attributes={ attributes } setAttributes={ setAttributes } />
+			<ShowcasePanel attributes={ attributes } setAttributes={ setAttributes } />
 			<FlowNavigationPanel attributes={ attributes } setAttributes={ setAttributes } />
 			<InspectorControls>
 				<SummaryPanel

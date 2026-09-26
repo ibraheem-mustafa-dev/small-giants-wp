@@ -236,6 +236,68 @@
 			"type": "string",
 			"default": "Continue",
 			"description": "D1/D2: the footer's primary button label on a question step, in 'continue' advanceMode. Muted (aria-disabled) until the current step has a selection."
+		},
+		"progressCounts": {
+			"type": "string",
+			"enum": [ "finished", "current" ],
+			"default": "finished",
+			"description": "FR-43-24: what the progress line counts. 'finished' (D8): questions already answered, empty on question 1. 'current': the question being shown, so question 1 of 4 fills a quarter (the Eye Care draft)."
+		},
+		"stepCountLabel": {
+			"type": "string",
+			"default": "Step",
+			"description": "FR-43-24: the word before the question position, e.g. 'Question' gives 'Question 1 of 3'. A question with its own eyebrow shows that instead and is left out of the count."
+		},
+		"headerLogoHeight": {
+			"type": "number",
+			"default": 32,
+			"description": "The header logo's height in px (its width follows the image's own proportions)."
+		},
+		"stageColour": {
+			"type": "string",
+			"default": "",
+			"description": "FR-43-24: the showcase stage's background and the chosen option card's fill. Empty uses the theme's raised background (surface-alt)."
+		},
+		"summaryPendingLabel": {
+			"type": "string",
+			"default": "",
+			"description": "FR-43-19: a placeholder line shown on the stage until the first priced choice, e.g. 'Lenses'. Empty shows none."
+		},
+		"summaryPendingText": {
+			"type": "string",
+			"default": "not chosen yet",
+			"description": "FR-43-19: the placeholder line's right-hand text."
+		},
+		"stageNoteIcon": {
+			"type": "string",
+			"enum": [ "none", "whatsapp", "phone", "email", "chat" ],
+			"default": "none",
+			"description": "FR-43-24: an icon in a round badge beside the stage help note; with a link the whole note becomes the link."
+		},
+		"stageNoteIconColour": {
+			"type": "string",
+			"default": "",
+			"description": "The help note icon badge's fill. Empty uses the accent colour."
+		},
+		"stageNoteBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "The help note's border colour. Empty uses the border colour."
+		},
+		"stageNoteHoverColour": {
+			"type": "string",
+			"default": "",
+			"description": "The help note's background on hover. Empty keeps the background unchanged."
+		},
+		"skipPrompt": {
+			"type": "string",
+			"default": "",
+			"description": "FR-43-24: text before the footer's skip link on the first question, e.g. 'Frame only?'."
+		},
+		"skipLabel": {
+			"type": "string",
+			"default": "",
+			"description": "FR-43-24: the footer's skip link on the first question, e.g. 'Skip the lenses'. It takes the same route as the flow's 'no add-ons' option. Empty shows no link."
 		}
 	},
 	"providesContext": {

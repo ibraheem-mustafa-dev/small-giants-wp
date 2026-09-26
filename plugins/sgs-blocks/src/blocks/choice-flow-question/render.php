@@ -85,7 +85,7 @@ if ( '' !== $product_attribute && function_exists( 'wc_get_product' ) ) {
 }
 $is_product_attribute_step = '' !== $product_attribute && '' !== $attribute_mode && ! empty( $generated_options );
 
-$wrapper_args = array( 'class' => 'sgs-choice-flow-question' );
+$wrapper_args = array_merge( array( 'class' => 'sgs-choice-flow-question' ), sgs_choice_flow_question_data_attrs( $attributes ) );
 if ( $is_product_attribute_step ) {
 	$wrapper_args['data-product-attribute'] = $product_attribute;
 	$wrapper_args['data-attribute-mode']    = $attribute_mode;
@@ -147,6 +147,7 @@ if ( $is_product_attribute_step ) {
 		if ( $is_default ) {
 			echo ' data-default="1"';
 		}
+		echo sgs_choice_flow_option_data_attrs( $merged ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper escapes internally.
 		if ( $disabled ) {
 			echo ' disabled aria-disabled="true"';
 		}
@@ -182,10 +183,7 @@ if ( $is_product_attribute_step ) {
 		$next_step_id = isset( $option['nextStepId'] ) ? (string) $option['nextStepId'] : '';
 		$tags         = isset( $option['tags'] ) && is_array( $option['tags'] ) ? array_map( 'strval', $option['tags'] ) : array();
 
-		// FR-43-15: optional per-option image. Only render the media zone
-		// when a real URL is present — an empty/absent `image` object keeps
-		// this option rendering exactly as before (no broken layout, no
-		// empty box).
+		// FR-43-15: optional per-option image; no URL renders no media zone.
 		$image     = isset( $option['image'] ) && is_array( $option['image'] ) ? $option['image'] : array();
 		$image_url = isset( $image['url'] ) ? (string) $image['url'] : '';
 		$image_alt = isset( $image['alt'] ) ? (string) $image['alt'] : '';
@@ -246,6 +244,7 @@ if ( $is_product_attribute_step ) {
 		if ( $is_default ) {
 			echo ' data-default="1"';
 		}
+		echo sgs_choice_flow_option_data_attrs( $option ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper escapes internally.
 		echo '>';
 
 		if ( '' !== $badge ) {
@@ -264,8 +263,9 @@ if ( $is_product_attribute_step ) {
 			echo '<span class="sgs-choice-flow-question__option-description">' . esc_html( $description ) . '</span>';
 		}
 
-		if ( null !== $addon_price_decimal ) {
-			echo '<span class="sgs-choice-flow-question__option-price">' . esc_html( sgs_choice_flow_format_addon_price( $addon_price_decimal ) ) . '</span>';
+		// A "no add-ons" option in a priced step reads as a zero amount ("£0.00").
+		if ( null !== $addon_price_decimal || ( $add_to_bag_now && ! empty( $group_options ) ) ) {
+			echo '<span class="sgs-choice-flow-question__option-price">' . esc_html( sgs_choice_flow_format_addon_price( $addon_price_decimal ?? '0', (string) ( $attributes['pricePrefix'] ?? 'plus' ), null === $addon_price_decimal ) ) . '</span>';
 		}
 
 		echo '</button>';

@@ -1,35 +1,20 @@
 /**
- * SGS Choice Flow — pricing module (Spec 43 FR-43-17 to FR-43-20, v1.4.0).
+ * SGS Choice Flow — pricing state (Spec 43 FR-43-17 to FR-43-20).
  *
- * Kept as its own file rather than growing `view.js` (already well over this
- * codebase's 250-line JS guideline) — `view.js` calls the handful of exports
- * below at the points it already resolves a step click / initialises a flow;
- * everything add-on/price-specific lives here. The 'add-to-bag' terminal's
- * own POST is a further split, `add-to-bag.js` (reads this module's
- * `getAddonSummary()`), to keep this file itself under the same guideline.
- * The D4 summary panel's own PAINTING (image swap, rows, total) is a further
- * split again, `summary.js` — this module owns only the pricing STATE and
- * hands it a snapshot on every change; it holds no DOM query for the panel.
+ * Holds each flow's priced answers (keyed by add-on group, so a later answer
+ * in a group replaces the earlier one) and its base product or variation,
+ * and hands `summary.js` a snapshot to paint on every change; `add-to-bag.js`
+ * reads `getAddonSummary()` for the request.
  *
- * Ownership split (FR-43-18 — the server-side price list is the ONLY price
- * authority):
- *   - This module never invents a price. Every price it shows or sends came
- *     from a `data-price` attribute `choice-flow-question/render.php` already
- *     read off the site-wide add-on price list at render time.
- *   - The summary panel is DISPLAY ONLY. The actual charge is resolved
- *     server-side, in `/sgs/v1/cart/add-item`'s `addons` handling (a parallel
- *     build — see `add-to-bag.js`), from `{group, key}` pairs alone; this
- *     module never sends a price or a total.
+ * FR-43-18: the server-side price list is the only price authority. Every
+ * price here came from a `data-price` that `choice-flow-question/render.php`
+ * read off the list at render time; the request sends `{group, key}` pairs
+ * only, never a price or a total.
  *
- * "What is being bought" (FR-43-20): a page's own `sgs/buybox`/
- * `sgs/product-card` announces its live variation via a window
- * `sgs-variation-change` CustomEvent (built in `product-card/view.js`) —
- * listened for here, module-scoped (one listener for the whole page, not
- * per-flow instance: there is normally exactly one buybox per product page).
- * A flow's own `data-flow-product-id`/`data-flow-price-minor`/
- * `data-flow-decimals` (`choice-flow/render.php`) are the first-paint
- * fallback, read once per instance and overwritten the moment a live event
- * arrives.
+ * FR-43-20, what is being bought: the page's buybox or product card
+ * announces its live variation with a window `sgs-variation-change` event
+ * (one module-level listener); the flow's own `data-flow-product-id`/
+ * `data-flow-price-minor`/`data-flow-decimals` are the first-paint fallback.
  *
  * @package SGS\Blocks
  */
@@ -37,30 +22,22 @@
 import { renderSummaryPanel, formatMinor, bindSummaryToggle } from './summary.js';
 
 /**
- * Per-flow-instance add-on state: which priced-question group each chosen
- * option belongs to, keyed by GROUP so a later answer in the same group
- * (e.g. the shopper went Back and picked differently) simply overwrites the
- * earlier one rather than accumulating duplicates.
+ * Per-flow state: priced answers keyed by group, and the seeded base.
  *
  * @type {WeakMap<HTMLElement, {answers: Map<string, {key: string, label: string, price: string}>, base: {productId: number, variationId: number, attributes: Object, priceMinor: number|null, decimals: number}}>}
  */
 const flowPricingState = new WeakMap();
 
 /**
- * Live base product/variation per product ID, from `sgs-variation-change`.
- * Every product card on a page (the buybox, and each card in a "More from"
- * or "Similar" row) dispatches it, so a flow reads only the entry for its
- * own product (render.php seeds `data-flow-product-id`: the page's product,
- * else `flowProductId`). Until that product's event fires, the seeded
- * values stand.
+ * Live base per product ID, from `sgs-variation-change`. Every product card
+ * on a page dispatches it, so a flow reads only its own product's entry.
  *
  * @type {Map<number, {productId: number, variationId: number, attributes: Object, priceMinor: number|null, decimals: number}>}
  */
 const liveBases = new Map();
 
 /**
- * The most recent event, for a flow with no product of its own (no product
- * page, no `flowProductId`): the only product it can mean is the last one
+ * The latest event, for a flow with no product of its own: the last product
  * the shopper touched.
  *
  * @type {{productId: number, variationId: number, attributes: Object, priceMinor: number|null, decimals: number}|null}
@@ -132,6 +109,19 @@ function refreshSummary( flowRoot ) {
 		trimZeros: state.trimZeros,
 		addonRows: Array.from( state.answers.values() ),
 	} );
+}
+
+/**
+ * Repaint a flow's summary (the step it shows changed, so a default answer
+ * may now be listed — `flow-steps.js::showStepByIndex()`). A no-op for a
+ * flow whose pricing has not been initialised.
+ *
+ * @param {HTMLElement} flowRoot Flow wrapper element.
+ */
+export function refreshPricePanel( flowRoot ) {
+	if ( flowPricingState.has( flowRoot ) ) {
+		refreshSummary( flowRoot );
+	}
 }
 
 /**
@@ -220,13 +210,27 @@ export function initPricePanel( flowRoot ) {
  *                                  server resolves, per FR-43-18).
  * @param {string}      label      The chosen option's label.
  * @param {string}      price      The chosen option's decimal price string.
+ * @param {Object}      [where]           Where the answer came from.
+ * @param {number}      [where.stepIndex] Its step (the stage lists it once reached).
+ * @param {string}      [where.effect]    Its stage photo effect, '' for none.
+ * @param {boolean}     [where.startingPrice] A 'from' price: the stage shows it without a '+'.
+ * @param {string}      [where.summaryText]   The stage's wording for this answer, '' for the label.
  */
-export function recordAddonAnswer( flowRoot, group, groupLabel, key, label, price ) {
+export function recordAddonAnswer( flowRoot, group, groupLabel, key, label, price, where = {} ) {
 	if ( ! group ) {
 		return;
 	}
 	const state = ensureState( flowRoot );
-	state.answers.set( group, { key, label, groupLabel, price } );
+	state.answers.set( group, {
+		key,
+		label,
+		groupLabel,
+		price,
+		stepIndex: typeof where.stepIndex === 'number' ? where.stepIndex : -1,
+		effect: where.effect || '',
+		startingPrice: !! where.startingPrice,
+		summaryText: where.summaryText || '',
+	} );
 	refreshSummary( flowRoot );
 }
 

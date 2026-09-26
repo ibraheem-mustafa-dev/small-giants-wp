@@ -88,28 +88,31 @@ if ( ! function_exists( 'sgs_choice_flow_addon_option_by_key' ) ) {
 
 if ( ! function_exists( 'sgs_choice_flow_format_addon_price' ) ) {
 	/**
-	 * Format an add-on price for display: "included" at zero, otherwise a
-	 * "+"-prefixed formatted amount. Uses `wc_price()` (stripped of markup)
-	 * when WooCommerce is active, per the build brief; a plain decimal
-	 * fallback keeps this block non-fatal without WooCommerce, though the
-	 * add-on price list itself is a WooCommerce-settings-page feature and
-	 * this path is not expected to be reached in practice.
+	 * An option's price as its card shows it: "+£30.00" (`plus`, the default),
+	 * "from £59.00" (`from`, a starting price later choices add to), or
+	 * "included" when it costs nothing. `$zero_as_amount` shows a zero as an
+	 * amount instead ("£0.00", a "no add-ons" option).
 	 *
-	 * @param string $price Decimal price string from the price list.
-	 * @return string Display string, e.g. "included" or "+ £4.00".
+	 * @param string $price          Decimal price from the add-on price list.
+	 * @param string $prefix         'plus' or 'from'.
+	 * @param bool   $zero_as_amount Show a zero price as an amount, not "included".
+	 * @return string Plain text (tags stripped).
 	 */
-	function sgs_choice_flow_format_addon_price( string $price ): string {
+	function sgs_choice_flow_format_addon_price( string $price, string $prefix = 'plus', bool $zero_as_amount = false ): string {
 		$amount = (float) $price;
 
-		if ( $amount <= 0.0 ) {
+		if ( $amount <= 0.0 && ! $zero_as_amount ) {
 			return __( 'included', 'sgs-blocks' );
 		}
 
-		if ( function_exists( 'wc_price' ) ) {
-			return '+ ' . wp_strip_all_tags( wc_price( $amount ) );
+		$money = function_exists( 'wc_price' ) ? html_entity_decode( wp_strip_all_tags( wc_price( max( 0.0, $amount ) ) ), ENT_QUOTES, 'UTF-8' ) : number_format( max( 0.0, $amount ), 2 );
+
+		if ( $amount <= 0.0 ) {
+			return $money;
 		}
 
-		return '+ ' . number_format( $amount, 2 );
+		/* translators: %s: a formatted price, e.g. £59.00. */
+		return 'from' === $prefix ? sprintf( __( 'from %s', 'sgs-blocks' ), $money ) : '+' . $money;
 	}
 }
 

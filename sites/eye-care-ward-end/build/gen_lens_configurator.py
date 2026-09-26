@@ -43,26 +43,30 @@ STEP_LATER, STEP_UPLOAD, STEP_TYPE, STEP_FRAME_ONLY = 4, 5, 6, 7
 # styled at 38px/28px in the showcase layout) — no separate sgs/heading/sgs/text
 # blocks. Using those would either leave the title/intro blank (unset attribute)
 # or double them up (block's own h3/p alongside the manual ones).
+# Every question's title: the draft's Playfair headings are medium weight (500), not bold.
+WEIGHT = "500"
+
+
 def step(label, question):
     return B("sgs/form-step", {"label": label}, [question])
 
 
 use = B("sgs/choice-flow-question", dict(
-    layout="grid", priceGroup="lens-use",
+    layout="grid", priceGroup="lens-use", pricePrefix="from", questionFontWeight=WEIGHT,
     question="What will you use them for?",
     intro="Your prescription tells you which. If there's an “ADD” column on it, varifocal is probably what "
           "you're after.",
     options=[
     opt("distance", "Distance", 455, "use-distance.png",
         "Uses the main line of your prescription. This is what most people want in sunglasses — sharp vision "
-        "looking ahead and into the distance.", description="Driving, walking about, everyday wear."),
+        "looking ahead and into the distance.", description="Driving, walking about, everyday wear.", summaryText="Distance lenses"),
     opt("reading", "Reading", 457, "use-reading.png",
         "For reading in the garden or by the pool. Uses the “ADD” value on your prescription. You won't want to "
-        "drive in these.", description="Close work, in the sun."),
+        "drive in these.", description="Close work, in the sun.", summaryText="Reading lenses"),
     opt("varifocal", "Varifocal", 458, "use-varifocal.png",
         "Distance at the top, reading at the bottom, blended in between with no visible line. Usually for "
         "over-40s. I take the fitting measurements from a photo or in person.",
-        description="Near and far in one lens, no line."),
+        description="Near and far in one lens, no line.", summaryText="Varifocal lenses"),
     opt("none", "No prescription", 456, "use-none.png",
         "Adds the frame to your bag exactly as the brand made it, with its original tinted lenses. You can always "
         "add prescription lenses later.", description="Keep the lenses they come with.",
@@ -73,7 +77,7 @@ use = B("sgs/choice-flow-question", dict(
 # (Eye Care Birmingham.dc.html:1429, the `rec` flag on thickOptions:1998); the prescription step's
 # "later" carries "Easiest" (dc.html:1483, the `pref` flag on rxModes:2018).
 thickness = B("sgs/choice-flow-question", dict(
-    layout="grid", priceGroup="lens-thickness",
+    layout="grid", priceGroup="lens-thickness", questionFontWeight=WEIGHT,
     question="How thin would you like them?",
     intro="Thinner lenses are lighter and sit neater in the frame. If you don't know your numbers, Standard is "
           "a safe pick — I'll check when your prescription arrives and tell you if something thinner is worth "
@@ -101,42 +105,44 @@ thickness = B("sgs/choice-flow-question", dict(
 # pick — a showcase-specific line (the compact layout has no persistent product image to watch), kept
 # verbatim because the showcase stage does exactly that (FR-43-24's swap-on-selection).
 finish = B("sgs/choice-flow-question", dict(
-    layout="grid", priceGroup="lens-finish",
+    layout="grid", priceGroup="lens-finish", questionFontWeight=WEIGHT,
     question="What finish?",
     intro="All of them block 100% of UV and come scratch-resistant. Watch the frame on the left change as you "
           "pick.",
     options=[
     opt("tint", "Tinted to match", 450, "finish-tint.png",
         "I match the tint to the lenses the brand fitted, so the frame looks exactly as designed. Nobody will know "
-        "they're prescription.", description="Same colour and depth as the original lenses."),
+        "they're prescription.", description="Same colour and depth as the original lenses.", stageEffect="dim"),
     opt("pol", "Polarised", 449, "finish-pol.png",
         "A filter that cuts reflected glare rather than just dimming everything. If you drive a lot or spend time "
         "near water, this is the upgrade worth paying for.",
-        description="Kills glare off water, roads and windscreens."),
+        description="Kills glare off water, roads and windscreens.", stageEffect="deepen"),
     opt("photo", "Light-reactive", 448, "finish-photo.png",
         "One pair that works indoors and out. Worth knowing they react to UV, so they stay lighter behind a car "
-        "windscreen.", description="Clear indoors, dark outside in under a minute."),
+        "windscreen.", description="Clear indoors, dark outside in under a minute.", stageEffect="soften"),
     opt("clear", "Clear", 447, "finish-clear.png",
         "Sunglasses frames make excellent everyday glasses. Anti-reflective coating both sides, included.",
-        description="Turn them into everyday glasses."),
+        description="Turn them into everyday glasses.", stageEffect="brighten"),
 ]))
 
 # The draft's prescription step (dc.html:1481-1486) shows its `desc` directly under the title with no
 # "?" toggle at all (unlike the three steps above) — so that copy maps to `description` here, not
 # `helpText`; a `helpText` value would wrongly add a toggle button the draft never has on this step.
 rx = B("sgs/choice-flow-question", dict(
-    layout="grid",
+    layout="grid", questionFontWeight=WEIGHT,
+    # The draft's own eyebrow for this last step (so the count reads "of 3"), and its stage line.
+    eyebrow="Last bit — and it can wait", summaryLabel="Prescription",
     question="Your prescription",
     intro="It needs to be under two years old and from a UK optician — whoever tested your eyes has to give "
           "you a copy if you ask. You don't need it to hand right now.",
     options=[
     {"label": "Send it later", "value": "later", "nextStepId": str(STEP_LATER),
      "description": "Order now and I'll WhatsApp you a link for it. Nothing gets made until it arrives.",
-     "isDefault": True, "badge": "Easiest"},
+     "isDefault": True, "badge": "Easiest", "summaryText": "Sending it later"},
     {"label": "Upload a photo", "value": "upload", "nextStepId": str(STEP_UPLOAD),
-     "description": "A phone photo of the paper copy is fine."},
+     "description": "A phone photo of the paper copy is fine.", "summaryText": "Photo uploaded"},
     {"label": "Type it in", "value": "type", "nextStepId": str(STEP_TYPE),
-     "description": "If you've got the numbers in front of you."},
+     "description": "If you've got the numbers in front of you.", "summaryText": "Entered online"},
 ]))
 
 READY = "Your frame and lenses go in together."
@@ -171,28 +177,31 @@ PHOTO = [B("sgs/form-field-file", dict(
     helpText="A phone photo of the paper copy is fine, as long as every number is readable."))]
 
 tree = [
-    # Root polish (this session, matching dc.html:1307-1320,1537 exactly):
-    # - progressColour "accent" (#9C8B78 taupe) = the draft's var(--acc,#9C8B78) fill.
-    # - showHeader on: the draft's header row above the progress bar (a decorative glasses mark, not the
-    #   site's real logo — headerLogo stays empty) plus a "Step N of M" eyebrow the block builds itself.
-    # - closeLabel left at the block default "Close", which already matches dc.html:1317's visible text.
-    # - stickyFooter on: dc.html's footer row (:1537) stays pinned at the bottom of the flex column while
-    #   the body scrolls (:1322's flex:1;overflow:auto) — the same visual effect stickyFooter produces.
-    # - flowLayout "showcase" (FR-43-24, this session): the full-screen stage-beside-step-pane layout, the
-    #   framework's reference build for it — matches the draft's `lensOpen` dialog structure exactly.
-    # - summaryBaseLabel "Frame" (this session): the draft's first running line on the stage.
-    # - closeStyle "text" (this session): the draft's bordered rectangular Close button.
-    # - stageNote/stageNoteLink: the draft's WhatsApp help card in the stage aside (dc.html:1345-1350),
-    #   verbatim text and number.
-    B("sgs/choice-flow", dict(title="Add prescription lenses", maxWidth="1200px", progressStyle="bar",
-                              showPricePanel=True, pricePanelTitle="Your order",
-                              progressColour="accent", showHeader=True, stickyFooter=True,
-                              flowLayout="showcase", summaryBaseLabel="Frame", closeStyle="text",
+    # The root, matching the draft's lens dialog (dc.html "sgs-lens-configurator"):
+    # - flowLayout "showcase" (FR-43-24): the full-screen stage-beside-questions layout.
+    # - showHeader, the site's EC mark (media 198, ec-logo.png) at the draft's 16px height, closeStyle "text".
+    # - progressCounts "current": question 1 of 4 fills a quarter, as the draft does.
+    # - stepCountLabel "Question": "Question 1 of 3" (the prescription step has its own eyebrow).
+    # - progressColour "accent" (#9C8B78, the draft's var(--acc)); stageColour #F3F0EB (the draft's stage and
+    #   chosen-card fill, which the Eye Care palette has no token for).
+    # - summaryBaseLabel "Frame" and the "Lenses · not chosen yet" placeholder line; no panel title.
+    # - The WhatsApp help card: note and link verbatim, the WhatsApp icon and the palette's WhatsApp colours.
+    # - The footer's "Frame only? Skip the lenses" link (it takes the "No prescription" route).
+    B("sgs/choice-flow", dict(title="Add prescription lenses", progressStyle="bar", flowLayout="showcase",
+                              showPricePanel=True, pricePanelTitle="", stickyFooter=True,
+                              showHeader=True, closeStyle="text", headerLogoHeight=16,
+                              headerLogo={"id": 198, "url": MEDIA + "ec-logo.png", "alt": ""},
+                              progressColour="accent", progressCounts="current", stepCountLabel="Question",
+                              stageColour="#F3F0EB", summaryBaseLabel="Frame",
+                              summaryPendingLabel="Lenses", summaryPendingText="not chosen yet",
                               stageNote="Not sure which to pick?",
                               stageNoteLink={
                                   "url": "https://wa.me/4479605978",
                                   "text": "Happy to talk it through — message me and we'll choose together.",
-                              }), [
+                              },
+                              stageNoteIcon="whatsapp", stageNoteIconColour="whatsapp",
+                              stageNoteBorderColour="whatsapp-line", stageNoteHoverColour="whatsapp-soft",
+                              skipPrompt="Frame only?", skipLabel="Skip the lenses"), [
         step("What they're for", use),
         step("How thin", thickness),
         step("Finish", finish),

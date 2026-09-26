@@ -586,6 +586,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						/>
 					) }
 					<TextControl
+						label={ __( 'Note', 'sgs-blocks' ) }
+						value={ attributes.note || '' }
+						onChange={ ( val ) => setAttributes( { note: val } ) }
+						help={ __( 'Optional. A short muted line at the far end of the button, e.g. a price hint "from +£59".', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<TextControl
 						label={ __( 'Aria label', 'sgs-blocks' ) }
 						value={ ariaLabel }
 						onChange={ ( val ) => setAttributes( { ariaLabel: val } ) }
@@ -1094,6 +1102,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						withoutInteractiveFormatting
 					/>
 				) }
+				{ attributes.note && <span className="sgs-button__note">{ attributes.note }</span> }
 				{ hasIcon && ( iconPosition === 'after' || iconPosition === 'only' ) && iconPlaceholder }
 			</span>
 

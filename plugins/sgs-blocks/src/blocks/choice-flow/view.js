@@ -43,6 +43,8 @@ import { handleAddToBasketClick, handleBuyNowClick } from './add-to-bag.js';
 import { uploadFlowFile } from './flow-fields.js';
 import { initChrome } from './chrome.js';
 import { initEmailResults } from './email.js';
+import { handleSkipClick } from './flow-skip.js';
+import { SKIP_BUTTON_SELECTOR } from './flow-constants.js';
 import {
 	FLOW_SELECTOR,
 	OPTION_BUTTON_SELECTOR,
@@ -96,6 +98,13 @@ document.addEventListener( 'click', ( event ) => {
 	const addToBasketButtonEl = event.target.closest( ADD_TO_BASKET_BUTTON_SELECTOR );
 	if ( addToBasketButtonEl ) {
 		handleAddToBasketClick( addToBasketButtonEl );
+		return;
+	}
+
+	// FR-43-24 — the footer's skip link ("Frame only? Skip the lenses").
+	const skipButtonEl = event.target.closest( SKIP_BUTTON_SELECTOR );
+	if ( skipButtonEl ) {
+		handleSkipClick( skipButtonEl );
 		return;
 	}
 

@@ -3,21 +3,37 @@
     "name": "sgs/choice-flow",
     "attributes": {
       "title": "Add prescription lenses",
-      "maxWidth": "1200px",
       "progressStyle": "bar",
-      "showPricePanel": true,
-      "pricePanelTitle": "Your order",
-      "progressColour": "accent",
-      "showHeader": true,
-      "stickyFooter": true,
       "flowLayout": "showcase",
-      "summaryBaseLabel": "Frame",
+      "showPricePanel": true,
+      "pricePanelTitle": "",
+      "stickyFooter": true,
+      "showHeader": true,
       "closeStyle": "text",
+      "headerLogoHeight": 16,
+      "headerLogo": {
+        "id": 198,
+        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/ec-logo.png",
+        "alt": ""
+      },
+      "progressColour": "accent",
+      "progressCounts": "current",
+      "stepCountLabel": "Question",
+      "stageColour": "#F3F0EB",
+      "summaryBaseLabel": "Frame",
+      "summaryPendingLabel": "Lenses",
+      "summaryPendingText": "not chosen yet",
       "stageNote": "Not sure which to pick?",
       "stageNoteLink": {
         "url": "https://wa.me/4479605978",
         "text": "Happy to talk it through — message me and we'll choose together."
-      }
+      },
+      "stageNoteIcon": "whatsapp",
+      "stageNoteIconColour": "whatsapp",
+      "stageNoteBorderColour": "whatsapp-line",
+      "stageNoteHoverColour": "whatsapp-soft",
+      "skipPrompt": "Frame only?",
+      "skipLabel": "Skip the lenses"
     },
     "innerBlocks": [
       {
@@ -31,6 +47,8 @@
             "attributes": {
               "layout": "grid",
               "priceGroup": "lens-use",
+              "pricePrefix": "from",
+              "questionFontWeight": "500",
               "question": "What will you use them for?",
               "intro": "Your prescription tells you which. If there's an “ADD” column on it, varifocal is probably what you're after.",
               "options": [
@@ -44,7 +62,8 @@
                     "alt": ""
                   },
                   "helpText": "Uses the main line of your prescription. This is what most people want in sunglasses — sharp vision looking ahead and into the distance.",
-                  "description": "Driving, walking about, everyday wear."
+                  "description": "Driving, walking about, everyday wear.",
+                  "summaryText": "Distance lenses"
                 },
                 {
                   "label": "Reading",
@@ -56,7 +75,8 @@
                     "alt": ""
                   },
                   "helpText": "For reading in the garden or by the pool. Uses the “ADD” value on your prescription. You won't want to drive in these.",
-                  "description": "Close work, in the sun."
+                  "description": "Close work, in the sun.",
+                  "summaryText": "Reading lenses"
                 },
                 {
                   "label": "Varifocal",
@@ -68,7 +88,8 @@
                     "alt": ""
                   },
                   "helpText": "Distance at the top, reading at the bottom, blended in between with no visible line. Usually for over-40s. I take the fitting measurements from a photo or in person.",
-                  "description": "Near and far in one lens, no line."
+                  "description": "Near and far in one lens, no line.",
+                  "summaryText": "Varifocal lenses"
                 },
                 {
                   "label": "No prescription",
@@ -99,6 +120,7 @@
             "attributes": {
               "layout": "grid",
               "priceGroup": "lens-thickness",
+              "questionFontWeight": "500",
               "question": "How thin would you like them?",
               "intro": "Thinner lenses are lighter and sit neater in the frame. If you don't know your numbers, Standard is a safe pick — I'll check when your prescription arrives and tell you if something thinner is worth it.",
               "options": [
@@ -168,6 +190,7 @@
             "attributes": {
               "layout": "grid",
               "priceGroup": "lens-finish",
+              "questionFontWeight": "500",
               "question": "What finish?",
               "intro": "All of them block 100% of UV and come scratch-resistant. Watch the frame on the left change as you pick.",
               "options": [
@@ -181,7 +204,8 @@
                     "alt": ""
                   },
                   "helpText": "I match the tint to the lenses the brand fitted, so the frame looks exactly as designed. Nobody will know they're prescription.",
-                  "description": "Same colour and depth as the original lenses."
+                  "description": "Same colour and depth as the original lenses.",
+                  "stageEffect": "dim"
                 },
                 {
                   "label": "Polarised",
@@ -193,7 +217,8 @@
                     "alt": ""
                   },
                   "helpText": "A filter that cuts reflected glare rather than just dimming everything. If you drive a lot or spend time near water, this is the upgrade worth paying for.",
-                  "description": "Kills glare off water, roads and windscreens."
+                  "description": "Kills glare off water, roads and windscreens.",
+                  "stageEffect": "deepen"
                 },
                 {
                   "label": "Light-reactive",
@@ -205,7 +230,8 @@
                     "alt": ""
                   },
                   "helpText": "One pair that works indoors and out. Worth knowing they react to UV, so they stay lighter behind a car windscreen.",
-                  "description": "Clear indoors, dark outside in under a minute."
+                  "description": "Clear indoors, dark outside in under a minute.",
+                  "stageEffect": "soften"
                 },
                 {
                   "label": "Clear",
@@ -217,7 +243,8 @@
                     "alt": ""
                   },
                   "helpText": "Sunglasses frames make excellent everyday glasses. Anti-reflective coating both sides, included.",
-                  "description": "Turn them into everyday glasses."
+                  "description": "Turn them into everyday glasses.",
+                  "stageEffect": "brighten"
                 }
               ]
             }
@@ -234,6 +261,9 @@
             "name": "sgs/choice-flow-question",
             "attributes": {
               "layout": "grid",
+              "questionFontWeight": "500",
+              "eyebrow": "Last bit — and it can wait",
+              "summaryLabel": "Prescription",
               "question": "Your prescription",
               "intro": "It needs to be under two years old and from a UK optician — whoever tested your eyes has to give you a copy if you ask. You don't need it to hand right now.",
               "options": [
@@ -243,19 +273,22 @@
                   "nextStepId": "4",
                   "description": "Order now and I'll WhatsApp you a link for it. Nothing gets made until it arrives.",
                   "isDefault": true,
-                  "badge": "Easiest"
+                  "badge": "Easiest",
+                  "summaryText": "Sending it later"
                 },
                 {
                   "label": "Upload a photo",
                   "value": "upload",
                   "nextStepId": "5",
-                  "description": "A phone photo of the paper copy is fine."
+                  "description": "A phone photo of the paper copy is fine.",
+                  "summaryText": "Photo uploaded"
                 },
                 {
                   "label": "Type it in",
                   "value": "type",
                   "nextStepId": "6",
-                  "description": "If you've got the numbers in front of you."
+                  "description": "If you've got the numbers in front of you.",
+                  "summaryText": "Entered online"
                 }
               ]
             }

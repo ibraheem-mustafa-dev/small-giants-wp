@@ -280,60 +280,73 @@
  * =========================================================================
  * The ancestor class lives on the root `sgs/choice-flow` wrapper
  * (choice-flow/style.css) — every rule here reaches down into this block's
- * own classes through it, so compact's rules above stay untouched.
+ * own classes through it, so compact's rules above stay untouched. Card
+ * motion follows the Eye Care draft: border and lift over 0.25s, shadow
+ * over 0.3s; the '?' over 0.2s; its answer fades in over 0.25s.
  */
 
 .sgs-choice-flow--layout-showcase .sgs-choice-flow-question__intro {
 	max-width: 56ch;
 	margin-bottom: 26px;
 	font-size: 15.5px;
+	text-wrap: pretty;
 }
 
 .sgs-choice-flow--layout-showcase .sgs-choice-flow-question__title {
 	font-family: var( --wp--preset--font-family--heading, inherit );
 	font-size: 28px;
-	line-height: 1.1;
+	line-height: 1.05;
 	margin-bottom: 8px;
 }
 
-@container sgs-choice-flow-showcase ( min-width: 700px ) {
+@container sgs-choice-flow-showcase ( min-width: 600px ) {
 	.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__title {
 		font-size: 38px;
 	}
 }
 
-/* Options grid — the step pane's OWN container (`sgs-choice-flow-pane`,
-   declared on choice-flow/style.css's `.sgs-choice-flow__inner`), not the
-   flow's overall width: "one column under a 620px container" (FR-43-24). */
+/* Options grid: two columns once the flow is 620px wide (one on a phone);
+   a step whose options carry no pictures (the prescription step) runs three
+   across from 768px, as short text cards. */
 .sgs-choice-flow--layout-showcase .sgs-choice-flow-question__options--grid {
 	grid-template-columns: minmax( 0, 1fr );
 	gap: 12px;
 }
 
-@container sgs-choice-flow-pane ( min-width: 620px ) {
+@container sgs-choice-flow-showcase ( min-width: 620px ) {
 	.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__options--grid {
 		grid-template-columns: repeat( 2, minmax( 0, 1fr ) );
 	}
 }
 
+@container sgs-choice-flow-showcase ( min-width: 768px ) {
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__options--grid:not( :has( .sgs-choice-flow-question__option-media ) ) {
+		grid-template-columns: repeat( 3, minmax( 0, 1fr ) );
+	}
+}
+
 /* Option card: a 16:9 image band on top (row 1), then the title with its
-   price aligned right on the same line (row 2), then the description
-   (row 3) — explicit grid-row placement so the visual order doesn't depend
-   on render.php's own DOM order (badge stays absolutely positioned,
-   untouched). */
+   price aligned right (row 2), the description (row 3) and a badge (row 4).
+   Explicit placement keeps the visual order independent of the DOM order. */
 .sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-button {
 	display: grid;
 	grid-template-columns: 1fr auto;
 	align-items: baseline;
+	align-content: start;
+	height: 100%;
 	column-gap: 12px;
-	row-gap: 4px;
+	row-gap: 5px;
 	padding: 16px 18px 18px;
+	border-radius: 0;
+	background-color: var( --wp--preset--color--surface-alt, #fff );
+	transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.3s ease;
 }
 
 .sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-media {
 	grid-column: 1 / -1;
 	grid-row: 1;
-	margin: -16px -18px 12px;
+	width: calc( 100% + 36px );
+	margin: -16px -18px 11px;
 	border-radius: 0;
 }
 
@@ -348,33 +361,130 @@
 	grid-column: 2;
 	grid-row: 2;
 	margin-top: 0;
+	font-size: 14px;
 	white-space: nowrap;
-	color: var( --wp--preset--color--accent, var( --wp--preset--color--primary-dark, #6F6152 ) );
+	color: var( --wp--preset--color--accent-text, var( --wp--preset--color--primary-dark, #6F6152 ) );
 }
 
 .sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-description {
 	grid-column: 1 / -1;
 	grid-row: 3;
 	margin-top: 0;
+	font-size: 14px;
+	text-wrap: pretty;
 }
 
-/* A plain surface band when the option carries no image — render.php only
-   emits `.option-media` when an image URL exists, so this is a CSS-only
-   fallback (`:has()` is broadly supported; browsers without it simply show
-   no band, a decorative-only degrade). */
-.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-button:not( :has( .sgs-choice-flow-question__option-media ) )::before {
+/* A picture card's badge ("Most people pick this"): a solid accent tag
+   under the description. */
+.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-badge {
+	position: static;
+	grid-column: 1 / -1;
+	grid-row: 4;
+	justify-self: start;
+	margin-top: 4px;
+	padding: 4px 9px;
+	border-radius: 0;
+	background-color: var( --wp--preset--color--accent, #1f7a7a );
+	color: var( --wp--preset--color--text-inverse, #fff );
+	font-size: 10.5px;
+	font-weight: 400;
+	letter-spacing: 0.14em;
+}
+
+/* A blank band keeps a picture-less card level with its pictured
+   neighbours — only in a step where some option has a picture. */
+.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__options:has( .sgs-choice-flow-question__option-media ) .sgs-choice-flow-question__option-button:not( :has( .sgs-choice-flow-question__option-media ) )::before {
 	content: '';
 	display: block;
 	grid-column: 1 / -1;
 	grid-row: 1;
+	width: calc( 100% + 36px );
 	aspect-ratio: 16 / 9;
-	margin: -16px -18px 12px;
+	margin: -16px -18px 11px;
 	background-color: var( --wp--preset--color--surface-alt, #F3F0EC );
 }
 
-/* "the selected card gets a 2px border in the text colour" (FR-43-24) —
-   overrides the compact `--selected` rule's primary-token border above. */
+/* A text card (a step with no pictures): roomier padding, a smaller lift,
+   and its badge a soft tag beside the title ("Easiest"). */
+.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__options:not( :has( .sgs-choice-flow-question__option-media ) ) .sgs-choice-flow-question__option-button {
+	align-items: center;
+	row-gap: 6px;
+	padding: 20px 22px;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__options:not( :has( .sgs-choice-flow-question__option-media ) ) .sgs-choice-flow-question__option-button:hover {
+	transform: translateY( -2px );
+	box-shadow: none;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__options:not( :has( .sgs-choice-flow-question__option-media ) ) .sgs-choice-flow-question__option-label {
+	font-size: 17px;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__options:not( :has( .sgs-choice-flow-question__option-media ) ) .sgs-choice-flow-question__option-badge {
+	grid-column: 2;
+	grid-row: 2;
+	justify-self: end;
+	margin-top: 0;
+	padding: 4px 8px;
+	background-color: var( --wp--preset--color--accent-light, #FEF3C7 );
+	color: var( --wp--preset--color--accent-text, #92400E );
+}
+
+/* "the selected card gets a 2px border in the text colour" (FR-43-24) on
+   the stage colour — overrides the compact `--selected` rule above. */
 .sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-button--selected {
 	border-color: var( --wp--preset--color--text, #1a202c );
+	background-color: var( --sgs-choice-flow-stage, var( --wp--preset--color--surface-alt, #F1F0EC ) );
 	box-shadow: none;
+}
+
+/* The '?' toggle: a 30px disc in the card's top corner that fills dark on
+   hover; its answer opens as a dark panel under the card. */
+.sgs-choice-flow--layout-showcase .sgs-info-toggle {
+	top: 12px;
+	right: 12px;
+	width: 30px;
+	height: 30px;
+	background-color: color-mix( in srgb, var( --wp--preset--color--surface-alt, #fff ) 94%, transparent );
+	color: var( --wp--preset--color--text, #1a202c );
+	font-size: 14px;
+	font-weight: 400;
+	transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+@keyframes sgs-choice-flow-question-fade {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
+
+.sgs-choice-flow--layout-showcase .sgs-info-toggle__panel {
+	margin-top: 6px;
+	padding: 14px 16px;
+	border: 0;
+	border-radius: 0;
+	background-color: var( --wp--preset--color--text, #1a202c );
+	color: var( --wp--preset--color--text-inverse, #f1f5f9 );
+	font-size: 13.5px;
+	text-wrap: pretty;
+	animation: sgs-choice-flow-question-fade 0.25s ease both;
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-button {
+		transition: border-color 0.25s ease;
+	}
+
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-button:hover {
+		transform: none;
+	}
+
+	.sgs-choice-flow--layout-showcase .sgs-info-toggle__panel {
+		animation: none;
+	}
 }

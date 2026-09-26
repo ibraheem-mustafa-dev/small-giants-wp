@@ -832,7 +832,7 @@ $label_html = '<span class="sgs-button__label">' . wp_kses(
 		'span'   => array( 'class' => true ),
 		'code'   => array(),
 	)
-) . '</span>';
+) . '</span>' . sgs_button_note_html( $attributes ); // The optional note ("from +£59") follows the label.
 
 if ( $icon_html ) {
 	if ( 'before' === $icon_position ) {

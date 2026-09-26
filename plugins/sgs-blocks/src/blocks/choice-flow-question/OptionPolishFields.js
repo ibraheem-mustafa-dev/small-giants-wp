@@ -1,6 +1,8 @@
 /**
  * Per-option "polish" fields — Spec 43 §5 (Option polish): `isDefault`,
- * `badge` and `description`. Extracted out of edit.js's options.map() (which
+ * `badge` and `description`, plus FR-43-24's `summaryText` (the summary's
+ * wording for this answer) and `stageEffect` (a photo treatment the stage
+ * shows while this option is chosen). Extracted out of edit.js's options.map() (which
  * is at its 250-line cap per the choice-flow contract's size rule) so the
  * main thread can mount it as a sibling field block without adding lines to
  * that file's own JSX body.
@@ -15,7 +17,7 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { ToggleControl, TextControl, TextareaControl } from '@wordpress/components';
+import { SelectControl, ToggleControl, TextControl, TextareaControl } from '@wordpress/components';
 
 const BADGE_MAX_LENGTH = 20;
 const DESCRIPTION_MAX_LENGTH = 140;
@@ -67,6 +69,29 @@ export default function OptionPolishFields( { option, index, onChange } ) {
 				) }
 				rows={ 2 }
 				__nextHasNoMarginBottom
+			/>
+			<TextControl
+				label={ __( 'Summary wording', 'sgs-blocks' ) }
+				value={ option.summaryText || '' }
+				onChange={ ( val ) => onChange( index, 'summaryText', val ) }
+				help={ __( 'Optional. How the summary shows this answer, e.g. "Sending it later". Leave blank for the label.', 'sgs-blocks' ) }
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
+			/>
+			<SelectControl
+				label={ __( 'Photo treatment while chosen', 'sgs-blocks' ) }
+				value={ option.stageEffect || '' }
+				options={ [
+					{ label: __( 'None', 'sgs-blocks' ), value: '' },
+					{ label: __( 'Dim (a matched tint)', 'sgs-blocks' ), value: 'dim' },
+					{ label: __( 'Deepen (richer, darker)', 'sgs-blocks' ), value: 'deepen' },
+					{ label: __( 'Soften (a touch lighter)', 'sgs-blocks' ), value: 'soften' },
+					{ label: __( 'Brighten (clear)', 'sgs-blocks' ), value: 'brighten' },
+				] }
+				onChange={ ( val ) => onChange( index, 'stageEffect', val ) }
+				help={ __( 'The full-screen stage shows the product photo this way while this option is chosen, e.g. a lens finish.', 'sgs-blocks' ) }
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
 			/>
 		</>
 	);

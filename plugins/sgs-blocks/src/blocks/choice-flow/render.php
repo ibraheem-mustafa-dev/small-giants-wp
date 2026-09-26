@@ -38,7 +38,7 @@
  *
  * Footer: Back left; Continue (muted with aria-disabled until the step has a
  * choice), or a result step's own Add to basket / Buy now, on the right —
- * `includes/choice-flow-chrome.php::sgs_choice_flow_footer_html`, driven by
+ * `includes/choice-flow-footer.php::sgs_choice_flow_footer_html`, driven by
  * `navigation.js::updateFooterActions`. A recommendation or email-capture
  * terminal shows neither.
  *
@@ -69,6 +69,8 @@ require_once dirname( __DIR__ ) . '/choice-flow-question/helpers-addon-pricing.p
 require_once dirname( __DIR__, 3 ) . '/includes/choice-flow-chrome.php';
 require_once dirname( __DIR__, 3 ) . '/includes/choice-flow-variation-seed.php';
 require_once dirname( __DIR__, 3 ) . '/includes/choice-flow-summary.php';
+require_once dirname( __DIR__, 3 ) . '/includes/choice-flow-footer.php';
+require_once dirname( __DIR__, 3 ) . '/includes/choice-flow-showcase.php';
 
 // FR-43-6 — a linked flow renders the referenced sgs_choice_flow post's own
 // sgs/choice-flow (its steps, pricing and styling) in place of this block,
@@ -165,7 +167,8 @@ $root_sel = '.' . $uid . '.wp-block-sgs-choice-flow';
 
 $scoped_css = array();
 
-if ( '' !== $max_width ) {
+// Showcase fills its full-screen frame, so the compact box (maxWidth, padding) is not applied.
+if ( '' !== $max_width && ! $is_showcase ) {
 	$mw_safe = sgs_css_length_value( $max_width );
 	if ( '' !== $mw_safe ) {
 		$scoped_css[] = "{$root_sel}{max-width:{$mw_safe};margin-left:auto;margin-right:auto;}";
@@ -173,17 +176,17 @@ if ( '' !== $max_width ) {
 }
 
 $padding_base_val = sgs_box_object_shorthand( $padding_desktop );
-if ( null !== $padding_base_val ) {
+if ( null !== $padding_base_val && ! $is_showcase ) {
 	$scoped_css[] = "{$root_sel}{padding:{$padding_base_val};}";
 }
 
 $padding_tablet_val = sgs_box_object_shorthand( $padding_tablet );
-if ( null !== $padding_tablet_val ) {
+if ( null !== $padding_tablet_val && ! $is_showcase ) {
 	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{padding:{$padding_tablet_val};}}";
 }
 
 $padding_mobile_val = sgs_box_object_shorthand( $padding_mobile );
-if ( null !== $padding_mobile_val ) {
+if ( null !== $padding_mobile_val && ! $is_showcase ) {
 	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{padding:{$padding_mobile_val};}}";
 }
 
@@ -196,6 +199,7 @@ if ( '' !== $back_css ) {
 	$scoped_css[] = $back_css;
 }
 $scoped_css[] = sgs_choice_flow_chrome_progress_colour_css( $attributes, $root_sel );
+$scoped_css[] = sgs_choice_flow_showcase_css( $attributes, $root_sel );
 
 $inner_parsed = isset( $block->parsed_block['innerBlocks'] ) && is_array( $block->parsed_block['innerBlocks'] ) ? $block->parsed_block['innerBlocks'] : array();
 
@@ -215,6 +219,9 @@ $wrapper_args = array(
 	'data-flow-trim-zeros'  => apply_filters( 'woocommerce_price_trim_zeros', false ) ? '1' : '0',
 	// D1: read by navigation.js's advanceModeOf().
 	'data-advance-mode'     => $advance_mode,
+	// FR-43-24: read by flow-steps.js (progress formula, "Question 1 of 3").
+	'data-progress-counts'  => isset( $attributes['progressCounts'] ) && 'current' === $attributes['progressCounts'] ? 'current' : 'finished',
+	'data-step-count-label' => isset( $attributes['stepCountLabel'] ) && '' !== trim( (string) $attributes['stepCountLabel'] ) ? trim( (string) $attributes['stepCountLabel'] ) : __( 'Step', 'sgs-blocks' ),
 );
 
 if ( '' !== $flow_title ) {
@@ -270,6 +277,9 @@ if ( false !== strpos( $content, 'sgs-form-field' ) ) {
 	wp_enqueue_style( generate_block_asset_handle( 'sgs/form', 'style' ) );
 }
 echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- InnerBlocks content is pre-rendered/sanitised by the block editor's own save pipeline.
+if ( $is_showcase ) {
+	echo sgs_choice_flow_stage_note_html( $attributes, 'pane' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper escapes internally.
+}
 echo '</div>';
 
 // FR-43-19/D4/FR-43-24: the live summary/stage panel is DISPLAY ONLY — the

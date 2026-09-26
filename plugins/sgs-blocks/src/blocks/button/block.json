@@ -139,6 +139,12 @@
 			"default": "Click Here",
 			"role": "content"
 		},
+		"note": {
+			"type": "string",
+			"default": "",
+			"role": "content",
+			"description": "A short muted line beside the label, e.g. a price hint ('from +£59'). Not uppercased; the button spreads the label and note to its two ends. Empty shows none."
+		},
 		"url": {
 			"type": "string",
 			"default": "",

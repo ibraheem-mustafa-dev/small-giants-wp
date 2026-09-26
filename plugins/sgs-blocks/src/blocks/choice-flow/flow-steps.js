@@ -23,11 +23,12 @@ import {
 	ADD_TO_BASKET_BUTTON_SELECTOR,
 	BUY_NOW_BUTTON_SELECTOR,
 	SELECTED_CLASS,
-	STEP_COUNT_SELECTOR,
-	STEP_LABEL_SELECTOR,
 	CONTINUE_HINT_SELECTOR,
 } from './flow-constants.js';
-import { buildStepperMarkup, updateStepperState, updateProgressBadge } from './flow-progress.js';
+import { updateStepPosition } from './flow-progress.js';
+import { markStepReached } from './flow-reached.js';
+import { refreshPricePanel } from './pricing.js';
+import { updateSkipVisibility } from './flow-skip.js';
 import { flowState } from './flow-persistence.js';
 
 /**
@@ -161,7 +162,8 @@ export function hideContinueHint( flowRoot ) {
 /**
  * Show exactly one step (by index), hide all others, and update every piece
  * of chrome that depends on the current step (progress, step text, Back
- * visibility, footer actions).
+ * visibility, footer actions, the skip link) and the stage, which lists a
+ * default answer only once its step is reached (`flow-reached.js`).
  *
  * @param {HTMLElement} flowRoot    Flow wrapper element.
  * @param {number}      targetIndex Step index to reveal.
@@ -188,41 +190,11 @@ export function showStepByIndex( flowRoot, targetIndex ) {
 	}
 
 	if ( steps.length > 0 ) {
-		// D8 — progress counts FINISHED question steps: empty on step 1, full
-		// on a result step. A branching flow can end in several result steps
-		// (one per path), so counting those as questions would misreport the
-		// total.
-		const questionSteps = steps.filter( ( stepEl ) => ! stepEl.querySelector( RESULT_SELECTOR ) );
-		const total = questionSteps.length || steps.length;
-		const questionIndex = questionSteps.indexOf( targetStepEl );
-		// "Step N of M" (the eyebrow) still names the CURRENT question's
-		// position; the fill (below) is D8's separate finished-count formula.
-		const position = questionIndex === -1 ? total : questionIndex + 1;
-		const isResultStep = questionIndex === -1;
-		const finishedCount = isResultStep ? total : questionIndex;
-		const progress = total > 0 ? finishedCount / total : 0;
-		flowRoot.style.setProperty( '--sgs-choice-flow-progress', String( progress ) );
-
-		const stepCountEl = flowRoot.querySelector( STEP_COUNT_SELECTOR );
-		if ( stepCountEl ) {
-			stepCountEl.textContent = `Step ${ position } of ${ total }`;
-		}
-
-		const stepLabelEl = flowRoot.querySelector( STEP_LABEL_SELECTOR );
-		if ( stepLabelEl && targetStepEl ) {
-			// FIXES item 2: fall back to the active question's own title when
-			// the step declares no explicit `data-step-label` — chrome.js's
-			// showcase eyebrow reads this same element, so it always has
-			// something to compose "<Product name> — <Step name>" from.
-			const questionTitleEl = targetStepEl.querySelector( '.sgs-choice-flow-question__title' );
-			stepLabelEl.textContent =
-				targetStepEl.getAttribute( 'data-step-label' ) || ( questionTitleEl ? questionTitleEl.textContent : '' );
-		}
-
-		buildStepperMarkup( flowRoot, questionSteps.length ? questionSteps : steps );
-		updateStepperState( flowRoot, isResultStep ? total : questionIndex );
-		updateProgressBadge( flowRoot, position, total, progress );
+		updateStepPosition( flowRoot, steps, targetIndex );
 	}
+	markStepReached( flowRoot, targetIndex );
+	refreshPricePanel( flowRoot );
+	updateSkipVisibility( flowRoot, targetIndex );
 
 	updateBackButtonVisibility( flowRoot );
 	updateFooterActions( flowRoot, targetStepEl || null );

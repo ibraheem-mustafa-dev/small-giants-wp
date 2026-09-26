@@ -28,25 +28,30 @@ const MODAL_CLOSE_SELECTOR     = '.sgs-modal__close';
 const SHOWCASE_CLASS           = 'sgs-choice-flow--layout-showcase';
 
 /**
- * FIXES item 2: `showcase`'s eyebrow reads "<Product name> — <Step name>"
- * (the header's own `data-product-name` — render.php resolves it — plus
- * `.sgs-choice-flow__step-label`, which `flow-steps.js`'s showStepByIndex()
- * fills from the step's `data-step-label` or, failing that, the active
- * question's own title) instead of mirroring "Step N of M".
+ * `showcase`'s eyebrow: the step name on the first question, then
+ * "<Brand> <Product> — <Step name>" once the shopper has moved on (the Eye
+ * Care draft's `lensStepLabel`). The product name is the header's own
+ * `data-product-name`, the brand is the stage's brand line, and the step
+ * name is `.sgs-choice-flow__step-label` (`flow-progress.js` fills it, and
+ * sets the root's `data-question-index`).
  *
  * @param {HTMLElement} flowEl The flow's wrapper element.
  * @return {string} The composed eyebrow text.
  */
 function composeShowcaseEyebrow( flowEl ) {
 	const headerEl = flowEl.querySelector( HEADER_SELECTOR );
-	const productName = headerEl ? headerEl.getAttribute( 'data-product-name' ) || '' : '';
+	const brandEl = flowEl.querySelector( '.sgs-choice-flow__summary-brand' );
+	const product = [ brandEl ? brandEl.textContent.trim() : '', headerEl ? headerEl.getAttribute( 'data-product-name' ) || '' : '' ]
+		.filter( Boolean )
+		.join( ' ' );
 	const stepLabelEl = flowEl.querySelector( SOURCE_STEP_LABEL_SELECTOR );
 	const stepLabel = stepLabelEl ? stepLabelEl.textContent.trim() : '';
+	const onFirstQuestion = '0' === flowEl.dataset.questionIndex;
 
-	if ( productName && stepLabel ) {
-		return `${ productName } — ${ stepLabel }`;
+	if ( product && stepLabel && ! onFirstQuestion ) {
+		return `${ product } — ${ stepLabel }`;
 	}
-	return productName || stepLabel;
+	return stepLabel || product;
 }
 
 /**
@@ -120,6 +125,17 @@ function wireClose( flowEl ) {
 	closeButton.addEventListener( 'click', () => {
 		modalCloseButton.click();
 	} );
+
+	// On open the browser focuses the dialog's first control, this Close,
+	// which then wears a focus ring before the shopper has done anything.
+	// Focus the flow itself instead (its aria-label names the dialog); Tab
+	// still reaches Close first.
+	flowEl.setAttribute( 'tabindex', '-1' );
+	new MutationObserver( () => {
+		if ( dialog.open ) {
+			flowEl.focus( { preventScroll: true } );
+		}
+	} ).observe( dialog, { attributes: true, attributeFilter: [ 'open' ] } );
 
 	// The header's Close replaces the modal's own round one, so the dialog
 	// shows a single Close. The modal's button stays in the DOM because the

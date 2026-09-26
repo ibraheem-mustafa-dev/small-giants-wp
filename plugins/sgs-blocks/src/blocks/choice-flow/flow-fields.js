@@ -11,9 +11,13 @@
  */
 
 /**
- * Unpriced answers per flow instance, in the order they were given.
+ * Unpriced answers per flow instance, in the order they were given. `label`
+ * and `value` travel to the bag line; `stageLabel`/`stageValue` are the
+ * stage's wording (the question's `summaryLabel`, the option's
+ * `summaryText`); `product` marks an answer to one of the product's own
+ * attributes, which the stage names beside the product instead of as a line.
  *
- * @type {WeakMap<HTMLElement, Array<{stepIndex: number, label: string, value: string}>>}
+ * @type {WeakMap<HTMLElement, Array<{stepIndex: number, label: string, value: string, stageLabel: string, stageValue: string, product: boolean, effect: string}>>}
  */
 const plainAnswers = new WeakMap();
 
@@ -32,8 +36,18 @@ export function recordPlainAnswer( flowRoot, stepIndex, stepEl, buttonEl ) {
 	if ( ! label || ! value ) {
 		return;
 	}
+	const questionEl = buttonEl.closest( '.sgs-choice-flow-question' );
+	const answer = {
+		stepIndex,
+		label,
+		value,
+		stageLabel: ( questionEl && questionEl.getAttribute( 'data-summary-label' ) ) || label,
+		stageValue: buttonEl.getAttribute( 'data-summary-text' ) || value,
+		product: buttonEl.hasAttribute( 'data-product-attribute' ),
+		effect: buttonEl.getAttribute( 'data-stage-effect' ) || '',
+	};
 	const list = plainAnswers.get( flowRoot ) || [];
-	plainAnswers.set( flowRoot, [ ...list.filter( ( answer ) => answer.stepIndex !== stepIndex ), { stepIndex, label, value } ] );
+	plainAnswers.set( flowRoot, [ ...list.filter( ( entry ) => entry.stepIndex !== stepIndex ), answer ] );
 }
 
 /**

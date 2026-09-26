@@ -793,6 +793,23 @@
 	font-size: 1rem;
 }
 
+/* Brand, name and chosen options, one per line (choice-flow-summary.php's
+   identity helper serves the stage and the narrow row alike). */
+.sgs-choice-flow__summary-identity > span,
+.sgs-choice-flow__summary-summary-name > span {
+	display: block;
+}
+
+.sgs-choice-flow__summary-brand {
+	font-size: 0.8125rem;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.sgs-choice-flow__summary-summary-name .sgs-choice-flow__summary-meta {
+	font-size: 0.8125rem;
+}
+
 .sgs-choice-flow__summary-product {
 	margin: 0 0 4px;
 	font-weight: 600;
@@ -858,22 +875,35 @@
  * A full-height frame for a flow shown full screen (typically inside an
  * sgs/modal): a header bar (the chrome header, forced on by render.php),
  * a full-width progress line, a scrolling body grid — a sticky "stage"
- * aside (the summary panel above, reused as-is: same __summary-media/
- * -product/-meta/-lines/-total/-note elements) beside the step pane (the
- * existing __inner) — and the existing sticky-capable footer. Container
- * queries (not viewport media queries) drive every tier here, named on this
- * wrapper (`sgs-choice-flow-showcase`) and, for the options grid, on the
- * step pane itself (`sgs-choice-flow-pane`, declared in
- * choice-flow-question/style.css) — this project's convention is that a
- * component's responsive tier follows its own container's width, not the
- * viewport's.
+ * aside (the summary panel above, reused: same __summary-media/-identity/
+ * -lines/-total/-note elements) beside the step pane (the existing __inner)
+ * — and the footer bar. Container queries (not viewport media queries)
+ * drive every tier, named on this wrapper (`sgs-choice-flow-showcase`), so
+ * the flow's tier follows its own width. Below 600px the stage collapses to
+ * a slim row above the steps.
+ *
+ * Surfaces: the bars sit on the raised background (surface-alt), the body
+ * on the page background (surface), the stage and a chosen card on
+ * `--sgs-choice-flow-stage` (render.php, the `stageColour` setting).
+ *
+ * Motion (the Eye Care draft's values, all off under reduced motion): the
+ * progress line eases over 0.5s, a step rises in over 0.4s, the total pops
+ * over 0.35s when it changes, the stage photo's treatment eases over 0.6s.
  *
  * Compact's own rules above are untouched — every rule below is scoped
- * under `.sgs-choice-flow--layout-showcase` and never edits a bare
- * `.sgs-choice-flow__*` selector.
+ * under `.sgs-choice-flow--layout-showcase`.
  */
 
+/* A showcase flow fills its full-screen modal edge to edge: the modal's
+   own padding (room for its round Close, which the flow's header Close
+   replaces — chrome.js) is not needed. */
+.sgs-modal__dialog--fullscreen .sgs-modal__inner:has(> .sgs-choice-flow--layout-showcase) {
+	height: 100%;
+	padding: 0;
+}
+
 .sgs-choice-flow--layout-showcase {
+	--sgs-choice-flow-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 	container: sgs-choice-flow-showcase / inline-size;
 	display: flex;
 	flex-direction: column;
@@ -881,13 +911,22 @@
 	min-height: 0;
 	max-width: none;
 	padding: 0;
+	background-color: var(--wp--preset--color--surface, #FAF9F6);
 }
 
+/* chrome.js focuses the flow itself when its dialog opens. */
+.sgs-choice-flow--layout-showcase:focus {
+	outline: none;
+}
+
+/* ----- Header bar ----- */
+
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__chrome-header {
+	gap: 16px;
 	margin-bottom: 0;
 	padding: 14px 18px;
 	border-bottom: 1px solid var(--wp--preset--color--border, #D4DBE5);
-	background-color: var(--wp--preset--color--surface, #fff);
+	background-color: var(--wp--preset--color--surface-alt, #fff);
 	flex-shrink: 0;
 }
 
@@ -897,16 +936,41 @@
 	}
 }
 
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__chrome-logo {
+	height: var(--sgs-choice-flow-logo-height, 32px);
+	max-height: none;
+	margin-right: -2px;
+}
+
+/* The step name ("What they're for"), quiet and spaced. */
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__chrome-eyebrow {
+	font-size: 12px;
+	font-weight: 400;
+	letter-spacing: 0.18em;
+	color: var(--wp--preset--color--text-muted, #606D80);
+}
+
+/* The border firms up to the text colour, as the option cards do. */
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__chrome-close--text:hover {
+	border-color: var(--wp--preset--color--text, #1A202C);
+}
+
+/* ----- Progress line ----- */
+
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__progress {
 	margin-bottom: 0;
+	border-radius: 0;
+	background-color: var(--wp--preset--color--border, #D4DBE5);
 	flex-shrink: 0;
 }
 
-/* The flow-level step-indicator moves INTO the step pane (render.php echoes
-   the same markup there instead) — left-aligned there, an "accent ink"
-   eyebrow above the question title, not the compact right-aligned header
-   row. The step-label duplicates the H3 question text directly below it in
-   this layout, so only the count shows. */
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__progress-fill {
+	transition: width 0.5s var(--sgs-choice-flow-ease);
+}
+
+/* ----- The position line above each question ("Question 1 of 3") -----
+   render.php echoes the step indicator inside the step pane in showcase;
+   it shows even with the header on (the header carries the step name). */
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__header {
 	justify-content: flex-start;
 	margin: 0 0 8px;
@@ -918,14 +982,19 @@
 }
 
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__step-count {
-	color: var(--wp--preset--color--accent, var(--wp--preset--color--primary-dark, #6F6152));
+	display: block;
+	color: var(--wp--preset--color--accent-text, var(--wp--preset--color--primary-dark, #6F6152));
 	font-size: 12px;
+	font-weight: 400;
 	letter-spacing: 0.2em;
+	text-transform: uppercase;
 }
 
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__step-label {
 	display: none;
 }
+
+/* ----- Body grid ----- */
 
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__body {
 	display: block;
@@ -937,25 +1006,21 @@
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__body--with-panel {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr);
+	align-content: start;
 	align-items: stretch;
 	gap: 0;
 }
 
 @container sgs-choice-flow-showcase (min-width: 600px) {
 	.sgs-choice-flow--layout-showcase .sgs-choice-flow__body--with-panel {
-		grid-template-columns: minmax(300px, .8fr) minmax(0, 1.55fr);
+		grid-template-columns: minmax(250px, .7fr) minmax(0, 1.6fr);
+		align-content: stretch;
 	}
 }
 
-/* FIXES item 1: lowered from 700px — a ~640px+ container (e.g. this flow
-   inside an sgs/modal on a 768px viewport, whose container is ~672px) keeps
-   the full two-column stage instead of collapsing to the slim row; the
-   draft only stacks it at phone widths. Column minimums under 1100px match
-   the draft's own real lens-configurator source
-   (Eye Care Birmingham.dc.html:2187): minmax(250px,.7fr) minmax(0,1.6fr). */
-@container sgs-choice-flow-showcase (min-width: 600px) and (max-width: 1099px) {
+@container sgs-choice-flow-showcase (min-width: 1100px) {
 	.sgs-choice-flow--layout-showcase .sgs-choice-flow__body--with-panel {
-		grid-template-columns: minmax(250px, .7fr) minmax(0, 1.6fr);
+		grid-template-columns: minmax(300px, .8fr) minmax(0, 1.55fr);
 	}
 }
 
@@ -964,8 +1029,7 @@
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__summary {
 	order: -1;
 	margin: 0;
-	position: sticky;
-	top: 0;
+	position: static;
 	align-self: stretch;
 }
 
@@ -975,39 +1039,54 @@
 	border: none;
 	border-bottom: 1px solid var(--wp--preset--color--border, #D4DBE5);
 	border-radius: 0;
-	background-color: var(--wp--preset--color--surface-alt, #F3F0EC);
+	background-color: var(--sgs-choice-flow-stage, var(--wp--preset--color--surface-alt, #F1F0EC));
 }
 
-/* Narrow (below the container query, no match): a slim row only — 72px
-   thumbnail, name, total, above the steps. The full stage (image, lines,
-   note) stays hidden; FR-43-24's running lines move to the final step's
-   own summary instead. */
+/* Narrow: a slim row only — 72px thumbnail, brand, name and options, and
+   the total, above the steps. The full stage (image, lines, note) stays
+   hidden; the help note moves to the end of the step pane. */
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-body {
 	display: none;
 	flex-direction: column;
+	gap: 22px;
 	height: 100%;
+	padding: 0;
 }
 
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-toggle > summary {
+	gap: 14px;
+	padding: 0;
 	pointer-events: none;
 	cursor: default;
+	font-weight: 400;
 }
 
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-toggle > summary::after {
 	display: none;
 }
 
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-summary-media {
+	border: 1px solid var(--wp--preset--color--border, #D4DBE5);
+	border-radius: 0;
+	background-color: var(--wp--preset--color--surface-alt, #fff);
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-summary-name {
+	min-width: 0;
+}
+
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-summary-total {
 	flex-direction: column;
 	align-items: flex-end;
-	gap: 2px;
-}
-
-.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-summary-total-label {
-	font-size: 10px;
+	gap: 4px;
 }
 
 @container sgs-choice-flow-showcase (min-width: 600px) {
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary {
+		position: sticky;
+		top: 0;
+	}
+
 	.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-toggle {
 		padding: 22px;
 		border-bottom: 0;
@@ -1029,16 +1108,133 @@
 	}
 }
 
-.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-product {
-	font-family: var(--wp--preset--font-family--heading, inherit);
-	font-size: 1.1rem;
+/* The stage photo: a bordered square on the raised background. */
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-media {
+	position: relative;
+	margin: 0;
+	border: 1px solid var(--wp--preset--color--border, #D4DBE5);
+	border-radius: 0;
+	background-color: var(--wp--preset--color--surface-alt, #fff);
+	flex: 0 0 auto;
 }
 
-/* FIXES item 5: a small uppercase letter-spaced muted label (draft:
-   Eye Care Birmingham.dc.html:1353, 11.5px/text-muted) beside a large total
-   in the heading font — `.sgs-choice-flow__summary-total`'s own base rule
-   already keeps both on one flex/baseline row. */
-.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-total-label {
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-media .sgs-choice-flow__summary-image {
+	transition: filter 0.6s var(--sgs-choice-flow-ease);
+}
+
+/* An option's photo treatment (its `stageEffect`, e.g. a lens finish),
+   shown on the stage while it is chosen, named in a tag on the photo. */
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-media.is-effect-dim .sgs-choice-flow__summary-image {
+	filter: saturate(0.8) brightness(0.82);
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-media.is-effect-deepen .sgs-choice-flow__summary-image {
+	filter: saturate(1.25) contrast(1.2) brightness(0.78);
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-media.is-effect-soften .sgs-choice-flow__summary-image {
+	filter: brightness(1.05) saturate(0.9);
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-media.is-effect-brighten .sgs-choice-flow__summary-image {
+	filter: brightness(1.12) saturate(0.95);
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-effect {
+	position: absolute;
+	left: 14px;
+	bottom: 14px;
+	padding: 6px 10px;
+	background-color: color-mix(in srgb, var(--wp--preset--color--text, #1A202C) 80%, transparent);
+	color: var(--wp--preset--color--text-inverse, #fff);
+	font-size: 11px;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-effect[hidden] {
+	display: none;
+}
+
+/* Brand, name, chosen options. */
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-identity {
+	flex: 1 1 auto;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-brand,
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-product,
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-meta {
+	display: block;
+	margin: 0;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-brand {
+	font-family: var(--wp--preset--font-family--heading, inherit);
+	font-size: 14px;
+	font-weight: 500;
+	letter-spacing: 0.28em;
+	text-transform: uppercase;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-product {
+	margin-top: 6px;
+	font-family: inherit;
+	font-size: 17px;
+	font-weight: 400;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-meta {
+	margin-top: 3px;
+	color: var(--wp--preset--color--text-muted, #606D80);
+	font-size: 13px;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-meta:empty {
+	display: none;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-summary-name .sgs-choice-flow__summary-brand {
+	font-size: 13px;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-summary-name .sgs-choice-flow__summary-product {
+	margin-top: 4px;
+	font-size: 16px;
+}
+
+/* The running lines: the chosen things; answers and the placeholder muted. */
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-lines {
+	display: flex;
+	flex-direction: column;
+	gap: 9px;
+	padding-top: 18px;
+	border-bottom: 0;
+	font-size: 14.5px;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-lines li {
+	padding: 0;
+	gap: 14px;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-lines li > span:last-child {
+	white-space: nowrap;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-lines li.is-muted {
+	color: var(--wp--preset--color--text-muted, #606D80);
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-total {
+	flex-shrink: 0;
+	gap: 4px;
+	padding: 16px 0 0;
+	border-top: 1px solid var(--wp--preset--color--border, #D4DBE5);
+	font-weight: 400;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-total-label,
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-summary-total-label {
 	font-size: 11.5px;
 	font-weight: 400;
 	letter-spacing: 0.18em;
@@ -1048,32 +1244,31 @@
 }
 
 /* "a large total in the heading font" (FR-43-24). */
-.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-total-value {
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-total-value,
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-summary-total-value {
+	display: inline-block;
 	font-family: var(--wp--preset--font-family--heading, inherit);
 	font-size: 24px;
 	font-weight: 500;
+	line-height: 1;
+	white-space: nowrap;
 }
 
-@container sgs-choice-flow-showcase (min-width: 1100px) {
+@container sgs-choice-flow-showcase (min-width: 600px) {
 	.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-total-value {
 		font-size: 34px;
 	}
 }
 
-.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-note {
-	margin-top: auto;
-	padding: 14px 16px;
-	border: 1px solid var(--wp--preset--color--border, #D4DBE5);
-	border-radius: var(--wp--custom--border-radius--medium, 8px);
-	background-color: var(--wp--preset--color--surface, #fff);
-}
-
-/* Total pop on change (FR-43-24) — summary.js toggles `.is-updated` on the
-   stage's own total value every time pricing.js re-renders it. */
+/* The total pops when it changes (summary.js adds `.is-updated`). */
 @keyframes sgs-choice-flow-total-pop {
 	0% {
-		transform: scale(0.94);
-		opacity: 0.6;
+		transform: scale(0.6);
+		opacity: 0;
+	}
+
+	60% {
+		transform: scale(1.15);
 	}
 
 	100% {
@@ -1082,13 +1277,72 @@
 	}
 }
 
-.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-total-value.is-updated {
-	animation: sgs-choice-flow-total-pop 0.35s ease-out both;
+.sgs-choice-flow--layout-showcase .is-updated:is(.sgs-choice-flow__summary-total-value, .sgs-choice-flow__summary-summary-total-value) {
+	animation: sgs-choice-flow-total-pop 0.35s ease both;
 }
 
-@media (prefers-reduced-motion: reduce) {
-	.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-total-value.is-updated {
-		animation: none;
+/* The help note: a bordered card; with a link the whole card is the link,
+   with an optional round icon badge. Stage copy on wide containers, pane
+   copy (after the options) on narrow ones. */
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-note {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin: auto 0 0;
+	padding: 14px 16px;
+	border: 1px solid var(--sgs-choice-flow-note-border, var(--wp--preset--color--border, #D4DBE5));
+	border-radius: 0;
+	background-color: var(--wp--preset--color--surface-alt, #fff);
+	color: var(--wp--preset--color--text, #1A202C);
+	font-size: 14px;
+	font-weight: 400;
+	text-decoration: none;
+	transition: background-color 0.25s ease;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-note--link:hover {
+	background-color: var(--sgs-choice-flow-note-hover, var(--wp--preset--color--surface-alt, #fff));
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-note--link:focus-visible {
+	outline: 2px solid var(--wp--preset--color--text, #1A202C);
+	outline-offset: 2px;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-note-icon {
+	display: inline-flex;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: center;
+	width: 34px;
+	height: 34px;
+	border-radius: 50%;
+	background-color: var(--sgs-choice-flow-note-icon, var(--wp--preset--color--accent, #F59E0B));
+	color: #fff;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-note-icon svg {
+	width: 18px;
+	height: 18px;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-note-text {
+	text-wrap: pretty;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-note-sub {
+	display: block;
+	color: var(--wp--preset--color--text-muted, #606D80);
+	font-size: 13px;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-note--pane {
+	margin-top: 28px;
+}
+
+@container sgs-choice-flow-showcase (min-width: 600px) {
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-note--pane {
+		display: none;
 	}
 }
 
@@ -1105,19 +1359,78 @@
 	}
 }
 
-/* Steps rise in over 0.4s in showcase (compact keeps its own 220ms —
-   reduced motion is already handled globally above for `.sgs-form-step`). */
+/* A step rises in over 0.4s (compact keeps its own 220ms; reduced motion
+   is handled globally above for `.sgs-form-step`). */
 .sgs-choice-flow--layout-showcase .sgs-form-step {
-	transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+	transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
 .sgs-choice-flow--layout-showcase .sgs-form-step.is-entering {
-	transform: translateY(12px);
+	transform: translateY(18px);
 }
 
-/* ----- Footer bar (top border, per FR-43-24's frame) ----- */
+/* ----- Footer bar ----- */
 
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__footer {
 	margin-top: 0;
+	padding: 14px 18px;
+	border-top: 1px solid var(--wp--preset--color--border, #D4DBE5);
+	background-color: var(--wp--preset--color--surface-alt, #fff);
 	flex-shrink: 0;
+}
+
+@container sgs-choice-flow-showcase (min-width: 600px) {
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow__footer {
+		padding: 16px 28px;
+	}
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__nav-back,
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__chrome-close--text {
+	transition: border-color 0.25s ease;
+}
+
+/* The skip link beside Back, first question only (flow-skip.js); wide
+   containers only, as in the draft. */
+.sgs-choice-flow__skip {
+	margin: 0;
+	color: var(--wp--preset--color--text-muted, #606D80);
+	font-size: 13.5px;
+}
+
+.sgs-choice-flow__skip[hidden] {
+	display: none;
+}
+
+.sgs-choice-flow__skip-button {
+	min-height: 44px;
+	padding: 0;
+	border: 0;
+	background: none;
+	color: var(--wp--preset--color--text, #1A202C);
+	font: inherit;
+	text-decoration: underline;
+	text-decoration-thickness: 1px;
+	text-underline-offset: 4px;
+	cursor: pointer;
+}
+
+@container sgs-choice-flow-showcase (max-width: 599px) {
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow__skip {
+		display: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow__progress-fill,
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-image,
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-note,
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow__chrome-close--text,
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow__nav-back {
+		transition: none;
+	}
+
+	.sgs-choice-flow--layout-showcase .is-updated:is(.sgs-choice-flow__summary-total-value, .sgs-choice-flow__summary-summary-total-value) {
+		animation: none;
+	}
 }

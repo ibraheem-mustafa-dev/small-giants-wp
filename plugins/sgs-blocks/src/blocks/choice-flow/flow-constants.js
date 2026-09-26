@@ -30,3 +30,7 @@ export const PROGRESS_BADGE_SELECTOR = '.sgs-choice-flow__progress-badge';
 export const CONTINUE_HINT_SELECTOR = '.sgs-choice-flow__continue-hint';
 export const DEFAULT_OPTION_SELECTOR = '[data-default="1"]';
 export const OPTIONS_GROUP_SELECTOR = '.sgs-choice-flow-question__options';
+export const SKIP_SELECTOR = '.sgs-choice-flow__skip';
+export const SKIP_BUTTON_SELECTOR = '.sgs-choice-flow__skip-button';
+export const NO_ADDONS_OPTION_SELECTOR = '[data-add-to-bag-now]';
+export const QUESTION_SELECTOR = '.sgs-choice-flow-question';

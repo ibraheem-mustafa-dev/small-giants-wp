@@ -176,6 +176,7 @@
                   "label": "Add my prescription",
                   "url": "#lens-configurator",
                   "inheritStyle": "primary",
+                  "note": "from +£59.00",
                   "widthType": {
                     "desktop": "full"
                   },

@@ -1,60 +1,35 @@
 /**
  * SGS Choice Flow — summary panel (Spec 43 FR-43-19/FR-43-24, D4 v1.8.0).
  *
- * Renders the "finished product" summary `choice-flow-summary.php` reserves
- * the markup for: the resolved image (both the compact collapsed thumbnail
- * and the full stage image share one class, updated together), the product
- * name, a one-line "chosen options" summary (the unpriced answers on the
- * path, plain and product-option alike), the priced lines (base price then
- * each add-on, price or "Included"), and the running total. Same markup
- * serves this task's compact styling and FR-43-24's later `showcase`
- * styling. `pricing.js` owns the pricing STATE and calls
- * `renderSummaryPanel()` here on every change — this file only reads that
- * snapshot and paints. DISPLAY ONLY; FR-43-18's server-side price list
- * stays the sole price authority for what is actually charged.
+ * Paints the "finished product" stage `choice-flow-summary.php` reserves
+ * the markup for: the resolved image (the narrow row's thumbnail and the
+ * stage photo share one class) with the chosen option's photo treatment,
+ * the brand, name and chosen options, the running lines and the total.
+ * What to list comes from `summary-lines.js`; `pricing.js` owns the pricing
+ * state and calls `renderSummaryPanel()` on every change. DISPLAY ONLY:
+ * FR-43-18's server-side price list is the sole authority for the charge.
  *
  * @package SGS\Blocks
  */
 
-import { getPlainAnswers } from './flow-fields.js';
+import { buildSummary, formatMinor as formatTotal } from './summary-lines.js';
+
+export { formatMinor } from './summary-lines.js';
 
 const SUMMARY_SELECTOR = '.sgs-choice-flow__summary';
 const IMAGE_SELECTOR = '.sgs-choice-flow__summary-image';
 const PRODUCT_SELECTOR = '.sgs-choice-flow__summary-product';
-const SUMMARY_NAME_SELECTOR = '.sgs-choice-flow__summary-summary-name';
 const META_SELECTOR = '.sgs-choice-flow__summary-meta';
 const LINES_SELECTOR = '.sgs-choice-flow__summary-lines';
-const TOTAL_VALUE_SELECTOR = '.sgs-choice-flow__summary-total-value';
-// FIXES item 6: the collapsed row's total is now a "Total" label plus its
-// own value span (previously a bare text node) — only the value updates.
-const TOGGLE_TOTAL_VALUE_SELECTOR = '.sgs-choice-flow__summary-summary-total-value';
+const MEDIA_SELECTOR = '.sgs-choice-flow__summary-media';
+const TOTAL_VALUE_SELECTOR = '.sgs-choice-flow__summary-total-value, .sgs-choice-flow__summary-summary-total-value';
+const EFFECTS = [ 'dim', 'deepen', 'soften', 'brighten' ];
 
 /** `style.css`'s own two-column breakpoint for `.sgs-choice-flow__body--with-panel`. */
 const DESKTOP_QUERY = '(min-width: 1024px)';
 
 /** Flow roots whose "stay open on desktop" toggle lock is already bound. */
 const toggleLockBound = new WeakSet();
-
-/**
- * @param {number}  minor     Amount in minor currency units.
- * @param {number}  decimals  Currency decimal places.
- * @param {boolean} trimZeros Drop the decimals on a whole amount (WooCommerce's
- *                            `woocommerce_price_trim_zeros`, seeded by render.php).
- * @return {string} A plain formatted amount, e.g. "£9.99". Display only — the
- *                   cart/order totals a shopper actually pays are always
- *                   WooCommerce's own, server-formatted output.
- */
-export function formatMinor( minor, decimals, trimZeros = false ) {
-	const amount = minor / 10 ** decimals;
-	const places = trimZeros && minor % 10 ** decimals === 0 ? 0 : decimals;
-	return (
-		'£' +
-		amount.toLocaleString( undefined, {
-			minimumFractionDigits: places,
-			maximumFractionDigits: places,
-		} )
-	);
-}
 
 /**
  * Find the image of the combo whose resolved variation ID matches, from the
@@ -111,12 +86,16 @@ function updateImage( panelEl, variationId ) {
 }
 
 /**
- * @param {string} label Left cell text.
- * @param {string} value Right cell text.
+ * @param {string}  label Left cell text.
+ * @param {string}  value Right cell text.
+ * @param {boolean} muted A secondary line (an unpriced answer, the placeholder).
  * @return {HTMLLIElement} A line with both cells.
  */
-function buildLine( label, value ) {
+function buildLine( label, value, muted ) {
 	const lineEl = document.createElement( 'li' );
+	if ( muted ) {
+		lineEl.className = 'is-muted';
+	}
 	const labelEl = document.createElement( 'span' );
 	labelEl.textContent = label;
 	const valueEl = document.createElement( 'span' );
@@ -127,15 +106,39 @@ function buildLine( label, value ) {
 }
 
 /**
+ * Show the chosen option's photo treatment on the stage image (style.css's
+ * `.is-effect-*` rules, a filter that eases over 0.6s) and name it in a small
+ * tag on the photo, as the Eye Care draft does for the lens finish.
+ *
+ * @param {HTMLElement} panelEl     Stage `<aside>`.
+ * @param {string}      effect      One of EFFECTS, or '' for none.
+ * @param {string}      effectLabel The chosen option's label.
+ */
+function updateEffect( panelEl, effect, effectLabel ) {
+	panelEl.querySelectorAll( MEDIA_SELECTOR ).forEach( ( mediaEl ) => {
+		EFFECTS.forEach( ( name ) => mediaEl.classList.toggle( `is-effect-${ name }`, name === effect ) );
+		let tagEl = mediaEl.querySelector( '.sgs-choice-flow__summary-effect' );
+		if ( effect && ! tagEl ) {
+			tagEl = document.createElement( 'span' );
+			tagEl.className = 'sgs-choice-flow__summary-effect';
+			mediaEl.appendChild( tagEl );
+		}
+		if ( tagEl ) {
+			tagEl.textContent = effect ? effectLabel : '';
+			tagEl.hidden = ! effect;
+		}
+	} );
+}
+
+/**
  * Re-render one flow instance's summary panel. A no-op when the flow has no
  * panel container (`showPricePanel:false` never emits one — that setting
  * still means "show the panel", D4/FR-43-24 just changed what it shows).
  *
  * @param {HTMLElement} flowRoot Flow wrapper element.
- * @param {Object}      pricing  Pricing snapshot from `pricing.js`.
- * @param {Object}      pricing.base      `{priceMinor, decimals, variationId}` — the resolved product/variation.
- * @param {boolean}     pricing.trimZeros Whether to drop decimals on a whole amount.
- * @param {Array}       pricing.addonRows Priced add-on answers, `{key, label, groupLabel, price}` each.
+ * @param {Object}      pricing  Pricing snapshot from `pricing.js`: `base`
+ *                               (`{priceMinor, decimals, variationId, attributes}`),
+ *                               `trimZeros`, `addonRows`.
  */
 export function renderSummaryPanel( flowRoot, pricing ) {
 	const panelEl = flowRoot.querySelector( SUMMARY_SELECTOR );
@@ -143,72 +146,38 @@ export function renderSummaryPanel( flowRoot, pricing ) {
 		return;
 	}
 
-	const { base, trimZeros, addonRows } = pricing;
+	const { base, trimZeros } = pricing;
+	const summary = buildSummary( flowRoot, panelEl, pricing );
 	const productName = panelEl.getAttribute( 'data-product-name' ) || '';
-	// FIXES item 4: the base row's label is an operator control
-	// (`summaryBaseLabel`, default "Base price" — Eye Care sets "Frame"),
-	// carried here via the panel's own `data-base-label`.
-	const baseLabel = panelEl.getAttribute( 'data-base-label' ) || 'Base price';
 
 	updateImage( panelEl, base.variationId );
+	updateEffect( panelEl, summary.effect, summary.effectLabel );
 
-	// FR-43-24's "chosen options" one-liner — the path's unpriced answers
-	// (plain questions and unpriced product-option steps alike; a priced
-	// product-option step's choice shows as one of the priced lines below
-	// via its resolved base price instead), joined " · " for the stage.
-	const metaEl = panelEl.querySelector( META_SELECTOR );
-	if ( metaEl ) {
-		metaEl.textContent = getPlainAnswers( flowRoot )
-			.map( ( answer ) => answer.value )
-			.join( ' · ' );
-	}
-
-	const nameEl = panelEl.querySelector( SUMMARY_NAME_SELECTOR );
-	if ( nameEl ) {
-		nameEl.textContent = productName;
-	}
-	const productEl = panelEl.querySelector( PRODUCT_SELECTOR );
-	if ( productEl ) {
+	panelEl.querySelectorAll( META_SELECTOR ).forEach( ( metaEl ) => {
+		metaEl.textContent = summary.meta;
+	} );
+	panelEl.querySelectorAll( PRODUCT_SELECTOR ).forEach( ( productEl ) => {
 		productEl.textContent = productName;
-	}
+	} );
 
 	const linesEl = panelEl.querySelector( LINES_SELECTOR );
-	let addonTotalMinor = 0;
 	if ( linesEl ) {
 		linesEl.innerHTML = '';
-		linesEl.appendChild(
-			buildLine( baseLabel, base.priceMinor !== null ? formatMinor( base.priceMinor, base.decimals, trimZeros ) : '—' )
-		);
-		addonRows.forEach( ( answer ) => {
-			const priceValue = parseFloat( answer.price );
-			const priceMinor = Number.isFinite( priceValue ) ? Math.round( priceValue * 10 ** base.decimals ) : 0;
-			addonTotalMinor += priceMinor;
-			// FIXES item 4: the chosen OPTION's own label only (e.g. "Distance
-			// lenses", "Standard · 1.5") — never prefixed with its group's
-			// label, matching the draft's own running lines.
-			linesEl.appendChild(
-				buildLine( answer.label, priceMinor > 0 ? formatMinor( priceMinor, base.decimals, trimZeros ) : 'Included' )
-			);
-		} );
+		summary.lines.forEach( ( line ) => linesEl.appendChild( buildLine( line.label, line.value, line.muted ) ) );
 	}
 
-	const total =
-		base.priceMinor !== null ? formatMinor( base.priceMinor + addonTotalMinor, base.decimals, trimZeros ) : '—';
-	const totalValueEl = panelEl.querySelector( TOTAL_VALUE_SELECTOR );
-	if ( totalValueEl ) {
+	const total = summary.totalMinor !== null ? formatTotal( summary.totalMinor, base.decimals, trimZeros ) : '—';
+	panelEl.querySelectorAll( TOTAL_VALUE_SELECTOR ).forEach( ( totalValueEl ) => {
+		// FR-43-24: the total pops when it changes (style.css's `.is-updated`
+		// keyframes, off under reduced motion); an unchanged repaint stays still.
+		const changed = totalValueEl.textContent !== '' && totalValueEl.textContent !== total;
 		totalValueEl.textContent = total;
-		// FR-43-24: retrigger the showcase stage's "total pops on change"
-		// animation (style.css's `.is-updated` keyframe) — a no-op in compact,
-		// which has no rule for this class. Reduced motion is handled entirely
-		// by that CSS, not here.
-		totalValueEl.classList.remove( 'is-updated' );
-		void totalValueEl.offsetWidth; // Force a reflow so the class removal takes effect before it's re-added.
-		totalValueEl.classList.add( 'is-updated' );
-	}
-	const toggleTotalValueEl = panelEl.querySelector( TOGGLE_TOTAL_VALUE_SELECTOR );
-	if ( toggleTotalValueEl ) {
-		toggleTotalValueEl.textContent = total;
-	}
+		if ( changed ) {
+			totalValueEl.classList.remove( 'is-updated' );
+			void totalValueEl.offsetWidth; // Restart the animation.
+			totalValueEl.classList.add( 'is-updated' );
+		}
+	} );
 }
 
 /**

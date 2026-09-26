@@ -138,6 +138,8 @@ require_once __DIR__ . '/helpers-row-behaviour.php';
 require_once __DIR__ . '/helpers-svg-gradient.php';
 require_once __DIR__ . '/helpers-colour-variants.php';
 require_once __DIR__ . '/helpers-info-toggle.php';
+require_once __DIR__ . '/helpers-brand-glyphs.php';
+require_once __DIR__ . '/helpers-button-note.php';
 require_once __DIR__ . '/helpers-empty-tab.php';
 require_once __DIR__ . '/helpers-reviews-inline.php';
 require_once __DIR__ . '/media/atoms/media-type.php';

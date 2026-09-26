@@ -8,7 +8,7 @@
  *     hardcoded black-on-brand default before this)
  *   - an optional header: logo, a "Step N of M" eyebrow, a labelled Close
  *     button (only meaningful when the flow sits inside an sgs/modal)
- *   - a sticky Back / primary-action footer
+ *   - a sticky footer (its markup: `includes/choice-flow-footer.php`)
  *
  * D5/D7 (2026-09-26 plan) also live here — a product-option step's swatch-
  * image fallback and the question heading's font-weight class — because
@@ -266,32 +266,5 @@ if ( ! function_exists( 'sgs_choice_flow_question_title_weight_class' ) ) {
 	function sgs_choice_flow_question_title_weight_class( array $attributes ): string {
 		$weight = isset( $attributes['questionFontWeight'] ) ? (string) $attributes['questionFontWeight'] : '700';
 		return in_array( $weight, array( '400', '500', '600', '700', '800' ), true ) ? $weight : '700';
-	}
-}
-
-if ( ! function_exists( 'sgs_choice_flow_footer_html' ) ) {
-	/**
-	 * The flow's sticky footer: Back on the left; Continue, Add to basket and
-	 * Buy now on the right. navigation.js's updateFooterActions() decides which
-	 * right-hand buttons show for the current step (Spec 43 FR-43-1/FR-43-5).
-	 *
-	 * @param array $attributes Root block attributes.
-	 * @return string Escaped markup.
-	 */
-	function sgs_choice_flow_footer_html( array $attributes ): string {
-		$continue_label = isset( $attributes['continueLabel'] ) && '' !== trim( (string) $attributes['continueLabel'] )
-			? (string) $attributes['continueLabel']
-			: __( 'Continue', 'sgs-blocks' );
-
-		return '<div class="sgs-choice-flow__footer"><div class="sgs-choice-flow__footer-row">'
-			. '<button type="button" class="sgs-choice-flow__nav-back" hidden aria-label="' . esc_attr__( 'Back', 'sgs-blocks' ) . '">'
-			. '<span aria-hidden="true">&larr;</span> ' . esc_html__( 'Back', 'sgs-blocks' ) . '</button>'
-			. '<div class="sgs-choice-flow__footer-actions">'
-			. '<button type="button" class="sgs-choice-flow__continue is-muted" hidden aria-disabled="true">' . esc_html( $continue_label ) . '</button>'
-			. '<button type="button" class="sgs-choice-flow__add-to-basket" hidden></button>'
-			. '<button type="button" class="sgs-choice-flow__buy-now" hidden></button>'
-			. '</div></div>'
-			. '<p class="sgs-choice-flow__continue-hint" role="status" aria-live="polite" data-message="' . esc_attr__( 'Choose an option to continue', 'sgs-blocks' ) . '"></p>'
-			. '</div>';
 	}
 }

@@ -143,6 +143,23 @@
 	border-radius: 0;
 }
 
+/* A full-screen dialog fades in: there is no edge to grow from, so a scale
+   reads as the whole page lurching. */
+.sgs-modal__dialog--fullscreen,
+.sgs-modal__dialog--fullscreen[open] {
+	transform: none;
+	transition:
+		opacity   var(--wp--custom--duration--medium, 0.3s) ease,
+		overlay   var(--wp--custom--duration--medium, 0.3s) ease allow-discrete,
+		display   var(--wp--custom--duration--medium, 0.3s) ease allow-discrete;
+}
+
+@starting-style {
+	.sgs-modal__dialog--fullscreen[open] {
+		transform: none;
+	}
+}
+
 .sgs-modal__dialog--fullscreen .sgs-modal__close {
 	top: max(1rem, env(safe-area-inset-top));
 	right: max(1rem, env(safe-area-inset-right));

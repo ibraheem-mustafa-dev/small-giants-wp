@@ -89,7 +89,13 @@ export function recordOptionAnswer( flowRoot, buttonEl, stepIndex ) {
 			groupLabel,
 			buttonEl.getAttribute( 'data-value' ) || '',
 			buttonEl.getAttribute( 'data-price-label' ) || '',
-			buttonEl.getAttribute( 'data-price' ) || '0'
+			buttonEl.getAttribute( 'data-price' ) || '0',
+			{
+				stepIndex,
+				effect: buttonEl.getAttribute( 'data-stage-effect' ) || '',
+				summaryText: buttonEl.getAttribute( 'data-summary-text' ) || '',
+				startingPrice: 'from' === buttonEl.closest( '.sgs-choice-flow-question' )?.getAttribute( 'data-price-prefix' ),
+			}
 		);
 	} else if ( 'variation' !== buttonEl.getAttribute( 'data-attribute-mode' ) ) {
 		const stepEl = buttonEl.closest( STEP_SELECTOR );
