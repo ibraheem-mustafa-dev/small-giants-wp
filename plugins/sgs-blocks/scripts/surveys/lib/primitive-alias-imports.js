@@ -96,27 +96,10 @@ function findUnprefixedAliasImports( text, aliases ) {
  * visible in `--survey`, and `--check` fails if an entry no longer matches a real import (a stale
  * exemption reads as "handled" while pointing at nothing).
  *
- * BoxControl: verified live 2026-09-21 on the WP 7.1 editor that `wp.components.BoxControl` is a
- * defined function (core stabilised it), so these imports work today. They still bypass the
- * boundary, so they are listed here until each file's import is moved to
- * `components/primitives` (a one-line change per file, no behaviour change).
+ * Empty: no file imports a raw box editor any more (every box is SgsBoxControl, enforced by
+ * scripts/check-raw-box-control.py).
  */
-const UNPREFIXED_EXEMPT = {
-	BoxControl: {
-		reason:
-			'unprefixed BoxControl is a defined function on WP 7.1 (measured live in the block editor 2026-09-21), so it does not crash; migrate each file to components/primitives',
-		files: [
-			'blocks/container/components/GridItemDefaultsPanel.js',
-			'blocks/cta-section/edit.js',
-			'blocks/hero/edit.js',
-			'blocks/physics-canvas/edit.js',
-			'blocks/site-footer/edit.js',
-			'blocks/site-header/edit.js',
-			'blocks/trust-bar/edit.js',
-			'components/ResponsiveBoxControls.js',
-		],
-	},
-};
+const UNPREFIXED_EXEMPT = {};
 
 /**
  * @param {string} name Alias name.
