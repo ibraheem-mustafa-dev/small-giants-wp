@@ -1100,6 +1100,17 @@
 	.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-body {
 		display: flex;
 	}
+
+	/* The stage fills its column: the <details> passes its height to its
+	   content, and the product lines take the slack, so the running lines
+	   and total sit low and the help note meets the bottom edge. */
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-toggle::details-content {
+		height: 100%;
+	}
+
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-body {
+		min-height: 100%;
+	}
 }
 
 @container sgs-choice-flow-showcase (min-width: 1100px) {
@@ -1385,9 +1396,31 @@
 	}
 }
 
+/* The footer's buttons share one small uppercase treatment and the theme
+   button preset's height (Back's border and radius stay its own settings). */
+.sgs-choice-flow--layout-showcase :is(.sgs-choice-flow__nav-back, .sgs-choice-flow__continue, .sgs-choice-flow__add-to-basket, .sgs-choice-flow__buy-now) {
+	min-height: var(--wp--custom--button-presets--primary--min-height, 44px);
+	font-size: 12.5px;
+	font-weight: 400;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__nav-back {
+	padding: 0 20px;
+}
+
+.sgs-choice-flow--layout-showcase .sgs-choice-flow__nav-back > [aria-hidden="true"] {
+	display: none;
+}
+
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__nav-back,
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__chrome-close--text {
 	transition: border-color 0.25s ease;
+}
+
+.sgs-choice-flow--layout-showcase :is(.sgs-choice-flow__continue, .sgs-choice-flow__add-to-basket, .sgs-choice-flow__buy-now) {
+	transition: background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
 }
 
 /* The skip link beside Back, first question only (flow-skip.js); wide

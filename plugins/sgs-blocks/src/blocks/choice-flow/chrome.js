@@ -131,9 +131,15 @@ function wireClose( flowEl ) {
 	// Focus the flow itself instead (its aria-label names the dialog); Tab
 	// still reaches Close first.
 	flowEl.setAttribute( 'tabindex', '-1' );
+	// The total pops as the flow appears, as it does on every change.
 	new MutationObserver( () => {
 		if ( dialog.open ) {
 			flowEl.focus( { preventScroll: true } );
+			flowEl.querySelectorAll( '.sgs-choice-flow__summary-total-value, .sgs-choice-flow__summary-summary-total-value' ).forEach( ( totalEl ) => {
+				totalEl.classList.remove( 'is-updated' );
+				void totalEl.offsetWidth; // Restart the animation.
+				totalEl.classList.add( 'is-updated' );
+			} );
 		}
 	} ).observe( dialog, { attributes: true, attributeFilter: [ 'open' ] } );
 

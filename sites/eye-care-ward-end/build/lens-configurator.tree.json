@@ -12,8 +12,8 @@
       "closeStyle": "text",
       "headerLogoHeight": 16,
       "headerLogo": {
-        "id": 198,
-        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/ec-logo.png",
+        "id": 486,
+        "url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/flow-mark.png",
         "alt": ""
       },
       "progressColour": "accent",
@@ -33,7 +33,19 @@
       "stageNoteBorderColour": "whatsapp-line",
       "stageNoteHoverColour": "whatsapp-soft",
       "skipPrompt": "Frame only?",
-      "skipLabel": "Skip the lenses"
+      "skipLabel": "Skip the lenses",
+      "backBorderWidth": {
+        "top": "1px",
+        "right": "1px",
+        "bottom": "1px",
+        "left": "1px"
+      },
+      "backBorderRadius": {
+        "topLeft": "0px",
+        "topRight": "0px",
+        "bottomRight": "0px",
+        "bottomLeft": "0px"
+      }
     },
     "innerBlocks": [
       {

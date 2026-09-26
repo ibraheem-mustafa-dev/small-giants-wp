@@ -297,6 +297,8 @@
 	font-size: 28px;
 	line-height: 1.05;
 	margin-bottom: 8px;
+	/* Plain wrapping: a theme's balanced headings would break the question early. */
+	text-wrap: wrap;
 }
 
 @container sgs-choice-flow-showcase ( min-width: 600px ) {
@@ -333,7 +335,6 @@
 	grid-template-columns: 1fr auto;
 	align-items: baseline;
 	align-content: start;
-	height: 100%;
 	column-gap: 12px;
 	row-gap: 5px;
 	padding: 16px 18px 18px;
@@ -355,6 +356,7 @@
 	grid-row: 2;
 	font-size: 18px;
 	font-weight: 500;
+	line-height: normal;
 }
 
 .sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-price {
@@ -371,6 +373,7 @@
 	grid-row: 3;
 	margin-top: 0;
 	font-size: 14px;
+	line-height: normal;
 	text-wrap: pretty;
 }
 

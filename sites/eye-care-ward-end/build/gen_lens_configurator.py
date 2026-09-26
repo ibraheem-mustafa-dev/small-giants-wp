@@ -179,18 +179,20 @@ PHOTO = [B("sgs/form-field-file", dict(
 tree = [
     # The root, matching the draft's lens dialog (dc.html "sgs-lens-configurator"):
     # - flowLayout "showcase" (FR-43-24): the full-screen stage-beside-questions layout.
-    # - showHeader, the site's EC mark (media 198, ec-logo.png) at the draft's 16px height, closeStyle "text".
+    # - showHeader, the draft's thin-line EC glasses mark (media 486, sites/eye-care-ward-end/assets/flow-mark.png,
+    #   rendered from the hosted draft's inline SVG) at 16px high, closeStyle "text".
     # - progressCounts "current": question 1 of 4 fills a quarter, as the draft does.
     # - stepCountLabel "Question": "Question 1 of 3" (the prescription step has its own eyebrow).
     # - progressColour "accent" (#9C8B78, the draft's var(--acc)); stageColour #F3F0EB (the draft's stage and
     #   chosen-card fill, which the Eye Care palette has no token for).
     # - summaryBaseLabel "Frame" and the "Lenses · not chosen yet" placeholder line; no panel title.
     # - The WhatsApp help card: note and link verbatim, the WhatsApp icon and the palette's WhatsApp colours.
-    # - The footer's "Frame only? Skip the lenses" link (it takes the "No prescription" route).
+    # - The footer's "Frame only? Skip the lenses" link (it takes the "No prescription" route) and its
+    #   hairline square Back.
     B("sgs/choice-flow", dict(title="Add prescription lenses", progressStyle="bar", flowLayout="showcase",
                               showPricePanel=True, pricePanelTitle="", stickyFooter=True,
                               showHeader=True, closeStyle="text", headerLogoHeight=16,
-                              headerLogo={"id": 198, "url": MEDIA + "ec-logo.png", "alt": ""},
+                              headerLogo={"id": 486, "url": MEDIA + "flow-mark.png", "alt": ""},
                               progressColour="accent", progressCounts="current", stepCountLabel="Question",
                               stageColour="#F3F0EB", summaryBaseLabel="Frame",
                               summaryPendingLabel="Lenses", summaryPendingText="not chosen yet",
@@ -201,7 +203,11 @@ tree = [
                               },
                               stageNoteIcon="whatsapp", stageNoteIconColour="whatsapp",
                               stageNoteBorderColour="whatsapp-line", stageNoteHoverColour="whatsapp-soft",
-                              skipPrompt="Frame only?", skipLabel="Skip the lenses"), [
+                              skipPrompt="Frame only?", skipLabel="Skip the lenses",
+                              # The draft's footer Back: a 1px hairline, square corners.
+                              backBorderWidth={"top": "1px", "right": "1px", "bottom": "1px", "left": "1px"},
+                              backBorderRadius={"topLeft": "0px", "topRight": "0px", "bottomRight": "0px",
+                                                "bottomLeft": "0px"}), [
         step("What they're for", use),
         step("How thin", thickness),
         step("Finish", finish),

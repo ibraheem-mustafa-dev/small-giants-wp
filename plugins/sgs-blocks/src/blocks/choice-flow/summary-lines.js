@@ -93,7 +93,9 @@ export function buildSummary( flowRoot, panelEl, pricing ) {
 		},
 	];
 	let addonMinor = 0;
-	const priced = addonRows.filter( reached );
+	// In question order, whatever order the answers were recorded in (a
+	// default is recorded at load, before the questions ahead of it).
+	const priced = addonRows.filter( reached ).sort( ( a, b ) => a.stepIndex - b.stepIndex );
 	priced.forEach( ( answer ) => {
 		const priceValue = parseFloat( answer.price );
 		const minor = Number.isFinite( priceValue ) ? Math.round( priceValue * 10 ** base.decimals ) : 0;
