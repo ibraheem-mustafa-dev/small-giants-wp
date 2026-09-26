@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 30
-spec_version: "2.2"
+spec_version: "2.3"
 status: active
 title: "SGS WooCommerce Page Types — single-product / shop archive / cart / checkout"
 project: small-giants-wp
@@ -40,7 +40,7 @@ The Mama's Munches product-page draft is a WooCommerce page TYPE, but the framew
 
 ## Non-goals / Out of scope
 
-- **Block-based My Account** — no core block alternative exists; the page stays the classic WooCommerce shortcode. Its design (layout, styling, and where saved items sit) is FR-30-14.
+- **Block-based My Account** — no core block alternative exists; the page stays WooCommerce's classic account output, rendered inside the `sgs/account` block (FR-30-14), which owns its layout and every editor control.
 - **Bespoke cart drawer** — the core Mini-Cart drawer is used instead.
 - **Multi-image-per-variation galleries** — core swaps one image per variation; the plugin route is out of MVP scope.
 - **`FAQPage` schema for rich results** — Google does not show FAQ rich results (FR-27-F2's AI-citation framing is unaffected; this spec adds none).
@@ -76,7 +76,7 @@ The Mama's Munches product-page draft is a WooCommerce page TYPE, but the framew
 | PDP | Single Product template chassis; Product Gallery (variation-aware ≥WC 9.9, **Beta** — see FR-30-0); Title/Rating/Price/Breadcrumbs; Add-to-Cart+Options as the simple-product/no-JS fallback; Related/Up-sells | option-picker + cart proxy + variation manifest (FR-30-7) | price-display coupling (FR-30-8); template parts (FR-30-2) |
 | Shop | Product Collection; Product Filters (price/attribute/rating/stock); Active Filters (the chips — styled, not rebuilt) | — | product search (FR-30-5); searchable attribute filter (FR-30-6); archive UX shell (FR-30-3) |
 | Cart/Checkout | Cart + Checkout blocks (Store API); Mini-Cart with core slide-out drawer (Blocks ≥10.1) | — | styling only (FR-30-4) |
-| Account | Classic shortcode | — | none (CSS only, deferred) |
+| Account | Classic account output (`WC_Shortcode_My_Account`) | two-tier wishlist (U-12) | `sgs/account` wrapper block, Saved items endpoint and page, saved-item alerts (FR-30-14/15) |
 
 **Key research facts the split rests on:** live product search + type-to-find attribute filter are NOT core (paid extension only) → FR-30-5/6 build them; the cart drawer IS core → no SGS drawer; WC injects default block templates automatically — theme files only override composition (verified to win on the canary's WC version per FR-30-0).
 
@@ -163,22 +163,26 @@ A cloned product page targets the WC **single-product template on a real `produc
 A documented, repeatable pre-launch gate run before ANY client shop takes real money: (a) payment gateway in LIVE mode verified (test transaction or gateway dashboard confirmation); (b) return-policy fields populated (the FR-30-9 local validator passes — no empty `hasMerchantReturnPolicy`); (c) review source connected with ≥1 genuine review synced OR the empty-state toggle deliberately set; (d) per-unit denomination strings set (no placeholder text); (e) product data completeness sweep — published products missing `sku`/`gtin` listed (Google silently downgrades merchant listings); (f) statutory content present for the vertical (food: allergen information placed in the FR-30-2 content slot); (g) FR-30-11's script run green on the live site; (h) cookie-consent state verified if any capture/analytics is active (PECR).
 **Model:** sonnet (checklist doc + any automatable probes). **Done when:** the checklist exists as a versioned doc in the repo, each item has a named probe or manual step, and the first client launch records a completed pass.
 
-### FR-30-14 — Customer account area: research, design, then build — **NOT STARTED**
-The shopper-facing pages around the Wave 3C wishlist (`sgs/wishlist-link`, `sgs/wishlist-panel`, Save for later on basket rows; `.claude/plans/2026-09-21-wave-3c-implementation-plan.md` lane C) were built from a feature design, not a page design. This FR designs them as pages: (a) the **My Account** page (dashboard, orders, addresses, account details, log-in and register states for a logged-out visitor); (b) the **Saved items** page (the panel on its own page: layout, empty state, sorting, what each row shows); (c) the **saved items under the basket** on `theme/sgs-theme/templates/cart.html` (placement, how many rows before "View all", how it reads next to the basket totals).
-Order: research first (`/research-buddies` on the best current UK and international shop account and saved-items pages, plus `/gh-research` on open-source WooCommerce account templates), then a direction with `/frontend-design`, then Bean's sign-off, then the build.
-**Done when:** a design note with the researched references and the chosen layouts is signed off by Bean; all three surfaces are built with every value an editor control; live-checked at 375/768/1440 with axe 0 on sandybrown.
+### FR-30-14 — Customer account area — **SHIPPED** (live on sandybrown 2026-09-26)
+Designed as pages, researched (Baymard, CMA209, the WooCommerce account templates and 11.2's core lists) and signed off by Bean on 2026-09-26: `.claude/reports/2026-09-26-fr30-14-account-area-design.md` (mockup linked there).
+(a) **My Account**: the `sgs/account` block renders WooCommerce's classic account output (`WC_Shortcode_My_Account::output()`) inside a scoped wrapper. Side menu at the desktop tier, a scrolling row of tabs below it (per-tier `navLayout`), an icon per item, hideable items; a dashboard (`includes/account/templates/dashboard.php`, swapped in only inside the block) that leads with the latest order (status chip and a four-step progress line) then quick cards; log-in and register side by side or stacked, an optional Track an order card and guest line. Every value is an editor control, including menu, active item, content link, card, chip and track colours, card border, and menu / heading / card-title typography.
+(b) **Saved items**: a `saved-items` account endpoint (self-healing rewrite) and a Saved items page (WooCommerce setting `woocommerce_saved_items_page_id`, beside Cart and Checkout); `sgs/wishlist-panel` gains `grid` / `list` / `strip` layouts, sort, date saved, the price-drop line, a guest sign-in prompt and every label as an attribute. The header heart defaults to the Saved items page.
+(c) **Under the basket**: `theme/sgs-theme/templates/cart.html` uses the strip layout (compact cards, up to 4, then View all), full width below the basket and totals.
+New installs get both pages through `woocommerce_create_pages`, each inside an `sgs/container`; an existing page converts with the `core/shortcode` → `sgs/account` transform.
+**Verified:** `scripts/wc-pages-responsive-audit.js` (guest and a customer account) at 375/768/1440: zero overflow, axe 0 outside the header on every account and saved-items surface (the one remaining finding is the header phone button, tracked in LEDGER); screenshots in `.claude/reports/spec30-p5/`. Executed JS: saved-items page 55 KB (header scripts plus 7 KB of the panel); account pages 116 KB, of which WooCommerce core's jQuery and selectWoo are 49 KB (the block adds none).
 
-### FR-30-15 — Saved-item alerts: back in stock and price drops — **PARTLY BUILT**
-Built: each saved row shows its stock status, and an out-of-stock row offers "Notify me" through the existing back-in-stock route (`includes/class-stock-notify.php`). To build: (a) **price drops**: the price is recorded when an item is saved (`_sgs_wishlist` user meta for logged-in shoppers, the browser list for guests); the row shows "Now £X, was £Y" when the current price is lower; logged-in shoppers who opted in get an email through the N8N webhook when a saved item's price falls (a scheduled comparison, never `wp_mail()`); the reference price follows FR-30-8's DMCC rules; (b) **back-in-stock for in-stock items that later sell out**: the same opt-in covers a saved item going out of stock and returning; (c) **share by link**: a read-only link to a saved list. Each alert is a shopper opt-in (PECR consent, as notify-me already does), and each is a block-editor toggle for the client.
-**Done when:** a price change on a saved product shows on the row and, for an opted-in logged-in shopper, sends one webhook event; the opt-in and each client toggle work from the editor; tests with a negative control.
+### FR-30-15 — Saved-item alerts and share by link — **SHIPPED** (live-proved on sandybrown 2026-09-26)
+(a) **Price drops**: each saved item records `savedPrice` (minor units, the Store API basis) when saved (account user meta; a parallel browser key for guests; a merge records server prices only). The row shows "Price drop: now {now} ({saved} when you saved it)", never "was" and never a percentage (CMA209: it is the shopper's own history, not a trader reference price; FR-30-8 is unchanged). (b) **Alerts**: two separate unticked opt-ins (price drops; back in stock) with the privacy link, per shopper with a consent timestamp. A 12-hourly Action Scheduler job (`Wishlist_Alerts_Scan`) sends at most one `sgs_wishlist_alert` N8N event per shopper per run, only while the site switch AND the opt-in are on, and saves new baselines only after a successful send (a price only alerts again below the lowest price already alerted). The Notify me list (`class-stock-notify.php`) is now actually sent: a product or variation moving to in stock queues one `sgs_back_in_stock` event with its subscriber emails, then clears the list. Never `wp_mail()`. (c) **Share by link**: a revocable 32-hex token (`?sgs-list=` on the Saved items page), read-only view, noindexed, served by a rate-limited public route that returns only published, visible product ids and no personal data. **Client switches**: price alerts, stock alerts and sharing are the site setting `sgs_wishlist_features`, edited from the Saved items panel's inspector through the site entity.
+**Verified:** `tests/php/run-wishlist-standalone.php` (74), `run-wishlist-alerts-standalone.php` (15), `run-account-standalone.php` (22) and `scripts/tests/test-wishlist-panel.mjs`, each with negative controls; the live proof `scripts/qa/fr30-15-alerts-live-proof.php` passed 9/9 on sandybrown (one event for a drop, none on a second scan, none with the site switch off, restock sent once and cleared, list kept with no webhook URL), restoring every value it touched.
+**Watch item:** WooCommerce 11.2 ships core back-in-stock notifications and experimental, logged-in-only shopper lists (wishlist, save for later). When the lists leave experimental, compare again and decide whether the logged-in tier should sit on them.
 
-## Phasing (P1 to P4 COMPLETE; P5 open)
+## Phasing (P1 to P5 COMPLETE)
 
 1. **P1 — Working PDP + cart loop:** FR-30-0/1/2/7/4. **SHIPPED**, R-22-13 signed off. FR-30-12 pipeline gate unblocked.
 2. **P2 — Differentiators:** FR-30-8 (price coupling + value-ladder), FR-30-10 (reviews), notify-me + Turnstile (FR-30-7), gallery variation-aware swap. **SHIPPED**.
 3. **P3 — Shop:** FR-30-3 archive UX shell, FR-30-6 searchable filter, FR-30-5 product search. **SHIPPED**, live-verified on the canary.
 4. **P4 — Schema:** FR-30-9 (Organization/WebSite/noindex/returnPolicyCountry). FR-30-13 go-live checklist at `.claude/specs/go-live-checklist.md`. **SHIPPED**.
-5. **P5 — Customer account area:** FR-30-14 (research and design first), then FR-30-15. **NOT STARTED**.
+5. **P5 — Customer account area:** FR-30-14 and FR-30-15. **SHIPPED** 2026-09-26, live on sandybrown.
 - FR-30-11 gates every phase close (Playwright responsive scripts + axe 0 per page).
 
 ## Open Questions

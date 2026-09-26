@@ -2,7 +2,7 @@
 doc_type: plan
 spec_id: 30
 covers: [FR-30-14, FR-30-15]
-status: in progress
+status: complete
 created: 2026-09-26
 ---
 
@@ -38,11 +38,15 @@ Design (signed off 2026-09-26): `.claude/reports/2026-09-26-fr30-14-account-area
 
 | # | Stream | Files (one writer each) | Status |
 |---|---|---|---|
-| A1 | Wishlist store, REST, alerts opt-in, share, public shared route, site setting, shared-view noindex | `includes/wishlist/class-wishlist-store.php`, `class-wishlist-rest.php`, `class-wishlist-account-rest.php`, `class-wishlist-shared-rest.php`, `class-wishlist-settings.php`, `class-wishlist-privacy.php`; delete `includes/class-sgs-wishlist-rest.php`; `includes/class-noindex-store-pages.php`; `tests/php/run-wishlist-standalone.php` | |
-| A2 | Alerts scan, back-in-stock dispatch, webhook helper | `includes/wishlist/class-wishlist-alerts-scan.php`, `includes/class-stock-notify-dispatch.php`, `includes/class-sgs-webhook.php`, `tests/php/run-wishlist-alerts-standalone.php` | |
-| B | `sgs/account` block, account endpoints, dashboard, pages | `src/blocks/account/*`, `includes/account/*`, `tests/php/run-account-standalone.php` | |
-| C | Wishlist panel layouts, labels, sort, price drop, alerts and share bars, shared view, store prices, link default, cart template | `src/blocks/wishlist-panel/*`, `src/shared/wishlist-store/*`, `src/blocks/wishlist-link/render.php`, `theme/sgs-theme/templates/cart.html`, `scripts/tests/test-wishlist-panel.mjs` | |
-| M | Main thread: loader lines in `sgs-blocks.php`, build, gates, `/sgs-update`, deploy, page content on sandybrown, `scripts/wc-pages-responsive-audit.js` account pages, live check, docs | | |
+| A1 | Wishlist store, REST, alerts opt-in, share, public shared route, site setting, shared-view noindex | `includes/wishlist/class-wishlist-store.php`, `class-wishlist-rest.php`, `class-wishlist-account-rest.php`, `class-wishlist-shared-rest.php`, `class-wishlist-settings.php`, `class-wishlist-privacy.php`; delete `includes/class-sgs-wishlist-rest.php`; `includes/class-noindex-store-pages.php`; `tests/php/run-wishlist-standalone.php` || done |
+| A2 | Alerts scan, back-in-stock dispatch, webhook helper | `includes/wishlist/class-wishlist-alerts-scan.php`, `includes/class-stock-notify-dispatch.php`, `includes/class-sgs-webhook.php`, `tests/php/run-wishlist-alerts-standalone.php` || done |
+| B | `sgs/account` block, account endpoints, dashboard, pages | `src/blocks/account/*`, `includes/account/*`, `tests/php/run-account-standalone.php` || done |
+| C | Wishlist panel layouts, labels, sort, price drop, alerts and share bars, shared view, store prices, link default, cart template | `src/blocks/wishlist-panel/*`, `src/shared/wishlist-store/*`, `src/blocks/wishlist-link/render.php`, `theme/sgs-theme/templates/cart.html`, `scripts/tests/test-wishlist-panel.mjs` || done |
+| M | Main thread: loader lines in `sgs-blocks.php`, build, gates, `/sgs-update`, deploy, page content on sandybrown, `scripts/wc-pages-responsive-audit.js` account pages, live check, docs | || done |
+
+## Outcome (2026-09-26)
+
+Built and live on sandybrown: 539553286, 169442a98, cfe242678, 6c31ad8b7, 89123a75f, 1663ff14f + 84b9424f9, a6d7567eb. The live check (a real customer account, `sgs-qa-customer`, credentials in the gitignored secrets file; fixture order 4229; Saved items page 4228) found and fixed: a dashboard fatal (a require path one folder too deep), logged-in shoppers treated as guests on pages without `wp-api-request` (the wishlist and cart configs now print on their own head handles), WooCommerce's `width:30%` on the account menu, the strip layout never applying, a 4px tab-row overflow, contrast failures on content links, the active tab pill and focus rings (accent used as ink), and an unlabelled share field. Verification results are in Spec 30 FR-30-14 and FR-30-15. Polish for Bean's eye, not defects: the lone fifth quick card on its row at 1440; two-column saved cards are narrow at 375.
 
 ## Verification
 
