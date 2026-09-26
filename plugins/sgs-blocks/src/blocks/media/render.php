@@ -1381,15 +1381,16 @@ if ( 'image' === $media_type ) {
 		$caption_html        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled from wp_kses_post() + esc_attr() above.
 	);
 } elseif ( 'lottie' === $media_type ) {
-	// Lottie — the pause control prints as a SIBLING after the closing
-	// </figure>, never nested inside it (council fix 4, design §3.2): this
-	// block emits no link wrapper for a Lottie instance, but keeping the
-	// control outside the figure matches every other Lottie surface.
+	// Lottie: the pause control sits directly after the animation inside the
+	// figure, where fx-lottie.js binds it (the wrapper's parent) and
+	// fx-lottie.css positions it. A figure is not a link, so the control is
+	// not nested in interactive content (the logo prints its own after </a>).
 	printf(
-		'<figure %s>%s</figure>%s',
+		'<figure %s>%s%s%s</figure>',
 		$wrapper_attributes, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() escapes internally.
 		$lottie_html,        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built exclusively by sgs_render_lottie(), which escapes every value itself.
-		$lottie_pause_html   // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built exclusively by sgs_render_lottie(), which escapes every value itself.
+		$lottie_pause_html,  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built exclusively by sgs_render_lottie(), which escapes every value itself.
+		$caption_html        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled from wp_kses_post() + esc_attr() above.
 	);
 } else {
 	// Video always emits a <figure> wrapper (needed for caption + accessible labelling).
