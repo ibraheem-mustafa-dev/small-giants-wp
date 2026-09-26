@@ -210,7 +210,7 @@ visually. `none` means neither.
 | ‖ | U-12 — **DONE** | Header and footer furniture: local-time clock, language switch, store selector, wishlist (link, saved-items panel, Save for later), theme toggle with an automatic dark palette, back-to-top and account as `sgs/button` link sources, sound mute as an `sgs/audio` style (Bean, 2026-09-25). `headerEssential` on `product-search` only | M-18 | none | high | six new directories (`local-time/`, `language-switch/`, `store-selector/`, `theme-toggle/`, `wishlist-link/`, `wishlist-panel/`), plus `button/`, `audio/`, `product-card/`, `cart/`, `product-search/block.json`, `includes/wishlist/`, `includes/helpers-link-source.php`, `scripts/derive-dark-palette.py` and the theme's dark-mode files |
 | ‖ | U-15 — **DONE** | Self-changing header message (rotate, random, live clock) on `notice-banner`. No overlap with header or nav infrastructure | M-07 | eye | medium | `notice-banner/*`, new `notice-message/` |
 | ‖ | U-17 — **DONE** | The Lottie player (DEC-13, section 1h): Spec 38 Tier H, the fourth media type, the wrapper background and the logo substrate | M-33 | design | high | `includes/lottie-*.php`, `src/shared/effects/{fx-lottie,lottie-adapter}.js`, `src/vendor-modules/lottie-light.js`, the media atoms, `media/`, `hero/`, `responsive-logo/`, `class-sgs-container-wrapper.php` |
-| 15 | U-18 — **open** | Copy-parity gaps found composing Gate 3C item 4's two copies: G1 burger width and height, G2 drawer grows from the header's box, G3 drawer fill takes any colour, G4 a narrower panel centres in its wrap, G5 per-card fills (composition first). Detail below the lane C paragraph | M-39, M-17, M-13, M-16, M-42 | design | medium | `nav-bar-menu/{block.json,style.css}`, `nav-drawer/{block.json,render.php}`, `nav-menu-submenu-css.php`, `src/shared/nav-interactivity/mega-disclosure.js` |
+| 15 | U-18 — **open** | Copy-parity gaps found composing Gate 3C item 4's two copies: G1 burger width and height, G2 drawer grows from the header's box, G3 (first) every colour setting accepts any colour on the live page, with a detector and gate, G4 a narrower panel centres in its wrap, G5 per-card fills (composition first; M-42 only if it needs code). Detail below the lane C paragraph | M-39, M-17, M-13, M-16 | design | medium | `nav-bar-menu/{block.json,style.css}`, `nav-drawer/{block.json,render.php}`, `nav-menu-item-border-featured-css.php`, `nav-menu-submenu-css.php`, `src/shared/nav-interactivity/mega-disclosure.js`, a new colour gate under `scripts/` |
 
 **U-1 — done** (live `reports/visual-diff/container-2026-09-23.md`, `nav-bar-menu-2026-09-23.md` and
 `nav-drawer-2026-09-23.md`, each `verdict: PASS`). Shipped: mega close-grace reads `submenuCloseGrace`; force-solid paints the header's own
@@ -419,8 +419,16 @@ the code or a live measurement; they go through the section 5 loop, never inline
 - G1: `sgs/nav-bar-menu::burgerSize` sets width and height together; lamalama's burger is 30x36.
 - G2: no `sgs/nav-drawer::anchor` value lays the panel over the header's own box (lamalama's pill grows into its
   438x436 card). `trigger` drops below the burger, right-aligned (`nav-drawer/render.php`, `case 'trigger'`).
-- G3: `sgs/nav-drawer::drawerBg` resolves palette slugs only (`render.php`, `sanitize_html_class`), while
-  `sgs/site-header::backgroundColour` takes any colour: lamalama's black and Indus blue cannot be painted.
+- G3, FIRST (Bean 2026-09-26: a breach of the universal colour standard, and nothing detects it): the editor's colour
+  panel lets any colour be picked and previewed, but three render paths drop a custom colour on the live page by
+  running it through `sanitize_html_class` (which strips the `#`) and a palette-name-only `sgs_resolve_palette_hex`:
+  `nav-drawer/render.php` (`drawerBg`) and `includes/nav-menu-item-border-featured-css.php` (`featuredBg`,
+  `featuredBgHover`). The precedent that accepts a slug or any CSS colour is `includes/nav-menu-css.php` (the
+  `$sgs_nm_hex` closure: `sgs_is_css_colour` then `sgs_functional_colour_to_hex`). `scripts/census-colour-paint-route.py`
+  counts which helper paints, not whether a custom colour survives, so it cannot see this. Build the detector before
+  fixing (`.claude/THE-MIGRATION-METHOD.md`): a static check for colour attributes read through `sanitize_html_class` or a
+  slug-only lookup, and a render proof that feeds every colour attribute in the framework DB a raw hex and asserts it
+  reaches the emitted CSS, red first on today's `drawerBg`; then fix every instance it finds and wire it as a gate.
 - G4: a panel narrower than the page-centred wrap sits at the wrap's left edge. Measured at 1440 on page 4465: the wrap
   is 1120px at 153/153, Trade's 620px panel lands at left 153 (draft 410), More's 300px at 153 (draft 570).
   `nav-menu-submenu-css.php` sizes `__mega-panel-wrap` by `--sgs-mm-panel-width`, default `min(1120px, calc(100vw - 56px))`.
