@@ -2,7 +2,7 @@
  * `@sgs/fx-lottie` — the boot module `SGS_Motion_Registry::enqueue_effect()`
  * enqueues for every page rendering `data-sgs-fx="lottie"` (U-17, design
  * §3.3). Finds every `.sgs-lottie` element, wires its trigger, and drives it
- * through `src/shared/lottie/adapter.js` — this module never touches
+ * through `src/shared/effects/lottie-adapter.js` — this module never touches
  * `lottie-web` directly.
  *
  * NO GSAP (council fix 3): the scroll trigger below is vanilla
@@ -25,7 +25,7 @@
  * @package SGS\Blocks
  */
 
-import { init as playerInit } from './adapter.js';
+import { init as playerInit } from './lottie-adapter.js';
 import { prefersReducedMotion, rafThrottle } from '../effects/motion-utils.js';
 
 /** Elements the render layer marked. */

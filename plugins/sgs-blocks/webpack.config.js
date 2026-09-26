@@ -161,11 +161,11 @@ if ( moduleConfig ) {
 			 * (`@sgs/lottie-web`) with a dynamic import after its trigger fires,
 			 * never under reduced motion.
 			 */
-			'shared/lottie/fx-lottie': path.resolve(
+			'shared/effects/fx-lottie': path.resolve(
 				process.cwd(),
 				'src',
 				'shared',
-				'lottie',
+				'effects',
 				'fx-lottie.js'
 			),
 			'shared/effects/gsap/provider': path.resolve(

@@ -7,7 +7,7 @@
  * `.min.js` build is a plain UMD/CJS bundle with no ES exports, so it is
  * imported for its side effect (it assigns to `module.exports`) and the CJS
  * default is re-exported here as both the default and the named `lottie`
- * export, matching the shape `src/shared/lottie/adapter.js` expects.
+ * export, matching the shape `src/shared/effects/lottie-adapter.js` expects.
  *
  * The externals rule in `webpack.config.js` deliberately does NOT apply
  * inside `src/vendor-modules/` — these shims are the modules everything else

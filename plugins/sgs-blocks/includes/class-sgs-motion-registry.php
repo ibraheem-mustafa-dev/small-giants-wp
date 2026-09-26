@@ -194,7 +194,7 @@ class SGS_Motion_Registry {
 			'deps' => array(),
 		),
 		'@sgs/fx-lottie'           => array(
-			'path' => 'build/shared/lottie/fx-lottie.js',
+			'path' => 'build/shared/effects/fx-lottie.js',
 			'deps' => array(
 				array(
 					'id'     => '@sgs/lottie-web',
