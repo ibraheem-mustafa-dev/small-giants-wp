@@ -53,43 +53,11 @@ from pathlib import Path
 
 
 def urlopen_tls(req, tag, timeout=20):
-    """Open `req`, trying the certifi bundle first and the platform store second.
+    """Open `req` through the shared trust-store fallback (scripts/tls_urlopen.py), logging via log()."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from tls_urlopen import urlopen_tls as _shared
 
-    The two trust stores can disagree about the same certificate (seen on the
-    deploy machine: a healthy site failing with "certificate has expired" under
-    one store), and which one is right varies by machine, so both are tried. A
-    certificate-verification failure under certifi is retried ONCE under the
-    platform default; any other error is raised untouched. The store that
-    served the request is logged as `[<tag>] TLS: certifi|platform store`.
-    """
-    import ssl
-    import urllib.error
-    import urllib.request
-
-    stores = []
-    try:
-        import certifi
-        stores.append(("certifi", ssl.create_default_context(cafile=certifi.where())))
-    except ImportError:
-        pass
-    stores.append(("platform store", None))
-
-    for position, (label, context) in enumerate(stores):
-        try:
-            resp = urllib.request.urlopen(req, timeout=timeout, context=context)
-        except urllib.error.HTTPError:
-            log("[%s] TLS: %s" % (tag, label))  # the handshake succeeded; the server answered with an error status
-            raise
-        except (urllib.error.URLError, ssl.SSLCertVerificationError) as e:
-            reason = getattr(e, "reason", e)
-            if isinstance(reason, ssl.SSLCertVerificationError) and position + 1 < len(stores):
-                log("[%s] TLS: %s rejected the certificate, retrying with the %s"
-                    % (tag, label, stores[position + 1][0]))
-                continue
-            raise
-        log("[%s] TLS: %s" % (tag, label))
-        return resp
-    raise RuntimeError("no TLS store available")  # unreachable: the platform store is always last
+    return _shared(req, tag, timeout=timeout, log=log)
 
 
 sys.stdout.reconfigure(encoding="utf-8")

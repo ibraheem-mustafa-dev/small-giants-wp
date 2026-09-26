@@ -77,6 +77,7 @@ import urllib.request
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from tls_urlopen import urlopen_tls  # noqa: E402
 
 # The generic host-matched secrets lookup lives with the Site Info push; one copy, not two.
 from business_info.credentials import credentials_from_secrets  # noqa: E402
@@ -294,7 +295,7 @@ def fetch_global_styles(target_domain: str, post_id: int, auth_header: str | Non
     if auth_header:
         req.add_header("Authorization", auth_header)
     try:
-        with urllib.request.urlopen(req, timeout=15) as resp:
+        with urlopen_tls(req, "push-theme-snapshot", timeout=15) as resp:
             return json.loads(resp.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:
         if exc.code in (401, 403):
@@ -588,7 +589,7 @@ def post_global_styles(
     )
     print(f"[push-theme-snapshot] POST /wp/v2/global-styles/{post_id} → {url}")
     try:
-        with urllib.request.urlopen(req, timeout=30) as resp:
+        with urlopen_tls(req, "push-theme-snapshot", timeout=30) as resp:
             resp_data = json.loads(resp.read().decode("utf-8"))
             returned_id = resp_data.get("id")
             print(
