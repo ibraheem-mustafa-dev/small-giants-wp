@@ -700,6 +700,19 @@ git push
 
 No CI/CD pipeline — deployment is `python plugins/sgs-blocks/scripts/build-deploy.py` (see §Deployment above). It is the only sanctioned path for every target.
 
+### N8N: where site notifications go
+
+Every SGS site's `sgs_n8n_webhook_url` option points at one workflow on `https://n8n.smallgiantsstudio.cloud`: "SGS site events" (id `AJzRBARFn8AqQlkg`). The URL's path is a secret; read it with `wp option get sgs_n8n_webhook_url` on sandybrown, never commit it. The workflow emails `sgs_wishlist_alert` (one email to the shopper) and `sgs_back_in_stock` (one email per subscriber) over the `Hostinger SMTP - admin@ibraheemmustafa.com` credential, and acknowledges then drops anything else, including form submissions (no form-email path exists yet).
+
+Its logic lives in the repo: `plugins/sgs-blocks/scripts/n8n/site-events-build-emails.js`. A site is emailed for only when its `site_url` is in that file's `SITES` map (shop name and sender), and every link in an email must point at that same site. To add a client shop, add its `SITES` line, then:
+
+```bash
+python plugins/sgs-blocks/scripts/n8n/push-site-events.py           # push the repo code to the live node
+python plugins/sgs-blocks/scripts/n8n/push-site-events.py --check   # exit 1 if the live code has drifted
+```
+
+The API key is `N8N_API_KEY` in `.claude/secrets/ai-agent-credentials-and-info/api-keys.env`. Check what the engine really holds (`GET /api/v1/workflows`, `/executions?workflowId=…`) rather than trusting this section.
+
 ### SGS DB queries (quick reference)
 
 ```bash
