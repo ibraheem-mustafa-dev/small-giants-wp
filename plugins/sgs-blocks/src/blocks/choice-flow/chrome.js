@@ -12,7 +12,8 @@
  * Close reuses the enclosing sgs/modal's OWN close mechanism (its
  * `.sgs-modal__close` button, wired by modal/view.js) rather than
  * reimplementing dialog.close() — clicking it runs the exact same
- * scroll-restore/aria-expanded cleanup a normal modal close does.
+ * scroll-restore/aria-expanded cleanup a normal modal close does — and hides
+ * the modal's round button so the dialog shows one Close.
  *
  * @package SGS\Blocks
  */
@@ -119,6 +120,11 @@ function wireClose( flowEl ) {
 	closeButton.addEventListener( 'click', () => {
 		modalCloseButton.click();
 	} );
+
+	// The header's Close replaces the modal's own round one, so the dialog
+	// shows a single Close. The modal's button stays in the DOM because the
+	// header's click is forwarded to it.
+	modalCloseButton.hidden = true;
 }
 
 /**

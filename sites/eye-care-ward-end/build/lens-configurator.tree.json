@@ -11,6 +11,8 @@
       "showHeader": true,
       "stickyFooter": true,
       "flowLayout": "showcase",
+      "summaryBaseLabel": "Frame",
+      "closeStyle": "text",
       "stageNote": "Not sure which to pick?",
       "stageNoteLink": {
         "url": "https://wa.me/4479605978",

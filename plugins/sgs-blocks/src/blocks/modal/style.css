@@ -224,6 +224,11 @@
 	height: 1.25rem;
 }
 
+/* Content that brings its own Close (a choice flow's header) hides this one. */
+.sgs-modal__close[hidden] {
+	display: none;
+}
+
 /* Inner content wrapper */
 .sgs-modal__inner {
 	padding: 3rem 2rem 2rem;

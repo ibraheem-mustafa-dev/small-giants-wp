@@ -180,12 +180,14 @@ tree = [
     #   the body scrolls (:1322's flex:1;overflow:auto) — the same visual effect stickyFooter produces.
     # - flowLayout "showcase" (FR-43-24, this session): the full-screen stage-beside-step-pane layout, the
     #   framework's reference build for it — matches the draft's `lensOpen` dialog structure exactly.
+    # - summaryBaseLabel "Frame" (this session): the draft's first running line on the stage.
+    # - closeStyle "text" (this session): the draft's bordered rectangular Close button.
     # - stageNote/stageNoteLink: the draft's WhatsApp help card in the stage aside (dc.html:1345-1350),
     #   verbatim text and number.
     B("sgs/choice-flow", dict(title="Add prescription lenses", maxWidth="1200px", progressStyle="bar",
                               showPricePanel=True, pricePanelTitle="Your order",
                               progressColour="accent", showHeader=True, stickyFooter=True,
-                              flowLayout="showcase",
+                              flowLayout="showcase", summaryBaseLabel="Frame", closeStyle="text",
                               stageNote="Not sure which to pick?",
                               stageNoteLink={
                                   "url": "https://wa.me/4479605978",
