@@ -280,7 +280,8 @@ drawer anchoring, force-solid) is reopened by a family, not patched on its own.
 |---|---|---|---|---|
 | W3C-1 | The nav chain, one unit at a time: U-1, U-9, U-11, U-5, U-2, U-3, U-6, U-7, U-10, U-4, U-8, U-14, U-13, U-16 | every signed family built, nothing parked; the drawer's own × optional (DEC-15); the pill panel width rule kept; force-solid and the drawer clamp are open questions for Bean and land in U-1 and U-3 only on his answer | about 4 sessions | YES |
 | W3C-2 | Furniture blocks (U-12), in parallel — DONE | local-time, language-switch, store-selector, wishlist (link, panel, Save for later), theme-toggle with an automatic dark palette; back-to-top and account as `sgs/button` link sources, sound as an `sgs/audio` style (Wave 3C plan, lane C paragraph) | 1 session | no |
-| W3C-3 | Self-changing header message (U-15), in parallel — DONE | `notice-banner` rotate, random and live-clock modes via `sgs/notice-message` | 1h | no |
+| W3C-3 | Self-changing header message (U-15), in parallel — DONE | `notice-banner` rotate, random and live-clock modes via `sgs/notice-message`, plus a full-width strip display mode | 1h | no |
+| W3C-3b | Lottie player (U-17), in parallel — DONE | Spec 38 Tier H admits `lottie-web` light (D1151); Lottie on the logo, `sgs/media`, the hero's split media and every wrapper background (`bgLottie`); validated upload, loads only on demand, never under reduced motion | 1 session | no |
 | W3C-4 | Gate 3C composed-header check | one composed real header matches its requirements-table row, with Bean's eye (R-31-13) | ½ session | YES |
 
 **TEST (critical path):** Happy = every reference's row is expressible with block attributes and one

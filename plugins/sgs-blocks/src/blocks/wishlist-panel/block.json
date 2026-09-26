@@ -29,11 +29,6 @@
 			"lineHeight": true
 		},
 		"sgs": {
-			"boxFamilies": {
-				"margin": [
-					"margin"
-				]
-			},
 			"elements": {
 				"heading": {
 					"label": "Heading",

@@ -1,13 +1,13 @@
 ---
 doc_type: spec
 spec_id: 30
-spec_version: "2.1"
-status: complete
+spec_version: "2.2"
+status: active
 title: "SGS WooCommerce Page Types — single-product / shop archive / cart / checkout"
 project: small-giants-wp
 authors: Bean + Claude (Opus 4.8)
 created: 2026-06-11
-last_verified: 2026-09-19
+last_verified: 2026-09-26
 absorbs: []
 absorbed_by: null
 lock_reason: null
@@ -40,7 +40,7 @@ The Mama's Munches product-page draft is a WooCommerce page TYPE, but the framew
 
 ## Non-goals / Out of scope
 
-- **Block-based My Account** — no core block alternative exists; stays classic, CSS-styled, deferred. The Site-Editor template carries an explanatory note that the different look is intentional.
+- **Block-based My Account** — no core block alternative exists; the page stays the classic WooCommerce shortcode. Its design (layout, styling, and where saved items sit) is FR-30-14.
 - **Bespoke cart drawer** — the core Mini-Cart drawer is used instead.
 - **Multi-image-per-variation galleries** — core swaps one image per variation; the plugin route is out of MVP scope.
 - **`FAQPage` schema for rich results** — Google does not show FAQ rich results (FR-27-F2's AI-citation framing is unaffected; this spec adds none).
@@ -163,12 +163,22 @@ A cloned product page targets the WC **single-product template on a real `produc
 A documented, repeatable pre-launch gate run before ANY client shop takes real money: (a) payment gateway in LIVE mode verified (test transaction or gateway dashboard confirmation); (b) return-policy fields populated (the FR-30-9 local validator passes — no empty `hasMerchantReturnPolicy`); (c) review source connected with ≥1 genuine review synced OR the empty-state toggle deliberately set; (d) per-unit denomination strings set (no placeholder text); (e) product data completeness sweep — published products missing `sku`/`gtin` listed (Google silently downgrades merchant listings); (f) statutory content present for the vertical (food: allergen information placed in the FR-30-2 content slot); (g) FR-30-11's script run green on the live site; (h) cookie-consent state verified if any capture/analytics is active (PECR).
 **Model:** sonnet (checklist doc + any automatable probes). **Done when:** the checklist exists as a versioned doc in the repo, each item has a named probe or manual step, and the first client launch records a completed pass.
 
-## Phasing (all phases COMPLETE)
+### FR-30-14 — Customer account area: research, design, then build — **NOT STARTED**
+The shopper-facing pages around the Wave 3C wishlist (`sgs/wishlist-link`, `sgs/wishlist-panel`, Save for later on basket rows; `.claude/plans/2026-09-21-wave-3c-implementation-plan.md` lane C) were built from a feature design, not a page design. This FR designs them as pages: (a) the **My Account** page (dashboard, orders, addresses, account details, log-in and register states for a logged-out visitor); (b) the **Saved items** page (the panel on its own page: layout, empty state, sorting, what each row shows); (c) the **saved items under the basket** on `theme/sgs-theme/templates/cart.html` (placement, how many rows before "View all", how it reads next to the basket totals).
+Order: research first (`/research-buddies` on the best current UK and international shop account and saved-items pages, plus `/gh-research` on open-source WooCommerce account templates), then a direction with `/frontend-design`, then Bean's sign-off, then the build.
+**Done when:** a design note with the researched references and the chosen layouts is signed off by Bean; all three surfaces are built with every value an editor control; live-checked at 375/768/1440 with axe 0 on sandybrown.
+
+### FR-30-15 — Saved-item alerts: back in stock and price drops — **PARTLY BUILT**
+Built: each saved row shows its stock status, and an out-of-stock row offers "Notify me" through the existing back-in-stock route (`includes/class-stock-notify.php`). To build: (a) **price drops**: the price is recorded when an item is saved (`_sgs_wishlist` user meta for logged-in shoppers, the browser list for guests); the row shows "Now £X, was £Y" when the current price is lower; logged-in shoppers who opted in get an email through the N8N webhook when a saved item's price falls (a scheduled comparison, never `wp_mail()`); the reference price follows FR-30-8's DMCC rules; (b) **back-in-stock for in-stock items that later sell out**: the same opt-in covers a saved item going out of stock and returning; (c) **share by link**: a read-only link to a saved list. Each alert is a shopper opt-in (PECR consent, as notify-me already does), and each is a block-editor toggle for the client.
+**Done when:** a price change on a saved product shows on the row and, for an opted-in logged-in shopper, sends one webhook event; the opt-in and each client toggle work from the editor; tests with a negative control.
+
+## Phasing (P1 to P4 COMPLETE; P5 open)
 
 1. **P1 — Working PDP + cart loop:** FR-30-0/1/2/7/4. **SHIPPED**, R-22-13 signed off. FR-30-12 pipeline gate unblocked.
 2. **P2 — Differentiators:** FR-30-8 (price coupling + value-ladder), FR-30-10 (reviews), notify-me + Turnstile (FR-30-7), gallery variation-aware swap. **SHIPPED**.
 3. **P3 — Shop:** FR-30-3 archive UX shell, FR-30-6 searchable filter, FR-30-5 product search. **SHIPPED**, live-verified on the canary.
 4. **P4 — Schema:** FR-30-9 (Organization/WebSite/noindex/returnPolicyCountry). FR-30-13 go-live checklist at `.claude/specs/go-live-checklist.md`. **SHIPPED**.
+5. **P5 — Customer account area:** FR-30-14 (research and design first), then FR-30-15. **NOT STARTED**.
 - FR-30-11 gates every phase close (Playwright responsive scripts + axe 0 per page).
 
 ## Open Questions
