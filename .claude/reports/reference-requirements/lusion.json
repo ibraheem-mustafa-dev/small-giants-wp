@@ -2614,6 +2614,32 @@
        ]
       }
      }
+    },
+    "motion": {
+     "value": {
+      "reveal": "no fade/translate reveal detected on the one native DOM link found; opacity stayed 1 / transform stayed none throughout",
+      "note": "reached after a long wheel-scroll (~48,600px of virtual scroll); no visible <a> was found inside the footer element on this run",
+      "caveat": "the footer's presence in the DOM was intermittent across repeated runs at the same scroll position, consistent with a virtualised/recycled section; most footer content (social icons, the round-up button) is very likely WebGL/canvas-rendered rather than DOM text, so it is not measurable this way (Text not present as DOM text is recorded as such, per protocol)"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "capture-0d.mjs::captureFooterReveal",
+      "selector": "footer",
+      "rawFile": "raw/lusion-0d-375.json",
+      "captured": "2026-09-26"
+     }
+    },
+    "item_states": {
+     "value": {
+      "note": "no visible footer <a> elements were found in the DOM on this run"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "capture-0d.mjs::captureFooterHover",
+      "selector": "footer a",
+      "rawFile": "raw/lusion-0d-375.json",
+      "captured": "2026-09-26"
+     }
     }
    }
   },
@@ -5933,14 +5959,27 @@
       "entrance": "sound, talk and menu slide from translate3d(0,4em,0) to 0 with staggered easing (ratio windows 0.9-1.7, 1.0-1.8, 1.1-1.9 s) driven by header.update()",
       "scrollEffects": "none on the header; only the ink colour class changes per section",
       "smoothing": "SecondOrderDynamics (spring) smoothing on the page transform, not Lenis",
-      "tier": "custom JS spring + rAF (not GSAP, not Lenis); WebGL canvas behind (Tier W substrate)"
+      "tier": "custom JS spring + rAF (not GSAP, not Lenis); WebGL canvas behind (Tier W substrate)",
+      "entranceRecheck": "RE-CHECKED headed, 2026-09-26: header (top:0, 1440x146), .header-menu-link items, and the header-right-talk-btn-dot / header-right-menu-btn-dot elements all show a CONSTANT opacity (1) and transform (none, aside from the dots' fixed -2.1875px centring offset) across a 9s / 30ms-stepped sample from navigation start -- no slide-in observed on any of them. This contradicts the source-only 'entrance' note above (translate3d(0,4em,0) staggered over 0.9-1.9s). Trusted over the old note: a live grep of the current DOM finds no element matching [class*=sound], so the domRightSoundBtn the source cites either no longer exists or the code path is conditional (e.g. behind a sound toggle) rather than run on page load."
      },
-     "method": "source-only",
+     "method": "interaction-capture",
      "evidence": {
-      "script": "src/lus-hoisted.js (https://lusion.co/_astro/hoisted.CUO_IjfL.js) class Header.update, class ScrollPane",
-      "selector": "header#header",
-      "raw": {
-       "quote": "this.ratio=math.clamp(this.ratio+(this.isActive?e:-e),0,2);const t=math.fit(this.ratio,.9,1.7,0,1),r=math.fit(t,0,1,4,0,ease.lusion);this.domRightSoundBtn.style.transform=`translate3d(0, ${r}em, 0)`"
+      "script": "capture-0d.mjs::captureEntrance",
+      "selector": "header, .header-menu-link, [class*='header-right' i]",
+      "rawFile": "raw/lusion-0d.json",
+      "captured": "2026-09-26",
+      "priorEvidence": {
+       "script": "capture-0d.mjs::captureEntrance",
+       "selector": "header, .header-menu-link, [class*='header-right' i]",
+       "rawFile": "raw/lusion-0d.json",
+       "captured": "2026-09-26",
+       "priorEvidence": {
+        "script": "src/lus-hoisted.js (https://lusion.co/_astro/hoisted.CUO_IjfL.js) class Header.update, class ScrollPane",
+        "selector": "header#header",
+        "raw": {
+         "quote": "this.ratio=math.clamp(this.ratio+(this.isActive?e:-e),0,2);const t=math.fit(this.ratio,.9,1.7,0,1),r=math.fit(t,0,1,4,0,ease.lusion);this.domRightSoundBtn.style.transform=`translate3d(0, ${r}em, 0)`"
+        }
+       }
       }
      }
     },
@@ -7898,6 +7937,34 @@
        ]
       }
      }
+    },
+    "motion": {
+     "value": {
+      "reveal": "no fade/translate reveal detected on the one native DOM link found; opacity stayed 1 / transform stayed none throughout",
+      "note": "reached after ~430 wheel-scroll steps (footer sits ~51,000px below the fold on this site's custom transform-driven scroller; window.scrollY never moves, only getBoundingClientRect().top does)",
+      "caveat": "the footer's presence in the DOM was intermittent across repeated runs at the same scroll position, consistent with a virtualised/recycled section; most footer content (social icons, the round-up button) is very likely WebGL/canvas-rendered rather than DOM text, so it is not measurable this way (Text not present as DOM text is recorded as such, per protocol)"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "capture-0d.mjs::captureFooterReveal",
+      "selector": "footer",
+      "rawFile": "raw/lusion-0d.json",
+      "captured": "2026-09-26"
+     }
+    },
+    "item_states": {
+     "value": {
+      "business@lusion.co": "no colour change (rgb(0,0,0) constant, transitionDuration 0s)",
+      "siblingDim": "n/a (only one native link found)",
+      "socialIcon": "none found as DOM <a>; likely canvas/WebGL-rendered"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "capture-0d.mjs::captureFooterHover",
+      "selector": "footer a",
+      "rawFile": "raw/lusion-0d.json",
+      "captured": "2026-09-26"
+     }
     }
    }
   }
@@ -7906,18 +7973,6 @@
   {
    "surface": "footer",
    "tier": 375,
-   "column": "item_states",
-   "reason": "link hover in the footer (socials and email lines roll like the menu links) was not driven"
-  },
-  {
-   "surface": "footer",
-   "tier": 375,
-   "column": "motion",
-   "reason": "footer text reveal and line animations not sampled"
-  },
-  {
-   "surface": "footer",
-   "tier": 375,
    "column": "trigger_close",
    "reason": "the footer has no trigger; the round up button and the newsletter submit were not clicked"
   },
@@ -7938,18 +7993,6 @@
    "tier": 768,
    "column": "trigger_close",
    "reason": "the footer has no trigger; the round up button and the newsletter submit were not clicked"
-  },
-  {
-   "surface": "footer",
-   "tier": 1440,
-   "column": "item_states",
-   "reason": "link hover in the footer (socials and email lines roll like the menu links) was not driven"
-  },
-  {
-   "surface": "footer",
-   "tier": 1440,
-   "column": "motion",
-   "reason": "footer text reveal and line animations not sampled"
   },
   {
    "surface": "footer",
@@ -7962,12 +8005,6 @@
    "tier": 1440,
    "column": "motion",
    "reason": "open/close durations and the end pose were not observed: the headless run renders the WebGL page at about one frame per second, so wall-clock reads never reached the end state; the declared transitions and closed poses are recorded instead"
-  },
-  {
-   "surface": "header-shell",
-   "tier": 1440,
-   "column": "motion",
-   "reason": "intro slide timing in a real browser: measured 40s to settle in this software-rendered run, source says about 2s of header time"
   },
   {
    "surface": "footer",

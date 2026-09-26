@@ -2326,16 +2326,19 @@
     },
     "item_states": {
      "value": {
-      "hover": "not measured"
+      "hover": {
+       "English": "no colour change (rgb(255,255,255) constant)",
+       "Español": "no colour change (rgb(255,255,255) constant)"
+      },
+      "siblingDim": "none observed on any sampled link",
+      "socialIcon": "none found: no <a> in the footer matches a social href/class pattern (instagram/facebook/twitter/linkedin/dribbble/[class*=social])"
      },
-     "method": "static",
+     "method": "interaction-capture",
      "evidence": {
-      "script": "cap.mjs",
+      "script": "capture-0d.mjs::captureFooterHover",
       "selector": ".site-footer a",
-      "rawFile": "raw/dogstudio-375.json",
-      "raw": {
-       "note": "footer hover not driven"
-      }
+      "rawFile": "raw/dogstudio-0d-375.json",
+      "captured": "2026-09-26"
      }
     },
     "secondary_blocks": {
@@ -2409,6 +2412,20 @@
         ]
        ]
       }
+     }
+    },
+    "motion": {
+     "value": {
+      "reveal": "scroll-triggered fade-up on the footer's per-block reveal items (site-footer-contact / -newsletter / -languages, class 'appear-fade-up' with per-block 'appear-delay--N' stagger classes): opacity 0->1, translateY 50px->0px",
+      "trigger": "scroll position, not a timer -- footerTop 4504->850px, settles once the footer is scrolled into view",
+      "stagger": "class-based delay tiers appear-delay--1..5 exist on sibling blocks (not sampled individually here)"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "capture-0d.mjs::captureFooterReveal",
+      "selector": ".site-footer [class*='appear-fade-up' i]",
+      "rawFile": "raw/dogstudio-0d-375.json",
+      "captured": "2026-09-26"
      }
     }
    }
@@ -5182,6 +5199,25 @@
        "scrolledBg": "rgba(0, 0, 0, 0)"
       }
      }
+    },
+    "entrance": {
+     "value": {
+      "onLoad": "no header entrance: header (.site-header) opacity and transform are constant (opacity 1, transform none) for the full ~8s sampling window from navigation start",
+      "preloader": {
+       "selector": ".site-loader",
+       "visibleFrom": "~0.2s",
+       "visibleUntil": "~3.6s (class is-hidden added)",
+       "headerAffectedByPreloader": false
+      },
+      "reducedMotion": "not applicable: there is no entrance to suppress"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "capture-0d.mjs::captureEntrance",
+      "selector": ".site-header, .site-loader",
+      "rawFile": "raw/dogstudio-0d.json",
+      "captured": "2026-09-26"
+     }
     }
    }
   },
@@ -7088,16 +7124,20 @@
     },
     "item_states": {
      "value": {
-      "hover": "not measured"
+      "hover": {
+       "biz@dogstudio.be": "no colour/opacity change (rgb(255,255,255) before and after, transitionDuration 0s)",
+       "Privacy Policy": "no change (rgba(160,168,220,0.7) before and after, transitionDuration 0s)",
+       "English": "no colour change despite a declared transitionDuration 0.2s (rgb(255,255,255) constant)"
+      },
+      "siblingDim": "none observed on any sampled link",
+      "socialIcon": "none found: no <a> in the footer matches a social href/class pattern (instagram/facebook/twitter/linkedin/dribbble/[class*=social])"
      },
-     "method": "static",
+     "method": "interaction-capture",
      "evidence": {
-      "script": "cap.mjs",
+      "script": "capture-0d.mjs::captureFooterHover",
       "selector": ".site-footer a",
-      "rawFile": "raw/dogstudio-1440.json",
-      "raw": {
-       "note": "footer hover not driven"
-      }
+      "rawFile": "raw/dogstudio-0d.json",
+      "captured": "2026-09-26"
      }
     },
     "secondary_blocks": {
@@ -7169,6 +7209,20 @@
        ]
       }
      }
+    },
+    "motion": {
+     "value": {
+      "reveal": "scroll-triggered fade-up on the footer's per-block reveal items (site-footer-contact / -newsletter / -languages, class 'appear-fade-up' with per-block 'appear-delay--N' stagger classes): opacity 0->1, translateY 50px->0px",
+      "trigger": "scroll position, not a timer -- footerTop 1100->826px over the wheel-scroll window, fully settled by ~2.1s of scrolling",
+      "stagger": "class-based delay tiers appear-delay--1..5 exist on sibling blocks (not sampled individually here)"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "capture-0d.mjs::captureFooterReveal",
+      "selector": ".site-footer [class*='appear-fade-up' i]",
+      "rawFile": "raw/dogstudio-0d.json",
+      "captured": "2026-09-26"
+     }
     }
    }
   }
@@ -7193,18 +7247,6 @@
    "reason": "footer behaviour not probed"
   },
   {
-   "surface": "footer",
-   "tier": 375,
-   "column": "motion",
-   "reason": "the footer blocks carry appear-fade-up classes; the reveal was not sampled"
-  },
-  {
-   "surface": "footer",
-   "tier": 375,
-   "column": "item_states.hover",
-   "reason": "footer link hover not driven"
-  },
-  {
    "surface": "header-shell",
    "tier": 768,
    "column": "motion",
@@ -7251,18 +7293,6 @@
    "tier": 1440,
    "column": "mechanics",
    "reason": "footer behaviour not probed"
-  },
-  {
-   "surface": "footer",
-   "tier": 1440,
-   "column": "motion",
-   "reason": "the footer blocks carry appear-fade-up classes; the reveal was not sampled"
-  },
-  {
-   "surface": "footer",
-   "tier": 1440,
-   "column": "item_states.hover",
-   "reason": "footer link hover not driven"
   }
  ],
  "cross_check": [

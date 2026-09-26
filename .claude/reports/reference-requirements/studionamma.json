@@ -3192,22 +3192,23 @@
     },
     "item_states": {
      "value": {
-      "hover": "not measured (roll label markup present: each link has two copies of its text)",
+      "hover": {
+       "HomeHome": "no colour or transform change on the anchor itself (rgb(17,17,17), transform none, constant)",
+       "WorkWork": "no colour or transform change on the anchor itself",
+       "ServicesServices": "no colour or transform change on the anchor itself",
+       "LinkedInLinkedIn": "no colour or transform change on the anchor itself"
+      },
       "currentIndicator": "none observed",
-      "duplicatedLabels": true
+      "duplicatedLabels": true,
+      "caveat": "duplicated label markup (each link's text renders twice, e.g. 'HomeHome') implies the roll effect is likely animated on an inner child span, not the <a> itself; this capture measured the anchor per the hover-probe protocol and found no change there -- the inner span was not isolated separately",
+      "siblingDim": "none observed on any sampled link"
      },
-     "method": "static",
+     "method": "interaction-capture",
      "evidence": {
-      "script": "cap.mjs",
+      "script": "capture-0d.mjs::captureFooterHover",
       "selector": "footer.footer a",
-      "rawFile": "raw/studionamma-375.json",
-      "raw": {
-       "sampleText": [
-        "HOME HOME",
-        "WORK WORK",
-        "SERVICES SERVICES"
-       ]
-      }
+      "rawFile": "raw/studionamma-0d-375.json",
+      "captured": "2026-09-26"
      }
     },
     "secondary_blocks": {
@@ -3283,6 +3284,20 @@
        "mainGrid": "351px",
        "width": 375
       }
+     }
+    },
+    "motion": {
+     "value": {
+      "reveal": "footer blocks carrying class 'grow-appear' (some also 'hide-mobile-landscape') animate opacity 0->1 with a scale transform 0.9->1.0 (matrix(0.9,0,0,0.9,0,0) -> matrix(1,0,0,1,0,0)) as the footer scrolls into view",
+      "trigger": "scroll position, not a timer",
+      "note375": "at 375, the sampled items were already at opacity 1 by the first sample (the reveal had already completed by the time capture started, i.e. it fires closer to initial scroll position on this narrower layout)"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "capture-0d.mjs::captureFooterReveal",
+      "selector": "footer.footer [class*='grow-appear' i]",
+      "rawFile": "raw/studionamma-0d-375.json",
+      "captured": "2026-09-26"
      }
     }
    }
@@ -7276,21 +7291,24 @@
     },
     "motion": {
      "value": {
-      "effect": "both strips slide in from off-screen (translateY -44.8px / +47.7px) to 0 when the preloader ends (~8-9 s after load), driven by GSAP",
+      "effect": "both strips slide in from off-screen (nav.nav-top translateY -44.8px -> 0; nav.nav-bottom translateY +47.68px -> 0) once the preloader ends. RE-MEASURED headed, 2026-09-26 at 200ms steps: both strips sit at their off-screen offset unchanged through at least t=8.6s, begin moving by t=9.0s and are within 0.1-0.2px of 0 (settled) by t=9.8s -- an ~800ms tween starting ~9.0s after navigation.",
       "spec38Tier": "G-or-V: a plain CSS transform transition reaches it, so V; the site uses GSAP",
-      "substrate": "DOM"
+      "substrate": "DOM",
+      "reducedMotion": "no change: re-run with prefers-reduced-motion:reduce still holds nav-top at -44.8px through t=9.3s and is only just starting to move by t=9.9s -- same timeline, the site does not respect the setting"
      },
      "method": "interaction-capture",
      "evidence": {
       "script": "sn-r3.mjs",
       "selector": "nav.nav-top, nav.nav-bottom",
-      "rawFile": "not stored as JSON; console log of computed transform sampled every 700ms",
+      "rawFile": "raw/studionamma-0d.json",
       "raw": {
        "at0_5s": "translateY(-44.8) / translateY(47.68)",
        "at8_3s": "translateY(-37.1) / translateY(39.5)",
        "at9_0s": "matrix identity (0)",
        "bodyClasses": "show-preloader at load, preloader when done"
-      }
+      },
+      "captured": "2026-09-26",
+      "reconfirmScript": "capture-0d.mjs::captureEntrance"
      }
     }
    }
@@ -10178,22 +10196,23 @@
     },
     "item_states": {
      "value": {
-      "hover": "not measured (roll label markup present: each link has two copies of its text)",
+      "hover": {
+       "HomeHome": "no colour or transform change on the anchor itself (rgb(17,17,17), transform none, constant)",
+       "WorkWork": "no colour or transform change on the anchor itself",
+       "ServicesServices": "no colour or transform change on the anchor itself",
+       "LinkedInLinkedIn": "no colour or transform change on the anchor itself"
+      },
       "currentIndicator": "none observed",
-      "duplicatedLabels": true
+      "duplicatedLabels": true,
+      "caveat": "duplicated label markup (each link's text renders twice, e.g. 'HomeHome') implies the roll effect is likely animated on an inner child span, not the <a> itself; this capture measured the anchor per the hover-probe protocol and found no change there -- the inner span was not isolated separately",
+      "siblingDim": "none observed on any sampled link"
      },
-     "method": "static",
+     "method": "interaction-capture",
      "evidence": {
-      "script": "cap.mjs",
+      "script": "capture-0d.mjs::captureFooterHover",
       "selector": "footer.footer a",
-      "rawFile": "raw/studionamma-1440.json",
-      "raw": {
-       "sampleText": [
-        "HOME HOME",
-        "WORK WORK",
-        "SERVICES SERVICES"
-       ]
-      }
+      "rawFile": "raw/studionamma-0d.json",
+      "captured": "2026-09-26"
      }
     },
     "secondary_blocks": {
@@ -10266,6 +10285,20 @@
        "width": 1440
       }
      }
+    },
+    "motion": {
+     "value": {
+      "reveal": "footer blocks carrying class 'grow-appear' (some also 'hide-mobile-landscape') animate opacity 0->1 with a scale transform 0.9->1.0 (matrix(0.9,0,0,0.9,0,0) -> matrix(1,0,0,1,0,0)) as the footer scrolls into view",
+      "trigger": "scroll position, not a timer",
+      "note375": "at 375, the sampled items were already at opacity 1 by the first sample (the reveal had already completed by the time capture started, i.e. it fires closer to initial scroll position on this narrower layout)"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "capture-0d.mjs::captureFooterReveal",
+      "selector": "footer.footer [class*='grow-appear' i]",
+      "rawFile": "raw/studionamma-0d.json",
+      "captured": "2026-09-26"
+     }
     }
    }
   }
@@ -10290,12 +10323,6 @@
    "reason": "footer has no behaviour beyond links; hover and video-play behaviour not probed"
   },
   {
-   "surface": "footer",
-   "tier": 375,
-   "column": "motion",
-   "reason": "footer entrance animation (class grow-appear) not sampled"
-  },
-  {
    "surface": "header-shell",
    "tier": 768,
    "column": "motion",
@@ -10324,12 +10351,6 @@
    "tier": 1440,
    "column": "mechanics",
    "reason": "footer has no behaviour beyond links; hover and video-play behaviour not probed"
-  },
-  {
-   "surface": "footer",
-   "tier": 1440,
-   "column": "motion",
-   "reason": "footer entrance animation (class grow-appear) not sampled"
   },
   {
    "surface": "drawer",

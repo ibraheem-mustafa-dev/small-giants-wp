@@ -334,7 +334,8 @@
       "transition_on_header": "all",
       "note": "bar background, blur and border are identical at scroll 0 and after scrolling (sticky is not effective, see mechanics)",
       "spec38": "V (no motion on the shell)",
-      "substrate": "DOM"
+      "substrate": "DOM",
+      "entrance": "no header entrance on load: header/logo/nav opacity stayed 1 and transform stayed 'none' from the earliest measurable sample (~150ms after navigation) through an 8s sampling window; no preloader element was detected. Consistent with this being a static design draft with no load-time animation."
      },
      "method": "interaction-capture",
      "evidence": {
@@ -350,7 +351,10 @@
         "borderBottomWidth": "1px",
         "height": "73px"
        }
-      }
+      },
+      "entranceScript": "capture-0d.mjs::captureEntrance",
+      "entranceRawFile": "raw/halcyon-0d.json",
+      "entranceCaptured": "2026-09-26"
      }
     },
     "mechanics": {
@@ -11211,7 +11215,8 @@
       "transition_on_header": "all",
       "note": "bar background, blur and border are identical at scroll 0 and after scrolling (sticky is not effective, see mechanics)",
       "spec38": "V (no motion on the shell)",
-      "substrate": "DOM"
+      "substrate": "DOM",
+      "entrance": "no header entrance on load: header/logo/nav opacity stayed 1 and transform stayed 'none' from the earliest measurable sample (~150ms after navigation) through an 8s sampling window; no preloader element was detected. Consistent with this being a static design draft with no load-time animation."
      },
      "method": "interaction-capture",
      "evidence": {
@@ -11227,7 +11232,10 @@
         "borderBottomWidth": "1px",
         "height": "73px"
        }
-      }
+      },
+      "entranceScript": "capture-0d.mjs::captureEntrance",
+      "entranceRawFile": "raw/halcyon-0d.json",
+      "entranceCaptured": "2026-09-26"
      }
     },
     "mechanics": {
@@ -22076,7 +22084,8 @@
       "transition_on_header": "all",
       "note": "bar background, blur and border are identical at scroll 0 and after scrolling (sticky is not effective, see mechanics)",
       "spec38": "V (no motion on the shell)",
-      "substrate": "DOM"
+      "substrate": "DOM",
+      "entrance": "no header entrance on load: header/logo/nav opacity stayed 1 and transform stayed 'none' from the earliest measurable sample (~150ms after navigation) through an 8s sampling window; no preloader element was detected. Consistent with this being a static design draft with no load-time animation."
      },
      "method": "interaction-capture",
      "evidence": {
@@ -22092,7 +22101,10 @@
         "borderBottomWidth": "1px",
         "height": "73px"
        }
-      }
+      },
+      "entranceScript": "capture-0d.mjs::captureEntrance",
+      "entranceRawFile": "raw/halcyon-0d.json",
+      "entranceCaptured": "2026-09-26"
      }
     },
     "mechanics": {
@@ -32957,7 +32969,8 @@
       "transition_on_header": "all",
       "note": "bar background, blur and border are identical at scroll 0 and after scrolling (sticky is not effective, see mechanics)",
       "spec38": "V (no motion on the shell)",
-      "substrate": "DOM"
+      "substrate": "DOM",
+      "entrance": "no header entrance on load: header/logo/nav opacity stayed 1 and transform stayed 'none' from the earliest measurable sample (~150ms after navigation) through an 8s sampling window; no preloader element was detected. Consistent with this being a static design draft with no load-time animation."
      },
      "method": "interaction-capture",
      "evidence": {
@@ -32973,7 +32986,10 @@
         "borderBottomWidth": "1px",
         "height": "73px"
        }
-      }
+      },
+      "entranceScript": "capture-0d.mjs::captureEntrance",
+      "entranceRawFile": "raw/halcyon-0d.json",
+      "entranceCaptured": "2026-09-26"
      }
     },
     "mechanics": {
@@ -43742,7 +43758,8 @@
       "transition_on_header": "all",
       "note": "bar background, blur and border are identical at scroll 0 and after scrolling (sticky is not effective, see mechanics)",
       "spec38": "V (no motion on the shell)",
-      "substrate": "DOM"
+      "substrate": "DOM",
+      "entrance": "no header entrance on load: header/logo/nav opacity stayed 1 and transform stayed 'none' from the earliest measurable sample (~150ms after navigation) through an 8s sampling window; no preloader element was detected. Consistent with this being a static design draft with no load-time animation."
      },
      "method": "interaction-capture",
      "evidence": {
@@ -43758,7 +43775,10 @@
         "borderBottomWidth": "1px",
         "height": "73px"
        }
-      }
+      },
+      "entranceScript": "capture-0d.mjs::captureEntrance",
+      "entranceRawFile": "raw/halcyon-0d.json",
+      "entranceCaptured": "2026-09-26"
      }
     },
     "mechanics": {
@@ -54079,7 +54099,8 @@
       "transition_on_header": "all",
       "note": "bar background, blur and border are identical at scroll 0 and after scrolling (sticky is not effective, see mechanics)",
       "spec38": "V (no motion on the shell)",
-      "substrate": "DOM"
+      "substrate": "DOM",
+      "entrance": "no header entrance on load: header/logo/nav opacity stayed 1 and transform stayed 'none' from the earliest measurable sample (~150ms after navigation) through an 8s sampling window; no preloader element was detected. Consistent with this being a static design draft with no load-time animation."
      },
      "method": "interaction-capture",
      "evidence": {
@@ -54095,7 +54116,10 @@
         "borderBottomWidth": "1px",
         "height": "73px"
        }
-      }
+      },
+      "entranceScript": "capture-0d.mjs::captureEntrance",
+      "entranceRawFile": "raw/halcyon-0d.json",
+      "entranceCaptured": "2026-09-26"
      }
     },
     "mechanics": {

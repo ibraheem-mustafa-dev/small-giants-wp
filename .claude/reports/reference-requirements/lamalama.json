@@ -3676,6 +3676,37 @@
       "selector": "footer",
       "raw": {}
      }
+    },
+    "motion": {
+     "value": {
+      "reveal": "text-reveal spans (class 'll-text-reveal', initially carrying 'opacity-0') and mono-text spans (class 'll-part--mono-text-reveal') go opacity 0->1 as the page scrolls the footer into view; the mono-text spans are already opacity 1 at rest, only the 'll-text-reveal' span itself is the true reveal target (loses its 'opacity-0' class, gains a 'js-text-re...' class once settled)",
+      "trigger": "scroll position on the site's custom transform-driven scroller (window.scrollBy does nothing here; real wheel input is required)"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "capture-0d.mjs::captureFooterReveal",
+      "selector": ".ll-text-reveal, .ll-part--mono-text-reveal",
+      "rawFile": "raw/lamalama-0d-375.json",
+      "captured": "2026-09-26"
+     }
+    },
+    "item_states": {
+     "value": {
+      "hover": {
+       "+31 20 6220440 (tel link)": "no colour change (rgb(249,244,235) constant, transitionDuration 0s)",
+       "Start a project": "no colour change (rgb(249,244,235) constant, transitionDuration 0s)",
+       "Schedule a call": "no colour change (rgb(249,244,235) constant, transitionDuration 0s)"
+      },
+      "siblingDim": "none observed on any sampled link",
+      "socialIcon": "none found via href/class social pattern within the footer"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "capture-0d.mjs::captureFooterHover",
+      "selector": "footer a",
+      "rawFile": "raw/lamalama-0d-375.json",
+      "captured": "2026-09-26"
+     }
     }
    }
   },
@@ -8231,18 +8262,22 @@
     "motion": {
      "value": {
       "scrollMorph": "none (measured)",
-      "entrance": "pill starts class opacity-0 and carries inline style opacity:1 after the loader",
+      "entrance": "the floating pill (header.ll-header > div.fixed) fades opacity 0->1 ONLY -- no positional slide: translateX stays constant at -219px (its centring transform) throughout. The fade runs over ~800ms, beginning ~7.0-7.2s after navigation and settling by ~8.0s.",
+      "preloader": {
+       "selector": ".js-loader.ll-loader",
+       "visible": "~0-3.6s (opacity fades 1->0.4->0 between ~2.85s and ~3.6s)",
+       "idleGapAfterPreloader": "~3.4s where nothing visibly changes between the preloader clearing (~3.6s) and the pill starting to fade in (~7.0s)"
+      },
+      "reducedMotion": "no change: re-run with prefers-reduced-motion:reduce still fades the pill in on the same ~6.9-7.8s timeline -- the site does not respect the setting",
       "tier": "no scroll effect to classify"
      },
      "method": "interaction-capture",
      "evidence": {
-      "script": "lama-capture.mjs scroll",
-      "selector": "header.ll-header > div.fixed.left-1/2",
-      "raw": {
-       "attrs": [
-        "class=fixed left-1/2 -translate-x-1/2 backdrop-blur-sm top-4 rounded z-20 opacity-0 w-[calc(100vw-(32/16*1rem))] max-w-[calc(438/16*1rem)] flex flex-col js-menu"
-       ]
-      }
+      "script": "capture-0d.mjs::captureEntrance",
+      "selector": "header.ll-header .fixed, .js-loader.ll-loader",
+      "rawFile": "raw/lamalama-0d.json",
+      "captured": "2026-09-26",
+      "priorNote": "earlier source-only entrance guess (from lama-capture.mjs) kept only as background; this cell now records a directly-measured value"
      }
     },
     "content": {
@@ -11609,23 +11644,42 @@
       "selector": "footer",
       "raw": {}
      }
+    },
+    "motion": {
+     "value": {
+      "reveal": "text-reveal spans (class 'll-text-reveal', initially carrying 'opacity-0') and mono-text spans (class 'll-part--mono-text-reveal') go opacity 0->1 as the page scrolls the footer into view; the mono-text spans are already opacity 1 at rest, only the 'll-text-reveal' span itself is the true reveal target (loses its 'opacity-0' class, gains a 'js-text-re...' class once settled)",
+      "trigger": "scroll position on the site's custom transform-driven scroller (window.scrollBy does nothing here; real wheel input is required)"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "capture-0d.mjs::captureFooterReveal",
+      "selector": ".ll-text-reveal, .ll-part--mono-text-reveal",
+      "rawFile": "raw/lamalama-0d.json",
+      "captured": "2026-09-26"
+     }
+    },
+    "item_states": {
+     "value": {
+      "hover": {
+       "+31 20 6220440 (tel link)": "no colour change (rgb(249,244,235) constant, transitionDuration 0s)",
+       "Start a project": "no colour change (rgb(249,244,235) constant, transitionDuration 0s)",
+       "Schedule a call": "no colour change (rgb(249,244,235) constant, transitionDuration 0s)"
+      },
+      "siblingDim": "none observed on any sampled link",
+      "socialIcon": "none found via href/class social pattern within the footer"
+     },
+     "method": "interaction-capture",
+     "evidence": {
+      "script": "capture-0d.mjs::captureFooterHover",
+      "selector": "footer a",
+      "rawFile": "raw/lamalama-0d.json",
+      "captured": "2026-09-26"
+     }
     }
    }
   }
  ],
  "not_measured": [
-  {
-   "surface": "footer",
-   "tier": 375,
-   "column": "item_states",
-   "reason": "footer link/button hover was not driven in this capture"
-  },
-  {
-   "surface": "footer",
-   "tier": 375,
-   "column": "motion",
-   "reason": "no footer motion was sampled (hover-roll buttons and any scroll reveal)"
-  },
   {
    "surface": "footer",
    "tier": 768,
@@ -11643,24 +11697,6 @@
    "tier": 1440,
    "column": "motion",
    "reason": "accordion height easing/duration not sampled separately from the pill open animation"
-  },
-  {
-   "surface": "footer",
-   "tier": 1440,
-   "column": "item_states",
-   "reason": "footer link/button hover was not driven in this capture"
-  },
-  {
-   "surface": "footer",
-   "tier": 1440,
-   "column": "motion",
-   "reason": "no footer motion was sampled (hover-roll buttons and any scroll reveal)"
-  },
-  {
-   "surface": "header-shell",
-   "tier": 1440,
-   "column": "motion",
-   "reason": "entrance/intro animation and preloader (js-loader, z-index 50) not sampled"
   },
   {
    "surface": "trigger-close",
