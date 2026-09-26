@@ -498,7 +498,7 @@ if ( ! function_exists( 'sgs_product_card_swatches_markup' ) ) {
 			$scoped_css .= '#' . $dot_id . '{--sgs-pc-swatch-bg:' . esc_attr( $colour ) . ';}';
 
 			$dots_html .= '<span id="' . esc_attr( $dot_id ) . '" class="sgs-product-card__swatch"'
-				. ( '' !== $label ? ' title="' . esc_attr( $label ) . '" aria-label="' . esc_attr( $label ) . '"' : ' aria-hidden="true"' )
+				. ( '' !== $label ? ' role="img" title="' . esc_attr( $label ) . '" aria-label="' . esc_attr( $label ) . '"' : ' aria-hidden="true"' )
 				. '></span>';
 		}
 
@@ -510,7 +510,7 @@ if ( ! function_exists( 'sgs_product_card_swatches_markup' ) ) {
 		if ( $hidden > 0 ) {
 			/* translators: %d is the number of additional colour options not shown as swatches. */
 			$more_label = sprintf( __( '+%d more colours', 'sgs-blocks' ), $hidden );
-			$more_html  = '<span class="sgs-product-card__swatch-more" aria-label="' . esc_attr( $more_label ) . '">+' . (int) $hidden . '</span>';
+			$more_html  = '<span class="sgs-product-card__swatch-more" role="img" aria-label="' . esc_attr( $more_label ) . '">+' . (int) $hidden . '</span>';
 		}
 
 		$style_tag = '' !== $scoped_css ? '<style>' . wp_strip_all_tags( $scoped_css ) . '</style>' : '';

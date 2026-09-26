@@ -84,8 +84,8 @@ export function wishlistRowHtml( product, { showPrice, showStock } ) {
 				'Notify me'
 		  ) }</button><div class="sgs-wishlist-panel__notify-form" data-product-id="${ id }" hidden></div>`
 		: hasOptions
-		? `<a class="sgs-wishlist-panel__choose-options" href="${ chooseOptionsUrl }" data-product-id="${ id }">${ chooseOptionsText }</a>`
-		: `<button type="button" class="sgs-wishlist-panel__move-to-basket" data-product-id="${ id }">${ escapeHtml(
+		? `<a class="sgs-wishlist-panel__choose-options wp-element-button" href="${ chooseOptionsUrl }" data-product-id="${ id }">${ chooseOptionsText }</a>`
+		: `<button type="button" class="sgs-wishlist-panel__move-to-basket wp-element-button" data-product-id="${ id }">${ escapeHtml(
 				'Move to basket'
 		  ) }</button>`;
 

@@ -81,11 +81,9 @@
 	cursor: pointer;
 }
 
-.sgs-wishlist-panel__move-to-basket {
-	background-color: var(--wp--preset--color--accent, #1e6091);
-	color: var(--wp--preset--color--text-inverse, #fff);
-	border-radius: var(--wp--preset--spacing--10, 4px);
-}
+/* Move to basket and Choose options carry wp-element-button, so they take the
+   client's own button colours from theme.json (a fixed accent/text-inverse
+   pair read 1.44:1 on a yellow accent). */
 
 /* Variable products route to their product page to choose options (a Store
    API add-to-cart call on a variable product is rejected) — same size/shape
@@ -97,9 +95,6 @@
 	justify-content: center;
 	min-height: 44px;
 	padding: 0 1rem;
-	background-color: var(--wp--preset--color--accent, #1e6091);
-	color: var(--wp--preset--color--text-inverse, #fff);
-	border-radius: var(--wp--preset--spacing--10, 4px);
 	text-decoration: none;
 }
 
