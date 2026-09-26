@@ -584,6 +584,27 @@ apply section-ink-off && node scripts/nav-qa/u13-ink-probe.mjs $URL --expect off
 apply direction-fade && node scripts/nav-qa/m03-direction-probe.mjs $URL
 ```
 
+## 12. `u16-entrance-probe.mjs` + `u16-editor-check.mjs` — entrances beside the block's own motion
+
+Fixture case `entrance` in `qa-item-markup-fixture.php` (same trapped apply-measure-restore rule as §10, ending on
+`two-bar`): the test header gets a `fade-in` extra-slow entrance with sticky, shrink and hide-on-scroll on at every tier,
+over page `/qa-entrance/` (rewritten on each apply, kept): an info-box with its own hover and an extra-slow `fade-up`, a
+1600px spacer, then an `sgs/site-footer` whose rows fade up 50px at 0, 100 and 200ms, the third with `fxFooterStagger`
+(its own entrance gives way) around an info-box that keeps one. `u16-entrance-probe.mjs <url>` asserts at 375/768/1440:
+the header rises from 0 to 1 over at least 650ms with no flash after the first paint; the card's own hover ends within
+330ms; shrink, hide-on-scroll and pinning still work; a dropdown opened mid-entrance lands where it settles (1440);
+footer rows travel 50px to 0 about 100ms apart; reduced motion, JavaScript off and a blocked observer show everything.
+The page runs Lenis, so the probe scrolls with `window.scrollTo`, never `scrollIntoView`. `u16-editor-check.mjs` (repo
+root) drives the real inspector at Desktop and Tablet: the 500/800ms delays, the Distance options (hidden for
+`fade-in`), a save and reload round-trip, and the header's first-appearance notice (not saved).
+
+```bash
+URL=https://sandybrown-nightingale-600381.hostingersite.com/qa-entrance/
+trap restore EXIT   # restore() as in §10
+apply entrance && node scripts/nav-qa/u16-entrance-probe.mjs $URL
+node plugins/sgs-blocks/scripts/nav-qa/u16-editor-check.mjs   # from the repo root
+```
+
 ## Notes for the acceptance gate
 
 - Run all of them against **both** gate targets, Mama's (flat bar plus drawer) and

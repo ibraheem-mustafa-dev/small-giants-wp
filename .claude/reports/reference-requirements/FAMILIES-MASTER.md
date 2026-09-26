@@ -2,7 +2,7 @@
 
 **Inputs:** `families-A.json` (header shell, bar, footer — 25), `families-B.json` (dropdown, mega, trigger and close — 25), `families-C.json` (drawer — 24). **Revised against:** `FAMILIES-REVIEW.md` (23 findings, verdict *sign after fixes*) — every finding re-verified against the raw cell or the tree before anything changed (V-34 to V-47). **Feeds:** W3B-5 (owner signs off the family list and the order) and Wave 3C.
 
-**74 source families merged to 46 masters** — 11 covered, 21 partial, 8 gap, 6 conflict. Reference counts are out of the 13-reference roster: away, buck, butcherbox, dogstudio, fantasy, halcyon, indus-foods, lamalama, lusion, rabbit, resn, studionamma, wearecollins.
+**74 source families merged to 46 masters** — 12 covered, 20 partial, 8 gap, 6 conflict. Reference counts are out of the 13-reference roster: away, buck, butcherbox, dogstudio, fantasy, halcyon, indus-foods, lamalama, lusion, rabbit, resn, studionamma, wearecollins.
 
 **Two columns do different jobs.** *needed by* = references whose rows touch the family at all. *uncovered* = references with at least one value the framework cannot express today. Unit support is the union of **uncovered**, because a family that is covered for eleven references and short for two is two references of work, not eleven.
 
@@ -22,7 +22,7 @@
 | M-08 | A trigger that outlives its header (detach to a fixed control) | 2 | 2 | gap | measured | F-A-19, F-B-24 |
 | M-09 | Header stacking order (z-index) | 9 | 10 | conflict | measured | F-A-21 |
 | M-10 | Pointer-tracking label magnet on bar items | 2 | 2 | partial | measured | F-A-14 |
-| M-11 | Header and footer entrance animation | 6 | 6 | partial | thin | F-A-20 |
+| M-11 | Header and footer entrance animation | 6 | 6 | covered | measured | F-A-20 |
 | M-12 | Footer archetype | 11 | 0 | covered | mixed | F-A-22 |
 | M-13 | Surface ground: fill, opacity, blur, radius, border, shadow | 13 | 6 | partial | measured | F-A-03, F-A-04, F-B-05, F-C-04, F-C-05, F-A-23 |
 | M-14 | Surface scrim (viewport dimmer behind an open surface) | 6 | 6 | gap | measured | F-B-06, F-C-06 |
@@ -71,7 +71,7 @@
 - **M-08 A trigger that outlives its header (detach to a fixed control)** — RE-SCOPED from five references to TWO. Covered by: *nothing*
 - **M-09 Header stacking order (z-index)** — VERIFIED: site-header/render.php emits 'z-index' => '100' in all three tri-state branches and style.css:25 sets z-index:100. Covered by: `sgs/site-header (z-index hardcoded 100; NO attribute)`
 - **M-10 Pointer-tracking label magnet on bar items** — VERIFIED: itemMagnetStrength and itemMagnetRadius are ABSENT while triggerMagnetStrength (default 24) and triggerMagnetRadius (default 120) exist. Covered by: `sgs/nav-bar-menu::itemMagnetEnabled (boolean only)`
-- **M-11 Header and footer entrance animation** — VERIFIED: site-header and site-footer both declare supports.sgs.hideExtensions ['fx'], so the generic Spec 38 picker is deliberately hidden on them; only the footer row has a scrubbed reveal. Covered by: `sgs/site-footer-row::fxFooterStagger`
+- **M-11 Header and footer entrance animation** — COVERED by U-16 (2026-09-26, measured in step 0d and live): the universal entrance runs on the header, footer, footer rows and their blocks as a script animation beside their own behaviours; distance presets reach dogstudio's 50px footer travel, `extra-slow` reaches lamalama's and studionamma's 800ms header. Divergence: their preloader-gated start (SGS has no preloader). Covered by: `sgsAnimation`, `sgsAnimationDistance`, `sgsAnimationDelay`, `sgs/site-footer-row::fxFooterStagger`
 - **M-12 Footer archetype** — All five shapes are rows of blocks, and 'absent' is covered by carrying no footer template part. Covered by: `sgs/site-footer::layout`, `::columns`, `::minHeight`, `::contentWidth`
 - **M-13 Surface ground: fill, opacity, blur, radius, border, shadow** — MERGED across header, panel, drawer and footer: one ground vocabulary, per the composite-mirror rule. Covered by: `sgs/site-header::backgroundColour/-Gradient/::backdropBlur/::border*/::shadow`, `sgs/mega-panel::panelBg/::bgBlur/::borderRadius/::border*`, `sgs/nav-drawer::drawerBg/::surfaceOpacity/::surfaceBlur/::borderRadius`, `sgs/site-footer::backgroundColour/-Gradient`
 - **M-14 Surface scrim (viewport dimmer behind an open surface)** — MERGED: group B found no scrim element on the panel fork, group C found a hardcoded one on the drawer. Covered by: `(drawer scrim exists but is hardcoded; the panel fork has no scrim at all)`
@@ -127,7 +127,7 @@ Ordered by **uncovered** support. `independent` is computed from the units' own 
 | 7 | U-2 | Surface scrim on the panel and the drawer | M-14 | 6 of 13 | **no** | medium |
 | 8 | U-10 | Role migration: move a non-menu header block into the drawer per tier | M-19 | 6 of 13 | **no** | medium |
 | 9 | U-14 | Band pass-through and a trigger that outlives its header | M-52, M-08, M-39 | 6 of 13 | **no** | medium |
-| 10 | U-16 | Header and footer entrance animation | M-11 | 6 of 13 | **no** | medium |
+| 10 | U-16 | Header and footer entrance animation | M-11 | 6 of 13 | yes (2026-09-26) | medium |
 | 11 | U-4 | Type scaling mode: a formula unit and per-tier line-height | M-45 | 5 of 13 | **no** | medium |
 | 12 | U-7 | Per-item ornament and per-item media slot | M-22, M-15 | 5 of 13 | **no** | medium |
 | 13 | U-13 | Header scroll intelligence: direction-keyed restyle and section-adaptive ink | M-03, M-04 | 5 of 13 | **no** | high |

@@ -1,11 +1,11 @@
 ---
 doc_type: spec
 spec_id: 38
-spec_version: 1.2
+spec_version: 1.3
 status: active
 title: SGS Motion System — the four-tier motion doctrine (V/G/H/W) + the GSAP (Tier G) effects layer
 created: 2026-07-29
-last_verified: 2026-09-19
+last_verified: 2026-09-26
 depends_on: [31, 32, 35, 37, "02 §Animation", "src/shared/effects/ house runtime"]
 ---
 
@@ -1424,7 +1424,7 @@ shipped header sticky/collapse system depends on.
 ### 4.3 Entrance (Tier V `sgsAnimation`) × scroll-scrub on the same block
 
 **Resolution — mutual exclusivity; scrub wins; enforced at RENDER time.** A scrub timeline owns
-the element's transform/opacity for its whole scroll range; an IntersectionObserver entrance
+the element's transform/opacity for its whole scroll range; an entrance animation
 fighting it produces double-animation and broken initial states — precedence ordering cannot
 fix a shared-property conflict, only hide it. Rule: when a `data-sgs-fx` scrub effect is
 present on a block, the render layer suppresses the `data-sgs-animation*` attributes for that
@@ -1444,6 +1444,35 @@ effect controls this block's motion — entrance animation is off") when an fx s
 (e.g. DrawSVG on load, ScrambleText) do NOT exclude entrances — only effects that own
 transform/opacity across a scroll range do; the exclusion list is part of each effect's
 registry row (§6), not a hardcoded pair.
+
+### 4.3a The Tier V entrance is its own layer on every block
+
+The universal entrance (`sgsAnimation`, 16 effects) runs as a script animation, never as CSS:
+`plugins/sgs-blocks/assets/js/animation-observer.js` calls `element.animate()` (Web Animations
+API). A script animation is its own effect in the element's animation stack, so it never shares
+the element's `transition`, `animation` or `transform` with the block's own effects (hover
+transitions, the header's scroll-timeline shrink, hide-on-scroll): every block keeps its own
+motion during and after the entrance. Each effect names only the properties it moves (the
+standalone `translate`, `scale` and `rotate`, which compose with `transform`; `filter` for
+blur-in; `clip-path` for reveal-up; flip-in alone keeps `transform: perspective()`, which has no
+standalone property), with `fill: 'backwards'` so nothing is held once it ends. The effect table
+is one JSON literal between the `sgs-entrance-effects` markers in the observer, which the DB
+seeder (`scripts/dbschema/seed-motion-shape-signatures.py::_extract_entrance_rows`) reads.
+
+- **Timing.** Duration and easing resolve from the theme tokens (`--wp--custom--duration--*`,
+  `--wp--custom--easing--*`); delay is `sgsAnimationDelay` (0 to 800ms) plus a 100ms-per-index
+  stagger for elements in view at load. `sgsAnimationDistance` (15, 30, 50 or 100px, written only
+  when set) replaces a directional effect's own travel (30px fade, 100px slide).
+- **When it plays.** In view at load: at once. Otherwise the animation is created paused (start
+  pose) within 200px of the viewport and plays at 15% in view; it plays once (a script animation
+  does not replay when a hidden container shows again) and is cancelled when finished.
+- **Before it plays.** A `wp_head` flag and rule (`sgs-entrance-pending`,
+  `plugins/sgs-blocks/includes/animation-attributes.php::print_entrance_pending_flag`, printed render-blocking because
+  `extensions.css` loads asynchronously) hold animated elements at opacity 0 until the observer has
+  placed the start poses; the flag lifts itself after 3s. Without
+  JavaScript nothing is hidden; under reduced motion no animation is created; `beforeprint`
+  finishes every entrance. `sgs/site-header` has a 3s failsafe, and its Animation panel warns
+  that an entrance delays the header's first appearance.
 
 ### 4.4 Conditional-loading contract
 

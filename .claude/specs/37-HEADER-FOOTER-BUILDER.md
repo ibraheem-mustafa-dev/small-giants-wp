@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 37
-spec_version: 1.5.0
+spec_version: 1.6.0
 title: SGS Header/Footer Builder — CPT editing home, container blocks, behaviours, binding
 project: small-giants-wp
 status: active
@@ -892,6 +892,21 @@ a class on `<body>` is site-wide and cannot express "scrim over the desktop hero
 phone". `header-behaviours.css` carries no `body.sgs-header-behaviour-*` rules.
 **Done when:** no header behaviour renders an inline `style=""` declaration, and the emitted CSS is
 scoped to the block uid. ✅ met.
+
+#### FR-37-52 — Header and footer entrance
+`sgs/site-header`, `sgs/site-footer`, `sgs/site-footer-row` and every block inside them take the
+universal entrance (Spec 38 §4.3a: `sgsAnimation` with duration, easing, delay up to 800ms and a
+travel distance of 15, 30, 50 or 100px). The entrance runs as a script animation, so it never
+touches the header's sticky, shrink or hide-on-scroll: those keep working during and after it.
+The header's Animation panel warns that an entrance delays the header's first appearance, and a
+3s failsafe shows the header if the observer never plays it. A footer row with
+`fxFooterStagger` on gives its own entrance way to the scroll reveal
+(`plugins/sgs-blocks/includes/animation-attributes.php::sgs_fx_owns_scroll_transform`); blocks inside it keep theirs.
+A reference whose header waits for its own preloader (lamalama, studionamma) is a recorded
+divergence: SGS has no preloader, so the entrance starts at load.
+**Status:** `BUILT + LIVE-VERIFIED` (U-16, 2026-09-26): `node plugins/sgs-blocks/scripts/nav-qa/u16-entrance-probe.mjs`
+on `/qa-entrance/` (fixture `qa-item-markup-fixture.php entrance`) and
+`node plugins/sgs-blocks/scripts/nav-qa/u16-editor-check.mjs`.
 
 ### Data model and controls
 

@@ -132,7 +132,7 @@ sgs-blocks/
 │   │   ├── choice-flow-question/ # Multiple-choice question step (parent: sgs/form-step)
 │   │   ├── choice-flow-result/   # Recommendation terminal of a choice flow (parent: sgs/form-step)
 │   │   └── extensions/           # Not a block (no block.json): editor extensions applied to many blocks
-│   │       ├── animation.js          # Scroll-triggered animation extension
+│   │       ├── animation.js          # Entrance animation extension (script animations)
 │   │       ├── responsive-visibility.js  # Show/hide per breakpoint
 │   │       ├── hover-effects.js      # Hover-effect controls
 │   │       ├── image-controls.js     # Universal image controls (blocks declaring `supports.sgs.imageControls`)
@@ -1322,23 +1322,16 @@ All SGS blocks receive animation and interaction controls via the block extensio
 - Hover effects (universal extension): lift (via scale + shadow), scale, glow, border-accent, shadow-grow, colour-shift, tilt-3d — all universal.
 - Scroll-linked: `sgsScrollProgress` (global CSS variable, exposes `--sgs-scroll-progress` 0-1 on documentElement) and `sgsParallax` (background + element variants) are built.
 
-#### Entrance Animations (scroll-triggered via IntersectionObserver)
+#### Entrance Animations (script animations, Spec 38 §4.3a)
 
-**Attributes (injected into all `sgs/*` blocks):**
-- `sgsAnimation` — none | fade-up | fade-down | fade-in | fade-left | fade-right | slide-up | slide-down | slide-left | slide-right | scale-in | scale-out | rotate-in | flip-in | blur-in | **bounce-in** | **reveal-up** (default: none) — 16 active types
-- `sgsAnimationDelay` — 0 | 100 | 200 | 300 | 400 | 500 ms (default: 0)
-- `sgsAnimationDuration` — fast (300ms) | medium (500ms) | slow (800ms) | very-slow (1200ms) (default: medium)
-- `sgsAnimationStagger` — boolean (default: false — when true, direct children animate in sequence with incrementing delay)
-- `sgsAnimationStaggerDelay` — integer ms (default: 100 — delay between each child animation)
-- `sgsAnimationOnce` — boolean (default: true — animate only on first scroll into view, not every time)
+**Attributes (injected into all `sgs/*` blocks by `src/blocks/extensions/animation.js`; server mirror in `includes/extension-attributes.generated.php`):**
+- `sgsAnimation` — none | fade-up | fade-down | fade-in | fade-left | fade-right | slide-up | slide-down | slide-left | slide-right | scale-in | scale-out | rotate-in | flip-in | blur-in | bounce-in | reveal-up (default: none)
+- `sgsAnimationDelay` — 0 | 100 | 200 | 300 | 500 | 800 ms (default: 0)
+- `sgsAnimationDuration` — the theme duration tokens: instant (60ms) | fast (150ms) | medium (300ms) | slow (500ms) | extra-slow (800ms) (default: medium)
+- `sgsAnimationEasing` — the theme easing tokens: default | ease-out | ease-in | spring | linear (default: default)
+- `sgsAnimationDistance` — '' | 15 | 30 | 50 | 100 px, directional effects only (default: '' = the effect's own 30px fade or 100px slide)
 
-**Implementation:**
-- CSS classes: `.sgs-animate--fade-up`, `.sgs-animate--slide-left`, etc.
-- Initial state: elements start with `opacity: 0` and transform offset
-- Triggered state: `.sgs-animate--visible` class added by IntersectionObserver
-- Stagger: JS calculates `animation-delay` per child based on index × staggerDelay
-- CSS: `transition: opacity {duration} ease-out, transform {duration} ease-out`
-- GPU-accelerated: only `transform` and `opacity` are animated — no layout thrashing
+**Implementation:** `assets/js/animation-observer.js` plays each entrance with `element.animate()`, so it never shares a block's own `transition`, `animation` or `transform`; elements in view at load play with a 100ms-per-index stagger, the rest play at 15% in view. A render-blocking head flag (`plugins/sgs-blocks/includes/animation-attributes.php::print_entrance_pending_flag`) holds entrances until their start pose is placed. Reduced motion and no-JS show content unanimated. Full contract: Spec 38 §4.3a.
 
 #### Hover Animations (CSS-first, JS for complex effects)
 
