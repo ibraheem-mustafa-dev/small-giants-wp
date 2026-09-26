@@ -101,23 +101,51 @@ foreach ( array(
 }
 
 // showLabel — icon-only by default (the label stays in the DOM for
-// assistive tech via aria-label; visually hidden unless a tier opts in).
-$show_label_tiers = sgs_responsive_normalise_object( $attributes['showLabel'] ?? null, false );
-foreach ( array(
-	'desktop' => '',
-	'tablet'  => '@media(max-width:1023px)',
-	'mobile'  => '@media(max-width:767px)',
-) as $tier => $media ) {
-	if ( true !== ( $show_label_tiers[ $tier ] ?? null ) ) {
-		continue;
-	}
-	$rule         = $root_sel . ' .sgs-wishlist-link__label{position:static;width:auto;height:auto;overflow:visible;clip:auto;clip-path:none;white-space:normal;margin:0 0 0 var(--wp--preset--spacing--20,0.5em);}';
-	$scoped_css[] = $media ? $media . '{' . $rule . '}' : $rule;
+// assistive tech via aria-label). Per-tier resolution uses the framework's
+// null-means-inherit chain (Desktop concrete boolean, Tablet/Mobile override;
+// see BooleanResponsiveControl and sgs/audio's toggleShowLabel for the same
+// shape).
+$show_label_base = ! empty( $attributes['showLabel'] );
+
+$show_label_tablet_raw = $attributes['showLabelTablet'] ?? null;
+$show_label_mobile_raw = $attributes['showLabelMobile'] ?? null;
+// '' is the REST GET null-serialisation shim (addQueryArgs can't represent a
+// real null) — treat identically to a real null (inherit the tier above).
+$show_label_tablet_inherits = ( null === $show_label_tablet_raw || '' === $show_label_tablet_raw );
+$show_label_mobile_inherits = ( null === $show_label_mobile_raw || '' === $show_label_mobile_raw );
+
+$show_label_tablet_effective = $show_label_tablet_inherits ? $show_label_base : (bool) $show_label_tablet_raw;
+$show_label_mobile_effective = $show_label_mobile_inherits ? $show_label_tablet_effective : (bool) $show_label_mobile_raw;
+
+$sgs_wl_label_shown_decls  = '{position:static;width:auto;height:auto;overflow:visible;clip:auto;clip-path:none;white-space:normal;margin:0 0 0 var(--wp--preset--spacing--20,0.5em);}';
+$sgs_wl_label_hidden_decls = '{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;margin:0;}';
+
+// Each tier's rule is emitted unconditionally (not only when true) — the
+// resolved value can legitimately need to override a wider tier that already
+// switched the label on (e.g. Desktop on, Tablet explicitly off).
+foreach (
+	array(
+		'desktop' => array(
+			'media'     => '',
+			'effective' => $show_label_base,
+		),
+		'tablet'  => array(
+			'media'     => '@media(max-width:1023px)',
+			'effective' => $show_label_tablet_effective,
+		),
+		'mobile'  => array(
+			'media'     => '@media(max-width:767px)',
+			'effective' => $show_label_mobile_effective,
+		),
+	) as $sgs_wl_tier_data
+) {
+	$rule         = $root_sel . ' .sgs-wishlist-link__label' . ( $sgs_wl_tier_data['effective'] ? $sgs_wl_label_shown_decls : $sgs_wl_label_hidden_decls );
+	$scoped_css[] = $sgs_wl_tier_data['media'] ? $sgs_wl_tier_data['media'] . '{' . $rule . '}' : $rule;
 }
 
 $wrapper_attrs = get_block_wrapper_attributes(
 	array(
-		'class' => $uid,
+		'class' => 'sgs-wishlist-link ' . $uid,
 	)
 );
 

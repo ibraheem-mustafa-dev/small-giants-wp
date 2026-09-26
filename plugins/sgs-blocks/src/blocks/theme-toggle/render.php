@@ -65,7 +65,20 @@ if ( '' === trim( $label_text ) ) {
 	$label_text = __( 'Dark mode', 'sgs-blocks' );
 }
 
-$icon_only = is_array( $attributes['iconOnly'] ?? null ) ? $attributes['iconOnly'] : array();
+// iconOnly — per-tier resolution uses the framework's null-means-inherit chain
+// (Desktop concrete boolean, Tablet/Mobile override; see BooleanResponsiveControl
+// and sgs/audio's toggleShowLabel for the same shape).
+$icon_only_base = ! empty( $attributes['iconOnly'] );
+
+$icon_only_tablet_raw = $attributes['iconOnlyTablet'] ?? null;
+$icon_only_mobile_raw = $attributes['iconOnlyMobile'] ?? null;
+// '' is the REST GET null-serialisation shim (addQueryArgs can't represent a
+// real null) — treat identically to a real null (inherit the tier above).
+$icon_only_tablet_inherits = ( null === $icon_only_tablet_raw || '' === $icon_only_tablet_raw );
+$icon_only_mobile_inherits = ( null === $icon_only_mobile_raw || '' === $icon_only_mobile_raw );
+
+$icon_only_tablet_effective = $icon_only_tablet_inherits ? $icon_only_base : (bool) $icon_only_tablet_raw;
+$icon_only_mobile_effective = $icon_only_mobile_inherits ? $icon_only_tablet_effective : (bool) $icon_only_mobile_raw;
 
 // -----------------------------------------------------------------------------
 // 2. Icons (Light/Dark) — resolved server-side, same icon maps notice-banner uses.
@@ -228,13 +241,13 @@ if ( 'segmented' === $toggle_style ) {
 }
 if ( 'switch' === $toggle_style ) {
 	$wrapper_classes[] = 'sgs-dark-mode-toggle';
-	if ( ! empty( $icon_only['desktop'] ) ) {
+	if ( $icon_only_base ) {
 		$wrapper_classes[] = 'sgs-theme-toggle--icon-only';
 	}
-	if ( ! empty( $icon_only['tablet'] ) ) {
+	if ( $icon_only_tablet_effective ) {
 		$wrapper_classes[] = 'sgs-theme-toggle--icon-only-tablet';
 	}
-	if ( ! empty( $icon_only['mobile'] ) ) {
+	if ( $icon_only_mobile_effective ) {
 		$wrapper_classes[] = 'sgs-theme-toggle--icon-only-mobile';
 	}
 }

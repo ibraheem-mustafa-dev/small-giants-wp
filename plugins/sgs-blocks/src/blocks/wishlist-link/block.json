@@ -81,8 +81,27 @@
 			"default": true
 		},
 		"showLabel": {
-			"type": "object",
-			"default": {}
+			"type": "boolean",
+			"default": false,
+			"description": "Desktop tier: show the visible text label next to the icon (the label stays the accessible name via aria-label on the link when hidden). Default false (icon-only). Framework flat tier convention (BooleanResponsiveControl) — Desktop is always a concrete boolean, Tablet/Mobile override via the two sibling attrs below (null = inherit the tier above)."
+		},
+		"showLabelTablet": {
+			"type": [
+				"boolean",
+				"null",
+				"string"
+			],
+			"default": null,
+			"description": "Tablet override for showLabel. null = inherit Desktop. 'string' is in the type union only because @wordpress/server-side-render's GET transport serialises a null value to an empty string in the REST query string (see sgs/before-after videoAutoplayTablet) — render.php treats '' identically to null."
+		},
+		"showLabelMobile": {
+			"type": [
+				"boolean",
+				"null",
+				"string"
+			],
+			"default": null,
+			"description": "Mobile override for showLabel. null = inherit the resolved Tablet value. Same REST-shim 'string' union as showLabelTablet."
 		},
 		"label": {
 			"type": "string",

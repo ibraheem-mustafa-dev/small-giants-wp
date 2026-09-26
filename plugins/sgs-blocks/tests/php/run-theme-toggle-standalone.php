@@ -55,7 +55,26 @@ ok( 'Dark mode' === ( $label_schema['default'] ?? null ), 'block.json: label def
 $label_roll_schema = $block_json['attributes']['labelRoll'] ?? array();
 ok( array( '', 'up', 'up-scale' ) === ( $label_roll_schema['enum'] ?? null ), 'block.json: labelRoll enum is exactly ["", up, up-scale]' );
 
-ok( 'object' === ( ( $block_json['attributes']['iconOnly'] ?? array() )['type'] ?? null ), 'block.json: iconOnly is typed object (per-tier boolean)' );
+ok( 'boolean' === ( ( $block_json['attributes']['iconOnly'] ?? array() )['type'] ?? null ), 'block.json: iconOnly is a flat boolean (Desktop tier, BooleanResponsiveControl convention)' );
+ok( false === ( ( $block_json['attributes']['iconOnly'] ?? array() )['default'] ?? null ), 'block.json: iconOnly defaults to false' );
+ok(
+	array( 'boolean', 'null', 'string' ) === ( ( $block_json['attributes']['iconOnlyTablet'] ?? array() )['type'] ?? null ),
+	'block.json: iconOnlyTablet is boolean|null|string (the REST-GET null-serialisation shim)'
+);
+ok(
+	array_key_exists( 'default', $block_json['attributes']['iconOnlyTablet'] ?? array() )
+		&& null === $block_json['attributes']['iconOnlyTablet']['default'],
+	'block.json: iconOnlyTablet defaults to null (inherit Desktop)'
+);
+ok(
+	array( 'boolean', 'null', 'string' ) === ( ( $block_json['attributes']['iconOnlyMobile'] ?? array() )['type'] ?? null ),
+	'block.json: iconOnlyMobile is boolean|null|string (the REST-GET null-serialisation shim)'
+);
+ok(
+	array_key_exists( 'default', $block_json['attributes']['iconOnlyMobile'] ?? array() )
+		&& null === $block_json['attributes']['iconOnlyMobile']['default'],
+	'block.json: iconOnlyMobile defaults to null (inherit the resolved Tablet value)'
+);
 ok( 'object' === ( ( $block_json['attributes']['iconLight'] ?? array() )['type'] ?? null ), 'block.json: iconLight is typed object ({source,name})' );
 ok( 'object' === ( ( $block_json['attributes']['iconDark'] ?? array() )['type'] ?? null ), 'block.json: iconDark is typed object ({source,name})' );
 
@@ -216,6 +235,56 @@ $broken_switch_markup = render_button_open_tag_simulated( (string) $broken_resul
 ok(
 	'' === $broken_switch_markup,
 	'NEGATIVE CONTROL: an unsanitised off-enum value renders NEITHER the switch NOR the segmented markup (would silently render nothing on a real site, not fall back)'
+);
+
+// ---------------------------------------------------------------------------
+// iconOnly per-tier resolution — Mobile override wins over Desktop.
+// ---------------------------------------------------------------------------
+
+/**
+ * Faithful re-implementation of render.php's iconOnly tier resolution
+ * (null-means-inherit-the-tier-above, matching BooleanResponsiveControl).
+ *
+ * @param bool      $base   Desktop value.
+ * @param bool|null $tablet Tablet override (null = inherit Desktop).
+ * @param bool|null $mobile Mobile override (null = inherit resolved Tablet).
+ * @return array{tablet: bool, mobile: bool} Resolved Tablet/Mobile effective values.
+ */
+function resolve_icon_only_tiers( bool $base, $tablet, $mobile ): array {
+	$tablet_effective = ( null === $tablet ) ? $base : (bool) $tablet;
+	$mobile_effective = ( null === $mobile ) ? $tablet_effective : (bool) $mobile;
+	return array(
+		'tablet' => $tablet_effective,
+		'mobile' => $mobile_effective,
+	);
+}
+
+$icon_only_resolved = resolve_icon_only_tiers( true, null, false );
+ok( true === $icon_only_resolved['tablet'], 'iconOnly resolution: Tablet with no override inherits Desktop (true)' );
+ok( false === $icon_only_resolved['mobile'], 'iconOnly resolution: Mobile explicitly false WINS over an inherited-true Desktop/Tablet' );
+
+/**
+ * The BROKEN variant — ignores the Mobile sibling entirely and just returns
+ * the resolved Tablet value, as if Mobile always inherited.
+ *
+ * @param bool      $base   Desktop value.
+ * @param bool|null $tablet Tablet override (null = inherit Desktop).
+ * @param bool|null $mobile Mobile override — deliberately IGNORED.
+ * @return bool The (wrongly) resolved Mobile value.
+ */
+function resolve_icon_only_mobile_ignoring_override_broken( bool $base, $tablet, $mobile ): bool {
+	unset( $mobile ); // Deliberately unused — this IS the bug being proven.
+	return ( null === $tablet ) ? $base : (bool) $tablet;
+}
+
+$broken_mobile = resolve_icon_only_mobile_ignoring_override_broken( true, null, false );
+ok(
+	false !== $broken_mobile,
+	'NEGATIVE CONTROL: ignoring the Mobile sibling gets Mobile WRONG (true instead of the explicit false override) — proves the "Mobile wins over Desktop" assertion above is a real test of the override, not a tautology'
+);
+ok(
+	true === $broken_mobile,
+	'NEGATIVE CONTROL: the broken variant instead just repeats the resolved Tablet/Desktop value'
 );
 
 echo "\n==== $pass passed, $fail failed ====\n";

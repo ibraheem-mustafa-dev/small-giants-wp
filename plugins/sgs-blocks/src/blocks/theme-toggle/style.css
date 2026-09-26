@@ -27,7 +27,10 @@
 
 /* iconOnly (per tier) — the label stays in the DOM as the accessible name but is
 visually hidden; never `display:none` (that would also remove it from the
-accessible name computation on some AT/browser combinations). */
+accessible name computation on some AT/browser combinations). Classes are
+applied against render.php's already-RESOLVED effective value per tier
+(iconOnly/iconOnlyTablet/iconOnlyMobile, null-means-inherit-the-tier-above —
+see BooleanResponsiveControl), so these selectors need no cascade guesswork. */
 .sgs-theme-toggle--icon-only .sgs-theme-toggle__label {
 	position: absolute;
 	width: 1px;

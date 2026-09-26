@@ -128,8 +128,27 @@
 			"default": ""
 		},
 		"iconOnly": {
-			"type": "object",
-			"default": {}
+			"type": "boolean",
+			"default": false,
+			"description": "Desktop tier: hide the visible label text, showing the icon only (the label stays the accessible name). Default false. Framework flat tier convention (BooleanResponsiveControl) — Desktop is always a concrete boolean, Tablet/Mobile override via the two sibling attrs below (null = inherit the tier above)."
+		},
+		"iconOnlyTablet": {
+			"type": [
+				"boolean",
+				"null",
+				"string"
+			],
+			"default": null,
+			"description": "Tablet override for iconOnly. null = inherit Desktop. 'string' is in the type union only because @wordpress/server-side-render's GET transport serialises a null value to an empty string in the REST query string (see sgs/before-after videoAutoplayTablet) — render.php treats '' identically to null."
+		},
+		"iconOnlyMobile": {
+			"type": [
+				"boolean",
+				"null",
+				"string"
+			],
+			"default": null,
+			"description": "Mobile override for iconOnly. null = inherit the resolved Tablet value. Same REST-shim 'string' union as iconOnlyTablet."
 		},
 		"iconLight": {
 			"type": "object",

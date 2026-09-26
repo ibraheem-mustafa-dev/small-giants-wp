@@ -14,6 +14,7 @@ import {
 	IconPreview,
 	SgsColourPanel,
 	ResponsiveControl,
+	BooleanResponsiveControl,
 	fillRow,
 	textRow,
 } from '../../components';
@@ -31,6 +32,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		iconName,
 		showCount,
 		showLabel,
+		showLabelTablet,
+		showLabelMobile,
 		label,
 		iconSize,
 	} = attributes;
@@ -92,21 +95,15 @@ export default function Edit( { attributes, setAttributes } ) {
 						checked={ !! showCount }
 						onChange={ ( value ) => setAttributes( { showCount: value } ) }
 					/>
-					<ResponsiveControl label={ __( 'Show text label', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => (
-							<ToggleControl
-								__nextHasNoMarginBottom
-								label={ __( 'Show text label', 'sgs-blocks' ) }
-								hideLabelFromVision
-								checked={ !! showLabel[ breakpoint ] }
-								onChange={ ( value ) =>
-									setAttributes( {
-										showLabel: { ...showLabel, [ breakpoint ]: value },
-									} )
-								}
-							/>
-						) }
-					</ResponsiveControl>
+					<BooleanResponsiveControl
+						label={ __( 'Show text label', 'sgs-blocks' ) }
+						help={ __( 'Off shows the icon only (label stays the accessible name).', 'sgs-blocks' ) }
+						attrBase="showLabel"
+						attrTablet="showLabelTablet"
+						attrMobile="showLabelMobile"
+						attributes={ { showLabel, showLabelTablet, showLabelMobile } }
+						setAttributes={ setAttributes }
+					/>
 					<ResponsiveControl label={ __( 'Icon size (px)', 'sgs-blocks' ) }>
 						{ ( breakpoint ) => (
 							<UnitControl
@@ -149,7 +146,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						// in the canvas too unless the desktop tier opts in — mirrors
 						// the visually-hidden clip-rect render.php's scoped CSS applies.
 						style={
-							true === showLabel?.desktop
+							true === showLabel
 								? undefined
 								: {
 									position: 'absolute',

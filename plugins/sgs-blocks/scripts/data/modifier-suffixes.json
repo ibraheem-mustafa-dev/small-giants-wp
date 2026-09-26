@@ -95,6 +95,16 @@
       null
     ],
     [
+      "Light",
+      "variant",
+      "2026-09-26 orphan_unclassified fix: sgs/theme-toggle iconLight/iconDark name the icon's theme-scheme variant AFTER the property word (icon+Light), the mirror image of the Primary/Secondary/Tertiary convention above. Peeling this modifier first leaves stem 'icon', which then peels cleanly via the existing property_suffixes 'Icon' entry (role enum-class-probe) -- the same role sgs/nav-drawer.closeIcon and sgs/nav-bar-menu.triggerIcon already carry. Verified zero collision: no other attr_name in the live DB (sgs/* or core/*) ends in 'Light' or 'Dark' (checked 2026-09-26)."
+    ],
+    [
+      "Dark",
+      "variant",
+      "2026-09-26, paired with the Light entry above -- see its note."
+    ],
+    [
       "Unit",
       "unit",
       null

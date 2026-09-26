@@ -89,7 +89,7 @@ foreach ( array(
 	$scoped_css[] = $media ? $media . '{' . $rule . '}' : $rule;
 }
 
-$wrapper_attrs = get_block_wrapper_attributes( array( 'class' => $uid ) );
+$wrapper_attrs = get_block_wrapper_attributes( array( 'class' => 'sgs-wishlist-panel ' . $uid ) );
 
 ?>
 <?php if ( $scoped_css ) : ?>

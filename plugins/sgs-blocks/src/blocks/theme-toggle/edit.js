@@ -1,12 +1,11 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls, useSetting } from '@wordpress/block-editor';
-import { PanelBody, SelectControl, TextControl, ToggleControl, Notice } from '@wordpress/components';
+import { PanelBody, SelectControl, TextControl, Notice } from '@wordpress/components';
 import {
 	SgsColourPanel,
 	fillRow,
 	textRow,
 	TypographyControls,
-	ResponsiveControl,
 	ResponsiveOverride,
 	ResponsiveBorderRadiusControl,
 	SgsBorderControl,
@@ -14,6 +13,7 @@ import {
 	BOX_UNITS,
 	normaliseResponsiveBox,
 	IconPicker,
+	BooleanResponsiveControl,
 } from '../../components';
 
 const TOGGLE_STYLE_OPTIONS = [
@@ -33,6 +33,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		label,
 		labelRoll,
 		iconOnly,
+		iconOnlyTablet,
+		iconOnlyMobile,
 		iconLight,
 		iconDark,
 		textColour,
@@ -58,10 +60,6 @@ export default function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps( {
 		className: 'sgs-theme-toggle-preview',
 	} );
-
-	const iconOnlyDesktop = iconOnly?.desktop ?? false;
-	const iconOnlyTablet = iconOnly?.tablet ?? false;
-	const iconOnlyMobile = iconOnly?.mobile ?? false;
 
 	// Contrast check for border colour — warn if border fails WCAG 3:1 contrast
 	// against the block's own background. When the background is a gradient,
@@ -158,23 +156,15 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				<PanelBody title={ __( 'Icon-only', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveControl label={ __( 'Icon only (hide the label visually)', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => (
-							<ToggleControl
-								checked={
-									'desktop' === breakpoint
-										? iconOnlyDesktop
-										: 'tablet' === breakpoint
-										? iconOnlyTablet
-										: iconOnlyMobile
-								}
-								onChange={ ( val ) =>
-									setAttributes( { iconOnly: { ...iconOnly, [ breakpoint ]: val } } )
-								}
-								__nextHasNoMarginBottom
-							/>
-						) }
-					</ResponsiveControl>
+					<BooleanResponsiveControl
+						label={ __( 'Icon only (hide the label visually)', 'sgs-blocks' ) }
+						help={ __( 'Off shows the label text (label stays the accessible name either way).', 'sgs-blocks' ) }
+						attrBase="iconOnly"
+						attrTablet="iconOnlyTablet"
+						attrMobile="iconOnlyMobile"
+						attributes={ { iconOnly, iconOnlyTablet, iconOnlyMobile } }
+						setAttributes={ setAttributes }
+					/>
 				</PanelBody>
 			</InspectorControls>
 
