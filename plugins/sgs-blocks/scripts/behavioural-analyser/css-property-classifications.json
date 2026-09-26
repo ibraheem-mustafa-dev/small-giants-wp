@@ -14866,6 +14866,15 @@
       }
     },
     {
+      "slug": "sgs/choice-flow-question",
+      "attr": "questionFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_layer": "CONTENT",
+        "css_element": "question"
+      }
+    },
+    {
       "slug": "sgs/collapsible-text",
       "attr": "backgroundColour",
       "fields": {
