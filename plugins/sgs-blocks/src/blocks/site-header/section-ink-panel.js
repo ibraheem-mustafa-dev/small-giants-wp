@@ -144,7 +144,7 @@ export default function SectionInkPanel( { attributes, setAttributes, colourPale
 				{ ( { ownValue, effectiveValue, setOwnValue, tier } ) => (
 					<ToggleGroupControl
 						label={ __( 'Colour over sections', 'sgs-blocks' ) }
-						help={ __( 'Adapt: the ink (and, once a fill below is set, the fill) follows the section behind the header. Blend: an inverting effect needing no colour choice.', 'sgs-blocks' ) }
+						help={ __( 'Adapt: the header colour (and its fill, if you set one under Styles, Colour) follows the section behind it. Blend: an inverting effect needing no colour choice.', 'sgs-blocks' ) }
 						value={ tier === 'desktop' ? ownValue || 'off' : ownValue || effectiveValue || 'off' }
 						onChange={ ( value ) => setOwnValue( 'desktop' === tier ? value || 'off' : value ) }
 						isBlock

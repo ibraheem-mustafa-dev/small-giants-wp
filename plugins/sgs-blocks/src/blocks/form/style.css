@@ -734,7 +734,7 @@ select.sgs-form-field__input {
  * scoped `.{uid}` rule always wins. */
 :where(.sgs-form__button--primary) {
 	background-color: var(--wp--preset--color--primary, #0f7e80);
-	color: var(--wp--preset--color--text-inverse, #fff);
+	color: var(--wp--preset--color--primary-text, var(--wp--preset--color--text-inverse, #fff));
 }
 
 /* Spec 32: no block emits an inline `style` property declaration any more,

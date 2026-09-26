@@ -171,13 +171,17 @@ if ( ! function_exists( 'sgs_header_ink_mode_rule' ) ) {
 		$css = $root_sel . '.is-header-on-dark{color:' . $ink_dark . ' !important;}'
 			. $root_sel . '.is-header-on-light{color:' . $ink_light . ' !important;}';
 
-		// While live, top-level links and the burger follow the ink over the
-		// menu's own colour; hover, focus and dropdown panels keep theirs.
+		// While live, top-level links, the burger and header icons follow the ink
+		// over their own colour; hover, focus, dropdowns and filled chips keep theirs.
 		foreach ( array( 'dark', 'light' ) as $tone ) {
 			$on   = $root_sel . '.is-header-on-' . $tone;
 			$css .= $on . ' .sgs-nav-bar-menu__item>.sgs-nav-bar-menu__link:not(:hover):not(:focus-visible),'
-				. $on . ' .sgs-nav-bar-menu__burger:not(:hover):not(:focus-visible)'
-				. '{color:inherit !important;-webkit-text-fill-color:currentColor !important;}';
+				. $on . ' .sgs-nav-bar-menu__burger:not(:hover):not(:focus-visible),'
+				. $on . ' .wp-block-sgs-business-info:not(.is-style-button) .sgs-business-info__link:not(:hover):not(:focus-visible)'
+				. '{color:inherit !important;-webkit-text-fill-color:currentColor !important;}'
+				. $on . ' .wp-block-sgs-business-info:not(.is-style-button),' . $on . ' .sgs-cart,'
+				. $on . ' .sgs-social-icons:not(.sgs-social-icons--filled):not(.sgs-social-icons--pill) .sgs-social-icons__item'
+				. '{--sgs-bi-icon-colour:currentColor !important;--sgs-cart-icon-colour:currentColor !important;--sgs-social-glyph:currentColor !important;}';
 		}
 
 		if ( 'tone-fill' === $mode || 'tone-fill-transparent' === $mode ) {
@@ -227,12 +231,7 @@ if ( ! function_exists( 'sgs_header_ink_css' ) ) {
 		$any_blend = in_array( 'blend', $ink_tiers, true );
 
 		if ( ! $any_adapt && ! $any_blend ) {
-			return array(
-				'css'        => '',
-				'transition' => '',
-				'any_adapt'  => false,
-				'live'       => '',
-			);
+			return array( 'css' => '', 'transition' => '', 'any_adapt' => false, 'live' => '' );
 		}
 
 		$ink_light  = sgs_header_ink_resolve_colour( $attributes['inkOnLight'] ?? '', 'var(--wp--preset--color--text)' );

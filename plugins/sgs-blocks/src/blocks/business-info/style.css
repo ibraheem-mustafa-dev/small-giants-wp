@@ -427,7 +427,8 @@
 	margin: 0;
 	background: var(--wp--preset--color--primary);
 	border-radius: var(--wp--custom--border-radius--medium, 6px);
-	color: var(--wp--preset--color--text-inverse, #fff);
+	/* The palette's text-on-primary colour, not text-inverse (text on the dark text colour). */
+	color: var(--wp--preset--color--primary-text, var(--wp--preset--color--text-inverse, #fff));
 	font-weight: 600;
 	line-height: 1.2;
 	text-decoration: none;
@@ -435,10 +436,13 @@
 }
 .wp-block-sgs-business-info.is-style-button .sgs-business-info__link:hover,
 .wp-block-sgs-business-info.is-style-button .sgs-business-info__link:focus-visible {
-	background: var(--wp--preset--color--primary-dark, var(--wp--preset--color--primary));
-	color: var(--wp--preset--color--text-inverse, #fff);
+	/* Hover brightens: the button colour mixed 12% toward white (the plain colour
+	   first, for a browser without color-mix). */
+	background: var(--wp--preset--color--primary);
+	background: color-mix(in srgb, var(--wp--preset--color--primary) 88%, #fff);
+	color: var(--wp--preset--color--primary-text, var(--wp--preset--color--text-inverse, #fff));
 }
 .wp-block-sgs-business-info.is-style-button .sgs-business-info__icon,
 .wp-block-sgs-business-info.is-style-button .sgs-business-info__icon svg {
-	color: var(--wp--preset--color--text-inverse, #fff);
+	color: var(--wp--preset--color--primary-text, var(--wp--preset--color--text-inverse, #fff));
 }

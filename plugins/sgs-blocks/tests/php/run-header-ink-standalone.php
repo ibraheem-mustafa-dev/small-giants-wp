@@ -199,6 +199,8 @@ ok( 0 === strpos( $tone_fill_transparent['live'], 'desktop:always' ), 'transpare
 ok( false === strpos( $tone_fill_transparent['css'], 'revert' ), 'no tier ever cancels with revert' );
 ok( false !== strpos( $tone_fill_transparent['css'], '.is-header-on-dark .sgs-nav-bar-menu__item>.sgs-nav-bar-menu__link:not(:hover):not(:focus-visible)' ), 'live ink overrides the menu link colour, except on hover and focus' );
 ok( false === strpos( sgs_header_ink_css( $root_sel, $uid, array(), $all_off, false, '', '' )['css'], 'sgs-nav-bar-menu__link' ), 'NEGATIVE CONTROL: with section ink off the menu link colour is untouched' );
+ok( false !== strpos( $tone_fill_transparent['css'], '--sgs-cart-icon-colour:currentColor !important' ) && false !== strpos( $tone_fill_transparent['css'], '.wp-block-sgs-business-info:not(.is-style-button)' ), 'live ink overrides header icon colours (business info, cart, social), not filled chips' );
+ok( false === strpos( sgs_header_ink_css( $root_sel, $uid, array(), $all_off, false, '', '' )['css'], '--sgs-cart-icon-colour' ), 'NEGATIVE CONTROL: with section ink off the icon colours are untouched' );
 ok( false !== strpos( $tone_fill['css'], 'background:var(--wp--preset--color--primary, currentColor) !important;' ), 'tone fill paints the resolved fill colour' );
 // Negative control: the SAME attributes WITHOUT fillOnDark do not carry that
 // selector at all — proving the three-part selector is caused by the tone

@@ -58,7 +58,7 @@
 	justify-content: center;
 	padding: 0 0.75rem;
 	background: var( --wp--preset--color--primary, #0f7e80 );
-	color: var( --wp--preset--color--text-inverse, #fff );
+	color: var(--wp--preset--color--primary-text, var(--wp--preset--color--text-inverse, #fff ));
 	border: none;
 	border-radius: 8px;
 	cursor: pointer;
@@ -312,7 +312,7 @@
 	min-height: 44px;
 	padding: 0;
 	background: var( --wp--preset--color--primary, #0f7e80 );
-	color: var( --wp--preset--color--text-inverse, #fff );
+	color: var(--wp--preset--color--primary-text, var(--wp--preset--color--text-inverse, #fff ));
 	border-radius: 8px;
 	cursor: pointer;
 }
@@ -384,7 +384,7 @@
 	min-height: 44px;
 	padding: 0;
 	background: var( --wp--preset--color--primary, #0f7e80 );
-	color: var( --wp--preset--color--text-inverse, #fff );
+	color: var(--wp--preset--color--primary-text, var(--wp--preset--color--text-inverse, #fff ));
 	border: none;
 	border-radius: 8px;
 	cursor: pointer;

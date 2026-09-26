@@ -98,6 +98,9 @@ for ( const width of [ 375, 768, 1440 ] ) {
 				headerColour: getComputedStyle( header ).color,
 				headerBg: getComputedStyle( header ).backgroundColor,
 				linkColour: link ? getComputedStyle( link ).color : '',
+				iconColours: Array.from( header.querySelectorAll( '.wp-block-sgs-business-info:not(.is-style-button) .sgs-business-info__icon, .sgs-cart__trigger' ) )
+					.filter( ( el ) => el.getBoundingClientRect().width > 0 )
+					.map( ( el ) => getComputedStyle( el ).color ),
 				sectionBg: getComputedStyle( section ).backgroundColor,
 				sectionClass: section.className,
 				sampleX: Math.round( hr.left + 4 ),
@@ -153,6 +156,9 @@ for ( const width of [ 375, 768, 1440 ] ) {
 		}
 		rows.filter( ( r ) => r.tone && r.linkColour && r.linkColour !== r.headerColour ).forEach( ( r ) => {
 			failures.push( `${ width }: ${ r.label } menu link ${ r.linkColour } does not follow the ink ${ r.headerColour }` );
+		} );
+		rows.filter( ( r ) => r.tone && r.iconColours.some( ( c ) => c !== r.headerColour ) ).forEach( ( r ) => {
+			failures.push( `${ width }: ${ r.label } header icons ${ r.iconColours.join( ' / ' ) } do not follow the ink ${ r.headerColour }` );
 		} );
 		rows.filter( ( r ) => r.tone && null !== r.contrast && r.contrast < 4.5 ).forEach( ( r ) => {
 			failures.push( `${ width }: ${ r.label } ink ${ r.headerColour } on ground ${ r.pixel } = ${ r.contrast }:1` );

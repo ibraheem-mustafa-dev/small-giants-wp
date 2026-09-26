@@ -168,7 +168,7 @@
 	border-radius: 50%;
 	border: none;
 	background: var(--wp--preset--color--primary, #0F7E80);
-	color: var(--wp--preset--color--text-inverse, #ffffff);
+	color: var(--wp--preset--color--primary-text, var(--wp--preset--color--text-inverse, #ffffff));
 	font-size: 24px;
 	line-height: 1;
 	cursor: pointer;
@@ -325,7 +325,7 @@
 
 .sgs-testimonial-slider__pause-btn:hover {
 	background: var(--wp--preset--color--primary, #0f7e80);
-	color: var(--wp--preset--color--text-inverse, #fff);
+	color: var(--wp--preset--color--primary-text, var(--wp--preset--color--text-inverse, #fff));
 	border-color: var(--wp--preset--color--primary, #0f7e80);
 }
 

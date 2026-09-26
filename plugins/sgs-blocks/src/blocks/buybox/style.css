@@ -1078,7 +1078,7 @@
 	margin-left: auto;
 	border: none;
 	background: var(--wp--preset--color--primary, #1e1e1e);
-	color: var(--wp--preset--color--text-inverse, #fff);
+	color: var(--wp--preset--color--primary-text, var(--wp--preset--color--text-inverse, #fff));
 }
 
 .sgs-buybox-guided__nav-btn--next[aria-disabled='true'] {
