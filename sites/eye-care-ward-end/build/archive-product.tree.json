@@ -39,41 +39,95 @@
         },
         "innerBlocks": [
           {
-            "name": "sgs/text",
+            "name": "sgs/container",
             "attributes": {
-              "text": "Shop",
-              "fontSize": {
-                "desktop": 12
+              "tagName": "div",
+              "className": "sgs-shop-toolbar",
+              "layout": "flex",
+              "justifyContent": "space-between",
+              "alignItems": "flex-end",
+              "flexWrap": "wrap",
+              "gap": {
+                "desktop": "16px"
               },
-              "fontSizeUnit": "px",
-              "letterSpacing": {
-                "desktop": 0.24
-              },
-              "letterSpacingUnit": "em",
-              "textTransform": "uppercase",
-              "textColour": "accent-text",
-              "margin": {
-                "desktop": {
-                  "bottom": "10px"
-                }
+              "contentWidth": {
+                "desktop": "full"
               }
-            }
-          },
-          {
-            "name": "core/query-title",
-            "attributes": {
-              "type": "archive",
-              "level": 1,
-              "showPrefix": false,
-              "style": {
-                "typography": {
-                  "fontSize": "46px",
-                  "fontWeight": "500",
-                  "lineHeight": "1.02"
-                }
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "contentWidth": {
+                    "desktop": "full"
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "Shop",
+                      "fontSize": {
+                        "desktop": 12
+                      },
+                      "fontSizeUnit": "px",
+                      "letterSpacing": {
+                        "desktop": 0.24
+                      },
+                      "letterSpacingUnit": "em",
+                      "textTransform": "uppercase",
+                      "textColour": "accent-text",
+                      "margin": {
+                        "desktop": {
+                          "bottom": "10px"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "name": "core/query-title",
+                    "attributes": {
+                      "type": "archive",
+                      "level": 1,
+                      "showPrefix": false,
+                      "style": {
+                        "typography": {
+                          "fontSize": "46px",
+                          "fontWeight": "500",
+                          "lineHeight": "1.02"
+                        }
+                      },
+                      "fontFamily": "heading"
+                    }
+                  }
+                ]
               },
-              "fontFamily": "heading"
-            }
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "flex",
+                  "alignItems": "center",
+                  "gap": {
+                    "desktop": "12px"
+                  },
+                  "contentWidth": {
+                    "desktop": "full"
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "woocommerce/product-results-count",
+                    "attributes": {}
+                  },
+                  {
+                    "name": "woocommerce/catalog-sorting",
+                    "attributes": {}
+                  }
+                ]
+              }
+            ]
           },
           {
             "name": "sgs/container",
@@ -137,9 +191,75 @@
                       {
                         "name": "sgs/heading",
                         "attributes": {
-                          "content": "Colour",
+                          "content": "Gender",
+                          "level": "h3",
+                          "className": "sgs-shop-filters__group-heading is-open is-segmented",
+                          "fontSize": {
+                            "desktop": 12
+                          },
+                          "fontSizeUnit": "px",
+                          "fontWeight": "400",
+                          "letterSpacing": {
+                            "desktop": 0.18
+                          },
+                          "letterSpacingUnit": "em",
+                          "textTransform": "uppercase"
+                        }
+                      },
+                      {
+                        "name": "woocommerce/product-filter-attribute",
+                        "attributes": {
+                          "attributeId": 9,
+                          "queryType": "or",
+                          "displayStyle": "woocommerce/product-filter-chips",
+                          "showCounts": true
+                        },
+                        "innerBlocks": [
+                          {
+                            "name": "woocommerce/product-filter-chips",
+                            "attributes": {}
+                          }
+                        ]
+                      },
+                      {
+                        "name": "sgs/heading",
+                        "attributes": {
+                          "content": "Size",
                           "level": "h3",
                           "className": "sgs-shop-filters__group-heading",
+                          "fontSize": {
+                            "desktop": 12
+                          },
+                          "fontSizeUnit": "px",
+                          "fontWeight": "400",
+                          "letterSpacing": {
+                            "desktop": 0.18
+                          },
+                          "letterSpacingUnit": "em",
+                          "textTransform": "uppercase"
+                        }
+                      },
+                      {
+                        "name": "woocommerce/product-filter-attribute",
+                        "attributes": {
+                          "attributeId": 10,
+                          "queryType": "or",
+                          "displayStyle": "woocommerce/product-filter-chips",
+                          "showCounts": true
+                        },
+                        "innerBlocks": [
+                          {
+                            "name": "woocommerce/product-filter-chips",
+                            "attributes": {}
+                          }
+                        ]
+                      },
+                      {
+                        "name": "sgs/heading",
+                        "attributes": {
+                          "content": "Colour",
+                          "level": "h3",
+                          "className": "sgs-shop-filters__group-heading is-open has-swatches",
                           "fontSize": {
                             "desktop": 12
                           },
@@ -172,7 +292,7 @@
                         "attributes": {
                           "content": "Price",
                           "level": "h3",
-                          "className": "sgs-shop-filters__group-heading",
+                          "className": "sgs-shop-filters__group-heading is-open",
                           "fontSize": {
                             "desktop": 12
                           },
@@ -200,7 +320,7 @@
                         "attributes": {
                           "content": "Brand",
                           "level": "h3",
-                          "className": "sgs-shop-filters__group-heading",
+                          "className": "sgs-shop-filters__group-heading is-open has-count has-search",
                           "fontSize": {
                             "desktop": 12
                           },
@@ -232,7 +352,7 @@
                         "attributes": {
                           "content": "Style",
                           "level": "h3",
-                          "className": "sgs-shop-filters__group-heading",
+                          "className": "sgs-shop-filters__group-heading is-open has-count",
                           "fontSize": {
                             "desktop": 12
                           },
@@ -391,38 +511,6 @@
                             "attributes": {}
                           }
                         ]
-                      },
-                      {
-                        "name": "sgs/heading",
-                        "attributes": {
-                          "content": "Lenses",
-                          "level": "h3",
-                          "className": "sgs-shop-filters__group-heading",
-                          "fontSize": {
-                            "desktop": 12
-                          },
-                          "fontSizeUnit": "px",
-                          "fontWeight": "400",
-                          "letterSpacing": {
-                            "desktop": 0.18
-                          },
-                          "letterSpacingUnit": "em",
-                          "textTransform": "uppercase"
-                        }
-                      },
-                      {
-                        "name": "woocommerce/product-filter-taxonomy",
-                        "attributes": {
-                          "taxonomy": "product_tag",
-                          "displayStyle": "woocommerce/product-filter-chips",
-                          "showCounts": true
-                        },
-                        "innerBlocks": [
-                          {
-                            "name": "woocommerce/product-filter-chips",
-                            "attributes": {}
-                          }
-                        ]
                       }
                     ]
                   }
@@ -448,35 +536,6 @@
                   ]
                 },
                 "innerBlocks": [
-                  {
-                    "name": "sgs/container",
-                    "attributes": {
-                      "tagName": "div",
-                      "className": "sgs-shop-toolbar",
-                      "layout": "flex",
-                      "justifyContent": "space-between",
-                      "alignItems": "center",
-                      "flexWrap": "wrap",
-                      "contentWidth": {
-                        "desktop": "full"
-                      },
-                      "margin": {
-                        "desktop": {
-                          "bottom": "18px"
-                        }
-                      }
-                    },
-                    "innerBlocks": [
-                      {
-                        "name": "woocommerce/product-results-count",
-                        "attributes": {}
-                      },
-                      {
-                        "name": "woocommerce/catalog-sorting",
-                        "attributes": {}
-                      }
-                    ]
-                  },
                   {
                     "name": "woocommerce/product-template",
                     "attributes": {},

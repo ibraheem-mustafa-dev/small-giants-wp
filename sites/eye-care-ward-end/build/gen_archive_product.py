@@ -10,7 +10,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, 'archive-product.tree.json')
 
 # Attribute IDs on eye-care-test (wc_get_attribute_taxonomies, 2026-09-25).
-ATTR = {'colour': 2, 'shape': 3, 'material': 4, 'frame-type': 5, 'hinge': 6, 'nose-pad': 7, 'frame-size': 8}
+ATTR = {'colour': 2, 'shape': 3, 'material': 4, 'frame-type': 5, 'hinge': 6, 'nose-pad': 7, 'frame-size': 8,
+        'gender': 9, 'size': 10}  # gender and size: woo-seed/seed-facets.php, 2026-09-26
 
 
 def B(name, attrs=None, inner=None):
@@ -20,24 +21,26 @@ def B(name, attrs=None, inner=None):
     return d
 
 
-def group_heading(text):
-    return B("sgs/heading", {"content": text, "level": "h3", "className": "sgs-shop-filters__group-heading",
+def group_heading(text, looks=""):
+    # looks: the theme's per-group classes (is-open, has-count, has-search, has-swatches, is-segmented).
+    return B("sgs/heading", {"content": text, "level": "h3",
+                             "className": ("sgs-shop-filters__group-heading " + looks).strip(),
                              "fontSize": {"desktop": 12}, "fontSizeUnit": "px", "fontWeight": "400",
                              "letterSpacing": {"desktop": 0.18}, "letterSpacingUnit": "em",
                              "textTransform": "uppercase"})
 
 
-def attribute_filter(label, slug, style):
+def attribute_filter(label, slug, style, looks=""):
     display = "woocommerce/product-filter-chips" if style == "chips" else "woocommerce/product-filter-checkbox-list"
-    return [group_heading(label),
+    return [group_heading(label, looks),
             B("woocommerce/product-filter-attribute", {"attributeId": ATTR[slug],
                                                        "queryType": "or", "displayStyle": display, "showCounts": True},
               [B(display)])]
 
 
-def taxonomy_filter(label, taxonomy, style):
+def taxonomy_filter(label, taxonomy, style, looks=""):
     display = "woocommerce/product-filter-chips" if style == "chips" else "woocommerce/product-filter-checkbox-list"
-    return [group_heading(label),
+    return [group_heading(label, looks),
             B("woocommerce/product-filter-taxonomy", {"taxonomy": taxonomy, "displayStyle": display, "showCounts": True},
               [B(display)])]
 
@@ -63,17 +66,19 @@ filters = [
       [B("woocommerce/product-filter-removable-chips"),
        B("woocommerce/product-filter-clear-button", {}, [B("sgs/button", {"label": "Clear all filters",
                                                                          "className": "wp-block-button__link"})])]),
-    *attribute_filter("Colour", "colour", "chips"),
-    group_heading("Price"),
+    # The draft's order and open state; "Polarised only" is the theme's toggle (apply_shop_settings.py).
+    *attribute_filter("Gender", "gender", "chips", "is-open is-segmented"),
+    *attribute_filter("Size", "size", "chips"),
+    *attribute_filter("Colour", "colour", "chips", "is-open has-swatches"),
+    group_heading("Price", "is-open"),
     B("woocommerce/product-filter-price", {},
       [B("woocommerce/product-filter-price-slider")]),
-    *taxonomy_filter("Brand", "product_brand", "list"),
-    *attribute_filter("Style", "shape", "chips"),
+    *taxonomy_filter("Brand", "product_brand", "list", "is-open has-count has-search"),
+    *attribute_filter("Style", "shape", "chips", "is-open has-count"),
     *attribute_filter("Material", "material", "list"),
     *attribute_filter("Frame type", "frame-type", "list"),
     *attribute_filter("Hinge", "hinge", "list"),
     *attribute_filter("Nose pads", "nose-pad", "list"),
-    *taxonomy_filter("Lenses", "product_tag", "chips"),
 ]
 
 tree = [
@@ -83,13 +88,25 @@ tree = [
             "maxWidth": {"desktop": "1440px"},
             "padding": {"desktop": {"top": "48px", "right": "52px", "bottom": "90px", "left": "52px"},
                         "mobile": {"top": "28px", "right": "20px", "bottom": "60px", "left": "20px"}}}, [
-            B("sgs/text", {"text": "Shop", "fontSize": {"desktop": 12}, "fontSizeUnit": "px",
-                           "letterSpacing": {"desktop": 0.24}, "letterSpacingUnit": "em", "textTransform": "uppercase",
-                           "textColour": "accent-text", "margin": {"desktop": {"bottom": "10px"}}}),
-            B("core/query-title", {"type": "archive", "level": 1, "showPrefix": False,
-                                   "style": {"typography": {"fontSize": "46px", "fontWeight": "500",
-                                                            "lineHeight": "1.02"}},
-                                   "fontFamily": "heading"}),
+            B("sgs/container", {"tagName": "div", "className": "sgs-shop-toolbar", "layout": "flex",
+                                "justifyContent": "space-between", "alignItems": "flex-end", "flexWrap": "wrap",
+                                "gap": {"desktop": "16px"}, "contentWidth": {"desktop": "full"}}, [
+                B("sgs/container", {"tagName": "div", "contentWidth": {"desktop": "full"}}, [
+                    B("sgs/text", {"text": "Shop", "fontSize": {"desktop": 12}, "fontSizeUnit": "px",
+                                   "letterSpacing": {"desktop": 0.24}, "letterSpacingUnit": "em",
+                                   "textTransform": "uppercase", "textColour": "accent-text",
+                                   "margin": {"desktop": {"bottom": "10px"}}}),
+                    B("core/query-title", {"type": "archive", "level": 1, "showPrefix": False,
+                                           "style": {"typography": {"fontSize": "46px", "fontWeight": "500",
+                                                                    "lineHeight": "1.02"}},
+                                           "fontFamily": "heading"}),
+                ]),
+                B("sgs/container", {"tagName": "div", "layout": "flex", "alignItems": "center",
+                                    "gap": {"desktop": "12px"}, "contentWidth": {"desktop": "full"}}, [
+                    B("woocommerce/product-results-count"),
+                    B("woocommerce/catalog-sorting"),
+                ]),
+            ]),
             B("sgs/container", {"tagName": "div", "className": "sgs-shop-layout", "contentWidth": {"desktop": "full"},
                                 "margin": {"desktop": {"top": "28px"}}}, [
                 B("sgs/container", {"tagName": "aside", "anchor": "sgs-shop-filters", "className": "sgs-shop-filters"}, [
@@ -100,13 +117,6 @@ tree = [
                     "queryId": 0, "query": {"inherit": True, "perPage": 24, "isProductCollectionBlock": True},
                     "tagName": "div", "displayLayout": {"type": "flex", "columns": 3, "shrinkColumns": True},
                     "queryContextIncludes": ["collection"]}, [
-                    B("sgs/container", {"tagName": "div", "className": "sgs-shop-toolbar", "layout": "flex",
-                                        "justifyContent": "space-between", "alignItems": "center",
-                                        "flexWrap": "wrap", "contentWidth": {"desktop": "full"},
-                                        "margin": {"desktop": {"bottom": "18px"}}}, [
-                        B("woocommerce/product-results-count"),
-                        B("woocommerce/catalog-sorting"),
-                    ]),
                     B("woocommerce/product-template", {}, [B("sgs/product-card", dict(CARD))]),
                     B("core/query-pagination", {"layout": {"type": "flex", "justifyContent": "center"}}, [
                         B("core/query-pagination-previous"), B("core/query-pagination-numbers"),

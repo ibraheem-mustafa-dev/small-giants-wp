@@ -53,6 +53,7 @@ real site. Nothing in `seed.php` is test-site-specific.
 | `extract_data.py` | Parses the draft's `<script data-dc-script>` JS literals (`PRODUCTS`, `BRANDS`, `COLS`, `STYLE_LIST`, `MATERIALS`, `FTYPES`, `HINGES`, `NOSES`, `SHAPES`, `IMG`) into `data.json`. Uses a small hand-rolled JS-literal parser (unquoted keys, single-quoted strings, trailing commas) — not hand-typed data, and not `eval()`. Cross-checks every product's brand/shape/colour/material/frame-type/hinge/nose reference resolves against the reference lists, and fails if PRODUCTS isn't exactly 16. |
 | `data.json` | Extracted output (regenerate with the command above; do not hand-edit). |
 | `seed.php` | The idempotent seed itself. Run via `wp eval-file seed.php <path-to-data.json>`. |
+| `seed-facets.php` | The shop's filter facets from the same data.json: Gender (`pa_gender`; a unisex frame carries Women and Men), Size (`pa_size`: Small ≤52mm eye, Medium ≤57, Large) and the draft's Featured order (`menu_order`). Filter-only attributes (not variations, not shown on the product page). Run after `seed.php`: `wp eval-file seed-facets.php <path-to-data.json> --user=Claude`. |
 
 ## Colour/Image swatch test — what actually happened
 

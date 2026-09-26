@@ -1,0 +1,56 @@
+"""Applies Eye Care's shop settings (the theme's Customizer > Shop Filters theme mods) to a site over SSH.
+The reproducible record of those settings: re-run after a site rebuild. Values follow the draft's shop
+(Eye Care Birmingham.dc.html): 270px filter column 40px from a grid of 18px gaps, "16 frames", the draft's five
+sort options, "Search brands", and "Polarised only" (a product tag) at the bottom of the panel.
+
+Usage: python apply_shop_settings.py [--path domains/<site>/public_html]   (default: eye-care-test)"""
+import argparse
+import shlex
+import subprocess
+
+SETTINGS = {
+    'sgs_shop_hide_zero_decimals': '1',
+    'sgs_shop_card_min_width': '250',
+    'sgs_shop_col_gap': '18',
+    'sgs_shop_row_gap': '18',
+    'sgs_shop_narrow_layout': 'grid',
+    'sgs_shop_filter_panel_style': 'plain',
+    'sgs_shop_filters_width': '270',
+    'sgs_shop_layout_gap': '40',
+    'sgs_shop_count_label': '%d frames',
+    'sgs_shop_count_label_single': '%d frame',
+    'sgs_shop_sort_biggest_saving_enabled': '1',
+    'sgs_shop_sort_rrp_meta_key': '_sgs_rrp',
+    'sgs_shop_sort_brand_az_enabled': '1',
+    'sgs_shop_sort_menu': '\n'.join([
+        'menu_order|Featured',
+        'price|Price: low to high',
+        'price-desc|Price: high to low',
+        'sgs_biggest_saving|Biggest saving',
+        'sgs_brand_az|Brand A–Z',
+    ]),
+    'sgs_shop_filter_search_label': 'Search brands',
+    'sgs_shop_filter_boolean_enabled': '1',
+    'sgs_shop_filter_boolean_source': 'tag',
+    'sgs_shop_filter_boolean_term': 'polarised',
+    'sgs_shop_filter_boolean_label': 'Polarised only',
+    'sgs_shop_filter_boolean_position': 'bottom',
+}
+
+SSH = ['ssh', '-i', '~/.ssh/id_ed25519', '-p', '65002', 'u945238940@141.136.39.73']
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--path', default='domains/darkcyan-grouse-898606.hostingersite.com/public_html')
+    args = ap.parse_args()
+    commands = [f'wp theme mod set {shlex.quote(k)} {shlex.quote(v)}' for k, v in SETTINGS.items()]
+    remote = f'cd {shlex.quote(args.path)} && ' + ' && '.join(commands) + ' && wp theme mod list --format=csv | grep -c sgs_shop_'
+    result = subprocess.run(SSH + [remote], capture_output=True, text=True, encoding='utf-8')
+    print(result.stdout.strip() or result.stderr.strip())
+    if result.returncode:
+        raise SystemExit(result.returncode)
+
+
+if __name__ == '__main__':
+    main()

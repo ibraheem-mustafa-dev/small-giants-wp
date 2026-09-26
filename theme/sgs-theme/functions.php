@@ -22,6 +22,7 @@ if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 require_once __DIR__ . '/inc/colour-helpers.php';
 require_once __DIR__ . '/inc/shop-filters-settings.php';
 require_once __DIR__ . '/inc/shop-filters-sorting.php';
+require_once __DIR__ . '/inc/shop-toolbar-settings.php';
 
 // Header behaviour system (sticky, transparent, smart-reveal, shrink).
 // Header behaviour is owned by the sgs-blocks plugin (Spec 37 FR-37-13, D330):

@@ -50,6 +50,28 @@ function register_shop_layout_customizer_settings( \WP_Customize_Manager $wp_cus
 	);
 
 	$wp_customize->add_setting(
+		'sgs_shop_row_gap',
+		array(
+			'default'           => '',
+			'sanitize_callback' => __NAMESPACE__ . '\sanitize_shop_col_gap',
+		)
+	);
+	$wp_customize->add_control(
+		'sgs_shop_row_gap',
+		array(
+			'section'     => 'sgs_shop_filters',
+			'type'        => 'number',
+			'label'       => __( 'Gap between product rows (px)', 'sgs-theme' ),
+			'description' => __( 'Space between rows of product cards, at every width. Leave blank for the theme defaults (40px, 24px on phones).', 'sgs-theme' ),
+			'input_attrs' => array(
+				'min'  => 0,
+				'max'  => 64,
+				'step' => 1,
+			),
+		)
+	);
+
+	$wp_customize->add_setting(
 		'sgs_shop_col_gap',
 		array(
 			'default'           => '',
@@ -210,6 +232,11 @@ function output_shop_card_dimensions_style(): void {
 		if ( $col_gap <= 64 ) {
 			$css .= sprintf( '--sgs-shop-col-gap-setting:%dpx;', $col_gap );
 		}
+	}
+
+	$row_gap = trim( (string) get_theme_mod( 'sgs_shop_row_gap', '' ) );
+	if ( '' !== $row_gap && absint( $row_gap ) <= 64 ) {
+		$css .= sprintf( '--sgs-shop-row-gap-setting:%dpx;', absint( $row_gap ) );
 	}
 
 	if ( '' === $css ) {

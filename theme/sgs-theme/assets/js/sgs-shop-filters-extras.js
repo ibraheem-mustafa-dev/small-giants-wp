@@ -40,7 +40,8 @@
 			return;
 		}
 
-		const paramName = 'filter_' + config.attribute;
+		// `param` is `filter_<attribute>` or, for a product tag, WooCommerce's `tags`.
+		const paramName = config.param || 'filter_' + config.attribute;
 		const currentParams = new URLSearchParams( window.location.search );
 		const currentValue = currentParams.get( paramName );
 		const isChecked = currentValue ? currentValue.split( ',' ).indexOf( config.term ) !== -1 : false;
@@ -83,7 +84,11 @@
 		label.appendChild( track );
 		label.appendChild( text );
 		wrap.appendChild( label );
-		scrollWrap.insertBefore( wrap, scrollWrap.firstChild );
+		if ( 'bottom' === config.position ) {
+			scrollWrap.appendChild( wrap );
+		} else {
+			scrollWrap.insertBefore( wrap, scrollWrap.firstChild );
+		}
 	}
 
 	/* ── 2. Live result count on the Apply button ("Show 12 results") ───────

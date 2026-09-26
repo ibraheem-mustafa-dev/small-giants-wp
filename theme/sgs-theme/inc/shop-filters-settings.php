@@ -149,7 +149,10 @@ function sanitize_shop_filter_checkbox( $value ): bool {
  * term's real display name so the default label reads naturally for any
  * client's attribute/term choice rather than showing a raw slug.
  *
- * @return array{attribute:string,term:string,label:string}|null
+ * With `sgs_shop_filter_boolean_source` = tag the term is a product tag
+ * (WooCommerce's `tags` query parameter) and the attribute slug is unused.
+ *
+ * @return array{attribute:string,term:string,label:string,param:string,position:string}|null
  */
 function get_shop_filter_boolean_config(): ?array {
 	if ( ! get_theme_mod( 'sgs_shop_filter_boolean_enabled', false ) ) {
@@ -159,11 +162,12 @@ function get_shop_filter_boolean_config(): ?array {
 	$attribute = sanitize_title( (string) get_theme_mod( 'sgs_shop_filter_boolean_attribute', '' ) );
 	$term_slug = sanitize_title( (string) get_theme_mod( 'sgs_shop_filter_boolean_term', '' ) );
 
-	if ( '' === $attribute || '' === $term_slug || ! function_exists( 'taxonomy_exists' ) ) {
+	$is_tag = 'tag' === get_theme_mod( 'sgs_shop_filter_boolean_source', 'attribute' );
+	if ( ( '' === $attribute && ! $is_tag ) || '' === $term_slug || ! function_exists( 'taxonomy_exists' ) ) {
 		return null;
 	}
 
-	$taxonomy = 'pa_' . $attribute;
+	$taxonomy = $is_tag ? 'product_tag' : 'pa_' . $attribute;
 	if ( ! taxonomy_exists( $taxonomy ) ) {
 		return null;
 	}
@@ -183,6 +187,8 @@ function get_shop_filter_boolean_config(): ?array {
 		'attribute' => $attribute,
 		'term'      => $term_slug,
 		'label'     => $label,
+		'param'     => $is_tag ? 'tags' : 'filter_' . $attribute,
+		'position'  => 'bottom' === get_theme_mod( 'sgs_shop_filter_boolean_position', 'top' ) ? 'bottom' : 'top',
 	);
 }
 

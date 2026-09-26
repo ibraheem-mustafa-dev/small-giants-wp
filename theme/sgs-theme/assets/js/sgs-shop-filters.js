@@ -158,14 +158,20 @@
 				root.querySelectorAll( '.sgs-shop-filters__group-heading' )
 			);
 
+			/* A heading with the class `is-open` (the block's Additional CSS
+			   class) starts its group expanded. With none marked, the first
+			   group stays open so the panel never reads as an empty list of
+			   words, and every other one starts collapsed, which is what
+			   actually buys the height back. */
+			const anyMarked = headings.some( function ( h ) {
+				return h.classList.contains( 'is-open' );
+			} );
+
 			headings.forEach( function ( heading, index ) {
 				const details = document.createElement( 'details' );
 				details.className = 'sgs-shop-filters__group';
 
-				/* The first group stays open so the panel never reads as an
-				   empty list of words — every other one starts collapsed, which
-				   is what actually buys the height back. */
-				if ( 0 === index ) {
+				if ( anyMarked ? heading.classList.contains( 'is-open' ) : 0 === index ) {
 					details.open = true;
 				}
 
