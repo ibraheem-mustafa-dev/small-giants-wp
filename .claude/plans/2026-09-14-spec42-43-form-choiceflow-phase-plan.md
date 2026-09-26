@@ -7,8 +7,8 @@ cost_estimate: "~5 min agent time, Phase 0 only"
 docscore_grade: not-run (ad-hoc, in-flight — see phase-planner Stage 7 note on active plans)
 ---
 
-**Status (2026-09-26):** Phases 0 to 4 SHIPPED; the UX and architecture follow-up runs in
-`2026-09-26-choice-flow-ux-and-guided-buybox.md`; Phase 5 (FR-42-9, FR-42-7b) open.
+**Status (2026-09-26):** Phases 0 to 4 and the v1.8.0 UX and architecture follow-up SHIPPED
+(`archive/2026-09-26-choice-flow-ux-and-guided-buybox.md`); Phase 5 (FR-42-9, FR-42-7b) is next.
 - Phase 0: landed with Phase 1 (fc6c66444); proven live 2026-09-25 (an unresolvable formId gets 503, a real form 200).
 - Phase 3: add-on price list (FR-43-17 to 20) as the Eye Care lens configurator; product-option steps reading any
   product attribute (FR-43-10/10a), purchase from the flow's own variation (FR-43-5), email-capture ending with a
@@ -19,8 +19,8 @@ docscore_grade: not-run (ad-hoc, in-flight — see phase-planner Stage 7 note on
   Eye Care configurator.
 - Proof: live QA 2026-09-26 at 1440 and 375 (journeys, cart rows, tampered variation 400, cross-page state,
   resume, editor round trip, email 200/429/400/403/404, Eye Care 268 path); evidence in c:\tmp\qa-choiceflow\.
-- The v1.8.0 follow-up (Continue model, showcase, product link, guided buybox) is in
-  `2026-09-26-choice-flow-ux-and-guided-buybox.md`. A flow that asks only some of its product's price-changing
+- The v1.8.0 follow-up (Continue model, showcase, product link, guided buybox) shipped with its closing QA
+  (`archive/2026-09-26-choice-flow-ux-and-guided-buybox.md`). A flow that asks only some of its product's price-changing
   options now gets an editor warning (all in the flow or all on the page, D9).
 
 # Phase 0 — Fix the fail-open `requireLogin` bug (Spec 42 FR-42-0)
@@ -166,8 +166,7 @@ shape), inline or inside a fullscreen `sgs/modal`. FR-43-7 (2026-09-26): Mama's 
 run on the canary for a full session and the real instance count is known — run
 `wp post list`/a DB query FIRST, per the spec's own decided sequencing), FR-42-7b
 (delete-guard hook + Gutenberg #33234 race check — confirm the race doesn't apply to a
-slug-keyed, contentless reference before building anything). Runs in a fresh session once
-`2026-09-26-choice-flow-ux-and-guided-buybox.md` is closed. The cloning-pipeline gap
+slug-keyed, contentless reference before building anything). Runs in a fresh session. The cloning-pipeline gap
 (FR-42-10/FR-43-14) and analytics (FR-42-13) are parked in
 `2026-09-26-form-choiceflow-pipeline-and-analytics.md`.
 

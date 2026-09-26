@@ -527,8 +527,11 @@ steps over any attribute, FR-43-5, FR-43-4), proven live on sandybrown.
 or in a fullscreen `sgs/modal`); FR-43-7 and FR-43-22 SHIPPED 2026-09-26 (Mama's journeys on sandybrown
 product 3990).
 
-**v1.8.0 follow-up (FR-43-23 to 25 and the Continue model): built and live 2026-09-26.** Its closing QA runs in
-`plans/2026-09-26-choice-flow-ux-and-guided-buybox.md` (Status, "Remaining").
+**v1.8.0 follow-up (FR-43-23 to 25 and the Continue model): SHIPPED 2026-09-26**, live on sandybrown and
+eye-care-test. Closing QA at 1440 and 375: Mama's journeys A, B and C reach the cart with every answer row
+(including a re-tapped default), the guided finish-choosing guard, Continue muted then active with its hint, Add to
+basket and Buy now, an editor round trip for every new setting, and the Eye Care £268 path. Plan:
+`plans/archive/2026-09-26-choice-flow-ux-and-guided-buybox.md`.
 
 **Phase 5 — everything else, independently deferrable, no fixed order.** Spec 42 FR-42-9
 (mandatory rebuild, only after Phase 1 proves stable and the instance count is known),

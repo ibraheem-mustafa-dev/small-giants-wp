@@ -2,15 +2,15 @@
 doc_type: plan
 plan_id: choice-flow-ux-guided-buybox
 spec: 43-SGS-CHOICE-FLOW.md (v1.7.0 → v1.8.0)
-status: active
+status: done
 date: 2026-09-26
 ---
 
 # Choice flow: Continue model, visual summary, option images, guided buybox
 
-**Status (2026-09-26):** Waves 1, 1.5, 2, 2b and most of Wave 3 are DONE and live on sandybrown and eye-care-test.
+**Status (2026-09-26): DONE.** Every wave is built, live on sandybrown and eye-care-test, and QA'd.
 - **Commits:** 60bde4b0a (the wave), 1d5071b4c, 03e5c1a33, 74e6546a9 (showcase fixes against the draft),
-  5c17a44d0 (answer-row fix, guided unchosen start, flow opener label).
+  5c17a44d0 (answer-row fix, guided unchosen start, flow opener label); close-out f6da8fc09, f26c23146, 84c6fc505.
 - **Eye Care:** the lens configurator runs the showcase layout (post 463, `gen_lens_configurator.py`). Draft compared
   at 1440, 768 and 375; six differences found and fixed in 74e6546a9. The £268 path, cart rows and Buy now to
   checkout are proven. The draft is also hosted at mintcream-lyrebird-224487.hostingersite.com.
@@ -26,23 +26,22 @@ date: 2026-09-26
   - A bare `layout` attribute collided with WordPress's layout support (now `flowLayout` / `buyboxLayout`).
   - Two panel names collided in the shared component map (now `FlowLayoutPanel` / `FlowNavigationPanel`).
 
-**Remaining (next session, in order):**
-1. DONE: 5c17a44d0 is deployed to sandybrown and eye-care-test (payload verify passed on both, 2026-09-26).
-2. Eye Care: set `summaryBaseLabel` "Frame" and `closeStyle` "text" in `gen_lens_configurator.py`, rebuild post
-   463, then re-run the draft comparison at 1440, 768 and 375. It passes when no structural difference remains.
-3. Mama's: set flow 4010's `openerLabel` "Choose your flavours".
-4. **One batched QA pass on both sites:**
-   - every journey, including B and C with the re-tap-default case, at 1440 and 375
-   - the Continue button muted then active, and its early-press hint
-   - Add to basket and Buy now
-   - the guided finish-choosing guard (C now starts with Flavour, Topping and Dietary unchosen)
-   - an editor round trip for every new setting (`flowLayout`, `closeStyle`, `summaryBaseLabel`, `openerLabel`,
-     `requireChoice`, `showTermDetails`, the guided peripherals)
-   - the Eye Care £268 regression
-5. **Close the plan:**
-   - Spec 43 §9 phasing status
-   - LEDGER row
-   - archive this plan; Phase 5 of the phase plan then starts in a fresh session
+**Close-out (2026-09-26):**
+- Eye Care: `summaryBaseLabel` "Frame" and `closeStyle` "text" set; post 463 rebuilt (invalid [], no drift) and
+  compared with the draft at 1440, 768 and 375. The one structural difference was a second, round Close from the
+  popup itself; a flow's header Close now hides it (f26c23146). Accepted difference: the draft advances on tap at
+  step 1; the flow shows Continue on every step (D1).
+- Mama's: flow 4010's `openerLabel` "Choose your flavours" drives product 3990's buybox button (f6da8fc09).
+- Batched QA, 1440 and 375 (evidence in `c:\tmp\qa-choiceflow-v180\` and `c:\tmp\qa-guided-probe\`):
+  - journeys A, B and C reach the cart with every answer row, including a re-tapped default
+  - Continue muted, early-press hint, then active; Add to basket and Buy now (to /checkout/)
+  - C's finish-choosing guard names the unchosen groups; it now also moves focus to the first one (84c6fc505; it
+    returned early when that group was already showing)
+  - editor round trips pass for every new setting: no invalid-content notice, values persist, the frontend follows.
+    `requireChoice` and `showTermDetails` were proven on a temporary page, deleted afterwards
+  - the Eye Care £268 path: one line at £268 with "Options: Thin · 1.6 · Distance · Polarised" and "Your
+    prescription: Send it later"
+- Next: Phase 5 of `2026-09-14-spec42-43-form-choiceflow-phase-plan.md`, in a fresh session.
 
 **Why:** Bean's review of the live Mama's journeys (2026-09-26). The flow works but reads as a quiz, not a shop:
 - the final step shows one button where the options were
