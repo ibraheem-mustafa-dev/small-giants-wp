@@ -268,11 +268,10 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 			{ /* Surface tone (U-13 §4.3/§4.4) — the "Surface tone: Automatic /
 			   Light / Dark" override on class-sgs-container-wrapper.php's
 			   automatic sgs-on-dark/sgs-on-light judgement. Gated on the block
-			   type actually declaring `surfaceTone` (read from the registered
-			   block type, same pattern the Surface ToolsPanel below uses for
-			   `surfaceBlur`) — `sgs/site-header` mounts this SAME shared panel
-			   but does not declare the attribute (owned by a concurrent U-13
-			   session), so this section correctly does not render there. */ }
+			   type declaring `surfaceTone` (read from the registered block type,
+			   the same pattern the Surface ToolsPanel below uses for
+			   `surfaceBlur`), so a block mounting this panel without the
+			   attribute shows nothing. */ }
 			{ getBlockType( name )?.attributes?.surfaceTone && (
 				<>
 					<hr style={ { margin: '16px 0' } } />

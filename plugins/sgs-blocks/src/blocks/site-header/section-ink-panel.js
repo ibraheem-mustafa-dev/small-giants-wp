@@ -13,7 +13,6 @@ import { __ } from '@wordpress/i18n';
 import { PanelBody, RangeControl, Notice } from '@wordpress/components';
 import {
 	ResponsiveOverride,
-	SgsColourPanel,
 	MotionEasingControl,
 	resolveColourToken,
 } from '../../components';
@@ -54,6 +53,38 @@ function paletteExtremes( colourPalette ) {
 		}
 	} );
 	return lightest && darkest ? { lightest, darkest } : null;
+}
+
+/**
+ * The ink and fill rows for the header's single Colour panel (Styles tab), so
+ * the block keeps one colour home. Headed "Colour over sections"; the switch,
+ * timing and notices live in SectionInkPanel on the Settings tab.
+ *
+ * @param {Object}   attributes    Block attributes.
+ * @param {Function} setAttributes Attribute setter.
+ * @return {Array} SgsColourPanel rows.
+ */
+export function sectionInkColourRows( attributes, setAttributes ) {
+	const { inkOnLight, inkOnDark, fillOnLight, fillOnDark, fillOnLightGradient, fillOnDarkGradient } = attributes;
+	return [
+		{
+			key: 'ink',
+			heading: __( 'Colour over sections', 'sgs-blocks' ),
+			label: __( 'Ink', 'sgs-blocks' ),
+			states: [
+				{ key: 'light', label: __( 'Over a light section', 'sgs-blocks' ), value: inkOnLight, onChange: ( v ) => setAttributes( { inkOnLight: v ?? '' } ), linked: true },
+				{ key: 'dark', label: __( 'Over a dark section', 'sgs-blocks' ), value: inkOnDark, onChange: ( v ) => setAttributes( { inkOnDark: v ?? '' } ) },
+			],
+		},
+		{
+			key: 'fill',
+			label: __( 'Fill (optional)', 'sgs-blocks' ),
+			states: [
+				{ key: 'light', label: __( 'Over a light section', 'sgs-blocks' ), value: fillOnLight, onChange: ( v ) => setAttributes( { fillOnLight: v ?? '' } ), gradientValue: fillOnLightGradient, onGradientChange: ( v ) => setAttributes( { fillOnLightGradient: v ?? '' } ), linked: true },
+				{ key: 'dark', label: __( 'Over a dark section', 'sgs-blocks' ), value: fillOnDark, onChange: ( v ) => setAttributes( { fillOnDark: v ?? '' } ), gradientValue: fillOnDarkGradient, onGradientChange: ( v ) => setAttributes( { fillOnDarkGradient: v ?? '' } ) },
+			],
+		},
+	];
 }
 
 /**
@@ -106,24 +137,6 @@ export default function SectionInkPanel( { attributes, setAttributes, colourPale
 		} );
 	}
 
-	const colourRows = [
-		{
-			key: 'ink',
-			label: __( 'Ink', 'sgs-blocks' ),
-			states: [
-				{ key: 'light', label: __( 'Over a light section', 'sgs-blocks' ), value: inkOnLight, onChange: ( v ) => setAttributes( { inkOnLight: v ?? '' } ), linked: true },
-				{ key: 'dark', label: __( 'Over a dark section', 'sgs-blocks' ), value: inkOnDark, onChange: ( v ) => setAttributes( { inkOnDark: v ?? '' } ) },
-			],
-		},
-		{
-			key: 'fill',
-			label: __( 'Fill (optional)', 'sgs-blocks' ),
-			states: [
-				{ key: 'light', label: __( 'Over a light section', 'sgs-blocks' ), value: fillOnLight, onChange: ( v ) => setAttributes( { fillOnLight: v ?? '' } ), gradientValue: fillOnLightGradient, onGradientChange: ( v ) => setAttributes( { fillOnLightGradient: v ?? '' } ), linked: true },
-				{ key: 'dark', label: __( 'Over a dark section', 'sgs-blocks' ), value: fillOnDark, onChange: ( v ) => setAttributes( { fillOnDark: v ?? '' } ), gradientValue: fillOnDarkGradient, onGradientChange: ( v ) => setAttributes( { fillOnDarkGradient: v ?? '' } ) },
-			],
-		},
-	];
 
 	return (
 		<PanelBody title={ __( 'Colour over sections', 'sgs-blocks' ) } initialOpen={ false }>
@@ -147,7 +160,6 @@ export default function SectionInkPanel( { attributes, setAttributes, colourPale
 
 			{ anyAdapt && (
 				<>
-					<SgsColourPanel rows={ colourRows } />
 					<RangeControl
 						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
 						value={ inkDuration ?? 400 }
@@ -192,7 +204,7 @@ export default function SectionInkPanel( { attributes, setAttributes, colourPale
 			{ opaqueUnprotectedTiers.length > 0 && (
 				<Notice status="info" isDismissible={ false }>
 					<p style={ { margin: 0 } }>
-						{ __( 'The header has its own fill here, so its colour stays as set — Adapt has nothing to switch to until a fill above is set, or Transparent is turned on.', 'sgs-blocks' ) }
+						{ __( 'The header has its own fill here, so its colour stays as set — Adapt has nothing to switch to until a fill is set (Styles tab, Colour, Colour over sections), or Transparent is turned on.', 'sgs-blocks' ) }
 					</p>
 				</Notice>
 			) }

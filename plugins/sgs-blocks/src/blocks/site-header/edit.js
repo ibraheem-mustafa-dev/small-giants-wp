@@ -36,7 +36,7 @@ import FloatControls from './components/FloatControls';
 import { floatPreview, floatResetAttributes } from './float-preview';
 // Section-adaptive ink (Wave 3C U-13) — its own panel, independent of the
 // "Header behaviour" ToolsPanel below (sectionInk is its own feature).
-import SectionInkPanel from './section-ink-panel';
+import SectionInkPanel, { sectionInkColourRows } from './section-ink-panel';
 import ScrollChangePanel from './scroll-change-panel';
 
 /**
@@ -656,6 +656,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							},
 						],
 					},
+					...sectionInkColourRows( attributes, setAttributes ),
 				] }
 			/>
 
