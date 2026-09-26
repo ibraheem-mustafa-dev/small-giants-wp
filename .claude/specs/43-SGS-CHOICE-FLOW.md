@@ -306,6 +306,76 @@ Neither uses branching.
 open-anywhere listener (`data-sgs-modal-open`) instead of adding to the cart, keeps the in-stock gate and keeps
 announcing the chosen variation, so a flow inside the modal buys it. No modal named falls back to `cart`.
 
+**FR-43-23 (v1.8.0) — guided buybox.** `sgs/buybox` `layout: guided` (default `standard`) turns the buy box into a
+short flow on the page itself. Design direction: *the meter is the receipt*: calm and token-driven (every colour,
+font and radius comes from the client's theme), and the one memorable detail is a segmented progress meter whose
+finished segments carry the chosen value ("Chocolate · Chip · Vegan · 20") and jump back to that group when pressed.
+- **Groups:** every variation-forming attribute from `Product_Manifest::build()` axes, plus (setting
+  `guidedAnswerAttributes`, default on) the product's other visible attributes, in the product's own attribute
+  order. Answer groups never enter variation resolution; their choices travel as answer rows (the cart proxy's
+  `fields`, shown on the bag line as FR-43-21 rows).
+- **Layout (top to bottom):** the live price (unchanged); the meter (one segment per group; on narrow containers,
+  dots plus "2 of 4 · Topping"); the active group (bold group title, the group's options as the existing pickers
+  with term swatch images); a nav row with Back (left, hidden on the first group) and Next (right, muted with
+  `aria-disabled` until the group has a choice); the Add to basket button stays where it is.
+- **Behaviour:**
+  - Picking an option moves to the next group after a short beat (setting `guidedAutoAdvance`, default on;
+    instant under reduced motion).
+  - A default choice counts as made, and the flow opens on the first group without one.
+  - The active-group region keeps a stable minimum height, so nothing jumps.
+  - Add to basket or Buy now pressed with groups unfinished shows "Finish choosing: Topping, Dietary"
+    (`aria-live`), then moves to and focuses the first unfinished group. It never adds a partial choice.
+- **Code:** new files only (`buybox/render.php` and `product-card/view.js` are over the size cap):
+  `includes/buybox-guided.php`, `buybox/guided.js`, `buybox/GuidedPanel.js`.
+
+**FR-43-24 (v1.8.0) — showcase layout for full-screen flows.** `sgs/choice-flow` `layout: compact | showcase`,
+set on the saved flow (FR-43-25). `compact` is the single column for a flow inline on a page. `showcase` is for a flow
+shown full screen and spends the screen the way the Eye Care draft's lens flow does (the draft's `lensOpen` dialog):
+- **Frame:** a full-height column. At the top, a header bar (logo, the eyebrow "Product · Step name", Close) on the
+  surface token with a bottom border, and a 3px progress line across the full width beneath it. In the middle, the
+  body grid, the only part that scrolls. At the bottom, the footer bar (Back left, optional secondary link,
+  actions right) with a top border.
+- **Body grid:** a sticky "stage" aside (`minmax(300px, .8fr)`; `minmax(250px, .7fr)` under a 1100px container)
+  beside the step pane (`minmax(0, 1.55fr)`).
+  - The stage shows the finished product: a large square image that swaps with the resolved variation, the
+    product name and chosen options, the running lines (choice and price), and a large total in the heading font.
+  - It can also hold an optional help note (`stageNote` text and link, e.g. "Not sure which to pick? Message me").
+- **Step pane:** padded 40/44/56. It holds:
+  - an eyebrow ("Question 1 of 3") in the accent ink
+  - the step title in the heading font (38px desktop, 28px mobile)
+  - an intro paragraph (the question's new `intro` attribute, at most 56 characters wide)
+  - the options as large cards in two columns (one under a 620px container). Each card has a 16:9 image band on
+    top, then the title with its price aligned right, then the one-line description; the selected card gets a 2px
+    border in the text colour.
+- **Narrow containers:** the stage collapses to a slim row above the steps (a 72px thumbnail, the name and the
+  total); the running lines move to the final step's summary.
+- **Motion:** steps rise in (0.4s) and the total pops on change, both off under reduced motion. Every colour, font,
+  radius and spacing comes from the client's theme tokens, so any client's flow gets the same structure.
+
+**FR-43-25 (v1.8.0) — architecture: one saved flow, its placements, and the product link** (Bean, 2026-09-26).
+- **The saved flow (`sgs_choice_flow`) is the single source.** It holds questions, options, images, pricing sources,
+  endings, behaviour and the whole look, including its layout (compact or showcase), header, footer, progress bar
+  and summary. A linking block (FR-43-6) shows it exactly as saved; placements carry no overrides. To show a flow
+  differently, save a second flow.
+- **A product links to a flow.** Every purchasable product (simple or variable) gets a "Customisation flow" picker
+  on its edit screen (product meta `_sgs_choice_flow`, a flow slug). With a flow linked, the product page's buybox
+  wires itself:
+  - the Add to Cart button becomes the flow's opener (FR-43-22, labelled from the buybox)
+  - the buybox renders the full-screen `sgs/modal` holding the linked flow
+  - no per-product template or hand-placed popup is needed
+  - a simple product's flow has no variation steps; it adds answers, fields and add-ons to that product
+  - the Choice Flows list shows "Used by N products" beside "Embedded on N pages"
+- **The guided buybox (FR-43-23) is separate.** It never runs a saved flow: its groups are always the product's own
+  attributes. It gets the essentials from WooCommerce itself:
+  - each option's image, badge and one-line description are attribute-term fields beside the existing swatch fields
+    (`includes/configurator-term-fields.php`: `_sgs_swatch_image_id`, `_sgs_term_badge`, `_sgs_term_description`),
+    set once per term and shown everywhere: buybox pickers, the guided buybox, and flow product-option steps that
+    don't override them
+  - the default option is the product's own WooCommerce default attributes
+  - its peripherals are buybox settings: Back / Next / Add to basket / Buy now wording and styling, and the
+    meter's style and colour
+  - rich features (custom questions, add-ons, stage, endings) belong to a saved flow in a popup
+
 ## 5. CPT — `sgs_choice_flow`
 
 **FR-43-8 (values committed, v1.2.0 — was "same requirement to decide", now "same decided
@@ -469,4 +539,7 @@ FR-42-7b, FR-42-10/FR-43-14 (clone-orchestrator CPT-creation gap), FR-42-13 (ana
 | FR-43-19 | Live price panel beside the questions (display only) |
 | FR-43-20 | What is bought: the page's chosen variation, or a set product; a "no add-ons" exit |
 | FR-43-21 | Unpriced answers on the path and fields in the terminal step travel with the purchase; file fields via a session-stamped cart upload |
+| FR-43-25 | Architecture: the saved flow owns content and look; products link to a flow and the buybox wires the popup; the guided buybox stays product-options-only with term-level image, badge and description |
+| FR-43-24 | Showcase layout: full-screen flows use a stage (the finished product, running lines, total) beside large image-led option cards, as in the Eye Care lens draft |
+| FR-43-23 | Guided buybox: one option group at a time on the product page, a meter that doubles as the summary, a finish-choosing guard |
 | FR-43-22 | The buybox button can open a popup (`addToCartAction: modal`) so a flow finishes a purchase started on the product page |

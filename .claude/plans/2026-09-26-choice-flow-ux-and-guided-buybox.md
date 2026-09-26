@@ -37,6 +37,10 @@ this plan is clear.
 | D9 | **Price-changing choices sit either all in the flow or all on the page.** The editor warns when a flow asks some but not all of its product's variation-forming attributes. Add-ons and non-priced options are free either way. | Bean, point 5. |
 | D10 | **Guided buybox.** `sgs/buybox` gets a "Guided" layout that shows one option group at a time: variation attributes plus the product's non-priced attributes, which travel as answer rows. It has a progress meter and Back / Next beneath. Adding to the basket with groups unfinished (and no default to fill them) shows "Finish choosing: Flavour, Topping" and jumps to the first unfinished group. Design gate first (below). | Bean's idea: the flow inside the buybox. |
 
+| D11 | **Full-screen flows get a showcase layout** (Spec 43 FR-43-24), modelled on the Eye Care draft's lens flow: a header bar, a full-width progress line, a sticky stage (the finished product, running lines, a big total) beside large image-led option cards, and a footer bar. The compact layout stays for inline flows and the guided buybox. | Bean, 2026-09-26: the compact flows are "weak and underwhelming" full screen and should use the space like the lens draft. |
+
+| D12 | **Architecture (Spec 43 FR-43-25, Bean 2026-09-26).** The saved flow owns content and look (layout chosen on the flow, no per-placement overrides). Any purchasable product can link a flow, and its buybox then renders the popup and opener itself. The guided buybox stays product-options-only, with term-level image, badge and description plus buybox-level styling of its peripherals. | "Saved flow only"; "Product setting, buybox auto-wires"; "keep them separate". |
+
 ## Orchestration
 The main thread owns contracts, wiring, review, build, deploy and design judgement. Sonnet agents write code in
 parallel on file sets that don't overlap. There is one build and deploy per wave, and one batched QA pass per wave.
@@ -53,16 +57,40 @@ In parallel, the main thread runs the **D10 design gate**: load `/frontend-desig
 guided buybox reuses the flow's progress meter, footer and answer rows (a buybox layout, not an embedded flow), and
 write the design into Spec 43 as FR-43-23 before Wave 2.
 
-## Wave 2: guided buybox (two agents, about 25 min)
+## Wave 1.5: showcase layout (one agent, after Wave 1 lands, about 20 min)
+The main thread wires Wave 1 first. One agent then owns FR-43-24 on top of it: the root `layout` setting, the frame and body grid CSS, the stage (extending Wave 1's summary panel), the question `intro` attribute, the large option-card styling and the narrow-container collapse.
+
+**Reference build: the Eye Care lens flow** (Bean, 2026-09-26: cloning it faithfully establishes the showcase layout
+and closes the lens-flow gap in one step).
+- The agent builds the showcase against the draft's `lensOpen` dialog.
+- It applies the layout to the Eye Care configurator (post 463).
+- Acceptance is the draft beside the live flow at 1440, 768 and 375, compared in screenshots with the differences
+  listed. It is not done while a structural difference remains.
+- Mama's full-screen journeys then inherit the proven layout; only their content differs.
+
+## Wave 2: guided buybox (one agent, running alongside Wave 1)
 - **E: server and editor** (`buybox/block.json`, a new `includes/buybox-guided.php`, a new `buybox/GuidedPanel.js`): the
   `layout: guided` setting, groups from the manifest axes plus the product's non-variation attributes, and defaults.
 - **F: client** (a new `buybox/guided.js` and `buybox` style): one group at a time, Next / Back, the progress meter, the
   finish-choosing guard, and answer rows sent as `fields` on the existing add-to-cart call.
 
+## Wave 2b: architecture (two agents in parallel with Wave 1.5, about 20 min)
+- **G: product link and buybox wiring.**
+  - The product-screen "Customisation flow" picker (product meta `_sgs_choice_flow`, simple and variable products).
+  - The buybox: with a linked flow, it renders its opener plus a full-screen `sgs/modal` holding the flow (reusing
+    FR-43-22's opener and the linked-flow render).
+  - The Choice Flows list gets a "Used by N products" column.
+- **H: term fields and guided peripherals.**
+  - Badge and description fields on attribute terms (`configurator-term-fields.php`), read by `sgs/option-picker`
+    (standard and guided buybox) and as the fallback for flow product-option steps.
+  - The guided buybox's peripheral settings: button wording and style, meter style and colour.
+  - The guided buybox takes its default from the product's default attributes.
+
 ## Wave 3: apply and prove (about 20 min)
 - **Mama's:**
   - Journey A (full flow with the summary and images)
-  - Journey B (pack on the page, flow for the rest)
+  - Journey B (pack on the page, flow for the rest), rebuilt on the product link; the per-product template
+    `single-product-classic-lactation-cookies` is deleted
   - Journey C: product 3990's page with the guided buybox
 - **Eye Care:** the lens configurator with the summary panel as the draft's left aside, compared with the draft at
   1440, 768 and 375 (this closes the lens-flow visual clone).
