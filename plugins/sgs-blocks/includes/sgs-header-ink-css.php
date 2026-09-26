@@ -5,18 +5,13 @@
  *
  * `sectionInk` is a per-tier enum (`off` | `adapt` | `blend`):
  *   - `off`   paints nothing (today's behaviour).
- *   - `adapt` follows the section behind the header. view.js reads the
- *     section under the header and toggles `is-header-on-dark` /
- *     `is-header-on-light`; this file emits the CSS those classes need, GATED
- *     to where the header is genuinely see-through (no own fill, or
- *     Transparent's see-through state) or where a tone fill is set (it
- *     follows the section, so the ink pairs with it in every state).
- *     Elsewhere nothing is emitted — opaque with no tone fill reads its own fill.
+ *   - `adapt` follows the section behind the header. view.js toggles
+ *     `is-header-on-dark` / `is-header-on-light` only inside the live window
+ *     published in `data-sgs-header-ink` (see sgs_header_ink_live_state()).
  *   - `blend` paints `mix-blend-mode:difference` on the header's rows with
  *     the ink forced to white, needing no JS at all.
  *
- * The header never styles the logo — only publishes `is-header-on-dark`/
- * `is-header-on-light` (§4.5, another surface).
+ * The header never styles the logo; the logo reads the same classes (§4.5).
  *
  * @package SGS\Blocks
  */
@@ -175,6 +170,15 @@ if ( ! function_exists( 'sgs_header_ink_mode_rule' ) ) {
 
 		$css = $root_sel . '.is-header-on-dark{color:' . $ink_dark . ' !important;}'
 			. $root_sel . '.is-header-on-light{color:' . $ink_light . ' !important;}';
+
+		// While live, top-level links and the burger follow the ink over the
+		// menu's own colour; hover, focus and dropdown panels keep theirs.
+		foreach ( array( 'dark', 'light' ) as $tone ) {
+			$on   = $root_sel . '.is-header-on-' . $tone;
+			$css .= $on . ' .sgs-nav-bar-menu__item>.sgs-nav-bar-menu__link:not(:hover):not(:focus-visible),'
+				. $on . ' .sgs-nav-bar-menu__burger:not(:hover):not(:focus-visible)'
+				. '{color:inherit !important;-webkit-text-fill-color:currentColor !important;}';
+		}
 
 		if ( 'tone-fill' === $mode || 'tone-fill-transparent' === $mode ) {
 			// Transparent on: the fill follows the section only in the header's

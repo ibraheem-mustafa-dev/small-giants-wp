@@ -24,10 +24,13 @@
  *               waits for 330px of scroll, 68.6px, 48px from the side and 32px from the top.
  *   section-ink U-13 (design .claude/reports/2026-09-26-u13-header-ink-design.md): exit-cells plus a sticky,
  *               see-through header with section ink on at every tier on wearecollins' pair (#140700 on
- *               light, #f8f8f7 on dark, 400ms), over page /qa-section-ink/ (created once, kept): a light
+ *               light, #f8f8f7 on dark, the fill following the
+ *               section once scrolled, 400ms), over page /qa-section-ink/ (created once, kept): a light
  *               section, a dark section, a photo section with no overlay (attachment 3459, toned by
  *               `wp sgs media measure-tone`) and a plain core/group with a dark fill (the browser-side
  *               fallback). section-ink-off is the same with section ink off (the negative control).
+ *   direction-fade  M-03 on the same page: fantasy's header, a black fill at 0.5 fading top to bottom
+ *               that fades out while scrolling down past 100px and returns on any upward scroll of 8px.
  *   restore     put the pre-fixture bodies back.
  */
 
@@ -68,7 +71,7 @@ if ( 'restore' === $case ) {
 	return;
 }
 
-if ( ! in_array( $case, array( 'exit-cells', 'two-bar', 'header-row', 'detach-chip', 'section-ink', 'section-ink-off' ), true ) ) {
+if ( ! in_array( $case, array( 'exit-cells', 'two-bar', 'header-row', 'detach-chip', 'section-ink', 'section-ink-off', 'direction-fade' ), true ) ) {
 	echo "unknown case {$case}\n";
 	return;
 }
@@ -195,6 +198,18 @@ if ( 'detach-chip' === $case ) {
 	$header_set  = array( 'headerSticky' => array( 'desktop' => 'off' ) );
 }
 
+if ( 'direction-fade' === $case ) {
+	// fantasy (M-03): a black fill at 0.5 fading top to bottom, gone while
+	// scrolling down past 100px, back the moment the visitor scrolls up.
+	$header_set = array(
+		'headerSticky'               => array( 'desktop' => 'on', 'tablet' => 'on', 'mobile' => 'on' ),
+		'headerTransparent'          => array( 'desktop' => 'on', 'tablet' => 'on', 'mobile' => 'on' ),
+		'headerTransparentDirection' => 'solid-first',
+		'backgroundColourGradient'   => 'linear-gradient(180deg,rgba(0,0,0,0.5) 0%,rgba(0,0,0,0) 100%)',
+		'scrolledTrigger'            => 'direction',
+		'scrolledOffset'             => 100,
+	);
+}
 if ( 'section-ink' === $case || 'section-ink-off' === $case ) {
 	$all_tiers  = static function ( $value ) {
 		return array( 'desktop' => $value, 'tablet' => $value, 'mobile' => $value );
@@ -205,6 +220,8 @@ if ( 'section-ink' === $case || 'section-ink-off' === $case ) {
 		'sectionInk'        => $all_tiers( 'section-ink' === $case ? 'adapt' : 'off' ),
 		'inkOnLight'        => '#140700',
 		'inkOnDark'         => '#f8f8f7',
+		'fillOnLight'       => '#f8f8f7',
+		'fillOnDark'        => '#140700',
 		'inkDuration'       => 400,
 	);
 

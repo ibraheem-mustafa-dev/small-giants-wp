@@ -174,7 +174,7 @@ export default function SectionInkPanel( { attributes, setAttributes, colourPale
 			{ ( anyAdapt || anyBlend ) && (
 				<Notice status="info" isDismissible={ false }>
 					<p style={ { margin: 0 } }>
-						{ __( 'If the menu sets its own link colour, links will not follow this — the client override wins.', 'sgs-blocks' ) }
+						{ __( 'While the header follows a section, its menu links take this colour even if the menu sets its own; hover colours still apply.', 'sgs-blocks' ) }
 					</p>
 				</Notice>
 			) }

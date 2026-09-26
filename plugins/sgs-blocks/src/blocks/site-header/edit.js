@@ -37,6 +37,7 @@ import { floatPreview, floatResetAttributes } from './float-preview';
 // Section-adaptive ink (Wave 3C U-13) — its own panel, independent of the
 // "Header behaviour" ToolsPanel below (sectionInk is its own feature).
 import SectionInkPanel from './section-ink-panel';
+import ScrollChangePanel from './scroll-change-panel';
 
 /**
  * Does a tri-state {desktop,tablet,mobile} behaviour object resolve 'on' at
@@ -1291,6 +1292,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 					colourPalette={ colourPalette }
+				/>
+				<ScrollChangePanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
 				/>
 			</InspectorControls>
 

@@ -43,6 +43,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/helpers-surface-ground.php';
 require_once dirname( __DIR__, 3 ) . '/includes/sgs-header-z-index.php';
 require_once dirname( __DIR__, 3 ) . '/includes/sgs-header-pass-through.php';
 require_once dirname( __DIR__, 3 ) . '/includes/sgs-header-ink-css.php';
+require_once dirname( __DIR__, 3 ) . '/includes/sgs-header-scroll-trigger.php';
 
 // Deterministic, content-addressed uid — mirrors SGS_Container_Wrapper's own
 // md5( wp_json_encode( $attributes ) ) derivation (class-sgs-container-wrapper.php)
@@ -98,11 +99,11 @@ if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundC
 	// translucent fill is written as its own scoped rule instead of going through it.
 	$sh_bg_alpha = sgs_surface_fill_alpha( $sh_bg_value, $attributes['surfaceOpacity'] ?? null );
 	if ( '' !== $sh_bg_alpha ) {
-		$css               .= $root_sel . '{background-color:' . $sh_bg_alpha . ';}';
+		$css                .= $root_sel . '{background-color:' . $sh_bg_alpha . ';}';
 		$sh_resting_bg_color = $sh_bg_alpha;
 	} elseif ( '' !== $sh_bg_value ) {
 		$sh_color_args['background'] = $sh_bg_value;
-		$sh_resting_bg_color          = $sh_bg_value;
+		$sh_resting_bg_color         = $sh_bg_value;
 	}
 }
 // Background GRADIENT (`backgroundColourGradient`) — a BLOCK-PRIVATE attribute (never
@@ -206,8 +207,8 @@ $sh_solid_first = ( 'solid-first' === $sh_direction );
 
 $sh_transparent_effective = array();
 foreach ( array( 'desktop', 'tablet', 'mobile' ) as $sh_tier ) {
-	$sh_tier_transparent = sgs_resolve_tier( $sh_transparent, $sh_tier, 'off' );
-	$sh_tier_contrast    = sgs_resolve_tier( $sh_contrast, $sh_tier, 'none' );
+	$sh_tier_transparent                  = sgs_resolve_tier( $sh_transparent, $sh_tier, 'off' );
+	$sh_tier_contrast                     = sgs_resolve_tier( $sh_contrast, $sh_tier, 'none' );
 	$sh_transparent_effective[ $sh_tier ] = ( 'force-solid' === $sh_tier_contrast['value'] )
 		? 'off'
 		: $sh_tier_transparent['value'];
@@ -308,6 +309,16 @@ $css .= sgs_header_z_index_css( $root_sel, $attributes );
 // point (includes/sgs-header-pass-through.php).
 $css .= sgs_header_pass_through_css( $root_sel, $attributes );
 $css .= sgs_header_collapse_visibility_css( $root_sel, isset( $block->parsed_block ) && is_array( $block->parsed_block ) ? $block->parsed_block : array() );
+// SCROLL TRIGGER (Wave 3C U-13 M-03) — resolved here, before the scrolled-state
+// background below, so the fade result can replace part of it. `direction`
+// mode changes nothing about WHAT view.js toggles is-header-scrolled TO (the
+// selector and its CSS below are identical either way) — only WHEN it toggles
+// (view.js's own state machine). See includes/sgs-header-scroll-trigger.php.
+$sh_scroll_trigger = sgs_header_scrolled_trigger_value( $attributes );
+$sh_scroll_offset  = sgs_header_scrolled_offset_value( $attributes );
+$sh_scroll_fade    = sgs_header_scroll_fade_css( $root_sel, $sh_scroll_trigger, $sh_solid_first, $sh_transparent_effective, $sh_resting_bg_color, $sh_resting_bg_image );
+$css              .= $sh_scroll_fade['css'];
+
 // SCROLLED-state background for the Transparent behaviour — a distinct STATE
 // selector (root_sel + '.is-header-scrolled'), so this rule never collides
 // with the merged at-rest declarations above (single-writer design intact;
@@ -331,9 +342,14 @@ $css .= sgs_header_collapse_visibility_css( $root_sel, isset( $block->parsed_blo
 // that reason — the style engine has no way to emit `!important`.
 if ( $sh_solid_first ) {
 	// Inverted pair: solid at rest (emitted above), see-through once scrolled.
+	// A tier the fade above has claimed (direction mode, genuinely
+	// Transparent, a resting fill to fade) is 'off' in $sh_scroll_fade's
+	// filtered map, so THIS instant toggle contributes nothing there — the
+	// fade's own opacity transition is the only writer of that tier's
+	// see-through transition, never a second one fighting it for `background`.
 	$css .= sgs_emit_tier_rules(
 		$root_sel . '.is-header-scrolled',
-		$sh_transparent_effective,
+		$sh_scroll_fade['toggle_effective'],
 		'background:transparent !important;',
 		'',
 		'off'
@@ -341,7 +357,7 @@ if ( $sh_solid_first ) {
 } else {
 	$sh_scrolled_decls = '';
 
-	$sh_scrolled_bg = isset( $attributes['backgroundColourScrolled'] )
+	$sh_scrolled_bg     = isset( $attributes['backgroundColourScrolled'] )
 		? sgs_colour_value( (string) $attributes['backgroundColourScrolled'] )
 		: '';
 	$sh_scrolled_decls .= 'background:' . ( '' !== $sh_scrolled_bg
@@ -552,8 +568,8 @@ if ( $sh_hide_any_tier ) {
 // suppressor of Transparent, so it needs no CSS of its own.
 $sh_contrast_modes = array();
 foreach ( array( 'desktop', 'tablet', 'mobile' ) as $sh_tier ) {
-	$sh_resolved                = sgs_resolve_tier( $sh_contrast, $sh_tier, 'none' );
-	$sh_contrast_modes[]        = $sh_resolved['value'];
+	$sh_resolved         = sgs_resolve_tier( $sh_contrast, $sh_tier, 'none' );
+	$sh_contrast_modes[] = $sh_resolved['value'];
 }
 
 if ( in_array( 'scrim', $sh_contrast_modes, true ) ) {
@@ -618,11 +634,11 @@ $css .= '@media (prefers-reduced-motion: reduce) {' . $root_sel . '{transition:n
 $sh_extra_attrs = array( 'id' => $uid );
 // Float implies sticky, so a float-only header must still get the
 // "an ancestor is silently breaking sticky" advisory.
-$sh_sticky_any_tier     = ! empty( sgs_resolve_on_tiers( $sh_sticky, 'on', 'off' ) ) || $sh_float_any_tier;
+$sh_sticky_any_tier = ! empty( sgs_resolve_on_tiers( $sh_sticky, 'on', 'off' ) ) || $sh_float_any_tier;
 // Pass-through is position:fixed, which a transformed or filtered ancestor
 // breaks just as it breaks sticky, so it gets the same advisory.
 $sh_pass_through_any_tier = ! empty( sgs_resolve_on_tiers( $attributes['headerPassThrough'] ?? array(), 'on', 'off' ) );
-$sh_scroll_behaviour_on = ! empty( sgs_resolve_on_tiers( $sh_transparent, 'on', 'off' ) )
+$sh_scroll_behaviour_on   = ! empty( sgs_resolve_on_tiers( $sh_transparent, 'on', 'off' ) )
 	|| ! empty( sgs_resolve_on_tiers( $sh_shrink, 'on', 'off' ) )
 	|| ! empty( sgs_resolve_on_tiers( $sh_hide, 'on', 'off' ) )
 	// A scrolled shadow needs view.js to toggle `.is-header-scrolled`, even on a
@@ -646,6 +662,16 @@ if ( '' !== $sh_ink['live'] ) {
 }
 if ( $sh_scroll_behaviour_on ) {
 	$sh_extra_attrs['data-sgs-header-scroll-behaviours'] = '1';
+}
+// Scroll trigger (Wave 3C U-13 M-03) — read by initScrollBehaviours(). Only
+// emitted off-default, matching every other data-attr in this block: a
+// `position`-trigger header (today's only mode) carries neither attribute and
+// renders byte-identical to before this attribute existed.
+if ( 'direction' === $sh_scroll_trigger ) {
+	$sh_extra_attrs['data-sgs-header-scrolled-trigger'] = 'direction';
+}
+if ( 50 !== $sh_scroll_offset ) {
+	$sh_extra_attrs['data-sgs-header-scrolled-offset'] = (string) $sh_scroll_offset;
 }
 if ( $sh_float_any_tier ) {
 	$sh_extra_attrs['data-sgs-header-float'] = '1';
@@ -671,10 +697,10 @@ if ( 'none' !== $border_style ) {
 	// A style with no width means no border — never fall through to the
 	// browser's initial `medium` (~3px).
 	if ( $has_border_width ) {
-		$bwt = '' !== $border_width_top ? $border_width_top : '0';
-		$bwr = '' !== $border_width_right ? $border_width_right : '0';
-		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
-		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$bwt  = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr  = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb  = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl  = '' !== $border_width_left ? $border_width_left : '0';
 		$css .= $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
 	}
 
@@ -705,7 +731,7 @@ if ( 'none' !== $border_style ) {
 // tablet/mobile tiers use the identical call). The style-engine result is an
 // intermediate PHP value ($out array), never appended raw -- only its ['css']
 // string is appended to $css. ──
-$radius_tiers = sgs_border_radius_tiers( $attributes );
+$radius_tiers      = sgs_border_radius_tiers( $attributes );
 $border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
 if ( ! empty( $border_radius_obj ) ) {
 	$border_radius_out = wp_style_engine_get_styles(

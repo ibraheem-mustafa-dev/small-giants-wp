@@ -197,6 +197,8 @@ ok( false === strpos( $tft_desktop, $root_sel . '.is-header-on-dark{background:'
 ok( false !== strpos( $tone_fill_transparent['css'], '@media (max-width:767px){' ) && false !== strpos( substr( $tone_fill_transparent['css'], (int) strpos( $tone_fill_transparent['css'], '@media (max-width:767px){' ) ), $root_sel . '.is-header-on-dark{background:' ), 'mobile, Transparent off: the tone fill is stateless' );
 ok( 0 === strpos( $tone_fill_transparent['live'], 'desktop:always' ), 'transparent + tone fill: ink live in both states' );
 ok( false === strpos( $tone_fill_transparent['css'], 'revert' ), 'no tier ever cancels with revert' );
+ok( false !== strpos( $tone_fill_transparent['css'], '.is-header-on-dark .sgs-nav-bar-menu__item>.sgs-nav-bar-menu__link:not(:hover):not(:focus-visible)' ), 'live ink overrides the menu link colour, except on hover and focus' );
+ok( false === strpos( sgs_header_ink_css( $root_sel, $uid, array(), $all_off, false, '', '' )['css'], 'sgs-nav-bar-menu__link' ), 'NEGATIVE CONTROL: with section ink off the menu link colour is untouched' );
 ok( false !== strpos( $tone_fill['css'], 'background:var(--wp--preset--color--primary, currentColor) !important;' ), 'tone fill paints the resolved fill colour' );
 // Negative control: the SAME attributes WITHOUT fillOnDark do not carry that
 // selector at all — proving the three-part selector is caused by the tone

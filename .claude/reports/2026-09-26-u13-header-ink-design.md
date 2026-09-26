@@ -18,7 +18,9 @@ scroll DIRECTION (fill fades going down, returns going up, at any offset past 10
 
 - **Ink cascades.** `nav-bar-menu` links and burger, `cart`, `product-search`, `wishlist-link`, `button`,
   `social-icons` all paint with `color: inherit` / `currentColor`. One `color` on the header root repaints
-  every control. An operator-set `itemColour` still wins (explicit choice); the editor says so (§4.4).
+  every control. While ink is live it also overrides the bar's own `itemColour` on top-level links and the
+  burger (hover, focus and dropdown panels keep theirs): all eight header patterns set `itemColour: text`, so
+  a menu colour winning left the menu unreadable (live check 2026-09-26; Bean chose "ink wins while live").
 - **Sections already know their tone.** `SGS_Container_Wrapper` stamps `sgs-on-dark` / `sgs-on-light` on every
   section-kind block (container, hero, cta-section, …) from its painted layers
   (`helpers-surface-tone.php::sgs_surface_tone_class`). Image layers are never sampled, so an image section
@@ -115,7 +117,7 @@ Two separate panels in the header inspector (they are independent features):
 - **"Colour over sections"**: the per-tier `sectionInk` toggle group under the global device toggle; two
   `SgsColourPanel` rows (ink on light, ink on dark) and two fill rows, each with `linked` wired; duration and
   easing. Advisory notices (never gates): each ink below 4.5:1 against the palette's lightest or darkest
-  colour; "Menu link colour is set on the menu, so links will not follow"; and, at a tier where the header
+  colour; "While the header follows a section, its menu links take this colour"; and, at a tier where the header
   is opaque with no tone fill, "The header has its own fill here, so its colour stays as set".
 - **"Scroll change"** (M-03): `scrolledTrigger` and `scrolledOffset`.
 - On `sgs/container`-family blocks: the "Surface tone" control, with an advisory when a background image has

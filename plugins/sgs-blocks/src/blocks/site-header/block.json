@@ -279,6 +279,20 @@
 				"solid-first"
 			]
 		},
+		"scrolledTrigger": {
+			"type": "string",
+			"default": "position",
+			"enum": [
+				"position",
+				"direction"
+			],
+			"description": "Wave 3C U-13 M-03. position (default): is-header-scrolled/is-header-shrunk toggle once scrollY passes scrolledOffset, same as before this attribute existed. direction: is-header-scrolled toggles on while scrollY is past scrolledOffset AND the last movement was downward, and clears on an upward movement of 8px or more (deadzone) or at/below the offset — so a solid-first transparent header restyles going down and restyles back the moment the visitor scrolls up, at any offset."
+		},
+		"scrolledOffset": {
+			"type": "number",
+			"default": 50,
+			"description": "The scrollY threshold (px) past which is-header-scrolled/is-header-shrunk apply, in both trigger modes. Sanitised server-side via absint, clamped 0-2000."
+		},
 		"sectionInk": {
 			"type": "object",
 			"default": {},

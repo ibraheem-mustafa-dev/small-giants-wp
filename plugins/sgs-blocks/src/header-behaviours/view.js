@@ -67,6 +67,11 @@
 /* global ResizeObserver */
 
 import { decideSectionTone } from './header-ink-tone.js';
+import {
+	initDirectionScrollState,
+	nextDirectionScrollState,
+	positionScrolled,
+} from './direction-scroll-state.js';
 
 ( function () {
 	'use strict';
@@ -472,6 +477,16 @@ import { decideSectionTone } from './header-ink-tone.js';
 	 * `data-sgs-header-scroll-behaviours` attr (no tier of any behaviour is
 	 * active), matching the previous getActiveBehaviours() perf gate.
 	 *
+	 * `is-header-scrolled` / `is-header-shrunk` share ONE decision (Wave 3C
+	 * U-13 M-03): `data-sgs-header-scrolled-trigger` picks `position` (the
+	 * default, `scrollY > offset`, byte-for-byte the pre-M-03 rule) or
+	 * `direction` (`direction-scroll-state.js`'s state machine — scrolled only
+	 * while past the offset AND the last movement was down, cleared on an 8px+
+	 * upward run or at/below the offset). `data-sgs-header-scrolled-offset`
+	 * (default 50) is the shared threshold either mode reads. `is-header-
+	 * scrolling-down`'s own hide-on-scroll threshold (100, its own prevScrollY)
+	 * is untouched — a separate FR-37-13 behaviour, out of M-03's scope.
+	 *
 	 * @param {HTMLElement} header
 	 */
 	function initScrollBehaviours( header ) {
@@ -479,20 +494,32 @@ import { decideSectionTone } from './header-ink-tone.js';
 			return;
 		}
 
+		const trigger = header.dataset.sgsHeaderScrolledTrigger === 'direction' ? 'direction' : 'position';
+		const offsetAttr = parseInt( header.dataset.sgsHeaderScrolledOffset, 10 );
+		const offset = Number.isFinite( offsetAttr ) ? offsetAttr : 50;
+
 		let rafScheduled = false;
 		let prevScrollY = window.scrollY;
+		let directionState = initDirectionScrollState( window.scrollY );
 
 		function onScrollTick() {
 			rafScheduled = false;
 			const scrollY = window.scrollY;
 
-			// Transparent → opaque transition.
-			header.classList.toggle( 'is-header-scrolled', scrollY > 50 );
+			// Transparent → opaque transition, and Shrink (same threshold, own
+			// state class, independent CSS rule) — one decision drives both.
+			let scrolled;
+			if ( 'direction' === trigger ) {
+				directionState = nextDirectionScrollState( directionState, scrollY, offset );
+				scrolled = directionState.scrolled;
+			} else {
+				scrolled = positionScrolled( scrollY, offset );
+			}
+			header.classList.toggle( 'is-header-scrolled', scrolled );
+			header.classList.toggle( 'is-header-shrunk', scrolled );
 
-			// Shrink — same threshold, own state class, independent CSS rule.
-			header.classList.toggle( 'is-header-shrunk', scrollY > 50 );
-
-			// Hide on scroll down — smart reveal (FR-37-13).
+			// Hide on scroll down — smart reveal (FR-37-13). Its own fixed
+			// threshold and direction read, independent of scrolledTrigger.
 			if ( scrollY > 100 && scrollY > prevScrollY ) {
 				header.classList.add( 'is-header-scrolling-down' );
 			} else if ( scrollY <= prevScrollY ) {
