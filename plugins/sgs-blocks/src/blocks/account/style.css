@@ -60,8 +60,8 @@
 
 /* WooCommerce's own layout sheet floats these at 30% / 68% widths; the
    block's grid and tab row own the layout instead. */
-.sgs-account .woocommerce-MyAccount-navigation,
-.sgs-account .woocommerce-MyAccount-content {
+.sgs-account .sgs-account__wc > nav.woocommerce-MyAccount-navigation,
+.sgs-account .sgs-account__wc > .woocommerce-MyAccount-content {
 	float: none;
 	width: auto;
 }

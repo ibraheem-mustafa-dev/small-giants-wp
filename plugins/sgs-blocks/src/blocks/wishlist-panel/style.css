@@ -237,8 +237,11 @@
 
 .sgs-wishlist-panel--strip .sgs-wishlist-panel__items {
 	display: grid;
+	/* No explicit tracks: the base rule's column count would otherwise size
+	   every card to a quarter of the row and the auto columns never apply. */
+	grid-template-columns: none;
 	grid-auto-flow: column;
-	grid-auto-columns: minmax(11rem, 14rem);
+	grid-auto-columns: var(--sgs-wishlist-panel-strip-card, minmax(15rem, 18rem));
 	gap: var(--sgs-wishlist-panel-gap);
 	overflow-x: auto;
 	scroll-snap-type: x mandatory;
@@ -247,6 +250,20 @@
 
 .sgs-wishlist-panel--strip .sgs-wishlist-panel__row {
 	scroll-snap-align: start;
+	display: grid;
+	grid-template-columns: var(--sgs-wishlist-panel-strip-thumb, 4rem) minmax(0, 1fr);
+	column-gap: 0.75rem;
+	row-gap: 0.5rem;
+	align-items: start;
+	padding: 0.75rem;
+}
+
+.sgs-wishlist-panel--strip .sgs-wishlist-panel__row-link {
+	grid-row: 1 / span 2;
+}
+
+.sgs-wishlist-panel--strip .sgs-wishlist-panel__row-actions {
+	grid-column: 2;
 }
 
 /* ── Price-drop line and date saved ── */
