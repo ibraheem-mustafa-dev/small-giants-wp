@@ -96,7 +96,7 @@ key), with the owed Wave C polish alongside.
   4. Mobile menu Sunglasses and Brands link to /shop/ until category pages exist (Wave C).
 - Known follow-up, not blocking: the social-icons glyph gradient paints strokes only, so it has no effect on the four
   filled brand marks (Google, WhatsApp, TikTok, X).
-- **Wave C progress (2026-09-25):** (1) shared product card DONE (`plans/2026-09-25-eye-care-product-card.md`); (2)
+- **Wave C progress (2026-09-25):** (1) shared product card DONE (`plans/archive/2026-09-25-eye-care-product-card.md`); (2)
   product page, zero-reviews state, DONE (`plans/2026-09-25-eye-care-product-page.md`; real frame sizes from
   jpopticians.com, Bean 2026-09-25); (3) shop archive DONE: the site's own `archive-product` template from
   `build/archive-product.tree.json` (generator `build/gen_archive_product.py`), shop page titled Sunglasses (`/shop/`
