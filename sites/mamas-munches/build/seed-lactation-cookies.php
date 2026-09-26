@@ -143,7 +143,6 @@ if ( ! $flavour_attr_id ) {
 // -----------------------------------------------------------------------
 $pack_terms = array(
 	'8'  => seed_get_or_create_term( 'pa_number-in-pack', '8' ),
-	'12' => seed_get_or_create_term( 'pa_number-in-pack', '12' ),
 	'20' => seed_get_or_create_term( 'pa_number-in-pack', '20' ),
 	'40' => seed_get_or_create_term( 'pa_number-in-pack', '40' ),
 );
@@ -230,10 +229,9 @@ $product_id = $product->save();
 // 4. Variations — one per pack size, priced per the brief.
 // -----------------------------------------------------------------------
 $pack_prices = array(
-	'8'  => '6.00',
-	'12' => '8.50',
-	'20' => '12.00',
-	'40' => '22.00',
+	'8'  => '9.50',
+	'20' => '21.50',
+	'40' => '38.00',
 );
 
 $variation_ids = array();
