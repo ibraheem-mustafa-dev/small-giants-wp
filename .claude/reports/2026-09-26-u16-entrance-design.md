@@ -60,56 +60,61 @@ for their own effects: 50 block stylesheets write a `transition` shorthand and b
 places (hover lifts, tilts, the header's hide-on-scroll). Whichever rule is printed later wins, so any block with an
 entrance and its own effect loses one or the other (council, census finding 4, found on the header; Bean: scroll
 effects and entrances are separate things, so fix the mechanism, not the header). The entrance becomes an
-independent layer for every block:
-1. A keyframe animation, not a transition: `extensions.css` gains one `@keyframes sgs-entrance-<effect>` per effect
-   and `.sgs-js [data-sgs-animation].sgs-animated { animation: sgs-entrance-<effect> <duration> <easing> <delay>
-   backwards; }`. `animation` and `transition` are separate properties, so neither can reset the other.
-2. The standalone `translate`, `scale`, `rotate` and `filter`-free properties, not `transform`: the browser composes
-   them with a block's own `transform`, so a hover lift or hide-on-scroll works during and after the entrance.
-   Effects that need `filter` (blur-in) or `clip-path` (reveal-up) animate those; no block writes them on its root
-   today, which the build confirms with a grep.
-3. Fill mode `backwards`: the start pose holds through the delay and every property is released when the entrance
-   ends. The pre-start hidden state stays gated on `.sgs-js`, so without JavaScript content shows.
-A failsafe on every animated block would spoil below-the-fold reveals, so it stays on `sgs/site-header` only: if the
-observer never marks it (a script error), a 3s-delayed animation shows it anyway. Editor: an entrance set on the
-header shows a notice that it delays the header's first appearance.
+independent layer for every block. A CSS keyframe animation was the first answer and is not enough: CSS keeps one
+`animation` list per element, and blocks run their own there too (the header's shrink is a scroll-timeline
+`animation` on the header root, `.{uid}.sgs-site-header`; `sgs/counter`'s root runs `sgs-counter-reveal`; 23 block
+stylesheets or renderers write `animation`). Whichever rule wins the list silently drops the other. So the entrance
+runs outside the cascade entirely.
 
-### 4.4 The mechanism, as built (council revision 2, 2026-09-26)
+### 4.4 The mechanism, as built (revision 3, 2026-09-26)
 
-1. **Paused until marked, then running.** `.sgs-js [data-sgs-animation]` (inside `prefers-reduced-motion:
-   no-preference`) sets `animation-duration` (from `data-sgs-animation-duration`, the same tokens), the easing
-   variable, `animation-delay: var(--sgs-anim-delay, 0ms)`, `animation-fill-mode: backwards` and
-   `animation-play-state: paused`; each `[data-sgs-animation="<effect>"]` rule sets only `animation-name:
-   sgs-entrance-<effect>`. A paused animation at time 0 already paints its `from` keyframe, so the hidden pose needs no
-   static `opacity`, `translate` or `transform` write; `.sgs-animated` sets `animation-play-state: running` and
-   nothing else. The old `.sgs-animated { transform: none; … }` end state is deleted: it was the collision itself.
-2. **Each keyframe lists only the properties its effect moves.** fade and slide effects: `translate` (slide keeps
-   opacity 1); scale-in, scale-out, bounce-in: `scale` (bounce-in keeps its own overshoot curve as its
-   `animation-timing-function`); rotate-in: `rotate`; blur-in: `filter` with an explicit `to { filter: blur(0) }`;
-   reveal-up: `clip-path` with an explicit `to { clip-path: inset(0 0 0 0) }` (inset to `none` does not interpolate).
-   flip-in keeps `transform: perspective(600px) rotateX(30deg)` in its keyframe, because `perspective()` has no
-   standalone property: it is the one effect that still owns the block's `transform`, during its entrance only.
-3. **Distance.** Directional keyframes read `var(--sgs-entrance-distance, <effect default>)` (30px fade, 100px
-   slide, sign per direction); `[data-sgs-animation-distance="50"]` sets `--sgs-entrance-distance: 50px`, one rule
-   per preset. The data attribute is written only when set, so existing static blocks' saved markup stays valid.
-4. **Delay and stagger as animation delay.** The observer marks every element when it enters view and writes
-   `--sgs-anim-delay` (its own delay plus the existing 100ms-per-index stagger for elements in view at load), instead
-   of deferring the class with `setTimeout`.
-5. **Plays once.** Animations replay when a hidden ancestor (drawer, tab, accordion, dialog) shows again; transitions
-   did not. On `animationend` or `animationcancel` of an `sgs-entrance-*` animation the observer adds
-   `sgs-entrance-done`, which sets `animation: none`, so the entrance never replays and every property is released.
-6. **Reduced motion.** The reduce block adds `animation: none !important` and `translate`/`scale`/`rotate: none
-   !important` to its existing resets; the observer still marks everything at once.
-7. **Header failsafe.** `sgs/site-header` with an entrance carries a second animation in the list,
-   `sgs-entrance-failsafe` (opacity 1, translate none, 1ms, delay 3s, fill `forwards`, always running); the done
-   class removes it long before it fires, so it only ever acts when the script died.
-8. **One entrance per element.** `sgs/counter`'s root runs its own scroll-timeline reveal (`sgs-counter-reveal`);
-   an entrance chosen in the panel replaces it (higher specificity on the same `animation` list). That is intended:
-   the author's choice wins; with no entrance set, the built-in reveal is unchanged.
+1. **A script animation, not a CSS property.** `animation-observer.js` calls `element.animate(keyframes, timing)` (Web
+   Animations API) for every `[data-sgs-animation]` element. A script animation is its own effect in the element's
+   animation stack: it never reads or writes the element's `transition`, `animation` or `transform` properties, so a
+   block's own transitions (hover lifts), CSS animations (header shrink, counter reveal) and `transform`
+   (hide-on-scroll) run unchanged underneath it. It overrides only the properties its keyframe names, only while it
+   runs.
+2. **Each effect moves only its own properties, as one start keyframe.** The effect table is one JSON literal in
+   `animation-observer.js`, between `/* sgs-entrance-effects:start */` and `/* sgs-entrance-effects:end */`, matching
+   today's start poses: fade-up/down/left/right opacity 0 plus `translate` 30px on the axis; slide-* `translate` 100px
+   with no fade; scale-in 0.9 and scale-out 1.1 on `scale` with a fade; bounce-in `scale` 0.3 with a fade and its own
+   overshoot curve; rotate-in `rotate` -10deg with a fade; blur-in `filter: blur(8px)` with a fade and an explicit end
+   `blur(0)`; reveal-up `clip-path: inset(100% 0 0 0)` to `inset(0 0 0 0)` with no fade; fade-in opacity only; flip-in
+   `transform: perspective(600px) rotateX(30deg)` with a fade (`perspective()` has no standalone property, so flip-in
+   alone owns the block's `transform`, during its entrance only). The end keyframe is implicit (the element's own
+   value), except blur-in and reveal-up, whose functions do not interpolate to `none`.
+3. **Hidden until in view, without CSS.** The observer creates each animation with `fill: 'backwards'`: elements in
+   view at load play at once (their own delay plus the existing 100ms-per-index stagger, as the animation's `delay`);
+   the rest are created paused at time 0 (which already paints the start pose) by a second observer when they come
+   within 200px of the viewport, and play when 15% of them is in view, so elements far down a long page hold no
+   animation at all. `beforeprint` finishes every entrance, so nothing prints hidden. When one
+   plays the observer adds `.sgs-animated` (the info-box icon rule reads it) and, on finish, cancels the finished
+   animation so nothing is held. The static hidden poses, the `transition` rules, the `.sgs-animated { transform: none }`
+   end state and the reduced-motion resets are deleted from `extensions.css`: nothing is hidden by CSS, so no-JS and a
+   failed script both show content. `.sgs-js` is still added (image-sequence and horizontal-panel read it).
+4. **Timing.** Duration from `data-sgs-animation-duration` (the theme token read from the root's computed
+   `--wp--custom--duration--<key>`, with today's fallbacks 60/150/300/500/800ms); easing from the token's computed
+   `--wp--custom--easing--<key>` (a resolved string, since `animate()` takes no `var()`); delay from
+   `data-sgs-animation-delay`, whose options gain 500 and 800ms. Distance from `data-sgs-animation-distance` (15, 30,
+   50 or 100; written only when set, so existing static blocks' saved markup stays valid) replaces the effect's default
+   travel.
+5. **Plays once.** A script animation does not restart when a hidden ancestor (drawer, tab, accordion, dialog) shows
+   again, and an element inside a closed container gets its animation only when it first comes near view. The drawer
+   waits on `getAnimations({ subtree: true })` before it settles (`src/shared/nav-interactivity/store.js::
+   whenAnimationsSettle`); an entrance inside an open drawer is one of those animations for its duration, and the
+   function's own end-time timer backstops it.
+6. **Reduced motion.** Under `prefers-reduced-motion: reduce` the observer creates no animations.
+7. **Header failsafe.** If the header's animation is still paused 3s after the observer starts, it is finished; any
+   error inside the observer finishes every animation it created. Editor: an entrance on the header shows a notice
+   that it delays the header's first appearance.
+8. **One override, named.** An entrance on `sgs/counter` plays on top of its built-in reveal (both run; the entrance
+   wins `opacity` and `translate` while it runs, then the reveal shows through).
 9. **The framework DB seeder** (`scripts/dbschema/seed-motion-shape-signatures.py::_extract_entrance_rows`) reads the
-   per-effect shape from the `@keyframes sgs-entrance-<effect>` `from` blocks (translate, scale, rotate, filter,
-   clip-path, transform) instead of the old start-pose rules. Proof: the 16 entrance rows are identical before and
-   after the reseed (same property, direction and magnitude band).
+   effect table between the two markers instead of `extensions.css`. Proof: the 16 entrance rows are identical before
+   and after (same property, direction, magnitude band, easing and co-animated opacity).
+10. **Browser floor.** `animate()` with an implicit end keyframe and the standalone `translate`/`scale`/`rotate`
+    properties: Chrome 104, Safari 14.1, Firefox 72 (all current). Where `animate` is missing the observer skips it:
+    content shows, unanimated.
 
 ### 4.5 Proof for the rest
 
@@ -130,29 +135,39 @@ path exists); delay steps capped at 800ms; a header-only failsafe; the first-app
 hide-on-scroll and shrink on. Declined: effect-keyed distances (one effect per element). Per plan §5 step 2a this
 revision went back past the same two reviewers.
 
-Revision 2 (same reviewers, 2026-09-26): both GO WITH FIXES, applied as §4.4. Census: flip-in's `perspective()` has
+Revision 2 (same reviewers, 2026-09-26): both GO WITH FIXES, applied (then superseded in mechanism by revision 3). Census: flip-in's `perspective()` has
 no standalone property (kept on `transform`, entrance only); `sgs/counter` runs its own root animation (the chosen
 entrance wins); the reduced-motion reset lacked the new properties; the DB seeder's regex would silently read zero
 entrance rows; delay was a `setTimeout`, not an animation delay. Adversarial: keyframes replay when a hidden
 container shows again (the done class); `animation` must sit inside the no-preference query. Declined: writing
 `translate: none` etc. on `.sgs-animated` (a static end-state write is the collision being removed; the paused
-`from` pose replaces it). Recorded, not changed: the observer loads in the footer, so `.sgs-js` arrives after the
-header may have painted; the live probe's first samples decide it (§7), and if the header paints visible first the
-fix is a head script that adds `.sgs-js`, covered by the header failsafe.
+`from` pose replaces it).
+
+Revision 3 (main thread at build, 2026-09-26, before any code was written): the header's shrink is a CSS
+`animation` on the header root, so a CSS keyframe entrance and the shrink would overwrite each other's `animation`
+list, and the revision-2 done rule (`animation: none`) would have switched the shrink off for good. The mechanism moved
+to script animations (§4.4); it goes back past the same two reviewers on the delta. Recorded, not changed: the
+observer loads in the footer, so an element in view at load (the header) may paint visible before its entrance starts;
+the live probe's first samples after first paint decide it (§7); a head script cannot help (the elements do not exist
+yet). Adversarial on revision 3, GO WITH FIXES: paused animations on every below-fold element (fixed: created only
+near the viewport), printing paused content hidden (fixed: `beforeprint`). Declined: loading the observer in the head. Census on
+revision 3, GO WITH FIXES: every theme and snapshot easing token is a value `animate()` accepts; the observer is not
+loaded in the editor; only the DB seeder parses `extensions.css`; the drawer's `whenAnimationsSettle` sees entrance
+animations (named in §4.4 item 5). Design gate closed.
 
 ## 6. Risks
 
-1. A `transform` on the header during its entrance makes the header the containing block for fixed descendants for
-   those 800ms (a mega panel opened mid-entrance would sit wrong). Accepted: nobody opens a menu in the first 800ms;
-   the live check opens one right after.
-2. An entrance on the header hides it (opacity 0) until the observer fires; if the script fails, the header stays
-   invisible. The extension's initial state is gated on `.sgs-js`, so with no script the header shows. Proved by the
-   live check with JavaScript disabled.
+1. A running `translate`, `scale`, `rotate` or `filter` on the header makes it the containing block for fixed
+   descendants while the entrance runs (a mega panel opened mid-entrance would sit wrong for those 800ms). Accepted:
+   the live check opens a dropdown mid-entrance and after it.
+2. A paused entrance hides an element until it intersects. Nothing is hidden before the script runs, a script error
+   finishes every created animation, and the header has a 3s failsafe. Proved by the live check with JavaScript
+   disabled.
 
 ## 7. Verification
 
 Fixture on sandybrown (new cases in `qa-item-markup-fixture.php`): header `fade-in` extra-slow; a footer row
 `fade-up` at 50px with stagger. Probe: sample the header's opacity every 50ms from navigation (starts at 0, reaches 1
-by about 800ms, ends at `transform: none`, still pinned after scrolling 600px); footer rows' translateY 50 to 0 as
+by about 800ms, leaves no running animation behind (`getAnimations()` empty), still pinned after scrolling 600px); footer rows' translateY 50 to 0 as
 they enter; reduced motion flat; JavaScript off shows the header. 375, 768 and 1440. The first samples after
 navigation must never show the header at opacity 1 before the entrance starts (the footer-loaded gate, §5).
