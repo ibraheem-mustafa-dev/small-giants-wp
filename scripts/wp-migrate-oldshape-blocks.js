@@ -60,7 +60,8 @@ const fail = (code, msg) => { console.error(`[FAIL ${code}] ${msg}`); process.ex
 
 async function restFetchRaw() {
 	const auth = 'Basic ' + Buffer.from(`${USER}:${APP_PASS}`).toString('base64');
-	for (const type of ['pages', 'posts']) {
+	// Saved-layout CPTs (sgs_header, sgs_drawer, ...) register no rest_base, so their REST route is the post type name.
+	for (const type of ['pages', 'posts', 'sgs_header', 'sgs_footer', 'sgs_drawer', 'sgs_modal']) {
 		const res = await fetch(`https://${SITE}/wp-json/wp/v2/${type}/${POST}?context=edit`, { headers: { Authorization: auth } });
 		if (res.status === 200) { const j = await res.json(); return { raw: j.content.raw, type }; }
 		if (res.status === 401 || res.status === 403) fail(2, `REST auth rejected (${res.status}) for ${type}/${POST}`);
