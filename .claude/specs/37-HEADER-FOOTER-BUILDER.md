@@ -1657,7 +1657,9 @@ canary). The pointers are read through `Sgs_Active_Layout`, never with a raw opt
 - **"Used by" list-table column** (`class-sgs-cpt-usage-columns.php`) on `sgs_header`, `sgs_footer`,
   `sgs_drawer`, `sgs_modal`, `sgs_form` and `sgs_choice_flow`. It is computed at request time from the
   real source (rule count for header/footer, the Active pointer for a drawer, `modalRef` references
-  for a modal), never stored, so it cannot go stale.
+  for a modal; for a form or flow, published posts embedding its slug, excluding the definition post
+  itself, plus product links for a flow, via `Sgs_Cpt_References`, the same finder the Spec 42 FR-42-7b
+  delete guard reads), never stored, so it cannot go stale.
 - **Header Rules and Footer Rules pages** live inside the `sgs_header` / `sgs_footer` list screens
   (FR-37-20).
 - **"Set as active", "Clear active", "Preview on site"** row actions and the **Active** column

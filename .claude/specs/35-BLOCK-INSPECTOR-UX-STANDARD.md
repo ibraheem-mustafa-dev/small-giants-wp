@@ -852,7 +852,9 @@ everywhere a hyperlink option exists — including the block-link extension's li
    target shape a consumer's schema actually declares — **do not default to 'enum' for a boolean-typed
    schema attr**, that's exactly the "flat value on an object attr" coercion-trap class of bug.
    `enableInternalResolution` opts a consumer INTO `linkId`/`linkKind` render-time ID resolution — off
-   by default (only `sgs/button`'s `render.php` resolves them today).
+   by default (only `sgs/button`'s `render.php` resolves them today). Optional `emptyLabel` replaces the
+   "Add link" button text while nothing is chosen, for pickers that choose a post rather than a link
+   (the saved-form and saved-flow pickers use "Choose a saved form" / "Choose a saved flow").
 3. **Banned lookalikes** — `<TextControl type="url">`; `<URLInput>`; `SgsLinkControl`'s inline mount
    for any NEW consumer.
 4. **Tab** — unchanged: `settings` when the control styles nothing and lands in the pinned `Settings`
