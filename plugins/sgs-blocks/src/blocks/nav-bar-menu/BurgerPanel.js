@@ -222,12 +222,10 @@ export default function BurgerPanel( {
 				presets={ false }
 			/>
 
-			{ /* FR-U18-G1: WIDTH only — burgerSize above stays the button's
-			   height (and its width too, unless overridden here), so the
-			   button can be a genuinely non-square touch target (e.g. 30px
-			   wide x 36px tall, lamalama.com). Per-device override via the
-			   GLOBAL device toggle (ResponsiveOverride), matching `triggerMode`
-			   above — never a per-control switcher. */ }
+			{ /* Width only — burgerSize above is the height (and the width
+			   while this is empty), so the button can be non-square (e.g.
+			   30px wide x 36px tall, lamalama.com). Per device through the
+			   global device toggle (ResponsiveOverride), like `triggerMode`. */ }
 			<ResponsiveOverride
 				label={ __( 'Width', 'sgs-blocks' ) }
 				value={ burgerWidth }
@@ -235,6 +233,7 @@ export default function BurgerPanel( {
 			>
 				{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
 					<SgsLengthControl
+						hideLabelFromVision
 						label={ __( 'Width', 'sgs-blocks' ) }
 						value={ ownValue || '' }
 						placeholder={ inherited ? effectiveValue || burgerSize : burgerSize }
