@@ -171,10 +171,6 @@
 		"linkColourHover": {
 			"type": "string",
 			"default": ""
-		},
-		"margin": {
-			"type": "object",
-			"default": {}
 		}
 	},
 	"editorScript": "file:./index.js",

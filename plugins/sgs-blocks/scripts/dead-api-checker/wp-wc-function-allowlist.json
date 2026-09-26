@@ -122,6 +122,7 @@
     "get_term_link",
     "get_term_meta",
     "get_terms",
+    "get_locale",
     "get_the_ID",
     "get_the_archive_description",
     "get_the_archive_title",

@@ -126,10 +126,6 @@
 		"iconSize": {
 			"type": "object",
 			"default": {}
-		},
-		"margin": {
-			"type": "object",
-			"default": {}
 		}
 	},
 	"editorScript": "file:./index.js",
