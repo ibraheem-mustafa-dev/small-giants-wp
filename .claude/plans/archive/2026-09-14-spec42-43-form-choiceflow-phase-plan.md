@@ -163,7 +163,9 @@ variations.
 `sgs_choice_flow` post shown by a linked `sgs/choice-flow` (`flowId` + `flowIsLinked`, the Linked Form picker's
 shape), inline or inside a fullscreen `sgs/modal`. FR-43-7 (2026-09-26): Mama's two journeys, see Status.
 
-**Phase 5 — rebuild + delete guard. SHIPPED (2026-09-26).** Commits b75b75aa1, b3d72cfd5, 07121d92e.
+**Phase 5 — rebuild + delete guard. SHIPPED (2026-09-26).** Commits b75b75aa1, b3d72cfd5, 07121d92e, b2b5aef10 (an
+independent code review found unlinking left the slug behind, so the form stayed "in use"; unlinking now clears it).
+Live on sandybrown, eye-care-test and indus-test at 31c2ed4c5.
 FR-42-9: the count ran first; the only real form (Eye Care's Contact) was already a saved form, and sandybrown's
 six inline forms are QA fixtures, so nothing was rebuilt. The editor now enforces the mandate instead (owner
 decision): outside a saved form, `sgs/form` picks a saved form, creates one by name, or saves an inline form to the
