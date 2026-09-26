@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "..\\..\\..\\..\\..\\Users\\Bean\\.claude\\skills\\sgs-wp-engine\\sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 8567,
+    "row_count": 8572,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -4376,6 +4376,7 @@
     "sgs/media::linkOpensNewTab": "boolean-visibility",
     "sgs/media::linkRel": "technical",
     "sgs/media::linkUrl": "link-href",
+    "sgs/media::lottieId": "enum-class-probe",
     "sgs/media::maxHeight": "layout",
     "sgs/media::maxHeightUnit": "layout",
     "sgs/media::maxWidth": "layout",
@@ -6820,6 +6821,8 @@
     "sgs/site-footer::backgroundSize": "visual",
     "sgs/site-footer::bgAnimationDuration": "motion",
     "sgs/site-footer::bgKenBurns": "boolean-visibility",
+    "sgs/site-footer::bgLottie": null,
+    "sgs/site-footer::bgLottieLoop": "boolean-visibility",
     "sgs/site-footer::bgParallax": "styling",
     "sgs/site-footer::bgSvgAnimation": "motion",
     "sgs/site-footer::bgSvgAnimationSpeed": "behaviour",
@@ -6954,6 +6957,8 @@
     "sgs/site-header::backgroundSize": "visual",
     "sgs/site-header::bgAnimationDuration": "motion",
     "sgs/site-header::bgKenBurns": "boolean-visibility",
+    "sgs/site-header::bgLottie": null,
+    "sgs/site-header::bgLottieLoop": "boolean-visibility",
     "sgs/site-header::bgParallax": "styling",
     "sgs/site-header::bgSvgAnimation": "motion",
     "sgs/site-header::bgSvgAnimationSpeed": "behaviour",

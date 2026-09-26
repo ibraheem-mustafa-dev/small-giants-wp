@@ -6194,7 +6194,8 @@
       "attr": "currentColour",
       "fields": {
         "css_property": "color",
-        "css_element": "link"
+        "role": "color",
+        "css_element": "current"
       }
     },
     {
@@ -6242,14 +6243,19 @@
       "slug": "sgs/language-switch",
       "attr": "linkColour",
       "fields": {
-        "css_property": "color"
+        "css_property": "color",
+        "role": "color",
+        "css_element": "link"
       }
     },
     {
       "slug": "sgs/language-switch",
       "attr": "linkColourHover",
       "fields": {
-        "css_property": "color"
+        "css_property": "color",
+        "role": "color",
+        "css_element": "link",
+        "css_state": "hover"
       }
     },
     {
@@ -6273,6 +6279,7 @@
       "attr": "separatorColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "separator"
       }
     },
@@ -13163,6 +13170,7 @@
       "attr": "badgeBackgroundColour",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "badge"
       }
     },
@@ -13171,6 +13179,7 @@
       "attr": "badgeTextColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "badge"
       }
     },
@@ -13178,7 +13187,8 @@
       "slug": "sgs/wishlist-link",
       "attr": "iconColour",
       "fields": {
-        "css_property": "background-color",
+        "css_property": "color",
+        "role": "color",
         "css_element": "icon"
       }
     },
@@ -13186,7 +13196,8 @@
       "slug": "sgs/wishlist-link",
       "attr": "iconColourHover",
       "fields": {
-        "css_property": "background-color",
+        "css_property": "color",
+        "role": "color",
         "css_element": "icon",
         "css_state": "hover"
       }
@@ -13196,7 +13207,8 @@
       "attr": "buttonBackgroundColour",
       "fields": {
         "css_property": "background-color",
-        "css_element": "move-to-basket"
+        "role": "color",
+        "css_element": "button"
       }
     },
     {
@@ -13204,7 +13216,8 @@
       "attr": "buttonTextColour",
       "fields": {
         "css_property": "color",
-        "css_element": "move-to-basket"
+        "role": "color",
+        "css_element": "button"
       }
     },
     {
@@ -13229,6 +13242,7 @@
       "attr": "headingColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "heading"
       }
     },
@@ -13237,7 +13251,8 @@
       "attr": "itemNameColour",
       "fields": {
         "css_property": "color",
-        "css_element": "row-name"
+        "role": "color",
+        "css_element": "itemName"
       }
     },
     {
@@ -13245,7 +13260,8 @@
       "attr": "linkColour",
       "fields": {
         "css_property": "color",
-        "css_element": "remove"
+        "role": "color",
+        "css_element": "link"
       }
     },
     {
@@ -13253,7 +13269,8 @@
       "attr": "linkColourHover",
       "fields": {
         "css_property": "color",
-        "css_element": "remove",
+        "role": "color",
+        "css_element": "link",
         "css_state": "hover"
       }
     },
@@ -13262,7 +13279,8 @@
       "attr": "priceColour",
       "fields": {
         "css_property": "color",
-        "css_element": "row-price"
+        "role": "color",
+        "css_element": "price"
       }
     },
     {
@@ -13270,7 +13288,8 @@
       "attr": "stockColour",
       "fields": {
         "css_property": "color",
-        "css_element": "row-stock"
+        "role": "color",
+        "css_element": "stock"
       }
     },
     {
@@ -17349,6 +17368,23 @@
       "fields": {
         "css_property": "color-gradient",
         "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/language-switch",
+      "attr": "linkColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "link"
+      }
+    },
+    {
+      "slug": "sgs/language-switch",
+      "attr": "linkColourHoverGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "link",
         "css_state": "hover"
       }
     },
