@@ -134,7 +134,7 @@ Live reports: `reports/visual-diff/nav-bar-menu-*.md`, `nav-drawer-*.md`, `nav-d
 - STATUS: under way (`plans/2026-09-21-wave-3c-implementation-plan.md`). U-1, U-2, all of lane A (U-9+U-11, U-5,
   U-3+U-8, U-6+U-7, U-4, U-10+U-14, with its batched QA pass), all of lane C (U-12, U-15, U-17), U-13 and U-16 are
   closed. Open: Gate 3C below (its composed-header check with Bean).
-- U-16 exit criteria (live on sandybrown 2026-09-26, fixture `qa-item-markup-fixture.php entrance` on `/qa-entrance/`,
+- U-16 exit criteria (live report `reports/visual-diff/entrance-2026-09-26.md`, verdict PASS; sandybrown 2026-09-26, fixture `qa-item-markup-fixture.php entrance` on `/qa-entrance/`,
   restored to `two-bar`): the header's `fade-in` extra-slow rises from 0 to 1 over 713 to 761ms with no flash at
   375/768/1440; shrink (16px to 4px) and hide-on-scroll (slides away and back, pins) keep working; a dropdown opened
   mid-entrance lands where it settles; footer rows travel 50px to 0 about 100ms apart; a footer row with the stagger

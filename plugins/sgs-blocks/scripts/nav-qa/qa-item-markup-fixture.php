@@ -292,7 +292,7 @@ if ( 'entrance' === $case ) {
 			// The info-box's own default template children (edit.js::INFO_BOX_TEMPLATE): a heading and a text.
 			$attrs = array_merge( array( 'effectHover' => 'lift' ), $extra );
 			return '<!-- wp:sgs/info-box ' . serialize_block_attributes( $attrs ) . ' -->'
-				. '<!-- wp:sgs/heading ' . serialize_block_attributes( array( 'level' => 'h3', 'headingRole' => 'heading', 'content' => $heading ) ) . ' /-->'
+				. '<!-- wp:sgs/heading ' . serialize_block_attributes( array( 'level' => 'h2', 'headingRole' => 'heading', 'content' => $heading ) ) . ' /-->'
 				. '<!-- wp:sgs/text ' . serialize_block_attributes( array( 'text' => 'Entrance and hover on one card.' ) ) . ' /-->'
 				. '<!-- /wp:sgs/info-box -->';
 		};
