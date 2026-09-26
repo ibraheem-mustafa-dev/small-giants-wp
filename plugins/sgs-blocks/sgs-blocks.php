@@ -162,8 +162,35 @@ Turnstile::register();
 // Stores ONLY email + timestamp — no IP ever persisted.
 require_once SGS_BLOCKS_PATH . 'includes/class-stock-notify.php';
 Stock_Notify::register();
-require_once SGS_BLOCKS_PATH . 'includes/class-sgs-wishlist-rest.php';
-Sgs_Wishlist_Rest::register();
+// N8N webhook sender, and the Notify me list sent once when stock returns (FR-30-15).
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-webhook.php';
+require_once SGS_BLOCKS_PATH . 'includes/class-stock-notify-dispatch.php';
+Stock_Notify_Dispatch::register();
+// Two-tier wishlist (guest browser list + account user meta): REST, site
+// switches, alerts opt-in, share links, privacy tools and the alerts scan.
+require_once SGS_BLOCKS_PATH . 'includes/wishlist/class-wishlist-store.php';
+require_once SGS_BLOCKS_PATH . 'includes/wishlist/class-wishlist-settings.php';
+require_once SGS_BLOCKS_PATH . 'includes/wishlist/class-wishlist-rest.php';
+require_once SGS_BLOCKS_PATH . 'includes/wishlist/class-wishlist-account-rest.php';
+require_once SGS_BLOCKS_PATH . 'includes/wishlist/class-wishlist-shared-rest.php';
+require_once SGS_BLOCKS_PATH . 'includes/wishlist/class-wishlist-privacy.php';
+require_once SGS_BLOCKS_PATH . 'includes/wishlist/class-wishlist-alerts-scan.php';
+Wishlist_Settings::register();
+Wishlist_Rest::register();
+Wishlist_Account_Rest::register();
+Wishlist_Shared_Rest::register();
+Wishlist_Privacy::register();
+Wishlist_Alerts_Scan::register();
+// Customer account area (Spec 30 FR-30-14): the Saved items endpoint, the
+// sgs/account dashboard template and the account / Saved items pages.
+require_once SGS_BLOCKS_PATH . 'includes/account/helpers-account-defaults.php';
+require_once SGS_BLOCKS_PATH . 'includes/account/helpers-account-render-css.php';
+require_once SGS_BLOCKS_PATH . 'includes/account/class-account-endpoints.php';
+require_once SGS_BLOCKS_PATH . 'includes/account/class-account-dashboard.php';
+require_once SGS_BLOCKS_PATH . 'includes/account/class-account-pages.php';
+Account_Endpoints::register();
+Account_Dashboard::register();
+Account_Pages::register();
 // Lottie media type (Spec 38 §1.2a Tier H, D1151): the upload validator for
 // .json animation files and the shared render helper.
 require_once SGS_BLOCKS_PATH . 'includes/lottie-upload.php';

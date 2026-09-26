@@ -164,3 +164,178 @@
 	text-decoration: underline;
 	cursor: pointer;
 }
+
+/* ── FR-30-14/15: heading row, count, "View all" (strip) ── */
+
+.sgs-wishlist-panel__bar-top {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.5rem;
+}
+
+.sgs-wishlist-panel__count {
+	margin-left: 0.35em;
+	font-weight: 400;
+}
+
+.sgs-wishlist-panel__view-all {
+	min-height: 44px;
+	display: inline-flex;
+	align-items: center;
+}
+
+/* ── List layout ── */
+
+.sgs-wishlist-panel--list .sgs-wishlist-panel__items {
+	display: flex;
+	flex-direction: column;
+	gap: var(--sgs-wishlist-panel-gap);
+}
+
+.sgs-wishlist-panel--list .sgs-wishlist-panel__row {
+	flex-direction: row;
+	align-items: center;
+}
+
+.sgs-wishlist-panel--list .sgs-wishlist-panel__row-thumb {
+	width: 5rem;
+	flex-shrink: 0;
+}
+
+.sgs-wishlist-panel--list .sgs-wishlist-panel__row-info {
+	flex: 1;
+}
+
+.sgs-wishlist-panel--list .sgs-wishlist-panel__row-actions {
+	flex-shrink: 0;
+}
+
+/* ── Strip layout — a horizontally scrolling rail of compact cards ── */
+
+.sgs-wishlist-panel--strip .sgs-wishlist-panel__items {
+	display: grid;
+	grid-auto-flow: column;
+	grid-auto-columns: minmax(11rem, 14rem);
+	gap: var(--sgs-wishlist-panel-gap);
+	overflow-x: auto;
+	scroll-snap-type: x mandatory;
+	padding-bottom: 0.25rem;
+}
+
+.sgs-wishlist-panel--strip .sgs-wishlist-panel__row {
+	scroll-snap-align: start;
+}
+
+/* ── Price-drop line and date saved ── */
+
+.sgs-wishlist-panel__row-price-drop {
+	font-size: 0.9em;
+}
+
+.sgs-wishlist-panel__row-date {
+	font-size: 0.85em;
+	opacity: 0.75;
+}
+
+/* ── Stock chip — a coloured pill, not just coloured text (default
+   background so the chip reads even before a client sets a colour) ── */
+
+.sgs-wishlist-panel__row-stock {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.15rem 0.6rem;
+	border-radius: 999px;
+	background-color: var(--wp--preset--color--surface-alt, #eee);
+	font-size: 0.85em;
+	width: fit-content;
+}
+
+/* ── Sort control ── */
+
+.sgs-wishlist-panel__sort {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.sgs-wishlist-panel__sort select {
+	min-height: 44px;
+}
+
+/* ── Guest prompt and the logged-in alerts/share bar ── */
+
+.sgs-wishlist-panel__guest-prompt,
+.sgs-wishlist-panel__bar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 1rem;
+	padding: 0.75rem 1rem;
+	margin-bottom: 1rem;
+	border-radius: var(--wp--preset--spacing--10, 4px);
+	background-color: var(--wp--preset--color--surface-alt, #f5f5f5);
+}
+
+.sgs-wishlist-panel__guest-prompt p {
+	margin: 0;
+}
+
+.sgs-wishlist-panel__guest-prompt .wp-element-button,
+.sgs-wishlist-panel__share-toggle,
+.sgs-wishlist-panel__share-controls button {
+	min-height: 44px;
+	padding: 0 1rem;
+}
+
+.sgs-wishlist-panel__alert-row {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.sgs-wishlist-panel__privacy-link {
+	font-size: 0.85em;
+}
+
+.sgs-wishlist-panel__share {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.sgs-wishlist-panel__share-controls {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.sgs-wishlist-panel__share-field {
+	min-height: 44px;
+	padding: 0 0.75rem;
+	min-width: 12rem;
+	background-color: var(--wp--preset--color--surface, #fff);
+}
+
+.sgs-wishlist-panel__share-toggle:focus-visible,
+.sgs-wishlist-panel__share-controls button:focus-visible,
+.sgs-wishlist-panel__sort select:focus-visible,
+.sgs-wishlist-panel__view-all:focus-visible,
+.sgs-wishlist-panel__guest-prompt .wp-element-button:focus-visible,
+.sgs-wishlist-panel__add-to-mine:focus-visible {
+	outline: 2px solid var(--wp--preset--color--accent, #1e6091);
+	outline-offset: 2px;
+}
+
+/* ── Shared-list "Save to my list" action ── */
+
+.sgs-wishlist-panel__add-to-mine {
+	min-height: 44px;
+	padding: 0 1rem;
+	background: transparent;
+	border: 1px solid var(--wp--preset--color--border, #ddd);
+	cursor: pointer;
+}

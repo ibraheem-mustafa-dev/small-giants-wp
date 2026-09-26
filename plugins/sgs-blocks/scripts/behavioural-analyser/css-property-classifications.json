@@ -13284,15 +13284,6 @@
       }
     },
     {
-      "slug": "sgs/wishlist-panel",
-      "attr": "stockColour",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_element": "stock"
-      }
-    },
-    {
       "slug": "sgs/accordion",
       "attr": "borderColourGradient",
       "fields": {
@@ -13613,6 +13604,131 @@
         "css_property": "background-image",
         "css_element": "wrapper",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "cardBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "cardBox"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "cardBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "cardBox"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "cardBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "cardBox"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "cardBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "cardBox"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "chipBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "chip"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "chipTextColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "chip"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headingColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "heading"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "menuActiveBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "menuActive"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "menuActiveIndicatorColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "menuIndicator"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "menuActiveTextColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "menuActive"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "menuTextColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "menuLink"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "menuTextColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "menuLink",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "trackColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "track"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "trackDoneColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "trackDone"
       }
     },
     {
@@ -24187,6 +24303,60 @@
       "fields": {
         "css_property": "padding",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/wishlist-panel",
+      "attr": "barBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "bar"
+      }
+    },
+    {
+      "slug": "sgs/wishlist-panel",
+      "attr": "priceDropColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "priceDrop"
+      }
+    },
+    {
+      "slug": "sgs/wishlist-panel",
+      "attr": "shareFieldBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "shareField"
+      }
+    },
+    {
+      "slug": "sgs/wishlist-panel",
+      "attr": "shareFieldTextColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "shareField"
+      }
+    },
+    {
+      "slug": "sgs/wishlist-panel",
+      "attr": "stockChipBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "stockChip"
+      }
+    },
+    {
+      "slug": "sgs/wishlist-panel",
+      "attr": "stockChipTextColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "stockChip"
       }
     },
     {

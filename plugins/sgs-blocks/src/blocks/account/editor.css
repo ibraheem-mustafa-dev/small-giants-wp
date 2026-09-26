@@ -1,0 +1,12 @@
+/**
+ * sgs/account — editor-only styles.
+ *
+ * The editor shows a ServerSideRender preview (see edit.js); this file only
+ * styles the WooCommerce-missing notice shown when WooCommerce is inactive.
+ */
+.sgs-account__editor-notice {
+	padding: var(--wp--preset--spacing--30, 1rem);
+	border: 1px dashed var(--wp--preset--color--border, #ccc);
+	border-radius: 4px;
+	color: var(--wp--preset--color--text, currentColor);
+}

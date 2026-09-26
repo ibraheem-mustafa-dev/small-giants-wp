@@ -565,7 +565,7 @@
     "sgs/local-time (timeZone, label, labelPosition, separator, hourCycle, showSeconds, showPeriod; U-12)",
     "sgs/language-switch (display inline/single-link/disclosure, labelStyle autonym/code/custom, languages; PHP intl for autonyms and BCP-47 lang/hreflang; U-12)",
     "sgs/store-selector (triggerPrefix, stores with flags, current store by host and longest path prefix; U-12)",
-    "sgs/wishlist-link + sgs/wishlist-panel + includes/class-sgs-wishlist-rest.php (two-tier wishlist, Save for later; U-12)",
+    "sgs/wishlist-link + sgs/wishlist-panel + includes/wishlist/ (two-tier wishlist, Save for later; U-12)",
     "sgs/theme-toggle + scripts/derive-dark-palette.py (automatic per-client dark palette; U-12)",
     "sgs/button::linkSource top|account (back-to-top, account/log-in; U-12)",
     "sgs/audio::playerStyle toggle (site-wide sound on/off; U-12)",

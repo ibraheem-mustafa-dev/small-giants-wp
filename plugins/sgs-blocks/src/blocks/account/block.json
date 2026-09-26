@@ -1,0 +1,458 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/account",
+	"version": "0.1.0",
+	"title": "SGS Account",
+	"category": "sgs-interactive",
+	"description": "Wraps WooCommerce's My Account page: styled sidebar/tabs menu, a dashboard with a latest-order status card and quick-links, and side-by-side/stacked logged-out log-in and register cards (Spec 30 FR-30-14).",
+	"keywords": [
+		"account",
+		"my account",
+		"woocommerce",
+		"dashboard"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "admin-users",
+	"supports": {
+		"align": [
+			"wide",
+			"full"
+		],
+		"anchor": true,
+		"html": false,
+		"color": {
+			"background": false,
+			"text": false
+		},
+		"sgs": {
+			"specRef": "30",
+			"elements": {
+				"menuLink": {
+					"label": "Menu links",
+					"order": 1,
+					"clusters": [
+						"text"
+					],
+					"prefix": "menu",
+					"attrMap": {
+						"css:color": "menuTextColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "menuTextColourHover"
+							}
+						}
+					}
+				},
+				"menuActive": {
+					"label": "Active menu item",
+					"order": 2,
+					"clusters": [
+						"text",
+						"fill"
+					],
+					"attrMap": {
+						"css:color": "menuActiveTextColour",
+						"css:background-color": "menuActiveBackgroundColour"
+					}
+				},
+				"menuIndicator": {
+					"label": "Active menu item bar",
+					"order": 3,
+					"clusters": [
+						"fill"
+					],
+					"attrMap": {
+						"css:background-color": "menuActiveIndicatorColour"
+					}
+				},
+				"heading": {
+					"label": "Headings",
+					"order": 4,
+					"clusters": [
+						"text"
+					],
+					"prefix": "heading",
+					"attrMap": {
+						"css:color": "headingColour"
+					}
+				},
+				"cardBox": {
+					"label": "Cards",
+					"order": 5,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"attrMap": {
+						"css:background-color": "cardBackgroundColour",
+						"css:border-color": "cardBorderColour",
+						"css:border-width": "cardBorderWidth",
+						"css:border-style": "cardBorderStyle"
+					}
+				},
+				"cardTitle": {
+					"label": "Card titles",
+					"order": 6,
+					"clusters": [
+						"text"
+					],
+					"prefix": "cardTitle",
+					"_note": "Card titles share the headings colour (headingColour); only their typography is separate."
+				},
+				"chip": {
+					"label": "Status chip",
+					"order": 7,
+					"clusters": [
+						"text",
+						"fill"
+					],
+					"attrMap": {
+						"css:color": "chipTextColour",
+						"css:background-color": "chipBackgroundColour"
+					}
+				},
+				"track": {
+					"label": "Progress track",
+					"order": 8,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:border-color": "trackColour"
+					}
+				},
+				"trackDone": {
+					"label": "Progress track (completed)",
+					"order": 9,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:border-color": "trackDoneColour"
+					}
+				}
+			}
+		}
+	},
+	"attributes": {
+		"navLayout": {
+			"type": "object",
+			"default": {}
+		},
+		"showMenuIcons": {
+			"type": "boolean",
+			"default": true
+		},
+		"navIcons": {
+			"type": "object",
+			"default": {}
+		},
+		"hiddenEndpoints": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "string"
+			}
+		},
+		"greeting": {
+			"type": "string",
+			"default": "Hello, {name}"
+		},
+		"showLatestOrder": {
+			"type": "boolean",
+			"default": true
+		},
+		"showQuickCards": {
+			"type": "boolean",
+			"default": true
+		},
+		"cardDescriptions": {
+			"type": "object",
+			"default": {}
+		},
+		"latestOrderHeading": {
+			"type": "string",
+			"default": "Your latest order"
+		},
+		"viewOrderLabel": {
+			"type": "string",
+			"default": "View order"
+		},
+		"parcelTrackingLabel": {
+			"type": "string",
+			"default": "Track parcel"
+		},
+		"noOrdersText": {
+			"type": "string",
+			"default": "You haven't placed an order yet."
+		},
+		"shopLinkLabel": {
+			"type": "string",
+			"default": "Start shopping"
+		},
+		"authLayout": {
+			"type": "string",
+			"default": "side-by-side"
+		},
+		"showOrderTracking": {
+			"type": "boolean",
+			"default": false
+		},
+		"orderTrackingHeading": {
+			"type": "string",
+			"default": "Track an order"
+		},
+		"showGuestLine": {
+			"type": "boolean",
+			"default": true
+		},
+		"guestLineText": {
+			"type": "string",
+			"default": "No account? You can check out as a guest."
+		},
+		"statusStepLabels": {
+			"type": "object",
+			"default": {}
+		},
+		"menuTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"menuTextColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"menuActiveTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"menuActiveIndicatorColour": {
+			"type": "string",
+			"default": ""
+		},
+		"menuActiveBackgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"cardBackgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"cardBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"cardBorderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"cardBorderStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"headingColour": {
+			"type": "string",
+			"default": ""
+		},
+		"chipBackgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"chipTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"trackColour": {
+			"type": "string",
+			"default": ""
+		},
+		"trackDoneColour": {
+			"type": "string",
+			"default": ""
+		},
+		"menuFontSize": {
+			"type": "number"
+		},
+		"menuFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"menuFontSizeTablet": {
+			"type": "number"
+		},
+		"menuFontSizeMobile": {
+			"type": "number"
+		},
+		"menuFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"menuFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"menuFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"menuLineHeight": {
+			"type": "number"
+		},
+		"menuLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"menuLetterSpacing": {
+			"type": "number"
+		},
+		"menuLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"menuTextTransform": {
+			"type": "string",
+			"default": ""
+		},
+		"menuTextDecoration": {
+			"type": "string",
+			"default": ""
+		},
+		"menuTextAlign": {
+			"type": "string",
+			"default": ""
+		},
+		"menuTextWrap": {
+			"type": "string",
+			"default": ""
+		},
+		"headingFontSize": {
+			"type": "number"
+		},
+		"headingFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"headingFontSizeTablet": {
+			"type": "number"
+		},
+		"headingFontSizeMobile": {
+			"type": "number"
+		},
+		"headingFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"headingFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"headingFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"headingLineHeight": {
+			"type": "number"
+		},
+		"headingLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"headingLetterSpacing": {
+			"type": "number"
+		},
+		"headingLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"headingTextTransform": {
+			"type": "string",
+			"default": ""
+		},
+		"headingTextDecoration": {
+			"type": "string",
+			"default": ""
+		},
+		"headingTextAlign": {
+			"type": "string",
+			"default": ""
+		},
+		"headingTextWrap": {
+			"type": "string",
+			"default": ""
+		},
+		"cardTitleFontSize": {
+			"type": "number"
+		},
+		"cardTitleFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"cardTitleFontSizeTablet": {
+			"type": "number"
+		},
+		"cardTitleFontSizeMobile": {
+			"type": "number"
+		},
+		"cardTitleFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"cardTitleFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"cardTitleFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"cardTitleLineHeight": {
+			"type": "number"
+		},
+		"cardTitleLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"cardTitleLetterSpacing": {
+			"type": "number"
+		},
+		"cardTitleLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"cardTitleTextTransform": {
+			"type": "string",
+			"default": ""
+		},
+		"cardTitleTextDecoration": {
+			"type": "string",
+			"default": ""
+		},
+		"cardTitleTextAlign": {
+			"type": "string",
+			"default": ""
+		},
+		"cardTitleTextWrap": {
+			"type": "string",
+			"default": ""
+		},
+		"navWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"gap": {
+			"type": "object",
+			"default": {}
+		},
+		"contentMaxWidth": {
+			"type": "object",
+			"default": {}
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style.css",
+	"render": "file:./render.php"
+}

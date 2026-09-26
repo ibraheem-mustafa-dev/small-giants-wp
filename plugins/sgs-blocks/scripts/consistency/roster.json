@@ -2,7 +2,7 @@
   "_meta": {
     "purpose": "Spec 35 UNIT A0 roster \u2014 the audit denominator. DB-first, regenerate after /sgs-update.",
     "source": "sgs-framework.db blocks(source=sgs,status=built,is_stale=0)",
-    "count": 94,
+    "count": 95,
     "generator": "scripts/consistency/build-roster.py"
   },
   "blocks": [
@@ -58,6 +58,25 @@
           "spacing",
           "typography"
         ]
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "title": "SGS Account",
+      "category": "sgs-interactive",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": true,
+        "media": false,
+        "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 21,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -160,7 +179,7 @@
         "animation": true
       },
       "qualifies": {
-        "paintDeclarations": 12,
+        "paintDeclarations": 13,
         "replacedCoreSupports": []
       }
     },
@@ -179,7 +198,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 6,
+        "paintDeclarations": 7,
         "replacedCoreSupports": [
           "anchor",
           "border",
@@ -206,7 +225,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 50,
+        "paintDeclarations": 69,
         "replacedCoreSupports": []
       }
     },
@@ -263,7 +282,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 19,
+        "paintDeclarations": 63,
         "replacedCoreSupports": []
       }
     },
@@ -282,7 +301,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 10,
+        "paintDeclarations": 27,
         "replacedCoreSupports": []
       }
     },
@@ -301,7 +320,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 9,
+        "paintDeclarations": 8,
         "replacedCoreSupports": []
       }
     },
@@ -1234,7 +1253,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 13,
+        "paintDeclarations": 15,
         "replacedCoreSupports": []
       }
     },
@@ -1272,7 +1291,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 31,
+        "paintDeclarations": 34,
         "replacedCoreSupports": []
       }
     },
@@ -1931,7 +1950,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 7,
+        "paintDeclarations": 9,
         "replacedCoreSupports": []
       }
     }

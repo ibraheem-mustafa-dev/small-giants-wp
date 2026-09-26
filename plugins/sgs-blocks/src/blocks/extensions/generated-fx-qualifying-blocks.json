@@ -1,4 +1,14 @@
 {
+	"sgs/account": [
+		"carousel-loop",
+		"draggable",
+		"lottie",
+		"magnet",
+		"morph",
+		"motion-path",
+		"particles",
+		"scrub"
+	],
 	"sgs/before-after": [
 		"carousel-loop",
 		"draggable",
@@ -374,5 +384,15 @@
 		"scramble",
 		"scrub",
 		"split-reveal"
+	],
+	"sgs/wishlist-panel": [
+		"carousel-loop",
+		"draggable",
+		"lottie",
+		"magnet",
+		"morph",
+		"motion-path",
+		"particles",
+		"scrub"
 	]
 }

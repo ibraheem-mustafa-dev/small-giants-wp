@@ -1,9 +1,14 @@
 /**
  * SGS Wishlist Panel — row HTML template.
  *
+ * Builds one saved-item row for every layout (grid/list/strip) and both the
+ * visitor's own list and the read-only shared-list view (`shared-view.js`).
+ *
  * @package
  */
 import { formatMoney } from './api';
+import { priceDropLine } from './price-drop';
+import { formatSavedDate } from './labels';
 
 /**
  * Escape a string for safe insertion into HTML, including inside a quoted
@@ -35,26 +40,107 @@ function plainText( html ) {
 }
 
 /**
+ * @param {Object} product Store API product.
+ * @return {boolean} Whether it is currently in stock.
+ */
+function isInStock( product ) {
+	return 'instock' === product.is_in_stock || true === product.is_in_stock;
+}
+
+/**
+ * The primary action for a product row (Move to basket / Choose options /
+ * Notify me for the visitor's own list; Move to basket / Choose options /
+ * Add to my list, never Notify me, on a read-only shared row).
+ *
+ * @param {Object}  product Store API product.
+ * @param {Object}  labels  `labels.js::readPanelData()` output.
+ * @param {boolean} shared  Whether this is a read-only shared-list row.
+ * @return {string} Action markup.
+ */
+function actionHtml( product, labels, shared ) {
+	const id = Number( product.id ) || 0;
+	const permalink = escapeHtml( product.permalink || '#' );
+	const hasOptions = !! product.has_options;
+	const chooseOptionsUrl = escapeHtml( product.add_to_cart?.url || permalink );
+	const chooseOptionsText = escapeHtml( product.add_to_cart?.text || 'Choose options' );
+
+	if ( ! isInStock( product ) && ! shared ) {
+		return (
+			`<button type="button" class="sgs-wishlist-panel__notify-toggle" data-product-id="${ id }" aria-expanded="false">${ escapeHtml(
+				labels.notifyLabel
+			) }</button><div class="sgs-wishlist-panel__notify-form" data-product-id="${ id }" hidden></div>`
+		);
+	}
+
+	// Variable products refuse a Store API add-to-cart call with no
+	// variation chosen ("Missing attributes for variable product", 400) —
+	// `has_options` is the Store API's own signal a selection is needed
+	// first; send those shoppers to the product page instead of a one-click
+	// add that is guaranteed to fail.
+	const primary = hasOptions
+		? `<a class="sgs-wishlist-panel__choose-options wp-element-button" href="${ chooseOptionsUrl }" data-product-id="${ id }">${ chooseOptionsText }</a>`
+		: `<button type="button" class="sgs-wishlist-panel__move-to-basket wp-element-button" data-product-id="${ id }">${ escapeHtml(
+				labels.moveLabel
+		  ) }</button>`;
+
+	if ( ! shared ) {
+		return primary;
+	}
+
+	return (
+		primary +
+		`<button type="button" class="sgs-wishlist-panel__add-to-mine" data-product-id="${ id }">${ escapeHtml(
+			labels.addToMineLabel
+		) }</button>`
+	);
+}
+
+/**
  * Build one saved-item row's markup.
  *
- * @param {Object}  product     A Store API product.
+ * @param {Object}  product       A Store API product.
  * @param {Object}  options
- * @param {boolean} options.showPrice Whether to render the price.
- * @param {boolean} options.showStock Whether to render the stock line.
+ * @param {boolean} options.showPrice     Whether to render the price.
+ * @param {boolean} options.showStock     Whether to render the stock line.
+ * @param {boolean} options.showDateSaved Whether to render "Saved {date}" (grid/list only).
+ * @param {boolean} options.showPriceDrop Whether to render the price-drop line (grid/list only).
+ * @param {boolean} options.shared        Read-only shared-list row (no dates, no drop, no Remove).
+ * @param {Object}  options.labels        `labels.js::readPanelData()` output.
+ * @param {Object}  [options.savedPrice]  This item's `getSavedPrices()` record.
  * @return {string} The row's HTML.
  */
-export function wishlistRowHtml( product, { showPrice, showStock } ) {
+export function wishlistRowHtml( product, options ) {
+	const { showPrice, showStock, showDateSaved, showPriceDrop, shared, labels, savedPrice } = options;
 	const id = Number( product.id ) || 0;
 	const name = escapeHtml( plainText( product.name ) );
 	const permalink = escapeHtml( product.permalink || '#' );
 	const thumb = product.images?.[ 0 ]?.thumbnail || product.images?.[ 0 ]?.src || '';
-	const inStock = 'instock' === product.is_in_stock || true === product.is_in_stock;
+
 	const priceHtml =
 		showPrice && product.prices
 			? `<span class="sgs-wishlist-panel__row-price">${ escapeHtml(
 					formatMoney( product.prices.price, product.prices )
 			  ) }</span>`
 			: '';
+
+	const dropText =
+		! shared && showPriceDrop && savedPrice
+			? priceDropLine( labels.priceDropText, savedPrice, product.prices, formatMoney )
+			: '';
+	const priceDropHtml = dropText
+		? `<span class="sgs-wishlist-panel__row-price-drop">${ escapeHtml( dropText ) }</span>`
+		: '';
+
+	const dateText =
+		! shared && showDateSaved && savedPrice?.addedTs
+			? String( labels.dateSavedText || '' ).replace(
+					'{date}',
+					formatSavedDate( savedPrice.addedTs )
+			  )
+			: '';
+	const dateHtml = dateText
+		? `<span class="sgs-wishlist-panel__row-date">${ escapeHtml( dateText ) }</span>`
+		: '';
 
 	const thumbHtml = thumb
 		? `<img class="sgs-wishlist-panel__row-thumb sgs-media-el" src="${ escapeHtml(
@@ -63,35 +149,15 @@ export function wishlistRowHtml( product, { showPrice, showStock } ) {
 		: '<span class="sgs-wishlist-panel__row-thumb sgs-wishlist-panel__row-thumb--placeholder" aria-hidden="true"></span>';
 
 	const stockHtml =
-		showStock && ! inStock
-			? `<span class="sgs-wishlist-panel__row-stock">${ escapeHtml( 'Out of stock' ) }</span>`
+		showStock && ! isInStock( product )
+			? `<span class="sgs-wishlist-panel__row-stock">${ escapeHtml( labels.outOfStockLabel ) }</span>`
 			: '';
 
-	// Variable products (all three canary test products) refuse the Store
-	// API's add-to-cart call with "Missing attributes for variable product"
-	// (400) when no variation is chosen — `has_options` is the Store API's
-	// own signal that a product needs a selection first (colour/size/etc.).
-	// Send those shoppers to the product page (`add_to_cart.url`, its own
-	// permalink) to choose options instead of attempting a basket add that
-	// is guaranteed to fail; only an option-free (simple) product gets the
-	// one-click Move to basket button.
-	const hasOptions = !! product.has_options;
-	const chooseOptionsUrl = escapeHtml( product.add_to_cart?.url || permalink );
-	const chooseOptionsText = escapeHtml( product.add_to_cart?.text || 'Choose options' );
-
-	const actionHtml = ! inStock
-		? `<button type="button" class="sgs-wishlist-panel__notify-toggle" data-product-id="${ id }" aria-expanded="false">${ escapeHtml(
-				'Notify me'
-		  ) }</button><div class="sgs-wishlist-panel__notify-form" data-product-id="${ id }" hidden></div>`
-		: hasOptions
-		? `<a class="sgs-wishlist-panel__choose-options wp-element-button" href="${ chooseOptionsUrl }" data-product-id="${ id }">${ chooseOptionsText }</a>`
-		: `<button type="button" class="sgs-wishlist-panel__move-to-basket wp-element-button" data-product-id="${ id }">${ escapeHtml(
-				'Move to basket'
-		  ) }</button>`;
-
-	const removeHtml = `<button type="button" class="sgs-wishlist-panel__remove" data-product-id="${ id }" aria-label="${ escapeHtml(
-		'Remove ' + plainText( product.name ) + ' from your wishlist'
-	) }">${ escapeHtml( 'Remove' ) }</button>`;
+	const removeHtml = shared
+		? ''
+		: `<button type="button" class="sgs-wishlist-panel__remove" data-product-id="${ id }" aria-label="${ escapeHtml(
+				labels.removeLabel + ' ' + plainText( product.name )
+		  ) }">${ escapeHtml( labels.removeLabel ) }</button>`;
 
 	return (
 		`<div class="sgs-wishlist-panel__row" data-product-id="${ id }">` +
@@ -105,10 +171,12 @@ export function wishlistRowHtml( product, { showPrice, showStock } ) {
 		'<div class="sgs-wishlist-panel__row-info">' +
 		`<a class="sgs-wishlist-panel__row-name" href="${ permalink }">${ name }</a>` +
 		priceHtml +
+		priceDropHtml +
 		stockHtml +
+		dateHtml +
 		'</div>' +
 		'<div class="sgs-wishlist-panel__row-actions">' +
-		actionHtml +
+		actionHtml( product, labels, !! shared ) +
 		removeHtml +
 		'</div>' +
 		'</div>'

@@ -5,7 +5,7 @@
  * (`includes/class-stock-notify.php`) with its full consent step — the
  * wishlist panel does not duplicate that endpoint's validation, it just
  * supplies the form. Reuses the `wp_rest` nonce
- * `includes/class-sgs-wishlist-rest.php::enqueue_client_config()` already
+ * `includes/wishlist/class-wishlist-rest.php::Wishlist_Rest::enqueue_client_config()` already
  * exposes on `window.sgsWishlistData.nonce` (Stock_Notify's own
  * `permission_callback` is `__return_true`, but its handler still verifies
  * `X-WP-Nonce` itself — see that file's Step 1).
@@ -24,25 +24,31 @@ function restRoot() {
 }
 
 /**
- * Build the notify-me form's markup.
+ * Build the notify-me form's markup. Every visible string is a block
+ * attribute (`labels.js::readPanelData()`), never hard-coded here.
  *
  * @param {number} productId Product id.
+ * @param {Object} labels    `labels.js::readPanelData()` output.
  * @return {string} Form HTML.
  */
-function formHtml( productId ) {
+function formHtml( productId, labels ) {
 	const emailId = `sgs-wishlist-notify-email-${ productId }`;
 	const consentId = `sgs-wishlist-notify-consent-${ productId }`;
+	const privacyLink = labels.privacyUrl
+		? ` <a class="sgs-wishlist-panel__privacy-link" href="${ escapeHtml(
+				labels.privacyUrl
+		  ) }">${ escapeHtml( labels.privacyLinkLabel ) }</a>`
+		: '';
 	return (
 		'<form class="sgs-wishlist-panel__notify-inner">' +
-		`<label for="${ emailId }">${ escapeHtml( 'Your email' ) }</label>` +
+		`<label for="${ emailId }">${ escapeHtml( labels.notifyEmailLabel ) }</label>` +
 		`<input type="email" id="${ emailId }" name="email" required autocomplete="email" />` +
 		'<div class="sgs-wishlist-panel__notify-consent">' +
 		`<input type="checkbox" id="${ consentId }" name="consent" required />` +
-		`<label for="${ consentId }">${ escapeHtml(
-			'Email me when this item is back in stock.'
-		) }</label>` +
+		`<label for="${ consentId }">${ escapeHtml( labels.notifyConsentText ) }</label>` +
+		privacyLink +
 		'</div>' +
-		`<button type="submit">${ escapeHtml( 'Notify me' ) }</button>` +
+		`<button type="submit">${ escapeHtml( labels.notifyLabel ) }</button>` +
 		'<p class="sgs-wishlist-panel__notify-message" role="status" aria-live="polite"></p>' +
 		'</form>'
 	);
@@ -53,10 +59,11 @@ function formHtml( productId ) {
  *
  * @param {HTMLElement} container The `.sgs-wishlist-panel__notify-form` element.
  * @param {number}      productId Product id.
+ * @param {Object}      labels    `labels.js::readPanelData()` output.
  */
-export function mountNotifyForm( container, productId ) {
+export function mountNotifyForm( container, productId, labels ) {
 	if ( ! container.dataset.sgsMounted ) {
-		container.innerHTML = formHtml( productId ); // Built from escapeHtml()'d static strings + a numeric id only.
+		container.innerHTML = formHtml( productId, labels ); // Built from escapeHtml()'d strings + a numeric id only.
 		container.dataset.sgsMounted = '1';
 
 		const form = container.querySelector( 'form' );
@@ -82,16 +89,15 @@ export function mountNotifyForm( container, productId ) {
 				} );
 				const json = await response.json().catch( () => null );
 				if ( response.ok ) {
-					messageEl.textContent = 'You’ll get an email when this is back in stock.';
+					messageEl.textContent = labels.notifySuccessText;
 					form.querySelector( 'button[type="submit"]' ).hidden = true;
 					form.querySelector( 'input[name="email"]' ).disabled = true;
 					form.querySelector( 'input[name="consent"]' ).disabled = true;
 				} else {
-					messageEl.textContent =
-						json?.message || 'Could not save your request. Please try again.';
+					messageEl.textContent = json?.message || labels.errorText;
 				}
 			} catch {
-				messageEl.textContent = 'Could not save your request. Please try again.';
+				messageEl.textContent = labels.errorText;
 			} finally {
 				submitButton.disabled = false;
 			}

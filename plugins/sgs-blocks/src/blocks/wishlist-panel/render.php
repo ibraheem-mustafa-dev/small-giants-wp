@@ -11,12 +11,21 @@
  * `sgs/cart`'s "always render 0" trick — this block simply never emits item
  * markup server-side; `aria-busy` covers the no-JS/loading gap.
  *
+ * Every visible label/text is a block attribute (never hard-coded in
+ * `view.js`) — resolved by `render-labels.php` into one data-* attribute map
+ * on the root element. URLs (Saved items page, sign-in, shop) are resolved
+ * by `render-urls.php`; the new elements' colours by `render-colours.php`.
+ * `layout` (grid/list/strip) becomes a root modifier class; the client reads
+ * it (`view.js`) to pick its row/bar templates.
+ *
  * NO-INLINE (Spec 32): zero inline style property declarations; colours/
  * tiers are a scoped `<style>` block built from $scoped_css.
  *
- * BEM: .sgs-wishlist-panel (root) / __heading / __status / __items /
- * __empty / __row / __row-thumb / __row-info / __row-name / __row-price /
- * __row-stock / __row-actions / __move-to-basket / __remove / __notify-form.
+ * BEM: .sgs-wishlist-panel (root, --list/--strip modifiers) / __heading /
+ * __count / __status / __items / __empty / __row / __row-thumb /
+ * __row-info / __row-name / __row-price / __row-price-drop / __row-stock /
+ * __row-date / __row-actions / __move-to-basket / __remove /
+ * __notify-form / __guest-prompt / __bar / __share-field / __view-all.
  *
  * @var array     $attributes Block attributes.
  * @var string    $content    Unused — no InnerBlocks.
@@ -29,6 +38,9 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
+require_once __DIR__ . '/render-urls.php';
+require_once __DIR__ . '/render-labels.php';
+require_once __DIR__ . '/render-colours.php';
 
 $heading          = sanitize_text_field( (string) ( $attributes['heading'] ?? __( 'Saved for later', 'sgs-blocks' ) ) );
 $empty_text       = sanitize_text_field( (string) ( $attributes['emptyText'] ?? __( 'Your wishlist is empty.', 'sgs-blocks' ) ) );
@@ -36,10 +48,21 @@ $empty_link_label = sanitize_text_field( (string) ( $attributes['emptyLinkLabel'
 $show_when_empty  = ! empty( $attributes['showWhenEmpty'] );
 $show_price       = ! empty( $attributes['showPrice'] );
 $show_stock       = ! empty( $attributes['showStock'] );
+$show_count       = ! empty( $attributes['showCount'] );
+$show_sort        = ! empty( $attributes['showSort'] );
+$show_date_saved  = ! empty( $attributes['showDateSaved'] );
+$show_price_drop  = ! empty( $attributes['showPriceDrop'] );
+$show_guest_promo = ! empty( $attributes['showGuestPrompt'] );
 
-$shop_url = ( class_exists( 'WooCommerce' ) && function_exists( 'wc_get_page_permalink' ) )
-	? wc_get_page_permalink( 'shop' )
-	: home_url( '/' );
+$layout_raw = (string) ( $attributes['layout'] ?? 'grid' );
+$layout     = in_array( $layout_raw, array( 'grid', 'list', 'strip' ), true ) ? $layout_raw : 'grid';
+$max_items  = max( 0, absint( $attributes['maxItems'] ?? 0 ) );
+
+$shop_url        = sgs_wishlist_panel_shop_url();
+$view_all_url    = sgs_wishlist_panel_view_all_url( $attributes );
+$sign_in_url     = sgs_wishlist_panel_sign_in_url();
+$privacy_url     = function_exists( 'get_privacy_policy_url' ) ? get_privacy_policy_url() : '';
+$saved_items_url = sgs_wishlist_panel_saved_items_url();
 
 $uid      = 'sgs-wishlist-panel-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 $root_sel = '.' . $uid . '.wp-block-sgs-wishlist-panel';
@@ -65,7 +88,6 @@ if ( '' !== $item_name_colour ) {
 	$scoped_css[] = $root_sel . ' .sgs-wishlist-panel__row-name{color:var(--wp--preset--color--text);}';
 }
 $scoped_css[] = sgs_text_states_css( $root_sel . ' .sgs-wishlist-panel__row-price', $attributes, array( 'base' => 'priceColour' ) );
-$scoped_css[] = sgs_text_states_css( $root_sel . ' .sgs-wishlist-panel__row-stock', $attributes, array( 'base' => 'stockColour' ) );
 $scoped_css[] = sgs_fill_states_css( $root_sel . ' .sgs-wishlist-panel__move-to-basket', $attributes, array( 'base' => 'buttonBackgroundColour' ) );
 $scoped_css[] = sgs_text_states_css( $root_sel . ' .sgs-wishlist-panel__move-to-basket', $attributes, array( 'base' => 'buttonTextColour' ) );
 $scoped_css[] = sgs_text_states_css(
@@ -76,6 +98,7 @@ $scoped_css[] = sgs_text_states_css(
 		'hover' => 'linkColourHover',
 	)
 );
+$scoped_css   = array_merge( $scoped_css, sgs_wishlist_panel_new_element_css( $root_sel, $attributes ) );
 
 // Columns / gap — tier objects, custom properties consumed by style.css
 // (`.sgs-wishlist-panel__items{ grid-template-columns:repeat(var(--sgs-wishlist-panel-columns,3),1fr); gap:var(--sgs-wishlist-panel-gap,1rem); }`).
@@ -105,7 +128,40 @@ foreach ( array(
 	$scoped_css[] = $media ? $media . '{' . $rule . '}' : $rule;
 }
 
-$wrapper_attrs = get_block_wrapper_attributes( array( 'class' => 'sgs-wishlist-panel ' . $uid ) );
+$wrapper_attrs = get_block_wrapper_attributes(
+	array( 'class' => 'sgs-wishlist-panel sgs-wishlist-panel--' . $layout . ' ' . $uid )
+);
+
+$label_data = sgs_wishlist_panel_label_data( $attributes );
+
+$data_attrs = array(
+	'data-sgs-wishlist-panel' => null,
+	'data-layout'             => $layout,
+	'data-max-items'          => (string) $max_items,
+	'data-show-when-empty'    => $show_when_empty ? '1' : '0',
+	'data-show-price'         => $show_price ? '1' : '0',
+	'data-show-stock'         => $show_stock ? '1' : '0',
+	'data-show-count'         => $show_count ? '1' : '0',
+	'data-show-sort'          => $show_sort ? '1' : '0',
+	'data-show-date-saved'    => $show_date_saved ? '1' : '0',
+	'data-show-price-drop'    => $show_price_drop ? '1' : '0',
+	'data-show-guest-prompt'  => $show_guest_promo ? '1' : '0',
+	'data-empty-text'         => $empty_text,
+	'data-empty-link-label'   => $empty_link_label,
+	'data-shop-url'           => $shop_url,
+	'data-view-all-url'       => $view_all_url,
+	'data-sign-in-url'        => $sign_in_url,
+	'data-privacy-url'        => $privacy_url,
+	'data-saved-items-url'    => $saved_items_url,
+);
+foreach ( $label_data as $key => $value ) {
+	$data_attrs[ 'data-' . $key ] = $value;
+}
+
+$attrs_html = '';
+foreach ( $data_attrs as $name => $value ) {
+	$attrs_html .= null === $value ? ' ' . esc_attr( $name ) : ' ' . esc_attr( $name ) . '="' . esc_attr( $value ) . '"';
+}
 
 ?>
 <?php if ( $scoped_css ) : ?>
@@ -113,8 +169,12 @@ $wrapper_attrs = get_block_wrapper_attributes( array( 'class' => 'sgs-wishlist-p
 	<?php echo wp_strip_all_tags( implode( '', array_filter( $scoped_css ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 </style>
 <?php endif; ?>
-<div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-sanitised. ?> data-sgs-wishlist-panel data-show-when-empty="<?php echo $show_when_empty ? '1' : '0'; ?>" data-show-price="<?php echo $show_price ? '1' : '0'; ?>" data-show-stock="<?php echo $show_stock ? '1' : '0'; ?>" data-empty-text="<?php echo esc_attr( $empty_text ); ?>" data-empty-link-label="<?php echo esc_attr( $empty_link_label ); ?>" data-shop-url="<?php echo esc_url( $shop_url ); ?>" hidden>
-	<h2 class="sgs-wishlist-panel__heading"><?php echo esc_html( $heading ); ?></h2>
+<div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-sanitised. ?><?php echo $attrs_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every value above is esc_attr()'d in the loop. ?> hidden>
+	<div class="sgs-wishlist-panel__bar-top">
+		<h2 class="sgs-wishlist-panel__heading"><?php echo esc_html( $heading ); ?><span class="sgs-wishlist-panel__count" data-sgs-wishlist-count hidden></span></h2>
+		<a class="sgs-wishlist-panel__view-all" href="<?php echo esc_url( $view_all_url ); ?>" data-sgs-wishlist-view-all hidden></a>
+	</div>
 	<p class="sgs-wishlist-panel__status" role="status" aria-live="polite" aria-atomic="true" data-sgs-wishlist-status></p>
+	<div class="sgs-wishlist-panel__bars" data-sgs-wishlist-bars></div>
 	<div class="sgs-wishlist-panel__items" data-sgs-wishlist-items aria-busy="true"></div>
 </div>

@@ -76,7 +76,7 @@ export function findCartItemForRow( rowHref, cartItems ) {
 /**
  * Resolve the product id to save to the wishlist for a Store API cart item.
  * A variation's `id` is the variation post id (type `product_variation`,
- * which `Sgs_Wishlist_Rest::product_is_valid()` rejects) — the wishlist
+ * which `includes/wishlist/class-wishlist-store.php::Wishlist_Store::product_is_valid()` rejects) — the wishlist
  * always wants the PARENT product id.
  *
  * @param {Object} item A Store API cart item.

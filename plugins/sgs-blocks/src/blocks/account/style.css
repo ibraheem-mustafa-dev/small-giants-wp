@@ -1,0 +1,381 @@
+/**
+ * sgs/account — frontend + editor styles.
+ *
+ * Layout: `.sgs-account` is an inline-size container; the sidebar/tabs menu
+ * layout is switched per tier via `@container` queries reading the
+ * `sgs-account--{tier}-{sidebar|tabs}` modifier classes render.php sets from
+ * the `navLayout` tier-object attribute. Every colour/typography/spacing
+ * value is fed in through custom properties render.php's scoped `<style>`
+ * sets (Spec 32 — no inline `style=""`); every declaration below has a
+ * token-based fallback so an unset control still paints correctly.
+ */
+
+.sgs-account {
+	container-type: inline-size;
+	container-name: sgs-account;
+	max-width: var(--sgs-account-content-max-width, 100%);
+	margin-inline: auto;
+}
+
+/* -- WooCommerce's own notices ------------------------------------------ */
+.sgs-account .woocommerce-info,
+.sgs-account .woocommerce-message,
+.sgs-account .woocommerce-error,
+.sgs-account .woocommerce-NoticeGroup {
+	background: var(--wp--preset--color--surface-alt, #f5f5f5);
+	color: var(--wp--preset--color--text, currentColor);
+	border: 1px solid var(--wp--preset--color--border, #ddd);
+	border-radius: 6px;
+	padding: 1rem 1.25rem;
+	margin-block-end: 1rem;
+	list-style: none;
+}
+
+/* -- Menu (sidebar layout, desktop) -------------------------------------- */
+.sgs-account__wc {
+	display: block;
+}
+
+@container sgs-account (min-width: 1024px) {
+	.sgs-account--desktop-sidebar .sgs-account__wc:has(> nav.woocommerce-MyAccount-navigation) {
+		display: grid;
+		grid-template-columns: var(--sgs-account-menu-width, 240px) 1fr;
+		gap: var(--sgs-account-gap, 2.5rem);
+		align-items: start;
+	}
+	.sgs-account--desktop-sidebar .sgs-account__wc > nav.woocommerce-MyAccount-navigation {
+		position: sticky;
+		top: 1rem;
+	}
+}
+
+.sgs-account nav.woocommerce-MyAccount-navigation ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: var(--sgs-account-menu-item-gap, 0.25rem);
+}
+
+.sgs-account nav.woocommerce-MyAccount-navigation a {
+	display: flex;
+	align-items: center;
+	min-height: 44px;
+	padding: 0.5rem 0.75rem;
+	border-radius: 6px;
+	text-decoration: none;
+	color: var(--wp--preset--color--text, currentColor);
+	position: relative;
+}
+
+.sgs-account nav.woocommerce-MyAccount-navigation a:focus-visible {
+	outline: 2px solid var(--wp--preset--color--accent, currentColor);
+	outline-offset: 2px;
+}
+
+/* Active item — sidebar: an accent BAR (a ground, never a bare dot) plus
+   bold text, never colour alone. */
+.sgs-account--desktop-sidebar nav.woocommerce-MyAccount-navigation .woocommerce-MyAccount-navigation-link.is-active > a {
+	font-weight: 700;
+	color: var(--wp--preset--color--text);
+}
+
+.sgs-account--desktop-sidebar nav.woocommerce-MyAccount-navigation .woocommerce-MyAccount-navigation-link.is-active > a::after {
+	content: "";
+	position: absolute;
+	inset-inline-start: 0;
+	inset-block: 0.25rem;
+	width: 3px;
+	border-radius: 2px;
+	background: var(--wp--preset--color--accent);
+}
+
+/* -- Menu (tabs layout, tablet + mobile) ---------------------------------- */
+@container sgs-account (max-width: 1023px) {
+	.sgs-account--tablet-tabs nav.woocommerce-MyAccount-navigation ul,
+	.sgs-account--mobile-tabs nav.woocommerce-MyAccount-navigation ul {
+		flex-direction: row;
+		overflow-x: auto;
+		scroll-snap-type: x proximity;
+		padding: 0.25rem;
+		margin-inline: -0.25rem;
+		scrollbar-width: none;
+	}
+	.sgs-account--tablet-tabs nav.woocommerce-MyAccount-navigation ul::-webkit-scrollbar,
+	.sgs-account--mobile-tabs nav.woocommerce-MyAccount-navigation ul::-webkit-scrollbar {
+		display: none;
+	}
+	.sgs-account--tablet-tabs nav.woocommerce-MyAccount-navigation li,
+	.sgs-account--mobile-tabs nav.woocommerce-MyAccount-navigation li {
+		flex: 0 0 auto;
+		scroll-snap-align: start;
+	}
+	.sgs-account--tablet-tabs nav.woocommerce-MyAccount-navigation a,
+	.sgs-account--mobile-tabs nav.woocommerce-MyAccount-navigation a {
+		border-radius: 999px;
+		background: var(--wp--preset--color--surface-alt, #f0f0f0);
+		white-space: nowrap;
+	}
+	.sgs-account--tablet-tabs nav.woocommerce-MyAccount-navigation .woocommerce-MyAccount-navigation-link.is-active > a,
+	.sgs-account--mobile-tabs nav.woocommerce-MyAccount-navigation .woocommerce-MyAccount-navigation-link.is-active > a {
+		font-weight: 700;
+		background: var(--wp--preset--color--accent);
+		color: var(--wp--preset--color--text-inverse, #fff);
+	}
+}
+
+@container sgs-account (max-width: 767px) {
+	.sgs-account--mobile-tabs .sgs-account__wc {
+		display: block;
+	}
+}
+
+/* -- Cards (dashboard quick-cards, latest order, tracking, auth) --------- */
+.sgs-account__card {
+	background: var(--wp--preset--color--surface-alt, #f7f7f7);
+	border: 1px solid var(--wp--preset--color--border, #e2e2e2);
+	border-radius: 10px;
+	padding: 1.25rem;
+	margin-block-end: 1rem;
+}
+
+.sgs-account__card-title,
+.sgs-account__heading {
+	color: var(--wp--preset--color--text, currentColor);
+	margin: 0 0 0.5rem;
+}
+
+.sgs-account__quick-cards {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	gap: var(--sgs-account-gap, 1rem);
+}
+
+a.sgs-account__quick-card {
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+	text-decoration: none;
+	min-height: 44px;
+}
+
+a.sgs-account__quick-card:hover .sgs-account__card-title,
+a.sgs-account__quick-card:focus-visible .sgs-account__card-title {
+	filter: brightness(1.15);
+}
+
+.sgs-account__card-desc {
+	color: var(--wp--preset--color--text-muted, var(--wp--preset--color--text));
+	font-size: 0.9em;
+}
+
+/* -- Status chip ---------------------------------------------------------- */
+.sgs-account__chip {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.25rem 0.75rem;
+	border-radius: 999px;
+	background: var(--wp--preset--color--surface-alt, #eee);
+	color: var(--wp--preset--color--text, currentColor);
+	font-size: 0.85em;
+	font-weight: 600;
+}
+
+/* -- Order progress line --------------------------------------------------- */
+.sgs-account__progress {
+	display: flex;
+	list-style: none;
+	margin: 1rem 0;
+	padding: 0;
+	gap: 0.25rem;
+}
+
+.sgs-account__progress-step {
+	flex: 1;
+	text-align: center;
+	font-size: 0.8em;
+	padding-block-start: 0.75rem;
+	border-top: 3px solid var(--wp--preset--color--border, #ddd);
+}
+
+.sgs-account__progress-step--done {
+	border-top-color: var(--wp--preset--color--accent);
+	font-weight: 600;
+}
+
+.sgs-account__progress-step[aria-current="step"] {
+	text-decoration: underline;
+}
+
+.sgs-account__order-thumbs {
+	display: flex;
+	gap: 0.5rem;
+	margin-block: 0.5rem;
+}
+
+.sgs-account__order-thumbs img {
+	width: 48px;
+	height: 48px;
+	object-fit: cover;
+	border-radius: 6px;
+}
+
+.sgs-account__order-actions {
+	display: flex;
+	gap: 1rem;
+	flex-wrap: wrap;
+}
+
+.sgs-account__order-link {
+	min-height: 44px;
+	display: inline-flex;
+	align-items: center;
+}
+
+/* -- WooCommerce forms ------------------------------------------------------ */
+.sgs-account form .form-row label,
+.sgs-account form label {
+	color: var(--wp--preset--color--text, currentColor);
+}
+
+.sgs-account form input.input-text,
+.sgs-account form select,
+.sgs-account form textarea {
+	min-height: 44px;
+	border: 1px solid var(--wp--preset--color--border, #ccc);
+	border-radius: 6px;
+	padding: 0.5rem 0.75rem;
+	background: var(--wp--preset--color--surface, #fff);
+	color: var(--wp--preset--color--text, currentColor);
+	width: 100%;
+}
+
+.sgs-account form input.input-text:focus-visible,
+.sgs-account form select:focus-visible,
+.sgs-account form textarea:focus-visible {
+	outline: 2px solid var(--wp--preset--color--accent, currentColor);
+	outline-offset: 1px;
+}
+
+.sgs-account form button,
+.sgs-account form input[type="submit"] {
+	min-height: 44px;
+	min-width: 44px;
+}
+
+/* -- Addresses -------------------------------------------------------------- */
+.sgs-account .woocommerce-Addresses.u-columns.col2-set {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: var(--sgs-account-gap, 1.5rem);
+}
+
+@container sgs-account (min-width: 640px) {
+	.sgs-account .woocommerce-Addresses.u-columns.col2-set {
+		grid-template-columns: 1fr 1fr;
+	}
+}
+
+.sgs-account .woocommerce-Address {
+	background: var(--wp--preset--color--surface-alt, #f7f7f7);
+	border: 1px solid var(--wp--preset--color--border, #e2e2e2);
+	border-radius: 10px;
+	padding: 1.25rem;
+}
+
+/* -- Orders table -> cards under 768px container width --------------------- */
+.sgs-account table.woocommerce-orders-table.shop_table_responsive {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+:where(.sgs-account table.woocommerce-orders-table.shop_table_responsive) :where(th, td) {
+	text-align: start;
+}
+
+.sgs-account table.woocommerce-orders-table.shop_table_responsive th,
+.sgs-account table.woocommerce-orders-table.shop_table_responsive td {
+	padding: 0.75rem 0.5rem;
+	border-bottom: 1px solid var(--wp--preset--color--border, #e2e2e2);
+}
+
+@container sgs-account (max-width: 767px) {
+	.sgs-account table.woocommerce-orders-table.shop_table_responsive thead {
+		display: none;
+	}
+	.sgs-account table.woocommerce-orders-table.shop_table_responsive tr {
+		display: block;
+		background: var(--wp--preset--color--surface-alt, #f7f7f7);
+		border: 1px solid var(--wp--preset--color--border, #e2e2e2);
+		border-radius: 10px;
+		margin-block-end: 1rem;
+		padding: 0.5rem 1rem;
+	}
+	.sgs-account table.woocommerce-orders-table.shop_table_responsive td {
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+		border-bottom: 1px solid var(--wp--preset--color--border, #e2e2e2);
+	}
+	.sgs-account table.woocommerce-orders-table.shop_table_responsive td:last-child {
+		border-bottom: none;
+	}
+	.sgs-account table.woocommerce-orders-table.shop_table_responsive td::before {
+		content: attr(data-title);
+		font-weight: 600;
+		padding-inline-end: 1rem;
+	}
+}
+
+/* -- Logged-out: log in / register ------------------------------------------ */
+.sgs-account__wc > #customer_login.u-columns.col2-set {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1.5rem;
+	justify-content: center;
+}
+
+.sgs-account[data-auth-layout="stacked"] .sgs-account__wc > #customer_login.u-columns.col2-set {
+	flex-direction: column;
+	align-items: center;
+}
+
+.sgs-account__wc > #customer_login.u-columns.col2-set > div,
+.sgs-account__wc > form.woocommerce-form-login,
+.sgs-account__wc > form.woocommerce-ResetPassword {
+	background: var(--wp--preset--color--surface-alt, #f7f7f7);
+	border: 1px solid var(--wp--preset--color--border, #e2e2e2);
+	border-radius: 10px;
+	padding: 1.5rem;
+	max-width: var(--sgs-account-auth-card-max-width, 480px);
+	width: 100%;
+	margin-inline: auto;
+}
+
+.sgs-account__tracking-card {
+	max-width: var(--sgs-account-auth-card-max-width, 480px);
+	margin-inline: auto;
+}
+
+.sgs-account__guest-line {
+	text-align: center;
+	color: var(--wp--preset--color--text, currentColor);
+	margin-block-start: 1rem;
+}
+
+/* -- Motion -------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+	.sgs-account nav.woocommerce-MyAccount-navigation ul {
+		scroll-behavior: auto;
+	}
+}
+
+/* -- Editor placeholder note (mirrors editor.css's notice styling for the
+      frontend "no WooCommerce" state, which uses the same markup). --------- */
+.sgs-account__editor-notice {
+	padding: var(--wp--preset--spacing--30, 1rem);
+	border: 1px dashed var(--wp--preset--color--border, #ccc);
+	border-radius: 4px;
+	color: var(--wp--preset--color--text, currentColor);
+}

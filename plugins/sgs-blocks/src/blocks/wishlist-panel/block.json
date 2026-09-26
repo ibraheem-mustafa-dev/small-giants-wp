@@ -60,19 +60,9 @@
 						"css:color": "priceColour"
 					}
 				},
-				"stock": {
-					"label": "Stock status",
-					"order": 4,
-					"clusters": [
-						"text"
-					],
-					"attrMap": {
-						"css:color": "stockColour"
-					}
-				},
 				"button": {
 					"label": "Move to basket button",
-					"order": 5,
+					"order": 4,
 					"clusters": [
 						"fill",
 						"text"
@@ -84,7 +74,7 @@
 				},
 				"link": {
 					"label": "Remove / notify link",
-					"order": 6,
+					"order": 5,
 					"clusters": [
 						"text"
 					],
@@ -97,6 +87,50 @@
 								"css:color": "linkColourHover"
 							}
 						}
+					}
+				},
+				"priceDrop": {
+					"label": "Price drop text",
+					"order": 6,
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:color": "priceDropColour"
+					}
+				},
+				"stockChip": {
+					"label": "Stock chip",
+					"order": 7,
+					"clusters": [
+						"fill",
+						"text"
+					],
+					"attrMap": {
+						"css:background-color": "stockChipBackgroundColour",
+						"css:color": "stockChipTextColour"
+					}
+				},
+				"bar": {
+					"label": "Guest prompt / alerts bar background",
+					"order": 8,
+					"clusters": [
+						"fill"
+					],
+					"attrMap": {
+						"css:background-color": "barBackgroundColour"
+					}
+				},
+				"shareField": {
+					"label": "Share link field",
+					"order": 9,
+					"clusters": [
+						"fill",
+						"text"
+					],
+					"attrMap": {
+						"css:background-color": "shareFieldBackgroundColour",
+						"css:color": "shareFieldTextColour"
 					}
 				}
 			}
@@ -135,6 +169,151 @@
 			"type": "object",
 			"default": {}
 		},
+		"layout": {
+			"type": "string",
+			"enum": [ "grid", "list", "strip" ],
+			"default": "grid"
+		},
+		"maxItems": {
+			"type": "number",
+			"default": 0
+		},
+		"viewAllLabel": {
+			"type": "string",
+			"default": "View all saved items"
+		},
+		"viewAllUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"showCount": {
+			"type": "boolean",
+			"default": true
+		},
+		"showSort": {
+			"type": "boolean",
+			"default": true
+		},
+		"sortLabel": {
+			"type": "string",
+			"default": "Sort"
+		},
+		"sortRecentLabel": {
+			"type": "string",
+			"default": "Recently saved"
+		},
+		"sortPriceAscLabel": {
+			"type": "string",
+			"default": "Price, low to high"
+		},
+		"sortPriceDescLabel": {
+			"type": "string",
+			"default": "Price, high to low"
+		},
+		"sortStockLabel": {
+			"type": "string",
+			"default": "In stock first"
+		},
+		"showDateSaved": {
+			"type": "boolean",
+			"default": true
+		},
+		"dateSavedText": {
+			"type": "string",
+			"default": "Saved {date}"
+		},
+		"showPriceDrop": {
+			"type": "boolean",
+			"default": true
+		},
+		"priceDropText": {
+			"type": "string",
+			"default": "Price drop: now {now} ({saved} when you saved it)"
+		},
+		"moveLabel": {
+			"type": "string",
+			"default": "Move to basket"
+		},
+		"removeLabel": {
+			"type": "string",
+			"default": "Remove"
+		},
+		"notifyLabel": {
+			"type": "string",
+			"default": "Notify me"
+		},
+		"outOfStockLabel": {
+			"type": "string",
+			"default": "Out of stock"
+		},
+		"notifyEmailLabel": {
+			"type": "string",
+			"default": "Your email"
+		},
+		"notifyConsentText": {
+			"type": "string",
+			"default": "Email me when this item is back in stock."
+		},
+		"notifySuccessText": {
+			"type": "string",
+			"default": "We'll email you when this is back in stock."
+		},
+		"errorText": {
+			"type": "string",
+			"default": "Something went wrong. Please try again."
+		},
+		"showGuestPrompt": {
+			"type": "boolean",
+			"default": true
+		},
+		"guestPromptText": {
+			"type": "string",
+			"default": "Sign in to keep your saved items on every device and get price alerts."
+		},
+		"signInLabel": {
+			"type": "string",
+			"default": "Sign in"
+		},
+		"alertsPriceLabel": {
+			"type": "string",
+			"default": "Email me when a saved item drops in price"
+		},
+		"alertsStockLabel": {
+			"type": "string",
+			"default": "Email me when a saved item is back in stock"
+		},
+		"shareLabel": {
+			"type": "string",
+			"default": "Share my list"
+		},
+		"shareCopyLabel": {
+			"type": "string",
+			"default": "Copy link"
+		},
+		"shareCopiedText": {
+			"type": "string",
+			"default": "Link copied"
+		},
+		"shareNewLinkLabel": {
+			"type": "string",
+			"default": "Make a new link"
+		},
+		"sharedHeading": {
+			"type": "string",
+			"default": "A saved list"
+		},
+		"addToMineLabel": {
+			"type": "string",
+			"default": "Save to my list"
+		},
+		"sharedGoneText": {
+			"type": "string",
+			"default": "This saved list is no longer shared."
+		},
+		"privacyLinkLabel": {
+			"type": "string",
+			"default": "Privacy policy"
+		},
 		"headingColour": {
 			"type": "string",
 			"default": ""
@@ -144,10 +323,6 @@
 			"default": ""
 		},
 		"priceColour": {
-			"type": "string",
-			"default": ""
-		},
-		"stockColour": {
 			"type": "string",
 			"default": ""
 		},
@@ -164,6 +339,30 @@
 			"default": ""
 		},
 		"linkColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"priceDropColour": {
+			"type": "string",
+			"default": ""
+		},
+		"stockChipBackgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"stockChipTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"barBackgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"shareFieldBackgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"shareFieldTextColour": {
 			"type": "string",
 			"default": ""
 		}

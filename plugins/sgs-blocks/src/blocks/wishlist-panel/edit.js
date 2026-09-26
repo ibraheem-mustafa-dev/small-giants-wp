@@ -8,9 +8,11 @@
  */
 import { __ } from '@wordpress/i18n';
 import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
-import { PanelBody, TextControl, ToggleControl, RangeControl } from '@wordpress/components';
-import { UnitControl } from '../../components/primitives';
-import { SgsColourPanel, ResponsiveControl, fillRow, textRow } from '../../components';
+import { SgsColourPanel, fillRow, textRow } from '../../components';
+import WishlistLayoutPanel from './inspector/WishlistLayoutPanel';
+import LabelsPanel from './inspector/LabelsPanel';
+import AlertsSharingPanel from './inspector/AlertsSharingPanel';
+import SiteFeaturesPanel from './inspector/SiteFeaturesPanel';
 
 /**
  * @param {Object}   props               Block props.
@@ -19,16 +21,7 @@ import { SgsColourPanel, ResponsiveControl, fillRow, textRow } from '../../compo
  * @return {JSX.Element} Editor markup.
  */
 export default function Edit( { attributes, setAttributes } ) {
-	const {
-		heading,
-		emptyText,
-		emptyLinkLabel,
-		showWhenEmpty,
-		showPrice,
-		showStock,
-		columns,
-		gap,
-	} = attributes;
+	const { heading } = attributes;
 
 	const blockProps = useBlockProps( { className: 'sgs-wishlist-panel' } );
 
@@ -55,9 +48,23 @@ export default function Edit( { attributes, setAttributes } ) {
 			setAttributes,
 		} ),
 		textRow( {
-			key: 'stock',
-			label: __( 'Stock status', 'sgs-blocks' ),
-			attrs: { base: 'stockColour' },
+			key: 'priceDrop',
+			label: __( 'Price-drop text', 'sgs-blocks' ),
+			attrs: { base: 'priceDropColour' },
+			attributes,
+			setAttributes,
+		} ),
+		fillRow( {
+			key: 'stockChipBackground',
+			label: __( 'Stock chip background', 'sgs-blocks' ),
+			attrs: { base: 'stockChipBackgroundColour' },
+			attributes,
+			setAttributes,
+		} ),
+		textRow( {
+			key: 'stockChipText',
+			label: __( 'Stock chip text', 'sgs-blocks' ),
+			attrs: { base: 'stockChipTextColour' },
 			attributes,
 			setAttributes,
 		} ),
@@ -82,6 +89,27 @@ export default function Edit( { attributes, setAttributes } ) {
 			attributes,
 			setAttributes,
 		} ),
+		fillRow( {
+			key: 'barBackground',
+			label: __( 'Guest prompt / alerts bar background', 'sgs-blocks' ),
+			attrs: { base: 'barBackgroundColour' },
+			attributes,
+			setAttributes,
+		} ),
+		fillRow( {
+			key: 'shareFieldBackground',
+			label: __( 'Share link field background', 'sgs-blocks' ),
+			attrs: { base: 'shareFieldBackgroundColour' },
+			attributes,
+			setAttributes,
+		} ),
+		textRow( {
+			key: 'shareFieldText',
+			label: __( 'Share link field text', 'sgs-blocks' ),
+			attrs: { base: 'shareFieldTextColour' },
+			attributes,
+			setAttributes,
+		} ),
 	];
 
 	return (
@@ -90,80 +118,10 @@ export default function Edit( { attributes, setAttributes } ) {
 				<SgsColourPanel rows={ colourRows } />
 			</InspectorControls>
 			<InspectorControls>
-				<PanelBody title={ __( 'Wishlist panel', 'sgs-blocks' ) } initialOpen>
-					<TextControl
-						__next40pxDefaultSize
-						__nextHasNoMarginBottom
-						label={ __( 'Heading', 'sgs-blocks' ) }
-						value={ heading }
-						onChange={ ( value ) => setAttributes( { heading: value } ) }
-					/>
-					<TextControl
-						__next40pxDefaultSize
-						__nextHasNoMarginBottom
-						label={ __( 'Empty-wishlist text', 'sgs-blocks' ) }
-						value={ emptyText }
-						onChange={ ( value ) => setAttributes( { emptyText: value } ) }
-					/>
-					<TextControl
-						__next40pxDefaultSize
-						__nextHasNoMarginBottom
-						label={ __( 'Empty-wishlist link label', 'sgs-blocks' ) }
-						value={ emptyLinkLabel }
-						onChange={ ( value ) => setAttributes( { emptyLinkLabel: value } ) }
-					/>
-					<ToggleControl
-						__nextHasNoMarginBottom
-						label={ __( 'Show the panel even when the wishlist is empty', 'sgs-blocks' ) }
-						help={ __(
-							'Off by default on the cart page — the panel simply does not render for an empty wishlist.',
-							'sgs-blocks'
-						) }
-						checked={ !! showWhenEmpty }
-						onChange={ ( value ) => setAttributes( { showWhenEmpty: value } ) }
-					/>
-					<ToggleControl
-						__nextHasNoMarginBottom
-						label={ __( 'Show price', 'sgs-blocks' ) }
-						checked={ !! showPrice }
-						onChange={ ( value ) => setAttributes( { showPrice: value } ) }
-					/>
-					<ToggleControl
-						__nextHasNoMarginBottom
-						label={ __( 'Show stock status', 'sgs-blocks' ) }
-						checked={ !! showStock }
-						onChange={ ( value ) => setAttributes( { showStock: value } ) }
-					/>
-					<ResponsiveControl label={ __( 'Columns', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => (
-							<RangeControl
-								__next40pxDefaultSize
-								__nextHasNoMarginBottom
-								label={ __( 'Columns', 'sgs-blocks' ) }
-								hideLabelFromVision
-								min={ 1 }
-								max={ 4 }
-								value={ columns[ breakpoint ] ?? ( 'desktop' === breakpoint ? 3 : 1 ) }
-								onChange={ ( value ) =>
-									setAttributes( { columns: { ...columns, [ breakpoint ]: value } } )
-								}
-							/>
-						) }
-					</ResponsiveControl>
-					<ResponsiveControl label={ __( 'Row gap', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => (
-							<UnitControl
-								__next40pxDefaultSize
-								label={ __( 'Row gap', 'sgs-blocks' ) }
-								hideLabelFromVision
-								value={ gap[ breakpoint ] ?? '' }
-								onChange={ ( value ) =>
-									setAttributes( { gap: { ...gap, [ breakpoint ]: value } } )
-								}
-							/>
-						) }
-					</ResponsiveControl>
-				</PanelBody>
+				<WishlistLayoutPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<LabelsPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<AlertsSharingPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<SiteFeaturesPanel />
 			</InspectorControls>
 			<div { ...blockProps }>
 				<h2 className="sgs-wishlist-panel__heading">{ heading }</h2>

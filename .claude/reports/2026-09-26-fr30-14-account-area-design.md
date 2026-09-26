@@ -1,6 +1,6 @@
 # FR-30-14 / FR-30-15 design: the customer account area and saved-item alerts
 
-Status: design, awaiting Bean's sign-off (FR-30-14 requires it before the build). Governing: `.claude/specs/30-SGS-WOOCOMMERCE-PAGE-TYPES.md` FR-30-14, FR-30-15, FR-30-8 (reference-price rules), FR-30-9 (noindex). Builds on `.claude/reports/2026-09-26-u12-furniture-design.md` §E (the two-tier wishlist).
+Status: signed off by Bean 2026-09-26 (mockup https://claude.ai/artifact/RCSQ5j1uKaoStsFRVzVEk9), with the recommended option on all four decisions in §8: price-drop wording "now £X (£Y when you saved it)", two separate alert ticks, scrolling tabs on phones, and the N8N back-in-stock sender built now. Build plan: `.claude/plans/2026-09-26-fr30-14-15-account-area-build.md`. Governing: `.claude/specs/30-SGS-WOOCOMMERCE-PAGE-TYPES.md` FR-30-14, FR-30-15, FR-30-8 (reference-price rules), FR-30-9 (noindex). Builds on `.claude/reports/2026-09-26-u12-furniture-design.md` §E (the two-tier wishlist).
 
 ## 1. Where things stand (evidence)
 

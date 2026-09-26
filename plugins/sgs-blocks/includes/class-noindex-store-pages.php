@@ -58,6 +58,14 @@ final class Noindex_Store_Pages {
 			return;
 		}
 
+		// A shared wishlist view (?sgs-list=<token>) is a per-visitor, dynamic
+		// read of someone else's saved items — never worth indexing, whatever
+		// page it happens to render on (FR-30-15).
+		if ( self::has_shared_list_param() ) {
+			echo '<meta name="robots" content="noindex,nofollow">' . "\n";
+			return;
+		}
+
 		if ( ! \function_exists( 'is_cart' ) ) {
 			// WC inactive — nothing to noindex.
 			return;
@@ -77,5 +85,20 @@ final class Noindex_Store_Pages {
 			}
 			echo '<meta name="robots" content="noindex,nofollow">' . "\n";
 		}
+	}
+
+	/**
+	 * Whether the current request carries a non-empty `sgs-list` query arg
+	 * (a wishlist share-token view, FR-30-15). Read-only — never mutates
+	 * the query, never used for anything but this presence check.
+	 *
+	 * @return bool
+	 */
+	private static function has_shared_list_param(): bool {
+		if ( ! isset( $_GET['sgs-list'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only query-arg check, no state change.
+			return false;
+		}
+		$token = \sanitize_key( \wp_unslash( $_GET['sgs-list'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only query-arg check, no state change.
+		return '' !== $token;
 	}
 }

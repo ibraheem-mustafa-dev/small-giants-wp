@@ -9,6 +9,14 @@
  * stale count to every visitor — and `view.js` hydrates the real count from
  * `src/shared/wishlist-store/index.js` within one paint.
  *
+ * Href resolution (FR-30-14, Wave 3C account-area build): an explicit
+ * `wishlistUrl` attribute always wins; otherwise the Saved items page
+ * (`woocommerce_saved_items_page_id` — WooCommerce's own
+ * `woocommerce_{key}_page_id` option naming, so `wc_get_page_permalink(
+ * 'saved_items' )` reads it automatically) when that page is set and
+ * published; otherwise the pre-existing fallback, the cart page (where
+ * `sgs/wishlist-panel` lived before the Saved items page existed).
+ *
  * NO-INLINE (Spec 32): zero inline style property declarations; colours and
  * sizes are a scoped `<style>` block built from $scoped_css, same contract as
  * sgs/notice-banner and sgs/cart.
@@ -39,15 +47,22 @@ $icon_html       = ( 'lucide' === $icon_source )
 $label      = sanitize_text_field( (string) ( $attributes['label'] ?? __( 'Wishlist', 'sgs-blocks' ) ) );
 $show_count = ! empty( $attributes['showCount'] );
 
-// ── Href resolution: an explicit URL wins; otherwise the cart page, where
-// sgs/wishlist-panel lives by default (theme/sgs-theme/templates/cart.html). ──
+// ── Href resolution: an explicit URL wins; otherwise the Saved items page
+// when it is set and published; otherwise the cart page, where
+// sgs/wishlist-panel lived by default before the Saved items page existed
+// (theme/sgs-theme/templates/cart.html). ──
 $wishlist_url = trim( (string) ( $attributes['wishlistUrl'] ?? '' ) );
 if ( '' !== $wishlist_url ) {
 	$href = esc_url( $wishlist_url );
-} elseif ( function_exists( 'wc_get_cart_url' ) ) {
-	$href = esc_url( wc_get_cart_url() );
 } else {
-	$href = esc_url( home_url( '/' ) );
+	$saved_items_page_id = ( function_exists( 'wc_get_page_id' ) ) ? wc_get_page_id( 'saved_items' ) : 0;
+	if ( $saved_items_page_id > 0 && 'publish' === get_post_status( $saved_items_page_id ) && function_exists( 'wc_get_page_permalink' ) ) {
+		$href = esc_url( wc_get_page_permalink( 'saved_items' ) );
+	} elseif ( function_exists( 'wc_get_cart_url' ) ) {
+		$href = esc_url( wc_get_cart_url() );
+	} else {
+		$href = esc_url( home_url( '/' ) );
+	}
 }
 
 $aria_label = sprintf(
