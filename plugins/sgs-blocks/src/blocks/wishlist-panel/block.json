@@ -29,11 +29,81 @@
 			"lineHeight": true
 		},
 		"sgs": {
-			"imageControls": true,
 			"boxFamilies": {
 				"margin": [
 					"margin"
 				]
+			},
+			"elements": {
+				"heading": {
+					"label": "Heading",
+					"order": 1,
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:color": "headingColour"
+					}
+				},
+				"itemName": {
+					"label": "Item name",
+					"order": 2,
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:color": "itemNameColour"
+					}
+				},
+				"price": {
+					"label": "Price",
+					"order": 3,
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:color": "priceColour"
+					}
+				},
+				"stock": {
+					"label": "Stock status",
+					"order": 4,
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:color": "stockColour"
+					}
+				},
+				"button": {
+					"label": "Move to basket button",
+					"order": 5,
+					"clusters": [
+						"fill",
+						"text"
+					],
+					"attrMap": {
+						"css:background-color": "buttonBackgroundColour",
+						"css:color": "buttonTextColour"
+					}
+				},
+				"link": {
+					"label": "Remove / notify link",
+					"order": 6,
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:color": "linkColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "linkColourHover"
+							}
+						}
+					}
+				}
 			}
 		}
 	},

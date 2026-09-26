@@ -14,9 +14,8 @@ import {
 	TextControl,
 	ToggleControl,
 	ComboboxControl,
-	__experimentalToggleGroupControl as ToggleGroupControl,
-	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 } from '@wordpress/components';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import {
 	SgsColourPanel,
 	textRow,
@@ -194,6 +193,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						isBlock
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					>
 						<ToggleGroupControlOption
 							value="before"
@@ -231,6 +231,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						isBlock
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					>
 						<ToggleGroupControlOption
 							value="h12"

@@ -21,9 +21,8 @@ import {
 	Button,
 	Flex,
 	FlexItem,
-	__experimentalToggleGroupControl as ToggleGroupControl,
-	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 } from '@wordpress/components';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import {
 	SgsColourPanel,
 	fillRow,

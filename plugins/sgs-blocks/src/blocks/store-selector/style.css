@@ -41,7 +41,7 @@
 	padding: 8px;
 	list-style: none;
 	min-width: 180px;
-	background: var(--wp--preset--color--background, #fff);
+	background: var(--wp--preset--color--surface, #fff);
 }
 
 .sgs-store-selector--panel-start .sgs-store-selector__list {

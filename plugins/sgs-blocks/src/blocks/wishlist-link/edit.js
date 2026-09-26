@@ -7,12 +7,8 @@
  */
 import { __ } from '@wordpress/i18n';
 import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
-import {
-	PanelBody,
-	TextControl,
-	ToggleControl,
-	__experimentalUnitControl as UnitControl, // eslint-disable-line camelcase
-} from '@wordpress/components';
+import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
+import { UnitControl } from '../../components/primitives';
 import {
 	IconPicker,
 	IconPreview,
@@ -142,11 +138,31 @@ export default function Edit( { attributes, setAttributes } ) {
 					<IconPreview
 						source={ iconSource || 'lucide' }
 						name={ iconName || 'heart' }
-						size={ 24 }
+						size={ parseInt( iconSize?.desktop, 10 ) || 24 }
 					/>
 				</span>
 				{ label ? (
-					<span className="sgs-wishlist-link__label">{ label }</span>
+					<span
+						className="sgs-wishlist-link__label"
+						// Icon-only by default (render.php's own contract): the label
+						// stays in the DOM for assistive tech but is visually hidden
+						// in the canvas too unless the desktop tier opts in — mirrors
+						// the visually-hidden clip-rect render.php's scoped CSS applies.
+						style={
+							true === showLabel?.desktop
+								? undefined
+								: {
+									position: 'absolute',
+									width: 1,
+									height: 1,
+									overflow: 'hidden',
+									clip: 'rect(0,0,0,0)',
+									whiteSpace: 'nowrap',
+								}
+						}
+					>
+						{ label }
+					</span>
 				) : null }
 				{ showCount ? (
 					<span className="sgs-wishlist-link__badge">0</span>

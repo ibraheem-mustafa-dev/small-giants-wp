@@ -27,23 +27,31 @@
 		},
 		"sgs": {
 			"boxFamilies": {
-				"padding": [ "padding" ]
+				"padding": [
+					"padding"
+				]
 			},
 			"elements": {
 				"label": {
 					"label": "Label",
 					"order": 1,
 					"prefix": "label",
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"attrMap": {
 						"css:color": "textColour"
 					},
 					"states": {
 						"hover": {
-							"attrMap": { "css:color": "textColourHover" }
+							"attrMap": {
+								"css:color": "textColourHover"
+							}
 						},
 						"current": {
-							"attrMap": { "css:color": "textColourPressed" }
+							"attrMap": {
+								"css:color": "textColourPressed"
+							}
 						}
 					},
 					"_note": "'current' = the toggle's own aria-pressed/aria-checked TRUE state (dark mode active) — Spec 41 FR-41-3's third state, reused here for a genuinely state-driven colour rather than a hover-adjacent one."
@@ -51,13 +59,17 @@
 				"icon": {
 					"label": "Icon",
 					"order": 2,
-					"clusters": [ "fill" ],
+					"clusters": [
+						"text"
+					],
 					"attrMap": {
 						"css:color": "iconColour"
 					},
 					"states": {
 						"hover": {
-							"attrMap": { "css:color": "iconColourHover" }
+							"attrMap": {
+								"css:color": "iconColourHover"
+							}
 						}
 					}
 				},
@@ -65,7 +77,10 @@
 					"label": "Background",
 					"order": 3,
 					"isWrapper": true,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"attrMap": {
 						"css:background-color": "backgroundColour",
 						"css:padding": "padding",
@@ -76,7 +91,9 @@
 					},
 					"states": {
 						"hover": {
-							"attrMap": { "css:background-color": "backgroundColourHover" }
+							"attrMap": {
+								"css:background-color": "backgroundColourHover"
+							}
 						}
 					}
 				}
@@ -90,7 +107,10 @@
 	"attributes": {
 		"toggleStyle": {
 			"type": "string",
-			"enum": [ "switch", "segmented" ],
+			"enum": [
+				"switch",
+				"segmented"
+			],
 			"default": "switch"
 		},
 		"label": {
@@ -100,7 +120,11 @@
 		},
 		"labelRoll": {
 			"type": "string",
-			"enum": [ "", "up", "up-scale" ],
+			"enum": [
+				"",
+				"up",
+				"up-scale"
+			],
 			"default": ""
 		},
 		"iconOnly": {
@@ -109,11 +133,17 @@
 		},
 		"iconLight": {
 			"type": "object",
-			"default": { "source": "lucide", "name": "sun" }
+			"default": {
+				"source": "lucide",
+				"name": "sun"
+			}
 		},
 		"iconDark": {
 			"type": "object",
-			"default": { "source": "lucide", "name": "moon" }
+			"default": {
+				"source": "lucide",
+				"name": "moon"
+			}
 		},
 		"textColour": {
 			"type": "string",
@@ -153,16 +183,25 @@
 		},
 		"borderStyle": {
 			"type": "string",
-			"enum": [ "none", "solid", "dashed", "dotted" ],
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted"
+			],
 			"default": "none"
 		},
 		"borderRadius": {
 			"type": "object",
-			"default": { "desktop": {} }
+			"default": {
+				"desktop": {}
+			}
 		},
 		"padding": {
 			"type": "object",
-			"default": { "desktop": {} }
+			"default": {
+				"desktop": {}
+			}
 		},
 		"labelFontSize": {
 			"type": "object",

@@ -6,7 +6,7 @@
  * stylesheet only carries structural/layout rules with no per-client value.
  */
 
-.sgs-language-switch {
+:where(.sgs-language-switch) {
 	display: flex;
 	align-items: center;
 	flex-wrap: wrap;

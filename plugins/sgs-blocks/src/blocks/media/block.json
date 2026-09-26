@@ -188,6 +188,9 @@
 		"videoId": {
 			"type": "integer"
 		},
+		"lottieId": {
+			"type": "integer"
+		},
 		"videoMimeType": {
 			"type": "string",
 			"default": ""

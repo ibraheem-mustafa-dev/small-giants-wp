@@ -212,6 +212,7 @@ export function backgroundPreview( attributes, colourPalette, gradientPresets = 
 	const {
 		backgroundImage,
 		bgVideo,
+		bgLottie,
 		backgroundSize,
 		backgroundPosition,
 		backgroundRepeat,
@@ -229,6 +230,7 @@ export function backgroundPreview( attributes, colourPalette, gradientPresets = 
 
 	const hasBgImage = !! backgroundImage?.url;
 	const hasBgVideo = !! bgVideo?.url;
+	const hasBgLottie = ! hasBgImage && ! hasBgVideo && !! bgLottie;
 	const hasBgMedia = hasBgImage && ! hasBgVideo;
 
 	const overlayPreview = overlayPaintPreview(
@@ -252,6 +254,13 @@ export function backgroundPreview( attributes, colourPalette, gradientPresets = 
 		} ),
 		...( hasBgVideo && {
 			// Show a teal placeholder in editor when video is set
+			backgroundColor: 'var(--wp--preset--color--primary, #0F7E80)',
+		} ),
+		...( hasBgLottie && {
+			// Same placeholder-only treatment as bgVideo (Tier H Lottie player,
+			// D1151): the editor never mounts the real player, so a flat
+			// placeholder is the only honest preview — bgLottieLoop has no
+			// static-frame effect to show either way.
 			backgroundColor: 'var(--wp--preset--color--primary, #0F7E80)',
 		} ),
 		...( bgKenBurns && hasBgImage && {

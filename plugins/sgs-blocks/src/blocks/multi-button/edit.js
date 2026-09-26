@@ -160,6 +160,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const bgPreview = backgroundPreview( {
 		backgroundImage: attributes.backgroundImage,
 		bgVideo: attributes.bgVideo,
+		bgLottie: attributes.bgLottie,
 		backgroundSize: attributes.backgroundSize,
 		backgroundPosition: attributes.backgroundPosition,
 		backgroundRepeat: attributes.backgroundRepeat,

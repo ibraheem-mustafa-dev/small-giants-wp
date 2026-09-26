@@ -1,16 +1,280 @@
 {
-	"_comment": "Accepted findings for check-editor-render-parity.js (CHECK A: editor-canvas desync — a destructured+written attribute never referenced in the preview JSX; CHECK B: invalid CSS keyword passthrough — a SelectControl option value not in the target CSS property's valid keyword set). Same discipline as dead-controls-baseline.json: the guard reports NET-NEW findings only (findings NOT listed here). To accept a finding, add it here with a reason; to fix one, wire the attribute into the preview / correct the SelectControl option, then delete the entry. Empty `accepted` = zero tolerance once/if this is promoted to gate — it ships advisory-only today (2026-08-13), so nothing needs baselining yet; findings are census output, not a blocking backlog. CRITICAL: never raise the baseline silently — any increase must include a written reason (see check-element-manifest-conformance.js:796-798).",
-	"_meta": {
-		"dispositionVocabulary": ["by-design", "accepted-debt", "detector-limitation", "blocked"],
-		"dispositionVocabularyNote": "Closed vocabulary: by-design (correct, will never need fixing) / accepted-debt (real gap, consciously deferred) / detector-limitation (the checker itself is wrong — flags a rule violation per THE-MIGRATION-METHOD.md:455, not a normal outcome) / blocked (waiting on something external). See .claude/archive/parking.md P-BASELINE-DISPOSITION-VOCABULARY / .claude/LEDGER.md."
-	},
-	"accepted": [
-		{
-			"check": "editor-canvas-desync",
-			"block": "sgs/button",
-			"attr": "boxShadowColourHover",
-			"disposition": "accepted-debt",
-			"reason": "Wave A1 ShadowControl redesign (2026-09-07): the resting boxShadow/boxShadowColour pair already has a canvas preview (resolveShadowPreviewComposed(), edit.js ~L339), but no SGS block canvas-previews a HOVER colour anywhere in the framework today — the editor canvas cannot simulate :hover without JS, and no shared mechanism for that exists yet. This attr existed under a different name (boxShadowHoverColour, a separate two-mount ShadowControl) before this session's rename+consolidation into one tabbed Normal/Hover mount; the underlying desync is pre-existing framework-wide debt (see sgs/product-search's 12 identical hover-colour-family findings, untouched by this session), surfaced under a new name by the rename rather than newly introduced."
-		}
-	]
+  "_comment": "Accepted findings for check-editor-render-parity.js (CHECK A: editor-canvas desync — a destructured+written attribute never referenced in the preview JSX; CHECK B: invalid CSS keyword passthrough — a SelectControl option value not in the target CSS property's valid keyword set). Same discipline as dead-controls-baseline.json: the guard reports NET-NEW findings only (findings NOT listed here). To accept a finding, add it here with a reason; to fix one, wire the attribute into the preview / correct the SelectControl option, then delete the entry. Empty `accepted` = zero tolerance once/if this is promoted to gate — it ships advisory-only today (2026-08-13), so nothing needs baselining yet; findings are census output, not a blocking backlog. CRITICAL: never raise the baseline silently — any increase must include a written reason (see check-element-manifest-conformance.js:796-798).",
+  "_meta": {
+    "dispositionVocabulary": [
+      "by-design",
+      "accepted-debt",
+      "detector-limitation",
+      "blocked"
+    ],
+    "dispositionVocabularyNote": "Closed vocabulary: by-design (correct, will never need fixing) / accepted-debt (real gap, consciously deferred) / detector-limitation (the checker itself is wrong — flags a rule violation per THE-MIGRATION-METHOD.md:455, not a normal outcome) / blocked (waiting on something external). See .claude/archive/parking.md P-BASELINE-DISPOSITION-VOCABULARY / .claude/LEDGER.md."
+  },
+  "accepted": [
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/button",
+      "attr": "boxShadowColourHover",
+      "disposition": "accepted-debt",
+      "reason": "Wave A1 ShadowControl redesign (2026-09-07): the resting boxShadow/boxShadowColour pair already has a canvas preview (resolveShadowPreviewComposed(), edit.js ~L339), but no SGS block canvas-previews a HOVER colour anywhere in the framework today — the editor canvas cannot simulate :hover without JS, and no shared mechanism for that exists yet. This attr existed under a different name (boxShadowHoverColour, a separate two-mount ShadowControl) before this session's rename+consolidation into one tabbed Normal/Hover mount; the underlying desync is pre-existing framework-wide debt (see sgs/product-search's 12 identical hover-colour-family findings, untouched by this session), surfaced under a new name by the rename rather than newly introduced."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/container",
+      "attr": "bgLottieLoop",
+      "disposition": "by-design",
+      "reason": "Tier H Lottie background (Spec 38 §1.2a, D1151), same shape as the pre-existing bgVideo pair: bgLottie itself now has a real editor-canvas preview (background-preview.js's backgroundPreview() paints the same teal placeholder bgVideo gets, since the editor never mounts the real lottie-web player). bgLottieLoop controls only whether a MOUNTED player repeats after finishing — it has zero effect on the single static placeholder frame the editor renders, so there is nothing for a canvas preview to show. bgVideo has no equivalent loop attribute at all to compare against; this is the first background-media attribute where the loop flag is genuinely unpreviewable rather than just unbuilt."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/cta-section",
+      "attr": "bgLottieLoop",
+      "disposition": "by-design",
+      "reason": "Tier H Lottie background (Spec 38 §1.2a, D1151), same shape as the pre-existing bgVideo pair: bgLottie itself now has a real editor-canvas preview (background-preview.js's backgroundPreview() paints the same teal placeholder bgVideo gets, since the editor never mounts the real lottie-web player). bgLottieLoop controls only whether a MOUNTED player repeats after finishing — it has zero effect on the single static placeholder frame the editor renders, so there is nothing for a canvas preview to show. bgVideo has no equivalent loop attribute at all to compare against; this is the first background-media attribute where the loop flag is genuinely unpreviewable rather than just unbuilt."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/hero",
+      "attr": "bgLottieLoop",
+      "disposition": "by-design",
+      "reason": "Tier H Lottie background (Spec 38 §1.2a, D1151), same shape as the pre-existing bgVideo pair: bgLottie itself now has a real editor-canvas preview (background-preview.js's backgroundPreview() paints the same teal placeholder bgVideo gets, since the editor never mounts the real lottie-web player). bgLottieLoop controls only whether a MOUNTED player repeats after finishing — it has zero effect on the single static placeholder frame the editor renders, so there is nothing for a canvas preview to show. bgVideo has no equivalent loop attribute at all to compare against; this is the first background-media attribute where the loop flag is genuinely unpreviewable rather than just unbuilt."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/multi-button",
+      "attr": "bgLottieLoop",
+      "disposition": "by-design",
+      "reason": "Tier H Lottie background (Spec 38 §1.2a, D1151), same shape as the pre-existing bgVideo pair: bgLottie itself now has a real editor-canvas preview (background-preview.js's backgroundPreview() paints the same teal placeholder bgVideo gets, since the editor never mounts the real lottie-web player). bgLottieLoop controls only whether a MOUNTED player repeats after finishing — it has zero effect on the single static placeholder frame the editor renders, so there is nothing for a canvas preview to show. bgVideo has no equivalent loop attribute at all to compare against; this is the first background-media attribute where the loop flag is genuinely unpreviewable rather than just unbuilt."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/physics-canvas",
+      "attr": "bgLottieLoop",
+      "disposition": "by-design",
+      "reason": "Tier H Lottie background (Spec 38 §1.2a, D1151), same shape as the pre-existing bgVideo pair: bgLottie itself now has a real editor-canvas preview (background-preview.js's backgroundPreview() paints the same teal placeholder bgVideo gets, since the editor never mounts the real lottie-web player). bgLottieLoop controls only whether a MOUNTED player repeats after finishing — it has zero effect on the single static placeholder frame the editor renders, so there is nothing for a canvas preview to show. bgVideo has no equivalent loop attribute at all to compare against; this is the first background-media attribute where the loop flag is genuinely unpreviewable rather than just unbuilt."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/site-footer",
+      "attr": "bgLottieLoop",
+      "disposition": "by-design",
+      "reason": "Tier H Lottie background (Spec 38 §1.2a, D1151), same shape as the pre-existing bgVideo pair: bgLottie itself now has a real editor-canvas preview (background-preview.js's backgroundPreview() paints the same teal placeholder bgVideo gets, since the editor never mounts the real lottie-web player). bgLottieLoop controls only whether a MOUNTED player repeats after finishing — it has zero effect on the single static placeholder frame the editor renders, so there is nothing for a canvas preview to show. bgVideo has no equivalent loop attribute at all to compare against; this is the first background-media attribute where the loop flag is genuinely unpreviewable rather than just unbuilt."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/site-header",
+      "attr": "bgLottieLoop",
+      "disposition": "by-design",
+      "reason": "Tier H Lottie background (Spec 38 §1.2a, D1151), same shape as the pre-existing bgVideo pair: bgLottie itself now has a real editor-canvas preview (background-preview.js's backgroundPreview() paints the same teal placeholder bgVideo gets, since the editor never mounts the real lottie-web player). bgLottieLoop controls only whether a MOUNTED player repeats after finishing — it has zero effect on the single static placeholder frame the editor renders, so there is nothing for a canvas preview to show. bgVideo has no equivalent loop attribute at all to compare against; this is the first background-media attribute where the loop flag is genuinely unpreviewable rather than just unbuilt."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/trust-bar",
+      "attr": "bgLottieLoop",
+      "disposition": "by-design",
+      "reason": "Tier H Lottie background (Spec 38 §1.2a, D1151), same shape as the pre-existing bgVideo pair: bgLottie itself now has a real editor-canvas preview (background-preview.js's backgroundPreview() paints the same teal placeholder bgVideo gets, since the editor never mounts the real lottie-web player). bgLottieLoop controls only whether a MOUNTED player repeats after finishing — it has zero effect on the single static placeholder frame the editor renders, so there is nothing for a canvas preview to show. bgVideo has no equivalent loop attribute at all to compare against; this is the first background-media attribute where the loop flag is genuinely unpreviewable rather than just unbuilt."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/notice-banner",
+      "attr": "rotateInterval",
+      "disposition": "accepted-debt",
+      "reason": "Rotation timing (ms between messages) has no effect until Interactivity hydrates client-side; the editor canvas always shows a single static message, never a running rotation, so there is nothing for this value to visibly change."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/notice-banner",
+      "attr": "messageTransition",
+      "disposition": "by-design",
+      "reason": "The fade/slide transition only plays during a live client-side rotation swap; the static editor canvas never animates between messages, so there is no transition to preview."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/notice-banner",
+      "attr": "showMessageArrows",
+      "disposition": "by-design",
+      "reason": "Verified: this attribute IS read outside its own control (edit.js ~L297), but only to gate ANOTHER InspectorControls row (the rotation-arrow colour picker) -- still inside the checker's own 'control panel' boundary, never the canvas. The arrows themselves only render once Interactivity hydrates a running rotation, which the static canvas never does."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/notice-banner",
+      "attr": "pauseOnHover",
+      "disposition": "by-design",
+      "reason": "Pause-on-hover is client-side rotation behaviour (Interactivity) with no static-frame visual difference; the editor canvas cannot simulate a running, hoverable rotation."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/notice-message",
+      "attr": "label",
+      "disposition": "by-design",
+      "reason": "Per the control's own help text ('Editor only -- never rendered on the frontend... shown in the editor list view only, so you can tell messages apart'): this is deliberately list-view-only metadata, not a canvas-visible property. It has no rendered counterpart to preview by design."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/store-selector",
+      "attr": "borderColour",
+      "disposition": "accepted-debt",
+      "reason": "The dropdown panel's border is painted by render.php's own scoped <style> tag (never loaded into the editor canvas); no JS-side canvas mirror has been built for this block's border yet."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/store-selector",
+      "attr": "borderColourGradient",
+      "disposition": "accepted-debt",
+      "reason": "Same gap as borderColour (see that entry) -- no canvas border mirror built yet."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/store-selector",
+      "attr": "borderStyle",
+      "disposition": "accepted-debt",
+      "reason": "Same gap as borderColour (see that entry) -- no canvas border mirror built yet."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/store-selector",
+      "attr": "borderWidth",
+      "disposition": "accepted-debt",
+      "reason": "Same gap as borderColour (see that entry) -- no canvas border mirror built yet."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/store-selector",
+      "attr": "borderRadius",
+      "disposition": "accepted-debt",
+      "reason": "Same gap as borderColour (see that entry) -- no canvas border mirror built yet."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/theme-toggle",
+      "attr": "borderColour",
+      "disposition": "accepted-debt",
+      "reason": "The toggle's border/padding is painted by render.php's own scoped <style> tag (never loaded into the editor canvas); no JS-side canvas mirror has been built for this block's border yet."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/theme-toggle",
+      "attr": "borderWidth",
+      "disposition": "accepted-debt",
+      "reason": "Same gap as borderColour (see that entry) -- no canvas border mirror built yet."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/theme-toggle",
+      "attr": "borderStyle",
+      "disposition": "accepted-debt",
+      "reason": "Same gap as borderColour (see that entry) -- no canvas border mirror built yet."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/theme-toggle",
+      "attr": "borderRadius",
+      "disposition": "accepted-debt",
+      "reason": "Same gap as borderColour (see that entry) -- no canvas border mirror built yet."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/theme-toggle",
+      "attr": "padding",
+      "disposition": "accepted-debt",
+      "reason": "Same gap as borderColour (see that entry) -- no canvas padding mirror built yet."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/theme-toggle",
+      "attr": "labelRoll",
+      "disposition": "by-design",
+      "reason": "A roll/flip text-swap animation between the light/dark labels only plays on a real state change (Interactivity, client-side); the static canvas shows one resting frame, so there is no transition to preview."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/theme-toggle",
+      "attr": "iconLight",
+      "disposition": "by-design",
+      "reason": "Custom icon override for the LIGHT-mode state specifically -- the static editor canvas always shows the toggle's resting (undetermined-theme) frame, never a live light/dark state switch, so a state-specific icon swap has nothing to preview against."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/theme-toggle",
+      "attr": "iconDark",
+      "disposition": "by-design",
+      "reason": "Same as iconLight (see that entry) -- a state-specific icon override with no live state switch in the static canvas to preview."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/language-switch",
+      "attr": "gap",
+      "disposition": "accepted-debt",
+      "reason": "The language-link list's gap is painted by render.php's own scoped <style> tag (never loaded into the editor canvas); no JS-side canvas mirror has been built for this responsive gap value yet."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/language-switch",
+      "attr": "panelPadding",
+      "disposition": "accepted-debt",
+      "reason": "The disclosure panel's padding is painted by render.php's own scoped <style> tag (never loaded into the editor canvas); no JS-side canvas mirror has been built for this responsive padding value yet."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/local-time",
+      "attr": "gap",
+      "disposition": "accepted-debt",
+      "reason": "The label/time gap is painted by render.php's own scoped <style> tag (never loaded into the editor canvas); no JS-side canvas mirror has been built for this responsive gap value yet."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/wishlist-link",
+      "attr": "wishlistUrl",
+      "disposition": "by-design",
+      "reason": "A link destination (the wishlist page URL, or a custom override) has no visual effect on the icon-link's own appearance -- the canvas icon+label+badge render identically regardless of where the link points, matching how other blocks' link-destination attrs are never canvas-previewed either."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/wishlist-panel",
+      "attr": "emptyText",
+      "disposition": "by-design",
+      "reason": "Per the block's own file header: the editor shows a static 3-row PLACEHOLDER (sample data) -- the real wishlist state (empty or not) is only known client-side via the Store API, so the empty-state copy has nothing real to preview against in the editor's own request."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/wishlist-panel",
+      "attr": "emptyLinkLabel",
+      "disposition": "by-design",
+      "reason": "Same gap as emptyText (see that entry) -- the empty-state CTA only ever shows for a real empty wishlist, which the editor's static placeholder never represents."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/wishlist-panel",
+      "attr": "showWhenEmpty",
+      "disposition": "by-design",
+      "reason": "Same gap as emptyText (see that entry) -- whether the block still renders when the visitor's real wishlist is empty is unknowable from the editor's static placeholder rows."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/wishlist-panel",
+      "attr": "showPrice",
+      "disposition": "accepted-debt",
+      "reason": "The static placeholder rows are illustrative sample data, not attribute-driven; toggling this would need the placeholder itself wired to conditionally render its price column, which has not been built."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/wishlist-panel",
+      "attr": "showStock",
+      "disposition": "accepted-debt",
+      "reason": "Same gap as showPrice (see that entry) -- accepted debt, not yet wired into the static placeholder rows."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/wishlist-panel",
+      "attr": "columns",
+      "disposition": "accepted-debt",
+      "reason": "The grid's real column count is painted by render.php's scoped <style> custom property, never loaded into the editor canvas; the static placeholder rows do not yet mirror it."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/wishlist-panel",
+      "attr": "gap",
+      "disposition": "accepted-debt",
+      "reason": "Same gap as columns (see that entry) -- accepted debt, no canvas mirror built yet for this responsive value."
+    }
+  ]
 }

@@ -41,6 +41,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							placeholder={ __( 'e.g. Slide 1', 'sgs-blocks' ) }
 							help={ __( 'Editor only — never rendered on the frontend.', 'sgs-blocks' ) }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					</div>
 				</ToolbarGroup>
@@ -71,17 +72,6 @@ export default function Edit( { attributes, setAttributes } ) {
 			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Message', 'sgs-blocks' ) } initialOpen={ true }>
-					<TextControl
-						label={ __( 'List view label', 'sgs-blocks' ) }
-						value={ label }
-						onChange={ ( val ) => setAttributes( { label: val ?? '' } ) }
-						placeholder={ __( 'e.g. Slide 1', 'sgs-blocks' ) }
-						help={ __(
-							'Shown in the editor list view only, so you can tell messages apart. Never rendered on the frontend.',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-					/>
 					{ ! backgroundColour && ! textColour && (
 						<p>
 							{ __(

@@ -1,6 +1,6 @@
 /* ===== SGS Local Time — Frontend + Editor ===== */
 
-.sgs-local-time {
+:where(.sgs-local-time) {
 	display: inline-flex;
 	align-items: baseline;
 	gap: 0.4em;

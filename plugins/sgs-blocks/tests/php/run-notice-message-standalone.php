@@ -19,7 +19,7 @@
  *      fixtures — a change to the shipped code is a change to what is tested;
  *  (c) proves the static/byte-identical claim (design §3.3) by extracting the
  *      SAME span (by the SAME two markers, unchanged text in both files) from
- *      the OLD render.php via `git show HEAD:...` and diffing the two eval
+ *      the OLD render.php via `git show 16e20f873~1:...` (pinned to the commit before U-15, so the reference never moves) and diffing the two eval
  *      results under a static-mode fixture.
  *
  * Plain PHP, no PHPUnit. Exits non-zero on any failure.
@@ -220,7 +220,7 @@ function run_section( string $code, array $fixture ): array {
 }
 
 // ── Static mode — the byte-identical claim (§3.3) ────────────────────────────
-$git_head_source = shell_exec( 'git show HEAD:plugins/sgs-blocks/src/blocks/notice-banner/render.php 2>&1' );
+$git_head_source = shell_exec( 'git show 16e20f873~1:plugins/sgs-blocks/src/blocks/notice-banner/render.php 2>&1' );
 $old_section      = is_string( $git_head_source )
 	? extract_section( $git_head_source, $start_marker, $end_marker )
 	: '';

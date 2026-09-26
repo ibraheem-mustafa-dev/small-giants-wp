@@ -25,6 +25,49 @@
 			"background": false,
 			"gradients": false,
 			"__experimentalSkipSerialization": true
+		},
+		"sgs": {
+			"elements": {
+				"link": {
+					"label": "Language link",
+					"order": 1,
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:color": "linkColour",
+						"css:color-gradient": "linkColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "linkColourHover",
+								"css:color-gradient": "linkColourHoverGradient"
+							}
+						}
+					}
+				},
+				"current": {
+					"label": "Current language",
+					"order": 2,
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:color": "currentColour"
+					}
+				},
+				"separator": {
+					"label": "Separator",
+					"order": 3,
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:color": "separatorColour"
+					}
+				}
+			}
 		}
 	},
 	"selectors": {

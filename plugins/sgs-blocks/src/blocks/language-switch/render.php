@@ -184,7 +184,12 @@ $prefix_html = '' !== $prefix_label
 	? '<span class="sgs-language-switch__prefix">' . esc_html( $prefix_label ) . '</span>'
 	: '';
 
-$style_tag = ! empty( $scoped_css ) ? '<style>' . implode( '', $scoped_css ) . '</style>' : '';
+// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving CSS
+// combinators like `>` intact (contract §D — matches sgs/notice-banner + SGS_Container_Wrapper
+// + sgs/quote + sgs/heading). Every value reaching $scoped_css is pre-sanitised
+// (sgs_css_length_value() / sgs_colour_value() / allowlisted attribute enums), so no
+// un-sanitised value survives to here.
+$style_tag = ! empty( $scoped_css ) ? '<style>' . wp_strip_all_tags( implode( '', $scoped_css ) ) . '</style>' : '';
 
 ob_start();
 

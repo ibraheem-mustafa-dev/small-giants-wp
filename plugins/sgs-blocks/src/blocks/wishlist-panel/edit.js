@@ -8,13 +8,8 @@
  */
 import { __ } from '@wordpress/i18n';
 import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
-import {
-	PanelBody,
-	TextControl,
-	ToggleControl,
-	RangeControl,
-	__experimentalUnitControl as UnitControl, // eslint-disable-line camelcase
-} from '@wordpress/components';
+import { PanelBody, TextControl, ToggleControl, RangeControl } from '@wordpress/components';
+import { UnitControl } from '../../components/primitives';
 import { SgsColourPanel, ResponsiveControl, fillRow, textRow } from '../../components';
 
 /**

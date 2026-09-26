@@ -29,7 +29,38 @@
 		"sgs": {
 			"headerEssential": true,
 			"iconPicker": true,
-			"imageControls": false
+			"imageControls": false,
+			"elements": {
+				"icon": {
+					"label": "Icon",
+					"order": 1,
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:color": "iconColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "iconColourHover"
+							}
+						}
+					}
+				},
+				"badge": {
+					"label": "Count badge",
+					"order": 2,
+					"clusters": [
+						"fill",
+						"text"
+					],
+					"attrMap": {
+						"css:background-color": "badgeBackgroundColour",
+						"css:color": "badgeTextColour"
+					}
+				}
+			}
 		}
 	},
 	"attributes": {

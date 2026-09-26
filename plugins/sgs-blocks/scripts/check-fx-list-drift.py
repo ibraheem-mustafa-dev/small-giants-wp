@@ -775,9 +775,15 @@ def evaluate(src: Sources) -> list[Violation]:
     # parse_non_effect_modules()'s own docstring above — it uses a data-sgs-loop
     # attribute, not the data-sgs-fx grammar SHIPPED_EFFECTS governs. That docstring
     # claimed I9 already ignored it; the diff below never actually subtracted it —
-    # fixed here so the claim and the code agree.
+    # fixed here so the claim and the code agree. `lottie` (Tier H, Spec 38 §1.2a,
+    # D1151) is the same shape again: sgs/media's own `mediaType: 'lottie'` control
+    # writes `data-sgs-fx="lottie"` directly from includes/lottie-render.php, never
+    # from the generic fx picker — generated-fx-effect-meta.json already marks it
+    # `in_picker: false` on purpose, so adding it to SHIPPED_EFFECTS would offer a
+    # second, redundant control and break I1's picker/meta agreement instead of
+    # fixing anything.
     BLOCK_DEDICATED_EFFECTS = frozenset(
-        { "draggable", "flip", "image-sequence", "carousel-loop" }
+        { "draggable", "flip", "image-sequence", "carousel-loop", "lottie" }
     )
     for effect in sorted(set(registry_effects) - set(shipped) - BLOCK_DEDICATED_EFFECTS):
         violations.append(Violation(

@@ -359,6 +359,19 @@
       ],
       "reason": "RULED 2026-08-26 (D808), per-instance — same shape as sgs/info-box.shadowHover and sgs/team-member.cardShadowHover (see those entries above). `shadowHover` ships beside the pre-existing `shadowColourHover` (block.json) and the pair feeds sgs_shadow_decls()/sgs_shadow_value_composed(). The panel's ENTIRE shadow vocabulary is four slugs (subtle/raised/floating/glow) with NO colour input anywhere, so deleting the block's attr swaps a brand-colour swatch for a four-word dropdown. `shadowHover` (the hover SHAPE half) was added 2026-09-07 to complete cta-section's existing shadowColourHover with the missing shape control per Bean's ruling that hover state needs shape AND colour — this is the exact case D796/D808 examined and refused deleting.",
       "disposition": "by-design"
+    },
+    {
+      "check": "parent-child-duplicate",
+      "block": "sgs/notice-message",
+      "attr": "textColour",
+      "severity": "parent-child:heuristic",
+      "keeper": "BOTH — parent sets the inheritable default, child overrides one instance (same ruling as sgs/accordion-item, 2026-08-21)",
+      "sources": [
+        "sgs/notice-message edit.js: parent-level control for \"textColour\"",
+        "sgs/text (mounted via this block's InnerBlocks template, role \"text\"): its own native typography/colour controls"
+      ],
+      "reason": "Verified against render.php/helpers.php: sgs_notice_message_bar_css() paints '.{uid}{color:...}' on the message's OWN scoped wrapper (helpers.php), not on the child sgs/text directly. The message's default-uncoloured sgs/text child has no colour of its own set, so it inherits this parent colour via normal CSS cascade — a real, live effect, not a dead-by-specificity leftover. sgs/text's own colour control still overrides it for one instance via specificity. Same two-jobs pattern already ruled by Bean for sgs/accordion-item: KEEP BOTH.",
+      "disposition": "by-design"
     }
   ],
   "_meta": {

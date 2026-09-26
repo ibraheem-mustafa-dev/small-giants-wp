@@ -21,7 +21,7 @@
 	justify-content: center;
 }
 
-.sgs-wishlist-link__icon svg {
+:where(.sgs-wishlist-link__icon svg) {
 	width: 24px;
 	height: 24px;
 }
@@ -53,7 +53,7 @@
 	top: 2px;
 	right: 2px;
 	background-color: var(--wp--preset--color--accent, #1e6091);
-	color: var(--wp--preset--color--white, #fff);
+	color: var(--wp--preset--color--text-inverse, #fff);
 }
 
 .sgs-wishlist-link__badge--visible {

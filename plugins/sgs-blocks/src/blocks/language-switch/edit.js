@@ -14,8 +14,6 @@ import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import {
 	PanelBody,
 	TextControl,
-	ToggleGroupControl,
-	ToggleGroupControlOption,
 	Button,
 	Flex,
 	FlexItem,
@@ -31,6 +29,7 @@ import {
 	SgsLengthControl,
 	LinkPopoverField,
 } from '../../components';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 const LENGTH_UNITS = [
 	{ value: 'px', label: 'px', default: 8 },

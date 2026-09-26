@@ -49,7 +49,7 @@
 }
 
 .sgs-wishlist-panel__row-thumb--placeholder {
-	background: var(--wp--preset--color--light, #eee);
+	background: var(--wp--preset--color--surface-alt, #eee);
 	aspect-ratio: 1 / 1;
 	display: block;
 }
@@ -83,7 +83,7 @@
 
 .sgs-wishlist-panel__move-to-basket {
 	background-color: var(--wp--preset--color--accent, #1e6091);
-	color: var(--wp--preset--color--white, #fff);
+	color: var(--wp--preset--color--text-inverse, #fff);
 	border-radius: var(--wp--preset--spacing--10, 4px);
 }
 
@@ -130,7 +130,7 @@
 	line-height: 44px;
 	padding: 0 1rem;
 	background-color: var(--wp--preset--color--accent, #1e6091);
-	color: var(--wp--preset--color--white, #fff);
+	color: var(--wp--preset--color--text-inverse, #fff);
 	text-decoration: none;
 	border-radius: var(--wp--preset--spacing--10, 4px);
 }
@@ -139,7 +139,7 @@
    (src/blocks/wishlist-panel/save-for-later.js). Scoped here (not
    sgs/cart's stylesheet — that block's own build only touches its flyout
    lines) since this is the same JS module that inserts it. */
-.sgs-save-for-later {
+:where(.sgs-save-for-later) {
 	min-height: 44px;
 	padding: 0 0.75rem;
 	margin-left: 0.5rem;

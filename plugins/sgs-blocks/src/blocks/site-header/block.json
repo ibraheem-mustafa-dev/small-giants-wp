@@ -387,6 +387,14 @@
 		"bgVideoMobile": {
 			"type": "object"
 		},
+		"bgLottie": {
+			"type": "integer",
+			"default": 0
+		},
+		"bgLottieLoop": {
+			"type": "boolean",
+			"default": true
+		},
 		"contentBandPadding": {
 			"type": "object",
 			"default": {

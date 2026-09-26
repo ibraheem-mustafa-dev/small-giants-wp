@@ -27,7 +27,6 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
-			"imageControls": true,
 			"boxFamilies": {
 				"padding": [
 					"panelPadding"
