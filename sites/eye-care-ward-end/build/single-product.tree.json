@@ -177,6 +177,11 @@
                   "url": "#lens-configurator",
                   "inheritStyle": "primary",
                   "note": "from +£59.00",
+                  "minHeight": {
+                    "desktop": 56
+                  },
+                  "minHeightUnit": "px",
+                  "transitionDuration": 250,
                   "widthType": {
                     "desktop": "full"
                   },

@@ -449,11 +449,20 @@
 	right: 12px;
 	width: 30px;
 	height: 30px;
+	border-color: color-mix( in srgb, var( --wp--preset--color--border, #d4dbe5 ) 94%, var( --wp--preset--color--text, #1a202c ) );
 	background-color: color-mix( in srgb, var( --wp--preset--color--surface-alt, #fff ) 94%, transparent );
 	color: var( --wp--preset--color--text, #1a202c );
 	font-size: 14px;
 	font-weight: 400;
 	transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* The shared partial's dark fill on hover and focus, restated at this
+   rule's specificity so the resting fill above does not mask it. */
+.sgs-choice-flow--layout-showcase .sgs-info-toggle:hover,
+.sgs-choice-flow--layout-showcase .sgs-info-toggle:focus-visible {
+	background-color: var( --wp--preset--color--text, #1a202c );
+	color: var( --wp--preset--color--text-inverse, #f1f5f9 );
 }
 
 @keyframes sgs-choice-flow-question-fade {
