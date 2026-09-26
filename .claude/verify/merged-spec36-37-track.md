@@ -300,10 +300,12 @@ strategic plan's Gate 3C entry):
 2. Each unit row cites its live report with `verdict: PASS`.
 3. `node plugins/sgs-blocks/scripts/audit-inline-styling.js --check` exits 0 and
    `python plugins/sgs-blocks/scripts/no-inline/check-no-inline.py` passes against a reachable canary.
-4. Two composed real headers match their reference rows: the pill on fixture page 3734 (lamalama) and
-   the capped-width header on page 3733 against the reference Bean names, with equal left and right
-   gaps at 1440px, a mega panel whose width equals the header's and a dropdown centred on its parent
-   item. Bean's eye is co-authoritative (R-31-13).
+4. Two composed headers are 100% visual copies of their references, at 375, 768 and 1440: a copy
+   of lamalama's floating pill and a copy of the Indus Foods Mega Menu draft. Every panel's position
+   and width match the reference's measured cells (the Indus draft centres each panel on the page:
+   mega 1080px, About and Trade 620px, More 300px; Bean 2026-09-26), and the header's left and right
+   gaps are equal at 1440px. The structural fixtures 3733 and 3734 are test rigs on Mama's content,
+   not these copies. Bean's eye is co-authoritative (R-31-13).
 5. Spec 36, Spec 37, this verify doc and LEDGER state the model.
 
 ## Wave 4 — Proof gate (clones)

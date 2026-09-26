@@ -211,7 +211,8 @@ visually. `none` means neither.
 | ‖ | U-15 — **DONE** | Self-changing header message (rotate, random, live clock) on `notice-banner`. No overlap with header or nav infrastructure | M-07 | eye | medium | `notice-banner/*`, new `notice-message/` |
 | ‖ | U-17 — **DONE** | The Lottie player (DEC-13, section 1h): Spec 38 Tier H, the fourth media type, the wrapper background and the logo substrate | M-33 | design | high | `includes/lottie-*.php`, `src/shared/effects/{fx-lottie,lottie-adapter}.js`, `src/vendor-modules/lottie-light.js`, the media atoms, `media/`, `hero/`, `responsive-logo/`, `class-sgs-container-wrapper.php` |
 
-**U-1 — done.** Shipped: mega close-grace reads `submenuCloseGrace`; force-solid paints the header's own
+**U-1 — done** (live `reports/visual-diff/container-2026-09-23.md`, `nav-bar-menu-2026-09-23.md` and
+`nav-drawer-2026-09-23.md`, each `verdict: PASS`). Shipped: mega close-grace reads `submenuCloseGrace`; force-solid paints the header's own
 resting background; per-tier `zIndex` on `sgs/site-header` with drawer stacking derived from it;
 `submenuIntentDelay` + `submenuOpenOn` (hover or click); the surface-ground trio (`surfaceBlur`,
 `surfaceSaturate`, `surfaceOpacity`) aligned across `site-header`, `mega-panel`, `nav-drawer`, `container`,
@@ -375,7 +376,8 @@ Munches pink on cream read 2.24:1); the brand colour stays as the Hover row fill
 at 1440 with the `exit-cells` geometry fixture: 0 violations.
 
 **U-13 — done** (design `.claude/reports/2026-09-26-u13-header-ink-design.md`, two-model council GO WITH FIXES,
-Bean sign-off; commits 0844bb1cf, 97b7df3a1, 93196a939, 31c2ed4c5, 51d80ff73; Spec 37 FR-37-50 and FR-37-51). The
+Bean sign-off; commits 0844bb1cf, 97b7df3a1, 93196a939, 31c2ed4c5, 51d80ff73; Spec 37 FR-37-50 and FR-37-51; live
+report `reports/visual-diff/section-ink-2026-09-26.md`, `verdict: PASS`). The
 header's colour follows the section behind it (`sectionInk` adapt or blend, ink and optional fill per tone), only where
 the header is see-through; menu links and header icons follow it over their own colour while live (Bean); photo sections are toned by a
 brightness measure taken at upload (`_sgs_top_tone`, `wp sgs media measure-tone`) with a `surfaceTone` override on
@@ -402,7 +404,7 @@ flat `gap`, so the editor preview failed with "Error loading block" (31c2ed4c5);
 states are not measurable live; the ink colours carry no `css_state`, so the converter cannot route a draft's CSS
 to them.
 
-**Lane C — U-12, U-15 and U-17 done** (designs `.claude/reports/2026-09-26-u12-furniture-design.md`, `.claude/reports/2026-09-26-u15-notice-message-design.md`, `.claude/reports/2026-09-26-u17-lottie-design.md` (two-model council GO WITH FIXES, Bean sign-off); live checks on sandybrown fixture pages 4070 `/qa-furniture/`, 4072 `/qa-notice/`, 4074 `/qa-wishlist/`, 4087 `/qa-lottie/`, trees in `plugins/sgs-blocks/scripts/nav-qa/lane-c/`). M-18, M-07 and M-33 move to `covered` (M-33 keeps lamalama's canvas mark as the accepted still). Researched with /research-buddies and /gh-research before building (Bean): the automatic dark palette (derived at snapshot push time, minimum-change rule, every colour checked against every ground it is used on, failing closed) and the two-tier wishlist (browser list merged into the account on log-in). The live check found and fixed: every media upload fatalling (a typed hook parameter; 039bd248d), the Lottie player never built (vendor list) and unstyled, the Media block's Lottie pause control unbound, `sgs/media` missing `lottie` in its enum, wishlist rows not refreshing and Move to basket failing for products with options, a 21px icon-only toggle, unpadded 24-hour clocks, and brand-pink links at 2.24:1. Existing backgrounds proved byte-identical before and after the wrapper change (23 of 23 elements on three live pages). Residue, named: Polylang/WPML as a language-list source; the customer account area and saved-item alerts (price drops, share by link) shipped as Spec 30 FR-30-14 and FR-30-15 (2026-09-26); per-item icons in nav menus; Lottie in the cloning pipeline (Lottie in `sgs/before-after` dropped, Bean 2026-09-26: a drag-compared animation has no real use); `extract-signatures.py` missing bracket-index and local-variable reads (`sgs/whatsapp-cta.showOn`); Bean's eye on U-15 (seen 2026-09-26: good; its rounded corners were the inline card style, now a full-width strip mode, c2737bd34).
+**Lane C — U-12, U-15 and U-17 done** (designs `.claude/reports/2026-09-26-u12-furniture-design.md`, `.claude/reports/2026-09-26-u15-notice-message-design.md`, `.claude/reports/2026-09-26-u17-lottie-design.md` (two-model council GO WITH FIXES, Bean sign-off); live checks on sandybrown fixture pages 4070 `/qa-furniture/`, 4072 `/qa-notice/`, 4074 `/qa-wishlist/`, 4087 `/qa-lottie/`, trees in `plugins/sgs-blocks/scripts/nav-qa/lane-c/`; live reports `reports/visual-diff/furniture-2026-09-26.md` (U-12), `notice-banner-2026-09-26.md` (U-15) and `lottie-2026-09-26.md` (U-17), each `verdict: PASS`). M-18, M-07 and M-33 move to `covered` (M-33 keeps lamalama's canvas mark as the accepted still). Researched with /research-buddies and /gh-research before building (Bean): the automatic dark palette (derived at snapshot push time, minimum-change rule, every colour checked against every ground it is used on, failing closed) and the two-tier wishlist (browser list merged into the account on log-in). The live check found and fixed: every media upload fatalling (a typed hook parameter; 039bd248d), the Lottie player never built (vendor list) and unstyled, the Media block's Lottie pause control unbound, `sgs/media` missing `lottie` in its enum, wishlist rows not refreshing and Move to basket failing for products with options, a 21px icon-only toggle, unpadded 24-hour clocks, and brand-pink links at 2.24:1. Existing backgrounds proved byte-identical before and after the wrapper change (23 of 23 elements on three live pages). Residue, named: Polylang/WPML as a language-list source; the customer account area and saved-item alerts (price drops, share by link) shipped as Spec 30 FR-30-14 and FR-30-15 (2026-09-26); per-item icons in nav menus; Lottie in the cloning pipeline (Lottie in `sgs/before-after` dropped, Bean 2026-09-26: a drag-compared animation has no real use); `extract-signatures.py` missing bracket-index and local-variable reads (`sgs/whatsapp-cta.showOn`); Bean's eye on U-15 (seen 2026-09-26: good; its rounded corners were the inline card style, now a full-width strip mode, c2737bd34).
 
 **Dark palette, the Mama's Munches refusal (fixed 2026-09-26).** Of the four refused colours, three were framework false alarms: `text-inverse`, `primary-text` and `accent-text` were paired with a fill by NAME, and those pairs already fail in light mode (cream on pink 2.4:1, olive on yellow 3.8:1). The real conflict was Mama's yellow `accent` buttons labelled in body `text`, which must turn light on the dark page. Fixed in the framework (Spec 33 FR-33-20): a name-guessed pair counts only when it reads in light mode (else a light-mode warning), and fill-scoped ink keeps a readable label inside the scope that paints text on a fill (`settings.custom.darkInk`, printed by `theme/sgs-theme/functions.php::dark_mode_ink_css`). Mama's now derives with no failures and no hand-set colours. Proved live on sandybrown with a temporary dark push (rolled back): the yellow button's label 8.77:1, page text 6.55:1; the same colours outside the button's scope measured 1.92:1 (the control). The same check found that a missing `settings.custom` key read as the whole settings array, which loaded dark mode on every site without a palette; fixed with `includes/helpers-global-settings.php::sgs_global_custom_setting` and gated by `scripts/check-nested-global-settings.py`. The notice banner also gained a full-width strip display mode and an icon size plus a trust-bar-style icon badge (`iconStyle`, `iconCircle*`).
 
@@ -588,11 +590,13 @@ Gate 3C passes when:
 3. `node plugins/sgs-blocks/scripts/audit-inline-styling.js --check` exits 0 and
    `python plugins/sgs-blocks/scripts/no-inline/check-no-inline.py` passes against a
    reachable canary.
-4. Two composed real headers match their reference rows: the pill on fixture page 3734
-   (lamalama) and the capped-width header on page 3733 against the Indus Foods Mega Menu
-   draft (section 1g), with equal left and right gaps at 1440px, a mega panel whose width equals the
-   header's and a dropdown centred on its parent item. Bean's eye is co-authoritative
-   (R-31-13).
+4. Two composed headers are 100% visual copies of their references, at 375, 768 and 1440: a
+   copy of lamalama's floating pill and a copy of the Indus Foods Mega Menu draft (section 1g).
+   Every panel's position and width match the reference's measured cells (the Indus draft
+   centres each panel on the page: mega 1080px, About and Trade 620px, More 300px; Bean
+   2026-09-26), and the header's left and right gaps are equal at 1440px. The structural
+   fixtures 3733 and 3734 are test rigs on Mama's content, not these copies. Bean's eye is
+   co-authoritative (R-31-13).
 5. Spec 36, Spec 37, the verify doc and `LEDGER.md` state the model.
 
 Bean's session for item 4 is booked at the last unit's close, with the evidence pack pre-built

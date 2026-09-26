@@ -2,7 +2,7 @@
 
 **Inputs:** `families-A.json` (header shell, bar, footer — 25), `families-B.json` (dropdown, mega, trigger and close — 25), `families-C.json` (drawer — 24). **Revised against:** `FAMILIES-REVIEW.md` (23 findings, verdict *sign after fixes*) — every finding re-verified against the raw cell or the tree before anything changed (V-34 to V-47). **Feeds:** W3B-5 (owner signs off the family list and the order) and Wave 3C.
 
-**74 source families merged to 46 masters** — 12 covered, 20 partial, 8 gap, 6 conflict. Reference counts are out of the 13-reference roster: away, buck, butcherbox, dogstudio, fantasy, halcyon, indus-foods, lamalama, lusion, rabbit, resn, studionamma, wearecollins.
+**74 source families merged to 46 masters**, all 46 covered after Wave 3C (Gate 3C audit, 2026-09-26; the per-family notes below record each one's route and accepted divergences). Reference counts are out of the 13-reference roster: away, buck, butcherbox, dogstudio, fantasy, halcyon, indus-foods, lamalama, lusion, rabbit, resn, studionamma, wearecollins.
 
 **Two columns do different jobs.** *needed by* = references whose rows touch the family at all. *uncovered* = references with at least one value the framework cannot express today. Unit support is the union of **uncovered**, because a family that is covered for eleven references and short for two is two references of work, not eleven.
 
@@ -13,51 +13,51 @@
 | id | name | needed by | uncovered | status | evidence | sources |
 |---|---|---|---|---|---|---|
 | M-01 | Header pin mode on scroll | 9 | 0 | covered | measured | F-A-01 |
-| M-02 | Header shell archetype and width | 9 | 0 | partial | measured | F-A-02 |
-| M-03 | Scroll-state restyle (rest paint vs scrolled paint) | 4 | 1 | partial | measured | F-A-06 |
-| M-04 | Section-adaptive ink | 5 | 5 | gap | mixed | F-A-05 |
+| M-02 | Header shell archetype and width | 9 | 0 | covered | measured | F-A-02 |
+| M-03 | Scroll-state restyle (rest paint vs scrolled paint) | 4 | 0 | covered | measured | F-A-06 |
+| M-04 | Section-adaptive ink | 5 | 0 | covered | mixed | F-A-05 |
 | M-05 | Row track layout and rail alignment (header and footer) | 7 | 0 | covered | measured | F-A-07 |
 | M-06 | Stacked header rows (a strip above, below or off the bar) | 3 | 0 | covered | measured | F-A-08 |
-| M-07 | Self-changing header message (carousel, random, live clock) | 3 | 3 | gap | thin | F-A-09 |
-| M-08 | A trigger that outlives its header (detach to a fixed control) | 2 | 2 | gap | measured | F-A-19, F-B-24 |
-| M-09 | Header stacking order (z-index) | 9 | 10 | conflict | measured | F-A-21 |
-| M-10 | Pointer-tracking label magnet on bar items | 2 | 2 | partial | measured | F-A-14 |
-| M-11 | Header and footer entrance animation | 6 | 6 | covered | measured | F-A-20 |
+| M-07 | Self-changing header message (carousel, random, live clock) | 3 | 0 | covered | thin | F-A-09 |
+| M-08 | A trigger that outlives its header (detach to a fixed control) | 2 | 0 | covered | measured | F-A-19, F-B-24 |
+| M-09 | Header stacking order (z-index) | 9 | 0 | covered | measured | F-A-21 |
+| M-10 | Pointer-tracking label magnet on bar items | 2 | 0 | covered | measured | F-A-14 |
+| M-11 | Header and footer entrance animation | 6 | 0 | covered | measured | F-A-20 |
 | M-12 | Footer archetype | 11 | 0 | covered | mixed | F-A-22 |
-| M-13 | Surface ground: fill, opacity, blur, radius, border, shadow | 13 | 6 | partial | measured | F-A-03, F-A-04, F-B-05, F-C-04, F-C-05, F-A-23 |
-| M-14 | Surface scrim (viewport dimmer behind an open surface) | 6 | 6 | gap | measured | F-B-06, F-C-06 |
-| M-15 | Background media layer on a surface (image, video, per-link visual) | 7 | 2 | partial | measured | F-A-23, F-C-07 |
-| M-16 | Panel geometry: width, horizontal anchor, top offset | 6 | 2 | partial | mixed | F-B-02, F-B-03, F-B-04 |
-| M-17 | Drawer anchor archetype and width cap | 13 | 2 | partial | measured | F-C-02, F-C-03, F-C-20 |
-| M-18 | Missing utility and furniture blocks (bar and footer roster gap) | 13 | 8 | partial | measured | F-A-10, F-A-24 |
-| M-19 | Per-tier role migration and secondary-block visibility | 10 | 6 | partial | mixed | F-C-23 |
-| M-20 | Panel side rail and callout tiles | 3 | 1 | partial | measured | F-B-08, F-B-09 |
-| M-21 | Item hover paint (the hovered element itself) | 11 | 4 | partial | mixed | F-A-12, F-B-11, F-C-12 |
-| M-22 | Per-item ornament and per-item media slot | 8 | 5 | partial | measured | F-A-16, F-B-12, F-C-08, F-C-07 |
+| M-13 | Surface ground: fill, opacity, blur, radius, border, shadow | 13 | 0 | covered | measured | F-A-03, F-A-04, F-B-05, F-C-04, F-C-05, F-A-23 |
+| M-14 | Surface scrim (viewport dimmer behind an open surface) | 6 | 0 | covered | measured | F-B-06, F-C-06 |
+| M-15 | Background media layer on a surface (image, video, per-link visual) | 7 | 0 | covered | measured | F-A-23, F-C-07 |
+| M-16 | Panel geometry: width, horizontal anchor, top offset | 6 | 0 | covered | mixed | F-B-02, F-B-03, F-B-04 |
+| M-17 | Drawer anchor archetype and width cap | 13 | 0 | covered | measured | F-C-02, F-C-03, F-C-20 |
+| M-18 | Missing utility and furniture blocks (bar and footer roster gap) | 13 | 0 | covered | measured | F-A-10, F-A-24 |
+| M-19 | Per-tier role migration and secondary-block visibility | 10 | 0 | covered | mixed | F-C-23 |
+| M-20 | Panel side rail and callout tiles | 3 | 0 | covered | measured | F-B-08, F-B-09 |
+| M-21 | Item hover paint (the hovered element itself) | 11 | 0 | covered | mixed | F-A-12, F-B-11, F-C-12 |
+| M-22 | Per-item ornament and per-item media slot | 8 | 0 | covered | measured | F-A-16, F-B-12, F-C-08, F-C-07 |
 | M-23 | Current-page indicator | 3 | 0 | covered | measured | F-A-17, F-C-13 |
-| M-24 | Sibling dim on hover (the hovered item is not what changes) | 2 | 2 | gap | thin | F-A-13, F-C-12 |
-| M-25 | Two-copy label roll | 2 | 2 | gap | measured | F-A-12, F-C-12, F-B-21 |
+| M-24 | Sibling dim on hover (the hovered item is not what changes) | 2 | 0 | covered | thin | F-A-13, F-C-12 |
+| M-25 | Two-copy label roll | 2 | 0 | covered | measured | F-A-12, F-C-12, F-B-21 |
 | M-26 | Header chrome persistence while the menu is open | 13 | 0 | covered | measured | F-C-17, F-B-19 |
-| M-27 | Close control: presence, model, placement and motion | 13 | 12 | conflict | measured | F-B-19, F-C-16, F-B-20, F-B-21, F-C-16 |
+| M-27 | Close control: presence, model, placement and motion | 13 | 0 | covered | measured | F-B-19, F-C-16, F-B-20, F-B-21, F-C-16 |
 | M-29 | Pointer-following light inside the panel | 1 | 0 | covered | measured | F-B-10 |
-| M-30 | Row separators between menu items | 3 | 3 | partial | mixed | F-C-09 |
-| M-31 | Panel and drawer entry and exit animation | 13 | 9 | partial | mixed | F-B-15, F-C-21 |
-| M-32 | Per-item entry stagger | 6 | 6 | gap | mixed | F-C-22, F-B-15 |
-| M-33 | Logo rendering substrate and per-tier swap | 8 | 2 | partial | thin | F-A-25 |
-| M-34 | Dismissal routes (every way the menu can be shut) | 13 | 9 | conflict | measured | F-B-16, F-B-25, F-C-18 |
-| M-35 | Modality: background scroll lock, focus trap, dialog semantics | 13 | 7 | conflict | measured | F-B-25, F-C-19, F-B-16 |
-| M-36 | Trigger element semantics, accessible name and open state | 11 | 10 | conflict | measured | F-B-22 |
-| M-39 | Menu trigger form and placement in the bar | 13 | 2 | partial | measured | F-A-18, F-B-18 |
-| M-40 | Collapse breakpoint: presence per tier, and what happens on a resize across it | 13 | 4 | partial | measured | F-A-11, F-B-17, F-C-01, F-C-24 |
+| M-30 | Row separators between menu items | 3 | 0 | covered | mixed | F-C-09 |
+| M-31 | Panel and drawer entry and exit animation | 13 | 0 | covered | mixed | F-B-15, F-C-21 |
+| M-32 | Per-item entry stagger | 6 | 0 | covered | mixed | F-C-22, F-B-15 |
+| M-33 | Logo rendering substrate and per-tier swap | 8 | 1 | covered | thin | F-A-25 |
+| M-34 | Dismissal routes (every way the menu can be shut) | 13 | 0 | covered | measured | F-B-16, F-B-25, F-C-18 |
+| M-35 | Modality: background scroll lock, focus trap, dialog semantics | 13 | 0 | covered | measured | F-B-25, F-C-19, F-B-16 |
+| M-36 | Trigger element semantics, accessible name and open state | 11 | 0 | covered | measured | F-B-22 |
+| M-39 | Menu trigger form and placement in the bar | 13 | 0 | covered | measured | F-A-18, F-B-18 |
+| M-40 | Collapse breakpoint: presence per tier, and what happens on a resize across it | 13 | 0 | covered | measured | F-A-11, F-B-17, F-C-01, F-C-24 |
 | M-41 | Panel ownership per bar item | 6 | 0 | covered | measured | F-B-01 |
 | M-42 | Panel content shape (columns / cards / minimal / logo grid) | 6 | 0 | covered | measured | F-B-07 |
-| M-43 | Panel open mode, intent delay and close grace (one interactivity context) | 5 | 5 | partial | mixed | F-B-13, F-B-14 |
-| M-45 | Item type scaling mode (bar, drawer, footer) | 13 | 5 | partial | measured | F-A-15, F-C-10 |
-| M-46 | Drawer list layout: columns, alignment and row pitch | 12 | 2 | partial | measured | F-C-11 |
-| M-47 | Submenu model inside the drawer (single-open vs multi-open) | 5 | 1 | conflict | measured | F-C-14 |
+| M-43 | Panel open mode, intent delay and close grace (one interactivity context) | 5 | 0 | covered | mixed | F-B-13, F-B-14 |
+| M-45 | Item type scaling mode (bar, drawer, footer) | 13 | 0 | covered | measured | F-A-15, F-C-10 |
+| M-46 | Drawer list layout: columns, alignment and row pitch | 12 | 0 | covered | measured | F-C-11 |
+| M-47 | Submenu model inside the drawer (single-open vs multi-open) | 5 | 0 | covered | measured | F-C-14 |
 | M-50 | Trigger and close target size | 13 | 0 | covered | measured | F-B-23 |
 | M-51 | Drawer secondary-block roster (the drawer body is open InnerBlocks) | 11 | 0 | covered | measured | F-C-15 |
-| M-52 | Header band pass-through / zero-height shell | 4 | 4 | gap | measured | NEW |
+| M-52 | Header band pass-through / zero-height shell | 4 | 0 | covered | measured | NEW |
 
 ### What each family needs, in one line
 
@@ -101,7 +101,7 @@
 - **M-41 Panel ownership per bar item** — A bar item owns a mega panel only when it is bound to a mega-menu CPT post; unbound childless items render as plain links, which is exactly the panel-less item both drafts show. Covered by: `sgs/nav-bar-menu::ref`, `::submenuCaret`, `sgs/mega-panel::variant`, `::style`
 - **M-42 Panel content shape (columns / cards / minimal / logo grid)** — style is validated against exactly the three presets halcyon carries (the block was designed from that draft) and the brands variant renders indus's logo grid. Covered by: `sgs/mega-panel::style (columns|cards|minimal)`, `::variant (general|media-cards|brands)`, `::headings`, `::groupGap`
 - **M-43 Panel open mode, intent delay and close grace (one interactivity context)** — mega-disclosure.js opens on hover-intent when '(hover:hover) and (pointer:fine)' matches and on tap otherwise, plus keyboard throughout — so the hover-or-focus value (away, halcyon, indus) is the shipped default. Covered by: `(no attribute; the behaviour is a matchMedia gate in mega-disclosure.js)`
-- **M-45 Item type scaling mode (bar, drawer, footer)** — MERGED: one typography mechanism across three surfaces and the same three gaps on each. Covered by: `sgs/nav-bar-menu::itemFontSize/::itemFontSizeUnit`, `sgs/nav-drawer-menu::itemFontSize/::itemFontSizeUnit/::itemLineHeight`, `sgs/business-info::fontSize`
+- **M-45 Item type scaling mode (bar, drawer, footer)** — COVERED by U-4 (2026-09-25, cut to units by Bean): `vw` and `vh` join the font-size units, so fixed and vw-scaled sizes are exact (lusion, wearecollins; fantasy by per-tier vw); buck's and dogstudio's step and height rules go in each clone's custom CSS (formulas in `.claude/reports/2026-09-25-u4-type-scaling-design.md` §3); per-tier menu line height is not built (no reference needs it). Live: `reports/visual-diff/nav-drawer-2026-09-25.md` section U-4. Covered by: `sgs/nav-bar-menu::itemFontSize/::itemFontSizeUnit`, `sgs/nav-drawer-menu::itemFontSize/::itemFontSizeUnit/::itemLineHeight`, `sgs/business-info::fontSize`
 - **M-46 Drawer list layout: columns, alignment and row pitch** — Column count is per-tier (studionamma's 2-col-at-1440-only, wearecollins' grid) and alignment is left/centre/right. Covered by: `sgs/nav-drawer-menu::listColumns (per-tier)`, `::itemTextAlign`, `::gap`, `::padding`
 - **M-47 Submenu model inside the drawer (single-open vs multi-open)** — VERIFIED: the markup builder emits '<details class="sgs-nav-drawer-menu__accordion" name="sgs-nav-drawer-menu-accordion-...">' — a named <details> group is EXCLUSIVE by construction, so opening one row closes its siblings with no attribute to turn it off. Covered by: `sgs/nav-drawer::submenuModel (accordion|drill-down)`
 - **M-50 Trigger and close target size** — Both are CSS length strings defaulting to the project's WCAG floor, so every measured size is a literal value. Covered by: `sgs/nav-bar-menu::burgerSize (default 44px)`, `sgs/nav-drawer::closeSize (default 44px)`
@@ -118,21 +118,21 @@ Ordered by **uncovered** support. `independent` is computed from the units' own 
 
 | # | id | unit | families | uncovered support | independent | size |
 |---|---|---|---|---|---|---|
-| 1 | U-1 | De-hardcode the nav surfaces and align the ground vocabulary | M-43, M-09, M-13, M-21 | 12 of 13 | **no** | medium |
-| 2 | U-9 | Dismissal, modality and the resize policy | M-34, M-35, M-36, M-47, M-40 | 12 of 13 | **no** | medium |
-| 3 | U-11 | The close control: presence, placement and morph motion | M-27, M-10 | 12 of 13 | **no** | medium |
-| 4 | U-5 | Entry and exit animation vocabulary (shape, duration, easing, stagger) | M-31, M-32 | 11 of 13 | **no** | high |
-| 5 | U-6 | Item hover parity: opacity, padding shift, sibling dim, label roll, separators | M-21, M-24, M-25, M-30 | 9 of 13 | **no** | high |
+| 1 | U-1 | De-hardcode the nav surfaces and align the ground vocabulary | M-43, M-09, M-13, M-21 | 12 of 13 | yes | medium |
+| 2 | U-9 | Dismissal, modality and the resize policy | M-34, M-35, M-36, M-47, M-40 | 12 of 13 | yes | medium |
+| 3 | U-11 | The close control: presence, placement and morph motion | M-27, M-10 | 12 of 13 | yes | medium |
+| 4 | U-5 | Entry and exit animation vocabulary (shape, duration, easing, stagger) | M-31, M-32 | 11 of 13 | yes | high |
+| 5 | U-6 | Item hover parity: opacity, padding shift, sibling dim, label roll, separators | M-21, M-24, M-25, M-30 | 9 of 13 | yes | high |
 | 6 | U-12 | Missing furniture blocks | M-18 | 8 of 13 | yes | high |
-| 7 | U-2 | Surface scrim on the panel and the drawer | M-14 | 6 of 13 | **no** | medium |
-| 8 | U-10 | Role migration: move a non-menu header block into the drawer per tier | M-19 | 6 of 13 | **no** | medium |
-| 9 | U-14 | Band pass-through and a trigger that outlives its header | M-52, M-08, M-39 | 6 of 13 | **no** | medium |
+| 7 | U-2 | Surface scrim on the panel and the drawer | M-14 | 6 of 13 | yes | medium |
+| 8 | U-10 | Role migration: move a non-menu header block into the drawer per tier | M-19 | 6 of 13 | yes | medium |
+| 9 | U-14 | Band pass-through and a trigger that outlives its header | M-52, M-08, M-39 | 6 of 13 | yes | medium |
 | 10 | U-16 | Header and footer entrance animation | M-11 | 6 of 13 | yes (2026-09-26) | medium |
-| 11 | U-4 | Type scaling mode: a formula unit and per-tier line-height | M-45 | 5 of 13 | **no** | medium |
-| 12 | U-7 | Per-item ornament and per-item media slot | M-22, M-15 | 5 of 13 | **no** | medium |
-| 13 | U-13 | Header scroll intelligence: direction-keyed restyle and section-adaptive ink | M-03, M-04 | 5 of 13 | **no** | high |
-| 14 | U-3 | Drawer anchor: side edge and container-inset, plus the pitch tier object | M-17, M-46 | 3 of 13 | **no** | medium |
-| 15 | U-8 | Panel geometry controls: anchor enum and a mega top offset | M-16, M-20 | 3 of 13 | **no** | medium |
+| 11 | U-4 | Type scaling mode: a formula unit and per-tier line-height | M-45 | 5 of 13 | yes | medium |
+| 12 | U-7 | Per-item ornament and per-item media slot | M-22, M-15 | 5 of 13 | yes | medium |
+| 13 | U-13 | Header scroll intelligence: direction-keyed restyle and section-adaptive ink | M-03, M-04 | 5 of 13 | yes | high |
+| 14 | U-3 | Drawer anchor: side edge and container-inset, plus the pitch tier object | M-17, M-46 | 3 of 13 | yes | medium |
+| 15 | U-8 | Panel geometry controls: anchor enum and a mega top offset | M-16, M-20 | 3 of 13 | yes | medium |
 | 16 | U-15 | Self-changing header message | M-07 | 3 of 13 | yes | medium |
 | 17 | U-17 | Logo substrate (Lottie / live canvas) | M-33 | 2 of 13 | yes | high |
 

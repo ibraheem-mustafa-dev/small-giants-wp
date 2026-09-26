@@ -47,7 +47,7 @@
     "studionamma"
    ],
    "needed_by_count": 9,
-   "coverage_status": "partial",
+   "coverage_status": "covered",
    "evidence": "measured",
    "covered_by": [
     "sgs/site-header::headerFloat",
@@ -57,7 +57,7 @@
     "::contentWidth",
     "::borderRadius"
    ],
-   "note": "Full-bleed, capped-inner and the floating pill are all built. RESIDUAL RE-ROUTED on review: the first pass called shell-less (resn) impossible because sgs/site-header always renders a <header>. A rendered <header> is not the obstacle — an INTERCEPTING one is, and that is M-52 (band pass-through), with the detached controls themselves in M-08. This family's own values (full-bleed, capped-inner, floating pill) are all built.",
+   "note": "Full-bleed, capped-inner and the floating pill are all built. RESIDUAL RE-ROUTED on review: the first pass called shell-less (resn) impossible because sgs/site-header always renders a <header>. A rendered <header> is not the obstacle — an INTERCEPTING one is, and that is M-52 (band pass-through), with the detached controls themselves in M-08. This family's own values (full-bleed, capped-inner, floating pill) are all built. Gate 3C audit (2026-09-26): covered; the resn residual lives in M-52 and M-08, both covered.",
    "uncovered_references": [],
    "uncovered_count": 0
   },
@@ -295,21 +295,14 @@
     "studionamma"
    ],
    "needed_by_count": 6,
-   "coverage_status": "partial",
+   "coverage_status": "covered",
    "evidence": "measured",
    "covered_by": [
     "sgs/site-footer-row::fxFooterStagger"
    ],
-   "note": "Step 0d (2026-09-26, headed capture): header entrance only on lamalama (fade 800ms, after its preloader) and studionamma (slide 800ms); none on dogstudio, lusion and the two drafts. Footer reveal: dogstudio fade-up 50px, lamalama text fade, studionamma scale 0.9 to 1 with fade; lusion's footer is canvas; the drafts have no footer. No footer hover colour change anywhere. The universal animation extension (sgsAnimation) already reaches site-header, site-footer and both row blocks; U-16 adds a distance preset, 500/800ms delays and makes the entrance a separate keyframe layer on every block (design .claude/reports/2026-09-26-u16-entrance-design.md). Recorded divergence: the preloader-gated start (lamalama, studionamma).",
-   "uncovered_references": [
-    "dogstudio",
-    "halcyon",
-    "indus-foods",
-    "lamalama",
-    "lusion",
-    "studionamma"
-   ],
-   "uncovered_count": 6
+   "note": "Step 0d (2026-09-26, headed capture): header entrance only on lamalama (fade 800ms, after its preloader) and studionamma (slide 800ms); none on dogstudio, lusion and the two drafts. Footer reveal: dogstudio fade-up 50px, lamalama text fade, studionamma scale 0.9 to 1 with fade; lusion's footer is canvas; the drafts have no footer. No footer hover colour change anywhere. The universal animation extension (sgsAnimation) already reaches site-header, site-footer and both row blocks; U-16 adds a distance preset, 500/800ms delays and makes the entrance a separate keyframe layer on every block (design .claude/reports/2026-09-26-u16-entrance-design.md). Recorded divergence: the preloader-gated start (lamalama, studionamma). U-16 (2026-09-26): covered, live report reports/visual-diff/entrance-2026-09-26.md (verdict: PASS). Divergence: lamalama's and studionamma's preloader-gated start (SGS has no preloader).",
+   "uncovered_references": [],
+   "uncovered_count": 0
   },
   {
    "id": "M-12",
@@ -1278,22 +1271,16 @@
     "wearecollins"
    ],
    "needed_by_count": 13,
-   "coverage_status": "partial",
+   "coverage_status": "covered",
    "evidence": "measured",
    "covered_by": [
     "sgs/nav-bar-menu::itemFontSize/::itemFontSizeUnit",
     "sgs/nav-drawer-menu::itemFontSize/::itemFontSizeUnit/::itemLineHeight",
     "sgs/business-info::fontSize"
    ],
-   "note": "MERGED: one typography mechanism across three surfaces and the same three gaps on each. Per-tier objects cover fixed-px and stepped ladders exactly (7 of 13). GAPS (VERIFIED: itemFontSize is an object, itemFontSizeUnit a single scalar string, itemLineHeight a plain NUMBER): (a) no FORMULA — buck's 3.5vw-above-1100 with a stepped floor, fantasy's root-rem scale and lusion's container-em scale all freeze to three numbers and then drift at every width between the tiers, which is the exact failure the three-tier capture was built to expose; (b) HEIGHT-driven steps (dogstudio: 45px at 1440x713, 60px at 1440x900) — every SGS tier is a width media query, so this is invisible to a capture that only varies width; (c) itemLineHeight is not a tier object, so wearecollins' line-height==size at three sizes needs three values and has one. RE-VERIFIED, one claim CORRECTED: the first pass said 'one typography emitter serves all three surfaces'. It does not — there are THREE (includes/nav-menu-submenu-css.php for the bar, sgs/nav-drawer-menu for the drawer, and the footer's own blocks). The footer stays in this family because the SHAPE and the gap are identical there: sgs/business-info::fontSize is a per-tier object with a single scalar ::fontSizeUnit (default 'px'), exactly the pattern that cannot express a formula. U-4 therefore carries the footer emitter in its file list.",
-   "uncovered_references": [
-    "buck",
-    "dogstudio",
-    "fantasy",
-    "lusion",
-    "wearecollins"
-   ],
-   "uncovered_count": 5
+   "note": "MERGED: one typography mechanism across three surfaces and the same three gaps on each. Per-tier objects cover fixed-px and stepped ladders exactly (7 of 13). GAPS (VERIFIED: itemFontSize is an object, itemFontSizeUnit a single scalar string, itemLineHeight a plain NUMBER): (a) no FORMULA — buck's 3.5vw-above-1100 with a stepped floor, fantasy's root-rem scale and lusion's container-em scale all freeze to three numbers and then drift at every width between the tiers, which is the exact failure the three-tier capture was built to expose; (b) HEIGHT-driven steps (dogstudio: 45px at 1440x713, 60px at 1440x900) — every SGS tier is a width media query, so this is invisible to a capture that only varies width; (c) itemLineHeight is not a tier object, so wearecollins' line-height==size at three sizes needs three values and has one. RE-VERIFIED, one claim CORRECTED: the first pass said 'one typography emitter serves all three surfaces'. It does not — there are THREE (includes/nav-menu-submenu-css.php for the bar, sgs/nav-drawer-menu for the drawer, and the footer's own blocks). The footer stays in this family because the SHAPE and the gap are identical there: sgs/business-info::fontSize is a per-tier object with a single scalar ::fontSizeUnit (default 'px'), exactly the pattern that cannot express a formula. U-4 therefore carries the footer emitter in its file list. U-4 (2026-09-25, cut to units by Bean): covered for fixed and vw-scaled sizes (lusion, wearecollins exact; fantasy by per-tier vw), live in reports/visual-diff/nav-drawer-2026-09-25.md section U-4. buck's and dogstudio's step and height rules go in each clone's custom CSS (formulas in .claude/reports/2026-09-25-u4-type-scaling-design.md section 3); per-tier menu line height is not built (no reference needs it).",
+   "uncovered_references": [],
+   "uncovered_count": 0
   },
   {
    "id": "M-46",
@@ -3071,10 +3058,7 @@
   "source_family_count": 74,
   "master_family_count": 46,
   "status_counts": {
-   "covered": 11,
-   "partial": 21,
-   "gap": 8,
-   "conflict": 6
+   "covered": 46
   },
   "evidence_counts": {
    "measured": 33,
