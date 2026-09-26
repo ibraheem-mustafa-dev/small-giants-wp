@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 43
-spec_version: 1.7.0
+spec_version: 1.8.0
 status: active
 owner: framework
 date: 2026-09-14
@@ -77,6 +77,17 @@ derived_from:
     step reads ANY attribute of the flow's product (FR-43-10); an attribute that creates variations resolves the
     variation and its price, one that does not is an unpriced answer on the bag line (FR-43-21). FR-43-4 (email
     ending), FR-43-5 and FR-43-7 built; FR-43-22 adds the buybox button that opens a popup.
+  - **2026-09-26 (v1.8.0), owner review of the live journeys (Bean, 2026-09-26):**
+    - Picking an option selects it; a footer Continue advances. The Continue button is muted with aria-disabled
+      until a choice is made. `advanceMode: tap` keeps tap-to-advance.
+    - The final step's Add to basket and Buy now sit in the footer opposite Back.
+    - Progress counts finished steps.
+    - A summary stage shows the finished product.
+    - The showcase layout (FR-43-24) is modelled on the Eye Care lens draft.
+    - Options get term images, badges and descriptions; titles are bold; the round or text Close is set by
+      `closeStyle`.
+    - The architecture (FR-43-25): the saved flow owns content and look; products link a flow; the guided buybox
+      (FR-43-23) stays product-options-only.
 ---
 
 # Spec 43 — `sgs/choice-flow`
@@ -184,9 +195,18 @@ its add-on prices re-read from the list; the lines are copied to the order item'
 checkout and the order as one line, e.g. "Single vision · Thin 1.67 · Polarised grey". No client-sent price,
 total or label is ever used.
 
-**FR-43-19 — live price panel (v1.4.0).** A flow with priced add-on steps can show a running total beside its
-questions: the product's current price, then one row per chosen add-on (its label and price, "included" for 0),
-then the total. Display only; FR-43-18 is the authority.
+**FR-43-19 — summary panel (v1.4.0; v1.8.0 summary).** A flow can show a summary beside its questions
+(`showPricePanel`). It holds:
+- the product's image, swapped for the resolved variation's image
+- the product name, with the chosen options joined by " · "
+- the base row (label `summaryBaseLabel`, default "Base price")
+- one row per chosen priced option (the option's label and price, "included" for 0)
+- the total
+- an optional help note (`stageNote`, `stageNoteLink`)
+
+It sits beside the steps on wide containers (`summaryPosition` start or end) and collapses to a "Your box · total"
+row on narrow ones. It is the stage of the showcase layout (FR-43-24). Display only; FR-43-18 is the authority.
+Code: `includes/choice-flow-summary.php`, `choice-flow/summary.js`.
 
 **FR-43-20 — what is being bought (v1.4.0).** A purchase terminal in a flow with add-on steps adds the page's
 current product: on a product page, the variation the shopper has chosen there (colour, size), which the buybox
@@ -328,7 +348,7 @@ finished segments carry the chosen value ("Chocolate · Chip · Vegan · 20") an
 - **Code:** new files only (`buybox/render.php` and `product-card/view.js` are over the size cap):
   `includes/buybox-guided.php`, `buybox/guided.js`, `buybox/GuidedPanel.js`.
 
-**FR-43-24 (v1.8.0) — showcase layout for full-screen flows.** `sgs/choice-flow` `layout: compact | showcase`,
+**FR-43-24 (v1.8.0) — showcase layout for full-screen flows.** `sgs/choice-flow` `flowLayout: compact | showcase`,
 set on the saved flow (FR-43-25). `compact` is the single column for a flow inline on a page. `showcase` is for a flow
 shown full screen and spends the screen the way the Eye Care draft's lens flow does (the draft's `lensOpen` dialog):
 - **Frame:** a full-height column. At the top, a header bar (logo, the eyebrow "Product · Step name", Close) on the
@@ -504,14 +524,17 @@ eye-care-test. **Variation source, purchase and email ending SHIPPED 2026-09-26*
 steps over any attribute, FR-43-5, FR-43-4), proven live on sandybrown.
 
 **Phase 4 — modal delivery + Mama's Munches acceptance criterion.** FR-43-6 SHIPPED 2026-09-25 (linked flow, inline
-or in a fullscreen `sgs/modal`); FR-43-7 and FR-43-22 SHIPPED 2026-09-26 (Mama's two journeys on sandybrown
+or in a fullscreen `sgs/modal`); FR-43-7 and FR-43-22 SHIPPED 2026-09-26 (Mama's journeys on sandybrown
 product 3990).
+
+**v1.8.0 follow-up (FR-43-23 to 25 and the Continue model): built and live 2026-09-26.** Its closing QA runs in
+`plans/2026-09-26-choice-flow-ux-and-guided-buybox.md` (Status, "Remaining").
 
 **Phase 5 — everything else, independently deferrable, no fixed order.** Spec 42 FR-42-9
 (mandatory rebuild, only after Phase 1 proves stable and the instance count is known),
 FR-42-7b, FR-42-10/FR-43-14 (clone-orchestrator CPT-creation gap), FR-42-13 (analytics).
 
-## 10. Requirement index (v1.6.0)
+## 10. Requirement index (v1.8.0)
 
 | FR | One-line |
 |---|---|
@@ -536,10 +559,10 @@ FR-42-7b, FR-42-10/FR-43-14 (clone-orchestrator CPT-creation gap), FR-42-13 (ana
 | FR-43-16 | Per-option help-text `?` toggle (universal, not lens-specific) — grounded in the real lens-flow source |
 | FR-43-17 | Add-on price list: a second priced-step source (site-wide groups of `{key, label, price}`, one settings page) |
 | FR-43-18 | The list is the only price authority: `{group, key}` from the browser, resolved and priced server-side, stored on the cart and order line |
-| FR-43-19 | Live price panel beside the questions (display only) |
+| FR-43-19 | Summary panel: product image, chosen options, priced rows, total; the showcase stage (display only) |
 | FR-43-20 | What is bought: the page's chosen variation, or a set product; a "no add-ons" exit |
 | FR-43-21 | Unpriced answers on the path and fields in the terminal step travel with the purchase; file fields via a session-stamped cart upload |
 | FR-43-25 | Architecture: the saved flow owns content and look; products link to a flow and the buybox wires the popup; the guided buybox stays product-options-only with term-level image, badge and description |
-| FR-43-24 | Showcase layout: full-screen flows use a stage (the finished product, running lines, total) beside large image-led option cards, as in the Eye Care lens draft |
+| FR-43-24 | Showcase layout (`flowLayout`): full-screen flows use a stage (the finished product, running lines, total) beside large image-led option cards, as in the Eye Care lens draft |
 | FR-43-23 | Guided buybox: one option group at a time on the product page, a meter that doubles as the summary, a finish-choosing guard |
 | FR-43-22 | The buybox button can open a popup (`addToCartAction: modal`) so a flow finishes a purchase started on the product page |

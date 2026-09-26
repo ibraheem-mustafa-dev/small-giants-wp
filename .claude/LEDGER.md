@@ -56,12 +56,12 @@ listing card, product page, shop; the lens configurator (a Choice Flow post, `le
 full screen from "Add my prescription"; four questions incl. "Your prescription" per pair; one bag line at £268 for
 Distance/Thin/Polarised; tampered add-on or file requests refused); the size guide (`sgs_modal` 461); bag drawer
 detail rows; checkout placed an order end to end (store now GB-only with the draft's three delivery options, UK County
-hidden, free delivery pre-selected, staff download link for uploaded prescriptions). Spec 43 is v1.7.0 (FR-43-6 linked
-flow, FR-43-21 answers and fields, product-option steps, email ending, flow chrome). The final design review ran; its owed items are in the plan's Status block. No
+hidden, free delivery pre-selected, staff download link for uploaded prescriptions). Spec 43 is v1.8.0; the lens configurator (post 463) runs the showcase layout, compared
+with the draft at 1440/768/375 and its differences fixed. The final design review ran; its owed items are in the plan's Status block. No
 payment gateway is enabled on eye-care-test (a launch item for Bean). Header, footer, mobile menu and mega panels stay
 with the nav track. No blockers.
 
-**Resume from:** the plan's Status block, "Wave C design review" (owed choice-flow chrome and shop polish) and Phase 6
+**Resume from:** the plan's Status block, "Wave C design review" (owed shop polish) and Phase 6
 (launch readiness); task 6 detail and parked items in `plans/2026-09-25-eye-care-bag-checkout-prescription.md`.
 
 **Parked (detail in the plan's Status block and the task plans):** owed product-page and shop polish; theme default
@@ -229,7 +229,7 @@ does not produce real matches on real data for it to consume.
 | **Classless recognition (Spec 44) — built; AI-fallback tier parked** | `specs/44-CLASSLESS-REPEATER-RECOGNITION.md`; `.claude/reports/2026-09-18-spec44-full-pipeline-stage-breakdown.md` |
 | **Structural-facts trio (repeaters + composition + singletons)** — built and validated, consumer wiring open | `specs/31-UNIVERSAL-CLONING-PIPELINE.md` §13.9-§13.10 |
 | **Classless FIELD resolution (Spec 45)** — all 4 tiers built, no real input yet | `specs/45-CLASSLESS-FIELD-RESOLUTION.md` |
-| **Form CPT + choice-flow** — Phases 0-4 shipped: add-on and product-option pricing, email ending, linked flows in popups, flow chrome; Mama's two journeys live on sandybrown (product 3990). Phase 5 (rebuild existing forms, delete guard, clone-pipeline CPT creation, analytics) open | `specs/42-SGS-FORM-CPT-AND-PRICING.md` + `specs/43-SGS-CHOICE-FLOW.md` + `plans/2026-09-14-spec42-43-form-choiceflow-phase-plan.md` |
+| **Form CPT + choice-flow** — Phases 0-4 and the v1.8.0 follow-up (Continue model, showcase layout, product-linked flows, guided buybox) live on sandybrown and eye-care-test at 5c17a44d0. Open: the follow-up's closing QA (`plans/2026-09-26-choice-flow-ux-and-guided-buybox.md` Remaining 2-5), then Phase 5 (form rebuild, delete guard); pipeline and analytics parked in `plans/2026-09-26-form-choiceflow-pipeline-and-analytics.md` | `specs/42-SGS-FORM-CPT-AND-PRICING.md` + `specs/43-SGS-CHOICE-FLOW.md` + `plans/2026-09-14-spec42-43-form-choiceflow-phase-plan.md` |
 | Nav menu colour/state system | `specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` |
 | Per-draft accepted design differences | `sites/mamas-munches/accepted-differences.md` |
 | Cloning pipeline spec + binding rules | `specs/31-UNIVERSAL-CLONING-PIPELINE.md` |

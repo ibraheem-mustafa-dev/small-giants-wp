@@ -131,7 +131,10 @@ key), with the owed Wave C polish alongside.
   2026-09-25): progress colour, optional header (logo, step eyebrow, Close), sticky footer, per-option badge,
   description and default. Applied to the lens configurator (post 463, `build/gen_lens_configurator.py`, 2026-09-26):
   accent progress fill, header with step eyebrow and Close, sticky footer, the draft's option descriptions, "Standard
-  · 1.5" and "Send it later" pre-selected with their badges; the £268 path proven at 1440 and 375. Owed, shop polish (already listed above): colour swatches, filter panels open by
+  · 1.5" and "Send it later" pre-selected with their badges; the £268 path proven at 1440 and 375. Since 2026-09-26 it
+  runs the showcase layout (Spec 43 FR-43-24; the draft's left aside is the stage), compared with the draft at 1440,
+  768 and 375; the "Frame" base label and text Close are set in `plans/2026-09-26-choice-flow-ux-and-guided-buybox.md`
+  Remaining step 2. Owed, shop polish (already listed above): colour swatches, filter panels open by
   default, the results count and sort row. For Bean: the size buttons read the real lens width (55 / 58 / 62, from
   the jpopticians sizes chosen 2026-09-25) where the draft says S / M / L. For the nav track: `floatingHideNearInline`
   (default `true`, f9af77509) steps the floating WhatsApp bubble aside while the product page's "Need advice?"

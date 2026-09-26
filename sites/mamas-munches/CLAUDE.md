@@ -31,6 +31,13 @@ On sandybrown this is product **3990** "Classic Lactation Cookies" (`sites/mamas
 Pack prices (Bean, 2026-09-26): 8 = £9.50 (£1.19 each), 20 = £21.50 (£1.08 each), 40 = £38.00 (£0.95 each); there is
 no 12-pack.
 
+Choice-flow demos on sandybrown (Spec 43):
+- **Full customisation:** saved flow 4008 (`mamas-build-your-box`, showcase) in a popup on page 4012.
+- **Product page:** product 3990 links flow 4010 (`mamas-choose-flavours`) through `_sgs_choice_flow`, so its buybox
+  opens the flow.
+- **Guided buybox:** page 4083.
+- **Trees:** the trees for all three are in `build/`.
+
 ### Wanted but not built
 
 - **Fruit flavour add-ins:** strawberry, blueberry, banana, others (extends the "Flavour" attribute)

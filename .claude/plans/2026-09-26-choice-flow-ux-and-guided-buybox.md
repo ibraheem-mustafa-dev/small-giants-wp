@@ -27,8 +27,7 @@ date: 2026-09-26
   - Two panel names collided in the shared component map (now `FlowLayoutPanel` / `FlowNavigationPanel`).
 
 **Remaining (next session, in order):**
-1. Confirm the 5c17a44d0 deploy landed on both sites (payload verify), or redeploy with
-   `build-deploy.py --target <site> --blocks-only`.
+1. DONE: 5c17a44d0 is deployed to sandybrown and eye-care-test (payload verify passed on both, 2026-09-26).
 2. Eye Care: set `summaryBaseLabel` "Frame" and `closeStyle` "text" in `gen_lens_configurator.py`, rebuild post
    463, then re-run the draft comparison at 1440, 768 and 375. It passes when no structural difference remains.
 3. Mama's: set flow 4010's `openerLabel` "Choose your flavours".
@@ -95,7 +94,7 @@ guided buybox reuses the flow's progress meter, footer and answer rows (a buybox
 write the design into Spec 43 as FR-43-23 before Wave 2.
 
 ## Wave 1.5: showcase layout (one agent, after Wave 1 lands, about 20 min)
-The main thread wires Wave 1 first. One agent then owns FR-43-24 on top of it: the root `layout` setting, the frame and body grid CSS, the stage (extending Wave 1's summary panel), the question `intro` attribute, the large option-card styling and the narrow-container collapse.
+The main thread wires Wave 1 first. One agent then owns FR-43-24 on top of it: the root `flowLayout` setting, the frame and body grid CSS, the stage (extending Wave 1's summary panel), the question `intro` attribute, the large option-card styling and the narrow-container collapse.
 
 **Reference build: the Eye Care lens flow** (Bean, 2026-09-26: cloning it faithfully establishes the showcase layout
 and closes the lens-flow gap in one step).

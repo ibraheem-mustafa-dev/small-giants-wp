@@ -13,17 +13,15 @@ docscore_grade: not-run (ad-hoc, in-flight — see phase-planner Stage 7 note on
 - Phase 3: add-on price list (FR-43-17 to 20) as the Eye Care lens configurator; product-option steps reading any
   product attribute (FR-43-10/10a), purchase from the flow's own variation (FR-43-5), email-capture ending with a
   server-read rate limit (FR-43-4). Commits 63d1bf426, 0bb4fc61d, 812a4d93f, 137c8e3de, a8b00ef82.
-- Phase 4: linked flows inline or in a popup (FR-43-6); Mama's Munches (FR-43-7) on sandybrown product 3990 as two
-  journeys: full customisation in a popup (page 4012, flow 4008) and pack on the product page then "Choose your
-  flavours" (flow 4010, per-product template, buybox popup mode FR-43-22). Flow chrome (progress colour, header,
-  sticky footer, option badge/description/default) built and applied to the Eye Care configurator.
+- Phase 4: linked flows inline or in a popup (FR-43-6); Mama's Munches (FR-43-7) on sandybrown product 3990: full
+  customisation in a popup (page 4012, flow 4008) and pack on the product page with the rest in a popup (product 3990
+  links flow 4010 through `_sgs_choice_flow`; its buybox opens it, FR-43-25). Flow chrome built and applied to the
+  Eye Care configurator.
 - Proof: live QA 2026-09-26 at 1440 and 375 (journeys, cart rows, tampered variation 400, cross-page state,
-  resume, editor round trip, email 200/429/400/403/404, Eye Care 268 path); evidence in c:	mp\qa-choiceflow\.
-- Open, recorded here: Zainab confirms the pack prices (8 = 6, 12 = 8.50, 20 = 12, 40 = 22); the Zookies product
-  (513, draft) is not set up; the flavour term "chocolate" is lower-case (shared with test product 540); on Mama's
-  palette the focus outline (primary pink on cream) is 2.25:1 against the 3:1 target (a client-palette choice);
-  a flow that covers only some of a product's variation attributes does not merge the rest from the page buybox
-  (every product built so far has one variation attribute).
+  resume, editor round trip, email 200/429/400/403/404, Eye Care 268 path); evidence in c:\tmp\qa-choiceflow\.
+- The v1.8.0 follow-up (Continue model, showcase, product link, guided buybox) is in
+  `2026-09-26-choice-flow-ux-and-guided-buybox.md`. A flow that asks only some of its product's price-changing
+  options now gets an editor warning (all in the flow or all on the page, D9).
 
 # Phase 0 — Fix the fail-open `requireLogin` bug (Spec 42 FR-42-0)
 
