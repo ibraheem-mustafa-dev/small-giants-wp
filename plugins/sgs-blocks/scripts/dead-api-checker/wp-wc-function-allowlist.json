@@ -453,6 +453,7 @@
     "wc_get_account_endpoint_url",
     "wc_get_account_menu_items",
     "wc_get_order_status_name",
-    "get_privacy_policy_url"
+    "get_privacy_policy_url",
+    "wp_print_inline_script_tag"
   ]
 }

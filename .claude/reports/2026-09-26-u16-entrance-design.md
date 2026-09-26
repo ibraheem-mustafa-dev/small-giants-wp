@@ -115,6 +115,12 @@ runs outside the cascade entirely.
 10. **Browser floor.** `animate()` with an implicit end keyframe and the standalone `translate`/`scale`/`rotate`
     properties: Chrome 104, Safari 14.1, Firefox 72 (all current). Where `animate` is missing the observer skips it:
     content shows, unanimated.
+11. **Nothing paints before its entrance.** A `wp_head` script
+    (`includes/animation-attributes.php::print_entrance_pending_flag`) adds `sgs-entrance-pending` to `<html>`, and
+    `extensions.css` holds `[data-sgs-animation]` at opacity 0 while it is present (motion allowed only). The observer
+    lifts it once every in-view entrance holds its start pose (elements within 200px of the viewport get their paused
+    pose synchronously first); the flag lifts itself after 3s, so a blocked observer never leaves content hidden, and
+    without JavaScript it never exists.
 
 ### 4.5 Proof for the rest
 
@@ -148,8 +154,9 @@ Revision 3 (main thread at build, 2026-09-26, before any code was written): the 
 list, and the revision-2 done rule (`animation: none`) would have switched the shrink off for good. The mechanism moved
 to script animations (§4.4); it goes back past the same two reviewers on the delta. Recorded, not changed: the
 observer loads in the footer, so an element in view at load (the header) may paint visible before its entrance starts;
-the live probe's first samples after first paint decide it (§7); a head script cannot help (the elements do not exist
-yet). Adversarial on revision 3, GO WITH FIXES: paused animations on every below-fold element (fixed: created only
+the live probe's first samples after first paint decide it (§7). Measured at build: at 375 the header painted visible,
+vanished, then faded in. Fixed with a head flag (§4.4 item 11), since a head script cannot animate elements that do not
+exist yet but can mark `<html>` before the first paint. Adversarial on revision 3, GO WITH FIXES: paused animations on every below-fold element (fixed: created only
 near the viewport), printing paused content hidden (fixed: `beforeprint`). Declined: loading the observer in the head. Census on
 revision 3, GO WITH FIXES: every theme and snapshot easing token is a value `animate()` accepts; the observer is not
 loaded in the editor; only the DB seeder parses `extensions.css`; the drawer's `whenAnimationsSettle` sees entrance
