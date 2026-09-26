@@ -13,7 +13,7 @@
 		"plugins/sgs-blocks/scripts/inspector-scan/rules/01-tab-group.js",
 		"plugins/sgs-blocks/scripts/placement-reach.py",
 		"plugins/sgs-blocks/src/blocks/extensions/animation.js",
-		"plugins/sgs-blocks/src/blocks/extensions/hover-effects.js",
+		"plugins/sgs-blocks/src/blocks/extensions/hover-effects/index.js",
 		"plugins/sgs-blocks/src/blocks/extensions/image-controls.js",
 		"plugins/sgs-blocks/src/blocks/extensions/parallax.js"
 	]

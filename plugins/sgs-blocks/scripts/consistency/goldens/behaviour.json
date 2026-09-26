@@ -73,7 +73,7 @@
     },
     "hoverEffects": {
      "shape": "the universal hover-effects.js extension (scale, shadow preset, image zoom, grayscale, stagger delay, easing, duration, focus ring, block link, click-ripple)",
-     "path": "src/blocks/extensions/hover-effects.js",
+     "path": "src/blocks/extensions/hover-effects/",
      "gating": "opt-in via supports.sgs.enabledExtensions:[\"hover\"] (D551)",
      "verifiedLive": true,
      "note": "Confirmed live 2026-08-19: reached via the 'Click Effects' panel plus a shadow-preset SelectControl already named in golden-controls.json's own shadow row as reaching '67 blocks... invisible to any per-block scan'. Same underlying extension.",

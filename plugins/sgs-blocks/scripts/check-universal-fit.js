@@ -270,7 +270,7 @@ const EXTENSIONS = [
 	},
 	{
 		id: 'hover',
-		file: 'hover-effects.js',
+		file: 'hover-effects/',
 		panel: 'Hover Effects',
 		attrs: [
 			'sgsHoverBgColour', 'sgsHoverTextColour', 'sgsHoverBorderColour',
@@ -291,7 +291,7 @@ const EXTENSIONS = [
 	},
 	{
 		id: 'blockLink',
-		file: 'hover-effects.js',
+		file: 'hover-effects/',
 		panel: 'Block Link',
 		attrs: [ 'sgsBlockLink', 'sgsBlockLinkTarget' ],
 		hideSlug: 'blockLink',
@@ -301,7 +301,7 @@ const EXTENSIONS = [
 	},
 	{
 		id: 'clickEffects',
-		file: 'hover-effects.js',
+		file: 'hover-effects/',
 		panel: 'Click Effects',
 		attrs: [ 'sgsClickEffect', 'sgsClickRippleColour', 'sgsClickRippleDuration' ],
 		hideSlug: 'clickEffects',
