@@ -173,35 +173,11 @@ def test_real_usage_pairs_are_collected_and_mostly_pass(snapshot_with_dark, caps
     # button label on the `accent` fill (styles.elements.button.color) — a real
     # declared usage the OLD narrow surface+surface-alt default never checked.
     assert ("text", "accent", "text") in {(f, b, k) for f, b, k in pairs}
+    # The button label is resolved by fill-scoped ink, not by the site-wide text
+    # value (which turns light for the dark page).
     accent_dark = result["dark"].get("accent") or palette["accent"]
-    text_dark = result["dark"].get("text") or palette["text"]
-    assert ddp.contrast_ratio(text_dark, accent_dark) >= ddp.TEXT_TARGET - 1e-9
-
-
-def test_real_snapshot_has_named_irresolvable_conflicts(snapshot_with_dark):
-    """Checking every text-role colour against EVERY surface (not just the base
-    `surface` + `surface-alt`, the old narrow default) surfaces genuine, real
-    conflicts already baked into Mama's Munches' palette: `text-inverse`,
-    `primary-text` and `accent-text` are each paired (by name) with a light brand
-    fill that itself stays light in dark mode (brand colours only need 3:1
-    against a surface, which a light colour clears trivially against a near-black
-    one) — but the SAME slug is also checked against every surface, and no single
-    lightness can be both dark enough for the light fill and light enough for the
-    dark surfaces. Per D.3 this fails closed (the value is left unchanged rather
-    than guessing) and is reported here so Bean can decide a `_sgsDark.palette`
-    override for whichever of these the client's real markup actually renders."""
-    result = ddp.derive(snapshot_with_dark)
-    failing_slugs = {f["slug"] for f in result["failures"]}
-    assert failing_slugs == {"text", "text-inverse", "primary-text", "accent-text"}, failing_slugs
-    # text-inverse's own value must stay unchanged (near-white) — it already
-    # passes every SURFACE at that value (including the un-darkened footer-bg,
-    # 12.66:1); only the `primary` fill pairing fails. That unchanged value is
-    # exactly what keeps the real footer readable; see the negative control below
-    # for what happens when this broader check is missing.
-    palette = _palette_dict(snapshot_with_dark)
-    assert result["dark"]["text-inverse"] == palette["text-inverse"]
-    text_inverse_failures = [f for f in result["failures"] if f["slug"] == "text-inverse"]
-    assert {f["against"] for f in text_inverse_failures} == {"primary"}
+    label = result["ink"]["element"]["button"]["base"]["text"]
+    assert ddp.contrast_ratio(label, accent_dark) >= ddp.TEXT_TARGET - 1e-9
 
 
 def test_negative_control_without_the_all_surfaces_check_the_footer_defect_is_invisible(
@@ -216,6 +192,9 @@ def test_negative_control_without_the_all_surfaces_check_the_footer_defect_is_in
     (the OLD, narrow behaviour `_default_pairs_for_slug` used before this fix)
     and prove the gate goes green while the real render would still be broken."""
     monkeypatch.setattr(ddp, "_surface_bg_slugs", lambda palette, roles: [])
+    # The name-guessed `primary` pairing is now dropped (it fails in light mode),
+    # so force it back: this control is about the all-surfaces check alone.
+    monkeypatch.setattr(ddp, "_guessed_fill", ddp._text_pairs_with_fill)
     result = ddp.derive(snapshot_with_dark)
     assert not any(f["slug"] == "text-inverse" for f in result["failures"]), (
         "NEGATIVE CONTROL FAILED: the gate still caught the conflict even with "
@@ -280,22 +259,6 @@ def test_a_midtone_brand_colour_is_lightened_and_passes(snapshot_with_dark):
             assert ddp.contrast_ratio(derived, hexc) >= 3.0 - 1e-9, (
                 f"cookie-brown still fails 3:1 against {slug} after the search"
             )
-
-
-def test_text_inverse_is_still_one_of_the_named_conflicts(snapshot_with_dark):
-    """Superseded premise: this test used to assert `text-inverse` always passes
-    against `primary` alone, because that was the ONLY pairing the old code ever
-    checked it against. `test_real_snapshot_has_named_irresolvable_conflicts`
-    covers this properly now (Mama's real palette has no lightness that
-    satisfies both `primary` and every surface at once) — this test just pins
-    the specific pairing that fails, so a future change to `_text_pairs_with_fill`
-    is still caught here even if the broader conflict set changes shape."""
-    result = ddp.derive(snapshot_with_dark)
-    palette = _palette_dict(snapshot_with_dark)
-    dark_primary = result["dark"]["primary"]
-    dark_text_inverse = result["dark"]["text-inverse"]
-    assert dark_text_inverse == palette["text-inverse"], "text-inverse must stay unchanged (fail-closed)"
-    assert ddp.contrast_ratio(dark_text_inverse, dark_primary) < 4.5
 
 
 def test_hand_set_palette_value_is_used_and_checked(real_snapshot):
@@ -383,3 +346,76 @@ def test_dark_palette_contrast_error_names_every_pair():
     )
     assert "x" in str(err)
     assert "3.0" in str(err) or "3.0:1" in str(err)
+
+
+# ---------------------------------------------------------------------------
+# Name-guessed fill pairs and fill-scoped ink (the Mama's Munches refusal,
+# diagnosed 2026-09-26: three name-guessed false alarms, one real
+# text-on-yellow-button conflict).
+# ---------------------------------------------------------------------------
+
+
+def test_real_snapshot_derives_with_no_failures(snapshot_with_dark):
+    """Mama's Munches turns on with zero hand-set colours: page text turns light,
+    the yellow button keeps its dark label through fill-scoped ink, and the three
+    name-guessed pairings that already fail in light mode are warnings."""
+    result = ddp.derive(snapshot_with_dark)
+    palette = _palette_dict(snapshot_with_dark)
+    assert result["failures"] == [], result["failures"]
+    assert result["ink"] == {"element": {"button": {"base": {"text": palette["text"]}}}}
+    assert {w["slug"] for w in result["warnings"]} == {"text-inverse", "primary-text", "accent-text"}
+    assert all(w["mode"] == "light" for w in result["warnings"])
+    # Page text really inverted: light enough for every dark surface.
+    for slug, hexc in result["dark"].items():
+        if ddp.classify_role(slug, {}) == "surface":
+            assert ddp.contrast_ratio(result["dark"]["text"], hexc) >= ddp.TEXT_TARGET - 1e-9, slug
+    # text-inverse stays its light value: it is the footer's text (dark ground).
+    assert result["dark"]["text-inverse"] == palette["text-inverse"]
+
+
+def test_negative_control_without_scoped_ink_the_button_conflict_returns(snapshot_with_dark, monkeypatch):
+    """NEGATIVE CONTROL. Strip every usage pair's scope (the pre-fix behaviour:
+    no selector owns it, so the colour must serve every ground site-wide) and the
+    real text-on-yellow-button conflict comes back as a failure."""
+    real = ddp.collect_scoped_usage
+    monkeypatch.setattr(
+        ddp, "collect_scoped_usage",
+        lambda snap, pal: [(fg, bg, kind, None) for fg, bg, kind, _s in real(snap, pal)],
+    )
+    result = ddp.derive(snapshot_with_dark)
+    assert result["ink"] == {}
+    # One `text` value cannot be light for the page and dark for the yellow
+    # button, so the search leaves it unchanged and the gate names the surfaces.
+    assert any(f["slug"] == "text" for f in result["failures"]), result["failures"]
+
+
+def test_guessed_fill_pair_that_reads_in_light_mode_is_still_enforced():
+    """The light-mode filter only drops a guessed pair the site could not be
+    using: white `text-inverse` on a navy `primary` reads at 12:1 in light mode,
+    so it stays a dark-mode constraint."""
+    palette = {"surface": "#ffffff", "text": "#111111", "primary": "#1d3557", "text-inverse": "#ffffff"}
+    assert ddp._guessed_fill("text-inverse", palette) == "primary"
+    pairs = ddp._default_pairs_for_slug("text-inverse", "text", palette, ["surface"])
+    assert ("primary", ddp.TEXT_TARGET) in pairs
+    # ...and the same slug on a fill it cannot read on is dropped.
+    palette["primary"] = "#e68a95"
+    assert ddp._guessed_fill("text-inverse", palette) is None
+
+
+def test_ink_moves_the_label_when_its_light_value_fails_the_dark_fill(real_snapshot):
+    """A dark fill value the light label cannot read on (a hand-set mid-grey
+    accent) makes the ink search move the label, and the moved label passes."""
+    snap = copy.deepcopy(real_snapshot)
+    snap["_sgsDark"] = {"enabled": True, "palette": {"accent": "#555555"}}
+    result = ddp.derive(snap)
+    palette = _palette_dict(snap)
+    label = result["ink"]["element"]["button"]["base"]["text"]
+    assert label != palette["text"]
+    assert ddp.contrast_ratio(label, "#555555") >= ddp.TEXT_TARGET - 1e-9
+
+
+def test_scoped_usage_carries_element_block_and_state_scopes(real_snapshot):
+    palette = _palette_dict(real_snapshot)
+    scoped = ddp.collect_scoped_usage(real_snapshot, palette)
+    assert ("text", "accent", "text", ("element", "button", "base")) in scoped
+    assert ("surface", "primary-dark", "text", ("element", "button", "hover")) in scoped

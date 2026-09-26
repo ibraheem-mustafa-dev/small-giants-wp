@@ -192,6 +192,79 @@ function dark_mode_mapping_css( array $dark_colours ): string {
 }
 
 /**
+ * Fill-scoped dark ink (settings.custom.darkInk, written by
+ * scripts/derive-dark-palette.py): a text colour declared on a fill that stays
+ * light in dark mode keeps a readable value inside that scope only, so page text
+ * can invert while, for example, a bright button keeps its dark label.
+ *
+ * Shape: { kind: { name: { state: { slug: hex } } } } with kind `element` (a
+ * theme.json element, selector from WP_Theme_JSON::ELEMENTS), `block` (a block
+ * name, selector from wp_get_block_css_selector()) or `fill` (a palette slug,
+ * selector `.has-<slug>-background-color`); state `base` or a pseudo-class name.
+ *
+ * @param array $ink Raw settings.custom.darkInk.
+ * @return string CSS, or '' when nothing resolves.
+ */
+function dark_mode_ink_css( array $ink ): string {
+	$dark_css = '';
+	$auto_css = '';
+	foreach ( $ink as $kind => $names ) {
+		if ( ! is_array( $names ) ) {
+			continue;
+		}
+		foreach ( $names as $name => $states ) {
+			if ( ! is_array( $states ) ) {
+				continue;
+			}
+			$selector = '';
+			if ( 'element' === $kind && class_exists( 'WP_Theme_JSON' ) && isset( \WP_Theme_JSON::ELEMENTS[ $name ] ) ) {
+				$selector = \WP_Theme_JSON::ELEMENTS[ $name ];
+			} elseif ( 'block' === $kind && class_exists( 'WP_Block_Type_Registry' ) && function_exists( 'wp_get_block_css_selector' ) ) {
+				$block_type = \WP_Block_Type_Registry::get_instance()->get_registered( (string) $name );
+				$selector   = $block_type ? (string) wp_get_block_css_selector( $block_type ) : '';
+			} elseif ( 'fill' === $kind ) {
+				$fill     = preg_replace( '/[^a-z0-9-]/', '', strtolower( (string) $name ) );
+				$selector = '' !== $fill ? '.has-' . $fill . '-background-color' : '';
+			}
+			if ( '' === $selector ) {
+				continue;
+			}
+			foreach ( $states as $state => $slugs ) {
+				if ( ! is_array( $slugs ) ) {
+					continue;
+				}
+				$pseudo = 'base' === $state ? '' : ':' . preg_replace( '/[^a-z-]/', '', strtolower( (string) $state ) );
+				$decls  = '';
+				foreach ( $slugs as $slug => $hex ) {
+					$safe_slug = preg_replace( '/[^a-z0-9-]/', '', strtolower( (string) $slug ) );
+					$safe_hex  = sanitize_hex_color( (string) $hex );
+					if ( '' !== $safe_slug && $safe_hex ) {
+						$decls .= "--wp--preset--color--{$safe_slug}:{$safe_hex};";
+					}
+				}
+				if ( '' === $decls ) {
+					continue;
+				}
+				$parts = array_filter( array_map( 'trim', explode( ',', $selector ) ) );
+				$dark  = array();
+				$auto  = array();
+				foreach ( $parts as $part ) {
+					$dark[] = ':root[data-theme="dark"] ' . $part . $pseudo;
+					$dark[] = ':root[data-theme="auto"][data-prefers-dark="true"] ' . $part . $pseudo;
+					$auto[] = ':root:not([data-theme="light"]):not([data-theme="dark"]) ' . $part . $pseudo;
+				}
+				$dark_css .= implode( ',', $dark ) . '{' . $decls . '}';
+				$auto_css .= implode( ',', $auto ) . '{' . $decls . '}';
+			}
+		}
+	}
+	if ( '' === $dark_css ) {
+		return '';
+	}
+	return $dark_css . '@media (prefers-color-scheme: dark){' . $auto_css . '}';
+}
+
+/**
  * Preload the hero block background image on front-page/single posts.
  *
  * H15: The hero background image is the LCP element on most pages. Preloading
@@ -377,6 +450,12 @@ function enqueue_styles(): void {
 		// derived dark value while dark mode is active. Slugs vary per client, so this
 		// cannot live in the static stylesheet — built here from the resolved settings.
 		wp_add_inline_style( 'sgs-dark-mode', dark_mode_mapping_css( $sgs_dark_custom ) );
+
+		// Fill-scoped ink: printed after the mapping so a scope's own value wins there.
+		$sgs_dark_ink = wp_get_global_settings( array( 'custom', 'darkInk' ) );
+		if ( is_array( $sgs_dark_ink ) && ! empty( $sgs_dark_ink ) ) {
+			wp_add_inline_style( 'sgs-dark-mode', dark_mode_ink_css( $sgs_dark_ink ) );
+		}
 
 		// Shadows on a dark page: every theme shadow preset gets a derived dark variant (a black
 		// shadow at higher opacity plus a 1px light ring), generated from the theme's own presets

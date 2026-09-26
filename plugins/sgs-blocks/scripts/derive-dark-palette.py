@@ -22,6 +22,12 @@ machinery turns that into a `--wp--custom--dark--<slug>` custom property; the th
 side (functions.php::dark_mode_mapping_css) repoints `--wp--preset--color--<slug>` at
 it while dark mode is active.
 
+Fill-scoped ink: a text colour declared on a fill that stays light in dark mode
+inside one style scope (the button element, a block, a markup fill class) keeps a
+readable value in that scope only, output as `settings.custom.darkInk` and printed by
+functions.php::dark_mode_ink_css. A text slug paired with a fill only by its name
+counts only when that pair already reads in light mode (else a light-mode warning).
+
 Roles (any slug, not a fixed list — `_sgsDark.roles` overrides the name-based guess):
     surface  slug*, *-bg, background*, base*, and footer-bg (endswith '-bg' covers it).
              Mapped onto a dark band: the base `surface` slug sits at OKLCh L 0.18;
@@ -408,6 +414,21 @@ def _surface_bg_slugs(palette: dict, roles_override: dict) -> list[str]:
     return slugs
 
 
+def _guessed_fill(slug: str, palette: dict) -> Optional[str]:
+    """The fill a text slug's NAME says it sits on (`_text_pairs_with_fill`), kept
+    only when that pairing already reads in the LIGHT theme (4.5:1 with both light
+    values). A name-guessed pairing that fails in light mode is not how the site
+    uses the colour (Mama's Munches' cream `text-inverse` on its pink `primary`
+    measures 2.4:1), so it cannot be a dark-mode constraint: `derive()` reports it
+    as a light-mode warning instead."""
+    fill = _text_pairs_with_fill(slug, palette)
+    if not fill or fill not in palette or slug not in palette:
+        return None
+    if contrast_ratio(palette[slug], palette[fill]) < TEXT_TARGET - 1e-9:
+        return None
+    return fill
+
+
 def _default_pairs_for_slug(
     slug: str, role: str, palette: dict, surface_slugs: list[str]
 ) -> list[tuple[str, float]]:
@@ -419,8 +440,8 @@ def _default_pairs_for_slug(
     fill and never against the surfaces it is also used on."""
     if role == "text":
         pairs = [(s, TEXT_TARGET) for s in surface_slugs]
-        pair_with = _text_pairs_with_fill(slug, palette)
-        if pair_with and pair_with in palette:
+        pair_with = _guessed_fill(slug, palette)
+        if pair_with:
             pairs.append((pair_with, TEXT_TARGET))
         return pairs
     # border / brand / locked (locked is checked with the same background rule
@@ -482,7 +503,11 @@ def _pairs_from_markup(html: str, palette: dict) -> list[tuple[str, str, str]]:
 
 
 def _walk_style_scope(
-    obj: object, ancestor_bg: Optional[str], palette: dict, out: list
+    obj: object,
+    ancestor_bg: Optional[str],
+    palette: dict,
+    out: list,
+    scope: Optional[tuple[str, str, str]] = None,
 ) -> None:
     """Recurse into one theme.json style scope (an element, a block, a block's
     own element, or a pseudo-state of any of those), collecting every declared
@@ -505,7 +530,7 @@ def _walk_style_scope(
         own_bg = _preset_slug(color.get("background")) or ancestor_bg
         text_slug = _preset_slug(color.get("text"))
     if text_slug and own_bg and text_slug != own_bg and text_slug in palette and own_bg in palette:
-        out.append((text_slug, own_bg, "text"))
+        out.append((text_slug, own_bg, "text", scope))
     border = obj.get("border")
     if isinstance(border, dict):
         border_slug = _preset_slug(border.get("color"))
@@ -516,10 +541,11 @@ def _walk_style_scope(
             and border_slug in palette
             and ancestor_bg in palette
         ):
-            out.append((border_slug, ancestor_bg, "border"))
+            out.append((border_slug, ancestor_bg, "border", None))
     for key, sub in obj.items():
         if key.startswith(":") and isinstance(sub, dict):
-            _walk_style_scope(sub, own_bg, palette, out)
+            sub_scope = (scope[0], scope[1], key[1:]) if scope else None
+            _walk_style_scope(sub, own_bg, palette, out, sub_scope)
     elements = obj.get("elements")
     if isinstance(elements, dict):
         for el_obj in elements.values():
@@ -527,6 +553,14 @@ def _walk_style_scope(
 
 
 def collect_usage_pairs(snapshot: dict, palette: dict) -> list[tuple[str, str, str]]:
+    """Every real (foreground-slug, background-slug, kind) pair — see
+    `collect_scoped_usage`, which also says WHERE each one was declared."""
+    return [(fg, bg, kind) for fg, bg, kind, _scope in collect_scoped_usage(snapshot, palette)]
+
+
+def collect_scoped_usage(
+    snapshot: dict, palette: dict
+) -> list[tuple[str, str, str, Optional[tuple[str, str, str]]]]:
     """Every real (foreground-slug, background-slug, kind) pair the client's own
     snapshot actually declares. This is what catches a slug used in more than the
     one role-guessed context its name suggests — D.2's `text-inverse` rule was
@@ -538,19 +572,23 @@ def collect_usage_pairs(snapshot: dict, palette: dict) -> list[tuple[str, str, s
     root_bg = _preset_slug(root_color.get("background"))
     root_text = _preset_slug(root_color.get("text"))
 
-    pairs: list[tuple[str, str, str]] = []
+    # Each pair's scope is (kind, name, state): ("element", "button", "base"),
+    # ("block", "core/button", "hover"), ("fill", "<background-slug>", "base") for a
+    # markup pair; None where no single selector owns it (the root, a block's own
+    # nested element). A scope is what lets fill-scoped ink target just that element.
+    pairs: list[tuple[str, str, str, Optional[tuple[str, str, str]]]] = []
     if root_text and root_bg and root_text != root_bg and root_text in palette and root_bg in palette:
-        pairs.append((root_text, root_bg, "text"))
+        pairs.append((root_text, root_bg, "text", None))
 
     elements = styles.get("elements")
     if isinstance(elements, dict):
-        for el_obj in elements.values():
-            _walk_style_scope(el_obj, root_bg, palette, pairs)
+        for el_name, el_obj in elements.items():
+            _walk_style_scope(el_obj, root_bg, palette, pairs, ("element", el_name, "base"))
 
     blocks = styles.get("blocks")
     if isinstance(blocks, dict):
-        for block_style in blocks.values():
-            _walk_style_scope(block_style, root_bg, palette, pairs)
+        for block_name, block_style in blocks.items():
+            _walk_style_scope(block_style, root_bg, palette, pairs, ("block", block_name, "base"))
 
     for coll_key in ("templateParts", "customTemplates"):
         entries = snapshot.get(coll_key)
@@ -559,7 +597,8 @@ def collect_usage_pairs(snapshot: dict, palette: dict) -> list[tuple[str, str, s
                 if isinstance(entry, dict):
                     content = entry.get("content")
                     if isinstance(content, str) and content:
-                        pairs.extend(_pairs_from_markup(content, palette))
+                        for fg, bg, kind in _pairs_from_markup(content, palette):
+                            pairs.append((fg, bg, kind, ("fill", bg, "base")))
 
     return pairs
 
@@ -569,15 +608,24 @@ def derive(snapshot: dict) -> dict:
         {
           "enabled": bool,
           "dark": {slug: hex, ...},   # empty when not enabled
+          "ink": {kind: {name: {state: {slug: hex}}}},  # fill-scoped ink
           "failures": [ {slug, against, ratio, target}, ... ],
+          "warnings": [ {slug, against, ratio, target, mode}, ... ],
         }
+    Fill-scoped ink: a text colour declared on a FILL (not a surface) inside one
+    style scope (the button element, a block, a markup fill class) and failing
+    against that fill's dark value once the page text has turned light keeps its
+    own value in that scope only — the light-theme value when it still passes,
+    else the shortest lightness move that does. `functions.php::dark_mode_ink_css`
+    prints it as `--wp--preset--color--<slug>` on that scope's selector, so body
+    text inverts while a bright button keeps a readable label.
     `failures` is non-empty exactly when some pair could not be made to pass —
     callers that must "stop the deploy" raise `DarkPaletteContrastError(failures)`
     themselves (see `prepare_deploy_snapshot` in push-theme-snapshot.py).
     """
     cfg = snapshot.get("_sgsDark") or {}
     if not cfg.get("enabled"):
-        return {"enabled": False, "dark": {}, "failures": []}
+        return {"enabled": False, "dark": {}, "ink": {}, "failures": [], "warnings": []}
 
     palette = _palette_dict(snapshot)
     roles_override = cfg.get("roles") or {}
@@ -593,10 +641,27 @@ def derive(snapshot: dict) -> dict:
     # (fed into the minimum-change search alongside the role defaults) and slugs
     # that are themselves a SURFACE (their value is fixed by `derive_surfaces`'s
     # band placement, never by this search — they are only ever verified).
-    usage_pairs = collect_usage_pairs(snapshot, palette)
+    scoped_usage = collect_scoped_usage(snapshot, palette)
+    # A text pair on a non-surface fill that is declared ONLY inside scopes is
+    # resolved by fill-scoped ink below, never by moving the colour site-wide
+    # (one value cannot be light on the dark page and dark on a bright button).
+    inkable: dict[tuple[str, str], list[tuple[str, str, str]]] = {}
+    unscoped_text: set[tuple[str, str]] = set()
+    for fg, bg, kind, scope in scoped_usage:
+        if kind != "text" or classify_role(bg, roles_override) == "surface":
+            continue
+        if scope is None:
+            unscoped_text.add((fg, bg))
+        else:
+            inkable.setdefault((fg, bg), []).append(scope)
+    for key in unscoped_text:
+        inkable.pop(key, None)
+
     usage_solvable: dict[str, list[tuple[str, float]]] = {}
     usage_surface_fg: list[tuple[str, str, float]] = []
-    for fg, bg, kind in usage_pairs:
+    for fg, bg, kind, _scope in scoped_usage:
+        if kind == "text" and (fg, bg) in inkable:
+            continue
         target = TEXT_TARGET if kind == "text" else UI_TARGET
         if classify_role(fg, roles_override) == "surface":
             usage_surface_fg.append((fg, bg, target))
@@ -668,7 +733,33 @@ def derive(snapshot: dict) -> dict:
         if ratio < target - 1e-9:
             failures.append({"slug": fg, "against": bg, "ratio": round(ratio, 2), "target": target})
 
-    return {"enabled": True, "dark": dark, "failures": failures}
+    ink: dict[str, dict[str, dict[str, dict[str, str]]]] = {}
+    for (fg, bg), scopes in inkable.items():
+        final_fg = dark.get(fg) or palette.get(fg)
+        final_bg = bg_hex(bg)
+        if not final_fg or contrast_ratio(final_fg, final_bg) >= TEXT_TARGET - 1e-9:
+            continue
+        light_fg = palette[fg]
+        value = light_fg if contrast_ratio(light_fg, final_bg) >= TEXT_TARGET - 1e-9 else solve_lightness(
+            light_fg, [(final_bg, TEXT_TARGET)]
+        )
+        ratio = contrast_ratio(value, final_bg)
+        if ratio < TEXT_TARGET - 1e-9:
+            failures.append({"slug": fg, "against": bg, "ratio": round(ratio, 2), "target": TEXT_TARGET})
+            continue
+        for kind, name, state in scopes:
+            ink.setdefault(kind, {}).setdefault(name, {}).setdefault(state, {})[fg] = value
+
+    warnings: list[dict] = []
+    for slug in ordered_slugs:
+        fill = _text_pairs_with_fill(slug, palette)
+        if fill and fill in palette and _guessed_fill(slug, palette) is None:
+            warnings.append({
+                "slug": slug, "against": fill, "target": TEXT_TARGET, "mode": "light",
+                "ratio": round(contrast_ratio(palette[slug], palette[fill]), 2),
+            })
+
+    return {"enabled": True, "dark": dark, "ink": ink, "failures": failures, "warnings": warnings}
 
 
 # ---------------------------------------------------------------------------

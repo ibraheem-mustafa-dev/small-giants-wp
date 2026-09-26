@@ -1,12 +1,12 @@
 ---
 doc_type: spec
 spec_id: 33
-spec_version: "1.8"
+spec_version: "1.9"
 project: small-giants-wp
 thread: header-footer-setup-pipeline (Part 1 of 2)
 title: "Universal Draft Global-Styles / Token Extractor"
 created: 2026-07-13
-last_verified: 2026-09-23
+last_verified: 2026-09-26
 status: complete
 references:
   - 26-SGS-GLOBAL-STYLES-AND-THEMING.md (the theming MODEL this FEEDS; FR-26-C derived-globals = a FORWARD CONTRACT, inert until Spec 26 Phase 3)
@@ -420,9 +420,9 @@ The rendered value wins over the declared `.container` width (FR-33-4) and the R
 
 **Behaviour.** A client opts in with a top-level `_sgsDark` key in its `theme-snapshot.json`: `{ "enabled": true, "palette": { "<slug>": "#hex" }, "roles": { "<slug>": "surface|text|border|brand|locked" } }`. It is internal (stripped before deploy, like `_sgsExtractor`). `plugins/sgs-blocks/scripts/derive-dark-palette.py::derive` runs inside `push-theme-snapshot.py::prepare_deploy_snapshot`, the one function both the snapshot push and `build-deploy.py` use, and writes `settings.custom.dark.<slug>` for every palette slug (WordPress prints `--wp--custom--dark--<slug>`). The theme maps each `--wp--preset--color--<slug>` to it while dark mode is on and loads dark mode only when the client has a dark palette.
 
-**Rules.** Each slug's role comes from its name unless `roles` sets it. Light surfaces move onto a dark band (hue kept); surfaces already dark in light mode keep their value. Every other colour follows the minimum-change rule: it is kept byte-identical if it already reaches its target against every ground it is used on (4.5:1 text, 3:1 borders and brand), otherwise its OKLCH lightness moves the shortest distance that passes them all. Grounds are every surface plus the text/background pairs the snapshot declares (`styles.color`, `styles.elements` with states, `styles.blocks`, preset references in template parts). Locked colours (WhatsApp green) are checked, never changed; hand-set `palette` values win and are checked the same way. When no lightness satisfies every ground, the push stops and names each pair and ratio (`DarkPaletteContrastError`), so a client never ships an unreadable dark page; a hand-set `palette` or `roles` entry settles the conflict.
+**Rules.** Each slug's role comes from its name unless `roles` sets it. Light surfaces move onto a dark band (hue kept); surfaces already dark in light mode keep their value. Every other colour follows the minimum-change rule: it is kept byte-identical if it already reaches its target against every ground it is used on (4.5:1 text, 3:1 borders and brand), otherwise its OKLCH lightness moves the shortest distance that passes them all. Grounds are every surface plus the text/background pairs the snapshot declares (`styles.color`, `styles.elements` with states, `styles.blocks`, preset references in template parts). Locked colours (WhatsApp green) are checked, never changed; hand-set `palette` values win and are checked the same way. A text slug paired with a fill only by its NAME (`text-inverse` with `primary`, `<fill>-text` with `<fill>`) is checked against that fill only when the pair already reads in light mode; otherwise it is a light-mode warning in the push note (`derive-dark-palette.py::_guessed_fill`), since the site cannot be using it. **Fill-scoped ink:** a text colour declared on a fill that stays light in dark mode, inside one style scope (a theme.json element such as the button, a block, or a markup `has-<fill>-background-color` element), keeps its own value in that scope only: the light-mode value when it still reaches 4.5:1 on the fill's dark value, else the shortest lightness move that does. It ships as `settings.custom.darkInk.<kind>.<name>.<state>.<slug>` and `theme/sgs-theme/functions.php::dark_mode_ink_css` prints it as `--wp--preset--color--<slug>` on that scope's selector (element selectors from `WP_Theme_JSON::ELEMENTS`, block selectors from `wp_get_block_css_selector()`), so page text inverts while a bright button keeps a readable label. When no value satisfies every ground, the push stops and names each pair and ratio (`DarkPaletteContrastError`), so a client never ships an unreadable dark page; a hand-set `palette` or `roles` entry settles the conflict.
 
-**Status.** Mama's Munches reports four such conflicts (text, text-inverse, primary-text, accent-text), so its committed snapshot does not enable dark mode until Bean chooses the overrides. Tests: `plugins/sgs-blocks/scripts/tests/test_derive_dark_palette.py`.
+**Status.** Mama's Munches derives with no failures and no hand-set colours: page text lightens, the yellow button keeps its dark label through fill-scoped ink, and three light-mode warnings are reported (`text-inverse` and `primary-text` on `primary` at 2.4:1, `accent-text` on `accent` at 3.8:1). Tests: `plugins/sgs-blocks/scripts/tests/test_derive_dark_palette.py`, `test_push_theme_snapshot.py`, `plugins/sgs-blocks/tests/php/run-dark-mode-ink-standalone.php`.
 
 ## Known limits
 

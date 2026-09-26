@@ -775,9 +775,22 @@ def apply_dark_palette(snapshot: dict) -> tuple[dict, str | None]:
     result = _dark_palette.derive({**out, "_sgsDark": cfg})
     if result["failures"]:
         raise _dark_palette.DarkPaletteContrastError(result["failures"])
-    out.setdefault("settings", {}).setdefault("custom", {})["dark"] = result["dark"]
+    custom = out.setdefault("settings", {}).setdefault("custom", {})
+    custom["dark"] = result["dark"]
+    # Fill-scoped ink (text kept readable on a fill that stays light in dark mode);
+    # functions.php::dark_mode_ink_css() prints it per scope.
+    if result.get("ink"):
+        custom["darkInk"] = result["ink"]
+    else:
+        custom.pop("darkInk", None)
     n = len(result["dark"])
-    return out, f"derived {n} dark palette colour{'s' if n != 1 else ''} into settings.custom.dark"
+    note = f"derived {n} dark palette colour{'s' if n != 1 else ''} into settings.custom.dark"
+    if result.get("ink"):
+        n_ink = sum(len(slugs) for names in result["ink"].values() for states in names.values() for slugs in states.values())
+        note += f"; {n_ink} fill-scoped ink value{'s' if n_ink != 1 else ''} into settings.custom.darkInk"
+    for w in result.get("warnings", []):
+        note += f"; light-mode warning: {w['slug']} on {w['against']} is {w['ratio']}:1 (target {w['target']}:1)"
+    return out, note
 
 
 def prepare_deploy_snapshot(local: dict, include_advisory: bool) -> tuple[dict, str | None]:

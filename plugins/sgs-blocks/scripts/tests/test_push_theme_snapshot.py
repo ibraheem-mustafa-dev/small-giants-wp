@@ -405,3 +405,31 @@ def test_deploy_bytes_fail_loudly_on_a_broken_snapshot(pts, tmp_path):
         pts.deploy_theme_json_bytes(path)
     with pytest.raises(OSError):
         pts.deploy_theme_json_bytes(tmp_path / "missing.json")
+
+
+def test_apply_dark_palette_ships_fill_scoped_ink_and_light_mode_warnings(pts):
+    """Mama's Munches with dark mode on: the push carries settings.custom.darkInk
+    (the button's own label colour) beside settings.custom.dark, strips the
+    internal _sgsDark key, and names each light-mode warning in its note."""
+    repo = Path(__file__).resolve().parents[4]
+    snap = json.loads((repo / "sites" / "mamas-munches" / "theme-snapshot.json").read_text(encoding="utf-8"))
+    snap["_sgsDark"] = {"enabled": True}
+    out, note = pts.apply_dark_palette(snap)
+    custom = out["settings"]["custom"]
+    assert "_sgsDark" not in out
+    assert custom["dark"]["text"] != "#3a2e26"
+    assert custom["darkInk"] == {"element": {"button": {"base": {"text": "#3a2e26"}}}}
+    assert "fill-scoped ink" in note and "light-mode warning: text-inverse on primary" in note
+
+
+def test_apply_dark_palette_removes_stale_ink_when_none_is_needed(pts):
+    """NEGATIVE CONTROL for a stale key: a snapshot already carrying darkInk
+    from an earlier push loses it when the derivation needs no ink."""
+    snap = _snap([
+        {"slug": "surface", "color": "#ffffff", "name": "Surface"},
+        {"slug": "text", "color": "#111111", "name": "Text"},
+    ])
+    snap.setdefault("settings", {}).setdefault("custom", {})["darkInk"] = {"element": {"button": {"base": {"text": "#000000"}}}}
+    snap["_sgsDark"] = {"enabled": True}
+    out, _note = pts.apply_dark_palette(snap)
+    assert "darkInk" not in out["settings"]["custom"]
