@@ -197,6 +197,8 @@ function run_section( string $code, array $fixture ): array {
 	// Inputs the extracted span reads (mirrors the real render.php's own
 	// variable names exactly, so the eval'd code writes into them for real).
 	$icon_html                 = $fixture['icon_html'] ?? '';
+	// Set by render.php before this span (the icon badge's modifier class).
+	$sgs_nb_icon_classes       = $fixture['icon_classes'] ?? 'sgs-notice-banner__icon';
 	$content                   = $fixture['content'] ?? '<p>Hello</p>';
 	$is_announcement           = $fixture['is_announcement'] ?? false;
 	$dismissible               = $fixture['dismissible'] ?? false;

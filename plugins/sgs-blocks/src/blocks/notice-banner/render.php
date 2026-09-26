@@ -461,7 +461,7 @@ if ( $is_announcement ) {
 // -------------------------------------------------------------------------
 $sgs_inner_html = '';
 if ( $icon_html ) {
-	$sgs_inner_html .= '<span class="' . esc_attr( $sgs_nb_icon_classes ?? 'sgs-notice-banner__icon' ) . '" aria-hidden="true">' . $icon_html . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from first-party icon maps; dashicon slug + emoji escaped above.
+	$sgs_inner_html .= '<span class="' . esc_attr( $sgs_nb_icon_classes ) . '" aria-hidden="true">' . $icon_html . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from first-party icon maps; dashicon slug + emoji escaped above.
 }
 // U-15 (§3.3): static mode, or fewer than two sgs/notice-message children,
 // takes this EXACT pre-U-15 branch — $content goes straight in, unchanged.

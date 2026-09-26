@@ -76,7 +76,12 @@
     "attributes": {
       "displayMode": "bar",
       "align": "full",
-      "messageMode": "random"
+      "messageMode": "random",
+      "showIcon": true,
+      "iconStyle": "circle",
+      "iconSize": 16,
+      "iconCircleSize": 32,
+      "iconCircleBackground": "accent"
     },
     "innerBlocks": [
       {
