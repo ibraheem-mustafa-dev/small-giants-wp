@@ -27,7 +27,7 @@ Replaces Atarim, ProjectHuddle, and similar SaaS tools with a self-hosted, zero-
 2. Dashboard shows all unresolved notes across all pages, sorted by priority
 3. Admin can reply to notes (reply appears on the frontend pin for the client)
 4. Admin marks notes as "In Progress" or "Resolved"
-5. Email notifications over `wp_mail()`: built, the notification address (`sgs_client_notes_notification_email`) is emailed when a note is created or resolved (`includes/api/class-notes-mailer.php`); not built, emailing the client when a note is replied to (unified-email plan, phase 5b)
+5. Email notifications over `wp_mail()`: built — the notification address (`sgs_client_notes_notification_email`) is emailed when a note is created or resolved, and the note's author is emailed when someone else replies (never a self-notification), all via `includes/api/class-notes-mailer.php` (unified-email plan, phase 5b, live-proven on sandybrown 2026-09-27)
 6. Admin can filter by page, priority, status, date
 
 ---
