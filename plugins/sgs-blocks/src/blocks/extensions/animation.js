@@ -1,10 +1,11 @@
 /**
- * Animation extension — injects scroll-triggered animation controls
- * into ALL sgs/* blocks via WordPress filters.
+ * Animation extension — injects entrance-animation controls into ALL sgs/*
+ * blocks via WordPress filters.
  *
- * Adds three attributes (sgsAnimation, sgsAnimationDelay, sgsAnimationDuration)
- * and outputs them as data-* attributes on the saved markup. The frontend
- * IntersectionObserver reads these and triggers CSS transitions.
+ * Adds five attributes (sgsAnimation, sgsAnimationDelay, sgsAnimationDuration,
+ * sgsAnimationEasing, sgsAnimationDistance) and outputs them as data-*
+ * attributes on the saved markup. assets/js/animation-observer.js reads
+ * these and plays the entrance as a Web Animations API script animation.
  */
 import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
@@ -81,6 +82,7 @@ function addAnimationAttributes( settings, name ) {
 	const existingDelay     = settings.attributes?.sgsAnimationDelay?.default;
 	const existingDuration  = settings.attributes?.sgsAnimationDuration?.default;
 	const existingEasing    = settings.attributes?.sgsAnimationEasing?.default;
+	const existingDistance  = settings.attributes?.sgsAnimationDistance?.default;
 
 	return {
 		...settings,
@@ -90,6 +92,7 @@ function addAnimationAttributes( settings, name ) {
 			sgsAnimationDelay:    { type: 'string', default: existingDelay         ?? '0' },
 			sgsAnimationDuration: { type: 'string', default: existingDuration      ?? 'medium' },
 			sgsAnimationEasing:   { type: 'string', default: existingEasing        ?? 'default' },
+			sgsAnimationDistance: { type: 'string', default: existingDistance      ?? '' },
 		},
 	};
 }
@@ -189,6 +192,7 @@ const withAnimationControls = createHigherOrderComponent( ( BlockEdit ) => {
 							</Notice>
 						) }
 						<AnimationControl
+							blockName={ props.name }
 							animation={ attributes.sgsAnimation }
 							animationDelay={ attributes.sgsAnimationDelay }
 							animationDuration={
@@ -196,6 +200,9 @@ const withAnimationControls = createHigherOrderComponent( ( BlockEdit ) => {
 							}
 							animationEasing={
 								attributes.sgsAnimationEasing
+							}
+							animationDistance={
+								attributes.sgsAnimationDistance
 							}
 							onChangeAnimation={ ( val ) =>
 								setAttributes( { sgsAnimation: val } )
@@ -211,6 +218,11 @@ const withAnimationControls = createHigherOrderComponent( ( BlockEdit ) => {
 							onChangeEasing={ ( val ) =>
 								setAttributes( {
 									sgsAnimationEasing: val,
+								} )
+							}
+							onChangeDistance={ ( val ) =>
+								setAttributes( {
+									sgsAnimationDistance: val,
 								} )
 							}
 						/>
@@ -233,7 +245,7 @@ function addAnimationSaveProps( props, blockType, attributes ) {
 	}
 
 	if ( attributes.sgsAnimation && attributes.sgsAnimation !== 'none' ) {
-		return {
+		const saveProps = {
 			...props,
 			'data-sgs-animation': attributes.sgsAnimation,
 			'data-sgs-animation-delay': attributes.sgsAnimationDelay || '0',
@@ -242,6 +254,15 @@ function addAnimationSaveProps( props, blockType, attributes ) {
 			'data-sgs-animation-easing':
 				attributes.sgsAnimationEasing || 'default',
 		};
+
+		// Written only when set — omitting it when empty keeps existing
+		// static blocks' saved markup byte-identical.
+		if ( attributes.sgsAnimationDistance ) {
+			saveProps[ 'data-sgs-animation-distance' ] =
+				attributes.sgsAnimationDistance;
+		}
+
+		return saveProps;
 	}
 
 	return props;

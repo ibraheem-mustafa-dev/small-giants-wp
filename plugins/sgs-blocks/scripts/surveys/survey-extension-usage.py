@@ -83,7 +83,7 @@ WP_PATH = 'domains/sandybrown-nightingale-600381.hostingersite.com/public_html'
 # post-D551 sanity check, not a live candidate.
 EXTENSIONS = {
     'animation': {
-        'attrs': ['sgsAnimation', 'sgsAnimationDelay', 'sgsAnimationDuration', 'sgsAnimationEasing'],
+        'attrs': ['sgsAnimation', 'sgsAnimationDelay', 'sgsAnimationDuration', 'sgsAnimationEasing', 'sgsAnimationDistance'],
         'hide_slug': 'animation',
         'candidate': True,
     },

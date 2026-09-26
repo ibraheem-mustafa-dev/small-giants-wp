@@ -2,16 +2,17 @@
 /**
  * Animation attributes — server-side data-attribute injection.
  *
- * Injects data-sgs-animation, data-sgs-animation-delay, and
- * data-sgs-animation-duration attributes onto rendered block HTML.
+ * Injects data-sgs-animation, data-sgs-animation-delay,
+ * data-sgs-animation-duration, data-sgs-animation-easing and
+ * data-sgs-animation-distance attributes onto rendered block HTML.
  *
  * The JS extension (animation.js) handles the editor-side controls and
  * save-time props for static blocks. This filter handles dynamic blocks
  * (render.php) which don't go through blocks.getSaveContent.extraProps.
  *
- * Works with ALL sgs/* blocks. The frontend IntersectionObserver in
- * assets/js/animation-observer.js reads these data attributes and adds
- * the .sgs-animated class when elements scroll into view.
+ * Works with ALL sgs/* blocks. assets/js/animation-observer.js reads these
+ * data attributes and plays the entrance as a Web Animations API script
+ * animation, adding the .sgs-animated class when it plays.
  *
  * @package SGS\Blocks
  */
@@ -120,6 +121,7 @@ function sgs_strip_animation_attributes( string $block_content ): string {
 		'data-sgs-animation-delay',
 		'data-sgs-animation-duration',
 		'data-sgs-animation-easing',
+		'data-sgs-animation-distance',
 	) as $attr ) {
 		$processor->remove_attribute( $attr );
 	}
@@ -206,6 +208,13 @@ function inject_animation_attributes( string $block_content, array $block ): str
 	$duration = $attrs['sgsAnimationDuration'] ?? 'medium';
 	$easing   = $attrs['sgsAnimationEasing'] ?? 'default';
 
+	// Allow-listed to the four preset steps; anything else falls back to the
+	// effect's own default distance (an empty attribute, so omitted below).
+	$distance = $attrs['sgsAnimationDistance'] ?? '';
+	if ( ! in_array( $distance, array( '', '15', '30', '50', '100' ), true ) ) {
+		$distance = '';
+	}
+
 	// --- Locate the block's actual ROOT element. ---
 	// The no-inline styling contract (Spec 32, D293-D296) has every composite
 	// using SGS_Container_Wrapper — and several blocks directly — PREPEND a
@@ -242,6 +251,9 @@ function inject_animation_attributes( string $block_content, array $block ): str
 			$processor->set_attribute( 'data-sgs-animation-delay', esc_attr( $delay ) );
 			$processor->set_attribute( 'data-sgs-animation-duration', esc_attr( $duration ) );
 			$processor->set_attribute( 'data-sgs-animation-easing', esc_attr( $easing ) );
+			if ( '' !== $distance ) {
+				$processor->set_attribute( 'data-sgs-animation-distance', esc_attr( $distance ) );
+			}
 		}
 
 		return $sgs_head . $processor->get_updated_html();

@@ -16,22 +16,29 @@ DECLARATIVE PATTERN (mirrors ``converter/db/db_lookup.py::fx_attr_roster``)
 already-maintained PHP source files (``FX_ATTR_MAP`` +
 ``extension-attributes.generated.php``) and builds the roster from what it
 reads. This script does the equivalent for the entrance/hover/parallax Tier V
-inventory: it regexes the two files SGS engineers actually maintain —
+inventory: it regexes the files SGS engineers actually maintain —
 
+  * ``plugins/sgs-blocks/assets/js/animation-observer.js`` — the 16 real
+    entrance presets, as the strict-JSON effect table between the
+    ``sgs-entrance-effects:start``/``:end`` markers. Entrances stopped being
+    CSS in revision 3 of the U-16 design (2026-09-26): they run as Web
+    Animations API script animations, so there is no CSS declaration left to
+    parse for them.
   * ``plugins/sgs-blocks/assets/css/extensions.css`` — the real CSS rules
-    that define each preset's starting transform/filter/clip-path, plus the
-    border-accent and element-parallax keyframes.
+    that still define the border-accent and element-parallax keyframes (both
+    stayed CSS; neither is an entrance).
   * ``plugins/sgs-blocks/src/blocks/gallery/block.json`` — the real default
     values for ``sgsAnimationDuration``/``sgsAnimationEasing`` (any block
     declaring these attrs carries the same defaults; gallery is used only as
     a live read target, not a privileged source).
 
 No preset's direction/magnitude/easing is hand-typed here — every value is
-computed from parsing the actual CSS declaration. The ONLY exception is the
-5-keyword easing-curve fallback table (`_NAMED_EASING_CURVES`) and the
-duration-token->ms map (`_DURATION_TOKEN_MS`), which are the CSS spec's own
-fixed cubic-bezier definitions and SGS's own theme.json duration tokens
-respectively — not a shape/preset mapping, so R-31-1 does not apply to them.
+computed from parsing the actual effect-table entry or CSS declaration. The
+ONLY exception is the 5-keyword easing-curve fallback table
+(`_NAMED_EASING_CURVES`) and the duration-token->ms map
+(`_DURATION_TOKEN_MS`), which are the CSS spec's own fixed cubic-bezier
+definitions and SGS's own theme.json duration tokens respectively — not a
+shape/preset mapping, so R-31-1 does not apply to them.
 
 GROUND TRUTH CONFIRMED LIVE BEFORE WRITING THIS FILE (2026-09-11)
 ------------------------------------------------------------------
@@ -49,8 +56,11 @@ Queried `sgs-framework.db` directly:
     fade-up, fade-down, fade-in, fade-left, fade-right, slide-up, slide-down,
     slide-left, slide-right, scale-in, scale-out, rotate-in, flip-in,
     blur-in, bounce-in, reveal-up.
-  * Their actual CSS shapes live in `extensions.css` lines ~32-73 under
-    `.sgs-js [data-sgs-animation="<preset>"]` selectors.
+  * Their actual shapes (revision 3, 2026-09-26 onward) live in the JSON
+    effect table between the `sgs-entrance-effects:start`/`:end` markers in
+    `assets/js/animation-observer.js` — read by `_extract_entrance_rows`
+    below and mapped onto the same (property, direction, magnitude) shape
+    the retired CSS-parsing version produced for each preset.
 
 REAL, DOCUMENTED QUIRK — DO NOT "FIX" IN THIS SCRIPT
 ------------------------------------------------------
@@ -91,6 +101,7 @@ scaleX 0->1 transition, `.sgs-has-border-accent::before`) + `parallax-element`
 
 from __future__ import annotations
 
+import json
 import os
 import re
 import sqlite3
@@ -100,6 +111,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 REPO_ROOT = HERE.parents[3]  # scripts/dbschema -> scripts -> sgs-blocks -> plugins -> ROOT
 EXTENSIONS_CSS = REPO_ROOT / "plugins" / "sgs-blocks" / "assets" / "css" / "extensions.css"
+ANIMATION_OBSERVER_JS = REPO_ROOT / "plugins" / "sgs-blocks" / "assets" / "js" / "animation-observer.js"
 GALLERY_BLOCK_JSON = REPO_ROOT / "plugins" / "sgs-blocks" / "src" / "blocks" / "gallery" / "block.json"
 # Same resolution convention as ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py
 # (DB_PATH = <script dir>/../sgs-framework.db) — this script lives elsewhere,
@@ -250,67 +262,98 @@ def _parse_transform_shape(preset: str, value: str) -> tuple[str, str, float, fl
     raise ValueError(f"Unparseable transform shape for preset '{preset}': {value!r}")
 
 
-def _co_animates_opacity(preset: str, body: str) -> int:
-    """Whether this preset transitions opacity ALONGSIDE its own shape —
-    the real, AOS-precedented (github.com/michalsnik/aos) axis that
-    distinguishes `fade-*` (opacity + transform together) from `slide-*`
-    (transform only, stays fully visible) — derived from the real CSS, not
-    hand-typed. Every entrance preset fades via the SHARED base rule
-    (`.sgs-js [data-sgs-animation]{opacity:0;...}`) UNLESS its own block
-    explicitly opts out with `opacity: 1;` — the exact technique `reveal-up`
-    already uses (clip-path handles its reveal) and `slide-*` now also uses
-    (a large transform move is the sole effect). A preset whose OWN shape
-    already comes from a pure opacity change (`fade-in`) trivially co-
-    animates opacity by construction, independent of any override.
+def _magnitude_shape(preset: str, entry: dict) -> tuple[str, str, float, float]:
+    """Map one effect-table entry to (property, direction, mag_min, mag_max).
+
+    Rebuilds the equivalent CSS function string from the JSON entry (e.g.
+    an `axis`/`sign`/`distance` triple back into `translateY(30px)`) and
+    feeds it through `_parse_transform_shape`, the same parser the retired
+    CSS-based version used — so a translate/scale/rotate/flip preset lands
+    on the exact same (property, direction, magnitude band) as before.
     """
-    if re.search(r"opacity:\s*1\s*;", body):
-        return 0
-    return 1
+    if "axis" in entry:
+        value = entry["sign"] * entry["distance"]
+        css_value = (
+            f"translateY({value}px)" if "y" == entry["axis"] else f"translateX({value}px)"
+        )
+        shape = _parse_transform_shape(preset, css_value)
+        if shape is not None:
+            return shape
+
+    if "scale" in entry:
+        shape = _parse_transform_shape(preset, f"scale({entry['scale']})")
+        if shape is not None:
+            return shape
+
+    if "rotate" in entry:
+        shape = _parse_transform_shape(preset, f"rotate({entry['rotate']}deg)")
+        if shape is not None:
+            return shape
+
+    if "transform" in entry:
+        # flip-in — `perspective()` has no standalone property, so the
+        # entry stores the same transform string the old CSS rule did.
+        shape = _parse_transform_shape(preset, entry["transform"])
+        if shape is not None:
+            return shape
+
+    if "filter" in entry:
+        bm = re.search(r"blur\(\s*(-?[\d.]+)px\s*\)", entry["filter"])
+        if bm:
+            v = float(bm.group(1))
+            lo, hi = _band(v)
+            return ("filter", "none", lo, hi)
+
+    if "clipPath" in entry:
+        # inset(100% 0 0 0) -> wipes from the top edge downward as it
+        # reveals -> the CONTENT becomes visible moving upward into view.
+        return ("clip-path", "up", 90.0, 100.0)
+
+    # No axis/scale/rotate/transform/filter/clipPath -> pure opacity fade
+    # (fade-in is the only preset with this exact shape).
+    return ("opacity", "none", 0.0, 1.0)
 
 
 def _extract_entrance_rows(default_duration_ms: int, default_easing: str) -> list[dict]:
-    """Regex-extract the 16 real `[data-sgs-animation="..."]` shapes."""
-    text = EXTENSIONS_CSS.read_text(encoding="utf-8")
+    """Read the 16 real entrance-effect shapes from ``animation-observer.js``.
 
-    # Merge every declaration block keyed by preset name (blur-in has two
-    # separate rule blocks in the source file, slide-* now four — all
-    # merged here).
-    blocks: dict[str, str] = {}
-    for m in re.finditer(r'\[data-sgs-animation="([\w-]+)"\]\s*\{([^}]*)\}', text, re.DOTALL):
-        preset, body = m.group(1), m.group(2)
-        blocks[preset] = blocks.get(preset, "") + "\n" + body
+    Entrances stopped being CSS in revision 3 of the U-16 design
+    (2026-09-26): they run as Web Animations API script animations, so
+    there is no `.sgs-js [data-sgs-animation="..."]` rule left to parse.
+    The effect table lives instead as strict JSON between the
+    ``sgs-entrance-effects:start``/``:end`` markers in
+    ``assets/js/animation-observer.js`` — read here and mapped onto the same
+    row shape the retired CSS-parsing version produced.
+    """
+    text = ANIMATION_OBSERVER_JS.read_text(encoding="utf-8")
+    marker_m = re.search(
+        r"/\*\s*sgs-entrance-effects:start\s*\*/\s*(\{.*?\})\s*/\*\s*sgs-entrance-effects:end\s*\*/",
+        text,
+        re.DOTALL,
+    )
+    if not marker_m:
+        raise RuntimeError(
+            f"Could not find sgs-entrance-effects:start/:end markers in {ANIMATION_OBSERVER_JS}"
+        )
+    effects: dict[str, dict] = json.loads(marker_m.group(1))
 
     rows: list[dict] = []
-    for preset, body in blocks.items():
-        transform_m = re.search(r"transform:\s*([^;]+);", body)
-        filter_m = re.search(r"filter:\s*([^;]+);", body)
-        clip_m = re.search(r"clip-path:\s*([^;]+);", body)
-        easing_override_m = re.search(r"transition-timing-function:\s*([^;]+);", body)
+    for preset, entry in effects.items():
+        prop, direction, mag_min, mag_max = _magnitude_shape(preset, entry)
 
-        easing_raw = easing_override_m.group(1) if easing_override_m else default_easing
+        # bounce-in carries its own overshoot curve; every other preset
+        # falls back to the framework's default easing token, same as the
+        # retired parser's `default_easing` fallback.
+        easing_raw = entry.get("easing", default_easing)
         easing_curve = _snap_easing(easing_raw)
-        co_animates_opacity = _co_animates_opacity(preset, body)
 
-        shape = None
-        if transform_m:
-            shape = _parse_transform_shape(preset, transform_m.group(1))
-        if shape is None and filter_m and "blur" in filter_m.group(1):
-            bm = re.search(r"blur\(\s*(-?[\d.]+)px\s*\)", filter_m.group(1))
-            if bm:
-                v = float(bm.group(1))
-                lo, hi = _band(v)
-                shape = ("filter", "none", lo, hi)
-        if shape is None and clip_m:
-            # inset(100% 0 0 0) -> wipes from the top edge downward as it
-            # reveals -> the CONTENT becomes visible moving upward into view.
-            shape = ("clip-path", "up", 90.0, 100.0)
-        if shape is None:
-            # transform: none with no filter/clip-path -> pure opacity fade
-            # (fade-in is the only preset with this exact shape).
-            shape = ("opacity", "none", 0.0, 1.0)
-            co_animates_opacity = 1  # trivially true -- opacity IS the shape
+        # A preset co-animates opacity whenever its entry carries an
+        # "opacity" field at all (every fade-* and scale/rotate/flip/blur/
+        # bounce preset does; slide-* and reveal-up do not) — the same axis
+        # the retired CSS-based `_co_animates_opacity` derived from the
+        # shared `opacity:0` rule and its per-preset `opacity:1` overrides.
+        co_animates_opacity = 1 if "opacity" in entry else 0
 
-        prop, direction, mag_min, mag_max = shape
         rows.append(
             {
                 "preset_slug": preset,
@@ -335,7 +378,7 @@ def _extract_entrance_rows(default_duration_ms: int, default_easing: str) -> lis
     missing = expected - found
     if missing:
         raise RuntimeError(
-            f"Expected all 16 entrance presets in {EXTENSIONS_CSS}, missing: {sorted(missing)}"
+            f"Expected all 16 entrance presets in {ANIMATION_OBSERVER_JS}, missing: {sorted(missing)}"
         )
     return [r for r in rows if r["preset_slug"] in expected]
 
@@ -460,6 +503,9 @@ def seed(conn: sqlite3.Connection, rows: list[dict]) -> int:
 def main() -> int:
     if not EXTENSIONS_CSS.exists():
         print(f"ERROR: source file not found: {EXTENSIONS_CSS}", file=sys.stderr)
+        return 1
+    if not ANIMATION_OBSERVER_JS.exists():
+        print(f"ERROR: source file not found: {ANIMATION_OBSERVER_JS}", file=sys.stderr)
         return 1
     if not GALLERY_BLOCK_JSON.exists():
         print(f"ERROR: source file not found: {GALLERY_BLOCK_JSON}", file=sys.stderr)

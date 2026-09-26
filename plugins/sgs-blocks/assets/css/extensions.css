@@ -1,133 +1,22 @@
 /* ===== SGS Animation Extension ===== */
 /*
- * Progressive enhancement: initial hidden states gated behind .sgs-js on <html>.
- * JS adds this class on load. Without JS, content stays visible.
- * Also gated behind prefers-reduced-motion: no-preference.
- */
-
-@media (prefers-reduced-motion: no-preference) {
-
-.sgs-js [data-sgs-animation] {
-	opacity: 0;
-	transition-property: opacity, transform;
-	/*
-	 * Easing resolves from the token CSS variable set by animation-observer.js.
-	 * Fallback: Material Design standard curve (matches theme.json easing.default).
-	 */
-	transition-timing-function: var(--sgs-anim-easing, var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1)));
-}
-
-/*
- * Duration variants — resolved from theme.json motion tokens.
- * CSS variable path: var(--wp--custom--duration--<key>)
- * Fallback values match the token definitions in theme.json settings.custom.duration.
- */
-.sgs-js [data-sgs-animation-duration="instant"] { transition-duration: var(--wp--custom--duration--instant,  60ms); }
-.sgs-js [data-sgs-animation-duration="fast"]    { transition-duration: var(--wp--custom--duration--fast,    150ms); }
-.sgs-js [data-sgs-animation-duration="medium"]  { transition-duration: var(--wp--custom--duration--medium,  300ms); }
-.sgs-js [data-sgs-animation-duration="slow"]    { transition-duration: var(--wp--custom--duration--slow,    500ms); }
-.sgs-js [data-sgs-animation-duration="extra-slow"] { transition-duration: var(--wp--custom--duration--extra-slow, 800ms); }
-
-/* Starting positions — 16 animation types */
-.sgs-js [data-sgs-animation="fade-up"]    { transform: translateY(30px); }
-.sgs-js [data-sgs-animation="fade-down"]  { transform: translateY(-30px); }
-.sgs-js [data-sgs-animation="fade-in"]    { transform: none; }
-.sgs-js [data-sgs-animation="fade-left"]  { transform: translateX(30px); }
-.sgs-js [data-sgs-animation="fade-right"] { transform: translateX(-30px); }
-.sgs-js [data-sgs-animation="slide-up"]   { transform: translateY(100px); }
-.sgs-js [data-sgs-animation="slide-down"] { transform: translateY(-100px); }
-.sgs-js [data-sgs-animation="slide-left"] { transform: translateX(-100px); }
-.sgs-js [data-sgs-animation="slide-right"]{ transform: translateX(100px); }
-.sgs-js [data-sgs-animation="scale-in"]   { transform: scale(0.9); }
-.sgs-js [data-sgs-animation="scale-out"]  { transform: scale(1.1); }
-.sgs-js [data-sgs-animation="rotate-in"]  { transform: rotate(-10deg); }
-.sgs-js [data-sgs-animation="flip-in"]    { transform: perspective(600px) rotateX(30deg); }
-.sgs-js [data-sgs-animation="blur-in"]    { filter: blur(8px); transform: none; }
-
-/* Additional transition property for blur-in */
-.sgs-js [data-sgs-animation="blur-in"] {
-	transition-property: opacity, filter;
-}
-
-/*
- * slide-up/down/left/right — a genuinely distinct effect from fade-up/down/
- * left/right, not the same effect under two names. Fade nudges the element
- * into place WHILE fading it in (opacity + transform together, subtle,
- * 30px). Slide moves it a much greater distance and never fades — the
- * element stays fully visible throughout, only its position changes. This
- * mirrors the real, established convention in AOS (Animate On Scroll,
- * github.com/michalsnik/aos, src/sass/_animations.scss): its own fade
- * family transitions "opacity, transform" together; its own slide family
- * transitions "transform" alone with no opacity change at all. Same
- * override technique reveal-up already uses two blocks up.
+ * Entrances run from assets/js/animation-observer.js as script animations
+ * (Web Animations API, element.animate()), never as CSS. A script animation
+ * is its own effect in the element's animation stack, so it never shares
+ * `transition`, `animation` or `transform` with a block's own effects
+ * (hover transitions, the header's shrink keyframes, hide-on-scroll).
  *
- * Four separate exact-match blocks (not one `^=` prefix selector) — the
- * DB seed script (`dbschema/seed-motion-shape-signatures.py`,
- * `_extract_entrance_rows`) regex-matches this file for
- * `[data-sgs-animation="<exact-preset-name>"]{...}` per preset (merging
- * multiple blocks for the same name, same technique blur-in already uses
- * two blocks up) and would silently miss a `^=` prefix selector entirely.
+ * Nothing here hides an element: no start pose, no opacity:0, nothing
+ * gated behind .sgs-js. Content shows immediately with no JavaScript, or if
+ * the observer script fails — the observer itself is what hides an element
+ * (via a paused, fill:'backwards' animation) once it confirms it can also
+ * play it back in.
+ *
+ * The effect table (start pose per preset, matching what used to live here)
+ * lives in animation-observer.js between the `sgs-entrance-effects:start`
+ * and `sgs-entrance-effects:end` markers — read that file, not this one, for
+ * what each preset does.
  */
-.sgs-js [data-sgs-animation="slide-up"] {
-	opacity: 1; /* Override the shared opacity:0 rule — slide never fades */
-	transition-property: transform;
-}
-.sgs-js [data-sgs-animation="slide-down"] {
-	opacity: 1;
-	transition-property: transform;
-}
-.sgs-js [data-sgs-animation="slide-left"] {
-	opacity: 1;
-	transition-property: transform;
-}
-.sgs-js [data-sgs-animation="slide-right"] {
-	opacity: 1;
-	transition-property: transform;
-}
-
-/*
- * bounce-in — element starts at scale 0.3 + opacity 0, springs to scale 1
- * with an overshoot bounce via cubic-bezier(0.175, 0.885, 0.32, 1.275).
- * Easing is hardcoded here to guarantee the overshoot regardless of the
- * user's chosen easing setting — the bounce curve IS the effect.
- */
-.sgs-js [data-sgs-animation="bounce-in"] {
-	transform: scale(0.3);
-	transition-property: opacity, transform;
-	transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-/*
- * reveal-up — content wipes upward into view using clip-path inset.
- * GPU-composited (clip-path animates on the compositor thread in Chrome/Safari).
- * No transform or opacity needed; the clip is the sole visual effect.
- */
-.sgs-js [data-sgs-animation="reveal-up"] {
-	clip-path: inset(100% 0 0 0);
-	opacity: 1; /* Override the shared opacity:0 rule — clip handles the hide */
-	transition-property: clip-path;
-}
-
-} /* end @media (prefers-reduced-motion: no-preference) */
-
-/* Animated state — added by IntersectionObserver */
-[data-sgs-animation].sgs-animated {
-	opacity: 1;
-	transform: none;
-	filter: none;
-	clip-path: none;
-}
-
-/* L4: Respect prefers-reduced-motion — skip ALL animation */
-@media (prefers-reduced-motion: reduce) {
-	[data-sgs-animation] {
-		opacity: 1 !important;
-		transform: none !important;
-		filter: none !important;
-		clip-path: none !important;
-		transition: none !important;
-	}
-}
 
 /* ===== SGS Device Visibility Extension ===== */
 

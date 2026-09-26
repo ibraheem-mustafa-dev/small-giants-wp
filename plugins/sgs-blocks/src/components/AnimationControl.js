@@ -1,11 +1,13 @@
 /**
  * Animation selector for block sidebar.
  *
- * Lets editors choose a scroll-triggered animation (fade-up, slide, etc.),
- * delay, and duration. The frontend IntersectionObserver reads these as
- * data attributes and triggers the CSS transition.
+ * Lets editors choose an entrance animation (fade-up, slide, etc.), delay,
+ * duration, easing and — for directional effects — travel distance. The
+ * frontend observer (assets/js/animation-observer.js) reads these as data
+ * attributes and plays the entrance as a Web Animations API keyframe
+ * animation, not a CSS transition.
  */
-import { SelectControl } from '@wordpress/components';
+import { SelectControl, Notice } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
 const ANIMATIONS = [
@@ -33,7 +35,39 @@ const DELAYS = [
 	{ label: '100ms', value: '100' },
 	{ label: '200ms', value: '200' },
 	{ label: '300ms', value: '300' },
+	{ label: '500ms', value: '500' },
+	{ label: '800ms', value: '800' },
 ];
+
+/**
+ * Effects that move an element along an axis (as opposed to scale, rotate,
+ * filter or clip-path effects) — the only ones a travel distance applies to.
+ */
+const DIRECTIONAL_EFFECTS = [
+	'fade-up', 'fade-down', 'fade-left', 'fade-right',
+	'slide-up', 'slide-down', 'slide-left', 'slide-right',
+];
+
+/**
+ * Distance options. The empty value keeps each effect's own default travel
+ * (30px for fade-*, 100px for slide-*) — the label reflects whichever
+ * default applies to the currently-selected effect.
+ */
+function distanceOptions( animation ) {
+	const isSlide = animation && animation.startsWith( 'slide-' );
+	return [
+		{
+			label: isSlide
+				? __( 'Default (100px)', 'sgs-blocks' )
+				: __( 'Default (30px)', 'sgs-blocks' ),
+			value: '',
+		},
+		{ label: '15px', value: '15' },
+		{ label: '30px', value: '30' },
+		{ label: '50px', value: '50' },
+		{ label: '100px', value: '100' },
+	];
+}
 
 /**
  * Duration options reference theme.json motion tokens:
@@ -60,15 +94,21 @@ const EASINGS = [
 ];
 
 export default function AnimationControl( {
+	blockName,
 	animation,
 	animationDelay,
 	animationDuration,
 	animationEasing,
+	animationDistance,
 	onChangeAnimation,
 	onChangeDelay,
 	onChangeDuration,
 	onChangeEasing,
+	onChangeDistance,
 } ) {
+	const hasAnimation = animation && animation !== 'none';
+	const isDirectional = hasAnimation && DIRECTIONAL_EFFECTS.includes( animation );
+
 	return (
 		<>
 			<SelectControl
@@ -79,7 +119,15 @@ export default function AnimationControl( {
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
-			{ animation && animation !== 'none' && (
+			{ hasAnimation && 'sgs/site-header' === blockName && (
+				<Notice status="info" isDismissible={ false }>
+					{ __(
+						"An entrance hides the header until it plays, so it delays the header's first appearance.",
+						'sgs-blocks'
+					) }
+				</Notice>
+			) }
+			{ hasAnimation && (
 				<>
 					<SelectControl
 						label={ __( 'Delay', 'sgs-blocks' ) }
@@ -105,6 +153,16 @@ export default function AnimationControl( {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					{ isDirectional && (
+						<SelectControl
+							label={ __( 'Distance', 'sgs-blocks' ) }
+							value={ animationDistance || '' }
+							options={ distanceOptions( animation ) }
+							onChange={ onChangeDistance }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
 				</>
 			) }
 		</>

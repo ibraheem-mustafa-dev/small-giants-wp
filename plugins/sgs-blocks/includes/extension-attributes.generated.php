@@ -98,6 +98,7 @@ return array(
 	'fxWaveVariant' => array( 'type' => 'string' ),
 	'sgsAnimation' => array( 'type' => 'string' ),
 	'sgsAnimationDelay' => array( 'type' => 'string' ),
+	'sgsAnimationDistance' => array( 'type' => 'string' ),
 	'sgsAnimationDuration' => array( 'type' => 'string' ),
 	'sgsAnimationEasing' => array( 'type' => 'string' ),
 	'sgsBlockLink' => array( 'type' => 'string' ),
