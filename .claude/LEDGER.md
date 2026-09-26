@@ -56,10 +56,7 @@ listing card, product page, shop; the lens configurator (a Choice Flow post, `le
 full screen from "Add my prescription"; four questions incl. "Your prescription" per pair; one bag line at £268 for
 Distance/Thin/Polarised; tampered add-on or file requests refused); the size guide (`sgs_modal` 461); bag drawer
 detail rows; checkout placed an order end to end (store now GB-only with the draft's three delivery options, UK County
-hidden, free delivery pre-selected, staff download link for uploaded prescriptions). Spec 43 is v1.9.0; the lens configurator (post 463) runs the showcase layout and matches the draft at 1440, 768
-and 375 in look and motion (2026-09-26, live to aaf19d46f, compared on the photographed Gucci product 76; the plan's "Lens-flow parity"
-bullet lists the accepted differences and one open choice for Bean, the option pictures' scale). The final design review ran; its owed items are in the plan's Status block. Only the lens flow is verified
-to the draft-parity standard; every other page is owed a re-review to it before Wave D (the plan's Status block). No
+hidden, free delivery pre-selected, staff download link for uploaded prescriptions). Spec 43 is v1.10.0; the lens configurator (post 463) runs the showcase layout and passes the parity tool (`scripts/parity/draft-live-walk.mjs`, config `sites/eye-care-ward-end/build/qa/parity/lens.mjs`) with 0 open differences at 1440, 768 and 375 (2026-09-26, live to a174a8f3d; the plan's "Lens-flow parity" bullet lists the accepted differences, four PROPOSED for Bean). The final design review ran; its owed items are in the plan's Status block. The lens flow is the only page verified to the draft-parity standard so far; the shop archive is in progress (`plans/2026-09-26-eye-care-shop-parity.md`) and the other pages follow before Wave D (the plan's Status block). No
 payment gateway is enabled on eye-care-test (a launch item for Bean). Header, footer, mobile menu and mega panels stay
 with the nav track. No blockers.
 

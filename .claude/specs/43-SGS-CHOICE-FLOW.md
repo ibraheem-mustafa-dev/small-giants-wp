@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 43
-spec_version: 1.9.0
+spec_version: 1.10.0
 status: active
 owner: framework
 date: 2026-09-14
@@ -93,6 +93,9 @@ derived_from:
     built to; progress can count the question on screen (`progressCounts`); a pre-selected default is listed on the
     stage only once its question is reached (Bean: "not chosen yet", as in the draft); option prices read "+£30.00"
     or "from £59.00" (FR-43-17); a result can carry the running total on its button.
+  - **2026-09-26 (v1.10.0), the parity tool's findings:** an option's picture size is set per device
+    (`optionMediaSize`, Bean: one proportion per device so a drawn picture reads the same size on every screen); the
+    header step name and the '?' toggle take their own colours; the bag line lists add-ons in question order.
 ---
 
 # Spec 43 — `sgs/choice-flow`
@@ -398,8 +401,12 @@ to edge (the modal's own padding drops, and a full-screen modal fades in rather 
     pictures runs three across from 768px as text cards. A picture card has a full-width 16:9 image band, then the
     title with its price aligned right (accent ink), then the description, then its badge as a solid accent tag; a
     text card carries its badge as a soft tag beside the title. The selected card gets a 2px border in the text
-    colour on the stage colour. The '?' help toggle is a 30px disc that fills dark on hover; its answer opens as a
-    dark panel under the card.
+    colour on the stage colour. The picture band shows the stage colour; the option's own picture is drawn at
+    `optionMediaSize` per device ({desktop, tablet, mobile}, % of the band's width, 100 = fills the band), centred,
+    so a smaller one shows the band around it and a larger one is cropped by it (a finish card's frame photo is never
+    scaled). The '?' help toggle is a 30px disc that fills dark on hover (`infoToggleColour`,
+    `infoToggleBorderColour`); its answer opens as a dark panel under the card. The header's step name takes
+    `headerEyebrowColour` (default the muted text colour).
   - A result step reads as a quiet confirmation panel; a result can put the running total on its purchase button
     (`buttonShowsTotal`: "Add to bag £418.00"), and a lone purchase button takes the primary style.
 - **Narrow containers (under 600px):** the stage collapses to a slim row above the steps (a 72px thumbnail, the

@@ -14,7 +14,10 @@ key), with the owed Wave C polish alongside.
   on both sides (a photographed product where the draft has a photo: Gucci 76, Holbrook 81, Wayfarer 90, Round Metal
   98), every state walked (tabs, steps, open panels, filters), text and positions and computed styles and motion and
   hover end states compared by script at 1440, 768 and 375, screenshots looked at, and every difference either fixed
-  or listed as accepted by Bean.
+  or listed as accepted by Bean. Tool: `scripts/parity/draft-live-walk.mjs` with a config per page in
+  `sites/eye-care-ward-end/build/qa/parity/`. Progress: lens pop-up DONE (below); shop archive IN PROGRESS
+  (`plans/2026-09-26-eye-care-shop-parity.md`); product page, bag drawer, checkout, order confirmation, home,
+  lenses, about, help, contact to do.
 - Wave B pages on eye-care-test, each built through the editor with `scripts/wp-build-page.js` from a tree in
   `sites/eye-care-ward-end/build/` (the reproducible record): header `sgs_header` 199 (active), mobile menu `sgs_drawer`
   203 (the burger's own drawerRef; the global drawer pointer is untouched), mega panels 165/176/183/186, WP menu 96,
@@ -163,9 +166,18 @@ key), with the owed Wave C polish alongside.
     size line reads "Frame size 55" where the draft says "Size M" (Bean, 2026-09-25); pennies on every price (Bean,
     2026-09-25); Close keeps the 44px touch target (the draft's is 42px, so the header is 2px taller); the product
     page button lifts 3px (Eye Care's button preset) where the draft's lifts 2px.
-  - For Bean: the option pictures (media 447-458) draw the draft's shapes at a fixed share of the card (44%), where
-    the draft draws them at a fixed 140px, so they read larger at 1440 and smaller at 768. Matching exactly needs the
-    pictures redrawn as fixed-size marks on a plain band.
+  - Option pictures: `sgs/choice-flow` `optionMediaSize` (Bean 2026-09-26: one proportion per device, each set so
+    the picture matches the draft's 140px plate at that device's width): 76 / 156 / 96.7%.
+  - **Re-verified 2026-09-26 with the parity tool** (`scripts/parity/draft-live-walk.mjs`, config
+    `build/qa/parity/lens.mjs`, 4 questions x 3 widths): 0 open differences after fixing what it found that
+    the earlier checks missed: Close and '?' in Arial (form controls did not inherit the font; theme rule), every
+    pop-up text #000 (a `<dialog>` defaults to CanvasText; theme rule), the '?' and header step-name colours
+    (new palette tokens and choice-flow colour settings), the position line's line height, text cards 6px tall, the
+    stage total hidden under a 85px footer at 900px tall, and the bag line listing the pre-selected thickness first.
+    Accepted differences are listed with reasons in the config; four are marked PROPOSED for Bean: the '?' glyph
+    fades on hover where the draft snaps it, its hover colour is #FAF8F5 not white, at 768 the prescription cards
+    run the description full width (the draft squeezes it beside the badge), and at 375 the stage thumbnail has no
+    clipped "POLARIS" label.
   - Each finish card previews the frame's own photo under that finish's treatment, as the draft's do (e1403e873,
     centred and at the uncropped single-product size since aaf19d46f/3caa2ce16); a product with no photo shows the
     finish's own picture. At 768 "Light-reactive +£70.00" wraps where the draft's "+£70" does not (pennies).
