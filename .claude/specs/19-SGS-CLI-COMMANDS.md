@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 19
-spec_version: 0.3
+spec_version: 0.4
 project: small-giants-wp
 title: SGS WP-CLI Command Reference — `wp sgs` Namespace
 status: active
@@ -41,6 +41,7 @@ Three command groups:
 | Site Info, template parts, rules, migrations | `Sgs_Cli_Commands` | `site-info`, `seed-template-parts`, `reset-template-parts`, `header-rules`, `footer-rules`, `seeding-arm`, `migrations` |
 | Header / footer / drawer lifecycle | `Sgs_Header_Footer_Cli_Commands` (`seed-starter` body in `Sgs_Starter_Cli_Seeder`) | `header`, `footer`, `drawer` — each with `set-active`, `clear-active`, `list`, `seed-starter` |
 | Colour-token audit | `Sgs_Colour_Audit_Cli_Commands` | `audit-colour-tokens` |
+| Photo tone backfill | `Sgs_Media_Cli_Commands` | `media measure-tone` |
 
 **Audience:** developers and Claude Code automation. Clients never interact with WP-CLI.
 
@@ -56,6 +57,7 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
     \WP_CLI::add_command( 'sgs footer', new Sgs_Header_Footer_Cli_Commands( Sgs_Active_Layout::AREA_FOOTER ) );
     \WP_CLI::add_command( 'sgs drawer', new Sgs_Header_Footer_Cli_Commands( Sgs_Active_Layout::AREA_DRAWER ) );
     \WP_CLI::add_command( 'sgs audit-colour-tokens', Sgs_Colour_Audit_Cli_Commands::class );
+    \WP_CLI::add_command( 'sgs media', Sgs_Media_Cli_Commands::class );
 }
 ```
 
@@ -463,6 +465,27 @@ wp sgs audit-colour-tokens --post_type=page
 Zero orphans prints `Success: No orphaned colour-token slugs found.`; otherwise it prints
 the table and a warning with the count.
 
+### 4.16 `wp sgs media measure-tone [--force]`
+
+**Capability:** none (writes attachment meta only; run over SSH)
+**Class:** `Sgs_Media_Cli_Commands` (`includes/class-sgs-media-cli-commands.php`)
+
+Backfills `_sgs_top_tone` (`dark` / `light`) on image attachments: the mean luminance of each image's top 20%,
+measured on a small downscaled copy by `includes/media-top-tone.php`, the same measure new uploads get from its
+`wp_generate_attachment_metadata` filter. `sgs_surface_tone()` reads it so a photo section tells a see-through
+header and the shadow logic whether it reads light or dark (Spec 37 FR-37-50). Without `--force`, attachments that
+already carry the meta are skipped. An unreadable file or a server with no image library is counted as failed and
+gets no meta.
+
+```bash
+wp sgs media measure-tone
+wp sgs media measure-tone --force
+# Output: Success: Measured N, skipped N (already measured), failed N (unreadable file or no usable image library).
+```
+
+Run it on a client site only when asked: it changes the tone class, and so the shadows, of photo sections that
+already exist.
+
 ---
 
 ## 5. Quick-reference cheatsheet
@@ -500,6 +523,7 @@ wp sgs migrations run [--target=<slug>] --user=1
 
 # Diagnostics
 wp sgs audit-colour-tokens [--post_type=<types>]
+wp sgs media measure-tone [--force]
 ```
 
 Per-site branding is deployed with `push-theme-snapshot.py` (§7), not with `wp sgs`.

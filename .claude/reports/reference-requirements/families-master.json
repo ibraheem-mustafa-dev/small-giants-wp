@@ -296,11 +296,11 @@
    ],
    "needed_by_count": 6,
    "coverage_status": "partial",
-   "evidence": "thin",
+   "evidence": "measured",
    "covered_by": [
     "sgs/site-footer-row::fxFooterStagger"
    ],
-   "note": "VERIFIED: site-header and site-footer both declare supports.sgs.hideExtensions ['fx'], so the generic Spec 38 picker is deliberately hidden on them; only the footer row has a scrubbed reveal. Three references animate their header in and none can be cloned; a preloader-gated start has no expression. Evidence thin: every footer motion cell is not_measured, so this rests on class names (appear-fade-up, grow-appear).",
+   "note": "Step 0d (2026-09-26, headed capture): header entrance only on lamalama (fade 800ms, after its preloader) and studionamma (slide 800ms); none on dogstudio, lusion and the two drafts. Footer reveal: dogstudio fade-up 50px, lamalama text fade, studionamma scale 0.9 to 1 with fade; lusion's footer is canvas; the drafts have no footer. No footer hover colour change anywhere. The universal animation extension (sgsAnimation) already reaches site-header, site-footer and both row blocks; U-16 adds a distance preset, 500/800ms delays and a keyframe entrance on site-header (design .claude/reports/2026-09-26-u16-entrance-design.md). Recorded divergence: the preloader-gated start (lamalama, studionamma).",
    "uncovered_references": [
     "dogstudio",
     "halcyon",

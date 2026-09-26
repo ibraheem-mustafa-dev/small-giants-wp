@@ -1,12 +1,12 @@
 ---
 doc_type: spec
 spec_id: 36
-spec_version: 2.7
+spec_version: 2.8
 title: SGS Navigation System
 project: small-giants-wp
 status: active
 owner: framework
-last_verified: 2026-09-23
+last_verified: 2026-09-26
 references:
   - .claude/specs/37-HEADER-FOOTER-BUILDER.md
   - .claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md
@@ -1019,11 +1019,14 @@ lockup / favicon / variant half needs a frozen attribute table first (§4 index)
   that spreads or centres its children keeps control of the free space; link-to-home on by default;
   **separate desktop/tablet/mobile IMAGE upload** (swap the file, not resize-only); SVG upload; **functional
   alt** ("[Business] home", inline authoring hint, never "logo"); max-width/height per breakpoint;
-  sticky-header compact-mark swap. **BUILT:** `colourTreatment` (`''` | `white`) forces the logo IMAGE to
-  pure white via a CSS filter, for a full-colour logo on a dark surface such as `sgs/site-footer`.
-- **SHOULD (Phase 3):** transparent-header light/dark variant; shrink-on-scroll (row+logo dimension animate);
-  logo+site-title lockup toggle; **sync-as-favicon** (WP core `shouldSyncIcon`). **BUILT (Wave 3C U-17):** the
-  dark-mode variant (`darkLogoId`, shown under the site's dark theme) and a Lottie substrate (`animationSubstrate`
+  sticky-header compact-mark swap. **BUILT:** `colourTreatment` (`''` | `white` | `auto`): `white` forces the
+  logo IMAGE to pure white via a CSS filter, for a full-colour logo on a dark surface such as `sgs/site-footer`;
+  `auto` whitens it only on a dark ground (Wave 3C U-13; the ground signals are in the next bullet).
+- **SHOULD (Phase 3):** shrink-on-scroll (row+logo dimension animate); logo+site-title lockup toggle;
+  **sync-as-favicon** (WP core `shouldSyncIcon`). **BUILT (Wave 3C U-17, U-13):** "Logo for dark backgrounds"
+  (`darkLogoId`), shown in the site's dark theme and on any dark ground: inside `sgs-on-dark`, or in a header
+  whose section ink reads dark (`is-header-on-dark`, which outranks a static section class; Spec 37 FR-37-50),
+  with the normal logo on a light ground even in dark mode; and a Lottie substrate (`animationSubstrate`
   `svg-draw` | `lottie`, with `lottieId`, `lottieTrigger`, `lottieLoop`, `lottieSpeed`; the logo picture is the poster).
 - **NICE:** reduced-motion SVG entrance/hover; auto-2x raster.
 - **Differentiator:** ONE logo *object* attribute (desktop/mobile/sticky/transparent/dark with a fallback

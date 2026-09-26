@@ -55,6 +55,7 @@ small-giants-wp/
 │   │   ├── class-sgs-cli-commands.php                # `wp sgs` commands (Spec 19)
 │   │   ├── class-sgs-header-footer-cli-commands.php  # `wp sgs header|footer|drawer`
 │   │   ├── class-sgs-colour-audit-cli-commands.php   # `wp sgs audit-colour-tokens`
+│   │   ├── class-sgs-media-cli-commands.php          # `wp sgs media measure-tone`
 │   │   ├── forms/               # Form processor, REST API, admin, DB activation
 │   │   ├── migrations/          # Framework migrations run by `wp sgs migrations`
 │   │   ├── helpers-*.php        # Shared render helpers
@@ -640,7 +641,7 @@ cd plugins/sgs-blocks ; npm run build ; cd ..\..
 The `wp sgs` namespace is the developer and pipeline command surface for SGS sites: Site Info,
 template-part seeding and reset, conditional header/footer rules, migrations, the CPT-backed
 header / footer / drawer lifecycle (`wp sgs header|footer|drawer set-active | clear-active | list
-| seed-starter`), and `wp sgs audit-colour-tokens`. It runs on the server over SSH (`ssh hd`),
+| seed-starter`), `wp sgs audit-colour-tokens` and `wp sgs media measure-tone` (photo brightness for section tone). It runs on the server over SSH (`ssh hd`),
 and write commands need `--user=<id>`. Full reference: `.claude/specs/19-SGS-CLI-COMMANDS.md`
 (Spec 19).
 

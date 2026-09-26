@@ -1457,13 +1457,13 @@ text and icon colour (`inkOnLight`, `inkOnDark`, defaulting to the palette's `te
 and optionally its fill (`fillOnLight`, `fillOnDark` and their gradients) follow the section under the
 header's vertical midpoint, over `inkDuration` ms on `inkEasing`. `blend`: the header's rows invert
 against whatever is behind (`mix-blend-mode: difference`, ink white), with no script.
-- **Reading the section.** `src/header-behaviours/view.js::initSectionInk` walks
+- **Reading the section.** `plugins/sgs-blocks/src/header-behaviours/view.js::initSectionInk` walks
   `document.elementsFromPoint` at the header's centre, skipping the header, a `dialog`, a mega panel and
   the detached burger chip: a `sgs-on-dark`/`sgs-on-light` class decides; a picture (`img`, `video`,
   `canvas`, `iframe` or a background image without a tone class) means unknown; otherwise an opaque
   computed background colour is judged with `sgs_wcag_white_wins_for_luminance()`'s rule
-  (`src/header-behaviours/header-ink-tone.js`). Unknown leaves the header's own colour.
-- **Only where the header is see-through.** `includes/sgs-header-ink-css.php::sgs_header_ink_live_state`
+  (`plugins/sgs-blocks/src/header-behaviours/header-ink-tone.js`). Unknown leaves the header's own colour.
+- **Only where the header is see-through.** `plugins/sgs-blocks/includes/sgs-header-ink-css.php::sgs_header_ink_live_state`
   publishes, per tier, when the tone classes may be set (`data-sgs-header-ink`: `always` with no own fill or
   with a tone fill, `rest` or `scrolled` for Transparent's see-through state); outside it view.js sets no
   class, so an opaque header reads its own fill. With Transparent on, a tone fill paints only in the solid
@@ -1471,8 +1471,8 @@ against whatever is behind (`mix-blend-mode: difference`, ink white), with no sc
 - **Menu links follow.** While live, the bar's top-level links and burger take the ink even when the menu
   sets `itemColour` (Bean, 2026-09-26); hover, focus and dropdown panels keep theirs.
 - **Photo sections.** New image uploads store `_sgs_top_tone` (mean luminance of the top 20%,
-  `includes/media-top-tone.php`); `wp sgs media measure-tone [--force]` backfills.
-  `helpers-surface-tone.php::sgs_surface_tone` reads it for an image layer. Every wrapper block with a
+  `plugins/sgs-blocks/includes/media-top-tone.php`); `wp sgs media measure-tone [--force]` backfills.
+  `plugins/sgs-blocks/includes/helpers-surface-tone.php::sgs_surface_tone` reads it for an image layer. Every wrapper block with a
   background image carries `surfaceTone` (`auto` | `light` | `dark`) in the shared Background panel to
   override the judgement; the editor canvas tone follows it.
 - **The logo answers its ground.** `sgs/responsive-logo`'s "Logo for dark backgrounds" (`darkLogoId`)
@@ -1480,7 +1480,7 @@ against whatever is behind (`mix-blend-mode: difference`, ink white), with no sc
   outranks a static section class); `colourTreatment: auto` turns the logo white only on a dark ground.
   The header never styles the logo.
 **Status:** `BUILT + LIVE-VERIFIED` (sandybrown, `/qa-section-ink/`, fixtures `section-ink` and
-`section-ink-off` in `scripts/nav-qa/qa-item-markup-fixture.php`, probe `scripts/nav-qa/u13-ink-probe.mjs`:
+`section-ink-off` in `plugins/sgs-blocks/scripts/nav-qa/qa-item-markup-fixture.php`, probe `plugins/sgs-blocks/scripts/nav-qa/u13-ink-probe.mjs`:
 wearecollins' pair `#140700`/`#f8f8f7` at 18.64:1 over light, dark, photo and plain-group sections at 375,
 768 and 1440, menu links following; with the feature off, no tone and no change).
 **Done when:** the header, its menu links and its logo stay at 4.5:1 or better over light, dark and photo
@@ -1489,11 +1489,11 @@ sections at every tier where the header is see-through, and nothing changes wher
 #### FR-37-51 — The scrolled state can follow scroll direction
 `sgs/site-header::scrolledTrigger` (`position` | `direction`, default `position`) and `scrolledOffset`
 (px, default 50). `direction`: `is-header-scrolled` is set only while past the offset and last moving
-down, and clears on an upward run of 8px or more (`src/header-behaviours/direction-scroll-state.js`).
+down, and clears on an upward run of 8px or more (`plugins/sgs-blocks/src/header-behaviours/direction-scroll-state.js`).
 With `headerTransparentDirection: solid-first`, the resting fill paints on `::after` and fades by
-opacity (`includes/sgs-header-scroll-trigger.php`), direction mode only; reduced motion makes it
+opacity (`plugins/sgs-blocks/includes/sgs-header-scroll-trigger.php`), direction mode only; reduced motion makes it
 instant. Editor: the "Scroll change" panel.
-**Status:** `BUILT + LIVE-VERIFIED` (fixture `direction-fade`, probe `scripts/nav-qa/m03-direction-probe.mjs`:
+**Status:** `BUILT + LIVE-VERIFIED` (fixture `direction-fade`, probe `plugins/sgs-blocks/scripts/nav-qa/m03-direction-probe.mjs`:
 fantasy's black 0.5 fill at rest, gone past 100px going down, a 5px nudge up keeps it gone, 15px up
 restores it mid-page over about 300ms, at 375, 768 and 1440).
 **Done when:** a header can restyle going down and restore going up at any offset. ✅ met.

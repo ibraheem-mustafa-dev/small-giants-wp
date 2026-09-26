@@ -133,7 +133,8 @@ Live reports: `reports/visual-diff/nav-bar-menu-*.md`, `nav-drawer-*.md`, `nav-d
 ## Wave 3C — Header and nav architecture harmonised
 - STATUS: under way (`plans/2026-09-21-wave-3c-implementation-plan.md`). U-1, U-2, all of lane A (U-9+U-11, U-5,
   U-3+U-8, U-6+U-7, U-4, U-10+U-14, with its batched QA pass), all of lane C (U-12, U-15, U-17) and U-13 are closed.
-  Open: U-16 (step 0d measured 2026-09-26; design gate next) and Gate 3C below.
+  Open: U-16 (step 0d measured 2026-09-26; design `.claude/reports/2026-09-26-u16-entrance-design.md` at council
+  revision) and Gate 3C below.
 - Lane C evidence (live on sandybrown 2026-09-26, headed Chrome; fixture pages 4070 `/qa-furniture/`, 4072 `/qa-notice/`,
   4074 `/qa-wishlist/`, 4087 `/qa-lottie/`): six clocks in their zones with correct offsets and no `aria-live`; language links
   with `lang`/`hreflang`; the store disclosure closes on Escape and returns focus; the up button 54x54 at 1440 and 45x45 at

@@ -119,7 +119,7 @@ as defects.
 
 - **0a and 0b run before U-1.**
 - **0c runs before Wave 4**, and before U-8 or U-2 read rabbit's dropdown cells.
-- **0d runs before U-16's design gate.**
+- **0d — done** (2026-09-26, f839facc7): measured cells in the six M-11 references' JSON; summary in `.claude/reports/2026-09-26-u16-entrance-design.md` §3.
 - **0e is optional and blocks nothing.**
 - **0f runs before U-1's live check:** create and activate a test header and drawer.
 
@@ -206,7 +206,7 @@ visually. `none` means neither.
 | 11 | U-8 — **DONE** (paired with U-3) | Panel geometry: anchor enum and mega top offset (M-16). "Panel follows the pill" is a covered value of M-16, already built. Then Away's callout row (M-20), the aside or callout column count, which comes last on one reference | M-16, M-20 | none | medium | `nav-menu-submenu-css.php`, `mega-panel/{block.json,render.php}`, `mega-aside/render.php` |
 | 12 | U-14 — **DONE** (paired with U-10) | Band pass-through, a zero-height shell (M-52); the surface trigger (M-39, DEC-14, built as the separate `triggerSurface` attribute); then a trigger that outlives its header, the detaching chip (M-08, buck and resn), last on two references. Do not reuse `class-sgs-floating-ui-renderer.php` as is: its container is `aria-hidden`, and FR-36-8's priority-plus-More text contradicts it | M-52, M-39, M-08 | design | medium | `site-header/{render.php,block.json,style.css}`, `site-header-row/block.json`, `nav-bar-menu/block.json` |
 | 13 | U-13 — **DONE** | Header scroll intelligence: section-adaptive ink (M-04), then direction-keyed restyle (M-03, one reference, last) | M-04, M-03 | design | high | `src/header-behaviours/view.js`, `includes/class-sgs-header-behaviours.php`, `site-header/*` |
-| 14 | U-16 | Header and footer entrance animation, after the 0d measurements. Premise: `site-header` and `site-footer` carry `supports.sgs.hideExtensions`; `site-footer-row` does not | M-11 | eye | medium | `site-header/block.json`, `site-footer/block.json`, `site-footer-row/block.json` |
+| 14 | U-16 — design at council revision | Header and footer entrance animation. Step 0d measured it: most of M-11 is already expressible through the universal animation extension; the build adds a distance preset, 500/800ms delays and a keyframe entrance on `site-header` (design `.claude/reports/2026-09-26-u16-entrance-design.md`, council GO WITH FIXES applied; the revision goes back past the same two reviewers before the build, plan §5 step 2a) | M-11 | eye | medium | `src/blocks/extensions/animation.js`, `src/components/AnimationControl.js`, `includes/animation-attributes.php`, `assets/css/extensions.css`, `scripts/generate-extension-attributes.js` |
 | ‖ | U-12 — **DONE** | Header and footer furniture: local-time clock, language switch, store selector, wishlist (link, saved-items panel, Save for later), theme toggle with an automatic dark palette, back-to-top and account as `sgs/button` link sources, sound mute as an `sgs/audio` style (Bean, 2026-09-25). `headerEssential` on `product-search` only | M-18 | none | high | six new directories (`local-time/`, `language-switch/`, `store-selector/`, `theme-toggle/`, `wishlist-link/`, `wishlist-panel/`), plus `button/`, `audio/`, `product-card/`, `cart/`, `product-search/block.json`, `includes/class-sgs-wishlist-rest.php`, `includes/helpers-link-source.php`, `scripts/derive-dark-palette.py` and the theme's dark-mode files |
 | ‖ | U-15 — **DONE** | Self-changing header message (rotate, random, live clock) on `notice-banner`. No overlap with header or nav infrastructure | M-07 | eye | medium | `notice-banner/*`, new `notice-message/` |
 | ‖ | U-17 — **DONE** | The Lottie player (DEC-13, section 1h): Spec 38 Tier H, the fourth media type, the wrapper background and the logo substrate | M-33 | design | high | `includes/lottie-*.php`, `src/shared/effects/{fx-lottie,lottie-adapter}.js`, `src/vendor-modules/lottie-light.js`, the media atoms, `media/`, `hero/`, `responsive-logo/`, `class-sgs-container-wrapper.php` |
@@ -282,8 +282,8 @@ named: dogstudio's durations are upper bounds (compared by shape and order only)
 its 0.4s scrim close delay and fantasy's second item direction are recorded divergences; lusion's end pose was
 never captured, so its stagger is expressed but not measured. The lane A QA pass (d954c83f8, `reports/visual-diff/nav-drawer-2026-09-25.md` section "Lane A batched QA pass") closed
 reduced motion (14 and 20 animations without the emulation, 0 with it, same end state), axe on the open drawer and
-the editor round-trip of the new controls; Bean's eye on the shapes is still open. U-16 was not paired: its design gate waits on step 0d; it reuses
-this vocabulary.
+the editor round-trip of the new controls; Bean's eye on the shapes is still open. U-16 was not paired (it needed step 0d first) and
+builds on the universal animation extension instead.
 
 **U-3 + U-8 — done, as one pair** (design `.claude/reports/2026-09-24-u3-u8-design.md`, two-model council GO
 WITH FIXES, Bean sign-off; commits 9f3fc5071, 51d4be574, dd2db8a1f; live `reports/visual-diff/nav-drawer-2026-09-25.md`).
@@ -422,7 +422,7 @@ one sign-off, one build, one deploy, one live check, one report.
 | U-9 + U-11 | How a menu closes: dismissal routes plus the close control |
 | U-3 + U-8 | Where a surface sits: drawer anchor and inset, panel anchor and top offset |
 | U-6 + U-7 | New item markup in the same two menu files |
-| U-5 + U-16 | One motion vocabulary (U-16 still needs step 0d first; U-2's scrim fade joins it) |
+| U-5 + U-16 | Proposed as one motion vocabulary; not paired in the end (U-16 builds on the universal animation extension); U-2's scrim fade joined U-5 |
 | U-10 + U-14 | Header-row structure |
 
 U-4 and U-13 run alone. Three lanes run as separate sessions on disjoint files:

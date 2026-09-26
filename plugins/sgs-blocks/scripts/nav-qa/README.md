@@ -563,6 +563,27 @@ ssh hd "cd $WP && wp eval-file /tmp/qa-item-markup-fixture.php restore && wp eva
 node scripts/nav-qa/u1-owed-probe.mjs https://sandybrown-nightingale-600381.hostingersite.com/qa-scrim/ --expect on
 ```
 
+## 11. `u13-ink-probe.mjs` + `m03-direction-probe.mjs` — header colour over sections and the direction restyle
+
+Fixture cases in `qa-item-markup-fixture.php` (same trapped apply-measure-restore rule as §10, ending on `two-bar`):
+`section-ink` (a sticky, see-through header with section ink on at every tier on wearecollins' pair, the fill
+following the section once scrolled), `section-ink-off` (the negative control) and `direction-fade` (fantasy's
+black 0.5 fill that fades going down past 100px). All three run over page `/qa-section-ink/`, which the fixture
+creates once and keeps: light, dark, photo (attachment 3459, toned by `wp sgs media measure-tone`), a plain dark
+`core/group` and light again. `u13-ink-probe.mjs <url> --expect on|off` scrolls each section under the header at
+375/768/1440 and asserts the tone class, the ink, the menu link following the ink and 4.5:1 against the sampled
+pixel; `off` asserts no tone and no change. `m03-direction-probe.mjs <url>` drives real wheel input and asserts the
+fill at rest, gone past 100px, held through a 5px nudge up and back on 15px up.
+
+```bash
+URL=https://sandybrown-nightingale-600381.hostingersite.com/qa-section-ink/
+apply() { ssh hd "cd $WP && wp eval-file /tmp/qa-item-markup-fixture.php restore >/dev/null && wp eval-file /tmp/qa-item-markup-fixture.php $1 && wp litespeed-purge all"; }
+trap restore EXIT   # restore() as in §10
+apply section-ink && node scripts/nav-qa/u13-ink-probe.mjs $URL --expect on
+apply section-ink-off && node scripts/nav-qa/u13-ink-probe.mjs $URL --expect off
+apply direction-fade && node scripts/nav-qa/m03-direction-probe.mjs $URL
+```
+
 ## Notes for the acceptance gate
 
 - Run all of them against **both** gate targets, Mama's (flat bar plus drawer) and
