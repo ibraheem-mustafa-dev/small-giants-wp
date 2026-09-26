@@ -1,13 +1,13 @@
 ---
 doc_type: spec
 spec_id: 30
-spec_version: "2.5"
+spec_version: "2.6"
 status: active
 title: "SGS WooCommerce Page Types — single-product / shop archive / cart / checkout"
 project: small-giants-wp
 authors: Bean + Claude (Opus 4.8)
 created: 2026-06-11
-last_verified: 2026-09-26
+last_verified: 2026-09-27
 absorbs: []
 absorbed_by: null
 lock_reason: null
@@ -104,7 +104,7 @@ Product Collection + Product Filters composed into:
 (c) **filter parity** — a filter group for every attribute the product card displays at build time (post-launch attribute additions surface automatically via WC's attribute taxonomy — if any case requires code, FR-30-13's checklist says so explicitly);
 (d) **top SEO text** — a RichText block attribute (1–3 sentences) above the grid, fully operator-editable in the block editor;
 (e) **bottom SEO text** — RichText attribute below the grid with the read-more expand: full text server-rendered in the HTML; collapsed via a wrapper with `height:0; overflow:hidden; visibility:hidden` + `aria-hidden="true"` (NOT `display:none` on the text, NOT JS-injected content); the toggle is a `<button>` with `aria-expanded` + `aria-controls`, accessible name flips Read more/less, ≥44px; the collapsed line count N is an inspector integer control. Collapsed text remains ASA-subject — factual claims only.
-(f) **settings (v2.4, 2026-09-26, Eye Care shop parity)** — Customizer > Shop Filters also sets the result count's wording ("%d frames", with a singular form), the sort menu's options, order and labels ("option|Label" lines; `inc/shop-toolbar-settings.php`), product row gap, filter column width and the gap beside it, and where the one-switch filter toggle sits and whether it reads an attribute or a product tag (`?tags=`). A filter group's heading block takes classes that set its look: `sgs-filter-open` (starts expanded; with none marked the first group opens), `sgs-filter-count` (option count beside the heading), `sgs-filter-segmented` (one choice at a time, "All" first), `sgs-filter-swatches` (round swatches from each term's `_sgs_swatch_color`, via a generated stylesheet). `sgs-filter-search` (a search box over the list) duplicates FR-30-6's `sgs/filter-search` block and is being removed (`plans/2026-09-26-eye-care-shop-parity.md`, Remaining item 0). The "plain" panel style draws 52px heading rows ruled below.
+(f) **settings (v2.4, 2026-09-26, Eye Care shop parity)** — Customizer > Shop Filters also sets the result count's wording ("%d frames", with a singular form), the sort menu's options, order and labels ("option|Label" lines; `inc/shop-toolbar-settings.php`), product row gap, filter column width and the gap beside it, and where the one-switch filter toggle sits and whether it reads an attribute or a product tag (`?tags=`). A filter group's heading block takes classes that set its look: `sgs-filter-open` (starts expanded; with none marked the first group opens), `sgs-filter-count` (option count beside the heading), `sgs-filter-segmented` (one choice at a time, "All" first), `sgs-filter-swatches` (round swatches from each term's `_sgs_swatch_color`, via a generated stylesheet). A search box over a group's options is FR-30-6's `sgs/filter-search` block placed inside that group's filter block. The "plain" panel style draws 52px heading rows ruled below.
 **Model:** sonnet build + opus design review. **Done when:** at 375px the archive paints with filters closed + a sticky Filter button opening a drawer; chips render/remove and persist across a paginate-away-and-back; `curl` of the archive HTML contains the FULL bottom text pre-expand; the toggle passes button/aria checks in axe + a manual keyboard run; top text, bottom text, and N are all editable in the block editor with zero code.
 
 ### FR-30-4 — Cart / checkout / Mini-Cart styling — **SHIPPED**
@@ -121,7 +121,7 @@ A live/keyword product-search block. **This is the spec's largest net-new build 
 **Model:** opus design-gate + sonnet build. **Done when:** typing ≥2 chars surfaces matching products on the canary ordered prefix-first; a draft product's title NEVER appears in suggestions (live-probed); curl-hammering the endpoint past the rate limit returns 429; Enter with JS disabled lands on a product-scoped results URL; a product titled `<img src=x onerror=alert(1)>` renders inertly in the dropdown; axe 0 violations; registered via `/sgs-update`.
 
 ### FR-30-6 — SGS searchable attribute filter — **SHIPPED**
-A type-to-find input INSIDE a filter group, auto-enabled when the attribute has **more than 15 options (i.e. 16+)** — single threshold, Baymard-derived; composing with core Product Filters (same query params — filtering stays core). Matches options client-side; announces the narrowed count via an ARIA live region; narrowing to 0 shows "No matching options". **Term population MUST be visibility-scoped** (terms counted against published/visible products only — an attribute term attached only to a draft product must not appear; no unscoped `get_terms()`).
+A type-to-find input INSIDE a filter group, auto-enabled when the attribute has **more than 15 options (i.e. 16+)** — single threshold, Baymard-derived, an inspector control (`threshold`) per instance; composing with core Product Filters (same query params — filtering stays core). It sits inside a core attribute filter (`attributeId`) or a core taxonomy filter such as brand (`taxonomy`, v2.6: `?brands=` stays WooCommerce's), chips or checkbox list; a checkbox list's "Show N more" expands on the first keystroke (`view.js`, live-proven on eye-care-test 2026-09-27: "ray" narrows 14 brands to Ray-Ban, ticking it loads `?brands=ray-ban` with its 3 frames). Matches options client-side; announces the narrowed count via an ARIA live region; narrowing to 0 shows "No matching options". **Term population MUST be visibility-scoped** (terms counted against published/visible products only — an attribute term attached only to a draft product must not appear; no unscoped `get_terms()`).
 **Model:** sonnet. **Done when:** an attribute fixture with exactly 16 terms renders the input and one with exactly 15 renders none (boundary-tested); typing narrows visibly + announces the count; a term existing only on a draft product is absent (live-probed); applying a narrowed option filters the collection identically to core.
 
 ### FR-30-7 — option-picker → cart wiring — **SHIPPED** (`sgs/buybox` wrapper block)

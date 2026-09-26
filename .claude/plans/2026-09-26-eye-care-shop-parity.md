@@ -32,8 +32,8 @@ Framework (any client, each with a control):
    accordion opens only the first group today). Control: the heading's Additional CSS class.
 2. Colour swatches: a hex per attribute term (term meta, edited on the term screen) and a
    "swatches" look for an attribute filter group, the term name as the accessible name.
-3. Brand search: a "Search brands" box above the brand list. Built as a heading class (`sgs-filter-search`),
-   which duplicates Spec 30 FR-30-6's `sgs/filter-search` block: see Remaining item 0.
+3. Brand search: a "Search brands" box above the brand list: Spec 30 FR-30-6's `sgs/filter-search` block inside
+   the brand (taxonomy) filter.
 4. Heading counts: the number of options shown beside a group's heading (class `sgs-filter-count`).
 5. One-choice groups (Gender): a segmented All / option / option look where one choice replaces
    the last (class `sgs-filter-segmented`).
@@ -60,15 +60,11 @@ Content (Eye Care, in `build/gen_archive_product.py` and the product seed):
 
 ## Remaining (next session, in order)
 
-0. **Remove a duplicate built this session.** Spec 30 FR-30-6 already ships a searchable filter, the
-   `sgs/filter-search` block (`plugins/sgs-blocks/src/blocks/filter-search/`: `threshold` default 16, `placeholder`,
-   colours, and a standalone mode that lists any taxonomy's terms, brand included). The `sgs-filter-search` heading
-   class in `theme/sgs-theme/assets/js/sgs-shop-filters-groups.js` (addSearch), its CSS in
-   `theme/sgs-theme/assets/css/woocommerce.css` (8h) and the `sgs_shop_filter_search_label` setting in
-   `theme/sgs-theme/inc/shop-toolbar-settings.php` duplicate it: put `sgs/filter-search` in the Eye Care Brand group
-   instead (`build/gen_archive_product.py`; placeholder "Search brands", threshold below 14 so it shows), prove a
-   ticked brand still filters by `?brands=`, then delete the duplicate and its setting (and its line in
-   `build/apply_shop_settings.py`).
+0. **DONE 2026-09-27 (7240cb28d).** The duplicate brand search is gone: Eye Care's Brand group holds Spec 30
+   FR-30-6's `sgs/filter-search` block (now able to search a core taxonomy filter, placeholder "Search brands",
+   threshold 2); the theme's `sgs-filter-search` class, its CSS and the `sgs_shop_filter_search_label` setting are
+   deleted (theme mod removed on eye-care-test). Live: "ray" narrows 14 brands to 1; ticking Ray-Ban loads
+   `?brands=ray-ban` with 3 frames.
 1. **Hover, library-wide (Bean 2026-09-26: "a library wide feature improvement instead of only doing it for
    product cards").** Extend the shared hover extension (`src/blocks/extensions/hover-effects.js`,
    `includes/hover-effects.php`, `assets/css/extensions.css`; 11 blocks opt in) with lift in px (`sgsHoverLift`,
