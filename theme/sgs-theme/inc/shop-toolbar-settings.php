@@ -51,7 +51,7 @@ function register_shop_toolbar_customizer_settings( \WP_Customize_Manager $wp_cu
 		),
 		'sgs_shop_filter_search_label'     => array(
 			'type'     => 'text',
-			'label'    => __( 'Placeholder of a searchable filter list (a group heading with the class has-search), e.g. "Search brands"', 'sgs-theme' ),
+			'label'    => __( 'Placeholder of a searchable filter list (a group heading with the class sgs-filter-search), e.g. "Search brands"', 'sgs-theme' ),
 			'sanitize' => 'sanitize_text_field',
 		),
 		'sgs_shop_filter_boolean_source'   => array(
@@ -202,7 +202,7 @@ add_filter( 'render_block_woocommerce/product-results-count', __NAMESPACE__ . '\
 /**
  * One rule per attribute term with a swatch colour (`_sgs_swatch_color`,
  * edited on the attribute term screen), giving its filter chip the colour a
- * swatch group (heading class has-swatches) paints with. A stylesheet, so no
+ * swatch group (heading class sgs-filter-swatches) paints with. A stylesheet, so no
  * element carries an inline style.
  *
  * @return void

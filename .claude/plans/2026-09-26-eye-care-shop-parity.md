@@ -26,15 +26,15 @@
 ## Work, by layer
 
 Framework (any client, each with a control):
-1. Group open state: a filter group heading with the class `is-open` starts expanded (the
+1. Group open state: a filter group heading with the class `sgs-filter-open` starts expanded (the
    accordion opens only the first group today). Control: the heading's Additional CSS class.
 2. Colour swatches: a hex per attribute term (term meta, edited on the term screen) and a
    "swatches" look for an attribute filter group, the term name as the accessible name.
 3. Brand search: a "Search brands" box above a long checkbox list (a group heading class
-   `has-search`), filtering the list as you type.
-4. Heading counts: the number of options shown beside a group's heading (class `has-count`).
+   `sgs-filter-search`), filtering the list as you type.
+4. Heading counts: the number of options shown beside a group's heading (class `sgs-filter-count`).
 5. One-choice groups (Gender): a segmented All / option / option look where one choice replaces
-   the last (class `is-segmented`).
+   the last (class `sgs-filter-segmented`).
 6. Toolbar: result count wording ("%d frames") and the sort menu's options and labels
    (Customizer > Shop Filters), and the count and sort beside the page title.
 7. The "Polarised only" toggle reading a product tag as well as an attribute.

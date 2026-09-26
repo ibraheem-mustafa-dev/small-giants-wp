@@ -1,13 +1,13 @@
 /**
  * SGS Shop Filter Drawer — per-group looks, switched on by classes on a group's
  * heading block (its Additional CSS class):
- *   has-count     the number of options beside the heading ("Brand 40")
- *   has-search    a search box above the options that narrows the list as you type
+ *   sgs-filter-count     the number of options beside the heading ("Brand 40")
+ *   sgs-filter-search    a search box above the options that narrows the list as you type
  *                 (placeholder: Customizer > Shop Filters, `searchLabel`)
- *   is-segmented  one choice at a time as a segmented row, "All" first
+ *   sgs-filter-segmented  one choice at a time as a segmented row, "All" first
  *                 (an attribute group: it sets `filter_<attribute>` and reloads,
  *                 the same round trip WooCommerce's own filters take)
- * Swatches (has-swatches) are CSS only (woocommerce.css, inc/shop-toolbar-settings.php).
+ * Swatches (sgs-filter-swatches) are CSS only (woocommerce.css, inc/shop-toolbar-settings.php).
  *
  * Runs once sgs-shop-filters.js has turned the aside into its dialog and the
  * headings into <details> groups; a site with none of the classes is unchanged.
@@ -100,13 +100,13 @@
 
 	function run( dialog ) {
 		dialog.querySelectorAll( '.sgs-shop-filters__group-heading' ).forEach( function ( heading ) {
-			if ( heading.classList.contains( 'has-count' ) ) {
+			if ( heading.classList.contains( 'sgs-filter-count' ) ) {
 				addCount( heading );
 			}
-			if ( heading.classList.contains( 'has-search' ) ) {
+			if ( heading.classList.contains( 'sgs-filter-search' ) ) {
 				addSearch( heading );
 			}
-			if ( heading.classList.contains( 'is-segmented' ) ) {
+			if ( heading.classList.contains( 'sgs-filter-segmented' ) ) {
 				makeSegmented( heading );
 			}
 		} );

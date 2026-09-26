@@ -22,7 +22,7 @@ def B(name, attrs=None, inner=None):
 
 
 def group_heading(text, looks=""):
-    # looks: the theme's per-group classes (is-open, has-count, has-search, has-swatches, is-segmented).
+    # looks: the theme's per-group classes (sgs-filter-open, sgs-filter-count, sgs-filter-search, sgs-filter-swatches, sgs-filter-segmented).
     return B("sgs/heading", {"content": text, "level": "h3",
                              "className": ("sgs-shop-filters__group-heading " + looks).strip(),
                              "fontSize": {"desktop": 12}, "fontSizeUnit": "px", "fontWeight": "400",
@@ -67,14 +67,14 @@ filters = [
        B("woocommerce/product-filter-clear-button", {}, [B("sgs/button", {"label": "Clear all filters",
                                                                          "className": "wp-block-button__link"})])]),
     # The draft's order and open state; "Polarised only" is the theme's toggle (apply_shop_settings.py).
-    *attribute_filter("Gender", "gender", "chips", "is-open is-segmented"),
+    *attribute_filter("Gender", "gender", "chips", "sgs-filter-open sgs-filter-segmented"),
     *attribute_filter("Size", "size", "chips"),
-    *attribute_filter("Colour", "colour", "chips", "is-open has-swatches"),
-    group_heading("Price", "is-open"),
+    *attribute_filter("Colour", "colour", "chips", "sgs-filter-open sgs-filter-swatches"),
+    group_heading("Price", "sgs-filter-open"),
     B("woocommerce/product-filter-price", {},
       [B("woocommerce/product-filter-price-slider")]),
-    *taxonomy_filter("Brand", "product_brand", "list", "is-open has-count has-search"),
-    *attribute_filter("Style", "shape", "chips", "is-open has-count"),
+    *taxonomy_filter("Brand", "product_brand", "list", "sgs-filter-open sgs-filter-count sgs-filter-search"),
+    *attribute_filter("Style", "shape", "chips", "sgs-filter-open sgs-filter-count"),
     *attribute_filter("Material", "material", "list"),
     *attribute_filter("Frame type", "frame-type", "list"),
     *attribute_filter("Hinge", "hinge", "list"),

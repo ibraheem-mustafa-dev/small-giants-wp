@@ -1925,7 +1925,8 @@ body.woocommerce-cart .with-empty-cart-icon,
  *
  * ⛔ Do not fold this into the rule below it - that one styles WooCommerce's own
  * `h3.wp-block-heading` output, which this block replaced. */
-.sgs-shop-filters h3.sgs-shop-filters__group-heading {
+/* Zero specificity: the heading block's own size, weight and spacing settings win. */
+:where(.sgs-shop-filters h3.sgs-shop-filters__group-heading) {
 	margin: 0 0 var(--wp--preset--spacing--20, 0.75rem) 0;
 	font-size: 1rem;
 	font-weight: 600;
@@ -2382,14 +2383,14 @@ body.woocommerce-cart .with-empty-cart-icon,
 /* ── 8h. Per-group looks, switched on by a class on the group's heading block
  * (sgs-shop-filters-groups.js builds the parts; swatches are CSS only) ── */
 
-/* has-count: the number of options, right-aligned before the chevron. */
+/* sgs-filter-count: the number of options, right-aligned before the chevron. */
 .sgs-shop-filters__group-count {
 	margin-left: auto;
 	font-size: var(--wp--preset--font-size--x-small, 0.8125rem);
 	color: var(--wp--preset--color--text-label, var(--wp--preset--color--text-muted));
 }
 
-/* has-search: a box above the options that narrows the list as you type. */
+/* sgs-filter-search: a box above the options that narrows the list as you type. */
 .sgs-shop-filters__group-search {
 	display: block;
 	box-sizing: border-box;
@@ -2409,7 +2410,7 @@ body.woocommerce-cart .with-empty-cart-icon,
 	display: none !important;
 }
 
-/* is-segmented: one choice at a time, "All" first; WooCommerce's own chips
+/* sgs-filter-segmented: one choice at a time, "All" first; WooCommerce's own chips
    stay in the page (they carry the options) but out of sight. */
 .sgs-shop-filters__group--segmented .wp-block-woocommerce-product-filter-attribute {
 	display: none;
@@ -2444,14 +2445,14 @@ body.woocommerce-cart .with-empty-cart-icon,
 	outline-offset: -2px;
 }
 
-/* has-swatches: each chip a round swatch of its term's colour
+/* sgs-filter-swatches: each chip a round swatch of its term's colour
    (`--sgs-swatch`, set per term by inc/shop-toolbar-settings.php); the name
    stays as the button's accessible name and title. */
-.sgs-shop-filters__group:has( .has-swatches ) .wc-block-product-filter-chips__items {
+.sgs-shop-filters__group:has( .sgs-filter-swatches ) .wc-block-product-filter-chips__items {
 	gap: 12px;
 }
 
-.sgs-shop-filters__group:has( .has-swatches ) button.wc-block-product-filter-chips__item {
+.sgs-shop-filters__group:has( .sgs-filter-swatches ) button.wc-block-product-filter-chips__item {
 	width: 30px;
 	height: 30px;
 	min-height: 30px;
@@ -2463,24 +2464,24 @@ body.woocommerce-cart .with-empty-cart-icon,
 	transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
-.sgs-shop-filters__group:has( .has-swatches ) button.wc-block-product-filter-chips__item > * {
+.sgs-shop-filters__group:has( .sgs-filter-swatches ) button.wc-block-product-filter-chips__item > * {
 	display: none;
 }
 
-.sgs-shop-filters__group:has( .has-swatches ) button.wc-block-product-filter-chips__item:hover {
+.sgs-shop-filters__group:has( .sgs-filter-swatches ) button.wc-block-product-filter-chips__item:hover {
 	background: var(--sgs-swatch, var(--wp--preset--color--surface-alt));
 	border-color: var(--wp--preset--color--border-strong, var(--sgs-filter-line));
 	transform: scale(1.08);
 }
 
-.sgs-shop-filters__group:has( .has-swatches ) button.wc-block-product-filter-chips__item[aria-checked="true"] {
+.sgs-shop-filters__group:has( .sgs-filter-swatches ) button.wc-block-product-filter-chips__item[aria-checked="true"] {
 	background: var(--sgs-swatch, var(--wp--preset--color--surface-alt));
 	border-color: var(--wp--preset--color--border-strong, var(--sgs-filter-line));
 	box-shadow: 0 0 0 2px var(--wp--preset--color--surface, #fff), 0 0 0 3px var(--wp--preset--color--text);
 }
 
 @media ( prefers-reduced-motion: reduce ) {
-	.sgs-shop-filters__group:has( .has-swatches ) button.wc-block-product-filter-chips__item,
+	.sgs-shop-filters__group:has( .sgs-filter-swatches ) button.wc-block-product-filter-chips__item,
 	.sgs-shop-filters__segment {
 		transition-duration: 0.01ms;
 	}
@@ -2567,6 +2568,43 @@ body.woocommerce-cart .with-empty-cart-icon,
 .sgs-shop-filters__bool-filter-text {
 	font-size: var(--wp--preset--font-size--small, 0.9375rem);
 	color: var(--wp--preset--color--text, #1e1e1e);
+}
+
+/* ── 8i. The "plain" filter panel (Customizer > Shop Filters > Filter panel
+ * style: plain, body.sgs-shop-filters-plain): each group a 52px heading row
+ * ruled below, its options 18px clear of the rule, and the one-switch toggle a
+ * row of its own with the label left and the switch right. ── */
+.sgs-shop-filters-plain .sgs-shop-filters__group,
+.sgs-shop-filters-plain .sgs-shop-filters__group:first-of-type {
+	margin: 0;
+	padding: 0;
+	border-top: 0;
+	border-bottom: 1px solid var(--sgs-filter-line, var(--wp--preset--color--border));
+}
+
+.sgs-shop-filters-plain .sgs-shop-filters__group[open] {
+	padding-bottom: 18px;
+}
+
+.sgs-shop-filters-plain .sgs-shop-filters__group-summary {
+	min-height: 52px;
+}
+
+.sgs-shop-filters-plain .sgs-shop-filters__bool-filter {
+	margin: 0;
+	padding: 0;
+}
+
+.sgs-shop-filters-plain .sgs-shop-filters__bool-filter-label {
+	justify-content: space-between;
+	min-height: 52px;
+}
+
+.sgs-shop-filters-plain .sgs-shop-filters__bool-filter-text {
+	order: -1;
+	font-size: 0.75rem;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
 }
 
 /* ── The panel's scrollbar ──

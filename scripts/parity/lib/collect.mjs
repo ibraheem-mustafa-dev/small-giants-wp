@@ -58,15 +58,29 @@ export function collectPair( [ finder, props, resolveSrc ] ) {
 	} );
 	const carrier = walker.nextNode()?.parentElement || null;
 	const ccs = carrier ? getComputedStyle( carrier ) : null;
+	// Colours reported as oklab()/color() (colour-mix, relative colours) go through a
+	// canvas, which always hands back #rrggbb or rgba(), so both sides compare in sRGB.
+	const ctx = document.createElement( 'canvas' ).getContext( '2d' );
+	const srgb = ( v ) => {
+		if ( ! /^(oklab|oklch|lab|lch|color)\(/.test( v ) ) {
+			return v;
+		}
+		ctx.fillStyle = '#000';
+		ctx.fillStyle = v;
+		const f = ctx.fillStyle;
+		if ( f.startsWith( '#' ) ) {
+			const n = parseInt( f.slice( 1 ), 16 );
+			return `rgb(${ ( n >> 16 ) & 255 }, ${ ( n >> 8 ) & 255 }, ${ n & 255 })`;
+		}
+		return f;
+	};
 	const styles = {};
 	for ( const p of props ) {
-		if ( TEXT_PROPS.includes( p ) ) {
-			if ( ccs ) {
-				styles[ p ] = ccs.getPropertyValue( p ).trim();
-			}
-			continue;
+		const src = TEXT_PROPS.includes( p ) ? ccs : cs;
+		if ( src ) {
+			const v = src.getPropertyValue( p ).trim();
+			styles[ p ] = /color$/.test( p ) ? srgb( v ) : v;
 		}
-		styles[ p ] = cs.getPropertyValue( p ).trim();
 	}
 	// Keyframes compared by content, so a namespaced name (sgs-x-pop) matches the draft's (pop).
 	const keyframes = ( name ) => {
@@ -89,11 +103,11 @@ export function collectPair( [ finder, props, resolveSrc ] ) {
 	};
 	return {
 		text: ( el.innerText || el.getAttribute( 'aria-label' ) || '' ).replace( /\s+/g, ' ' ).trim().slice( 0, 400 ),
-		keyframes: cs.animationName.split( ',' ).map( ( n ) => keyframes( n.trim() ) ).join( ' | ' ),
+		keyframes: cs.animationName.split( ',' ).every( ( n ) => 'none' === n.trim() ) ? 'none' : cs.animationName.split( ',' ).map( ( n ) => keyframes( n.trim() ) ).join( ' | ' ),
 		box: { x: Math.round( r.x ), y: Math.round( r.y + window.scrollY ), w: Math.round( r.width ), h: Math.round( r.height ) },
 		styles,
 		motion: {
-			animation: cs.animationName === 'none' ? 'none' : `${ cs.animationDuration } ${ cs.animationTimingFunction } ${ cs.animationDelay } ${ cs.animationIterationCount } ${ cs.animationFillMode }`,
+			animation: cs.animationName.split( ',' ).every( ( n ) => 'none' === n.trim() ) ? 'none' : `${ cs.animationDuration } ${ cs.animationTimingFunction } ${ cs.animationDelay } ${ cs.animationIterationCount } ${ cs.animationFillMode }`,
 			transition: cs.transitionProperty === 'all' && cs.transitionDuration === '0s' ? 'none' : cs.transition.replace( /\s+/g, ' ' ),
 		},
 	};
@@ -137,9 +151,25 @@ export function hoverStyles( [ finder, props, resolveSrc ] ) {
 		return null;
 	}
 	const cs = getComputedStyle( el );
+	// Same sRGB normalising as collectPair (oklab()/color() through a canvas).
+	const ctx = document.createElement( 'canvas' ).getContext( '2d' );
+	const srgb = ( v ) => {
+		if ( ! /^(oklab|oklch|lab|lch|color)\(/.test( v ) ) {
+			return v;
+		}
+		ctx.fillStyle = '#000';
+		ctx.fillStyle = v;
+		const f = ctx.fillStyle;
+		if ( ! f.startsWith( '#' ) ) {
+			return f;
+		}
+		const n = parseInt( f.slice( 1 ), 16 );
+		return `rgb(${ ( n >> 16 ) & 255 }, ${ ( n >> 8 ) & 255 }, ${ n & 255 })`;
+	};
 	const out = {};
 	for ( const p of props ) {
-		out[ p ] = cs.getPropertyValue( p ).trim();
+		const v = cs.getPropertyValue( p ).trim();
+		out[ p ] = /color$/.test( p ) ? srgb( v ) : v;
 	}
 	return out;
 }

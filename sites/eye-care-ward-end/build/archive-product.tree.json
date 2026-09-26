@@ -193,7 +193,7 @@
                         "attributes": {
                           "content": "Gender",
                           "level": "h3",
-                          "className": "sgs-shop-filters__group-heading is-open is-segmented",
+                          "className": "sgs-shop-filters__group-heading sgs-filter-open sgs-filter-segmented",
                           "fontSize": {
                             "desktop": 12
                           },
@@ -259,7 +259,7 @@
                         "attributes": {
                           "content": "Colour",
                           "level": "h3",
-                          "className": "sgs-shop-filters__group-heading is-open has-swatches",
+                          "className": "sgs-shop-filters__group-heading sgs-filter-open sgs-filter-swatches",
                           "fontSize": {
                             "desktop": 12
                           },
@@ -292,7 +292,7 @@
                         "attributes": {
                           "content": "Price",
                           "level": "h3",
-                          "className": "sgs-shop-filters__group-heading is-open",
+                          "className": "sgs-shop-filters__group-heading sgs-filter-open",
                           "fontSize": {
                             "desktop": 12
                           },
@@ -320,7 +320,7 @@
                         "attributes": {
                           "content": "Brand",
                           "level": "h3",
-                          "className": "sgs-shop-filters__group-heading is-open has-count has-search",
+                          "className": "sgs-shop-filters__group-heading sgs-filter-open sgs-filter-count sgs-filter-search",
                           "fontSize": {
                             "desktop": 12
                           },
@@ -352,7 +352,7 @@
                         "attributes": {
                           "content": "Style",
                           "level": "h3",
-                          "className": "sgs-shop-filters__group-heading is-open has-count",
+                          "className": "sgs-shop-filters__group-heading sgs-filter-open sgs-filter-count",
                           "fontSize": {
                             "desktop": 12
                           },

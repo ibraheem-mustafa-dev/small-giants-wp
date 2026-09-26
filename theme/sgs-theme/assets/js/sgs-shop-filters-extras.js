@@ -32,7 +32,7 @@
 	 * is a normal, server-understood filter request the product-collection's
 	 * `inherit` query already applies — no bespoke query logic, no cheat. */
 	function buildBooleanFilterToggle( dialog, config ) {
-		if ( ! config || ! config.attribute || ! config.term || ! config.label ) {
+		if ( ! config || ! ( config.param || config.attribute ) || ! config.term || ! config.label ) {
 			return;
 		}
 		const scrollWrap = dialog.querySelector( '.sgs-shop-filters__scroll' );
