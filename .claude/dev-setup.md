@@ -700,6 +700,20 @@ git push
 
 No CI/CD pipeline — deployment is `python plugins/sgs-blocks/scripts/build-deploy.py` (see §Deployment above). It is the only sanctioned path for every target.
 
+### Site email: FluentSMTP over the client's own mailbox
+
+Every email a site sends goes through `wp_mail()`, and FluentSMTP (free) routes `wp_mail()` over the client's mailbox by SMTP. Set a site up, or re-check it, with:
+
+```bash
+python plugins/sgs-blocks/scripts/provision-site-mail.py --target <target> --smtp-user <mailbox> --secret-key <KEY> \
+    [--from-email <address>] [--from-name <name>] [--alert-email <address>] [--test-to <address>]
+python plugins/sgs-blocks/scripts/provision-site-mail.py --target <target> --check   # exit 1 when unconfigured
+```
+
+It installs FluentSMTP, writes `FLUENTMAIL_SMTP_USERNAME` / `FLUENTMAIL_SMTP_PASSWORD` into `wp-config.php` (the password goes over SSH stdin; the connection's `key_store` is `wp_config`, so the database holds no password), saves the connection through FluentSMTP's own `Settings::store()` (`smtp.hostinger.com:465`, `ssl`, forced From), turns email logging on, and turns on FluentSMTP's daily sending digest (sent and failed counts; its only email alert). The From address, name and digest recipient default to the Site Info email and the site title; override all three on a test site that holds a real client's details. A mailbox alias cannot sign in: log in as the mailbox and send From the alias. The secrets file defaults to `.claude/secrets/ai-agent-credentials-and-info/email.env`; when a key is defined twice, the last definition wins.
+
+sandybrown: From `admin@smallgiantsstudio.co.uk` (alias), login `ibraheem@smallgiantsstudio.co.uk`, key `SMTP_PASS_SGS`, digest to Bean. Sent mail is listed in WP Admin > Settings > FluentSMTP > Email Logs (table `{prefix}fsmpt_email_logs`).
+
 ### N8N: where site notifications go
 
 Every SGS site's `sgs_n8n_webhook_url` option points at one workflow on `https://n8n.smallgiantsstudio.cloud`: "SGS site events" (id `AJzRBARFn8AqQlkg`). The URL's path is a secret; read it with `wp option get sgs_n8n_webhook_url` on sandybrown, never commit it. The workflow emails `sgs_wishlist_alert` (one email to the shopper) and `sgs_back_in_stock` (one email per subscriber) over the `Hostinger SMTP - admin@ibraheemmustafa.com` credential, and acknowledges then drops anything else, including form submissions (no form-email path exists yet).
@@ -770,8 +784,8 @@ Check every row before building anything new.
 
 | Directory | Runnable files | Holds |
 |---|---|---|
-| `scripts/` | 21 | repo-wide tooling (naming lint, site utilities) |
-| `plugins/sgs-blocks/scripts/` | 927 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `scripts/` | 25 | repo-wide tooling (naming lint, site utilities) |
+| `plugins/sgs-blocks/scripts/` | 933 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/scripts/` | 0 | working-area helpers |
 | `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
@@ -900,15 +914,16 @@ Each entry's purpose is quoted from the script's own header.
 | 112 | `fanout-shadow-lift-attr.py` | adds the `shadowLiftOnHover` block-level switch (boolean, |
 | 113 | `check-scrim.py` | the viewport-scrim detector (Wave 3C U-2, family M-14). |
 | 114 | `check-no-src-requires.py` | Fail when plugin-level PHP loads a file from src/. |
-| 115 | `check-nested-global-settings.py` | reject nested-path wp_get_global_settings() reads. |
-| 116 | `check-text-on-primary.py` | text on a primary-coloured ground must use the palette's |
-| 117 | `check-raw-box-control.py` | every 4-side box editor in the inspector is SgsBoxControl. |
-| 118 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
-| 119 | `check-render-undefined-vars.py` | Undefined-variable gate for block render templates (PHPStan level 1). |
-| 120 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
-| 121 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
+| 115 | `check-exit-guards.py` | Fail when a PHP file's direct-access guard names a constant WordPress never defines. |
+| 116 | `check-nested-global-settings.py` | reject nested-path wp_get_global_settings() reads. |
+| 117 | `check-text-on-primary.py` | text on a primary-coloured ground must use the palette's |
+| 118 | `check-raw-box-control.py` | every 4-side box editor in the inspector is SgsBoxControl. |
+| 119 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
+| 120 | `check-render-undefined-vars.py` | Undefined-variable gate for block render templates (PHPStan level 1). |
+| 121 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
+| 122 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
 
-**121 gating scripts.** Regenerate this whole section with:
+**122 gating scripts.** Regenerate this whole section with:
 
 ```bash
 python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
@@ -916,7 +931,7 @@ python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
 
 ### I/O inventory — what each prebuild + commit-gate script reads/writes
 
-Scope: every script actually executed by the **prebuild chain** (121 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 1 resolved scripts) — 122 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
+Scope: every script actually executed by the **prebuild chain** (122 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 1 resolved scripts) — 123 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
 
 Every field below is extracted from the script's own executable code (regex over `open()`/`.read_text()`/`.write_text()`/`fs.readFileSync`/`fs.writeFileSync`/`sqlite3.connect()`/SQL keywords/argparse/`sys.exit()`/`process.exitCode`) — **never from a docstring or comment**, per this generator's own stale-header finding above. A script with no recognised call shape (e.g. I/O built dynamically, or delegated to a helper module) shows **UNVERIFIED** rather than an invented mechanism. `Read-only` is stated explicitly whenever no write call site was found at all.
 
@@ -1053,6 +1068,12 @@ Every field below is extracted from the script's own executable code (regex over
 - Reads: `BASELINE_PATH`, `edit`
 - Writes: **read-only** — no write call site found in source
 - Non-zero exit sites found: SystemExit(non-zero on failure)
+
+**`plugins/sgs-blocks/scripts/check-exit-guards.py`** (build)
+- Path constants: `REPO` = Path(__file__).resolve().parents[3]; `ROOTS` = [REPO / 'theme' / 'sgs-theme', REPO / 'plugins' / 'sgs-blocks']
+- Reads: UNVERIFIED (no recognised read call site found)
+- Writes: **read-only** — no write call site found in source
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
 **`plugins/sgs-blocks/scripts/check-fx-list-drift.py`** (build)
 - Reads: `dest_path`
@@ -1649,7 +1670,7 @@ always cheaper than a fresh build plus its brainstorm, QC and tests.
 for the SUBJECT (colour, gradient, token, element, inline, parity), never
 for the verb you happen to have in mind.
 
-#### `plugins/sgs-blocks/scripts/` — 783 scripts
+#### `plugins/sgs-blocks/scripts/` — 790 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -1720,6 +1741,7 @@ for the verb you happen to have in mind.
 | `check-element-manifest-conformance.js` | manifest+npm+script-call | Spec 35 Task 2 — the CLUSTER-COHERENCE rule, made computable. |
 | `check-empty-inspector-containers.js` | manifest+npm+script-call | STRUCTURAL GUARD — an inspector container rendered with NO children. |
 | `check-enum-control-shape.py` | manifest | the D812 enum control-shape GATE. |
+| `check-exit-guards.py` | manifest | Fail when a PHP file's direct-access guard names a constant WordPress never defines. |
 | `check-fx-list-drift.py` | manifest+npm+script-call | the three-list (plus field-type triad) fx drift gate. |
 | `check-fx-registration.py` | manifest | every shipped fx module is registered everywhere it must be. |
 | `check-hardcoded-render-defaults.js` | manifest+npm+script-call | STRUCTURAL GUARD (Gate B) — stops the "hardcoded render default" class of bug (F3) from regressing. An F3 violation occurs when a block declares an… |
@@ -2141,6 +2163,8 @@ for the verb you happen to have in mind.
 | `motion-qa/probe-wave-c-editor.mjs` | manifest | Spec 38 Wave C — EDITOR-surface probe (D388). |
 | `motion-qa/probe-wave-c.mjs` | manifest+script-call | Spec 38 Wave C — live browser probe for every shipped Wave C effect. |
 | `motion-qa/run-live-probes.mjs` | manifest+npm+script-call | Live motion-QA runner — the standing post-deploy motion check. |
+| `n8n/push-site-events.py` | — | Push or check the "Build emails" code of the live SGS site-events N8N workflow. |
+| `n8n/site-events-build-emails.js` | script-call | SGS site events: turns one webhook POST into zero or more ready-to-send emails. |
 | `nav-qa/axe-run.mjs` | manifest+script-call | blocks (Spec 36 §8 / FR-36-16: "axe = 0 on the OPEN drawer AND an OPEN desktop mega"). |
 | `nav-qa/build-header-fixtures.py` | — | nav QA fixtures whose nav blocks sit INSIDE a real site header. |
 | `nav-qa/build-poc-fixtures.py` | manifest | create the nav-drawer variant POC fixtures on the canary. |
@@ -2165,6 +2189,8 @@ for the verb you happen to have in mind.
 | `nav-qa/sweep-drawer-variants.mjs` | manifest+script-call | WHY THIS SHAPE |
 | `nav-qa/u1-owed-probe.mjs` | — | U-1 + U-2 owed live checks (Wave 3C), run against `qa-u1-owed-fixture.php`. |
 | `nav-qa/u13-ink-probe.mjs` | — | U-13 live probe: section-adaptive header ink on /qa-section-ink/. |
+| `nav-qa/u16-editor-check.mjs` | — | U-16 editor check: the entrance panel's Distance and delay options through the real inspector. |
+| `nav-qa/u16-entrance-probe.mjs` | — | U-16 live probe: entrances as their own layer, on /qa-entrance/ (fixture case `entrance`). |
 | `nav-qa/w2u-probe.mjs` | — | W2-u — mega-menu + drawer SAME-PAGE integration probe. |
 | `no-inline/check-no-inline.py` | manifest+npm+script-call | Anti-regression GATE for the framework-wide inline-zero win (Spec 32 FR-32-1 / |
 | `no-inline/check-stranded-guards.py` | manifest+npm | Anti-regression GATE for STRANDED inline-style guards (Spec 32). |
@@ -2272,6 +2298,7 @@ for the verb you happen to have in mind.
 | `programme-progress.py` | manifest+npm+script-call | burn-down reporter for the tier-object migration programme. |
 | `promote-icon.py` | script-call | human promote / reject step for SGS icon proposals. |
 | `prove-selftest-can-fail.py` | manifest+script-call | Prove a detector's --self-test is LOAD-BEARING, not decorative. |
+| `provision-site-mail.py` | — | : give a client site working SMTP email through FluentSMTP. |
 | `push-theme-snapshot.py` | manifest+script-call | Deploy a per-client theme.json snapshot to a WP site. |
 | `qa/assert-css-effect.js` | manifest+script-call | BACKGROUND. fix.js's own 15-assertion self-test (--self-test) is entirely edit-correctness: was the row planned fixable, does DRY RUN write nothing… |
 | `qa/capture-native-colour-ui.js` | manifest | Visual verification for the native-colour-ui migration (16 blocks). |
@@ -2281,6 +2308,7 @@ for the verb you happen to have in mind.
 | `qa/check-border-roundtrip.js` | manifest+script-call | Border round-trip probe — does the FRONTEND actually paint the border the block's `borderWidth` / `borderStyle` / `borderColour` attributes describe? |
 | `qa/check-colour-editor-roundtrip.js` | manifest+script-call | QA Gate C — the EDITOR half. |
 | `qa/check-colour-gradient-roundtrip.js` | manifest | Text-colour gradient round-trip probe — does the FRONTEND actually paint a `background-clip:text` gradient when a `{attr}Gradient` sibling is set… |
+| `qa/fr30-15-alerts-live-proof.php` | — | FR-30-15 live proof: saved-item alerts and the Notify me sender, on a real site. |
 | `qa/lib/google-reviews-settings-stub.php` | script-call | Thin stand-in for SGS\Blocks\Google_Reviews_Settings |
 | `qa/lib/render-css-harness.php` | manifest+script-call | Standalone render.php executor for CSS-effect assertions |
 | `qa/lib/sgs-is-frontend-render-stub.php` | script-call | Reproduces SGS\Blocks\sgs_is_frontend_render() (class-sgs-css-registry.php) verbatim, for plugins/sgs-blocks/src/blocks/business-info/render.php. |
@@ -2437,7 +2465,7 @@ for the verb you happen to have in mind.
 | `visual-report-sha.py` | manifest+script-call | Content hash binding a visual-diff report to the change it actually describes. |
 | `wp-pre-merge-gate.py` | manifest | Pre-merge validation gate for SGS WordPress plugin changes. |
 
-#### `scripts/` — 19 scripts
+#### `scripts/` — 23 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -2450,6 +2478,10 @@ for the verb you happen to have in mind.
 | `lib/oldshape-mappings.js` | script-call | wp-migrate-oldshape-blocks.js (Track B content restore, 2026-07-15). |
 | `lint-naming-conventions.py` | manifest | CI linter for the SGS WordPress Framework naming conventions. |
 | `lint-patterns-for-personal-data.py` | manifest+npm | Lint SGS pattern PHP files for hardcoded personal data. |
+| `parity/draft-live-walk.mjs` | script-call | Draft-versus-live parity walker. Drives the design draft and the live site through the same states (tabs, steps, open panels, filters, modals) at… |
+| `parity/lib/collect.mjs` | script-call | In-page collectors for draft-live-walk.mjs. Every function here is passed to page.evaluate(), so each one is self-contained (no closures over module… |
+| `parity/lib/compare.mjs` | manifest+script-call | Compares one pair's draft and live snapshots and returns the differences. |
+| `parity/lib/report.mjs` | manifest+script-call | Writes the parity report: report.json (everything), report.md (the differences), and one side-by-side screenshot per state and width (draft left… |
 | `qc-anti-cheat.py` | script-call | Static-analysis gate that fails on converter-cheating patterns. |
 | `qc-correctness-regression.py` | — | Mechanical regression checker for the SGS clone pipeline. |
 | `qc_anti_cheat_checks.py` | script-call | Cheat-pattern definitions, AST visitor, and file analysers. |

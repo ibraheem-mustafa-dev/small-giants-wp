@@ -164,6 +164,10 @@ require_once SGS_BLOCKS_PATH . 'includes/class-stock-notify.php';
 Stock_Notify::register();
 // N8N webhook sender, and the Notify me list sent once when stock returns (FR-30-15).
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-webhook.php';
+// Unified email: the one wp_mail() send path (Reply-To, AltBody, header-injection
+// guards) plus the shared WooCommerce/native email template (Spec 04, FR-30-15).
+require_once SGS_BLOCKS_PATH . 'includes/mail/class-sgs-mailer.php';
+require_once SGS_BLOCKS_PATH . 'includes/mail/class-sgs-mail-template.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-stock-notify-dispatch.php';
 Stock_Notify_Dispatch::register();
 // Two-tier wishlist (guest browser list + account user meta): REST, site
