@@ -2479,6 +2479,8 @@ body.woocommerce-cart .with-empty-cart-icon,
 	border-color: var(--wp--preset--color--border-strong, var(--sgs-filter-line));
 	box-shadow: 0 0 0 2px var(--wp--preset--color--surface, #fff), 0 0 0 3px var(--wp--preset--color--text);
 }
+@media (hover: hover) and (pointer: fine){:where(:root:not(.sgs-touch-input)) .sgs-shop-filters__group:has( .sgs-filter-swatches ) button.wc-block-product-filter-chips__item[aria-checked="true"]:hover{box-shadow:0 0 0 2px var(--wp--preset--color--surface, #fff), 0 0 0 3px var(--wp--preset--color--text)}}
+
 
 @media ( prefers-reduced-motion: reduce ) {
 	.sgs-shop-filters__group:has( .sgs-filter-swatches ) button.wc-block-product-filter-chips__item,
