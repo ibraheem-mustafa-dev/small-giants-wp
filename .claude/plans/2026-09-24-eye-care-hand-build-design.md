@@ -136,27 +136,27 @@ key), with the owed Wave C polish alongside.
   768 and 375, with the draft's "Frame" first running line and its single bordered text Close (f26c23146; the
   popup's own round Close now steps aside for the flow's). One accepted difference: the draft advances on tap at
   step 1, while the flow shows Continue on every step (Spec 43 D1, the Continue model).
-- **Lens-flow parity gap (open; found 2026-09-26 comparing the hosted draft, Gucci Oversized Cat-Eye, with
-  eye-care-test product 128 `dolce-gabbana-dg4268`, at 1440, 768 and 375; screenshots `.playwright-mcp/lens-*`,
-  gitignored).** The buying path works; the look and motion do not match. Done = a side-by-side at all three widths
-  showing no difference except the accepted ones above. Owner: the Spec 43 showcase layout (`choice-flow` block,
-  `includes/choice-flow-chrome.php`, `choice-flow-summary.php`) plus post 463 via `build/gen_lens_configurator.py`.
-  - Layout: the popup is boxed (about 110px top gap and side margins at 1440) where the draft is edge to edge with
-    the header pinned; the header lacks the glasses icon and reads "DG4268 — WHAT THEY'RE FOR" (cut off at 375)
-    where the draft reads the step name only; no progress on question 1 (the draft shows a quarter-full accent
-    line); no "QUESTION 1 OF 3" eyebrow; each option card's picture stops short of the card's right edge (a white
-    strip, a layout bug); at 768 options are one per row (draft two); prices read "+ £59.00" and "£215.00" (draft
-    "from £59", whole pounds, "£0" on No prescription, which live leaves blank); the WhatsApp help card is a plain
-    grey box (draft green-bordered with the WhatsApp icon); no "Frame only? Skip the lenses" footer link; the
-    product page's button lacks "from +£59"; at 375 the summary row lacks brand, colour and size.
-  - Stage panel: shows "Send it later" and "Standard · 1.5 Included" as chosen from question 1 (the pre-selection
-    is deliberate, above); the draft's stage reads brand, frame, colour · size and "Lenses: not chosen yet" until
-    the shopper answers. Decide whether pre-selected defaults show in the stage before their question is reached.
-  - Motion (draft values from `Ward End Eye Care - SGS Gap Handoff/Eye Care Birmingham.dc.html`, measured live on
-    both): the total never pops on change (draft `pop` 0.35s); progress width 0.25s ease-out (draft 0.5s
-    cubic-bezier(.2,.7,.2,1)); card border/lift/shadow 0.15s (draft 0.25s/0.25s/0.3s; the hover end state already
-    matches: -3px, 0 14px 32px rgba(20,20,20,.09), #141414), Close 0.15s (draft 0.25s), "?" 0.15s (draft 0.2s);
-    the stage photo's finish tint (draft `filter` 0.6s same curve) is unverified and likely absent. Owed, shop polish (already listed above): colour swatches, filter panels open by
+- **Lens-flow parity: DONE 2026-09-26** (Spec 43 v1.9.0; commits 38206aa0f to 3f5eb16d9, live on eye-care-test).
+  The hosted draft (Gucci Oversized Cat-Eye) and eye-care-test product 128 match at 1440, 768 and 375 in screenshots
+  and computed motion, walked through all four questions by a repeatable script (session scratchpad
+  `lens-steps.mjs`, `hovers.mjs`): the header text and mark at every step, the progress widths, "Question N of 3"
+  and "Last bit — and it can wait", the stage (brand, name, options, running lines in question order, "Lenses · not
+  chosen yet", "Prescription · Sending it later", total), the WhatsApp card, the skip link, the result panel and
+  "Add to bag £…", and every transition, animation and hover end state (cards, Close, '?', help panel, help card,
+  the product page's "Add my prescription · from +£59.00" button). The £268 path (product 71) still lands one bag
+  line at £268 with its rows, at 1440 and 375, with no console errors. Decided (Bean, 2026-09-26): a pre-selected
+  default shows on the stage only once its question is reached.
+  - Accepted differences: Continue on every step and the pre-selected default cards (Spec 43 D1), so the
+    prescription ending is one Continue away and the skip link goes to the "Frame only" confirmation; the test
+    product's missing photo (and the draft's own catalogue tint on its photo); pennies on every price (Bean,
+    2026-09-25); Close keeps the 44px touch target (the draft's is 42px, so the header is 2px taller); the product
+    page button lifts 3px (Eye Care's button preset) where the draft's lifts 2px.
+  - For Bean: the option pictures (media 447-458) draw the draft's shapes at a fixed share of the card (44%), where
+    the draft draws them at a fixed 140px, so they read larger at 1440 and smaller at 768. Matching exactly needs the
+    pictures redrawn as fixed-size marks on a plain band.
+  - Framework gap (FR-43-24, for products with photos): the draft's finish cards show the frame's own photo under
+    each finish's treatment; the flow shows the finish swatch pictures. Invisible on the test products (no photos).
+- Owed, shop polish (already listed above): colour swatches, filter panels open by
   default, the results count and sort row. For Bean: the size buttons read the real lens width (55 / 58 / 62, from
   the jpopticians sizes chosen 2026-09-25) where the draft says S / M / L. For the nav track: `floatingHideNearInline`
   (default `true`, f9af77509) steps the floating WhatsApp bubble aside while the product page's "Need advice?"

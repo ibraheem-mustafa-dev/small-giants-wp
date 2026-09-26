@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 43
-spec_version: 1.8.0
+spec_version: 1.9.0
 status: active
 owner: framework
 date: 2026-09-14
@@ -81,13 +81,18 @@ derived_from:
     - Picking an option selects it; a footer Continue advances. The Continue button is muted with aria-disabled
       until a choice is made. `advanceMode: tap` keeps tap-to-advance.
     - The final step's Add to basket and Buy now sit in the footer opposite Back.
-    - Progress counts finished steps.
+    - Progress counts finished steps (v1.9.0: or the question on screen, `progressCounts`).
     - A summary stage shows the finished product.
     - The showcase layout (FR-43-24) is modelled on the Eye Care lens draft.
     - Options get term images, badges and descriptions; titles are bold; the round or text Close is set by
       `closeStyle`.
     - The architecture (FR-43-25): the saved flow owns content and look; products link a flow; the guided buybox
       (FR-43-23) stays product-options-only.
+  - **2026-09-26 (v1.9.0), draft parity for the showcase layout (Bean, 2026-09-26: the lens flow must look, animate
+    and work as the Eye Care draft does):** FR-43-24 now states the full frame, stage, card and motion detail it was
+    built to; progress can count the question on screen (`progressCounts`); a pre-selected default is listed on the
+    stage only once its question is reached (Bean: "not chosen yet", as in the draft); option prices read "+£30.00"
+    or "from £59.00" (FR-43-17); a result can carry the running total on its button.
 ---
 
 # Spec 43 — `sgs/choice-flow`
@@ -183,7 +188,9 @@ with no `helpText` renders with no `?` button at all, not a disabled one.
 `{key, label, price}` (price in the shop's currency, entered the same way product prices are), kept on one settings
 page (WooCommerce > Add-on prices, capability `manage_woocommerce`, nonce-checked, every field sanitised). A priced
 add-on step names one group (`priceGroup`); its option values are that group's option keys, and the price each
-option shows is read from the list at render time, never typed into the block. Changing a price on the settings
+option shows is read from the list at render time, never typed into the block. It reads "+£30.00" (`pricePrefix`
+`plus`, the default), "from £59.00" (`from`, a starting price later choices add to; the stage line then shows it
+without the "+"), or "included" at no cost; a "no add-ons" option in a priced step reads "£0.00". Changing a price on the settings
 page changes every flow and every cart line from the next recalculation (FR-43-18).
 
 **FR-43-18 — the list is the only price authority (v1.4.0).** The browser sends only `{group, key}` pairs with the
@@ -198,11 +205,21 @@ total or label is ever used.
 **FR-43-19 — summary panel (v1.4.0; v1.8.0 summary).** A flow can show a summary beside its questions
 (`showPricePanel`). It holds:
 - the product's image, swapped for the resolved variation's image
-- the product name, with the chosen options joined by " · "
+- the product's brand (WooCommerce `product_brand`), its name, and its chosen options joined by " · " (the page
+  buybox's variation, named from the product's own attribute terms, plus the flow's product-option answers; a value
+  starting with a digit carries its attribute's label, e.g. "Black · Frame size 56")
 - the base row (label `summaryBaseLabel`, default "Base price")
-- one row per chosen priced option (the option's label and price, "included" for 0)
+- one row per chosen priced option, in question order (the option's `summaryText` or label, and its price;
+  "included" for 0)
+- one muted row per other unpriced answer (the question's `summaryLabel` or step label, and the option's
+  `summaryText` or label, e.g. "Prescription · Sending it later")
+- a placeholder row until the first priced choice (`summaryPendingLabel`, `summaryPendingText`: "Lenses · not
+  chosen yet")
 - the total
-- an optional help note (`stageNote`, `stageNoteLink`)
+- an optional help note (`stageNote`, `stageNoteLink`, `stageNoteIcon`)
+
+A pre-selected default (`isDefault`) counts as an answer from the start (Continue is live and the purchase carries
+it), but its row appears only once the shopper has reached its question.
 
 It sits beside the steps on wide containers (`summaryPosition` start or end) and collapses to a "Your box · total"
 row on narrow ones. It is the stage of the showcase layout (FR-43-24). Display only; FR-43-18 is the authority.
@@ -348,29 +365,53 @@ finished segments carry the chosen value ("Chocolate · Chip · Vegan · 20") an
 - **Code:** new files only (`buybox/render.php` and `product-card/view.js` are over the size cap):
   `includes/buybox-guided.php`, `buybox/guided.js`, `buybox/GuidedPanel.js`.
 
-**FR-43-24 (v1.8.0) — showcase layout for full-screen flows.** `sgs/choice-flow` `flowLayout: compact | showcase`,
-set on the saved flow (FR-43-25). `compact` is the single column for a flow inline on a page. `showcase` is for a flow
-shown full screen and spends the screen the way the Eye Care draft's lens flow does (the draft's `lensOpen` dialog):
-- **Frame:** a full-height column. At the top, a header bar (logo, the eyebrow "Product · Step name", Close) on the
-  surface token with a bottom border, and a 3px progress line across the full width beneath it. In the middle, the
-  body grid, the only part that scrolls. At the bottom, the footer bar (Back left, optional secondary link,
-  actions right) with a top border.
+**FR-43-24 (v1.8.0, detail v1.9.0) — showcase layout for full-screen flows.** `sgs/choice-flow` `flowLayout:
+compact | showcase`, set on the saved flow (FR-43-25). `compact` is the single column for a flow inline on a page.
+`showcase` is for a flow shown full screen and spends the screen the way the Eye Care draft's lens flow does (the
+draft's `lensOpen` dialog); it ignores the compact box (`maxWidth`, `padding`) and fills its full-screen modal edge
+to edge (the modal's own padding drops, and a full-screen modal fades in rather than scales).
+- **Frame:** a full-height column on the page background (surface). At the top, a header bar on the raised
+  background (surface-alt) with a bottom border: the logo (`headerLogo`, `headerLogoHeight`), the step name in
+  small spaced capitals, and Close (`closeStyle`); from the second question the step name reads "<Brand> <Product> —
+  <Step name>". A 3px progress line runs full width beneath it (`progressColour`; `progressCounts`: `finished`
+  counts answered questions, `current` the one on screen, so question 1 of 4 fills a quarter). In the middle, the
+  body grid, the only part that scrolls. At the bottom, the footer bar on the raised background with a top border:
+  Back left, the optional skip link on the first question ("Frame only? Skip the lenses": `skipPrompt`, `skipLabel`;
+  it takes the route of the flow's "no add-ons" option and shows only when one exists; wide containers only), the
+  step's actions right. Footer buttons share one small uppercase style at the theme button preset's height.
 - **Body grid:** a sticky "stage" aside (`minmax(300px, .8fr)`; `minmax(250px, .7fr)` under a 1100px container)
-  beside the step pane (`minmax(0, 1.55fr)`).
-  - The stage shows the finished product: a large square image that swaps with the resolved variation, the
-    product name and chosen options, the running lines (choice and price), and a large total in the heading font.
-  - It can also hold an optional help note (`stageNote` text and link, e.g. "Not sure which to pick? Message me").
+  beside the step pane (`minmax(0, 1.55fr)`; `1.6fr` under 1100px).
+  - The stage (FR-43-19) fills its column on the stage colour (`stageColour`, default surface-alt): a bordered square
+    photo that swaps with the resolved variation, the brand, name and chosen options (which take the slack, so the
+    lines sit low), the running lines, a large total in the heading font, and the help note at the bottom edge.
+  - An option can carry a photo treatment (`stageEffect`: dim, deepen, soften, brighten) that the stage photo shows
+    while it is chosen, named in a small tag on the photo (a lens finish).
+  - The help note is a bordered card; with a link the whole card is the link, with an optional round icon badge
+    (`stageNoteIcon`: WhatsApp, phone, email, chat) and its own icon, border and hover colours.
 - **Step pane:** padded 40/44/56. It holds:
-  - an eyebrow ("Question 1 of 3") in the accent ink
-  - the step title in the heading font (38px desktop, 28px mobile)
-  - an intro paragraph (the question's new `intro` attribute, at most 56 characters wide)
-  - the options as large cards in two columns (one under a 620px container). Each card has a 16:9 image band on
-    top, then the title with its price aligned right, then the one-line description; the selected card gets a 2px
-    border in the text colour.
-- **Narrow containers:** the stage collapses to a slim row above the steps (a 72px thumbnail, the name and the
-  total); the running lines move to the final step's summary.
-- **Motion:** steps rise in (0.4s) and the total pops on change, both off under reduced motion. Every colour, font,
-  radius and spacing comes from the client's theme tokens, so any client's flow gets the same structure.
+  - a position line in the accent ink ("Question 1 of 3": `stepCountLabel`; a question's own `eyebrow` replaces it
+    and leaves that question out of the count; a result step shows none)
+  - the step title in the heading font (38px from a 600px container, 28px under), wrapping plainly
+  - an intro paragraph (the question's `intro` attribute, at most 56 characters wide)
+  - the options as large cards: two columns once the flow is 620px wide, one under; a step whose options carry no
+    pictures runs three across from 768px as text cards. A picture card has a full-width 16:9 image band, then the
+    title with its price aligned right (accent ink), then the description, then its badge as a solid accent tag; a
+    text card carries its badge as a soft tag beside the title. The selected card gets a 2px border in the text
+    colour on the stage colour. The '?' help toggle is a 30px disc that fills dark on hover; its answer opens as a
+    dark panel under the card.
+  - A result step reads as a quiet confirmation panel; a result can put the running total on its purchase button
+    (`buttonShowsTotal`: "Add to bag £418.00"), and a lone purchase button takes the primary style.
+- **Narrow containers (under 600px):** the stage collapses to a slim row above the steps (a 72px thumbnail, the
+  brand, name and options, and the total); the running lines move to the final step's summary and the help note to
+  the end of the step pane.
+- **Opening:** the flow takes focus when its dialog opens (not Close, which would show a focus ring unprompted), and
+  the total pops.
+- **Motion** (the draft's values, all off under reduced motion): the progress fill eases over 0.5s
+  (cubic-bezier(.2,.7,.2,1)); a step rises 18px in over 0.4s; the total pops (scale .6 to 1.15 to 1) over 0.35s when
+  it changes; the stage photo's treatment eases over 0.6s; option cards move border and lift over 0.25s and shadow
+  over 0.3s; Close and Back over 0.25s; the '?' over 0.2s; a help panel fades in over 0.25s.
+- Every colour, font, radius and spacing comes from the client's theme tokens or a setting above, so any client's
+  flow gets the same structure.
 
 **FR-43-25 (v1.8.0) — architecture: one saved flow, its placements, and the product link** (Bean, 2026-09-26).
 - **The saved flow (`sgs_choice_flow`) is the single source.** It holds questions, options, images, pricing sources,
@@ -532,6 +573,10 @@ eye-care-test. Closing QA at 1440 and 375: Mama's journeys A, B and C reach the 
 (including a re-tapped default), the guided finish-choosing guard, Continue muted then active with its hint, Add to
 basket and Buy now, an editor round trip for every new setting, and the Eye Care £268 path. Plan:
 `plans/archive/2026-09-26-choice-flow-ux-and-guided-buybox.md`.
+
+**v1.9.0 showcase parity: SHIPPED 2026-09-26**, live on eye-care-test: the Eye Care lens flow matches the draft at
+1440, 768 and 375 in screenshots and computed motion, with the accepted differences recorded in
+`plans/2026-09-24-eye-care-hand-build-design.md` ("Lens-flow parity").
 
 **Phase 5: SHIPPED 2026-09-26** (Spec 42 FR-42-7b, FR-42-9). A choice flow still embedded on a
 page or linked from a product can't be trashed or deleted, by the same guard and the same
