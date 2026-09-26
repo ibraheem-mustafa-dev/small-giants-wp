@@ -19,6 +19,7 @@ export default function LinkedFlowPanel( { flowId, flowIsLinked, setAttributes }
 		<PanelBody title={ __( 'Linked flow', 'sgs-blocks' ) }>
 			<LinkPopoverField
 				label={ __( 'Linked flow', 'sgs-blocks' ) }
+				emptyLabel={ __( 'Choose a saved flow', 'sgs-blocks' ) }
 				help={ __(
 					'Optional. Show a flow saved under Choice Flows instead of building the steps here. Edit the steps on that flow, and every page that links it updates.',
 					'sgs-blocks'

@@ -12,6 +12,7 @@ export default function SavedFormPicker( { formId, formIsLinked, onLink, onUnlin
 	return (
 		<LinkPopoverField
 			label={ __( 'Saved form', 'sgs-blocks' ) }
+			emptyLabel={ __( 'Choose a saved form', 'sgs-blocks' ) }
 			help={ __( 'Search the Forms list. Edit the form there, and every page using it updates.', 'sgs-blocks' ) }
 			value={ { url: formIsLinked ? formId : '' } }
 			suggestionsQuery={ { type: 'post', subtype: FORM_CPT } }

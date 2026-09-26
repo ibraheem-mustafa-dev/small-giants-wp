@@ -241,7 +241,7 @@ settings, so the pipeline then has somewhere to put each value.
 | Gap map claim | Actual | Evidence |
 |---|---|---|
 | The theme is the first job: the snapshot uses DM Serif and navy/gold | **Out of date.** `sites/eye-care-ward-end/theme-snapshot.json` already has Playfair Display and Outfit and the ink/taupe palette (primary `#141414`, accent `#9C8B78`, accent-text `#6F6152`). The gap map read axis files that have since been deleted. | the snapshot's `settings.color.palette` |
-| Lens configurator: nothing exists | **Wrong.** `sgs/choice-flow`, `sgs/choice-flow-question`, `sgs/choice-flow-result` and `sgs/modal` exist (Spec 43 plan Phases 1 and 2 shipped). Not built: priced steps and add-to-bag (Phase 3), opening in a modal (Phase 4). | `plans/2026-09-14-spec42-43-form-choiceflow-phase-plan.md`; `grep -rE "price\|cart\|variation" plugins/sgs-blocks/src/blocks/choice-flow` returns one hit, in `block.json` |
+| Lens configurator: nothing exists | **Wrong.** `sgs/choice-flow`, `sgs/choice-flow-question`, `sgs/choice-flow-result` and `sgs/modal` exist (Spec 43 plan Phases 1 and 2 shipped). Not built: priced steps and add-to-bag (Phase 3), opening in a modal (Phase 4). | `plans/archive/2026-09-14-spec42-43-form-choiceflow-phase-plan.md`; `grep -rE "price\|cart\|variation" plugins/sgs-blocks/src/blocks/choice-flow` returns one hit, in `block.json` |
 | Prescription upload is a large build | **Wrong.** `sgs/form-field-file` (`allowedTypes`, `maxSize`) and `plugins/sgs-blocks/includes/forms/class-form-upload.php::handle` (type check, 10MB cap, attachment post) exist. What is missing is in section 6. | read the two files |
 
 These gap map claims were checked and are true: 87 blocks; `sgs/buybox` has no inner-block slot
@@ -301,7 +301,7 @@ tokens live in `sites/eye-care-ward-end/` and on the test site. These rules stil
 
 ## 5. The lens configurator
 
-Built as Phases 3 and 4 of `plans/2026-09-14-spec42-43-form-choiceflow-phase-plan.md` (Spec 43), plus the
+Built as Phases 3 and 4 of `plans/archive/2026-09-14-spec42-43-form-choiceflow-phase-plan.md` (Spec 43), plus the
 live price panel beside the questions. The questions, options, help text and prices come from the draft's
 lens options (search the draft for `title:'Varifocal'`).
 

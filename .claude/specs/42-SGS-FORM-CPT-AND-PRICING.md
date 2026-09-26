@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 42
-spec_version: 2.1.0
+spec_version: 2.2.0
 status: active
 owner: framework
 date: 2026-09-14
@@ -193,19 +193,18 @@ republish, or unlink this block." This is the whole of FR-42-7a's scope: `resolv
 returning null plus these two notices. Cheap, and it is what actually blocks the mandatory
 rebuild (FR-42-9/FR-42-11) — not the items in FR-42-7b below.
 
-**FR-42-7b (Should-fix, post-v1 — split from the old FR-42-7, Ship-PM MUST-FIX).** A
-delete-guard (refuse trashing a form/flow with live embed points — refuse, not "warn
-hard": a non-coder client will click through a warning without registering it) enforced at
-the `wp_trash_post`/`before_delete_post` hook level (not the admin-UI action alone, so
-WP-CLI/REST deletes are covered too — Spec-Lawyer finding), plus reproducing the
-Gutenberg #33234 save-race shape against this specific mechanism. **Demoted from Blocking
-because this project's own reference model differs from `wp_block` in the way that
-matters**: `sgs_form`/`sgs_choice_flow` embeds resolve by SLUG STRING (§2), not post ID,
-and carry no inner content of their own to be silently overwritten — #33234's actual
-failure (a load-order race that overwrites the reusable block's OWN post content) has no
-obvious route through a slug-keyed, contentless reference. Confirming that in ~15 minutes
-is the first task under this FR; only build the delete-guard hook and the fuller race test
-matrix once that's confirmed, not before.
+**FR-42-7b. SHIPPED (2026-09-26).** A form or choice flow that is still in use cannot be
+trashed or deleted: refuse, never warn (a non-coder client clicks through a warning without
+registering it). "In use" means embedded by slug in any post whose status is publish, future,
+draft, pending or private (the definition post itself excluded), or, for a flow, linked from a
+product's `_sgs_choice_flow` meta. One finder, `Sgs_Cpt_References::all_references()`, feeds both
+this guard and the "Used by" list column. `Sgs_Cpt_Delete_Guard` enforces it on
+`pre_trash_post` / `pre_delete_post`, so the admin list, the block editor, REST and WP-CLI are
+all covered, and each surface names the pages or products: REST returns 409 `sgs_in_use`
+(the block editor shows it as an error notice), the admin list shows a "Still in use" page,
+WP-CLI prints a warning. The Gutenberg #33234 race was checked first and does not apply:
+the embed reads the saved post once for its slug and never edits or saves it (live check: with a
+linked embed loaded, the editor's unsaved-records list is empty).
 
 **Spec 43's `sgs_choice_flow` needs the identical contract — build/test it once, apply to
 both CPTs, do not re-derive it.**
@@ -240,26 +239,18 @@ no "simple form stays inline" exception. Reasoning given: a genuinely one-off fo
 and the whole point of a unified form setup is consistent analytics tracking and A/B testing
 across every form on a site, which an opt-out path would fragment.
 
-**FR-42-9 (narrowed, Ship-PM + Support Realist MUST-FIX).** Existing **hand-authored
-editor** `sgs/form` instances are rebuilt through the new CPT-backed system — this project
-runs no block-deprecation machinery (D270) and the framework is pre-production with no live
-client content to protect, so a rebuild rather than a migration shim is the correct and
-cheap path. Two corrections to how "mandatory, one pass" is executed:
+**FR-42-9. DONE (2026-09-26).** The count ran first, on every site: sandybrown held six inline
+`sgs/form` instances, all on QA fixture pages (2118, 2159, 2164, 2893) that stay as they are
+and keep rendering; indus-test held none; eye-care-test's one real form (Contact) was already
+a saved form linked from page 190. No rebuild run and no ledger tool were needed.
 
-- **Scope is narrowed to hand-authored content, explicitly, now** — not content produced
-  via `/sgs-clone`, because FR-42-10 (below) discloses the clone pipeline cannot create the
-  CPT this mandate requires; a mandate that cannot be satisfied by one of its two content
-  sources is not "decided", it's stalled on an unowned blocker. The clone-pipeline gap gets
-  its own follow-up (FR-42-10, unchanged) and is not this FR's problem to solve.
-- **Count before rebuilding, and run it as a per-form ledger, not one unattended batch.**
-  Before the rebuild starts: run `wp post list`/a DB query against the canary (and any
-  client sites) for actual `sgs/form` block instances — this is one command, and it turns
-  "however many forms exist" (FR-42-11's own phrase) from a fear into a number. Rebuild
-  form-by-form against a status ledger (pending/migrated/failed) with a submit-test gate per
-  form before moving to the next, resumable from the last completed form — never as a single
-  unattended pass with no partial-failure story. A rebuild that dies halfway must leave a
-  visible, checkable state (which forms are done), not a silent half-migrated site that only
-  the client notices.
+The mandate is enforced in the editor instead, so it cannot leak again (owner decision
+2026-09-26). Outside a `sgs_form` post, `sgs/form` is an embed (`form/FormEmbedEdit.js`): pick a
+saved form, create one by name (published and linked in one step), or, for an inline form
+(older content or clone output), "Save as reusable form" moves its fields into a new saved
+form and links it. Fields are built only inside the saved form, whose settings show its Form
+ID as the slug. A linked form renders with `formId` set to the saved form's slug, whatever the
+definition stores, so submissions and rate limits always key on the slug (§2).
 
 ## 10. Known cross-cutting gap — not resolved here, disclosed honestly
 
@@ -299,7 +290,7 @@ compared across incompatible form edits) is real, scoped-but-unbuilt follow-up w
 invented here. Until it ships, §9's justification is aspirational, not delivered — say so
 plainly rather than implying the benefit already exists.
 
-## 13. Requirement index (FR-42-0 through FR-42-13, v2.1.0)
+## 13. Requirement index (FR-42-0 through FR-42-13, v2.2.0)
 
 | FR | One-line | Priority |
 |---|---|---|
@@ -311,11 +302,11 @@ plainly rather than implying the benefit already exists.
 | FR-42-5 | Picker shows type badge, not bare title | Should-fix |
 | FR-42-6 | Client-side draft resumption (non-pricing) | Should-fix |
 | FR-42-7a | Trashed/missing-form embed degrade — two audiences, two messages | Blocking |
-| FR-42-7b | Delete-guard (hook-level) + Gutenberg #33234 race check | Should-fix, post-v1 |
+| FR-42-7b | Delete-guard (hook-level) + Gutenberg #33234 race check | Shipped 2026-09-26 |
 | FR-42-8 | Cache/nonce contract — cache-independent lookup at submit time — decided | Blocking |
-| FR-42-9 | Mandatory rebuild, narrowed to hand-authored content, per-form ledger + resume, count-first | Decision recorded |
+| FR-42-9 | Count-first rebuild (nothing to convert) + saved-forms-only editor | Done 2026-09-26 |
 | FR-42-10 | Cloning pipeline can't create a form/flow CPT — disclosed, unresolved | Known gap |
-| FR-42-11 | CPT/picker/lifecycle proven (FR-42-7a's test artefact) before the mandatory rebuild runs at scale | Sequencing |
+| FR-42-11 | CPT/picker/lifecycle proven (FR-42-7a's test artefact) before the mandatory rebuild runs at scale | Met (Phase 1 QA, 2026-09-15) |
 | FR-42-12 | Presets stay an open brainstorm, not invented here | Explicitly deferred |
 | FR-42-13 | Analytics/A-B testing (the stated reuse-mandate justification) is unbuilt — disclosed | Explicitly deferred |
 

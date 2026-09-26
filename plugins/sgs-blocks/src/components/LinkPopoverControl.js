@@ -250,6 +250,8 @@ export function LinkPopoverContent( {
  *                                                subtype: 'sgs_form' }) to scope suggestions to
  *                                                one post type/subtype. Omit for the default
  *                                                unscoped search.
+ * @param {string}   [props.emptyLabel]           Button text while nothing is chosen (default
+ *                                                "Add link"), e.g. "Choose a saved form".
  */
 const LinkPopoverField = forwardRef( function LinkPopoverField(
 	{
@@ -265,6 +267,7 @@ const LinkPopoverField = forwardRef( function LinkPopoverField(
 		renderExtraFields,
 		searchOnly = false,
 		suggestionsQuery,
+		emptyLabel,
 	},
 	ref
 ) {
@@ -297,7 +300,7 @@ const LinkPopoverField = forwardRef( function LinkPopoverField(
 				onClick={ () => setIsOpen( true ) }
 			>
 				<span className="sgs-link-popover__row-label">
-					{ url ? url : __( 'Add link', 'sgs-blocks' ) }
+					{ url ? url : emptyLabel || __( 'Add link', 'sgs-blocks' ) }
 				</span>
 			</Button>
 			{ isOpen && (

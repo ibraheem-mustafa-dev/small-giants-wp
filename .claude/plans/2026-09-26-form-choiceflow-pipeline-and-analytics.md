@@ -9,14 +9,16 @@ date: 2026-09-26
 # Forms and choice flows: cloning-pipeline creation and analytics (parked)
 
 **Why this is separate:** Bean, 2026-09-26: these two items are not being built yet. Every other part of the
-form and choice-flow track is in `2026-09-14-spec42-43-form-choiceflow-phase-plan.md`.
+form and choice-flow track is in `archive/2026-09-14-spec42-43-form-choiceflow-phase-plan.md`.
 
 ## 1. The cloning pipeline creates form and flow posts (Spec 42 FR-42-10, Spec 43 FR-43-14)
 - **Gap:** `sgs-clone-orchestrator.py --deploy-target` cannot create a new `sgs_form` or `sgs_choice_flow` post, so a
   cloned draft containing a form or a flow still emits inline content. That breaches the rule that forms and flows
   live as saved posts.
-- **Decision needed first (owner policy, not an agent call):** should a cloned form or flow always become a saved
-  post plus a linking block, and what is it named?
+- **Decided for forms (Bean, 2026-09-26, Spec 42 §9):** every form is a saved post; a cloned form becomes a saved
+  form plus a linking `sgs/form`. Until the pipeline does this, open the cloned page and press "Save as reusable
+  form" on the form block (it moves the fields into a new saved form and links it).
+- **Still open (owner policy):** the same rule for cloned flows, and how cloned forms and flows are named.
 - **Then:** one follow-up fixes both post types; don't solve it twice.
 
 ## 2. Analytics and A/B testing (Spec 42 FR-42-13, applies to flows identically)

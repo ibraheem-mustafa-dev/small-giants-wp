@@ -7,8 +7,9 @@ cost_estimate: "~5 min agent time, Phase 0 only"
 docscore_grade: not-run (ad-hoc, in-flight — see phase-planner Stage 7 note on active plans)
 ---
 
-**Status (2026-09-26):** Phases 0 to 4 and the v1.8.0 UX and architecture follow-up SHIPPED
-(`archive/2026-09-26-choice-flow-ux-and-guided-buybox.md`); Phase 5 (FR-42-9, FR-42-7b) is next.
+**Status (2026-09-26):** COMPLETE. Phases 0 to 5 and the v1.8.0 UX and architecture follow-up SHIPPED
+(`archive/2026-09-26-choice-flow-ux-and-guided-buybox.md`). Still parked: the cloning-pipeline gap and analytics
+(`plans/2026-09-26-form-choiceflow-pipeline-and-analytics.md`).
 - Phase 0: landed with Phase 1 (fc6c66444); proven live 2026-09-25 (an unresolvable formId gets 503, a real form 200).
 - Phase 3: add-on price list (FR-43-17 to 20) as the Eye Care lens configurator; product-option steps reading any
   product attribute (FR-43-10/10a), purchase from the flow's own variation (FR-43-5), email-capture ending with a
@@ -162,13 +163,16 @@ variations.
 `sgs_choice_flow` post shown by a linked `sgs/choice-flow` (`flowId` + `flowIsLinked`, the Linked Form picker's
 shape), inline or inside a fullscreen `sgs/modal`. FR-43-7 (2026-09-26): Mama's two journeys, see Status.
 
-**Phase 5 — mandatory rebuild + deferred items.** FR-42-9 (rebuild, ONLY after Phase 1 has
-run on the canary for a full session and the real instance count is known — run
-`wp post list`/a DB query FIRST, per the spec's own decided sequencing), FR-42-7b
-(delete-guard hook + Gutenberg #33234 race check — confirm the race doesn't apply to a
-slug-keyed, contentless reference before building anything). Runs in a fresh session. The cloning-pipeline gap
-(FR-42-10/FR-43-14) and analytics (FR-42-13) are parked in
-`2026-09-26-form-choiceflow-pipeline-and-analytics.md`.
+**Phase 5 — rebuild + delete guard. SHIPPED (2026-09-26).** Commits b75b75aa1, b3d72cfd5, 07121d92e.
+FR-42-9: the count ran first; the only real form (Eye Care's Contact) was already a saved form, and sandybrown's
+six inline forms are QA fixtures, so nothing was rebuilt. The editor now enforces the mandate instead (owner
+decision): outside a saved form, `sgs/form` picks a saved form, creates one by name, or saves an inline form to the
+Forms list in one click; a linked form renders under its slug. FR-42-7b: the #33234 race doesn't apply (the embed
+never edits the saved post); an in-use form or flow can't be trashed or deleted from any surface. Live QA on
+sandybrown: WP-CLI, `wp_trash_post()`, REST (409 in use, 200 unused control), block-editor notice, admin-list
+refusal page, "Used by" self-count fix, linked render under the slug, an anonymous submit stored under the slug,
+and the editor's create, convert and linked views. The cloning-pipeline gap (FR-42-10/FR-43-14) and analytics
+(FR-42-13) are parked in `2026-09-26-form-choiceflow-pipeline-and-analytics.md`.
 
 ---
 

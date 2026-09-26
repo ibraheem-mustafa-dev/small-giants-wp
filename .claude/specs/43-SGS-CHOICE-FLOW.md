@@ -533,9 +533,11 @@ eye-care-test. Closing QA at 1440 and 375: Mama's journeys A, B and C reach the 
 basket and Buy now, an editor round trip for every new setting, and the Eye Care £268 path. Plan:
 `plans/archive/2026-09-26-choice-flow-ux-and-guided-buybox.md`.
 
-**Phase 5 — everything else, independently deferrable, no fixed order.** Spec 42 FR-42-9
-(mandatory rebuild, only after Phase 1 proves stable and the instance count is known),
-FR-42-7b, FR-42-10/FR-43-14 (clone-orchestrator CPT-creation gap), FR-42-13 (analytics).
+**Phase 5: SHIPPED 2026-09-26** (Spec 42 FR-42-7b, FR-42-9). A choice flow still embedded on a
+page or linked from a product can't be trashed or deleted, by the same guard and the same
+reference finder as forms (`Sgs_Cpt_Delete_Guard`, `Sgs_Cpt_References`). Parked in
+`plans/2026-09-26-form-choiceflow-pipeline-and-analytics.md`: FR-42-10/FR-43-14 (clone-orchestrator
+CPT-creation gap) and FR-42-13 (analytics).
 
 ## 10. Requirement index (v1.8.0)
 
