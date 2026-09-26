@@ -188,6 +188,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						]
 							.filter( Boolean )
 							.join( ' · ' ) || __( 'no button — both are switched off', 'sgs-blocks' ) }
+						{ buttonShowsTotal && ` ${ __( '(with the running total)', 'sgs-blocks' ) }` }
 					</p>
 				) }
 				{ /* Canvas preview only — the real submit handler is built client-side
