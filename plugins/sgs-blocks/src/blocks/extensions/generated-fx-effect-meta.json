@@ -73,6 +73,17 @@
 			"scroll"
 		]
 	},
+	"lottie": {
+		"in_picker": false,
+		"owns_scroll_transform": false,
+		"pins": false,
+		"triggers": [
+			"load",
+			"visible",
+			"hover",
+			"scroll"
+		]
+	},
 	"magnet": {
 		"in_picker": true,
 		"owns_scroll_transform": false,

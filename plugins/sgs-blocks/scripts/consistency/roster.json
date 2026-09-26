@@ -2,7 +2,7 @@
   "_meta": {
     "purpose": "Spec 35 UNIT A0 roster \u2014 the audit denominator. DB-first, regenerate after /sgs-update.",
     "source": "sgs-framework.db blocks(source=sgs,status=built,is_stale=0)",
-    "count": 87,
+    "count": 94,
     "generator": "scripts/consistency/build-roster.py"
   },
   "blocks": [
@@ -75,7 +75,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 12,
+        "paintDeclarations": 15,
         "replacedCoreSupports": [
           "anchor",
           "spacing"
@@ -244,7 +244,7 @@
         "animation": true
       },
       "qualifies": {
-        "paintDeclarations": 16,
+        "paintDeclarations": 19,
         "replacedCoreSupports": []
       }
     },
@@ -258,12 +258,12 @@
       "surfaces": {
         "styling": false,
         "colour": true,
-        "link": false,
-        "media": false,
+        "link": true,
+        "media": true,
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 14,
+        "paintDeclarations": 19,
         "replacedCoreSupports": []
       }
     },
@@ -282,7 +282,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 5,
+        "paintDeclarations": 10,
         "replacedCoreSupports": []
       }
     },
@@ -301,7 +301,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 0,
+        "paintDeclarations": 9,
         "replacedCoreSupports": []
       }
     },
@@ -993,6 +993,44 @@
       }
     },
     {
+      "slug": "sgs/language-switch",
+      "title": "Language Switch",
+      "category": "sgs-interactive",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": true,
+        "media": false,
+        "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 2,
+        "replacedCoreSupports": []
+      }
+    },
+    {
+      "slug": "sgs/local-time",
+      "title": "Local Time",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": []
+      }
+    },
+    {
       "slug": "sgs/media",
       "title": "SGS Media",
       "category": "sgs-content",
@@ -1196,7 +1234,26 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 9,
+        "paintDeclarations": 13,
+        "replacedCoreSupports": []
+      }
+    },
+    {
+      "slug": "sgs/notice-message",
+      "title": "SGS Notice Message",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
         "replacedCoreSupports": []
       }
     },
@@ -1568,6 +1625,25 @@
       }
     },
     {
+      "slug": "sgs/store-selector",
+      "title": "Store Selector",
+      "category": "sgs-interactive",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": true,
+        "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 4,
+        "replacedCoreSupports": []
+      }
+    },
+    {
       "slug": "sgs/tab",
       "title": "SGS Tab",
       "category": "sgs-interactive",
@@ -1727,6 +1803,25 @@
       }
     },
     {
+      "slug": "sgs/theme-toggle",
+      "title": "Theme Toggle",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": []
+      }
+    },
+    {
       "slug": "sgs/timeline",
       "title": "SGS Timeline",
       "category": "sgs-content",
@@ -1799,6 +1894,44 @@
       },
       "qualifies": {
         "paintDeclarations": 8,
+        "replacedCoreSupports": []
+      }
+    },
+    {
+      "slug": "sgs/wishlist-link",
+      "title": "SGS Wishlist Link",
+      "category": "sgs-interactive",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": true,
+        "media": true,
+        "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 3,
+        "replacedCoreSupports": []
+      }
+    },
+    {
+      "slug": "sgs/wishlist-panel",
+      "title": "SGS Wishlist Panel",
+      "category": "sgs-interactive",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": true,
+        "media": true,
+        "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 7,
         "replacedCoreSupports": []
       }
     }

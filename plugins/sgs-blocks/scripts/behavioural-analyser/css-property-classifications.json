@@ -6190,6 +6190,205 @@
       }
     },
     {
+      "slug": "sgs/language-switch",
+      "attr": "currentColour",
+      "fields": {
+        "css_property": "color",
+        "css_element": "link"
+      }
+    },
+    {
+      "slug": "sgs/language-switch",
+      "attr": "fontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "link"
+      }
+    },
+    {
+      "slug": "sgs/language-switch",
+      "attr": "fontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "link"
+      }
+    },
+    {
+      "slug": "sgs/language-switch",
+      "attr": "fontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "link"
+      }
+    },
+    {
+      "slug": "sgs/language-switch",
+      "attr": "gap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "list"
+      }
+    },
+    {
+      "slug": "sgs/language-switch",
+      "attr": "lineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "link"
+      }
+    },
+    {
+      "slug": "sgs/language-switch",
+      "attr": "linkColour",
+      "fields": {
+        "css_property": "color"
+      }
+    },
+    {
+      "slug": "sgs/language-switch",
+      "attr": "linkColourHover",
+      "fields": {
+        "css_property": "color"
+      }
+    },
+    {
+      "slug": "sgs/language-switch",
+      "attr": "panelBackground",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "panel"
+      }
+    },
+    {
+      "slug": "sgs/language-switch",
+      "attr": "panelPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "panel"
+      }
+    },
+    {
+      "slug": "sgs/language-switch",
+      "attr": "separatorColour",
+      "fields": {
+        "css_property": "color",
+        "css_element": "separator"
+      }
+    },
+    {
+      "slug": "sgs/local-time",
+      "attr": "labelFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/local-time",
+      "attr": "labelFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/local-time",
+      "attr": "labelFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/local-time",
+      "attr": "labelLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/local-time",
+      "attr": "labelLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/local-time",
+      "attr": "labelTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/local-time",
+      "attr": "labelTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/local-time",
+      "attr": "timeFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "time"
+      }
+    },
+    {
+      "slug": "sgs/local-time",
+      "attr": "timeFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "time"
+      }
+    },
+    {
+      "slug": "sgs/local-time",
+      "attr": "timeFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "time"
+      }
+    },
+    {
+      "slug": "sgs/local-time",
+      "attr": "timeLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "time"
+      }
+    },
+    {
+      "slug": "sgs/local-time",
+      "attr": "timeLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "time"
+      }
+    },
+    {
+      "slug": "sgs/local-time",
+      "attr": "timeTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "time"
+      }
+    },
+    {
+      "slug": "sgs/local-time",
+      "attr": "timeTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "time"
+      }
+    },
+    {
       "slug": "sgs/media",
       "attr": "captionColour",
       "fields": {
@@ -9967,6 +10166,16 @@
     },
     {
       "slug": "sgs/site-header",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
       "attr": "backgroundColourScrolledGradient",
       "fields": {
         "css_property": "background-color-gradient",
@@ -10486,6 +10695,72 @@
       "fields": {
         "css_property": "border-style",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/store-selector",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "panel"
+      }
+    },
+    {
+      "slug": "sgs/store-selector",
+      "attr": "borderColourHover",
+      "fields": {
+        "css_property": "border-color",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/store-selector",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "panel"
+      }
+    },
+    {
+      "slug": "sgs/store-selector",
+      "attr": "fontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "trigger"
+      }
+    },
+    {
+      "slug": "sgs/store-selector",
+      "attr": "fontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "trigger"
+      }
+    },
+    {
+      "slug": "sgs/store-selector",
+      "attr": "fontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "trigger"
+      }
+    },
+    {
+      "slug": "sgs/store-selector",
+      "attr": "lineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "trigger"
+      }
+    },
+    {
+      "slug": "sgs/store-selector",
+      "attr": "panelBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "panel"
       }
     },
     {
@@ -11778,6 +12053,84 @@
       }
     },
     {
+      "slug": "sgs/theme-toggle",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/theme-toggle",
+      "attr": "backgroundColourHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/theme-toggle",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/theme-toggle",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/theme-toggle",
+      "attr": "labelFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/theme-toggle",
+      "attr": "labelFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/theme-toggle",
+      "attr": "labelFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/theme-toggle",
+      "attr": "padding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/theme-toggle",
+      "attr": "textColourPressed",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "label",
+        "css_state": "current"
+      }
+    },
+    {
       "slug": "sgs/timeline",
       "attr": "backgroundColour",
       "fields": {
@@ -12803,6 +13156,121 @@
       "fields": {
         "css_property": "text-wrap",
         "css_element": "card-text"
+      }
+    },
+    {
+      "slug": "sgs/wishlist-link",
+      "attr": "badgeBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/wishlist-link",
+      "attr": "badgeTextColour",
+      "fields": {
+        "css_property": "color",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/wishlist-link",
+      "attr": "iconColour",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/wishlist-link",
+      "attr": "iconColourHover",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "icon",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/wishlist-panel",
+      "attr": "buttonBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "move-to-basket"
+      }
+    },
+    {
+      "slug": "sgs/wishlist-panel",
+      "attr": "buttonTextColour",
+      "fields": {
+        "css_property": "color",
+        "css_element": "move-to-basket"
+      }
+    },
+    {
+      "slug": "sgs/wishlist-panel",
+      "attr": "columns",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_layer": "GRID"
+      }
+    },
+    {
+      "slug": "sgs/wishlist-panel",
+      "attr": "gap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "items"
+      }
+    },
+    {
+      "slug": "sgs/wishlist-panel",
+      "attr": "headingColour",
+      "fields": {
+        "css_property": "color",
+        "css_element": "heading"
+      }
+    },
+    {
+      "slug": "sgs/wishlist-panel",
+      "attr": "itemNameColour",
+      "fields": {
+        "css_property": "color",
+        "css_element": "row-name"
+      }
+    },
+    {
+      "slug": "sgs/wishlist-panel",
+      "attr": "linkColour",
+      "fields": {
+        "css_property": "color",
+        "css_element": "remove"
+      }
+    },
+    {
+      "slug": "sgs/wishlist-panel",
+      "attr": "linkColourHover",
+      "fields": {
+        "css_property": "color",
+        "css_element": "remove",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/wishlist-panel",
+      "attr": "priceColour",
+      "fields": {
+        "css_property": "color",
+        "css_element": "row-price"
+      }
+    },
+    {
+      "slug": "sgs/wishlist-panel",
+      "attr": "stockColour",
+      "fields": {
+        "css_property": "color",
+        "css_element": "row-stock"
       }
     },
     {
@@ -16885,6 +17353,69 @@
       }
     },
     {
+      "slug": "sgs/local-time",
+      "attr": "gap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/local-time",
+      "attr": "labelColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/local-time",
+      "attr": "labelColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "label",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/local-time",
+      "attr": "labelColourHoverGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "label",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/local-time",
+      "attr": "timeColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "time"
+      }
+    },
+    {
+      "slug": "sgs/local-time",
+      "attr": "timeColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "time",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/local-time",
+      "attr": "timeColourHoverGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "time",
+        "css_state": "hover"
+      }
+    },
+    {
       "slug": "sgs/media",
       "attr": "borderColour",
       "fields": {
@@ -19356,6 +19887,25 @@
     },
     {
       "slug": "sgs/notice-banner",
+      "attr": "arrowColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "arrows"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
+      "attr": "arrowColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "arrows",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
       "attr": "borderColourGradient",
       "fields": {
         "css_property": "border-color-gradient",
@@ -19474,6 +20024,44 @@
         "css_layer": "CONTENT",
         "css_element": "wrapper",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/notice-message",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/notice-message",
+      "attr": "backgroundColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/notice-message",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/notice-message",
+      "attr": "textColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
       }
     },
     {
@@ -21240,16 +21828,6 @@
     },
     {
       "slug": "sgs/site-header",
-      "attr": "backgroundColour",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/site-header",
       "attr": "backgroundColourGradient",
       "fields": {
         "css_property": "background-color-gradient",
@@ -21737,6 +22315,68 @@
       "fields": {
         "css_property": "color-gradient",
         "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/store-selector",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "panel"
+      }
+    },
+    {
+      "slug": "sgs/store-selector",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "panel"
+      }
+    },
+    {
+      "slug": "sgs/store-selector",
+      "attr": "itemColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/store-selector",
+      "attr": "itemColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "item",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/store-selector",
+      "attr": "panelPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "panel"
+      }
+    },
+    {
+      "slug": "sgs/store-selector",
+      "attr": "triggerColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "trigger"
+      }
+    },
+    {
+      "slug": "sgs/store-selector",
+      "attr": "triggerColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "trigger",
         "css_state": "hover"
       }
     },
@@ -22795,6 +23435,60 @@
       "fields": {
         "css_property": "writing-mode",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/theme-toggle",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/theme-toggle",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/theme-toggle",
+      "attr": "iconColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/theme-toggle",
+      "attr": "iconColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "icon",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/theme-toggle",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/theme-toggle",
+      "attr": "textColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "label",
+        "css_state": "hover"
       }
     },
     {

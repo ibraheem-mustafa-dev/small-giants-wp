@@ -2,6 +2,7 @@
 	"sgs/before-after": [
 		"carousel-loop",
 		"draggable",
+		"lottie",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -10,6 +11,7 @@
 		"surface-treatment"
 	],
 	"sgs/button": [
+		"lottie",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -20,6 +22,7 @@
 	],
 	"sgs/buybox": [
 		"carousel-loop",
+		"lottie",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -27,6 +30,7 @@
 		"scrub"
 	],
 	"sgs/choice-flow-result": [
+		"lottie",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -36,6 +40,7 @@
 		"split-reveal"
 	],
 	"sgs/collapsible-text": [
+		"lottie",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -50,6 +55,7 @@
 		"generative-background",
 		"grid-dots",
 		"horizontal-panel",
+		"lottie",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -59,6 +65,7 @@
 		"wave-gradient"
 	],
 	"sgs/counter": [
+		"lottie",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -73,6 +80,7 @@
 		"generative-background",
 		"grid-dots",
 		"horizontal-panel",
+		"lottie",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -83,6 +91,7 @@
 		"wave-gradient"
 	],
 	"sgs/decorative-image": [
+		"lottie",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -92,6 +101,7 @@
 	],
 	"sgs/gallery": [
 		"carousel-loop",
+		"lottie",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -101,6 +111,7 @@
 	],
 	"sgs/google-reviews": [
 		"carousel-loop",
+		"lottie",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -109,6 +120,7 @@
 		"surface-treatment"
 	],
 	"sgs/heading": [
+		"lottie",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -123,6 +135,7 @@
 		"generative-background",
 		"grid-dots",
 		"horizontal-panel",
+		"lottie",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -134,6 +147,7 @@
 	],
 	"sgs/icon": [
 		"draw",
+		"lottie",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -142,6 +156,7 @@
 	],
 	"sgs/image-sequence": [
 		"image-sequence",
+		"lottie",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -153,6 +168,7 @@
 		"cursor-field",
 		"generative-background",
 		"grid-dots",
+		"lottie",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -163,6 +179,7 @@
 		"wave-gradient"
 	],
 	"sgs/label": [
+		"lottie",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -176,6 +193,7 @@
 		"draw",
 		"generative-background",
 		"grid-dots",
+		"lottie",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -189,6 +207,7 @@
 		"generative-background",
 		"grid-dots",
 		"horizontal-panel",
+		"lottie",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -199,6 +218,7 @@
 	],
 	"sgs/post-grid": [
 		"carousel-loop",
+		"lottie",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -207,6 +227,7 @@
 		"surface-treatment"
 	],
 	"sgs/pricing-table": [
+		"lottie",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -216,6 +237,7 @@
 		"split-reveal"
 	],
 	"sgs/product-card": [
+		"lottie",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -229,6 +251,7 @@
 		"cursor-field",
 		"generative-background",
 		"grid-dots",
+		"lottie",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -239,6 +262,7 @@
 		"wave-gradient"
 	],
 	"sgs/quote": [
+		"lottie",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -248,6 +272,7 @@
 		"split-reveal"
 	],
 	"sgs/responsive-logo": [
+		"lottie",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -257,6 +282,7 @@
 	],
 	"sgs/separator": [
 		"draw",
+		"lottie",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -264,6 +290,7 @@
 		"scrub"
 	],
 	"sgs/team-member": [
+		"lottie",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -277,6 +304,7 @@
 		"cursor-field",
 		"generative-background",
 		"grid-dots",
+		"lottie",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -288,6 +316,7 @@
 		"wave-gradient"
 	],
 	"sgs/text": [
+		"lottie",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -299,6 +328,7 @@
 	"sgs/timeline": [
 		"carousel-loop",
 		"draggable",
+		"lottie",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -313,6 +343,7 @@
 		"generative-background",
 		"grid-dots",
 		"horizontal-panel",
+		"lottie",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -326,6 +357,7 @@
 	],
 	"sgs/trustpilot-reviews": [
 		"carousel-loop",
+		"lottie",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -334,6 +366,7 @@
 		"surface-treatment"
 	],
 	"sgs/whatsapp-cta": [
+		"lottie",
 		"magnet",
 		"morph",
 		"motion-path",
