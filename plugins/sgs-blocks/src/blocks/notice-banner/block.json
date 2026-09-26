@@ -47,6 +47,22 @@
 				],
 				"borderWidth": [
 					"borderWidth"
+				],
+				"iconCircleBorderWidth": [
+					"iconCircleBorderWidth"
+				]
+			},
+			"variantAttr": "iconStyle",
+			"variants": {
+				"bare": [],
+				"circle": [
+					"iconCircleSize",
+					"iconCircleBackground",
+					"iconCircleBorderRadius",
+					"iconCircleShadow",
+					"iconCircleBorderWidth",
+					"iconCircleBorderStyle",
+					"iconCircleBorderColour"
 				]
 			},
 			"elements": {
@@ -96,44 +112,71 @@
 					"order": 2,
 					"clusters": [
 						"text",
-						"fill"
+						"fill",
+						"layout"
 					],
 					"prefix": "icon",
 					"attrMap": {
 						"css:color": "iconColour",
-						"css:stroke": "iconColourGradient"
+						"css:stroke": "iconColourGradient",
+						"css:width": "iconCircleSize",
+						"css:height": "iconCircleSize",
+						"css:background-color": "iconCircleBackground",
+						"css:background-image": "iconCircleBackgroundGradient",
+						"css:border-radius": "iconCircleBorderRadius",
+						"css:border-width": "iconCircleBorderWidth",
+						"css:border-style": "iconCircleBorderStyle",
+						"css:border-color": "iconCircleBorderColour",
+						"css:box-shadow": "iconCircleShadow",
+						"css:box-shadow-color": "iconCircleShadowColour"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:color": "iconColourHover",
-								"css:stroke": "iconColourHoverGradient"
+								"css:stroke": "iconColourHoverGradient",
+								"css:background-color": "iconCircleBackgroundHover",
+								"css:background-image": "iconCircleBackgroundHoverGradient",
+								"css:box-shadow-color": "iconCircleShadowColourHover"
 							}
 						}
 					},
-					"_note": "iconColour/iconColourHover explicitly mapped (base + states.hover) since 2026-09-04 (D956) -- both used to resolve via the default {prefix}{suffix} convention, which routed them to the SAME (css:color, element=icon, state=NULL) slot with no way to tell them apart, a real routing-determinism ambiguity (F6 Check #1/#8). Emitted as scoped rules (`.{uid} .sgs-notice-banner__icon{color:...}` base, a touch-guarded :hover + unguarded :focus-visible pair for the Hover attr via sgs_hover_state_rules()), not inline -- gated on iconColour being set. `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php)."
+					"_note": "iconColour/iconColourHover explicitly mapped (base + states.hover) since 2026-09-04 (D956) -- both used to resolve via the default {prefix}{suffix} convention, which routed them to the SAME (css:color, element=icon, state=NULL) slot with no way to tell them apart, a real routing-determinism ambiguity (F6 Check #1/#8). Emitted as scoped rules (`.{uid} .sgs-notice-banner__icon{color:...}` base, a touch-guarded :hover + unguarded :focus-visible pair for the Hover attr via sgs_hover_state_rules()), not inline -- gated on iconColour being set. `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php). The badge (iconCircle*) mappings added 2026-09-26 mirror sgs/trust-bar's own icon-badge element (trust-bar/block.json::supports.sgs.elements.icon-badge) onto this SAME element rather than a second one -- notice-banner has one icon element throughout, the badge is a variant of it (`iconStyle:'circle'`), not a distinct node. Emitted via includes/notice-banner-icon-badge.php through the block's own `$scoped_css` array (Spec 32 no-inline contract) -- never trust-bar's inline custom-property `style` attribute."
+				},
+				"arrows": {
+					"label": "Rotation arrows",
+					"order": 3,
+					"clusters": [
+						"fill"
+					],
+					"attrMap": {
+						"css:color": "arrowColour"
 					},
-					"arrows": {
-						"label": "Rotation arrows",
-						"order": 3,
-						"clusters": [
-							"fill"
-						],
-						"attrMap": {
-							"css:color": "arrowColour"
-						},
-						"states": {
-							"hover": {
-								"attrMap": {
-									"css:color": "arrowColourHover"
-								}
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "arrowColourHover"
 							}
-						},
-						"_note": "U-15 — rotate mode's previous/next controls only (block.json::messageMode). Explicit attrMap (not the default {prefix}{suffix} convention) because the block has no `arrow` PREFIX declared. Emitted scoped on `.sgs-notice-banner__prev`/`.sgs-notice-banner__next` via sgs_hover_state_rules(), gated on arrowColour being set."
-					}
+						}
+					},
+					"_note": "U-15 — rotate mode's previous/next controls only (block.json::messageMode). Explicit attrMap (not the default {prefix}{suffix} convention) because the block has no `arrow` PREFIX declared. Emitted scoped on `.sgs-notice-banner__prev`/`.sgs-notice-banner__next` via sgs_hover_state_rules(), gated on arrowColour being set."
+				},
+				"icon-glyph": {
+					"label": "Icon glyph size",
+					"order": 2,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "icon",
+					"attrMap": {
+						"css:width": "iconSize",
+						"css:height": "iconSize"
+					},
+					"_note": "A second element sharing the `icon` prefix, scoped to ONLY iconSize -- the glyph size, distinct from iconCircleSize (the badge diameter, mapped on the sibling `icon` element above). Both elements declare `layout`'s css:width/css:height member with DIFFERENT target attrs; each resolves independently (check-element-manifest-conformance.js resolves attrMap per element, not per prefix), so both iconSize and iconCircleSize are claimed rather than orphaned. iconSize sizes the <svg> width/height for lucide/wp-icon, or the font-size for dashicon/emoji (includes/notice-banner-icon-badge.php) -- one glyph-size concept, two CSS mechanisms depending on icon source, same as the `icon` element's own css:stroke/css:color split."
 				}
 			}
-		},
+		}
+	},
 	"selectors": {
 		"root": ".sgs-notice-banner",
 		"typography": ".sgs-notice-banner"
@@ -292,6 +335,88 @@
 		"iconColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"iconSize": {
+			"type": "number",
+			"default": 20,
+			"description": "Icon glyph size in px (8 to 96). Applies in both iconStyle values (bare and circle)."
+		},
+		"iconStyle": {
+			"type": "string",
+			"default": "bare",
+			"enum": [
+				"bare",
+				"circle"
+			],
+			"description": "Bare (default) shows just the glyph, today's look. Circle wraps it in a background badge (a circle or rounded square)."
+		},
+		"iconCircleSize": {
+			"type": "number",
+			"default": 44,
+			"description": "iconStyle:'circle' only. Badge diameter in px (24 to 96), independent of iconSize (the glyph inside it)."
+		},
+		"iconCircleBackground": {
+			"type": "string",
+			"default": "surface"
+		},
+		"iconCircleBackgroundGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the badge background instead of a flat colour. Non-empty wins over iconCircleBackground at render time (D636/D644)."
+		},
+		"iconCircleBackgroundHover": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state background colour for the icon badge."
+		},
+		"iconCircleBackgroundHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of iconCircleBackgroundHover. Non-empty wins over iconCircleBackgroundHover at render time."
+		},
+		"iconCircleBorderRadius": {
+			"type": "string",
+			"default": "50%",
+			"description": "50% makes a circle; a px value makes a rounded square."
+		},
+		"iconCircleShadow": {
+			"type": "string",
+			"default": "none",
+			"description": "Unlike sgs/trust-bar's icon-circle badge (default 'whisper'), a notice banner's badge carries no shadow by default -- it already sits on a coloured strip."
+		},
+		"iconCircleShadowColour": {
+			"type": "string"
+		},
+		"iconCircleShadowColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"iconCircleBorderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "4-side box-object family (box_family 'iconCircleBorderWidth'). Empty (unset) falls through to style.css's framework-default fallback (1px) so an unmodified badge still reads as a circle; an explicit 0 on every side removes the border entirely."
+		},
+		"iconCircleBorderStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "",
+			"description": "Unset (default) falls through to style.css's framework-default fallback (solid)."
+		},
+		"iconCircleBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Unset (default) falls through to style.css's framework-default fallback (rgba(0,0,0,0.08))."
 		},
 		"fontSize": {
 			"type": "object",

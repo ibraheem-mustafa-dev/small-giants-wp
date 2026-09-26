@@ -66,6 +66,7 @@ $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_t
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/wp-icons.php';
+require_once dirname( __DIR__, 3 ) . '/includes/notice-banner-icon-badge.php';
 require_once __DIR__ . '/helpers.php';
 
 // FR-22-6: $text is no longer rendered here — the text content slot is now
@@ -82,6 +83,16 @@ $display_mode      = $attributes['displayMode'] ?? 'inline';
 $sticky_position   = $attributes['stickyPosition'] ?? 'top';
 $dismissible       = ! empty( $attributes['dismissible'] );
 $dismiss_behaviour = $attributes['dismissBehaviour'] ?? 'session';
+
+// Icon glyph size + optional circle/rounded-square badge (mirrors
+// sgs/trust-bar's icon-circle family — includes/notice-banner-icon-badge.php).
+// $sgs_nb_icon_classes is computed here (outside the interior-HTML span below)
+// so the byte-identical U-15 test's extracted span only ever REFERENCES an
+// already-known variable — bare (default) resolves to the exact pre-existing
+// class string, unchanged.
+$icon_style          = sgs_notice_banner_resolve_icon_style( $attributes['iconStyle'] ?? null );
+$is_icon_circle      = ( 'circle' === $icon_style );
+$sgs_nb_icon_classes = $is_icon_circle ? 'sgs-notice-banner__icon sgs-notice-banner__icon--circle' : 'sgs-notice-banner__icon';
 
 $is_announcement = ( 'announcement' === $display_mode );
 $is_bar          = ( 'bar' === $display_mode );
@@ -247,6 +258,12 @@ if ( $sgs_notice_banner_grad['css'] ) {
 	// Flat-colour-only fallback — no gradient set on either state.
 	$scoped_css[] = sgs_hover_state_rules( $sgs_notice_banner_icon_sel, 'color:' . sgs_colour_value( $attributes['iconColourHover'] ), ':focus-visible' );
 }
+
+// --- Icon glyph size + optional circle/rounded-square badge. Every
+// declaration is gated on differing from style.css's own default, so an
+// unmodified block (or one still on iconStyle:'bare') adds zero new CSS —
+// see includes/notice-banner-icon-badge.php's own docblock. ---
+$scoped_css = array_merge( $scoped_css, sgs_notice_banner_icon_badge_css( $attributes, $root_sel ) );
 
 // --- Text colour (flat-or-gradient, base + hover) — D744: replaces core's
 // `style.color.text` storage. Painted on the ROOT selector so it inherits
@@ -444,7 +461,7 @@ if ( $is_announcement ) {
 // -------------------------------------------------------------------------
 $sgs_inner_html = '';
 if ( $icon_html ) {
-	$sgs_inner_html .= '<span class="sgs-notice-banner__icon" aria-hidden="true">' . $icon_html . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from first-party icon maps; dashicon slug + emoji escaped above.
+	$sgs_inner_html .= '<span class="' . esc_attr( $sgs_nb_icon_classes ?? 'sgs-notice-banner__icon' ) . '" aria-hidden="true">' . $icon_html . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from first-party icon maps; dashicon slug + emoji escaped above.
 }
 // U-15 (§3.3): static mode, or fewer than two sgs/notice-message children,
 // takes this EXACT pre-U-15 branch — $content goes straight in, unchanged.

@@ -12,8 +12,8 @@ import {
 	Notice,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
-import { IconPicker, IconPreview, ResponsiveBoxControl, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
-import { colourVar } from '../../utils';
+import { IconPicker, IconPreview, ResponsiveBoxControl, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, ShadowControl } from '../../components';
+import { colourVar, resolveShadowPreviewComposed } from '../../utils';
 import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 // U-15 (`.claude/reports/2026-09-26-u15-notice-message-design.md` §3.2).
@@ -164,6 +164,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		iconColourHover,
 		iconColourGradient,
 		iconColourHoverGradient,
+		iconSize,
+		iconStyle,
+		iconCircleSize,
+		iconCircleBackground,
+		iconCircleBackgroundGradient,
+		iconCircleBorderRadius,
+		iconCircleBorderWidth,
+		iconCircleBorderStyle,
+		iconCircleBorderColour,
+		iconCircleShadow,
+		iconCircleShadowColour,
 		displayMode,
 		stickyPosition,
 		dismissible,
@@ -180,6 +191,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	} = attributes;
 
 	const isAnnouncement = 'announcement' === displayMode;
+	const isIconCircle = 'circle' === iconStyle;
 
 	// U-15 §3.2: the rotation panel only shows once there are two or more
 	// sgs/notice-message children to rotate between.
@@ -225,6 +237,30 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	} );
 	const resolved = resolveIcon( attributes );
 	const usingDefault = ! ( iconSource && attributes.iconName );
+
+	// Canvas preview only — the frontend paints via render.php's own scoped
+	// CSS (includes/notice-banner-icon-badge.php), never this inline style
+	// (Spec 32's no-inline contract is a RENDER.PHP/frontend rule; the editor
+	// canvas mirror exception is documented in sgs/quote's edit.js and used
+	// throughout this file, e.g. buildWrapperStyle() above). Falls back to
+	// EXACTLY style.css's own defaults so an unmodified badge previews the
+	// same as the frontend.
+	const iconBadgeStyle = isIconCircle
+		? {
+				display: 'inline-flex',
+				alignItems: 'center',
+				justifyContent: 'center',
+				width: `${ iconCircleSize }px`,
+				height: `${ iconCircleSize }px`,
+				borderRadius: iconCircleBorderRadius || '50%',
+				backgroundColor: colourVar( iconCircleBackground ) || 'var(--wp--preset--color--surface, #FAF9F6)',
+				backgroundImage: iconCircleBackgroundGradient || 'none',
+				borderWidth: boxShorthand( iconCircleBorderWidth, [ 'top', 'right', 'bottom', 'left' ] ) || '1px',
+				borderStyle: iconCircleBorderStyle || 'solid',
+				borderColor: iconCircleBorderColour ? colourVar( iconCircleBorderColour ) : 'rgba(0, 0, 0, 0.08)',
+				boxShadow: resolveShadowPreviewComposed( iconCircleShadow, iconCircleShadowColour ) || 'none',
+		  }
+		: undefined;
 
 	return (
 		<>
@@ -294,6 +330,36 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							},
 						],
 					},
+					// Icon badge background (iconStyle:'circle' only) — mirrors
+					// sgs/trust-bar's own "Icon circle background" row exactly
+					// (trust-bar/edit.js:680-703), rows.filter(Boolean) omits it
+					// on 'bare'.
+					isIconCircle && {
+						key: 'iconCircleBackground',
+						label: __( 'Icon badge background', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: iconCircleBackground,
+								onChange: ( val ) => setAttributes( { iconCircleBackground: val ?? '' } ),
+								linked: true,
+								gradientValue: iconCircleBackgroundGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { iconCircleBackgroundGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: attributes.iconCircleBackgroundHover,
+								onChange: ( val ) => setAttributes( { iconCircleBackgroundHover: val ?? '' } ),
+								linked: true,
+								gradientValue: attributes.iconCircleBackgroundHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { iconCircleBackgroundHoverGradient: val ?? '' } ),
+							},
+						],
+					},
 					// U-15 §3.2: only relevant once rotate + arrows are switched on —
 					// SgsColourPanel omits a falsy row entirely (rows.filter(Boolean)).
 					canRotate && 'rotate' === messageMode && showMessageArrows
@@ -328,6 +394,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								iconSource: '',
 								iconName: '',
 								iconColour: '',
+								iconSize: 20,
+								iconStyle: 'bare',
+								iconCircleSize: 44,
+								iconCircleBackground: 'surface',
+								iconCircleBorderRadius: '50%',
+								iconCircleShadow: 'none',
 							} )
 						}
 					>
@@ -482,6 +554,82 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									/>
 								) }
 								{ /* Icon colour moved to the top-level SgsColourPanel (D618/D621). */ }
+								<RangeControl
+									label={ __( 'Icon size (px)', 'sgs-blocks' ) }
+									value={ iconSize }
+									onChange={ ( val ) => setAttributes( { iconSize: val ?? 20 } ) }
+									min={ 8 }
+									max={ 96 }
+									step={ 2 }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+								<ToggleGroupControl
+									label={ __( 'Icon style', 'sgs-blocks' ) }
+									value={ iconStyle }
+									onChange={ ( val ) => setAttributes( { iconStyle: val } ) }
+									isBlock
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								>
+									<ToggleGroupControlOption value="bare" label={ __( 'Bare', 'sgs-blocks' ) } />
+									<ToggleGroupControlOption value="circle" label={ __( 'Circle', 'sgs-blocks' ) } />
+								</ToggleGroupControl>
+								{ /* Badge controls (iconStyle:'circle' only) — replicate
+								     sgs/trust-bar's own icon-circle Appearance panel
+								     (trust-bar/edit.js:1130-1201) exactly: size,
+								     border-radius, border, shadow. Background +
+								     hover live in the top-level SgsColourPanel above,
+								     matching trust-bar's 2026-08-30 consolidation. */ }
+								{ isIconCircle && (
+									<>
+										<RangeControl
+											label={ __( 'Icon badge size (px)', 'sgs-blocks' ) }
+											value={ iconCircleSize }
+											onChange={ ( val ) => setAttributes( { iconCircleSize: val ?? 44 } ) }
+											min={ 24 }
+											max={ 96 }
+											step={ 2 }
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+										/>
+										<SgsLengthControl
+											presets={ false }
+											label={ __( 'Icon badge border radius', 'sgs-blocks' ) }
+											value={ iconCircleBorderRadius }
+											onChange={ ( val ) => setAttributes( { iconCircleBorderRadius: val || '' } ) }
+											units={ [
+												{ value: '%', label: '%', default: 50 },
+												{ value: 'px', label: 'px', default: 8 },
+												{ value: 'rem', label: 'rem', default: 0.5 },
+												{ value: 'em', label: 'em', default: 0.5 },
+											] }
+											help={ __( '50% makes a circle; a px value makes a rounded square.', 'sgs-blocks' ) }
+										/>
+										<SgsBorderControl
+											label={ __( 'Icon badge border width', 'sgs-blocks' ) }
+											widthValues={ iconCircleBorderWidth ?? {} }
+											onWidthChange={ ( next ) => setAttributes( { iconCircleBorderWidth: next } ) }
+											styleValue={ iconCircleBorderStyle }
+											onStyleChange={ ( val ) => setAttributes( { iconCircleBorderStyle: val ?? '' } ) }
+											colourLabel={ __( 'Icon badge border colour', 'sgs-blocks' ) }
+											colourValue={ iconCircleBorderColour }
+											onColourChange={ ( val ) => setAttributes( { iconCircleBorderColour: val ?? '' } ) }
+											colourLinked={ true }
+											contrastAgainst={ colourVar( iconCircleBackground ) }
+										/>
+										<ShadowControl
+											label={ __( 'Icon badge shadow', 'sgs-blocks' ) }
+											attributes={ attributes }
+											setAttributes={ setAttributes }
+											attrNames={ {
+												base: 'iconCircleShadow',
+												colour: 'iconCircleShadowColour',
+												hoverColour: 'iconCircleShadowColourHover',
+											} }
+										/>
+									</>
+								) }
 							</ToolsPanelItem>
 						) }
 					</ToolsPanel>
@@ -688,11 +836,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			<div { ...blockProps } role={ isAnnouncement ? 'banner' : 'note' }>
 				{ showIcon && (
 					<span
-						className="sgs-notice-banner__icon"
+						className={ isIconCircle ? 'sgs-notice-banner__icon sgs-notice-banner__icon--circle' : 'sgs-notice-banner__icon' }
 						aria-hidden="true"
-						style={ iconColour ? { color: colourVar( iconColour ) } : undefined }
+						style={ {
+							...( iconColour ? { color: colourVar( iconColour ) } : undefined ),
+							...iconBadgeStyle,
+						} }
 					>
-						<IconPreview source={ resolved.source } name={ resolved.name } size={ 20 } gradient={ iconColourGradient } />
+						<IconPreview source={ resolved.source } name={ resolved.name } size={ iconSize } gradient={ iconColourGradient } />
 					</span>
 				) }
 				<div { ...innerBlocksProps } />

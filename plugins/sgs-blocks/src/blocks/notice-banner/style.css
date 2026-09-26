@@ -64,6 +64,44 @@
 /* No icon colour fallback: it declared `color: inherit`, i.e. exactly what the
  * element already does. A pure no-op sitting behind a dead guard. */
 
+/* Glyph size (iconSize) — the SVG (lucide/wp-icon) sizes via width/height;
+ * a dashicon/emoji glyph sizes via the parent's font-size (already 20px
+ * above). render.php's includes/notice-banner-icon-badge.php only adds a
+ * scoped override when iconSize differs from this 20px default, so an
+ * unmodified block adds zero new CSS. :where() (specificity 0,0,0) keeps
+ * this a DEFAULT the operator's scoped iconSize rule always outranks —
+ * check-hardcoded-render-defaults.js's sanctioned "own this via specificity"
+ * pattern (Fix option 3), matching :where(.sgs-notice-banner__text) below. */
+:where(.sgs-notice-banner__icon svg) {
+	width: 20px;
+	height: 20px;
+	display: block;
+}
+
+/* ===== Icon badge (iconStyle:'circle') =====
+ * Wraps the glyph in a background circle/rounded square — replicates
+ * sgs/trust-bar's icon-circle badge (trust-bar/style.css::.sgs-trust-bar__circle)
+ * through notice-banner's own no-inline scoped-CSS contract (Spec 32): every
+ * operator override lands in render.php's $scoped_css via
+ * includes/notice-banner-icon-badge.php, never an inline style. The values
+ * below are the "no override" defaults — iconCircleSize/Background/
+ * BorderRadius/Shadow/BorderWidth/Style/Colour only add scoped CSS when the
+ * operator changes them away from these. */
+.sgs-notice-banner__icon--circle {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	border-radius: 50%;
+	background-color: var(--wp--preset--color--surface, #FAF9F6);
+	background-image: none;
+	border-width: 1px;
+	border-style: solid;
+	border-color: rgba(0, 0, 0, 0.08);
+	box-shadow: none;
+}
+
 /* ===== Text ===== */
 .sgs-notice-banner__text {
 	margin: 0;
@@ -281,8 +319,10 @@
 }
 
 /* Pause icon — two bars (playing); the CSS-only "paused" look is a single
- * triangle, driven off aria-pressed so no extra JS-toggled class is needed. */
-.sgs-notice-banner__pause-icon {
+ * triangle, driven off aria-pressed so no extra JS-toggled class is needed.
+ * :where() keeps this fixed glyph box at zero specificity: no attribute sizes
+ * it, and the pressed-state rule below still outranks it. */
+:where(.sgs-notice-banner__pause-icon) {
 	display: inline-block;
 	width: 12px;
 	height: 12px;
